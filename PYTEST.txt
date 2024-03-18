@@ -1,0 +1,1324 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-7.4.2, pluggy-1.3.0
+rootdir: /net/home/h06/rking/esmvaltool/ESMValTool
+configfile: setup.cfg
+plugins: cov-4.1.0, env-1.0.1, metadata-3.0.0, mock-3.11.1, mypy-0.8.0, xdist-3.3.1, html-3.2.0
+created: 4/4 workers
+4 workers [1474 items]
+
+......................................................................... [  4%]
+...................................................................F.... [  9%]
+.....F.................................................................. [ 14%]
+........................................................................ [ 19%]
+............s........................................................... [ 24%]
+........................................................................ [ 29%]
+........................................................................ [ 34%]
+...F.................................................................... [ 39%]
+........................................................................ [ 44%]
+...............................................................F........ [ 48%]
+........................................................................ [ 53%]
+........................................................................ [ 58%]
+........................................................................ [ 63%]
+........................................................................ [ 68%]
+........................................................................ [ 73%]
+...................F.................................................... [ 78%]
+........................................................................ [ 83%]
+........................................................................ [ 87%]
+..................F...F.....F........................................... [ 92%]
+........................................................................ [ 97%]
+.................................                                        [100%]
+==================================== ERRORS ====================================
+____ ERROR collecting esmvaltool/cmorizers/data/formatters/datasets/agcd.py ____
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/runner.py:341: in from_call
+    result: Optional[TResult] = func()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/runner.py:372: in <lambda>
+    call = CallInfo.from_call(lambda: list(collector.collect()), "collect")
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/doctest.py:567: in collect
+    module = import_path(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/pathlib.py:567: in import_path
+    importlib.import_module(module_name)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+<frozen importlib._bootstrap>:1050: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1027: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1006: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:688: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:883: in exec_module
+    ???
+<frozen importlib._bootstrap>:241: in _call_with_frames_removed
+    ???
+esmvaltool/cmorizers/data/formatters/datasets/agcd.py:29: in <module>
+    from esmvalcore.cmor._fixes.shared import get_time_bounds
+E   ImportError: cannot import name 'get_time_bounds' from 'esmvalcore.cmor._fixes.shared' (/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/cmor/_fixes/shared.py)
+____ ERROR collecting esmvaltool/cmorizers/data/formatters/datasets/agcd.py ____
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/runner.py:341: in from_call
+    result: Optional[TResult] = func()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/runner.py:372: in <lambda>
+    call = CallInfo.from_call(lambda: list(collector.collect()), "collect")
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/doctest.py:567: in collect
+    module = import_path(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/pathlib.py:567: in import_path
+    importlib.import_module(module_name)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+<frozen importlib._bootstrap>:1050: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1027: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1006: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:688: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:883: in exec_module
+    ???
+<frozen importlib._bootstrap>:241: in _call_with_frames_removed
+    ???
+esmvaltool/cmorizers/data/formatters/datasets/agcd.py:29: in <module>
+    from esmvalcore.cmor._fixes.shared import get_time_bounds
+E   ImportError: cannot import name 'get_time_bounds' from 'esmvalcore.cmor._fixes.shared' (/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/cmor/_fixes/shared.py)
+____ ERROR collecting esmvaltool/cmorizers/data/formatters/datasets/agcd.py ____
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/runner.py:341: in from_call
+    result: Optional[TResult] = func()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/runner.py:372: in <lambda>
+    call = CallInfo.from_call(lambda: list(collector.collect()), "collect")
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/doctest.py:567: in collect
+    module = import_path(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/pathlib.py:567: in import_path
+    importlib.import_module(module_name)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+<frozen importlib._bootstrap>:1050: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1027: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1006: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:688: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:883: in exec_module
+    ???
+<frozen importlib._bootstrap>:241: in _call_with_frames_removed
+    ???
+esmvaltool/cmorizers/data/formatters/datasets/agcd.py:29: in <module>
+    from esmvalcore.cmor._fixes.shared import get_time_bounds
+E   ImportError: cannot import name 'get_time_bounds' from 'esmvalcore.cmor._fixes.shared' (/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/cmor/_fixes/shared.py)
+____ ERROR collecting esmvaltool/cmorizers/data/formatters/datasets/agcd.py ____
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/runner.py:341: in from_call
+    result: Optional[TResult] = func()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/runner.py:372: in <lambda>
+    call = CallInfo.from_call(lambda: list(collector.collect()), "collect")
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/doctest.py:567: in collect
+    module = import_path(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/pathlib.py:567: in import_path
+    importlib.import_module(module_name)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+<frozen importlib._bootstrap>:1050: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1027: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1006: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:688: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:883: in exec_module
+    ???
+<frozen importlib._bootstrap>:241: in _call_with_frames_removed
+    ???
+esmvaltool/cmorizers/data/formatters/datasets/agcd.py:29: in <module>
+    from esmvalcore.cmor._fixes.shared import get_time_bounds
+E   ImportError: cannot import name 'get_time_bounds' from 'esmvalcore.cmor._fixes.shared' (/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/cmor/_fixes/shared.py)
+_ ERROR collecting esmvaltool/cmorizers/data/formatters/datasets/esacci_watervapour.py _
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/runner.py:341: in from_call
+    result: Optional[TResult] = func()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/runner.py:372: in <lambda>
+    call = CallInfo.from_call(lambda: list(collector.collect()), "collect")
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/doctest.py:567: in collect
+    module = import_path(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/pathlib.py:567: in import_path
+    importlib.import_module(module_name)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+<frozen importlib._bootstrap>:1050: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1027: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1006: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:688: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:883: in exec_module
+    ???
+<frozen importlib._bootstrap>:241: in _call_with_frames_removed
+    ???
+esmvaltool/cmorizers/data/formatters/datasets/esacci_watervapour.py:26: in <module>
+    from esmvalcore.cmor.fixes import get_time_bounds
+E   ImportError: cannot import name 'get_time_bounds' from 'esmvalcore.cmor.fixes' (/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/cmor/fixes.py)
+_ ERROR collecting esmvaltool/cmorizers/data/formatters/datasets/esacci_watervapour.py _
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/runner.py:341: in from_call
+    result: Optional[TResult] = func()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/runner.py:372: in <lambda>
+    call = CallInfo.from_call(lambda: list(collector.collect()), "collect")
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/doctest.py:567: in collect
+    module = import_path(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/pathlib.py:567: in import_path
+    importlib.import_module(module_name)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+<frozen importlib._bootstrap>:1050: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1027: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1006: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:688: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:883: in exec_module
+    ???
+<frozen importlib._bootstrap>:241: in _call_with_frames_removed
+    ???
+esmvaltool/cmorizers/data/formatters/datasets/esacci_watervapour.py:26: in <module>
+    from esmvalcore.cmor.fixes import get_time_bounds
+E   ImportError: cannot import name 'get_time_bounds' from 'esmvalcore.cmor.fixes' (/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/cmor/fixes.py)
+_ ERROR collecting esmvaltool/cmorizers/data/formatters/datasets/esacci_watervapour.py _
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/runner.py:341: in from_call
+    result: Optional[TResult] = func()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/runner.py:372: in <lambda>
+    call = CallInfo.from_call(lambda: list(collector.collect()), "collect")
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/doctest.py:567: in collect
+    module = import_path(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/pathlib.py:567: in import_path
+    importlib.import_module(module_name)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+<frozen importlib._bootstrap>:1050: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1027: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1006: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:688: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:883: in exec_module
+    ???
+<frozen importlib._bootstrap>:241: in _call_with_frames_removed
+    ???
+esmvaltool/cmorizers/data/formatters/datasets/esacci_watervapour.py:26: in <module>
+    from esmvalcore.cmor.fixes import get_time_bounds
+E   ImportError: cannot import name 'get_time_bounds' from 'esmvalcore.cmor.fixes' (/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/cmor/fixes.py)
+_ ERROR collecting esmvaltool/cmorizers/data/formatters/datasets/esacci_watervapour.py _
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/runner.py:341: in from_call
+    result: Optional[TResult] = func()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/runner.py:372: in <lambda>
+    call = CallInfo.from_call(lambda: list(collector.collect()), "collect")
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/doctest.py:567: in collect
+    module = import_path(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/_pytest/pathlib.py:567: in import_path
+    importlib.import_module(module_name)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+<frozen importlib._bootstrap>:1050: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1027: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1006: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:688: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:883: in exec_module
+    ???
+<frozen importlib._bootstrap>:241: in _call_with_frames_removed
+    ???
+esmvaltool/cmorizers/data/formatters/datasets/esacci_watervapour.py:26: in <module>
+    from esmvalcore.cmor.fixes import get_time_bounds
+E   ImportError: cannot import name 'get_time_bounds' from 'esmvalcore.cmor.fixes' (/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/cmor/fixes.py)
+=================================== FAILURES ===================================
+_______________ TestAdvancedRFE.test_advanced_rfe_no_fit_kwargs ________________
+[gw2] linux -- Python 3.10.12 /opt/scitools/conda/environments/esmvaltool-2.9.0-2/bin/python3.10
+
+self = <tests.integration.diag_scripts.mlr.test_custom_sklearn_classes.TestAdvancedRFE object at 0x7f464eeb8af0>
+rfe = AdvancedRFE(estimator=AdvancedPipeline(steps=[('trans',
+                                               ColumnTransform...                                    ('lin', NewLinearRegression())]),
+            n_features_to_select=1, verbose=1000)
+
+    def test_advanced_rfe_no_fit_kwargs(self, rfe):
+        """Test ``AdvancedRFE`` without fit_kwargs."""
+        rfe.fit(self.X_TRAIN, self.Y_TRAIN)
+        assert rfe.n_features_ == 1
+        np.testing.assert_array_equal(rfe.ranking_, [2, 3, 1])
+        np.testing.assert_array_equal(rfe.support_, [False, False, True])
+        est = rfe.estimator_
+        assert isinstance(est, AdvancedPipeline)
+        assert len(est.steps[0][1].transformers_) == 1
+        transformer = est.steps[0][1].transformers_[0]
+        assert transformer[0] == 'passthrough'
+>       assert isinstance(transformer[1], FunctionTransformer)
+E       AssertionError: assert False
+E        +  where False = isinstance('passthrough', FunctionTransformer)
+
+tests/integration/diag_scripts/mlr/test_custom_sklearn_classes.py:435: AssertionError
+----------------------------- Captured stdout call -----------------------------
+Fitting estimator with 3 features.
+Fitting estimator with 2 features.
+_________________ TestAdvancedRFE.test_advanced_rfe_fit_kwargs _________________
+[gw2] linux -- Python 3.10.12 /opt/scitools/conda/environments/esmvaltool-2.9.0-2/bin/python3.10
+
+self = <tests.integration.diag_scripts.mlr.test_custom_sklearn_classes.TestAdvancedRFE object at 0x7f464eeb9c60>
+rfe = AdvancedRFE(estimator=AdvancedPipeline(steps=[('trans',
+                                               ColumnTransform...                                    ('lin', NewLinearRegression())]),
+            n_features_to_select=1, verbose=1000)
+
+    def test_advanced_rfe_fit_kwargs(self, rfe):
+        """Test ``AdvancedRFE`` with fit_kwargs."""
+        rfe.fit(self.X_TRAIN, self.Y_TRAIN,
+                lin__sample_weight=self.SAMPLE_WEIGHTS)
+        assert rfe.n_features_ == 1
+        np.testing.assert_array_equal(rfe.ranking_, [1, 3, 2])
+        np.testing.assert_array_equal(rfe.support_, [True, False, False])
+        est = rfe.estimator_
+        assert isinstance(est, AdvancedPipeline)
+        assert len(est.steps[0][1].transformers_) == 1
+        transformer = est.steps[0][1].transformers_[0]
+        assert transformer[0] == 'passthrough'
+>       assert isinstance(transformer[1], FunctionTransformer)
+E       AssertionError: assert False
+E        +  where False = isinstance('passthrough', FunctionTransformer)
+
+tests/integration/diag_scripts/mlr/test_custom_sklearn_classes.py:456: AssertionError
+----------------------------- Captured stdout call -----------------------------
+Fitting estimator with 3 features.
+Fitting estimator with 2 features.
+______________________ test_diagnostic_run[diagnostic.jl] ______________________
+[gw0] linux -- Python 3.10.12 /opt/scitools/conda/environments/esmvaltool-2.9.0-2/bin/python3.10
+
+    def run():
+        """Run the `esmvaltool` program, logging any exceptions."""
+        import sys
+    
+        from .exceptions import RecipeError
+    
+        # Workaround to avoid using more for the output
+    
+        def display(lines, out):
+            text = "\n".join(lines) + "\n"
+            out.write(text)
+    
+        fire.core.Display = display
+    
+        try:
+>           fire.Fire(ESMValTool())
+
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_main.py:524: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/fire/core.py:141: in Fire
+    component_trace = _Fire(component, args, parsed_flag_args, context, name)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/fire/core.py:475: in _Fire
+    component, remaining_args = _CallAndUpdateTrace(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/fire/core.py:691: in _CallAndUpdateTrace
+    component = fn(*varargs, **kwargs)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_main.py:411: in run
+    self._run(recipe, session)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_main.py:453: in _run
+    process_recipe(recipe_file=recipe, session=session)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_main.py:122: in process_recipe
+    recipe = read_recipe_file(recipe_file, session)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:83: in read_recipe_file
+    return Recipe(raw_recipe, session, recipe_file=filename)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:903: in __init__
+    self.tasks = self.initialize_tasks()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:1265: in initialize_tasks
+    tasks = self._create_tasks()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:1230: in _create_tasks
+    new_tasks = self._create_diagnostic_tasks(diagnostic_name,
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:1150: in _create_diagnostic_tasks
+    task = DiagnosticTask(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_task.py:345: in __init__
+    self.cmd = self._initialize_cmd()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = DiagnosticTask: diagnostic_name/script_name
+script: /var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_diagnostic_run_di...t_diagnostic_run_diagnostic3/output_dir/recipe_test_20240221_140805/work/diagnostic_name/script_name'}
+ancestors:
+None
+
+
+    def _initialize_cmd(self):
+        """Create an executable command from script."""
+        diagnostics_root = DIAGNOSTICS.scripts
+        script = self.script
+        script_file = (diagnostics_root / Path(script).expanduser()).absolute()
+    
+        err_msg = f"Cannot execute script '{script}' ({script_file})"
+        if not script_file.is_file():
+            raise DiagnosticError(f"{err_msg}: file does not exist.")
+    
+        cmd = []
+    
+        interpreters = {
+            'jl': 'julia',
+            'ncl': 'ncl',
+            'py': 'python',
+            'r': 'Rscript',
+        }
+        args = {
+            'ncl': ['-n', '-p'],
+        }
+        if self.settings['profile_diagnostic']:
+            profile_file = Path(self.settings['run_dir'], 'profile.json')
+            args['py'] = ['-m', 'vprof', '-o', str(profile_file), '-c', 'c']
+    
+        ext = script_file.suffix.lower()[1:]
+        if ext in interpreters:
+            if ext == 'py' and sys.executable:
+                interpreter = sys.executable
+            else:
+                interpreter = which(interpreters[ext])
+            if interpreter is None:
+>               raise DiagnosticError(
+                    f"{err_msg}: program '{interpreters[ext]}' not installed.")
+E               esmvalcore._task.DiagnosticError: Cannot execute script '/var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_diagnostic_run_diagnostic3/diagnostic.jl' (/var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_diagnostic_run_diagnostic3/diagnostic.jl): program 'julia' not installed.
+
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_task.py:382: DiagnosticError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_diagnostic_run_diagnostic3')
+script_file = PosixPath('/var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_diagnostic_run_diagnostic3/diagnostic.jl')
+
+    @pytest.mark.installation
+    @pytest.mark.parametrize('script_file', SCRIPTS)
+    def test_diagnostic_run(tmp_path, script_file):
+    
+        local_script_file = Path(__file__).parent / script_file
+    
+        recipe_file = tmp_path / 'recipe_test.yml'
+        script_file = tmp_path / script_file
+        result_file = tmp_path / 'result.yml'
+    
+        shutil.copy(local_script_file, script_file)
+    
+        # Create recipe
+        recipe = dedent("""
+            documentation:
+              title: Test recipe
+              description: Recipe with no data.
+              authors: [andela_bouwe]
+    
+            diagnostics:
+              diagnostic_name:
+                scripts:
+                  script_name:
+                    script: {}
+                    setting_name: {}
+            """.format(script_file, result_file))
+        recipe_file.write_text(str(recipe))
+    
+        config_user_file = write_config_user_file(tmp_path)
+        with arguments(
+                'esmvaltool',
+                'run',
+                '--config_file',
+                config_user_file,
+                str(recipe_file),
+        ):
+>           run()
+
+tests/integration/test_diagnostic_run.py:107: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def run():
+        """Run the `esmvaltool` program, logging any exceptions."""
+        import sys
+    
+        from .exceptions import RecipeError
+    
+        # Workaround to avoid using more for the output
+    
+        def display(lines, out):
+            text = "\n".join(lines) + "\n"
+            out.write(text)
+    
+        fire.core.Display = display
+    
+        try:
+            fire.Fire(ESMValTool())
+        except fire.core.FireExit:
+            raise
+        except RecipeError as exc:
+            # Hide the stack trace for RecipeErrors
+            logger.error("%s", exc)
+            logger.debug("Stack trace for debugging:", exc_info=True)
+            sys.exit(1)
+        except Exception:  # noqa
+            if not logger.handlers:
+                # Add a logging handler if main failed to do so.
+                logging.basicConfig()
+            logger.exception(
+                "Program terminated abnormally, see stack trace "
+                "below for more information:",
+                exc_info=True)
+            logger.info(
+                "\n"
+                "If you have a question or need help, please start a new "
+                "discussion on "
+                "https://github.com/ESMValGroup/ESMValTool/discussions"
+                "\n"
+                "If you suspect this is a bug, please open an issue on "
+                "https://github.com/ESMValGroup/ESMValTool/issues"
+                "\n"
+                "To make it easier to find out what the problem is, please "
+                "consider attaching the files run/recipe_*.yml and "
+                "run/main_log_debug.txt from the output directory.")
+>           sys.exit(1)
+E           SystemExit: 1
+
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_main.py:552: SystemExit
+----------------------------- Captured stdout call -----------------------------
+2024-02-21 14:08:05,627 UTC [100714] INFO    
+______________________________________________________________________
+          _____ ____  __  ____     __    _ _____           _
+         | ____/ ___||  \/  \ \   / /_ _| |_   _|__   ___ | |
+         |  _| \___ \| |\/| |\ \ / / _` | | | |/ _ \ / _ \| |
+         | |___ ___) | |  | | \ V / (_| | | | | (_) | (_) | |
+         |_____|____/|_|  |_|  \_/ \__,_|_| |_|\___/ \___/|_|
+______________________________________________________________________
+
+ESMValTool - Earth System Model Evaluation Tool.
+
+http://www.esmvaltool.org
+
+CORE DEVELOPMENT TEAM AND CONTACTS:
+  Birgit Hassler (Co-PI; DLR, Germany - birgit.hassler@dlr.de)
+  Alistair Sellar (Co-PI; Met Office, UK - alistair.sellar@metoffice.gov.uk)
+  Bouwe Andela (Netherlands eScience Center, The Netherlands - b.andela@esciencecenter.nl)
+  Lee de Mora (PML, UK - ledm@pml.ac.uk)
+  Niels Drost (Netherlands eScience Center, The Netherlands - n.drost@esciencecenter.nl)
+  Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
+  Bettina Gier (UBremen, Germany - gier@uni-bremen.de)
+  Remi Kazeroni (DLR, Germany - remi.kazeroni@dlr.de)
+  Nikolay Koldunov (AWI, Germany - nikolay.koldunov@awi.de)
+  Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
+  Saskia Loosveldt-Tomas (BSC, Spain - saskia.loosveldt@bsc.es)
+  Ruth Lorenz (ETH Zurich, Switzerland - ruth.lorenz@env.ethz.ch)
+  Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
+  Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
+  Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
+  Manuel Schlund (DLR, Germany - manuel.schlund@dlr.de)
+  Breixo Solino Fernandez (DLR, Germany - breixo.solinofernandez@dlr.de)
+  Javier Vegas-Regidor (BSC, Spain - javier.vegas@bsc.es)
+  Klaus Zimmermann (SMHI, Sweden - klaus.zimmermann@smhi.se)
+
+For further help, please read the documentation at
+http://docs.esmvaltool.org. Have fun!
+
+2024-02-21 14:08:05,627 UTC [100714] INFO    Package versions
+2024-02-21 14:08:05,627 UTC [100714] INFO    ----------------
+2024-02-21 14:08:05,627 UTC [100714] INFO    ESMValCore: 2.9.0
+2024-02-21 14:08:05,627 UTC [100714] INFO    ESMValTool: 2.9.0
+2024-02-21 14:08:05,627 UTC [100714] INFO    ----------------
+2024-02-21 14:08:05,628 UTC [100714] INFO    Using config file /var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_diagnostic_run_diagnostic3/config-user.yml
+2024-02-21 14:08:05,628 UTC [100714] INFO    Writing program log files to:
+/var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_diagnostic_run_diagnostic3/output_dir/recipe_test_20240221_140805/run/main_log.txt
+/var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_diagnostic_run_diagnostic3/output_dir/recipe_test_20240221_140805/run/main_log_debug.txt
+2024-02-21 14:08:05,631 UTC [100714] INFO    Starting the Earth System Model Evaluation Tool at time: 2024-02-21 14:08:05 UTC
+2024-02-21 14:08:05,631 UTC [100714] INFO    ----------------------------------------------------------------------
+2024-02-21 14:08:05,631 UTC [100714] INFO    RECIPE   = /var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_diagnostic_run_diagnostic3/recipe_test.yml
+2024-02-21 14:08:05,631 UTC [100714] INFO    RUNDIR     = /var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_diagnostic_run_diagnostic3/output_dir/recipe_test_20240221_140805/run
+2024-02-21 14:08:05,632 UTC [100714] INFO    WORKDIR    = /var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_diagnostic_run_diagnostic3/output_dir/recipe_test_20240221_140805/work
+2024-02-21 14:08:05,632 UTC [100714] INFO    PREPROCDIR = /var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_diagnostic_run_diagnostic3/output_dir/recipe_test_20240221_140805/preproc
+2024-02-21 14:08:05,632 UTC [100714] INFO    PLOTDIR    = /var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_diagnostic_run_diagnostic3/output_dir/recipe_test_20240221_140805/plots
+2024-02-21 14:08:05,632 UTC [100714] INFO    ----------------------------------------------------------------------
+2024-02-21 14:08:05,632 UTC [100714] INFO    Running tasks using at most 4 processes
+2024-02-21 14:08:05,632 UTC [100714] INFO    If your system hangs during execution, it may not have enough memory for keeping this number of tasks in memory.
+2024-02-21 14:08:05,632 UTC [100714] INFO    If you experience memory problems, try reducing 'max_parallel_tasks' in your user configuration file.
+2024-02-21 14:08:05,632 UTC [100714] WARNING Using the Dask basic scheduler. This may lead to slow computations and out-of-memory errors. Note that the basic scheduler may still be the best choice for preprocessor functions that are not lazy. In that case, you can safely ignore this warning. See https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#dask-distributed-configuration for more information. 
+2024-02-21 14:08:05,633 UTC [100714] DEBUG   Checking recipe against schema /opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe_schema.yml
+2024-02-21 14:08:05,651 UTC [100714] DEBUG   Retrieving diagnostics from recipe
+2024-02-21 14:08:05,651 UTC [100714] DEBUG   Setting script for diagnostic diagnostic_name
+2024-02-21 14:08:05,652 UTC [100714] INFO    Creating tasks from recipe
+2024-02-21 14:08:05,652 UTC [100714] INFO    Creating tasks for diagnostic diagnostic_name
+2024-02-21 14:08:05,652 UTC [100714] INFO    Creating diagnostic task diagnostic_name/script_name
+2024-02-21 14:08:06,635 UTC [100714] INFO    Maximum memory used (estimate): 0.0 GB
+2024-02-21 14:08:06,635 UTC [100714] INFO    Sampled every second. It may be inaccurate if short but high spikes in memory consumption occur.
+2024-02-21 14:08:06,636 UTC [100714] ERROR   Program terminated abnormally, see stack trace below for more information:
+Traceback (most recent call last):
+  File "/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_main.py", line 524, in run
+    fire.Fire(ESMValTool())
+  File "/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/fire/core.py", line 141, in Fire
+    component_trace = _Fire(component, args, parsed_flag_args, context, name)
+  File "/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/fire/core.py", line 475, in _Fire
+    component, remaining_args = _CallAndUpdateTrace(
+  File "/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/fire/core.py", line 691, in _CallAndUpdateTrace
+    component = fn(*varargs, **kwargs)
+  File "/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_main.py", line 411, in run
+    self._run(recipe, session)
+  File "/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_main.py", line 453, in _run
+    process_recipe(recipe_file=recipe, session=session)
+  File "/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_main.py", line 122, in process_recipe
+    recipe = read_recipe_file(recipe_file, session)
+  File "/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py", line 83, in read_recipe_file
+    return Recipe(raw_recipe, session, recipe_file=filename)
+  File "/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py", line 903, in __init__
+    self.tasks = self.initialize_tasks()
+  File "/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py", line 1265, in initialize_tasks
+    tasks = self._create_tasks()
+  File "/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py", line 1230, in _create_tasks
+    new_tasks = self._create_diagnostic_tasks(diagnostic_name,
+  File "/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py", line 1150, in _create_diagnostic_tasks
+    task = DiagnosticTask(
+  File "/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_task.py", line 345, in __init__
+    self.cmd = self._initialize_cmd()
+  File "/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_task.py", line 382, in _initialize_cmd
+    raise DiagnosticError(
+esmvalcore._task.DiagnosticError: Cannot execute script '/var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_diagnostic_run_diagnostic3/diagnostic.jl' (/var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_diagnostic_run_diagnostic3/diagnostic.jl): program 'julia' not installed.
+2024-02-21 14:08:06,641 UTC [100714] INFO    
+If you have a question or need help, please start a new discussion on https://github.com/ESMValGroup/ESMValTool/discussions
+If you suspect this is a bug, please open an issue on https://github.com/ESMValGroup/ESMValTool/issues
+To make it easier to find out what the problem is, please consider attaching the files run/recipe_*.yml and run/main_log_debug.txt from the output directory.
+___________________ test_formatters_have_required_interface ____________________
+[gw2] linux -- Python 3.10.12 /opt/scitools/conda/environments/esmvaltool-2.9.0-2/bin/python3.10
+
+    def test_formatters_have_required_interface():
+        formatters_folder = os.path.dirname(fdt.__file__)
+        arg_names = ('in_dir', 'out_dir', 'cfg', 'cfg_user', 'start_date',
+                     'end_date')
+        unused_arg_names = ('_', '__', '___')
+    
+        error = False
+    
+        for formatter in os.listdir(formatters_folder):
+            if not formatter.endswith('.py') or formatter == '__init__.py':
+                continue
+            module = formatter[:-3]
+>           member = importlib.import_module(
+                f".{module}",
+                package="esmvaltool.cmorizers.data.formatters.datasets")
+
+tests/unit/cmorizers/test_cmorization_interface.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+<frozen importlib._bootstrap>:1050: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1027: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1006: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:688: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:883: in exec_module
+    ???
+<frozen importlib._bootstrap>:241: in _call_with_frames_removed
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """ESMValTool CMORizer for AGCD data.
+    
+    Tier
+        Tier 2: other freely available dataset.
+    
+    Source
+        https://dx.doi.org/10.25914/rses-zh67
+    
+    Last access
+        20231121
+    
+    Download and processing instructions
+        Data from NCI (National Computing Infrastructure Australia)
+        https://nci.org.au/,
+        requiring an NCI account and access to Gadi(Supercomputer in Australia)
+          and the dataset project found in
+          catalogue record https://dx.doi.org/10.25914/rses-zh67.
+        Access can be requested through NCI.
+        NCI is an ESGF node: (https://esgf.nci.org.au/projects/esgf-nci/)
+        Processing is done on Gadi.
+    
+    """
+    import logging
+    import os
+    import re
+    
+    import iris
+    
+>   from esmvalcore.cmor._fixes.shared import get_time_bounds
+E   ImportError: cannot import name 'get_time_bounds' from 'esmvalcore.cmor._fixes.shared' (/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/cmor/_fixes/shared.py)
+
+esmvaltool/cmorizers/data/formatters/datasets/agcd.py:29: ImportError
+______________________ test_recipe_valid[recipe_kcs.yml] _______________________
+[gw1] linux -- Python 3.10.12 /opt/scitools/conda/environments/esmvaltool-2.9.0-2/bin/python3.10
+
+recipe_file = PosixPath('/net/home/h06/rking/esmvaltool/ESMValTool/esmvaltool/recipes/recipe_kcs.yml')
+session = Session({'auxiliary_data_dir': PosixPath('/var/tmp/pytest-of-rking/pytest-1/popen-gw1/test_recipe_valid_recipe_kcs_y0/...s': False,
+         'search_esgf': 'never',
+         'skip_nonexistent': False,
+         'write_ncl_interface': False})
+mocker = <pytest_mock.plugin.MockerFixture object at 0x7f35a8749ba0>
+
+    @pytest.mark.parametrize('recipe_file', RECIPES, ids=IDS)
+    def test_recipe_valid(recipe_file, session, mocker):
+        """Check that recipe files are valid ESMValTool recipes."""
+        # Mock input files
+        try:
+            # Since ESValCore v2.8.0
+            import esmvalcore.local
+            module = esmvalcore.local
+            method = 'glob'
+        except ImportError:
+            # Prior to ESMValCore v2.8.0
+            import esmvalcore._data_finder
+            module = esmvalcore._data_finder
+            method = 'find_files'
+    
+        mocker.patch.object(
+            module,
+            method,
+            autospec=True,
+            side_effect=lambda *_, **__: [
+                'test_0001-1849.nc',
+                'test_1850-9999.nc',
+            ],
+        )
+    
+        # Do not remove unexpanded supplementaries. These cannot be expanded
+        # because the mocked file finding above does not produce facets.
+        try:
+            import esmvalcore.dataset
+        except ImportError:
+            pass
+        else:
+            mocker.patch.object(
+                esmvalcore.dataset.Dataset,
+                '_remove_unexpanded_supplementaries',
+                autospec=True,
+                spec_set=True,
+            )
+    
+        # Mock vertical levels
+        # Account for module change after esmvalcore=2.7
+        if version.parse(core_ver) <= version.parse('2.7.1'):
+            import esmvalcore._recipe
+            mocker.patch.object(
+                esmvalcore._recipe,
+                'get_reference_levels',
+                autospec=True,
+                spec_set=True,
+                side_effect=lambda *_, **__: [1, 2],
+            )
+        else:
+            import esmvalcore._recipe.recipe
+            mocker.patch.object(
+                esmvalcore._recipe.recipe,
+                'get_reference_levels',
+                autospec=True,
+                spec_set=True,
+                side_effect=lambda *_, **__: [1, 2],
+            )
+    
+        # Mock valid NCL version
+        # Account for module change after esmvalcore=2.7
+        if version.parse(core_ver) <= version.parse('2.7.1'):
+            import esmvalcore._recipe_checks
+            mocker.patch.object(
+                esmvalcore._recipe_checks,
+                'ncl_version',
+                autospec=True,
+                spec_set=True,
+            )
+        else:
+            import esmvalcore._recipe.check
+            mocker.patch.object(
+                esmvalcore._recipe.check,
+                'ncl_version',
+                autospec=True,
+                spec_set=True,
+            )
+    
+        # Mock interpreters installed
+        def which(executable):
+            if executable in ('julia', 'ncl', 'python', 'Rscript'):
+                path = '/path/to/' + executable
+            else:
+                path = None
+            return path
+    
+        mocker.patch.object(
+            esmvalcore._task,
+            'which',
+            autospec=True,
+            side_effect=which,
+        )
+    
+        # Create a shapefile for extract_shape preprocessor if needed
+        recipe = yaml.safe_load(recipe_file.read_text())
+        for preproc in recipe.get('preprocessors', {}).values():
+            extract_shape = preproc.get('extract_shape')
+            if extract_shape and 'shapefile' in extract_shape:
+                filename = Path(
+                    session['auxiliary_data_dir']) / extract_shape['shapefile']
+                filename.parent.mkdir(parents=True, exist_ok=True)
+                filename.touch()
+    
+        # Account for module change after esmvalcore=2.7
+        if version.parse(core_ver) <= version.parse('2.7.1'):
+            config_user = session.to_config_user()
+            esmvalcore._recipe.read_recipe_file(recipe_file, config_user)
+        else:
+>           esmvalcore._recipe.recipe.read_recipe_file(recipe_file, session)
+
+tests/integration/test_recipes_loading.py:166: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:83: in read_recipe_file
+    return Recipe(raw_recipe, session, recipe_file=filename)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:903: in __init__
+    self.tasks = self.initialize_tasks()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:1265: in initialize_tasks
+    tasks = self._create_tasks()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:1240: in _create_tasks
+    new_tasks, failed = self._create_preprocessor_tasks(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:1204: in _create_preprocessor_tasks
+    task = _get_preprocessor_task(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:841: in _get_preprocessor_task
+    products = _get_preprocessor_products(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:726: in _get_preprocessor_products
+    _configure_multi_product_preprocessor(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:763: in _configure_multi_product_preprocessor
+    multimodel_products, multimodel_settings = _update_multiproduct(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:588: in _update_multiproduct
+    check.multimodel_statistics_preproc(settings)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/check.py:338: in multimodel_statistics_preproc
+    _verify_statistics(statistics, 'multi_model_statistics')
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/check.py:266: in _verify_statistics
+    or re.match(r'|'.join(valid_patterns), statistic)):
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+pattern = '^(p\\d{1,2})(\\.\\d*)?$'
+string = {'operator': 'percentile', 'percent': 10}, flags = 0
+
+    def match(pattern, string, flags=0):
+        """Try to apply the pattern at the start of the string, returning
+        a Match object, or None if no match was found."""
+>       return _compile(pattern, flags).match(string)
+E       TypeError: expected string or bytes-like object
+
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/re.py:190: TypeError
+_______________ test_recipe_valid[examples/recipe_check_obs.yml] _______________
+[gw0] linux -- Python 3.10.12 /opt/scitools/conda/environments/esmvaltool-2.9.0-2/bin/python3.10
+
+recipe_file = PosixPath('/net/home/h06/rking/esmvaltool/ESMValTool/esmvaltool/recipes/examples/recipe_check_obs.yml')
+session = Session({'auxiliary_data_dir': PosixPath('/var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_recipe_valid_examples_rec0/...s': False,
+         'search_esgf': 'never',
+         'skip_nonexistent': False,
+         'write_ncl_interface': False})
+mocker = <pytest_mock.plugin.MockerFixture object at 0x7f333ec29630>
+
+    @pytest.mark.parametrize('recipe_file', RECIPES, ids=IDS)
+    def test_recipe_valid(recipe_file, session, mocker):
+        """Check that recipe files are valid ESMValTool recipes."""
+        # Mock input files
+        try:
+            # Since ESValCore v2.8.0
+            import esmvalcore.local
+            module = esmvalcore.local
+            method = 'glob'
+        except ImportError:
+            # Prior to ESMValCore v2.8.0
+            import esmvalcore._data_finder
+            module = esmvalcore._data_finder
+            method = 'find_files'
+    
+        mocker.patch.object(
+            module,
+            method,
+            autospec=True,
+            side_effect=lambda *_, **__: [
+                'test_0001-1849.nc',
+                'test_1850-9999.nc',
+            ],
+        )
+    
+        # Do not remove unexpanded supplementaries. These cannot be expanded
+        # because the mocked file finding above does not produce facets.
+        try:
+            import esmvalcore.dataset
+        except ImportError:
+            pass
+        else:
+            mocker.patch.object(
+                esmvalcore.dataset.Dataset,
+                '_remove_unexpanded_supplementaries',
+                autospec=True,
+                spec_set=True,
+            )
+    
+        # Mock vertical levels
+        # Account for module change after esmvalcore=2.7
+        if version.parse(core_ver) <= version.parse('2.7.1'):
+            import esmvalcore._recipe
+            mocker.patch.object(
+                esmvalcore._recipe,
+                'get_reference_levels',
+                autospec=True,
+                spec_set=True,
+                side_effect=lambda *_, **__: [1, 2],
+            )
+        else:
+            import esmvalcore._recipe.recipe
+            mocker.patch.object(
+                esmvalcore._recipe.recipe,
+                'get_reference_levels',
+                autospec=True,
+                spec_set=True,
+                side_effect=lambda *_, **__: [1, 2],
+            )
+    
+        # Mock valid NCL version
+        # Account for module change after esmvalcore=2.7
+        if version.parse(core_ver) <= version.parse('2.7.1'):
+            import esmvalcore._recipe_checks
+            mocker.patch.object(
+                esmvalcore._recipe_checks,
+                'ncl_version',
+                autospec=True,
+                spec_set=True,
+            )
+        else:
+            import esmvalcore._recipe.check
+            mocker.patch.object(
+                esmvalcore._recipe.check,
+                'ncl_version',
+                autospec=True,
+                spec_set=True,
+            )
+    
+        # Mock interpreters installed
+        def which(executable):
+            if executable in ('julia', 'ncl', 'python', 'Rscript'):
+                path = '/path/to/' + executable
+            else:
+                path = None
+            return path
+    
+        mocker.patch.object(
+            esmvalcore._task,
+            'which',
+            autospec=True,
+            side_effect=which,
+        )
+    
+        # Create a shapefile for extract_shape preprocessor if needed
+        recipe = yaml.safe_load(recipe_file.read_text())
+        for preproc in recipe.get('preprocessors', {}).values():
+            extract_shape = preproc.get('extract_shape')
+            if extract_shape and 'shapefile' in extract_shape:
+                filename = Path(
+                    session['auxiliary_data_dir']) / extract_shape['shapefile']
+                filename.parent.mkdir(parents=True, exist_ok=True)
+                filename.touch()
+    
+        # Account for module change after esmvalcore=2.7
+        if version.parse(core_ver) <= version.parse('2.7.1'):
+            config_user = session.to_config_user()
+            esmvalcore._recipe.read_recipe_file(recipe_file, config_user)
+        else:
+>           esmvalcore._recipe.recipe.read_recipe_file(recipe_file, session)
+
+tests/integration/test_recipes_loading.py:166: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:83: in read_recipe_file
+    return Recipe(raw_recipe, session, recipe_file=filename)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:903: in __init__
+    self.tasks = self.initialize_tasks()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:1265: in initialize_tasks
+    tasks = self._create_tasks()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <esmvalcore._recipe.recipe.Recipe object at 0x7f333ec28d60>
+
+    def _create_tasks(self):
+        """Create tasks from the recipe."""
+        logger.info("Creating tasks from recipe")
+        tasks = TaskSet()
+    
+        tasknames_to_run = self._get_tasks_to_run()
+    
+        priority = 0
+        failed_tasks = []
+    
+        for diagnostic_name, diagnostic in self.diagnostics.items():
+            logger.info("Creating tasks for diagnostic %s", diagnostic_name)
+    
+            # Create diagnostic tasks
+            new_tasks = self._create_diagnostic_tasks(diagnostic_name,
+                                                      diagnostic,
+                                                      tasknames_to_run)
+            any_diag_script_is_run = bool(new_tasks)
+            for task in new_tasks:
+                task.priority = priority
+                tasks.add(task)
+                priority += 1
+    
+            # Create preprocessor tasks
+            new_tasks, failed = self._create_preprocessor_tasks(
+                diagnostic_name, diagnostic, tasknames_to_run,
+                any_diag_script_is_run)
+            failed_tasks.extend(failed)
+            for task in new_tasks:
+                for task0 in task.flatten():
+                    task0.priority = priority
+                tasks.add(task)
+                priority += 1
+    
+        if failed_tasks:
+            recipe_error = RecipeError('Could not create all tasks')
+            recipe_error.failed_tasks.extend(failed_tasks)
+>           raise recipe_error
+E           esmvalcore.exceptions.RecipeError: Could not create all tasks
+
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:1253: RecipeError
+----------------------------- Captured stdout call -----------------------------
+2024-02-21 14:09:01,435 UTC [100714] ERROR   Could not create all tasks
+2024-02-21 14:09:01,435 UTC [100714] ERROR   Unable to load CMOR table (project) 'OBS6' for variable 'ch4s' with mip 'Amon'
+------------------------------ Captured log call -------------------------------
+ERROR    esmvalcore._recipe.recipe:recipe.py:946 Could not create all tasks
+ERROR    esmvalcore._recipe.recipe:recipe.py:948 Unable to load CMOR table (project) 'OBS6' for variable 'ch4s' with mip 'Amon'
+_______________ test_recipe_valid[examples/recipe_easy_ipcc.yml] _______________
+[gw0] linux -- Python 3.10.12 /opt/scitools/conda/environments/esmvaltool-2.9.0-2/bin/python3.10
+
+recipe_file = PosixPath('/net/home/h06/rking/esmvaltool/ESMValTool/esmvaltool/recipes/examples/recipe_easy_ipcc.yml')
+session = Session({'auxiliary_data_dir': PosixPath('/var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_recipe_valid_examples_rec4/...s': False,
+         'search_esgf': 'never',
+         'skip_nonexistent': False,
+         'write_ncl_interface': False})
+mocker = <pytest_mock.plugin.MockerFixture object at 0x7f332733b100>
+
+    @pytest.mark.parametrize('recipe_file', RECIPES, ids=IDS)
+    def test_recipe_valid(recipe_file, session, mocker):
+        """Check that recipe files are valid ESMValTool recipes."""
+        # Mock input files
+        try:
+            # Since ESValCore v2.8.0
+            import esmvalcore.local
+            module = esmvalcore.local
+            method = 'glob'
+        except ImportError:
+            # Prior to ESMValCore v2.8.0
+            import esmvalcore._data_finder
+            module = esmvalcore._data_finder
+            method = 'find_files'
+    
+        mocker.patch.object(
+            module,
+            method,
+            autospec=True,
+            side_effect=lambda *_, **__: [
+                'test_0001-1849.nc',
+                'test_1850-9999.nc',
+            ],
+        )
+    
+        # Do not remove unexpanded supplementaries. These cannot be expanded
+        # because the mocked file finding above does not produce facets.
+        try:
+            import esmvalcore.dataset
+        except ImportError:
+            pass
+        else:
+            mocker.patch.object(
+                esmvalcore.dataset.Dataset,
+                '_remove_unexpanded_supplementaries',
+                autospec=True,
+                spec_set=True,
+            )
+    
+        # Mock vertical levels
+        # Account for module change after esmvalcore=2.7
+        if version.parse(core_ver) <= version.parse('2.7.1'):
+            import esmvalcore._recipe
+            mocker.patch.object(
+                esmvalcore._recipe,
+                'get_reference_levels',
+                autospec=True,
+                spec_set=True,
+                side_effect=lambda *_, **__: [1, 2],
+            )
+        else:
+            import esmvalcore._recipe.recipe
+            mocker.patch.object(
+                esmvalcore._recipe.recipe,
+                'get_reference_levels',
+                autospec=True,
+                spec_set=True,
+                side_effect=lambda *_, **__: [1, 2],
+            )
+    
+        # Mock valid NCL version
+        # Account for module change after esmvalcore=2.7
+        if version.parse(core_ver) <= version.parse('2.7.1'):
+            import esmvalcore._recipe_checks
+            mocker.patch.object(
+                esmvalcore._recipe_checks,
+                'ncl_version',
+                autospec=True,
+                spec_set=True,
+            )
+        else:
+            import esmvalcore._recipe.check
+            mocker.patch.object(
+                esmvalcore._recipe.check,
+                'ncl_version',
+                autospec=True,
+                spec_set=True,
+            )
+    
+        # Mock interpreters installed
+        def which(executable):
+            if executable in ('julia', 'ncl', 'python', 'Rscript'):
+                path = '/path/to/' + executable
+            else:
+                path = None
+            return path
+    
+        mocker.patch.object(
+            esmvalcore._task,
+            'which',
+            autospec=True,
+            side_effect=which,
+        )
+    
+        # Create a shapefile for extract_shape preprocessor if needed
+        recipe = yaml.safe_load(recipe_file.read_text())
+        for preproc in recipe.get('preprocessors', {}).values():
+            extract_shape = preproc.get('extract_shape')
+            if extract_shape and 'shapefile' in extract_shape:
+                filename = Path(
+                    session['auxiliary_data_dir']) / extract_shape['shapefile']
+                filename.parent.mkdir(parents=True, exist_ok=True)
+                filename.touch()
+    
+        # Account for module change after esmvalcore=2.7
+        if version.parse(core_ver) <= version.parse('2.7.1'):
+            config_user = session.to_config_user()
+            esmvalcore._recipe.read_recipe_file(recipe_file, config_user)
+        else:
+>           esmvalcore._recipe.recipe.read_recipe_file(recipe_file, session)
+
+tests/integration/test_recipes_loading.py:166: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:83: in read_recipe_file
+    return Recipe(raw_recipe, session, recipe_file=filename)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:903: in __init__
+    self.tasks = self.initialize_tasks()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:1265: in initialize_tasks
+    tasks = self._create_tasks()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:1240: in _create_tasks
+    new_tasks, failed = self._create_preprocessor_tasks(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:1204: in _create_preprocessor_tasks
+    task = _get_preprocessor_task(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:841: in _get_preprocessor_task
+    products = _get_preprocessor_products(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:726: in _get_preprocessor_products
+    _configure_multi_product_preprocessor(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:750: in _configure_multi_product_preprocessor
+    ensemble_products, ensemble_settings = _update_multiproduct(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:585: in _update_multiproduct
+    check.ensemble_statistics_preproc(settings)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/check.py:362: in ensemble_statistics_preproc
+    _verify_statistics(statistics, 'ensemble_statistics')
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/check.py:266: in _verify_statistics
+    or re.match(r'|'.join(valid_patterns), statistic)):
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+pattern = '^(p\\d{1,2})(\\.\\d*)?$', string = {'operator': 'mean'}, flags = 0
+
+    def match(pattern, string, flags=0):
+        """Try to apply the pattern at the start of the string, returning
+        a Match object, or None if no match was found."""
+>       return _compile(pattern, flags).match(string)
+E       TypeError: expected string or bytes-like object
+
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/re.py:190: TypeError
+___________ test_recipe_valid[examples/recipe_preprocessor_test.yml] ___________
+[gw0] linux -- Python 3.10.12 /opt/scitools/conda/environments/esmvaltool-2.9.0-2/bin/python3.10
+
+recipe_file = PosixPath('/net/home/h06/rking/esmvaltool/ESMValTool/esmvaltool/recipes/examples/recipe_preprocessor_test.yml')
+session = Session({'auxiliary_data_dir': PosixPath('/var/tmp/pytest-of-rking/pytest-1/popen-gw0/test_recipe_valid_examples_rec10...s': False,
+         'search_esgf': 'never',
+         'skip_nonexistent': False,
+         'write_ncl_interface': False})
+mocker = <pytest_mock.plugin.MockerFixture object at 0x7f3327565b10>
+
+    @pytest.mark.parametrize('recipe_file', RECIPES, ids=IDS)
+    def test_recipe_valid(recipe_file, session, mocker):
+        """Check that recipe files are valid ESMValTool recipes."""
+        # Mock input files
+        try:
+            # Since ESValCore v2.8.0
+            import esmvalcore.local
+            module = esmvalcore.local
+            method = 'glob'
+        except ImportError:
+            # Prior to ESMValCore v2.8.0
+            import esmvalcore._data_finder
+            module = esmvalcore._data_finder
+            method = 'find_files'
+    
+        mocker.patch.object(
+            module,
+            method,
+            autospec=True,
+            side_effect=lambda *_, **__: [
+                'test_0001-1849.nc',
+                'test_1850-9999.nc',
+            ],
+        )
+    
+        # Do not remove unexpanded supplementaries. These cannot be expanded
+        # because the mocked file finding above does not produce facets.
+        try:
+            import esmvalcore.dataset
+        except ImportError:
+            pass
+        else:
+            mocker.patch.object(
+                esmvalcore.dataset.Dataset,
+                '_remove_unexpanded_supplementaries',
+                autospec=True,
+                spec_set=True,
+            )
+    
+        # Mock vertical levels
+        # Account for module change after esmvalcore=2.7
+        if version.parse(core_ver) <= version.parse('2.7.1'):
+            import esmvalcore._recipe
+            mocker.patch.object(
+                esmvalcore._recipe,
+                'get_reference_levels',
+                autospec=True,
+                spec_set=True,
+                side_effect=lambda *_, **__: [1, 2],
+            )
+        else:
+            import esmvalcore._recipe.recipe
+            mocker.patch.object(
+                esmvalcore._recipe.recipe,
+                'get_reference_levels',
+                autospec=True,
+                spec_set=True,
+                side_effect=lambda *_, **__: [1, 2],
+            )
+    
+        # Mock valid NCL version
+        # Account for module change after esmvalcore=2.7
+        if version.parse(core_ver) <= version.parse('2.7.1'):
+            import esmvalcore._recipe_checks
+            mocker.patch.object(
+                esmvalcore._recipe_checks,
+                'ncl_version',
+                autospec=True,
+                spec_set=True,
+            )
+        else:
+            import esmvalcore._recipe.check
+            mocker.patch.object(
+                esmvalcore._recipe.check,
+                'ncl_version',
+                autospec=True,
+                spec_set=True,
+            )
+    
+        # Mock interpreters installed
+        def which(executable):
+            if executable in ('julia', 'ncl', 'python', 'Rscript'):
+                path = '/path/to/' + executable
+            else:
+                path = None
+            return path
+    
+        mocker.patch.object(
+            esmvalcore._task,
+            'which',
+            autospec=True,
+            side_effect=which,
+        )
+    
+        # Create a shapefile for extract_shape preprocessor if needed
+        recipe = yaml.safe_load(recipe_file.read_text())
+        for preproc in recipe.get('preprocessors', {}).values():
+            extract_shape = preproc.get('extract_shape')
+            if extract_shape and 'shapefile' in extract_shape:
+                filename = Path(
+                    session['auxiliary_data_dir']) / extract_shape['shapefile']
+                filename.parent.mkdir(parents=True, exist_ok=True)
+                filename.touch()
+    
+        # Account for module change after esmvalcore=2.7
+        if version.parse(core_ver) <= version.parse('2.7.1'):
+            config_user = session.to_config_user()
+            esmvalcore._recipe.read_recipe_file(recipe_file, config_user)
+        else:
+>           esmvalcore._recipe.recipe.read_recipe_file(recipe_file, session)
+
+tests/integration/test_recipes_loading.py:166: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:83: in read_recipe_file
+    return Recipe(raw_recipe, session, recipe_file=filename)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:903: in __init__
+    self.tasks = self.initialize_tasks()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:1265: in initialize_tasks
+    tasks = self._create_tasks()
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:1240: in _create_tasks
+    new_tasks, failed = self._create_preprocessor_tasks(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:1204: in _create_preprocessor_tasks
+    task = _get_preprocessor_task(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:841: in _get_preprocessor_task
+    products = _get_preprocessor_products(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:726: in _get_preprocessor_products
+    _configure_multi_product_preprocessor(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:750: in _configure_multi_product_preprocessor
+    ensemble_products, ensemble_settings = _update_multiproduct(
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/recipe.py:585: in _update_multiproduct
+    check.ensemble_statistics_preproc(settings)
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/check.py:362: in ensemble_statistics_preproc
+    _verify_statistics(statistics, 'ensemble_statistics')
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/site-packages/esmvalcore/_recipe/check.py:266: in _verify_statistics
+    or re.match(r'|'.join(valid_patterns), statistic)):
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+pattern = '^(p\\d{1,2})(\\.\\d*)?$'
+string = {'operator': 'percentile', 'percent': 5}, flags = 0
+
+    def match(pattern, string, flags=0):
+        """Try to apply the pattern at the start of the string, returning
+        a Match object, or None if no match was found."""
+>       return _compile(pattern, flags).match(string)
+E       TypeError: expected string or bytes-like object
+
+/opt/scitools/conda/environments/esmvaltool-2.9.0-2/lib/python3.10/re.py:190: TypeError
+- generated html file: file:///net/home/h06/rking/esmvaltool/ESMValTool/test-reports/report.html -
+
+---------- coverage: platform linux, python 3.10.12-final-0 ----------
+Coverage HTML written to dir test-reports/coverage_html
+Coverage XML written to file test-reports/coverage.xml
+
+=========================== short test summary info ============================
+FAILED tests/integration/diag_scripts/mlr/test_custom_sklearn_classes.py::TestAdvancedRFE::test_advanced_rfe_no_fit_kwargs
+FAILED tests/integration/diag_scripts/mlr/test_custom_sklearn_classes.py::TestAdvancedRFE::test_advanced_rfe_fit_kwargs
+FAILED tests/integration/test_diagnostic_run.py::test_diagnostic_run[diagnostic.jl]
+FAILED tests/unit/cmorizers/test_cmorization_interface.py::test_formatters_have_required_interface
+FAILED tests/integration/test_recipes_loading.py::test_recipe_valid[recipe_kcs.yml]
+FAILED tests/integration/test_recipes_loading.py::test_recipe_valid[examples/recipe_check_obs.yml]
+FAILED tests/integration/test_recipes_loading.py::test_recipe_valid[examples/recipe_easy_ipcc.yml]
+FAILED tests/integration/test_recipes_loading.py::test_recipe_valid[examples/recipe_preprocessor_test.yml]
+ERROR esmvaltool/cmorizers/data/formatters/datasets/agcd.py - ImportError: ca...
+ERROR esmvaltool/cmorizers/data/formatters/datasets/agcd.py - ImportError: ca...
+ERROR esmvaltool/cmorizers/data/formatters/datasets/agcd.py - ImportError: ca...
+ERROR esmvaltool/cmorizers/data/formatters/datasets/agcd.py - ImportError: ca...
+ERROR esmvaltool/cmorizers/data/formatters/datasets/esacci_watervapour.py - I...
+ERROR esmvaltool/cmorizers/data/formatters/datasets/esacci_watervapour.py - I...
+ERROR esmvaltool/cmorizers/data/formatters/datasets/esacci_watervapour.py - I...
+ERROR esmvaltool/cmorizers/data/formatters/datasets/esacci_watervapour.py - I...
+= 8 failed, 1465 passed, 1 skipped, 175 warnings, 8 errors in 208.49s (0:03:28) =
