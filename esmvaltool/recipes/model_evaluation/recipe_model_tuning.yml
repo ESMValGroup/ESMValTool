@@ -147,6 +147,20 @@ preprocessors:
     area_statistics:
       operator: mean
 
+  zonalmean2:
+    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
+    climate_statistics:
+      period: full
+    regrid:
+      scheme: linear
+      target_grid: 2x2
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev19}
+      scheme: linear
+      coordinate: air_pressure
+    zonal_statistics:
+      operator: mean
+
 
 diagnostics:
 
@@ -470,7 +484,7 @@ diagnostics:
                 linewidth: 1
                 zorder: 1
 
-  # *** zonal mean plots ***
+  # *** zonal mean plots of 2-dim variables ***
   # !!! to do: possibly harmonize time periods !!!
 
   zonalmeans:
@@ -793,53 +807,109 @@ diagnostics:
                 linewidth: 1
                 zorder: 1
 
-  # *** vertical profiles (zonal wind speed) ***
-  
-#  uwind_60n:
-#    description: Plot time series of zonal surface stress.
-#    variables:
-#      ua:
-#        <<: *time_period
-#        mip: Amon
-#        preprocessor: profile_60n
-#        additional_datasets:
-#          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
-#    scripts:
-#      60n:
-#        plot_folder: '{plot_dir}'
-#        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
-#        group_variables_by: variable_group
-#        script: monitor/multi_datasets.py
-#        plots:
-#          1d_profile:
-#            plot_kwargs:
-#              MPI-ESM1-2-LR:
-#                color: C1
-#              ERA5:
-#                color: black
+  # *** zonal mean plot(s) of 3-dim variable(s) 
 
-#  uwind_60s:
-#    description: Plot time series of zonal surface stress.
-#    variables:
-#      ua:
-#        <<: *time_period
-#        mip: Amon
-#        preprocessor: profile_60s
-#        additional_datasets:
-#          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
-#    scripts:
-#      60s:
-#        plot_folder: '{plot_dir}'
-#        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
-#        group_variables_by: variable_group
-#        script: monitor/multi_datasets.py
-#        plots:
-#          1d_profile:
-#            plot_kwargs:
-#              MPI-ESM1-2-LR:
-#                color: C1
-#              ERA5:
-#                color: black
+  zonal_mean_ta:
+    description: zonal average of 3-dim temperature
+    variables:
+      ta:
+        <<: *time_period
+        mip: Amon
+        preprocessor: zonalmean2
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          zonal_mean_profile:
+            common_cbar: true
+
+  # *** vertical profiles of zonal wind speed (u-wind) ***
+  
+  uwind_60n:
+    description: Plot vertical profile of zonal wind speed (u-wind)
+    variables:
+      ua:
+        <<: *time_period
+        mip: Amon
+        preprocessor: profile_60n
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      60n:
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        group_variables_by: variable_group
+        script: monitor/multi_datasets.py
+        plots:
+          1d_profile:
+            plot_kwargs:
+              MIROC6:
+                label: '{dataset}'
+                zorder: 3
+                color: C1
+              ERA5:
+                color: darkgreen
+                label: '{dataset}'
+                linestyle: '-'
+                zorder: 3
+              default:
+                color: lightgray
+                label: null
+                linestyle: '-'
+                linewidth: 1
+                zorder: 1
+
+  uwind_60s:
+    description: Plot time series of zonal surface stress.
+    variables:
+      ua:
+        <<: *time_period
+        mip: Amon
+        preprocessor: profile_60s
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      60s:
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        group_variables_by: variable_group
+        script: monitor/multi_datasets.py
+        plots:
+          1d_profile:
+            plot_kwargs:
+              MIROC6:
+                label: '{dataset}'
+                zorder: 3
+                color: C1
+              ERA5:
+                color: darkgreen
+                label: '{dataset}'
+                linestyle: '-'
+                zorder: 3
+              default:
+                color: lightgray
+                label: null
+                linestyle: '-'
+                linewidth: 1
+                zorder: 1
 
   # *** time series (surface wind stress) - for coupled simulations ***
 
@@ -850,6 +920,11 @@ diagnostics:
 #        <<: *time_period
 #        mip: Amon
 #        preprocessor: natlantic_mean
+#        mip: Amon
+#        project: CMIP6
+#        exp: historical
+#        ensemble: r1i1p1f1
+#        grid: gr
 #        additional_datasets:
 #          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
 #          - {project: OBS6, dataset: ERA-Interim, type: reanaly, version: 1, tier: 3}
