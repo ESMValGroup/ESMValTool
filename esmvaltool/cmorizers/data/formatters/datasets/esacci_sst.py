@@ -32,10 +32,12 @@ Modification history
    20201214-lauer_axel: approved.
 """
 
+import glob
 import logging
 import os
 
 import iris
+from esmvalcore.cmor.fixes import get_time_bounds
 from esmvalcore.preprocessor import concatenate
 
 from ...utilities import (
@@ -62,7 +64,7 @@ def extract_variable(var_info, raw_info, attrs, year):
     # Fix cube
     fix_var_metadata(cube, var_info)
     convert_timeunits(cube, year)
-    fix_coords(cube)
+    fix_coords(cube, overwrite_time_bounds=False)
     set_global_atts(cube, attrs)
     return cube
 
@@ -73,23 +75,28 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     glob_attrs = cfg['attributes']
 
     # run the cmorization
-    for var, vals in cfg['variables'].items():
+    for var_name, vals in cfg['variables'].items():
+        var = vals['short_name']
         var_info = cmor_table.get_variable(vals['mip'], var)
         glob_attrs['mip'] = vals['mip']
-        raw_info = {'name': vals['raw'], 'file': vals['file']}
-        inpfile = os.path.join(in_dir, cfg['filename'])
-        logger.info("CMORizing var %s from file type %s", var, inpfile)
-        years = range(1982, 2020)
-        months = ["0" + str(mo) for mo in range(1, 10)] + ["10", "11", "12"]
-        for year in years:
-            monthly_cubes = []
-            for month in months:
-                raw_info['file'] = inpfile.format(year=year, month=month)
+        raw_info = {'name': vals['raw']}
+        #inpfile = os.path.join(in_dir, cfg['filename'])
+        inpfile_pattern = os.path.join(in_dir, '{year}*'+vals['filename'])
+        logger.info("CMORizing var %s from file type %s", var, inpfile_pattern)
+        for year in range(vals['start_year'], vals['end_year'] + 1):
+            data_cubes = []
+            year_inpfile_pattern = inpfile_pattern.format(year=year)
+            inpfiles = sorted(glob.glob(year_inpfile_pattern))
+            for inpfile in inpfiles:
+                raw_info['file'] = inpfile
                 logger.info("CMORizing var %s from file type %s", var,
                             raw_info['file'])
-                cube = extract_variable(var_info, raw_info, glob_attrs, year)
-                monthly_cubes.append(cube)
-            yearly_cube = concatenate(monthly_cubes)
+                data_cubes.append(
+                    extract_variable(var_info, raw_info, glob_attrs, year))
+            yearly_cube = concatenate(data_cubes)
+            # Fix monthly time bounds
+            time = yearly_cube.coord('time')
+            time.bounds = get_time_bounds(time, vals['frequency'])
             save_variable(yearly_cube,
                           var,
                           out_dir,
