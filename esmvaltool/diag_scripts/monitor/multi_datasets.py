@@ -2238,12 +2238,9 @@ class MultiDatasets(MonitorBase):
         idx1 = len(percentile_dataset) - 1  # index smallest percentile
 
         if metric == 'bias':
-            sgn_p_up = np.where((percentile_dataset[idx0].data >= 0), 1, -1)
-            sgn_p_dn = np.where((percentile_dataset[idx1].data >= 0), 1, -1)
-            mask = np.where((sgn_p_up == 1) &
-                            (cube.data >= percentile_dataset[idx0].data) |
-                            (sgn_p_dn == -1) &
-                            (cube.data <= percentile_dataset[idx1].data), 0, 1)
+            maxabs_perc = np.maximum(np.abs(percentile_dataset[idx0].data),
+                                     np.abs(percentile_dataset[idx1].data))
+            mask = np.where(np.abs(cube.data) >= maxabs_perc, 0, 1)
         elif metric == 'emd':
             mask = np.where(cube.data >= percentile_dataset[idx0].data, 0, 1)
         elif metric == 'pearsonr':
