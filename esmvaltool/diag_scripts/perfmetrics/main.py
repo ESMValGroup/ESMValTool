@@ -1,30 +1,40 @@
-"""
-This diagnostic provides plot functionalities 
-for performance metrics.
+"""Overview plot for performance metrics.
+
+Description
+-----------
+This diagnostic provides plot functionalities for performance metrics.
 The multi model overview heatmap might be usefull for different
 tasks and therefore this diagnostic tries to be as flexible as possible.
 X and Y axis, grouping parameter and slits for each rectangle can be
 configured in the recipe. All *_by parameters can be set to any metadata
 key. To split by 'reference' this key needs to be set as extra_facet in recipe.
 
+Author
+------
+Lukas Ruhe (Universität Bremen, Germany)
+Diego Cammarano
+
 Configuration parameters through recipe:
 ----------------------------------------
 x_by: str, optional
-    Metadata key for x coordinate. 
+    Metadata key for x coordinate.
     By default 'alias'.
 y_by: str, optional
-    Metadata key for y coordinate 
+    Metadata key for y coordinate.
     By default 'variable_group'.
 group_by: str, optional
     Metadata key for grouping.
-    Grouping is always applied in x direction. Can be set to None to skip grouping into subplots.
+    Grouping is always applied in x direction. Can be set to None to skip
+    grouping into subplots.
     By default 'project'.
 split_by: str, optional
     Not implemented yet.
     By default None.
-plot_kwargs: dict, optional 
+plot_kwargs: dict, optional
     Dictionary that gets passed as kwargs to `matplotlib.pyplot.imshow()`.
-    Colormaps will be converted to 11 discrete steps automatically. Default colormap is RdYlBu_r but can be changed with cmap. Other common keywords: vmin, vmax
+    Colormaps will be converted to 11 discrete steps automatically. Default
+    colormap is RdYlBu_r but can be changed with cmap.
+    Other common keywords: vmin, vmax
     By default {}.
 cbar_kwargs: dict, optional
     Dictionary that gets passed to `matplotlib.pyplot.colorbar()`.
@@ -33,45 +43,34 @@ cbar_kwargs: dict, optional
 plot_properties: dict, optional
     Dictionary that gets passed to `matplotlib.axes.Axes.set()`.
     Subplots can be widely customized. For a full list of
-    properties see: https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set.html#matplotlib.axes.Axes.set
+    properties see:
+    https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set.html
     E.g. xlabel, ylabel, yticklabels, xmargin...
     By default {}.
 figsize: list(float), optional
-   [width, height] of the figure in inches. The final figure will 
-   be saved with bbox_inches="tight", which can change the 
-   resulting aspect ratio.
-   By default: [5, 3]
+   [width, height] of the figure in inches. The final figure will be saved with
+   bbox_inches="tight", which can change the resulting aspect ratio.
+   By default [5, 3].
 """
 
-import matplotlib as mpl
-from esmvalcore import preprocessor as pp
 import itertools
-import logging
-import matplotlib.pyplot as plt
-import esmvaltool.diag_scripts.shared as e
-from mpl_toolkits.axes_grid1 import ImageGrid
-from esmvaltool.diag_scripts.shared import (
-    # ProvenanceLogger,
-    get_plot_filename,
-    group_metadata,
-    run_diagnostic,
-    select_metadata,
-)
-
 import iris
-import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
-
+import numpy as np
+from esmvaltool.diag_scripts.shared import (
+    get_plot_filename, group_metadata, run_diagnostic, select_metadata)
+from mpl_toolkits.axes_grid1 import ImageGrid
 
 
 def unify_limits(cfg, grid):
+    """set same limits for all subplots"""
     vmin, vmax = np.inf, -np.inf
     images = [ax.get_images()[0] for ax in grid]
     for im in images:
         vmin = min(vmin, im.get_clim()[0])
         vmax = max(vmax, im.get_clim()[1])
     for im in images:
-        print("setting clim to", vmin, vmax)
         im.set_clim(vmin, vmax)
 
 
@@ -103,26 +102,44 @@ def remove_reference(metas):
         if not meta.get("reference_for_metric", False)]
 
 
+def plot_additional_splits(cfg, ax, splitted):
+    """add additional references as triangular overlays"""
+    if len(splitted) < 2:
+        return
+    print("Overlays for ", len(splitted)-1)
+    for split, metas in splitted.items()[1:]:
+        print(split)
+    pass
+
+
 def plot_group(cfg, ax, metas, title=None):
     """create matrix for one subplot at axes ax"""
+    splitted = group_metadata(metas, cfg["split_by"])
     y_labels = list(group_metadata(metas, cfg["y_by"]).keys())
     x_labels = list(group_metadata(metas, cfg["x_by"]).keys())
-    # TODO: splitted rectangles overlay multiple triangles.
-    if cfg["split_by"] is not None:
-       s_labels = list(group_metadata(metas, cfg["split_by"]).keys())
     data = np.zeros((len(y_labels), len(x_labels)))
     # load data from nc files into matrix
     for x, x_label in enumerate(x_labels): 
         for y, y_label in enumerate(y_labels):
             selection = {cfg["x_by"]: x_label, cfg["y_by"]: y_label}
-            meta = select_metadata(metas, **selection)[0]
-            # TODO: select_single_metadata() to shared?
+            if cfg["split_by"] is not None:
+                selection.update({cfg["split_by"]: splitted.keys()[0]})
+            try:
+                # TODO: select_single_metadata() to shared?
+                meta = select_metadata(metas, **selection)[0]
+            except IndexError:
+                print(f"No data found for {selection}")
+                data[y, x] = np.nan
+                continue
             cube = iris.load_cube(meta["filename"])
             data[y, x] = cube.data
     # plot matrix
     im = plot_matrix(data, y_labels, x_labels, ax, cfg["plot_kwargs"])
     if title is not None:
         ax.set_title(title)
+    # overlay splits (additional references)
+    if cfg["split_by"] is not None:
+        plot_additional_splits(cfg, ax, splitted)
     ax.set(**cfg["axes_properties"])
     return im, data
 
@@ -135,7 +152,7 @@ def plot(cfg, grouped_metas):
         cbar_mode="single",
         cbar_location="right",
         cbar_pad=0.1,
-        cbar_size=0.1,
+        cbar_size=0.2,
         nrows_ncols=(1, len(grouped_metas)),
         axes_pad=0.1)
     # remap colorbar to 11 discrete steps
