@@ -290,12 +290,16 @@ diagnostics:
   ESACCI-SST:
     description: ESACCI-SST check
     variables:
-      ts:
-      tsStderr:
+      #ts:
+      #tsStderr:
+      tos:
     additional_datasets:
-      - {dataset: ESACCI-SST, project: OBS, mip: Amon, tier: 2,
-         type: sat, version: 2.2,
-         start_year: 1982, end_year: 2019}
+            #- {dataset: ESACCI-SST, project: OBS, mip: Amon, tier: 2,
+            #   type: sat, version: 2.2,
+            #   start_year: 1982, end_year: 2019}
+      - {dataset: ESACCI-SST, project: OBS6, mip: Oday, tier: 2,
+         type: sat, version: 2.1,
+         start_year: 2003, end_year: 2003}
     scripts: null
 
 

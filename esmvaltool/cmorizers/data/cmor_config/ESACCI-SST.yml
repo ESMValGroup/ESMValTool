@@ -29,5 +29,5 @@ variables:
     raw: analysed_sst
     frequency: day
     filename: ESACCI-L4_GHRSST-SSTdepth-OSTIA-GLOB_CDR2.1-v02.0-fv01.0.nc
-    start_year: 2003
-    end_year: 2003
+    start_year: 2004
+    end_year: 2007
