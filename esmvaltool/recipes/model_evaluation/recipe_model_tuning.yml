@@ -64,6 +64,7 @@ preprocessors:
       operator: mean
 
   zonalmean:
+    custom_order: true
     regrid:
       target_grid: 2x2
       scheme: linear
@@ -74,9 +75,7 @@ preprocessors:
       period: full
 
   profile_60n:
-    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
-    climate_statistics:
-      period: full
+    custom_order: true
     regrid:
       scheme: linear
       target_grid: 1x1
@@ -85,17 +84,17 @@ preprocessors:
       end_longitude: 360.
       start_latitude: 59.
       end_latitude: 61.
+    area_statistics:
+      operator: mean
     extract_levels:
       levels: {cmor_table: CMIP6, coordinate: plev39}
       scheme: linear
       coordinate: air_pressure
-    area_statistics:
-      operator: mean
-
-  profile_60s:
-    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
     climate_statistics:
       period: full
+
+  profile_60s:
+    custom_order: true
     regrid:
       scheme: linear
       target_grid: 1x1
@@ -104,17 +103,17 @@ preprocessors:
       end_longitude: 360.
       start_latitude: -61.
       end_latitude: -59.
+    area_statistics:
+      operator: mean
     extract_levels:
       levels: {cmor_table: CMIP6, coordinate: plev39}
       scheme: linear
       coordinate: air_pressure
-    area_statistics:
-      operator: mean
+    climate_statistics:
+      period: full
 
   natlantic_mean:
-    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
-    annual_statistics:
-      operator: mean
+    custom_order: true
     extract_shape:
       # Relative paths are relative to 'auxiliary_data_dir' as configured in
       # the config-user.yml file.
@@ -123,16 +122,16 @@ preprocessors:
       # but any shapefile can be used
       shapefile: World_Seas_IHO_v3/World_Seas_IHO_v3.shp
       method: contains
-      crop: True
+      crop: true
       ids:
         - North Atlantic Ocean
     area_statistics:
       operator: mean
-
-  southernocean_mean:
-    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
     annual_statistics:
       operator: mean
+
+  southernocean_mean:
+    custom_order: true
     extract_shape:
       # Relative paths are relative to 'auxiliary_data_dir' as configured in
       # the config-user.yml file.
@@ -141,25 +140,27 @@ preprocessors:
       # but any shapefile can be used
       shapefile: World_Seas_IHO_v3/World_Seas_IHO_v3.shp
       method: contains
-      crop: True
+      crop: true
       ids:
         - Southern Ocean
     area_statistics:
       operator: mean
+    annual_statistics:
+      operator: mean
 
   zonalmean2:
-    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
-    climate_statistics:
-      period: full
+    custom_order: true
     regrid:
       scheme: linear
       target_grid: 2x2
+    zonal_statistics:
+      operator: mean
+    climate_statistics:
+      period: full
     extract_levels:
       levels: {cmor_table: CMIP6, coordinate: plev19}
       scheme: linear
       coordinate: air_pressure
-    zonal_statistics:
-      operator: mean
 
 
 diagnostics:
@@ -178,6 +179,7 @@ diagnostics:
         ensemble: r1i1p1f1
         grid: gr
         derive: true
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2021}
@@ -186,8 +188,8 @@ diagnostics:
              start_year: 1992, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
              tier: 2, start_year: 1984, end_year: 2016}
-#          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-#             tier: 3, start_year: 1979, end_year: 2016}
+          # - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+          #    tier: 3, start_year: 1979, end_year: 2016}
           - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
              start_year: 1980, end_year: 2020}
       clivi:
@@ -198,6 +200,7 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
              version: AVHRR-AMPM-fv3.0, tier: 2,
@@ -221,6 +224,7 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
              version: AVHRR-AMPM-fv3.0, tier: 2, tag: 'obs', start_year: 1992, end_year: 2016}
@@ -229,7 +233,7 @@ diagnostics:
           - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA,
              tier: 2, tag: 'obs', start_year: 1982, end_year: 2016}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
-             tier: 3, start_year: 2003, tag: 'obs', start_year: 2003, end_year: 2018}
+             tier: 3, tag: 'obs', start_year: 2003, end_year: 2018}
           - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
              start_year: 1979, end_year: 2020}
           - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
@@ -243,6 +247,7 @@ diagnostics:
         ensemble: r1i1p1f1
         grid: gr
         derive: true
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2021}
@@ -251,8 +256,8 @@ diagnostics:
              start_year: 1992, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
              tier: 2, start_year: 1984, end_year: 2016}
-#          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-#             tier: 3, start_year: 1979, end_year: 2020}
+          # - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+          #    tier: 3, start_year: 1979, end_year: 2020}
           - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
              start_year: 1980, end_year: 2020}
       lwp:
@@ -264,6 +269,7 @@ diagnostics:
         ensemble: r1i1p1f1
         grid: gr
         derive: true
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
              version: AVHRR-AMPM-fv3.0, tier: 2,
@@ -275,8 +281,8 @@ diagnostics:
              version: P1-R05-gridbox-average-noprecip,
              start_year: 2006, end_year: 2017, tier: 3}
           # MAC-LWP is ocean only
-#          - {dataset: MAC-LWP, project: OBS, type: sat, version: v1,
-#             tier: 3, start_year: 1988, end_year: 2016}
+          # - {dataset: MAC-LWP, project: OBS, type: sat, version: v1,
+          #    tier: 3, start_year: 1988, end_year: 2016}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
              tier: 3, start_year: 2003, end_year: 2018}
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
@@ -292,6 +298,7 @@ diagnostics:
         ensemble: r1i1p1f1
         grid: gr
         derive: true
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2021}
@@ -300,8 +307,8 @@ diagnostics:
              start_year: 1992, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
              tier: 2, start_year: 1984, end_year: 2016}
-#          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-#             tier: 3, start_year: 1979, end_year: 2020}
+          # - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+          #    tier: 3, start_year: 1979, end_year: 2020}
           - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
              start_year: 1980, end_year: 2020}
       prw:
@@ -312,6 +319,7 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat,
              version: CDR2-L3-COMBI-05deg-fv3.1, tier: 3, start_year: 2003,
@@ -320,7 +328,7 @@ diagnostics:
              start_year: 1984, end_year: 2016}
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, start_year: 1979, end_year: 2020}
-          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3, 
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
              start_year: 1980, end_year: 2020}
       rlut:
         <<: *time_period
@@ -330,6 +338,7 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2021}
@@ -338,8 +347,8 @@ diagnostics:
              start_year: 1992, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
              tier: 2, start_year: 1984, end_year: 2016}
-#          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-#             tier: 3, start_year: 1979, end_year: 2020}
+          # - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+          #    tier: 3, start_year: 1979, end_year: 2020}
           - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
              start_year: 1980, end_year: 2020}
       rtnt:
@@ -351,6 +360,7 @@ diagnostics:
         ensemble: r1i1p1f1
         grid: gr
         derive: true
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
       swcre:
         <<: *time_period
         preprocessor: globalmean
@@ -360,6 +370,7 @@ diagnostics:
         ensemble: r1i1p1f1
         grid: gr
         derive: true
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2021}
@@ -368,8 +379,8 @@ diagnostics:
              start_year: 1992, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
              tier: 2, start_year: 1984, end_year: 2016}
-#          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-#             tier: 3, start_year: 1979, end_year: 2020}
+          # - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+          #    tier: 3, start_year: 1979, end_year: 2020}
           - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
              start_year: 1980, end_year: 2020}
     scripts:
@@ -379,7 +390,7 @@ diagnostics:
         group_variables_by: variable_group
         plots:
           timeseries:
-            annual_mean_kwargs: False
+            annual_mean_kwargs: false
             plot_kwargs:
               MIROC6:
                 color: red
@@ -499,6 +510,7 @@ diagnostics:
         ensemble: r1i1p1f1
         grid: gr
         derive: true
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2021}
@@ -507,8 +519,8 @@ diagnostics:
              start_year: 1992, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
              tier: 2, start_year: 1984, end_year: 2016}
-#          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-#             tier: 3, start_year: 1979, end_year: 2016}
+          # - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+          #    tier: 3, start_year: 1979, end_year: 2016}
           - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
              start_year: 1980, end_year: 2020}
       clivi:
@@ -519,6 +531,7 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
              version: AVHRR-AMPM-fv3.0, tier: 2,
@@ -542,6 +555,7 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
              version: AVHRR-AMPM-fv3.0, tier: 2, tag: 'obs', start_year: 1992, end_year: 2016}
@@ -550,7 +564,7 @@ diagnostics:
           - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA,
              tier: 2, tag: 'obs', start_year: 1982, end_year: 2016}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
-             tier: 3, start_year: 2003, tag: 'obs', start_year: 2003, end_year: 2018}
+             tier: 3, tag: 'obs', start_year: 2003, end_year: 2018}
           - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
              start_year: 1979, end_year: 2020}
           - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
@@ -564,6 +578,7 @@ diagnostics:
         ensemble: r1i1p1f1
         grid: gr
         derive: true
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2021}
@@ -572,8 +587,8 @@ diagnostics:
              start_year: 1992, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
              tier: 2, start_year: 1984, end_year: 2016}
-#          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-#             tier: 3, start_year: 1979, end_year: 2020}
+          # - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+          #    tier: 3, start_year: 1979, end_year: 2020}
           - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
              start_year: 1980, end_year: 2020}
       lwp:
@@ -585,6 +600,7 @@ diagnostics:
         ensemble: r1i1p1f1
         grid: gr
         derive: true
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
              version: AVHRR-AMPM-fv3.0, tier: 2,
@@ -596,8 +612,8 @@ diagnostics:
              version: P1-R05-gridbox-average-noprecip,
              start_year: 2006, end_year: 2017, tier: 3}
           # MAC-LWP is ocean only
-#          - {dataset: MAC-LWP, project: OBS, type: sat, version: v1,
-#             tier: 3, start_year: 1988, end_year: 2016}
+          # - {dataset: MAC-LWP, project: OBS, type: sat, version: v1,
+          #    tier: 3, start_year: 1988, end_year: 2016}
           - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
              tier: 3, start_year: 2003, end_year: 2018}
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
@@ -613,6 +629,7 @@ diagnostics:
         ensemble: r1i1p1f1
         grid: gr
         derive: true
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2021}
@@ -621,8 +638,8 @@ diagnostics:
              start_year: 1992, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
              tier: 2, start_year: 1984, end_year: 2016}
-#          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-#             tier: 3, start_year: 1979, end_year: 2020}
+          # - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+          #    tier: 3, start_year: 1979, end_year: 2020}
           - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
              start_year: 1980, end_year: 2020}
       pr:
@@ -633,6 +650,7 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, tag: 'obs', start_year: 1979, end_year: 2020}
           - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2, tag: 'obs', start_year: 1979, end_year: 2020}
@@ -644,6 +662,7 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat,
              version: CDR2-L3-COMBI-05deg-fv3.1, tier: 3, start_year: 2003,
@@ -652,7 +671,7 @@ diagnostics:
              start_year: 1984, end_year: 2016}
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, start_year: 1979, end_year: 2020}
-          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3, 
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
              start_year: 1980, end_year: 2020}
       rlut:
         <<: *time_period
@@ -662,6 +681,7 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2021}
@@ -670,8 +690,8 @@ diagnostics:
              start_year: 1992, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
              tier: 2, start_year: 1984, end_year: 2016}
-#          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-#             tier: 3, start_year: 1979, end_year: 2020}
+          # - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+          #    tier: 3, start_year: 1979, end_year: 2020}
           - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
              start_year: 1980, end_year: 2020}
       swcre:
@@ -683,6 +703,7 @@ diagnostics:
         ensemble: r1i1p1f1
         grid: gr
         derive: true
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2021}
@@ -691,8 +712,8 @@ diagnostics:
              start_year: 1992, end_year: 2016}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
              tier: 2, start_year: 1984, end_year: 2016}
-#          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-#             tier: 3, start_year: 1979, end_year: 2020}
+          # - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+          #    tier: 3, start_year: 1979, end_year: 2020}
           - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
              start_year: 1980, end_year: 2020}
     scripts:
@@ -702,7 +723,7 @@ diagnostics:
         group_variables_by: variable_group
         plots:
           variable_vs_lat:
-            annual_mean_kwargs: False
+            annual_mean_kwargs: false
             plot_kwargs:
               MIROC6:
                 color: red
@@ -807,7 +828,7 @@ diagnostics:
                 linewidth: 1
                 zorder: 1
 
-  # *** zonal mean plot(s) of 3-dim variable(s) 
+  # *** zonal mean plot(s) of 3-dim variable(s)
 
   zonal_mean_ta:
     description: zonal average of 3-dim temperature
@@ -816,23 +837,25 @@ diagnostics:
         <<: *time_period
         mip: Amon
         preprocessor: zonalmean2
-        mip: Amon
         project: CMIP6
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
     scripts:
       plot:
-        <<: *plot_multi_dataset_default
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        group_variables_by: variable_group
         script: monitor/multi_datasets.py
         plots:
           zonal_mean_profile:
             common_cbar: true
 
   # *** vertical profiles of zonal wind speed (u-wind) ***
-  
+
   uwind_60n:
     description: Plot vertical profile of zonal wind speed (u-wind)
     variables:
@@ -840,11 +863,11 @@ diagnostics:
         <<: *time_period
         mip: Amon
         preprocessor: profile_60n
-        mip: Amon
         project: CMIP6
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
     scripts:
@@ -879,11 +902,11 @@ diagnostics:
         <<: *time_period
         mip: Amon
         preprocessor: profile_60s
-        mip: Amon
         project: CMIP6
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
+        supplementary_variables: [{short_name: areacella, skip: true}, {short_name: areacello, skip: true}, {short_name: sftlf, skip: true}, {short_name: sftof, skip: true}]
         additional_datasets:
           - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
     scripts:
@@ -911,7 +934,7 @@ diagnostics:
                 linewidth: 1
                 zorder: 1
 
-  # *** time series (surface wind stress) - for coupled simulations ***
+# *** time series (surface wind stress) - for coupled simulations ***
 
 #  surface_stress_na:
 #    description: Plot time series of zonal surface stress.
