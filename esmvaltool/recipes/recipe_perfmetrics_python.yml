@@ -4,9 +4,8 @@
 documentation:
   title: Performance metrics plots.
   description: >
-    Compare performance of ICON-Seamless vs. CMIP6 models.
+    Compare performance of model simulations to a reference dataset.
   authors:
-    - schlund_manuel
     - ruhe_lukas
     # - cammarano_diego
   references:
@@ -27,7 +26,9 @@ preprocessors:
       end_day: 31
     regrid:
       target_grid: 3x3
-      scheme: nearest
+      # scheme: nearest
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
     regrid_time:
       calendar: standard
       frequency: mon
@@ -72,7 +73,6 @@ datasets:
   #   }
   # CMIP6
   # - {<<: *cmip6, dataset: ACCESS-CM2, reference_for_metric: true}
-  - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
   - {<<: *cmip6, dataset: AWI-CM-1-1-MR}
   - {<<: *cmip6, dataset: AWI-ESM-1-1-LR}
 
@@ -122,21 +122,39 @@ diagnostics:
         preprocessor: default
         mip: Amon
         exp: historical
+        ref: ref1
         # ensemble: r1i1p1
         # alternative_dataset: GHCN
-      tas:
+        additional_datasets: &ref1
+          - {<<: *cmip6, dataset: BCC-ESM1, reference_for_metric: true}
+          
+      pr_ref2: &var_default_ref2
         <<: *var_default
+        short_name: pr
+        ref: ref2
+        additional_datasets: &ref2
+          - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO, reference_for_metric: true}
+      tas:
+        ref: ref1
+        <<: *var_default
+
+      tas_ref2:
+        short_name: tas
+        <<: *var_default_ref2
       # rlut: 
       #   <<: *var_default
       ps:
+        ref: ref1
         <<: *var_default
       # sfcWind:
       #   <<: *var_default
       clt:
+        ref: ref1
         <<: *var_default
       # rlut:
       #   <<: *var_default
       psl:
+        ref: ref1
         <<: *var_default
 
 
@@ -144,7 +162,8 @@ diagnostics:
       # - {dataset: ERA5, project: native6, type: reanaly, 
       #   version: v1, tier: 3, reference_for_metric: true}
 
-      - {<<: *cmip6, dataset: BCC-ESM1, reference_for_metric: true}
+      - {<<: *cmip6, dataset: MPI-ESM-MR, type: exp, project: CMIP5, exp: historical,
+     ensemble: r1i1p1}
       - {<<: *cmip6, dataset: CMCC-ESM2}
       - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
       - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
