@@ -13,8 +13,6 @@ documentation:
 
 
 preprocessors:
-
-
   default:
     custom_order: true
     extract_time:
@@ -127,7 +125,23 @@ diagnostics:
         # alternative_dataset: GHCN
         additional_datasets: &ref1
           - {<<: *cmip6, dataset: BCC-ESM1, reference_for_metric: true}
-          
+          - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B4_r1v1i1p1l1f1}
+          # - {project: ICON, dataset: ICON, exp: ag_atm_amip_r2b4_cfm, supplementary_variables: [{short_name: areacella, skip: true}]} 
+
+          # - {
+          #     project: ICON,
+          #     timerange: '1990/1991', 
+          #     dataset: ICON-Seamless,
+          #     exp: hist001,
+          #     horizontal_grid: /work/pd1295/ICON/grids/public/edzw/icon_grid_0030_R02B05_G.nc,
+          #     supplementary_variables: [
+          #       {short_name: areacella, skip: true},
+          #       {short_name: areacello, skip: true},
+          #       {short_name: sftlf, skip: true},
+          #       {short_name: sftof, skip: true},
+          #     ],
+          #     ugrid: false,
+          #   }
       pr_ref2: &var_default_ref2
         <<: *var_default
         short_name: pr
@@ -153,34 +167,34 @@ diagnostics:
         <<: *var_default
       # rlut:
       #   <<: *var_default
-      psl:
-        ref: ref1
-        <<: *var_default
+      # psl:
+      #   ref: ref1
+      #   <<: *var_default
 
 
-    additional_datasets:
+    # additional_datasets:
       # - {dataset: ERA5, project: native6, type: reanaly, 
       #   version: v1, tier: 3, reference_for_metric: true}
 
-      - {<<: *cmip6, dataset: MPI-ESM-MR, type: exp, project: CMIP5, exp: historical,
-     ensemble: r1i1p1}
-      - {<<: *cmip6, dataset: CMCC-ESM2}
-      - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
-      - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
-      - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-      - {<<: *cmip6, dataset: GFDL-ESM4, grid: gr1}
+    #   - {<<: *cmip6, dataset: MPI-ESM-MR, type: exp, project: CMIP5, exp: historical,
+    #  ensemble: r1i1p1}
+    #   - {<<: *cmip6, dataset: CMCC-ESM2}
+    #   - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+    #   - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+    #   - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+    #   - {<<: *cmip6, dataset: GFDL-ESM4, grid: gr1}
       
-      # grid wrong? missing data
-      # - {<<: *cmip6, dataset: MCM-UA-1-0}
-      # - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
-      # - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
-      # - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
+    #   # grid wrong? missing data
+    #   # - {<<: *cmip6, dataset: MCM-UA-1-0}
+    #   # - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+    #   # - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
+    #   # - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
 
-      - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
-      - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
-      - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
-      - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
-      - {<<: *cmip6, dataset: EC-Earth3-Veg, grid: gr}
+    #   - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
+    #   - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+    #   - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+    #   - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+    #   - {<<: *cmip6, dataset: EC-Earth3-Veg, grid: gr}
 
     scripts:
       python:
