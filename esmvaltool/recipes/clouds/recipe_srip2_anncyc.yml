@@ -21,8 +21,6 @@ preprocessors:
       scheme: linear
     area_statistics:
       operator: mean
-      fx_variables:
-        areacella:
     climate_statistics:
       operator: mean
       period: month
@@ -86,12 +84,11 @@ diagnostics:
     description: lineplot annual cycle (monthly means)
     variables:
       clt_global: &clt_settings
+        short_name: clt
         preprocessor: pp_global
         mip: Amon
-        start_year: 1980
-        end_year: 2009
-        short_name: clt
-        additional_datasets:
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets: 
           - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01,
              tier: 3, start_year: 1982, end_year: 2018, alias: a02_CLARA-AVHRR}
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
@@ -101,19 +98,30 @@ diagnostics:
              tier: 3, start_year: 2003, end_year: 2018, alias: a08_MODIS}
           - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA,
              tier: 2, start_year: 1982, end_year: 2016, alias: a09_PATMOS-x}
-          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2, alias: r01_CFSR}
+          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2010, alias: r01_CFSR}
           - {dataset: CFSv2, project: OBS6, type: reanaly, version: '1', tier: 2,
              start_year: 2011, end_year: 2022, alias: r02_CFSv2}
-          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3, alias: r04_ERA-Interim}
-          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3, alias: r03_ERA5}
-          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2, end_year: 2007, alias: r05_JRA-25}
-          - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2, alias: r06_JRA-55}
-          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3, alias: r07_MERRA}
-          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3, alias: r08_MERRA2}
-          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2, alias: r09_NCEP-DOE-R2}
-          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2, alias: r10_NCEP-NCAR-R1}
-          - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, type: reanaly, version: 'v2', tier: 2, alias: r11_NOAA-CIRES-20CR-V2}
-          - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, type: reanaly, version: 'v3', tier: 2, alias: r12_NOAA-CIRES-20CR-V3}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
+             start_year: 1979, end_year: 2021, alias: r03_ERA5}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+             start_year: 1979, end_year: 2018, alias: r04_ERA-Interim}
+          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2007, alias: r05_JRA-25}
+          - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2019, alias: r06_JRA-55}
+          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3,
+             start_year: 1979, end_year: 2015, alias: r07_MERRA}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             start_year: 1980, end_year: 2021, alias: r08_MERRA2}
+          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2,
+             start_year: 1979, end_year: 2021, alias: r09_NCEP-DOE-R2}
+          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2021, alias: r10_NCEP-NCAR-R1}
+          - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, type: reanaly, version: 'v2', tier: 2,
+             start_year: 1979, end_year: 2012, alias: r11_NOAA-CIRES-20CR-V2}
+          - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, type: reanaly, version: 'v3', tier: 2,
+             start_year: 1979, end_year: 2015, alias: r12_NOAA-CIRES-20CR-V3}
       clt_itcz:
         <<: *clt_settings
         preprocessor: pp_ITCZPacific
@@ -128,6 +136,277 @@ diagnostics:
         preprocessor: pp_Tropics
       clt_stormtracks:
         <<: *clt_settings
+        preprocessor: pp_StormTracks
+      clivi_global: &clivi_settings
+        short_name: clivi
+        preprocessor: pp_global
+        mip: Amon
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016, alias: a04_ESACCI-CLOUD}
+          - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
+             version: P1-R05-gridbox-average-noprecip,
+             start_year: 2006, end_year: 2017, tier: 3, alias: a03_CLOUDSAT-L2}
+          - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+             tier: 3, start_year: 2003, end_year: 2018, alias: a08_MODIS}
+#          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             start_year: 1979, end_year: 2010, alias: r01_CFSR}
+#          - {dataset: CFSv2, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             start_year: 2011, end_year: 2022, alias: r02_CFSv2}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
+             start_year: 1979, end_year: 2019, alias: r03_ERA5}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+             start_year: 1979, end_year: 2018, alias: r04_ERA-Interim}
+#          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             start_year: 1979, end_year: 2007, alias: r05_JRA-25}
+          - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2019, alias: r06_JRA-55}
+          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3,
+             start_year: 1979, end_year: 2015, alias: r07_MERRA}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             start_year: 1980, end_year: 2021, alias: r08_MERRA2}
+#          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2,
+#             start_year: 1979, end_year: 2021, alias: r09_NCEP-DOE-R2}
+#          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             start_year: 1979, end_year: 2021, alias: r10_NCEP-NCAR-R1}
+#          - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, type: reanaly, version: 'v2', tier: 2,
+#             start_year: 1979, end_year: 2012, alias: r11_NOAA-CIRES-20CR-V2}
+#          - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, type: reanaly, version: 'v3', tier: 2,
+#             start_year: 1979, end_year: 2015, alias: r12_NOAA-CIRES-20CR-V3}
+      clivi_itcz:
+        <<: *clivi_settings
+        preprocessor: pp_ITCZPacific
+      clivi_sep:
+        <<: *clivi_settings
+        preprocessor: pp_SEPacific
+      clivi_so:
+        <<: *clivi_settings
+        preprocessor: pp_SouthernOcean
+      clivi_tropics:
+        <<: *clivi_settings
+        preprocessor: pp_Tropics
+      clivi_stormtracks:
+        <<: *clivi_settings
+        preprocessor: pp_StormTracks
+      clwvi_global: &clwvi_settings
+        short_name: clwvi
+        preprocessor: pp_global
+        exp: historical
+        mip: Amon
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016, alias: a04_ESACCI-CLOUD}
+          - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01,
+             tier: 3, start_year: 1982, end_year: 2018, alias: a02_CLARA-AVHRR}
+          - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
+             version: P1-R05-gridbox-average-noprecip,
+             start_year: 2006, end_year: 2017, tier: 3, alias: a03_CLOUDSAT-L2}
+          - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+             tier: 3, start_year: 2003, end_year: 2018, alias: a08_MODIS}
+          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2010, alias: r01_CFSR}
+          - {dataset: CFSv2, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 2011, end_year: 2022, alias: r02_CFSv2}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
+             start_year: 1979, end_year: 2019, alias: r03_ERA5}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+             start_year: 1979, end_year: 2018, alias: r04_ERA-Interim}
+          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2007, alias: r05_JRA-25}
+          - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2019, alias: r06_JRA-55}
+          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3,
+             start_year: 1979, end_year: 2015, alias: r07_MERRA}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             start_year: 1980, end_year: 2021, alias: r08_MERRA2}
+#          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2,
+#             start_year: 1979, end_year: 2021, alias: r09_NCEP-DOE-R2}
+#          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             start_year: 1979, end_year: 2021, alias: r10_NCEP-NCAR-R1}
+          - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, type: reanaly, version: 'v2', tier: 2,
+             start_year: 1979, end_year: 2012, alias: r11_NOAA-CIRES-20CR-V2}
+          - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, type: reanaly, version: 'v3', tier: 2,
+             start_year: 1979, end_year: 2015, alias: r12_NOAA-CIRES-20CR-V3}
+      clwvi_itcz:
+        <<: *clwvi_settings
+        preprocessor: pp_ITCZPacific
+      clwvi_sep:
+        <<: *clwvi_settings
+        preprocessor: pp_SEPacific
+      clwvi_so:
+        <<: *clwvi_settings
+        preprocessor: pp_SouthernOcean
+      clwvi_tropics:
+        <<: *clwvi_settings
+        preprocessor: pp_Tropics
+      clwvi_stormtracks:
+        <<: *clwvi_settings
+        preprocessor: pp_StormTracks
+      lwp_global: &lwp_settings
+        preprocessor: pp_global
+        short_name: lwp
+        mip: Amon
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016, alias: a04_ESACCI-CLOUD}
+          - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002_01,
+             tier: 3, start_year: 1982, end_year: 2018, alias: a02_CLARA-AVHRR}
+          - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
+             version: P1-R05-gridbox-average-noprecip,
+             start_year: 2006, end_year: 2017, tier: 3, alias: a03_CLOUDSAT-L2}
+          - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+             tier: 3, start_year: 2003, end_year: 2018, alias: a08_MODIS}
+#          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             start_year: 1979, end_year: 2010, alias: r01_CFSR}
+#          - {dataset: CFSv2, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             start_year: 2011, end_year: 2022, alias: r02_CFSv2}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
+             start_year: 1979, end_year: 2019, alias: r03_ERA5}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+             start_year: 1979, end_year: 2018, alias: r04_ERA-Interim}
+#          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             start_year: 1979, end_year: 2007, alias: r05_JRA-25}
+          - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2019, alias: r06_JRA-55}
+          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3,
+             start_year: 1979, end_year: 2015, alias: r07_MERRA}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             start_year: 1980, end_year: 2021, alias: r08_MERRA2}
+#          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2,
+#             start_year: 1979, end_year: 2021, alias: r09_NCEP-DOE-R2}
+#          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             start_year: 1979, end_year: 2021, alias: r10_NCEP-NCAR-R1}
+#          - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, type: reanaly, version: 'v2', tier: 2,
+#             start_year: 1979, end_year: 2012, alias: r11_NOAA-CIRES-20CR-V2}
+#          - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, type: reanaly, version: 'v3', tier: 2,
+#             start_year: 1979, end_year: 2015, alias: r12_NOAA-CIRES-20CR-V3}
+      lwp_itcz:
+        <<: *lwp_settings
+        preprocessor: pp_ITCZPacific
+      lwp_sep:
+        <<: *lwp_settings
+        preprocessor: pp_SEPacific
+      lwp_so:
+        <<: *lwp_settings
+        preprocessor: pp_SouthernOcean
+      lwp_tropics:
+        <<: *lwp_settings
+        preprocessor: pp_Tropics
+      lwp_stormtracks:
+        <<: *lwp_settings
+        preprocessor: pp_StormTracks
+      swcre_global: &swcre_settings
+        short_name: swcre
+        preprocessor: pp_global
+        mip: Amon
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, start_year: 2001, end_year: 2021, alias: a01_CERES-EBAF}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016, alias: a04_ESACCI-CLOUD}
+          - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
+             start_year: 1984, end_year: 2016, alias: a06_ISCCP-FH}
+          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2010, alias: r01_CFSR}
+          - {dataset: CFSv2, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 2011, end_year: 2022, alias: r02_CFSv2}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
+             start_year: 1979, end_year: 2021, alias: r03_ERA5}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+             start_year: 1979, end_year: 2018, alias: r04_ERA-Interim}
+          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2007, alias: r05_JRA-25}
+          - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2019, alias: r06_JRA-55}
+          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3,
+             start_year: 1979, end_year: 2015, alias: r07_MERRA}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             start_year: 1980, end_year: 2021, alias: r08_MERRA2}
+#          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2,
+#             start_year: 1979, end_year: 2021, alias: r09_NCEP-DOE-R2}
+          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2021, alias: r10_NCEP-NCAR-R1}
+#          - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, type: reanaly, version: 'v2', tier: 2,
+#             start_year: 1979, end_year: 2012, alias: r11_NOAA-CIRES-20CR-V2}
+          - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, type: reanaly, version: 'v3', tier: 2,
+             start_year: 1979, end_year: 2015, alias: r12_NOAA-CIRES-20CR-V3}
+      swcre_itcz:
+        <<: *swcre_settings
+        preprocessor: pp_ITCZPacific
+      swcre_sep:
+        <<: *swcre_settings
+        preprocessor: pp_SEPacific
+      swcre_so:
+        <<: *swcre_settings
+        preprocessor: pp_SouthernOcean
+      swcre_tropics:
+        <<: *swcre_settings
+        preprocessor: pp_Tropics
+      swcre_stormtracks:
+        <<: *swcre_settings
+        preprocessor: pp_StormTracks
+      lwcre_global: &lwcre_settings
+        short_name: lwcre
+        preprocessor: pp_global
+        mip: Amon
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, start_year: 2001, end_year: 2021, alias: a01_CERES-EBAF}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2,
+             start_year: 1992, end_year: 2016, alias: a04_ESACCI-CLOUD}
+          - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
+             start_year: 1984, end_year: 2016, alias: a06_ISCCP-FH}
+          - {dataset: CFSR, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2010, alias: r01_CFSR}
+          - {dataset: CFSv2, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 2011, end_year: 2022, alias: r02_CFSv2}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3,
+             start_year: 1979, end_year: 2021, alias: r03_ERA5}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3,
+             start_year: 1979, end_year: 2018, alias: r04_ERA-Interim}
+          - {dataset: JRA-25, project: OBS6, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2007, alias: r05_JRA-25}
+          - {dataset: JRA-55, project: OBS6, Amon, type: reanaly, version: '1', tier: 2,
+             start_year: 1979, end_year: 2019, alias: r06_JRA-55}
+          - {dataset: MERRA, project: OBS, type: reanaly, version: 5.2.0, tier: 3,
+             start_year: 1979, end_year: 2015, alias: r07_MERRA}
+          - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+             start_year: 1980, end_year: 2021, alias: r08_MERRA2}
+#          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, version: '2', tier: 2,
+#             start_year: 1979, end_year: 2021, alias: r09_NCEP-DOE-R2}
+#          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: '1', tier: 2,
+#             start_year: 1979, end_year: 2021, alias: r10_NCEP-NCAR-R1}
+#          - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, type: reanaly, version: 'v2', tier: 2,
+#             start_year: 1979, end_year: 2012, alias: r11_NOAA-CIRES-20CR-V2}
+          - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, type: reanaly, version: 'v3', tier: 2,
+             start_year: 1979, end_year: 2015, alias: r12_NOAA-CIRES-20CR-V3}
+      lwcre_itcz:
+        <<: *lwcre_settings
+        preprocessor: pp_ITCZPacific
+      lwcre_sep:
+        <<: *lwcre_settings
+        preprocessor: pp_SEPacific
+      lwcre_so:
+        <<: *lwcre_settings
+        preprocessor: pp_SouthernOcean
+      lwcre_tropics:
+        <<: *lwcre_settings
+        preprocessor: pp_Tropics
+      lwcre_stormtracks:
+        <<: *lwcre_settings
         preprocessor: pp_StormTracks
     scripts:
       ac_clt_global:
@@ -147,4 +426,94 @@ diagnostics:
         script: mpqb/mpqb_lineplot_anncyc.py
       ac_clt_stormtracks:
         variable_group: clt_stormtracks
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clivi_global:
+        variable_group: clivi_global
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clivi_itcz:
+        variable_group: clivi_itcz
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clivi_sep:
+        variable_group: clivi_sep
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clivi_so:
+        variable_group: clivi_so
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clivi_tropics:
+        variable_group: clivi_tropics
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clivi_stormtracks:
+        variable_group: clivi_stormtracks
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clwvi_global:
+        variable_group: clwvi_global
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clwvi_itcz:
+        variable_group: clwvi_itcz
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clwvi_sep:
+        variable_group: clwvi_sep
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clwvi_so:
+        variable_group: clwvi_so
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clwvi_tropics:
+        variable_group: clwvi_tropics
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_clwvi_stormtracks:
+        variable_group: clwvi_stormtracks
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_lwp_global:
+        variable_group: lwp_global
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_lwp_itcz:
+        variable_group: lwp_itcz
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_lwp_sep:
+        variable_group: lwp_sep
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_lwp_so:
+        variable_group: lwp_so
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_lwp_tropics:
+        variable_group: lwp_tropics
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_lwp_stormtracks:
+        variable_group: lwp_stormtracks
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_swcre_global:
+        variable_group: swcre_global
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_swcre_itcz:
+        variable_group: swcre_itcz
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_swcre_sep:
+        variable_group: swcre_sep
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_swcre_so:
+        variable_group: swcre_so
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_swcre_tropics:
+        variable_group: swcre_tropics
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_swcre_stormtracks:
+        variable_group: swcre_stormtracks
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_lwcre_global:
+        variable_group: lwcre_global
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_lwcre_itcz:
+        variable_group: lwcre_itcz
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_lwcre_sep:
+        variable_group: lwcre_sep
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_lwcre_so:
+        variable_group: lwcre_so
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_lwcre_tropics:
+        variable_group: lwcre_tropics
+        script: mpqb/mpqb_lineplot_anncyc.py
+      ac_lwcre_stormtracks:
+        variable_group: lwcre_stormtracks
         script: mpqb/mpqb_lineplot_anncyc.py
