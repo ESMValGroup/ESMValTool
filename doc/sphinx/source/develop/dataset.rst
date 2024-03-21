@@ -74,7 +74,7 @@ The folder ``RAWOBS`` needs the subdirectories ``Tier1``, ``Tier2`` and
 ``Tier3``. The different tiers describe the different levels of restrictions
 for downloading (e.g. providing contact information, licence agreements)
 and using the observations. The unformatted (raw) observations
-should then be stored then in the appropriate of these three folders.
+should then be stored in the appropriate of these three folders.
 
 For each additional dataset, an entry needs to be made to the file 
 `datasets.yml

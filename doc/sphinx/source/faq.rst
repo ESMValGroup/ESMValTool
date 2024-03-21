@@ -113,11 +113,24 @@ a symbolic link to it so it gets picked up at every re-run iteration:
 Can ESMValTool plot arbitrary model output?
 ===========================================
 
-Recipe :ref:`recipe_monitor` allows for the plotting of any preprocessed model.
-The plotting parameters are set through a yaml configuration file, and the
-type of plots to be generated are determined in the recipe.
+:ref:`recipe_model_evaluation` provides a set of recipes that can be used for a
+basic climate model evaluation with observational data.
+This is especially useful to get an overview of the general performance of a
+simulation.
+
+Furthermore, recipe :ref:`recipe_monitor` allows for the plotting of any
+preprocessed model.
+The plotting parameters are set through a yaml configuration file, and the type
+of plots to be generated are determined in the recipe.
 
 Moreover, recipe :ref:`recipes_psyplot_diag` and the corresponding diagnostic
 :ref:`psyplot_diag.py <api.esmvaltool.diag_scripts.psyplot_diag>` provide a
 high-level interface to the `Psyplot <https://psyplot.github.io/>`__ package
 which can be used to create a large variety of different plots.
+
+Similarly, recipe :ref:`recipes_seaborn_diag` and the corresponding diagnostic
+:ref:`seaborn_diag.py <api.esmvaltool.diag_scripts.seaborn_diag>` provide a
+high-level interface to the `Seaborn <https://seaborn.pydata.org>`__ package
+which can also be used to create a large variety of different plots.
+
+See also :ref:`general_purpose_diags`.

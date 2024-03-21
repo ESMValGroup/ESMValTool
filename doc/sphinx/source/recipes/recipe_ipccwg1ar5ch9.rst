@@ -14,8 +14,8 @@ rather than constantly having to "re-invent the wheel".
 
 .. note::
 
-    Please note that most recipes have been modified to include only models that are 
-    (still) readily available via ESGF. Plots produced may therefore look different 
+    Please note that most recipes have been modified to include only models that are
+    (still) readily available via ESGF. Plots produced may therefore look different
     than the original figures from IPCC AR5.
 
 The plots are produced collecting the diagnostics from individual recipes. The
@@ -95,16 +95,16 @@ following figures from Flato et al. (2013) can currently be reproduced:
       calculated as the standard deviation of the annual means over the period
       1986–2005.
 
-    * Figure 9.38: Seasonal cycle for the surface temperature or precipitation 
-      over land within defined regions multi-model mean and difference to 
+    * Figure 9.38: Seasonal cycle for the surface temperature or precipitation
+      over land within defined regions multi-model mean and difference to
       reference dataset or absolute annual cycle can be chosen.
 
-    * Figure 9.39: Seasonal bias box and whiskers plot 
+    * Figure 9.39: Seasonal bias box and whiskers plot
       for surface temperature or precipitation within
       SREX (IPCC Special Report on Managing the Risks of Extreme Events and
       Disasters to Advance Climate Change Adaptation) regions.
 
-    * Figure 9.40: Seasonal bias box and whiskers plot for surface 
+    * Figure 9.40: Seasonal bias box and whiskers plot for surface
       temperature or precipitation within defined polar and ocean regions.
 
     * Figure 9.41b: Comparison between observations and models for variable
@@ -246,7 +246,7 @@ User settings in recipe
    * time_avg: type of time average (currently only "yearly" and "monthly" are
      available).
    * ts_anomaly: calculates anomalies with respect to the defined period; for
-     each gird point by removing the mean for the given calendar month
+     each grid point by removing the mean for the given calendar month
      (requiring at least 50% of the data to be non-missing)
    * ref_start: start year of reference period for anomalies
    * ref_end: end year of reference period for anomalies
@@ -360,7 +360,7 @@ User settings in recipe
    * fig938_mip_MMM: mip to average, default "Amon"
    * fig938_names_MMM: names in legend  i.e. (["CMIP5","CMIP3"]), default fig938_project_MMM
    * fig938_colors_MMM: Color for multi-model mean (e.g. ["red"]), default "red"
-   * If set fig938_mip_MMM, fig938_experiment_MMM, fig938_project_MMM, fig938_names_MMM, and fig938_colors_MMM must 
+   * If set fig938_mip_MMM, fig938_experiment_MMM, fig938_project_MMM, fig938_names_MMM, and fig938_colors_MMM must
      have the same number of elements
 
    * fig938_refModel: Reference data set for differences default "ERA-Interim"
@@ -453,7 +453,8 @@ User settings in recipe
      :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`).
    * save: :obj:`dict` containing keyword arguments for the function
      :func:`matplotlib.pyplot.savefig`.
-   * seaborn_settings: Options for :func:`seaborn.set` (affects all plots).
+   * seaborn_settings: Options for :func:`seaborn.set_theme` (affects all
+     plots).
 
 .. _ch09_fig09_42b.py:
 
@@ -476,7 +477,8 @@ User settings in recipe
      ``marker_column``).  If a relative path is given, assumes that this is a
      pattern to search for ancestor files.
    * savefig_kwargs: Keyword arguments for :func:`matplotlib.pyplot.savefig`.
-   * seaborn_settings: Options for :func:`seaborn.set` (affects all plots).
+   * seaborn_settings: Options for :func:`seaborn.set_theme` (affects all
+     plots).
    * x_lim: Plot limits for X axis (ECS).
    * y_lim: Plot limits for Y axis (TCR).
 
@@ -573,12 +575,12 @@ References
   Tignor, M., and Midgley, P. M., Cambridge University Press, Cambridge, UK,
   and New York, NY, USA, 109-230.
 
-* Weigel, K., Bock, L., Gier, B. K., Lauer, A., Righi, M., Schlund, M., Adeniyi, K., 
-  Andela, B., Arnone, E., Berg, P., Caron, L.-P., Cionni, I., Corti, S., Drost, N., 
-  Hunter, A., Lledó, L., Mohr, C. W., Paçal, A., Pérez-Zanón, N., Predoi, V., Sandstad, 
-  M., Sillmann, J., Sterl, A., Vegas-Regidor, J., von Hardenberg, J., and Eyring, V.: 
-  Earth System Model Evaluation Tool (ESMValTool) v2.0 - diagnostics for extreme events, 
-  regional and impact evaluation, and analysis of Earth system models in CMIP, 
+* Weigel, K., Bock, L., Gier, B. K., Lauer, A., Righi, M., Schlund, M., Adeniyi, K.,
+  Andela, B., Arnone, E., Berg, P., Caron, L.-P., Cionni, I., Corti, S., Drost, N.,
+  Hunter, A., Lledó, L., Mohr, C. W., Paçal, A., Pérez-Zanón, N., Predoi, V., Sandstad,
+  M., Sillmann, J., Sterl, A., Vegas-Regidor, J., von Hardenberg, J., and Eyring, V.:
+  Earth System Model Evaluation Tool (ESMValTool) v2.0 - diagnostics for extreme events,
+  regional and impact evaluation, and analysis of Earth system models in CMIP,
   Geosci. Model Dev., 14, 3159-3184, https://doi.org/10.5194/gmd-14-3159-2021, 2021.
 
 
@@ -701,7 +703,7 @@ Example plots
    :align: center
 
    Figure 9.38tas: Mean seasonal cycle for surface temperature (tas)
-   as multi model mean of 38 CMIP5 and 22 CMIP6 models as well as 
+   as multi model mean of 38 CMIP5 and 22 CMIP6 models as well as
    CRU and ERA-Interim reanalysis data averaged
    for 1980-2005 over land in different regions:
    Western North America (WNA), Eastern North America (ENA),
@@ -710,7 +712,7 @@ Example plots
    North Africa (NAF), Central Africa (CAF), South Africa (SAF),
    North Asia (NAS), Central Asia (CAS), East Asia (EAS),
    South Asia (SAS), Southeast Asia (SEA), and Australia (AUS).
-   Similar to Fig. 9.38a from Flato et al. (2013), CMIP6 instead of CMIP3 and 
+   Similar to Fig. 9.38a from Flato et al. (2013), CMIP6 instead of CMIP3 and
    set of CMIP5 models used different.
 
 
@@ -718,7 +720,7 @@ Example plots
    :align: center
 
    Figure 9.38pr: Mean seasonal cycle for precipitation (pr)
-   as multi model mean of 38 CMIP5 and 22 CMIP6 models as well as 
+   as multi model mean of 38 CMIP5 and 22 CMIP6 models as well as
    CRU and ERA-Interim reanalysis data averaged
    for 1980-1999 over land in different regions:
    Western North America (WNA), Eastern North America (ENA),
@@ -727,7 +729,7 @@ Example plots
    North Africa (NAF), Central Africa (CAF), South Africa (SAF),
    North Asia (NAS), Central Asia (CAS), East Asia (EAS),
    South Asia (SAS), Southeast Asia (SEA), and Australia (AUS).
-   Similar to Fig. 9.38b from Flato et al. (2013), CMIP6 instead of CMIP3 and 
+   Similar to Fig. 9.38b from Flato et al. (2013), CMIP6 instead of CMIP3 and
    set of CMIP5 models used different.
 
 .. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-38_regions.png
@@ -740,7 +742,7 @@ Example plots
 
    Figure 9.39tas: Box and whisker plots showing the 5th, 25th, 50th, 75th
    and 95th percentiles of the seasonal- and annual mean biases for
-   surface temperature (tas) for 1980-2005 between 38 CMIP5 models 
+   surface temperature (tas) for 1980-2005 between 38 CMIP5 models
    (box and whiskers) or 22 CMIP6 models (crosses) and CRU data.
    The regions are: Alaska/NW Canada (ALAs),
    Eastern Canada/Greenland/Iceland (CGIs), Western North America(WNAs),
@@ -756,7 +758,7 @@ Example plots
    Southern Australia/New Zealand (SAUs).
    The positions of these regions are defined following
    (Seneviratne et al., 2012) and differ from the ones in Fig. 9.38.
-   Similar to Fig. 9.39 a,c,e from Flato et al. (2013), CMIP6 instead of CMIP3 and 
+   Similar to Fig. 9.39 a,c,e from Flato et al. (2013), CMIP6 instead of CMIP3 and
    set of CMIP5 models used different.
 
 .. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-39-pr.png
@@ -764,7 +766,7 @@ Example plots
 
    Figure 9.39pr: Box and whisker plots showing the 5th, 25th, 50th, 75th
    and 95th percentiles of the seasonal- and annual mean biases for
-   precipitation (pr) for 1980-2005 between 38 CMIP5 models 
+   precipitation (pr) for 1980-2005 between 38 CMIP5 models
    (box and whiskers) or 22 CMIP6 models (crosses) and CRU data.
    The regions are: Alaska/NW Canada (ALAs),
    Eastern Canada/Greenland/Iceland (CGIs), Western North America(WNAs),
@@ -780,7 +782,7 @@ Example plots
    Southern Australia/New Zealand (SAUs).
    The positions of these regions are defined following
    (Seneviratne et al., 2012) and differ from the ones in Fig. 9.38.
-   Similar to Fig. 9.39 b,d,f from Flato et al. (2013), CMIP6 instead of CMIP3 and 
+   Similar to Fig. 9.39 b,d,f from Flato et al. (2013), CMIP6 instead of CMIP3 and
    set of CMIP5 models used different.
 
 .. figure:: /recipes/figures/ipccwg1ar5ch9/fig-9-39_regions.png

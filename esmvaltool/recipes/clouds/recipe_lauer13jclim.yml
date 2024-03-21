@@ -142,6 +142,13 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
+        # The original recipe uses the UWisc dataset that is not 
+        # maintained anymore by the authors and has been supersided
+        # by MAC-LWP (Elsaesser et al., 2017)
+        # https://doi.org/10.1175/JCLI-D-16-0902.1
+        # We recommend using MAC-LWP
+      #- {dataset: MAC-LWP, project: OBS, type: sat, version: v1,
+      #   start_year: 1988, end_year: 2007, tier: 3}
       - {dataset: UWisc, project: OBS, type: sat, version: v2,
          start_year: 1988, end_year: 2007, tier: 3}
     scripts:
@@ -168,11 +175,10 @@ diagnostics:
     variables:
       clt:
         preprocessor: clim
-        reference_dataset: MODIS
+        reference_dataset: MODIS-1-0
         mip: Amon
     additional_datasets:
-      - {dataset: MODIS, project: obs4MIPs, level: L3, version: C5,
-         start_year: 2001, end_year: 2010, tier: 1}
+      - {dataset: MODIS-1-0, project: obs4MIPs, level: L3, start_year: 2001, end_year: 2010, tier: 1}
     scripts:
       clim:
         <<: *clim_settings
@@ -187,11 +193,10 @@ diagnostics:
     variables:
       pr:
         preprocessor: clim
-        reference_dataset: GPCP-SG
+        reference_dataset: GPCP-V2.2
         mip: Amon
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2,
-         start_year: 1986, end_year: 2005, tier: 1}
+      - {dataset: GPCP-V2.2, project: obs4MIPs, level: L3, start_year: 1986, end_year: 2005, tier: 1}
     scripts:
       clim:
         <<: *clim_settings
@@ -211,8 +216,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
-         start_year: 2001, end_year: 2010, tier: 1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, start_year: 2001, end_year: 2010, tier: 1}
     scripts:
       clim:
         <<: *clim_settings
@@ -232,8 +236,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
-         start_year: 2001, end_year: 2010, tier: 1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, start_year: 2001, end_year: 2010, tier: 1}
     scripts:
       clim:
         <<: *clim_settings
@@ -253,11 +256,10 @@ diagnostics:
     variables:
       clt:
         preprocessor: clim
-        reference_dataset: MODIS
+        reference_dataset: MODIS-1-0
         mip: Amon
     additional_datasets:
-      - {dataset: MODIS, project: obs4MIPs, level: L3, version: C5,
-         start_year: 2001, end_year: 2010, tier: 1}
+      - {dataset: MODIS-1-0, project: obs4MIPs, level: L3, start_year: 2001, end_year: 2010, tier: 1}
     scripts:
       clim: &taylor_settings
         script: clouds/clouds_taylor.ncl
@@ -314,8 +316,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: UWisc, project: OBS, type: sat, version: v2,
-         start_year: 1988, end_year: 2007, tier: 3}
+      - {dataset: UWisc, project: OBS, type: sat, version: v2, start_year: 1988, end_year: 2007, tier: 3}
     scripts:
       clim:
         <<: *taylor_settings
@@ -335,8 +336,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
-         start_year: 2001, end_year: 2010, tier: 1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, start_year: 2001, end_year: 2010, tier: 1}
     scripts:
       clim:
         <<: *taylor_settings
@@ -356,8 +356,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
-         start_year: 2001, end_year: 2010, tier: 1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, start_year: 2001, end_year: 2010, tier: 1}
     scripts:
       clim:
         <<: *taylor_settings
@@ -372,11 +371,10 @@ diagnostics:
     variables:
       pr:
         preprocessor: clim
-        reference_dataset: GPCP-SG
+        reference_dataset: GPCP-V2.2
         mip: Amon
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2,
-         start_year: 1986, end_year: 2005, tier: 1}
+      - {dataset: GPCP-V2.2, project: obs4MIPs, level: L3, start_year: 1986, end_year: 2005, tier: 1}
     scripts:
       clim:
         <<: *taylor_settings
@@ -402,8 +400,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: UWisc, project: OBS, type: sat, version: v2,
-         start_year: 1988, end_year: 2007, tier: 3}
+      - {dataset: UWisc, project: OBS, type: sat, version: v2, start_year: 1988, end_year: 2007, tier: 3}
     scripts:
       clim: &intera_settings
         script: clouds/clouds_interannual.ncl
@@ -435,11 +432,10 @@ diagnostics:
     variables:
       clt:
         preprocessor: clim
-        reference_dataset: MODIS
+        reference_dataset: MODIS-1-0
         mip: Amon
     additional_datasets:
-      - {dataset: MODIS, project: obs4MIPs, level: L3, version: C5,
-         start_year: 2001, end_year: 2010, tier: 1}
+      - {dataset: MODIS-1-0, project: obs4MIPs, level: L3, start_year: 2001, end_year: 2010, tier: 1}
     scripts:
       clim:
         <<: *intera_settings
@@ -459,8 +455,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
-         start_year: 2001, end_year: 2010, tier: 1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, start_year: 2001, end_year: 2010, tier: 1}
     scripts:
       clim:
         <<: *intera_settings
@@ -480,8 +475,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
-         start_year: 2001, end_year: 2010, tier: 1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, start_year: 2001, end_year: 2010, tier: 1}
     scripts:
       clim:
         <<: *intera_settings
@@ -496,11 +490,10 @@ diagnostics:
     variables:
       pr:
         preprocessor: clim
-        reference_dataset: GPCP-SG
+        reference_dataset: GPCP-V2.2
         mip: Amon
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2,
-         start_year: 1986, end_year: 2005, tier: 1}
+      - {dataset: GPCP-V2.2, project: obs4MIPs, level: L3, start_year: 1986, end_year: 2005, tier: 1}
     scripts:
       clim:
         <<: *intera_settings

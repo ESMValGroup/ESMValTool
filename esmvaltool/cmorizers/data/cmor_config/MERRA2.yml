@@ -216,3 +216,28 @@ variables:
     mip: Amon
     raw: "RH"
     file: 'MERRA2_???.instM_3d_asm_Np.{year}??.nc4'
+  cli_monthly:
+    short_name: cli
+    mip: Amon
+    raw: "QI"
+    file: 'MERRA2_???.tavgM_3d_cld_Np.{year}??.nc4'
+  clw_monthly:
+    short_name: clw
+    mip: Amon
+    raw: "QL"
+    file: 'MERRA2_???.tavgM_3d_cld_Np.{year}??.nc4'
+  cl_monthly:
+    short_name: cl
+    mip: Amon
+    raw: "CLOUD"
+    file: 'MERRA2_???.tavgM_3d_cld_Np.{year}??.nc4'
+  clivi_monthly:
+    short_name: clivi
+    mip: Amon
+    raw: TQI
+    file: 'MERRA2_???.instM_2d_asm_Nx.{year}??.nc4'
+  clwvi_monthly:
+    short_name: clwvi
+    mip: Amon
+    raw: TQI+TQL
+    file: 'MERRA2_???.instM_2d_asm_Nx.{year}??.nc4'

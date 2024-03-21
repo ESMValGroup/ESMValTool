@@ -135,8 +135,8 @@ diagnostics:
         exp: amip
         reference_dataset: ESACCI-WATERVAPOUR
         additional_datasets:
-          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
-             version: CDR2-L3S-05deg_fv3.1, tier: 3,
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat,
+             version: CDR2-L3-COMBI-05deg-fv3.1, tier: 3,
              start_year: 2003, end_year: 2017}
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
              start_year: 1984, end_year: 2016}

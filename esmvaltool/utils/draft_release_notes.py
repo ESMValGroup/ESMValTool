@@ -10,6 +10,7 @@ or esmvaltool
 """
 import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import dateutil
 import esmvalcore
@@ -40,24 +41,25 @@ GITHUB_REPO = {
     'esmvaltool': "ESMValGroup/ESMValTool",
 }
 
-PREVIOUS_RELEASE = {
-    'esmvalcore': datetime.datetime(2022, 10, 13, 18),
-    'esmvaltool': datetime.datetime(2022, 10, 28, 18),
-}
+TIMEZONE = ZoneInfo("CET")
 
+PREVIOUS_RELEASE = {
+    'esmvalcore': datetime.datetime(2023, 6, 6, 0, tzinfo=TIMEZONE),
+    'esmvaltool': datetime.datetime(2023, 6, 20, 0, tzinfo=TIMEZONE),
+}
 
 LABELS = {
     'esmvalcore': (
+        'backwards incompatible change',  # important, keep at the top
+        'deprecated feature',  # important, keep at the top
+        'bug',  # important, keep at the top
         'api',
-        'backwards incompatible change',
-        'bug',
         'cmor',
         'containerization',
         'community',
+        'dask',
         'deployment',
-        'deprecated feature',
         'documentation',
-        'enhancement',
         'fix for dataset',
         'installation',
         'iris',
@@ -65,20 +67,21 @@ LABELS = {
         'release',
         'testing',
         'UX',
-        'variable derivation'
+        'variable derivation',
+        'enhancement',  # uncategorized, keep at the bottom
     ),
     'esmvaltool': (
-        'backwards incompatible change',
-        'bug',
+        'backwards incompatible change',  # important, keep at the top
+        'deprecated feature',  # important, keep at the top
+        'bug',  # important, keep at the top
         'community',
-        'deprecated feature',
         'documentation',
         'diagnostic',
         'preprocessor',
         'observations',
         'testing',
         'installation',
-        'enhancement',
+        'enhancement',  # uncategorized, keep at the bottom
     )
 }
 
@@ -87,6 +90,7 @@ TITLES = {
     'deprecated feature': 'Deprecations',
     'bug': 'Bug fixes',
     'cmor': 'CMOR standard',
+    'dask': 'Computational performance improvements',
     'diagnostic': 'Diagnostics',
     'fix for dataset': 'Fixes for datasets',
     'observations': 'Observational and re-analysis dataset support',
@@ -126,11 +130,17 @@ def draft_notes_since(project, previous_release_date=None, labels=None):
     print(f"Note: Unmerged PRs or PRs that have been merged before "
           f"{previous_release_date} are not shown\n")
     for pull in pulls:
-        if pull.updated_at < previous_release_date:
+        if pull.updated_at.astimezone(TIMEZONE) < previous_release_date:
             break
-        if not pull.merged or pull.merged_at < previous_release_date:
+        if (not pull.merged or
+                pull.merged_at.astimezone(TIMEZONE) < previous_release_date):
             continue
-        print(pull.updated_at, pull.merged_at, pull.number, pull.title)
+        print(
+            pull.updated_at.astimezone(TIMEZONE),
+            pull.merged_at.astimezone(TIMEZONE),
+            pull.number,
+            pull.title,
+        )
         pr_labels = {label.name for label in pull.labels}
         if 'automatedPR' in pr_labels:
             continue
@@ -201,16 +211,14 @@ def _list_labelless_pulls(labelless_pulls):
 
 def _compose_note(pull):
     user = pull.user
-    username = user.login if user.name is None else user.name
     title = pull.title
     title = title[0].upper() + title[1:]
-    return (f"-  {title} (`#{pull.number} "
-            f"<{pull.html_url}>`__) "
-            f"`{username} <https://github.com/{user.login}>`__")
+    return f"-  {title} (:pull:`{pull.number}`) by :user:`{user.login}`"
 
 
 def main():
-    """Entry point for the scrip."""
+    """Entry point for the script."""
+
     def display(lines, out):
         text = "\n".join(lines) + "\n"
         out.write(text)

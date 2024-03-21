@@ -694,8 +694,6 @@ print(atts_z)
   xyres2@tmXTLabelsOn = True
   xyres2@tmXBLabelsOn = False
 
-  nframe = 0
-
   do ii = 0, nplots - 1
     if (ii .lt. dim_MOD) then
       plotdata = result(ii, :, :)
@@ -788,8 +786,6 @@ print(atts_z)
 
     delete(plotdata)
     delete(countdata)
-
-    nframe = nframe + 1
   end do
 
 ;  pres                      = True    ; needed to override
@@ -811,11 +807,6 @@ print(atts_z)
   log_info("Wrote " + outfile)
   log_info("Wrote " + doutfile)
   log_info("Wrote " + coutfile)
-
-  suffix = get_file_suffix(outfile, 0)
-  if (suffix .eq. ".png") then
-    outfile = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
-  end if
 
   ; ==========================================================================
 

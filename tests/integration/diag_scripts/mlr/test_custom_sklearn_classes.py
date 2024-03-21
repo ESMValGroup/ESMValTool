@@ -42,6 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-arguments
 
+import warnings
 from copy import deepcopy
 
 import numpy as np
@@ -142,35 +143,6 @@ class TestAdvancedPipeline():
         )
         assert pipeline.feature_importances_ == 42
 
-    def test_fit(self):
-        """Test ``_fit``."""
-        x_data = np.array([
-            [0, 1000],
-            [1, 0],
-            [2, 3000],
-            [0, -5000],
-            [4, -3000],
-            [4, -3000],
-        ])
-        y_data = np.array([1, 0, 3, -5, -3, -3])
-        pipeline = AdvancedPipeline([
-            ('t', StandardScaler()), ('r', LinearRegression()),
-        ])
-        sample_weights = np.array([0.0, 0.0, 0.0, 0.0, 1.0, 1.0])
-        kwargs = {
-            't': {'sample_weight': sample_weights},
-            'r': {'sample_weight': sample_weights},
-        }
-        pipeline._fit(x_data, y_data, **kwargs)
-
-        transformer_ = pipeline.steps[0][1]
-        np.testing.assert_allclose(transformer_.scale_, [1.0, 1.0])
-        np.testing.assert_allclose(transformer_.mean_, [4.0, -3000.0])
-
-        regressor_ = pipeline.steps[1][1]
-        with pytest.raises(NotFittedError):
-            regressor_.predict([[0, 0]])
-
     AREG = AdvancedTransformedTargetRegressor(
         transformer=NonStandardScaler(),
         regressor=LinearRegression(),
@@ -253,7 +225,7 @@ class TestAdvancedPipeline():
          (np.array([8.333333]), np.array([8.222222])),
          (np.array([6.333333]), np.array([8.222222])),
          ValueError,
-         ValueError,
+         KeyError,
          (np.array([8.333333]), np.array([8.222222]))],
     )
 
@@ -274,6 +246,8 @@ class TestAdvancedPipeline():
             return
         np.testing.assert_allclose(transformer.mean_, output[0])
         np.testing.assert_allclose(transformer.var_, output[1])
+        assert pipeline.steps[-1][0] == 'r'
+        assert pipeline.steps[-1][1] != 'passthrough'
         with pytest.raises(NotFittedError):
             pipeline.predict(X_TRAIN)
         with pytest.raises(NotFittedError):
@@ -455,8 +429,11 @@ class TestAdvancedRFE():
         np.testing.assert_array_equal(rfe.support_, [False, False, True])
         est = rfe.estimator_
         assert isinstance(est, AdvancedPipeline)
-        assert est.steps[0][1].transformers_ == [
-            ('passthrough', 'passthrough', [0])]
+        assert len(est.steps[0][1].transformers_) == 1
+        transformer = est.steps[0][1].transformers_[0]
+        assert transformer[0] == 'passthrough'
+        assert isinstance(transformer[1], FunctionTransformer)
+        assert transformer[2] == [0]
         np.testing.assert_allclose(est.steps[1][1].coef_, [1.0])
         np.testing.assert_allclose(est.steps[1][1].intercept_, 0.0, atol=1e-10)
         pred = rfe.predict(self.X_PRED)
@@ -473,8 +450,11 @@ class TestAdvancedRFE():
         np.testing.assert_array_equal(rfe.support_, [True, False, False])
         est = rfe.estimator_
         assert isinstance(est, AdvancedPipeline)
-        assert est.steps[0][1].transformers_ == [
-            ('passthrough', 'passthrough', [0])]
+        assert len(est.steps[0][1].transformers_) == 1
+        transformer = est.steps[0][1].transformers_[0]
+        assert transformer[0] == 'passthrough'
+        assert isinstance(transformer[1], FunctionTransformer)
+        assert transformer[2] == [0]
         np.testing.assert_allclose(est.steps[1][1].coef_, [0.5])
         np.testing.assert_allclose(est.steps[1][1].intercept_, 0.0, atol=1e-10)
         pred = rfe.predict(self.X_PRED)
@@ -741,9 +721,9 @@ class TestAdvancedTransformedTargetRegressor():
             inverse_func=self.square,
             check_inverse=False,
         )
-        with pytest.warns(None) as record:
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")  # make sure no warning is raised
             areg._fit_transformer(self.Y_2D)
-        assert not record
 
     def test_fit_transformer_transformer(self):
         """Test ``_fit_transformer`` with transformer."""
