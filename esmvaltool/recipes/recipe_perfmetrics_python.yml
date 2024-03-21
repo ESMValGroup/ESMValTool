@@ -32,7 +32,6 @@ preprocessors:
       frequency: mon
     distance_metric:
       metric: pearsonr
-      # coords: null
 
 
 cmip6_default: &cmip6
@@ -43,74 +42,62 @@ cmip6_default: &cmip6
 
 datasets:
   # ICON
-  # - {project: ICON,
-  #    timerange: '1991/1992', 
-  #    dataset: ICON-Seamless,
-  #    exp: hist001,
-  #    horizontal_grid: /work/pd1295/ICON/grids/public/edzw/icon_grid_0030_R02B05_G.nc,
-  #    supplementary_variables: [
-  #     {short_name: areacella, skip: true},
-  #     {short_name: areacello, skip: true},
-  #     {short_name: sftlf, skip: true},
-  #     {short_name: sftof, skip: true},
-  #    ],
-  #    ugrid: false,
-  #   }
-  # - {project: ICON,
-  #     timerange: '1991/1992',
-  #    dataset: ICON-Seamless,
-  #    exp: hist002,
-  #    horizontal_grid: /work/pd1295/ICON/grids/public/edzw/icon_grid_0030_R02B05_G.nc,
-  #    supplementary_variables: [
-  #     {short_name: areacella, skip: true},
-  #     {short_name: areacello, skip: true},
-  #     {short_name: sftlf, skip: true},
-  #     {short_name: sftof, skip: true},
-  #    ],
-  #    ugrid: false,
-  #   }
   # CMIP6
-  # - {<<: *cmip6, dataset: ACCESS-CM2, reference_for_metric: true}
+  - {<<: *cmip6, dataset: ACCESS-CM2}
+  - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
   - {<<: *cmip6, dataset: AWI-CM-1-1-MR}
   - {<<: *cmip6, dataset: AWI-ESM-1-1-LR}
-
   - {<<: *cmip6, dataset: CESM2-FV2, institute: NCAR}
   - {<<: *cmip6, dataset: CESM2-WACCM, institute: NCAR}
   - {<<: *cmip6, dataset: CESM2-WACCM-FV2, institute: NCAR}
   - {<<: *cmip6, dataset: CIESM, grid: gr}
   - {<<: *cmip6, dataset: CMCC-CM2-HR4}
-  # # - {<<: *cmip6, dataset: CMCC-CM2-SR5}
-  # - {<<: *cmip6, dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
-  # # - {<<: *cmip6, dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
-  # # - {<<: *cmip6, dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
-  # # - {<<: *cmip6, dataset: EC-Earth3-Veg-LR, grid: gr}
-  # - {<<: *cmip6, dataset: FGOALS-f3-L, grid: gr}
-  # - {<<: *cmip6, dataset: FGOALS-g3}
-  # - {<<: *cmip6, dataset: GFDL-CM4, grid: gr1}
-  # - {<<: *cmip6, dataset: GISS-E2-1-G}
-  # - {<<: *cmip6, dataset: GISS-E2-1-H}
-  # - {<<: *cmip6, dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3}
-  # - {<<: *cmip6, dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3}
+  - {<<: *cmip6, dataset: CMCC-CM2-SR5}
+  - {<<: *cmip6, dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+  - {<<: *cmip6, dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+  - {<<: *cmip6, dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+  - {<<: *cmip6, dataset: EC-Earth3-Veg-LR, grid: gr}
+  - {<<: *cmip6, dataset: FGOALS-f3-L, grid: gr}
+  - {<<: *cmip6, dataset: FGOALS-g3}
+  - {<<: *cmip6, dataset: GFDL-CM4, grid: gr1}
+  - {<<: *cmip6, dataset: GISS-E2-1-G}
+  - {<<: *cmip6, dataset: GISS-E2-1-H}
+  - {<<: *cmip6, dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3}
+  - {<<: *cmip6, dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3}
+  - {<<: *cmip6, dataset: IITM-ESM}
+  - {<<: *cmip6, dataset: INM-CM4-8, grid: gr1}
+  - {<<: *cmip6, dataset: INM-CM5-0, grid: gr1}
+  - {<<: *cmip6, dataset: IPSL-CM6A-LR, grid: gr}
+  - {<<: *cmip6, dataset: MIROC6, reference_for_metric: false}
+  - {<<: *cmip6, dataset: MIROC-ES2L, ensemble: r1i1p1f2}
+  - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM}
+  - {<<: *cmip6, dataset: MPI-ESM1-2-LR}
+  - {<<: *cmip6, dataset: MPI-ESM1-2-HR}
+  - {<<: *cmip6, dataset: MRI-ESM2-0}
+  - {<<: *cmip6, dataset: NESM3}
+  - {<<: *cmip6, dataset: NorCPM1, institute: NCC, ensemble: r10i1p1f1}
+  - {<<: *cmip6, dataset: NorESM2-LM, institute: NCC}
+  - {<<: *cmip6, dataset: NorESM2-MM, institute: NCC}
+  - {<<: *cmip6, dataset: SAM0-UNICON}
+  - {<<: *cmip6, dataset: TaiESM1}
+  - {<<: *cmip6, dataset: UKESM1-0-LL, ensemble: r1i1p1f2}
+  #   - {<<: *cmip6, dataset: CMCC-ESM2}
+  #   - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
+  #   - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
+  #   - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
+  #   - {<<: *cmip6, dataset: GFDL-ESM4, grid: gr1}
+    
+  #   # grid wrong? missing data
+  #   # - {<<: *cmip6, dataset: MCM-UA-1-0}
+  #   # - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
+  #   # - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
+  #   # - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
 
-
-  # - {<<: *cmip6, dataset: IITM-ESM}
-  # - {<<: *cmip6, dataset: INM-CM4-8, grid: gr1}
-  # - {<<: *cmip6, dataset: INM-CM5-0, grid: gr1}
-  # - {<<: *cmip6, dataset: IPSL-CM6A-LR, grid: gr}
-  # - {<<: *cmip6, dataset: MIROC6, reference_for_metric: true}
-  # - {<<: *cmip6, dataset: MIROC-ES2L, ensemble: r1i1p1f2}
-  # - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM}
-  # - {<<: *cmip6, dataset: MPI-ESM1-2-LR}
-  # - {<<: *cmip6, dataset: MPI-ESM1-2-HR}
-  # - {<<: *cmip6, dataset: MRI-ESM2-0}
-  # - {<<: *cmip6, dataset: NESM3}
-  # - {<<: *cmip6, dataset: NorCPM1, institute: NCC, ensemble: r10i1p1f1}
-  # - {<<: *cmip6, dataset: NorESM2-LM, institute: NCC}
-  # - {<<: *cmip6, dataset: NorESM2-MM, institute: NCC}
-  # - {<<: *cmip6, dataset: SAM0-UNICON}
-  # - {<<: *cmip6, dataset: TaiESM1}
-  # - {<<: *cmip6, dataset: UKESM1-0-LL, ensemble: r1i1p1f2}
-
+  #   - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
+  #   - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
+  #   - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
+  #   - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
+  #   - {<<: *cmip6, dataset: EC-Earth3-Veg, grid: gr}
 
 diagnostics:
   perfmetric:
@@ -121,27 +108,9 @@ diagnostics:
         mip: Amon
         exp: historical
         ref: ref1
-        # ensemble: r1i1p1
-        # alternative_dataset: GHCN
         additional_datasets: &ref1
           - {<<: *cmip6, dataset: BCC-ESM1, reference_for_metric: true}
           - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B4_r1v1i1p1l1f1}
-          # - {project: ICON, dataset: ICON, exp: ag_atm_amip_r2b4_cfm, supplementary_variables: [{short_name: areacella, skip: true}]} 
-
-          # - {
-          #     project: ICON,
-          #     timerange: '1990/1991', 
-          #     dataset: ICON-Seamless,
-          #     exp: hist001,
-          #     horizontal_grid: /work/pd1295/ICON/grids/public/edzw/icon_grid_0030_R02B05_G.nc,
-          #     supplementary_variables: [
-          #       {short_name: areacella, skip: true},
-          #       {short_name: areacello, skip: true},
-          #       {short_name: sftlf, skip: true},
-          #       {short_name: sftof, skip: true},
-          #     ],
-          #     ugrid: false,
-          #   }
       pr_ref2: &var_default_ref2
         <<: *var_default
         short_name: pr
@@ -151,6 +120,9 @@ diagnostics:
       tas:
         ref: ref1
         <<: *var_default
+        # additional_datasets:
+        #     - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+        #     - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
 
       tas_ref2:
         short_name: tas
@@ -167,34 +139,16 @@ diagnostics:
         <<: *var_default
       # rlut:
       #   <<: *var_default
-      # psl:
-      #   ref: ref1
-      #   <<: *var_default
+      psl:
+        ref: ref1
+        <<: *var_default
 
 
-    # additional_datasets:
+    additional_datasets:
       # - {dataset: ERA5, project: native6, type: reanaly, 
       #   version: v1, tier: 3, reference_for_metric: true}
 
-    #   - {<<: *cmip6, dataset: MPI-ESM-MR, type: exp, project: CMIP5, exp: historical,
-    #  ensemble: r1i1p1}
-    #   - {<<: *cmip6, dataset: CMCC-ESM2}
-    #   - {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project, grid: gr}
-    #   - {<<: *cmip6, dataset: E3SM-1-0, grid: gr}
-    #   - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
-    #   - {<<: *cmip6, dataset: GFDL-ESM4, grid: gr1}
-      
-    #   # grid wrong? missing data
-    #   # - {<<: *cmip6, dataset: MCM-UA-1-0}
-    #   # - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
-    #   # - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
-    #   # - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
-
-    #   - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
-    #   - {<<: *cmip6, dataset: EC-Earth3, grid: gr}
-    #   - {<<: *cmip6, dataset: EC-Earth3-AerChem, grid: gr}
-    #   - {<<: *cmip6, dataset: EC-Earth3-CC, grid: gr}
-    #   - {<<: *cmip6, dataset: EC-Earth3-Veg, grid: gr}
+      - {<<: *cmip6, dataset: MPI-ESM-MR, type: exp, project: CMIP5, exp: historical, ensemble: r1i1p1}
 
     scripts:
       python:
@@ -202,8 +156,6 @@ diagnostics:
         group_by: project
 
   # tas: &pcmip6, dataset: MCM-UA-1-0}
-  #     - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
-  #     - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly, version: 1, tier: 2}
 
   # clt:
   #   <<:torical
