@@ -322,13 +322,13 @@ diagnostics:
     variables:
       pr:
         preprocessor: clima_nomask_pr
-        reference_dataset: GPCP-SG
+        reference_dataset: GPCP-V2.2
         mip: Amon
         ensemble: r1i1p1
         start_year: 1980
         end_year: 2005
     additional_datasets:
-      - {dataset: GPCP-SG, project: OBS, project: obs4MIPs, level: L3, version: v2.2, tier: 1}
+      - {dataset: GPCP-V2.2, project: obs4MIPs, tier: 1}
       # - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
     scripts:
       clim:

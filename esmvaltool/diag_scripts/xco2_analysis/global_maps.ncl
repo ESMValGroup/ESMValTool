@@ -472,7 +472,7 @@ begin
 
   ; Provenance
   log_provenance(ncdf_outfile, \
-                 outfile, \
+                 outfile + "." + file_type, \
                  "Maps of mean Seasonal Cycle Amplitude of " + var0 + " " \
                  + DATASETS(imod) + " for " + start_year + "-" \
                  + end_year + ". Top: SCA with observational sampling (left)" \
@@ -587,7 +587,7 @@ begin
 
   ; Provenance
   log_provenance(ncdf_outfile, \
-                 outfile_scap, \
+                 outfile_scap + "." + file_type, \
                  "Maps of mean Seasonal Cycle Amplitude of " \
                  + var0 + " for " + start_year + "-" \
                  + end_year + ". Similar to Gier et al 2020, Fig 5.", \
