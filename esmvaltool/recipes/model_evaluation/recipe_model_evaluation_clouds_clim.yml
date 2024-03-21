@@ -3,8 +3,8 @@
 documentation:
   title: Model evaluation with focus on clouds.
   description: >
-    Plot climatologies several cloud-related variables of multi-year
-    simulations.
+    Plot climatologies and zonal mean profiles of several cloud-related
+    variables of multi-year simulations.
   authors:
     - bonnet_pauline
     - lauer_axel
@@ -152,7 +152,7 @@ diagnostics:
         mip: Amon
         preprocessor: full_climatology
         additional_datasets:
-          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat, version: CDR2-L3S-05deg_fv3.1, tier: 3, timerange: '2003/2017', reference_for_monitor_diags: true}
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat, version: CDR2-L3-COMBI-05deg-fv3.1, tier: 3, timerange: '2003/2017', reference_for_monitor_diags: true}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
