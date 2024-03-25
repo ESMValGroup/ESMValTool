@@ -24,8 +24,11 @@ years: &years
 
 ESACCI_CLOUD_datasets: &esacci
         - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2}
+ESACCI_SST_datasets: &esacci_sst
+        - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 2.1, tier: 2}
 ESACCI_WATERVAPOUR_datasets: &esacci_wv
-        - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat, version: 3.1, tier: 2}
+        - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat,
+           version: CDR2-L3-COMBI-05deg-fv3.1, tier: 3}
 CERES-EBAF_datasets: &ceres-ebaf
         - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1}
 ERA5_datasets: &era5
@@ -151,50 +154,53 @@ diagnostics:
   south_east_pacific_clouds:
     description: Create timeseries.
     variables:
-      clt: &var
-        preprocessor: mean_pp_filter
-        mip: day
+            #clt: &var
+            #  preprocessor: mean_pp
+            #  mip: day
+            #  frequency: day
+            #  <<: *years
+            #  additional_datasets: *esacci
+            #clwvi:
+            #  <<: *var
+            #  mip: CFday
+            #cod:
+            #  <<: *var
+            #  mip: AERday
+            #ctp:
+            #  <<: *var
+            #  mip: day
+            #reff:
+            #  <<: *var
+            #  mip: day
+            #rsdt:
+            #  <<: *var
+            #  mip: Amon
+            #  frequency: mon
+            #  additional_datasets: *ceres-ebaf
+            #prw:
+            #  <<: *var
+            #  mip: Eday
+            #  additional_datasets: *esacci_wv
+            #psl: &var2
+            #  <<: *var
+            #  additional_datasets: *era5
+            #hfss: 
+            #  <<: *var2
+            #sfcWind: 
+            #  <<: *var2
+            #ta700: 
+            #  <<: *var2
+            #  mip: CFday 
+            #ta1000: 
+            #  <<: *var2
+      tos:
         frequency: day
         <<: *years
-        additional_datasets: *esacci
-      clwvi:
-        <<: *var
-        mip: CFday
-      cod:
-        <<: *var
-        mip: AERday
-      ctp:
-        <<: *var
-        mip: day
-      reff:
-        <<: *var
-        mip: day
-      rsdt:
-        <<: *var
-        mip: Amon
-        frequency: mon
-        additional_datasets: *ceres-ebaf
-      prw:
-        <<: *var
-        mip: Eday
-        additional_datasets: *esacci_wv
-      psl: &var2
-        <<: *var
-        additional_datasets: *era5
-      hfss: 
-        <<: *var2
-      sfcWind: 
-        <<: *var2
-      ta700: 
-        <<: *var2
-        mip: CFday 
-      ta1000: 
-        <<: *var2
-      tos:
-        <<: *var2
-        preprocessor: anomaly_pp_filter
-      wap700:
-        <<: *var2
+        mip: Oday 
+        preprocessor: anomaly_pp
+        additional_datasets: *esacci_sst
+        #wap700:
+        #  <<: *var2
     scripts: 
       timeseries:
         script: causal_clouds_timeseries.py
