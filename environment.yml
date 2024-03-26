@@ -44,10 +44,10 @@ dependencies:
   - pip !=21.3
   - progressbar2
   - prov
-  - psyplot
-  - psy-maps
-  - psy-reg
-  - psy-simple
+  # - psyplot
+  # - psy-maps
+  # - psy-reg
+  # - psy-simple
   - pyproj >=2.1
   - python >=3.9
   - python-cdo
