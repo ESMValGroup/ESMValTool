@@ -1991,11 +1991,12 @@ class MultiDatasets(MonitorBase):
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg['figure_kwargs'])
             # fig.suptitle(cubes[0].long_name.split()[0] +
-            fig.suptitle(cubes[0].long_name.partition("of")[0] +
-                         "of " +
-                         self._get_label(datasets[0]) +
-                         " ({datasets[0]['start_year']} - "
-                         "{datasets[0]['end_year']})")
+            metric = cubes[0].long_name.partition("of")[0]
+            #fig.suptitle(metric + "of " +
+            #             self._get_label(datasets[0]) +
+            fig.suptitle(f"{metric}of {self._get_label(datasets[0])}"
+                         f" ({datasets[0]['start_year']} - "
+                         f"{datasets[0]['end_year']})")
 
             sns.set_style('darkgrid')
 
@@ -2008,11 +2009,12 @@ class MultiDatasets(MonitorBase):
                 plot_boxplot.set(xticklabels=[])
                 # plot_map = plot_func(cube, **plot_kwargs)
 
-                plt.scatter(0, cubes[i].data, marker='x', s=200, linewidths=3,
+                plt.scatter(0, cubes[i].data, marker='x', s=200, linewidths=2,
                             color="red")
 
-                plt.ylabel(cubes[i].units)
                 plt.xlabel(var)
+                if cubes[i].units != 1:
+                    plt.ylabel(cubes[i].units)
 
                 # Setup fontsize
                 # fontsize = self.plots[plot_type]['fontsize']
