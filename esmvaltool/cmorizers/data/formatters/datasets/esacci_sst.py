@@ -38,6 +38,7 @@ import os
 
 import iris
 from esmvalcore.cmor.fixes import get_time_bounds
+from esmvaltool.cmorizers.data import utilities as utils
 from esmvalcore.preprocessor import concatenate
 
 from ...utilities import (
@@ -61,6 +62,8 @@ def extract_variable(var_info, raw_info, attrs, year):
         raise ValueError(f"No data available for variable {rawvar}"
                          f"and year {year}") from constraint_error
 
+    #Fix dtype
+    utils.fix_dtype(cube)
     # Fix cube
     fix_var_metadata(cube, var_info)
     convert_timeunits(cube, year)
