@@ -28,8 +28,20 @@ group_by: str, optional
     grouping into subplots.
     By default 'project'.
 split_by: str, optional
-    Not implemented yet.
-    By default None.
+    The rectangles can be splitted into 2-4 triangles. This is used to show
+    metrics for different references. For this case there is no need to change
+    this parameter. Multiple variables can be set in the recipe with `split`
+    assigned as extra_facet to label the different references. Data without
+    a split assigned will be plotted as main rectangles, this can be changed
+    by setting default_split parameter.
+    By default 'split'.
+default_split: str, optional
+    Data labeled with this string, will be used as main rectangles. All other
+    splits will be plotted as overlays. This can be used to choose the base
+    reference, while all references are labeled for the legend.
+plot_legend: bool, optional
+    If True, a legend will be plotted showing which additional reference,
+    belongs to the triangle positions.
 plot_kwargs: dict, optional
     Dictionary that gets passed as kwargs to `matplotlib.pyplot.imshow()`.
     Colormaps will be converted to 11 discrete steps automatically. Default
@@ -53,10 +65,11 @@ figsize: list(float), optional
    By default [5, 3].
 """
 
+import logging
 import itertools
-import iris
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 import numpy as np
 from esmvaltool.diag_scripts.shared import (
     get_plot_filename,
@@ -65,7 +78,9 @@ from esmvaltool.diag_scripts.shared import (
     select_metadata,
 )
 from mpl_toolkits.axes_grid1 import ImageGrid
-import matplotlib.patches as patches
+import xarray as xr
+
+log = logging.getLogger(__name__)
 
 
 def unify_limits(cfg, grid):
@@ -103,47 +118,87 @@ def plot_matrix(data, row_labels, col_labels, ax, plot_kwargs):
 
 
 def remove_reference(metas):
-    """ "return metadata that are not reference for metric"""
-    return [
-        meta for meta in metas if not meta.get("reference_for_metric", False)
-    ]
+    """remove reference for metric from list of metadata
+    setting split=none allows to omit it in recipe, but handle it as special
+    case of splitted data.
+    list() creates a copy with same references to allow removing in place
+    """
+    for meta in list(metas):
+        if meta.get("reference_for_metric", False):
+            metas.remove(meta)
+
+
+def add_split_none(metas):
+    """list of metadata with split=None if no split is given"""
+    for meta in metas:
+        if "split" not in meta:
+            meta["split"] = None
+
+
+def open_file(metadata, **selection):
+    """try to find a single file for selection and return data.
+    If multiple files are found, raise an error.
+    If no file is found, return np.nan.
+    """
+    metas = select_metadata(metadata, **selection)
+    if len(metas) > 1:
+        raise ValueError(f"Multiple files found for {selection}")
+    if len(metas) < 1:
+        log.debug("No Metadata found for %s", selection)
+        return np.nan
+    log.warning("Metadata found for %s", selection)
+    ds = xr.open_dataset(metas[0]["filename"])
+    varname = list(ds.data_vars.keys())[0]
+    return ds[varname].values.item()
+    # iris.load_cube(metas[0]["filename"]).data
 
 
 def load_data(cfg, metas):
-    """load nc files into dictionary of numpy arrays
-    dict keys are the values for each split (i.e. reference).
+    """load all nc files from metadata into xarray dataset.
+    The dataset contains all relevant information for the plot.
+    Coord names are metadata keys, ordered as x, y, group, split.
+    The default reference is None, or if all references are named
+    the first from the list.
     """
-    splitted = group_metadata(metas, cfg["split_by"])
-    y_labels = list(group_metadata(metas, cfg["y_by"]).keys())
-    x_labels = list(group_metadata(metas, cfg["x_by"]).keys())
-    data = {key: np.zeros((len(y_labels), len(x_labels))) for key in splitted}
-    for x, x_label in enumerate(x_labels):
-        for y, y_label in enumerate(y_labels):
-            for split, split_metas in splitted.items():
-                selection = {cfg["x_by"]: x_label, cfg["y_by"]: y_label}
-                try:
-                    meta = select_metadata(split_metas, **selection)[0]
-                except IndexError:
-                    print(f"No data found for {selection}")
-                    data[split][y, x] = np.nan
-                    continue
-                cube = iris.load_cube(meta["filename"])
-                data[split][y, x] = cube.data
-    return data, x_labels, y_labels
+    coords = {  # order matters: x, y, group, split
+        cfg["x_by"]: list(group_metadata(metas, cfg["x_by"]).keys()),
+        cfg["y_by"]: list(group_metadata(metas, cfg["y_by"]).keys()),
+        cfg["group_by"]: list(group_metadata(metas, cfg["group_by"]).keys()),
+        cfg["split_by"]: list(group_metadata(metas, cfg["split_by"]).keys()),
+    }
+    shape = [len(coord) for coord in coords.values()]
+    var_data = xr.DataArray(np.full(shape, np.nan), dims=list(coords.keys()))
+    data = xr.Dataset(
+        {"var": var_data},
+        coords=coords)
+    # loop over each cell (coord combination) and load data if existing
+    for coord_tuple in itertools.product(*coords.values()):
+        selection = dict(zip(coords.keys(), coord_tuple))
+        data['var'].loc[selection] = open_file(metas, **selection)
+        # data[coord_tuple] = (list(coords.keys(), value))
+    if None in data.coords[cfg["split_by"]].values:
+        cfg.update({"default_split": None})
+    else:
+        cfg.update({"default_split": data.coords[cfg["split_by"]].values[0]})
+    log.debug("using %s as default split", cfg["default_split"])
+    log.debug("Loaded Data:")
+    log.debug(data)
+    return data
 
 
-def overlay_reference(cfg, ax, data, triangle):
+# def references_legend(cfg, fig, metas):
+#     """create legend for references"""
+#     splits =
+
+
+def overlay_reference(ax, data, triangle):
     """create triangular overlays for given data and axes."""
     # use same colors as in main plot
     cmap = ax.get_images()[0].get_cmap()
     norm = ax.get_images()[0].norm
-    # print("plotting overlay for", split)
-    # print(data)
-    # print(ax.get_images()[0])
     for i, j in itertools.product(*map(range, data.shape)):
         if np.isnan(data[i, j]):
             continue
-        print(data[i, j])
         color = cmap(norm(data[i, j]))
         edges = [(e[0] + j, e[1] + i) for e in triangle]
         patch = patches.Polygon(
@@ -157,55 +212,70 @@ def overlay_reference(cfg, ax, data, triangle):
         ax.add_patch(patch)
 
 
-def plot_additional_splits(cfg, grid, datas):
-    """add references as triangular overlays"""
-    # if len(datas) < 2:
-    #     return
-    # if len(datas) > 4:
-    #     print("Too many splits for overlay, only 4 will be plotted.")
-    half = [
-        [(0.5, -0.5), (0.5, 0.5), (-0.5, 0.5)],  # lower right
-    ]
-    quarters = [
-        [(-0.5, -0.5), (0, 0), (-0.5, 0.5)],  # left
-        [(0.5, -0.5), (0, 0), (0.5, 0.5)],  # right
-        [(-0.5, 0.5), (0, 0), (0.5, 0.5)],  # bottom
-        [(-0.5, -0.5), (0, 0), (0.5, -0.5)],  # top (?)
-    ]
-    if len(datas) == 2:
-        quarters = half
-
-    for ggg, data in enumerate(datas):
-        data.pop(cfg["reference"])  # TODO: fix me
-        for sss, (split, array) in enumerate(data.items()):
-            # if split == cfg["reference"]:
-            #     continue
-            print("plotting overlay for", split, array.shape)
-            overlay_reference(cfg, grid[ggg], array, quarters[sss])
-
-
-def plot_group(cfg, ax, metas, title=None):
+def plot_group(cfg, ax, data, title=None):
     """create matrix for one subplot in ax using plt.imshow()
-    returns image object and dict of numpy array for each reference (split).
+    by default split None is used, if all splits are named the first is used.
+    other splits will be added by overlaying triangles.
     """
-    data, x_labels, y_labels = load_data(cfg, metas)
-    # plot matrix with simple rectangles
-    im = plot_matrix(
-        data[cfg["reference"]], y_labels, x_labels, ax, cfg["plot_kwargs"]
+    split = data.sel({cfg["split_by"]: cfg["default_split"]})
+    print(f"Plotting group {title}")
+    print(split)
+    plot_matrix(
+        split.values.T,  # 2d numpy array
+        split.coords[cfg["y_by"]].values,  # y_labels
+        split.coords[cfg["x_by"]].values,  # x_labels
+        ax,
+        cfg["plot_kwargs"],  # TODO: pass cfg instead?
     )
     if title is not None:
         ax.set_title(title)
-    # overlay splits (additional references)
-    # cmap might change after plot_group. set vmin and vmax before plotting?
-    # if len(data) > 1:
-    #     plot_additional_splits(cfg, ax, data)
     ax.set(**cfg["axes_properties"])
-    return im, data
 
 
-def plot(cfg, grouped_metas):
-    """creates figure with subplots for each group"""
+def plot_overlays(cfg, grid, data):
+    """call overlay_reference for each split in data and each group in grid.
+    """
+    split_count = data.shape[3]
+    group_count = data.shape[2]
+    for i in range(group_count):
+        if split_count < 2:
+            log.warning("No additional splits for overlay.")
+            break
+        quarters = [
+            [(-0.5, -0.5), (0, 0), (-0.5, 0.5)],  # left
+            [(0.5, -0.5), (0, 0), (0.5, 0.5)],  # right
+            [(-0.5, 0.5), (0, 0), (0.5, 0.5)],  # bottom
+            [(-0.5, -0.5), (0, 0), (0.5, -0.5)],  # top
+        ]
+        half = [(0.5, -0.5), (0.5, 0.5), (-0.5, 0.5)]
+        if split_count > 4:
+            log.warning("Too many splits for overlay, only 3 will be plotted.")
+        group_data = data.isel({cfg["group_by"]: i})
+        group_data = group_data.dropna(cfg["x_by"], how="all")
+        print(group_data)
+
+        for sss in range(split_count):
+            split = group_data.isel({cfg["split_by"]: sss})
+            split_label = split.coords[cfg["split_by"]].values.item()
+            # print(split)
+            # if cfg["split_by"] in split.dims:
+            #     split = split.squeeze(cfg["split_by"])
+            if split_label == cfg["default_split"]:
+                log.debug("Skipping default split for overlay.")
+                continue
+            if split_count == 2:
+                edges = half
+            else:
+                edges = quarters[sss]
+            overlay_reference(grid[i], split.values.T, edges)
+
+
+def plot(cfg, data):
+    """creates figure with subplots for each group, sets same color range and
+    overlays additional references based on the content of data (xr.DataArray)
+    """
     fig = plt.figure(1, cfg.get("figsize", (5.5, 3.5)))
+    group_count = len(data.coords[cfg["group_by"]])
     grid = ImageGrid(
         fig,
         111,  # similar to subplot(111)
@@ -213,25 +283,30 @@ def plot(cfg, grouped_metas):
         cbar_location="right",
         cbar_pad=0.1,
         cbar_size=0.2,
-        nrows_ncols=(1, len(grouped_metas)),
+        nrows_ncols=(1, group_count),
         axes_pad=0.1,
     )
     # remap colorbar to 10 discrete steps
     cmap = mpl.cm.get_cmap(cfg.get("cmap", "RdYlBu_r"), 10)
     cfg["plot_kwargs"]["cmap"] = cmap
-    datas = []
-    for i, (group, metas) in enumerate(grouped_metas.items()):
-        title = group if len(grouped_metas) > 1 else None
-        im, data = plot_group(cfg, grid[i], metas, title=title)
-        datas.append(data)  # collect data for overlay
+    for i in range(group_count):
+        group = data.isel({cfg["group_by"]: i})
+        group = group.dropna(cfg["x_by"], how="all")
+        title = None
+        if group_count > 1:
+            title = group.coords[cfg["group_by"]].values.item()
+        plot_group(cfg, grid[i], group, title=title)
     # use same colorrange and colorbar for all subplots:
     unify_limits(cfg, grid)
-    grid.cbar_axes[0].colorbar(im, **cfg["cbar_kw"])
-    # cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom")
-
-    # plot overlay with same colors
-    plot_additional_splits(cfg, grid, datas)
-    basename = "performance_metrics.png"
+    # set cb of first image as single cb for the figure
+    grid.cbar_axes[0].colorbar(grid[0].get_images()[0], **cfg["cbar_kwargs"])
+    if data.shape[3] > 1:
+        plot_overlays(cfg, grid, data)
+    # replace_ticklabels with dict given in config
+    # if "xticklabels" in cfg["axes_properties"]:
+    #     for ax in grid:
+    #         ax.set_xticklabels(cfg["axes_properties"]["xticklabels"])
+    basename = "performance_metrics"
     fname = get_plot_filename(basename, cfg)
     # plt.tight_layout()
     plt.savefig(fname, bbox_inches="tight")
@@ -241,6 +316,7 @@ def plot(cfg, grouped_metas):
 
 def apply_grouping(cfg, metas):
     """returns sorted metadata, and group labels with positions"""
+    # NOTE obsolet for xarray
     group_by = cfg.get("group_by", "project")
     grouped = group_metadata(metas, group_by)
     counts = []
@@ -260,8 +336,8 @@ def set_defaults(cfg):
     cfg.setdefault("x_by", "alias")
     cfg.setdefault("y_by", "variable_group")
     cfg.setdefault("group_by", "project")
-    cfg.setdefault("split_by", None)
-    cfg.setdefault("cbar_kw", {})
+    cfg.setdefault("split_by", "split")  # extra facet
+    cfg.setdefault("cbar_kwargs", {})
     cfg.setdefault("axes_properties", {})
     cfg.setdefault("plot_kwargs", {})
     cfg["plot_kwargs"].setdefault("cmap", "RdYlBu_r")
@@ -272,18 +348,15 @@ def set_defaults(cfg):
 def main(cfg):
     """run the diagnostic"""
     set_defaults(cfg)
-    metas = cfg["input_data"].values()
-    metas = remove_reference(metas)
-    grouped_metas = group_metadata(metas, cfg["group_by"])
     cfg["figsize"] = (7.5, 5.5)
     cfg["y_by"] = "short_name"
-    cfg[
-        "split_by"
-    ] = "ref"  # TODO: hardcode split as extra facet? and use None as default?
-    cfg[
-        "reference"
-    ] = "ref1"  # TODO: this becomes obsolet if we use extra facet
-    plot(cfg, grouped_metas)
+    metas = list(cfg["input_data"].values())
+    remove_reference(metas)
+    add_split_none(metas)
+    dataset = load_data(cfg, metas)
+    plot(cfg, dataset["var"])
+    # grouped_metas = group_metadata(metas, cfg["group_by"])
+    # plot(cfg, grouped_metas)
 
 
 if __name__ == "__main__":
