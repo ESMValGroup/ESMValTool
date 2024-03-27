@@ -42,7 +42,7 @@ diagnostics:
         force_derivation: false
         mip: Amon
         additional_datasets:
-          - {dataset: CERES-EBAF,  project: obs4MIPs,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
+          - {dataset: CERES-EBAF,  project: obs4MIPs,  level: L3B,  start_year: 2001,  end_year: 2012, tier: 1}
       sftlf:
         mip: fx
       rlns: # Surf LW net all sky
@@ -50,7 +50,7 @@ diagnostics:
         force_derivation: false
         mip: Amon
         additional_datasets:
-          - {dataset: CERES-EBAF,  project: obs4MIPs,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
+          - {dataset: CERES-EBAF,  project: obs4MIPs,  level: L3B,  start_year: 2001,  end_year: 2012, tier: 1}
       sftlf:
         mip: fx
     scripts:
