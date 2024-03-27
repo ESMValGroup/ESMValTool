@@ -78,6 +78,7 @@ REQUIREMENTS = {
     # Execute `pip install .[test]` once and the use `pytest` to run tests
     'test': [
         'flake8',
+        'imagehash',
         'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
         'pytest-cov>=2.10.1',
         'pytest-env',
