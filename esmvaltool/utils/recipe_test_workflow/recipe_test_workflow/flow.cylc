@@ -1,0 +1,91 @@
+#!jinja2
+[scheduler]
+    UTC mode = True
+
+[task parameters]
+    fast = radiation_budget, albedolandcover
+    medium = ensclus, heatwaves_coldwaves, autoassess_landsurface_soilmoisture
+
+
+[scheduling]
+    initial cycle point = {{ START_DATE }}T{{ RUN_TIME }}
+    [[graph]]
+        R1 = "install_env_file => get_esmval"
+        P1D = """@wall_clock => get_esmval => configure
+                configure => process<medium> => compare<medium>
+                configure => process<fast> => compare<fast>"""
+
+[runtime]
+    [[root]]
+        script = rose task-run
+        env-script = "eval $(rose task-env)"
+        [[[environment]]]
+            ENV_NAME = {{ ENV_NAME }}
+            USER_CONFIG_DIR = ${CYLC_WORKFLOW_RUN_DIR}/etc
+            USER_CONFIG_PATH = ${USER_CONFIG_DIR}/config-user.yml
+            OUTPUT_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/${CYLC_TASK_CYCLE_POINT}
+            ESMVALCORE_DIR = ""
+            ESMVALTOOL_DIR = ""
+            PYTHONPATH_PREPEND = ""
+
+    [[install_env_file]]
+        platform = localhost
+        [[[environment]]]
+            SITE = {{ SITE }}
+
+    [[get_esmval]]
+        [[[environment]]]
+            ROSE_APP_OPT_CONF_KEYS = {{ SITE }}
+
+    [[configure]]
+        pre-script = "mkdir -p ${USER_CONFIG_DIR}"
+        [[[environment]]]
+            ROSE_TASK_APP = configure
+            DRS_CMIP3 = {{ DRS_CMIP3 }}
+            DRS_CMIP5 = {{ DRS_CMIP5 }}
+            DRS_CMIP6 = {{ DRS_CMIP6 }}
+            DRS_CORDEX = {{ DRS_CORDEX }}
+            DRS_OBS = {{ DRS_OBS }}
+            DRS_OBS6 = {{ DRS_OBS6 }}
+            DRS_ANA4MIPS = {{ DRS_ANA4MIPS }}
+            DRS_NATIVE6 = {{ DRS_NATIVE6 }}
+            DRS_OBS4MIPS = {{ DRS_OBS4MIPS }}
+            MAX_PARALLEL_TASKS = {{ MAX_PARALLEL_TASKS }}
+            ROOTPATH_CMIP3 = {{ ROOTPATH_CMIP3 }}
+            ROOTPATH_CMIP5 = {{ ROOTPATH_CMIP5 }}
+            ROOTPATH_CMIP6 = {{ ROOTPATH_CMIP6 }}
+            ROOTPATH_CORDEX = {{ ROOTPATH_CORDEX }}
+            ROOTPATH_OBS = {{ ROOTPATH_OBS }}
+            ROOTPATH_OBS6 = {{ ROOTPATH_OBS6 }}
+            ROOTPATH_ANA4MIPS = {{ ROOTPATH_ANA4MIPS }}
+            ROOTPATH_NATIVE6 = {{ ROOTPATH_NATIVE6 }}
+            ROOTPATH_OBS4MIPS = {{ ROOTPATH_OBS4MIPS }}
+            ROOTPATH_RAWOBS = {{ ROOTPATH_RAWOBS }}
+
+    [[process<fast>]]
+        inherit = None, COMPUTE
+        [[[environment]]]
+            ROSE_TASK_APP = process
+            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_fast}.yml"
+
+    [[process<medium>]]
+        inherit = None, COMPUTE
+        [[[environment]]]
+            ROSE_TASK_APP = process
+            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_medium}.yml"
+
+    [[compare<fast>]]
+        inherit = None, COMPUTE
+        [[[environment]]]
+            ROSE_TASK_APP = compare
+            KGO_METRIC = "${CYLC_TASK_PARAM_fast}"
+            KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
+
+    [[compare<medium>]]
+        inherit = None, COMPUTE
+        [[[environment]]]
+            ROSE_TASK_APP = compare
+            KGO_METRIC = "${CYLC_TASK_PARAM_medium}"
+            KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
+
+{% include 'site/' ~ SITE ~ '.cylc' %}
