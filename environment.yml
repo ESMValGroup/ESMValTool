@@ -22,7 +22,7 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
-  - esmvalcore 2.10.*
+  # - esmvalcore 2.10.*
   - fiona
   - fire
   - gdal
@@ -44,12 +44,12 @@ dependencies:
   - pip !=21.3
   - progressbar2
   - prov
-  - psyplot
-  - psy-maps
-  - psy-reg
-  - psy-simple
+  # - psyplot
+  # - psy-maps
+  # - psy-reg
+  # - psy-simple
   - pyproj >=2.1
-  - python >=3.9
+  - python >=3.12
   - python-cdo
   - python-dateutil
   - pyyaml
@@ -86,14 +86,14 @@ dependencies:
   - docformatter
   - isort
   - pre-commit
-  - prospector
+  # - prospector
   - pyroma
   # - vprof not on conda-forge
   - yamllint
   - yapf
 
   # NCL and dependencies
-  - ncl
+  # - ncl
   - cdo
   - imagemagick
   - nco
@@ -102,7 +102,7 @@ dependencies:
   - cdo
   - r-base >=3.5
   - r-abind
-  - r-akima <=0.6-2.3  # see https://github.com/ESMValGroup/ESMValTool/issues/2695
+  - r-akima  # <=0.6-2.3  # see https://github.com/ESMValGroup/ESMValTool/issues/2695
   - r-climdex.pcic
   - r-climprojdiags
   - r-docopt
