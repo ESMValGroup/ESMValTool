@@ -1,0 +1,260 @@
+# ESMValTool
+---
+documentation:
+  title: Basic Model Evaluation.
+  description: >
+    Show plots of several variables that can be used for basic model
+    evaluations ("sanity checks").
+  authors:
+    - hassler_birgit
+    - lauer_axel
+    - bonnet_pauline
+    - schlund_manuel
+  maintainer:
+    - hassler_birgit
+
+
+# Note: The following models are just examples
+datasets:
+  - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+
+# Note: for some observational datasets, we use preset time ranges due to
+# their limited temporal availability
+timerange_for_models: &time_period
+  timerange: '2003/2007'  # can be specified, this is just an example
+
+
+preprocessors:
+
+  timeseries_regular: &pp_timeseries_regular
+    area_statistics:
+      operator: mean
+
+  timeseries_regular_ann:
+    <<: *pp_timeseries_regular
+    annual_statistics:
+      operator: mean
+
+  timeseries_regular_pr:
+    <<: *pp_timeseries_regular
+    convert_units:
+      units: mm day-1
+
+  full_climatology: &pp_full_climatology
+    climate_statistics:
+      period: full
+    regrid:
+      target_grid: 2x2
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+
+  full_climatology_pr:
+    <<: *pp_full_climatology
+    convert_units:
+      units: mm day-1
+
+  zonal_mean:
+    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
+    climate_statistics:
+      period: full
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev19}
+      scheme: linear
+      coordinate: air_pressure
+    regrid:
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+      target_grid: 2x2
+    zonal_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  # Climatologies - maps (full climatology)
+
+  plot_maps_with_references_tas:
+    description: Plot climatology maps including reference datasets for tas.
+    variables:
+      tas:
+        <<: *time_period
+        mip: Amon
+        preprocessor: full_climatology
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      plot: &plot_multi_dataset_default
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        script: monitor/multi_datasets.py
+        plots:
+          map:
+            common_cbar: true
+
+  plot_maps_with_references_pr:
+    description: Plot climatology maps including reference datasets for pr.
+    variables:
+      pr:
+        <<: *time_period
+        mip: Amon
+        preprocessor: full_climatology_pr
+        additional_datasets:
+          - {project: OBS, dataset: GPCP-SG, type: atmos, version: 2.3, tier: 2, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          map:
+            common_cbar: true
+            plot_kwargs:
+              default:
+                cmap: Blues
+
+  # Climatologies (zonal means)
+
+  plot_zonal_mean_profiles_with_references_ta:
+    description: Plot 2D zonal mean profiles including reference datasets.
+    variables:
+      ta:
+        <<: *time_period
+        mip: Amon
+        preprocessor: zonal_mean
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          zonal_mean_profile:
+            common_cbar: true
+
+  plot_zonal_mean_profiles_with_references_ua:
+    description: Plot 2D zonal mean profiles including reference datasets.
+    variables:
+      ua:
+        <<: *time_period
+        mip: Amon
+        preprocessor: zonal_mean
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          zonal_mean_profile:
+            common_cbar: true
+            plot_kwargs:
+              default:
+                cmap: Blues
+
+  plot_zonal_mean_profiles_with_references_hus:
+    description: Plot 2D zonal mean profiles including reference datasets.
+    variables:
+      hus:
+        <<: *time_period
+        mip: Amon
+        preprocessor: zonal_mean
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          zonal_mean_profile:
+            common_cbar: true
+            plot_kwargs:
+              default:
+                cmap: Blues
+
+  # Time series of global averages (monthly)
+
+  plot_multiple_timeseries:
+    description: Plot time series including reference datasets.
+    variables:
+      tas:
+        <<: *time_period
+        mip: Amon
+        preprocessor: timeseries_regular
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+      clt:
+        <<: *time_period
+        mip: Amon
+        preprocessor: timeseries_regular
+        additional_datasets:
+          - {project: OBS, dataset: ESACCI-CLOUD, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, reference_for_monitor_diags: true}
+      rsut:
+        <<: *time_period
+        mip: Amon
+        preprocessor: timeseries_regular
+        additional_datasets:
+          - {project: OBS, dataset: CERES-EBAF, type: sat, version: Ed4.1, tier: 2, reference_for_monitor_diags: true}
+      rlut:
+        <<: *time_period
+        mip: Amon
+        preprocessor: timeseries_regular
+        additional_datasets:
+          - {project: OBS, dataset: CERES-EBAF, type: sat, version: Ed4.1, tier: 2, reference_for_monitor_diags: true}
+      rtnt:
+        derive: true
+        force_derivation: true
+        mip: Amon
+        preprocessor: timeseries_regular_ann
+        timerange: '1995/2014'
+      prw:
+        <<: *time_period
+        mip: Amon
+        preprocessor: timeseries_regular
+        # timerange MUST NOT start before 2003 since the observations are not available before 2003
+        additional_datasets:
+          - {project: OBS6, dataset: ESACCI-WATERVAPOUR, type: sat, version: CDR2-L3-COMBI-05deg-fv3.1, tier: 3, timerange: '2003/2007', reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        group_variables_by: variable_group
+        script: monitor/multi_datasets.py
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            plot_kwargs:
+              MPI-ESM1-2-HR:
+                color: C0
+              MPI-ESM1-2-LR:
+                color: C1
+              ERA5:
+                color: black
+              ESACCI-CLOUD:
+                color: black
+              CERES-EBAF:
+                color: black
+              ESACCI-WATERVAPOUR:
+                color: black
+
+  plot_multiple_timeseries_pr:
+    description: Plot time series including reference datasets.
+    variables:
+      pr:
+        <<: *time_period
+        mip: Amon
+        preprocessor: timeseries_regular_pr
+        additional_datasets:
+          - {project: OBS, dataset: GPCP-SG, type: atmos, version: 2.3, tier: 2, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            plot_kwargs:
+              MPI-ESM1-2-HR:
+                color: C0
+              MPI-ESM1-2-LR:
+                color: C1
+              GPCP-SG:
+                color: black

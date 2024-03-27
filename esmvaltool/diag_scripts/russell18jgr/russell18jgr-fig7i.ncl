@@ -61,7 +61,7 @@ begin
 
   var0 = variable_info[0]@short_name
 
-  plotpath = config_user_info@plot_dir + "/Russell_figure7i_" + var0 + "_" \
+  plotpath = config_user_info@plot_dir + "Russell_figure7i_" + var0 + "_" \
     + sprinti("%0.4i", min(toint(start_years_data))) + "-" \
     + sprinti("%0.4i", max(toint(end_years_data)))
 
@@ -201,16 +201,6 @@ begin
       overlay(plot(0), plot(iii))
     end if
 
-    log_provenance(ncdf_outfile, \
-                   plotpath, \
-                   "Russell et al 2018 figure 7i", \
-                   "mean", \
-                   "sh", \
-                   "zonal", \
-                   "russell_joellen", \
-                   "russell18jgr", \
-                   infile_path)
-
   end do
   draw(plot(0))
 
@@ -229,5 +219,17 @@ begin
   "lgMonoLineLabelFontColor" : True                   ; one label color
   end create
   draw(legend)
+
+  frame(wks)
+
+  log_provenance(ncdf_outfile, \
+                 plotpath + "." + output_type(), \
+                 "Russell et al 2018 figure 7i", \
+                 "mean", \
+                 "sh", \
+                 "zonal", \
+                 "russell_joellen", \
+                 "russell18jgr", \
+                 infile_path)
 
 end
