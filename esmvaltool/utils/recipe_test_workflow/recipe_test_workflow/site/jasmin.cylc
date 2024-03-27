@@ -15,7 +15,7 @@
 
     [[get_esmval]]
         inherit = None, COMPUTE
-        execution time limit = PT30M
+        execution time limit = PT60M
         [[[directives]]]
             --mem = 2G
 
@@ -26,11 +26,11 @@
             --mem = 2G
 
     [[process<fast>]]
-        execution time limit = PT5M
+        execution time limit = PT10M
         [[[directives]]]
             --mem = 2G
 
     [[process<medium>]]
-        execution time limit = PT10M
+        execution time limit = PT30M
         [[[directives]]]
             --mem = 2G

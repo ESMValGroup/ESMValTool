@@ -3,16 +3,15 @@
     UTC mode = True
 
 [task parameters]
-    fast = radiation_budget
-    medium = ensclus, heatwaves_coldwaves
+    fast = radiation_budget, albedolandcover
+    medium = ensclus, heatwaves_coldwaves, autoassess_landsurface_soilmoisture
+
 
 [scheduling]
-   cycling mode = integer
-   initial cycle point = 1
-   final cycle point = 10
+    initial cycle point = {{ START_DATE }}T{{ RUN_TIME }}
     [[graph]]
-
-        R1 = """install_env_file => get_esmval => configure
+        R1 = "install_env_file => get_esmval"
+        P1D = """@wall_clock => get_esmval => configure
                 configure => process<medium> => compare<medium>
                 configure => process<fast> => compare<fast>"""
 
