@@ -340,6 +340,7 @@ def set_defaults(cfg):
     cfg.setdefault("cbar_kwargs", {})
     cfg.setdefault("axes_properties", {})
     cfg.setdefault("plot_kwargs", {})
+    cfg.setdefault("figsize", (7.5, 5.5))
     cfg["plot_kwargs"].setdefault("cmap", "RdYlBu_r")
     cfg["plot_kwargs"].setdefault("vmin", 0)
     cfg["plot_kwargs"].setdefault("vmax", 1)
@@ -348,15 +349,11 @@ def set_defaults(cfg):
 def main(cfg):
     """run the diagnostic"""
     set_defaults(cfg)
-    cfg["figsize"] = (7.5, 5.5)
-    cfg["y_by"] = "short_name"
     metas = list(cfg["input_data"].values())
     remove_reference(metas)
     add_split_none(metas)
     dataset = load_data(cfg, metas)
     plot(cfg, dataset["var"])
-    # grouped_metas = group_metadata(metas, cfg["group_by"])
-    # plot(cfg, grouped_metas)
 
 
 if __name__ == "__main__":
