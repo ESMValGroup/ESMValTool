@@ -73,12 +73,9 @@ Variables
 ---------
 Tested for:
 
-*  prw 
-  (atmos, monthly mean, longitude latitude time)
-*  tas 
-  (atmos, monthly mean, longitude latitude time)
-*  pr 
-  (atmos, monthly mean, longitude latitude time)
+*  prw (atmos, monthly mean, longitude latitude time)
+*  tas (atmos, monthly mean, longitude latitude time)
+*  pr (atmos, monthly mean, longitude latitude time)
 
 Other variables should be possible.
 
