@@ -99,7 +99,7 @@ IPCC
    :maxdepth: 1
 
    recipe_ipccwg1ar6ch3
-   recipe_ipccwg1ar6ch3_santer20jclim
+   recipe_ipccwg1ar6ch3_santer21jclim
    recipe_ipccwg1ar5ch9
    recipe_collins13ipcc
    recipe_examples
