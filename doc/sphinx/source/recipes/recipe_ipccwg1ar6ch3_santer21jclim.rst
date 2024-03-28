@@ -51,30 +51,34 @@ User settings in recipe
    *Optional settings for script*
 
    * ``sample_obs``: Path to the mask to filter the model data for a given sampling of observational data. 
-   All data sets must be interpolated to the same grid as the mask. The mask must cover at least the time period used for the data. 
-   If the keyword is not provided no mask is applied and interpolation to a common grid is not necessary.
+     All data sets must be interpolated to the same grid as the mask. The mask must cover at least the time period used for the data. 
+     If the keyword is not provided no mask is applied and interpolation to a common grid is not necessary.
    * ``add_model_dist``: List datasets with several ensemble members to plot their PDF. 
-   If the keyword is provided an extra plot is created containing their PDFs, else only the PDFs for CMIP5 and CMIP6 are plotted.
+     If the keyword is provided an extra plot is created containing their PDFs, else only the PDFs for CMIP5 and CMIP6 are plotted.
    * ``histmin`` and ``histmax``: The minimum and maximum value of the histograms, also acting as x-axis limits.
-   If no values are provided, they are automatically set to the minimum and maximum values of the model data.
+     If no values are provided, they are automatically set to the minimum and maximum values of the model data.
    * ``ymax``: The upper y-axis boundary (lower is set to zero). If no value is provided, this is also set automatically.
 
    *Required settings for variables*
 
    * ``preprocessor``: tropical_ocean, with the optional setting "sample_obs" 
-   the regridding to a grid fitting the mask is required, the other 
-   preprocessor settings are chosen to match the methods of Santer et al. 2021
-    but the recipe would accept other settings.
+     the regridding to a grid fitting the mask is required, the other 
+     preprocessor settings are chosen to match the methods of Santer et al. 2021
+      but the recipe would accept other settings.
    * ``reference_dataset``: name of the reference data set for regridding,
-    this must be RSS if a mask based on RSS should be applied 
-    (given at "sample_obs").
+      this must be RSS if a mask based on RSS should be applied 
+      (given at "sample_obs").
 
 Variables
 ---------
 Tested for:
-*  prw (atmos, monthly mean, longitude latitude time)
-*  tas (atmos, monthly mean, longitude latitude time)
-*  pr (atmos, monthly mean, longitude latitude time)
+
+  *  prw (atmos, monthly mean, longitude latitude time)
+
+  *  tas (atmos, monthly mean, longitude latitude time)
+
+  *  pr (atmos, monthly mean, longitude latitude time)
+
 Other variables should be possible.
 
 Observations and reformat scripts
