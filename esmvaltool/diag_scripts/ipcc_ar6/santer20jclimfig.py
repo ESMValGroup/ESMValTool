@@ -1,17 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Plot based on Santer et al. (2020).
+"""Diagnostic script to plot figure 3.12 of IPCC AR 6 chapter 3
+(based on Santer et al. (2007) and Santer et al. (2021)).
 
 ###############################################################################
-santer20jclim/santer20jclimfig.py
+ipcc_ar6/santer21jclimfig.py
 Author: Katja Weigel (IUP, Uni Bremen, Germany)
 EVal4CMIP ans 4C project
 ###############################################################################
 
 Description
 -----------
-    Water Vapor Path trends following Santer et al. (2021).
+    Water Vapor Path trends compared to observational and reanalysis data
+    based on methods used in Santer et al. (2007) and Santer et al. (2021).
+    https://www.pnas.org/doi/10.1073/pnas.0702872104
     https://doi.org/10.1175/JCLI-D-20-0768.1
 
 Configuration options
@@ -200,10 +203,11 @@ def _get_valid_datasets(input_data):
 
 def _plot_extratrends(cfg, extratrends, trends, period, axx_lim):
     """Plot trends for ensembles."""
-    res_ar = {'xhist': np.linspace(axx_lim['histmin'],
-                                   axx_lim['histmax'], 41),
-              'artrend': {},
-              'kde1': {}}
+    res_ar = {'artrend': {}, 'kde1': {}}
+    # res_ar = {'xhist': np.linspace(axx_lim['histmin'],
+    #                                axx_lim['histmax'], 41),
+    #           'artrend': {},
+    #           'kde1': {}}
     res_ar['xval'] = axx_lim['xval']
     res_ar['xhist'] = axx_lim['xhist']
     fig, axx = plt.subplots(figsize=(8, 6))
@@ -219,18 +223,21 @@ def _plot_extratrends(cfg, extratrends, trends, period, axx_lim):
         elif alias in trends['cmip5'].keys():
             style = plot.get_dataset_style(xtrmdl, style_file='cmip5')
         else:
-            style = {'facecolor': (0, 0, 1, 0.2), 
+            style = {'facecolor': (0, 0, 1, 0.2),
                      'color': (0, 0, 1, 1.0)}
 
         res_ar['artrend'][xtrmdl] = np.fromiter(extratrends[xtrmdl].values(),
                                                 dtype=float)
         res_ar['kde1'][xtrmdl] = stats.gaussian_kde(res_ar['artrend'][xtrmdl],
                                                     bw_method='scott')
-        hbin, b, p = axx.hist(res_ar['artrend'][xtrmdl], bins=res_ar['xhist'],
-                              density=True,
-                              edgecolor=style['color'],
-                              facecolor=style['facecolor'])
-        axx.plot(res_ar['xval'], res_ar['kde1'][xtrmdl](res_ar['xval']),
+        hbin, bins1, patches = axx.hist(res_ar['artrend'][xtrmdl],
+                                        bins=res_ar['xhist'],
+                                        density=True,
+                                        edgecolor=style['color'],
+                                        facecolor=style['facecolor'])
+        del bins1, patches
+        axx.plot(res_ar['xval'],
+                 res_ar['kde1'][xtrmdl](res_ar['xval']),
                  color=style['color'],
                  linewidth=3,
                  label=xtrmdl)
@@ -304,9 +311,11 @@ def _plot_obs(trends, axx, axx_lim):
 
 def _get_ax_limits(cfg, trends):
     """ Automatically find plot bounds, if 'histmin' and 'histmax' not given.
-        The limits for the x-axis are then determined by
-        the width of the histograms (plus offset)."""
-    axx_lim = {'factor':0.3}
+
+        If no values are given, the limits for the x-axis are then determined
+        by the width of the histograms (plus offset).
+    """
+    axx_lim = {'factor': 0.3}
     # factor determines offset between limits of histogram and x-axis
     # depending on the histogram width
 
@@ -335,7 +344,7 @@ def _get_ax_limits(cfg, trends):
                                                dtype=float))]))
 
     if 'histmin' not in cfg.keys():
-        xmin = histmin - axx_lim['factor'] * abs(abs(histmax)-abs(histmin))
+        xmin = histmin - axx_lim['factor'] * abs(abs(histmax) - abs(histmin))
 
     if 'histmax' not in cfg.keys():
         xmax = histmax + axx_lim['factor'] * abs(abs(histmax) - abs(histmin))
@@ -353,10 +362,12 @@ def _get_ax_limits(cfg, trends):
 
 def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
     """Plot probability density function of trends.
+
        The probability density function is estimated by using Gaussian kernel
        density estimation. The models are weighted by their respective number
        of realisations. Trends are depicted in a histogram, the probability
-       density function as a curve."""
+       density function as a curve.
+    """
     res_ar = {'xval': axx_lim['xval']}
     res_ar['xhist'] = axx_lim['xhist']
     fig, axx = plt.subplots(figsize=(8, 6))
@@ -375,13 +386,15 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
         res_ar['kde1_c5'] = stats.gaussian_kde(res_ar['artrend_c5'],
                                                weights=res_ar['weights_c5'],
                                                bw_method='scott')
-        hbinx1, b, p = axx.hist(res_ar['artrend_c5'], bins=res_ar['xhist'],
-                                density=True,
-                                weights=res_ar['weights_c5'],
-                                edgecolor=(37 / 250.0, 81 /
-                                           255.0, 204 / 255.0, 1.0),
-                                facecolor=(37 / 250.0, 81 /
-                                           255.0, 204 / 255.0, 0.2))
+        hbinx1, bins1, patches = axx.hist(res_ar['artrend_c5'],
+                                          bins=res_ar['xhist'],
+                                          density=True,
+                                          weights=res_ar['weights_c5'],
+                                          edgecolor=(37 / 250.0, 81 /
+                                                     255.0, 204 / 255.0, 1.0),
+                                          facecolor=(37 / 250.0, 81 /
+                                                     255.0, 204 / 255.0, 0.2))
+        del bins1, patches
         axx.plot(res_ar['xval'], res_ar['kde1_c5'](res_ar['xval']),
                  color=(37 / 250.0, 81 / 255.0, 204 / 255.0, 1),
                  linewidth=3,
@@ -399,11 +412,15 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
         res_ar['kde1_c6'] = stats.gaussian_kde(res_ar['artrend_c6'],
                                                weights=res_ar['weights_c6'],
                                                bw_method='scott')
-        hbinx2, b, p = axx.hist(res_ar['artrend_c6'], bins=res_ar['xhist'],
-                                density=True,
-                                weights=res_ar['weights_c6'],
-                                edgecolor=(204 / 250.0, 35 / 255.0, 35 / 255.0, 1.0),
-                                facecolor=(204 / 250.0, 35 / 255.0, 35 / 255.0, 0.2))
+        hbinx2, bins1, patches = axx.hist(res_ar['artrend_c6'],
+                                          bins=res_ar['xhist'],
+                                          density=True,
+                                          weights=res_ar['weights_c6'],
+                                          edgecolor=(204 / 250.0, 35 /
+                                                     255.0, 35 / 255.0, 1.0),
+                                          facecolor=(204 / 250.0, 35 /
+                                                     255.0, 35 / 255.0, 0.2))
+        del bins1, patches
         axx.plot(res_ar['xval'], res_ar['kde1_c6'](res_ar['xval']),
                  color=(204 / 250.0, 35 / 255.0, 35 / 255.0, 1),
                  linewidth=3,
@@ -587,7 +604,9 @@ def get_provenance_record(ancestor_files, caption, statistics,
             'weigel_katja',
         ],
         'references': [
-            'santer20jclim',
+            'santer07jclim',
+            'santer21jclim',
+            'eyring21ipcc',
         ],
         'ancestors': ancestor_files,
     }
