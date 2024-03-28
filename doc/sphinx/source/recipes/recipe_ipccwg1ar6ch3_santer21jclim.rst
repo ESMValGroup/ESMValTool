@@ -63,21 +63,22 @@ User settings in recipe
 
    * ``preprocessor``: tropical_ocean, with the optional setting "sample_obs" 
      the regridding to a grid fitting the mask is required, the other 
-     preprocessor settings are chosen to match the methods of Santer et al. 2021
-      but the recipe would accept other settings.
-   * ``reference_dataset``: name of the reference data set for regridding,
-      this must be RSS if a mask based on RSS should be applied 
-      (given at "sample_obs").
+     preprocessor settings are chosen to match the methods of `Santer et al., 2021`_
+     but the recipe would accept other settings.
+   * ``reference_dataset``: name of the reference data set for regridding, 
+     this must be RSS if a mask based on RSS should be applied 
+     (given at "sample_obs").
 
 Variables
 ---------
 Tested for:
 
-  *  prw (atmos, monthly mean, longitude latitude time)
-
-  *  tas (atmos, monthly mean, longitude latitude time)
-
-  *  pr (atmos, monthly mean, longitude latitude time)
+*  prw 
+  (atmos, monthly mean, longitude latitude time)
+*  tas 
+  (atmos, monthly mean, longitude latitude time)
+*  pr 
+  (atmos, monthly mean, longitude latitude time)
 
 Other variables should be possible.
 
