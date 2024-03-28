@@ -39,9 +39,24 @@ default_split: str, optional
     Data labeled with this string, will be used as main rectangles. All other
     splits will be plotted as overlays. This can be used to choose the base
     reference, while all references are labeled for the legend.
-plot_legend: bool, optional
-    If True, a legend will be plotted showing which additional reference,
-    belongs to the triangle positions.
+legend: dict, optional
+    Customize, if, how and where the legend is plotted. The 'best' position 
+    and size of the legend depends on multiple parameters of the figure 
+    (i.e. lengths of labels, aspect ratio of the plots...). And might require
+    manual adjustment of `x`, `y` and `size` to fit the figure layout.
+    Keys (each optional) that will be handled are:
+    position: str or None, optional
+        Position of the legend. Can be 'right' or 'left'. Or set to None to
+        disable plotting the legend. By default 'right'.
+    x_offset: float, optional
+        Manually adjust horizontal position to save space or fix overlap.
+        Number given in Inches. By default 0.
+    y_offset: float, optional
+        Manually adjust vertical position to save space or fix overlap.
+        Number given in Inches. By default 0.
+    size: float, optional
+        Size of the legend in Inches. By default 0.3.
+    TODO: set defaults and add offsets to legend function.
 plot_kwargs: dict, optional
     Dictionary that gets passed as kwargs to `matplotlib.pyplot.imshow()`.
     Colormaps will be converted to 11 discrete steps automatically. Default
@@ -186,9 +201,61 @@ def load_data(cfg, metas):
     return data
 
 
-# def references_legend(cfg, fig, metas):
-#     """create legend for references"""
-#     splits =
+def split_legend(cfg, grid, data):
+    """create legend for references, based on split coordinate in the dataset. 
+    Mpl handles axes positions in relative figure coordinates. To anchor the
+    legend to the origin of the first graph (bottom left) with fixed size,
+    without messing up the layout for changing figure sizes a few extra steps
+    are required.
+    TODO: maybe `mpl_toolkits.axes_grid1.axes_divider.AxesDivider` simplifies
+    this a bit by using `append_axes`.
+    """
+    
+    fig = grid[0].get_figure()
+    fig.canvas.draw()  # set axes position in figure (dont call tight_layout())
+    size = cfg["legend"].get("size", 0.5)  # rect width in physical size (inch)
+    fig_w, fig_h = fig.get_size_inches()  # physical size of figure
+    ax_w, ax_h = (size / fig_w, size / fig_h)  # legend size in figure coords
+    gap_x, gap_y = (0.3 / fig_w, 0.3 / fig_h)  # margins to plot in fig coords
+    # anchor legend on origin of first plot or colorbar
+    anchor = grid[0].get_position().bounds  # relative figure coordinates
+    if cfg["legend"].get("position", "right") == "right":
+        cbar_x = grid.cbar_axes[0].get_position().bounds[0]
+        gap_x *= 0.8  # compensate colorbar padding
+        anchor = (cbar_x+gap_x, anchor[1]-gap_y-ax_h)
+    else:
+        anchor = (anchor[0]-gap_x-ax_w, anchor[1]-gap_y-ax_h)
+    # create legend as empty imshow like axes in figure coordinates
+    legend = fig.add_axes([anchor[0], anchor[1], ax_w, ax_h])
+    legend.imshow(np.zeros((1, 1)))  # same axes properties as main plot
+    legend.set_xticks([])
+    legend.set_yticks([])
+    axy = legend.twinx()  # add twins to allow axes labels on all sides
+    axy.set_yticks([])
+    axx = legend.twiny()
+    axx.set_xticks([])
+
+    labels = data.coords[cfg["split_by"]].values
+    label_at = [  # order matches get_triangle_nodes (halfs and quarters)
+        legend.set_ylabel,  # left
+        axy.set_ylabel,  # right
+        legend.set_xlabel,  # bottom
+        axx.set_xlabel,  # top
+    ]
+    for i, _ in enumerate(labels):
+        nodes = get_triangle_nodes(i, len(labels))
+        colors = ["#bbb", "#ccc", "#ddd", "#eee"]
+        patch = patches.Polygon(
+            nodes,
+            closed=True,
+            facecolor=colors[i],
+            edgecolor="black",
+            linewidth=0.5,
+            fill=True,
+        )
+        legend.add_patch(patch)
+        label_at[i](labels[i])
+    print(labels)
 
 
 def overlay_reference(ax, data, triangle):
@@ -225,11 +292,33 @@ def plot_group(cfg, ax, data, title=None):
         split.coords[cfg["y_by"]].values,  # y_labels
         split.coords[cfg["x_by"]].values,  # x_labels
         ax,
-        cfg["plot_kwargs"],  # TODO: pass cfg instead?
+        cfg["plot_kwargs"],
     )
     if title is not None:
         ax.set_title(title)
     ax.set(**cfg["axes_properties"])
+
+
+def get_triangle_nodes(position, total_count=2):
+    """returns list of three tuples with relative x, y coordinates for nodes 
+    of triangle (-0.5 to +0.5) at given quarters (total_count>2) or
+    halfs (total_count==2).
+    NOTE: Order matters. Ensure axis labels for the legend match when changing.
+    """
+    if total_count < 3:
+        halfs = [
+            [(0.5, -0.5), (-0.5, -0.5), (-0.5, 0.5)],  # top left
+            [(0.5, -0.5), (0.5, 0.5), (-0.5, 0.5)],  # bottom right
+        ]
+        return halfs[position]
+    else:
+        quarters = [
+            [(-0.5, -0.5), (0, 0), (-0.5, 0.5)],  # left
+            [(0.5, -0.5), (0, 0), (0.5, 0.5)],  # right
+            [(-0.5, 0.5), (0, 0), (0.5, 0.5)],  # bottom
+            [(-0.5, -0.5), (0, 0), (0.5, -0.5)],  # top
+        ]
+        return quarters[position]
 
 
 def plot_overlays(cfg, grid, data):
@@ -239,35 +328,20 @@ def plot_overlays(cfg, grid, data):
     group_count = data.shape[2]
     for i in range(group_count):
         if split_count < 2:
-            log.warning("No additional splits for overlay.")
+            log.debug("No additional splits for overlay.")
             break
-        quarters = [
-            [(-0.5, -0.5), (0, 0), (-0.5, 0.5)],  # left
-            [(0.5, -0.5), (0, 0), (0.5, 0.5)],  # right
-            [(-0.5, 0.5), (0, 0), (0.5, 0.5)],  # bottom
-            [(-0.5, -0.5), (0, 0), (0.5, -0.5)],  # top
-        ]
-        half = [(0.5, -0.5), (0.5, 0.5), (-0.5, 0.5)]
         if split_count > 4:
             log.warning("Too many splits for overlay, only 3 will be plotted.")
         group_data = data.isel({cfg["group_by"]: i})
         group_data = group_data.dropna(cfg["x_by"], how="all")
-        print(group_data)
-
         for sss in range(split_count):
             split = group_data.isel({cfg["split_by"]: sss})
             split_label = split.coords[cfg["split_by"]].values.item()
-            # print(split)
-            # if cfg["split_by"] in split.dims:
-            #     split = split.squeeze(cfg["split_by"])
             if split_label == cfg["default_split"]:
                 log.debug("Skipping default split for overlay.")
                 continue
-            if split_count == 2:
-                edges = half
-            else:
-                edges = quarters[sss]
-            overlay_reference(grid[i], split.values.T, edges)
+            nodes = get_triangle_nodes(sss, split_count)
+            overlay_reference(grid[i], split.values.T, nodes)
 
 
 def plot(cfg, data):
@@ -302,33 +376,13 @@ def plot(cfg, data):
     grid.cbar_axes[0].colorbar(grid[0].get_images()[0], **cfg["cbar_kwargs"])
     if data.shape[3] > 1:
         plot_overlays(cfg, grid, data)
-    # replace_ticklabels with dict given in config
-    # if "xticklabels" in cfg["axes_properties"]:
-    #     for ax in grid:
-    #         ax.set_xticklabels(cfg["axes_properties"]["xticklabels"])
+    if cfg.get("plot_legend", True):
+        split_legend(cfg, grid, data)
     basename = "performance_metrics"
     fname = get_plot_filename(basename, cfg)
-    # plt.tight_layout()
-    plt.savefig(fname, bbox_inches="tight")
-    print("Figure saved:")
-    print(fname)
-
-
-def apply_grouping(cfg, metas):
-    """returns sorted metadata, and group labels with positions"""
-    # NOTE obsolet for xarray
-    group_by = cfg.get("group_by", "project")
-    grouped = group_metadata(metas, group_by)
-    counts = []
-    labels = []
-    for group, metas in grouped.items():
-        labels.append(group)
-        x_entries = len(group_metadata(metas, cfg["x_by"]))
-        counts.append(x_entries)
-    positions = np.cumsum(counts)
-    groups = dict(zip(labels, positions))
-    metas = list(itertools.chain(*grouped.values()))
-    return metas, groups
+    plt.savefig(fname, bbox_inches="tight") # , bbox_inches=cfg.get("bbox_inches", "tight"))
+    log.info("Figure saved:")
+    log.info(fname)
 
 
 def set_defaults(cfg):
@@ -340,7 +394,8 @@ def set_defaults(cfg):
     cfg.setdefault("cbar_kwargs", {})
     cfg.setdefault("axes_properties", {})
     cfg.setdefault("plot_kwargs", {})
-    cfg.setdefault("figsize", (7.5, 5.5))
+    cfg.setdefault("figsize", (7.5, 3.5))
+    cfg.setdefault("legend", {})
     cfg["plot_kwargs"].setdefault("cmap", "RdYlBu_r")
     cfg["plot_kwargs"].setdefault("vmin", 0)
     cfg["plot_kwargs"].setdefault("vmax", 1)
