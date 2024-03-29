@@ -69,7 +69,6 @@ dependencies:
   - zarr
   # Python packages needed for testing
   - flake8
-  - imagehash
   - pytest >=3.9,!=6.0.0rc1,!=6.0.0
   - pytest-cov
   - pytest-env
@@ -85,6 +84,7 @@ dependencies:
   # Python packages needed for development
   - codespell
   - docformatter
+  - imagehash
   - isort
   - pre-commit
   - prospector
