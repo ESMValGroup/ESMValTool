@@ -16,6 +16,10 @@ Diego Cammarano
 
 Configuration parameters through recipe:
 ----------------------------------------
+normalize: str or None, optional
+    ('mean', 'median', 'centered_mean', 'centered_median', None).
+    Subtract median/mean if centered. Divide by median/mean if not None.
+    By default None.
 x_by: str, optional
     Metadata key for x coordinate.
     By default 'alias'.
@@ -39,6 +43,7 @@ default_split: str, optional
     Data labeled with this string, will be used as main rectangles. All other
     splits will be plotted as overlays. This can be used to choose the base
     reference, while all references are labeled for the legend.
+    By default None.
 legend: dict, optional
     Customize, if, how and where the legend is plotted. The 'best' position
     and size of the legend depends on multiple parameters of the figure
@@ -56,7 +61,6 @@ legend: dict, optional
         Number given in Inches. By default 0.
     size: float, optional
         Size of the legend in Inches. By default 0.3.
-    TODO: set defaults and add offsets to legend function.
 plot_kwargs: dict, optional
     Dictionary that gets passed as kwargs to `matplotlib.pyplot.imshow()`.
     Colormaps will be converted to 11 discrete steps automatically. Default
@@ -74,6 +78,10 @@ plot_properties: dict, optional
     https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set.html
     E.g. xlabel, ylabel, yticklabels, xmargin...
     By default {}.
+nan_color: str or None, optional
+    Matplotlib named color or hexcode for NaN values. If set to None,
+    no triagnles are plotted for NaN values.
+    By default 'white'.
 figsize: list(float), optional
    [width, height] of the figure in inches. The final figure will be saved with
    bbox_inches="tight", which can change the resulting aspect ratio.
@@ -211,10 +219,9 @@ def split_legend(cfg, grid, data):
     legend to the origin of the first graph (bottom left) with fixed size,
     without messing up the layout for changing figure sizes a few extra steps
     are required.
-    TODO: maybe `mpl_toolkits.axes_grid1.axes_divider.AxesDivider` simplifies
+    NOTE: maybe `mpl_toolkits.axes_grid1.axes_divider.AxesDivider` simplifies
     this a bit by using `append_axes`.
     """
-
     fig = grid[0].get_figure()
     fig.canvas.draw()  # set axes position in figure (dont call tight_layout())
     size = cfg["legend"].get("size", 0.5)  # rect width in physical size (inch)
@@ -226,9 +233,11 @@ def split_legend(cfg, grid, data):
     if cfg["legend"].get("position", "right") == "right":
         cbar_x = grid.cbar_axes[0].get_position().bounds[0]
         gap_x *= 0.8  # compensate colorbar padding
-        anchor = (cbar_x + gap_x, anchor[1] - gap_y - ax_h)
+        anchor = (cbar_x + gap_x + cfg["legend"]["x_offset"],
+                  anchor[1] - gap_y - ax_h + cfg["legend"]["y_offset"])
     else:
-        anchor = (anchor[0] - gap_x - ax_w, anchor[1] - gap_y - ax_h)
+        anchor = (anchor[0] - gap_x - ax_w + cfg["legend"]["x_offset"],
+                  anchor[1] - gap_y - ax_h + cfg["legend"]["y_offset"])
     # create legend as empty imshow like axes in figure coordinates
     legend = fig.add_axes([anchor[0], anchor[1], ax_w, ax_h])
     legend.imshow(np.zeros((1, 1)))  # same axes properties as main plot
@@ -262,13 +271,15 @@ def split_legend(cfg, grid, data):
     print(labels)
 
 
-def overlay_reference(ax, data, triangle):
+def overlay_reference(cfg, ax, data, triangle):
     """Create triangular overlays for given data and axes."""
     # use same colors as in main plot
     cmap = ax.get_images()[0].get_cmap()
     norm = ax.get_images()[0].norm
+    if cfg["nan_color"] is not None:
+        cmap.set_bad(cfg["nan_color"])
     for i, j in itertools.product(*map(range, data.shape)):
-        if np.isnan(data[i, j]):
+        if np.isnan(data[i, j]) and cfg["nan_color"] is None:
             continue
         color = cmap(norm(data[i, j]))
         edges = [(e[0] + j, e[1] + i) for e in triangle]
@@ -346,7 +357,7 @@ def plot_overlays(cfg, grid, data):
                 log.debug("Skipping default split for overlay.")
                 continue
             nodes = get_triangle_nodes(sss, split_count)
-            overlay_reference(grid[i], split.values.T, nodes)
+            overlay_reference(cfg, grid[i], split.values.T, nodes)
 
 
 def plot(cfg, data):
@@ -390,20 +401,39 @@ def plot(cfg, data):
     log.info(fname)
 
 
+def normalize(array, method, dims):
+    shift = 0
+    norm = 1
+    if "mean" in method:
+        norm = array.mean(dim=dims)
+    elif "median" in method:
+        norm = array.median(dim=dims)
+    if "centered" in method:
+        shift = norm
+    normalized = (array - shift) / norm
+    return normalized
+
+
 def set_defaults(cfg):
     """Set default values for most important config parameters."""
+    cfg.setdefault("normalize", "centered_median")
     cfg.setdefault("x_by", "alias")
     cfg.setdefault("y_by", "variable_group")
     cfg.setdefault("group_by", "project")
     cfg.setdefault("split_by", "split")  # extra facet
+    cfg.setdefault("default_split", None)
     cfg.setdefault("cbar_kwargs", {})
     cfg.setdefault("axes_properties", {})
+    cfg.setdefault("nan_color", 'white')
     cfg.setdefault("plot_kwargs", {})
-    cfg.setdefault("figsize", (7.5, 3.5))
-    cfg.setdefault("legend", {})
     cfg["plot_kwargs"].setdefault("cmap", "RdYlBu_r")
     cfg["plot_kwargs"].setdefault("vmin", 0)
     cfg["plot_kwargs"].setdefault("vmax", 1)
+    cfg.setdefault("figsize", (7.5, 3.5))
+    cfg.setdefault("legend", {})
+    cfg["legend"].setdefault("x_offset", 0)
+    cfg["legend"].setdefault("y_offset", 0)
+    cfg["legend"].setdefault("size", 0.3)
 
 
 def main(cfg):
@@ -413,6 +443,10 @@ def main(cfg):
     remove_reference(metas)
     add_split_none(metas)
     dataset = load_data(cfg, metas)
+    if cfg["normalize"] is not None:
+        dataset["var"] = normalize(dataset["var"], cfg["normalize"],
+                                   [cfg["x_by"], cfg["group_by"]])
+
     plot(cfg, dataset["var"])
 
 
