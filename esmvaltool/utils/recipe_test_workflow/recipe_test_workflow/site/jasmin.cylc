@@ -7,15 +7,19 @@
             # Pick up local installation of imagehash. Slightly fragile: see #3436
             PYTHONPATH_PREPEND = ${HOME}/.local/lib/python3.11/site-packages
             
+    # COMPUTE provides defaults for computation-heavy tasks
+    # Specific tasks below override some defaults, e.g. time & memory
     [[COMPUTE]]
         platform = lotus
+        execution time limit = PT3M
         [[[directives]]]
             --wckey = RTW
             --ntasks = 1
+            --mem = 2G
 
     [[get_esmval]]
         inherit = None, COMPUTE
-        execution time limit = PT60M
+        execution time limit = PT60M  # Actual: 29m on 2024-03-29
         [[[directives]]]
             --mem = 2G
 
@@ -25,12 +29,16 @@
         [[[directives]]]
             --mem = 2G
 
-    [[process<fast>]]
-        execution time limit = PT10M
+    # Resources for recipes that need more than the default
+    # Comment indicates example recorded usage on Jasmin
+    [[process<recipe=ensclus>]]
+        # Actual: 4m23s, 1.5 GB on 2024-03-29
+        execution time limit = PT6M
         [[[directives]]]
             --mem = 2G
-
-    [[process<medium>]]
-        execution time limit = PT30M
+            
+    [[process<recipe=autoassess_landsurface_soilmoisture>]]
+        # Actual: 1m35s, 2.1 GB on 2024-03-29
+        execution time limit = PT3M
         [[[directives]]]
-            --mem = 2G
+            --mem = 3G

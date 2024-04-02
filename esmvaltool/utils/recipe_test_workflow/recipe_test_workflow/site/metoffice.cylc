@@ -6,11 +6,15 @@
             ESMVALTOOL_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValTool
             PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
             
+    # COMPUTE provides defaults for computation-heavy tasks
+    # Specific tasks below override some defaults, e.g. time & memory
     [[COMPUTE]]
         platform = spice
+        execution time limit = PT2M
         [[[directives]]]
             --wckey = RTW
             --ntasks = {{ MAX_PARALLEL_TASKS }}
+            --mem = 2G
 
     [[configure]]
         platform = localhost
@@ -21,12 +25,16 @@
         [[[directives]]]
             --mem = 2G
 
-    [[process<fast>]]
-        execution time limit = PT2M
+    # Resources for recipes that need more than the default
+    # Comment should indicate example recorded usage at Met Office
+    [[process<recipe=ensclus>]]
+        # Actual: 2m10s, 2.4 GB on 2024-03-29
+        execution time limit = PT4M
         [[[directives]]]
-            --mem = 2G
-
-    [[process<medium>]]
-        execution time limit = PT6M
+            --mem = 3G
+            
+    [[process<recipe=autoassess_landsurface_soilmoisture>]]
+        # Actual: 0m36s, 2.8 GB on 2024-03-29
+        execution time limit = PT2M
         [[[directives]]]
             --mem = 3G
