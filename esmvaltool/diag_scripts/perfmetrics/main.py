@@ -3,7 +3,7 @@
 Description
 -----------
 This diagnostic provides plot functionalities for performance metrics.
-The multi model overview heatmap might be usefull for different
+The multi model overview heatmap might be useful for different
 tasks and therefore this diagnostic tries to be as flexible as possible.
 X and Y axis, grouping parameter and slits for each rectangle can be
 configured in the recipe. All *_by parameters can be set to any metadata
@@ -28,7 +28,7 @@ group_by: str, optional
     grouping into subplots.
     By default 'project'.
 split_by: str, optional
-    The rectangles can be splitted into 2-4 triangles. This is used to show
+    The rectangles can be split into 2-4 triangles. This is used to show
     metrics for different references. For this case there is no need to change
     this parameter. Multiple variables can be set in the recipe with `split`
     assigned as extra_facet to label the different references. Data without
@@ -40,8 +40,8 @@ default_split: str, optional
     splits will be plotted as overlays. This can be used to choose the base
     reference, while all references are labeled for the legend.
 legend: dict, optional
-    Customize, if, how and where the legend is plotted. The 'best' position 
-    and size of the legend depends on multiple parameters of the figure 
+    Customize, if, how and where the legend is plotted. The 'best' position
+    and size of the legend depends on multiple parameters of the figure
     (i.e. lengths of labels, aspect ratio of the plots...). And might require
     manual adjustment of `x`, `y` and `size` to fit the figure layout.
     Keys (each optional) that will be handled are:
@@ -80,26 +80,28 @@ figsize: list(float), optional
    By default [5, 3].
 """
 
-import logging
 import itertools
+import logging
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 import numpy as np
+import xarray as xr
+from matplotlib import patches
+from mpl_toolkits.axes_grid1 import ImageGrid
+
 from esmvaltool.diag_scripts.shared import (
     get_plot_filename,
     group_metadata,
     run_diagnostic,
     select_metadata,
 )
-from mpl_toolkits.axes_grid1 import ImageGrid
-import xarray as xr
 
 log = logging.getLogger(__name__)
 
 
 def unify_limits(cfg, grid):
-    """set same limits for all subplots"""
+    """Set same limits for all subplots."""
     vmin, vmax = np.inf, -np.inf
     images = [ax.get_images()[0] for ax in grid]
     for im in images:
@@ -133,10 +135,11 @@ def plot_matrix(data, row_labels, col_labels, ax, plot_kwargs):
 
 
 def remove_reference(metas):
-    """remove reference for metric from list of metadata
-    setting split=none allows to omit it in recipe, but handle it as special
-    case of splitted data.
-    list() creates a copy with same references to allow removing in place
+    """Remove reference for metric from list of metadata setting split=none
+    allows to omit it in recipe, but handle it as special case of split data.
+
+    list() creates a copy with same references to allow removing in
+    place
     """
     for meta in list(metas):
         if meta.get("reference_for_metric", False):
@@ -144,16 +147,17 @@ def remove_reference(metas):
 
 
 def add_split_none(metas):
-    """list of metadata with split=None if no split is given"""
+    """List of metadata with split=None if no split is given."""
     for meta in metas:
         if "split" not in meta:
             meta["split"] = None
 
 
 def open_file(metadata, **selection):
-    """try to find a single file for selection and return data.
-    If multiple files are found, raise an error.
-    If no file is found, return np.nan.
+    """Try to find a single file for selection and return data.
+
+    If multiple files are found, raise an error. If no file is found,
+    return np.nan.
     """
     metas = select_metadata(metadata, **selection)
     if len(metas) > 1:
@@ -169,11 +173,12 @@ def open_file(metadata, **selection):
 
 
 def load_data(cfg, metas):
-    """load all nc files from metadata into xarray dataset.
-    The dataset contains all relevant information for the plot.
-    Coord names are metadata keys, ordered as x, y, group, split.
-    The default reference is None, or if all references are named
-    the first from the list.
+    """Load all nc files from metadata into xarray dataset.
+
+    The dataset contains all relevant information for the plot. Coord
+    names are metadata keys, ordered as x, y, group, split. The default
+    reference is None, or if all references are named the first from the
+    list.
     """
     coords = {  # order matters: x, y, group, split
         cfg["x_by"]: list(group_metadata(metas, cfg["x_by"]).keys()),
@@ -183,9 +188,7 @@ def load_data(cfg, metas):
     }
     shape = [len(coord) for coord in coords.values()]
     var_data = xr.DataArray(np.full(shape, np.nan), dims=list(coords.keys()))
-    data = xr.Dataset(
-        {"var": var_data},
-        coords=coords)
+    data = xr.Dataset({"var": var_data}, coords=coords)
     # loop over each cell (coord combination) and load data if existing
     for coord_tuple in itertools.product(*coords.values()):
         selection = dict(zip(coords.keys(), coord_tuple))
@@ -202,7 +205,8 @@ def load_data(cfg, metas):
 
 
 def split_legend(cfg, grid, data):
-    """create legend for references, based on split coordinate in the dataset. 
+    """Create legend for references, based on split coordinate in the dataset.
+
     Mpl handles axes positions in relative figure coordinates. To anchor the
     legend to the origin of the first graph (bottom left) with fixed size,
     without messing up the layout for changing figure sizes a few extra steps
@@ -210,7 +214,7 @@ def split_legend(cfg, grid, data):
     TODO: maybe `mpl_toolkits.axes_grid1.axes_divider.AxesDivider` simplifies
     this a bit by using `append_axes`.
     """
-    
+
     fig = grid[0].get_figure()
     fig.canvas.draw()  # set axes position in figure (dont call tight_layout())
     size = cfg["legend"].get("size", 0.5)  # rect width in physical size (inch)
@@ -222,9 +226,9 @@ def split_legend(cfg, grid, data):
     if cfg["legend"].get("position", "right") == "right":
         cbar_x = grid.cbar_axes[0].get_position().bounds[0]
         gap_x *= 0.8  # compensate colorbar padding
-        anchor = (cbar_x+gap_x, anchor[1]-gap_y-ax_h)
+        anchor = (cbar_x + gap_x, anchor[1] - gap_y - ax_h)
     else:
-        anchor = (anchor[0]-gap_x-ax_w, anchor[1]-gap_y-ax_h)
+        anchor = (anchor[0] - gap_x - ax_w, anchor[1] - gap_y - ax_h)
     # create legend as empty imshow like axes in figure coordinates
     legend = fig.add_axes([anchor[0], anchor[1], ax_w, ax_h])
     legend.imshow(np.zeros((1, 1)))  # same axes properties as main plot
@@ -236,7 +240,7 @@ def split_legend(cfg, grid, data):
     axx.set_xticks([])
 
     labels = data.coords[cfg["split_by"]].values
-    label_at = [  # order matches get_triangle_nodes (halfs and quarters)
+    label_at = [  # order matches get_triangle_nodes (halves and quarters)
         legend.set_ylabel,  # left
         axy.set_ylabel,  # right
         legend.set_xlabel,  # bottom
@@ -259,7 +263,7 @@ def split_legend(cfg, grid, data):
 
 
 def overlay_reference(ax, data, triangle):
-    """create triangular overlays for given data and axes."""
+    """Create triangular overlays for given data and axes."""
     # use same colors as in main plot
     cmap = ax.get_images()[0].get_cmap()
     norm = ax.get_images()[0].norm
@@ -280,9 +284,10 @@ def overlay_reference(ax, data, triangle):
 
 
 def plot_group(cfg, ax, data, title=None):
-    """create matrix for one subplot in ax using plt.imshow()
-    by default split None is used, if all splits are named the first is used.
-    other splits will be added by overlaying triangles.
+    """Create matrix for one subplot in ax using plt.imshow()
+
+    by default split None is used, if all splits are named the first is
+    used. Other splits will be added by overlaying triangles.
     """
     split = data.sel({cfg["split_by"]: cfg["default_split"]})
     print(f"Plotting group {title}")
@@ -300,17 +305,18 @@ def plot_group(cfg, ax, data, title=None):
 
 
 def get_triangle_nodes(position, total_count=2):
-    """returns list of three tuples with relative x, y coordinates for nodes 
-    of triangle (-0.5 to +0.5) at given quarters (total_count>2) or
-    halfs (total_count==2).
+    """Returns list of three tuples with relative x, y coordinates for nodes of
+    triangle (-0.5 to +0.5) at given quarters (total_count>2) or halves
+    (total_count==2).
+
     NOTE: Order matters. Ensure axis labels for the legend match when changing.
     """
     if total_count < 3:
-        halfs = [
+        halves = [
             [(0.5, -0.5), (-0.5, -0.5), (-0.5, 0.5)],  # top left
             [(0.5, -0.5), (0.5, 0.5), (-0.5, 0.5)],  # bottom right
         ]
-        return halfs[position]
+        return halves[position]
     else:
         quarters = [
             [(-0.5, -0.5), (0, 0), (-0.5, 0.5)],  # left
@@ -322,8 +328,7 @@ def get_triangle_nodes(position, total_count=2):
 
 
 def plot_overlays(cfg, grid, data):
-    """call overlay_reference for each split in data and each group in grid.
-    """
+    """Call overlay_reference for each split in data and each group in grid."""
     split_count = data.shape[3]
     group_count = data.shape[2]
     for i in range(group_count):
@@ -345,9 +350,9 @@ def plot_overlays(cfg, grid, data):
 
 
 def plot(cfg, data):
-    """creates figure with subplots for each group, sets same color range and
-    overlays additional references based on the content of data (xr.DataArray)
-    """
+    """Creates figure with subplots for each group, sets same color range and
+    overlays additional references based on the content of data
+    (xr.DataArray)"""
     fig = plt.figure(1, cfg.get("figsize", (5.5, 3.5)))
     group_count = len(data.coords[cfg["group_by"]])
     grid = ImageGrid(
@@ -380,13 +385,13 @@ def plot(cfg, data):
         split_legend(cfg, grid, data)
     basename = "performance_metrics"
     fname = get_plot_filename(basename, cfg)
-    plt.savefig(fname, bbox_inches="tight") # , bbox_inches=cfg.get("bbox_inches", "tight"))
+    plt.savefig(fname, bbox_inches="tight")
     log.info("Figure saved:")
     log.info(fname)
 
 
 def set_defaults(cfg):
-    """set default values for most important config parameters"""
+    """Set default values for most important config parameters."""
     cfg.setdefault("x_by", "alias")
     cfg.setdefault("y_by", "variable_group")
     cfg.setdefault("group_by", "project")
@@ -402,7 +407,7 @@ def set_defaults(cfg):
 
 
 def main(cfg):
-    """run the diagnostic"""
+    """Run the diagnostic."""
     set_defaults(cfg)
     metas = list(cfg["input_data"].values())
     remove_reference(metas)
