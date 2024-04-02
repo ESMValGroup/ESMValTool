@@ -3,17 +3,15 @@
     UTC mode = True
 
 [task parameters]
-    fast = radiation_budget, albedolandcover
-    medium = ensclus, heatwaves_coldwaves, autoassess_landsurface_soilmoisture
-
+    recipe = radiation_budget, albedolandcover, heatwaves_coldwaves, \
+             ensclus, autoassess_landsurface_soilmoisture
 
 [scheduling]
     initial cycle point = {{ START_DATE }}T{{ RUN_TIME }}
     [[graph]]
         R1 = "install_env_file => get_esmval"
         P1D = """@wall_clock => get_esmval => configure
-                configure => process<medium> => compare<medium>
-                configure => process<fast> => compare<fast>"""
+                configure => process<recipe> => compare<recipe>"""
 
 [runtime]
     [[root]]
@@ -62,30 +60,17 @@
             ROOTPATH_OBS4MIPS = {{ ROOTPATH_OBS4MIPS }}
             ROOTPATH_RAWOBS = {{ ROOTPATH_RAWOBS }}
 
-    [[process<fast>]]
+    [[process<recipe>]]
         inherit = None, COMPUTE
         [[[environment]]]
             ROSE_TASK_APP = process
-            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_fast}.yml"
+            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_recipe}.yml"
 
-    [[process<medium>]]
-        inherit = None, COMPUTE
-        [[[environment]]]
-            ROSE_TASK_APP = process
-            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_medium}.yml"
-
-    [[compare<fast>]]
+    [[compare<recipe>]]
         inherit = None, COMPUTE
         [[[environment]]]
             ROSE_TASK_APP = compare
-            KGO_METRIC = "${CYLC_TASK_PARAM_fast}"
-            KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
-
-    [[compare<medium>]]
-        inherit = None, COMPUTE
-        [[[environment]]]
-            ROSE_TASK_APP = compare
-            KGO_METRIC = "${CYLC_TASK_PARAM_medium}"
+            KGO_METRIC = "${CYLC_TASK_PARAM_recipe}"
             KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
 
 {% include 'site/' ~ SITE ~ '.cylc' %}
