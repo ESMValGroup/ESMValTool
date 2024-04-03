@@ -4,16 +4,18 @@ observations."""
 import logging
 import os
 
+import numpy as np
+from numpy import ma
+import scipy
+
 import iris
 import iris.plot as iplt
 import matplotlib.cm as mpl_cm
 import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
-import numpy as np
-import scipy
+
 from aero_utils import add_bounds, extract_pt
 from matplotlib import colors, gridspec
-from numpy import ma
 
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
@@ -70,7 +72,7 @@ def plot_aod_mod_obs(md_data, obs_data, aeronet_obs_cube, plot_dict):
 
     # Loop over stations
     for istn, stn_data in enumerate(obs_data):
-        if stn_data.mask:
+        if ma.is_masked(stn_data):
             continue
 
         # Find position of the observed AOD on the colorscale.
@@ -152,7 +154,7 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
     # Co-locate model grid points with measurement sites --func from aero_utils
     anet_aod_lats = aeronet_obs_cube.coord("latitude").points.tolist()
     anet_aod_lons = aeronet_obs_cube.coord("longitude").points.tolist()
-    aod_at_anet = extract_pt(md_data, anet_aod_lats, anet_aod_lons)
+    aod_at_anet = extract_pt(model_data, anet_aod_lats, anet_aod_lons)
 
     # Set up seasonal contour plots
     figures = []
@@ -261,7 +263,8 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
         yticks=np.linspace(0.0, 1.0, num=6),
     )
     ax_scatter.set_xlabel("AeroNET AOD", fontsize=fontsizedict["axis"])
-    ax_scatter.set_ylabel(md_id + " AOD", fontsize=fontsizedict["axis"])
+    ax_scatter.set_ylabel(model_id + " AOD", fontsize=fontsizedict["axis"])
+
     ax_scatter.tick_params(axis="both",
                            which="major",
                            labelsize=fontsizedict["ticklabel"])
@@ -395,7 +398,7 @@ def main(config):
 
     # Produce climatology for observational dataset
 #    obs_dataset_name = config["observational_dataset"]
-    obs_dataset = datasets.pop(obs_dataset_name)
+    obs_dataset = datasets.pop(config["observational_dataset"])
     obs_cube = preprocess_aod_obs_dataset(obs_dataset)
 
     for model_dataset, group in datasets.items():

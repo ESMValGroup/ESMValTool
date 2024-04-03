@@ -72,7 +72,7 @@ def get_wavel_index(wavel):
               ' not in ', cwavel)
 
 
-def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
+def extract_pt(icube, pt_lat, pt_lon, **kwargs):
     """Extracts given location(s) (3-D) from a cube.
 
     Method
@@ -89,10 +89,10 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
     icube : Iris cube
     pt_lat, pt_lon : latitude and longitude coordinates of desired points
     kwargs: (optional)
-        height  : Altitude (above geoid) of point
-        level   : Model/ pseudo/ tile number, default = all
-        nearest : (optional) Whether to use 'nearest neighbour', instead
-                  of 'linear' method while extracting data.
+        height  : Altitude (above geoid) of point.
+        level   : Model/ pseudo/ tile number, default = all.
+        nearest : Boolean. Specify whether to use 'nearest neighbour', instead
+                  of 'linear' method while extracting data. Default is False.
 
     Returns
     -------
@@ -150,7 +150,7 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
             pt_hgt.append(kwargs['height'])
 
         else:
-            pt_height.extend(kwargs['height']
+            pt_height.extend(kwargs['height'])
 #            for n in np.arange(len(kwargs['height'])):
 #                pt_hgt.append(kwargs['height'][n])
 
