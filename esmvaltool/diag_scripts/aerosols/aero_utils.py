@@ -25,27 +25,6 @@ mm_dust = 0.100  # Mol mass dust(kg mol-1) - see UKCA_MODE_SETUP: 'mm' arrays
 earth_g = 9.80665  # m/s^2
 
 
-def string_stc(stash):
-    """Convert stashcode to mXXsYYiZZZ format.
-
-    Parameters
-    ----------
-    stash : str
-        UM stashcode with format YYZZZ.
-
-    Returns
-    -------
-    : str
-        UM stashcode with format mXXsYYiZZZ.
-    """
-
-    stash = int(stash)
-
-    if stash < 1 or stash > 99999:
-        raise AeroAnsError('STR_STC: Invalid stashcode ' + str(stash))
-    return 'm01s{0:02d}i{1:03d}'.format(int(stash / 1000), int(stash % 1000))
-
-
 def add_bounds(cube):
     """Add bounds to a cubes latitude and longitude coordinates.
 
@@ -93,7 +72,7 @@ def get_wavel_index(wavel):
               ' not in ', cwavel)
 
 
-def extract_pt(icube, pt_lat, pt_lon, **keys):
+def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
     """Extracts given location(s) (3-D) from a cube.
 
     Method
@@ -109,16 +88,26 @@ def extract_pt(icube, pt_lat, pt_lon, **keys):
     ----------
     icube : Iris cube
     pt_lat, pt_lon : latitude and longitude coordinates of desired points
-    keys: (optional)
-        height  : altitude (above geoid) of point
-        level   : model/ pseudo/ tile number, default = all
+    kwargs: (optional)
+        height  : Altitude (above geoid) of point
+        level   : Model/ pseudo/ tile number, default = all
         nearest : (optional) Whether to use 'nearest neighbour', instead
                   of 'linear' method while extracting data.
 
     Returns
     -------
     data_out : List
-        List of single point values, corresponding to each point specified.
+        List of single point values, corresponding to each point specified
+
+    Raises
+    ------
+    AeroAnsError : If the numbers of latitude and longitude points are
+        mismatched. OR if both and level and height are passed as kwargs.
+        OR if the cude contains a time coordinate. OR if a pseudo level
+        coordinate is requested, but not present in the cube. OR if the numbers
+        of latitude/longitude and height points are mismatched. OR if height
+        is requested but the cube does not contain and altitude coordinate.
+
     """
 
     # Check that input data is a (single) cube
@@ -143,26 +132,27 @@ def extract_pt(icube, pt_lat, pt_lon, **keys):
     if len(pt_lat1) != len(pt_lon1):
         raise AeroAnsError('Extract_pt:Mismatch in number of lat/long values')
 
-    if 'level' in keys and 'height' in keys:
+    if 'level' in kwargs and 'height' in kwargs:
         raise AeroAnsError('Extract_pt: Both Level and Height requested')
 
     if icube.coords()[0].name() == 'time':  # only lat,lon,lev accepted
         raise AeroAnsError(
             'Extract_pt:Cannot handle time dimension at present')
 
-    if 'level' in keys and not icube.coord(
+    if 'level' in kwargs and not icube.coord(
             'model_level_number') and not icube.coord('pseudo_level'):
         raise AeroAnsError('Extract_pt:Level requested, but not found in cube')
 
-    if 'height' in keys:
+    if 'height' in kwargs:
         pt_hgt = []
 
-        if not isinstance(keys['height'], list):
-            pt_hgt.append(keys['height'])
+        if not isinstance(kwargs['height'], list):
+            pt_hgt.append(kwargs['height'])
 
         else:
-            for n in np.arange(len(keys['height'])):
-                pt_hgt.append(keys['height'][n])
+            pt_height.extend(kwargs['height']
+#            for n in np.arange(len(kwargs['height'])):
+#                pt_hgt.append(kwargs['height'][n])
 
         if len(pt_lat1) != len(pt_hgt):
             raise AeroAnsError(
@@ -184,18 +174,18 @@ def extract_pt(icube, pt_lat, pt_lon, **keys):
     # ---------- Finished checks -- begin processing -------------------------
 
     # If level specified, extract slice first
-    if 'level' in keys:
+    if 'level' in kwargs:
 
         if icube.coord('model_level_number'):
             icube = icube.extract(
-                iris.Constraint(model_level_number=keys['level']))
+                iris.Constraint(model_level_number=kwargs['level']))
 
         else:
 
             if icube.coord('pseudo_level'):
 
                 icube = icube.extract(
-                    iris.Constraint(pseudo_level=keys['level']))
+                    iris.Constraint(pseudo_level=kwargs['level']))
 
     # Extract values for specified points lat/lon
 
@@ -206,7 +196,7 @@ def extract_pt(icube, pt_lat, pt_lon, **keys):
     for n in np.arange(len(pt_lat1)):
         pt_coords = [('latitude', pt_lat1[n]), ('longitude', pt_lon1[n])]
 
-        if 'nearest' in keys and keys['nearest']:
+        if 'nearest' in kwargs and kwargs['nearest']:
             tcube = icube.interpolate(pt_coords, iris.analysis.Nearest())
 
         else:
@@ -214,12 +204,12 @@ def extract_pt(icube, pt_lat, pt_lon, **keys):
 
         # Extract at requested height
 
-        if 'height' in keys:
+        if 'height' in kwargs:
             pt = max(pt_hgt[n], hgt_min)
             pt = min(pt_hgt[n], hgt_max)
             pt_coords = [('altitude', pt)]
 
-            if 'nearest' in keys and keys['nearest']:
+            if 'nearest' in kwargs and kwargs['nearest']:
                 tcube = tcube.interpolate(pt_coords, iris.analysis.Nearest())
 
             else:
@@ -228,43 +218,3 @@ def extract_pt(icube, pt_lat, pt_lon, **keys):
         data_out.append(tcube.data)
 
     return data_out
-
-
-def calc_mass(pstar, prho, ptheta_top, mmr, nlev):
-    """Calculates mass in model layer from mass mixing ratios.
-
-    Method
-    ------
-    Simply calculates mass in layer using mmr*rho*dz = mmr*g*(-dp)
-       - at lowest level uses dp = p2 - pstar
-       - at highest level uses dp = p_theta(top) - p_rho(top_rho_lev)
-    Orig/IDL: Stephanie Woodward, 2003
-
-    Parameters
-    ----------
-    pstar :
-    prho :
-    ptheta :
-    mmr : Iris cube
-       Iris cube containing mass mixing ratio data.
-    nlev : int (optional)
-
-    Returns
-    -------
-    tmp : Iris cube
-        Iris cube containing mass data.
-    """
-
-    tmp = mmr.copy()
-    tmp.data[:, :, :] = 0.
-    tmp[0, :, :] = mmr[0, :, :] * (pstar - prho[1, :, :]) / earth_g
-
-    # Loop over model levels. Range will iterate up to nlev-2
-    for i in range(1, nlev - 1):
-        tmp[i, :, :] = mmr[i, :, :] * (prho[i, :, :] -
-                                       prho[i + 1, :, :]) / earth_g
-
-    tmp[nlev - 1, :, :] = mmr[nlev - 1, :, :] * (prho[nlev - 1, :, :] -
-                                                 ptheta_top) / earth_g
-
-    return tmp

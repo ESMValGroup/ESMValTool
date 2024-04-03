@@ -35,7 +35,6 @@ def get_provenance_record(filenames):
     dictionary
         The provenance record describing the metric.
     """
-
     record = {
         "ancestors": filenames,
     }
@@ -58,7 +57,6 @@ def plot_aod_mod_obs(md_data, obs_data, aeronet_obs_cube, plot_dict):
     plot_dict : Dictionary.
         Contains plotting settings.
     """
-
     # Plot model data
     cf_plot = iplt.contourf(md_data,
                             plot_dict["Levels"],
@@ -71,14 +69,14 @@ def plot_aod_mod_obs(md_data, obs_data, aeronet_obs_cube, plot_dict):
                      180)
 
     # Loop over stations
-    for istn, stn in enumerate(aeronet_obs_cube.coord("platform_name").points):
-        if obs_data.mask[istn]:
+    for istn, stn_data in enumerate(obs_data):
+        if stn_data.mask:
             continue
 
         # Find position of the observed AOD on the colorscale.
         # np.searchsorted returns index at which inserting new value will
         # maintain a sorted array. We use the color to the left of index.
-        cid = np.searchsorted(plot_dict["Levels"], obs_data[istn])
+        cid = np.searchsorted(plot_dict["Levels"], stn_data)
         cid = max(0, cid - 1)  # filter out zero and max when seeking 'left'
         cid = min(len(plot_dict["Colours"]) - 1, cid)
         pcol = plot_dict["Colours"][cid]
@@ -114,13 +112,13 @@ def plot_aod_mod_obs(md_data, obs_data, aeronet_obs_cube, plot_dict):
     )
 
 
-def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
+def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
     """Evaluates AOD vs Aeronet, generates plots and returns evaluation
     metrics.
 
     Parameters
     ----------
-    md_data : Iris Cube.
+    model_data : Iris Cube.
         Contains model output of AOD with coordinates; time, latitude and
         longitude.
     aeronet_obs_cube : Iris Cube.
@@ -139,18 +137,17 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
     fig_scatter : Figure object.
         The scatter plot comparing modelled and observed AOD at 440nm.
     """
-
     # Convert wave length nm -> um
     wv_mi = str(float(wavel) / 1000.0)
 
     # Get model run id
-    if "parent_source_id" in md_data.attributes:
-        md_id = md_data.attributes["parent_source_id"]
+    if "parent_source_id" in model_data.attributes:
+        model_id = model_data.attributes["parent_source_id"]
     else:
-        md_id = "Multi-Model-Mean"
+        model_id = "Multi-Model-Mean"
 
     # Add bounds for lat and lon if not present
-    md_data = add_bounds(md_data)
+    model_data = add_bounds(model_data)
 
     # Co-locate model grid points with measurement sites --func from aero_utils
     anet_aod_lats = aeronet_obs_cube.coord("latitude").points.tolist()
@@ -179,23 +176,25 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
     for season in aeronet_obs_cube.slices_over("clim_season"):
 
         # Match Aeronet obs season with model season number
-        md_sn = [c.lower() for c in clim_seas
+        model_sn = [c.lower() for c in clim_seas
                  ].index(season.coord("clim_season").points[0])
-        md_season = md_data[md_sn]
+        model_season = model_data[model_sn]
 
-        logger.info(f"Analysing AOD for {md_id}: {clim_seas[md_sn]}")
+        logger.info(
+            'Analysing AOD for %s', {model_id}, ': %s', {clim_seas[model_sn]}
+        )
 
         # Generate statistics required - area-weighted mean
-        grid_areas = iris.analysis.cartography.area_weights(md_season)
-        global_mean = md_season.collapsed(
+        grid_areas = iris.analysis.cartography.area_weights(model_season)
+        global_mean = model_season.collapsed(
             ["latitude", "longitude"],
             iris.analysis.MEAN,
             weights=grid_areas,
         )
 
-        # Extract model and obs data for season number (md_sn)
+        # Extract model and obs data for season number (model_sn)
         seas_anet_obs = season.data
-        seas_anet_md = np.array([x[md_sn] for x in aod_at_anet])
+        seas_anet_md = np.array([x[model_sn] for x in aod_at_anet])
 
         # Match model data with valid obs data
         valid_indices = ma.where(seas_anet_obs)
@@ -210,10 +209,10 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
         linreg = scipy.stats.linregress(valid_obs, valid_md)
 
         # Plot scatter of co-located model and obs data
-        ax_scatter.scatter(valid_obs, valid_md, color=col_scatter[md_sn])
+        ax_scatter.scatter(valid_obs, valid_md, color=col_scatter[model_sn])
 
         # Legend
-        label = clim_seas[md_sn] + " = " + str("%.2f" % linreg.rvalue**2)
+        label = f"{clim_seas[model_sn]} = {linreg.rvalue**2:.2f}"
         leg_scatter.append(
             mlines.Line2D(
                 [0],
@@ -222,7 +221,7 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
                 color="w",
                 label=label,
                 markersize=15,
-                markerfacecolor=col_scatter[md_sn],
+                markerfacecolor=col_scatter[model_sn],
             ))
 
         # Plot contours overlaid with obs for this run and season
@@ -230,7 +229,7 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
 
         n_stn = str(len(valid_obs))
         title = ("\nTotal Aerosol Optical Depth at " + wv_mi + " microns" +
-                 "\n" + md_id + ", " + clim_seas[md_sn] + ", N stations=" +
+                 "\n" + model_id + ", " + clim_seas[model_sn] + ", N stations=" +
                  n_stn)
 
         # Plot dictionary
@@ -243,9 +242,9 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
             "Colours": colours,
             "tick_labels": clabs,
             "Title": title,
-            "Season": clim_seas[md_sn],
+            "Season": clim_seas[model_sn],
         }
-        plot_aod_mod_obs(md_season, seas_anet_obs, aeronet_obs_cube, plot_dict)
+        plot_aod_mod_obs(model_season, seas_anet_obs, aeronet_obs_cube, plot_dict)
 
         figures.append(fig_cf)
 
@@ -284,7 +283,22 @@ def aod_analyse(md_data, aeronet_obs_cube, clim_seas, wavel):
     return figures, fig_scatter
 
 
-def preprocess_aod_observational_dataset(obs_dataset):
+def preprocess_aod_obs_dataset(obs_dataset):
+    """Calculate a multiannual seasonal mean 'climatology' for AOD at each
+    AERONET station using the observational timeseries data. The climatiology
+    is processed using user defined thresholds to specify the amount of valid
+    data needed to calculate the climatology. 
+
+    Parameters
+    ----------
+    obs_dataset : ESMValTool dictionary. Holds meata data for the observational
+        data.
+
+    Returns
+    -------
+     multiannual_seaonal_mean : Iris cube. Preporocessed observational
+         climatology.
+    """
     obs_cube = iris.load_cube(obs_dataset[0]["filename"])
 
     # Set up thresholds for generating the multi annual seasonal mean
@@ -300,20 +314,19 @@ def preprocess_aod_observational_dataset(obs_dataset):
 
     iris.coord_categorisation.add_season_year(obs_cube,
                                               'time',
-                                              name='season_year')
+                                              name='season_year'
+    )
 
     # Copy obs cube and mask all months with fewer
     # "Number of days" than given threshold.
-    #
     num_days_var = obs_cube.ancillary_variable("Number of days")
     masked_months_obs_cube = obs_cube.copy(data=ma.masked_where(
         num_days_var.data < min_days_per_mon, obs_cube.data))
 
     # Aggregate (mean) by season.
     # The number of unmasked months per season is counted,
-    #   and where there are fewer unmasked months than the
-    #   given threshold, the computed mean is masked.
-    #
+    # and where there are fewer unmasked months than the
+    # given threshold, the computed mean is masked.
     annual_seasonal_mean = masked_months_obs_cube.aggregated_by(
         ['clim_season', 'season_year'],
         iris.analysis.MEAN,
@@ -330,10 +343,9 @@ def preprocess_aod_observational_dataset(obs_dataset):
 
     # Aggregate (mean) by multi-annual season.
     # The number of unmasked seasons per multi-annual season
-    #   is counted, and where there are fewer unmasked seasons
-    #   than the given threshold, the computed multi-annual
-    #   season is masked.
-    #
+    # is counted, and where there are fewer unmasked seasons
+    # than the given threshold, the computed multi-annual
+    # season is masked.
     multi_annual_seasonal_mean = annual_seasonal_mean.aggregated_by(
         'clim_season',
         iris.analysis.MEAN,
@@ -372,11 +384,6 @@ def main(config):
     ----------
     wavel : String.
         User defined. Default is "440".
-    aeronet_dir : String.
-        The directory containing the Aeronet observational climatology
-        This is currently set by the user because the Aeronet climatologies
-        are not yet CMORized or ready for use with the ESMValTool
-        pre-processors.
     config : dict
         The ESMValTool configuration.
     """
@@ -387,9 +394,9 @@ def main(config):
     wavel = "440"
 
     # Produce climatology for observational dataset
-    obs_dataset_name = config["observational_dataset"]
+#    obs_dataset_name = config["observational_dataset"]
     obs_dataset = datasets.pop(obs_dataset_name)
-    obs_cube = preprocess_aod_observational_dataset(obs_dataset)
+    obs_cube = preprocess_aod_obs_dataset(obs_dataset)
 
     for model_dataset, group in datasets.items():
         # 'model_dataset' is the name of the model dataset.
@@ -412,7 +419,6 @@ def main(config):
                                 "_" + attributes["mip"] + "_" +
                                 attributes["exp"] + "_" +
                                 attributes["short_name"] + "_" +
-#                                attributes["grid"] + "_" +
                                 str(attributes["start_year"]) + "_" +
                                 str(attributes["end_year"]) + "_")
 
@@ -420,7 +426,8 @@ def main(config):
             figures, fig_scatter = aod_analyse(cube,
                                                obs_cube,
                                                seasons,
-                                               wavel=wavel)
+                                               wavel=wavel
+            )
 
         # Save the scatter plot
         output_file = plot_file_prefix + "scatter"
