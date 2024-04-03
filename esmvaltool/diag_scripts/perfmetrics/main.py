@@ -108,26 +108,26 @@ from esmvaltool.diag_scripts.shared import (
 log = logging.getLogger(__name__)
 
 
-def unify_limits(cfg, grid):
+def unify_limits(grid):
     """Set same limits for all subplots."""
     vmin, vmax = np.inf, -np.inf
     images = [ax.get_images()[0] for ax in grid]
-    for im in images:
-        vmin = min(vmin, im.get_clim()[0])
-        vmax = max(vmax, im.get_clim()[1])
-    for im in images:
-        im.set_clim(vmin, vmax)
+    for img in images:
+        vmin = min(vmin, img.get_clim()[0])
+        vmax = max(vmax, img.get_clim()[1])
+    for img in images:
+        img.set_clim(vmin, vmax)
 
 
-def plot_matrix(data, row_labels, col_labels, ax, plot_kwargs):
+def plot_matrix(data, row_labels, col_labels, axe, plot_kwargs):
     """Create an image for given data."""
-    im = ax.imshow(data, **plot_kwargs)
+    img = axe.imshow(data, **plot_kwargs)
     # Show all ticks and label them with the respective list entries.
-    ax.set_xticks(np.arange(data.shape[1]), labels=col_labels)
-    ax.set_yticks(np.arange(data.shape[0]), labels=row_labels)
+    axe.set_xticks(np.arange(data.shape[1]), labels=col_labels)
+    axe.set_yticks(np.arange(data.shape[0]), labels=row_labels)
     # Rotate the tick labels and set their alignment.
     plt.setp(
-        ax.get_xticklabels(),
+        axe.get_xticklabels(),
         rotation=90,
         ha="right",
         va="center",
@@ -135,19 +135,17 @@ def plot_matrix(data, row_labels, col_labels, ax, plot_kwargs):
     )
     # Turn spines off and create white grid.
     # ax.spines[:].set_visible(False)
-    ax.set_xticks(np.arange(data.shape[1] + 1) - 0.5, minor=True)
-    ax.set_yticks(np.arange(data.shape[0] + 1) - 0.5, minor=True)
-    ax.grid(which="minor", color="black", linestyle="-", linewidth=1)
-    ax.tick_params(which="both", bottom=False, left=False)
-    return im
+    axe.set_xticks(np.arange(data.shape[1] + 1) - 0.5, minor=True)
+    axe.set_yticks(np.arange(data.shape[0] + 1) - 0.5, minor=True)
+    axe.grid(which="minor", color="black", linestyle="-", linewidth=1)
+    axe.tick_params(which="both", bottom=False, left=False)
+    return img
 
 
 def remove_reference(metas):
-    """Remove reference for metric from list of metadata setting split=none
-    allows to omit it in recipe, but handle it as special case of split data.
+    """Remove reference for metric from list of metadata.
 
-    list() creates a copy with same references to allow removing in
-    place
+    NOTE: list() creates a copy with same references to allow removing in place
     """
     for meta in list(metas):
         if meta.get("reference_for_metric", False):
@@ -174,9 +172,9 @@ def open_file(metadata, **selection):
         log.debug("No Metadata found for %s", selection)
         return np.nan
     log.warning("Metadata found for %s", selection)
-    ds = xr.open_dataset(metas[0]["filename"])
-    varname = list(ds.data_vars.keys())[0]
-    return ds[varname].values.item()
+    das = xr.open_dataset(metas[0]["filename"])
+    varname = list(das.data_vars.keys())[0]
+    return das[varname].values.item()
     # iris.load_cube(metas[0]["filename"]).data
 
 
@@ -225,37 +223,35 @@ def split_legend(cfg, grid, data):
     fig = grid[0].get_figure()
     fig.canvas.draw()  # set axes position in figure (dont call tight_layout())
     size = cfg["legend"].get("size", 0.5)  # rect width in physical size (inch)
-    fig_w, fig_h = fig.get_size_inches()  # physical size of figure
-    ax_w, ax_h = (size / fig_w, size / fig_h)  # legend size in figure coords
-    gap_x, gap_y = (0.3 / fig_w, 0.3 / fig_h)  # margins to plot in fig coords
+    fig_size = fig.get_size_inches()  # physical size of figure
+    ax_size = (size / fig_size[0], size / fig_size[1])  # legend (fig coords)
+    gaps = (0.3 / fig_size[0], 0.3 / fig_size[1])  # margins (fig coords)
     # anchor legend on origin of first plot or colorbar
     anchor = grid[0].get_position().bounds  # relative figure coordinates
     if cfg["legend"].get("position", "right") == "right":
         cbar_x = grid.cbar_axes[0].get_position().bounds[0]
-        gap_x *= 0.8  # compensate colorbar padding
-        anchor = (cbar_x + gap_x + cfg["legend"]["x_offset"],
-                  anchor[1] - gap_y - ax_h + cfg["legend"]["y_offset"])
+        gaps[0] *= 0.8  # compensate colorbar padding
+        anchor = (cbar_x + gaps[0] + cfg["legend"]["x_offset"],
+                  anchor[1] - gaps[1] - ax_size[1] + cfg["legend"]["y_offset"])
     else:
-        anchor = (anchor[0] - gap_x - ax_w + cfg["legend"]["x_offset"],
-                  anchor[1] - gap_y - ax_h + cfg["legend"]["y_offset"])
+        anchor = (anchor[0] - gaps[0] - ax_size[0] + cfg["legend"]["x_offset"],
+                  anchor[1] - gaps[1] - ax_size[1] + cfg["legend"]["y_offset"])
     # create legend as empty imshow like axes in figure coordinates
-    legend = fig.add_axes([anchor[0], anchor[1], ax_w, ax_h])
+    legend = fig.add_axes([anchor[0], anchor[1], ax_size[0], ax_size[1]])
     legend.imshow(np.zeros((1, 1)))  # same axes properties as main plot
     legend.set_xticks([])
     legend.set_yticks([])
-    axy = legend.twinx()  # add twins to allow axes labels on all sides
-    axy.set_yticks([])
-    axx = legend.twiny()
-    axx.set_xticks([])
-
+    twins = [legend.twiny(), legend.twinx()]
+    twins[1].set_yticks([])
+    twins[0].set_xticks([])
     labels = data.coords[cfg["split_by"]].values
     label_at = [  # order matches get_triangle_nodes (halves and quarters)
         legend.set_ylabel,  # left
-        axy.set_ylabel,  # right
+        twins[1].set_ylabel,  # right
         legend.set_xlabel,  # bottom
-        axx.set_xlabel,  # top
+        twins[0].set_xlabel,  # top
     ]
-    for i, _ in enumerate(labels):
+    for i, label in enumerate(labels):
         nodes = get_triangle_nodes(i, len(labels))
         colors = ["#bbb", "#ccc", "#ddd", "#eee"]
         patch = patches.Polygon(
@@ -267,15 +263,14 @@ def split_legend(cfg, grid, data):
             fill=True,
         )
         legend.add_patch(patch)
-        label_at[i](labels[i])
-    print(labels)
+        label_at[i](label)
 
 
-def overlay_reference(cfg, ax, data, triangle):
+def overlay_reference(cfg, axe, data, triangle):
     """Create triangular overlays for given data and axes."""
     # use same colors as in main plot
-    cmap = ax.get_images()[0].get_cmap()
-    norm = ax.get_images()[0].norm
+    cmap = axe.get_images()[0].get_cmap()
+    norm = axe.get_images()[0].norm
     if cfg["nan_color"] is not None:
         cmap.set_bad(cfg["nan_color"])
     for i, j in itertools.product(*map(range, data.shape)):
@@ -291,10 +286,10 @@ def overlay_reference(cfg, ax, data, triangle):
             linewidth=0.5,
             fill=True,
         )
-        ax.add_patch(patch)
+        axe.add_patch(patch)
 
 
-def plot_group(cfg, ax, data, title=None):
+def plot_group(cfg, axe, data, title=None):
     """Create matrix for one subplot in ax using plt.imshow()
 
     by default split None is used, if all splits are named the first is
@@ -307,19 +302,21 @@ def plot_group(cfg, ax, data, title=None):
         split.values.T,  # 2d numpy array
         split.coords[cfg["y_by"]].values,  # y_labels
         split.coords[cfg["x_by"]].values,  # x_labels
-        ax,
+        axe,
         cfg["plot_kwargs"],
     )
     if title is not None:
-        ax.set_title(title)
-    ax.set(**cfg["axes_properties"])
+        axe.set_title(title)
+    axe.set(**cfg["axes_properties"])
 
 
 def get_triangle_nodes(position, total_count=2):
-    """Returns list of three tuples with relative x, y coordinates for nodes of
-    triangle (-0.5 to +0.5) at given quarters (total_count>2) or halves
-    (total_count==2).
+    """Returns list of nodes with relative x, y coordinates.
 
+    The nodes of the triangle are given as list of three tuples. Each tuples
+    contains relative coordinates (-0.5 to +0.5). For total of <= 2 a top left
+    (position=0) and bottom right (position=1) rectangle is returned.
+    For higher counts (3 or 4) one quartile is returned for each position.
     NOTE: Order matters. Ensure axis labels for the legend match when changing.
     """
     if total_count < 3:
@@ -328,14 +325,13 @@ def get_triangle_nodes(position, total_count=2):
             [(0.5, -0.5), (0.5, 0.5), (-0.5, 0.5)],  # bottom right
         ]
         return halves[position]
-    else:
-        quarters = [
-            [(-0.5, -0.5), (0, 0), (-0.5, 0.5)],  # left
-            [(0.5, -0.5), (0, 0), (0.5, 0.5)],  # right
-            [(-0.5, 0.5), (0, 0), (0.5, 0.5)],  # bottom
-            [(-0.5, -0.5), (0, 0), (0.5, -0.5)],  # top
-        ]
-        return quarters[position]
+    quarters = [
+        [(-0.5, -0.5), (0, 0), (-0.5, 0.5)],  # left
+        [(0.5, -0.5), (0, 0), (0.5, 0.5)],  # right
+        [(-0.5, 0.5), (0, 0), (0.5, 0.5)],  # bottom
+        [(-0.5, -0.5), (0, 0), (0.5, -0.5)],  # top
+    ]
+    return quarters[position]
 
 
 def plot_overlays(cfg, grid, data):
@@ -387,7 +383,7 @@ def plot(cfg, data):
             title = group.coords[cfg["group_by"]].values.item()
         plot_group(cfg, grid[i], group, title=title)
     # use same colorrange and colorbar for all subplots:
-    unify_limits(cfg, grid)
+    unify_limits(grid)
     # set cb of first image as single cb for the figure
     grid.cbar_axes[0].colorbar(grid[0].get_images()[0], **cfg["cbar_kwargs"])
     if data.shape[3] > 1:
@@ -402,6 +398,7 @@ def plot(cfg, data):
 
 
 def normalize(array, method, dims):
+    """Divide and shift values along dims depending on method."""
     shift = 0
     norm = 1
     if "mean" in method:
