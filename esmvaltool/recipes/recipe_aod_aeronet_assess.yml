@@ -14,6 +14,7 @@ documentation:
   maintainer:
     - hogan_emma
     - lillis_jon
+    - hardacre_catherine
 
   projects:
     - esmval
@@ -56,7 +57,7 @@ diagnostics:
           - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f1, grid: gn}
 
     scripts:
-      script1:
+      aeronet:
         script: aerosols/aod_aeronet_assess.py
         observational_dataset: AERONET
         quickplot:
