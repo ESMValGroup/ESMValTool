@@ -225,7 +225,7 @@ def split_legend(cfg, grid, data):
     size = cfg["legend"].get("size", 0.5)  # rect width in physical size (inch)
     fig_size = fig.get_size_inches()  # physical size of figure
     ax_size = (size / fig_size[0], size / fig_size[1])  # legend (fig coords)
-    gaps = (0.3 / fig_size[0], 0.3 / fig_size[1])  # margins (fig coords)
+    gaps = [0.3 / fig_size[0], 0.3 / fig_size[1]]  # margins (fig coords)
     # anchor legend on origin of first plot or colorbar
     anchor = grid[0].get_position().bounds  # relative figure coordinates
     if cfg["legend"].get("position", "right") == "right":

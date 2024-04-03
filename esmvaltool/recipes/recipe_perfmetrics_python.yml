@@ -1,5 +1,5 @@
 # ESMValTool
-# 
+#
 ---
 documentation:
   title: Performance metrics plots.
@@ -123,15 +123,15 @@ diagnostics:
         <<: *var_default
     scripts:
       perfmetrics:
-        script: perfmetrics/main.py
+        script: perfmetrics/portrait_plot.py
         y_by: variable_group
 
   complex:
     description: >
-      A more complex example with extra variables to support different reference datasets, 
+      A more complex example with extra variables to support different reference datasets,
       groups for datasets and some plot customization.
     variables:
-      pr: 
+      pr:
         <<: *var_default
         y_label: Precipitation
       pr_vs_access: &var_default_ref2
@@ -147,7 +147,8 @@ diagnostics:
         split: "ERA5"
         y_label: Precipitation
         additional_datasets: &ref_era
-          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, timerange: 1990/1992, reference_for_metric: true}
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, timerange: 1990/1992, reference_for_metric: true}
       tas:
         <<: *var_default
         y_label: Temperature
@@ -157,7 +158,7 @@ diagnostics:
         short_name: tas
         <<: *var_default_ref2
         y_label: Temperature
-      rlut: 
+      rlut:
         <<: *var_default
         y_label: "LW radiation out"
 
@@ -174,21 +175,22 @@ diagnostics:
         short_name: clt
         split: "ESACCI"
         y_label: "Cloud cover"
-        additional_datasets: 
-          - {reference_for_metric: true, dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2, timerange: '1990/1992'}
+        additional_datasets:
+          - {reference_for_metric: true, dataset: ESACCI-CLOUD, project: OBS,
+             type: sat, version: AVHRR-fv3.0, tier: 2, timerange: '1990/1992'}
       psl:
         <<: *var_default
         y_label: "Sea level pressure"
 
 
     additional_datasets:
-      # - {dataset: ERA5, project: native6, type: reanaly, 
+      # - {dataset: ERA5, project: native6, type: reanaly,
       #   version: v1, tier: 3, reference_for_metric: true}
       - {<<: *cmip6, dataset: MPI-ESM-MR, type: exp, project: CMIP5, exp: historical, ensemble: r1i1p1}
 
     scripts:
       perfmetrics:
-        script: perfmetrics/main.py
+        script: perfmetrics/portrait_plot.py
         x_by: dataset
         y_by: y_label
         # split_by is the 'split' extra facet by default (set in variables)
@@ -196,11 +198,11 @@ diagnostics:
         additional_datasets:
           - {<<: *cmip6, dataset: MPI-ESM-MR, type: exp, project: CMIP5, exp: historical, ensemble: r1i1p1}
         plot_kwargs:
-          vmin: 0.0
-          vmax: 0.6
+          vmin: 0.5
+          vmax: 1.0
         cbar_kwargs:
           label: "Pearson correlation coefficient"
-          ticks: [0, 0.3, 0.6]
+          ticks: [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
           extend: both
         cmap: "Reds"
   metrics:
@@ -234,7 +236,7 @@ diagnostics:
         preprocessor: rmse
     scripts:
       perfmetrics:
-        script: perfmetrics/main.py
+        script: perfmetrics/portrait_plot.py
         y_by: y_label
         plot_kwargs:
           vmin: 0
