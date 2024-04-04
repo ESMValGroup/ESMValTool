@@ -9,11 +9,10 @@ import numpy as np
 
 
 class AeroAnsError(Exception):
-    """Exception class for errors raised when model data is checked in the
-      extract_pt module.
-    """
-    pass
 
+    """Exception class for errors raised when model data is checked in the
+    extract_pt module.
+    """
 
 def add_bounds(cube):
     """Add bounds to a cubes latitude and longitude coordinates.
@@ -88,9 +87,9 @@ def extract_pt(icube, pt_lat, pt_lon, **kwargs):
         pt_lon1.append(pt_lon)
 
     else:
-        for n in np.arange(len(pt_lat)):
-            pt_lat1.append(pt_lat[n])
-            pt_lon1.append(pt_lon[n])
+        for n_lat in np.arange(len(pt_lat)):
+            pt_lat1.append(pt_lat[n_lat])
+            pt_lon1.append(pt_lon[n_lat])
 
     if len(pt_lat1) != len(pt_lon1):
         raise AeroAnsError('Extract_pt:Mismatch in number of lat/long values')
@@ -153,8 +152,9 @@ def extract_pt(icube, pt_lat, pt_lon, **kwargs):
 
     data_out = []
 
-    for n in np.arange(len(pt_lat1)):
-        pt_coords = [('latitude', pt_lat1[n]), ('longitude', pt_lon1[n])]
+    for n_lat1 in np.arange(len(pt_lat1)):
+        pt_coords = [('latitude', pt_lat1[n_lat1]),
+                     ('longitude', pt_lon1[n_lat1])]
 
         if 'nearest' in kwargs and kwargs['nearest']:
             tcube = icube.interpolate(pt_coords, iris.analysis.Nearest())
@@ -165,9 +165,9 @@ def extract_pt(icube, pt_lat, pt_lon, **kwargs):
         # Extract at requested height
 
         if 'height' in kwargs:
-            pt = max(pt_hgt[n], hgt_min)
-            pt = min(pt_hgt[n], hgt_max)
-            pt_coords = [('altitude', pt)]
+            point = max(pt_hgt[n_lat1], hgt_min)
+            point = min(pt_hgt[n_lat1], hgt_max)
+            pt_coords = [('altitude', point)]
 
             if 'nearest' in kwargs and kwargs['nearest']:
                 tcube = tcube.interpolate(pt_coords, iris.analysis.Nearest())
