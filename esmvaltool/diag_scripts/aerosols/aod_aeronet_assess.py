@@ -4,18 +4,16 @@ observations."""
 import logging
 import os
 
-import numpy as np
-from numpy import ma
-import scipy
-
 import iris
 import iris.plot as iplt
 import matplotlib.cm as mpl_cm
 import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
-
+import numpy as np
+import scipy
 from aero_utils import add_bounds, extract_pt
 from matplotlib import colors, gridspec
+from numpy import ma
 
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
@@ -179,12 +177,11 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
 
         # Match Aeronet obs season with model season number
         model_sn = [c.lower() for c in clim_seas
-                 ].index(season.coord("clim_season").points[0])
+                    ].index(season.coord("clim_season").points[0])
         model_season = model_data[model_sn]
 
-        logger.info(
-            'Analysing AOD for %s', {model_id}, ': %s', {clim_seas[model_sn]}
-        )
+        logger.info('Analysing AOD for %s', {model_id}, ': %s',
+                    {clim_seas[model_sn]})
 
         # Generate statistics required - area-weighted mean
         grid_areas = iris.analysis.cartography.area_weights(model_season)
@@ -231,8 +228,8 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
 
         n_stn = str(len(valid_obs))
         title = ("\nTotal Aerosol Optical Depth at " + wv_mi + " microns" +
-                 "\n" + model_id + ", " + clim_seas[model_sn] + ", N stations=" +
-                 n_stn)
+                 "\n" + model_id + ", " + clim_seas[model_sn] +
+                 ", N stations=" + n_stn)
 
         # Plot dictionary
         plot_dict = {
@@ -246,7 +243,8 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
             "Title": title,
             "Season": clim_seas[model_sn],
         }
-        plot_aod_mod_obs(model_season, seas_anet_obs, aeronet_obs_cube, plot_dict)
+        plot_aod_mod_obs(model_season, seas_anet_obs, aeronet_obs_cube,
+                         plot_dict)
 
         figures.append(fig_cf)
 
@@ -290,7 +288,7 @@ def preprocess_aod_obs_dataset(obs_dataset):
     """Calculate a multiannual seasonal mean 'climatology' for AOD at each
     AERONET station using the observational timeseries data. The climatiology
     is processed using user defined thresholds to specify the amount of valid
-    data needed to calculate the climatology. 
+    data needed to calculate the climatology.
 
     Parameters
     ----------
@@ -317,8 +315,7 @@ def preprocess_aod_obs_dataset(obs_dataset):
 
     iris.coord_categorisation.add_season_year(obs_cube,
                                               'time',
-                                              name='season_year'
-    )
+                                              name='season_year')
 
     # Copy obs cube and mask all months with fewer
     # "Number of days" than given threshold.
@@ -397,7 +394,7 @@ def main(config):
     wavel = "440"
 
     # Produce climatology for observational dataset
-#    obs_dataset_name = config["observational_dataset"]
+    #    obs_dataset_name = config["observational_dataset"]
     obs_dataset = datasets.pop(config["observational_dataset"])
     obs_cube = preprocess_aod_obs_dataset(obs_dataset)
 
@@ -429,8 +426,7 @@ def main(config):
             figures, fig_scatter = aod_analyse(cube,
                                                obs_cube,
                                                seasons,
-                                               wavel=wavel
-            )
+                                               wavel=wavel)
 
         # Save the scatter plot
         output_file = plot_file_prefix + "scatter"

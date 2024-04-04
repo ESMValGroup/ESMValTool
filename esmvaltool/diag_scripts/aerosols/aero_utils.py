@@ -107,7 +107,6 @@ def extract_pt(icube, pt_lat, pt_lon, **kwargs):
         coordinate is requested, but not present in the cube. OR if the numbers
         of latitude/longitude and height points are mismatched. OR if height
         is requested but the cube does not contain and altitude coordinate.
-
     """
 
     # Check that input data is a (single) cube
@@ -150,9 +149,7 @@ def extract_pt(icube, pt_lat, pt_lon, **kwargs):
             pt_hgt.append(kwargs['height'])
 
         else:
-            pt_height.extend(kwargs['height'])
-#            for n in np.arange(len(kwargs['height'])):
-#                pt_hgt.append(kwargs['height'][n])
+            pt_hgt.extend(kwargs['height'])
 
         if len(pt_lat1) != len(pt_hgt):
             raise AeroAnsError(
