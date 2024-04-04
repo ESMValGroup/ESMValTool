@@ -1,11 +1,18 @@
 """
-ESMValTool diagnostic for ESA CCI LST data.
-
-The code uses the all time average monthly data.
-The ouptput is a timeseries plot of the mean differnce of
-CCI LST to model ensemble average, with the ensemble spread
-represented by a standard deviation either side of the mean.
+ESMValTool diagnostic for ESA CCI LST V3 data - Uncertainity Propagation
 """
+
+# Expected keys for OBS LST data in loaded_data:
+# ts_day
+# ts_night
+# lst_unc_loc_sfc_day 
+# lst_unc_loc_sfc_night
+# lst_unc_loc_atm_day 
+# lst_unc_loc_atm_night
+# lst_unc_sys_day 
+# lst_unc_sys_night
+# lst_unc_ran_day 
+# lst_unc_ran_night
 
 import logging
 import time
@@ -37,9 +44,8 @@ def _get_input_cubes(metadata):
     """
     inputs = {}
     ancestors = {}
-    print('/\/\/\/\/\/\/\/\/\/\/')
     for attributes in metadata:
-        print(attributes)
+
         short_name = attributes['short_name']
         filename = attributes['filename']
         logger.info("Loading variable %s", short_name)
@@ -47,7 +53,7 @@ def _get_input_cubes(metadata):
         cube.attributes.clear()
         inputs[short_name] = cube
         ancestors[short_name] = [filename]
-        print('@@@@@@@@@@@@@@@@@@@@@@')
+
     return inputs, ancestors
 
 
@@ -92,46 +98,42 @@ def _diagnostic(config):
 
     Returns
     -------
-    figures made by make_plots.
+    
     """
     # this loading function is based on the hydrology diagnostic
     input_metadata = config['input_data'].values()
-    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-    print(input_metadata)
-    print('bbbbbbbbbbbbbbbbb')
     loaded_data = {}
     ancestor_list = []
-    print('ccccccccccccccccccccccccccccccccccccccccccccccccc')
-    print(group_metadata(input_metadata, 'dataset'))
-    print('dddddddddddddddddddddddddddddddddddddddddddddddddddddddd')
+
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         print(dataset, metadata)
         cubes, ancestors = _get_input_cubes(metadata)
         print(cubes, ancestors)
         loaded_data[dataset] = cubes
-        # ancestor_list.append(ancestors['ts'][0])
 
-    print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
-    print(ancestor_list)
-    print('*************************************')
-
-    # loaded data is a nested dictionary
-    # KEY1 model ESACCI-LST or something else
-    # KEY2 is ts, the surface temperature
-    # ie loaded_data['ESACCI-LST']['ts'] is the CCI cube
-    #    loaded_data['MultiModelMean']['ts'] is CMIP6 data, emsemble means
-    #    similarly dor Std, see preprocessor
-
-    # The Diagnostic uses CCI - MODEL
+    # for now leave this so it appears in the log file
     print('###########################################')
     print(loaded_data)
     print('##########################################')
 
-    START = time.time()
-    for KEY in loaded_data['ESACCI-LST'].keys():
-        xyz = np.mean(loaded_data['ESACCI-LST'][KEY].data)
-        print(f'{KEY} {xyz}')
-    print(f'TIME {time.time()-START}')
+
+    # add calls to propagation equations here
+
+    ts_day_mean = eq_arithmetic_mean(loaded_data['ESACCI-LST']['ts_day'])
+
+
+    print('*********************')
+    print(f'ts_day mean {ts_day_mean.data}')
+
+# make function for each propagation equation
+def eq_arithmetic_mean(cube):
+    """Arithmetic mean of cube, across latitude and longitude
+    ATBD eq 1
+    """
+
+    out_cube = cube.collapsed(['latitude','longitude'], iris.analysis.MEAN)
+
+    return out_cube
 
 
 if __name__ == '__main__':
