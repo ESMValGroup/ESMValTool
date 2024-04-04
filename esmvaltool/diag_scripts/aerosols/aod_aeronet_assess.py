@@ -1,5 +1,5 @@
-"""Implement the AOD climatology metric from ground-based AeroNet
-observations."""
+"""Implement the AOD climatology metric from ground-based AeroNet observations.
+"""
 import logging
 import os
 
@@ -102,11 +102,6 @@ def plot_aod_mod_obs(md_data, obs_data, aeronet_obs_cube, plot_dict):
     plt.figtext(
         0.12,
         0.27,
-#        ("Global mean AOD={0:6.3f}; "
-#         "RMSE={1:6.3f}; Stn mean: "
-#         "md={2:6.3f}; obs={3:6.3f}".format(
-#             plot_dict["Mean_aod"], plot_dict["RMS_aod"],
-#             plot_dict["Stn_mn_md"], plot_dict["Stn_mn_obs"])),
         (f'''Global mean AOD={plot_dict["Mean_aod"]:.3f}; RMSE='''
          f'''{plot_dict["RMS_aod"]:.3f}; Stn mean: md='''
          f'''{plot_dict["Stn_mn_md"]:.3f}; obs='''
