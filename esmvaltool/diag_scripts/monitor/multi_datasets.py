@@ -225,13 +225,17 @@ plot_kwargs: dict, optional
     ``plot_func``. String arguments can include facets in curly brackets which
     will be derived from the corresponding dataset, e.g., ``{project}``,
     ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
-    {vmin: 200, vmax: 250}``.
+    {vmin: 200, vmax: 250}``. In addition to the normalization_ options
+    supported by the plot function, the option ``norm: centered`` can be
+    specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
+    be used instead of ``vmin`` or ``vmax`` (see
+    :class:`~matplotlib.colors.CenteredNorm`).
 plot_kwargs_bias: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``
     for plotting biases. These keyword arguments update (and potentially
     overwrite) the ``plot_kwargs`` for the bias plot. This option has no effect
     if no reference dataset is given. See option ``plot_kwargs`` for more
-    details. By default, uses ``cmap: bwr``.
+    details. By default, uses ``cmap: bwr`` and ``norm: centered``.
 projection: str, optional (default: 'Robinson')
     Projection used for the map plot. Needs to be a valid projection class of
     :mod:`cartopy.crs`. Keyword arguments can be specified using the option
@@ -248,10 +252,9 @@ pyplot_kwargs: dict, optional
     ``{project}``, ``{short_name}``, ``{exp}``.  Examples: ``title: 'Awesome
     Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
 rasterize: bool, optional (default: True)
-    If ``True``, use `rasterization
-    <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
-    map plots to produce smaller files. This is only relevant for vector
-    graphics (e.g., ``output_file_type=pdf,svg,ps``).
+    If ``True``, use rasterization_ for map plots to produce smaller files.
+    This is only relevant for vector graphics (e.g., ``output_file_type:
+    pdf,svg,ps``).
 show_stats: bool, optional (default: True)
     Show basic statistics on the plots.
 x_pos_stats_avg: float, optional (default: 0.0)
@@ -309,13 +312,17 @@ plot_kwargs: dict, optional
     ``plot_func``. String arguments can include facets in curly brackets which
     will be derived from the corresponding dataset, e.g., ``{project}``,
     ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
-    {vmin: 200, vmax: 250}``.
+    {vmin: 200, vmax: 250}``. In addition to the normalization_ options
+    supported by the plot function, the option ``norm: centered`` can be
+    specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
+    be used instead of ``vmin`` or ``vmax`` (see
+    :class:`~matplotlib.colors.CenteredNorm`).
 plot_kwargs_bias: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``
     for plotting biases. These keyword arguments update (and potentially
     overwrite) the ``plot_kwargs`` for the bias plot. This option has no effect
     if no reference dataset is given. See option ``plot_kwargs`` for more
-    details. By default, uses ``cmap: bwr``.
+    details. By default, uses ``cmap: bwr`` and ``norm: centered``.
 pyplot_kwargs: dict, optional
     Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
@@ -324,10 +331,9 @@ pyplot_kwargs: dict, optional
     ``{project}``, ``{short_name}``, ``{exp}``.  Examples: ``title: 'Awesome
     Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
 rasterize: bool, optional (default: True)
-    If ``True``, use `rasterization
-    <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
-    profile plots to produce smaller files. This is only relevant for vector
-    graphics (e.g., ``output_file_type=pdf,svg,ps``).
+    If ``True``, use rasterization_ for profile plots to produce smaller files.
+    This is only relevant for vector graphics (e.g., ``output_file_type:
+    pdf,svg,ps``).
 show_stats: bool, optional (default: True)
     Show basic statistics on the plots.
 show_y_minor_ticklabels: bool, optional (default: False)
@@ -456,13 +462,17 @@ plot_kwargs: dict, optional
     ``plot_func``. String arguments can include facets in curly brackets which
     will be derived from the corresponding dataset, e.g., ``{project}``,
     ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
-    {vmin: 200, vmax: 250}``.
+    {vmin: 200, vmax: 250}``. In addition to the normalization_ options
+    supported by the plot function, the option ``norm: centered`` can be
+    specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
+    be used instead of ``vmin`` or ``vmax`` (see
+    :class:`~matplotlib.colors.CenteredNorm`).
 plot_kwargs_bias: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``
     for plotting biases. These keyword arguments update (and potentially
     overwrite) the ``plot_kwargs`` for the bias plot. This option has no effect
     if no reference dataset is given. See option ``plot_kwargs`` for more
-    details. By default, uses ``cmap: bwr``.
+    details. By default, uses ``cmap: bwr`` and ``norm: centered``.
 pyplot_kwargs: dict, optional
     Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
@@ -471,10 +481,9 @@ pyplot_kwargs: dict, optional
     ``{project}``, ``{short_name}``, ``{exp}``.  Examples: ``title: 'Awesome
     Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
 rasterize: bool, optional (default: True)
-    If ``True``, use `rasterization
-    <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
-    profile plots to produce smaller files. This is only relevant for vector
-    graphics (e.g., ``output_file_type=pdf,svg,ps``).
+    If ``True``, use rasterization_ for profile plots to produce smaller files.
+    This is only relevant for vector graphics (e.g., ``output_file_type:
+    pdf,svg,ps``).
 show_stats: bool, optional (default: True)
     Show basic statistics on the plots.
 show_y_minor_ticklabels: bool, optional (default: False)
@@ -536,13 +545,17 @@ plot_kwargs: dict, optional
     ``plot_func``. String arguments can include facets in curly brackets which
     will be derived from the corresponding dataset, e.g., ``{project}``,
     ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
-    {vmin: 200, vmax: 250}``.
+    {vmin: 200, vmax: 250}``. In addition to the normalization_ options
+    supported by the plot function, the option ``norm: centered`` can be
+    specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
+    be used instead of ``vmin`` or ``vmax`` (see
+    :class:`~matplotlib.colors.CenteredNorm`).
 plot_kwargs_bias: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``
     for plotting biases. These keyword arguments update (and potentially
     overwrite) the ``plot_kwargs`` for the bias plot. This option has no effect
     if no reference dataset is given. See option ``plot_kwargs`` for more
-    details. By default, uses ``cmap: bwr``.
+    details. By default, uses ``cmap: bwr`` and ``norm: centered``.
 pyplot_kwargs: dict, optional
     Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
@@ -550,11 +563,10 @@ pyplot_kwargs: dict, optional
     curly brackets which will be derived from the corresponding dataset, e.g.,
     ``{project}``, ``{short_name}``, ``{exp}``.  Examples: ``title: 'Awesome
     Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
-rasterize: bool, optional (default: False)
-    If ``True``, use `rasterization
-    <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
-    profile plots to produce smaller files. This is only relevant for vector
-    graphics (e.g., ``output_file_type=pdf,svg,ps``).
+rasterize: bool, optional (default: True)
+    If ``True``, use rasterization_ for profile plots to produce smaller files.
+    This is only relevant for vector graphics (e.g., ``output_file_type:
+    pdf,svg,ps``).
 show_y_minor_ticks: bool, optional (default: True)
     Show minor ticks for time on the Y axis.
 show_x_minor_ticks: bool, optional (default: True)
@@ -570,8 +582,14 @@ time_format: str, optional (default: None)
    anchors to share the configuration of common arguments with other monitor
    diagnostic script.
 
+.. _rasterization: https://matplotlib.org/stable/gallery/misc/
+   rasterization_demo.html
+.. _normalization: https://matplotlib.org/stable/users/explain/colors/
+   colormapnorms.html
+
 """
 import logging
+import warnings
 from copy import deepcopy
 from pathlib import Path
 from pprint import pformat
@@ -586,6 +604,7 @@ import seaborn as sns
 from iris.analysis.cartography import area_weights
 from iris.coord_categorisation import add_year
 from iris.coords import AuxCoord
+from matplotlib.colors import CenteredNorm
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import (
     AutoMinorLocator,
@@ -703,6 +722,9 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type]['plot_kwargs_bias'].setdefault(
                     'cmap', 'bwr'
                 )
+                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
+                    'norm', 'centered'
+                )
                 if 'projection' not in self.plots[plot_type]:
                     self.plots[plot_type].setdefault('projection', 'Robinson')
                     self.plots[plot_type].setdefault(
@@ -733,6 +755,9 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('plot_kwargs_bias', {})
                 self.plots[plot_type]['plot_kwargs_bias'].setdefault(
                     'cmap', 'bwr'
+                )
+                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
+                    'norm', 'centered'
                 )
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
                 self.plots[plot_type].setdefault('rasterize', True)
@@ -776,6 +801,9 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('plot_kwargs_bias', {})
                 self.plots[plot_type]['plot_kwargs_bias'].setdefault(
                     'cmap', 'bwr')
+                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
+                    'norm', 'centered'
+                )
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
                 self.plots[plot_type].setdefault('rasterize', True)
                 self.plots[plot_type].setdefault('show_stats', True)
@@ -802,8 +830,11 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type]['plot_kwargs_bias'].setdefault(
                     'cmap', 'bwr'
                 )
+                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
+                    'norm', 'centered'
+                )
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
-                self.plots[plot_type].setdefault('rasterize', False)
+                self.plots[plot_type].setdefault('rasterize', True)
                 self.plots[plot_type].setdefault(
                     'show_y_minor_ticks', True
                 )
@@ -915,15 +946,24 @@ class MultiDatasets(MonitorBase):
                 mean.data,
                 dataset['units'],
             )
-        axes.text(x_pos, y_pos, f"{mean.data:.2f}{cube.units}",
-                  fontsize=fontsize, transform=axes.transAxes)
+        if np.abs(mean.data) >= 0.1:
+            mean_val = f"{mean.data:.2f} {cube.units}"
+        else:
+            mean_val = f"{mean.data:.2e} {cube.units}"
+        axes.text(
+            x_pos, y_pos, mean_val, fontsize=fontsize, transform=axes.transAxes
+        )
         if ref_cube is None:
             return
 
         # Weighted RMSE
         rmse = (cube - ref_cube).collapsed(dim_coords, iris.analysis.RMS,
                                            weights=weights)
-        axes.text(x_pos_bias, y_pos, f"RMSE={rmse.data:.2f}{cube.units}",
+        if np.abs(rmse.data) >= 0.1:
+            rmse_val = f"{rmse.data:.2f} {cube.units}"
+        else:
+            rmse_val = f"{rmse.data:.2e} {cube.units}"
+        axes.text(x_pos_bias, y_pos, f"RMSE={rmse_val}",
                   fontsize=fontsize, transform=axes.transAxes)
         logger.info(
             "Area-weighted RMSE of %s for %s = %f%s",
@@ -1043,6 +1083,13 @@ class MultiDatasets(MonitorBase):
                          'variable_vs_lat'):
             plot_kwargs.setdefault('label', label)
 
+        if plot_kwargs.get('norm') == 'centered':
+            norm = CenteredNorm(
+                vcenter=plot_kwargs.pop('vcenter', 0.0),
+                halfrange=plot_kwargs.pop('halfrange', None),
+            )
+            plot_kwargs['norm'] = norm
+
         return deepcopy(plot_kwargs)
 
     def _load_and_preprocess_data(self):
@@ -1155,8 +1202,7 @@ class MultiDatasets(MonitorBase):
                             ref_dataset)
 
             # Customize plot
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             self._process_pyplot_kwargs(plot_type, dataset)
 
             # Rasterization
@@ -1211,8 +1257,7 @@ class MultiDatasets(MonitorBase):
 
             # Customize plot
             axes.set_title(self._get_label(dataset))
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             self._process_pyplot_kwargs(plot_type, dataset)
 
             # Rasterization
@@ -1313,8 +1358,7 @@ class MultiDatasets(MonitorBase):
                             ref_dataset)
 
             # Customize plot
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             self._process_pyplot_kwargs(plot_type, dataset)
 
             # Rasterization
@@ -1366,8 +1410,7 @@ class MultiDatasets(MonitorBase):
 
             # Customize plot
             axes.set_title(self._get_label(dataset))
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             axes.set_xlabel('latitude [°N]')
             z_coord = cube.coord(axis='Z')
             axes.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
@@ -1425,8 +1468,7 @@ class MultiDatasets(MonitorBase):
 
             # Customize plot
             axes.set_title(self._get_label(dataset))
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             z_coord = cube.coord(axis='Z')
             axes.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
             if self.plots[plot_type]['log_y']:
@@ -1552,8 +1594,7 @@ class MultiDatasets(MonitorBase):
                             ref_dataset)
 
             # Customize plot
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             self._process_pyplot_kwargs(plot_type, dataset)
 
             # Rasterization
@@ -1661,8 +1702,7 @@ class MultiDatasets(MonitorBase):
             cbar_bias.ax.tick_params(labelsize=fontsize)
 
             # Customize plot
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             self._process_pyplot_kwargs(plot_type, dataset)
 
             # Rasterization
@@ -1714,8 +1754,7 @@ class MultiDatasets(MonitorBase):
 
             # Customize plot
             axes.set_title(self._get_label(dataset))
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             if 'latitude' in dim_coords_dat:
                 axes.set_xlabel('latitude [°N]')
             elif 'longitude' in dim_coords_dat:
@@ -1804,7 +1843,7 @@ class MultiDatasets(MonitorBase):
         multi_dataset_facets = {}
         for key in all_keys:
             if all(d.get(key) == datasets[0].get(key) for d in datasets):
-                multi_dataset_facets[key] = datasets[0][key]
+                multi_dataset_facets[key] = datasets[0].get(key)
             else:
                 multi_dataset_facets[key] = f'ambiguous_{key}'
         return multi_dataset_facets
@@ -2020,8 +2059,7 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Map plot of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"from {dataset['start_year']} to {dataset['end_year']}."
+                    f"{dataset['alias']}."
                 )
             else:
                 (plot_path, netcdf_paths) = (
@@ -2029,10 +2067,8 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Map plot of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"including bias relative to {ref_dataset['dataset']} "
-                    f"(project {ref_dataset['project']}) from "
-                    f"{dataset['start_year']} to {dataset['end_year']}."
+                    f"{dataset['alias']} including bias relative to "
+                    f"{ref_dataset['alias']}."
                 )
                 ancestors.append(ref_dataset['filename'])
 
@@ -2097,8 +2133,7 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Zonal mean profile of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"from {dataset['start_year']} to {dataset['end_year']}."
+                    f"{dataset['alias']}."
                 )
             else:
                 (plot_path, netcdf_paths) = (
@@ -2107,10 +2142,8 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Zonal mean profile of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"including bias relative to {ref_dataset['dataset']} "
-                    f"(project {ref_dataset['project']}) from "
-                    f"{dataset['start_year']} to {dataset['end_year']}."
+                    f"{dataset['alias']} including bias relative to "
+                    f"{ref_dataset['alias']}."
                 )
                 ancestors.append(ref_dataset['filename'])
 
@@ -2351,20 +2384,17 @@ class MultiDatasets(MonitorBase):
                      plot_func, dataset))
                 caption = (
                     f"Hovmoeller Z vs. time plot of {dataset['long_name']} "
-                    f"of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"from {dataset['start_year']} to {dataset['end_year']}.")
+                    f"of dataset {dataset['alias']}."
+                )
             else:
                 (plot_path,
                  netcdf_paths) = (self._plot_hovmoeller_z_vs_time_with_ref(
                      plot_func, dataset, ref_dataset))
                 caption = (
                     f"Hovmoeller Z vs. time plot of {dataset['long_name']} "
-                    f"of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"including bias relative to {ref_dataset['dataset']} "
-                    f"(project {ref_dataset['project']}) from "
-                    f"{dataset['start_year']} to {dataset['end_year']}.")
+                    f"of dataset {dataset['alias']} including bias relative "
+                    f"to {ref_dataset['alias']}."
+                )
                 ancestors.append(ref_dataset['filename'])
 
             # If statistics are shown add a brief description to the caption
@@ -2429,8 +2459,7 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Hovmoeller plot of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"from {dataset['start_year']} to {dataset['end_year']}."
+                    f"{dataset['alias']}."
                 )
             else:
                 (plot_path, netcdf_paths) = (
@@ -2439,10 +2468,8 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Hovmoeller plot of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"including bias relative to {ref_dataset['dataset']} "
-                    f"(project {ref_dataset['project']}) from "
-                    f"{dataset['start_year']} to {dataset['end_year']}."
+                    f"{dataset['alias']} including bias relative to "
+                    f"{ref_dataset['alias']}."
                 )
                 ancestors.append(ref_dataset['filename'])
 
@@ -2485,7 +2512,14 @@ class MultiDatasets(MonitorBase):
 def main():
     """Run diagnostic."""
     with run_diagnostic() as config:
-        MultiDatasets(config).compute()
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                'ignore',
+                message="Using DEFAULT_SPHERICAL_EARTH_RADIUS",
+                category=UserWarning,
+                module='iris',
+            )
+            MultiDatasets(config).compute()
 
 
 if __name__ == '__main__':

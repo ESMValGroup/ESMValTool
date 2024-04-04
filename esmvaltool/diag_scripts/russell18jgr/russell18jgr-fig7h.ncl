@@ -64,7 +64,7 @@ begin
   dashes = project_style(input_file_info, diag_script_info, "dashes")
   thicks = project_style(input_file_info, diag_script_info, "thicks")
 
-  plotpath = config_user_info@plot_dir + "/Russell_figure7h_" + var0 + "_" \
+  plotpath = config_user_info@plot_dir + "Russell_figure7h_" + var0 + "_" \
     + sprinti("%0.4i", min(toint(start_years_data))) + "-" \
     + sprinti("%0.4i", max(toint(end_years_data)))
 
@@ -163,15 +163,6 @@ begin
     ncdf_outfile = ncdf_write(var_lon_avg, nc_filename)
     delete(var_lon_avg)
     delete(dataset)
-    log_provenance(ncdf_outfile, \
-                   plotpath, \
-                   "Russell et al 2018 figure 7h", \
-                   "mean", \
-                   "sh", \
-                   "zonal", \
-                   "russell_joellen", \
-                   "russell18jgr", \
-                   infile_path)
 
   end do
   draw(plot(0))
@@ -191,5 +182,17 @@ begin
   "lgMonoLineLabelFontColor" : True                    ; one label color
   end create
   draw(legend)
+
+  frame(wks)
+
+  log_provenance(ncdf_outfile, \
+                 plotpath + "." + output_type(), \
+                 "Russell et al 2018 figure 7h", \
+                 "mean", \
+                 "sh", \
+                 "zonal", \
+                 "russell_joellen", \
+                 "russell18jgr", \
+                 infile_path)
 
 end

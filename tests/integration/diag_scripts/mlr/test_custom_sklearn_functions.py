@@ -42,6 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-arguments
 
+import warnings
 from copy import copy, deepcopy
 
 import numpy as np
@@ -504,9 +505,9 @@ def test_is_pairwise():
     """Test ``_is_pairwise``."""
     # Simple checks for _is_pairwise
     pca = KernelPCA(kernel='precomputed')
-    with pytest.warns(None) as record:
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")  # make sure that no warning is raised
         assert _is_pairwise(pca)
-    assert not record
 
     # Pairwise attribute that is not consistent with the pairwise tag
     class IncorrectTagPCA(KernelPCA):
@@ -532,9 +533,9 @@ def test_is_pairwise():
 
     # Pairwise attribute is not defined thus tag is used
     est = BaseEstimator()
-    with pytest.warns(None) as record:
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")  # make sure that no warning is raised
         assert not _is_pairwise(est)
-    assert not record
 
 
 # _safe_split
