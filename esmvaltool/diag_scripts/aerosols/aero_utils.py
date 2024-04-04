@@ -4,25 +4,15 @@ This module contains utility functions commonly used by aerosol
 assessment routines.
 """
 
-import os
-
 import iris
 import numpy as np
 
 
 class AeroAnsError(Exception):
+    """Exception class for errors raised when model data is checked in the
+      extract_pt module.
+    """
     pass
-
-
-# Global variables
-
-# STASH - name mapping file
-
-PATH_AERO = os.path.abspath(os.path.dirname(__file__))
-seasons = ['djf', 'mam', 'jja', 'son']
-nseas = len(seasons)
-mm_dust = 0.100  # Mol mass dust(kg mol-1) - see UKCA_MODE_SETUP: 'mm' arrays
-earth_g = 9.80665  # m/s^2
 
 
 def add_bounds(cube):
@@ -45,31 +35,6 @@ def add_bounds(cube):
         cube.coord('longitude').guess_bounds()
 
     return cube
-
-
-def get_wavel_index(wavel):
-    """Return the pseudo-level index for given wavelength in AOD diags.
-
-    Parameters
-    ----------
-    wavel : str
-        A given wavelength.
-
-    Returns
-    -------
-    pseudo-level index : str
-        The pseudo-level index corresponding to the given wavelength.
-    """
-
-    # Wavelengths (nm)
-    cwavel = ['380', '440', '500', '675', '870', '1020']
-
-    try:
-        return cwavel.index(str(wavel)) + 1  # for 1: indexing in files
-
-    except AeroAnsError:
-        print('Get_Wavelen_Index: requested Wavelength not found' + str(wavel),
-              ' not in ', cwavel)
 
 
 def extract_pt(icube, pt_lat, pt_lon, **kwargs):
@@ -110,7 +75,6 @@ def extract_pt(icube, pt_lat, pt_lon, **kwargs):
     """
 
     # Check that input data is a (single) cube
-
     if not isinstance(icube, iris.cube.Cube):
         raise AeroAnsError('Extract_pt:First argument must be a single cube')
 
@@ -160,13 +124,12 @@ def extract_pt(icube, pt_lat, pt_lon, **kwargs):
             raise AeroAnsError(
                 'Extract_pt:Height requested but input data does not contain \
                 "Altitude" coordinate')
-        else:
 
-            # Store the min and max altitudes from cube data so that user
-            # cannot request points located below/ above that.
-            # Will extract =min/max if beyond limits.
-            hgt_min = icube.coord('altitude').points.min()
-            hgt_max = icube.coord('altitude').points.max()
+        # Store the min and max altitudes from cube data so that user
+        # cannot request points located below/ above that.
+        # Will extract =min/max if beyond limits.
+        hgt_min = icube.coord('altitude').points.min()
+        hgt_max = icube.coord('altitude').points.max()
 
     # ---------- Finished checks -- begin processing -------------------------
 
