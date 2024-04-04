@@ -3,15 +3,20 @@
     UTC mode = True
 
 [task parameters]
-    recipe = radiation_budget, albedolandcover, heatwaves_coldwaves, \
-             ensclus, autoassess_landsurface_soilmoisture
+    # `fast` recipes are those taking less than 10 mins.
+    # Other recipes should be included in `medium`
+    fast = radiation_budget, albedolandcover, heatwaves_coldwaves, \
+           examples--recipe_autoassess_landsurface_soilmoisture
+    medium = ensclus  # Should be in fast: is in medium temporarily to
+                      # avoid empty variable
 
 [scheduling]
     initial cycle point = {{ START_DATE }}T{{ RUN_TIME }}
     [[graph]]
         R1 = "install_env_file => get_esmval"
         P1D = """@wall_clock => get_esmval => configure
-                configure => process<recipe> => compare<recipe>"""
+                configure => process<fast> => compare<fast>
+                configure => process<medium> => compare<medium>"""
 
 [runtime]
     [[root]]
@@ -60,17 +65,30 @@
             ROOTPATH_OBS4MIPS = {{ ROOTPATH_OBS4MIPS }}
             ROOTPATH_RAWOBS = {{ ROOTPATH_RAWOBS }}
 
-    [[process<recipe>]]
+    [[process<fast>]]
         inherit = None, COMPUTE
         [[[environment]]]
             ROSE_TASK_APP = process
-            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_recipe}.yml"
+            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_fast}.yml"
 
-    [[compare<recipe>]]
+    [[process<medium>]]
+        inherit = None, COMPUTE
+        [[[environment]]]
+            ROSE_TASK_APP = process
+            RECIPE_NAME = "recipe_${CYLC_TASK_PARAM_medium}.yml"
+
+    [[compare<fast>]]
         inherit = None, COMPUTE
         [[[environment]]]
             ROSE_TASK_APP = compare
-            KGO_METRIC = "${CYLC_TASK_PARAM_recipe}"
+            KGO_METRIC = "${CYLC_TASK_PARAM_fast}"
+            KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
+
+    [[compare<medium>]]
+        inherit = None, COMPUTE
+        [[[environment]]]
+            ROSE_TASK_APP = compare
+            KGO_METRIC = "${CYLC_TASK_PARAM_medium}"
             KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
 
 {% include 'site/' ~ SITE ~ '.cylc' %}
