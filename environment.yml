@@ -44,10 +44,10 @@ dependencies:
   - pip !=21.3
   - progressbar2
   - prov
-  # - psyplot
-  # - psy-maps
-  # - psy-reg
-  # - psy-simple
+  - psyplot >=1.5.0  # earliest Py312 build
+  - psy-maps >=1.5.0  # earliest Py312 build
+  - psy-reg >=1.5.0  # earliest Py312 build
+  - psy-simple >=1.5.0  # earliest Py312 build
   - pyproj >=2.1
   - python >=3.12
   - python-cdo
