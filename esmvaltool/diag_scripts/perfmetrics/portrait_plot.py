@@ -220,10 +220,9 @@ def split_legend(cfg, grid, data):
     NOTE: maybe `mpl_toolkits.axes_grid1.axes_divider.AxesDivider` simplifies
     this a bit by using `append_axes`.
     """
-    fig = grid[0].get_figure()
-    fig.canvas.draw()  # set axes position in figure (dont call tight_layout())
+    grid[0].get_figure().canvas.draw()  # set axes position in figure
     size = cfg["legend"].get("size", 0.5)  # rect width in physical size (inch)
-    fig_size = fig.get_size_inches()  # physical size of figure
+    fig_size = grid[0].get_figure().get_size_inches()  # physical figure size
     ax_size = (size / fig_size[0], size / fig_size[1])  # legend (fig coords)
     gaps = [0.3 / fig_size[0], 0.3 / fig_size[1]]  # margins (fig coords)
     # anchor legend on origin of first plot or colorbar
@@ -237,32 +236,28 @@ def split_legend(cfg, grid, data):
         anchor = (anchor[0] - gaps[0] - ax_size[0] + cfg["legend"]["x_offset"],
                   anchor[1] - gaps[1] - ax_size[1] + cfg["legend"]["y_offset"])
     # create legend as empty imshow like axes in figure coordinates
-    legend = fig.add_axes([anchor[0], anchor[1], ax_size[0], ax_size[1]])
-    legend.imshow(np.zeros((1, 1)))  # same axes properties as main plot
-    legend.set_xticks([])
-    legend.set_yticks([])
-    twins = [legend.twiny(), legend.twinx()]
-    twins[1].set_yticks([])
-    twins[0].set_xticks([])
-    labels = data.coords[cfg["split_by"]].values
+    axes = {"main": grid[0].get_figure().add_axes([*anchor, *ax_size])}
+    axes["main"].imshow(np.zeros((1, 1)))  # same axes properties as main plot
+    axes["main"].set_xticks([])
+    axes["main"].set_yticks([])
+    axes["twiny"], axes["twinx"] = [axes["main"].twiny(), axes["main"].twinx()]
+    axes["twinx"].set_yticks([])
+    axes["twiny"].set_xticks([])
     label_at = [  # order matches get_triangle_nodes (halves and quarters)
-        legend.set_ylabel,  # left
-        twins[1].set_ylabel,  # right
-        legend.set_xlabel,  # bottom
-        twins[0].set_xlabel,  # top
+        axes["main"].set_ylabel,  # left
+        axes["twinx"].set_ylabel,  # right
+        axes["main"].set_xlabel,  # bottom
+        axes["twiny"].set_xlabel,  # top
     ]
-    for i, label in enumerate(labels):
-        nodes = get_triangle_nodes(i, len(labels))
-        colors = ["#bbb", "#ccc", "#ddd", "#eee"]
-        patch = patches.Polygon(
-            nodes,
-            closed=True,
-            facecolor=colors[i],
-            edgecolor="black",
-            linewidth=0.5,
-            fill=True,
-        )
-        legend.add_patch(patch)
+    for i, label in enumerate(data.coords[cfg["split_by"]].values):
+        axes["main"].add_patch(
+            patches.Polygon(get_triangle_nodes(
+                i, len(data.coords[cfg["split_by"]].values)),
+                            closed=True,
+                            facecolor=["#bbb", "#ccc", "#ddd", "#eee"][i],
+                            edgecolor="black",
+                            linewidth=0.5,
+                            fill=True))
         label_at[i](label)
 
 
@@ -290,7 +285,7 @@ def overlay_reference(cfg, axe, data, triangle):
 
 
 def plot_group(cfg, axe, data, title=None):
-    """Create matrix for one subplot in ax using plt.imshow()
+    """Create matrix for one subplot in ax using plt.imshow.
 
     by default split None is used, if all splits are named the first is
     used. Other splits will be added by overlaying triangles.
@@ -311,7 +306,7 @@ def plot_group(cfg, axe, data, title=None):
 
 
 def get_triangle_nodes(position, total_count=2):
-    """Returns list of nodes with relative x, y coordinates.
+    """Return list of nodes with relative x, y coordinates.
 
     The nodes of the triangle are given as list of three tuples. Each tuples
     contains relative coordinates (-0.5 to +0.5). For total of <= 2 a top left
@@ -357,9 +352,11 @@ def plot_overlays(cfg, grid, data):
 
 
 def plot(cfg, data):
-    """Creates figure with subplots for each group, sets same color range and
-    overlays additional references based on the content of data
-    (xr.DataArray)"""
+    """Create figure with subplots for each group.
+
+    sets same color range and  overlays additional references based on
+    the content of data (xr.DataArray)
+    """
     fig = plt.figure(1, cfg.get("figsize", (5.5, 3.5)))
     group_count = len(data.coords[cfg["group_by"]])
     grid = ImageGrid(
@@ -440,6 +437,7 @@ def main(cfg):
     remove_reference(metas)
     add_split_none(metas)
     dataset = load_data(cfg, metas)
+    dataset = dataset.sortby(dataset[cfg["x_by"]].str.lower())
     if cfg["normalize"] is not None:
         dataset["var"] = normalize(dataset["var"], cfg["normalize"],
                                    [cfg["x_by"], cfg["group_by"]])
