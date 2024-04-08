@@ -103,7 +103,7 @@ dependencies:
   - cdo
   - r-base >=3.5
   - r-abind
-  - r-akima  # <=0.6-2.3  # see https://github.com/ESMValGroup/ESMValTool/issues/2695
+  - r-akima
   - r-climdex.pcic
   - r-climprojdiags
   - r-docopt
