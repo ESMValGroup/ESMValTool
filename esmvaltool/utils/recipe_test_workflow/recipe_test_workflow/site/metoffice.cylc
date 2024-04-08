@@ -34,6 +34,12 @@
         execution time limit = PT2M
         [[[directives]]]
             --mem = 3G
+
+    [[process<fast=albedolandcover>]]
+        # Actual: 0m31s, 2.5 GB on 2024-04-08
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 3G
             
     [[process<medium=ensclus>]]
         # Actual: 2m10s, 2.4 GB on 2024-03-29
