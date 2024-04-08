@@ -22,7 +22,7 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
-  # - esmvalcore 2.10.*
+  # - esmvalcore 2.10.*  # needs support for Python 3.12
   - fiona
   - fire
   - gdal
@@ -46,7 +46,7 @@ dependencies:
   - prov
   - psyplot >=1.5.0  # earliest Py312 build
   - psy-maps >=1.5.0  # earliest Py312 build
-  # - psy-reg >=1.5.0  # earliest Py312 build; not yet at 1.5.0 (4 Apr 2024)
+  # - psy-reg >=1.5.0  # earliest Py312 build; not yet at 1.5.0 (4 Apr 2024); needs support for Python 3.12
   - psy-simple >=1.5.0  # earliest Py312 build
   - pyproj >=2.1
   - python >=3.12
@@ -87,14 +87,14 @@ dependencies:
   - imagehash
   - isort
   - pre-commit
-  # - prospector
+  # - prospector  # needs support for Python 3.12
   - pyroma
   # - vprof not on conda-forge
   - yamllint
   - yapf
 
   # NCL and dependencies
-  # - ncl
+  # - ncl  # needs support for Python 3.12
   - cdo
   - imagemagick
   - nco
