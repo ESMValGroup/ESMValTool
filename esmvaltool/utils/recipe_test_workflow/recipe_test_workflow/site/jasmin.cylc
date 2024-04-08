@@ -32,7 +32,7 @@
     # Resources for recipes that need more than the default. Both time and
     # memory should be specified, in case the default changes.
     # Variable (fast, medium) must be consistent with flow.cylc.
-    # Comment indicates example recorded usage on Jasmin.
+    # Comment indicates example recorded usage on JASMIN.
     [[process<fast=autoassess_landsurface_soilmoisture>]]
         # Actual: 1m35s, 2.1 GB on 2024-03-29
         execution time limit = PT3M
