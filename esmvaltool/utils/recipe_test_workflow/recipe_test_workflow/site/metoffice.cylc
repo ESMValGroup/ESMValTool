@@ -21,7 +21,7 @@
 
     [[get_esmval]]
         platform = localhost
-        execution time limit = PT30M
+        execution time limit = PT2M
         [[[directives]]]
             --mem = 2G
 
