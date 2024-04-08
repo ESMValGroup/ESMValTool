@@ -11,12 +11,14 @@
                       # avoid empty variable
 
 [scheduling]
-    initial cycle point = {{ START_DATE }}T{{ RUN_TIME }}
+    initial cycle point = now
     [[graph]]
-        R1 = "install_env_file => get_esmval"
-        P1D = """@wall_clock => get_esmval => configure
+        R1 = """install_env_file => get_esmval => configure
                 configure => process<fast> => compare<fast>
                 configure => process<medium> => compare<medium>"""
+        T01 = """@wall_clock => get_esmval => configure
+                 configure => process<fast> => compare<fast>
+                 configure => process<medium> => compare<medium>"""
 
 [runtime]
     [[root]]
