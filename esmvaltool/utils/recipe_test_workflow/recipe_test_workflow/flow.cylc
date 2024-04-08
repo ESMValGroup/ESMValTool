@@ -4,11 +4,11 @@
 
 [task parameters]
     # `fast` recipes are those taking less than 10 mins.
-    # Other recipes should be included in `medium`
+    # Other recipes should be included in `medium`.
     fast = radiation_budget, albedolandcover, heatwaves_coldwaves, \
            autoassess_landsurface_soilmoisture
     medium = ensclus  # Should be in fast: is in medium temporarily to
-                      # avoid empty variable
+                      # avoid empty variable.
 
 [scheduling]
     initial cycle point = now
