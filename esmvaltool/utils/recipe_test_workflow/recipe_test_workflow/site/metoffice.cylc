@@ -25,7 +25,8 @@
         [[[directives]]]
             --mem = 2G
 
-    # Resources for recipes that need more than the default.
+    # Resources for recipes that need more than the default. Both time and
+    # memory should be specified, in case the default changes.
     # Variable (fast, medium) must be consistent with flow.cylc.
     # Comment should indicate example recorded usage at Met Office.
     [[process<fast=autoassess_landsurface_soilmoisture>]]
