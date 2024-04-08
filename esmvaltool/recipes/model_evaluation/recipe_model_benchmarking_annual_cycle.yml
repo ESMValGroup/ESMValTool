@@ -50,7 +50,8 @@ datasets:
   - {dataset: IPSL-CM6A-LR}
   - {dataset: KACE-1-0-G}
   - {dataset: MCM-UA-1-0, grid: gn}
-  - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
+#  - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
+  - {dataset: MIROC6, grid: gn}
   - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
   - {dataset: MPI-ESM-1-2-HAM, grid: gn}
   - {dataset: MPI-ESM1-2-HR, grid: gn}
@@ -61,6 +62,8 @@ datasets:
   - {dataset: NorESM2-MM, grid: gn, institute: NCC}
   - {dataset: SAM0-UNICON, grid: gn}
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+  - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, supplementary_variables: [{short_name: areacella, skip: true}]}
+
 
 preprocessors:
 
@@ -79,7 +82,8 @@ preprocessors:
           percent: 10
         - operator: percentile
           percent: 90
-      exclude: [reference_dataset, MIROC6]
+#      exclude: [reference_dataset, MIROC6]
+      exclude: [reference_dataset, EMAC]
 
   pp_tas_metric:
     custom_order: true
@@ -100,7 +104,8 @@ preprocessors:
           percent: 10
         - operator: percentile
           percent: 90
-      exclude: [reference_dataset, MIROC6]
+#      exclude: [reference_dataset, MIROC6]
+      exclude: [reference_dataset, EMAC]
 
 
 diagnostics:
@@ -109,7 +114,8 @@ diagnostics:
     description: Create "classical" annual cycle plot including a reference dataset.
     variables:
       tas:
-        timerange: '2000/2009'
+#        timerange: '2000/2009'
+        timerange: '2000/2010'
         preprocessor: pp_tas
         project: CMIP6
         mip: Amon
@@ -131,7 +137,8 @@ diagnostics:
             annual_mean_kwargs: False
 #            legend_kwargs: False
             plot_kwargs:
-              MIROC6:
+#              MIROC6:
+              EMAC:
                 color: red
                 label: '{dataset}'
                 linestyle: '-'
@@ -166,7 +173,8 @@ diagnostics:
     description: Create "benchmarking" annual cycle plot.
     variables:
       tas:
-        timerange: '2000/2009'
+#        timerange: '2000/2009'
+        timerange: '2000/2010'
         preprocessor: pp_tas_metric
         project: CMIP6
         mip: Amon
@@ -189,7 +197,8 @@ diagnostics:
             annual_mean_kwargs: False
 #            legend_kwargs: False
             plot_kwargs:
-              MIROC6:
+#              MIROC6:
+              EMAC:
                 color: red
                 label: '{dataset}'
                 linestyle: '-'
