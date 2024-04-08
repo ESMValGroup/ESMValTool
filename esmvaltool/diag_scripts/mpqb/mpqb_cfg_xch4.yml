@@ -39,6 +39,8 @@ datasetnames:
   r10_NCEP-NCAR-R1: NCEP-NCAR-R1
   r11_NOAA-CIRES-20CR-V2: NOAA-CIRES-20CR-V2
   r12_NOAA-CIRES-20CR-V3: NOAA-CIRES-20CR-V3
+  cmip5: CMIP5
+  cmip6: CMIP6 
 
 datasetcolors:
   default: '#000000'
@@ -76,6 +78,8 @@ datasetcolors:
   r10_NCEP-NCAR-R1: '#0830a0'
   r11_NOAA-CIRES-20CR-V2: '#ff3020'
   r12_NOAA-CIRES-20CR-V3: '#ff3020'
+  cmip5: '#b3b3d9'
+  cmip6: '#d9b3b3'
 
 linestyles:
   default: 'solid'
@@ -113,6 +117,8 @@ linestyles:
   r10_NCEP-NCAR-R1: 'dashed'
   r11_NOAA-CIRES-20CR-V2: 'solid'
   r12_NOAA-CIRES-20CR-V3: 'dashed'
+  cmip5: 'solid'
+  cmip6: 'solid'
 
 linewidths:
   default: 0.5
@@ -150,6 +156,8 @@ linewidths:
   r10_NCEP-NCAR-R1: 0.5
   r11_NOAA-CIRES-20CR-V2: 0.5
   r12_NOAA-CIRES-20CR-V3: 0.5
+  cmip5: 0.25
+  cmip6: 0.25
 
 # From:
 # https://stackoverflow.com/questions/42086276/
