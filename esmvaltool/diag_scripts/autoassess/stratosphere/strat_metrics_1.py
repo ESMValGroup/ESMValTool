@@ -276,8 +276,8 @@ def pnj_strength(cube, winter=True):
     """
     # Extract regions of interest
     notrop = iris.Constraint(air_pressure=lambda p: p < 8000.)
-    nh_cons = iris.Constraint(latitude=lambda l: l > 0)
-    sh_cons = iris.Constraint(latitude=lambda l: l < 0)
+    nh_cons = iris.Constraint(latitude=lambda lat: lat > 0)
+    sh_cons = iris.Constraint(latitude=lambda lat: lat < 0)
     nh_tmp = cube.extract(notrop & nh_cons)
     sh_tmp = cube.extract(notrop & sh_cons)
 
