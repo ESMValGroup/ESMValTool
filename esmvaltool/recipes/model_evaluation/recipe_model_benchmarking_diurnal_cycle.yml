@@ -50,7 +50,7 @@ datasets:
   - {dataset: IPSL-CM6A-LR}
   - {dataset: KACE-1-0-G}
 #  - {dataset: MCM-UA-1-0, grid: gn}
-  - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
+  - {dataset: MIROC6, grid: gn}
   - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
   - {dataset: MPI-ESM-1-2-HAM, grid: gn}
   - {dataset: MPI-ESM1-2-HR, grid: gn}
@@ -61,7 +61,7 @@ datasets:
 #  - {dataset: NorESM2-MM, grid: gn, institute: NCC}
   - {dataset: SAM0-UNICON, grid: gn}
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
-
+  - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, channel: 3hr, frequency: 3hr, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}]}
 
 preprocessors:
 
@@ -95,7 +95,7 @@ preprocessors:
           percent: 10
         - operator: percentile
           percent: 90
-      exclude: [reference_dataset, MIROC6]
+      exclude: [reference_dataset, EMAC]
 
 
 diagnostics:
@@ -103,11 +103,11 @@ diagnostics:
   diurncyc:
     description: Example plot diurnal cycles including reference datasets.
     variables:
-      clt_tropics:
+      tas_tropics:
         project: CMIP6
         timerange: 20060101/20061231
         preprocessor: pp_diurn_Tropics
-        short_name: clt
+        short_name: pr
         exp: historical
         mip: 3hr
         ensemble: r1i1p1f1
@@ -131,7 +131,7 @@ diagnostics:
             legend_kwargs:
               loc: upper right
             plot_kwargs:
-              MIROC6:
+              EMAC:
                 color: red
                 label: '{dataset}'
                 linestyle: '-'
