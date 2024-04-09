@@ -77,6 +77,8 @@ preprocessors:
     regrid:
       target_grid: 2x2
       scheme: linear
+    mask_below_threshold:
+      threshold: 0.0
     climate_statistics:
       operator: mean
     zonal_statistics:
