@@ -32,7 +32,7 @@ REQUIREMENTS = {
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
-        # 'esmvalcore',
+        # 'esmvalcore',  # not yet py312
         'esmf-regrid>=0.7.0',
         'fiona',
         'fire',
@@ -51,10 +51,10 @@ REQUIREMENTS = {
         'packaging',
         'pandas',
         'progressbar2',
-        'psyplot',
-        'psy-maps',
-        'psy-reg',
-        'psy-simple',
+        'psyplot>=1.5.0',
+        'psy-maps>=1.5.0',
+        # 'psy-reg',  # not yet at 1.5.0 not yet py312
+        'psy-simple>=1.5.0',
         'pyproj>=2.1',
         'python-dateutil',
         'pyyaml',
@@ -101,7 +101,7 @@ REQUIREMENTS = {
         'imagehash',
         'isort',
         'pre-commit',
-        # 'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',
+        # 'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',  # not yet py312
         'vprof',
         'yamllint',
         'yapf',
