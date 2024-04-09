@@ -67,5 +67,5 @@ def test_r_lint(monkeypatch):
         """))
         print(ex.output)
 
-    assert False,\
+    assert False, \
         'Your R code does not follow our formatting standards.'
