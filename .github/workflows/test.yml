@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - main
-      - fix_recipe_filler_bkwds_incompatibility
+      - aeronet_aod_clim_new_diagnostic
   schedule:
     - cron: '0 0 * * *'
 
