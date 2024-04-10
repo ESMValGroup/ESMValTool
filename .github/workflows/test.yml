@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - aeronet_aod_clim_new_diagnostic
   schedule:
     - cron: '0 0 * * *'
 
