@@ -8,7 +8,7 @@ the interface of library functions may change when updating to new versions. Thi
 withdrawal of datasets used by a recipe can result in an existing recipe to stop working. Such "broken"
 recipes might require some work to fix such problems and make the recipe fully functional again.
 
-A first **contact point** for the technical lead development team (`@ESMValGroup/technical-lead-development-team`_) in such cases is the recipe "maintainer". The recipe
+A first **contact point** for the technical lead development team (:team:`technical-lead-development-team`) in such cases is the recipe "maintainer". The recipe
 maintainer is then asked to check the affected recipe and if possible, fix the problems or work with the technical
 lead development team to find a solution. Ideally, a recipe maintainer is able to tell whether the results of a fixed
 recipe are scientifically valid and look as expected. Being a recipe maintainer consists of the following tasks:
@@ -22,10 +22,7 @@ recipe are scientifically valid and look as expected. Being a recipe maintainer 
 * informing the core development team when no longer available as maintainer
 
 Ideally, a recipe maintainer is named when contributing a new recipe to the ESMValTool. Recipe maintainers are asked to inform
-the core development team (`@ESMValGroup/esmvaltool-coreteam`_) when they are no longer able to act as maintainer or when they would like to step down from this duty
+the core development team (:team:`esmvaltool-coreteam`) when they are no longer able to act as maintainer or when they would like to step down from this duty
 for any reason. The core development team will then try to find a successor. If no recipe maintainer can be found, the
 :ref:`policy on unmaintained broken (non-working) recipes<broken-recipe-policy>` might apply eventually leading to
 retirement of the affected recipe.
-
-.. _`@ESMValGroup/technical-lead-development-team`: https://github.com/orgs/ESMValGroup/teams/technical-lead-development-team
-.. _`@ESMValGroup/esmvaltool-coreteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-coreteam

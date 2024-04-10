@@ -1,0 +1,23 @@
+---
+filename: seaice_conc_monthly_sh_{year}.*.nc
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: NSIDC-G02202-sh
+  version: '4'
+  tier: 3
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: 'https://nsidc.org/data/g02202/versions/4'
+  reference: 'nsidc-g02202'
+  comment: ''
+
+variables:
+  siconc:
+    mip: SImon
+    raw: cdr_seaice_conc_monthly 
+    compress: true
+
+
+custom:
+  create_areacello: true
+  area_file: pss25area_v3.dat
