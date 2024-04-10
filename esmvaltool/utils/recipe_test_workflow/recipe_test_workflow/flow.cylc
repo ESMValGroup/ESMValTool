@@ -76,13 +76,13 @@
         inherit = None, COMPUTE
         [[[environment]]]
             ROSE_TASK_APP = process
-            RECIPE_NAME = "${CYLC_TASK_PARAM_fast//--//}.yml"
+            RECIPE_PATH = "${CYLC_TASK_PARAM_fast//--//}.yml"
 
     [[process<medium>]]
         inherit = None, COMPUTE
         [[[environment]]]
             ROSE_TASK_APP = process
-            RECIPE_NAME = "${CYLC_TASK_PARAM_medium//--//}.yml"
+            RECIPE_PATH = "${CYLC_TASK_PARAM_medium//--//}.yml"
 
     [[compare<fast>]]
         inherit = None, COMPUTE
