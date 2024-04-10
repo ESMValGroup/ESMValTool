@@ -88,14 +88,14 @@
         inherit = None, COMPUTE
         [[[environment]]]
             ROSE_TASK_APP = compare
-            KGO_METRIC = "${CYLC_TASK_PARAM_fast##*--}"
+            RECIPE_NAME = "${CYLC_TASK_PARAM_fast##*--}"
             KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
 
     [[compare<medium>]]
         inherit = None, COMPUTE
         [[[environment]]]
             ROSE_TASK_APP = compare
-            KGO_METRIC = "${CYLC_TASK_PARAM_medium##*--}"
+            RECIPE_NAME = "${CYLC_TASK_PARAM_medium##*--}"
             KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
 
 {% include 'site/' ~ SITE ~ '.cylc' %}
