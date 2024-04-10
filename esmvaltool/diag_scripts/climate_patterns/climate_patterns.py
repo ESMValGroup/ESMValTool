@@ -658,14 +658,14 @@ def patterns(model, cfg):
 
     if cfg["area"] == 'land':
         regressions = calculate_regressions(
-            anom_list_final.copy(),
+            anom_list_final,
             cfg["area"],
             ocean_frac=ocean_frac,
             land_frac=land_frac
         )
     if cfg["area"] == 'global':
         regressions = calculate_regressions(
-            anom_list_final.copy(), cfg["area"]
+            anom_list_final, cfg["area"]
         )
 
     list_of_cubelists = [clim_list_final, anom_list_final, regressions]
