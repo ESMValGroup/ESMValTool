@@ -126,7 +126,7 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
 #            pt_hgt.append(height)
         pt_hgt.extend(height) if \
             isinstance(height, list) else \
-              pt_hgt.append(height)
+            pt_hgt.append(height)
 
         if len(pt_lat1) != len(pt_hgt):
             raise AeroAnsError(
