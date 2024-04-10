@@ -63,8 +63,7 @@ def ocean_fraction_calc(sftlf):
     sftlf.coord("longitude").coord_system = iris.coord_systems.GeogCS(
         6371229.0
     )
-    sftof = sftlf.copy()
-    sftof.data = 100.0 - sftlf.data
+    sftof = 100 - sftlf
 
     ocean_frac = sftof / 100
     land_frac = sftlf / 100
@@ -117,13 +116,12 @@ def area_avg_landsea(cube, ocean_frac, land_frac, land=True, return_cube=None):
             )
             / 1e12
         )
-        cube2 = cube.copy()
-        cube2.data = cube2.data * global_weights * ocean_frac.data
+        cube2 = cube * global_weights * ocean_frac
 
         cube2 = (
             cube2.collapsed(["latitude", "longitude"], iris.analysis.SUM)
             / 1e12
-            / ocean_area.data
+            / ocean_area
         )
 
     if land:
@@ -138,12 +136,11 @@ def area_avg_landsea(cube, ocean_frac, land_frac, land=True, return_cube=None):
             )
             / 1e12
         )
-        cube2 = cube.copy()
-        cube2.data = cube2.data * global_weights * land_frac.data
+        cube2 = cube * global_weights * land_frac
         cube2 = (
             cube2.collapsed(["latitude", "longitude"], iris.analysis.SUM)
             / 1e12
-            / land_area.data
+            / land_area
         )
 
     if return_cube:
