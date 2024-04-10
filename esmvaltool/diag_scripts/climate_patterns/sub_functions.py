@@ -16,6 +16,7 @@ import iris
 import iris.analysis.cartography
 import iris.coord_categorisation
 import numpy as np
+import dask as da
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -105,7 +106,7 @@ def area_avg_landsea(cube, ocean_frac, land_frac, land=True, return_cube=None):
     )
 
     if land is False:
-        ocean_frac.data = np.ma.masked_less(ocean_frac.data, 0.01)
+        ocean_frac.data = da.array.ma.masked_less(ocean_frac.core_data(), 0.01)
         weights = iris.analysis.cartography.area_weights(
             ocean_frac,
             normalize=False
@@ -125,7 +126,7 @@ def area_avg_landsea(cube, ocean_frac, land_frac, land=True, return_cube=None):
         )
 
     if land:
-        land_frac.data = np.ma.masked_less(land_frac.data, 0.01)
+        land_frac.data = da.array.ma.masked_less(land_frac.core_data(), 0.01)
         weights = iris.analysis.cartography.area_weights(
             land_frac,
             normalize=False
