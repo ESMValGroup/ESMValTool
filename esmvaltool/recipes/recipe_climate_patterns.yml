@@ -11,6 +11,10 @@ documentation:
   maintainer:
     - munday_gregory
 
+  references:
+    - mathison2024gmd
+    - huntingford2000climdyn
+
 preprocessors:
   global_mean_monthly:
     monthly_statistics:
