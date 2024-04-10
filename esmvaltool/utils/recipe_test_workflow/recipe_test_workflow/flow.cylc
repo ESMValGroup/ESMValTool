@@ -72,6 +72,8 @@
             ROOTPATH_OBS4MIPS = {{ ROOTPATH_OBS4MIPS }}
             ROOTPATH_RAWOBS = {{ ROOTPATH_RAWOBS }}
 
+    # Bash variable substitution below replaces `--` with `/` to obtain path to
+    # recipe.
     [[process<fast>]]
         inherit = None, COMPUTE
         [[[environment]]]
@@ -84,6 +86,8 @@
             ROSE_TASK_APP = process
             RECIPE_PATH = "${CYLC_TASK_PARAM_medium//--//}.yml"
 
+    # Bash variable manipulation `##*--` below strips leading path from recipe
+    # parameter to obtain recipe name (=recipe basename minus yml extension).
     [[compare<fast>]]
         inherit = None, COMPUTE
         [[[environment]]]
