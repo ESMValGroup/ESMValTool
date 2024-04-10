@@ -50,7 +50,7 @@ monthly_global_settings_day: &monthly_global_settings_day
 #   - {dataset: CanESM5,         exp: piControl,  ensemble: r1i1p1f1, grid: gn}
 #   - {dataset: CanESM5-CanOE,   exp: piControl,  ensemble: r1i1p2f1, grid: gn}
 #   - {dataset: CanESM5-1,       exp: piControl,  ensemble: r1i1p1f1, grid: gn}
-#   # - {dataset: CAS-ESM2-0,      exp: piControl,  ensemble: r1i1p1f1, grid: gn} # Disable land_frac to use 
+#   # - {dataset: CAS-ESM2-0,      exp: piControl,  ensemble: r1i1p1f1, grid: gn} # Disable land_frac to use
 #   - {dataset: CESM2,           exp: 1pctCO2,    ensemble: r1i1p1f1,  grid: gn}
 #   - {dataset: CESM2-WACCM,     exp: 1pctCO2,    ensemble: r1i1p1f1,  grid: gn}
 #   - {dataset: CMCC-ESM2,       exp: piControl,  ensemble: r1i1p1f1, grid: gn}
@@ -64,7 +64,7 @@ monthly_global_settings_day: &monthly_global_settings_day
 #   - {dataset: EC-Earth3-Veg,   exp: piControl,  ensemble: r1i1p1f1, grid: gr}
 #   # - {dataset: FGOALS-f3-L,     exp: historical, ensemble: r1i1p1f1, grid: gr} # No tasmin/tasmax
 #   - {dataset: FGOALS-g3,       exp: piControl,  ensemble: r1i1p1f1, grid: gn}
-#   # - {dataset: FIO-ESM-2-0,     exp: piControl,  ensemble: r1i1p1f1, grid: gn} # Disable land_frac to use 
+#   # - {dataset: FIO-ESM-2-0,     exp: piControl,  ensemble: r1i1p1f1, grid: gn} # Disable land_frac to use
 #   - {dataset: GFDL-CM4,        exp: piControl,  ensemble: r1i1p1f1, grid: gr1}
 #   - {dataset: GFDL-ESM4,       exp: ssp370,     ensemble: r1i1p1f1, grid: gr1}
 #   - {dataset: GISS-E2-1-H,     exp: piControl,  ensemble: r1i1p1f1, grid: gn}
@@ -88,7 +88,7 @@ monthly_global_settings_day: &monthly_global_settings_day
 #   - {dataset: TaiESM1,         exp: piControl,  ensemble: r1i1p1f1, grid: gn}
 #   - {dataset: UKESM1-0-LL,     exp: piControl,  ensemble: r1i1p1f2, grid: gn}
 
-CMIP6_no_tasmax: &cmip6_no_tasmax 
+CMIP6_no_tasmax: &cmip6_no_tasmax
   # - {dataset: E3SM-1-0,        exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2099} # bad tasmin/tasmax
   # - {dataset: NorESM2-LM,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100} # bad tasmin/tasmax
   - {dataset: NorESM2-MM,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
@@ -246,7 +246,7 @@ diagnostics:
     scripts:
       climate_patterns_script:
         script: climate_patterns/climate_patterns.py
-        grid: constrained # options: constrained, full
-        imogen_mode: on # options: on, off
-        parallelise: on # options: on, off
-        area: global # options global, land. If land, uncomment landfrac recipe settings
+        grid: constrained  # options: constrained, full
+        imogen_mode: true  # options: on, off
+        parallelise: true  # options: on, off
+        area: global  # options global, land. If land, uncomment landfrac recipe settings
