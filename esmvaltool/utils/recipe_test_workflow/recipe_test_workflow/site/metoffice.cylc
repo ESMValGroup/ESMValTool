@@ -29,19 +29,19 @@
     # memory should be specified, in case the default changes.
     # Variable (fast, medium) must be consistent with flow.cylc.
     # Comment should indicate example recorded usage at Met Office.
-    [[process<fast=autoassess_landsurface_soilmoisture>]]
+    [[process<fast=recipe_autoassess_landsurface_soilmoisture>]]
         # Actual: 0m36s, 2.8 GB on 2024-03-29.
         execution time limit = PT2M
         [[[directives]]]
             --mem = 3G
 
-    [[process<fast=albedolandcover>]]
+    [[process<fast=recipe_albedolandcover>]]
         # Actual: 0m31s, 2.5 GB on 2024-04-08.
         execution time limit = PT2M
         [[[directives]]]
             --mem = 3G
             
-    [[process<medium=ensclus>]]
+    [[process<medium=recipe_ensclus>]]
         # Actual: 2m10s, 2.4 GB on 2024-03-29.
         execution time limit = PT4M
         [[[directives]]]
