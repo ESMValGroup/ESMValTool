@@ -1,0 +1,72 @@
+# ESMValTool
+---
+documentation:
+  title: Model evaluation with focus on precipitation.
+  description: >
+    Plot zonal mean precipitation.
+  authors:
+    - lauer_axel
+    - schlund_manuel
+  maintainer:
+    - lauer_axel
+
+
+# Note: the following models are just examples
+datasets:
+  - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+
+# Note: for some observational datasets, we use preset time ranges due to
+# their limited temporal availability
+timerange_for_models: &time_period
+  timerange: '2000/2014'  # can be specified, this is just an example
+
+
+preprocessors:
+
+  pp_zonal:
+    regrid:
+      target_grid: 2x2
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    zonal_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: full
+    convert_units:
+      units: mm day-1
+
+
+diagnostics:
+
+  zonal:
+    description: Plot annual cycles including reference datasets.
+    variables:
+      pr:
+        <<: *time_period
+        preprocessor: pp_zonal
+        mip: Amon
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3}
+          - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3, tier: 1}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        group_variables_by: variable_group
+        plots:
+          variable_vs_lat:
+            legend_kwargs:
+              loc: upper right
+            plot_kwargs:
+              MPI-ESM1-2-HR:
+                color: C0
+              MPI-ESM1-2-LR:
+                color: C1
+              ERA5:
+                color: black
+                linestyle: dotted
+              GPCP-SG:
+                color: black
