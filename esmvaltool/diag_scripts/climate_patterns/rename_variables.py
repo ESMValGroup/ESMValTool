@@ -1,3 +1,4 @@
+# (C) Crown Copyright 2022-2024, Met Office.
 """Script containing cube re-naming functions for driving scripts.
 
 Author

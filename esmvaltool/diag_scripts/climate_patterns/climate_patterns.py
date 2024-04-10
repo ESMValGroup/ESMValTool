@@ -1,3 +1,4 @@
+# (C) Crown Copyright 2022-2024, Met Office.
 """Diagnostic script to build climate patterns from CMIP6 models.
 
 Description

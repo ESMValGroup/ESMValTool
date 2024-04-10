@@ -20,14 +20,14 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * recipe_climate_patterns.yml
+* recipe_climate_patterns.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/climate_patterns/
 
-    * climate_patterns.py: generates climate patterns from input datasets
-    * rename_variables.py: renames variables depending on user specifications
-    * sub_functions.py: set of sub functions to assist with driving scripts
-    * plotting.py: contains all plotting functions for driving scripts
+* climate_patterns.py: generates climate patterns from input datasets
+* rename_variables.py: renames variables depending on user specifications
+* sub_functions.py: set of sub functions to assist with driving scripts
+* plotting.py: contains all plotting functions for driving scripts
 
 
 User settings in recipe
@@ -44,7 +44,7 @@ User settings in recipe
    * grid: whether you want to remove Antarctic latitudes or not
    * imogen_mode: output imogen-specific var names + .nc files
    * parallelise: parallelise over models or not
-   * parallel_threads: if you want to paralellise, how many threads you want
+   * area: calculate the patterns globally, or over land only
 
    *Required settings for variables*
 
@@ -72,7 +72,6 @@ Variables
 * tasmax (atmos, monthly, longitude latitude time)
 * tasmin (atmos, monthly, longitude latitude time)
 * tas (atmos, monthly, longitude latitude time)
-* hurs (atmos, monthly, longitude latitude time)
 * huss (atmos, monthly, longitude latitude time)
 * pr (atmos, monthly, longitude latitude time)
 * sfcWind (atmos, monthly, longitude latitude time)

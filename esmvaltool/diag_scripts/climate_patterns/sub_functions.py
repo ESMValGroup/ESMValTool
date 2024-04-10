@@ -1,3 +1,4 @@
+# (C) Crown Copyright 2022-2024, Met Office.
 """Script containing relevant sub-functions for driving scripts.
 
 Author
@@ -116,7 +117,6 @@ def area_avg_landsea(cube, ocean_frac, land_frac, land=True, return_cube=None):
             )
             / 1e12
         )
-        print("Ocean area: ", ocean_area.data)
         cube2 = cube.copy()
         cube2.data = cube2.data * global_weights * ocean_frac.data
 
@@ -138,7 +138,6 @@ def area_avg_landsea(cube, ocean_frac, land_frac, land=True, return_cube=None):
             )
             / 1e12
         )
-        print("Land area: ", land_area.data)
         cube2 = cube.copy()
         cube2.data = cube2.data * global_weights * land_frac.data
         cube2 = (
