@@ -1,4 +1,5 @@
-"""Implement the AOD climatology metric from ground-based AeroNet observations.
+"""Implement the AOD climatology metric from ground-based
+   AeroNet observations.
 """
 import logging
 import os
@@ -283,10 +284,15 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
 
 
 def preprocess_aod_obs_dataset(obs_dataset):
-    """Calculate a multiannual seasonal mean 'climatology' for AOD at each
-    AERONET station using the observational timeseries data. The climatiology
-    is processed using user defined thresholds to specify the amount of valid
-    data needed to calculate the climatology.
+    """Calculate a multiannual seasonal mean AOD 'climatology'.
+
+    Observational AOD timeseries data from AeroNET are used to generate a
+    multiannual seasonal mean climatology for each AeroNET station. The
+    user sets thresholds (or uses the default settings) to specify the
+    amount of valid data required for the climatology. At this stage
+    ESMValTool preprocessors are unsuitable for pre-processing the AeroNET
+    AOD observations because of the bespoke nature and application of the
+    filtering thresholds.
 
     Parameters
     ----------
