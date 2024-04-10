@@ -176,6 +176,10 @@ authors:
     given-names: Stefan
     orcid: "https://orcid.org/0000-0001-5444-2945"
   -
+    affiliation: "University of Canterbury, New Zealand"
+    family-names: Hardacre
+    given-names: Catherine
+  -
     affiliation: "ISAC-CNR, Italy"
     name-particle: von
     family-names: Hardenberg
