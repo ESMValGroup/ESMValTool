@@ -27,7 +27,7 @@ def get_provenance_record(filenames):
 
     Parameters
     ----------
-    filenames : list of strings
+    filenames : List of strings
         The filenames containing the data used to create the metric.
 
     Returns
@@ -43,7 +43,7 @@ def get_provenance_record(filenames):
 
 
 def plot_aod_mod_obs(md_data, obs_data, aeronet_obs_cube, plot_dict):
-    """Plot AOD contour overlaid with Aeronet values for given period.
+    """Plot AOD contour overlaid with Aeronet climatology.
 
     Parameters
     ----------
@@ -52,10 +52,10 @@ def plot_aod_mod_obs(md_data, obs_data, aeronet_obs_cube, plot_dict):
     obs_data : List.
         Observations of AOD from each AeroNET station.
     aeronet_obs_cube : Iris cube.
-        Contains information about Aeronet measurement stations including
+        Holds information about Aeronet measurement stations including
         station names, station latitude and station longitude.
     plot_dict : Dictionary.
-        Contains plotting settings.
+        Holds plotting settings.
     """
     # Plot model data
     cf_plot = iplt.contourf(md_data,
@@ -126,7 +126,7 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
     clim_seas : List.
        Strings to denote climate seasons ["DJF", "MAM", "JJA", "SON"]
     wavel : String.
-        AOD wavelength, default = 440nm - translates to pseudo-lev.
+        AOD wavelength, default = 440nm - translates to pseudo-level.
 
     Returns
     -------
@@ -284,7 +284,7 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
 
 
 def preprocess_aod_obs_dataset(obs_dataset):
-    """Calculate a multiannual seasonal mean AOD 'climatology'.
+    """Calculate a multiannual seasonal mean AOD climatology.
 
     Observational AOD timeseries data from AeroNET are used to generate a
     multiannual seasonal mean climatology for each AeroNET station. The
@@ -296,13 +296,13 @@ def preprocess_aod_obs_dataset(obs_dataset):
 
     Parameters
     ----------
-    obs_dataset : ESMValTool dictionary. Holds meata data for the observational
-        data.
+    obs_dataset : ESMValTool dictionary. Holds meta data for the observational
+        AOD dataset.
 
     Returns
     -------
-     multiannual_seaonal_mean : Iris cube. Preporocessed observational
-         climatology.
+     multiannual_seaonal_mean : Iris cube. Preprocessed observational
+         AOD climatology.
     """
     obs_cube = iris.load_cube(obs_dataset[0]["filename"])
 
@@ -398,7 +398,6 @@ def main(config):
     wavel = "440"
 
     # Produce climatology for observational dataset
-    #    obs_dataset_name = config["observational_dataset"]
     obs_dataset = datasets.pop(config["observational_dataset"])
     obs_cube = preprocess_aod_obs_dataset(obs_dataset)
 

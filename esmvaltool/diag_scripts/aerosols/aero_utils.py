@@ -16,7 +16,7 @@ class AeroAnsError(Exception):
 
 
 def add_bounds(cube):
-    """Add bounds to a cubes latitude and longitude coordinates.
+    """Add bounds to a cube's latitude and longitude coordinates.
 
     Parameters
     ----------
@@ -25,7 +25,7 @@ def add_bounds(cube):
 
     Returns
     -------
-    cube : cube
+    cube : Iris cube.
         Iris cube with bounds added to the latitude and longitude coordinates.
     """
 
@@ -53,10 +53,10 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
     ----------
     icube : Iris cube
     pt_lat, pt_lon : Float or list/array of floats. Latitude and longitude
-        coordinates of desired points.    
+                     coordinates of desired points.
     args: 
         height  : Float or list/array of floats. Altitude (above geoid) of
-            point. Initialized to None.
+                  point. Initialized to None.
         level   : Integer . Model level or pseudo level or tile number. 
                   Initialized to None, meaning that all available levels in
                   the cube are used. 
@@ -70,8 +70,8 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
 
     Raises
     ------
-    AeroAnsError : If the numbers of latitude and longitude points are
-        mismatched. OR if both and level and height are passed as kwargs.
+    AeroAnsError : If the number of latitude and longitude points are
+        mismatched. OR if both and level and height are passed as args.
         OR if the cube contains a time coordinate. OR if a pseudo level
         coordinate is requested, but not present in the cube. OR if the numbers
         of latitude/longitude and height points are mismatched. OR if height
@@ -104,11 +104,6 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
 
     if len(pt_lat1) != len(pt_lon1):
         raise AeroAnsError('Extract_pt:Mismatch in number of lat/long values')
-
-    # Set lat/lon coordinates for model grid cell interpolation
-    for n_lat1 in np.arange(len(pt_lat1)):
-        latlon_coords = [('latitude', pt_lat1[n_lat1]),
-                         ('longitude', pt_lon1[n_lat1])]
 
     # Check that both level and height haven't been requested.
     if level is not None and height is not None:
@@ -146,7 +141,6 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
         # Set vertical coordinates for model grid cell interpolation
         point = max(pt_hgt[n_lat1], hgt_min)
         point = min(pt_hgt[n_lat1], hgt_max)
-        hgt_coords = [('altitude', point)]
 
 
     # ---------- Finished checks -- begin processing -------------------------
@@ -165,19 +159,10 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
             icube = icube.extract(
                 iris.Constraint(pseudo_level=level))
 
-    # Extract values for specified points lat/lon
-    # NOTE: Does not seem to handle multiple points if 3-D
-
-    data_out = []
-
-    if nearest:
-        tcube = icube.interpolate(latlon_coords, iris.analysis.Nearest())
-
-    else:
-        tcube = icube.interpolate(latlon_coords, iris.analysis.Linear())
-
-    # Extract at requested height
+    # If height specified, interpolate to requested height
     if height is not None:
+
+        hgt_coords = [('altitude', point)]
 
         if nearest:
             tcube = tcube.interpolate(hgt_coords, iris.analysis.Nearest())
@@ -185,6 +170,23 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
         else:
             tcube = tcube.interpolate(hgt_coords, iris.analysis.Linear())
 
-    data_out.append(tcube.data)
+    # Extract values for specified points lat/lon
+    # NOTE: Does not seem to handle multiple points if 3-D
+    data_out = []
+
+    # Set lat/lon coordinates for model grid cell interpolation
+    for n_lat1 in np.arange(len(pt_lat1)):
+        latlon_coords = [('latitude', pt_lat1[n_lat1]),
+                         ('longitude', pt_lon1[n_lat1])]
+
+        if nearest:
+            tcube = icube.interpolate(latlon_coords, iris.analysis.Nearest())
+
+        else:
+            tcube = icube.interpolate(latlon_coords, iris.analysis.Linear())
+
+        # Append processed data point
+        data_out.append(tcube.data)
+
 
     return data_out
