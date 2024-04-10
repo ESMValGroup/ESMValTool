@@ -142,6 +142,13 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
+        # The original recipe uses the UWisc dataset that is not 
+        # maintained anymore by the authors and has been supersided
+        # by MAC-LWP (Elsaesser et al., 2017)
+        # https://doi.org/10.1175/JCLI-D-16-0902.1
+        # We recommend using MAC-LWP
+      #- {dataset: MAC-LWP, project: OBS, type: sat, version: v1,
+      #   start_year: 1988, end_year: 2007, tier: 3}
       - {dataset: UWisc, project: OBS, type: sat, version: v2,
          start_year: 1988, end_year: 2007, tier: 3}
     scripts:
