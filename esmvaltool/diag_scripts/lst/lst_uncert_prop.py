@@ -105,35 +105,49 @@ def _diagnostic(config):
     loaded_data = {}
     ancestor_list = []
 
+    # for now leave this so it appears in the log file
+    print('###########################################')
+    print(loaded_data)
+    print('##########################################')
+
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         print(dataset, metadata)
         cubes, ancestors = _get_input_cubes(metadata)
         print(cubes, ancestors)
         loaded_data[dataset] = cubes
 
-    # for now leave this so it appears in the log file
-    print('###########################################')
-    print(loaded_data)
-    print('##########################################')
-
-
     # add calls to propagation equations here
-    # ts_day, ts_night use arithmetic mean
-    ts_day_mean = eq_arithmetic_mean(loaded_data['ESACCI-LST']['ts_day'])
-    ts_night_mean = eq_arithmetic_mean(loaded_data['ESACCI-LST']['ts_night'])
+    # ts eq 1 eq_arithmetic_mean 
+    # lst_unc_loc_atm eq 7 eq_weighted_sqrt_mean
+    # lst_unc_sys eq 5 = eq 1 eq_arithmetic_mean, no spatial propagation here
+    # lst_unc_loc_sfc DEPENDS ON SENSOR
+    # see Table 1 and then table 4
+    # MODIS Aqua and Terra = GSW eq 6 = eq 1 eq_arithmetic_mean.
+    # lst_unc_ran eq 4 !!! TO DO !!!
+    # total uncert  eq 9 eq_sum_in_quadrature
 
-    quad_test = eq_sum_in_quadrature(iris.cube.CubeList([ts_day_mean, ts_night_mean]))
+    lst_variables = ['ts', 'lst_unc_loc_atm', 'lst_unc_sys'
+                     'lst_unc_loc_sfc','lst_unc_ran'] 
 
+    propagated_values = {}
+
+    # for now
     lat_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('latitude').points)
     lon_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('longitude').points)
     n_use = lat_len*lon_len*0.75 # for testing
-    eq7_test = eq_weighted_sqrt_mean(loaded_data['ESACCI-LST']['ts_day'], n_use)
 
-    print('*********************')
-    print(f'ts_day mean {ts_day_mean.data}')
-    print(f'ts_night_mean {ts_night_mean.data}')
-    print(f'quad test {quad_test.data}')
-    print(f'w sqrt mean test {eq7_test.data} /n {n_use}')
+    for time in ['day', 'night']:
+        
+        propagated_values[f'ts_{time}'] = eq_arithmetic_mean(loaded_data['ESACCI-LST'][f'ts_{time}'])
+        propagated_values[f'lst_unc_loc_atm_{time}'] = eq_weighted_sqrt_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_atm_{time}'],
+                                                                             n_use)
+        # no spatial propagation
+        propagated_values[f'lst_unc_sys_{time}'] = loaded_data['ESACCI-LST'][f'lst_unc_sys_{time}']
+
+        propagated_values[f'lst_unc_loc_sfc_{time}'] = eq_arithmetic_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_sfc_{time}'])
+
+    print(propagated_values)
+
 
 
 # make function for each propagation equation
