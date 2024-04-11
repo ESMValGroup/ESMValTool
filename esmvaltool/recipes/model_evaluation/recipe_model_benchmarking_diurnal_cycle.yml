@@ -61,30 +61,32 @@ datasets:
 #  - {dataset: NorESM2-MM, grid: gn, institute: NCC}
   - {dataset: SAM0-UNICON, grid: gn}
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
-  - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, channel: 3hr, frequency: 3hr, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}]}
+  - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, channel: 3hr, frequency: 3hr, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}], timerange: '2004/2004', alias: 'EMAC (2004)'}
+  - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, channel: 3hr, frequency: 3hr, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}], timerange: '2005/2005', alias: 'EMAC (2005)'}
 
 preprocessors:
 
   pp_diurn_Tropics:
     custom_order: true
-#    regrid_time:
-#       frequency: 3hr
-    resample_hours:
-      interval: 3
-      offset: 1
+    regrid:
+      target_grid: 2x2
+      scheme: linear
     local_solar_time:
     extract_region:
       start_longitude: 0
       end_longitude: 360
       start_latitude: -30
       end_latitude: 30
-    regrid:
-      target_grid: 2x2
-      scheme: linear
     mask_landsea:
       mask_out: land
+    resample_hours:
+      interval: 3
+      offset: 1
+      interpolate: true
     climate_statistics:
       period: hourly
+    convert_units:
+      units: mm day-1
     distance_metric:
       metric: rmse
       coords: [longitude, latitude]
@@ -103,9 +105,9 @@ diagnostics:
   diurncyc:
     description: Example plot diurnal cycles including reference datasets.
     variables:
-      tas_tropics:
+      pr_tropics:
         project: CMIP6
-        timerange: 20060101/20061231
+        timerange: 2004/2005
         preprocessor: pp_diurn_Tropics
         short_name: pr
         exp: historical
@@ -115,25 +117,32 @@ diagnostics:
         reference_dataset: ERA5
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', frequency: 1hr,
-             tier: 3, reference_for_metric: true}
+             tier: 3, reference_for_metric: true, alias: ERA5}
 #        reference_dataset: ISCCP-H
 #        additional_datasets:
 #          - {dataset: ISCCP-H, project: OBS6, type: sat, version: 'v01r00',
-#             mip: CF3hr, tier: 2, reference_for_metric: true}
+#             mip: CF3hr, tier: 2, reference_for_metric: true, alias: ISCCP-H}
     scripts:
       allplots:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{mip}'
         group_variables_by: variable_group
+        facet_used_for_labels: alias
         plots:
           benchmarking_diurnal_cycle:
             legend_kwargs:
               loc: upper right
             plot_kwargs:
-              EMAC:
+              'EMAC (2004)':
                 color: red
-                label: '{dataset}'
+                label: '{alias}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 4
+              'EMAC (2005)':
+                color: darkblue
+                label: '{alias}'
                 linestyle: '-'
                 linewidth: 2
                 zorder: 4

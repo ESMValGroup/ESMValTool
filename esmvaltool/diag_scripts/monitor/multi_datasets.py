@@ -2209,16 +2209,16 @@ class MultiDatasets(MonitorBase):
                 f"'{variable}', got {len(ref_datasets)}")
         return None
 
-    def _get_benchmark_dataset(self, datasets):
+    def _get_benchmark_datasets(self, datasets):
         """Get dataset to be benchmarked."""
         variable = datasets[0][self.cfg['group_variables_by']]
         benchmark_datasets = [d for d in datasets if
                               d.get('benchmark_dataset', False)]
-        if len(benchmark_datasets) == 1:
-            return benchmark_datasets[0]
+        if len(benchmark_datasets) >= 1:
+            return benchmark_datasets
 
         raise ValueError(
-            f"Expected exactly 1 benchmark dataset (with "
+            f"Expected at least 1 benchmark dataset (with "
             f"'benchmark_dataset: true' for variable "
             f"'{variable}'), got {len(benchmark_datasets):d}")
 
@@ -2423,7 +2423,7 @@ class MultiDatasets(MonitorBase):
         logger.info("Plotting %s", plot_type)
 
         # Get dataset to be benchmarked
-        dataset = self._get_benchmark_dataset(datasets)
+        plot_datasets = self._get_benchmark_datasets(datasets)
         # Get percentiles from multi-model statistics
         percentile_dataset = self._get_benchmark_percentiles(datasets)
 
@@ -2444,8 +2444,9 @@ class MultiDatasets(MonitorBase):
         ancestors = []
         cubes = {}
 
-        plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-        iris.plot.plot(dataset['cube'], **plot_kwargs)
+        for dataset in plot_datasets:
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            iris.plot.plot(dataset['cube'], **plot_kwargs)
 
         yval2 = percentile_dataset[0]['cube']
         if len(percentile_dataset) > 1:
@@ -2599,7 +2600,7 @@ class MultiDatasets(MonitorBase):
         logger.info("Plotting %s", plot_type)
 
         # Get dataset to be benchmarked
-        dataset = self._get_benchmark_dataset(datasets)
+        plot_datasets = self._get_benchmark_datasets(datasets)
         # Get percentiles from multi-model statistics
         percentile_dataset = self._get_benchmark_percentiles(datasets)
 
@@ -2610,11 +2611,12 @@ class MultiDatasets(MonitorBase):
         ancestors = []
         cubes = {}
 
-        # Plot annual cycle
-        cube = dataset['cube']
-        plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-        plot_kwargs['axes'] = axes
-        iris.plot.plot(cube, **plot_kwargs)
+        # Plot annual cycle(s)
+        for dataset in plot_datasets:
+          cube = dataset['cube']
+          plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+          plot_kwargs['axes'] = axes
+          iris.plot.plot(cube, **plot_kwargs)
 
         yval2 = percentile_dataset[0]['cube']
         if len(percentile_dataset) > 1:
@@ -2698,7 +2700,7 @@ class MultiDatasets(MonitorBase):
                 raise ValueError(f"No input data to plot '{plot_type}' given")
 
             # Get dataset to be benchmarked
-            benchmark_dataset = self._get_benchmark_dataset(datasets)
+            benchmark_dataset = self._get_benchmark_datasets(datasets)
             logger.info("Plotting %s for dataset %s",
                         plot_type, benchmark_dataset['dataset'])
 
@@ -2779,7 +2781,7 @@ class MultiDatasets(MonitorBase):
         logger.info("Plotting %s", plot_type)
 
         # Get dataset to be benchmarked
-        dataset = self._get_benchmark_dataset(datasets)
+        plot_datasets = self._get_benchmark_datasets(datasets)
         # Get percentiles from multi-model statistics
         percentile_dataset = self._get_benchmark_percentiles(datasets)
 
@@ -2789,12 +2791,13 @@ class MultiDatasets(MonitorBase):
         # Plot all datasets in one single figure
         ancestors = []
         cubes = {}
-        cube = dataset['cube']
 
-        # Plot diurnal cycle
-        plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-        plot_kwargs['axes'] = axes
-        iris.plot.plot(cube, **plot_kwargs)
+        # Plot diurnal cycle(s)
+        for dataset in plot_datasets:
+            cube = dataset['cube']
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs['axes'] = axes
+            iris.plot.plot(cube, **plot_kwargs)
 
         yval2 = percentile_dataset[0]['cube']
         if len(percentile_dataset) > 1:
@@ -2948,7 +2951,7 @@ class MultiDatasets(MonitorBase):
         # Get reference dataset
         ref_dataset = self._get_benchmarking_reference(datasets)
         # Get dataset to be benchmarked
-        dataset = self._get_benchmark_dataset(datasets)
+        plot_datasets = self._get_benchmark_datasets(datasets)
         # Get percentiles from multi-model statistics
         percentile_dataset = self._get_benchmark_percentiles(datasets)
         # Get benchmarking metric
@@ -2969,9 +2972,10 @@ class MultiDatasets(MonitorBase):
             cube = iris.load_cube(filename)
             percentile_data.append(cube)
 
-        (plot_path, netcdf_paths) = (
-            self._plot_benchmarking_map(plot_func, dataset, percentile_data,
-                                        metric)
+        for dataset in plot_datasets:
+            (plot_path, netcdf_paths) = (
+                self._plot_benchmarking_map(plot_func, dataset,
+                                            percentile_data, metric)
         )
         caption = (
             f"Map plot of {dataset['long_name']} of dataset "
@@ -3098,7 +3102,7 @@ class MultiDatasets(MonitorBase):
         # Get reference dataset
         # ref_dataset = self._get_benchmarking_reference(datasets)
         # Get dataset to be benchmarked
-        dataset = self._get_benchmark_dataset(datasets)
+        dataset = self._get_benchmark_datasets(datasets)
         # Get percentiles from multi-model statistics
         percentile_dataset = self._get_benchmark_percentiles(datasets)
         # Get benchmarking metric
@@ -3121,9 +3125,10 @@ class MultiDatasets(MonitorBase):
             cube = iris.load_cube(filename)
             percentile_data.append(cube)
 
-        (plot_path, netcdf_paths) = (
-            self._plot_benchmarking_zonal(plot_func, dataset,
-                                          percentile_data, metric)
+        for dataset in plot_datasets:
+            (plot_path, netcdf_paths) = (
+                self._plot_benchmarking_zonal(plot_func, dataset,
+                                              percentile_data, metric)
         )
         caption = (
             f"Zonal mean profile of {dataset['long_name']} of dataset "

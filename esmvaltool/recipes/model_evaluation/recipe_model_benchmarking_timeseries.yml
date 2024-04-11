@@ -51,7 +51,6 @@ datasets:
   - {dataset: KACE-1-0-G}
   - {dataset: MCM-UA-1-0, grid: gn}
   - {dataset: MIROC6, grid: gn}
-#  - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
   - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
   - {dataset: MPI-ESM-1-2-HAM, grid: gn}
   - {dataset: MPI-ESM1-2-HR, grid: gn}
@@ -73,16 +72,10 @@ preprocessors:
     anomalies:
       period: month
       reference:
-#        start_year: 1980
-#        start_month: 1
-#        start_day: 1
-#        end_year: 1999
-#        end_month: 12
-#        end_day: 31
         start_year: 2000
         start_month: 1
         start_day: 1
-        end_year: 2010
+        end_year: 2009
         end_month: 12
         end_day: 31
     area_statistics:
@@ -95,7 +88,6 @@ preprocessors:
         - operator: percentile
           percent: 90
       exclude: [reference_dataset, EMAC]
-#      exclude: [reference_dataset, MIROC6]
 
   pp_tas_metric:
     custom_order: true
@@ -107,16 +99,10 @@ preprocessors:
     anomalies:
       period: month
       reference:
-#        start_year: 1980
-#        start_month: 1
-#        start_day: 1
-#        end_year: 1999
-#        end_month: 12
-#        end_day: 31
         start_year: 2000
         start_month: 1
         start_day: 1
-        end_year: 2010
+        end_year: 2009
         end_month: 12
         end_day: 31
     distance_metric:
@@ -130,7 +116,6 @@ preprocessors:
         - operator: percentile
           percent: 90
       exclude: [reference_dataset, EMAC]
-#      exclude: [reference_dataset, MIROC6]
 
 
 diagnostics:
@@ -139,8 +124,7 @@ diagnostics:
     description: Plot "classical" time series of global mean anomalies including a reference dataset.
     variables:
       tas:
-#        timerange: '1980/2014'
-        timerange: '2000/2010'
+        timerange: '2000/2009'
         preprocessor: pp_tas
         project: CMIP6
         mip: Amon
@@ -163,14 +147,13 @@ diagnostics:
 #            legend_kwargs: False
             plot_kwargs:
               EMAC:
-#              MIROC6:
                 color: red
                 label: '{dataset}'
                 linestyle: '-'
                 linewidth: 2
                 zorder: 4
               HadCRUT5:
-                color: darkblue
+                color: black
                 label: '{dataset}'
                 linestyle: '-'
                 linewidth: 2
@@ -198,8 +181,7 @@ diagnostics:
     description: Plot "benchmarking" time series of global mean anomalies.
     variables:
       tas:
-#        timerange: '1980/2014'
-        timerange: '2000/2010'
+        timerange: '2000/2009'
         preprocessor: pp_tas_metric
         project: CMIP6
         mip: Amon
@@ -223,7 +205,6 @@ diagnostics:
 #            legend_kwargs: False
             plot_kwargs:
               EMAC:
-#              MIROC6:
                 color: red
                 label: '{dataset}'
                 linestyle: '-'
