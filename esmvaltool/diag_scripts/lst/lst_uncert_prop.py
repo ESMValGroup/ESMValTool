@@ -122,14 +122,18 @@ def _diagnostic(config):
     ts_day_mean = eq_arithmetic_mean(loaded_data['ESACCI-LST']['ts_day'])
     ts_night_mean = eq_arithmetic_mean(loaded_data['ESACCI-LST']['ts_night'])
 
-
-    
     quad_test = eq_sum_in_quadrature(iris.cube.CubeList([ts_day_mean, ts_night_mean]))
+
+    lat_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('latitude').points)
+    lon_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('longitude').points)
+    n_use = lat_len*lon_len*0.75 # for testing
+    eq7_test = eq_weighted_sqrt_mean(loaded_data['ESACCI-LST']['ts_day'], n_use)
 
     print('*********************')
     print(f'ts_day mean {ts_day_mean.data}')
     print(f'ts_night_mean {ts_night_mean.data}')
     print(f'quad test {quad_test.data}')
+    print(f'w sqrt mean test {eq7_test.data} /n {n_use}')
 
 
 # make function for each propagation equation
@@ -162,6 +166,19 @@ def eq_sum_in_quadrature(cubelist):
 
     output = iris.analysis.maths.exponentiate(cube,0.5,in_place=False)
 
+    return output
+
+def eq_weighted_sqrt_mean(cube, n_use):
+    """Mean with square root of n factor
+    ATBD eq 7
+
+    Inputs:
+    cube:
+    n_use: the number of useable pixels - NEED TO IMPLIMENT A CHECK ON MASKS BEING THE SAME
+    """
+
+    output = (1/np.sqrt(n_use)) * cube.collapsed(['latitude', 'longitude'], iris.analysis.MEAN)
+    
     return output
 
 if __name__ == '__main__':
