@@ -20,6 +20,8 @@ import iris
 import matplotlib.pyplot as plt
 import numpy as np
 
+import iris.plot as iplt
+
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
     get_plot_filename,
@@ -126,8 +128,8 @@ def _diagnostic(config):
     # lst_unc_ran eq 4 !!! TO DO !!!
     # total uncert  eq 9 eq_sum_in_quadrature
 
-    lst_variables = ['ts', 'lst_unc_loc_atm', 'lst_unc_sys'
-                     'lst_unc_loc_sfc','lst_unc_ran'] 
+    lst_unc_variables = ['lst_unc_loc_atm', 'lst_unc_sys',
+                         'lst_unc_loc_sfc','lst_unc_ran'] 
 
     propagated_values = {}
 
@@ -149,8 +151,38 @@ def _diagnostic(config):
         propagated_values[f'lst_unc_ran_{time}'] = eq_propagate_random_with_sampling(loaded_data['ESACCI-LST'][f'lst_unc_ran_{time}'],
                                                                                      loaded_data['ESACCI-LST'][f'ts_{time}'])
 
-    print(propagated_values)
 
+    for time in ['day', 'night']:
+       
+        time_cubelist = iris.cube.CubeList([propagated_values[f'{variable}_{time}']
+                                            for variable in lst_unc_variables])
+
+        propagated_values[f'lst_total_unc_{time}'] = eq_sum_in_quadrature(time_cubelist)
+                                
+                                        
+
+    test_plot(propagated_values)
+    
+def test_plot(propagated_values):
+
+    for time in ['day','night']:
+
+        plt.figure(figsize=(12,10))
+        
+        plt.subplot(211)
+        iplt.plot(propagated_values[f'ts_{time}'], c='b')
+        
+        plt.subplot(212)
+        iplt.plot(propagated_values[f'lst_unc_loc_atm_{time}'], c='r', label=f'lst_unc_loc_atm_{time}')
+        iplt.plot(propagated_values[f'lst_unc_loc_sfc_{time}'], c='g', label=f'lst_unc_loc_sfc_{time}')
+        iplt.plot(propagated_values[f'lst_unc_sys_{time}'], c='b', label=f'lst_unc_sys_{time}')
+        iplt.plot(propagated_values[f'lst_unc_ran_{time}'], c='m', label=f'lst_unc_ran_{time}')
+        
+        iplt.plot(propagated_values[f'lst_total_unc_{time}'], c='k',label=f'lst_total_unc_{time}')
+
+        plt.legend()
+
+        plt.savefig(f'test_{time}.png')
 
 # make function for each propagation equation
 def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts):
