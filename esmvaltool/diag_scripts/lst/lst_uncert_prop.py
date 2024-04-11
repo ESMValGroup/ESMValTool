@@ -118,12 +118,19 @@ def _diagnostic(config):
 
 
     # add calls to propagation equations here
-
+    # ts_day, ts_night use arithmetic mean
     ts_day_mean = eq_arithmetic_mean(loaded_data['ESACCI-LST']['ts_day'])
+    ts_night_mean = eq_arithmetic_mean(loaded_data['ESACCI-LST']['ts_night'])
 
+
+    
+    quad_test = eq_sum_in_quadrature(iris.cube.CubeList([ts_day_mean, ts_night_mean]))
 
     print('*********************')
     print(f'ts_day mean {ts_day_mean.data}')
+    print(f'ts_night_mean {ts_night_mean.data}')
+    print(f'quad test {quad_test.data}')
+
 
 # make function for each propagation equation
 def eq_arithmetic_mean(cube):
@@ -135,6 +142,27 @@ def eq_arithmetic_mean(cube):
 
     return out_cube
 
+def eq_sum_in_quadrature(cubelist):
+    """Sum in quadrature
+    ATBD eq 9
+    
+    Input:
+    cubelist : A cubelist of 1D cubes
+    """
+
+    # dont want to inplace replace the input
+    newlist=cubelist.copy()
+
+    for cube in newlist:
+        iris.analysis.maths.exponentiate(cube, 2, in_place=True)
+
+    cubes_sum = 0
+    for cube in newlist:
+        cubes_sum += cube
+
+    output = iris.analysis.maths.exponentiate(cube,0.5,in_place=False)
+
+    return output
 
 if __name__ == '__main__':
     # always use run_diagnostic() to get the config (the preprocessor
