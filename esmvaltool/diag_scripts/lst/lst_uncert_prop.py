@@ -146,11 +146,45 @@ def _diagnostic(config):
 
         propagated_values[f'lst_unc_loc_sfc_{time}'] = eq_arithmetic_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_sfc_{time}'])
 
+        propagated_values[f'lst_unc_ran_{time}'] = eq_propagate_random_with_sampling(loaded_data['ESACCI-LST'][f'lst_unc_ran_{time}'],
+                                                                                     loaded_data['ESACCI-LST'][f'ts_{time}'])
+
     print(propagated_values)
 
 
-
 # make function for each propagation equation
+def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts):
+    """Propagate radom uncertatinty using the sampling uncertainty
+    ATBD eq 4
+
+    the sum in quadrature of the arithmetic mean of lst_unc_ran and
+    the sampling uncertainty
+
+    Sampling uncertainty is
+    n_cloudy * Variance of LST / n_total-1
+
+    see ATBD section 3.13.3
+
+    Inputs:
+    cube_unc_ran: The cube with the lst_unc_ran day/night data
+    cube_ts:      The lst use for day/night as appropriate
+    """
+    lat_len = len(cube_ts.coord('latitude').points)
+    lon_len = len(cube_ts.coord('longitude').points)
+    n_total = lon_len * lat_len
+
+    n_fill = np.sum(cube_ts.data.mask)
+    print(f'{n_fill=}')
+
+    unc_ran_mean = eq_arithmetic_mean(cube_unc_ran)
+    
+    lst_variance = cube_ts.collapsed(['latitude','longitude'], iris.analysis.VARIANCE)
+    unc_sampling = (n_fill * lst_variance) / (n_total - 1)
+
+    output = eq_sum_in_quadrature(iris.cube.CubeList([unc_ran_mean]))
+
+    return output
+    
 def eq_arithmetic_mean(cube):
     """Arithmetic mean of cube, across latitude and longitude
     ATBD eq 1
