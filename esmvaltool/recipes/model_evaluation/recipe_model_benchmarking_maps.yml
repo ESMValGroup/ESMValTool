@@ -51,7 +51,6 @@ datasets:
   - {dataset: KACE-1-0-G}
   - {dataset: MCM-UA-1-0, grid: gn}
   - {dataset: MIROC6, grid: gn}
-#  - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
   - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
   - {dataset: MPI-ESM-1-2-HAM, grid: gn}
   - {dataset: MPI-ESM1-2-HR, grid: gn}
@@ -86,7 +85,6 @@ preprocessors:
       statistics:
         - operator: percentile
           percent: 90
-#      exclude: [reference_dataset, MIROC6]
       exclude: [reference_dataset, EMAC]
 
 
@@ -96,8 +94,8 @@ diagnostics:
     description: Plot diurnal cycles including reference datasets.
     variables:
       pr:
-#        timerange: '2000/2009'
-        timerange: '2000/2010'
+#        timerange: '2000/2004'
+        timerange: '2005/2009'
         preprocessor: pp_pr
         project: CMIP6
         mip: Amon
@@ -106,7 +104,7 @@ diagnostics:
         grid: gr
         reference_dataset: GPCP-SG
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2, reference_for_metric: true}
+          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2, reference_for_metric: true, alias: GPCP-SG}
     scripts:
       allplots:
         script: monitor/multi_datasets.py

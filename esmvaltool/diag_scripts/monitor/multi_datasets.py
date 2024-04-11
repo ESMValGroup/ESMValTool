@@ -2960,8 +2960,6 @@ class MultiDatasets(MonitorBase):
         # Get plot function
         plot_func = self._get_plot_func(plot_type)
 
-        ancestors = [dataset['filename']]
-
         # load data
 
         percentile_data = []
@@ -2973,6 +2971,7 @@ class MultiDatasets(MonitorBase):
             percentile_data.append(cube)
 
         for dataset in plot_datasets:
+            ancestors = [dataset['filename']]
             (plot_path, netcdf_paths) = (
                 self._plot_benchmarking_map(plot_func, dataset,
                                             percentile_data, metric)
@@ -3102,7 +3101,7 @@ class MultiDatasets(MonitorBase):
         # Get reference dataset
         # ref_dataset = self._get_benchmarking_reference(datasets)
         # Get dataset to be benchmarked
-        dataset = self._get_benchmark_datasets(datasets)
+        plot_datasets = self._get_benchmark_datasets(datasets)
         # Get percentiles from multi-model statistics
         percentile_dataset = self._get_benchmark_percentiles(datasets)
         # Get benchmarking metric
@@ -3113,7 +3112,6 @@ class MultiDatasets(MonitorBase):
 
         # Create a single plot for each dataset (incl. reference dataset if
         # given)
-        ancestors = [dataset['filename']]
 
         # load data
 
@@ -3129,7 +3127,9 @@ class MultiDatasets(MonitorBase):
             (plot_path, netcdf_paths) = (
                 self._plot_benchmarking_zonal(plot_func, dataset,
                                               percentile_data, metric)
-        )
+            )
+            ancestors = [dataset['filename']]
+
         caption = (
             f"Zonal mean profile of {dataset['long_name']} of dataset "
             f"{dataset['dataset']} (project {dataset['project']}) from "

@@ -105,8 +105,8 @@ diagnostics:
     description: Plot zonal mean profile.
     variables:
       ta:
-#        timerange: '2000/2009'
-        timerange: '2000/2010'
+        timerange: '2000/2004'
+#        timerange: '2005/2009'
         raw_name: [tm1_p39_cav, tm1_p39_ave]
         preprocessor: pp_ta
         project: CMIP6
