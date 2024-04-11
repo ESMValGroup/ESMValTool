@@ -32,7 +32,7 @@ variables:
     mip: Amon
     raw: land surface temperature
     raw_units: kelvin
-    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
     start_year: 2006
     end_year: 2007
 
