@@ -2700,7 +2700,9 @@ class MultiDatasets(MonitorBase):
                 raise ValueError(f"No input data to plot '{plot_type}' given")
 
             # Get dataset to be benchmarked
-            benchmark_dataset = self._get_benchmark_datasets(datasets)
+            plot_datasets = self._get_benchmark_datasets(datasets)
+            benchmark_dataset = plot_datasets[0]
+
             logger.info("Plotting %s for dataset %s",
                         plot_type, benchmark_dataset['dataset'])
 

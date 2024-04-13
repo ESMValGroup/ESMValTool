@@ -59,9 +59,8 @@ datasets:
   - {dataset: NorESM2-MM, grid: gn, institute: NCC}
   - {dataset: SAM0-UNICON, grid: gn}
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
-  # Dataset to be benchmarked
-#  - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
   - {dataset: MIROC6, grid: gn}
+  # Dataset to be benchmarked
   - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, supplementary_variables: [{short_name: areacella, skip: true}]}
     #- {dataset: ACCESS1-0, ensemble: r1i1p1, project: CMIP5, benchmark_dataset: true}
 
@@ -72,8 +71,8 @@ VAR_SETTINGS: &var_settings
   exp: historical
   ensemble: r1i1p1f1
   grid: gr
-  timerange: '2000/2010'
-#  timerange: '2000/2009'
+  timerange: '2000/2004'
+#  timerange: '2005/2009'
 
 
 preprocessors:
