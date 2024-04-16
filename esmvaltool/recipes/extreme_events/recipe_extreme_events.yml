@@ -5,7 +5,7 @@ documentation:
 
   description: |
     Recipe for calculating indices supported by xclim.
-    
+
   authors:
     - ruhe_lukas
     - pacal_aytac
@@ -17,11 +17,11 @@ documentation:
     - esmval
 
 datasets:
-  - {dataset: ACCESS1-0,  project: CMIP5, exp: historical,  ensemble: r2i1p1,  start_year: 1850,  end_year: 1855}
-  - {dataset: MPI-ESM-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1850,  end_year: 1855}
+  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r2i1p1, start_year: 1850, end_year: 1855}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1850, end_year: 1855}
 
 diagnostics:
-  index:
+  nested_example:
     variables:
       tasmin:
         mip: day
@@ -30,11 +30,90 @@ diagnostics:
       pr:
         mip: day
     scripts:
-      xclim:
+      pet:
         script: xclim/diag_xclim.py
         indicator: "potential_evapotranspiration"
         realm: "atmos"
         input: ["tasmax", "tasmin"]  # all by default
-        kwargs: 
+        kwargs:
           method: "HG85"
-
+      water_budget:
+        script: xclim/diag_xclim.py
+        indicator: "water_budget"
+        realm: "atmos"
+        input: ["evspsblpot", "pr"]
+        ancestors: [index/pet, index/pr]
+  indices_r:
+    variables:
+      tas:
+        mip: day
+      tasmin:
+        mip: day
+      tasmax:
+        mip: day
+      pr:
+        mip: day
+    scripts:
+      # sdiiETCCDI_yr:
+      #   script: xclim/diag_xclim.py
+      #   indicator: "sdiiETCCDI_yr"
+      #   realm: "atmos"
+      #   input: ["pr"]
+      # r95pETCCDI_yr:
+      #   script: xclim/diag_xclim.py
+      #   indicator: "r95pETCCDI_yr"
+      #   realm: "atmos"
+      #   input: ["pr"]
+      # rx5dayETCCDI_yr:
+      #   script: xclim/diag_xclim.py
+      #   indicator: "rx5dayETCCDI_yr"
+      #   realm: "atmos"
+      #   input: ["pr"]
+      # rx1dayETCCDI_yr:
+      #   script: xclim/diag_xclim.py
+      #   indicator: "rx1dayETCCDI_yr"
+      #   realm: "atmos"
+      #   input: ["pr"]
+      cddETCCDI_yr:
+        script: xclim/diag_xclim.py
+        indicator: "maximum_consecutive_dry_days"
+        realm: "atmos"
+        input: ["pr"]
+        kwargs:
+          thresh: "1 mm/day"
+          freq: "YS"
+        post_proc:
+          area_statistics:
+            operator: mean
+      # cdd_timeseries:
+      #   script: multi
+      # fdETCCDI_yr:
+      #   script: xclim/diag_xclim.py
+      #   indicator: "fdETCCDI_yr"
+      #   realm: "atmos"
+      #   input: ["pr"]
+      # trETCCDI_yr:
+      #   script: xclim/diag_xclim.py
+      #   indicator: "trETCCDI_yr"
+      #   realm: "atmos"
+      #   input: ["pr"]
+      # txnETCCDI_yr:
+      #   script: xclim/diag_xclim.py
+      #   indicator: "txnETCCDI_yr"
+      #   realm: "atmos"
+      #   input: ["tasmin"]
+      # txxETCCDI_yr:
+      #   script: xclim/diag_xclim.py
+      #   indicator: "txxETCCDI_yr"
+      #   realm: "atmos"
+      #   input: ["tasmax"]
+      # tnnETCCDI_yr:
+      #   script: xclim/diag_xclim.py
+      #   indicator: "tnnETCCDI_yr"
+      #   realm: "atmos"
+      #   input: ["tasmin"]
+      # tnxETCCDI_yr:
+      #   script: xclim/diag_xclim.py
+      #   indicator: "tnxETCCDI_yr"
+      #   realm: "atmos"
+      #   input: ["tasmax"]
