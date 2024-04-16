@@ -44,6 +44,9 @@ default_split: str, optional
     splits will be plotted as overlays. This can be used to choose the base
     reference, while all references are labeled for the legend.
     By default None.
+plot_legend: bool, optional
+    If True, a legend is plotted, when multiple splits are given.
+    By default True.
 legend: dict, optional
     Customize, if, how and where the legend is plotted. The 'best' position
     and size of the legend depends on multiple parameters of the figure
@@ -86,6 +89,8 @@ figsize: list(float), optional
    [width, height] of the figure in inches. The final figure will be saved with
    bbox_inches="tight", which can change the resulting aspect ratio.
    By default [5, 3].
+dpi: int, optional
+    Dots per inch for the figure. By default 300.
 """
 
 import itertools
@@ -385,11 +390,11 @@ def plot(cfg, data):
     grid.cbar_axes[0].colorbar(grid[0].get_images()[0], **cfg["cbar_kwargs"])
     if data.shape[3] > 1:
         plot_overlays(cfg, grid, data)
-    if cfg.get("plot_legend", True):
+    if cfg["plot_legend"] and data.shape[3] > 1:
         split_legend(cfg, grid, data)
-    basename = "performance_metrics"
+    basename = "portrait_plot"
     fname = get_plot_filename(basename, cfg)
-    plt.savefig(fname, bbox_inches="tight")
+    plt.savefig(fname, bbox_inches="tight", dpi=cfg["dpi"])
     log.info("Figure saved:")
     log.info(fname)
 
@@ -419,15 +424,37 @@ def set_defaults(cfg):
     cfg.setdefault("cbar_kwargs", {})
     cfg.setdefault("axes_properties", {})
     cfg.setdefault("nan_color", 'white')
+    cfg.setdefault("figsize", (7.5, 3.5))
+    cfg.setdefault("dpi", 300)
+    cfg.setdefault("plot_legend", True)
     cfg.setdefault("plot_kwargs", {})
     cfg["plot_kwargs"].setdefault("cmap", "RdYlBu_r")
     cfg["plot_kwargs"].setdefault("vmin", 0)
     cfg["plot_kwargs"].setdefault("vmax", 1)
-    cfg.setdefault("figsize", (7.5, 3.5))
     cfg.setdefault("legend", {})
     cfg["legend"].setdefault("x_offset", 0)
     cfg["legend"].setdefault("y_offset", 0)
     cfg["legend"].setdefault("size", 0.3)
+
+
+def sort_data(cfg, dataset):
+    """Sort the dataset along by custom or alphabetical order."""
+    # custom order: dsimport xarray as xr
+    # import pandas as pd
+    # order = ['value3', 'value1', 'value2']  # replace by custom order
+    # ds[cfg['y_by']] = pd.Categorical(ds[cfg['y_by']], categories=order,
+    #     ordered=True)
+    # ds = ds.sortby('y_by')
+    # sort alphabetically (caseinsensitive)
+    dataset = dataset.sortby([
+        dataset[cfg["x_by"]].str.lower(), dataset[cfg["y_by"]].str.lower(),
+        dataset[cfg["group_by"]].str.lower(),
+        dataset[cfg["split_by"]].str.lower()
+    ])
+    # apply custom orders if given:
+    # if cfg.get("x_order"):
+    #     dataset = dataset.reindex({cfg["x_by"]: cfg["x_order"]})
+    return dataset
 
 
 def main(cfg):
@@ -437,11 +464,10 @@ def main(cfg):
     remove_reference(metas)
     add_split_none(metas)
     dataset = load_data(cfg, metas)
-    dataset = dataset.sortby(dataset[cfg["x_by"]].str.lower())
+    dataset = sort_data(cfg, dataset)
     if cfg["normalize"] is not None:
         dataset["var"] = normalize(dataset["var"], cfg["normalize"],
                                    [cfg["x_by"], cfg["group_by"]])
-
     plot(cfg, dataset["var"])
 
 
