@@ -31,7 +31,6 @@ from esmvaltool.diag_scripts.shared import (
 
 logger = logging.getLogger(__name__)
 
-
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
 
@@ -107,18 +106,12 @@ def _diagnostic(config):
     loaded_data = {}
     ancestor_list = []
 
-    # for now leave this so it appears in the log file
-    print('###########################################')
-    print(loaded_data)
-    print('##########################################')
-
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
-        print(dataset, metadata)
         cubes, ancestors = _get_input_cubes(metadata)
-        print(cubes, ancestors)
         loaded_data[dataset] = cubes
 
-    # add calls to propagation equations here
+    # Methodolgy:
+    # for day and night seperately, calls to propagation equations for each compoent
     # ts eq 1 eq_arithmetic_mean 
     # lst_unc_loc_atm eq 7 eq_weighted_sqrt_mean
     # lst_unc_sys eq 5 = eq 1 eq_arithmetic_mean, no spatial propagation here
@@ -126,21 +119,20 @@ def _diagnostic(config):
     # see Table 1 and then table 4
     # MODIS Aqua and Terra = GSW eq 6 = eq 1 eq_arithmetic_mean.
     # lst_unc_ran eq 4 eq_propagate_random_with_sampling
+    #
+    # Then combine to get a total day and night vale
     # total uncert  eq 9 eq_sum_in_quadrature
+    # a total all day uncertainty can then be obtained with eq 9 eq_sum_in_quadrature
+    # and a mean eq 1 eq_arithmetic_mean to get an 'average' lst for the day
 
     lst_unc_variables = ['lst_unc_loc_atm', 'lst_unc_sys',
                          'lst_unc_loc_sfc','lst_unc_ran'] 
 
     propagated_values = {}
 
-    time_coord = {}
-    time_coord['day'] = loaded_data['ESACCI-LST']['ts_day'].coord('time')
-    time_coord['night'] = loaded_data['ESACCI-LST']['ts_night'].coord('time')
-
     # for now
     lat_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('latitude').points)
     lon_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('longitude').points)
-    n_use = lat_len*lon_len*0.75 # for testing
 
     n_fill = {}
     n_use = {}
@@ -155,7 +147,7 @@ def _diagnostic(config):
         propagated_values[f'ts_{time}'] = eq_arithmetic_mean(loaded_data['ESACCI-LST'][f'ts_{time}'])
         propagated_values[f'lst_unc_loc_atm_{time}'] = eq_weighted_sqrt_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_atm_{time}'],
                                                                              n_use[f'{time}'])
-        # no spatial propagation
+        # no spatial propagation of the systamatic uncertainity
         propagated_values[f'lst_unc_sys_{time}'] = loaded_data['ESACCI-LST'][f'lst_unc_sys_{time}']
 
         propagated_values[f'lst_unc_loc_sfc_{time}'] = eq_arithmetic_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_sfc_{time}'])
@@ -164,39 +156,19 @@ def _diagnostic(config):
                                                                                                                                 loaded_data['ESACCI-LST'][f'ts_{time}'],
                                                                                                                                 n_use[f'{time}'], n_fill[f'{time}'])
 
-    print('*************************************')
-    # for KEY in propagated_values.keys(): 
-    #     try:
-    #         print(KEY, propagated_values[KEY].coord('time') == time_coord['day'])
-    #         print(KEY, propagated_values[KEY].coord('time') == time_coord['night'])
-    #     except:
-    #         pass
     for time in ['day', 'night']:
-    #     for variable in lst_unc_variables:
-    #         print(time, variable, propagated_values[f'{variable}_{time}'])
-
         time_cubelist = iris.cube.CubeList([propagated_values[f'{variable}_{time}']
                                             for variable in lst_unc_variables])
-        print(time_cubelist)
-
         propagated_values[f'lst_total_unc_{time}'] = eq_sum_in_quadrature(time_cubelist)
-                   
-    # # # # # # print('*************************************')
-    # # # # # # for KEY in propagated_values.keys():                              
-    # # # # # #     try:
-    # # # # # #         print(KEY, propagated_values[KEY].data)
-    # # # # # #     except:
-    # # # # # #         print(KEY, propagated_values[KEY])
-
-
-    print('mmmmmmmmmmmmmmmmmmmmm')
-    print(type(propagated_values[f'lst_sampling_day']))
 
     test_plot(propagated_values)
     
 def test_plot(propagated_values):
+    """This is a very simple plot to just test the method
+    """
 
     for time in ['day','night']:
+        # one plot for day and night seperately
 
         plt.figure(figsize=(12,10))
         
@@ -216,9 +188,7 @@ def test_plot(propagated_values):
 
         plt.savefig(f'test_{time}.png')
 
-
-
-# make function for each propagation equation
+# These are the propagation equations
 def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_fill, n_use):
     """Propagate radom uncertatinty using the sampling uncertainty
     ATBD eq 4
@@ -238,15 +208,10 @@ def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_fill, n_use):
     
     n_total = n_fill + n_use
 
-    #n_fill = np.sum(cube_ts.data.mask)
-    #print(f'{n_fill=}')
-
     unc_ran_mean = eq_arithmetic_mean(cube_unc_ran)
     
     lst_variance = cube_ts.collapsed(['latitude','longitude'], iris.analysis.VARIANCE)
-    #unc_sampling = (n_fill * lst_variance) / (n_total - 1)
     factor = n_fill/(n_total - 1)
-    print(factor)
 
     unc_sampling = iris.analysis.maths.multiply(lst_variance, n_fill/(n_total-1))
     output = eq_sum_in_quadrature(iris.cube.CubeList([unc_ran_mean**2, unc_sampling]))
@@ -270,10 +235,9 @@ def eq_sum_in_quadrature(cubelist):
     Input:
     cubelist : A cubelist of 1D cubes
     """
-    print('................')
+
     # dont want to inplace replace the input
     newlist=cubelist.copy()
-    print(newlist)
     for cube in newlist:
         iris.analysis.maths.exponentiate(cube, 2, in_place=True)
 
@@ -293,8 +257,6 @@ def eq_weighted_sqrt_mean(cube, n_use):
     cube:
     n_use: the number of useable pixels - NEED TO IMPLIMENT A CHECK ON MASKS BEING THE SAME
     """
-
-    #output = (1/np.sqrt(n_use)) * cube.collapsed(['latitude', 'longitude'], iris.analysis.MEAN)
     output = iris.analysis.maths.multiply(cube.collapsed(['latitude', 'longitude'], iris.analysis.MEAN),
                                  1/np.sqrt(n_use))
     return output
