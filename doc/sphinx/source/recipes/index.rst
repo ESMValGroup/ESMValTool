@@ -62,6 +62,7 @@ Atmosphere
    recipe_thermodyn_diagtool
    recipe_validation
    recipe_radiation_budget
+   recipe_aod_aeronet_assess
 
 Climate metrics
 ^^^^^^^^^^^^^^^

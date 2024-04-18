@@ -2059,7 +2059,7 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Map plot of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']})."
+                    f"{dataset['alias']}."
                 )
             else:
                 (plot_path, netcdf_paths) = (
@@ -2067,9 +2067,8 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Map plot of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"including bias relative to {ref_dataset['dataset']} "
-                    f"(project {ref_dataset['project']})."
+                    f"{dataset['alias']} including bias relative to "
+                    f"{ref_dataset['alias']}."
                 )
                 ancestors.append(ref_dataset['filename'])
 
@@ -2134,7 +2133,7 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Zonal mean profile of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']})."
+                    f"{dataset['alias']}."
                 )
             else:
                 (plot_path, netcdf_paths) = (
@@ -2143,9 +2142,8 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Zonal mean profile of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"including bias relative to {ref_dataset['dataset']} "
-                    f"(project {ref_dataset['project']})."
+                    f"{dataset['alias']} including bias relative to "
+                    f"{ref_dataset['alias']}."
                 )
                 ancestors.append(ref_dataset['filename'])
 
@@ -2386,8 +2384,7 @@ class MultiDatasets(MonitorBase):
                      plot_func, dataset))
                 caption = (
                     f"Hovmoeller Z vs. time plot of {dataset['long_name']} "
-                    f"of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']})."
+                    f"of dataset {dataset['alias']}."
                 )
             else:
                 (plot_path,
@@ -2395,10 +2392,8 @@ class MultiDatasets(MonitorBase):
                      plot_func, dataset, ref_dataset))
                 caption = (
                     f"Hovmoeller Z vs. time plot of {dataset['long_name']} "
-                    f"of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"including bias relative to {ref_dataset['dataset']} "
-                    f"(project {ref_dataset['project']})."
+                    f"of dataset {dataset['alias']} including bias relative "
+                    f"to {ref_dataset['alias']}."
                 )
                 ancestors.append(ref_dataset['filename'])
 
@@ -2464,7 +2459,7 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Hovmoeller plot of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']})."
+                    f"{dataset['alias']}."
                 )
             else:
                 (plot_path, netcdf_paths) = (
@@ -2473,9 +2468,8 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Hovmoeller plot of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"including bias relative to {ref_dataset['dataset']} "
-                    f"(project {ref_dataset['project']})."
+                    f"{dataset['alias']} including bias relative to "
+                    f"{ref_dataset['alias']}."
                 )
                 ancestors.append(ref_dataset['filename'])
 
