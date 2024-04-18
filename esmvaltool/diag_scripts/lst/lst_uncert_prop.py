@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
 
-    Based on the hydrology diagnostic.
+    Based on the hydrology diagnostic originally.
 
     Inputs:
     metadata = List of dictionaries made from the preprocessor config
@@ -69,11 +69,7 @@ def _get_provenance_record(attributes, ancestor_files):
     Outputs:
     record = dictionary of provenance records.
     """
-    caption = "Timeseries of ESA CCI LST difference to mean of "\
-        + "model ensembles calculated over region bounded by latitude "\
-        + "{lat_south} to {lat_north}, longitude {lon_west} to {lon_east} "\
-        + "and for model/ensembles {ensembles}. "\
-        + "Shown for years {start_year} to {end_year}.".format(**attributes)
+    caption = "This needs a new caption.".format(**attributes)
 
     record = {
         'caption': caption,
@@ -128,12 +124,16 @@ def _diagnostic(config):
     lst_unc_variables = ['lst_unc_loc_atm', 'lst_unc_sys',
                          'lst_unc_loc_sfc','lst_unc_ran'] 
 
+    # This will be a dictionary of variables and the cubes of their propagated values
     propagated_values = {}
 
-    # for now
+    # These define the total number of points in the data
     lat_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('latitude').points)
     lon_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('longitude').points)
 
+    # n_fill and n_use ad dictionaries with keys 'day' and 'night'
+    # the item for each key is an array
+    # These give the cloud/don't use pixel numbers, and the number of useable pixels for each timestep
     n_fill = {}
     n_use = {}
     n_fill['day'] = np.array([np.sum(item) for item in loaded_data['ESACCI-LST']['ts_day'].data.mask])
@@ -142,6 +142,7 @@ def _diagnostic(config):
     n_use['day'] = (lat_len*lon_len) - n_fill['day']
     n_use['night'] = (lat_len*lon_len)
 
+    # This loop call the propagation equations, once for 'day' and 'night'
     for time in ['day', 'night']:
         
         propagated_values[f'ts_{time}'] = eq_arithmetic_mean(loaded_data['ESACCI-LST'][f'ts_{time}'])
@@ -156,6 +157,7 @@ def _diagnostic(config):
                                                                                                                                 loaded_data['ESACCI-LST'][f'ts_{time}'],
                                                                                                                                 n_use[f'{time}'], n_fill[f'{time}'])
 
+    # Combines all uncertainty types to get total uncertainty for 'day' and 'night'
     for time in ['day', 'night']:
         time_cubelist = iris.cube.CubeList([propagated_values[f'{variable}_{time}']
                                             for variable in lst_unc_variables])
@@ -206,14 +208,20 @@ def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_fill, n_use):
     cube_ts:      The lst use for day/night as appropriate
     """
     
+    # total number of pixed
     n_total = n_fill + n_use
 
+    # the mean of the random uncertainty
     unc_ran_mean = eq_arithmetic_mean(cube_unc_ran)
     
+    # calculate the sampling error
+    # variance of the lst * n_fill/n_total-1
     lst_variance = cube_ts.collapsed(['latitude','longitude'], iris.analysis.VARIANCE)
     factor = n_fill/(n_total - 1)
-
     unc_sampling = iris.analysis.maths.multiply(lst_variance, n_fill/(n_total-1))
+
+    # apply the ATBD equation
+    # note the square of random uncertainty is needed
     output = eq_sum_in_quadrature(iris.cube.CubeList([unc_ran_mean**2, unc_sampling]))
     output  = iris.analysis.maths.exponentiate(output, 0.5)
 
@@ -236,7 +244,7 @@ def eq_sum_in_quadrature(cubelist):
     cubelist : A cubelist of 1D cubes
     """
 
-    # dont want to inplace replace the input
+    # dont want to in-place replace the input
     newlist=cubelist.copy()
     for cube in newlist:
         iris.analysis.maths.exponentiate(cube, 2, in_place=True)
@@ -255,7 +263,7 @@ def eq_weighted_sqrt_mean(cube, n_use):
 
     Inputs:
     cube:
-    n_use: the number of useable pixels - NEED TO IMPLIMENT A CHECK ON MASKS BEING THE SAME
+    n_use: the number of useable pixels - NEED TO IMPLIMENT A CHECK ON MASKS BEING THE SAME?
     """
     output = iris.analysis.maths.multiply(cube.collapsed(['latitude', 'longitude'], iris.analysis.MEAN),
                                  1/np.sqrt(n_use))
