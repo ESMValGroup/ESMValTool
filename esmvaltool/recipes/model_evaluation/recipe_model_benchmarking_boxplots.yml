@@ -61,7 +61,7 @@ datasets:
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
   - {dataset: MIROC6, grid: gn}
   # Dataset to be benchmarked
-  - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, supplementary_variables: [{short_name: areacella, skip: true}]}
+  - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}]}
     #- {dataset: ACCESS1-0, ensemble: r1i1p1, project: CMIP5, benchmark_dataset: true}
 
 
@@ -101,6 +101,37 @@ preprocessors:
       metric: weighted_rmse
       coords: [latitude, longitude]
 
+  rmse_sst:
+    custom_order: true
+    climate_statistics:
+      operator: mean
+    mask_below_threshold:
+      threshold: 273.15
+    regrid:
+      target_grid: 2x2
+      scheme: nearest
+#    mask_landsea:
+#      mask_out: land
+#    mask_below_threshold:
+#      threshold: 273.15
+#    mask_multimodel:
+    distance_metric:
+      metric: weighted_rmse
+      coords: [latitude, longitude]
+
+  rmse_land:
+    custom_order: true
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 2x2
+      scheme: nearest
+    mask_landsea:
+      mask_out: sea
+    distance_metric:
+      metric: weighted_rmse
+      coords: [latitude, longitude]
+
   pearsonr:
     custom_order: true
     climate_statistics:
@@ -125,6 +156,37 @@ preprocessors:
       metric: weighted_pearsonr
       coords: [latitude, longitude]
 
+  pearsonr_sst:
+    custom_order: true
+    climate_statistics:
+      operator: mean
+    mask_below_threshold:
+      threshold: 273.15
+    regrid:
+      target_grid: 2x2
+      scheme: nearest
+#    mask_landsea:
+#      mask_out: land
+#    mask_below_threshold:
+#      threshold: 273.15
+#    mask_multimodel:
+    distance_metric:
+      metric: weighted_pearsonr
+      coords: [latitude, longitude]
+
+  pearsonr_land:
+    custom_order: true
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 2x2
+      scheme: nearest
+    mask_landsea:
+      mask_out: sea
+    distance_metric:
+      metric: weighted_pearsonr
+      coords: [latitude, longitude]
+
   emd:
     custom_order: true
     climate_statistics:
@@ -133,7 +195,7 @@ preprocessors:
       target_grid: 2x2
       scheme: nearest
     distance_metric:
-      metric: emd
+      metric: weighted_emd
       coords: [latitude, longitude]
 
   emd_pr:
@@ -146,7 +208,38 @@ preprocessors:
     convert_units:
       units: mm day-1
     distance_metric:
-      metric: emd
+      metric: weighted_emd
+      coords: [latitude, longitude]
+
+  emd_sst:
+    custom_order: true
+    climate_statistics:
+      operator: mean
+    mask_below_threshold:
+      threshold: 273.15
+    regrid:
+      target_grid: 2x2
+      scheme: nearest
+#    mask_landsea:
+#      mask_out: land
+#    mask_below_threshold:
+#      threshold: 273.15
+#    mask_multimodel:
+    distance_metric:
+      metric: weighted_emd
+      coords: [latitude, longitude]
+
+  emd_land:
+    custom_order: true
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 2x2
+      scheme: nearest
+    mask_landsea:
+      mask_out: sea
+    distance_metric:
+      metric: weighted_emd
       coords: [latitude, longitude]
 
 
@@ -155,16 +248,18 @@ diagnostics:
   plot_boxplots_rmse:
     description: Plot boxplots for different variables.
     variables:
-      tas: &var_rmse
+      tas_land:
         <<: *var_settings
-        preprocessor: rmse
+        preprocessor: rmse_land
+        short_name: tas
         additional_datasets:
                 #- {dataset: ERA5, project: native6, type: reanaly, version: v1,
                 #   tier: 3, reference_for_metric: true}
           - {dataset: HadCRUT5, project: OBS, type: ground,
              version: 5.0.1.0-analysis, tier: 2, reference_for_metric: true}
       lwcre:
-        <<: *var_rmse
+        <<: *var_settings
+        preprocessor: rmse
         derive: true
         force_derivation: true
         channel: Amon
@@ -172,38 +267,44 @@ diagnostics:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2020, reference_for_metric: true}
       pr:
-        <<: *var_rmse
+        <<: *var_settings
         preprocessor: rmse_pr
         additional_datasets:
           - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
              reference_for_metric: true}
       psl:
-        <<: *var_rmse
+        <<: *var_settings
+        preprocessor: rmse
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, reference_for_metric: true}
              #- {dataset: JRA-55, project: ana4mips, type: reanalysis, tier: 1,
              #   reference_for_metric: true}
       rlut:
-        <<: *var_rmse
+        <<: *var_settings
+        preprocessor: rmse
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2020, reference_for_metric: true}
       rsut:
-        <<: *var_rmse
+        <<: *var_settings
+        preprocessor: rmse
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2020, reference_for_metric: true}
       swcre:
-        <<: *var_rmse
+        <<: *var_settings
+        preprocessor: rmse
         derive: true
         force_derivation: true
         channel: Amon
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2020, reference_for_metric: true}
-      ts:
-        <<: *var_rmse
+      sst:
+        <<: *var_settings
+        preprocessor: rmse_sst
+        short_name: ts
         additional_datasets:
           - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2, reference_for_metric: true}
     scripts:
@@ -213,7 +314,7 @@ diagnostics:
         group_variables_by: variable_group
         plots:
           benchmarking_boxplot:
-            var_order: ['tas', 'ts', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
+            var_order: ['tas_land', 'sst', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
             #pyplot_kwargs:
             #    color: "red"
 
@@ -221,16 +322,16 @@ diagnostics:
   plot_boxplots_pearsonr:
     description: Plot boxplots for different variables.
     variables:
-      tas: &var_pearsonr
+      tas_land:
         <<: *var_settings
-        preprocessor: pearsonr
+        short_name: tas
+        preprocessor: pearsonr_land
         additional_datasets:
-                #- {dataset: ERA5, project: native6, type: reanaly, version: v1,
-                #   tier: 3, reference_for_metric: true}
           - {dataset: HadCRUT5, project: OBS, type: ground,
              version: 5.0.1.0-analysis, tier: 2, reference_for_metric: true}
       lwcre:
-        <<: *var_pearsonr
+        <<: *var_settings
+        preprocessor: pearsonr
         derive: true
         force_derivation: true
         channel: Amon
@@ -238,38 +339,42 @@ diagnostics:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2020, reference_for_metric: true}
       pr:
-        <<: *var_pearsonr
+        <<: *var_settings
         preprocessor: pearsonr_pr
         additional_datasets:
           - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
              reference_for_metric: true}
       psl:
-        <<: *var_pearsonr
+        <<: *var_settings
+        preprocessor: pearsonr
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, reference_for_metric: true}
-             #- {dataset: JRA-55, project: ana4mips, type: reanalysis, tier: 1,
-             #   reference_for_metric: true}
       rlut:
-        <<: *var_pearsonr
+        <<: *var_settings
+        preprocessor: pearsonr
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2020, reference_for_metric: true}
       rsut:
-        <<: *var_pearsonr
+        <<: *var_settings
+        preprocessor: pearsonr
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2020, reference_for_metric: true}
       swcre:
-        <<: *var_pearsonr
+        <<: *var_settings
+        preprocessor: pearsonr
         derive: true
         force_derivation: true
         channel: Amon
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2020, reference_for_metric: true}
-      ts:
-        <<: *var_pearsonr
+      sst:
+        <<: *var_settings
+        preprocessor: pearsonr_sst
+        short_name: ts
         additional_datasets:
           - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2, reference_for_metric: true}
     scripts:
@@ -279,22 +384,24 @@ diagnostics:
         group_variables_by: variable_group
         plots:
           benchmarking_boxplot:
-            var_order: ['tas', 'ts', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
+            var_order: ['tas_land', 'sst', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
 
 
   plot_boxplots_emd:
     description: Plot boxplots for different variables.
     variables:
-      tas: &var_emd
+      tas_land:
         <<: *var_settings
-        preprocessor: emd
+        preprocessor: emd_land
+        short_name: tas
         additional_datasets:
                 #- {dataset: ERA5, project: native6, type: reanaly, version: v1,
                 #   tier: 3, reference_for_metric: true}
           - {dataset: HadCRUT5, project: OBS, type: ground,
              version: 5.0.1.0-analysis, tier: 2, reference_for_metric: true}
       lwcre:
-        <<: *var_emd
+        <<: *var_settings
+        preprocessor: emd
         derive: true
         force_derivation: true
         channel: Amon
@@ -302,38 +409,44 @@ diagnostics:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2020, reference_for_metric: true}
       pr:
-        <<: *var_emd
+        <<: *var_settings
         preprocessor: emd_pr
         additional_datasets:
           - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
              reference_for_metric: true}
       psl:
-        <<: *var_emd
+        <<: *var_settings
+        preprocessor: emd
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, reference_for_metric: true}
              #- {dataset: JRA-55, project: ana4mips, type: reanalysis, tier: 1,
              #   reference_for_metric: true}
       rlut:
-        <<: *var_emd
+        <<: *var_settings
+        preprocessor: emd
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2020, reference_for_metric: true}
       rsut:
-        <<: *var_emd
+        <<: *var_settings
+        preprocessor: emd
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2020, reference_for_metric: true}
       swcre:
-        <<: *var_emd
+        <<: *var_settings
+        preprocessor: emd
         derive: true
         force_derivation: true
         channel: Amon
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2020, reference_for_metric: true}
-      ts:
-        <<: *var_emd
+      sst:
+        <<: *var_settings
+        preprocessor: emd_sst
+        short_name: ts
         additional_datasets:
           - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2, reference_for_metric: true}
     scripts:
@@ -343,4 +456,4 @@ diagnostics:
         group_variables_by: variable_group
         plots:
           benchmarking_boxplot:
-            var_order: ['tas', 'ts', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
+            var_order: ['tas_land', 'sst', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
