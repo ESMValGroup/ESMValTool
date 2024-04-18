@@ -5,17 +5,16 @@ ESMValTool diagnostic for ESA CCI LST V3 data - Uncertainity Propagation
 # Expected keys for OBS LST data in loaded_data:
 # ts_day
 # ts_night
-# lst_unc_loc_sfc_day 
+# lst_unc_loc_sfc_day
 # lst_unc_loc_sfc_night
-# lst_unc_loc_atm_day 
+# lst_unc_loc_atm_day
 # lst_unc_loc_atm_night
-# lst_unc_sys_day 
+# lst_unc_sys_day
 # lst_unc_sys_night
-# lst_unc_ran_day 
+# lst_unc_ran_day
 # lst_unc_ran_night
 
 import logging
-import time
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
@@ -161,36 +160,46 @@ def _diagnostic(config):
     for time in ['day', 'night']:
         time_cubelist = iris.cube.CubeList([propagated_values[f'{variable}_{time}']
                                             for variable in lst_unc_variables])
-        propagated_values[f'lst_total_unc_{time}'] = eq_sum_in_quadrature(time_cubelist)
+        propagated_values[f'lst_total_unc_{time}'] = \
+                                                     eq_sum_in_quadrature(time_cubelist)
 
     test_plot(propagated_values)
-    
+
+
 def test_plot(propagated_values):
     """This is a very simple plot to just test the method
     """
 
-    for time in ['day','night']:
+    for time in ['day', 'night']:
         # one plot for day and night seperately
 
-        plt.figure(figsize=(12,10))
-        
+        plt.figure(figsize=(12, 10))
+
         plt.subplot(211)
         iplt.plot(propagated_values[f'ts_{time}'], c='b')
-        
+
         plt.subplot(212)
-        iplt.plot(propagated_values[f'lst_unc_loc_atm_{time}'], c='r', label=f'lst_unc_loc_atm_{time}')
-        iplt.plot(propagated_values[f'lst_unc_loc_sfc_{time}'], c='g', label=f'lst_unc_loc_sfc_{time}')
-        iplt.plot(propagated_values[f'lst_unc_sys_{time}'], c='b', label=f'lst_unc_sys_{time}')
-        iplt.plot(propagated_values[f'lst_unc_ran_{time}'], c='m', label=f'lst_unc_ran_{time}')
-        
-        iplt.plot(propagated_values[f'lst_sampling_{time}'], c='c',label=f'lst_sampling_{time}')
-        iplt.plot(propagated_values[f'lst_total_unc_{time}'], c='k',label=f'lst_total_unc_{time}')
+        iplt.plot(propagated_values[f'lst_unc_loc_atm_{time}'], c='r',
+                  label=f'lst_unc_loc_atm_{time}')
+        iplt.plot(propagated_values[f'lst_unc_loc_sfc_{time}'], c='g',
+                  label=f'lst_unc_loc_sfc_{time}')
+        iplt.plot(propagated_values[f'lst_unc_sys_{time}'], c='b',
+                  label=f'lst_unc_sys_{time}')
+        iplt.plot(propagated_values[f'lst_unc_ran_{time}'], c='m',
+                  label=f'lst_unc_ran_{time}')
+
+        iplt.plot(propagated_values[f'lst_sampling_{time}'], c='c',
+                  label=f'lst_sampling_{time}')
+        iplt.plot(propagated_values[f'lst_total_unc_{time}'], c='k',
+                  label=f'lst_total_unc_{time}')
 
         plt.legend()
 
         plt.savefig(f'test_{time}.png')
 
 # These are the propagation equations
+
+
 def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_fill, n_use):
     """Propagate radom uncertatinty using the sampling uncertainty
     ATBD eq 4
@@ -207,45 +216,50 @@ def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_fill, n_use):
     cube_unc_ran: The cube with the lst_unc_ran day/night data
     cube_ts:      The lst use for day/night as appropriate
     """
-    
+
     # total number of pixed
     n_total = n_fill + n_use
 
     # the mean of the random uncertainty
     unc_ran_mean = eq_arithmetic_mean(cube_unc_ran)
-    
+
     # calculate the sampling error
     # variance of the lst * n_fill/n_total-1
-    lst_variance = cube_ts.collapsed(['latitude','longitude'], iris.analysis.VARIANCE)
+    lst_variance = cube_ts.collapsed(['latitude', 'longitude'],
+                                     iris.analysis.VARIANCE)
     factor = n_fill/(n_total - 1)
-    unc_sampling = iris.analysis.maths.multiply(lst_variance, n_fill/(n_total-1))
+    unc_sampling = iris.analysis.maths.multiply(lst_variance,
+                                                factor)
 
     # apply the ATBD equation
     # note the square of random uncertainty is needed
-    output = eq_sum_in_quadrature(iris.cube.CubeList([unc_ran_mean**2, unc_sampling]))
-    output  = iris.analysis.maths.exponentiate(output, 0.5)
+    output = eq_sum_in_quadrature(iris.cube.CubeList([unc_ran_mean**2,
+                                                      unc_sampling]))
+    output = iris.analysis.maths.exponentiate(output, 0.5)
 
     return output, unc_sampling
-    
+
+
 def eq_arithmetic_mean(cube):
     """Arithmetic mean of cube, across latitude and longitude
     ATBD eq 1
     """
 
-    out_cube = cube.collapsed(['latitude','longitude'], iris.analysis.MEAN)
+    out_cube = cube.collapsed(['latitude', 'longitude'], iris.analysis.MEAN)
 
     return out_cube
+
 
 def eq_sum_in_quadrature(cubelist):
     """Sum in quadrature
     ATBD eq 9
-    
+
     Input:
     cubelist : A cubelist of 1D cubes
     """
 
     # dont want to in-place replace the input
-    newlist=cubelist.copy()
+    newlist = cubelist.copy()
     for cube in newlist:
         iris.analysis.maths.exponentiate(cube, 2, in_place=True)
 
@@ -253,9 +267,11 @@ def eq_sum_in_quadrature(cubelist):
     for cube in newlist:
         cubes_sum += cube
 
-    output = iris.analysis.maths.exponentiate(cube,0.5,in_place=False)
+    output = iris.analysis.maths.exponentiate(cube, 0.5,
+                                              in_place=False)
 
     return output
+
 
 def eq_weighted_sqrt_mean(cube, n_use):
     """Mean with square root of n factor
@@ -263,11 +279,15 @@ def eq_weighted_sqrt_mean(cube, n_use):
 
     Inputs:
     cube:
-    n_use: the number of useable pixels - NEED TO IMPLIMENT A CHECK ON MASKS BEING THE SAME?
+    n_use: the number of useable pixels
+    NEED TO IMPLIMENT A CHECK ON MASKS BEING THE SAME?
     """
-    output = iris.analysis.maths.multiply(cube.collapsed(['latitude', 'longitude'], iris.analysis.MEAN),
-                                 1/np.sqrt(n_use))
+    output = iris.analysis.maths.multiply(cube.collapsed(['latitude',
+                                                          'longitude'],
+                                                         iris.analysis.MEAN),
+                                          1/np.sqrt(n_use))
     return output
+
 
 if __name__ == '__main__':
     # always use run_diagnostic() to get the config (the preprocessor
