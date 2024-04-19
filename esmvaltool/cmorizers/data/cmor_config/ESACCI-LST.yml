@@ -13,7 +13,7 @@ attributes:
   reference: 'esacci_lst'
   comment: ''
   start_year: 2006
-  end_year: 2007
+  end_year: 2006
 
 # Variables to cmorize
 # These go into the vals dictionary in the python script
@@ -24,7 +24,7 @@ variables:
     raw_units: kelvin
     file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
     start_year: 2006
-    end_year: 2007
+    end_year: 2006
 
   tsNight:
     mip: Amon
@@ -32,7 +32,7 @@ variables:
     raw_units: kelvin
     file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
     start_year: 2006
-    end_year: 2007
+    end_year: 2006
 
   tsLocalAtmErrDay:
     mip: Amon
@@ -40,7 +40,7 @@ variables:
     raw_units: kelvin
     file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
     start_year: 2006
-    end_year: 2007
+    end_year: 2006
 
   tsLocalAtmErrNight:
     mip: Amon
@@ -48,7 +48,7 @@ variables:
     raw_units: kelvin
     file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
     start_year: 2006
-    end_year: 2007
+    end_year: 2006
 
   tsLocalSfcErrDay:
     mip: Amon
@@ -56,7 +56,7 @@ variables:
     raw_units: kelvin
     file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
     start_year: 2006
-    end_year: 2007
+    end_year: 2006
 
   tsLocalSfcErrNight:
     mip: Amon
@@ -64,7 +64,7 @@ variables:
     raw_units: kelvin
     file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
     start_year: 2006
-    end_year: 2007
+    end_year: 2006
 
   tsLSSysErrDay:
     mip: Amon
@@ -72,7 +72,7 @@ variables:
     raw_units: kelvin
     file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
     start_year: 2006
-    end_year: 2007
+    end_year: 2006
 
   tsLSSysErrNight:
     mip: Amon
@@ -80,7 +80,7 @@ variables:
     raw_units: kelvin
     file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
     start_year: 2006
-    end_year: 2007
+    end_year: 2006
 
   tsUnCorErrDay:
     mip: Amon
@@ -88,7 +88,7 @@ variables:
     raw_units: kelvin
     file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
     start_year: 2006
-    end_year: 2007
+    end_year: 2006
 
   tsUnCorErrNight:
     mip: Amon
@@ -96,4 +96,4 @@ variables:
     raw_units: kelvin
     file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
     start_year: 2006
-    end_year: 2007
+    end_year: 2006

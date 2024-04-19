@@ -78,6 +78,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     logger.info('skip fixing')
                     logger.info(cubes.long_name)
 
+                # this is needed for V1 data, V3 data is ok
                 try:
                     cubes.coords()[2].standard_name = 'longitude'
                 except:
