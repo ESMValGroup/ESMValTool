@@ -52,7 +52,7 @@ REQUIREMENTS = {
         'packaging',
         'pandas',
         'pyproj>=2.1',
-        'pys2index',
+        # 'pys2index',  # issues installing from PyPI (wheel doesn't build)
         'pyyaml',
         'progressbar2',
         'psyplot',
