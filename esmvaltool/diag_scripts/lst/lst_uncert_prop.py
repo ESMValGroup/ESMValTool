@@ -30,6 +30,7 @@ from esmvaltool.diag_scripts.shared import (
 
 logger = logging.getLogger(__name__)
 
+
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
 
@@ -94,7 +95,7 @@ def _diagnostic(config):
 
     Returns
     -------
-    
+
     """
     # this loading function is based on the hydrology diagnostic
     input_metadata = config['input_data'].values()
@@ -106,8 +107,9 @@ def _diagnostic(config):
         loaded_data[dataset] = cubes
 
     # Methodolgy:
-    # for day and night seperately, calls to propagation equations for each compoent
-    # ts eq 1 eq_arithmetic_mean 
+    # calcualte for day and night seperately
+    # calls to propagation equations for each compoent
+    # ts eq 1 eq_arithmetic_mean
     # lst_unc_loc_atm eq 7 eq_weighted_sqrt_mean
     # lst_unc_sys eq 5 = eq 1 eq_arithmetic_mean, no spatial propagation here
     # lst_unc_loc_sfc DEPENDS ON SENSOR
@@ -117,13 +119,15 @@ def _diagnostic(config):
     #
     # Then combine to get a total day and night vale
     # total uncert  eq 9 eq_sum_in_quadrature
-    # a total all day uncertainty can then be obtained with eq 9 eq_sum_in_quadrature
+    # a total all day uncertainty can then be obtained using
+    # eq 9 eq_sum_in_quadrature
     # and a mean eq 1 eq_arithmetic_mean to get an 'average' lst for the day
 
     lst_unc_variables = ['lst_unc_loc_atm', 'lst_unc_sys',
-                         'lst_unc_loc_sfc','lst_unc_ran'] 
+                         'lst_unc_loc_sfc', 'lst_unc_ran']
 
-    # This will be a dictionary of variables and the cubes of their propagated values
+    # This will be a dictionary of variables and cubes
+    # of their propagated values
     propagated_values = {}
 
     # These define the total number of points in the data
@@ -132,36 +136,49 @@ def _diagnostic(config):
 
     # n_fill and n_use ad dictionaries with keys 'day' and 'night'
     # the item for each key is an array
-    # These give the cloud/don't use pixel numbers, and the number of useable pixels for each timestep
+    # These give the cloud/don't use pixel numbers,
+    # and the number of useable pixels for each timestep
     n_fill = {}
     n_use = {}
-    n_fill['day'] = np.array([np.sum(item) for item in loaded_data['ESACCI-LST']['ts_day'].data.mask])
-    n_fill['night'] = np.array([np.sum(item) for item in loaded_data['ESACCI-LST']['ts_night'].data.mask])
-    
+    n_fill['day'] = np.array(
+        [np.sum(item)
+         for item in loaded_data['ESACCI-LST']['ts_day'].data.mask])
+    n_fill['night'] = np.array(
+        [np.sum(item)
+         for item in loaded_data['ESACCI-LST']['ts_night'].data.mask])
+
     n_use['day'] = (lat_len*lon_len) - n_fill['day']
     n_use['night'] = (lat_len*lon_len)
 
     # This loop call the propagation equations, once for 'day' and 'night'
     for time in ['day', 'night']:
-        
-        propagated_values[f'ts_{time}'] = eq_arithmetic_mean(loaded_data['ESACCI-LST'][f'ts_{time}'])
-        propagated_values[f'lst_unc_loc_atm_{time}'] = eq_weighted_sqrt_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_atm_{time}'],
-                                                                             n_use[f'{time}'])
+
+        propagated_values[f'ts_{time}'] = \
+        eq_arithmetic_mean(loaded_data['ESACCI-LST'][f'ts_{time}'])
+
+        propagated_values[f'lst_unc_loc_atm_{time}'] = \
+        eq_weighted_sqrt_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_atm_{time}'],
+        n_use[f'{time}'])
         # no spatial propagation of the systamatic uncertainity
-        propagated_values[f'lst_unc_sys_{time}'] = loaded_data['ESACCI-LST'][f'lst_unc_sys_{time}']
+        propagated_values[f'lst_unc_sys_{time}'] = \
+        loaded_data['ESACCI-LST'][f'lst_unc_sys_{time}']
 
-        propagated_values[f'lst_unc_loc_sfc_{time}'] = eq_arithmetic_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_sfc_{time}'])
+        propagated_values[f'lst_unc_loc_sfc_{time}'] = \
+        eq_arithmetic_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_sfc_{time}'])
 
-        propagated_values[f'lst_unc_ran_{time}'], propagated_values[f'lst_sampling_{time}'] = eq_propagate_random_with_sampling(loaded_data['ESACCI-LST'][f'lst_unc_ran_{time}'],
-                                                                                                                                loaded_data['ESACCI-LST'][f'ts_{time}'],
-                                                                                                                                n_use[f'{time}'], n_fill[f'{time}'])
+        propagated_values[f'lst_unc_ran_{time}'], \
+        propagated_values[f'lst_sampling_{time}'] = \
+        eq_propagate_random_with_sampling(loaded_data['ESACCI-LST'][f'lst_unc_ran_{time}'],
+                                          loaded_data['ESACCI-LST'][f'ts_{time}'],
+                                          n_use[f'{time}'], n_fill[f'{time}'])
 
-    # Combines all uncertainty types to get total uncertainty for 'day' and 'night'
+    # Combines all uncertainty types to get total uncertainty
+    # for 'day' and 'night'
     for time in ['day', 'night']:
         time_cubelist = iris.cube.CubeList([propagated_values[f'{variable}_{time}']
                                             for variable in lst_unc_variables])
         propagated_values[f'lst_total_unc_{time}'] = \
-                                                     eq_sum_in_quadrature(time_cubelist)
+                                            eq_sum_in_quadrature(time_cubelist)
 
     test_plot(propagated_values)
 
