@@ -1,5 +1,5 @@
-# CMORIZE ESA CCI LST
-# Only looking at AQUA MONTHLY
+# CMORIZE ESA CCI LST - V3
+# Only looking at AQUA MODIS MONTHLY
 ---
 
 # Common global attributes for Cmorizer output
@@ -25,8 +25,6 @@ variables:
     file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
     start_year: 2006
     end_year: 2007
-    short_name: XYZ_TESTING  
-
 
   tsNight:
     mip: Amon
@@ -36,8 +34,7 @@ variables:
     start_year: 2006
     end_year: 2007
 
-
-  tsLocalAtmErrDay:    
+  tsLocalAtmErrDay:
     mip: Amon
     raw: uncertainty from locally correlated errors on atmospheric scales
     raw_units: kelvin
@@ -45,7 +42,7 @@ variables:
     start_year: 2006
     end_year: 2007
 
-  tsLocalAtmErrNight:    
+  tsLocalAtmErrNight:
     mip: Amon
     raw: uncertainty from locally correlated errors on atmospheric scales
     raw_units: kelvin
@@ -53,7 +50,7 @@ variables:
     start_year: 2006
     end_year: 2007
 
-  tsLocalSfcErrDay:    
+  tsLocalSfcErrDay:
     mip: Amon
     raw: uncertainty from locally correlated errors on surface scales
     raw_units: kelvin
@@ -61,7 +58,7 @@ variables:
     start_year: 2006
     end_year: 2007
 
-  tsLocalSfcErrNight:    
+  tsLocalSfcErrNight:
     mip: Amon
     raw: uncertainty from locally correlated errors on surface scales
     raw_units: kelvin
@@ -69,7 +66,7 @@ variables:
     start_year: 2006
     end_year: 2007
 
-  tsLSSysErrDay:    
+  tsLSSysErrDay:
     mip: Amon
     raw: uncertainty from large-scale systematic errors
     raw_units: kelvin
@@ -77,7 +74,7 @@ variables:
     start_year: 2006
     end_year: 2007
 
-  tsLSSysErrNight:    
+  tsLSSysErrNight:
     mip: Amon
     raw: uncertainty from large-scale systematic errors
     raw_units: kelvin
@@ -85,7 +82,7 @@ variables:
     start_year: 2006
     end_year: 2007
 
-  tsUnCorErrDay:    
+  tsUnCorErrDay:
     mip: Amon
     raw: uncertainty from uncorrelated errors
     raw_units: kelvin
@@ -93,7 +90,7 @@ variables:
     start_year: 2006
     end_year: 2007
 
-  tsUnCorErrNight:    
+  tsUnCorErrNight:
     mip: Amon
     raw: uncertainty from uncorrelated errors
     raw_units: kelvin

@@ -1,7 +1,7 @@
-"""ESMValTool CMORizer for ESACCI-LST-UNCERT data.
+"""ESMValTool CMORizer for ESACCI-LST.
 
-BOTH DAY and NIGHT files are needed for each month
-Currently set to work with only the MODIS AQUA L3 monthly data
+Tested for the V3 of the data
+Works for both day and night files
 """
 
 import datetime
@@ -24,8 +24,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
     # vals has the info from the yml file
     # var is set up in the yml file
-    print('........................')
-    print(cfg['variables'])
     for var, vals in cfg['variables'].items():
         glob_attrs['mip'] = vals['mip']
 
@@ -94,13 +92,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 if 'Day' in var_name:
                     cubes.long_name += ' Day'
                     cubes.var_name += '_day'
-                    
 
                 if 'Night' in var_name:
                     cubes.long_name += ' Night'
                     cubes.var_name += '_night'
 
-                # make use - and _ consistent!!!
                 save_name = f'{out_dir}/OBS_ESACCI-LST_sat_3.00_Amon_{var_name}_{year}{month:02d}.nc'
                 iris.save(cubes,
                           save_name
