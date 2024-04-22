@@ -51,15 +51,13 @@ REQUIREMENTS = {
         'openpyxl',
         'packaging',
         'pandas',
-        'pyproj>=2.1',
-        # 'pys2index',  # issues installing from PyPI (wheel doesn't build)
-        'pyyaml',
         'progressbar2',
         'psyplot',
         'psy-maps',
         'psy-reg',
         'psy-simple',
         'pyproj>=2.1',
+        # 'pys2index',  # issues installing from PyPI (wheel doesn't build)
         'python-dateutil',
         'pyyaml',
         'rasterio',
