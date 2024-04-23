@@ -437,10 +437,7 @@ def bootstrapping(cubes, cube_obs, all_groups, attributes, cfg):
 def main(cfg):
     """Run diagnostic."""
     cfg = deepcopy(cfg)
-    cfg.setdefault('title_key', 'dataset')
     cfg.setdefault('plot_each_model', False)
-    logger.info("Using key '%s' to create titles for datasets",
-                cfg['title_key'])
 
     input_data = list(cfg['input_data'].values())
 

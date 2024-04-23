@@ -40,20 +40,40 @@ User settings in recipe
 
    *Required settings (scripts)*
 
-   none
+   reference: if true, a reference dataset is given within 'variable_group' equal 'OBS'
 
    *Optional settings (scripts)*
 
-   * title_key:
-   * plot_each_model:
+   plot_each_model: one figure for each single model
 
-   *Required settings (variables)*
 
-   none
+#. Script clouds/clouds_ecs_groups_zonal.py
 
-   *Optional settings (variables)*
+   *Required settings (scripts)*
 
-   none
+   group_by: list of 'variable_group's to have the order
+   plot_type: 'zonal' and 'height' plots are available 
+
+   *Optional settings (scripts)*
+
+   filename_attach: attachment to the output files
+
+
+#. Script clouds/clouds_ecs_groups_boxplots.py
+
+   *Required settings (scripts)*
+
+   exclude_datasets: list of datasets which are not used for the statistics,
+                     default is ['MultiModelMean', 'MultiModelP5', 'MultiModelP95']
+   group_by: list of 'variable_group's to have the order
+   plot_type: 'zonal' and 'height' plots are available 
+
+   *Optional settings (scripts)*
+
+   filename_attach: attachment to the output files
+   title: set title of figure
+   y_range: set range of the y-axes
+
 
 ##. Script clouds_ipcc.ncl
 #
@@ -94,7 +114,7 @@ Example plots
 -------------
 
 .. _fig_bock24acp_4:
-.. figure::  /recipes/figures/bock20jgr/tas_Global_CMIP6_historical_anom_1850-2014.png
+.. figure::  /recipes/figures/bock24acp/map_netcre.png
    :align:   center
 
    Geographical map of the multi-year annual mean net cloud radiative effect from 
