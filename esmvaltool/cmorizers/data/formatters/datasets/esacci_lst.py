@@ -33,12 +33,16 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             for month in range(1, 13):
                 logger.info(year)
                 logger.info(month)
-                cubes = load_cubes(in_dir,
-                                   vals['file'],
-                                   year,
-                                   month,
-                                   vals['raw'],
+                try:
+                    cubes = load_cubes(in_dir,
+                                       vals['file'],
+                                       year,
+                                       month,
+                                       vals['raw'],
                                    )
+                except:
+                    logger.info(f'Problem with Month {month} in {year}')
+                    continue
 
                 #  make time coords
                 time_units = 'hours since 1970-01-01 00:00:00'
