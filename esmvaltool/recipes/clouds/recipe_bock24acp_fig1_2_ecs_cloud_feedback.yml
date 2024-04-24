@@ -266,12 +266,6 @@ CMIP6_RTNT: &cmip6_rtnt
 ECS_SCRIPT: &ecs_script
   script: climate_metrics/ecs.py
   calculate_mmm: false
-SCATTERPLOT: &scatterplot_script
-  script: climate_metrics/create_scatterplot.py
-  pattern: 'ecs.nc'
-  seaborn_settings:
-    style: ticks
-  y_range: [0.0, 6.0]
 FEEDBACK_PLOT: &feedback_plot
   script: mlr/plot.py
   group_by_attribute: project
@@ -312,10 +306,6 @@ diagnostics:
     scripts:
       ecs:
         <<: *ecs_script
-      scatterplot:
-        <<: *scatterplot_script
-        ancestors: ['cmip5/ecs']
-        dataset_style: cmip5
 
   cmip6:
     description: Calculate ECS for all available CMIP6 models.
@@ -334,24 +324,6 @@ diagnostics:
     scripts:
       ecs:
         <<: *ecs_script
-      scatterplot:
-        <<: *scatterplot_script
-        ancestors: ['cmip6/ecs']
-        dataset_style: cmip6
-
-  barplot:
-    description: Create barplot of ECS.
-    scripts:
-      barplot:
-        script: climate_metrics/create_barplot.py
-        ancestors: ['*/ecs']
-        # add_mean: true
-        # label_attribute: project
-        # order: ['CMIP5', 'CMIP6']
-        patterns: ['ecs.nc']
-        sort_descending: true
-        value_labels: true
-        y_range: [0.0, 6.0]
 
   feedback_high_ECS:
     title: CMIP5 cloud feedback
@@ -498,7 +470,7 @@ diagnostics:
     description: Plot figure.
     scripts:
       scatterplot: &scatter_plot
-        script: clouds_ecs/scatterplot.py
+        script: clouds/clouds_ecs_scatterplot.py
         ancestors: ['feedback_*_ECS/feedback_parameters', '*/ecs']
         file1: 'lambda_netcre_vs_latitude-longitude_*_all_150_years.nc'
         file2: 'ecs.nc'
