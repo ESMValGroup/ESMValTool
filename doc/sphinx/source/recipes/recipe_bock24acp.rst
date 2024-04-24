@@ -6,7 +6,7 @@ Cloud properties and their projected changes in CMIP models with low to high cli
 Overview
 --------
 
-The recipes recipe_bock24acp_*.yml reproduce figures from the publication Bock and Lauer, 2024.
+The recipes recipe_bock24acp_*.yml reproduce figures (Fig. 3, 4, 6 and 7) from the publication Bock and Lauer, 2024.
 
 
 Available recipes and diagnostics
@@ -14,20 +14,11 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/clouds
 
-    * recipe_bock24acp_fig1_2_ecs_cloud_feedback.yml
     * recipe_bock24acp_fig3-4_maps.yml
     * recipe_bock24acp_fig6_zonal.yml
     * recipe_bock24acp_fig7_boxplots.yml
 
 Diagnostics are stored in diag_scripts/
-
-    Fig.1:
-
-    * mlr/plot.py
-
-    Fig.2:
-
-    * clouds/clouds_ecs_scatterplot.py
 
     Fig. 3 and 4:
 
@@ -44,31 +35,6 @@ Diagnostics are stored in diag_scripts/
 
 User settings in recipe
 -----------------------
-
-#. Script mlr/plot.py
-
-   * :ref:`mlr/plot.py<api.esmvaltool.diag_scripts.mlr.plot>`
-
-#. Script clouds/clouds_ecs_scatterplot.py
-
-   *Required settings (scripts)*
-
-   * ``file1:`` contains the feedback parameters for all cmip models from the 
-     ``climate_metrics/feedback_parameters.py`` diagnostic
-   * ``file2:`` contains the ECS values for all cmip models from the 
-     ``climate_metrics/ecs.py`` diagnostic
-   * ``output_file_name``: Set output file name.
-   * ``xlabel:`` label on x-axis
-   * ``ylabel:`` label on y-axis
-   * ``x_range:`` Range for the x-axis of the plot
-   * ``y_range:`` Range for the y-axis of the plot
-
-   *Optional settings (scripts)*
-
-   * ``seaborn_settings``, *dict*, optional: Options for
-     :func:`seaborn.set_theme` (affects all plots).
-   * ``print_corr``: Print and save Pearson correlation coefficient between all datasets at the
-     end.  Requires identical shapes for all datasets. (default: False)
 
 #. Script clouds_ecs_groups_maps.py 
 
@@ -109,11 +75,6 @@ User settings in recipe
    y_range: set range of the y-axes
 
 
-##. Script clouds_ipcc.ncl
-#
-#   See :ref:`here<clouds_ipcc.ncl>`.
-
-
 Variables
 ---------
 
@@ -148,21 +109,6 @@ Example plots
 -------------
 
 .. _fig_bock24acp_1:
-
-.. figure::  /recipes/figures/bock24acp/ecs_netcre.png
-   :align:   center
-
-   Scatterplot of the global mean net cloud feedback (x axis) and ECS (y axis) of the CMIP
-   models, with a regression line, including the confidence interval of the regression of
-   95 %. Dashed horizontal lines indicate separations of the three ECS groups (Fig. 1a).
-
-.. _fig_bock24acp_2:
-.. figure::  /recipes/figures/bock24acp/map_prediction_output___high_ECS_netcre.png
-   :align:   center
-
-   Geographical maps of net cloud feedback for high-ECS groups (Fig. 2a).
-
-.. _fig_bock24acp_3:
 .. figure::  /recipes/figures/bock24acp/map_netcre.png
    :align:   center
 
@@ -170,7 +116,7 @@ Example plots
    (a) CERES–EBAF Ed4.2 (OBS) and (b–d) group means of historical CMIP simulations
    from all three ECS groups (Fig. 4).
 
-.. _fig_bock24acp_4:
+.. _fig_bock24acp_2:
 .. figure::  /recipes/figures/bock24acp/map_netcre.png
    :align:   center
 
@@ -185,7 +131,7 @@ Example plots
    historical simulations. Shading indicates the 5 % and 95 % quantiles of the single
    model results (Fig. 6).
 
-.. _fig_bock24acp_5:
+.. _fig_bock24acp_3:
 .. figure::  /recipes/figures/bock24acp/map_netcre.png
    :align:   center
 
