@@ -54,7 +54,6 @@ dependencies:
   - python >=3.9
   - python-cdo
   - python-dateutil
-  - pys2index  # conda-forge only
   - pyyaml
   - rasterio
   - requests
