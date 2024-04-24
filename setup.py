@@ -57,7 +57,7 @@ REQUIREMENTS = {
         'psy-reg',
         'psy-simple',
         'pyproj>=2.1',
-        # 'pys2index',  # issues installing from PyPI (wheel doesn't build)
+        'pys2index',
         'python-dateutil',
         'pyyaml',
         'rasterio',
