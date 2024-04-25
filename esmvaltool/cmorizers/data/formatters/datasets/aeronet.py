@@ -52,7 +52,11 @@ CONTACT_PATTERN = re.compile(
 
 def compress_column(data_frame, name):
     compressed = data_frame.pop(name).unique()
-    assert len(compressed) == 1
+    if len(compressed) != 1:
+        raise ValueError(
+            f"Data frame column '{name}' must only contain"
+            f" one unique value, found {len(compressed)}"
+        )
     return compressed[0]
 
 
@@ -90,15 +94,31 @@ def parse_contact(contact):
 def load_file(filesystem, path_like):
     with filesystem.open(path_like, mode="rt", encoding="iso-8859-1") as file:
         aeronet_header = file.readline().strip()
-        assert aeronet_header == AERONET_HEADER
+        if aeronet_header != AERONET_HEADER:
+            raise ValueError(
+                f"File header identifier is '{aeronet_header}',"
+                f" expected '{AERONET_HEADER}'"
+            )
         station_name = file.readline().strip()
         level_header = file.readline().strip()
-        assert level_header == LEVEL_HEADER
+        if level_header != LEVEL_HEADER:
+            raise ValueError(
+                f"File level string is '{level_header}',"
+                f" expected '{LEVEL_HEADER}'"
+            )
         level_description = file.readline().strip()
-        assert level_description == LEVEL_DESCRIPTION
+        if level_description != LEVEL_DESCRIPTION:
+            raise ValueError(
+                f"File data description string is"
+                f" '{level_description}', expected '{LEVEL_DESCRIPTION}'"
+            )
         contact_string = file.readline().strip()
         units_header = file.readline().strip()
-        assert units_header == UNITS_HEADER
+        if units_header != UNITS_HEADER:
+            raise ValueError(
+                f"File units info string is '{units_header}',"
+                f" expected '{UNITS_HEADER}'"
+            )
         data_frame = pd.read_csv(
             file,
             index_col=0,
@@ -112,7 +132,11 @@ def load_file(filesystem, path_like):
     latitude = compress_column(data_frame, "Latitude(degrees)")
     longitude = compress_column(data_frame, "Longitude(degrees)")
     data_quality_level = compress_column(data_frame, "Data_Quality_Level")
-    assert data_quality_level == DATA_QUALITY_LEVEL
+    if data_quality_level != DATA_QUALITY_LEVEL:
+        raise ValueError(
+            f"File data quality level is '{data_quality_level}',"
+            f" expected '{DATA_QUALITY_LEVEL}'"
+        )
     station = AeronetStation(
         station_name,
         latitude,
@@ -126,7 +150,10 @@ def load_file(filesystem, path_like):
 
 def sort_data_columns(columns):
     data_columns = [c for c in columns if "NUM_" not in c]
-    assert len(columns) == 3 * len(data_columns)
+    if len(columns) != 3 * len(data_columns):
+        raise ValueError(
+            "Station data contains unexpected number of columns."
+        )
     aod_columns = [c for c in data_columns if c.startswith("AOD_")]
     precipitable_water_columns = [
         c for c in data_columns if c == "Precipitable_Water(cm)"
@@ -134,9 +161,12 @@ def sort_data_columns(columns):
     angstrom_exponent_columns = [
         c for c in data_columns if "_Angstrom_Exponent" in c
     ]
-    assert len(data_columns) == (len(aod_columns) +
-                                 len(precipitable_water_columns) +
-                                 len(angstrom_exponent_columns))
+    if len(data_columns) != (len(aod_columns) +
+                             len(precipitable_water_columns) +
+                             len(angstrom_exponent_columns)):
+        raise ValueError(
+            "Station data contains unexpected number of columns."
+        )
     return (aod_columns, precipitable_water_columns, angstrom_exponent_columns)
 
 
@@ -166,7 +196,10 @@ def assemble_cube(stations, idx, wavelengths=None):
         np.array([df.columns for df in data_frames], dtype=str),
         axis=0,
     )
-    assert len(all_data_columns) == 1
+    if len(all_data_columns) != 1:
+        raise ValueError(
+            "Station data frames has different sets of column names."
+        )
     aod_columns, _, _ = sort_data_columns(all_data_columns[0])
     if wavelengths is None:
         wavelengths = sorted([int(c[4:-2]) for c in aod_columns])
@@ -314,7 +347,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     versions = np.unique(
         np.array([os.path.basename(p).split("_")[1] for p in paths],
                  dtype=str))
-    assert len(versions) == 1
+    if len(versions) != 1:
+        raise ValueError(
+            "All station datasets in tar file must have same version."
+        )
     version = versions[0]
     wavelengths = sorted(
         [var["wavelength"] for var in cfg['variables'].values()])
