@@ -82,7 +82,6 @@ def read_data(filename):
     elif cube.var_name == 'clw':
         cube.convert_units('g/kg')
 
-    logger.debug("Reading data")
     cube = iris.util.squeeze(cube)
     return cube
 

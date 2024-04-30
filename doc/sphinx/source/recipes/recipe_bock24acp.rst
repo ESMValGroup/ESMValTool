@@ -117,7 +117,7 @@ Example plots
    from all three ECS groups (Fig. 4).
 
 .. _fig_bock24acp_2:
-.. figure::  /recipes/figures/bock24acp/map_netcre.png
+.. figure::  /recipes/figures/bock24acp/zonal_diff_clt_ssp585.png
    :align:   center
 
    Each labelled subfigure contains two panels, namely the upper panels and lower
@@ -132,7 +132,7 @@ Example plots
    model results (Fig. 6).
 
 .. _fig_bock24acp_3:
-.. figure::  /recipes/figures/bock24acp/map_netcre.png
+.. figure::  /recipes/figures/bock24acp/boxplot_ssp585_south_oc.png
    :align:   center
 
    Relative change (calculated as the difference between the scenario value and the
