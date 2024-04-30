@@ -76,7 +76,7 @@ def get_provenance_record(attributes, ancestor_files):
     }
     return record
 
- 
+
 def area_weighted_mean(cube):
     logger.debug("Computing field mean")
     grid_areas = iris.analysis.cartography.area_weights(cube)
@@ -106,12 +106,11 @@ def calculate_corr(model_cube, obs_cube):
     logger.debug("Computing Correlation")
     grid_areas = iris.analysis.cartography.area_weights(model_cube)
     corr = pearsonr(model_cube, obs_cube, weights=grid_areas)
-    #corr = pearsonr(model_cube, obs_cube)
     return corr
 
 
 def compute_diagnostic(filename):
-    
+
     logger.debug("Loading %s", filename)
     cube = iris.load_cube(filename)
 
@@ -134,15 +133,14 @@ def plot_model(cube, attributes, cfg):
         cmap = 'viridis'
     elif attributes['short_name'] == 'netcre':
         levels = [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
-        cmap = 'bwr' 
+        cmap = 'bwr'
     elif attributes['short_name'] == 'lwcre':
         levels = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
-        cmap = 'Reds' 
+        cmap = 'Reds'
     elif attributes['short_name'] == 'swcre':
         levels = [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0]
-        cmap = 'Blues_r' 
+        cmap = 'Blues_r'
     plt.axes(projection=ccrs.Robinson())
-    # im = iplt.contourf(cube, levels=levels, cmap=cmap, extend ='both')
     iplt.contourf(cube, levels=levels, cmap=cmap, extend ='both')
     plt.gca().coastlines()
     colorbar = plt.colorbar(orientation='horizontal')
@@ -222,7 +220,7 @@ def plot_diagnostic(cubes, attributes, cfg):
         plt.subplots_adjust(left=0.02, bottom=0.10, right=0.98, top=0.95,
                             wspace=0.01, hspace=0.01)
 
-    cmap = 'bwr' 
+    cmap = 'bwr'
     if attributes['short_name'] == 'clt':
         levels = [10, 20, 30, 40, 50, 60, 70, 80, 90]
         cmap = 'viridis'
@@ -234,13 +232,13 @@ def plot_diagnostic(cubes, attributes, cfg):
         cmap = 'viridis'
     elif attributes['short_name'] == 'netcre':
         levels = [-50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50]
-        cmap = 'bwr' 
+        cmap = 'bwr'
     elif attributes['short_name'] == 'lwcre':
         levels = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
-        cmap = 'Reds' 
+        cmap = 'Reds'
     elif attributes['short_name'] == 'swcre':
         levels = [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0]
-        cmap = 'Blues_r' 
+        cmap = 'Blues_r'
     elif attributes['short_name'] == 'clt_diff':
         levels = list(np.arange(-30, 31, 2.5))
     elif attributes['short_name'] == 'clivi_diff':
@@ -348,7 +346,7 @@ def get_dataframe(cubes, cube_obs):
 
     df = pd.DataFrame(columns=['Dataset', 'Group', 'Statistic', 'Value'])
     idf = 0
-    
+
     for cube in cubes:
         dataset = cube.attributes['dataset']
         group = cube.attributes['variable_group']
@@ -373,21 +371,17 @@ def get_dataframe(cubes, cube_obs):
 
 def write_statistics(df, attributes, cfg):
     df['Value'] = df['Value'].astype(str).astype(float)
-     
+
     basename = "statistic_all_" + attributes['short_name']
     csv_path = get_diagnostic_filename(basename, cfg).replace('.nc', '.csv')
     df.to_csv(csv_path)
     logger.info("Wrote %s", csv_path)
-    #with pd.option_context(*PANDAS_PRINT_OPTIONS):
-    #    logger.info("Data:\n%s", df)
 
     stat = df.groupby(['Statistic', 'Group'])['Value'].describe()
     basename = "statistic_" + attributes['short_name']
     csv_path = get_diagnostic_filename(basename, cfg).replace('.nc', '.csv')
     stat.to_csv(csv_path)
     logger.info("Wrote %s", csv_path)
-    #with pd.option_context(*PANDAS_PRINT_OPTIONS):
-    #    logger.info("Data:\n%s", df)
 
 
 def bootstrapping(cubes, cube_obs, all_groups, attributes, cfg):
@@ -454,7 +448,7 @@ def main(cfg):
     if cfg['reference']:
         # Compute bias plots
         cube_obs = cubes_out.extract_cube(iris.Constraint
-                       (cube_func=lambda cube: 
+                       (cube_func=lambda cube:
                         cube.attributes['variable_group']=='OBS'))
 
         # Bootstrapping
@@ -471,11 +465,11 @@ def main(cfg):
         attributes['short_name'] = attributes['short_name'] + "_diff"
 
         for cube in cubes_out:
-            if (cube.attributes['variable_group'] != 'OBS' or 
+            if (cube.attributes['variable_group'] != 'OBS' or
               cube.attributes['dataset'] != 'MultiModelMean'):
                 logger.info("Processing %s of group %s",
-                  cube.attributes['dataset'],
-                  cube.attributes['variable_group'])
+                            cube.attributes['dataset'],
+                            cube.attributes['variable_group'])
                 bias = calculate_bias(cube, cube_obs)
                 rmsd = calculate_rmsd(cube, cube_obs)
                 corr = calculate_corr(cube, cube_obs)
@@ -485,8 +479,8 @@ def main(cfg):
                 cube_diff.attributes['short_name'] = attributes['short_name']
                 cubes_diff.append(cube_diff)
                 logger.info('%s : bias = %f, rmsd = %f, corr = %f',
-                      cube.attributes['variable_group'],
-                      bias.data, rmsd.data, corr.data)
+                            cube.attributes['variable_group'],
+                            bias.data, rmsd.data, corr.data)
 
         # Plotting biases
         plot_diagnostic(cubes_diff, attributes, cfg)

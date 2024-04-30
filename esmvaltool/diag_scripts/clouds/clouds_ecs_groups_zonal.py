@@ -60,8 +60,8 @@ LINE_DASH = {
 def get_provenance_record(short_name, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     caption = (f"Zonally averaged group means of {short_name} in the upper"
-                "panel and the corresponding relative differences in lower"
-                "panel.") 
+               "panel and the corresponding relative differences in lower"
+               "panel.")
 
     record = {
         'caption': caption,
@@ -97,7 +97,7 @@ def _get_multi_model_mean(cubes, var):
         'datasets': '|'.join(datasets),
     }
     mmm_cube.attributes = attributes
-    return  mmm_cube
+    return mmm_cube
 
 
 def _get_multi_model_quantile(cubes, var, quantile):
@@ -118,7 +118,7 @@ def _get_multi_model_quantile(cubes, var, quantile):
         'datasets': '|'.join(datasets),
     }
     mmq_cube.attributes = attributes
-    return  mmq_cube
+    return mmq_cube
 
 
 def compute_diagnostic(filename):
@@ -166,7 +166,7 @@ def compute_diff_temp(input_data, group, dataset, plot_type):
     var_data_2 = select_metadata(input_data,
                                  short_name=var,
                                  dataset=dataset_name,
-                                 variable_group=group[1]) 
+                                 variable_group=group[1])
     if not var_data_2:
         raise ValueError(
             f"No '{var}' data for '{dataset_name}' in '{group[1]}' available")
@@ -175,22 +175,22 @@ def compute_diff_temp(input_data, group, dataset, plot_type):
 
     if plot_type == 'zonal':
         ta_data_1 = select_metadata(input_data,
-                                  short_name='tas',
-                                  dataset=dataset_name,
-                                  variable_group='tas_'+group[0]) 
+                                    short_name='tas',
+                                    dataset=dataset_name,
+                                    variable_group='tas_'+group[0])
         ta_data_2 = select_metadata(input_data,
-                                  short_name='tas',
-                                  dataset=dataset_name,
-                                  variable_group='tas_'+group[1]) 
+                                    short_name='tas',
+                                    dataset=dataset_name,
+                                    variable_group='tas_'+group[1])
     elif plot_type == 'height':
         ta_data_1 = select_metadata(input_data,
-                                  short_name='ta',
-                                  dataset=dataset_name,
-                                  variable_group='ta_'+group[0]) 
+                                    short_name='ta',
+                                    dataset=dataset_name,
+                                    variable_group='ta_'+group[0])
         ta_data_2 = select_metadata(input_data,
-                                  short_name='ta',
-                                  dataset=dataset_name,
-                                  variable_group='ta_'+group[1]) 
+                                    short_name='ta',
+                                    dataset=dataset_name,
+                                    variable_group='ta_'+group[1])
     if not ta_data_1:
         raise ValueError(
             f"No temperature data for '{dataset_name}' "
@@ -233,7 +233,7 @@ def compute_diff_temp(input_data, group, dataset, plot_type):
         raise ValueError(f"Plot type {plot_type} is not implemented.")
 
     cube_diff.units = '%/K'
-    
+
     return cube_diff
 
 
@@ -249,7 +249,7 @@ def plot_diagnostic(cube, legend, plot_type):
     if plot_type == 'height':
         cube.coord('air_pressure').convert_units('hPa')
         y_axis = cube.coord('air_pressure')
-        qplt.plot(cube, y_axis, label=cube_label, color=line_color, 
+        qplt.plot(cube, y_axis, label=cube_label, color=line_color,
                   linestyle=line_dash)
     else:
         lat = cube.coord('latitude')
@@ -280,7 +280,7 @@ def plot_diagnostic_diff(cube, legend, plot_type):
     if plot_type == 'height':
         cube.coord('air_pressure').convert_units('hPa')
         y_axis = cube.coord('air_pressure')
-        qplt.plot(cube, y_axis, label=cube_label, color=line_color, 
+        qplt.plot(cube, y_axis, label=cube_label, color=line_color,
                   linestyle=line_dash)
     else:
         lat = cube.coord('latitude')
@@ -376,19 +376,19 @@ def main(cfg):
 
             plot_diagnostic(cube_mmm, group_name, plot_type)
 
-            cube_p5  = _get_multi_model_quantile(cubes, var, 0.05)
+            cube_p5 = _get_multi_model_quantile(cubes, var, 0.05)
             cube_p95 = _get_multi_model_quantile(cubes, var, 0.95)
 
             plot_errorband(cube_p5, cube_p95, group_name, plot_type)
 
     if plot_type == 'height':
-        plt.ylim(1000.,100.)
+        plt.ylim(1000., 100.)
         plt.yscale('log')
         plt.yticks([1000., 800., 600., 400., 300., 200., 100.],
                    [1000, 800, 600, 400, 300, 200, 100])
         title = 'Vertical mean of ' + dataset['long_name']
     elif plot_type == 'zonal':
-        if dataset['long_name']=='Total Cloud Cover Percentage':
+        if dataset['long_name'] == 'Total Cloud Cover Percentage':
             title = 'Zonal mean of Total Cloud Fraction'
         else:
             title = 'Zonal mean of ' + dataset['long_name']
@@ -426,7 +426,7 @@ def main(cfg):
 
     if plot_type == 'height':
         plt.xlim(0., 1.)
-        plt.ylim(1000.,100.)
+        plt.ylim(1000., 100.)
         plt.yscale('log')
         plt.yticks([1000., 800., 600., 400., 300., 200., 100.],
                    [1000, 800, 600, 400, 300, 200, 100])

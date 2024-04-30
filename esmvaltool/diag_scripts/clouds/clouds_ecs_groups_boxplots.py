@@ -69,7 +69,7 @@ def _get_multi_model_mean(cubes, var):
         'datasets': '|'.join(dataset_names),
     }
     mmm_cube.attributes = attributes
-    return  mmm_cube
+    return mmm_cube
 
 
 def read_data(filename):
@@ -115,7 +115,7 @@ def compute_diff_temp(input_data, group, var, dataset):
     var_data_2 = select_metadata(input_data,
                                  short_name=var,
                                  dataset=dataset_name,
-                                 variable_group=var+"_"+group[1]) 
+                                 variable_group=var+"_"+group[1])
     if not var_data_2:
         raise ValueError(
             f"No '{var}' data for '{dataset_name}' in '{group[1]}' available")
@@ -123,13 +123,13 @@ def compute_diff_temp(input_data, group, var, dataset):
     input_file_2 = var_data_2[0]['filename']
 
     tas_data_1 = select_metadata(input_data,
-                              short_name='tas',
-                              dataset=dataset_name,
-                              variable_group='tas_'+group[0]) 
+                                 short_name='tas',
+                                 dataset=dataset_name,
+                                 variable_group='tas_'+group[0])
     tas_data_2 = select_metadata(input_data,
-                              short_name='tas',
-                              dataset=dataset_name,
-                              variable_group='tas_'+group[1]) 
+                                 short_name='tas',
+                                 dataset=dataset_name,
+                                 variable_group='tas_'+group[1])
     if not tas_data_1:
         raise ValueError(
             f"No 'tas' data for '{dataset_name}' in '{group[0]}' available")
@@ -206,7 +206,7 @@ def plot_boxplot(data_frame, cfg):
             ancestor_files=cfg['input_files'])
 
     # Save plot
-    plot_path = get_plot_filename('boxplot'+ '_' + cfg['filename_attach'], cfg)
+    plot_path = get_plot_filename('boxplot' + '_' + cfg['filename_attach'], cfg)
     plt.savefig(plot_path)
     logger.info("Wrote %s", plot_path)
     plt.close()
