@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - GA_install_git_OSX
   schedule:
     - cron: '0 0 * * *'
 
