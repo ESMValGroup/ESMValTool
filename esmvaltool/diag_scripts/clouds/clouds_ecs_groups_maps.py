@@ -194,8 +194,9 @@ def read_data(groups, cfg):
 
             cubes.append(cube)
 
-            if (attributes['dataset'] == 'MultiModelMean' or
-            group_name == 'OBS'):
+            if (attributes['dataset'] == 'MultiModelMean'
+                or
+                group_name == 'OBS'):
                 cubes_out.append(cube)
             else:
                 if cfg['plot_each_model']:
@@ -466,8 +467,9 @@ def main(cfg):
         attributes['short_name'] = attributes['short_name'] + "_diff"
 
         for cube in cubes_out:
-            if (cube.attributes['variable_group'] != 'OBS' or
-            cube.attributes['dataset'] != 'MultiModelMean'):
+            if (cube.attributes['variable_group'] != 'OBS'
+                or
+                cube.attributes['dataset'] != 'MultiModelMean'):
                 logger.info("Processing %s of group %s",
                             cube.attributes['dataset'],
                             cube.attributes['variable_group'])
