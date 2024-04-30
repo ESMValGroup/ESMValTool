@@ -120,16 +120,13 @@ Example plots
 .. figure::  /recipes/figures/bock24acp/zonal_diff_clt_ssp585.png
    :align:   center
 
-   Each labelled subfigure contains two panels, namely the upper panels and lower
-   panels. Upper panels show the zonally averaged group means of (a) total cloud
-   fraction, (b) liquid water path, (c) ice water path, and (d) net, (e) shortwave,
-   and (f) longwave cloud radiative effect from historical simulations (solid lines)
+   The upper panel show the zonally averaged group means of total cloud
+   fraction from historical simulations (solid lines)
    and RCP8.5/SSP5-8.5 scenarios (dashed lines) for the three different ECS groups.
-   The reference dataset CERES–EBAF Ed4.2 is shown as solid black lines in panels
-   (d)–(f). Lower panels show the corresponding relative differences of all zonally
+   Lower panels show the corresponding relative differences of all zonally
    averaged group means between the RCP8.5/SSP5-8.5 scenarios and the corresponding
    historical simulations. Shading indicates the 5 % and 95 % quantiles of the single
-   model results (Fig. 6).
+   model results (Fig. 6a).
 
 .. _fig_bock24acp_3:
 .. figure::  /recipes/figures/bock24acp/boxplot_ssp585_south_oc.png
@@ -138,13 +135,9 @@ Example plots
    Relative change (calculated as the difference between the scenario value and the
    historical value divided by the historical value) of total cloud fraction (clt),
    ice water path (iwp), liquid water path (lwp), and net cloud radiative effect
-   (netcre) per degree of warming averaged over selected regions over the ocean.
-   (a) Arctic (70–90∘ N), (b) Southern Ocean (30–65∘ S), (c) tropical ocean
-   (30∘ N–30∘ S), (d) Pacific ITCZ (0–12∘ N, 135∘ E–85∘ W), and (e) the three
-   stratocumulus regions of the southeast Pacific (10–30∘ S, 75–95∘ W), southeast
-   Atlantic (10–30∘ S, 10∘ W–10∘ E), and northeast Pacific (15–35∘ N, 120–140∘ W)
-   (see also Fig. 5). In the box plot, each box indicates the range from the first
+   (netcre) per degree of warming averaged over the Southern Ocean (30–65∘ S). In the
+   box plot, each box indicates the range from the first
    quartile to the third quartile, the vertical line shows the median, and the
    whiskers the minimum and maximum values, excluding the outliers. Outliers are
-   defined as being outside 1.5 times the interquartile range (Fig. 7).
+   defined as being outside 1.5 times the interquartile range (Fig. 7b).
 
