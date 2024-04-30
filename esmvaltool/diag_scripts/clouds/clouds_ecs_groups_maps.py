@@ -81,8 +81,8 @@ def area_weighted_mean(cube):
     logger.debug("Computing field mean")
     grid_areas = iris.analysis.cartography.area_weights(cube)
     mean = cube.collapsed(['longitude', 'latitude'],
-                               iris.analysis.MEAN,
-                                           weights=grid_areas)
+                          iris.analysis.MEAN,
+                          weights=grid_areas)
     return mean
 
 
@@ -141,10 +141,10 @@ def plot_model(cube, attributes, cfg):
         levels = [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0]
         cmap = 'Blues_r'
     plt.axes(projection=ccrs.Robinson())
-    iplt.contourf(cube, levels=levels, cmap=cmap, extend ='both')
+    iplt.contourf(cube, levels=levels, cmap=cmap, extend='both')
     plt.gca().coastlines()
     colorbar = plt.colorbar(orientation='horizontal')
-    colorbar.set_label( cube.var_name + '/' + cube.units.origin)
+    colorbar.set_label(cube.var_name + '/' + cube.units.origin)
     if attributes['short_name'] == 'clt':
         ticks = [10, 20, 30, 40, 50, 60, 70, 80, 90]
     elif attributes['short_name'] == 'clivi':
@@ -195,7 +195,7 @@ def read_data(groups, cfg):
             cubes.append(cube)
 
             if (attributes['dataset'] == 'MultiModelMean' or
-                 group_name == 'OBS'):
+                group_name == 'OBS'):
                 cubes_out.append(cube)
             else:
                 if cfg['plot_each_model']:
@@ -210,13 +210,13 @@ def plot_diagnostic(cubes, attributes, cfg):
     if cfg['reference']:
         fig = plt.figure(figsize=(14, 9))
         title = attributes['long_name']
-        fig.suptitle(title, fontsize = 22)
+        fig.suptitle(title, fontsize=22)
         plt.subplots_adjust(left=0.05, bottom=0.15, right=0.95, top=0.90,
                             wspace=0.2, hspace=0.05)
     else:
         fig = plt.figure(figsize=(10, 3))
         title = attributes['long_name']
-        fig.suptitle(title, fontsize = 16)
+        fig.suptitle(title, fontsize=16)
         plt.subplots_adjust(left=0.02, bottom=0.10, right=0.98, top=0.95,
                             wspace=0.01, hspace=0.01)
 
@@ -265,34 +265,34 @@ def plot_diagnostic(cubes, attributes, cfg):
 
         plt.subplot(ipanel, projection=ccrs.Robinson())
 
-        im = iplt.contourf(cube, levels=levels, cmap=cmap, extend ='both')
+        im = iplt.contourf(cube, levels=levels, cmap=cmap, extend='both')
 
         plt.gca().coastlines()
 
         if cfg['reference']:
             plt.title(legend, fontsize=18)
             ipanel_label = PANEL_LABELS.get(legend, None)
-            plt.title(ipanel_label, fontsize = 22, loc='left')
+            plt.title(ipanel_label, fontsize=22, loc='left')
             fsize = 14
         else:
             plt.title(legend, fontsize=9)
             ipanel_label = PANEL_LABELS_woOBS.get(legend, None)
-            plt.title(ipanel_label, fontsize = 12, loc='left')
+            plt.title(ipanel_label, fontsize=12, loc='left')
             fsize = 8
         if attributes['short_name'] in ['clt', 'netcre']:
-            plt.title(f'mean = {mean.data:.1f}      ',fontsize = fsize,
+            plt.title(f'mean = {mean.data:.1f}      ', fontsize=fsize,
                       loc='right')
         elif attributes['short_name'] in ['clivi', 'lwp']:
-            plt.title(f'mean = {mean.data:.3f}      ',fontsize = fsize,
+            plt.title(f'mean = {mean.data:.3f}      ', fontsize=fsize,
                       loc='right')
         elif attributes['short_name'] in ['clivi_diff', 'lwp_diff']:
-            plt.title(f'bias = {mean.data:.3f}      ',fontsize = fsize,
+            plt.title(f'bias = {mean.data:.3f}      ', fontsize=fsize,
                       loc='right')
         elif attributes['short_name'] in ['clt_diff', 'netcre_diff']:
-            plt.title(f'bias = {mean.data:.1f}      ',fontsize = fsize,
+            plt.title(f'bias = {mean.data:.1f}      ', fontsize=fsize,
                       loc='right')
         else:
-            plt.title(f'{mean.data:.1f}      ', fontsize = fsize, loc='right')
+            plt.title(f'{mean.data:.1f}      ', fontsize=fsize, loc='right')
 
     if cfg['reference']:
         cbar_ax = fig.add_axes([0.2, 0.08, 0.6, 0.03])
@@ -319,7 +319,7 @@ def plot_diagnostic(cubes, attributes, cfg):
         ticks = [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0]
 
     elif attributes['short_name'] == 'clt_diff':
-        ticks = list(np.arange(-30,31,5))
+        ticks = list(np.arange(-30, 31, 5))
     elif attributes['short_name'] == 'clivi_diff':
         ticks = [-0.1, -0.08, -0.06, -0.04, -0.02, 0.,
                  0.02, 0.04, 0.06, 0.08, 0.1]
@@ -328,7 +328,7 @@ def plot_diagnostic(cubes, attributes, cfg):
                  0.02, 0.04, 0.06, 0.08, 0.1]
     elif attributes['short_name'] in ['netcre_diff', 'lwcre_diff',
                                       'swcre_diff']:
-        ticks = list(np.arange(-30,31,5))
+        ticks = list(np.arange(-30, 31, 5))
 
     colorbar.set_ticks(ticks)
     colorbar.set_ticklabels([str(tick) for tick in ticks])
@@ -448,8 +448,8 @@ def main(cfg):
     if cfg['reference']:
         # Compute bias plots
         cube_obs = cubes_out.extract_cube(iris.Constraint
-                       (cube_func=lambda cube:
-                        cube.attributes['variable_group']=='OBS'))
+                       (cube_func = lambda cube:
+                        cube.attributes['variable_group'] == 'OBS'))
 
         # Bootstrapping
         bootstrapping(cubes, cube_obs, all_groups, attributes, cfg)
@@ -466,7 +466,7 @@ def main(cfg):
 
         for cube in cubes_out:
             if (cube.attributes['variable_group'] != 'OBS' or
-              cube.attributes['dataset'] != 'MultiModelMean'):
+                cube.attributes['dataset'] != 'MultiModelMean'):
                 logger.info("Processing %s of group %s",
                             cube.attributes['dataset'],
                             cube.attributes['variable_group'])

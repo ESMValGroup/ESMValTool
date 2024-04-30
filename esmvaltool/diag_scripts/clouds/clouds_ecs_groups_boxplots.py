@@ -185,7 +185,6 @@ def create_data_frame(input_data, cfg):
                                                  dataset_name, cube_diff.data]
                         ifile = ifile + 1
 
-
     data_frame['Data'] = data_frame['Data'].astype(str).astype(float)
 
     return data_frame
@@ -206,7 +205,8 @@ def plot_boxplot(data_frame, cfg):
             ancestor_files=cfg['input_files'])
 
     # Save plot
-    plot_path = get_plot_filename('boxplot' + '_' + cfg['filename_attach'], cfg)
+    plot_path = get_plot_filename('boxplot' + '_' + cfg['filename_attach'],
+                                  cfg)
     plt.savefig(plot_path)
     logger.info("Wrote %s", plot_path)
     plt.close()
