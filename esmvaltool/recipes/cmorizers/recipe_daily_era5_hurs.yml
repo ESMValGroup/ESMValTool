@@ -24,13 +24,6 @@ documentation:
 preprocessors:
   daily_hurs:
     custom_order: true
-    # extract_time:
-    #   start_year: 2023
-    #   start_month: 1
-    #   start_day: 1
-    #   end_year: 2023
-    #   end_month: 12
-    #   end_day: 31
     derive: true
     daily_statistics:
       operator: mean
