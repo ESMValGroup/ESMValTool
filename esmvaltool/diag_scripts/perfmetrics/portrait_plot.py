@@ -165,11 +165,11 @@ def remove_reference(metas):
             metas.remove(meta)
 
 
-def add_split_none(metas):
+def add_split_none(cfg, metas):
     """List of metadata with split=None if no split is given."""
     for meta in metas:
-        if "split" not in meta:
-            meta["split"] = None
+        if cfg["split_by"] not in meta:
+            meta[cfg["split_by"]] = None
 
 
 def open_file(metadata, **selection):
@@ -499,7 +499,7 @@ def main(cfg):
     set_defaults(cfg)
     metas = list(cfg["input_data"].values())
     remove_reference(metas)
-    add_split_none(metas)
+    add_split_none(cfg, metas)
     dataset = load_data(cfg, metas)
     dataset = sort_data(cfg, dataset)
     if cfg["normalize"] is not None:
