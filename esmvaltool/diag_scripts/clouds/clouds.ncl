@@ -539,6 +539,10 @@ begin
       res@cnLevels            = ispan(0, 60, 5)
     end if
 
+    if (var0.eq."ts") then
+      res@cnLevels            = ispan(274, 304, 2)
+    end if
+
 ;    res@lbLabelBarOn         = False
     res@gsnRightString       = ""
 
