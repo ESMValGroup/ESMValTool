@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - GA_install_git_OSX
   schedule:
     - cron: '0 0 * * *'
 
@@ -96,6 +97,10 @@ jobs:
           python -V 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
       - name: Inspect environment
         run: conda list
+      - name: Determine if git
+        run: |
+          which git
+          git --version
       - name: Install git
         run: mamba install -c conda-forge git
       - name: Install ESMValTool
