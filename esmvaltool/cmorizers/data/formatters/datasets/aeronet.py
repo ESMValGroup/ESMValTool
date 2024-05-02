@@ -51,6 +51,7 @@ CONTACT_PATTERN = re.compile(
 
 
 def compress_column(data_frame, name):
+    """Assert all values in DataFrame column are equal, and return value."""
     compressed = data_frame.pop(name).unique()
     if len(compressed) != 1:
         raise ValueError(
@@ -60,8 +61,9 @@ def compress_column(data_frame, name):
     return compressed[0]
 
 
-# @dataclass(frozen=True)
 class AeronetStation(NamedTuple):
+    """AERONET station data."""
+
     station_name: str
     latitude: float
     longitude: float
@@ -71,6 +73,8 @@ class AeronetStation(NamedTuple):
 
 
 class AeronetStations(NamedTuple):
+    """AERONET station data lists."""
+
     station_name: list[str]
     latitude: list[float]
     longitude: list[float]
@@ -80,6 +84,7 @@ class AeronetStations(NamedTuple):
 
 
 def parse_contact(contact):
+    """Parse and reformat contact information in AERONET file."""
     match = CONTACT_PATTERN.fullmatch(contact)
     if match is None:
         raise RuntimeError(f"Could not parse contact line {contact}")
@@ -92,6 +97,7 @@ def parse_contact(contact):
 
 
 def load_file(filesystem, path_like):
+    """Load AERONET data from fsspec filesystem instance."""
     with filesystem.open(path_like, mode="rt", encoding="iso-8859-1") as file:
         aeronet_header = file.readline().strip()
         if aeronet_header != AERONET_HEADER:
@@ -149,6 +155,7 @@ def load_file(filesystem, path_like):
 
 
 def sort_data_columns(columns):
+    """Sort AOD station data columns."""
     data_columns = [c for c in columns if "NUM_" not in c]
     if len(columns) != 3 * len(data_columns):
         raise ValueError(
@@ -171,6 +178,7 @@ def sort_data_columns(columns):
 
 
 def merge_stations(stations):
+    """Collect and merge station data into AeronetStations data class."""
     columns = {}
     for name, dtype in (
         ("station_name", str),
@@ -188,6 +196,27 @@ def merge_stations(stations):
 
 
 def assemble_cube(stations, idx, wavelengths=None):
+    """Assemble Iris cube with station data.
+
+    Parameters
+    ----------
+    stations : AeronetStations
+        Station data
+    idx : int
+        Unique ids of all stations
+    wavelengths : list, optional
+        Wavelengths to include in data
+
+    Returns
+    -------
+    Iris cube
+        Iris cube with station data.
+
+    Raises
+    ------
+    ValueError
+        If station data has inconsistent variable names.
+    """
     min_time = np.array([df.index.min() for df in stations.data_frame]).min()
     max_time = np.array([df.index.max() for df in stations.data_frame]).max()
     date_index = pd.date_range(min_time, max_time, freq="MS")
@@ -326,6 +355,7 @@ def assemble_cube(stations, idx, wavelengths=None):
 
 
 def build_cube(filesystem, paths, wavelengths=None):
+    """Build station data cube."""
     individual_stations = [
         load_file(filesystem, file_path) for file_path in paths
     ]
