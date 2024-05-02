@@ -319,6 +319,10 @@ def calculate_wt_means(cfg, cube, dataset: str, var_name: str, wt_string: str="s
             plot_mean(wt, cfg, wt_cube_mean, dataset, var_name, wt_string)
             if var_name == "prcp":
                 wt_data_prcp.append(wt_cube_mean.data.compressed())
+<<<<<<< HEAD
+=======
+        
+>>>>>>> main
         if var_name == "prcp":
             process_prcp_mean(wt, cfg, wt_data_prcp, dataset, var_name, wt_string)
     else:
