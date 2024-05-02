@@ -19,7 +19,11 @@ Configuration parameters through recipe:
 normalize: str or None, optional
     ('mean', 'median', 'centered_mean', 'centered_median', None).
     Subtract median/mean if centered. Divide by median/mean if not None.
-    By default None.
+    By default 'centered_median'.
+distance_metric: str or None, optional
+    A method for the distance_metric preprocessor can be set, to apply it to
+    the input data along all axis before plotting. If set to None, the input
+    is expected to contain scalar values for each input file. By default, None.
 x_by: str, optional
     Metadata key for x coordinate.
     By default 'alias'.
@@ -67,8 +71,8 @@ legend: dict, optional
 plot_kwargs: dict, optional
     Dictionary that gets passed as kwargs to `matplotlib.pyplot.imshow()`.
     Colormaps will be converted to 11 discrete steps automatically. Default
-    colormap is RdYlBu_r but can be changed with cmap.
-    Other common keywords: vmin, vmax
+    colormap RdYlBu_r and limits vmin=-0.5, vmax=0.5 can be changed using
+    keywords like: cmap, vmin, vmax.
     By default {}.
 cbar_kwargs: dict, optional
     Dictionary that gets passed to `matplotlib.pyplot.colorbar()`.
@@ -95,15 +99,19 @@ dpi: int, optional
 
 import itertools
 import logging
+from pathlib import Path
 
+import iris
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
+from esmvalcore import preprocessor as pp
 from matplotlib import patches
 from mpl_toolkits.axes_grid1 import ImageGrid
 
 from esmvaltool.diag_scripts.shared import (
+    get_diagnostic_filename,
     get_plot_filename,
     group_metadata,
     run_diagnostic,
@@ -413,6 +421,35 @@ def normalize(array, method, dims):
     return normalized
 
 
+def apply_distance_metric(cfg, metas):
+    """Optionally apply preproc method.
+
+    reference_for_metric facet required.
+    """
+    if not cfg["distance_metric"]:
+        return
+    for y_metas in group_metadata(metas, cfg["y_by"]).values():
+        try:  # TODO: add select_single_metadata to shared?
+            reference = select_metadata(y_metas, reference_for_metric=True)[0]
+        except IndexError as exc:
+            raise IndexError("No reference found for metric.") from exc
+        ref_cube = iris.load_cube(reference["filename"])
+        for meta in y_metas:
+            if meta.get("reference_for_metric", False):
+                continue  # skip distance to itself
+            cube = iris.load_cube(meta["filename"])
+            distance = pp.distance_metric([cube],
+                                          reference=ref_cube,
+                                          metric=cfg["distance_metric"])
+            basename = f"{Path(meta['filename']).stem}"
+            basename += f"{cfg['distance_metric']}"
+            fname = get_diagnostic_filename(basename, cfg)
+            iris.save(distance, fname)
+            log.info("Distance metric saved: %s", fname)
+            # TODO: adjust all relevant meta data
+            meta["filename"] = fname
+
+
 def set_defaults(cfg):
     """Set default values for most important config parameters."""
     cfg.setdefault("normalize", "centered_median")
@@ -429,8 +466,8 @@ def set_defaults(cfg):
     cfg.setdefault("plot_legend", True)
     cfg.setdefault("plot_kwargs", {})
     cfg["plot_kwargs"].setdefault("cmap", "RdYlBu_r")
-    cfg["plot_kwargs"].setdefault("vmin", 0)
-    cfg["plot_kwargs"].setdefault("vmax", 1)
+    cfg["plot_kwargs"].setdefault("vmin", -0.5)
+    cfg["plot_kwargs"].setdefault("vmax", 0.5)
     cfg.setdefault("legend", {})
     cfg["legend"].setdefault("x_offset", 0)
     cfg["legend"].setdefault("y_offset", 0)
