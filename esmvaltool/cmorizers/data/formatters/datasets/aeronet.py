@@ -178,7 +178,7 @@ def sort_data_columns(columns):
 
 
 def merge_stations(stations):
-    """Collect and merge station data into AeronetStations data class."""
+    """Collect and merge station data into AeronetStations instance."""
     columns = {}
     for name, dtype in (
         ("station_name", str),
@@ -205,7 +205,7 @@ def assemble_cube(stations, idx, wavelengths=None):
     idx : int
         Unique ids of all stations
     wavelengths : list, optional
-        Wavelengths to include in data
+        Wavelengths to include in data.
 
     Returns
     -------
@@ -234,23 +234,23 @@ def assemble_cube(stations, idx, wavelengths=None):
         wavelengths = sorted([int(c[4:-2]) for c in aod_columns])
 
     aod = da.stack([
-        np.stack([df[f"AOD_{wl}nm"].values for wl in wavelengths], axis=-1)
+        da.stack([df[f"AOD_{wl}nm"].values for wl in wavelengths], axis=-1)
         for df in data_frames
     ], axis=-1)[..., idx]
     num_days = da.stack([
-        np.stack([
+        da.stack([
             df[f"NUM_DAYS[AOD_{wl}nm]"].values.astype(np.float32)
             for wl in wavelengths
         ], axis=-1) for df in data_frames
     ], axis=-1)[..., idx]
     num_points = da.stack([
-        np.stack([
+        da.stack([
             df[f"NUM_POINTS[AOD_{wl}nm]"].values.astype(np.float32)
             for wl in wavelengths
         ], axis=-1) for df in data_frames
     ], axis=-1)[..., idx]
 
-    wavelength_points = np.array(wavelengths, dtype=np.float64)
+    wavelength_points = da.array(wavelengths, dtype=np.float64)
     wavelength_coord = iris.coords.DimCoord(
         points=wavelength_points,
         standard_name="radiation_wavelength",
@@ -278,7 +278,7 @@ def assemble_cube(stations, idx, wavelengths=None):
         bounds=time_units.date2num(time_bounds),
     )
     index_coord = iris.coords.DimCoord(
-        points=np.arange(aod.shape[-1]),
+        points=da.arange(aod.shape[-1]),
         standard_name=None,
         long_name="Station index (arbitrary)",
         var_name="station_index",
