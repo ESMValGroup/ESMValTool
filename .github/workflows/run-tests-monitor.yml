@@ -42,6 +42,8 @@ jobs:
         run: |
           mamba --version 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
           python -V 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - name: Inspect environment
+        run: conda list
       - name: Install pytest-monitor
         run: pip install pytest-monitor
       - name: Install ESMValTool
@@ -87,6 +89,10 @@ jobs:
         run: |
           mamba --version 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/conda_version.txt
           python -V 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - name: Inspect environment
+        run: conda list
+      - name: Install git
+        run: mamba install -c conda-forge git
       - name: Install pytest-monitor
         run: pip install pytest-monitor
       - name: Install ESMValTool
