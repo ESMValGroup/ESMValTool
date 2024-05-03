@@ -31,7 +31,7 @@ REQUIREMENTS = {
         'distributed',
         'ecmwf-api-client',
         'eofs',
-        'ESMPy',
+        # 'ESMPy',  # not on PyPI
         'esmvalcore',
         'esmf-regrid>=0.7.0',
         'fiona',
