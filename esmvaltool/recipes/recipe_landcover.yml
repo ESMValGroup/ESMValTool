@@ -67,5 +67,5 @@ diagnostics:
       landcover:
         script: landcover/landcover.py
         comparison: variable
-        colorscheme: seaborn-darkgrid
+        colorscheme: seaborn-v0_8-darkgrid
 

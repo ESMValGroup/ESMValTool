@@ -252,6 +252,10 @@ authors:
     name: Hansson, Ulf
     institute: SMHI, Sweden
     orcid:
+  hardacre_catherine:
+    name: Hardacre, Catherine
+    institute: University of Canterbury, New Zealand
+    orcid: https://orcid.org/0000-0001-9093-4656
   hassler_birgit:
     name: Hassler, Birgit
     institute: DLR, Germany
@@ -361,7 +365,7 @@ authors:
   malinina_elizaveta:
     name: Malinina, Elizaveta
     institute: CCCma, Canada
-    orchid: https://orcid.org/0000-0002-4102-2877
+    orcid: https://orcid.org/0000-0002-4102-2877
     github: malininae
   maloney_eric:
     name: Maloney, Eric
