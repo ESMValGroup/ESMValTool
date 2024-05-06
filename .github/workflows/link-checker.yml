@@ -1,0 +1,15 @@
+name: Check Markdown links
+
+on: push
+
+jobs:
+  markdown-link-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: gaurav-nelson/github-action-markdown-link-check@v1
+      with:
+        use-quiet-mode: 'yes'
+        use-verbose-mode: 'yes'
+        config-file: 'link-checker-config.json'
+        file-path: './CODE_OF_CONDUCT.md, ./README.md, ./CONTRIBUTING.md, ./.github/pull_request_template.md, ./.github/ISSUE_TEMPLATE/new-diagnostic.md, ./.github/ISSUE_TEMPLATE/feature_request.md, ./.github/ISSUE_TEMPLATE/bug_report.md, ./esmvaltool/diag_scripts/shared/README.md'      
