@@ -31,25 +31,24 @@ def _get_filepaths(in_dir, basename):
 
         Search sub folders of raw data directory"""
     regex = re.compile(basename)
-    return_files = {}
+    return_files = []
     for root, _dir, files in os.walk(in_dir, followlinks=True):
 
         for filename in files:
             if regex.match(filename):
-                # dir by year. group by year - dict
-                year = root.split('/')[-1]
-                if year in return_files:
-                    return_files[year].append(os.path.join(root, filename))
-                else:
-                    return_files[year] = [os.path.join(root, filename)]
+
+                return_files.append(os.path.join(root, filename))
 
     return return_files
 
 
-def fix_data_var(cube, var, year, month):
+def fix_data_var(cube, var):
     """Convert units in cube for the variable."""
-    no_ofdays = calendar.monthrange(year, month)[1]
-    # logger.info(f"year:{year}, month:{month}. number of days:{no_ofdays}")
+    # get month, year from cube # test
+    tcoord = cube.coord('time')
+    tdate = tcoord.units.num2date(tcoord.points[0], only_use_cftime_datetimes=True)
+    no_ofdays = calendar.monthrange(tdate.year, tdate.month)[1]
+
     if var == 'pr':
 
         cube = cube / (no_ofdays * 86400)  # days in month
@@ -63,34 +62,40 @@ def fix_data_var(cube, var, year, month):
     else:
         logger.info("Variable %s not converted", var)
 
-    return cube
+    return cube, tdate.year
 
 
-def _extract_variable(cmor_info, attrs, year, filepaths, out_dir):
+def _extract_variable(cmor_info, attrs, filepaths, out_dir):
     """Extract variable."""
     var = cmor_info.short_name
     logger.info("Var is %s", var)
-    cbls = iris.cube.CubeList()
+    cbls_2 = iris.cube.CubeList()
+    cbls_1 = iris.cube.CubeList()
     for filepath in filepaths:
         cubes = iris.load(filepath)
-        month = filepath[-5:-3]  # get year and month
 
-        cube = fix_data_var(cubes[0], var, int(year), int(month))
+        cube, year = fix_data_var(cubes[0], var)
 
         utils.fix_var_metadata(cube, cmor_info)
 
         utils.set_global_atts(cube, attrs)
-        cbls.append(cube)
 
-    iris.util.equalise_attributes(cbls)
-    cubesave = cbls.concatenate_cube()
-    utils.fix_coords(cube)
-    logger.info("Saving file")
-    utils.save_variable(cubesave,
-                        var,
-                        out_dir,
-                        attrs,
-                        unlimited_dimensions=['time'])
+        if year<2000:
+            cbls_1.append(cube)
+        else:
+            cbls_2.append(cube)
+
+    for cbls in [cbls_1, cbls_2]:
+        iris.util.equalise_attributes(cbls)
+        cubesave = cbls.concatenate_cube()
+        utils.fix_coords(cubesave)
+
+        logger.info("Saving file")    
+        utils.save_variable(cubesave,
+                            var,
+                            out_dir,
+                            attrs,
+                            unlimited_dimensions=['time'])
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
@@ -109,15 +114,14 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         raw_filename = cfg['filename'].format(version=ver,
                                               raw=var_info['raw'],
                                               freq=var_info['freq'])
-        filepaths = _get_filepaths(in_dir, raw_filename)  # dict
+        filepaths = _get_filepaths(in_dir, raw_filename)
 
         if len(filepaths) == 0:
             logger.info("no files for %s pattern: %s", var, raw_filename)
             logger.info("directory: %s", in_dir)
-
-        for year, inputfiles in filepaths.items():
-            logger.info("Found files '%s', count %s", year, len(inputfiles))
+        else:
+            logger.info("Found files, count %s", len(filepaths))
 
             cmor_info = cmor_table.get_variable(var_info['mip'], var)
-            _extract_variable(cmor_info, glob_attrs, year,
-                              inputfiles, out_dir)
+            _extract_variable(cmor_info, glob_attrs,
+                                filepaths, out_dir)
