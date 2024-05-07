@@ -24,6 +24,19 @@ from iris.analysis.cartography import wrap_lons
 # import internal esmvaltool modules here
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 
+def turn_set_to_mapping_dict(array):
+
+    result_dict = {}
+
+    for i, s in enumerate(array):
+        for elem in s:
+            if elem not in result_dict:
+                result_dict[elem] = i+1
+            else:
+                result_dict[elem].append(i)
+
+    return result_dict
+
 def get_mapping_dict(selected_pairs):
 
     mapping_dict = {
@@ -43,7 +56,19 @@ def get_mapping_dict(selected_pairs):
     for i in range(0,len(selected_pairs)):
         mapping_array.append(selected_pairs[i][0])
 
-    print(mapping_array)
+    s=[set(i) for i in mapping_array if i]
+
+    def find_intersection(m_list):
+        for i,v in enumerate(m_list) : 
+            for j,k in enumerate(m_list[i+1:],i+1):  
+                if v&k:
+                    s[i]=v.union(m_list.pop(j))
+                    return find_intersection(m_list)
+        return m_list
+
+    merged_tuples = find_intersection(s)
+
+    mapping_dict = turn_set_to_mapping_dict(merged_tuples)
 
     return mapping_dict
 
@@ -76,9 +101,7 @@ def calculate_slwt_obs(cfg, LWT, cube, dataset: str, correlation_thresold, rmse_
 
         mapping_dict = get_mapping_dict(selected_pairs)
 
-        #add_slwt_to_file(cfg, dataset, mapping_dict)
-
-        return np.array([mapping_dict[value] for value in np.int8(LWT)])
+        return np.array([mapping_dict.get(value, 0) for value in np.int8(LWT)])
 
 def wt_algorithm(cube):
 
@@ -382,7 +405,7 @@ def write_to_csv(cfg, pattern_correlation, rmse_matrix, dataset):
     df_rmse = pd.DataFrame(rmse_matrix)
     df_rmse.index = range(1, len(df_rmse) + 1)
     df_rmse.columns = range(1, len(df_rmse.columns) + 1)
-    df_rmse.to_csv(f'{work_dir}/correlation_matrix_{dataset}.csv', index_label='Index')
+    df_rmse.to_csv(f'{work_dir}/rmse_matrix_{dataset}.csv', index_label='Index')
 
     return
 
@@ -567,22 +590,24 @@ def run_my_diagnostic(cfg):
                 wt_cubes = [lwt_cube, slwt_era5_cube, slwt_eobs_cube]   
 
                 #plot means
-                calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="lwt")
-                calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes,  key, var_name="prcp", wt_string="lwt")
-                calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="lwt")
-                calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="slwt_ERA5")
-                calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes, key, var_name="prcp", wt_string="slwt_ERA5")
-                calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="slwt_ERA5")
-                calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="slwt_EOBS")
-                calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes, key, var_name="prcp", wt_string="slwt_EOBS")
-                calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="slwt_EOBS")     
+                #calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="lwt")
+                #calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes,  key, var_name="prcp", wt_string="lwt")
+                #calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="lwt")
+                #calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="slwt_ERA5")
+                #calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes, key, var_name="prcp", wt_string="slwt_ERA5")
+                #calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="slwt_ERA5")
+                #calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="slwt_EOBS")
+                #calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes, key, var_name="prcp", wt_string="slwt_EOBS")
+                #calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="slwt_EOBS")     
 
 
     return
 
 if __name__ == '__main__':
+
     # always use run_diagnostic() to get the config (the preprocessor
     # nested dictionary holding all the needed information)
     with run_diagnostic() as config:
         # list here the functions that need to run
         run_my_diagnostic(config)
+        
