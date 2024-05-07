@@ -41,6 +41,8 @@ jobs:
           python -V 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
           # this is how to export variables to the GITHUB var environment
           echo "pver0=$(python -V)" >> $GITHUB_ENV
+      - name: Inspect environment
+        run: conda list
       - name: Install ESMValTool
         run: pip install -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Install Julia dependencies
@@ -53,6 +55,8 @@ jobs:
           echo "Python minor version changed after Julia install"
           python -V
           exit 1
+      - name: Inspect environment
+        run: conda list
       - name: Run flake8
         run: flake8
       - name: Run tests
@@ -90,8 +94,18 @@ jobs:
         run: |
           mamba --version 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/conda_version.txt
           python -V 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - name: Inspect environment
+        run: conda list
+      - name: Determine if git
+        run: |
+          which git
+          git --version
+      - name: Install git
+        run: mamba install -c conda-forge git
       - name: Install ESMValTool
         run: pip install -e .[develop] 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/install.txt
+      - name: Inspect environment
+        run: conda list
       - name: Run flake8
         run: flake8
       - name: Run tests
