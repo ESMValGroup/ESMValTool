@@ -8,6 +8,7 @@ from copy import deepcopy
 # import cartopy
 import iris
 import numpy as np
+import dask.array as da
 import matplotlib.pyplot as plt
 import yaml
 from iris.analysis import MEAN
@@ -50,9 +51,9 @@ def calculate_gridmassdry(press, hus, z_coord):
     """
     # calculate minimum in cubes
     if isinstance(press, iris.cube.Cube):
-        pmin = np.nanmin(press.data)
+        pmin = da.nanmin(press.core_data())
     else:
-        pmin = np.nanmin(press)
+        pmin = da.nanmin(press)
 
     # surface air pressure as cube
     pmax = press[:, 0, :, :].copy()
