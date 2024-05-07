@@ -3,7 +3,7 @@
 documentation:
   title: Model evaluation with focus on precipitation.
   description: >
-    Plot zonal mean plots of precipitation.
+    Plot zonal mean precipitation.
   authors:
     - lauer_axel
     - schlund_manuel
