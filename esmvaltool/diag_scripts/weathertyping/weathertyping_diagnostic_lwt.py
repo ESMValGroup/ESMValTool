@@ -25,7 +25,6 @@ from iris.analysis.cartography import wrap_lons
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 
 def turn_set_to_mapping_dict(array):
-
     result_dict = {}
 
     for i, s in enumerate(array):
@@ -38,19 +37,6 @@ def turn_set_to_mapping_dict(array):
     return result_dict
 
 def get_mapping_dict(selected_pairs):
-
-    mapping_dict_douglas_paper = {
-            1: 1, 2: 1, 19: 1,
-            3: 2, 4: 2, 22: 2, 21: 2,
-            5: 3, 6: 3, 15: 3, 16: 3,
-            7: 4, 8: 4, 11: 4, 18: 4,
-            9: 5, 17: 5,
-            10: 6, 20: 6,
-            12: 7, 13: 7, 14: 7,
-            23: 8, 24: 8,
-            25: 9, 26: 9, 27:27, 0:0
-        }
-
     mapping_array = []
 
     for i in range(0,len(selected_pairs)):
@@ -67,32 +53,28 @@ def get_mapping_dict(selected_pairs):
         return m_list
 
     merged_tuples = find_intersection(s)
-
     mapping_dict = turn_set_to_mapping_dict(merged_tuples)
 
     return mapping_dict
 
-def calculate_slwt_obs(cfg, LWT, cube, dataset: str, correlation_thresold, rmse_threshold):
-        
-        print(dataset)
+def calculate_slwt_obs(cfg, LWT, cube, dataset: str, correlation_thresold, rmse_threshold):        
         
         work_dir = cfg['work_dir']
-
         tcoord = cube.coord("time")
 
         wt_data_prcp = []
         for wt in range(1,28):
+            print(f"Weathertype {wt}")
             target_indices = np.where(LWT == wt)
             if len(target_indices[0]) < 1:
                 print(f"calculate_slwt_obs - CAUTION: Skipped wt {wt} for dataset {dataset}!")
                 continue
             dates = [tcoord.units.num2date(tcoord.points[i]) for i in target_indices]
             if dataset == "E-OBS":
-                extracted_cube = cube[target_indices]#.extract(iris.Constraint(time=lambda t: t.point in dates[0]))
+                extracted_cube = cube[target_indices]
             else:
                 extracted_cube = cube.extract(iris.Constraint(time=lambda t: t.point in dates[0]))
-            wt_cube_mean = extracted_cube.collapsed('time', iris.analysis.MEAN)#cube[target_indices[0], :, :].collapsed('time', iris.analysis.MEAN)
-            #plot_mean(wt, cfg, wt_cube_mean, dataset, f"{var_name}_", wt_string)
+            wt_cube_mean = extracted_cube.collapsed('time', iris.analysis.MEAN)
             wt_data_prcp.append(wt_cube_mean.data.compressed())
         selected_pairs = process_prcp_mean(wt, cfg, wt_data_prcp, correlation_thresold, rmse_threshold, dataset)
 
@@ -104,7 +86,7 @@ def calculate_slwt_obs(cfg, LWT, cube, dataset: str, correlation_thresold, rmse_
         with open(f'{work_dir}/wt_mapping_dict_{dataset}.json', 'w') as file:
             json.dump(mapping_dict, file)
 
-        return np.array([np.int8(mapping_dict.get(value, 0)) for value in LWT])
+        return np.array([np.int8(mapping_dict.get(value, 0)) for value in np.int8(LWT)])
 
 def wt_algorithm(cube):
 
@@ -245,11 +227,8 @@ def calculate_lwt_slwt_model(cfg, cube, dataset):
     with open(f'{work_dir}/wt_mapping_dict_E-OBS.json', 'r') as file:
         mapping_dict_eobs = json.load(file)
 
-    print(mapping_dict_era5)
-    print(mapping_dict_eobs)
-
-    slwt_era5 = np.array([np.int8(mapping_dict_era5.get(int(value), 0)) for value in WT])
-    slwt_eobs = np.array([np.int8(mapping_dict_eobs.get(int(value), 0)) for value in WT])
+    slwt_era5 = np.array([np.int8(mapping_dict_era5.get(f"{value}", 0)) for value in np.int8(WT)])
+    slwt_eobs = np.array([np.int8(mapping_dict_eobs.get(f"{value}", 0)) for value in np.int8(WT)])
 
     wt_cube = iris.cube.CubeList()
     wt_cube.append(iris.cube.Cube(WT, long_name="lwt"))
@@ -263,7 +242,7 @@ def calculate_lwt_slwt_model(cfg, cube, dataset):
     iris.save(wt_cube, f"{work_dir}/{dataset}.nc")
 
     #write to csv file
-    d = {'date': time_points[:], 'lwt': np.int8(WT), 'slwt_ERA5': slwt_era5, 'slwt_EOBS': slwt_eobs}
+    d = {'date': time_points[:], 'lwt': np.int8(WT), 'slwt_ERA5': np.int8(slwt_era5), 'slwt_EOBS': np.int8(slwt_eobs)}
     df = pd.DataFrame(data=d)
     df.to_csv(f'{work_dir}/{dataset}.csv', index=False)
 
@@ -324,8 +303,6 @@ def plot_mean(wt, cfg, cube, dataset, var_name, wt_string):
 
     ax = plt.axes(projection=ccrs.PlateCarree())
 
-
-    
     psl_cmap = get_colormap("psl")
     prcp_cmap = get_colormap("prcp")
     temp_cmap = get_colormap("temp")
@@ -399,9 +376,7 @@ def write_to_csv(cfg, pattern_correlation, rmse_matrix, dataset):
 def process_prcp_mean(wt, cfg, data, correlation_threshold, rmse_threshold, dataset):
 
     selected_pairs = []
-
     pattern_correlation = np.ma.corrcoef(data)
-
     n = len(data)
     rmse_matrix = np.zeros((n, n))
     
@@ -411,8 +386,6 @@ def process_prcp_mean(wt, cfg, data, correlation_threshold, rmse_threshold, data
             rmse_matrix[j][i] = rmse_matrix[i][j]
             if pattern_correlation[i][j] >= correlation_threshold and rmse_matrix[i][j] <= rmse_threshold:
                 selected_pairs.append(((i+1, j+1), pattern_correlation[i][j], rmse_matrix[i][j]))
-
-    print(selected_pairs)
 
     #write matrices to csv
     write_to_csv(cfg, pattern_correlation, rmse_matrix, dataset)
@@ -425,17 +398,14 @@ def calculate_wt_means(cfg, cube, wt_cubes, dataset: str, var_name: str, wt_stri
         slwt_era5_cube = wt_cubes[1]#iris.load(f"{work_dir}/{file_name}.nc", "slwt_era5")
         tcoord = slwt_era5_cube.coord("time")
         slwt_era5 = slwt_era5_cube.data[:]
-        print(slwt_era5)
     elif wt_string == "slwt_EOBS":
         slwt_eobs_cube = wt_cubes[2]#iris.load(f"{work_dir}/{file_name}.nc", "slwt_e-obs")
         tcoord = slwt_eobs_cube.coord("time")
         slwt_eobs = slwt_eobs_cube.data[:]
-        print(slwt_eobs)
     elif wt_string == "lwt":    
         lwt_cube = wt_cubes[0]#iris.load(f"{work_dir}/{file_name}.nc", "lwt")
         tcoord = lwt_cube.coord("time")
         lwt = lwt_cube.data[:]
-        print(lwt)
 
     if "slwt" in wt_string:
         for wt in range(1,10):
@@ -503,7 +473,7 @@ def write_lwt_to_file(cfg, lwt, cube, file_name):
     write_path = cfg['work_dir']
 
     wt_cube = iris.cube.CubeList()
-    wt_cube.append(iris.cube.Cube(lwt, long_name="lwt"))
+    wt_cube.append(iris.cube.Cube(np.int8(lwt), long_name="lwt"))
 
     wt_cube[0].add_dim_coord(tcoord, 0)
     iris.save(wt_cube, f"{write_path}/{file_name}.nc")
@@ -589,15 +559,15 @@ def run_my_diagnostic(cfg):
                 wt_cubes = [lwt_cube, slwt_era5_cube, slwt_eobs_cube]
 
                 #plot means
-                #calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="lwt")
-                #calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes, key, var_name="prcp", wt_string="lwt")
-                #calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="lwt")
-                #calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="slwt_ERA5")
-                #calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes, key, var_name="prcp", wt_string="slwt_ERA5")
-                #calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="slwt_ERA5")
-                #calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="slwt_EOBS")
-                #calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes, key, var_name="prcp", wt_string="slwt_EOBS")
-                #calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="slwt_EOBS")
+                calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="lwt")
+                calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes, key, var_name="prcp", wt_string="lwt")
+                calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="lwt")
+                calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="slwt_ERA5")
+                calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes, key, var_name="prcp", wt_string="slwt_ERA5")
+                calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="slwt_ERA5")
+                calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="slwt_EOBS")
+                calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes, key, var_name="prcp", wt_string="slwt_EOBS")
+                calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="slwt_EOBS")
             else: 
                 if key == "E-OBS":
                     continue
@@ -616,16 +586,16 @@ def run_my_diagnostic(cfg):
                 wt_cubes = [lwt_cube, slwt_era5_cube, slwt_eobs_cube]   
 
                 #plot means
-                #calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="lwt")
-                #calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes,  key, var_name="prcp", wt_string="lwt")
-                #calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="lwt")
-                #calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="slwt_ERA5")
-                #calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes, key, var_name="prcp", wt_string="slwt_ERA5")
-                #calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="slwt_ERA5")
-                #calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="slwt_EOBS")
-                #calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes, key, var_name="prcp", wt_string="slwt_EOBS")
-                #calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="slwt_EOBS")
-    else: #if automatic_slwt is false, just do the lwt, DOES NOT WORK YET
+                calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="lwt")
+                calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes,  key, var_name="prcp", wt_string="lwt")
+                calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="lwt")
+                calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="slwt_ERA5")
+                calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes, key, var_name="prcp", wt_string="slwt_ERA5")
+                calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="slwt_ERA5")
+                calculate_wt_means(cfg, mean_preproc_psl, wt_cubes, key, var_name="psl", wt_string="slwt_EOBS")
+                calculate_wt_means(cfg, mean_preproc_prcp, wt_cubes, key, var_name="prcp", wt_string="slwt_EOBS")
+                calculate_wt_means(cfg, mean_preproc_tas, wt_cubes, key, var_name="tas", wt_string="slwt_EOBS")
+    else: #if automatic_slwt is false, just do the lwt
         for key, value in preproc_variables_dict.items():
             if key == "ERA5":
                 wt_preproc = iris.load_cube(value[0]['filename'])
