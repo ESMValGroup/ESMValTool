@@ -11,12 +11,7 @@ documentation:
     - lauer_axel
 
 
-# Note: the following models are just examples
 datasets:
-#  - {project: CMIP6, dataset: IPSL-CM6A-LR, exp: historical, ensemble: r1i1p1f1, grid: gr}
-#  - {project: CMIP6, dataset: MIROC6, exp: historical, ensemble: r1i1p1f1, grid: gn, benchmark_dataset: true}
-#  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
-#  - {project: CMIP6, dataset: UKESM1-0-LL, exp: historical, ensemble: r1i1p1f2, grid: gn}
   - {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS}
   - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO}
   - {dataset: AWI-CM-1-1-MR, grid: gn}
@@ -50,7 +45,6 @@ datasets:
   - {dataset: IPSL-CM6A-LR}
   - {dataset: KACE-1-0-G}
   - {dataset: MCM-UA-1-0, grid: gn}
-  - {dataset: MIROC6, grid: gn}
   - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
   - {dataset: MPI-ESM-1-2-HAM, grid: gn}
   - {dataset: MPI-ESM1-2-HR, grid: gn}
@@ -61,7 +55,8 @@ datasets:
   - {dataset: NorESM2-MM, grid: gn, institute: NCC}
   - {dataset: SAM0-UNICON, grid: gn}
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
-  - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, supplementary_variables: [{short_name: areacella, skip: true}]}
+  # Dataset to be benchmarked
+  - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
 
 preprocessors:
 
@@ -124,7 +119,7 @@ diagnostics:
     description: Plot "classical" time series of global mean anomalies including a reference dataset.
     variables:
       tas:
-        timerange: '2000/2009'
+        timerange: '2000/2014'
         preprocessor: pp_tas
         project: CMIP6
         mip: Amon
@@ -138,15 +133,12 @@ diagnostics:
       allplots:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
-#        plot_filename: '{plot_type}_{real_name}_{mip}'
         group_variables_by: variable_group
-#        facet_used_for_labels: project
         plots:
           timeseries:
             annual_mean_kwargs: False
-#            legend_kwargs: False
             plot_kwargs:
-              EMAC:
+              MIROC6:
                 color: red
                 label: '{dataset}'
                 linestyle: '-'
@@ -181,7 +173,7 @@ diagnostics:
     description: Plot "benchmarking" time series of global mean anomalies.
     variables:
       tas:
-        timerange: '2000/2009'
+        timerange: '2000/2014'
         preprocessor: pp_tas_metric
         project: CMIP6
         mip: Amon
@@ -195,16 +187,13 @@ diagnostics:
       allplots:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
-#        plot_filename: '{plot_type}_{real_name}_{mip}'
         group_variables_by: variable_group
-#        facet_used_for_labels: project
         plots:
           benchmarking_timeseries:
             plot_kwargs:
             annual_mean_kwargs: False
-#            legend_kwargs: False
             plot_kwargs:
-              EMAC:
+              MIROC6:
                 color: red
                 label: '{dataset}'
                 linestyle: '-'
