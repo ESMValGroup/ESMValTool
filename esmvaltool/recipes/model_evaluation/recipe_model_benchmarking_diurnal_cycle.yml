@@ -57,6 +57,38 @@ preprocessors:
       interval: 3
       offset: 1
       interpolate: true
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: hourly
+    convert_units:
+      units: mm day-1
+    multi_model_statistics:
+      span: overlap
+      statistics:
+        - operator: percentile
+          percent: 10
+        - operator: percentile
+          percent: 90
+      exclude: [reference_dataset, MIROC6]
+
+  pp_diurn_Tropics_metric:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    local_solar_time:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -30
+      end_latitude: 30
+    mask_landsea:
+      mask_out: land
+    resample_hours:
+      interval: 3
+      offset: 1
+      interpolate: true
     climate_statistics:
       period: hourly
     convert_units:
@@ -76,10 +108,10 @@ preprocessors:
 
 diagnostics:
 
-  diurncyc:
-    description: Example plot diurnal cycles including reference datasets.
+  diurnal_cycle:
+    description: Classical diurnal cycle plot including reference dataset.
     variables:
-      pr_tropics:
+      pr_tropics: &var_settings
         project: CMIP6
         timerange: 2000/2000
         preprocessor: pp_diurn_Tropics
@@ -92,6 +124,56 @@ diagnostics:
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', frequency: 1hr,
              tier: 3, reference_for_metric: true, alias: ERA5}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        group_variables_by: variable_group
+        facet_used_for_labels: alias
+        plots:
+          diurnal_cycle:
+            annual_mean_kwargs: False
+            legend_kwargs:
+              loc: upper right
+            plot_kwargs:
+              'MIROC6':
+                color: red
+                label: '{alias}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 4
+              ERA5:
+                color: black
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              MultiModelPercentile10:
+                color: gray
+                label: '{dataset}'
+                linestyle: '--'
+                linewidth: 1
+                zorder: 2
+              MultiModelPercentile90:
+                color: gray
+                label: '{dataset}'
+                linestyle: '--'
+                linewidth: 1
+                zorder: 2
+              default:
+                color: lightgray
+                label: null
+                linestyle: '-'
+                linewidth: 1
+                zorder: 1
+
+  benchmarking_diurnal_cycle:
+    description: Create "benchmarking" diurnal cycle plot.
+    variables:
+      pr_tropics:
+        <<: *var_settings
+        preprocessor: pp_diurn_Tropics_metric
     scripts:
       allplots:
         script: monitor/multi_datasets.py

@@ -2600,7 +2600,7 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-   def create_benchmarking_annual(self, datasets):
+    def create_benchmarking_annual(self, datasets):
         """Create benchmarking annual cycle plot."""
         plot_type = 'benchmarking_annual_cycle'
         if plot_type not in self.plots:
