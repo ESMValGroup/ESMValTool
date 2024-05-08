@@ -44,9 +44,9 @@ def _get_filepaths(in_dir, basename):
 
 def fix_data_var(cube, var):
     """Convert units in cube for the variable."""
-    # get month, year from cube # test
+    # get month, year from cube
     tcoord = cube.coord('time')
-    tdate = tcoord.units.num2date(tcoord.points[0], only_use_cftime_datetimes=True)
+    tdate = tcoord.units.num2date(tcoord.points[0])
     no_ofdays = calendar.monthrange(tdate.year, tdate.month)[1]
 
     if var == 'pr':
@@ -80,7 +80,7 @@ def _extract_variable(cmor_info, attrs, filepaths, out_dir):
 
         utils.set_global_atts(cube, attrs)
 
-        if year<2000:
+        if year < 2000:  # split for cube save
             cbls_1.append(cube)
         else:
             cbls_2.append(cube)
@@ -90,7 +90,7 @@ def _extract_variable(cmor_info, attrs, filepaths, out_dir):
         cubesave = cbls.concatenate_cube()
         utils.fix_coords(cubesave)
 
-        logger.info("Saving file")    
+        logger.info("Saving file")
         utils.save_variable(cubesave,
                             var,
                             out_dir,
@@ -123,5 +123,4 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             logger.info("Found files, count %s", len(filepaths))
 
             cmor_info = cmor_table.get_variable(var_info['mip'], var)
-            _extract_variable(cmor_info, glob_attrs,
-                                filepaths, out_dir)
+            _extract_variable(cmor_info, glob_attrs, filepaths, out_dir)
