@@ -1073,9 +1073,9 @@ datasets:
   OceanSODA-ETHZ:
     tier: 2
     source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0220059/
-    last_access: 2022-11-03
+    last_access: 2024-02-15
     info: |
-      Download the file OceanSODA-ETHZ_GRaCER_v2021a_1982-2020.nc
+      Download the file OceanSODA_ETHZ-v2023.OCADS.01_1982-2022.nc
 
   OSI-450-nh:
     tier: 2

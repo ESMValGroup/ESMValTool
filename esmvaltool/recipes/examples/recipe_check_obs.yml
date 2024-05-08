@@ -730,7 +730,7 @@ diagnostics:
         mip: Omon
     additional_datasets:
       - {dataset: OceanSODA-ETHZ, project: OBS6, tier: 2, type: reanaly,
-         version: v2021e, start_year: 1982, end_year: 2020}
+         version: v2023, start_year: 1982, end_year: 2022}
     scripts: null
 
 

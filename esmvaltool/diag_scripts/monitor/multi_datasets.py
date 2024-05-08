@@ -17,6 +17,9 @@ Currently supported plot types (use the option ``plots`` to specify them):
     - Annual cycle (plot type ``annual_cycle``): for each variable separately,
       all datasets are plotted in one single figure. Input data needs to be 1D
       with single dimension `month_number`.
+    - Diurnal cycle (plot type ``diurnal_cycle``): for each variable
+      separately, all datasets are plotted in one single figure. Input data
+      needs to be 1D with single dimension `hour`.
     - Maps (plot type ``map``): for each variable and dataset, an individual
       map is plotted. If a reference dataset is defined, also include this
       dataset and a bias plot into the figure. Note that if a reference dataset
@@ -69,6 +72,7 @@ Currently supported plot types (use the option ``plots`` to specify them):
     ------------------
     - annual cycles (``benchmarking_annual_cycle``)
     - box plots (``benchmarking_boxplot``)
+    - diurnal cycles (``benchmarking_annual_cycle``)
     - maps (``benchmarking_map``)
     - time series (``benchmarking_timeseries``)
     - zonal mean profiles (plot type ``benchmarking_zonal``)
@@ -157,8 +161,8 @@ time_format: str, optional (default: None)
     the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
     use the default formatting imposed by the iris plotting function.
 
-Configuration options for plot type ``annual_cycle``
-----------------------------------------------------
+Configuration options for plot type ``annual_cycle`` and ``diurnal_cycle``
+--------------------------------------------------------------------------
 gridline_kwargs: dict, optional
     Optional keyword arguments for grid lines. By default, ``color: lightgrey,
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
@@ -593,7 +597,6 @@ Configuration options for plot type ``benchmarking_boxplot``
 
 Configuration options for plot type ``benchmarking_diurnal_cycle``
 ------------------------------------------------------------------
-Same as for ``benchmarking_annual_cycle``.
 
 Configuration options for plot type ``benchmarking_map``
 --------------------------------------------------------
@@ -708,6 +711,7 @@ class MultiDatasets(MonitorBase):
         self.supported_plot_types = [
             'timeseries',
             'annual_cycle',
+            'diurnal_cycle',
             'map',
             'zonal_mean_profile',
             '1d_profile',
@@ -753,6 +757,12 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
 
             elif plot_type == 'benchmarking_annual_cycle':
+                self.plots[plot_type].setdefault('gridline_kwargs', {})
+                self.plots[plot_type].setdefault('legend_kwargs', {})
+                self.plots[plot_type].setdefault('plot_kwargs', {})
+                self.plots[plot_type].setdefault('pyplot_kwargs', {})
+
+            elif plot_type == 'diurnal_cycle':
                 self.plots[plot_type].setdefault('gridline_kwargs', {})
                 self.plots[plot_type].setdefault('legend_kwargs', {})
                 self.plots[plot_type].setdefault('plot_kwargs', {})
@@ -903,6 +913,7 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault(
                     'show_y_minor_ticklabels', False
                 )
+
             elif plot_type == 'variable_vs_lat':
                 self.plots[plot_type].setdefault('gridline_kwargs', {})
                 self.plots[plot_type].setdefault('legend_kwargs', {})
@@ -1210,7 +1221,7 @@ class MultiDatasets(MonitorBase):
         # Default settings for different plot types
         if plot_type in ('timeseries', 'annual_cycle',
                          'benchmarking_annual_cycle', '1d_profile',
-                         'benchmarking_diurnal_cycle',
+                         'diurnal_cycle', 'benchmarking_diurnal_cycle',
                          'variable_vs_lat', 'benchmarking_timeseries'):
             plot_kwargs.setdefault('label', label)
 
@@ -2118,6 +2129,7 @@ class MultiDatasets(MonitorBase):
         expected_dimensions_dict = {
             'annual_cycle': (['month_number'],),
             'benchmarking_boxplot': (['']),
+            'diurnal_cycle': (['hour'],),
             'map': (['latitude', 'longitude'],),
             'benchmarking_annual_cycle': (['month_number'],),
             'benchmarking_diurnal_cycle': (['hour'],),
@@ -2588,7 +2600,7 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_benchmarking_annual(self, datasets):
+   def create_benchmarking_annual(self, datasets):
         """Create benchmarking annual cycle plot."""
         plot_type = 'benchmarking_annual_cycle'
         if plot_type not in self.plots:
@@ -2668,6 +2680,176 @@ class MultiDatasets(MonitorBase):
 
         # Provenance tracking
         caption = (f"Annual cycle of {multi_dataset_facets['long_name']} for "
+                   f"various datasets.")
+        provenance_record = {
+            'ancestors': ancestors,
+            'authors': ['schlund_manuel'],
+            'caption': caption,
+            'plot_types': ['seas'],
+            'long_names': [var_attrs['long_name']],
+        }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(netcdf_path, provenance_record)
+
+    def create_diurnal_cycle_plot(self, datasets):
+        """Create diurnal cycle plot."""
+        plot_type = 'diurnal_cycle'
+        if plot_type not in self.plots:
+            return
+
+        if not datasets:
+            raise ValueError(f"No input data to plot '{plot_type}' given")
+
+        logger.info("Plotting %s", plot_type)
+        fig = plt.figure(**self.cfg['figure_kwargs'])
+        axes = fig.add_subplot()
+
+        # Plot all datasets in one single figure
+        ancestors = []
+        cubes = {}
+        for dataset in datasets:
+            ancestors.append(dataset['filename'])
+            cube = dataset['cube']
+            cubes[self._get_label(dataset)] = cube
+            self._check_cube_dimensions(cube, plot_type)
+
+            # Plot diurnal cycle
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs['axes'] = axes
+            iris.plot.plot(cube, **plot_kwargs)
+
+        # Default plot appearance
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+        axes.set_title(multi_dataset_facets['long_name'])
+        axes.set_xlabel('Hour')
+        axes.set_ylabel(
+            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
+            f"[{multi_dataset_facets['units']}]"
+        )
+        axes.set_xticks(range(0, 24), minor=True)
+        axes.set_xticks(range(0, 24, 3), [str(m) for m in range(0, 24, 3)])
+        gridline_kwargs = self._get_gridline_kwargs(plot_type)
+        if gridline_kwargs is not False:
+            axes.grid(**gridline_kwargs)
+
+        # Legend
+        legend_kwargs = self.plots[plot_type]['legend_kwargs']
+        if legend_kwargs is not False:
+            axes.legend(**legend_kwargs)
+
+        # Customize plot appearance
+        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+
+        # Save plot
+        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
+        fig.savefig(plot_path, **self.cfg['savefig_kwargs'])
+        logger.info("Wrote %s", plot_path)
+        plt.close()
+
+        # Save netCDF file
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+        var_attrs = {
+            n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
+        }
+        io.save_1d_data(cubes, netcdf_path, 'hour', var_attrs)
+
+        # Provenance tracking
+        caption = (f"Diurnal cycle of {multi_dataset_facets['long_name']} for "
+                   f"various datasets.")
+        provenance_record = {
+            'ancestors': ancestors,
+            'authors': ['schlund_manuel'],
+            'caption': caption,
+            'plot_types': ['seas'],
+            'long_names': [var_attrs['long_name']],
+        }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(netcdf_path, provenance_record)
+
+    def create_benchmarking_diurnal(self, datasets):
+        """Create benchmarking diurnal cycle plot."""
+        plot_type = 'benchmarking_diurnal_cycle'
+        if plot_type not in self.plots:
+            return
+
+        if not datasets:
+            raise ValueError(f"No input data to plot '{plot_type}' given")
+
+        logger.info("Plotting %s", plot_type)
+
+        # Get dataset to be benchmarked
+        plot_datasets = self._get_benchmark_datasets(datasets)
+        # Get percentiles from multi-model statistics
+        percentile_dataset = self._get_benchmark_percentiles(datasets)
+
+        fig = plt.figure(**self.cfg['figure_kwargs'])
+        axes = fig.add_subplot()
+
+        # Plot all datasets in one single figure
+        ancestors = []
+        cubes = {}
+
+        # Plot diurnal cycle(s)
+        for dataset in plot_datasets:
+            cube = dataset['cube']
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs['axes'] = axes
+            iris.plot.plot(cube, **plot_kwargs)
+
+        yval2 = percentile_dataset[0]['cube']
+        if len(percentile_dataset) > 1:
+            idx = len(percentile_dataset) - 1
+            yval1 = percentile_dataset[idx]['cube']
+        else:
+            yval1 = yval2.copy()
+            ymin, ymax = axes.get_ylim()
+            yval1.data = np.full(len(yval1.data), ymin)
+
+        iris.plot.fill_between(cube.coord('hour'), yval1, yval2,
+                               facecolor='lightblue',
+                               linewidth=0,
+                               zorder=1, alpha=0.8)
+
+        # Default plot appearance
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+        axes.set_title(multi_dataset_facets['long_name'])
+        axes.set_xlabel('Hour')
+        axes.set_ylabel(
+            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
+            f"[{multi_dataset_facets['units']}]"
+        )
+        axes.set_xticks(range(0, 24), minor=True)
+        axes.set_xticks(range(0, 24, 3), [str(m) for m in range(0, 24, 3)])
+        gridline_kwargs = self._get_gridline_kwargs(plot_type)
+        if gridline_kwargs is not False:
+            axes.grid(**gridline_kwargs)
+
+        # Legend
+        legend_kwargs = self.plots[plot_type]['legend_kwargs']
+        if legend_kwargs is not False:
+            axes.legend(**legend_kwargs)
+
+        # Customize plot appearance
+        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+
+        # Save plot
+        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
+        fig.savefig(plot_path, **self.cfg['savefig_kwargs'])
+        logger.info("Wrote %s", plot_path)
+        plt.close()
+
+        # Save netCDF file
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+        var_attrs = {
+            n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
+        }
+        cubes[self._get_label(dataset)] = dataset['cube']
+        io.save_1d_data(cubes, netcdf_path, 'hour', var_attrs)
+
+        # Provenance tracking
+        caption = (f"Diurnal cycle of {multi_dataset_facets['long_name']} for "
                    f"various datasets.")
         provenance_record = {
             'ancestors': ancestors,
@@ -2766,100 +2948,6 @@ class MultiDatasets(MonitorBase):
             'authors': ['bock_lisa', 'schlund_manuel'],
             'caption': caption,
             'plot_types': ['box'],
-        }
-        with ProvenanceLogger(self.cfg) as provenance_logger:
-            provenance_logger.log(plot_path, provenance_record)
-            provenance_logger.log(netcdf_path, provenance_record)
-
-    def create_benchmarking_diurnal(self, datasets):
-        """Create benchmarking diurnal cycle plot."""
-        plot_type = 'benchmarking_diurnal_cycle'
-        if plot_type not in self.plots:
-            return
-
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
-
-        logger.info("Plotting %s", plot_type)
-
-        # Get dataset to be benchmarked
-        plot_datasets = self._get_benchmark_datasets(datasets)
-        # Get percentiles from multi-model statistics
-        percentile_dataset = self._get_benchmark_percentiles(datasets)
-
-        fig = plt.figure(**self.cfg['figure_kwargs'])
-        axes = fig.add_subplot()
-
-        # Plot all datasets in one single figure
-        ancestors = []
-        cubes = {}
-
-        # Plot diurnal cycle(s)
-        for dataset in plot_datasets:
-            cube = dataset['cube']
-            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-            plot_kwargs['axes'] = axes
-            iris.plot.plot(cube, **plot_kwargs)
-
-        yval2 = percentile_dataset[0]['cube']
-        if len(percentile_dataset) > 1:
-            idx = len(percentile_dataset) - 1
-            yval1 = percentile_dataset[idx]['cube']
-        else:
-            yval1 = yval2.copy()
-            ymin, ymax = axes.get_ylim()
-            yval1.data = np.full(len(yval1.data), ymin)
-
-        iris.plot.fill_between(cube.coord('hour'), yval1, yval2,
-                               facecolor='lightblue',
-                               linewidth=0,
-                               zorder=1, alpha=0.8)
-
-        # Default plot appearance
-        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
-        axes.set_title(multi_dataset_facets['long_name'])
-        axes.set_xlabel('Hour')
-        axes.set_ylabel(
-            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
-            f"[{multi_dataset_facets['units']}]"
-        )
-        axes.set_xticks(range(0, 24), minor=True)
-        axes.set_xticks(range(0, 24, 3), [str(m) for m in range(0, 24, 3)])
-        gridline_kwargs = self._get_gridline_kwargs(plot_type)
-        if gridline_kwargs is not False:
-            axes.grid(**gridline_kwargs)
-
-        # Legend
-        legend_kwargs = self.plots[plot_type]['legend_kwargs']
-        if legend_kwargs is not False:
-            axes.legend(**legend_kwargs)
-
-        # Customize plot appearance
-        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
-
-        # Save plot
-        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
-        fig.savefig(plot_path, **self.cfg['savefig_kwargs'])
-        logger.info("Wrote %s", plot_path)
-        plt.close()
-
-        # Save netCDF file
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-        var_attrs = {
-            n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
-        }
-        cubes[self._get_label(dataset)] = dataset['cube']
-        io.save_1d_data(cubes, netcdf_path, 'hour', var_attrs)
-
-        # Provenance tracking
-        caption = (f"Diurnal cycle of {multi_dataset_facets['long_name']} for "
-                   f"various datasets.")
-        provenance_record = {
-            'ancestors': ancestors,
-            'authors': ['schlund_manuel'],
-            'caption': caption,
-            'plot_types': ['seas'],
-            'long_names': [var_attrs['long_name']],
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
@@ -3500,6 +3588,7 @@ class MultiDatasets(MonitorBase):
             logger.info("Processing variable %s", var_key)
             self.create_timeseries_plot(datasets)
             self.create_annual_cycle_plot(datasets)
+            self.create_diurnal_cycle_plot(datasets)
             self.create_benchmarking_annual(datasets)
             self.create_benchmarking_diurnal(datasets)
             self.create_benchmarking_map_plot(datasets)
