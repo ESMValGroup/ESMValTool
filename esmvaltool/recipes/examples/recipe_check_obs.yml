@@ -906,6 +906,17 @@ diagnostics:
 
   ### TIER 3 ##################################################################
 
+  ANUClimate:
+    description: ANUClimate check
+    variables:
+      pr:
+      tasmax:
+      tasmin:
+      tas:
+    additional_datasets:
+      - {dataset: ANUClimate, project: OBS6, mip: Amon, tier: 3, type: reanaly}
+    scripts: null
+
   APHRO-MA:
     description: APHRO-MA check
     variables:
