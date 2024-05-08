@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: esmvaltool
           environment-file: environment.yml
@@ -74,7 +74,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: esmvaltool
           environment-file: environment_osx.yml
