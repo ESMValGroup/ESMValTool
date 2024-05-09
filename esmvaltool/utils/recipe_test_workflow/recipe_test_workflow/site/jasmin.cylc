@@ -33,13 +33,13 @@
     # memory should be specified, in case the default changes.
     # Variable (fast, medium) must be consistent with flow.cylc.
     # Comment indicates example recorded usage on JASMIN.
-    [[process<fast=autoassess_landsurface_soilmoisture>]]
+    [[process<fast=recipe_autoassess_landsurface_soilmoisture>]]
         # Actual: 1m35s, 2.1 GB on 2024-03-29.
         execution time limit = PT3M
         [[[directives]]]
             --mem = 3G
 
-    [[process<medium=ensclus>]]
+    [[process<medium=recipe_ensclus>]]
         # Actual: 4m23s, 1.5 GB on 2024-03-29.
         execution time limit = PT6M
         [[[directives]]]
