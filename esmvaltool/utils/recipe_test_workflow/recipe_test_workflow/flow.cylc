@@ -87,7 +87,10 @@
             RECIPE_PATH = "${CYLC_TASK_PARAM_medium//--//}.yml"
 
     # Bash variable manipulation `##*--` below strips leading path from recipe
-    # parameter to obtain recipe name (=recipe basename minus yml extension).
+    # parameter to obtain RECIPE_NAME.
+    # RECIPE_NAME is the recipe file basename without yml extension, as used by 
+    # ESMValTool for naming output directories. E.g. for the recipe
+    # examples/recipe_python.yml, RECIPE_NAME=recipe_python
     [[compare<fast>]]
         inherit = None, COMPUTE
         [[[environment]]]
