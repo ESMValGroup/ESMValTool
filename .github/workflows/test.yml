@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - update_GA_Versions
   schedule:
     - cron: '0 0 * * *'
 
