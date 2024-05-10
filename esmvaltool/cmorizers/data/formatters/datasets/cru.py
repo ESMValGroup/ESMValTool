@@ -4,9 +4,9 @@ Tier
     Tier 2: other freely-available dataset.
 
 Source
-    TS4.02: https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/cruts.1811131722.v4.02/
-    TS4.06: https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.06/cruts.2205201912.v4.06/
-    TS4.07: https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.07/cruts.2304141047.v4.07/
+    TS4.02: https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/cruts.1811131722.v4.02/  # noqa: E501
+    TS4.06: https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.06/cruts.2205201912.v4.06/  # noqa: E501
+    TS4.07: https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.07/cruts.2304141047.v4.07/  # noqa: E501
 
 Last access
     TS4.02: 20190516
@@ -23,13 +23,11 @@ Download and processing instructions
 import logging
 import os
 
-import iris
 import cftime
-from iris import NameConstraint
-from iris.coords import AuxCoord
+import iris
 import numpy as np
-
 from cf_units import Unit
+from iris import NameConstraint
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -39,8 +37,8 @@ logger = logging.getLogger(__name__)
 def _center_timecoord(cube):
     """Set time coordinates to exact center of each month.
 
-    CRU timepoints are not in the center of the month and
-    added bounds by utils.fix_coords are incorrect. #1981
+    CRU timepoints are not in the center of the month and added bounds
+    by utils.fix_coords are incorrect. #1981
     """
     time = cube.coord("time")
     times = time.units.num2date(time.points)
@@ -49,8 +47,7 @@ def _center_timecoord(cube):
     starts = [cftime.DatetimeNoLeap(c.year, c.month, 1) for c in times]
     ends = [
         cftime.DatetimeNoLeap(c.year, c.month + 1, 1)
-        if c.month < 12
-        else cftime.DatetimeNoLeap(c.year + 1, 1, 1)
+        if c.month < 12 else cftime.DatetimeNoLeap(c.year + 1, 1, 1)
         for c in times
     ]
     time.bounds = time.units.date2num(np.stack([starts, ends], -1))
@@ -63,19 +60,6 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     version = cfg["attributes"]["version"]
     cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
 
-    # Add stations for most versions
-    # if version not in ["TS4.02"]:
-    #     try:
-    #         stations = iris.load_cube(filepath, NameConstraint(var_name="stn"))
-    #         stn_coord = AuxCoord(
-    #             stations.data,
-    #             long_name="Number of stations",
-    #             var_name="stations",
-    #         )
-    #         cube.add_aux_coord(stn_coord, data_dims=[0, 1, 2])
-    #     except iris.exceptions.ConstraintMismatchError:
-    #         logger.info("No station data available for: %s", short_name)
-
     # Fix units
     if "raw_units" in var:
         cube.units = var["raw_units"]
@@ -85,8 +69,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
         utils.convert_timeunits(cube, 1950)
     else:
         cube.coord("time").convert_units(
-            Unit("days since 1950-1-1 00:00:00", calendar="gregorian")
-        )
+            Unit("days since 1950-1-1 00:00:00", calendar="gregorian"))
 
     # Fix coordinates
     utils.fix_coords(cube)
@@ -102,9 +85,11 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     utils.set_global_atts(cube, attrs)
 
     # Save variable
-    utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
-    )
+    utils.save_variable(cube,
+                        short_name,
+                        out_dir,
+                        attrs,
+                        unlimited_dimensions=["time"])
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
