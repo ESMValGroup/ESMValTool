@@ -928,6 +928,17 @@ diagnostics:
 
   ### TIER 3 ##################################################################
 
+  ANUClimate:
+    description: ANUClimate check
+    variables:
+      pr:
+      tasmax:
+      tasmin:
+      tas:
+    additional_datasets:
+      - {dataset: ANUClimate, project: OBS6, mip: Amon, tier: 3, type: reanaly}
+    scripts: null
+
   APHRO-MA:
     description: APHRO-MA check
     variables:
@@ -1599,8 +1610,11 @@ diagnostics:
     variables:
       prw:
     additional_datasets:
-      - {dataset: ESACCI-WATERVAPOUR, project: OBS, mip: Amon, tier: 3,
-         type: sat, version: CDR2-L3S-05deg_fv3.1,
+      - {dataset: ESACCI-WATERVAPOUR, project: OBS6, mip: Amon, tier: 3,
+         type: sat, version: CDR2-L3-COMBI-05deg-fv3.1,
+         start_year: 2003, end_year: 2017}
+      - {dataset: ESACCI-WATERVAPOUR, project: OBS6, mip: Eday, tier: 3,
+         type: sat, version: CDR2-L3-COMBI-05deg-fv3.1,
          start_year: 2003, end_year: 2017}
     scripts: null
 
