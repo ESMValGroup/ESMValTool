@@ -18,19 +18,18 @@ Available recipes and diagnostics
 
 Recipes are stored in `recipes/monitor`
 
-   * recipe_monitor.yml
-   * recipe_monitor_with_refs.yml
+* recipe_monitor.yml
+* recipe_monitor_with_refs.yml
 
 Diagnostics are stored in `diag_scripts/monitor/`
 
-   * :ref:`monitor.py <api.esmvaltool.diag_scripts.monitor.monitor>`:
-     Monitoring diagnostic to plot arbitrary preprocessor output.
-   * :ref:`compute_eofs.py <api.esmvaltool.diag_scripts.monitor.compute_eofs>`:
-     Monitoring diagnostic to plot EOF maps and associated PC timeseries.
-   * :ref:`multi_datasets.py
-     <api.esmvaltool.diag_scripts.monitor.multi_datasets>`:
-     Monitoring diagnostic to show multiple datasets in one plot (incl.
-     biases).
+* :ref:`monitor.py <api.esmvaltool.diag_scripts.monitor.monitor>`:
+  Monitoring diagnostic to plot arbitrary preprocessor output.
+* :ref:`compute_eofs.py <api.esmvaltool.diag_scripts.monitor.compute_eofs>`:
+  Monitoring diagnostic to plot EOF maps and associated PC timeseries.
+* :ref:`multi_datasets.py
+  <api.esmvaltool.diag_scripts.monitor.multi_datasets>`:
+  Monitoring diagnostic to show multiple datasets in one plot (incl. biases).
 
 
 User settings

@@ -1,0 +1,20 @@
+---
+# Filename
+filename: 'ersst.v5.*.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  project_id: OBS6
+  dataset_id: NOAA-ERSSTv5
+  version: 'v5'
+  tier: 2
+  modeling_realm: reanaly
+  source: 'https://doi.org/10.7289/V5T72FNM'
+  reference: 'ersstv5'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  tos:
+    mip: Omon
+    raw: sst

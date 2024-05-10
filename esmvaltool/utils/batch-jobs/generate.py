@@ -24,6 +24,7 @@ to the SLURM scheduler.
 """
 import os
 import subprocess
+import textwrap
 from pathlib import Path
 
 import esmvaltool
@@ -82,10 +83,6 @@ SPECIAL_RECIPES = {
     'recipe_collins13ipcc': {
         'partition': '#SBATCH --partition=compute \n',
         'time': '#SBATCH --time=08:00:00 \n',
-        'memory': '#SBATCH --constraint=512G \n',
-    },
-    'recipe_daily_era5': {
-        'partition': '#SBATCH --partition=compute \n',
         'memory': '#SBATCH --constraint=512G \n',
     },
     'recipe_eady_growth_rate': {
@@ -190,6 +187,9 @@ SPECIAL_RECIPES = {
     'recipe_thermodyn_diagtool': {
         'partition': '#SBATCH --partition=compute \n',
     },
+    'recipe_wflow': {
+        'partition': '#SBATCH --partition=compute \n',
+    },
     'recipe_wenzel16jclim': {
         'partition': '#SBATCH --partition=compute \n',
     },
@@ -207,6 +207,9 @@ MAX_PARALLEL_TASKS = {
     'recipe_bock20jgr_fig_1-4': 1,
     'recipe_bock20jgr_fig_6-7': 1,
     'recipe_bock20jgr_fig_8-10': 1,
+    'recipe_daily_era5': 1,
+    'recipe_easy_ipcc': 1,
+    'recipe_climate_change_hotspot': 1,
     'recipe_flato13ipcc_figure_96': 1,
     'recipe_flato13ipcc_figures_938_941_cmip3': 1,
     'recipe_ipccwg1ar6ch3_fig_3_9': 1,
@@ -214,25 +217,54 @@ MAX_PARALLEL_TASKS = {
     'recipe_ipccwg1ar6ch3_fig_3_43': 1,
     'recipe_check_obs': 1,
     'recipe_collins13ipcc': 1,
-    'recipe_lauer22jclim_fig3-4_zonal': 3,
-    'recipe_lauer22jclim_fig5_lifrac': 3,
+    'recipe_lauer22jclim_fig3-4_zonal': 1,
+    'recipe_lauer22jclim_fig5_lifrac': 1,
     'recipe_smpi': 1,
     'recipe_smpi_4cds': 1,
     'recipe_wenzel14jgr': 1,
 }
 
+DISTRIBUTED_RECIPES = [
+    'recipe_easy_ipcc',
+    'recipe_daily_era5',
+    'recipe_marrmot',
+    'recipe_pcrglobwb',
+]
+
 
 def generate_submit():
     """Generate and submit scripts."""
+    print("It is recommended that you run the following recipes with the "
+          "configuration in dask.yml in ~/.esmvaltool/dask.yml:")
+    default_dask_config_file = textwrap.dedent(f"""
+    cluster:
+      type: dask_jobqueue.SLURMCluster
+      queue: compute
+      account: {account}
+      cores: 128
+      memory: 256GiB
+      processes: 32
+      interface: ib0
+      local_directory: /scratch/{os.getlogin()[0]}/{os.getlogin()}/dask-tmp
+      n_workers: 32
+      walltime: '8:00:00'
+    """)
+    for recipe in DISTRIBUTED_RECIPES:
+        print(f"- {recipe}.yml")
+    Path('dask.yml').write_text(default_dask_config_file, encoding='utf-8')
+
     home = os.path.expanduser('~')
     # Fill the list with the names of the recipes to be excluded
     # This includes recipes containing missing datasets
-    exclude = ['recipe_schlund20jgr_gpp_abs_rcp85',
-               'recipe_schlund20jgr_gpp_change_1pct',
-               'recipe_schlund20jgr_gpp_change_rcp85']
+    exclude = [
+        'recipe_schlund20jgr_gpp_abs_rcp85',
+        'recipe_schlund20jgr_gpp_change_1pct',
+        'recipe_schlund20jgr_gpp_change_rcp85'
+    ]
     dir_recipes = Path('/'.join((esmvaltool.__path__[0], 'recipes')))
 
     for recipe in Path(dir_recipes).rglob('*.yml'):
+        recipe = recipe.relative_to(dir_recipes)
         filename = f'launch_{recipe.stem}.sh'
         if recipe.stem in exclude:
             continue
@@ -241,11 +273,9 @@ def generate_submit():
             file.write('\n')
             file.write(f'#SBATCH --job-name={recipe.stem}.%J\n')
             file.write(
-                f'#SBATCH --output={home}/{outputs}/{recipe.stem}.%J.out\n'
-            )
+                f'#SBATCH --output={home}/{outputs}/{recipe.stem}.%J.out\n')
             file.write(
-                f'#SBATCH --error={home}/{outputs}/{recipe.stem}.%J.err\n'
-            )
+                f'#SBATCH --error={home}/{outputs}/{recipe.stem}.%J.err\n')
             file.write(f'#SBATCH --account={account}\n')
             if not SPECIAL_RECIPES.get(recipe.stem, None):
                 # continue

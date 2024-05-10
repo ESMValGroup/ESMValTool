@@ -35,6 +35,7 @@ REQUIREMENTS = {
         'esmvalcore',
         'esmf-regrid>=0.7.0',
         'fiona',
+        'fire',
         'GDAL',
         'jinja2',
         'joblib',
@@ -46,35 +47,36 @@ REQUIREMENTS = {
         'netCDF4',
         'numba',
         'numpy!=1.24.3',  # severe masking bug
-        'packaging',
         'openpyxl',
+        'packaging',
         'pandas',
-        'pyproj>=2.1',
-        'pyyaml',
         'progressbar2',
         'psyplot',
         'psy-maps',
         'psy-reg',
         'psy-simple',
+        'pyproj>=2.1',
+        # 'pys2index',  # issues installing from PyPI (wheel doesn't build)
+        'python-dateutil',
+        'pyyaml',
         'rasterio',
+        'requests',
         'ruamel.yaml',
         'scikit-image',
-        'scikit-learn',
+        'scikit-learn>=1.4.0',  # github.com/ESMValGroup/ESMValTool/issues/3504
         'scipy',
-        # See the following issue for info on the iris pin below:
-        # https://github.com/ESMValGroup/ESMValTool/issues/3239#issuecomment-1613298587
-        'scitools-iris>=3.4.0',
+        'scitools-iris>=3.6.1',
         'seaborn',
         'seawater',
-        'shapely',
+        'shapely>=2',
         'xarray>=0.12.0',
         'xesmf>=0.7.1',
         'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
         'zarr',
     ],
-    # Test dependencies
-    # Execute `pip install .[test]` once and the use `pytest` to run tests
+    # Test dependencies (unit tests)
+    # Execute `pip install .[test]` once and then use `pytest` to run tests
     'test': [
         'flake8',
         'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
@@ -97,6 +99,7 @@ REQUIREMENTS = {
     'develop': [
         'codespell',
         'docformatter',
+        'imagehash',
         'isort',
         'pre-commit',
         'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',

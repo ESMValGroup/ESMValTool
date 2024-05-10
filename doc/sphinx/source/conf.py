@@ -63,6 +63,7 @@ generate_gallery.main()
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
+    'sphinx.ext.extlinks',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
@@ -439,6 +440,40 @@ intersphinx_mapping = {
     'scipy': ('https://docs.scipy.org/doc/scipy/', None),
     'seaborn': ('https://seaborn.pydata.org/', None),
     'sklearn': ('https://scikit-learn.org/stable', None),
+}
+
+# -- Extlinks extension -------------------------------------------------------
+# See https://www.sphinx-doc.org/en/master/usage/extensions/extlinks.html
+
+extlinks = {
+    "discussion": (
+        "https://github.com/ESMValGroup/ESMValTool/discussions/%s",
+        "Discussion #%s",
+    ),
+    "issue": (
+        "https://github.com/ESMValGroup/ESMValTool/issues/%s",
+        "Issue #%s",
+    ),
+    "pull": (
+        "https://github.com/ESMValGroup/ESMValTool/pull/%s",
+        "Pull request #%s",
+    ),
+    "release": (
+        "https://github.com/ESMValGroup/ESMValTool/releases/tag/%s",
+        "ESMValTool %s",
+    ),
+    "esmvalcore-release": (
+        "https://github.com/ESMValGroup/ESMValCore/releases/tag/%s",
+        "ESMValCore %s",
+    ),
+    "team": (
+        "https://github.com/orgs/ESMValGroup/teams/%s",
+        "@ESMValGroup/%s",
+    ),
+    "user": (
+        "https://github.com/%s",
+        "@%s",
+    ),
 }
 
 # -- Custom Document processing ----------------------------------------------

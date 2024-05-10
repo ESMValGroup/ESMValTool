@@ -97,7 +97,4 @@ jobs:
             automatedPR
           assignees: valeriupredoi
           reviewers: valeriupredoi
-          team-reviewers: |
-            owners
-            maintainers
           draft: false

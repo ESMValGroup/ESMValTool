@@ -371,7 +371,7 @@ begin
     original_entry = outstring
     do outfile_idx = 0, dimsizes(all_outfiles) - 1
       file_to_add := all_outfiles(outfile_idx)
-      if (.not. fileexists(outfile)) then
+      if (.not. fileexists(file_to_add)) then
         error_msg("f", scriptname, funcname, "outfile (path to figure) '" + \
                   file_to_add + "' does not exist (for PNGs, this " + \
                   "function also searches for 'FILE.000001.png', " + \

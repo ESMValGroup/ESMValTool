@@ -291,16 +291,31 @@ base_dict = {
 }
 
 
+def _get_download_dir(yamlconf, cmip_era):
+    """Get the Download Directory from user config file."""
+    if 'download_dir' in yamlconf:
+        return os.path.join(yamlconf['download_dir'], cmip_era)
+    return False
+
+
 def _get_site_rootpath(cmip_era):
     """Get site (drs) from config-user.yml."""
     config_yml = get_args().config_file
     with open(config_yml, 'r') as yamf:
         yamlconf = yaml.safe_load(yamf)
     drs = yamlconf['drs'][cmip_era]
-    rootdir = yamlconf['rootpath'][cmip_era]
+
+    download_dir = _get_download_dir(yamlconf, cmip_era)
+    rootdir = [yamlconf['rootpath'][cmip_era], ]
+
+    if download_dir:
+        rootdir.append(download_dir)
     logger.debug("%s root directory %s", cmip_era, rootdir)
     if drs == 'default' and 'default' in yamlconf['rootpath']:
-        rootdir = yamlconf['rootpath']['default']
+        rootdir = [yamlconf['rootpath']['default'], ]
+        if download_dir:
+            rootdir.append(download_dir)
+
         logger.debug("Using drs default and "
                      "default: %s data directory", rootdir)
 
@@ -327,6 +342,7 @@ def _determine_basepath(cmip_era):
         rootpaths = _get_site_rootpath(cmip_era)[1]
     else:
         rootpaths = [_get_site_rootpath(cmip_era)[1]]
+
     basepaths = []
     for rootpath in rootpaths:
         if _get_input_dir(cmip_era) != os.path.sep:

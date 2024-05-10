@@ -118,11 +118,11 @@ Running multiple recipes
 It is possible to run more than one recipe in one go.
 
 This can for example be achieved by using ``rose`` and/or ``cylc``, tools
-that may be available at your local HPC cluster. 
+that may be available at your local HPC cluster.
 
 In the case in which neither ``rose`` nor ``cylc`` are available at your HPC cluster,
 it is possible to automatically generate job submission scripts, as well as a summary of the
-job outputs using the scripts available in 
+job outputs using the scripts available in
 `esmvaltool/utils/batch-jobs <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs>`__.
 
 Using cylc
@@ -218,7 +218,7 @@ a copy of `u-bd684` is always located in ``/home/users/valeriu/roses/u-bd684`` o
 Using the scripts in `utils/batch-jobs`
 ---------------------------------------
 
-In `utils/batch-jobs <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs>`_, 
+In `utils/batch-jobs <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs>`_,
 you can find a script to generate slurm submission scripts for all available recipes in ESMValTool,
 as well as a script to parse the job outputs.
 
@@ -227,15 +227,15 @@ as well as a script to parse the job outputs.
 Using `generate.py`
 ...................
 
-The script `generate.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs/generate.py>`_, 
+The script `generate.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/batch-jobs/generate.py>`_,
 is a simple python script that creates slurm submission scripts, and
 if configured, submits them to the HPC cluster. It has been tested in `DKRZ's Levante cluster <https://docs.dkrz.de/doc/levante/index.html>`_.
 
 The following parameters have to be set in the script in order to make it run:
 
 * ``env``, *str*: Name of the conda environment in which `esmvaltool` is installed.
-* ``mail``, *bool*: Whether or not to recieve mail notifications when a submitted job fails or finishes successfully. Default is ``False``.
-* ``submit``, *bool*: Wheter or not to automatically submit the job after creating the launch script. Default value is ``False``.
+* ``mail``, *bool*: Whether or not to receive mail notifications when a submitted job fails or finishes successfully. Default is ``False``.
+* ``submit``, *bool*: Whether or not to automatically submit the job after creating the launch script. Default value is ``False``.
 * ``account``, *str*: Name of the DKRZ account in which the job will be billed.
 * ``outputs``, *str*: Name of the directory in which the job outputs (.out and .err files) are going to be saved. The outputs will be saved in `/home/user/<outputs>`.
 * ``conda_path``, *str*: Full path to the `mambaforge/etc/profile.d/conda.sh` executable.
@@ -247,10 +247,10 @@ Optionally, the following parameters can be edited:
 * ``memory``, *str*: Amount of memory requested for each run. Default is ``64G`` to allow to run 4 recipes on the same node in parallel.
 * ``time``, *str*: Time limit. Default is ``04:00:00`` to increase the job priority. Jobs can run for up to 8 hours and 12 hours on the compute and interactive partitions, respectively.
 * ``default_max_parallel_tasks``, *int*: Default is ``8`` which works for most recipes. For other cases, an entry needs to be made to the ``MAX_PARALLEL_TASKS`` dictionary (see below).
-  
+
 The script will generate a submission script for all recipes using by default the ``interactive`` queue and with a time limit of 4h. In case a recipe
 may require of additional resources, they can be defined in the ``SPECIAL_RECIPES`` dictionary. The recipe name has to be given as a ``key`` in which the
-values are another dictionary. 
+values are another dictionary.
 The latter are used to specify the ``partition`` in which to submit the recipe, the new ``time`` limit and other ``memory`` requirements
 given by the slurm flags ``--mem``, ``--constraint`` or ``--ntasks``. In general, an entry in ``SPECIAL_RECIPES`` should be set as:
 
@@ -284,17 +284,15 @@ Using `parse_recipes_outputs`
 You can run this script (simply as a standalone Python script) after all recipes have been run, to gather a bird's eye view
 of the run status for each recipe; running the script provides you with a Markdown-formatted list of recipes that succeeded,
 recipes that failed due to a diagnostic error, and recipes that failed due to missing data (the two most common causes for
-recipe run failure). You should add a ``SLURM_OUT_DIR`` e.g. ``SLURM_OUT_DIR = "/home/b/b382109/output_v270"`` - this is the
-physical location of your SLURM output, after all recipes have finished running and a ``GLOB_PATTERN``, a glob pattern, 
-which is reccommended to be set to the ``*.out`` extension, so that the script finds all the ``.out`` files.
-
-To keep the script execution fast, it is recommended to use ``log_level: info`` in your config-user.yml file so that SLURM
-output files are rather small. This script also requires a list of recipes stored in a ``all_recipes.txt`` file, which can
-be obtained by running:
+recipe run failure). You should provide the location of the output log files from SLURM (``*.out`` and ``*.err``) to the
+script as well as a list of all available recipes. To generate the list, run the command:
 
 .. code-block:: bash
 
-   for recipe in $(esmvaltool recipes list | grep '\.yml$'); do echo "$recipe"; done > all_recipes.txt
+   for recipe in $(esmvaltool recipes list | grep '\.yml$'); do echo $(basename "$recipe"); done > all_recipes.txt
+
+To keep the script execution fast, it is recommended to use ``log_level: info`` in your config-user.yml file so that SLURM
+output files are rather small.
 
 .. _overview_page:
 
@@ -323,7 +321,7 @@ Comparing recipe runs
 A command-line tool is available for comparing one or more recipe runs to
 known good previous run(s).
 This tool uses `xarray <https://docs.xarray.dev/en/stable/>`_ to compare NetCDF
-files and difference hasing provided by
+files and difference hashing provided by
 `imagehash <https://pypi.org/project/ImageHash/>`_ to compare PNG images.
 All other file types are compared byte for byte.
 

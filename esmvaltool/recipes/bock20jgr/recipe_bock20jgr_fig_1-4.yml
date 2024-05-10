@@ -445,7 +445,11 @@ diagnostics:
         end_year: 1999
         additional_datasets: *cmip3_tas
     additional_datasets:
-      - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1, mip: Amon}
+      - dataset: GPCP-V2.3
+        project: obs4MIPs
+        tier: 1
+        mip: Amon
+        frequency: mon
     scripts:
       model_bias:
         <<: *model_bias_settings

@@ -21,6 +21,7 @@ large variety of input data.
 .. toctree::
    :maxdepth: 1
 
+   recipe_model_evaluation
    recipe_monitor
    recipe_psyplot
    recipe_seaborn
@@ -61,6 +62,7 @@ Atmosphere
    recipe_thermodyn_diagtool
    recipe_validation
    recipe_radiation_budget
+   recipe_aod_aeronet_assess
 
 Climate metrics
 ^^^^^^^^^^^^^^^

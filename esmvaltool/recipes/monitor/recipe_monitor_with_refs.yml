@@ -1,7 +1,7 @@
 # ESMValTool
 ---
 documentation:
-  title: Model Monitoring
+  title: Example recipe for model monitoring with reference datasets.
   description: |
     Show plots that include multiple datasets that can be used to monitor
     (ongoing) model simulations.
