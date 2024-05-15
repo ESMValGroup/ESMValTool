@@ -6,9 +6,9 @@ Model Benchmarking
 Overview
 --------
 
-These recipes and diagnostics are based on :ref:`recipe_monitor <_recipe_monitor>`: that allow plotting arbitrary preprocessor output, i.e., arbitrary variables from arbitrary datasets. An extension of these diagnostics is used to benchmark a model simulation with other datasets (e.g. CMIP6). The benchmarking features are described in `Lauer et al. (202x)`_:.
+These recipes and diagnostics are based on :ref:`recipe_monitor <_recipe_monitor>`: that allow plotting arbitrary preprocessor output, i.e., arbitrary variables from arbitrary datasets. An extension of these diagnostics is used to benchmark a model simulation with other datasets (e.g. CMIP6). The benchmarking features are described in `Lauer et al.`_:.
 
-.. _`Lauer et al. (202x)`: xxx
+.. _`Lauer et al.`: A. Lauer, Bock, L., Hassler, B., Jöckel, P., Ruhe, L., and Schlund, M.: Monitoring and benchmarking Earth System Model simulations with ESMValTool v2.12.0, Geosci. Model Dev. (submitted).
 
 Available recipes and diagnostics
 ---------------------------------
