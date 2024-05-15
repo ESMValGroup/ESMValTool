@@ -10,10 +10,8 @@ Last access
     20230613
 
 Download and processing instructions
-
-Issues:
-
-Refs:
+    Download the following file:
+    https://aeronet.gsfc.nasa.gov/data_push/V3/AOD/AOD_Level20_Monthly_V3.tar.gz
 """
 
 import logging
