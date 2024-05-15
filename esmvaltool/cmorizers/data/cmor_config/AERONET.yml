@@ -10,7 +10,7 @@ attributes:
   modeling_realm: atmos
   project_id: OBS6
   source: 'https://aeronet.gsfc.nasa.gov/new_web/download_all_v3_aod.html'
-  reference: ''
+  reference: 'aeronetv3'
   comment:
     'Notice to users: this data has recommended guidelines for use and publication,
     please refer to https://aeronet.gsfc.nasa.gov/new_web/data_usage.html.'
