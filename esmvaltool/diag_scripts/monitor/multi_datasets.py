@@ -2018,7 +2018,7 @@ class MultiDatasets(MonitorBase):
                 # plot_map = plot_func(cube, **plot_kwargs)
 
                 plt.scatter(0, cubes[i].data, marker='x', s=200, linewidths=2,
-                            color="red")
+                            color="red", zorder=3)
 
                 plt.xlabel(var)
                 if cubes[i].units != 1:
