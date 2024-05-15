@@ -2031,7 +2031,8 @@ class MultiDatasets(MonitorBase):
                 self._process_pyplot_kwargs(plot_type, datasets[i])
 
         # File paths
-        datasets[0]['variable_group'] = datasets[0]['short_name'].partition("_")[0]
+        datasets[0]['variable_group'] = (
+            datasets[0]['short_name'].partition("_")[0])
         plot_path = self.get_plot_path(plot_type,  datasets[0])
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
 
@@ -2466,9 +2467,10 @@ class MultiDatasets(MonitorBase):
             yval1 = percentile_dataset[idx]['cube']
         else:
             yval1 = yval2.copy()
-            ymin, ymax = axes.get_ylim()
+            ymin, __ = axes.get_ylim()
             yval1.data = np.full(len(yval1.data), ymin)
 
+        dataset = plot_datasets[0]
         iris.plot.fill_between(dataset['cube'].coord('time'), yval1, yval2,
                                facecolor='lightblue', edgecolor='lightblue',
                                linewidth=3, zorder=1, alpha=0.8)
@@ -2625,10 +2627,10 @@ class MultiDatasets(MonitorBase):
 
         # Plot annual cycle(s)
         for dataset in plot_datasets:
-          cube = dataset['cube']
-          plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-          plot_kwargs['axes'] = axes
-          iris.plot.plot(cube, **plot_kwargs)
+            cube = dataset['cube']
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs['axes'] = axes
+            iris.plot.plot(cube, **plot_kwargs)
 
         yval2 = percentile_dataset[0]['cube']
         if len(percentile_dataset) > 1:
@@ -2636,7 +2638,7 @@ class MultiDatasets(MonitorBase):
             yval1 = percentile_dataset[idx]['cube']
         else:
             yval1 = yval2.copy()
-            ymin, ymax = axes.get_ylim()
+            ymin, __ = axes.get_ylim()
             yval1.data = np.full(len(yval1.data), ymin)
 
         iris.plot.fill_between(cube.coord('month_number'), yval1, yval2,
@@ -2675,6 +2677,7 @@ class MultiDatasets(MonitorBase):
         var_attrs = {
             n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
         }
+        dataset = plot_datasets[0]
         cubes[self._get_label(dataset)] = dataset['cube']
         io.save_1d_data(cubes, netcdf_path, 'month_number', var_attrs)
 
@@ -2804,7 +2807,7 @@ class MultiDatasets(MonitorBase):
             yval1 = percentile_dataset[idx]['cube']
         else:
             yval1 = yval2.copy()
-            ymin, ymax = axes.get_ylim()
+            ymin, __ = axes.get_ylim()
             yval1.data = np.full(len(yval1.data), ymin)
 
         iris.plot.fill_between(cube.coord('hour'), yval1, yval2,
@@ -2845,6 +2848,7 @@ class MultiDatasets(MonitorBase):
         var_attrs = {
             n: datasets[0][n] for n in ('short_name', 'long_name', 'units')
         }
+        dataset = plot_datasets[0]
         cubes[self._get_label(dataset)] = dataset['cube']
         io.save_1d_data(cubes, netcdf_path, 'hour', var_attrs)
 
@@ -2862,13 +2866,13 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_benchmarking_boxplot_plot(self):
+    def create_benchmarking_boxplot(self):
         """Create boxplot."""
         plot_type = 'benchmarking_boxplot'
         if plot_type not in self.plots:
             return
 
-        df = pd.DataFrame(columns=['Variable', 'Dataset', 'Value'])
+        dframe = pd.DataFrame(columns=['Variable', 'Dataset', 'Value'])
         ifile = 0
 
         cubes = iris.cube.CubeList()
@@ -2900,10 +2904,10 @@ class MultiDatasets(MonitorBase):
             for dataset in benchmark_group:
                 dataset_name = dataset['dataset']
                 cube = iris.load_cube(dataset['filename'])
-                df.loc[ifile] = [var_key, dataset_name, cube.data]
+                dframe.loc[ifile] = [var_key, dataset_name, cube.data]
                 ifile = ifile + 1
 
-            df['Value'] = df['Value'].astype(str).astype(float)
+            dframe['Value'] = dframe['Value'].astype(str).astype(float)
 
             cubes.append(benchmark_dataset['cube'])
             benchmark_datasets.append(benchmark_dataset)
@@ -2923,7 +2927,7 @@ class MultiDatasets(MonitorBase):
                                  " processed variables")
 
         (plot_path, netcdf_paths) = (
-            self._plot_benchmarking_boxplot(df, cubes, variables,
+            self._plot_benchmarking_boxplot(dframe, cubes, variables,
                                             benchmark_datasets)
         )
 
@@ -2936,22 +2940,22 @@ class MultiDatasets(MonitorBase):
         for (netcdf_path, cube) in netcdf_paths.items():
             io.iris_save(cube, netcdf_path)
 
-        # Provenance tracking
-        caption = (
-            "Boxplot."
-            # f"Boxplot of {dataset['long_name']} of dataset "
-            # f"{dataset['dataset']} (project {dataset['project']}) "
-            # f"from {dataset['start_year']} to {dataset['end_year']}."
-            )
-        provenance_record = {
-            'ancestors': ancestors,
-            'authors': ['bock_lisa', 'schlund_manuel'],
-            'caption': caption,
-            'plot_types': ['box'],
-        }
-        with ProvenanceLogger(self.cfg) as provenance_logger:
-            provenance_logger.log(plot_path, provenance_record)
-            provenance_logger.log(netcdf_path, provenance_record)
+            # Provenance tracking
+            caption = (
+                "Boxplot."
+                # f"Boxplot of {dataset['long_name']} of dataset "
+                # f"{dataset['dataset']} (project {dataset['project']}) "
+                # f"from {dataset['start_year']} to {dataset['end_year']}."
+                )
+            provenance_record = {
+                'ancestors': ancestors,
+                'authors': ['bock_lisa', 'schlund_manuel'],
+                'caption': caption,
+                'plot_types': ['box'],
+            }
+            with ProvenanceLogger(self.cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
+                provenance_logger.log(netcdf_path, provenance_record)
 
     def create_map_plot(self, datasets):
         """Create map plot."""
@@ -3065,41 +3069,41 @@ class MultiDatasets(MonitorBase):
             (plot_path, netcdf_paths) = (
                 self._plot_benchmarking_map(plot_func, dataset,
                                             percentile_data, metric)
-        )
-        caption = (
-            f"Map plot of {dataset['long_name']} of dataset "
-            f"{dataset['dataset']} (project {dataset['project']}) "
-            f"from {dataset['start_year']} to {dataset['end_year']}."
-        )
-        ancestors.append(ref_dataset['filename'])
+            )
+            caption = (
+                f"Map plot of {dataset['long_name']} of dataset "
+                f"{dataset['dataset']} (project {dataset['project']}) "
+                f"from {dataset['start_year']} to {dataset['end_year']}."
+            )
+            ancestors.append(ref_dataset['filename'])
 
-        # If statistics are shown add a brief description to the caption
-        if self.plots[plot_type]['show_stats']:
-            caption += (
-                " The number in the top left corner corresponds to the "
-                "spatial mean (weighted by grid cell areas).")
+            # If statistics are shown add a brief description to the caption
+            if self.plots[plot_type]['show_stats']:
+                caption += (
+                    " The number in the top left corner corresponds to the "
+                    "spatial mean (weighted by grid cell areas).")
 
-        # Save plot
-        plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
-        logger.info("Wrote %s", plot_path)
-        plt.close()
+            # Save plot
+            plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
+            logger.info("Wrote %s", plot_path)
+            plt.close()
 
-        # Save netCDFs
-        for (netcdf_path, cube) in netcdf_paths.items():
-            io.iris_save(cube, netcdf_path)
+            # Save netCDFs
+            for (netcdf_path, cube) in netcdf_paths.items():
+                io.iris_save(cube, netcdf_path)
 
-        # Provenance tracking
-        provenance_record = {
-            'ancestors': ancestors,
-            'authors': ['schlund_manuel'],
-            'caption': caption,
-            'plot_types': ['map'],
-            'long_names': [dataset['long_name']],
-        }
-        with ProvenanceLogger(self.cfg) as provenance_logger:
-            provenance_logger.log(plot_path, provenance_record)
-            for netcdf_path in netcdf_paths:
-                provenance_logger.log(netcdf_path, provenance_record)
+            # Provenance tracking
+            provenance_record = {
+                'ancestors': ancestors,
+                'authors': ['schlund_manuel'],
+                'caption': caption,
+                'plot_types': ['map'],
+                'long_names': [dataset['long_name']],
+            }
+            with ProvenanceLogger(self.cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
+                for netcdf_path in netcdf_paths:
+                    provenance_logger.log(netcdf_path, provenance_record)
 
     def create_zonal_mean_profile_plot(self, datasets):
         """Create zonal mean profile plot."""
@@ -3220,40 +3224,40 @@ class MultiDatasets(MonitorBase):
             )
             ancestors = [dataset['filename']]
 
-        caption = (
-            f"Zonal mean profile of {dataset['long_name']} of dataset "
-            f"{dataset['dataset']} (project {dataset['project']}) from "
-            f"{dataset['start_year']} to {dataset['end_year']}."
-        )
-        # ancestors.append(ref_dataset['filename'])
+            caption = (
+                f"Zonal mean profile of {dataset['long_name']} of dataset "
+                f"{dataset['dataset']} (project {dataset['project']}) from "
+                f"{dataset['start_year']} to {dataset['end_year']}."
+            )
+            # ancestors.append(ref_dataset['filename'])
 
-        # If statistics are shown add a brief description to the caption
-        # if self.plots[plot_type]['show_stats']:
-        #    caption += (
-        #         " The number in the top left corner corresponds to the "
-        #         "spatial mean (weighted by grid cell areas).")
+            # If statistics are shown add a brief description to the caption
+            # if self.plots[plot_type]['show_stats']:
+            #    caption += (
+            #         " The number in the top left corner corresponds to the "
+            #         "spatial mean (weighted by grid cell areas).")
 
-        # Save plot
-        plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
-        logger.info("Wrote %s", plot_path)
-        plt.close()
+            # Save plot
+            plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
+            logger.info("Wrote %s", plot_path)
+            plt.close()
 
-        # Save netCDFs
-        for (netcdf_path, cube) in netcdf_paths.items():
-            io.iris_save(cube, netcdf_path)
+            # Save netCDFs
+            for (netcdf_path, cube) in netcdf_paths.items():
+                io.iris_save(cube, netcdf_path)
 
-        # Provenance tracking
-        provenance_record = {
-            'ancestors': ancestors,
-            'authors': ['schlund_manuel'],
-            'caption': caption,
-            'plot_types': ['vert'],
-            'long_names': [dataset['long_name']],
-        }
-        with ProvenanceLogger(self.cfg) as provenance_logger:
-            provenance_logger.log(plot_path, provenance_record)
-            for netcdf_path in netcdf_paths:
-                provenance_logger.log(netcdf_path, provenance_record)
+            # Provenance tracking
+            provenance_record = {
+                'ancestors': ancestors,
+                'authors': ['schlund_manuel'],
+                'caption': caption,
+                'plot_types': ['vert'],
+                'long_names': [dataset['long_name']],
+            }
+            with ProvenanceLogger(self.cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
+                for netcdf_path in netcdf_paths:
+                    provenance_logger.log(netcdf_path, provenance_record)
 
     def create_1d_profile_plot(self, datasets):
         """Create 1D profile plot."""
@@ -3583,7 +3587,7 @@ class MultiDatasets(MonitorBase):
 
     def compute(self):
         """Plot preprocessed data."""
-        self.create_benchmarking_boxplot_plot()
+        self.create_benchmarking_boxplot()
         for (var_key, datasets) in self.grouped_input_data.items():
             logger.info("Processing variable %s", var_key)
             self.create_timeseries_plot(datasets)
