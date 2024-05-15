@@ -6,9 +6,16 @@ documentation:
     Benchmarking: diurnal cycle.
   authors:
     - lauer_axel
+    - bock_lisa
+    - hassler_birgit
+    - ruhe_lukas
     - schlund_manuel
   maintainer:
     - lauer_axel
+  references:
+    - lauer24gmd
+  projects:
+    - dlrmabak
 
 
 datasets:

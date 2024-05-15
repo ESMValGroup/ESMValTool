@@ -1,16 +1,26 @@
 # ESMValTool
 ---
 documentation:
-  title: Beichmarkig of a single model.
+  title: Benchmarkig of a single model.
 
   description: >
           Benchmarking: Box plots.
 
   authors:
+    - lauer_axel
     - bock_lisa
+    - hassler_birgit
+    - ruhe_lukas
+    - schlund_manuel
 
   maintainer:
     - bock_lisa
+
+  references:
+    - lauer24gmd
+
+  projects:
+    - dlrmabak
 
 
 datasets:
