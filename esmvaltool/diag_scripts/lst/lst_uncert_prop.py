@@ -134,6 +134,8 @@ def _diagnostic(config):
     lat_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('latitude').points)
     lon_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('longitude').points)
 
+    print(loaded_data) # for testing new variables total var and lc
+
     # n_fill and n_use ad dictionaries with keys 'day' and 'night'
     # the item for each key is an array
     # These give the cloud/don't use pixel numbers,
@@ -212,7 +214,7 @@ def test_plot(propagated_values):
 
         plt.legend()
 
-        plt.savefig(f'test_{time}.png')
+        plt.savefig(f'test_A_{time}.png')
 
 # These are the propagation equations
 
