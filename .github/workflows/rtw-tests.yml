@@ -29,7 +29,7 @@ jobs:
       - name: Create environment
         run: |
           conda update conda
-          conda create --name rtw --file .github/workflows/rtw-env.lock
+          conda create --name rtw --file .github/workflows/rtw-env/rtw-env.lock
           eval "$(conda shell.bash hook)"
           conda activate rtw
 
