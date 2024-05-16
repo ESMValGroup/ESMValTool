@@ -1956,12 +1956,17 @@ class MultiDatasets(MonitorBase):
             mask_cube = self._get_benchmark_mask(cube, percentile_dataset,
                                                  metric)
 
-            plot_func(
+            hatching = plot_func(
                mask_cube,
                colors='none',
                levels=[.5, 1.5],
-               hatches=['......', None],
+               hatches=['......'],
             )
+
+            # set color for stippling to 'black' (default = 'white')
+            hatching.set_edgecolor('black')
+            hatching.set_linewidth(0.)
+
 
             axes.coastlines()
             # gridline_kwargs = self._get_gridline_kwargs(plot_type)
@@ -2063,12 +2068,16 @@ class MultiDatasets(MonitorBase):
 
             mask_cube = self._get_benchmark_mask(cube, percentile_dataset,
                                                  metric)
-            plot_func(
+            hatching = plot_func(
                mask_cube,
                colors='none',
                levels=[.5, 1.5],
-               hatches=['......', None],
+               hatches=['......'],
             )
+
+            # set color for stippling to 'black' (default = 'white')
+            hatching.set_edgecolor('black')
+            hatching.set_linewidth(0.)
 
             # Print statistics if desired
             # self._add_stats(plot_type, axes, dim_coords_dat, dataset)
