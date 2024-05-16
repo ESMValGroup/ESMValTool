@@ -18,115 +18,130 @@ attributes:
 # Variables to cmorize
 # These go into the vals dictionary in the python script
 variables:
-  tsTotalDay:
+  tsLCDay:
     mip: Amon
-    raw: land surface temperature total uncertainty
-    raw_units: kelvin
-    file: 'ESACCI-LST-L3C-LST-MOSISA-0.01deg_1MONTHLY_DAY-'
+    raw: land cover class
+    raw_units:
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
     start_year: 2003
     end_year: 2018
 
-  tsTotalNight:
+  tsLCNight:
     mip: Amon
-    raw: land surface temperature total uncertainty
-    raw_units: kelvin
-    file: 'ESACCI-LST-L3C-LST-MOSISA-0.01deg_1MONTHLY_NIGHT-'
+    raw: land cover class
+    raw_units:
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
     start_year: 2003
     end_year: 2018
 
-  tsVarDay:
-    mip: Amon
-    raw: land surface temperature variance
-    raw_units: kelvin
-    file: 'ESACCI-LST-L3C-LST-MOSISA-0.01deg_1MONTHLY_DAY-'
-    start_year: 2003
-    end_year: 2018
+  # tsTotalDay:
+  #   mip: Amon
+  #   raw: land surface temperature total uncertainty
+  #   raw_units: kelvin
+  #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
+  #   start_year: 2003
+  #   end_year: 2018
 
-  tsVarNight:
-    mip: Amon
-    raw: land surface temperature variance
-    raw_units: kelvin
-    file: 'ESACCI-LST-L3C-LST-MOSISA-0.01deg_1MONTHLY_NIGHT-'
-    start_year: 2003
-    end_year: 2018
+  # tsTotalNight:
+  #   mip: Amon
+  #   raw: land surface temperature total uncertainty
+  #   raw_units: kelvin
+  #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
+  #   start_year: 2003
+  #   end_year: 2018
 
-  tsDay:
-    mip: Amon
-    raw: land surface temperature
-    raw_units: kelvin
-    file: 'ESACCI-LST-L3C-LST-MOSISA-0.01deg_1MONTHLY_DAY-'
-    start_year: 2003
-    end_year: 2018
+  # tsVarDay:
+  #   mip: Amon
+  #   raw: land surface temperature variance
+  #   raw_units: kelvin
+  #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
+  #   start_year: 2003
+  #   end_year: 2018
 
-  tsNight:
-    mip: Amon
-    raw: land surface temperature
-    raw_units: kelvin
-    file: 'ESACCI-LST-L3C-LST-MOSISA-0.01deg_1MONTHLY_NIGHT-'
-    start_year: 2003
-    end_year: 2018
+  # tsVarNight:
+  #   mip: Amon
+  #   raw: land surface temperature variance
+  #   raw_units: kelvin
+  #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
+  #   start_year: 2003
+  #   end_year: 2018
 
-  tsLocalAtmErrDay:
-    mip: Amon
-    raw: uncertainty from locally correlated errors on atmospheric scales
-    raw_units: kelvin
-    file: 'ESACCI-LST-L3C-LST-MOSISA-0.01deg_1MONTHLY_DAY-'
-    start_year: 2003
-    end_year: 2018
+  # tsDay:
+  #   mip: Amon
+  #   raw: land surface temperature
+  #   raw_units: kelvin
+  #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
+  #   start_year: 2003
+  #   end_year: 2018
 
-  tsLocalAtmErrNight:
-    mip: Amon
-    raw: uncertainty from locally correlated errors on atmospheric scales
-    raw_units: kelvin
-    file: 'ESACCI-LST-L3C-LST-MOSISA-0.01deg_1MONTHLY_NIGHT-'
-    start_year: 2003
-    end_year: 2018
+  # tsNight:
+  #   mip: Amon
+  #   raw: land surface temperature
+  #   raw_units: kelvin
+  #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
+  #   start_year: 2003
+  #   end_year: 2018
 
-  tsLocalSfcErrDay:
-    mip: Amon
-    raw: uncertainty from locally correlated errors on surface scales
-    raw_units: kelvin
-    file: 'ESACCI-LST-L3C-LST-MOSISA-0.01deg_1MONTHLY_DAY-'
-    start_year: 2003
-    end_year: 2018
+  # tsLocalAtmErrDay:
+  #   mip: Amon
+  #   raw: uncertainty from locally correlated errors on atmospheric scales
+  #   raw_units: kelvin
+  #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
+  #   start_year: 2003
+  #   end_year: 2018
 
-  tsLocalSfcErrNight:
-    mip: Amon
-    raw: uncertainty from locally correlated errors on surface scales
-    raw_units: kelvin
-    file: 'ESACCI-LST-L3C-LST-MOSISA-0.01deg_1MONTHLY_NIGHT-'
-    start_year: 2003
-    end_year: 2018
+  # tsLocalAtmErrNight:
+  #   mip: Amon
+  #   raw: uncertainty from locally correlated errors on atmospheric scales
+  #   raw_units: kelvin
+  #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
+  #   start_year: 2003
+  #   end_year: 2018
 
-  tsLSSysErrDay:
-    mip: Amon
-    raw: uncertainty from large-scale systematic errors
-    raw_units: kelvin
-    file: 'ESACCI-LST-L3C-LST-MOSISA-0.01deg_1MONTHLY_DAY-'
-    start_year: 2003
-    end_year: 2018
+  # tsLocalSfcErrDay:
+  #   mip: Amon
+  #   raw: uncertainty from locally correlated errors on surface scales
+  #   raw_units: kelvin
+  #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
+  #   start_year: 2003
+  #   end_year: 2018
 
-  tsLSSysErrNight:
-    mip: Amon
-    raw: uncertainty from large-scale systematic errors
-    raw_units: kelvin
-    file: 'ESACCI-LST-L3C-LST-MOSISA-0.01deg_1MONTHLY_NIGHT-'
-    start_year: 2003
-    end_year: 2018
+  # tsLocalSfcErrNight:
+  #   mip: Amon
+  #   raw: uncertainty from locally correlated errors on surface scales
+  #   raw_units: kelvin
+  #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
+  #   start_year: 2003
+  #   end_year: 2018
 
-  tsUnCorErrDay:
-    mip: Amon
-    raw: uncertainty from uncorrelated errors
-    raw_units: kelvin
-    file: 'ESACCI-LST-L3C-LST-MOSISA-0.01deg_1MONTHLY_DAY-'
-    start_year: 2003
-    end_year: 2018
+  # tsLSSysErrDay:
+  #   mip: Amon
+  #   raw: uncertainty from large-scale systematic errors
+  #   raw_units: kelvin
+  #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
+  #   start_year: 2003
+  #   end_year: 2018
 
-  tsUnCorErrNight:
-    mip: Amon
-    raw: uncertainty from uncorrelated errors
-    raw_units: kelvin
-    file: 'ESACCI-LST-L3C-LST-MOSISA-0.01deg_1MONTHLY_NIGHT-'
-    start_year: 2003
-    end_year: 2018
+  # tsLSSysErrNight:
+  #   mip: Amon
+  #   raw: uncertainty from large-scale systematic errors
+  #   raw_units: kelvin
+  #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
+  #   start_year: 2003
+  #   end_year: 2018
 
+  # tsUnCorErrDay:
+  #   mip: Amon
+  #   raw: uncertainty from uncorrelated errors
+  #   raw_units: kelvin
+  #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
+  #   start_year: 2003
+  #   end_year: 2018
+
+  # tsUnCorErrNight:
+  #   mip: Amon
+  #   raw: uncertainty from uncorrelated errors
+  #   raw_units: kelvin
+  #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
+  #   start_year: 2003
+  #   end_year: 2018
