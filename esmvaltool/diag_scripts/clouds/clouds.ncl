@@ -114,7 +114,8 @@ begin
 
   variables = metadata_att_as_array(variable_info, "short_name")
   if (.not. any(variables .eq. var0)) then
-    errstr = "diagnostic " + DIAG_SCRIPT + " requires the following variable: " + var0
+    errstr = "diagnostic " + DIAG_SCRIPT \
+             + " requires the following variable: " + var0
     error_msg("f", DIAG_SCRIPT, "", errstr)
   end if
 
