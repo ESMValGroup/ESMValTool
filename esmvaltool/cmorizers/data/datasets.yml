@@ -1,6 +1,36 @@
 # Dataset information
 ---
 datasets:
+  AGCD:
+    tier: 2
+    source: "http://dx.doi.org/10.25914/6009600786063"
+    last_access: 2023-11-21
+    info: |
+      Australian Gridded Climate Data (AGCD) version 2 is the Bureau of Meteorology's official dataset for climate
+      analyses covering analysis of monthly rainfall. The dataset provides consistent temporal and spatial analyses
+      across Australia for each observed data variable. This accounts for spatial and temporal gaps in observations.
+      Where possible, the gridded analysis techniques provide useful estimates in data-sparse regions
+      such as central Australia. 
+      
+      Time coverage: Site-based data are used to provide gridded climate data at the monthly timescale for rainfall (1900+).
+      Reference: Evans, A., Jones, D.A., Smalley, R., and Lellyett, S. 2020. An enhanced gridded rainfall analysis scheme
+      for Australia. Bureau of Meteorology Research Report. No. 41.
+      National Computational Infrastructure (NCI) - Catalogue Record: http://dx.doi.org/10.25914/6009600786063.
+      Data from NCI (National Computing Infrastructure Australia https://nci.org.au/), 
+      requires an NCI account and access to Gadi(Supercomputer in Canberra) and the project found in catalogue record.
+      Access can be requested through NCI. NCI is an ESGF node (https://esgf.nci.org.au/projects/esgf-nci/)
+  
+  ANUClimate:
+    tier: 3
+    source: "https://dx.doi.org/10.25914/60a10aa56dd1b"
+    last_access: 2023-11-21
+    info: |
+      Data from NCI project requiring an NCI account and access to GADI
+
+      ANUClimate 2.0 consists of gridded daily and monthly climate variables across the terrestrial landmass of Australia
+      from at least 1970 to the present. Rainfall grids are generated from 1900 to the present. The underpinning spatial 
+      models have been developed at the Fenner School of Environment and Society of the Australian National University.
+
   APHRO-MA:
     tier: 3
     source: "http://aphrodite.st.hirosaki-u.ac.jp/download/"
@@ -515,14 +545,12 @@ datasets:
 
   ESACCI-WATERVAPOUR:
     tier: 3
-    source: Marc Schröder, ftp.brockmann-consult.de
-    last_access: 2021-03-29
+    source: https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001
+    last_access: 2024-02-21
     info: |
-      Currently still restricted because preliminary.
-      Download and processing instructions:
-        FTP server: ftp.brockmann-consult.de, access currently restricted
-                    data/tcwv/dataset3_1/CDR-*/...
-        All files need to be in one directory, not in yearly subdirectories.
+      CDR2 requires registration at EUMETSAT CM SAF, the information on how to 
+          download the order will be emailed once the order is ready.
+      All files need to be in one directory, not in yearly subdirectories.
 
   ESDC:
     tier: 2
@@ -1068,6 +1096,14 @@ datasets:
     info: |
       Download daily data from:
       https://nsidc.org/data/NSIDC-0116
+      Login required for download, and also requires citation only to use
+   
+  NSIDC-G02202-sh:
+    tier: 3
+    source: https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4shmday
+    last_access: 2023-05-13
+    info: |
+      Download monthly data. 
       Login required for download, and also requires citation only to use
 
   OceanSODA-ETHZ:

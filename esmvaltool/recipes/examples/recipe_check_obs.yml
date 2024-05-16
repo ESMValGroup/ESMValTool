@@ -18,6 +18,16 @@ diagnostics:
 
   ### TIER 2 ##################################################################
 
+  AGCD:
+    description:
+    variables:
+      pr:
+    additional_datasets:
+      - {project: OBS6, dataset: AGCD, mip: Amon, tier: 3, 
+        type: ground, version: v2-0-1}
+    scripts: null
+
+
   BerkeleyEarth:
     description: BerkeleyEarth check
     variables:
@@ -637,9 +647,10 @@ diagnostics:
       hur:
       prw:
       ta:
+      wap:
     additional_datasets:
       - {dataset: NCEP-DOE-R2, project: OBS6, mip: Amon, tier: 2,
-         type: reanaly, version: 2, start_year: 1979, end_year: 2021}
+         type: reanaly, version: 2, start_year: 1979, end_year: 2022}
     scripts: null
 
 
@@ -894,6 +905,17 @@ diagnostics:
 
 
   ### TIER 3 ##################################################################
+
+  ANUClimate:
+    description: ANUClimate check
+    variables:
+      pr:
+      tasmax:
+      tasmin:
+      tas:
+    additional_datasets:
+      - {dataset: ANUClimate, project: OBS6, mip: Amon, tier: 3, type: reanaly}
+    scripts: null
 
   APHRO-MA:
     description: APHRO-MA check
@@ -1566,8 +1588,11 @@ diagnostics:
     variables:
       prw:
     additional_datasets:
-      - {dataset: ESACCI-WATERVAPOUR, project: OBS, mip: Amon, tier: 3,
-         type: sat, version: CDR2-L3S-05deg_fv3.1,
+      - {dataset: ESACCI-WATERVAPOUR, project: OBS6, mip: Amon, tier: 3,
+         type: sat, version: CDR2-L3-COMBI-05deg-fv3.1,
+         start_year: 2003, end_year: 2017}
+      - {dataset: ESACCI-WATERVAPOUR, project: OBS6, mip: Eday, tier: 3,
+         type: sat, version: CDR2-L3-COMBI-05deg-fv3.1,
          start_year: 2003, end_year: 2017}
     scripts: null
 
@@ -1911,6 +1936,17 @@ diagnostics:
          type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
     scripts: null
 
+  NSIDC-G02202:
+    description: NSIDC-G02202 check
+    variables:
+      areacello:
+        mip: Ofx
+      siconc:
+        mip: SImon
+    additional_datasets:
+      - {dataset: NSIDC-G02202-sh, project: OBS6, tier: 3,
+        type: reanaly, version: 4, start_year: 1979, end_year: 2022}
+    scripts: null
 
   UWisc:
     description: UWisc check

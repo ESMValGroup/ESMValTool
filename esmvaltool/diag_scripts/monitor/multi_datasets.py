@@ -1081,15 +1081,24 @@ class MultiDatasets(MonitorBase):
                 mean.data,
                 dataset['units'],
             )
-        axes.text(x_pos, y_pos, f"{mean.data:.2f}{cube.units}",
-                  fontsize=fontsize, transform=axes.transAxes)
+        if np.abs(mean.data) >= 0.1:
+            mean_val = f"{mean.data:.2f} {cube.units}"
+        else:
+            mean_val = f"{mean.data:.2e} {cube.units}"
+        axes.text(
+            x_pos, y_pos, mean_val, fontsize=fontsize, transform=axes.transAxes
+        )
         if ref_cube is None:
             return
 
         # Weighted RMSE
         rmse = (cube - ref_cube).collapsed(dim_coords, iris.analysis.RMS,
                                            weights=weights)
-        axes.text(x_pos_bias, y_pos, f"RMSE={rmse.data:.2f}{cube.units}",
+        if np.abs(rmse.data) >= 0.1:
+            rmse_val = f"{rmse.data:.2f} {cube.units}"
+        else:
+            rmse_val = f"{rmse.data:.2e} {cube.units}"
+        axes.text(x_pos_bias, y_pos, f"RMSE={rmse_val}",
                   fontsize=fontsize, transform=axes.transAxes)
         logger.info(
             "Area-weighted RMSE of %s for %s = %f%s",
@@ -1344,8 +1353,7 @@ class MultiDatasets(MonitorBase):
                             ref_dataset)
 
             # Customize plot
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             self._process_pyplot_kwargs(plot_type, dataset)
 
             # Rasterization
@@ -1400,8 +1408,7 @@ class MultiDatasets(MonitorBase):
 
             # Customize plot
             axes.set_title(self._get_label(dataset))
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             self._process_pyplot_kwargs(plot_type, dataset)
 
             # Rasterization
@@ -1502,8 +1509,7 @@ class MultiDatasets(MonitorBase):
                             ref_dataset)
 
             # Customize plot
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             self._process_pyplot_kwargs(plot_type, dataset)
 
             # Rasterization
@@ -1555,8 +1561,7 @@ class MultiDatasets(MonitorBase):
 
             # Customize plot
             axes.set_title(self._get_label(dataset))
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             axes.set_xlabel('latitude [°N]')
             z_coord = cube.coord(axis='Z')
             axes.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
@@ -1614,8 +1619,7 @@ class MultiDatasets(MonitorBase):
 
             # Customize plot
             axes.set_title(self._get_label(dataset))
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             z_coord = cube.coord(axis='Z')
             axes.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
             if self.plots[plot_type]['log_y']:
@@ -1741,8 +1745,7 @@ class MultiDatasets(MonitorBase):
                             ref_dataset)
 
             # Customize plot
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             self._process_pyplot_kwargs(plot_type, dataset)
 
             # Rasterization
@@ -1850,8 +1853,7 @@ class MultiDatasets(MonitorBase):
             cbar_bias.ax.tick_params(labelsize=fontsize)
 
             # Customize plot
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             self._process_pyplot_kwargs(plot_type, dataset)
 
             # Rasterization
@@ -1903,8 +1905,7 @@ class MultiDatasets(MonitorBase):
 
             # Customize plot
             axes.set_title(self._get_label(dataset))
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             if 'latitude' in dim_coords_dat:
                 axes.set_xlabel('latitude [°N]')
             elif 'longitude' in dim_coords_dat:
@@ -2190,7 +2191,7 @@ class MultiDatasets(MonitorBase):
         multi_dataset_facets = {}
         for key in all_keys:
             if all(d.get(key) == datasets[0].get(key) for d in datasets):
-                multi_dataset_facets[key] = datasets[0][key]
+                multi_dataset_facets[key] = datasets[0].get(key)
             else:
                 multi_dataset_facets[key] = f'ambiguous_{key}'
         return multi_dataset_facets
@@ -2998,8 +2999,7 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Map plot of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"from {dataset['start_year']} to {dataset['end_year']}."
+                    f"{dataset['alias']}."
                 )
             else:
                 (plot_path, netcdf_paths) = (
@@ -3007,10 +3007,8 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Map plot of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"including bias relative to {ref_dataset['dataset']} "
-                    f"(project {ref_dataset['project']}) from "
-                    f"{dataset['start_year']} to {dataset['end_year']}."
+                    f"{dataset['alias']} including bias relative to "
+                    f"{ref_dataset['alias']}."
                 )
                 ancestors.append(ref_dataset['filename'])
 
@@ -3147,8 +3145,7 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Zonal mean profile of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"from {dataset['start_year']} to {dataset['end_year']}."
+                    f"{dataset['alias']}."
                 )
             else:
                 (plot_path, netcdf_paths) = (
@@ -3157,10 +3154,8 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Zonal mean profile of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"including bias relative to {ref_dataset['dataset']} "
-                    f"(project {ref_dataset['project']}) from "
-                    f"{dataset['start_year']} to {dataset['end_year']}."
+                    f"{dataset['alias']} including bias relative to "
+                    f"{ref_dataset['alias']}."
                 )
                 ancestors.append(ref_dataset['filename'])
 
@@ -3477,20 +3472,17 @@ class MultiDatasets(MonitorBase):
                      plot_func, dataset))
                 caption = (
                     f"Hovmoeller Z vs. time plot of {dataset['long_name']} "
-                    f"of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"from {dataset['start_year']} to {dataset['end_year']}.")
+                    f"of dataset {dataset['alias']}."
+                )
             else:
                 (plot_path,
                  netcdf_paths) = (self._plot_hovmoeller_z_vs_time_with_ref(
                      plot_func, dataset, ref_dataset))
                 caption = (
                     f"Hovmoeller Z vs. time plot of {dataset['long_name']} "
-                    f"of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"including bias relative to {ref_dataset['dataset']} "
-                    f"(project {ref_dataset['project']}) from "
-                    f"{dataset['start_year']} to {dataset['end_year']}.")
+                    f"of dataset {dataset['alias']} including bias relative "
+                    f"to {ref_dataset['alias']}."
+                )
                 ancestors.append(ref_dataset['filename'])
 
             # If statistics are shown add a brief description to the caption
@@ -3555,8 +3547,7 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Hovmoeller plot of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"from {dataset['start_year']} to {dataset['end_year']}."
+                    f"{dataset['alias']}."
                 )
             else:
                 (plot_path, netcdf_paths) = (
@@ -3565,10 +3556,8 @@ class MultiDatasets(MonitorBase):
                 )
                 caption = (
                     f"Hovmoeller plot of {dataset['long_name']} of dataset "
-                    f"{dataset['dataset']} (project {dataset['project']}) "
-                    f"including bias relative to {ref_dataset['dataset']} "
-                    f"(project {ref_dataset['project']}) from "
-                    f"{dataset['start_year']} to {dataset['end_year']}."
+                    f"{dataset['alias']} including bias relative to "
+                    f"{ref_dataset['alias']}."
                 )
                 ancestors.append(ref_dataset['filename'])
 
