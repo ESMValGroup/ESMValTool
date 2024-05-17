@@ -2,10 +2,10 @@
 [runtime]
     [[root]]
         [[[environment]]]
-            ESMVALCORE_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValCore
-            ESMVALTOOL_DIR = ${CYLC_WORKFLOW_RUN_DIR}/lib/ESMValTool
+            ESMVALCORE_DIR = ${CYLC_WORKFLOW_RUN_DIR}/share/lib/python/ESMValCore
+            ESMVALTOOL_DIR = ${CYLC_WORKFLOW_RUN_DIR}/share/lib/python/ESMValTool
             PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
-            
+
     # COMPUTE provides defaults for computation-heavy tasks.
     # Specific tasks below override some defaults, e.g. time & memory.
     [[COMPUTE]]
@@ -40,7 +40,7 @@
         execution time limit = PT2M
         [[[directives]]]
             --mem = 3G
-            
+
     [[process<medium=recipe_ensclus>]]
         # Actual: 2m10s, 2.4 GB on 2024-03-29.
         execution time limit = PT4M
