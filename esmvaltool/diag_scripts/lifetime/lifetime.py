@@ -270,6 +270,7 @@ import iris
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+import dask.array as da
 import seaborn as sns
 from iris.coord_categorisation import add_year
 import iris.common
@@ -709,7 +710,8 @@ class CH4Lifetime(LifetimeBase):
                                               hus,
                                               self.z_coord)
 
-        var = variables[varname] * grmassdry * m_var / self.cfg['m_air']
+        var = da.multiply(da.multiply(variables[varname], grmassdry),
+                          da.divide(m_var, self.cfg['m_air']))
 
         return var
 
@@ -992,9 +994,9 @@ class CH4Lifetime(LifetimeBase):
             plot_kwargs['axes'] = axes
 
             if self.plots[plot_type]['display_mean'] is not False:
-                mean = cube.collapsed('time', iris.analysis.MEAN)
+                mean = cube.collapsed('time', iris.analysis.MEAN).data
                 plot_kwargs['label'] = (f"{plot_kwargs['label']}"
-                                        f" ({mean.data:.2f})")
+                                        f" ({mean:.2f})")
 
             # Plot annual means if desired
             annual_mean = self.plots[plot_type]['annual_mean']
@@ -1046,8 +1048,6 @@ class CH4Lifetime(LifetimeBase):
             'long_name': self.names['long_name'],
             'units': self.units
         }
-        print(cubes)
-        sys.exit(1)
         io.save_1d_data(cubes, netcdf_path, 'time', var_attrs)
 
         # Provenance tracking

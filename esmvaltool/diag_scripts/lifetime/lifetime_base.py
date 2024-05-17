@@ -24,7 +24,6 @@ M_H2O = 18.02   # [g_air/mol_air]
 
 logger = logging.getLogger(__name__)
 
-
 def create_press(var):
     """Create a pressure variable."""
     resolver = iris.common.resolve.Resolve(var, var)
@@ -200,8 +199,8 @@ def guess_interfaces(coordinate):
     #     first = np.sign(first) * min([abs(first), 90.])
     #     last = np.sign(last) * min([abs(last), 90.])
 
-    interfaces = np.insert(interfaces, 0, first)
-    interfaces = np.append(interfaces, last)
+    interfaces = da.insert(interfaces, 0, first)
+    interfaces = da.append(interfaces, last)
 
     return interfaces
 
@@ -226,13 +225,13 @@ def calculate_area(latitude, longitude):
     """
     r_earth = 6378100.0  # from astropy.constants
 
-    lat_i = np.deg2rad(guess_interfaces(latitude.points))
-    lon_i = np.deg2rad(guess_interfaces(longitude.points))
+    lat_i = da.deg2rad(guess_interfaces(latitude.points))
+    lon_i = da.deg2rad(guess_interfaces(longitude.points))
 
     delta_x = abs(lon_i[1:] - lon_i[:-1])
-    delta_y = abs(np.sin(lat_i[1:]) - np.sin(lat_i[:-1]))
+    delta_y = abs(da.sin(lat_i[1:]) - da.sin(lat_i[:-1]))
 
-    output = np.outer(delta_y, delta_x) * r_earth**2
+    output = da.outer(delta_y, delta_x) * r_earth**2
     output = output.astype('float32')
 
     result = iris.cube.Cube(output,
@@ -277,14 +276,14 @@ def dpres_plevel_4d(plev, pmin, pmax, z_coord='air_pressure'):
 
         if i == 0:
             cube = (cubelist_plev[increment[0]] - lev) / 2. + (lev - pmin)
-            cubelist_dplev[i].data = cube.data
+            cubelist_dplev[i].data = cube.core_data()
         elif i == last:
             cube = (pmax - lev) + (lev - cubelist_plev[increment[1]]) / 2.
-            cubelist_dplev[i].data = cube.data
+            cubelist_dplev[i].data = cube.core_data()
         else:
             cube = ((lev - cubelist_plev[increment[0]]) / 2.
                     + (cubelist_plev[increment[1]] - lev) / 2.)
-            cubelist_dplev[i].data = cube.data
+            cubelist_dplev[i].data = cube.core_data()
 
         cubelist_dplev[i].add_aux_coord(iris.coords.AuxCoord(
             lev.coords(z_coord)[0].points[0]))
@@ -306,8 +305,8 @@ def dpres_plevel_1d(plev, pmin, pmax):
     cube. The output of dpres_plevel will have the
     same dimensionality.
     """
-    increasing = (np.diff(plev) >= 0).all()
-    decreasing = (np.diff(plev) <= 0).all()
+    increasing = (da.diff(plev) >= 0).all()
+    decreasing = (da.diff(plev) <= 0).all()
 
     if isinstance(pmax, float):
 
@@ -408,11 +407,14 @@ def extract_region(dataset, region, case='reaction'):
     var = dataset[case]
     z_coord = dataset['z_coord']
 
+    # calculate climatological tropopause pressure
+    # but only if tropopause is not given by data
     if (
             'ptp' not in dataset['variables']
             and 'tp_i' not in dataset['variables']):
         tp_clim = climatological_tropopause(var[:, 0, :, :])
 
+    # mask regions outside
     if region in ['TROP', 'STRA']:
         use_z_coord = 'air_pressure'
         if z_coord.name() == 'air_pressure':
@@ -444,13 +446,13 @@ def extract_region(dataset, region, case='reaction'):
         )
 
         if region == 'TROP':
-            var.data = np.ma.array(
-                var.data,
+            var.data = da.ma.masked_array(
+                var.core_data(),
                 mask=(z_4d <= tp_4d),
             )
         elif region == 'STRA':
-            var.data = np.ma.array(
-                var.data,
+            var.data = da.ma.masked_array(
+                var.core_data(),
                 mask=(z_4d > tp_4d),
             )
     else:
@@ -466,7 +468,7 @@ def climatological_tropopause(cube):
                                   " have a latitude cooridnate")
 
     tpp = (300. - 215. * (
-        np.cos(np.deg2rad(cube.coord('latitude').points)) ** 2)) * 100.
+        da.cos(da.deg2rad(cube.coord('latitude').points)) ** 2)) * 100.
 
     tp_clim = cube.copy()
     tp_clim.data = broadcast_to_shape(
@@ -502,7 +504,7 @@ def sum_up_to_plot_dimensions(var, plot_type):
         cube = var.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
     elif plot_type == 'annual_cycle':
         # TODO!
-        # not iris.analysis.SUM but some kind of mean
+        # not use iris.analysis.SUM but some kind of mean
         # cube = var.collapsed(['longitude', 'latitude', z_coord],
         #                      iris.analysis.SUM)
         raise NotImplementedError("The sum to plot dimensions for plot_type"
@@ -523,13 +525,13 @@ def calculate_reaction_rate(temp, reaction_type,
 
     # special reaction rate
     if coeff_b is not None:
-        reaction_rate = (coeff_a
-                         * iris.analysis.maths.exp(coeff_b *
-                                                   iris.analysis.maths.log(
-                                                       reaction_rate)
-                                                   - (
-                                                       coeff_er
-                                                       / reaction_rate)))
+        reaction_rate = (da.multiply(coeff_a,
+                                     iris.analysis.maths.exp(
+                                         da.multiply(coeff_b,
+                                                     iris.analysis.maths.log(
+                                                         reaction_rate))
+                                                     - da.divide(coeff_er
+                                                                 ,reaction_rate))))
     else:
         # standard reaction rate (arrhenius)
         reaction_rate = coeff_a * iris.analysis.maths.exp(
