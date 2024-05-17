@@ -8,6 +8,7 @@ import datetime
 import logging
 import iris
 import cf_units as unit
+import numpy as np
 
 from ...utilities import fix_coords
 
@@ -101,6 +102,14 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 if 'Night' in var_name:
                     cubes.long_name += ' Night'
                     cubes.var_name += '_night'
+                    
+                # land cover class gives this error when loading in CMORised fiels
+                # OverflowError: Python int too large to convert to C long error
+                # Attempt to fix it
+                if 'land cover' in cubes.long_name:
+                    cubes.data.fill_value = 0
+                    cubes.data = cubes.data.filled()
+                    cubes.data = np.ma.masked_equal(cubes.data, 0)
 
                 save_name = f'{out_dir}/OBS_ESACCI-LST_sat_3.00_Amon_{var_name}_{year}{month:02d}.nc'
                 iris.save(cubes,
