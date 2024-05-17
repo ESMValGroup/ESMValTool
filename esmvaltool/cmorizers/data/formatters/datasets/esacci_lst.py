@@ -109,7 +109,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 if 'land cover' in cubes.long_name:
                     cubes.data.fill_value = 0
                     cubes.data = cubes.data.filled()
-                    cubes.data = np.ma.masked_equal(cubes.data, 0)
+                    #cubes.data = np.ma.masked_equal(cubes.data, 0)
 
                 save_name = f'{out_dir}/OBS_ESACCI-LST_sat_3.00_Amon_{var_name}_{year}{month:02d}.nc'
                 iris.save(cubes,
