@@ -111,6 +111,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     cubes.data.fill_value = 0
                     logger.info("fill value = 0")
 
+                    # try to get rid of anything outide 0-255
+                    cubes.data[np.where(cubes.data<0)] = 0
+                    cubes.data[np.where(cubes.data>255)] = 0
+
                     cubes.data = cubes.data.filled()
                     logger.info("cube filled")
                     
