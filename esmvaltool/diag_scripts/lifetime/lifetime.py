@@ -1047,7 +1047,8 @@ class CH4Lifetime(LifetimeBase):
             'units': self.units
         }
         print(cubes)
-        sys.exit(1)
+        print(var_attrs)
+        print(netcdf_path)
         io.save_1d_data(cubes, netcdf_path, 'time', var_attrs)
 
         # Provenance tracking
