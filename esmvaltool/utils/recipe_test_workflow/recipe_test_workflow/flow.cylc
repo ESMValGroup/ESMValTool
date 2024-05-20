@@ -31,7 +31,7 @@
         env-script = "eval $(rose task-env)"
         [[[environment]]]
             ENV_NAME = {{ ENV_NAME }}
-            USER_CONFIG_DIR = ${CYLC_WORKFLOW_RUN_DIR}/etc
+            USER_CONFIG_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/${CYLC_TASK_CYCLE_POINT}
             USER_CONFIG_PATH = ${USER_CONFIG_DIR}/config-user.yml
             OUTPUT_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/${CYLC_TASK_CYCLE_POINT}
             ESMVALCORE_DIR = ""
@@ -88,7 +88,7 @@
 
     # Bash variable manipulation `##*--` below strips leading path from recipe
     # parameter to obtain RECIPE_NAME.
-    # RECIPE_NAME is the recipe file basename without yml extension, as used by 
+    # RECIPE_NAME is the recipe file basename without yml extension, as used by
     # ESMValTool for naming output directories. E.g. for the recipe
     # examples/recipe_python.yml, RECIPE_NAME=recipe_python
     [[compare<fast>]]
