@@ -1,0 +1,12 @@
+name: recipe_test_workflow
+
+channels:
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  - cylc-flow >=8.2
+  - cylc-rose
+  - metomi-rose
+  - sphinx
+  - sphinx_rtd_theme

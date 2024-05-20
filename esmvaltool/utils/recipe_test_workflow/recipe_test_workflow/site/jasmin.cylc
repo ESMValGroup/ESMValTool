@@ -6,7 +6,7 @@
             ESMVALTOOL_DIR = /opt/conda/envs/esmvaltool/lib/python3.11/site-packages
             # Pick up local installation of imagehash. Slightly fragile: see #3436
             PYTHONPATH_PREPEND = ${HOME}/.local/lib/python3.11/site-packages
-            
+
     # COMPUTE provides defaults for computation-heavy tasks.
     # Specific tasks below override some defaults, e.g. time & memory.
     [[COMPUTE]]
