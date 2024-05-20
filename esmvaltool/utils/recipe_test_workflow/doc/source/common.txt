@@ -16,7 +16,7 @@
 .. _Cylc Documentation: https://cylc.github.io/cylc-doc/stable/html/index.html
 .. _Cylc Review: https://cylc.github.io/cylc-doc/7.9.3/html/tutorial.html#viewing-suite-logs-in-a-web-browser-cylc-review
 .. _Ensclus: https://docs.esmvaltool.org/en/latest/recipes/recipe_ensclus.html
-.. _ESMValTool Documentation: https://www.esmvaltool.org/
+.. _ESMValTool Documentation: https://esmvaltool.org/
 .. _Heatwaves coldwaves: https://docs.esmvaltool.org/en/latest/recipes/recipe_heatwaves_coldwaves.html
 .. _Radiation budget: https://docs.esmvaltool.org/en/latest/recipes/recipe_radiation_budget.html
 .. _Rose Documentation: https://metomi.github.io/rose/doc/html/index.html
