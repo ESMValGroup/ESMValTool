@@ -7,7 +7,7 @@ set -eux
 # installed Cylc workflow (this directory is automatically added to the
 # ${PATH} by Cylc).
 SOURCE_PATH="${CYLC_WORKFLOW_RUN_DIR}/site/${SITE}-env"
-TARGET_DIR="${CYLC_WORKFLOW_RUN_DIR}/share/bin"
+TARGET_DIR="${CYLC_WORKFLOW_SHARE_DIR}/bin"
 ENV_FILE="rtw-env"
 
 # Create the 'share/bin' directory in the installed workflow.

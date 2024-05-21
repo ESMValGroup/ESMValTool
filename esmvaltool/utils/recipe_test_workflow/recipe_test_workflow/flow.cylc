@@ -31,9 +31,9 @@
         env-script = "eval $(rose task-env)"
         [[[environment]]]
             ENV_NAME = {{ ENV_NAME }}
-            USER_CONFIG_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/${CYLC_TASK_CYCLE_POINT}
+            USER_CONFIG_DIR = ${ROSE_DATAC}
             USER_CONFIG_PATH = ${USER_CONFIG_DIR}/config-user.yml
-            OUTPUT_DIR = ${CYLC_WORKFLOW_SHARE_DIR}/cycle/${CYLC_TASK_CYCLE_POINT}
+            OUTPUT_DIR = ${ROSE_DATAC}
             ESMVALCORE_DIR = ""
             ESMVALTOOL_DIR = ""
             PYTHONPATH_PREPEND = ""
