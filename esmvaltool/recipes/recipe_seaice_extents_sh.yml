@@ -1,0 +1,50 @@
+# ESMValTool 
+# recipe_seaice_extents_sh.yml
+---
+documentation:
+  title: SH sea ice area recipe
+  description: |
+    This is an example recipe, shared in 
+    CMIP7 hackathon 2024, CSIRO Aspendale (Melbourne).
+    Converted a COSIMA cookbook recipe with help 
+    from Anton Steketee
+
+  authors:
+    - chun_felicity
+
+  realms:
+    - seaIce
+
+  projects:
+    - access-nri
+
+datasets: 
+# these years are comparable to 1958 -2018 # re-adjust years in script (+1652)
+  - {dataset: ACCESS-ESM1-5, activity: CMIP ,project: CMIP6,  grid: gn,
+  exp: piControl, ensemble: r1i1p1f1, start_year: 306, end_year: 366} 
+  - {dataset: ACCESS-OM2, activity: OMIP ,project: CMIP6,  grid: gn,
+  exp: omip2, ensemble: r1i1p1f1, start_year: 306, end_year: 366} 
+# observations
+  - {dataset: NSIDC-G02202-sh, project: OBS6, tier: 3,
+  type: reanaly, version: 4, start_year: 1979, end_year: 2018}
+
+
+diagnostics:
+
+  sea_ice_sh:
+    description: sea ice area and mapping sea ice concentration
+    variables:
+    ## 2 variables - sea ice concentration and cell area to compute sea ice area
+      si_fraction:
+        short_name: siconc
+        mip: SImon
+      area:
+        short_name: areacello
+        mip: Ofx
+    scripts:
+      map_extents:
+        months: [2,9] # months to map (feb, sep)
+        script: seaice_area_extents/seaice_mapextents.py
+      trends:
+        script: seaice_area_extents/seaicearea_trends.py
+ 
