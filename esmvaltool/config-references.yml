@@ -315,6 +315,11 @@ authors:
     name: Krasting, John
     institute: NOAA, USA
     orcid: https://orcid.org/0000-0002-4650-9844
+  kroißenbrunner_thomas:
+    name: Kroißenbrunner, Thomas
+    institute: WEGC, Austria
+    email: thomas.kroissenbrunner@uni-graz.at
+    github: thomaskroi1996
   kuehbacher_birgit:
     name: Kuehbacher, Birgit
     institute: DLR, Germany
@@ -788,6 +793,7 @@ projects:
   trr181: DFG Project TRR-181, Energy transfers in Atmosphere and Ocean
   ukesm: UKESM, UK Earth System Model project (NERC)
   usmile: ERC Synergy Grant USMILE
+  preval: PREVAL ÖKS
 
 
 realms:
