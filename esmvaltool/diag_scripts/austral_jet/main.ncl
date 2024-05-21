@@ -342,14 +342,22 @@ begin
         lat_range = f->lat_bnds
       end if
     else
-      if (isatt(f, "plev") .and. \
+      f_var = f->$var0$
+      if (isatt(f, "plev") .and. \  ; ESMValCore < 2.11.0
           isatt(f, "lat_range_0") .and. \
           isatt(f, "lat_range_1")) then
         lev = f@plev
         lat_range = (/f@lat_range_0, f@lat_range_1/)
+      else if (isatt(f_var, "plev") .and. \  ; ESMValCore >= 2.11.0
+               isatt(f_var, "lat_range_0") .and. \
+               isatt(f_var, "lat_range_1")) then
+        lev = f_var@plev
+        lat_range = (/f_var@lat_range_0, f_var@lat_range_1/)
       else
         error_msg("f", DIAG_SCRIPT, "", "cannot read plev and latrange")
       end if
+      end if
+      delete(f_var)
     end if
     log_info("Retrieved pressure level " + lev + " and latitude range " + \
              lat_range(0) + " to " + lat_range(1) + " from preprocessed data")
