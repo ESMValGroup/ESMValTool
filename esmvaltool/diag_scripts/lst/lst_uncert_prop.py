@@ -130,11 +130,13 @@ def _diagnostic(config):
     # of their propagated values
     propagated_values = {}
 
+    print(loaded_data) # for testing new variables total var and lc
+
     # These define the total number of points in the data
     lat_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('latitude').points)
     lon_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('longitude').points)
 
-    print(loaded_data) # for testing new variables total var and lc
+    
 
     # n_fill and n_use ad dictionaries with keys 'day' and 'night'
     # the item for each key is an array
