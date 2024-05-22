@@ -237,13 +237,38 @@ drs:
 #  CMIP5: /project/champ/data/cmip5/output1
 #  CMIP6: /project/champ/data/CMIP6
 #  CORDEX: /project/champ/data/cordex/output
-#  OBS: /data/users/esmval/ESMValTool/temporary/obs/
-#  obs4MIPs: /data/users/esmval/ESMValTool/temporary/obs/
+#  OBS: /data/users/esmval/ESMValTool/obs
+#  OBS6: /data/users/esmval/ESMValTool/obs
+#  obs4MIPs: /data/users/esmval/ESMValTool/obs
 #  ana4mips: /project/champ/data/ana4MIPs
+#  native6: /data/users/esmval/ESMValTool/rawobs
+#  RAWOBS: /data/users/esmval/ESMValTool/rawobs
 #drs:
 #  CMIP5: BADC
 #  CMIP6: BADC
 #  CORDEX: BADC
 #  OBS: default
+#  OBS6: default
 #  obs4MIPs: default
 #  ana4mips: BADC
+#  native6: default
+
+# Site-specific entries: NCI
+# Uncomment the lines below to locate data at NCI.
+#rootpath:
+#  CMIP6: [/g/data/oi10/replicas/CMIP6, /g/data/fs38/publications/CMIP6, /g/data/xp65/public/apps/esmvaltool/replicas/CMIP6]
+#  CMIP5: [/g/data/r87/DRSv3/CMIP5, /g/data/al33/replicas/CMIP5/combined, /g/data/rr3/publications/CMIP5/output1, /g/data/xp65/public/apps/esmvaltool/replicas/cmip5/output1]
+#  CMIP3: /g/data/r87/DRSv3/CMIP3
+#  OBS: /g/data/ct11/access-nri/replicas/esmvaltool/obsdata-v2
+#  OBS6: /g/data/ct11/access-nri/replicas/esmvaltool/obsdata-v2
+#  obs4MIPs: /g/data/ct11/access-nri/replicas/esmvaltool/obsdata-v2
+#  ana4mips: /g/data/ct11/access-nri/replicas/esmvaltool/obsdata-v2
+#  native6: /g/data/xp65/public/apps/esmvaltool/native6
+#
+#drs:
+#  CMIP6: NCI
+#  CMIP5: NCI
+#  CMIP3: NCI
+#  CORDEX: ESGF
+#  obs4MIPs: default
+#  ana4mips: default
