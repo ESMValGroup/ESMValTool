@@ -32,19 +32,20 @@ def sea_ice_area_obs(xdataset):
     """compute sea ice area for obs dataset"""
     sic = xdataset.siconc
     area_km2 = xdataset.areacello / 1e6
-    result = sea_ice_area(sic, area_km2, ['x','y']).to_dataset(name='cdr_area')
+    result = sea_ice_area(sic, area_km2,
+                          ['x', 'y']).to_dataset(name='cdr_area')
 
     # Theres a couple of data gaps which should be nan
     result.loc[{'time': '1988-01-01'}] = np.nan
     result.loc[{'time': '1987-12'}] = np.nan
 
-    return result.sel(time=slice('1979','2018'))
+    return result.sel(time=slice('1979', '2018'))
 
 
 def sea_ice_area_model_sh(xdataset):
     """compute sea ice area for model dataset"""
     sic = xdataset.siconc.where(xdataset.siconc.lat < -20, drop=True)
-    
+
     area_km2 = xdataset.areacello / 1e6  # area convert to km2
 
     return sea_ice_area(sic, area_km2, ['i', 'j']).to_dataset(name='si_area')
@@ -61,6 +62,7 @@ def min_and_max(dataset):
                                                 ).apply(min_and_max_year)
     return annual_min_max_ds
 
+
 def plot_trend(model_min_max, obs_a, minmax):
     """
     function to plot min or max trend
@@ -73,7 +75,7 @@ def plot_trend(model_min_max, obs_a, minmax):
     """
 
     figure, _axes = plt.subplots()
- 
+
     # add note for years change
     for mod_label, model_min_max_dt in model_min_max.items():
         model_min_max_dt[minmax].plot(label=mod_label)
@@ -107,19 +109,19 @@ def main(cfg):
     inputfiles_df = pd.DataFrame(data, columns=['filename', 'short_name',
                                                 'dataset'])
     # sort to ensure order of reading
-    inputfiles_df.sort_values(['dataset','short_name'], inplace=True)
+    inputfiles_df.sort_values(['dataset', 'short_name'], inplace=True)
     logger.info(inputfiles_df[['short_name', 'dataset']])
 
     min_max = {}
 
-    for filepath, shortname, data_name in inputfiles_df.itertuples(index=False):
+    for filepath, short, data_name in inputfiles_df.itertuples(index=False):
         if data_name == 'NSIDC-G02202-sh':
-            if shortname == 'areacello':
+            if short == 'areacello':
                 area_obs = xr.open_dataset(filepath)
             else:
                 obs_si = xr.open_dataset(filepath)
         else:  # other models
-            if shortname == 'areacello':
+            if short == 'areacello':
                 area_mod = xr.open_dataset(filepath)
                 dt_label = data_name
             else:
@@ -165,7 +167,6 @@ def get_provenance_record(ancestor_files):
 
 
 if __name__ == '__main__':
-
 
     with run_diagnostic() as config:
         main(config)
