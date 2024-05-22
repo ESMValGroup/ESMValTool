@@ -119,9 +119,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     logger.info("cube filled")
                     
                     #cubes.data.dtype = np.float32
-                    cubes.data = np.array(cubes.data, dtype=np.float32)
-                    logger.info("dtype np float32 applied")
-                    cubes.data *= 1.0
+                    #cubes.data = np.array(cubes.data, dtype=np.float32)
+                    #logger.info("dtype np float32 applied")
+                    cubes.data += 0
                     #cubes.data = np.ma.masked_equal(cubes.data, 0)
 
                 logger.info(cubes.data.dtype)
