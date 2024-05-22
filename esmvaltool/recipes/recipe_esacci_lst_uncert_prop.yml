@@ -152,13 +152,13 @@ diagnostics:
         mip: Amon
         preprocessor: obs_preprocessor
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2004, end_year: 2004, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2004, version: '3.00'}
 
       tsLCNight:
         mip: Amon
         preprocessor: obs_preprocessor
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2004, end_year: 2004, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2004, version: '3.00'}
 
 
     scripts:
