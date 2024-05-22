@@ -120,8 +120,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     
                     #cubes.data.dtype = np.float32
                     cubes.data = np.array(cubes.data, dtype=np.float32)
-                    logger.info("dtype np float32")
+                    logger.info("dtype np float32 applied")
+                    cubes.data *= 1.0
                     #cubes.data = np.ma.masked_equal(cubes.data, 0)
+
+                logger.info(cubes.data.dtype)
 
                 save_name = f'{out_dir}/OBS_ESACCI-LST_sat_3.00_Amon_{var_name}_{year}{month:02d}.nc'
                 iris.save(cubes,

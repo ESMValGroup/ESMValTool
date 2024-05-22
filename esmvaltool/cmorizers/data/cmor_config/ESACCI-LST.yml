@@ -12,7 +12,7 @@ attributes:
   modeling_realm: sat
   reference: 'esacci_lst'
   comment: ''
-  start_year: 2004
+  start_year: 2003
   end_year: 2004
 
 # Variables to cmorize
@@ -23,7 +23,7 @@ variables:
     raw: land cover class
     raw_units:
     file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
-    start_year: 2004
+    start_year: 2003
     end_year: 2004
 
   tsLCNight:
@@ -31,7 +31,7 @@ variables:
     raw: land cover class
     raw_units:
     file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
-    start_year: 2004
+    start_year: 2003
     end_year: 2004
 
   # tsTotalDay:
@@ -39,7 +39,7 @@ variables:
   #   raw: land surface temperature total uncertainty
   #   raw_units: kelvin
   #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
-  #   start_year: 2004
+  #   start_year: 2003
   #   end_year: 2004
 
   # tsTotalNight:
@@ -47,7 +47,7 @@ variables:
   #   raw: land surface temperature total uncertainty
   #   raw_units: kelvin
   #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
-  #   start_year: 2004
+  #   start_year: 2003
   #   end_year: 2004
 
   # tsVarDay:
@@ -55,7 +55,7 @@ variables:
   #   raw: land surface temperature variance
   #   raw_units: kelvin
   #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
-  #   start_year: 2004
+  #   start_year: 2003
   #   end_year: 2004
 
   # tsVarNight:
@@ -63,7 +63,7 @@ variables:
   #   raw: land surface temperature variance
   #   raw_units: kelvin
   #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
-  #   start_year: 2004
+  #   start_year: 2003
   #   end_year: 2004
 
   # tsDay:
@@ -71,7 +71,7 @@ variables:
   #   raw: land surface temperature
   #   raw_units: kelvin
   #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
-  #   start_year: 2004
+  #   start_year: 2003
   #   end_year: 2004
 
   # tsNight:
@@ -79,7 +79,7 @@ variables:
   #   raw: land surface temperature
   #   raw_units: kelvin
   #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
-  #   start_year: 2004
+  #   start_year: 2003
   #   end_year: 2004
 
   # tsLocalAtmErrDay:
@@ -87,7 +87,7 @@ variables:
   #   raw: uncertainty from locally correlated errors on atmospheric scales
   #   raw_units: kelvin
   #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
-  #   start_year: 2004
+  #   start_year: 2003
   #   end_year: 2004
 
   # tsLocalAtmErrNight:
@@ -95,7 +95,7 @@ variables:
   #   raw: uncertainty from locally correlated errors on atmospheric scales
   #   raw_units: kelvin
   #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
-  #   start_year: 2004
+  #   start_year: 2003
   #   end_year: 2004
 
   # tsLocalSfcErrDay:
@@ -103,7 +103,7 @@ variables:
   #   raw: uncertainty from locally correlated errors on surface scales
   #   raw_units: kelvin
   #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
-  #   start_year: 2004
+  #   start_year: 2003
   #   end_year: 2004
 
   # tsLocalSfcErrNight:
@@ -111,7 +111,7 @@ variables:
   #   raw: uncertainty from locally correlated errors on surface scales
   #   raw_units: kelvin
   #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
-  #   start_year: 2004
+  #   start_year: 2003
   #   end_year: 2004
 
   # tsLSSysErrDay:
@@ -119,7 +119,7 @@ variables:
   #   raw: uncertainty from large-scale systematic errors
   #   raw_units: kelvin
   #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
-  #   start_year: 2004
+  #   start_year: 2003
   #   end_year: 2004
 
   # tsLSSysErrNight:
@@ -127,7 +127,7 @@ variables:
   #   raw: uncertainty from large-scale systematic errors
   #   raw_units: kelvin
   #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
-  #   start_year: 2004
+  #   start_year: 2003
   #   end_year: 2004
 
   # tsUnCorErrDay:
@@ -135,7 +135,7 @@ variables:
   #   raw: uncertainty from uncorrelated errors
   #   raw_units: kelvin
   #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
-  #   start_year: 2004
+  #   start_year: 2003
   #   end_year: 2004
 
   # tsUnCorErrNight:
@@ -143,5 +143,5 @@ variables:
   #   raw: uncertainty from uncorrelated errors
   #   raw_units: kelvin
   #   file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
-  #   start_year: 2004
+  #   start_year: 2003
   #   end_year: 2004
