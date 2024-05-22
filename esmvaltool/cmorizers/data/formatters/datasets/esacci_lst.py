@@ -103,28 +103,22 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     cubes.long_name += ' Night'
                     cubes.var_name += '_night'
                     
-                # land cover class gives this error when loading in CMORised fiels
+                # land cover class gives this error when loading in CMORised files
                 # OverflowError: Python int too large to convert to C long error
-                # Attempt to fix it
+                # This fixes it
                 if 'land cover' in cubes.long_name:
                     logger.info("Got a Land Cover Class cube")
                     cubes.data.fill_value = 0
-                    logger.info("fill value = 0")
 
-                    # try to get rid of anything outide 0-255
+                    # Get rid of anything outide 0-255
                     cubes.data[np.where(cubes.data<0)] = 0
                     cubes.data[np.where(cubes.data>255)] = 0
 
                     cubes.data = cubes.data.filled()
-                    logger.info("cube filled")
-                    
-                    #cubes.data.dtype = np.float32
-                    #cubes.data = np.array(cubes.data, dtype=np.float32)
-                    #logger.info("dtype np float32 applied")
-                    cubes.data += 0
-                    #cubes.data = np.ma.masked_equal(cubes.data, 0)
-
-                logger.info(cubes.data.dtype)
+                      
+                    # This is the line the ultimately solves things.
+                    # Will leave the other checks above in because they
+                    cubes.data *= 1.0
 
                 save_name = f'{out_dir}/OBS_ESACCI-LST_sat_3.00_Amon_{var_name}_{year}{month:02d}.nc'
                 iris.save(cubes,
