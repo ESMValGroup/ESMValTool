@@ -1,14 +1,18 @@
-"""diagnostic script to plot minima and maxima trends based on code
-    from Anton's COSIMA cookbook notebook
+"""
+diagnostic script to plot minima and maxima trends 
 
+based on code from Anton Steketee's COSIMA cookbook notebook
+https://cosima-recipes.readthedocs.io/en/latest/DocumentedExamples
+    /SeaIce_Obs_Model_Compare.html
 """
 
+import logging
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import xarray as xr
-import os
-import logging
+
 from esmvaltool.diag_scripts.shared import run_diagnostic, save_figure
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
 
@@ -16,49 +20,61 @@ from esmvaltool.diag_scripts.shared._base import get_plot_filename
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 
-def sea_ice_area(sic,area,coordls, range=[0.15,1]): 
-    #sic percent is in 0-100. Mulitply by portion so divide by 100 ##
-    sic = sic/100 
-    return (sic*area).where((sic>=range[0])*(sic<=range[1])).sum(coordls)
 
-def sea_ice_area_obs(ds):
-    sic = ds.siconc #
-    area_km2 = ds.areacello/1e6 #
-    result = sea_ice_area(sic,area_km2,['x','y']).to_dataset(name='cdr_area') 
+def sea_ice_area(sic, area, coordls):
+    "sic percent is in 0-100. Mulitply by portion so divide by 100"
+    sic = sic / 100
+    # valid sic between 0.15 and 1
+    return (sic * area).where((sic >= 0.15) * (sic <= 1)).sum(coordls)
 
-    #Theres a couple of data gaps which should be nan
-    result.loc[{'time':'1988-01-01'}] = np.nan
-    result.loc[{'time':'1987-12'}] = np.nan
 
-    return result.sel(time=slice('1979','2018')) 
+def sea_ice_area_obs(xdataset):
+    "compute sea ice area for obs dataset"
+    sic = xdataset.siconc
+    area_km2 = xdataset.areacello/1e6
+    result = sea_ice_area(sic, area_km2, ['x','y']).to_dataset(name='cdr_area')
 
-def sea_ice_area_model_sh(ds):
-    sic = ds.siconc.where(ds.siconc.lat < -20, drop=True) #
+    # Theres a couple of data gaps which should be nan
+    result.loc[{'time': '1988-01-01'}] = np.nan
+    result.loc[{'time': '1987-12'}] = np.nan
+
+    return result.sel(time=slice('1979','2018'))
+
+
+def sea_ice_area_model_sh(xdataset):
+    "compute sea ice area for model dataset"
+    sic = xdataset.siconc.where(xdataset.siconc.lat < -20, drop=True)
     
-    area_km2=ds.areacello/1e6 ##area convert to km2
+    area_km2 = xdataset.areacello / 1e6  # area convert to km2
 
-    return sea_ice_area(sic,area_km2,['i','j']).to_dataset(name='si_area')
+    return sea_ice_area(sic, area_km2, ['i', 'j']).to_dataset(name='si_area')
 
-def min_and_max(ds):
-    def min_and_max_year(da):
+
+def min_and_max(dataset):
+    "compute min and max for dataset"
+    def min_and_max_year(yeardata):
         result = xr.Dataset()
-        result['min'] = da.min()
-        result['max'] = da.max()
+        result['min'] = yeardata.min()
+        result['max'] = yeardata.max()
         return result
-    annual_min_max_ds=ds.si_area.groupby('time.year').apply(min_and_max_year)
+    annual_min_max_ds = dataset.si_area.groupby('time.year').apply(min_and_max_year)
     return annual_min_max_ds
 
 def plot_trend(model_min_max, obs_a, minmax):
     """
+    function to plot min or max trend
+
+    Parameters
+    ----------
     model_min_max: dictionary of model label and xarray ds with min and max.
     obs_a: xarray of observations area
+    minmax: 'min' or 'max'
     """
 
     figure, _axes = plt.subplots()
-    
-    # both min and max # multiple models? min_max dict 
-    # add note for years change?
-    for mod_label,model_min_max_dt in model_min_max.items():
+ 
+    # add note for years change
+    for mod_label, model_min_max_dt in model_min_max.items():
         model_min_max_dt[minmax].plot(label=mod_label)
 
     if minmax == 'max':
@@ -68,7 +84,6 @@ def plot_trend(model_min_max, obs_a, minmax):
         obs_a.cdr_area.groupby('time.year').min().plot(label='Obs CDR')
         plt.title('Trends in Sea-Ice Minima')
 
-    
     plt.ylabel('Sea-Ice Area (km2)')
 
     _ = plt.legend()
@@ -77,60 +92,61 @@ def plot_trend(model_min_max, obs_a, minmax):
 
 def main(cfg):
     """Compute sea ice area for each input dataset."""
-
     input_data = cfg['input_data'].values()
-
     data = []
 
     for dataset in input_data:
         # Load the data
         input_file = [dataset['filename'], dataset['short_name'], dataset['dataset']]
-        # key for different models      
-        logger.info(f"dataset: {dataset['long_name']}")
+        # key for different models
+        logger.info("dataset: %s", dataset['long_name'])
         data.append(input_file)
 
-    df = pd.DataFrame(data, columns=['filename','short_name','dataset']) #
+    inputfiles_df = pd.DataFrame(data, columns=['filename','short_name','dataset'])
 
-    logger.info(df[['short_name', 'dataset']])
+    logger.info(inputfiles_df[['short_name', 'dataset']])
 
     min_max = {}
     # sort to ensure order of reading
-    for fp, sn, dt in df.sort_values(['dataset','short_name']).itertuples(index=False):
-        if dt == 'NSIDC-G02202-sh':    
-            if sn == 'areacello':
-                area_obs = xr.open_dataset(fp) 
+    for filepath, shortname, data_name in inputfiles_df.sort_values(['dataset','short_name']
+                                     ).itertuples(index=False):
+        if data_name == 'NSIDC-G02202-sh':
+            if shortname == 'areacello':
+                area_obs = xr.open_dataset(filepath)
             else:
-                obs_si = xr.open_dataset(fp)
-        else:  # other models 
-            if sn == 'areacello':
-                area_mod = xr.open_dataset(fp)
-                dta = dt 
+                obs_si = xr.open_dataset(filepath)
+        else:  # other models
+            if shortname == 'areacello':
+                area_mod = xr.open_dataset(filepath)
+                dt_label = data_name
             else:
-                mod_si = xr.open_dataset(fp)
+                mod_si = xr.open_dataset(filepath)
 
-                # make sure correct area with model?
-                if dta == dt:
-                    mod_si['areacello'] = area_mod['areacello'] #
-                    model_area_dt = sea_ice_area_model_sh(mod_si)    
+                # make sure correct area with model
+                if dt_label == data_name:
+                    mod_si['areacello'] = area_mod['areacello']
+                    model_area_dt = sea_ice_area_model_sh(mod_si)
                     model_min_max_dt = min_and_max(model_area_dt)
-                    model_min_max_dt['year'] = model_min_max_dt.year + 1652  # make years compariable
-                    min_max[dt] = model_min_max_dt
+                    # make years in ACCESS model compariable
+                    model_min_max_dt['year'] = model_min_max_dt.year + 1652
+                    min_max[data_name] = model_min_max_dt
                 else:
-                    logger.warning(f"..{dt} missing a variable?")
-    
+                    logger.warning("..%s missing a variable?", data_name)
+
     obs_si['areacello'] = area_obs['areacello']
     obs_a = sea_ice_area_obs(obs_si)
 
     provenance_record = get_provenance_record(df['filename'].to_list())
-    for m in ['min','max']:
-        fig = plot_trend(min_max, obs_a, m)
+    for trend_type in ['min', 'max']:
+        fig = plot_trend(min_max, obs_a, trend_type)
         # Save output
-        output_path = get_plot_filename(f'{m}_trend', cfg)
-        # fig.savefig(output_path) # use esmvaltool convenience function
+        output_path = get_plot_filename(f'{trend_type}_trend', cfg)
+
         save_figure(output_path, provenance_record, cfg, figure=fig)
 
 
 def get_provenance_record(ancestor_files):
+    "build provenance record"
     record = {
         'ancestors': ancestor_files,
         'authors': [
@@ -144,7 +160,9 @@ def get_provenance_record(ancestor_files):
         }
     return record
 
+
 if __name__ == '__main__':
+
 
     with run_diagnostic() as config:
         main(config)
