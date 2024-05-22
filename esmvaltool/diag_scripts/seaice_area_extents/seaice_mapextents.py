@@ -25,7 +25,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def map_diff(mod_si_ls, obs_si, months):
-    "create figure mapping extents for models and months"
+    """create figure mapping extents for models and months"""
     # get lat max for regridding
     latmax = obs_si.lat.max().values.item()
 
@@ -53,12 +53,12 @@ def map_diff(mod_si_ls, obs_si, months):
             )
 
             model_mean = mod_si.siconc.sel(time=mod_si.siconc.time.dt.month.isin(mon)
-                                   ).mean('time')
+                                        ).mean('time')
             mod_regrid = regridder_access_sh(model_mean)
             diff_ds = mod_regrid - cdr
 
-            axes = plt.subplot(len(months), 3, i + j * 3, projection=
-                             crs.SouthPolarStereo(true_scale_latitude=-70))
+            axes = plt.subplot(len(months), 3, i + j * 3, 
+                               projection=crs.SouthPolarStereo(true_scale_latitude=-70))
 
             diffmap = axes.contourf(
                 diff_ds.x, diff_ds.y, diff_ds,
@@ -116,14 +116,12 @@ def main(cfg):
     mapfig = map_diff(mod_si_dict, obs_si, cfg['months'])
     # Save output
     output_path = get_plot_filename('map_difference', cfg)
-    # mapfig.savefig(output_path) # use esmvaltool convenience function
-
     provenance_record = get_provenance_record(inputs_df['filename'].to_list())
     save_figure(output_path, provenance_record, cfg, figure=mapfig)
 
 
 def get_provenance_record(ancestor_files):
-    "build provenance dictionary"
+    """build provenance dictionary"""
     record = {
         'ancestors': ancestor_files,
         'authors': [

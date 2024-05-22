@@ -1,5 +1,5 @@
 """
-diagnostic script to plot minima and maxima trends 
+diagnostic script to plot minima and maxima trends
 
 based on code from Anton Steketee's COSIMA cookbook notebook
 https://cosima-recipes.readthedocs.io/en/latest/DocumentedExamples
@@ -22,16 +22,16 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def sea_ice_area(sic, area, coordls):
-    "sic percent is in 0-100. Mulitply by portion so divide by 100"
+    """sic percent is in 0-100. Mulitply by portion so divide by 100"""
     sic = sic / 100
     # valid sic between 0.15 and 1
     return (sic * area).where((sic >= 0.15) * (sic <= 1)).sum(coordls)
 
 
 def sea_ice_area_obs(xdataset):
-    "compute sea ice area for obs dataset"
+    """compute sea ice area for obs dataset"""
     sic = xdataset.siconc
-    area_km2 = xdataset.areacello/1e6
+    area_km2 = xdataset.areacello / 1e6
     result = sea_ice_area(sic, area_km2, ['x','y']).to_dataset(name='cdr_area')
 
     # Theres a couple of data gaps which should be nan
@@ -42,7 +42,7 @@ def sea_ice_area_obs(xdataset):
 
 
 def sea_ice_area_model_sh(xdataset):
-    "compute sea ice area for model dataset"
+    """compute sea ice area for model dataset"""
     sic = xdataset.siconc.where(xdataset.siconc.lat < -20, drop=True)
     
     area_km2 = xdataset.areacello / 1e6  # area convert to km2
@@ -51,13 +51,14 @@ def sea_ice_area_model_sh(xdataset):
 
 
 def min_and_max(dataset):
-    "compute min and max for dataset"
+    """compute min and max for dataset"""
     def min_and_max_year(yeardata):
         result = xr.Dataset()
         result['min'] = yeardata.min()
         result['max'] = yeardata.max()
         return result
-    annual_min_max_ds = dataset.si_area.groupby('time.year').apply(min_and_max_year)
+    annual_min_max_ds = dataset.si_area.groupby('time.year'
+                                                ).apply(min_and_max_year)
     return annual_min_max_ds
 
 def plot_trend(model_min_max, obs_a, minmax):
@@ -97,19 +98,21 @@ def main(cfg):
 
     for dataset in input_data:
         # Load the data
-        input_file = [dataset['filename'], dataset['short_name'], dataset['dataset']]
+        input_file = [dataset['filename'], dataset['short_name'],
+                      dataset['dataset']]
         # key for different models
         logger.info("dataset: %s", dataset['long_name'])
         data.append(input_file)
 
-    inputfiles_df = pd.DataFrame(data, columns=['filename','short_name','dataset'])
-
+    inputfiles_df = pd.DataFrame(data, columns=['filename', 'short_name',
+                                                'dataset'])
+    # sort to ensure order of reading
+    inputfiles_df.sort_values(['dataset','short_name'], inplace=True)
     logger.info(inputfiles_df[['short_name', 'dataset']])
 
     min_max = {}
-    # sort to ensure order of reading
-    for filepath, shortname, data_name in inputfiles_df.sort_values(['dataset','short_name']
-                                     ).itertuples(index=False):
+
+    for filepath, shortname, data_name in inputfiles_df.itertuples(index=False):
         if data_name == 'NSIDC-G02202-sh':
             if shortname == 'areacello':
                 area_obs = xr.open_dataset(filepath)
@@ -136,17 +139,17 @@ def main(cfg):
     obs_si['areacello'] = area_obs['areacello']
     obs_a = sea_ice_area_obs(obs_si)
 
-    provenance_record = get_provenance_record(df['filename'].to_list())
+    provenance = get_provenance_record(inputfiles_df['filename'].to_list())
     for trend_type in ['min', 'max']:
         fig = plot_trend(min_max, obs_a, trend_type)
         # Save output
         output_path = get_plot_filename(f'{trend_type}_trend', cfg)
 
-        save_figure(output_path, provenance_record, cfg, figure=fig)
+        save_figure(output_path, provenance, cfg, figure=fig)
 
 
 def get_provenance_record(ancestor_files):
-    "build provenance record"
+    """build provenance record"""
     record = {
         'ancestors': ancestor_files,
         'authors': [
@@ -157,7 +160,7 @@ def get_provenance_record(ancestor_files):
         'plot_types': ['times'],
         'references': [],
         'statistics': ['mean'],
-        }
+            }
     return record
 
 
