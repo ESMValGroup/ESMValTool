@@ -101,7 +101,10 @@ def validate_user_config_file(user_config_file_content):
     ValidationError
         If any of the called validation functions raise a ValidationError.
     """
-    errors = []
+    errors = [
+        "There were validation errors in your user configuration file. See "
+        "details below."
+    ]
     for user_config_key, usr_config_value in user_config_file_content.items():
         try:
             validatation_function = _validators[user_config_key]
@@ -120,8 +123,8 @@ def validate_user_config_file(user_config_file_content):
                     f'Validation error for {user_config_key.upper()} with '
                     f'value "{usr_config_value}"\nERROR: {err}\n')
     if errors:
-        print(errors)
         raise ValidationError("\n".join(errors))
+    print("All validation checks passed.")
 
 
 def write_yaml(file_path, contents):
