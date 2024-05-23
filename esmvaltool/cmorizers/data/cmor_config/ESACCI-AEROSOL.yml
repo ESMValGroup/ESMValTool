@@ -1,0 +1,33 @@
+---
+# Common global attributes for Cmorizer output
+filename: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+attributes:
+  dataset_id: ESACCI-AEROSOL
+  version: 'SU-v4.3'
+  tier: 2
+  modeling_realm: sat
+  project_id: OBS
+  source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/'
+  reference: ["esacci-aerosol"]
+  comment: "Note that the variable tsStderr is an uncertainty not a standard error."
+
+# Variables to cmorize (here use only filename prefix)
+variables:
+  od550aer:
+    mip: aero
+    raw: AOD550_mean
+  od870aer:
+    mip: aero
+    raw: AOD870_mean
+  od550lt1aer:
+    mip: aero
+    raw: FM_AOD550_mean
+  abs550aer:
+    mip: aero
+    raw: AAOD550_mean
+  od550aerStderr:
+    mip: aero
+    raw: AOD550_uncertainty
+  od870aerStderr:
+    mip: aero
+    raw: AOD870_uncertainty

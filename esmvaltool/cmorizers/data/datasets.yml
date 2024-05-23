@@ -420,11 +420,14 @@ datasets:
   ESACCI-AEROSOL:
     tier: 2
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/
-    last_access: 2019-01-24
+    # last_access: 2019-01-24
+    last_access: 2024-05-22
     info: |
       Download the data from:
-        ATSR2_SU/L3/v4.21/MONTHLY/ (1997-2002)
-        AATSR_SU/L3/v4.21/MONTHLY/ (2003-2011)
+        # ATSR2_SU/L3/v4.21/MONTHLY/ (1997-2002)
+        # AATSR_SU/L3/v4.21/MONTHLY/ (2003-2011)
+        ATSR2_SU/L3/v4.3/MONTHLY/ (1997-2002)
+        AATSR_SU/L3/v4.3/MONTHLY/ (2003-2011)
       Other years are not considered since they are not complete.
       Put all files in input_dir_path (no subdirectories with years).
 

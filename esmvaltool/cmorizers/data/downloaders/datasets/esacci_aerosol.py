@@ -29,7 +29,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     if start_date is None:
         start_date = datetime(1997, 1, 1)
     if end_date is None:
-        end_date = datetime(2011, 1, 1)
+        end_date = datetime(2011, 12, 31)
     loop_date = start_date
 
     downloader = CCIDownloader(
@@ -43,9 +43,11 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     while loop_date <= end_date:
         year = loop_date.year
         if year < 2003:
-            downloader.set_cwd('ATSR2_SU/L3/v4.21/MONTHLY')
+            # downloader.set_cwd('ATSR2_SU/L3/v4.21/MONTHLY')
+            downloader.set_cwd('ATSR2_SU/L3/v4.3/MONTHLY')
         else:
-            downloader.set_cwd('AATSR_SU/L3/v4.21/MONTHLY')
+            # downloader.set_cwd('AATSR_SU/L3/v4.21/MONTHLY')
+            downloader.set_cwd('AATSR_SU/L3/v4.3/MONTHLY')
 
         downloader.download_year(loop_date.year)
         loop_date += relativedelta.relativedelta(years=1)

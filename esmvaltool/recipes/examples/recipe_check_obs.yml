@@ -167,7 +167,8 @@ diagnostics:
       od870aerStderr:
     additional_datasets:
       - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
-         type: sat, version: SU-v4.21, start_year: 1997, end_year: 2011}
+#         type: sat, version: SU-v4.21, start_year: 1997, end_year: 2011}
+         type: sat, version: SU-v4.3, start_year: 1997, end_year: 2011}
     scripts: null
 
 
