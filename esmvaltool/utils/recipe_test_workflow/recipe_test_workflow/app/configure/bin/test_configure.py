@@ -2,8 +2,6 @@ import pytest
 from bin.configure import validate_user_config_file
 from esmvalcore.config._config_validators import ValidationError
 
-# Run tests with `pytest -c dev/null`.
-
 
 def test_validate_user_config_file():
     mock_valid_config = {
@@ -16,8 +14,9 @@ def test_validate_user_config_file():
         "exit_on_warning": True,
         "output_file_type": "png",
     }
-    result = validate_user_config_file(mock_valid_config)
-    assert result is None
+    # No assert statement is needed. If the function call errors Pytest
+    # considers the test failed.
+    validate_user_config_file(mock_valid_config)
 
 
 def test_validate_user_config_file_one_validation_error():
