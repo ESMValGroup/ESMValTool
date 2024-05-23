@@ -34,6 +34,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             for month in range(1, 13):
                 logger.info(year)
                 logger.info(month)
+                # test breaks to find all masked data issue
+                if year != 2003: continue
+                if month != 1: continue
                 try:
                     cubes = load_cubes(in_dir,
                                        vals['file'],
@@ -107,7 +110,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 # OverflowError: Python int too large to convert to C long error
                 # This fixes it
                 if 'land cover' in cubes.long_name:
-                    logger.info("Got a Land Cover Class cube")
+                    logger.info(f"Got a Land Cover Class cube {cubes.long_name}")
                     cubes.data.fill_value = 0
 
                     # Get rid of anything outide 0-255
@@ -118,7 +121,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                       
                     # This is the line the ultimately solves things.
                     # Will leave the other checks above in because they
-                    cubes.data *= 1.0
+                    cubes.data = cubes.data * 1.0
+                else:
+                    logger.info(f"not a land cover cube {cubes.log_name}")
 
                 save_name = f'{out_dir}/OBS_ESACCI-LST_sat_3.00_Amon_{var_name}_{year}{month:02d}.nc'
                 iris.save(cubes,
