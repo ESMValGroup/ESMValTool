@@ -4,6 +4,7 @@ import os
 import pprint
 
 import yaml
+from esmvalcore.config._config_validators import ValidationError, _validators
 
 
 def main():
@@ -16,6 +17,9 @@ def main():
     # Get the configuration values defined in the environment for the
     # 'configure' task.
     config_values = get_config_values_from_task_env()
+
+    # Validate the user config file content.
+    validate_user_config_file(config_values)
 
     # Update the configuration from OS environment.
     user_config_path = os.environ["USER_CONFIG_PATH"]
@@ -78,6 +82,46 @@ def get_config_values_from_task_env():
           "'configure' task: ")
     pprint.PrettyPrinter().pprint(config_values_from_task_env)
     return config_values_from_task_env
+
+
+def validate_user_config_file(user_config_file_content):
+    """Validate a user config with ``ESMValCore.config._validators`` functions.
+
+    Parameters
+    ----------
+    user_config_file_content: dict
+        An ESMValTool user configuration file loaded in memory as a Python
+        dictionary.
+
+    Raises
+    ------
+    KeyError
+        If ``user_config_file_content`` includes a key for which there is no
+        validator listed in ``_validators``,
+    ValidationError
+        If any of the called validation functions raise a ValidationError.
+    """
+    errors = []
+    for user_config_key, usr_config_value in user_config_file_content.items():
+        try:
+            validatation_function = _validators[user_config_key]
+        except KeyError as err:
+            errors.append(
+                f'Key Error for {user_config_key.upper()}. May not be a valid '
+                f'ESMValTool user configuration key\nERROR: {err}\n')
+        else:
+            try:
+                print(f'Validating {user_config_key.upper()} with value '
+                      f'"{usr_config_value}" using function '
+                      f'{validatation_function.__name__.upper()}.')
+                validatation_function(usr_config_value)
+            except ValidationError as err:
+                errors.append(
+                    f'Validation error for {user_config_key.upper()} with '
+                    f'value "{usr_config_value}"\nERROR: {err}\n')
+    if errors:
+        print(errors)
+        raise ValidationError("\n".join(errors))
 
 
 def write_yaml(file_path, contents):
