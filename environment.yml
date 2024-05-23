@@ -11,7 +11,7 @@ channels:
 dependencies:
   - aiohttp
   - cartopy
-  - cdo >=1.9.7
+  - cdo >=2.3.0
   - cdsapi
   - cf-units
   - cftime

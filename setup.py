@@ -22,7 +22,7 @@ REQUIREMENTS = {
     'install': [
         'aiohttp',
         'cartopy',
-        'cdo',
+        'cdo>=2.3.0',
         'cdsapi',
         'cf-units',
         'cftime',
