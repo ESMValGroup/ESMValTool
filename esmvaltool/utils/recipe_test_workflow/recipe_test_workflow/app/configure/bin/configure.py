@@ -103,7 +103,7 @@ def validate_user_config_file(user_config_file_content):
     """
     errors = [
         "There were validation errors in your user configuration file. See "
-        "details below."
+        "details below.\n"
     ]
     for user_config_key, usr_config_value in user_config_file_content.items():
         try:
