@@ -122,7 +122,7 @@ def validate_user_config_file(user_config_file_content):
                 errors.append(
                     f'Validation error for {user_config_key.upper()} with '
                     f'value "{usr_config_value}"\nERROR: {err}\n')
-    if errors:
+    if len(errors) > 1:
         raise ValidationError("\n".join(errors))
     print("All validation checks passed.")
 
