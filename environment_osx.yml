@@ -11,7 +11,7 @@ channels:
 dependencies:
   - aiohttp
   - cartopy
-  - cdo >=1.9.7
+  - cdo >=2.3.0
   - cdsapi
   - cf-units
   - cftime
@@ -48,7 +48,7 @@ dependencies:
   - psy-maps
   - psy-reg
   - psy-simple
-  - pyproj>=2.1
+  - pyproj >=2.1
   - pys2index  # only from conda-forge
   - python >=3.9
   - python-cdo
