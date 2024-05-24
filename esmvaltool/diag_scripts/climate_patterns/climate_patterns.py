@@ -628,15 +628,17 @@ def patterns(model, cfg):
 
     save_outputs(cfg, list_of_cubelists, model)
 
-    model_work_dir, _ = sf.make_model_dirs(
-        cfg,
-        model
-    )
+    ### Provenance Logging, removed due to sporadic errors. Fix later.
+    
+    # model_work_dir, _ = sf.make_model_dirs(
+    #     cfg,
+    #     model
+    # )
 
-    provenance_record = get_provenance_record()
-    path = os.path.join(model_work_dir, "patterns.nc")
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(path, provenance_record)
+    # provenance_record = get_provenance_record()
+    # path = os.path.join(model_work_dir, "patterns.nc")
+    # with ProvenanceLogger(cfg) as provenance_logger:
+    #     provenance_logger.log(path, provenance_record)
 
 
 def main(cfg):
