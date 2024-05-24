@@ -365,10 +365,10 @@ def calculate_regressions(
     for cube in anom_list:
         if cube.var_name == "tl1_anom":
             # convert years to months when selecting
-            tas = cube[-yrs*12:]
+            tas = cube[-yrs * 12:]
 
     for cube in anom_list:
-        cube = cube[-yrs*12:]
+        cube = cube[-yrs * 12:]
         month_list = iris.cube.CubeList([])
 
         # extracting months, regressing, and merging
