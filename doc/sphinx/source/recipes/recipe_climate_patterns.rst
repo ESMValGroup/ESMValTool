@@ -92,6 +92,11 @@ References
   change scenarios from existing GCM simulations.
   Climate Dynamics 16, 575–586 (2000). https://doi.org/10.1007/s003820000067
 
+* Mathison, C. T. et al. A rapid application emissions-to-impacts tool
+  for scenario assessment: Probabilistic Regional Impacts from Model patterns
+  and Emissions (PRIME).
+  EGUsphere [preprint], (2024). https://doi.org/10.5194/egusphere-2023-2932
+
 Example plots
 -------------
 
