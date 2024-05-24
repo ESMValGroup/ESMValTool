@@ -18,12 +18,12 @@ Configuration options in recipe
 grid: str, optional (default: constrained)
     options: constrained, full
     def: removes Antarctica from grid
-imogen_mode: bool, optional (default: off)
-    options: on, off
+jules_mode: bool, optional (default: true)
+    options: true, false
     def: outputs extra data (anomaly, climatology) per variable
          to drive JULES-IMOGEN configuration
-parallelise: bool, optional (default: off)
-    options: on, off
+parallelise: bool, optional (default: true)
+    options: true, false
     def: parallelises code to run N models at once
 parallel_threads: int, optional (default: null)
     options: any int, up to the amount of CPU cores accessible by user
@@ -34,6 +34,7 @@ parallel_threads: int, optional (default: null)
 
 import logging
 from pathlib import Path
+import os
 
 import iris
 import iris.coord_categorisation
@@ -479,7 +480,7 @@ def calculate_regressions(
     return regr_var_list
 
 
-def cube_saver(list_of_cubelists, work_path, name_list, mode):
+def cube_saver(list_of_cubelists, work_path, name_list, jules_mode):
     """Save desired cubelists to work_dir, depending on switch settings.
 
     Parameters
@@ -497,14 +498,19 @@ def cube_saver(list_of_cubelists, work_path, name_list, mode):
     -------
     None
     """
-    if mode == "imogen":
+    if jules_mode:
         for i in range(0, 3):
-            iris.save(list_of_cubelists[i], work_path + name_list[i])
-
-    if mode == "base":
-        for cube in list_of_cubelists[2]:
-            rename_variables_base(cube)
-        iris.save(list_of_cubelists[2], work_path + name_list[2])
+            iris.save(
+                list_of_cubelists[i],
+                os.path.join(work_path, name_list[i])
+            )
+    else:
+        for i, cube in enumerate(list_of_cubelists[2]):
+            list_of_cubelists[2][i] = rename_variables_base(cube)
+        iris.save(
+            list_of_cubelists[2],
+            os.path.join(work_path, name_list[2])
+        )
 
 
 def save_outputs(
@@ -538,15 +544,25 @@ def save_outputs(
     ]
 
     # saving data + plotting
-    if cfg["imogen_mode"] is True:
+    if cfg["jules_mode"] is True:
         plot_climatologies_timeseries(list_of_cubelists[0], plot_path)
         plot_anomalies_timeseries(list_of_cubelists[1], plot_path)
         plot_patterns_timeseries(list_of_cubelists[2], plot_path)
-        cube_saver(list_of_cubelists, work_path, name_list, mode="imogen")
+        cube_saver(
+            list_of_cubelists,
+            work_path,
+            name_list,
+            jules_mode=cfg["jules_mode"]
+        )
 
     else:
         plot_patterns(list_of_cubelists[2], plot_path)
-        cube_saver(list_of_cubelists, work_path, name_list, mode="base")
+        cube_saver(
+            list_of_cubelists,
+            work_path,
+            name_list,
+            jules_mode=cfg["jules_mode"]
+        )
 
 
 def get_provenance_record():
@@ -672,7 +688,7 @@ def patterns(model, cfg):
     )
 
     provenance_record = get_provenance_record()
-    path = model_work_dir + "patterns.nc"
+    path = os.path.join(model_work_dir, "patterns.nc")
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(path, provenance_record)
 

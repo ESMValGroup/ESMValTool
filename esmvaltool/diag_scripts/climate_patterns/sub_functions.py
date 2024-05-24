@@ -54,8 +54,6 @@ def ocean_fraction_calc(sftlf):
         ocean_fraction cube for area-weights
     land_frac: cube
         land_fraction cube for area-weights
-    of: float
-        ocean fraction float for EBM calculations
     """
     sftlf.coord("latitude").coord_system = iris.coord_systems.GeogCS(
         6371229.0
@@ -168,18 +166,15 @@ def make_model_dirs(cfg, model):
     model_plot_dir : path
         path to specific plot directory in plot_dir
     """
-    work_path = cfg["work_dir"] + "/"
-    plot_path = cfg["plot_dir"] + "/"
-    w_path = os.path.join(work_path, model)
-    p_path = os.path.join(plot_path, model)
+    work_path = cfg["work_dir"]
+    plot_path = cfg["plot_dir"]
+    model_work_dir = os.path.join(work_path, model)
+    model_plot_dir = os.path.join(plot_path, model)
 
-    if not os.path.exists(w_path):
-        os.mkdir(w_path)
-    if not os.path.exists(p_path):
-        os.mkdir(p_path)
-
-    model_work_dir = w_path + "/"
-    model_plot_dir = p_path + "/"
+    if not os.path.exists(model_work_dir):
+        os.mkdir(model_work_dir)
+    if not os.path.exists(model_plot_dir):
+        os.mkdir(model_plot_dir)
 
     return model_work_dir, model_plot_dir
 

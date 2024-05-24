@@ -5,6 +5,8 @@ Author
 ------
 Gregory Munday (Met Office, UK)
 """
+import os
+
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 import numpy as np
@@ -41,7 +43,7 @@ def subplot_positions(j):
 
 
 def plot_patterns(cube_list, plot_path):
-    """Plot climate patterns for imogen_mode: off.
+    """Plot climate patterns for jules_mode: off.
 
     Parameters
     ----------
@@ -77,11 +79,11 @@ def plot_patterns(cube_list, plot_path):
         qplt.pcolormesh(cube[0])
 
     plt.tight_layout()
-    plt.savefig(plot_path + "Patterns")
+    plt.savefig(os.path.join(plot_path, "Patterns"), dpi=300)
     plt.close()
 
     fig.tight_layout()
-    fig.savefig(plot_path + "Patterns Timeseries")
+    fig.savefig(os.path.join(plot_path, "Patterns Timeseries"), dpi=300)
 
 
 def plot_patterns_timeseries(cubelist, plot_path):
@@ -121,10 +123,10 @@ def plot_patterns_timeseries(cubelist, plot_path):
         qplt.pcolormesh(cube[0])
 
     fig.tight_layout()
-    fig.savefig(plot_path + "Patterns Timeseries")
+    fig.savefig(os.path.join(plot_path, "Patterns Timeseries"), dpi=300)
 
     plt.tight_layout()
-    plt.savefig(plot_path + "Patterns")
+    plt.savefig(os.path.join(plot_path, "Patterns"), dpi=300)
     plt.close()
 
 
@@ -159,7 +161,7 @@ def plot_anomalies_timeseries(cubelist, plot_path):
             axs[x_pos, y_pos].set_xlabel("Time")
 
     fig.tight_layout()
-    fig.savefig(plot_path + "Anomalies")
+    fig.savefig(os.path.join(plot_path, "Anomalies"), dpi=300)
 
 
 def plot_climatologies_timeseries(cubelist, plot_path):
@@ -192,4 +194,4 @@ def plot_climatologies_timeseries(cubelist, plot_path):
             axs[x_pos, y_pos].set_xlabel("Time")
 
     fig.tight_layout()
-    fig.savefig(plot_path + "Climatologies")
+    fig.savefig(os.path.join(plot_path, "Climatologies"), dpi=300)
