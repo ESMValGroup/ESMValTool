@@ -217,7 +217,7 @@ def rename_variables(cube, has_orig_vars=True, new_extension=""):
     ----------
     cube : cube
         input cube
-    orig_vars : bool
+    has_orig_vars : bool
         if True, rename to new var names with correct extension
     new_extension : str
         extension to add to variable names
