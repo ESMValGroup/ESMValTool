@@ -606,15 +606,9 @@ def extract_data_from_cfg(cfg, model):
                 cube = constrain_latitude(cube_initial)
             else:
                 cube = cube_initial
-
-            if dataset["exp"] not in ["historical-ssp585", "ssp585"]:
+                
+            if dataset["exp"] != "historical-ssp585":
                 sftlf = cube
-            elif dataset["exp"] == "ssp585":
-                # appending to timeseries list
-                ts_list.append(cube)
-                # use first year as baseline for anomaly
-                clim_cube = cube[0]
-                clim_list.append(clim_cube)
             else:
                 # appending to timeseries list
                 ts_list.append(cube)
@@ -696,6 +690,7 @@ def main(cfg):
     None
     """
     input_data = cfg["input_data"].values()
+    print(input_data)
     parallelise = cfg["parallelise"]
 
     models = []
