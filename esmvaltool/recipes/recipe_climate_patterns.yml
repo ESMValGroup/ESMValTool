@@ -50,19 +50,19 @@ CMIP6_landfrac: &cmip6_landfrac
   - {dataset: CanESM5,         exp: piControl,  ensemble: r1i1p1f1, grid: gn}
   - {dataset: CanESM5-CanOE,   exp: piControl,  ensemble: r1i1p2f1, grid: gn}
   - {dataset: CanESM5-1,       exp: piControl,  ensemble: r1i1p1f1, grid: gn, institute: CCCma}
-#   # - {dataset: CAS-ESM2-0,      exp: piControl,  ensemble: r1i1p1f1, grid: gn} # Global only
+  # - {dataset: CAS-ESM2-0,      exp: piControl,  ensemble: r1i1p1f1, grid: gn} # Global only
   - {dataset: CMCC-ESM2,       exp: piControl,  ensemble: r1i1p1f1, grid: gn}
-#   # - {dataset: CMCC-CM2-SR5,    exp: piControl,  ensemble: r1i1p1f1, grid: gn} # No tasmin/tasmax
+  # - {dataset: CMCC-CM2-SR5,    exp: piControl,  ensemble: r1i1p1f1, grid: gn} # No tasmin/tasmax
   - {dataset: CNRM-CM6-1,      exp: piControl,  ensemble: r1i1p1f2, grid: gr}
   - {dataset: CNRM-CM6-1-HR,   exp: piControl,  ensemble: r1i1p1f2, grid: gr}
   - {dataset: CNRM-ESM2-1,     exp: piControl,  ensemble: r1i1p1f2, grid: gr}
-#   # - {dataset: E3SM-1-0,        exp: piControl,  ensemble: r1i1p1f1, grid: gr} # Tasmax == tasmin
+  # - {dataset: E3SM-1-0,        exp: piControl,  ensemble: r1i1p1f1, grid: gr} # Tasmax == tasmin
   - {dataset: EC-Earth3,       exp: piControl,  ensemble: r1i1p1f1, grid: gr}
-#   # - {dataset: EC-Earth3-CC,    exp: piControl,  ensemble: r1i1p1f1, grid: gr} # Global only
+  # - {dataset: EC-Earth3-CC,    exp: piControl,  ensemble: r1i1p1f1, grid: gr} # Global only
   - {dataset: EC-Earth3-Veg,   exp: piControl,  ensemble: r1i1p1f1, grid: gr}
-#   # - {dataset: FGOALS-f3-L,     exp: historical, ensemble: r1i1p1f1, grid: gr} # No tasmin/tasmax
+  # - {dataset: FGOALS-f3-L,     exp: historical, ensemble: r1i1p1f1, grid: gr} # No tasmin/tasmax
   - {dataset: FGOALS-g3,       exp: piControl,  ensemble: r1i1p1f1, grid: gn}
-#   # - {dataset: FIO-ESM-2-0,     exp: piControl,  ensemble: r1i1p1f1, grid: gn} # Global only
+  # - {dataset: FIO-ESM-2-0,     exp: piControl,  ensemble: r1i1p1f1, grid: gn} # Global only
   - {dataset: GFDL-CM4,        exp: piControl,  ensemble: r1i1p1f1, grid: gr1}
   - {dataset: GFDL-ESM4,       exp: ssp370,     ensemble: r1i1p1f1, grid: gr1}
   - {dataset: GISS-E2-1-H,     exp: piControl,  ensemble: r1i1p1f1, grid: gn}
@@ -73,8 +73,8 @@ CMIP6_landfrac: &cmip6_landfrac
   - {dataset: INM-CM4-8,       exp: piControl,  ensemble: r1i1p1f1, grid: gr1}
   - {dataset: INM-CM5-0,       exp: abrupt-4xCO2,  ensemble: r1i1p1f1, grid: gr1}
   - {dataset: IPSL-CM6A-LR,    exp: piControl,  ensemble: r1i1p1f1, grid: gr}
-#   # - {dataset: KACE-1-0-G,      exp: piControl,  ensemble: r1i1p1f1, grid: gr} # Global only, weird tasmin/tasmax
-#   # - {dataset: KIOST-ESM,       exp: piControl,  ensemble: r1i1p1f1, grid: gr} # Global only
+  # - {dataset: KACE-1-0-G,      exp: piControl,  ensemble: r1i1p1f1, grid: gr} # Global only, weird tasmin/tasmax
+  # - {dataset: KIOST-ESM,       exp: piControl,  ensemble: r1i1p1f1, grid: gr} # Global only
   - {dataset: MIROC6,          exp: piControl,  ensemble: r1i1p1f1, grid: gn}
   - {dataset: MIROC-ES2L,      exp: piControl,  ensemble: r1i1p1f2, grid: gn}
   - {dataset: MIROC-ES2H,      exp: piControl,  ensemble: r1i1p4f2, grid: gn}
@@ -144,12 +144,12 @@ diagnostics:
 
     variables:
 
-      sftlf:
-        short_name: sftlf
-        mip: fx
-        project: CMIP6
-        preprocessor: downscale_sftlf
-        additional_datasets: *cmip6_landfrac
+      # sftlf:
+      #   short_name: sftlf
+      #   mip: fx
+      #   project: CMIP6
+      #   preprocessor: downscale_sftlf
+      #   additional_datasets: *cmip6_landfrac
 
       tasmax_585:
         short_name: tasmax
@@ -247,4 +247,4 @@ diagnostics:
         grid: constrained  # options: constrained, full
         imogen_mode: true  # options: true, false
         parallelise: true  # options: true, false
-        area: land  # options global, land. If land, uncomment landfrac recipe settings
+        area: global  # options global, land. If land, uncomment landfrac recipe settings
