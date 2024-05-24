@@ -263,8 +263,7 @@ def regression(tas, cube_data, area, ocean_frac=None, land_frac=None):
         tas_data = sf.area_avg_landsea(
             tas, ocean_frac, land_frac, land=True, return_cube=False
         )
-
-    if area == 'global':
+    else:
         # calculate global average warming
         tas_data = area_statistics(tas, 'mean').data
 
@@ -284,26 +283,6 @@ def regression(tas, cube_data, area, ocean_frac=None, land_frac=None):
     slope_array = slopes.reshape(cube_data.shape[1:])
 
     return slope_array
-
-
-def regression_units(tas, cube):
-    """Calculate regression coefficient units.
-
-    Parameters
-    ----------
-    tas : cube
-        near-surface air temperature
-    cube : cube
-        cube of a given variable
-
-    Returns
-    -------
-    units : str
-        string of calculated regression units
-    """
-    units = cube.units / tas.units
-
-    return units
 
 
 def create_cube(tas_cube, ssp_cube, array, month_number, units=None):
@@ -382,51 +361,48 @@ def calculate_regressions(
         cube list of newly created regression slope value cubes, for each var
     """
     regr_var_list = iris.cube.CubeList([])
-    months = yrs * 12
 
     for cube in anom_list:
         if cube.var_name == "tl1_anom":
             # convert years to months when selecting
-            tas = cube[-months:]
+            tas = cube[-yrs*12:]
 
     for cube in anom_list:
-        cube_ssp = cube[-months:]
+        cube = cube[-yrs*12:]
         month_list = iris.cube.CubeList([])
 
         # extracting months, regressing, and merging
         for i in range(1, 13):
-            month_constraint = iris.Constraint(imogen_drive=i)
-            month_cube_ssp = cube_ssp.extract(month_constraint)
-            month_tas = tas.extract(month_constraint)
+            month_cube = cube.extract(iris.Constraint(imogen_drive=i))
+            month_tas = tas.extract(iris.Constraint(imogen_drive=i))
 
             if area == 'land':
                 regr_array = regression(
                     month_tas,
-                    month_cube_ssp.data,
+                    month_cube.data,
                     area=area,
                     ocean_frac=ocean_frac,
                     land_frac=land_frac,
                 )
-
-            if area == 'global':
+            else:
                 regr_array = regression(
                     month_tas,
-                    month_cube_ssp.data,
+                    month_cube.data,
                     area=area,
                 )
 
             if cube.var_name in ("swdown_anom", "lwdown_anom"):
                 units = "W m-2 K-1"
             else:
-                units = regression_units(tas, cube_ssp)
+                units = cube.units / tas.units
 
-            # creating cube of regression values
-            regr_cube = create_cube(tas, cube_ssp, regr_array, i, units=units)
+            # create, and append cube of regression values
+            month_list.append(
+                create_cube(tas, cube, regr_array, i, units=units)
+            )
 
-            month_list.append(regr_cube)
-
-        conc_cube = month_list.merge_cube()
-        regr_var_list.append(conc_cube)
+        month_list = month_list.merge_cube()
+        regr_var_list.append(month_list)
 
     return regr_var_list
 
