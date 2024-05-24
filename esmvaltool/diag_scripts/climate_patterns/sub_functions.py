@@ -210,7 +210,7 @@ def parallelise(function, processes=None):
     return partial(easy_parallise, function)
 
 
-def rename_variables(cube, orig_vars=True, new_extension=""):
+def rename_variables(cube, has_orig_vars=True, new_extension=""):
     """Rename variables and a coord to fit in JULES framework.
 
     Parameters
@@ -244,7 +244,7 @@ def rename_variables(cube, orig_vars=True, new_extension=""):
     for orig_var, new_var, long_var in zip(
         original_var_names, new_var_names, long_var_names
     ):
-        if orig_vars:
+        if has_orig_vars:
             if cube.var_name == f"{orig_var}":
                 cube.rename(long_var)
                 cube.var_name = f"{new_var}{new_extension}"
