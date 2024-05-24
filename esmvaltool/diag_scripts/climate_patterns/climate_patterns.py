@@ -606,7 +606,7 @@ def extract_data_from_cfg(cfg, model):
                 cube = constrain_latitude(cube_initial)
             else:
                 cube = cube_initial
-                
+
             if dataset["exp"] != "historical-ssp585":
                 sftlf = cube
             else:
