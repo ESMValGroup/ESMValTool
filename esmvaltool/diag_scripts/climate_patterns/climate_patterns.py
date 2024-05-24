@@ -55,7 +55,7 @@ from esmvalcore.preprocessor import (
     extract_time,
     climate_statistics
 )
-from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
+from esmvaltool.diag_scripts.shared import run_diagnostic
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -442,7 +442,7 @@ def cube_saver(list_of_cubelists, work_path, name_list, jules_mode):
         path to work_dir, to save cubelists
     name_list : list
         list of filename strings for saving
-    mode : str
+    jules_mode : str
         switch option passed through by ESMValTool config dict
 
     Returns
@@ -628,8 +628,8 @@ def patterns(model, cfg):
 
     save_outputs(cfg, list_of_cubelists, model)
 
-    ### Provenance Logging, removed due to sporadic errors. Fix later.
-    
+    # Provenance Logging, removed due to sporadic errors. Fix later.
+
     # model_work_dir, _ = sf.make_model_dirs(
     #     cfg,
     #     model
