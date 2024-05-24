@@ -244,7 +244,6 @@ diagnostics:
     scripts:
       climate_patterns_script:
         script: climate_patterns/climate_patterns.py
-        grid: constrained  # options: constrained, full
         jules_mode: true  # options: true, false
         parallelise: true  # options: true, false
         area: global  # options global, land. If land, uncomment landfrac recipe settings

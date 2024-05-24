@@ -15,9 +15,6 @@ Gregory Munday (Met Office, UK)
 
 Configuration options in recipe
 -------------------------------
-grid: str, optional (default: constrained)
-    options: constrained, full
-    def: removes Antarctica from grid
 jules_mode: bool, optional (default: false)
     options: true, false
     def: outputs extra data (anomaly, climatology) per variable
@@ -53,13 +50,17 @@ from rename_variables import (
     rename_variables_base,
 )
 
-from esmvalcore.preprocessor import area_statistics
+from esmvalcore.preprocessor import (
+    area_statistics,
+    extract_time,
+    climate_statistics
+)
 from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
 
 logger = logging.getLogger(Path(__file__).stem)
 
 
-def climatology(cube, syr=1850, eyr=1889):
+def calculate_climatology(cube, syr=1850, eyr=1889):
     """Handle aggregation to make climatology.
 
     Parameters
@@ -76,66 +77,18 @@ def climatology(cube, syr=1850, eyr=1889):
     cube_aggregated : cube
         40 year climatology cube from syr-eyr (default 1850-1889)
     """
-    cube_40yr = cube.extract(
-        iris.Constraint(
-            time=lambda t: syr <= t.point.year <= eyr,
-            month_number=lambda t: 1 <= t.point <= 12,
-        )
+    cube_40yr = extract_time(
+        cube,
+        start_year=syr,
+        start_month=1,
+        start_day=1,
+        end_year=eyr,
+        end_month=12,
+        end_day=31
     )
-    cube_aggregated = make_monthly_climatology(cube_40yr)
+    cube_aggregated = climate_statistics(cube_40yr, 'mean', 'month')
 
     return cube_aggregated
-
-
-def constrain_latitude(cube, min_lat=-55, max_lat=82.5):
-    """Constrains latitude to decrease run-time when output fed to IMOGEN.
-
-    Parameters
-    ----------
-    cube : cube
-        cube loaded from config dictionary
-    min_lat : float
-        minimum latitude to crop
-    max_lat : float
-        maximum latitude to crop
-
-    Returns
-    -------
-    cube_clipped : cube
-        cube with latitudes set from -55 to 82.5 degrees
-    """
-    cube_clipped = cube.extract(
-        iris.Constraint(latitude=lambda cell: max_lat >= cell >= min_lat)
-    )
-
-    return cube_clipped
-
-
-def make_monthly_climatology(cube):
-    """Generate a climatology by month_number.
-
-    Parameters
-    ----------
-    cube : cube
-        cube loaded from config dictionary
-
-    Returns
-    -------
-    cube_month_climatol : cube
-        cube aggregated by month_number
-    """
-    if not cube.coords("month_number"):
-        iris.coord_categorisation.add_month_number(
-            cube,
-            "time",
-            "month_number"
-        )
-    cube_month_climatol = cube.aggregated_by(
-        "month_number",
-        iris.analysis.MEAN
-    )
-
-    return cube_month_climatol
 
 
 def diurnal_temp_range(cubelist):
@@ -614,12 +567,7 @@ def extract_data_from_cfg(cfg, model):
             input_file = dataset["filename"]
 
             # preparing single cube
-            cube_initial = sf.load_cube(input_file)
-
-            if cfg["grid"] == "constrained":
-                cube = constrain_latitude(cube_initial)
-            else:
-                cube = cube_initial
+            cube = sf.load_cube(input_file)
 
             if dataset["exp"] != "historical-ssp585":
                 sftlf = cube
@@ -628,7 +576,7 @@ def extract_data_from_cfg(cfg, model):
                 ts_list.append(cube)
 
                 # making climatology
-                clim_cube = climatology(cube)
+                clim_cube = calculate_climatology(cube)
                 clim_list.append(clim_cube)
 
     if cfg["area"] == 'land':
