@@ -208,3 +208,54 @@ def parallelise(function, processes=None):
             return result
 
     return partial(easy_parallise, function)
+
+
+def rename_variables(cube, orig_vars=True, new_extension=""):
+    """Rename variables and a coord to fit in JULES framework.
+
+    Parameters
+    ----------
+    cube : cube
+        input cube
+    orig_vars : bool
+        if True, rename to new var names with correct extension
+    new_extension : str
+        extension to add to variable names
+
+    Returns
+    -------
+    cube : cube
+        cube with renamed variables
+    """
+    original_var_names = ["tas", "range_tl1", "huss", "pr",
+                          "sfcWind", "ps", "rsds", "rlds"]
+    new_var_names = ["tl1", "range_tl1", "ql1", "precip",
+                     "wind", "pstar", "swdown", "lwdown"]
+    long_var_names = [
+        "Air Temperature",
+        "Diurnal Range",
+        "Specific Humidity",
+        "Precipitation",
+        "Wind Speed",
+        "Surface Pressure",
+        "Surface Downwelling Shortwave Radiation",
+        "Surface Downwelling Longwave Radiation"
+    ]
+    for orig_var, new_var, long_var in zip(
+        original_var_names, new_var_names, long_var_names
+    ):
+        if orig_vars:
+            if cube.var_name == f"{orig_var}":
+                cube.rename(long_var)
+                cube.var_name = f"{new_var}{new_extension}"
+                cube.coord("month_number").rename("imogen_drive")
+        else:
+            if cube.var_name == f"{new_var}_anom":
+                cube.rename(long_var)
+                cube.var_name = f"{new_var}_patt"
+            elif cube.var_name == f"{new_var}_patt":
+                cube.rename(long_var)
+                cube.var_name = f"{orig_var}"
+                cube.coord("imogen_drive").rename("month_number")
+
+    return cube

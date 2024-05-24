@@ -36,6 +36,7 @@ import iris.coord_categorisation
 import iris.cube
 import numpy as np
 import sklearn.linear_model
+
 import sub_functions as sf
 from plotting import (
     plot_patterns_timeseries,
@@ -43,13 +44,6 @@ from plotting import (
     plot_climatologies_timeseries,
     plot_patterns
 )
-from rename_variables import (
-    rename_anom_variables,
-    rename_clim_variables,
-    rename_regression_variables,
-    rename_variables_base,
-)
-
 from esmvalcore.preprocessor import (
     area_statistics,
     extract_time,
@@ -316,7 +310,7 @@ def create_cube(tas_cube, ssp_cube, array, month_number, units=None):
     coord_month = iris.coords.AuxCoord(month_number, var_name="imogen_drive")
     aux_coords_and_dims = [(coord_month, ())]
 
-    cube = rename_regression_variables(ssp_cube)
+    cube = sf.rename_variables(ssp_cube, has_orig_vars=False)
 
     # creating cube
     cube = iris.cube.Cube(
@@ -433,7 +427,9 @@ def cube_saver(list_of_cubelists, work_path, name_list, jules_mode):
             )
     else:
         for i, cube in enumerate(list_of_cubelists[2]):
-            list_of_cubelists[2][i] = rename_variables_base(cube)
+            list_of_cubelists[2][i] = sf.rename_variables(
+                cube, has_orig_vars=False
+            )
         iris.save(
             list_of_cubelists[2],
             os.path.join(work_path, name_list[2])
@@ -585,8 +581,12 @@ def patterns(model, cfg):
     clim_list_final, anom_list_final = calculate_anomaly(clim_list, ts_list)
 
     for i, cube in enumerate(clim_list_final):
-        rename_clim_variables(cube)
-        rename_anom_variables(anom_list_final[i])
+        sf.rename_variables(
+            cube, has_orig_vars=True, new_extension="_clim"
+        )
+        sf.rename_variables(
+            anom_list_final[i], has_orig_vars=True, new_extension="_anom"
+        )
 
     if cfg["area"] == 'land':
         regressions = calculate_regressions(

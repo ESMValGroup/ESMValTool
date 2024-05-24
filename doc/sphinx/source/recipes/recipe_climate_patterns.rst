@@ -25,7 +25,6 @@ Recipes are stored in esmvaltool/recipes/
 Diagnostics are stored in esmvaltool/diag_scripts/climate_patterns/
 
 * climate_patterns.py: generates climate patterns from input datasets
-* rename_variables.py: renames variables depending on user specifications
 * sub_functions.py: set of sub functions to assist with driving scripts
 * plotting.py: contains all plotting functions for driving scripts
 
