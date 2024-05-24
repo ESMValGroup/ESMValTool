@@ -137,7 +137,9 @@ def area_avg_landsea(cube, ocean_frac, land_frac, land=True, return_cube=None):
             )
             / 1e12
         )
-        cube2 = cube * global_weights * land_frac
+        
+        # Iris is too strict so we need to use core_data in this calculation 
+        cube2 = cube * global_weights * land_frac.core_data()
         cube2 = (
             cube2.collapsed(["latitude", "longitude"], iris.analysis.SUM)
             / 1e12
