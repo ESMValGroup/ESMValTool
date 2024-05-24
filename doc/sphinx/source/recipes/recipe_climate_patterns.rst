@@ -11,7 +11,7 @@ datasets.
 
 .. note::
   The regrid setting in the recipe is set to a 2.5x3.75 grid. This is done to
-  match the current resolution in the IMOGEN-JULES framework, but can be
+  match the current resolution in the IMOGEN-JULES model, but can be
   adjusted with no issues for a finer/coarser patterns grid.
 
 
@@ -41,8 +41,7 @@ User settings in recipe
 
    *Optional settings for script*
 
-   * grid: whether you want to remove Antarctic latitudes or not
-   * imogen_mode: output imogen-specific var names + .nc files
+   * jules_mode: output jules-specific var names + .nc files
    * parallelise: parallelise over models or not
    * area: calculate the patterns globally, or over land only
 
