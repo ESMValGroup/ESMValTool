@@ -142,15 +142,24 @@ def _diagnostic(config):
     # and the number of useable pixels for each timestep
     n_fill = {}
     n_use = {}
-    n_fill['day'] = np.array(
-        [np.sum(item)
-         for item in loaded_data['ESACCI-LST']['ts_day'].data.mask])
-    n_fill['night'] = np.array(
-        [np.sum(item)
-         for item in loaded_data['ESACCI-LST']['ts_night'].data.mask])
+    for time in ['day', 'night']:
+        if isinstance(loaded_data['ESACCI-LST'][f'ts_{time}'].data.mask,np.ndarray):
+            # mask is an array so there are masked values
+            ## do counting
+            n_fill[time] = np.array([np.sum(loaded_data['ESACCI-LST'][f'ts_{time}'][date].data.mask) for date in range(len(loaded_data['ESACCI-LST']['ts_day'].coord('time').points))])
+        elif loaded_data['ESACCI-LST'][f'ts_{time}'].data.mask:
+            # mask is single value of True so all masked values
+            ## make a array of m*n
+            n_fill[time] = np.array([lat_len*lon*len for i in loaded_data['ESACCI-LST']['ts_day'].coord('time').points])
+        else:
+            # mask is a single value of False so no masked values
+            ## make an array of zeros
+            n_fill[time] = np.array([0 for i in loaded_data['ESACCI-LST']['ts_day'].coord('time').points])
+
+    print(n_fill) # while still testing
 
     n_use['day'] = (lat_len*lon_len) - n_fill['day']
-    n_use['night'] = (lat_len*lon_len)
+    n_use['night'] = (lat_len*lon_len) - n_fill['night']
 
     # This loop call the propagation equations, once for 'day' and 'night'
     for time in ['day', 'night']:
