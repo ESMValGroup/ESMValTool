@@ -175,9 +175,9 @@ def _diagnostic(config):
         loaded_data['ESACCI-LST'][f'lst_unc_sys_{time}']
 
         propagated_values[f'lst_unc_loc_sfc_{time}'] = \
-        eq_arithmetic_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_sfc_{time}'])
-
-        propagated_values[f'lst_unc_ran_{time}'], \
+        eq_correlation_with_biome(loaded_data['ESACCI-LST'][f'lst_unc_loc_sfc_{time}'],
+                                  loaded_data['ESACCI-LST'][f'lcc_{time}'])
+        # eq_ari thmetic_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_sfc_{time}'])
         propagated_values[f'lst_sampling_{time}'] = \
         eq_propagate_random_with_sampling(loaded_data['ESACCI-LST'][f'lst_unc_ran_{time}'],
                                           loaded_data['ESACCI-LST'][f'ts_{time}'],
@@ -227,7 +227,28 @@ def test_plot(propagated_values):
 
 # These are the propagation equations
 
+def eq_correlation_with_biome(cube_loc_sfc, lcc):
+    # make a 0.05 degree grid of data
+    # find same biome matrix
+    # calc uncert for each correlated biome
+    # calc 0.05 box total uncert
+    # with all of these, find the total uncert (0.05 -> arbitary)
+    
+    lat_len = len(cube_loc_sfc.coord('latitude').points)
+    lon_len = len(cube_loc_sfc.coord('longitude').points)
 
+    lc_grid = []
+
+    for i in range(0,lat_len,5):
+        for j in range(0,lon_len,5):
+            lc_grid.append(lcc[:,i:i+5,j:j+5])
+    
+    
+    print(lc_grid)
+    return
+                                  
+                                  
+                                  
 def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_fill, n_use):
     """Propagate radom uncertatinty using the sampling uncertainty
     ATBD eq 4
