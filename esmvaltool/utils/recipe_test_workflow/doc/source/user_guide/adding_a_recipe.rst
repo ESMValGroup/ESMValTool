@@ -1,7 +1,10 @@
-Adding a recipe to the |RTW|
-============================
+Adding a recipe to the Recipe Test Workflow (|RTW|)
+===================================================
 
 .. include:: ../common.txt
+
+**Please note:** Before you follow these steps to add your recipe, you must be
+able to successfully run it with ESMValtool without error.
 
 * Run ESMValTool locally with your recipe, make sure to take note of the memory
   and time expenditure provided by the terminal output::
@@ -26,7 +29,8 @@ Adding a recipe to the |RTW|
 * Locate the workflow run folder of the workflow you just completed.
 
 * Copy the output files from the "cycle" folder (run/share/bin/cycle) of the
-  workflow you just ran, to the KGO rootpath folder (/data/users/esmval/KGO)::
+  workflow you just ran, to your site specific KGO rootpath folder
+  (/data/users/esmval/KGO)::
 
     cp -r <directory_of_recipe_output_cycle_folder> <KGO_rootpath_folder>
 
@@ -42,6 +46,52 @@ Adding a recipe to the |RTW|
 * Run the RTW again::
 
     cylc vip -O <your_site_name>
+
+* The workflow should now succeed.
+
+* Take note of how long the run took  to complete on cylc. This can be found in the `job.time` section of the task listed as `process_<your_recipe>`.
+
+* Locate your local <site>.cylc file, found in (recipe_test_workflow/site).
+
+* Open it in your preferred code editor.
+
+* Locate the `COMPUTE` section, it should look something like this::
+
+    [[COMPUTE]]
+    platform = <your_platform_here>
+    execution time limit = PT2M
+    [[[directives]]]
+    --wckey = RTW
+    --ntasks = {{ MAX_PARALLEL_TASKS }}
+    --mem = 2G
+
+* Compare the `execution time limit` and --mem (memory) units here with the
+  readings you took locally. If your local readings do not exceed these, then
+  you have successfully added the recipe to the workflow, and can now commit
+  and push your changes.
+
+
+* If either of the time/memory readings from your local run are larger than the
+  values specified in the `COMPUTE` section, you need to add your recipe as
+  another `process` similar to::
+
+    [[process<fast=recipe_albedolandcover>]]
+    # Actual: 0m31s, 2.5 GB on 2024-04-08.
+    execution time limit = PT2M
+    [[[directives]]]
+        --mem = 3G
+
+* Variable (fast, medium) must be consistent with flow.cylc.
+
+* The commented "Actual" reading should be the time/memory
+  reading you recorded from cylc review.
+
+* Adjust the values for `execution_time` and `--mem` to be larger than the
+  values you recorded from cylc review.
+
+* Stop any running workflows.
+
+* Run the recipe test workflow again.
 
 * If the workflow succeeds then your recipe has successfully been added to the
   workflow. You can now commit your changes and push them onto GitHub.
