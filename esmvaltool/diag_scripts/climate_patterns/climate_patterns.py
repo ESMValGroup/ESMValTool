@@ -18,18 +18,16 @@ Configuration options in recipe
 grid: str, optional (default: constrained)
     options: constrained, full
     def: removes Antarctica from grid
-jules_mode: bool, optional (default: true)
+jules_mode: bool, optional (default: false)
     options: true, false
     def: outputs extra data (anomaly, climatology) per variable
          to drive JULES-IMOGEN configuration
-parallelise: bool, optional (default: true)
+parallelise: bool, optional (default: false)
     options: true, false
     def: parallelises code to run N models at once
-parallel_threads: int, optional (default: null)
-    options: any int, up to the amount of CPU cores accessible by user
-    def: number of threads/cores to parallelise over. If 'parallelise: on' and
-         'parallel_threads': null, diagnostic will automatically parallelise
-         over N-1 accessible threads
+area: str, optional (default: global)
+    options: global, land
+    def: area over which to calculate climate patterns
 """
 
 import logging
@@ -673,7 +671,7 @@ def patterns(model, cfg):
             ocean_frac=ocean_frac,
             land_frac=land_frac
         )
-    if cfg["area"] == 'global':
+    else:
         regressions = calculate_regressions(
             anom_list_final, cfg["area"]
         )
