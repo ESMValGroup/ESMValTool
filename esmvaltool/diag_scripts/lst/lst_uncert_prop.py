@@ -150,7 +150,7 @@ def _diagnostic(config):
         elif loaded_data['ESACCI-LST'][f'ts_{time}'].data.mask:
             # mask is single value of True so all masked values
             ## make a array of m*n
-            n_fill[time] = np.array([lat_len*lon*len for i in loaded_data['ESACCI-LST']['ts_day'].coord('time').points])
+            n_fill[time] = np.array([lat_len*lon_len for i in loaded_data['ESACCI-LST']['ts_day'].coord('time').points])
         else:
             # mask is a single value of False so no masked values
             ## make an array of zeros
