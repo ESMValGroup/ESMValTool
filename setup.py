@@ -31,7 +31,7 @@ REQUIREMENTS = {
         'distributed',
         'ecmwf-api-client',
         'eofs',
-        'ESMPy',
+        'ESMPy',  # not on PyPI
         'esmvalcore',
         'esmf-regrid>=0.7.0',
         'fiona',
@@ -49,13 +49,14 @@ REQUIREMENTS = {
         'numpy!=1.24.3',  # severe masking bug
         'openpyxl',
         'packaging',
-        'pandas',
+        'pandas!=2.2.0,!=2.2.1,!=2.2.2',  # ESMValCore PR2305
         'progressbar2',
         'psyplot',
         'psy-maps',
         'psy-reg',
         'psy-simple',
         'pyproj>=2.1',
+        # 'pys2index',  # issues installing from PyPI (wheel doesn't build)
         'python-dateutil',
         'pyyaml',
         'rasterio',
