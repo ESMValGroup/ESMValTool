@@ -21,6 +21,8 @@ import numpy as np
 import pandas as pd
 import json
 import logging
+import warnings
+import os
 
 # import internal esmvaltool modules here
 from esmvaltool.diag_scripts.shared import (
@@ -31,7 +33,7 @@ from esmvaltool.diag_scripts.shared import (
 
 
 logger = logging.getLogger(os.path.basename(__file__))
-
+warnings.filterwarnings("ignore", ".*Collapsing a non-contiguous coordinate*")
 
 def get_provenance_record(caption: str, ancestors: list,
                           long_names: list, plot_types: list) -> dict:
@@ -108,7 +110,7 @@ def get_mapping_dict(selected_pairs: list) -> dict:
 
 def calculate_slwt_obs(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
                        dataset: str, correlation_thresold: float,
-                       rmse_threshold: float) -> np.array:
+                       rmse_threshold: float, ancestors: list) -> np.array:
     
     logger.info('Calculating simplified Lamb Weathertypes for %s', dataset)
 
@@ -150,6 +152,10 @@ def calculate_slwt_obs(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
         f'{work_dir}/wt_mapping_dict_{dataset}.json', 'w', encoding='utf-8'
     ) as file:
         json.dump(mapping_dict, file)
+
+    log_provenance('Lamb Weathertypes', f'{dataset}_wt_prov', cfg,
+                   ancestors,
+                   ['Lamb Weathertypes'], [''])
 
     return np.array([np.int8(mapping_dict.get(value, 0)) for value in lwt])
 
@@ -299,9 +305,13 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
     return wt
 
 
-def calculate_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str):
+def calculate_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str, 
+                             preproc_path: str, output_file_path: str):
 
     work_dir = cfg.get('work_dir')
+
+    if not os.path.exists(f'{work_dir}/{output_file_path}'):
+        os.makedirs(f'{work_dir}/{output_file_path}')
 
     wt = wt_algorithm(cube, dataset)
 
@@ -336,7 +346,7 @@ def calculate_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str):
     wt_cube[1].add_dim_coord(tcoord, 0)
     wt_cube[2].add_dim_coord(tcoord, 0)
 
-    iris.save(wt_cube, f'{work_dir}/{dataset}.nc')
+    iris.save(wt_cube, f'{work_dir}/{output_file_path}/{dataset}.nc')
 
     # write to csv file
     d = {
@@ -346,10 +356,11 @@ def calculate_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str):
         'slwt_EOBS': np.int8(slwt_eobs),
     }
     df = pd.DataFrame(data=d)
-    df.to_csv(f'{work_dir}/{dataset}.csv', index=False)
+    df.to_csv(f'{work_dir}/{output_file_path}/{dataset}.csv', index=False)
 
     log_provenance('Lamb Weathertypes', f'{dataset}_wt_prov', cfg,
-                   ['wt_mapping_dict_ERA5.json', 'wt_mapping_dict_E-OBS.json'],
+                   [preproc_path, f'{work_dir}/wt_mapping_dict_ERA5.json', 
+                    f'{work_dir}/wt_mapping_dict_E-OBS.json'],
                    ['Lamb Weathertypes'], [''])
 
 
@@ -527,9 +538,11 @@ def process_prcp_mean(cfg: dict, data: np.array, correlation_threshold: float,
 
 def calculate_wt_means(cfg: dict, cube: iris.cube.Cube,
                        wt_cubes: iris.cube.CubeList, dataset: str,
-                       var_name: str, wt_string: str):
+                       var_name: str, wt_string: str, preproc_path: str):
 
     logger.info('Calculating %s %s means for %s', dataset, var_name, wt_string)
+
+    work_dir = cfg.get('work_dir')
 
     if wt_string == 'slwt_ERA5':
         slwt_era5_cube = wt_cubes[1]
@@ -589,12 +602,15 @@ def calculate_wt_means(cfg: dict, cube: iris.cube.Cube,
 
     log_provenance(f'{var_name} means for {wt_string}',
                    f'{dataset}_{var_name}_{wt_string}_means_prov', cfg,
-                   [f'{dataset}.nc', 'ERA5.nc'], [var_name], ['geo'])
+                   [f'{preproc_path}', f'{work_dir}/ERA5.nc'], 
+                   [var_name], ['geo'])
 
 
 def calculate_wt_anomalies(cfg: dict, cube: iris.cube.Cube,
                            wt_cubes: iris.cube.CubeList, dataset: str,
-                           var_name: str, wt_string: str):
+                           var_name: str, wt_string: str, preproc_path: str):
+
+    work_dir = cfg.get('work_dir')
 
     logger.info('Calculating %s %s anomalies for %s', dataset,
                 var_name, wt_string)
@@ -657,12 +673,14 @@ def calculate_wt_anomalies(cfg: dict, cube: iris.cube.Cube,
 
     log_provenance(f'{var_name} anomaly for {wt_string}',
                    f'{dataset}_{var_name}_{wt_string}_anomalies_prov', cfg,
-                   [f'{dataset}.nc', 'ERA5.nc'], [var_name], ['geo'])
+                   [f'{preproc_path}', f'{work_dir}/ERA5.nc'], [var_name], ['geo'])
 
 
 def calculate_wt_std(cfg: dict, cube: iris.cube.Cube,
                      wt_cubes: iris.cube.CubeList, dataset: str,
-                     var_name: str, wt_string: str):
+                     var_name: str, wt_string: str, preproc_path: str):
+
+    work_dir = cfg.get('work_dir')
 
     logger.info('Calculating %s %s standard deviation for %s',
                 dataset, var_name, wt_string)
@@ -726,7 +744,7 @@ def calculate_wt_std(cfg: dict, cube: iris.cube.Cube,
 
     log_provenance(f'{var_name} standard deviation for {wt_string}',
                    f'{dataset}_{var_name}_{wt_string}_std_prov', cfg,
-                   [f'{dataset}.nc', 'ERA5.nc'], [var_name], ['geo'])
+                   [f'{preproc_path}', f'{work_dir}/ERA5.nc'], [var_name], ['geo'])
 
 
 def combine_wt_to_file(cfg: dict, lwt: np.array, slwt_era5: np.array,
@@ -788,9 +806,12 @@ def write_lwt_to_file(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
     df.to_csv(write_path + f'/{file_name}.csv', index=False)
 
 
-def calculate_lwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str):
+def calculate_lwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str, output_file_path: str):
 
     work_dir = cfg.get('work_dir')
+
+    if not os.path.exists(f'{work_dir}/{output_file_path}'):
+        os.makedirs(f'{work_dir}/{output_file_path}')
 
     wt = wt_algorithm(cube, dataset)
 
@@ -807,12 +828,12 @@ def calculate_lwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str):
 
     wt_cube[0].add_dim_coord(tcoord, 0)
 
-    iris.save(wt_cube, f'{work_dir}/{dataset}.nc')
+    iris.save(wt_cube, f'{work_dir}/{output_file_path}/{dataset}.nc')
 
     # write to csv file
     d = {'date': time_points[:], 'lwt': np.int8(wt)}
     df = pd.DataFrame(data=d)
-    df.to_csv(f'{work_dir}/{dataset}.csv', index=False)
+    df.to_csv(f'{work_dir}/{output_file_path}/{dataset}.csv', index=False)
 
 
 def run_my_diagnostic(cfg: dict):
@@ -853,6 +874,11 @@ def run_my_diagnostic(cfg: dict):
                 # calculate lwt
                 lwt = wt_algorithm(wt_preproc, key)
 
+                era5_ancestors = [value[0].get('filename'),
+                                  value[1].get('filename')]
+                eobs_ancestors = [value[0].get('filename'),
+                preproc_variables_dict.get('E-OBS')[0].get('filename')]
+
                 # calculate simplified lwt based on precipitation patterns
                 slwt_era5 = calculate_slwt_obs(
                     cfg,
@@ -861,6 +887,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     correlation_threshold,
                     rmse_threshold,
+                    era5_ancestors,
                 )
                 slwt_eobs = calculate_slwt_obs(
                     cfg,
@@ -869,7 +896,9 @@ def run_my_diagnostic(cfg: dict):
                     'E-OBS',
                     correlation_threshold,
                     rmse_threshold,
+                    eobs_ancestors,
                 )
+
 
                 # write to file
                 combine_wt_to_file(cfg, lwt, slwt_era5,
@@ -883,7 +912,10 @@ def run_my_diagnostic(cfg: dict):
                     f'{work_dir}/{key}.nc', 'slwt_eobs')
                 wt_cubes = [lwt_cube, slwt_era5_cube, slwt_eobs_cube]
 
-                
+                preproc_path_psl = value[2].get('filename')
+                preproc_path_prcp = value[3].get('filename')
+                preproc_path_tas = value[4].get('filename')
+
                 # plot means
                 calculate_wt_means(
                     cfg,
@@ -892,6 +924,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='psl',
                     wt_string='lwt',
+                    preproc_path=preproc_path_psl,
                 )
                 calculate_wt_means(
                     cfg,
@@ -900,6 +933,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='prcp',
                     wt_string='lwt',
+                    preproc_path=preproc_path_prcp,
                 )
                 calculate_wt_means(
                     cfg,
@@ -908,6 +942,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='tas',
                     wt_string='lwt',
+                    preproc_path=preproc_path_tas,
                 )
                 calculate_wt_means(
                     cfg,
@@ -916,6 +951,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='psl',
                     wt_string='slwt_ERA5',
+                    preproc_path=preproc_path_psl,
                 )
                 calculate_wt_means(
                     cfg,
@@ -924,6 +960,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='prcp',
                     wt_string='slwt_ERA5',
+                    preproc_path=preproc_path_prcp,
                 )
                 calculate_wt_means(
                     cfg,
@@ -932,6 +969,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='tas',
                     wt_string='slwt_ERA5',
+                    preproc_path=preproc_path_tas,
                 )
                 calculate_wt_means(
                     cfg,
@@ -940,6 +978,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='psl',
                     wt_string='slwt_EOBS',
+                    preproc_path=preproc_path_psl,
                 )
                 calculate_wt_means(
                     cfg,
@@ -948,6 +987,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='prcp',
                     wt_string='slwt_EOBS',
+                    preproc_path=preproc_path_prcp,
                 )
                 calculate_wt_means(
                     cfg,
@@ -956,6 +996,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='tas',
                     wt_string='slwt_EOBS',
+                    preproc_path=preproc_path_tas,
                 )
             else:
                 if key == 'E-OBS':
@@ -965,16 +1006,30 @@ def run_my_diagnostic(cfg: dict):
                 mean_preproc_prcp = iris.load_cube(value[2].get('filename'))
                 mean_preproc_tas = iris.load_cube(value[3].get('filename'))
 
+                model_name = key
+                timerange = value[0].get('timerange').replace('/', '-')
+                experiment = value[0].get('exp')
+                ensemble = value[0].get('ensemble')
+
+                output_file_path = f'{model_name}/{experiment}/{ensemble}/{timerange}'
+                preproc_path = value[0].get('filename')
+
                 # calculate weathertypes
-                calculate_lwt_slwt_model(cfg, wt_preproc, key)
+                calculate_lwt_slwt_model(cfg, wt_preproc, key, preproc_path, output_file_path)
 
                 # load wt files
-                lwt_cube = iris.load_cube(f'{work_dir}/{key}.nc', 'lwt')
+                lwt_cube = iris.load_cube(
+                    f'{work_dir}/{output_file_path}/{key}.nc', 'lwt')
                 slwt_era5_cube = iris.load_cube(
-                    f'{work_dir}/{key}.nc', 'slwt_era5')
+                    f'{work_dir}/{output_file_path}/{key}.nc', 'slwt_era5')
                 slwt_eobs_cube = iris.load_cube(
-                    f'{work_dir}/{key}.nc', 'slwt_eobs')
+                    f'{work_dir}/{output_file_path}/{key}.nc', 'slwt_eobs')
                 wt_cubes = [lwt_cube, slwt_era5_cube, slwt_eobs_cube]
+
+
+                preproc_path_psl = value[1].get('filename')
+                preproc_path_prcp = value[2].get('filename')
+                preproc_path_tas = value[3].get('filename')
 
                 # plot means
                 calculate_wt_means(
@@ -984,6 +1039,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='psl',
                     wt_string='lwt',
+                    preproc_path=preproc_path_psl,
                 )
                 calculate_wt_means(
                     cfg,
@@ -992,6 +1048,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='prcp',
                     wt_string='lwt',
+                    preproc_path=preproc_path_prcp,
                 )
                 calculate_wt_means(
                     cfg,
@@ -1000,6 +1057,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='tas',
                     wt_string='lwt',
+                    preproc_path=preproc_path_tas,
                 )
                 calculate_wt_means(
                     cfg,
@@ -1008,6 +1066,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='psl',
                     wt_string='slwt_ERA5',
+                    preproc_path=preproc_path_psl,
                 )
                 calculate_wt_means(
                     cfg,
@@ -1016,6 +1075,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='prcp',
                     wt_string='slwt_ERA5',
+                    preproc_path=preproc_path_prcp,
                 )
                 calculate_wt_means(
                     cfg,
@@ -1024,6 +1084,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='tas',
                     wt_string='slwt_ERA5',
+                    preproc_path=preproc_path_tas,
                 )
                 calculate_wt_means(
                     cfg,
@@ -1032,6 +1093,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='psl',
                     wt_string='slwt_EOBS',
+                    preproc_path=preproc_path_psl,
                 )
                 calculate_wt_means(
                     cfg,
@@ -1040,6 +1102,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='prcp',
                     wt_string='slwt_EOBS',
+                    preproc_path=preproc_path_prcp,
                 )
                 calculate_wt_means(
                     cfg,
@@ -1048,6 +1111,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='tas',
                     wt_string='slwt_EOBS',
+                    preproc_path=preproc_path_tas,
                 )
     else:  # if automatic_slwt is false, just do the lwt
         for key, value in preproc_variables_dict.items():
@@ -1071,6 +1135,10 @@ def run_my_diagnostic(cfg: dict):
                 lwt_cube = iris.load_cube(f'{work_dir}/{key}.nc', 'lwt')
                 wt_cubes = [lwt_cube]
 
+                preproc_path_psl = value[2].get('filename')
+                preproc_path_prcp = value[3].get('filename')
+                preproc_path_tas = value[4].get('filename')
+
                 # plot means
                 calculate_wt_means(
                     cfg,
@@ -1079,6 +1147,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='psl',
                     wt_string='lwt',
+                    preproc_path=preproc_path_psl,
                 )
                 calculate_wt_means(
                     cfg,
@@ -1087,6 +1156,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='prcp',
                     wt_string='lwt',
+                    preproc_path=preproc_path_prcp,
                 )
                 calculate_wt_means(
                     cfg,
@@ -1095,6 +1165,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='tas',
                     wt_string='lwt',
+                    preproc_path=preproc_path_tas,
                 )
             else:
                 if key == 'E-OBS':
@@ -1104,12 +1175,24 @@ def run_my_diagnostic(cfg: dict):
                 mean_preproc_prcp = iris.load_cube(value[2].get('filename'))
                 mean_preproc_tas = iris.load_cube(value[3].get('filename'))
 
+                model_name = key
+                timerange = value[0].get('timerange').replace('/', '-')
+                experiment = value[0].get('exp')
+                ensemble = value[0].get('ensemble')
+
+                output_file_path = f'{model_name}/{experiment}/{ensemble}/{timerange}'
+
                 # calculate weathertypes
-                calculate_lwt_model(cfg, wt_preproc, key)
+                calculate_lwt_model(cfg, wt_preproc, key, output_file_path)
 
                 # load wt files
                 lwt_cube = iris.load_cube(f'{work_dir}/{key}.nc', 'lwt')
                 wt_cubes = [lwt_cube]
+
+                # plot means
+                preproc_path_psl = value[2].get('filename')
+                preproc_path_prcp = value[3].get('filename')
+                preproc_path_tas = value[4].get('filename')
 
                 # plot means
                 calculate_wt_means(
@@ -1119,6 +1202,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='psl',
                     wt_string='lwt',
+                    preproc_path=preproc_path_psl,
                 )
                 calculate_wt_means(
                     cfg,
@@ -1127,6 +1211,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='prcp',
                     wt_string='lwt',
+                    preproc_path=preproc_path_prcp,
                 )
                 calculate_wt_means(
                     cfg,
@@ -1135,6 +1220,7 @@ def run_my_diagnostic(cfg: dict):
                     key,
                     var_name='tas',
                     wt_string='lwt',
+                    preproc_path=preproc_path_tas,
                 )
 
 
