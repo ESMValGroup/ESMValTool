@@ -171,7 +171,7 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
             if date_available:
                 full_list.append(new_list[idx])
             else:
-                logger.debug(f"No data available for {loop_date}")
+                logger.debug("No data available for %d", loop_date)
                 nan_cube = _create_nan_cube(new_list[0], loop_date.year,
                                             loop_date.month, loop_date.day)
                 full_list.append(nan_cube)
@@ -188,7 +188,7 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
             if date_available:
                 full_list.append(new_list[idx])
             else:
-                logger.debug(f"No data available for {loop_date}")
+                logger.debug("No data available for %d", loop_date)
                 nan_cube = _create_nan_cube(new_list[0], loop_date.year,
                                             loop_date.month, loop_date.day)
                 full_list.append(nan_cube)
@@ -265,7 +265,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             daily = False
         while loop_date <= end_date:
             if daily:
-                freqstr = 'daily' 
+                freqstr = 'daily'
             else:
                 freqstr = 'monthly'
             filepattern = os.path.join(

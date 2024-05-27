@@ -1,10 +1,13 @@
 """Script to download ESACCI-AEROSOL from CCI CEDA ftp."""
 
+import logging
 from datetime import datetime
 
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
+
+logger = logging.getLogger(__name__)
 
 
 def download_dataset(config, dataset, dataset_info, start_date, end_date,
@@ -57,7 +60,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
             downloader.download_folder(f'{loop_date.year}',
                                        f'{algorithm}-{version}-monthly')
         else:
-            logger.info(f'{loop_date.year}: no data found')
+            logger.info('%d: no data found', loop_date.year)
         loop_date += relativedelta.relativedelta(years=1)
 
     # download daily data
@@ -76,8 +79,8 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                 downloader.download_folder(f'{loop_date.month:02}',
                                            f'{algorithm}-{version}-daily')
             else:
-                logger.info(f'{loop_date.year}/{loop_date.month}: '
-                            f'no data found')
+                logger.info('%d/%d: no data found', loop_date.year,
+                            loop_date.month)
         else:
-            logger.info(f'{loop_date.year}: no data found')
+            logger.info('%d: no data found', loop_date.year)
         loop_date += relativedelta.relativedelta(months=1)
