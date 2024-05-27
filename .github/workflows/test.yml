@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - main
-      - fix_recipe_filler_bkwds_incompatibility
+      - recipe_test_workflow_prototype
   schedule:
     - cron: '0 0 * * *'
 
