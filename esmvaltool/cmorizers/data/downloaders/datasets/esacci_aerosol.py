@@ -40,14 +40,44 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     )
     downloader.connect()
 
-    while loop_date <= end_date:
-        year = loop_date.year
-        if year < 2003:
-            # downloader.set_cwd('ATSR2_SU/L3/v4.21/MONTHLY')
-            downloader.set_cwd('ATSR2_SU/L3/v4.3/MONTHLY')
-        else:
-            # downloader.set_cwd('AATSR_SU/L3/v4.21/MONTHLY')
-            downloader.set_cwd('AATSR_SU/L3/v4.3/MONTHLY')
+    version = 'v4.3'
+    algorithm = 'SU'
 
-        downloader.download_year(loop_date.year)
+    # download monthly data
+
+    loop_date = start_date
+    while loop_date <= end_date:
+        if loop_date.year < 2003:
+            instrument = 'ATSR2'
+        else:
+            instrument = 'AATSR'
+        rel_base_dir = f'{instrument}_{algorithm}/L3/{version}/MONTHLY'
+        downloader.set_cwd(rel_base_dir)
+        if downloader.exists(f'{loop_date.year}'):
+            downloader.download_folder(f'{loop_date.year}',
+                                       f'{algorithm}-{version}-monthly')
+        else:
+            logger.info(f'{loop_date.year}: no data found')
         loop_date += relativedelta.relativedelta(years=1)
+
+    # download daily data
+
+    loop_date = start_date
+    while loop_date <= end_date:
+        if loop_date.year < 2003:
+            instrument = 'ATSR2'
+        else:
+            instrument = 'AATSR'
+        rel_base_dir = f'{instrument}_{algorithm}/L3/{version}/DAILY'
+        downloader.set_cwd(rel_base_dir)
+        if downloader.exists(f'{loop_date.year}'):
+            downloader.set_cwd(f'{rel_base_dir}/{loop_date.year}')
+            if downloader.exists(f"{loop_date.month:02}"):
+                downloader.download_folder(f'{loop_date.month:02}',
+                                           f'{algorithm}-{version}-daily')
+            else:
+                logger.info(f'{loop_date.year}/{loop_date.month}: '
+                            f'no data found')
+        else:
+            logger.info(f'{loop_date.year}: no data found')
+        loop_date += relativedelta.relativedelta(months=1)

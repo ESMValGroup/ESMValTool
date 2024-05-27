@@ -156,8 +156,23 @@ diagnostics:
     scripts: null
 
 
-  ESACCI-AEROSOL:
-    description: ESACCI-AEROSOL check
+#  ESACCI-AEROSOL:
+#    description: ESACCI-AEROSOL check
+#    variables:
+#      abs550aer:
+#      od550aer:
+#      od550aerStderr:
+#      od550lt1aer:
+#      od870aer:
+#      od870aerStderr:
+#    additional_datasets:
+#      - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
+#         type: sat, version: SU-v4.3, start_year: 1997, end_year: 2011}
+#    scripts: null
+
+
+  ESACCI-AEROSOL-MOTHLY:
+    description: ESACCI-AEROSOL monthly data check
     variables:
       abs550aer:
       od550aer:
@@ -167,8 +182,22 @@ diagnostics:
       od870aerStderr:
     additional_datasets:
       - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
-#         type: sat, version: SU-v4.21, start_year: 1997, end_year: 2011}
-         type: sat, version: SU-v4.3, start_year: 1997, end_year: 2011}
+         type: sat, version: SU-v4.3-MONTHLY, start_year: 1997, end_year: 2011}
+    scripts: null
+
+
+  ESACCI-AEROSOL-DAILY:
+    description: ESACCI-AEROSOL daily data check
+    variables:
+      abs550aer:
+      od550aer:
+      od550aerStderr:
+      od550lt1aer:
+      od870aer:
+      od870aerStderr:
+    additional_datasets:
+      - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2, frequency: day,
+         type: sat, version: SU-v4.3-DAILY, start_year: 1997, end_year: 2011}
     scripts: null
 
 

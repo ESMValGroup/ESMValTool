@@ -1,6 +1,5 @@
 ---
 # Common global attributes for Cmorizer output
-filename: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
 attributes:
   dataset_id: ESACCI-AEROSOL
   version: 'SU-v4.3'
@@ -11,23 +10,67 @@ attributes:
   reference: ["esacci-aerosol"]
   comment: "Note that the variable tsStderr is an uncertainty not a standard error."
 
-# Variables to cmorize (here use only filename prefix)
+# Variables to cmorize
 variables:
-  od550aer:
+# monthly means
+  od550aer_month:
     mip: aero
+    short_name: od550aer
     raw: AOD550_mean
-  od870aer:
+    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+  od870aer_month:
     mip: aero
+    short_name: od870aer
     raw: AOD870_mean
-  od550lt1aer:
+    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+  od550lt1aer_month:
     mip: aero
+    short_name: od550lt1aer
     raw: FM_AOD550_mean
-  abs550aer:
+    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+  abs550aer_month:
     mip: aero
+    short_name: abs550aer
     raw: AAOD550_mean
-  od550aerStderr:
+    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+  od550aerStderr_month:
     mip: aero
+    short_name: od550aerStderr
     raw: AOD550_uncertainty
-  od870aerStderr:
+    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+  od870aerStderr_month:
     mip: aero
+    short_name: od870aerStderr
     raw: AOD870_uncertainty
+    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+# daily data
+  od550aer_day:
+    mip: aero
+    short_name: od550aer
+    raw: AOD550_mean
+    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
+  od870aer_day:
+    mip: aero
+    short_name: od870aer
+    raw: AOD870_mean
+    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
+  od550lt1aer_day:
+    mip: aero
+    short_name: od550lt1aer
+    raw: FM_AOD550_mean
+    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
+  abs550aer_day:
+    mip: aero
+    short_name: abs550aer
+    raw: AAOD550_mean
+    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
+  od550aerStderr_day:
+    mip: aero
+    short_name: od550aerStderr
+    raw: AOD550_uncertainty
+    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
+  od870aerStderr_day:
+    mip: aero
+    short_name: od870aerStderr
+    raw: AOD870_uncertainty
+    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
