@@ -14,15 +14,17 @@ able to successfully run it with ESMValtool without error.
 * Run the same recipe on JASMIN, again taking note of the memory and time
   expenditure printed to the terminal.
 
-* Stop any running workflows::
+* Stop any running recipe_test_workflow workflows::
 
-    cylc stop "*"
+    cylc stop "a_running_recipe_test_workflow"
 
 * Add the recipe to the ``[task parameters]`` section of the |RTW| ``flow.cylc``
   workflow file (make sure to place it within the "fast" or "medium" category
   depending on how long it took to run):
 
-* Run the workflow (it should fail)::
+* Run the workflow. The process task for the new recipe should succeed, but its
+  compare task should fail with an error that the reference data (KGO) does
+  not exist::
 
     cylc vip -O <your_site_name>
 
@@ -30,7 +32,8 @@ able to successfully run it with ESMValtool without error.
 
 * Copy the output files from the "cycle" folder (run/share/bin/cycle) of the
   workflow you just ran, to your site specific KGO rootpath folder
-  (/data/users/esmval/KGO)::
+  (this folder should be set as the value for the variable "KGO_ROOT_PATH="
+  in your rose-suite<your_site>.conf file)::
 
     cp -r <directory_of_recipe_output_cycle_folder> <KGO_rootpath_folder>
 
