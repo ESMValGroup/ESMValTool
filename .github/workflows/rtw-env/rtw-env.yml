@@ -9,4 +9,4 @@ dependencies:
   - cylc-rose
   - metomi-rose
   - sphinx
-  - sphinx_rtd_theme
+  - pydata-sphinx-theme
