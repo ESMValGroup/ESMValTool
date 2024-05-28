@@ -18,5 +18,6 @@
 .. _Ensclus: https://docs.esmvaltool.org/en/latest/recipes/recipe_ensclus.html
 .. _ESMValTool Documentation: https://esmvaltool.org/
 .. _Heatwaves coldwaves: https://docs.esmvaltool.org/en/latest/recipes/recipe_heatwaves_coldwaves.html
+.. _Ocean multimap: https://docs.esmvaltool.org/en/latest/recipes/recipe_oceans.html#recipe-ocean-multimap-yml
 .. _Radiation budget: https://docs.esmvaltool.org/en/latest/recipes/recipe_radiation_budget.html
 .. _Rose Documentation: https://metomi.github.io/rose/doc/html/index.html

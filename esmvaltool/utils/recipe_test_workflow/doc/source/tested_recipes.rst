@@ -8,7 +8,7 @@ The following currently tested recipes are available in the |RTW|:
 
 Fast recipes
 ------------
-* `Ocean multimap`
+* `Ocean multimap`_
 * `Radiation budget`_
 
 Medium recipes
