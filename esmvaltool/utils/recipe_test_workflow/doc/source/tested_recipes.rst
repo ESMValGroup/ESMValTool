@@ -6,13 +6,8 @@ Currently tested recipes
 
 The following currently tested recipes are available in the |RTW|:
 
-Fast recipes
-------------
-* `Ocean multimap`_
-* `Radiation budget`_
-
-Medium recipes
---------------
 
 * `Ensclus`_
 * `Heatwaves coldwaves`_
+* `Ocean multimap`_
+* `Radiation budget`_
