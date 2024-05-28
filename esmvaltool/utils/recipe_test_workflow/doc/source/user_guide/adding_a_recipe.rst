@@ -19,8 +19,8 @@ able to successfully run it with ESMValtool without error.
     cylc stop "a_running_recipe_test_workflow"
 
 * Add the recipe to the ``[task parameters]`` section of the |RTW| ``flow.cylc``
-  workflow file (make sure to place it within the "fast" or "medium" category
-  depending on how long it took to run):
+  workflow file, make sure your recipe name fits the formatting of ``recipe_new_
+  recipe \\``.
 
 * Run the workflow. The process task for the new recipe should succeed, but its
   compare task should fail with an error that the reference data (KGO) does

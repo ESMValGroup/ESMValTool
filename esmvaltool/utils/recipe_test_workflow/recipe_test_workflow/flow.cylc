@@ -3,8 +3,6 @@
     UTC mode = True
 
 [task parameters]
-    # `fast` recipes are those taking less than 10 mins.
-    # Other recipes should be included in `medium`.
     # Recipe paths are specified relative to esmvaltool/recipes. For recipes in
     # subdirectories, `--` stands for `/` since the latter is an illegal char.
     fast = recipe_radiation_budget, \
