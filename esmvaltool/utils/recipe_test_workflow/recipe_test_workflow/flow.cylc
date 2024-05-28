@@ -1,5 +1,4 @@
 #!jinja2
-# Adding this comment to test the GitHub workflow!
 [scheduler]
     UTC mode = True
 
