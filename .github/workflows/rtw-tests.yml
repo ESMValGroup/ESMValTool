@@ -35,7 +35,6 @@ jobs:
         with:
           activate-environment: esmvaltool
           environment-file: environment.yml
-          python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
           miniforge-variant: Mambaforge
           use-mamba: true
@@ -54,10 +53,13 @@ jobs:
         run: |
           cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
           output="$(rose config-dump)"
+          echo $?
           msg="Run 'rose config-dump' to re-dump the Rose configuration files"
           msg="${msg} in the common format, then commit the changes."
+          echo $?
           # The '-z' option returns true if 'output' is empty.
           if [[ -z "${output}" ]]; then exit 0; else echo "${msg}" && exit 1; fi
+          echo $?
 
       - name: Validate Rose configuration metadata
         run: |
