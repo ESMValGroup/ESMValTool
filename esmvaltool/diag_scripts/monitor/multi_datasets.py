@@ -69,7 +69,6 @@ Currently supported plot types (use the option ``plots`` to specify them):
       needs to be 2D with dimensions `time`, `latitude`/`longitude`.
 
     Benchmarking plots
-    ------------------
     - annual cycles (``benchmarking_annual_cycle``)
     - box plots (``benchmarking_boxplot``)
     - diurnal cycles (``benchmarking_annual_cycle``)
@@ -310,7 +309,7 @@ fontsize: int, optional (default: 10)
     Fontsize used for ticks, labels and titles. For the latter, use the given
     fontsize plus 2. Does not affect suptitles.
 log_y: bool, optional (default: True)
-                variables = var_order
+    variables = var_order
     Use logarithmic Y-axis.
 plot_func: str, optional (default: 'contourf')
     Plot function used to plot the profiles. Must be a function of
@@ -602,7 +601,7 @@ Configuration options for plot type ``benchmarking_map``
 --------------------------------------------------------
 
 Configuration options for plot type ``benchmarking_timeseries``
---------------------------------------------------------
+---------------------------------------------------------------
 
 Configuration options for plot type ``benchmarking_zonal``
 ----------------------------------------------------------
