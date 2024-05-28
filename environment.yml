@@ -77,6 +77,9 @@ dependencies:
   - pytest-metadata >=1.5.1
   - pytest-mock
   - pytest-xdist
+  - cylc-flow >=8.2
+  - cylc-rose
+  - metomi-rose
   # Python packages needed for building docs
   - autodocsumm >=0.2.2
   - nbsphinx
