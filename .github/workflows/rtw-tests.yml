@@ -58,7 +58,7 @@ jobs:
           msg="${msg} in the common format, then commit the changes."
           echo $?
           # The '-z' option returns true if 'output' is empty.
-          if [[ -z "${output}" ]]; then echo 'empty'; else echo "${msg}"; fi
+          if [[ -z "${output}" ]]; break; else echo "${msg}" && exit 1; fi
           echo $?
 
       - name: Validate Rose configuration metadata
