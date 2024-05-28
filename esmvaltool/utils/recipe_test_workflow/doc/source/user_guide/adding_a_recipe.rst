@@ -20,9 +20,10 @@ be able to find this in your site specific ``.cylc`` file in the site directory
 
     cylc stop "a_running_recipe_test_workflow"
 
-* Add the recipe to the ``[task parameters]`` section of the |RTW| ``flow.cylc``
+* Add the recipe to the ``[task parameters]`` section of the |RTW| in the ``flow.cylc``
   workflow file, make sure your recipe name fits the formatting of ``recipe_new_
-  recipe \\``.
+  recipe, \\`` (unless it is the lowest item added in the list, in which case
+  it should fit the format of ``recipe_new_recipe`` followed by no characters).
 
 * Run the workflow. The process task for the new recipe should succeed, but its
   compare task should fail with an error that the reference data (KGO) does
@@ -32,7 +33,7 @@ be able to find this in your site specific ``.cylc`` file in the site directory
 
 * Locate the workflow run folder of the workflow you just completed.
 
-* Copy the output files from the "cycle" folder (run/share/bin/cycle) of the
+* Copy the output files from the "cycle" folder (run/share/cycle) of the
   workflow you just ran, to your site specific KGO rootpath folder
   (this folder should be set as the value for the variable "KGO_ROOT_PATH="
   in your rose-suite<your_site>.conf file)::
