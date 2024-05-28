@@ -36,7 +36,8 @@ be able to find this in your site specific ``.cylc`` file in the site directory
 * Copy the output files from the "cycle" folder (run/share/cycle) of the
   workflow you just ran, to your site specific KGO rootpath folder
   (this folder should be set as the value for the variable "KGO_ROOT_PATH="
-  in your rose-suite<your_site>.conf file)::
+  in your ``rose-suite<your_site>.conf`` file found in the ``/data/users/esmval
+  /KGO`` directory)::
 
     cp -r <directory_of_recipe_output_cycle_folder> <KGO_rootpath_folder>
 
@@ -101,3 +102,8 @@ be able to find this in your site specific ``.cylc`` file in the site directory
 
 * If the workflow succeeds then your recipe has successfully been added to the
   workflow. You can now commit your changes and push them onto GitHub.
+
+* Add your recipe to the list of "Currently tested recipes" in ``tested_recipes.
+  rst`` (this file is located within ``recipe_test_workflow/doc/source``) in it's
+  correct position (the list is ordered alphabetically), this will add it to
+  the documentation.
