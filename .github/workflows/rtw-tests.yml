@@ -42,22 +42,16 @@ jobs:
 
       - name: Validate Cylc workflow
         run: |
-          eval "$(conda shell.bash hook)"
-          conda activate rtw
           cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
           cylc validate . -O metoffice
 
       - name: Run Cylc configuration linter
         run: |
-          eval "$(conda shell.bash hook)"
-          conda activate rtw
           cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
           cylc lint
 
       - name: Validate format of Rose configuration files
         run: |
-          eval "$(conda shell.bash hook)"
-          conda activate rtw
           cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
           output="$(rose config-dump)"
           msg="Run 'rose config-dump' to re-dump the Rose configuration files"
@@ -67,21 +61,15 @@ jobs:
 
       - name: Validate Rose configuration metadata
         run: |
-          eval "$(conda shell.bash hook)"
-          conda activate rtw
           cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
           rose metadata-check -C meta/
 
       - name: Build documentation
         run: |
-          eval "$(conda shell.bash hook)"
-          conda activate rtw
           cd esmvaltool/utils/recipe_test_workflow/doc
           make html
 
       - name: Check for broken links in the documentation
         run: |
-          eval "$(conda shell.bash hook)"
-          conda activate rtw
           cd esmvaltool/utils/recipe_test_workflow/doc
           make linkcheck
