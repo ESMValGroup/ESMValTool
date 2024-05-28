@@ -4,7 +4,9 @@ Adding a recipe to the Recipe Test Workflow (|RTW|)
 .. include:: ../common.txt
 
 **Please note:** Before you follow these steps to add your recipe, you must be
-able to successfully run it with ESMValtool without error.
+able to successfully run it on your compute server for your site. You should
+be able to find this in your site specific ``.cylc`` file in the site directory
+.
 
 * Run ESMValTool locally with your recipe, make sure to take note of the memory
   and time expenditure provided by the terminal output::
