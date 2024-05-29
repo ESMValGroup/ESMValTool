@@ -42,10 +42,11 @@ Adding a recipe to the Recipe Test Workflow (|RTW|)
     cylc vip -O <your_site_name>
 
 
-#. The ``process`` task should now pass
+#. The ``process`` task should now pass. If the ``compare`` task fails, these next steps should fix it,
+and even if the ``compare`` task has passed, they must still be completed.
 
-
-#. Take note of how long the run took  to complete on cylc. This can be found in the `job.time` section of the task listed as `process_<your_recipe>`.
+#. Take note of how long the ``process`` step took to complete on cylc review.
+This can be found in the ``job.time`` section of the task listed as ``process_<your_recipe>``.
 
 #. Locate your local <site>.cylc file, found in (recipe_test_workflow/site).
 
