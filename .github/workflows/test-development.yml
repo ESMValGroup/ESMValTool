@@ -12,7 +12,7 @@ on:
   push:
     branches:
       - main
-      - fix_recipe_filler_bkwds_incompatibility
+      - fix_flake8-7_issues
   schedule:
     - cron: '0 0 * * *'
 
