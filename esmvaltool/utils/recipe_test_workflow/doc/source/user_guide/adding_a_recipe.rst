@@ -3,6 +3,11 @@ Adding a recipe to the Recipe Test Workflow (|RTW|)
 
 .. include:: ../common.txt
 
+**Please note**: Before you follow these steps to add your recipe, you must be
+able to successfully run it with the latest version of ESMValTool on the
+compute server you use at your site (you should be able to find this in your
+site specific ``.cylc`` file in the site directory).
+
 #. Stop any running recipe_test_workflow workflows::
 
     cylc stop "a_running_recipe_test_workflow"
@@ -24,8 +29,9 @@ Adding a recipe to the Recipe Test Workflow (|RTW|)
 #. Run your recipe with ESMValTool on your compute server for your site.
 
 #. If the recipe takes less than 10 minutes to run then it should be added as a
-   "fast" recipe in the ``flow.cylc`` file within the ``[task parameters]`` section.
-   If it takes longer than ten minutes it should be included in "medium".
+   "fast" recipe in the ``flow.cylc`` file within the ``[task parameters]``
+   section.If it takes longer than ten minutes it should be included in "medium
+   ".
 
 #. If either of the memory readings from your run are larger than the
    values specified in the `COMPUTE` section, you need to add your recipe as
@@ -40,15 +46,15 @@ Adding a recipe to the Recipe Test Workflow (|RTW|)
 #. Run the recipe test workflow.
 
 #. The ``compare`` task will fail. These next steps should fix it,
-and even if the ``compare`` task has passed, they must still be completed.
+   and even if the ``compare`` task has passed, they must still be completed.
 
 #. Locate the workflow run folder of the workflow you just completed.
 
 #. Copy the output files from the "cycle" folder (``run/share/cycle``) of the
    workflow you just ran, to your site specific KGO rootpath folder
    (this folder should be set as the value for the variable "KGO_ROOT_PATH="
-   in your ``rose-suite<your_site>.conf`` file found in the ``/data/users/esmval
-   /KGO`` directory)::
+   in your ``rose-suite<your_site>.conf`` file found in the ``/data/users/esmva
+   l/KGO`` directory)::
 
     cp -r <directory_of_recipe_output_cycle_folder> <KGO_rootpath_folder>
 
@@ -69,13 +75,12 @@ and even if the ``compare`` task has passed, they must still be completed.
 
     cylc vip -O <your_site_name>
 
+#. The workflow should now succeed.
 
-
+#. Add your recipe to the list of "Currently tested recipes" in ``tested_recipe
+   s.rst`` (this file is located within ``recipe_test_workflow/doc/source``) in
+   it's correct position (the list is ordered alphabetically), this will add
+   it to the documentation.
 
 #. If the workflow succeeds then your recipe has successfully been added to the
    workflow. You can now commit your changes and push them onto GitHub.
-
-#. Add your recipe to the list of "Currently tested recipes" in ``tested_recipes.
-   rst`` (this file is located within ``recipe_test_workflow/doc/source``) in it's
-   correct position (the list is ordered alphabetically), this will add it to
-   the documentation.
