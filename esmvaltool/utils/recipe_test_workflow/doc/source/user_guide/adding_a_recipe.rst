@@ -3,32 +3,20 @@ Adding a recipe to the Recipe Test Workflow (|RTW|)
 
 .. include:: ../common.txt
 
-**Please note:** Before you follow these steps to add your recipe, you must be
-able to successfully run it on your compute server for your site. You should
-be able to find this in your site specific ``.cylc`` file in the site directory
-.
-
-#. Run ESMValTool locally with your recipe, make sure to take note of the memory
-   and time expenditure provided by the terminal output::
-
-    esmvaltool run <your_recipe_name.yml>
-
-#. Run the same recipe on JASMIN, again taking note of the memory and time
-   expenditure printed to the terminal.
-
 #. Stop any running recipe_test_workflow workflows::
 
     cylc stop "a_running_recipe_test_workflow"
 
-#. Run the workflow. The process task for the new recipe should succeed, but its
-   compare task should fail with an error that the reference data (KGO) does
-   not exist::
+#. Run your recipe with ESMValTool on your compute server for your site. You should
+   be able to find this in your site specific ``.cylc`` file in the site directory.
 
     cylc vip -O <your_site_name>
 
+#. If the ``process`` task in the workflow has failed, then follow the next steps::
+
 #. Locate the workflow run folder of the workflow you just completed.
 
-#. Copy the output files from the "cycle" folder (run/share/cycle) of the
+#. Copy the output files from the "cycle" folder (``run/share/cycle``) of the
    workflow you just ran, to your site specific KGO rootpath folder
    (this folder should be set as the value for the variable "KGO_ROOT_PATH="
    in your ``rose-suite<your_site>.conf`` file found in the ``/data/users/esmval
@@ -45,11 +33,17 @@ be able to find this in your site specific ``.cylc`` file in the site directory
 
     chmod a+w <the_directory_of_the_recipe_you_have_copied_into_the_KGO_folder>
 
+#. Stop any running recipe_test_workflow workflows::
+
+    cylc stop "a_running_recipe_test_workflow"
+
 #. Run the RTW again::
 
     cylc vip -O <your_site_name>
 
-#. The workflow should now succeed.
+
+#. The ``process`` task should now pass
+
 
 #. Take note of how long the run took  to complete on cylc. This can be found in the `job.time` section of the task listed as `process_<your_recipe>`.
 
@@ -83,7 +77,8 @@ be able to find this in your site specific ``.cylc`` file in the site directory
     [[[directives]]]
         --mem = 3G
 
-#. Variable (fast, medium) must be consistent with flow.cylc.
+#. If the recipe takes less than 10 minutes to run then it should be added as a fast recipe.
+   If it takes longer than ten minutes it should be included in `medium`.
 
 #. The commented "Actual" reading should be the time/memory
    reading you recorded from cylc review.
