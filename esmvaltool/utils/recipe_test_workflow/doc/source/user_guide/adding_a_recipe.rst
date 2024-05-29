@@ -12,11 +12,12 @@ site specific ``.cylc`` file in the site directory).
 
     cylc stop "a_running_recipe_test_workflow"
 
-#. Locate your local <site>.cylc file, found in (recipe_test_workflow/site).
+#. Locate your local ``<site>.cylc`` file, found in (recipe_test_workflow/site)
+   .
 
 #. Open it in your preferred code editor.
 
-#. Locate the `COMPUTE` section, it should look something like this::
+#. Locate the ``[[COMPUTE]]`` section, it should look something like this::
 
     [[COMPUTE]]
     platform = <your_platform_here>
@@ -34,7 +35,7 @@ site specific ``.cylc`` file in the site directory).
    ".
 
 #. If either of the memory readings from your run are larger than the
-   values specified in the `COMPUTE` section, you need to add your recipe as
+   values specified in the ``[[COMPUTE]]`` section, you need to add your recipe as
    another `process` similar to::
 
     [[process<fast=recipe_albedolandcover>]]
@@ -52,7 +53,7 @@ site specific ``.cylc`` file in the site directory).
 
 #. Copy the output files from the "cycle" folder (``run/share/cycle``) of the
    workflow you just ran, to your site specific KGO rootpath folder
-   (this folder should be set as the value for the variable "KGO_ROOT_PATH="
+   (this folder should be set as the value for the variable ``KGO_ROOT_PATH=``
    in your ``rose-suite<your_site>.conf`` file found in the ``/data/users/esmva
    l/KGO`` directory)::
 
@@ -77,8 +78,8 @@ site specific ``.cylc`` file in the site directory).
 
 #. The workflow should now succeed.
 
-#. Add your recipe to the list of "Currently tested recipes" in ``tested_recipe
-   s.rst`` (this file is located within ``recipe_test_workflow/doc/source``) in
+#. Add your recipe to the list of "Currently tested recipes" in ``tested_recipes.rst``
+   (this file is located within ``recipe_test_workflow/doc/source``) in
    it's correct position (the list is ordered alphabetically), this will add
    it to the documentation.
 
