@@ -109,11 +109,7 @@ jobs:
         run: mamba install -c conda-forge git
       - name: Install ESMValTool
         run: pip install -e .[develop] 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/install.txt
-<<<<<<< HEAD
-      - name: Examine conda environment
-=======
       - name: Inspect environment
->>>>>>> main
         run: conda list
       - name: Run flake8
         run: flake8
