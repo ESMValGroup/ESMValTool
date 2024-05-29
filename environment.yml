@@ -11,7 +11,7 @@ channels:
 dependencies:
   - aiohttp
   - cartopy
-  - cdo >=1.9.7
+  - cdo >=2.3.0
   - cdsapi
   - cf-units
   - cftime
@@ -25,6 +25,7 @@ dependencies:
   - esmvalcore 2.10.*
   - fiona
   - fire
+  - fsspec
   - gdal
   - iris >=3.6.1
   - iris-esmf-regrid >=0.7.0

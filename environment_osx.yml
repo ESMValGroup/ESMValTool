@@ -11,7 +11,7 @@ channels:
 dependencies:
   - aiohttp
   - cartopy
-  - cdo >=1.9.7
+  - cdo >=2.3.0
   - cdsapi
   - cf-units
   - cftime
@@ -24,6 +24,7 @@ dependencies:
   - esmpy !=8.1.0,<8.6.0  # https://github.com/SciTools-incubator/iris-esmf-regrid/pull/342#issuecomment-2092921514
   - esmvalcore 2.10.*
   - fiona
+  - fsspec
   - fire
   - gdal
   - iris >=3.6.1
@@ -48,7 +49,7 @@ dependencies:
   - psy-maps
   - psy-reg
   - psy-simple
-  - pyproj>=2.1
+  - pyproj >=2.1
   - pys2index  # only from conda-forge
   - python >=3.9
   - python-cdo

@@ -36,6 +36,7 @@ REQUIREMENTS = {
         'esmf-regrid>=0.7.0',
         'fiona',
         'fire',
+        'fsspec',
         'GDAL',
         'jinja2',
         'joblib',
@@ -56,7 +57,7 @@ REQUIREMENTS = {
         'psy-reg',
         'psy-simple',
         'pyproj>=2.1',
-        # 'pys2index',  # issues installing from PyPI (wheel doesn't build)
+        'pys2index',
         'python-dateutil',
         'pyyaml',
         'rasterio',
