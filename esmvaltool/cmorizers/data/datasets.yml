@@ -1,6 +1,13 @@
 # Dataset information
 ---
 datasets:
+  AERONET:
+    tier: 3
+    source: "https://aeronet.gsfc.nasa.gov/"
+    last_access: 2023-06-13
+    info: |
+      Aerosol Optical Depth information from a worldwide network of stations.
+
   AGCD:
     tier: 2
     source: "http://dx.doi.org/10.25914/6009600786063"
@@ -19,6 +26,17 @@ datasets:
       Data from NCI (National Computing Infrastructure Australia https://nci.org.au/), 
       requires an NCI account and access to Gadi(Supercomputer in Canberra) and the project found in catalogue record.
       Access can be requested through NCI. NCI is an ESGF node (https://esgf.nci.org.au/projects/esgf-nci/)
+  
+  ANUClimate:
+    tier: 3
+    source: "https://dx.doi.org/10.25914/60a10aa56dd1b"
+    last_access: 2023-11-21
+    info: |
+      Data from NCI project requiring an NCI account and access to GADI
+
+      ANUClimate 2.0 consists of gridded daily and monthly climate variables across the terrestrial landmass of Australia
+      from at least 1970 to the present. Rainfall grids are generated from 1900 to the present. The underpinning spatial 
+      models have been developed at the Fenner School of Environment and Society of the Australian National University.
 
   APHRO-MA:
     tier: 3

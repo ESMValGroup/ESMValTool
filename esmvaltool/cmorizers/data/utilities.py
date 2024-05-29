@@ -495,7 +495,7 @@ def fix_dtype(cube):
                     cube.dtype)
         cube.data = cube.core_data().astype(np.float32, casting='same_kind')
     for coord in cube.coords():
-        if coord.dtype != np.float64:
+        if coord.dtype.kind != "U" and coord.dtype != np.float64:
             logger.info(
                 "Converting data type of coordinate points of '%s' from '%s' "
                 "to 'float64'", coord.name(), coord.dtype)

@@ -27,7 +27,6 @@ diagnostics:
         type: ground, version: v2-0-1}
     scripts: null
 
-
   BerkeleyEarth:
     description: BerkeleyEarth check
     variables:
@@ -437,7 +436,7 @@ diagnostics:
       pr:
     additional_datasets:
       - {dataset: GPCP-SG, project: OBS, mip: Amon, tier: 2, type: atmos,
-         version: 2.3,  start_year: 1979,  end_year: 2022}
+         version: 2.3, start_year: 1979, end_year: 2022}
     scripts: null
 
   HadCRUT3:
@@ -909,6 +908,25 @@ diagnostics:
 
 
   ### TIER 3 ##################################################################
+
+  AERONET:
+    description: Aeronet check
+    variables:
+      od440aer:
+    additional_datasets:
+      - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20231021}
+    scripts: null
+
+  ANUClimate:
+    description: ANUClimate check
+    variables:
+      pr:
+      tasmax:
+      tasmin:
+      tas:
+    additional_datasets:
+      - {dataset: ANUClimate, project: OBS6, mip: Amon, tier: 3, type: reanaly}
+    scripts: null
 
   APHRO-MA:
     description: APHRO-MA check
