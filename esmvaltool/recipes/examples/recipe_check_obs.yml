@@ -913,6 +913,17 @@ diagnostics:
       - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20231021}
     scripts: null
 
+  ANUClimate:
+    description: ANUClimate check
+    variables:
+      pr:
+      tasmax:
+      tasmin:
+      tas:
+    additional_datasets:
+      - {dataset: ANUClimate, project: OBS6, mip: Amon, tier: 3, type: reanaly}
+    scripts: null
+
   APHRO-MA:
     description: APHRO-MA check
     variables:

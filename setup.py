@@ -31,7 +31,7 @@ REQUIREMENTS = {
         'distributed',
         'ecmwf-api-client',
         'eofs',
-        'ESMPy',
+        'ESMPy',  # not on PyPI
         'esmvalcore',
         'esmf-regrid>=0.7.0',
         'fiona',
@@ -50,7 +50,7 @@ REQUIREMENTS = {
         'numpy!=1.24.3',  # severe masking bug
         'openpyxl',
         'packaging',
-        'pandas',
+        'pandas!=2.2.0,!=2.2.1,!=2.2.2',  # ESMValCore PR2305
         'progressbar2',
         'psyplot',
         'psy-maps',
