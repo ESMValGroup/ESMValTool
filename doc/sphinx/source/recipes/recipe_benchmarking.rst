@@ -88,4 +88,4 @@ Area-weighted RMSE of the annual mean diurnal cycle (year 2000) of precipitation
    :align:   center
    :width:   10cm
 
-5-year annual mean bias (2000-2004) of the zonally averaged temperature in K from a historical simulation of MIROC6 compared with ERA5 reanalysis data. The stippled areas mask grid cells where the absolute BIAS (${ | BIAS | }$) is smaller than the maximum of the absolute 10% (${ | p10 | }$) and the absolute 90% (${ | p90 | }$) percentiles from an ensemble of CMIP6 models, i.e. ${ | BIAS | \geq max( | p10 |, | p90 |)}$. Created with recipe_model_benchmarking_zonal.yml.
+5-year annual mean bias (2000-2004) of the zonally averaged temperature in K from a historical simulation of MIROC6 compared with ERA5 reanalysis data. The stippled areas mask grid cells where the absolute BIAS (${ | BIAS | }$) is smaller than the maximum of the absolute 10% (${ | p10 | }$) and the absolute 90% (${ | p90 | }$) percentiles from an ensemble of CMIP6 models, i.e. ${ | BIAS | \geq max( | p10 |, | p90 | )}$. Created with recipe_model_benchmarking_zonal.yml.
