@@ -12,7 +12,6 @@ on:
   push:
     branches:
       - main
-      - fix_flake8-7_issues
   schedule:
     - cron: '0 0 * * *'
 
