@@ -258,7 +258,8 @@ setup(
             'colortables = '
             'esmvaltool.utils.color_tables.show_color_tables:ColorTables',
             'install = esmvaltool.install:Install',
-            'data = esmvaltool.cmorizers.data.cmorizer:DataCommand'
+            'data = esmvaltool.cmorizers.data.cmorizer:DataCommand',
+            'develop = esmvaltool.utils.develop:DevelopCommand'
         ]
     },
     cmdclass={
