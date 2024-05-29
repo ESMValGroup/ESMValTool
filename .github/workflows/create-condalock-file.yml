@@ -20,10 +20,10 @@ jobs:
     name: Create conda lock file for latest Python
     runs-on: 'ubuntu-latest'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           activate-environment: esmvaltool-fromlock
@@ -35,7 +35,7 @@ jobs:
         run: |
           conda update -n base -c conda-forge conda
           conda --version
-          # setup-miniconda@v2 installs an old conda and mamba
+          # setup-miniconda@v3 installs an old conda and mamba
           # forcing a modern mamba updates both mamba and conda
           conda install -c conda-forge "mamba>=1.4.8"
           conda config --show-sources

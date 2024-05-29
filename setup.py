@@ -32,10 +32,11 @@ REQUIREMENTS = {
         'ecmwf-api-client',
         'eofs',
         'ESMPy',
-        # 'esmvalcore',  # not yet py312
+        # 'esmvalcore',
         'esmf-regrid>=0.7.0',
         'fiona',
         'fire',
+        'fsspec',
         'GDAL',
         'jinja2',
         'joblib',
@@ -49,13 +50,14 @@ REQUIREMENTS = {
         'numpy!=1.24.3',  # severe masking bug
         'openpyxl',
         'packaging',
-        'pandas',
+        'pandas!=2.2.0,!=2.2.1,!=2.2.2',  # ESMValCore PR2305
         'progressbar2',
         'psyplot>=1.5.0',
         'psy-maps>=1.5.0',
         # 'psy-reg',  # not yet at 1.5.0 not yet py312
         'psy-simple>=1.5.0',
         'pyproj>=2.1',
+        'pys2index',
         'python-dateutil',
         'pyyaml',
         'rasterio',

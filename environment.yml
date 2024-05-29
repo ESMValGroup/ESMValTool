@@ -11,7 +11,7 @@ channels:
 dependencies:
   - aiohttp
   - cartopy
-  - cdo >=1.9.7
+  - cdo >=2.3.0
   - cdsapi
   - cf-units
   - cftime
@@ -21,10 +21,11 @@ dependencies:
   - distributed
   - ecmwf-api-client
   - eofs
-  - esmpy
-  # - esmvalcore 2.10.*  # needs support for Python 3.12
+  - esmpy !=8.1.0,<8.6.0  # https://github.com/SciTools-incubator/iris-esmf-regrid/pull/342#issuecomment-2092921514
+  # - esmvalcore 2.10.*
   - fiona
   - fire
+  - fsspec
   - gdal
   - iris >=3.6.1
   - iris-esmf-regrid >=0.7.0
@@ -40,7 +41,7 @@ dependencies:
   - numpy !=1.24.3  # severe masking bug
   - openpyxl
   - packaging
-  - pandas
+  - pandas !=2.2.0,!=2.2.1,!=2.2.2 # github.com/ESMValGroup/ESMValCore/pull/2305
   - pip !=21.3
   - progressbar2
   - prov
@@ -49,6 +50,7 @@ dependencies:
   # - psy-reg >=1.5.0  # earliest Py312 build; not yet at 1.5.0 (4 Apr 2024); needs support for Python 3.12
   - psy-simple >=1.5.0  # earliest Py312 build
   - pyproj >=2.1
+  - pys2index  # only from conda-forge
   - python >=3.9
   - python-cdo
   - python-dateutil
@@ -94,7 +96,7 @@ dependencies:
   - yapf
 
   # NCL and dependencies
-  # - ncl  # needs support for Python 3.12
+  - ncl
   - cdo
   - imagemagick
   - nco
