@@ -179,37 +179,6 @@ def make_model_dirs(cfg, model):
     return model_work_dir, model_plot_dir
 
 
-def parallelise(function, processes=None):
-    """Parallelise any function, by George Ford, Met Office.
-
-    Parameters
-    ----------
-    function : function
-        function to be parallelised
-    processes : int
-        number of threads to be used in parallelisation
-
-    Returns
-    -------
-    result : any
-        results of parallelised elements
-    """
-    if processes is None:
-        processes = max(1, mp.cpu_count() - 1)
-    if processes <= 0:
-        processes = 1
-
-    def easy_parallise(func, sequence, cfg):
-        with mp.Pool(processes=processes) as pool:
-            config_wrapper = partial(func, cfg=cfg)
-            result = pool.map_async(config_wrapper, sequence).get()
-            pool.close()
-            pool.join()
-            return result
-
-    return partial(easy_parallise, function)
-
-
 def rename_variables(cube, has_orig_vars=True, new_extension=""):
     """Rename variables and a coord to fit in JULES framework.
 
@@ -259,3 +228,34 @@ def rename_variables(cube, has_orig_vars=True, new_extension=""):
                 cube.coord("imogen_drive").rename("month_number")
 
     return cube
+
+
+def parallelise(function, processes=None):
+    """Parallelise any function, by George Ford, Met Office.
+
+    Parameters
+    ----------
+    function : function
+        function to be parallelised
+    processes : int
+        number of threads to be used in parallelisation
+
+    Returns
+    -------
+    result : any
+        results of parallelised elements
+    """
+    if processes is None:
+        processes = max(1, mp.cpu_count() - 1)
+    if processes <= 0:
+        processes = 1
+
+    def easy_parallise(func, sequence, cfg):
+        with mp.Pool(processes=processes) as pool:
+            config_wrapper = partial(func, cfg=cfg)
+            result = pool.map_async(config_wrapper, sequence).get()
+            pool.close()
+            pool.join()
+            return result
+
+    return partial(easy_parallise, function)
