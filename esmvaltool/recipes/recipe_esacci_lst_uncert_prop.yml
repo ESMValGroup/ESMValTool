@@ -21,9 +21,9 @@ preprocessors:
   obs_preprocessor:
     extract_region:
       start_longitude: 1
-      end_longitude: 2
+      end_longitude: 1.5
       start_latitude: 45
-      end_latitude: 46
+      end_latitude: 45.5
 
   cmip_preprocessor:
     regrid:

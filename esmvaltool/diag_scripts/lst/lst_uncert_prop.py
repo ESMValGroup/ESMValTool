@@ -178,13 +178,15 @@ def _diagnostic(config):
         eq_correlation_with_biome(loaded_data['ESACCI-LST'][f'lst_unc_loc_sfc_{time}'],
                                   loaded_data['ESACCI-LST'][f'lcc_{time}'])
         # eq_ari thmetic_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_sfc_{time}'])
-        propagated_values[f'lst_sampling_{time}'] = \
+        propagated_values[f'lst_unc_ran_{time}'], propagated_values[f'lst_sampling_{time}'] = \
         eq_propagate_random_with_sampling(loaded_data['ESACCI-LST'][f'lst_unc_ran_{time}'],
                                           loaded_data['ESACCI-LST'][f'ts_{time}'],
                                           n_use[f'{time}'], n_fill[f'{time}'])
 
     # Combines all uncertainty types to get total uncertainty
     # for 'day' and 'night'
+    print(propagated_values.keys())
+    print(lst_unc_variables)
     for time in ['day', 'night']:
         time_cubelist = iris.cube.CubeList([propagated_values[f'{variable}_{time}']
                                             for variable in lst_unc_variables])
@@ -236,17 +238,52 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
     
     lat_len = len(cube_loc_sfc.coord('latitude').points)
     lon_len = len(cube_loc_sfc.coord('longitude').points)
+    time_len = len(cube_loc_sfc.coord('time').points)
+    print(lat_len, lon_len, time_len)
+    final_values = [] # this is for each overal main area value, will turn into a cube at the end
+    lc_grid = [] # this is for each 5*5 block
+    for t in range(time_len):
+        print(t)
+        # all cci lst v3 data is 0.05 resolution so use blocks of 5 to get 0.01 degree resolution
+        for i in range(0,lat_len,5):    
+            for j in range(0,lon_len,5):
+                grid_means = [] # this is for the 5*5 block means
+            
+                this_region = lcc[t,i:i+5,j:j+5]
+                lc_grid.append(this_region)
+                uniques = np.unique(this_region.data.round(decimals=0), return_index=True, return_inverse=True)
+                # note order of uniques will depend on what true/false finally use
+                num_of_biomes = len(uniques[0])
+            
+                this_biome = this_region.data.flatten()
+                this_uncerts = cube_loc_sfc[t,i:i+5,j:j+5].data.flatten()
 
-    lc_grid = []
-
-    for i in range(0,lat_len,5):
-        for j in range(0,lon_len,5):
-            lc_grid.append(lcc[:,i:i+5,j:j+5])
+                uncert_by_biome = [[] for i in range(num_of_biomes)]
+                for k, item in enumerate(this_uncerts):
+                    uncert_by_biome[uniques[2][k]].append(this_uncerts[k])
+            
+                # E3UB gives two methods
+                # method 1 = eq 5.31 and worked example eq 5.32
+                # method 2 is used by CCI at moment and is eq 5.34
+                # here use method 2
+                
+                # np.ma.mean allows masked boxes to be ignored
+                mean_list = [np.ma.mean(item) for item in uncert_by_biome]
+                this_mean = np.ma.mean(mean_list)
+                grid_means.append(this_mean)
     
+        this_times_mean = np.mean(grid_means) # this is the value to make a timeseries out of
+        final_values.append(this_times_mean)
     
-    print(lc_grid)
-    return
-                                  
+    # need to make a cube to return
+    results_cube = iris.cube.Cube(np.array(final_values),
+                                dim_coords_and_dims = [(lcc.coord('time'),0)],
+                                units = 'Kelvin',
+                                var_name = cube_loc_sfc.var_name,
+                                long_name = cube_loc_sfc.long_name,
+                                )
+    
+    return results_cube        
                                   
                                   
 def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_fill, n_use):
