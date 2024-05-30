@@ -15,12 +15,13 @@ and
 A tutorial is available on https://tutorial.esmvaltool.org.
 
 A series of video lectures has been created by `ACCESS-NRI <https://access-nri.org.au>`_.
-While these are tailored for ACCESS-NRI users, they are still very informative.
+While these are tailored for ACCESS users, they are still very informative.
 
 .. raw:: html
 
    <iframe width="560" height="315" src="https://www.youtube.com/embed/videoseries?si=pUXrXB8C8bLRfQHY&amp;list=PLFjfi2xLaFpJp59LvDc1upQsj_xzFlFLc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
+|
 For more detailed information, the documentation is available below.
 
 Get in touch! Contact information is available :ref:`here <Support-and-Contact>`.
