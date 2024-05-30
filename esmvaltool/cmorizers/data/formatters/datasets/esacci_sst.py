@@ -40,6 +40,7 @@ import iris
 from esmvalcore.cmor.fixes import get_time_bounds
 from esmvaltool.cmorizers.data import utilities as utils
 from esmvalcore.preprocessor import concatenate
+from esmvalcore.preprocessor import regrid
 
 from ...utilities import (
     convert_timeunits,
@@ -62,6 +63,8 @@ def extract_variable(var_info, raw_info, attrs, year):
         raise ValueError(f"No data available for variable {rawvar}"
                          f"and year {year}") from constraint_error
 
+    # regridding from 0.05x0.05 to 0.5x0.5
+    cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
     #Fix dtype
     utils.fix_dtype(cube)
     # Fix cube
@@ -87,21 +90,27 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         inpfile_pattern = os.path.join(in_dir, '{year}*'+vals['filename'])
         logger.info("CMORizing var %s from file type %s", var, inpfile_pattern)
         for year in range(vals['start_year'], vals['end_year'] + 1):
-            data_cubes = []
-            year_inpfile_pattern = inpfile_pattern.format(year=year)
-            inpfiles = sorted(glob.glob(year_inpfile_pattern))
-            for inpfile in inpfiles:
-                raw_info['file'] = inpfile
-                logger.info("CMORizing var %s from file type %s", var,
-                            raw_info['file'])
-                data_cubes.append(
-                    extract_variable(var_info, raw_info, glob_attrs, year))
-            yearly_cube = concatenate(data_cubes)
-            # Fix monthly time bounds
-            time = yearly_cube.coord('time')
-            time.bounds = get_time_bounds(time, vals['frequency'])
-            save_variable(yearly_cube,
-                          var,
-                          out_dir,
-                          glob_attrs,
-                          unlimited_dimensions=['time'])
+            logger.info("Processing year %s", year)
+            for month in range(1,13):
+                data_cubes = []
+                #year_inpfile_pattern = inpfile_pattern.format(year=year)
+                month_inpfile_pattern = inpfile_pattern.format(year=str(year)+"{:02}".format(month))
+                logger.info("Pattern: %s", month_inpfile_pattern)
+                inpfiles = sorted(glob.glob(month_inpfile_pattern))
+                #inpfiles = sorted(glob.glob(year_inpfile_pattern))
+                logger.info("Found input files: %s", inpfiles)
+                for inpfile in inpfiles:
+                    raw_info['file'] = inpfile
+                    logger.info("CMORizing var %s from file type %s", var,
+                                raw_info['file'])
+                    data_cubes.append(
+                        extract_variable(var_info, raw_info, glob_attrs, year))
+                yearly_cube = concatenate(data_cubes)
+                # Fix monthly time bounds
+                time = yearly_cube.coord('time')
+                time.bounds = get_time_bounds(time, vals['frequency'])
+                save_variable(yearly_cube,
+                              var,
+                              out_dir,
+                              glob_attrs,
+                              unlimited_dimensions=['time'])
