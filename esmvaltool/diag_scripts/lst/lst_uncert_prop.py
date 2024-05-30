@@ -281,7 +281,6 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
                 # note order of uniques will depend on what true/false finally use
                 num_of_biomes = len(uniques[0])
             
-                this_biome = this_region.data.flatten()
                 this_uncerts = cube_loc_sfc[t,i:i+5,j:j+5].data.flatten()
 
                 uncert_by_biome = [[] for i in range(num_of_biomes)]
