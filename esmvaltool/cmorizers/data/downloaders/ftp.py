@@ -44,7 +44,7 @@ class FTPDownloader(BaseDownloader):
         """Connect to the FTP server."""
         self._client = ftplib.FTP(self.server)
         logger.info(self._client.getwelcome())
-        self._client.login()
+        self._client.login(user="lbock", passwd="~?s`Cb`@E8Vf")
 
     def set_cwd(self, path):
         """Set current working directory in the remote.
@@ -178,7 +178,7 @@ class CCIDownloader(FTPDownloader):
         Overwrite already downloaded files
     """
     def __init__(self, config, dataset, dataset_info, overwrite):
-        super().__init__(config, 'anon-ftp.ceda.ac.uk', dataset, dataset_info,
+        super().__init__(config, 'ftp3.ceda.ac.uk', dataset, dataset_info,
                          overwrite)
         self.ftp_name = self.dataset_name[7:]
 
@@ -192,7 +192,9 @@ class CCIDownloader(FTPDownloader):
         path : str
             Remote path to set as current working directory.
         """
-        cwd = f'/neodc/esacci/{self.ftp_name}/data/{path}'
+        #cwd = f'/neodc/esacci/{self.ftp_name}/data/{path}'
+        #cwd = f'/neodc/{self.ftp_name}/data/{path}'
+        cwd = f'/neodc/eocis'
         super().set_cwd(cwd)
 
     @property

@@ -3,8 +3,8 @@
 #filename: '{year}{month}15_regridded_sst.nc'
 attributes:
   dataset_id: ESACCI-SST
-  version: '2.1'
-  tier: 2
+  version: '3.0-L4-analysis'
+  tier: 3
   modeling_realm: sat
   project_id: OBS6
   source: 'dx.doi.org/10.5285/62c0f97b1eac4e0197a674870afe1ee6'
@@ -28,6 +28,7 @@ variables:
     mip: Oday
     raw: analysed_sst
     frequency: day
-    filename: ESACCI-L4_GHRSST-SSTdepth-OSTIA-GLOB_CDR2.1-v02.0-fv01.0.nc
+    #filename: ESACCI-L4_GHRSST-SSTdepth-OSTIA-GLOB_CDR2.1-v02.0-fv01.0.nc
+    filename: ESACCI-L4_GHRSST-SSTdepth-OSTIA-GLOB_CDR3.0-v02.0-fv01.0.nc
     start_year: 2004
     end_year: 2007
