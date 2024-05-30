@@ -243,11 +243,12 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
     final_values = [] # this is for each overal main area value, will turn into a cube at the end
     lc_grid = [] # this is for each 5*5 block
     for t in range(time_len):
-        print(t)
+        
+        grid_means = [] # this is for the 5*5 block means
         # all cci lst v3 data is 0.05 resolution so use blocks of 5 to get 0.01 degree resolution
         for i in range(0,lat_len,5):    
             for j in range(0,lon_len,5):
-                grid_means = [] # this is for the 5*5 block means
+                
             
                 this_region = lcc[t,i:i+5,j:j+5]
                 lc_grid.append(this_region)
