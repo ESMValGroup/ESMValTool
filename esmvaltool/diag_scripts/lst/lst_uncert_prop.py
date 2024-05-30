@@ -17,6 +17,8 @@ ESMValTool diagnostic for ESA CCI LST V3 data - Uncertainity Propagation
 import logging
 import iris
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import matplotlib.ticker as ticker
 import numpy as np
 
 import iris.plot as iplt
@@ -200,15 +202,30 @@ def test_plot(propagated_values):
     """This is a very simple plot to just test the method
     """
 
+    years = mdates.YearLocator()   # every year
+    months = mdates.MonthLocator()  # every month
+    yearsFmt = mdates.DateFormatter('%Y')
+
     for time in ['day', 'night']:
         # one plot for day and night seperately
 
-        plt.figure(figsize=(12, 10))
+        plt.figure(figsize=(14, 10))
 
-        plt.subplot(211)
-        iplt.plot(propagated_values[f'ts_{time}'], c='b')
+        ax1 = plt.subplot(211)
+        iplt.plot(propagated_values[f'ts_{time}'], c='b', linewidth=2)
+        iplt.fill_between(propagated_values[f'ts_{time}'].coord('time'),
+                            propagated_values[f'ts_{time}'] + propagated_values[f'lst_total_unc_{time}'],
+                            propagated_values[f'ts_{time}'] - propagated_values[f'lst_total_unc_{time}'],
+                            color='b', alpha=0.5
+        )
+        ax1.xaxis.set_major_locator(years)
+        ax1.xaxis.set_major_formatter(yearsFmt)
+        ax1.xaxis.set_minor_locator(months)
+        
+        plt.grid()
+        plt.ylabel('LST (K)', fontsize=24)
 
-        plt.subplot(212)
+        ax2 = plt.subplot(212, sharex=ax1)
         iplt.plot(propagated_values[f'lst_unc_loc_atm_{time}'], c='r',
                   label=f'lst_unc_loc_atm_{time}')
         iplt.plot(propagated_values[f'lst_unc_loc_sfc_{time}'], c='g',
@@ -218,13 +235,21 @@ def test_plot(propagated_values):
         iplt.plot(propagated_values[f'lst_unc_ran_{time}'], c='m',
                   label=f'lst_unc_ran_{time}')
 
-        iplt.plot(propagated_values[f'lst_sampling_{time}'], c='c',
+        iplt.plot(propagated_values[f'lst_sampling_{time}'], '--', c='c',
                   label=f'lst_sampling_{time}')
         iplt.plot(propagated_values[f'lst_total_unc_{time}'], c='k',
                   label=f'lst_total_unc_{time}')
 
-        plt.legend()
 
+        plt.xlabel('Date', fontsize=24)
+        plt.ylabel('Uncertainty (K)', fontsize=24)
+
+
+        plt.legend(bbox_to_anchor=(1.04, 0.75), fontsize=14)
+
+        ax1.tick_params(labelsize=18)
+        ax2.tick_params(labelsize=18)
+        
         plt.savefig(f'test_A_{time}.png')
 
 # These are the propagation equations
@@ -239,7 +264,7 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
     lat_len = len(cube_loc_sfc.coord('latitude').points)
     lon_len = len(cube_loc_sfc.coord('longitude').points)
     time_len = len(cube_loc_sfc.coord('time').points)
-    print(lat_len, lon_len, time_len)
+    
     final_values = [] # this is for each overal main area value, will turn into a cube at the end
     lc_grid = [] # this is for each 5*5 block
     for t in range(time_len):
