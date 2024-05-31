@@ -246,7 +246,7 @@ def test_plot(propagated_values):
         iplt.plot(propagated_values[f'lst_total_unc_{time}'], c='k',
                   label=f'lst_total_unc_{time}')
 
-
+        plt.grid()
         plt.xlabel('Date', fontsize=24)
         plt.ylabel('Uncertainty (K)', fontsize=24)
 
