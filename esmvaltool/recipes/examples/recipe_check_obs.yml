@@ -64,11 +64,33 @@ diagnostics:
   CRU:
     description: CRU check
     variables:
-      tas:
-      pr:
-    additional_datasets:
-      - {dataset: CRU, project: OBS, mip: Amon, tier: 2,
-         type: reanaly, version: TS4.02, start_year: 1901, end_year: 2017}
+      tas:  # check older versions
+        mip: Amon
+        additional_datasets:
+        - {dataset: CRU, project: OBS, tier: 2, type: reanaly, 
+          version: TS4.02, start_year: 1901, end_year: 2017}
+        - {dataset: CRU, project: OBS6, tier: 2, type: reanaly, 
+          version: TS4.07, start_year: 1901, end_year: 2021}
+      pr:  # check older versions
+        mip: Amon
+        additional_datasets:
+        - {dataset: CRU, project: OBS, tier: 2, type: reanaly, 
+        version: TS4.02, start_year: 1901, end_year: 2017}
+        - {dataset: CRU, project: OBS6, tier: 2, type: reanaly, 
+          version: TS4.07, start_year: 1901, end_year: 2021}
+      tasmin:
+        mip: Amon
+      tasmax:
+        mip: Amon
+      clt:
+        mip: Amon
+      evspsblpot:
+        mip: Emon
+    additional_datasets:  # newest version for all variables
+      - {dataset: CRU, project: OBS6, tier: 2,
+         type: reanaly, version: TS4.07, start_year: 1901, end_year: 2022}
+      
+
     scripts: null
 
 
