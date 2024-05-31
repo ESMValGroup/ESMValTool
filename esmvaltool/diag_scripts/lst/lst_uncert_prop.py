@@ -158,8 +158,6 @@ def _diagnostic(config):
             ## make an array of zeros
             n_fill[time] = np.array([0 for i in loaded_data['ESACCI-LST']['ts_day'].coord('time').points])
 
-    print(n_fill) # while still testing
-
     n_use['day'] = (lat_len*lon_len) - n_fill['day']
     n_use['night'] = (lat_len*lon_len) - n_fill['night']
 
@@ -188,19 +186,13 @@ def _diagnostic(config):
 
     # Combines all uncertainty types to get total uncertainty
     # for 'day' and 'night'
-
-    print('mmmmmmmmmmmmmmmmmmmmmmmmmmm')
     for time in ['day', 'night']:
         time_cubelist = iris.cube.CubeList([propagated_values[f'{variable}_{time}']
                                               for variable in lst_unc_variables])
-        print(time_cubelist)
+        
         propagated_values[f'lst_total_unc_{time}'] = \
                                             eq_sum_in_quadrature(time_cubelist)
                                             
-    print('........................')                                            
-    print(propagated_values['lst_total_unc_day'].data)
-    print(propagated_values['lst_unc_ran_day'].data)
-
     test_plot(propagated_values)
 
 
@@ -249,7 +241,6 @@ def test_plot(propagated_values):
         plt.grid()
         plt.xlabel('Date', fontsize=24)
         plt.ylabel('Uncertainty (K)', fontsize=24)
-
 
         #plt.legend(bbox_to_anchor=(1.04, 0.75), fontsize=14)
 
@@ -377,20 +368,12 @@ def eq_sum_in_quadrature(cubelist):
 
     # dont want to in-place replace the input
     newlist = cubelist.copy()
-    print(f"{newlist=}")
     for cube in newlist:
         iris.analysis.maths.exponentiate(cube, 2, in_place=True)
 
     cubes_sum = 0
-    for cube in newlist:
-        cubes_sum += cube
-        print('qqqqqqqqqqqqqqqqqqqqqqqq')
-        print(cubes_sum.data)
-
     output = iris.analysis.maths.exponentiate(cubes_sum, 0.5,
                                               in_place=False)
-    print('wwwww')
-    print(output.data)
 
     return output
 
