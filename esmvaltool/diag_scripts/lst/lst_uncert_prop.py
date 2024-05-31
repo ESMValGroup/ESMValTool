@@ -180,6 +180,7 @@ def _diagnostic(config):
         eq_correlation_with_biome(loaded_data['ESACCI-LST'][f'lst_unc_loc_sfc_{time}'],
                                   loaded_data['ESACCI-LST'][f'lcc_{time}'])
         # eq_ari thmetic_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_sfc_{time}'])
+        
         propagated_values[f'lst_unc_ran_{time}'], propagated_values[f'lst_sampling_{time}'] = \
         eq_propagate_random_with_sampling(loaded_data['ESACCI-LST'][f'lst_unc_ran_{time}'],
                                           loaded_data['ESACCI-LST'][f'ts_{time}'],
@@ -187,13 +188,18 @@ def _diagnostic(config):
 
     # Combines all uncertainty types to get total uncertainty
     # for 'day' and 'night'
-    print(propagated_values.keys())
-    print(lst_unc_variables)
+
+    print('mmmmmmmmmmmmmmmmmmmmmmmmmmm')
     for time in ['day', 'night']:
         time_cubelist = iris.cube.CubeList([propagated_values[f'{variable}_{time}']
-                                            for variable in lst_unc_variables])
+                                              for variable in lst_unc_variables])
+        print(time_cubelist)
         propagated_values[f'lst_total_unc_{time}'] = \
                                             eq_sum_in_quadrature(time_cubelist)
+                                            
+    print('........................')                                            
+    print(propagated_values['lst_total_unc_day'].data)
+    print(propagated_values['lst_unc_ran_day'].data)
 
     test_plot(propagated_values)
 
@@ -232,7 +238,7 @@ def test_plot(propagated_values):
                   label=f'lst_unc_loc_sfc_{time}')
         iplt.plot(propagated_values[f'lst_unc_sys_{time}'], c='b',
                   label=f'lst_unc_sys_{time}')
-        iplt.plot(propagated_values[f'lst_unc_ran_{time}'], c='m',
+        iplt.plot(propagated_values[f'lst_unc_ran_{time}'],c='m',
                   label=f'lst_unc_ran_{time}')
 
         iplt.plot(propagated_values[f'lst_sampling_{time}'], '--', c='c',
@@ -245,7 +251,7 @@ def test_plot(propagated_values):
         plt.ylabel('Uncertainty (K)', fontsize=24)
 
 
-        plt.legend(bbox_to_anchor=(1.04, 0.75), fontsize=14)
+        #plt.legend(bbox_to_anchor=(1.04, 0.75), fontsize=14)
 
         ax1.tick_params(labelsize=18)
         ax2.tick_params(labelsize=18)
@@ -371,15 +377,20 @@ def eq_sum_in_quadrature(cubelist):
 
     # dont want to in-place replace the input
     newlist = cubelist.copy()
+    print(f"{newlist=}")
     for cube in newlist:
         iris.analysis.maths.exponentiate(cube, 2, in_place=True)
 
     cubes_sum = 0
     for cube in newlist:
         cubes_sum += cube
+        print('qqqqqqqqqqqqqqqqqqqqqqqq')
+        print(cubes_sum.data)
 
-    output = iris.analysis.maths.exponentiate(cube, 0.5,
+    output = iris.analysis.maths.exponentiate(cubes_sum, 0.5,
                                               in_place=False)
+    print('wwwww')
+    print(output.data)
 
     return output
 
