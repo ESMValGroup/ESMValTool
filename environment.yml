@@ -21,7 +21,7 @@ dependencies:
   - distributed
   - ecmwf-api-client
   - eofs
-  - esmpy !=8.1.0,>=8.6.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
+  - esmpy >=8.6.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - esmvalcore 2.10.*
   - fiona
   - fire
