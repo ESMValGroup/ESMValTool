@@ -39,9 +39,7 @@ import sklearn.linear_model
 
 import sub_functions as sf
 from plotting import (
-    plot_patterns_timeseries,
-    plot_anomalies_timeseries,
-    plot_climatologies_timeseries,
+    plot_timeseries,
     plot_patterns
 )
 from esmvalcore.preprocessor import (
@@ -468,9 +466,19 @@ def save_outputs(
 
     # saving data + plotting
     if cfg["jules_mode"] is True:
-        plot_climatologies_timeseries(list_of_cubelists[0], plot_path)
-        plot_anomalies_timeseries(list_of_cubelists[1], plot_path)
-        plot_patterns_timeseries(list_of_cubelists[2], plot_path)
+        plot_timeseries(
+            list_of_cubelists[0],
+            plot_path,
+            "40 Year Climatologies, 1850-1889",
+            "Climatologies"
+        )
+        plot_timeseries(
+            list_of_cubelists[1],
+            plot_path,
+            "Anomaly Timeseries, 1850-2100",
+            "Anomalies"
+        )
+        plot_patterns(list_of_cubelists[2], plot_path)
         cube_saver(
             list_of_cubelists,
             work_path,
