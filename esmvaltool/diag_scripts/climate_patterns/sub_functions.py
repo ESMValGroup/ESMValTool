@@ -223,7 +223,7 @@ def rename_variables(cube, has_orig_vars=True, new_extension=""):
                 cube.rename(long_var)
                 cube.var_name = f"{new_var}_patt"
                 return cube
-            elif cube.var_name == f"{new_var}_patt":
+            if cube.var_name == f"{new_var}_patt":
                 cube.rename(long_var)
                 cube.var_name = orig_var
                 cube.coord("imogen_drive").rename("month_number")
