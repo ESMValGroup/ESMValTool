@@ -1,0 +1,28 @@
+# ACCESS-NRI / CSIRO ENSO analyses.
+---
+documentation:
+  title: ENSO analysis
+  description: El Nino Southern Oscillation analysis. 
+
+  authors:
+    - sullivan_arnold
+    - tetley_michael
+    - beucher_romain
+
+datasets: 
+  - {dataset: ACCESS-CM2, activity: CMIP, project: CMIP6, mip: Amon, grid: gn, exp: piControl, 
+  ensemble: r1i1p1f1, start_year: 1061, end_year: 1079}
+
+diagnostics:
+  plot_enso_analysis:
+    description: Plot range of ENSO analyses.
+    variables:
+      ts:
+        short_name: "ts"
+        reference_dataset: HadISST
+        mip: Amon
+    additional_datasets:
+      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+    scripts:
+      plotting:
+        script: /recipes/enso/plot_enso_analysis.py
