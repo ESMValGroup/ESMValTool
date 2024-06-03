@@ -229,6 +229,8 @@ def rename_variables(cube, has_orig_vars=True, new_extension=""):
                 cube.coord("imogen_drive").rename("month_number")
                 return cube
 
+    return None
+
 
 def parallelise(function, processes=None):
     """Parallelise any function, by George Ford, Met Office.
