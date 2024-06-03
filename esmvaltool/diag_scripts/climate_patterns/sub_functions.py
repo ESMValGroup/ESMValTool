@@ -214,20 +214,20 @@ def rename_variables(cube, has_orig_vars=True, new_extension=""):
         original_var_names, new_var_names, long_var_names
     ):
         if has_orig_vars:
-            if cube.var_name == f"{orig_var}":
-                cube.rename(long_var)
+            if cube.var_name == orig_var:
                 cube.var_name = f"{new_var}{new_extension}"
                 cube.coord("month_number").rename("imogen_drive")
+                return cube
         else:
             if cube.var_name == f"{new_var}_anom":
                 cube.rename(long_var)
                 cube.var_name = f"{new_var}_patt"
+                return cube
             elif cube.var_name == f"{new_var}_patt":
                 cube.rename(long_var)
-                cube.var_name = f"{orig_var}"
+                cube.var_name = orig_var
                 cube.coord("imogen_drive").rename("month_number")
-
-    return cube
+                return cube
 
 
 def parallelise(function, processes=None):

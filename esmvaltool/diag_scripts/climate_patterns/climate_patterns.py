@@ -392,7 +392,7 @@ def calculate_regressions(
 
             # create, and append cube of regression values
             month_list.append(
-                create_cube(tas, cube, regr_array, i, units=units)
+                create_cube(tas, cube.copy(), regr_array, i, units=units)
             )
 
         month_list = month_list.merge_cube()
@@ -581,10 +581,10 @@ def patterns(model, cfg):
     clim_list_final, anom_list_final = calculate_anomaly(clim_list, ts_list)
 
     for i, cube in enumerate(clim_list_final):
-        sf.rename_variables(
+        clim_list_final[i] = sf.rename_variables(
             cube, has_orig_vars=True, new_extension="_clim"
         )
-        sf.rename_variables(
+        anom_list_final[i] = sf.rename_variables(
             anom_list_final[i], has_orig_vars=True, new_extension="_anom"
         )
 
@@ -630,7 +630,6 @@ def main(cfg):
     None
     """
     input_data = cfg["input_data"].values()
-    print(input_data)
     parallelise = cfg["parallelise"]
 
     models = []
