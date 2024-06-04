@@ -13,19 +13,14 @@ the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
 
     cylc stop "a_running_recipe_test_workflow"
 
-#. Open it in your preferred code editor.
+#. Obtain the duration and memory usage of the recipe from the messages printed
+   to screen after running your recipe on the compute cluster you use at your
+   site; these messages will look something like::
 
-#. Locate the ``[[COMPUTE]]`` section, it should look something like this::
-
-    [[COMPUTE]]
-    platform = <your_platform_here>
-    execution time limit = PT2M
-    [[[directives]]]
-    --wckey = RTW
-    --ntasks = {{ MAX_PARALLEL_TASKS }}
-    --mem = 2G
-
-#. Run your recipe with ESMValTool on your compute server for your site.
+    YYYY-MM-DD HH:MM:SS:sss UTC [12345] INFO    Time for running the recipe was: 0:02:13.334742
+    YYYY-MM-DD HH:MM:SS:sss UTC [12345] INFO    Maximum memory used (estimate): 2.4 GB
+    [...]
+    YYYY-MM-DD HH:MM:SS:sss UTC [12345] INFO    Run was successful
 
 #. If the recipe takes less than 10 minutes to run then it should be added as a
    "fast" recipe in the ``flow.cylc`` file within the ``[task parameters]``
