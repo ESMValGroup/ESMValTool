@@ -37,7 +37,7 @@ the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
 
 #. Stop any running recipe_test_workflow workflows::
 
-    cylc stop "a_running_recipe_test_workflow"
+    cylc stop recipe_test_workflow
 
 #. Run the recipe test workflow.
 
