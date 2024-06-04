@@ -9,10 +9,6 @@ compute server you use at your site, as detailed by the ``platform`` option in
 the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
 ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/site/`` directory.
 
-#. Stop any running recipe_test_workflow workflows::
-
-    cylc stop "a_running_recipe_test_workflow"
-
 #. Obtain the duration and memory usage of the recipe from the messages printed
    to screen after running your recipe on the compute cluster you use at your
    site; these messages will look something like::
@@ -22,20 +18,26 @@ the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
     [...]
     YYYY-MM-DD HH:MM:SS:sss UTC [12345] INFO    Run was successful
 
-#. If the recipe takes less than 10 minutes to run then it should be added as a
-   "fast" recipe in the ``flow.cylc`` file within the ``[task parameters]``
-   section.If it takes longer than ten minutes it should be included in "medium
-   ".
+#. Add the recipe to the ``[task parameters]`` section in the
+   ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/flow.cylc``
+   file. If the recipe takes less than 10 minutes to run then it should be
+   added to the ``fast`` option. Recipes that take longer than ten minutes
+   should be added to the ``medium`` option.
 
-#. If either of the memory readings from your run are larger than the
-   values specified in the ``[[COMPUTE]]`` section, you need to add your recipe as
-   another `process` similar to::
+#. If the memory usage of the recipe is larger than the value specified by the
+   ``--mem`` option in the ``[[[directives]]]`` section in the ``[[COMPUTE]]``
+   section in the aforementioned site-specific ``.cylc`` file, add a section
+   (in alphabical order) to this file similar to::
 
     [[process<fast=recipe_albedolandcover>]]
     # Actual: 0m31s, 2.5 GB on 2024-04-08.
     execution time limit = PT2M
     [[[directives]]]
         --mem = 3G
+
+#. Stop any running recipe_test_workflow workflows::
+
+    cylc stop "a_running_recipe_test_workflow"
 
 #. Run the recipe test workflow.
 
