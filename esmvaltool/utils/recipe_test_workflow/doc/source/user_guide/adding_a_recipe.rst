@@ -36,7 +36,7 @@ the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
     [[[directives]]]
         --mem = 3G
 
-#. Stop any running recipe_test_workflow workflows::
+#. Stop any running ``recipe_test_workflow`` workflows::
 
     cylc stop recipe_test_workflow
 
@@ -47,11 +47,13 @@ the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
 
         #. Locate the workflow run folder of the workflow you just completed.
 
-        #. Copy the output files from the "cycle" folder (``run/share/cycle``) of the
-           workflow you just ran, to your site specific KGO rootpath folder
-           (this folder should be set as the value for the variable ``KGO_ROOT_PATH=``
-           in your ``rose-suite<your_site>.conf`` file found in the ``/data/users/esmva
-           l/KGO`` directory)::
+        #. Recursively copy the recipe output directory (i.e.
+           ``recipe_<recipe>_<date>_<time>``) from the
+           ``${HOME}/cylc-run/recipe_test_workflow/run1/share/cycle/<cycle>``
+           directory to your site-specific KGO directory, as detailed by the
+           ``KGO_ROOT_PATH`` option in the site-specific ``.conf`` file in the
+           ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/opt/``
+           directory::
 
             cp -r <directory_of_recipe_output_cycle_folder> <KGO_rootpath_folder>
 
@@ -64,18 +66,16 @@ the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
 
             chmod a+w <the_directory_of_the_recipe_you_have_copied_into_the_KGO_folder>
 
-#. Stop any running recipe_test_workflow workflows::
+#. Stop any running ``recipe_test_workflow`` workflows::
 
-    cylc stop "a_running_recipe_test_workflow"
+    cylc stop recipe_test_workflow
 
 #. Run the RTW again. The workflow should now succeed.::
 
     cylc vip -O <site>
 
-#. Add your recipe to the list of "Currently tested recipes" in ``tested_recipes.rst``
-   (this file is located within ``recipe_test_workflow/doc/source``) in
-   it's correct position (the list is ordered alphabetically), this will add
-   it to the documentation.
+#. Add the recipe to the documentation; add a link to the recipe to the list of
+   "Currently tested recipes" in ``doc/source/tested_recipes.rst`` in
+   alphabetical order.
 
-#. If the workflow succeeds then your recipe has successfully been added to the
-   workflow. You can now commit your changes and push them onto GitHub.
+#. Commit and push your changes.
