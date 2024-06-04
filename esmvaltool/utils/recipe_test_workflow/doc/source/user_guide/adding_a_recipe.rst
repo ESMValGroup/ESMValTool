@@ -43,34 +43,34 @@ the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
 #. Run the recipe test workflow (it is expected that the ``compare`` task will
    fail).
 
-#. Locate the workflow run folder of the workflow you just completed.
+#. Update the KGO:
 
-#. Copy the output files from the "cycle" folder (``run/share/cycle``) of the
-   workflow you just ran, to your site specific KGO rootpath folder
-   (this folder should be set as the value for the variable ``KGO_ROOT_PATH=``
-   in your ``rose-suite<your_site>.conf`` file found in the ``/data/users/esmva
-   l/KGO`` directory)::
+        #. Locate the workflow run folder of the workflow you just completed.
 
-    cp -r <directory_of_recipe_output_cycle_folder> <KGO_rootpath_folder>
+        #. Copy the output files from the "cycle" folder (``run/share/cycle``) of the
+           workflow you just ran, to your site specific KGO rootpath folder
+           (this folder should be set as the value for the variable ``KGO_ROOT_PATH=``
+           in your ``rose-suite<your_site>.conf`` file found in the ``/data/users/esmva
+           l/KGO`` directory)::
 
-#. Change directory to the rootpath KGO directory::
+            cp -r <directory_of_recipe_output_cycle_folder> <KGO_rootpath_folder>
 
-    cd <KGO_rootpath_directory>
+        #. Change directory to the rootpath KGO directory::
 
-#. Allow write permissions for all users on the directory and it's
-   subdirectories of the recipe you've added to the KGO folder::
+            cd <KGO_rootpath_directory>
 
-    chmod a+w <the_directory_of_the_recipe_you_have_copied_into_the_KGO_folder>
+        #. Allow write permissions for all users on the directory and it's
+           subdirectories of the recipe you've added to the KGO folder.::
+
+            chmod a+w <the_directory_of_the_recipe_you_have_copied_into_the_KGO_folder>
 
 #. Stop any running recipe_test_workflow workflows::
 
     cylc stop "a_running_recipe_test_workflow"
 
-#. Run the RTW again::
+#. Run the RTW again. The workflow should now succeed.::
 
-    cylc vip -O <your_site_name>
-
-#. The workflow should now succeed.
+    cylc vip -O <site>
 
 #. Add your recipe to the list of "Currently tested recipes" in ``tested_recipes.rst``
    (this file is located within ``recipe_test_workflow/doc/source``) in
