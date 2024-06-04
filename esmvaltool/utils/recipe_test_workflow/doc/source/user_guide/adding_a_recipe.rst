@@ -27,7 +27,8 @@ the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
 #. If the memory usage of the recipe is larger than the value specified by the
    ``--mem`` option in the ``[[[directives]]]`` section in the ``[[COMPUTE]]``
    section in the aforementioned site-specific ``.cylc`` file, add a section
-   (in alphabical order) to this file similar to::
+   (in alphabetical order) to this file as shown below (make sure to round off
+   the duration to the nearest second when you add it)::
 
     [[process<fast=recipe_albedolandcover>]]
     # Actual: 0m31s, 2.5 GB on 2024-04-08.
@@ -39,10 +40,8 @@ the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
 
     cylc stop recipe_test_workflow
 
-#. Run the recipe test workflow.
-
-#. The ``compare`` task will fail. These next steps should fix it,
-   and even if the ``compare`` task has passed, they must still be completed.
+#. Run the recipe test workflow (it is expected that the ``compare`` task will
+   fail).
 
 #. Locate the workflow run folder of the workflow you just completed.
 
