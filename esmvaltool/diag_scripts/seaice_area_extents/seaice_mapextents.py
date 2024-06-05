@@ -8,7 +8,7 @@ https://cosima-recipes.readthedocs.io/en/latest/DocumentedExamples
 import logging
 import os
 import calendar
-import cartopy.crs.SouthPolarStereo as SPS
+from cartopy.crs import SouthPolarStereo
 import xarray as xr
 import xesmf
 import matplotlib.pyplot as plt
@@ -22,6 +22,7 @@ from esmvaltool.diag_scripts.shared._base import get_plot_filename
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
+
 
 def model_regrid_diff(mod_si, obs_si, cdr, mon, latmax):
     """Regrid and compute difference grid."""
@@ -39,9 +40,10 @@ def model_regrid_diff(mod_si, obs_si, cdr, mon, latmax):
     )
 
     model_mean = mod_si.siconc.sel(time=mod_si.siconc.time
-                                    .dt.month.isin(mon)).mean('time')
+                                   .dt.month.isin(mon)).mean('time')
     mod_regrid = regridder_access_sh(model_mean)
     diff_ds = mod_regrid - cdr
+
     return diff_ds, mod_regrid
 
 
@@ -64,7 +66,7 @@ def map_diff(mod_si_ls, obs_si, months):
                                                     cdr, mon, latmax)
 
             axes = plt.subplot(len(months), 3, i + j * 3,
-                                projection=SPS(true_scale_latitude=-70))
+                                projection=SouthPolarStereo(true_scale_latitude=-70))
 
             diffmap = axes.contourf(
                 diff_ds.x, diff_ds.y, diff_ds,
