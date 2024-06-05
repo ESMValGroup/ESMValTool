@@ -1,4 +1,4 @@
-"""diagnostic script to plot minima and maxima trends.
+"""Diagnostic script to plot minima and maxima trends.
 
 based on code from Anton Steketee's COSIMA cookbook notebook
 https://cosima-recipes.readthedocs.io/en/latest/DocumentedExamples
@@ -21,14 +21,14 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def sea_ice_area(sic, area, coordls):
-    """sic percent is in 0-100. Mulitply by portion so divide by 100."""
+    """Percent sic is in 0-100. Mulitply by portion so divide by 100."""
     sic = sic / 100
     # valid sic between 0.15 and 1
     return (sic * area).where((sic >= 0.15) * (sic <= 1)).sum(coordls)
 
 
 def sea_ice_area_obs(xdataset):
-    """compute sea ice area for obs dataset."""
+    """Compute sea ice area for obs dataset."""
     sic = xdataset.siconc
     area_km2 = xdataset.areacello / 1e6
     result = sea_ice_area(sic, area_km2,
@@ -42,7 +42,7 @@ def sea_ice_area_obs(xdataset):
 
 
 def sea_ice_area_model_sh(xdataset):
-    """compute sea ice area for model dataset."""
+    """Compute sea ice area for model dataset."""
     sic = xdataset.siconc.where(xdataset.siconc.lat < -20, drop=True)
 
     area_km2 = xdataset.areacello / 1e6  # area convert to km2
@@ -51,7 +51,7 @@ def sea_ice_area_model_sh(xdataset):
 
 
 def min_and_max(dataset):
-    """compute min and max for dataset."""
+    """Compute min and max for dataset."""
     def min_and_max_year(yeardata):
         result = xr.Dataset()
         result['min'] = yeardata.min()
@@ -63,8 +63,7 @@ def min_and_max(dataset):
 
 
 def plot_trend(model_min_max, obs_a, minmax):
-    """
-    function to plot min or max trend
+    """function to plot min or max trend.
 
     Parameters
     ----------
@@ -100,7 +99,7 @@ def main(cfg):
         # data values to iterate
         logger.info("dataset: %s", dataset['long_name'])
         data.append([dataset['filename'], dataset['short_name'],
-                      dataset['dataset']])
+                    dataset['dataset']])
 
     inputfiles_df = pd.DataFrame(data, columns=['filename', 'short_name',
                                                 'dataset'])
@@ -145,7 +144,7 @@ def main(cfg):
 
 
 def get_provenance_record(ancestor_files):
-    """build provenance record"""
+    """Build provenance record."""
     record = {
         'ancestors': ancestor_files,
         'authors': [

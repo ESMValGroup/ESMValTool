@@ -1,4 +1,4 @@
-"""diagnostic script to plot extent and differences.
+"""Diagnostic script to plot extent and differences.
 
 based on code from Anton Steketee's COSIMA cookbook notebook
 https://cosima-recipes.readthedocs.io/en/latest/DocumentedExamples
@@ -8,7 +8,7 @@ https://cosima-recipes.readthedocs.io/en/latest/DocumentedExamples
 import logging
 import os
 import calendar
-from cartopy.crs import SouthPolarStereo
+import cartopy.crs.SouthPolarStereo as SPS
 import xarray as xr
 import xesmf
 import matplotlib.pyplot as plt
@@ -23,9 +23,30 @@ from esmvaltool.diag_scripts.shared._base import get_plot_filename
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 
+def model_regrid_diff(mod_si, obs_si, cdr, mon, latmax):
+    """Regrid and compute difference grid."""
+    lat_min = mod_si.lat.min().values.item()
+    mod_si = mod_si.where(mod_si.lat < latmax, drop=True)
+    regrd_out = obs_si.where(obs_si.lat > lat_min, drop=True)
+
+    # regrid model data to observations
+    regridder_access_sh = xesmf.Regridder(
+        mod_si.isel(time=0).drop(['i', 'j']),
+        regrd_out.isel(time=0),
+        'bilinear',
+        periodic=True,
+        unmapped_to_nan=True
+    )
+
+    model_mean = mod_si.siconc.sel(time=mod_si.siconc.time
+                                    .dt.month.isin(mon)).mean('time')
+    mod_regrid = regridder_access_sh(model_mean)
+    diff_ds = mod_regrid - cdr
+    return diff_ds, mod_regrid
+
 
 def map_diff(mod_si_ls, obs_si, months):
-    """create figure mapping extents for models and months."""
+    """Create figure mapping extents for models and months."""
     # get lat max for regridding
     latmax = obs_si.lat.max().values.item()
 
@@ -39,26 +60,11 @@ def map_diff(mod_si_ls, obs_si, months):
         i = 1
         for mod_label, mod_si in mod_si_ls.items():
 
-            lat_min = mod_si.lat.min().values.item()
-            mod_si = mod_si.where(mod_si.lat < latmax, drop=True)
-            regrd_out = obs_si.where(obs_si.lat > lat_min, drop=True)
+            diff_ds, mod_regrid = model_regrid_diff(mod_si, obs_si,
+                                                    cdr, mon, latmax)
 
-            # regrid model data to observations
-            regridder_access_sh = xesmf.Regridder(
-                mod_si.isel(time=0).drop(['i', 'j']),
-                regrd_out.isel(time=0),
-                'bilinear',
-                periodic=True,
-                unmapped_to_nan=True
-            )
-
-            model_mean = mod_si.siconc.sel(time=mod_si.siconc.time
-                                           .dt.month.isin(mon)).mean('time')
-            mod_regrid = regridder_access_sh(model_mean)
-            diff_ds = mod_regrid - cdr
-
-            axes = plt.subplot(len(months), 3, i + j * 3, 
-                        projection=SouthPolarStereo(true_scale_latitude=-70))
+            axes = plt.subplot(len(months), 3, i + j * 3,
+                                projection=SPS(true_scale_latitude=-70))
 
             diffmap = axes.contourf(
                 diff_ds.x, diff_ds.y, diff_ds,
@@ -72,7 +78,7 @@ def map_diff(mod_si_ls, obs_si, months):
 
             i += 1
         j += 1
-            
+
     line_cdr = mlines.Line2D([], [],
                              color=cs_cdr.collections[0].get_edgecolor(),
                              label="Observed Extent")
@@ -123,7 +129,7 @@ def main(cfg):
 
 
 def get_provenance_record(ancestor_files):
-    """build provenance dictionary"""
+    """Build provenance dictionary."""
     record = {
         'ancestors': ancestor_files,
         'authors': [
@@ -134,7 +140,7 @@ def get_provenance_record(ancestor_files):
         'plot_types': ['polar'],
         'references': [],
         'statistics': ['diff'],
-            }
+    }
     return record
 
 
