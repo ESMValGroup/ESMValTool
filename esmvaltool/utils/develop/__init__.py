@@ -1,17 +1,19 @@
-"""Interface to utility commands for develop command group"""
+"""Interface to utility commands for develop command group."""
 
 import sys
 from pathlib import Path
 from esmvaltool.utils.develop import compare
 
+
 class DevelopCommand():
-    """Development utilities"""
+    """Development utilities."""
 
     def compare(self,
-                reference_dir, 
-                current_dir, 
+                reference_dir,
+                current_dir,
                 verbose=False):
         """Compare a recipe run to a reference run.
+
         Returns True if the runs were identical, False otherwise.
     
         Parameters
@@ -23,7 +25,6 @@ class DevelopCommand():
         verbose : bool
             Produce verbose output
         """
-        
         same = compare.compare(Path(reference_dir), Path(current_dir), verbose)
 
         sys.exit(int(not same))
