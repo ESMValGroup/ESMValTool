@@ -26,4 +26,4 @@ class DevelopCommand():
         
         same = compare.compare(Path(reference_dir), Path(current_dir), verbose)
 
-        sys.exit(int(same))
+        sys.exit(int(not same))
