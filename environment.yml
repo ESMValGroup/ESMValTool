@@ -86,7 +86,7 @@ dependencies:
   # Python packages needed for development
   - codespell
   - docformatter
-  - imagehash
+  # - imagehash  # confluct with esmpy >=8.6.0 via libtiff
   - isort
   - pre-commit
   # - prospector  # needs support for Python 3.12
