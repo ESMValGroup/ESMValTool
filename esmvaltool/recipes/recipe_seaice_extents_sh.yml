@@ -11,6 +11,10 @@ documentation:
 
   authors:
     - chun_felicity
+    - steketee_anton
+    
+  maintainer:
+    - chun_felicity
 
   realms:
     - seaIce
