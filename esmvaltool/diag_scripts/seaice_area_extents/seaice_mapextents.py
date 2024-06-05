@@ -1,4 +1,4 @@
-"""diagnostic script to plot extent and differences
+"""diagnostic script to plot extent and differences.
 
 based on code from Anton Steketee's COSIMA cookbook notebook
 https://cosima-recipes.readthedocs.io/en/latest/DocumentedExamples
@@ -8,7 +8,7 @@ https://cosima-recipes.readthedocs.io/en/latest/DocumentedExamples
 import logging
 import os
 import calendar
-from cartopy import crs
+from cartopy.crs import SouthPolarStereo
 import xarray as xr
 import xesmf
 import matplotlib.pyplot as plt
@@ -25,7 +25,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def map_diff(mod_si_ls, obs_si, months):
-    """create figure mapping extents for models and months"""
+    """create figure mapping extents for models and months."""
     # get lat max for regridding
     latmax = obs_si.lat.max().values.item()
 
@@ -57,8 +57,8 @@ def map_diff(mod_si_ls, obs_si, months):
             mod_regrid = regridder_access_sh(model_mean)
             diff_ds = mod_regrid - cdr
 
-            proj = crs.SouthPolarStereo(true_scale_latitude=-70)
-            axes = plt.subplot(len(months), 3, i + j * 3, projection=proj)
+            axes = plt.subplot(len(months), 3, i + j * 3, 
+                        projection=SouthPolarStereo(true_scale_latitude=-70))
 
             diffmap = axes.contourf(
                 diff_ds.x, diff_ds.y, diff_ds,
@@ -72,12 +72,14 @@ def map_diff(mod_si_ls, obs_si, months):
 
             i += 1
         j += 1
+            
+    line_cdr = mlines.Line2D([], [],
+                             color=cs_cdr.collections[0].get_edgecolor(),
+                             label="Observed Extent")
 
-    color_cdr = cs_cdr.collections[0].get_edgecolor()
-    line_cdr = mlines.Line2D([], [], color=color_cdr, label="Observed Extent")
-
-    color_mod = cs_mod.collections[0].get_edgecolor()
-    line_mod = mlines.Line2D([], [], color=color_mod, label="Modelled Extent")
+    line_mod = mlines.Line2D([], [],
+                             color=cs_mod.collections[0].get_edgecolor(),
+                             label="Modelled Extent")
 
     plt.legend(handles=[line_cdr, line_mod], loc='center left',
                bbox_to_anchor=(1.2, 0.5))

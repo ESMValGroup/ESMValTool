@@ -1,5 +1,4 @@
-"""
-diagnostic script to plot minima and maxima trends
+"""diagnostic script to plot minima and maxima trends.
 
 based on code from Anton Steketee's COSIMA cookbook notebook
 https://cosima-recipes.readthedocs.io/en/latest/DocumentedExamples
@@ -22,14 +21,14 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def sea_ice_area(sic, area, coordls):
-    """sic percent is in 0-100. Mulitply by portion so divide by 100"""
+    """sic percent is in 0-100. Mulitply by portion so divide by 100."""
     sic = sic / 100
     # valid sic between 0.15 and 1
     return (sic * area).where((sic >= 0.15) * (sic <= 1)).sum(coordls)
 
 
 def sea_ice_area_obs(xdataset):
-    """compute sea ice area for obs dataset"""
+    """compute sea ice area for obs dataset."""
     sic = xdataset.siconc
     area_km2 = xdataset.areacello / 1e6
     result = sea_ice_area(sic, area_km2,
@@ -43,7 +42,7 @@ def sea_ice_area_obs(xdataset):
 
 
 def sea_ice_area_model_sh(xdataset):
-    """compute sea ice area for model dataset"""
+    """compute sea ice area for model dataset."""
     sic = xdataset.siconc.where(xdataset.siconc.lat < -20, drop=True)
 
     area_km2 = xdataset.areacello / 1e6  # area convert to km2
@@ -52,7 +51,7 @@ def sea_ice_area_model_sh(xdataset):
 
 
 def min_and_max(dataset):
-    """compute min and max for dataset"""
+    """compute min and max for dataset."""
     def min_and_max_year(yeardata):
         result = xr.Dataset()
         result['min'] = yeardata.min()
@@ -95,16 +94,13 @@ def plot_trend(model_min_max, obs_a, minmax):
 
 def main(cfg):
     """Compute sea ice area for each input dataset."""
-    input_data = cfg['input_data'].values()
     data = []
 
-    for dataset in input_data:
-        # Load the data
-        input_file = [dataset['filename'], dataset['short_name'],
-                      dataset['dataset']]
-        # key for different models
+    for dataset in cfg['input_data'].values():
+        # data values to iterate
         logger.info("dataset: %s", dataset['long_name'])
-        data.append(input_file)
+        data.append([dataset['filename'], dataset['short_name'],
+                      dataset['dataset']])
 
     inputfiles_df = pd.DataFrame(data, columns=['filename', 'short_name',
                                                 'dataset'])
@@ -139,15 +135,13 @@ def main(cfg):
                     logger.warning("..%s missing a variable?", data_name)
 
     obs_si['areacello'] = area_obs['areacello']
-    obs_a = sea_ice_area_obs(obs_si)
 
     provenance = get_provenance_record(inputfiles_df['filename'].to_list())
     for trend_type in ['min', 'max']:
-        fig = plot_trend(min_max, obs_a, trend_type)
+        fig = plot_trend(min_max, sea_ice_area_obs(obs_si), trend_type)
         # Save output
-        output_path = get_plot_filename(f'{trend_type}_trend', cfg)
-
-        save_figure(output_path, provenance, cfg, figure=fig)
+        save_figure(get_plot_filename(f'{trend_type}_trend', cfg),
+                    provenance, cfg, figure=fig)
 
 
 def get_provenance_record(ancestor_files):
@@ -162,7 +156,7 @@ def get_provenance_record(ancestor_files):
         'plot_types': ['times'],
         'references': [],
         'statistics': ['mean'],
-            }
+    }
     return record
 
 
