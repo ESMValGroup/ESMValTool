@@ -21,14 +21,14 @@ dependencies:
   - distributed
   - ecmwf-api-client
   - eofs
-  - esmpy !=8.1.0,<8.6.0  # https://github.com/SciTools-incubator/iris-esmf-regrid/pull/342#issuecomment-2092921514
+  - esmpy >=8.6.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   # - esmvalcore 2.10.*
   - fiona
   - fsspec
   - fire
   - gdal
   - iris >=3.6.1
-  - iris-esmf-regrid >=0.7.0
+  - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - jinja2
   - joblib
   - lime
@@ -45,20 +45,12 @@ dependencies:
   - pip !=21.3
   - progressbar2
   - prov
-<<<<<<< HEAD
   - psyplot >=1.5.0  # earliest Py312 build
   - psy-maps >=1.5.0  # earliest Py312 build
   # - psy-reg >=1.5.0  # earliest Py312 build; not yet at 1.5.0 (4 Apr 2024); needs support for Python 3.12
   - psy-simple >=1.5.0  # earliest Py312 build
   - pyproj >=2.1
-=======
-  - psyplot
-  - psy-maps
-  - psy-reg
-  - psy-simple
-  - pyproj >=2.1
   - pys2index  # only from conda-forge
->>>>>>> main
   - python >=3.9
   - python-cdo
   - python-dateutil
