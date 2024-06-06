@@ -54,9 +54,19 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
-- 2.11.0 (Release Manager: TBD)
+- 2.11.0 (Release Manager: Met Office: `Emma Hogan`_, `Chris Billows`_, `Ed Gillett`_)
 
-Planned for February or March 2024
++------------+------------+----------------------------------------+-------------------------------------+
+|  Planned   |    Done    |            Event                       |             Changelog               |
++============+============+========================================+=====================================+
+| 2024-04-22 |            | ESMValCore `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2023-05-03 |            | ESMValCore released                    |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2023-05-06 |            | ESMValTool `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2023-05-17 |            | ESMValTool released                    |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
 
 Past releases
 ^^^^^^^^^^^^^
@@ -647,3 +657,6 @@ Changelog
 .. _Manuel Schlund: https://github.com/schlunma
 .. _Javier Vegas-Regidor: https://github.com/jvegasbsc
 .. _Klaus Zimmermann: https://github.com/zklaus
+.. _Emma Hogan: https://github.com/ehogan
+.. _Chris Billows: https://github.com/chrisbillowsMO
+.. _Ed Gillett: https://github.com/mo-gill
