@@ -24,14 +24,17 @@ M_H2O = 18.02   # [g_air/mol_air]
 
 logger = logging.getLogger(__name__)
 
+# think about putting the first functions for lifetime into a third py file lifetime_func.py
+# so they are separated from the LifetimeBase class
+
 def create_press(var):
     """Create a pressure variable."""
     resolver = iris.common.resolve.Resolve(var, var)
-    if var.coord('air_pressure').points.shape == var.shape:
-        press = resolver.cube(var.coord('air_pressure').points)
+    if var.coord('air_pressure').shape == var.shape:
+        press = resolver.cube(var.coord('air_pressure').lazy_points())
     else:
         press = resolver.cube(broadcast_to_shape(
-            var.coord('air_pressure').points,
+            var.coord('air_pressure').lazy_points(),
             var.shape,
             var.coord_dims('air_pressure')
         ))
@@ -56,7 +59,10 @@ def calculate_gridmassdry(press, hus, z_coord):
 
     # surface air pressure as cube
     pmax = press[:, 0, :, :].copy()
-    pmax.data = press.coord('surface_air_pressure').points
+    if 'surface_air_pressure' in press.coords():
+        pmax.data = press.coord('surface_air_pressure').lazy_points()
+    else:
+        pmax.data[:, :, :] = 101525.
 
     # delta pressure > kg m-1 s-2
     delta_p = dpres_plevel_4d(press,
@@ -66,8 +72,17 @@ def calculate_gridmassdry(press, hus, z_coord):
     # grid mass per square meter > kg m-2
     delta_m = delta_p / g
     # grid area > m2
-    area = calculate_area(hus.coord('latitude'),
-                          hus.coord('longitude'))
+    lat_lon_dims = sorted(
+        tuple(set(hus.coord_dims('latitude') + hus.coord_dims('longitude')))
+    )
+    lat_lon_slice = next(hus.slices(['latitude', 'longitude'], ordered=False))
+    area_2d = iris.analysis.cartography.area_weights(lat_lon_slice)
+    area = broadcast_to_shape(
+        da.array(area_2d),
+        hus.shape,
+        lat_lon_dims,
+        chunks=hus.lazy_data().chunksize,
+    )
     # grid mass per grid > kg
     delta_gm = area * delta_m
     # to dry air
@@ -137,7 +152,8 @@ def _number_density_dryair_by_press(temp, hus, press=None):
         press = create_press(temp)
 
     rho = N_A / 10.**6
-    rho = rho * iris.analysis.maths.divide(press, R * temp)
+    #rho = rho * iris.analysis.maths.divide(press, R * temp)
+    rho = rho * press / (R * temp)
     rho = rho * iris.analysis.maths.divide(1. - hus,
                                            1. + hus *
                                            (M_AIR
@@ -176,83 +192,47 @@ def _number_density_dryair_by_grid(grmassdry, grvol):
     return rho
 
 
-def guess_interfaces(coordinate):
-    """
-    Calculate the interfaces of a coordinate given its midpoints.
-
-    Parameters
-    ----------
-    coordinate : iris.cube
-        The coordinate array.
-
-    Returns
-    -------
-    numpy.array
-        An array with the lenght of the coordinate plus one.
-    """
-    interfaces = 0.5 * (coordinate[0:-1] + coordinate[1:])
-    first = 0.5 * (3 * coordinate[0] - coordinate[1])
-    last = 0.5 * (3 * coordinate[-1] - coordinate[-2])
-
-    # Check limits
-    # if coordinate.name.lower() in ['lat', 'latitude']:
-    #     first = np.sign(first) * min([abs(first), 90.])
-    #     last = np.sign(last) * min([abs(last), 90.])
-
-    interfaces = da.insert(interfaces, 0, first)
-    interfaces = da.append(interfaces, last)
-
-    return interfaces
-
-
-def calculate_area(latitude, longitude):
-    """
-    Calculate the area of each grid cell on a rectangular grid.
-
-    Parameters
-    ----------
-    latitude : iris.cube.Coord
-        The latitude coordinate of the grid.
-
-    longitude : iris.cube.Coord
-        The longitude coordinate of the grid.
-
-    Returns
-    -------
-    iris.cube
-        An array with the area (in m2) and the input latitude and longitude as
-        coordinates.
-    """
-    r_earth = 6378100.0  # from astropy.constants
-
-    lat_i = da.deg2rad(guess_interfaces(latitude.points))
-    lon_i = da.deg2rad(guess_interfaces(longitude.points))
-
-    delta_x = abs(lon_i[1:] - lon_i[:-1])
-    delta_y = abs(da.sin(lat_i[1:]) - da.sin(lat_i[:-1]))
-
-    output = da.outer(delta_y, delta_x) * r_earth**2
-    output = output.astype('float32')
-
-    result = iris.cube.Cube(output,
-                            standard_name='cell_area',
-                            long_name='cell_area',
-                            var_name='cell_area',
-                            units='m2',
-                            dim_coords_and_dims=[(latitude, 0),
-                                                 (longitude, 1)])
-
-    return result
-
-
 def dpres_plevel_4d(plev, pmin, pmax, z_coord='air_pressure'):
     """Calculate delta pressure levels.
 
     The delta pressure levels are based
-    on the given pressure level as a
+    on the given pressure as a
     four dimensional cube.
 
     """
+
+    # for the calculation the following shifted
+    # vectors are used:
+    # - p_m1: shifted by one index down
+    #         (the value of the last index is the former first)
+    # - p_p1: shifted by one index up
+    #         (the value of the first index is the former last)
+    # both vector values are divided by two
+    p_m1 = plev.copy()
+    p_m1 = da.roll(plev, -1, axis=1) / 2.
+
+    p_p1 = plev.copy()
+    p_p1 = da.roll(plev, 1, axis=1) / 2.
+
+    # modify the last entry in p_m1
+    # and the first entry in p_p1
+    p_m1[:, 89, :, :] = pmax - p_m1[:, 88, :, :]
+    p_p1[:, 0, :, :] = pmin - p_p1[:, 1, :, :]
+
+    # calculate difference
+    dplev = p_p1 - p_m1
+
+    print(dplev)
+    print(type(dplev))
+    print(dplev[0, :, 0, 0])
+    print(np.array(dplev[0, :, 0, 0]))
+
+
+    import sys
+    sys.exit(2)
+
+
+
     cubelist_dplev = [plev_slice.copy()
                       for plev_slice in plev.slices(['time',
                                                      'latitude',
@@ -291,83 +271,6 @@ def dpres_plevel_4d(plev, pmin, pmax, z_coord='air_pressure'):
     dplev = iris.cube.CubeList(cubelist_dplev).merge_cube()
     dplev.transpose(new_order=[1, 0, 2, 3])
     dplev = iris.util.reverse(dplev, 1)
-    return dplev
-
-
-def dpres_plevel_1d(plev, pmin, pmax):
-    """Calculate delta pressure levels.
-
-    The delta pressure levels are based
-    on the given pressure level coordinate
-    as numpy array (one-dimensional).
-
-    pmax can be set as float or as a multidimensional
-    cube. The output of dpres_plevel will have the
-    same dimensionality.
-    """
-    increasing = (da.diff(plev) >= 0).all()
-    decreasing = (da.diff(plev) <= 0).all()
-
-    if isinstance(pmax, float):
-
-        dplev = plev.copy()
-
-        for i, lev in enumerate(plev):
-            if increasing:
-                if lev == min(plev):
-                    dplev[i] = (plev[i + 1] - lev) / 2. + (lev - pmin)
-                elif lev == max(plev):
-                    dplev[i] = (pmax - lev) + (lev - plev[i - 1]) / 2.
-                else:
-                    dplev[i] = ((plev[i + 1] - lev) / 2.
-                                + (lev - plev[i - 1]) / 2.)
-            elif decreasing:
-                if lev == min(plev):
-                    dplev[i] = (lev - pmin) + (plev[i - 1] - lev) / 2.
-                elif lev == max(plev):
-                    dplev[i] = (lev - plev[i + 1]) / 2. + (pmax - lev)
-                else:
-                    dplev[i] = ((lev - plev[i + 1]) / 2.
-                                + (plev[i - 1] - lev) / 2.)
-
-    elif isinstance(pmax, iris.cube.Cube):
-
-        cubelist = [pmax.copy() for lev in plev]
-
-        for i, lev in enumerate(plev):
-            if increasing:
-                if lev == min(plev):
-                    cubelist[i].data = (lev - pmin) + (plev[i + 1] - lev) / 2.
-                    cubelist[i] = (((lev - pmin)
-                                   + (plev[i + 1] - lev) / 2.)
-                                   * cubelist[i] / cubelist[i])
-                elif lev == max(plev):
-                    cubelist[i] = (pmax - lev) + (lev - plev[i - 1]) / 2.
-                else:
-                    cubelist[i] = (((plev[i + 1] - lev) / 2.
-                                   + (lev - plev[i - 1]) / 2.)
-                                   * cubelist[i] / cubelist[i])
-            elif decreasing:
-                if lev == min(plev):
-                    cubelist[i] = (((lev - pmin)
-                                   + (plev[i - 1] - lev) / 2.)
-                                   * cubelist[i] / cubelist[i])
-                elif lev == max(plev):
-                    cubelist[i] = (lev - plev[i + 1]) / 2. + (pmax - lev)
-                else:
-                    cubelist[i] = (((lev - plev[i + 1]) / 2.
-                                   + (plev[i - 1] - lev) / 2.)
-                                   * cubelist[i] / cubelist[i])
-            cubelist[i].units = 'Pa'
-            cubelist[i].var_name = 'air_pressure'
-            cubelist[i].add_aux_coord(iris.coords.AuxCoord(lev))
-        # merge to single cube
-        dplev = iris.cube.CubeList(cubelist).merge_cube()
-
-    else:
-        raise NotImplementedError("Function not implemented"
-                                  f" for type {type(pmax)}")
-
     return dplev
 
 
@@ -432,7 +335,7 @@ def extract_region(dataset, region, case='reaction'):
                 tropopause = tp_clim
 
         z_4d = broadcast_to_shape(
-            var.coord(use_z_coord).points,
+            var.coord(use_z_coord).lazy_points(),
             var.shape,
             var.coord_dims(use_z_coord)
         )
@@ -468,7 +371,7 @@ def climatological_tropopause(cube):
                                   " have a latitude cooridnate")
 
     tpp = (300. - 215. * (
-        da.cos(da.deg2rad(cube.coord('latitude').points)) ** 2)) * 100.
+        da.cos(da.deg2rad(cube.coord('latitude').lazy_points())) ** 2)) * 100.
 
     tp_clim = cube.copy()
     tp_clim.data = broadcast_to_shape(
@@ -643,154 +546,6 @@ class LifetimeBase():
     def _add_file_extension(self, filename):
         """Add extension to plot filename."""
         return f"{filename}.{self.cfg['output_file_type']}"
-
-    # def _get_proj_options(self, map_name):
-    #     return self.config['maps'][map_name]
-
-    def _get_variable_options(self, variable_group, map_name):
-        options = self.config['variables'].get(
-            variable_group, self.config['variables']['default'])
-        if 'default' not in options:
-            variable_options = options
-        else:
-            variable_options = options['default']
-            if map_name in options:
-                variable_options = {**variable_options, **options[map_name]}
-
-        if 'bounds' in variable_options:
-            if not isinstance(variable_options['bounds'], str):
-                variable_options['bounds'] = [
-                    float(n) for n in variable_options['bounds']
-                ]
-        logger.debug(variable_options)
-        return variable_options
-
-    def plot_timeseries(self, cube, var_info, period='', **kwargs):
-        """Plot timeseries from a cube.
-
-        It also automatically smoothes it for long timeseries of monthly data:
-            - Between 10 and 70 years long, it also plots the 12-month rolling
-              average along the raw series
-            - For more than ten years, it plots the 12-month and 10-years
-              rolling averages and not the raw series
-
-        """
-        if 'xlimits' not in kwargs:
-            kwargs['xlimits'] = 'auto'
-        length = cube.coord("year").points.max() - cube.coord(
-            "year").points.min()
-        filename = self.get_plot_path(f'timeseries{period}', var_info,
-                                      add_ext=False)
-        caption = ("{} of "
-                   f"{var_info[names.LONG_NAME]} of dataset "
-                   f"{var_info[names.DATASET]} (project "
-                   f"{var_info[names.PROJECT]}) from "
-                   f"{var_info[names.START_YEAR]} to "
-                   f"{var_info[names.END_YEAR]}.")
-        if length < 10 or length * 11 > cube.coord("year").shape[0]:
-            self.plot_cube(cube, filename, **kwargs)
-            self.record_plot_provenance(
-                self._add_file_extension(filename),
-                var_info,
-                'timeseries',
-                period=period,
-                caption=caption.format("Time series"),
-            )
-        elif length < 70:
-            self.plot_cube(cube, filename, **kwargs)
-            self.record_plot_provenance(
-                self._add_file_extension(filename),
-                var_info,
-                'timeseries',
-                period=period,
-                caption=caption.format("Time series"),
-            )
-
-            # Smoothed time series (12-month running mean)
-            plt.gca().set_prop_cycle(None)
-            self.plot_cube(cube.rolling_window('time', MEAN, 12),
-                           f"{filename}_smoothed_12_months",
-                           **kwargs)
-            self.record_plot_provenance(
-                self._add_file_extension(f"{filename}_smoothed_12_months"),
-                var_info,
-                'timeseries',
-                period=period,
-                caption=caption.format(
-                    "Smoothed (12-months running mean) time series"),
-            )
-        else:
-            # Smoothed time series (12-month running mean)
-            self.plot_cube(cube.rolling_window('time', MEAN, 12),
-                           f"{filename}_smoothed_12_months",
-                           **kwargs)
-            self.record_plot_provenance(
-                self._add_file_extension(f"{filename}_smoothed_12_months"),
-                var_info,
-                'timeseries',
-                period=period,
-                caption=caption.format(
-                    "Smoothed (12-months running mean) time series"),
-            )
-
-            # Smoothed time series (10-year running mean)
-            self.plot_cube(cube.rolling_window('time', MEAN, 120),
-                           f"{filename}_smoothed_10_years",
-                           **kwargs)
-            self.record_plot_provenance(
-                self._add_file_extension(f"{filename}_smoothed_10_years"),
-                var_info,
-                'timeseries',
-                period=period,
-                caption=caption.format(
-                    "Smoothed (10-years running mean) time series"),
-            )
-
-    def record_plot_provenance(self, filename, var_info, plot_type, **kwargs):
-        """Write provenance info for a given file."""
-        with ProvenanceLogger(self.cfg) as provenance_logger:
-            prov = self.get_provenance_record(
-                ancestor_files=[var_info['filename']],
-                plot_type=plot_type,
-                long_names=[var_info[names.LONG_NAME]],
-                **kwargs,
-            )
-            provenance_logger.log(filename, prov)
-
-    def plot_cube(self, cube, filename, linestyle='-', **kwargs):
-        """Plot a timeseries from a cube.
-
-        Supports multiplot layouts for cubes with extra dimensions
-        `shape_id` or `region`.
-
-        """
-        plotter = PlotSeries()
-        plotter.filefmt = self.cfg['output_file_type']
-        plotter.img_template = filename
-        region_coords = ('shape_id', 'region')
-
-        for region_coord in region_coords:
-            if cube.coords(region_coord):
-                if cube.coord(region_coord).shape[0] > 1:
-                    plotter.multiplot_cube(cube, 'time', region_coord,
-                                           **kwargs)
-                    return
-        plotter.plot_cube(cube, 'time', linestyle=linestyle, **kwargs)
-
-    @staticmethod
-    def get_provenance_record(ancestor_files, **kwargs):
-        """Create provenance record for the diagnostic data and plots."""
-        record = {
-            'authors': [
-                'vegas-regidor_javier',
-            ],
-            'references': [
-                'acknow_project',
-            ],
-            'ancestors': ancestor_files,
-            **kwargs
-        }
-        return record
 
     def get_plot_path(self, plot_type, var_info, add_ext=True):
         """Get plot full path from variable info.

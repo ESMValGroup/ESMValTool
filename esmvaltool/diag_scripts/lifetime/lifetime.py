@@ -701,10 +701,9 @@ class CH4Lifetime(LifetimeBase):
             if 'press' in variables:
                 press = variables['press']
             else:
-                if self.z_coord == 'air_pressure':
-                    press = hus.coords('air_pressure').points
-                else:
-                    press = create_press(hus)
+                # create 4D pressure variable from
+                # pressure (auxilliary) coordinate
+                press = create_press(hus)
 
             grmassdry = calculate_gridmassdry(press,
                                               hus,
