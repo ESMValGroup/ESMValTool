@@ -1,6 +1,13 @@
 # Dataset information
 ---
 datasets:
+  AERONET:
+    tier: 3
+    source: "https://aeronet.gsfc.nasa.gov/"
+    last_access: 2023-06-13
+    info: |
+      Aerosol Optical Depth information from a worldwide network of stations.
+
   AGCD:
     tier: 2
     source: "http://dx.doi.org/10.25914/6009600786063"
@@ -274,12 +281,19 @@ datasets:
 
   CRU:
     tier: 2
-    source: https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/cruts.1811131722.v4.02/
-    last_access: 2019-05-16
+    source: https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.07/cruts.2304141047.v4.07/
+    last_access: 2023-11-06
     info: |
-      Download the following files:
-        {raw_name}/cru_ts4.02.1901.2017.{raw_name}.dat.nc.gz
+      Files can be downloaded using the download script (latest version only)
+      or manually:
+        {raw_name}/cru_ts4.07.1901.2022.{raw_name}.dat.nc.gz
       where {raw_name} is the name of the desired variable(s).
+      Previous versions can be downloaded from the corresponding folders in
+      https://crudata.uea.ac.uk/cru/data/hrg/. ESMValTools formatter can be used
+      for older versions with minor adjustments of
+      ``esmvaltool/cmorizers/data/cmor_config/CRU.yml``
+      Exact time coordinates and number of stations are not available version
+      TS4.02.
 
   CT2019:
     tier: 2
