@@ -189,6 +189,7 @@ def dpres_plevel_4d(plev, pmin, pmax, z_coord='air_pressure'):
     four dimensional cube.
 
     """
+    print(plev)
 
     # for the calculation the following shifted
     # vectors are used:
@@ -197,10 +198,11 @@ def dpres_plevel_4d(plev, pmin, pmax, z_coord='air_pressure'):
     # - p_p1: shifted by one index up
     #         (the value of the first index is the former last)
     # both vector values are divided by two
-    p_m1 = plev.copy()
+    p_m1 = deepcopy(plev)
     p_m1 = da.roll(plev, -1, axis=1) / 2.
+    print(p_m1)
 
-    p_p1 = plev.copy()
+    p_p1 = deepcopy(plev)
     p_p1 = da.roll(plev, 1, axis=1) / 2.
 
     # modify the last entry in p_m1
@@ -214,52 +216,50 @@ def dpres_plevel_4d(plev, pmin, pmax, z_coord='air_pressure'):
     print(dplev)
     print(type(dplev))
     print(dplev[0, :, 0, 0])
-    print(np.array(dplev[0, :, 0, 0]))
+    print(dplev[0, :, 0, 0].compute())
 
 
     import sys
     sys.exit(2)
 
+    # cubelist_dplev = [plev_slice.copy()
+    #                   for plev_slice in plev.slices(['time',
+    #                                                  'latitude',
+    #                                                  'longitude'],
+    #                                                 ordered=True)]
+    # cubelist_plev = [plev_slice.copy()
+    #                  for plev_slice in plev.slices(['time',
+    #                                                 'latitude',
+    #                                                 'longitude'],
+    #                                                ordered=True)]
 
+    # increasing = (plev.coord(z_coord,
+    #                          dim_coords=True).attributes['positive'] == 'down')
+    # last = plev.coords(z_coord)[0].shape[0] - 1
 
-    cubelist_dplev = [plev_slice.copy()
-                      for plev_slice in plev.slices(['time',
-                                                     'latitude',
-                                                     'longitude'],
-                                                    ordered=True)]
-    cubelist_plev = [plev_slice.copy()
-                     for plev_slice in plev.slices(['time',
-                                                    'latitude',
-                                                    'longitude'],
-                                                   ordered=True)]
+    # for i, lev in enumerate(cubelist_plev):
+    #     if increasing:
+    #         increment = [i + 1, i - 1]
+    #     else:
+    #         increment = [i - 1, i + 1]
 
-    increasing = (plev.coord(z_coord,
-                             dim_coords=True).attributes['positive'] == 'down')
-    last = plev.coords(z_coord)[0].shape[0] - 1
+    #     if i == 0:
+    #         cube = (cubelist_plev[increment[0]] - lev) / 2. + (lev - pmin)
+    #         cubelist_dplev[i].data = cube.core_data()
+    #     elif i == last:
+    #         cube = (pmax - lev) + (lev - cubelist_plev[increment[1]]) / 2.
+    #         cubelist_dplev[i].data = cube.core_data()
+    #     else:
+    #         cube = ((lev - cubelist_plev[increment[0]]) / 2.
+    #                 + (cubelist_plev[increment[1]] - lev) / 2.)
+    #         cubelist_dplev[i].data = cube.core_data()
 
-    for i, lev in enumerate(cubelist_plev):
-        if increasing:
-            increment = [i + 1, i - 1]
-        else:
-            increment = [i - 1, i + 1]
+    #     cubelist_dplev[i].add_aux_coord(iris.coords.AuxCoord(
+    #         lev.coords(z_coord)[0].points[0]))
 
-        if i == 0:
-            cube = (cubelist_plev[increment[0]] - lev) / 2. + (lev - pmin)
-            cubelist_dplev[i].data = cube.core_data()
-        elif i == last:
-            cube = (pmax - lev) + (lev - cubelist_plev[increment[1]]) / 2.
-            cubelist_dplev[i].data = cube.core_data()
-        else:
-            cube = ((lev - cubelist_plev[increment[0]]) / 2.
-                    + (cubelist_plev[increment[1]] - lev) / 2.)
-            cubelist_dplev[i].data = cube.core_data()
-
-        cubelist_dplev[i].add_aux_coord(iris.coords.AuxCoord(
-            lev.coords(z_coord)[0].points[0]))
-
-    dplev = iris.cube.CubeList(cubelist_dplev).merge_cube()
-    dplev.transpose(new_order=[1, 0, 2, 3])
-    dplev = iris.util.reverse(dplev, 1)
+    # dplev = iris.cube.CubeList(cubelist_dplev).merge_cube()
+    # dplev.transpose(new_order=[1, 0, 2, 3])
+    # dplev = iris.util.reverse(dplev, 1)
     return dplev
 
 
