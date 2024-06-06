@@ -373,6 +373,7 @@ def dpres_plevel_1d(plev, pmin, pmax):
 
 def calculate_lifetime(dataset, plot_type, region):
     """Calculate the lifetime for the given plot_type and region."""
+
     # extract region from weights and reaction
     reaction = extract_region(dataset, region, case='reaction')
     weight = extract_region(dataset, region, case='weight')
@@ -391,45 +392,16 @@ def calculate_lifetime(dataset, plot_type, region):
 def extract_region(dataset, region, case='reaction'):
     """Return cube with everything outside region set to zero.
 
-    If z_coord is defined as:
-    - air_pressure, use:
-                      - ptp and air_pressure
-                      - tp_clim and air_pressure
-    - atmosphere_hybrid_sigma_pressure_coordinate, use:
-                      - tp_i and model_level_number
-                      - ptp and (derived) air_pressure
-                      - tp_clim and (derived) air_pressure
 
     Current aware regions:
-    - TROP: troposphere (excl. tropopause), requires tropopause pressure
-    - STRA: stratosphere (incl. tropopause), requires tropopause pressure
+    - TROP: troposphere (excl. tropopause)
+    - STRA: stratosphere (incl. tropopause)
     """
     var = dataset[case]
-    z_coord = dataset['z_coord']
-
-    # calculate climatological tropopause pressure
-    # but only if tropopause is not given by data
-    if (
-            'ptp' not in dataset['variables']
-            and 'tp_i' not in dataset['variables']):
-        tp_clim = climatological_tropopause(var[:, 0, :, :])
+    use_z_coord = dataset['use_z_coord']
 
     # mask regions outside
     if region in ['TROP', 'STRA']:
-        use_z_coord = 'air_pressure'
-        if z_coord.name() == 'air_pressure':
-            if 'ptp' in dataset['variables']:
-                tropopause = dataset['variables']['ptp']
-            else:
-                tropopause = tp_clim
-        elif z_coord.name() == 'atmosphere_hybrid_sigma_pressure_coordinate':
-            if 'tp_i' in dataset['variables']:
-                tropopause = dataset['variables']['tp_i']
-                use_z_coord = 'model_level_number'
-            elif 'ptp' in dataset['variables']:
-                tropopause = dataset['variables']['ptp']
-            else:
-                tropopause = tp_clim
 
         z_4d = broadcast_to_shape(
             var.coord(use_z_coord).points,
@@ -438,11 +410,11 @@ def extract_region(dataset, region, case='reaction'):
         )
 
         tp_4d = broadcast_to_shape(
-            tropopause.data,
+            dataset['tropopause'].data,
             var.shape,
-            var.coord_dims('time')
-            + var.coord_dims('latitude')
-            + var.coord_dims('longitude'),
+            tuple(( var.coord_dims(item)[0]
+                    for item in var.dim_coords
+                    if not item == dataset['z_coord'] )),
         )
 
         if region == 'TROP':
@@ -498,7 +470,7 @@ def sum_up_to_plot_dimensions(var, plot_type):
     if plot_type == 'timeseries':
         cube = var.collapsed(['longitude', 'latitude', z_coord],
                              iris.analysis.SUM)
-    elif plot_type == 'zonal_mean_profile':
+    elif plot_type == 'zonalmean':
         cube = var.collapsed(['longitude'], iris.analysis.SUM)
     elif plot_type == '1d_profile':
         cube = var.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
@@ -525,13 +497,9 @@ def calculate_reaction_rate(temp, reaction_type,
 
     # special reaction rate
     if coeff_b is not None:
-        reaction_rate = (da.multiply(coeff_a,
-                                     iris.analysis.maths.exp(
-                                         da.multiply(coeff_b,
-                                                     iris.analysis.maths.log(
-                                                         reaction_rate))
-                                                     - da.divide(coeff_er
-                                                                 ,reaction_rate))))
+        reaction_rate = coeff_a * iris.analysis.maths.exp(
+            coeff_b * iris.analysis.maths.log(reaction_rate)
+            - coeff_er / reaction_rate )
     else:
         # standard reaction rate (arrhenius)
         reaction_rate = coeff_a * iris.analysis.maths.exp(
