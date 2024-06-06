@@ -280,7 +280,8 @@ from matplotlib.ticker import FormatStrFormatter, LogLocator, NullFormatter
 from esmvalcore.cmor.fixes import add_model_level
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.lifetime.lifetime_base import (
-    LifetimeBase,
+    LifetimeBase)
+from esmvaltool.diag_scripts.lifetime.lifetime_func import (
     create_press,
     calculate_gridmassdry,
     calculate_lifetime,
