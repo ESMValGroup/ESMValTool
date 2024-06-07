@@ -6,7 +6,7 @@ Model Benchmarking
 Overview
 --------
 
-These recipes and diagnostics are based on :ref:`recipe_monitor <_recipe_monitor>`: that allow plotting arbitrary preprocessor output, i.e., arbitrary variables from arbitrary datasets. An extension of these diagnostics is used to benchmark a model simulation with other datasets (e.g. CMIP6). The benchmarking features are described in `Lauer et al.`_:.
+These recipes and diagnostics are based on :ref:`recipe_monitor <recipe_monitor>`: that allow plotting arbitrary preprocessor output, i.e., arbitrary variables from arbitrary datasets. An extension of these diagnostics is used to benchmark a model simulation with other datasets (e.g. CMIP6). The benchmarking features are described in `Lauer et al.`_:.
 
 .. _`Lauer et al.`: A. Lauer, Bock, L., Hassler, B., Jöckel, P., Ruhe, L., and Schlund, M.: Monitoring and benchmarking Earth System Model simulations with ESMValTool v2.12.0, Geosci. Model Dev. (submitted).
 
@@ -88,4 +88,4 @@ Area-weighted RMSE of the annual mean diurnal cycle (year 2000) of precipitation
    :align:   center
    :width:   10cm
 
-5-year annual mean bias (2000-2004) of the zonally averaged temperature in K from a historical simulation of MIROC6 compared with ERA5 reanalysis data. The stippled areas mask grid cells where the absolute BIAS (${ | BIAS | }$) is smaller than the maximum of the absolute 10% (${ | p10 | }$) and the absolute 90% (${ | p90 | }$) percentiles from an ensemble of CMIP6 models, i.e. ${ | BIAS | \geq max( | p10 |, | p90 | )}$. Created with recipe_model_benchmarking_zonal.yml.
+5-year annual mean bias (2000-2004) of the zonally averaged temperature in K from a historical simulation of MIROC6 compared with ERA5 reanalysis data. The stippled areas mask grid cells where the absolute BIAS (${\abs{BIAS}}$) is smaller than the maximum of the absolute 10% (${\abs{p10}}$) and the absolute 90% (${\abs{p90}}$) percentiles from an ensemble of CMIP6 models, i.e. ${\abs{BIAS} \geq max( \abs{p10}, \abs{p90})}$. Created with recipe_model_benchmarking_zonal.yml.
