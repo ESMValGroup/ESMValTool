@@ -258,8 +258,8 @@ diagnostics:
         activity: CMIP
         exp: historical
         mip: day
-        short_name: ta
-        preprocessor: mean_preproc_temp
+        short_name: tas
+        preprocessor: mean_preproc
         start_year: 1950
         end_year: 2014
         additional_datasets:
@@ -270,4 +270,6 @@ diagnostics:
         correlation_threshold: 0.9
         rmse_threshold: 0.002
         automatic_slwt: true
-        script: weathertyping/weathertyping.py
+        predefined_slwt: {1: [1, 2, 7, 8, 10, 11, 18, 19, 20, 25, 26], 2: [3, 13], 3: [4, 5, 6, 9, 14, 15, 16, 17], 4: [24, 23]}
+        plotting: false
+        script: ../diag_scripts/weathertyping/main.py
