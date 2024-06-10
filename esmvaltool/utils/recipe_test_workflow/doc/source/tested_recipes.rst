@@ -6,13 +6,11 @@ Currently tested recipes
 
 The following currently tested recipes are available in the |RTW|:
 
-Fast recipes
-------------
-
-* `Radiation budget`_
-
-Medium recipes
---------------
-
+* `Autoassess landsurface soilmoisture`_
+* `Consecutive dry days`_
 * `Ensclus`_
+* `Examples python`_
 * `Heatwaves coldwaves`_
+* `Landcover - Albedo`_
+* `Ocean multimap`_
+* `Radiation budget`_
