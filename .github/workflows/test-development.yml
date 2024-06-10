@@ -12,7 +12,6 @@ on:
   push:
     branches:
       - main
-      - fix_recipe_filler_bkwds_incompatibility
   schedule:
     - cron: '0 0 * * *'
 
