@@ -22,6 +22,7 @@ from pathlib import Path
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 root = Path(__file__).absolute().parent.parent.parent.parent
 sys.path.insert(0, str(root))
+sys.path.append(root)
 
 # from esmvaltool import __version__
 __version__ = "2.10.0"
@@ -62,7 +63,7 @@ generate_gallery.main()
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    # 'sphinx.ext.autodoc',
+    'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.extlinks',
     'sphinx.ext.intersphinx',
@@ -93,14 +94,14 @@ autoapi_options = ['members', 'private-members', 'show-inheritance',
                    'show-module-summary', 'special-members', 'imported-members', ]
 exclude_patterns = []
 
-# Autodoc configuration (obsolete)
-# autodoc_default_options = {
-#     'members': True,
-#     'undoc-members': True,
-#     'inherited-members': True,
-#     'show-inheritance': True,
-#     'autosummary': True,
-# }
+# Autodoc configuration
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True,
+    'inherited-members': True,
+    'show-inheritance': True,
+    'autosummary': True,
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
