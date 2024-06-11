@@ -89,6 +89,8 @@ autoapi_type = 'python'
 autoapi_file_pattern = "*.py"
 autoapi_options = ['members', 'private-members', 'show-inheritance',
                    'show-module-summary', 'special-members', 'imported-members', ]
+autoapi_add_toctree_entry = False  # remove the index.rst
+autoapi_root = 'api'  # where the API docs live; rel to source
 exclude_patterns = []
 
 # Autodoc configuration (obsolete)
