@@ -21,11 +21,10 @@ from pathlib import Path
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 root = Path(__file__).absolute().parent.parent.parent.parent
-esmvaltool_root = Path(__file__).absolute().parent.parent.parent
 sys.path.insert(0, str(root))
-sys.path.insert(0, str(esmvaltool_root))
+sys.path.insert(0, os.path.join(str(root), "esmvaltool"))
 sys.path.append(str(root))
-sys.path.append(str(esmvaltool_root))
+sys.path.append(os.path.join(str(root), "esmvaltool"))
 
 # from esmvaltool import __version__
 __version__ = "2.10.0"
