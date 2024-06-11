@@ -75,8 +75,14 @@ extensions = [
     'autoapi.extension',
 ]
 
+# Autoapi configuration
 autoapi_dirs = ['../../../esmvaltool']
+autoapi_type = 'python'
+autoapi_file_pattern = "*.py"
+autoapi_options = ['members', 'private-members', 'show-inheritance',
+                   'show-module-summary', 'special-members', 'imported-members', ]
 
+# Autodoc configuration (obsolete)
 autodoc_default_options = {
     'members': True,
     'undoc-members': True,
