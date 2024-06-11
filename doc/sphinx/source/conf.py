@@ -23,7 +23,8 @@ from pathlib import Path
 root = Path(__file__).absolute().parent.parent.parent.parent
 sys.path.insert(0, str(root))
 
-from esmvaltool import __version__
+# from esmvaltool import __version__
+__version__ = "2.10.0"
 
 # -- RTD configuration ------------------------------------------------
 
