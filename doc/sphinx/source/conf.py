@@ -72,7 +72,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
-    'sphinx.ext.autoapi',
+    'autoapi.extension',
 ]
 
 autoapi_dirs = ['../../../esmvaltool']
