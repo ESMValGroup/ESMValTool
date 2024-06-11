@@ -75,7 +75,7 @@ extensions = [
     'autoapi.extension',
 ]
 
-autoapi_dirs = ['../esmvaltool']
+autoapi_dirs = ['../../../esmvaltool']
 
 autodoc_default_options = {
     'members': True,
