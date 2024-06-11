@@ -76,12 +76,20 @@ extensions = [
 ]
 
 # Autoapi configuration
-autoapi_dirs = ['../../../esmvaltool']
+autoapi_dirs = [
+    '../../../esmvaltool/diag_scripts/emergent_constraints',
+    '../../../esmvaltool/diag_scripts/mlr',
+    '../../../esmvaltool/diag_scripts/monitor',
+    '../../../esmvaltool/diag_scripts/ocean',
+    '../../../esmvaltool/diag_scripts/shared',
+    '../../../esmvaltool/diag_scripts/psyplot_diag.py',
+    '../../../esmvaltool/diag_scripts/seaborn_diag.py',
+]
 autoapi_type = 'python'
 autoapi_file_pattern = "*.py"
 autoapi_options = ['members', 'private-members', 'show-inheritance',
                    'show-module-summary', 'special-members', 'imported-members', ]
-exclude_patterns = ['diag_scripts']
+exclude_patterns = []
 
 # Autodoc configuration (obsolete)
 autodoc_default_options = {
