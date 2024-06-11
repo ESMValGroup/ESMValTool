@@ -19,3 +19,8 @@ sphinx:
 # If using Sphinx, optionally build your docs in additional formats such as PDF
 formats:
   - pdf
+
+# Install auotoapi requirement
+python:
+  install:
+    - requirements: doc/sphinx/source/requirements.txt
