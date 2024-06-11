@@ -81,6 +81,7 @@ autoapi_type = 'python'
 autoapi_file_pattern = "*.py"
 autoapi_options = ['members', 'private-members', 'show-inheritance',
                    'show-module-summary', 'special-members', 'imported-members', ]
+exclude_patterns = ['diag_scripts']
 
 # Autodoc configuration (obsolete)
 autodoc_default_options = {
@@ -128,7 +129,7 @@ release = __version__
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = []
+# exclude_patterns = []
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
