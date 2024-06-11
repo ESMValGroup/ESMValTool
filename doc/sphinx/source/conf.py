@@ -92,13 +92,13 @@ autoapi_options = ['members', 'private-members', 'show-inheritance',
 exclude_patterns = []
 
 # Autodoc configuration (obsolete)
-autodoc_default_options = {
-    'members': True,
-    'undoc-members': True,
-    'inherited-members': True,
-    'show-inheritance': True,
-    'autosummary': True,
-}
+# autodoc_default_options = {
+#     'members': True,
+#     'undoc-members': True,
+#     'inherited-members': True,
+#     'show-inheritance': True,
+#     'autosummary': True,
+# }
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
