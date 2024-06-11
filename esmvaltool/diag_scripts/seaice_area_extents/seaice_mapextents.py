@@ -52,6 +52,8 @@ def map_diff(mod_si_ls, obs_si, months):
     # get lat max for regridding
     latmax = obs_si.lat.max().values.item()
 
+    proj = SouthPolarStereo(true_scale_latitude=-70)
+
     # fig set up, width for 2 models, check len mod_si_ls
     figure = plt.figure(figsize=(9, len(months) * 4))
     j = 0  # to iterate through positions on figure
@@ -65,8 +67,7 @@ def map_diff(mod_si_ls, obs_si, months):
             diff_ds, mod_regrid = model_regrid_diff(mod_si, obs_si,
                                                     cdr, mon, latmax)
 
-            axes = plt.subplot(len(months), 3, i + j * 3,
-                                projection=SouthPolarStereo(true_scale_latitude=-70))
+            axes = plt.subplot(len(months), 3, i + j * 3, projection=proj)
 
             diffmap = axes.contourf(
                 diff_ds.x, diff_ds.y, diff_ds,
