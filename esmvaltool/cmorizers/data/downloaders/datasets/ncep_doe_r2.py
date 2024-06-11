@@ -39,6 +39,8 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     url = "https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/"
 
+    downloader.download_file(url + "pressure/omega.mon.mean.nc",
+                             wget_options=[])
     downloader.download_file(url + "pressure/rhum.mon.mean.nc",
                              wget_options=[])
     downloader.download_file(url + "pressure/air.mon.mean.nc", wget_options=[])

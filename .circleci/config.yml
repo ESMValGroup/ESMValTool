@@ -258,7 +258,7 @@ jobs:
     # Test conda package installation
     docker:
       - image: condaforge/mambaforge:latest
-    resource_class: medium
+    resource_class: large
     steps:
       - run:
           command: |
