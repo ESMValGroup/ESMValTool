@@ -72,7 +72,6 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
-    'autodocsumm',
     'autoapi.extension',
 ]
 
