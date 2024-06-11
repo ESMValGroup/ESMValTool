@@ -34,6 +34,55 @@ Recipe settings
 
 See :ref:`multi_datasets.py<api.esmvaltool.diag_scripts.monitor.multi_datasets>`: for a list of all possible configuration options that can be specified in the recipe.
 
+.. note::
+   Please note that exactly one dataset (the dataset to be benchmarked) needs to specify the facet ``benchmark_dataset: True`` in the dataset entry of the recipe. For line plots (i.e. annual cycle, seasonal cycle, diurnal cycle, time series), it is recommended, to specify a particular line color and line style in the ``scripts`` section of the recipe for the dataset to be benchmarked (``benchmark_dataset: True``) so that this dataset is easy to identify in the plot. In the example below, MIROC6 is the dataset to be benchmarked and ERA5 is used as a reference dataset.
+
+.. code-block:: yaml
+
+   scripts:
+         allplots:
+           script: monitor/multi_datasets.py
+           plot_folder: '{plot_dir}'
+           plot_filename: '{plot_type}_{real_name}_{mip}'
+           group_variables_by: variable_group
+           facet_used_for_labels: alias
+           plots:
+             diurnal_cycle:
+               annual_mean_kwargs: False
+               legend_kwargs:
+                 loc: upper right
+               plot_kwargs:
+                 'MIROC6':
+                   color: red
+                   label: '{alias}'
+                   linestyle: '-'
+                   linewidth: 2
+                   zorder: 4
+                 ERA5:
+                   color: black
+                   label: '{dataset}'
+                   linestyle: '-'
+                   linewidth: 2
+                   zorder: 3
+                 MultiModelPercentile10:
+                   color: gray
+                   label: '{dataset}'
+                   linestyle: '--'
+                   linewidth: 1
+                   zorder: 2
+                 MultiModelPercentile90:
+                   color: gray
+                   label: '{dataset}'
+                   linestyle: '--'
+                   linewidth: 1
+                   zorder: 2
+                 default:
+                   color: lightgray
+                   label: null
+                   linestyle: '-'
+                   linewidth: 1
+                   zorder: 1
+
 Variables
 ---------
 
