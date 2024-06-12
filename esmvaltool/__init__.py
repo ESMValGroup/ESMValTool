@@ -1,6 +1,10 @@
 """ESMValTool diagnostics package."""
 from importlib.metadata import PackageNotFoundError, version
 
+__all__ = [
+    'diag_scripts',
+]
+
 try:
     __version__ = version("ESMValTool")
 except PackageNotFoundError as exc:
