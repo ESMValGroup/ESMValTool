@@ -28,6 +28,7 @@ SHORT_NAME = 'short_name'
 STANDARD_NAME = 'standard_name'
 UNITS = 'units'
 VAR_NAME = 'var_name'
+MODELING_REALM = 'modeling_realm'
 START_YEAR = 'start_year'
 END_YEAR = 'end_year'
 
