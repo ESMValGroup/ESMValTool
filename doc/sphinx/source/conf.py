@@ -15,16 +15,7 @@
 import os
 import sys
 from datetime import datetime
-from pathlib import Path
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-root = Path(__file__).absolute().parent.parent.parent.parent
-sys.path.insert(0, str(root))
-sys.path.insert(0, os.path.join(str(root), "esmvaltool"))
-sys.path.append(str(root))
-sys.path.append(os.path.join(str(root), "esmvaltool"))
 
 # from esmvaltool import __version__
 __version__ = "2.10.0"
@@ -65,7 +56,7 @@ generate_gallery.main()
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
+    'autoapi.extension',
     'sphinx.ext.doctest',
     'sphinx.ext.extlinks',
     'sphinx.ext.intersphinx',
@@ -75,35 +66,48 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
-    'autoapi.extension',
 ]
 
 # Autoapi configuration
 autoapi_dirs = [
-    '../../../esmvaltool/diag_scripts/emergent_constraints',
-    '../../../esmvaltool/diag_scripts/mlr',
-    '../../../esmvaltool/diag_scripts/monitor',
-    '../../../esmvaltool/diag_scripts/ocean',
-    '../../../esmvaltool/diag_scripts/shared',
-    '../../../esmvaltool/diag_scripts/psyplot_diag.py',
-    '../../../esmvaltool/diag_scripts/seaborn_diag.py',
+    '../../..',
 ]
 
 autoapi_root = 'api'  # where the API docs live; rel to source
-autoapi_type = 'python'
-autoapi_file_pattern = "*.py"
-autoapi_options = ['members', 'private-members', 'show-inheritance',
-                   'show-module-summary', 'special-members', 'imported-members', ]
-exclude_patterns = []
+autoapi_options = [
+    'members',
+    'undoc-members',
+    'inherited-members',
+    'special-members',
+    'show-inheritance',
+    'show-module-summary',
+]
 
-# Autodoc configuration
-autodoc_default_options = {
-    'members': True,
-    'undoc-members': True,
-    'inherited-members': True,
-    'show-inheritance': True,
-    'autosummary': True,
-}
+def skip_submodules(app, what, name, obj, skip, options):
+    modules_to_document = [
+        'esmvaltool',
+        'esmvaltool.diag_scripts',
+    ]
+    submodules_to_document = [
+        f"esmvaltool.diag_scripts.{module}" for module in [
+            'emergent_constraints',
+            'mlr',
+            'monitor',
+            'ocean',
+            'shared',
+            'psyplot_diag',
+            'seaborn_diag',
+        ]
+    ]
+
+    if not (name in modules_to_document or any(name.startswith(m) for m in submodules_to_document)):
+        skip = True
+    return skip
+
+
+def setup(sphinx):
+    sphinx.connect("autoapi-skip-member", skip_submodules)
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
