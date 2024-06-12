@@ -298,7 +298,7 @@ def _get_download_dir(yamlconf, cmip_era):
     return False
 
 
-def _get_site_rootpath(cmip_era):
+def _get_site_rootpath(cmip_era, config_yml):
     """Get site (drs) from config-user.yml."""
     config_yml = get_args().config_file
     with open(config_yml, 'r') as yamf:
@@ -322,9 +322,9 @@ def _get_site_rootpath(cmip_era):
     return drs, rootdir
 
 
-def _get_input_dir(cmip_era):
+def _get_input_dir(cmip_era, config_file):
     """Get input_dir from config-developer.yml."""
-    site = _get_site_rootpath(cmip_era)[0]
+    site = _get_site_rootpath(cmip_era, config_file)[0]
     yamlconf = read_config_developer_file()
 
     return yamlconf[cmip_era]['input_dir'][site]
@@ -336,17 +336,18 @@ def _get_input_file(cmip_era):
     return yamlconf[cmip_era]['input_file']
 
 
-def _determine_basepath(cmip_era):
+def _determine_basepath(cmip_era, config_file):
     """Determine a basepath."""
-    if isinstance(_get_site_rootpath(cmip_era)[1], list):
-        rootpaths = _get_site_rootpath(cmip_era)[1]
+    if isinstance(_get_site_rootpath(cmip_era, config_file)[1], list):
+        rootpaths = _get_site_rootpath(cmip_era, config_file)[1]
     else:
-        rootpaths = [_get_site_rootpath(cmip_era)[1]]
+        rootpaths = [_get_site_rootpath(cmip_era, config_file)[1]]
 
     basepaths = []
     for rootpath in rootpaths:
-        if _get_input_dir(cmip_era) != os.path.sep:
-            basepath = os.path.join(rootpath, _get_input_dir(cmip_era),
+        if _get_input_dir(cmip_era, config_file) != os.path.sep:
+            basepath = os.path.join(rootpath,
+                                    _get_input_dir(cmip_era, config_file),
                                     _get_input_file(cmip_era))
         else:
             basepath = os.path.join(rootpath, _get_input_file(cmip_era))
@@ -484,7 +485,7 @@ def _resolve_latestversion(dirname_template):
     return dirname_template
 
 
-def list_all_files(file_dict, cmip_era):
+def list_all_files(file_dict, cmip_era, config_file):
     """
     List all files that match the dataset dictionary.
 
@@ -522,7 +523,7 @@ def list_all_files(file_dict, cmip_era):
         return []
     file_dict['frequency'] = frequency
 
-    basepaths = _determine_basepath(cmip_era)
+    basepaths = _determine_basepath(cmip_era, config_file)
     all_files = []
 
     for basepath in basepaths:
@@ -553,7 +554,7 @@ def list_all_files(file_dict, cmip_era):
     return all_files
 
 
-def _file_to_recipe_dataset(fn_path, cmip_era, file_dict):
+def _file_to_recipe_dataset(fn_path, cmip_era, file_dict, config_file):
     """Convert a filename to an recipe ready dataset."""
     # Add the obvious ones - ie the one you requested!
     output_dataset = {}
@@ -565,7 +566,7 @@ def _file_to_recipe_dataset(fn_path, cmip_era, file_dict):
             output_dataset[key] = value
 
     # Split file name and base path into directory structure and filenames.
-    basefiles = _determine_basepath(cmip_era)
+    basefiles = _determine_basepath(cmip_era, config_file)
     _, fnfile = os.path.split(fn_path)
 
     for basefile in basefiles:
@@ -710,7 +711,7 @@ def _add_datasets_into_recipe(additional_datasets, output_recipe):
             yaml.dump(cur_yaml, yamlfile)
 
 
-def _find_all_datasets(recipe_dict, cmip_eras):
+def _find_all_datasets(recipe_dict, cmip_eras, config_file):
     """Find all datasets explicitly."""
     datasets = []
     for cmip_era in cmip_eras:
@@ -718,7 +719,7 @@ def _find_all_datasets(recipe_dict, cmip_eras):
             activity = "CMIP"
         else:
             activity = ""
-        drs, site_path = _get_site_rootpath(cmip_era)
+        drs, site_path = _get_site_rootpath(cmip_era, config_file)
         if drs in ["default", "SMHI"]:
             logger.info("DRS is %s; filter on dataset disabled.", drs)
             datasets = ["*"]
@@ -767,10 +768,10 @@ def _get_exp(recipe_dict):
     return exps_list
 
 
-def _get_datasets(recipe_dict, cmip_eras):
+def _get_datasets(recipe_dict, cmip_eras, config_file):
     """Get the correct datasets as list if needed."""
     if recipe_dict["dataset"] == "*":
-        datasets = _find_all_datasets(recipe_dict, cmip_eras)
+        datasets = _find_all_datasets(recipe_dict, cmip_eras, config_file)
         return datasets
     if isinstance(recipe_dict['dataset'], list):
         datasets = recipe_dict['dataset']
@@ -804,14 +805,14 @@ def get_args():
     return args
 
 
-def _get_timefiltered_files(recipe_dict, exps_list, cmip_era):
+def _get_timefiltered_files(recipe_dict, exps_list, cmip_era, config_file):
     """Obtain all files that correspond to requested time range."""
     # multiple experiments allowed, complement data from each exp
     if len(exps_list) > 1:
         files = []
         for exp in exps_list:
             recipe_dict["exp"] = exp
-            files.extend(list_all_files(recipe_dict, cmip_era))
+            files.extend(list_all_files(recipe_dict, cmip_era, config_file))
         files = filter_years(files,
                              recipe_dict["start_year"],
                              recipe_dict["end_year"],
@@ -819,23 +820,19 @@ def _get_timefiltered_files(recipe_dict, exps_list, cmip_era):
         recipe_dict["exp"] = exps_list
 
     else:
-        files = list_all_files(recipe_dict, cmip_era)
+        files = list_all_files(recipe_dict, cmip_era, config_file)
         files = filter_years(files, recipe_dict["start_year"],
                              recipe_dict["end_year"])
 
     return files
 
 
-def run():
-    """Run the `recipe_filler` tool. Help in __doc__ and via --help."""
-    # Get arguments
-    args = get_args()
-    input_recipe = args.recipe
-    output_recipe = args.output
+def run(input_recipe, output_recipe, config_file):
+    """Run the `recipe_filler` tool."""
     cmip_eras = ["CMIP5", "CMIP6"]
 
     # read the config file
-    config_user = read_config_user_file(args.config_file,
+    config_user = read_config_user_file(config_file,
                                         'recipe_filler',
                                         options={})
 
@@ -846,7 +843,7 @@ def run():
     log_files = configure_logging(output_dir=run_dir,
                                   console_log_level=config_user['log_level'])
     logger.info(HEADER)
-    logger.info("Using user configuration file: %s", args.config_file)
+    logger.info("Using user configuration file: %s", config_file)
     logger.info("Using pilot recipe file: %s", input_recipe)
     logger.info("Writing filled out recipe to: %s", output_recipe)
     log_files = "\n".join(log_files)
@@ -877,7 +874,7 @@ def run():
             cmip_eras = [recipe_dict['project']]
 
         # get datasets depending on user request; always a list
-        datasets = _get_datasets(recipe_dict, cmip_eras)
+        datasets = _get_datasets(recipe_dict, cmip_eras, config_file)
 
         # get experiments depending on user request; always a list
         exps_list = _get_exp(recipe_dict)
@@ -888,14 +885,15 @@ def run():
             logger.info("Seeking data for dataset: %s", dataset)
             for cmip_era in cmip_eras:
                 files = _get_timefiltered_files(recipe_dict, exps_list,
-                                                cmip_era)
+                                                cmip_era, config_file)
 
                 # assemble in new recipe
                 add_datasets = []
                 for fn in sorted(files):
                     fn_dir = os.path.dirname(fn)
                     logger.info("Data directory: %s", fn_dir)
-                    out = _file_to_recipe_dataset(fn, cmip_era, recipe_dict)
+                    out = _file_to_recipe_dataset(fn, cmip_era, recipe_dict,
+                                                  config_file)
                     logger.info("New recipe entry: %s", out)
                     if out is None:
                         continue
@@ -911,4 +909,10 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    """Run the `recipe_filler` tool. Help in __doc__ and via --help."""
+    # Get arguments
+    args = get_args()
+    input_recipe = args.recipe
+    output_recipe = args.output
+    config_file = args.config_file
+    run(input_recipe, output_recipe, config_file)
