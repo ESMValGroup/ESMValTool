@@ -90,10 +90,8 @@ REQUIREMENTS = {
     ],
     # Documentation dependencies
     'doc': [
-        'autodocsumm>=0.2.2',
         'nbsphinx',
         'sphinx>=6.1.3',
-        'pydata-sphinx-theme',
     ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
