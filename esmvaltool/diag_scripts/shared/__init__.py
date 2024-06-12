@@ -1,5 +1,5 @@
 """Code that is shared between multiple diagnostic scripts."""
-from . import io, iris_helpers, names, plot
+# from . import io, iris_helpers, names, plot
 from ._base import (
     ProvenanceLogger,
     extract_variables,
