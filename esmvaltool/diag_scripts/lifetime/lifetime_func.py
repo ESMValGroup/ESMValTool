@@ -4,7 +4,6 @@ import logging
 
 from copy import deepcopy
 import iris
-import numpy as np
 import dask.array as da
 from iris.util import broadcast_to_shape
 from scipy.constants import g, N_A, R
@@ -58,9 +57,11 @@ def calculate_gridmassdry(press, hus, z_coord):
                               pmin,
                               pmax,
                               z_coord=z_coord)
+
     # grid mass per square meter > kg m-2
     delta_m = delta_p / g
-    # grid area > m2
+
+    # grid area -> m2
     lat_lon_dims = sorted(
         tuple(set(hus.coord_dims('latitude') + hus.coord_dims('longitude')))
     )
@@ -70,12 +71,15 @@ def calculate_gridmassdry(press, hus, z_coord):
         da.array(area_2d),
         hus.shape,
         lat_lon_dims,
-        chunks=hus.lazy_data().chunksize,
     )
-    # grid mass per grid > kg
+
+    # grid mass per grid -> kg
     delta_gm = area * delta_m
+
     # to dry air
-    gridmassdry = delta_gm * (1. - hus)
+    gridmassdry = press
+    gridmassdry.data = delta_gm * (1. - hus)
+
     # attach metadata
     gridmassdry.long_name = 'gridmassdry'
     gridmassdry.var_name = 'gridmassdry'
@@ -141,7 +145,6 @@ def _number_density_dryair_by_press(temp, hus, press=None):
         press = create_press(temp)
 
     rho = N_A / 10.**6
-    #rho = rho * iris.analysis.maths.divide(press, R * temp)
     rho = rho * press / (R * temp)
     rho = rho * iris.analysis.maths.divide(1. - hus,
                                            1. + hus *
@@ -187,85 +190,35 @@ def dpres_plevel_4d(plev, pmin, pmax, z_coord='air_pressure'):
     The delta pressure levels are based
     on the given pressure as a
     four dimensional cube.
-
     """
-    print(plev)
+    axis = plev.coord_dims(z_coord)
 
-    # for the calculation the following shifted
-    # vectors are used:
+    # shifted vectors:
     # - p_m1: shifted by one index down
     #         (the value of the last index is the former first)
     # - p_p1: shifted by one index up
     #         (the value of the first index is the former last)
     # both vector values are divided by two
-    p_m1 = deepcopy(plev)
-    p_m1 = da.roll(plev, -1, axis=1) / 2.
-    print(p_m1)
+    p_p1 = da.roll(plev.lazy_data(), 1, axis=axis) / 2.
+    p_m1 = da.roll(plev.lazy_data(), -1, axis=axis) / 2.
 
-    p_p1 = deepcopy(plev)
-    p_p1 = da.roll(plev, 1, axis=1) / 2.
+    # modify the first entry in p_p1
+    # note: p_p1[:, 1, :, :] .eq. plev[:, 0, :, :] / 2.
+    p_p1[:, 0, :, :] = pmax.lazy_data() - p_p1[:, 1, :, :]
 
-    # modify the last entry in p_m1
-    # and the first entry in p_p1
-    p_m1[:, 89, :, :] = pmax - p_m1[:, 88, :, :]
-    p_p1[:, 0, :, :] = pmin - p_p1[:, 1, :, :]
+    # and the last entry in p_m1
+    # note: p_m1[:, -2, :, :] .eq. plev[:, -1, :, :] / 2.
+    p_m1[:, -1, :, :] = pmin - p_m1[:, -2, :, :]
 
     # calculate difference
-    dplev = p_p1 - p_m1
+    dplev = deepcopy(plev)
+    dplev.data = p_p1 - p_m1
 
-    print(dplev)
-    print(type(dplev))
-    print(dplev[0, :, 0, 0])
-    print(dplev[0, :, 0, 0].compute())
-
-
-    import sys
-    sys.exit(2)
-
-    # cubelist_dplev = [plev_slice.copy()
-    #                   for plev_slice in plev.slices(['time',
-    #                                                  'latitude',
-    #                                                  'longitude'],
-    #                                                 ordered=True)]
-    # cubelist_plev = [plev_slice.copy()
-    #                  for plev_slice in plev.slices(['time',
-    #                                                 'latitude',
-    #                                                 'longitude'],
-    #                                                ordered=True)]
-
-    # increasing = (plev.coord(z_coord,
-    #                          dim_coords=True).attributes['positive'] == 'down')
-    # last = plev.coords(z_coord)[0].shape[0] - 1
-
-    # for i, lev in enumerate(cubelist_plev):
-    #     if increasing:
-    #         increment = [i + 1, i - 1]
-    #     else:
-    #         increment = [i - 1, i + 1]
-
-    #     if i == 0:
-    #         cube = (cubelist_plev[increment[0]] - lev) / 2. + (lev - pmin)
-    #         cubelist_dplev[i].data = cube.core_data()
-    #     elif i == last:
-    #         cube = (pmax - lev) + (lev - cubelist_plev[increment[1]]) / 2.
-    #         cubelist_dplev[i].data = cube.core_data()
-    #     else:
-    #         cube = ((lev - cubelist_plev[increment[0]]) / 2.
-    #                 + (cubelist_plev[increment[1]] - lev) / 2.)
-    #         cubelist_dplev[i].data = cube.core_data()
-
-    #     cubelist_dplev[i].add_aux_coord(iris.coords.AuxCoord(
-    #         lev.coords(z_coord)[0].points[0]))
-
-    # dplev = iris.cube.CubeList(cubelist_dplev).merge_cube()
-    # dplev.transpose(new_order=[1, 0, 2, 3])
-    # dplev = iris.util.reverse(dplev, 1)
     return dplev
 
 
 def calculate_lifetime(dataset, plot_type, region):
     """Calculate the lifetime for the given plot_type and region."""
-
     # extract region from weights and reaction
     reaction = extract_region(dataset, region, case='reaction')
     weight = extract_region(dataset, region, case='weight')
@@ -283,7 +236,6 @@ def calculate_lifetime(dataset, plot_type, region):
 
 def extract_region(dataset, region, case='reaction'):
     """Return cube with everything outside region set to zero.
-
 
     Current aware regions:
     - TROP: troposphere (excl. tropopause)
@@ -304,9 +256,9 @@ def extract_region(dataset, region, case='reaction'):
         tp_4d = broadcast_to_shape(
             dataset['tropopause'].data,
             var.shape,
-            tuple(( var.coord_dims(item)[0]
-                    for item in var.dim_coords
-                    if not item == dataset['z_coord'] )),
+            tuple((var.coord_dims(item)[0]
+                   for item in var.dim_coords
+                   if not item == dataset['z_coord'])),
         )
 
         if region == 'TROP':
@@ -361,7 +313,7 @@ def sum_up_to_plot_dimensions(var, plot_type):
 
     if plot_type == 'timeseries':
         cube = var.collapsed(['longitude', 'latitude', z_coord],
-                             iris.analysis.SUM)
+                             iris.analysis.SUM, weights=None)
     elif plot_type == 'zonalmean':
         cube = var.collapsed(['longitude'], iris.analysis.SUM)
     elif plot_type == '1d_profile':
@@ -391,7 +343,7 @@ def calculate_reaction_rate(temp, reaction_type,
     if coeff_b is not None:
         reaction_rate = coeff_a * iris.analysis.maths.exp(
             coeff_b * iris.analysis.maths.log(reaction_rate)
-            - coeff_er / reaction_rate )
+            - coeff_er / reaction_rate)
     else:
         # standard reaction rate (arrhenius)
         reaction_rate = coeff_a * iris.analysis.maths.exp(

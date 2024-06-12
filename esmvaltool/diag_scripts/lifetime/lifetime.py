@@ -36,7 +36,7 @@ facet_used_for_labels: str, optional (default: 'dataset')
     Facet used to label different datasets in plot titles and legends. For
     example, ``facet_used_for_labels: dataset`` will use dataset names in plot
     titles and legends; ``facet_used_for_labels: exp`` will use experiments in
-    plot titles and legends. In addition, ``facet_used_for_labels`` is used tosa
+    plot titles and legends. In addition, ``facet_used_for_labels`` is used to
     select the correct ``plot_kwargs`` for the different datasets (see
     configuration options for the different plot types below).
 figure_kwargs: dict, optional
@@ -330,12 +330,12 @@ class CH4Lifetime(LifetimeBase):
 
         # base info
         self.info = {'short_name':
-                      f"tau_{self._get_name('reactant').upper()}"}
+                     f"tau_{self._get_name('reactant').upper()}"}
         oxidants = [ox.upper() for ox in self._get_name('oxidant')]
         self.info['long_name'] = ("Lifetime of"
-                                   f" {self._get_name('reactant').upper()}"
-                                   " with respect to"
-                                   f" {', '.join(oxidants)}")
+                                  f" {self._get_name('reactant').upper()}"
+                                  " with respect to"
+                                  f" {', '.join(oxidants)}")
         self.units = self.cfg['units']
         self.info['units'] = self.cfg['units']
 
@@ -460,7 +460,6 @@ class CH4Lifetime(LifetimeBase):
 
     def _get_label(self, dataset):
         """Get label of dataset."""
-        print(dataset)
         return dataset[self.cfg['facet_used_for_labels']]
 
     def _get_cbar_kwargs(self, plot_type, bias=False):
@@ -515,7 +514,6 @@ class CH4Lifetime(LifetimeBase):
 
         # Replace facets with dataset entries for string arguments
         for (key, val) in plot_kwargs.items():
-            print(val)
             if isinstance(val, str):
                 val = self._fill_facet_placeholders(
                     val,
@@ -534,20 +532,12 @@ class CH4Lifetime(LifetimeBase):
         """Load data and calculate coefficients."""
         self.input_data = list(self.cfg['input_data'].values())
 
-        list_of_datasets = self._get_all_datasets(self.input_data)
-
-        # get name of reactant and oxidant
-        name_reactant = self._get_name('reactant')
-        name_oxidant = self._get_name('oxidant')
-
         # loops over different variables ch4, oh, ta etc.
         input_data_dataset = {}
-        for dataset in list_of_datasets:
+        for dataset in self._get_all_datasets(self.input_data):
             input_data_dataset[dataset] = self._get_dataset_data(dataset)[0]
             input_data_dataset[dataset]['dataset_data'] = (
                 self._get_dataset_data(dataset))
-
-
 
             variables = {}
             for variable in input_data_dataset[dataset]['dataset_data']:
@@ -565,14 +555,14 @@ class CH4Lifetime(LifetimeBase):
 
             rho = calculate_rho(variables)
 
-            oxidant = {ox: variables[ox] for ox in name_oxidant}
+            oxidant = {ox: variables[ox] for ox in self._get_name('oxidant')}
             self._set_oxidant_defaults(oxidant)
 
             reaction = (
                 self._calculate_reaction(oxidant,
                                          rho,
                                          variables['ta'],
-                                         name_reactant))
+                                         self._get_name('reactant')))
 
             # Set Z-coordinate
             if reaction.coords('air_pressure', dim_coords=True):
@@ -600,7 +590,8 @@ class CH4Lifetime(LifetimeBase):
                 if (
                         'ptp' not in variables
                         and 'tp_i' not in variables):
-                    tropopause = climatological_tropopause(variables['ta'][:, 0, :, :])
+                    tropopause = climatological_tropopause(
+                        variables['ta'][:, 0, :, :])
 
                 # If z_coord is defined as:
                 #     - air_pressure, use:
@@ -612,14 +603,14 @@ class CH4Lifetime(LifetimeBase):
                 #          - tp_clim and (derived) air_pressure
                 use_z_coord = 'air_pressure'
                 if z_coord.name() == 'air_pressure':
-                    if 'ptp' in variables:
-                        tropopause = variables['ptp']
-                elif z_coord.name() == 'atmosphere_hybrid_sigma_pressure_coordinate':
+                    tropopause = variables.get('ptp', tropopause)
+                elif (z_coord.name()
+                      == 'atmosphere_hybrid_sigma_pressure_coordinate'):
                     if 'tp_i' in variables:
                         tropopause = variables['tp_i']
                         use_z_coord = 'model_level_number'
-                    elif 'ptp' in variables:
-                        tropopause = variables['ptp']
+                    else:
+                        tropopause = variables.get('ptp', tropopause)
 
             weight = self._define_weight(variables)
 
@@ -747,8 +738,10 @@ class CH4Lifetime(LifetimeBase):
                                               hus,
                                               self.z_coord)
 
-        var = da.multiply(da.multiply(variables[varname], grmassdry),
-                          da.divide(m_var, self.cfg['m_air']))
+        var = variables[varname] * grmassdry * (m_var / self.cfg['m_air'])
+
+        # var = da.multiply(da.multiply(variables[varname], grmassdry),
+        #                   da.divide(m_var, self.cfg['m_air']))
 
         return var
 
@@ -860,13 +853,15 @@ class CH4Lifetime(LifetimeBase):
 
         return (plot_path, netcdf_paths)
 
-    def plot_zonalmean_without_ref(self, plot_func, region, dataset, base_datasets, label):
+    def plot_zonalmean_without_ref(self, plot_func, region, dataset,
+                                   base_datasets, label):
         """Plot zonal mean profile for single dataset without reference."""
         plot_type = 'zonalmean'
         logger.info("Plotting zonal mean profile without reference dataset"
                     " for '%s'", label)
 
-        # zonalmean lifetime is calculated for each time step (sum over longitude)
+        # zonalmean lifetime is calculated for each time step
+        # (sum over longitude) and then a mean is calculated
         cube = calculate_lifetime(dataset,
                                   plot_type,
                                   region)
@@ -890,7 +885,7 @@ class CH4Lifetime(LifetimeBase):
                                     **self._get_cbar_kwargs(plot_type))
             colorbar.set_label(self._get_cbar_label(
                 plot_type, self.info),
-                               fontsize=fontsize)
+                fontsize=fontsize)
             colorbar.ax.tick_params(labelsize=fontsize)
 
             # Customize plot
@@ -1018,7 +1013,8 @@ class CH4Lifetime(LifetimeBase):
             ancestors.extend(variable['filename']
                              for variable in dataset['dataset_data'])
 
-            # call by timestep will take longer, however is less memory intensive
+            # call by timestep will take longer,
+            # but it is less memory intensive
             if self.plots[plot_type]['by_timestep']:
                 slice_dataset = {}
                 slice_dataset['z_coord'] = dataset['z_coord']
@@ -1028,7 +1024,8 @@ class CH4Lifetime(LifetimeBase):
                      weight_slice,
                      tp_slice) in zip(dataset['reaction'].slices_over('time'),
                                       dataset['weight'].slices_over('time'),
-                                      dataset['tropopause'].slices_over('time')):
+                                      dataset['tropopause'].slices_over(
+                                          'time')):
 
                     slice_dataset['reaction'] = reaction_slice
                     slice_dataset['weight'] = weight_slice
@@ -1042,6 +1039,8 @@ class CH4Lifetime(LifetimeBase):
                 cube = calculate_lifetime(dataset,
                                           plot_type,
                                           region)
+
+
             # convert units
             cube.convert_units(self.info['units'])
 
@@ -1075,6 +1074,10 @@ class CH4Lifetime(LifetimeBase):
             else:
                 raise ValueError("Unknown option for annual_mean."
                                  "Choose False, 'both', or 'only'.")
+
+
+            import sys
+            sys.exit(2)
 
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(
