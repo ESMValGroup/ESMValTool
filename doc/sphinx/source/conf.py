@@ -82,6 +82,8 @@ autoapi_options = [
     'show-inheritance',
     'show-module-summary',
 ]
+autoapi_ignore = ['tests']  # brute ignore; to skip see below
+
 
 def skip_submodules(app, what, name, obj, skip, options):
     modules_to_document = [
