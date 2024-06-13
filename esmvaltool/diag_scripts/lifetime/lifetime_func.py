@@ -52,33 +52,35 @@ def calculate_gridmassdry(press, hus, z_coord):
     else:
         pmax.data[:, :, :] = 101525.
 
-    # delta pressure > kg m-1 s-2
-    delta_p = dpres_plevel_4d(press,
-                              pmin,
-                              pmax,
-                              z_coord=z_coord)
-
-    # grid mass per square meter > kg m-2
-    delta_m = delta_p / g
-
     # grid area -> m2
     lat_lon_dims = sorted(
         tuple(set(hus.coord_dims('latitude') + hus.coord_dims('longitude')))
     )
     lat_lon_slice = next(hus.slices(['latitude', 'longitude'], ordered=False))
     area_2d = iris.analysis.cartography.area_weights(lat_lon_slice)
-    area = broadcast_to_shape(
+    area = deepcopy(press)
+    area.data = broadcast_to_shape(
         da.array(area_2d),
         hus.shape,
         lat_lon_dims,
     )
 
-    # grid mass per grid -> kg
-    delta_gm = area * delta_m
+    # delta pressure levels
+    delta_p = dpres_plevel_4d(press,
+                              pmin,
+                              pmax,
+                              z_coord=z_coord)
 
-    # to dry air
-    gridmassdry = press
-    gridmassdry.data = delta_gm * (1. - hus)
+    # gridmass of dry air
+    gridmassdry = deepcopy(press)
+
+    # Following steps are executed:
+    # - calculation of delta pressure to
+    #     grid mass per square meter > kg m-2
+    # - multiplied with area per grid -> mass per grid
+    # - remove humidity for dry weight
+    #
+    gridmassdry = area * (delta_p / g) * (1. - hus)
 
     # attach metadata
     gridmassdry.long_name = 'gridmassdry'
@@ -144,12 +146,15 @@ def _number_density_dryair_by_press(temp, hus, press=None):
         logger.info('Pressure not given')
         press = create_press(temp)
 
-    rho = N_A / 10.**6
-    rho = rho * press / (R * temp)
-    rho = rho * iris.analysis.maths.divide(1. - hus,
-                                           1. + hus *
-                                           (M_AIR
-                                            / M_H2O - 1.))
+    # rho = N_A / 10.**6
+    # rho = rho * press / (R * temp)
+    # rho = rho * iris.analysis.maths.divide(1. - hus,
+    #                                        1. + hus *
+    #                                        (M_AIR
+    #                                         / M_H2O - 1.))
+
+    rho = (N_A / 10.**6 * press / (R * temp)
+           * (1. - hus) / (1. + hus * (M_AIR / M_H2O - 1.)))
 
     # correct metadata
     rho.var_name = 'rho'

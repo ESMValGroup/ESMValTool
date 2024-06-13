@@ -7,7 +7,7 @@ import re
 import matplotlib.pyplot as plt
 import yaml
 
-from esmvaltool.diag_scripts.shared import ProvenanceLogger, names
+from esmvaltool.diag_scripts.shared import names
 
 logger = logging.getLogger(__name__)
 

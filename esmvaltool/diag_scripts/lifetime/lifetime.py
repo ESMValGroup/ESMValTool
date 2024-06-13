@@ -270,7 +270,6 @@ import iris
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-import dask.array as da
 import seaborn as sns
 from iris.coord_categorisation import add_year
 import iris.common
@@ -739,7 +738,6 @@ class CH4Lifetime(LifetimeBase):
                                               self.z_coord)
 
         var = variables[varname] * grmassdry * (m_var / self.cfg['m_air'])
-
         # var = da.multiply(da.multiply(variables[varname], grmassdry),
         #                   da.divide(m_var, self.cfg['m_air']))
 
@@ -1040,7 +1038,6 @@ class CH4Lifetime(LifetimeBase):
                                           plot_type,
                                           region)
 
-
             # convert units
             cube.convert_units(self.info['units'])
 
@@ -1074,10 +1071,6 @@ class CH4Lifetime(LifetimeBase):
             else:
                 raise ValueError("Unknown option for annual_mean."
                                  "Choose False, 'both', or 'only'.")
-
-
-            import sys
-            sys.exit(2)
 
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(
