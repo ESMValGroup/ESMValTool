@@ -96,7 +96,7 @@ dependencies:
   - yapf
 
   # NCL and dependencies
-  - ncl
+  - ncl >=6.6.2
   - cdo
   - imagemagick
   - nco
