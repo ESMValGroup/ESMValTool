@@ -14,11 +14,11 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-* recipe_<mynewrecipe>.yml
+    * recipe_<mynewrecipe>.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/<mynewdiag>/
 
-* <mynewdiag.py/.ncl/.r>: one line scription
+    * <mynewdiag.py/.ncl/.r>: one line scription
 
 
 User settings in recipe
@@ -26,23 +26,23 @@ User settings in recipe
 
 #. Script <mynewdiag.py/.ncl/.r>
 
-*Required settings for script*
+   *Required settings for script*
 
-* xxx: zzz
+   * xxx: zzz
 
-*Optional settings for script*
+   *Optional settings for script*
 
-*Required settings for variables*
+   *Required settings for variables*
 
-*Optional settings for variables*
+   *Optional settings for variables*
 
-*Required settings for preprocessor*
+   *Required settings for preprocessor*
 
-*Optional settings for preprocessor*
+   *Optional settings for preprocessor*
 
-*Color tables*
+   *Color tables*
 
-* list required color tables (if any) here
+   * list required color tables (if any) here
 
 
 Variables
