@@ -60,7 +60,7 @@ REQUIREMENTS = {
         'pys2index',
         'python-dateutil',
         'pyyaml',
-        'rasterio',
+        'rasterio>=1.3.10',
         'requests',
         'ruamel.yaml',
         'scikit-image',
