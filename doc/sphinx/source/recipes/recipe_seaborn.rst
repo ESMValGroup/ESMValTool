@@ -16,6 +16,8 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
+..
+
    * recipe_seaborn.yml
 
 Diagnostics are stored in diag_scripts/
