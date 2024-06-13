@@ -20,7 +20,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/
 
-   * :ref:`seaborn_diag.py <api.esmvaltool.diag_scripts.seaborn_diag>`
+* :ref:`seaborn_diag.py <api.esmvaltool.diag_scripts.seaborn_diag>`
 
 
 Variables
