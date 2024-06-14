@@ -1,3 +1,4 @@
+# (C) Crown Copyright 2021, the Met Office.
 """Write the global climatological seasonal radiation budget to a text file."""
 
 import csv

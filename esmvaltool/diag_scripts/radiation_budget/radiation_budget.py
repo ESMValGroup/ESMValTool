@@ -1,3 +1,4 @@
+# (C) Crown Copyright 2021, the Met Office.
 """Plot the global radiation budget."""
 
 # To run the doctests:
