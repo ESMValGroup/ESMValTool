@@ -1,27 +1,25 @@
 documentation:
   title: Weathertyping algorithm
 
-  description: Calculating the Lamb weathertypes.
+  description: |
+    A diagnostic to calculate Lamb weathertypes over a given region. Furthermore, 
+    correlations between weathertypes and precipitation patterns over a given are can be calculated 
+    and 'combined' or 'simplified' weathertypes can be derived. Additionally, mean fields, as well as
+    anomalies and standard deviations can be plotted.
 
   authors:
-    - broetz_bjoern
-  projects:
-    - crescendo
+    - jury_martin
+    - kroißenbrunner_thomas
 
-#documentation:
-#  description: |
-#    A diagnostic to calculate Lamb weathertypes over a given region. Furthermore, 
-#    correlations between weathertypes and precipitation patterns over a given are can be calculated 
-#    and 'combined' or 'simplified' weathertypes can be derived. Additionally, mean fields, as well as
-#    anomalies and standard deviations can be plotted.
-#
-#  title: Weathertyping Diagnostic
-#
-#  authors:
-#    - kroißenbrunner_thomas
-#
-#  projects:
-#    - preval
+  maintainer:
+    - kroißenbrunner_thomas
+
+  projects:
+    - preval
+
+  references:
+    - maraun21jgr
+    - jones93ijc
 
 datasets_psl_CMIP6: &datasets_psl_cmip6
   - {institute: AS-RCEC, dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn, esgf_version: v20200626}
@@ -112,17 +110,7 @@ preprocessors:
       start_longitude: -15
       end_longitude: 35
       start_latitude: 25
-      end_latitude: 65
-      
-  mean_preproc_temp:
-    extract_time:
-      *time
-    extract_levels:
-      levels: [100000.]
-      scheme: linear
-    extract_region: 
-      *reg
-    
+      end_latitude: 65    
 
 diagnostics:
   weathertyping:
@@ -271,5 +259,5 @@ diagnostics:
         rmse_threshold: 0.002
         automatic_slwt: true
         predefined_slwt: {1: [1, 2, 7, 8, 10, 11, 18, 19, 20, 25, 26], 2: [3, 13], 3: [4, 5, 6, 9, 14, 15, 16, 17], 4: [24, 23]}
-        plotting: false
-        script: ../diag_scripts/weathertyping/main.py
+        plotting: False
+        script: ../diag_scripts/weathertyping/weathertyping.py

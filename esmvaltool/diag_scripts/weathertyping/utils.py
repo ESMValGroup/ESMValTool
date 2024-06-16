@@ -38,6 +38,7 @@ iris.FUTURE.save_split_attrs = True
 logger = logging.getLogger(os.path.basename(__file__))
 warnings.filterwarnings('ignore', '.*Collapsing a non-contiguous coordinate*')
 
+
 def get_provenance_record(caption: str, ancestors: list,
                           long_names: list, plot_types: list) -> dict:
     '''Create a provenance record describing the diagnostic data and plots.'''
@@ -85,7 +86,7 @@ def turn_list_to_mapping_dict(list_: list) -> dict:
 
     Returns:
         dict: Mapping dicitonary keys are simplified WT, values are Lamb WT
-    '''    
+    '''
     result_dict = {}
 
     for i, s in enumerate(list_):
@@ -108,7 +109,7 @@ def get_mapping_dict(selected_pairs: list) -> dict:
 
     Returns:
         dict: Mapping dicitonary keys are simplified WT, values are Lamb WT 
-    '''    
+    '''
     mapping_array = []
 
     for i, elem in enumerate(selected_pairs):
@@ -156,10 +157,9 @@ def calculate_slwt_obs(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
 
     Returns:
         np.array: _description_
-    '''    
-    
-    logger.info('Calculating simplified Lamb Weathertypes for %s', dataset)
+    '''
 
+    logger.info('Calculating simplified Lamb Weathertypes for %s', dataset)
 
     work_dir = cfg.get('work_dir')
     tcoord = cube.coord('time')
@@ -203,8 +203,149 @@ def calculate_slwt_obs(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
     return map_lwt_to_slwt(lwt, mapping_dict)
 
 
+def calc_const():
+    '''Calculate constants for weathertyping algorithm.
+    Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993), 
+    A comparison of Lamb circulation types with an objective classification scheme. 
+    Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
+
+    Returns:
+        tuple: The four constants needed for WT calculation.
+    '''
+
+    const1 = 1 / np.cos(45 * np.pi / 180)
+    const2 = np.sin(45 * np.pi / 180) / np.sin(40 * np.pi / 180)
+    const3 = np.sin(45 * np.pi / 180) / np.sin(50 * np.pi / 180)
+    const4 = 1 / (2 * np.cos(45 * np.pi / 180) ** 2)
+
+    return const1, const2, const3, const4
+
+
+def calc_westerly_flow(cube: iris.cube.Cube) -> np.array:
+    '''Calculate the westerly flow over area.
+    Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993), 
+    A comparison of Lamb circulation types with an objective classification scheme. 
+    Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
+
+    Args:
+        cube (iris.cube.Cube): Cube of psl data.
+
+    Returns:
+        np.array: westerly flow
+    '''
+
+    return 1 / 2 * (cube.data[:, 1, 2] + cube.data[:, 1, 4]) - 1 / 2 * (
+        cube.data[:, 3, 2] + cube.data[:, 3, 4]
+    )
+
+
+def calc_southerly_flow(cube: iris.cube.Cube, const1: float) -> np.array:
+    '''Calculate the southerly flow over area.
+    Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993), 
+    A comparison of Lamb circulation types with an objective classification scheme. 
+    Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
+
+    Args:
+        cube (iris.cube.Cube): Cube of psl data.
+        const1 (float): const1
+
+    Returns:
+        np.array: southerly flow
+    '''
+
+    return const1 * (
+        1 / 4 * (cube.data[:, 3, 4] + 2 *
+                 cube.data[:, 2, 4] + cube.data[:, 1, 4])
+        - 1 / 4 * (cube.data[:, 3, 2] + 2 *
+                   cube.data[:, 2, 2] + cube.data[:, 1, 2])
+    )
+
+
+def calc_resultant_flow(w: np.array, s: np.array) -> np.array:
+    '''Calculate the resultant flow.
+    Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993), 
+    A comparison of Lamb circulation types with an objective classification scheme. 
+    Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
+
+    Args:
+        w (np.array): westerly flow.
+        s (np.array): southerly flow
+
+    Returns:
+        np.array: resultant flow
+    '''
+    return (s**2 + w**2) ** (1 / 2)
+
+
+def calc_westerly_shear_velocity(cube: iris.cube.Cube, const2: float, const3: float) -> np.array:
+    '''Calculate westerly shear velocity.
+    Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993), 
+    A comparison of Lamb circulation types with an objective classification scheme. 
+    Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
+
+    Args:
+        cube (iris.cube.Cube): cube of psl data
+        const2 (float): const2
+        const3 (float): const3
+
+    Returns:
+        np.array: westerly shear velocity
+    '''
+    return const2 * (
+        1 / 2 * (cube.data[:, 0, 2] + cube.data[:, 0, 4])
+        - 1 / 2 * (cube.data[:, 2, 2] + cube.data[:, 2, 4])
+    ) - const3 * (
+        1 / 2 * (cube.data[:, 2, 2] + cube.data[:, 2, 4])
+        - 1 / 2 * (cube.data[:, 4, 2] + cube.data[:, 4, 4])
+    )
+
+
+def calc_southerly_shear_velocity(cube: iris.cube.Cube, const4: float) -> np.array:
+    '''Calculate southerly shear velocity.
+    Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993), 
+    A comparison of Lamb circulation types with an objective classification scheme. 
+    Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
+
+    Args:
+        cube (iris.cube.Cube): cube of psl data
+        const4 (float): const4
+
+    Returns:
+        np.array: southerly shear velocity
+    '''
+    return const4 * (
+        1 / 4 * (cube.data[:, 3, 6] + 2 *
+                 cube.data[:, 2, 6] + cube.data[:, 1, 6])
+        - 1 / 4 * (cube.data[:, 3, 4] + 2 *
+                   cube.data[:, 2, 4] + cube.data[:, 1, 4])
+        - 1 / 4 * (cube.data[:, 3, 2] + 2 *
+                   cube.data[:, 2, 2] + cube.data[:, 1, 2])
+        + 1 / 4 * (cube.data[:, 3, 0] + 2 *
+                   cube.data[:, 2, 0] + cube.data[:, 1, 0])
+    )
+
+
+def calc_total_shear_velocity(zw: np.array, zs: np.array) -> np.array:
+    '''Calculate total shear velocity.
+    Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993), 
+    A comparison of Lamb circulation types with an objective classification scheme. 
+    Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
+
+    Args:
+        zw (np.array): westerly shear velocity
+        zs (np.array): southerly shear velocity
+
+    Returns:
+        np.array: total shear velocity
+    '''
+    return zw + zs
+
+
 def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
     '''Algorithm to calculate Lamb weathertypes.
+    Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993), 
+    A comparison of Lamb circulation types with an objective classification scheme. 
+    Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
         cube (iris.cube.Cube): PSL field of dataset
@@ -212,7 +353,7 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
 
     Returns:
         np.array: Array of Lamb WT for each day
-    '''    
+    '''
 
     # lats and lons corresponding to datapoints
     # 55, 5 -> 1
@@ -237,45 +378,20 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
 
     logger.info('Calculating Lamb Weathertypes for %s', dataset)
 
-    const1 = 1 / np.cos(45 * np.pi / 180)
-    const2 = np.sin(45 * np.pi / 180) / np.sin(40 * np.pi / 180)
-    const3 = np.sin(45 * np.pi / 180) / np.sin(50 * np.pi / 180)
-    const4 = 1 / (2 * np.cos(45 * np.pi / 180) ** 2)
+    const1, const2, const3, const4 = calc_const()
 
     # westerly flow
-    w = 1 / 2 * (cube.data[:, 1, 2] + cube.data[:, 1, 4]) - 1 / 2 * (
-        cube.data[:, 3, 2] + cube.data[:, 3, 4]
-    )
+    w = calc_westerly_flow(cube)
     # southerly flow
-    s = const1 * (
-        1 / 4 * (cube.data[:, 3, 4] + 2 *
-                 cube.data[:, 2, 4] + cube.data[:, 1, 4])
-        - 1 / 4 * (cube.data[:, 3, 2] + 2 *
-                   cube.data[:, 2, 2] + cube.data[:, 1, 2])
-    )
+    s = calc_southerly_flow(cube, const1)
     # resultant flow
-    f = (s**2 + w**2) ** (1 / 2)
+    f = calc_resultant_flow(w, s)
     # westerly shear vorticity
-    zw = const2 * (
-        1 / 2 * (cube.data[:, 0, 2] + cube.data[:, 0, 4])
-        - 1 / 2 * (cube.data[:, 2, 2] + cube.data[:, 2, 4])
-    ) - const3 * (
-        1 / 2 * (cube.data[:, 2, 2] + cube.data[:, 2, 4])
-        - 1 / 2 * (cube.data[:, 4, 2] + cube.data[:, 4, 4])
-    )
+    zw = calc_westerly_shear_velocity(cube, const2, const3)
     # southerly shear vorticity
-    zs = const4 * (
-        1 / 4 * (cube.data[:, 3, 6] + 2 *
-                 cube.data[:, 2, 6] + cube.data[:, 1, 6])
-        - 1 / 4 * (cube.data[:, 3, 4] + 2 *
-                   cube.data[:, 2, 4] + cube.data[:, 1, 4])
-        - 1 / 4 * (cube.data[:, 3, 2] + 2 *
-                   cube.data[:, 2, 2] + cube.data[:, 1, 2])
-        + 1 / 4 * (cube.data[:, 3, 0] + 2 *
-                   cube.data[:, 2, 0] + cube.data[:, 1, 0])
-    )
+    zs = calc_southerly_shear_velocity(cube, const4)
     # total shear vorticity
-    z = zw + zs
+    z = calc_total_shear_velocity(zw, zs)
 
     wt = np.zeros(len(z))
 
@@ -357,7 +473,7 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
     return wt
 
 
-def calculate_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str, 
+def calculate_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str,
                              preproc_path: str, output_file_path: str):
     '''Calculate Lamb WT and simplified WT for model data.
 
@@ -367,7 +483,7 @@ def calculate_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str,
         dataset (str): Name of dataset
         preproc_path (str): Path of ancestors
         output_file_path (str): Path to write output file
-    '''    
+    '''
 
     work_dir = cfg.get('work_dir')
 
@@ -417,7 +533,7 @@ def calculate_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str,
     df.to_csv(f'{work_dir}/{output_file_path}/{dataset}.csv', index=False)
 
     log_provenance('Lamb Weathertypes', f'{dataset}_wt_prov', cfg,
-                   [preproc_path, f'{work_dir}/wt_mapping_dict_ERA5.json', 
+                   [preproc_path, f'{work_dir}/wt_mapping_dict_ERA5.json',
                     f'{work_dir}/wt_mapping_dict_E-OBS.json'],
                    ['Lamb Weathertypes'], [''])
 
@@ -431,7 +547,7 @@ def get_colormap(colormap_string: str) -> ListedColormap:
 
     Returns:
         ListedColormap: Choosen Colormap
-    '''    
+    '''
 
     misc_seq_2_disc = [
         (230 / 255, 240 / 255, 240 / 255),
@@ -494,7 +610,7 @@ def plot_maps(wt: np.array, cfg: dict, cube: iris.cube.Cube, dataset: str,
                         slwt are calculated based on ERA5 or EOBS
                         precipitation data, respectively
         mode (str): Statistics that is used
-    '''    
+    '''
 
     logger.info('Plotting %s %s %s for %s %s', dataset, var_name,
                 mode, wt_string, wt)
@@ -568,41 +684,66 @@ def rmse(subarray1: np.array, subarray2: np.array) -> np.array:
 
     Returns:
         np.array: rsme array
-    '''    
+    '''
     return np.sqrt(np.mean((subarray1 - subarray2) ** 2))
 
 
-def convert_dict(original_dict):
+def convert_dict(dict_: dict) -> dict:
+    '''Convert mapping dictionary from {lwt: slwt, ...} format to {slwt: [lwt1, lwt2], ...}. 
+
+    Args:
+        dict_ (dict): Dict in the {lwt: slwt, ...} format
+
+    Returns:
+        dict: Dict in the {slwt: [lwt1, lwt2], ...} format
+    '''
+
     new_dict = {}
-    for key, value in original_dict.items():
+    for key, value in dict_.items():
         if value not in new_dict:
             new_dict[value] = []
         new_dict[value].append(key)
     return new_dict
 
 
-def reverse_convert_dict(new_dict):
-    original_dict = {}
-    for key, value_list in new_dict.items():
+def reverse_convert_dict(dict_: dict) -> dict:
+    '''Convert mapping dictionary from {slwt: [lwt1, lwt2], ...} format to {lwt: slwt, ...}. 
+
+    Args:
+        original_dict (dict): Dict in the {slwt: [lwt1, lwt2], ...}format
+
+    Returns:
+        dict: Dict in the  format {lwt: slwt, ...}
+    '''
+    new_dict = {}
+    for key, value_list in dict_.items():
         for original_key in value_list:
-            original_dict[original_key] = key
-    return original_dict
+            new_dict[original_key] = key
+    return new_dict
 
 
 def plot_corr_rmse_heatmaps(cfg: dict, pattern_correlation_matrix: np.array,
-                 rmse_matrix: np.array, dataset: str):
-    
+                            rmse_matrix: np.array, dataset: str):
+    '''Plot heatmaps for correlation and rmse matrices
+
+    Args:
+        cfg (dict): cfg dict from recipe
+        pattern_correlation_matrix (np.array): pattern correlation matrix
+        rmse_matrix (np.array): rmse matrix
+        dataset (str): string of dataset
+    '''
+
     work_dir = cfg.get('work_dir')
 
-    labels = np.arange(1,28)
+    labels = np.arange(1, 28)
 
     mask = np.zeros_like(pattern_correlation_matrix)
     mask[np.triu_indices_from(mask)] = True
-    with sns.axes_style("white"):
+    with sns.axes_style('white'):
         plt.title('Correlation Matrix')
         ax = sns.heatmap(pattern_correlation_matrix, mask=mask,
-                         square=True, annot=True, annot_kws={"size": 5},
-                         cmap="seismic", xticklabels=labels,
+                         square=True, annot=True, annot_kws={'size': 5},
+                         cmap='seismic', xticklabels=labels,
                          yticklabels=labels)
         ax.set_xlabel('lwt', fontsize=8, rotation=90)
         ax.set_ylabel('lwt', fontsize=8)
@@ -614,11 +755,11 @@ def plot_corr_rmse_heatmaps(cfg: dict, pattern_correlation_matrix: np.array,
 
     mask = np.zeros_like(rmse_matrix)
     mask[np.triu_indices_from(mask)] = True
-    with sns.axes_style("white"):
+    with sns.axes_style('white'):
         plt.title('RMSE Matrix')
         ax = sns.heatmap(rmse_matrix, mask=mask,
-                         square=True, annot=True, annot_kws={"size": 5},
-                         cmap="seismic", xticklabels=labels,
+                         square=True, annot=True, annot_kws={'size': 5},
+                         cmap='seismic', xticklabels=labels,
                          yticklabels=labels)
         ax.set_xlabel('lwt', fontsize=8, rotation=90)
         ax.set_ylabel('lwt', fontsize=8)
@@ -638,7 +779,7 @@ def write_corr_rmse_to_csv(cfg: dict, pattern_correlation_matrix: np.array,
         pattern_correlation_matrix (np.array): Correlation matrix
         rmse_matrix (np.array): RSME matrix
         dataset (str): Name of dataset
-    '''    
+    '''
 
     logger.info('Writing corr and rsme matrices for %s', dataset)
 
@@ -674,7 +815,7 @@ def process_prcp_mean(cfg: dict, data: np.array, correlation_threshold: float,
 
     Returns:
         list: Selected pairs of WT. This is passed to get_mapping_dict
-    '''    
+    '''
 
     logger.info('Calculating corr and rsme matrices for %s', dataset)
 
@@ -722,7 +863,7 @@ def calculate_wt_means(cfg: dict, cube: iris.cube.Cube,
                         slwt are calculated based on ERA5 or EOBS
                         precipitation data, respectively
         preproc_path (str): Ancestor path
-    '''    
+    '''
 
     logger.info('Calculating %s %s means for %s', dataset, var_name, wt_string)
 
@@ -746,7 +887,7 @@ def calculate_wt_means(cfg: dict, cube: iris.cube.Cube,
 
     if num_slwt_eobs != num_slwt_era5:
         logger.info('calculate_wt_means - CAUTION: unequal number of \
-                    slwt_era5 (%s) \ and slwt_eobs (%s)!', 
+                    slwt_era5 (%s) \ and slwt_eobs (%s)!',
                     num_slwt_era5, num_slwt_eobs)
 
     if 'slwt' in wt_string:
@@ -794,7 +935,7 @@ def calculate_wt_means(cfg: dict, cube: iris.cube.Cube,
 
     log_provenance(f'{var_name} means for {wt_string}',
                    f'{dataset}_{var_name}_{wt_string}_means_prov', cfg,
-                   [f'{preproc_path}', f'{work_dir}/ERA5.nc'], 
+                   [f'{preproc_path}', f'{work_dir}/ERA5.nc'],
                    [var_name], ['geo'])
 
 
@@ -814,7 +955,7 @@ def calculate_wt_anomalies(cfg: dict, cube: iris.cube.Cube,
                         slwt are calculated based on ERA5 or EOBS
                         precipitation data, respectively
         preproc_path (str): Ancestor path
-    ''' 
+    '''
 
     work_dir = cfg.get('work_dir')
 
@@ -839,7 +980,7 @@ def calculate_wt_anomalies(cfg: dict, cube: iris.cube.Cube,
 
     if num_slwt_eobs != num_slwt_era5:
         logger.info('calculate_wt_means - CAUTION: unequal number of \
-                    slwt_era5 (%s) \ and slwt_eobs (%s)!', 
+                    slwt_era5 (%s) \ and slwt_eobs (%s)!',
                     num_slwt_era5, num_slwt_eobs)
 
     if 'slwt' in wt_string:
@@ -906,7 +1047,7 @@ def calculate_wt_std(cfg: dict, cube: iris.cube.Cube,
                         slwt are calculated based on ERA5 or EOBS
                         precipitation data, respectively
         preproc_path (str): Ancestor path
-    ''' 
+    '''
 
     work_dir = cfg.get('work_dir')
 
@@ -931,7 +1072,7 @@ def calculate_wt_std(cfg: dict, cube: iris.cube.Cube,
 
     if num_slwt_eobs != num_slwt_era5:
         logger.info('calculate_wt_means - CAUTION: unequal number of \
-                    slwt_era5 (%s) \ and slwt_eobs (%s)!', 
+                    slwt_era5 (%s) \ and slwt_eobs (%s)!',
                     num_slwt_era5, num_slwt_eobs)
 
     if 'slwt' in wt_string:
@@ -995,7 +1136,7 @@ def combine_wt_to_file(cfg: dict, lwt: np.array, slwt_era5: np.array,
         slwt_eobs (np.array): slwt_eobs array
         cube (iris.cube.Cube): Cube of data to keep time coordinate
         file_name (str): Name of output file
-    '''    
+    '''
 
     logger.info('Writing weathertypes to %s', file_name)
 
@@ -1035,7 +1176,7 @@ def write_lwt_to_file(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
         lwt (np.array): lwt array
         cube (iris.cube.Cube): Cube to keep time coordinate
         file_name (str): Output filename
-    '''    
+    '''
 
     logger.info('Writing Lamb Weathertype to %s', file_name)
 
@@ -1064,7 +1205,7 @@ def calculate_lwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str, output_fi
         cube (iris.cube.Cube): Cube to keep time coordinate
         dataset (str): Name of dataset
         output_file_path (str): Path to write output
-    '''    
+    '''
 
     work_dir = cfg.get('work_dir')
 
@@ -1092,12 +1233,29 @@ def calculate_lwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str, output_fi
     df.to_csv(f'{work_dir}/{output_file_path}/{dataset}.csv', index=False)
 
 
-def map_lwt_to_slwt(lwt:np.array, mapping_dict: dict):
+def map_lwt_to_slwt(lwt: np.array, mapping_dict: dict) -> np.array:
+    '''map lwt array to slwt array.
+
+    Args:
+        lwt (np.array): array of lwt
+        mapping_dict (dict): mapping dictionary in {lwt: slwt, ...} format
+
+    Returns:
+        np.array: array of slwt
+    '''
 
     return np.array([np.int8(mapping_dict.get(value, 0)) for value in lwt])
 
 
-def check_mapping_dict_format(mapping_dict: dict):
+def check_mapping_dict_format(mapping_dict: dict) -> dict:
+    '''Check format of mapping dict and return in {lwt: slwt, ...} format
+
+    Args:
+        mapping_dict (dict): mapping dict in any format
+
+    Returns:
+        dict: mapping dict in {lwt: slwt, ...} format
+    '''
 
     if isinstance(mapping_dict.get(list(mapping_dict.keys())[0]), list):
         dict_ = reverse_convert_dict(mapping_dict)
@@ -1105,4 +1263,3 @@ def check_mapping_dict_format(mapping_dict: dict):
         dict_ = mapping_dict
 
     return dict_
-

@@ -1,4 +1,4 @@
-from weathertyping_diagnostic_lwt import *
+from utils import *
 
 # import internal esmvaltool modules here
 from esmvaltool.diag_scripts.shared import (
@@ -28,7 +28,7 @@ def run_my_diagnostic(cfg: dict):
     correlation_threshold = cfg.get('correlation_threshold')
     rmse_threshold = cfg.get('rmse_threshold')
     work_dir = cfg.get('work_dir')
-    plotting = cfg.get('plotting')
+    plotting = cfg.get('plotting', False)
     automatic_slwt = cfg.get('automatic_slwt')
     predefined_slwt = cfg.get('predefined_slwt', False)
 
@@ -52,7 +52,7 @@ def run_my_diagnostic(cfg: dict):
                 era5_ancestors = [value[0].get('filename'),
                                   value[1].get('filename')]
                 eobs_ancestors = [value[0].get('filename'),
-                preproc_variables_dict.get('E-OBS')[0].get('filename')]
+                                  preproc_variables_dict.get('E-OBS')[0].get('filename')]
 
                 # calculate simplified lwt based on precipitation patterns or use predefined_slwt
                 if predefined_slwt is False:
@@ -75,12 +75,12 @@ def run_my_diagnostic(cfg: dict):
                         eobs_ancestors,
                     )
                 else:
-                    predefined_slwt = check_mapping_dict_format(predefined_slwt)
+                    predefined_slwt = check_mapping_dict_format(
+                        predefined_slwt)
                     write_mapping_dict(work_dir, key, predefined_slwt)
                     write_mapping_dict(work_dir, "E-OBS", predefined_slwt)
                     slwt_era5 = map_lwt_to_slwt(lwt, predefined_slwt)
                     slwt_eobs = map_lwt_to_slwt(lwt, predefined_slwt)
-
 
                 # write to file
                 combine_wt_to_file(cfg, lwt, slwt_era5,
@@ -99,7 +99,7 @@ def run_my_diagnostic(cfg: dict):
                 preproc_path_tas = value[4].get('filename')
 
                 if plotting:
-                # plot means
+                    # plot means
                     calculate_wt_means(
                         cfg,
                         mean_preproc_psl,
@@ -194,11 +194,13 @@ def run_my_diagnostic(cfg: dict):
                 experiment = value[0].get('exp')
                 ensemble = value[0].get('ensemble')
 
-                output_file_path = f'{model_name}/{experiment}/{ensemble}/{timerange}'
+                output_file_path = f'{
+                    model_name}/{experiment}/{ensemble}/{timerange}'
                 preproc_path = value[0].get('filename')
 
                 # calculate weathertypes
-                calculate_lwt_slwt_model(cfg, wt_preproc, key, preproc_path, output_file_path)
+                calculate_lwt_slwt_model(
+                    cfg, wt_preproc, key, preproc_path, output_file_path)
 
                 # load wt files
                 lwt_cube = iris.load_cube(
@@ -208,7 +210,6 @@ def run_my_diagnostic(cfg: dict):
                 slwt_eobs_cube = iris.load_cube(
                     f'{work_dir}/{output_file_path}/{key}.nc', 'slwt_eobs')
                 wt_cubes = [lwt_cube, slwt_era5_cube, slwt_eobs_cube]
-
 
                 preproc_path_psl = value[1].get('filename')
                 preproc_path_prcp = value[2].get('filename')
@@ -297,7 +298,7 @@ def run_my_diagnostic(cfg: dict):
                         wt_string='slwt_EOBS',
                         preproc_path=preproc_path_tas,
                     )
-    elif not automatic_slwt: # if automatic_slwt is false, and predefined_slwt is false, just write selected pairs to file
+    elif not automatic_slwt:  # if automatic_slwt is false, and predefined_slwt is false, just write selected pairs to file
         for key, value in preproc_variables_dict.items():
             if key == 'ERA5':
                 wt_preproc = iris.load_cube(value[0].get('filename'))
@@ -385,7 +386,8 @@ def run_my_diagnostic(cfg: dict):
                 experiment = value[0].get('exp')
                 ensemble = value[0].get('ensemble')
 
-                output_file_path = f'{model_name}/{experiment}/{ensemble}/{timerange}'
+                output_file_path = f'{
+                    model_name}/{experiment}/{ensemble}/{timerange}'
 
                 # calculate weathertypes
                 calculate_lwt_model(cfg, wt_preproc, key, output_file_path)
