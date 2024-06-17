@@ -842,7 +842,6 @@ def run(input_recipe, output_recipe, config_file):
         os.makedirs(run_dir)
     log_files = configure_logging(output_dir=run_dir,
                                   console_log_level=config_user['log_level'])
-    logger.info(HEADER)
     logger.info("Using user configuration file: %s", config_file)
     logger.info("Using pilot recipe file: %s", input_recipe)
     logger.info("Writing filled out recipe to: %s", output_recipe)
@@ -910,6 +909,7 @@ def run(input_recipe, output_recipe, config_file):
 
 if __name__ == "__main__":
     """Run the `recipe_filler` tool. Help in __doc__ and via --help."""
+    logger.info(HEADER)
     # Get arguments
     args = get_args()
     input_recipe = args.recipe
