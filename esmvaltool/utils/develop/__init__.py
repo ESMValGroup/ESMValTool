@@ -2,7 +2,9 @@
 
 import sys
 from pathlib import Path
-from esmvaltool.utils.develop import compare
+
+from . import compare
+from . import recipe_filler
 
 
 class DevelopCommand():
@@ -30,11 +32,11 @@ class DevelopCommand():
         sys.exit(int(not same))
 
 
-    def fill_recipe(self):
+    def fill_recipe(self, recipe, output_recipe="recipe_autofilled.yml", config_file=""):
         """
-        Fill in a blank recipe with additional datasets.
+        Fill in a partial recipe with additional datasets.
         
-        Tool to obtain a set of additional datasets when given a blank recipe.
+        Tool to obtain a set of additional datasets when given a partial recipe.
         The blank recipe should contain, to the very least, a list of diagnostics
         each with their variable(s). Example of minimum settings:
         
@@ -69,4 +71,16 @@ class DevelopCommand():
         
         - the tool doesn't yet work for derived variables;
         - operation restricted to CMIP data.
-        "
+
+        Parameters
+        ----------
+
+        recipe : str
+            Path to partial recipe file
+        output_recipe : str
+            Path to output recipe
+        config_file : str
+            User configuration file
+        """
+        
+        recipe_filler.run(recipe, output_recipe, config_file)
