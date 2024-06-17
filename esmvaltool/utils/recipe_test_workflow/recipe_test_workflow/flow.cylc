@@ -43,8 +43,8 @@
         [[[environment]]]
             SITE = {{ SITE }}
             ENV_FILE=rtw-env
-            RTW_ENV_FILE_SOURCE_PATH=${CYLC_WORKFLOW_RUN_DIR}/site/${SITE}-env
-            RTW_ENV_FILE_SHARE_DIR=${CYLC_WORKFLOW_SHARE_DIR}/bin
+            ENV_FILE_SITE_PATH=${CYLC_WORKFLOW_RUN_DIR}/site/${SITE}-env
+            SHARE_BIN_DIR=${CYLC_WORKFLOW_SHARE_DIR}/bin
 
     [[get_esmval]]
         [[[environment]]]
