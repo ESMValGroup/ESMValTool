@@ -81,5 +81,4 @@ jobs:
 
       - name: Lint shell script with ShellCheck
         run: |
-          shellcheck esmvaltool/utils/recipe_test_workflow/recipe_test_workflo\
-          w/app/get_esmval/bin/clone_latest_esmval.sh
+          find . -name "*.sh" -exec shellcheck {} \; > output.txt
