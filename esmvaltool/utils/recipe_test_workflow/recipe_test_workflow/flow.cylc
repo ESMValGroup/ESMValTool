@@ -102,7 +102,7 @@
             KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
             COMPARE_SCRIPT=${ESMVALTOOL_DIR}/esmvaltool/utils/testing/regression/compare.py
             COMPARISON_OUTPUT_DIR=${OUTPUT_DIR}/${RECIPE_NAME}*
-            RTW_KGOS=${KGO_ROOT_PATH}/${RECIPE_NAME}*
+            KGO_DIR=${KGO_ROOT_PATH}/${RECIPE_NAME}*
 
 
     [[compare<medium>]]
