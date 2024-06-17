@@ -11,7 +11,7 @@ channels:
 dependencies:
   - aiohttp
   - cartopy
-  - cdo >=1.9.7
+  - cdo >=2.3.0
   - cdsapi
   - cf-units
   - cftime
@@ -21,13 +21,14 @@ dependencies:
   - distributed
   - ecmwf-api-client
   - eofs
-  - esmpy
+  - esmpy >=8.6.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - esmvalcore 2.10.*
   - fiona
+  - fsspec
   - fire
   - gdal
   - iris >=3.6.1
-  - iris-esmf-regrid >=0.7.0
+  - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - jinja2
   - joblib
   - lime
@@ -40,7 +41,7 @@ dependencies:
   - numpy !=1.24.3  # severe masking bug
   - openpyxl
   - packaging
-  - pandas
+  - pandas !=2.2.0,!=2.2.1,!=2.2.2 # github.com/ESMValGroup/ESMValCore/pull/2305
   - pip !=21.3
   - progressbar2
   - prov
@@ -48,7 +49,7 @@ dependencies:
   - psy-maps
   - psy-reg
   - psy-simple
-  - pyproj>=2.1
+  - pyproj >=2.1
   - pys2index  # only from conda-forge
   - python >=3.9
   - python-cdo

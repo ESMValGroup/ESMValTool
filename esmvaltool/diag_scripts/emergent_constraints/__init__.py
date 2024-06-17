@@ -297,12 +297,16 @@ def _get_data_frame(var_type, cubes, label_all_data, group_by=None):
 
 def _metadata_to_dict(metadata):
     """Convert :class:`iris.cube.CubeMetadata` to :obj:`dict`."""
-    new_dict = {}
-    for (key, val) in metadata._asdict().items():
-        if isinstance(val, dict):
-            new_dict.update(val)
-        else:
-            new_dict[key] = val
+    new_dict = dict(metadata.attributes)
+    other_keys = [
+        'standard_name',
+        'long_name',
+        'var_name',
+        'units',
+        'cell_methods',
+    ]
+    for key in other_keys:
+        new_dict[key] = getattr(metadata, key)
     return new_dict
 
 
