@@ -172,6 +172,11 @@
       "orcid": "0000-0001-5444-2945"
     },
     {
+      "affiliation": "University of Canterbury, New Zealand",
+      "name": "Hardacre, Catherine",
+      "orcid": "0000-0001-9093-4656"
+    },
+    {
       "affiliation": "ISAC-CNR, Italy",
       "name": "von Hardenberg, Jost",
       "orcid": "0000-0002-5312-8070"
@@ -380,47 +385,21 @@
       "affiliation": "DLR, Germany",
       "name": "Bonnet, Pauline",
       "orcid": "0000-0003-3780-0784"
+    },
+    {
+      "affiliation": "MetOffice, UK",
+      "name": "Hogan, Emma"
+    },
+    {
+      "affiliation": "MetOffice, UK",
+      "name": "Lillis, Jonathan"
     }
   ],
   "description": "ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP.",
   "license": {
     "id": "Apache-2.0"
   },
-  "publication_date": "2023-07-06",
+  "publication_date": "2023-12-20",
   "title": "ESMValTool",
-  "version": "v2.9.0",
-  "communities": [ 
-      { 
-          "identifier": "is-enes3" 
-      }, 
-      { 
-          "identifier": "dlr_de" 
-      }, 
-      { 
-          "identifier": "ecfunded" 
-      }, 
-      { 
-          "identifier": "nlesc" 
-      } 
-  ], 
-  "grants": [ 
-      { 
-          "id": "10.13039/501100000780::282672" 
-      }, 
-      { 
-          "id": "10.13039/501100000780::641727" 
-      }, 
-      { 
-          "id": "10.13039/501100000780::641816" 
-      }, 
-      { 
-          "id": "10.13039/501100000780::727862" 
-      }, 
-      { 
-          "id": "10.13039/501100000780::776613" 
-      }, 
-      { 
-          "id": "10.13039/501100000780::824084" 
-      } 
-  ] 
+  "version": "v2.10.0"
 }
