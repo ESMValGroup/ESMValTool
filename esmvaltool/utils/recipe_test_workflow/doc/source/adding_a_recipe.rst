@@ -1,7 +1,7 @@
 How to add a recipe to the |RTW|
 ===================================================
 
-.. include:: ../common.txt
+.. include:: common.txt
 
 **Please note**: Before you follow these steps to add your recipe, you must be
 able to successfully run the recipe with the latest version of ESMValTool on
