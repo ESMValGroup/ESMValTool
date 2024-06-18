@@ -10,7 +10,7 @@ the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
 ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/site/`` directory.
 
 #. Obtain the duration and memory usage of the recipe from the messages printed
-   to screen, or at the end of the run/main_log.txt file in the output
+   to screen, or at the end of the ``run/main_log.txt`` file in the output
    directory after running your recipe on the compute cluster you use at your
    site; these messages will look something like::
 
