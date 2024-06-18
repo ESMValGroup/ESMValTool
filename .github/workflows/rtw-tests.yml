@@ -81,5 +81,5 @@ jobs:
 
       - name: Lint shell scripts with ShellCheck
         run: |
-          pwd
+          cd esmvaltool/utils/recipe_test_workflow
           find . -name "*.sh" -exec shellcheck {} \;
