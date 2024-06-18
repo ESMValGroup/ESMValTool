@@ -81,4 +81,5 @@ jobs:
 
       - name: Lint shell scripts with ShellCheck
         run: |
+          pwd
           find . -name "*.sh" -exec shellcheck {} \;
