@@ -1,4 +1,4 @@
-Adding a recipe to the Recipe Test Workflow (|RTW|)
+How to add a recipe to the |RTW|
 ===================================================
 
 .. include:: ../common.txt

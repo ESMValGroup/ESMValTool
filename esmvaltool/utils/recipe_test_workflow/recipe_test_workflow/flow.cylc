@@ -3,6 +3,7 @@
     UTC mode = True
 
 [task parameters]
+    # See "How to add a recipe to the RTW" documentation for more information.
     # Recipe paths are specified relative to esmvaltool/recipes. For recipes in
     # subdirectories, `--` stands for `/` since the latter is an illegal char.
     fast = recipe_radiation_budget, \
