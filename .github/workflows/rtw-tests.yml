@@ -82,5 +82,5 @@ jobs:
       - name: Lint shell scripts in Recipe Test Worklow with ShellCheck
         run: |
           cd esmvaltool/utils/recipe_test_workflow
-          find . -name "*.sh" -exec shellcheck {} \;
+          output=$(find . -name "*.sh" -exec shellcheck {} \;)
           if [ "$output" ]; then exit 1; else exit 0; fi
