@@ -3,10 +3,10 @@ How to add a recipe to the |RTW|
 
 .. include:: ../common.txt
 
-**Please note**: Before you follow these steps to add it, you must be
-able to successfully run it with the latest version of ESMValTool on the
-compute server you use at your site, as detailed by the ``platform`` option in
-the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
+**Please note**: Before you follow these steps to add your recipe, you must be
+able to successfully run the recipe with the latest version of ESMValTool on
+the compute server you use at your site, as detailed by the ``platform`` option
+in the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
 ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/site/`` directory.
 
 #. Obtain the duration and memory usage of the recipe from the messages printed
