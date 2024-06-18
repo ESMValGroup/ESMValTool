@@ -10,7 +10,8 @@ the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
 ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/site/`` directory.
 
 #. Obtain the duration and memory usage of the recipe from the messages printed
-   to screen after running your recipe on the compute cluster you use at your
+   to screen, or at the end of the run/main_log.txt file in the output
+   directory after running your recipe on the compute cluster you use at your
    site; these messages will look something like::
 
     YYYY-MM-DD HH:MM:SS:sss UTC [12345] INFO    Time for running the recipe was: 0:02:13.334742
@@ -24,17 +25,29 @@ the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
    added to the ``fast`` option. Recipes that take longer than ten minutes
    should be added to the ``medium`` option.
 
-#. If the memory usage of the recipe is larger than the value specified by the
-   ``--mem`` option in the ``[[[directives]]]`` section in the ``[[COMPUTE]]``
-   section in the aforementioned site-specific ``.cylc`` file, add a section
-   (in alphabetical order) to this file as shown below (make sure to round off
-   the duration to the nearest second when you add it)::
+#. If the duration of the recipe is larger than the value specified by the
+   ``execution time limit`` option in the ``[[COMPUTE]]`` section in the
+   aforementioned site-specific ``.cylc`` file, and / or the memory usage of
+   the recipe is larger than the value specified by the ``--mem`` option in the
+   ``[[[directives]]]`` section in the ``[[COMPUTE]]`` section, add a section
+   (in alphabetical order) to this file as shown below (round the duration to
+   the nearest second).
+
+   Supplementary to the paragraph above, we advise execution with a duration of
+   less than ~1m45s should use an execution time limit of PT2M, and round up to
+   the nearest integer for the memory usage.::
 
     [[process<fast=recipe_albedolandcover>]]
     # Actual: 0m31s, 2.5 GB on 2024-04-08.
     execution time limit = PT2M
     [[[directives]]]
         --mem = 3G
+
+
+   **Please note**: When you add the your modified version of the above example
+   to your site-specific ``.cylc`` file, the key *fast* should match the
+   category you placed your recipe within the ``[task parameters]`` section
+    of the flow.cylc
 
 #. Stop any running ``recipe_test_workflow`` workflows::
 
