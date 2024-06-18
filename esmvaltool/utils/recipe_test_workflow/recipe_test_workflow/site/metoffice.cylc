@@ -41,6 +41,12 @@
         [[[directives]]]
             --mem = 3G
 
+    [[process<fast=recipe_ocean_multimap>]]
+        # Actual: 6m52s, 2.5 GB on 2024-05-28.
+        execution time limit = PT8M
+        [[[directives]]]
+            --mem = 3G
+
     [[process<medium=recipe_ensclus>]]
         # Actual: 2m10s, 2.4 GB on 2024-03-29.
         execution time limit = PT4M

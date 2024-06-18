@@ -31,7 +31,7 @@ REQUIREMENTS = {
         'distributed',
         'ecmwf-api-client',
         'eofs',
-        'ESMPy',
+        'ESMPy',  # not on PyPI
         'esmvalcore',
         'esmf-regrid>=0.7.0',
         'fiona',
@@ -49,13 +49,14 @@ REQUIREMENTS = {
         'numpy!=1.24.3',  # severe masking bug
         'openpyxl',
         'packaging',
-        'pandas',
+        'pandas!=2.2.0,!=2.2.1,!=2.2.2',  # ESMValCore PR2305
         'progressbar2',
         'psyplot',
         'psy-maps',
         'psy-reg',
         'psy-simple',
         'pyproj>=2.1',
+        # 'pys2index',  # issues installing from PyPI (wheel doesn't build)
         'python-dateutil',
         'pyyaml',
         'rasterio',
@@ -74,8 +75,9 @@ REQUIREMENTS = {
         'xlsxwriter',
         'zarr',
     ],
-    # Test dependencies
-    # Execute `pip install .[test]` once and the use `pytest` to run tests
+    # Test dependencies (unit tests)
+    # Execute `pip install .[test]` once and then use `pytest` to run tests
+    # or the Recipe Test Workflow (RTW) to run the recipe tests
     'test': [
         'flake8',
         'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
@@ -85,6 +87,9 @@ REQUIREMENTS = {
         'pytest-metadata>=1.5.1',
         'pytest-mock',
         'pytest-xdist',
+        'cylc-flow>=8.2',
+        'cylc-rose',
+        'metomi-rose',
     ],
     # Documentation dependencies
     'doc': [
@@ -98,6 +103,7 @@ REQUIREMENTS = {
     'develop': [
         'codespell',
         'docformatter',
+        'imagehash',
         'isort',
         'pre-commit',
         'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',

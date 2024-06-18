@@ -1,21 +1,27 @@
-# This workflow creates the required Conda environment, performs various
-# validation steps for Cylc and Rose, and builds and checks the documentation.
-name: rtw-tests
+# This workflow performs various validation steps for Cylc and Rose, and
+# builds and checks the documentation.
+name: Check Recipe Test Workflow (RTW)
 
 # Controls when the action will run
 on:
-  # Triggers the workflow on push or pull request events
+  # Triggers the workflow on push events
   push:
-  pull_request:
+    paths:
+      - esmvaltool/utils/recipe_test_workflow/**
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+# Required shell entrypoint to have properly configured bash shell
+defaults:
+  run:
+    shell: bash -l {0}
+
 # A workflow run is made up of one or more jobs that can run
 # sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
+  # This workflow contains a single job called "check-rtw"
+  check-rtw:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -24,58 +30,46 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job
       # can access it
-      - uses: actions/checkout@v2
-
-      - name: Create environment
-        run: |
-          conda update conda
-          conda create --name rtw --file .github/workflows/rtw-env/rtw-env.lock
-          eval "$(conda shell.bash hook)"
-          conda activate rtw
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: esmvaltool
+          environment-file: environment.yml
+          miniforge-version: "latest"
+          miniforge-variant: Mambaforge
+          use-mamba: true
 
       - name: Validate Cylc workflow
         run: |
-          eval "$(conda shell.bash hook)"
-          conda activate rtw
           cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
           cylc validate . -O metoffice
 
       - name: Run Cylc configuration linter
         run: |
-          eval "$(conda shell.bash hook)"
-          conda activate rtw
           cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
           cylc lint
 
       - name: Validate format of Rose configuration files
         run: |
-          eval "$(conda shell.bash hook)"
-          conda activate rtw
           cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
           output="$(rose config-dump)"
           msg="Run 'rose config-dump' to re-dump the Rose configuration files"
           msg="${msg} in the common format, then commit the changes."
           # The '-z' option returns true if 'output' is empty.
-          if [[ -z "${output}" ]]; then exit 0; else echo "${msg}" && exit 1; fi
+          if [[ -z "${output}" ]]; then true; else echo "${msg}" && exit 1; fi
 
       - name: Validate Rose configuration metadata
         run: |
-          eval "$(conda shell.bash hook)"
-          conda activate rtw
           cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
           rose metadata-check -C meta/
 
       - name: Build documentation
         run: |
-          eval "$(conda shell.bash hook)"
-          conda activate rtw
           cd esmvaltool/utils/recipe_test_workflow/doc
           make html
 
       - name: Check for broken links in the documentation
         run: |
-          eval "$(conda shell.bash hook)"
-          conda activate rtw
           cd esmvaltool/utils/recipe_test_workflow/doc
           make linkcheck
 

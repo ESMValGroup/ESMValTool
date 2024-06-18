@@ -20,7 +20,7 @@ The |RTW| performs the following steps:
 
 ``get_esmval``
   :Description:
-     Either clones the latest versions of |ESMValTool| and |ESMValCore| from GitHub, 
+     Either clones the latest versions of |ESMValTool| and |ESMValCore| from GitHub,
      or gets the latest container image from DockerHub and converts to a singularity
      image, depending on ``SITE``.
   :Runs on:
@@ -35,13 +35,13 @@ The |RTW| performs the following steps:
 
 ``configure``
   :Description:
-     Creates the |ESMValTool| user configuration file
+     Creates the |ESMValTool| user configuration file and validates it.
   :Runs on:
      Localhost
   :Executes:
      The ``configure.py`` script from the |Rose| app
   :Details:
-     ``configure`` should run at the start of each cycle after 
+     ``configure`` should run at the start of each cycle after
      ``install_env_file`` has completed.
 
 ``process``
