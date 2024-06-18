@@ -7,4 +7,3 @@ User Guide
 
    quick_start
    workflow
-   adding_a_recipe
