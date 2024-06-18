@@ -9,6 +9,8 @@ the compute server you use at your site, as detailed by the ``platform`` option
 in the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
 ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/site/`` directory.
 
+#. Open an issue on GitHub and create a branch.
+
 #. Obtain the duration and memory usage of the recipe from the messages printed
    to screen, or at the end of the ``run/main_log.txt`` file in the output
    directory after running your recipe on the compute cluster you use at your
