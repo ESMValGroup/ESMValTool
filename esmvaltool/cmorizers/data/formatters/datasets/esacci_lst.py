@@ -34,9 +34,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             for month in range(1, 13):
                 logger.info(year)
                 logger.info(month)
-                # test breaks to find all masked data issue
-                if year != 2003: continue
-                if month != 1: continue
                 try:
                     cubes = load_cubes(in_dir,
                                        vals['file'],
