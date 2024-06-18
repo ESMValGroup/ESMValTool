@@ -47,7 +47,7 @@ the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
    **Please note**: When you add the your modified version of the above example
    to your site-specific ``.cylc`` file, the key *fast* should match the
    category you placed your recipe within the ``[task parameters]`` section
-    of the flow.cylc
+   of the flow.cylc
 
 #. Stop any running ``recipe_test_workflow`` workflows::
 
