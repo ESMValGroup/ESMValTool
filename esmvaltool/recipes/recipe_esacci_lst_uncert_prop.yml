@@ -32,9 +32,9 @@ preprocessors:
 
     extract_region:
       start_longitude: 1
-      end_longitude: 2
-      start_latitude: 55
-      end_latitude: 56
+      end_longitude: 1.5
+      start_latitude: 45
+      end_latitude: 45.5
 
     mask_landsea:
       mask_out: sea
@@ -57,11 +57,11 @@ diagnostics:
     realms:
       - land
     variables:
-      # ts:
-      #   mip: Amon
-      #   preprocessor: cmip_preprocessor
-      #   additional_datasets:
-      #    - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 2003, end_year: 2004, grid: gn}
+      #ts:
+      #  mip: Amon
+      #  preprocessor: cmip_preprocessor
+      #  additional_datasets:
+      #   - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 2003, end_year: 2004, grid: gn}
 
       tsDay:
         mip: Amon

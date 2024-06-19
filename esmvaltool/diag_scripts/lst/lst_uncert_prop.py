@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
-
+    
     Based on the hydrology diagnostic originally.
 
     Inputs:
@@ -114,16 +114,15 @@ def _diagnostic(config):
     # ts eq 1 eq_arithmetic_mean
     # lst_unc_loc_atm eq 7 eq_weighted_sqrt_mean
     # lst_unc_sys eq 5 = eq 1 eq_arithmetic_mean, no spatial propagation here
-    # lst_unc_loc_sfc DEPENDS ON SENSOR
-    # see Table 1 and then table 4
-    # MODIS Aqua and Terra = GSW eq 6 = eq 1 eq_arithmetic_mean.
+    # lst_unc_loc_sfc
+    # use the worked example method in the E3UB document.
     # lst_unc_ran eq 4 eq_propagate_random_with_sampling
     #
-    # Then combine to get a total day and night vale
+    # Then combine to get a total day and night value
     # total uncert  eq 9 eq_sum_in_quadrature
     # a total all day uncertainty can then be obtained using
     # eq 9 eq_sum_in_quadrature
-    # and a mean eq 1 eq_arithmetic_mean to get an 'average' lst for the day
+    # Day and night time values kept seperate
 
     lst_unc_variables = ['lst_unc_loc_atm', 'lst_unc_sys',
                          'lst_unc_loc_sfc', 'lst_unc_ran']
@@ -341,6 +340,8 @@ def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_fill, n_use):
 
     # apply the ATBD equation
     # note the square of random uncertainty is needed
+    print(unc_ran_mean)
+    print(unc_sampling)
     output = eq_sum_in_quadrature(iris.cube.CubeList([unc_ran_mean**2,
                                                       unc_sampling]))
     output = iris.analysis.maths.exponentiate(output, 0.5)
@@ -372,6 +373,8 @@ def eq_sum_in_quadrature(cubelist):
         iris.analysis.maths.exponentiate(cube, 2, in_place=True)
 
     cubes_sum = 0
+    for cube in newlist:
+        cubes_sum = cubes_sum + cube
     output = iris.analysis.maths.exponentiate(cubes_sum, 0.5,
                                               in_place=False)
 
