@@ -237,12 +237,12 @@ def regression(tas, cube_data, area, ocean_frac=None, land_frac=None):
         near-surface air temperature
     cube_data : arr
         cube.data array of a variable
+    area: str
+        area over which to calculate patterns
     ocean_frac: cube
         gridded ocean fraction
     land_frac: cube
         gridded land fraction
-    area: str
-        area over which to calculate patterns
 
     Returns
     -------
@@ -338,12 +338,12 @@ def calculate_regressions(
     ----------
     anom_list : cubelist
         cube list of variables as anomalies
+    area: str
+        area over which to calculate patterns
     ocean_frac: cube
         gridded ocean fraction
     land_frac: cube
         gridded land fraction
-    area: str
-        area over which to calculate patterns
     yrs : int
         int to specify length of scenario
 
