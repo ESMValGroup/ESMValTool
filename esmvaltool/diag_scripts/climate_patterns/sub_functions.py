@@ -69,7 +69,7 @@ def ocean_fraction_calc(sftlf):
     return ocean_frac, land_frac
 
 
-def area_avg_landsea(cube, ocean_frac, land_frac, land=True, return_cube=None):
+def area_avg_landsea(cube, ocean_frac, land_frac, land=True, return_cube=False):
     """Calculate the global mean of a variable in a cube.
 
     Parameters
