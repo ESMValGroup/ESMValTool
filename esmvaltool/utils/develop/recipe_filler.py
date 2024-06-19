@@ -300,7 +300,6 @@ def _get_download_dir(yamlconf, cmip_era):
 
 def _get_site_rootpath(cmip_era, config_yml):
     """Get site (drs) from config-user.yml."""
-    config_yml = get_args().config_file
     with open(config_yml, 'r') as yamf:
         yamlconf = yaml.safe_load(yamf)
     drs = yamlconf['drs'][cmip_era]
