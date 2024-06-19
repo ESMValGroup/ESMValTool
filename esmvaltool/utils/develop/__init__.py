@@ -7,6 +7,8 @@ from . import compare
 from . import recipe_filler
 
 
+_DEFAULT_USER_CONFIG_FILE = Path.home() / ".esmvaltool" / "config-user.yml"
+
 class DevelopCommand():
     """Development utilities."""
 
@@ -32,7 +34,8 @@ class DevelopCommand():
         sys.exit(int(not same))
 
 
-    def fill_recipe(self, recipe, output_recipe="recipe_autofilled.yml", config_file=""):
+    def fill_recipe(self, recipe, output_recipe="recipe_autofilled.yml",
+                    config_file=_DEFAULT_USER_CONFIG_FILE):
         """
         Fill in a partial recipe with additional datasets.
         
