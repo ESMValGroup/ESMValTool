@@ -57,8 +57,9 @@ in the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
 
     cylc stop recipe_test_workflow
 
-#. Run the recipe test workflow (it is expected that the ``compare`` task will
-   fail).
+#. Run the |RTW|; it is expected that the ``compare`` task will fail.
+
+    cylc vip -O <site>
 
 #. Update the KGO:
 
