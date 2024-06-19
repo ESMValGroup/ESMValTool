@@ -61,7 +61,7 @@ in the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
 
     cylc vip -O <site>
 
-#. Update the KGO:
+#. Update the Known Good Outputs (|KGOs|):
 
     #. Locate the workflow run folder of the workflow you just completed.
 

@@ -24,6 +24,13 @@ Glossary
      routine evaluation of |ESMs| in |CMIP|, see the
      `ESMValTool Documentation`_.
 
+   KGOs
+    Known Good Outputs are outputs from an ESMValTool recipe that have been
+    confirmed (typically by a scientist) to be as expected. KGOs are used in
+    the compare task in the |RTW| to check whether any changes have been
+    introduced to the outputs from an ESMValTool recipe after changes are made
+    to either ESMValCore or ESMValTool.
+
    Rose
      Rose is a toolkit for writing, editing and running application
      configurations, see the `Rose Documentation`_.

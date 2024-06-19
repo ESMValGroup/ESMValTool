@@ -8,6 +8,7 @@
 .. |ESMs| replace:: :term:`ESMs <ESM>`
 .. |ESMValCore| replace:: :term:`ESMValCore`
 .. |ESMValTool| replace:: :term:`ESMValTool`
+.. |KGOs| replace:: :term:`KGOs`
 .. |Rose| replace:: :term:`Rose`
 
 .. Links
