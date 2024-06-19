@@ -12,7 +12,7 @@
 set -eu
 
 # Must be run before importing numpy, see
-# https://www-avd/sci/dask_best_practice/numpy-threads.html.
+# https://docs.dask.org/en/stable/array-best-practices.html#avoid-oversubscribing-threads
 export OMP_NUM_THREADS=1
 export OPENBLAS_NUM_THREADS=1
 export MKL_NUM_THREADS=1
@@ -32,7 +32,7 @@ CONTAINER=${ROSE_DATAC}/container/esmvaltool.sif
 # source and target files or directories.
 export SINGULARITY_BIND="/badc,/datacentre,/home/users,/work,/gws"
 
-# Suppress an ESMValTool "file not found" warning 
+# Suppress an ESMValTool "file not found" warning
 export SINGULARITYENV_PROJ_DATA="/opt/conda/envs/esmvaltool/share/proj"
 
 # Provide mkfile needed to build esmfpy package
