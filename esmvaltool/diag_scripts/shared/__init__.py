@@ -1,5 +1,5 @@
 """Code that is shared between multiple diagnostic scripts."""
-# from . import io, iris_helpers, names, plot
+from . import io, iris_helpers, names, plot
 from ._base import (
     ProvenanceLogger,
     extract_variables,
@@ -15,8 +15,8 @@ from ._base import (
     sorted_metadata,
     variables_available,
 )
-# from ._diag import Datasets, Variable, Variables
-# from ._validation import apply_supermeans, get_control_exper_obs
+from ._diag import Datasets, Variable, Variables
+from ._validation import apply_supermeans, get_control_exper_obs
 
 __all__ = [
     # Main entry point for diagnostics
