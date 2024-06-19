@@ -10,30 +10,22 @@
 #
 # OPTIONS
 #   COMMAND             The command to execute with options
-
-# ----------------------------------
-# I AM CHANGED AND GIT CAN'T SEE ME!
-# ----------------------------------
-
-set +eu
-module unload R
-conda activate /home/h02/cbillows/.conda/envs/esmvaltool-v2.10-temp
 set -eu
 
-# module_count(){
-#     module list -t 2>&1 | wc -l
-# }
+module_count(){
+    module list -t 2>&1 | wc -l
+}
 
-# safe_load(){
-#     PRE_LOAD_COUNT=$(module_count)
+safe_load(){
+    PRE_LOAD_COUNT=$(module_count)
 
-#     module load "${1}"
-#     # Check module count to determine whether module load was successful.
-#     if (( PRE_LOAD_COUNT == $(module_count) )); then
-#         echo "[ERROR] Failed to load: ${1}"
-#         exit 1
-#     fi
-# }
+    module load "${1}"
+    # Check module count to determine whether module load was successful.
+    if (( PRE_LOAD_COUNT == $(module_count) )); then
+        echo "[ERROR] Failed to load: ${1}"
+        exit 1
+    fi
+}
 
 # Must be run before importing numpy, see
 # https://www-avd/sci/dask_best_practice/numpy-threads.html.
@@ -46,7 +38,7 @@ export NUMEXPR_NUM_THREADS=1
 # Ensure '~/.local' isn't added to 'sys.path'.
 export PYTHONNOUSERSITE=True
 
-# safe_load "${ENV_NAME}"
+safe_load "${ENV_NAME}"
 
 # If PYTHONPATH_PREPEND has been set, prepend it to PYTHONPATH to extend the
 # Python environment.
@@ -55,9 +47,9 @@ if [[ ! -z ${PYTHONPATH_PREPEND:-} ]]; then
     export PYTHONPATH=${PYTHONPATH_PREPEND}:${PYTHONPATH:-}
 fi
 
-# if [[ -z ${QUIET_MODE:-} ]]; then
-#     echo "[OK] Modules loaded."
-# fi
+if [[ -z ${QUIET_MODE:-} ]]; then
+    echo "[OK] Modules loaded."
+fi
 
 command="/usr/bin/time -v -o ${CYLC_TASK_LOG_ROOT}.time $@"
 exec ${command}
