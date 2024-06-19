@@ -40,9 +40,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                        year,
                                        month,
                                        vals['raw'],
-                                   )
+                                       )
                 except:
-                    logger.info(f'Problem: Month %s in %s' % (month, year})
+                    logger.info(f'Problem: Month %s in %s' % (month, year))
                     continue
 
                 #  make time coords
@@ -104,23 +104,25 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     cubes.var_name += '_night'
 
                 # Land cover class gives this error when
-                # loading in CMORised files 
-                # OverflowError: Python int too large to convert to C long error
-                # This fixes it
+                # loading in CMORised files
+                # OverflowError:
+                # Python int too large to convert to C long error
+                # This fixes it:
                 if 'land cover' in cubes.long_name:
                     cubes.data.fill_value = 0
 
                     # Get rid of anything outide 0-255
-                    cubes.data[np.where(cubes.data<0)] = 0
-                    cubes.data[np.where(cubes.data>255)] = 0
+                    cubes.data[np.where(cubes.data < 0)] = 0
+                    cubes.data[np.where(cubes.data > 255)] = 0
 
                     cubes.data = cubes.data.filled()
-                      
+
                     # This is the line the ultimately solves things.
                     # Will leave the other checks above in because they
                     cubes.data = cubes.data * 1.0
 
-                save_name = f'{out_dir}/OBS_ESACCI-LST_sat_3.00_Amon_{var_name}_{year}{month:02d}.nc'
+                save_name = f'{out_dir}/OBS_ESACCI-LST_sat_3.00_Amon_' + \
+                            '{var_name}_{year}{month:02d}.nc'
                 iris.save(cubes,
                           save_name
                           )
