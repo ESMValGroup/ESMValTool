@@ -1,10 +1,5 @@
 """Convenience names for python diagnostics."""
 
-import logging
-
-logger = logging.getLogger(__name__)
-
-
 DAY_M = 'day_of_month'
 DAY_Y = 'day_of_year'
 HEIGHT = 'height'
@@ -28,13 +23,10 @@ SHORT_NAME = 'short_name'
 STANDARD_NAME = 'standard_name'
 UNITS = 'units'
 VAR_NAME = 'var_name'
-START_YEAR = 'start_year'
-END_YEAR = 'end_year'
 
 INPUT_DATA = 'input_data'
 INPUT_FILES = 'input_files'
 FILENAME = 'filename'
-FX_FILES = 'fx_files'
 METADATA_YAML_FILE = 'metadata.yml'
 OUTPUT_FILE_TYPE = 'output_file_type'
 PLOT_DIR = 'plot_dir'

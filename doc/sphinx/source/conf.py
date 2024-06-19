@@ -69,20 +69,31 @@ extensions = [
 ]
 
 # Autoapi configuration
+# https://sphinx-autoapi.readthedocs.io/en/latest/reference/config.html
 autoapi_dirs = [
-    '../../..',
+    '../../../esmvaltool',
 ]
-
-autoapi_root = 'api'  # where the API docs live; rel to source
+autoapi_ignore = [
+    '**/esmvaltool/cmorizers/**',
+    '**/esmvaltool/install/**',
+    '**/esmvaltool/utils/**',
+]
+autoapi_root = 'api'
 autoapi_options = [
     'members',
     'undoc-members',
+    'imported-members',
     'inherited-members',
     'special-members',
     'show-inheritance',
     'show-module-summary',
 ]
-# autoapi_ignore = ['*tests*']  # brute ignore; to skip see below
+autoapi_member_order = "groupwise"
+# Keep the AutoAPI generated files on the filesystem after the run. Useful for
+# debugging. Keeping files will also allow AutoAPI to use incremental builds.
+# Providing none of the source files have changed, AutoAPI will skip parsing
+# the source code and regenerating the API documentation.
+autoapi_keep_files = False
 
 
 def skip_submodules(app, what, name, obj, skip, options):
@@ -457,7 +468,7 @@ intersphinx_mapping = {
     'cartopy': ('https://scitools.org.uk/cartopy/docs/latest/', None),
     'cf_units': ('https://cf-units.readthedocs.io/en/latest/', None),
     'esmvalcore':
-    (f'https://docs.esmvaltool.org/projects/esmvalcore/en/{rtd_version}/',
+    (f'https://docs.esmvaltool.org/projects/ESMValCore/en/{rtd_version}/',
      None),
     'esmvaltool': (f'https://docs.esmvaltool.org/en/{rtd_version}/', None),
     'iris': ('https://scitools-iris.readthedocs.io/en/latest/', None),

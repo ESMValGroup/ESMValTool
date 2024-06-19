@@ -227,7 +227,7 @@ def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
     Parameters
     ----------
     cubes : dict of iris.cube.Cube
-        1D :class:`iris.cube.Cube`s (values) and corresponding dataset names
+        1D :class:`iris.cube.Cube` s (values) and corresponding dataset names
         (keys).
     path : str
         Path to the new file.
