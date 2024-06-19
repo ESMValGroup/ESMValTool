@@ -88,7 +88,7 @@ in the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
 
     cylc stop recipe_test_workflow
 
-#. Run the RTW again. The workflow should now succeed.::
+#. Run the |RTW| again; the ``compare`` task should now succeed::
 
     cylc vip -O <site>
 
