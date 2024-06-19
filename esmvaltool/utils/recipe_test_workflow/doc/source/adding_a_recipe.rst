@@ -25,7 +25,9 @@ in the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
    ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/flow.cylc``
    file. If the recipe takes less than 10 minutes to run then it should be
    added to the ``fast`` option. Recipes that take longer than ten minutes
-   should be added to the ``medium`` option.
+   should be added to the ``medium`` option. When adding the recipe it should
+   follow the format of ``recipe_new_recipe \,``, unless it is the last one in
+   the list, in which case it should follow the format of ``recipe_new_recipe``.
 
 #. If the duration of the recipe is larger than the value specified by the
    ``execution time limit`` option in the ``[[COMPUTE]]`` section in the
