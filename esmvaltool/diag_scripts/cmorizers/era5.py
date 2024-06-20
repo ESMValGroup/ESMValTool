@@ -26,6 +26,11 @@ def main(cfg):
                 if CMOR_TABLES['CMIP6'].get_variable(mip, info['short_name']):
                     basename = basename.replace('E1hr', mip)
             basename = basename.replace('E1hr', 'day')
+        elif info['diagnostic'] == '3hourly':
+            for mip in ['3hr', 'E3hr', 'CF3hr']:
+                if CMOR_TABLES['CMIP6'].get_variable(mip, info['short_name']):
+                    basename = basename.replace('E1hr', mip)
+            basename = basename.replace('E1hr', '3hr')
 
         cube = iris.load_cube(file)
         try:
@@ -36,6 +41,9 @@ def main(cfg):
             if info['diagnostic'] == "monthly":
                 start = time.cell(0).point.strftime("%Y%m")
                 end = time.cell(-1).point.strftime("%Y%m")
+            elif "hourly" in info['diagnostic']:
+                start = time.cell(0).point.strftime("%Y%m%d%H%M")
+                end = time.cell(-1).point.strftime("%Y%m%d%H%M")
             else:
                 start = time.cell(0).point.strftime("%Y%m%d")
                 end = time.cell(-1).point.strftime("%Y%m%d")
