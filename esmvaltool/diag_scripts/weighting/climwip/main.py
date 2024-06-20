@@ -10,15 +10,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import xarray as xr
-from calibrate_sigmas import calibrate_performance_sigma
-from core_functions import (
+
+from esmvaltool.diag_scripts.weighting.climwip.calibrate_sigmas \
+    import calibrate_performance_sigma
+from esmvaltool.diag_scripts.weighting.climwip.core_functions import (
     area_weighted_mean,
     calculate_model_distances,
     calculate_weights,
     combine_ensemble_members,
     compute_overall_mean,
 )
-from io_functions import (
+from esmvaltool.diag_scripts.weighting.climwip.io_functions import (
     log_provenance,
     read_metadata,
     read_model_data,
