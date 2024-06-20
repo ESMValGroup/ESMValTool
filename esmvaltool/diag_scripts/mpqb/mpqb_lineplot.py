@@ -7,8 +7,8 @@ from pprint import pformat
 import iris
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
-from mpqb_utils import get_mpqb_cfg
 
+from esmvaltool.diag_scripts.mpqb.mpqb_utils import get_mpqb_cfg
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import (
