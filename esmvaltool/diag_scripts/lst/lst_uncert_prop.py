@@ -30,6 +30,27 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 
+# Colour scheme for plots
+# blue cyan green yellow
+# red purple grey
+colour_list = ['#4477aa', '#66ccee','#228833','#ccbb44',
+               '#ee6677','#aa3377','#bbbbbb']
+
+line_labels = {
+            'lst_unc_loc_atm_day': 'Locally Correlated (Atm)',
+            'lst_unc_loc_sfc_day': 'Locally Correlated (Sfc)',
+            'lst_unc_sys_day': 'Systematic',
+            'lst_unc_ran_day': 'Random',
+            'lst_sampling_day': 'Sampling',
+            'lst_total_unc_day': 'Total',
+            'lst_unc_loc_atm_night': 'Locally Correlated (Atm)',
+            'lst_unc_loc_sfc_night': 'Locally Correlated (Sfc)',
+            'lst_unc_sys_night': 'Systematic',
+            'lst_unc_ran_night': 'Random',
+            'lst_sampling_night': 'Sampling',
+            'lst_total_unc_night': 'Total',
+        }
+
 logger = logging.getLogger(__name__)
 
 
@@ -205,47 +226,63 @@ def test_plot(propagated_values):
 
     for time in ['day', 'night']:
         # one plot for day and night seperately
-
-        plt.figure(figsize=(14, 10))
+        fig = plt.figure(figsize=(20,15))
 
         ax1 = plt.subplot(211)
-        iplt.plot(propagated_values[f'ts_{time}'], c='b', linewidth=2)
+        iplt.plot(propagated_values[f'ts_{time}'],
+                  c=colour_list[0],
+                  linewidth=2,
+                label='LST')
         iplt.fill_between(propagated_values[f'ts_{time}'].coord('time'),
                             propagated_values[f'ts_{time}'] + propagated_values[f'lst_total_unc_{time}'],
                             propagated_values[f'ts_{time}'] - propagated_values[f'lst_total_unc_{time}'],
-                            color='b', alpha=0.5
+                            color=colour_list[0],
+                            alpha=0.5,
+                            label='Uncertainty'
         )
         ax1.xaxis.set_major_locator(years)
         ax1.xaxis.set_major_formatter(yearsFmt)
         ax1.xaxis.set_minor_locator(months)
         
-        plt.grid()
+        plt.grid(which='major', color='k', linestyle='solid')
+        plt.grid(which='minor', color='k', linestyle='dotted', alpha=0.5)
+        
         plt.ylabel('LST (K)', fontsize=24)
 
+        plt.legend(loc='lower left',
+                   bbox_to_anchor=(1.05, 0),
+                   fontsize=16)
+
         ax2 = plt.subplot(212, sharex=ax1)
-        iplt.plot(propagated_values[f'lst_unc_loc_atm_{time}'], c='r',
-                  label=f'lst_unc_loc_atm_{time}')
-        iplt.plot(propagated_values[f'lst_unc_loc_sfc_{time}'], c='g',
-                  label=f'lst_unc_loc_sfc_{time}')
-        iplt.plot(propagated_values[f'lst_unc_sys_{time}'], c='b',
-                  label=f'lst_unc_sys_{time}')
-        iplt.plot(propagated_values[f'lst_unc_ran_{time}'],c='m',
-                  label=f'lst_unc_ran_{time}')
+        iplt.plot(propagated_values[f'lst_unc_loc_atm_{time}'], c=colour_list[2],
+                  label=line_labels[f'lst_unc_loc_atm_{time}'])
+        iplt.plot(propagated_values[f'lst_unc_loc_sfc_{time}'], c=colour_list[3],
+                  label=line_labels[f'lst_unc_loc_sfc_{time}'])
+        iplt.plot(propagated_values[f'lst_unc_sys_{time}'], c=colour_list[4],
+                  label=line_labels[f'lst_unc_sys_{time}'])
+        iplt.plot(propagated_values[f'lst_unc_ran_{time}'],c=colour_list[5],
+                  label=line_labels[f'lst_unc_ran_{time}'])
 
-        iplt.plot(propagated_values[f'lst_sampling_{time}'], '--', c='c',
-                  label=f'lst_sampling_{time}')
-        iplt.plot(propagated_values[f'lst_total_unc_{time}'], c='k',
-                  label=f'lst_total_unc_{time}')
+        iplt.plot(propagated_values[f'lst_sampling_{time}'], '--', c=colour_list[1],
+                  label=line_labels[f'lst_sampling_{time}'])
+        iplt.plot(propagated_values[f'lst_total_unc_{time}'], c=colour_list[6],
+                  label=line_labels[f'lst_total_unc_{time}'])
 
-        plt.grid()
+        plt.grid(which='major', color='k', linestyle='solid')
+        plt.grid(which='minor', color='k', linestyle='dotted', alpha=0.5)
+        
         plt.xlabel('Date', fontsize=24)
         plt.ylabel('Uncertainty (K)', fontsize=24)
 
-        #plt.legend(bbox_to_anchor=(1.04, 0.75), fontsize=14)
+        plt.legend(loc='upper left',
+                   bbox_to_anchor=(1.05, 1),
+                   fontsize=16)
 
         ax1.tick_params(labelsize=18)
         ax2.tick_params(labelsize=18)
+ 
         
+        plt.tight_layout()
         plt.savefig(f'test_A_{time}.png')
 
 # These are the propagation equations
@@ -340,8 +377,6 @@ def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_fill, n_use):
 
     # apply the ATBD equation
     # note the square of random uncertainty is needed
-    print(unc_ran_mean)
-    print(unc_sampling)
     output = eq_sum_in_quadrature(iris.cube.CubeList([unc_ran_mean**2,
                                                       unc_sampling]))
     output = iris.analysis.maths.exponentiate(output, 0.5)
