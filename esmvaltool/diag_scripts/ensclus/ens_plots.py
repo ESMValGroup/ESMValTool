@@ -8,7 +8,7 @@ import numpy as np
 import cartopy.crs as ccrs
 
 # User-defined libraries
-from read_netcdf import read_n_2d_fields
+from esmvaltool.diag_scripts.ensclus.read_netcdf import read_n_2d_fields
 
 
 def ens_plots(dir_output, dir_plot, name_outputs, numclus,
