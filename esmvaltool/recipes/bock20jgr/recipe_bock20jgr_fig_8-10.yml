@@ -434,6 +434,8 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1
         mip: Amon
+        modeling_realm: atmos
+        frequency: mon
         additional_datasets: *cmip5_all
 
   fig_9_cmip6:
@@ -446,6 +448,8 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1f1
         mip: Amon
+        modeling_realm: atmos
+        frequency: mon
         grid: gr
         additional_datasets: *cmip6_all
 
