@@ -63,26 +63,26 @@ in the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
 
 #. Update the Known Good Outputs (|KGOs|):
 
-    #. Locate the workflow run folder of the workflow you just completed.
+   #. Locate the workflow run folder of the workflow you just completed.
 
-    #. Recursively copy the recipe output directory (i.e.
-       ``recipe_<recipe>_<date>_<time>``) from the
-       ``${HOME}/cylc-run/recipe_test_workflow/run1/share/cycle/<cycle>``
-       directory to your site-specific KGO directory, as detailed by the
-       ``KGO_ROOT_PATH`` option in the site-specific ``.conf`` file in the
-       ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/opt/``
-       directory::
+   #. Recursively copy the recipe output directory (i.e.
+      ``recipe_<recipe>_<date>_<time>``) from the
+      ``${HOME}/cylc-run/recipe_test_workflow/run1/share/cycle/<cycle>``
+      directory to your site-specific KGO directory, as detailed by the
+      ``KGO_ROOT_PATH`` option in the site-specific ``.conf`` file in the
+      ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/opt/``
+      directory::
 
-       ``cp -r <directory_of_recipe_output_cycle_folder> <KGO_rootpath_folder>``
+      ``cp -r <directory_of_recipe_output_cycle_folder> <KGO_rootpath_folder>``
 
-    #. Change directory to the rootpath KGO directory::
+   #. Change directory to the rootpath KGO directory::
 
-       ``cd <KGO_rootpath_directory>``
+      ``cd <KGO_rootpath_directory>``
 
-    #. Allow write permissions for all users on the directory and it's
-       subdirectories of the recipe you've added to the KGO folder::
+   #. Allow write permissions for all users on the directory and it's
+      subdirectories of the recipe you've added to the KGO folder::
 
-       ``chmod a+w <the_directory_of_the_recipe_you_have_copied_into_the_KGO_folder>``
+      ``chmod a+w <the_directory_of_the_recipe_you_have_copied_into_the_KGO_folder>``
 
 #. Stop any running ``recipe_test_workflow`` workflows::
 
