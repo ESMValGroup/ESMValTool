@@ -83,14 +83,10 @@ How to add a recipe to the |RTW|
          cp -r ${HOME}/cylc-run/recipe_test_workflow/run1/share/cycle/<cycle>/
          recipe_<recipe>_<date>_<time> <KGO_ROOT_PATH>
 
-   #. Change directory to the rootpath KGO directory::
+#. Enable write permissions for all users on the recipe output directory in
+   your site-specific KGO directory::
 
-         cd <KGO_rootpath_directory>
-
-   #. Allow write permissions for all users on the directory and it's
-      subdirectories of the recipe you've added to the KGO folder::
-
-         chmod a+w <the_directory_of_the_recipe_you_have_copied_into_the_KGO_folder>
+   chmod -R a+w <KGO_ROOT_PATH>/recipe_<recipe>_<date>_<time>
 
 #. Stop any running ``recipe_test_workflow`` workflows::
 
