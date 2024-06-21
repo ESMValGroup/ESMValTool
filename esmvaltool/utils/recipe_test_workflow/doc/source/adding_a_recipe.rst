@@ -67,9 +67,8 @@ How to add a recipe to the |RTW|
 
     cylc stop recipe_test_workflow/*
 
-#. Run the |RTW|; it is expected that the ``compare`` task will fail::
-
-    cylc vip -O <site>
+#. Run the |RTW|, as detailed in the
+   :doc:`Quick Start Guide <user_guide/quick_start>`.
 
 #. Update the Known Good Outputs (|KGOs|):
 
