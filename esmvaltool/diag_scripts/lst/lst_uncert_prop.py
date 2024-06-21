@@ -36,6 +36,8 @@ from esmvaltool.diag_scripts.shared import (
 colour_list = ['#4477aa', '#66ccee','#228833','#ccbb44',
                '#ee6677','#aa3377','#bbbbbb']
 
+plot_params ={'linewidth': 3}
+
 line_labels = {
             'lst_unc_loc_atm_day': 'Locally Correlated (Atm)',
             'lst_unc_loc_sfc_day': 'Locally Correlated (Sfc)',
@@ -231,7 +233,7 @@ def test_plot(propagated_values):
         ax1 = plt.subplot(211)
         iplt.plot(propagated_values[f'ts_{time}'],
                   c=colour_list[0],
-                  linewidth=2,
+                  linewidth=plot_params['linewidth'],
                 label='LST')
         iplt.fill_between(propagated_values[f'ts_{time}'].coord('time'),
                             propagated_values[f'ts_{time}'] + propagated_values[f'lst_total_unc_{time}'],
@@ -244,6 +246,8 @@ def test_plot(propagated_values):
         ax1.xaxis.set_major_formatter(yearsFmt)
         ax1.xaxis.set_minor_locator(months)
         
+        ax1.get_xaxis().set_visible(False)
+        
         plt.grid(which='major', color='k', linestyle='solid')
         plt.grid(which='minor', color='k', linestyle='dotted', alpha=0.5)
         
@@ -254,18 +258,31 @@ def test_plot(propagated_values):
                    fontsize=16)
 
         ax2 = plt.subplot(212, sharex=ax1)
-        iplt.plot(propagated_values[f'lst_unc_loc_atm_{time}'], c=colour_list[2],
+        iplt.plot(propagated_values[f'lst_unc_loc_atm_{time}'],
+                  c=colour_list[2],
+                  linewidth=plot_params['linewidth'],
                   label=line_labels[f'lst_unc_loc_atm_{time}'])
-        iplt.plot(propagated_values[f'lst_unc_loc_sfc_{time}'], c=colour_list[3],
+        iplt.plot(propagated_values[f'lst_unc_loc_sfc_{time}'], 
+                  c=colour_list[3],
+                  linewidth=plot_params['linewidth'],
                   label=line_labels[f'lst_unc_loc_sfc_{time}'])
-        iplt.plot(propagated_values[f'lst_unc_sys_{time}'], c=colour_list[4],
+        iplt.plot(propagated_values[f'lst_unc_sys_{time}'], 
+                  c=colour_list[4],
+                  linewidth=plot_params['linewidth'],
                   label=line_labels[f'lst_unc_sys_{time}'])
-        iplt.plot(propagated_values[f'lst_unc_ran_{time}'],c=colour_list[5],
+        iplt.plot(propagated_values[f'lst_unc_ran_{time}'],
+                  c=colour_list[5],
+                  linewidth=plot_params['linewidth'],
                   label=line_labels[f'lst_unc_ran_{time}'])
 
-        iplt.plot(propagated_values[f'lst_sampling_{time}'], '--', c=colour_list[1],
+        iplt.plot(propagated_values[f'lst_sampling_{time}'],
+                  '--', 
+                  c=colour_list[1],
+                  linewidth=plot_params['linewidth'],
                   label=line_labels[f'lst_sampling_{time}'])
-        iplt.plot(propagated_values[f'lst_total_unc_{time}'], c=colour_list[6],
+        iplt.plot(propagated_values[f'lst_total_unc_{time}'], 
+                  c=colour_list[6],
+                  linewidth=plot_params['linewidth'],
                   label=line_labels[f'lst_total_unc_{time}'])
 
         plt.grid(which='major', color='k', linestyle='solid')
