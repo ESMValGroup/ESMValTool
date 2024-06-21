@@ -25,9 +25,9 @@ Glossary
      `ESMValTool Documentation`_.
 
    KGOs
-    Known Good Outputs are outputs from an ESMValTool recipe that have been
-    confirmed (typically by a scientist) to be as expected. KGOs are used in
-    the compare task in the |RTW| to check whether any changes have been
+    Known Good Outputs (KGOs) are outputs from an ESMValTool recipe that have
+    been confirmed (typically by a scientist) to be as expected. KGOs are used
+    in the compare task in the |RTW| to check whether any changes have been
     introduced to the outputs from an ESMValTool recipe after changes are made
     to either ESMValCore or ESMValTool.
 
