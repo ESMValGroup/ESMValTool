@@ -32,9 +32,9 @@ preprocessors:
 
     extract_region:
       start_longitude: 1
-      end_longitude: 1.5
+      end_longitude: 2
       start_latitude: 45
-      end_latitude: 45.5
+      end_latitude: 46
 
     mask_landsea:
       mask_out: sea
