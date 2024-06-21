@@ -3,11 +3,13 @@ How to add a recipe to the |RTW|
 
 .. include:: common.txt
 
-**Please note**: Before you follow these steps to add your recipe, you must be
-able to successfully run the recipe with the latest version of ESMValTool on
-the compute server you use at your site, as detailed by the ``platform`` option
-in the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
-``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/site/`` directory.
+.. note::
+   Before you follow these steps to add your recipe, you must be able to
+   successfully run the recipe with the latest version of ESMValTool on the
+   compute server you use at your site, as detailed by the ``platform`` option
+   in the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
+   ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/site/``
+   directory.
 
 #. Open an issue on GitHub and create a branch.
 
