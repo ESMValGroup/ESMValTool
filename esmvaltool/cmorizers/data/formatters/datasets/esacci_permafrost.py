@@ -33,7 +33,6 @@ import numpy as np
 from esmvalcore.cmor.table import CMOR_TABLES
 from esmvaltool.cmorizers.data.utilities import (
     save_variable, set_global_atts)
-#from iris.cube import Cube
 
 logger = logging.getLogger(__name__)
 
