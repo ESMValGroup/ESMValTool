@@ -86,15 +86,15 @@ How to add a recipe to the |RTW|
 #. Enable write permissions for all users on the recipe output directory in
    your site-specific KGO directory::
 
-   chmod -R a+w <KGO_ROOT_PATH>/recipe_<recipe>_<date>_<time>
+    chmod -R a+w <KGO_ROOT_PATH>/recipe_<recipe>_<date>_<time>
 
 #. Stop any running ``recipe_test_workflow`` workflows::
 
     cylc stop recipe_test_workflow/*
 
-#. Run the |RTW| again; the ``compare`` task should now succeed::
-
-    cylc vip -O <site>
+#. Run the |RTW|, as detailed in the
+   :doc:`Quick Start Guide <user_guide/quick_start>`. The task should now
+   succeed.
 
 #. Add the recipe to the documentation; add a link to the recipe to the list of
    "Currently tested recipes" in ``doc/source/tested_recipes.rst`` in
