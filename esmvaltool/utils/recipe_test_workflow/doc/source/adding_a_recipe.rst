@@ -65,7 +65,7 @@ How to add a recipe to the |RTW|
 
 #. Stop any running ``recipe_test_workflow`` workflows::
 
-    cylc stop recipe_test_workflow
+    cylc stop recipe_test_workflow/*
 
 #. Run the |RTW|; it is expected that the ``compare`` task will fail::
 
@@ -96,7 +96,7 @@ How to add a recipe to the |RTW|
 
 #. Stop any running ``recipe_test_workflow`` workflows::
 
-    cylc stop recipe_test_workflow
+    cylc stop recipe_test_workflow/*
 
 #. Run the |RTW| again; the ``compare`` task should now succeed::
 
