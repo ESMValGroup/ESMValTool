@@ -27,9 +27,10 @@ How to add a recipe to the |RTW|
    ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/flow.cylc``
    file. If the recipe takes less than 10 minutes to run then it should be
    added to the ``fast`` option. Recipes that take longer than ten minutes
-   should be added to the ``medium`` option. When adding the recipe it should
-   follow the format of ``recipe_new_recipe \,``, unless it is the last one in
-   the list, in which case it should follow the format of ``recipe_new_recipe``.
+   should be added to the ``medium`` option. The line added should follow the
+   format of ``recipe_new_recipe, \``, unless the line is the last one in the
+   list, in which case the line added should follow the format of
+   ``recipe_new_recipe``.
 
 #. If the duration of the recipe is larger than the value specified by the
    ``execution time limit`` option in the ``[[COMPUTE]]`` section in the
@@ -37,23 +38,30 @@ How to add a recipe to the |RTW|
    the recipe is larger than the value specified by the ``--mem`` option in the
    ``[[[directives]]]`` section in the ``[[COMPUTE]]`` section, add a section
    (in alphabetical order) to this file as shown below (round the duration to
-   the nearest second).
+   the nearest second)::
 
-   Supplementary to the paragraph above, we advise execution with a duration of
-   less than ~1m45s should use an execution time limit of PT2M, and round up to
-   the nearest integer for the memory usage.::
+      [[process<fast=recipe_albedolandcover>]]
+      # Actual: 0m31s, 2.5 GB on 2024-04-08.
+      execution time limit = PT2M
+      [[[directives]]]
+         --mem = 3G
 
-    [[process<fast=recipe_albedolandcover>]]
-    # Actual: 0m31s, 2.5 GB on 2024-04-08.
-    execution time limit = PT2M
-    [[[directives]]]
-        --mem = 3G
+   .. hint::
+      The `fast` key in the example task definition above
+      (`[[process<fast=recipe_albedolandcover>]]`) should match name of the
+      option the recipe was added to in the ``[task parameters]`` section in
+      the
+      ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/flow.cylc``
+      file
 
+   .. hint::
+      Set the `execution time limit` to 10-20% more than the actual duration.
+      For actual durations of up to `1m45s`, set the `execution time limit` to
+      `PT2M` (2 minutes).
 
-   **Please note**: When you add the your modified version of the above example
-   to your site-specific ``.cylc`` file, the key *fast* should match the
-   category you placed your recipe within the ``[task parameters]`` section
-   of the flow.cylc
+   .. hint::
+      Try not to regularly waste more than 500 MiB in memory usage. Typically,
+      rounding the actual memory usage up to the nearest integer is acceptable.
 
 #. Stop any running ``recipe_test_workflow`` workflows::
 
