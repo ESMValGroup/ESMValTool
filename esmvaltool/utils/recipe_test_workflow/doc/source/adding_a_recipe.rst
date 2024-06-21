@@ -98,6 +98,14 @@ How to add a recipe to the |RTW|
 
 #. Add the recipe to the documentation; add a link to the recipe to the list of
    "Currently tested recipes" in ``doc/source/tested_recipes.rst`` in
-   alphabetical order.
+   alphabetical order:
+
+   #. Add a link to the recipe in ``doc/source/common.txt`` under the
+      ``.. Links`` section in alphabetical order (follow the format
+      ``.. _<name>: <URL>``).
+
+   #. Add the link to the list of "Currently tested recipes" in
+      ``doc/source/tested_recipes.rst`` in alphabetical order (follow the
+      format ``* `<name>`_``).
 
 #. Commit and push your changes.
