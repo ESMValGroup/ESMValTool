@@ -39,8 +39,117 @@ logger = logging.getLogger(os.path.basename(__file__))
 warnings.filterwarnings('ignore', '.*Collapsing a non-contiguous coordinate*')
 
 
+def load_wt_preprocessors(value: list, preproc_variables_dict: dict):
+    wt_preproc = iris.load_cube(value[0].get('filename'))
+    wt_preproc_prcp = iris.load_cube(value[1].get('filename'))
+    wt_preproc_prcp_eobs = iris.load_cube(
+        preproc_variables_dict.get('E-OBS')[0].get('filename')
+    )
+
+    return wt_preproc, wt_preproc_prcp, wt_preproc_prcp_eobs
+
+
+def get_ancestors(value: list, preproc_variables_dict: dict):
+    era5_ancestors = [value[0].get('filename'),
+                                  value[1].get('filename')]
+    eobs_ancestors = [value[0].get('filename'),
+                        preproc_variables_dict.get('E-OBS')[0].get('filename')]
+    return era5_ancestors, eobs_ancestors
+
+
+def get_model_output_filepath(key: str, value: list):
+    model_name = key
+    timerange = value[0].get('timerange').replace('/', '-')
+    experiment = value[0].get('exp')
+    ensemble = value[0].get('ensemble')
+
+    output_file_path = f'{model_name}/{experiment}/{ensemble}/{timerange}'
+    preproc_path = value[0].get('filename')
+
+    return output_file_path, preproc_path
+
+
+def get_preproc_lists(preproc_vars: list):
+    preproc_path_psl = preproc_vars[-3].get('filename')
+    preproc_path_prcp = preproc_vars[-2].get('filename')
+    preproc_path_tas = preproc_vars[-1].get('filename')
+
+    mean_preproc_psl = iris.load_cube(preproc_vars[-3].get('filename'))
+    mean_preproc_prcp = iris.load_cube(preproc_vars[-2].get('filename'))
+    mean_preproc_tas = iris.load_cube(preproc_vars[-1].get('filename'))
+
+    preproc_list = [mean_preproc_psl, mean_preproc_prcp, mean_preproc_tas]
+    preproc_path_list = [preproc_path_psl, preproc_path_prcp, preproc_path_tas]
+
+    return preproc_list, preproc_path_list
+
+
+def get_looping_dict(preproc_vars: list):
+
+    preproc, preproc_path = get_preproc_lists(preproc_vars)
+    dict_ = {'psl': [preproc[0], preproc_path[0]],
+                'pr': [preproc[1], preproc_path[1]],
+                'tas': [preproc[2], preproc_path[2]]}
+    return dict_
+
+
+def load_wt_files(path: str, only_lwt=False):
+    if not only_lwt:
+        lwt_cube = iris.load_cube(path, 'lwt')
+        slwt_era5_cube = iris.load_cube(path, 'slwt_era5')
+        slwt_eobs_cube = iris.load_cube(path, 'slwt_eobs')
+        wt_cubes = [lwt_cube, slwt_era5_cube, slwt_eobs_cube]
+    else:
+        lwt_cube = iris.load_cube(path, 'lwt')
+        wt_cubes = [lwt_cube]
+
+    return wt_cubes
+
+
+def plot_means(cfg: dict, preproc_var: np.array, wt_cubes: iris.cube.Cube,
+               key: str, var: str, preproc_path: str, only_lwt=False):
+    if not only_lwt:
+        calc_wt_means(
+                            cfg,
+                            preproc_var,
+                            wt_cubes,
+                            key,
+                            var_name=var,
+                            wt_string='lwt',
+                            preproc_path=preproc_path,
+                        )
+        calc_wt_means(
+                            cfg,
+                            preproc_var,
+                            wt_cubes,
+                            key,
+                            var_name=var,
+                            wt_string='slwt_ERA5',
+                            preproc_path=preproc_path,
+                        )
+        calc_wt_means(
+                            cfg,
+                            preproc_var,
+                            wt_cubes,
+                            key,
+                            var_name=var,
+                            wt_string='slwt_EOBS',
+                            preproc_path=preproc_path,
+                        )
+    else:
+        calc_wt_means(cfg,
+                        preproc_var,
+                        wt_cubes,
+                        key,
+                        var_name=var,
+                        wt_string='lwt',
+                        preproc_path=preproc_path,
+                        )
+
+
 def get_provenance_record(caption: str, ancestors: list,
-                          long_names: list, plot_types: list) -> dict:
+                          long_names: list, plot_types: list,
+                          statistics: list) -> dict:
     '''Create a provenance record describing the diagnostic data and plots.'''
     record = {
         'caption':
@@ -62,15 +171,18 @@ def get_provenance_record(caption: str, ancestors: list,
         plot_types,
         'ancestors':
         ancestors,
+        'statistics':
+        statistics
     }
     return record
 
 
 def log_provenance(caption: str, filename: str, cfg: dict,
-                   ancestors: list, long_names: list, plot_types: list):
+                   ancestors: list, long_names: list, plot_types: list,
+                   statistics: list):
     '''Log provenance info.'''
     provenance_record = get_provenance_record(
-        caption, ancestors, long_names, plot_types)
+        caption, ancestors, long_names, plot_types, statistics)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance_record)
 
@@ -140,7 +252,7 @@ def write_mapping_dict(work_dir: str, dataset: str, mapping_dict: dict):
         json.dump(mapping_dict_reformat, file)
 
 
-def calculate_slwt_obs(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
+def calc_slwt_obs(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
                        dataset: str, correlation_thresold: float,
                        rmse_threshold: float, ancestors: list) -> np.array:
     '''Calculate simplified weathertypes for observation datasets based on 
@@ -169,7 +281,7 @@ def calculate_slwt_obs(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
         target_indices = np.where(lwt == wt)
         if len(target_indices[0]) < 1:
             logger.info(
-                'calculate_slwt_obs - CAUTION: Skipped wt %s \
+                'calc_slwt_obs - CAUTION: Skipped wt %s \
                 for dataset %s!', wt, dataset
             )
             continue
@@ -198,7 +310,7 @@ def calculate_slwt_obs(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
 
     log_provenance('Lamb Weathertypes', f'{dataset}_wt_prov', cfg,
                    ancestors,
-                   ['Lamb Weathertypes'], [''])
+                   ['Lamb Weathertypes'], ['other'], ['other'])
 
     return map_lwt_to_slwt(lwt, mapping_dict)
 
@@ -473,8 +585,9 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
     return wt
 
 
-def calculate_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str,
-                             preproc_path: str, output_file_path: str):
+def calc_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str,
+                             preproc_path: str, output_file_path: str,
+                             predefined_slwt):
     '''Calculate Lamb WT and simplified WT for model data.
 
     Args:
@@ -490,29 +603,36 @@ def calculate_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str,
     if not os.path.exists(f'{work_dir}/{output_file_path}'):
         os.makedirs(f'{work_dir}/{output_file_path}')
 
-    wt = wt_algorithm(cube, dataset)
+    lwt = wt_algorithm(cube, dataset)
 
     tcoord = cube.coord('time')
     time_points = tcoord.units.num2date(tcoord.points)
 
-    with open(f'{work_dir}/wt_mapping_dict_ERA5.json',
-              'r', encoding='utf-8') as file:
-        mapping_dict_era5_f = json.load(file)
-
-    with open(f'{work_dir}/wt_mapping_dict_E-OBS.json',
-              'r', encoding='utf-8') as file:
-        mapping_dict_eobs_f = json.load(file)
-
     logger.info('Calculating simplified Lamb Weathertypes for %s', dataset)
 
-    mapping_dict_era5 = reverse_convert_dict(mapping_dict_era5_f)
-    mapping_dict_eobs = reverse_convert_dict(mapping_dict_eobs_f)
+    if not predefined_slwt: 
+        with open(f'{work_dir}/wt_mapping_dict_ERA5.json',
+                'r', encoding='utf-8') as file:
+            mapping_dict_era5_f = json.load(file)
 
-    slwt_era5 = map_lwt_to_slwt(wt, mapping_dict_era5)
-    slwt_eobs = map_lwt_to_slwt(wt, mapping_dict_eobs)
+        with open(f'{work_dir}/wt_mapping_dict_E-OBS.json',
+                'r', encoding='utf-8') as file:
+            mapping_dict_eobs_f = json.load(file)
+        mapping_dict_era5 = reverse_convert_dict(mapping_dict_era5_f)
+        mapping_dict_eobs = reverse_convert_dict(mapping_dict_eobs_f)
+
+        slwt_era5 = map_lwt_to_slwt(lwt, mapping_dict_era5)
+        slwt_eobs = map_lwt_to_slwt(lwt, mapping_dict_eobs)
+    else:
+        predefined_slwt = check_mapping_dict_format(
+                        predefined_slwt)
+        write_mapping_dict(work_dir, "ERA5", predefined_slwt)
+        write_mapping_dict(work_dir, "E-OBS", predefined_slwt)
+        slwt_era5 = map_lwt_to_slwt(lwt, predefined_slwt)
+        slwt_eobs = map_lwt_to_slwt(lwt, predefined_slwt)
 
     wt_cube = iris.cube.CubeList()
-    wt_cube.append(iris.cube.Cube(wt, long_name='lwt'))
+    wt_cube.append(iris.cube.Cube(lwt, long_name='lwt'))
     wt_cube.append(iris.cube.Cube(slwt_era5, long_name='slwt_era5'))
     wt_cube.append(iris.cube.Cube(slwt_eobs, long_name='slwt_eobs'))
 
@@ -525,7 +645,7 @@ def calculate_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str,
     # write to csv file
     d = {
         'date': time_points[:],
-        'lwt': np.int8(wt),
+        'lwt': np.int8(lwt),
         'slwt_ERA5': np.int8(slwt_era5),
         'slwt_EOBS': np.int8(slwt_eobs),
     }
@@ -535,7 +655,7 @@ def calculate_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str,
     log_provenance('Lamb Weathertypes', f'{dataset}_wt_prov', cfg,
                    [preproc_path, f'{work_dir}/wt_mapping_dict_ERA5.json',
                     f'{work_dir}/wt_mapping_dict_E-OBS.json'],
-                   ['Lamb Weathertypes'], [''])
+                   ['Lamb Weathertypes'], ['other'], ['other'])
 
 
 def get_colormap(colormap_string: str) -> ListedColormap:
@@ -624,7 +744,7 @@ def plot_maps(wt: np.array, cfg: dict, cube: iris.cube.Cube, dataset: str,
         plt.title(f'{var_name} {mode}, wt: {wt}')
         unit = '[hPa]'
         im = iplt.contourf(cube / 100, cmap=psl_cmap)
-    elif var_name == 'prcp':
+    elif var_name == 'pr':
         prcp_cmap = get_colormap('prcp')
         if dataset == 'ERA5':
             unit = '[m]'
@@ -671,6 +791,10 @@ def plot_maps(wt: np.array, cfg: dict, cube: iris.cube.Cube, dataset: str,
     plt.savefig(
         os.path.join(
             local_path, f'{wt_string}_{wt}_{dataset}_{var_name}_{mode}.png')
+    )
+    plt.savefig(
+        os.path.join(
+            local_path, f'{wt_string}_{wt}_{dataset}_{var_name}_{mode}.pdf')
     )
     plt.close()
 
@@ -740,13 +864,20 @@ def plot_corr_rmse_heatmaps(cfg: dict, pattern_correlation_matrix: np.array,
     mask = np.zeros_like(pattern_correlation_matrix)
     mask[np.triu_indices_from(mask)] = True
     with sns.axes_style('white'):
+        plt.figure(figsize=(10, 10))
         plt.title('Correlation Matrix')
+        levels = np.linspace(np.min(pattern_correlation_matrix), np.max(pattern_correlation_matrix), 9)
         ax = sns.heatmap(pattern_correlation_matrix, mask=mask,
-                         square=True, annot=True, annot_kws={'size': 5},
+                         square=True, annot=True, annot_kws={'size': 6},
                          cmap='seismic', xticklabels=labels,
-                         yticklabels=labels)
-        ax.set_xlabel('lwt', fontsize=8, rotation=90)
+                         yticklabels=labels,
+                         cbar_kws={'ticks': levels, 'shrink': 0.8, 'format': '%.2f'})
+        ax.set_xlabel('lwt', fontsize=8)
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=0)
+        ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
         ax.set_ylabel('lwt', fontsize=8)
+        #plt.colorbar()
+        plt.tight_layout()
         plt.savefig(
             os.path.join(
                 work_dir, f'correlation_matrix_{dataset}.png')
@@ -756,13 +887,20 @@ def plot_corr_rmse_heatmaps(cfg: dict, pattern_correlation_matrix: np.array,
     mask = np.zeros_like(rmse_matrix)
     mask[np.triu_indices_from(mask)] = True
     with sns.axes_style('white'):
+        plt.figure(figsize=(10, 10))
         plt.title('RMSE Matrix')
+        levels = np.linspace(np.min(rmse_matrix), np.max(rmse_matrix), 9)
         ax = sns.heatmap(rmse_matrix, mask=mask,
-                         square=True, annot=True, annot_kws={'size': 5},
+                         square=True, annot=True, annot_kws={'size': 6},
                          cmap='seismic', xticklabels=labels,
-                         yticklabels=labels)
-        ax.set_xlabel('lwt', fontsize=8, rotation=90)
+                         yticklabels=labels,
+                         cbar_kws={'ticks': levels, 'shrink': 0.8, 'format': '%.2f'})
+        ax.set_xlabel('lwt', fontsize=8)
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=0)
+        ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
         ax.set_ylabel('lwt', fontsize=8)
+        #plt.colorbar()
+        plt.tight_layout()
         plt.savefig(
             os.path.join(
                 work_dir, f'rmse_matrix_{dataset}.png')
@@ -847,10 +985,10 @@ def process_prcp_mean(cfg: dict, data: np.array, correlation_threshold: float,
     return selected_pairs
 
 
-def calculate_wt_means(cfg: dict, cube: iris.cube.Cube,
+def calc_wt_means(cfg: dict, cube: iris.cube.Cube,
                        wt_cubes: iris.cube.CubeList, dataset: str,
                        var_name: str, wt_string: str, preproc_path: str):
-    '''Calculate means of fields of each weathertype
+    '''calculate means of fields of each weathertype
 
     Args:
         cfg (dict): Configuration dictionary from recipe
@@ -873,25 +1011,27 @@ def calculate_wt_means(cfg: dict, cube: iris.cube.Cube,
         slwt_era5_cube = wt_cubes[1]
         tcoord = slwt_era5_cube.coord('time')
         slwt_era5 = slwt_era5_cube.data[:]
+        num_slwt = len(np.unique(slwt_era5))
     elif wt_string == 'slwt_EOBS':
         slwt_eobs_cube = wt_cubes[2]
         tcoord = slwt_eobs_cube.coord('time')
         slwt_eobs = slwt_eobs_cube.data[:]
+        num_slwt = len(np.unique(slwt_eobs))
     elif wt_string == 'lwt':
         lwt_cube = wt_cubes[0]
         tcoord = lwt_cube.coord('time')
         lwt = lwt_cube.data[:]
 
-    num_slwt_era5 = len(np.unique(slwt_era5))
-    num_slwt_eobs = len(np.unique(slwt_eobs))
+    #num_slwt_era5 = len(np.unique(slwt_era5))
+    #num_slwt_eobs = len(np.unique(slwt_eobs))
 
-    if num_slwt_eobs != num_slwt_era5:
-        logger.info('calculate_wt_means - CAUTION: unequal number of \
-                    slwt_era5 (%s) \ and slwt_eobs (%s)!',
-                    num_slwt_era5, num_slwt_eobs)
+    #if num_slwt_eobs != num_slwt_era5:
+    #    logger.info('calc_wt_means - CAUTION: unequal number of \
+    #                slwt_era5 (%s) \ and slwt_eobs (%s)!',
+    #                num_slwt_era5, num_slwt_eobs)
 
     if 'slwt' in wt_string:
-        for wt in range(1, max(num_slwt_era5, num_slwt_eobs)):
+        for wt in range(1, num_slwt+1):#max(num_slwt_era5, num_slwt_eobs)):
             if wt_string == 'slwt_ERA5':
                 target_indices = np.where(slwt_era5 == wt)
             elif wt_string == 'slwt_EOBS':
@@ -900,8 +1040,8 @@ def calculate_wt_means(cfg: dict, cube: iris.cube.Cube,
                 logger.info('WT_STRING not supported!')
             if len(target_indices[0]) < 1:
                 logger.info(
-                    'calculate_wt_means - CAUTION: Skipped wt %s \
-                    for dataset %s!', wt, dataset
+                    'calc_wt_means - CAUTION: Skipped %s %s \
+                    for dataset %s!', wt_string, wt, dataset
                 )
                 continue
             dates = [tcoord.units.num2date(tcoord.points[i])
@@ -918,7 +1058,7 @@ def calculate_wt_means(cfg: dict, cube: iris.cube.Cube,
             target_indices = np.where(lwt == wt)
             if len(target_indices[0]) < 1:
                 logger.info(
-                    'calculate_wt_means - CAUTION: Skipped wt %s \
+                    'calc_wt_means - CAUTION: Skipped lwt %s \
                     for dataset %s!', wt, dataset
                 )
                 continue
@@ -936,10 +1076,10 @@ def calculate_wt_means(cfg: dict, cube: iris.cube.Cube,
     log_provenance(f'{var_name} means for {wt_string}',
                    f'{dataset}_{var_name}_{wt_string}_means_prov', cfg,
                    [f'{preproc_path}', f'{work_dir}/ERA5.nc'],
-                   [var_name], ['geo'])
+                   [var_name], ['map'], ['mean'])
 
 
-def calculate_wt_anomalies(cfg: dict, cube: iris.cube.Cube,
+def calc_wt_anomalies(cfg: dict, cube: iris.cube.Cube,
                            wt_cubes: iris.cube.CubeList, dataset: str,
                            var_name: str, wt_string: str, preproc_path: str):
     '''Calculate anomalies of fields of each weathertype
@@ -979,7 +1119,7 @@ def calculate_wt_anomalies(cfg: dict, cube: iris.cube.Cube,
     num_slwt_eobs = len(np.unique(slwt_eobs))
 
     if num_slwt_eobs != num_slwt_era5:
-        logger.info('calculate_wt_means - CAUTION: unequal number of \
+        logger.info('calc_wt_means - CAUTION: unequal number of \
                     slwt_era5 (%s) \ and slwt_eobs (%s)!',
                     num_slwt_era5, num_slwt_eobs)
 
@@ -993,7 +1133,7 @@ def calculate_wt_anomalies(cfg: dict, cube: iris.cube.Cube,
                 logger.info('WT_STRING not supported!')
             if len(target_indices[0]) < 1:
                 logger.info(
-                    'calculate_wt_anomalies - CAUTION: Skipped wt %s \
+                    'calc_wt_anomalies - CAUTION: Skipped wt %s \
                     for dataset %s!', wt, dataset
                 )
                 continue
@@ -1011,7 +1151,7 @@ def calculate_wt_anomalies(cfg: dict, cube: iris.cube.Cube,
             target_indices = np.where(lwt == wt)
             if len(target_indices[0]) < 1:
                 logger.info(
-                    'calculate_wt_anomalies - CAUTION: Skipped wt %s \
+                    'calc_wt_anomalies - CAUTION: Skipped wt %s \
                     for dataset %s!', wt, dataset
                 )
                 continue
@@ -1028,10 +1168,10 @@ def calculate_wt_anomalies(cfg: dict, cube: iris.cube.Cube,
 
     log_provenance(f'{var_name} anomaly for {wt_string}',
                    f'{dataset}_{var_name}_{wt_string}_anomalies_prov', cfg,
-                   [f'{preproc_path}', f'{work_dir}/ERA5.nc'], [var_name], ['geo'])
+                   [f'{preproc_path}', f'{work_dir}/ERA5.nc'], [var_name], ['map'], ['anomaly'])
 
 
-def calculate_wt_std(cfg: dict, cube: iris.cube.Cube,
+def calc_wt_std(cfg: dict, cube: iris.cube.Cube,
                      wt_cubes: iris.cube.CubeList, dataset: str,
                      var_name: str, wt_string: str, preproc_path: str):
     '''Calculate standard deviation of fields of each weathertype
@@ -1071,7 +1211,7 @@ def calculate_wt_std(cfg: dict, cube: iris.cube.Cube,
     num_slwt_eobs = len(np.unique(slwt_eobs))
 
     if num_slwt_eobs != num_slwt_era5:
-        logger.info('calculate_wt_means - CAUTION: unequal number of \
+        logger.info('calc_wt_means - CAUTION: unequal number of \
                     slwt_era5 (%s) \ and slwt_eobs (%s)!',
                     num_slwt_era5, num_slwt_eobs)
 
@@ -1085,7 +1225,7 @@ def calculate_wt_std(cfg: dict, cube: iris.cube.Cube,
                 logger.info('WT_STRING not supported!')
             if len(target_indices[0]) < 1:
                 logger.info(
-                    'calculate_slwt_obs - CAUTION: Skipped wt %s \
+                    'calc_slwt_obs - CAUTION: Skipped wt %s \
                     for dataset %s!', wt, dataset
                 )
                 continue
@@ -1103,7 +1243,7 @@ def calculate_wt_std(cfg: dict, cube: iris.cube.Cube,
             target_indices = np.where(lwt == wt)
             if len(target_indices[0]) < 1:
                 logger.info(
-                    'calculate_wt_std - CAUTION: Skipped wt %s \
+                    'calc_wt_std - CAUTION: Skipped wt %s \
                     for dataset %s!', wt, dataset
                 )
                 continue
@@ -1121,7 +1261,8 @@ def calculate_wt_std(cfg: dict, cube: iris.cube.Cube,
 
     log_provenance(f'{var_name} standard deviation for {wt_string}',
                    f'{dataset}_{var_name}_{wt_string}_std_prov', cfg,
-                   [f'{preproc_path}', f'{work_dir}/ERA5.nc'], [var_name], ['geo'])
+                   [f'{preproc_path}', f'{work_dir}/ERA5.nc'], [var_name], ['map'],
+                   ['stddev'])
 
 
 def combine_wt_to_file(cfg: dict, lwt: np.array, slwt_era5: np.array,
@@ -1197,7 +1338,7 @@ def write_lwt_to_file(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
     df.to_csv(write_path + f'/{file_name}.csv', index=False)
 
 
-def calculate_lwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str, output_file_path: str):
+def calc_lwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str, output_file_path: str):
     '''Calculate lwt for model data
 
     Args:
