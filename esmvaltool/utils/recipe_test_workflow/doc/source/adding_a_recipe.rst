@@ -100,9 +100,9 @@ How to add a recipe to the |RTW|
 
     cylc stop recipe_test_workflow/*
 
-#. Run the |RTW|, as detailed in the
-   :doc:`Quick Start Guide <user_guide/quick_start>`. The task should now
-   succeed.
+#. Run the |RTW| again; the ``compare`` task should now succeed:
+
+   :doc:`Quick Start Guide <user_guide/quick_start>`.
 
 #. Add the recipe to the documentation; add a link to the recipe to the list of
    "Currently tested recipes" in ``doc/source/tested_recipes.rst`` in
