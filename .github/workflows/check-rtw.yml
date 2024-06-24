@@ -73,7 +73,7 @@ jobs:
           cd esmvaltool/utils/recipe_test_workflow/doc
           make linkcheck
 
-      - name: Lint shell scripts in Recipe Test Workflow with ShellCheck
+      - name: Lint shell scripts
         run: |
           cd esmvaltool/utils/recipe_test_workflow
           output=$(find . -name "*.sh" -exec shellcheck {} \;)

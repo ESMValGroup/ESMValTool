@@ -106,7 +106,6 @@
             COMPARISON_OUTPUT_DIR=${OUTPUT_DIR}/${RECIPE_NAME}*
             KGO_DIR=${KGO_ROOT_PATH}/${RECIPE_NAME}*
 
-
     [[compare<medium>]]
         inherit = None, COMPUTE
         [[[environment]]]
