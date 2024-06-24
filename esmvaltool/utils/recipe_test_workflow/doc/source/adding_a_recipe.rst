@@ -114,4 +114,6 @@ How to add a recipe to the |RTW|
       ``doc/source/tested_recipes.rst`` in alphabetical order (follow the
       format ``* `<name>`_``).
 
-#. Commit and push your changes.
+#. Commit and push your changes, create a PR, assign yourself to the PR, and
+   add the Recipe Test Workflow (RTW) label to the PR
+   (see `ESMValTool example issue`_).
