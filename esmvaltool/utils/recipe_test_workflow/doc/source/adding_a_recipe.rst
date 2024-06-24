@@ -11,7 +11,13 @@ How to add a recipe to the |RTW|
    ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/site/``
    directory.
 
-#. Open an issue on GitHub and create a branch.
+#. Open an [ESMValTool issue](https://github.com/ESMValGroup/ESMValTool/issues/new)
+   on GitHub, assign yourself to the issue, and add the `Recipe Test Workflow (RTW)`
+   label to the issue, see
+   [ESMValTool: Issue #3663](https://github.com/ESMValGroup/ESMValTool/issues/3663)
+   for an example.
+
+#. Create a branch.
 
 #. Obtain the duration and memory usage of the recipe from the messages printed
    to screen, or at the end of the ``run/main_log.txt`` file in the output
