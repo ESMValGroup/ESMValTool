@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - 3670_use_pytest_importlib
   schedule:
     - cron: '0 0 * * *'
 
