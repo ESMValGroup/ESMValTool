@@ -30,7 +30,7 @@ repos:
         language: system
         files: '\.(ncl|NCL)$'
   - repo: https://github.com/lorenzwalthert/precommit/  # Checks for R
-    rev: 'v0.3.2.9007'
+    rev: 'v0.1.3'
     hooks:
       - id: style-files  # styler
       - id: lintr
