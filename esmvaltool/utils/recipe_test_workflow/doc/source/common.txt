@@ -8,6 +8,7 @@
 .. |ESMs| replace:: :term:`ESMs <ESM>`
 .. |ESMValCore| replace:: :term:`ESMValCore`
 .. |ESMValTool| replace:: :term:`ESMValTool`
+.. |KGOs| replace:: :term:`KGOs`
 .. |Rose| replace:: :term:`Rose`
 
 .. Links
@@ -19,9 +20,13 @@
 .. _Cylc Review: https://cylc.github.io/cylc-doc/7.9.3/html/tutorial.html#viewing-suite-logs-in-a-web-browser-cylc-review
 .. _Ensclus: https://docs.esmvaltool.org/en/latest/recipes/recipe_ensclus.html
 .. _ESMValTool Documentation: https://esmvaltool.org/
+.. _ESMValTool issue #3663: https://github.com/ESMValGroup/ESMValTool/issues/3663
+.. _ESMValTool PR #3664: https://github.com/ESMValGroup/ESMValTool/pull/3664
 .. _Examples python: https://docs.esmvaltool.org/en/latest/recipes/recipe_examples.html
 .. _Heatwaves coldwaves: https://docs.esmvaltool.org/en/latest/recipes/recipe_heatwaves_coldwaves.html
 .. _Landcover - Albedo: https://docs.esmvaltool.org/en/latest/recipes/recipe_albedolandcover.html#landcover-albedo
+.. _new ESMValTool issue: https://github.com/ESMValGroup/ESMValTool/issues/new
+.. _Ocean Atlantic Meridional Overturning Circulation (AMOC): https://docs.esmvaltool.org/en/latest/recipes/recipe_oceans.html#recipe-ocean-amoc-yml
 .. _Ocean multimap: https://docs.esmvaltool.org/en/latest/recipes/recipe_oceans.html#recipe-ocean-multimap-yml
 .. _Radiation budget: https://docs.esmvaltool.org/en/latest/recipes/recipe_radiation_budget.html
 .. _Rose Documentation: https://metomi.github.io/rose/doc/html/index.html

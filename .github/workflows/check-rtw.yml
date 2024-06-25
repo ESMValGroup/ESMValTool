@@ -63,6 +63,11 @@ jobs:
           cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
           rose metadata-check -C meta/
 
+      - name: Run Rose configuration validation macros
+        run: |
+          cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
+          rose macro -V
+
       - name: Build documentation
         run: |
           cd esmvaltool/utils/recipe_test_workflow/doc
