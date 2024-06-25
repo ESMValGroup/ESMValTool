@@ -13,6 +13,6 @@ Welcome to the Recipe Test Workflow's documentation!
    about
    tested_recipes
    user_guide/index.rst
-   adding_a_recipe
+   add_a_recipe
 
    glossary
