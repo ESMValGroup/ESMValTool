@@ -91,26 +91,30 @@
             ROSE_TASK_APP = process
             RECIPE_PATH = "${CYLC_TASK_PARAM_medium//--//}.yml"
 
+    [[COMPARE]]
+        inherit = None, COMPUTE
+        [[[environment]]]
+            ROSE_TASK_APP = compare
+            KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
+            COMPARE_SCRIPT=${ESMVALTOOL_DIR}/esmvaltool/utils/testing/regression/compare.py
+
     # Bash variable manipulation `##*--` below strips leading path from recipe
     # parameter to obtain RECIPE_NAME.
     # RECIPE_NAME is the recipe file basename without yml extension, as used by
     # ESMValTool for naming output directories. E.g. for the recipe
     # examples/recipe_python.yml, RECIPE_NAME=recipe_python
     [[compare<fast>]]
-        inherit = None, COMPUTE
+        inherit = COMPARE
         [[[environment]]]
-            ROSE_TASK_APP = compare
             RECIPE_NAME = "${CYLC_TASK_PARAM_fast##*--}"
-            KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
-            COMPARE_SCRIPT=${ESMVALTOOL_DIR}/esmvaltool/utils/testing/regression/compare.py
             COMPARISON_OUTPUT_DIR=${OUTPUT_DIR}/${RECIPE_NAME}*
             KGO_DIR=${KGO_ROOT_PATH}/${RECIPE_NAME}*
 
     [[compare<medium>]]
-        inherit = None, COMPUTE
+        inherit = COMPARE
         [[[environment]]]
-            ROSE_TASK_APP = compare
             RECIPE_NAME = "${CYLC_TASK_PARAM_medium##*--}"
-            KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
+            COMPARISON_OUTPUT_DIR=${OUTPUT_DIR}/${RECIPE_NAME}*
+            KGO_DIR=${KGO_ROOT_PATH}/${RECIPE_NAME}*
 
 {% include 'site/' ~ SITE ~ '.cylc' %}
