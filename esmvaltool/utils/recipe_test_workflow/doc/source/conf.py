@@ -16,7 +16,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'Recipe Test Workflow (RTW)'
+project = 'RTW'
 version = "0.1.0"
 
 # -- General configuration ---------------------------------------------------
