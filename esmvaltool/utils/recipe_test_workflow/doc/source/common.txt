@@ -13,8 +13,6 @@
 
 .. Links
 
-.. These URL's can be used via reference-style links.
-
 .. _Autoassess landsurface soilmoisture: https://docs.esmvaltool.org/en/latest/recipes/recipe_autoassess_landsurface_soilmoisture.html#available-recipes-and-diagnostics
 .. _Consecutive dry days: https://docs.esmvaltool.org/en/latest/recipes/recipe_consecdrydays.html
 .. _CMIP Documentation: https://www.wcrp-climate.org/wgcm-cmip
