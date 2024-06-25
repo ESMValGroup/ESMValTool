@@ -28,24 +28,24 @@ area: str, optional (default: global)
 """
 
 import logging
-from pathlib import Path
 import os
+from pathlib import Path
 
 import iris
 import iris.coord_categorisation
 import iris.cube
 import numpy as np
 import sklearn.linear_model
-
-import sub_functions as sf
-from plotting import (
-    plot_timeseries,
-    plot_patterns
-)
 from esmvalcore.preprocessor import (
     area_statistics,
+    climate_statistics,
     extract_time,
-    climate_statistics
+)
+
+import esmvaltool.diag_scripts.climate_patterns.sub_functions as sf
+from esmvaltool.diag_scripts.climate_patterns.plotting import (
+    plot_patterns,
+    plot_timeseries,
 )
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
