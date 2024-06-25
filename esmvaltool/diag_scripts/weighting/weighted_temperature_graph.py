@@ -11,8 +11,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 
-from esmvaltool.diag_scripts.weighting.climwip.io_functions \
-    import log_provenance, read_model_data
 from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
     get_plot_filename,
