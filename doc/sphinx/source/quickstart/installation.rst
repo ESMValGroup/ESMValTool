@@ -8,7 +8,7 @@ Installation
    ESMValTool now uses `mamba` instead of `conda` for the recommended installation.
    For more information about the change, have a look at :ref:`Move to Mamba<move-to-mamba>`.
 
-ESMValTool supports Python 3.9 and later and requires Linux or MacOS.
+ESMValTool supports Python 3.10 and later and requires Linux or MacOS.
 Successful usage on Windows has been reported by following the Linux
 installation instructions with
 `WSL <https://learn.microsoft.com/en-us/windows/wsl/install>`__.
@@ -489,7 +489,7 @@ To check that the installation was successful, run
 this should show the directory of the source code that you just downloaded.
 
 If the command above shows a directory inside your conda environment instead,
-e.g. ``~/mambaforge/envs/esmvaltool/lib/python3.9/site-packages/esmvalcore``,
+e.g. ``~/mambaforge/envs/esmvaltool/lib/python3.11/site-packages/esmvalcore``,
 you may need to manually remove that directory and run
 ``pip install --editable '.[develop]'`` again.
 
@@ -705,18 +705,19 @@ Usually mamba is much better at solving new environments than updating older
 environments, so it is often a good idea to create a new environment if updating
 does not work.
 
-It can help mamba if you let it know what version of certain packages you want,
-for example by running
+It is possible to create a new
+`Conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments>`_
+and install ESMValTool into it with a single command:
 
 .. code-block:: bash
 
-    mamba create -n esmvaltool esmvaltool 'python=3.11'
+    mamba create -n esmvaltool -c conda-forge esmvaltool
 
-you ask for Python 3.11 specifically and that makes it much easier for mamba to
-solve the environment, because now it can ignore any packages that were built
-for other Python versions. Note that, since the esmvaltool package is built
-with Python>=3.9, asking for an older Python version, e.g. `python=3.7`, in
-this way, it will result in installation failure.
+Don't forget to activate the newly created environment after the installation:
+
+.. code-block:: bash
+
+    conda activate esmvalcore
 
 Problems with proxies
 ---------------------
