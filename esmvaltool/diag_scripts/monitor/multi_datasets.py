@@ -138,12 +138,12 @@ plot_kwargs: dict, optional
 pyplot_kwargs: dict, optional
     Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    single argument for these functions. String arguments can include facets in
-    curly brackets which will be derived from the datasets plotted in the
-    corresponding plot, e.g., ``{short_name}``, ``{exp}``. Facets like
-    ``{project}`` that vary between the different datasets will be transformed
-    to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
-    of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+    argument(s) for these functions (if values are dictionaries, these are
+    interpreted as keyword arguments; otherwise a single argument is assumed).
+    String arguments can include facets in curly brackets which will be derived
+    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
+    '{short_name}'``, ``xlim: [0, 5]``.
 time_format: str, optional (default: None)
     :func:`~datetime.datetime.strftime` format string that is used to format
     the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
@@ -171,12 +171,12 @@ plot_kwargs: dict, optional
 pyplot_kwargs: dict, optional
     Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    single argument for these functions. String arguments can include facets in
-    curly brackets which will be derived from the datasets plotted in the
-    corresponding plot, e.g., ``{short_name}``, ``{exp}``. Facets like
-    ``{project}`` that vary between the different datasets will be transformed
-    to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
-    of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+    argument(s) for these functions (if values are dictionaries, these are
+    interpreted as keyword arguments; otherwise a single argument is assumed).
+    String arguments can include facets in curly brackets which will be derived
+    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
+    '{short_name}'``, ``xlim: [0, 5]``.
 
 Configuration options for plot type ``map``
 -------------------------------------------
@@ -247,10 +247,12 @@ projection_kwargs: dict, optional
 pyplot_kwargs: dict, optional
     Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    single argument for these functions. String arguments can include facets in
-    curly brackets which will be derived from the corresponding dataset, e.g.,
-    ``{project}``, ``{short_name}``, ``{exp}``.  Examples: ``title: 'Awesome
-    Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+    argument(s) for these functions (if values are dictionaries, these are
+    interpreted as keyword arguments; otherwise a single argument is assumed).
+    String arguments can include facets in curly brackets which will be derived
+    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
+    '{short_name}'``, ``xlim: [0, 5]``.
 rasterize: bool, optional (default: True)
     If ``True``, use rasterization_ for map plots to produce smaller files.
     This is only relevant for vector graphics (e.g., ``output_file_type:
@@ -326,10 +328,12 @@ plot_kwargs_bias: dict, optional
 pyplot_kwargs: dict, optional
     Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    single argument for these functions. String arguments can include facets in
-    curly brackets which will be derived from the corresponding dataset, e.g.,
-    ``{project}``, ``{short_name}``, ``{exp}``.  Examples: ``title: 'Awesome
-    Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+    argument(s) for these functions (if values are dictionaries, these are
+    interpreted as keyword arguments; otherwise a single argument is assumed).
+    String arguments can include facets in curly brackets which will be derived
+    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
+    '{short_name}'``, ``xlim: [0, 5]``.
 rasterize: bool, optional (default: True)
     If ``True``, use rasterization_ for profile plots to produce smaller files.
     This is only relevant for vector graphics (e.g., ``output_file_type:
@@ -378,12 +382,12 @@ plot_kwargs: dict, optional
 pyplot_kwargs: dict, optional
     Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    single argument for these functions. String arguments can include facets in
-    curly brackets which will be derived from the datasets plotted in the
-    corresponding plot, e.g., ``{short_name}``, ``{exp}``. Facets like
-    ``{project}`` that vary between the different datasets will be transformed
-    to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
-    of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+    argument(s) for these functions (if values are dictionaries, these are
+    interpreted as keyword arguments; otherwise a single argument is assumed).
+    String arguments can include facets in curly brackets which will be derived
+    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
+    '{short_name}'``, ``xlim: [0, 5]``.
 show_y_minor_ticklabels: bool, optional (default: False)
     Show tick labels for the minor ticks on the Y axis.
 
@@ -409,12 +413,12 @@ plot_kwargs: dict, optional
 pyplot_kwargs: dict, optional
     Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    single argument for these functions. String arguments can include facets in
-    curly brackets which will be derived from the datasets plotted in the
-    corresponding plot, e.g., ``{short_name}``, ``{exp}``. Facets like
-    ``{project}`` that vary between the different datasets will be transformed
-    to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
-    of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+    argument(s) for these functions (if values are dictionaries, these are
+    interpreted as keyword arguments; otherwise a single argument is assumed).
+    String arguments can include facets in curly brackets which will be derived
+    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
+    '{short_name}'``, ``xlim: [0, 5]``.
 
 Configuration options for plot type ``hovmoeller_z_vs_time``
 ------------------------------------------------------------
@@ -476,10 +480,12 @@ plot_kwargs_bias: dict, optional
 pyplot_kwargs: dict, optional
     Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    single argument for these functions. String arguments can include facets in
-    curly brackets which will be derived from the corresponding dataset, e.g.,
-    ``{project}``, ``{short_name}``, ``{exp}``.  Examples: ``title: 'Awesome
-    Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+    argument(s) for these functions (if values are dictionaries, these are
+    interpreted as keyword arguments; otherwise a single argument is assumed).
+    String arguments can include facets in curly brackets which will be derived
+    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
+    '{short_name}'``, ``xlim: [0, 5]``.
 rasterize: bool, optional (default: True)
     If ``True``, use rasterization_ for profile plots to produce smaller files.
     This is only relevant for vector graphics (e.g., ``output_file_type:
@@ -559,10 +565,12 @@ plot_kwargs_bias: dict, optional
 pyplot_kwargs: dict, optional
     Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    single argument for these functions. String arguments can include facets in
-    curly brackets which will be derived from the corresponding dataset, e.g.,
-    ``{project}``, ``{short_name}``, ``{exp}``.  Examples: ``title: 'Awesome
-    Plot of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
+    argument(s) for these functions (if values are dictionaries, these are
+    interpreted as keyword arguments; otherwise a single argument is assumed).
+    String arguments can include facets in curly brackets which will be derived
+    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
+    '{short_name}'``, ``xlim: [0, 5]``.
 rasterize: bool, optional (default: True)
     If ``True``, use rasterization_ for profile plots to produce smaller files.
     This is only relevant for vector graphics (e.g., ``output_file_type:
@@ -1791,6 +1799,8 @@ class MultiDatasets(MonitorBase):
                 )
             if arg is None:
                 getattr(plt, func)()
+            elif isinstance(arg, dict):
+                getattr(plt, func)(**arg)
             else:
                 getattr(plt, func)(arg)
 
