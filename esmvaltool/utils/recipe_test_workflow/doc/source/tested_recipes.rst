@@ -12,5 +12,6 @@ The following currently tested recipes are available in the |RTW|:
 * `Examples python`_
 * `Heatwaves coldwaves`_
 * `Landcover - Albedo`_
+* `Ocean Atlantic Meridional Overturning Circulation (AMOC)`_
 * `Ocean multimap`_
 * `Radiation budget`_
