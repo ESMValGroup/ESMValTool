@@ -3,9 +3,9 @@
 import math
 import os
 
+import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
-import cartopy.crs as ccrs
 
 # User-defined libraries
 from esmvaltool.diag_scripts.ensclus.read_netcdf import read_n_2d_fields

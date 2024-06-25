@@ -23,7 +23,7 @@ diagnostics:
     variables:
       pr:
     additional_datasets:
-      - {project: OBS6, dataset: AGCD, mip: Amon, tier: 3, 
+      - {project: OBS6, dataset: AGCD, mip: Amon, tier: 2, 
         type: ground, version: v2-0-1}
     scripts: null
 
@@ -539,7 +539,7 @@ diagnostics:
       rsutcs:
     additional_datasets:
       - {dataset: JRA-25, project: OBS6, mip: Amon, tier: 2,
-         type: reanaly, version: 1, start_year: 1979, end_year: 2013}
+         type: reanaly, version: 1, start_year: 1979, end_year: 2007}
     scripts: null
 
   Kadow2020:
@@ -932,7 +932,7 @@ diagnostics:
     variables:
       od440aer:
     additional_datasets:
-      - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20231021}
+      - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20240406}
     scripts: null
 
   ANUClimate:
@@ -1481,10 +1481,10 @@ diagnostics:
         short_name: rlns
         mip: E1hr
         frequency: 1hr
-      rlus_E1hr:
-        short_name: rlus
-        mip: E1hr
-        frequency: 1hr
+        #rlus_E1hr:
+        #  short_name: rlus
+        #  mip: E1hr
+        #  frequency: 1hr
       rsds_E1hr:
         short_name: rsds
         mip: E1hr
@@ -1495,10 +1495,10 @@ diagnostics:
         short_name: rsns
         mip: E1hr
         frequency: 1hr
-      rsus_E1hr:
-        short_name: rsus
-        mip: E1hr
-        frequency: 1hr
+        #rsus_E1hr:
+        #  short_name: rsus
+        #  mip: E1hr
+        #  frequency: 1hr
       rss_E1hr:
         short_name: rss
         mip: E1hr
@@ -1565,9 +1565,9 @@ diagnostics:
       rlns_Amon:
         short_name: rlns
         mip: Amon
-      rlus_Amon:
-        short_name: rlus
-        mip: Amon
+        #rlus_Amon:
+        #  short_name: rlus
+        #  mip: Amon
       rsds_Amon:
         short_name: rsds
         mip: Amon
@@ -1577,9 +1577,9 @@ diagnostics:
       rsns_Amon:
         short_name: rsns
         mip: Amon
-      rsus_Amon:
-        short_name: rsus
-        mip: Amon
+        #rsus_Amon:
+        #  short_name: rsus
+        #  mip: Amon
       rss_Amon:
         short_name: rss
         mip: Amon

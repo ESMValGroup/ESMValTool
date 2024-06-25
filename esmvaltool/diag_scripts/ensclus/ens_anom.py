@@ -1,14 +1,19 @@
 """Computation of ensemble anomalies based on a desired value."""
 
 import os
+
 import numpy as np
 from scipy import stats
 
 # User-defined packages
-from esmvaltool.diag_scripts.ensclus.read_netcdf \
-    import read_iris, save_n_2d_fields
-from esmvaltool.diag_scripts.ensclus.sel_season_area \
-    import sel_area, sel_season
+from esmvaltool.diag_scripts.ensclus.read_netcdf import (
+    read_iris,
+    save_n_2d_fields,
+)
+from esmvaltool.diag_scripts.ensclus.sel_season_area import (
+    sel_area,
+    sel_season,
+)
 
 
 def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,

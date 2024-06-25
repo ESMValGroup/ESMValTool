@@ -18,6 +18,10 @@ from esmvaltool.diag_scripts.shared import (
     get_plot_filename,
     run_diagnostic,
 )
+from esmvaltool.diag_scripts.weighting.climwip.io_functions import (
+    log_provenance,
+    read_model_data,
+)
 from esmvaltool.diag_scripts.weighting.plot_utilities import (
     calculate_percentiles,
     read_metadata,

@@ -3,8 +3,8 @@ from collections import defaultdict
 
 import xarray as xr
 
-from esmvaltool.diag_scripts.weighting.climwip.core_functions \
-    import weighted_quantile
+from esmvaltool.diag_scripts.weighting.climwip.core_functions import (
+    weighted_quantile, )
 
 
 def read_weights(filename: str) -> dict:

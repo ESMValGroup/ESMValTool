@@ -26,6 +26,7 @@ from esmvaltool.diag_scripts.shared import (
     get_plot_filename,
 )
 
+
 logger = logging.getLogger(os.path.basename(__file__))
 
 SIGMA_RANGE = (.1, 2)  # allow this to be set by the recipe later
