@@ -11,10 +11,10 @@ import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy
-from aero_utils import add_bounds, extract_pt
 from matplotlib import colors, gridspec
 from numpy import ma
 
+from esmvaltool.diag_scripts.aerosols.aero_utils import add_bounds, extract_pt
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
 

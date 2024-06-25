@@ -6,8 +6,8 @@ from pprint import pformat
 
 import iris
 import matplotlib.pyplot as plt
-from mpqb_utils import get_mpqb_cfg
 
+from esmvaltool.diag_scripts.mpqb.mpqb_utils import get_mpqb_cfg
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import (
     ProvenanceLogger,

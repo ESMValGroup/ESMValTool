@@ -16,11 +16,11 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-   * recipe_seaborn.yml
+* recipe_seaborn.yml
 
 Diagnostics are stored in diag_scripts/
 
-   * :ref:`seaborn_diag.py <api.esmvaltool.diag_scripts.seaborn_diag>`
+* :ref:`seaborn_diag.py <api.esmvaltool.diag_scripts.seaborn_diag>`
 
 
 Variables
