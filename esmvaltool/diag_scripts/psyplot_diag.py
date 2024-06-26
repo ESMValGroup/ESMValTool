@@ -36,6 +36,7 @@ seaborn_settings: dict, optional
     Options for :func:`seaborn.set_theme` (affects all plots).
 
 """
+import os
 import logging
 from contextlib import redirect_stdout
 from copy import deepcopy
@@ -44,6 +45,12 @@ from pathlib import Path
 from pprint import pformat
 
 import matplotlib.pyplot as plt
+
+# FIXME remove this after psy-reg=1.5.0 is released
+# currently psyplot=1.5.0 doesn't work with psy-reg=1.4.0
+os.environ['PSYPLOT_PLUGINS'] = "no:psy_reg.plugin"
+os.system("echo $PSYPLOT_PLUGINS")
+os.system("psyplot --list-plugins")
 import psyplot.project as psy
 import seaborn as sns
 
