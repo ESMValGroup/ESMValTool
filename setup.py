@@ -33,7 +33,7 @@ REQUIREMENTS = {
         'eofs',
         'ESMPy',  # not on PyPI
         'esmvalcore',
-        'esmf-regrid>=0.10.0',  # iris-esmf-regrid #342
+        'esmf-regrid>=0.7.0',
         'fiona',
         'fire',
         'fsspec',
