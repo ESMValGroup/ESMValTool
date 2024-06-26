@@ -517,3 +517,11 @@ The tool is based on the `prov <https://prov.readthedocs.io/en/latest/readme.htm
 library, a useful library for working with provenance files.
 With minor adaptations, this script could also print out global attributes
 of the input NetCDF files, e.g. the tracking_id.
+
+Recipe Test Workflow (RTW)
+==========================
+
+.. toctree::
+   :maxdepth: 1
+
+   RTW/index
