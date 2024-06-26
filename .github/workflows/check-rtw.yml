@@ -1,5 +1,5 @@
 # This workflow performs various validation steps for Cylc and Rose, and
-# builds and checks the documentation.
+# checks the documentation.
 name: Check Recipe Test Workflow (RTW)
 
 # Controls when the action will run
@@ -68,14 +68,9 @@ jobs:
           cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
           rose macro -V
 
-      - name: Build documentation
-        run: |
-          cd esmvaltool/utils/recipe_test_workflow/doc
-          make html
-
       - name: Check for broken links in the documentation
         run: |
-          cd esmvaltool/utils/recipe_test_workflow/doc
+          cd doc/sphinx/source/utils/RTW/
           make linkcheck
 
       - name: Lint shell scripts
