@@ -1,6 +1,5 @@
----
 attributes:
-  project_id: 'OBS6'
+  project_id: 'OBS'
   dataset_id: 'ESACCI-SOILMOISTURE'
   tier: 2
   modeling_realm: sat
@@ -17,13 +16,13 @@ variables:
     raw: sm #Volumetric Soil Moisture
     filename: 'ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc'
     start_year: 1978
-    end_year: 2022
+    end_year: 1979
     frequency: day
   sm_uncertainty:
-    short_name: sm_uncertainty
+    short_name: smStderr
     mip: Lmon
     raw: sm_uncertainty #Volumetric Soil Moisture
     filename: 'ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc'
     start_year: 1978
-    end_year: 2022
+    end_year: 1979
     frequency: day
