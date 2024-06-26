@@ -22,6 +22,8 @@ build:
       # use conda run executable wrapper to have all env variables
       - conda run -n ${CONDA_DEFAULT_ENV} mamba --version
       - conda run -n ${CONDA_DEFAULT_ENV} pip install . --no-deps
+      # kist the dependencies in the created env
+      - conda list
 
 # Declare the requirements required to build your docs
 conda:
