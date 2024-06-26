@@ -51,10 +51,10 @@ import matplotlib.pyplot as plt
 os.environ['PSYPLOT_PLUGINS'] = "no:psy_reg.plugin"
 os.system("echo $PSYPLOT_PLUGINS")
 os.system("psyplot --list-plugins")
-import psyplot.project as psy
-import seaborn as sns
+import psyplot.project as psy  # noqa: E402
+import seaborn as sns  # noqa: E402
 
-from esmvaltool.diag_scripts.shared import (
+from esmvaltool.diag_scripts.shared import (  # noqa: E402
     ProvenanceLogger,
     get_plot_filename,
     run_diagnostic,
