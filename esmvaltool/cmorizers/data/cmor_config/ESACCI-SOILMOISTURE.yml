@@ -1,3 +1,4 @@
+---
 attributes:
   project_id: 'OBS6'
   dataset_id: 'ESACCI-SOILMOISTURE'
@@ -15,14 +16,14 @@ variables:
     mip: Lmon
     raw: sm #Volumetric Soil Moisture
     filename: 'ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc'
-    start_year: 1979
-    end_year: 1981
+    start_year: 1978
+    end_year: 2022
     frequency: day
-  # sm_uncertainty:
-  #   short_name: sm_uncertainty
-  #   mip: Lmon
-  #   raw: sm_uncertainty #Volumetric Soil Moisture
-  #   filename: 'ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc'
-  #   start_year: 19790101
-  #   end_year: 19790131
-  #   frequency: day
+  sm_uncertainty:
+    short_name: sm_uncertainty
+    mip: Lmon
+    raw: sm_uncertainty #Volumetric Soil Moisture
+    filename: 'ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc'
+    start_year: 1978
+    end_year: 2022
+    frequency: day
