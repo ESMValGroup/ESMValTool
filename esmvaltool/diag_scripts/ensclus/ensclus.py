@@ -13,16 +13,21 @@ Modification history
     20170710-mavilia_irene: routines written.
 """
 
-import os
 import logging
+import os
+
 import numpy as np
-from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
-from esmvaltool.diag_scripts.shared import ProvenanceLogger, sorted_metadata
 
 # Import user diagnostic routines
-from ens_anom import ens_anom
-from ens_eof_kmeans import ens_eof_kmeans
-from ens_plots import ens_plots
+from esmvaltool.diag_scripts.ensclus.ens_anom import ens_anom
+from esmvaltool.diag_scripts.ensclus.ens_eof_kmeans import ens_eof_kmeans
+from esmvaltool.diag_scripts.ensclus.ens_plots import ens_plots
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    group_metadata,
+    run_diagnostic,
+    sorted_metadata,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 

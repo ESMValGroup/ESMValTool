@@ -20,9 +20,12 @@ import os
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
 # Import zmnam diagnostic routines
-from zmnam_calc import zmnam_calc
-from zmnam_plot import zmnam_plot
-from zmnam_preproc import (zmnam_preproc, zmnam_preproc_clean)
+from esmvaltool.diag_scripts.zmnam.zmnam_calc import zmnam_calc
+from esmvaltool.diag_scripts.zmnam.zmnam_plot import zmnam_plot
+from esmvaltool.diag_scripts.zmnam.zmnam_preproc import (
+    zmnam_preproc,
+    zmnam_preproc_clean,
+)
 
 logger = logging.getLogger(__name__)
 
