@@ -17,7 +17,11 @@ Bug fixes
 ~~~~~~~~~
 
 -  Update OceanSODA-ETHZ CMORizer with new source file (:pull:`3535`) by :user:`TomasTorsvik`
--   Update the name of the remapcon2 operator in R recipes (:pull:`3611`) by :user:`ehogan`
+-  Fix for `recipe_seaice_drift.yml`: fix CRS transformer for "North Pole Stereographic" (:pull:`3531`) by :user:`flicj191`
+-  Recipe_ocean_quadmap: Update ATSR to match ESGF name (:pull:`3443`) by :user:`rbeucher`
+-  Fixed attribute handling in austral_jet/main.ncl for iris>=3.8 (:pull:`3603`) by :user:`schlunma`
+-  Update the name of the remapcon2 operator in R recipes (:pull:`3611`) by :user:`ehogan`
+-  Fix recipe_bock20jgr_fig_8-10.yml (:pull:`3665`) by :user:`LisaBock`
 
 Documentation
 ~~~~~~~~~~~~~
@@ -40,10 +44,14 @@ Diagnostics
 -  Allow datasets without `project` in multi_datasets.py (:pull:`3552`) by :user:`schlunma`
 -  Add support for aerosol optical depth climatology metrics to the AutoAssess replacement (:pull:`3048`) by :user:`catherinehardacre`
 -  Fixed attribute handling in emergent constraint diagnostic for iris>=3.8 (:pull:`3605`) by :user:`schlunma`
--  Fixed attribute handling in austral_jet/main.ncl for iris>=3.8 (:pull:`3603`) by :user:`schlunma`
 -  Use `iris.FUTURE.save_split_attrs = True` to remove iris warning in many diagnostics (:pull:`3651`) by :user:`schlunma`
 -  Avoid concatenation error in recipe_pcrglobwb.yml (:pull:`3645`) by :user:`bouweandela`
 -  Prevent overlapping time axis tick labels in monitoring recipe (:pull:`3682`) by :user:`schlunma`
+
+New recipe
+~~~~~~~~~~
+
+-  CMIP6 climate patterns  (:pull:`2785`) by :user:`mo-gregmunday`
 
 Observational and re-analysis dataset support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -52,7 +60,11 @@ Observational and re-analysis dataset support
 -  Add CMORizer script for NSIDC-G02202-sh sea ice fraction (:pull:`3512`) by :user:`flicj191`
 -  CMORizer Australian Gridded Climate Data(AGCD) precipitation (:pull:`3445`) by :user:`flicj191`
 -  Extend CMORizer NCEP-DOE-R2 (:pull:`3469`) by :user:`axel-lauer`
+-  Add comment to recipe_lauer13jclim regarding UWisc being superseded by MAC-LWP (:pull:`3537`) by :user:`rbeucher`
+-  Recipe_autoassess_landsurface_surfrad: Remove CERES-EBAF version to fix ESGF search (:pull:`3438`) by :user:`rbeucher`
 -  Updating ESACCI-WATERVAPOUR cmorizer (:pull:`3282`) by :user:`malininae`
+-  CMORiser for ANU Climate 2.0 Australian data (:pull:`3511`) by :user:`flicj191`
+-  Add AERONET cmorizer (:pull:`3227`) by :user:`zklaus`
 -  Update CRU CMORizer (:pull:`3381`) by :user:`lukruh`
 -  Fix recipe_check_obs to be aligned with DKRZ (:pull:`3673`) by :user:`LisaBock`
 
@@ -75,6 +87,8 @@ Installation
 
 -  Update dependencies (:pull:`3487`) by :user:`bouweandela`
 -  Merge v2.10.x into main (:pull:`3489`) by :user:`schlunma`
+-  (Re-)raise exception when imagehash not available (:pull:`3435`) by :user:`alistairsellar`
+-  Revert "(Re-)raise exception when imagehash not available" (:pull:`3539`) by :user:`rbeucher`
 -  Add imagehash package as an ESMValTool dependency (:pull:`3557`) by :user:`alistairsellar`
 -  Unpin `r-akima` (:pull:`3564`) by :user:`valeriupredoi`
 -  Adding pys2index dependency (:pull:`3577`) by :user:`ljoakim`
@@ -84,17 +98,7 @@ Installation
 Improvements
 ~~~~~~~~~~~~
 
--  Fix for `recipe_seaice_drift.yml`: fix CRS transformer for "North Pole Stereographic" (:pull:`3531`) by :user:`flicj191`
--  Add comment to recipe_lauer13jclim regarding UWisc being superseded by MAC-LWP (:pull:`3537`) by :user:`rbeucher`
--  Recipe_autoassess_landsurface_surfrad: Remove CERES-EBAF version to fix ESGF search, see #2974 (:pull:`3438`) by :user:`rbeucher`
--  (Re-)raise exception when imagehash not available (:pull:`3435`) by :user:`alistairsellar`
--  Revert "(Re-)raise exception when imagehash not available" (:pull:`3539`) by :user:`rbeucher`
--  CMORiser for ANU Climate 2.0 Australian data (:pull:`3511`) by :user:`flicj191`
--  Recipe_ocean_quadmap: Update ATSR to match ESGF name (:pull:`3443`) by :user:`rbeucher`
 -  Add native6, OBS6 and RAWOBS rootpaths to metoffice template in config-user-example.yml and remove temporary dir (:pull:`3613`) by :user:`alistairsellar`
--  Add AERONET cmorizer (:pull:`3227`) by :user:`zklaus`
--  CMIP6 climate patterns  (:pull:`2785`) by :user:`mo-gregmunday`
--  Fix recipe_bock20jgr_fig_8-10.yml (:pull:`3665`) by :user:`LisaBock`
 
 .. _changelog-v2-10-0:
 
