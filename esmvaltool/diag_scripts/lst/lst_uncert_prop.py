@@ -217,7 +217,7 @@ def _diagnostic(config):
                                             
     test_plot(propagated_values)
 
-
+        
 def test_plot(propagated_values):
     """This is a very simple plot to just test the method
     """
@@ -228,7 +228,7 @@ def test_plot(propagated_values):
 
     for time in ['day', 'night']:
         # one plot for day and night seperately
-        fig = plt.figure(figsize=(20,15))
+        fig = plt.figure(figsize=(25,15))
 
         ax1 = plt.subplot(211)
         iplt.plot(propagated_values[f'ts_{time}'],
@@ -246,7 +246,7 @@ def test_plot(propagated_values):
         ax1.xaxis.set_major_formatter(yearsFmt)
         ax1.xaxis.set_minor_locator(months)
         
-        ax1.get_xaxis().set_visible(False)
+        #ax1.get_xaxis().set_visible(False)
         
         plt.grid(which='major', color='k', linestyle='solid')
         plt.grid(which='minor', color='k', linestyle='dotted', alpha=0.5)
