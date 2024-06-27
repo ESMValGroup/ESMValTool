@@ -22,11 +22,12 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy >=8.6.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
-  - esmvalcore 2.10.*
+  - esmf >=8.6.0
+  # - esmvalcore 2.10.*
   - fiona
   - fsspec
   - fire
-  - gdal
+  - gdal >=3.9.0
   - iris >=3.6.1
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - jinja2
@@ -38,24 +39,24 @@ dependencies:
   - nc-time-axis
   - netCDF4
   - numba
-  - numpy !=1.24.3  # severe masking bug
+  - numpy !=1.24.3,<2.0  # severe masking bug
   - openpyxl
   - packaging
   - pandas !=2.2.0,!=2.2.1,!=2.2.2 # github.com/ESMValGroup/ESMValCore/pull/2305
   - pip !=21.3
   - progressbar2
   - prov
-  - psyplot
-  - psy-maps
-  - psy-reg
-  - psy-simple
+  - psyplot >=1.5.0  # earliest Py312 build
+  - psy-maps >=1.5.0  # earliest Py312 build
+  # - psy-reg >=1.5.0  # earliest Py312 build; not yet at 1.5.0 (4 Apr 2024); needs support for Python 3.12
+  - psy-simple >=1.5.0  # earliest Py312 build
   - pyproj >=2.1
   - pys2index  # only from conda-forge
   - python >=3.9
   - python-cdo
   - python-dateutil
   - pyyaml
-  - rasterio
+  - rasterio >=1.3.10
   - requests
   - ruamel.yaml
   - scikit-image
@@ -63,7 +64,7 @@ dependencies:
   - scipy
   - seaborn
   - seawater
-  - shapely >=2
+  - shapely >=2.0.2
   - xarray >=0.12.0
   - xesmf >=0.7.1
   - xgboost >1.6.1  # github.com/ESMValGroup/ESMValTool/issues/2779
@@ -89,7 +90,7 @@ dependencies:
   - imagehash
   - isort
   - pre-commit
-  - prospector
+  # - prospector  # needs support for Python 3.12
   - pyroma
   # - vprof not on conda-forge
   - yamllint
