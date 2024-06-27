@@ -3,6 +3,101 @@
 Changelog
 =========
 
+.. _changelog-v2-11-0:
+
+v2.11.0
+-------
+Highlights
+
+TODO: add highlights
+
+This release includes
+
+Bug fixes
+~~~~~~~~~
+
+-  Update OceanSODA-ETHZ CMORizer with new source file (:pull:`3535`) by :user:`TomasTorsvik`
+-   Update the name of the remapcon2 operator in R recipes (:pull:`3611`) by :user:`ehogan`
+
+Documentation
+~~~~~~~~~~~~~
+
+-  Improve release tools and documentation (:pull:`3462`) by :user:`bouweandela`
+-  Fix a typo in the references file (:pull:`3499`) by :user:`bouweandela`
+-  Fix recipe path in `recipe_perfmetrics.rst` (:pull:`3532`) by :user:`TomasTorsvik`
+-  Improved description of model evaluation recipes (:pull:`3541`) by :user:`schlunma`
+-  Remove double word in cmorizer documentation (:pull:`3553`) by :user:`bettina-gier`
+-  Fix Codacy badge (:pull:`3558`) by :user:`bouweandela`
+-  Update the release schedule for v2.11.0 (:pull:`3573`) by :user:`ehogan`
+-  Improve the formatting of the recipe documentation template (:pull:`3652`) by :user:`mo-gill`
+-  Add introduction material on the main documentation page (:pull:`3628`) by :user:`bouweandela`
+-  Avoid warning in documentation build (:pull:`3675`) by :user:`bouweandela`
+
+Diagnostics
+~~~~~~~~~~~
+
+-  `monitor/multi_dataset.py` improvements: allow data w/o `timerange` and improve text formatting (:pull:`3528`) by :user:`schlunma`
+-  Allow datasets without `project` in multi_datasets.py (:pull:`3552`) by :user:`schlunma`
+-  Add support for aerosol optical depth climatology metrics to the AutoAssess replacement (:pull:`3048`) by :user:`catherinehardacre`
+-  Fixed attribute handling in emergent constraint diagnostic for iris>=3.8 (:pull:`3605`) by :user:`schlunma`
+-  Fixed attribute handling in austral_jet/main.ncl for iris>=3.8 (:pull:`3603`) by :user:`schlunma`
+-  Use `iris.FUTURE.save_split_attrs = True` to remove iris warning in many diagnostics (:pull:`3651`) by :user:`schlunma`
+-  Avoid concatenation error in recipe_pcrglobwb.yml (:pull:`3645`) by :user:`bouweandela`
+-  Prevent overlapping time axis tick labels in monitoring recipe (:pull:`3682`) by :user:`schlunma`
+
+Observational and re-analysis dataset support
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Add cmorizer scripts for NOAA-ERSST. (:pull:`1799`) by :user:`bjoernbroetz`
+-  Add CMORizer script for NSIDC-G02202-sh sea ice fraction (:pull:`3512`) by :user:`flicj191`
+-  CMORizer Australian Gridded Climate Data(AGCD) precipitation (:pull:`3445`) by :user:`flicj191`
+-  Extend CMORizer NCEP-DOE-R2 (:pull:`3469`) by :user:`axel-lauer`
+-  Updating ESACCI-WATERVAPOUR cmorizer (:pull:`3282`) by :user:`malininae`
+-  Update CRU CMORizer (:pull:`3381`) by :user:`lukruh`
+-  Fix recipe_check_obs to be aligned with DKRZ (:pull:`3673`) by :user:`LisaBock`
+
+Automatic testing
+~~~~~~~~~~~~~~~~~
+
+-  Move code into function in batch job generation script (:pull:`3491`) by :user:`bouweandela`
+-  Fix sklearn tests (:pull:`3506`) by :user:`schlunma`
+-  Pinned sklearn>=1.4.0 (:pull:`3508`) by :user:`schlunma`
+-  Update sklearn tests to be compatible with current pytest version (pytest >=8.0.0) (:pull:`3517`) by :user:`schlunma`
+-  Update sklearn tests to be compatible with current pytest version (pytest >=8.0.0) Part 2 (:pull:`3518`) by :user:`schlunma`
+-  [Circle/CI]Fix `test_installation_from_conda` Circle CI tests (:pull:`3538`) by :user:`valeriupredoi`
+-  [Github Actions] install git in OSX and add environment inspection (:pull:`3581`) by :user:`valeriupredoi`
+-  [CI Github Actions] Update (outdated) actions versions that produce Node.js warnings (:pull:`3586`) by :user:`valeriupredoi`
+-  Fix `flake8==7` linting issues (:pull:`3634`) by :user:`valeriupredoi`
+-  Use `importlib` as the import mode for `pytest` (:pull:`3672`) by :user:`ehogan`
+
+Installation
+~~~~~~~~~~~~
+
+-  Update dependencies (:pull:`3487`) by :user:`bouweandela`
+-  Merge v2.10.x into main (:pull:`3489`) by :user:`schlunma`
+-  Add imagehash package as an ESMValTool dependency (:pull:`3557`) by :user:`alistairsellar`
+-  Unpin `r-akima` (:pull:`3564`) by :user:`valeriupredoi`
+-  Adding pys2index dependency (:pull:`3577`) by :user:`ljoakim`
+-  Pin esmpy <8.6.0 (:pull:`3585`) by :user:`valeriupredoi`
+-  Updated esmf-related pins (:pull:`3643`) by :user:`schlunma`
+
+Improvements
+~~~~~~~~~~~~
+
+-  Fix for `recipe_seaice_drift.yml`: fix CRS transformer for "North Pole Stereographic" (:pull:`3531`) by :user:`flicj191`
+-  Add comment to recipe_lauer13jclim regarding UWisc being superseded by MAC-LWP (:pull:`3537`) by :user:`rbeucher`
+-  Recipe_autoassess_landsurface_surfrad: Remove CERES-EBAF version to fix ESGF search, see #2974 (:pull:`3438`) by :user:`rbeucher`
+-  (Re-)raise exception when imagehash not available (:pull:`3435`) by :user:`alistairsellar`
+-  Revert "(Re-)raise exception when imagehash not available" (:pull:`3539`) by :user:`rbeucher`
+-  CMORiser for ANU Climate 2.0 Australian data (:pull:`3511`) by :user:`flicj191`
+-  Recipe_ocean_quadmap: Update ATSR to match ESGF name (:pull:`3443`) by :user:`rbeucher`
+-  Add native6, OBS6 and RAWOBS rootpaths to metoffice template in config-user-example.yml and remove temporary dir (:pull:`3613`) by :user:`alistairsellar`
+-  Add AERONET cmorizer (:pull:`3227`) by :user:`zklaus`
+-  CMIP6 climate patterns  (:pull:`2785`) by :user:`mo-gregmunday`
+-  Fix recipe_bock20jgr_fig_8-10.yml (:pull:`3665`) by :user:`LisaBock`
+
+.. _changelog-v2-10-0:
+
 v2.10.0
 -------
 Highlights
