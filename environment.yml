@@ -97,14 +97,14 @@ dependencies:
   - yapf
 
   # NCL and dependencies
-  - ncl >=6.6.2
+  # - ncl >=6.6.2
   - cdo
   - imagemagick
   - nco
 
   # R and dependencies
   - cdo
-  - r-base >=3.5
+  - r-base >=3.5, <4.3.0
   - r-abind
   - r-akima
   - r-climdex.pcic
