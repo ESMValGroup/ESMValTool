@@ -6,7 +6,7 @@ import iris
 from iris.analysis import MEAN
 from iris.analysis.stats import pearsonr
 
-from diagnostic import plot_diagnostic
+from esmvaltool.diag_scripts.examples.diagnostic import plot_diagnostic
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 
 logger = logging.getLogger(os.path.basename(__file__))

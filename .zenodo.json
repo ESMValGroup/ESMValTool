@@ -390,6 +390,11 @@
       "affiliation": "ACCESS-NRI, Australia",
       "name": "Chun, Felicity",
       "orcid": "0009-0007-0845-0953"
+    },
+    {
+      "affiliation": "MetOffice, UK",
+      "name": "Munday, Gregory",
+      "orcid": "0000-0003-4750-9923"
     }
   ],
   "description": "ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP.",
