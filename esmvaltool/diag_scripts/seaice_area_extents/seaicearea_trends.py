@@ -74,7 +74,6 @@ def plot_trend(model_min_max, obs_a, minmax, prov, cfg):
     obs_a: xarray of observations area
     minmax: 'min' or 'max'
     """
-
     figure, _axes = plt.subplots()
 
     # add note for years change
