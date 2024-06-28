@@ -4,6 +4,7 @@ from pathlib import Path
 
 import dask.array as da
 import iris
+from esmvalcore.preprocessor import concatenate
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
@@ -83,8 +84,7 @@ def add_spinup_year(cube, cube_climatology):
         coord_climatology.guess_bounds()
 
     # Create CubeList and concatenate
-    cube_list = iris.cube.CubeList([cube, cube_climatology])
-    new_cube = iris.cube.CubeList(cube_list).concatenate_cube()
+    new_cube = concatenate([cube, cube_climatology])
 
     return new_cube
 

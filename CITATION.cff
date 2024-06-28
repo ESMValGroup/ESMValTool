@@ -391,6 +391,11 @@ authors:
     family-names: Bonnet
     given-names: Pauline
     orcid: "https://orcid.org/0000-0003-3780-0784"
+  - 
+    affiliation: "MetOffice, UK"
+    family-names: Munday
+    given-names: Gregory
+    orcid: "https://orcid.org/0000-0003-4750-9923"
 
 cff-version: 1.2.0
 date-released: 2023-12-20

@@ -1,0 +1,249 @@
+# ESMValTool
+# recipe_climate_patterns.yml
+---
+documentation:
+  description: Generating climate patterns from CMIP6 models.
+  title: Generating Climate Patterns
+
+  authors:
+    - munday_gregory
+
+  maintainer:
+    - munday_gregory
+
+  references:
+    - mathison2024gmd
+    - huntingford2000climdyn
+
+preprocessors:
+  global_mean_monthly:
+    monthly_statistics:
+      operator: mean
+
+    regrid:
+      target_grid: {start_longitude: -180, end_longitude: 176.25, step_longitude: 3.75,
+                    start_latitude: -55, end_latitude: 82.5, step_latitude: 2.5}
+      scheme: linear
+
+  downscale_sftlf:
+    regrid:
+      target_grid: {start_longitude: -180, end_longitude: 176.25, step_longitude: 3.75,
+                    start_latitude: -55, end_latitude: 82.5, step_latitude: 2.5}
+      scheme: linear
+
+monthly_global_settings: &monthly_global_settings
+  mip: Amon
+  project: CMIP6
+  preprocessor: global_mean_monthly
+
+monthly_global_settings_day: &monthly_global_settings_day
+  mip: day
+  project: CMIP6
+  preprocessor: global_mean_monthly
+
+
+CMIP6_landfrac: &cmip6_landfrac
+  - {dataset: ACCESS-CM2,      exp: piControl,  ensemble: r1i1p1f1, grid: gn, institute: CSIRO-ARCCSS}
+  - {dataset: ACCESS-ESM1-5,   exp: piControl,  ensemble: r1i1p1f1, grid: gn}
+  - {dataset: AWI-CM-1-1-MR,   exp: piControl,  ensemble: r1i1p1f1, grid: gn}
+  - {dataset: BCC-CSM2-MR,     exp: hist-resIPO,ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CanESM5,         exp: piControl,  ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CanESM5-CanOE,   exp: piControl,  ensemble: r1i1p2f1, grid: gn}
+  - {dataset: CanESM5-1,       exp: piControl,  ensemble: r1i1p1f1, grid: gn, institute: CCCma}
+  # - {dataset: CAS-ESM2-0,      exp: piControl,  ensemble: r1i1p1f1, grid: gn} # Global only
+  - {dataset: CMCC-ESM2,       exp: piControl,  ensemble: r1i1p1f1, grid: gn}
+  # - {dataset: CMCC-CM2-SR5,    exp: piControl,  ensemble: r1i1p1f1, grid: gn} # No tasmin/tasmax
+  - {dataset: CNRM-CM6-1,      exp: piControl,  ensemble: r1i1p1f2, grid: gr}
+  - {dataset: CNRM-CM6-1-HR,   exp: piControl,  ensemble: r1i1p1f2, grid: gr}
+  - {dataset: CNRM-ESM2-1,     exp: piControl,  ensemble: r1i1p1f2, grid: gr}
+  # - {dataset: E3SM-1-0,        exp: piControl,  ensemble: r1i1p1f1, grid: gr} # Tasmax == tasmin
+  - {dataset: EC-Earth3,       exp: piControl,  ensemble: r1i1p1f1, grid: gr}
+  # - {dataset: EC-Earth3-CC,    exp: piControl,  ensemble: r1i1p1f1, grid: gr} # Global only
+  - {dataset: EC-Earth3-Veg,   exp: piControl,  ensemble: r1i1p1f1, grid: gr}
+  # - {dataset: FGOALS-f3-L,     exp: historical, ensemble: r1i1p1f1, grid: gr} # No tasmin/tasmax
+  - {dataset: FGOALS-g3,       exp: piControl,  ensemble: r1i1p1f1, grid: gn}
+  # - {dataset: FIO-ESM-2-0,     exp: piControl,  ensemble: r1i1p1f1, grid: gn} # Global only
+  - {dataset: GFDL-CM4,        exp: piControl,  ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: GFDL-ESM4,       exp: ssp370,     ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: GISS-E2-1-H,     exp: piControl,  ensemble: r1i1p1f1, grid: gn}
+  - {dataset: GISS-E2-1-G,     exp: piControl,  ensemble: r1i1p5f1, grid: gn}
+  - {dataset: GISS-E2-2-G,     exp: piControl,  ensemble: r1i1p1f1, grid: gn}
+  - {dataset: HadGEM3-GC31-LL, exp: piControl,  ensemble: r1i1p1f1, grid: gn}
+  - {dataset: HadGEM3-GC31-MM, exp: piControl,  ensemble: r1i1p1f1, grid: gn}
+  - {dataset: INM-CM4-8,       exp: piControl,  ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: INM-CM5-0,       exp: abrupt-4xCO2,  ensemble: r1i1p1f1, grid: gr1}
+  - {dataset: IPSL-CM6A-LR,    exp: piControl,  ensemble: r1i1p1f1, grid: gr}
+  # - {dataset: KACE-1-0-G,      exp: piControl,  ensemble: r1i1p1f1, grid: gr} # Global only, weird tasmin/tasmax
+  # - {dataset: KIOST-ESM,       exp: piControl,  ensemble: r1i1p1f1, grid: gr} # Global only
+  - {dataset: MIROC6,          exp: piControl,  ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MIROC-ES2L,      exp: piControl,  ensemble: r1i1p1f2, grid: gn}
+  - {dataset: MIROC-ES2H,      exp: piControl,  ensemble: r1i1p4f2, grid: gn}
+  - {dataset: MPI-ESM1-2-HR,   exp: piControl,  ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MPI-ESM1-2-LR,   exp: piControl,  ensemble: r1i1p1f1, grid: gn}
+  - {dataset: MRI-ESM2-0,      exp: piControl,  ensemble: r1i1p1f1, grid: gn}
+  # - {dataset: NorESM2-LM,      exp: piControl,  ensemble: r1i1p1f1, grid: gn} # Global only, tasmax == tasmin
+  - {dataset: NorESM2-MM,      exp: piControl,  ensemble: r1i1p1f1, grid: gn}
+  - {dataset: TaiESM1,         exp: piControl,  ensemble: r1i1p1f1, grid: gn}
+  - {dataset: UKESM1-0-LL,     exp: piControl,  ensemble: r1i1p1f2, grid: gn}
+
+CMIP6_no_tasmax: &cmip6_no_tasmax
+  # - {dataset: E3SM-1-0,        exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2099} # bad tasmin/tasmax
+  # - {dataset: NorESM2-LM,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100} # bad tasmin/tasmax
+  - {dataset: NorESM2-MM,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: TaiESM1,         exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+
+CMIP6_DAY: &cmip6_day 
+  # - {dataset: E3SM-1-0,        exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2099} # bad tasmin/tasmax
+  # - {dataset: NorESM2-LM,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100} # bad tasmin/tasmax
+  - {dataset: NorESM2-MM,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: TaiESM1,         exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+
+CMIP6_FULL: &cmip6_full
+  - {dataset: ACCESS-CM2,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100, institute: CSIRO-ARCCSS}
+  - {dataset: ACCESS-ESM1-5,   exp: [historical, ssp585], ensemble: r3i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: AWI-CM-1-1-MR,   exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: BCC-CSM2-MR,     exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: CanESM5,         exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: CanESM5-1,       exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100, institute: CCCma} # optional extra
+  - {dataset: CanESM5-CanOE,   exp: [historical, ssp585], ensemble: r1i1p2f1, grid: gn, start_year: 1850, end_year: 2100}
+  # - {dataset: CAS-ESM2-0,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100} # Global only
+  - {dataset: CMCC-ESM2,       exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  # - {dataset: CMCC-CM2-SR5,    exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100} # No tasmin/tasmax
+  - {dataset: CNRM-CM6-1,      exp: [historical, ssp585], ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 2100}
+  - {dataset: CNRM-CM6-1-HR,   exp: [historical, ssp585], ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 2100}
+  - {dataset: CNRM-ESM2-1,     exp: [historical, ssp585], ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 2100}
+  - {dataset: EC-Earth3,       exp: [historical, ssp585], ensemble: r11i1p1f1, grid: gr, start_year: 1850, end_year: 2100}
+  # - {dataset: EC-Earth3-CC,    exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2100} # Global only
+  - {dataset: EC-Earth3-Veg,   exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2100}
+  # - {dataset: FGOALS-f3-L,     exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2100} # No tasmin/tasmax
+  - {dataset: FGOALS-g3,       exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  # - {dataset: FIO-ESM-2-0,     exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100} # Global only
+  - {dataset: GFDL-CM4,        exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr1, start_year: 1850, end_year: 2100}
+  - {dataset: GFDL-ESM4,       exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr1, start_year: 1850, end_year: 2100}
+  - {dataset: GISS-E2-1-H,     exp: [historical, ssp585], ensemble: r3i1p1f2, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: GISS-E2-1-G,     exp: [historical, ssp585], ensemble: r1i1p5f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: GISS-E2-2-G,     exp: [historical, ssp585], ensemble: r1i1p3f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: HadGEM3-GC31-LL, exp: [historical, ssp585], ensemble: r1i1p1f3, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: HadGEM3-GC31-MM, exp: [historical, ssp585], ensemble: r1i1p1f3, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: INM-CM4-8,       exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr1, start_year: 1850, end_year: 2100}
+  - {dataset: INM-CM5-0,       exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr1, start_year: 1850, end_year: 2100}
+  - {dataset: IPSL-CM6A-LR,    exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2100}
+  # - {dataset: KACE-1-0-G,      exp: [historical, ssp585],  ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2100} # bad tasmin/tasmax
+  # - {dataset: KIOST-ESM,       exp: [historical, ssp585],  ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2100} # optional extra
+  - {dataset: MIROC6,          exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: MIROC-ES2L,      exp: [historical, ssp585], ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: MIROC-ES2H,      exp: [historical, ssp585], ensemble: r1i1p4f2, grid: gn, start_year: 1850, end_year: 2100} # optional extra
+  - {dataset: MPI-ESM1-2-HR,   exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: MPI-ESM1-2-LR,   exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: MRI-ESM2-0,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
+  - {dataset: UKESM1-0-LL,     exp: [historical, ssp585], ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 2100}
+
+diagnostics:
+  monthly_timeseries:
+    description: Mean monthly variables
+
+    variables:
+
+      # sftlf:
+      #   short_name: sftlf
+      #   mip: fx
+      #   project: CMIP6
+      #   preprocessor: downscale_sftlf
+      #   additional_datasets: *cmip6_landfrac
+
+      tasmax_585:
+        short_name: tasmax
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
+
+      tasmin_585:
+        short_name: tasmin
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
+
+      tas_585:
+        short_name: tas
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
+
+      huss_585:
+        short_name: huss
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
+
+      pr_585:
+        short_name: pr
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
+
+      sfcWind_585:
+        short_name: sfcWind
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
+
+      ps_585:
+        short_name: ps
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
+
+      rsds_585:
+        short_name: rsds
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
+
+      rlds_585:
+        short_name: rlds
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_full
+
+      tasmax_585_day:
+        short_name: tasmax
+        <<: *monthly_global_settings_day
+        additional_datasets: *cmip6_day
+
+      tasmin_585_day:
+        short_name: tasmin
+        <<: *monthly_global_settings_day
+        additional_datasets: *cmip6_day
+
+      tas_585_no_tasmax:
+        short_name: tas
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_no_tasmax
+
+      huss_585_no_tasmax:
+        short_name: huss
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_no_tasmax
+
+      pr_585_no_tasmax:
+        short_name: pr
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_no_tasmax
+
+      sfcWind_585_no_tasmax:
+        short_name: sfcWind
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_no_tasmax
+
+      ps_585_no_tasmax:
+        short_name: ps
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_no_tasmax
+
+      rsds_585_no_tasmax:
+        short_name: rsds
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_no_tasmax
+
+      rlds_585_no_tasmax:
+        short_name: rlds
+        <<: *monthly_global_settings
+        additional_datasets: *cmip6_no_tasmax
+
+    scripts:
+      climate_patterns_script:
+        script: climate_patterns/climate_patterns.py
+        jules_mode: false  # options: true, false
+        parallelise: false  # options: true, false
+        area: global  # options global, land. If land, uncomment landfrac recipe settings
