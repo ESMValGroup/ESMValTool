@@ -7,22 +7,20 @@ attributes:
   reference: 'doi:10.5285/1234567890abcdef'
   source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/soil_moisture/data/'
   title: 'ESA CCI Soil Moisture'
-  version: '08.1'
+  version: 'L3S-SSMV-COMBINED-v08.1'
   comment: ''
 variables:
   sm:
-    short_name: sm
     mip: Lmon
-    raw: sm #Volumetric Soil Moisture
-    filename: 'ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc'
-    start_year: 1978
-    end_year: 1979
+    raw: sm
+    filename: ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc
+    start_year: 1979
+    end_year: 1980
     frequency: day
-  sm_uncertainty:
-    short_name: smStderr
+  smStderr:
     mip: Lmon
-    raw: sm_uncertainty #Volumetric Soil Moisture
-    filename: 'ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc'
-    start_year: 1978
-    end_year: 1979
+    raw: sm_uncertainty
+    filename: ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc
+    start_year: 1979
+    end_year: 1980
     frequency: day

@@ -10,7 +10,6 @@ from pathlib import Path
 
 import iris
 import numpy as np
-import xarray as xr
 import yaml
 from cf_units import Unit
 from dask import array as da
@@ -145,10 +144,13 @@ def convert_timeunits(cube, start_year):
         real_unit = f'days since {str(start_year)}-01-01 00:00:00'
     elif cube.coord('time').units == 'days since 1950-1-1':
         real_unit = 'days since 1950-1-1 00:00:00'
+    elif cube.coord('time').units == 'days since 1970-01-01T00:00:00+00:00':
+        real_unit = 'days since 1970-01-01T00:00:00+00:00'
     else:
         real_unit = cube.coord('time').units
     cube.coord('time').units = real_unit
     return cube
+
 
 def fix_coords(cube,
                overwrite_time_bounds=True,
@@ -200,119 +202,6 @@ def fix_coords(cube,
             if overwrite_time_bounds or not cube.coord('time').has_bounds():
                 fix_bounds(cube, cube.coord('time'))
 
-        # fix longitude
-        if cube_coord.var_name == 'lon':
-            logger.info("Fixing longitude...")
-            if cube_coord.ndim == 1:
-                if cube_coord.points[0] < 0. and \
-                        cube_coord.points[-1] < 181.:
-                    cube_coord.points = \
-                        cube_coord.points + 180.
-                    cube.attributes['geospatial_lon_min'] = 0.
-                    cube.attributes['geospatial_lon_max'] = 360.
-                    nlon = len(cube_coord.points)
-                    roll_cube_data(cube, nlon // 2, -1)
-            if overwrite_lon_bounds or not cube_coord.has_bounds():
-                fix_bounds(cube, cube_coord)
-
-        # fix latitude
-        if cube_coord.var_name == 'lat':
-            logger.info("Fixing latitude...")
-            if overwrite_lat_bounds or not cube.coord('latitude').has_bounds():
-                fix_bounds(cube, cube.coord('latitude'))
-
-        # fix depth
-        if cube_coord.var_name == 'lev':
-            logger.info("Fixing depth...")
-            if overwrite_lev_bounds or not cube.coord('depth').has_bounds():
-                fix_bounds(cube, cube.coord('depth'))
-
-        # fix air_pressure
-        if cube_coord.var_name == 'air_pressure':
-            logger.info("Fixing air pressure...")
-            if overwrite_airpres_bounds \
-                    or not cube.coord('air_pressure').has_bounds():
-                fix_bounds(cube, cube.coord('air_pressure'))
-
-    # remove CS
-    cube.coord('latitude').coord_system = None
-    cube.coord('longitude').coord_system = None
-
-    return cube
-
-def fix_coords_esacci_soilmoisture(cube,
-               overwrite_time_bounds=True,
-               overwrite_lon_bounds=True,
-               overwrite_lat_bounds=True,
-               overwrite_lev_bounds=True,
-               overwrite_airpres_bounds=True):
-    """Fix coordinates to CMOR standards.
-
-    Fixes coordinates eg time to have correct units, bounds etc;
-    longitude to be CMOR-compliant 0-360deg; fixes some attributes
-    and bounds - the user can avert bounds fixing by using supplied
-    arguments; if bounds are None they will be fixed regardless.
-
-    Parameters
-    ----------
-    cube: iris.cube.Cube
-        data cube with coordinates to be fixed.
-
-    overwrite_time_bounds: bool (optional)
-        set to False not to overwrite time bounds.
-
-    overwrite_lon_bounds: bool (optional)
-        set to False not to overwrite longitude bounds.
-
-    overwrite_lat_bounds: bool (optional)
-        set to False not to overwrite latitude bounds.
-
-    overwrite_lev_bounds: bool (optional)
-        set to False not to overwrite depth bounds.
-
-    overwrite_airpres_bounds: bool (optional)
-        set to False not to overwrite air pressure bounds.
-
-    Returns
-    -------
-    cube: iris.cube.Cube
-        data cube with fixed coordinates.
-    """
-    # first fix any completely missing coord var names
-    fix_dim_coordnames(cube)
-    # fix individual coords
-    for cube_coord in cube.coords():
-        # fix time
-        if cube_coord.var_name == 'time':
-            logger.info("Fixing time...")
-            cube.coord('time').convert_units(
-                Unit('days since 1970-01-01T00:00:00+00:00', calendar='proleptic_gregorian'))
-            if overwrite_time_bounds or not cube.coord('time').has_bounds():
-                fix_bounds(cube, cube.coord('time'))
-        
-    try:
-        time_coord = cube.coord('time')
-        
-        if time_coord is None:
-            raise ValueError("Time coordinate 'time' not found in cube.")
-        
-        # Ensure time bounds are strictly monotonic
-        if time_coord.bounds is None:
-            logger.warning("Time bounds are not available for 'time' coordinate.")
-        else:
-            bounds = time_coord.bounds
-            if not (np.all(bounds[:, 0] <= bounds[:, 1]) or np.all(bounds[:, 0] >= bounds[:, 1])):
-                logger.warning("Time bounds are not monotonic. Adjusting...")
-                
-                # Sort the bounds array to ensure monotonicity
-                time_coord.bounds = bounds[np.argsort(bounds[:, 0])]
-                
-                logger.info("Adjusted time bounds to ensure monotonicity.")
-        
-    except Exception as e:
-        logger.error(f"Error fixing coordinates: {e}")
-        raise  # Propagate the error up if necessary
-    
         # fix longitude
         if cube_coord.var_name == 'lon':
             logger.info("Fixing longitude...")
@@ -681,6 +570,7 @@ def _gunzip(file_name, work_dir):
     with gzip.open(file_name, 'rb') as f_in:
         with open(os.path.join(work_dir, filename), 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
+
 
 try:
     shutil.register_unpack_format('gz', [
