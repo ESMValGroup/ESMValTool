@@ -59,7 +59,7 @@ preprocessors:
     <<: *sep_pp_5x5
     area_statistics:
        operator: mean
-    detrend:
+    #detrend:
 
   anomaly_pp_5x5:
     <<: *sep_pp_5x5
@@ -96,7 +96,7 @@ preprocessors:
     regrid: &regrid
       scheme: area_weighted
       target_grid: 5x5      
-    detrend:
+      #detrend:
 
   anomaly_pp:
     <<: *sep_pp
@@ -159,7 +159,8 @@ diagnostics:
     description: Create timeseries.
     variables:
       clt: &var
-        preprocessor: mean_pp_5x5
+        preprocessor: mean_pp
+        #preprocessor: mean_pp_5x5
         #preprocessor: anomaly_pp
         mip: day
         frequency: day
@@ -208,7 +209,7 @@ diagnostics:
         <<: *var2
       tos:
         <<: *var
-        preprocessor: anomaly_pp_5x5
+        #preprocessor: anomaly_pp_5x5
         mip: Oday 
         additional_datasets: *esacci_sst
       wap700:
