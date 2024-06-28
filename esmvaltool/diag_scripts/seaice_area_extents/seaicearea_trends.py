@@ -12,7 +12,9 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from esmvaltool.diag_scripts.shared import run_diagnostic, save_figure
+from esmvaltool.diag_scripts.shared import (
+    run_diagnostic, save_figure, save_data
+)
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
 
 
@@ -62,7 +64,7 @@ def min_and_max(dataset):
     return annual_min_max_ds
 
 
-def plot_trend(model_min_max, obs_a, minmax):
+def plot_trend(model_min_max, obs_a, minmax, prov, cfg):
     """
     function to plot min or max trend
 
@@ -78,6 +80,9 @@ def plot_trend(model_min_max, obs_a, minmax):
     # add note for years change
     for mod_label, model_min_max_dt in model_min_max.items():
         model_min_max_dt[minmax].plot(label=mod_label)
+        # save data
+        save_data(mod_label + minmax, prov, cfg, 
+                  model_min_max_dt[minmax].to_iris())
 
     if minmax == 'max':
         obs_a.cdr_area.groupby('time.year').max().plot(label='Obs CDR')
@@ -138,7 +143,8 @@ def main(cfg):
 
     provenance = get_provenance_record(inputfiles_df['filename'].to_list())
     for trend_type in ['min', 'max']:
-        fig = plot_trend(min_max, sea_ice_area_obs(obs_si), trend_type)
+        fig = plot_trend(min_max, sea_ice_area_obs(obs_si), trend_type, 
+                         provenance, cfg)
         # Save output
         save_figure(get_plot_filename(f'{trend_type}_trend', cfg),
                     provenance, cfg, figure=fig)
@@ -150,11 +156,12 @@ def get_provenance_record(ancestor_files):
         'ancestors': ancestor_files,
         'authors': [
             'chun_felicity',
+            'steketee_anton'
         ],
         'caption': 'added 1652 years to model years for comparability',
         'domains': ['shpolar'],
         'plot_types': ['times'],
-        'references': [],
+        'references': ['access_nri'],
         'statistics': ['mean'],
     }
     return record

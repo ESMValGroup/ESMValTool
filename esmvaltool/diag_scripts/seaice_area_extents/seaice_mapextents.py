@@ -16,7 +16,11 @@ import matplotlib.lines as mlines
 import numpy as np
 import pandas as pd
 
-from esmvaltool.diag_scripts.shared import run_diagnostic, save_figure
+from esmvaltool.diag_scripts.shared import (
+    run_diagnostic, 
+    save_figure, 
+    save_data
+)
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
 
 
@@ -47,7 +51,7 @@ def model_regrid_diff(mod_si, obs_si, cdr, mon, latmax):
     return diff_ds, mod_regrid
 
 
-def map_diff(mod_si_ls, obs_si, months):
+def map_diff(mod_si_ls, obs_si, months, cfg, prov):
     """Create figure mapping extents for models and months."""
     # get lat max for regridding
     latmax = obs_si.lat.max().values.item()
@@ -66,7 +70,12 @@ def map_diff(mod_si_ls, obs_si, months):
 
             diff_ds, mod_regrid = model_regrid_diff(mod_si, obs_si,
                                                     cdr, mon, latmax)
-
+            # save plot data
+            save_data(mod_label + calendar.month_abbr[mon] + '_mean',
+                      prov, cfg,  mod_regrid.to_iris())
+            save_data(mod_label + calendar.month_abbr[mon] + '_obs_diff',
+                      prov, cfg,  diff_ds.to_iris())
+            
             axes = plt.subplot(len(months), 3, i + j * 3, projection=proj)
 
             diffmap = axes.contourf(
@@ -124,10 +133,13 @@ def main(cfg):
             mod_si_dict[data_name] = xr.open_dataset(filepath)
 
     logger.info("creating map differences")
-    mapfig = map_diff(mod_si_dict, obs_si, cfg['months'])
+    provenance_record = get_provenance_record(inputs_df['filename'].to_list())
+
+    mapfig = map_diff(mod_si_dict, obs_si, cfg['months'], 
+                      cfg, provenance_record)
     # Save output
     output_path = get_plot_filename('map_difference', cfg)
-    provenance_record = get_provenance_record(inputs_df['filename'].to_list())
+
     save_figure(output_path, provenance_record, cfg, figure=mapfig)
 
 
@@ -137,6 +149,7 @@ def get_provenance_record(ancestor_files):
         'ancestors': ancestor_files,
         'authors': [
             'chun_felicity',
+            'steketee_anton'
         ],
         'caption': '',
         'domains': ['shpolar'],

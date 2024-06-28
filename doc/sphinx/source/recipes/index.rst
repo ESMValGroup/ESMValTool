@@ -146,6 +146,7 @@ Other
    recipe_rainfarm
    recipe_seaice
    recipe_seaice_drift
+   recipe_seaice_extents_sh
    recipe_seaice_feedback
    recipe_shapeselect
    recipes_testing
