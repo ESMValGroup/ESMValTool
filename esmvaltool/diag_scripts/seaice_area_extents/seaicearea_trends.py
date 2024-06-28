@@ -65,8 +65,7 @@ def min_and_max(dataset):
 
 
 def plot_trend(model_min_max, obs_a, minmax, prov, cfg):
-    """
-    function to plot min or max trend
+    """Plot min or max trend.
 
     Parameters
     ----------
