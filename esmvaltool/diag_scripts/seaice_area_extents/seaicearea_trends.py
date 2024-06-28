@@ -12,11 +12,9 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from esmvaltool.diag_scripts.shared import (
-    run_diagnostic, save_figure, save_data
-)
+from esmvaltool.diag_scripts.shared import (run_diagnostic, save_figure,
+                                            save_data)
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
-
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -54,13 +52,15 @@ def sea_ice_area_model_sh(xdataset):
 
 def min_and_max(dataset):
     """Compute min and max for dataset."""
+
     def min_and_max_year(yeardata):
         result = xr.Dataset()
         result['min'] = yeardata.min()
         result['max'] = yeardata.max()
         return result
-    annual_min_max_ds = dataset.si_area.groupby('time.year'
-                                                ).apply(min_and_max_year)
+
+    annual_min_max_ds = dataset.si_area.groupby('time.year').apply(
+        min_and_max_year)
     return annual_min_max_ds
 
 
@@ -81,7 +81,7 @@ def plot_trend(model_min_max, obs_a, minmax, prov, cfg):
     for mod_label, model_min_max_dt in model_min_max.items():
         model_min_max_dt[minmax].plot(label=mod_label)
         # save data
-        save_data(mod_label + minmax, prov, cfg, 
+        save_data(mod_label + minmax, prov, cfg,
                   model_min_max_dt[minmax].to_iris())
 
     if minmax == 'max':
@@ -104,11 +104,11 @@ def main(cfg):
     for dataset in cfg['input_data'].values():
         # data values to iterate
         logger.info("dataset: %s", dataset['long_name'])
-        data.append([dataset['filename'], dataset['short_name'],
-                    dataset['dataset']])
+        data.append(
+            [dataset['filename'], dataset['short_name'], dataset['dataset']])
 
-    inputfiles_df = pd.DataFrame(data, columns=['filename', 'short_name',
-                                                'dataset'])
+    inputfiles_df = pd.DataFrame(data,
+                                 columns=['filename', 'short_name', 'dataset'])
     # sort to ensure order of reading
     inputfiles_df.sort_values(['dataset', 'short_name'], inplace=True)
     logger.info(inputfiles_df[['short_name', 'dataset']])
@@ -143,21 +143,20 @@ def main(cfg):
 
     provenance = get_provenance_record(inputfiles_df['filename'].to_list())
     for trend_type in ['min', 'max']:
-        fig = plot_trend(min_max, sea_ice_area_obs(obs_si), trend_type, 
+        fig = plot_trend(min_max, sea_ice_area_obs(obs_si), trend_type,
                          provenance, cfg)
         # Save output
         save_figure(get_plot_filename(f'{trend_type}_trend', cfg),
-                    provenance, cfg, figure=fig)
+                    provenance,
+                    cfg,
+                    figure=fig)
 
 
 def get_provenance_record(ancestor_files):
     """Build provenance record."""
     record = {
         'ancestors': ancestor_files,
-        'authors': [
-            'chun_felicity',
-            'steketee_anton'
-        ],
+        'authors': ['chun_felicity', 'steketee_anton'],
         'caption': 'added 1652 years to model years for comparability',
         'domains': ['shpolar'],
         'plot_types': ['times'],

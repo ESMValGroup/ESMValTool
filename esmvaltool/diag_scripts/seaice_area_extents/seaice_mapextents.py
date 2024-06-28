@@ -16,13 +16,9 @@ import matplotlib.lines as mlines
 import numpy as np
 import pandas as pd
 
-from esmvaltool.diag_scripts.shared import (
-    run_diagnostic, 
-    save_figure, 
-    save_data
-)
+from esmvaltool.diag_scripts.shared import (run_diagnostic, save_figure,
+                                            save_data)
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
-
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -35,16 +31,14 @@ def model_regrid_diff(mod_si, obs_si, cdr, mon, latmax):
     regrd_out = obs_si.where(obs_si.lat > lat_min, drop=True)
 
     # regrid model data to observations
-    regridder_access_sh = xesmf.Regridder(
-        mod_si.isel(time=0).drop(['i', 'j']),
-        regrd_out.isel(time=0),
-        'bilinear',
-        periodic=True,
-        unmapped_to_nan=True
-    )
+    regridder_access_sh = xesmf.Regridder(mod_si.isel(time=0).drop(['i', 'j']),
+                                          regrd_out.isel(time=0),
+                                          'bilinear',
+                                          periodic=True,
+                                          unmapped_to_nan=True)
 
-    model_mean = mod_si.siconc.sel(time=mod_si.siconc.time
-                                   .dt.month.isin(mon)).mean('time')
+    model_mean = mod_si.siconc.sel(
+        time=mod_si.siconc.time.dt.month.isin(mon)).mean('time')
     mod_regrid = regridder_access_sh(model_mean)
     diff_ds = mod_regrid - cdr
 
@@ -63,27 +57,29 @@ def map_diff(mod_si_ls, obs_si, months, cfg, prov):
     j = 0  # to iterate through positions on figure
 
     for mon in months:
-        cdr = obs_si.siconc.sel(time=obs_si.siconc.time.dt.month.isin(mon)
-                                ).mean('time')
+        cdr = obs_si.siconc.sel(
+            time=obs_si.siconc.time.dt.month.isin(mon)).mean('time')
         i = 1
         for mod_label, mod_si in mod_si_ls.items():
 
-            diff_ds, mod_regrid = model_regrid_diff(mod_si, obs_si,
-                                                    cdr, mon, latmax)
+            diff_ds, mod_regrid = model_regrid_diff(mod_si, obs_si, cdr, mon,
+                                                    latmax)
             # save plot data
-            save_data(mod_label + calendar.month_abbr[mon] + '_mean',
-                      prov, cfg,  mod_regrid.to_iris())
-            save_data(mod_label + calendar.month_abbr[mon] + '_obs_diff',
-                      prov, cfg,  diff_ds.to_iris())
-            
+            save_data(mod_label + calendar.month_abbr[mon] + '_mean', prov,
+                      cfg, mod_regrid.to_iris())
+            save_data(mod_label + calendar.month_abbr[mon] + '_obs_diff', prov,
+                      cfg, diff_ds.to_iris())
+
             axes = plt.subplot(len(months), 3, i + j * 3, projection=proj)
 
-            diffmap = axes.contourf(
-                diff_ds.x, diff_ds.y, diff_ds,
-                levels=np.arange(-90, 91, 20), cmap='RdBu'
-            )
+            diffmap = axes.contourf(diff_ds.x,
+                                    diff_ds.y,
+                                    diff_ds,
+                                    levels=np.arange(-90, 91, 20),
+                                    cmap='RdBu')
             cs_cdr = cdr.plot.contour(levels=[15], ax=axes)
-            cs_mod = mod_regrid.plot.contour(levels=[15], ax=axes,
+            cs_mod = mod_regrid.plot.contour(levels=[15],
+                                             ax=axes,
                                              colors=['black'])
 
             plt.title(calendar.month_abbr[mon] + ' ' + mod_label)
@@ -99,10 +95,12 @@ def map_diff(mod_si_ls, obs_si, months, cfg, prov):
                              color=cs_mod.collections[0].get_edgecolor(),
                              label="Modelled Extent")
 
-    plt.legend(handles=[line_cdr, line_mod], loc='center left',
+    plt.legend(handles=[line_cdr, line_mod],
+               loc='center left',
                bbox_to_anchor=(1.2, 0.5))
     cax = plt.axes([0.7, 0.55, 0.04, 0.3])
-    _ = plt.colorbar(diffmap, cax=cax,
+    _ = plt.colorbar(diffmap,
+                     cax=cax,
                      label='Difference in \nSea Ice Concentration')
     return figure
 
@@ -135,8 +133,8 @@ def main(cfg):
     logger.info("creating map differences")
     provenance_record = get_provenance_record(inputs_df['filename'].to_list())
 
-    mapfig = map_diff(mod_si_dict, obs_si, cfg['months'], 
-                      cfg, provenance_record)
+    mapfig = map_diff(mod_si_dict, obs_si, cfg['months'], cfg,
+                      provenance_record)
     # Save output
     output_path = get_plot_filename('map_difference', cfg)
 
@@ -147,10 +145,7 @@ def get_provenance_record(ancestor_files):
     """Build provenance dictionary."""
     record = {
         'ancestors': ancestor_files,
-        'authors': [
-            'chun_felicity',
-            'steketee_anton'
-        ],
+        'authors': ['chun_felicity', 'steketee_anton'],
         'caption': '',
         'domains': ['shpolar'],
         'plot_types': ['polar'],
