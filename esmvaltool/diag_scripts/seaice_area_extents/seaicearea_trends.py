@@ -67,11 +67,12 @@ def min_and_max(dataset):
 def plot_trend(model_min_max, obs_a, minmax, prov, cfg):
     """Plot min or max trend.
 
-    Parameters
-    ----------
-    model_min_max: dictionary of model label and xarray ds with min and max.
-    obs_a: xarray of observations area
-    minmax: 'min' or 'max'
+    Keyword arguments:
+    model_min_max -- dictionary of model label and xarray ds with min and max.
+    obs_a -- xarray of observations area
+    minmax -- 'min' or 'max' str
+    prov -- provenance record for saving data
+    cfg -- for saving data
     """
     figure, _axes = plt.subplots()
 
