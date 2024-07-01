@@ -86,12 +86,16 @@ authors:
     given-names: Peter
     orcid: "https://orcid.org/0000-0002-1469-2568"
   -
+    affiliation: "Met Office, UK"
+    family-names: Billows
+    given-names: Chris
+  -
     affiliation: "DLR, Germany"
     family-names: Bock
     given-names: Lisa
     orcid: "https://orcid.org/0000-0001-7058-5938"
   -
-    affiliation: "MetOffice, UK"
+    affiliation: "Met Office, UK"
     family-names: Bodas-Salcedo
     given-names: Alejandro
     orcid: "https://orcid.org/0000-0002-7890-2536"
@@ -146,7 +150,7 @@ authors:
     family-names: Docquier
     given-names: David
   -
-    affiliation: "MetOffice, UK"
+    affiliation: "Met Office, UK"
     family-names: Dreyer
     given-names: Laura
   -
@@ -154,13 +158,21 @@ authors:
     family-names: Ehbrecht
     given-names: Carsten
   -
-    affiliation: "MetOffice, UK"
+    affiliation: "Met Office, UK"
     family-names: Earnshaw
     given-names: Paul
+  -
+    affiliation: "Met Office, UK"
+    family-names: Geddes
+    given-names: Theo
   -
     affiliation: "University of Bremen, Germany"
     family-names: Gier
     given-names: Bettina
+  -
+    affiliation: "Met Office, UK"
+    family-names: Gill
+    given-names: Ed
   -
     affiliation: "BSC, Spain"
     family-names: Gonzalez-Reviriego
@@ -196,6 +208,10 @@ authors:
     family-names: Heuer
     given-names: Helge
     orcid: "https://orcid.org/0000-0003-2411-7150"
+  -
+    affiliation: "Met Office, UK"
+    family-names: Hogan
+    given-names: Emma
   -
     affiliation: "BSC, Spain"
     family-names: Hunter
@@ -284,7 +300,7 @@ authors:
     family-names: Sandstad
     given-names: Marit
   -
-    affiliation: "MetOffice, UK"
+    affiliation: "Met Office, UK"
     family-names: Sellar
     given-names: Alistair
   -
@@ -310,6 +326,10 @@ authors:
     family-names: Swaminathan
     given-names: Ranjini
     orcid: "https://orcid.org/0000-0001-5853-2673"
+  -
+    affiliation: "Met Office, UK"
+    family-names: Tomkins
+    given-names: Katherine
   -
     affiliation: "BSC, Spain"
     family-names: Torralba
@@ -391,7 +411,7 @@ authors:
     family-names: Bonnet
     given-names: Pauline
     orcid: "https://orcid.org/0000-0003-3780-0784"
-  - 
+  -
     affiliation: "MetOffice, UK"
     family-names: Munday
     given-names: Gregory
