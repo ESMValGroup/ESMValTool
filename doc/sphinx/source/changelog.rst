@@ -100,6 +100,7 @@ Installation
 -  Unpin ``r-akima`` (:pull:`3564`) by :user:`valeriupredoi`
 -  Adding pys2index dependency (:pull:`3577`) by :user:`ljoakim`
 -  Pin esmpy <8.6.0 (:pull:`3585`) by :user:`valeriupredoi`
+-  Pin R <4.3.0 (:pull:`3689`) by :user:`ehogan`
 
 Improvements
 ~~~~~~~~~~~~
