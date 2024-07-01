@@ -49,9 +49,8 @@ Documentation
 Diagnostics
 ~~~~~~~~~~~
 
--  ``monitor/multi_dataset.py`` improvements: allow data w/o `timerange` and improve text formatting (:pull:`3528`) by :user:`schlunma`
+-  ``monitor/multi_dataset.py`` improvements: allow data w/o ``timerange`` and improve text formatting (:pull:`3528`) by :user:`schlunma`
 -  Allow datasets without ``project`` in multi_datasets.py (:pull:`3552`) by :user:`schlunma`
--  Add support for aerosol optical depth climatology metrics to the AutoAssess replacement (:pull:`3048`) by :user:`catherinehardacre`
 -  Fixed attribute handling in emergent constraint diagnostic for iris>=3.8 (:pull:`3605`) by :user:`schlunma`
 -  Use ``iris.FUTURE.save_split_attrs = True`` to remove iris warning in many diagnostics (:pull:`3651`) by :user:`schlunma`
 -  Avoid concatenation error in recipe_pcrglobwb.yml (:pull:`3645`) by :user:`bouweandela`
@@ -60,6 +59,7 @@ Diagnostics
 New recipe
 ~~~~~~~~~~
 
+-  Add support for aerosol optical depth climatology metrics to the AutoAssess replacement (:pull:`3048`) by :user:`catherinehardacre`
 -  CMIP6 climate patterns  (:pull:`2785`) by :user:`mo-gregmunday`
 
 Observational and re-analysis dataset support
@@ -96,13 +96,10 @@ Installation
 
 -  Update dependencies (:pull:`3487`) by :user:`bouweandela`
 -  Merge v2.10.x into main (:pull:`3489`) by :user:`schlunma`
--  (Re-)raise exception when imagehash not available (:pull:`3435`) by :user:`alistairsellar`
--  Revert "(Re-)raise exception when imagehash not available" (:pull:`3539`) by :user:`rbeucher`
 -  Add imagehash package as an ESMValTool dependency (:pull:`3557`) by :user:`alistairsellar`
 -  Unpin ``r-akima`` (:pull:`3564`) by :user:`valeriupredoi`
 -  Adding pys2index dependency (:pull:`3577`) by :user:`ljoakim`
 -  Pin esmpy <8.6.0 (:pull:`3585`) by :user:`valeriupredoi`
--  Updated esmf-related pins (:pull:`3643`) by :user:`schlunma`
 
 Improvements
 ~~~~~~~~~~~~
