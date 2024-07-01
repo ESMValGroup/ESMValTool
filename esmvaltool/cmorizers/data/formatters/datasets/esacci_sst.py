@@ -15,14 +15,6 @@ Download and processing instructions
    Go to https://services.ceda.ac.uk/cedasite/register/info/
    and create an account at CEDA if needed.
   
-?       Exclude data above sea ice threshold: True
-?         (Threshold: 100 %)
-?       Include post-hoc SST bias adjustments: True
-?       Output Absolute or Anomaly SST: absolute
-?       Generate Sea Ice Fraction: True
-?       Error Correlation in Time (Days): 7
-?       Error Correlation In Space (Degrees): 3.0
-
 Modification history
    20240618-bock_lisa: update for v3.0
    20201204-roberts_charles: written.
@@ -81,20 +73,25 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     # run the cmorization
     for var_name, vals in cfg['variables'].items():
         var = vals['short_name']
-        var_info = cmor_table.get_variable(vals['mip'], var)
-        glob_attrs['mip'] = vals['mip']
+        var_info = cmor_table.get_variable(vals['mip'][0], var)
+        glob_attrs['mip'] = vals['mip'][0]
         raw_info = {'name': vals['raw']}
         inpfile_pattern = os.path.join(in_dir, '{year}*'+vals['filename'])
         logger.info("CMORizing var %s from file type %s", var, inpfile_pattern)
         for year in range(vals['start_year'], vals['end_year'] + 1):
             logger.info("Processing year %s", year)
             mon_cubes = []
-            #for month in range(1,13):
-            for month in range(1,4):
+            for month in range(1,13):
+            #for month in range(1,3):
                 data_cubes = []
-                month_inpfile_pattern = inpfile_pattern.format(year=str(year)+"{:02}".format(month))
+                month_inpfile_pattern = inpfile_pattern.format(
+                                         year=str(year)+"{:02}".format(month))
                 logger.info("Pattern: %s", month_inpfile_pattern)
                 inpfiles = sorted(glob.glob(month_inpfile_pattern))
+                if inpfiles == []:
+                    logger.error("Could not find any files with this pattern %s",
+                                 month_inpfile_pattern)
+                    raise ValueError
                 logger.info("Found input files: %s", inpfiles)
                 for inpfile in inpfiles:
                     raw_info['file'] = inpfile
@@ -106,16 +103,24 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 # Fix monthly time bounds
                 time = monthly_cube.coord('time')
                 time.bounds = get_time_bounds(time, vals['frequency'])
-                mon_cubes.append(monthly_cube)
-                #mon_cubes.append(monthly_cube.collapsed('time', iris.analysis.MEAN))
+                # Save daily data
                 save_variable(monthly_cube,
                               var,
                               out_dir,
                               glob_attrs,
                               unlimited_dimensions=['time'])
-            yearly_cube = monthly_statistics(concatenate(mon_cubes), operator='mean')
-            #yearly_cube = concatenate(mon_cubes)
-            glob_attrs['mip'] = 'Omon'
+                # Calculate monthly mean
+                logger.info("Calculating monthly mean")
+                iris.coord_categorisation.add_month_number(monthly_cube, 'time')
+                iris.coord_categorisation.add_year(monthly_cube, 'time')
+                monthly_cube = monthly_cube.aggregated_by(['month_number', 'year'],
+                                          iris.analysis.MEAN)
+                monthly_cube.remove_coord('month_number')
+                monthly_cube.remove_coord('year')
+                mon_cubes.append(monthly_cube)
+            # Save monthly data
+            yearly_cube = concatenate(mon_cubes)
+            glob_attrs['mip'] = vals['mip'][1]
             save_variable(yearly_cube,
                           var,
                           out_dir,
