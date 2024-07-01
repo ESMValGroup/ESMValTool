@@ -38,6 +38,7 @@ REQUIREMENTS = {
         'fire',
         'fsspec',
         'GDAL',
+        "importlib_metadata<8;python_version<'3.10'",
         'jinja2',
         'joblib',
         'lime',
