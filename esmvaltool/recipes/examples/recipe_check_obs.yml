@@ -311,16 +311,13 @@ diagnostics:
   ESACCI-SST:
     description: ESACCI-SST check
     variables:
-      #ts:
-      #tsStderr:
       tos:
+      tosStderr:
     additional_datasets:
-            #- {dataset: ESACCI-SST, project: OBS, mip: Amon, tier: 2,
-            #   type: sat, version: 2.2,
-            #   start_year: 1982, end_year: 2019}
+      - {dataset: ESACCI-SST, project: OBS6, mip: Omon, tier: 3,
+         type: sat, version: 3.0-L4-analysis, timerange: '200401/200412'}
       - {dataset: ESACCI-SST, project: OBS6, mip: Oday, tier: 3,
-        type: sat, version: 3.0-L4-analysis, timerange: '200301/200712'}
-        # start_year: 2004, end_year: 2004}
+         type: sat, version: 3.0-L4-analysis, timerange: '200401/200412'}
     scripts: null
 
 

@@ -12,20 +12,20 @@ attributes:
 
 # Variables to cmorize (here use only filename prefix)
 variables:
-  tos:
-    short_name: tos
-    mip: [Oday, Omon]
-    raw: analysed_sst
+        #tos:
+        #  short_name: tos
+        #  mip: [Oday, Omon]
+        #  raw: analysed_sst
+        #  frequency: day
+        #  filename: ESACCI-L4_GHRSST-SSTdepth-OSTIA-GLOB_CDR3.0-v02.0-fv01.0.nc
+        #  start_year: 2004
+        #  end_year: 2004
+
+  tosStderr:
+    short_name: tosStderr
+    mip: [Oday]
+    raw: analysed_sst_uncertainty
     frequency: day
     filename: ESACCI-L4_GHRSST-SSTdepth-OSTIA-GLOB_CDR3.0-v02.0-fv01.0.nc
-    start_year: 2004
-    end_year: 2004
-
-    #  tosStderr:
-    #    short_name: tosStderr
-    #    mip: [Oday]
-    #    raw: analysed_sst_uncertainty
-    #    frequency: day
-    #    filename: ESACCI-L4_GHRSST-SSTdepth-OSTIA-GLOB_CDR3.0-v02.0-fv01.0.nc
-    #    start_year: 2004
-    #    end_year: 2004
+    start_year: 2003
+    end_year: 2003

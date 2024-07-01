@@ -47,7 +47,7 @@ class FTPDownloader(BaseDownloader):
         """Connect to the FTP server."""
         self._client = ftplib.FTP(self.server)
         logger.info(self._client.getwelcome())
-        if self.user == None:
+        if self.user is None:
             self._client.login()
         else:
             self._client.login(user=self.user, passwd=self.passwd)

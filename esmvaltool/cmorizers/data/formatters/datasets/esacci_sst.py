@@ -14,7 +14,7 @@ Download and processing instructions
    to register.
    Go to https://services.ceda.ac.uk/cedasite/register/info/
    and create an account at CEDA if needed.
-  
+
 Modification history
    20240618-bock_lisa: update for v3.0
    20201204-roberts_charles: written.
@@ -28,9 +28,9 @@ import os
 
 import iris
 from esmvalcore.cmor.fixes import get_time_bounds
+from esmvalcore.preprocessor import regrid
 from esmvaltool.cmorizers.data import utilities as utils
 from esmvalcore.preprocessor import concatenate
-from esmvalcore.preprocessor import regrid, monthly_statistics
 
 from ...utilities import (
     convert_timeunits,
@@ -55,7 +55,7 @@ def extract_variable(var_info, raw_info, attrs, year):
 
     # regridding from 0.05x0.05 to 0.5x0.5
     cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
-    #Fix dtype
+    # Fix dtype
     utils.fix_dtype(cube)
     # Fix cube
     fix_var_metadata(cube, var_info)
@@ -76,21 +76,20 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         var_info = cmor_table.get_variable(vals['mip'][0], var)
         glob_attrs['mip'] = vals['mip'][0]
         raw_info = {'name': vals['raw']}
-        inpfile_pattern = os.path.join(in_dir, '{year}*'+vals['filename'])
+        inpfile_pattern = os.path.join(in_dir, '{year}*' + vals['filename'])
         logger.info("CMORizing var %s from file type %s", var, inpfile_pattern)
         for year in range(vals['start_year'], vals['end_year'] + 1):
             logger.info("Processing year %s", year)
             mon_cubes = []
-            for month in range(1,13):
-            #for month in range(1,3):
+            for month in range(1, 13):
                 data_cubes = []
                 month_inpfile_pattern = inpfile_pattern.format(
-                                         year=str(year)+"{:02}".format(month))
+                                        year=str(year)+"{:02}".format(month))
                 logger.info("Pattern: %s", month_inpfile_pattern)
                 inpfiles = sorted(glob.glob(month_inpfile_pattern))
                 if inpfiles == []:
-                    logger.error("Could not find any files with this pattern %s",
-                                 month_inpfile_pattern)
+                    logger.error("Could not find any files with this"
+                                 " pattern %s", month_inpfile_pattern)
                     raise ValueError
                 logger.info("Found input files: %s", inpfiles)
                 for inpfile in inpfiles:
@@ -111,18 +110,20 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                               unlimited_dimensions=['time'])
                 # Calculate monthly mean
                 logger.info("Calculating monthly mean")
-                iris.coord_categorisation.add_month_number(monthly_cube, 'time')
+                iris.coord_categorisation.add_month_number(monthly_cube,
+                                                           'time')
                 iris.coord_categorisation.add_year(monthly_cube, 'time')
                 monthly_cube = monthly_cube.aggregated_by(['month_number', 'year'],
-                                          iris.analysis.MEAN)
+                                                          iris.analysis.MEAN)
                 monthly_cube.remove_coord('month_number')
                 monthly_cube.remove_coord('year')
                 mon_cubes.append(monthly_cube)
             # Save monthly data
-            yearly_cube = concatenate(mon_cubes)
-            glob_attrs['mip'] = vals['mip'][1]
-            save_variable(yearly_cube,
-                          var,
-                          out_dir,
-                          glob_attrs,
-                          unlimited_dimensions=['time'])
+            if 'Stderr' not in var_name: 
+                yearly_cube = concatenate(mon_cubes)
+                glob_attrs['mip'] = vals['mip'][1]
+                save_variable(yearly_cube,
+                              var,
+                              out_dir,
+                              glob_attrs,
+                              unlimited_dimensions=['time'])

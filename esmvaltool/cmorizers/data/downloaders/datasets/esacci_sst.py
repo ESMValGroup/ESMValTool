@@ -1,13 +1,12 @@
-"""Script to download ESACCI-SOILMOISTURE."""
+"""Script to download ESACCI-SST."""
 # Import required python modules
-import ftplib
+import logging
 import os
 
 from datetime import datetime
 
 from dateutil import relativedelta
 
-from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 from esmvaltool.cmorizers.data.downloaders.ftp import FTPDownloader
 
 
@@ -33,7 +32,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     if start_date is None:
         start_date = datetime(2004, 1, 1)
     if end_date is None:
-        end_date = datetime(2007,12, 31)
+        end_date = datetime(2007, 12, 31)
 
     loop_date = start_date
 
@@ -42,8 +41,8 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         user = str(input("CEDA user name? "))
         if user == "":
             errmsg = ("A CEDA account is required to download CCI SST data."
-                      " Please visit https://services.ceda.ac.uk/cedasite/register/info/"
-                      " to create an account at CEDA if needed.")
+                      " Please visit https://services.ceda.ac.uk/cedasite/"
+                      "register/info/ to create an account at CEDA if needed.")
             logger.error(errmsg)
             raise ValueError
 
@@ -64,7 +63,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     downloader.connect()
     downloader.set_cwd('neodc/eocis/data/global_and_regional/'
                        'sea_surface_temperature/CDR_v3/Analysis/L4/v3.0.1/')
-    
+
     while loop_date <= end_date:
         year = loop_date.year
         month = loop_date.strftime("%m")
