@@ -10,39 +10,39 @@ The |RTW| performs the following steps:
 
 ``install_env_file``
   :Description:
-     Copies the environment file for |ESMValTool|, based on the ``SITE`` provided
+     Copies the environment file for |ESMValTool|, based on the ``SITE``
+     provided
   :Runs on:
      Localhost
   :Executes:
-     The ``install_env_file.sh`` script from the |Rose| app
+     The ``cp`` command from the |Rose| app
   :Details:
      Runs once at the start of the workflow
 
 ``get_esmval``
   :Description:
-     Either clones the latest versions of |ESMValTool| and |ESMValCore| from GitHub,
-     or gets the latest container image from DockerHub and converts to a singularity
-     image, depending on ``SITE``.
+     Either clones the latest versions of |ESMValTool| and |ESMValCore| from
+     GitHub, or gets the latest container image from DockerHub and converts to
+     a singularity image, depending on ``SITE``
   :Runs on:
      Localhost (if cloning), or ``COMPUTE`` (if getting container), which
      depends on the ``SITE``; on JASMIN, the ``get_esmval`` jobs will run on
      LOTUS
   :Executes:
-     The ``clone_latest_esmval.sh`` script (if cloning), or a ``singularity build``
-     command (if getting container) from the |Rose| app
+     The ``clone_latest_esmval.sh`` script (if cloning), or a
+     ``singularity build`` command (if getting container) from the |Rose| app
   :Details:
      Runs at the start of each cycle
 
 ``configure``
   :Description:
-     Creates the |ESMValTool| user configuration file and validates it.
+     Creates the |ESMValTool| user configuration file and validates it
   :Runs on:
      Localhost
   :Executes:
      The ``configure.py`` script from the |Rose| app
   :Details:
-     ``configure`` should run at the start of each cycle after
-     ``install_env_file`` has completed.
+     Runs each cycle after ``get_esmval`` has completed
 
 ``process``
   :Description:
@@ -51,22 +51,23 @@ The |RTW| performs the following steps:
      ``COMPUTE``, which depends on the ``SITE``; at the Met Office, the
      ``process`` jobs will run on SPICE
   :Executes:
-     The |ESMValTool| command line script
+     The |ESMValTool| command line script from the |Rose| app
   :Details:
-     Runs for every recipe defined in the workflow
+     Runs each cycle for every recipe defined in the |RTW| after ``configure``
+     has completed
 
 ``compare``
   :Description:
-     Compares the output from the ``process`` job with a Known Good Output
-     (KGO).
+     Compares the output from the ``process`` job with |KGOs|
   :Runs on:
      ``COMPUTE``, which depends on the ``SITE``; at the Met Office, the
      ``compare`` jobs will run on SPICE
   :Executes:
-     The ``compare.py`` script from |ESMValTool| through the
-     ``compare_task_runner.sh`` script from the |Rose| app
+     The :ref:`compare.py <compare_recipe_runs>` script from |ESMValTool|
+     from the |Rose| app
   :Details:
-     Runs for every metric defined in the workflow
+     Runs each cycle for every recipe defined in the |RTW| after ``process``
+     has completed
 
 Design considerations
 ---------------------
@@ -75,7 +76,7 @@ Portability
 ~~~~~~~~~~~
 
 The |RTW| is portable; site-specific information can be found in the ``site``
-and ``opt`` directories within the workflow. The files required are:
+and ``opt`` directories within the |RTW|. The files required are:
 
 ``site/<site>.cylc``
   Contains task definitions specific to the ``SITE``, for example, ``COMPUTE``

@@ -9,7 +9,7 @@ Quick Start
 
 * Configure the |RTW|::
 
-    cd ESMValTool/esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
+    cd ESMValTool/esmvaltool/utils/recipe_test_workflow
     rose edit
 
 * Run the |RTW|:
@@ -32,7 +32,7 @@ Quick Start
 
     * run the RTW on JASMIN::
 
-        cd ESMValTool/esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
+        cd ESMValTool/esmvaltool/utils/recipe_test_workflow
         export CYLC_VERSION=8
         cylc vip -O jasmin
 

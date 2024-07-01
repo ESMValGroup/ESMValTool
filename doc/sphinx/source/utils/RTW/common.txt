@@ -9,6 +9,7 @@
 .. |ESMValCore| replace:: :term:`ESMValCore`
 .. |ESMValTool| replace:: :term:`ESMValTool`
 .. |KGOs| replace:: :term:`KGOs`
+.. |KGO| replace:: :term:`KGOs`
 .. |Rose| replace:: :term:`Rose`
 
 .. Links
