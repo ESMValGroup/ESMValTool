@@ -120,9 +120,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     iris.coord_categorisation.add_month_number(monthly_cube,
                                                                'time')
                     iris.coord_categorisation.add_year(monthly_cube, 'time')
-                    monthly_cube = 
-                      monthly_cube.aggregated_by(['month_number', 'year'],
-                                                 iris.analysis.MEAN)
+                    monthly_cube = monthly_cube.aggregated_by(['month_number',
+                                    'year'], iris.analysis.MEAN)
                     monthly_cube.remove_coord('month_number')
                     monthly_cube.remove_coord('year')
                     mon_cubes.append(monthly_cube)
