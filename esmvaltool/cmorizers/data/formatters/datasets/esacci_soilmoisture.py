@@ -43,10 +43,9 @@ logger = logging.getLogger(__name__)
 
 
 def fix_coords_esacci_soilmoisture(cube,
-               overwrite_time_bounds=True,
-               overwrite_lon_bounds=True,
-               overwrite_lat_bounds=True,
-               ):
+                                   overwrite_time_bounds=True,
+                                   overwrite_lon_bounds=True,
+                                   overwrite_lat_bounds=True):
     """Fix coordinates to CMOR standards.
 
     Fixes coordinates eg time to have correct units, bounds etc;
@@ -81,7 +80,8 @@ def fix_coords_esacci_soilmoisture(cube,
         if cube_coord.var_name == 'time':
             logger.info("Fixing time...")
             cube.coord('time').convert_units(
-                Unit('days since 1970-01-01T00:00:00+00:00', calendar='proleptic_gregorian'))
+                Unit('days since 1970-01-01T00:00:00+00:00',
+                     calendar='proleptic_gregorian'))
             if overwrite_time_bounds or not cube.coord('time').has_bounds():
                 fix_bounds(cube, cube.coord('time'))
 
@@ -104,19 +104,23 @@ def fix_coords_esacci_soilmoisture(cube,
         if cube_coord.var_name == 'lat':
             logger.info("Fixing latitude...")
             if overwrite_lat_bounds or not cube.coord('latitude').has_bounds():
-                fix_bounds(cube, cube.coord('latitude'))    
-   
+                fix_bounds(cube, cube.coord('latitude'))
+
     return cube
+
 
 def extract_variable(var_info, raw_info, attrs, year):
     """Extract variables."""
     rawvar = raw_info['name']
     constraint = iris.Constraint(name=rawvar)
-    
+
     if rawvar == 'sm_uncertainty':
-        sm_cube = iris.load_cube(raw_info['file'], iris.NameConstraint(var_name='sm'))
-        ancillary_var = sm_cube.ancillary_variable('Volumetric Soil Moisture Uncertainty')
-        cube = sm_cube.copy(ancillary_var.core_data()) 
+        sm_cube = iris.load_cube(raw_info['file'],
+                                 iris.NameConstraint(var_name='sm'))
+        ancillary_var = sm_cube.ancillary_variable(
+            'Volumetric Soil Moisture Uncertainty'
+        )
+        cube = sm_cube.copy(ancillary_var.core_data())
     else:
         cube = iris.load_cube(raw_info['file'], constraint)
 
@@ -141,41 +145,45 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     for var_name, vals in cfg['variables'].items():
         all_data_cubes = []
         if isinstance(vals, dict):  # Ensure vals is a dictionary
-            try:
-                var_info = cfg['cmor_table'].get_variable(vals['mip'], var_name)
-            except KeyError as e:
-                raise ValueError(f"Missing key in variable configuration: {e}")
-
+            var_info = cfg['cmor_table'].get_variable(vals['mip'], var_name)
             glob_attrs['mip'] = vals['mip']
             raw_info = {'name': vals['raw']}
             inpfile_pattern = os.path.join(in_dir, vals['filename'])
-            logger.info("CMORizing var %s from file type %s", var_name, inpfile_pattern)
+            logger.info("CMORizing var %s from file type %s",
+                        var_name, inpfile_pattern)
 
             for year in range(vals['start_year'], vals['end_year'] + 1):
                 year_inpfile_pattern = inpfile_pattern.format(year=year)
                 inpfiles = sorted(glob.glob(year_inpfile_pattern))
                 for inpfile in inpfiles:
                     raw_info['file'] = inpfile
-                    logger.info("CMORizing var %s from file type %s", var_name, raw_info['file'])
-                    cube = extract_variable(var_info, raw_info, glob_attrs, year)
+                    logger.info("CMORizing var %s from file type %s",
+                                var_name, raw_info['file'])
+                    cube = extract_variable(var_info, raw_info, glob_attrs,
+                                            year)
                     all_data_cubes.append(cube)
             final_cube = concatenate(all_data_cubes)
             time = final_cube.coord('time')
             time.bounds = get_time_bounds(time, vals['frequency'])
-            save_variable(final_cube, var_name, out_dir, glob_attrs, unlimited_dimensions=['time'])
+            save_variable(final_cube, var_name, out_dir, glob_attrs,
+                          unlimited_dimensions=['time'])
 
         else:
-            raise ValueError(f"Invalid format for variable {var_name}: {type(vals)}")
+            raise ValueError(
+                f"Invalid format for variable {var_name}: {type(vals)}"
+            )
 
 
 if __name__ == "__main__":
-    #RAWOBS dir
+    # RAWOBS dir
     in_dir = '/scratch/b/b309265/RAWOBS/Tier2/ESACCI-SOILMOISTURE/'
-    #in_dir = '/work/bd0854/DATA/ESMValTool2/RAWOBS/Tier2/ESACCI-SOILMOISTURE/'
-    #OBS dir CMOR-compliant
+    # in_dir= '/work/bd0854/DATA/ESMValTool2/RAWOBS/Tier2/ESACCI-SOILMOISTURE/'
+
+    # OBS dir CMOR-compliant
     out_dir = '/scratch/b/b309265/esmvaltool_output/'
-    #out_dir = '/work/bd0854/DATA/ESMValTool2/OBS/'
-    #Configuration file ESACCI-SOILMOISTURE
+    # out_dir = '/work/bd0854/DATA/ESMValTool2/OBS/'
+
+    # Configuration file ESACCI-SOILMOISTURE
     cfg_path = '../cmor_config/ESACCI-SOILMOISTURE.yml'
 
     with open(cfg_path, 'r') as f:
@@ -185,10 +193,10 @@ if __name__ == "__main__":
     end_date = cfg.get('end_date')
 
     if end_date is None:
-        raise ValueError("end_date cannot be None in configuration. Please provide a valid end date.")
+        raise ValueError("end_date cannot be None in configuration."
+                         "Please provide a valid end date.")
 
     logger.info("Files in input directory:")
     logger.info(os.listdir(in_dir))
 
     cmorization(in_dir, out_dir, cfg, None, start_date, end_date)
-
