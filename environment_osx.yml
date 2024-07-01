@@ -27,6 +27,7 @@ dependencies:
   - fsspec
   - fire
   - gdal
+  - importlib_metadata <8  # required for Python < 3.10
   - iris >=3.6.1
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - jinja2
