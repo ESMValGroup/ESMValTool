@@ -14,1975 +14,1978 @@ documentation:
   maintainer:
     - predoi_valeriu
 
+preprocessors:
+  timemean:
+    climate_statistics:
+      operator: mean  
 diagnostics:
 
-  ### TIER 2 ##################################################################
+  ## TIER 2 ##################################################################
 
-  # AGCD:
-  #   description:
-  #   variables:
-  #     pr:
-  #   additional_datasets:
-  #     - {project: OBS6, dataset: AGCD, mip: Amon, tier: 3, 
-  #       type: ground, version: v2-0-1}
-  #   scripts: null
+  AGCD:
+    description:
+    variables:
+      pr:
+    additional_datasets:
+      - {project: OBS6, dataset: AGCD, mip: Amon, tier: 3, 
+        type: ground, version: v2-0-1}
+    scripts: null
 
-  # BerkeleyEarth:
-  #   description: BerkeleyEarth check
-  #   variables:
-  #     tas:
-  #     tasa:
-  #   additional_datasets:
-  #     - {dataset: BerkeleyEarth, project: OBS, mip: Amon, tier: 2,
-  #        type: reanaly, version: 2020, start_year: 1850, end_year: 2019}
-  #   scripts: null
-
-
-  # CALIPSO-GOCCP:
-  #   description: CALIPSO-GOCCP check
-  #   variables:
-  #     clcalipso:
-  #   additional_datasets:
-  #     - {dataset: CALIPSO-GOCCP, project: OBS, type: sat, version: 3.1.2,
-  #        mip: cfMon, tier: 2, start_year: 2007, end_year: 2015}
-  #   scripts: null
+  BerkeleyEarth:
+    description: BerkeleyEarth check
+    variables:
+      tas:
+      tasa:
+    additional_datasets:
+      - {dataset: BerkeleyEarth, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: 2020, start_year: 1850, end_year: 2019}
+    scripts: null
 
 
-  # CERES-EBAF:
-  #   description: CERES-EBAF check
-  #   variables:
-  #     rlut:
-  #     rlutcs:
-  #     rsut:
-  #     rsutcs:
-  #   additional_datasets:
-  #     - {dataset: CERES-EBAF, project: OBS, mip: Amon, tier: 2,
-  #        type: sat, version: Ed4.1, start_year: 2001, end_year: 2021}
-  #   scripts: null
+  CALIPSO-GOCCP:
+    description: CALIPSO-GOCCP check
+    variables:
+      clcalipso:
+    additional_datasets:
+      - {dataset: CALIPSO-GOCCP, project: OBS, type: sat, version: 3.1.2,
+         mip: cfMon, tier: 2, start_year: 2007, end_year: 2015}
+    scripts: null
 
 
-  # CRU:
-  #   description: CRU check
-  #   variables:
-  #     tas:  # check older versions
-  #       mip: Amon
-  #       additional_datasets:
-  #       - {dataset: CRU, project: OBS, tier: 2, type: reanaly, 
-  #         version: TS4.02, start_year: 1901, end_year: 2017}
-  #       - {dataset: CRU, project: OBS6, tier: 2, type: reanaly, 
-  #         version: TS4.07, start_year: 1901, end_year: 2021}
-  #     pr:  # check older versions
-  #       mip: Amon
-  #       additional_datasets:
-  #       - {dataset: CRU, project: OBS, tier: 2, type: reanaly, 
-  #       version: TS4.02, start_year: 1901, end_year: 2017}
-  #       - {dataset: CRU, project: OBS6, tier: 2, type: reanaly, 
-  #         version: TS4.07, start_year: 1901, end_year: 2021}
-  #     tasmin:
-  #       mip: Amon
-  #     tasmax:
-  #       mip: Amon
-  #     clt:
-  #       mip: Amon
-  #     evspsblpot:
-  #       mip: Emon
-  #   additional_datasets:  # newest version for all variables
-  #     - {dataset: CRU, project: OBS6, tier: 2,
-  #        type: reanaly, version: TS4.07, start_year: 1901, end_year: 2022}
+  CERES-EBAF:
+    description: CERES-EBAF check
+    variables:
+      rlut:
+      rlutcs:
+      rsut:
+      rsutcs:
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: OBS, mip: Amon, tier: 2,
+         type: sat, version: Ed4.1, start_year: 2001, end_year: 2021}
+    scripts: null
+
+
+  CRU:
+    description: CRU check
+    variables:
+      tas:  # check older versions
+        mip: Amon
+        additional_datasets:
+        - {dataset: CRU, project: OBS, tier: 2, type: reanaly, 
+          version: TS4.02, start_year: 1901, end_year: 2017}
+        - {dataset: CRU, project: OBS6, tier: 2, type: reanaly, 
+          version: TS4.07, start_year: 1901, end_year: 2021}
+      pr:  # check older versions
+        mip: Amon
+        additional_datasets:
+        - {dataset: CRU, project: OBS, tier: 2, type: reanaly, 
+        version: TS4.02, start_year: 1901, end_year: 2017}
+        - {dataset: CRU, project: OBS6, tier: 2, type: reanaly, 
+          version: TS4.07, start_year: 1901, end_year: 2021}
+      tasmin:
+        mip: Amon
+      tasmax:
+        mip: Amon
+      clt:
+        mip: Amon
+      evspsblpot:
+        mip: Emon
+    additional_datasets:  # newest version for all variables
+      - {dataset: CRU, project: OBS6, tier: 2,
+         type: reanaly, version: TS4.07, start_year: 1901, end_year: 2022}
       
 
-  #   scripts: null
+    scripts: null
 
 
-  # CowtanWay:
-  #   description: CowtanWay check
-  #   variables:
-  #     tasa:
-  #   additional_datasets:
-  #     - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
-  #        type: reanaly, version: had4_krig_v1, start_year: 1979,
-  #        end_year: 2013}
-  #     - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
-  #        type: reanaly, version: had4_uah_v1, start_year: 1979, end_year: 2013}
-  #     - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
-  #        type: reanaly, version: had4_short_krig_v2, start_year: 1979,
-  #        end_year: 2019, end_month: 11}
-  #     - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
-  #        type: reanaly, version: had4_short_uah_v2, start_year: 1979,
-  #        end_year: 2017, end_month: 7}
-  #     - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
-  #        type: reanaly, version: ghcn_short_krig_v2, start_year: 1979,
-  #        end_year: 2019, end_month: 8}
-  #     - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
-  #        type: reanaly, version: ghcn_short_uah_v2, start_year: 1979,
-  #        end_year: 2017, end_month: 7}
-  #     - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
-  #        type: reanaly, version: had4sst4_krig_v2, start_year: 1850,
-  #        end_year: 2018}
-  #     - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
-  #        type: reanaly, version: had4_krig_v2, start_year: 1850,
-  #        end_year: 2019, end_month: 11}
-  #   scripts: null
+  CowtanWay:
+    description: CowtanWay check
+    variables:
+      tasa:
+    additional_datasets:
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4_krig_v1, start_year: 1979,
+         end_year: 2013}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4_uah_v1, start_year: 1979, end_year: 2013}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4_short_krig_v2, start_year: 1979,
+         end_year: 2019, end_month: 11}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4_short_uah_v2, start_year: 1979,
+         end_year: 2017, end_month: 7}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: ghcn_short_krig_v2, start_year: 1979,
+         end_year: 2019, end_month: 8}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: ghcn_short_uah_v2, start_year: 1979,
+         end_year: 2017, end_month: 7}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4sst4_krig_v2, start_year: 1850,
+         end_year: 2018}
+      - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: had4_krig_v2, start_year: 1850,
+         end_year: 2019, end_month: 11}
+    scripts: null
 
 
-  # CT2019:
-  #   description: CT2019 check
-  #   variables:
-  #     co2s:
-  #   additional_datasets:
-  #     - {dataset: CT2019, project: OBS6, mip: Amon, tier: 2,
-  #        type: reanaly, version: 2019, start_year: 2000, end_year: 2018}
-  #   scripts: null
+  CT2019:
+    description: CT2019 check
+    variables:
+      co2s:
+    additional_datasets:
+      - {dataset: CT2019, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 2019, start_year: 2000, end_year: 2018}
+    scripts: null
 
 
-  # Duveiller2018:
-  #   description: Duveiller2018 check
-  #   variables:
-  #     albDiffiTr13:
-  #   additional_datasets:
-  #     - {dataset: Duveiller2018, project: OBS, mip: Amon, tier: 2,
-  #        type: clim, version: v2018, start_year: 2010, end_year: 2010}
-  #   scripts: null
+  Duveiller2018:
+    description: Duveiller2018 check
+    variables:
+      albDiffiTr13:
+    additional_datasets:
+      - {dataset: Duveiller2018, project: OBS, mip: Amon, tier: 2,
+         type: clim, version: v2018, start_year: 2010, end_year: 2010}
+    scripts: null
 
 
-  # E-OBS:
-  #   description: E-OBS check
-  #   variables:
-  #     tas:
-  #     tasmax:
-  #     tasmin:
-  #     pr:
-  #     psl:
-  #   additional_datasets:
-  #   # yamllint disable rule:octal-values
-  #     - {dataset: E-OBS, project: OBS, mip: day, tier: 2, type: ground,
-  #        version: v20.0e-0.1, start_year: 1950, end_year: 2019, end_month: 07}
-  #     - {dataset: E-OBS, project: OBS, mip: day, tier: 2, type: ground,
-  #        version: v20.0e-0.25, start_year: 1950, end_year: 2019, end_month: 07}
-  #     - {dataset: E-OBS, project: OBS, mip: Amon, tier: 2, type: ground,
-  #        version: v20.0e-0.1, start_year: 1950, end_year: 2019, end_month: 07}
-  #     - {dataset: E-OBS, project: OBS, mip: Amon, tier: 2, type: ground,
-  #        version: v20.0e-0.25, start_year: 1950, end_year: 2019, end_month: 07}
-  #   # yamllint enable rule:octal-values
-  #   scripts: null
+  E-OBS:
+    description: E-OBS check
+    variables:
+      tas:
+      tasmax:
+      tasmin:
+      pr:
+      psl:
+    additional_datasets:
+    # yamllint disable rule:octal-values
+      - {dataset: E-OBS, project: OBS, mip: day, tier: 2, type: ground,
+         version: v20.0e-0.1, start_year: 1950, end_year: 2019, end_month: 07}
+      - {dataset: E-OBS, project: OBS, mip: day, tier: 2, type: ground,
+         version: v20.0e-0.25, start_year: 1950, end_year: 2019, end_month: 07}
+      - {dataset: E-OBS, project: OBS, mip: Amon, tier: 2, type: ground,
+         version: v20.0e-0.1, start_year: 1950, end_year: 2019, end_month: 07}
+      - {dataset: E-OBS, project: OBS, mip: Amon, tier: 2, type: ground,
+         version: v20.0e-0.25, start_year: 1950, end_year: 2019, end_month: 07}
+    # yamllint enable rule:octal-values
+    scripts: null
 
 
-  # Eppley-VGPM-MODIS:
-  #   description: Eppley-VGPM-MODIS check
-  #   variables:
-  #     intpp:
-  #   additional_datasets:
-  #     - {dataset: Eppley-VGPM-MODIS, project: OBS, mip: Omon, tier: 2,
-  #        type: sat, version: R2018, start_year: 2003, end_year: 2018}
-  #   scripts: null
+  Eppley-VGPM-MODIS:
+    description: Eppley-VGPM-MODIS check
+    variables:
+      intpp:
+    additional_datasets:
+      - {dataset: Eppley-VGPM-MODIS, project: OBS, mip: Omon, tier: 2,
+         type: sat, version: R2018, start_year: 2003, end_year: 2018}
+    scripts: null
 
 
-  # ESACCI-AEROSOL:
-  #   description: ESACCI-AEROSOL check
-  #   variables:
-  #     abs550aer:
-  #     od550aer:
-  #     od550aerStderr:
-  #     od550lt1aer:
-  #     od870aer:
-  #     od870aerStderr:
-  #   additional_datasets:
-  #     - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
-  #        type: sat, version: SU-v4.21, start_year: 1997, end_year: 2011}
-  #   scripts: null
+  ESACCI-AEROSOL:
+    description: ESACCI-AEROSOL check
+    variables:
+      abs550aer:
+      od550aer:
+      od550aerStderr:
+      od550lt1aer:
+      od870aer:
+      od870aerStderr:
+    additional_datasets:
+      - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
+         type: sat, version: SU-v4.21, start_year: 1997, end_year: 2011}
+    scripts: null
 
 
-  # ESACCI-CLOUD:
-  #   description: ESACCI-CLOUD check
-  #   variables:
-  #     clivi:
-  #     clt:
-  #     cltStderr:
-  #     clwvi:
-  #     lwp:
-  #     rlut:
-  #     rlutcs:
-  #     rsut:
-  #     rsutcs:
-  #     rsdt:
-  #     rlus:
-  #     rsus:
-  #     rsuscs:
-  #   additional_datasets:
-  #     - {dataset: ESACCI-CLOUD, project: OBS, mip: Amon, tier: 2,
-  #        type: sat, version: AVHRR-AMPM-fv3.0, start_year: 1982, end_year: 2016}
-  #   scripts: null
+  ESACCI-CLOUD:
+    description: ESACCI-CLOUD check
+    variables:
+      clivi:
+      clt:
+      cltStderr:
+      clwvi:
+      lwp:
+      rlut:
+      rlutcs:
+      rsut:
+      rsutcs:
+      rsdt:
+      rlus:
+      rsus:
+      rsuscs:
+    additional_datasets:
+      - {dataset: ESACCI-CLOUD, project: OBS, mip: Amon, tier: 2,
+         type: sat, version: AVHRR-AMPM-fv3.0, start_year: 1982, end_year: 2016}
+    scripts: null
 
 
-  # ESACCI-FIRE:
-  #   description: ESACCI-FIRE check
-  #   variables:
-  #     burntArea:
-  #   additional_datasets:
-  #     - {dataset: ESACCI-FIRE, project: OBS, mip: Lmon, tier: 2,
-  #        type: sat, version: L4-BA-MERIS-fv4.1,
-  #        start_year: 2005, end_year: 2011}
-  #   scripts: null
+  ESACCI-FIRE:
+    description: ESACCI-FIRE check
+    variables:
+      burntArea:
+    additional_datasets:
+      - {dataset: ESACCI-FIRE, project: OBS, mip: Lmon, tier: 2,
+         type: sat, version: L4-BA-MERIS-fv4.1,
+         start_year: 2005, end_year: 2011}
+    scripts: null
 
 
-  # ESACCI-LANDCOVER:
-  #   description: ESACCI-LANDCOVER check
-  #   variables:
-  #     baresoilFrac:
-  #     cropFrac:
-  #     grassFrac:
-  #     shrubFrac:
-  #     treeFrac:
-  #   additional_datasets:
-  #     - {dataset: ESACCI-LANDCOVER, project: OBS, mip: Lmon, tier: 2,
-  #        type: sat, version: L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg,
-  #        start_year: 1998, end_year: 2012}
-  #   scripts: null
+  ESACCI-LANDCOVER:
+    description: ESACCI-LANDCOVER check
+    variables:
+      baresoilFrac:
+      cropFrac:
+      grassFrac:
+      shrubFrac:
+      treeFrac:
+    additional_datasets:
+      - {dataset: ESACCI-LANDCOVER, project: OBS, mip: Lmon, tier: 2,
+         type: sat, version: L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg,
+         start_year: 1998, end_year: 2012}
+    scripts: null
 
-  # ESACCI-LST:
-  #   # TODO change years to full data coverage
-  #   description: ESACCI-LST check
-  #   variables:
-  #     ts:
-  #   additional_datasets:
-  #     - {dataset: ESACCI-LST, project: OBS, mip: Amon, tier: 2,
-  #        type: sat, version: "1.00",
-  #        start_year: 2003, end_year: 2018}
-  #   scripts: null
-
-
-  # ESACCI-OC:
-  #   description: ESACCI-OC check
-  #   variables:
-  #     chl:
-  #   additional_datasets:
-  #     - {dataset: ESACCI-OC, project: OBS6, mip: Omon, tier: 2,
-  #        type: sat, version: fv5.0, start_year: 1998, end_year: 2020}
-  #   scripts: null
+  ESACCI-LST:
+    # TODO change years to full data coverage
+    description: ESACCI-LST check
+    variables:
+      ts:
+    additional_datasets:
+      - {dataset: ESACCI-LST, project: OBS, mip: Amon, tier: 2,
+         type: sat, version: "1.00",
+         start_year: 2003, end_year: 2018}
+    scripts: null
 
 
-  # ESACCI-OZONE:
-  #   description: ESACCI-OZONE check
-  #   variables:
-  #     toz:
-  #       additional_datasets:
-  #         - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
-  #            type: sat, version: L3, start_year: 1997, end_year: 2010}
-  #     tozStderr:
-  #       additional_datasets:
-  #         - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
-  #            type: sat, version: L3, start_year: 1997, end_year: 2010}
-  #     tro3prof:
-  #       additional_datasets:
-  #         - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
-  #            type: sat, version: L3, start_year: 2007, end_year: 2008}
-  #     tro3profStderr:
-  #       additional_datasets:
-  #         - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
-  #            type: sat, version: L3, start_year: 2007, end_year: 2008}
-  #   scripts: null
+  ESACCI-OC:
+    description: ESACCI-OC check
+    variables:
+      chl:
+    additional_datasets:
+      - {dataset: ESACCI-OC, project: OBS6, mip: Omon, tier: 2,
+         type: sat, version: fv5.0, start_year: 1998, end_year: 2020}
+    scripts: null
 
-  # ESACCI-SEA-SURFACE-SALINITY:
-  #   description: ESACCI-SEA-SURFACE-SALINITY check
-  #   variables:
-  #     sos:
-  #   additional_datasets:
-  #     - {dataset: ESACCI-SEA-SURFACE-SALINITY, project: OBS6, mip: Omon, tier: 2,
-  #        type: reanaly, version: fv1.8, start_year: 2010, end_year: 2018}
-  #     - {dataset: ESACCI-SEA-SURFACE-SALINITY, project: OBS6, mip: Omon, tier: 2,
-  #        type: reanaly, version: fv2.31, start_year: 2010, end_year: 2018}
-  #   scripts: null
+
+  ESACCI-OZONE:
+    description: ESACCI-OZONE check
+    variables:
+      toz:
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
+             type: sat, version: L3, start_year: 1997, end_year: 2010}
+      tozStderr:
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
+             type: sat, version: L3, start_year: 1997, end_year: 2010}
+      tro3prof:
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
+             type: sat, version: L3, start_year: 2007, end_year: 2008}
+      tro3profStderr:
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
+             type: sat, version: L3, start_year: 2007, end_year: 2008}
+    scripts: null
+
+  ESACCI-SEA-SURFACE-SALINITY:
+    description: ESACCI-SEA-SURFACE-SALINITY check
+    variables:
+      sos:
+    additional_datasets:
+      - {dataset: ESACCI-SEA-SURFACE-SALINITY, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: fv1.8, start_year: 2010, end_year: 2018}
+      - {dataset: ESACCI-SEA-SURFACE-SALINITY, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: fv2.31, start_year: 2010, end_year: 2018}
+    scripts: null
 
 
   ESACCI-SOILMOISTURE:
     description: ESACCI-SOILMOISTURE check
     variables:
       sm:
-        additional_datasets:
-          - {dataset: ESACCI-SOILMOISTURE, project: OBS, mip: Lmon, tier: 2,
-          type: sat, version: L3S-SSMV-COMBINED-v08.1, start_year: 1979, end_year: 1980}
+        preprocessor: timemean
       smStderr:
-        additional_datasets:
-          - {dataset: ESACCI-SOILMOISTURE, project: OBS, mip: Lmon, tier: 2,
-          type: sat, version: L3S-SSMV-COMBINED-v08.1, start_year: 1979, end_year: 1980}
+        preprocessor: timemean
+    additional_datasets:
+      - {dataset: ESACCI-SOILMOISTURE, project: OBS, mip: Lmon, tier: 2,
+         type: sat, version: L3S-SSMV-COMBINED-v08.1, frequency: day, start_year: 1978, end_year: 2022}
     scripts: null
 
 
-  # ESACCI-SST:
-  #   description: ESACCI-SST check
-  #   variables:
-  #     ts:
-  #     tsStderr:
-  #   additional_datasets:
-  #     - {dataset: ESACCI-SST, project: OBS, mip: Amon, tier: 2,
-  #        type: sat, version: 2.2,
-  #        start_year: 1982, end_year: 2019}
-  #   scripts: null
-
-
-  # ESDC:
-  #   description: ESDC check
-  #   variables:
-  #     tas:
-  #     tasmin:
-  #     tasmax:
-  #   additional_datasets:
-  #     - {dataset: ESDC, project: OBS6, mip: Amon, tier: 2,
-  #        type: reanaly, version: 3.0.1,
-  #        start_year: 1979, end_year: 2021}
-  #   scripts: null
-
-  # ESRL:
-  #   description: ESRL check
-  #   variables:
-  #     co2s:
-  #       mip: Amon
-  #   additional_datasets:
-  #     - {dataset: ESRL, project: OBS, type: ground, version: ASK, tier: 2,
-  #        start_year: 2000, end_year: 2002}
-  #     - {dataset: ESRL, project: OBS, type: ground, version: GLOBAL, tier: 2,
-  #        start_year: 2000, end_year: 2002}
-  #     - {dataset: ESRL, project: OBS, type: ground, version: MLO, tier: 2,
-  #        start_year: 2000, end_year: 2002}
-  #   scripts: null
-
-
-  # GCP2018:
-  #   description: GCP2018 check
-  #   variables:
-  #     nbp:
-  #       mip: Lmon
-  #     fgco2:
-  #       mip: Omon
-  #   additional_datasets:
-  #     - {dataset: GCP2018, project: OBS, frequency: yr, tier: 2, type: reanaly,
-  #        version: '1.0', start_year: 1959, end_year: 2017}
-  #   scripts: null
-
-
-  # GCP2020:
-  #   description: GCP2020 check
-  #   variables:
-  #     nbp:
-  #       mip: Lmon
-  #       additional_datasets:
-  #         - {dataset: GCP2020, project: OBS, frequency: yr, tier: 2,
-  #            type: reanaly, version: '1.0', start_year: 1959, end_year: 2019}
-  #     nbp_residual:
-  #       short_name: nbp
-  #       mip: Lmon
-  #       additional_datasets:
-  #         - {dataset: GCP2020, project: OBS, frequency: yr, tier: 2,
-  #            type: reanaly, version: '1.0-residual', start_year: 1959,
-  #            end_year: 2019}
-  #     fgco2:
-  #       mip: Omon
-  #       additional_datasets:
-  #         - {dataset: GCP2020, project: OBS, frequency: yr, tier: 2,
-  #            type: reanaly, version: '1.0', start_year: 1959, end_year: 2019}
-  #   scripts: null
-
-
-  # GHCN:
-  #   description: GHCN check
-  #   variables:
-  #     pr:
-  #   additional_datasets:
-  #     - {dataset: GHCN, project: OBS, mip: Amon, tier: 2,
-  #        type: ground, version: 1, start_year: 1900, end_year: 2014}
-  #   scripts: null
-
-
-  # GHCN-CAMS:
-  #   description: GHCN-CAMS check
-  #   variables:
-  #     tas:
-  #   additional_datasets:
-  #     - {dataset: GHCN-CAMS, project: OBS, mip: Amon, tier: 2,
-  #        type: ground, version: 1, start_year: 1948, end_year: 2020}
-  #   scripts: null
-
-
-  # GISTEMP:
-  #   description: GISTEMP check
-  #   variables:
-  #     tasa:
-  #   additional_datasets:
-  #     - {dataset: GISTEMP, project: OBS, mip: Amon, tier: 2,
-  #        type: ground, version: v4, start_year: 1880, end_year: 2020}
-  #   scripts: null
-
-
-  # GLODAP:
-  #   description: GLODAP check
-  #   variables:
-  #     dissic:
-  #     ph:
-  #     talk:
-  #   additional_datasets:
-  #     - {dataset: GLODAP, project: OBS6, mip: Oyr, tier: 2,
-  #        type: clim, version: v2.2016b, start_year: 2000, end_year: 2000}
-  #   scripts: null
-
-
-  # GPCC:
-  #   description: GPCC check
-  #   variables:
-  #     pr:
-  #   additional_datasets:
-  #     - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
-  #        type: reanaly, version: v2018_025, start_year: 1891, end_year: 2016}
-  #     - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
-  #        type: reanaly, version: v2018_05, start_year: 1891, end_year: 2016}
-  #     - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
-  #        type: reanaly, version: v2018_10, start_year: 1891, end_year: 2016}
-  #     - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
-  #        type: reanaly, version: v2018_25, start_year: 1891, end_year: 2016}
-  #     - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
-  #        version: v2018_025-numgauge1, start_year: 1891, end_year: 2016}
-  #     - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
-  #        version: v2018_05-numgauge1, start_year: 1891, end_year: 2016}
-  #     - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
-  #        version: v2018_10-numgauge1, start_year: 1891, end_year: 2016}
-  #     - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
-  #        version: v2018_25-numgauge1, start_year: 1891, end_year: 2016}
-  #   scripts: null
-
-  # GPCP-SG:
-  #   description: GPCP-SG check
-  #   variables:
-  #     pr:
-  #   additional_datasets:
-  #     - {dataset: GPCP-SG, project: OBS, mip: Amon, tier: 2, type: atmos,
-  #        version: 2.3, start_year: 1979, end_year: 2022}
-  #   scripts: null
-
-  # HadCRUT3:
-  #   description: HadCRUT3 check
-  #   variables:
-  #     tasa:
-  #   additional_datasets:
-  #     - {dataset: HadCRUT3, project: OBS, mip: Amon, tier: 2,
-  #        type: ground, version: 1, start_year: 1850, end_year: 2013}
-  #   scripts: null
-
-
-  # HadCRUT4:
-  #   description: HadCRUT4 check
-  #   variables:
-  #     tas:
-  #     tasa:
-  #     tasConf5:
-  #     tasConf95:
-  #   additional_datasets:
-  #     - {dataset: HadCRUT4, project: OBS, mip: Amon, tier: 2,
-  #        type: ground, version: 1, start_year: 1850, end_year: 2018}
-  #   scripts: null
-
-
-  # HadCRUT5:
-  #   description: HadCRUT5 check
-  #   variables:
-  #     tas:
-  #     tasa:
-  #   additional_datasets:
-  #     - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
-  #        type: ground, version: 5.0.1.0-analysis, start_year: 1850, end_year: 2021}
-  #     - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
-  #        type: ground, version: 5.0.1.0-noninfilled, start_year: 1850, end_year: 2021}
-  #   scripts: null
-
-
-  # HadISST:
-  #   description: HadISST check
-  #   variables:
-  #     ts:
-  #       mip: Amon
-  #     tos:
-  #       mip: Omon
-  #     sic:
-  #       mip: OImon
-  #   additional_datasets:
-  #     - {dataset: HadISST, project: OBS, tier: 2,
-  #        type: reanaly, version: 1, start_year: 1870, end_year: 2021}
-  #   scripts: null
-
-
-  # HALOE:
-  #   description: HALOE check
-  #   variables:
-  #     hus:
-  #     tro3:
-  #   additional_datasets:
-  #     - {dataset: HALOE, project: OBS, mip: Amon, tier: 2,
-  #        type: sat, version: 1, start_year: 1991, end_year: 2002}
-  #   scripts: null
-
-  # ISCCP-FH:
-  #   description: ISCCP-FH check
-  #   variables:
-  #     alb:
-  #   additional_datasets:
-  #     - {dataset: ISCCP-FH, project: OBS, mip: Amon, tier: 2,
-  #        type: sat, version: v0, start_year: 1984, end_year: 2016}
-  #   scripts: null
-
-  # JRA-25:
-  #   description: JRA-25 check
-  #   variables:
-  #     clt:
-  #     hus:
-  #     prw:
-  #     rlut:
-  #     rlutcs:
-  #     rsut:
-  #     rsutcs:
-  #   additional_datasets:
-  #     - {dataset: JRA-25, project: OBS6, mip: Amon, tier: 2,
-  #        type: reanaly, version: 1, start_year: 1979, end_year: 2013}
-  #   scripts: null
-
-  # Kadow2020:
-  #   description: Kadow2020 check
-  #   variables:
-  #     tasa:
-  #   additional_datasets:
-  #     - {dataset: Kadow2020, project: OBS, mip: Amon, tier: 2,
-  #        type: ground, version: 5.0.1.0, start_year: 1850, end_year: 2020}
-  #   scripts: null
-
-
-  # Landschuetzer2016:
-  #   description: Landschuetzer2016 check
-  #   variables:
-  #     dpco2:
-  #     fgco2:
-  #     spco2:
-  #   additional_datasets:
-  #     - {dataset: Landschuetzer2016, project: OBS, mip: Omon, tier: 2,
-  #        type: clim, version: v2016, start_year: 1982, end_year: 2015}
-  #   scripts: null
-
-
-  # Landschuetzer2020:
-  #   description: Landschuetzer2020 check
-  #   variables:
-  #     spco2:
-  #   additional_datasets:
-  #     - {dataset: Landschuetzer2020, project: OBS6, mip: Omon, tier: 2,
-  #        type: clim, version: '1.1', start_year: 2004, end_year: 2004}
-  #   scripts: null
-
-
-  # MOBO-DIC_MPIM:
-  #   description: MOBO-DIC_MPIM check
-  #   variables:
-  #     dissic:
-  #   additional_datasets:
-  #     - {dataset: MOBO-DIC_MPIM, project: OBS6, mip: Omon, tier: 2,
-  #        type: clim, version: '1.1', start_year: 2011, end_year: 2011}
-  #   scripts: null
-
-
-  # MOBO-DIC2004-2019:
-  #   description: MOBO-DIC2004-2019 check
-  #   variables:
-  #     dissic:
-  #   additional_datasets:
-  #     - {dataset: MOBO-DIC2004-2019, project: OBS6, mip: Omon, tier: 2,
-  #        type: reanaly, version: '2.3', start_year: 2004, end_year: 2019}
-  #   scripts: null
-
-
-  # NCEP-NCAR-R1:
-  #   description: NCEP-NCAR-R1 check
-  #   variables:
-  #     clt:
-  #       mip: Amon
-  #     hur:
-  #       mip: Amon
-  #     hurs:
-  #       mip: Amon
-  #     hus:
-  #       mip: Amon
-  #     pr_month:
-  #       short_name: pr
-  #       mip: Amon
-  #     pr_day:
-  #       short_name: pr
-  #       mip: day
-  #     prw:
-  #       mip: Amon
-  #     psl:
-  #       mip: Amon
-  #     rlut_day:
-  #       short_name: rlut
-  #       mip: day
-  #     rlut_month:
-  #       short_name: rlut
-  #       mip: Amon
-  #     rlutcs:
-  #       mip: Amon
-  #     rsut:
-  #       mip: Amon
-  #     rsutcs:
-  #       mip: Amon
-  #     sfcWind:
-  #       mip: Amon
-  #     ta:
-  #       mip: Amon
-  #     tas:
-  #       mip: Amon
-  #     tasmax:
-  #       mip: Amon
-  #     tasmin:
-  #       mip: Amon
-  #     ts:
-  #       mip: Amon
-  #     ua_month:
-  #       short_name: ua
-  #       mip: Amon
-  #     ua_day:
-  #       short_name: ua
-  #       mip: day
-  #     va_month:
-  #       short_name: va
-  #       mip: Amon
-  #     va_day:
-  #       short_name: va
-  #       mip: day
-  #     wap:
-  #       mip: Amon
-  #     zg:
-  #       mip: Amon
-  #   additional_datasets:
-  #     - {dataset: NCEP-NCAR-R1, project: OBS6, tier: 2,
-  #        type: reanaly, version: 1, start_year: 1948, end_year: 2021}
-  #   scripts: null
-
-
-  # NCEP-DOE-R2:
-  #   description: NCEP-DOE-R2 check
-  #   variables:
-  #     clt:
-  #     hur:
-  #     prw:
-  #     ta:
-  #     wap:
-  #   additional_datasets:
-  #     - {dataset: NCEP-DOE-R2, project: OBS6, mip: Amon, tier: 2,
-  #        type: reanaly, version: 2, start_year: 1979, end_year: 2022}
-  #   scripts: null
-
-
-  # NOAA-CIRES-20CR-V2:
-  #   description: NOAA-CIRES-20CR-V2 check
-  #   variables:
-  #     clt:
-  #     clwvi:
-  #     hus:
-  #     prw:
-  #     rlut:
-  #     rsut:
-  #   additional_datasets:
-  #     - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, mip: Amon, tier: 2,
-  #        type: reanaly, version: v2, start_year: 1871, end_year: 2012}
-  #   scripts: null
-
-  # NOAA-ERSSTv5:
-  #   description: NOAA-ERSSTv5 check
-  #   variables:
-  #     tos:
-  #   additional_datasets:
-  #     - {dataset: NOAA-ERSSTv5, project: OBS6, mip: Omon, tier: 2,
-  #        type: reanaly, version: v5, start_year: 1854, end_year: 2000}
-  #   scripts: null
-
-  # NOAA-ERSSTv3b:
-  #   description: NOAA-ERSSTv3b check
-  #   variables:
-  #     tos:
-  #   additional_datasets:
-  #     - {dataset: NOAA-ERSSTv3b, project: OBS6, mip: Omon, tier: 2,
-  #        type: reanaly, version: v3b, start_year: 1854, end_year: 2019}
-  #   scripts: null
-
-  # NOAA-MBL-CH4:
-  #   description: NOAA marine boundary layer CH4 check
-  #   variables:
-  #     ch4s:
-  #   additional_datasets:
-  #     - {dataset: NOAA-MBL-CH4, project: OBS6, mip: Amon, type: atmos, version: 1.0, tier: 2,
-  #        start_year: 1983, end_year: 2023}
-  #   scripts: null
-
-  # NOAA-CIRES-20CR-V3:
-  #   description: NOAA-CIRES-20CR-V3 check
-  #   variables:
-  #     clt:
-  #     clwvi:
-  #     hus:
-  #     prw:
-  #     rlut:
-  #     rlutcs:
-  #     rsut:
-  #     rsutcs:
-  #   additional_datasets:
-  #     - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, mip: Amon, tier: 2,
-  #        type: reanaly, version: v3, start_year: 1836, end_year: 2015}
-  #   scripts: null
-
-
-  # NOAAGlobalTemp:
-  #   description: NOAAGlobalTemp check
-  #   variables:
-  #     tasa:
-  #   additional_datasets:
-  #     - {dataset: NOAAGlobalTemp, project: OBS, mip: Amon, tier: 2,
-  #        type: ground, version: v5.0.0, start_year: 1880, end_year: 2021}
-  #   scripts: null
-
-
-  # OceanSODA-ETHZ:
-  #   description: OceanSODA-ETHZ check
-  #   variables:
-  #     areacello:
-  #       mip: Ofx
-  #     co3os:
-  #       mip: Omon
-  #     dissicos:
-  #       mip: Omon
-  #     fgco2:
-  #       mip: Omon
-  #     phos:
-  #       mip: Omon
-  #     spco2:
-  #       mip: Omon
-  #     talkos:
-  #       mip: Omon
-  #   additional_datasets:
-  #     - {dataset: OceanSODA-ETHZ, project: OBS6, tier: 2, type: reanaly,
-  #        version: v2023, start_year: 1982, end_year: 2022}
-  #   scripts: null
-
-
-  # OSI-450:
-  #   description: OSI-450 check
-  #   variables:
-  #     sic_day:
-  #       short_name: sic
-  #       mip: day
-  #     sic_month:
-  #       short_name: sic
-  #       mip: OImon
-  #     areacello:
-  #       mip: fx
-  #   additional_datasets:
-  #     - {dataset: OSI-450-nh, project: OBS, tier: 2,
-  #        type: reanaly, version: v2, start_year: 1979, end_year: 2015}
-  #     - {dataset: OSI-450-sh, project: OBS, tier: 2,
-  #        type: reanaly, version: v2, start_year: 1979, end_year: 2015}
-  #   scripts: null
-
-
-  # PATMOS-x:
-  #   description: PATMOS-x check
-  #   variables:
-  #     clt:
-  #   additional_datasets:
-  #     - {dataset: PATMOS-x, project: OBS, mip: Amon, tier: 2,
-  #        type: sat, version: NOAA, start_year: 1982, end_year: 2016}
-  #   scripts: null
-
-
-  # PERSIANN-CDR:
-  #   description: PERSIANN-CDR check
-  #   variables:
-  #     pr_month:
-  #       short_name: pr
-  #       mip: Amon
-  #     pr_day:
-  #       short_name: pr
-  #       mip: day
-  #   additional_datasets:
-  #     - {dataset: PERSIANN-CDR, project: OBS, tier: 2,
-  #        type: reanaly, version: v01r01, start_year: 1983, end_year: 2018}
-  #   scripts: null
-
-
-  # PHC:
-  #   description: PHC check
-  #   variables:
-  #     so:
-  #     thetao:
-  #   additional_datasets:
-  #     - {dataset: PHC, project: OBS6, frequency: yr, mip: Omon, tier: 2,
-  #        type: clim, version: 3, start_year: 1950, end_year: 1950}
-  #   scripts: null
-
-
-  # PIOMAS:
-  #   description: PIOMAS
-  #   variables:
-  #     sithick:
-  #       mip: day
-  #     areacello:
-  #       mip: fx
-  #   additional_datasets:
-  #     - {dataset: PIOMAS, project: OBS, tier: 2,
-  #        type: reanaly, version: 2.1, start_year: 1979, end_year: 2018}
-  #   scripts: null
-
-
-  # REGEN:
-  #   description: REGEN check
-  #   variables:
-  #     pr:
-  #   additional_datasets:
-  #     - {dataset: REGEN, project: OBS, mip: Amon, tier: 2,
-  #        type: reanaly, version: V1-2019, start_year: 1950, end_year: 2016}
-  #     - {dataset: REGEN, project: OBS, mip: day, tier: 2,
-  #        type: reanaly, version: V1-2019, start_year: 1950, end_year: 2016}
-  #   scripts: null
-
-
-  # Scripps-CO2-KUM:
-  #   description: Scripps-CO2-KUM check
-  #   variables:
-  #     co2s:
-  #   additional_datasets:
-  #     - {dataset: Scripps-CO2-KUM, project: OBS6, mip: Amon, tier: 2,
-  #        type: ground, version: 14-Oct-2021, start_year: 1979, end_year: 2021}
-  #   scripts: null
-
-
-  # WFDE5:
-  #   description: WFDE5 check
-  #   variables:
-  #     tas:
-  #       additional_datasets:
-  #         - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
-  #            type: ground, version: v1.1-CRU, start_year: 1979, end_year: 2018}
-  #         - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
-  #            type: ground, version: v1.1-CRU, start_year: 1979, end_year: 2018}
-  #     pr:
-  #       additional_datasets:
-  #         - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
-  #            type: ground, version: v1.1-CRU, start_year: 1980, end_year: 2018}
-  #         - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
-  #            type: ground, version: v1.1-CRU, start_year: 1980, end_year: 2018}
-  #         - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
-  #            type: ground, version: v1.1-CRU+GPCC, start_year: 1980, end_year: 2016}
-  #         - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
-  #            type: ground, version: v1.1-CRU+GPCC, start_year: 1980, end_year: 2016}
-  #   scripts: null
-
-
-  # TCOM-CH4:
-  #   description: TCOM-CH4 check
-  #   variables:
-  #     ch4:
-  #   additional_datasets:
-  #     - {dataset: TCOM-CH4, project: OBS6, mip: Amon, frequency: day, tier: 2,
-  #        type: reanaly, version: '1.0', start_year: 1991, end_year: 2021}
-  #   scripts: null
-
-
-  # TCOM-N2O:
-  #   description: TCOM-N2O check
-  #   variables:
-  #     n2o:
-  #   additional_datasets:
-  #     - {dataset: TCOM-N2O, project: OBS6, mip: Amon, frequency: day, tier: 2,
-  #        type: reanaly, version: '1.0', start_year: 1991, end_year: 2021}
-  #   scripts: null
-
-
-  # WOA:
-  #   description: WOA check
-  #   variables:
-  #     so:
-  #       mip: Omon
-  #     sos:
-  #       mip: Omon
-  #     thetao:
-  #       mip: Omon
-  #     tos:
-  #       mip: Omon
-  #     no3:
-  #       mip: Oyr
-  #     o2:
-  #       mip: Oyr
-  #     po4:
-  #       mip: Oyr
-  #     si:
-  #       mip: Oyr
-  #   additional_datasets:
-  #     - {dataset: WOA, project: OBS6, tier: 2,
-  #        type: clim, version: 2018, start_year: 2000, end_year: 2000}
-  #     - {dataset: WOA, project: OBS, tier: 2,
-  #        type: clim, version: 2013v2, start_year: 2000, end_year: 2000}
-  #   scripts: null
-
-
-  # ### TIER 3 ##################################################################
-
-  # AERONET:
-  #   description: Aeronet check
-  #   variables:
-  #     od440aer:
-  #   additional_datasets:
-  #     - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20231021}
-  #   scripts: null
-
-  # ANUClimate:
-  #   description: ANUClimate check
-  #   variables:
-  #     pr:
-  #     tasmax:
-  #     tasmin:
-  #     tas:
-  #   additional_datasets:
-  #     - {dataset: ANUClimate, project: OBS6, mip: Amon, tier: 3, type: reanaly}
-  #   scripts: null
-
-  # APHRO-MA:
-  #   description: APHRO-MA check
-  #   variables:
-  #     pr:
-  #       additional_datasets:
-  #         - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
-  #            version: 025deg-V1101, start_year: 1951, end_year: 2007}
-  #         - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
-  #            version: 050deg-V1101, start_year: 1951, end_year: 2007}
-  #         - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
-  #            version: 025deg-V1101, start_year: 1951, end_year: 2007}
-  #         - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
-  #            version: 050deg-V1101, start_year: 1951, end_year: 2007}
-  #         - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
-  #            version: 025deg-V1101-EXR1, start_year: 2007, end_year: 2015}
-  #         - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
-  #            version: 050deg-V1101-EXR1, start_year: 2007, end_year: 2015}
-  #         - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
-  #            version: 025deg-V1101-EXR1, start_year: 2007, end_year: 2015}
-  #         - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
-  #            version: 050deg-V1101-EXR1, start_year: 2007, end_year: 2015}
-  #     tas:
-  #       additional_datasets:
-  #         - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
-  #            version: 025deg-V1808, start_year: 1961, end_year: 2007}
-  #         - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
-  #            version: 050deg-V1808, start_year: 1961, end_year: 2007}
-  #         - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
-  #            version: 025deg-V1808, start_year: 1961, end_year: 2007}
-  #         - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
-  #            version: 050deg-V1808, start_year: 1961, end_year: 2007}
-  #   scripts: null
-
-
-  # AURA-TES:
-  #   description: AURA-TES check
-  #   variables:
-  #     tro3:
-  #   additional_datasets:
-  #     - {dataset: AURA-TES, project: OBS, mip: Amon, tier: 3,
-  #        type: sat, version: 1, start_year: 2005, end_year: 2011}
-  #   scripts: null
-
-
-  # CALIPSO-ICECLOUD:
-  #   description: CALIPSO-ICECLOUD check
-  #   variables:
-  #     cli:
-  #   additional_datasets:
-  #     - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00,
-  #        mip: Amon, tier: 3, start_year: 2007, end_year: 2015}
-  #   scripts: null
-
-
-  # CDS-SATELLITE-ALBEDO:
-  #   description: CDS-SATELLITE-ALBEDO check
-  #   variables:
-  #     bdalb:
-  #     bhalb:
-  #   additional_datasets:
-  #     - {dataset: CDS-SATELLITE-ALBEDO, project: OBS6, mip: Lmon, tier: 3,
-  #        type: sat, version: V1, start_year: 1999, end_year: 2013}
-  #   scripts: null
-
-
-  # CDS-SATELLITE-LAI-FAPAR:
-  #   description: CDS-SATELLITE-LAI-FAPAR check
-  #   variables:
-  #     fapar:
-  #     lai:
-  #   additional_datasets:
-  #     - {dataset: CDS-SATELLITE-LAI-FAPAR, project: OBS, mip: Lmon, tier: 3,
-  #        type: sat, version: V1, start_year: 1999, end_year: 2013}
-  #   scripts: null
-
-
-  # CDS-SATELLITE-SOIL-MOISTURE:
-  #   description: CDS-SATELLITE-SOIL-MOISTURE check
-  #   variables:
-  #     sm_month:
-  #       short_name: sm
-  #       mip: Lmon
-  #     sm_day:
-  #       short_name: sm
-  #       mip: day
-  #   additional_datasets:
-  #     - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3,
-  #        type: sat, version: ACTIVE,
-  #        start_year: 1992, end_year: 2020}
-  #     - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3,
-  #        type: sat, version: COMBINED,
-  #        start_year: 1979, end_year: 2020}
-  #     - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3,
-  #        type: sat, version: PASSIVE,
-  #        start_year: 1979, end_year: 2020}
-  #   scripts: null
-
-
-  # CDS-UERRA:
-  #   description: CDS-UERRA check
-  #   variables:
-  #     sm:
-  #   additional_datasets:
-  #     - {dataset: CDS-UERRA, project: OBS6, mip: E6hr, frequency: 6hr, tier: 3,
-  #        type: reanaly, version: UERRA-HARMONIE,
-  #        start_year: 1979, end_year: 2018}
-  #   scripts: null
-
-
-  # CDS-XCH4:
-  #   description: CDS-XCH4 check
-  #   variables:
-  #     xch4:
-  #   additional_datasets:
-  #     - {dataset: CDS-XCH4, project: OBS, mip: Amon, tier: 3,
-  #        type: sat, version: L3, start_year: 2003, end_year: 2018}
-  #   scripts: null
-
-
-  # CDS-XCO2:
-  #   description: CDS-XCO2 check
-  #   variables:
-  #     xco2:
-  #   additional_datasets:
-  #     - {dataset: CDS-XCO2, project: OBS, mip: Amon, tier: 3,
-  #        type: sat, version: L3, start_year: 2003, end_year: 2016}
-  #   scripts: null
-
-
-  # CERES_mon:
-  #   description: CERES-SYN1deg check
-  #   variables:
-  #     rlds_month:
-  #       short_name: rlds
-  #       mip: Amon
-  #     rlds_3hr:
-  #       short_name: rlds
-  #       mip: 3hr
-  #     rldscs_month:
-  #       short_name: rldscs
-  #       mip: Amon
-  #     rldscs_3hr:
-  #       short_name: rldscs
-  #       mip: 3hr
-  #     rlus_month:
-  #       short_name: rlus
-  #       mip: Amon
-  #     rlus_3hr:
-  #       short_name: rlus
-  #       mip: 3hr
-  #     rluscs:
-  #       mip: 3hr
-  #     rlut_month:
-  #       short_name: rlut
-  #       mip: Amon
-  #     rlut_3hr:
-  #       short_name: rlut
-  #       mip: 3hr
-  #     rlutcs_month:
-  #       short_name: rlutcs
-  #       mip: Amon
-  #     rlutcs_3hr:
-  #       short_name: rlutcs
-  #       mip: 3hr
-  #     rsds_month:
-  #       short_name: rsds
-  #       mip: Amon
-  #     rsds_3hr:
-  #       short_name: rsds
-  #       mip: 3hr
-  #     rsdscs:
-  #       mip: 3hr
-  #     rsdt:
-  #       mip: Amon
-  #     rsus_month:
-  #       short_name: rsus
-  #       mip: Amon
-  #     rsus_3hr:
-  #       short_name: rsus
-  #       mip: 3hr
-  #     rsuscs:
-  #       mip: 3hr
-  #     rsut_month:
-  #       short_name: rsut
-  #       mip: Amon
-  #     rsut_3hr:
-  #       short_name: rsut
-  #       mip: 3hr
-  #     rsutcs_month:
-  #       short_name: rsutcs
-  #       mip: Amon
-  #     rsutcs_3hr:
-  #       short_name: rsutcs
-  #       mip: 3hr
-  #   additional_datasets:
-  #     - {dataset: CERES-SYN1deg, project: OBS, tier: 3,
-  #        type: sat, version: Ed3A, start_year: 2001, end_year: 2016}
-  #   scripts: null
-
-
-  # CLARA-AVHRR:
-  #   description: CLARA-AVHRR check
-  #   variables:
-  #     clt:
-  #       mip: Amon
-  #     clivi:
-  #       mip: Amon
-  #     clwvi:
-  #       mip: Amon
-  #     lwp:
-  #       mip: Amon
-  #   additional_datasets:
-  #     - {dataset: CLARA-AVHRR, project: OBS, tier: 3,
-  #        type: sat, version: V002_01, start_year: 1982, end_year: 2018}
-  #   scripts: null
-
-
-  # CLOUDSAT-L2:
-  #   description: CloudSat-level2 check
-  #   variables:
-  #     clivi:
-  #     clw:
-  #     clwvi:
-  #     lwp:
-  #   additional_datasets:
-  #     - {dataset: CLOUDSAT-L2, project: OBS, tier: 3, type: sat,
-  #        version: P1-R05-gridbox-average-all, mip: Amon, start_year: 2006,
-  #        end_year: 2017}
-  #     - {dataset: CLOUDSAT-L2, project: OBS, tier: 3, type: sat,
-  #        version: P1-R05-gridbox-average-noprecip, mip: Amon, start_year: 2006,
-  #        end_year: 2017}
-  #     - {dataset: CLOUDSAT-L2, project: OBS, tier: 3, type: sat,
-  #        version: P1-R05-in-cloud-all, mip: Amon, start_year: 2006,
-  #        end_year: 2017}
-  #     - {dataset: CLOUDSAT-L2, project: OBS, tier: 3, type: sat,
-  #        version: P1-R05-in-cloud-noprecip, mip: Amon, start_year: 2006,
-  #        end_year: 2017}
-  #   scripts: null
-
-
-  # ERA-Interim:
-  #   description: ERA-Interim check
-  #   variables:
-  #     cl:
-  #       mip: Amon
-  #     cli:
-  #       mip: Amon
-  #     clivi:
-  #       mip: Amon
-  #     clt_day:
-  #       short_name: clt
-  #       mip: day
-  #     clt_month:
-  #       short_name: clt
-  #       mip: Amon
-  #     clw:
-  #       mip: Amon
-  #     clwvi:
-  #       mip: Amon
-  #     evspsbl_day:
-  #       short_name: evspsbl
-  #       mip: Eday
-  #     evspsbl_month:
-  #       short_name: evspsbl
-  #       mip: Amon
-  #     hfds:
-  #       mip: Omon
-  #     hur:
-  #       mip: Amon
-  #     hus:
-  #       mip: Amon
-  #     lwp:
-  #       mip: Amon
-  #     orog:
-  #       mip: fx
-  #     pr_day:
-  #       short_name: pr
-  #       mip: day
-  #     pr_month:
-  #       short_name: pr
-  #       mip: Amon
-  #     prsn_day:
-  #       short_name: prsn
-  #       mip: day
-  #     prsn_month:
-  #       short_name: prsn
-  #       mip: Amon
-  #     prw:
-  #       mip: Amon
-  #     ps_day:
-  #       short_name: ps
-  #       mip: CFday
-  #     ps_month:
-  #       short_name: ps
-  #       mip: Amon
-  #     psl_day:
-  #       short_name: psl
-  #       mip: day
-  #     psl_month:
-  #       short_name: psl
-  #       mip: Amon
-  #     rlds_day:
-  #       short_name: rlds
-  #       mip: day
-  #     rlut_month:
-  #       short_name: rlut
-  #       mip: Amon
-  #     rlutcs_month:
-  #       short_name: rlutcs
-  #       mip: Amon
-  #     rsds_day:
-  #       short_name: rsds
-  #       mip: day
-  #     rsds_month:
-  #       short_name: rsds
-  #       mip: Amon
-  #     rsdt_day:
-  #       short_name: rsdt
-  #       mip: CFday
-  #     rsdt_month:
-  #       short_name: rsdt
-  #       mip: Amon
-  #     rsut_month:
-  #       short_name: rsut
-  #       mip: Amon
-  #     rsutcs_month:
-  #       short_name: rsutcs
-  #       mip: Amon
-  #     rss_day:
-  #       short_name: rss
-  #       mip: day
-  #     rss_month:
-  #       short_name: rss
-  #       mip: Emon
-  #     sftlf:
-  #       mip: fx
-  #     ta_day:
-  #       short_name: ta
-  #       mip: day
-  #     ta_month:
-  #       short_name: ta
-  #       mip: Amon
-  #     tas_day:
-  #       short_name: tas
-  #       mip: day
-  #     tas_month:
-  #       short_name: tas
-  #       mip: Amon
-  #     tasmax:
-  #       mip: day
-  #     tasmin:
-  #       mip: day
-  #     tauu:
-  #       mip: Amon
-  #     tauv:
-  #       mip: Amon
-  #     tdps_day:
-  #       short_name: tdps
-  #       mip: Eday
-  #     tdps_month:
-  #       short_name: tdps
-  #       mip: Emon
-  #     tos:
-  #       mip: Omon
-  #     ts_day:
-  #       short_name: ts
-  #       mip: Eday
-  #     ts_month:
-  #       short_name: ts
-  #       mip: Amon
-  #     tsn_month:
-  #       short_name: tsn
-  #       mip: LImon
-  #     tsn_day:
-  #       short_name: tsn
-  #       mip: Eday
-  #     ua:
-  #       mip: Amon
-  #     uas_day:
-  #       short_name: uas
-  #       mip: day
-  #     uas_month:
-  #       short_name: uas
-  #       mip: Amon
-  #     va_day:
-  #       short_name: va
-  #       mip: day
-  #     va_month:
-  #       short_name: va
-  #       mip: Amon
-  #     vas_day:
-  #       short_name: vas
-  #       mip: day
-  #     vas_month:
-  #       short_name: vas
-  #       mip: Amon
-  #     wap:
-  #       mip: Amon
-  #     zg_day:
-  #       short_name: zg
-  #       mip: day
-  #     zg_month:
-  #       short_name: zg
-  #       mip: Amon
-  #   additional_datasets:
-  #     - {dataset: ERA-Interim, project: OBS6, tier: 3,
-  #        type: reanaly, version: 1, start_year: 1979, end_year: 2018}
-  #   scripts: null
-
-
-  # ERA-Interim-Land:
-  #   description: ERA-Interim-Land check
-  #   variables:
-  #     sm:
-  #       mip: Lmon
-  #   additional_datasets:
-  #     - {dataset: ERA-Interim-Land, project: OBS6, tier: 3,
-  #        type: reanaly, version: 1, start_year: 1979, end_year: 2010}
-  #   scripts: null
-
-
-  # ERA5_OBS6:
-  #   description: ERA5 OBS6 (daily) check
-  #   variables:
-  #     evspsbl_Eday:
-  #       short_name: evspsbl
-  #       mip: Eday
-  #     evspsblpot_Eday:
-  #       short_name: evspsblpot
-  #       mip: Eday
-  #     tdps_Eday:
-  #       short_name: tdps
-  #       mip: Eday
-  #     ts_Eday:
-  #       short_name: ts
-  #       mip: Eday
-  #     tsn_Eday:
-  #       short_name: tsn
-  #       mip: Eday
-  #     clt_day:
-  #       short_name: clt
-  #       mip: day
-  #     mrro_day:
-  #       short_name: mrro
-  #       mip: day
-  #     pr_day:
-  #       short_name: pr
-  #       mip: day
-  #     prsn_day:
-  #       short_name: prsn
-  #       mip: day
-  #     psl_day:
-  #       short_name: psl
-  #       mip: day
-  #     rlds_day:
-  #       short_name: rlds
-  #       mip: day
-  #     rls_day:
-  #       short_name: rls
-  #       mip: day
-  #     rsds_day:
-  #       short_name: rsds
-  #       mip: day
-  #     rss_day:
-  #       short_name: rss
-  #       mip: day
-  #     tas_day:
-  #       short_name: tas
-  #       mip: day
-  #     tasmax_day:
-  #       short_name: tasmax
-  #       mip: day
-  #     tasmin_day:
-  #       short_name: tasmin
-  #       mip: day
-  #     uas_day:
-  #       short_name: uas
-  #       mip: day
-  #     vas_day:
-  #       short_name: vas
-  #       mip: day
-  #     ps_CFday:
-  #       short_name: ps
-  #       mip: CFday
-  #     rsdt_CFday:
-  #       short_name: rsdt
-  #       mip: CFday
-  #     orog:
-  #       mip: fx
-  #   additional_datasets:
-  #     - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly,
-  #        version: 1, start_year: 1990, end_year: 1990}
-  #   scripts: null
-
-
-  # ERA5_native6:
-  #   description: ERA5 native6 (hourly and monthly) check
-  #   variables:
-  #     clt_E1hr:
-  #       short_name: clt
-  #       mip: E1hr
-  #     evspsbl_E1hr:
-  #       short_name: evspsbl
-  #       mip: E1hr
-  #     evspsblpot_E1hr:
-  #       short_name: evspsblpot
-  #       mip: E1hr
-  #     mrro_E1hr:
-  #       short_name: mrro
-  #       mip: E1hr
-  #     pr_E1hr:
-  #       short_name: pr
-  #       mip: E1hr
-  #     prsn_E1hr:
-  #       short_name: prsn
-  #       mip: E1hr
-  #     ps_E1hr:
-  #       short_name: ps
-  #       mip: E1hr
-  #     psl_E1hr:
-  #       short_name: psl
-  #       mip: E1hr
-  #     ptype_E1hr:
-  #       short_name: ptype
-  #       mip: E1hr
-  #     rls_E1hr:
-  #       short_name: rls
-  #       mip: E1hr
-  #     rlds_E1hr:
-  #       short_name: rlds
-  #       mip: E1hr
-  #     rlns_E1hr:
-  #       short_name: rlns
-  #       mip: E1hr
-  #       frequency: 1hr
-  #     rlus_E1hr:
-  #       short_name: rlus
-  #       mip: E1hr
-  #       frequency: 1hr
-  #     rsds_E1hr:
-  #       short_name: rsds
-  #       mip: E1hr
-  #     rsdt_E1hr:
-  #       short_name: rsdt
-  #       mip: E1hr
-  #     rsns_E1hr:
-  #       short_name: rsns
-  #       mip: E1hr
-  #       frequency: 1hr
-  #     rsus_E1hr:
-  #       short_name: rsus
-  #       mip: E1hr
-  #       frequency: 1hr
-  #     rss_E1hr:
-  #       short_name: rss
-  #       mip: E1hr
-  #     uas_E1hr:
-  #       short_name: uas
-  #       mip: E1hr
-  #     vas_E1hr:
-  #       short_name: vas
-  #       mip: E1hr
-  #     tas_E1hr:
-  #       short_name: tas
-  #       mip: E1hr
-  #     tasmax_E1hr:
-  #       short_name: tasmax
-  #       mip: E1hr
-  #     tasmin_E1hr:
-  #       short_name: tasmin
-  #       mip: E1hr
-  #     tdps_E1hr:
-  #       short_name: tdps
-  #       mip: E1hr
-  #     ts_E1hr:
-  #       short_name: ts
-  #       mip: E1hr
-  #     tsn_E1hr:
-  #       short_name: tsn
-  #       mip: E1hr
-  #     clt_Amon:
-  #       short_name: clt
-  #       mip: Amon
-  #     cl_Amon:
-  #       short_name: cl
-  #       mip: Amon
-  #     evspsbl_Amon:
-  #       short_name: evspsbl
-  #       mip: Amon
-  #     evspsblpot_Amon:
-  #       short_name: evspsblpot
-  #       mip: Amon
-  #     mrro_Amon:
-  #       short_name: mrro
-  #       mip: Amon
-  #     pr_Amon:
-  #       short_name: pr
-  #       mip: Amon
-  #     prsn_Amon:
-  #       short_name: prsn
-  #       mip: Amon
-  #     ps_Amon:
-  #       short_name: ps
-  #       mip: Amon
-  #     psl_Amon:
-  #       short_name: psl
-  #       mip: Amon
-  #     ptype_Amon:
-  #       short_name: ptype
-  #       mip: Amon
-  #     rlds_Amon:
-  #       short_name: rlds
-  #       mip: Amon
-  #     rls_Amon:
-  #       short_name: rls
-  #       mip: Amon
-  #     rlns_Amon:
-  #       short_name: rlns
-  #       mip: Amon
-  #     rlus_Amon:
-  #       short_name: rlus
-  #       mip: Amon
-  #     rsds_Amon:
-  #       short_name: rsds
-  #       mip: Amon
-  #     rsdt_Amon:
-  #       short_name: rsdt
-  #       mip: Amon
-  #     rsns_Amon:
-  #       short_name: rsns
-  #       mip: Amon
-  #     rsus_Amon:
-  #       short_name: rsus
-  #       mip: Amon
-  #     rss_Amon:
-  #       short_name: rss
-  #       mip: Amon
-  #     ta_Amon:
-  #       short_name: ta
-  #       mip: Amon
-  #     tas_Amon:
-  #       short_name: tas
-  #       mip: Amon
-  #     tdps_Amon:
-  #       short_name: tdps
-  #       mip: Amon
-  #     ts_Amon:
-  #       short_name: ts
-  #       mip: Amon
-  #     tsn_Amon:
-  #       short_name: tsn
-  #       mip: Amon
-  #     uas_Amon:
-  #       short_name: uas
-  #       mip: Amon
-  #     vas_Amon:
-  #       short_name: vas
-  #       mip: Amon
-  #     orog:
-  #       mip: fx
-  #   additional_datasets:
-  #     - {dataset: ERA5, project: native6, tier: 3, type: reanaly,
-  #        version: v1, start_year: 1990, end_year: 1990}
-  #   scripts: null
-
-
-  # ESACCI-WATERVAPOUR:
-  #   description: ESACCI-WV check
-  #   variables:
-  #     prw:
-  #   additional_datasets:
-  #     - {dataset: ESACCI-WATERVAPOUR, project: OBS6, mip: Amon, tier: 3,
-  #        type: sat, version: CDR2-L3-COMBI-05deg-fv3.1,
-  #        start_year: 2003, end_year: 2017}
-  #     - {dataset: ESACCI-WATERVAPOUR, project: OBS6, mip: Eday, tier: 3,
-  #        type: sat, version: CDR2-L3-COMBI-05deg-fv3.1,
-  #        start_year: 2003, end_year: 2017}
-  #   scripts: null
-
-
-  # GRACE:
-  #   description: GRACE check
-  #   variables:
-  #     lweGrace:
-  #       mip: Lmon
-  #   additional_datasets:
-  #     - {dataset: GRACE, project: OBS6, tier: 3, type: sat,
-  #        version: 1, start_year: 2002, end_year: 2020}
-  #   scripts: null
-
-
-  # HWSD:
-  #   description: HWSD check
-  #   variables:
-  #     areacella:
-  #       mip: fx
-  #     cSoil:
-  #       mip: Lmon
-  #     sftlf:
-  #       mip: fx
-  #   additional_datasets:
-  #     - {dataset: HWSD, project: OBS, tier: 3, type: reanaly, version: 1.2,
-  #        start_year: 2000, end_year: 2000}
-  #   scripts: null
-
-
-  # JMA-TRANSCOM:
-  #   description: JMA-TRANSCOM check
-  #   variables:
-  #     nbp:
-  #       mip: Lmon
-  #     fgco2:
-  #       mip: Omon
-  #   additional_datasets:
-  #     - {dataset: JMA-TRANSCOM, project: OBS, tier: 3, type: reanaly,
-  #        version: 2018, start_year: 1985, end_year: 2016}
-  #   scripts: null
-
-
-  # FLUXCOM:
-  #   description: FLUXCOM check
-  #   variables:
-  #     gpp:
-  #   additional_datasets:
-  #     - {dataset: FLUXCOM, project: OBS, mip: Lmon, tier: 3, type: reanaly,
-  #        version: ANN-v1, start_year: 1980, end_year: 2013}
-  #   scripts: null
-
-
-  # LAI3g:
-  #   description: LAI3g check
-  #   variables:
-  #     lai:
-  #   additional_datasets:
-  #     - {dataset: LAI3g, project: OBS, mip: Lmon, tier: 3,
-  #        type: reanaly, version: 1_regridded, start_year: 1981, end_year: 2018}
-  #   scripts: null
-
-
-  # LandFlux-EVAL:
-  #   description: LandFlux-EVAL check
-  #   variables:
-  #     et:
-  #     etStderr:
-  #   additional_datasets:
-  #     - {dataset: LandFlux-EVAL, project: OBS, mip: Lmon, tier: 3,
-  #        type: reanaly, version: Oct13, start_year: 1989, end_year: 2005}
-  #   scripts: null
-
-
-  # MAC-LWP:
-  #   description: MAC-LWP check
-  #   variables:
-  #     lwp:
-  #     lwpStderr:
-  #   additional_datasets:
-  #     - {dataset: MAC-LWP, project: OBS, mip: Amon, tier: 3,
-  #        type: sat, version: v1, start_year: 1988, end_year: 2016}
-  #   scripts: null
-
-  # MERRA:
-  #   description: MERRA check
-  #   variables:
-  #     cli:
-  #     clivi:
-  #     clt:
-  #     clw:
-  #     clwvi:
-  #     hur:
-  #     hus:
-  #     lwp:
-  #     pr:
-  #     prw:
-  #     ps:
-  #     psl:
-  #     rlut:
-  #     rlutcs:
-  #     rsdt:
-  #     rsut:
-  #     rsutcs:
-  #     ta:
-  #     tas:
-  #     ts:
-  #     ua:
-  #     va:
-  #     wap:
-  #     zg:
-  #   additional_datasets:
-  #     - {dataset: MERRA, project: OBS, tier: 3, mip: Amon,
-  #        type: reanaly, version: 5.2.0, start_year: 1979, end_year: 2015}
-  #   scripts: null
-
-
-  # MERRA2:
-  #   description: MERRA2 check
-  #   variables:
-  #     sm_monthly:
-  #       short_name: sm
-  #       mip: Lmon
-  #     clt_monthly:
-  #       short_name: clt
-  #       mip: Amon
-  #     pr_monthly:
-  #       short_name: pr
-  #       mip: Amon
-  #     evspsbl_monthly:
-  #       short_name: evspsbl
-  #       mip: Amon
-  #     hfss_monthly:
-  #       short_name: hfss
-  #       mip: Amon
-  #     hfls_monthly:
-  #       short_name: hfls
-  #       mip: Amon
-  #     huss_monthly:
-  #       short_name: huss
-  #       mip: Amon
-  #     prc_monthly:
-  #       short_name: prc
-  #       mip: Amon
-  #     prsn_monthly:
-  #       short_name: prsn
-  #       mip: Amon
-  #     prw_monthly:
-  #       short_name: prw
-  #       mip: Amon
-  #     ps_monthly:
-  #       short_name: ps
-  #       mip: Amon
-  #     psl_monthly:
-  #       short_name: psl
-  #       mip: Amon
-  #     rlds_monthly:
-  #       short_name: rlds
-  #       mip: Amon
-  #     rldscs_monthly:
-  #       short_name: rldscs
-  #       mip: Amon
-  #     rlus_monthly:
-  #       short_name: rlus
-  #       mip: Amon
-  #     rlut_monthly:
-  #       short_name: rlut
-  #       mip: Amon
-  #     rsds_monthly:
-  #       short_name: rsds
-  #       mip: Amon
-  #     rsdscs_monthly:
-  #       short_name: rsdscs
-  #       mip: Amon
-  #     rsdt_monthly:
-  #       short_name: rsdt
-  #       mip: Amon
-  #     tas_monthly:
-  #       short_name: tas
-  #       mip: Amon
-  #     tasmax_monthly:
-  #       short_name: tasmax
-  #       mip: Amon
-  #     tasmin_monthly:
-  #       short_name: tasmin
-  #       mip: Amon
-  #     tauu_monthly:
-  #       short_name: tauu
-  #       mip: Amon
-  #     tauv_monthly:
-  #       short_name: tauv
-  #       mip: Amon
-  #     rlutcs_monthly:
-  #       short_name: rlutcs
-  #       mip: Amon
-  #     ts_monthly:
-  #       short_name: ts
-  #       mip: Amon
-  #     uas_monthly:
-  #       short_name: uas
-  #       mip: Amon
-  #     vas_monthly:
-  #       short_name: vas
-  #       mip: Amon
-  #     rsus_monthly:
-  #       short_name: rsus
-  #       mip: Amon
-  #     rsuscs_monthly:
-  #       short_name: rsuscs
-  #       mip: Amon
-  #     rsut_monthly:
-  #       short_name: rsut
-  #       mip: Amon
-  #     rsutcs_monthly:
-  #       short_name: rsutcs
-  #       mip: Amon
-  #     ta_monthly:
-  #       short_name: ta
-  #       mip: Amon
-  #     ua_monthly:
-  #       short_name: ua
-  #       mip: Amon
-  #     va_monthly:
-  #       short_name: va
-  #       mip: Amon
-  #     tro3_monthly:
-  #       short_name: tro3
-  #       mip: Amon
-  #     zg_monthly:
-  #       short_name: zg
-  #       mip: Amon
-  #     hus_monthly:
-  #       short_name: hus
-  #       mip: Amon
-  #     wap_monthly:
-  #       short_name: wap
-  #       mip: Amon
-  #     hur_monthly:
-  #       short_name: hur
-  #       mip: Amon
-  #     cl_monthly:
-  #       short_name: cl
-  #       mip: Amon
-  #     clw_monthly:
-  #       short_name: clw
-  #       mip: Amon
-  #     cli_monthly:
-  #       short_name: cli
-  #       mip: Amon
-  #     clwvi_monthly:
-  #       short_name: clwvi
-  #       mip: Amon
-  #     clivi_monthly:
-  #       short_name: clivi
-  #       mip: Amon
-  #   additional_datasets:
-  #     - {dataset: MERRA2, project: OBS6, tier: 3,
-  #        type: reanaly, version: 5.12.4, start_year: 1980, end_year: 2022}
-  #   scripts: null
-
-
-  # MLS-AURA:
-  #   description: MLS-AURA check
-  #   variables:
-  #     hur:
-  #       mip: Amon
-  #     hurStderr:
-  #       mip: Amon
-  #   additional_datasets:
-  #     - {dataset: MLS-AURA, project: OBS6, tier: 3, type: sat, version: '004',
-  #        start_year: 2005, end_year: 2019}
-  #   scripts: null
-
-
-  # MODIS:
-  #   description: MODIS check
-  #   variables:
-  #     od550aer:
-  #       mip: aero
-  #     clivi:
-  #       mip: Amon
-  #     clwvi:
-  #       mip: Amon
-  #     clt:
-  #       mip: Amon
-  #     lwpStderr:
-  #       mip: Amon
-  #     iwpStderr:
-  #       mip: Amon
-  #   additional_datasets:
-  #     - {dataset: MODIS, project: OBS, tier: 3,
-  #        type: sat, version: MYD08-M3, start_year: 2003, end_year: 2018}
-  #   scripts: null
-
-
-  # MTE:
-  #   description: MTE check
-  #   variables:
-  #     gpp:
-  #     gppStderr:
-  #   additional_datasets:
-  #     - {dataset: MTE, project: OBS, tier: 3, mip: Lmon,
-  #        type: reanaly, version: May12, start_year: 1982, end_year: 2011}
-  #   scripts: null
-
-
-  # NDP:
-  #   description: NDP check
-  #   variables:
-  #     cVeg:
-  #   additional_datasets:
-  #     - {dataset: NDP, project: OBS, tier: 3, mip: Lmon,
-  #        type: reanaly, version: 017b, start_year: 2000, end_year: 2000}
-  #   scripts: null
-
-
-  # NIWA-BS:
-  #   description: NIWA-BS check
-  #   variables:
-  #     toz:
-  #     tozStderr:
-  #   additional_datasets:
-  #     - {dataset: NIWA-BS, project: OBS, mip: Amon, tier: 3,
-  #        type: sat, version: v3.3, start_year: 1979, end_year: 2016}
-  #   scripts: null
-
-
-  # NSIDC-0116:
-  #   description: NSIDC-0116 check
-  #   variables:
-  #     areacello:
-  #       mip: fx
-  #     usi:
-  #       mip: day
-  #     vsi:
-  #       mip: day
-  #   additional_datasets:
-  #     - {dataset: NSIDC-0116-nh, project: OBS, tier: 3,
-  #        type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
-  #     - {dataset: NSIDC-0116-sh, project: OBS, tier: 3,
-  #        type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
-  #   scripts: null
-
-  # NSIDC-G02202:
-  #   description: NSIDC-G02202 check
-  #   variables:
-  #     areacello:
-  #       mip: Ofx
-  #     siconc:
-  #       mip: SImon
-  #   additional_datasets:
-  #     - {dataset: NSIDC-G02202-sh, project: OBS6, tier: 3,
-  #       type: reanaly, version: 4, start_year: 1979, end_year: 2022}
-  #   scripts: null
-
-  # UWisc:
-  #   description: UWisc check
-  #   variables:
-  #     lwp:
-  #     lwpStderr:
-  #   additional_datasets:
-  #     - {dataset: UWisc, project: OBS, mip: Amon, tier: 3,
-  #        type: sat, version: v2, start_year: 1988, end_year: 2007}
-  #   scripts: null
+  ESACCI-SST:
+    description: ESACCI-SST check
+    variables:
+      ts:
+      tsStderr:
+    additional_datasets:
+      - {dataset: ESACCI-SST, project: OBS, mip: Amon, tier: 2,
+         type: sat, version: 2.2,
+         start_year: 1982, end_year: 2019}
+    scripts: null
+
+
+  ESDC:
+    description: ESDC check
+    variables:
+      tas:
+      tasmin:
+      tasmax:
+    additional_datasets:
+      - {dataset: ESDC, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 3.0.1,
+         start_year: 1979, end_year: 2021}
+    scripts: null
+
+  ESRL:
+    description: ESRL check
+    variables:
+      co2s:
+        mip: Amon
+    additional_datasets:
+      - {dataset: ESRL, project: OBS, type: ground, version: ASK, tier: 2,
+         start_year: 2000, end_year: 2002}
+      - {dataset: ESRL, project: OBS, type: ground, version: GLOBAL, tier: 2,
+         start_year: 2000, end_year: 2002}
+      - {dataset: ESRL, project: OBS, type: ground, version: MLO, tier: 2,
+         start_year: 2000, end_year: 2002}
+    scripts: null
+
+
+  GCP2018:
+    description: GCP2018 check
+    variables:
+      nbp:
+        mip: Lmon
+      fgco2:
+        mip: Omon
+    additional_datasets:
+      - {dataset: GCP2018, project: OBS, frequency: yr, tier: 2, type: reanaly,
+         version: '1.0', start_year: 1959, end_year: 2017}
+    scripts: null
+
+
+  GCP2020:
+    description: GCP2020 check
+    variables:
+      nbp:
+        mip: Lmon
+        additional_datasets:
+          - {dataset: GCP2020, project: OBS, frequency: yr, tier: 2,
+             type: reanaly, version: '1.0', start_year: 1959, end_year: 2019}
+      nbp_residual:
+        short_name: nbp
+        mip: Lmon
+        additional_datasets:
+          - {dataset: GCP2020, project: OBS, frequency: yr, tier: 2,
+             type: reanaly, version: '1.0-residual', start_year: 1959,
+             end_year: 2019}
+      fgco2:
+        mip: Omon
+        additional_datasets:
+          - {dataset: GCP2020, project: OBS, frequency: yr, tier: 2,
+             type: reanaly, version: '1.0', start_year: 1959, end_year: 2019}
+    scripts: null
+
+
+  GHCN:
+    description: GHCN check
+    variables:
+      pr:
+    additional_datasets:
+      - {dataset: GHCN, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: 1, start_year: 1900, end_year: 2014}
+    scripts: null
+
+
+  GHCN-CAMS:
+    description: GHCN-CAMS check
+    variables:
+      tas:
+    additional_datasets:
+      - {dataset: GHCN-CAMS, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: 1, start_year: 1948, end_year: 2020}
+    scripts: null
+
+
+  GISTEMP:
+    description: GISTEMP check
+    variables:
+      tasa:
+    additional_datasets:
+      - {dataset: GISTEMP, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: v4, start_year: 1880, end_year: 2020}
+    scripts: null
+
+
+  GLODAP:
+    description: GLODAP check
+    variables:
+      dissic:
+      ph:
+      talk:
+    additional_datasets:
+      - {dataset: GLODAP, project: OBS6, mip: Oyr, tier: 2,
+         type: clim, version: v2.2016b, start_year: 2000, end_year: 2000}
+    scripts: null
+
+
+  GPCC:
+    description: GPCC check
+    variables:
+      pr:
+    additional_datasets:
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: v2018_025, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: v2018_05, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: v2018_10, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: v2018_25, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
+         version: v2018_025-numgauge1, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
+         version: v2018_05-numgauge1, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
+         version: v2018_10-numgauge1, start_year: 1891, end_year: 2016}
+      - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
+         version: v2018_25-numgauge1, start_year: 1891, end_year: 2016}
+    scripts: null
+
+  GPCP-SG:
+    description: GPCP-SG check
+    variables:
+      pr:
+    additional_datasets:
+      - {dataset: GPCP-SG, project: OBS, mip: Amon, tier: 2, type: atmos,
+         version: 2.3, start_year: 1979, end_year: 2022}
+    scripts: null
+
+  HadCRUT3:
+    description: HadCRUT3 check
+    variables:
+      tasa:
+    additional_datasets:
+      - {dataset: HadCRUT3, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: 1, start_year: 1850, end_year: 2013}
+    scripts: null
+
+
+  HadCRUT4:
+    description: HadCRUT4 check
+    variables:
+      tas:
+      tasa:
+      tasConf5:
+      tasConf95:
+    additional_datasets:
+      - {dataset: HadCRUT4, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: 1, start_year: 1850, end_year: 2018}
+    scripts: null
+
+
+  HadCRUT5:
+    description: HadCRUT5 check
+    variables:
+      tas:
+      tasa:
+    additional_datasets:
+      - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: 5.0.1.0-analysis, start_year: 1850, end_year: 2021}
+      - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: 5.0.1.0-noninfilled, start_year: 1850, end_year: 2021}
+    scripts: null
+
+
+  HadISST:
+    description: HadISST check
+    variables:
+      ts:
+        mip: Amon
+      tos:
+        mip: Omon
+      sic:
+        mip: OImon
+    additional_datasets:
+      - {dataset: HadISST, project: OBS, tier: 2,
+         type: reanaly, version: 1, start_year: 1870, end_year: 2021}
+    scripts: null
+
+
+  HALOE:
+    description: HALOE check
+    variables:
+      hus:
+      tro3:
+    additional_datasets:
+      - {dataset: HALOE, project: OBS, mip: Amon, tier: 2,
+         type: sat, version: 1, start_year: 1991, end_year: 2002}
+    scripts: null
+
+  ISCCP-FH:
+    description: ISCCP-FH check
+    variables:
+      alb:
+    additional_datasets:
+      - {dataset: ISCCP-FH, project: OBS, mip: Amon, tier: 2,
+         type: sat, version: v0, start_year: 1984, end_year: 2016}
+    scripts: null
+
+  JRA-25:
+    description: JRA-25 check
+    variables:
+      clt:
+      hus:
+      prw:
+      rlut:
+      rlutcs:
+      rsut:
+      rsutcs:
+    additional_datasets:
+      - {dataset: JRA-25, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 1, start_year: 1979, end_year: 2013}
+    scripts: null
+
+  Kadow2020:
+    description: Kadow2020 check
+    variables:
+      tasa:
+    additional_datasets:
+      - {dataset: Kadow2020, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: 5.0.1.0, start_year: 1850, end_year: 2020}
+    scripts: null
+
+
+  Landschuetzer2016:
+    description: Landschuetzer2016 check
+    variables:
+      dpco2:
+      fgco2:
+      spco2:
+    additional_datasets:
+      - {dataset: Landschuetzer2016, project: OBS, mip: Omon, tier: 2,
+         type: clim, version: v2016, start_year: 1982, end_year: 2015}
+    scripts: null
+
+
+  Landschuetzer2020:
+    description: Landschuetzer2020 check
+    variables:
+      spco2:
+    additional_datasets:
+      - {dataset: Landschuetzer2020, project: OBS6, mip: Omon, tier: 2,
+         type: clim, version: '1.1', start_year: 2004, end_year: 2004}
+    scripts: null
+
+
+  MOBO-DIC_MPIM:
+    description: MOBO-DIC_MPIM check
+    variables:
+      dissic:
+    additional_datasets:
+      - {dataset: MOBO-DIC_MPIM, project: OBS6, mip: Omon, tier: 2,
+         type: clim, version: '1.1', start_year: 2011, end_year: 2011}
+    scripts: null
+
+
+  MOBO-DIC2004-2019:
+    description: MOBO-DIC2004-2019 check
+    variables:
+      dissic:
+    additional_datasets:
+      - {dataset: MOBO-DIC2004-2019, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: '2.3', start_year: 2004, end_year: 2019}
+    scripts: null
+
+
+  NCEP-NCAR-R1:
+    description: NCEP-NCAR-R1 check
+    variables:
+      clt:
+        mip: Amon
+      hur:
+        mip: Amon
+      hurs:
+        mip: Amon
+      hus:
+        mip: Amon
+      pr_month:
+        short_name: pr
+        mip: Amon
+      pr_day:
+        short_name: pr
+        mip: day
+      prw:
+        mip: Amon
+      psl:
+        mip: Amon
+      rlut_day:
+        short_name: rlut
+        mip: day
+      rlut_month:
+        short_name: rlut
+        mip: Amon
+      rlutcs:
+        mip: Amon
+      rsut:
+        mip: Amon
+      rsutcs:
+        mip: Amon
+      sfcWind:
+        mip: Amon
+      ta:
+        mip: Amon
+      tas:
+        mip: Amon
+      tasmax:
+        mip: Amon
+      tasmin:
+        mip: Amon
+      ts:
+        mip: Amon
+      ua_month:
+        short_name: ua
+        mip: Amon
+      ua_day:
+        short_name: ua
+        mip: day
+      va_month:
+        short_name: va
+        mip: Amon
+      va_day:
+        short_name: va
+        mip: day
+      wap:
+        mip: Amon
+      zg:
+        mip: Amon
+    additional_datasets:
+      - {dataset: NCEP-NCAR-R1, project: OBS6, tier: 2,
+         type: reanaly, version: 1, start_year: 1948, end_year: 2021}
+    scripts: null
+
+
+  NCEP-DOE-R2:
+    description: NCEP-DOE-R2 check
+    variables:
+      clt:
+      hur:
+      prw:
+      ta:
+      wap:
+    additional_datasets:
+      - {dataset: NCEP-DOE-R2, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 2, start_year: 1979, end_year: 2022}
+    scripts: null
+
+
+  NOAA-CIRES-20CR-V2:
+    description: NOAA-CIRES-20CR-V2 check
+    variables:
+      clt:
+      clwvi:
+      hus:
+      prw:
+      rlut:
+      rsut:
+    additional_datasets:
+      - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: v2, start_year: 1871, end_year: 2012}
+    scripts: null
+
+  NOAA-ERSSTv5:
+    description: NOAA-ERSSTv5 check
+    variables:
+      tos:
+    additional_datasets:
+      - {dataset: NOAA-ERSSTv5, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: v5, start_year: 1854, end_year: 2000}
+    scripts: null
+
+  NOAA-ERSSTv3b:
+    description: NOAA-ERSSTv3b check
+    variables:
+      tos:
+    additional_datasets:
+      - {dataset: NOAA-ERSSTv3b, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: v3b, start_year: 1854, end_year: 2019}
+    scripts: null
+
+  NOAA-MBL-CH4:
+    description: NOAA marine boundary layer CH4 check
+    variables:
+      ch4s:
+    additional_datasets:
+      - {dataset: NOAA-MBL-CH4, project: OBS6, mip: Amon, type: atmos, version: 1.0, tier: 2,
+         start_year: 1983, end_year: 2023}
+    scripts: null
+
+  NOAA-CIRES-20CR-V3:
+    description: NOAA-CIRES-20CR-V3 check
+    variables:
+      clt:
+      clwvi:
+      hus:
+      prw:
+      rlut:
+      rlutcs:
+      rsut:
+      rsutcs:
+    additional_datasets:
+      - {dataset: NOAA-CIRES-20CR-V3, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: v3, start_year: 1836, end_year: 2015}
+    scripts: null
+
+
+  NOAAGlobalTemp:
+    description: NOAAGlobalTemp check
+    variables:
+      tasa:
+    additional_datasets:
+      - {dataset: NOAAGlobalTemp, project: OBS, mip: Amon, tier: 2,
+         type: ground, version: v5.0.0, start_year: 1880, end_year: 2021}
+    scripts: null
+
+
+  OceanSODA-ETHZ:
+    description: OceanSODA-ETHZ check
+    variables:
+      areacello:
+        mip: Ofx
+      co3os:
+        mip: Omon
+      dissicos:
+        mip: Omon
+      fgco2:
+        mip: Omon
+      phos:
+        mip: Omon
+      spco2:
+        mip: Omon
+      talkos:
+        mip: Omon
+    additional_datasets:
+      - {dataset: OceanSODA-ETHZ, project: OBS6, tier: 2, type: reanaly,
+         version: v2023, start_year: 1982, end_year: 2022}
+    scripts: null
+
+
+  OSI-450:
+    description: OSI-450 check
+    variables:
+      sic_day:
+        short_name: sic
+        mip: day
+      sic_month:
+        short_name: sic
+        mip: OImon
+      areacello:
+        mip: fx
+    additional_datasets:
+      - {dataset: OSI-450-nh, project: OBS, tier: 2,
+         type: reanaly, version: v2, start_year: 1979, end_year: 2015}
+      - {dataset: OSI-450-sh, project: OBS, tier: 2,
+         type: reanaly, version: v2, start_year: 1979, end_year: 2015}
+    scripts: null
+
+
+  PATMOS-x:
+    description: PATMOS-x check
+    variables:
+      clt:
+    additional_datasets:
+      - {dataset: PATMOS-x, project: OBS, mip: Amon, tier: 2,
+         type: sat, version: NOAA, start_year: 1982, end_year: 2016}
+    scripts: null
+
+
+  PERSIANN-CDR:
+    description: PERSIANN-CDR check
+    variables:
+      pr_month:
+        short_name: pr
+        mip: Amon
+      pr_day:
+        short_name: pr
+        mip: day
+    additional_datasets:
+      - {dataset: PERSIANN-CDR, project: OBS, tier: 2,
+         type: reanaly, version: v01r01, start_year: 1983, end_year: 2018}
+    scripts: null
+
+
+  PHC:
+    description: PHC check
+    variables:
+      so:
+      thetao:
+    additional_datasets:
+      - {dataset: PHC, project: OBS6, frequency: yr, mip: Omon, tier: 2,
+         type: clim, version: 3, start_year: 1950, end_year: 1950}
+    scripts: null
+
+
+  PIOMAS:
+    description: PIOMAS
+    variables:
+      sithick:
+        mip: day
+      areacello:
+        mip: fx
+    additional_datasets:
+      - {dataset: PIOMAS, project: OBS, tier: 2,
+         type: reanaly, version: 2.1, start_year: 1979, end_year: 2018}
+    scripts: null
+
+
+  REGEN:
+    description: REGEN check
+    variables:
+      pr:
+    additional_datasets:
+      - {dataset: REGEN, project: OBS, mip: Amon, tier: 2,
+         type: reanaly, version: V1-2019, start_year: 1950, end_year: 2016}
+      - {dataset: REGEN, project: OBS, mip: day, tier: 2,
+         type: reanaly, version: V1-2019, start_year: 1950, end_year: 2016}
+    scripts: null
+
+
+  Scripps-CO2-KUM:
+    description: Scripps-CO2-KUM check
+    variables:
+      co2s:
+    additional_datasets:
+      - {dataset: Scripps-CO2-KUM, project: OBS6, mip: Amon, tier: 2,
+         type: ground, version: 14-Oct-2021, start_year: 1979, end_year: 2021}
+    scripts: null
+
+
+  WFDE5:
+    description: WFDE5 check
+    variables:
+      tas:
+        additional_datasets:
+          - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
+             type: ground, version: v1.1-CRU, start_year: 1979, end_year: 2018}
+          - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
+             type: ground, version: v1.1-CRU, start_year: 1979, end_year: 2018}
+      pr:
+        additional_datasets:
+          - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
+             type: ground, version: v1.1-CRU, start_year: 1980, end_year: 2018}
+          - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
+             type: ground, version: v1.1-CRU, start_year: 1980, end_year: 2018}
+          - {dataset: WFDE5, project: OBS, mip: Amon, tier: 2,
+             type: ground, version: v1.1-CRU+GPCC, start_year: 1980, end_year: 2016}
+          - {dataset: WFDE5, project: OBS, mip: day, tier: 2,
+             type: ground, version: v1.1-CRU+GPCC, start_year: 1980, end_year: 2016}
+    scripts: null
+
+
+  TCOM-CH4:
+    description: TCOM-CH4 check
+    variables:
+      ch4:
+    additional_datasets:
+      - {dataset: TCOM-CH4, project: OBS6, mip: Amon, frequency: day, tier: 2,
+         type: reanaly, version: '1.0', start_year: 1991, end_year: 2021}
+    scripts: null
+
+
+  TCOM-N2O:
+    description: TCOM-N2O check
+    variables:
+      n2o:
+    additional_datasets:
+      - {dataset: TCOM-N2O, project: OBS6, mip: Amon, frequency: day, tier: 2,
+         type: reanaly, version: '1.0', start_year: 1991, end_year: 2021}
+    scripts: null
+
+
+  WOA:
+    description: WOA check
+    variables:
+      so:
+        mip: Omon
+      sos:
+        mip: Omon
+      thetao:
+        mip: Omon
+      tos:
+        mip: Omon
+      no3:
+        mip: Oyr
+      o2:
+        mip: Oyr
+      po4:
+        mip: Oyr
+      si:
+        mip: Oyr
+    additional_datasets:
+      - {dataset: WOA, project: OBS6, tier: 2,
+         type: clim, version: 2018, start_year: 2000, end_year: 2000}
+      - {dataset: WOA, project: OBS, tier: 2,
+         type: clim, version: 2013v2, start_year: 2000, end_year: 2000}
+    scripts: null
+
+
+  ### TIER 3 ##################################################################
+
+  AERONET:
+    description: Aeronet check
+    variables:
+      od440aer:
+    additional_datasets:
+      - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20231021}
+    scripts: null
+
+  ANUClimate:
+    description: ANUClimate check
+    variables:
+      pr:
+      tasmax:
+      tasmin:
+      tas:
+    additional_datasets:
+      - {dataset: ANUClimate, project: OBS6, mip: Amon, tier: 3, type: reanaly}
+    scripts: null
+
+  APHRO-MA:
+    description: APHRO-MA check
+    variables:
+      pr:
+        additional_datasets:
+          - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
+             version: 025deg-V1101, start_year: 1951, end_year: 2007}
+          - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
+             version: 050deg-V1101, start_year: 1951, end_year: 2007}
+          - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
+             version: 025deg-V1101, start_year: 1951, end_year: 2007}
+          - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
+             version: 050deg-V1101, start_year: 1951, end_year: 2007}
+          - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
+             version: 025deg-V1101-EXR1, start_year: 2007, end_year: 2015}
+          - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
+             version: 050deg-V1101-EXR1, start_year: 2007, end_year: 2015}
+          - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
+             version: 025deg-V1101-EXR1, start_year: 2007, end_year: 2015}
+          - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
+             version: 050deg-V1101-EXR1, start_year: 2007, end_year: 2015}
+      tas:
+        additional_datasets:
+          - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
+             version: 025deg-V1808, start_year: 1961, end_year: 2007}
+          - {dataset: APHRO-MA, project: OBS, mip: day, tier: 3, type: ground,
+             version: 050deg-V1808, start_year: 1961, end_year: 2007}
+          - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
+             version: 025deg-V1808, start_year: 1961, end_year: 2007}
+          - {dataset: APHRO-MA, project: OBS, mip: Amon, tier: 3, type: ground,
+             version: 050deg-V1808, start_year: 1961, end_year: 2007}
+    scripts: null
+
+
+  AURA-TES:
+    description: AURA-TES check
+    variables:
+      tro3:
+    additional_datasets:
+      - {dataset: AURA-TES, project: OBS, mip: Amon, tier: 3,
+         type: sat, version: 1, start_year: 2005, end_year: 2011}
+    scripts: null
+
+
+  CALIPSO-ICECLOUD:
+    description: CALIPSO-ICECLOUD check
+    variables:
+      cli:
+    additional_datasets:
+      - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00,
+         mip: Amon, tier: 3, start_year: 2007, end_year: 2015}
+    scripts: null
+
+
+  CDS-SATELLITE-ALBEDO:
+    description: CDS-SATELLITE-ALBEDO check
+    variables:
+      bdalb:
+      bhalb:
+    additional_datasets:
+      - {dataset: CDS-SATELLITE-ALBEDO, project: OBS6, mip: Lmon, tier: 3,
+         type: sat, version: V1, start_year: 1999, end_year: 2013}
+    scripts: null
+
+
+  CDS-SATELLITE-LAI-FAPAR:
+    description: CDS-SATELLITE-LAI-FAPAR check
+    variables:
+      fapar:
+      lai:
+    additional_datasets:
+      - {dataset: CDS-SATELLITE-LAI-FAPAR, project: OBS, mip: Lmon, tier: 3,
+         type: sat, version: V1, start_year: 1999, end_year: 2013}
+    scripts: null
+
+
+  CDS-SATELLITE-SOIL-MOISTURE:
+    description: CDS-SATELLITE-SOIL-MOISTURE check
+    variables:
+      sm_month:
+        short_name: sm
+        mip: Lmon
+      sm_day:
+        short_name: sm
+        mip: day
+    additional_datasets:
+      - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3,
+         type: sat, version: ACTIVE,
+         start_year: 1992, end_year: 2020}
+      - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3,
+         type: sat, version: COMBINED,
+         start_year: 1979, end_year: 2020}
+      - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3,
+         type: sat, version: PASSIVE,
+         start_year: 1979, end_year: 2020}
+    scripts: null
+
+
+  CDS-UERRA:
+    description: CDS-UERRA check
+    variables:
+      sm:
+    additional_datasets:
+      - {dataset: CDS-UERRA, project: OBS6, mip: E6hr, frequency: 6hr, tier: 3,
+         type: reanaly, version: UERRA-HARMONIE,
+         start_year: 1979, end_year: 2018}
+    scripts: null
+
+
+  CDS-XCH4:
+    description: CDS-XCH4 check
+    variables:
+      xch4:
+    additional_datasets:
+      - {dataset: CDS-XCH4, project: OBS, mip: Amon, tier: 3,
+         type: sat, version: L3, start_year: 2003, end_year: 2018}
+    scripts: null
+
+
+  CDS-XCO2:
+    description: CDS-XCO2 check
+    variables:
+      xco2:
+    additional_datasets:
+      - {dataset: CDS-XCO2, project: OBS, mip: Amon, tier: 3,
+         type: sat, version: L3, start_year: 2003, end_year: 2016}
+    scripts: null
+
+
+  CERES_mon:
+    description: CERES-SYN1deg check
+    variables:
+      rlds_month:
+        short_name: rlds
+        mip: Amon
+      rlds_3hr:
+        short_name: rlds
+        mip: 3hr
+      rldscs_month:
+        short_name: rldscs
+        mip: Amon
+      rldscs_3hr:
+        short_name: rldscs
+        mip: 3hr
+      rlus_month:
+        short_name: rlus
+        mip: Amon
+      rlus_3hr:
+        short_name: rlus
+        mip: 3hr
+      rluscs:
+        mip: 3hr
+      rlut_month:
+        short_name: rlut
+        mip: Amon
+      rlut_3hr:
+        short_name: rlut
+        mip: 3hr
+      rlutcs_month:
+        short_name: rlutcs
+        mip: Amon
+      rlutcs_3hr:
+        short_name: rlutcs
+        mip: 3hr
+      rsds_month:
+        short_name: rsds
+        mip: Amon
+      rsds_3hr:
+        short_name: rsds
+        mip: 3hr
+      rsdscs:
+        mip: 3hr
+      rsdt:
+        mip: Amon
+      rsus_month:
+        short_name: rsus
+        mip: Amon
+      rsus_3hr:
+        short_name: rsus
+        mip: 3hr
+      rsuscs:
+        mip: 3hr
+      rsut_month:
+        short_name: rsut
+        mip: Amon
+      rsut_3hr:
+        short_name: rsut
+        mip: 3hr
+      rsutcs_month:
+        short_name: rsutcs
+        mip: Amon
+      rsutcs_3hr:
+        short_name: rsutcs
+        mip: 3hr
+    additional_datasets:
+      - {dataset: CERES-SYN1deg, project: OBS, tier: 3,
+         type: sat, version: Ed3A, start_year: 2001, end_year: 2016}
+    scripts: null
+
+
+  CLARA-AVHRR:
+    description: CLARA-AVHRR check
+    variables:
+      clt:
+        mip: Amon
+      clivi:
+        mip: Amon
+      clwvi:
+        mip: Amon
+      lwp:
+        mip: Amon
+    additional_datasets:
+      - {dataset: CLARA-AVHRR, project: OBS, tier: 3,
+         type: sat, version: V002_01, start_year: 1982, end_year: 2018}
+    scripts: null
+
+
+  CLOUDSAT-L2:
+    description: CloudSat-level2 check
+    variables:
+      clivi:
+      clw:
+      clwvi:
+      lwp:
+    additional_datasets:
+      - {dataset: CLOUDSAT-L2, project: OBS, tier: 3, type: sat,
+         version: P1-R05-gridbox-average-all, mip: Amon, start_year: 2006,
+         end_year: 2017}
+      - {dataset: CLOUDSAT-L2, project: OBS, tier: 3, type: sat,
+         version: P1-R05-gridbox-average-noprecip, mip: Amon, start_year: 2006,
+         end_year: 2017}
+      - {dataset: CLOUDSAT-L2, project: OBS, tier: 3, type: sat,
+         version: P1-R05-in-cloud-all, mip: Amon, start_year: 2006,
+         end_year: 2017}
+      - {dataset: CLOUDSAT-L2, project: OBS, tier: 3, type: sat,
+         version: P1-R05-in-cloud-noprecip, mip: Amon, start_year: 2006,
+         end_year: 2017}
+    scripts: null
+
+
+  ERA-Interim:
+    description: ERA-Interim check
+    variables:
+      cl:
+        mip: Amon
+      cli:
+        mip: Amon
+      clivi:
+        mip: Amon
+      clt_day:
+        short_name: clt
+        mip: day
+      clt_month:
+        short_name: clt
+        mip: Amon
+      clw:
+        mip: Amon
+      clwvi:
+        mip: Amon
+      evspsbl_day:
+        short_name: evspsbl
+        mip: Eday
+      evspsbl_month:
+        short_name: evspsbl
+        mip: Amon
+      hfds:
+        mip: Omon
+      hur:
+        mip: Amon
+      hus:
+        mip: Amon
+      lwp:
+        mip: Amon
+      orog:
+        mip: fx
+      pr_day:
+        short_name: pr
+        mip: day
+      pr_month:
+        short_name: pr
+        mip: Amon
+      prsn_day:
+        short_name: prsn
+        mip: day
+      prsn_month:
+        short_name: prsn
+        mip: Amon
+      prw:
+        mip: Amon
+      ps_day:
+        short_name: ps
+        mip: CFday
+      ps_month:
+        short_name: ps
+        mip: Amon
+      psl_day:
+        short_name: psl
+        mip: day
+      psl_month:
+        short_name: psl
+        mip: Amon
+      rlds_day:
+        short_name: rlds
+        mip: day
+      rlut_month:
+        short_name: rlut
+        mip: Amon
+      rlutcs_month:
+        short_name: rlutcs
+        mip: Amon
+      rsds_day:
+        short_name: rsds
+        mip: day
+      rsds_month:
+        short_name: rsds
+        mip: Amon
+      rsdt_day:
+        short_name: rsdt
+        mip: CFday
+      rsdt_month:
+        short_name: rsdt
+        mip: Amon
+      rsut_month:
+        short_name: rsut
+        mip: Amon
+      rsutcs_month:
+        short_name: rsutcs
+        mip: Amon
+      rss_day:
+        short_name: rss
+        mip: day
+      rss_month:
+        short_name: rss
+        mip: Emon
+      sftlf:
+        mip: fx
+      ta_day:
+        short_name: ta
+        mip: day
+      ta_month:
+        short_name: ta
+        mip: Amon
+      tas_day:
+        short_name: tas
+        mip: day
+      tas_month:
+        short_name: tas
+        mip: Amon
+      tasmax:
+        mip: day
+      tasmin:
+        mip: day
+      tauu:
+        mip: Amon
+      tauv:
+        mip: Amon
+      tdps_day:
+        short_name: tdps
+        mip: Eday
+      tdps_month:
+        short_name: tdps
+        mip: Emon
+      tos:
+        mip: Omon
+      ts_day:
+        short_name: ts
+        mip: Eday
+      ts_month:
+        short_name: ts
+        mip: Amon
+      tsn_month:
+        short_name: tsn
+        mip: LImon
+      tsn_day:
+        short_name: tsn
+        mip: Eday
+      ua:
+        mip: Amon
+      uas_day:
+        short_name: uas
+        mip: day
+      uas_month:
+        short_name: uas
+        mip: Amon
+      va_day:
+        short_name: va
+        mip: day
+      va_month:
+        short_name: va
+        mip: Amon
+      vas_day:
+        short_name: vas
+        mip: day
+      vas_month:
+        short_name: vas
+        mip: Amon
+      wap:
+        mip: Amon
+      zg_day:
+        short_name: zg
+        mip: day
+      zg_month:
+        short_name: zg
+        mip: Amon
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3,
+         type: reanaly, version: 1, start_year: 1979, end_year: 2018}
+    scripts: null
+
+
+  ERA-Interim-Land:
+    description: ERA-Interim-Land check
+    variables:
+      sm:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: ERA-Interim-Land, project: OBS6, tier: 3,
+         type: reanaly, version: 1, start_year: 1979, end_year: 2010}
+    scripts: null
+
+
+  ERA5_OBS6:
+    description: ERA5 OBS6 (daily) check
+    variables:
+      evspsbl_Eday:
+        short_name: evspsbl
+        mip: Eday
+      evspsblpot_Eday:
+        short_name: evspsblpot
+        mip: Eday
+      tdps_Eday:
+        short_name: tdps
+        mip: Eday
+      ts_Eday:
+        short_name: ts
+        mip: Eday
+      tsn_Eday:
+        short_name: tsn
+        mip: Eday
+      clt_day:
+        short_name: clt
+        mip: day
+      mrro_day:
+        short_name: mrro
+        mip: day
+      pr_day:
+        short_name: pr
+        mip: day
+      prsn_day:
+        short_name: prsn
+        mip: day
+      psl_day:
+        short_name: psl
+        mip: day
+      rlds_day:
+        short_name: rlds
+        mip: day
+      rls_day:
+        short_name: rls
+        mip: day
+      rsds_day:
+        short_name: rsds
+        mip: day
+      rss_day:
+        short_name: rss
+        mip: day
+      tas_day:
+        short_name: tas
+        mip: day
+      tasmax_day:
+        short_name: tasmax
+        mip: day
+      tasmin_day:
+        short_name: tasmin
+        mip: day
+      uas_day:
+        short_name: uas
+        mip: day
+      vas_day:
+        short_name: vas
+        mip: day
+      ps_CFday:
+        short_name: ps
+        mip: CFday
+      rsdt_CFday:
+        short_name: rsdt
+        mip: CFday
+      orog:
+        mip: fx
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly,
+         version: 1, start_year: 1990, end_year: 1990}
+    scripts: null
+
+
+  ERA5_native6:
+    description: ERA5 native6 (hourly and monthly) check
+    variables:
+      clt_E1hr:
+        short_name: clt
+        mip: E1hr
+      evspsbl_E1hr:
+        short_name: evspsbl
+        mip: E1hr
+      evspsblpot_E1hr:
+        short_name: evspsblpot
+        mip: E1hr
+      mrro_E1hr:
+        short_name: mrro
+        mip: E1hr
+      pr_E1hr:
+        short_name: pr
+        mip: E1hr
+      prsn_E1hr:
+        short_name: prsn
+        mip: E1hr
+      ps_E1hr:
+        short_name: ps
+        mip: E1hr
+      psl_E1hr:
+        short_name: psl
+        mip: E1hr
+      ptype_E1hr:
+        short_name: ptype
+        mip: E1hr
+      rls_E1hr:
+        short_name: rls
+        mip: E1hr
+      rlds_E1hr:
+        short_name: rlds
+        mip: E1hr
+      rlns_E1hr:
+        short_name: rlns
+        mip: E1hr
+        frequency: 1hr
+      rlus_E1hr:
+        short_name: rlus
+        mip: E1hr
+        frequency: 1hr
+      rsds_E1hr:
+        short_name: rsds
+        mip: E1hr
+      rsdt_E1hr:
+        short_name: rsdt
+        mip: E1hr
+      rsns_E1hr:
+        short_name: rsns
+        mip: E1hr
+        frequency: 1hr
+      rsus_E1hr:
+        short_name: rsus
+        mip: E1hr
+        frequency: 1hr
+      rss_E1hr:
+        short_name: rss
+        mip: E1hr
+      uas_E1hr:
+        short_name: uas
+        mip: E1hr
+      vas_E1hr:
+        short_name: vas
+        mip: E1hr
+      tas_E1hr:
+        short_name: tas
+        mip: E1hr
+      tasmax_E1hr:
+        short_name: tasmax
+        mip: E1hr
+      tasmin_E1hr:
+        short_name: tasmin
+        mip: E1hr
+      tdps_E1hr:
+        short_name: tdps
+        mip: E1hr
+      ts_E1hr:
+        short_name: ts
+        mip: E1hr
+      tsn_E1hr:
+        short_name: tsn
+        mip: E1hr
+      clt_Amon:
+        short_name: clt
+        mip: Amon
+      cl_Amon:
+        short_name: cl
+        mip: Amon
+      evspsbl_Amon:
+        short_name: evspsbl
+        mip: Amon
+      evspsblpot_Amon:
+        short_name: evspsblpot
+        mip: Amon
+      mrro_Amon:
+        short_name: mrro
+        mip: Amon
+      pr_Amon:
+        short_name: pr
+        mip: Amon
+      prsn_Amon:
+        short_name: prsn
+        mip: Amon
+      ps_Amon:
+        short_name: ps
+        mip: Amon
+      psl_Amon:
+        short_name: psl
+        mip: Amon
+      ptype_Amon:
+        short_name: ptype
+        mip: Amon
+      rlds_Amon:
+        short_name: rlds
+        mip: Amon
+      rls_Amon:
+        short_name: rls
+        mip: Amon
+      rlns_Amon:
+        short_name: rlns
+        mip: Amon
+      rlus_Amon:
+        short_name: rlus
+        mip: Amon
+      rsds_Amon:
+        short_name: rsds
+        mip: Amon
+      rsdt_Amon:
+        short_name: rsdt
+        mip: Amon
+      rsns_Amon:
+        short_name: rsns
+        mip: Amon
+      rsus_Amon:
+        short_name: rsus
+        mip: Amon
+      rss_Amon:
+        short_name: rss
+        mip: Amon
+      ta_Amon:
+        short_name: ta
+        mip: Amon
+      tas_Amon:
+        short_name: tas
+        mip: Amon
+      tdps_Amon:
+        short_name: tdps
+        mip: Amon
+      ts_Amon:
+        short_name: ts
+        mip: Amon
+      tsn_Amon:
+        short_name: tsn
+        mip: Amon
+      uas_Amon:
+        short_name: uas
+        mip: Amon
+      vas_Amon:
+        short_name: vas
+        mip: Amon
+      orog:
+        mip: fx
+    additional_datasets:
+      - {dataset: ERA5, project: native6, tier: 3, type: reanaly,
+         version: v1, start_year: 1990, end_year: 1990}
+    scripts: null
+
+
+  ESACCI-WATERVAPOUR:
+    description: ESACCI-WV check
+    variables:
+      prw:
+    additional_datasets:
+      - {dataset: ESACCI-WATERVAPOUR, project: OBS6, mip: Amon, tier: 3,
+         type: sat, version: CDR2-L3-COMBI-05deg-fv3.1,
+         start_year: 2003, end_year: 2017}
+      - {dataset: ESACCI-WATERVAPOUR, project: OBS6, mip: Eday, tier: 3,
+         type: sat, version: CDR2-L3-COMBI-05deg-fv3.1,
+         start_year: 2003, end_year: 2017}
+    scripts: null
+
+
+  GRACE:
+    description: GRACE check
+    variables:
+      lweGrace:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: GRACE, project: OBS6, tier: 3, type: sat,
+         version: 1, start_year: 2002, end_year: 2020}
+    scripts: null
+
+
+  HWSD:
+    description: HWSD check
+    variables:
+      areacella:
+        mip: fx
+      cSoil:
+        mip: Lmon
+      sftlf:
+        mip: fx
+    additional_datasets:
+      - {dataset: HWSD, project: OBS, tier: 3, type: reanaly, version: 1.2,
+         start_year: 2000, end_year: 2000}
+    scripts: null
+
+
+  JMA-TRANSCOM:
+    description: JMA-TRANSCOM check
+    variables:
+      nbp:
+        mip: Lmon
+      fgco2:
+        mip: Omon
+    additional_datasets:
+      - {dataset: JMA-TRANSCOM, project: OBS, tier: 3, type: reanaly,
+         version: 2018, start_year: 1985, end_year: 2016}
+    scripts: null
+
+
+  FLUXCOM:
+    description: FLUXCOM check
+    variables:
+      gpp:
+    additional_datasets:
+      - {dataset: FLUXCOM, project: OBS, mip: Lmon, tier: 3, type: reanaly,
+         version: ANN-v1, start_year: 1980, end_year: 2013}
+    scripts: null
+
+
+  LAI3g:
+    description: LAI3g check
+    variables:
+      lai:
+    additional_datasets:
+      - {dataset: LAI3g, project: OBS, mip: Lmon, tier: 3,
+         type: reanaly, version: 1_regridded, start_year: 1981, end_year: 2018}
+    scripts: null
+
+
+  LandFlux-EVAL:
+    description: LandFlux-EVAL check
+    variables:
+      et:
+      etStderr:
+    additional_datasets:
+      - {dataset: LandFlux-EVAL, project: OBS, mip: Lmon, tier: 3,
+         type: reanaly, version: Oct13, start_year: 1989, end_year: 2005}
+    scripts: null
+
+
+  MAC-LWP:
+    description: MAC-LWP check
+    variables:
+      lwp:
+      lwpStderr:
+    additional_datasets:
+      - {dataset: MAC-LWP, project: OBS, mip: Amon, tier: 3,
+         type: sat, version: v1, start_year: 1988, end_year: 2016}
+    scripts: null
+
+  MERRA:
+    description: MERRA check
+    variables:
+      cli:
+      clivi:
+      clt:
+      clw:
+      clwvi:
+      hur:
+      hus:
+      lwp:
+      pr:
+      prw:
+      ps:
+      psl:
+      rlut:
+      rlutcs:
+      rsdt:
+      rsut:
+      rsutcs:
+      ta:
+      tas:
+      ts:
+      ua:
+      va:
+      wap:
+      zg:
+    additional_datasets:
+      - {dataset: MERRA, project: OBS, tier: 3, mip: Amon,
+         type: reanaly, version: 5.2.0, start_year: 1979, end_year: 2015}
+    scripts: null
+
+
+  MERRA2:
+    description: MERRA2 check
+    variables:
+      sm_monthly:
+        short_name: sm
+        mip: Lmon
+      clt_monthly:
+        short_name: clt
+        mip: Amon
+      pr_monthly:
+        short_name: pr
+        mip: Amon
+      evspsbl_monthly:
+        short_name: evspsbl
+        mip: Amon
+      hfss_monthly:
+        short_name: hfss
+        mip: Amon
+      hfls_monthly:
+        short_name: hfls
+        mip: Amon
+      huss_monthly:
+        short_name: huss
+        mip: Amon
+      prc_monthly:
+        short_name: prc
+        mip: Amon
+      prsn_monthly:
+        short_name: prsn
+        mip: Amon
+      prw_monthly:
+        short_name: prw
+        mip: Amon
+      ps_monthly:
+        short_name: ps
+        mip: Amon
+      psl_monthly:
+        short_name: psl
+        mip: Amon
+      rlds_monthly:
+        short_name: rlds
+        mip: Amon
+      rldscs_monthly:
+        short_name: rldscs
+        mip: Amon
+      rlus_monthly:
+        short_name: rlus
+        mip: Amon
+      rlut_monthly:
+        short_name: rlut
+        mip: Amon
+      rsds_monthly:
+        short_name: rsds
+        mip: Amon
+      rsdscs_monthly:
+        short_name: rsdscs
+        mip: Amon
+      rsdt_monthly:
+        short_name: rsdt
+        mip: Amon
+      tas_monthly:
+        short_name: tas
+        mip: Amon
+      tasmax_monthly:
+        short_name: tasmax
+        mip: Amon
+      tasmin_monthly:
+        short_name: tasmin
+        mip: Amon
+      tauu_monthly:
+        short_name: tauu
+        mip: Amon
+      tauv_monthly:
+        short_name: tauv
+        mip: Amon
+      rlutcs_monthly:
+        short_name: rlutcs
+        mip: Amon
+      ts_monthly:
+        short_name: ts
+        mip: Amon
+      uas_monthly:
+        short_name: uas
+        mip: Amon
+      vas_monthly:
+        short_name: vas
+        mip: Amon
+      rsus_monthly:
+        short_name: rsus
+        mip: Amon
+      rsuscs_monthly:
+        short_name: rsuscs
+        mip: Amon
+      rsut_monthly:
+        short_name: rsut
+        mip: Amon
+      rsutcs_monthly:
+        short_name: rsutcs
+        mip: Amon
+      ta_monthly:
+        short_name: ta
+        mip: Amon
+      ua_monthly:
+        short_name: ua
+        mip: Amon
+      va_monthly:
+        short_name: va
+        mip: Amon
+      tro3_monthly:
+        short_name: tro3
+        mip: Amon
+      zg_monthly:
+        short_name: zg
+        mip: Amon
+      hus_monthly:
+        short_name: hus
+        mip: Amon
+      wap_monthly:
+        short_name: wap
+        mip: Amon
+      hur_monthly:
+        short_name: hur
+        mip: Amon
+      cl_monthly:
+        short_name: cl
+        mip: Amon
+      clw_monthly:
+        short_name: clw
+        mip: Amon
+      cli_monthly:
+        short_name: cli
+        mip: Amon
+      clwvi_monthly:
+        short_name: clwvi
+        mip: Amon
+      clivi_monthly:
+        short_name: clivi
+        mip: Amon
+    additional_datasets:
+      - {dataset: MERRA2, project: OBS6, tier: 3,
+         type: reanaly, version: 5.12.4, start_year: 1980, end_year: 2022}
+    scripts: null
+
+
+  MLS-AURA:
+    description: MLS-AURA check
+    variables:
+      hur:
+        mip: Amon
+      hurStderr:
+        mip: Amon
+    additional_datasets:
+      - {dataset: MLS-AURA, project: OBS6, tier: 3, type: sat, version: '004',
+         start_year: 2005, end_year: 2019}
+    scripts: null
+
+
+  MODIS:
+    description: MODIS check
+    variables:
+      od550aer:
+        mip: aero
+      clivi:
+        mip: Amon
+      clwvi:
+        mip: Amon
+      clt:
+        mip: Amon
+      lwpStderr:
+        mip: Amon
+      iwpStderr:
+        mip: Amon
+    additional_datasets:
+      - {dataset: MODIS, project: OBS, tier: 3,
+         type: sat, version: MYD08-M3, start_year: 2003, end_year: 2018}
+    scripts: null
+
+
+  MTE:
+    description: MTE check
+    variables:
+      gpp:
+      gppStderr:
+    additional_datasets:
+      - {dataset: MTE, project: OBS, tier: 3, mip: Lmon,
+         type: reanaly, version: May12, start_year: 1982, end_year: 2011}
+    scripts: null
+
+
+  NDP:
+    description: NDP check
+    variables:
+      cVeg:
+    additional_datasets:
+      - {dataset: NDP, project: OBS, tier: 3, mip: Lmon,
+         type: reanaly, version: 017b, start_year: 2000, end_year: 2000}
+    scripts: null
+
+
+  NIWA-BS:
+    description: NIWA-BS check
+    variables:
+      toz:
+      tozStderr:
+    additional_datasets:
+      - {dataset: NIWA-BS, project: OBS, mip: Amon, tier: 3,
+         type: sat, version: v3.3, start_year: 1979, end_year: 2016}
+    scripts: null
+
+
+  NSIDC-0116:
+    description: NSIDC-0116 check
+    variables:
+      areacello:
+        mip: fx
+      usi:
+        mip: day
+      vsi:
+        mip: day
+    additional_datasets:
+      - {dataset: NSIDC-0116-nh, project: OBS, tier: 3,
+         type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
+      - {dataset: NSIDC-0116-sh, project: OBS, tier: 3,
+         type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
+    scripts: null
+
+  NSIDC-G02202:
+    description: NSIDC-G02202 check
+    variables:
+      areacello:
+        mip: Ofx
+      siconc:
+        mip: SImon
+    additional_datasets:
+      - {dataset: NSIDC-G02202-sh, project: OBS6, tier: 3,
+        type: reanaly, version: 4, start_year: 1979, end_year: 2022}
+    scripts: null
+
+  UWisc:
+    description: UWisc check
+    variables:
+      lwp:
+      lwpStderr:
+    additional_datasets:
+      - {dataset: UWisc, project: OBS, mip: Amon, tier: 3,
+         type: sat, version: v2, start_year: 1988, end_year: 2007}
+    scripts: null

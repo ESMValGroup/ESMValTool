@@ -14,13 +14,13 @@ variables:
     mip: Lmon
     raw: sm
     filename: ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc
-    start_year: 1979
-    end_year: 1980
+    start_year: 1978
+    end_year: 2022
     frequency: day
   smStderr:
     mip: Lmon
     raw: sm_uncertainty
     filename: ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc
-    start_year: 1979
-    end_year: 1980
+    start_year: 1978
+    end_year: 2022
     frequency: day
