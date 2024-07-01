@@ -15,6 +15,10 @@ import yaml
 from packaging.version import Version
 from scipy import integrate
 from scipy.stats import linregress
+if Version(scipy.version.version) < Version('1.14.0'):
+    from scipy.integrate import simps as simpson
+else:
+    from scipy.integrate import simpson
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -22,11 +26,6 @@ from esmvaltool.diag_scripts.shared import (
     get_plot_filename,
     io,
 )
-
-if Version(scipy.version.version) < Version('1.14.0'):
-    from scipy.integrate import simps as simpson
-else:
-    from scipy.integrate import simpson
 
 logger = logging.getLogger(__name__)
 
