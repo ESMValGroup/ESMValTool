@@ -48,8 +48,10 @@ def extract_variable(var_info, raw_info, attrs, year):
     rawvar = raw_info['name']
     constraint = iris.NameConstraint(var_name=rawvar)
     if rawvar == 'analysed_sst_uncertainty':
-        tmp_cube = iris.load_cube(raw_info['file'], iris.NameConstraint(var_name='analysed_sst'))
-        ancillary_var = tmp_cube.ancillary_variable('sea_water_temperature standard_error')
+        tmp_cube = iris.load_cube(raw_info['file'],
+                   iris.NameConstraint(var_name='analysed_sst'))
+        ancillary_var = tmp_cube.ancillary_variable('sea_water_temperature'
+                                                    ' standard_error')
         cube = tmp_cube.copy(ancillary_var.core_data())
     else:
         try:
@@ -120,7 +122,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                                                'time')
                     iris.coord_categorisation.add_year(monthly_cube, 'time')
                     monthly_cube = monthly_cube.aggregated_by(['month_number',
-                                    'year'], iris.analysis.MEAN)
+                                   'year'], iris.analysis.MEAN)
                     monthly_cube.remove_coord('month_number')
                     monthly_cube.remove_coord('year')
                     mon_cubes.append(monthly_cube)
