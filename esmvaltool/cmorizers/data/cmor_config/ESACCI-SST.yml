@@ -1,34 +1,31 @@
 ---
 # Common global attributes for Cmorizer output
-#filename: '{year}{month}15_regridded_sst.nc'
 attributes:
   dataset_id: ESACCI-SST
   version: '3.0-L4-analysis'
   tier: 3
   modeling_realm: sat
   project_id: OBS6
-  source: 'dx.doi.org/10.5285/62c0f97b1eac4e0197a674870afe1ee6'
-  reference: ["esacci-sst", "esacci-sst-bias-correction"]
+  source: 'dx.doi.org/10.5285/4a9654136a7148e39b7feb56f8bb02d2'
+  reference: ["esacci-sst"]
   comment: "Note that the variable tsStderr is an uncertainty not a standard error."
 
 # Variables to cmorize (here use only filename prefix)
 variables:
-        #ts:
-        #  mip: Amon
-        #  raw: sst
-        #  file: ESACCI-SST_sat_L4-GHRSST-SSTdepth-OSTIA-GLOB
-        #tsStderr:
-        #  mip: Amon
-        #  raw: sst_uncertainty
-        #  file: ESACCI-SST_sat_L4-GHRSST-SSTdepth-OSTIA-GLOB
-
-# uncomment this part to produce sst cmorized data for ocean realm (Omon, tos)
-  tos_day:
+  tos:
     short_name: tos
-    mip: Oday
+    mip: [Oday, Omon]
     raw: analysed_sst
     frequency: day
-    #filename: ESACCI-L4_GHRSST-SSTdepth-OSTIA-GLOB_CDR2.1-v02.0-fv01.0.nc
     filename: ESACCI-L4_GHRSST-SSTdepth-OSTIA-GLOB_CDR3.0-v02.0-fv01.0.nc
     start_year: 2004
-    end_year: 2007
+    end_year: 2004
+
+    #  tosStderr:
+    #    short_name: tosStderr
+    #    mip: [Oday]
+    #    raw: analysed_sst_uncertainty
+    #    frequency: day
+    #    filename: ESACCI-L4_GHRSST-SSTdepth-OSTIA-GLOB_CDR3.0-v02.0-fv01.0.nc
+    #    start_year: 2004
+    #    end_year: 2004
