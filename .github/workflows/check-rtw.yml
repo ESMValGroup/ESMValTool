@@ -11,6 +11,10 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+# Common variables are defined here
+env:
+  RTW_ROOT_DIR: esmvaltool/utils/recipe_test_workflow
+
 # Required shell entrypoint to have properly configured bash shell
 defaults:
   run:
@@ -40,17 +44,17 @@ jobs:
 
       - name: Validate Cylc workflow
         run: |
-          cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
+          cd ${RTW_ROOT_DIR}
           cylc validate . -O metoffice
 
       - name: Run Cylc configuration linter
         run: |
-          cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
+          cd ${RTW_ROOT_DIR}
           cylc lint
 
       - name: Validate format of Rose configuration files
         run: |
-          cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
+          cd ${RTW_ROOT_DIR}
           output="$(rose config-dump)"
           msg="Run 'rose config-dump' to re-dump the Rose configuration files"
           msg="${msg} in the common format, then commit the changes."
@@ -59,16 +63,16 @@ jobs:
 
       - name: Validate Rose configuration metadata
         run: |
-          cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
+          cd ${RTW_ROOT_DIR}
           rose metadata-check -C meta/
 
       - name: Run Rose configuration validation macros
         run: |
-          cd esmvaltool/utils/recipe_test_workflow/recipe_test_workflow
+          cd ${RTW_ROOT_DIR}
           rose macro -V
 
       - name: Lint shell scripts
         run: |
-          cd esmvaltool/utils/recipe_test_workflow
+          cd ${RTW_ROOT_DIR}
           output=$(find . -name "*.sh" -exec shellcheck {} \;)
           if [ "$output" ]; then echo "${output}" && exit 1; fi
