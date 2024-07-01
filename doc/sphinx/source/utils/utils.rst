@@ -521,6 +521,8 @@ of the input NetCDF files, e.g. the tracking_id.
 Recipe Test Workflow (RTW)
 ==========================
 
+.. include:: RTW/common.txt
+
 The Recipe Test Workflow (|RTW|) is a workflow that is used to regularly run
 recipes so issues can be discovered during the development process sooner
 rather than later.

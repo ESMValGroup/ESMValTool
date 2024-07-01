@@ -1,5 +1,7 @@
-Quick Start
-===========
+.. _quick_start_guide:
+
+Quick Start Guide
+=================
 
 .. include:: ../common.txt
 
