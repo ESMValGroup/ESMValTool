@@ -418,7 +418,7 @@
   },
   "publication_date": "2023-12-20",
   "title": "ESMValTool",
-  "version": "v2.10.0"
+  "version": "v2.10.0",
   "communities": [
       {
           "identifier": "is-enes3"
