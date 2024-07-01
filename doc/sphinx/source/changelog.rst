@@ -9,7 +9,16 @@ v2.11.0
 -------
 Highlights
 
-TODO: add highlights
+- New CMORizers have been added:
+
+  - Updating ESACCI-WATERVAPOUR cmorizer (:pull:`3282`) by :user:`malininae`
+  - CMORiser for ANU Climate 2.0 Australian data (:pull:`3511`) by :user:`flicj191`
+
+- NEW TREND: First time release manager shout-outs!
+
+  - This is the first ESMValTool release managed by the Met Office! We want to
+    shout this out - and for all future first time release managers to
+    shout-out - to celebrate the growing, thriving ESMValTool community.
 
 This release includes
 
