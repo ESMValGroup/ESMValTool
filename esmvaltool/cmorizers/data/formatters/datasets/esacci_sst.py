@@ -47,11 +47,16 @@ def extract_variable(var_info, raw_info, attrs, year):
     """Extract to all vars."""
     rawvar = raw_info['name']
     constraint = iris.NameConstraint(var_name=rawvar)
-    try:
-        cube = iris.load_cube(raw_info['file'], constraint)
-    except iris.exceptions.ConstraintMismatchError as constraint_error:
-        raise ValueError(f"No data available for variable {rawvar}"
-                         f"and year {year}") from constraint_error
+    if rawvar == 'analysed_sst_uncertainty':
+        tmp_cube = iris.load_cube(raw_info['file'], iris.NameConstraint(var_name='analysed_sst'))
+        ancillary_var = tmp_cube.ancillary_variable('sea_water_temperature standard_error')
+        cube = tmp_cube.copy(ancillary_var.core_data())
+    else:
+        try:
+            cube = iris.load_cube(raw_info['file'], constraint)
+        except iris.exceptions.ConstraintMismatchError as constraint_error:
+            raise ValueError(f"No data available for variable {rawvar}"
+                             f" and year {year}") from constraint_error
 
     # regridding from 0.05x0.05 to 0.5x0.5
     cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
@@ -71,8 +76,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     glob_attrs = cfg['attributes']
 
     # run the cmorization
-    for var_name, vals in cfg['variables'].items():
-        var = vals['short_name']
+    for var, vals in cfg['variables'].items():
+        #var = vals['short_name']
         var_info = cmor_table.get_variable(vals['mip'][0], var)
         glob_attrs['mip'] = vals['mip'][0]
         raw_info = {'name': vals['raw']}
@@ -109,18 +114,18 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                               glob_attrs,
                               unlimited_dimensions=['time'])
                 # Calculate monthly mean
-                logger.info("Calculating monthly mean")
-                iris.coord_categorisation.add_month_number(monthly_cube,
-                                                           'time')
-                iris.coord_categorisation.add_year(monthly_cube, 'time')
-                monthly_cube = monthly_cube.aggregated_by(['month_number',
-                                                           'year'],
-                                                           iris.analysis.MEAN)
-                monthly_cube.remove_coord('month_number')
-                monthly_cube.remove_coord('year')
-                mon_cubes.append(monthly_cube)
+                if 'Stderr' not in var:
+                    logger.info("Calculating monthly mean")
+                    iris.coord_categorisation.add_month_number(monthly_cube,
+                                                               'time')
+                    iris.coord_categorisation.add_year(monthly_cube, 'time')
+                    monthly_cube = monthly_cube.aggregated_by(['month_number',
+                                    'year'], iris.analysis.MEAN)
+                    monthly_cube.remove_coord('month_number')
+                    monthly_cube.remove_coord('year')
+                    mon_cubes.append(monthly_cube)
             # Save monthly data
-            if 'Stderr' not in var_name:
+            if 'Stderr' not in var:
                 yearly_cube = concatenate(mon_cubes)
                 glob_attrs['mip'] = vals['mip'][1]
                 save_variable(yearly_cube,
