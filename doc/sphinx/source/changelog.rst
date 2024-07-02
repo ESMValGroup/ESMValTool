@@ -9,6 +9,8 @@ v2.11.0
 -------
 Highlights
 
+- Two new recipes have been added: aerosol optical depth climatology and CMIP6
+  climate patterns.
 - The ESACCI-WATERVAPOUR CMORizer now includes daily data and uses the
   officially released CDR2 data.
 - Support for 5 new datasets have been added:
