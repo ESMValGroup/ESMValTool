@@ -114,7 +114,8 @@ begin
 
   variables = metadata_att_as_array(variable_info, "short_name")
   if (.not. any(variables .eq. var0)) then
-    errstr = "diagnostic " + diag + " requires the following variable: " + var0
+    errstr = "diagnostic " + DIAG_SCRIPT \
+             + " requires the following variable: " + var0
     error_msg("f", DIAG_SCRIPT, "", errstr)
   end if
 
@@ -537,6 +538,10 @@ begin
 
     if (var0.eq."prw") then
       res@cnLevels            = ispan(0, 60, 5)
+    end if
+
+    if (var0.eq."ts") then
+      res@cnLevels            = ispan(274, 304, 2)
     end if
 
 ;    res@lbLabelBarOn         = False
