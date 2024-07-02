@@ -1,3 +1,5 @@
+.. _recipe_wenzel14jgr:
+
 Emergent constraints on carbon cycle feedbacks
 ==============================================
 

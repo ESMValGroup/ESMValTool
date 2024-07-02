@@ -9,26 +9,61 @@ More details can be found in the :ref:`broken recipe policy
 <broken-recipe-policy>`.
 
 .. list-table:: Broken recipes
-   :widths: 25 25 25 25
+   :widths: 25 25 25 25 25
    :header-rows: 1
 
    * - Broken recipe
      - Affected diagnostics
+     - Broken since release
      - Problem
      - GitHub issue
-   * - `recipe_check_obs.yml`
-     - `ERA5_native6`
-     - Derivation of custom variables `rlus` and `rsus`
-     - `#1388 <https://github.com/ESMValGroup/ESMValCore/issues/1388>`_
    * - :ref:`recipe_julia.yml <recipe_examples>`
      - `example`
-     - fill values are not interpreted, resulting in an unusable plot
+     - v2.5.0
+     - Fill values are not interpreted, resulting in an unusable plot
      - `#2595 <https://github.com/ESMValGroup/ESMValTool/issues/2595>`_
-   * - :ref:`recipe_seaice_drift.yml <recipes_seaice_drift>`
-     - `sea_ice_drift_SCICEX`
-     - ``shapely 2`` issue
-     - `#3243 <https://github.com/ESMValGroup/ESMValTool/issues/3243>`_
-   * - :ref:`recipe_pysplot.yml <recipes_psyplot_diag>`
-     - `plot_map`
-     - ``shapely 2`` issue
-     - `#3483 <https://github.com/ESMValGroup/ESMValTool/issues/3483>`_
+   * - :ref:`recipe_climwip_brunner2019_med.yml <recipe_climwip>`
+     - All (preprocessor issue)
+     - v2.11.0
+     - Failed to run preprocessor function ``fix_metadata`` on the data: Unable to convert units
+     - `#3694 <https://github.com/ESMValGroup/ESMValTool/issues/3694>`_
+   * - :ref:`recipe_collins13ipcc.yml <nml_collins>`
+     - All (preprocessor issue)
+     - v2.10.0
+     - Failed to run preprocessor function ``save`` on the data: HDF error
+     - `#3702 <https://github.com/ESMValGroup/ESMValTool/issues/3702>`_
+   * - :ref:`recipe_easy_ipcc.yml <recipe_examples>`
+     - All
+     - v2.11.0
+     - Failed to download data
+     - `#3703 <https://github.com/ESMValGroup/ESMValTool/issues/3703>`_
+   * - :ref:`recipe_ipccwg1ar6ch3_atmosphere.yml <recipes_ipccwg1ar6ch3>`
+     - All (preprocessor issue)
+     - v2.10.0
+     - Failed to run preprocessor function ``save`` on the data: HDF error
+     - `#3702 <https://github.com/ESMValGroup/ESMValTool/issues/3702>`_
+   * - :ref:`recipe_ocean_amoc.yml <XML_oceans>`
+     - ``diag_timeseries_amoc``, ``diag_transects``
+     - v2.11.0
+     - CESM1 CMIP5 Omon data no longer available
+     - `#3693 <https://github.com/ESMValGroup/ESMValTool/issues/3693>`_
+   * - :ref:`recipe_preprocessor_derive_test.yml <recipe_examples>`
+     - All (preprocessor issue)
+     - v2.11.0
+     - Failed to run preprocessor function ``derive`` on the data: Unable to convert units
+     - `#3709 <https://github.com/ESMValGroup/ESMValTool/issues/3709>`_
+   * - :ref:`recipe_tebaldi21esd.yml <recipe_tebaldi21esd>`
+     - All (preprocessor issue)
+     - v2.10.0
+     - Failed to run preprocessor function ``save`` on the data: HDF error
+     - `#3702 <https://github.com/ESMValGroup/ESMValTool/issues/3702>`_
+   * - :ref:`recipe_russell18jgr.yml <nml_oceanmetrics>`
+     - ``Figure_4``
+     - v2.11.0
+     - CESM1 CMIP5 Omon data no longer available
+     - `#3693 <https://github.com/ESMValGroup/ESMValTool/issues/3693>`_
+   * - :ref:`recipe_wenzel14jgr.yml <recipe_wenzel14jgr>`
+     - ``diag_tsline_Fig2d``
+     - v2.11.0
+     - CESM1 CMIP5 Omon data no longer available
+     - `#3693 <https://github.com/ESMValGroup/ESMValTool/issues/3693>`_
