@@ -9,10 +9,15 @@ v2.11.0
 -------
 Highlights
 
-- New CMORizers have been added:
+- The ESACCI-WATERVAPOUR CMORizer now includes daily data and uses the
+  officially released CDR2 data.
+- Support for 5 new datasets have been added:
 
-  - Updating ESACCI-WATERVAPOUR cmorizer (:pull:`3282`) by :user:`malininae`
-  - CMORiser for ANU Climate 2.0 Australian data (:pull:`3511`) by :user:`flicj191`
+  - AERONET
+  - ANU Climate 2.0 Australian data
+  - Australian Gridded Climate Data(AGCD) precipitation
+  - NOAA-ERSST
+  - NSIDC-G02202-sh sea ice fraction
 
 - NEW TREND: First time release manager shout-outs!
 
