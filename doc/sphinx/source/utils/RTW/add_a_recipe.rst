@@ -79,12 +79,12 @@ How to add a recipe to the |RTW|
 
    * Recursively copy the recipe output directory (i.e.
      ``recipe_<recipe>_<date>_<time>/``) from the
-     ``${HOME}/cylc-run/recipe_test_workflow/run1/share/cycle/<cycle>/``
+     ``${HOME}/cylc-run/recipe_test_workflow/runN/share/cycle/<cycle>/``
      directory to your site-specific |KGO| directory, as detailed by the
      ``KGO_ROOT_PATH`` option in the site-specific ``.conf`` file in the
      ``esmvaltool/utils/recipe_test_workflow/opt/`` directory::
 
-       cp -r ${HOME}/cylc-run/recipe_test_workflow/run1/share/cycle/<cycle>/recipe_<recipe>_<date>_<time> <KGO_ROOT_PATH>
+       cp -r ${HOME}/cylc-run/recipe_test_workflow/runN/share/cycle/<cycle>/recipe_<recipe>_<date>_<time> <KGO_ROOT_PATH>
 
    * Enable write permissions for all users on the recipe output directory in
      your site-specific |KGO| directory::
