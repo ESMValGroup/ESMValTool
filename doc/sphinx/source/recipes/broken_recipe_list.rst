@@ -17,6 +17,11 @@ More details can be found in the :ref:`broken recipe policy
      - Broken since release
      - Problem
      - GitHub issue
+   * - :ref:`recipe_julia.yml <recipe_examples>`
+     - `example`
+     - v2.5.0
+     - Fill values are not interpreted, resulting in an unusable plot
+     - `#2595 <https://github.com/ESMValGroup/ESMValTool/issues/2595>`_
    * - :ref:`recipe_climwip_brunner2019_med.yml <recipe_climwip>`
      - All (preprocessor issue)
      - v2.11.0
