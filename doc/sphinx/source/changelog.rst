@@ -32,7 +32,6 @@ This release includes
 Bug fixes
 ~~~~~~~~~
 
--  Update OceanSODA-ETHZ CMORizer with new source file (:pull:`3535`) by :user:`TomasTorsvik`
 -  Fix for ``recipe_seaice_drift.yml``: fix CRS transformer for "North Pole Stereographic" (:pull:`3531`) by :user:`flicj191`
 -  Recipe_ocean_quadmap: Update ATSR to match ESGF name (:pull:`3443`) by :user:`rbeucher`
 -  Fixed attribute handling in austral_jet/main.ncl for iris>=3.8 (:pull:`3603`) by :user:`schlunma`
@@ -73,6 +72,7 @@ Observational and re-analysis dataset support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Add cmorizer scripts for NOAA-ERSST. (:pull:`1799`) by :user:`bjoernbroetz`
+-  Update OceanSODA-ETHZ CMORizer with new source file (:pull:`3535`) by :user:`TomasTorsvik`
 -  Add CMORizer script for NSIDC-G02202-sh sea ice fraction (:pull:`3512`) by :user:`flicj191`
 -  CMORizer Australian Gridded Climate Data(AGCD) precipitation (:pull:`3445`) by :user:`flicj191`
 -  Extend CMORizer NCEP-DOE-R2 (:pull:`3469`) by :user:`axel-lauer`
