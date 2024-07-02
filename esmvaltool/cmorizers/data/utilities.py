@@ -144,6 +144,8 @@ def convert_timeunits(cube, start_year):
         real_unit = f'days since {str(start_year)}-01-01 00:00:00'
     elif cube.coord('time').units == 'days since 1950-1-1':
         real_unit = 'days since 1950-1-1 00:00:00'
+    elif cube.coord('time').units == 'days since 1970-01-01T00:00:00+00:00':
+        real_unit = 'days since 1970-01-01T00:00:00+00:00'
     else:
         real_unit = cube.coord('time').units
     cube.coord('time').units = real_unit
@@ -359,7 +361,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
 def extract_doi_value(tags):
     """Extract doi(s) from a bibtex entry."""
     reference_doi = []
-    pattern = r'doi\ = {(.*?)\},'
+    pattern = r'doi\s*=\s*{([^}]+)}'
 
     if not isinstance(tags, list):
         tags = [tags]
