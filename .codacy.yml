@@ -22,5 +22,5 @@ exclude_paths: [
     'doc/sphinx/**',
     'esmvaltool/cmor/tables/**',
     'tests/**',
-    'esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/app/configure/bin/test_configure.py'
+    'esmvaltool/utils/recipe_test_workflow/app/configure/bin/test_configure.py'
 ]
