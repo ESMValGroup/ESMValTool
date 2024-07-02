@@ -24,7 +24,6 @@ import glob
 import logging
 import os
 import iris
-import yaml
 from esmvalcore.cmor.fixes import get_time_bounds
 from esmvalcore.preprocessor import concatenate
 from cf_units import Unit
@@ -172,31 +171,3 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             raise ValueError(
                 f"Invalid format for variable {var_name}: {type(vals)}"
             )
-
-
-# if __name__ == "__main__":
-#     # RAWOBS dir
-#     in_dir = '/scratch/b/b309265/RAWOBS/Tier2/ESACCI-SOILMOISTURE/'
-#     # in_dir= '/work/bd0854/DATA/ESMValTool2/RAWOBS/Tier2/ESACCI-SOILMOISTURE/'
-
-#     # OBS dir CMOR-compliant
-#     out_dir = '/scratch/b/b309265/esmvaltool_output/'
-#     # out_dir = '/work/bd0854/DATA/ESMValTool2/OBS/'
-
-#     # Configuration file ESACCI-SOILMOISTURE
-#     cfg_path = '../cmor_config/ESACCI-SOILMOISTURE.yml'
-
-#     with open(cfg_path, 'r') as f:
-#         cfg = yaml.safe_load(f)
-
-#     start_date = cfg.get('start_date')
-#     end_date = cfg.get('end_date')
-
-#     if end_date is None:
-#         raise ValueError("end_date cannot be None in configuration."
-#                          "Please provide a valid end date.")
-
-#     logger.info("Files in input directory:")
-#     logger.info(os.listdir(in_dir))
-
-#     cmorization(in_dir, out_dir, cfg, None, start_date, end_date)
