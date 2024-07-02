@@ -14,7 +14,7 @@ Highlights
   - Recipe :ref:`recipe_aod_aeronet_assess.yml <recipe_aod_aeronet_assess>`
     evaluates model aerosol optical depth (AOD) climatologies against ground
     based observations from the AeroNET measurement network.
-  - Recipe :ref:`recipe_climate_patterns.yml <recipe_climate_patterns>`
+  - Recipe :ref:`recipe_climate_patterns.yml <recipes_climate_patterns>`
     generates climate patterns from CMIP6 model datasets.
 
 - The ESACCI-WATERVAPOUR CMORizer now includes daily data and uses the
