@@ -24,8 +24,8 @@ dependencies:
   - esmpy >=8.6.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - esmvalcore 2.10.*
   - fiona
-  - fsspec
   - fire
+  - fsspec
   - gdal
   - iris >=3.6.1
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
@@ -78,6 +78,9 @@ dependencies:
   - pytest-metadata >=1.5.1
   - pytest-mock
   - pytest-xdist
+  - cylc-flow >=8.2
+  - cylc-rose
+  - metomi-rose
   # Python packages needed for building docs
   - autodocsumm >=0.2.2
   - nbsphinx
