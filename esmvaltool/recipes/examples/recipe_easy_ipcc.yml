@@ -85,7 +85,7 @@ datasets:
   - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gn}
   - {dataset: EC-Earth3, ensemble: r4i1p1f1, grid: gn}
   - {dataset: EC-Earth3, ensemble: r6i1p1f1, grid: gn}
-  - {dataset: EC-Earth3, ensemble: r9i1p1f1, grid: gn}
+  # - {dataset: EC-Earth3, ensemble: r9i1p1f1, grid: gn}  # download failure of ssp585
   - {dataset: EC-Earth3, ensemble: r11i1p1f1, grid: gn}
   - {dataset: EC-Earth3, ensemble: r15i1p1f1, grid: gn}
   # - {dataset: EC-Earth3, ensemble: 'r(101:150)i1p1f1', grid: gn}  # available data does not fully cover timerange
@@ -123,6 +123,6 @@ datasets:
   # - {dataset: NESM3, ensemble: 'r(1:2)i1p1f1', grid: gn}  # cannot be used due to https://github.com/ESMValGroup/ESMValCore/issues/2101
   # - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}  # duplicated areacello file with wrong name
   - {dataset: NorESM2-MM, ensemble: r1i1p1f1, grid: gn}
-  # - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}  # unable to download ssp585
+  # - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}  # download failure of ssp585
   - {dataset: UKESM1-0-LL, ensemble: 'r(1:4)i1p1f2', grid: gn}
   - {dataset: UKESM1-0-LL, ensemble: r8i1p1f2, grid: gn}
