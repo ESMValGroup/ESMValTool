@@ -1,3 +1,5 @@
+.. _currently_tested_recipes:
+
 ************************
 Currently tested recipes
 ************************

@@ -8,8 +8,7 @@ How to add a recipe to the |RTW|
    successfully run the recipe with the latest version of ESMValTool on the
    compute server you use at your site, as detailed by the ``platform`` option
    in the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
-   ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/site/``
-   directory.
+   ``esmvaltool/utils/recipe_test_workflow/site/`` directory.
 
 #. Open a `new ESMValTool issue`_ on GitHub, assign yourself to the issue, and
    add the ``Recipe Test Workflow (RTW)`` label to the issue, see
@@ -28,8 +27,7 @@ How to add a recipe to the |RTW|
      YYYY-MM-DD HH:MM:SS:sss UTC [12345] INFO    Run was successful
 
 #. Add the recipe to the ``[task parameters]`` section in the
-   ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/flow.cylc``
-   file.
+   ``esmvaltool/utils/recipe_test_workflow/flow.cylc`` file.
 
    .. hint::
       If the recipe takes less than 10 minutes to run then it should be added
@@ -59,9 +57,7 @@ How to add a recipe to the |RTW|
       The ``fast`` key in the example task definition above
       (``[[process<fast=recipe_albedolandcover>]]``) should match name of the
       option the recipe was added to in the ``[task parameters]`` section in
-      the
-      ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/flow.cylc``
-      file
+      the ``esmvaltool/utils/recipe_test_workflow/flow.cylc`` file
 
    .. hint::
       Set the ``execution time limit`` to 10-20% more than the actual duration.
@@ -76,24 +72,22 @@ How to add a recipe to the |RTW|
 
     cylc stop recipe_test_workflow/*
 
-#. Run the |RTW|, as detailed in the
-   :doc:`Quick Start Guide <user_guide/quick_start>`; it is expected that the
-   ``compare`` task will fail.
+#. Run the |RTW|, as detailed in the :ref:`quick_start_guide`; it is expected
+   that the ``compare`` task will fail.
 
 #. Update the Known Good Outputs (|KGOs|):
 
    * Recursively copy the recipe output directory (i.e.
-     ``recipe_<recipe>_<date>_<time>``) from the
-     ``${HOME}/cylc-run/recipe_test_workflow/run1/share/cycle/<cycle>``
-     directory to your site-specific KGO directory, as detailed by the
+     ``recipe_<recipe>_<date>_<time>/``) from the
+     ``${HOME}/cylc-run/recipe_test_workflow/runN/share/cycle/<cycle>/``
+     directory to your site-specific |KGO| directory, as detailed by the
      ``KGO_ROOT_PATH`` option in the site-specific ``.conf`` file in the
-     ``esmvaltool/utils/recipe_test_workflow/recipe_test_workflow/opt/``
-     directory::
+     ``esmvaltool/utils/recipe_test_workflow/opt/`` directory::
 
-       cp -r ${HOME}/cylc-run/recipe_test_workflow/run1/share/cycle/<cycle>/recipe_<recipe>_<date>_<time> <KGO_ROOT_PATH>
+       cp -r ${HOME}/cylc-run/recipe_test_workflow/runN/share/cycle/<cycle>/recipe_<recipe>_<date>_<time> <KGO_ROOT_PATH>
 
    * Enable write permissions for all users on the recipe output directory in
-     your site-specific KGO directory::
+     your site-specific |KGO| directory::
 
        chmod -R a+w <KGO_ROOT_PATH>/recipe_<recipe>_<date>_<time>
 
@@ -101,22 +95,18 @@ How to add a recipe to the |RTW|
 
      cylc stop recipe_test_workflow/*
 
-#. Run the |RTW| again, as detailed in the
-   :doc:`Quick Start Guide <user_guide/quick_start>`; the ``compare`` task
-   should now succeed.
+#. Run the |RTW| again, as detailed in the :ref:`quick_start_guide`; the
+   ``compare`` task should now succeed.
 
-#. Add the recipe to the documentation; add a link to the recipe to the list of
-   "Currently tested recipes" in ``doc/source/tested_recipes.rst`` in
-   alphabetical order:
+#. Add the recipe to the documentation:
 
-   * Add a link to the recipe in ``doc/source/common.txt`` under the
-     ``.. Links`` section in alphabetical order (follow the format
+   * Add a URL for the recipe in ``doc/sphinx/source/utils/RTW/common.txt``
+     under the ``.. Links`` section in alphabetical order (follow the format
      ``.. _<name>: <URL>``).
 
-   * Add the link to the list of "Currently tested recipes" in
-     ``doc/source/tested_recipes.rst`` in alphabetical order (follow the
-     format ``* `<name>`_``).
+   * Add the recipe to the list of :ref:`currently_tested_recipes` in
+     alphabetical order (follow the format ``* `<name>`_``).
 
 #. Commit and push your changes, create a PR, assign yourself to the PR, and
-   add the Recipe Test Workflow (RTW) label to the PR, see
+   add the ``Recipe Test Workflow (RTW)`` label to the PR, see
    `ESMValTool PR #3664`_ for an example.
