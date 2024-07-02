@@ -60,7 +60,6 @@ Diagnostics
 
 -  ``monitor/multi_dataset.py`` improvements: allow data w/o ``timerange`` and improve text formatting (:pull:`3528`) by :user:`schlunma`
 -  Allow datasets without ``project`` in multi_datasets.py (:pull:`3552`) by :user:`schlunma`
--  Avoid concatenation error in recipe_pcrglobwb.yml (:pull:`3645`) by :user:`bouweandela`
 -  Prevent overlapping time axis tick labels in monitoring recipe (:pull:`3682`) by :user:`schlunma`
 
 New recipe
@@ -115,9 +114,10 @@ Dependency updates
 
 -  Fix for ``recipe_seaice_drift.yml``: fix CRS transformer for "North Pole Stereographic" (:pull:`3531`) by :user:`flicj191`
 -  Fixed attribute handling in austral_jet/main.ncl for iris>=3.8 (:pull:`3603`) by :user:`schlunma`
--  Update the name of the remapcon2 operator in R recipes (:pull:`3611`) by :user:`ehogan`
 -  Fixed attribute handling in emergent constraint diagnostic for iris>=3.8 (:pull:`3605`) by :user:`schlunma`
+-  Update the name of the remapcon2 operator in R recipes (:pull:`3611`) by :user:`ehogan`
 -  Use ``iris.FUTURE.save_split_attrs = True`` to remove iris warning in many diagnostics (:pull:`3651`) by :user:`schlunma`
+-  Avoid concatenation error in recipe_pcrglobwb.yml (:pull:`3645`) by :user:`bouweandela`
 
 Improvements
 ~~~~~~~~~~~~
