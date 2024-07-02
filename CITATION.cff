@@ -391,6 +391,14 @@ authors:
     family-names: Bonnet
     given-names: Pauline
     orcid: "https://orcid.org/0000-0003-3780-0784"
+  -
+    affiliation: "MetOffice, UK"
+    family-names: Hogan
+    given-names: Emma
+  -
+    affiliation: "MetOffice, UK"
+    family-names: Lillis
+    given-names: Jonathan
   - 
     affiliation: "MetOffice, UK"
     family-names: Munday

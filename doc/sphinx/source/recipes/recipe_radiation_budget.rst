@@ -1,3 +1,4 @@
+.. (C) Crown Copyright 2021, the Met Office.
 .. _recipes_radiation_budget:
 
 Radiation Budget
@@ -22,12 +23,11 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * recipe_radiation_budget.yml
+* recipe_radiation_budget.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/radiation_budget/
 
-    * radiation_budget.py: Plot the global radiation budget.
-    * seasonal_radiation_budget.py: Write the global climatological seasonal radiation budget to a text file.
+* seasonal_radiation_budget.py: Write the global climatological seasonal radiation budget to a text file.
 
 
 
@@ -68,8 +68,8 @@ instructions.*
 References
 ----------
 
-* Demory, ME., Vidale, P.L., Roberts, M.J. et al. The role of horizontal resolution in simulating drivers of the global hydrological cycle. Clim Dyn 42, 2201–2225 (2014). https://doi.org/10.1007/s00382-013-1924-4
-* Stephens, G., Li, J., Wild, M. et al. An update on Earth's energy balance in light of the latest global observations. Nature Geosci 5, 691–696 (2012). https://doi.org/10.1038/ngeo1580
+* Demory, ME., Vidale, P.L., Roberts, M.J. et al. The role of horizontal resolution in simulating drivers of the global hydrological cycle. Clim Dyn 42, 2201–2225 (2014).(demory14cd). https://doi.org/10.1007/s00382-013-1924-4
+* Stephens, G., Li, J., Wild, M. et al. An update on Earth's energy balance in light of the latest global observations. Nature Geosci 5, 691–696 (2012).(stephens12ng). https://doi.org/10.1038/ngeo1580
 
 
 Example plots
