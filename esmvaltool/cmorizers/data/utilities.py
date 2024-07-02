@@ -361,7 +361,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
 def extract_doi_value(tags):
     """Extract doi(s) from a bibtex entry."""
     reference_doi = []
-    pattern = r'doi\ = {(.*?)\},'
+    pattern = r'doi\s*=\s*{([^}]+)}'
 
     if not isinstance(tags, list):
         tags = [tags]
