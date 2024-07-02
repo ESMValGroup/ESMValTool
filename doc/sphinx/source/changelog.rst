@@ -9,13 +9,19 @@ v2.11.0
 -------
 Highlights
 
-- Two new recipes have been added: aerosol optical depth climatology and CMIP6
-  climate patterns.
+- Two new recipes have been added:
+
+  - Recipe :ref:`recipe_aod_aeronet_assess.yml <recipe_aod_aeronet_assess>`
+    evaluates model aerosol optical depth (AOD) climatologies against ground
+    based observations from the AeroNET measurement network.
+  - Recipe :ref:`recipe_climate_patterns.yml <recipe_climate_patterns>`
+    generated climate patterns from CMIP6 model datasets.
+
 - The ESACCI-WATERVAPOUR CMORizer now includes daily data and uses the
   officially released CDR2 data.
 - Support for 5 new datasets have been added:
 
-  - AERONET
+  - AeroNET
   - ANU Climate 2.0 Australian data
   - Australian Gridded Climate Data(AGCD) precipitation
   - NOAA-ERSST
