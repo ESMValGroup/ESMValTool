@@ -130,8 +130,8 @@ dependencies:
   - r-yaml
   # R packages needed for development
   - r-git2r  # dependency of lintr
-  - r-lintr
-  - r-styler
+  - r-lintr ==3.1.2
+  - r-styler ==1.10.3
 
   # Julia (dependencies installed by separate script)
   - julia
