@@ -7,7 +7,7 @@ Source
     https://aeronet.gsfc.nasa.gov/
 
 Last access
-    20230613
+    20240406
 
 Download and processing instructions
     Download the following file:
