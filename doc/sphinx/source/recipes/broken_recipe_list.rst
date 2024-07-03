@@ -27,21 +27,11 @@ More details can be found in the :ref:`broken recipe policy
      - v2.11.0
      - Failed to run preprocessor function ``fix_metadata`` on the data: Unable to convert units
      - `#3694 <https://github.com/ESMValGroup/ESMValTool/issues/3694>`_
-   * - :ref:`recipe_collins13ipcc.yml <nml_collins>`
-     - All (preprocessor issue)
-     - v2.10.0
-     - Failed to run preprocessor function ``save`` on the data: HDF error
-     - `#3702 <https://github.com/ESMValGroup/ESMValTool/issues/3702>`_
    * - :ref:`recipe_easy_ipcc.yml <recipe_examples>`
      - All
      - v2.11.0
      - Failed to download data
      - `#3703 <https://github.com/ESMValGroup/ESMValTool/issues/3703>`_
-   * - :ref:`recipe_ipccwg1ar6ch3_atmosphere.yml <recipes_ipccwg1ar6ch3>`
-     - All (preprocessor issue)
-     - v2.10.0
-     - Failed to run preprocessor function ``save`` on the data: HDF error
-     - `#3702 <https://github.com/ESMValGroup/ESMValTool/issues/3702>`_
    * - :ref:`recipe_ocean_amoc.yml <XML_oceans>`
      - ``diag_timeseries_amoc``, ``diag_transects``
      - v2.11.0
@@ -52,11 +42,6 @@ More details can be found in the :ref:`broken recipe policy
      - v2.11.0
      - Failed to run preprocessor function ``derive`` on the data: Unable to convert units
      - `#3709 <https://github.com/ESMValGroup/ESMValTool/issues/3709>`_
-   * - :ref:`recipe_tebaldi21esd.yml <recipe_tebaldi21esd>`
-     - All (preprocessor issue)
-     - v2.10.0
-     - Failed to run preprocessor function ``save`` on the data: HDF error
-     - `#3702 <https://github.com/ESMValGroup/ESMValTool/issues/3702>`_
    * - :ref:`recipe_russell18jgr.yml <nml_oceanmetrics>`
      - ``Figure_4``
      - v2.11.0
