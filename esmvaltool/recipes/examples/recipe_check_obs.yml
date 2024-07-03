@@ -14,13 +14,9 @@ documentation:
   maintainer:
     - predoi_valeriu
 
-preprocessors:
-  timemean:
-    climate_statistics:
-      operator: mean  
 diagnostics:
 
-  ## TIER 2 ##################################################################
+  # TIER 2 ##################################################################
 
   AGCD:
     description:
@@ -301,15 +297,44 @@ diagnostics:
   ESACCI-SOILMOISTURE:
     description: ESACCI-SOILMOISTURE check
     variables:
-      sm:
-        preprocessor: timemean
+      sm_daily:
+        short_name: sm
+        mip: Eday
+        frequency: day
+      sm_monthly:
+        short_name: sm
+        mip: Lmon
+        frequency: mon
       smStderr:
-        preprocessor: timemean
+        mip: Eday
+        frequency: day
     additional_datasets:
-      - {dataset: ESACCI-SOILMOISTURE, project: OBS, mip: Lmon, tier: 2,
-         type: sat, version: L3S-SSMV-COMBINED-v08.1, frequency: day, start_year: 1978, end_year: 2022}
+      - {dataset: ESACCI-SOILMOISTURE, project: OBS, tier: 2,
+         type: sat, version: L3S-SSMV-COMBINED-v08.1, start_year: 1978, end_year: 1979}    
     scripts: null
 
+
+  ESACCI-SOILMOISTURE:
+    description: ESACCI-SOILMOISTURE check
+    variables:
+      sm_daily:
+        short_name: sm
+        mip: Eday
+      additional_datasets:
+        - {dataset: ESACCI-SOILMOISTURE, project: OBS, tier: 2,
+           type: sat, version: L3S-SSMV-COMBINED-v08.1, frequency: day, start_year: 1978, end_year: 1979}    
+      sm_monthly:
+        short_name: sm
+        mip: Lmon
+      additional_datasets:
+        - {dataset: ESACCI-SOILMOISTURE, project: OBS, tier: 2,
+           type: sat, version: L3S-SSMV-COMBINED-v08.1, frequency: mon, start_year: 1978, end_year: 1979}          
+      smStderr:
+        mip: Eday
+      additional_datasets:
+        - {dataset: ESACCI-SOILMOISTURE, project: OBS, tier: 2,
+           type: sat, version: L3S-SSMV-COMBINED-v08.1, frequency: day, start_year: 1978, end_year: 1979}    
+    scripts: null
 
   ESACCI-SST:
     description: ESACCI-SST check

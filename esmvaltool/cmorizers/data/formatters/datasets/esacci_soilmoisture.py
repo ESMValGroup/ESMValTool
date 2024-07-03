@@ -19,13 +19,12 @@ Modification history
     20240626-cammarano_diego: written.
 """
 
-
 import glob
 import logging
 import os
 import iris
 from esmvalcore.cmor.fixes import get_time_bounds
-from esmvalcore.preprocessor import concatenate
+from esmvalcore.preprocessor import concatenate, monthly_statistics
 from cf_units import Unit
 
 from ...utilities import (
@@ -112,7 +111,6 @@ def extract_variable(var_info, raw_info, attrs, year):
     """Extract variables."""
     rawvar = raw_info['name']
     constraint = iris.Constraint(name=rawvar)
-
     if rawvar == 'sm_uncertainty':
         sm_cube = iris.load_cube(raw_info['file'],
                                  iris.NameConstraint(var_name='sm'))
@@ -164,8 +162,28 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             final_cube = concatenate(all_data_cubes)
             time = final_cube.coord('time')
             time.bounds = get_time_bounds(time, vals['frequency'])
-            save_variable(final_cube, var_name, out_dir, glob_attrs,
-                          unlimited_dimensions=['time'])
+
+            # Save daily data with Eday mip
+            if var_name == 'sm':
+                final_cube.attributes['mip'] = 'Eday'
+                glob_attrs['mip'] = 'Eday'
+                save_variable(final_cube, var_name, out_dir, glob_attrs,
+                              unlimited_dimensions=['time'])
+
+                # Calculate and save monthly means with Lmon mip
+                monthly_mean_cube = monthly_statistics(final_cube, 'mean')
+                monthly_mean_cube.var_name = var_name
+                monthly_mean_cube.attributes.update(glob_attrs)
+                monthly_mean_cube.attributes['mip'] = 'Lmon'
+                glob_attrs['mip'] = 'Lmon'
+                save_variable(monthly_mean_cube, var_name, out_dir, glob_attrs,
+                              unlimited_dimensions=['time'])
+            else:
+                # Save the smStderr data
+                final_cube.attributes['mip'] = 'Eday'
+                glob_attrs['mip'] = 'Eday'
+                save_variable(final_cube, var_name, out_dir, glob_attrs,
+                              unlimited_dimensions=['time'])
 
         else:
             raise ValueError(
