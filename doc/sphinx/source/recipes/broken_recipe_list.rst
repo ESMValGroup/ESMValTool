@@ -33,7 +33,7 @@ More details can be found in the :ref:`broken recipe policy
      - CESM1 CMIP5 Omon data no longer available
      - `#3693 <https://github.com/ESMValGroup/ESMValTool/issues/3693>`_
    * - :ref:`recipe_preprocessor_derive_test.yml <recipe_examples>`
-     - All (preprocessor issue)
+     - ``cmip6/toz``
      - v2.11.0
      - Failed to run preprocessor function ``derive`` on the data: Unable to convert units
      - `#3709 <https://github.com/ESMValGroup/ESMValTool/issues/3709>`_
