@@ -27,11 +27,6 @@ More details can be found in the :ref:`broken recipe policy
      - v2.11.0
      - Failed to run preprocessor function ``fix_metadata`` on the data: Unable to convert units
      - `#3694 <https://github.com/ESMValGroup/ESMValTool/issues/3694>`_
-   * - :ref:`recipe_easy_ipcc.yml <recipe_examples>`
-     - All
-     - v2.11.0
-     - Failed to download data
-     - `#3703 <https://github.com/ESMValGroup/ESMValTool/issues/3703>`_
    * - :ref:`recipe_ocean_amoc.yml <XML_oceans>`
      - ``diag_timeseries_amoc``, ``diag_transects``
      - v2.11.0
