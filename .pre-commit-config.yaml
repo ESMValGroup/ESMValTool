@@ -53,6 +53,6 @@ repos:
     hooks:
       - id: docformatter
   - repo: https://github.com/pycqa/flake8
-    rev: '7.1.0'
+    rev: '5.0.4'
     hooks:
       - id: flake8
