@@ -310,31 +310,9 @@ diagnostics:
         frequency: day
     additional_datasets:
       - {dataset: ESACCI-SOILMOISTURE, project: OBS, tier: 2,
-         type: sat, version: L3S-SSMV-COMBINED-v08.1, start_year: 1978, end_year: 1979}    
+         type: sat, version: L3S-SSMV-COMBINED-v08.1, start_year: 1978, end_year: 2022}    
     scripts: null
 
-
-  ESACCI-SOILMOISTURE:
-    description: ESACCI-SOILMOISTURE check
-    variables:
-      sm_daily:
-        short_name: sm
-        mip: Eday
-      additional_datasets:
-        - {dataset: ESACCI-SOILMOISTURE, project: OBS, tier: 2,
-           type: sat, version: L3S-SSMV-COMBINED-v08.1, frequency: day, start_year: 1978, end_year: 1979}    
-      sm_monthly:
-        short_name: sm
-        mip: Lmon
-      additional_datasets:
-        - {dataset: ESACCI-SOILMOISTURE, project: OBS, tier: 2,
-           type: sat, version: L3S-SSMV-COMBINED-v08.1, frequency: mon, start_year: 1978, end_year: 1979}          
-      smStderr:
-        mip: Eday
-      additional_datasets:
-        - {dataset: ESACCI-SOILMOISTURE, project: OBS, tier: 2,
-           type: sat, version: L3S-SSMV-COMBINED-v08.1, frequency: day, start_year: 1978, end_year: 1979}    
-    scripts: null
 
   ESACCI-SST:
     description: ESACCI-SST check
