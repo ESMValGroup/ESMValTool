@@ -43,7 +43,7 @@ REQUIREMENTS = {
         'joblib',
         'lime',
         'mapgenerator>=1.0.5',
-        'matplotlib',
+        'matplotlib<3.9.0',
         'natsort',
         'nc-time-axis',
         'netCDF4',

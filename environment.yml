@@ -34,7 +34,7 @@ dependencies:
   - joblib
   - lime
   - mapgenerator >=1.0.5
-  - matplotlib-base
+  - matplotlib-base <3.9.0
   - natsort
   - nc-time-axis
   - netCDF4
