@@ -21,11 +21,11 @@ Download and processing instructions
 import glob
 import logging
 import os
+from datetime import datetime
 import iris
 from esmvalcore.cmor.fixes import get_time_bounds
 from esmvalcore.preprocessor import concatenate, monthly_statistics
 from cf_units import Unit
-from datetime import datetime
 
 from ...utilities import (
     convert_timeunits,
@@ -80,8 +80,6 @@ def fix_coords_esacci_soilmoisture(cube,
             cube.coord('time').convert_units(
                 Unit('days since 1970-01-01T00:00:00+00:00',
                      calendar='proleptic_gregorian'))
-            if overwrite_time_bounds or not cube.coord('time').has_bounds():
-                fix_bounds(cube, cube.coord('time'))
 
         # fix longitude
         if cube_coord.var_name == 'lon':
@@ -95,9 +93,7 @@ def fix_coords_esacci_soilmoisture(cube,
                     cube.attributes['geospatial_lon_max'] = 360.
                     nlon = len(cube_coord.points)
                     roll_cube_data(cube, nlon // 2, -1)
-            if overwrite_lon_bounds or not cube_coord.has_bounds():
-                fix_bounds(cube, cube_coord)
-            fix_bounds(cube, cube_coord)
+        fix_bounds(cube, cube_coord)
 
     return cube
 
@@ -152,8 +148,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             inpfiles = sorted(glob.glob(year_inpfile_pattern))
             for inpfile in inpfiles:
                 raw_info['file'] = inpfile
-                logger.info("CMORizing var %s from file type %s",
-                            var_name, raw_info['file'])
                 cube = extract_variable(var_info, raw_info, glob_attrs, year)
                 all_data_cubes.append(cube)
         final_cube = concatenate(all_data_cubes)
@@ -175,8 +169,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 f"Created on {datetime.now()}")
             glob_attrs['mip'] = 'Lmon'
             monthly_mean_cube.attributes.update(glob_attrs)
-            # monthly_mean_cube.attributes['mip'] = 'Lmon'
-
             save_variable(monthly_mean_cube, var_name, out_dir, glob_attrs,
                           unlimited_dimensions=['time'])
         else:
