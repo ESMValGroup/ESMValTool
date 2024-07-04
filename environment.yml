@@ -22,7 +22,7 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy >=8.6.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
-  - esmvalcore 2.10.*
+  - esmvalcore 2.11.*
   - fiona
   - fire
   - fsspec
@@ -70,7 +70,7 @@ dependencies:
   - xlsxwriter
   - zarr
   # Python packages needed for unit testing
-  - flake8
+  - flake8 ==5.0.4
   - pytest >=3.9,!=6.0.0rc1,!=6.0.0
   - pytest-cov
   - pytest-env
@@ -87,16 +87,16 @@ dependencies:
   - sphinx >=6.1.3
   - pydata-sphinx-theme
   # Python packages needed for development
-  - codespell
-  - docformatter
+  - codespell ==2.3.0
+  - docformatter ==1.7.5
   - imagehash
-  - isort
+  - isort ==5.13.2
   - pre-commit
   - prospector
   - pyroma
   # - vprof not on conda-forge
-  - yamllint
-  - yapf
+  - yamllint ==1.35.1
+  - yapf ==0.32.0
 
   # NCL and dependencies
   - ncl
@@ -116,7 +116,6 @@ dependencies:
   - r-functional
   - r-ggplot2
   - r-gridextra
-  - r-lintr
   - r-logging
   - r-mapproj
   - r-maps
@@ -130,13 +129,12 @@ dependencies:
   - r-s2dverification
   - r-snow
   - r-spei
-  - r-styler
   - r-udunits2
   - r-yaml
   # R packages needed for development
   - r-git2r  # dependency of lintr
-  - r-lintr
-  - r-styler
+  - r-lintr ==3.1.2
+  - r-styler ==1.10.3
 
   # Julia (dependencies installed by separate script)
   - julia
