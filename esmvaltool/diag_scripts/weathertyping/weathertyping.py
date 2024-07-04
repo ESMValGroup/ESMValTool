@@ -14,7 +14,7 @@ from esmvaltool.diag_scripts.shared import (
 
 
 def run_automatic_slwt(cfg: dict):
-    preproc_variables_dict, correlation_threshold, rmse_threshold, \
+    preproc_variables_dict, _, _, \
         work_dir, plotting, _, predefined_slwt = get_cfg_vars(cfg)
     for dataset_name, dataset_vars in preproc_variables_dict.items():
         if dataset_name == 'ERA5':
@@ -94,8 +94,11 @@ def run_automatic_slwt(cfg: dict):
             if plotting:
                 # plot means
                 for var_name, var_data in var_dict.items():
-                    plot_means(cfg, var_data[0], wt_cubes, dataset_name,
-                               var_name, var_data[1])
+                    data_info = {'dataset': dataset_name,
+                                 'var': var_name,
+                                 'preproc_path': var_data[1]}
+                    plot_means(cfg, var_data[0], wt_cubes, data_info,
+                               only_lwt=True)
 
 
 def run_lwt(cfg: dict):
@@ -114,21 +117,17 @@ def run_lwt(cfg: dict):
 
             # calculate simplified lwt based on precipitation patterns
             _ = calc_slwt_obs(
-                cfg,
-                lwt,
-                wt_preproc_prcp,
-                dataset_name,
-                correlation_threshold,
-                rmse_threshold,
-                era5_ancestors,
-            )
+                    cfg,
+                    lwt,
+                    wt_preproc_prcp,
+                    dataset_name,
+                    era5_ancestors,
+                )
             _ = calc_slwt_obs(
                 cfg,
                 lwt,
                 wt_preproc_prcp_eobs,
                 'E-OBS',
-                correlation_threshold,
-                rmse_threshold,
                 eobs_ancestors,
             )
 
@@ -173,12 +172,10 @@ def run_lwt(cfg: dict):
             if plotting:
                 # plot means
                 for var_name, var_data in var_dict.items():
-                    plot_means(cfg,
-                               var_data[0],
-                               wt_cubes,
-                               dataset_name,
-                               var_name,
-                               var_data[1],
+                    data_info = {'dataset': dataset_name,
+                                 'var': var_name,
+                                 'preproc_path': var_data[1]}
+                    plot_means(cfg, var_data[0], wt_cubes, data_info,
                                only_lwt=True)
 
 
