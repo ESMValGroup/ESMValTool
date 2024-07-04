@@ -15,8 +15,7 @@ Download and processing instructions
       ancillary/v08.1/
     Put all files under a single directory (no subdirectories with years).
     in ${RAWOBS}/Tier2/ESACCI-SOILMOISTURE
-Modification history
-    20240626-cammarano_diego: written.
+
 """
 
 import glob
@@ -97,12 +96,7 @@ def fix_coords_esacci_soilmoisture(cube,
                     roll_cube_data(cube, nlon // 2, -1)
             if overwrite_lon_bounds or not cube_coord.has_bounds():
                 fix_bounds(cube, cube_coord)
-
-        # fix latitude
-        if cube_coord.var_name == 'lat':
-            logger.info("Fixing latitude...")
-            if overwrite_lat_bounds or not cube.coord('latitude').has_bounds():
-                fix_bounds(cube, cube.coord('latitude'))
+            fix_bounds(cube, cube_coord)
 
     return cube
 
@@ -141,7 +135,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     # run the cmorization
     for var_name, vals in cfg['variables'].items():
         all_data_cubes = []
-        if isinstance(vals, dict):  # Ensure vals is a dictionary
+        if not isinstance(vals, dict):  # Ensure vals is a dictionary  
+             raise ValueError(  
+                f"Invalid format for variable {var_name}: {type(vals)}"  
+            ) 
+        else:            
             var_info = cfg['cmor_table'].get_variable(vals['mip'], var_name)
             glob_attrs['mip'] = vals['mip']
             raw_info = {'name': vals['raw']}
@@ -185,7 +183,3 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 save_variable(final_cube, var_name, out_dir, glob_attrs,
                               unlimited_dimensions=['time'])
 
-        else:
-            raise ValueError(
-                f"Invalid format for variable {var_name}: {type(vals)}"
-            )
