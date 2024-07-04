@@ -135,11 +135,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     # run the cmorization
     for var_name, vals in cfg['variables'].items():
         all_data_cubes = []
-        if not isinstance(vals, dict):  # Ensure vals is a dictionary  
-             raise ValueError(  
-                f"Invalid format for variable {var_name}: {type(vals)}"  
-            ) 
-        else:            
+        if not isinstance(vals, dict):  # Ensure vals is a dictionary
+            raise ValueError(
+                f"Invalid format for variable {var_name}: {type(vals)}"
+            )
+        else:
             var_info = cfg['cmor_table'].get_variable(vals['mip'], var_name)
             glob_attrs['mip'] = vals['mip']
             raw_info = {'name': vals['raw']}
@@ -182,4 +182,3 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 glob_attrs['mip'] = 'Eday'
                 save_variable(final_cube, var_name, out_dir, glob_attrs,
                               unlimited_dimensions=['time'])
-
