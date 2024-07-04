@@ -25,6 +25,7 @@ import iris
 from esmvalcore.cmor.fixes import get_time_bounds
 from esmvalcore.preprocessor import concatenate, monthly_statistics
 from cf_units import Unit
+from datetime import datetime
 
 from ...utilities import (
     convert_timeunits,
@@ -162,6 +163,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         # Save daily data with Eday mip
         if var_name == 'sm':
             final_cube.attributes['mip'] = 'Eday'
+            final_cube.attributes["history"] = f"Created on {datetime.now()}"
             glob_attrs['mip'] = 'Eday'
             save_variable(final_cube, var_name, out_dir, glob_attrs,
                           unlimited_dimensions=['time'])
@@ -169,14 +171,18 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             # Calculate and save monthly means with Lmon mip
             monthly_mean_cube = monthly_statistics(final_cube, 'mean')
             monthly_mean_cube.var_name = var_name
-            monthly_mean_cube.attributes.update(glob_attrs)
-            monthly_mean_cube.attributes['mip'] = 'Lmon'
+            monthly_mean_cube.attributes["history"] = (
+                f"Created on {datetime.now()}")
             glob_attrs['mip'] = 'Lmon'
+            monthly_mean_cube.attributes.update(glob_attrs)
+            # monthly_mean_cube.attributes['mip'] = 'Lmon'
+
             save_variable(monthly_mean_cube, var_name, out_dir, glob_attrs,
                           unlimited_dimensions=['time'])
         else:
             # Save the smStderr data
             final_cube.attributes['mip'] = 'Eday'
+            final_cube.attributes["history"] = f"Created on {datetime.now()}"
             glob_attrs['mip'] = 'Eday'
             save_variable(final_cube, var_name, out_dir, glob_attrs,
                           unlimited_dimensions=['time'])
