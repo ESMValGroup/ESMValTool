@@ -40,6 +40,7 @@ Bug fixes
 
 -  Recipe_ocean_quadmap: Update ATSR to match ESGF name (:pull:`3443`) by :user:`rbeucher`
 -  Fix recipe_bock20jgr_fig_8-10.yml (:pull:`3665`) by :user:`LisaBock`
+-  Update the list of datasets used in ``recipe_easy_ipcc.yml`` (:pull:`3710`) by :user:`bouweandela`
 
 Documentation
 ~~~~~~~~~~~~~
@@ -54,6 +55,7 @@ Documentation
 -  Improve the formatting of the recipe documentation template (:pull:`3652`) by :user:`mo-gill`
 -  Add introduction material on the main documentation page (:pull:`3628`) by :user:`bouweandela`
 -  Avoid warning in documentation build (:pull:`3675`) by :user:`bouweandela`
+-  Update the list of broken recipes for ``v2.11.0`` (:pull:`3706`) by :user:`ehogan`
 
 Diagnostics
 ~~~~~~~~~~~
@@ -83,6 +85,7 @@ Observational and re-analysis dataset support
 -  Add AERONET cmorizer (:pull:`3227`) by :user:`zklaus`
 -  Update CRU CMORizer (:pull:`3381`) by :user:`lukruh`
 -  Fix recipe_check_obs to be aligned with DKRZ (:pull:`3673`) by :user:`LisaBock`
+-  Update AERONET data version (:pull:`3692`) by :user:`ehogan`
 
 Automatic testing
 ~~~~~~~~~~~~~~~~~
@@ -108,6 +111,8 @@ Installation
 -  Adding pys2index dependency (:pull:`3577`) by :user:`ljoakim`
 -  Pin esmpy <8.6.0 (:pull:`3585`) by :user:`valeriupredoi`
 -  Pin R <4.3.0 (:pull:`3689`) by :user:`ehogan`
+-  Pin importlib_metadata <8 (:pull:`3700`) by :user:`ehogan`
+-  Pin matplotlib <3.9.0 on ESMValTool release branch (:pull:`3712`) by :user:`ehogan`
 
 Dependency updates
 ~~~~~~~~~~~~~~~~~~
@@ -118,6 +123,7 @@ Dependency updates
 -  Update the name of the remapcon2 operator in R recipes (:pull:`3611`) by :user:`ehogan`
 -  Use ``iris.FUTURE.save_split_attrs = True`` to remove iris warning in many diagnostics (:pull:`3651`) by :user:`schlunma`
 -  Avoid concatenation error in recipe_pcrglobwb.yml (:pull:`3645`) by :user:`bouweandela`
+-  Update `scipy.integrate.simps` import (:pull:`3704`) by :user:`ehogan`
 
 Improvements
 ~~~~~~~~~~~~
