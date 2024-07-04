@@ -53,6 +53,10 @@ With the following release schedule, we strive to have three releases per year a
 
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
+- 2.12.0 (TBD)
+
+Past releases
+^^^^^^^^^^^^^
 
 - 2.11.0 (Release Manager: Met Office: `Emma Hogan`_, `Chris Billows`_, `Ed Gillett`_)
 
@@ -61,15 +65,12 @@ Upcoming releases
 +============+============+========================================+=====================================+
 | 2024-04-22 |            | ESMValCore `Feature Freeze`_           |                                     |
 +------------+------------+----------------------------------------+-------------------------------------+
-| 2023-05-03 |            | ESMValCore released                    |                                     |
+| 2023-05-03 | 2024-07-03 | :esmvalcore-release:`v2.11.0` released | :ref:`esmvalcore:changelog-v2-11-0` |
 +------------+------------+----------------------------------------+-------------------------------------+
 | 2023-05-06 |            | ESMValTool `Feature Freeze`_           |                                     |
 +------------+------------+----------------------------------------+-------------------------------------+
-| 2023-05-17 |            | ESMValTool released                    |                                     |
+| 2023-05-17 | 2024-07-04 | :release:`v2.11.0` released            | :ref:`changelog-v2-11-0`            |
 +------------+------------+----------------------------------------+-------------------------------------+
-
-Past releases
-^^^^^^^^^^^^^
 
 - 2.10.0 (Release Manager: `Klaus Zimmermann`_)
 
