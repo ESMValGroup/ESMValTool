@@ -40,10 +40,7 @@ from ...utilities import (
 logger = logging.getLogger(__name__)
 
 
-def fix_coords_esacci_soilmoisture(cube,
-                                   overwrite_time_bounds=True,
-                                   overwrite_lon_bounds=True,
-                                   overwrite_lat_bounds=True):
+def fix_coords(cube):
     """Fix coordinates to CMOR standards.
 
     Fixes coordinates eg time to have correct units, bounds etc;
@@ -56,14 +53,6 @@ def fix_coords_esacci_soilmoisture(cube,
     cube: iris.cube.Cube
         data cube with coordinates to be fixed.
 
-    overwrite_time_bounds: bool (optional)
-        set to False not to overwrite time bounds.
-
-    overwrite_lon_bounds: bool (optional)
-        set to False not to overwrite longitude bounds.
-
-    overwrite_lat_bounds: bool (optional)
-        set to False not to overwrite latitude bounds.
 
     Returns
     -------
@@ -115,7 +104,7 @@ def extract_variable(var_info, raw_info, attrs, year):
     # Continue with processing the cube if it was successfully loaded
     fix_var_metadata(cube, var_info)
     convert_timeunits(cube, year)
-    fix_coords_esacci_soilmoisture(cube, overwrite_time_bounds=False)
+    fix_coords(cube)
     set_global_atts(cube, attrs)
 
     # Remove dysfunctional ancillary data without standard names
