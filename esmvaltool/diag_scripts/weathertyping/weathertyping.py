@@ -102,7 +102,7 @@ def run_automatic_slwt(cfg: dict):
 
 
 def run_lwt(cfg: dict):
-    preproc_variables_dict, correlation_threshold, rmse_threshold, \
+    preproc_variables_dict, _, _, \
         work_dir, plotting, _, _ = get_cfg_vars(cfg)
     for dataset_name, dataset_vars in preproc_variables_dict.items():
         if dataset_name == 'ERA5':
