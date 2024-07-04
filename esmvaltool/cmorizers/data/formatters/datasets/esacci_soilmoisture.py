@@ -138,8 +138,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         if not isinstance(vals, dict):  # Ensure vals is a dictionary
             raise ValueError(
                 f"Invalid format for variable {var_name}: {type(vals)}"
-            ) 
-                    
+            )
         var_info = cfg['cmor_table'].get_variable(vals['mip'], var_name)
         glob_attrs['mip'] = vals['mip']
         raw_info = {'name': vals['raw']}
@@ -165,7 +164,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             final_cube.attributes['mip'] = 'Eday'
             glob_attrs['mip'] = 'Eday'
             save_variable(final_cube, var_name, out_dir, glob_attrs,
-                            unlimited_dimensions=['time'])
+                          unlimited_dimensions=['time'])
 
             # Calculate and save monthly means with Lmon mip
             monthly_mean_cube = monthly_statistics(final_cube, 'mean')
@@ -174,10 +173,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             monthly_mean_cube.attributes['mip'] = 'Lmon'
             glob_attrs['mip'] = 'Lmon'
             save_variable(monthly_mean_cube, var_name, out_dir, glob_attrs,
-                            unlimited_dimensions=['time'])
+                          unlimited_dimensions=['time'])
         else:
             # Save the smStderr data
             final_cube.attributes['mip'] = 'Eday'
             glob_attrs['mip'] = 'Eday'
             save_variable(final_cube, var_name, out_dir, glob_attrs,
-                            unlimited_dimensions=['time'])
+                          unlimited_dimensions=['time'])
