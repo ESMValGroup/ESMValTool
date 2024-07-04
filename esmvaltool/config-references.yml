@@ -415,6 +415,11 @@ authors:
     institute: BSC, Spain
     orcid:
     github: emchamarro
+  munday_gregory:
+    name: Munday, Gregory
+    institute: MetOffice, UK
+    orcid: https://orcid.org/0000-0003-4750-9923
+    github: mo-gregmunday
   nikulin_grigory:
     name: Nikulin, Grigory
     institute: SMHI, Sweden

@@ -10,8 +10,8 @@ import pandas as pd
 from sklearn.cluster import KMeans
 
 # User-defined libraries
-from eof_tool import eof_computation
-from read_netcdf import read_n_2d_fields
+from esmvaltool.diag_scripts.ensclus.eof_tool import eof_computation
+from esmvaltool.diag_scripts.ensclus.read_netcdf import read_n_2d_fields
 
 
 def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
