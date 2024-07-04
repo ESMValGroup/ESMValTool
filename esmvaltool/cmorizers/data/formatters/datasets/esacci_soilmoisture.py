@@ -138,47 +138,46 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         if not isinstance(vals, dict):  # Ensure vals is a dictionary
             raise ValueError(
                 f"Invalid format for variable {var_name}: {type(vals)}"
-            )
+            ) 
+                    
+        var_info = cfg['cmor_table'].get_variable(vals['mip'], var_name)
+        glob_attrs['mip'] = vals['mip']
+        raw_info = {'name': vals['raw']}
+        inpfile_pattern = os.path.join(in_dir, vals['filename'])
+        logger.info("CMORizing var %s from file type %s",
+                    var_name, inpfile_pattern)
+
+        for year in range(vals['start_year'], vals['end_year'] + 1):
+            year_inpfile_pattern = inpfile_pattern.format(year=year)
+            inpfiles = sorted(glob.glob(year_inpfile_pattern))
+            for inpfile in inpfiles:
+                raw_info['file'] = inpfile
+                logger.info("CMORizing var %s from file type %s",
+                            var_name, raw_info['file'])
+                cube = extract_variable(var_info, raw_info, glob_attrs, year)
+                all_data_cubes.append(cube)
+        final_cube = concatenate(all_data_cubes)
+        time = final_cube.coord('time')
+        time.bounds = get_time_bounds(time, vals['frequency'])
+
+        # Save daily data with Eday mip
+        if var_name == 'sm':
+            final_cube.attributes['mip'] = 'Eday'
+            glob_attrs['mip'] = 'Eday'
+            save_variable(final_cube, var_name, out_dir, glob_attrs,
+                            unlimited_dimensions=['time'])
+
+            # Calculate and save monthly means with Lmon mip
+            monthly_mean_cube = monthly_statistics(final_cube, 'mean')
+            monthly_mean_cube.var_name = var_name
+            monthly_mean_cube.attributes.update(glob_attrs)
+            monthly_mean_cube.attributes['mip'] = 'Lmon'
+            glob_attrs['mip'] = 'Lmon'
+            save_variable(monthly_mean_cube, var_name, out_dir, glob_attrs,
+                            unlimited_dimensions=['time'])
         else:
-            var_info = cfg['cmor_table'].get_variable(vals['mip'], var_name)
-            glob_attrs['mip'] = vals['mip']
-            raw_info = {'name': vals['raw']}
-            inpfile_pattern = os.path.join(in_dir, vals['filename'])
-            logger.info("CMORizing var %s from file type %s",
-                        var_name, inpfile_pattern)
-
-            for year in range(vals['start_year'], vals['end_year'] + 1):
-                year_inpfile_pattern = inpfile_pattern.format(year=year)
-                inpfiles = sorted(glob.glob(year_inpfile_pattern))
-                for inpfile in inpfiles:
-                    raw_info['file'] = inpfile
-                    logger.info("CMORizing var %s from file type %s",
-                                var_name, raw_info['file'])
-                    cube = extract_variable(var_info, raw_info, glob_attrs,
-                                            year)
-                    all_data_cubes.append(cube)
-            final_cube = concatenate(all_data_cubes)
-            time = final_cube.coord('time')
-            time.bounds = get_time_bounds(time, vals['frequency'])
-
-            # Save daily data with Eday mip
-            if var_name == 'sm':
-                final_cube.attributes['mip'] = 'Eday'
-                glob_attrs['mip'] = 'Eday'
-                save_variable(final_cube, var_name, out_dir, glob_attrs,
-                              unlimited_dimensions=['time'])
-
-                # Calculate and save monthly means with Lmon mip
-                monthly_mean_cube = monthly_statistics(final_cube, 'mean')
-                monthly_mean_cube.var_name = var_name
-                monthly_mean_cube.attributes.update(glob_attrs)
-                monthly_mean_cube.attributes['mip'] = 'Lmon'
-                glob_attrs['mip'] = 'Lmon'
-                save_variable(monthly_mean_cube, var_name, out_dir, glob_attrs,
-                              unlimited_dimensions=['time'])
-            else:
-                # Save the smStderr data
-                final_cube.attributes['mip'] = 'Eday'
-                glob_attrs['mip'] = 'Eday'
-                save_variable(final_cube, var_name, out_dir, glob_attrs,
-                              unlimited_dimensions=['time'])
+            # Save the smStderr data
+            final_cube.attributes['mip'] = 'Eday'
+            glob_attrs['mip'] = 'Eday'
+            save_variable(final_cube, var_name, out_dir, glob_attrs,
+                            unlimited_dimensions=['time'])
