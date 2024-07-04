@@ -11,14 +11,14 @@ attributes:
   comment: ''
 variables:
   sm:
-    mip: Lmon
+    mip: Eday
     raw: sm
     filename: ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc
     start_year: 1978
     end_year: 2022
     frequency: day
   smStderr:
-    mip: Lmon
+    mip: Eday
     raw: sm_uncertainty
     filename: ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc
     start_year: 1978
