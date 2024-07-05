@@ -86,7 +86,7 @@ def fix_coords(cube):
     return cube
 
 
-def extract_variable(var_info, raw_info, attrs, year):
+def extract_variable(var_info, raw_info, year):
     """Extract variables."""
     rawvar = raw_info['name']
     constraint = iris.Constraint(name=rawvar)
@@ -135,7 +135,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             inpfiles = sorted(glob.glob(year_inpfile_pattern))
             for inpfile in inpfiles:
                 raw_info['file'] = inpfile
-                cube = extract_variable(var_info, raw_info, glob_attrs, year)
+                cube = extract_variable(var_info, raw_info, year)
                 all_data_cubes.append(cube)
         final_cube = concatenate(all_data_cubes)
         final_cube.coord('time').guess_bounds()
