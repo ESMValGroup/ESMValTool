@@ -23,7 +23,6 @@ import logging
 import os
 from datetime import datetime
 import iris
-from esmvalcore.cmor.fixes import get_time_bounds
 from esmvalcore.preprocessor import concatenate, monthly_statistics
 from cf_units import Unit
 
@@ -105,7 +104,6 @@ def extract_variable(var_info, raw_info, attrs, year):
     fix_var_metadata(cube, var_info)
     convert_timeunits(cube, year)
     fix_coords(cube)
-    set_global_atts(cube, attrs)
 
     # Remove dysfunctional ancillary data without standard names
     for ancillary_variable in cube.ancillary_variables():
@@ -140,14 +138,12 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 cube = extract_variable(var_info, raw_info, glob_attrs, year)
                 all_data_cubes.append(cube)
         final_cube = concatenate(all_data_cubes)
-        time = final_cube.coord('time')
-        time.bounds = get_time_bounds(time, vals['frequency'])
+        final_cube.coord('time').guess_bounds()
 
         # Save daily data with Eday mip
         if var_name == 'sm':
-            final_cube.attributes['mip'] = 'Eday'
             final_cube.attributes["history"] = f"Created on {datetime.now()}"
-            glob_attrs['mip'] = 'Eday'
+            set_global_atts(cube, glob_attrs)
             save_variable(final_cube, var_name, out_dir, glob_attrs,
                           unlimited_dimensions=['time'])
 
@@ -158,12 +154,12 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 f"Created on {datetime.now()}")
             glob_attrs['mip'] = 'Lmon'
             monthly_mean_cube.attributes.update(glob_attrs)
+            set_global_atts(cube, glob_attrs)
             save_variable(monthly_mean_cube, var_name, out_dir, glob_attrs,
                           unlimited_dimensions=['time'])
         else:
             # Save the smStderr data
-            final_cube.attributes['mip'] = 'Eday'
             final_cube.attributes["history"] = f"Created on {datetime.now()}"
-            glob_attrs['mip'] = 'Eday'
+            set_global_atts(cube, glob_attrs)
             save_variable(final_cube, var_name, out_dir, glob_attrs,
                           unlimited_dimensions=['time'])
