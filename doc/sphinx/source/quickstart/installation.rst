@@ -684,41 +684,6 @@ repository, a direct download link can be found `here <https://raw.githubusercon
 Common installation problems and their solutions
 ================================================
 
-Mamba fails to solve the environment
-------------------------------------
-If you see the text ``Solving environment:`` with the characters ``-\|/`` rotating
-behind it for more than 10 minutes, mamba may be having problems finding a
-working combination of versions of the packages that the ESMValTool depends on.
-Because the ESMValTool is a community tool, there is no strict selection of
-which tools can be used and installing the ESMValTool requires installing almost
-any package that is available for processing climate data.
-To help mamba solve the environment, you can try the following.
-
-Always use the latest version of mamba, as problems have been reported by people
-using older versions, to update, run:
-
-.. code-block:: bash
-
-    mamba update --name base mamba
-
-Usually mamba is much better at solving new environments than updating older
-environments, so it is often a good idea to create a new environment if updating
-does not work.
-
-It is possible to create a new
-`Conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-environments>`_
-and install ESMValTool into it with a single command:
-
-.. code-block:: bash
-
-    mamba create -n esmvaltool -c conda-forge esmvaltool
-
-Don't forget to activate the newly created environment after the installation:
-
-.. code-block:: bash
-
-    conda activate esmvalcore
-
 Problems with proxies
 ---------------------
 If you are installing ESMValTool from source from behind a proxy that does not
