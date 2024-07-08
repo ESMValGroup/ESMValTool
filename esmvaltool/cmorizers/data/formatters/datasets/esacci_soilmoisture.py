@@ -119,7 +119,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if not start_date:
         start_date = datetime(1978, 1, 1)
     if not end_date:
-        end_date = datetime(1979, 12, 31)
+        end_date = datetime(2022, 12, 31)
 
     # run the cmorization
     for var_name, vals in cfg['variables'].items():
