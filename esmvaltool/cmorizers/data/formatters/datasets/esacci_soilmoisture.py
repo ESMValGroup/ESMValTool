@@ -27,7 +27,6 @@ from esmvalcore.preprocessor import concatenate, monthly_statistics
 from cf_units import Unit
 
 from ...utilities import (
-    convert_timeunits,
     fix_var_metadata,
     fix_dim_coordnames,
     fix_bounds,
@@ -58,18 +57,23 @@ def fix_coords(cube):
     cube: iris.cube.Cube
         data cube with fixed coordinates.
     """
-    # first fix any completely missing coord var names
+    # First fix any completely missing coord var names
     fix_dim_coordnames(cube)
-    # fix individual coords
+    # Fix individual coords
     for cube_coord in cube.coords():
-        # fix time
+        # Fix time
         if cube_coord.var_name == 'time':
             logger.info("Fixing time...")
             cube.coord('time').convert_units(
                 Unit('days since 1970-01-01T00:00:00+00:00',
                      calendar='proleptic_gregorian'))
 
-        # fix longitude
+        # Fix latitude
+        if cube_coord.var_name == 'lat':
+            logger.info("Fixing latitude...")
+            cube = iris.util.reverse(cube, cube_coord)
+
+        # Fix longitude
         if cube_coord.var_name == 'lon':
             logger.info("Fixing longitude...")
             if cube_coord.ndim == 1:
@@ -81,6 +85,8 @@ def fix_coords(cube):
                     cube.attributes['geospatial_lon_max'] = 360.
                     nlon = len(cube_coord.points)
                     roll_cube_data(cube, nlon // 2, -1)
+
+        # Fix bounds of all coordinates
         fix_bounds(cube, cube_coord)
 
     return cube
@@ -100,11 +106,6 @@ def extract_variable(var_info, raw_info, year):
     else:
         cube = iris.load_cube(raw_info['file'], constraint)
 
-    # Continue with processing the cube if it was successfully loaded
-    fix_var_metadata(cube, var_info)
-    convert_timeunits(cube, year)
-    fix_coords(cube)
-
     # Remove dysfunctional ancillary data without standard names
     for ancillary_variable in cube.ancillary_variables():
         cube.remove_ancillary_variable(ancillary_variable)
@@ -115,6 +116,10 @@ def extract_variable(var_info, raw_info, year):
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize data."""
     glob_attrs = cfg['attributes']
+    if not start_date:
+        start_date = datetime(1978, 1, 1)
+    if not end_date:
+        end_date = datetime(2022, 12, 31)
 
     # run the cmorization
     for var_name, vals in cfg['variables'].items():
@@ -130,7 +135,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         logger.info("CMORizing var %s from file type %s",
                     var_name, inpfile_pattern)
 
-        for year in range(vals['start_year'], vals['end_year'] + 1):
+        for year in range(start_date.year, end_date.year + 1):
             year_inpfile_pattern = inpfile_pattern.format(year=year)
             inpfiles = sorted(glob.glob(year_inpfile_pattern))
             for inpfile in inpfiles:
@@ -138,28 +143,21 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 cube = extract_variable(var_info, raw_info, year)
                 all_data_cubes.append(cube)
         final_cube = concatenate(all_data_cubes)
-        final_cube.coord('time').guess_bounds()
+        fix_var_metadata(final_cube, var_info)
+        final_cube = fix_coords(final_cube)
+        set_global_atts(final_cube, glob_attrs)
 
-        # Save daily data with Eday mip
+        # Remove dysfunctional ancillary data without standard names
+        for ancillary_variable in final_cube.ancillary_variables():
+            final_cube.remove_ancillary_variable(ancillary_variable)
+
+        save_variable(final_cube, var_name, out_dir, glob_attrs,
+                      unlimited_dimensions=['time'])
+
+        # For sm, also save monthly means
         if var_name == 'sm':
-            final_cube.attributes["history"] = f"Created on {datetime.now()}"
-            set_global_atts(cube, glob_attrs)
-            save_variable(final_cube, var_name, out_dir, glob_attrs,
-                          unlimited_dimensions=['time'])
-
-            # Calculate and save monthly means with Lmon mip
             monthly_mean_cube = monthly_statistics(final_cube, 'mean')
-            monthly_mean_cube.var_name = var_name
-            monthly_mean_cube.attributes["history"] = (
-                f"Created on {datetime.now()}")
             glob_attrs['mip'] = 'Lmon'
             monthly_mean_cube.attributes.update(glob_attrs)
-            set_global_atts(cube, glob_attrs)
             save_variable(monthly_mean_cube, var_name, out_dir, glob_attrs,
-                          unlimited_dimensions=['time'])
-        else:
-            # Save the smStderr data
-            final_cube.attributes["history"] = f"Created on {datetime.now()}"
-            set_global_atts(cube, glob_attrs)
-            save_variable(final_cube, var_name, out_dir, glob_attrs,
                           unlimited_dimensions=['time'])
