@@ -59,6 +59,10 @@ def fix_coords(cube):
     """
     # First fix any completely missing coord var names
     fix_dim_coordnames(cube)
+
+    # Convert longitude from -180...180 to 0...360
+    cube = cube.intersection(longitude=(0.0, 360.0))
+
     # Fix individual coords
     for cube_coord in cube.coords():
         # Fix time
@@ -146,10 +150,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         fix_var_metadata(final_cube, var_info)
         final_cube = fix_coords(final_cube)
         set_global_atts(final_cube, glob_attrs)
-
-        # Remove dysfunctional ancillary data without standard names
-        for ancillary_variable in final_cube.ancillary_variables():
-            final_cube.remove_ancillary_variable(ancillary_variable)
 
         save_variable(final_cube, var_name, out_dir, glob_attrs,
                       unlimited_dimensions=['time'])

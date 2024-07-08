@@ -310,7 +310,7 @@ diagnostics:
         frequency: day
     additional_datasets:
       - {dataset: ESACCI-SOILMOISTURE, project: OBS, tier: 2,
-         type: sat, version: L3S-SSMV-COMBINED-v08.1, start_year: 1978, end_year: 2022}    
+         type: sat, version: L3S-SSMV-COMBINED-v08.1, start_year: 1978, end_year: 2022}
     scripts: null
 
 
