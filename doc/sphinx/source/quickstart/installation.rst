@@ -744,7 +744,7 @@ Problems when updating the conda environment
 --------------------------------------------
 Usually mamba is much better at solving new environments than updating older
 environments, so it is often a good idea to create a new environment if updating
-does not work. See also `Mamba fails to solve the environment`_.
+does not work.
 
 Do not run ``mamba update --update-all`` in the ``esmvaltool``
 environment since that will update some packages that are pinned to
