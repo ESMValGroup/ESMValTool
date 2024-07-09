@@ -31,8 +31,7 @@ from ...utilities import (
     fix_dim_coordnames,
     fix_bounds,
     save_variable,
-    set_global_atts,
-    roll_cube_data
+    set_global_atts
 )
 
 logger = logging.getLogger(__name__)
