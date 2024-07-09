@@ -21,7 +21,7 @@ dependencies:
   - distributed
   - ecmwf-api-client
   - eofs
-  - esmpy !=8.1.0  # inline with esmvalcore==2.11
+  - esmpy >=8.5.0  # https://github.com/esmf-org/esmf/issues/140
   - esmvalcore 2.11.*
   - fiona
   - fire
