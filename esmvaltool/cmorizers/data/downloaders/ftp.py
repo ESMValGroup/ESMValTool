@@ -176,11 +176,18 @@ class CCIDownloader(FTPDownloader):
         Dataset information from the datasets.yml file
     overwrite : bool
         Overwrite already downloaded files
+    dataset_name : str
+        optional override for directory name on CEDA within
+        'esacci' folder
     """
-    def __init__(self, config, dataset, dataset_info, overwrite):
+    def __init__(self, config, dataset, dataset_info, overwrite,
+                 dataset_name=None):
         super().__init__(config, 'anon-ftp.ceda.ac.uk', dataset, dataset_info,
                          overwrite)
-        self.ftp_name = self.dataset_name[7:]
+        if dataset_name:
+            self.ftp_name = dataset_name
+        else:
+            self.ftp_name = self.dataset_name[7:]
 
     def set_cwd(self, path):
         """Set current work directory.
