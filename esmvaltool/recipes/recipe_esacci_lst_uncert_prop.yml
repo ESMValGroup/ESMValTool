@@ -61,104 +61,104 @@ diagnostics:
         mip: Amon
         preprocessor: cmip_preprocessor
         additional_datasets:
-         - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 2003, end_year: 2018, grid: gn}
+         - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, start_year: 2003, end_year: 2014, grid: gn}
 
       tsDay:
         mip: Amon
         preprocessor: obs_preprocessor
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2018, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2014, version: '3.00'}
 
 
       tsNight:
         mip: Amon
         preprocessor: obs_preprocessor
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2018, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2014, version: '3.00'}
  
       tsLocalSfcErrDay:
         mip: Amon
         preprocessor: obs_preprocessor
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2018, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2014, version: '3.00'}
  
       tsLocalSfcErrNight:
         mip: Amon
         preprocessor: obs_preprocessor
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2018, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2014, version: '3.00'}
 
       tsLocalAtmErrDay:
         mip: Amon
         preprocessor: obs_preprocessor
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2018, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2014, version: '3.00'}
  
       tsLocalAtmErrNight:
         mip: Amon
         preprocessor: obs_preprocessor
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2018, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2014, version: '3.00'}
  
       tsLSSysErrDay:
         mip: Amon
         # preprocessor: obs_preprocessor # Single value in files, no area cut out needed
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2018, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2014, version: '3.00'}
  
       tsLSSysErrNight:
         mip: Amon
         # preprocessor: obs_preprocessor # Single value in files, no area cut out needed
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2018, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2014, version: '3.00'}
  
       tsUnCorErrDay:
         mip: Amon
         preprocessor: obs_preprocessor
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2018, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2014, version: '3.00'}
  
       tsUnCorErrNight:
         mip: Amon
         preprocessor: obs_preprocessor
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2018, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2014, version: '3.00'}
 
       tsTotalDay:
         mip: Amon
         preprocessor: obs_preprocessor
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2018, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2014, version: '3.00'}
 
       tsTotalNight:
         mip: Amon
         preprocessor: obs_preprocessor
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2018, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2014, version: '3.00'}
 
       tsVarDay:
         mip: Amon
         preprocessor: obs_preprocessor
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2018, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2014, version: '3.00'}
 
       tsVarNight:
         mip: Amon
         preprocessor: obs_preprocessor
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2018, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2014, version: '3.00'}
 
       tsLCDay:
         mip: Amon
         preprocessor: obs_preprocessor
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2018, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2014, version: '3.00'}
 
       tsLCNight:
         mip: Amon
         preprocessor: obs_preprocessor
         additional_datasets:
-          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2018, version: '3.00'}
+          - {dataset: ESACCI-LST, project: OBS, type: sat, tier: 2, start_year: 2003, end_year: 2014, version: '3.00'}
 
 
     scripts:
