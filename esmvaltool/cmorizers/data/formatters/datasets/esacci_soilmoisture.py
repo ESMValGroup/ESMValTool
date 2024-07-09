@@ -77,19 +77,6 @@ def fix_coords(cube):
             logger.info("Fixing latitude...")
             cube = iris.util.reverse(cube, cube_coord)
 
-        # Fix longitude
-        if cube_coord.var_name == 'lon':
-            logger.info("Fixing longitude...")
-            if cube_coord.ndim == 1:
-                if cube_coord.points[0] < 0. and \
-                        cube_coord.points[-1] < 181.:
-                    cube_coord.points = \
-                        cube_coord.points + 180.
-                    cube.attributes['geospatial_lon_min'] = 0.
-                    cube.attributes['geospatial_lon_max'] = 360.
-                    nlon = len(cube_coord.points)
-                    roll_cube_data(cube, nlon // 2, -1)
-
         # Fix bounds of all coordinates
         fix_bounds(cube, cube_coord)
 
