@@ -21,12 +21,13 @@ dependencies:
   - distributed
   - ecmwf-api-client
   - eofs
-  - esmpy >=8.5.0  # https://github.com/esmf-org/esmf/issues/140
+  - esmpy !=8.1.0
   - esmvalcore 2.11.*
   - fiona
   - fire
   - fsspec
   - gdal >=3.9.0
+  - importlib_metadata <8
   - iris >=3.6.1
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - jinja2
