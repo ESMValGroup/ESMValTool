@@ -4,7 +4,7 @@ datasets:
   AERONET:
     tier: 3
     source: "https://aeronet.gsfc.nasa.gov/"
-    last_access: 2023-06-13
+    last_access: 2024-04-06
     info: |
       Aerosol Optical Depth information from a worldwide network of stations.
 
@@ -531,11 +531,11 @@ datasets:
   ESACCI-SOILMOISTURE:
     tier: 2
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/soil_moisture/data/
-    last_access: 2019-02-01
+    last_access: 2024-06-19
     info: |
       Download the data from:
-        daily_files/COMBINED/v04.2/
-        ancillary/v04.2/
+        daily_files/COMBINED/v08.1/
+        ancillary/v08.1/
       Put all files under a single directory (no subdirectories with years).
 
   ESACCI-SEA-SURFACE-SALINITY:
