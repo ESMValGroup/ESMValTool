@@ -155,6 +155,9 @@ def _diagnostic(config):
     propagated_values = {}
 
     print(loaded_data) # for testing new variables total var and lc
+    print('***')
+    print(loaded_data['UKESM1-0-LL']['ts'])
+    print(loaded_data['UKESM1-0-LL']['ts'].data)
 
     # These define the total number of points in the data
     lat_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('latitude').points)
@@ -214,9 +217,111 @@ def _diagnostic(config):
         
         propagated_values[f'lst_total_unc_{time}'] = \
                                             eq_sum_in_quadrature(time_cubelist)
-                                            
+    
+    
+    # iplt did not want to work with 360 day calendar of UKESM
+    # and demote appears to work on the standard_name
+    loaded_data['UKESM1-0-LL']['ts'].coord('time').var_name = 'time2'
+    loaded_data['UKESM1-0-LL']['ts'].coord('time').long_name = 'time2'
+    loaded_data['UKESM1-0-LL']['ts'].coord('time').standard_name = 'height'
+    iris.util.demote_dim_coord_to_aux_coord(loaded_data['UKESM1-0-LL']['ts'], 'height')
+    loaded_data['UKESM1-0-LL']['ts'].add_aux_coord(propagated_values['ts_day'].coord('time'),0)
+    iris.util.promote_aux_coord_to_dim_coord(loaded_data['UKESM1-0-LL']['ts'], 'time')
+    
     test_plot(propagated_values)
+    plot_with_cmip(propagated_values, loaded_data)
 
+def plot_with_cmip(propagated_values, loaded_data):
+    """A plot for comparing OBS+uncertainity with CMIP value
+    """
+    
+    years = mdates.YearLocator()   # every year
+    months = mdates.MonthLocator()  # every month
+    yearsFmt = mdates.DateFormatter('%Y')
+
+    for time in ['day', 'night']:
+        # one plot for day and night seperately
+        fig = plt.figure(figsize=(25,15))
+
+        ax1 = plt.subplot(111)
+        iplt.plot(propagated_values[f'ts_{time}'],
+                  c=colour_list[0],
+                  linewidth=plot_params['linewidth'],
+                label='LST (CCI)')
+        iplt.fill_between(propagated_values[f'ts_{time}'].coord('time'),
+                            propagated_values[f'ts_{time}'] + propagated_values[f'lst_total_unc_{time}'],
+                            propagated_values[f'ts_{time}'] - propagated_values[f'lst_total_unc_{time}'],
+                            color=colour_list[0],
+                            alpha=0.5,
+                            label='Uncertainty (CCI)'
+        )
+        
+        iplt.plot(loaded_data['UKESM1-0-LL']['ts'],
+                  c=colour_list[4],
+                  linewidth=plot_params['linewidth'],
+                  label='LST (CMIP6)')
+        
+        ax1.xaxis.set_major_locator(years)
+        ax1.xaxis.set_major_formatter(yearsFmt)
+        ax1.xaxis.set_minor_locator(months)
+                
+        plt.grid(which='major', color='k', linestyle='solid')
+        plt.grid(which='minor', color='k', linestyle='dotted', alpha=0.5)
+        
+        plt.xlabel('Date', fontsize=24)
+        plt.ylabel('LST (K)', fontsize=24)
+
+        plt.legend(loc='lower left',
+                   bbox_to_anchor=(1.05, 0),
+                   fontsize=16)
+        
+        ax1.tick_params(labelsize=18)
+         
+        plt.tight_layout()
+        plt.savefig(f'cmip_{time}.png')
+        
+    # make a version with day and night both on same plot
+    fig = plt.figure(figsize=(25,15))
+
+    ax1 = plt.subplot(111)
+    colour_id = 0
+    for time in ['day', 'night']:
+        iplt.plot(propagated_values[f'ts_{time}'],
+                  c=colour_list[colour_id],
+                  linewidth=plot_params['linewidth'],
+                  label=f'LST {time} (CCI)')
+        iplt.fill_between(propagated_values[f'ts_{time}'].coord('time'),
+                          propagated_values[f'ts_{time}'] + propagated_values[f'lst_total_unc_{time}'],
+                          propagated_values[f'ts_{time}'] - propagated_values[f'lst_total_unc_{time}'],
+                          color=colour_list[colour_id],
+                          alpha=0.5,
+                          label=f'Uncertainty {time}'
+                )
+        colour_id =- 1
+        
+    iplt.plot(loaded_data['UKESM1-0-LL']['ts'],
+              c=colour_list[4],
+              linewidth=plot_params['linewidth'],
+              label='LST (CMIP6)')
+        
+    ax1.xaxis.set_major_locator(years)
+    ax1.xaxis.set_major_formatter(yearsFmt)
+    ax1.xaxis.set_minor_locator(months)
+        
+    plt.grid(which='major', color='k', linestyle='solid')
+    plt.grid(which='minor', color='k', linestyle='dotted', alpha=0.5)
+
+    plt.xlabel('Date', fontsize=24)        
+    plt.ylabel('LST (K)', fontsize=24)
+
+    plt.legend(loc='lower left',
+               bbox_to_anchor=(1.05, 0),
+               fontsize=16)
+        
+    ax1.tick_params(labelsize=18)
+         
+    plt.tight_layout()
+    plt.savefig(f'cmip_both.png')
         
 def test_plot(propagated_values):
     """This is a very simple plot to just test the method
@@ -242,6 +347,7 @@ def test_plot(propagated_values):
                             alpha=0.5,
                             label='Uncertainty'
         )
+        
         ax1.xaxis.set_major_locator(years)
         ax1.xaxis.set_major_formatter(yearsFmt)
         ax1.xaxis.set_minor_locator(months)
