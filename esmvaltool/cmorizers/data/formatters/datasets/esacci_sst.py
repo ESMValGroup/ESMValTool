@@ -110,6 +110,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
+    if not start_date:
+        start_date = vals['start_year']
+    if not end_date:
+        end_date = vals['end_year']
 
     # run the cmorization
     for var, vals in cfg['variables'].items():
@@ -119,7 +123,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         inpfile_pattern = os.path.join(in_dir, '{year}*' + vals['filename'])
         logger.info("CMORizing var %s from file type %s", var, inpfile_pattern)
         mon_cubes = []
-        for year in range(vals['start_year'], vals['end_year'] + 1):
+        for year in range(start_year, end_year + 1):
             logger.info("Processing year %s", year)
             for month in range(1, 13):
                 monthly_cube = get_monthly_cube(var, vals, raw_info, var_info,
