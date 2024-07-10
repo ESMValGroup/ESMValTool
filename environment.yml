@@ -52,7 +52,7 @@ dependencies:
   - psy-simple >=1.5.0
   - pyproj >=2.1
   - pys2index  # only from conda-forge
-  - python >=3.9
+  - python >=3.10
   - python-cdo
   - python-dateutil
   - pyyaml
