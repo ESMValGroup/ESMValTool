@@ -1,0 +1,628 @@
+# ESMValTool
+# test.yml
+---
+documentation:
+  title: Plot
+
+  description: description
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  projects:
+    - esmval
+
+preprocessors:
+
+  ppNOLEV1:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset]
+  
+  ppNOLEV2:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+cmip6_default: &cmip6
+  grid: gn
+  ensemble: r1i1p1f1
+  project: CMIP6
+
+diagnostics:
+
+  sm:
+    description: Soil moisture
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      sm:
+        preprocessor: ppNOLEV1
+        reference_dataset: ESACCI-SOILMOISTURE
+        mip: Lmon
+        derive: true
+        force_derivation: false
+        exp: historical
+        start_year: 1980
+        end_year: 1999
+    additional_datasets:
+      - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {<<: *cmip6, dataset: NorESM2-LM, institute: NCC}
+      - {<<: *cmip6, dataset: NorCPM1, institute: NCC}
+      - {<<: *cmip6, dataset: NorESM2-MM, institute: NCC}
+      - {<<: *cmip6, dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {<<: *cmip6, dataset: CMCC-ESM2, institute: CMCC}
+      - {<<: *cmip6, dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {<<: *cmip6, dataset: MRI-ESM2-0, institute: MRI}
+      - {<<: *cmip6, dataset: TaiESM1, institute: AS-RCEC}
+      # Some issue related to lat not being monotonic
+      #- {<<: *cmip6, dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      # Latitude is not monotonic
+      #- {<<: *cmip6, dataset: CAS-ESM2-0, institute: CAS}
+      #- {<<: *cmip6, dataset: FGOALS-f3-L, institute: CAS}
+      - {<<: *cmip6, dataset: FGOALS-g3, institute: CAS}
+      #- {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      #- {<<: *cmip6, dataset: E3SM-1-1, institute: E3SM-Project}
+      #- {<<: *cmip6, dataset: E3SM-1-0, institute: E3SM-Project}
+      #- {<<: *cmip6, dataset: KACE-1-0-G, institute: NIMS-KMA}
+      #sdepth1 does not exist
+      #- {<<: *cmip6, dataset: CESM2-WACCM-FV2, institute: NCAR}
+      #- {<<: *cmip6, dataset: CESM2-FV2, institute: NCAR}
+      #sdepth1 does not exist
+      #- {<<: *cmip6, dataset: CESM2, institute: NCAR}
+      #sdepth1 does not exist
+      #- {<<: *cmip6, dataset: CESM2-WACCM, institute: NCAR}
+      - {<<: *cmip6, dataset: BCC-ESM1, institute: BCC}
+      - {<<: *cmip6, dataset: BCC-CSM2-MR, institute: BCC}
+      #- {<<: *cmip6, dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      #- {<<: *cmip6, dataset: IPSL-CM6A-LR, institute: IPSL}
+      #- {<<: *cmip6, dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {<<: *cmip6, dataset: MIROC6, institute: MIROC}
+      #- {<<: *cmip6, dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      #- {<<: *cmip6, dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      #- {<<: *cmip6, dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {<<: *cmip6, dataset: AWI-ESM-1-1-LR, institute: AWI}
+      #- {<<: *cmip6, dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      #- {<<: *cmip6, dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {<<: *cmip6, dataset: CanESM5, institute: CCCma}
+      #- {<<: *cmip6, dataset: GISS-E2-2-H, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: SAM0-UNICON, institute: SNU}
+      - {<<: *cmip6, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
+      - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
+      - {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat,
+         version: L3S-SSMV-COMBINED-v4.2, tier: 2}
+
+    scripts:
+      grading: &grading_settings
+        script: perfmetrics/main.ncl
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
+        plot_type: cycle_latlon
+        # Time average ('opt' argument of time_operations.ncl)
+        time_avg: monthlyclim
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
+        # Plot standard deviation ('all', 'none', 'ref_model' or dataset name)
+        plot_stddev: ref_model
+        # Plot legend in a separate file
+        legend_outside: true
+        # Plot style
+        styleset: CMIP5
+        # Calculate grading
+        calc_grading: true
+        # Metric ('RMSD', 'BIAS', taylor')
+        metric: [RMSD]
+        # Normalization ('mean', 'median', 'centered_median', 'none')
+        normalization: [centered_median]
+
+  nbp:
+    description: surface_net_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_all_land_processes
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      nbp:
+        short_name: nbp
+        preprocessor: ppNOLEV1
+        reference_dataset: JMA-TRANSCOM
+        mip: Lmon
+        exp: historical
+        start_year: 1980
+        end_year: 1999
+    additional_datasets:
+      - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
+      - {<<: *cmip6, dataset: CanESM5, institute: CCCma}
+      - {<<: *cmip6, dataset: SAM0-UNICON, institute: SNU}
+      - {<<: *cmip6, dataset: TaiESM1, institute: AS-RCEC}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {<<: *cmip6, dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {<<: *cmip6, dataset: CMCC-ESM2, institute: CMCC}
+      - {<<: *cmip6, dataset: CESM2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2-FV2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2-WACCM, institute: NCAR}
+      - {<<: *cmip6, dataset: NorESM2-LM, institute: NCC}
+      - {<<: *cmip6, dataset: NorESM2-MM, institute: NCC}
+      - {<<: *cmip6, dataset: NorCPM1, institute: NCC}
+      - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      
+      - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly,
+         version: 2018, tier: 3, start_year: 1985}
+    scripts:
+      grading:
+        <<: *grading_settings
+  
+  gpp:
+    description: Carbon Mass Flux out of Atmosphere due to Gross Primary
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      gpp:
+        short_name: gpp
+        preprocessor: ppNOLEV2
+        reference_dataset: MTE
+        alternative_dataset: FLUXCOM
+        mip: Lmon
+        exp: historical
+        start_year: 1980
+        end_year: 1999
+    additional_datasets:
+      - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      #- {<<: *cmip6, dataset: ICON-ESM-LR, institute: MPI-M}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {<<: *cmip6, dataset: NorESM2-LM, institute: NCC}
+      - {<<: *cmip6, dataset: NorCPM1, institute: NCC}
+      - {<<: *cmip6, dataset: NorESM2-MM, institute: NCC}
+      - {<<: *cmip6, dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {<<: *cmip6, dataset: CMCC-ESM2, institute: CMCC}
+      - {<<: *cmip6, dataset: TaiESM1, institute: AS-RCEC}
+      #- {<<: *cmip6, dataset: CAS-ESM2-0, institute: CAS}
+      #- {<<: *cmip6, dataset: CESM2-FV2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2-WACCM, institute: NCAR}
+      - {<<: *cmip6, dataset: BCC-ESM1, institute: BCC}
+      - {<<: *cmip6, dataset: BCC-CSM2-MR, institute: BCC}
+      - {<<: *cmip6, dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {<<: *cmip6, dataset: CanESM5, institute: CCCma}
+      #- {<<: *cmip6, dataset: GISS-E2-2-H, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: SAM0-UNICON, institute: SNU}
+      - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
+      - {dataset: FLUXCOM, project: OBS, type: reanaly,
+         version: ANN-v1, tier: 3}
+      - {dataset: MTE, project: OBS, type: reanaly,
+         version: May12, tier: 3, start_year: 1982}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+  lai:
+    description: Leaf Area Index
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      lai:
+        short_name: lai
+        preprocessor: ppNOLEV1
+        reference_dataset: LAI3g
+        mip: Lmon
+        exp: historical
+        start_year: 1980
+        end_year: 1999
+    additional_datasets:
+      - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {<<: *cmip6, dataset: NorESM2-LM, institute: NCC}
+      - {<<: *cmip6, dataset: NorESM2-MM, institute: NCC}
+      - {<<: *cmip6, dataset: TaiESM1, institute: AS-RCEC}
+      # Some issue with latitude not being monotonic
+      #- {<<: *cmip6, dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      #- {<<: *cmip6, dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2-FV2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2-WACCM, institute: NCAR}
+      - {<<: *cmip6, dataset: BCC-ESM1, institute: BCC}
+      - {<<: *cmip6, dataset: BCC-CSM2-MR, institute: BCC}
+      - {<<: *cmip6, dataset: CanESM5, institute: CCCma}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: SAM0-UNICON, institute: SNU}
+      - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
+      - {<<: *cmip6, dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {<<: *cmip6, dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {<<: *cmip6, dataset: CMCC-ESM2, institute: CMCC}
+      #- {<<: *cmip6, dataset: AWI-ESM-1-1-LR, institute: AWI}
+
+      - {dataset: LAI3g, project: OBS, type: reanaly,
+         version: 1_regridded, tier: 3, start_year: 1981}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+  fgco2:
+    description: surface_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon
+    themes:
+      - phys
+    realms:
+      - ocnBgchem
+    variables:
+      fgco2:
+        short_name: fgco2
+        preprocessor: ppNOLEV2
+        reference_dataset: JMA-TRANSCOM
+        alternative_dataset: Landschuetzer2016
+        mip: Omon
+        exp: historical
+        start_year: 1980
+        end_year: 1999
+    additional_datasets:
+      #- {<<: *cmip6, dataset: INM-CM5-0, institute: INM}
+      #- {<<: *cmip6, dataset: INM-CM4-8, institute: INM}
+      - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {<<: *cmip6, dataset: NorESM2-LM, institute: NCC}
+      - {<<: *cmip6, dataset: NorCPM1, institute: NCC}
+      - {<<: *cmip6, dataset: NorESM2-MM, institute: NCC}
+      - {<<: *cmip6, dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2-FV2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2-WACCM, institute: NCAR}
+      #There were errors in variable fgco2:
+      #There are multiple coordinates with standard_name "latitude": ['lat', 'latitude']
+      #There are multiple coordinates with standard_name "longitude": ['lon', 'longitude']
+      # fgco2: does not match coordinate rank
+      #- {<<: *cmip6, dataset: BCC-ESM1, institute: BCC}
+      #- {<<: *cmip6, dataset: BCC-CSM2-MR, institute: BCC}
+      - {<<: *cmip6, dataset: IPSL-CM6A-LR, institute: IPSL}
+      #- {<<: *cmip6, dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      #- {<<: *cmip6, dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {<<: *cmip6, dataset: CanESM5, institute: CCCma}
+      - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
+      #- {<<: *cmip6, dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {<<: *cmip6, dataset: CMCC-ESM2, institute: CMCC}
+      - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly,
+         version: 2018, tier: 3, start_year: 1985}
+      - {dataset: Landschuetzer2016, project: OBS, type: clim,
+         version: v2016, tier: 2, start_year: 1982}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+  et: # Derived from hfls, Amon
+    description: total_evapotranspiration
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      et:
+        short_name: et
+        preprocessor: ppNOLEV1
+        reference_dataset: LandFlux-EVAL
+        mip: Lmon
+        derive: true
+        force_derivation: false
+        exp: historical
+        start_year: 1980
+        end_year: 1999
+    additional_datasets:
+       #- {<<: *cmip6, dataset: INM-CM5-0, institute: INM}
+       #- {<<: *cmip6, dataset: INM-CM4-8, institute: INM}
+       - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+       - {<<: *cmip6, dataset: MPI-ESM1-2-HR, institute: MPI-M}
+       - {<<: *cmip6, dataset: MPI-ESM1-2-LR, institute: MPI-M}
+       - {<<: *cmip6, dataset: NorESM2-LM, institute: NCC}
+       - {<<: *cmip6, dataset: NorCPM1, institute: NCC}
+       - {<<: *cmip6, dataset: NorESM2-MM, institute: NCC}
+       - {<<: *cmip6, dataset: CMCC-CM2-SR5, institute: CMCC}
+       - {<<: *cmip6, dataset: CMCC-ESM2, institute: CMCC}
+       - {<<: *cmip6, dataset: CMCC-CM2-HR4, institute: CMCC}
+       #- {<<: *cmip6, dataset: CIESM, institute: THU}
+       - {<<: *cmip6, dataset: MRI-ESM2-0, institute: MRI}
+       - {<<: *cmip6, dataset: TaiESM1, institute: AS-RCEC}
+       - {<<: *cmip6, dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+       - {<<: *cmip6, dataset: CAS-ESM2-0, institute: CAS}
+       #- {<<: *cmip6, dataset: FGOALS-f3-L, institute: CAS}
+       - {<<: *cmip6, dataset: FGOALS-g3, institute: CAS}
+       - {<<: *cmip6, dataset: CAMS-CSM1-0, institute: CAMS}
+       #- {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+       #- {<<: *cmip6, dataset: E3SM-1-0, institute: E3SM-Project}
+       #- {<<: *cmip6, dataset: KACE-1-0-G, institute: NIMS-KMA}
+       - {<<: *cmip6, dataset: CESM2-WACCM-FV2, institute: NCAR}
+       - {<<: *cmip6, dataset: CESM2-FV2, institute: NCAR}
+       - {<<: *cmip6, dataset: CESM2, institute: NCAR}
+       - {<<: *cmip6, dataset: CESM2-WACCM, institute: NCAR}
+       - {<<: *cmip6, dataset: BCC-ESM1, institute: BCC}
+       - {<<: *cmip6, dataset: BCC-CSM2-MR, institute: BCC}
+       - {<<: *cmip6, dataset: IITM-ESM, institute: CCCR-IITM}
+       #- {<<: *cmip6, dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+       #- {<<: *cmip6, dataset: IPSL-CM6A-LR, institute: IPSL}
+       - {<<: *cmip6, dataset: MIROC6, institute: MIROC}
+       #- {<<: *cmip6, dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+       #- {<<: *cmip6, dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+       #- {<<: *cmip6, dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+       #- {<<: *cmip6, dataset: EC-Earth3, institute: EC-Earth-Consortium}
+       - {<<: *cmip6, dataset: MCM-UA-1-0, institute: UA}
+       - {<<: *cmip6, dataset: AWI-ESM-1-1-LR, institute: AWI}
+       - {<<: *cmip6, dataset: AWI-CM-1-1-MR, institute: AWI}
+       #- {<<: *cmip6, dataset: GFDL-ESM4, institute: NOAA-GFDL}
+       #- {<<: *cmip6, dataset: GFDL-CM4, institute: NOAA-GFDL}
+       - {<<: *cmip6, dataset: CanESM5, institute: CCCma}
+       - {<<: *cmip6, dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+       - {<<: *cmip6, dataset: GISS-E2-1-G, institute: NASA-GISS}
+       - {<<: *cmip6, dataset: GISS-E2-1-H, institute: NASA-GISS}
+       - {<<: *cmip6, dataset: NESM3, institute: NUIST}
+       - {<<: *cmip6, dataset: SAM0-UNICON, institute: SNU}
+       - {<<: *cmip6, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
+       - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
+       - {dataset: LandFlux-EVAL, project: OBS, type: reanaly,
+          version: Oct13, tier: 3, start_year: 1989}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+  rlus:
+    description: surface upwelling longwave flux in air
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      rlus:
+        short_name: rlus
+        preprocessor: ppNOLEV1
+        reference_dataset: CERES-EBAF_Surface
+        mip: Amon
+        exp: historical
+        start_year: 1980
+        end_year: 1999
+    additional_datasets:
+      - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {<<: *cmip6, dataset: NorESM2-LM, institute: NCC}
+      - {<<: *cmip6, dataset: NorCPM1, institute: NCC}
+      - {<<: *cmip6, dataset: NorESM2-MM, institute: NCC}
+      - {<<: *cmip6, dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {<<: *cmip6, dataset: CMCC-ESM2, institute: CMCC}
+      - {<<: *cmip6, dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {<<: *cmip6, dataset: MRI-ESM2-0, institute: MRI}
+      - {<<: *cmip6, dataset: TaiESM1, institute: AS-RCEC}
+      - {<<: *cmip6, dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {<<: *cmip6, dataset: CAS-ESM2-0, institute: CAS}
+      - {<<: *cmip6, dataset: FGOALS-g3, institute: CAS}
+      - {<<: *cmip6, dataset: CAMS-CSM1-0, institute: CAMS}
+      - {<<: *cmip6, dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2-FV2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2-WACCM, institute: NCAR}
+      - {<<: *cmip6, dataset: BCC-ESM1, institute: BCC}
+      - {<<: *cmip6, dataset: BCC-CSM2-MR, institute: BCC}
+      - {<<: *cmip6, dataset: IITM-ESM, institute: CCCR-IITM}
+      - {<<: *cmip6, dataset: MIROC6, institute: MIROC}
+      - {<<: *cmip6, dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {<<: *cmip6, dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {<<: *cmip6, dataset: CanESM5, institute: CCCma}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: NESM3, institute: NUIST}
+      - {<<: *cmip6, dataset: SAM0-UNICON, institute: SNU}
+      - {<<: *cmip6, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
+      - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
+      - {<<: *cmip6, dataset: CERES-EBAF_Surface, project: obs4MIPs, level: L3B, tier: 1, start_year: 2001, end_year: 2013}
+    scripts:
+      grading:
+        <<: *grading_settings
+  
+  rlds:
+    description: surface_downwelling_longwave_flux_in_air
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      rlds:
+        short_name: rlds
+        preprocessor: ppNOLEV1
+        reference_dataset: CERES-EBAF_Surface
+        mip: Amon
+        exp: historical
+        start_year: 1980
+        end_year: 1999
+    additional_datasets:
+      - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {<<: *cmip6, dataset: NorESM2-LM, institute: NCC}
+      - {<<: *cmip6, dataset: NorCPM1, institute: NCC}
+      - {<<: *cmip6, dataset: NorESM2-MM, institute: NCC}
+      - {<<: *cmip6, dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {<<: *cmip6, dataset: CMCC-ESM2, institute: CMCC}
+      - {<<: *cmip6, dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {<<: *cmip6, dataset: MRI-ESM2-0, institute: MRI}
+      - {<<: *cmip6, dataset: TaiESM1, institute: AS-RCEC}
+      - {<<: *cmip6, dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {<<: *cmip6, dataset: CAS-ESM2-0, institute: CAS}
+      - {<<: *cmip6, dataset: FGOALS-g3, institute: CAS}
+      - {<<: *cmip6, dataset: CAMS-CSM1-0, institute: CAMS}
+      - {<<: *cmip6, dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2-FV2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2-WACCM, institute: NCAR}
+      - {<<: *cmip6, dataset: BCC-ESM1, institute: BCC}
+      - {<<: *cmip6, dataset: BCC-CSM2-MR, institute: BCC}
+      - {<<: *cmip6, dataset: IITM-ESM, institute: CCCR-IITM}
+      - {<<: *cmip6, dataset: MIROC6, institute: MIROC}
+      - {<<: *cmip6, dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {<<: *cmip6, dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {<<: *cmip6, dataset: CanESM5, institute: CCCma}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: NESM3, institute: NUIST}
+      - {<<: *cmip6, dataset: SAM0-UNICON, institute: SNU}
+      - {<<: *cmip6, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
+      - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
+  
+      - {dataset: CERES-EBAF_Surface, project: obs4MIPs, level: L3B, tier: 1, start_year: 2001, end_year: 2013}
+    scripts:
+      grading:
+        <<: *grading_settings
+  
+  rsus:
+    description: surface_upwelling_shortwave_flux_in_air
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      rsus:
+        short_name: rsus
+        preprocessor: ppNOLEV1
+        reference_dataset: CERES-EBAF_Surface
+        mip: Amon
+        exp: historical
+        start_year: 1980
+        end_year: 1999
+    additional_datasets:
+      - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {<<: *cmip6, dataset: NorESM2-LM, institute: NCC}
+      - {<<: *cmip6, dataset: NorCPM1, institute: NCC}
+      - {<<: *cmip6, dataset: NorESM2-MM, institute: NCC}
+      - {<<: *cmip6, dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {<<: *cmip6, dataset: CMCC-ESM2, institute: CMCC}
+      - {<<: *cmip6, dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {<<: *cmip6, dataset: MRI-ESM2-0, institute: MRI}
+      - {<<: *cmip6, dataset: TaiESM1, institute: AS-RCEC}
+      - {<<: *cmip6, dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {<<: *cmip6, dataset: CAS-ESM2-0, institute: CAS}
+      - {<<: *cmip6, dataset: FGOALS-g3, institute: CAS}
+      - {<<: *cmip6, dataset: CAMS-CSM1-0, institute: CAMS}
+      - {<<: *cmip6, dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2-FV2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2-WACCM, institute: NCAR}
+      - {<<: *cmip6, dataset: BCC-ESM1, institute: BCC}
+      - {<<: *cmip6, dataset: BCC-CSM2-MR, institute: BCC}
+      - {<<: *cmip6, dataset: IITM-ESM, institute: CCCR-IITM}
+      - {<<: *cmip6, dataset: MIROC6, institute: MIROC}
+      - {<<: *cmip6, dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {<<: *cmip6, dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {<<: *cmip6, dataset: CanESM5, institute: CCCma}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: NESM3, institute: NUIST}
+      - {<<: *cmip6, dataset: SAM0-UNICON, institute: SNU}
+      - {<<: *cmip6, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
+      - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
+      - {dataset: CERES-EBAF_Surface, project: obs4MIPs, level: L3B, tier: 1, start_year: 2001, end_year: 2013}
+    scripts:
+      grading:
+        <<: *grading_settings
+  
+  rsds:
+    description: surface_downwelling_shortwave_flux_in_air
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      rsds:
+        short_name: rsds
+        preprocessor: ppNOLEV1
+        reference_dataset: CERES-EBAF_Surface
+        mip: Amon
+        exp: historical
+        start_year: 1980
+        end_year: 1999
+    additional_datasets:
+      - {<<: *cmip6, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {<<: *cmip6, dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {<<: *cmip6, dataset: NorESM2-LM, institute: NCC}
+      - {<<: *cmip6, dataset: NorCPM1, institute: NCC}
+      - {<<: *cmip6, dataset: NorESM2-MM, institute: NCC}
+      - {<<: *cmip6, dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {<<: *cmip6, dataset: CMCC-ESM2, institute: CMCC}
+      - {<<: *cmip6, dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {<<: *cmip6, dataset: MRI-ESM2-0, institute: MRI}
+      - {<<: *cmip6, dataset: TaiESM1, institute: AS-RCEC}
+      - {<<: *cmip6, dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {<<: *cmip6, dataset: CAS-ESM2-0, institute: CAS}
+      - {<<: *cmip6, dataset: FGOALS-g3, institute: CAS}
+      - {<<: *cmip6, dataset: CAMS-CSM1-0, institute: CAMS}
+      - {<<: *cmip6, dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2-FV2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2, institute: NCAR}
+      - {<<: *cmip6, dataset: CESM2-WACCM, institute: NCAR}
+      - {<<: *cmip6, dataset: BCC-ESM1, institute: BCC}
+      - {<<: *cmip6, dataset: BCC-CSM2-MR, institute: BCC}
+      - {<<: *cmip6, dataset: IITM-ESM, institute: CCCR-IITM}
+      - {<<: *cmip6, dataset: MIROC6, institute: MIROC}
+      - {<<: *cmip6, dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {<<: *cmip6, dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {<<: *cmip6, dataset: CanESM5, institute: CCCma}
+      - {<<: *cmip6, dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {<<: *cmip6, dataset: NESM3, institute: NUIST}
+      - {<<: *cmip6, dataset: SAM0-UNICON, institute: SNU}
+      - {<<: *cmip6, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
+      - {<<: *cmip6, dataset: ACCESS-ESM1-5, institute: CSIRO}
+      - {<<: *cmip6, dataset: CERES-EBAF_Surface, project: obs4MIPs, level: L3B, tier: 1, start_year: 2001, end_year: 2013}
+    scripts:
+      grading:
+        <<: *grading_settings
+  
+  collect:
+    description: Wrapper to collect and plot previously calculated metrics
+    scripts:
+      RMSD:
+        script: perfmetrics/collect.ncl
+        ancestors: ['*/grading*']
+        metric: RMSD
+        label_bounds: [-0.5, 0.5]
+        label_scale: 0.1
+        disp_values: false
+        cm_interval: [2, 241]
+        # Sort dataset in alphabetic order (excluding MMM)
+        sort: true
+        # Sort diagnostics in a specific order (name = 'diagnositic'-'region')
+        diag_order: ['sm-global', 'nbp-global', 'lai-global', 'gpp-global',
+                     'fgco2-global', 'et-global',
+                     'rsds-global', 'rsus-global', 'rlds-global', 'rlus-global']

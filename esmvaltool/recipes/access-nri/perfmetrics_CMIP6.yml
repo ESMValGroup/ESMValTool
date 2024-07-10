@@ -1,0 +1,1957 @@
+# ESMValTool
+# recipe_perfmetrics_CMIP6.yml
+---
+documentation:
+  title: Performance metrics for essential climate variables in CMIP6
+
+  description: |
+    Recipe for plotting the performance metrics for the CMIP6 datasets,
+    Adapted from the CMIP5 perfmetrics recipe
+
+  authors:
+    - beucher_romain
+
+  maintainer:
+    - beucher_romain
+
+  references:
+    - gleckler08jgr
+
+  projects:
+    - esmval
+
+preprocessors:
+  pp850:
+    extract_levels:
+      levels: 85000
+      scheme: linear
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  pp500:
+    extract_levels:
+      levels: 50000
+      scheme: linear
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  pp400:
+    extract_levels:
+      levels: 40000
+      scheme: linear
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  pp200:
+    extract_levels:
+      levels: 20000
+      scheme: linear
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  pp30:
+    extract_levels:
+      levels: 3000
+      scheme: linear
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  pp5:
+    extract_levels:
+      levels: 500
+      scheme: linear
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  ppNOLEV1:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset]
+
+  ppNOLEV2:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  ppNOLEV1thr10:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.10
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset]
+
+  ppNOLEV2thr10:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.10
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  ppNOLEV1x1:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  ppALL:
+    extract_levels:
+      levels: reference_dataset
+      scheme: linear
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+
+diagnostics:
+
+  ### The diagnostics are ordered by runtime, to optimize tasks execution #####
+
+  ### sm: SOIL MOISTURE #######################################################
+  sm:
+    description: Soil moisture
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      sm:
+        preprocessor: ppNOLEV1thr10
+        reference_dataset: ESACCI-SOILMOISTURE
+        mip: Lmon
+        derive: true
+        force_derivation: false
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2002
+        end_year: 2004
+    additional_datasets:
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+      # Some issue related to lat not being monotonic
+      #- {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      # Latitude is not monotonic
+      #- {dataset: CAS-ESM2-0, institute: CAS}
+      #- {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      #- {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      #- {dataset: E3SM-1-1, institute: E3SM-Project}
+      #- {dataset: E3SM-1-0, institute: E3SM-Project}
+      #- {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      #sdepth1 does not exist
+      #- {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      #- {dataset: CESM2-FV2, institute: NCAR}
+      #sdepth1 does not exist
+      #- {dataset: CESM2, institute: NCAR}
+      #sdepth1 does not exist
+      #- {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      #- {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      #- {dataset: IPSL-CM6A-LR, institute: IPSL}
+      #- {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: MIROC6, institute: MIROC}
+      #- {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      #- {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      #- {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      #- {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      #- {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: CanESM5, institute: CCCma}
+      #- {dataset: GISS-E2-2-H, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
+      - {dataset: ACCESS-ESM1-5, institute: CSIRO}
+      - {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat,
+         version: L3S-SSMV-COMBINED-v4.2, tier: 2}
+    scripts:
+      grading: &grading_settings
+        script: perfmetrics/main.ncl
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
+        plot_type: cycle_latlon
+        # Time average ('opt' argument of time_operations.ncl)
+        time_avg: monthlyclim
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
+        # Plot standard deviation ('all', 'none', 'ref_model' or dataset name)
+        plot_stddev: ref_model
+        # Plot legend in a separate file
+        legend_outside: true
+        # Plot style
+        styleset: CMIP5
+        # Calculate grading
+        calc_grading: true
+        # Metric ('RMSD', 'BIAS', taylor')
+        metric: [RMSD]
+        # Normalization ('mean', 'median', 'centered_median', 'none')
+        normalization: [centered_median]
+
+
+  ### ta: AIR TEMPERATURE (zonal) #############################################
+  taZONAL:
+    description: Air temperature zonal mean
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ta:
+        preprocessor: ppALL
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP-NCAR-R1
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: CanESM5-1, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: E3SM-2-0, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: GISS-E2-2-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-2-H, institute: NASA-GISS}
+      - {dataset: ICON-ESM-LR, institute: MPI-M}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MCM-UA-1-0, institute: UA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+      
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+         version: 1, tier: 2}
+    scripts:
+      zonal: &zonal_settings
+        script: perfmetrics/main.ncl
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
+        plot_type: zonal
+        # Time average ('opt' argument of time_operations.ncl)
+        time_avg: annualclim
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
+        # Draw difference plots
+        plot_diff: true
+        # Calculate t-test in difference plots
+        t_test: true
+        # Confidence level for the t-test
+        conf_level: 0.95
+        # Mask non-significant values with stippling
+        stippling: true
+        # Contour levels for absolute plot
+        abs_levs: [200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300]
+        # Contour levels for difference plot
+        diff_levs: [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
+
+
+  ### clt: TOTAL CLOUD COVER ##################################################
+  clt:
+    description: Total cloud cover
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: ppNOLEV2
+        reference_dataset: ESACCI-CLOUD
+        alternative_dataset: PATMOS-x
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+         version: AVHRR-AMPM-fv3.0, tier: 2}
+      - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, tier: 2}
+    scripts:
+      latlon: &latlon_settings
+        script: perfmetrics/main.ncl
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
+        plot_type: latlon
+        # Time average ('opt' argument of time_operations.ncl)
+        time_avg: annualclim
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
+        # Draw difference plots
+        plot_diff: true
+        # Calculate t-test in difference plots
+        t_test: true
+        # Confidence level for the t-test
+        conf_level: 0.95
+        # Add global average to the plot
+        show_global_avg: true
+        # Contour levels for absolute plot
+        abs_levs: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        # Contour levels for difference plot
+        diff_levs: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
+      grading:
+        <<: *grading_settings
+
+
+  ### tas: NEAR-SURFACE TEMPERATURE ###########################################
+  tas:
+    description: Near-surface air temperature
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: ppNOLEV2
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP-NCAR-R1
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: GISS-E2-2-H, institute: NASA-GISS}
+      - {dataset: ICON-ESM-LR, institute: MPI-M}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MCM-UA-1-0, institute: UA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+    
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+         version: 1, tier: 2}
+    scripts:
+      latlon:
+        <<: *latlon_settings
+        # Add global average to the plot
+        show_global_avg: false
+        # Contour levels for absolute plot
+        abs_levs: [240, 243, 246, 249, 252, 255, 258,
+                   261, 264, 267, 270, 273, 276, 279,
+                   282, 285, 288, 291, 294, 297, 300]
+        # Contour levels for difference plot
+        diff_levs: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+      grading:
+        <<: *grading_settings
+
+
+  ### ts: SEA-SURFACE (SKIN) TEMPERATURE ######################################
+  ts:
+    description: Sea-surface (skin) temperature
+    themes:
+      - phys
+    realms:
+      - atmos
+      - ocean
+    variables:
+      ts:
+        preprocessor: ppNOLEV1x1
+        reference_dataset: ESACCI-SST
+        alternative_dataset: HadISST
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: ICON-ESM-LR, institute: MPI-M}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MCM-UA-1-0, institute: UA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+
+
+      - {dataset: ESACCI-SST, project: OBS, type: sat,
+         version: 2.2, tier: 2}
+      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### pr: PRECIPITATION #######################################################
+  pr:
+    description: Precipitation
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      pr:
+        preprocessor: ppNOLEV1
+        reference_dataset: GPCP-V2.2
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: MCM-UA-1-0, institute: UA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+
+      - {dataset: GPCP-V2.2, project: obs4MIPs, level: L3, tier: 1}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### zg: GEOPOTENTIAL HEIGHT (500 hPa) #######################################
+  zg500:
+    description: Geopotential height 500 hPa global
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      zg:
+        preprocessor: pp500
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP-NCAR-R1
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: CanESM5-1, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: E3SM-2-0, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: GISS-E2-2-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-2-H, institute: NASA-GISS}
+      - {dataset: ICON-ESM-LR, institute: MPI-M}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MCM-UA-1-0, institute: UA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+         version: 1, tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### lwcre: LONGWAVE CLOUD FORCING ###########################################
+  lwcre:
+    description: Longwave cloud radiative effect
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      lwcre:
+        preprocessor: ppNOLEV1
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        derive: true
+        force_derivation: false
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2001
+        end_year: 2003
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1}
+    scripts:
+      latlon:
+        <<: *latlon_settings
+        # Add global average to the plot
+        show_global_avg: false
+        # Contour levels for absolute plot
+        abs_levs: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        # Contour levels for difference plot
+        diff_levs: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
+      grading:
+        <<: *grading_settings
+
+
+  ### swcre: SHORTWAVE CLOUD FORCING ##########################################
+  swcre:
+    description: Shortwave cloud radiative effect
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      swcre:
+        preprocessor: ppNOLEV1
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        derive: true
+        force_derivation: false
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2001
+        end_year: 2003
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1}
+    scripts:
+      latlon:
+        <<: *latlon_settings
+        # Add global average to the plot
+        show_global_avg: false
+        # Contour levels for absolute plot
+        abs_levs: [-100, -90, -80, -70, -60, -50, -40, -30, -20, -10, 0]
+        # Contour levels for difference plot
+        diff_levs: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
+      grading:
+        <<: *grading_settings
+
+
+  ### rlut: ALL-SKY LONGWAVE RADIATION ########################################
+  rlut:
+    description: All-sky longwave radiation
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      rlut:
+        preprocessor: ppNOLEV1
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2001
+        end_year: 2003
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MCM-UA-1-0, institute: UA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### hus: SPECIFIC HUMIDITY (400 hPa) ########################################
+  hus400:
+    description: Specific humidity at 400 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      hus:
+        preprocessor: pp400
+        reference_dataset: AIRS-2-1
+        alternative_dataset: ERA-Interim
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2003
+        end_year: 2004
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MCM-UA-1-0, institute: UA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+
+      - {dataset: AIRS-2-1, project: obs4MIPs, level: L3, tier: 1}
+      - {dataset: ERA-Interim, project: OBS6,
+         type: reanaly, version: 1, tier: 3}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### rsut: ALL-SKY SHORTWAVE RADIATION #######################################
+  rsut:
+    description: All-sky shortwave radiation
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      rsut:
+        preprocessor: ppNOLEV1
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2001
+        end_year: 2003
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### ua: EASTWARD WIND (200 hPa) #############################################
+  ua200:
+    description: Eastward wind at 200 hPa global
+    themes:
+      - atmDyn
+    realms:
+      - atmos
+    variables:
+      ua:
+        preprocessor: pp200
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP-NCAR-R1
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: ICON-ESM-LR, institute: MPI-M}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MCM-UA-1-0, institute: UA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+         version: 1, tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### va: NORTHWARD WIND (850 hPa) ############################################
+  va850:
+    description: Northward wind at 850 hPa global.
+    themes:
+      - atmDyn
+    realms:
+      - atmos
+    variables:
+      va:
+        preprocessor: pp850
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP-NCAR-R1
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: ICON-ESM-LR, institute: MPI-M}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MCM-UA-1-0, institute: UA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+         version: 1, tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### ua: EASTWARD WIND (850 hPa) #############################################
+  ua850:
+    description: Eastward wind at 850 hPa global.
+    themes:
+      - atmDyn
+    realms:
+      - atmos
+    variables:
+      ua:
+        preprocessor: pp850
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP-NCAR-R1
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: ICON-ESM-LR, institute: MPI-M}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MCM-UA-1-0, institute: UA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+         version: 1, tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### va: NORTHWARD WIND (200 hPa) ############################################
+  va200:
+    description: Northward wind at 200 hPa global.
+    themes:
+      - atmDyn
+    realms:
+      - atmos
+    variables:
+      va:
+        preprocessor: pp200
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP-NCAR-R1
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: ICON-ESM-LR, institute: MPI-M}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MCM-UA-1-0, institute: UA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+         version: 1, tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+
+  ### ta: AIR TEMPERATURE (5 hPa) #############################################
+  ta5:
+    description: Air temperature at 5 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ta:
+        preprocessor: pp5
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP-NCAR-R1
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: CanESM5-1, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: E3SM-2-0, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: GISS-E2-2-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-2-H, institute: NASA-GISS}
+      - {dataset: ICON-ESM-LR, institute: MPI-M}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MCM-UA-1-0, institute: UA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+         version: 1, tier: 2}
+    scripts:
+      cycle: &cycle_settings
+        script: perfmetrics/main.ncl
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
+        plot_type: cycle
+        # Time average ('opt' argument of time_operations.ncl)
+        time_avg: monthlyclim
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
+        # Plot standard deviation ('all', 'none', 'ref_model' or dataset name)
+        plot_stddev: ref_model
+        # Plot legend in a separate file
+        legend_outside: true
+        # Plot style
+        styleset: CMIP5
+
+
+  ### ta: AIR TEMPERATURE (850 hPa) ###########################################
+  ta850:
+    description: Air temperature at 850 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ta:
+        preprocessor: pp850
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP-NCAR-R1
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: CanESM5-1, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: E3SM-2-0, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: GISS-E2-2-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-2-H, institute: NASA-GISS}
+      - {dataset: ICON-ESM-LR, institute: MPI-M}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MCM-UA-1-0, institute: UA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+     
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+         version: 1, tier: 2}
+    scripts:
+      cycle:
+        <<: *cycle_settings
+      grading:
+        <<: *grading_settings
+        # Metric ('RMSD', 'BIAS', taylor')
+        metric: [RMSD, taylor]
+        # Normalization ('mean', 'median', 'centered_median', 'none')
+        normalization: [centered_median, none]
+
+
+  ### ta: AIR TEMPERATURE (30 hPa) ############################################
+  ta30:
+    description: Air temperature at 30 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ta:
+        preprocessor: pp30
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP-NCAR-R1
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: CanESM5-1, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: E3SM-2-0, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: GISS-E2-2-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-2-H, institute: NASA-GISS}
+      - {dataset: ICON-ESM-LR, institute: MPI-M}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MCM-UA-1-0, institute: UA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+      
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+         version: 1, tier: 2}
+    scripts:
+      cycle:
+        <<: *cycle_settings
+
+
+  ### ta: AIR TEMPERATURE (200 hPa) ###########################################
+  ta200:
+    description: Air temperature at 200 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ta:
+        preprocessor: pp200
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP-NCAR-R1
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2000
+        end_year: 2002
+    additional_datasets:
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: CanESM5-1, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: E3SM-2-0, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: GISS-E2-2-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-2-H, institute: NASA-GISS}
+      - {dataset: ICON-ESM-LR, institute: MPI-M}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: KIOST-ESM, institute: KIOST}
+      - {dataset: MCM-UA-1-0, institute: UA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+      
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
+      - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+         version: 1, tier: 2}
+    scripts:
+      cycle:
+        <<: *cycle_settings
+      grading:
+        <<: *grading_settings
+
+
+  ### od550aer: AEROSOL OPTICAL DEPTH AT 550 nm ###############################
+  od550aer:
+    description: Aerosol optical depth at 550 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
+    variables:
+      od550aer:
+        preprocessor: ppNOLEV2thr10
+        reference_dataset: ESACCI-AEROSOL
+        alternative_dataset: MODIS
+        mip: aero
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        start_year: 2003
+        end_year: 2004
+    additional_datasets:
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: E3SM-1-0, institute: E3SM-Project}
+      - {dataset: E3SM-1-1, institute: E3SM-Project}
+      - {dataset: E3SM-1-1-ECA, institute: E3SM-Project}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: INM-CM4-8, institute: INM}
+      - {dataset: INM-CM5-0, institute: INM}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: KACE-1-0-G, institute: NIMS-KMA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+
+      - {dataset: ESACCI-AEROSOL, project: OBS, type: sat,
+         version: SU-v4.21, tier: 2}
+      - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3}
+    scripts:
+      grading:
+        <<: *grading_settings
+
+  ### COLLECT METRICS #########################################################
+  collect:
+    description: Wrapper to collect and plot previously calculated metrics
+    scripts:
+      RMSD:
+        script: perfmetrics/collect.ncl
+        ancestors: ['*/grading*']
+        metric: RMSD
+        label_bounds: [-0.5, 0.5]
+        label_scale: 0.1
+        disp_values: false
+        cm_interval: [2, 241]
+        # Sort dataset in alphabetic order (excluding MMM)
+        sort: true
+        # Sort diagnostics in a specific order (name = 'diagnositic'-'region')
+        diag_order: ['ta850-global', 'ta200-global', 'ua850-global',
+                     'ua200-global', 'va850-global', 'va200-global',
+                     'zg500-global', 'hus400-global', 'tas-global',
+                     'ts-global', 'pr-global', 'clt-global', 'rlut-global',
+                     'rsut-global', 'lwcre-global', 'swcre-global',
+                     'od550aer-global','sm-global']
+      taylor:
+        script: perfmetrics/collect.ncl
+        ancestors: ['*/grading']
+        metric: taylor
