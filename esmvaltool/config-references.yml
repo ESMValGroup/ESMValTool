@@ -567,6 +567,18 @@ authors:
     institute: MetOffice, UK
     orcid:
   # Viewers (not active developers)
+  cathy_reader:
+    name: Reader, Cathy
+    institute: CCCma, Canada
+    orcid:
+  james_anstey:
+    name: Anstey, James
+    institute: CCCma, Canada
+    orcid:
+  kristi_webb:
+    name: Webb, Kristi
+    institute: CCCma, Canada
+    orcid: 0000-0002-8610-0672
   balaji_venkatramani:
     name: Balaji, Venkatramani
     institute: GFDL, USA
