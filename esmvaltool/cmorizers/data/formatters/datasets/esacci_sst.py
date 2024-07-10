@@ -43,7 +43,7 @@ from ...utilities import (
 logger = logging.getLogger(__name__)
 
 
-def extract_variable(var_info, raw_info, attrs, year):
+def extract_variable(raw_info, year):
     """Extract to all vars."""
     rawvar = raw_info['name']
     constraint = iris.NameConstraint(var_name=rawvar)
@@ -60,6 +60,36 @@ def extract_variable(var_info, raw_info, attrs, year):
             raise ValueError(f"No data available for variable {rawvar}"
                              f" and year {year}") from constraint_error
 
+    # Remove ancillary data
+    for ancillary_variable in cube.ancillary_variables():
+        cube.remove_ancillary_variable(ancillary_variable)
+    ## regridding from 0.05x0.05 to 0.5x0.5
+    #cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
+    return cube
+
+
+def get_monthly_cube(var, vals, raw_info, var_info, attrs,
+                     inpfile_pattern, year, month):
+    data_cubes = []
+    month_inpfile_pattern = inpfile_pattern.format(
+                            year=str(year)+"{:02}".format(month))
+    logger.info("Pattern: %s", month_inpfile_pattern)
+    inpfiles = sorted(glob.glob(month_inpfile_pattern))
+    if inpfiles == []:
+        logger.error("Could not find any files with this"
+                     " pattern %s", month_inpfile_pattern)
+        raise ValueError
+    logger.info("Found input files: %s", inpfiles)
+
+    for inpfile in inpfiles:
+        raw_info['file'] = inpfile
+        logger.info("CMORizing var %s from file type %s", var,
+                    raw_info['file'])
+        data_cubes.append(
+            extract_variable(raw_info, year))
+
+    cube = concatenate(data_cubes)
+
     # regridding from 0.05x0.05 to 0.5x0.5
     cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
     # Fix dtype
@@ -69,8 +99,12 @@ def extract_variable(var_info, raw_info, attrs, year):
     convert_timeunits(cube, year)
     fix_coords(cube, overwrite_time_bounds=False)
     set_global_atts(cube, attrs)
-    return cube
+    # Fix monthly time bounds
+    time = cube.coord('time')
+    time.bounds = get_time_bounds(time, vals['frequency'])
 
+    return cube
+    
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
@@ -84,30 +118,13 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         raw_info = {'name': vals['raw']}
         inpfile_pattern = os.path.join(in_dir, '{year}*' + vals['filename'])
         logger.info("CMORizing var %s from file type %s", var, inpfile_pattern)
+        mon_cubes = []
         for year in range(vals['start_year'], vals['end_year'] + 1):
             logger.info("Processing year %s", year)
-            mon_cubes = []
             for month in range(1, 13):
-                data_cubes = []
-                month_inpfile_pattern = inpfile_pattern.format(
-                                        year=str(year)+"{:02}".format(month))
-                logger.info("Pattern: %s", month_inpfile_pattern)
-                inpfiles = sorted(glob.glob(month_inpfile_pattern))
-                if inpfiles == []:
-                    logger.error("Could not find any files with this"
-                                 " pattern %s", month_inpfile_pattern)
-                    raise ValueError
-                logger.info("Found input files: %s", inpfiles)
-                for inpfile in inpfiles:
-                    raw_info['file'] = inpfile
-                    logger.info("CMORizing var %s from file type %s", var,
-                                raw_info['file'])
-                    data_cubes.append(
-                        extract_variable(var_info, raw_info, glob_attrs, year))
-                monthly_cube = concatenate(data_cubes)
-                # Fix monthly time bounds
-                time = monthly_cube.coord('time')
-                time.bounds = get_time_bounds(time, vals['frequency'])
+                monthly_cube = get_monthly_cube(var, vals, raw_info, var_info,
+                                                glob_attrs, inpfile_pattern,
+                                                year, month)
                 # Save daily data
                 save_variable(monthly_cube,
                               var,
@@ -134,3 +151,4 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                               out_dir,
                               glob_attrs,
                               unlimited_dimensions=['time'])
+                mon_cubes.clear()
