@@ -111,9 +111,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
     if not start_date:
-        start_date = vals['start_year']
+        start_year = vals['start_year']
     if not end_date:
-        end_date = vals['end_year']
+        end_year = vals['end_year']
 
     # run the cmorization
     for var, vals in cfg['variables'].items():
