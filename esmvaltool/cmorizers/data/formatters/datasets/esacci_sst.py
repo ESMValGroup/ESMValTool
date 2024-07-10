@@ -123,7 +123,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         inpfile_pattern = os.path.join(in_dir, '{year}*' + vals['filename'])
         logger.info("CMORizing var %s from file type %s", var, inpfile_pattern)
         mon_cubes = []
-        for year in range(start_date, end_date + 1):
+        for year in range(start_date.year, end_date.year + 1):
             logger.info("Processing year %s", year)
             for month in range(1, 13):
                 monthly_cube = get_monthly_cube(var, vals, raw_info, var_info,
