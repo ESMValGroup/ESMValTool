@@ -17,8 +17,8 @@ variables:
     raw: analysed_sst
     frequency: day
     filename: ESACCI-L4_GHRSST-SSTdepth-OSTIA-GLOB_CDR3.0-v02.0-fv01.0.nc
-    start_year: 2003
-    end_year: 2007
+    start_year: 1980
+    end_year: 2023
 
   tosStderr:
     mip: [Oday]
