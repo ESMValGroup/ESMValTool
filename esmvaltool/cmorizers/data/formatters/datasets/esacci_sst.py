@@ -27,6 +27,7 @@ import logging
 import os
 
 import iris
+from datetime import datetime
 from esmvalcore.cmor.fixes import get_time_bounds
 from esmvalcore.preprocessor import regrid
 from esmvaltool.cmorizers.data import utilities as utils
@@ -114,9 +115,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     # run the cmorization
     for var, vals in cfg['variables'].items():
         if not start_date:
-            start_date = vals['start_year']
+            start_date = datetime(vals['start_year'], 1, 1)
         if not end_date:
-            end_date = vals['end_year']
+            end_date = datetime(vals['end_year'], 12, 31)
         var_info = cmor_table.get_variable(vals['mip'][0], var)
         glob_attrs['mip'] = vals['mip'][0]
         raw_info = {'name': vals['raw']}
