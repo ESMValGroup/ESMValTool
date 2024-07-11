@@ -26,4 +26,4 @@ variables:
     frequency: day
     filename: ESACCI-L4_GHRSST-SSTdepth-OSTIA-GLOB_CDR3.0-v02.0-fv01.0.nc
     start_year: 1980
-    end_year: 2023
+    end_year: 2021
