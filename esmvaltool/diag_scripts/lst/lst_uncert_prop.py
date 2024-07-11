@@ -16,6 +16,8 @@ ESMValTool diagnostic for ESA CCI LST V3 data - Uncertainity Propagation
 
 import logging
 import iris
+import matplotlib
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
@@ -36,7 +38,11 @@ from esmvaltool.diag_scripts.shared import (
 colour_list = ['#4477aa', '#66ccee','#228833','#ccbb44',
                '#ee6677','#aa3377','#bbbbbb']
 
-plot_params ={'linewidth': 3}
+# This gives a colour list for the Land Cover type plots
+lc_colour_list  = sorted(list(mcolors.CSS4_COLORS.keys()))
+lc_colour_list.reverse()
+
+plot_params ={'linewidth': 4}
 
 line_labels = {
             'lst_unc_loc_atm_day': 'Locally Correlated (Atm)',
@@ -158,7 +164,10 @@ def _diagnostic(config):
     print('***')
     print(loaded_data['UKESM1-0-LL']['ts'])
     print(loaded_data['UKESM1-0-LL']['ts'].data)
+    print(loaded_data['UKESM1-0-LL']['ts'].coord('latitude'))
 
+    print(loaded_data['UKESM1-0-LL']['ts'].coord('longitude'))
+    
     # These define the total number of points in the data
     lat_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('latitude').points)
     lon_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('longitude').points) 
@@ -227,10 +236,75 @@ def _diagnostic(config):
     iris.util.demote_dim_coord_to_aux_coord(loaded_data['UKESM1-0-LL']['ts'], 'height')
     loaded_data['UKESM1-0-LL']['ts'].add_aux_coord(propagated_values['ts_day'].coord('time'),0)
     iris.util.promote_aux_coord_to_dim_coord(loaded_data['UKESM1-0-LL']['ts'], 'time')
-    
+   
+    plot_lc(propagated_values, loaded_data)
+ 
     test_plot(propagated_values)
     plot_with_cmip(propagated_values, loaded_data)
+   
+def plot_lc(propagated_values, loaded_data):
+    """Plot to show land cover and correlations
+    """
 
+    lc_types = np.unique(loaded_data['ESACCI-LST']['lcc_day'][0].data,
+                         return_counts=True)
+    
+    class_list = lc_types[0]
+    bound_list = np.append(class_list - 0.5, 256)
+    
+    colours = lc_colour_list[0:len(lc_types[0])]
+    
+    cmap = matplotlib.colors.ListedColormap(colours)
+    norm = matplotlib.colors.BoundaryNorm(bound_list, cmap.N)
+    
+    fig = plt.figure(figsize=(25,15))
+    ax1 = plt.subplot(111)
+    
+    iplt.pcolormesh(loaded_data['ESACCI-LST']['lcc_day'][0],
+                    cmap=cmap, norm=norm)
+    x_ticks = [loaded_data['ESACCI-LST']['lcc_day'][0].coord('longitude').points[0],
+               loaded_data['ESACCI-LST']['lcc_day'][0].coord('longitude').points[-1]]
+    y_ticks = [loaded_data['ESACCI-LST']['lcc_day'][0].coord('latitude').points[0],
+               loaded_data['ESACCI-LST']['lcc_day'][0].coord('latitude').points[-1]]
+    
+    plt.xticks(x_ticks, fontsize=18)
+    plt.yticks(y_ticks, fontsize=18)
+    plt.xlabel('Longitude', fontsize=24)
+    plt.ylabel('Latitude', fontsize=24)
+    
+    cbar = plt.colorbar()
+    
+    Z = [(bound_list[i]+bound_list[i+1])/2 for i in range(len(bound_list)-1)]
+    labels = [int(item) for item in class_list]
+    cbar.set_ticks(Z, labels=labels)
+    cbar.ax.tick_params(labelsize=18)
+    cbar.set_label('Land Cover Types', fontsize=20)
+
+    
+    #ax1.tick_params(labelsize=18)
+
+    
+    plt.tight_layout()
+    plt.savefig(f'LC_map.png')
+    
+    fig2 = plt.figure(figsize=(20,25))
+    
+    ax1 = plt.subplot(111)
+    plt.bar(range(len(class_list)), lc_types[1],
+            label = labels,
+            color=colours,
+            linewidth=2, edgecolor='black',
+            tick_label = labels)
+
+    ax1.tick_params(labelsize=18)
+    
+    plt.xlabel('Land Cover Type', fontsize=24)
+    plt.ylabel('Count', fontsize=24)
+
+    
+    plt.tight_layout()
+    plt.savefig(f'LC_bar.png')
+        
 def plot_with_cmip(propagated_values, loaded_data):
     """A plot for comparing OBS+uncertainity with CMIP value
     """
@@ -247,13 +321,13 @@ def plot_with_cmip(propagated_values, loaded_data):
         iplt.plot(propagated_values[f'ts_{time}'],
                   c=colour_list[0],
                   linewidth=plot_params['linewidth'],
-                label='LST (CCI)')
+                label=f'LST {time} (CCI)')
         iplt.fill_between(propagated_values[f'ts_{time}'].coord('time'),
                             propagated_values[f'ts_{time}'] + propagated_values[f'lst_total_unc_{time}'],
                             propagated_values[f'ts_{time}'] - propagated_values[f'lst_total_unc_{time}'],
                             color=colour_list[0],
                             alpha=0.5,
-                            label='Uncertainty (CCI)'
+                            label=f'Uncertainty {time} (CCI)'
         )
         
         iplt.plot(loaded_data['UKESM1-0-LL']['ts'],

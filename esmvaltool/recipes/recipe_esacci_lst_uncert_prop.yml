@@ -20,10 +20,10 @@ preprocessors:
 
   obs_preprocessor:
     extract_region:
-      start_longitude: 1
-      end_longitude: 1.5
-      start_latitude: 45
-      end_latitude: 45.5
+      start_longitude: 2.6
+      end_longitude: 3.0
+      start_latitude: 46.05
+      end_latitude: 47.45
 
   cmip_preprocessor:
     regrid:
@@ -31,10 +31,10 @@ preprocessors:
       scheme: linear
 
     extract_region:
-      start_longitude: 1
-      end_longitude: 3
+      start_longitude: 1.875
+      end_longitude: 3.75
       start_latitude: 45
-      end_latitude: 47
+      end_latitude: 47.5
 
     mask_landsea:
       mask_out: sea
