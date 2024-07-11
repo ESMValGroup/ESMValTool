@@ -36,18 +36,65 @@ logger = logging.getLogger(os.path.basename(__file__))
 warnings.filterwarnings('ignore', '.*Collapsing a non-contiguous coordinate*')
 
 
-def plot_seasonal_occurence(cfg: dict, wt_cubes: iris.Cube.cube,
-                            dataset_name: str, only_lwt=False):
-    full_dict = {}  #{wt_string: {month: {wt1: occurence, wt2: occurence, ....}}}
+def plot_seasonal_occurence(cfg: dict, wt_cubes: iris.cube.Cube,
+                            dataset_name: str):
+
+    month_list = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    output_path = cfg['work_dir']
+
+    relative_occurences = {}  
+    #{wt_string: {month: {wt1: rel_occurence, wt2: rel_occurence, ....}}}
     #first do absolute occurence, then relative occurence
     for cube in wt_cubes:
+        month_dict = {}
         for month in range(1,13):
-            month_constraint = iris.Constraint(time=iris.time.PartialDateTime(month=month))
+            month_constraint = iris.Constraint(
+                time=iris.time.PartialDateTime(month=month))
             array = cube.extract(month_constraint).data
             unique, counts = np.unique(array, return_counts=True)
-            count_dict = dict(zip(unique, counts))
-            
+            count_dict = dict(zip(unique, counts/sum(counts)))
+            month_dict[month] = count_dict
+        relative_occurences[cube.long_name] = month_dict
 
+    #colors = ['#653334', '#8b4746', '#b35958', '#da6c6b', '#f9bb7e',
+    #          '#fbea80', '#66b3cd', '#4a8799', '#335966']
+
+    x = month_list
+
+    for wt_string in relative_occurences.keys():
+        wt_numbers = len(relative_occurences.get(wt_string).get(1).keys())
+        wt_stack = np.zeros((wt_numbers, 12))
+        for month, month_value in relative_occurences.get(wt_string).items():
+            print(month_value)
+            for wt in month_value.keys():
+                print(month_value.get(wt))
+                wt_stack[np.int8(wt-1), month-1] = month_value.get(wt)
+
+
+        y = np.vstack([x for x in wt_stack])
+
+        # plot
+        fig, ax = plt.subplots(figsize=(10,10))
+
+        ax.set_title(f'{dataset_name}')
+
+        ax.stackplot(x, y)#, colors=colors)
+
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
+                  fancybox=True, shadow=True, ncol=9, labels=
+                  tuple(f'WT {i+1}' for i in range(0,wt_numbers)))
+
+        ax.set(xlim=(0, 11), xticks=np.arange(0, 12),
+            ylim=(0, 1), yticks=np.arange(0,1.1,0.1))
+        ax.set_xlabel('Month')
+        ax.set_ylabel('Cumulative Relative Occurence')
+
+        plt.savefig(
+            f'{output_path}/{dataset_name}_{wt_string}_rel_occurence.png')
+        plt.savefig(
+            f'{output_path}/{dataset_name}_{wt_string}_rel_occurence.pdf')
+        plt.close()
 
 
 
@@ -98,11 +145,11 @@ def get_ancestors_era5_eobs(dataset: str, preproc_variables_dict: dict):
         _type_: lists of ERA5/E-OBS ancestors
     """
     era5_ancestors = [
-        preproc_variables_dict.get(dataset).get('filename'),
+        preproc_variables_dict.get(dataset)[0].get('filename'),
         preproc_variables_dict.get(dataset)[1].get('filename')
     ]
     eobs_ancestors = [
-        preproc_variables_dict.get(dataset).get('filename'),
+        preproc_variables_dict.get(dataset)[0].get('filename'),
         preproc_variables_dict.get('E-OBS')[0].get('filename')
     ]
     return era5_ancestors, eobs_ancestors

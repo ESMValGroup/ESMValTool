@@ -62,14 +62,13 @@ def run_automatic_slwt(cfg: dict):
             var_dict = get_looping_dict(
                 dataset_vars
             )  # dataset_vars is list of variables for dataset dataset_name
-
             if plotting:
                 # plot means
                 for var_name, var_data in var_dict.items():
                     data_info = {'dataset': dataset_name,
                                  'var': var_name,
                                  'preproc_path': var_data[1]}
-                    plot_means(cfg, var_data[0], wt_cubes, data_info)
+                    #plot_means(cfg, var_data[0], wt_cubes, data_info)
                 plot_seasonal_occurence(cfg, wt_cubes, dataset_name)
         else:
             if dataset_name == 'E-OBS':
@@ -99,8 +98,10 @@ def run_automatic_slwt(cfg: dict):
                     data_info = {'dataset': dataset_name,
                                  'var': var_name,
                                  'preproc_path': var_data[1]}
-                    plot_means(cfg, var_data[0], wt_cubes, data_info,
-                               only_lwt=True)
+                    #plot_means(cfg, var_data[0], wt_cubes, data_info,
+                    #           only_lwt=True)
+                plot_seasonal_occurence(cfg, wt_cubes, dataset_name)
+                    
 
 
 def run_lwt(cfg: dict):
@@ -152,6 +153,7 @@ def run_lwt(cfg: dict):
                                  'preproc_path': var_data[1]}
                     plot_means(cfg, var_data[0], wt_cubes, data_info,
                                only_lwt=True)
+                plot_seasonal_occurence(cfg, wt_cubes, dataset_name)
         else:
             if dataset_name == 'E-OBS':
                 continue
@@ -179,6 +181,7 @@ def run_lwt(cfg: dict):
                                  'preproc_path': var_data[1]}
                     plot_means(cfg, var_data[0], wt_cubes, data_info,
                                only_lwt=True)
+                plot_seasonal_occurence(cfg, wt_cubes, dataset_name)
 
 
 def run_my_diagnostic(cfg: dict):
