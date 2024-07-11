@@ -36,6 +36,21 @@ logger = logging.getLogger(os.path.basename(__file__))
 warnings.filterwarnings('ignore', '.*Collapsing a non-contiguous coordinate*')
 
 
+def plot_seasonal_occurence(cfg: dict, wt_cubes: iris.Cube.cube,
+                            dataset_name: str, only_lwt=False):
+    full_dict = {}  #{wt_string: {month: {wt1: occurence, wt2: occurence, ....}}}
+    #first do absolute occurence, then relative occurence
+    for cube in wt_cubes:
+        for month in range(1,13):
+            month_constraint = iris.Constraint(time=iris.time.PartialDateTime(month=month))
+            array = cube.extract(month_constraint).data
+            unique, counts = np.unique(array, return_counts=True)
+            count_dict = dict(zip(unique, counts))
+            
+
+
+
+
 def get_cfg_vars(cfg: dict):
     preproc_variables_dict = group_metadata(
         cfg.get('input_data').values(), 'dataset')

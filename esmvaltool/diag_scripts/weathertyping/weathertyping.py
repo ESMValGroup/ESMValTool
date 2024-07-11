@@ -2,7 +2,8 @@ from wt_utils import (get_cfg_vars, load_wt_preprocessors,
                       wt_algorithm, get_ancestors_era5_eobs, calc_slwt_obs,
                       run_predefined_slwt, combine_wt_to_file, load_wt_files,
                       get_looping_dict, plot_means, get_model_output_filepath,
-                      calc_lwt_slwt_model, write_lwt_to_file, calc_lwt_model
+                      calc_lwt_slwt_model, write_lwt_to_file, calc_lwt_model,
+                      plot_seasonal_occurence
                       )
 
 import iris
@@ -69,6 +70,7 @@ def run_automatic_slwt(cfg: dict):
                                  'var': var_name,
                                  'preproc_path': var_data[1]}
                     plot_means(cfg, var_data[0], wt_cubes, data_info)
+                plot_seasonal_occurence(cfg, wt_cubes, dataset_name)
         else:
             if dataset_name == 'E-OBS':
                 continue

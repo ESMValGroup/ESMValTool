@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<prov:document xmlns:project="https://www.esmvaltool.org/project" xmlns:recipe="https://www.esmvaltool.org/recipe" xmlns:author="https://www.esmvaltool.org/author" xmlns:software="https://www.esmvaltool.org/software" xmlns:task="https://www.esmvaltool.org/task" xmlns:attribute="https://www.esmvaltool.org/attribute" xmlns:file="https://www.esmvaltool.org/file" xmlns:preprocessor="https://www.esmvaltool.org/preprocessor" xmlns:prov="http://www.w3.org/ns/prov#" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <prov:entity prov:id="file:/data/reloclim/normal/PREVAL/ESMValTool_output/recipe_weathertyping_CMIP5_20240711_164300/preproc/weathertyping/era5_pr_wt/native6_ERA5_reanaly_v1_day_pr_1958-2005.nc">
+    <attribute:alias>native6</attribute:alias>
+    <attribute:dataset>ERA5</attribute:dataset>
+    <attribute:diagnostic>weathertyping</attribute:diagnostic>
+    <attribute:end_year>2005</attribute:end_year>
+    <attribute:filename>/data/reloclim/normal/PREVAL/ESMValTool_output/recipe_weathertyping_CMIP5_20240711_164300/preproc/weathertyping/era5_pr_wt/native6_ERA5_reanaly_v1_day_pr_1958-2005.nc</attribute:filename>
+    <attribute:frequency>day</attribute:frequency>
+    <attribute:latestversion>v1</attribute:latestversion>
+    <attribute:long_name>Precipitation</attribute:long_name>
+    <attribute:mip>day</attribute:mip>
+    <attribute:modeling_realm>['atmos']</attribute:modeling_realm>
+    <attribute:original_short_name>pr</attribute:original_short_name>
+    <attribute:preprocessor>weathertype_preproc_pr</attribute:preprocessor>
+    <attribute:project>native6</attribute:project>
+    <attribute:recipe_dataset_index>0</attribute:recipe_dataset_index>
+    <attribute:short_name>pr</attribute:short_name>
+    <attribute:standard_name>precipitation_flux</attribute:standard_name>
+    <attribute:start_year>1958</attribute:start_year>
+    <attribute:tier>3</attribute:tier>
+    <attribute:timerange>1958/2005</attribute:timerange>
+    <attribute:type>reanaly</attribute:type>
+    <attribute:units>kg m-2 s-1</attribute:units>
+    <attribute:variable_group>era5_pr_wt</attribute:variable_group>
+    <attribute:version>v1</attribute:version>
+    <preprocessor:extract_region>{'start_longitude': 9.5, 'end_longitude': 17.25, 'start_latitude': 46.25, 'end_latitude': 49}</preprocessor:extract_region>
+    <preprocessor:extract_time>{'start_year': 1950, 'start_month': 1, 'start_day': 1, 'end_year': 2005, 'end_month': 12, 'end_day': 31}</preprocessor:extract_time>
+    <preprocessor:remove_supplementary_variables>{}</preprocessor:remove_supplementary_variables>
+    <preprocessor:save>{'compress': False, 'filename': PosixPath('/data/reloclim/normal/PREVAL/ESMValTool_output/recipe_weathertyping_CMIP5_20240711_164300/preproc/weathertyping/era5_pr_wt/native6_ERA5_reanaly_v1_day_pr_1958-2005.nc')}</preprocessor:save>
+  </prov:entity>
+  <prov:wasAttributedTo>
+    <prov:entity prov:ref="recipe:recipe_weathertyping_CMIP5.yml"/>
+    <prov:agent prov:ref="author:Jury, Martin"/>
+  </prov:wasAttributedTo>
+  <prov:entity prov:id="file:/data/reloclim/normal/ESMValTool_obs_PREVAL/Tier3/ERA5/v1/day/pr/ERA5_2p5_day_PR_19500101-20221231.nc">
+    <attribute:CDI>Climate Data Interface version 2.1.1 (https://mpimet.mpg.de/cdi)</attribute:CDI>
+    <attribute:CDO>Climate Data Operators version 2.1.1 (https://mpimet.mpg.de/cdo)</attribute:CDO>
+    <attribute:Conventions>CF-1.6</attribute:Conventions>
+    <attribute:frequency>day</attribute:frequency>
+    <attribute:history>Wed Nov 29 10:47:28 2023: cdo mulc,24 ERA5_2p5cdo_day_PR_19500101-20221231.nc tmp.nc
+Wed Nov 29 09:25:53 2023: cdo remapcon,ERA5_2p5_day_PSL_19580101-20221231.nc ERA5_0p25_day_PR_19500101-20221231.nc ERA5_2p5cdo_day_PR_19500101-20221231.nc
+Mon Oct 09 09:31:08 2023: cdo -b F32 -daymean -mergetime hourly_surface/pr_1950.nc hourly_surface/pr_1951.nc hourly_surface/pr_1952.nc hourly_surface/pr_1953.nc hourly_surface/pr_1954.nc hourly_surface/pr_1955.nc hourly_surface/pr_1956.nc hourly_surface/pr_1957.nc hourly_surface/pr_1958.nc hourly_surface/pr_1959.nc hourly_surface/pr_1960.nc hourly_surface/pr_1961.nc hourly_surface/pr_1962.nc hourly_surface/pr_1963.nc hourly_surface/pr_1964.nc hourly_surface/pr_1965.nc hourly_surface/pr_1966.nc hourly_surface/pr_1967.nc hourly_surface/pr_1968.nc hourly_surface/pr_1969.nc hourly_surface/pr_1970.nc hourly_surface/pr_1971.nc hourly_surface/pr_1972.nc hourly_surface/pr_1973.nc hourly_surface/pr_1974.nc hourly_surface/pr_1975.nc hourly_surface/pr_1976.nc hourly_surface/pr_1977.nc hourly_surface/pr_1978.nc hourly_surface/pr_1979.nc hourly_surface/pr_1980.nc hourly_surface/pr_1981.nc hourly_surface/pr_1982.nc hourly_surface/pr_1983.nc hourly_surface/pr_1984.nc hourly_surface/pr_1985.nc hourly_surface/pr_1986.nc hourly_surface/pr_1987.nc hourly_surface/pr_1988.nc hourly_surface/pr_1989.nc hourly_surface/pr_1990.nc hourly_surface/pr_1991.nc hourly_surface/pr_1992.nc hourly_surface/pr_1993.nc hourly_surface/pr_1994.nc hourly_surface/pr_1995.nc hourly_surface/pr_1996.nc hourly_surface/pr_1997.nc hourly_surface/pr_1998.nc hourly_surface/pr_1999.nc hourly_surface/pr_2000.nc hourly_surface/pr_2001.nc hourly_surface/pr_2002.nc hourly_surface/pr_2003.nc hourly_surface/pr_2004.nc hourly_surface/pr_2005.nc hourly_surface/pr_2006.nc hourly_surface/pr_2007.nc hourly_surface/pr_2008.nc hourly_surface/pr_2009.nc hourly_surface/pr_2010.nc hourly_surface/pr_2011.nc hourly_surface/pr_2012.nc hourly_surface/pr_2013.nc hourly_surface/pr_2014.nc hourly_surface/pr_2015.nc hourly_surface/pr_2016.nc hourly_surface/pr_2017.nc hourly_surface/pr_2018.nc hourly_surface/pr_2019.nc hourly_surface/pr_2020.nc hourly_surface/pr_2021.nc hourly_surface/pr_2022.nc /data/reloclim/normal/ESMValTool_RAWOBS/Tier3/ERA5/PREVAL/ERA5_0p25_day_PR_19500101-20221231.nc
+2023-10-03 04:01:14 GMT by grib_to_netcdf-2.25.1: /opt/ecmwf/mars-client/bin/grib_to_netcdf.bin -S param -o /cache/data5/adaptor.mars.internal-1696305350.0348094-26737-8-709187c8-5b1a-41d6-95b7-ad74a18fe30b.nc /cache/tmp/709187c8-5b1a-41d6-95b7-ad74a18fe30b-adaptor.mars.internal-1696304630.7169528-26737-10-tmp.grib</attribute:history>
+  </prov:entity>
+  <prov:entity prov:id="file:/data/reloclim/normal/ESMValTool_obs_PREVAL/Tier3/ERA5/v1/day/psl/ERA5_2p5_day_PSL_19580101-20221231.nc">
+    <attribute:CDI>Climate Data Interface version 1.9.10 (https://mpimet.mpg.de/cdi)</attribute:CDI>
+    <attribute:CDO>Climate Data Operators version 1.9.10 (https://mpimet.mpg.de/cdo)</attribute:CDO>
+    <attribute:Conventions>CF-1.6</attribute:Conventions>
+    <attribute:frequency>day</attribute:frequency>
+    <attribute:history>Mon Jun 05 10:00:40 2023: cdo -b F32 -daymean -mergetime hourly_surface/psl_1958.nc hourly_surface/psl_1959.nc hourly_surface/psl_1960.nc hourly_surface/psl_1961.nc hourly_surface/psl_1962.nc hourly_surface/psl_1963.nc hourly_surface/psl_1964.nc hourly_surface/psl_1965.nc hourly_surface/psl_1966.nc hourly_surface/psl_1967.nc hourly_surface/psl_1968.nc hourly_surface/psl_1969.nc hourly_surface/psl_1970.nc hourly_surface/psl_1971.nc hourly_surface/psl_1972.nc hourly_surface/psl_1973.nc hourly_surface/psl_1974.nc hourly_surface/psl_1975.nc hourly_surface/psl_1976.nc hourly_surface/psl_1977.nc hourly_surface/psl_1978.nc hourly_surface/psl_1979.nc hourly_surface/psl_1980.nc hourly_surface/psl_1981.nc hourly_surface/psl_1982.nc hourly_surface/psl_1983.nc hourly_surface/psl_1984.nc hourly_surface/psl_1985.nc hourly_surface/psl_1986.nc hourly_surface/psl_1987.nc hourly_surface/psl_1988.nc hourly_surface/psl_1989.nc hourly_surface/psl_1990.nc hourly_surface/psl_1991.nc hourly_surface/psl_1992.nc hourly_surface/psl_1993.nc hourly_surface/psl_1994.nc hourly_surface/psl_1995.nc hourly_surface/psl_1996.nc hourly_surface/psl_1997.nc hourly_surface/psl_1998.nc hourly_surface/psl_1999.nc hourly_surface/psl_2000.nc hourly_surface/psl_2001.nc hourly_surface/psl_2002.nc hourly_surface/psl_2003.nc hourly_surface/psl_2004.nc hourly_surface/psl_2005.nc hourly_surface/psl_2006.nc hourly_surface/psl_2007.nc hourly_surface/psl_2008.nc hourly_surface/psl_2009.nc hourly_surface/psl_2010.nc hourly_surface/psl_2011.nc hourly_surface/psl_2012.nc hourly_surface/psl_2013.nc hourly_surface/psl_2014.nc hourly_surface/psl_2015.nc hourly_surface/psl_2016.nc hourly_surface/psl_2017.nc hourly_surface/psl_2018.nc hourly_surface/psl_2019.nc hourly_surface/psl_2020.nc hourly_surface/psl_2021.nc hourly_surface/psl_2022.nc /data/reloclim/normal/ESMValTool_RAWOBS/Tier3/ERA5/flo2/ERA5_2p5_day_PSL_19580101-20221231.nc
+2023-05-15 09:25:45 GMT by grib_to_netcdf-2.25.1: /opt/ecmwf/mars-client/bin/grib_to_netcdf.bin -S param -o /cache/data6/adaptor.mars.internal-1684142717.2869563-15255-7-6cf45118-1614-4ec7-aa18-7c0d54bd69b6.nc /cache/tmp/6cf45118-1614-4ec7-aa18-7c0d54bd69b6-adaptor.mars.internal-1684142177.5537033-15255-13-tmp.grib</attribute:history>
+  </prov:entity>
+  <prov:wasAttributedTo>
+    <prov:entity prov:ref="file:ERA5_wt_prov"/>
+    <prov:agent prov:ref="author:Kroissenbrunner, Thomas"/>
+  </prov:wasAttributedTo>
+  <prov:entity prov:id="recipe:recipe_weathertyping_CMIP5.yml">
+    <attribute:description>A diagnostic to calculate Lamb weathertypes over a given region. Furthermore, 
+correlations between weathertypes and precipitation patterns over a given are can be calculated 
+and 'combined' or 'simplified' weathertypes can be derived. Additionally, mean fields, as well as
+anomalies and standard deviations can be plotted.
+</attribute:description>
+    <attribute:references>['maraun21jgr', 'jones93ijc']</attribute:references>
+  </prov:entity>
+  <prov:wasAttributedTo>
+    <prov:entity prov:ref="recipe:recipe_weathertyping_CMIP5.yml"/>
+    <prov:agent prov:ref="project:PREVAL ÖKS"/>
+  </prov:wasAttributedTo>
+  <prov:entity prov:id="file:ERA5_wt_prov">
+    <attribute:automatic_slwt>True</attribute:automatic_slwt>
+    <attribute:caption>Lamb Weathertypes</attribute:caption>
+    <attribute:correlation_threshold>0.9</attribute:correlation_threshold>
+    <attribute:domains>('regional',)</attribute:domains>
+    <attribute:long_names>['Lamb Weathertypes']</attribute:long_names>
+    <attribute:plotting>True</attribute:plotting>
+    <attribute:references>['maraun21jgr', 'jones93ijc']</attribute:references>
+    <attribute:rmse_threshold>0.002</attribute:rmse_threshold>
+    <attribute:script>weathertyping</attribute:script>
+    <attribute:script_file>../diag_scripts/weathertyping/weathertyping.py</attribute:script_file>
+  </prov:entity>
+  <prov:wasStartedBy>
+    <prov:activity prov:ref="task:weathertyping/era5_msl_wt"/>
+    <prov:trigger prov:ref="recipe:recipe_weathertyping_CMIP5.yml"/>
+    <prov:starter prov:ref="software:esmvaltool==2.10.0"/>
+  </prov:wasStartedBy>
+  <prov:wasAttributedTo>
+    <prov:entity prov:ref="file:ERA5_wt_prov"/>
+    <prov:agent prov:ref="author:Jury, Martin"/>
+  </prov:wasAttributedTo>
+  <prov:wasDerivedFrom>
+    <prov:generatedEntity prov:ref="file:ERA5_wt_prov"/>
+    <prov:usedEntity prov:ref="file:/data/reloclim/normal/PREVAL/ESMValTool_output/recipe_weathertyping_CMIP5_20240711_164300/preproc/weathertyping/era5_pr_wt/native6_ERA5_reanaly_v1_day_pr_1958-2005.nc"/>
+    <prov:activity prov:ref="task:weathertyping/weathertyping"/>
+  </prov:wasDerivedFrom>
+  <prov:activity prov:id="task:weathertyping/weathertyping"/>
+  <prov:wasDerivedFrom>
+    <prov:generatedEntity prov:ref="file:ERA5_wt_prov"/>
+    <prov:usedEntity prov:ref="file:/data/reloclim/normal/PREVAL/ESMValTool_output/recipe_weathertyping_CMIP5_20240711_164300/preproc/weathertyping/era5_msl_wt/native6_ERA5_reanaly_v1_day_psl_1958-2005.nc"/>
+    <prov:activity prov:ref="task:weathertyping/weathertyping"/>
+  </prov:wasDerivedFrom>
+  <prov:activity prov:id="task:weathertyping/era5_msl_wt"/>
+  <prov:agent prov:id="author:Jury, Martin">
+    <attribute:e-mail>martin.jury@uni-graz.at</attribute:e-mail>
+    <attribute:institute>WEGC, Austria</attribute:institute>
+    <attribute:orcid>https://orcid.org/0000-0003-0590-7843</attribute:orcid>
+  </prov:agent>
+  <prov:wasAttributedTo>
+    <prov:entity prov:ref="file:ERA5_wt_prov"/>
+    <prov:agent prov:ref="project:PREVAL ÖKS"/>
+  </prov:wasAttributedTo>
+  <prov:activity prov:id="software:esmvaltool==2.10.0"/>
+  <prov:wasDerivedFrom>
+    <prov:generatedEntity prov:ref="file:/data/reloclim/normal/PREVAL/ESMValTool_output/recipe_weathertyping_CMIP5_20240711_164300/preproc/weathertyping/era5_msl_wt/native6_ERA5_reanaly_v1_day_psl_1958-2005.nc"/>
+    <prov:usedEntity prov:ref="file:/data/reloclim/normal/ESMValTool_obs_PREVAL/Tier3/ERA5/v1/day/psl/ERA5_2p5_day_PSL_19580101-20221231.nc"/>
+    <prov:activity prov:ref="task:weathertyping/era5_msl_wt"/>
+  </prov:wasDerivedFrom>
+  <prov:wasStartedBy>
+    <prov:activity prov:ref="task:weathertyping/weathertyping"/>
+    <prov:trigger prov:ref="recipe:recipe_weathertyping_CMIP5.yml"/>
+    <prov:starter prov:ref="software:esmvaltool==2.10.0"/>
+  </prov:wasStartedBy>
+  <prov:wasStartedBy>
+    <prov:activity prov:ref="task:weathertyping/era5_pr_wt"/>
+    <prov:trigger prov:ref="recipe:recipe_weathertyping_CMIP5.yml"/>
+    <prov:starter prov:ref="software:esmvaltool==2.10.0"/>
+  </prov:wasStartedBy>
+  <prov:wasAttributedTo>
+    <prov:entity prov:ref="recipe:recipe_weathertyping_CMIP5.yml"/>
+    <prov:agent prov:ref="author:Kroissenbrunner, Thomas"/>
+  </prov:wasAttributedTo>
+  <prov:agent prov:id="author:Kroissenbrunner, Thomas">
+    <attribute:email>thomas.kroissenbrunner@uni-graz.at</attribute:email>
+    <attribute:github>thomaskroi1996</attribute:github>
+    <attribute:institute>WEGC, Austria</attribute:institute>
+  </prov:agent>
+  <prov:entity prov:id="file:/data/reloclim/normal/PREVAL/ESMValTool_output/recipe_weathertyping_CMIP5_20240711_164300/preproc/weathertyping/era5_msl_wt/native6_ERA5_reanaly_v1_day_psl_1958-2005.nc">
+    <attribute:alias>native6</attribute:alias>
+    <attribute:dataset>ERA5</attribute:dataset>
+    <attribute:diagnostic>weathertyping</attribute:diagnostic>
+    <attribute:end_year>2005</attribute:end_year>
+    <attribute:filename>/data/reloclim/normal/PREVAL/ESMValTool_output/recipe_weathertyping_CMIP5_20240711_164300/preproc/weathertyping/era5_msl_wt/native6_ERA5_reanaly_v1_day_psl_1958-2005.nc</attribute:filename>
+    <attribute:frequency>day</attribute:frequency>
+    <attribute:latestversion>v1</attribute:latestversion>
+    <attribute:long_name>Sea Level Pressure</attribute:long_name>
+    <attribute:mip>day</attribute:mip>
+    <attribute:modeling_realm>['atmos']</attribute:modeling_realm>
+    <attribute:original_short_name>psl</attribute:original_short_name>
+    <attribute:preprocessor>weathertype_preproc</attribute:preprocessor>
+    <attribute:project>native6</attribute:project>
+    <attribute:recipe_dataset_index>0</attribute:recipe_dataset_index>
+    <attribute:short_name>psl</attribute:short_name>
+    <attribute:standard_name>air_pressure_at_mean_sea_level</attribute:standard_name>
+    <attribute:start_year>1958</attribute:start_year>
+    <attribute:tier>3</attribute:tier>
+    <attribute:timerange>1958/2005</attribute:timerange>
+    <attribute:type>reanaly</attribute:type>
+    <attribute:units>Pa</attribute:units>
+    <attribute:variable_group>era5_msl_wt</attribute:variable_group>
+    <attribute:version>v1</attribute:version>
+    <preprocessor:extract_time>{'start_year': 1950, 'start_month': 1, 'start_day': 1, 'end_year': 2005, 'end_month': 12, 'end_day': 31}</preprocessor:extract_time>
+    <preprocessor:regrid>{'target_grid': {'start_longitude': -5, 'end_longitude': 25, 'step_longitude': 5, 'start_latitude': 35, 'end_latitude': 55, 'step_latitude': 5}, 'scheme': 'linear'}</preprocessor:regrid>
+    <preprocessor:remove_supplementary_variables>{}</preprocessor:remove_supplementary_variables>
+    <preprocessor:save>{'compress': False, 'filename': PosixPath('/data/reloclim/normal/PREVAL/ESMValTool_output/recipe_weathertyping_CMIP5_20240711_164300/preproc/weathertyping/era5_msl_wt/native6_ERA5_reanaly_v1_day_psl_1958-2005.nc')}</preprocessor:save>
+  </prov:entity>
+  <prov:wasDerivedFrom>
+    <prov:generatedEntity prov:ref="file:/data/reloclim/normal/PREVAL/ESMValTool_output/recipe_weathertyping_CMIP5_20240711_164300/preproc/weathertyping/era5_pr_wt/native6_ERA5_reanaly_v1_day_pr_1958-2005.nc"/>
+    <prov:usedEntity prov:ref="file:/data/reloclim/normal/ESMValTool_obs_PREVAL/Tier3/ERA5/v1/day/pr/ERA5_2p5_day_PR_19500101-20221231.nc"/>
+    <prov:activity prov:ref="task:weathertyping/era5_pr_wt"/>
+  </prov:wasDerivedFrom>
+  <prov:agent prov:id="project:PREVAL ÖKS"/>
+  <prov:activity prov:id="task:weathertyping/era5_pr_wt"/>
+</prov:document>
