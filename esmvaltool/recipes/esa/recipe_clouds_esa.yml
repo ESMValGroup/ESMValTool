@@ -1,0 +1,1945 @@
+# ESMValTool
+# recipe_clouds.yml
+---
+documentation:
+  description: |
+    Diagnostics of clouds and hydrological cycle reproducing selected figures
+    from Lauer and Hamilton (2013).
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - lauer13jclim
+
+  projects:
+    - esmval
+    - embrace
+
+
+preprocessors:
+  clim:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    mask_multimodel:
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [CERES-EBAF, CLARA-AVHRR, ERA5, ERA-Interim, ESACCI-CLOUD,
+                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x
+                reference_dataset, SSMI-MERIS]
+
+  clim500:
+    convert_units:
+      units: "Pa min-1"
+    extract_levels:
+      levels: 50000
+      scheme: linear
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [CERES-EBAF, CLARA-AVHRR, ERA5, ERA-Interim, ESACCI-CLOUD,
+                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x
+                reference_dataset, SSMI-MERIS]
+
+  clim500_ocean:
+    convert_units:
+      units: "Pa min-1"
+    mask_landsea:
+      mask_out: land
+      fx_variables:
+        sftlf:
+    extract_levels:
+      levels: 50000
+      scheme: linear
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [CERES-EBAF, CLARA-AVHRR, ERA5, ERA-Interim, ESACCI-CLOUD,
+                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x
+                reference_dataset, SSMI-MERIS]
+
+  clim_ocean:
+    mask_landsea:
+      mask_out: land
+      fx_variables:
+        sftlf:
+    mask_multimodel:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [CERES-EBAF, CLARA-AVHRR, ERA5, ERA-Interim, ESACCI-CLOUD,
+                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x
+                reference_dataset, SSMI-MERIS]
+
+  clim500_land:
+    convert_units:
+      units: "Pa min-1"
+    mask_landsea:
+      mask_out: sea
+      fx_variables:
+        sftlf:
+    extract_levels:
+      levels: 50000
+      scheme: linear
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [CERES-EBAF, CLARA-AVHRR, ERA5, ERA-Interim, ESACCI-CLOUD,
+                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x
+                reference_dataset, SSMI-MERIS]
+
+  clim_land:
+    mask_landsea:
+      mask_out: sea
+      fx_variables:
+        sftlf:
+    mask_multimodel:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [CERES-EBAF, CLARA-AVHRR, ERA5, ERA-Interim, ESACCI-CLOUD,
+                ESACCI-WATERVAPOUR, HadISST, ISCCP-FH, MAC-LWP, MODIS, PATMOS-x
+                reference_dataset, SSMI-MERIS]
+
+
+diagnostics:
+
+#  # ==========================================================================
+#  # Matrices: x = sst, y = omega500, z = clt, lwp, clivi, icefrac
+#  # ==========================================================================
+
+  clouds_matrices_cmip5_all:
+    description: cloud matrices - dynamical regimes vs. cloud parameter
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0,
+             start_year: 2003, end_year: 2012, tier: 2}
+      ts:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1',
+             start_year: 2003, end_year: 2012, tier: 3}
+      wap:
+        preprocessor: clim500
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1',
+             start_year: 2003, end_year: 2012, tier: 3}
+      clivi:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0,
+             start_year: 2003, end_year: 2012, tier: 2}
+      lwp:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0,
+             start_year: 2003, end_year: 2012, tier: 2}
+      swcre:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
+             start_year: 2003, end_year: 2012, tier: 1}
+      lwcre:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
+             start_year: 2003, end_year: 2012, tier: 1}
+      prw:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ESACCI-WATERVAPOUR
+        additional_datasets:
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat, 
+             version: L3S-COMBI-TCWV-05deg-fv3.1, start_year: 2003, end_year: 2012, tier: 3}
+    additional_datasets:
+      - {dataset: ACCESS1-0, ensemble: r1i1p1}
+      - {dataset: ACCESS1-3, ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+      - {dataset: BNU-ESM, ensemble: r1i1p1}
+      - {dataset: CanESM2, ensemble: r1i1p1}
+      - {dataset: CCSM4, ensemble: r1i1p1}
+      - {dataset: CESM1-BGC, ensemble: r1i1p1}
+      - {dataset: CESM1-CAM5, ensemble: r1i1p1}
+      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
+      - {dataset: CESM1-WACCM, ensemble: r1i1p1}
+#fixneeded      - {dataset: CMCC-CESM, ensemble: r1i1p1}
+#fixneeded      - {dataset: CMCC-CM, ensemble: r1i1p1}
+#fixneeded      - {dataset: CMCC-CMS, ensemble: r1i1p1}
+      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+      - {dataset: FGOALS-g2, ensemble: r1i1p1}
+      - {dataset: FIO-ESM, ensemble: r1i1p1}
+      - {dataset: GFDL-CM3, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+      - {dataset: GISS-E2-H-CC, ensemble: r1i1p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p1}
+      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
+      - {dataset: GISS-E2-R, ensemble: r1i1p1}
+#time=int64      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
+#time=int64      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+      - {dataset: inmcm4, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+#error      - {dataset: MIROC4h, ensemble: r1i1p1}
+      - {dataset: MIROC5, ensemble: r1i1p1}
+      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+      - {dataset: MIROC-ESM, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+      - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+      - {dataset: MRI-ESM1, ensemble: r1i1p1}
+      - {dataset: NorESM1-ME, ensemble: r1i1p1}
+      - {dataset: NorESM1-M, ensemble: r1i1p1}
+    scripts:
+      dynclt:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: clt
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0
+        zmax: 100
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_all
+      dynclivi:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: clivi
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip5_all
+      dynlwp:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: lwp
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip5_all
+      dynswcre:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: swcre
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: -152
+        zmax: -8
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_all
+      dynlwcre:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: lwcre
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 6
+        zmax: 114
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_all
+      dynprw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: prw
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip5_all
+      dynprwrad:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: swcre
+        var_y: lwcre
+        var_z: prw
+        xmin: -152
+        xmax: -8
+        ymin: 6
+        ymax: 114
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip5_all
+      dynicefrac:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: columnicefrac
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0
+        zmax: 100
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_all
+      dyntcwp:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: totalcwp
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip5_all
+      dyncldradsw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: totalcwp
+        var_y: clt
+        var_z: swcre
+        xmin: 0.0
+        xmax: 0.5
+        ymin: 0
+        ymax: 100
+        zmin: -152
+        zmax: -8
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_all
+      dyncldradlw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: totalcwp
+        var_y: clt
+        var_z: lwcre
+        xmin: 0.0
+        xmax: 0.5
+        ymin: 0
+        ymax: 100
+        zmin: 6
+        zmax: 114
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_all
+      dyntcwp2:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: clt
+        var_y: totalcwp
+        var_z: prw
+        xmin: 0
+        xmax: 100
+        ymin: 0.0
+        ymax: 0.2
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip5_all
+
+# ############################################################################
+
+  clouds_matrices_cmip5_ocean:
+    description: cloud matrices - dynamical regimes vs. cloud parameter
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: clim_ocean
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0,
+             start_year: 2003, end_year: 2012, tier: 2}
+      ts:
+        preprocessor: clim_ocean
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1',
+             start_year: 2003, end_year: 2012, tier: 3}
+      wap:
+        preprocessor: clim500_ocean
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1',
+             start_year: 2003, end_year: 2012, tier: 3}
+      clivi:
+        preprocessor: clim_ocean
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0,
+             start_year: 2003, end_year: 2012, tier: 2}
+      lwp:
+        preprocessor: clim_ocean
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0,
+             start_year: 2003, end_year: 2012, tier: 2}
+      swcre:
+        preprocessor: clim_ocean
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
+             start_year: 2003, end_year: 2012, tier: 1}
+      lwcre:
+        preprocessor: clim_ocean
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
+             start_year: 2003, end_year: 2012, tier: 1}
+      prw:
+        preprocessor: clim_ocean
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ESACCI-WATERVAPOUR
+        additional_datasets:
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
+             version: L3S-COMBI-TCWV-05deg-fv3.1, start_year: 2003, end_year: 2012, tier: 3}
+    additional_datasets:
+#landmaskdimensionerror      - {dataset: ACCESS1-0, ensemble: r1i1p1}
+#landmaskdimensionerror      - {dataset: ACCESS1-3, ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+      - {dataset: BNU-ESM, ensemble: r1i1p1}
+      - {dataset: CanESM2, ensemble: r1i1p1}
+      - {dataset: CCSM4, ensemble: r1i1p1}
+      - {dataset: CESM1-BGC, ensemble: r1i1p1}
+      - {dataset: CESM1-CAM5, ensemble: r1i1p1}
+      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
+      - {dataset: CESM1-WACCM, ensemble: r1i1p1}
+#fixneeded      - {dataset: CMCC-CESM, ensemble: r1i1p1}
+#fixneeded      - {dataset: CMCC-CM, ensemble: r1i1p1}
+#fixneeded      - {dataset: CMCC-CMS, ensemble: r1i1p1}
+      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+      - {dataset: FGOALS-g2, ensemble: r1i1p1}
+      - {dataset: FIO-ESM, ensemble: r1i1p1}
+      - {dataset: GFDL-CM3, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+      - {dataset: GISS-E2-H-CC, ensemble: r1i1p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p1}
+      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
+      - {dataset: GISS-E2-R, ensemble: r1i1p1}
+#time=int64      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
+#time=int64      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+      - {dataset: inmcm4, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+#error      - {dataset: MIROC4h, ensemble: r1i1p1}
+      - {dataset: MIROC5, ensemble: r1i1p1}
+      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+      - {dataset: MIROC-ESM, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+      - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+      - {dataset: MRI-ESM1, ensemble: r1i1p1}
+      - {dataset: NorESM1-ME, ensemble: r1i1p1}
+      - {dataset: NorESM1-M, ensemble: r1i1p1}
+    scripts:
+      dynclt:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: clt
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0
+        zmax: 100
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_ocean
+      dynclivi:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: clivi
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip5_ocean
+      dynlwp:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: lwp
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip5_ocean
+      dynswcre:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: swcre
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: -152
+        zmax: -8
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_ocean
+      dynlwcre:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: lwcre
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 6
+        zmax: 114
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_ocean
+      dynprw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: prw
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip5_ocean
+      dynprwrad:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: swcre
+        var_y: lwcre
+        var_z: prw
+        xmin: -152
+        xmax: -8
+        ymin: 6
+        ymax: 114
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip5_ocean
+      dynicefrac:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: columnicefrac
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0
+        zmax: 100
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_ocean
+      dyntcwp:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: totalcwp
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip5_ocean
+      dyncldradsw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: totalcwp
+        var_y: clt
+        var_z: swcre
+        xmin: 0.0
+        xmax: 0.5
+        ymin: 0
+        ymax: 100
+        zmin: -152
+        zmax: -8
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_ocean
+      dyncldradlw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: totalcwp
+        var_y: clt
+        var_z: lwcre
+        xmin: 0.0
+        xmax: 0.5
+        ymin: 0
+        ymax: 100
+        zmin: 6
+        zmax: 114
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_ocean
+      dyntcwp2:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: clt
+        var_y: totalcwp
+        var_z: prw
+        xmin: 0
+        xmax: 100
+        ymin: 0.0
+        ymax: 0.2
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip5_ocean
+
+# ############################################################################
+
+  clouds_matrices_cmip5_land:
+    description: cloud matrices - dynamical regimes vs. cloud parameter
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: clim_land
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0,
+             start_year: 2003, end_year: 2012, tier: 2}
+      ts:
+        preprocessor: clim_land
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1',
+             start_year: 2003, end_year: 2012, tier: 3}
+      wap:
+        preprocessor: clim500_land
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1',
+             start_year: 2003, end_year: 2012, tier: 3}
+      clivi:
+        preprocessor: clim_land
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0,
+             start_year: 2003, end_year: 2012, tier: 2}
+      lwp:
+        preprocessor: clim_land
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0,
+             start_year: 2003, end_year: 2012, tier: 2}
+      swcre:
+        preprocessor: clim_land
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
+             start_year: 2003, end_year: 2012, tier: 1}
+      lwcre:
+        preprocessor: clim_land
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8,
+             start_year: 2003, end_year: 2012, tier: 1}
+      prw:
+        preprocessor: clim_land
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        start_year: 1996
+        end_year: 2005
+        reference_dataset: ESACCI-WATERVAPOUR
+        additional_datasets:
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
+             version: L3S-COMBI-TCWV-05deg-fv3.1, start_year: 2003, end_year: 2012, tier: 3}
+    additional_datasets:
+#landmaskdimensionerror      - {dataset: ACCESS1-0, ensemble: r1i1p1}
+#landmaskdimensionerror      - {dataset: ACCESS1-3, ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+      - {dataset: BNU-ESM, ensemble: r1i1p1}
+      - {dataset: CanESM2, ensemble: r1i1p1}
+      - {dataset: CCSM4, ensemble: r1i1p1}
+      - {dataset: CESM1-BGC, ensemble: r1i1p1}
+      - {dataset: CESM1-CAM5, ensemble: r1i1p1}
+      - {dataset: CESM1-FASTCHEM, ensemble: r1i1p1}
+      - {dataset: CESM1-WACCM, ensemble: r1i1p1}
+#fixneeded      - {dataset: CMCC-CESM, ensemble: r1i1p1}
+#fixneeded      - {dataset: CMCC-CM, ensemble: r1i1p1}
+#fixneeded      - {dataset: CMCC-CMS, ensemble: r1i1p1}
+      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+      - {dataset: FGOALS-g2, ensemble: r1i1p1}
+      - {dataset: FIO-ESM, ensemble: r1i1p1}
+      - {dataset: GFDL-CM3, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+      - {dataset: GISS-E2-H-CC, ensemble: r1i1p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p1}
+      - {dataset: GISS-E2-R-CC, ensemble: r1i1p1}
+      - {dataset: GISS-E2-R, ensemble: r1i1p1}
+#time=int64      - {dataset: HadGEM2-CC, ensemble: r1i1p1}
+#time=int64      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+      - {dataset: inmcm4, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+#error      - {dataset: MIROC4h, ensemble: r1i1p1}
+      - {dataset: MIROC5, ensemble: r1i1p1}
+      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+      - {dataset: MIROC-ESM, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+      - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+      - {dataset: MRI-ESM1, ensemble: r1i1p1}
+      - {dataset: NorESM1-ME, ensemble: r1i1p1}
+      - {dataset: NorESM1-M, ensemble: r1i1p1}
+    scripts:
+      dynclt:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: clt
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0
+        zmax: 100
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_land
+      dynclivi:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: clivi
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip5_land
+      dynlwp:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: lwp
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip5_land
+      dynswcre:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: swcre
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: -152
+        zmax: -8
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_land
+      dynlwcre:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: lwcre
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 6
+        zmax: 114
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_land
+      dynprw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: prw
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip5_land
+      dynprwrad:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: swcre
+        var_y: lwcre
+        var_z: prw
+        xmin: -152
+        xmax: -8
+        ymin: 6
+        ymax: 114
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip5_land
+      dynicefrac:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: columnicefrac
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0
+        zmax: 100
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_land
+      dyntcwp:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: totalcwp
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip5_land
+      dyncldradsw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: totalcwp
+        var_y: clt
+        var_z: swcre
+        xmin: 0.0
+        xmax: 0.5
+        ymin: 0
+        ymax: 100
+        zmin: -152
+        zmax: -8
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_land
+      dyncldradlw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: totalcwp
+        var_y: clt
+        var_z: lwcre
+        xmin: 0.0
+        xmax: 0.5
+        ymin: 0
+        ymax: 100
+        zmin: 6
+        zmax: 114
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip5_land
+      dyntcwp2:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: clt
+        var_y: totalcwp
+        var_z: prw
+        xmin: 0
+        xmax: 100
+        ymin: 0.0
+        ymax: 0.2
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip5_land
+
+# ############################################################################
+
+  clouds_matrices_cmip6_all:
+    description: cloud matrices - dynamical regimes vs. cloud parameter
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+      ts:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+      wap:
+        preprocessor: clim500
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+      clivi:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+      lwp:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+      swcre:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
+      lwcre:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
+      prw:
+        preprocessor: clim
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ESACCI-WATERVAPOUR
+        additional_datasets:
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
+             version: L3S-COMBI-TCWV-05deg-fv3.1, tier: 3}
+    additional_datasets:
+      - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+#time_coord_problem_rlut      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+#no_prw      - {dataset: FGOALS-f3-L, ensemble: r2i1p1f1, grid: gr}
+      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
+      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+      - {dataset: IPSL-CM6A-LR, ensemble: r3i1p1f1, grid: gr}
+      - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr}
+      - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+      - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+    scripts:
+      dynclt:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: clt
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0
+        zmax: 100
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_all
+      dynclivi:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: clivi
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip6_all
+      dynlwp:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: lwp
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip6_all
+      dynswcre:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: swcre
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: -152
+        zmax: -8
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_all
+      dynlwcre:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: lwcre
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 6
+        zmax: 114
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_all
+      dynprw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: prw
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip6_all
+      dynprwrad:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: swcre
+        var_y: lwcre
+        var_z: prw
+        xmin: -152
+        xmax: -8
+        ymin: 6
+        ymax: 114
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip6_all
+      dynicefrac:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: columnicefrac
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 5
+        zmax: 95
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_all
+      dyntcwp:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: totalcwp
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip6_all
+      dyncldradsw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: totalcwp
+        var_y: clt
+        var_z: swcre
+        xmin: 0.0
+        xmax: 0.5
+        ymin: 0
+        ymax: 100
+        zmin: -152
+        zmax: -8
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_all
+      dyncldradlw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: totalcwp
+        var_y: clt
+        var_z: lwcre
+        xmin: 0.0
+        xmax: 0.5
+        ymin: 0
+        ymax: 100
+        zmin: 6
+        zmax: 114
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_all
+      dyntcwp2:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: clt
+        var_y: totalcwp
+        var_z: prw
+        xmin: 0
+        xmax: 100
+        ymin: 0.0
+        ymax: 0.2
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip6_all
+
+# ############################################################################
+
+  clouds_matrices_cmip6_ocean:
+    description: cloud matrices - dynamical regimes vs. cloud parameter
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: clim_ocean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+      ts:
+        preprocessor: clim_ocean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+      wap:
+        preprocessor: clim500_ocean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+      clivi:
+        preprocessor: clim_ocean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+      lwp:
+        preprocessor: clim_ocean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+      swcre:
+        preprocessor: clim_ocean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
+      lwcre:
+        preprocessor: clim_ocean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
+      prw:
+        preprocessor: clim_ocean
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ESACCI-WATERVAPOUR
+        additional_datasets:
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
+             version: L3S-COMBI-TCWV-05deg-fv3.1, tier: 3}
+    additional_datasets:
+      - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+#time_coord_problem_rlut      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+#no_prw      - {dataset: FGOALS-f3-L, ensemble: r2i1p1f1, grid: gr}
+      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
+      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+      - {dataset: IPSL-CM6A-LR, ensemble: r3i1p1f1, grid: gr}
+      - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr}
+      - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+      - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+    scripts:
+      dynclt:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: clt
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0
+        zmax: 100
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_ocean
+      dynclivi:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: clivi
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip6_ocean
+      dynlwp:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: lwp
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip6_ocean
+      dynswcre:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: swcre
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: -152
+        zmax: -8
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_ocean
+      dynlwcre:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: lwcre
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 6
+        zmax: 114
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_ocean
+      dynprw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: prw
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip6_ocean
+      dynprwrad:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: swcre
+        var_y: lwcre
+        var_z: prw
+        xmin: -152
+        xmax: -8
+        ymin: 6
+        ymax: 114
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip6_ocean
+      dynicefrac:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: columnicefrac
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 5
+        zmax: 95
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_ocean
+      dyntcwp:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: totalcwp
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip6_ocean
+      dyncldradsw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: totalcwp
+        var_y: clt
+        var_z: swcre
+        xmin: 0.0
+        xmax: 0.5
+        ymin: 0
+        ymax: 100
+        zmin: -152
+        zmax: -8
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_ocean
+      dyncldradlw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: totalcwp
+        var_y: clt
+        var_z: lwcre
+        xmin: 0.0
+        xmax: 0.5
+        ymin: 0
+        ymax: 100
+        zmin: 6
+        zmax: 114
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_ocean
+      dyntcwp2:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: clt
+        var_y: totalcwp
+        var_z: prw
+        xmin: 0
+        xmax: 100
+        ymin: 0.0
+        ymax: 0.2
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip6_ocean
+
+# ############################################################################
+
+  clouds_matrices_cmip6_land:
+    description: cloud matrices - dynamical regimes vs. cloud parameter
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clt:
+        preprocessor: clim_land
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+      ts:
+        preprocessor: clim_land
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+      wap:
+        preprocessor: clim500_land
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1', tier: 3}
+      clivi:
+        preprocessor: clim_land
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+      lwp:
+        preprocessor: clim_land
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        derive: true
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+      swcre:
+        preprocessor: clim_land
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
+      lwcre:
+        preprocessor: clim_land
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        derive: true
+        reference_dataset: CERES-EBAF
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-8, tier: 1}
+      prw:
+        preprocessor: clim_land
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        start_year: 2003
+        end_year: 2012
+        reference_dataset: ESACCI-WATERVAPOUR
+        additional_datasets:
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS, type: sat,
+             version: L3S-COMBI-TCWV-05deg-fv3.1, tier: 3}
+    additional_datasets:
+      - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+#time_coord_problem_rlut      - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr}
+      - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+      - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+#no_prw      - {dataset: FGOALS-f3-L, ensemble: r2i1p1f1, grid: gr}
+      - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1}
+      - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1}
+      - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+      - {dataset: IPSL-CM6A-LR, ensemble: r3i1p1f1, grid: gr}
+      - {dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr}
+      - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+      - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}
+      - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+    scripts:
+      dynclt:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: clt
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0
+        zmax: 100
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_land
+      dynclivi:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: clivi
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip6_land
+      dynlwp:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: lwp
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip6_land
+      dynswcre:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: swcre
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: -152
+        zmax: -8
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_land
+      dynlwcre:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: lwcre
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 6
+        zmax: 114
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_land
+      dynprw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: prw
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip6_land
+      dynprwrad:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: swcre
+        var_y: lwcre
+        var_z: prw
+        xmin: -152
+        xmax: -8
+        ymin: 6
+        ymax: 114
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip6_land
+      dynicefrac:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: columnicefrac
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 5
+        zmax: 95
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_land
+      dyntcwp:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: ts
+        var_y: wap
+        var_z: totalcwp
+        xmin: 275
+        xmax: 305
+        ymin: -10
+        ymax: 10
+        zmin: 0.0
+        zmax: 0.5
+        zdmin: -0.09
+        zdmax: 0.09
+        filename_add: cmip6_land
+      dyncldradsw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: totalcwp
+        var_y: clt
+        var_z: swcre
+        xmin: 0.0
+        xmax: 0.5
+        ymin: 0
+        ymax: 100
+        zmin: -152
+        zmax: -8
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_land
+      dyncldradlw:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: totalcwp
+        var_y: clt
+        var_z: lwcre
+        xmin: 0.0
+        xmax: 0.5
+        ymin: 0
+        ymax: 100
+        zmin: 6
+        zmax: 114
+        zdmin: -45
+        zdmax: 45
+        filename_add: cmip6_land
+      dyntcwp2:
+        script: clouds/clouds_dyn_matrix.ncl
+        var_x: clt
+        var_y: totalcwp
+        var_z: prw
+        xmin: 0
+        xmax: 100
+        ymin: 0.0
+        ymax: 0.2
+        zmin: 3
+        zmax: 57
+        zdmin: -9
+        zdmax: 9
+        filename_add: cmip6_land

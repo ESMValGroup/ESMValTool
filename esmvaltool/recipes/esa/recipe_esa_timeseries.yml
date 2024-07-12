@@ -1,0 +1,319 @@
+# ESMValTool
+---
+documentation:
+  title: Benchmarking of a single model.
+  description: >
+    Benchmarking: time series.
+  authors:
+    - lauer_axel
+    - schlund_manuel
+  maintainer:
+    - lauer_axel
+
+#datasets:
+#  - {project: CMIP6, dataset: IPSL-CM6A-LR, exp: historical, ensemble: r1i1p1f1, grid: gr}
+#  - {project: CMIP6, dataset: MIROC6, exp: historical, ensemble: r1i1p1f1, grid: gn, benchmark_dataset: true}
+#  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#  - {project: CMIP6, dataset: UKESM1-0-LL, exp: historical, ensemble: r1i1p1f2, grid: gn}
+#  - {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS}
+#  - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO}
+#  - {dataset: AWI-CM-1-1-MR, grid: gn}
+#  - {dataset: AWI-ESM-1-1-LR, grid: gn}
+#  - {dataset: BCC-CSM2-MR, grid: gn}
+#  - {dataset: BCC-ESM1, grid: gn}
+#  - {dataset: CAMS-CSM1-0, grid: gn}
+#  - {dataset: CanESM5, grid: gn}
+#  - {dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1}
+#  - {dataset: CESM2, grid: gn}
+#  - {dataset: CESM2-FV2, grid: gn, institute: NCAR}
+#  - {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
+#  - {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
+#  - {dataset: CIESM}
+#  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
+#  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2}
+#  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
+#  - {dataset: E3SM-1-0}
+#  - {dataset: E3SM-1-1, institute: E3SM-Project}
+#  - {dataset: EC-Earth3-Veg}
+#  - {dataset: FGOALS-f3-L}
+#  - {dataset: FGOALS-g3, grid: gn}
+#  - {dataset: FIO-ESM-2-0, grid: gn}
+#  - {dataset: GFDL-ESM4, grid: gr1}
+#  - {dataset: GISS-E2-1-G, grid: gn}
+#  - {dataset: GISS-E2-1-H, grid: gn}
+#  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+#  - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
+#  - {dataset: INM-CM4-8, grid: gr1}
+#  - {dataset: INM-CM5-0, grid: gr1}
+#  - {dataset: IPSL-CM6A-LR}
+#  - {dataset: KACE-1-0-G}
+#  - {dataset: MCM-UA-1-0, grid: gn}
+#  - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
+#  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+#  - {dataset: MPI-ESM-1-2-HAM, grid: gn}
+#  - {dataset: MPI-ESM1-2-HR, grid: gn}
+#  - {dataset: MPI-ESM1-2-LR, grid: gn}
+#  - {dataset: MRI-ESM2-0, grid: gn}
+#  - {dataset: NESM3, grid: gn}
+#  - {dataset: NorESM2-LM, grid: gn, institute: NCC}
+#  - {dataset: NorESM2-MM, grid: gn, institute: NCC}
+#  - {dataset: SAM0-UNICON, grid: gn}
+#  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+
+preprocessors:
+
+  pp_snw:
+#    regrid:
+#      target_grid: 2x2
+#      scheme: linear
+    area_statistics:
+      operator: sum
+#    anomalies:
+#      period: month
+#      reference:
+#        start_year: 1980
+#        start_month: 1
+#        start_day: 1
+#        end_year: 1999
+#        end_month: 12
+#        end_day: 31
+
+  pp_snc:
+    custom_order: true
+    mask_below_threshold:
+      threshold: 1.0
+    area_statistics:
+      operator: mean
+
+  pp_clt:
+    area_statistics:
+      operator: mean
+
+  pp_greenland:
+    extract_shape:
+      shapefile: ar6
+      method: contains
+      ids:
+        Acronym:
+          - GIC
+    mask_landsea:
+      mask_out: sea
+    area_statistics:
+      operator: mean
+  
+
+diagnostics:
+
+#  timeseries:
+#    description: Plot time series of global sum.
+#    variables:
+#      snw:
+#        timerange: '1979/2019'
+#        preprocessor: pp_snw
+#        mip: day
+#        exp: historical
+#        ensemble: r1i1p1f1
+#        grid: gr
+#        project: CMIP6
+#        additional_datasets:
+#          - {dataset: ESACCI-SNOW, project: OBS6, type: sat, version: v2.0, tier: 2}
+#    scripts:
+#      allplots:
+#        script: monitor/multi_datasets.py
+#        plot_folder: '{plot_dir}'
+#        group_variables_by: variable_group
+#        plots:
+#          timeseries:
+#            annual_mean_kwargs: False
+#            plot_kwargs:
+#              ESACCI-SNOW:
+#                color: blue
+#                label: '{dataset}'
+#                linestyle: '-'
+#                linewidth: 2
+#                zorder: 2
+#              default:
+#                color: lightgray
+#                label: null
+#                linestyle: '-'
+#                linewidth: 1
+#                zorder: 1
+
+#  timeseries2:
+#    description: Plot time series of global mean value.
+#    variables:
+#      snc:
+#        timerange: '1982/2018'
+#        preprocessor: pp_snc
+#        mip: day
+#        exp: historical
+#        ensemble: r1i1p1f1
+#        grid: gr
+#        project: CMIP6
+#        additional_datasets:
+#          - {dataset: ESACCI-SNOW, project: OBS6, type: sat, version: v2.0, tier: 2}
+#          - {dataset: '*', institute: '*', grid: '*', start_year: 1970, end_year: 2014}
+#    scripts:
+#      allplots:
+#        script: monitor/multi_datasets.py
+#        plot_folder: '{plot_dir}'
+#        group_variables_by: variable_group
+#        plots:
+#          timeseries:
+#            annual_mean_kwargs: False
+#            plot_kwargs:
+#              ESACCI-SNOW:
+#                color: blue
+#                label: '{dataset}'
+#                linestyle: '-'
+#                linewidth: 2
+#                zorder: 2
+#              default:
+#                color: lightgray
+#                label: null
+#                linestyle: '-'
+#                linewidth: 1
+#                zorder: 1
+
+#  timeseries3:
+#    description: Plot time series of global mean value.
+#    variables:
+#      clt_daily:
+#        timerange: '2000/2007'
+#        preprocessor: pp_clt
+#        mip: day
+#        exp: historical
+#        ensemble: r1i1p1f1
+#        grid: gr
+#        project: CMIP6
+#        short_name: clt
+#        additional_datasets:
+#          - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2}
+#      clt_monthly:
+#        timerange: '1982/2016'
+#        preprocessor: pp_clt
+#        mip: Amon
+#        exp: historical
+#        ensemble: r1i1p1f1
+#        grid: gr
+#        project: CMIP6
+#        short_name: clt
+#        additional_datasets:
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+#    scripts:
+#      allplots:
+#        script: monitor/multi_datasets.py
+#        plot_folder: '{plot_dir}'
+#        group_variables_by: variable_group
+#        plots:
+#          timeseries:
+#            annual_mean_kwargs: False
+#            plot_kwargs:
+#              ESACCI-CLOUD:
+#                color: blue
+#                label: '{dataset}'
+#                linestyle: '-'
+#                linewidth: 2
+#                zorder: 2
+#              default:
+#                color: lightgray
+#                label: null
+#                linestyle: '-'
+#                linewidth: 1
+#                zorder: 1
+
+#  timeseries4:
+#    description: Plot time series of global mean value.
+#    variables:
+#      prw_daily:
+#        timerange: '2003/2007'
+#        preprocessor: pp_clt
+#        mip: Eday
+#        exp: historical
+#        ensemble: r1i1p1f1
+#        grid: gr
+#        project: CMIP6
+#        short_name: prw
+#        additional_datasets:
+#          - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat, version: 3.1, tier: 2}
+#      prw_monthly:
+#        timerange: '2003/2017'
+#        preprocessor: pp_clt
+#        mip: Amon
+#        exp: historical
+#        ensemble: r1i1p1f1
+#        grid: gr
+#        project: CMIP6
+#        short_name: prw
+#        additional_datasets:
+#          - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat, version: 3.1, tier: 2}
+#    scripts:
+#      allplots:
+#        script: monitor/multi_datasets.py
+#        plot_folder: '{plot_dir}'
+#        group_variables_by: variable_group
+#        plots:
+#          timeseries:
+#            annual_mean_kwargs: False
+#            plot_kwargs:
+#              ESACCI-WATERVAPOUR:
+#                color: red
+#                label: '{dataset}'
+#                linestyle: '-'
+#                linewidth: 2
+#                zorder: 2
+#              default:
+#                color: lightgray
+#                label: null
+#                linestyle: '-'
+#                linewidth: 1
+#                zorder: 1
+
+  timeseries5:
+    description: Plot time series of Greenland mean value.
+    variables:
+      prw_daily:
+        timerange: '2003/2017'
+#        timerange: '20160901/20161231'
+        preprocessor: pp_greenland
+        mip: Eday
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        project: CMIP6
+        short_name: prw
+        additional_datasets:
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat, version: CDR2-L3-COMBI-05deg-fv3.1, tier: 3}
+      prw_monthly:
+        timerange: '2003/2017'
+#        timerange: '2016/2016'
+        preprocessor: pp_greenland
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        project: CMIP6
+        short_name: prw
+        additional_datasets:
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat, version: CDR2-L3-COMBI-05deg-fv3.1, tier: 3}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: variable_group
+        plots:
+          timeseries:
+            annual_mean_kwargs: False
+            plot_kwargs:
+              ESACCI-WATERVAPOUR:
+                color: red
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 1
+                zorder: 2
+              default:
+                color: lightgray
+                label: null
+                linestyle: '-'
+                linewidth: 1
+                zorder: 1

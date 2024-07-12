@@ -422,6 +422,8 @@ begin
       delete(ref_avg)
     end if
 
+    data1= where(data1 .le. 0.0, data1@_FillValue, data1)
+
     ; if requested, select geographical region
 
     if (isatt(diag_script_info, "region")) then
@@ -563,6 +565,9 @@ begin
     ; specified in namelist
 
     res@mpProjection       = projection
+    if (projection .eq. "PolarStereographic") then
+      res@gsnPolar= "NH"
+    end if
 
     ; set explicit contour levels
 
@@ -671,8 +676,8 @@ begin
           delete(refmasked)
           delete(datmasked)
         end if
-        gavg(imod, 0) = area_operations(data1, -90., 90., 0., 360., \
-                                        "average", True)
+        gavg(imod, 0) = tofloat(area_operations(data1, -90., 90., 0., 360., \
+                                        "average", True))
       end if
     end if
 
@@ -770,7 +775,7 @@ begin
     ; mandatory netcdf output
 
     data1@var = var0 + "_mean_" + names(imod)
-    nc_outfile_mean = ncdf_write(data1, nc_filename_mean)
+;;;    nc_outfile_mean = ncdf_write(data1, nc_filename_mean)
 
     ; =======================================================================
     ; Create difference plots (if requested)
