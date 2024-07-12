@@ -1,0 +1,251 @@
+# ESMValTool
+# recipe_flato13ipcc_figures_92_95.yml ## edited for CMIP6 data
+---
+documentation:
+  title: Reproducing figures for CMIP6 data
+
+  description: |
+    Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013)
+    9.2, 9.4, 9.8
+    Editing to use CMIP6 data available on Gadi
+
+  authors:
+    - bock_lisa
+    - gier_bettina
+    - lauer_axel
+    - schlund_manuel
+    - senftleben_daniel
+    - zimmermann_klaus
+
+  maintainer:
+    - chun_felicity
+
+  references:
+    - flato13ipcc
+
+  projects:
+    - embrace
+    - esmval
+    - crescendo
+
+datasets:
+- {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS}
+- {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO}
+- {dataset: AWI-CM-1-1-MR, grid: gn, institute: AWI}
+- {dataset: AWI-ESM-1-1-LR, grid: gn, institute: AWI}
+- {dataset: BCC-CSM2-MR, grid: gn, institute: BCC}
+- {dataset: BCC-ESM1, grid: gn, institute: BCC}
+- {dataset: CAMS-CSM1-0, grid: gn, institute: CAMS}
+- {dataset: CAS-ESM2-0, grid: gn, institute: CAS}
+- {dataset: CESM2, grid: gn, institute: NCAR}
+- {dataset: CESM2-FV2, grid: gn, institute: NCAR}
+- {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
+- {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
+- {dataset: CIESM, grid: gr, institute: THU}
+- {dataset: CMCC-CM2-HR4, grid: gn, institute: CMCC}
+- {dataset: CMCC-CM2-SR5, grid: gn, institute: CMCC}
+- {dataset: CMCC-ESM2, grid: gn, institute: CMCC}
+- {dataset: CanESM5, grid: gn, institute: CCCma}
+- {dataset: CanESM5-1, grid: gn, institute: CCCma}
+- {dataset: FGOALS-g3, grid: gn, institute: CAS}
+- {dataset: FIO-ESM-2-0, grid: gn, institute: FIO-QLNM}
+- {dataset: GISS-E2-1-G, grid: gn, institute: NASA-GISS}
+- {dataset: GISS-E2-1-G-CC, grid: gn, institute: NASA-GISS}
+- {dataset: GISS-E2-1-H, grid: gn, institute: NASA-GISS}
+- {dataset: IITM-ESM, grid: gn, institute: CCCR-IITM}
+- {dataset: MCM-UA-1-0, grid: gn, institute: UA}
+- {dataset: MIROC6, grid: gn, institute: MIROC}
+- {dataset: MPI-ESM-1-2-HAM, grid: gn, institute: HAMMOZ-Consortium}
+- {dataset: MPI-ESM1-2-HR, grid: gn, institute: MPI-M}
+- {dataset: MPI-ESM1-2-LR, grid: gn, institute: MPI-M}
+- {dataset: MRI-ESM2-0, grid: gn, institute: MRI}
+- {dataset: NESM3, grid: gn, institute: NUIST}
+- {dataset: NorCPM1, grid: gn, institute: NCC}
+- {dataset: NorESM2-LM, grid: gn, institute: NCC}
+- {dataset: NorESM2-MM, grid: gn, institute: NCC}
+- {dataset: SAM0-UNICON, grid: gn, institute: SNU}
+- {dataset: TaiESM1, grid: gn, institute: AS-RCEC}
+preprocessors:
+
+  clim:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+
+  clim_ref_9-3:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+    convert_units:
+      units: degC
+
+  clim_ref: ## ipcc fig 9.8
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+
+diagnostics:
+
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.2 a/b/c
+  # **********************************************************************
+  # Multi model mean, multi model mean bias, and mean absolute error
+  # (geographical distributions)
+  # **********************************************************************
+
+  fig09-2:
+    title: Near-surface temperature
+    description: |
+      Based on IPCC AR5 Ch. 9, Fig. 9.2 (near-surface temperature)
+      For period 1995-2014
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: clim
+        reference_dataset: ERA-Interim
+        activity: CMIP
+        ensemble: r1i1p1f1
+        exp: historical
+        mip: Amon
+        project: CMIP6
+        timerange: 1995/2014
+    additional_datasets:
+      - {dataset: GISS-E2-2-H, grid: gn, institute: NASA-GISS}
+      # - {dataset: ICON-ESM-LR, grid: gn, institute: MPI-M}  #error regridding - 1d x coordinate
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
+         start_year: 1995, end_year: 2014, tier: 3}
+    scripts:
+      Figure5: &fig-9-2_and_9-4_settings
+        script: clouds/clouds_bias.ncl
+        projection: Robinson
+        timemean: annualclim
+        plot_abs_diff: true
+        plot_rel_diff: false
+
+  # ***************************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.3
+  # ***************************************************************************
+  #  Multi model mean seasonality, mean absolute seasonality, mean bias
+  #  in seasonality, and mean bias in absolute seasonality
+  # ***************************************************************************
+
+  # fig09-3:
+  #   title: Fig. 9.3 (near-surface temperature)
+  #   description: Calculate seasonality of multi-model mean for tas
+  #   themes:
+  #     - phys
+  #   realms:
+  #     - atmos
+  #   variables:
+  #     tas:
+  #       preprocessor: clim_ref_9-3
+  #       reference_dataset: ERA-Interim
+  #       project: CMIP6
+  #       exp: historical
+  #       ensemble: r1i1p1f1
+  #       mip: Amon
+  #       start_year: 1995
+  #       end_year: 2014
+  #   additional_datasets:
+  #     - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+  #   scripts:
+  #     fig09-3:
+  #       script: ipcc_ar5/ch09_fig09_3.ncl
+
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.4
+  # **********************************************************************
+  # Multi model mean, multi model mean bias, mean absolute error, and
+  # mean relative error (geographical ditributions)
+  # **********************************************************************
+
+  fig09-4:
+    title: Precipitation
+    description: |
+      Based on IPCC AR5 Ch. 9, Fig. 9.4 (precipitation). 
+      For period 1995-2014
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      pr:
+        preprocessor: clim
+        reference_dataset: GPCP-V2.2
+        ensemble: r1i1p1f1
+        exp: historical
+        mip: Amon
+        project: CMIP6
+        timerange: 1994/2013
+    additional_datasets:
+      - {dataset: GPCP-V2.2, project: obs4MIPs, level: L3,
+         start_year: 1994, end_year: 2013, tier: 1}
+    scripts:
+      Figure6:
+        <<: *fig-9-2_and_9-4_settings
+        plot_abs_diff: true
+        plot_rel_diff: true
+  
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.8
+  # **********************************************************************
+  # Time series of anomalies of annual and global surface temperature
+  # **********************************************************************
+
+  fig09-8:
+    title: Fig. 9.8 (near-surface temperature)
+    description: IPCC AR5 Ch. 9, Fig. 9.8 (near-surface temperature)
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: clim_ref
+        reference_dataset: HadCRUT4
+        mip: Amon
+        project: CMIP6
+        activity: CMIP
+        exp: [historical, rcp45]
+        ensemble: r1i1p1f1
+        start_year: 1870
+        end_year: 2014
+    additional_datasets:
+      - {dataset: HadCRUT4, project: OBS, type: ground, version: 1,
+      start_year: 1870, end_year: 2014, tier: 2}
+    scripts:
+      Figure7:
+        script: ipcc_ar5/tsline.ncl
+        time_avg: "yearly"
+        ts_anomaly: "anom"
+        ref_start: 1961
+        ref_end: 1990
+        ref_mask: True
+        plot_units: "degC"
+        y_min: -1.2
+        y_max: 1.5
+        volcanoes: True
+        styleset: CMIP5       # Plot style, colours
