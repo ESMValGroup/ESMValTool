@@ -401,9 +401,9 @@
   "license": {
     "id": "Apache-2.0"
   },
-  "publication_date": "2023-12-20",
+  "publication_date": "2024-07-04",
   "title": "ESMValTool",
-  "version": "v2.10.0",
+  "version": "v2.11.0",
   "communities": [ 
       { 
           "identifier": "is-enes3" 
