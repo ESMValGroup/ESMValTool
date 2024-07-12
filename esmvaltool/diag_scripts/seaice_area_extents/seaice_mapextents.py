@@ -65,9 +65,9 @@ def map_diff(mod_si_ls, obs_si, months, cfg, prov):
             diff_ds, mod_regrid = model_regrid_diff(mod_si, obs_si, cdr, mon,
                                                     latmax)
             # save plot data
-            save_data(mod_label + calendar.month_abbr[mon] + '_mean', prov,
+            save_data(''.join([mod_label, calendar.month_abbr[mon], '_mean']), prov,
                       cfg, mod_regrid.to_iris())
-            save_data(mod_label + calendar.month_abbr[mon] + '_obs_diff', prov,
+            save_data(''.join([mod_label, calendar.month_abbr[mon], '_obs_diff']), prov,
                       cfg, diff_ds.to_iris())
 
             axes = plt.subplot(len(months), 3, i + j * 3, projection=proj)
@@ -82,7 +82,7 @@ def map_diff(mod_si_ls, obs_si, months, cfg, prov):
                                              ax=axes,
                                              colors=['black'])
 
-            plt.title(calendar.month_abbr[mon] + ' ' + mod_label)
+            plt.title(' '.join([calendar.month_abbr[mon], mod_label]))
 
             i += 1
         j += 1
@@ -121,7 +121,7 @@ def main(cfg):
 
     inputs_df = pd.DataFrame(data, columns=['filename', 'dataset'])
 
-    logger.info(inputs_df)
+    logger.info("input siconc data:", inputs_df)
     mod_si_dict = {}
     for filepath, data_name in inputs_df.itertuples(index=False):
         if data_name == 'NSIDC-G02202-sh':

@@ -35,6 +35,7 @@ def sea_ice_area_obs(xdataset):
                           ['x', 'y']).to_dataset(name='cdr_area')
 
     # Theres a couple of data gaps which should be nan
+    # if result.isin([{'time': '1988-01-01'},{'time': '1987-12'}]):
     result.loc[{'time': '1988-01-01'}] = np.nan
     result.loc[{'time': '1987-12'}] = np.nan
 
@@ -80,7 +81,7 @@ def plot_trend(model_min_max, obs_a, minmax, prov, cfg):
     for mod_label, model_min_max_dt in model_min_max.items():
         model_min_max_dt[minmax].plot(label=mod_label)
         # save data
-        save_data(mod_label + minmax, prov, cfg,
+        save_data(''.join([mod_label, minmax]), prov, cfg,
                   model_min_max_dt[minmax].to_iris())
 
     if minmax == 'max':
