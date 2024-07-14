@@ -249,15 +249,14 @@ setup(
             'esmvaltool.cmorizers.mip_convert.esmvt_mipconv_setup:main',
             'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
             'test_recipe = '
-            'esmvaltool.utils.testing.recipe_settings.install_expand_run:main',
-            'recipe_filler = '
-            'esmvaltool.utils.recipe_filler:run'
+            'esmvaltool.utils.testing.recipe_settings.install_expand_run:main'
         ],
         'esmvaltool_commands': [
             'colortables = '
             'esmvaltool.utils.color_tables.show_color_tables:ColorTables',
             'install = esmvaltool.install:Install',
-            'data = esmvaltool.cmorizers.data.cmorizer:DataCommand'
+            'data = esmvaltool.cmorizers.data.cmorizer:DataCommand',
+            'develop = esmvaltool.utils.develop:DevelopCommand'
         ]
     },
     cmdclass={
