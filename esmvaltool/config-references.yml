@@ -730,7 +730,8 @@ authors:
   steketee_anton:
     name: Steketee, Anton
     institute: ACCESS-NRI
-    orcid:
+    orcid: https://orcid.org/0009-0002-9081-4106
+    github: anton-seaice
   # Former viewers (not active viewers)
   adeniyi_kemisola:
     name: Adeniyi, Kemisola
