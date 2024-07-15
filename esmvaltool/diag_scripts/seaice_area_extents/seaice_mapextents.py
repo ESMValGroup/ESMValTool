@@ -55,11 +55,11 @@ def map_diff(mod_si_ls, obs_si, months, cfg, prov):
     figure = plt.figure(figsize=(9, len(months) * 4))
     j = 0  # to iterate through positions on figure
 
-    for mon in months:
+    for j, mon in enumerate(months):
         cdr = obs_si.siconc.sel(
             time=obs_si.siconc.time.dt.month.isin(mon)).mean('time')
         i = 1
-        for mod_label, mod_si in mod_si_ls.items():
+        for i, (mod_label, mod_si) in enumerate(mod_si_ls.items()):
 
             diff_ds, mod_regrid = model_regrid_diff(mod_si, obs_si, cdr, mon,
                                                     latmax)
