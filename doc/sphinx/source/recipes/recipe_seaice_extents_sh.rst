@@ -54,7 +54,7 @@ instructions.*
 References
 ----------
 
-* COSIMA(Consortium for Ocean-Sea Ice Modelling in Australia) recipe: https://cosima-recipes.readthedocs.io/en/latest/DocumentedExamples/SeaIce_Obs_Model_Compare.html
+https://cosima-recipes.readthedocs.io/en/latest/Examples/Sea_Ice_Area_Concentration_Volume_with_Obs.html
 
 Example plots
 -------------

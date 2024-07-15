@@ -1,7 +1,7 @@
 """Diagnostic script to plot minima and maxima trends.
 
 based on code from Anton Steketee's COSIMA cookbook notebook
-https://cosima-recipes.readthedocs.io/en/latest/DocumentedExamples
+https://cosima-recipes.readthedocs.io/en/latest/Examples/Sea_Ice_Area_Concentration_Volume_with_Obs.html
     /SeaIce_Obs_Model_Compare.html
 """
 

@@ -1,8 +1,7 @@
 """Diagnostic script to plot extent and differences.
 
-based on code from Anton Steketee's COSIMA cookbook notebook
-https://cosima-recipes.readthedocs.io/en/latest/DocumentedExamples
-    /SeaIce_Obs_Model_Compare.html
+based on code from Anton Steketee's COSIMA recipes notebook
+https://cosima-recipes.readthedocs.io/en/latest/Examples/Sea_Ice_Area_Concentration_Volume_with_Obs.html
 """
 
 import logging
