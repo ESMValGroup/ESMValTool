@@ -23,14 +23,18 @@ documentation:
     - access-nri
 
 datasets: 
-# these years are comparable to 1958 -2018 # re-adjust years in script (+1652)
+
   - {dataset: ACCESS-ESM1-5, activity: CMIP ,project: CMIP6,  grid: gn,
-  exp: piControl, ensemble: r1i1p1f1, start_year: 306, end_year: 366} 
+  exp: historical, ensemble: r1i1p1f1, start_year: 1981, end_year: 2010} 
+
+# the years 306-366 are comparable to 1958 -2018 
+# re-adjust years in trends script (+1652)
   - {dataset: ACCESS-OM2, activity: OMIP ,project: CMIP6,  grid: gn,
-  exp: omip2, ensemble: r1i1p1f1, start_year: 306, end_year: 366} 
+  exp: omip2, ensemble: r1i1p1f1, start_year: 329, end_year: 358} 
+
 # observations
   - {dataset: NSIDC-G02202-sh, project: OBS6, tier: 3,
-  type: reanaly, version: 4, start_year: 1979, end_year: 2018}
+  type: reanaly, version: 4, start_year: 1981, end_year: 2010} #- 2018
 
 
 diagnostics:

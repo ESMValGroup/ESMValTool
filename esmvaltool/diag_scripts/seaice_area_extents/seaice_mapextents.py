@@ -53,21 +53,20 @@ def map_diff(mod_si_ls, obs_si, months, cfg, prov):
 
     # fig set up, width for 2 models, check len mod_si_ls
     figure = plt.figure(figsize=(9, len(months) * 4))
-    j = 0  # to iterate through positions on figure
 
     for j, mon in enumerate(months):
         cdr = obs_si.siconc.sel(
             time=obs_si.siconc.time.dt.month.isin(mon)).mean('time')
-        i = 1
-        for i, (mod_label, mod_si) in enumerate(mod_si_ls.items()):
+
+        for i, (mod_label, mod_si) in enumerate(mod_si_ls.items(), start=1):
 
             diff_ds, mod_regrid = model_regrid_diff(mod_si, obs_si, cdr, mon,
                                                     latmax)
             # save plot data
-            save_data(''.join([mod_label, calendar.month_abbr[mon], '_mean']), prov,
-                      cfg, mod_regrid.to_iris())
-            save_data(''.join([mod_label, calendar.month_abbr[mon], '_obs_diff']), prov,
-                      cfg, diff_ds.to_iris())
+            save_data(''.join([mod_label, calendar.month_abbr[mon], '_mean']),
+                      prov, cfg, mod_regrid.to_iris())
+            save_data(''.join([mod_label, calendar.month_abbr[mon], '_obs_diff']),
+                      prov, cfg, diff_ds.to_iris())
 
             axes = plt.subplot(len(months), 3, i + j * 3, projection=proj)
 
@@ -82,9 +81,6 @@ def map_diff(mod_si_ls, obs_si, months, cfg, prov):
                                              colors=['black'])
 
             plt.title(' '.join([calendar.month_abbr[mon], mod_label]))
-
-            i += 1
-        j += 1
 
     line_cdr = mlines.Line2D([], [],
                              color=cs_cdr.collections[0].get_edgecolor(),

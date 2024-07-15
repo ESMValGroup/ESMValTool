@@ -2,7 +2,6 @@
 
 based on code from Anton Steketee's COSIMA cookbook notebook
 https://cosima-recipes.readthedocs.io/en/latest/Examples/Sea_Ice_Area_Concentration_Volume_with_Obs.html
-    /SeaIce_Obs_Model_Compare.html
 """
 
 import logging
@@ -35,9 +34,9 @@ def sea_ice_area_obs(xdataset):
                           ['x', 'y']).to_dataset(name='cdr_area')
 
     # Theres a couple of data gaps which should be nan
-    # if result.isin([{'time': '1988-01-01'},{'time': '1987-12'}]):
-    result.loc[{'time': '1988-01-01'}] = np.nan
-    result.loc[{'time': '1987-12'}] = np.nan
+    if result.isin([{'time': '1988-01-01'},{'time': '1987-12'}]):
+        result.loc[{'time': '1988-01-01'}] = np.nan
+        result.loc[{'time': '1987-12'}] = np.nan
 
     return result.sel(time=slice('1979', '2018'))
 
@@ -132,10 +131,11 @@ def main(cfg):
                 if dt_label == data_name:
                     mod_si['areacello'] = area_mod['areacello']
                     model_area_dt = sea_ice_area_model_sh(mod_si)
-                    model_min_max_dt = min_and_max(model_area_dt)
-                    # make years in ACCESS model compariable
-                    model_min_max_dt['year'] = model_min_max_dt.year + 1652
-                    min_max[data_name] = model_min_max_dt
+                    model_minmax_dt = min_and_max(model_area_dt)
+                    # make years in ACCESS OM2 model compariable (366 is 2018)
+                    if model_minmax_dt['year'].max().values <= 366:
+                        model_minmax_dt['year'] = model_minmax_dt.year + 1652
+                    min_max[data_name] = model_minmax_dt
                 else:
                     logger.warning("..%s missing a variable?", data_name)
 
@@ -157,7 +157,7 @@ def get_provenance_record(ancestor_files):
     record = {
         'ancestors': ancestor_files,
         'authors': ['chun_felicity', 'steketee_anton'],
-        'caption': 'added 1652 years to model years for comparability',
+        'caption': 'added 1652 years to OM2 model years for comparability',
         'domains': ['shpolar'],
         'plot_types': ['times'],
         'references': ['access_nri'],
