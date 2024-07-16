@@ -105,6 +105,10 @@ def get_monthly_cube(cfg, var, vals, raw_info, attrs,
 
     # set global attributes
     set_global_atts(cube, attrs)
+    # add comment to tosStderr
+    if var == 'tosStderr':
+        cube.attributes['comment'] = ('Note that the variable tsStderr is an '
+                                      'uncertainty not a standard error.')
 
     return cube
 
@@ -130,8 +134,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 monthly_cube = get_monthly_cube(cfg, var, vals, raw_info,
                                                 glob_attrs, inpfile_pattern,
                                                 year, month)
-                logger.info(glob_attrs)
-                #set_global_atts(monthly_cube, glob_attrs)
                 # Save daily data
                 save_variable(monthly_cube,
                               var,
