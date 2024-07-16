@@ -1,27 +1,6 @@
 """ESMValTool CMORizer for ESACCI-WATERVAPOUR data.
 
 Tier
-<<<<<<< HEAD
-    Tier 2: other freely-available dataset.
-
-Source
-    https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001
-
-Last access
-    20240125
-
-Download and processing instructions
-    To download the data you need to register on the EUMETSAT website.
-    After login you could choose at the bottom of the website
-    "https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001"
-    between the monthly and daily dataset. We chose for both datasets the 
-    0.5x0.5 resolution. Press "Order to carts" and then set the time
-    period of the dataset and choose " HTTPS/SFTP" as type of data 
-    transfer. Afterwards you receive an email with the 'sftp' infos. 
-"""
-
-import copy
-=======
    Tier 3: CDR2 requires registration at EUMETSAT CM SAF.
 
 Source
@@ -43,76 +22,42 @@ Modification history
 """
 
 import glob
->>>>>>> public/main
 import logging
 import os
 
-import cf_units
 import iris
-import numpy as np
-from iris import NameConstraint
-from calendar import monthrange
-from datetime import datetime
+from esmvalcore.cmor.fixes import get_time_bounds
+from esmvalcore.preprocessor import concatenate
 
-from esmvaltool.cmorizers.data import utilities as utils
+from ...utilities import (
+    convert_timeunits,
+    fix_coords,
+    fix_var_metadata,
+    save_variable,
+    set_global_atts,
+)
 
 logger = logging.getLogger(__name__)
 
 
-def _create_nan_cube(cube, year, month, day):
+def extract_variable(var_info, raw_info, attrs, year):
+    """Extract to all vars."""
+    rawvar = raw_info['name']
+    constraint = iris.NameConstraint(var_name=rawvar)
+    try:
+        cube = iris.load_cube(raw_info['file'], constraint)
+    except iris.exceptions.ConstraintMismatchError as constraint_error:
+        raise ValueError(f"No data available for variable {rawvar}"
+                         f"and year {year}") from constraint_error
 
-    nan_cube = cube.copy(
-        np.ma.masked_all(cube.shape, dtype=cube.dtype))
-
-    # Read dataset time unit and calendar from file
-    dataset_time_unit = str(nan_cube.coord('time').units)
-    dataset_time_calender = nan_cube.coord('time').units.calendar
-    # Convert datetime
-    newtime = datetime(year=year, month=month, day=day)
-    newtime = cf_units.date2num(newtime, dataset_time_unit,
-                                dataset_time_calender)
-    nan_cube.coord('time').points = float(newtime)
-
-    return nan_cube
-
-
-def save_data(var, cfg, cube, out_dir):
-    # fix and save data
-
-    # load cmor table
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], var['short_name'])
-
-    if 'raw_units' in var:
-        cube.units = var['raw_units']
-    cube.convert_units(cmor_info.units)
-
-    # Fix metadata and  update version information
-    attrs = copy.deepcopy(cfg['attributes'])
-    attrs['mip'] = var['mip']
-    utils.fix_var_metadata(cube, cmor_info)
-    utils.set_global_atts(cube, attrs)
-
-    # Save variable
-    utils.save_variable(cube,
-                        var['short_name'],
-                        out_dir,
-                        attrs,
-                        unlimited_dimensions=['time'])
-
-
-def load_cube(var, ifile):
-    # load data
-    raw_var = var['raw']
-    cube = iris.load_cube(ifile, NameConstraint(var_name=raw_var))
-
-    cube.attributes.clear()
-    cube.coord('time').long_name = 'time'
-
-    # Fix coordinates
-    cube = utils.fix_coords(cube)
-    # Fix dtype
-    utils.fix_dtype(cube)
-
+    # Fix cube
+    fix_var_metadata(cube, var_info)
+    convert_timeunits(cube, year)
+    fix_coords(cube, overwrite_time_bounds=False)
+    set_global_atts(cube, attrs)
+    # Remove dysfunctional ancillary data without sandard name
+    for ancillary_variable in cube.ancillary_variables():
+        cube.remove_ancillary_variable(ancillary_variable)
     return cube
 
 

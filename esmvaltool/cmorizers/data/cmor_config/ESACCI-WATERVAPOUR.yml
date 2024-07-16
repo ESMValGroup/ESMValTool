@@ -12,6 +12,7 @@ attributes:
   comment: "This CMORizer is for the CDR2 version of dataset (global coverage).
             Download is possible after registration and ordering of the data."
 
+# Variables to cmorize (here use only filename prefix)
 variables:
 # monthly frequency
   prw_mon:
