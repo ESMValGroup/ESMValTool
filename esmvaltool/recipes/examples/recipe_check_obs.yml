@@ -312,12 +312,13 @@ diagnostics:
     description: ESACCI-SST check
     variables:
       tos:
+        additional_datasets:
+          - {dataset: ESACCI-SST, project: OBS6, mip: Omon, tier: 3,
+             type: sat, version: 3.0-L4-analysis, timerange: '200301/200312'}
       tosStderr:
     additional_datasets:
-      - {dataset: ESACCI-SST, project: OBS6, mip: Omon, tier: 3,
-         type: sat, version: 3.0-L4-analysis, timerange: '200401/200412'}
       - {dataset: ESACCI-SST, project: OBS6, mip: Oday, tier: 3,
-         type: sat, version: 3.0-L4-analysis, timerange: '200401/200412'}
+         type: sat, version: 3.0-L4-analysis, timerange: '200301/200312'}
     scripts: null
 
 

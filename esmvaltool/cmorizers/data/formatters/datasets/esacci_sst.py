@@ -15,13 +15,9 @@ Download and processing instructions
    Go to https://services.ceda.ac.uk/cedasite/register/info/
    and create an account at CEDA if needed.
 
-Modification history
-   20240618-bock_lisa: update for v3.0
-   20201204-roberts_charles: written.
-   20201214-predoi_valeriu: approved.
-   20201214-lauer_axel: approved.
 """
 
+import copy
 import glob
 import logging
 import os
@@ -44,7 +40,7 @@ from ...utilities import (
 logger = logging.getLogger(__name__)
 
 
-def extract_variable(raw_info, year):
+def extract_variable(raw_info):
     """Extract to all vars."""
     rawvar = raw_info['name']
     constraint = iris.NameConstraint(var_name=rawvar)
@@ -58,8 +54,8 @@ def extract_variable(raw_info, year):
         try:
             cube = iris.load_cube(raw_info['file'], constraint)
         except iris.exceptions.ConstraintMismatchError as constraint_error:
-            raise ValueError(f"No data available for variable {rawvar}"
-                             f" and year {year}") from constraint_error
+            raise ValueError(f"No data available for variable {rawvar} in file"
+                             f" {raw_info['file']}") from constraint_error
 
     # Remove ancillary data
     for ancillary_variable in cube.ancillary_variables():
@@ -67,7 +63,7 @@ def extract_variable(raw_info, year):
     return cube
 
 
-def get_monthly_cube(var, vals, raw_info, var_info, attrs,
+def get_monthly_cube(cfg, var, vals, raw_info, attrs,
                      inpfile_pattern, year, month):
     data_cubes = []
     month_inpfile_pattern = inpfile_pattern.format(
@@ -84,31 +80,42 @@ def get_monthly_cube(var, vals, raw_info, var_info, attrs,
         raw_info['file'] = inpfile
         logger.info("CMORizing var %s from file type %s", var,
                     raw_info['file'])
-        data_cubes.append(
-            extract_variable(raw_info, year))
+        data_cubes.append(extract_variable(raw_info))
 
     cube = concatenate(data_cubes)
 
     # regridding from 0.05x0.05 to 0.5x0.5
     cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
+
+    #if var == 'tos': cube.attributes.pop('comment', None)
+
     # Fix dtype
     utils.fix_dtype(cube)
-    # Fix cube
-    fix_var_metadata(cube, var_info)
-    convert_timeunits(cube, year)
-    fix_coords(cube, overwrite_time_bounds=False)
-    set_global_atts(cube, attrs)
+    # Fix units
+    cmor_info = cfg['cmor_table'].get_variable(vals['mip'][0], var)
+    cube.convert_units(cmor_info.units)
+    # Fix metadata
+    fix_var_metadata(cube, cmor_info)
+    # Fix coordinates
+    #convert_timeunits(cube, year)
+    #fix_coords(cube, overwrite_time_bounds=False)
+    fix_coords(cube)
+    cube.coord('time').long_name = 'time'
+    cube.coord('latitude').long_name = 'latitude'
+    cube.coord('longitude').long_name = 'longitude'
     # Fix monthly time bounds
     time = cube.coord('time')
     time.bounds = get_time_bounds(time, vals['frequency'])
+
+    # set global attributes
+    set_global_atts(cube, attrs)
 
     return cube
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cmor_table = cfg['cmor_table']
-    glob_attrs = cfg['attributes']
+    glob_attrs = copy.deepcopy(cfg['attributes'])
 
     # run the cmorization
     for var, vals in cfg['variables'].items():
@@ -116,18 +123,19 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             start_date = datetime(vals['start_year'], 1, 1)
         if not end_date:
             end_date = datetime(vals['end_year'], 12, 31)
-        var_info = cmor_table.get_variable(vals['mip'][0], var)
-        glob_attrs['mip'] = vals['mip'][0]
         raw_info = {'name': vals['raw']}
         inpfile_pattern = os.path.join(in_dir, '{year}*' + vals['filename'])
         logger.info("CMORizing var %s from file type %s", var, inpfile_pattern)
         mon_cubes = []
         for year in range(start_date.year, end_date.year + 1):
             logger.info("Processing year %s", year)
-            for month in range(1, 13):
-                monthly_cube = get_monthly_cube(var, vals, raw_info, var_info,
+            glob_attrs['mip'] = vals['mip'][0]
+            for month in range(start_date.month, end_date.month + 1):
+                monthly_cube = get_monthly_cube(cfg, var, vals, raw_info,
                                                 glob_attrs, inpfile_pattern,
                                                 year, month)
+                logger.info(glob_attrs)
+                #set_global_atts(monthly_cube, glob_attrs)
                 # Save daily data
                 save_variable(monthly_cube,
                               var,
