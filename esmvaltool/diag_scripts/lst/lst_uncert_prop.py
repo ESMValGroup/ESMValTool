@@ -562,7 +562,7 @@ def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_fill, n_use):
     n_total = n_fill + n_use
 
     # the mean of the random uncertainty
-    unc_ran_mean = eq_arithmetic_mean(cube_unc_ran)
+    unc_ran_mean = eq_weighted_sqrt_mean(cube_unc_ran, n_total)#eq_arithmetic_mean(cube_unc_ran)
 
     # calculate the sampling error
     # variance of the lst * n_fill/n_total-1
