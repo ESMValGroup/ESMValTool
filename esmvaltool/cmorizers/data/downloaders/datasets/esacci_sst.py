@@ -32,9 +32,9 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         Overwrite already downloaded files
     """
     if start_date is None:
-        start_date = datetime(2004, 1, 1)
+        start_date = datetime(1980, 1, 1)
     if end_date is None:
-        end_date = datetime(2007, 12, 31)
+        end_date = datetime(2021, 12, 31)
 
     loop_date = start_date
 
