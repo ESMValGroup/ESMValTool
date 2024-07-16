@@ -68,7 +68,15 @@ preprocessors:
 #      scheme: linear
     area_statistics:
       operator: mean
-#    anomalies:
+    anomalies:
+      period: month
+      reference:
+        start_year: 1980
+        start_month: 1
+        start_day: 1
+        end_year: 2009
+        end_month: 12
+        end_day: 31
 #      period: month
 #      reference:
 #        start_year: 1980
@@ -84,15 +92,15 @@ diagnostics:
   timeseries:
     description: Plot time series of global mean value.
     variables:
-      tos_daily:
-        timerange: '1981/2021'
-        preprocessor: pp_tos
-        mip: Oday
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        project: CMIP6
-        short_name: tos
+#      tos_daily:
+#        timerange: '1981/2021'
+#        preprocessor: pp_tos
+#        mip: Oday
+#        exp: historical
+#        ensemble: r1i1p1f1
+#        grid: gr
+#        project: CMIP6
+#        short_name: tos
       tos_monthly:
         timerange: '1980/2021'
         preprocessor: pp_tos
@@ -111,9 +119,9 @@ diagnostics:
         group_variables_by: variable_group
         plots:
           timeseries:
-            annual_mean_kwargs:
-              linestyle: '--'
-              color: black
+            annual_mean_kwargs: false
+#              linestyle: '--'
+#              color: black
             plot_kwargs:
               ESACCI-SST:
                 color: green
