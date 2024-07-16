@@ -42,7 +42,10 @@ colour_list = ['#4477aa', '#66ccee','#228833','#ccbb44',
 lc_colour_list  = sorted(list(mcolors.CSS4_COLORS.keys()))
 lc_colour_list.reverse()
 
-plot_params ={'linewidth': 4}
+plot_params ={'linewidth': 4,
+              'ticksize': 24,
+              'labelsize': 28,
+              'legendsize': 20,}
 
 line_labels = {
             'lst_unc_loc_atm_day': 'Locally Correlated (Atm)',
@@ -267,22 +270,18 @@ def plot_lc(propagated_values, loaded_data):
     y_ticks = [loaded_data['ESACCI-LST']['lcc_day'][0].coord('latitude').points[0],
                loaded_data['ESACCI-LST']['lcc_day'][0].coord('latitude').points[-1]]
     
-    plt.xticks(x_ticks, fontsize=18)
-    plt.yticks(y_ticks, fontsize=18)
-    plt.xlabel('Longitude', fontsize=24)
-    plt.ylabel('Latitude', fontsize=24)
+    plt.xticks(x_ticks, fontsize=plot_params['ticksize'])
+    plt.yticks(y_ticks, fontsize=plot_params['ticksize'])
+    plt.xlabel('Longitude', fontsize=plot_params['labelsize'])
+    plt.ylabel('Latitude', fontsize=plot_params['labelsize'])
     
     cbar = plt.colorbar()
     
     Z = [(bound_list[i]+bound_list[i+1])/2 for i in range(len(bound_list)-1)]
     labels = [int(item) for item in class_list]
     cbar.set_ticks(Z, labels=labels)
-    cbar.ax.tick_params(labelsize=18)
-    cbar.set_label('Land Cover Types', fontsize=20)
-
-    
-    #ax1.tick_params(labelsize=18)
-
+    cbar.ax.tick_params(labelsize=plot_params['ticksize'])
+    cbar.set_label('Land Cover Types', fontsize=plot_params['labelsize'])
     
     plt.tight_layout()
     plt.savefig(f'LC_map.png')
@@ -296,14 +295,14 @@ def plot_lc(propagated_values, loaded_data):
             linewidth=2, edgecolor='black',
             tick_label = labels)
 
-    ax1.tick_params(labelsize=18)
+    ax1.tick_params(labelsize=plot_params['ticksize'])
     
-    plt.xlabel('Land Cover Type', fontsize=24)
-    plt.ylabel('Count', fontsize=24)
-
+    plt.xlabel('Land Cover Type', fontsize=plot_params['labelsize'])
+    plt.ylabel('Count', fontsize=plot_params['labelsize'])
     
     plt.tight_layout()
     plt.savefig(f'LC_bar.png')
+    
         
 def plot_with_cmip(propagated_values, loaded_data):
     """A plot for comparing OBS+uncertainity with CMIP value
@@ -342,14 +341,14 @@ def plot_with_cmip(propagated_values, loaded_data):
         plt.grid(which='major', color='k', linestyle='solid')
         plt.grid(which='minor', color='k', linestyle='dotted', alpha=0.5)
         
-        plt.xlabel('Date', fontsize=24)
-        plt.ylabel('LST (K)', fontsize=24)
+        plt.xlabel('Date', fontsize=plot_params['labelsize'])
+        plt.ylabel('LST (K)', fontsize=plot_params['labelsize'])
 
         plt.legend(loc='lower left',
                    bbox_to_anchor=(1.05, 0),
-                   fontsize=16)
+                   fontsize=plot_params['legendsize'])
         
-        ax1.tick_params(labelsize=18)
+        ax1.tick_params(labelsize=plot_params['ticksize'])
          
         plt.tight_layout()
         plt.savefig(f'cmip_{time}.png')
@@ -385,17 +384,18 @@ def plot_with_cmip(propagated_values, loaded_data):
     plt.grid(which='major', color='k', linestyle='solid')
     plt.grid(which='minor', color='k', linestyle='dotted', alpha=0.5)
 
-    plt.xlabel('Date', fontsize=24)        
-    plt.ylabel('LST (K)', fontsize=24)
+    plt.xlabel('Date', fontsize=plot_params['labelsize'])     
+    plt.ylabel('LST (K)', fontsize=plot_params['labelsize'])
 
     plt.legend(loc='lower left',
                bbox_to_anchor=(1.05, 0),
-               fontsize=16)
+               fontsize=plot_params['legendsize'])
         
-    ax1.tick_params(labelsize=18)
+    ax1.tick_params(labelsize=plot_params['ticksize'])
          
     plt.tight_layout()
     plt.savefig(f'cmip_both.png')
+        
         
 def test_plot(propagated_values):
     """This is a very simple plot to just test the method
@@ -426,16 +426,14 @@ def test_plot(propagated_values):
         ax1.xaxis.set_major_formatter(yearsFmt)
         ax1.xaxis.set_minor_locator(months)
         
-        #ax1.get_xaxis().set_visible(False)
-        
         plt.grid(which='major', color='k', linestyle='solid')
         plt.grid(which='minor', color='k', linestyle='dotted', alpha=0.5)
         
-        plt.ylabel('LST (K)', fontsize=24)
+        plt.ylabel('LST (K)', fontsize=plot_params['labelsize'])
 
         plt.legend(loc='lower left',
                    bbox_to_anchor=(1.05, 0),
-                   fontsize=16)
+                   fontsize=plot_params['legendsize'])
 
         ax2 = plt.subplot(212, sharex=ax1)
         iplt.plot(propagated_values[f'lst_unc_loc_atm_{time}'],
@@ -468,19 +466,19 @@ def test_plot(propagated_values):
         plt.grid(which='major', color='k', linestyle='solid')
         plt.grid(which='minor', color='k', linestyle='dotted', alpha=0.5)
         
-        plt.xlabel('Date', fontsize=24)
-        plt.ylabel('Uncertainty (K)', fontsize=24)
+        plt.xlabel('Date', fontsize=plot_params['labelsize'])
+        plt.ylabel('Uncertainty (K)', fontsize=plot_params['labelsize'])
 
         plt.legend(loc='upper left',
                    bbox_to_anchor=(1.05, 1),
-                   fontsize=16)
+                   fontsize=plot_params['legendsize'])
 
-        ax1.tick_params(labelsize=18)
-        ax2.tick_params(labelsize=18)
+        ax1.tick_params(labelsize=plot_params['ticksize'])
+        ax2.tick_params(labelsize=plot_params['ticksize'])
  
-        
         plt.tight_layout()
         plt.savefig(f'test_A_{time}.png')
+
 
 # These are the propagation equations
 
