@@ -1,0 +1,49 @@
+# CMORIZE ESA CCI CLOUD daily data
+---
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: ESACCI-CLOUD
+  version: 'v3.0'
+  tier: 2
+  project_id: OBS6
+  source: 'ESA CCI'
+  modeling_realm: sat
+  reference: 'esacci_cloud'
+  comment: ''
+  start_year: 2000
+  end_year: 2007
+
+# Variables to cmorize
+variables:
+  clt:
+    mip: day
+    raw: cmask_asc
+    raw_units: '1'
+    file: '-ESACCI-L3U_CLOUD-CLD_MASKTYPE-AVHRR_NOAA-*-fv3.0.nc'
+  clwvi:
+    mip: CFday
+    raw: cwp_asc
+    raw_units: g/m2
+    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
+  ctp:
+    mip: day
+    raw: ctp_asc
+    raw_units: hPa
+    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
+  reff:
+    mip: day
+    raw: cer_asc
+    raw_units: um
+    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
+  cod:
+    mip: AERday
+    raw: cot_asc
+    raw_units: 1
+    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
+    #rlut:
+    #  mip: day
+    #  raw: toa_lwup_asc
+    #  raw_units: W/m2
+    #  file: '-ESACCI-L3U_CLOUD-RAD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
+
