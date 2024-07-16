@@ -65,6 +65,23 @@ datasets:
 - {dataset: NorESM2-MM, grid: gn, institute: NCC}
 - {dataset: SAM0-UNICON, grid: gn, institute: SNU}
 - {dataset: TaiESM1, grid: gn, institute: AS-RCEC}
+- {dataset: E3SM-1-0, grid: gr, institute: E3SM-Project}
+- {dataset: E3SM-1-1, grid: gr, institute: E3SM-Project}
+- {dataset: E3SM-1-1-ECA, grid: gr, institute: E3SM-Project}
+- {dataset: EC-Earth3, grid: gr, institute: EC-Earth-Consortium}
+- {dataset: EC-Earth3-AerChem, grid: gr, institute: EC-Earth-Consortium}
+- {dataset: EC-Earth3-CC, grid: gr, institute: EC-Earth-Consortium}
+- {dataset: EC-Earth3-Veg, grid: gr, institute: EC-Earth-Consortium}
+- {dataset: EC-Earth3-Veg-LR, grid: gr, institute: EC-Earth-Consortium}
+- {dataset: FGOALS-f3-L, grid: gr, institute: CAS}
+- {dataset: INM-CM4-8, grid: gr1, institute: INM}
+- {dataset: INM-CM5-0, grid: gr1, institute: INM}
+- {dataset: IPSL-CM5A2-INCA, grid: gr, institute: IPSL}
+- {dataset: IPSL-CM6A-LR, grid: gr, institute: IPSL}
+- {dataset: IPSL-CM6A-LR-INCA, grid: gr, institute: IPSL}
+- {dataset: KACE-1-0-G, grid: gr, institute: NIMS-KMA}
+- {dataset: KIOST-ESM, grid: gr1, institute: KIOST}
+
 preprocessors:
 
   clim:
@@ -140,7 +157,7 @@ diagnostics:
         projection: Robinson
         timemean: annualclim
         plot_abs_diff: true
-        plot_rel_diff: false
+        plot_rel_diff: true
 
   # ***************************************************************************
   # Flato et al. (2013) - IPCC AR5, chap. 9
@@ -234,6 +251,7 @@ diagnostics:
         start_year: 1870
         end_year: 2014
     additional_datasets:
+      - {dataset: GISS-E2-2-H, grid: gn, institute: NASA-GISS}
       - {dataset: HadCRUT4, project: OBS, type: ground, version: 1,
       start_year: 1870, end_year: 2014, tier: 2}
     scripts:
@@ -248,4 +266,4 @@ diagnostics:
         y_min: -1.2
         y_max: 1.5
         volcanoes: True
-        styleset: CMIP5       # Plot style, colours
+        styleset: CMIP6       # Plot style, colours
