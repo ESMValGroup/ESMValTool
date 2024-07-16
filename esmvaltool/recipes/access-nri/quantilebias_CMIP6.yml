@@ -1,0 +1,54 @@
+# ESMValTool
+# recipe_quantilebias.yml
+---
+documentation:
+  title: Precipitation Quantile Bias
+  description: |
+    Tool for calculation of precipitation quantile bias
+    CMIP6 models, figure 8 in ESMValTool v2.0 paper (Eyring et al.)
+
+  authors:
+    - arnone_enrico
+    - vonhardenberg_jost
+
+  maintainer:
+    - vonhardenberg_jost
+
+  references:
+    - mehran14jgr
+
+  projects:
+    - c3s-magic
+
+datasets:
+  # - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2005}
+  - {dataset: CanESM5, grid: gn, institute: CCCma, ensemble: r1i1p1f1, exp: historical, project: CMIP6}
+  - {dataset: CESM2, grid: gn, institute: NCAR, ensemble: r1i1p1f1, exp: historical, project: CMIP6}
+  - {dataset: MIROC6, grid: gn, institute: MIROC, ensemble: r1i1p1f1, exp: historical, project: CMIP6}
+  - {dataset: MPI-ESM1-2-HR, grid: gn, institute: MPI-M, ensemble: r1i1p1f1, exp: historical, project: CMIP6}
+  - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO, ensemble: r1i1p1f1, exp: historical, project: CMIP6}
+  - {dataset: BCC-ESM1, grid: gn, institute: BCC, ensemble: r1i1p1f1, exp: historical, project: CMIP6}
+  - {dataset: GPCP-V2.3, project: obs4MIPs, level: L3, tier: 1, start_year: 1984, end_year: 2010}
+
+preprocessors:
+  mask_regrid_preproc:
+    regrid:
+      target_grid: 2x2
+      scheme: area_weighted
+    mask_landsea:
+      mask_out: sea
+
+diagnostics:
+  quantilebias:
+    description: Tool for calculation of precipitation quantile bias
+    variables:
+      pr:
+        preprocessor: mask_regrid_preproc
+        reference_dataset: "GPCP-V2.3"
+        timerange: 1984/2010
+        mip: Amon
+
+    scripts:
+      main:
+        script: quantilebias/quantilebias.R
+        perc_lev: 75
