@@ -162,7 +162,7 @@ def _diagnostic(config):
     # This will be a dictionary of variables and cubes
     # of their propagated values
     propagated_values = {}
-
+   
     print(loaded_data) # for testing new variables total var and lc
     print('***')
     print(loaded_data['UKESM1-0-LL']['ts'])
@@ -240,12 +240,12 @@ def _diagnostic(config):
     loaded_data['UKESM1-0-LL']['ts'].add_aux_coord(propagated_values['ts_day'].coord('time'),0)
     iris.util.promote_aux_coord_to_dim_coord(loaded_data['UKESM1-0-LL']['ts'], 'time')
    
-    plot_lc(propagated_values, loaded_data)
+    plot_lc(loaded_data)
  
     test_plot(propagated_values)
     plot_with_cmip(propagated_values, loaded_data)
    
-def plot_lc(propagated_values, loaded_data):
+def plot_lc(loaded_data):
     """Plot to show land cover and correlations
     """
 
@@ -270,8 +270,20 @@ def plot_lc(propagated_values, loaded_data):
     y_ticks = [loaded_data['ESACCI-LST']['lcc_day'][0].coord('latitude').points[0],
                loaded_data['ESACCI-LST']['lcc_day'][0].coord('latitude').points[-1]]
     
-    plt.xticks(x_ticks, fontsize=plot_params['ticksize'])
-    plt.yticks(y_ticks, fontsize=plot_params['ticksize'])
+    x_ticks = [item for item in loaded_data['ESACCI-LST']['lcc_day'][0].coord('longitude').points[::5]]
+    x_tick_labels = ['' for item in x_ticks]
+    x_tick_labels[0] = f"{loaded_data['ESACCI-LST']['lcc_day'][0].coord('longitude').points[0]:.2f}"
+    x_tick_labels[-1] = f"{loaded_data['ESACCI-LST']['lcc_day'][0].coord('longitude').points[-1]:.2f}"
+    plt.xticks(x_ticks, x_tick_labels, fontsize=plot_params['ticksize'])
+    
+    y_ticks = [item for item in loaded_data['ESACCI-LST']['lcc_day'][0].coord('latitude').points[::5]]
+    y_tick_labels = ['' for item in y_ticks]
+    y_tick_labels[0] = f"{loaded_data['ESACCI-LST']['lcc_day'][0].coord('latitude').points[0]:.2f}"
+    y_tick_labels[-1] = f"{loaded_data['ESACCI-LST']['lcc_day'][0].coord('latitude').points[-1]:.2f}"
+    plt.yticks(y_ticks, y_tick_labels, fontsize=plot_params['ticksize'])
+    
+    plt.grid(c='k', linewidth=1)
+    
     plt.xlabel('Longitude', fontsize=plot_params['labelsize'])
     plt.ylabel('Latitude', fontsize=plot_params['labelsize'])
     
