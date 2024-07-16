@@ -87,8 +87,6 @@ def get_monthly_cube(cfg, var, vals, raw_info, attrs,
     # regridding from 0.05x0.05 to 0.5x0.5
     cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
 
-    #if var == 'tos': cube.attributes.pop('comment', None)
-
     # Fix dtype
     utils.fix_dtype(cube)
     # Fix units
@@ -97,8 +95,6 @@ def get_monthly_cube(cfg, var, vals, raw_info, attrs,
     # Fix metadata
     fix_var_metadata(cube, cmor_info)
     # Fix coordinates
-    #convert_timeunits(cube, year)
-    #fix_coords(cube, overwrite_time_bounds=False)
     fix_coords(cube)
     cube.coord('time').long_name = 'time'
     cube.coord('latitude').long_name = 'latitude'
