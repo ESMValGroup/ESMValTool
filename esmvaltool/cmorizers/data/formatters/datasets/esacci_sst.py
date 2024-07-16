@@ -30,7 +30,6 @@ from esmvaltool.cmorizers.data import utilities as utils
 from esmvalcore.preprocessor import concatenate
 
 from ...utilities import (
-    convert_timeunits,
     fix_coords,
     fix_var_metadata,
     save_variable,
