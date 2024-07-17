@@ -11,39 +11,39 @@ attributes:
   modeling_realm: sat
   reference: 'esacci_cloud'
   comment: ''
-  start_year: 2000
+  start_year: 2003
   end_year: 2007
 
 # Variables to cmorize
 variables:
   clt:
     mip: day
-    raw: cmask_asc
+    raw: cmask_desc
     raw_units: '1'
     file: '-ESACCI-L3U_CLOUD-CLD_MASKTYPE-AVHRR_NOAA-*-fv3.0.nc'
   clwvi:
     mip: CFday
-    raw: cwp_asc
+    raw: cwp_desc
     raw_units: g/m2
     file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
   ctp:
     mip: day
-    raw: ctp_asc
+    raw: ctp_desc
     raw_units: hPa
     file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
   reff:
     mip: day
-    raw: cer_asc
+    raw: cer_desc
     raw_units: um
     file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
   cod:
     mip: AERday
-    raw: cot_asc
+    raw: cot_desc
     raw_units: 1
     file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
     #rlut:
     #  mip: day
-    #  raw: toa_lwup_asc
+    #  raw: toa_lwup_desc
     #  raw_units: W/m2
     #  file: '-ESACCI-L3U_CLOUD-RAD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
 
