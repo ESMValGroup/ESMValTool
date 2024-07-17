@@ -83,8 +83,9 @@ def get_monthly_cube(cfg, var, vals, raw_info, attrs,
 
     cube = concatenate(data_cubes)
 
-    # regridding from 0.05x0.05 to 0.5x0.5
-    cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
+    # regridding from 0.05x0.05 to 0.5x0.5 (not for uncertainty field
+    if 'Stderr' not in var:
+        cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
 
     # Fix dtype
     utils.fix_dtype(cube)
