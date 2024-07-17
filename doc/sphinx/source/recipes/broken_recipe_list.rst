@@ -32,11 +32,6 @@ More details can be found in the :ref:`broken recipe policy
      - v2.11.0
      - CESM1 CMIP5 Omon data no longer available
      - `#3693 <https://github.com/ESMValGroup/ESMValTool/issues/3693>`_
-   * - :ref:`recipe_preprocessor_derive_test.yml <recipe_examples>`
-     - ``cmip6/toz``
-     - v2.11.0
-     - Failed to run preprocessor function ``derive`` on the data: Unable to convert units
-     - `#3709 <https://github.com/ESMValGroup/ESMValTool/issues/3709>`_
    * - :ref:`recipe_russell18jgr.yml <nml_oceanmetrics>`
      - ``Figure_4``
      - v2.11.0
