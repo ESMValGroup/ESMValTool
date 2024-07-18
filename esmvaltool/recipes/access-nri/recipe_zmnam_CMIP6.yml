@@ -1,0 +1,53 @@
+# ESMValTool
+# recipe_zmnam.yml
+---
+documentation:
+  title: Zonal mean annular modes
+  description: |
+    Recipe for zonal mean annular mode.
+    The diagnostics compute the index and the spatial
+    pattern to assess the simulation of the
+    strat-trop coupling in the extratropical regions
+
+  authors:
+    - serva_federico
+    - vonhardenberg_jost
+    - arnone_enrico
+    - cagnazzo_chiara
+
+  maintainer:
+    - serva_federico
+
+  references:
+    - baldwin09qjrms
+
+  projects:
+    - c3s-magic
+
+datasets:
+  #- {dataset: MPI-ESM-MR, project: CMIP5, mip: day, exp: amip, ensemble: r1i1p1, start_year: 1979, end_year: 2008}
+  - {dataset: ACCESS-CM2, project: CMIP6, institution: CSIRO-ARCCSS, mip: day, exp: amip, ensemble: r1i1p1f1, grid: gn, start_year: 1979, end_year: 2008}
+
+preprocessors:
+  preproc:
+    extract_levels:
+      levels: [85000., 50000., 25000., 5000.]
+      scheme: nearest
+    regrid:
+      target_grid: 3x3
+      scheme: area_weighted
+
+diagnostics:
+  zmnam:
+    description: Zonal mean annular mode
+    variables:
+      zg:
+        preprocessor: preproc
+    scripts:
+      main:
+        # The script require naturalearth data for plotting
+        # coastlines. Make sure you have the data available in the 
+        # CARTOPY_DATA_DIR directory.
+        script: zmnam/zmnam.py
+        title: "Zonal mean AM diagnostics"
+        hemisphere: ["NH", "SH"]
