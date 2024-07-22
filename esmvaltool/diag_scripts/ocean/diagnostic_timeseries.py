@@ -216,12 +216,13 @@ def make_time_series_plots(
             cube_layer = moving_average(cube_layer, cfg['moving_average'])
 
         if multi_model:
-            timeplot(cube_layer, label=metadata['dataset'], ls=':')
+            timeplot(cube_layer, label=metadata.get( 'dataset_ID', metadata['dataset']), ls=':')
         else:
-            timeplot(cube_layer, label=metadata['dataset'])
+            timeplot(cube_layer, label=metadata.get( 'dataset_ID', metadata['dataset']) )
 
         # Add title, legend to plots
-        title = ' '.join([metadata['dataset'], metadata['long_name']])
+        # title = ' '.join([metadata['dataset'], metadata['long_name']])
+        title = '\n'.join([ metadata.get('dataset_ID',metadata['dataset']), metadata['long_name']])
         if layer != '':
             if cube_layer.coords('depth'):
                 z_units = cube_layer.coord('depth').units
@@ -229,7 +230,7 @@ def make_time_series_plots(
                 z_units = ''
             title = ' '.join([title, '(', layer, str(z_units), ')'])
         plt.title(title)
-        plt.legend(loc='best')
+        # plt.legend(loc='best')
         plt.ylabel(str(cube_layer.units))
 
         # Determine image filename:
@@ -246,7 +247,7 @@ def make_time_series_plots(
                 ],
             )
             caption = ' '.join([
-                'Time series of', metadata["dataset"], metadata["long_name"],
+                'Time series of', metadata.get("dataset"), metadata["long_name"],
                 'with MultiModel value',
             ])
 
@@ -257,7 +258,7 @@ def make_time_series_plots(
                 suffix='timeseries_' + str(layer_index) + image_extention,
             )
             caption = ' '.join([
-                'Time series of', metadata["dataset"], metadata["long_name"],
+                'Time series of', metadata.get('dataset_ID', metadata["dataset"]), metadata["long_name"],
             ])
 
         # Saving files
@@ -320,6 +321,10 @@ def multi_model_time_series(
 
         title = ''
         z_units = ''
+
+        # if only one layer, no need to do anything, would be redundant
+        # if len(metadata)<2: continue 
+
         plot_details = {}
         cmap = plt.cm.get_cmap('viridis')
 
@@ -349,7 +354,7 @@ def multi_model_time_series(
                     'c': color,
                     'ls': ':',
                     'lw': 2.,
-                    'label': metadata[filename]['dataset']
+                    'label': metadata[filename].get('dataset_ID', metadata[filename]['dataset'] ),
                 }
             else:
                 timeplot(
@@ -363,7 +368,9 @@ def multi_model_time_series(
                     'c': color,
                     'ls': '-',
                     'lw': 2.,
-                    'label': metadata[filename]['dataset']
+                    # 'label': metadata[filename]['dataset']
+                    'label': metadata[filename].get('dataset_ID',  metadata[filename]['dataset'] )
+
                 }
 
             title = metadata[filename]['long_name']
@@ -394,11 +401,13 @@ def multi_model_time_series(
 
         # Resize and add legend outside thew axes.
         plt.gcf().set_size_inches(9., 6.)
-        diagtools.add_legend_outside_right(
-            plot_details, plt.gca(), column_width=0.15)
-
+        # diagtools.add_legend_outside_right(
+        #     plot_details, plt.gca(), column_width=0.15) # cuts off long names
+        diagtools.add_legend_outside(
+            plot_details, plt.gca(), loc=0, bbox_to_anchor=None)
+            
         logger.info('Saving plots to %s', path)
-        plt.savefig(path)
+        plt.savefig(path, bbox_inches='tight')
         plt.close()
 
         provenance_record = diagtools.prepare_provenance_record(
@@ -447,7 +456,7 @@ def main(cfg):
 
                 ######
                 # Time series of individual model
-                make_time_series_plots(cfg, metadatas[filename], filename)
+                # make_time_series_plots(cfg, metadatas[filename], filename)
     logger.info('Success')
 
 

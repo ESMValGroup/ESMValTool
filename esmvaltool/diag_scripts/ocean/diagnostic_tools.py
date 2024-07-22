@@ -448,6 +448,51 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1, loc='right'):
     legd.get_frame().set_alpha(0.)
 
 
+def add_legend_outside(plot_details, ax1, loc=2, bbox_to_anchor=(1.05,1)):
+    """
+    Add a legend outside the plot, to the right.
+
+    plot_details is a 2 level dict,
+    where the first level is some key (which is hidden)
+    and the 2nd level contains the keys:
+    'c': color
+    'lw': line width
+    'label': label for the legend.
+    ax1 is the axis where the plot was drawn.
+
+    Parameters
+    ----------
+    plot_details: dict
+        A dictionary of the plot details (color, linestyle, linewidth, label)
+    ax1: matplotlib.pyplot.axes
+        The pyplot axes to add 
+
+    Returns
+    -------
+    cftime.datetime
+        A datetime creator function from cftime, based on the cube's calendar.
+
+    """
+    # ####
+    # Create dummy axes:
+    
+    # Add emply plots to dummy axis.
+    for index in sorted(plot_details):
+        colour = plot_details[index]['c']
+
+        linewidth = plot_details[index].get('lw', 1)
+
+        linestyle = plot_details[index].get('ls', '-')
+
+        label = plot_details[index].get('label', str(index))
+
+        plt.plot([], [], c=colour, lw=linewidth, ls=linestyle, label=label)
+
+
+    legd = plt.legend(ncol = 1, fontsize=10, loc=loc, bbox_to_anchor=bbox_to_anchor)
+    legd.draw_frame(False)
+    legd.get_frame().set_alpha(0.)
+
 def get_image_format(cfg, default='png'):
     """
     Load the image format from the global config file.
