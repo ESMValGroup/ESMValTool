@@ -238,7 +238,7 @@ def make_time_series_plots(
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
-                prefix='MultiModel',
+                prefix='allmodels',
                 suffix='_'.join(['timeseries',
                                  str(layer) + image_extention]),
                 metadata_id_list=[
@@ -403,7 +403,7 @@ def multi_model_time_series(
         plt.gcf().set_size_inches(9., 6.)
         # diagtools.add_legend_outside_right(
         #     plot_details, plt.gca(), column_width=0.15) # cuts off long names
-        diagtools.add_legend_outside(
+        diagtools.add_legend(
             plot_details, plt.gca(), loc=0, bbox_to_anchor=None)
             
         logger.info('Saving plots to %s', path)

@@ -448,7 +448,7 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1, loc='right'):
     legd.get_frame().set_alpha(0.)
 
 
-def add_legend_outside(plot_details, ax1, loc=2, bbox_to_anchor=(1.05,1)):
+def add_legend(plot_details, ax1, loc=2, bbox_to_anchor=(1.05,1)):
     """
     Add a legend outside the plot, to the right.
 

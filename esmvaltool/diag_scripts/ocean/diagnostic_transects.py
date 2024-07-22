@@ -269,8 +269,8 @@ def make_transects_plots(
             region_title = determine_transect_str(cube, region)
 
         # Add title to plot
-        title = ' '.join(
-            [metadata['dataset'], metadata['long_name'], region_title])
+        title = '\n'.join(
+            [ metadata.get('dataset_ID', metadata['dataset']), metadata['long_name'], region_title])
         titlify(title)
 
         # Load image format extention
@@ -290,7 +290,7 @@ def make_transects_plots(
 
         # Saving files:
         logger.info('Saving plots to %s', path)
-        plt.savefig(path)
+        plt.savefig(path, bbox_inches='tight')
         plt.close()
 
         provenance_record = diagtools.prepare_provenance_record(
@@ -388,12 +388,14 @@ def make_transect_contours(
         add_sea_floor(cube)
 
         # Add legend
-        diagtools.add_legend_outside_right(
-            plot_details, plt.gca(), column_width=0.08, loc='below')
+        # diagtools.add_legend_outside_right(
+        #     plot_details, plt.gca(), column_width=0.08, loc='below')
+        diagtools.add_legend(
+            plot_details, plt.gca(), loc=0, bbox_to_anchor=None)
 
         # Add title to plot
-        title = ' '.join([
-            metadata['dataset'], metadata['long_name'],
+        title = '\n'.join([
+            metadata.get('dataset_ID', metadata['dataset']), metadata['long_name'],
             determine_transect_str(cube, region)
         ])
         titlify(title)
@@ -415,7 +417,7 @@ def make_transect_contours(
 
         # Saving files:
         logger.info('Saving plots to %s', path)
-        plt.savefig(path)
+        plt.savefig(path, bbox_inches='tight')
         plt.close()
 
         provenance_record = diagtools.prepare_provenance_record(
@@ -513,7 +515,7 @@ def multi_model_contours(
                 'c': color,
                 'ls': linestyle,
                 'lw': linewidth,
-                'label': metadatas[filename]['dataset']
+                'label': metadatas[filename].get('dataset_ID', metadatas[filename]['dataset'] ),
             }
 
             if set_y_logscale:
@@ -537,7 +539,8 @@ def multi_model_contours(
         path = diagtools.get_image_path(
             cfg,
             metadatas[filename],
-            prefix='MultipleModels',
+            # prefix='MultipleModels',
+            prefix='allmodels',
             suffix='_'.join([
                 'contour_tramsect', region,
                 str(threshold) + image_extention
@@ -550,11 +553,13 @@ def multi_model_contours(
 
         # Resize and add legend outside thew axes.
         plt.gcf().set_size_inches(9., 6.)
-        diagtools.add_legend_outside_right(
-            plot_details, plt.gca(), column_width=0.15)
+        # diagtools.add_legend_outside_right(
+        #     plot_details, plt.gca(), column_width=0.15)
+        diagtools.add_legend(
+            plot_details, plt.gca(), loc=0, bbox_to_anchor=None)
 
         logger.info('Saving plots to %s', path)
-        plt.savefig(path)
+        plt.savefig(path, bbox_inches='tight')
         plt.close()
 
         provenance_record = diagtools.prepare_provenance_record(
