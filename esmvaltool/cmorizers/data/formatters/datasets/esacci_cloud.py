@@ -27,7 +27,7 @@ from calendar import monthrange
 from datetime import datetime
 
 from esmvaltool.cmorizers.data import utilities as utils
-from esmvalcore.preprocessor import regrid
+from esmvalcore.preprocessor import regrid, daily_statistics
 
 logger = logging.getLogger(__name__)
 
@@ -50,53 +50,76 @@ def _create_nan_cube(cube, year, month, day):
 
 
 def _extract_variable(short_name, var, cfg, in_dir,
-                      out_dir):
+                      out_dir, start_date, end_date):
     """Extract variable."""
 
     fill_cube = None
     glob_attrs = cfg['attributes']
 
-    for year in range(glob_attrs['start_year'],
-                      glob_attrs['end_year'] + 1):
-        for month in range(1,13):
+    if not start_date:
+        start_date = datetime(glob_attrs['start_year'], 1, 1)
+    if not end_date:
+        end_date = datetime(glob_attrs['end_year'], 12, 31)
+
+    for year in range(start_date.year, end_date.year + 1):
+        for month in range(start_date.month, end_date.month + 1):
             cubes = iris.cube.CubeList()
             filename = f'{year}{month:02}*' + var['file']
-            filelist = glob.glob(os.path.join(in_dir, filename))
+            #filelist = glob.glob(os.path.join(in_dir, filename))
             num_days = monthrange(year, month)[1]
             for iday in range(1, num_days+1):
 
-                ifile = glob.glob(os.path.join(in_dir, f'{year}{month:02}' + f'{iday:02}' + var['file']))
+                filelist = glob.glob(os.path.join(in_dir, f'{year}{month:02}' + f'{iday:02}' + var['file']))
 
-                if ifile:
-                    logger.info("CMORizing file %s", ifile)
+                if filelist:
 
-                    # load data
-                    raw_var = var.get('raw', short_name)
-                    daily_cube = iris.load_cube(ifile, NameConstraint(var_name=raw_var))
+                    for inum, ifile in enumerate(filelist):
+                        logger.info("CMORizing file %s", ifile)
 
-                    daily_cube.attributes.clear()
-                    daily_cube.coord('time').long_name = 'time'
+                        # load data
+                        raw_var = var.get('raw', short_name)
+                        daily_cube = iris.load_cube(ifile, NameConstraint(var_name=raw_var))
 
-                    # Fix coordinates
-                    daily_cube = utils.fix_coords(daily_cube)
-                    #Fix dtype
-                    utils.fix_dtype(daily_cube)
+                        print(daily_cube.coord('time'))
+                        daily_cube.coord('time').points =  daily_cube.coord('time').points + inum * 0.1
+                        print(daily_cube.coord('time'))
 
-                    if fill_cube is None:
-                        fill_cube = daily_cube
+                        daily_cube.attributes.clear()
+                        daily_cube.coord('time').long_name = 'time'
+
+                        print(daily_cube.coord('time'))
+
+                        # Fix coordinates
+                        daily_cube = utils.fix_coords(daily_cube)
+                        #Fix dtype
+                        utils.fix_dtype(daily_cube)
+
+                        print(daily_cube.coord('time'))
+
+                        #logger.info("cube coords = %s", daily_cube.coords['time'])
+
+                        if fill_cube is None:
+                            fill_cube = daily_cube
+
+                        cubes.append(daily_cube)
 
                 else:
 
                     logger.info("Fill missing day %s in month %s and year %s", iday, month, year)
-
                     daily_cube = _create_nan_cube(fill_cube, year, month, iday)
+                    cubes.append(daily_cube)
 
-                cubes.append(daily_cube)
+            for cube in cubes:
+                print(cube.coords('time'))
 
             cube = cubes.concatenate_cube()
 
             # regridding from 0.05x0.05 to 0.5x0.5
             cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
+
+            logger.info("Building daily means")
+            # Calc daily
+            cube = daily_statistics(cube)
 
             cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
 
@@ -127,4 +150,5 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     # Run the cmorization
     for (short_name, var) in cfg['variables'].items():
         logger.info("CMORizing variable '%s'", short_name)
-        _extract_variable(short_name, var, cfg, in_dir, out_dir)
+        _extract_variable(short_name, var, cfg, in_dir, out_dir,
+                          start_date, end_date)
