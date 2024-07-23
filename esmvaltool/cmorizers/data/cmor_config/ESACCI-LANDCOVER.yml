@@ -10,19 +10,47 @@ attributes:
   version: 'v2.0.8'
   comment: ''
 variables:
-  waterFrac:
+  baresoilFrac:
     mip: Lmon
-    long_name: 'Water'
+    long_name: 'BARE'
     filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc
-  # baresoilFrac:
-  #   mip: Lmon
-  #   long_name: 'BARE'
-  #   filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc
-  # cropFrac:
-  #   mip: Lmon
-  #   long_name: 'GRASS-MAN'
-  #   filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc  
-  # grassFrac:
-  #   mip: Lmon
-  #   long_name: 'GRASS-NAT'
-  #   filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc  
+  cropFrac:
+    mip: Lmon
+    long_name: 'GRASS-MAN'
+    filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc  
+  grassFrac:
+    mip: Lmon
+    long_name: 'GRASS-NAT'
+    filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc  
+  shrubs-bd:
+    mip: Lmon
+    long_name: 'SHRUBS-BD'
+    filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc
+  shrubs-be:
+    mip: Lmon
+    long_name: 'SHRUBS-BE'
+    filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc
+  shrubs-nd:
+    mip: Lmon
+    long_name: 'SHRUBS-ND'
+    filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc
+  shrubs-ne:
+    mip: Lmon
+    long_name: 'SHRUBS-NE'
+    filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc
+  trees-bd:
+    mip: Lmon
+    long_name: 'TREES-BD'
+    filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc
+  trees-be:
+    mip: Lmon
+    long_name: 'TREES-BE'
+    filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc
+  trees-nd:
+    mip: Lmon
+    long_name: 'TREES-ND'
+    filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc
+  trees-ne:
+    mip: Lmon
+    long_name: 'TREES-NE'
+    filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc                
