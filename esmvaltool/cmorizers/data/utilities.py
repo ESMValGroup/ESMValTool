@@ -207,7 +207,7 @@ def fix_coords(cube,
                 if cube_coord.points[0] < 0. and \
                         cube_coord.points[-1] < 181.:
                     cube_coord.points = \
-                        cube_coord.points - 180.
+                        cube_coord.points + 180.
                     cube.attributes['geospatial_lon_min'] = 0.
                     cube.attributes['geospatial_lon_max'] = 360.
                     nlon = len(cube_coord.points)
@@ -237,6 +237,50 @@ def fix_coords(cube,
     # remove CS
     cube.coord('latitude').coord_system = None
     cube.coord('longitude').coord_system = None
+
+    return cube
+
+
+def fix_coords_esacci(cube):
+    """Fix coordinates to CMOR standards.
+
+    Fixes coordinates eg time to have correct units, bounds etc;
+    longitude to be CMOR-compliant 0-360deg; fixes some attributes
+    and bounds - the user can avert bounds fixing by using supplied
+    arguments; if bounds are None they will be fixed regardless.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        data cube with coordinates to be fixed.
+
+
+    Returns
+    -------
+    cube: iris.cube.Cube
+        data cube with fixed coordinates.
+    """
+    # First fix any completely missing coord var names
+    fix_dim_coordnames(cube)
+
+    # Convert longitude from -180...180 to 0...360
+    cube = cube.intersection(longitude=(0.0, 360.0))
+
+    # Fix individual coords
+    for cube_coord in cube.coords():
+        # Fix time
+        if cube_coord.var_name == 'time':
+            logger.info("Fixing time...")
+            cube.coord('time').convert_units(
+                Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
+
+        # Fix latitude
+        if cube_coord.var_name == 'lat':
+            logger.info("Fixing latitude...")
+            cube = iris.util.reverse(cube, cube_coord)
+
+        # Fix bounds of all coordinates
+        fix_bounds(cube, cube_coord)
 
     return cube
 

@@ -7,12 +7,10 @@ import numpy as np
 import logging
 import gc
 from datetime import datetime
-from cf_units import Unit
 
 
 from ...utilities import (
-    fix_dim_coordnames,
-    fix_bounds,
+    fix_coords_esacci,
     fix_dtype,
     set_global_atts,
 )
@@ -199,7 +197,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date=None,
                         logger.info(f"Regridding cube for {var_name}")
                         regridded_cube = regrid_iris(cube)
                         logger.info("Regridding done")
-                        regridded_cube = fix_coords(regridded_cube)
+                        regridded_cube = fix_coords_esacci(regridded_cube)
                         set_global_atts(regridded_cube, glob_attrs)
                         output_filename = (f"{var_name}_"
                                            f"{datetime.now().strftime('%Y')}"
@@ -216,47 +214,3 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date=None,
                 except Exception as e:
                     logger.error(f"Failed to process file {inpfile}: {e}")
                     continue
-
-
-def fix_coords(cube):
-    """Fix coordinates to CMOR standards.
-
-    Fixes coordinates eg time to have correct units, bounds etc;
-    longitude to be CMOR-compliant 0-360deg; fixes some attributes
-    and bounds - the user can avert bounds fixing by using supplied
-    arguments; if bounds are None they will be fixed regardless.
-
-    Parameters
-    ----------
-    cube: iris.cube.Cube
-        data cube with coordinates to be fixed.
-
-
-    Returns
-    -------
-    cube: iris.cube.Cube
-        data cube with fixed coordinates.
-    """
-    # First fix any completely missing coord var names
-    fix_dim_coordnames(cube)
-
-    # Convert longitude from -180...180 to 0...360
-    cube = cube.intersection(longitude=(0.0, 360.0))
-
-    # Fix individual coords
-    for cube_coord in cube.coords():
-        # Fix time
-        if cube_coord.var_name == 'time':
-            logger.info("Fixing time...")
-            cube.coord('time').convert_units(
-                Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
-
-        # Fix latitude
-        if cube_coord.var_name == 'lat':
-            logger.info("Fixing latitude...")
-            cube = iris.util.reverse(cube, cube_coord)
-
-        # Fix bounds of all coordinates
-        fix_bounds(cube, cube_coord)
-
-    return cube
