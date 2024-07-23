@@ -207,7 +207,7 @@ def fix_coords(cube,
                 if cube_coord.points[0] < 0. and \
                         cube_coord.points[-1] < 181.:
                     cube_coord.points = \
-                        cube_coord.points + 180.
+                        cube_coord.points - 180.
                     cube.attributes['geospatial_lon_min'] = 0.
                     cube.attributes['geospatial_lon_max'] = 360.
                     nlon = len(cube_coord.points)

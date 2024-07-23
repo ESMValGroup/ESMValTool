@@ -10,15 +10,19 @@ attributes:
   version: 'v2.0.8'
   comment: ''
 variables:
-  baresoilFraction:
+  waterFrac:
     mip: Lmon
-    long_name: 'BARE'
+    long_name: 'Water'
     filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc
-  # cropFraction:
+  # baresoilFrac:
+  #   mip: Lmon
+  #   long_name: 'BARE'
+  #   filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc
+  # cropFrac:
   #   mip: Lmon
   #   long_name: 'GRASS-MAN'
   #   filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc  
-  # grassFraction:
+  # grassFrac:
   #   mip: Lmon
   #   long_name: 'GRASS-NAT'
   #   filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc  

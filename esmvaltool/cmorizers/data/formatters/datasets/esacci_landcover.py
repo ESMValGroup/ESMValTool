@@ -1,3 +1,6 @@
+
+
+
 import iris
 import os
 import glob
@@ -5,12 +8,13 @@ import numpy as np
 import logging
 import gc
 from datetime import datetime
-from esmvalcore.preprocessor import regrid
+from iris.cube import Cube
+
 
 from ...utilities import (
     fix_dim_coordnames,
     fix_bounds,
-    #save_variable,
+    # save_variable,
     fix_dtype,
     set_global_atts,
     fix_coords
@@ -20,8 +24,8 @@ from ...utilities import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Set the future configuration option to enable split attributes handling mode
-#iris.FUTURE.save_split_attrs = True
+# Enable the new split-attributes handling mode
+iris.FUTURE.save_split_attrs = True
 
 def extract_variable(raw_info, year):
     """Extract the variable from the raw data file."""
@@ -29,13 +33,41 @@ def extract_variable(raw_info, year):
     cube_list = iris.load(raw_info['file'], raw_info['name'])
     if not cube_list:
         logger.warning(f"No cubes found for {raw_info['name']} in file {raw_info['file']}")
+    else:
+        logger.info(f"Extracted cubes: {cube_list}")
     return cube_list
 
-def regrid_tile(tile, target_cube):
-    """Regrid a single tile."""
-    return tile.regrid(target_cube, iris.analysis.Linear())
-    #return tile.regrid(target_cube, iris.analysis.AreaWeighted())
+def average_block(data, block_size):
+    """Average the data within each block of size block_size."""
+    shape = data.shape
+    reshaped_data = data.reshape(shape[0], shape[1] // block_size, block_size, shape[2] // block_size, block_size)
+    averaged_data = reshaped_data.mean(axis=(2, 4))
+    return averaged_data
 
+def regrid_iris(cube):
+    """Regrid the cubes using block averaging."""
+    logger.info("Regridding using block averaging")
+    
+    block_size = 100
+    
+    combined_data = average_block(cube.data, block_size)
+    
+    target_lats = np.linspace(-90 + 0.5 * (180 / combined_data.shape[1]), 90 - 0.5 * (180 / combined_data.shape[1]), combined_data.shape[1])
+    target_lons = np.linspace(-180 + 0.5 * (360 / combined_data.shape[2]), 180 - 0.5 * (360 / combined_data.shape[2]), combined_data.shape[2])
+    
+    # Flip the latitude points and data
+    target_lats = target_lats[::-1]
+    combined_data = combined_data[:, ::-1, :]
+    
+    lat_bounds = calculate_bounds(target_lats)
+    lon_bounds = calculate_bounds(target_lons)
+    
+    combined_cube = iris.cube.Cube(combined_data,
+                                   dim_coords_and_dims=[(cube.coord('time'), 0),
+                                                        (iris.coords.DimCoord(target_lats, standard_name='latitude', units='degrees', bounds=lat_bounds), 1),
+                                                        (iris.coords.DimCoord(target_lons, standard_name='longitude', units='degrees', bounds=lon_bounds), 2)])
+    
+    return combined_cube
 
 def calculate_bounds(points):
     """Calculate bounds for a set of points."""
@@ -45,87 +77,6 @@ def calculate_bounds(points):
     bounds[0, 0] = points[0] - (bounds[1, 0] - points[0])
     bounds[-1, 1] = points[-1] + (points[-1] - bounds[-2, 1])
     return bounds
-
-def regrid_iris(cube):
-    """Regrid the cubes using Iris."""
-    logger.info("Regridding using Iris")
-    
-    target_lats = np.linspace(-90, 90, int(180 / 0.25) + 1)
-    target_lons = np.linspace(-180, 180, int(360 / 0.25) + 1)
-    
-    lat_bounds = calculate_bounds(target_lats)
-    lon_bounds = calculate_bounds(target_lons)
-    
-    target_cube = iris.cube.Cube(np.zeros((len(target_lats), len(target_lons))),
-                                 dim_coords_and_dims=[(iris.coords.DimCoord(target_lats, standard_name='latitude', units='degrees', bounds=lat_bounds), 0),
-                                                      (iris.coords.DimCoord(target_lons, standard_name='longitude', units='degrees', bounds=lon_bounds), 1)])
-
-    # Fix bounds for the source cube coordinates
-    if not cube.coord('latitude').has_bounds():
-        cube.coord('latitude').guess_bounds()
-    if not cube.coord('longitude').has_bounds():
-        cube.coord('longitude').guess_bounds()
-    
-    # Ensure bounds are valid and log for debugging
-    logger.debug(f"Latitude bounds: {cube.coord('latitude').bounds}")
-    logger.debug(f"Longitude bounds: {cube.coord('longitude').bounds}")
-
-    combined_data = np.zeros((cube.shape[0], len(target_lats), len(target_lons)))
-
-    tile_size = 1012  # Smaller tile size to reduce memory usage
-    for time_idx in range(cube.shape[0]):
-        for lat_start in range(0, cube.shape[1], tile_size):
-            for lon_start in range(0, cube.shape[2], tile_size):
-                lat_end = min(lat_start + tile_size, cube.shape[1])
-                lon_end = min(lon_start + tile_size, cube.shape[2])
-                
-                # Extract sub-cube data
-                sub_cube_data = cube.data[time_idx, lat_start:lat_end, lon_start:lon_end].astype(np.float32)
-                
-                # Log sub-cube data to debug
-                logger.debug(f"Sub-cube data (time_idx={time_idx}, lat_start={lat_start}, lon_start={lon_start}): "
-                             f"{sub_cube_data}")
-                
-                sub_cube = iris.cube.Cube(sub_cube_data,
-                                          dim_coords_and_dims=[(cube.coord('latitude')[lat_start:lat_end], 0),
-                                                               (cube.coord('longitude')[lon_start:lon_end], 1)])
-                
-                # Log sub-cube before regridding
-                logger.debug(f"Sub-cube before regridding: {sub_cube.data}")
-
-                try:
-                    regridded_sub_cube = regrid_tile(sub_cube, target_cube)
-                    
-                    # Log regridded sub-cube data to debug
-                    logger.debug(f"Regridded sub-cube data (time_idx={time_idx}, lat_start={lat_start}, lon_start={lon_start}): "
-                                 f"{regridded_sub_cube.data}")
-                    
-                except Exception as e:
-                    logger.error(f"Regridding error at time_idx={time_idx}, lat_start={lat_start}, lon_start={lon_start}: {e}")
-                    continue
-                
-                lat_indices = [np.abs(target_lats - lat).argmin() for lat in regridded_sub_cube.coord('latitude').points]
-                lon_indices = [np.abs(target_lons - lon).argmin() for lon in regridded_sub_cube.coord('longitude').points]
-                
-                # Log indices to verify correct assignment
-                logger.debug(f"Lat indices: {lat_indices}, Lon indices: {lon_indices}")
-                
-                # Ensure indices are within bounds
-                if lat_indices and lon_indices:
-                    combined_data[time_idx, lat_indices[0]:lat_indices[-1] + 1, lon_indices[0]:lon_indices[-1] + 1] = regridded_sub_cube.data
-
-    combined_cube = iris.cube.Cube(combined_data,
-                                   dim_coords_and_dims=[(cube.coord('time'), 0),
-                                                        (iris.coords.DimCoord(target_lats, standard_name='latitude', units='degrees', bounds=lat_bounds), 1),
-                                                        (iris.coords.DimCoord(target_lons, standard_name='longitude', units='degrees', bounds=lon_bounds), 2)])
-    
-    # Log combined data to debug
-    logger.debug(f"Combined cube data: {combined_data}")
-    
-    return combined_cube
-
-
-
 
 def save_variable(cube, var, outdir, attrs, **kwargs):
     """Saver function.
@@ -148,7 +99,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
         project_id, version etc.
 
     **kwargs: kwargs
-        Keyword arguments to be passed to iris.save
+        Keyword arguments to be passed to `iris.save`
     """
     fix_dtype(cube)
 
@@ -174,17 +125,10 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     except iris.exceptions.CoordinateNotFoundError:
         time_suffix = None
     else:
-        if len(time.points) == 1 and "mon" not in cube.attributes.get('mip'):
-            year = str(time.cell(0).point.year)
-            time_suffix = '-'.join([year + '01', year + '12'])
-        else:
-            date1 = (
-                f"{time.cell(0).point.year:d}{time.cell(0).point.month:02d}"
+        year = (
+                f"{time.cell(0).point.year:d}"
             )
-            date2 = (
-                f"{time.cell(-1).point.year:d}{time.cell(-1).point.month:02d}"
-            )
-            time_suffix = '-'.join([date1, date2])
+        time_suffix = '-'.join([year])
 
     name_elements = [
         attrs['project_id'],
@@ -202,7 +146,6 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     status = 'lazy' if cube.has_lazy_data() else 'realized'
     logger.info('Cube has %s data [lazy is preferred]', status)
     iris.save(cube, file_path, fill_value=1e20, **kwargs)
-
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date=None, end_date=None):
     """Cmorize data."""
