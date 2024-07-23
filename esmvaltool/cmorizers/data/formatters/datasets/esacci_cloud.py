@@ -22,6 +22,7 @@ import cf_units
 import iris
 import numpy as np
 from cf_units import Unit
+from dask import array as da
 from iris import NameConstraint
 from calendar import monthrange
 from datetime import datetime
@@ -34,8 +35,9 @@ logger = logging.getLogger(__name__)
 
 def _create_nan_cube(cube, year, month, day):
 
-    nan_cube = cube.copy(
-        np.ma.masked_all(cube.shape, dtype=cube.dtype))
+    """Create cube containing only nan from existing cube."""
+    nan_cube = cube.copy()
+    nan_cube.data = da.ma.masked_greater(cube.core_data(), -1e20)
 
     # Read dataset time unit and calendar from file
     dataset_time_unit = str(nan_cube.coord('time').units)
@@ -44,7 +46,7 @@ def _create_nan_cube(cube, year, month, day):
     newtime = datetime(year=year, month=month, day=day)
     newtime = cf_units.date2num(newtime, dataset_time_unit,
                                 dataset_time_calender)
-    nan_cube.coord('time').points = float(newtime)
+    nan_cube.coord('time').points = float(newtime) + 0.025390625
 
     return nan_cube
 
@@ -55,6 +57,7 @@ def _extract_variable(short_name, var, cfg, in_dir,
 
     fill_cube = None
     glob_attrs = cfg['attributes']
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
 
     if not start_date:
         start_date = datetime(glob_attrs['start_year'], 1, 1)
@@ -64,7 +67,7 @@ def _extract_variable(short_name, var, cfg, in_dir,
     for year in range(start_date.year, end_date.year + 1):
         for month in range(start_date.month, end_date.month + 1):
             cubes = iris.cube.CubeList()
-            filename = f'{year}{month:02}*' + var['file']
+            #filename = f'{year}{month:02}*' + var['file']
             #filelist = glob.glob(os.path.join(in_dir, filename))
             num_days = monthrange(year, month)[1]
             for iday in range(1, num_days+1):
@@ -78,39 +81,35 @@ def _extract_variable(short_name, var, cfg, in_dir,
 
                         # load data
                         raw_var = var.get('raw', short_name)
-                        daily_cube = iris.load_cube(ifile, NameConstraint(var_name=raw_var))
 
-                        print(daily_cube.coord('time'))
-                        daily_cube.coord('time').points =  daily_cube.coord('time').points + inum * 0.1
-                        print(daily_cube.coord('time'))
+                        for ivar, raw_name in enumerate(raw_var):
+                            daily_cube = iris.load_cube(ifile, NameConstraint(var_name=raw_name))
 
-                        daily_cube.attributes.clear()
-                        daily_cube.coord('time').long_name = 'time'
+                            # set arbitrary time of day
+                            daily_cube.coord('time').points = (daily_cube.coord('time').points
+                                                               + (inum + 0.5 * ivar) * 0.1)
+                            daily_cube.attributes.clear()
+                            daily_cube.coord('time').long_name = 'time'
 
-                        print(daily_cube.coord('time'))
+                            # Fix coordinates
+                            print(daily_cube.coords)
+                            daily_cube = utils.fix_coords(daily_cube)
+                            print(daily_cube.coords)
+                            #Fix dtype
+                            utils.fix_dtype(daily_cube)
+                            #Fix metadata
+                            utils.fix_var_metadata(daily_cube, cmor_info)
 
-                        # Fix coordinates
-                        daily_cube = utils.fix_coords(daily_cube)
-                        #Fix dtype
-                        utils.fix_dtype(daily_cube)
+                            if fill_cube is None:
+                                fill_cube = daily_cube
 
-                        print(daily_cube.coord('time'))
-
-                        #logger.info("cube coords = %s", daily_cube.coords['time'])
-
-                        if fill_cube is None:
-                            fill_cube = daily_cube
-
-                        cubes.append(daily_cube)
+                            cubes.append(daily_cube)
 
                 else:
 
                     logger.info("Fill missing day %s in month %s and year %s", iday, month, year)
                     daily_cube = _create_nan_cube(fill_cube, year, month, iday)
                     cubes.append(daily_cube)
-
-            for cube in cubes:
-                print(cube.coords('time'))
 
             cube = cubes.concatenate_cube()
 
@@ -121,7 +120,7 @@ def _extract_variable(short_name, var, cfg, in_dir,
             # Calc daily
             cube = daily_statistics(cube)
 
-            cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+            #cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
 
             # Fix units
             if short_name == 'clt':
@@ -134,8 +133,10 @@ def _extract_variable(short_name, var, cfg, in_dir,
             # Fix metadata and  update version information
             attrs = copy.deepcopy(cfg['attributes'])
             attrs['mip'] = var['mip']
-            utils.fix_var_metadata(cube, cmor_info)
+            #utils.fix_var_metadata(cube, cmor_info)
             utils.set_global_atts(cube, attrs)
+
+            print(cube.coords)
 
             # Save variable
             utils.save_variable(cube,

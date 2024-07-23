@@ -18,29 +18,29 @@ attributes:
 variables:
   clt:
     mip: day
-    raw: cmask_desc
+    raw: [cmask_desc, cmask_asc]
     raw_units: '1'
     file: '-ESACCI-L3U_CLOUD-CLD_MASKTYPE-AVHRR_NOAA-*-fv3.0.nc'
-  clwvi:
-    mip: CFday
-    raw: cwp_desc
-    raw_units: g/m2
-    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
-  ctp:
-    mip: day
-    raw: ctp_desc
-    raw_units: hPa
-    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
-  reff:
-    mip: day
-    raw: cer_desc
-    raw_units: um
-    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
-  cod:
-    mip: AERday
-    raw: cot_desc
-    raw_units: 1
-    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
+    #  clwvi:
+    #    mip: CFday
+    #    raw: [cwp_desc, cwp_asc]
+    #    raw_units: g/m2
+    #    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
+    #  ctp:
+    #    mip: day
+    #    raw: [ctp_desc, ctp_asc]
+    #    raw_units: hPa
+    #    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
+    #  reff:
+    #    mip: day
+    #    raw: [cer_desc, cer_asc]
+    #    raw_units: um
+    #    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
+    #  cod:
+    #    mip: AERday
+    #    raw: [cot_desc, cot_asc]
+    #    raw_units: 1
+    #    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
 
 
     #rlut:
