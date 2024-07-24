@@ -229,14 +229,24 @@ diagnostics:
     description: ESACCI-LANDCOVER check
     variables:
       baresoilFrac:
+        mip: Lmon
+        frequency: yr
       cropFrac:
+        mip: Lmon
+        frequency: yr
       grassFrac:
+        mip: Lmon
+        frequency: yr
       shrubFrac:
+        mip: Lmon
+        frequency: yr
       treeFrac:
+        mip: Lmon
+        frequency: yr 
     additional_datasets:
       - {dataset: ESACCI-LANDCOVER, project: OBS, mip: Lmon, tier: 2,
-         type: sat, version: L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg,
-         start_year: 1998, end_year: 2012}
+         type: sat, version: v2.0.8,
+         start_year: 1992, end_year: 2020}
     scripts: null
 
   ESACCI-LST:

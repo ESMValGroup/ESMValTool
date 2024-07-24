@@ -27,8 +27,10 @@ from datetime import datetime
 
 from ...utilities import (
     fix_coords_esacci,
+    fix_var_metadata,
     fix_dtype,
     set_global_atts,
+    set_units,
 )
 
 # Configure logging
@@ -198,6 +200,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         if not isinstance(vals, dict):
             raise ValueError(f"Invalid format for variable {var_name}: "
                              f"{type(vals)}")
+        var_info = cfg['cmor_table'].get_variable(vals['mip'], var_name)
         glob_attrs['mip'] = vals['mip']
         raw_info = {'name': vals['long_name']}
         inpfile_pattern = os.path.join(in_dir, vals['filename'])
@@ -227,6 +230,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                 f"Regridding cube for {var_name}")
                             regridded_cube = regrid_iris(cube)
                             logger.info("Regridding done")
+                            fix_var_metadata(regridded_cube, var_info)
                             regridded_cube = fix_coords_esacci(regridded_cube)
                             set_global_atts(regridded_cube, glob_attrs)
                             output_filename = (f"{var_name}_"
@@ -247,32 +251,34 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     continue
 
     if shrub_cubes:
-        logger.info("Summing shrub cubes to create shrubFraction")
+        logger.info("Summing shrub cubes to create shrubFrac")
         shrub_fraction_cube = sum(shrub_cubes)
         regridded_shrub_fraction_cube = regrid_iris(shrub_fraction_cube)
+        set_units(regridded_shrub_fraction_cube, '%')
         regridded_shrub_fraction_cube = fix_coords_esacci(
             regridded_shrub_fraction_cube)
         set_global_atts(regridded_shrub_fraction_cube, glob_attrs)
-        shrub_fraction_filename = (f"shrubFraction_"
+        shrub_fraction_filename = (f"shrubFrac_"
                                    f"{datetime.now().strftime('%Y')}.nc")
         shrub_fraction_filepath = os.path.join(
             out_dir, shrub_fraction_filename)
         logger.info(f"Saving: {shrub_fraction_filepath}")
-        save_variable(regridded_shrub_fraction_cube, "shrubFraction",
+        save_variable(regridded_shrub_fraction_cube, "shrubFrac",
                       out_dir, glob_attrs, unlimited_dimensions=['time'])
-        logger.info(f"Saved shrubFraction to {shrub_fraction_filepath}")
+        logger.info(f"Saved shrubFrac to {shrub_fraction_filepath}")
 
     if tree_cubes:
-        logger.info("Summing tree cubes to create treeFraction")
+        logger.info("Summing tree cubes to create treeFrac")
         tree_fraction_cube = sum(tree_cubes)
         regridded_tree_fraction_cube = regrid_iris(tree_fraction_cube)
+        set_units(regridded_tree_fraction_cube, '%')
         regridded_tree_fraction_cube = fix_coords_esacci(
             regridded_tree_fraction_cube)
         set_global_atts(regridded_tree_fraction_cube, glob_attrs)
-        tree_fraction_filename = (f"treeFraction_"
+        tree_fraction_filename = (f"treeFrac_"
                                   f"{datetime.now().strftime('%Y')}.nc")
         tree_fraction_filepath = os.path.join(out_dir, tree_fraction_filename)
         logger.info(f"Saving: {tree_fraction_filepath}")
-        save_variable(regridded_tree_fraction_cube, "treeFraction",
+        save_variable(regridded_tree_fraction_cube, "treeFrac",
                       out_dir, glob_attrs, unlimited_dimensions=['time'])
-        logger.info(f"Saved treeFraction to {tree_fraction_filepath}")
+        logger.info(f"Saved treeFrac to {tree_fraction_filepath}")
