@@ -120,8 +120,6 @@ def _extract_variable(short_name, var, cfg, in_dir,
             # Calc daily
             cube = daily_statistics(cube)
 
-            #cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
-
             # Fix units
             if short_name == 'clt':
                 cube.data = 100 * cube.core_data()
@@ -135,8 +133,6 @@ def _extract_variable(short_name, var, cfg, in_dir,
             attrs['mip'] = var['mip']
             #utils.fix_var_metadata(cube, cmor_info)
             utils.set_global_atts(cube, attrs)
-
-            print(cube.coords)
 
             # Save variable
             utils.save_variable(cube,
