@@ -17,12 +17,12 @@ Download and processing instructions
 
 """
 
-import iris
 import os
 import glob
-import numpy as np
-import logging
 import gc
+import logging
+import iris
+import numpy as np
 from datetime import datetime
 
 from ...utilities import (
@@ -181,8 +181,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     iris.save(cube, file_path, fill_value=1e20, **kwargs)
 
 
-def cmorization(in_dir, out_dir, cfg, cfg_user, start_date=None,
-                end_date=None):
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize data."""
     glob_attrs = cfg['attributes']
     if not start_date:
