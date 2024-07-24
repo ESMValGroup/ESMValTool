@@ -197,9 +197,17 @@ diagnostics:
     variables:
             #clivi:
       clt:
+        mip: day
               #cltStderr:
-              #clwvi:
+      clwvi:
+        mip: CFday
+      cod:
+        mip: AERday
+      ctp:
+        mip: day
               #lwp:
+      reff:
+        mip: day
               #rlut:
               #rlutcs:
               #rsut:
@@ -211,7 +219,7 @@ diagnostics:
     additional_datasets:
             # - {dataset: ESACCI-CLOUD, project: OBS, mip: Amon, tier: 2,
             #    type: sat, version: AVHRR-AMPM-fv3.0, start_year: 1982, end_year: 2016}
-      - {dataset: ESACCI-CLOUD, project: OBS6, mip: day, tier: 2,
+      - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2,
          type: sat, version: v3.0, timerange: 200301/200712}
     scripts: null
 
