@@ -159,8 +159,8 @@ diagnostics:
     description: Create timeseries.
     variables:
       clt: &var
-        preprocessor: mean_pp
-        #preprocessor: mean_pp_5x5
+        #preprocessor: mean_pp
+        preprocessor: mean_pp_5x5
         #preprocessor: anomaly_pp
         mip: day
         frequency: day
