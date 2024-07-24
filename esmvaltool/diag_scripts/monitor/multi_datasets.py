@@ -1117,13 +1117,13 @@ class MultiDatasets(MonitorBase):
                     cube = cubes.extract_cube(iris.NameConstraint(
                         var_name=var_name
                     ))
-                except ConstraintMismatchError:
+                except ConstraintMismatchError as exc:
                     var_names = [c.var_name for c in cubes]
-                    raise IOError(
+                    raise ValueError(
                         f"Cannot load data: multiple variables ({var_names}) "
                         f"are available in file {filename}, but not the "
                         f"requested '{var_name}'"
-                    )
+                    ) from exc
 
             # Fix time coordinate if present
             if cube.coords('time', dim_coords=True):
