@@ -187,9 +187,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize data."""
     glob_attrs = cfg['attributes']
     if not start_date:
-        start_date = datetime(2000, 1, 1)
+        start_date = datetime(1992, 1, 1)
     if not end_date:
-        end_date = datetime(2000, 12, 31)
+        end_date = datetime(2020, 12, 31)
 
     shrub_vars = {'shrubs-bd', 'shrubs-be', 'shrubs-nd', 'shrubs-ne'}
     shrub_cubes = []
@@ -233,17 +233,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                             fix_var_metadata(regridded_cube, var_info)
                             regridded_cube = fix_coords_esacci(regridded_cube)
                             set_global_atts(regridded_cube, glob_attrs)
-                            output_filename = (f"{var_name}_"
-                                               f"{datetime.now().strftime('%Y')}"
-                                               f".nc")
-                            output_filepath = os.path.join(out_dir,
-                                                           output_filename)
-                            logger.info(f"Saving: {output_filepath}")
                             save_variable(regridded_cube, var_name, out_dir,
                                           glob_attrs,
                                           unlimited_dimensions=['time'])
-                            logger.info(f"Saved {var_name} to "
-                                        f"{output_filepath}")
                     del cube_list  # Free memory
                     gc.collect()  # Explicitly call garbage collection
                 except Exception as e:
@@ -265,7 +257,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         logger.info(f"Saving: {shrub_fraction_filepath}")
         save_variable(regridded_shrub_fraction_cube, "shrubFrac",
                       out_dir, glob_attrs, unlimited_dimensions=['time'])
-        logger.info(f"Saved shrubFrac to {shrub_fraction_filepath}")
 
     if tree_cubes:
         logger.info("Summing tree cubes to create treeFrac")
@@ -281,4 +272,3 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         logger.info(f"Saving: {tree_fraction_filepath}")
         save_variable(regridded_tree_fraction_cube, "treeFrac",
                       out_dir, glob_attrs, unlimited_dimensions=['time'])
-        logger.info(f"Saved treeFrac to {tree_fraction_filepath}")
