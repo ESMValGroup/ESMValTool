@@ -473,33 +473,13 @@ datasets:
 
   ESACCI-LANDCOVER:
     tier: 2
-    #source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/land_cover_maps/
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/pft/v2.0.8/
-    last_access: 2019-01-10
+    last_access: 2024-07-11
     info: |
-      Download the 3 NetCDF files for 2000, 2005 and 2010.
-      Download the CCI-LC Tools from:
-        http://maps.elie.ucl.ac.be/CCI/viewer/download/lc-user-tools-3.14.zip
-      Unpack and run the CCI-LC Tools on each of the NetCDF files as follows:
-        bash lc-user-tools-3.14/bin/aggregate-map.sh \
-          -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 \
-          -PoutputAccuracy=false -PoutputPFTClasses=true \
-          -PoutputLCCSClasses=false -PnumRows=360 <inputfile.nc>
-      Put the resulting processed data in input_dir_path.
-
-      Caveats
-        The CCI-LC Tools must be applied before running this script.
-        The CCI-LC Tools require Java Version 7 or higher.
-        The input data are available for a single year and are copied over to
-        generate a time series over their time range of validity.
+        Download and processing instructions:
+        Put all files under a single directory (no subdirectories with years)
+        in ${RAWOBS}/Tier2/ESACCI-LANDCOVER
   
-  # ESACCI-LANDCOVER-PFT:
-  #   tier: 2
-  #   source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/pft/
-  #   last_access: 2024-07-10
-  #   info:
-
-
   ESACCI-LST:
     tier: 2
     source: On CEDA-JASMIN, /gws/nopw/j04/esacci_lst/public

@@ -1,4 +1,21 @@
+"""ESMValTool CMORizer for ESACCI-LANDCOVER pft data.
 
+Tier
+    Tier 2: other freely-available dataset.
+
+Source
+    ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/pft/
+
+Last access
+    20240626
+
+Download and processing instructions
+    Download the data from:
+      pft/v2.0.8/
+    Put all files under a single directory (no subdirectories with years).
+    in ${RAWOBS}/Tier2/ESACCI-LANDCOVER
+
+"""
 
 import iris
 import os
@@ -7,7 +24,6 @@ import numpy as np
 import logging
 import gc
 from datetime import datetime
-
 
 from ...utilities import (
     fix_coords_esacci,
@@ -170,9 +186,14 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date=None,
     """Cmorize data."""
     glob_attrs = cfg['attributes']
     if not start_date:
-        start_date = datetime(1998, 1, 1)
+        start_date = datetime(2000, 1, 1)
     if not end_date:
-        end_date = datetime(1998, 12, 31)
+        end_date = datetime(2000, 12, 31)
+
+    shrub_vars = {'shrubs-bd', 'shrubs-be', 'shrubs-nd', 'shrubs-ne'}
+    shrub_cubes = []
+    tree_vars = {'trees-bd', 'trees-be', 'trees-nd', 'trees-ne'}
+    tree_cubes = []
 
     for var_name, vals in cfg['variables'].items():
         if not isinstance(vals, dict):
@@ -194,23 +215,65 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date=None,
                     cube_list = extract_variable(raw_info, year=year)
                     logger.info("End variable extraction")
                     for cube in cube_list:
-                        logger.info(f"Regridding cube for {var_name}")
-                        regridded_cube = regrid_iris(cube)
-                        logger.info("Regridding done")
-                        regridded_cube = fix_coords_esacci(regridded_cube)
-                        set_global_atts(regridded_cube, glob_attrs)
-                        output_filename = (f"{var_name}_"
-                                           f"{datetime.now().strftime('%Y')}"
-                                           f".nc")
-                        output_filepath = os.path.join(out_dir,
-                                                       output_filename)
-                        logger.info(f"Saving: {output_filepath}")
-                        save_variable(regridded_cube, var_name, out_dir,
-                                      glob_attrs,
-                                      unlimited_dimensions=['time'])
-                        logger.info(f"Saved {var_name} to {output_filepath}")
+                        if var_name in shrub_vars:
+                            logger.info(
+                                f"Adding {var_name} cube for summation")
+                            shrub_cubes.append(cube)
+                        elif var_name in tree_vars:
+                            logger.info(
+                                f"Adding {var_name} cube for summation")
+                            tree_cubes.append(cube)
+                        else:
+                            logger.info(
+                                f"Regridding cube for {var_name}")
+                            regridded_cube = regrid_iris(cube)
+                            logger.info("Regridding done")
+                            regridded_cube = fix_coords_esacci(regridded_cube)
+                            set_global_atts(regridded_cube, glob_attrs)
+                            output_filename = (f"{var_name}_"
+                                               f"{datetime.now().strftime('%Y')}"
+                                               f".nc")
+                            output_filepath = os.path.join(out_dir,
+                                                           output_filename)
+                            logger.info(f"Saving: {output_filepath}")
+                            save_variable(regridded_cube, var_name, out_dir,
+                                          glob_attrs,
+                                          unlimited_dimensions=['time'])
+                            logger.info(f"Saved {var_name} to "
+                                        f"{output_filepath}")
                     del cube_list  # Free memory
                     gc.collect()  # Explicitly call garbage collection
                 except Exception as e:
                     logger.error(f"Failed to process file {inpfile}: {e}")
                     continue
+
+    if shrub_cubes:
+        logger.info("Summing shrub cubes to create shrubFraction")
+        shrub_fraction_cube = sum(shrub_cubes)
+        regridded_shrub_fraction_cube = regrid_iris(shrub_fraction_cube)
+        regridded_shrub_fraction_cube = fix_coords_esacci(
+            regridded_shrub_fraction_cube)
+        set_global_atts(regridded_shrub_fraction_cube, glob_attrs)
+        shrub_fraction_filename = (f"shrubFraction_"
+                                   f"{datetime.now().strftime('%Y')}.nc")
+        shrub_fraction_filepath = os.path.join(
+            out_dir, shrub_fraction_filename)
+        logger.info(f"Saving: {shrub_fraction_filepath}")
+        save_variable(regridded_shrub_fraction_cube, "shrubFraction",
+                      out_dir, glob_attrs, unlimited_dimensions=['time'])
+        logger.info(f"Saved shrubFraction to {shrub_fraction_filepath}")
+
+    if tree_cubes:
+        logger.info("Summing tree cubes to create treeFraction")
+        tree_fraction_cube = sum(tree_cubes)
+        regridded_tree_fraction_cube = regrid_iris(tree_fraction_cube)
+        regridded_tree_fraction_cube = fix_coords_esacci(
+            regridded_tree_fraction_cube)
+        set_global_atts(regridded_tree_fraction_cube, glob_attrs)
+        tree_fraction_filename = (f"treeFraction_"
+                                  f"{datetime.now().strftime('%Y')}.nc")
+        tree_fraction_filepath = os.path.join(out_dir, tree_fraction_filename)
+        logger.info(f"Saving: {tree_fraction_filepath}")
+        save_variable(regridded_tree_fraction_cube, "treeFraction",
+                      out_dir, glob_attrs, unlimited_dimensions=['time'])
+        logger.info(f"Saved treeFraction to {tree_fraction_filepath}")

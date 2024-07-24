@@ -1,4 +1,4 @@
-"""Script to download ESACCI-OC from the CEDA."""
+"""Script to download ESACCI-LANDCOVER pft data from the CEDA."""
 
 from datetime import datetime
 
