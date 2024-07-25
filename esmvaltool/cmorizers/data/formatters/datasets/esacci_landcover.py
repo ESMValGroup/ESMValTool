@@ -183,7 +183,7 @@ def save_variable(cube, var, out_dir, attrs, **kwargs):
 
 def calculate_shrubfrac(shrub_cubes, glob_attrs, out_dir):
     """Calculate shrubFrac.
-    
+
     Summing variables:
        'shrubs-bd',
        'shrubs-be',
@@ -221,7 +221,7 @@ def calculate_treefrac(tree_cubes, glob_attrs, out_dir):
        'trees-be',
        'trees-nd',
        'trees-ne'
-       
+
     Parameters
     ----------
     tree_cubes: iris.cube.Cube
