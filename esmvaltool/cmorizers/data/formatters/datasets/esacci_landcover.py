@@ -111,7 +111,7 @@ def calculate_bounds(points):
     return bounds
 
 
-def save_variable(cube, var, outdir, attrs, **kwargs):
+def save_variable(cube, var, out_dir, attrs, **kwargs):
     """Saver function.
 
     Saves iris cubes (data variables) in CMOR-standard named files.
@@ -119,16 +119,16 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     Parameters
     ----------
     cube: iris.cube.Cube
-        data cube to be saved.
+        Data cube to be saved.
 
     var: str
         Variable short_name e.g. ts or tas.
 
-    outdir: str
-        root directory where the file will be saved.
+    out_dir: str
+        Root directory where the file will be saved.
 
     attrs: dict
-        dictionary holding cube metadata attributes like
+        Dictionary holding cube metadata attributes like
         project_id, version etc.
 
     **kwargs: kwargs
@@ -174,7 +174,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     if time_suffix:
         name_elements.append(time_suffix)
     file_name = '_'.join(name_elements) + '.nc'
-    file_path = os.path.join(outdir, file_name)
+    file_path = os.path.join(out_dir, file_name)
     logger.info('Saving: %s', file_path)
     status = 'lazy' if cube.has_lazy_data() else 'realized'
     logger.info('Cube has %s data [lazy is preferred]', status)
@@ -183,10 +183,22 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
 
 def calculate_shrubfrac(shrub_cubes, glob_attrs, out_dir):
     """Calculate shrubFrac by summing variables:
+
        'shrubs-bd',
        'shrubs-be',
        'shrubs-nd',
        'shrubs-ne'
+
+    Parameters
+    ----------
+    shrub_cubes: iris.cube.Cube
+                Data cube to be saved.
+
+    glob_attrs: dict
+                Dictionary holding cube metadata attributes
+
+    out_dir: str
+                Root directory where the file will be saved.
     """
     if shrub_cubes:
         logger.info("Summing shrub cubes to create shrubFrac")
@@ -202,10 +214,21 @@ def calculate_shrubfrac(shrub_cubes, glob_attrs, out_dir):
 
 def calculate_treefrac(tree_cubes, glob_attrs, out_dir):
     """Calculate treeFrac by summing variables:
+
        'trees-bd',
        'trees-be',
        'trees-nd',
        'trees-ne'
+    Parameters
+    ----------
+    tree_cubes: iris.cube.Cube
+                Data cube to be saved.
+
+    glob_attrs: dict
+                Dictionary holding cube metadata attributes
+
+    out_dir: str
+                Root directory where the file will be saved.
     """
     if tree_cubes:
         logger.info("Summing tree cubes to create treeFrac")
