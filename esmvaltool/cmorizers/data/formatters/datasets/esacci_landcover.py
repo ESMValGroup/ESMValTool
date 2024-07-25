@@ -43,14 +43,14 @@ iris.FUTURE.save_split_attrs = True
 
 def extract_variable(raw_info, year):
     """Extract the variable from the raw data file."""
-    logger.info(f"Extracting variable for year {year} from "
-                f"{raw_info['file']}")
+    logger.info("Extracting variable for year {year} from "
+                "{raw_info['file']}")
     cube_list = iris.load(raw_info['file'], raw_info['name'])
     if not cube_list:
-        logger.warning(f"No cubes found for {raw_info['name']} in file "
-                       f"{raw_info['file']}")
+        logger.warning("No cubes found for {raw_info['name']} in file "
+                       "{raw_info['file']}")
     else:
-        logger.info(f"Extracted cubes: {cube_list}")
+        logger.info("Extracted cubes: {cube_list}")
     return cube_list
 
 
@@ -152,9 +152,9 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     cube.long_name = cube.long_name or var
 
     # Debugging metadata before saving
-    logger.debug(f"Saving cube with var_name={cube.var_name}, "
-                 f"standard_name={cube.standard_name}, "
-                 f"long_name={cube.long_name}")
+    logger.debug("Saving cube with var_name=%s, standard_name=%s, "
+                 "long_name=%s",
+                 cube.var_name, cube.standard_name, cube.long_name)
 
     # CMOR standard
     try:
@@ -219,15 +219,15 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     for cube in cube_list:
                         if var_name in shrub_vars:
                             logger.info(
-                                f"Adding {var_name} cube for summation")
+                                 "Adding {var_name} cube for summation")
                             shrub_cubes.append(cube)
                         elif var_name in tree_vars:
                             logger.info(
-                                f"Adding {var_name} cube for summation")
+                                 "Adding {var_name} cube for summation")
                             tree_cubes.append(cube)
                         else:
                             logger.info(
-                                f"Regridding cube for {var_name}")
+                                 "Regridding cube for {var_name}")
                             regridded_cube = regrid_iris(cube)
                             logger.info("Regridding done")
                             fix_var_metadata(regridded_cube, var_info)
@@ -239,7 +239,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     del cube_list  # Free memory
                     gc.collect()  # Explicitly call garbage collection
                 except Exception as e:
-                    logger.error(f"Failed to process file {inpfile}: {e}")
+                    logger.error("Failed to process file %s: %s",
+                                 inpfile, e)
                     continue
 
     if shrub_cubes:
@@ -250,11 +251,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         regridded_shrub_fraction_cube = fix_coords_esacci(
             regridded_shrub_fraction_cube)
         set_global_atts(regridded_shrub_fraction_cube, glob_attrs)
-        shrub_fraction_filename = (f"shrubFrac_"
-                                   f"{datetime.now().strftime('%Y')}.nc")
-        shrub_fraction_filepath = os.path.join(
-            out_dir, shrub_fraction_filename)
-        logger.info(f"Saving: {shrub_fraction_filepath}")
         save_variable(regridded_shrub_fraction_cube, "shrubFrac",
                       out_dir, glob_attrs, unlimited_dimensions=['time'])
 
@@ -266,9 +262,5 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         regridded_tree_fraction_cube = fix_coords_esacci(
             regridded_tree_fraction_cube)
         set_global_atts(regridded_tree_fraction_cube, glob_attrs)
-        tree_fraction_filename = (f"treeFrac_"
-                                  f"{datetime.now().strftime('%Y')}.nc")
-        tree_fraction_filepath = os.path.join(out_dir, tree_fraction_filename)
-        logger.info(f"Saving: {tree_fraction_filepath}")
         save_variable(regridded_tree_fraction_cube, "treeFrac",
                       out_dir, glob_attrs, unlimited_dimensions=['time'])
