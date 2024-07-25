@@ -21,9 +21,9 @@ import os
 import glob
 import gc
 import logging
+from datetime import datetime
 import iris
 import numpy as np
-from datetime import datetime
 
 from ...utilities import (
     fix_coords_esacci,
@@ -211,21 +211,18 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             for inpfile in inpfiles:
                 raw_info['file'] = inpfile
                 try:
-                    logger.info("Starting variable extraction")
                     cube_list = extract_variable(raw_info)
-                    logger.info("End variable extraction")
                     for cube in cube_list:
                         if var_name in shrub_vars:
-                            logger.info(
-                                 "Adding %s cube for summation", var_name)
+                            logger.info("Adding %s cube for summation",
+                                        var_name)
                             shrub_cubes.append(cube)
                         elif var_name in tree_vars:
                             logger.info(
                                  "Adding %s cube for summation", var_name)
                             tree_cubes.append(cube)
                         else:
-                            logger.info(
-                                 "Regridding cube for %s", var_name)
+                            logger.info("Regridding cube for %s", var_name)
                             regridded_cube = regrid_iris(cube)
                             logger.info("Regridding done")
                             fix_var_metadata(regridded_cube, var_info)
@@ -236,9 +233,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                           unlimited_dimensions=['time'])
                     del cube_list  # Free memory
                     gc.collect()  # Explicitly call garbage collection
-                except Exception as e:
+                except Exception as exc:
                     logger.error("Failed to process file %s: %s",
-                                 inpfile, e)
+                                 inpfile, exc)
                     continue
 
     if shrub_cubes:
