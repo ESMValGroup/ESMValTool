@@ -181,6 +181,32 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     iris.save(cube, file_path, fill_value=1e20, **kwargs)
 
 
+def calculate_shrubfrac(shrub_cubes, glob_attrs, out_dir):
+    if shrub_cubes:
+        logger.info("Summing shrub cubes to create shrubFrac")
+        shrub_fraction_cube = sum(shrub_cubes)
+        regridded_shrub_fraction_cube = regrid_iris(shrub_fraction_cube)
+        set_units(regridded_shrub_fraction_cube, '%')
+        regridded_shrub_fraction_cube = fix_coords_esacci(
+            regridded_shrub_fraction_cube)
+        set_global_atts(regridded_shrub_fraction_cube, glob_attrs)
+        save_variable(regridded_shrub_fraction_cube, "shrubFrac",
+                      out_dir, glob_attrs, unlimited_dimensions=['time'])
+
+
+def calculate_treefrac(tree_cubes, glob_attrs, out_dir):
+    if tree_cubes:
+        logger.info("Summing tree cubes to create treeFrac")
+        tree_fraction_cube = sum(tree_cubes)
+        regridded_tree_fraction_cube = regrid_iris(tree_fraction_cube)
+        set_units(regridded_tree_fraction_cube, '%')
+        regridded_tree_fraction_cube = fix_coords_esacci(
+            regridded_tree_fraction_cube)
+        set_global_atts(regridded_tree_fraction_cube, glob_attrs)
+        save_variable(regridded_tree_fraction_cube, "treeFrac",
+                      out_dir, glob_attrs, unlimited_dimensions=['time'])
+
+
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize data."""
     glob_attrs = cfg['attributes']
@@ -210,52 +236,23 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             inpfiles = sorted(glob.glob(year_inpfile_pattern))
             for inpfile in inpfiles:
                 raw_info['file'] = inpfile
-                try:
-                    cube_list = extract_variable(raw_info)
-                    for cube in cube_list:
-                        if var_name in shrub_vars:
-                            logger.info("Adding %s cube for summation",
-                                        var_name)
-                            shrub_cubes.append(cube)
-                        elif var_name in tree_vars:
-                            logger.info(
-                                 "Adding %s cube for summation", var_name)
-                            tree_cubes.append(cube)
-                        else:
-                            logger.info("Regridding cube for %s", var_name)
-                            regridded_cube = regrid_iris(cube)
-                            logger.info("Regridding done")
-                            fix_var_metadata(regridded_cube, var_info)
-                            regridded_cube = fix_coords_esacci(regridded_cube)
-                            set_global_atts(regridded_cube, glob_attrs)
-                            save_variable(regridded_cube, var_name, out_dir,
-                                          glob_attrs,
-                                          unlimited_dimensions=['time'])
-                    del cube_list  # Free memory
-                    gc.collect()  # Explicitly call garbage collection
-                except Exception as exc:
-                    logger.error("Failed to process file %s: %s",
-                                 inpfile, exc)
-                    continue
+                cube_list = extract_variable(raw_info)
+                for cube in cube_list:
+                    if var_name in shrub_vars:
+                        shrub_cubes.append(cube)
+                    elif var_name in tree_vars:
+                        tree_cubes.append(cube)
+                    else:
+                        logger.info("Regridding cube for %s", var_name)
+                        regridded_cube = regrid_iris(cube)
+                        fix_var_metadata(regridded_cube, var_info)
+                        regridded_cube = fix_coords_esacci(regridded_cube)
+                        set_global_atts(regridded_cube, glob_attrs)
+                        save_variable(regridded_cube, var_name, out_dir,
+                                      glob_attrs,
+                                      unlimited_dimensions=['time'])
+                del cube_list  # Free memory
+                gc.collect()  # Explicitly call garbage collection
 
-    if shrub_cubes:
-        logger.info("Summing shrub cubes to create shrubFrac")
-        shrub_fraction_cube = sum(shrub_cubes)
-        regridded_shrub_fraction_cube = regrid_iris(shrub_fraction_cube)
-        set_units(regridded_shrub_fraction_cube, '%')
-        regridded_shrub_fraction_cube = fix_coords_esacci(
-            regridded_shrub_fraction_cube)
-        set_global_atts(regridded_shrub_fraction_cube, glob_attrs)
-        save_variable(regridded_shrub_fraction_cube, "shrubFrac",
-                      out_dir, glob_attrs, unlimited_dimensions=['time'])
-
-    if tree_cubes:
-        logger.info("Summing tree cubes to create treeFrac")
-        tree_fraction_cube = sum(tree_cubes)
-        regridded_tree_fraction_cube = regrid_iris(tree_fraction_cube)
-        set_units(regridded_tree_fraction_cube, '%')
-        regridded_tree_fraction_cube = fix_coords_esacci(
-            regridded_tree_fraction_cube)
-        set_global_atts(regridded_tree_fraction_cube, glob_attrs)
-        save_variable(regridded_tree_fraction_cube, "treeFrac",
-                      out_dir, glob_attrs, unlimited_dimensions=['time'])
+    calculate_shrubfrac(shrub_cubes, glob_attrs, out_dir)
+    calculate_treefrac(tree_cubes, glob_attrs, out_dir)
