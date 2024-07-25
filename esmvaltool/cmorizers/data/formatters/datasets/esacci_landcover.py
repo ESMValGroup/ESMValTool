@@ -182,6 +182,12 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
 
 
 def calculate_shrubfrac(shrub_cubes, glob_attrs, out_dir):
+    """Calculate shrubFrac by summing variables:
+       'shrubs-bd',
+       'shrubs-be',
+       'shrubs-nd',
+       'shrubs-ne'
+    """
     if shrub_cubes:
         logger.info("Summing shrub cubes to create shrubFrac")
         shrub_fraction_cube = sum(shrub_cubes)
@@ -195,6 +201,12 @@ def calculate_shrubfrac(shrub_cubes, glob_attrs, out_dir):
 
 
 def calculate_treefrac(tree_cubes, glob_attrs, out_dir):
+    """Calculate treeFrac by summing variables:
+       'trees-bd',
+       'trees-be',
+       'trees-nd',
+       'trees-ne'
+    """
     if tree_cubes:
         logger.info("Summing tree cubes to create treeFrac")
         tree_fraction_cube = sum(tree_cubes)
