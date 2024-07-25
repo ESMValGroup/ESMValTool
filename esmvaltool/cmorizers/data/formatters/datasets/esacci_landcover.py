@@ -41,16 +41,14 @@ logger = logging.getLogger(__name__)
 iris.FUTURE.save_split_attrs = True
 
 
-def extract_variable(raw_info, year):
+def extract_variable(raw_info):
     """Extract the variable from the raw data file."""
-    logger.info("Extracting variable for year {year} from "
-                "{raw_info['file']}")
     cube_list = iris.load(raw_info['file'], raw_info['name'])
     if not cube_list:
         logger.warning("No cubes found for {raw_info['name']} in file "
                        "{raw_info['file']}")
     else:
-        logger.info("Extracted cubes: {cube_list}")
+        logger.info("Extracted cubes: %s", cube_list)
     return cube_list
 
 
@@ -189,7 +187,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if not start_date:
         start_date = datetime(1992, 1, 1)
     if not end_date:
-        end_date = datetime(2020, 12, 31)
+        end_date = datetime(1992, 12, 31)
 
     shrub_vars = {'shrubs-bd', 'shrubs-be', 'shrubs-nd', 'shrubs-ne'}
     shrub_cubes = []
@@ -214,20 +212,20 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 raw_info['file'] = inpfile
                 try:
                     logger.info("Starting variable extraction")
-                    cube_list = extract_variable(raw_info, year=year)
+                    cube_list = extract_variable(raw_info)
                     logger.info("End variable extraction")
                     for cube in cube_list:
                         if var_name in shrub_vars:
                             logger.info(
-                                 "Adding {var_name} cube for summation")
+                                 "Adding %s cube for summation", var_name)
                             shrub_cubes.append(cube)
                         elif var_name in tree_vars:
                             logger.info(
-                                 "Adding {var_name} cube for summation")
+                                 "Adding %s cube for summation", var_name)
                             tree_cubes.append(cube)
                         else:
                             logger.info(
-                                 "Regridding cube for {var_name}")
+                                 "Regridding cube for %s", var_name)
                             regridded_cube = regrid_iris(cube)
                             logger.info("Regridding done")
                             fix_var_metadata(regridded_cube, var_info)
