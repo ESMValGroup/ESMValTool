@@ -94,6 +94,22 @@ def add_scalar_height_coord(cube: Cube, height: float = 2.0) -> None:
     cube.add_aux_coord(height_coord, ())
 
 
+def add_typebare(cube, value='bare_ground'):
+    """Add scalar coordinate 'typebare' with value of `value`."""
+
+    logger.debug("Adding typesi coordinate (%s)", value)
+    typebare_coord = iris.coords.AuxCoord(value,
+                                          var_name='typebare',
+                                          standard_name='area_type',
+                                          long_name='surface type',
+                                          units=Unit('no unit'))
+    try:
+        cube.coord('area_type')
+    except iris.exceptions.CoordinateNotFoundError:
+        cube.add_aux_coord(typebare_coord, ())
+    return cube
+
+
 @contextmanager
 def constant_metadata(cube):
     """Do cube math without modifying units, attributes etc.

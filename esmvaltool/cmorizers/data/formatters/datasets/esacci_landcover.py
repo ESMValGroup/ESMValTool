@@ -31,6 +31,7 @@ from ...utilities import (
     fix_dtype,
     set_global_atts,
     set_units,
+    add_typebare,
 )
 
 # Configure logging
@@ -284,6 +285,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                         logger.info("Regridding cube for %s", var_name)
                         regridded_cube = regrid_iris(cube)
                         fix_var_metadata(regridded_cube, var_info)
+                        if vals['long_name'] == 'BARE':
+                            add_typebare(regridded_cube)
                         regridded_cube = fix_coords_esacci(regridded_cube)
                         set_global_atts(regridded_cube, glob_attrs)
                         save_variable(regridded_cube, var_name, out_dir,
