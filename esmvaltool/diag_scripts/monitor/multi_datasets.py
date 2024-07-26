@@ -612,6 +612,7 @@ import seaborn as sns
 from iris.analysis.cartography import area_weights
 from iris.coord_categorisation import add_year
 from iris.coords import AuxCoord
+from iris.exceptions import ConstraintMismatchError
 from matplotlib.colors import CenteredNorm
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import (
@@ -1107,7 +1108,22 @@ class MultiDatasets(MonitorBase):
         for dataset in input_data:
             filename = dataset['filename']
             logger.info("Loading %s", filename)
-            cube = iris.load_cube(filename)
+            cubes = iris.load(filename)
+            if len(cubes) == 1:
+                cube = cubes[0]
+            else:
+                var_name = dataset['short_name']
+                try:
+                    cube = cubes.extract_cube(iris.NameConstraint(
+                        var_name=var_name
+                    ))
+                except ConstraintMismatchError as exc:
+                    var_names = [c.var_name for c in cubes]
+                    raise ValueError(
+                        f"Cannot load data: multiple variables ({var_names}) "
+                        f"are available in file {filename}, but not the "
+                        f"requested '{var_name}'"
+                    ) from exc
 
             # Fix time coordinate if present
             if cube.coords('time', dim_coords=True):
