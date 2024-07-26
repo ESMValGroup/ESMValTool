@@ -38,7 +38,15 @@ preprocessors:
       period: full
 
   preproc_era_ano: 
-    <<: *prep_era_abs   
+    custom_order: True 
+    extract_shape:
+      shapefile: british_columbia.shp
+      method: contains
+      crop: True
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: max
     anomalies:
       period: full
       reference:
@@ -116,14 +124,14 @@ diagnostics:
                  Similar to figs 3 and 4 and observational info in tab 2 
                  in Malinina&Gillet (2024). 
     variables:     
-      obs_ano:
+      obs_data:
         short_name: tasmax
         start_year: 1940
         end_year: 2022
         mip: day
         preprocessor: preproc_era_ano 
         additional_datasets: *dataset_era    
-      obs_gsat:
+      obs_covariate:
         short_name: tas
         start_year: 1940
         end_year: 2022
@@ -135,63 +143,69 @@ diagnostics:
         script: malinina24/observational_return_periods.py
         mpl_style: malinina24
         color_style: malinina24
-        CI_borders: [5, 95] # lower and upper limits of the confidence interval
+        CI_quantiles: [5, 95] # percentiles for the confidence interval
         region: BC # needed for the figure title
         ax_var_label: TXx # needed for axis name
         analysis_year: 2021
-        smooth_gsat_years: 4
-        gsat_dataset: ERA5 # optional parameter if the extreme dataset doesn't have GSAT
-  model:
-    description: Calculate the event probability in different climates 
-                 for an event selected in the observations diagnostic. 
-                 Similar to fig 9 and inputs in tab 2 and 3
-                 in Malinina&Gillet (2024). 
-    variables:
-      all:
-        short_name: tasmax
-        exp: [historical, ssp245]
-        start_year: 2011
-        end_year: 2030
-        project: CMIP6
-        mip: day
-        preprocessor: preproc_txx
-        additional_datasets: *datasets_tasmax
-      ssp245: 
-        short_name: tasmax
-        exp: ssp245
-        start_year: 2081
-        end_year: 2100
-        project: CMIP6
-        mip: day
-        preprocessor: preproc_txx
-        additional_datasets: *datasets_tasmax        
-      nat: 
-        short_name: tasmax
-        exp: historical
-        start_year: 1850
-        end_year: 1900
-        project: CMIP6
-        mip: day
-        preprocessor: preproc_txx
-        additional_datasets: *datasets_tasmax
-      anomaly:
-        short_name: tasmax
-        exp: historical
-        start_year: 1940
-        end_year: 1959
-        project: CMIP6
-        mip: day
-        preprocessor: preproc_ano
-        additional_datasets: *datasets_tasmax
-    scripts:
-      models:
-        script: extreme_events/model_analysis_event_attribution.py
-        ancestors: observations/observations
-        mpl_style: malinina24
-        color_style: malinina24
-        individual_models: False # do the output for sigle models (true) or multi-model mean (false)
-        anomaly_type: minus # options: minus and ratio
-        initial_conditions: True # use initial conditions for the GEV fit
-        model_weighting: False # determines, if each realisation gets a weight of 1 (false) or 1/number of relisation
-        region: BC # needed for the figure title
-        ax_var_label: TXx # needed for axis name
+        smooth_covariate_years: 4
+        covariate_dataset: ERA5 # optional parameter if the extreme dataset doesn't have GSAT
+        bootstrap_seed: 501 # seed to start sequence for bootstrap
+        # anomaly: #optional parameter if anomalies calculaetd in the diagnostic
+        #   type: minus # options: minus and ratio
+        #   period: [1940, 1959]
+  # model:
+  #   description: Calculate the event probability in different climates 
+  #                for an event selected in the observations diagnostic. 
+  #                Similar to fig 9 and inputs in tab 2 and 3
+  #                in Malinina&Gillet (2024). 
+  #   variables:
+  #     all:
+  #       short_name: tasmax
+  #       exp: [historical, ssp245]
+  #       start_year: 2011
+  #       end_year: 2030
+  #       project: CMIP6
+  #       mip: day
+  #       preprocessor: preproc_txx
+  #       additional_datasets: *datasets_tasmax
+  #     ssp245: 
+  #       short_name: tasmax
+  #       exp: ssp245
+  #       start_year: 2081
+  #       end_year: 2100
+  #       project: CMIP6
+  #       mip: day
+  #       preprocessor: preproc_txx
+  #       additional_datasets: *datasets_tasmax        
+  #     nat: 
+  #       short_name: tasmax
+  #       exp: historical
+  #       start_year: 1850
+  #       end_year: 1900
+  #       project: CMIP6
+  #       mip: day
+  #       preprocessor: preproc_txx
+  #       additional_datasets: *datasets_tasmax
+  #     anomaly:
+  #       short_name: tasmax
+  #       exp: historical
+  #       start_year: 1940
+  #       end_year: 1959
+  #       project: CMIP6
+  #       mip: day
+  #       preprocessor: preproc_ano
+  #       additional_datasets: *datasets_tasmax
+  #   scripts:
+  #     models:
+  #       script: extreme_events/model_analysis_event_attribution.py
+  #       ancestors: observations/observations
+  #       mpl_style: malinina24
+  #       color_style: malinina24
+  #       obs_gev: nonstationary # which GEV stats from observations to use options: stationary (default), nonstationary
+  #       individual_models: False # do the output for sigle models (true) or multi-model mean (false)
+  #       anomaly_type: minus # options: minus (default) and ratio
+  #       initial_conditions: True # use initial conditions for the GEV fit
+  #       model_weighting: False # determines, if each realisation gets a weight of 1 (false) or 1/number of relisation
+  #       region: BC # needed for the figure title
+  #       ax_var_label: TXx # needed for axis name
+  #       bootstrap_seed: 501 # seed to start sequence for bootstrap
