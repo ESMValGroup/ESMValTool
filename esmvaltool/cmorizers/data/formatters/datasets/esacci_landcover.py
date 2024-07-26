@@ -26,7 +26,7 @@ import iris
 import numpy as np
 
 from ...utilities import (
-    fix_coords_esacci,
+    fix_coords,
     fix_var_metadata,
     fix_dtype,
     set_global_atts,
@@ -207,7 +207,7 @@ def calculate_shrubfrac(shrub_cubes, glob_attrs, out_dir):
         shrub_fraction_cube = sum(shrub_cubes)
         regridded_shrub_fraction_cube = regrid_iris(shrub_fraction_cube)
         set_units(regridded_shrub_fraction_cube, '%')
-        regridded_shrub_fraction_cube = fix_coords_esacci(
+        regridded_shrub_fraction_cube = fix_coords(
             regridded_shrub_fraction_cube)
         set_global_atts(regridded_shrub_fraction_cube, glob_attrs)
         save_variable(regridded_shrub_fraction_cube, "shrubFrac",
@@ -239,7 +239,7 @@ def calculate_treefrac(tree_cubes, glob_attrs, out_dir):
         tree_fraction_cube = sum(tree_cubes)
         regridded_tree_fraction_cube = regrid_iris(tree_fraction_cube)
         set_units(regridded_tree_fraction_cube, '%')
-        regridded_tree_fraction_cube = fix_coords_esacci(
+        regridded_tree_fraction_cube = fix_coords(
             regridded_tree_fraction_cube)
         set_global_atts(regridded_tree_fraction_cube, glob_attrs)
         save_variable(regridded_tree_fraction_cube, "treeFrac",
@@ -267,13 +267,18 @@ def regrid_fix(cube, vals, glob_attrs, var_name, var_info):
 
     var_info: dict
           Dictionary holding cube metadata attributes.
+
+    Returns
+    -------
+    cube: iris.cube.Cube
+        data cube regreidded and with fixed coordinates.
     """
     logger.info("Regridding cube for %s", var_name)
     regridded_cube = regrid_iris(cube)
     fix_var_metadata(regridded_cube, var_info)
     if vals['long_name'] == 'BARE':
         add_typebare(regridded_cube)
-    regridded_cube = fix_coords_esacci(regridded_cube)
+    regridded_cube = fix_coords(regridded_cube)
     set_global_atts(regridded_cube, glob_attrs)
 
     return regridded_cube
@@ -285,7 +290,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if not start_date:
         start_date = datetime(1992, 1, 1)
     if not end_date:
-        end_date = datetime(2020, 12, 31)
+        end_date = datetime(1992, 12, 31)
 
     shrub_vars = {'shrubs-bd', 'shrubs-be', 'shrubs-nd', 'shrubs-ne'}
     shrub_cubes = []
