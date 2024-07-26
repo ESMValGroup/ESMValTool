@@ -246,13 +246,46 @@ def calculate_treefrac(tree_cubes, glob_attrs, out_dir):
                       out_dir, glob_attrs, unlimited_dimensions=['time'])
 
 
+def regrid_fix(cube, vals, glob_attrs, var_name, var_info):
+    """Regrid cube and fixes.
+
+    Regrids the cube, adds typebare coordinate and fix coordinates.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+          Data cube to be regridded.
+
+    vals: dict
+          Variable long_name.
+
+    glob_attrs: dict
+          Dictionary holding cube metadata attributes.
+
+    var_name: str
+          Variable name.
+
+    var_info: dict
+          Dictionary holding cube metadata attributes.
+    """
+    logger.info("Regridding cube for %s", var_name)
+    regridded_cube = regrid_iris(cube)
+    fix_var_metadata(regridded_cube, var_info)
+    if vals['long_name'] == 'BARE':
+        add_typebare(regridded_cube)
+    regridded_cube = fix_coords_esacci(regridded_cube)
+    set_global_atts(regridded_cube, glob_attrs)
+
+    return regridded_cube
+
+
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize data."""
     glob_attrs = cfg['attributes']
     if not start_date:
         start_date = datetime(1992, 1, 1)
     if not end_date:
-        end_date = datetime(2020, 12, 31)
+        end_date = datetime(1992, 12, 31)
 
     shrub_vars = {'shrubs-bd', 'shrubs-be', 'shrubs-nd', 'shrubs-ne'}
     shrub_cubes = []
@@ -282,13 +315,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     elif var_name in tree_vars:
                         tree_cubes.append(cube)
                     else:
-                        logger.info("Regridding cube for %s", var_name)
-                        regridded_cube = regrid_iris(cube)
-                        fix_var_metadata(regridded_cube, var_info)
-                        if vals['long_name'] == 'BARE':
-                            add_typebare(regridded_cube)
-                        regridded_cube = fix_coords_esacci(regridded_cube)
-                        set_global_atts(regridded_cube, glob_attrs)
+                        regridded_cube = regrid_fix(cube, vals, glob_attrs,
+                                                    var_name, var_info)
                         save_variable(regridded_cube, var_name, out_dir,
                                       glob_attrs,
                                       unlimited_dimensions=['time'])
