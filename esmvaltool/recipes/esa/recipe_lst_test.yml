@@ -1,0 +1,101 @@
+# ESMValTool
+# recipe_lst_test.yml
+---
+documentation:
+  title: Test land surface temperature
+
+  description: |
+    Recipe test lst
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+#datasets:
+#    - {dataset: ACCESS-CM2, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: TaiESM1, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: AWI-ESM-1-1-LR, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: BCC-ESM1, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: CAS-ESM2-0, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: FGOALS-f3-L, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: FGOALS-g3, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: CanESM5, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: CMCC-CM2-HR4, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: CMCC-CM2-SR5, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: CMCC-ESM2, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: ACCESS-ESM1-5, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: E3SM-1-0, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: E3SM-1-1-ECA, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: E3SM-1-1, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: EC-Earth3-AerChem, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: EC-Earth3-CC, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: EC-Earth3, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: EC-Earth3-Veg, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: EC-Earth3-Veg-LR, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: FIO-ESM-2-0, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: MPI-ESM-1-2-HAM, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: IPSL-CM5A2-INCA, grid: gr, ensemble: r1i1p1f1}
+###    - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: ICON-ESM-LR, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: MPI-ESM1-2-HR, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: MPI-ESM1-2-LR, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: CESM2-FV2, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: CESM2-WACCM-FV2, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: CESM2-WACCM, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: NorCPM1, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: NorESM2-LM, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: NorESM2-MM, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: KACE-1-0-G, grid: gr, ensemble: r1i1p1f1}
+###    - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
+###    - {dataset: GFDL-ESM4, grid: gr1, ensemble: r1i1p1f1}
+#    - {dataset: SAM0-UNICON, grid: '*', ensemble: r1i1p1f1}
+
+
+preprocessors:
+  pp_lst:
+    regrid:
+      target_grid: 0.5x0.5
+      scheme: linear
+    convert_units:
+      units: "degC"
+
+diagnostics:
+  lst:
+    title: land surface temperature
+    description: test land surface temperature
+    variables:
+      tsDay:
+        preprocessor: pp_lst
+        mip: Amon
+        start_year: 2003
+        end_year: 2018
+        project: CMIP6
+        exp: historical
+      tsNight:
+        preprocessor: pp_lst
+        mip: Amon
+        start_year: 2003
+        end_year: 2018
+        project: CMIP6
+        exp: historical
+    additional_datasets:
+      - {dataset: ESACCI-LST, project: OBS, mip: Amon, tier: 2, type: sat, version: '3.00'}
+    scripts:
+      plot_day: &settings
+        script: clouds/clouds.ncl
+        projection: Robinson
+        timemean: seasonalclim
+        explicit_cn_levels: [-60, -55, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
+        extralegend: true
+        var: ts_day
+      plot_night:
+        <<: *settings
+        var: ts_night

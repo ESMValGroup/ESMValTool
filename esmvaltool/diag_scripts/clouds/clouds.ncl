@@ -114,7 +114,7 @@ begin
 
   variables = metadata_att_as_array(variable_info, "short_name")
   if (.not. any(variables .eq. var0)) then
-    errstr = "diagnostic " + diag + " requires the following variable: " + var0
+    errstr = "diagnostic clouds.ncl requires the following variable: " + var0
     error_msg("f", DIAG_SCRIPT, "", errstr)
   end if
 
@@ -422,7 +422,7 @@ begin
       delete(ref_avg)
     end if
 
-    data1= where(data1 .le. 0.0, data1@_FillValue, data1)
+;;;    data1= where(data1 .le. 0.0, data1@_FillValue, data1)
 
     ; if requested, select geographical region
 
@@ -775,7 +775,7 @@ begin
     ; mandatory netcdf output
 
     data1@var = var0 + "_mean_" + names(imod)
-;;;    nc_outfile_mean = ncdf_write(data1, nc_filename_mean)
+    nc_outfile_mean = ncdf_write(data1, nc_filename_mean)
 
     ; =======================================================================
     ; Create difference plots (if requested)
