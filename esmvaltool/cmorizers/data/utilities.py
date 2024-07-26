@@ -96,7 +96,6 @@ def add_scalar_height_coord(cube: Cube, height: float = 2.0) -> None:
 
 def add_typebare(cube, value='bare_ground'):
     """Add scalar coordinate 'typebare' with value of `value`."""
-
     logger.debug("Adding typesi coordinate (%s)", value)
     typebare_coord = iris.coords.AuxCoord(value,
                                           var_name='typebare',

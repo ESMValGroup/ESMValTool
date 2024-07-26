@@ -285,7 +285,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if not start_date:
         start_date = datetime(1992, 1, 1)
     if not end_date:
-        end_date = datetime(1992, 12, 31)
+        end_date = datetime(2020, 12, 31)
 
     shrub_vars = {'shrubs-bd', 'shrubs-be', 'shrubs-nd', 'shrubs-ne'}
     shrub_cubes = []
