@@ -183,7 +183,7 @@ def fix_coords(cube,
     cube: iris.cube.Cube
         data cube with coordinates to be fixed.
 
-        overwrite_time_bounds: bool (optional)
+    overwrite_time_bounds: bool (optional)
         set to False not to overwrite time bounds.
 
     overwrite_lon_bounds: bool (optional)
@@ -203,16 +203,11 @@ def fix_coords(cube,
     cube: iris.cube.Cube
         data cube with fixed coordinates.
     """
-    # First fix any completely missing coord var names
+    # first fix any completely missing coord var names
     fix_dim_coordnames(cube)
-
-    # Convert longitude from -180...180 to 0...360
-    logger.info("Fixing longitude...")
-    cube = cube.intersection(longitude=(0.0, 360.0))
-
-    # Fix individual coords
+    # fix individual coords
     for cube_coord in cube.coords():
-        # Fix time
+        # fix time
         if cube_coord.var_name == 'time':
             logger.info("Fixing time...")
             cube.coord('time').convert_units(
@@ -220,10 +215,26 @@ def fix_coords(cube,
             if overwrite_time_bounds or not cube.coord('time').has_bounds():
                 fix_bounds(cube, cube.coord('time'))
 
-        # Fix latitude
+        # fix longitude
+        if cube_coord.var_name == 'lon':
+            logger.info("Fixing longitude...")
+            if cube_coord.ndim == 1:
+                if cube_coord.points[0] < 0. and \
+                        cube_coord.points[-1] < 181.:
+                    cube_coord.points = \
+                        cube_coord.points + 180.
+                    cube.attributes['geospatial_lon_min'] = 0.
+                    cube.attributes['geospatial_lon_max'] = 360.
+                    nlon = len(cube_coord.points)
+                    roll_cube_data(cube, nlon // 2, -1)
+            if overwrite_lon_bounds or not cube_coord.has_bounds():
+                fix_bounds(cube, cube_coord)
+
+        # fix latitude
         if cube_coord.var_name == 'lat':
             logger.info("Fixing latitude...")
-            cube = iris.util.reverse(cube, cube_coord)
+            if overwrite_lat_bounds or not cube.coord('latitude').has_bounds():
+                fix_bounds(cube, cube.coord('latitude'))
 
         # fix depth
         if cube_coord.var_name == 'lev':
@@ -237,9 +248,6 @@ def fix_coords(cube,
             if overwrite_airpres_bounds \
                     or not cube.coord('air_pressure').has_bounds():
                 fix_bounds(cube, cube.coord('air_pressure'))
-
-        # Fix bounds of all coordinates
-        fix_bounds(cube, cube_coord)
 
     # remove CS
     cube.coord('latitude').coord_system = None

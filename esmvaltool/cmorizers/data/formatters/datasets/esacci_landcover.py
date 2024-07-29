@@ -24,9 +24,11 @@ import logging
 from datetime import datetime
 import iris
 import numpy as np
+from cf_units import Unit
 
 from ...utilities import (
-    fix_coords,
+    fix_dim_coordnames,
+    fix_bounds,
     fix_var_metadata,
     fix_dtype,
     set_global_atts,
@@ -110,6 +112,50 @@ def calculate_bounds(points):
     bounds[0, 0] = points[0] - (bounds[1, 0] - points[0])
     bounds[-1, 1] = points[-1] + (points[-1] - bounds[-2, 1])
     return bounds
+
+
+def fix_coords(cube):
+    """Fix coordinates to CMOR standards.
+
+    Fixes coordinates eg time to have correct units, bounds etc;
+    longitude to be CMOR-compliant 0-360deg; fixes some attributes
+    and bounds - the user can avert bounds fixing by using supplied
+    arguments; if bounds are None they will be fixed regardless.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        data cube with coordinates to be fixed.
+
+
+    Returns
+    -------
+    cube: iris.cube.Cube
+        data cube with fixed coordinates.
+    """
+    # First fix any completely missing coord var names
+    fix_dim_coordnames(cube)
+
+    # Convert longitude from -180...180 to 0...360
+    cube = cube.intersection(longitude=(0.0, 360.0))
+
+    # Fix individual coords
+    for cube_coord in cube.coords():
+        # Fix time
+        if cube_coord.var_name == 'time':
+            logger.info("Fixing time...")
+            cube.coord('time').convert_units(
+                Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
+
+        # Fix latitude
+        if cube_coord.var_name == 'lat':
+            logger.info("Fixing latitude...")
+            cube = iris.util.reverse(cube, cube_coord)
+
+        # Fix bounds of all coordinates
+        fix_bounds(cube, cube_coord)
+
+    return cube
 
 
 def save_variable(cube, var, out_dir, attrs, **kwargs):
@@ -290,7 +336,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if not start_date:
         start_date = datetime(1992, 1, 1)
     if not end_date:
-        end_date = datetime(2020, 12, 31)
+        end_date = datetime(1992, 12, 31)
 
     shrub_vars = {'shrubs-bd', 'shrubs-be', 'shrubs-nd', 'shrubs-ne'}
     shrub_cubes = []
