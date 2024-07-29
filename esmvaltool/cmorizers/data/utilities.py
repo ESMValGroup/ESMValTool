@@ -165,7 +165,12 @@ def convert_timeunits(cube, start_year):
     return cube
 
 
-def fix_coords(cube):
+def fix_coords(cube,
+               overwrite_time_bounds=True,
+               overwrite_lon_bounds=True,
+               overwrite_lat_bounds=True,
+               overwrite_lev_bounds=True,
+               overwrite_airpres_bounds=True):
     """Fix coordinates to CMOR standards.
 
     Fixes coordinates eg time to have correct units, bounds etc;
@@ -178,6 +183,21 @@ def fix_coords(cube):
     cube: iris.cube.Cube
         data cube with coordinates to be fixed.
 
+        overwrite_time_bounds: bool (optional)
+        set to False not to overwrite time bounds.
+
+    overwrite_lon_bounds: bool (optional)
+        set to False not to overwrite longitude bounds.
+
+    overwrite_lat_bounds: bool (optional)
+        set to False not to overwrite latitude bounds.
+
+    overwrite_lev_bounds: bool (optional)
+        set to False not to overwrite depth bounds.
+
+    overwrite_airpres_bounds: bool (optional)
+        set to False not to overwrite air pressure bounds.
+
     Returns
     -------
     cube: iris.cube.Cube
@@ -187,6 +207,7 @@ def fix_coords(cube):
     fix_dim_coordnames(cube)
 
     # Convert longitude from -180...180 to 0...360
+    logger.info("Fixing longitude...")
     cube = cube.intersection(longitude=(0.0, 360.0))
 
     # Fix individual coords
@@ -196,14 +217,33 @@ def fix_coords(cube):
             logger.info("Fixing time...")
             cube.coord('time').convert_units(
                 Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
+            if overwrite_time_bounds or not cube.coord('time').has_bounds():
+                fix_bounds(cube, cube.coord('time'))
 
         # Fix latitude
         if cube_coord.var_name == 'lat':
             logger.info("Fixing latitude...")
             cube = iris.util.reverse(cube, cube_coord)
 
+        # fix depth
+        if cube_coord.var_name == 'lev':
+            logger.info("Fixing depth...")
+            if overwrite_lev_bounds or not cube.coord('depth').has_bounds():
+                fix_bounds(cube, cube.coord('depth'))
+
+        # fix air_pressure
+        if cube_coord.var_name == 'air_pressure':
+            logger.info("Fixing air pressure...")
+            if overwrite_airpres_bounds \
+                    or not cube.coord('air_pressure').has_bounds():
+                fix_bounds(cube, cube.coord('air_pressure'))
+
         # Fix bounds of all coordinates
         fix_bounds(cube, cube_coord)
+
+    # remove CS
+    cube.coord('latitude').coord_system = None
+    cube.coord('longitude').coord_system = None
 
     return cube
 
