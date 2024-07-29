@@ -1,0 +1,32 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+
+  dataset_id: DMI-ARC-SEAICE_TEMP-L4-NRT-OBS
+  tier: 2
+  modeling_realm: sat
+
+
+  project_id: OBS6
+  short_name: siconc
+  version: '2.0'
+  source: 'https://www.copernicus.eu/en/access-data/copernicus-services-catalogue/arctic-ocean-sea-and-ice-surface-temperature'
+  reference: 'https://doi.org/10.48670/moi-00130'
+
+  comment: ''
+
+# Variables to cmorize (here use only filename prefix)
+# Temperature and salinity from 1981-2010 climatology (81B0)
+variables:
+  siconc:
+    mip: SImon
+    raw_var: sea_ice_fraction
+    files: "DMI-ARC-SEAICE_TEMP-L4-NRT-OBS_sea_ice_fraction*.nc"
+  
+  # sitemptop:
+  #   mip: SImon
+  #   raw_var: analysed_st
+  #   files: "DMI-ARC-SEAICE_TEMP-L4-NRT-OBS_analysed_st*.nc"
+
+# Custom dictionary for this cmorizer
+custom:
