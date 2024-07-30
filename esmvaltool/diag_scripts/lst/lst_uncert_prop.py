@@ -16,14 +16,12 @@ ESMValTool diagnostic for ESA CCI LST V3 data - Uncertainity Propagation
 
 import logging
 import iris
+import iris.plot as iplt
 import matplotlib
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import matplotlib.ticker as ticker
 import numpy as np
-
-import iris.plot as iplt
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -35,39 +33,39 @@ from esmvaltool.diag_scripts.shared import (
 # Colour scheme for plots
 # blue cyan green yellow
 # red purple grey
-colour_list = ['#4477aa', '#66ccee','#228833','#ccbb44',
-               '#ee6677','#aa3377','#bbbbbb']
+colour_list = ['#4477aa', '#66ccee', '#228833', '#ccbb44',
+               '#ee6677', '#aa3377', '#bbbbbb']
 
 # This gives a colour list for the Land Cover type plots
-lc_colour_list  = sorted(list(mcolors.CSS4_COLORS.keys()))
+lc_colour_list = sorted(list(mcolors.CSS4_COLORS.keys()))
 lc_colour_list.reverse()
 
-plot_params ={'linewidth': 4,
-              'ticksize': 24,
-              'labelsize': 28,
-              'legendsize': 20,}
+plot_params = {'linewidth': 4,
+               'ticksize': 24,
+               'labelsize': 28,
+               'legendsize': 20,}
 
 line_labels = {
-            'lst_unc_loc_atm_day': 'Locally Correlated (Atm)',
-            'lst_unc_loc_sfc_day': 'Locally Correlated (Sfc)',
-            'lst_unc_sys_day': 'Systematic',
-            'lst_unc_ran_day': 'Random',
-            'lst_sampling_day': 'Sampling',
-            'lst_total_unc_day': 'Total',
-            'lst_unc_loc_atm_night': 'Locally Correlated (Atm)',
-            'lst_unc_loc_sfc_night': 'Locally Correlated (Sfc)',
-            'lst_unc_sys_night': 'Systematic',
-            'lst_unc_ran_night': 'Random',
-            'lst_sampling_night': 'Sampling',
-            'lst_total_unc_night': 'Total',
-        }
+    'lst_unc_loc_atm_day': 'Locally Correlated (Atm)',
+    'lst_unc_loc_sfc_day': 'Locally Correlated (Sfc)',
+    'lst_unc_sys_day': 'Systematic',
+    'lst_unc_ran_day': 'Random',
+    'lst_sampling_day': 'Sampling',
+    'lst_total_unc_day': 'Total',
+    'lst_unc_loc_atm_night': 'Locally Correlated (Atm)',
+    'lst_unc_loc_sfc_night': 'Locally Correlated (Sfc)',
+    'lst_unc_sys_night': 'Systematic',
+    'lst_unc_ran_night': 'Random',
+    'lst_sampling_night': 'Sampling',
+    'lst_total_unc_night': 'Total',
+    }
 
 logger = logging.getLogger(__name__)
 
 
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
-    
+
     Based on the hydrology diagnostic originally.
 
     Inputs:
@@ -107,7 +105,7 @@ def _get_provenance_record(attributes, ancestor_files):
 
     record = {
         'caption': caption,
-        'statistics': ['mean', 'stddev'],
+        'statistics': ['mean'],
         'domains': ['reg'],
         'plot_types': ['times'],
         'authors': ['king_robert'],
@@ -146,7 +144,7 @@ def _diagnostic(config):
     # ts eq 1 eq_arithmetic_mean
     # lst_unc_loc_atm eq 7 eq_weighted_sqrt_mean
     # lst_unc_sys eq 5 = eq 1 eq_arithmetic_mean, no spatial propagation here
-    # lst_unc_loc_sfc
+    # lst_unc_loc_sfc follows the worked example in the E3UB
     # use the worked example method in the E3UB document.
     # lst_unc_ran eq 4 eq_propagate_random_with_sampling
     #
@@ -162,10 +160,10 @@ def _diagnostic(config):
     # This will be a dictionary of variables and cubes
     # of their propagated values
     propagated_values = {}
-     
+
     # These define the total number of points in the data
     lat_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('latitude').points)
-    lon_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('longitude').points) 
+    lon_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('longitude').points)
 
     # n_fill and n_use ad dictionaries with keys 'day' and 'night'
     # the item for each key is an array
@@ -174,21 +172,22 @@ def _diagnostic(config):
     n_fill = {}
     n_use = {}
     for time in ['day', 'night']:
-        if isinstance(loaded_data['ESACCI-LST'][f'ts_{time}'].data.mask,np.ndarray):
+        if isinstance(loaded_data['ESACCI-LST'][f'ts_{time}'].data.mask,
+                      np.ndarray):
             # mask is an array so there are masked values
-            ## do counting
+            # do counting
             n_fill[time] = np.array([np.sum(loaded_data['ESACCI-LST'][f'ts_{time}'][date].data.mask) for date in range(len(loaded_data['ESACCI-LST']['ts_day'].coord('time').points))])
         elif loaded_data['ESACCI-LST'][f'ts_{time}'].data.mask:
             # mask is single value of True so all masked values
-            ## make a array of m*n
+            # make a array of m*n
             n_fill[time] = np.array([lat_len*lon_len for i in loaded_data['ESACCI-LST']['ts_day'].coord('time').points])
         else:
             # mask is a single value of False so no masked values
-            ## make an array of zeros
-            n_fill[time] = np.array([0 for i in loaded_data['ESACCI-LST']['ts_day'].coord('time').points])
+            # make an array of zeros
+            n_fill[time] = np.zeros_like(loaded_data['ESACCI-LST']['ts_day'].coord('time').points)
 
-    n_use['day'] = (lat_len*lon_len) - n_fill['day']
-    n_use['night'] = (lat_len*lon_len) - n_fill['night']
+    n_use['day'] = (lat_len * lon_len) - n_fill['day']
+    n_use['night'] = (lat_len * lon_len) - n_fill['night']
 
     # This loop call the propagation equations, once for 'day' and 'night'
     for time in ['day', 'night']:
@@ -206,21 +205,22 @@ def _diagnostic(config):
         propagated_values[f'lst_unc_loc_sfc_{time}'] = \
         eq_correlation_with_biome(loaded_data['ESACCI-LST'][f'lst_unc_loc_sfc_{time}'],
                                   loaded_data['ESACCI-LST'][f'lcc_{time}'])
-        # eq_ari thmetic_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_sfc_{time}'])
         
-        propagated_values[f'lst_unc_ran_{time}'], propagated_values[f'lst_sampling_{time}'] = \
+        propagated_values[f'lst_unc_ran_{time}'], \
+        propagated_values[f'lst_sampling_{time}'] = \
         eq_propagate_random_with_sampling(loaded_data['ESACCI-LST'][f'lst_unc_ran_{time}'],
                                           loaded_data['ESACCI-LST'][f'ts_{time}'],
-                                          n_use[f'{time}'], n_fill[f'{time}'])
+                                          n_use[f'{time}'],
+                                          n_fill[f'{time}'])
 
     # Combines all uncertainty types to get total uncertainty
     # for 'day' and 'night'
     for time in ['day', 'night']:
         time_cubelist = iris.cube.CubeList([propagated_values[f'{variable}_{time}']
-                                              for variable in lst_unc_variables])
-        
+                                            for variable in lst_unc_variables])
+
         propagated_values[f'lst_total_unc_{time}'] = \
-                                            eq_sum_in_quadrature(time_cubelist)
+                            eq_sum_in_quadrature(time_cubelist)
     
     
     # iplt did not want to work with 360 day calendar of UKESM
@@ -228,9 +228,11 @@ def _diagnostic(config):
     loaded_data['UKESM1-0-LL']['ts'].coord('time').var_name = 'time2'
     loaded_data['UKESM1-0-LL']['ts'].coord('time').long_name = 'time2'
     loaded_data['UKESM1-0-LL']['ts'].coord('time').standard_name = 'height'
-    iris.util.demote_dim_coord_to_aux_coord(loaded_data['UKESM1-0-LL']['ts'], 'height')
+    iris.util.demote_dim_coord_to_aux_coord(loaded_data['UKESM1-0-LL']['ts'],
+                                            'height')
     loaded_data['UKESM1-0-LL']['ts'].add_aux_coord(propagated_values['ts_day'].coord('time'),0)
-    iris.util.promote_aux_coord_to_dim_coord(loaded_data['UKESM1-0-LL']['ts'], 'time')
+    iris.util.promote_aux_coord_to_dim_coord(loaded_data['UKESM1-0-LL']['ts'],
+                                             'time')
    
     plot_lc(loaded_data)
  
@@ -252,7 +254,7 @@ def plot_lc(loaded_data):
     cmap = matplotlib.colors.ListedColormap(colours)
     norm = matplotlib.colors.BoundaryNorm(bound_list, cmap.N)
     
-    fig = plt.figure(figsize=(25,15))
+    fig = plt.figure(figsize=(25, 15))
     ax1 = plt.subplot(111)
     
     iplt.pcolormesh(loaded_data['ESACCI-LST']['lcc_day'][0],
@@ -314,7 +316,7 @@ def plot_with_cmip(propagated_values, loaded_data):
     
     years = mdates.YearLocator()   # every year
     months = mdates.MonthLocator()  # every month
-    yearsFmt = mdates.DateFormatter('%Y')
+    yearsfmt = mdates.DateFormatter('%Y')
 
     for time in ['day', 'night']:
         # one plot for day and night seperately
@@ -324,14 +326,14 @@ def plot_with_cmip(propagated_values, loaded_data):
         iplt.plot(propagated_values[f'ts_{time}'],
                   c=colour_list[0],
                   linewidth=plot_params['linewidth'],
-                label=f'LST {time} (CCI)')
+                  label=f'LST {time} (CCI)')
         iplt.fill_between(propagated_values[f'ts_{time}'].coord('time'),
-                            propagated_values[f'ts_{time}'] + propagated_values[f'lst_total_unc_{time}'],
-                            propagated_values[f'ts_{time}'] - propagated_values[f'lst_total_unc_{time}'],
-                            color=colour_list[0],
-                            alpha=0.5,
-                            label=f'Uncertainty {time} (CCI)'
-        )
+                          propagated_values[f'ts_{time}'] + propagated_values[f'lst_total_unc_{time}'],
+                          propagated_values[f'ts_{time}'] - propagated_values[f'lst_total_unc_{time}'],
+                          color=colour_list[0],
+                          alpha=0.5,
+                          label=f'Uncertainty {time} (CCI)'
+                          )
         
         iplt.plot(loaded_data['UKESM1-0-LL']['ts'],
                   c=colour_list[4],
@@ -339,7 +341,7 @@ def plot_with_cmip(propagated_values, loaded_data):
                   label='LST (CMIP6)')
         
         ax1.xaxis.set_major_locator(years)
-        ax1.xaxis.set_major_formatter(yearsFmt)
+        ax1.xaxis.set_major_formatter(yearsfmt)
         ax1.xaxis.set_minor_locator(months)
                 
         plt.grid(which='major', color='k', linestyle='solid')
@@ -382,7 +384,7 @@ def plot_with_cmip(propagated_values, loaded_data):
               label='LST (CMIP6)')
         
     ax1.xaxis.set_major_locator(years)
-    ax1.xaxis.set_major_formatter(yearsFmt)
+    ax1.xaxis.set_major_formatter(yearsfmt)
     ax1.xaxis.set_minor_locator(months)
         
     plt.grid(which='major', color='k', linestyle='solid')
@@ -398,7 +400,7 @@ def plot_with_cmip(propagated_values, loaded_data):
     ax1.tick_params(labelsize=plot_params['ticksize'])
          
     plt.tight_layout()
-    plt.savefig(f'cmip_both.png')
+    plt.savefig('cmip_both.png')
         
         
 def test_plot(propagated_values):
@@ -407,7 +409,7 @@ def test_plot(propagated_values):
 
     years = mdates.YearLocator()   # every year
     months = mdates.MonthLocator()  # every month
-    yearsFmt = mdates.DateFormatter('%Y')
+    yearsfmt = mdates.DateFormatter('%Y')
 
     for time in ['day', 'night']:
         # one plot for day and night seperately
@@ -417,17 +419,17 @@ def test_plot(propagated_values):
         iplt.plot(propagated_values[f'ts_{time}'],
                   c=colour_list[0],
                   linewidth=plot_params['linewidth'],
-                label='LST')
+                  label='LST')
         iplt.fill_between(propagated_values[f'ts_{time}'].coord('time'),
-                            propagated_values[f'ts_{time}'] + propagated_values[f'lst_total_unc_{time}'],
-                            propagated_values[f'ts_{time}'] - propagated_values[f'lst_total_unc_{time}'],
-                            color=colour_list[0],
-                            alpha=0.5,
-                            label='Uncertainty'
+                          propagated_values[f'ts_{time}'] + propagated_values[f'lst_total_unc_{time}'],
+                          propagated_values[f'ts_{time}'] - propagated_values[f'lst_total_unc_{time}'],
+                          color=colour_list[0],
+                          alpha=0.5,
+                          label='Uncertainty'
         )
         
         ax1.xaxis.set_major_locator(years)
-        ax1.xaxis.set_major_formatter(yearsFmt)
+        ax1.xaxis.set_major_formatter(yearsfmt)
         ax1.xaxis.set_minor_locator(months)
         
         plt.grid(which='major', color='k', linestyle='solid')
@@ -444,11 +446,11 @@ def test_plot(propagated_values):
                   c=colour_list[2],
                   linewidth=plot_params['linewidth'],
                   label=line_labels[f'lst_unc_loc_atm_{time}'])
-        iplt.plot(propagated_values[f'lst_unc_loc_sfc_{time}'], 
+        iplt.plot(propagated_values[f'lst_unc_loc_sfc_{time}'],
                   c=colour_list[3],
                   linewidth=plot_params['linewidth'],
                   label=line_labels[f'lst_unc_loc_sfc_{time}'])
-        iplt.plot(propagated_values[f'lst_unc_sys_{time}'], 
+        iplt.plot(propagated_values[f'lst_unc_sys_{time}'],
                   c=colour_list[4],
                   linewidth=plot_params['linewidth'],
                   label=line_labels[f'lst_unc_sys_{time}'])
@@ -462,7 +464,7 @@ def test_plot(propagated_values):
                   c=colour_list[1],
                   linewidth=plot_params['linewidth'],
                   label=line_labels[f'lst_sampling_{time}'])
-        iplt.plot(propagated_values[f'lst_total_unc_{time}'], 
+        iplt.plot(propagated_values[f'lst_total_unc_{time}'],
                   c=colour_list[6],
                   linewidth=plot_params['linewidth'],
                   label=line_labels[f'lst_total_unc_{time}'])
@@ -487,11 +489,16 @@ def test_plot(propagated_values):
 # These are the propagation equations
 
 def eq_correlation_with_biome(cube_loc_sfc, lcc):
-    # make a 0.05 degree grid of data
-    # find same biome matrix
-    # calc uncert for each correlated biome
-    # calc 0.05 box total uncert
-    # with all of these, find the total uncert (0.05 -> arbitary)
+    """
+    Propagate using the land cover/biome information.
+    Used for the locally correlated surface uncertainity.
+    Method:
+        Make a 0.05 degree grid of data
+        Find the matching biome matrix
+        Calc uncert for each correlated biome
+        Calc 0.05 box total uncert
+        With all of these, find the total uncert (0.05 -> arbitary)
+    """
     
     lat_len = len(cube_loc_sfc.coord('latitude').points)
     lon_len = len(cube_loc_sfc.coord('longitude').points)
@@ -499,14 +506,14 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
     
     final_values = [] # this is for each overal main area value
     lc_grid = [] # this is for each 5*5 block
-    for t in range(time_len):
+    for time_index in range(time_len):
         
         grid_means = [] # this is for the 5*5 block means
         # all cci lst v3 data is 0.05 resolution
         # so use blocks of 5 to get 0.01 degree resolution
-        for i in range(0,lat_len,5):    
+        for i in range(0,lat_len,5):
             for j in range(0,lon_len,5):
-                this_region = lcc[t,i:i+5,j:j+5]
+                this_region = lcc[time_index,i:i+5,j:j+5]
                 lc_grid.append(this_region)
                 uniques = np.unique(this_region.data.round(decimals=0),
                                     return_index=True,
@@ -514,7 +521,7 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
                 # note order of uniques will depends on both options = True
                 num_of_biomes = len(uniques[0])
             
-                this_uncerts = cube_loc_sfc[t,i:i+5,j:j+5].data.flatten()
+                this_uncerts = cube_loc_sfc[time_index,i:i+5,j:j+5].data.flatten()
 
                 uncert_by_biome = [[] for i in range(num_of_biomes)]
                 for k, item in enumerate(this_uncerts):
@@ -542,9 +549,9 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
                                 long_name = cube_loc_sfc.long_name,
                                 )
     
-    return results_cube        
-                                  
-                                  
+    return results_cube
+
+
 def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_fill, n_use):
     """Propagate radom uncertatinty using the sampling uncertainty
     ATBD eq 4
