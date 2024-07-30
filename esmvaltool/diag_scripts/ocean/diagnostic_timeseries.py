@@ -338,6 +338,7 @@ def multi_model_time_series(
                 cube = model_cubes[filename][layer]
 
             if 'MultiModel' in metadata[filename]['dataset']:
+                color = 'k' #black
                 timeplot(
                     cube,
                     c=color,
@@ -447,7 +448,7 @@ def main(cfg):
 
                 ######
                 # Time series of individual model
-                make_time_series_plots(cfg, metadatas[filename], filename)
+                # make_time_series_plots(cfg, metadatas[filename], filename)
     logger.info('Success')
 
 

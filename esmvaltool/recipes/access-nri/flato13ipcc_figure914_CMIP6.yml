@@ -1,0 +1,145 @@
+# ESMValTool
+# recipe_flato13ipcc_figure_914.yml
+---
+documentation:
+  title: IPCC AR5, chap. 9 diagnostics for 9.14
+
+  description: |
+    Reproducing Fig. 9.14 from IPCC AR5, chap. 9 (Flato et al., 2013).
+    Data sets taken out were part of the original publication but are
+    currently not available on ESGF.
+
+  authors:
+    - bock_lisa
+    - gier_bettina
+    - lauer_axel
+    - schlund_manuel
+    - senftleben_daniel
+    - zimmermann_klaus
+
+  maintainer:
+    - lauer_axel
+
+  references:
+    - flato13ipcc
+
+  projects:
+    - embrace
+    - esmval
+    - crescendo
+
+
+preprocessors:
+
+  zonal_mean:
+    custom_order: true
+    climate_statistics:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    zonal_statistics:
+      operator: mean
+    convert_units:
+      units: degC
+
+  equatorial:
+    custom_order: true
+    climate_statistics:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -5.
+      end_latitude: 5.
+    meridional_statistics:
+      operator: mean
+    convert_units:
+      units: degC
+
+diagnostics:
+
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.14
+  # **********************************************************************
+  # SST zonal mean and equatorial, multi model mean
+  # **********************************************************************
+
+  fig09-14:
+    title: Fig. 26 in Eyring paper
+    description: |
+      IPCC AR5 Ch. 9, Fig. 9.14 (sst error, zonal mean and equatorial)
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      tos_zm: &fig09_14_settings
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gn
+        mip: Omon
+        short_name: tos
+        preprocessor: zonal_mean
+        reference_dataset: HadISST
+        start_year: 1979
+        end_year: 1999
+      tos_eq:
+        <<: *fig09_14_settings
+        preprocessor: equatorial
+    additional_datasets:
+      # - {dataset: NOAA-ERSSTv5, project: OBS6, type: reanaly, version: 5, tier: 2}
+      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
+      - {dataset: ACCESS-ESM1-5, institute: CSIRO}
+      - {dataset: AWI-CM-1-1-MR, institute: AWI}
+      - {dataset: AWI-ESM-1-1-LR, institute: AWI}
+      - {dataset: BCC-CSM2-MR, institute: BCC}
+      - {dataset: BCC-ESM1, institute: BCC}
+      - {dataset: CAMS-CSM1-0, institute: CAMS}
+      - {dataset: CAS-ESM2-0, institute: CAS}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR}
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR}
+      - {dataset: CIESM, institute: THU}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium}
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium}
+      - {dataset: FGOALS-f3-L, institute: CAS}
+      - {dataset: FGOALS-g3, institute: CAS}
+      - {dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS}
+      - {dataset: GISS-E2-1-H, institute: NASA-GISS}
+      - {dataset: GISS-E2-2-H, institute: NASA-GISS}
+      - {dataset: ICON-ESM-LR, institute: MPI-M}
+      - {dataset: IITM-ESM, institute: CCCR-IITM}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL}
+      - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+      - {dataset: MCM-UA-1-0, institute: UA}
+      - {dataset: MIROC6, institute: MIROC}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+      - {dataset: MRI-ESM2-0, institute: MRI}
+      - {dataset: NESM3, institute: NUIST}
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC}
+      - {dataset: NorESM2-MM, institute: NCC}
+      - {dataset: SAM0-UNICON, institute: SNU}
+      - {dataset: TaiESM1, institute: AS-RCEC}
+    scripts:
+      fig09-14:
+        script: ipcc_ar5/ch09_fig09_14.py ## edit script for CMIP6 (source_id instead of model_id)

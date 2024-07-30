@@ -49,11 +49,11 @@ def get_provenance_record(ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption':
-        ('(a) Zonally averaged sea surface temperature (SST) error in CMIP5 '
-         'models. (b) Equatorial SST error in CMIP5 models. (c) Zonally '
-         'averaged multi-model mean SST error for CMIP5 (red line) together '
+        ('(a) Zonally averaged sea surface temperature (SST) error in CMIP6 '
+         'models. (b) Equatorial SST error in CMIP6 models. (c) Zonally '
+         'averaged multi-model mean SST error for CMIP6 (red line) together '
          'with inter-model standard deviation (shading). (d) Equatorial '
-         'multi-model mean SST in CMIP5(red line) together with inter-model '
+         'multi-model mean SST in CMIP6(red line) together with inter-model '
          'standard deviation (shading) and observations (black).  Model '
          'climatologies are derived from the 1979-1999 mean of the historical '
          'simulations. The Hadley Centre Sea Ice and Sea Surface Temperature '
@@ -173,7 +173,7 @@ def multi_model_merge(cubes):
     def promote_model_name(cube):
         """Promote model_id attribute to scalar variable."""
         new_cube = cube.copy()
-        model_name = new_cube.attributes['model_id']
+        model_name = new_cube.attributes['source_id'] #CMIP6 attributes
         coord = iris.coords.AuxCoord(np.array([model_name]),
                                      standard_name=None,
                                      units='no_unit',
@@ -255,7 +255,7 @@ def setup_figure():
 
 def plot_zonal_mean_errors_ensemble(axes, zonal_mean_errors, ref_line_style):
     """Plot zonal mean error plot (subfigure a)."""
-    axes.set_title('(a) Zonal mean SST error CMIP5')
+    axes.set_title('(a) Zonal mean SST error CMIP6')
     axes.yaxis.set_label_text(u'SST error (°C)')
     axes.yaxis.set_minor_locator(MultipleLocator(.5))
     axes.xaxis.set_minor_locator(MultipleLocator(10))
@@ -275,7 +275,7 @@ def plot_zonal_mean_errors_ensemble(axes, zonal_mean_errors, ref_line_style):
     cube_list = multi_model_merge(zonal_mean_errors)
     for error in zonal_mean_errors:
         lines.append(iplt.plot(error.coord('latitude'), error, axes=axes)[0])
-        labels.append(error.attributes['model_id'])
+        labels.append(error.attributes['source_id']) #CMIP6 attributes
     ensemble_mean = cube_list.collapsed('model', iris.analysis.MEAN)
     mean_line = iplt.plot(ensemble_mean.coord('latitude'),
                           ensemble_mean,
@@ -283,13 +283,13 @@ def plot_zonal_mean_errors_ensemble(axes, zonal_mean_errors, ref_line_style):
                           color='#e61f25',
                           **ref_line_style)[0]
     lines = [mean_line] + lines
-    labels = ['CMIP5 mean'] + labels
+    labels = ['CMIP6 mean'] + labels
     return (lines, labels)
 
 
 def plot_equatorial_errors(axes, equatorial_errors, ref_line_style):
     """Plot equatorial errors (subfigure b)."""
-    axes.set_title('(b) Equatorial SST error CMIP5')
+    axes.set_title('(b) Equatorial SST error CMIP6')
     axes.yaxis.set_label_text(u'SST error (°C)')
     axes.yaxis.set_minor_locator(MultipleLocator(.5))
     axes.xaxis.set_minor_locator(MultipleLocator(30))
@@ -305,11 +305,11 @@ def plot_equatorial_errors(axes, equatorial_errors, ref_line_style):
                      labelsize=7.)
     axes.xaxis.set_label_text(u'Longitude')
     for error in equatorial_errors:
-        iplt.plot(error, label=error.attributes['model_id'], axes=axes)
+        iplt.plot(error, label=error.attributes['source_id'], axes=axes) #CMIP6 attributes
     cube_list = multi_model_merge(equatorial_errors)
     ensemble_mean = cube_list.collapsed('model', iris.analysis.MEAN)
     iplt.plot(ensemble_mean,
-              label='CMIP5 mean',
+              label='CMIP6 mean',
               axes=axes,
               color='#e61f25',
               **ref_line_style)
@@ -317,7 +317,7 @@ def plot_equatorial_errors(axes, equatorial_errors, ref_line_style):
 
 def plot_zonal_mean_errors_project(axes, zonal_mean_errors, ref_line_style):
     """Plot zonal error multi model mean (subfigure c)."""
-    axes.set_title('(c) Zonal mean SST error CMIP5')
+    axes.set_title('(c) Zonal mean SST error CMIP6')
     axes.yaxis.set_label_text(u'SST error (°C)')
     axes.yaxis.set_minor_locator(MultipleLocator(.5))
     axes.xaxis.set_minor_locator(MultipleLocator(10))
@@ -342,7 +342,7 @@ def plot_zonal_mean_errors_project(axes, zonal_mean_errors, ref_line_style):
 
 def plot_equatorials(axes, reference, equatorials, ref_line_style):
     """Plot equatorial multi model mean (subfigure d)."""
-    axes.set_title('(d) Equatorial SST CMIP5')
+    axes.set_title('(d) Equatorial SST CMIP6')
     axes.yaxis.set_label_text(u'SST (°C)')
     axes.yaxis.set_minor_locator(MultipleLocator(.5))
     axes.xaxis.set_minor_locator(MultipleLocator(30))

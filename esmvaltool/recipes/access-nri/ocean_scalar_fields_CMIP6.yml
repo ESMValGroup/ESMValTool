@@ -1,0 +1,185 @@
+# ESMValTool
+# recipe_ocean_scalar_fields.yml
+---
+documentation:
+  title: Ocean Scalar fields analysis
+
+  description: |
+    Recipe to demonstrate several simple plots based on the scalar fields.
+    These fluxes are saved as MFO files in CMIP5.
+    Please use this file as a template for adding additional
+    fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103.
+
+  authors:
+    - demora_lee
+
+  maintainer:
+    - demora_lee
+
+  references:
+    - demora2018gmd
+
+  projects:
+    - ukesm
+
+
+preprocessors:
+#figure 21 -volume-weighted thermosteric sea level change anomaly(before 1900) (zostoga)
+  prep_fig21: # For Global surface Averaged 
+    multi_model_statistics:
+      span: full
+      statistics: [mean]
+    anomalies:
+      period: month
+      reference:
+        start_year: 1850
+        start_month: 1
+        start_day: 1
+        end_year: 1900
+        end_month: 12
+        end_day: 31
+
+  prep_timeseries_drake:
+    multi_model_statistics:
+      span: full
+      statistics: [mean]
+    extract_named_regions:
+      regions: drake_passage
+
+  prep_multimodel:
+    regrid: # fgco2 irregular grids to combine
+      target_grid: 2x2
+      scheme: linear
+    multi_model_statistics:
+      span: full
+      statistics: [mean]
+    area_statistics:
+      operator: mean
+
+diagnostics:
+  # --------------------------------------------------
+  # Thermosteric Sea Level Change anomalies
+  # --------------------------------------------------
+  diag_anomaly:
+    description: volume weighted thermosteric sea level change anomaly
+    variables:
+      zostoga: # Thermosteric Sea Level Change
+        preprocessor: prep_fig21
+        mip: Omon
+        project: CMIP6
+        activity: CMIP
+        ensemble: r1i1p1f1
+        # grid: gn
+        exp: historical
+        timerange: 1850/2014
+    additional_datasets:
+      - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, grid: gn}
+      - {dataset: ACCESS-ESM1-5, institute: CSIRO, grid: gn}
+      - {dataset: BCC-CSM2-MR, institute: BCC, grid: gn}
+      - {dataset: BCC-ESM1, institute: BCC, grid: gn}
+      - {dataset: CMCC-CM2-HR4, institute: CMCC, grid: gn}
+      - {dataset: CMCC-CM2-SR5, institute: CMCC, grid: gn}
+      - {dataset: CMCC-ESM2, institute: CMCC, grid: gn}
+      - {dataset: CanESM5, institute: CCCma, grid: gn}
+      - {dataset: EC-Earth3, institute: EC-Earth-Consortium, grid: gn}
+      - {dataset: EC-Earth3-AerChem, institute: EC-Earth-Consortium, grid: gn}
+      - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium, grid: gn}
+      # - {dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium, grid: gn} #missing local data
+      - {dataset: EC-Earth3-Veg-LR, institute: EC-Earth-Consortium, grid: gn}
+      - {dataset: GISS-E2-1-G, institute: NASA-GISS, grid: gn}
+      - {dataset: GISS-E2-1-G-CC, institute: NASA-GISS, grid: gn}
+      # - {dataset: GISS-E2-1-H, institute: NASA-GISS, grid: gn} #outlier?
+      - {dataset: INM-CM4-8, institute: INM, grid: gr1}
+      - {dataset: INM-CM5-0, institute: INM, grid: gr1}
+      # - {dataset: IPSL-CM6A-LR, institute: IPSL, grid: gn} #esmvalcore.cmor.check.CMORCheckError
+      # - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL, grid: gn}
+      - {dataset: MIROC6, institute: MIROC, grid: gm}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium, grid: gn}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, grid: gn}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M, grid: gn}
+      - {dataset: MRI-ESM2-0, institute: MRI, grid: gm}
+      - {dataset: NorESM2-LM, institute: NCC, grid: gm}
+      - {dataset: NorESM2-MM, institute: NCC, grid: gm}
+    scripts:
+      Ocean_anomaly_timeseries:
+        script: ocean/diagnostic_timeseries.py
+        moving_average: 6 years
+  # --------------------------------------------------
+  # Drake passage sea water transport #fig 23
+  # --------------------------------------------------
+    diag_timeseries_drake:
+    description: Drake_passage_current
+    variables:
+      mfo:
+        preprocessor: prep_timeseries_drake
+        mip: Omon
+        project: CMIP6
+        activity: CMIP
+        ensemble: r1i1p1f1
+        grid: gn
+        exp: historical
+        timerange: 1850/2014
+    additional_datasets:
+        # - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1860, end_year: 2004}
+        - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
+        - {dataset: ACCESS-ESM1-5, institute: CSIRO}
+        - {dataset: GFDL-CM4, institute: NOAA-GFDL}
+        - {dataset: IPSL-CM6A-LR, institute: IPSL}
+        - {dataset: IPSL-CM6A-LR-INCA, institute: IPSL}
+        - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+        - {dataset: MPI-ESM1-2-HR, institute: MPI-M}
+        - {dataset: MPI-ESM1-2-LR, institute: MPI-M}
+        - {dataset: MRI-ESM2-0, institute: MRI}
+        - {dataset: NorCPM1, institute: NCC}
+        - {dataset: NorESM2-LM, institute: NCC}
+        - {dataset: NorESM2-MM, institute: NCC}
+    scripts:
+     Drake_timeseries:
+        script: ocean/diagnostic_timeseries.py
+        moving_average: 6 years
+
+# --------------------------------------------------
+# Surface downward mass flux from CO2 #fig24?
+# --------------------------------------------------
+diagnostics: ## fgco2 -air-to-sea CO2 flux
+  diag_co2flux:
+    variables:
+      fgco2: # cubes not same grid
+        preprocessor: prep_multimodel
+        activity: CMIP
+        ensemble: r1i1p1f1
+        exp: historical
+        mip: Omon
+        project: CMIP6
+        timerange: 1850/2014
+    additional_datasets:
+      - {dataset: ACCESS-ESM1-5, institute: CSIRO, grid: gn}
+      # - {dataset: BCC-CSM2-MR, institute: BCC, grid: gn}
+      # - {dataset: BCC-ESM1, institute: BCC, grid: gn}
+      - {dataset: CESM2, institute: NCAR, grid: gn}
+      - {dataset: CESM2, institute: NCAR, grid: gr}
+      - {dataset: CESM2-FV2, institute: NCAR, grid: gn}
+      - {dataset: CESM2-FV2, institute: NCAR, grid: gr}
+      - {dataset: CESM2-WACCM, institute: NCAR, grid: gn}
+      - {dataset: CESM2-WACCM, institute: NCAR, grid: gr}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR, grid: gn}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR, grid: gr}
+      - {dataset: CMCC-ESM2, institute: CMCC, grid: gn}
+      - {dataset: CanESM5, institute: CCCma, grid: gn}
+      # - {dataset: EC-Earth3-CC, institute: EC-Earth-Consortium, grid: gn} # missing data
+      - {dataset: GFDL-CM4, institute: NOAA-GFDL, grid: gr}
+      - {dataset: GFDL-ESM4, institute: NOAA-GFDL, grid: gr}
+      - {dataset: INM-CM4-8, institute: INM, grid: gr1}
+      - {dataset: INM-CM5-0, institute: INM, grid: gr1}
+      - {dataset: IPSL-CM5A2-INCA, institute: IPSL, grid: gn}
+      - {dataset: IPSL-CM6A-LR, institute: IPSL, grid: gn}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium, grid: gn}
+      - {dataset: MPI-ESM1-2-HR, institute: MPI-M, grid: gn}
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M, grid: gn}
+      - {dataset: NorCPM1, institute: NCC, grid: gn}
+      - {dataset: NorESM2-LM, institute: NCC, grid: gn}
+      - {dataset: NorESM2-MM, institute: NCC, grid: gn}
+    scripts:
+      co2flux_timeseries:
+        script: ocean/diagnostic_timeseries.py
+        moving_average: 6 years
