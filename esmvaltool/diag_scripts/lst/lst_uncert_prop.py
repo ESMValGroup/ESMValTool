@@ -497,20 +497,21 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
     lon_len = len(cube_loc_sfc.coord('longitude').points)
     time_len = len(cube_loc_sfc.coord('time').points)
     
-    final_values = [] # this is for each overal main area value, will turn into a cube at the end
+    final_values = [] # this is for each overal main area value
     lc_grid = [] # this is for each 5*5 block
     for t in range(time_len):
         
         grid_means = [] # this is for the 5*5 block means
-        # all cci lst v3 data is 0.05 resolution so use blocks of 5 to get 0.01 degree resolution
+        # all cci lst v3 data is 0.05 resolution
+        # so use blocks of 5 to get 0.01 degree resolution
         for i in range(0,lat_len,5):    
             for j in range(0,lon_len,5):
-                
-            
                 this_region = lcc[t,i:i+5,j:j+5]
                 lc_grid.append(this_region)
-                uniques = np.unique(this_region.data.round(decimals=0), return_index=True, return_inverse=True)
-                # note order of uniques will depend on what true/false finally use
+                uniques = np.unique(this_region.data.round(decimals=0),
+                                    return_index=True,
+                                    return_inverse=True)
+                # note order of uniques will depends on both options = True
                 num_of_biomes = len(uniques[0])
             
                 this_uncerts = cube_loc_sfc[t,i:i+5,j:j+5].data.flatten()
@@ -529,7 +530,8 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
                 this_mean = np.ma.mean(mean_list)
                 grid_means.append(this_mean)
     
-        this_times_mean = np.mean(grid_means) # this is the value to make a timeseries out of
+        # final_values is the value to make a timeseries out of
+        this_times_mean = np.mean(grid_means)
         final_values.append(this_times_mean)
     
     # need to make a cube to return
@@ -564,7 +566,7 @@ def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_fill, n_use):
     n_total = n_fill + n_use
 
     # the mean of the random uncertainty
-    unc_ran_mean = eq_weighted_sqrt_mean(cube_unc_ran, n_total)#eq_arithmetic_mean(cube_unc_ran)
+    unc_ran_mean = eq_weighted_sqrt_mean(cube_unc_ran, n_total)
 
     # calculate the sampling error
     # variance of the lst * n_fill/n_total-1
