@@ -2,18 +2,6 @@
 ESMValTool diagnostic for ESA CCI LST V3 data - Uncertainity Propagation
 """
 
-# Expected keys for OBS LST data in loaded_data:
-# ts_day
-# ts_night
-# lst_unc_loc_sfc_day
-# lst_unc_loc_sfc_night
-# lst_unc_loc_atm_day
-# lst_unc_loc_atm_night
-# lst_unc_sys_day
-# lst_unc_sys_night
-# lst_unc_ran_day
-# lst_unc_ran_night
-
 import logging
 import iris
 import iris.plot as iplt
