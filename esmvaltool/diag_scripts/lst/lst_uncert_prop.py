@@ -162,15 +162,7 @@ def _diagnostic(config):
     # This will be a dictionary of variables and cubes
     # of their propagated values
     propagated_values = {}
-   
-    print(loaded_data) # for testing new variables total var and lc
-    print('***')
-    print(loaded_data['UKESM1-0-LL']['ts'])
-    print(loaded_data['UKESM1-0-LL']['ts'].data)
-    print(loaded_data['UKESM1-0-LL']['ts'].coord('latitude'))
-
-    print(loaded_data['UKESM1-0-LL']['ts'].coord('longitude'))
-    
+     
     # These define the total number of points in the data
     lat_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('latitude').points)
     lon_len = len(loaded_data['ESACCI-LST']['ts_day'].coord('longitude').points) 
