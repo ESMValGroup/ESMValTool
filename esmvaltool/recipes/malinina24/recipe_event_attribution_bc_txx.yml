@@ -47,6 +47,8 @@ preprocessors:
       operator: mean
     annual_statistics:
       operator: max
+    convert_units:
+      units: degrees_C
     anomalies:
       period: full
       reference:
@@ -145,13 +147,14 @@ diagnostics:
         color_style: malinina24
         CI_quantiles: [5, 95] # percentiles for the confidence interval
         region: BC # needed for the figure title
-        ax_var_label: TXx # needed for axis name
-        analysis_year: 2021
-        smooth_covariate_years: 4
-        covariate_dataset: ERA5 # optional parameter if the extreme dataset doesn't have GSAT
+        var_label: TXx # needed for axis name
+        analysis_year: 2021 # optional parameter, year for which analysis should be done
+        smooth_covariate_years: 4 # optional parameter if the covariate data should be smoothed
+        # add_covariate_year: true # optional parameter if the dataset is one year shorter 
+        covariate_dataset: ERA5 # optional parameter if the extreme dataset doesn't have covariate
         bootstrap_seed: 501 # seed to start sequence for bootstrap
         # anomaly: #optional parameter if anomalies calculaetd in the diagnostic
-        #   type: minus # options: minus and ratio
+        #   type: anomaly # options: anomaly and ratio
         #   period: [1940, 1959]
   # model:
   #   description: Calculate the event probability in different climates 
@@ -203,7 +206,7 @@ diagnostics:
   #       color_style: malinina24
   #       obs_gev: nonstationary # which GEV stats from observations to use options: stationary (default), nonstationary
   #       individual_models: False # do the output for sigle models (true) or multi-model mean (false)
-  #       anomaly_type: minus # options: minus (default) and ratio
+  #       anomaly_type: anomaly # options: anomaly (default) and ratio
   #       initial_conditions: True # use initial conditions for the GEV fit
   #       model_weighting: False # determines, if each realisation gets a weight of 1 (false) or 1/number of relisation
   #       region: BC # needed for the figure title
