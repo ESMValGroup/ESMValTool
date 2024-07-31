@@ -98,7 +98,7 @@ def regrid_iris(cube):
     return combined_cube
 
 
-def regrid_fix(cube, vals, glob_attrs, var_name, var_info):
+def regrid_fix(cube, glob_attrs, var_name, var_info):
     """Regrid cube and fixes.
 
     Regrids the cube, fixes metadata, coordinates and glob_attrs.
@@ -165,7 +165,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 else:
                     cube = cubes.extract_cube(vals['long_name'])
 
-                    regridded_cube = regrid_fix(cube, vals, glob_attrs,
+                    regridded_cube = regrid_fix(cube, glob_attrs,
                                                 var_name, var_info)
                 if var_name == 'baresoilFrac':
                     add_typebare(regridded_cube)

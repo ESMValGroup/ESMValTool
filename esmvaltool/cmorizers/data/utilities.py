@@ -230,7 +230,7 @@ def fix_coords(cube,
                 fix_bounds(cube, cube.coord('latitude'))
             if cube_coord.core_points()[0] > cube_coord.core_points()[-1]:
                 cube = iris.util.reverse(cube, cube_coord)
-                
+
         # fix depth
         if cube_coord.var_name == 'lev':
             logger.info("Fixing depth...")
