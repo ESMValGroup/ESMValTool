@@ -2,8 +2,6 @@
 
 from datetime import datetime
 
-from dateutil import relativedelta
-
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 
 
@@ -26,13 +24,13 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     overwrite : bool
         Overwrite already downloaded files
     """
+    # Default start and end dates if not provided
     if not start_date:
         start_date = datetime(1992, 1, 1)
     if not end_date:
         end_date = datetime(2020, 12, 31)
 
-    loop_date = start_date
-
+    # Initialize the downloader
     downloader = CCIDownloader(
         config=config,
         dataset=dataset,
@@ -41,9 +39,9 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     )
     downloader.ftp_name = 'land_cover'
     downloader.connect()
+
+    # Set current working directory to the main directory with the files
     downloader.set_cwd('/pft/v2.0.8/')
-    downloader.download_folder('.')
-    while loop_date <= end_date:
-        year = loop_date.year
-        downloader.download_year(f'{year}')
-        loop_date += relativedelta.relativedelta(years=1)
+
+    # Download all .nc files in the directory
+    downloader.download_folder('.', filter_files=r'.*\.nc$')
