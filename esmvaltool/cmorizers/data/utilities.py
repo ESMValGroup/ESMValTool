@@ -219,14 +219,7 @@ def fix_coords(cube,
         if cube_coord.var_name == 'lon':
             logger.info("Fixing longitude...")
             if cube_coord.ndim == 1:
-                if cube_coord.points[0] < 0. and \
-                        cube_coord.points[-1] < 181.:
-                    cube_coord.points = \
-                        cube_coord.points + 180.
-                    cube.attributes['geospatial_lon_min'] = 0.
-                    cube.attributes['geospatial_lon_max'] = 360.
-                    nlon = len(cube_coord.points)
-                    roll_cube_data(cube, nlon // 2, -1)
+                cube = cube = cube.intersection(longitude=(0.0, 360.0))
             if overwrite_lon_bounds or not cube_coord.has_bounds():
                 fix_bounds(cube, cube_coord)
 
@@ -235,7 +228,9 @@ def fix_coords(cube,
             logger.info("Fixing latitude...")
             if overwrite_lat_bounds or not cube.coord('latitude').has_bounds():
                 fix_bounds(cube, cube.coord('latitude'))
-
+            if cube_coord.core_points()[0] > cube_coord.core_points()[-1]:
+                cube = iris.util.reverse(cube, cube_coord)
+                
         # fix depth
         if cube_coord.var_name == 'lev':
             logger.info("Fixing depth...")

@@ -19,21 +19,17 @@ Download and processing instructions
 
 import os
 import glob
-import gc
 import logging
 from datetime import datetime
 import iris
 import numpy as np
-from cf_units import Unit
 
 from ...utilities import (
-    fix_dim_coordnames,
-    fix_bounds,
+    fix_coords,
     fix_var_metadata,
-    fix_dtype,
     set_global_atts,
-    set_units,
     add_typebare,
+    save_variable,
 )
 
 # Configure logging
@@ -84,218 +80,28 @@ def regrid_iris(cube):
     # Flip the latitude points and data
     combined_data = combined_data[:, ::-1, :]
 
-    lat_bounds = calculate_bounds(target_lats[::-1])
-    lon_bounds = calculate_bounds(target_lons)
-
     combined_cube = iris.cube.Cube(combined_data,
                                    dim_coords_and_dims=[
                                        (cube.coord('time'), 0),
                                        (iris.coords.DimCoord(
                                            target_lats[::-1],
                                            standard_name='latitude',
-                                           units='degrees',
-                                           bounds=lat_bounds), 1),
+                                           units='degrees'), 1),
                                        (iris.coords.DimCoord(
                                            target_lons,
                                            standard_name='longitude',
-                                           units='degrees',
-                                           bounds=lon_bounds), 2)])
+                                           units='degrees'), 2)])
+
+    combined_cube.coord('latitude').guess_bounds()
+    combined_cube.coord('longitude').guess_bounds()
 
     return combined_cube
-
-
-def calculate_bounds(points):
-    """Calculate bounds for a set of points."""
-    bounds = np.zeros((len(points), 2))
-    bounds[1:, 0] = (points[:-1] + points[1:]) / 2
-    bounds[:-1, 1] = bounds[1:, 0]
-    bounds[0, 0] = points[0] - (bounds[1, 0] - points[0])
-    bounds[-1, 1] = points[-1] + (points[-1] - bounds[-2, 1])
-    return bounds
-
-
-def fix_coords(cube):
-    """Fix coordinates to CMOR standards.
-
-    Fixes coordinates eg time to have correct units, bounds etc;
-    longitude to be CMOR-compliant 0-360deg; fixes some attributes
-    and bounds - the user can avert bounds fixing by using supplied
-    arguments; if bounds are None they will be fixed regardless.
-
-    Parameters
-    ----------
-    cube: iris.cube.Cube
-        data cube with coordinates to be fixed.
-
-
-    Returns
-    -------
-    cube: iris.cube.Cube
-        data cube with fixed coordinates.
-    """
-    # First fix any completely missing coord var names
-    fix_dim_coordnames(cube)
-
-    # Convert longitude from -180...180 to 0...360
-    cube = cube.intersection(longitude=(0.0, 360.0))
-
-    # Fix individual coords
-    for cube_coord in cube.coords():
-        # Fix time
-        if cube_coord.var_name == 'time':
-            logger.info("Fixing time...")
-            cube.coord('time').convert_units(
-                Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
-
-        # Fix latitude
-        if cube_coord.var_name == 'lat':
-            logger.info("Fixing latitude...")
-            cube = iris.util.reverse(cube, cube_coord)
-
-        # Fix bounds of all coordinates
-        fix_bounds(cube, cube_coord)
-
-    return cube
-
-
-def save_variable(cube, var, out_dir, attrs, **kwargs):
-    """Saver function.
-
-    Saves iris cubes (data variables) in CMOR-standard named files.
-
-    Parameters
-    ----------
-    cube: iris.cube.Cube
-        Data cube to be saved.
-
-    var: str
-        Variable short_name e.g. ts or tas.
-
-    out_dir: str
-        Root directory where the file will be saved.
-
-    attrs: dict
-        Dictionary holding cube metadata attributes like
-        project_id, version etc.
-
-    **kwargs: kwargs
-        Keyword arguments to be passed to `iris.save`
-    """
-    fix_dtype(cube)
-
-    # Ensure the variable metadata is correctly set
-    cube.var_name = var
-
-    # Only set standard_name if it is a valid CF standard name
-    if hasattr(cube, 'standard_name') and cube.standard_name in \
-            iris.std_names.STD_NAMES:
-        cube.standard_name = cube.standard_name
-    else:
-        cube.standard_name = None  # or keep it unset
-
-    # Ensure long_name is set
-    cube.long_name = cube.long_name or var
-
-    # Debugging metadata before saving
-    logger.debug("Saving cube with var_name=%s, standard_name=%s, "
-                 "long_name=%s",
-                 cube.var_name, cube.standard_name, cube.long_name)
-
-    # CMOR standard
-    try:
-        time = cube.coord('time')
-    except iris.exceptions.CoordinateNotFoundError:
-        time_suffix = None
-    else:
-        year = f"{time.cell(0).point.year:d}"
-        time_suffix = '-'.join([year])
-
-    name_elements = [
-        attrs['project_id'],
-        attrs['dataset_id'],
-        attrs['modeling_realm'],
-        attrs['version'],
-        attrs['mip'],
-        var,
-    ]
-    if time_suffix:
-        name_elements.append(time_suffix)
-    file_name = '_'.join(name_elements) + '.nc'
-    file_path = os.path.join(out_dir, file_name)
-    logger.info('Saving: %s', file_path)
-    status = 'lazy' if cube.has_lazy_data() else 'realized'
-    logger.info('Cube has %s data [lazy is preferred]', status)
-    iris.save(cube, file_path, fill_value=1e20, **kwargs)
-
-
-def calculate_shrubfrac(shrub_cubes, glob_attrs, out_dir):
-    """Calculate shrubFrac.
-
-    Summing variables:
-       'shrubs-bd',
-       'shrubs-be',
-       'shrubs-nd',
-       'shrubs-ne'
-
-    Parameters
-    ----------
-    shrub_cubes: iris.cube.Cube
-                Data cube to be saved.
-
-    glob_attrs: dict
-                Dictionary holding cube metadata attributes
-
-    out_dir: str
-                Root directory where the file will be saved.
-    """
-    if shrub_cubes:
-        logger.info("Summing shrub cubes to create shrubFrac")
-        shrub_fraction_cube = sum(shrub_cubes)
-        regridded_shrub_fraction_cube = regrid_iris(shrub_fraction_cube)
-        set_units(regridded_shrub_fraction_cube, '%')
-        regridded_shrub_fraction_cube = fix_coords(
-            regridded_shrub_fraction_cube)
-        set_global_atts(regridded_shrub_fraction_cube, glob_attrs)
-        save_variable(regridded_shrub_fraction_cube, "shrubFrac",
-                      out_dir, glob_attrs, unlimited_dimensions=['time'])
-
-
-def calculate_treefrac(tree_cubes, glob_attrs, out_dir):
-    """Calculate treeFrac.
-
-    Summing variables:
-       'trees-bd',
-       'trees-be',
-       'trees-nd',
-       'trees-ne'
-
-    Parameters
-    ----------
-    tree_cubes: iris.cube.Cube
-                Data cube to be saved.
-
-    glob_attrs: dict
-                Dictionary holding cube metadata attributes
-
-    out_dir: str
-                Root directory where the file will be saved.
-    """
-    if tree_cubes:
-        logger.info("Summing tree cubes to create treeFrac")
-        tree_fraction_cube = sum(tree_cubes)
-        regridded_tree_fraction_cube = regrid_iris(tree_fraction_cube)
-        set_units(regridded_tree_fraction_cube, '%')
-        regridded_tree_fraction_cube = fix_coords(
-            regridded_tree_fraction_cube)
-        set_global_atts(regridded_tree_fraction_cube, glob_attrs)
-        save_variable(regridded_tree_fraction_cube, "treeFrac",
-                      out_dir, glob_attrs, unlimited_dimensions=['time'])
 
 
 def regrid_fix(cube, vals, glob_attrs, var_name, var_info):
     """Regrid cube and fixes.
 
-    Regrids the cube, adds typebare coordinate and fix coordinates.
+    Regrids the cube, fixes metadata, coordinates and glob_attrs.
 
     Parameters
     ----------
@@ -322,8 +128,6 @@ def regrid_fix(cube, vals, glob_attrs, var_name, var_info):
     logger.info("Regridding cube for %s", var_name)
     regridded_cube = regrid_iris(cube)
     fix_var_metadata(regridded_cube, var_info)
-    if vals['long_name'] == 'BARE':
-        add_typebare(regridded_cube)
     regridded_cube = fix_coords(regridded_cube)
     set_global_atts(regridded_cube, glob_attrs)
 
@@ -338,41 +142,32 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if not end_date:
         end_date = datetime(1992, 12, 31)
 
-    shrub_vars = {'shrubs-bd', 'shrubs-be', 'shrubs-nd', 'shrubs-ne'}
-    shrub_cubes = []
-    tree_vars = {'trees-bd', 'trees-be', 'trees-nd', 'trees-ne'}
-    tree_cubes = []
+    for year in range(start_date.year, end_date.year + 1):
+        inpfile_pattern = os.path.join(in_dir, cfg['filename'])
+        year_inpfile_pattern = inpfile_pattern.format(year=year)
+        inpfiles = sorted(glob.glob(year_inpfile_pattern))
+        for inpfile in inpfiles:
+            cubes = iris.load(inpfile)
+            for var_name, vals in cfg['variables'].items():
+                var_info = cfg['cmor_table'].get_variable(vals['mip'],
+                                                          var_name)
+                glob_attrs['mip'] = vals['mip']
+                if var_name == 'shrubFrac':
+                    cube = cubes.extract_cube('SHRUBS-BD') + \
+                        cubes.extract_cube('SHRUBS-BE') + \
+                        cubes.extract_cube('SHRUBS-ND') + \
+                        cubes.extract_cube('SHRUBS-NE')
+                elif var_name == 'treeFrac':
+                    cube = cubes.extract_cube('TREES-BD') + \
+                        cubes.extract_cube('TREES-BE') + \
+                        cubes.extract_cube('TREES-ND') + \
+                        cubes.extract_cube('TREES-NE')
+                else:
+                    cube = cubes.extract_cube(vals['long_name'])
 
-    for var_name, vals in cfg['variables'].items():
-        if not isinstance(vals, dict):
-            raise ValueError(f"Invalid format for variable {var_name}: "
-                             f"{type(vals)}")
-        var_info = cfg['cmor_table'].get_variable(vals['mip'], var_name)
-        glob_attrs['mip'] = vals['mip']
-        raw_info = {'name': vals['long_name']}
-        inpfile_pattern = os.path.join(in_dir, vals['filename'])
-        logger.info("CMORizing var %s from file type %s", var_name,
-                    inpfile_pattern)
-
-        for year in range(start_date.year, end_date.year + 1):
-            year_inpfile_pattern = inpfile_pattern.format(year=year)
-            inpfiles = sorted(glob.glob(year_inpfile_pattern))
-            for inpfile in inpfiles:
-                raw_info['file'] = inpfile
-                cube_list = extract_variable(raw_info)
-                for cube in cube_list:
-                    if var_name in shrub_vars:
-                        shrub_cubes.append(cube)
-                    elif var_name in tree_vars:
-                        tree_cubes.append(cube)
-                    else:
-                        regridded_cube = regrid_fix(cube, vals, glob_attrs,
-                                                    var_name, var_info)
-                        save_variable(regridded_cube, var_name, out_dir,
-                                      glob_attrs,
-                                      unlimited_dimensions=['time'])
-                del cube_list  # Free memory
-                gc.collect()  # Explicitly call garbage collection
-
-    calculate_shrubfrac(shrub_cubes, glob_attrs, out_dir)
-    calculate_treefrac(tree_cubes, glob_attrs, out_dir)
+                    regridded_cube = regrid_fix(cube, vals, glob_attrs,
+                                                var_name, var_info)
+                if var_name == 'baresoilFrac':
+                    add_typebare(regridded_cube)
+                save_variable(regridded_cube, var_name, out_dir, glob_attrs,
+                              unlimited_dimensions=['time'])
