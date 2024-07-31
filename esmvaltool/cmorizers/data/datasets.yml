@@ -477,8 +477,12 @@ datasets:
     last_access: 2024-07-11
     info: |
         Download and processing instructions:
-        Put all files under a single directory (no subdirectories with years)
-        in ${RAWOBS}/Tier2/ESACCI-LANDCOVER
+        Use the following CLI to download all the files:
+        esmvaltool data download ESACCI-LANDCOVER
+        The underlying downloader is located here: 
+        /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_landcover.py
+        and it will download all the files currently avaialable on CEDA (1992-2020) 
+        under a single directory as follow: ${RAWOBS}/Tier2/ESACCI-LANDCOVER
   
   ESACCI-LST:
     tier: 2
