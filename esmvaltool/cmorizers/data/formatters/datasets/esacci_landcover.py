@@ -40,17 +40,6 @@ logger = logging.getLogger(__name__)
 iris.FUTURE.save_split_attrs = True
 
 
-def extract_variable(raw_info):
-    """Extract the variable from the raw data file."""
-    cube_list = iris.load(raw_info['file'], raw_info['name'])
-    if not cube_list:
-        logger.warning("No cubes found for {raw_info['name']} in file "
-                       "{raw_info['file']}")
-    else:
-        logger.info("Extracted cubes: %s", cube_list)
-    return cube_list
-
-
 def average_block(data, block_size):
     """Average the data within each block of size block_size."""
     shape = data.shape
@@ -140,7 +129,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if not start_date:
         start_date = datetime(1992, 1, 1)
     if not end_date:
-        end_date = datetime(1992, 12, 31)
+        end_date = datetime(2020, 12, 31)
 
     for year in range(start_date.year, end_date.year + 1):
         inpfile_pattern = os.path.join(in_dir, cfg['filename'])
