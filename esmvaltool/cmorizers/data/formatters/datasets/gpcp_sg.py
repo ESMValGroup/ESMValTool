@@ -78,7 +78,7 @@ def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
     cube = _fix_var_metadata(var_info, cmor_info, cube)
 
     # Fix coordinates
-    cube = _fix_coords(cube, filepath)
+    _fix_coords(cube, filepath)
 
     # Fix global metadata
     utils.set_global_atts(cube, attrs)
