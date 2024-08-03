@@ -1029,9 +1029,13 @@ class CH4Lifetime(LifetimeBase):
                     slice_dataset['weight'] = weight_slice
                     slice_dataset['tropopause'] = tp_slice
 
-                    cube_slices.append(calculate_lifetime(slice_dataset,
+                    cube_slice = calculate_lifetime(slice_dataset,
                                                           plot_type,
-                                                          region))
+                                                          region)
+                    # make it real to reduce memory demand later
+                    cube_slice.data
+                    cube_slices.append(cube_slice)
+
                 cube = cube_slices.merge_cube()
             else:
                 cube = calculate_lifetime(dataset,
