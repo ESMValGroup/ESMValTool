@@ -583,6 +583,9 @@ time_format: str, optional (default: None)
     :func:`~datetime.datetime.strftime` format string that is used to format
     the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
     use the default formatting imposed by the iris plotting function.
+time_on: str, optional (default: y-axis)
+
+
 
 .. hint::
 
@@ -851,6 +854,7 @@ class MultiDatasets(MonitorBase):
                     'show_x_minor_ticks', True
                 )
                 self.plots[plot_type].setdefault('time_format', None)
+                self.plots[plot_type].setdefault('time_on', 'y-axis')
 
         # Check that facet_used_for_labels is present for every dataset
         for dataset in self.input_data:
@@ -1766,6 +1770,8 @@ class MultiDatasets(MonitorBase):
 
             # Make sure time is on y-axis
             plot_kwargs['coords'] = list(reversed(dim_coords_dat))
+            if self.plots[plot_type]['time_on'] == 'x-axis':
+                plot_kwargs['coords'] = list(dim_coords_dat)
             plot_hovmoeller = plot_func(cube, **plot_kwargs)
 
             # Setup colorbar
@@ -1779,11 +1785,18 @@ class MultiDatasets(MonitorBase):
             # Customize plot
             axes.set_title(self._get_label(dataset))
             fig.suptitle(dataset['long_name'])
-            if 'latitude' in dim_coords_dat:
-                axes.set_xlabel('latitude [°N]')
-            elif 'longitude' in dim_coords_dat:
-                axes.set_xlabel('longitude [°E]')
-            axes.set_ylabel('time')
+            if self.plots[plot_type]['time_on'] == 'x-axis':
+                if 'latitude' in dim_coords_dat:
+                    axes.set_ylabel('latitude [°N]')
+                elif 'longitude' in dim_coords_dat:
+                    axes.set_ylabel('longitude [°E]')
+                axes.set_xlabel('time')
+            else:
+                if 'latitude' in dim_coords_dat:
+                    axes.set_ylabel('latitude [°N]')
+                elif 'longitude' in dim_coords_dat:
+                    axes.set_ylabel('longitude [°E]')
+                    axes.set_xlabel('time')
             if self.plots[plot_type]['time_format'] is not None:
                 axes.get_yaxis().set_major_formatter(mdates.DateFormatter(
                     self.plots[plot_type]['time_format'])
