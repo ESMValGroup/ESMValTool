@@ -584,7 +584,9 @@ time_format: str, optional (default: None)
     the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
     use the default formatting imposed by the iris plotting function.
 time_on: str, optional (default: y-axis)
-
+    Optional switch to change the orientation of the plot so that time is on
+    the x-axis ``time_on: x-axis``. Default orientation is time on y-axis and
+    lat/lon on x-axis.
 
 
 .. hint::
