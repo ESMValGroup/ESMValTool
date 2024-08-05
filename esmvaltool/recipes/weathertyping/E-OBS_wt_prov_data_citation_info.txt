@@ -1,2 +1,0 @@
-Additional data citation information was found, for which no entry is available in the bibtex file:
-- doi:10.1029/2017JD028200

@@ -36,69 +36,99 @@ logger = logging.getLogger(os.path.basename(__file__))
 warnings.filterwarnings('ignore', '.*Collapsing a non-contiguous coordinate*')
 
 
-def plot_seasonal_occurence(cfg: dict, wt_cubes: iris.cube.Cube,
-                            dataset_name: str):
+def generate_grayscale_hex_values(x):
+    """Generate grayscale values for plotting seasonal occurrence.
+
+    Args:
+        x (int): number of weathertypes
+
+    Returns:
+        np.list: array with grescale values as hex
+    """
+    grayscale_values = np.linspace(0, 1, x)
+    grayscale_hex = [f'#{int(value * 255):02x}{int(value * 255):02x}\
+                     {int(value * 255):02x}' for value in grayscale_values]
+
+    return grayscale_hex
+
+
+def plot_seasonal_occurrence(cfg: dict, wt_cubes: iris.cube.Cube,
+                             dataset_name: str):
+    """Plot relative monthly/seasonal occurrence of weathertypes.
+
+    Args:
+        cfg (dict): Configuration dict from recipe
+        wt_cubes (iris.cube.Cube): Cube with weathertypes
+        dataset_name (str): name of dataset
+    """
+    output_path = f'{cfg["plot_dir"]}/seasonal_occurrence'
+
+    if not os.path.exists(f'{output_path}'):
+        os.makedirs(f'{output_path}')
 
     month_list = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    output_path = cfg['work_dir']
 
-    relative_occurences = {}  
-    #{wt_string: {month: {wt1: rel_occurence, wt2: rel_occurence, ....}}}
-    #first do absolute occurence, then relative occurence
+    relative_occurrences = {}
+    # {wt_string: {month: {wt1: rel_occurrence, wt2: rel_occurrence, ....}}}
+    # first do absolute occurrence, then relative occurrence
     for cube in wt_cubes:
         month_dict = {}
-        for month in range(1,13):
+        for month in range(1, 13):
             month_constraint = iris.Constraint(
                 time=iris.time.PartialDateTime(month=month))
             array = cube.extract(month_constraint).data
             unique, counts = np.unique(array, return_counts=True)
             count_dict = dict(zip(unique, counts/sum(counts)))
             month_dict[month] = count_dict
-        relative_occurences[cube.long_name] = month_dict
-
-    #colors = ['#653334', '#8b4746', '#b35958', '#da6c6b', '#f9bb7e',
-    #          '#fbea80', '#66b3cd', '#4a8799', '#335966']
+        relative_occurrences[cube.long_name] = month_dict
 
     x = month_list
 
-    for wt_string in relative_occurences.keys():
-        wt_numbers = len(relative_occurences.get(wt_string).get(1).keys())
+    for wt_string in relative_occurrences:
+        wt_numbers = len(relative_occurrences.get(wt_string).get(1).keys())
+        colors = generate_grayscale_hex_values(wt_numbers)
         wt_stack = np.zeros((wt_numbers, 12))
-        for month, month_value in relative_occurences.get(wt_string).items():
+        for month, month_value in relative_occurrences.get(wt_string).items():
             print(month_value)
             for wt in month_value.keys():
                 print(month_value.get(wt))
                 wt_stack[np.int8(wt-1), month-1] = month_value.get(wt)
 
-
-        y = np.vstack([x for x in wt_stack])
+        y = np.vstack(list(wt_stack))
 
         # plot
-        fig, ax = plt.subplots(figsize=(10,10))
+        _, ax = plt.subplots(figsize=(10, 10))
 
         ax.set_title(f'{dataset_name}')
 
-        ax.stackplot(x, y)#, colors=colors)
+        ax.stackplot(x, y, colors=colors)
 
         ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
-                  fancybox=True, shadow=True, ncol=9, labels=
-                  tuple(f'WT {i+1}' for i in range(0,wt_numbers)))
+                  fancybox=True, shadow=True, ncol=9,
+                  labels=tuple(f'WT {i+1}' for i in range(0, wt_numbers)))
 
         ax.set(xlim=(0, 11), xticks=np.arange(0, 12),
-            ylim=(0, 1), yticks=np.arange(0,1.1,0.1))
+               ylim=(0, 1), yticks=np.arange(0, 1.1, 0.1))
         ax.set_xlabel('Month')
-        ax.set_ylabel('Cumulative Relative Occurence')
+        ax.set_ylabel('Cumulative Relative occurrence')
 
         plt.savefig(
-            f'{output_path}/{dataset_name}_{wt_string}_rel_occurence.png')
+            f'{output_path}/{dataset_name}_{wt_string}_rel_occurrence.png')
         plt.savefig(
-            f'{output_path}/{dataset_name}_{wt_string}_rel_occurence.pdf')
+            f'{output_path}/{dataset_name}_{wt_string}_rel_occurrence.pdf')
         plt.close()
 
 
-
 def get_cfg_vars(cfg: dict):
+    """Get list of vars from configuration dict.
+
+    Args:
+        cfg (dict): Configuration dict from recipe.
+
+    Returns:
+        tuple: cfg vars
+    """
     preproc_variables_dict = group_metadata(
         cfg.get('input_data').values(), 'dataset')
 
@@ -1040,7 +1070,10 @@ def plot_corr_rmse_heatmaps(cfg: dict, pattern_correlation_matrix: np.array,
         dataset (str): string of dataset
     """
 
-    work_dir = cfg.get('work_dir')
+    output_path = f'{cfg.get("plot_dir")}/heatmaps'
+
+    if not os.path.exists(f'{output_path}'):
+        os.makedirs(f'{output_path}')
 
     labels = np.arange(1, 28)
 
@@ -1069,7 +1102,7 @@ def plot_corr_rmse_heatmaps(cfg: dict, pattern_correlation_matrix: np.array,
         ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
         ax.set_ylabel('lwt', fontsize=8)
         plt.tight_layout()
-        plt.savefig(os.path.join(work_dir,
+        plt.savefig(os.path.join(output_path,
                                  f'correlation_matrix_{dataset}.png'))
         plt.close()
 
@@ -1097,7 +1130,7 @@ def plot_corr_rmse_heatmaps(cfg: dict, pattern_correlation_matrix: np.array,
         ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
         ax.set_ylabel('lwt', fontsize=8)
         plt.tight_layout()
-        plt.savefig(os.path.join(work_dir, f'rmse_matrix_{dataset}.png'))
+        plt.savefig(os.path.join(output_path, f'rmse_matrix_{dataset}.png'))
         plt.close()
 
 

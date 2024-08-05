@@ -3,7 +3,7 @@ from wt_utils import (get_cfg_vars, load_wt_preprocessors,
                       run_predefined_slwt, combine_wt_to_file, load_wt_files,
                       get_looping_dict, plot_means, get_model_output_filepath,
                       calc_lwt_slwt_model, write_lwt_to_file, calc_lwt_model,
-                      plot_seasonal_occurence
+                      plot_seasonal_occurrence
                       )
 
 import iris
@@ -68,8 +68,8 @@ def run_automatic_slwt(cfg: dict):
                     data_info = {'dataset': dataset_name,
                                  'var': var_name,
                                  'preproc_path': var_data[1]}
-                    #plot_means(cfg, var_data[0], wt_cubes, data_info)
-                plot_seasonal_occurence(cfg, wt_cubes, dataset_name)
+                    # plot_means(cfg, var_data[0], wt_cubes, data_info)
+                plot_seasonal_occurrence(cfg, wt_cubes, dataset_name)
         else:
             if dataset_name == 'E-OBS':
                 continue
@@ -98,10 +98,9 @@ def run_automatic_slwt(cfg: dict):
                     data_info = {'dataset': dataset_name,
                                  'var': var_name,
                                  'preproc_path': var_data[1]}
-                    #plot_means(cfg, var_data[0], wt_cubes, data_info,
+                    # plot_means(cfg, var_data[0], wt_cubes, data_info,
                     #           only_lwt=True)
-                plot_seasonal_occurence(cfg, wt_cubes, dataset_name)
-                    
+                plot_seasonal_occurrence(cfg, wt_cubes, dataset_name)
 
 
 def run_lwt(cfg: dict):
@@ -153,7 +152,7 @@ def run_lwt(cfg: dict):
                                  'preproc_path': var_data[1]}
                     plot_means(cfg, var_data[0], wt_cubes, data_info,
                                only_lwt=True)
-                plot_seasonal_occurence(cfg, wt_cubes, dataset_name)
+                plot_seasonal_occurrence(cfg, wt_cubes, dataset_name)
         else:
             if dataset_name == 'E-OBS':
                 continue
@@ -181,7 +180,7 @@ def run_lwt(cfg: dict):
                                  'preproc_path': var_data[1]}
                     plot_means(cfg, var_data[0], wt_cubes, data_info,
                                only_lwt=True)
-                plot_seasonal_occurence(cfg, wt_cubes, dataset_name)
+                plot_seasonal_occurrence(cfg, wt_cubes, dataset_name)
 
 
 def run_my_diagnostic(cfg: dict):
