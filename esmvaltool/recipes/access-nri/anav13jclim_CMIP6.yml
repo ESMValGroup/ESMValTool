@@ -1,0 +1,101 @@
+# ESMValTool
+# recipe_anav13jclim.xml
+---
+documentation:
+  title: Land and ocean components of the global carbon cycle in CMIP5
+
+  description: |
+    This recipe reproduces most of the figures of Anav et al. (2013).
+    https://docs.esmvaltool.org/en/latest/recipes/recipe_anav13jclim.html
+
+  authors:
+    - anav_alessandro
+    - wenzel_sabrina
+    - schlund_manuel
+    - righi_mattia
+
+  maintainer:
+    - gier_bettina
+
+  references:
+    - anav13jclim
+
+  projects:
+    - embrace
+    - crescendo
+
+
+preprocessors:
+
+  land_fraction_weighting:
+    weighting_landsea_fraction:
+      area_type: land
+      exclude: [
+        # 'bcc-csm1-1-m',
+        'GCP2018',
+        # 'inmcm4',
+        'JMA-TRANSCOM',
+        # 'LAI3g',
+        # 'MTE',
+        # 'NDP',
+      ]
+
+
+diagnostics:
+
+  diag_main_nbp_global:
+    description: | 
+      Error bar, sasonal cycle and evolution plots for nbp (Figures 5, 6, 7).
+      Figure 35 in Eyring et al. paper
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      nbp: &var_nbp
+        preprocessor: land_fraction_weighting
+        project: CMIP6
+        activity: CMIP
+        mip: Lmon
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gn
+        start_year: 1901
+        end_year: 2009 
+        reference_dataset: JMA-TRANSCOM
+        plot_units: PgC y-1
+        additional_datasets:
+          - {dataset: GCP2018, project: OBS, type: reanaly, version: '1.0', tier: 2, start_year: 1959, end_year: 2017, frequency: yr}
+    additional_datasets: &nbp_datasets
+      - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 2018, tier: 3, start_year: 1986, end_year: 2005}
+      - {dataset: ACCESS-ESM1-5, institute: CSIRO}
+      - {dataset: CESM2, institute: NCAR}
+      - {dataset: CESM2-FV2, institute: NCAR} #downloaded data
+      - {dataset: CESM2-WACCM, institute: NCAR}
+      - {dataset: CESM2-WACCM-FV2, institute: NCAR} #downloaded data
+      - {dataset: CMCC-CM2-SR5, institute: CMCC}
+      - {dataset: CMCC-ESM2, institute: CMCC}
+      - {dataset: CanESM5, institute: CCCma}
+      - {dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium} #downloaded data
+      - {dataset: MPI-ESM1-2-LR, institute: MPI-M} #downloaded data
+      - {dataset: NorCPM1, institute: NCC}
+      - {dataset: NorESM2-LM, institute: NCC} #downloaded data
+      - {dataset: NorESM2-MM, institute: NCC} #downloaded data
+      - {dataset: SAM0-UNICON, institute: SNU} #downloaded data
+      - {dataset: TaiESM1, institute: AS-RCEC}
+    scripts:
+      main_global: &main_global
+        script: carbon_cycle/main.ncl
+        legend_outside: false
+        sort: true
+        seasonal_cycle_plot: false #
+        errorbar_plot: false #
+        mean_IAV_plot: false #
+        styleset: CMIP6 #
+        region: global
+        evolution_plot: true
+        evolution_plot_volcanoes: true
+        ensemble_name: CMIP6
+        evolution_plot_ref_dataset: GCP2018
+        evolution_plot_anomaly: false
+        anav_month: true
