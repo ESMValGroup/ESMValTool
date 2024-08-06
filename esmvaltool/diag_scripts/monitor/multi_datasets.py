@@ -1770,10 +1770,11 @@ class MultiDatasets(MonitorBase):
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
 
-            # Make sure time is on y-axis
-            plot_kwargs['coords'] = list(reversed(dim_coords_dat))
+            # Put time on desired axis
             if self.plots[plot_type]['time_on'] == 'x-axis':
                 plot_kwargs['coords'] = list(dim_coords_dat)
+            else:
+                plot_kwargs['coords'] = list(reversed(dim_coords_dat))
             plot_hovmoeller = plot_func(cube, **plot_kwargs)
 
             # Setup colorbar
@@ -1795,10 +1796,10 @@ class MultiDatasets(MonitorBase):
                 axes.set_xlabel('time')
             else:
                 if 'latitude' in dim_coords_dat:
-                    axes.set_ylabel('latitude [°N]')
+                    axes.set_xlabel('latitude [°N]')
                 elif 'longitude' in dim_coords_dat:
-                    axes.set_ylabel('longitude [°E]')
-                    axes.set_xlabel('time')
+                    axes.set_xlabel('longitude [°E]')
+                axes.set_ylabel('time')
             if self.plots[plot_type]['time_format'] is not None:
                 axes.get_yaxis().set_major_formatter(mdates.DateFormatter(
                     self.plots[plot_type]['time_format'])
