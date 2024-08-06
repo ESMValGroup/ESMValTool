@@ -297,14 +297,20 @@ diagnostics:
   ESACCI-SOILMOISTURE:
     description: ESACCI-SOILMOISTURE check
     variables:
-      dos:
-      dosStderr:
-        sm:
+      sm_daily:
+        short_name: sm
+        mip: Eday
+        frequency: day
+      sm_monthly:
+        short_name: sm
+        mip: Lmon
+        frequency: mon
       smStderr:
+        mip: Eday
+        frequency: day
     additional_datasets:
-      - {dataset: ESACCI-SOILMOISTURE, project: OBS, mip: Lmon, tier: 2,
-         type: sat, version: L3S-SSMV-COMBINED-v4.2,
-         start_year: 2005, end_year: 2011}
+      - {dataset: ESACCI-SOILMOISTURE, project: OBS, tier: 2,
+         type: sat, version: L3S-SSMV-COMBINED-v08.1, start_year: 1978, end_year: 2022}
     scripts: null
 
 
