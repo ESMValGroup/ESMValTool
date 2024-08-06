@@ -82,12 +82,16 @@
       "orcid": "0000-0002-1469-2568"
     },
     {
+      "affiliation": "Met Office, UK",
+      "name": "Billows, Chris"
+    },
+    {
       "affiliation": "DLR, Germany",
       "name": "Bock, Lisa",
       "orcid": "0000-0001-7058-5938"
     },
     {
-      "affiliation": "MetOffice, UK",
+      "affiliation": "Met Office, UK",
       "name": "Bodas-Salcedo, Alejandro",
       "orcid": "0000-0002-7890-2536"
     },
@@ -142,7 +146,7 @@
       "name": "Docquier, David"
     },
     {
-      "affiliation": "MetOffice, UK",
+      "affiliation": "Met Office, UK",
       "name": "Dreyer, Laura"
     },
     {
@@ -150,12 +154,20 @@
       "name": "Ehbrecht, Carsten"
     },
     {
-      "affiliation": "MetOffice, UK",
+      "affiliation": "Met Office, UK",
       "name": "Earnshaw, Paul"
+    },
+    {
+      "affiliation": "Met Office, UK",
+      "name": "Geddes, Theo"
     },
     {
       "affiliation": "University of Bremen, Germany",
       "name": "Gier, Bettina"
+    },
+    {
+      "affiliation": "Met Office, UK",
+      "name": "Gillett, Ed"
     },
     {
       "affiliation": "BSC, Spain",
@@ -190,6 +202,10 @@
       "affiliation": "DLR, Germany",
       "name": "Heuer, Helge",
       "orcid": "0000-0003-2411-7150"
+    },
+    {
+      "affiliation": "Met Office, UK",
+      "name": "Hogan, Emma"
     },
     {
       "affiliation": "BSC, Spain",
@@ -227,7 +243,7 @@
       "orcid": "0000-0001-6085-5914"
     },
     {
-      "affiliation": "MetOffice, UK",
+      "affiliation": "Met Office, UK",
       "name": "Little, Bill"
     },
     {
@@ -279,7 +295,7 @@
       "name": "Sandstad, Marit"
     },
     {
-      "affiliation": "MetOffice, UK",
+      "affiliation": "Met Office, UK",
       "name": "Sellar, Alistair"
     },
     {
@@ -304,6 +320,10 @@
       "affiliation": "URead, UK",
       "name": "Swaminathan, Ranjini",
       "orcid": "0000-0001-5853-2673"
+    },
+    {
+      "affiliation": "Met Office, UK",
+      "name": "Tomkins, Katherine"
     },
     {
       "affiliation": "BSC, Spain",
@@ -387,7 +407,7 @@
       "orcid": "0000-0003-3780-0784"
     },
     {
-      "affiliation": "MetOffice, UK",
+      "affiliation": "Met Office, UK",
       "name": "Munday, Gregory",
       "orcid": "0000-0003-4750-9923"
     }
