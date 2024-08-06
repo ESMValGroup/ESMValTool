@@ -61,7 +61,7 @@ def _extract_variable(cmor_info, attrs, var_file, out_dir, cfg):
     cube.convert_units('kg m-2')
     utils.fix_var_metadata(cube, cmor_info)
     utils.convert_timeunits(cube, 1950)
-    utils.fix_coords(cube)
+    cube = utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
     utils.save_variable(cube,
                         cmor_info.short_name,

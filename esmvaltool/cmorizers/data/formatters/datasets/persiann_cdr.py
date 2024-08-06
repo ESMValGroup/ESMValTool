@@ -113,7 +113,7 @@ def _extract_variable(short_name, var, cfg, input_files, out_dir):
     cube.units = 'kg m-2 s-1'
 
     # Fix coordinates
-    utils.fix_coords(cube)
+    cube = utils.fix_coords(cube)
 
     # Fix metadata
     attrs = cfg['attributes']

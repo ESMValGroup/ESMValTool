@@ -93,7 +93,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
 
     # Fix metadata
     utils.convert_timeunits(cube, 1950)
-    utils.fix_coords(cube)
+    cube = utils.fix_coords(cube)
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
     cube.convert_units(cmor_info.units)
     attrs = cfg['attributes']

@@ -50,7 +50,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     utils.convert_timeunits(cube, 1950)
 
     # Fix coordinates
-    utils.fix_coords(cube)
+    cube = utils.fix_coords(cube)
 
     # Fix metadata
     attrs = cfg['attributes']

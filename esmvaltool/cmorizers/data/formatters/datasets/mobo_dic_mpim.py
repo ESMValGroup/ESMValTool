@@ -171,7 +171,7 @@ def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
     elif cube.coords('Julian Day'):  # MOBO-DIC2004-2019
         _fix_time(cube)
     cube.coord('depth').units = 'm'
-    utils.fix_coords(cube, overwrite_time_bounds=False)
+    cube = utils.fix_coords(cube, overwrite_time_bounds=False)
 
     # Fix global metadata
     utils.set_global_atts(cube, attrs)

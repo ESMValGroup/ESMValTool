@@ -80,7 +80,7 @@ def _extract_variable(cmor_info, attrs, filepath, out_dir):
 
         utils.fix_var_metadata(cube, cmor_info)
 
-        utils.fix_coords(cube)
+        cube = utils.fix_coords(cube)
         bounds = get_time_bounds(cube.coords('time')[0], 'mon')
         cube.coords('time')[0].bounds = bounds
         utils.set_global_atts(cube, attrs)

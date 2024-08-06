@@ -54,7 +54,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
     for cube in cubes:
         if cube.var_name == rawvar:
             fix_var_metadata(cube, var_info)
-            fix_coords(cube)
+            cube = fix_coords(cube)
             _fix_data(cube, var)
             set_global_atts(cube, attrs)
             save_variable(

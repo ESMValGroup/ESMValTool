@@ -94,7 +94,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
     # fix coordinates
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)
-    utils.fix_coords(cube)
+    cube = utils.fix_coords(cube)
 
     # Fix metadata
     attrs = cfg['attributes'].copy()
@@ -124,7 +124,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
             attrs['mip'] = 'Amon'
 
             # Fix coordinates
-            utils.fix_coords(cube)
+            cube = utils.fix_coords(cube)
 
             # Save variable
             utils.save_variable(cube,

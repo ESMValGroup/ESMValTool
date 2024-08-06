@@ -42,11 +42,13 @@ def _fix_coords(cube, cmor_info):
         time_coord.points = time_coord.units.date2num(new_dates)
     cube.coord('lat').standard_name = 'latitude'
     cube.coord('lon').standard_name = 'longitude'
-    utils.fix_coords(cube)
+    cube = utils.fix_coords(cube)
 
     # Scalar coordinates
     if cmor_info.short_name in ('fgco2', 'spco2'):
         utils.add_scalar_depth_coord(cube)
+
+    return cube
 
 
 def _fix_data(cube, var):
@@ -109,7 +111,7 @@ def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
     _fix_var_metadata(var_info, cmor_info, attrs, cube)
 
     # Fix coordinates
-    _fix_coords(cube, cmor_info)
+    cube = _fix_coords(cube, cmor_info)
 
     # Fix global metadata
     utils.set_global_atts(cube, attrs)

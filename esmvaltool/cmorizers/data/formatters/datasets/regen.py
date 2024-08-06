@@ -44,7 +44,7 @@ def _extract_variable(short_name, var, cfg, file_path, out_dir):
     utils.convert_timeunits(cube, 1950)
 
     # Fix coordinates
-    utils.fix_coords(cube)
+    cube = utils.fix_coords(cube)
 
     # Fix metadata
     attrs = cfg['attributes']
@@ -72,7 +72,7 @@ def _extract_variable(short_name, var, cfg, file_path, out_dir):
             attrs['mip'] = 'Amon'
 
             # Fix coordinates
-            utils.fix_coords(cube)
+            cube = utils.fix_coords(cube)
 
             # Save variable
             utils.save_variable(cube,

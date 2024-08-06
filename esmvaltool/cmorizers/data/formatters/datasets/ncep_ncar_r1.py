@@ -84,10 +84,7 @@ def _fix_units(cube, definition):
 
 
 def _fix_coordinates(cube, definition, cmor_info):
-    # fix flipped latitude
-    utils.flip_dim_coord(cube, 'latitude')
-    # fix other coordinates
-    utils.fix_coords(cube)
+    cube = utils.fix_coords(cube)
 
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)

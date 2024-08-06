@@ -114,7 +114,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
         if cube.var_name == rawvar:
             fix_var_metadata(cube, var_info)
             _fix_time(cube, var_info.frequency)
-            fix_coords(cube, overwrite_time_bounds=False)
+            cube = fix_coords(cube, overwrite_time_bounds=False)
             cube = _add_depth_coord(cube)
             _fix_data(cube, var)
             set_global_atts(cube, attrs)

@@ -47,7 +47,7 @@ def _fix_cube(var, cube, cfg):
         logger.info("Converting time units to gregorian")
         cube.coord('time').units = cf_units.Unit(old_unit.origin,
                                                  calendar='gregorian')
-    utils.fix_coords(cube)
+    cube = utils.fix_coords(cube)
     cube.convert_units(cmor_info.units)
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)

@@ -57,9 +57,8 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     _fix_time_coord(cube)
     utils.fix_var_metadata(cube, cmor_info)
     utils.convert_timeunits(cube, 1950)
-    utils.fix_coords(cube)
+    cube = utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
-    utils.flip_dim_coord(cube, 'latitude')
     utils.save_variable(cube,
                         var,
                         out_dir,

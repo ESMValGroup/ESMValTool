@@ -8,6 +8,7 @@ import iris.coord_systems
 import iris.coords
 import iris.cube
 import iris.fileformats
+import iris.util
 import numpy as np
 import pytest
 from cf_units import Unit
@@ -194,8 +195,9 @@ def test_fix_coords():
     cube.coord("longitude").units = "m"
     cube.coord("latitude").units = "K"
     cube_2 = cube.copy()
-    cube_2.coord("depth").bounds = [[0., 2.5], [2.5, 25.], [25., 250.]]
-    utils.fix_coords(cube)
+
+    cube = utils.fix_coords(cube)
+
     assert cube.coord("time").var_name == "time"
     assert cube.coord("longitude").var_name == "lon"
     assert cube.coord("latitude").var_name == "lat"
@@ -217,24 +219,31 @@ def test_fix_coords():
     # both cf-units <= 3.1.0 and later versions, we list both variants in the
     # following assertion.
     assert cube.coord("time").units.calendar in ("standard", "gregorian")
-    assert cube.coord("longitude").points[0] == 178.5
-    assert cube.coord("longitude").points[1] == 179.5
+    assert cube.coord("longitude").points[0] == 358.5
+    assert cube.coord("longitude").points[1] == 359.5
     assert cube.coord("longitude").has_bounds()
-    assert cube.coord("longitude").bounds[1][1] == 180.
-    assert cube.data[1, 1, 1, 0] == 22.
+    assert cube.coord("longitude").bounds[1][1] == 360.0
+    assert cube.data[1, 1, 1, 1] == 22.
     assert cube.coord("latitude").has_bounds()
     assert cube.coord("depth").has_bounds()
     assert cube.coord('latitude').coord_system is None
     assert cube.coord('longitude').coord_system is None
-    utils.fix_coords(cube_2,
-                     overwrite_time_bounds=False,
-                     overwrite_lon_bounds=False,
-                     overwrite_lat_bounds=False,
-                     overwrite_lev_bounds=False)
+
+    cube_2.coord("depth").bounds = [[0., 2.5], [2.5, 25.], [25., 250.]]
+    cube_2 = iris.util.reverse(cube_2, "latitude")
+    np.testing.assert_allclose(cube_2.coord('latitude').points, [2.5, 1.5])
+    cube_2 = utils.fix_coords(
+        cube_2,
+        overwrite_time_bounds=False,
+        overwrite_lon_bounds=False,
+        overwrite_lat_bounds=False,
+        overwrite_lev_bounds=False,
+    )
     assert cube_2.coord("time").bounds[0][1] == 30.
-    assert cube_2.coord("longitude").bounds[1][1] == 180.
+    assert cube_2.coord("longitude").bounds[1][1] == 360.0
     assert cube_2.coord("latitude").bounds[1][1] == 3.
     assert cube_2.coord("depth").bounds[1][1] == 25.
+    np.testing.assert_allclose(cube_2.coord('latitude').points, [1.5, 2.5])
 
 
 def test_fix_var_metadata():
