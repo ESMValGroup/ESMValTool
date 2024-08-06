@@ -1,0 +1,103 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: JRA-55
+  version: '1'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: 'https://rda.ucar.edu/datasets/ds628.1/'
+  reference: 'jra_55'
+  comment: |
+    '' 
+
+# Variables to cmorize
+variables:
+  cli:
+    short_name: cli
+    mip: Amon
+    file: fcst_p125.229_ciwc.{year}01_{year}12.grb
+
+  clivi:
+    short_name: clivi
+    mip: Amon
+    file: fcst_column125.058_cice.{year}01_{year}12.grb
+
+  clw:
+    short_name: clw
+    mip: Amon
+    file: fcst_p125.228_clwc.{year}01_{year}12.grb
+
+  clwvi:
+    short_name: clwvi
+    mip: Amon
+    operator: sum
+    files:
+      - 'fcst_column125.058_cice.{year}01_{year}12.grb'
+      - 'fcst_column125.227_cw.{year}01_{year}12.grb'
+
+  clt:
+    short_name: clt
+    mip: Amon
+    file: fcst_surf125.071_tcdc.{year}01_{year}12.grb
+
+  prw:
+    short_name: prw
+    mip: Amon
+    file: fcst_column125.054_pwat.{year}01_{year}12.grb
+
+  rlus:
+    short_name: rlus
+    mip: Amon
+    typeOfLevel: surface
+    file: fcst_phy2m125.212_ulwrf.{year}01_{year}12.grb
+
+  rlut:
+    short_name: rlut
+    mip: Amon
+    typeOfLevel: nominalTop
+    file: fcst_phy2m125.212_ulwrf.{year}01_{year}12.grb
+
+  rlutcs:
+    short_name: rlutcs
+    mip: Amon
+    file: fcst_phy2m125.162_csulf.{year}01_{year}12.grb
+
+  rsus:
+    short_name: rsus
+    mip: Amon
+    typeOfLevel: surface
+    file: fcst_phy2m125.211_uswrf.{year}01_{year}12.grb
+
+  rsuscs:
+    short_name: rsuscs
+    mip: Amon
+    typeOfLevel: surface
+    file: fcst_phy2m125.160_csusf.{year}01_{year}12.grb
+
+  rsut:
+    short_name: rsut
+    mip: Amon
+    typeOfLevel: nominalTop
+    file: fcst_phy2m125.211_uswrf.{year}01_{year}12.grb
+
+  rsutcs:
+    short_name: rsutcs
+    mip: Amon
+    typeOfLevel: nominalTop
+    file: fcst_phy2m125.160_csusf.{year}01_{year}12.grb
+
+  ta:
+    short_name: ta
+    mip: Amon
+    file: anl_p125.011_tmp.{year}01_{year}12.grb
+
+  tas:
+    short_name: tas
+    mip: Amon
+    file: anl_surf125.011_tmp.{year}01_{year}12.grb
+
+  wap:
+    short_name: wap
+    mip: Amon
+    file: anl_p125.039_vvel.{year}01_{year}12.grb
