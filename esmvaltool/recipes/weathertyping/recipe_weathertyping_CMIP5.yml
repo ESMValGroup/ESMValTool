@@ -1,0 +1,255 @@
+documentation:
+  title: Weathertyping algorithm
+
+  description: |
+    A diagnostic to calculate Lamb weathertypes over a given region. Furthermore, 
+    correlations between weathertypes and precipitation patterns over a given are can be calculated 
+    and 'combined' or 'simplified' weathertypes can be derived. Additionally, mean fields, as well as
+    anomalies and standard deviations can be plotted.
+
+  authors:
+    - jury_martin
+    - kroissenbrunner_thomas
+
+  maintainer:
+    - kroissenbrunner_thomas
+
+  projects:
+    - preval
+
+  references:
+    - maraun21jgr
+    - jones93ijc
+
+datasets_psl_CMIP5: &datasets_psl_cmip5
+  - {institute: CSIRO-BOM, dataset: ACCESS1-0, ensemble: r1i1p1, esgf_version: v4}
+  - {institute: CSIRO-BOM, dataset: ACCESS1-3, ensemble: r1i1p1, esgf_version: v20131108}
+  - {institute: CMCC, dataset: CMCC-CESM, ensemble: r1i1p1, esgf_version: v20170725}
+  - {institute: CMCC, dataset: CMCC-CM, ensemble: r1i1p1, esgf_version: v20170725}
+  - {institute: CMCC, dataset: CMCC-CMS, ensemble: r1i1p1, esgf_version: v20170725}
+  - {institute: CNRM-CERFACS, dataset: CNRM-CM5, ensemble: r1i1p1, esgf_version: v20120530}
+  - {institute: CSIRO-QCCCE, dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1, esgf_version: v1}
+  - {institute: LASG-IAP, dataset: FGOALS-s2, ensemble: r1i1p1, esgf_version: v20161204}
+  - {institute: NIMR-KMA, dataset: HadGEM2-AO, ensemble: r1i1p1, esgf_version: v20130815}
+  - {institute: INM, dataset: inmcm4, ensemble: r1i1p1, esgf_version: v20110323}
+  - {institute: IPSL, dataset: IPSL-CM5A-LR, ensemble: r1i1p1, esgf_version: v20110915}
+  - {institute: IPSL, dataset: IPSL-CM5A-MR, ensemble: r1i1p1, esgf_version: v20111119}
+  - {institute: IPSL, dataset: IPSL-CM5B-LR, ensemble: r1i1p1, esgf_version: v20120718}
+  - {institute: MIROC, dataset: MIROC5, ensemble: r1i1p1, esgf_version: v20120710}
+  - {institute: MIROC, dataset: MIROC-ESM, ensemble: r1i1p1, esgf_version: v20120710}
+  - {institute: MIROC, dataset: MIROC-ESM-CHEM, ensemble: r1i1p1, esgf_version: v20120718}
+  - {institute: MPI-M, dataset: MPI-ESM-LR, ensemble: r1i1p1, esgf_version: v20111006}
+  - {institute: MPI-M, dataset: MPI-ESM-P, ensemble: r1i1p1, esgf_version: v20120315}
+  - {institute: MPI-M, dataset: MPI-ESM-MR, ensemble: r1i1p1, esgf_version: v20120503}
+  - {institute: MRI, dataset: MRI-CGCM3, ensemble: r1i1p1, esgf_version: v20120701}
+  - {institute: MRI, dataset: MRI-ESM1, ensemble: r1i1p1, esgf_version: v20130307}
+  - {institute: MOHC, dataset: HadGEM2-CC, ensemble: r1i1p1, esgf_version: v20110930}
+  - {institute: MOHC, dataset: HadGEM2-ES, ensemble: r1i1p1, esgf_version: v20120716}
+  - {institute: BCC, dataset: bcc-csm1-1, ensemble: r1i1p1, esgf_version: v1}
+  - {institute: BCC, dataset: bcc-csm1-1-m, ensemble: r1i1p1, esgf_version: v20120709}
+  - {institute: CCCma, dataset: CanESM2, ensemble: r1i1p1, esgf_version: v20120410}
+  - {institute: NCAR, dataset: CCSM4, ensemble: r1i1p1, esgf_version: v20120409}
+  - {institute: NCC, dataset: NorESM1-M, ensemble: r1i1p1, esgf_version: v20110901}
+  - {institute: NOAA-GFDL, dataset: GFDL-ESM2G, ensemble: r1i1p1, esgf_version: v20130130}
+  - {institute: NOAA-GFDL, dataset: GFDL-ESM2M, ensemble: r1i1p1, esgf_version: v20111228}
+  - {institute: NSF-DOE-NCAR, dataset: CESM1-BGC, ensemble: r1i1p1, esgf_version: v20120523}
+  - {institute: NSF-DOE-NCAR, dataset: CESM1-CAM5, ensemble: r1i1p1, esgf_version: v20140612}
+  - {institute: NSF-DOE-NCAR, dataset: CESM1-FASTCHEM, ensemble: r1i1p1, esgf_version: v20120522}
+  - {institute: ICHEC, dataset: EC-EARTH, ensemble: r1i1p1, esgf_version: v20171115}
+  #- {institute: LASG-CESS, dataset: FGOALS-g2, ensemble: r1i1p1, esgf_version: v20161204}
+  - {institute: BNU, dataset: BNU-ESM, ensemble: r1i1p1, esgf_version: v20120504}
+  #- {institute: CCCma, dataset: CanCM4, ensemble: r1i1p1, esgf_version: v20120612}
+  - {institute: MIROC, dataset: MIROC4h, ensemble: r1i1p1, esgf_version: v20120628}
+
+datasets_ERA5: &datasets_era5
+  - {project: native6, dataset: ERA5, type: reanaly, frequency: day, latestversion: v1, mip: day, tier: 3, start_year: 1958, end_year: 2005}
+
+datasets_EOBS: &datasets_EOBS
+  - {dataset: E-OBS, project: OBS, version: v29.0e-0.25, type: ground, tier: 2, start_year: 1958, end_year: 2005, mip: day}
+
+preprocessors:
+  weathertype_preproc:
+    extract_time: &time
+      start_year: 1950
+      start_month: 1
+      start_day: 1
+      end_year: 2005
+      end_month: 12
+      end_day: 31
+    regrid:
+      target_grid: &grid
+        start_longitude: -5
+        end_longitude: 25
+        step_longitude: 5
+        start_latitude: 35
+        end_latitude: 55
+        step_latitude: 5
+      scheme: linear
+
+  weathertype_preproc_pr:
+    extract_time: 
+      *time
+    extract_region: #choose region which will be used for weathertype and precipitation correlation
+      start_longitude: 9.5
+      end_longitude: 17.25
+      start_latitude: 46.25
+      end_latitude: 49
+
+  mean_preproc:
+    extract_time: 
+      *time
+    extract_region: &reg
+      start_longitude: -15
+      end_longitude: 35
+      start_latitude: 25
+      end_latitude: 65    
+
+diagnostics:
+  weathertyping:
+    description: calculate weathertypes and plot means
+    variables:
+      era5_msl_wt: &era5_msl_wt
+        project: native6
+        dataset: ERA51
+        type: reanaly
+        frequency: day
+        mip: day
+        latestversion: v1
+        tier: 3
+        start_year: 1958
+        end_year: 2005
+        short_name: psl
+        preprocessor: weathertype_preproc
+        additional_datasets:
+          *datasets_era5
+
+      era5_pr_wt: &era5_pr_wt
+        project: native6
+        dataset: ERA51
+        type: reanaly
+        frequency: day
+        mip: day
+        latestversion: v1
+        tier: 3
+        start_year: 1958
+        end_year: 2005
+        short_name: pr
+        preprocessor: weathertype_preproc_pr
+        additional_datasets:
+          *datasets_era5    
+
+      eobs_pr_wt: &eobs_pr_wt
+        project: OBS
+        dataset: E-OBS
+        type: ground
+        mip: day
+        version: v29.0e-0.25
+        tier: 2
+        start_year: 1958
+        end_year: 2005
+        short_name: pr
+        preprocessor: weathertype_preproc_pr
+        additional_datasets:
+          *datasets_EOBS
+
+      era5_msl_mean: &era5_msl
+        project: native6
+        dataset: ERA5
+        type: reanaly
+        frequency: day
+        mip: day
+        latestversion: v1
+        tier: 3
+        start_year: 1958
+        end_year: 2005
+        short_name: psl
+        preprocessor: mean_preproc
+        additional_datasets:
+          *datasets_era5
+
+      era5_tp_mean: &era5_prcp
+        project: native6
+        dataset: ERA5
+        type: reanaly
+        frequency: day
+        mip: day
+        latestversion: v1
+        tier: 3
+        start_year: 1958
+        end_year: 2005
+        short_name: pr
+        preprocessor: mean_preproc
+        additional_datasets:
+          *datasets_era5
+          
+      era5_tas_mean: &era5_temp
+        project: native6
+        dataset: ERA5
+        type: reanaly
+        frequency: day
+        mip: day
+        latestversion: v1
+        tier: 3
+        start_year: 1958
+        end_year: 2005
+        short_name: tas
+        preprocessor: mean_preproc
+        additional_datasets:
+          *datasets_era5
+
+      cmip5_historical_psl_day_wt: &cmip5_historical_wt
+        project: CMIP5
+        activity: CMIP
+        exp: historical
+        mip: day
+        short_name: psl
+        preprocessor: weathertype_preproc
+        start_year: 1950
+        end_year: 2005
+        additional_datasets:
+          *datasets_psl_cmip5
+      
+      cmip5_historical_psl_day_mean: &cmip5_historical_psl
+        project: CMIP5
+        activity: CMIP
+        exp: historical
+        mip: day
+        short_name: psl
+        preprocessor: mean_preproc
+        start_year: 1950
+        end_year: 2005
+        additional_datasets:
+          *datasets_psl_cmip5
+
+      cmip5_historical_prcp_day_mean: &cmip5_historical_prcp
+        project: CMIP5
+        activity: CMIP
+        exp: historical
+        mip: day
+        short_name: pr
+        preprocessor: mean_preproc
+        start_year: 1950
+        end_year: 2005
+        additional_datasets:
+          *datasets_psl_cmip5
+      
+      cmip5_historical_temp_day_mean: &cmip5_historical_ta
+        project: CMIP5
+        activity: CMIP
+        exp: historical
+        mip: day
+        short_name: tas
+        preprocessor: mean_preproc
+        start_year: 1950
+        end_year: 2005
+        additional_datasets:
+          *datasets_psl_cmip5
+
+    scripts:
+      weathertyping:
+        correlation_threshold: 0.9
+        rmse_threshold: 0.002
+        automatic_slwt: true
+        #predefined_slwt: {1: [1, 2, 7, 8, 10, 11, 18, 19, 20, 25, 26], 2: [3, 13], 3: [4, 5, 6, 9, 14, 15, 16, 17], 4: [24, 23]}
+        plotting: true
+        script: ../diag_scripts/weathertyping/weathertyping.py
