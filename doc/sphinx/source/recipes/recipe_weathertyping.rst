@@ -88,49 +88,25 @@ Example plots
    PSL mean map of Lamb WT 1 for ERA5.
 
 .. _fig_weathertyping_2:
-.. figure::  /recipes/figures/weathertyping/lwt_1_ERA5_pr_mean.png
-   :align:   center
-
-   PR mean map of Lamb WT 1 for ERA5.
-
-.. _fig_weathertyping_3:
-.. figure::  /recipes/figures/weathertyping/lwt_1_ERA5_tas_mean.png
-   :align:   center
-
-   TAS mean map of Lamb WT 1 for ERA5.
-
-.. _fig_weathertyping_4:
-.. figure::  /recipes/figures/weathertyping/lwt_2_ERA5_psl_mean.png
-   :align:   center
-
-   PSL mean map of Lamb WT 2 for ERA5.
-
-.. _fig_weathertyping_5:
 .. figure::  /recipes/figures/weathertyping/lwt_1_TaiESM1_psl_mean.png
    :align:   center
 
    PSL mean map of Lamb WT 1 for TaiESM1.
 
-.. _fig_weathertyping_6:
-.. figure::  /recipes/figures/weathertyping/lwt_2_TaiESM1_psl_mean.png
-   :align:   center
-
-   PSL mean map of Lamb WT 2 for TaiESM1.
-
-.. _fig_weathertyping_7:
+.. _fig_weathertyping_3:
 .. figure::  /recipes/figures/weathertyping/slwt_EOBS_4_ERA5_psl_mean.png
    :align:   center
 
    PSL mean map of slwt_EOBS 4 for ERA5 (in this case combined Lamb WT 24 and 23).
 
-.. _fig_weathertyping_8:
-.. figure::  /recipes/figures/weathertyping/slwt_EOBS_4_TaiESM1_psl_mean.png
-   :align:   center
-
-   PSL mean map of slwt_EOBS 4 for TaiESM1 (in this case combined Lamb WT 24 and 23).
-
-.. _fig_weathertyping_9:
+.. _fig_weathertyping_4:
 .. figure::  /recipes/figures/weathertyping/correlation_matrix_E-OBS.png
    :align:   center
 
    Heatmap of correlation values for Lamb WTs 1-27.
+
+.. _fig_weathertyping_5:
+.. figure::  /recipes/figures/weathertyping/ERA5__lwt_rel_occurrence.png
+   :align:   center
+
+   Stackplot of seasonal relative occureences of each WT for ERA5.

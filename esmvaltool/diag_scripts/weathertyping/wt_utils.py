@@ -46,14 +46,15 @@ def generate_grayscale_hex_values(x):
         np.list: array with grescale values as hex
     """
     grayscale_values = np.linspace(0, 1, x)
-    grayscale_hex = [f'#{int(value * 255):02x}{int(value * 255):02x}\
-                     {int(value * 255):02x}' for value in grayscale_values]
-
+    grayscale_hex = [
+        f'#{int(value * 255):02x}{int(value * 255):02x}{int(value * 255):02x}'
+        for value in grayscale_values]
+    
     return grayscale_hex
 
 
 def plot_seasonal_occurrence(cfg: dict, wt_cubes: iris.cube.Cube,
-                             dataset_name: str):
+                             dataset_name: str, ensemble: str=""):
     """Plot relative monthly/seasonal occurrence of weathertypes.
 
     Args:
@@ -113,10 +114,10 @@ def plot_seasonal_occurrence(cfg: dict, wt_cubes: iris.cube.Cube,
         ax.set_xlabel('Month')
         ax.set_ylabel('Cumulative Relative occurrence')
 
-        plt.savefig(
-            f'{output_path}/{dataset_name}_{wt_string}_rel_occurrence.png')
-        plt.savefig(
-            f'{output_path}/{dataset_name}_{wt_string}_rel_occurrence.pdf')
+        plt.savefig(f'{output_path}/{dataset_name}_{ensemble}_'
+                    f'{wt_string}_rel_occurrence.png')
+        plt.savefig(f'{output_path}/{dataset_name}_{ensemble}_'
+                    f'{wt_string}_rel_occurrence.pdf')
         plt.close()
 
 
@@ -286,16 +287,14 @@ def plot_means(cfg: dict,
         cfg (dict): cfg dictionary provided by recipe
         preproc_var (np.array): variable to be plotted
         wt_cubes (iris.cube.Cube): list of wt cubes
-        dataset (str): dataset string
-        var (str): variable string
-        preproc_path (str): path to preprocessor
+        data_info (dict): dictionary with info to dataset
         only_lwt (bool, optional): If True,
         only Lamb weathertypes will be loaded. Defaults to False.
         (useful for automatic_slwt = False)
     """
 
-    data_info['wt_string'] = 'lwt'
     if not only_lwt:
+        data_info['wt_string'] = 'lwt'
         calc_wt_means(
             cfg,
             preproc_var,
@@ -942,13 +941,17 @@ def plot_maps(wt: np.array, cfg: dict, cube: iris.cube.Cube,
     """
 
     dataset = data_info.get('dataset')
-    var_name = data_info.get('var_name')
+    var_name = data_info.get('var')
     wt_string = data_info.get('wt_string')
+    ensemble = data_info.get('ensemble', '')
 
     logger.info('Plotting %s %s %s for %s %s', dataset, var_name, mode,
                 wt_string, wt)
 
-    local_path = cfg.get('plot_dir')
+    local_path = f"{cfg.get('plot_dir')}/{mode}"
+
+    if not os.path.exists(f'{local_path}'):
+        os.makedirs(f'{local_path}')
 
     ax = plt.axes(projection=ccrs.PlateCarree())
 
@@ -1001,12 +1004,14 @@ def plot_maps(wt: np.array, cfg: dict, cube: iris.cube.Cube,
     ax.coastlines()
     ax.add_feature(cfeature.BORDERS, linestyle=':')
 
-    plt.savefig(
-        os.path.join(local_path,
-                     f'{wt_string}_{wt}_{dataset}_{var_name}_{mode}.png'))
-    plt.savefig(
-        os.path.join(local_path,
-                     f'{wt_string}_{wt}_{dataset}_{var_name}_{mode}.pdf'))
+    plt.savefig(f'{local_path}/{wt_string}_{wt}_{dataset}_{ensemble}'
+                f'_{var_name}_{mode}.png')
+        #os.path.join(local_path,
+        #             (f'{wt_string}_{wt}_{dataset}_{ensemble}_{var_name}_{mode}.png')))
+    plt.savefig(f'{local_path}/{wt_string}_{wt}_{dataset}_{ensemble}_'
+                f'{var_name}_{mode}.pdf')
+        #os.path.join(local_path,
+        #             (f'{wt_string}_{wt}_{dataset}_{ensemble}_{var_name}_{mode}.pdf')))
     plt.close()
 
 
@@ -1102,8 +1107,8 @@ def plot_corr_rmse_heatmaps(cfg: dict, pattern_correlation_matrix: np.array,
         ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
         ax.set_ylabel('lwt', fontsize=8)
         plt.tight_layout()
-        plt.savefig(os.path.join(output_path,
-                                 f'correlation_matrix_{dataset}.png'))
+        plt.savefig(f'{output_path}/correlation_matrix_{dataset}.png')
+        plt.savefig(f'{output_path}/correlation_matrix_{dataset}.pdf')
         plt.close()
 
     mask = np.zeros_like(rmse_matrix)
@@ -1116,7 +1121,7 @@ def plot_corr_rmse_heatmaps(cfg: dict, pattern_correlation_matrix: np.array,
                          mask=mask,
                          square=True,
                          annot=True,
-                         annot_kws={'size': 6},
+                         annot_kws={'size': 5},
                          cmap='seismic',
                          xticklabels=labels,
                          yticklabels=labels,
@@ -1130,7 +1135,8 @@ def plot_corr_rmse_heatmaps(cfg: dict, pattern_correlation_matrix: np.array,
         ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
         ax.set_ylabel('lwt', fontsize=8)
         plt.tight_layout()
-        plt.savefig(os.path.join(output_path, f'rmse_matrix_{dataset}.png'))
+        plt.savefig(f'{output_path}/rmse_matrix_{dataset}.png')
+        plt.savefig(f'{output_path}/rmse_matrix_{dataset}.pdf')
         plt.close()
 
 
@@ -1225,7 +1231,7 @@ def calc_wt_means(cfg: dict, cube: iris.cube.Cube,
     """
 
     dataset = data_info.get('dataset')
-    var_name = data_info.get('var_name')
+    var_name = data_info.get('var')
     wt_string = data_info.get('wt_string')
     preproc_path = data_info.get('preproc_path')
 
