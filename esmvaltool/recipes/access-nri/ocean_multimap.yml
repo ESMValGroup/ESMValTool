@@ -1,0 +1,93 @@
+# ESMValTool
+# recipe_ocean_multimap.yml
+---
+documentation:
+ 
+  title: Maps of ESMs biases against observations
+ 
+  description: |
+    Recipe to evaluate multiple model bias against a reference dataset
+    Written by Tomas Lovato, CMCC, tomas.lovato@cmcc.it
+
+    Edited for CMIP6, figure 41 from Eyring paper
+
+  authors:
+    - lovato_tomas
+  
+  maintainer:
+    - lovato_tomas
+
+  references:
+    - acknow_project
+
+  projects:
+    - crescendo
+
+
+# Write options for scripts
+# --------------------------------------------------
+WRITE_OPTS: &write_opts
+   - { write_plots: True, write_netcdf: True }
+
+
+# --------------------------------------------------
+# DATASETS
+# --------------------------------------------------
+datasets:
+
+  - {dataset: CanESM5-1, project: CMIP6, activity: CMIP, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2005,  end_year: 2014, institute: CCCma}
+  - {dataset: CMCC-ESM2, project: CMIP6, activity: CMIP, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2005,  end_year: 2014}
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, activity: CMIP, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2005,  end_year: 2014}
+  - {dataset: EC-Earth3-CC, project: CMIP6, activity: CMIP, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2005,  end_year: 2014}
+  - {dataset: IPSL-CM6A-LR, project: CMIP6, activity: CMIP, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2005,  end_year: 2014}
+  - {dataset: MPI-ESM1-2-HR, project: CMIP6, activity: CMIP, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2005,  end_year: 2014}
+  - {dataset: MPI-ESM1-2-LR, project: CMIP6, activity: CMIP, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2005,  end_year: 2014}
+  - {dataset: CESM2-FV2, project: CMIP6, activity: CMIP, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2005,  end_year: 2014}
+  - {dataset: CESM2-WACCM-FV2, project: CMIP6, activity: CMIP, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2005,  end_year: 2014}
+  - {dataset: CESM2-WACCM, project: CMIP6, activity: CMIP, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2005,  end_year: 2014}
+  - {dataset: CESM2, project: CMIP6, activity: CMIP, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2005,  end_year: 2014}
+  - {dataset: NorESM2-LM, project: CMIP6, activity: CMIP, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2005,  end_year: 2014}
+  - {dataset: NorESM2-MM, project: CMIP6, activity: CMIP, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2005,  end_year: 2014}
+  - {dataset: GFDL-CM4, project: CMIP6, activity: CMIP, exp: historical, ensemble: r1i1p1f1, grid: gr, start_year: 2005,  end_year: 2014}
+  - {dataset: GFDL-ESM4, project: CMIP6, activity: CMIP, exp: historical, ensemble: r1i1p1f1, grid: gr, start_year: 2005,  end_year: 2014}
+  - {dataset: IPSL-CM5A2-INCA, project: CMIP6, activity: CMIP, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2005,  end_year: 2014}
+# --------------------------------------------------
+# Preprocessors
+# --------------------------------------------------
+preprocessors:
+  # --------------------------------------------------
+  # map preprocessors
+  # --------------------------------------------------
+  # For a 2D global surface map
+  prep_surface_map_2D:
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+# --------------------------------------------------
+# Diagnostics
+# --------------------------------------------------
+diagnostics:
+
+  # --------------------------------------------------
+  # Map diagnostics vs OBS
+  # --------------------------------------------------
+  diag_surface_multimap:
+    description: Global Ocean Surface maps vs OBS
+    variables:
+      intpp:
+        preprocessor: prep_surface_map_2D
+        mip: Omon
+        maps_range: [0, 30] 
+        diff_range: [-15, 15] 
+        layout_rowcol: [4, 4]
+    additional_datasets:
+      - {dataset: Eppley-VGPM-MODIS,  project: OBS,  type: sat,  version: R2018,  start_year: 2005,  end_year: 2014,  tier: 2}
+    scripts:
+      Global_Ocean_multi_vs_obs:
+        script: ocean/diagnostic_maps_multimodel.py
+        observational_dataset: {dataset: Eppley-VGPM-MODIS, project: OBS}
+        <<: *write_opts
+

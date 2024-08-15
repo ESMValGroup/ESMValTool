@@ -1,0 +1,101 @@
+# ESMValTool
+# recipe_ocean_bcg.yml
+---
+documentation:
+  title: Marine Biogeochemistry analysis suite
+
+  description: |
+    Recipe to evaluate the marine biogeochemistry models of CMIP5.
+    There are also some physical evaluation metrics here too.
+    This work based on the BGC-val toolkit GMD-2018-103.
+    DOI: https://doi.org/10.5194/gmd-11-4215-2018
+    Written by Lee de Mora, Plymouth Marine Laboratory, ledm@pml.ac.uk
+    
+    CMIP6 edit and for Eyring paper - figures 38,39,40
+
+  authors:
+    - demora_lee
+
+  maintainer:
+    - demora_lee
+
+  references:
+    - demora2018gmd
+
+  projects:
+    - ukesm
+
+
+datasets:
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, grid: gn, activity: CMIP, exp: historical, ensemble: r1i1p1f1, start_year: 2001, end_year: 2005}
+
+# --------------------------------------------------
+# Preprocessors
+# --------------------------------------------------
+preprocessors:
+
+  prep_surface_map_regrid_3D:
+    custom_order: true
+    extract_levels:
+      levels:  [0., ]
+      scheme: linear_extrapolate
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    ## ACCESS model max values high skewing scale and plot
+    ## and non positive values found causing error in scatter plot
+    mask_outside_range:
+      minimum: 0.000001
+      maximum: 0.06
+
+  prep_global_profile:
+    annual_statistics:
+      operator: mean
+    area_statistics:
+      operator: mean
+
+
+
+# --------------------------------------------------
+# Diagnostics
+# --------------------------------------------------
+diagnostics:
+
+  # --------------------------------------------------
+  # Profile diagnostics - vs WOA
+  # --------------------------------------------------
+  diag_profile_vs_WOA:
+    description: Global profile (WOA observations)
+    variables:
+      no3: # Nitrate ocean surface
+        preprocessor: prep_global_profile
+        mip: Oyr
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
+
+    scripts:
+      Global_profile_vs_WOA:
+        script: ocean/diagnostic_profiles.py
+        observational_dataset: {dataset: WOA, project: OBS}
+
+
+  # --------------------------------------------------
+  # Map diagnostics - vs WOA
+  # --------------------------------------------------
+  diag_surface_maps_vs_WOA:
+    description: Global Ocean Surface maps vs WOA
+    variables:
+      no3:
+        preprocessor: prep_surface_map_regrid_3D
+        mip: Oyr
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
+    scripts:
+      Global_Ocean_surface_map:
+        script: ocean/diagnostic_maps.py
+      Global_Ocean_model_vs_obs:
+        script: ocean/diagnostic_model_vs_obs.py
+        observational_dataset: {dataset: WOA, project: OBS}
+
