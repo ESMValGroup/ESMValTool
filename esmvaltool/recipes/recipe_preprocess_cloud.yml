@@ -159,8 +159,8 @@ diagnostics:
     description: Create timeseries.
     variables:
       clt: &var
-        #preprocessor: mean_pp
-        preprocessor: mean_pp_5x5
+        preprocessor: mean_pp
+        #preprocessor: mean_pp_5x5
         #preprocessor: anomaly_pp
         mip: day
         frequency: day
@@ -178,48 +178,48 @@ diagnostics:
       reff:
         <<: *var
         mip: day
-    scripts: 
-      timeseries:
-        script: causal_clouds_timeseries.py
+    scripts: Null 
+    #timeseries:
+    #    script: causal_clouds_timeseries.py
 
 
-  south_east_pacific_ccfs:
-    description: Create timeseries.
-    variables:
-      rsdt:
-        <<: *var
-        mip: Amon
-        frequency: mon
-        additional_datasets: *ceres-ebaf
-      prw:
-        <<: *var
-        mip: Eday
-        additional_datasets: *esacci_wv
-      psl: &var2
-        <<: *var
-        additional_datasets: *era5
-      hfss: 
-        <<: *var2
-      sfcWind: 
-        <<: *var2
-      ta700: 
-        <<: *var2
-        mip: CFday 
-      ta1000: 
-        <<: *var2
-      tos:
-        <<: *var
-        #preprocessor: anomaly_pp_5x5
-        mip: Oday 
-        additional_datasets: *esacci_sst
-      wap700:
-        <<: *var2
-    scripts: 
-      timeseries:
-        script: causal_clouds_timeseries.py
-        compute:
-          #- theta700
-          #- theta850
-          - LTS
-            #plot_timeseries:
-            #  plot_type: plot
+        #  south_east_pacific_ccfs:
+        #    description: Create timeseries.
+        #    variables:
+        #      rsdt:
+        #        <<: *var
+        #        mip: Amon
+        #        frequency: mon
+        #        additional_datasets: *ceres-ebaf
+        #      prw:
+        #        <<: *var
+        #        mip: Eday
+        #        additional_datasets: *esacci_wv
+        #      psl: &var2
+        #        <<: *var
+        #        additional_datasets: *era5
+        #      hfss: 
+        #        <<: *var2
+        #      sfcWind: 
+        #        <<: *var2
+        #      ta700: 
+        #        <<: *var2
+        #        mip: CFday 
+        #      ta1000: 
+        #        <<: *var2
+        #      tos:
+        #        <<: *var
+        #        #preprocessor: anomaly_pp_5x5
+        #        mip: Oday 
+        #        additional_datasets: *esacci_sst
+        #      wap700:
+        #        <<: *var2
+        #    scripts: 
+        #      timeseries:
+        #        script: causal_clouds_timeseries.py
+        #        compute:
+        #          #- theta700
+        #          #- theta850
+        #          - LTS
+        #            #plot_timeseries:
+        #            #  plot_type: plot
