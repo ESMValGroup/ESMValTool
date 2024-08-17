@@ -209,7 +209,9 @@ class StationaryRP:
         which GEV shape parameter notion is used. Possible options: 
         scipy or R. This attribute is used simply for checking.
     '''
-    def __init__(self, data: xr.DataArray, event: float):
+    def __init__(self, data: xr.DataArray, event: float, 
+                 weights: np.ndarray | None = None, 
+                 initial: dict | None = None):
         '''
         Parameters
         ----------
@@ -217,8 +219,16 @@ class StationaryRP:
                 a data array with the timeseries that is used for fitting
             event : 
                 the strength of the event for return period calculation
+            weights : 
+                an array with the weights, the same shape as data
+                TODO add shape check
+            initial : 
+                an dictionary with the initial conditions for the fit
+                keys are {'location', 'scale', 'shape'}
+                TODO add keywords check  
         '''
-        stat_gev = cex.fit_gev(data.data, returnValue=event, getParams=True)
+        stat_gev = cex.fit_gev(data.data, returnValue=event, getParams=True,
+                               weights=weights, initial=initial)
         self.rp = float(np.exp(stat_gev['logReturnPeriod'][0]))
         self.shape = float(-1 *stat_gev['mle'][2])
         self.loc = float(stat_gev['mle'][0])
@@ -259,7 +269,7 @@ class NonStationaryRP:
         scipy or R. This attribute is used simply for checking.
     '''
     def __init__(self, data: xr.DataArray, covariate: xr.DataArray, 
-                                    event: float, idx: int = -1):
+                     event: float, idx: int = -1, initial: dict | None = None):
         '''
         Parameters
         ----------
@@ -273,6 +283,11 @@ class NonStationaryRP:
             idx : 
                 index for which the retrun period has to be calculated
                 (e.g., year of interest), default is -1 (the last)
+            initial : 
+                an dictionary with the initial conditions for the fit
+                keys are {'location', 'scale', 'shape'}
+                TODO add keywords check  
+            
         
         Raises
         ------
