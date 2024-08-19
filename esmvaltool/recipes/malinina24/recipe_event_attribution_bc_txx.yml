@@ -204,8 +204,9 @@ diagnostics:
         ancestors: [observations/observations, factual, ssp245, nat, anomaly]
         mpl_style: malinina24
         color_style: malinina24
+        obs_ref_dataset: ERA5 # the dataset name that will be used for event definition
         CI_quantiles: [5, 95] # percentiles for the confidence interval
-        obs_gev: nonstationary # which GEV stats from observations to use options: stationary (default), nonstationary
+        obs_gev: non_stationary # which GEV stats from observations to use options: stationary (default), nonstationary
         individual_models: False # do the output for sigle models (true) or multi-model mean (false, default)
         anomaly_type: anomaly # options: anomaly (default) and ratio
         yblock: 1 # (optional) determines how many years in block should be pooled in boostrap
