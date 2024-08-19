@@ -36,6 +36,44 @@ from esmvaltool.diag_scripts.shared import ProvenanceLogger
 # # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 
+def select_bins(min_val:  float | int, max_val: float | int):
+    '''
+    Create the bins and x-values for plotting
+
+    Parameters
+    ----------
+    min_val :  
+        minimum value 
+    max_val : 
+        maximum value
+
+    Returns
+    -------
+    bins : np.ndarray
+        bins for plotting 
+    x_fine : np.ndarray
+        x values with fine resolution 
+    '''
+
+    if max_val - min_val < 5: 
+        bins = np.arange(min_val, max_val+0.1, 0.1).round(1)
+        x_fine = np.arange(min_val, max_val+0.01, 0.01).round(2)
+    elif 5 <= max_val - min_val < 10: 
+        bins = np.arange(min_val, max_val+0.1, 0.5).round(1)
+        x_fine = np.arange(min_val, max_val+0.01, 0.05).round(2)
+    elif 10 <= max_val - min_val < 30: 
+        bins = np.arange(min_val, max_val+0.1, 1).round()
+        x_fine = np.arange(min_val, max_val+0.01, 0.1).round(1)
+    elif 30 <= max_val - min_val < 50: 
+        bins = np.arange(min_val, max_val+0.1, 2).round()
+        x_fine = np.arange(min_val, max_val+0.01, 0.2).round(1)
+    else: 
+        bins = np.arange((min_val - 5)//5, (max_val + 5)//5 + 0.1, 5).round()
+        x_fine = np.arange(min_val, max_val+0.01, 0.5).round(1)    
+
+    return bins, x_fine
+
+
 def obtain_covariate_data(input_data: dict, dataset: str, 
                                             covariate_dataset: str| None, 
                                             smooth_kernel: int | None, 
@@ -209,14 +247,14 @@ class StationaryRP:
         which GEV shape parameter notion is used. Possible options: 
         scipy or R. This attribute is used simply for checking.
     '''
-    def __init__(self, data: xr.DataArray, event: float, 
+    def __init__(self, data: np.ndarray, event: float, 
                  weights: np.ndarray | None = None, 
                  initial: dict | None = None):
         '''
         Parameters
         ----------
             data : 
-                a data array with the timeseries that is used for fitting
+                an array with the timeseries that is used for fitting
             event : 
                 the strength of the event for return period calculation
             weights : 
@@ -227,12 +265,16 @@ class StationaryRP:
                 keys are {'location', 'scale', 'shape'}
                 TODO add keywords check  
         '''
-        stat_gev = cex.fit_gev(data.data, returnValue=event, getParams=True,
+        stat_gev = cex.fit_gev(data, returnValue=event, getParams=True,
                                weights=weights, initial=initial)
-        self.rp = float(np.exp(stat_gev['logReturnPeriod'][0]))
-        self.shape = float(-1 *stat_gev['mle'][2])
-        self.loc = float(stat_gev['mle'][0])
-        self.scale = float(stat_gev['mle'][1])
+        try:
+            self.rp = float(np.exp(stat_gev['logReturnPeriod'][0]))
+            self.shape = float(-1 *stat_gev['mle'][2])
+            self.loc = float(stat_gev['mle'][0])
+            self.scale = float(stat_gev['mle'][1])
+        except:
+            self.rp = float(np.nan) ; self.shape = float(np.nan)
+            self.loc = float(np.nan) ; self.scale = float(np.nan)            
         self.notation= 'scipy'
 
 
@@ -268,15 +310,15 @@ class NonStationaryRP:
         which GEV shape parameter notion is used. Possible options: 
         scipy or R. This attribute is used simply for checking.
     '''
-    def __init__(self, data: xr.DataArray, covariate: xr.DataArray, 
+    def __init__(self, data: np.ndarray, covariate: np.ndarray, 
                      event: float, idx: int = -1, initial: dict | None = None):
         '''
         Parameters
         ----------
             data : 
-                a data array with the timeseries that is used for fitting
+                an array with the timeseries that is used for fitting
             covariate: 
-                a data array with a covariate that is used for fitting
+                an array with a covariate that is used for fitting
                 (e.g., GSAT, CO2 etc.)
             event : 
                 the strength of the event for return period calculation
@@ -294,10 +336,10 @@ class NonStationaryRP:
         ValueError
             If the length of the data and covariate is different.
         '''
-        if len(data.data) != len(covariate.data):
+        if len(data) != len(covariate):
             raise ValueError("The lengths of the data and covariate"
                                                         "don't match.")
-        stat_gev = cex.fit_gev(data.data, covariate.data, locationFun=1, 
+        stat_gev = cex.fit_gev(data, covariate, locationFun=1, 
                                returnValue=event, getParams=True)
         try: 
             self.rp = float(np.exp(stat_gev['logReturnPeriod'][idx]))
@@ -309,8 +351,8 @@ class NonStationaryRP:
             self.rp = float(np.nan)  
             self.loc_a = float(np.nan) ; self.loc_b = float(np.nan)
             self.shape = float(np.nan) ; self.scale = float(np.nan)
-        self.loc_idx = float(self.loc_a * covariate.data[idx] + self.loc_b)
-        self.cov_value = float(covariate.data[idx])
+        self.loc_idx = float(self.loc_a * covariate[idx] + self.loc_b)
+        self.cov_value = float(covariate[idx])
         self.notation= 'scipy'
 
 
@@ -349,13 +391,13 @@ def obtain_confidence_intervals(data: xr.DataArray, event: float,
         fit_idx = rng.integers(low=0, high=len(data), size=len(data))
         fit_idx.sort()
         if covariate_data is None:
-            TmpStat = StationaryRP(data[fit_idx], event)
+            TmpStat = StationaryRP(data[fit_idx].data, event)
             shape = TmpStat.shape
             scale = TmpStat.scale
             loc = TmpStat.loc
         else: 
-            TmpNonStat = NonStationaryRP(data[fit_idx], 
-                                         covariate_data[fit_idx], event)
+            TmpNonStat = NonStationaryRP(data[fit_idx].data, 
+                                         covariate_data[fit_idx].data, event)
             shape = TmpNonStat.shape
             scale = TmpNonStat.scale
             loc = TmpNonStat.loc_a*covariate_value + TmpNonStat.loc_b
@@ -433,16 +475,16 @@ class SingleObsDataset:
         self.event = event
         self.year = year
 
-        self.StationaryRP = StationaryRP(self.data, self.event)
+        self.StationaryRP = StationaryRP(self.data.data, self.event)
         self.stationary_cis = obtain_confidence_intervals(
-                                                self.data, self.event,
+                                                self.data.data, self.event,
                                                 conf_int=cfg['CI_quantiles'],
                                                 seed=cfg.get('bootstrap_seed'))
         if self.covariate_data is None:
             logger.info(f"For {dataset} only the stationary GEV was calculated")
         else:
-            self.NonStationaryRP = NonStationaryRP(self.data, 
-                                                   self.covariate_data,
+            self.NonStationaryRP = NonStationaryRP(self.data.data, 
+                                                   self.covariate_data.data,
                                                    self.event, idx)
             self.non_stationary_cis = obtain_confidence_intervals(
                                                 self.data, self.event,
@@ -507,21 +549,8 @@ def plot_figure(Dataset: SingleObsDataset, cfg: dict, prov_dic: dict):
                                                else Dataset.data.min()*1.1)
     max_val = np.ceil(Dataset.data.max()*1.1 if Dataset.data.max()> 0 
                                                else Dataset.data.max()*0.9)
-    if max_val - min_val < 5: 
-        bins = np.arange(min_val, max_val+0.1, 0.1)
-        x_fine = np.arange(min_val, max_val+0.01, 0.01)
-    elif 5 <= max_val - min_val < 10: 
-        bins = np.arange(min_val, max_val+0.1, 0.5)
-        x_fine = np.arange(min_val, max_val+0.01, 0.05)
-    elif 10 <= max_val - min_val < 30: 
-        bins = np.arange(min_val, max_val+0.1, 1)
-        x_fine = np.arange(min_val, max_val+0.01, 0.1)
-    elif 30 <= max_val - min_val < 50: 
-        bins = np.arange(min_val, max_val+0.1, 2)
-        x_fine = np.arange(min_val, max_val+0.01, 0.2)
-    else: 
-        bins = np.arange((min_val - 5)//5, (max_val + 5)//5 + 0.1, 5)
-        x_fine = np.arange(min_val, max_val+0.01, 0.5)
+
+    bins, x_fine = select_bins(min_val, max_val)
 
     if Dataset.covariate_data is None:
         obs_surv_func = gev.sf(x_fine, Dataset.StationaryRP.shape, 
