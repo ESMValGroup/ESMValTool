@@ -37,7 +37,7 @@ from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 # import the classes from OBS diag 
-from esmvaltool.diag_scripts.malinina24.observational_return_periods import StationaryRP
+from esmvaltool.diag_scripts.malinina24.observational_return_periods import StationaryRP, select_bins
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -179,6 +179,59 @@ def bootstrap_gev(data: np.ndarray, event: float, datasets: np.ndarray,
 
     return bootstrap_samples
 
+def get_basic_event_info(obs_info : dict, cfg: dict):
+    '''
+    Parameters
+    ----------
+    obs_info : 
+        dictionary with the observational information
+    cfg : 
+        internal ESMValTool dictionary with the input from the recipe
+
+    Returns
+    -------
+    event : float
+        event strength from observations
+    obs_event_rp : float
+        best guess event return period from observation
+    '''
+
+    obs_ref_dataset = cfg['obs_ref_dataset']
+    event = obs_info[obs_ref_dataset]['event']
+    if obs_info.get('obs_gev'): 
+        obs_gev_type = obs_info['obs_gev']
+    else:
+        obs_gev_type = 'stationary'
+    obs_event_rp = obs_info[obs_ref_dataset][obs_gev_type+'_gev']['RP']
+
+    return event, obs_event_rp
+
+
+def calculate_intensity(GEV : StationaryRP, x_fine : np.ndarray, 
+                                            event_rp: float):
+    '''
+    Calculate intensity of the event if the event_rp rarity
+
+    Parameters
+    ----------
+    GEV : 
+        class with the stationary GEV info
+    x_fine : 
+        array with the strengths
+    event_rp :
+        return period of the event for which inetensity is calculated
+    
+    Returns
+    -------
+    intensity : float 
+        the strength of the event of the event_rp probability
+    '''
+
+    rp_func = 1/gev.sf(x_fine, GEV.shape, loc=GEV.loc, scale=GEV.scale)
+    intensity = float(x_fine[np.argmin(np.abs(rp_func-event_rp))])
+
+    return intensity
+
 
 class Climate:
     '''
@@ -191,10 +244,13 @@ class Climate:
     weights
     bootstrap
     BestGuessGEV
+    RP_CI
+    intensity
+    intensity_CI 
     '''
 
     def __init__(self, input_data: list, group: str, anomaly_calculation: bool,
-                                                    cfg: dict, obs_info: dict):
+                                                    cfg: dict, event: float):
         
         group_info = select_metadata(input_data, variable_group=group)
 
@@ -224,23 +280,77 @@ class Climate:
         else:
             self.weights = None
 
-        self.bootstrap = bootstrap_gev(self.data, obs_info['event'], datasets,
-                                                                           cfg)
+        self.bootstrap = bootstrap_gev(self.data, event, datasets, cfg)
         if cfg['initial_conditions']: 
             initial_cond = calculate_initial_cond(self.bootstrap)
         else:
             initial_cond = None
-        self.BestGuessGEV = StationaryRP(self.data.flatten(), 
-                                            obs_info['event'],
-                                            weights=self.weights,
-                                            initial=initial_cond)
+        self.BestGuessGEV = StationaryRP(self.data.flatten(), event,
+                                                weights=self.weights,
+                                                initial=initial_cond)
+        self.rp_ci = {}
+        # calculate RPs for the quantiles
+        cfg['CI_quantiles']
 
+    def calculate_intensities(self, x_fine, event_rp, CI):
+
+        self.intensity = calculate_intensity(self.BestGuessGEV, x_fine, 
+                                                                event_rp)
+        ci_dict = {} 
+        self.intensity_CI = ci_dict
+        # calculate CIs 
+
+    def update_event(self, event):
+        self.BestGuessGEV.rp = float(1/gev.sf(event, self.BestGuessGEV.shape, 
+                                               loc=self.BestGuessGEV.loc,
+                                               scale=self.BestGuessGEV.scale))
+        for i in range(len(self.bootstrap)):
+            self.bootstrap[i].rp = float(1/gev.sf(event, 
+                                                self.bootstrap[i].shape,
+                                                loc=self.bootstrap[i].loc,
+                                                scale=self.bootstrap[i].scale))
 
     def reform_to_yml(self):
 
-        out_dic = {}
+        out_dic = {self.name: {'shape': self.BestGuessGEV.shape,
+                               'scale': self.BestGuessGEV.scale,
+                               'loc': self.BestGuessGEV.loc,
+                               'RP': self.BestGuessGEV.rp
+                            #    add CIs
+                            # add intensities and their CIs
+                               }}
 
         return out_dic
+
+
+def calculate_risk_ratios(clim_list : list[Climate], ci_percs : list[float|int]):
+    '''
+    Calculate risk ratios from the list of climates
+
+    Parameters
+    ----------
+    clim_list : 
+        list with Climate information
+    ci_dic : 
+        list with the percentiles
+    
+    Returns
+    -------
+    risk_ratio_dic : dict
+        dictionary with risk ratios
+    '''
+    risk_ratio_dic = {}
+
+    # sort the climates from earliest to the latest
+    # divide BestGuessGEV RPs
+    # divide bootstrap GEVs RPs
+    for ci_perc in ci_percs: 
+        # risk_ratio_dic[period] 
+        risk_ratio_dic[ci_perc] = np.nanpercentile([], ci_perc)
+
+
+    return risk_ratio_dic
+
 
 class Climates:
     '''
@@ -251,11 +361,16 @@ class Climates:
     name : str
         name of the dataset
     climates : list
-        list with the Climates classes 
+        list with the Climates classes
+    risk_ratios
+    max_value
+    min_value
     '''
 
     def __init__(self, input_data: list, dataset_name: str, cfg: dict, 
                                                             obs_info: dict):
+        
+        event, event_rp = get_basic_event_info(obs_info, cfg)
 
         self.name = dataset_name
         self.climates = []
@@ -265,9 +380,33 @@ class Climates:
             groups.remove('anomaly'); anomaly_calculation = True
 
         for group in groups:
-            GroupClimate = Climate(input_data, group, anomaly_calculation, cfg, obs_info)
+            GroupClimate = Climate(input_data, group, anomaly_calculation, 
+                                                                    cfg, event)
             self.climates.append(GroupClimate)
-        self.risk_ratios = {}
+
+        max_value = np.max([cl.data.max() for cl in self.climates])
+        min_value = np.min([cl.data.min() for cl in self.climates])
+
+        self.max_value = np.ceil(max_value*1.1 if max_value> 0
+                                               else max_value*0.9)
+        self.min_value = np.floor(min_value*0.9 if min_value> 0 
+                                               else min_value*1.1)
+
+        bins, x_fine = select_bins(self.min_value, self.max_value)
+        
+        if cfg.get('event_definition') == 'rarity':
+            for Clim in self.climates:
+                if Clim.name == 'factual':
+                    FactClim = Clim
+                    # the event is redifined using the best guess event 
+                    # probability obtained from observations
+                    event = calculate_intensity(FactClim.BestGuessGEV, x_fine,
+                                                                     event_rp)
+            for Clim in self.climates:
+                Clim.update_event(event)
+        for Clim in self.climates:
+            Clim.calculate_intensities(x_fine, event_rp, cfg['CI_quantiles'])
+        self.risk_ratios = calculate_risk_ratios(self.climates, cfg['CI_quantiles'])
 
 
     def plot_uncert_plot(self, cfg: dict, prov_dic: dict):
@@ -310,7 +449,8 @@ def main(cfg):
             DatasetClimates = Climates(dataset_info, dataset, cfg, obs_info)
             for Climate in DatasetClimates.climates:
                 output_dic[dataset] = Climate.reform_to_yml()
-            output_dic[dataset]['risk_ratios'] = DatasetClimates.save_risk_ratios(cfg)
+            output_dic[dataset]['risk_ratios'] = DatasetClimates.save_risk_ratios(
+                                                            cfg['CI_quantiles'])
 
     logger.info(f"Processing Multi-Model-Ensemble")
     MMEClimates = Climates(input_data.values(), 'Multi-Model-Ensemble', cfg, obs_info)    
@@ -318,7 +458,7 @@ def main(cfg):
     MMEClimates.plot_uncert_plot(cfg, provenance_dic)
     for MMEClimate in MMEClimates.climates:
         output_dic['Multi-Model-Ensemble'] = MMEClimate.reform_to_yml()
-    output_dic['Multi-Model-Ensemble'] = MMEClimates.save_risk_ratios(cfg)
+    output_dic['Multi-Model-Ensemble'] = MMEClimates.save_risk_ratios(cfg['CI_quantiles'])
 
     model_stats_path = os.path.join(cfg['work_dir'],'models_statistics.yml')
     with open(model_stats_path, 'w') as model_info_yml:
