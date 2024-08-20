@@ -4,7 +4,7 @@ attributes:
   tier: 2
   modeling_realm: sat
   institution: 'Universite catholique de Louvain'
-  reference: 'http://www.esa-landcover-cci.org/'
+  reference: 'esacci-landcover'
   source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/pft'
   title: 'ESA CCI Land Cover'
   version: 'v2.0.8'

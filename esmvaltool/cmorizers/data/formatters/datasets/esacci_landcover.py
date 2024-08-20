@@ -64,16 +64,13 @@ def regrid_iris(cube):
                               combined_data.shape[1])
     target_lons = np.linspace(-180 + 0.5 * (360 / combined_data.shape[2]),
                               180 - 0.5 * (360 / combined_data.shape[2]),
-                              combined_data.shape[2])
-
-    # Flip the latitude points and data
-    combined_data = combined_data[:, ::-1, :]
+                              combined_data.shape[2]) 
 
     combined_cube = iris.cube.Cube(combined_data,
                                    dim_coords_and_dims=[
                                        (cube.coord('time'), 0),
                                        (iris.coords.DimCoord(
-                                           target_lats[::-1],
+                                           target_lats,
                                            standard_name='latitude',
                                            units='degrees'), 1),
                                        (iris.coords.DimCoord(
@@ -129,7 +126,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if not start_date:
         start_date = datetime(1992, 1, 1)
     if not end_date:
-        end_date = datetime(2020, 12, 31)
+        end_date = datetime(1992, 12, 31)
 
     for year in range(start_date.year, end_date.year + 1):
         inpfile_pattern = os.path.join(in_dir, cfg['filename'])
@@ -153,9 +150,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                         cubes.extract_cube('TREES-NE')
                 else:
                     cube = cubes.extract_cube(vals['long_name'])
-
-                    regridded_cube = regrid_fix(cube, glob_attrs,
-                                                var_name, var_info)
+                regridded_cube = regrid_fix(cube, glob_attrs,
+                                            var_name, var_info)
                 if var_name == 'baresoilFrac':
                     add_typebare(regridded_cube)
                 save_variable(regridded_cube, var_name, out_dir, glob_attrs,

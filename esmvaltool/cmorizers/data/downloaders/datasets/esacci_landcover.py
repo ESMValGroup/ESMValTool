@@ -43,5 +43,10 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     # Set current working directory to the main directory with the files
     downloader.set_cwd('/pft/v2.0.8/')
 
+    # Create a regex pattern to match any .nc files
+    year_range = '|'.join(str(year) for year in range(start_date.year,
+                                                      end_date.year + 1))
+    pattern = rf".*-(?:{year_range}).*\.nc$"
+
     # Download all .nc files in the directory
-    downloader.download_folder('.', filter_files=r'.*\.nc$')
+    downloader.download_folder('.', filter_files=pattern)
