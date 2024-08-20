@@ -64,7 +64,7 @@ def regrid_iris(cube):
                               combined_data.shape[1])
     target_lons = np.linspace(-180 + 0.5 * (360 / combined_data.shape[2]),
                               180 - 0.5 * (360 / combined_data.shape[2]),
-                              combined_data.shape[2]) 
+                              combined_data.shape[2])
 
     combined_cube = iris.cube.Cube(combined_data,
                                    dim_coords_and_dims=[
