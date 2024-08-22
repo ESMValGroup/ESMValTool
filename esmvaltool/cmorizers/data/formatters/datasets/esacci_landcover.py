@@ -54,7 +54,7 @@ def regrid_iris(cube):
     """Regrid the cubes using block averaging."""
     logger.info("Regridding using block averaging")
 
-    block_size = 100
+    block_size = 25
 
     combined_data = average_block(cube.data, block_size)
 
@@ -109,7 +109,7 @@ def regrid_fix(cube, glob_attrs, var_name, var_info):
     Returns
     -------
     cube: iris.cube.Cube
-        data cube regreidded and with fixed coordinates.
+        data cube regridded and with fixed coordinates.
     """
     logger.info("Regridding cube for %s", var_name)
     regridded_cube = regrid_iris(cube)
@@ -126,7 +126,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if not start_date:
         start_date = datetime(1992, 1, 1)
     if not end_date:
-        end_date = datetime(1992, 12, 31)
+        end_date = datetime(2020, 12, 31)
 
     for year in range(start_date.year, end_date.year + 1):
         inpfile_pattern = os.path.join(in_dir, cfg['filename'])
