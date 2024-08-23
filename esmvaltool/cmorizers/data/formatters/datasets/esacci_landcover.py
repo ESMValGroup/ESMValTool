@@ -54,7 +54,7 @@ def regrid_iris(cube):
     """Regrid the cubes using block averaging."""
     logger.info("Regridding using block averaging")
 
-    block_size = 25
+    block_size = 100
 
     combined_data = average_block(cube.data, block_size)
 
@@ -138,6 +138,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 var_info = cfg['cmor_table'].get_variable(vals['mip'],
                                                           var_name)
                 glob_attrs['mip'] = vals['mip']
+                glob_attrs['frequency'] = vals['frequency']
                 if var_name == 'shrubFrac':
                     cube = cubes.extract_cube('SHRUBS-BD') + \
                         cubes.extract_cube('SHRUBS-BE') + \

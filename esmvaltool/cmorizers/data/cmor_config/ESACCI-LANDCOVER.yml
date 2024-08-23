@@ -14,13 +14,19 @@ variables:
   baresoilFrac:
     mip: Lmon
     long_name: 'BARE'
+    frequency: yr
   cropFrac:
     mip: Lmon
     long_name: 'GRASS-MAN'
+    frequency: yr
   grassFrac:
     mip: Lmon
     long_name: 'GRASS-NAT'
+    frequency: yr
   shrubFrac:
     mip: Lmon
+    frequency: yr
   treeFrac:
     mip: Lmon
+    frequency: yr
+
