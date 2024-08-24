@@ -303,6 +303,31 @@ class StationaryRP:
                                  "conditions supposed to be float, currently "
                                  f"it is {type(initial['location'])}")
 
+    def obtain_pdf(self, x_gev : np.ndarray):
+        '''
+        This function calculates pdf for x_gev
+
+        Parameters
+        ----------
+        x_gev : 
+            array with x-es for which pdfs are calculated
+        '''
+        self.pdf = gev.pdf(x_gev, self.shape, loc=self.loc, scale=self.scale)
+
+        return
+
+    def obtain_rp_curve(self, x_gev : np.ndarray):
+        '''
+        This function calculates return period curve for x_gev
+
+        Parameters
+        ----------
+        x_gev : 
+            array with x-es for which pdfs are calculated
+        '''
+        self.rp_curve = 1/gev.sf(x_gev, self.shape, loc=self.loc, scale=self.scale)
+
+        return
 
 class NonStationaryRP:
     '''
