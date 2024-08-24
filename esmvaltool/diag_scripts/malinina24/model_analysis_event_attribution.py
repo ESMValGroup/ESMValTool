@@ -338,16 +338,44 @@ def calculate_risk_ratios(clim_list : list[Climate], ci_percs : list[float|int])
     -------
     risk_ratio_dic : dict
         dictionary with risk ratios
+
+    Raises
+    ------
+    ValueError
+        if the amount of climates is insuffiecient to calculate risk
+        ratios (the number of climates is less than two)
     '''
+
+    if len(clim_list)<2: 
+        raise ValueError("The amount of climates in insufficient to calculate "
+                         "a risk ratio. Required number of climates is 2, but "
+                         f"only {len(clim_list)} were provided.")
+
+    # sorting the climates from earliest to latest 
+    clim_indices = np.argsort([c.start_year for c in clim_list])
+
     risk_ratio_dic = {}
 
-    # sort the climates from earliest to the latest
-    # divide BestGuessGEV RPs
-    # divide bootstrap GEVs RPs
-    for ci_perc in ci_percs: 
-        # risk_ratio_dic[period] 
-        risk_ratio_dic[ci_perc] = np.nanpercentile([], ci_perc)
-
+    # starting with the second, because the oldest is always the reference 
+    for clim_idx in clim_indices[1:]:
+    # for climate in clim_list[clim_indices[1:]]:
+        current_idx = np.where(clim_indices==clim_idx)[0][0]
+        for dev_clim_idx in range(current_idx):
+            old_clim_idx = clim_indices[dev_clim_idx]
+            key = f"{clim_list[clim_idx].name}/{clim_list[old_clim_idx].name}"
+            risk_ratio_dic[key] = {
+                'best_guess': float(clim_list[old_clim_idx].BestGuessGEV.rp/\
+                    clim_list[clim_idx].BestGuessGEV.rp)}
+            bootstrap_rrs = list()
+            # the number of bootstrap samples is the same in each climate
+            for i in range(len(clim_list[clim_idx].bootstrap)):
+                bootstrap_rrs = clim_list[old_clim_idx].bootstrap[i].rp/\
+                                    clim_list[clim_idx].bootstrap[i].rp
+            risk_ratio_dic[key]['CI'] = {}
+            for ci_perc in ci_percs: 
+                risk_ratio_dic[key]['CI'][ci_perc] = float(np.nanpercentile(
+                        bootstrap_rrs, ci_perc, method='closest_observation'
+                                                                    ).round(2))
 
     return risk_ratio_dic
 
