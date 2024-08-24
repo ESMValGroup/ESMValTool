@@ -41,6 +41,36 @@ from esmvaltool.diag_scripts.malinina24.observational_return_periods import Stat
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+
+def get_percentiles_dic(data : np.ndarray | list, 
+                                percentiles: list[int| float], round : int):
+    '''
+    This function returns a dictionary with percentiles
+
+    Parameters
+    ----------
+    data :
+        array or list with the data for which percentiles calculated
+    percentiles : 
+        list with percentiles
+    round : 
+        the level of rounding of the percentiles
+    
+    Returns
+    -------
+    ci_dict : dict
+        ditionary with percentiles as keys
+    '''
+
+    ci_dict = {}
+
+    for perc in percentiles:
+        ci_dict[perc] = float(np.nanpercentile(data, perc, 
+                                    method='closest_observation').round(round))
+
+    return ci_dict
+
+
 def calculate_anomaly(data: np.array, input_data: list, file_meta: dict,
                                                             anomaly_type: str):
     '''
@@ -288,17 +318,19 @@ class Climate:
         self.BestGuessGEV = StationaryRP(self.data.flatten(), event,
                                                 weights=self.weights,
                                                 initial=initial_cond)
-        self.rp_ci = {}
-        # calculate RPs for the quantiles
-        cfg['CI_quantiles']
+        self.rp_ci = get_percentiles_dic([b.rp for b in self.bootstrap],
+                                          cfg['CI_quantiles'], 1)
 
-    def calculate_intensities(self, x_fine, event_rp, CI):
+    def calculate_intensities(self, x_fine, event_rp, conf_ints):
 
         self.intensity = calculate_intensity(self.BestGuessGEV, x_fine, 
                                                                 event_rp)
-        ci_dict = {} 
-        self.intensity_CI = ci_dict
-        # calculate CIs 
+        intensities = list()
+        for i in range(len(self.bootstrap)):
+            intensities.append(calculate_intensity(self.bootstrap[i],x_fine,
+                                                                    event_rp))
+
+        self.intensity_CI = get_percentiles_dic(intensities, conf_ints, 1)
 
     def update_event(self, event):
         self.BestGuessGEV.rp = float(1/gev.sf(event, self.BestGuessGEV.shape, 
@@ -309,16 +341,19 @@ class Climate:
                                                 self.bootstrap[i].shape,
                                                 loc=self.bootstrap[i].loc,
                                                 scale=self.bootstrap[i].scale))
+        self.rp_ci = get_percentiles_dic([b.rp for b in self.bootstrap],
+                                                    list(self.rp_ci.keys()), 1)
+
 
     def reform_to_yml(self):
 
         out_dic = {self.name: {'shape': self.BestGuessGEV.shape,
                                'scale': self.BestGuessGEV.scale,
                                'loc': self.BestGuessGEV.loc,
-                               'RP': self.BestGuessGEV.rp
-                            #    add CIs
-                            # add intensities and their CIs
-                               }}
+                               'RP': self.BestGuessGEV.rp,
+                               'RP_CI': self.rp_ci, 
+                               'intensity': self.intensity,
+                               'intensity_CI': self.intensity_CI}}
 
         return out_dic
 
@@ -371,11 +406,9 @@ def calculate_risk_ratios(clim_list : list[Climate], ci_percs : list[float|int])
             for i in range(len(clim_list[clim_idx].bootstrap)):
                 bootstrap_rrs = clim_list[old_clim_idx].bootstrap[i].rp/\
                                     clim_list[clim_idx].bootstrap[i].rp
-            risk_ratio_dic[key]['CI'] = {}
-            for ci_perc in ci_percs: 
-                risk_ratio_dic[key]['CI'][ci_perc] = float(np.nanpercentile(
-                        bootstrap_rrs, ci_perc, method='closest_observation'
-                                                                    ).round(2))
+            
+            risk_ratio_dic[key]['CI'] = get_percentiles_dic(bootstrap_rrs,
+                                                                   ci_percs, 2)
 
     return risk_ratio_dic
 
@@ -430,6 +463,7 @@ class Climates:
                     # probability obtained from observations
                     event = calculate_intensity(FactClim.BestGuessGEV, x_fine,
                                                                      event_rp)
+                    obs_info['model_event'] = event
             for Clim in self.climates:
                 Clim.update_event(event)
         for Clim in self.climates:
@@ -437,17 +471,94 @@ class Climates:
         self.risk_ratios = calculate_risk_ratios(self.climates, cfg['CI_quantiles'])
 
 
-    def plot_uncert_plot(self, cfg: dict, prov_dic: dict):
+    def plot_uncert_plot(self, cfg: dict, obs_info: dict, prov_dic: dict):
+        '''
+        This function plots the distribtuion of the GEV parameters
+
+        Parameters
+        ----------
+        cfg : 
+            internal ESMValTool dictionary with the input from the recipe
+        obs_info : 
+            dictionary with the observational information
+        prov_dic : 
+            dictionary with provenance parameters 
+        '''
+
 
         return
 
 
-    def plot_attribution_plot(self, cfg: dict, prov_dic: dict):
+    def plot_attribution_plot(self, cfg: dict, obs_info: dict, prov_dic: dict):
+        '''
+        This function plots the Fig 9 in Malinina and Gillett (2024)
 
-        return
-    
+        Parameters
+        ----------
+        cfg : 
+            internal ESMValTool dictionary with the input from recipe
+        obs_info : 
+            dictionary with the observational information
+        prov_dic : 
+            dictionary with provenance parameters
+        '''
 
-    def save_risk_ratios(self, cfg: dict):
+        prov_dic['caption'] = f"{self.name} (a) probability density function"+\
+                              f" ,(b) QQ-plot and (c) return periods."
+        mpl_st_file = eplot.get_path_to_mpl_style(cfg.get('mpl_style'))
+        plt.style.use(mpl_st_file)
+
+        reg = cfg.get('region') if cfg.get('region') else 'region'
+        label = cfg.get('var_label') if cfg.get('var_label') else 'extreme'
+        bins, x_fine = select_bins(self.min_value, self.max_value)
+
+        fig = plt.figure(constrained_layout=False)
+        fig.set_size_inches(12., 8.)
+        gs = fig.add_gridspec(nrows=2, ncols=6)
+        ax_hist = fig.add_subplot(gs[:, :-2])
+        ax_qq= fig.add_subplot(gs[0, -2:])
+        ax_surv= fig.add_subplot(gs[1, -2:])
+
+        for clim in self.climates:
+            clim_color_st = eplot.get_dataset_style(clim.name, 
+                                                    cfg.get('color_style'))
+            # add labels for legend
+            ax_hist.hist(clim.data.flatten(), weights=clim.weights, bins=bins,
+                            edgecolor=clim_color_st['facecolor'],  alpha=0.3,
+                            color=clim_color_st['color'], density=True)
+            ax_hist.plot() # here would be a GEV 
+            ax_hist.fill_between() # calculate the uncert int
+            ax_qq.scatter()  #add calculation of quantiles
+            ax_surv.plot() #add survival best guess 
+            ax_surv.fill_between() # calculate the uncert rp curv
+
+        # technical aspects of the plot, limits, captions etc.
+        ylims = ax_hist.get_ylim()
+        ax_hist.set_ylim(*ylims)
+        # get color for the obs dataset 
+        ax_hist.vlines(obs_info['event'], *ylims, )
+
+        ax_hist.legend(loc=2, fancybox=False, frameon=False)
+        ax_qq.legend(loc=2, fancybox=False, frameon=False, handletextpad=0.01)
+        ax_qq.grid(color='silver', axis='both', alpha=0.5)
+        ax_surv.grid(color='silver', axis='both', alpha=0.5)
+        ax_surv.set_yscale('log')
+        ax_hist.set_title('(a) Probability density function')
+        ax_qq.set_title('(b) Quality assessment')
+        ax_qq.set_ylabel('Data quantile')
+        ax_qq.set_xlabel('GEV quantile')
+        ax_surv.set_title('(c) Return period')
+        ax_surv.set_ylabel('years')
+        ax_hist.set_ylabel('Number density')
+
+        fig.suptitle()
+
+        fig.set_dpi(250)
+
+        plt.tight_layout()
+        fig_path = os.path.join(cfg['plot_dir'], 
+                            f"attribution_{self.name}_{reg}_{label.lower()}")
+        save_figure(fig_path, prov_dic, cfg, fig, close=True)
 
         return
 
@@ -477,16 +588,16 @@ def main(cfg):
             DatasetClimates = Climates(dataset_info, dataset, cfg, obs_info)
             for Climate in DatasetClimates.climates:
                 output_dic[dataset] = Climate.reform_to_yml()
-            output_dic[dataset]['risk_ratios'] = DatasetClimates.save_risk_ratios(
-                                                            cfg['CI_quantiles'])
+            output_dic[dataset]['risk_ratios'] = DatasetClimates.risk_ratios
 
     logger.info(f"Processing Multi-Model-Ensemble")
-    MMEClimates = Climates(input_data.values(), 'Multi-Model-Ensemble', cfg, obs_info)    
-    MMEClimates.plot_attribution_plot(cfg, provenance_dic)
-    MMEClimates.plot_uncert_plot(cfg, provenance_dic)
+    MMEClimates = Climates(input_data.values(), 'Multi-Model-Ensemble', cfg, 
+                                                                    obs_info)
+    MMEClimates.plot_attribution_plot(cfg, obs_info, provenance_dic)
+    # MMEClimates.plot_uncert_plot(cfg, obs_info, provenance_dic)
     for MMEClimate in MMEClimates.climates:
         output_dic['Multi-Model-Ensemble'] = MMEClimate.reform_to_yml()
-    output_dic['Multi-Model-Ensemble'] = MMEClimates.save_risk_ratios(cfg['CI_quantiles'])
+    output_dic['Multi-Model-Ensemble']['risk_ratios'] = MMEClimates.risk_ratios
 
     model_stats_path = os.path.join(cfg['work_dir'],'models_statistics.yml')
     with open(model_stats_path, 'w') as model_info_yml:
