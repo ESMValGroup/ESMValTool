@@ -145,6 +145,7 @@ diagnostics:
         script: malinina24/observational_return_periods.py
         mpl_style: malinina24
         color_style: malinina24
+        yblock: 1 # (optional) determines how many years in block should be pooled in boostrap
         CI_quantiles: [5, 95] # percentiles for the confidence interval
         region: BC # needed for the figure title
         var_label: TXx # needed for axis name
