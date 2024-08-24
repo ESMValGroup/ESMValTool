@@ -259,11 +259,16 @@ class StationaryRP:
                 the strength of the event for return period calculation
             weights : 
                 an array with the weights, the same shape as data
-                TODO add shape check
             initial : 
                 an dictionary with the initial conditions for the fit
-                keys are {'location', 'scale', 'shape'}
-                TODO add keywords check  
+                keys are {'location', 'scale', 'shape'} 
+        
+        Raises
+        ------
+        ValueError 
+            if the weights and data are do not have matching shape or
+            the keywords in the initial condition dictionary are not 
+            correct or initial conditions are not float type
         '''
         stat_gev = cex.fit_gev(data, returnValue=event, getParams=True,
                                weights=weights, initial=initial)
@@ -274,8 +279,29 @@ class StationaryRP:
             self.scale = float(stat_gev['mle'][1])
         except:
             self.rp = float(np.nan) ; self.shape = float(np.nan)
-            self.loc = float(np.nan) ; self.scale = float(np.nan)            
+            self.loc = float(np.nan) ; self.scale = float(np.nan)
         self.notation= 'scipy'
+        if weights:
+            if data.shape != weights.shape:
+                raise ValueError("The shapes of the data and weights for "
+                                 "stationary GEV fit have unmatching shapes")
+        if initial:
+            if list(initial.keys()) != ['location', 'scale', 'shape']:
+                raise ValueError("The initial conditions supposed to be "
+                                 "['location', 'scale', 'shape'], currently "
+                                 f"it is {list(initial.keys())}")
+            if not(isinstance(initial['shape'], float)):
+                raise ValueError("The type of shape parameter for initial "
+                                 "conditions supposed to be float, currently "
+                                 f"it is {type(initial['shape'])}")
+            if not(isinstance(initial['scale'], float)):
+                raise ValueError("The type of scale parameter for initial "
+                                 "conditions supposed to be float, currently "
+                                 f"it is {type(initial['scale'])}")
+            if not(isinstance(initial['location'], float)):
+                raise ValueError("The type of location parameter for initial "
+                                 "conditions supposed to be float, currently "
+                                 f"it is {type(initial['location'])}")
 
 
 class NonStationaryRP:
@@ -328,13 +354,14 @@ class NonStationaryRP:
             initial : 
                 an dictionary with the initial conditions for the fit
                 keys are {'location', 'scale', 'shape'}
-                TODO add keywords check  
             
         
         Raises
         ------
         ValueError
-            If the length of the data and covariate is different.
+            If the length of the data and covariate is different or
+            the keywords in the initial condition dictionary are not
+            correct or initial conditions are not float type
         '''
         if len(data) != len(covariate):
             raise ValueError("The lengths of the data and covariate"
@@ -354,11 +381,25 @@ class NonStationaryRP:
         self.loc_idx = float(self.loc_a * covariate[idx] + self.loc_b)
         self.cov_value = float(covariate[idx])
         self.notation= 'scipy'
+        if initial:
+            if not(isinstance(initial['shape'], float)):
+                raise ValueError("The type of shape parameter for initial "
+                                 "conditions supposed to be float, currently "
+                                 f"it is {type(initial['shape'])}")
+            if not(isinstance(initial['scale'], float)):
+                raise ValueError("The type of scale parameter for initial "
+                                 "conditions supposed to be float, currently "
+                                 f"it is {type(initial['scale'])}")
+            if not(isinstance(initial['location'], float)):
+                raise ValueError("The type of location parameter for initial "
+                                 "conditions supposed to be float, currently "
+                                 f"it is {type(initial['location'])}")
 
 
 def obtain_confidence_intervals(data: xr.DataArray, event: float, 
-                                conf_int: list[int | float], seed: int=1,   
-                                covariate_data: xr.DataArray | None = None, 
+                                conf_int: list[int | float], seed: int=1,  
+                                yblock: int = 1, 
+                                covariate_data: xr.DataArray | None = None,
                                 covariate_value: float | None = None):
     '''
     This function calculates confidence intervals with bootstrap
@@ -386,10 +427,18 @@ def obtain_confidence_intervals(data: xr.DataArray, event: float,
     '''
     rps = []
 
+    high = int(np.ceil(len(data)/yblock))
+    if len(data)%yblock > 0: 
+        logger.warning(f"The data length {len(data)} is not devisible by "
+                       f"the averaging block {yblock}, the data for bootstrap "
+                       f"will be corrected by choosing {(len(data)//yblock)+1}"
+                       f" samples and truncated to {len(data)}.")
+
     rng = np.random.default_rng(seed)
     for i in range(1000):
-        fit_idx = rng.integers(low=0, high=len(data), size=len(data))
-        fit_idx.sort()
+        fit_idx = rng.integers(low=0, high=high, size=high)
+        fit_idx = np.asarray([np.arange(i, i+yblock) for i in fit_idx]
+                                                                    ).flatten()
         if covariate_data is None:
             TmpStat = StationaryRP(data[fit_idx].data, event)
             shape = TmpStat.shape
@@ -476,10 +525,12 @@ class SingleObsDataset:
         self.year = year
 
         self.StationaryRP = StationaryRP(self.data.data, self.event)
+        # TODO add the y_block as for models
         self.stationary_cis = obtain_confidence_intervals(
-                                                self.data.data, self.event,
+                                                self.data, self.event,
                                                 conf_int=cfg['CI_quantiles'],
-                                                seed=cfg.get('bootstrap_seed'))
+                                                seed=cfg.get('bootstrap_seed'),
+                                                yblock=cfg.get('yblock'))
         if self.covariate_data is None:
             logger.info(f"For {dataset} only the stationary GEV was calculated")
         else:
@@ -492,7 +543,8 @@ class SingleObsDataset:
                                                 seed=cfg.get('bootstrap_seed'),
                                                 covariate_data=covariate_data,
                                                 covariate_value=
-                                                self.NonStationaryRP.cov_value)
+                                                self.NonStationaryRP.cov_value,
+                                                yblock=cfg.get('yblock'))
     
     def reform_to_yml_dic(self): 
         """Reforms class to the output yml friendly dictionary"""
