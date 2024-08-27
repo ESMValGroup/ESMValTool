@@ -302,30 +302,71 @@ class StationaryRP:
                 raise ValueError("The type of location parameter for initial "
                                  "conditions supposed to be float, currently "
                                  f"it is {type(initial['location'])}")
+            
+    
+    def set_x_gev(self, metric: str, x_gev : np.ndarray | None = None):
+        '''
+        This function checks is class has x_gev attribute and sets it
 
-    def obtain_pdf(self, x_gev : np.ndarray):
+        Parameters
+        ----------
+        metric:
+            metric for which the x_gev is calculated
+        x_gev: 
+            optional array of x_gevs
+
+        Raises
+        ------
+        ValueError
+            if the x_gev was not provided and the class doesn't have 
+            existing x_gev attribute
+        '''
+        if x_gev is None: 
+            try:
+                # checking if x_gev exists
+                x_gev = self.x_gev 
+            except: 
+                raise ValueError("There is no existing attribute x_gev, x "
+                                 "values for PDF calculations should be "
+                                 "provided")
+        else: 
+            try: 
+                x_gev = self.x_gev
+                logger.warning("The class already contains x_gev parameter, "
+                               "will use existing class attribute as x_gev for "
+                               f"{metric} calculations")
+            except:
+                self.x_gev = x_gev
+
+        return
+
+    def obtain_pdf(self, x_gev : np.ndarray | None = None):
         '''
         This function calculates pdf for x_gev
 
         Parameters
         ----------
         x_gev : 
-            array with x-es for which pdfs are calculated
+            optional array with x-es for which PDFs are calculated
         '''
-        self.pdf = gev.pdf(x_gev, self.shape, loc=self.loc, scale=self.scale)
+
+        self.set_x_gev(metric='probability density function', x_gev=x_gev)
+        self.pdf = gev.pdf(self.x_gev, self.shape, loc=self.loc, 
+                                                   scale=self.scale)
 
         return
 
-    def obtain_rp_curve(self, x_gev : np.ndarray):
+    def obtain_rp_curve(self, x_gev : np.ndarray | None = None ):
         '''
-        This function calculates return period curve for x_gev
+        This function calculates return periods (RPs) curve for x_gev
 
         Parameters
         ----------
         x_gev : 
-            array with x-es for which pdfs are calculated
+            optional array with x-es for which RPs are calculated
         '''
-        self.rp_curve = 1/gev.sf(x_gev, self.shape, loc=self.loc, scale=self.scale)
+        self.set_x_gev(metric='return period curve', x_gev=x_gev)
+        self.rp_curve = 1/gev.sf(self.x_gev, self.shape, loc=self.loc, scale=self.scale)
 
         return
 
