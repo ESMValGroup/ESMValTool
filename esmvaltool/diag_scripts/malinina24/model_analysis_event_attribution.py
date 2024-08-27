@@ -25,6 +25,7 @@ import climextremes as cex
 import logging
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import os
 from datetime import datetime, timedelta
 from scipy.stats import genextreme as gev
@@ -237,8 +238,8 @@ def get_basic_event_info(obs_info : dict, cfg: dict):
     return event, obs_event_rp
 
 
-def calculate_intensity(GEV : StationaryRP, x_fine : np.ndarray, 
-                                            event_rp: float):
+def calculate_intensity(GEV : StationaryRP, event_rp: float,
+                                            x_fine : np.ndarray | None = None):
     '''
     Calculate intensity of the event if the event_rp rarity
 
@@ -246,18 +247,23 @@ def calculate_intensity(GEV : StationaryRP, x_fine : np.ndarray,
     ----------
     GEV : 
         class with the stationary GEV info
-    x_fine : 
-        array with the strengths
     event_rp :
         return period of the event for which inetensity is calculated
-    
+    x_fine : 
+        optional array with the strengths. If None, internal x_gev from
+        GEV will be used
+
     Returns
     -------
     intensity : float 
         the strength of the event of the event_rp probability
     '''
 
-    rp_func = 1/gev.sf(x_fine, GEV.shape, loc=GEV.loc, scale=GEV.scale)
+    if x_fine is None:
+        rp_func = GEV.rp_curve ; x_fine = GEV.x_gev
+    else:
+        rp_func = 1/gev.sf(x_fine, GEV.shape, loc=GEV.loc, scale=GEV.scale)
+
     intensity = float(x_fine[np.argmin(np.abs(rp_func-event_rp))])
 
     return intensity
@@ -320,15 +326,24 @@ class Climate:
                                                 initial=initial_cond)
         self.rp_ci = get_percentiles_dic([b.rp for b in self.bootstrap],
                                           cfg['CI_quantiles'], 1)
+    
+    def obtain_rps_and_pdfs_curves(self, x_gev):
+
+        self.BestGuessGEV.obtain_pdf(x_gev)
+        self.BestGuessGEV.obtain_rp_curve()
+        for i in range(len(self.bootstrap)):
+            self.bootstrap[i].obtain_pdf(x_gev)
+            self.bootstrap[i].obtain_rp_curve()
 
     def calculate_intensities(self, x_fine, event_rp, conf_ints):
 
-        self.intensity = calculate_intensity(self.BestGuessGEV, x_fine, 
-                                                                event_rp)
+        self.obtain_rps_and_pdfs_curves(x_fine)
+
+        self.intensity = calculate_intensity(self.BestGuessGEV, event_rp)
         intensities = list()
         for i in range(len(self.bootstrap)):
-            intensities.append(calculate_intensity(self.bootstrap[i],x_fine,
-                                                                    event_rp))
+            intensities.append(calculate_intensity(self.bootstrap[i], 
+                                                                event_rp))
 
         self.intensity_CI = get_percentiles_dic(intensities, conf_ints, 1)
 
@@ -393,7 +408,6 @@ def calculate_risk_ratios(clim_list : list[Climate], ci_percs : list[float|int])
 
     # starting with the second, because the oldest is always the reference 
     for clim_idx in clim_indices[1:]:
-    # for climate in clim_list[clim_indices[1:]]:
         current_idx = np.where(clim_indices==clim_idx)[0][0]
         for dev_clim_idx in range(current_idx):
             old_clim_idx = clim_indices[dev_clim_idx]
@@ -461,9 +475,9 @@ class Climates:
                     FactClim = Clim
                     # the event is redifined using the best guess event 
                     # probability obtained from observations
-                    event = calculate_intensity(FactClim.BestGuessGEV, x_fine,
-                                                                     event_rp)
-                    obs_info['model_event'] = event
+                    event = calculate_intensity(FactClim.BestGuessGEV, 
+                                                            event_rp, x_fine)
+                    obs_info[cfg['obs_ref_dataset']]['model_event'] = event
             for Clim in self.climates:
                 Clim.update_event(event)
         for Clim in self.climates:
@@ -508,6 +522,16 @@ class Climates:
         mpl_st_file = eplot.get_path_to_mpl_style(cfg.get('mpl_style'))
         plt.style.use(mpl_st_file)
 
+        # getting info for the obs params
+        obs_name = cfg['obs_ref_dataset']
+        obs_color = eplot.get_dataset_style(obs_name, cfg.get('color_style'))
+        obs_ref = obs_info[obs_name]
+        obs_event, obs_rp = get_basic_event_info(obs_info, cfg)
+        obs_rp_fit = cfg.get('obs_gev') if cfg.get('obs_gev') else 'stationary'
+        obs_rp_ci_dic= obs_ref[obs_rp_fit+'_gev']['CI']
+        obs_rp_ci_min = obs_rp_ci_dic[np.min(list(obs_rp_ci_dic.keys()))]
+        obs_rp_ci_max = obs_rp_ci_dic[np.max(list(obs_rp_ci_dic.keys()))]
+
         reg = cfg.get('region') if cfg.get('region') else 'region'
         label = cfg.get('var_label') if cfg.get('var_label') else 'extreme'
         bins, x_fine = select_bins(self.min_value, self.max_value)
@@ -517,39 +541,106 @@ class Climates:
         gs = fig.add_gridspec(nrows=2, ncols=6)
         ax_hist = fig.add_subplot(gs[:, :-2])
         ax_qq= fig.add_subplot(gs[0, -2:])
-        ax_surv= fig.add_subplot(gs[1, -2:])
+        ax_rps= fig.add_subplot(gs[1, -2:])
 
         for clim in self.climates:
+            clim_leg_label = f"{clim.start_year}-{clim.end_year}"
             clim_color_st = eplot.get_dataset_style(clim.name, 
                                                     cfg.get('color_style'))
-            # add labels for legend
+            # plotting histogram part
             ax_hist.hist(clim.data.flatten(), weights=clim.weights, bins=bins,
-                            edgecolor=clim_color_st['facecolor'],  alpha=0.3,
-                            color=clim_color_st['color'], density=True)
-            ax_hist.plot() # here would be a GEV 
-            ax_hist.fill_between() # calculate the uncert int
-            ax_qq.scatter()  #add calculation of quantiles
-            ax_surv.plot() #add survival best guess 
-            ax_surv.fill_between() # calculate the uncert rp curv
+                         edgecolor=clim_color_st['facecolor'],  alpha=0.3,
+                         color=clim_color_st['color'], density=True, zorder=2,
+                         label=clim_leg_label)
+            ax_hist.plot(clim.BestGuessGEV.x_gev, clim.BestGuessGEV.pdf, 
+                         color=clim_color_st['color'], zorder=3,
+                         label=f"GEV fit {clim_leg_label}")
+            # determine the pdf uncert interval
+            pdf_max_q = np.nanpercentile([b.pdf for b in clim.bootstrap], 
+                                         np.max(cfg['CI_quantiles']), axis=0,
+                                         method='closest_observation')
+            pdf_min_q = np.nanpercentile([b.pdf for b in clim.bootstrap], 
+                                         np.min(cfg['CI_quantiles']), axis=0,
+                                         method='closest_observation')
+            ax_hist.fill_between(clim.BestGuessGEV.x_gev, pdf_min_q, pdf_max_q,
+                                 color=clim_color_st['color'], alpha=0.3, 
+                                 linewitdth=0, zorder=4)
+            # QQ plot part 
+            # creating quantile measures for QQ plot
+            quantile_measures = np.arange(0, 1.01, 0.01)
+            quantile_measures[0] = 0.001 # numpy not accepting 0 for quantile
+            # calculating theoretical quantiles of the distribution
+            theor_quants = gev(clim.BestGuessGEV.shape, 
+                               loc=clim.BestGuessGEV.loc, 
+                               scale=clim.BestGuessGEV.scale).ppf(
+                                                            quantile_measures)
+            # calculating practical quantiles of the data (for QQ plot)
+            pract_quants = np.quantile(clim.data.flatten(), quantile_measures)
+            ax_qq.scatter(theor_quants, pract_quants, zorder=3, 
+                          lw=0.75*mpl.rcParams['lines.linewidth'],
+                          label=clim_leg_label, marker=clim_color_st['mark'],
+                          edgecolors=clim_color_st['color'], facecolors=None)  
+            # plotting return periods
+            ax_rps.plot(clim.BestGuessGEV.x_gev, clim.BestGuessGEV.rp_curve,
+                        color=clim_color_st['color'], zorder=3, 
+                        label=clim_leg_label)
+            # determine the rps uncert interval
+            rps_max_q = np.nanpercentile([b.rp_curve for b in clim.bootstrap], 
+                                         np.max(cfg['CI_quantiles']), axis=0,
+                                         method='closest_observation')
+            rps_min_q = np.nanpercentile([b.rp_curve for b in clim.bootstrap], 
+                                         np.min(cfg['CI_quantiles']), axis=0,
+                                         method='closest_observation')
+            ax_rps.fill_between(clim.BestGuessGEV.x_gev, rps_min_q, rps_max_q,
+                                color=clim_color_st['color'], alpha=0.3, 
+                                linewitdth=0, zorder=4)
+            
+        # add observational info
+        hist_ylims = ax_hist.get_ylim()
+        ax_hist.set_ylim(*hist_ylims)
+        # get color for the obs dataset 
+        ax_hist.vlines(obs_event, *hist_ylims, color=obs_color['color'],
+                       zorder=1, label=f"{obs_name} ({obs_ref['year']})",
+                       lw=mpl.rcParams['lines.linewidth']*1.5)
+        ax_rps.vlines(obs_event, 0.1, obs_rp, color=obs_color['color'], 
+                      label=f"{obs_name} ({obs_ref['year']})", zorder=2)
+        ax_rps.hlines(obs_rp, x_fine[0], obs_event, color=obs_color['color'],
+                                                                    zorder=2)
+        ax_rps.fill_between([x_fine[0], obs_event], obs_rp_ci_min, 
+                            obs_rp_ci_max, color=obs_color['color'], zorder=2,
+                            alpha=0.15)
+        if cfg.get('event_definition') == 'rarity':
+            ax_hist.vlines(obs_ref['model_event'], *hist_ylims, 
+                           color=obs_color['color'], zorder=1, ls='--',
+                           label=f"Factual\n(1 in {np.around(obs_rp, 1)})",
+                           lw=mpl.rcParams['lines.linewidth']*1.5)
+            ax_rps.vlines(obs_ref['model_event'], 0.1, obs_rp, ls='--',
+                          color=obs_color['color'], zorder=2, 
+                          label=f"Factual\n(1 in {np.around(obs_rp, 1)})")
 
         # technical aspects of the plot, limits, captions etc.
-        ylims = ax_hist.get_ylim()
-        ax_hist.set_ylim(*ylims)
-        # get color for the obs dataset 
-        ax_hist.vlines(obs_info['event'], *ylims, )
-
+        ax_qq.plot(x_fine, x_fine, c='tab:grey', zorder=1)
+        # legends
         ax_hist.legend(loc=2, fancybox=False, frameon=False)
         ax_qq.legend(loc=2, fancybox=False, frameon=False, handletextpad=0.01)
+        ax_rps.legend(loc=2, fancybox=False, frameon=False)
+        # grids
         ax_qq.grid(color='silver', axis='both', alpha=0.5)
-        ax_surv.grid(color='silver', axis='both', alpha=0.5)
-        ax_surv.set_yscale('log')
+        ax_rps.grid(color='silver', axis='both', alpha=0.5)
+
+        
+        # set rp axes ylim
+        ax_rps.set_ylim(1, 10000 if obs_rp_ci_max > 950 else 1000)
+        ax_rps.set_yscale('log')
+        # captions and titles
         ax_hist.set_title('(a) Probability density function')
         ax_qq.set_title('(b) Quality assessment')
         ax_qq.set_ylabel('Data quantile')
         ax_qq.set_xlabel('GEV quantile')
-        ax_surv.set_title('(c) Return period')
-        ax_surv.set_ylabel('years')
+        ax_rps.set_title('(c) Return period')
+        ax_rps.set_ylabel('years')
         ax_hist.set_ylabel('Number density')
+
 
         fig.suptitle()
 
