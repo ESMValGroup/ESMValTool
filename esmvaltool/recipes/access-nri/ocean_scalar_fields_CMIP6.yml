@@ -107,7 +107,7 @@ diagnostics:
   # --------------------------------------------------
   # Drake passage sea water transport #fig 23
   # --------------------------------------------------
-    diag_timeseries_drake:
+  diag_timeseries_drake:
     description: Drake_passage_current
     variables:
       mfo:
@@ -141,7 +141,7 @@ diagnostics:
 # --------------------------------------------------
 # Surface downward mass flux from CO2 #fig24?
 # --------------------------------------------------
-diagnostics: ## fgco2 -air-to-sea CO2 flux
+## fgco2 -air-to-sea CO2 flux
   diag_co2flux:
     variables:
       fgco2: # cubes not same grid
