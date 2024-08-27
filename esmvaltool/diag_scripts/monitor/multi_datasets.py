@@ -583,6 +583,11 @@ time_format: str, optional (default: None)
     :func:`~datetime.datetime.strftime` format string that is used to format
     the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
     use the default formatting imposed by the iris plotting function.
+time_on: str, optional (default: y-axis)
+    Optional switch to change the orientation of the plot so that time is on
+    the x-axis ``time_on: x-axis``. Default orientation is time on y-axis and
+    lat/lon on x-axis.
+
 
 .. hint::
 
@@ -851,6 +856,7 @@ class MultiDatasets(MonitorBase):
                     'show_x_minor_ticks', True
                 )
                 self.plots[plot_type].setdefault('time_format', None)
+                self.plots[plot_type].setdefault('time_on', 'y-axis')
 
         # Check that facet_used_for_labels is present for every dataset
         for dataset in self.input_data:
@@ -1650,6 +1656,10 @@ class MultiDatasets(MonitorBase):
         ref_cube = ref_dataset['cube']
         dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
         self._check_cube_dimensions(ref_cube, plot_type)
+        if 'latitude' in dim_coords_dat:
+            non_time_label = 'latitude [°N]'
+        else:
+            non_time_label = 'longitude [°E]'
 
         # Create single figure with multiple axes
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
@@ -1664,16 +1674,23 @@ class MultiDatasets(MonitorBase):
             # Plot dataset (top left)
             axes_data = fig.add_subplot(gridspec[0:2, 0:2])
             plot_kwargs['axes'] = axes_data
-            coord_names = [coord[0].name() for coord in cube.dim_coords]
-            if coord_names[0] == "time":
-                coord_names.reverse()
-            plot_kwargs['coords'] = coord_names
+            if self.plots[plot_type]['time_on'] == 'x-axis':
+                plot_kwargs['coords'] = list(dim_coords_dat)
+                x_label = 'time'
+                y_label = non_time_label
+                time_axis = axes_data.get_xaxis()
+            else:
+                plot_kwargs['coords'] = list(reversed(dim_coords_dat))
+                x_label = non_time_label
+                y_label = 'time'
+                time_axis = axes_data.get_yaxis()
             plot_data = plot_func(cube, **plot_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
-            axes_data.set_ylabel('time')
+            axes_data.set_ylabel(y_label)
             if self.plots[plot_type]['time_format'] is not None:
-                axes_data.get_yaxis().set_major_formatter(mdates.DateFormatter(
-                    self.plots[plot_type]['time_format']))
+                time_axis.set_major_formatter(mdates.DateFormatter(
+                    self.plots[plot_type]['time_format']
+                ))
             if self.plots[plot_type]['show_y_minor_ticks']:
                 axes_data.get_yaxis().set_minor_locator(AutoMinorLocator())
             if self.plots[plot_type]['show_x_minor_ticks']:
@@ -1705,17 +1722,14 @@ class MultiDatasets(MonitorBase):
             plot_kwargs_bias = self._get_plot_kwargs(plot_type, dataset,
                                                      bias=True)
             plot_kwargs_bias['axes'] = axes_bias
-            plot_kwargs_bias['coords'] = coord_names
+            plot_kwargs_bias['coords'] = plot_kwargs['coords']
             plot_bias = plot_func(bias_cube, **plot_kwargs_bias)
             axes_bias.set_title(
                 f"{self._get_label(dataset)} - {self._get_label(ref_dataset)}",
                 pad=3.0,
             )
-            axes_bias.set_ylabel('time')
-            if 'latitude' in dim_coords_dat:
-                axes_bias.set_xlabel('latitude [°N]')
-            elif 'longitude' in dim_coords_dat:
-                axes_bias.set_xlabel('longitude [°E]')
+            axes_bias.set_xlabel(x_label)
+            axes_bias.set_ylabel(y_label)
             cbar_kwargs_bias = self._get_cbar_kwargs(plot_type, bias=True)
             cbar_bias = fig.colorbar(plot_bias, ax=axes_bias,
                                      **cbar_kwargs_bias)
@@ -1756,6 +1770,10 @@ class MultiDatasets(MonitorBase):
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
         dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
+        if 'latitude' in dim_coords_dat:
+            non_time_label = 'latitude [°N]'
+        else:
+            non_time_label = 'longitude [°E]'
 
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
@@ -1764,8 +1782,17 @@ class MultiDatasets(MonitorBase):
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
 
-            # Make sure time is on y-axis
-            plot_kwargs['coords'] = list(reversed(dim_coords_dat))
+            # Put time on desired axis
+            if self.plots[plot_type]['time_on'] == 'x-axis':
+                plot_kwargs['coords'] = list(dim_coords_dat)
+                x_label = 'time'
+                y_label = non_time_label
+                time_axis = axes.get_xaxis()
+            else:
+                plot_kwargs['coords'] = list(reversed(dim_coords_dat))
+                x_label = non_time_label
+                y_label = 'time'
+                time_axis = axes.get_yaxis()
             plot_hovmoeller = plot_func(cube, **plot_kwargs)
 
             # Setup colorbar
@@ -1779,15 +1806,12 @@ class MultiDatasets(MonitorBase):
             # Customize plot
             axes.set_title(self._get_label(dataset))
             fig.suptitle(dataset['long_name'])
-            if 'latitude' in dim_coords_dat:
-                axes.set_xlabel('latitude [°N]')
-            elif 'longitude' in dim_coords_dat:
-                axes.set_xlabel('longitude [°E]')
-            axes.set_ylabel('time')
+            axes.set_xlabel(x_label)
+            axes.set_ylabel(y_label)
             if self.plots[plot_type]['time_format'] is not None:
-                axes.get_yaxis().set_major_formatter(mdates.DateFormatter(
-                    self.plots[plot_type]['time_format'])
-                )
+                time_axis.set_major_formatter(mdates.DateFormatter(
+                    self.plots[plot_type]['time_format']
+                ))
             if self.plots[plot_type]['show_y_minor_ticks']:
                 axes.get_yaxis().set_minor_locator(AutoMinorLocator())
             if self.plots[plot_type]['show_x_minor_ticks']:
