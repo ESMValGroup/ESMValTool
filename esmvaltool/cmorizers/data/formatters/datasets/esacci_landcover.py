@@ -24,7 +24,7 @@ from datetime import datetime
 import iris
 import numpy as np
 
-from ...utilities import (
+from esmvaltool.cmorizers.data.utilities import (
     fix_coords,
     fix_var_metadata,
     set_global_atts,
@@ -41,7 +41,22 @@ iris.FUTURE.save_split_attrs = True
 
 
 def average_block(data, block_size):
-    """Average the data within each block of size block_size."""
+    """Average the data within each block of size block_size.
+
+    Parameters
+    ----------
+    data : numpy.ndarray
+        The input data array to be block averaged.
+    block_size : int
+        The size of the block used for averaging. The data is averaged
+        within non-overlapping blocks of this size along the spatial dimensions
+        (latitude and longitude).
+
+    Returns
+    -------
+    numpy.ndarray
+        The block-averaged data array.
+    """
     shape = data.shape
     reshaped_data = data.reshape(shape[0], shape[1] // block_size,
                                  block_size, shape[2] // block_size,
@@ -51,10 +66,26 @@ def average_block(data, block_size):
 
 
 def regrid_iris(cube):
-    """Regrid the cubes using block averaging."""
+    """Regrid the cubes using block averaging.
+
+    Parameters
+    ----------
+    cube : iris.cube.Cube
+        The input data cube to be regridded.
+
+    Returns
+    -------
+    iris.cube.Cube
+        The regridded data cube.
+
+    Notes
+    -----
+    The block size is set to 100, which means the data will be averaged within
+    non-overlapping blocks of 100x100 grid cells along the spatial dimensions.
+    """
     logger.info("Regridding using block averaging")
 
-    block_size = 100
+    block_size = 100   # Number of grid cells to average in each block
 
     combined_data = average_block(cube.data, block_size)
 
