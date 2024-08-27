@@ -7,9 +7,9 @@ This diagnostic requires an ancestor task to determine the event and
 its rarity from the observations. 
 
 The preprocessed data should be provided in form of spatially averaged
-timeseries of the annual maxima of a variable (e.g., tasmax). While
-some seasonal data can be used at the preprocessor stage, to the 
-diagnostic only one value per year shall be provided. Example: 
+timeseries of the annual maxima/minima of a variable (e.g., tasmax).
+While some seasonal data can be used at the preprocessor stage, to the
+diagnostic only one value per year shall be provided. Example:
 extract JJA season first, calculate annual mean using JJA data only.
 
 This code was developped for the results used in Malinina&Gillett(2024)
@@ -210,33 +210,6 @@ def bootstrap_gev(data: np.ndarray, event: float, datasets: np.ndarray,
 
     return bootstrap_samples
 
-def get_basic_event_info(obs_info : dict, cfg: dict):
-    '''
-    Parameters
-    ----------
-    obs_info : 
-        dictionary with the observational information
-    cfg : 
-        internal ESMValTool dictionary with the input from the recipe
-
-    Returns
-    -------
-    event : float
-        event strength from observations
-    obs_event_rp : float
-        best guess event return period from observation
-    '''
-
-    obs_ref_dataset = cfg['obs_ref_dataset']
-    event = obs_info[obs_ref_dataset]['event']
-    if obs_info.get('obs_gev'): 
-        obs_gev_type = obs_info['obs_gev']
-    else:
-        obs_gev_type = 'stationary'
-    obs_event_rp = obs_info[obs_ref_dataset][obs_gev_type+'_gev']['RP']
-
-    return event, obs_event_rp
-
 
 def calculate_intensity(GEV : StationaryRP, event_rp: float,
                                             x_fine : np.ndarray | None = None):
@@ -269,40 +242,121 @@ def calculate_intensity(GEV : StationaryRP, event_rp: float,
     return intensity
 
 
+class ObsData:
+    '''
+    Attributes
+    ----------
+    name : str
+        Name of the dataset
+    event : float
+        Strength of the event of interest
+    year: int 
+        Year of the event
+    event_rp : float
+        Return period of the event for the selected type of fit
+    rp_ci_max : float
+        Upper border of the return period confidence interval
+    rp_ci_min : float
+        Lower border of the return period confidence interval
+    model_event : float (optional)
+        Strength of the event of the event_rp rarity in the factual
+        climate in the models
+    '''
+    def __init__(self, obs_info: dict, cfg: dict):
+        '''
+        Parameters
+        ----------
+        obs_info : 
+            loaded from ancestor file dictionary
+        cfg : 
+            internal ESMValTool dictionary with input from the recipe
+        '''
+        self.name = cfg['obs_ref_dataset']
+        self.event = obs_info[self.name]['event']
+        obs_fit = cfg.get('obs_gev') if cfg.get('obs_gev') else 'stationary'
+        self.event_rp = obs_info[self.name][obs_fit+'_gev']['RP']
+        self.year = obs_info[self.name]['year']
+        max_ci = np.max(list(obs_info[self.name][obs_fit+'_gev']['CI'].keys()))
+        min_ci = np.min(list(obs_info[self.name][obs_fit+'_gev']['CI'].keys()))
+        self.rp_ci_max = obs_info[self.name][obs_fit+'_gev']['CI'][max_ci]      
+        self.rp_ci_min = obs_info[self.name][obs_fit+'_gev']['CI'][min_ci]
+
+    def add_model_event(self, model_event: float):
+        '''
+        Parameters
+        ----------
+        model_event : 
+            Strength of the event of the event_rp rarity in the factual
+            climate in the models
+        '''
+        self.model_event = model_event  
+
+
 class Climate:
     '''
     Attributes
     ----------
-    name
-    start_year
-    end_year
-    data
-    weights
-    bootstrap
-    BestGuessGEV
-    RP_CI
-    intensity
-    intensity_CI 
+    name : str
+        name of the climate
+    start_year : int
+        start year of the climate period
+    end_year : int
+        end year of the climate period (included)
+    short_name : str
+        name of the variable
+    units : str
+        units of the data
+    data : np.ndarray
+        data for the climate, 2D  (N_real, N_years)
+    weights : np.ndarray | None
+        weights for the data. If array, flattened (N_real*N_years)
+    bootstrap : list[StationaryRP]
+        list with the boostrap realizations
+    BestGuessGEV : StationaryRP
+        the best guess of the stationary GEV 
+    rp_ci: dict
+        dictionary with the confidence intervals
+    intensity: float
+        strength of the event in of the provided rarity in this climate
+    intensity_CI: dict
+        dictionary with the confidence interval of the intensities
     '''
 
     def __init__(self, input_data: list, group: str, anomaly_calculation: bool,
                                                     cfg: dict, event: float):
+        '''
+        Parameters
+        ----------
+        input_data : 
+            list with the climates metadata including file paths
+        group : 
+            name of the group/climate
+        anomaly_calculation: 
+            flag which switches on/off anomaly calculation
+        cfg : 
+            internal ESMValTool dictionary with input from the recipe
+        event : 
+            strength of the event of interest
+        '''
         
         group_info = select_metadata(input_data, variable_group=group)
 
         self.name = group
+        # since the group is uniform for these keys, saving the first
         self.start_year = list(group_metadata(group_info, 'start_year'
                                                                   ).keys())[0]
         self.end_year = list(group_metadata(group_info, 'end_year').keys())[0]
+        self.short_name = list(group_metadata(group_info, 'short_name'
+                                                                  ).keys())[0]
+        self.units = list(group_metadata(group_info, 'units').keys())[0]
 
         # obtain data and datasets to calculate weights
         files = group_metadata(group_info, 'filename')
         group_data = list(); datasets = list()
         for file in files.keys():
             file_meta = select_metadata(input_data, filename=file)[0]
-            short_name = file_meta['short_name']
             file_dataset = file_meta['dataset']
-            data = xr.open_dataset(file)[short_name].data
+            data = xr.open_dataset(file)[self.short_name].data
             if anomaly_calculation:
                 data = calculate_anomaly(data, input_data, file_meta, 
                                             cfg['anomaly_type'])
@@ -328,6 +382,7 @@ class Climate:
                                           cfg['CI_quantiles'], 1)
     
     def obtain_rps_and_pdfs_curves(self, x_gev):
+        '''This function gets RP curves and PDFs for x_gev'''
 
         self.BestGuessGEV.obtain_pdf(x_gev)
         self.BestGuessGEV.obtain_rp_curve()
@@ -335,7 +390,20 @@ class Climate:
             self.bootstrap[i].obtain_pdf(x_gev)
             self.bootstrap[i].obtain_rp_curve()
 
-    def calculate_intensities(self, x_fine, event_rp, conf_ints):
+    def calculate_intensities(self, x_fine : np.ndarray, event_rp : float,
+                                                        conf_ints : list):
+        '''
+        This function calculates strength of the event_rp rarity event
+
+        Parameters
+        ----------
+        x_fine : 
+            array with the x-es used for the strength calculation
+        event_rp : 
+            return period of the event for which to calculate strength
+        conf_ints : 
+            list with percentiles for confidence interval calculation
+        '''
 
         self.obtain_rps_and_pdfs_curves(x_fine)
 
@@ -347,7 +415,13 @@ class Climate:
 
         self.intensity_CI = get_percentiles_dic(intensities, conf_ints, 1)
 
-    def update_event(self, event):
+    def update_event(self, event: float):
+        '''
+        Paramaters
+        ----------
+        event : 
+            strength of the event used for return period calculations
+        '''
         self.BestGuessGEV.rp = float(1/gev.sf(event, self.BestGuessGEV.shape, 
                                                loc=self.BestGuessGEV.loc,
                                                scale=self.BestGuessGEV.scale))
@@ -361,14 +435,15 @@ class Climate:
 
 
     def reform_to_yml(self):
+        '''This function returns the information in yml-dictionary'''
 
-        out_dic = {self.name: {'shape': self.BestGuessGEV.shape,
-                               'scale': self.BestGuessGEV.scale,
-                               'loc': self.BestGuessGEV.loc,
-                               'RP': self.BestGuessGEV.rp,
-                               'RP_CI': self.rp_ci, 
-                               'intensity': self.intensity,
-                               'intensity_CI': self.intensity_CI}}
+        out_dic = { self.name : {'shape': self.BestGuessGEV.shape,
+                                 'scale': self.BestGuessGEV.scale,
+                                 'loc': self.BestGuessGEV.loc,
+                                 'RP': self.BestGuessGEV.rp,
+                                 'RP_CI': self.rp_ci, 
+                                 'intensity': self.intensity,
+                                 'intensity_CI': self.intensity_CI}}
 
         return out_dic
 
@@ -437,15 +512,28 @@ class Climates:
         name of the dataset
     climates : list
         list with the Climates classes
-    risk_ratios
-    max_value
-    min_value
+    risk_ratios : dict
+        dictionary with the risk ratios 
+    max_value : float
+        maximum value in the data for all climates 
+    min_value : float
+        minimum value in the data for all climates
     '''
 
     def __init__(self, input_data: list, dataset_name: str, cfg: dict, 
-                                                            obs_info: dict):
-        
-        event, event_rp = get_basic_event_info(obs_info, cfg)
+                                                            ObsInfo: ObsData):
+        '''
+        Parameters
+        ----------
+        input_data: 
+            list with all the metadata and files for the dataset
+        dataset_name:
+            name of the dataset
+        cfg: 
+            internal ESMValTool dictionary with the input from recipe
+        ObsInfo:
+            class with the observational information
+        '''
 
         self.name = dataset_name
         self.climates = []
@@ -455,8 +543,8 @@ class Climates:
             groups.remove('anomaly'); anomaly_calculation = True
 
         for group in groups:
-            GroupClimate = Climate(input_data, group, anomaly_calculation, 
-                                                                    cfg, event)
+            GroupClimate = Climate(input_data, group, anomaly_calculation, cfg,
+                                                                 ObsInfo.event)
             self.climates.append(GroupClimate)
 
         max_value = np.max([cl.data.max() for cl in self.climates])
@@ -476,34 +564,19 @@ class Climates:
                     # the event is redifined using the best guess event 
                     # probability obtained from observations
                     event = calculate_intensity(FactClim.BestGuessGEV, 
-                                                            event_rp, x_fine)
-                    obs_info[cfg['obs_ref_dataset']]['model_event'] = event
+                                                            ObsInfo.event_rp, x_fine)
+                    ObsInfo.add_model_event(event)
             for Clim in self.climates:
                 Clim.update_event(event)
         for Clim in self.climates:
-            Clim.calculate_intensities(x_fine, event_rp, cfg['CI_quantiles'])
-        self.risk_ratios = calculate_risk_ratios(self.climates, cfg['CI_quantiles'])
+            Clim.calculate_intensities(x_fine, ObsInfo.event_rp,
+                                                        cfg['CI_quantiles'])
+        self.risk_ratios = calculate_risk_ratios(self.climates, 
+                                                        cfg['CI_quantiles'])
 
 
-    def plot_uncert_plot(self, cfg: dict, obs_info: dict, prov_dic: dict):
-        '''
-        This function plots the distribtuion of the GEV parameters
-
-        Parameters
-        ----------
-        cfg : 
-            internal ESMValTool dictionary with the input from the recipe
-        obs_info : 
-            dictionary with the observational information
-        prov_dic : 
-            dictionary with provenance parameters 
-        '''
-
-
-        return
-
-
-    def plot_attribution_plot(self, cfg: dict, obs_info: dict, prov_dic: dict):
+    def plot_attribution_plot(self, cfg: dict, ObsInfo: ObsData, 
+                                                        prov_dic: dict):
         '''
         This function plots the Fig 9 in Malinina and Gillett (2024)
 
@@ -511,8 +584,8 @@ class Climates:
         ----------
         cfg : 
             internal ESMValTool dictionary with the input from recipe
-        obs_info : 
-            dictionary with the observational information
+        ObsInfo : 
+            class with the observational information
         prov_dic : 
             dictionary with provenance parameters
         '''
@@ -522,18 +595,15 @@ class Climates:
         mpl_st_file = eplot.get_path_to_mpl_style(cfg.get('mpl_style'))
         plt.style.use(mpl_st_file)
 
-        # getting info for the obs params
-        obs_name = cfg['obs_ref_dataset']
-        obs_color = eplot.get_dataset_style(obs_name, cfg.get('color_style'))
-        obs_ref = obs_info[obs_name]
-        obs_event, obs_rp = get_basic_event_info(obs_info, cfg)
-        obs_rp_fit = cfg.get('obs_gev') if cfg.get('obs_gev') else 'stationary'
-        obs_rp_ci_dic= obs_ref[obs_rp_fit+'_gev']['CI']
-        obs_rp_ci_min = obs_rp_ci_dic[np.min(list(obs_rp_ci_dic.keys()))]
-        obs_rp_ci_max = obs_rp_ci_dic[np.max(list(obs_rp_ci_dic.keys()))]
+        # getting info for the obs plotting
+        obs_color = eplot.get_dataset_style(
+                                        ObsInfo.name, cfg.get('color_style'))
 
         reg = cfg.get('region') if cfg.get('region') else 'region'
-        label = cfg.get('var_label') if cfg.get('var_label') else 'extreme'
+        label = cfg.get('var_label') if cfg.get('var_label') else self.climates[0
+                                                                    ].short_name
+        units = cfg.get('units') if cfg.get('units') else self.climates[0
+                                                                    ].units
         bins, x_fine = select_bins(self.min_value, self.max_value)
 
         fig = plt.figure(constrained_layout=False)
@@ -564,7 +634,7 @@ class Climates:
                                          method='closest_observation')
             ax_hist.fill_between(clim.BestGuessGEV.x_gev, pdf_min_q, pdf_max_q,
                                  color=clim_color_st['color'], alpha=0.3, 
-                                 linewitdth=0, zorder=4)
+                                 linewidth=0, zorder=4)
             # QQ plot part 
             # creating quantile measures for QQ plot
             quantile_measures = np.arange(0, 1.01, 0.01)
@@ -579,7 +649,7 @@ class Climates:
             ax_qq.scatter(theor_quants, pract_quants, zorder=3, 
                           lw=0.75*mpl.rcParams['lines.linewidth'],
                           label=clim_leg_label, marker=clim_color_st['mark'],
-                          edgecolors=clim_color_st['color'], facecolors=None)  
+                          edgecolors=clim_color_st['color'], facecolors='None')
             # plotting return periods
             ax_rps.plot(clim.BestGuessGEV.x_gev, clim.BestGuessGEV.rp_curve,
                         color=clim_color_st['color'], zorder=3, 
@@ -593,30 +663,31 @@ class Climates:
                                          method='closest_observation')
             ax_rps.fill_between(clim.BestGuessGEV.x_gev, rps_min_q, rps_max_q,
                                 color=clim_color_st['color'], alpha=0.3, 
-                                linewitdth=0, zorder=4)
+                                linewidth=0, zorder=4)
             
         # add observational info
         hist_ylims = ax_hist.get_ylim()
         ax_hist.set_ylim(*hist_ylims)
         # get color for the obs dataset 
-        ax_hist.vlines(obs_event, *hist_ylims, color=obs_color['color'],
-                       zorder=1, label=f"{obs_name} ({obs_ref['year']})",
+        ax_hist.vlines(ObsInfo.event, *hist_ylims, color=obs_color['color'],
+                       zorder=1, label=f"{ObsInfo.name} ({ObsInfo.year})",
                        lw=mpl.rcParams['lines.linewidth']*1.5)
-        ax_rps.vlines(obs_event, 0.1, obs_rp, color=obs_color['color'], 
-                      label=f"{obs_name} ({obs_ref['year']})", zorder=2)
-        ax_rps.hlines(obs_rp, x_fine[0], obs_event, color=obs_color['color'],
-                                                                    zorder=2)
-        ax_rps.fill_between([x_fine[0], obs_event], obs_rp_ci_min, 
-                            obs_rp_ci_max, color=obs_color['color'], zorder=2,
-                            alpha=0.15)
+        ax_rps.vlines(ObsInfo.event, 0.1, ObsInfo.event_rp, 
+                      color=obs_color['color'],
+                      label=f"{ObsInfo.name} ({ObsInfo.year})", zorder=2)
+        ax_rps.hlines(ObsInfo.event_rp, x_fine[0], ObsInfo.event, 
+                                        color=obs_color['color'], zorder=2)
+        ax_rps.fill_between([x_fine[0], ObsInfo.event], ObsInfo.rp_ci_min, 
+                    ObsInfo.rp_ci_max if ObsInfo.rp_ci_max < 10000 else 10000,
+                    color=obs_color['color'], zorder=2, alpha=0.15)
         if cfg.get('event_definition') == 'rarity':
-            ax_hist.vlines(obs_ref['model_event'], *hist_ylims, 
+            ax_hist.vlines(ObsInfo.model_event, *hist_ylims, 
                            color=obs_color['color'], zorder=1, ls='--',
-                           label=f"Factual\n(1 in {np.around(obs_rp, 1)})",
+                           label=f"Factual\n(1 in {np.around(ObsInfo.rp, 1)})",
                            lw=mpl.rcParams['lines.linewidth']*1.5)
-            ax_rps.vlines(obs_ref['model_event'], 0.1, obs_rp, ls='--',
+            ax_rps.vlines(ObsInfo.model_event, 0.1, ObsInfo.event_rp, ls='--',
                           color=obs_color['color'], zorder=2, 
-                          label=f"Factual\n(1 in {np.around(obs_rp, 1)})")
+                          label=f"Factual\n(1 in {np.around(ObsInfo.rp, 1)})")
 
         # technical aspects of the plot, limits, captions etc.
         ax_qq.plot(x_fine, x_fine, c='tab:grey', zorder=1)
@@ -627,26 +698,30 @@ class Climates:
         # grids
         ax_qq.grid(color='silver', axis='both', alpha=0.5)
         ax_rps.grid(color='silver', axis='both', alpha=0.5)
-
-        
         # set rp axes ylim
-        ax_rps.set_ylim(1, 10000 if obs_rp_ci_max > 950 else 1000)
+        ax_rps.set_ylim(1, 10000 if ObsInfo.rp_ci_max > 950 else 1000)
         ax_rps.set_yscale('log')
+        # set axes x- and ylim
+        ax_hist.set_xlim(x_fine[0], x_fine[-1]) 
+        ax_qq.set_xlim(x_fine[0], x_fine[-1]) 
+        ax_qq.set_ylim(x_fine[0], x_fine[-1]) 
+        ax_rps.set_xlim(x_fine[0], x_fine[-1]) 
         # captions and titles
         ax_hist.set_title('(a) Probability density function')
+        ax_hist.set_ylabel('Number density')
+        ax_hist.set_xlabel(f"{label}, {units}")
         ax_qq.set_title('(b) Quality assessment')
         ax_qq.set_ylabel('Data quantile')
         ax_qq.set_xlabel('GEV quantile')
         ax_rps.set_title('(c) Return period')
         ax_rps.set_ylabel('years')
-        ax_hist.set_ylabel('Number density')
+        ax_rps.set_xlabel(f"{label}, {units}")
 
-
-        fig.suptitle()
+        fig.suptitle(f"{label} in {reg}")
 
         fig.set_dpi(250)
 
-        plt.tight_layout()
+        fig.tight_layout()
         fig_path = os.path.join(cfg['plot_dir'], 
                             f"attribution_{self.name}_{reg}_{label.lower()}")
         save_figure(fig_path, prov_dic, cfg, fig, close=True)
@@ -661,8 +736,10 @@ def main(cfg):
     obs_file = io.get_ancestor_file(cfg, 'obs_information_event.yml')
     obs_info = yaml.safe_load(open(obs_file, 'r'))
     logger.info(f"Loaded information on OBS statistics from {obs_file}")
+    ObsInfo = ObsData(obs_info, cfg)
 
-    provenance_dic = {'authors': ['malinina_elizaveta']}
+    provenance_dic = {'authors': ['malinina_elizaveta'], 
+                      'ancestors': [obs_file] }
     # add ancestors to provenance
 
     input_data = cfg['input_data']
@@ -676,24 +753,25 @@ def main(cfg):
         for dataset in datasets.keys():
             dataset_info = datasets[dataset]
             logger.info(f"Processing {dataset}")
-            DatasetClimates = Climates(dataset_info, dataset, cfg, obs_info)
+            DatasetClimates = Climates(dataset_info, dataset, cfg, ObsInfo)
+            output_dic[dataset] = {}
             for Climate in DatasetClimates.climates:
-                output_dic[dataset] = Climate.reform_to_yml()
+                output_dic[dataset].update(Climate.reform_to_yml())
             output_dic[dataset]['risk_ratios'] = DatasetClimates.risk_ratios
 
     logger.info(f"Processing Multi-Model-Ensemble")
     MMEClimates = Climates(input_data.values(), 'Multi-Model-Ensemble', cfg, 
-                                                                    obs_info)
-    MMEClimates.plot_attribution_plot(cfg, obs_info, provenance_dic)
-    # MMEClimates.plot_uncert_plot(cfg, obs_info, provenance_dic)
+                                                                    ObsInfo)
+    MMEClimates.plot_attribution_plot(cfg, ObsInfo, provenance_dic)
+    output_dic['Multi-Model-Ensemble'] = {}
     for MMEClimate in MMEClimates.climates:
-        output_dic['Multi-Model-Ensemble'] = MMEClimate.reform_to_yml()
+        output_dic['Multi-Model-Ensemble'].update(MMEClimate.reform_to_yml())
     output_dic['Multi-Model-Ensemble']['risk_ratios'] = MMEClimates.risk_ratios
 
     model_stats_path = os.path.join(cfg['work_dir'],'models_statistics.yml')
     with open(model_stats_path, 'w') as model_info_yml:
         yaml.dump(output_dic, model_info_yml, sort_keys=False)
-    logger.info(f"Saved OBS info into {model_stats_path}")
+    logger.info(f"Saved model info into {model_stats_path}")
 
     logger.info("Successfully completed diagnostic")
 

@@ -662,6 +662,7 @@ def plot_figure(Dataset: SingleObsDataset, cfg: dict, prov_dic: dict):
 
     label = cfg.get('var_label') if cfg.get('var_label') else Dataset.data.name
     reg = cfg.get('region') if cfg.get('region') else 'region'
+    units = cfg.get('units') if cfg.get('region') else Dataset.data.units
 
     min_val = np.floor(Dataset.data.min()*0.9 if Dataset.data.min()> 0 
                                                else Dataset.data.min()*1.1)
@@ -697,7 +698,7 @@ def plot_figure(Dataset: SingleObsDataset, cfg: dict, prov_dic: dict):
     ax_hist.scatter(Dataset.event, 0, c=color_st['facecolor'], marker='x',
                                                           s=100, clip_on=False)
     ax_hist.set_xlim(bins[0], bins[-1])
-    ax_hist.set_xlabel(f"{label}, {Dataset.data.units}")
+    ax_hist.set_xlabel(f"{label}, {units}")
     ax_hist.set_ylabel('Number density')
     ax_hist.set_title('(a) Histogram')
 
@@ -722,12 +723,12 @@ def plot_figure(Dataset: SingleObsDataset, cfg: dict, prov_dic: dict):
     ax_tseries.set_xlim(Dataset.data.year.data[0] - 0.5, 
                         Dataset.data.year.data[-1] + 0.5)
     ax_tseries.text(0.7, 0.92, f"{Dataset.name}({Dataset.year}): " + \
-                    str(np.around(Dataset.event, 1))+ f" {Dataset.data.units}",
+                    str(np.around(Dataset.event, 1))+ f" {units}",
                     transform = ax_tseries.transAxes, clip_on=False)
     ax_tseries.set_title(f"(c) {Dataset.name} {label} timeseries")
     ax_tseries.grid(color='silver', axis='both', alpha=0.5)
     ax_tseries.set_xlabel('time')
-    ax_tseries.set_ylabel(f"{label}, {Dataset.data.units}")
+    ax_tseries.set_ylabel(f"{label}, {units}")
 
     fig_obs.suptitle(f"{Dataset.name} {label} in {reg} and its GEV fit")
 
