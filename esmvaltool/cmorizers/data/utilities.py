@@ -359,7 +359,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
 def extract_doi_value(tags):
     """Extract doi(s) from a bibtex entry."""
     reference_doi = []
-    pattern = r'doi\ = {(.*?)\},'
+    pattern = r'doi\s*=\s*{([^}]+)}'
 
     if not isinstance(tags, list):
         tags = [tags]
@@ -368,17 +368,18 @@ def extract_doi_value(tags):
         bibtex_file = REFERENCES_PATH / f'{tag}.bibtex'
         if bibtex_file.is_file():
             reference_entry = bibtex_file.read_text()
-            if re.search("doi", reference_entry):
-                reference_doi.append(
-                    f'doi:{re.search(pattern, reference_entry).group(1)}')
+            dois = re.findall(pattern, reference_entry)
+            if dois:
+                for doi in dois:
+                    reference_doi.append(f'doi:{doi}')
             else:
                 reference_doi.append('doi not found')
-                logger.warning('The reference file %s does not have a doi.',
-                               bibtex_file)
+                logger.warning(
+                    'The reference file %s does not have a doi.', bibtex_file)
         else:
             reference_doi.append('doi not found')
-            logger.warning('The reference file %s does not exist.',
-                           bibtex_file)
+            logger.warning(
+                'The reference file %s does not exist.', bibtex_file)
     return ', '.join(reference_doi)
 
 
@@ -424,7 +425,7 @@ def set_global_atts(cube, attrs):
 
     # Additional attributes
     glob_dict.update(attrs)
-    cube.attributes = glob_dict
+    cube.attributes.globals = glob_dict
 
 
 def fix_bounds(cube, dim_coord):
@@ -495,7 +496,7 @@ def fix_dtype(cube):
                     cube.dtype)
         cube.data = cube.core_data().astype(np.float32, casting='same_kind')
     for coord in cube.coords():
-        if coord.dtype != np.float64:
+        if coord.dtype.kind != "U" and coord.dtype != np.float64:
             logger.info(
                 "Converting data type of coordinate points of '%s' from '%s' "
                 "to 'float64'", coord.name(), coord.dtype)

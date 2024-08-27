@@ -27,15 +27,16 @@ REQUIREMENTS = {
         'cf-units',
         'cftime',
         'cmocean',
-        'dask',
+        'dask!=2024.8.0',  # https://github.com/dask/dask/issues/11296
         'distributed',
         'ecmwf-api-client',
         'eofs',
         'ESMPy',  # not on PyPI
         'esmvalcore',
-        'esmf-regrid>=0.7.0',
+        'esmf-regrid>=0.10.0',  # iris-esmf-regrid #342
         'fiona',
         'fire',
+        'fsspec',
         'GDAL',
         'jinja2',
         'joblib',
@@ -56,7 +57,7 @@ REQUIREMENTS = {
         'psy-reg',
         'psy-simple',
         'pyproj>=2.1',
-        # 'pys2index',  # issues installing from PyPI (wheel doesn't build)
+        'pys2index',
         'python-dateutil',
         'pyyaml',
         'rasterio',
@@ -220,7 +221,6 @@ setup(
         'Natural Language :: English',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Topic :: Scientific/Engineering',

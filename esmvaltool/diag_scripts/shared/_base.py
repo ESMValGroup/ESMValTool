@@ -16,6 +16,8 @@ import yaml
 
 logger = logging.getLogger(__name__)
 
+iris.FUTURE.save_split_attrs = True
+
 
 def get_plot_filename(basename, cfg):
     """Get a valid path for saving a diagnostic plot.
