@@ -1,12 +1,12 @@
 # ESMValTool
-# recipe_event_attribution_ab_txx.yml
+# recipe_event_attribution_sk_txx.yml
 ---
 documentation:
 
-  title: Event attribution of the 2021 heat wave in BC. 
+  title: Event attribution of the 2021 heat wave in Saskatchewan. 
 
   description: This is a recipe for event attribution of the 2021
-               Pacific Northwest heat wave in British Columbia. 
+               Pacific Northwest heat wave in Saskatchewan. 
                The observational return periods are calculated from 
                ERA5 and the probability of the event is compared in 
                different climates based on CMIP6 data. 
@@ -23,7 +23,7 @@ preprocessors:
       lat_offset: 0.25
       scheme: linear    
     extract_shape:
-      shapefile: british_columbia.shp
+      shapefile: saskatchewan.shp
       method: contains
       crop: True
     area_statistics:
@@ -40,7 +40,7 @@ preprocessors:
   preproc_era_ano: 
     custom_order: True 
     extract_shape:
-      shapefile: british_columbia.shp
+      shapefile: saskatchewan.shp
       method: contains
       crop: True
     area_statistics:
@@ -147,7 +147,7 @@ diagnostics:
         mpl_style: malinina24 # optional parameter, defines plot style
         color_style: malinina24 # optional but hightly recommended, otherwise all lines black
         yblock: 1 # (optional) determines how many years in block should be pooled in boostrap, default 1
-        region: BC # needed for the figure title
+        region: SK # needed for the figure title
         var_label: TXx # needed for axis name
         analysis_year: 2021 # optional parameter, year for which analysis should be done
         smooth_covariate_years: 4 # optional parameter if the covariate data should be smoothed
@@ -216,7 +216,7 @@ diagnostics:
         model_weighting: False # determines, if each realisation gets a weight of 1 (false) or 1/number of relisation
         event_definition: strength # options: strength (default) magnitude of the event from obs, rarity: uses return period
         # from obs and then finds the event of the same rarity in the factual climate
-        region: BC # needed for the figure title
+        region: SK # needed for the figure title
         var_label: TXx # needed for axis name
         units: C # optional parameter for the labelling
         bootstrap_seed: 501 # seed to start sequence for bootstrap (optional)
