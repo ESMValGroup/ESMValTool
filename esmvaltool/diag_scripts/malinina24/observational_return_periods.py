@@ -11,6 +11,11 @@ extract JJA season first, calculate annual mean using JJA data only.
 This code was developped for the results used in Malinina&Gillett(2024)
 and Gillet et al. (2022) (Weather and Climate Extremes). 
 
+The output of the diagnostic is a yml-file with the retrun period
+statistics from the observational datasets as well as a plot for
+with individual datasets info, similar to Figs 3 and 4 in 
+Malinina&Gillett(2024).
+
 Author: Elizaveta Malinina (elizaveta.malinina-rieger@ec.gc.ca)
 Initial development: 2021-2022
 Last updated: August 2024
@@ -480,6 +485,8 @@ def obtain_confidence_intervals(data: xr.DataArray, event: float,
         quantiles for the confidence interval calculation
     seed: 
         optional seed for the start of the bootstrap random sequence
+    yblock: 
+        determines how many years in block should be pooled in boostrap
     covariate_data:
         optional data with the covariate for non stationary GEV
     covariate_value:
@@ -491,6 +498,10 @@ def obtain_confidence_intervals(data: xr.DataArray, event: float,
         dictionary with quantile number as a key and corresponding RP 
         percentile as a value      
     '''
+    # assign default parameters in case they are None
+    yblock = 1 if yblock is None else yblock
+    seed = 1 if seed is None else seed
+    
     rps = []
 
     high = int(np.ceil(len(data)/yblock))

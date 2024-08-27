@@ -15,6 +15,9 @@ extract JJA season first, calculate annual mean using JJA data only.
 This code was developped for the results used in Malinina&Gillett(2024)
 and Gillet et al. (2022) (Weather and Climate Extremes). 
 
+The result of this diagnostic is a figure similar to Fig 9 from 
+Malinina&Gillett(2024) and a yml-file with the attribution statistics.
+
 Author: Elizaveta Malinina (elizaveta.malinina-rieger@ec.gc.ca)
 Initial development: 2021-2022
 Last updated: August 2024
@@ -73,7 +76,7 @@ def get_percentiles_dic(data : np.ndarray | list,
 
 
 def calculate_anomaly(data: np.array, input_data: list, file_meta: dict,
-                                                            anomaly_type: str):
+                                            anomaly_type: str = 'anomaly'):
     '''
     Parameters
     ----------
@@ -84,7 +87,7 @@ def calculate_anomaly(data: np.array, input_data: list, file_meta: dict,
     file_meta : 
         a dictionary with the data metadata
     anomaly_type: 
-        a type of anomaly to calculate
+        a type of anomaly to calculate, default 'anomaly'
     
     Returns
     -------
@@ -96,6 +99,9 @@ def calculate_anomaly(data: np.array, input_data: list, file_meta: dict,
     NotImplementedError
         if the anomly type is not 'anomaly' or 'ratio' 
     '''
+
+    anomaly_type = 'anomaly' if anomaly_type is None else anomaly_type
+
     ano_file = select_metadata(input_data, dataset=file_meta['dataset'],
                                ensemble=file_meta['ensemble'], 
                                variable_group='anomaly')[0]['filename']
@@ -199,7 +205,7 @@ def bootstrap_gev(data: np.ndarray, event: float, datasets: np.ndarray,
             sample_data.append(data[mod_idx, y_idx:y_idx+yblock])
             sample_datasets.append(datasets[mod_idx])
         sample_data = np.asarray(sample_data)
-        if cfg['model_weighting']:
+        if cfg.get('model_weighting'):
             sample_weights = determine_weights(sample_datasets, 
                                             sample_data.shape).flatten()
         else:
@@ -359,19 +365,19 @@ class Climate:
             data = xr.open_dataset(file)[self.short_name].data
             if anomaly_calculation:
                 data = calculate_anomaly(data, input_data, file_meta, 
-                                            cfg['anomaly_type'])
+                                            cfg.get('anomaly_type'))
             group_data.append(data)
             datasets.append(file_dataset)
         group_data = np.asarray(group_data) ; datasets = np.asarray(datasets)
 
         self.data = group_data
-        if cfg['model_weighting']:
+        if cfg.get('model_weighting'):
             self.weights = determine_weights(datasets, group_data.shape).flatten()
         else:
             self.weights = None
 
         self.bootstrap = bootstrap_gev(self.data, event, datasets, cfg)
-        if cfg['initial_conditions']: 
+        if cfg.get('initial_conditions'): 
             initial_cond = calculate_initial_cond(self.bootstrap)
         else:
             initial_cond = None
@@ -748,7 +754,7 @@ def main(cfg):
 
     output_dic = {}
 
-    if cfg['individual_models']:
+    if cfg.get('individual_models'):
     # provide statistics for individual models
         for dataset in datasets.keys():
             dataset_info = datasets[dataset]
