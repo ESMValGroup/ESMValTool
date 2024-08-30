@@ -32,15 +32,17 @@ def main(cfg):
     }
     input_data = cfg['input_data'].values() 
 
-    datagroup = {} ## for each variable min and max
+    datagroup = {}  # for each variable min and max
 
     for dataset in input_data:
         # Load the data
         if 'offset_years' in dataset:
-            input_file = (dataset['filename'], dataset['short_name'], dataset['dataset'], dataset['offset_years'])
+            input_file = (dataset['filename'], dataset['short_name'],
+                          dataset['dataset'], dataset['offset_years'])
         else:
-            input_file = (dataset['filename'], dataset['short_name'], dataset['dataset'], None)
-        # key for different models      
+            input_file = (dataset['filename'], dataset['short_name'],
+                          dataset['dataset'], None)
+        # key for different models
         logger.info(f"dataset: {dataset['long_name']}")
         if dataset['variable_group'] not in datagroup:
             datagroup[dataset['variable_group']] = []
@@ -51,18 +53,17 @@ def main(cfg):
     for variable_group, attributes in datagroup.items():
         plt.clf()
         for (fp, sn, dt, offset) in attributes:
-            cube = iris.load_cube(fp,sn,_prom_dim_coord)
+            cube = iris.load_cube(fp, sn, _prom_dim_coord)
             if offset:
-                cube.coord('year').points = [y + offset for y in cube.coord('year').points]
+                cube.coord('year').points = [y + offset for y in 
+                                             cube.coord('year').points]
             quickplot.plot(cube, label=dt)
 
-        plt.title(f"Trends in Sea-Ice {variable_group.split('_')[1]}ima") #
+        plt.title(f"Trends in Sea-Ice {variable_group.split('_')[1]}ima")
         plt.legend(loc='upper left')
         plt.ylabel('Sea-Ice Area (km2)')
 
-        filename = variable_group
-
-        save_figure(filename, provenance_record, cfg, dpi=300)
+        save_figure(variable_group, provenance_record, cfg, dpi=300)
 
 
 if __name__ == '__main__':

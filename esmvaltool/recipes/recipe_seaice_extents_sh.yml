@@ -44,6 +44,21 @@ preprocessors:
     convert_units: 
       units: km2
 
+  map_extents:
+    regrid:
+      target_grid: 0.5x0.5
+      scheme: linear
+    climate_statistics:
+      operator: mean
+      period: month
+    # extract_month:  # move to script for multiple?
+    #   month: 2
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -90
+      end_latitude: -50
+
 datasets: 
 
   - {dataset: ACCESS-ESM1-5, activity: CMIP ,project: CMIP6,  grid: gn,
@@ -68,6 +83,7 @@ diagnostics:
     variables:
       siconc:
         mip: SImon
+        preprocessor: map_extents
     scripts:
       map_extents:
         months: [2,9] # months to map (feb, sep)
