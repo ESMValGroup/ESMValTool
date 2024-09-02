@@ -180,15 +180,19 @@ def bootstrap_gev(data: np.ndarray, event: float, datasets: np.ndarray,
     seed = cfg['bootstrap_seed'] if cfg.get('bootstrap_seed') else 1
     yblock = cfg['yblock'] if cfg.get('yblock') else 1
 
-    pool_iter_n = np.max([len(np.unique(datasets)) *100, 1000])
+    # number of unique datasets and realizations in each dataset
+    unique_dtsts, reals_dtsts = np.unique(datasets, return_counts=True)
+
+    # number of iterations for bootstrap
+    pool_iter_n = np.max([reals_dtsts.max()*100, 1000])
 
     # the number of the datasets to be included in the pool
     # in case the dataset number is less than 3, using 3 as
     # the minimum ensemble number of to draw conclusions on
     # 3 most likely to be used in the case of only one model
-    n_dataset = np.max([len(np.unique(datasets)), 3])
+    n_dataset = np.max([len(unique_dtsts), 3])
 
-    n_years = data.shape[1]
+    n_years = data.shape[1]; n_all_reals = data.shape[0]
 
     pool_size = int(np.around(n_dataset*n_years/yblock))
 
@@ -199,7 +203,7 @@ def bootstrap_gev(data: np.ndarray, event: float, datasets: np.ndarray,
 
     for i in range(pool_iter_n):
         sample_data = list() ; sample_datasets = list()
-        mod_idxs = rng.integers(0, high=n_dataset, size=pool_size)
+        mod_idxs = rng.integers(0, high=n_all_reals, size=pool_size)
         for mod_idx in mod_idxs:
             y_idx = rng.integers(0, high=n_years-yblock)
             sample_data.append(data[mod_idx, y_idx:y_idx+yblock])
@@ -499,8 +503,8 @@ def calculate_risk_ratios(clim_list : list[Climate], ci_percs : list[float|int])
             bootstrap_rrs = list()
             # the number of bootstrap samples is the same in each climate
             for i in range(len(clim_list[clim_idx].bootstrap)):
-                bootstrap_rrs = clim_list[old_clim_idx].bootstrap[i].rp/\
-                                    clim_list[clim_idx].bootstrap[i].rp
+                bootstrap_rrs.append(clim_list[old_clim_idx].bootstrap[i].rp/\
+                                    clim_list[clim_idx].bootstrap[i].rp)
             
             risk_ratio_dic[key]['CI'] = get_percentiles_dic(bootstrap_rrs,
                                                                    ci_percs, 2)
@@ -746,7 +750,6 @@ def main(cfg):
 
     provenance_dic = {'authors': ['malinina_elizaveta'], 
                       'ancestors': [obs_file] }
-    # add ancestors to provenance
 
     input_data = cfg['input_data']
 
