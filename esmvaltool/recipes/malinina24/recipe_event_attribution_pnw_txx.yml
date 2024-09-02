@@ -1,0 +1,224 @@
+# ESMValTool
+# recipe_event_attribution_pnw_txx.yml
+---
+documentation:
+
+  title: Event attribution of the 2021 heat wave in BC. 
+
+  description: This is a recipe for event attribution of the 2021
+               Pacific Northwest heat wave in Pacific Northwest. 
+               The observational return periods are calculated from 
+               ERA5 and the probability of the event is compared in 
+               different climates based on CMIP6 data. 
+
+  authors:
+    - malinina_elizaveta
+
+preprocessors:
+  preproc_txx: &prep_txx
+    custom_order: True
+    regrid:
+      target_grid: 0.5x0.5
+      lon_offset: 0.25
+      lat_offset: 0.25
+      scheme: linear    
+    extract_region:
+      start_longitude: -123.0
+      end_longitude: -119.0
+      start_latitude: 45.0
+      end_latitude: 52.0
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: max
+  
+  preproc_ano:
+    <<: *prep_txx
+    climate_statistics: 
+      operator: mean
+      period: full
+
+  preproc_era_ano: 
+    custom_order: True 
+    extract_region:
+      start_longitude: -123.0
+      end_longitude: -119.0
+      start_latitude: 45.0
+      end_latitude: 52.0
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: max
+    convert_units:
+      units: degrees_C
+    anomalies:
+      period: full
+      reference:
+        start_year: 1940
+        start_month: 1
+        start_day: 1
+        end_year: 1959
+        end_month: 12
+        end_day: 31
+
+  preproc_era_gsat:
+    custom_order: True  
+    area_statistics:
+      operator: mean    
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      reference:
+        start_year: 1940
+        start_month: 1
+        start_day: 1
+        end_year: 1959
+        end_month: 12
+        end_day: 31   
+
+datasets_tasmax: &datasets_tasmax
+  - {dataset: ACCESS-ESM1-5, ensemble: "r(1:18)i1p1f1", grid: gn}
+  - {dataset: ACCESS-ESM1-5, ensemble: "r(21:24)i1p1f1", grid: gn}
+  - {dataset: ACCESS-ESM1-5, ensemble: r26i1p1f1, grid: gn}
+  - {dataset: ACCESS-ESM1-5, ensemble: "r(28:33)i1p1f1", grid: gn}
+  - {dataset: ACCESS-ESM1-5, ensemble: "r(35:40)i1p1f1", grid: gn}
+  - {dataset: ACCESS-CM2, ensemble: "r(1:5)i1p1f1", grid: gn}
+  - {dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CanESM5, ensemble: "r(1:25)i1p1f1", grid: gn}
+  - {dataset: CanESM5, ensemble: "r(1:25)i1p2f1", grid: gn}
+  - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
+  - { dataset: EC-Earth3, ensemble: r2i1p1f1, grid: gr } 
+  - { dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr }
+  - { dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr }
+  - { dataset: EC-Earth3-Veg, ensemble: r6i1p1f1, grid: gr } 
+  - { dataset: GFDL-ESM4, institute: NOAA-GFDL, ensemble: r1i1p1f1, grid: gr1 } 
+  - { dataset: INM-CM5-0, ensemble: r1i1p1f1, grid: gr1 }
+  - { dataset: INM-CM4-8, ensemble: r1i1p1f1, grid: gr1 }
+  - { dataset: IPSL-CM6A-LR, ensemble: "r(1:6)i1p1f1", grid: gr } 
+  - { dataset: IPSL-CM6A-LR, ensemble: "r(10:11)i1p1f1", grid: gr }
+  - { dataset: IPSL-CM6A-LR, ensemble: r14i1p1f1, grid: gr }
+  - { dataset: IPSL-CM6A-LR, ensemble: r22i1p1f1, grid: gr }
+  - { dataset: IPSL-CM6A-LR, ensemble: r25i1p1f1, grid: gr }
+  - {dataset: MIROC6, ensemble: "r(1:3)i1p1f1", grid: gn}
+  - {dataset: MIROC6, ensemble: "r(21:29)i1p1f1", grid: gn}
+  - {dataset: MIROC6, ensemble: "r(31:34)i1p1f1", grid: gn}
+  - {dataset: MIROC6, ensemble: "r(36:37)i1p1f1", grid: gn}
+  - {dataset: MIROC6, ensemble: "r(39:40)i1p1f1", grid: gn}
+  - {dataset: MIROC6, ensemble: "r(42:47)i1p1f1", grid: gn}
+  - {dataset: MIROC6, ensemble: "r(49:50)i1p1f1", grid: gn}
+  - {dataset: MPI-ESM1-2-LR, ensemble: "r(1:3)i1p1f1", grid: gn}
+  - {dataset: MPI-ESM1-2-LR, ensemble: "r(5:10)i1p1f1", grid: gn}
+  - {dataset: MRI-ESM2-0, ensemble: "r(1:5)i1p1f1", grid: gn}
+  - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: NorESM2-LM, ensemble: "r(1:3)i1p1f1", grid: gn}
+  - {dataset: NorESM2-MM, ensemble: r2i1p1f1, grid: gn}
+  - {dataset: TaiESM1, ensemble: r1i1p1f1, grid: gn}
+
+dataset_era: &dataset_era
+  - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+
+diagnostics:
+  observations:
+    description: Calculate event statistic in the observational data
+                 for a selected year and plot the observational figure. 
+                 Similar to figs 3 and 4 and observational info in tab 2 
+                 in Malinina&Gillet (2024). 
+    variables:     
+      obs_data:
+        short_name: tasmax
+        start_year: 1940
+        end_year: 2022
+        mip: day
+        preprocessor: preproc_era_ano 
+        additional_datasets: *dataset_era    
+      obs_covariate:
+        short_name: tas
+        start_year: 1940
+        end_year: 2022
+        mip: Amon
+        preprocessor: preproc_era_gsat 
+        additional_datasets: *dataset_era        
+    scripts:
+      observations:
+        script: malinina24/observational_return_periods.py
+        CI_quantiles: [5, 95] # percentiles for the confidence interval, mandatory parameter
+        mpl_style: malinina24 # optional parameter, defines plot style
+        color_style: malinina24 # optional but hightly recommended, otherwise all lines black
+        yblock: 1 # (optional) determines how many years in block should be pooled in boostrap, default 1
+        region: PNW # needed for the figure title
+        var_label: TXx # needed for axis name
+        analysis_year: 2021 # optional parameter, year for which analysis should be done
+        smooth_covariate_years: 4 # optional parameter if the covariate data should be smoothed
+        # add_covariate_year: true # optional parameter if the dataset is one year shorter 
+        covariate_dataset: ERA5 # optional parameter, needed if the extreme dataset doesn't have its own covariate
+        bootstrap_seed: 501 # seed to start sequence for bootstrap (optional, default 1)
+        units: C # optional parameter for the labeling
+        # anomaly: #optional parameter if anomalies calculaetd in the diagnostic
+        #   type: anomaly # options: anomaly and ratio
+        #   period: [1940, 1959]
+  models:
+    description: Calculate the event probability in different climates 
+                 for an event selected in the observations diagnostic. 
+                 Similar to fig 9 and inputs in tab 2 and 3
+                 in Malinina&Gillet (2024). 
+    variables:
+      factual:
+        short_name: tasmax
+        exp: [historical, ssp245]
+        start_year: 2011
+        end_year: 2030
+        project: CMIP6
+        mip: day
+        preprocessor: preproc_txx
+        additional_datasets: *datasets_tasmax
+      ssp245: 
+        short_name: tasmax
+        exp: ssp245
+        start_year: 2081
+        end_year: 2100
+        project: CMIP6
+        mip: day
+        preprocessor: preproc_txx
+        additional_datasets: *datasets_tasmax        
+      nat: 
+        short_name: tasmax
+        exp: historical
+        start_year: 1850
+        end_year: 1900
+        project: CMIP6
+        mip: day
+        preprocessor: preproc_txx
+        additional_datasets: *datasets_tasmax
+      anomaly:
+        short_name: tasmax
+        exp: historical
+        start_year: 1940
+        end_year: 1959
+        project: CMIP6
+        mip: day
+        preprocessor: preproc_ano
+        additional_datasets: *datasets_tasmax
+    scripts:
+      models:
+        script: malinina24/model_analysis_event_attribution.py
+        ancestors: [observations/observations, factual, ssp245, nat, anomaly]
+        obs_ref_dataset: ERA5 # the dataset name that will be used for event definition, mandatory parameter
+        CI_quantiles: [5, 95] # percentiles for the confidence interval, mandatory parameter
+        mpl_style: malinina24 # optional parameter, defines plot style
+        color_style: malinina24 # optional but hightly recommended, otherwise all lines black
+        obs_gev: non_stationary # which GEV stats from observations to use options: stationary (default), nonstationary
+        individual_models: False # do the output for sigle models (true) or multi-model ensemble (false, default)
+        anomaly_type: anomaly # options: anomaly (default) and ratio
+        yblock: 1 # (optional) determines how many years in block should be pooled in boostrap
+        initial_conditions: False # use initial conditions for the GEV fit
+        model_weighting: False # determines, if each realisation gets a weight of 1 (false) or 1/number of relisation
+        event_definition: strength # options: strength (default) magnitude of the event from obs, rarity: uses return period
+        # from obs and then finds the event of the same rarity in the factual climate
+        region: PNW # needed for the figure title
+        var_label: TXx # needed for axis name
+        units: C # optional parameter for the labelling
+        bootstrap_seed: 501 # seed to start sequence for bootstrap (optional)
