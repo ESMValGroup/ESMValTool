@@ -23,14 +23,15 @@ dependencies:
   - distributed
   - ecmwf-api-client
   - eofs
-  - esmpy >=8.6.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
+  - esmpy  !=8.1.0,<8.6.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - esmvalcore 2.11.*
   - fiona
   - fire
   - fsspec
   - gdal
-  - iris >=3.6.1
+  - iris >=3.10.0
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
+  - importlib_metadata <8
   - jinja2
   - joblib
   - lime
@@ -53,7 +54,7 @@ dependencies:
   - psy-simple
   - pyproj >=2.1
   - pys2index  # only from conda-forge
-  - python == 3.10
+  - python == 3.10.*
   - python-cdo
   - python-dateutil
   - pyyaml
