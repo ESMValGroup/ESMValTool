@@ -1,12 +1,12 @@
 # ESMValTool
-# recipe_event_attribution_bc_tx3x.yml
+# recipe_event_attribution_pnw_txx.yml
 ---
 documentation:
 
-  title: Event attribution of the 2021 heat wave in BC. 
+  title: Event attribution of the 2021 heat wave in WWA region. 
 
   description: This is a recipe for event attribution of the 2021
-               Pacific Northwest heat wave in British Columbia. 
+               Pacific Northwest heat wave in Pacific Northwest. 
                The observational return periods are calculated from 
                ERA5 and the probability of the event is compared in 
                different climates based on CMIP6 data. 
@@ -15,44 +15,38 @@ documentation:
     - malinina_elizaveta
 
 preprocessors:
-  preproc_tx3x: &prep_tx3x
+  preproc_txx: &prep_txx
     custom_order: True
     regrid:
       target_grid: 0.5x0.5
       lon_offset: 0.25
       lat_offset: 0.25
       scheme: linear    
-    extract_shape:
-      shapefile: british_columbia.shp
-      method: contains
-      crop: True
+    extract_region:
+      start_longitude: -123.0
+      end_longitude: -119.0
+      start_latitude: 45.0
+      end_latitude: 52.0
     area_statistics:
       operator: mean
-    rolling_window_statistics:
-      coordinate: time
-      operator: mean
-      window_length: 3
     annual_statistics:
       operator: max
   
   preproc_ano:
-    <<: *prep_tx3x
+    <<: *prep_txx
     climate_statistics: 
       operator: mean
       period: full
 
   preproc_era_ano: 
     custom_order: True 
-    extract_shape:
-      shapefile: british_columbia.shp
-      method: contains
-      crop: True
+    extract_region:
+      start_longitude: -123.0
+      end_longitude: -119.0
+      start_latitude: 45.0
+      end_latitude: 52.0
     area_statistics:
       operator: mean
-    rolling_window_statistics:
-      coordinate: time
-      operator: mean
-      window_length: 3
     annual_statistics:
       operator: max
     convert_units:
@@ -150,13 +144,13 @@ diagnostics:
         additional_datasets: *dataset_era        
     scripts:
       observations:
-        script: malinina24/observational_return_periods.py
+        script: eccc_extremes/observational_return_periods.py
         CI_quantiles: [5, 95] # percentiles for the confidence interval, mandatory parameter
         mpl_style: malinina24 # optional parameter, defines plot style
         color_style: malinina24 # optional but hightly recommended, otherwise all lines black
         yblock: 1 # (optional) determines how many years in block should be pooled in boostrap, default 1
-        region: BC # needed for the figure title
-        var_label: TX3x # needed for axis name
+        region: PNW # needed for the figure title
+        var_label: TXx # needed for axis name
         analysis_year: 2021 # optional parameter, year for which analysis should be done
         smooth_covariate_years: 4 # optional parameter if the covariate data should be smoothed
         # add_covariate_year: true # optional parameter if the dataset is one year shorter 
@@ -179,7 +173,7 @@ diagnostics:
         end_year: 2030
         project: CMIP6
         mip: day
-        preprocessor: preproc_tx3x
+        preprocessor: preproc_txx
         additional_datasets: *datasets_tasmax
       ssp245: 
         short_name: tasmax
@@ -188,7 +182,7 @@ diagnostics:
         end_year: 2100
         project: CMIP6
         mip: day
-        preprocessor: preproc_tx3x
+        preprocessor: preproc_txx
         additional_datasets: *datasets_tasmax        
       nat: 
         short_name: tasmax
@@ -197,7 +191,7 @@ diagnostics:
         end_year: 1900
         project: CMIP6
         mip: day
-        preprocessor: preproc_tx3x
+        preprocessor: preproc_txx
         additional_datasets: *datasets_tasmax
       anomaly:
         short_name: tasmax
@@ -210,7 +204,7 @@ diagnostics:
         additional_datasets: *datasets_tasmax
     scripts:
       models:
-        script: malinina24/model_analysis_event_attribution.py
+        script: eccc_extremes/model_analysis_event_attribution.py
         ancestors: [observations/observations, factual, ssp245, nat, anomaly]
         obs_ref_dataset: ERA5 # the dataset name that will be used for event definition, mandatory parameter
         CI_quantiles: [5, 95] # percentiles for the confidence interval, mandatory parameter
@@ -224,7 +218,7 @@ diagnostics:
         model_weighting: False # determines, if each realisation gets a weight of 1 (false) or 1/number of relisation
         event_definition: strength # options: strength (default) magnitude of the event from obs, rarity: uses return period
         # from obs and then finds the event of the same rarity in the factual climate
-        region: BC # needed for the figure title
-        var_label: TX3x # needed for axis name
+        region: PNW # needed for the figure title
+        var_label: TXx # needed for axis name
         units: C # optional parameter for the labelling
         bootstrap_seed: 501 # seed to start sequence for bootstrap (optional)

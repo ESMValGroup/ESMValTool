@@ -41,7 +41,7 @@ from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 # import the classes from OBS diag 
-from esmvaltool.diag_scripts.malinina24.observational_return_periods import StationaryRP, select_bins
+from esmvaltool.diag_scripts.eccc_extremes.observational_return_periods import StationaryRP, select_bins
 
 logger = logging.getLogger(os.path.basename(__file__))
 

@@ -100,7 +100,7 @@ diagnostics:
         additional_datasets: *dataset_era        
     scripts:
       observations_abs:
-        script: malinina24/observational_return_periods.py
+        script: eccc_extremes/observational_return_periods.py
         CI_quantiles: [5, 95] # percentiles for the confidence interval, mandatory parameter
         mpl_style: malinina24 # optional parameter, defines plot style
         color_style: malinina24 # optional but hightly recommended, otherwise all lines black
@@ -113,7 +113,7 @@ diagnostics:
         bootstrap_seed: 501 # seed to start sequence for bootstrap (optional, default 1)
         units: m/s # optional parameter for the labeling
       observations:
-        script: malinina24/observational_return_periods.py
+        script: eccc_extremes/observational_return_periods.py
         CI_quantiles: [5, 95] # percentiles for the confidence interval, mandatory parameter
         mpl_style: malinina24 # optional parameter, defines plot style
         color_style: malinina24 # optional but hightly recommended, otherwise all lines black
@@ -163,7 +163,7 @@ diagnostics:
         additional_datasets: *datasets_highresmip
     scripts:
       models_unwght:
-        script: malinina24/model_analysis_event_attribution.py
+        script: eccc_extremes/model_analysis_event_attribution.py
         ancestors: [observations/observations, factual, ssp245, nat, anomaly]
         obs_ref_dataset: ERA5 # the dataset name that will be used for event definition, mandatory parameter
         CI_quantiles: [5, 95] # percentiles for the confidence interval, mandatory parameter
@@ -182,7 +182,7 @@ diagnostics:
         units: m/s # optional parameter for the labelling
         bootstrap_seed: 501 # seed to start sequence for bootstrap (optional)
       models_wght:
-        script: malinina24/model_analysis_event_attribution.py
+        script: eccc_extremes/model_analysis_event_attribution.py
         ancestors: [observations/observations, factual, ssp245, nat, anomaly]
         obs_ref_dataset: ERA5 # the dataset name that will be used for event definition, mandatory parameter
         CI_quantiles: [5, 95] # percentiles for the confidence interval, mandatory parameter
