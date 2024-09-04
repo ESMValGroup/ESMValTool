@@ -13,6 +13,7 @@
 # serve to show the default.
 
 import os
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -45,6 +46,13 @@ if on_rtd:
     os.environ["PROJ_NETWORK"] = "OFF"
 if rtd_version not in ["latest", "stable", "doc"]:
     rtd_version = "latest"
+
+
+if re.fullmatch("v\d+\.\d+\.\d+", __version__):
+    baseurl = f"https://github.com/ESMValGroup/ESMValTool/tree/v{__version__}"
+else:
+    baseurl = f"https://github.com/ESMValGroup/ESMValTool/tree/main"
+
 
 # Generate gallery
 sys.path.append(os.path.dirname(__file__))
@@ -486,3 +494,84 @@ extlinks = {
 import gensidebar
 
 gensidebar.generate_sidebar(globals(), "esmvaltool")
+
+
+from docutils import nodes
+
+
+def recipe_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
+    """Link to a recipe
+
+    Returns 2 part tuple containing list of nodes to insert into the
+    document and a list of system messages.  Both are allowed to be
+    empty.
+
+    :param name: The role name used in the document.
+    :param rawtext: The entire markup snippet, with role.
+    :param text: The text marked with the role.
+    :param lineno: The line number where rawtext appears in the input.
+    :param inliner: The inliner instance that called us.
+    :param options: Directive options for customization.
+    :param content: The directive content for customization.
+    """
+    node = nodes.reference(
+        rawtext,
+        text,
+        refuri=f"{baseurl}/esmvaltool/recipes/{text}",
+        **options,
+    )
+    return [node], []
+
+
+def diag_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
+    """Link to a diagnostic script
+
+    Returns 2 part tuple containing list of nodes to insert into the
+    document and a list of system messages.  Both are allowed to be
+    empty.
+
+    :param name: The role name used in the document.
+    :param rawtext: The entire markup snippet, with role.
+    :param text: The text marked with the role.
+    :param lineno: The line number where rawtext appears in the input.
+    :param inliner: The inliner instance that called us.
+    :param options: Directive options for customization.
+    :param content: The directive content for customization.
+    """
+    node = nodes.reference(
+        rawtext,
+        text,
+        refuri=f"{baseurl}/esmvaltool/diag_scripts/{text}",
+        **options,
+    )
+    return [node], []
+
+
+def folder_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
+    """Link to a folder in esmvaltool repository
+
+    Returns 2 part tuple containing list of nodes to insert into the
+    document and a list of system messages.  Both are allowed to be
+    empty.
+
+    :param name: The role name used in the document.
+    :param rawtext: The entire markup snippet, with role.
+    :param text: The text marked with the role.
+    :param lineno: The line number where rawtext appears in the input.
+    :param inliner: The inliner instance that called us.
+    :param options: Directive options for customization.
+    :param content: The directive content for customization.
+    """
+    node = nodes.reference(
+        rawtext,
+        text,
+        refuri=f"{baseurl}/esmvaltool/{text}",
+        **options,
+    )
+    return [node], []
+
+
+def setup(app):
+    app.add_role("recipe", recipe_role)
+    app.add_role("diag", diag_role)
+    app.add_role("folder", folder_role)
