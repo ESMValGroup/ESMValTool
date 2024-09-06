@@ -27,14 +27,14 @@ import os
 import re
 
 import numpy as np
-
 import iris
 from cf_units import Unit
 from iris.coords import AuxCoord
 
-from esmvaltool.cmorizers.data import utilities as utils
 from esmvalcore.cmor._fixes.common import OceanFixGrid
 from esmvalcore.cmor.fixes import get_time_bounds
+from esmvaltool.cmorizers.data import utilities as utils
+
 
 logger = logging.getLogger(__name__)
 
@@ -102,12 +102,11 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir, latlon):
 
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
-    ## latlon are multidimensional
-    # create bounds
+    # latlon are multidimensional, create bounds
     siconc = OceanFixGrid(cmor_info)
     cube = siconc.fix_metadata(cubes=[cube])[0]
     # time bounds
-    cube.coord('time').bounds = get_time_bounds(cube.coord('time'), 
+    cube.coord('time').bounds = get_time_bounds(cube.coord('time'),
                                                 cmor_info.frequency)
 
     utils.save_variable(cube,
