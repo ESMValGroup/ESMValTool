@@ -35,7 +35,6 @@ from iris.coords import AuxCoord
 from esmvaltool.cmorizers.data import utilities as utils
 from esmvalcore.cmor._fixes.common import OceanFixGrid
 from esmvalcore.cmor.fixes import get_time_bounds
-from esmvalcore.cmor.table import get_var_info
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +73,7 @@ def _create_coord(cubes, var_name, standard_name):
         standard_name=standard_name,
         long_name=cube.long_name,
         var_name=var_name,
-        units='degrees'  # cube.units,
+        units='degrees'
     )
     return coord
 
@@ -97,19 +96,19 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir, latlon):
                          long_name='Sea Ice area type')
     cube.add_aux_coord(area_type)
 
-    # cube.convert_units(cmor_info.units)
     cube.units = '%'
     cube.data[cube.data > 100] = np.nan
     cube = cube * 100
 
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
-    # utils.fix_coords(cube) # latlon multidimensional
+    ## latlon are multidimensional
     # create bounds
     siconc = OceanFixGrid(cmor_info)
-    cube = siconc.fix_metadata(cubes = [cube])[0]   
+    cube = siconc.fix_metadata(cubes=[cube])[0]
     # time bounds
-    cube.coord('time').bounds = get_time_bounds(cube.coord('time'), cmor_info.frequency)
+    cube.coord('time').bounds = get_time_bounds(cube.coord('time'), 
+                                                cmor_info.frequency)
 
     utils.save_variable(cube,
                         var,
