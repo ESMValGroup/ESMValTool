@@ -4,8 +4,10 @@ Tier
     Tier 2: other freely-available dataset.
 
 Source
-    v2020: https://www.bgc-jena.mpg.de/CarboScope/?ID=sEXTocNEET_v2020
-    v20204: https://www.bgc-jena.mpg.de/CarboScope/?file=nbetEXToc_v2024E.flux.nc
+    v2020:
+        https://www.bgc-jena.mpg.de/CarboScope/?ID=sEXTocNEET_v2020
+    v2024:
+        https://www.bgc-jena.mpg.de/CarboScope/?file=nbetEXToc_v2024E.flux.nc
 
 Last access
     20240909
