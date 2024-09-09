@@ -47,6 +47,19 @@ diagnostics:
          mip: cfMon, tier: 2, start_year: 2007, end_year: 2015}
     scripts: null
 
+  CarboScope:
+    description: Jena CarboScope check
+    variables:
+      nbp:
+        mip: Lmon
+      fgco2:
+        mip: Omon
+    additional_datasets: 
+      - {dataset: CarboScope, project: OBS6, tier: 2, type: reanaly,
+         version: v2020, start_year: 1957, end_year: 2019}
+      - {dataset: CarboScope, project: OBS6, tier: 2, type: reanaly,
+         version: v2024E, start_year: 1957, end_year: 2023}
+    scripts: null
 
   CERES-EBAF:
     description: CERES-EBAF check
@@ -75,7 +88,7 @@ diagnostics:
         mip: Amon
         additional_datasets:
         - {dataset: CRU, project: OBS, tier: 2, type: reanaly, 
-        version: TS4.02, start_year: 1901, end_year: 2017}
+           version: TS4.02, start_year: 1901, end_year: 2017}
         - {dataset: CRU, project: OBS6, tier: 2, type: reanaly, 
           version: TS4.07, start_year: 1901, end_year: 2021}
       tasmin:

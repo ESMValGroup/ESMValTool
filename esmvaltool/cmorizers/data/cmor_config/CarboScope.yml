@@ -1,0 +1,48 @@
+---
+# Filename (will be extended by variable name)
+filename: 'sEXTocNEET_v2020_daily.nc.gz'
+# filename: 'nbetEXToc_v2024E.flux.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: CarboScope
+  version: 'v2020'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: 'https://www.bgc-jena.mpg.de/CarboScope/s/INVERSION/OUTPUT/sEXTocNEET_v2020_daily.nc.gz'
+  reference: 'carboscope2020'
+  comment: ''
+
+# attributes:
+#   dataset_id: CarboScope
+#   version: 'v2024E'
+#   tier: 2
+#   modeling_realm: reanaly
+#   project_id: OBS6
+#   source: 'https://www.bgc-jena.mpg.de/CarboScope/?file=nbetEXToc_v2024E.flux.nc'
+#   reference: 'carboscope2024'
+#   comment: ''
+
+# Variables to cmorize
+variables:
+  nbp:
+    mip: Lmon
+    raw_name: co2flux_land
+    raw_units: Gt yr-1
+  fgco2:
+    mip: Omon
+    raw_name: co2flux_ocean
+    raw_units: Gt yr-1
+  areacella:
+    mip: fx
+    raw_name: area
+  areacello:
+    mip: Ofx
+    raw_name: area
+  sftlf:
+    mip: fx
+    raw_name: area
+  sftof:
+    mip: Ofx
+    raw_name: area
