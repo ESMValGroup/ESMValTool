@@ -95,16 +95,6 @@ datasets:
       Put all files under a single directory (no subdirectories with years).
         3D_CloudFraction330m_yyyymm_avg_CFMIP2_sat_3.1.2.nc
 
-  CarboScope:
-    tier: 2
-    source: https://www.bgc-jena.mpg.de/CarboScope/?ID=s
-    last access: 2024-09-09
-    info: |
-      Data is freely available.
-      For previous versions, click on archive of outdated results.
-      Download the co2 fluxes in the full resolution (daily, gridded)
-        from https://www.bgc-jena.mpg.de/CarboScope/?ID=s
-
   CALIPSO-ICECLOUD:
     tier: 3
     source: https://eosweb.larc.nasa.gov/project/CALIPSO/CAL_LID_L3_Ice_Cloud-Standard_V1-00
@@ -120,6 +110,16 @@ datasets:
       6) Follow download instructions in email from EarthData and put all
          files in the same directory
 
+  CarboScope:
+    tier: 2
+    source: https://www.bgc-jena.mpg.de/CarboScope/?ID=s
+    last access: 2024-09-09
+    info: |
+      Data is freely available.
+      For previous versions, click on archive of outdated results.
+      Download the co2 fluxes in the full resolution (daily, gridded)
+        from https://www.bgc-jena.mpg.de/CarboScope/?ID=s
+        
   CDS-SATELLITE-ALBEDO:
     tier: 3
     source: https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-albedo?tab=form
