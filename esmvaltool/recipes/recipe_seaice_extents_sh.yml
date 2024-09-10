@@ -45,19 +45,17 @@ preprocessors:
       units: km2
 
   map_extents:
-    regrid:
-      target_grid: 0.5x0.5
-      scheme: linear
     climate_statistics:
       operator: mean
-      period: month
-    # extract_month:  # move to script for multiple?
-    #   month: 2
-    extract_region:
+      period: monthly
+    extract_region: 
       start_longitude: 0
       end_longitude: 360
       start_latitude: -90
-      end_latitude: -50
+      end_latitude: -35
+    regrid:
+      target_grid: 0.5x0.5
+      scheme: linear
 
 datasets: 
 
