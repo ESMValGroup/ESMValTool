@@ -154,7 +154,9 @@ def determine_weights(datasets: np.ndarray | list, shape: tuple):
     weights :
         weights with the shape of shape
     '''
-    # weighs are assigned in a way that each model in a sample gets
+    # convert to array to use the best counting methods
+    datasets = np.asarray(datasets)
+    # weights are assigned in a way that each model in a sample gets
     # a weight of 1, e.g., model has 4 samples, it's weight is 0.25
     weights_1d = [1/np.count_nonzero(datasets == d) for d in datasets]
     weights = np.repeat(np.expand_dims(weights_1d, 1),shape[1]
@@ -693,11 +695,11 @@ class Climates:
         if cfg.get('event_definition') == 'rarity':
             ax_hist.vlines(ObsInfo.model_event, *hist_ylims, 
                            color=obs_color['color'], zorder=1, ls='--',
-                           label=f"Factual\n(1 in {np.around(ObsInfo.rp, 1)})",
+                           label=f"Factual\n(1 in {np.around(ObsInfo.event_rp, 1)})",
                            lw=mpl.rcParams['lines.linewidth']*1.5)
             ax_rps.vlines(ObsInfo.model_event, 0.1, ObsInfo.event_rp, ls='--',
                           color=obs_color['color'], zorder=2, 
-                          label=f"Factual\n(1 in {np.around(ObsInfo.rp, 1)})")
+                          label=f"Factual\n(1 in {np.around(ObsInfo.event_rp, 1)})")
 
         # technical aspects of the plot, limits, captions etc.
         ax_qq.plot(x_fine, x_fine, c='tab:grey', zorder=1)

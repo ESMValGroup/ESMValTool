@@ -71,7 +71,7 @@ def select_bins(min_val:  float | int, max_val: float | int):
         x_fine = np.arange(min_val, max_val+0.01, 0.1).round(1)
     elif 30 <= max_val - min_val < 50: 
         bins = np.arange(min_val, max_val+0.1, 2).round()
-        x_fine = np.arange(min_val, max_val+0.01, 0.2).round(1)
+        x_fine = np.arange(min_val, max_val+0.01, 0.1).round(1)
     else: 
         bins = np.arange((min_val - 5)//5, (max_val + 5)//5 + 0.1, 5).round()
         x_fine = np.arange(min_val, max_val+0.01, 0.5).round(1)    
@@ -275,22 +275,11 @@ class StationaryRP:
             the keywords in the initial condition dictionary are not 
             correct or initial conditions are not float type
         '''
-        stat_gev = cex.fit_gev(data, returnValue=event, getParams=True,
-                               weights=weights, initial=initial)
-        try:
-            self.rp = float(np.exp(stat_gev['logReturnPeriod'][0]))
-            self.shape = float(-1 *stat_gev['mle'][2])
-            self.loc = float(stat_gev['mle'][0])
-            self.scale = float(stat_gev['mle'][1])
-        except:
-            self.rp = float(np.nan) ; self.shape = float(np.nan)
-            self.loc = float(np.nan) ; self.scale = float(np.nan)
-        self.notation= 'scipy'
-        if weights:
+        if not(weights is None):
             if data.shape != weights.shape:
                 raise ValueError("The shapes of the data and weights for "
                                  "stationary GEV fit have unmatching shapes")
-        if initial:
+        if not(initial is None):
             if list(initial.keys()) != ['location', 'scale', 'shape']:
                 raise ValueError("The initial conditions supposed to be "
                                  "['location', 'scale', 'shape'], currently "
@@ -307,6 +296,19 @@ class StationaryRP:
                 raise ValueError("The type of location parameter for initial "
                                  "conditions supposed to be float, currently "
                                  f"it is {type(initial['location'])}")
+                    
+        stat_gev = cex.fit_gev(data, returnValue=event, getParams=True,
+                               weights=weights, initial=initial)
+        
+        try:
+            self.rp = float(np.exp(stat_gev['logReturnPeriod'][0]))
+            self.shape = float(-1 *stat_gev['mle'][2])
+            self.loc = float(stat_gev['mle'][0])
+            self.scale = float(stat_gev['mle'][1])
+        except:
+            self.rp = float(np.nan) ; self.shape = float(np.nan)
+            self.loc = float(np.nan) ; self.scale = float(np.nan)
+        self.notation= 'scipy'
             
     
     def set_x_gev(self, metric: str, x_gev : np.ndarray | None = None):
@@ -553,6 +555,8 @@ class SingleObsDataset:
         name of the dataset
     data : xr.DataArray
         data array with the extremes data
+    units: str
+        units of the data 
     covariate_data: xr.DataArray | None
         data array with the covariate data (or None)
     event : float 
@@ -584,8 +588,11 @@ class SingleObsDataset:
         all_input_data = cfg['input_data']
         short_name = all_input_data[path]['short_name']
         data = xr.open_dataset(path)[short_name]
+        # saving units here othervise can be lost during anomaly calculations
+        self.units = data.units
         if cfg.get('anomaly'):
-            data = calculate_anomaly(data, cfg['anomaly'], dataset)
+            data = calculate_anomaly(data, cfg['anomaly'], dataset, 
+                                                           all_input_data)
 
         self.data = data
 
@@ -628,7 +635,7 @@ class SingleObsDataset:
         dataset_dic = {}
 
         dataset_dic['event'] = self.event; dataset_dic['year'] = self.year
-        dataset_dic['units'] = self.data.units
+        dataset_dic['units'] = self.units
         dataset_dic['stationary_gev'] = { 'shape': self.StationaryRP.shape,
                                         'scale': self.StationaryRP.scale,
                                         'loc': self.StationaryRP.loc,
@@ -673,7 +680,7 @@ def plot_figure(Dataset: SingleObsDataset, cfg: dict, prov_dic: dict):
 
     label = cfg.get('var_label') if cfg.get('var_label') else Dataset.data.name
     reg = cfg.get('region') if cfg.get('region') else 'region'
-    units = cfg.get('units') if cfg.get('region') else Dataset.data.units
+    units = cfg.get('units') if cfg.get('region') else Dataset.units
 
     min_val = np.floor(Dataset.data.min()*0.9 if Dataset.data.min()> 0 
                                                else Dataset.data.min()*1.1)
