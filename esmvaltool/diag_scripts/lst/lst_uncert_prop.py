@@ -125,9 +125,7 @@ def _diagnostic(config):
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         cubes, ancestors = _get_input_cubes(metadata)
         loaded_data[dataset] = cubes
-
-    for KEY in loaded_data['ESACCI-LST'].keys():
-            iris.save(loaded_data['ESACCI-LST'][KEY], f'{KEY}.nc')
+        
     # Methodology:
     # calcualte for day and night seperately
     # calls to propagation equations for each compoent
@@ -526,12 +524,12 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
                 # here use method 2
                 
                 # np.ma.mean allows masked boxes to be ignored
-                mean_list = [np.ma.mean(item) for item in uncert_by_biome]
-                this_mean = np.ma.mean(mean_list)
+                mean_list = [np.ma.mean(item) for item in uncert_by_biome] 
+                this_mean = (1/np.sqrt(len(uncert_by_biome))) * np.ma.mean(mean_list)
                 grid_means.append(this_mean)
     
         # final_values is the value to make a timeseries out of
-        this_times_mean = np.mean(grid_means)
+        this_times_mean = (1/np.sqrt(len(grid_means))) * np.mean(grid_means)
         final_values.append(this_times_mean)
     
     # need to make a cube to return
@@ -541,7 +539,8 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
                                 var_name = cube_loc_sfc.var_name,
                                 long_name = cube_loc_sfc.long_name,
                                 )
-    
+    print('#############################################')
+    print(final_values)
     return results_cube
 
 
