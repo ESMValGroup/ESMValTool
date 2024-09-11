@@ -52,7 +52,7 @@ preprocessors:
       start_longitude: 0
       end_longitude: 360
       start_latitude: -90
-      end_latitude: -35
+      end_latitude: -50
     regrid:
       target_grid: 0.5x0.5
       scheme: linear
@@ -86,6 +86,7 @@ diagnostics:
       map_extents:
         months: [2,9] # months to map (feb, sep)
         script: seaice_area_extents/seaice_mapextents.py
+  
   sea_ice_trends_sh:
     description: sea ice trends
     variables:
