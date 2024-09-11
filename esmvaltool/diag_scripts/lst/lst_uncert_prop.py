@@ -126,7 +126,11 @@ def _diagnostic(config):
         cubes, ancestors = _get_input_cubes(metadata)
         loaded_data[dataset] = cubes
 
-    # Methodolgy:
+    print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
+    print(loaded_data)
+    for KEY in loaded_data['ESACCI-LST'].keys():
+            iris.save(loaded_data['ESACCI-LST'][KEY], f'{KEY}.nc')
+    # Methodology:
     # calcualte for day and night seperately
     # calls to propagation equations for each compoent
     # ts eq 1 eq_arithmetic_mean
@@ -159,36 +163,40 @@ def _diagnostic(config):
     # and the number of useable pixels for each timestep
     n_fill = {}
     n_use = {}
-    for time in ['day', 'night']:
+    for time in ['day', 'night']:   
         if isinstance(loaded_data['ESACCI-LST'][f'ts_{time}'].data.mask,
                       np.ndarray):
             # mask is an array so there are masked values
             # do counting
             n_fill[time] = np.array([np.sum(loaded_data['ESACCI-LST'][f'ts_{time}'][date].data.mask) for date in range(len(loaded_data['ESACCI-LST']['ts_day'].coord('time').points))])
+        
         elif loaded_data['ESACCI-LST'][f'ts_{time}'].data.mask:
             # mask is single value of True so all masked values
             # make a array of m*n
-            n_fill[time] = np.array([lat_len*lon_len for i in loaded_data['ESACCI-LST']['ts_day'].coord('time').points])
+            n_fill[time] = np.array([lat_len*lon_len for i in loaded_data['ESACCI-LST'][f'ts_{time}'].coord('time').points])
+            
         else:
             # mask is a single value of False so no masked values
             # make an array of zeros
-            n_fill[time] = np.zeros_like(loaded_data['ESACCI-LST']['ts_day'].coord('time').points)
-
+            n_fill[time] = np.zeros_like(loaded_data['ESACCI-LST'][f'ts_{time}'].coord('time').points)
+    
     n_use['day'] = (lat_len * lon_len) - n_fill['day']
     n_use['night'] = (lat_len * lon_len) - n_fill['night']
-
+    
     # This loop call the propagation equations, once for 'day' and 'night'
     for time in ['day', 'night']:
 
         propagated_values[f'ts_{time}'] = \
-        eq_arithmetic_mean(loaded_data['ESACCI-LST'][f'ts_{time}'])
+        eq_arithmetic_mean(loaded_data['ESACCI-LST'][f'ts_{time}']) 
 
         propagated_values[f'lst_unc_loc_atm_{time}'] = \
         eq_weighted_sqrt_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_atm_{time}'],
-        n_use[f'{time}'])
+                              n_use[f'{time}']) 
+        
         # no spatial propagation of the systamatic uncertainity
+        # no generalisation has been made at this stage for the single value input
         propagated_values[f'lst_unc_sys_{time}'] = \
-        loaded_data['ESACCI-LST'][f'lst_unc_sys_{time}']
+        loaded_data['ESACCI-LST'][f'lst_unc_sys_{time}'] 
 
         propagated_values[f'lst_unc_loc_sfc_{time}'] = \
         eq_correlation_with_biome(loaded_data['ESACCI-LST'][f'lst_unc_loc_sfc_{time}'],
@@ -209,7 +217,6 @@ def _diagnostic(config):
 
         propagated_values[f'lst_total_unc_{time}'] = \
                             eq_sum_in_quadrature(time_cubelist)
-    
     
     # iplt did not want to work with 360 day calendar of UKESM
     # and demote appears to work on the standard_name
@@ -540,7 +547,7 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
     return results_cube
 
 
-def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_fill, n_use):
+def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_use, n_fill):
     """Propagate radom uncertatinty using the sampling uncertainty
     ATBD eq 4
 
@@ -570,13 +577,16 @@ def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_fill, n_use):
     factor = n_fill/(n_total - 1)
     unc_sampling = iris.analysis.maths.multiply(lst_variance,
                                                 factor)
+    unc_sampling.units = 1
+    unc_ran_mean.units = 1
 
     # apply the ATBD equation
     # note the square of random uncertainty is needed
-    output = eq_sum_in_quadrature(iris.cube.CubeList([unc_ran_mean**2,
+    output = eq_sum_in_quadrature(iris.cube.CubeList([unc_ran_mean,#**2,
                                                       unc_sampling]))
-    output = iris.analysis.maths.exponentiate(output, 0.5)
-
+    #output = iris.analysis.maths.exponentiate(output, 0.5)
+    output = unc_ran_mean.copy()
+    output.units = 'K'
     return output, unc_sampling
 
 
