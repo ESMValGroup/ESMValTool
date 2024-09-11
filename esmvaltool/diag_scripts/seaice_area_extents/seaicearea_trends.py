@@ -63,7 +63,7 @@ def main(cfg):
             input_file = (dataset['filename'], dataset['short_name'],
                           dataset['dataset'], None)
         # key for different models
-        logger.info(f"dataset: {dataset['long_name']}")
+        logger.info("Dataset: %s", {dataset['long_name']})
         if dataset['variable_group'] not in datagroup:
             datagroup[dataset['variable_group']] = []
         datagroup[dataset['variable_group']].append(input_file)
