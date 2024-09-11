@@ -582,9 +582,9 @@ def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_use, n_fill):
 
     # apply the ATBD equation
     # note the square of random uncertainty is needed
-    output = eq_sum_in_quadrature(iris.cube.CubeList([unc_ran_mean,#**2,
+    output = eq_sum_in_quadrature(iris.cube.CubeList([unc_ran_mean,
                                                       unc_sampling]))
-    #output = iris.analysis.maths.exponentiate(output, 0.5)
+    
     output = unc_ran_mean.copy()
     output.units = 'K'
     return output, unc_sampling
