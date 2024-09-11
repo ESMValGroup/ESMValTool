@@ -126,8 +126,6 @@ def _diagnostic(config):
         cubes, ancestors = _get_input_cubes(metadata)
         loaded_data[dataset] = cubes
 
-    print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
-    print(loaded_data)
     for KEY in loaded_data['ESACCI-LST'].keys():
             iris.save(loaded_data['ESACCI-LST'][KEY], f'{KEY}.nc')
     # Methodology:
