@@ -50,11 +50,8 @@ line_labels = {
 
 logger = logging.getLogger(__name__)
 
-
 def _get_input_cubes(metadata):
     """Load the data files into cubes.
-
-    Based on the hydrology diagnostic originally.
 
     Inputs:
     metadata = List of dictionaries made from the preprocessor config
@@ -117,7 +114,6 @@ def _diagnostic(config):
     -------
 
     """
-    # this loading function is based on the hydrology diagnostic
     input_metadata = config['input_data'].values()
     loaded_data = {}
     ancestor_list = []
@@ -182,9 +178,11 @@ def _diagnostic(config):
     # This loop call the propagation equations, once for 'day' and 'night'
     for time in ['day', 'night']:
 
+        # LST
         propagated_values[f'ts_{time}'] = \
         eq_arithmetic_mean(loaded_data['ESACCI-LST'][f'ts_{time}']) 
 
+        # Locally correlated Atmosphere
         propagated_values[f'lst_unc_loc_atm_{time}'] = \
         eq_weighted_sqrt_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_atm_{time}'],
                               n_use[f'{time}']) 
@@ -194,10 +192,12 @@ def _diagnostic(config):
         propagated_values[f'lst_unc_sys_{time}'] = \
         loaded_data['ESACCI-LST'][f'lst_unc_sys_{time}'] 
 
+        # Locally correlated Surface
         propagated_values[f'lst_unc_loc_sfc_{time}'] = \
         eq_correlation_with_biome(loaded_data['ESACCI-LST'][f'lst_unc_loc_sfc_{time}'],
                                   loaded_data['ESACCI-LST'][f'lcc_{time}'])
         
+        # Random uncertainity
         propagated_values[f'lst_unc_ran_{time}'], \
         propagated_values[f'lst_sampling_{time}'] = \
         eq_propagate_random_with_sampling(loaded_data['ESACCI-LST'][f'lst_unc_ran_{time}'],
@@ -205,7 +205,7 @@ def _diagnostic(config):
                                           n_use[f'{time}'],
                                           n_fill[f'{time}'])
 
-    # Combines all uncertainty types to get total uncertainty
+    # Combines all uncertainty types to get total uncertainty using sum in quadrature
     # for 'day' and 'night'
     for time in ['day', 'night']:
         time_cubelist = iris.cube.CubeList([propagated_values[f'{variable}_{time}']
@@ -225,9 +225,10 @@ def _diagnostic(config):
     iris.util.promote_aux_coord_to_dim_coord(loaded_data['UKESM1-0-LL']['ts'],
                                              'time')
    
+    # plot the Land Cover example
     plot_lc(loaded_data)
  
-    test_plot(propagated_values)
+    timeseries_plot(propagated_values)
     plot_with_cmip(propagated_values, loaded_data)
    
 def plot_lc(loaded_data):
@@ -394,7 +395,7 @@ def plot_with_cmip(propagated_values, loaded_data):
     plt.savefig('cmip_both.png')
         
         
-def test_plot(propagated_values):
+def timeseries_plot(propagated_values):
     """This is a very simple plot to just test the method
     """
 
@@ -474,7 +475,7 @@ def test_plot(propagated_values):
         ax2.tick_params(labelsize=plot_params['ticksize'])
  
         plt.tight_layout()
-        plt.savefig(f'test_A_{time}.png')
+        plt.savefig(f'timeseries_{time}.png')
 
 
 # These are the propagation equations
@@ -539,8 +540,7 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
                                 var_name = cube_loc_sfc.var_name,
                                 long_name = cube_loc_sfc.long_name,
                                 )
-    print('#############################################')
-    print(final_values)
+
     return results_cube
 
 
@@ -574,6 +574,8 @@ def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_use, n_fill):
     factor = n_fill/(n_total - 1)
     unc_sampling = iris.analysis.maths.multiply(lst_variance,
                                                 factor)
+    
+    # This is needed to allow cubes to be passed to the sum in quadrature function
     unc_sampling.units = 1
     unc_ran_mean.units = 1
 
