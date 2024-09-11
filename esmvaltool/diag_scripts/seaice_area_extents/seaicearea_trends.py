@@ -22,15 +22,15 @@ def _prom_dim_coord(cube, _field, _filename):
 
 
 def plot_trends(datagroup, provenance_record, cfg):
-    """Create plot for min and max groups"""
+    """Create plot for min and max groups."""
     for variable_group, attributes in datagroup.items():
         plt.clf()
-        for (fp, sn, dt, offset) in attributes:
-            cube = iris.load_cube(fp, sn, _prom_dim_coord)
+        for (filep, vname, datalabel, offset) in attributes:
+            cube = iris.load_cube(filep, vname, _prom_dim_coord)
             if offset:
                 cube.coord('year').points = [y + offset for y in
                                              cube.coord('year').points]
-            quickplot.plot(cube, label=dt)
+            quickplot.plot(cube, label=datalabel)
 
         plt.title(f"Trends in Sea-Ice {variable_group.split('_')[1]}ima")
         plt.legend(loc='upper left')
