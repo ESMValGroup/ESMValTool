@@ -4,14 +4,14 @@ based on code from Anton Steketee's COSIMA cookbook notebook
 https://cosima-recipes.readthedocs.io/en/latest/Examples/Sea_Ice_Area_Concentration_Volume_with_Obs.html
 """
 
+import logging
+import os
+
+import iris
 import matplotlib.pyplot as plt
 from iris import quickplot
 
-import iris
-import os
-import logging
 from esmvaltool.diag_scripts.shared import run_diagnostic, save_figure
-
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -20,22 +20,24 @@ logger = logging.getLogger(os.path.basename(__file__))
 def _prom_dim_coord(cube, _field, _filename):
     iris.util.promote_aux_coord_to_dim_coord(cube, 'year')
 
+
 def plot_trends(datagroup, provenance_record, cfg):
     """Create plot for min and max groups"""
     for variable_group, attributes in datagroup.items():
-    plt.clf()
-    for (fp, sn, dt, offset) in attributes:
-        cube = iris.load_cube(fp, sn, _prom_dim_coord)
-        if offset:
-            cube.coord('year').points = [y + offset for y in 
-                                            cube.coord('year').points]
-        quickplot.plot(cube, label=dt)
+        plt.clf()
+        for (fp, sn, dt, offset) in attributes:
+            cube = iris.load_cube(fp, sn, _prom_dim_coord)
+            if offset:
+                cube.coord('year').points = [y + offset for y in
+                                             cube.coord('year').points]
+            quickplot.plot(cube, label=dt)
 
-    plt.title(f"Trends in Sea-Ice {variable_group.split('_')[1]}ima")
-    plt.legend(loc='upper left')
-    plt.ylabel('Sea-Ice Area (km2)')
+        plt.title(f"Trends in Sea-Ice {variable_group.split('_')[1]}ima")
+        plt.legend(loc='upper left')
+        plt.ylabel('Sea-Ice Area (km2)')
 
-    save_figure(variable_group, provenance_record, cfg, dpi=300)
+        save_figure(variable_group, provenance_record, cfg, dpi=300)
+
 
 def main(cfg):
     """Compute sea ice area for each input dataset."""
@@ -48,7 +50,7 @@ def main(cfg):
         'references': [''],
         'ancestors': list(cfg['input_data'].keys()),
     }
-    input_data = cfg['input_data'].values() 
+    input_data = cfg['input_data'].values()
 
     datagroup = {}  # for each variable min and max
 
