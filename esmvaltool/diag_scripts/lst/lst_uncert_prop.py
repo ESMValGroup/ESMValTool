@@ -215,7 +215,8 @@ def _diagnostic(config):
                             eq_sum_in_quadrature(time_cubelist)
     
     # iplt did not want to work with 360 day calendar of UKESM
-    # and demote appears to work on the standard_name
+    # demote appears to work on the standard_name
+    # These line fix that issue
     loaded_data['UKESM1-0-LL']['ts'].coord('time').var_name = 'time2'
     loaded_data['UKESM1-0-LL']['ts'].coord('time').long_name = 'time2'
     loaded_data['UKESM1-0-LL']['ts'].coord('time').standard_name = 'height'
@@ -224,13 +225,172 @@ def _diagnostic(config):
     loaded_data['UKESM1-0-LL']['ts'].add_aux_coord(propagated_values['ts_day'].coord('time'),0)
     iris.util.promote_aux_coord_to_dim_coord(loaded_data['UKESM1-0-LL']['ts'],
                                              'time')
-   
-    # plot the Land Cover example
+
+    # Make the plots:
     plot_lc(loaded_data)
- 
     timeseries_plot(propagated_values)
     plot_with_cmip(propagated_values, loaded_data)
    
+# These are the propagation equations
+
+def eq_correlation_with_biome(cube_loc_sfc, lcc):
+    """
+    Propagate using the land cover/biome information.
+    Used for the locally correlated surface uncertainity.
+    Method:
+        Make a 0.05 degree grid of data
+        Find the matching biome matrix
+        Calc uncert for each correlated biome
+        Calc 0.05 box total uncert
+        With all of these, find the total uncert (0.05 -> arbitary)
+    """
+    
+    lat_len = len(cube_loc_sfc.coord('latitude').points)
+    lon_len = len(cube_loc_sfc.coord('longitude').points)
+    time_len = len(cube_loc_sfc.coord('time').points)
+    
+    final_values = [] # this is for each overal main area value
+    lc_grid = [] # this is for each 5*5 block
+    for time_index in range(time_len):
+        
+        grid_means = [] # this is for the 5*5 block means
+        # all cci lst v3 data is 0.05 resolution
+        # so use blocks of 5 to get 0.01 degree resolution
+        for i in range(0,lat_len,5):
+            for j in range(0,lon_len,5):
+                this_region = lcc[time_index,i:i+5,j:j+5]
+                lc_grid.append(this_region)
+                uniques = np.unique(this_region.data.round(decimals=0),
+                                    return_index=True,
+                                    return_inverse=True)
+                # note order of uniques will depends on both options = True
+                num_of_biomes = len(uniques[0])
+            
+                this_uncerts = cube_loc_sfc[time_index,i:i+5,j:j+5].data.flatten()
+
+                uncert_by_biome = [[] for i in range(num_of_biomes)]
+                for k, item in enumerate(this_uncerts):
+                    uncert_by_biome[uniques[2][k]].append(this_uncerts[k])
+            
+                # E3UB gives two methods
+                # method 1 = eq 5.31 and worked example eq 5.32
+                # method 2 is used by CCI at moment and is eq 5.34
+                # here use method 2
+                
+                # np.ma.mean allows masked boxes to be ignored
+                mean_list = [np.ma.mean(item) for item in uncert_by_biome] 
+                this_mean = (1/np.sqrt(len(uncert_by_biome))) * np.ma.mean(mean_list)
+                grid_means.append(this_mean)
+    
+        # final_values is the value to make a timeseries out of
+        this_times_mean = (1/np.sqrt(len(grid_means))) * np.mean(grid_means)
+        final_values.append(this_times_mean)
+    
+    # need to make a cube to return
+    results_cube = iris.cube.Cube(np.array(final_values),
+                                dim_coords_and_dims = [(lcc.coord('time'),0)],
+                                units = 'Kelvin',
+                                var_name = cube_loc_sfc.var_name,
+                                long_name = cube_loc_sfc.long_name,
+                                )
+
+    return results_cube
+
+
+def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_use, n_fill):
+    """Propagate radom uncertatinty using the sampling uncertainty
+    ATBD eq 4
+
+    the sum in quadrature of the arithmetic mean of lst_unc_ran and
+    the sampling uncertainty
+
+    Sampling uncertainty is
+    n_cloudy * Variance of LST / n_total-1
+
+    see ATBD section 3.13.3
+
+    Inputs:
+    cube_unc_ran: The cube with the lst_unc_ran day/night data
+    cube_ts:      The lst use for day/night as appropriate
+    """
+
+    # total number of pixed
+    n_total = n_fill + n_use
+
+    # the mean of the random uncertainty
+    unc_ran_mean = eq_weighted_sqrt_mean(cube_unc_ran, n_total)
+
+    # calculate the sampling error
+    # variance of the lst * n_fill/n_total-1
+    lst_variance = cube_ts.collapsed(['latitude', 'longitude'],
+                                     iris.analysis.VARIANCE)
+    factor = n_fill/(n_total - 1)
+    unc_sampling = iris.analysis.maths.multiply(lst_variance,
+                                                factor)
+    
+    # This is needed to allow cubes to be passed to the sum in quadrature function
+    unc_sampling.units = 1
+    unc_ran_mean.units = 1
+
+    # apply the ATBD equation
+    # note the square of random uncertainty is needed
+    output = eq_sum_in_quadrature(iris.cube.CubeList([unc_ran_mean,
+                                                      unc_sampling]))
+    
+    output = unc_ran_mean.copy()
+    output.units = 'K'
+    return output, unc_sampling
+
+
+def eq_arithmetic_mean(cube):
+    """Arithmetic mean of cube, across latitude and longitude
+    ATBD eq 1
+    """
+
+    out_cube = cube.collapsed(['latitude', 'longitude'], iris.analysis.MEAN)
+
+    return out_cube
+
+
+def eq_sum_in_quadrature(cubelist):
+    """Sum in quadrature
+    ATBD eq 9
+
+    Input:
+    cubelist : A cubelist of 1D cubes
+    """
+
+    # dont want to in-place replace the input
+    newlist = cubelist.copy()
+    for cube in newlist:
+        iris.analysis.maths.exponentiate(cube, 2, in_place=True)
+
+    cubes_sum = 0
+    for cube in newlist:
+        cubes_sum = cubes_sum + cube
+    output = iris.analysis.maths.exponentiate(cubes_sum, 0.5,
+                                              in_place=False)
+
+    return output
+
+
+def eq_weighted_sqrt_mean(cube, n_use):
+    """Mean with square root of n factor
+    ATBD eq 7
+
+    Inputs:
+    cube:
+    n_use: the number of useable pixels
+    NEED TO IMPLIMENT A CHECK ON MASKS BEING THE SAME?
+    """
+    output = iris.analysis.maths.multiply(cube.collapsed(['latitude',
+                                                          'longitude'],
+                                                         iris.analysis.MEAN),
+                                          1/np.sqrt(n_use))
+    return output
+
+# Plotting functions
+
 def plot_lc(loaded_data):
     """Plot to show land cover and correlations
     """
@@ -476,166 +636,6 @@ def timeseries_plot(propagated_values):
  
         plt.tight_layout()
         plt.savefig(f'timeseries_{time}.png')
-
-
-# These are the propagation equations
-
-def eq_correlation_with_biome(cube_loc_sfc, lcc):
-    """
-    Propagate using the land cover/biome information.
-    Used for the locally correlated surface uncertainity.
-    Method:
-        Make a 0.05 degree grid of data
-        Find the matching biome matrix
-        Calc uncert for each correlated biome
-        Calc 0.05 box total uncert
-        With all of these, find the total uncert (0.05 -> arbitary)
-    """
-    
-    lat_len = len(cube_loc_sfc.coord('latitude').points)
-    lon_len = len(cube_loc_sfc.coord('longitude').points)
-    time_len = len(cube_loc_sfc.coord('time').points)
-    
-    final_values = [] # this is for each overal main area value
-    lc_grid = [] # this is for each 5*5 block
-    for time_index in range(time_len):
-        
-        grid_means = [] # this is for the 5*5 block means
-        # all cci lst v3 data is 0.05 resolution
-        # so use blocks of 5 to get 0.01 degree resolution
-        for i in range(0,lat_len,5):
-            for j in range(0,lon_len,5):
-                this_region = lcc[time_index,i:i+5,j:j+5]
-                lc_grid.append(this_region)
-                uniques = np.unique(this_region.data.round(decimals=0),
-                                    return_index=True,
-                                    return_inverse=True)
-                # note order of uniques will depends on both options = True
-                num_of_biomes = len(uniques[0])
-            
-                this_uncerts = cube_loc_sfc[time_index,i:i+5,j:j+5].data.flatten()
-
-                uncert_by_biome = [[] for i in range(num_of_biomes)]
-                for k, item in enumerate(this_uncerts):
-                    uncert_by_biome[uniques[2][k]].append(this_uncerts[k])
-            
-                # E3UB gives two methods
-                # method 1 = eq 5.31 and worked example eq 5.32
-                # method 2 is used by CCI at moment and is eq 5.34
-                # here use method 2
-                
-                # np.ma.mean allows masked boxes to be ignored
-                mean_list = [np.ma.mean(item) for item in uncert_by_biome] 
-                this_mean = (1/np.sqrt(len(uncert_by_biome))) * np.ma.mean(mean_list)
-                grid_means.append(this_mean)
-    
-        # final_values is the value to make a timeseries out of
-        this_times_mean = (1/np.sqrt(len(grid_means))) * np.mean(grid_means)
-        final_values.append(this_times_mean)
-    
-    # need to make a cube to return
-    results_cube = iris.cube.Cube(np.array(final_values),
-                                dim_coords_and_dims = [(lcc.coord('time'),0)],
-                                units = 'Kelvin',
-                                var_name = cube_loc_sfc.var_name,
-                                long_name = cube_loc_sfc.long_name,
-                                )
-
-    return results_cube
-
-
-def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_use, n_fill):
-    """Propagate radom uncertatinty using the sampling uncertainty
-    ATBD eq 4
-
-    the sum in quadrature of the arithmetic mean of lst_unc_ran and
-    the sampling uncertainty
-
-    Sampling uncertainty is
-    n_cloudy * Variance of LST / n_total-1
-
-    see ATBD section 3.13.3
-
-    Inputs:
-    cube_unc_ran: The cube with the lst_unc_ran day/night data
-    cube_ts:      The lst use for day/night as appropriate
-    """
-
-    # total number of pixed
-    n_total = n_fill + n_use
-
-    # the mean of the random uncertainty
-    unc_ran_mean = eq_weighted_sqrt_mean(cube_unc_ran, n_total)
-
-    # calculate the sampling error
-    # variance of the lst * n_fill/n_total-1
-    lst_variance = cube_ts.collapsed(['latitude', 'longitude'],
-                                     iris.analysis.VARIANCE)
-    factor = n_fill/(n_total - 1)
-    unc_sampling = iris.analysis.maths.multiply(lst_variance,
-                                                factor)
-    
-    # This is needed to allow cubes to be passed to the sum in quadrature function
-    unc_sampling.units = 1
-    unc_ran_mean.units = 1
-
-    # apply the ATBD equation
-    # note the square of random uncertainty is needed
-    output = eq_sum_in_quadrature(iris.cube.CubeList([unc_ran_mean,
-                                                      unc_sampling]))
-    
-    output = unc_ran_mean.copy()
-    output.units = 'K'
-    return output, unc_sampling
-
-
-def eq_arithmetic_mean(cube):
-    """Arithmetic mean of cube, across latitude and longitude
-    ATBD eq 1
-    """
-
-    out_cube = cube.collapsed(['latitude', 'longitude'], iris.analysis.MEAN)
-
-    return out_cube
-
-
-def eq_sum_in_quadrature(cubelist):
-    """Sum in quadrature
-    ATBD eq 9
-
-    Input:
-    cubelist : A cubelist of 1D cubes
-    """
-
-    # dont want to in-place replace the input
-    newlist = cubelist.copy()
-    for cube in newlist:
-        iris.analysis.maths.exponentiate(cube, 2, in_place=True)
-
-    cubes_sum = 0
-    for cube in newlist:
-        cubes_sum = cubes_sum + cube
-    output = iris.analysis.maths.exponentiate(cubes_sum, 0.5,
-                                              in_place=False)
-
-    return output
-
-
-def eq_weighted_sqrt_mean(cube, n_use):
-    """Mean with square root of n factor
-    ATBD eq 7
-
-    Inputs:
-    cube:
-    n_use: the number of useable pixels
-    NEED TO IMPLIMENT A CHECK ON MASKS BEING THE SAME?
-    """
-    output = iris.analysis.maths.multiply(cube.collapsed(['latitude',
-                                                          'longitude'],
-                                                         iris.analysis.MEAN),
-                                          1/np.sqrt(n_use))
-    return output
-
 
 if __name__ == '__main__':
     # always use run_diagnostic() to get the config (the preprocessor
