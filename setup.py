@@ -27,7 +27,7 @@ REQUIREMENTS = {
         'cf-units',
         'cftime',
         'cmocean',
-        'dask',
+        'dask!=2024.8.0',  # https://github.com/dask/dask/issues/11296
         'distributed',
         'ecmwf-api-client',
         'eofs',
@@ -219,7 +219,6 @@ setup(
         'Natural Language :: English',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Topic :: Scientific/Engineering',

@@ -425,7 +425,7 @@ def set_global_atts(cube, attrs):
 
     # Additional attributes
     glob_dict.update(attrs)
-    cube.attributes = glob_dict
+    cube.attributes.globals = glob_dict
 
 
 def fix_bounds(cube, dim_coord):
