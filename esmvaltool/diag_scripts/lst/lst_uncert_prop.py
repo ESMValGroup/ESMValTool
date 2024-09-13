@@ -611,11 +611,12 @@ def timeseries_plot(propagated_values):
                   linewidth=plot_params['linewidth'],
                   label=line_labels[f'lst_unc_ran_{time}'])
 
-        iplt.plot(propagated_values[f'lst_sampling_{time}'],
-                  '--', 
-                  c=colour_list[1],
-                  linewidth=plot_params['linewidth'],
-                  label=line_labels[f'lst_sampling_{time}'])
+        #iplt.plot(propagated_values[f'lst_sampling_{time}'],
+        #          '--', 
+        #          c=colour_list[1],
+        #          linewidth=plot_params['linewidth'],
+        #          label=line_labels[f'lst_sampling_{time}'])
+        
         iplt.plot(propagated_values[f'lst_total_unc_{time}'],
                   c=colour_list[6],
                   linewidth=plot_params['linewidth'],
