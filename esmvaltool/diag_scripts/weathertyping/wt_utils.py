@@ -87,7 +87,8 @@ def plot_seasonal_occurrence(cfg: dict, wt_cubes: iris.cube.Cube,
     x = month_list
 
     for wt_string in relative_occurrences:
-        wt_numbers = len(relative_occurrences.get(wt_string).get(1).keys())
+        wt_numbers = max(len(value) for value in
+        relative_occurrences.get(wt_string).values())
         colors = generate_grayscale_hex_values(wt_numbers)
         wt_stack = np.zeros((wt_numbers, 12))
         for month, month_value in relative_occurrences.get(wt_string).items():
