@@ -283,6 +283,6 @@ diagnostics:
         correlation_threshold: 0.9
         rmse_threshold: 0.002
         automatic_slwt: true
-        #predefined_slwt: {1: [1, 2, 7, 8, 10, 11, 18, 19, 20, 25, 26], 2: [3, 13], 3: [4, 5, 6, 9, 14, 15, 16, 17], 4: [24, 23]}
+        predefined_slwt: {1: [1, 2, 19], 2: [3, 4, 22, 21], 3: [5, 6, 15, 16], 4: [7, 8, 11, 18], 5: [9, 17], 6: [10, 20], 7: [12, 13, 14], 8: [23, 24], 9: [25, 26], 0: [27]}
         plotting: true
         script: ../diag_scripts/weathertyping/weathertyping.py
