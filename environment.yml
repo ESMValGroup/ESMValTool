@@ -51,7 +51,7 @@ dependencies:
   - psy-simple
   - pyproj >=2.1
   - pys2index  # only from conda-forge
-  - python >=3.10, <3.12
+  - python >=3.10
   - python-cdo
   - python-dateutil
   - pyyaml
@@ -134,4 +134,4 @@ dependencies:
   - r-styler ==1.10.3
 
   # Julia (dependencies installed by separate script)
-  - julia >=1.10.4
+  - julia
