@@ -172,7 +172,7 @@ Installation of subpackages
 ---------------------------
 
 The diagnostics bundled in ESMValTool are scripts in four different programming
-languages: Python, NCL, R, and Julia.
+languages: Python, NCL, R, and Julia (currently at risk!).
 
 There are three language specific packages available:
 
@@ -208,6 +208,9 @@ one or more of the packages for other languages.
 
 Installation of Julia dependencies
 ----------------------------------
+
+.. note:: 
+    This is currently at risk!
 
 If you want to use the ESMValTool Julia functionality, you will also need to
 install Julia. If you are just getting started, we suggest that you
