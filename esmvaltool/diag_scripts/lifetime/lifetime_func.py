@@ -46,11 +46,14 @@ def calculate_gridmassdry(press, hus, z_coord):
         pmin = da.nanmin(press)
 
     # surface air pressure as cube
-    pmax = press[:, 0, :, :].copy()
+    surface = press.coord(z_coord)[0].points
+    pmax = press.extract(iris.Constraint(coord_values={z: surface for z in [z_coord]})).copy()
     if 'surface_air_pressure' in press.coords():
         pmax.data = press.coord('surface_air_pressure').lazy_points()
     else:
-        pmax.data[:, :, :] = 101525.
+        pmax.data = da.full_like(
+            press.extract(iris.Constraint(coord_values={z: surface for z in [z_coord]})),
+            101525.)
 
     # grid area -> m2
     lat_lon_dims = sorted(
@@ -66,10 +69,10 @@ def calculate_gridmassdry(press, hus, z_coord):
     )
 
     # delta pressure levels
-    delta_p = dpres_plevel_4d(press,
-                              pmin,
-                              pmax,
-                              z_coord=z_coord)
+    delta_p = dpres_plevel(press,
+                           pmin,
+                           pmax,
+                           z_coord=z_coord)
 
     # gridmass of dry air
     gridmassdry = deepcopy(press)
@@ -188,6 +191,58 @@ def _number_density_dryair_by_grid(grmassdry, grvol):
 
     return rho
 
+def dpres_plevel(plev, pmin, pmax, z_coord='air_pressure'):
+    """
+    Call the appropriate pressure level calculation with
+    respect to the given coordinates.
+    """
+
+    cube_coords = [coord.name() for coord in plev.dim_coords]
+
+    if [z_coord, 'latitude', 'longitude'] == cube_coords:
+        dplev = dpres_plevel_3d(plev, pmin, pmax, z_coord)
+    elif ['time', z_coord, 'latitude', 'longitude'] == cube_coords:
+        dplev = dpres_plevel_4d(plev, pmin, pmax, z_coord)
+    else:
+        raise NotImplementedError(
+            "Pressurelevel calculation is not implemented"
+            " for the present coordinates.")
+
+    return dplev
+
+
+def dpres_plevel_3d(plev, pmin, pmax, z_coord='air_pressure'):
+    """Calculate delta pressure levels.
+
+    The delta pressure levels are based
+    on the given pressure as a
+    four dimensional cube.
+    """
+    axis = plev.coord_dims(z_coord)
+
+    # shifted vectors:
+    # - p_m1: shifted by one index down
+    #         (the value of the last index is the former first)
+    # - p_p1: shifted by one index up
+    #         (the value of the first index is the former last)
+    # both vector values are divided by two
+    p_p1 = da.roll(plev.lazy_data(), 1, axis=axis) / 2.
+    p_m1 = da.roll(plev.lazy_data(), -1, axis=axis) / 2.
+
+    # modify the first entry in p_p1
+    # note: p_p1[1, :, :] .eq. plev[0, :, :] / 2.
+    p_p1[0, :, :] = pmax.lazy_data() - p_p1[1, :, :]
+
+    # and the last entry in p_m1
+    # note: p_m1[-2, :, :] .eq. plev[-1, :, :] / 2.
+    p_m1[-1, :, :] = pmin - p_m1[-2, :, :]
+
+    # calculate difference
+    dplev = deepcopy(plev)
+    dplev.data = p_p1 - p_m1
+
+    return dplev
+
 
 def dpres_plevel_4d(plev, pmin, pmax, z_coord='air_pressure'):
     """Calculate delta pressure levels.
@@ -225,8 +280,12 @@ def dpres_plevel_4d(plev, pmin, pmax, z_coord='air_pressure'):
 def calculate_lifetime(dataset, plot_type, region):
     """Calculate the lifetime for the given plot_type and region."""
     # extract region from weights and reaction
-    reaction = extract_region(dataset, region, case='reaction')
-    weight = extract_region(dataset, region, case='weight')
+    if plot_type in ['timeseries', 'annual_cycle']:
+        reaction = extract_region(dataset, region, case='reaction')
+        weight = extract_region(dataset, region, case='weight')
+    else:
+        reaction = dataset['reaction']
+        weight = dataset['weight']
 
     # calculate nominator and denominator
     # and sum of nominator and denominator via plot_type dimensions

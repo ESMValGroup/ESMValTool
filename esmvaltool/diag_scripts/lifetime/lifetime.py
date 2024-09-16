@@ -343,8 +343,7 @@ class CH4Lifetime(LifetimeBase):
             'timeseries',
             'annual_cycle',
             'zonalmean',
-            '1d_profile'
-        ]
+            '1d_profile' ]
         for (plot_type, plot_options) in self.plots.items():
             if plot_type not in self.supported_plot_types:
                 raise ValueError(
@@ -353,7 +352,7 @@ class CH4Lifetime(LifetimeBase):
             if plot_options is None:
                 self.plots[plot_type] = {}
 
-            # Default options for the different plot types
+            # Default options for the differ N MMNMJHJ JMHTHent plot types
             if plot_type == 'timeseries':
                 self.plots[plot_type].setdefault('annual_mean', False)
                 self.plots[plot_type].setdefault('annual_mean_kwargs', {})
@@ -371,7 +370,9 @@ class CH4Lifetime(LifetimeBase):
 
             if plot_type == 'zonalmean':
                 self.plots[plot_type].setdefault(
-                    'cbar_label', '{short_name} [{units}]')
+                    'cbar_label',
+                    f"{chr(964)}({self._get_name('reactant').upper()})"
+                    ' [{units}]')
                 self.plots[plot_type].setdefault(
                     'cbar_label_bias', 'Δ{short_name} [{units}]')
                 self.plots[plot_type].setdefault(
@@ -569,6 +570,7 @@ class CH4Lifetime(LifetimeBase):
                 z_coord = reaction.coord('air_pressure', dim_coords=True)
                 z_coord.attributes['positive'] = 'down'
                 z_coord.convert_units('Pa')
+                use_z_coord = 'air_pressure'
             elif reaction.coords('atmosphere_hybrid_sigma_pressure_coordinate',
                                  dim_coords=True):
                 self.z_coord = 'atmosphere_hybrid_sigma_pressure_coordinate'
@@ -576,13 +578,15 @@ class CH4Lifetime(LifetimeBase):
                     'atmosphere_hybrid_sigma_pressure_coordinate',
                     dim_coords=True)
                 z_coord.attributes['positive'] = 'down'
+                use_z_coord = 'model_level_number'
             else:
                 raise NotImplementedError(
                     "Lifetime calculation is not implemented"
                     " for the present type of vertical coordinate."
                 )
 
-            if not set(['TROP', 'STRA']).isdisjoint(self.cfg['regions']):
+            if (not set(['TROP', 'STRA']).isdisjoint(self.cfg['regions']) and
+                not set(['timeseries', 'annual_cycle']).isdisjoint(self.plots)):
 
                 # calculate climatological tropopause pressure (tp_clim)
                 # but only if no tropopause is given by data
@@ -600,16 +604,19 @@ class CH4Lifetime(LifetimeBase):
                 #          - tp_i and model_level_number
                 #          - ptp and (derived) air_pressure
                 #          - tp_clim and (derived) air_pressure
-                use_z_coord = 'air_pressure'
                 if z_coord.name() == 'air_pressure':
                     tropopause = variables.get('ptp', tropopause)
                 elif (z_coord.name()
                       == 'atmosphere_hybrid_sigma_pressure_coordinate'):
                     if 'tp_i' in variables:
                         tropopause = variables['tp_i']
-                        use_z_coord = 'model_level_number'
                     else:
                         tropopause = variables.get('ptp', tropopause)
+                        # fall back to air_pressure
+                        use_z_coord = 'air_pressure'
+
+                input_data_dataset[dataset]['tropopause'] = tropopause
+
 
             weight = self._define_weight(variables)
 
@@ -620,7 +627,6 @@ class CH4Lifetime(LifetimeBase):
 
             input_data_dataset[dataset]['z_coord'] = z_coord
             input_data_dataset[dataset]['use_z_coord'] = use_z_coord
-            input_data_dataset[dataset]['tropopause'] = tropopause
             input_data_dataset[dataset]['variables'] = variables
             input_data_dataset[dataset]['reaction'] = reaction
             input_data_dataset[dataset]['weight'] = weight
@@ -1030,8 +1036,8 @@ class CH4Lifetime(LifetimeBase):
                     slice_dataset['tropopause'] = tp_slice
 
                     cube_slice = calculate_lifetime(slice_dataset,
-                                                          plot_type,
-                                                          region)
+                                                    plot_type,
+                                                    region)
                     # make it real to reduce memory demand later
                     cube_slice.data
                     cube_slices.append(cube_slice)
@@ -1164,7 +1170,7 @@ class CH4Lifetime(LifetimeBase):
             list(base_datasets.values()))
         axes.set_title(f'{self.info["long_name"]} in region {region}')
         axes.set_xlabel('Month')
-        axes.set_ylabel(f"$\tau$({self._get_name('reactant').upper()})"
+        axes.set_ylabel(f"{chr(964)}({self._get_name('reactant').upper()})"
                         " [{self.info['units']}]")
         axes.set_xticks(range(1, 13), [str(m) for m in range(1, 13)])
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
@@ -1329,8 +1335,8 @@ class CH4Lifetime(LifetimeBase):
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(
             list(base_datasets.values()))
-        axes.set_title(f'{self.info["long_name"]} in region {region}')
-        axes.set_xlabel(f"$\tau$({self._get_name('reactant').upper()})"
+        axes.set_title(f'{self.info["long_name"]}')
+        axes.set_xlabel(f"{chr(964)}({self._get_name('reactant').upper()})"
                         f" [{self.info['units']}]")
         z_coord = cube.coord(axis='Z')
         axes.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
