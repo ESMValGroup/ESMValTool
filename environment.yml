@@ -134,4 +134,4 @@ dependencies:
   - r-styler ==1.10.3
 
   # Julia (dependencies installed by separate script)
-  - julia
+  - julia >=1.10.4
