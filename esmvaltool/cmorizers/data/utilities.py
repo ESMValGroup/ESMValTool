@@ -554,7 +554,7 @@ def unpack_files_in_folder(folder):
                 continue
             if filename.startswith('.'):
                 continue
-            if not filename.endswith(('.gz', '.tgz', '.tar')):
+            if not filename.endswith(('.gz', '.tgz', '.tar', '.zip')):
                 continue
             logger.info('Unpacking %s', filename)
             shutil.unpack_archive(full_path, folder)

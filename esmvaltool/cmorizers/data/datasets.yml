@@ -110,6 +110,15 @@ datasets:
       6) Follow download instructions in email from EarthData and put all
          files in the same directory
 
+  CAMS:
+    tier: 2
+    source: https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-greenhouse-gas-inversion?tab=form
+    last_access: 2024-09-09
+    info: |
+      You will need to make an account with the CDS data store to download the data.
+      Then, select carbon dioxide, surface flux, surface air sample, monthly mean,
+      as well as the version and years you require to download.
+
   CDS-SATELLITE-ALBEDO:
     tier: 3
     source: https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-albedo?tab=form
