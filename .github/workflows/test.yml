@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - commentout_netcdf_julia_projecttoml
   schedule:
     - cron: '0 0 * * *'
 
