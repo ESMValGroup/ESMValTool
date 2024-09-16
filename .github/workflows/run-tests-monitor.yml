@@ -48,8 +48,8 @@ jobs:
         run: pip install pytest-monitor
       - name: Install ESMValTool
         run: pip install -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
-      - name: Install Julia dependencies
-        run: esmvaltool install Julia
+      # - name: Install Julia dependencies
+      #   run: esmvaltool install Julia
       - name: Run tests
         run: >
           pytest -n 2 -m "not installation" --db ../.pymon 2>&1
