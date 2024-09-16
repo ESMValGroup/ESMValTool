@@ -65,8 +65,7 @@ SCRIPTS = [
                  # marks=pytest.mark.skipif(
                  #     sys.platform == 'darwin',
                  #     reason="ESMValTool Julia not supported on OSX"))
-                 marks=pytest.mark.skip(
-                     reason="Julia is currently broken.")
+                 marks=pytest.mark.skip(reason="Julia is currently broken."))
 ]
 
 
