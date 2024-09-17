@@ -63,7 +63,8 @@ preprocessors:
 datasets_pr: &datasets_pr
   - {dataset: ACCESS-ESM1-5, ensemble: "r(1:15)i1p1f1", mip: day, grid: gn} 
   - {dataset: ACCESS-ESM1-5, ensemble: "r(21:25)i1p1f1", mip: day, grid: gn}
-  - {dataset: ACCESS-ESM1-5, ensemble: "r(27:40)i1p1f1", mip: day, grid: gn}
+  - {dataset: ACCESS-ESM1-5, ensemble: "r(27:37)i1p1f1", mip: day, grid: gn} # 38 ssp  late bad
+  - {dataset: ACCESS-ESM1-5, ensemble: "r(39:40)i1p1f1", mip: day, grid: gn} # 38 ssp  late bad
   - {dataset: ACCESS-CM2, ensemble: "r(1:5)i1p1f1", mip: day, grid: gn} 
   - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, mip: day, grid: gn}
   - {dataset: CanESM5, ensemble: "r(1:25)i1p1f1", mip: day, grid: gn} 
@@ -112,7 +113,7 @@ diagnostics:
         start_year: 1950
         end_year: 2021
         mip: day
-        preprocessor: preproc_era_ano 
+        preprocessor: preproc_era_abs
         additional_datasets: *dataset_era         
     scripts:
       absolute:

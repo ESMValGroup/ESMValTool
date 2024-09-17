@@ -34,18 +34,6 @@ preprocessors:
       operator: mean
       period: full
 
-  preproc_era_ano: 
-    <<: *prep_wxx
-    anomalies:
-      period: full
-      reference:
-        start_year: 1950
-        start_month: 1
-        start_day: 1
-        end_year: 1979
-        end_month: 12
-        end_day: 31
-
   preproc_era_gsat:
     custom_order: True  
     area_statistics:
@@ -75,7 +63,7 @@ datasets_highresmip: &datasets_highresmip
   - {dataset: MPI-ESM1-2-XR, ensemble: r1i1p1f1, grid: gn} #  res 0.56 
 
 dataset_era: &dataset_era
-  - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+  - {dataset: ERA5, type: reanaly, version: v1, tier: 3}
 
 diagnostics:
   observations:
@@ -85,14 +73,16 @@ diagnostics:
                  in Malinina&Gillet (2024). 
     variables:     
       obs_data:
-        short_name: sfcWindmax
+        short_name: sfcWind
         start_year: 1940
         end_year: 2022
-        mip: day
-        preprocessor: preproc_era_ano 
+        project: OBS6
+        mip: E1hr
+        preprocessor: preproc_wxx 
         additional_datasets: *dataset_era    
       obs_covariate:
         short_name: tas
+        project: OBS6
         start_year: 1940
         end_year: 2022
         mip: Amon
@@ -154,7 +144,7 @@ diagnostics:
         additional_datasets: *datasets_highresmip
       anomaly:
         short_name: sfcWindmax
-        exp: historical
+        exp: highresSST-present
         start_year: 1950
         end_year: 1969
         project: CMIP6
@@ -164,12 +154,12 @@ diagnostics:
     scripts:
       models_unwght:
         script: eccc_extremes/model_analysis_event_attribution.py
-        ancestors: [observations/observations, factual, ssp245, nat, anomaly]
+        ancestors: [observations/observations, factual, nat, anomaly]
         obs_ref_dataset: ERA5 # the dataset name that will be used for event definition, mandatory parameter
         CI_quantiles: [5, 95] # percentiles for the confidence interval, mandatory parameter
         mpl_style: malinina24 # optional parameter, defines plot style
         color_style: malinina24 # optional but hightly recommended, otherwise all lines black
-        obs_gev: stationary # which GEV stats from observations to use options: stationary (default), nonstationary
+        obs_gev: non_stationary # which GEV stats from observations to use options: stationary (default), nonstationary
         individual_models: False # do the output for sigle models (true) or multi-model ensemble (false, default)
         anomaly_type: anomaly # options: anomaly (default) and ratio
         yblock: 1 # (optional) determines how many years in block should be pooled in boostrap
@@ -183,12 +173,12 @@ diagnostics:
         bootstrap_seed: 501 # seed to start sequence for bootstrap (optional)
       models_wght:
         script: eccc_extremes/model_analysis_event_attribution.py
-        ancestors: [observations/observations, factual, ssp245, nat, anomaly]
+        ancestors: [observations/observations, factual, nat, anomaly]
         obs_ref_dataset: ERA5 # the dataset name that will be used for event definition, mandatory parameter
         CI_quantiles: [5, 95] # percentiles for the confidence interval, mandatory parameter
         mpl_style: malinina24 # optional parameter, defines plot style
         color_style: malinina24 # optional but hightly recommended, otherwise all lines black
-        obs_gev: stationary # which GEV stats from observations to use options: stationary (default), nonstationary
+        obs_gev: non_stationary # which GEV stats from observations to use options: stationary (default), nonstationary
         individual_models: False # do the output for sigle models (true) or multi-model ensemble (false, default)
         anomaly_type: anomaly # options: anomaly (default) and ratio
         yblock: 1 # (optional) determines how many years in block should be pooled in boostrap
