@@ -11,23 +11,24 @@ channels:
 dependencies:
   - aiohttp
   - cartopy
-  - cdo >=1.9.7
+  - cdo >=2.3.0
   - cdsapi
   - cf-units
   - cftime
   - cmocean
   - cython
-  - dask
+  - dask !=2024.8.0  # https://github.com/dask/dask/issues/11296
   - distributed
   - ecmwf-api-client
   - eofs
-  - esmpy
-  - esmvalcore 2.10.*
+  - esmpy >=8.6.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
+  - esmvalcore 2.11.*
   - fiona
   - fire
+  - fsspec
   - gdal
   - iris >=3.6.1
-  - iris-esmf-regrid >=0.7.0
+  - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - jinja2
   - joblib
   - lime
@@ -40,7 +41,7 @@ dependencies:
   - numpy !=1.24.3  # severe masking bug
   - openpyxl
   - packaging
-  - pandas
+  - pandas !=2.2.0,!=2.2.1,!=2.2.2 # github.com/ESMValGroup/ESMValCore/pull/2305
   - pip !=21.3
   - progressbar2
   - prov
@@ -48,8 +49,9 @@ dependencies:
   - psy-maps
   - psy-reg
   - psy-simple
-  - pyproj>=2.1
-  - python >=3.9
+  - pyproj >=2.1
+  - pys2index  # only from conda-forge
+  - python >=3.10
   - python-cdo
   - python-dateutil
   - pyyaml
@@ -67,8 +69,8 @@ dependencies:
   - xgboost >1.6.1  # github.com/ESMValGroup/ESMValTool/issues/2779
   - xlsxwriter
   - zarr
-  # Python packages needed for testing
-  - flake8
+  # Python packages needed for unit testing
+  - flake8 ==5.0.4
   - pytest >=3.9,!=6.0.0rc1,!=6.0.0
   - pytest-cov
   - pytest-env
@@ -82,12 +84,13 @@ dependencies:
   - sphinx >=6.1.3
   - pydata-sphinx-theme
   # Python packages needed for development
-  - codespell
-  - docformatter
-  - isort
+  - codespell ==2.3.0
+  - docformatter ==1.7.5
+  - imagehash
+  - isort ==5.13.2
   - pre-commit
   - prospector
   - pyroma
   # - vprof not on conda-forge
-  - yamllint
-  - yapf
+  - yamllint ==1.35.1
+  - yapf ==0.32.0

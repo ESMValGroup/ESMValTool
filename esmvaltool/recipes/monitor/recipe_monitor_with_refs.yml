@@ -225,7 +225,7 @@ diagnostics:
       ta:
         preprocessor: global_mean_extract_levels
         mip: Amon
-        timerange: '2000/2004'
+        timerange: '2000/2005'
     scripts:
       plot:
         <<: *plot_multi_dataset_default
@@ -238,6 +238,8 @@ diagnostics:
             log_y: false
             pyplot_kwargs:
               ylim: [0, 20000]
+              xticks:
+                rotation: 25
 
   plot_time_vs_lat_with_references:
     description: Plot Hovmoeller time vs. latitude including reference datasets.
@@ -245,7 +247,7 @@ diagnostics:
       tas:
         mip: Amon
         preprocessor: zonal_mean_2d
-        timerange: '2000/2004'
+        timerange: '2000/2005'
     scripts:
       plot:
         <<: *plot_multi_dataset_default
