@@ -61,54 +61,54 @@ generate_gallery.main()
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.autodoc",
-    "sphinx.ext.doctest",
-    "sphinx.ext.extlinks",
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.todo",
-    "sphinx.ext.coverage",
-    "sphinx.ext.mathjax",
-    "sphinx.ext.ifconfig",
-    "sphinx.ext.viewcode",
-    "sphinx.ext.napoleon",
-    "autodocsumm",
+    'sphinx.ext.autodoc',
+    'sphinx.ext.doctest',
+    'sphinx.ext.extlinks',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
+    'sphinx.ext.coverage',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.ifconfig',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.napoleon',
+    'autodocsumm',
 ]
 
 autodoc_default_options = {
-    "members": True,
-    "undoc-members": True,
-    "inherited-members": True,
-    "show-inheritance": True,
-    "autosummary": True,
+    'members': True,
+    'undoc-members': True,
+    'inherited-members': True,
+    'show-inheritance': True,
+    'autosummary': True,
 }
 
 # See https://github.com/sphinx-doc/sphinx/issues/12589
 suppress_warnings = [
-    "autosummary.import_cycle",
+    'autosummary.import_cycle',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates"]
+templates_path = ['_templates']
 
 # The suffix of source filenames.
-source_suffix = ".rst"
+source_suffix = '.rst'
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-master_doc = "index"
+master_doc = 'index'
 
 # General information about the project.
-project = "ESMValTool"
-copyright = "{0}, ESMValTool Development Team".format(datetime.now().year)
+project = u'ESMValTool'
+copyright = u'{0}, ESMValTool Development Team'.format(datetime.now().year)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = ".".join(__version__.split(".")[0:1])
+version = '.'.join(__version__.split('.')[0:1])
 # The full version, including alpha/beta/rc tags.
 release = __version__
 
@@ -142,7 +142,7 @@ exclude_patterns = []
 # show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "sphinx"
+pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
@@ -154,7 +154,7 @@ pygments_style = "sphinx"
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "pydata_sphinx_theme"
+html_theme = 'pydata_sphinx_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -168,13 +168,7 @@ html_theme = "pydata_sphinx_theme"
 # `conf.py` file.Be aware that `navigation_with_keys = True` has negative
 # accessibility implications:
 # https://github.com/pydata/pydata-sphinx-theme/issues/1492"
-html_theme_options = {
-    "navigation_with_keys": False,
-    "logo": {
-        "image_light": "figures/ESMValTool-logo-2.png",
-        "image_dark": "figures/ESMValTool-logo-2-dark.png",
-    },
-}
+html_theme_options = {"navigation_with_keys": False}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
@@ -188,7 +182,7 @@ html_short_title = "ESMValTool {0}".format(release)
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "figures/ESMValTool-logo-2.png"
+html_logo = 'figures/ESMValTool-logo-2.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -198,7 +192,7 @@ html_logo = "figures/ESMValTool-logo-2.png"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["figures/ESMValTool-logo-2-dark.png"]
+html_static_path = []
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
@@ -247,17 +241,20 @@ html_static_path = ["figures/ESMValTool-logo-2-dark.png"]
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "ESMValTooldoc"
+htmlhelp_basename = 'ESMValTooldoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     # 'papersize': 'letterpaper',
+
     # The font size ('10pt', '11pt' or '12pt').
     # 'pointsize': '10pt',
+
     # Additional stuff for the LaTeX preamble.
-    "preamble": r"""
+    'preamble':
+    r'''
    \makeatletter
    \renewcommand{\maketitle}{
      \newcommand{\MONTH}{%
@@ -290,7 +287,7 @@ latex_elements = {
      \end{titlepage}
      \clearpage
    }
-   \makeatother"""
+   \makeatother'''
 }
 
 # latex_additional_files = []
@@ -299,13 +296,9 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (
-        "index",
-        "ESMValTool_Users_Guide.tex",
-        "ESMValTool User's and Developer's Guide",
-        "ESMValTool Development Team",
-        "manual",
-    ),
+    ('index', 'ESMValTool_Users_Guide.tex',
+     u'ESMValTool User\'s and Developer\'s Guide',
+     u'ESMValTool Development Team', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -336,7 +329,7 @@ latex_toplevel_sectioning = "part"
 # man_pages = [
 #    ('index', 'esmvaltool', u'ESMValTool Documentation',
 #     [u'Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'], 1)
-# ]
+#]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
@@ -346,11 +339,11 @@ latex_toplevel_sectioning = "part"
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
-# texinfo_documents = [
+#texinfo_documents = [
 ##  ('index', 'ESMValTool', u'ESMValTool Documentation',
 #   u'Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.', 'ESMValTool', 'One line #description of project.',
 #   'Miscellaneous'),
-# ]
+#]
 
 # Documents to append as an appendix to all manuals.
 # texinfo_appendices = []
@@ -367,10 +360,10 @@ latex_toplevel_sectioning = "part"
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = "ESMValTool"
-epub_author = "ESMValTool Development Team"
-epub_publisher = "ESMValTool Development Team"
-epub_copyright = "ESMValTool Development Team"
+epub_title = u'ESMValTool'
+epub_author = u'ESMValTool Development Team'
+epub_publisher = u'ESMValTool Development Team'
+epub_copyright = u'ESMValTool Development Team'
 
 # The basename for the epub file. It defaults to the project name.
 # epub_basename = u'ESMValTool'
@@ -410,7 +403,7 @@ epub_copyright = "ESMValTool Development Team"
 # epub_post_files = []
 
 # A list of files that should not be packed into the epub file.
-epub_exclude_files = ["search.html"]
+epub_exclude_files = ['search.html']
 
 # The depth of the table of contents in toc.ncx.
 # epub_tocdepth = 3
@@ -437,22 +430,21 @@ numfig = True
 
 # Configuration for intersphinx
 intersphinx_mapping = {
-    "cartopy": ("https://scitools.org.uk/cartopy/docs/latest/", None),
-    "cf_units": ("https://cf-units.readthedocs.io/en/latest/", None),
-    "esmvalcore": (
-        f"https://docs.esmvaltool.org/projects/esmvalcore/en/{rtd_version}/",
-        None,
-    ),
-    "esmvaltool": (f"https://docs.esmvaltool.org/en/{rtd_version}/", None),
-    "iris": ("https://scitools-iris.readthedocs.io/en/latest/", None),
-    "lime": ("https://lime-ml.readthedocs.io/en/latest/", None),
-    "matplotlib": ("https://matplotlib.org/stable/", None),
-    "numpy": ("https://numpy.org/doc/stable/", None),
-    "pandas": ("https://pandas.pydata.org/pandas-docs/dev", None),
-    "python": ("https://docs.python.org/3/", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
-    "seaborn": ("https://seaborn.pydata.org/", None),
-    "sklearn": ("https://scikit-learn.org/stable", None),
+    'cartopy': ('https://scitools.org.uk/cartopy/docs/latest/', None),
+    'cf_units': ('https://cf-units.readthedocs.io/en/latest/', None),
+    'esmvalcore':
+    (f'https://docs.esmvaltool.org/projects/esmvalcore/en/{rtd_version}/',
+     None),
+    'esmvaltool': (f'https://docs.esmvaltool.org/en/{rtd_version}/', None),
+    'iris': ('https://scitools-iris.readthedocs.io/en/latest/', None),
+    'lime': ('https://lime-ml.readthedocs.io/en/latest/', None),
+    'matplotlib': ('https://matplotlib.org/stable/', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
+    'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
+    'python': ('https://docs.python.org/3/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/', None),
+    'seaborn': ('https://seaborn.pydata.org/', None),
+    'sklearn': ('https://scikit-learn.org/stable', None),
 }
 
 # -- Extlinks extension -------------------------------------------------------
