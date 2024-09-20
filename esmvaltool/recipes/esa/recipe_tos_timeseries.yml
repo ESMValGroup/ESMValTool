@@ -86,52 +86,242 @@ preprocessors:
 #        end_month: 12
 #        end_day: 31
 
+  pp_ts_min:
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: day
+      operator: min
+
+  pp_ts_max:
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: max
+      period: day
+
+  pp_ts_mean:
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: mean
+      period: day
+
 
 diagnostics:
 
-  timeseries:
-    description: Plot time series of global mean value.
-    variables:
-#      tos_daily:
-#        timerange: '1981/2021'
+#  timeseries:
+#    description: Plot time series of global mean value.
+#    variables:
+##      tos_daily:
+##        timerange: '1981/2021'
+##        preprocessor: pp_tos
+##        mip: Oday
+##        exp: historical
+##        ensemble: r1i1p1f1
+##        grid: gr
+##        project: CMIP6
+##        short_name: tos
+#      tos_monthly:
+#        timerange: '1980/2021'
 #        preprocessor: pp_tos
-#        mip: Oday
+#        mip: Omon
 #        exp: historical
 #        ensemble: r1i1p1f1
 #        grid: gr
 #        project: CMIP6
 #        short_name: tos
-      tos_monthly:
+#    additional_datasets:
+#      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3}
+#    scripts:
+#      allplots:
+#        script: monitor/multi_datasets.py
+#        plot_folder: '{plot_dir}'
+#        group_variables_by: variable_group
+#        plots:
+#          timeseries:
+#            annual_mean_kwargs: false
+##              linestyle: '--'
+##              color: black
+#            plot_kwargs:
+#              ESACCI-SST:
+#                color: green
+#                label: '{dataset}'
+#                linestyle: '-'
+#                linewidth: 1
+#                zorder: 2
+#              default:
+#                color: lightgray
+#                label: null
+#                linestyle: '-'
+#                linewidth: 1
+#                zorder: 1
+
+  timeseries2:
+    description: Plot time series of global mean value.
+    variables:
+#      tos_min:
+#        timerange: '1980/2021'
+#        preprocessor: pp_ts_min
+#        mip: Oday
+#        short_name: tos
+#      tos_max:
+#        timerange: '1980/2021'
+#        preprocessor: pp_ts_max
+#        mip: Oday
+#        short_name: tos
+      tos_mean:
         timerange: '1980/2021'
-        preprocessor: pp_tos
-        mip: Omon
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        project: CMIP6
+        preprocessor: pp_ts_mean
+        mip: Oday
         short_name: tos
+        ensemble: x
+        exp: y 
     additional_datasets:
-      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1980/1980', alias: '1980'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1981/1981', alias: '1981'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1982/1982', alias: '1982'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1983/1983', alias: '1983'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1984/1984', alias: '1984'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1985/1985', alias: '1985'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1986/1986', alias: '1986'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1987/1987', alias: '1987'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1988/1988', alias: '1988'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1989/1989', alias: '1989'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1990/1990', alias: '1990'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1991/1991', alias: '1991'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1992/1992', alias: '1992'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1993/1993', alias: '1993'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1994/1994', alias: '1994'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1995/1995', alias: '1995'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1996/1996', alias: '1996'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1997/1997', alias: '1997'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1998/1998', alias: '1998'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '1999/1999', alias: '1999'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2000/2000', alias: '2000'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2001/2001', alias: '2001'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2002/2002', alias: '2002'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2003/2003', alias: '2003'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2004/2004', alias: '2004'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2005/2005', alias: '2005'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2006/2006', alias: '2006'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2007/2007', alias: '2007'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2008/2008', alias: '2008'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2009/2009', alias: '2009'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2010/2010', alias: '2010'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2011/2011', alias: '2011'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2012/2012', alias: '2012'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2013/2013', alias: '2013'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2014/2014', alias: '2014'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2015/2015', alias: '2015'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2016/2016', alias: '2016'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2017/2017', alias: '2017'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2018/2018', alias: '2018'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2019/2019', alias: '2019'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2020/2020', alias: '2020'}
+      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3, timerange: '2021/2021', alias: '2021'}
+#      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
     scripts:
       allplots:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
-        group_variables_by: variable_group
+###        group_variables_by: variable_group
+        facet_used_for_labels: alias
         plots:
           timeseries:
-            annual_mean_kwargs: false
-#              linestyle: '--'
-#              color: black
+            legend_kwargs:
+              ncols: 3
+              fontsize: 'x-small'
+            annual_mean_kwargs: False
+            pyplot_kwargs:
+              xlabel: 'day of year'
+#              xlim: [1, 365]
             plot_kwargs:
-              ESACCI-SST:
-                color: green
-                label: '{dataset}'
-                linestyle: '-'
-                linewidth: 1
-                zorder: 2
               default:
-                color: lightgray
-                label: null
-                linestyle: '-'
                 linewidth: 1
-                zorder: 1
+                linestyle: '-'
+                label: '{alias}'
+              '1980':
+                color: '#0015ff'
+              '1981':
+                color: '#0827ff'
+              '1982':
+                color: '#0f39ff'
+              '1983':
+                color: '#174bff'
+              '1984':
+                color: '#1f5dff'
+              '1985':
+                color: '#266fff'
+              '1986':
+                color: '#2e81ff'
+              '1987':
+                color: '#3693ff'
+              '1988':
+                color: '#3ea5ff'
+              '1989':
+                color: '#45b7ff'
+              '1990':
+                color: '#4dc9ff'
+              '1991':
+                color: '#55dbff'
+              '1992':
+                color: '#5cedff'
+              '1993':
+                color: '#64ffff'
+              '1994':
+                color: '#6ffded'
+              '1995':
+                color: '#7afbdb'
+              '1996':
+                color: '#85fac8'
+              '1997':
+                color: '#90f8b6'
+              '1998':
+                color: '#9bf6a4'
+              '1999':
+                color: '#a6f492'
+              '2000':
+                color: '#b2f380'
+              '2001':
+                color: '#bdf16d'
+              '2002':
+                color: '#c8ef5b'
+              '2003':
+                color: '#d3ed49'
+              '2004':
+                color: '#deeb37'
+              '2005':
+                color: '#e9ea24'
+              '2006':
+                color: '#f4e812'
+              '2007':
+                color: '#ffe600'
+              '2008':
+                color: '#fed600'
+              '2009':
+                color: '#fec500'
+              '2010':
+                color: '#fdb500'
+              '2011':
+                color: '#fca400'
+              '2012':
+                color: '#fb9400'
+              '2013':
+                color: '#fb8300'
+              '2014':
+                color: '#fa7300'
+              '2015':
+                color: '#f96300'
+              '2016':
+                color: '#f95200'
+              '2017':
+                color: '#f84200'
+              '2018':
+                color: '#f73100'
+              '2019':
+                color: '#f62100'
+              '2020':
+                color: '#f61000'
+              '2021':
+                color: '#f50000'

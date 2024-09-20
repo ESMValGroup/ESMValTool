@@ -183,52 +183,52 @@ diagnostics:
 #                linewidth: 1
 #                zorder: 1
 
-  timeseries3:
-    description: Plot time series of global mean value.
-    variables:
-#      clt_daily:
-#        timerange: '2000/2007'
+#  timeseries3:
+#    description: Plot time series of global mean value.
+#    variables:
+##      clt_daily:
+##        timerange: '2000/2007'
+##        preprocessor: pp_clt
+##        mip: day
+##        exp: historical
+##        ensemble: r1i1p1f1
+##        grid: gr
+##        project: CMIP6
+##        short_name: clt
+##        additional_datasets:
+##          - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2}
+#      clt_monthly:
+#        timerange: '1982/2016'
 #        preprocessor: pp_clt
-#        mip: day
+#        mip: Amon
 #        exp: historical
 #        ensemble: r1i1p1f1
 #        grid: gr
 #        project: CMIP6
 #        short_name: clt
 #        additional_datasets:
-#          - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2}
-      clt_monthly:
-        timerange: '1982/2016'
-        preprocessor: pp_clt
-        mip: Amon
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        project: CMIP6
-        short_name: clt
-        additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
-    scripts:
-      allplots:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        group_variables_by: variable_group
-        plots:
-          timeseries:
-            annual_mean_kwargs: False
-            plot_kwargs:
-              ESACCI-CLOUD:
-                color: blue
-                label: '{dataset}'
-                linestyle: '-'
-                linewidth: 2
-                zorder: 2
-              default:
-                color: lightgray
-                label: null
-                linestyle: '-'
-                linewidth: 1
-                zorder: 1
+#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+#    scripts:
+#      allplots:
+#        script: monitor/multi_datasets.py
+#        plot_folder: '{plot_dir}'
+#        group_variables_by: variable_group
+#        plots:
+#          timeseries:
+#            annual_mean_kwargs: False
+#            plot_kwargs:
+#              ESACCI-CLOUD:
+#                color: blue
+#                label: '{dataset}'
+#                linestyle: '-'
+#                linewidth: 2
+#                zorder: 2
+#              default:
+#                color: lightgray
+#                label: null
+#                linestyle: '-'
+#                linewidth: 1
+#                zorder: 1
 
 #  timeseries4:
 #    description: Plot time series of global mean value.
@@ -369,3 +369,46 @@ diagnostics:
 ##          rc:
 ##            axes.titlepad: 15.0
 ##        suptitle: Simulated Temperature (1991-2014)
+
+  timeseries7:
+    description: Plot time series of global mean value.
+    variables:
+      prw:
+        start_year: 2003
+        end_year: 2017
+        preprocessor: pp_clt
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        project: CMIP6
+        additional_datasets:
+#          - {dataset: ESACCI-WATERVAPOUR, project: OBS6, mip: Amon, tier: 3, type: sat, version: CDR2-L3-COMBI-05deg-fv3.1}
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, start_year: 1980, end_year: 2021}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: variable_group
+        plots:
+          timeseries:
+            annual_mean_kwargs: False
+            plot_kwargs:
+              ESACCI-WATERVAPOUR:
+                color: blue
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 2
+              ERA5:
+                color: red
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 2
+              default:
+                color: lightgray
+                label: null
+                linestyle: '-'
+                linewidth: 1
+                zorder: 1
