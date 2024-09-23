@@ -191,6 +191,10 @@ def compute_diff_temp(input_data, group, dataset, plot_type):
                                     short_name='ta',
                                     dataset=dataset_name,
                                     variable_group='ta_'+group[1])
+    else:
+        raise ValueError(
+            f"The plot_type '{var}' is not implemented.")
+
     if not ta_data_1:
         raise ValueError(
             f"No temperature data for '{dataset_name}' "
