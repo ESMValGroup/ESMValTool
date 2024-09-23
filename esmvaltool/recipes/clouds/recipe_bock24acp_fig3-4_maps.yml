@@ -145,40 +145,40 @@ diagnostics:
         plot_each_model: false
         reference: false
 
-  lwp_lat_lon:
-    <<: *lat_lon_diag
-    variables:
-      ECS_high:
-        <<: *var_clt
-        short_name: lwp
-        derive: true
-        additional_datasets: *datasets_ecs_high
-      ECS_med:
-        <<: *var_clt
-        short_name: lwp
-        derive: true
-        additional_datasets: *datasets_ecs_med
-      ECS_low:
-        <<: *var_clt
-        short_name: lwp
-        derive: true
-        additional_datasets: *datasets_ecs_low
+        #  lwp_lat_lon:
+        #    <<: *lat_lon_diag
+        #    variables:
+        #      ECS_high:
+        #        <<: *var_clt
+        #        short_name: lwp
+        #        derive: true
+        #        additional_datasets: *datasets_ecs_high
+        #      ECS_med:
+        #        <<: *var_clt
+        #        short_name: lwp
+        #        derive: true
+        #        additional_datasets: *datasets_ecs_med
+        #      ECS_low:
+        #        <<: *var_clt
+        #        short_name: lwp
+        #        derive: true
+        #        additional_datasets: *datasets_ecs_low
 
-  iwp_lat_lon:
-    <<: *lat_lon_diag
-    variables:
-      ECS_high:
-        <<: *var_clt
-        short_name: clivi
-        additional_datasets: *datasets_ecs_high
-      ECS_med:
-        <<: *var_clt
-        short_name: clivi
-        additional_datasets: *datasets_ecs_med
-      ECS_low:
-        <<: *var_clt
-        short_name: clivi
-        additional_datasets: *datasets_ecs_low
+        #  iwp_lat_lon:
+        #    <<: *lat_lon_diag
+        #    variables:
+        #      ECS_high:
+        #        <<: *var_clt
+        #        short_name: clivi
+        #        additional_datasets: *datasets_ecs_high
+        #      ECS_med:
+        #        <<: *var_clt
+        #        short_name: clivi
+        #        additional_datasets: *datasets_ecs_med
+        #      ECS_low:
+        #        <<: *var_clt
+        #        short_name: clivi
+        #        additional_datasets: *datasets_ecs_low
 
   netcre_lat_lon: &lat_lon_cre
     description: comparison of geographical maps
