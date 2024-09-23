@@ -434,6 +434,7 @@ def main(cfg):
     """Run diagnostic."""
     cfg = deepcopy(cfg)
     cfg.setdefault('plot_each_model', False)
+    cfg.setdefault('plot_bias', False)
 
     input_data = list(cfg['input_data'].values())
 
@@ -467,28 +468,30 @@ def main(cfg):
         cubes_diff = iris.cube.CubeList()
         attributes['short_name'] = attributes['short_name'] + "_diff"
 
-        for cube in cubes_out:
-            if (
-                cube.attributes['variable_group'] != 'OBS'
-                or cube.attributes['dataset'] != 'MultiModelMean'
-            ):
-                logger.info("Processing %s of group %s",
-                            cube.attributes['dataset'],
-                            cube.attributes['variable_group'])
-                bias = calculate_bias(cube, cube_obs)
-                rmsd = calculate_rmsd(cube, cube_obs)
-                corr = calculate_corr(cube, cube_obs)
-                cube_diff = cube - cube_obs
-                cube_diff.attributes = cube.attributes
-                cube_diff.var_name = cube.var_name
-                cube_diff.attributes['short_name'] = attributes['short_name']
-                cubes_diff.append(cube_diff)
-                logger.info('%s : bias = %f, rmsd = %f, corr = %f',
-                            cube.attributes['variable_group'],
-                            bias.data, rmsd.data, corr.data)
+        if cfg['plot_bias']:
+            for cube in cubes_out:
+                if (
+                    cube.attributes['variable_group'] != 'OBS'
+                    or cube.attributes['dataset'] != 'MultiModelMean'
+                ):
+                    logger.info("Processing %s of group %s",
+                                cube.attributes['dataset'],
+                                cube.attributes['variable_group'])
+                    bias = calculate_bias(cube, cube_obs)
+                    rmsd = calculate_rmsd(cube, cube_obs)
+                    corr = calculate_corr(cube, cube_obs)
+                    cube_diff = cube - cube_obs
+                    cube_diff.attributes = cube.attributes
+                    cube_diff.var_name = cube.var_name
+                    cube_diff.attributes['short_name'] = attributes[
+                                                          'short_name']
+                    cubes_diff.append(cube_diff)
+                    logger.info('%s : bias = %f, rmsd = %f, corr = %f',
+                                cube.attributes['variable_group'],
+                                bias.data, rmsd.data, corr.data)
 
-        # Plotting biases
-        plot_diagnostic(cubes_diff, attributes, cfg)
+            # Plotting biases
+            plot_diagnostic(cubes_diff, attributes, cfg)
 
 
 if __name__ == '__main__':

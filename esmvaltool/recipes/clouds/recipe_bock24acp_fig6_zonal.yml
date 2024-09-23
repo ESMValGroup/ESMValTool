@@ -185,6 +185,7 @@ preprocessors:
 
 diagnostics:
 
+  # Figure 6a
   clt_zonal: &zonal_diag
     description: comparison of zonal mean
     variables:
@@ -250,6 +251,7 @@ diagnostics:
         filename_attach: 'ssp585'
 
 
+  # Figure 6b
   lwp_zonal:
     <<: *zonal_diag
     variables:
@@ -311,6 +313,7 @@ diagnostics:
         additional_datasets: *datasets_ecs_low_scenario
 
 
+  # Figure 6c
   iwp_zonal:
     <<: *zonal_diag
     variables:
@@ -366,6 +369,7 @@ diagnostics:
         additional_datasets: *datasets_ecs_low_scenario
 
 
+  # Figure 6d
   netcre_zonal:
     <<: *zonal_diag
     variables:
@@ -435,6 +439,7 @@ diagnostics:
              tier: 2, start_year: 2001, end_year: 2022}
 
 
+  # Figure 6e
   swcre_zonal:
     <<: *zonal_diag
     variables:
@@ -504,6 +509,7 @@ diagnostics:
              tier: 2, start_year: 2001, end_year: 2022}
 
 
+  # Figure 6f
   lwcre_zonal:
     <<: *zonal_diag
     variables:
