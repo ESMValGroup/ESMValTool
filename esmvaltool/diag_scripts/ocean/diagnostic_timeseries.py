@@ -126,6 +126,7 @@ def moving_average(cube, window):
 
     """
     window = window.split()
+    if (len(window)==0) and ('_' in window): window = window.split('_') # KW edit for A4D
     window_len = int(window[0]) / 2.
     win_units = str(window[1])
 
