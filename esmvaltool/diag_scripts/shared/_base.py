@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 iris.FUTURE.save_split_attrs = True
 
 
-def get_plot_filename(basename, cfg):
+def get_plot_filename(basename, cfg, ext=None):
     """Get a valid path for saving a diagnostic plot.
 
     Parameters
@@ -34,11 +34,11 @@ def get_plot_filename(basename, cfg):
     str:
         A valid path for saving a diagnostic plot.
     """
-    return os.path.join(
-        cfg['plot_dir'],
-        f"{basename}.{cfg['output_file_type']}",
-    )
+    if not ext:
+        ext = cfg['output_file_type']
 
+    filename = os.path.join( cfg['plot_dir'], f"{basename}.{ext}")
+    return filename
 
 def get_diagnostic_filename(basename, cfg, extension='nc'):
     """Get a valid path for saving a diagnostic data file.
@@ -61,6 +61,12 @@ def get_diagnostic_filename(basename, cfg, extension='nc'):
         cfg['work_dir'],
         f"{basename}.{extension}",
     )
+
+def get_plotname( basename, ext, plot_dir, **extras ):
+    filename = Path(plot_dir) / f"{basename}.{ext}"
+    # filename = Path(plot_dir) / ext / f"{basename}.{ext}"
+    filename.parent.mkdir(exist_ok=True)
+    return filename
 
 
 def save_figure(basename, provenance, cfg, figure=None, close=True, **kwargs):
@@ -94,7 +100,8 @@ def save_figure(basename, provenance, cfg, figure=None, close=True, **kwargs):
         extensions = cfg['output_file_type']
 
     for ext in extensions:
-        filename = Path(cfg['plot_dir']) / ext / f"{basename}.{ext}"
+        filename = get_plot_filename( basename, ext=ext, cfg=cfg )
+        filename = Path(filename)
         filename.parent.mkdir(exist_ok=True)
         logger.info("Plotting analysis results to %s", filename)
         fig = plt if figure is None else figure
