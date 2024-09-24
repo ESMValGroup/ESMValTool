@@ -3,8 +3,9 @@ filename: seaice_conc_monthly_sh_{year}.*.nc
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: NSIDC-G02202-sh
+  # dataset_id: NSIDC-sh
   version: '4'
-  tier: 3
+  tier: 2
   modeling_realm: reanaly
   project_id: OBS6
   source: 'https://nsidc.org/data/g02202/versions/4'
@@ -14,7 +15,7 @@ attributes:
 variables:
   siconc:
     mip: SImon
-    raw: cdr_seaice_conc_monthly 
+    raw: seaice_conc_monthly 
     compress: true
 
 
