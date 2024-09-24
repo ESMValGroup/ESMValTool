@@ -1273,3 +1273,16 @@ datasets:
         silicate/netcdf/all/1.00/woa18_all_i00_01.nc
       (To get WOA13, replace filenames prefix woa18 with woa13 and source with
       https://www.ncei.noaa.gov/data/oceans/woa/WOA13/DATAv2)
+
+  WOA23:
+    tier: 2
+    source: https://data.nodc.noaa.gov/woa/WOA23/DATA/
+    last_access: 2023-09-11
+    info: |
+      Download the following files:
+        temperature/netcdf/decav81B0/1.00/woa23_decav81B0_t00_01.nc
+        salinity/netcdf/decav81B0/1.00/woa23_decav81B0_s00_01.nc
+        oxygen/netcdf/all/1.00/woa23_all_o00_01.nc
+        nitrate/netcdf/all/1.00/woa23_all_n00_01.nc
+        phosphate/netcdf/all/1.00/woa23_all_p00_01.nc
+        silicate/netcdf/all/1.00/woa23_all_i00_01.nc
