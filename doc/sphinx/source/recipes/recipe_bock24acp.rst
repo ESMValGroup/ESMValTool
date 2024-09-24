@@ -63,8 +63,7 @@ User settings in recipe
 
    *Required settings (scripts)*
 
-   exclude_datasets: list of datasets which are not used for the statistics,
-                     default is ['MultiModelMean', 'MultiModelP5', 'MultiModelP95']
+   exclude_datasets: list of datasets which are not used for the statistics, default is ['MultiModelMean', 'MultiModelP5', 'MultiModelP95']
    group_by: list of 'variable_group's to have the order
    plot_type: 'zonal' and 'height' plots are available 
 
