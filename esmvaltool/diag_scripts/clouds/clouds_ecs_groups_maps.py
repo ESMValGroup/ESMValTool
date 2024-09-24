@@ -255,7 +255,7 @@ def plot_diagnostic(cubes, attributes, cfg):
                                       'swcre_diff']:
         levels = list(np.arange(-30, 31, 2.5))
     else:
-        levels = list(np.linspace(min(cube), max(cube), 10))
+        levels = list(np.linspace(min(cubes), max(cubes), 10))
 
     for cube in cubes:
         logger.info("Plotting %s %s of group %s",
@@ -337,6 +337,8 @@ def plot_diagnostic(cubes, attributes, cfg):
     elif attributes['short_name'] in ['netcre_diff', 'lwcre_diff',
                                       'swcre_diff']:
         ticks = list(np.arange(-30, 31, 5))
+    else:
+        ticks = levels
 
     colorbar.set_ticks(ticks)
     colorbar.set_ticklabels([str(tick) for tick in ticks])
