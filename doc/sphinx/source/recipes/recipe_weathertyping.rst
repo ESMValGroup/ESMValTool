@@ -71,6 +71,7 @@ Observations and reformat scripts
 instructions.*
 
 * E-OBS: European Climate Assessment & Dataset gridded daily precipitation sum
+* ERA5: ECMWF reanalysis
 
 References
 ----------
