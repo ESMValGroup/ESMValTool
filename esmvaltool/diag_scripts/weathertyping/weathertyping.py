@@ -1,17 +1,8 @@
-from wt_utils import (get_cfg_vars, load_wt_preprocessors,
-                      wt_algorithm, get_ancestors_era5_eobs, calc_slwt_obs,
-                      run_predefined_slwt, combine_wt_to_file, load_wt_files,
-                      get_looping_dict, plot_means, get_model_output_filepath,
-                      calc_lwt_slwt_model, write_lwt_to_file, calc_lwt_model,
-                      plot_seasonal_occurrence
-                      )
-
 import iris
+from wt_utils import *
 
 # import internal esmvaltool modules here
-from esmvaltool.diag_scripts.shared import (
-    run_diagnostic,
-)
+from esmvaltool.diag_scripts.shared import run_diagnostic
 
 
 def run_automatic_slwt(cfg: dict):
@@ -109,6 +100,7 @@ def run_automatic_slwt(cfg: dict):
 def run_lwt(cfg: dict):
     preproc_variables_dict, _, _, \
         work_dir, plotting, _, _ = get_cfg_vars(cfg)
+    print(preproc_variables_dict)
     for dataset_name, dataset_vars in preproc_variables_dict.items():
         if dataset_name == 'ERA5':
             wt_preproc, wt_preproc_prcp, wt_preproc_prcp_eobs = \

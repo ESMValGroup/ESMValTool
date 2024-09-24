@@ -23,10 +23,7 @@ from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from matplotlib.colors import ListedColormap
 
 # import internal esmvaltool modules here
-from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger,
-    group_metadata
-)
+from esmvaltool.diag_scripts.shared import ProvenanceLogger, group_metadata
 
 iris.FUTURE.datum_support = True
 
@@ -49,12 +46,12 @@ def generate_grayscale_hex_values(x):
     grayscale_hex = [
         f'#{int(value * 255):02x}{int(value * 255):02x}{int(value * 255):02x}'
         for value in grayscale_values]
-    
+
     return grayscale_hex
 
 
 def plot_seasonal_occurrence(cfg: dict, wt_cubes: iris.cube.Cube,
-                             dataset_name: str, ensemble: str=""):
+                             dataset_name: str, ensemble: str = ""):
     """Plot relative monthly/seasonal occurrence of weathertypes.
 
     Args:
@@ -88,7 +85,7 @@ def plot_seasonal_occurrence(cfg: dict, wt_cubes: iris.cube.Cube,
 
     for wt_string in relative_occurrences:
         wt_numbers = max(len(value) for value in
-        relative_occurrences.get(wt_string).values())
+                         relative_occurrences.get(wt_string).values())
         colors = generate_grayscale_hex_values(wt_numbers)
         wt_stack = np.zeros((wt_numbers, 12))
         for month, month_value in relative_occurrences.get(wt_string).items():
@@ -1007,12 +1004,8 @@ def plot_maps(wt: np.array, cfg: dict, cube: iris.cube.Cube,
 
     plt.savefig(f'{local_path}/{wt_string}_{wt}_{dataset}_{ensemble}'
                 f'_{var_name}_{mode}.png')
-        #os.path.join(local_path,
-        #             (f'{wt_string}_{wt}_{dataset}_{ensemble}_{var_name}_{mode}.png')))
     plt.savefig(f'{local_path}/{wt_string}_{wt}_{dataset}_{ensemble}_'
                 f'{var_name}_{mode}.pdf')
-        #os.path.join(local_path,
-        #             (f'{wt_string}_{wt}_{dataset}_{ensemble}_{var_name}_{mode}.pdf')))
     plt.close()
 
 

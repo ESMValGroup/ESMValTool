@@ -7,7 +7,7 @@ Overview
 --------
 
 A diagnostic to calculate Lamb weathertypes over a given region. Furthermore, 
-correlations between weathertypes and precipitation patterns over a given are can be calculated 
+correlations between weathertypes and precipitation patterns over a given area can be calculated 
 and 'combined' or 'simplified' weathertypes can be derived. Additionally, mean fields, as well as
 anomalies and standard deviations can be plotted.
 
@@ -21,7 +21,7 @@ Recipes are stored in esmvaltool/recipes/
 
 Diagnostics are stored in esmvaltool/diag_scripts/weathertyping/
 
-    * weathertyping.py: calculate lamb and simplified WT, plot mean, anomalies and std for each WT for psl, tas, prcp
+    * weathertyping.py: calculate lamb and simplified WT, plot mean, anomalies and std for each WT for psl, tas, pr
 
 
 User settings in recipe
@@ -70,7 +70,7 @@ Observations and reformat scripts
 (2) see headers of reformat scripts for non-obs4MIPs data for download
 instructions.*
 
-* E-OBS: European Climate Assessment & Dataset gridded observationl daily precipitation sum
+* E-OBS: European Climate Assessment & Dataset gridded daily precipitation sum
 
 References
 ----------
