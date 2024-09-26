@@ -10,7 +10,7 @@
 [![Anaconda-Server Badge](https://img.shields.io/conda/vn/conda-forge/ESMValTool?color=blue&label=conda-forge&logo=conda-forge&logoColor=white)](https://anaconda.org/conda-forge/esmvaltool)
 ![stand with Ukraine](https://badgen.net/badge/stand%20with/UKRAINE/?color=0057B8&labelColor=FFD700)
 
-![esmvaltoollogo](https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/doc/sphinx/source/figures/ESMValTool-logo-2.png)
+![esmvaltoollogo](https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/doc/sphinx/source/figures/ESMValTool-logo-2-glow.png)
 
 - [**Documentation**](https://docs.esmvaltool.org/en/latest/)
 - [**ESMValTool Website**](https://www.esmvaltool.org/)
