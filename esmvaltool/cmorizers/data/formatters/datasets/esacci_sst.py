@@ -62,7 +62,7 @@ def extract_variable(var_info, raw_info, attrs, year):
     # Fix cube
     fix_var_metadata(cube, var_info)
     convert_timeunits(cube, year)
-    fix_coords(cube)
+    cube = fix_coords(cube)
     set_global_atts(cube, attrs)
     return cube
 
