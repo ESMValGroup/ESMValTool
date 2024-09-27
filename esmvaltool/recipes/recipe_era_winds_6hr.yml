@@ -13,7 +13,7 @@ documentation:
     - malinina_elizaveta
 
 datasets:
-  - {dataset: ERA5, project: OBS6, type: reanaly, mip: E1hr, version: v1, tier: 3}
+  - {dataset: ERA5, project: native6, type: reanaly, mip: E1hr, version: v1, tier: 3}
 
 preprocessors:
   sfcwind_from_6h:
@@ -35,23 +35,23 @@ diagnostics:
         script: winds/winds_biases.py
         hours: 6hr
     variables:
-      sfcwind_from_6h:
+      derived:
         short_name: sfcWind
         preprocessor: sfcwind_from_6h
         derive: true
-        start_year: 1940
+        start_year: 2008
         start_month: 1
         start_day: 1
-        end_year: 1940
+        end_year: 2008
         end_month: 12
         end_day: 31
-      6h_sfcwind:
+      real:
         preprocessor: 6h_sfcwind
         short_name: sfcWind
         derive: true
-        start_year: 1940
+        start_year: 2008
         start_month: 1
         start_day: 1
-        end_year: 1940
+        end_year: 2008
         end_month: 12
         end_day: 31
