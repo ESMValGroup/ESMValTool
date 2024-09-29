@@ -3,7 +3,7 @@ documentation:
 
   description: |
     A diagnostic to calculate Lamb weathertypes over a given region. Furthermore, 
-    correlations between weathertypes and precipitation patterns over a given are can be calculated 
+    correlations between weathertypes and precipitation patterns over a given area can be calculated 
     and 'combined' or 'simplified' weathertypes can be derived. Additionally, mean fields, as well as
     anomalies and standard deviations can be plotted.
 
