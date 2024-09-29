@@ -498,13 +498,14 @@ def calc_slwt_obs(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
                                               ['Lamb Weathertypes'],
                                               False, False)
 
-    log_provenance(f'{dataset}_wt_prov', cfg, provenance_record)
+    log_provenance(f'{work_dir}/wt_selected_pairs_{dataset}',
+                   cfg, provenance_record)
 
     return map_lwt_to_slwt(lwt, mapping_dict)
 
 
 def calc_const():
-    '''Calculate constants for weathertyping algorithm.
+    """Calculate constants for weathertyping algorithm.
     Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993),
     A comparison of Lamb circulation types with an objective classification
     scheme.
@@ -512,7 +513,7 @@ def calc_const():
 
     Returns:
         tuple: The four constants needed for WT calculation.
-    '''
+    """
 
     const1 = 1 / np.cos(45 * np.pi / 180)
     const2 = np.sin(45 * np.pi / 180) / np.sin(40 * np.pi / 180)
@@ -523,7 +524,7 @@ def calc_const():
 
 
 def calc_westerly_flow(cube: iris.cube.Cube) -> np.array:
-    '''Calculate the westerly flow over area.
+    """Calculate the westerly flow over area.
     Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993),
     A comparison of Lamb circulation types with an objective classification
     scheme.
@@ -534,14 +535,14 @@ def calc_westerly_flow(cube: iris.cube.Cube) -> np.array:
 
     Returns:
         np.array: westerly flow
-    '''
+    """
 
     return 1 / 2 * (cube.data[:, 1, 2] + cube.data[:, 1, 4]) - 1 / 2 * (
         cube.data[:, 3, 2] + cube.data[:, 3, 4])
 
 
 def calc_southerly_flow(cube: iris.cube.Cube, const1: float) -> np.array:
-    '''Calculate the southerly flow over area.
+    """Calculate the southerly flow over area.
     Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993),
     A comparison of Lamb circulation types with an objective classification
     scheme.
@@ -553,7 +554,7 @@ def calc_southerly_flow(cube: iris.cube.Cube, const1: float) -> np.array:
 
     Returns:
         np.array: southerly flow
-    '''
+    """
 
     return const1 * (
         1 / 4 *
@@ -563,7 +564,7 @@ def calc_southerly_flow(cube: iris.cube.Cube, const1: float) -> np.array:
 
 
 def calc_resultant_flow(w: np.array, s: np.array) -> np.array:
-    '''Calculate the resultant flow.
+    """Calculate the resultant flow.
     Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993),
     A comparison of Lamb circulation types with an objective classification
     scheme.
@@ -575,13 +576,13 @@ def calc_resultant_flow(w: np.array, s: np.array) -> np.array:
 
     Returns:
         np.array: resultant flow
-    '''
+    """
     return (s**2 + w**2)**(1 / 2)
 
 
 def calc_westerly_shear_velocity(cube: iris.cube.Cube, const2: float,
                                  const3: float) -> np.array:
-    '''Calculate westerly shear velocity.
+    """Calculate westerly shear velocity.
     Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993),
     A comparison of Lamb circulation types with an objective classification
     scheme.
@@ -594,7 +595,7 @@ def calc_westerly_shear_velocity(cube: iris.cube.Cube, const2: float,
 
     Returns:
         np.array: westerly shear velocity
-    '''
+    """
     return const2 * (1 / 2 *
                      (cube.data[:, 0, 2] + cube.data[:, 0, 4]) - 1 / 2 *
                      (cube.data[:, 2, 2] + cube.data[:, 2, 4])) - const3 * (
@@ -605,7 +606,7 @@ def calc_westerly_shear_velocity(cube: iris.cube.Cube, const2: float,
 
 def calc_southerly_shear_velocity(cube: iris.cube.Cube,
                                   const4: float) -> np.array:
-    '''Calculate southerly shear velocity.
+    """Calculate southerly shear velocity.
     Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993),
     A comparison of Lamb circulation types with an objective classification
     scheme.
@@ -617,7 +618,7 @@ def calc_southerly_shear_velocity(cube: iris.cube.Cube,
 
     Returns:
         np.array: southerly shear velocity
-    '''
+    """
     return const4 * (
         1 / 4 *
         (cube.data[:, 3, 6] + 2 * cube.data[:, 2, 6] + cube.data[:, 1, 6]) -
@@ -630,7 +631,7 @@ def calc_southerly_shear_velocity(cube: iris.cube.Cube,
 
 
 def calc_total_shear_velocity(zw: np.array, zs: np.array) -> np.array:
-    '''Calculate total shear velocity.
+    """Calculate total shear velocity.
     Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993),
     A comparison of Lamb circulation types with an objective classification
     scheme.
@@ -642,12 +643,12 @@ def calc_total_shear_velocity(zw: np.array, zs: np.array) -> np.array:
 
     Returns:
         np.array: total shear velocity
-    '''
+    """
     return zw + zs
 
 
 def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
-    '''Algorithm to calculate Lamb weathertypes.
+    """Algorithm to calculate Lamb weathertypes.
     Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993),
     A comparison of Lamb circulation types with an objective classification
     scheme.
@@ -659,7 +660,7 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
 
     Returns:
         np.array: Array of Lamb WT for each day
-    '''
+    """
 
     # lats and lons corresponding to datapoints
     # 55, 5 -> 1
@@ -859,7 +860,8 @@ def calc_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube,
                                               ['Lamb Weathertypes'],
                                               False, False)
 
-    log_provenance(f'{dataset}_wt_prov', cfg, provenance_record)
+    log_provenance(f'{work_dir}/{output_file_path}/{dataset}',
+                   cfg, provenance_record)
 
 
 def get_colormap(colormap_string: str) -> ListedColormap:
@@ -941,7 +943,8 @@ def plot_maps(wt: np.array, cfg: dict, cube: iris.cube.Cube,
     dataset = data_info.get('dataset')
     var_name = data_info.get('var')
     wt_string = data_info.get('wt_string')
-    ensemble = data_info.get('ensemble', '')
+    ensemble = data_info.get('ensemble')
+    timerange = data_info.get('timerange')
 
     logger.info('Plotting %s %s %s for %s %s', dataset, var_name, mode,
                 wt_string, wt)
@@ -955,22 +958,26 @@ def plot_maps(wt: np.array, cfg: dict, cube: iris.cube.Cube,
 
     if var_name == 'psl':
         psl_cmap = get_colormap('psl')
-        plt.title(f'{var_name} {mode}, wt: {wt}')
+        plt.title(f'{dataset} {ensemble}, {var_name} {mode}\n' +
+                  f'{timerange}, wt: {wt}')
         unit = '[hPa]'
         im = iplt.contourf(cube / 100, cmap=psl_cmap)
     elif var_name == 'pr':
         prcp_cmap = get_colormap('prcp')
         if dataset == 'ERA5':
             unit = '[m]'
-            plt.title(f'total {var_name} {mode}, wt: {wt}')
+            plt.title(f'{dataset} {ensemble}, total {var_name} {mode}\n' +
+                      f'{timerange}, wt: {wt}')
         else:
             unit = '[kg m-2 s-1]'
-            plt.title(f'{var_name} flux {mode}, wt: {wt}')
+            plt.title(f'{dataset} {ensemble}, {var_name} flux {mode}\n' +
+                      f'{timerange}, wt: {wt}')
         im = iplt.contourf(cube, cmap=prcp_cmap)
     elif var_name == 'tas':
         temp_cmap = get_colormap('temp')
         unit = '[K]'
-        plt.title(f'1000 hPa {var_name} {mode}, wt: {wt}')
+        plt.title(f'{dataset} {ensemble}, 1000 hPa {var_name} {mode}\n' +
+                  f'{timerange}, wt: {wt}')
         im = iplt.contourf(cube, cmap=temp_cmap)
 
     cb = plt.colorbar(im)
@@ -1003,9 +1010,9 @@ def plot_maps(wt: np.array, cfg: dict, cube: iris.cube.Cube,
     ax.add_feature(cfeature.BORDERS, linestyle=':')
 
     plt.savefig(f'{local_path}/{wt_string}_{wt}_{dataset}_{ensemble}'
-                f'_{var_name}_{mode}.png')
+                f'_{var_name}_{mode}_{timerange}.png')
     plt.savefig(f'{local_path}/{wt_string}_{wt}_{dataset}_{ensemble}_'
-                f'{var_name}_{mode}.pdf')
+                f'{var_name}_{mode}_{timerange}.pdf')
     plt.close()
 
 
@@ -1228,6 +1235,8 @@ def calc_wt_means(cfg: dict, cube: iris.cube.Cube,
     var_name = data_info.get('var')
     wt_string = data_info.get('wt_string')
     preproc_path = data_info.get('preproc_path')
+    ensemble = data_info.get('ensemble')
+    timerange = data_info.get('timerange')
 
     logger.info('Calculating %s %s means for %s', dataset, var_name, wt_string)
 
@@ -1301,8 +1310,10 @@ def calc_wt_means(cfg: dict, cube: iris.cube.Cube,
                                               [var_name],
                                               ['map'], ['mean'])
 
-    log_provenance(f'{dataset}_{var_name}_{wt_string}_means_prov',
-                   cfg, provenance_record)
+    local_path = f"{cfg.get('plot_dir')}/mean"
+
+    log_provenance(f'{local_path}/{wt_string}_{wt}_{dataset}_{ensemble}'
+                   f'_{var_name}_mean_{timerange}', cfg, provenance_record)
 
 
 def calc_wt_anomalies(cfg: dict, cube: iris.cube.Cube,
@@ -1327,6 +1338,8 @@ def calc_wt_anomalies(cfg: dict, cube: iris.cube.Cube,
     var_name = data_info.get('var_name')
     wt_string = data_info.get('wt_string')
     preproc_path = data_info.get('preproc_path')
+    ensemble = data_info.get('ensemble')
+    timerange = data_info.get('timerange')
 
     logger.info('Calculating %s %s anomalies for %s', dataset, var_name,
                 wt_string)
@@ -1404,8 +1417,11 @@ def calc_wt_anomalies(cfg: dict, cube: iris.cube.Cube,
                                               [var_name],
                                               ['map'], ['anomaly'])
 
-    log_provenance(f'{dataset}_{var_name}_{wt_string}_anomaly_prov',
-                   cfg, provenance_record)
+    local_path = f"{cfg.get('plot_dir')}/anomaly"
+
+    log_provenance(f'{local_path}/{wt_string}_{wt}_{dataset}_{ensemble}'
+                   f'_{var_name}_anomaly__{timerange}', cfg,
+                   provenance_record)
 
 
 def calc_wt_std(cfg: dict, cube: iris.cube.Cube,
@@ -1430,6 +1446,8 @@ def calc_wt_std(cfg: dict, cube: iris.cube.Cube,
     var_name = data_info.get('var_name')
     wt_string = data_info.get('wt_string')
     preproc_path = data_info.get('preproc_path')
+    ensemble = data_info.get('ensemble')
+    timerange = data_info.get('timerange')
 
     logger.info('Calculating %s %s standard deviation for %s', dataset,
                 var_name, wt_string)
@@ -1477,7 +1495,7 @@ def calc_wt_std(cfg: dict, cube: iris.cube.Cube,
             wt_cube_std = extracted_cube.collapsed('time',
                                                    iris.analysis.STD_DEV)
             plot_maps(wt, cfg, wt_cube_std, data_info,
-                      'standard deviation')
+                      'stddev')
     elif wt_string == 'lwt':
         for wt in range(1, 28):
             target_indices = np.where(lwt == wt)
@@ -1494,7 +1512,7 @@ def calc_wt_std(cfg: dict, cube: iris.cube.Cube,
             wt_cube_std = extracted_cube.collapsed('time',
                                                    iris.analysis.STD_DEV)
             plot_maps(wt, cfg, wt_cube_std, data_info,
-                      'standard deviation')
+                      'stddev')
     else:
         logger.info('WT_STRING NOT SUPPORTED.')
 
@@ -1506,8 +1524,10 @@ def calc_wt_std(cfg: dict, cube: iris.cube.Cube,
                                               [var_name],
                                               ['map'], ['stddev'])
 
-    log_provenance(f'{dataset}_{var_name}_{wt_string}_std_prov',
-                   cfg, provenance_record)
+    local_path = f"{cfg.get('plot_dir')}/stddev"
+
+    log_provenance(f'{local_path}/{wt_string}_{wt}_{dataset}_{ensemble}'
+                   f'_{var_name}_stddev_{timerange}', cfg, provenance_record)
 
 
 def run_predefined_slwt(work_dir: str, dataset_name: str,

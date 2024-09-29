@@ -58,7 +58,11 @@ def run_automatic_slwt(cfg: dict):
                 for var_name, var_data in var_dict.items():
                     data_info = {'dataset': dataset_name,
                                  'var': var_name,
-                                 'preproc_path': var_data[1]}
+                                 'preproc_path': var_data[1],
+                                 'ensemble':
+                                     dataset_vars[0].get('ensemble', ''),
+                                 'timerange': dataset_vars[0].
+                                     get('timerange').replace('/', '-')}
                     plot_means(cfg, var_data[0], wt_cubes, data_info)
                 plot_seasonal_occurrence(cfg, wt_cubes, dataset_name)
         else:
@@ -72,7 +76,10 @@ def run_automatic_slwt(cfg: dict):
             # calculate weathertypes
             data_info = {'dataset': dataset_name,
                          'preproc_path': preproc_path,
-                         'output_file_path': output_file_path}
+                         'output_file_path': output_file_path,
+                         'ensemble': dataset_vars[0].get('ensemble', ''),
+                         'timerange': dataset_vars[0].get(
+                             'timerange').replace('/', '-')}
             calc_lwt_slwt_model(cfg, wt_preproc, data_info, predefined_slwt)
 
             # load wt files
@@ -83,14 +90,17 @@ def run_automatic_slwt(cfg: dict):
                 dataset_vars
             )  # dataset_vars is list of variables for dataset dataset_name
 
+            # plot means
             if plotting:
-                # plot means
-                ensemble = dataset_vars[0].get('ensemble')
                 for var_name, var_data in var_dict.items():
                     data_info = {'dataset': dataset_name,
                                  'var': var_name,
                                  'preproc_path': var_data[1],
-                                 'ensemble': ensemble}
+                                 'ensemble': dataset_vars[0].get(
+                                     'ensemble', ''),
+                                 'timerange':
+                                     dataset_vars[0].
+                                     get('timerange').replace('/', '-')}
                     plot_means(cfg, var_data[0], wt_cubes, data_info,
                                only_lwt=True)
                 plot_seasonal_occurrence(cfg, wt_cubes, dataset_name,
@@ -100,7 +110,6 @@ def run_automatic_slwt(cfg: dict):
 def run_lwt(cfg: dict):
     preproc_variables_dict, _, _, \
         work_dir, plotting, _, _ = get_cfg_vars(cfg)
-    print(preproc_variables_dict)
     for dataset_name, dataset_vars in preproc_variables_dict.items():
         if dataset_name == 'ERA5':
             wt_preproc, wt_preproc_prcp, wt_preproc_prcp_eobs = \
@@ -144,7 +153,11 @@ def run_lwt(cfg: dict):
                 for var_name, var_data in var_dict.items():
                     data_info = {'dataset': dataset_name,
                                  'var': var_name,
-                                 'preproc_path': var_data[1]}
+                                 'preproc_path': var_data[1],
+                                 'ensemble': dataset_vars[0].get(
+                                     'ensemble', ''),
+                                 'timerange': dataset_vars[0].get(
+                                     'timerange').replace('/', '-')}
                     plot_means(cfg, var_data[0], wt_cubes, data_info,
                                only_lwt=True)
                 plot_seasonal_occurrence(cfg, wt_cubes, dataset_name)
@@ -174,7 +187,10 @@ def run_lwt(cfg: dict):
                     data_info = {'dataset': dataset_name,
                                  'var': var_name,
                                  'preproc_path': var_data[1],
-                                 'ensemble': ensemble}
+                                 'ensemble': dataset_vars[0].get(
+                                     'ensemble', ''),
+                                 'timerange': dataset_vars[0].get(
+                                     'timerange').replace('/', '-')}
                     plot_means(cfg, var_data[0], wt_cubes, data_info,
                                only_lwt=True)
                 plot_seasonal_occurrence(cfg, wt_cubes, dataset_name,
