@@ -25,6 +25,7 @@ REQUIREMENTS = {
         'cdo',
         'cdsapi',
         'cf-units',
+        'cfgrib',
         'cftime',
         'cmocean',
         'dask!=2024.8.0',  # https://github.com/dask/dask/issues/11296
