@@ -1,6 +1,7 @@
 """Script to download NSIDC-G02202-sh."""
 import logging
 from datetime import datetime
+
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
@@ -15,7 +16,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     Parameters
     ----------
     config : dict
-        ESMValTool's user configuration
+        ESMValTool's configuration
     dataset : str
         Name of the dataset
     dataset_info : dict

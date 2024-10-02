@@ -13,7 +13,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     Parameters
     ----------
     config : dict
-        ESMValTool's user configuration
+        ESMValTool's configuration
     dataset : str
         Name of the dataset
     dataset_info : dict

@@ -1,13 +1,11 @@
 """Script to download JRA-55 from RDA."""
 import logging
 import os
-
 from datetime import datetime
 
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
-
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +17,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     Parameters
     ----------
     config : dict
-        ESMValTool's user configuration
+        ESMValTool's configuration
     dataset : str
         Name of the dataset
     dataset_info : dict
