@@ -6,8 +6,8 @@ channels:
   # ESMValCore.
   # - conda-forge/label/esmvalcore_rc
   - conda-forge
-  - nodefaults
   - cascade
+  - nodefaults
 
 dependencies:
   - aiohttp
@@ -16,23 +16,22 @@ dependencies:
   - cdsapi
   - cf-units
   - cftime
+  - climextremes
   - cmocean
   - curl <8.10
   - cython
-  - climextremes
   - dask !=2024.8.0  # https://github.com/dask/dask/issues/11296
   - distributed
   - ecmwf-api-client
   - eofs
-  - esmpy  !=8.1.0,<8.6.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
+  - esmpy >=8.6.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - esmvalcore 2.11.*
   - fiona
   - fire
   - fsspec
   - gdal
-  - iris >=3.10.0
+  - iris >=3.6.1
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
-  - importlib_metadata <8
   - jinja2
   - joblib
   - lime
