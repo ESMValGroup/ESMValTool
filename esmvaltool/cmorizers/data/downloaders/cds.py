@@ -19,7 +19,7 @@ class CDSDownloader(BaseDownloader):
     product_name : str
         Name of the product in the CDS
     config : dict
-        ESMValTool's configuration
+        ESMValTool's user configuration
     request_dictionary : dict
         Common CDS request parameters
     dataset : str

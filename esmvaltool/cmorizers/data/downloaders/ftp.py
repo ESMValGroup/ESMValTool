@@ -25,7 +25,7 @@ class FTPDownloader(BaseDownloader):
     Parameters
     ----------
     config : dict
-        ESMValTool's configuration
+        ESMValTool's user configuration
     server : str
         FTP server URL
     dataset : str
@@ -169,7 +169,7 @@ class CCIDownloader(FTPDownloader):
     Parameters
     ----------
     config : dict
-        ESMValTool's configuration
+        ESMValTool's user configuration
     dataset : str
         Dataset to download
     dataset_info : dict

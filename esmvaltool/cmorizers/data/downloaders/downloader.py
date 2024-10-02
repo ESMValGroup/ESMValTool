@@ -9,7 +9,7 @@ class BaseDownloader():
     Parameters
     ----------
     config : dict
-        ESMValTool's configuration
+        ESMValTool's user configuration
     dataset : str
         Dataset to download
     dataset_info : dict
