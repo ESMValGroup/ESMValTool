@@ -8,9 +8,10 @@ from textwrap import dedent
 import pytest
 import yaml
 from esmvalcore._main import run
+from esmvalcore.exceptions import ESMValCoreDeprecationWarning
 
 
-def write_config_user_file(dirname):
+def write_config_file(dirname):
     config_file = dirname / 'config-user.yml'
     cfg = {
         'output_dir': str(dirname / 'output_dir'),
@@ -68,10 +69,10 @@ SCRIPTS = [
 ]
 
 
+# Remove in v2.14.0
 @pytest.mark.installation
 @pytest.mark.parametrize('script_file', SCRIPTS)
-def test_diagnostic_run(tmp_path, script_file):
-
+def test_diagnostic_run_config_file(tmp_path, script_file):
     local_script_file = Path(__file__).parent / script_file
 
     recipe_file = tmp_path / 'recipe_test.yml'
@@ -96,12 +97,55 @@ def test_diagnostic_run(tmp_path, script_file):
         """.format(script_file, result_file))
     recipe_file.write_text(str(recipe))
 
-    config_user_file = write_config_user_file(tmp_path)
+    config_file = write_config_file(tmp_path)
     with arguments(
             'esmvaltool',
             'run',
             '--config_file',
-            config_user_file,
+            config_file,
+            str(recipe_file),
+    ):
+        with pytest.warns(ESMValCoreDeprecationWarning):
+            run()
+
+    check(result_file)
+
+
+@pytest.mark.installation
+@pytest.mark.parametrize('script_file', SCRIPTS)
+def test_diagnostic_run(tmp_path, script_file):
+    local_script_file = Path(__file__).parent / script_file
+
+    recipe_file = tmp_path / 'recipe_test.yml'
+    script_file = tmp_path / script_file
+    result_file = tmp_path / 'result.yml'
+    config_dir = tmp_path / 'config'
+    config_dir.mkdir(exist_ok=True, parents=True)
+
+    shutil.copy(local_script_file, script_file)
+
+    # Create recipe
+    recipe = dedent("""
+        documentation:
+          title: Test recipe
+          description: Recipe with no data.
+          authors: [andela_bouwe]
+
+        diagnostics:
+          diagnostic_name:
+            scripts:
+              script_name:
+                script: {}
+                setting_name: {}
+        """.format(script_file, result_file))
+    recipe_file.write_text(str(recipe))
+
+    write_config_file(config_dir)
+    with arguments(
+            'esmvaltool',
+            'run',
+            '--config_dir',
+            str(config_dir),
             str(recipe_file),
     ):
         run()
