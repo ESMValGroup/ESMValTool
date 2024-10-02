@@ -225,7 +225,7 @@ User settings in recipe
 
    * plot_legend: if true, plot legend will be plotted
    * plot_units: variable unit for plotting
-   * multi_model_mean: if true, multi-model mean and uncertaintiy will be
+   * multi_model_mean: if true, multi-model mean and uncertainty will be
      plotted
 
    *Optional settings for variables*
