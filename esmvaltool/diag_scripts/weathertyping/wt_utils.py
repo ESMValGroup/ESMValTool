@@ -97,20 +97,20 @@ def plot_seasonal_occurrence(cfg: dict, wt_cubes: iris.cube.Cube,
         y = np.vstack(list(wt_stack))
 
         # plot
-        _, ax = plt.subplots(figsize=(10, 10))
+        _, ax_ = plt.subplots(figsize=(10, 10))
 
-        ax.set_title(f'{dataset_name}')
+        ax_.set_title(f'{dataset_name}')
 
-        ax.stackplot(x, y, colors=colors)
+        ax_.stackplot(x, y, colors=colors)
 
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
-                  fancybox=True, shadow=True, ncol=9,
-                  labels=tuple(f'WT {i+1}' for i in range(0, wt_numbers)))
+        ax_.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
+                   fancybox=True, shadow=True, ncol=9,
+                   labels=tuple(f'WT {i+1}' for i in range(0, wt_numbers)))
 
-        ax.set(xlim=(0, 11), xticks=np.arange(0, 12),
-               ylim=(0, 1), yticks=np.arange(0, 1.1, 0.1))
-        ax.set_xlabel('Month')
-        ax.set_ylabel('Cumulative Relative occurrence')
+        ax_.set(xlim=(0, 11), xticks=np.arange(0, 12),
+                ylim=(0, 1), yticks=np.arange(0, 1.1, 0.1))
+        ax_.set_xlabel('Month')
+        ax_.set_ylabel('Cumulative Relative occurrence')
 
         plt.savefig(f'{output_path}/{dataset_name}_{ensemble}_'
                     f'{wt_string}_rel_occurrence.png')
@@ -429,6 +429,13 @@ def get_mapping_dict(selected_pairs: list) -> dict:
 
 
 def write_mapping_dict(work_dir: str, dataset: str, mapping_dict: dict):
+    """Write mapping dictionary to file.
+
+    Args:
+        work_dir (str): Working directory
+        dataset (str): Name of dataset
+        mapping_dict (dict): Mapping dictionary
+    """
     mapping_dict_reformat = convert_dict(mapping_dict)
 
     with open(f'{work_dir}/wt_mapping_dict_{dataset}.json',
@@ -439,8 +446,8 @@ def write_mapping_dict(work_dir: str, dataset: str, mapping_dict: dict):
 
 def calc_slwt_obs(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
                   dataset: str, ancestors: list) -> np.array:
-    """Calculate simplified weathertypes for observation datasets based on
-    precipitation patterns over specified area.
+    """Calculate simplified weathertypes for observation datasets based on \
+        precipitation patterns over specified area.
 
     Args:
         cfg (dict): Configuration dictionary from recipe
@@ -463,12 +470,12 @@ def calc_slwt_obs(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
     tcoord = cube.coord('time')
 
     wt_data_prcp = []
-    for wt in range(1, 28):
-        target_indices = np.where(lwt == wt)
+    for wt_ in range(1, 28):
+        target_indices = np.where(lwt == wt_)
         if len(target_indices[0]) < 1:
             logger.info(
                 'calc_slwt_obs - CAUTION: Skipped wt %s \
-                for dataset %s!', wt, dataset)
+                for dataset %s!', wt_, dataset)
             continue
         dates = [
             tcoord.units.num2date(tcoord.points[i]) for i in target_indices
@@ -563,7 +570,8 @@ def calc_southerly_flow(cube: iris.cube.Cube, const1: float) -> np.array:
         (cube.data[:, 3, 2] + 2 * cube.data[:, 2, 2] + cube.data[:, 1, 2]))
 
 
-def calc_resultant_flow(w: np.array, s: np.array) -> np.array:
+def calc_resultant_flow(westerly_flow: np.array,
+                        southerly_flow: np.array) -> np.array:
     """Calculate the resultant flow.
     Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993),
     A comparison of Lamb circulation types with an objective classification
@@ -571,13 +579,13 @@ def calc_resultant_flow(w: np.array, s: np.array) -> np.array:
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
-        w (np.array): westerly flow.
-        s (np.array): southerly flow
+        westerly_flow (np.array): westerly flow.
+        southerly_flow (np.array): southerly flow
 
     Returns:
         np.array: resultant flow
     """
-    return (s**2 + w**2)**(1 / 2)
+    return (southerly_flow**2 + westerly_flow**2)**(1 / 2)
 
 
 def calc_westerly_shear_velocity(cube: iris.cube.Cube, const2: float,
@@ -630,7 +638,8 @@ def calc_southerly_shear_velocity(cube: iris.cube.Cube,
         (cube.data[:, 3, 0] + 2 * cube.data[:, 2, 0] + cube.data[:, 1, 0]))
 
 
-def calc_total_shear_velocity(zw: np.array, zs: np.array) -> np.array:
+def calc_total_shear_velocity(westerly_shear_velocity: np.array,
+                              southerly_shear_velocity: np.array) -> np.array:
     """Calculate total shear velocity.
     Eq. taken from: Jones, P.D., Hulme, M. and Briffa, K.R. (1993),
     A comparison of Lamb circulation types with an objective classification
@@ -638,13 +647,13 @@ def calc_total_shear_velocity(zw: np.array, zs: np.array) -> np.array:
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
-        zw (np.array): westerly shear velocity
-        zs (np.array): southerly shear velocity
+        westerly_shear_velocity (np.array): westerly shear velocity
+        southerly_shear_velocity (np.array): southerly shear velocity
 
     Returns:
         np.array: total shear velocity
     """
-    return zw + zs
+    return westerly_shear_velocity + southerly_shear_velocity
 
 
 def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
@@ -688,96 +697,99 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
     const1, const2, const3, const4 = calc_const()
 
     # westerly flow
-    w = calc_westerly_flow(cube)
+    westerly_flow = calc_westerly_flow(cube)
     # southerly flow
-    s = calc_southerly_flow(cube, const1)
+    southerly_flow = calc_southerly_flow(cube, const1)
     # resultant flow
-    f = calc_resultant_flow(w, s)
+    total_flow = calc_resultant_flow(westerly_flow, southerly_flow)
     # westerly shear vorticity
-    zw = calc_westerly_shear_velocity(cube, const2, const3)
+    westerly_shear_velocity = calc_westerly_shear_velocity(cube, const2,
+                                                           const3)
     # southerly shear vorticity
-    zs = calc_southerly_shear_velocity(cube, const4)
+    southerly_shear_velocity = calc_southerly_shear_velocity(cube, const4)
     # total shear vorticity
-    z = calc_total_shear_velocity(zw, zs)
+    total_shear_velocity = calc_total_shear_velocity(westerly_shear_velocity,
+                                                     southerly_shear_velocity)
 
-    wt = np.zeros(len(z))
+    weathertypes = np.zeros(len(total_shear_velocity))
 
-    for i, z_i in enumerate(z):
+    for i, z_i in enumerate(total_shear_velocity):
 
-        direction = np.arctan(w[i] / s[i]) * 180 / np.pi  # deg
-        if s[i] >= 0:
+        direction = (np.arctan(westerly_flow[i] / southerly_flow[i])
+                     * 180 / np.pi)  # deg
+        if southerly_flow[i] >= 0:
             direction += 180  # deg
 
         if direction < 0:
             direction += 360  # deg
 
         # Lamb pure directional type
-        if abs(z_i) < f[i]:
+        if abs(z_i) < total_flow[i]:
             if 337.5 <= direction or direction < 22.5:
-                wt[i] = 1
+                weathertypes[i] = 1
             elif 22.5 <= direction < 67.5:
-                wt[i] = 2
+                weathertypes[i] = 2
             elif 67.5 <= direction < 112.5:
-                wt[i] = 3
+                weathertypes[i] = 3
             elif 112.5 <= direction < 157.5:
-                wt[i] = 4
+                weathertypes[i] = 4
             elif 157.5 <= direction < 202.5:
-                wt[i] = 5
+                weathertypes[i] = 5
             elif 202.5 <= direction < 247.5:
-                wt[i] = 6
+                weathertypes[i] = 6
             elif 247.5 <= direction < 292.5:
-                wt[i] = 7
+                weathertypes[i] = 7
             elif 292.5 <= direction < 337.5:
-                wt[i] = 8
+                weathertypes[i] = 8
         # Lamb’s pure cyclonic and anticyclonic type
-        elif (2 * f[i]) < abs(z_i):
+        elif (2 * total_flow[i]) < abs(z_i):
             if z_i > 0:
-                wt[i] = 9
+                weathertypes[i] = 9
 
             elif z_i < 0:
-                wt[i] = 10
+                weathertypes[i] = 10
         # Lambs’s synoptic/direction hybrid types
-        elif f[i] < abs(z_i) < (2 * f[i]):
+        elif total_flow[i] < abs(z_i) < (2 * total_flow[i]):
             if z_i > 0:
                 if 337.5 <= direction or direction < 22.5:
-                    wt[i] = 11
+                    weathertypes[i] = 11
                 elif 22.5 <= direction < 67.5:
-                    wt[i] = 12
+                    weathertypes[i] = 12
                 elif 67.5 <= direction < 112.5:
-                    wt[i] = 13
+                    weathertypes[i] = 13
                 elif 112.5 <= direction < 157.5:
-                    wt[i] = 14
+                    weathertypes[i] = 14
                 elif 157.5 <= direction < 202.5:
-                    wt[i] = 15
+                    weathertypes[i] = 15
                 elif 202.5 <= direction < 247.5:
-                    wt[i] = 16
+                    weathertypes[i] = 16
                 elif 247.5 <= direction < 292.5:
-                    wt[i] = 17
+                    weathertypes[i] = 17
                 elif 292.5 <= direction < 337.5:
-                    wt[i] = 18
+                    weathertypes[i] = 18
 
             elif z_i < 0:
                 if 337.5 <= direction or direction < 22.5:
-                    wt[i] = 19
+                    weathertypes[i] = 19
                 elif 22.5 <= direction < 67.5:
-                    wt[i] = 20
+                    weathertypes[i] = 20
                 elif 67.5 <= direction < 112.5:
-                    wt[i] = 21
+                    weathertypes[i] = 21
                 elif 112.5 <= direction < 157.5:
-                    wt[i] = 22
+                    weathertypes[i] = 22
                 elif 157.5 <= direction < 202.5:
-                    wt[i] = 23
+                    weathertypes[i] = 23
                 elif 202.5 <= direction < 247.5:
-                    wt[i] = 24
+                    weathertypes[i] = 24
                 elif 247.5 <= direction < 292.5:
-                    wt[i] = 25
+                    weathertypes[i] = 25
                 elif 292.5 <= direction < 337.5:
-                    wt[i] = 26
+                    weathertypes[i] = 26
         # light indeterminate flow, corresponding to Lamb’s unclassified type U
-        elif abs(z_i) < 6 and f[i] < 6:
-            wt[i] = 27
+        elif abs(z_i) < 6 and total_flow[i] < 6:
+            weathertypes[i] = 27
 
-    return wt
+    return weathertypes
 
 
 def calc_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube,

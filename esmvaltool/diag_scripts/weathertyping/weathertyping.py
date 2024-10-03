@@ -1,11 +1,26 @@
+""" This script calculates weathertypes for the input datasets and writes \
+    to file. It also plots the means and seasonal occurrence of the weathertypes, \
+    and offers the option to calculate simplified weathertypes based on \ 
+    precipitation patterns."""
 import iris
-from wt_utils import *
+from wt_utils import get_cfg_vars, load_wt_preprocessors, wt_algorithm, \
+    get_ancestors_era5_eobs, calc_slwt_obs, run_predefined_slwt, \
+    combine_wt_to_file, load_wt_files, get_looping_dict, plot_means, \
+    plot_seasonal_occurrence, write_lwt_to_file, get_model_output_filepath, \
+    calc_lwt_slwt_model, calc_lwt_model
 
 # import internal esmvaltool modules here
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 
 def run_automatic_slwt(cfg: dict):
+    """Run the automated calculation for simplified weathertypes \
+    and write to file, and plot the means and seasonal occurrence \
+    of the weathertypes.
+
+    Args:
+        cfg (dict): Nested dictionary of metadata
+    """
     preproc_variables_dict, _, _, \
         work_dir, plotting, _, predefined_slwt = get_cfg_vars(cfg)
     for dataset_name, dataset_vars in preproc_variables_dict.items():
@@ -104,10 +119,17 @@ def run_automatic_slwt(cfg: dict):
                     plot_means(cfg, var_data[0], wt_cubes, data_info,
                                only_lwt=True)
                 plot_seasonal_occurrence(cfg, wt_cubes, dataset_name,
-                                         ensemble=ensemble)
+                                         ensemble=dataset_vars[0].
+                                         get('ensemble', ''))
 
 
 def run_lwt(cfg: dict):
+    """Run calculation of weathertypes and write to file, and plot the means \
+    and seasonal occurrence of the weathertypes.
+
+    Args:
+        cfg (dict): Nested dictionary of metadata
+    """
     preproc_variables_dict, _, _, \
         work_dir, plotting, _, _ = get_cfg_vars(cfg)
     for dataset_name, dataset_vars in preproc_variables_dict.items():
