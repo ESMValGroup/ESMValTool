@@ -690,6 +690,9 @@ diagnostics:
       prw:
       rlut:
       rsut:
+      pr:
+      tauu:
+      tauv:
     additional_datasets:
       - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, mip: Amon, tier: 2,
          type: reanaly, version: v2, start_year: 1871, end_year: 2012}

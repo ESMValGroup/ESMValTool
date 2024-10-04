@@ -1045,7 +1045,9 @@ datasets:
         gaussian/monolevel/tcdc.eatm.mon.mean.nc
         gaussian/monolevel/ulwrf.ntat.mon.mean.nc
         gaussian/monolevel/uswrf.ntat.mon.mean.nc
-
+        gaussian/monolevel/prate.mon.mean.nc
+        gaussian/monolevel/uflx.mon.mean.nc
+        gaussian/monolevel/vflx.mon.mean.nc
   NOAA-CIRES-20CR-V3:
     tier: 2
     source: ftp.cdc.noaa.gov/Projects/20thC_ReanV3/Monthlies/
