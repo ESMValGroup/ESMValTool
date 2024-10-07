@@ -72,7 +72,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
             Unit("days since 1950-1-1 00:00:00", calendar="gregorian"))
 
     # Fix coordinates
-    utils.fix_coords(cube)
+    cube = utils.fix_coords(cube)
     if "height2m" in cmor_info.dimensions:
         utils.add_height2m(cube)
     if version not in ["TS4.02"]:

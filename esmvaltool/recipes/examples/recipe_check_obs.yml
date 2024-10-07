@@ -235,8 +235,8 @@ diagnostics:
       treeFrac:
     additional_datasets:
       - {dataset: ESACCI-LANDCOVER, project: OBS, mip: Lmon, tier: 2,
-         type: sat, version: L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg,
-         start_year: 1998, end_year: 2012}
+         type: sat, version: v2.0.8, frequency: yr,
+         start_year: 1992, end_year: 2020}
     scripts: null
 
   ESACCI-LST:
@@ -546,6 +546,30 @@ diagnostics:
     additional_datasets:
       - {dataset: JRA-25, project: OBS6, mip: Amon, tier: 2,
          type: reanaly, version: 1, start_year: 1979, end_year: 2007}
+    scripts: null
+
+  JRA-55:
+    description: JRA-55 check
+    variables:
+      cli:
+      clivi:
+      clw:
+      clwvi:
+      clt:
+      prw:
+      rlus:
+      rlut:
+      rlutcs:
+      rsus:
+      rsuscs:
+      rsut:
+      rsutcs:
+      ta:
+      tas:
+      wap:
+    additional_datasets:
+      - {dataset: JRA-55, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 1, start_year: 1958, end_year: 2022} 
     scripts: null
 
   Kadow2020:

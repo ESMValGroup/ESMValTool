@@ -473,25 +473,17 @@ datasets:
 
   ESACCI-LANDCOVER:
     tier: 2
-    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/land_cover_maps/
-    last_access: 2019-01-10
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/pft/v2.0.8/
+    last_access: 2024-07-11
     info: |
-      Download the 3 NetCDF files for 2000, 2005 and 2010.
-      Download the CCI-LC Tools from:
-        http://maps.elie.ucl.ac.be/CCI/viewer/download/lc-user-tools-3.14.zip
-      Unpack and run the CCI-LC Tools on each of the NetCDF files as follows:
-        bash lc-user-tools-3.14/bin/aggregate-map.sh \
-          -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 \
-          -PoutputAccuracy=false -PoutputPFTClasses=true \
-          -PoutputLCCSClasses=false -PnumRows=360 <inputfile.nc>
-      Put the resulting processed data in input_dir_path.
-
-      Caveats
-        The CCI-LC Tools must be applied before running this script.
-        The CCI-LC Tools require Java Version 7 or higher.
-        The input data are available for a single year and are copied over to
-        generate a time series over their time range of validity.
-
+        Download and processing instructions:
+        Use the following CLI to download all the files:
+        esmvaltool data download ESACCI-LANDCOVER
+        The underlying downloader is located here: 
+        /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_landcover.py
+        and it will download all the files currently available on CEDA (1992-2020) 
+        under a single directory as follow: ${RAWOBS}/Tier2/ESACCI-LANDCOVER
+  
   ESACCI-LST:
     tier: 2
     source: On CEDA-JASMIN, /gws/nopw/j04/esacci_lst/public
@@ -815,6 +807,15 @@ datasets:
         mon/atmos/rlutcs/rlutcs_Amon_reanalysis_JRA-25_197901-201312.nc
         mon/atmos/rsut/rsut_Amon_reanalysis_JRA-25_197901-201312.nc
         mon/atmos/rsutcs/rsutcs_Amon_reanalysis_JRA-25_197901-201312.nc
+
+  JRA-55:
+    tier: 2
+    source: https://rda.ucar.edu/datasets/ds628.1/
+    last_access: 2023-03-22
+    info: |
+      Create an account on the research data archive (RDA) in order to be able
+      to download the data (1.25 degree, pressure levels). See
+      https://rda.ucar.edu/login/register/ for more details.
 
   Kadow2020:
     tier: 2
