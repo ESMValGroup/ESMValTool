@@ -194,7 +194,6 @@ def test_cmorize_obs_woa_data_config_file(tmp_path):
 )
 def test_cmorize_obs_woa_no_data(tmp_path):
     """Test for example run of cmorize_obs command."""
-    print(version.parse(esmvalcore.__version__))
     write_config_file(tmp_path)
     os.makedirs(os.path.join(tmp_path, 'raw_stuff', 'Tier2'))
     with keep_cwd():
