@@ -104,7 +104,7 @@ REQUIREMENTS = {
         'imagehash',
         'isort',
         'pre-commit',
-        # 'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',  # not yet py312
+        'prospector[with_pyroma]>=1.12',
         'vprof',
         'yamllint',
         'yapf',
