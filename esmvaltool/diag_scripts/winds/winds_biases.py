@@ -88,8 +88,8 @@ def plot_fig(cube : iris.cube.Cube, levels : np.ndarray, year: int,
     fig.subplots_adjust(left=0.01, bottom=0.1, right=0.99, top=0.9999)
     cax = fig.add_axes([0.1,0.11,0.8,0.02])
     fig.colorbar(levs, cax=cax, orientation='horizontal', label='Difference, %')
-    fig.savefig(os.path.join(cfg['plot_dir'], 
-                             f'{hours}_{metric}_diff_{dataset}_{year}{img_form}'))
+    # fig.savefig(os.path.join(cfg['plot_dir'], 
+    #                          f'{hours}_{metric}_diff_{dataset}_{year}{img_form}'))
     fig.savefig(os.path.join(cfg['plot_dir'], 
                              f'{hours}_{metric}_diff_{dataset}_{year}.png'))
 

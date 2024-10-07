@@ -21,37 +21,53 @@ preprocessors:
         end_year: 2008
         end_month: 12
         end_day: 31
+  3hr_to_daily:
+    custom_order: true
+    derive: true  
+    daily_statistics:
+      operator: mean
+    extract_time:
+        start_year: 2008
+        start_month: 1
+        start_day: 2
+        end_year: 2008
+        end_month: 12
+        end_day: 31
 
-datasets:
+daily_datasets: &daily_datasets
   # day
-  # - {dataset: NICAM16-7S, grid: gr, ensemble: r1i1p1f1} # done recipe_model_winds_20240202_030418
-  # - {dataset: NICAM16-8S, grid: gr, ensemble: r1i1p1f1} # done recipe_model_winds_20240202_030418
-  # - {dataset: CMCC-CM2-HR4, grid: gn, ensemble: r1i1p1f1} # done recipe_model_winds_20240202_030418
-  # - {dataset: CMCC-CM2-VHR4, grid: gn, ensemble: r1i1p1f1} # done recipe_model_winds_20240202_030418
-  # - {dataset: EC-Earth3P-HR, grid: gr, ensemble: r2i1p1f1} # done recipe_model_winds_20240202_030418
-  # - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr} # done recipe_model_winds_20240202_211142
-  # - {dataset: MRI-AGCM3-2-H, ensemble: r1i1p1f1, grid: gn} # done recipe_model_winds_20240202_211142
-  # - {dataset: MRI-AGCM3-2-S, ensemble: r1i1p1f1, grid: gn} # done recipe_model_winds_20240202_211142  
-  # - {dataset: GFDL-CM4C192, ensemble: r1i1p1f1, grid: gr3} # done recipe_model_winds_20240202_211142
-  # - {dataset: MPI-ESM1-2-XR, ensemble: r1i1p1f1, grid: gn} # done recipe_model_winds_20240202_211142
+  - {dataset: NICAM16-7S, grid: gr, ensemble: r1i1p1f1} # done recipe_model_winds_20240202_030418
+  - {dataset: NICAM16-8S, grid: gr, ensemble: r1i1p1f1} # done recipe_model_winds_20240202_030418
+  - {dataset: CMCC-CM2-HR4, grid: gn, ensemble: r1i1p1f1} # done recipe_model_winds_20240202_030418
+  - {dataset: CMCC-CM2-VHR4, grid: gn, ensemble: r1i1p1f1} # done recipe_model_winds_20240202_030418
+  - {dataset: EC-Earth3P-HR, grid: gr, ensemble: r2i1p1f1} # done recipe_model_winds_20240202_030418
+  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gr} # done recipe_model_winds_20240202_211142
+  - {dataset: MRI-AGCM3-2-H, ensemble: r1i1p1f1, grid: gn} # done recipe_model_winds_20240202_211142
+  - {dataset: MRI-AGCM3-2-S, ensemble: r1i1p1f1, grid: gn} # done recipe_model_winds_20240202_211142  
+  - {dataset: GFDL-CM4C192, ensemble: r1i1p1f1, grid: gr3} # done recipe_model_winds_20240202_211142
+  - {dataset: MPI-ESM1-2-XR, ensemble: r1i1p1f1, grid: gn} # done recipe_model_winds_20240202_211142
   # 6hr
   # - {dataset: EC-Earth3P-HR, grid: gr, ensemble: r2i1p1f1} # done recipe_model_winds_20240202_221230
   # - {dataset: CMCC-CM2-VHR4, grid: gn, ensemble: r1i1p1f1} # done recipe_model_winds_20240202_221230 
   # 3hr
-  - {dataset: CNRM-CM6-1-HR, grid: gr, ensemble: r1i1p1f2, exp: amip} # done recipe_model_winds_20240202_224006
+  # - {dataset: CNRM-CM6-1-HR, grid: gr, ensemble: r1i1p1f2, exp: amip} # done recipe_model_winds_20240202_224006
+
+daily_3hr_datasets: &daily_3hr_datasets
+  - {dataset: NICAM16-7S, grid: gr, ensemble: r1i1p1f1}
+  - {dataset: NICAM16-8S, grid: gr, ensemble: r1i1p1f1}
 
 diagnostics:
-  era_compare:
+  models_daily:
     description: Compare wind speed derivation for ERA5.
     scripts: 
-      era_compare:
+      compare:
         script: winds/winds_biases.py
-        hours: 3hr
+        hours: Daily
     variables:
       uas:
         preprocessor: time
-        mip: 3hr
-        # exp: highresSST-present
+        mip: day
+        exp: highresSST-present
         project: CMIP6
         start_year: 2008
         start_month: 1
@@ -59,10 +75,11 @@ diagnostics:
         end_year: 2008
         end_month: 12
         end_day: 31
+        additional_datasets: *daily_datasets
       vas:
         preprocessor: time
-        mip: 3hr
-        # exp: highresSST-present
+        mip: day
+        exp: highresSST-present
         project: CMIP6
         start_year: 2008
         start_month: 1
@@ -70,11 +87,12 @@ diagnostics:
         end_year: 2008
         end_month: 12
         end_day: 31
+        additional_datasets: *daily_datasets
       real:
         preprocessor: time
         short_name: sfcWind
-        mip: CF3hr
-        # exp: highresSST-present
+        mip: day
+        exp: highresSST-present
         project: CMIP6
         start_year: 2008
         start_month: 1
@@ -82,3 +100,38 @@ diagnostics:
         end_year: 2008
         end_month: 12
         end_day: 31
+        additional_datasets: *daily_datasets
+  models_day_3hr:
+    description: Compare wind speed derivation for ERA5.
+    scripts: 
+      compare:
+        script: winds/winds_biases.py
+        hours: Daily
+    variables:
+      derived:
+        short_name: sfcWind
+        derive: true
+        preprocessor: 3hr_to_daily
+        mip: 3hr
+        exp: highresSST-present
+        project: CMIP6
+        start_year: 2008
+        start_month: 1
+        start_day: 2 
+        end_year: 2008
+        end_month: 12
+        end_day: 31
+        additional_datasets: *daily_3hr_datasets
+      real:
+        preprocessor: time
+        short_name: sfcWind
+        mip: day
+        exp: highresSST-present
+        project: CMIP6
+        start_year: 2008
+        start_month: 1
+        start_day: 2 
+        end_year: 2008
+        end_month: 12
+        end_day: 31
+        additional_datasets: *daily_3hr_datasets
