@@ -9,7 +9,6 @@ import esmvalcore
 import pytest
 import yaml
 from esmvalcore._main import run
-from esmvalcore.exceptions import ESMValCoreDeprecationWarning
 from packaging import version
 
 
@@ -110,8 +109,7 @@ def test_diagnostic_run_config_file(tmp_path, script_file):
             config_file,
             str(recipe_file),
     ):
-        with pytest.warns(ESMValCoreDeprecationWarning):
-            run()
+        run()
 
     check(result_file)
 
