@@ -121,7 +121,10 @@ def _diagnostic(config):
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         cubes, ancestors = _get_input_cubes(metadata)
         loaded_data[dataset] = cubes
-        
+    
+    
+    for KEY in loaded_data['ESACCI-LST'].keys():
+        iris.save(loaded_data['ESACCI-LST'][KEY], f'data_{KEY}.nc')
     # Methodology:
     # calcualte for day and night seperately
     # calls to propagation equations for each compoent
@@ -186,6 +189,8 @@ def _diagnostic(config):
         propagated_values[f'lst_unc_loc_atm_{time}'] = \
         eq_weighted_sqrt_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_atm_{time}'],
                               n_use[f'{time}']) 
+        
+        
         
         # no spatial propagation of the systamatic uncertainity
         # no generalisation has been made at this stage for the single value input
@@ -278,12 +283,40 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
                 # here use method 2
                 
                 # np.ma.mean allows masked boxes to be ignored
-                mean_list = [np.ma.mean(item) for item in uncert_by_biome] 
-                this_mean = (1/np.sqrt(len(uncert_by_biome))) * np.ma.mean(mean_list)
+                #mean_list = np.array([np.ma.mean(item) for item in uncert_by_biome] ) # make NP array
+                # old version:
+                # this_mean = (1/np.sqrt(len(uncert_by_biome))) * np.ma.mean(mean_list)
+                # new version:
+                print(uncert_by_biome)
+                print('aaaaa')
+                for item in uncert_by_biome:
+                    print(item)
+                    print(len(item))
+                    print(np.array(item))
+                    print(np.array(item)**2)
+                biome_quadrature = np.array([])
+                for item in uncert_by_biome:
+                    biome_quadrature = np.append(biome_quadrature,
+                                                 (1/len(item)) * np.sqrt(np.array(item)**2)
+                                                )              
+                print('BIOME QUAD *************************************')
+                print(biome_quadrature)
+                this_mean = (1/np.sqrt(len(biome_quadrature))) * np.sqrt(np.sum(biome_quadrature**2))
                 grid_means.append(this_mean)
     
         # final_values is the value to make a timeseries out of
-        this_times_mean = (1/np.sqrt(len(grid_means))) * np.mean(grid_means)
+        # old version:
+        #this_times_mean = (1/np.sqrt(len(grid_means))) * np.mean(np.array(grid_means))
+        # new version:
+        print('8888888888888888888888888888888888888888888')
+        print(type(grid_means))
+        grid_means = np.array(grid_means)
+        print(type(grid_means))
+        print(grid_means)
+        this_times_mean = (1/np.sqrt(len(grid_means))) * np.sqrt(np.sum(grid_means**2))
+        print('***********************************************')
+        print(this_times_mean)
+        print('####################################')
         final_values.append(this_times_mean)
     
     # need to make a cube to return
