@@ -148,7 +148,7 @@ def arguments(*args):
 
 @pytest.mark.skipif(
     version.parse(esmvalcore.__version__) >= version.parse("2.14.0"),
-    reason='ESMValCore < v2.14.0',
+    reason='ESMValCore >= v2.14.0',
 )
 def test_cmorize_obs_woa_no_data_config_file(tmp_path):
     """Test for example run of cmorize_obs command."""
@@ -168,7 +168,7 @@ def test_cmorize_obs_woa_no_data_config_file(tmp_path):
 
 @pytest.mark.skipif(
     version.parse(esmvalcore.__version__) >= version.parse("2.14.0"),
-    reason='ESMValCore < v2.14.0',
+    reason='ESMValCore >= v2.14.0',
 )
 def test_cmorize_obs_woa_data_config_file(tmp_path):
     """Test for example run of cmorize_obs command."""

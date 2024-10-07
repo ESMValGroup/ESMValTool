@@ -10,6 +10,9 @@ import yaml
 from esmvalcore._main import run
 from esmvalcore.exceptions import ESMValCoreDeprecationWarning
 
+from packaging import version
+import esmvalcore
+
 
 def write_config_file(dirname):
     config_file = dirname / 'config-user.yml'
@@ -69,7 +72,10 @@ SCRIPTS = [
 ]
 
 
-# Remove in v2.14.0
+@pytest.mark.skipif(
+    version.parse(esmvalcore.__version__) >= version.parse("2.14.0"),
+    reason='ESMValCore >= v2.14.0',
+)
 @pytest.mark.installation
 @pytest.mark.parametrize('script_file', SCRIPTS)
 def test_diagnostic_run_config_file(tmp_path, script_file):
@@ -111,6 +117,10 @@ def test_diagnostic_run_config_file(tmp_path, script_file):
     check(result_file)
 
 
+@pytest.mark.skipif(
+    version.parse(esmvalcore.__version__) < version.parse("2.12.0"),
+    reason='ESMValCore < v2.12.0',
+)
 @pytest.mark.installation
 @pytest.mark.parametrize('script_file', SCRIPTS)
 def test_diagnostic_run(tmp_path, script_file):
