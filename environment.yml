@@ -99,7 +99,7 @@ dependencies:
   - yapf ==0.32.0
 
   # NCL and dependencies
-  - ncl >=6.6.2
+  # - ncl >=6.6.2
   - cdo
   - imagemagick
   - nco
