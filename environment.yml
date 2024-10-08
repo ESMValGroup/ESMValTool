@@ -23,7 +23,7 @@ dependencies:
   - distributed
   - ecmwf-api-client
   - eofs
-  - esmpy !=8.1.0
+  - esmpy !=8.1.0,<8.6.0  # https://github.com/SciTools-incubator/iris-esmf-regrid/pull/342#issuecomment-2092921514
   - esmvalcore 2.11.*
   - fiona
   - fire
@@ -73,7 +73,7 @@ dependencies:
   - xlsxwriter
   - zarr
   # Python packages needed for unit testing
-  - flake8 >=6  # >=7 inline with esmvalcore==2.11 but current prospector:flake8<7
+  - flake8 >=6
   - pytest >=3.9,!=6.0.0rc1,!=6.0.0
   - pytest-cov
   - pytest-env
