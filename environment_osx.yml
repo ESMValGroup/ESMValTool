@@ -72,7 +72,7 @@ dependencies:
   - xlsxwriter
   - zarr
   # Python packages needed for unit testing
-  - flake8 >=7  # inline with esmvalcore==2.11
+  - flake8 >=6  # >=7 inline with esmvalcore==2.11 but current prospector:flake8<7
   - pytest >=3.9,!=6.0.0rc1,!=6.0.0
   - pytest-cov
   - pytest-env
