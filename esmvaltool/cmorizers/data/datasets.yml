@@ -808,6 +808,15 @@ datasets:
         mon/atmos/rsut/rsut_Amon_reanalysis_JRA-25_197901-201312.nc
         mon/atmos/rsutcs/rsutcs_Amon_reanalysis_JRA-25_197901-201312.nc
 
+  JRA-55:
+    tier: 2
+    source: https://rda.ucar.edu/datasets/ds628.1/
+    last_access: 2023-03-22
+    info: |
+      Create an account on the research data archive (RDA) in order to be able
+      to download the data (1.25 degree, pressure levels). See
+      https://rda.ucar.edu/login/register/ for more details.
+
   Kadow2020:
     tier: 2
     source: http://users.met.fu-berlin.de/~ChristopherKadow/
