@@ -25,6 +25,7 @@ REQUIREMENTS = {
         'cdo',
         'cdsapi',
         'cf-units',
+        'cfgrib',
         'cftime',
         'cmocean',
         'dask!=2024.8.0',  # https://github.com/dask/dask/issues/11296
@@ -245,8 +246,6 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'mip_convert_setup = '
-            'esmvaltool.cmorizers.mip_convert.esmvt_mipconv_setup:main',
             'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
             'test_recipe = '
             'esmvaltool.utils.testing.recipe_settings.install_expand_run:main',

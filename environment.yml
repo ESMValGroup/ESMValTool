@@ -15,6 +15,7 @@ dependencies:
   - cdo >=2.3.0
   - cdsapi
   - cf-units
+  - cfgrib
   - cftime
   - climextremes
   - cmocean
