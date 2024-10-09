@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - python312
   schedule:
     - cron: '0 0 * * *'
 
