@@ -29,7 +29,7 @@ dependencies:
   - fire
   - fsspec
   - gdal >=3.9.0
-  # - importlib_metadata <8  # https://github.com/ESMValGroup/ESMValTool/issues/3699
+  - importlib_metadata <8  # https://github.com/ESMValGroup/ESMValTool/issues/3699 only for Python 3.10/11
   - iris >=3.6.1
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - jinja2
