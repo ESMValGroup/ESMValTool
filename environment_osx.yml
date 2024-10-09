@@ -43,7 +43,7 @@ dependencies:
   - numpy !=1.24.3,<2.0  # severe masking bug
   - openpyxl
   - packaging
-  - pandas
+  - pandas !=2.2.0,!=2.2.1,!=2.2.2,!=2.2.3 # github.com/ESMValGroup/ESMValCore/pull/2305
   - pip !=21.3
   - progressbar2
   - prov
