@@ -952,9 +952,14 @@ datasets:
       pressure/
         rhum.mon.mean.nc
         air.mon.mean.nc
+        omega.mon.mean.nc
       https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
       gaussian_grid
         tcdc.eatm.mon.mean.nc
+        prate.sfc.mon.mean.nc
+        uflx.sfc.mon.mean.nc
+        vflx.sfc.mon.mean.nc
+        skt.sfc.mon.mean.nc
       https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
       surface
         pr_wtr.eatm.mon.mean.nc

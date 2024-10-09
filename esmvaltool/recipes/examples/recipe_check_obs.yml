@@ -675,6 +675,10 @@ diagnostics:
       prw:
       ta:
       wap:
+      pr:
+      tauu:
+      tauv:
+      tos:
     additional_datasets:
       - {dataset: NCEP-DOE-R2, project: OBS6, mip: Amon, tier: 2,
          type: reanaly, version: 2, start_year: 1979, end_year: 2022}
