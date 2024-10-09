@@ -33,7 +33,7 @@ REQUIREMENTS = {
         'ecmwf-api-client',
         'eofs',
         'ESMPy',  # not on PyPI
-        # 'esmvalcore',
+        'esmvalcore',
         'esmf-regrid>=0.10.0',  # iris-esmf-regrid #342
         'fiona',
         'fire',
