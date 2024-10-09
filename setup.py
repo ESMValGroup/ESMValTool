@@ -53,9 +53,9 @@ REQUIREMENTS = {
         'packaging',
         'pandas!=2.2.0,!=2.2.1,!=2.2.2',  # ESMValCore PR2305
         'progressbar2',
-        'psyplot>=1.5.0',
+        'psyplot>=1.5.0',  # psy*<1.5.0 are not py312 compat
         'psy-maps>=1.5.0',
-        # 'psy-reg',  # not yet at 1.5.0 not yet py312
+        'psy-reg>=1.5.0',
         'psy-simple>=1.5.0',
         'pyproj>=2.1',
         'pys2index',
