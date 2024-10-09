@@ -264,6 +264,15 @@ datasets:
          named like the year (e.g. 2007), no subdirectories with
          days etc.
 
+  CMAP:
+    tier: 2
+    source: https://psl.noaa.gov/data/gridded/data.cmap.html
+    last_access: 2024-09-09
+    info: |
+      To facilitate the download, the links to the https server are provided.
+      https://downloads.psl.noaa.gov/Datasets/cmap/enh/
+        precip.mon.mean.nc
+
   CowtanWay:
     tier: 2
     source: https://www-users.york.ac.uk/~kdc3/papers/coverage2013/series.html
