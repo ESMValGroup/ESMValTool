@@ -365,7 +365,7 @@ def _create_regression_plot(tas_cube,
     y_reg = reg.slope * x_reg + reg.intercept
 
     # Plot data
-    title = (f'{FEEDBACK_PARAMETERS.get(var,var)} TOA radiance for '
+    title = (f'{FEEDBACK_PARAMETERS.get(var, var)} TOA radiance for '
              f'{dataset_name}')
     filename = f'{var}_regression_{dataset_name}'
     if description is not None:
