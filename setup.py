@@ -51,7 +51,7 @@ REQUIREMENTS = {
         'numpy!=1.24.3',  # severe masking bug
         'openpyxl',
         'packaging',
-        'pandas!=2.2.0,!=2.2.1,!=2.2.2',  # ESMValCore PR2305
+        'pandas!=2.2.0,!=2.2.1,!=2.2.2,!=2.2.3',  # ESMValCore PR2305
         'progressbar2',
         'psyplot>=1.5.0',  # psy*<1.5.0 are not py312 compat
         'psy-maps>=1.5.0',
