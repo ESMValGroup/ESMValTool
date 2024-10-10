@@ -3,11 +3,8 @@
 
 """Calculates emergent constraint on Indian summer monsoon.
 
-###############################################################################
-testkw/lif1.py
 Author: Katja Weigel (IUP, Uni Bremen, Germany)
 EVal4CMIP project
-###############################################################################
 
 Description
 -----------
@@ -17,9 +14,6 @@ Description
 Configuration options
 ---------------------
     output_name     : Name of the output files.
-
-###############################################################################
-
 """
 
 import logging
@@ -35,10 +29,13 @@ from scipy import stats
 
 import esmvaltool.diag_scripts.shared as e
 import esmvaltool.diag_scripts.shared.names as n
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, group_metadata,
-                                            select_metadata)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    select_metadata,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -58,7 +55,7 @@ def _get_sel_files(cfg, dataname, dim=2):
 
 
 def _get_sel_files_var(cfg, varnames):
-    """Get filenames from cfg for all model mean and differen variables."""
+    """Get filenames from cfg for all model mean and different variables."""
     selection = []
 
     for var in varnames:
@@ -649,7 +646,7 @@ def substract_li(cfg, data, lats, lons, future_exp):
     datasets = []
     for iii, dataset_path in enumerate(pathlist):
 
-        # Substract historical experiment from rcp85 experiment
+        # Subtract historical experiment from rcp85 experiment
         datasets.append(data.get_info(n.DATASET, dataset_path))
         ar_diff_rain[:, :, iii] = (data.get_data(short_name='pr',
                                                  exp=future_exp,

@@ -2,26 +2,16 @@
 from pathlib import Path
 
 import esmvalcore
+import esmvalcore._recipe.check
+import esmvalcore._recipe.recipe
 import esmvalcore.cmor.check
+import esmvalcore.dataset
+import esmvalcore.local
 import pytest
 import yaml
-from esmvalcore import __version__ as core_ver
-from packaging import version
+from esmvalcore.config import CFG, _config
 
 import esmvaltool
-
-if version.parse(core_ver) < version.parse('2.8.0'):
-    from esmvalcore._config import _config
-    from esmvalcore.experimental.config import CFG
-
-    # Work around
-    # https://github.com/ESMValGroup/ESMValCore/issues/1579
-    def clear(self):
-        self._mapping.clear()
-
-    esmvalcore.experimental.config.Config.clear = clear
-else:
-    from esmvalcore.config import CFG, _config
 
 
 @pytest.fixture
@@ -58,20 +48,9 @@ RECIPES, IDS = _get_recipes()
 def test_recipe_valid(recipe_file, session, mocker):
     """Check that recipe files are valid ESMValTool recipes."""
     # Mock input files
-    try:
-        # Since ESValCore v2.8.0
-        import esmvalcore.local
-        module = esmvalcore.local
-        method = 'glob'
-    except ImportError:
-        # Prior to ESMValCore v2.8.0
-        import esmvalcore._data_finder
-        module = esmvalcore._data_finder
-        method = 'find_files'
-
     mocker.patch.object(
-        module,
-        method,
+        esmvalcore.local,
+        'glob',
         autospec=True,
         side_effect=lambda *_, **__: [
             'test_0001-1849.nc',
@@ -81,57 +60,29 @@ def test_recipe_valid(recipe_file, session, mocker):
 
     # Do not remove unexpanded supplementaries. These cannot be expanded
     # because the mocked file finding above does not produce facets.
-    try:
-        import esmvalcore.dataset
-    except ImportError:
-        pass
-    else:
-        mocker.patch.object(
-            esmvalcore.dataset.Dataset,
-            '_remove_unexpanded_supplementaries',
-            autospec=True,
-            spec_set=True,
-        )
+    mocker.patch.object(
+        esmvalcore.dataset.Dataset,
+        '_remove_unexpanded_supplementaries',
+        autospec=True,
+        spec_set=True,
+    )
 
     # Mock vertical levels
-    # Account for module change after esmvalcore=2.7
-    if version.parse(core_ver) <= version.parse('2.7.1'):
-        import esmvalcore._recipe
-        mocker.patch.object(
-            esmvalcore._recipe,
-            'get_reference_levels',
-            autospec=True,
-            spec_set=True,
-            side_effect=lambda *_, **__: [1, 2],
-        )
-    else:
-        import esmvalcore._recipe.recipe
-        mocker.patch.object(
-            esmvalcore._recipe.recipe,
-            'get_reference_levels',
-            autospec=True,
-            spec_set=True,
-            side_effect=lambda *_, **__: [1, 2],
-        )
+    mocker.patch.object(
+        esmvalcore._recipe.recipe,
+        'get_reference_levels',
+        autospec=True,
+        spec_set=True,
+        side_effect=lambda *_, **__: [1, 2],
+    )
 
     # Mock valid NCL version
-    # Account for module change after esmvalcore=2.7
-    if version.parse(core_ver) <= version.parse('2.7.1'):
-        import esmvalcore._recipe_checks
-        mocker.patch.object(
-            esmvalcore._recipe_checks,
-            'ncl_version',
-            autospec=True,
-            spec_set=True,
-        )
-    else:
-        import esmvalcore._recipe.check
-        mocker.patch.object(
-            esmvalcore._recipe.check,
-            'ncl_version',
-            autospec=True,
-            spec_set=True,
-        )
+    mocker.patch.object(
+        esmvalcore._recipe.check,
+        'ncl_version',
+        autospec=True,
+        spec_set=True,
+    )
 
     # Mock interpreters installed
     def which(executable):
@@ -158,9 +109,4 @@ def test_recipe_valid(recipe_file, session, mocker):
             filename.parent.mkdir(parents=True, exist_ok=True)
             filename.touch()
 
-    # Account for module change after esmvalcore=2.7
-    if version.parse(core_ver) <= version.parse('2.7.1'):
-        config_user = session.to_config_user()
-        esmvalcore._recipe.read_recipe_file(recipe_file, config_user)
-    else:
-        esmvalcore._recipe.recipe.read_recipe_file(recipe_file, session)
+    esmvalcore._recipe.recipe.read_recipe_file(recipe_file, session)

@@ -66,7 +66,7 @@ def generate_sidebar(conf, conf_api):
     _write("esmvaltool", "Making a recipe or diagnostic", "develop/index")
     _write("esmvaltool", "Contributing to the community", "community/index")
     _write("esmvaltool", "Utilities", "utils")
-    _write("esmvaltool", "Diagnostics API Reference", "api/esmvaltool")
+    _write("esmvaltool", "Diagnostics API Reference", "api/index")
     _write("esmvaltool", "Frequently Asked Questions", "faq")
     _write("esmvaltool", "Changelog", "changelog")
     _endl()
