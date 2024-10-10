@@ -21,7 +21,7 @@ REQUIREMENTS = {
     # Use with pip install . to install from source
     'install': [
         'aiohttp',
-        'cartopy<0.24',
+        'cartopy<0.24',  # github.com/ESMValGroup/ESMValTool/issues/3767
         'cdo',
         'cdsapi',
         'cf-units',
