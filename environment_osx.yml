@@ -10,7 +10,7 @@ channels:
 
 dependencies:
   - aiohttp
-  - cartopy
+  - cartopy <0.24
   - cdo >=2.3.0
   - cdsapi
   - cf-units
