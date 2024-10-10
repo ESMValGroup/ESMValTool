@@ -151,10 +151,8 @@ begin
       fx_variable = "volcello"
       error_msg("f", "russell18jgr-fig6.ncl", " ", "volcello file for "  \
                 + vo_datasets(iii) \
-                + " not found in the metadata file, please add "\
-                + "'fx_files: [volcello]' to the variable dictionary in the " \
-                + "recipe or add the location of file to input directory " \
-                + "in config-user.yml ")
+                + " not found in the metadata file, please specify " \
+                + "'volcello' as supplementary variable in the recipe.")
     end if
 
     dataset_so_time = read_data(so_items[iii])

@@ -12,8 +12,13 @@ https://confluence.ecmwf.int/display/WEBAPI/Accessing+ECMWF+data+servers+in+batc
 4. Copy/paste the text in https://api.ecmwf.int/v1/key/ into a blank text file
 and save it as $HOME/.ecmwfapirc
 
-5. Use ESMValCore/esmvalcore/config-user.yml as an template
-and set the rootpath of the output directory in RAWOBS
+5. Copy the default configuration file with
+
+```bash
+esmvaltool config get_config_user --path=config-user.yml
+```
+
+and set the ``rootpath`` for the RAWOBS project.
 
 6. Check the description of the variables at
 https://apps.ecmwf.int/codes/grib/param-db

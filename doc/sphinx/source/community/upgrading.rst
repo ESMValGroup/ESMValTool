@@ -145,7 +145,7 @@ Many operations previously performed by the diagnostic scripts, are now included
 
 The backend operations are fully controlled by the ``preprocessors`` section in the recipe. Here, a number of preprocessor sets can be defined, with different options for each of the operations. The sets defined in this section are applied in the ``diagnostics`` section to preprocess a given variable.
 
-It is recommended to proceed step by step, porting and testing each operation separately before proceeding with the next one. A useful setting in the user configuration file (``config-private.yml``) called ``write_intermediary_cube`` allows writing out the variable field after each preprocessing step, thus facilitating the comparison with the old version (e.g., after CMORization, level selection, after regridding, etc.). The CMORization step of the new backend exactly corresponds to the operation performed by the old backend (and stored in the ``climo`` directory, now called ``preprec``): this is the very first step to be checked, by simply comparing the intermediary file produced by the new backend after CMORization with the output of the old backend in the ``climo`` directorsy (see "Testing" below for instructions).
+It is recommended to proceed step by step, porting and testing each operation separately before proceeding with the next one. A useful setting in the configuration called ``write_intermediary_cube`` allows writing out the variable field after each preprocessing step, thus facilitating the comparison with the old version (e.g., after CMORization, level selection, after regridding, etc.). The CMORization step of the new backend exactly corresponds to the operation performed by the old backend (and stored in the ``climo`` directory, now called ``preprec``): this is the very first step to be checked, by simply comparing the intermediary file produced by the new backend after CMORization with the output of the old backend in the ``climo`` directorsy (see "Testing" below for instructions).
 
 The new backend also performs variable derivation, replacing the ``calculate`` function in the ``variable_defs`` scripts. If the recipe which is being ported makes use of derived variables, the corresponding calculation must be ported from the ``./variable_defs/<variable>.ncl`` file to ``./esmvaltool/preprocessor/_derive.py``.
 
@@ -159,7 +159,7 @@ In the new version, all settings are centralized in the recipe, completely repla
 Make sure the diagnostic script writes NetCDF output
 ======================================================
 
-Each diagnostic script is required to write the output of the anaylsis in one or more NetCDF files. This is to give the user the possibility to further look into the results, besides the plots, but (most importantly) for tagging purposes when publishing the data in a report and/or on a website.
+Each diagnostic script is required to write the output of the analysis in one or more NetCDF files. This is to give the user the possibility to further look into the results, besides the plots, but (most importantly) for tagging purposes when publishing the data in a report and/or on a website.
 
 For each of the plot produced by the diagnostic script a single NetCDF file has to be generated. The variable saved in this file should also contain all the necessary metadata that documents the plot (dataset names, units, statistical methods, etc.).
 The files have to be saved in the work directory (defined in `cfg['work_dir']` and `config_user_info@work_dir`, for the python and NCL diagnostics, respectively).
@@ -209,7 +209,7 @@ Before submitting a pull request, the code should be cleaned to adhere to the co
 Update the documentation
 ========================
 
-If necessary, add or update the documentation for your recipes in the corrsponding rst file, which is now in ``doc\sphinx\source\recipes``. Do not forget to also add the documentation file to the list in ``doc\sphinx\source\annex_c`` to make sure it actually appears in the documentation.
+If necessary, add or update the documentation for your recipes in the corresponding rst file, which is now in ``doc\sphinx\source\recipes``. Do not forget to also add the documentation file to the list in ``doc\sphinx\source\annex_c`` to make sure it actually appears in the documentation.
 
 Open a pull request
 ===================
