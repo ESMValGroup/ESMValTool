@@ -16,6 +16,7 @@ dependencies:
   - cf-units
   - cftime
   - cmocean
+  - curl <8.10  # https://github.com/ESMValGroup/ESMValTool/pull/3755
   - cython
   - dask
   - distributed
