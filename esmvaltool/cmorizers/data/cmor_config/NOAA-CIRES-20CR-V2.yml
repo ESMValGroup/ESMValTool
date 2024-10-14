@@ -60,4 +60,5 @@ variables:
     mip: Amon
     raw: vflx
     file: 'vflx.mon.mean.nc'
+    make_negative: true
     
