@@ -10,12 +10,13 @@ channels:
 
 dependencies:
   - aiohttp
-  - cartopy
+  - cartopy <0.24  # https://github.com/ESMValGroup/ESMValTool/issues/3767
   - cdo >=2.3.0
   - cdsapi
   - cf-units
   - cftime
   - cmocean
+  - curl <8.10  # https://github.com/ESMValGroup/ESMValTool/pull/3755
   - cython
   - dask
   - distributed
