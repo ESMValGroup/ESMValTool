@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - pin_cartopy_on_v211branch
   schedule:
     - cron: '0 0 * * *'
 
