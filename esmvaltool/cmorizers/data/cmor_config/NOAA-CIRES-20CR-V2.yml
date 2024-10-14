@@ -54,6 +54,7 @@ variables:
     mip: Amon
     raw: uflx
     file: 'uflx.mon.mean.nc'
+    make_negative: true
   tauv_month:
     short_name: tauv
     mip: Amon
