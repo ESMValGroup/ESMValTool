@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - retire_Mambaforge
   schedule:
     - cron: '0 0 * * *'
 
