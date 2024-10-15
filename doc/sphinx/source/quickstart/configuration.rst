@@ -5,10 +5,10 @@ Configuration
 *************
 
 The ``esmvaltool`` command is provided by the ESMValCore package, the
-documentation on configuring ESMValCore can be found :ref:`here
-<esmvalcore:config>`.
-An overview of all configuration options can be found :ref:`here
-<esmvalcore:config_options>`.
+documentation on configuring ESMValCore can be found
+:ref:`here <esmvalcore:config>`.
+An overview of all configuration options can be found
+:ref:`here <esmvalcore:config_options>`.
 In particular, it is recommended to read the section on how to :ref:`specify
 configuration options  <esmvalcore:config_for_cli>` and the section on
 :ref:`Finding data <esmvalcore:findingdata>`.
