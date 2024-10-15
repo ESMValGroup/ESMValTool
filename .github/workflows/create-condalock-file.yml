@@ -10,6 +10,7 @@ on:
       - pin_conda-lock
   schedule:
     - cron: '0 4 */10 * *'
+workflow_dispatch:
 
 # Required shell entrypoint to have properly configured bash shell
 defaults:
@@ -30,7 +31,6 @@ jobs:
           activate-environment: esmvaltool-fromlock
           python-version: "3.12"
           miniforge-version: "latest"
-          miniforge-variant: Mambaforge
           use-mamba: true
       - name: Show conda config
         run: |
@@ -38,7 +38,7 @@ jobs:
           conda --version
           # setup-miniconda@v3 installs an old conda and mamba
           # forcing a modern mamba updates both mamba and conda
-          conda install -c conda-forge "mamba>=1.4.8"
+          conda install -c conda-forge "mamba>=1.4.8,<2"
           conda config --show-sources
           conda config --show
           conda --version
