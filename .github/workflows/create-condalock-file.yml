@@ -9,6 +9,7 @@ on:
   #     - main
   schedule:
     - cron: '0 4 */10 * *'
+  workflow_dispatch:
 
 # Required shell entrypoint to have properly configured bash shell
 defaults:
