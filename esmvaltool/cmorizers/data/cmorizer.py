@@ -66,7 +66,9 @@ class _Formatter():
         if config_file is not None:  # remove in v2.14.0
             CFG.load_from_file(config_file)
         elif config_dir is not None:
-            config_dir = Path(os.path.expandvars(config_dir)).expanduser().absolute()
+            config_dir = Path(
+                os.path.expandvars(config_dir)
+            ).expanduser().absolute()
             if not config_dir.is_dir():
                 raise NotADirectoryError(
                     f"Invalid --config_dir given: {config_dir} is not an "
@@ -213,8 +215,9 @@ class _Formatter():
                 failed_datasets.append(dataset)
 
         if failed_datasets:
-            raise Exception(
-                f'Format failed for datasets {" ".join(failed_datasets)}')
+            raise RuntimeError(
+                f'Format failed for datasets {" ".join(failed_datasets)}'
+            )
 
     @staticmethod
     def has_downloader(dataset):

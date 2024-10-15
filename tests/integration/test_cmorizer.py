@@ -156,7 +156,7 @@ def test_cmorize_obs_woa_no_data_config_file(tmp_path):
     os.makedirs(os.path.join(tmp_path, 'raw_stuff', 'Tier2'))
     os.makedirs(os.path.join(tmp_path, 'output_dir'))
     with keep_cwd():
-        with pytest.raises(Exception):
+        with pytest.raises(RuntimeError):
             with pytest.warns(ESMValToolDeprecationWarning):
                 DataCommand().format('WOA', config_file=config_file)
 
@@ -197,7 +197,7 @@ def test_cmorize_obs_woa_no_data(tmp_path):
     write_config_file(tmp_path)
     os.makedirs(os.path.join(tmp_path, 'raw_stuff', 'Tier2'))
     with keep_cwd():
-        with pytest.raises(Exception):
+        with pytest.raises(RuntimeError):
             DataCommand().format('WOA', config_dir=str(tmp_path))
 
     log_dir = os.path.join(tmp_path, 'output_dir')
