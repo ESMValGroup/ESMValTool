@@ -4,9 +4,10 @@ on:
   # Trigger on push on main or other branch for testing
   # NOTE that push: main will create the file very often
   # and hence lots of automated PRs
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+  #      - main
+    - test_BenMares
   schedule:
     - cron: '0 4 */10 * *'
 
@@ -49,8 +50,9 @@ jobs:
         run: mamba install -y -c conda-forge conda-lock
       - name: Check version of conda-lock
         run: conda-lock --version
+      - run: conda list
       - name: Create conda lock file for linux-64
-        run: conda-lock lock --platform linux-64 -f environment.yml --mamba --kind explicit
+        run: conda-lock lock --platform linux-64 -f environment.yml --mamba --kind explicit --log-level=DEBUG
       - name: Show conda version again
         run: conda --version
       - name: Show Python exec and version again
