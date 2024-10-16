@@ -1,6 +1,43 @@
 # Dataset information
 ---
 datasets:
+  AERONET:
+    tier: 3
+    source: "https://aeronet.gsfc.nasa.gov/"
+    last_access: 2024-04-06
+    info: |
+      Aerosol Optical Depth information from a worldwide network of stations.
+
+  AGCD:
+    tier: 2
+    source: "http://dx.doi.org/10.25914/6009600786063"
+    last_access: 2023-11-21
+    info: |
+      Australian Gridded Climate Data (AGCD) version 2 is the Bureau of Meteorology's official dataset for climate
+      analyses covering analysis of monthly rainfall. The dataset provides consistent temporal and spatial analyses
+      across Australia for each observed data variable. This accounts for spatial and temporal gaps in observations.
+      Where possible, the gridded analysis techniques provide useful estimates in data-sparse regions
+      such as central Australia. 
+      
+      Time coverage: Site-based data are used to provide gridded climate data at the monthly timescale for rainfall (1900+).
+      Reference: Evans, A., Jones, D.A., Smalley, R., and Lellyett, S. 2020. An enhanced gridded rainfall analysis scheme
+      for Australia. Bureau of Meteorology Research Report. No. 41.
+      National Computational Infrastructure (NCI) - Catalogue Record: http://dx.doi.org/10.25914/6009600786063.
+      Data from NCI (National Computing Infrastructure Australia https://nci.org.au/), 
+      requires an NCI account and access to Gadi(Supercomputer in Canberra) and the project found in catalogue record.
+      Access can be requested through NCI. NCI is an ESGF node (https://esgf.nci.org.au/projects/esgf-nci/)
+  
+  ANUClimate:
+    tier: 3
+    source: "https://dx.doi.org/10.25914/60a10aa56dd1b"
+    last_access: 2023-11-21
+    info: |
+      Data from NCI project requiring an NCI account and access to GADI
+
+      ANUClimate 2.0 consists of gridded daily and monthly climate variables across the terrestrial landmass of Australia
+      from at least 1970 to the present. Rainfall grids are generated from 1900 to the present. The underpinning spatial 
+      models have been developed at the Fenner School of Environment and Society of the Australian National University.
+
   APHRO-MA:
     tier: 3
     source: "http://aphrodite.st.hirosaki-u.ac.jp/download/"
@@ -244,12 +281,19 @@ datasets:
 
   CRU:
     tier: 2
-    source: https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/cruts.1811131722.v4.02/
-    last_access: 2019-05-16
+    source: https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.07/cruts.2304141047.v4.07/
+    last_access: 2023-11-06
     info: |
-      Download the following files:
-        {raw_name}/cru_ts4.02.1901.2017.{raw_name}.dat.nc.gz
+      Files can be downloaded using the download script (latest version only)
+      or manually:
+        {raw_name}/cru_ts4.07.1901.2022.{raw_name}.dat.nc.gz
       where {raw_name} is the name of the desired variable(s).
+      Previous versions can be downloaded from the corresponding folders in
+      https://crudata.uea.ac.uk/cru/data/hrg/. ESMValTools formatter can be used
+      for older versions with minor adjustments of
+      ``esmvaltool/cmorizers/data/cmor_config/CRU.yml``
+      Exact time coordinates and number of stations are not available version
+      TS4.02.
 
   CT2019:
     tier: 2
@@ -429,25 +473,17 @@ datasets:
 
   ESACCI-LANDCOVER:
     tier: 2
-    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/land_cover_maps/
-    last_access: 2019-01-10
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/pft/v2.0.8/
+    last_access: 2024-07-11
     info: |
-      Download the 3 NetCDF files for 2000, 2005 and 2010.
-      Download the CCI-LC Tools from:
-        http://maps.elie.ucl.ac.be/CCI/viewer/download/lc-user-tools-3.14.zip
-      Unpack and run the CCI-LC Tools on each of the NetCDF files as follows:
-        bash lc-user-tools-3.14/bin/aggregate-map.sh \
-          -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 \
-          -PoutputAccuracy=false -PoutputPFTClasses=true \
-          -PoutputLCCSClasses=false -PnumRows=360 <inputfile.nc>
-      Put the resulting processed data in input_dir_path.
-
-      Caveats
-        The CCI-LC Tools must be applied before running this script.
-        The CCI-LC Tools require Java Version 7 or higher.
-        The input data are available for a single year and are copied over to
-        generate a time series over their time range of validity.
-
+        Download and processing instructions:
+        Use the following CLI to download all the files:
+        esmvaltool data download ESACCI-LANDCOVER
+        The underlying downloader is located here: 
+        /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_landcover.py
+        and it will download all the files currently available on CEDA (1992-2020) 
+        under a single directory as follow: ${RAWOBS}/Tier2/ESACCI-LANDCOVER
+  
   ESACCI-LST:
     tier: 2
     source: On CEDA-JASMIN, /gws/nopw/j04/esacci_lst/public
@@ -487,11 +523,11 @@ datasets:
   ESACCI-SOILMOISTURE:
     tier: 2
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/soil_moisture/data/
-    last_access: 2019-02-01
+    last_access: 2024-06-19
     info: |
       Download the data from:
-        daily_files/COMBINED/v04.2/
-        ancillary/v04.2/
+        daily_files/COMBINED/v08.1/
+        ancillary/v08.1/
       Put all files under a single directory (no subdirectories with years).
 
   ESACCI-SEA-SURFACE-SALINITY:
@@ -515,14 +551,12 @@ datasets:
 
   ESACCI-WATERVAPOUR:
     tier: 3
-    source: Marc Schröder, ftp.brockmann-consult.de
-    last_access: 2021-03-29
+    source: https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001
+    last_access: 2024-02-21
     info: |
-      Currently still restricted because preliminary.
-      Download and processing instructions:
-        FTP server: ftp.brockmann-consult.de, access currently restricted
-                    data/tcwv/dataset3_1/CDR-*/...
-        All files need to be in one directory, not in yearly subdirectories.
+      CDR2 requires registration at EUMETSAT CM SAF, the information on how to 
+          download the order will be emailed once the order is ready.
+      All files need to be in one directory, not in yearly subdirectories.
 
   ESDC:
     tier: 2
@@ -636,6 +670,15 @@ datasets:
     info: |
       Download the following files:
         full_data_monthly_{version}.nc.gz
+
+  GPCP-SG:
+    tier: 2
+    source: |
+      https://psl.noaa.gov/data/gridded/data.gpcp.html
+      https://downloads.psl.noaa.gov/Datasets/gpcp/precip.mon.mean.nc
+    last_access: 2023-02-15
+    info: |
+      Download the file precip.mon.mean.nc
 
   GRACE:
     tier: 3
@@ -765,6 +808,15 @@ datasets:
         mon/atmos/rsut/rsut_Amon_reanalysis_JRA-25_197901-201312.nc
         mon/atmos/rsutcs/rsutcs_Amon_reanalysis_JRA-25_197901-201312.nc
 
+  JRA-55:
+    tier: 2
+    source: https://rda.ucar.edu/datasets/ds628.1/
+    last_access: 2023-03-22
+    info: |
+      Create an account on the research data archive (RDA) in order to be able
+      to download the data (1.25 degree, pressure levels). See
+      https://rda.ucar.edu/login/register/ for more details.
+
   Kadow2020:
     tier: 2
     source: http://users.met.fu-berlin.de/~ChristopherKadow/
@@ -827,6 +879,13 @@ datasets:
       individually or by using the option "download all".
       Data is freely available, but a registration is required.
 
+  MERRA:
+    tier: 3
+    source: https://goldsmr3.gesdisc.eosdis.nasa.gov/data/MERRA_MONTHLY/
+    last_access: 2023-02-01
+    info: |
+      Use automatic download. That will download monthly data.
+
   MERRA2:
     tier: 3
     source: https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/ https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
@@ -856,6 +915,13 @@ datasets:
     last_access: 2022-11-03
     info: |
       Download the file MOBO-DIC_MPIM_monthly_clim.nc
+
+  MOBO-DIC2004-2019:
+    tier: 2
+    source: https://www.nodc.noaa.gov/archive/arc0211/0277099/2.3/data/0-data/
+    last_access: 2023-10-09
+    info: |
+      Download the file MPI_MOBO-DIC_2004-2019_v2.nc
 
   MODIS:
     tier: 3
@@ -976,7 +1042,7 @@ datasets:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
 
-  NOAA-CIRES-20CR:
+  NOAA-CIRES-20CR-V2:
     tier: 2
     source: ftp.cdc.noaa.gov/Projects/20thC_ReanV2/Monthlies/
     last_access: 2022-11-17
@@ -986,8 +1052,41 @@ datasets:
         monolevel/pr_wtr.eatm.mon.mean.nc
         pressure/shum.mon.mean.nc
         gaussian/monolevel/tcdc.eatm.mon.mean.nc
-        gaussian/monolevel/ulwrf.ntat.mon.mean.nc  
+        gaussian/monolevel/ulwrf.ntat.mon.mean.nc
         gaussian/monolevel/uswrf.ntat.mon.mean.nc
+
+  NOAA-CIRES-20CR-V3:
+    tier: 2
+    source: ftp.cdc.noaa.gov/Projects/20thC_ReanV3/Monthlies/
+    last_access: 2023-03-27
+    info: |
+      Download the following files:
+        miscSI-MO/cldwtr.eatm.mon.mean.nc
+        miscSI-MO/pr_wtr.eatm.mon.mean.nc
+        prsSI-MO/shum.mon.mean.nc
+        miscMO/tcdc.eatm.mon.mean.nc
+        ntatFlxSI-MO/ulwrf.ntat.mon.mean.nc
+        ntatFlxSI-MO/uswrf.ntat.mon.mean.nc
+        ntatFlxSI-MO/csulf.ntat.mon.mean.nc
+        ntatFlxSI-MO/csusf.ntat.mon.mean.nc
+
+  NOAA-ERSSTv3b:
+    tier: 2
+    source: https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v3b/netcdf/
+    last_access: 2023-12-04
+    info: |
+      Download the following files:
+        ersst.yyyymm.nc 
+        for years 1854 to 2020
+
+  NOAA-ERSSTv5:
+    tier: 2
+    source: https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/netcdf/
+    last_access: 2023-12-04
+    info: |
+      Download the following files:
+        ersst.v5.yyyymm.nc 
+        for years 1854 onwards
 
   NOAAGlobalTemp:
     tier: 2
@@ -997,6 +1096,14 @@ datasets:
       Download the following files:
       [SOURCE]/gridded/NOAAGlobalTemp_v5.0.0_gridded_s188001_e202205_c20220608T133245.nc
 
+  NOAA-MBL-CH4:
+    tier: 2
+    source: https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv
+    last_access: 2023-07-17
+    info: |
+      Download the following file:
+      https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv
+
   NSIDC-0116-sh:
     tier: 3
     source: https://nsidc.org/data/NSIDC-0116
@@ -1005,13 +1112,21 @@ datasets:
       Download daily data from:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
+   
+  NSIDC-G02202-sh:
+    tier: 3
+    source: https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4shmday
+    last_access: 2023-05-13
+    info: |
+      Download monthly data. 
+      Login required for download, and also requires citation only to use
 
   OceanSODA-ETHZ:
     tier: 2
     source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0220059/
-    last_access: 2022-11-03
+    last_access: 2024-02-15
     info: |
-      Download the file OceanSODA-ETHZ_GRaCER_v2021a_1982-2020.nc
+      Download the file OceanSODA_ETHZ-v2023.OCADS.01_1982-2022.nc
 
   OSI-450-nh:
     tier: 2

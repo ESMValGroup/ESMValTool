@@ -159,7 +159,7 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cfg['work_dir'] = cfg_user['work_dir']
+    cfg['work_dir'] = cfg_user.work_dir
     # Pass on some parameters to cfg file
     cfg['rawobsdir'] = cfg_user['rootpath']['RAWOBS'][0]
     cfg['in_dir'] = in_dir

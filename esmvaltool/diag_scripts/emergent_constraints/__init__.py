@@ -9,10 +9,16 @@ import iris.pandas
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import scipy
 import seaborn as sns
 import yaml
+from packaging.version import Version
 from scipy import integrate
 from scipy.stats import linregress
+if Version(scipy.version.version) < Version('1.14.0'):
+    from scipy.integrate import simps as simpson
+else:
+    from scipy.integrate import simpson
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -35,7 +41,10 @@ LEGEND_KWARGS = {
     'bbox_to_anchor': [1.05, 0.5],
     'borderaxespad': 0.0,
 }
-PANDAS_PRINT_OPTIONS = ['display.max_rows', None, 'display.max_colwidth', -1]
+PANDAS_PRINT_OPTIONS = [
+    'display.max_rows', None,
+    'display.max_colwidth', None,
+]
 
 
 def _check_x_y_arrays(x_array, y_array):
@@ -68,11 +77,11 @@ def _check_x_y_arrays(x_array, y_array):
 
 def _add_column(data_frame, series, column_name):
     """Add column to :class:`pandas.DataFrame` (expands index if necessary)."""
-    for row in series.index.difference(data_frame.index):
-        data_frame = pd.concat([
-            data_frame,
-            pd.Series(name=row, dtype=np.float64).to_frame().T,
-        ])
+    rows_to_add = [
+        pd.Series(name=row, dtype=np.float64).to_frame().T for row in
+        series.index.difference(data_frame.index)
+    ]
+    data_frame = pd.concat([data_frame] + rows_to_add)
     if column_name in data_frame.columns:
         for row in series.index:
             if np.isnan(data_frame.loc[row, column_name]):
@@ -294,12 +303,16 @@ def _get_data_frame(var_type, cubes, label_all_data, group_by=None):
 
 def _metadata_to_dict(metadata):
     """Convert :class:`iris.cube.CubeMetadata` to :obj:`dict`."""
-    new_dict = {}
-    for (key, val) in metadata._asdict().items():
-        if isinstance(val, dict):
-            new_dict.update(val)
-        else:
-            new_dict[key] = val
+    new_dict = dict(metadata.attributes)
+    other_keys = [
+        'standard_name',
+        'long_name',
+        'var_name',
+        'units',
+        'cell_methods',
+    ]
+    for key in other_keys:
+        new_dict[key] = getattr(metadata, key)
     return new_dict
 
 
@@ -808,14 +821,16 @@ def get_input_data(cfg):
                                      label_all_data, group_by)
 
     # Unify indices of features and label
-    for row in features.index.difference(label.index):
-        label = pd.concat(
-            [label, pd.Series(name=row, dtype=np.float64).to_frame().T]
-        )
-    for row in label.index.difference(features.index):
-        features = pd.concat(
-            [features, pd.Series(name=row, dtype=np.float64).to_frame().T]
-        )
+    rows_to_add_to_label = [
+        pd.Series(name=row, dtype=np.float64).to_frame().T for row in
+        features.index.difference(label.index)
+    ]
+    label = pd.concat([label] + rows_to_add_to_label)
+    rows_to_add_to_features = [
+        pd.Series(name=row, dtype=np.float64).to_frame().T for row in
+        label.index.difference(features.index)
+    ]
+    features = pd.concat([features] + rows_to_add_to_features)
 
     # Sort data frames
     for data_frame in (features, label, pred_input, pred_input_err):
@@ -1394,7 +1409,7 @@ def plot_target_distributions(training_data, pred_input_data, attributes,
                         add_combined_group=cfg['combine_groups'])
     summary_columns = pd.MultiIndex.from_product(
         [groups, ['best estimate', 'range', 'min', 'max']])
-    summary = pd.DataFrame(columns=summary_columns, dtype=np.float64)
+    summaries = []
 
     # Iterate over features
     for feature in training_data.x.columns:
@@ -1455,8 +1470,8 @@ def plot_target_distributions(training_data, pred_input_data, attributes,
             summary_for_feature[(group, 'min')] = y_min
             summary_for_feature[(group, 'max')] = y_max
 
-        # Save results to feature
-        summary = pd.concat([summary, summary_for_feature.to_frame().T])
+        # Save results for feature
+        summaries.append(summary_for_feature.to_frame().T)
 
         # Plot appearance
         set_plot_appearance(axes, attributes, plot_title=feature)
@@ -1485,6 +1500,7 @@ def plot_target_distributions(training_data, pred_input_data, attributes,
             provenance_logger.log(plot_path, provenance_record)
 
     # Print mean results
+    summary = pd.concat(summaries)
     with pd.option_context(*PANDAS_PRINT_OPTIONS):
         logger.info("Constrained ranges:\n%s", summary)
         summary = summary.mean(axis=0)
@@ -1663,7 +1679,7 @@ def cdf(data, pdf):
 
     """
     idx_range = range(1, len(data) + 1)
-    cum_dens = [integrate.simps(pdf[:idx], data[:idx]) for idx in idx_range]
+    cum_dens = [simpson(pdf[:idx], x=data[:idx]) for idx in idx_range]
     return np.array(cum_dens)
 
 

@@ -3,9 +3,16 @@
 
 This module contains functions for data interpolation.
 """
+try:
+    import esmpy
+except ImportError as exc:
+    # Prior to v8.4.0, `esmpy`` could be imported as `ESMF`.
+    try:
+        import ESMF as esmpy  # noqa: N811
+    except ImportError:
+        raise exc
 import logging
 import os
-import ESMF
 import numpy as np
 # import pyresample
 from cartopy.util import add_cyclic_point
@@ -65,12 +72,12 @@ def weighting(distance):
 def define_esmf_field(ifile, data_onlevel, name):
     """Define ESMF field from netCDF file."""
 
-    grid_obs = ESMF.Grid(filename=ifile, filetype=ESMF.FileFormat.GRIDSPEC)
-    mask_obs = grid_obs.add_item(ESMF.GridItem.MASK)
+    grid_obs = esmpy.Grid(filename=ifile, filetype=esmpy.FileFormat.GRIDSPEC)
+    mask_obs = grid_obs.add_item(esmpy.GridItem.MASK)
     mask_obs[:] = data_onlevel.mask.astype('int').T
-    esmf_field = ESMF.Field(
+    esmf_field = esmpy.Field(
         grid_obs,
-        staggerloc=ESMF.StaggerLoc.CENTER,
+        staggerloc=esmpy.StaggerLoc.CENTER,
         name=name,
     )
     return esmf_field
@@ -92,12 +99,12 @@ def add_esmf_cyclic(metadata_obs, data_onlevel, interpolated):
 def esmf_regriding(sourcefield, distfield, metadata_obs, data_onlev_obs):
     """Use ESMF fields to do the regriding."""
     # define the regrider
-    regrid = ESMF.Regrid(
+    regrid = esmpy.Regrid(
         sourcefield,
         distfield,
-        regrid_method=ESMF.RegridMethod.NEAREST_STOD,
-        # regrid_method=ESMF.RegridMethod.BILINEAR,
-        unmapped_action=ESMF.UnmappedAction.IGNORE,
+        regrid_method=esmpy.RegridMethod.NEAREST_STOD,
+        # regrid_method=esmpy.RegridMethod.BILINEAR,
+        unmapped_action=esmpy.UnmappedAction.IGNORE,
         dst_mask_values=np.array([1]),
         src_mask_values=np.array([1]))
     # actual regriding

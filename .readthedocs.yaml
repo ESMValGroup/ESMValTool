@@ -9,10 +9,19 @@ version: 2
 build:
   os: ubuntu-22.04
   tools:
-    python: "mambaforge-4.10"
+    # updated and deployed from Aug 1, 2023
+    python: "mambaforge-22.9"
   jobs:
+    pre_create_environment:
+      # update mamba just in case
+      - mamba update --yes --quiet --name=base mamba 'zstd=1.5.2'
+      - mamba --version
+      - mamba list --name=base
     post_create_environment:
-      - pip install . --no-deps
+      - conda run -n ${CONDA_DEFAULT_ENV} mamba list
+      # use conda run executable wrapper to have all env variables
+      - conda run -n ${CONDA_DEFAULT_ENV} mamba --version
+      - conda run -n ${CONDA_DEFAULT_ENV} pip install . --no-deps
 
 # Declare the requirements required to build your docs
 conda:

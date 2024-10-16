@@ -107,7 +107,7 @@ end
 
 begin
 
-  plotpath = config_user_info@plot_dir + "/russell18jgr-fig9c_" \
+  plotpath = config_user_info@plot_dir + "russell18jgr-fig9c_" \
             + sprinti("%0.4i", min(toint(start_years_data))) + "-" \
             + sprinti("%0.4i", max(toint(end_years_data)))
 
@@ -312,6 +312,8 @@ begin
   end create
   draw(legend)
 
+  frame(wks)
+
   do idd = 0, dimsizes(lat_width) - 1
     nc_filename = config_user_info@work_dir + "russell18jgr_fig9c_" \
                   + annots(idd) + "_" + (start_years_data(idd)) + "-" \
@@ -331,7 +333,7 @@ begin
     ncdf_outfile = ncdf_write(outvar, nc_filename)
 
     log_provenance(ncdf_outfile, \
-                   plotpath, \
+                   plotpath + "." + output_type(), \
                    "Russell et al 2018 figure 9c", \
                    "mean", \
                    "sh", \

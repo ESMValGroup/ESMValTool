@@ -23,6 +23,6 @@ the ``esmvaltool`` command can find the data on your system, before it can run
 a recipe.
 
 There is a lesson available in the
-`ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
+`ESMValTool tutorial <https://tutorial.esmvaltool.org/>`_
 that describes how to personalize the configuration file. It can be found
-`at this site <https://esmvalgroup.github.io/ESMValTool_Tutorial/03-configuration/index.html>`_.
+`at this site <https://tutorial.esmvaltool.org/03-configuration/index.html>`_.

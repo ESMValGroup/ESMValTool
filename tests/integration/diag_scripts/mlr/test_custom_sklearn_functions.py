@@ -42,6 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-arguments
 
+import warnings
 from copy import copy, deepcopy
 
 import numpy as np
@@ -459,10 +460,18 @@ class MoreTagsEstimator:
         return {"allow_nan": True}
 
 
+class MockBaseEstimator:
+    """Estimator with ``_get_tags``."""
+
+    def _get_tags(self):
+        """Return tags."""
+        return _DEFAULT_TAGS
+
+
 @pytest.mark.parametrize(
     'estimator,err_msg',
     [
-        (BaseEstimator(), 'The key xxx is not defined in _get_tags'),
+        (MockBaseEstimator(), 'The key xxx is not defined in _get_tags'),
         (NoTagsEstimator(), 'The key xxx is not defined in _DEFAULT_TAGS'),
     ],
 )
@@ -480,9 +489,8 @@ def test_safe_tags_error(estimator, err_msg):
         (NoTagsEstimator(), 'allow_nan', _DEFAULT_TAGS['allow_nan']),
         (MoreTagsEstimator(), None, {**_DEFAULT_TAGS, **{'allow_nan': True}}),
         (MoreTagsEstimator(), 'allow_nan', True),
-        (BaseEstimator(), None, _DEFAULT_TAGS),
-        (BaseEstimator(), 'allow_nan', _DEFAULT_TAGS['allow_nan']),
-        (BaseEstimator(), 'allow_nan', _DEFAULT_TAGS['allow_nan']),
+        (MockBaseEstimator(), None, _DEFAULT_TAGS),
+        (MockBaseEstimator(), 'allow_nan', _DEFAULT_TAGS['allow_nan']),
     ],
 )
 def test_safe_tags_no_get_tags(estimator, key, expected_results):
@@ -497,9 +505,9 @@ def test_is_pairwise():
     """Test ``_is_pairwise``."""
     # Simple checks for _is_pairwise
     pca = KernelPCA(kernel='precomputed')
-    with pytest.warns(None) as record:
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")  # make sure that no warning is raised
         assert _is_pairwise(pca)
-    assert not record
 
     # Pairwise attribute that is not consistent with the pairwise tag
     class IncorrectTagPCA(KernelPCA):
@@ -525,9 +533,9 @@ def test_is_pairwise():
 
     # Pairwise attribute is not defined thus tag is used
     est = BaseEstimator()
-    with pytest.warns(None) as record:
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")  # make sure that no warning is raised
         assert not _is_pairwise(est)
-    assert not record
 
 
 # _safe_split

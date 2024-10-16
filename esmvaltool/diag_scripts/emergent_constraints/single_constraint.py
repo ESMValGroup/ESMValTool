@@ -56,7 +56,7 @@ read_external_file: str, optional
 savefig_kwargs: dict
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings: dict
-    Options for :func:`seaborn.set` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots).
 
 """
 
@@ -101,7 +101,7 @@ def get_default_settings(cfg):
 def main(cfg):
     """Run the diagnostic."""
     cfg = get_default_settings(cfg)
-    sns.set(**cfg['seaborn_settings'])
+    sns.set_theme(**cfg['seaborn_settings'])
 
     # Load data
     (training_data, prediction_data, attributes) = ec.get_input_data(cfg)

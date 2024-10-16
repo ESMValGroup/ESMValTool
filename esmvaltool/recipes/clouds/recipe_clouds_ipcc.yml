@@ -145,8 +145,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
-         start_year: 2001, end_year: 2010, tier: 1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, start_year: 2001, end_year: 2010, tier: 1}
     scripts:
       clim: &clim_settings
         script: clouds/clouds_ipcc.ncl
@@ -168,8 +167,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
-         start_year: 2001, end_year: 2010, tier: 1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, start_year: 2001, end_year: 2010, tier: 1}
     scripts:
       clim:
         <<: *clim_settings
@@ -188,8 +186,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
-         start_year: 2001, end_year: 2010, tier: 1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, start_year: 2001, end_year: 2010, tier: 1}
     scripts:
       clim:
         <<: *clim_settings

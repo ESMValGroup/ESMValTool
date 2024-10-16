@@ -20,6 +20,7 @@ from datetime import datetime
 from pathlib import Path
 
 import iris
+import numpy as np
 from cf_units import Unit
 from dask import array as da
 from iris import NameConstraint
@@ -28,6 +29,9 @@ from iris.coords import CellMethod, DimCoord
 from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
+
+
+TIME_UNITS = Unit('days since 1950-01-01 00:00:00', calendar='standard')
 
 
 def _callback_fix_missing_value(cube, field, _):
@@ -40,20 +44,18 @@ def _callback_fix_missing_value(cube, field, _):
 
 def _fix_climatological_time(cube):
     """Fix climatology coordinate."""
-    time_units = Unit('days since 1950-01-01 00:00:00', calendar='standard')
-
     # Following the doc the covered time period of the climatology is
     # January 2004 to December 2017 (Use 2011 as the "mean" year). See
     # https://www.ncei.noaa.gov/access/metadata/landing-page/bin/
     # iso?id=gov.noaa.nodc%3A0221526
-    time_points = time_units.date2num(
+    time_points = TIME_UNITS.date2num(
         [datetime(2011, m, 15) for m in range(1, 13)]
     )
     time_bounds = [
         [datetime(2004, m, 1), datetime(2017, m + 1, 1)] for m in range(1, 12)
     ]
     time_bounds.append([datetime(2004, 12, 1), datetime(2018, 1, 1)])
-    time_bounds = time_units.date2num(time_bounds)
+    time_bounds = TIME_UNITS.date2num(time_bounds)
 
     # Add new time coordinate to cube
     time_coord = DimCoord(
@@ -62,7 +64,7 @@ def _fix_climatological_time(cube):
         standard_name='time',
         long_name='time',
         var_name='time',
-        units=time_units,
+        units=TIME_UNITS,
         climatological=True,
     )
     cube.remove_coord('month of the year')
@@ -71,6 +73,49 @@ def _fix_climatological_time(cube):
     # Fix cell methods
     cube.add_cell_method(CellMethod('mean within years', coords=time_coord))
     cube.add_cell_method(CellMethod('mean over years', coords=time_coord))
+
+
+def _fix_time(cube):
+    """Fix time coordinate."""
+    julian_day_coord = cube.coord('Julian Day')
+
+    # Calculate bounds of new time coordinate
+    # print(str(julian_day_coord.units))
+    datetime_base = datetime.strptime(
+        str(julian_day_coord.units).partition(' since ')[2],
+        '%Y-%m-%d %H:%M:%S',
+    )
+    base_year = datetime_base.year
+    base_month = datetime_base.month
+    all_months = list(julian_day_coord.points.astype(int)) + [
+        julian_day_coord.points.astype(int).max() + 1  # 1 more month for bnds
+    ]
+    bounds_datetimes = [
+        datetime(base_year + (m - 1) // 12, base_month + (m - 1) % 12, 1)
+        for m in all_months
+    ]
+    time_bounds = np.stack(
+        (
+            TIME_UNITS.date2num(bounds_datetimes[:-1]),
+            TIME_UNITS.date2num(bounds_datetimes[1:]),
+        ),
+        axis=-1,
+    )
+
+    # Calculate time points as mean of bounds
+    time_points = np.mean(time_bounds, axis=1)
+
+    # Add new time coordinate to cube
+    time_coord = DimCoord(
+        time_points,
+        bounds=time_bounds,
+        standard_name='time',
+        long_name='time',
+        var_name='time',
+        units=TIME_UNITS,
+    )
+    cube.remove_coord('Julian Day')
+    cube.add_dim_coord(time_coord, 0)
 
 
 def _fix_var_metadata(var_info, cmor_info, cube):
@@ -121,9 +166,12 @@ def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
     _fix_var_metadata(var_info, cmor_info, cube)
 
     # Fix coordinates
-    _fix_climatological_time(cube)
+    if cube.coords('month of the year'):  # MOBO-DIC_MPIM
+        _fix_climatological_time(cube)
+    elif cube.coords('Julian Day'):  # MOBO-DIC2004-2019
+        _fix_time(cube)
     cube.coord('depth').units = 'm'
-    utils.fix_coords(cube, overwrite_time_bounds=False)
+    cube = utils.fix_coords(cube, overwrite_time_bounds=False)
 
     # Fix global metadata
     utils.set_global_atts(cube, attrs)

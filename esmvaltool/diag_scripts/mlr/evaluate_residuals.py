@@ -33,7 +33,7 @@ rmse_plot: dict, optional
 savefig_kwargs: dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings: dict, optional
-    Options for :func:`seaborn.set` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots).
 weighted_samples: dict
     If specified, use weighted root mean square error. The given keyword
     arguments are directly passed to
@@ -188,7 +188,7 @@ def main(cfg):
     cfg = deepcopy(cfg)
     cfg.setdefault('weighted_samples',
                    {'area_weighted': True, 'time_weighted': True})
-    sns.set(**cfg.get('seaborn_settings', {}))
+    sns.set_theme(**cfg.get('seaborn_settings', {}))
 
     # Extract data
     residual_data = get_residual_data(cfg)

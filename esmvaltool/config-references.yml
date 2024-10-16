@@ -120,10 +120,19 @@ authors:
     institute: DLR, Germany
     orcid: https://orcid.org/0000-0001-7058-5938
     github: LisaBock
+  bodas-salcedo_alejandro:
+    name: Bodas-Salcedo, Alejandro
+    institute: MetOffice, UK
+    orcid:
   bojovic_dragana:
     name: Bojovic, Dragana
     institute: BSC, Spain
     orcid: https://orcid.org/0000-0001-7354-1885
+  bonnet_pauline:
+    name: Bonnet, Pauline
+    institute: DLR, Germany
+    orcid: https://orcid.org/0000-0003-3780-0784
+    github: Paulinebonnet111
   brunner_lukas:
     name: Brunner, Lukas
     institute: ETH Zurich, Switzerland
@@ -198,6 +207,10 @@ authors:
     name: Frank, Franziska
     institute: DLR, Germany
     orcid: https://orcid.org/0000-0002-2406-4936
+  winterstein_franziska:
+    name: Winterstein, Franziska
+    institute: DLR, Germany
+    orcid: https://orcid.org/0000-0002-2406-4936
   fuckar_neven:
     name: Fuckar, Neven
     institute: BSC, Spain
@@ -247,6 +260,10 @@ authors:
     name: Hansson, Ulf
     institute: SMHI, Sweden
     orcid:
+  hardacre_catherine:
+    name: Hardacre, Catherine
+    institute: University of Canterbury, New Zealand
+    orcid: https://orcid.org/0000-0001-9093-4656
   hassler_birgit:
     name: Hassler, Birgit
     institute: DLR, Germany
@@ -256,6 +273,11 @@ authors:
     name: Hempelmann, Nils
     institute: IPSL, France
     orcid:
+  heuer_helge:
+    name: Heuer, Helge
+    institute: DLR, Germany
+    email: helge.heuer@dlr.de
+    orcid: https://orcid.org/0000-0003-2411-7150
   hogan_emma:
     name: Hogan, Emma
     institute: MetOffice, UK
@@ -296,10 +318,20 @@ authors:
     name: Koirala, Sujan
     institute: MPI-BGC, Germany
     orcid: https://orcid.org/0000-0001-5681-1986
+  kraft_jeremy:
+    name: Kraft, Jeremy
+    institute: DLR, Germany
+    orcid:
+    github: jeremykraftdlr
   krasting_john:
     name: Krasting, John
     institute: NOAA, USA
     orcid: https://orcid.org/0000-0002-4650-9844
+  kuehbacher_birgit:
+    name: Kuehbacher, Birgit
+    institute: DLR, Germany
+    email: birgit.kuehbacher@dlr.de
+    orcid:
   lejeune_quentin:
     name: Lejeune, Quentin
     institute: Climate Analytics, Germany
@@ -345,7 +377,7 @@ authors:
   malinina_elizaveta:
     name: Malinina, Elizaveta
     institute: CCCma, Canada
-    orchid: https://orcid.org/0000-0002-4102-2877
+    orcid: https://orcid.org/0000-0002-4102-2877
     github: malininae
   maloney_eric:
     name: Maloney, Eric
@@ -384,6 +416,11 @@ authors:
     institute: BSC, Spain
     orcid:
     github: emchamarro
+  munday_gregory:
+    name: Munday, Gregory
+    institute: MetOffice, UK
+    orcid: https://orcid.org/0000-0003-4750-9923
+    github: mo-gregmunday
   nikulin_grigory:
     name: Nikulin, Grigory
     institute: SMHI, Sweden
@@ -398,6 +435,10 @@ authors:
   pandde_amarjiit:
     name: Pandde, Amarjiit
     institute: Univ. of Arizona, USA
+    orcid:
+  pearce_francesca:
+    name: Pearce, Francesca
+    institute: MetOffice, UK
     orcid:
   perez-zanon_nuria:
     name: Perez-Zanon, Nuria
@@ -454,6 +495,11 @@ authors:
     name: Sandstad, Marit
     institute: Cicero, Norway
     orcid:
+  sarauer_ellen:
+    name: Sarauer, Ellen
+    institute: DLR, Germany
+    orcid:
+    github: ellensarauer
   serva_federico:
     name: Serva, Federico
     institute: CNR, Italy
@@ -605,7 +651,7 @@ authors:
   sellar_alistair:
     name: Sellar, Alistair
     institute: MetOffice, UK
-    orcid:
+    orcid: 0000-0002-2955-7254
   wyser_klaus:
     name: Wyser, Klaus
     institute: SMHI, Sweden
@@ -676,6 +722,10 @@ authors:
     institute:
     orcid:
     github: mcreader97
+  rumbold_heather:
+    name: Heather, Rumbold
+    institute: Met Office, UK
+    orcid:
   senftleben_daniel:
     name: Senftleben, Daniel
     institute: DLR, Germany

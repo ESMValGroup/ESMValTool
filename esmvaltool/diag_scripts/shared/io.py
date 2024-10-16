@@ -22,6 +22,8 @@ NECESSARY_KEYS = VAR_KEYS + [
     'short_name',
 ]
 
+iris.FUTURE.save_split_attrs = True
+
 
 def _has_necessary_attributes(metadata,
                               only_var_attrs=False,

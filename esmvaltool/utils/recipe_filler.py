@@ -52,21 +52,15 @@ from pathlib import Path
 
 import esmvalcore
 import yaml
+
+from esmvalcore import __version__ as core_ver
 from esmvalcore.cmor.table import CMOR_TABLES, read_cmor_tables
+from packaging import version as pkg_version
 from ruamel.yaml import YAML
 
 logger = logging.getLogger(__name__)
 
 CFG = {}
-
-
-# standard libs from esmvalcore ported here to avoid private func import
-def load_config_developer(cfg_file=None):
-    """Load the config developer file and initialize CMOR tables."""
-    cfg_developer = read_config_developer_file(cfg_file)
-    for key, value in cfg_developer.items():
-        CFG[key] = value
-    read_cmor_tables(CFG)
 
 
 def _purge_file_handlers(cfg: dict) -> None:
@@ -134,8 +128,10 @@ def configure_logging(cfg_file: str = None,
     """
     if cfg_file is None:
         cfg_loc = Path(esmvalcore.__file__ + "esmvalcore")
-        # TODO change to new location of config module in 2.3.0
-        cfg_file = cfg_loc.parents[0] / '_config' / 'config-logging.yml'
+        if pkg_version.parse(core_ver) < pkg_version.parse('2.8.0'):
+            cfg_file = cfg_loc.parents[0] / '_config' / 'config-logging.yml'
+        else:
+            cfg_file = cfg_loc.parents[0] / 'config' / 'config-logging.yml'
 
     cfg_file = Path(cfg_file).absolute()
 
@@ -253,7 +249,7 @@ def read_config_user_file(config_file, folder_name, options=None):
     cfg['run_dir'] = os.path.join(cfg['output_dir'], 'run')
 
     # Read developer configuration file
-    load_config_developer(cfg['config_developer_file'])
+    read_cmor_tables(cfg['config_developer_file'])
 
     return cfg
 
@@ -295,16 +291,31 @@ base_dict = {
 }
 
 
+def _get_download_dir(yamlconf, cmip_era):
+    """Get the Download Directory from user config file."""
+    if 'download_dir' in yamlconf:
+        return os.path.join(yamlconf['download_dir'], cmip_era)
+    return False
+
+
 def _get_site_rootpath(cmip_era):
     """Get site (drs) from config-user.yml."""
     config_yml = get_args().config_file
     with open(config_yml, 'r') as yamf:
         yamlconf = yaml.safe_load(yamf)
     drs = yamlconf['drs'][cmip_era]
-    rootdir = yamlconf['rootpath'][cmip_era]
+
+    download_dir = _get_download_dir(yamlconf, cmip_era)
+    rootdir = [yamlconf['rootpath'][cmip_era], ]
+
+    if download_dir:
+        rootdir.append(download_dir)
     logger.debug("%s root directory %s", cmip_era, rootdir)
     if drs == 'default' and 'default' in yamlconf['rootpath']:
-        rootdir = yamlconf['rootpath']['default']
+        rootdir = [yamlconf['rootpath']['default'], ]
+        if download_dir:
+            rootdir.append(download_dir)
+
         logger.debug("Using drs default and "
                      "default: %s data directory", rootdir)
 
@@ -331,6 +342,7 @@ def _determine_basepath(cmip_era):
         rootpaths = _get_site_rootpath(cmip_era)[1]
     else:
         rootpaths = [_get_site_rootpath(cmip_era)[1]]
+
     basepaths = []
     for rootpath in rootpaths:
         if _get_input_dir(cmip_era) != os.path.sep:

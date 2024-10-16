@@ -24,6 +24,7 @@ to the SLURM scheduler.
 """
 import os
 import subprocess
+import textwrap
 from pathlib import Path
 
 import esmvaltool
@@ -51,6 +52,9 @@ conda_path = 'PATH_TO/mambaforge/etc/profile.d/conda.sh'
 # Full path to config_file
 # If none, ~/.esmvaltool/config-user.yml is used
 config_file = ''
+# Set max_parallel_tasks
+# If none, read from config_file
+default_max_parallel_tasks = 8
 
 # List of recipes that require non-default SLURM options set above
 SPECIAL_RECIPES = {
@@ -74,6 +78,7 @@ SPECIAL_RECIPES = {
     },
     'recipe_climate_change_hotspot': {
         'partition': '#SBATCH --partition=compute \n',
+        'memory': '#SBATCH --constraint=512G \n',
     },
     'recipe_collins13ipcc': {
         'partition': '#SBATCH --partition=compute \n',
@@ -101,6 +106,9 @@ SPECIAL_RECIPES = {
     'recipe_flato13ipcc_figures_938_941_cmip6': {
         'partition': '#SBATCH --partition=compute \n',
     },
+    'recipe_galytska23jgr': {
+        'partition': '#SBATCH --partition=compute \n',
+    },
     'recipe_ipccwg1ar6ch3_atmosphere': {
         'partition': '#SBATCH --partition=compute \n',
     },
@@ -122,6 +130,7 @@ SPECIAL_RECIPES = {
     },
     'recipe_ipccwg1ar6ch3_fig_3_43': {
         'partition': '#SBATCH --partition=compute \n',
+        'time': '#SBATCH --time=08:00:00 \n',
     },
     'recipe_lauer22jclim_fig3-4_zonal': {
         'partition': '#SBATCH --partition=compute \n',
@@ -134,6 +143,7 @@ SPECIAL_RECIPES = {
     },
     'recipe_mpqb_xch4': {
         'partition': '#SBATCH --partition=compute \n',
+        'memory': '#SBATCH --constraint=512G \n',
     },
     'recipe_perfmetrics_CMIP5': {
         'partition': '#SBATCH --partition=compute \n',
@@ -161,6 +171,9 @@ SPECIAL_RECIPES = {
     'recipe_schlund20jgr_gpp_change_rcp85': {
         'partition': '#SBATCH --partition=compute \n',
     },
+    'recipe_sea_surface_salinity': {
+        'partition': '#SBATCH --partition=compute \n',
+    },
     'recipe_smpi': {
         'partition': '#SBATCH --partition=compute \n',
     },
@@ -171,6 +184,12 @@ SPECIAL_RECIPES = {
         'partition': '#SBATCH --partition=compute \n',
         'time': '#SBATCH --time=08:00:00 \n',
     },
+    'recipe_thermodyn_diagtool': {
+        'partition': '#SBATCH --partition=compute \n',
+    },
+    'recipe_wflow': {
+        'partition': '#SBATCH --partition=compute \n',
+    },
     'recipe_wenzel16jclim': {
         'partition': '#SBATCH --partition=compute \n',
     },
@@ -179,39 +198,73 @@ SPECIAL_RECIPES = {
     },
 }
 
+# These recipes cannot be run with the default number of parallel
+# tasks (max_parallel_tasks=8).
 # These recipes either use CMIP3 input data
 # (see https://github.com/ESMValGroup/ESMValCore/issues/430)
-# and recipes where tasks require the full compute node memory.
-ONE_TASK_RECIPES = [
-    'recipe_bock20jgr_fig_1-4',
-    'recipe_bock20jgr_fig_6-7',
-    'recipe_bock20jgr_fig_8-10',
-    'recipe_flato13ipcc_figure_96',
-    'recipe_flato13ipcc_figures_938_941_cmip3',
-    'recipe_ipccwg1ar6ch3_fig_3_9',
-    'recipe_ipccwg1ar6ch3_fig_3_42_a',
-    'recipe_ipccwg1ar6ch3_fig_3_43',
-    'recipe_check_obs',
-    'recipe_collins13ipcc',
-    'recipe_lauer22jclim_fig3-4_zonal',
-    'recipe_lauer22jclim_fig5_lifrac',
-    'recipe_smpi',
-    'recipe_smpi_4cds',
-    'recipe_wenzel14jgr',
-    ]
+# or require a large fraction of the compute node memory.
+MAX_PARALLEL_TASKS = {
+    'recipe_bock20jgr_fig_1-4': 1,
+    'recipe_bock20jgr_fig_6-7': 1,
+    'recipe_bock20jgr_fig_8-10': 1,
+    'recipe_daily_era5': 1,
+    'recipe_easy_ipcc': 1,
+    'recipe_climate_change_hotspot': 1,
+    'recipe_flato13ipcc_figure_96': 1,
+    'recipe_flato13ipcc_figures_938_941_cmip3': 1,
+    'recipe_ipccwg1ar6ch3_fig_3_9': 1,
+    'recipe_ipccwg1ar6ch3_fig_3_42_a': 1,
+    'recipe_ipccwg1ar6ch3_fig_3_43': 1,
+    'recipe_check_obs': 1,
+    'recipe_collins13ipcc': 1,
+    'recipe_lauer22jclim_fig3-4_zonal': 1,
+    'recipe_lauer22jclim_fig5_lifrac': 1,
+    'recipe_smpi': 1,
+    'recipe_smpi_4cds': 1,
+    'recipe_wenzel14jgr': 1,
+}
+
+DISTRIBUTED_RECIPES = [
+    'recipe_easy_ipcc',
+    'recipe_daily_era5',
+    'recipe_marrmot',
+    'recipe_pcrglobwb',
+]
 
 
 def generate_submit():
     """Generate and submit scripts."""
+    print("It is recommended that you run the following recipes with the "
+          "configuration in dask.yml in ~/.esmvaltool/dask.yml:")
+    default_dask_config_file = textwrap.dedent(f"""
+    cluster:
+      type: dask_jobqueue.SLURMCluster
+      queue: compute
+      account: {account}
+      cores: 128
+      memory: 256GiB
+      processes: 32
+      interface: ib0
+      local_directory: /scratch/{os.getlogin()[0]}/{os.getlogin()}/dask-tmp
+      n_workers: 32
+      walltime: '8:00:00'
+    """)
+    for recipe in DISTRIBUTED_RECIPES:
+        print(f"- {recipe}.yml")
+    Path('dask.yml').write_text(default_dask_config_file, encoding='utf-8')
+
     home = os.path.expanduser('~')
     # Fill the list with the names of the recipes to be excluded
     # This includes recipes containing missing datasets
-    exclude = ['recipe_schlund20jgr_gpp_abs_rcp85',
-               'recipe_schlund20jgr_gpp_change_1pct',
-               'recipe_schlund20jgr_gpp_change_rcp85']
+    exclude = [
+        'recipe_schlund20jgr_gpp_abs_rcp85',
+        'recipe_schlund20jgr_gpp_change_1pct',
+        'recipe_schlund20jgr_gpp_change_rcp85'
+    ]
     dir_recipes = Path('/'.join((esmvaltool.__path__[0], 'recipes')))
 
     for recipe in Path(dir_recipes).rglob('*.yml'):
+        recipe = recipe.relative_to(dir_recipes)
         filename = f'launch_{recipe.stem}.sh'
         if recipe.stem in exclude:
             continue
@@ -220,11 +273,9 @@ def generate_submit():
             file.write('\n')
             file.write(f'#SBATCH --job-name={recipe.stem}.%J\n')
             file.write(
-                f'#SBATCH --output={home}/{outputs}/{recipe.stem}.%J.out\n'
-            )
+                f'#SBATCH --output={home}/{outputs}/{recipe.stem}.%J.out\n')
             file.write(
-                f'#SBATCH --error={home}/{outputs}/{recipe.stem}.%J.err\n'
-            )
+                f'#SBATCH --error={home}/{outputs}/{recipe.stem}.%J.err\n')
             file.write(f'#SBATCH --account={account}\n')
             if not SPECIAL_RECIPES.get(recipe.stem, None):
                 # continue
@@ -269,9 +320,12 @@ def generate_submit():
             else:
                 file.write(f'esmvaltool run --config_file '
                            f'{str(config_file)} {str(recipe)}')
-            if recipe.stem in ONE_TASK_RECIPES:
-                file.write(' --max_parallel_tasks=1')
-
+            # set max_parallel_tasks
+            max_parallel_tasks = MAX_PARALLEL_TASKS.get(
+                recipe.stem,
+                default_max_parallel_tasks,
+            )
+            file.write(f' --max_parallel_tasks={max_parallel_tasks}\n')
         if submit:
             subprocess.check_call(['sbatch', filename])
 

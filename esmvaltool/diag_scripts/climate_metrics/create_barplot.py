@@ -29,7 +29,7 @@ patterns : list of str, optional
 savefig_kwargs : dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots).
 sort_ascending : bool, optional (default: False)
     Sort bars in ascending order.
 sort_descending : bool, optional (default: False)
@@ -244,7 +244,7 @@ def main(cfg):
         'orientation': 'landscape',
         'bbox_inches': 'tight',
     })
-    sns.set(**cfg.get('seaborn_settings', {}))
+    sns.set_theme(**cfg.get('seaborn_settings', {}))
     patterns = cfg.get('patterns')
     if patterns is None:
         input_files = io.get_all_ancestor_files(cfg)

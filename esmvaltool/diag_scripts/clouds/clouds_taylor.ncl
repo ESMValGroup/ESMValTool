@@ -11,7 +11,7 @@
 ;     1) perfmetrics_main.ncl
 ;     2) perfmetrics_taylor.ncl
 ;     3) perfmetrics_taylor_collect.ncl
-;   originally written by Franziska Frank (DLR, Germany).
+;   originally written by Franziska Winterstein (DLR, Germany).
 ;   Note: This code requires that all data are provided on the same grid.
 ;
 ; Required diag_script_info attributes (diagnostic specific)

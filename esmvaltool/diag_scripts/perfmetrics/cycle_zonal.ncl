@@ -92,7 +92,8 @@ begin
                    (/"mean", "rmsd"/), \
                    diag_script_info@region, \
                    "other", \
-                   (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
+                   (/"winterstein_franziska", "righi_mattia", \
+                     "eyring_veronika"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
                    info_items[imod]@filename)
 

@@ -4,9 +4,16 @@
 This module contains functions for extracting the data
 from netCDF files and prepearing them for plotting.
 """
+try:
+    import esmpy
+except ImportError as exc:
+    # Prior to v8.4.0, ``esmpy`` could be imported as `ESMF`.
+    try:
+        import ESMF as esmpy  # noqa: N811
+    except ImportError:
+        raise exc
 import logging
 import os
-import ESMF
 import numpy as np
 from netCDF4 import Dataset, num2date
 
@@ -188,9 +195,9 @@ def hofm_data(cfg, model_filenames, mmodel, cmor_var, region):
 def transect_level(datafile, cmor_var, level, grid, locstream):
     """Interpolation for one level of transect."""
 
-    sourcefield = ESMF.Field(
+    sourcefield = esmpy.Field(
         grid,
-        staggerloc=ESMF.StaggerLoc.CENTER,
+        staggerloc=esmpy.StaggerLoc.CENTER,
         name='MPI',
     )
     # load model data
@@ -203,7 +210,7 @@ def transect_level(datafile, cmor_var, level, grid, locstream):
         sourcefield.data[...] = model_data.T
 
     # create a field we giong to intorpolate TO
-    dstfield = ESMF.Field(locstream, name='dstfield')
+    dstfield = esmpy.Field(locstream, name='dstfield')
     dstfield.data[:] = 0.0
 
     # create an object to regrid data
@@ -212,12 +219,12 @@ def transect_level(datafile, cmor_var, level, grid, locstream):
     # if domask:
     dst_mask_values = np.array([0])
 
-    regrid = ESMF.Regrid(
+    regrid = esmpy.Regrid(
         sourcefield,
         dstfield,
-        regrid_method=ESMF.RegridMethod.NEAREST_STOD,
-        # regrid_method=ESMF.RegridMethod.BILINEAR,
-        unmapped_action=ESMF.UnmappedAction.IGNORE,
+        regrid_method=esmpy.RegridMethod.NEAREST_STOD,
+        # regrid_method=esmpy.RegridMethod.BILINEAR,
+        unmapped_action=esmpy.UnmappedAction.IGNORE,
         dst_mask_values=dst_mask_values)
 
     # do the regridding from source to destination field
@@ -292,8 +299,8 @@ def transect_data(cfg, mmodel, cmor_var, region, mult=2):
                             extension='.nc')
     # open with netCDF4
     datafile = Dataset(ifilename)
-    # open with ESMF
-    grid = ESMF.Grid(filename=ifilename, filetype=ESMF.FileFormat.GRIDSPEC)
+    # open with ESMF/esmpy
+    grid = esmpy.Grid(filename=ifilename, filetype=esmpy.FileFormat.GRIDSPEC)
 
     # get depth of the levels
     lev = datafile.variables['lev'][:]
@@ -305,9 +312,9 @@ def transect_data(cfg, mmodel, cmor_var, region, mult=2):
     # domask = True
 
     # create instans of the location stream (set of points)
-    locstream = ESMF.LocStream(lon_s4new.shape[0],
-                               name="Atlantic Inflow Section",
-                               coord_sys=ESMF.CoordSys.SPH_DEG)
+    locstream = esmpy.LocStream(lon_s4new.shape[0],
+                                name="Atlantic Inflow Section",
+                                coord_sys=esmpy.CoordSys.SPH_DEG)
 
     # appoint the section locations
     locstream["ESMF:Lon"] = lon_s4new

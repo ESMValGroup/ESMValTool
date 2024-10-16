@@ -1,0 +1,145 @@
+# ESMValTool
+# recipe_seaborn.yml
+---
+documentation:
+  title: Example recipe for the Seaborn diagnostic.
+
+  description: >
+    This recipe showcases the use of the Seaborn diagnostic that provides a
+    high-level interface to Seaborn for ESMValTool recipes. For this, the input
+    data is arranged into a single `pandas.DataFrame`, which is then used as
+    input for the Seaborn function defined by the option `seaborn_func`. With
+    the Seaborn diagnostic, arbitrary Seaborn plots can be created.
+
+  authors:
+    - schlund_manuel
+
+  maintainer:
+    - schlund_manuel
+
+  references:
+    - waskom21joss
+
+  projects:
+    - 4c
+    - esm2025
+    - isenes3
+    - usmile
+
+
+preprocessors:
+
+  zonal_mean:
+    zonal_statistics:
+      operator: mean
+
+  extract_ar6_regions:
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+    extract_shape:
+      shapefile: ar6
+      crop: true
+      decomposed: true
+      ids:
+        Name: &regions_to_extract
+          - N.Europe
+          - West&Central-Europe
+          - Mediterranean
+          - Equatorial.Pacific-Ocean
+          - Equatorial.Atlantic-Ocean
+          - Equatorial.Indic-Ocean
+    convert_units:
+      units: mm day-1
+
+
+diagnostics:
+
+  plot_temperature_vs_lat:
+    description: Plot air temperature vs. latitude (pressure levels = colors).
+    variables:
+      zonal_mean_ta:
+        short_name: ta
+        mip: Amon
+        preprocessor: zonal_mean
+        project: CMIP6
+        exp: historical
+        timerange: '1991/2014'
+    additional_datasets:
+      - {dataset: CESM2-WACCM, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: GFDL-ESM4, grid: gr1, ensemble: r1i1p1f1}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: relplot
+        seaborn_kwargs:
+          x: latitude
+          y: zonal_mean_ta
+          col: alias
+          col_wrap: 2
+          hue: air_pressure
+          hue_norm: log
+          palette: plasma
+          linewidth: 0.0
+          marker: o
+          s: 1
+        add_aux_coords: true
+        data_frame_ops:
+          eval: air_pressure = air_pressure / 100.0
+        dropna_kwargs:
+          axis: 0
+          how: any
+        legend_title: Pressure [hPa]
+        plot_object_methods:
+          set:
+            xlabel: 'Latitude [°]'
+            ylabel: 'Temperatute [K]'
+          set_titles: '{col_name}'
+        seaborn_settings:
+          style: ticks
+          rc:
+            axes.titlepad: 15.0
+        suptitle: Simulated Temperature (1991-2014)
+
+  plot_precipitation_histograms_region:
+    description: Plot precipitation histograms for different regions.
+    variables:
+      pr:
+        mip: day
+        preprocessor: extract_ar6_regions
+        project: CMIP6
+        exp: historical
+        timerange: '2005/2014'
+    additional_datasets:
+      - {dataset: CESM2-WACCM, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: GFDL-ESM4, grid: gr1, ensemble: r1i1p1f1}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: displot
+        seaborn_kwargs:
+          kind: hist
+          stat: density
+          bins: 300
+          x: pr
+          col: shape_id
+          col_order: *regions_to_extract
+          col_wrap: 3
+          hue: alias
+          facet_kws:
+            sharey: false
+        add_aux_coords: true
+        dropna_kwargs:
+          axis: 0
+          how: any
+        legend_title: Model
+        plot_object_methods:
+          set:
+            xlabel: 'Precipitation [mm/day]'
+            xlim: [0, 30]
+          set_titles: '{col_name}'
+        seaborn_settings:
+          style: ticks
+          rc:
+            axes.titlepad: 15.0
+        suptitle: Simulated Precipitation (2005-2014)

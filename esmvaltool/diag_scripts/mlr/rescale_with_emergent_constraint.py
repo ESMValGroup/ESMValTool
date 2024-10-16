@@ -44,7 +44,7 @@ plot_kwargs_for_groups: dict, optional
 savefig_kwargs: dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings: dict, optional
-    Options for :func:`seaborn.set` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots).
 
 """
 
@@ -488,7 +488,7 @@ def rescale_labels(cfg, y_data, y_mean, y_std):
 
 def main(cfg):
     """Run the diagnostic."""
-    sns.set(**cfg.get('seaborn_settings', {}))
+    sns.set_theme(**cfg.get('seaborn_settings', {}))
     cfg = deepcopy(cfg)
     cfg.setdefault('group_by_attributes', ['dataset'])
     cfg.setdefault('legend_kwargs', {})

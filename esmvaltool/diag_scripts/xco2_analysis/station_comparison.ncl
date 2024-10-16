@@ -285,7 +285,7 @@ begin
 
     ; Provenance
     log_provenance(ncdf_outfile, \
-                   outfile_stations_masked, \
+                   outfile_stations_masked + "." + file_type, \
                    "Time series of station " + station_array&station(istat) \
                    + ", dotted denoting areas masked like observations.", \
                    (/""/), \
@@ -334,7 +334,7 @@ begin
 
     ; Provenance
     log_provenance(ncdf_outfile, \
-                   outfile_stations_obs, \
+                   outfile_stations_obs + "." + file_type, \
                    "Time series of station " + station_array&station(istat) \
                    + ", for " + var0 + " and " + var1 + ".", \
                    (/"mean"/), \
@@ -501,7 +501,7 @@ begin
 
         ; Provenance
     log_provenance(ncdf_outfile, \
-                   outfile_map, \
+                   outfile_map + "." + file_type, \
                    "Time series for satellite, multi-model mean and station " \
                    + var0 + " and " + var1 \
                    + ". Similar to Gier et al, 2020 Fig. 2", \

@@ -25,15 +25,19 @@ REQUIREMENTS = {
         'cdo',
         'cdsapi',
         'cf-units',
+        'cfgrib',
         'cftime',
         'cmocean',
-        'dask',
+        'dask!=2024.8.0',  # https://github.com/dask/dask/issues/11296
+        'distributed',
         'ecmwf-api-client',
         'eofs',
-        'ESMPy',
+        'ESMPy',  # not on PyPI
         'esmvalcore',
-        'esmf-regrid',
+        'esmf-regrid>=0.10.0',  # iris-esmf-regrid #342
         'fiona',
+        'fire',
+        'fsspec',
         'GDAL',
         'jinja2',
         'joblib',
@@ -43,34 +47,38 @@ REQUIREMENTS = {
         'natsort',
         'nc-time-axis',
         'netCDF4',
-        'numpy',
-        'packaging',
+        'numba',
+        'numpy!=1.24.3',  # severe masking bug
         'openpyxl',
-        'pandas',
-        'pyproj',
-        'pyyaml',
+        'packaging',
+        'pandas!=2.2.0,!=2.2.1,!=2.2.2',  # ESMValCore PR2305
         'progressbar2',
         'psyplot',
         'psy-maps',
         'psy-reg',
         'psy-simple',
+        'pyproj>=2.1',
+        'pys2index',
+        'python-dateutil',
+        'pyyaml',
         'rasterio',
+        'requests',
         'ruamel.yaml',
         'scikit-image',
-        'scikit-learn',
+        'scikit-learn>=1.4.0',  # github.com/ESMValGroup/ESMValTool/issues/3504
         'scipy',
-        'scitools-iris',
+        'scitools-iris>=3.6.1',
         'seaborn',
         'seawater',
-        'shapely<2.0.0',  # github.com/ESMValGroup/ESMValTool/issues/2965
-        'xarray',
-        'xesmf==0.3.0',
+        'shapely>=2',
+        'xarray>=0.12.0',
+        'xesmf>=0.7.1',
         'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
         'zarr',
     ],
-    # Test dependencies
-    # Execute `pip install .[test]` once and the use `pytest` to run tests
+    # Test dependencies (unit tests)
+    # Execute `pip install .[test]` once and then use `pytest` to run tests
     'test': [
         'flake8',
         'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
@@ -86,13 +94,14 @@ REQUIREMENTS = {
         'autodocsumm>=0.2.2',
         'nbsphinx',
         'sphinx>=6.1.3',
-        'sphinx_rtd_theme',
+        'pydata-sphinx-theme',
     ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
         'codespell',
         'docformatter',
+        'imagehash',
         'isort',
         'pre-commit',
         'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',
@@ -105,6 +114,7 @@ REQUIREMENTS = {
 
 def discover_python_files(paths, ignore):
     """Discover Python files."""
+
     def _ignore(path):
         """Return True if `path` should be ignored, False otherwise."""
         return any(re.match(pattern, path) for pattern in ignore)
@@ -212,9 +222,8 @@ setup(
         'Natural Language :: English',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Atmospheric Science',
         'Topic :: Scientific/Engineering :: GIS',
@@ -237,8 +246,6 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'mip_convert_setup = '
-            'esmvaltool.cmorizers.mip_convert.esmvt_mipconv_setup:main',
             'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
             'test_recipe = '
             'esmvaltool.utils.testing.recipe_settings.install_expand_run:main',

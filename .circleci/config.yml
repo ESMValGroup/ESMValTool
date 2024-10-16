@@ -27,6 +27,7 @@ commands:
           name: Log versions
           command: |
             . /opt/conda/etc/profile.d/conda.sh
+            conda env export --name base > /logs/base_environment.yml
             conda activate esmvaltool
             esmvaltool version
             dpkg -l > /logs/versions.txt
@@ -40,6 +41,7 @@ commands:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
+            mamba --version
             pytest -n 4 --junitxml=test-reports/report.xml
             esmvaltool version
             esmvaltool -- --help
@@ -127,6 +129,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            set -x
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             mkdir /logs
@@ -213,9 +216,8 @@ jobs:
             conda activate esmvaltool
             mkdir -p ~/climate_data
             esmvaltool config get_config_user
-            echo "offline: false" >> ~/.esmvaltool/config-user.yml
+            echo "search_esgf: when_missing" >> ~/.esmvaltool/config-user.yml
             cat ~/.esmvaltool/config-user.yml
-            esmvaltool run examples/recipe_python.yml
             for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
               esmvaltool run "$recipe"
             done
@@ -232,7 +234,7 @@ jobs:
     # Test building documentation
     docker:
       - image: condaforge/mambaforge:latest
-    resource_class: small
+    resource_class: medium
     steps:
       - checkout
       - run:
@@ -256,7 +258,7 @@ jobs:
     # Test conda package installation
     docker:
       - image: condaforge/mambaforge:latest
-    resource_class: medium
+    resource_class: large
     steps:
       - run:
           command: |
@@ -265,7 +267,7 @@ jobs:
             # Install prerequisites
             mkdir /logs
             # Install ESMValTool in a new conda environment
-            mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.10' >> /logs/conda.txt 2>&1
+            mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.11' >> /logs/conda.txt 2>&1
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
             # install the Julia dependencies

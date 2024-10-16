@@ -10,7 +10,7 @@ documentation:
     variables (like ozone, sea-ice, aerosol...)
 
   authors:
-    - frank_franziska
+    - winterstein_franziska
     - righi_mattia
     - eyring_veronika
 
@@ -1025,7 +1025,7 @@ diagnostics:
     variables:
       hus:
         preprocessor: pp400
-        reference_dataset: AIRS
+        reference_dataset: AIRS-2-1
         alternative_dataset: ERA-Interim
         mip: Amon
         project: CMIP5
@@ -1074,9 +1074,9 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: AIRS, project: obs4MIPs, level: L3, version: RetStd-v5, tier: 1}
-      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
-         version: 1, tier: 3}
+      - {dataset: AIRS-2-1, project: obs4MIPs, level: L3, tier: 1}
+      - {dataset: ERA-Interim, project: OBS6,
+         type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         <<: *grading_settings
@@ -1271,7 +1271,7 @@ diagnostics:
     variables:
       pr:
         preprocessor: ppNOLEV1
-        reference_dataset: GPCP-SG
+        reference_dataset: GPCP-V2.2
         mip: Amon
         project: CMIP5
         exp: historical
@@ -1328,7 +1328,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.2, tier: 1}
+      - {dataset: GPCP-V2.2, project: obs4MIPs, level: L3, tier: 1}
     scripts:
       grading:
         <<: *grading_settings
@@ -1477,7 +1477,7 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1}
     scripts:
       grading:
         <<: *grading_settings
@@ -1544,7 +1544,7 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1}
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1}
     scripts:
       grading:
         <<: *grading_settings

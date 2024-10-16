@@ -34,7 +34,6 @@ preprocessors:
 
   preproc_land_only:
     mask_landsea:
-      fx_variables: null
       mask_out: sea
     regrid:
       scheme: linear
@@ -53,7 +52,6 @@ preprocessors:
 
   preproc_ocean_only:
     mask_landsea:
-      fx_variables: null
       mask_out: land
     regrid:
       scheme: linear

@@ -8,7 +8,7 @@ Installation
    ESMValTool now uses `mamba` instead of `conda` for the recommended installation.
    For more information about the change, have a look at :ref:`Move to Mamba<move-to-mamba>`.
 
-ESMValTool supports Python 3.8 and later and requires Linux or MacOS.
+ESMValTool supports Python 3.10 and later and requires Linux or MacOS.
 Successful usage on Windows has been reported by following the Linux
 installation instructions with
 `WSL <https://learn.microsoft.com/en-us/windows/wsl/install>`__.
@@ -37,10 +37,10 @@ The next sections will detail the procedure to install ESMValTool through each
 of these methods.
 
 There is also a lesson available in the
-`ESMValTool tutorial <https://esmvalgroup.github.io/ESMValTool_Tutorial/>`_
+`ESMValTool tutorial <https://tutorial.esmvaltool.org/>`_
 that describes the installation of the ESMValTool in more detail.
 It can be found
-`here <https://esmvalgroup.github.io/ESMValTool_Tutorial/02-installation/index.html>`_.
+`here <https://tutorial.esmvaltool.org/02-installation/index.html>`_.
 
 See `common installation issues`_ if you run into trouble.
 
@@ -489,7 +489,7 @@ To check that the installation was successful, run
 this should show the directory of the source code that you just downloaded.
 
 If the command above shows a directory inside your conda environment instead,
-e.g. ``~/mambaforge/envs/esmvaltool/lib/python3.8/site-packages/esmvalcore``,
+e.g. ``~/mambaforge/envs/esmvaltool/lib/python3.11/site-packages/esmvalcore``,
 you may need to manually remove that directory and run
 ``pip install --editable '.[develop]'`` again.
 
@@ -510,11 +510,11 @@ estate, so there is no need to install ESMValTool if you are just running recipe
  - Met Office: `esmvaltool` is available on the Linux estate after login and module loading via `module load`;
    see the ESMValTool Community of Practice SharePoint site for more details.
 
-The ESMValTool Tutorial provides a `quickstart guide <https://esmvalgroup.github.io/ESMValTool_Tutorial/01-quickstart/index.html>`__
+The ESMValTool Tutorial provides a `quickstart guide <https://tutorial.esmvaltool.org/01-quickstart/index.html>`__
 that is particularly suited for new users that have an access to pre-installed version of ESMValTool.
 
 Information on how to request an account at CEDA-JASMIN and DKRZ-Levante and to get started with these HPC clusters
-can be found on the setup page of the tutorial `here <https://esmvalgroup.github.io/ESMValTool_Tutorial/setup.html>`__.
+can be found on the setup page of the tutorial `here <https://tutorial.esmvaltool.org/setup.html>`__.
 
 .. _install_with_docker:
 
@@ -684,40 +684,6 @@ repository, a direct download link can be found `here <https://raw.githubusercon
 Common installation problems and their solutions
 ================================================
 
-Mamba fails to solve the environment
-------------------------------------
-If you see the text ``Solving environment:`` with the characters ``-\|/`` rotating
-behind it for more than 10 minutes, mamba may be having problems finding a
-working combination of versions of the packages that the ESMValTool depends on.
-Because the ESMValTool is a community tool, there is no strict selection of
-which tools can be used and installing the ESMValTool requires installing almost
-any package that is available for processing climate data.
-To help mamba solve the environment, you can try the following.
-
-Always use the latest version of mamba, as problems have been reported by people
-using older versions, to update, run:
-
-.. code-block:: bash
-
-    mamba update --name base mamba
-
-Usually mamba is much better at solving new environments than updating older
-environments, so it is often a good idea to create a new environment if updating
-does not work.
-
-It can help mamba if you let it know what version of certain packages you want,
-for example by running
-
-.. code-block:: bash
-
-    mamba create -n esmvaltool esmvaltool 'python=3.10'
-
-you ask for Python 3.10 specifically and that makes it much easier for mamba to
-solve the environment, because now it can ignore any packages that were built
-for other Python versions. Note that, since the esmvaltool package is built
-with Python>=3.8, asking for an older Python version, e.g. `python=3.7`, in
-this way, it will result in installation failure.
-
 Problems with proxies
 ---------------------
 If you are installing ESMValTool from source from behind a proxy that does not
@@ -778,7 +744,7 @@ Problems when updating the conda environment
 --------------------------------------------
 Usually mamba is much better at solving new environments than updating older
 environments, so it is often a good idea to create a new environment if updating
-does not work. See also `Mamba fails to solve the environment`_.
+does not work.
 
 Do not run ``mamba update --update-all`` in the ``esmvaltool``
 environment since that will update some packages that are pinned to

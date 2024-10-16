@@ -176,7 +176,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     # run the cmorization
     # Pass on the workdir to the cfg dictionary
-    cfg['work_dir'] = cfg_user['work_dir']
+    cfg['work_dir'] = cfg_user.work_dir
     # If it doesn't exist, create it
     if not os.path.isdir(cfg['work_dir']):
         logger.info("Creating working directory for regridding: %s",

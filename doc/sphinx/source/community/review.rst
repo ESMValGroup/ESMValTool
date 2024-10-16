@@ -69,7 +69,7 @@ GitHub.
 
 Pull requests are merged by the `@ESMValGroup/esmvaltool-coreteam`_.
 Specifically, pull requests containing a :ref:`CMORizer script<new-dataset>` can only be merged by
-`@remi-kazeroni`_, who will then add the CMORized data to the OBS data pool at
+a member of `@OBS-maintainers`_, who will then add the CMORized data to the OBS data pool at
 DKRZ and CEDA-Jasmin.
 The team member who does the merge first checks that both the technical and
 scientific reviewer approved the pull request and that the reviews were
@@ -215,7 +215,7 @@ their opinion and try to find a solution.
 .. _`@ESMValGroup/tech-reviewers`: https://github.com/orgs/ESMValGroup/teams/tech-reviewers
 .. _`@ESMValGroup/science-reviewers`: https://github.com/orgs/ESMValGroup/teams/science-reviewers
 .. _`@ESMValGroup/esmvaltool-coreteam`: https://github.com/orgs/ESMValGroup/teams/esmvaltool-coreteam
-.. _`@remi-kazeroni`: https://github.com/remi-kazeroni
+.. _`@OBS-maintainers`: https://github.com/orgs/ESMValGroup/teams/obs-maintainers
 .. _`pull request template`: https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/.github/pull_request_template.md
 .. _`Google meet`: https://meet.google.com
 .. _`Jitsi meet`: https://meet.jit.si

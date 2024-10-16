@@ -27,7 +27,7 @@ only_consider_mmm : bool, optional (default: False)
 output_attributes : dict, optional
     Write additional attributes to netcdf files.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots).
 
 """
 
@@ -1016,7 +1016,7 @@ def set_default_cfg(cfg):
 def main(cfg):
     """Run the diagnostic."""
     cfg = set_default_cfg(cfg)
-    sns.set(cfg['seaborn_settings'])
+    sns.set_theme(cfg['seaborn_settings'])
     check_input_data(cfg)
     year_indices = {
         'all 150 years': slice(None),
