@@ -40,7 +40,8 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
     for cube in cubes:
         assert cube.units == "mm/day", f"unknown units:{cube.units}"
         # convert data from mm/day to kg m-2 s-1
-        # mm/day ~ density_water * mm/day = 1000 kg m-3 * 1/(1000*86400) m s-1 = 1/86400 kg m-2 s-1
+        # mm/day ~ density_water * mm/day
+        # = 1000 kg m-3 * 1/(1000*86400) m s-1 = 1/86400 kg m-2 s-1
         cube = cube / 86400
         cube.units = "kg m-2 s-1"
 
@@ -49,9 +50,8 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
         utils.set_global_atts(cube, attributes)
 
         logger.info("Saving file")
-        utils.save_variable(
-            cube, short_name, out_dir, attributes, unlimited_dimensions=["time"]
-        )
+        utils.save_variable(cube, short_name, out_dir, attributes,
+            unlimited_dimensions=["time"])
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
