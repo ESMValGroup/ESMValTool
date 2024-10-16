@@ -53,6 +53,12 @@ jobs:
       - name: Check version of conda-lock
         run: conda-lock --version
       - run: conda env export
+      - run: mamba info --json
+      - run: conda info --json
+      - run: conda install -c conda-forge "mamba>2"
+      - run: mamba info --json
+      - run: /home/runner/miniconda3/envs/esmvaltool-fromlock/bin/mamba --version
+      - run: md5sum /home/runner/miniconda3/envs/esmvaltool-fromlock/bin/mamba
       - name: Create conda lock file for linux-64
         run: conda-lock lock --platform linux-64 -f environment.yml --mamba --kind explicit --log-level=DEBUG
       - name: Show conda version again
