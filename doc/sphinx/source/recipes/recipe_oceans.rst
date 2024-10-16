@@ -763,7 +763,7 @@ Some of these diagnostic scripts may not function on machines with no access
 to the internet, as cartopy may try to download the shape files. The solution
 to this issue is the put the relevant cartopy shapefiles in a directory which
 is visible to esmvaltool, then link that path to ESMValTool via the
-:ref:`configuration option <esmvalcore:config_options>` `auxiliary_data_dir`.
+:ref:`configuration option <esmvalcore:config_options>` ``auxiliary_data_dir``.
 
 The cartopy masking files can be downloaded from:
 https://www.naturalearthdata.com/downloads/
