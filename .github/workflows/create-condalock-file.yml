@@ -48,9 +48,11 @@ jobs:
           python --version
       - name: Install conda-lock
         run: mamba install -y -c conda-forge conda-lock
+      - name: Upgrade conda-lock
+        run: pip install --force 'git+https://github.com/conda/conda-lock@main'
       - name: Check version of conda-lock
         run: conda-lock --version
-      - run: conda list
+      - run: conda env export
       - name: Create conda lock file for linux-64
         run: conda-lock lock --platform linux-64 -f environment.yml --mamba --kind explicit --log-level=DEBUG
       - name: Show conda version again
