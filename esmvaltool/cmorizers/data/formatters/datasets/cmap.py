@@ -51,7 +51,7 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
 
         logger.info("Saving file")
         utils.save_variable(cube, short_name, out_dir, attributes,
-            unlimited_dimensions=["time"])
+                            unlimited_dimensions=["time"])
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
