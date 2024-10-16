@@ -40,7 +40,7 @@ def _loc_function(x: np.ndarray, non_stat_params: list,
     return loc
 
 
-def _neg_log_likelihood(non_stat_params: list, data: np.ndarray,
+def _non_stationary_minimizer(non_stat_params: list, data: np.ndarray,
                                                covariate: np.ndarray):
     '''
     Function to minimize for the non_stationary fit
@@ -57,6 +57,57 @@ def _neg_log_likelihood(non_stat_params: list, data: np.ndarray,
     loc = _loc_function(covariate, non_stat_params)
     shape, scale = non_stat_params[2:]
     return -gev.logpdf(data, shape, loc=loc, scale=scale).sum()
+
+
+def _weighted_stationary_minimizer(stat_params: list, data: np.ndarray,
+                                               weights: np.ndarray):
+    '''
+    Function to minimize for the non_stationary fit
+
+    Parameters
+    ----------
+    stat_params : 
+        non-stationary GEV parameters in format [loc, shape, scale]
+    data: 
+        extremes data for the fit (e.g., TXx, RX1day)
+    covariate :
+        data with the covariate for the fit (e.g., GSAT, CO2 etc)
+    '''
+    loc, shape, scale = stat_params
+    logpdf_values = gev.logpdf(data, shape, loc=loc, scale=scale)
+    weighted_logpdf_values = logpdf_values * weights
+
+    return -weighted_logpdf_values.sum()
+
+
+class GEVSingleFit: 
+    def __init__(self, data, params, method, succeded):
+
+        self.loc, self.shape, self.scale = params
+        self.method = method
+        self.succeded = succeded
+        self._ks_stat_calculation(data)
+
+    def _ks_stat_calculation(self, data):
+        # from chat gpt suggestion on weighting
+        #     # Sort the data and weights
+        # sorted_indices = np.argsort(data)
+        # sorted_data = data[sorted_indices]
+        # sorted_weights = weights[sorted_indices]
+
+        # # Compute the weighted empirical CDF
+        # cum_weights = np.cumsum(sorted_weights)
+        # total_weight = np.sum(weights)
+        # weighted_ecdf = cum_weights / total_weight
+
+        # # Compute the theoretical CDF using GEV
+        # theoretical_cdf = genextreme.cdf(sorted_data, shape, loc=loc, scale=scale)
+
+        # # Calculate the KS statistic (maximum absolute difference between ECDF and theoretical CDF)
+        # ks_stat = np.max(np.abs(weighted_ecdf - theoretical_cdf))    
+        cdf = gev(self.shape, loc=self.loc, scale=self.scale).cdf
+        ks_result = kstest(data, cdf)
+        self.ks_stat = ks_result.statistic    
 
 
 class StationaryGEV:
@@ -102,12 +153,45 @@ class StationaryGEV:
         '''
 
         self._check_weights(data, weights)
-        initial_guess = self._get_initial_guess(data, initial)
-                    
-        stat_gev = cex.fit_gev(data, returnValue=event, getParams=True,
-                               weights=weights, initial=initial)
-        
+        self._get_initial_guess(data, initial)
+        self._fit_best_guess(data, weights)
+        self.rp = float(1/gev.sf(event, self.shape, loc=self.loc_idx,
+                                                    scale=self.scale))
         self.notation= 'scipy'
+
+    def _fit_best_guess(self, data, weights, initial_guess):
+
+        methods = ["COBYLA", "SLSQP", "L-BFGS-B", "Nelder-Mead", "Powell"]
+
+        fits = []
+
+        for method in methods:
+            # try multiple initial guesses
+            guess = [self.loc, self.shape, self.scale]
+            # for guess in perturbed_guesses:
+            result = minimize(_weighted_stationary_minimizer, guess, 
+                            args=(data, weights), method=method)
+            if result.success:
+                params = result.x
+                fits.append(GEVSingleFit(data, params, method, succeded=True))
+            else:
+                params = [np.nan, np.nan, np.nan]
+                fits.append(GEVSingleFit(data, params, method, succeded=False))
+            
+        ks_min_idx = np.nanargmin([fit.ks_stat for fit in fits])
+        best_fit = fits[ks_min_idx]
+
+        if (best_fit.ks > 0.1) | (best_fit.ks is None): 
+            self.loc = float(np.nan)
+            self.shape = float(np.nan)
+            self.scale = float(np.nan)
+            self.method = float(np.nan)
+        else:
+            self.loc = float(best_fit.loc) 
+            self.shape = float(best_fit.shape)
+            self.scale = float(best_fit.scale)
+            self.method = best_fit.method
+
 
     def _check_weights(data, weights):
         if not(weights is None):
@@ -141,13 +225,15 @@ class StationaryGEV:
         self._check_initial(initial)
 
         if initial:    
-            loc = initial['location']
-            shape = initial['shape']
-            scale = initial['scale']
+            self.loc = initial['location']
+            self.shape = initial['shape']
+            self.scale = initial['scale']
+            self.method = 'assigned'
         else:
-            shape, loc, scale = gev.fit(data)
+            self.shape, self.loc, self.scale = gev.fit(data)
+            self.method = 'default'
 
-        return [loc, shape, scale]
+        return
 
 
     def set_x_gev(self, metric: str, x_gev : np.ndarray | None = None):
@@ -357,7 +443,7 @@ class NonStationaryGEV:
             initial parameters for the fit [loc_1, loc_2, shape, scale]
         '''
 
-        optim_result = minimize(_neg_log_likelihood, initial_guess, 
+        optim_result = minimize(_non_stationary_minimizer, initial_guess,
                                 args=(data, covariate), method='SLSQP')
         if optim_result.status:
             self.loc_a = float(optim_result.x[0])
