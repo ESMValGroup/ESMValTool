@@ -1,4 +1,4 @@
-"""Script to download CMAP (CPC Merged Analysis of Precipitation)"""
+"""Script to download CMAP (CPC Merged Analysis of Precipitation)."""
 
 import logging
 
