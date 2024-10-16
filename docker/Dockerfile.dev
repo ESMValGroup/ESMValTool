@@ -1,6 +1,6 @@
 # To build this container, go to ESMValTool root folder and execute:
 # docker build -t esmvaltool:development . -f docker/Dockerfile.dev
-FROM condaforge/mambaforge
+FROM condaforge/miniforge3
 
 WORKDIR /src/ESMValTool
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y curl git ssh && apt clean
