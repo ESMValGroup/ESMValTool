@@ -44,7 +44,8 @@ Using shapefiles for cutting scientific regions
 To use shapefiles for selecting SREX or AR6 regions by name it is necessary to download them, e.g.,
 from the sources below and reference the file using the `shapefile` parameter. This can either be a
 absolute or a relative path. In the example recipes they are stored in a subfolder `shapefiles`
-in the :ref:`configuration option <esmvalcore:config_options>` `auxiliary_data_dir`.
+in the :ref:`configuration option <esmvalcore:config_options>`
+``auxiliary_data_dir``.
 
 SREX regions (AR5 reference regions): http://www.ipcc-data.org/guidelines/pages/ar5_regions.html
 

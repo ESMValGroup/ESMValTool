@@ -45,7 +45,7 @@ To reproduce Fig. 3.9 you need the shapefile of the `AR6 reference regions
 Please download the file `IPCC-WGI-reference-regions-v4_shapefile.zip
 <https://github.com/SantanderMetGroup/ATLAS/blob/v1.6/reference-regions/IPCC-WGI-reference-regions-v4_shapefile.zip>`_,
 unzip and store it in `<auxiliary_data_dir>/IPCC-regions/` (where
-`auxiliary_data_dir` is given as :ref:`configuration option
+``auxiliary_data_dir`` is given as :ref:`configuration option
 <esmvalcore:config_options>`).
 
 .. _`Eyring et al., 2021`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
