@@ -177,7 +177,7 @@ The following parameters have to be set in the script in order to make it run:
 * ``submit``, *bool*: Whether or not to automatically submit the job after creating the launch script. Default value is ``False``.
 * ``account``, *str*: Name of the DKRZ account in which the job will be billed.
 * ``outputs``, *str*: Name of the directory in which the job outputs (.out and .err files) are going to be saved. The outputs will be saved in `/home/user/<outputs>`.
-* ``conda_path``, *str*: Full path to the `mambaforge/etc/profile.d/conda.sh` executable.
+* ``conda_path``, *str*: Full path to the `miniforge3/etc/profile.d/conda.sh` executable.
 
 Optionally, the following parameters can be edited:
 
