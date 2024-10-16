@@ -49,7 +49,7 @@ jobs:
       - name: Install conda-lock
         run: mamba install -y -c conda-forge conda-lock
       - name: Upgrade conda-lock
-        run: pip install --force 'git+https://github.com/maresb/conda-lock@fix-pkgs-dirs-keyerror'
+        run: pip install --force 'git+https://github.com/maresb/conda-lock@main'
       - name: Check version of conda-lock
         run: conda-lock --version
       - run: conda env export
