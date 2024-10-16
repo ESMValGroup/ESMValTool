@@ -193,7 +193,7 @@ To CMORize one or more datasets, run:
 
     esmvaltool data format --config_file [CONFIG_FILE] [DATASET_LIST]
 
-The `rootpath` to the raw data to be CMORized must be specified in the
+The ``rootpath`` to the raw data to be CMORized must be specified in the
 :ref:`configuration <esmvalcore:config_options>` as ``RAWOBS``.
 Within this path, the data are expected to be organized in subdirectories
 corresponding to the data tier: Tier2 for freely-available datasets (other than
