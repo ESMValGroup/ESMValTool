@@ -46,9 +46,9 @@ partition = 'interactive'
 memory = '64G'
 # Default walltime
 time = '04:00:00'
-# Full path to the mambaforge/etc/profile.d/conda.sh executable
+# Full path to the miniforge3/etc/profile.d/conda.sh executable
 # Set the path to conda
-conda_path = 'PATH_TO/mambaforge/etc/profile.d/conda.sh'
+conda_path = 'PATH_TO/miniforge3/etc/profile.d/conda.sh'
 # Full path to config_file
 # If none, ~/.esmvaltool/config-user.yml is used
 config_file = ''
