@@ -36,7 +36,8 @@ jobs:
           conda --version
           # setup-miniconda@v3 installs an old conda and mamba
           # forcing a modern mamba updates both mamba and conda
-          conda install -c conda-forge "mamba>=1.4.8"
+          # pin <2 due to https://github.com/ESMValGroup/ESMValTool/pull/3771
+          conda install -c conda-forge "mamba>=1.4.8,<2"
           conda config --show-sources
           conda config --show
           conda --version
