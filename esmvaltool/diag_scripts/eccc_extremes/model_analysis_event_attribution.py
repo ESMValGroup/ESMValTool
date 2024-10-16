@@ -572,12 +572,12 @@ class Climates:
         if cfg.get('event_definition') == 'rarity':
             for Clim in self.climates:
                 if Clim.name == 'factual':
-                    FactClim = Clim
                     # the event is redifined using the best guess event 
                     # probability obtained from observations
-                    event = calculate_intensity(FactClim.BestGuessGEV, 
+                    event = calculate_intensity(Clim.BestGuessGEV, 
                                                             ObsInfo.event_rp, x_fine)
                     ObsInfo.add_model_event(event)
+                    break
             for Clim in self.climates:
                 Clim.update_event(event)
         for Clim in self.climates:
@@ -611,10 +611,10 @@ class Climates:
         obs_color = eplot.get_dataset_style(
                                         ObsInfo.name, cfg.get('color_style'))
 
-        reg = cfg.get('region') if cfg.get('region') else 'region'
-        label = cfg.get('var_label') if cfg.get('var_label') else self.climates[0
+        reg = cfg['region'] if cfg.get('region') else 'region'
+        label = cfg['var_label'] if cfg.get('var_label') else self.climates[0
                                                                     ].short_name
-        units = cfg.get('units') if cfg.get('units') else self.climates[0
+        units = cfg['units'] if cfg.get('units') else self.climates[0
                                                                     ].units
         bins, x_fine = select_bins(self.min_value, self.max_value)
 

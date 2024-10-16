@@ -200,7 +200,7 @@ def calculate_anomaly(data: xr.DataArray, anomaly_dic: dict, name: str,
         anomaly_data = data / base_data
     else:
         raise NotImplementedError(f"The anomaly type {ano_type} isn't "
-                                  f"impleneted. Possible entries: 'anomaly' "
+                                  f"implemented. Possible entries: 'anomaly' "
                                   "and 'ratio'.")
 
     return anomaly_data
