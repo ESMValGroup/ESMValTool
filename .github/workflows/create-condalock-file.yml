@@ -49,7 +49,7 @@ jobs:
       - name: Install conda-lock
         run: mamba install -y -c conda-forge conda-lock
       - name: Upgrade conda-lock
-        run: pip install --force 'git+https://github.com/conda/conda-lock@main'
+        run: pip install --force 'git+https://github.com/maresb/conda-lock@fix-pkgs-dirs-keyerror'
       - name: Check version of conda-lock
         run: conda-lock --version
       - run: conda env export
@@ -57,6 +57,8 @@ jobs:
       - run: conda info --json
       - run: conda install -c conda-forge "mamba>2"
       - run: mamba info --json
+      - run: mamba install -y -c conda-forge micromamba
+      - run: micromamba info --json
       - run: /home/runner/miniconda3/envs/esmvaltool-fromlock/bin/mamba --version
       - run: md5sum /home/runner/miniconda3/envs/esmvaltool-fromlock/bin/mamba
       - name: Create conda lock file for linux-64
