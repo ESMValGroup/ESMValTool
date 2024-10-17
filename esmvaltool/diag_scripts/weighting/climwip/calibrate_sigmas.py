@@ -6,12 +6,8 @@ from typing import Union
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
-from scipy.optimize import brute
 
-from esmvaltool.diag_scripts.shared import (
-    get_diagnostic_filename,
-    get_plot_filename,
-)
+from scipy.optimize import brute
 from esmvaltool.diag_scripts.weighting.climwip.core_functions import (
     area_weighted_mean,
     calculate_model_distances,
@@ -25,6 +21,11 @@ from esmvaltool.diag_scripts.weighting.climwip.io_functions import (
     read_model_data,
     read_model_data_ancestor,
 )
+from esmvaltool.diag_scripts.shared import (
+    get_diagnostic_filename,
+    get_plot_filename,
+)
+
 
 logger = logging.getLogger(os.path.basename(__file__))
 
