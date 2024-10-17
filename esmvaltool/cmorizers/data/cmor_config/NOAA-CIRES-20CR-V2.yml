@@ -44,3 +44,21 @@ variables:
     mip: Amon
     raw: uswrf
     file: 'uswrf.ntat.mon.mean.nc'
+  pr_month:
+    short_name: pr
+    mip: Amon
+    raw: prate
+    file: 'prate.mon.mean.nc'
+  tauu_month:
+    short_name: tauu
+    mip: Amon
+    raw: uflx
+    file: 'uflx.mon.mean.nc'
+    make_negative: true
+  tauv_month:
+    short_name: tauv
+    mip: Amon
+    raw: vflx
+    file: 'vflx.mon.mean.nc'
+    make_negative: true
+    
