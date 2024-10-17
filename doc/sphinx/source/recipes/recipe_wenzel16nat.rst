@@ -35,9 +35,8 @@ User settings
 
 .. note::
 
-   Make sure to run this recipe setting ``output_file_type: pdf`` in the ``config_user.yml``
-   file or using the CLI flag ``--output_file_type=pdf``.
-
+   Make sure to run this recipe with the :ref:`configuration option
+   <esmvalcore:config_options>` ``max_parallel_tasks: 1``.
 
 #. Script carbon_beta.ncl
 
@@ -58,7 +57,7 @@ User settings
 
    none
 
-#. Script carbon_co2_cycle.ncl 
+#. Script carbon_co2_cycle.ncl
 
    *Required Settings (scripts)*
 
@@ -72,7 +71,7 @@ User settings
 
    *Required settings (variables)*
 
-   * reference_dataset: name of reference datatset (observations)
+   * reference_dataset: name of reference dataset (observations)
 
    *Optional settings (variables)*
 
@@ -102,15 +101,15 @@ Example plots
 -------------
 
 .. figure:: /recipes/figures/wenzel16nat/fig_1.png
-   :width: 12 cm 
+   :width: 12 cm
    :align: center
-   
+
    Comparison of CO\ :sub:`2` seasonal amplitudes for CMIP5 historical simulations and observations showing annual mean atmospheric CO\ :sub:`2` versus the amplitudes of the CO\ :sub:`2` seasonal cycle at Pt. Barrow, Alaska (produced with carbon_co2_cycle.ncl, similar to Fig. 1a from Wenzel et al. (2016)).
-      
+
 .. figure:: /recipes/figures/wenzel16nat/fig_2.png
-   :width: 12 cm 
+   :width: 12 cm
    :align: center
-   
+
    Barchart showing the gradient of the linear correlations for the comparison of CO\ :sub:`2` seasonal amplitudes for CMIP5 historical for at Pt. Barrow, Alaska (produced with carbon_co2_cycle.ncl, similar to Fig. 1b from Wenzel et al. (2016)).
 
 .. figure:: /recipes/figures/wenzel16nat/fig_3.png

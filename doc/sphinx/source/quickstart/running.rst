@@ -39,20 +39,20 @@ from ESGF to the local directory ``~/climate_data``, run
 
 The ``--search_esgf=when_missing`` option tells ESMValTool to search for and
 download the necessary climate data files, if they cannot be found locally.
-The data only needs to be downloaded once, every following run will re-use
+The data only needs to be downloaded once, every following run will reuse
 previously downloaded data.
 If you have all required data available locally, you can run the tool with
 ``--search_esgf=never`` argument (the default).
 Note that in that case the required data should be located in the directories
-specified in your user configuration file.
+specified in the configuration (see :ref:`esmvalcore:config_option_rootpath`).
 A third option ``--search_esgf=always`` is available.
 With this option, the tool will first check the ESGF for the needed data,
 regardless of any local data availability; if the data found on ESGF is newer
 than the local data (if any) or the user specifies a version of the data that
 is available only from the ESGF, then that data will be downloaded; otherwise,
 local data will be used.
-Recall that the chapter :ref:`Configuring ESMValTool <config-user>`
-provides an explanation of how to create your own config-user.yml file.
+Recall that the chapter on :ref:`configuring ESMValTool <config>`
+provides an explanation of how to set up the configuration.
 
 See :ref:`running esmvaltool <esmvalcore:running>` in the ESMValCore
 documentation for a more complete introduction to the ``esmvaltool`` command.

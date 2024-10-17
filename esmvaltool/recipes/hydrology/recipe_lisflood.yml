@@ -37,7 +37,8 @@ preprocessors:
       scheme: linear
     extract_shape:
       # Perhaps a single shapefile needs to be created covering multiple basins
-      shapefile: Lorentz_Basin_Shapefiles/Meuse/Meuse.shp  # (config-user, aux)
+      # Relative to auxiliary_data_dir defined in configuration
+      shapefile: Lorentz_Basin_Shapefiles/Meuse/Meuse.shp
       method: contains
       crop: true  # set to false to keep the entire globe (memory intensive!)
   daily_water:

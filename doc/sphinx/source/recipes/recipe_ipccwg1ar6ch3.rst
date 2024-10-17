@@ -6,7 +6,7 @@ IPCC AR6 Chapter 3 (selected figures)
 Overview
 --------
 
-This recipe collects selected diagnostics used in IPCC AR6 WGI Chapter 3: 
+This recipe collects selected diagnostics used in IPCC AR6 WGI Chapter 3:
 Human influence on the climate system (`Eyring et al., 2021`_). Plots from IPCC
 AR6 can be readily reproduced and compared to previous versions. The aim is to
 be able to start with what was available now the next time allowing us to focus
@@ -15,7 +15,8 @@ on developing more innovative analysis methods rather than constantly having to
 
 Processing of CMIP3 models currently works only in serial mode, due to an issue
 in the input data still under investigation. To run the recipe for Fig 3.42a
-and Fig. 3.43 set "max_parallel_tasks: 1" in the config-user.yml file.
+and Fig. 3.43 set the :ref:`configuration option <esmvalcore:config_options>`
+``max_parallel_tasks: 1``.
 
 The plots are produced collecting the diagnostics from individual recipes. The
 following figures from `Eyring et al. (2021)`_ can currently be reproduced:
@@ -43,10 +44,9 @@ To reproduce Fig. 3.9 you need the shapefile of the `AR6 reference regions
 (`Iturbide et al., 2020 <https://doi.org/10.5194/essd-12-2959-2020>`_).
 Please download the file `IPCC-WGI-reference-regions-v4_shapefile.zip
 <https://github.com/SantanderMetGroup/ATLAS/blob/v1.6/reference-regions/IPCC-WGI-reference-regions-v4_shapefile.zip>`_,
-unzip and store it in `<auxiliary_data_dir>/IPCC-regions/` (the `auxiliary_data_dir`
-is defined in the `config-user.yml
-<https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#user-configuration-file>`_
-file).
+unzip and store it in `<auxiliary_data_dir>/IPCC-regions/` (where
+``auxiliary_data_dir`` is given as :ref:`configuration option
+<esmvalcore:config_options>`).
 
 .. _`Eyring et al., 2021`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
 .. _`Eyring et al. (2021)`: https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-3/
@@ -179,7 +179,7 @@ User settings in recipe
 
    * start_year: start year in figure
    * end_year: end year in figure
-   * panels: list of variable blocks for each panel 
+   * panels: list of variable blocks for each panel
 
    *Optional settings for script*
 
@@ -205,7 +205,7 @@ User settings in recipe
    * plot_units: variable unit for plotting
    * y-min: set min of y-axis
    * y-max: set max of y-axis
-   * order: order in which experiments should be plotted 
+   * order: order in which experiments should be plotted
    * stat_shading: if true: shading of statistic range
    * ref_shading: if true: shading of reference period
 
@@ -225,7 +225,7 @@ User settings in recipe
 
    * plot_legend: if true, plot legend will be plotted
    * plot_units: variable unit for plotting
-   * multi_model_mean: if true, multi-model mean and uncertaintiy will be 
+   * multi_model_mean: if true, multi-model mean and uncertainty will be
      plotted
 
    *Optional settings for variables*
@@ -304,7 +304,7 @@ User settings in recipe
    * labels: List of labels for each variable on the x-axis
    * model_spread: if True, model spread is shaded
    * plot_median: if True, median is plotted
-   * project_order: give order of projects 
+   * project_order: give order of projects
 
 
 Variables
@@ -452,7 +452,7 @@ Example plots
    2013). For line colours see the legend of Figure 3.4. Additionally, the
    multi-model mean (red) and standard deviation (grey shading) are shown.
    Observational and model datasets were detrended by removing the
-   least-squares quadratic trend. 
+   least-squares quadratic trend.
 
 .. figure::  /recipes/figures/ipccwg1ar6ch3/tas_anom_damip_global_1850-2020.png
    :align:   center
@@ -467,7 +467,7 @@ Example plots
    anomalies are shown relative to 1950-2010 for Antarctica and relative to
    1850-1900 for other continents. CMIP6 historical simulations are expanded by
    the SSP2-4.5 scenario simulations. All available ensemble members were used.
-   Regions are defined by Iturbide et al. (2020). 
+   Regions are defined by Iturbide et al. (2020).
 
 .. figure::  /recipes/figures/ipccwg1ar6ch3/model_bias_pr_annualclim_CMIP6.png
    :align:   center
@@ -487,7 +487,7 @@ Example plots
    show a change greater than the variability threshold; crossed lines indicate
    regions with conflicting signal, where >=66% of models show change greater
    than the variability threshold and <80% of all models agree on the sign of
-   change. 
+   change.
 
 .. figure::  /recipes/figures/ipccwg1ar6ch3/precip_anom_1950-2014.png
    :align:   center
@@ -511,7 +511,7 @@ Example plots
    forcings (brown) and natural forcings only (blue). Observed trends for each
    observational product are shown as horizontal lines. Panel (b) shows annual
    mean precipitation rate (mm day-1) of GHCN version 2 for the years 1950-2014
-   over land areas used to compute the plots. 
+   over land areas used to compute the plots.
 
 .. figure::  /recipes/figures/ipccwg1ar6ch3/zonal_westerly_winds.png
    :align:   center

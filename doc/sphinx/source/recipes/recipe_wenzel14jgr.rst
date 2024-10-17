@@ -28,8 +28,8 @@ User settings
 
 .. note::
 
-   Make sure to run this recipe setting ``max_parallel_tasks: 1`` in the ``config_user.yml``
-   file or using the CLI flag ``--max_parallel_tasks=1``.
+   Make sure to run this recipe with the :ref:`configuration option
+   <esmvalcore:config_options>` ``max_parallel_tasks: 1``.
 
 User setting files (cfg files) are stored in nml/cfg_carbon/
 

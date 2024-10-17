@@ -156,9 +156,8 @@ begin
         fx_variable = "areacello"
         error_msg("f", "russell_fig-7i.ncl", " ", "areacello file for " + \
                   datasetnames(iii) + " not found in the metadata file," + \
-                  " please add 'fx_files: [areacello]' to the variable " + \
-                  "dictionary in the recipe or add the location of " + \
-                  " file to config-user.yml")
+                  + " not found in the metadata file, please specify " \
+                  + "'areacello' as supplementary variable in the recipe.")
       end if
       areacello_2d = fx_var
       delete(fx_var)
@@ -212,9 +211,9 @@ begin
   "lgPerimOn"                : False                  ; no perimeter
   "lgItemCount"              : dimsizes(annots)       ; how many
   "lgLineLabelStrings"       : annots                 ; labels
-  "lgLabelsOn"               : False                  ; no default lables
+  "lgLabelsOn"               : False                  ; no default labsels
   "lgLineLabelFontHeightF"   : 0.0085                 ; font height
-  "lgDashIndexes"            : dashes                 ; line paterns
+  "lgDashIndexes"            : dashes                 ; line patterns
   "lgLineColors"             : colors
   "lgMonoLineLabelFontColor" : True                   ; one label color
   end create

@@ -59,12 +59,17 @@ This is a useful functionality because it allows the user to `fix` things on-the
 quitting the Ipython console, code execution continues as per normal.
 
 
-Use multiple config-user.yml files
-==================================
+Using multiple configuration directories
+========================================
 
-The user selects the configuration yaml file at run time. It's possible to
-have several configurations files. For instance, it may be practical to have one
-config file for debugging runs and another for production runs.
+By default, ESMValTool will read YAML configuration files from the user
+configuration directory ``~/.config/esmvaltool``, which can be changed with the
+``ESMVALTOOL_CONFIG_DIR`` environment variable.
+If required, users can specify the command line option ``--config_dir`` to
+select another configuration directory, which is read **in addition** to the
+user configuration directory
+See the section on configuration :ref:`config_yaml_files` for details on this.
+
 
 Create a symbolic link to the latest output directory
 =====================================================

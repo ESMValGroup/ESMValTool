@@ -10,7 +10,6 @@ import yaml
 
 from esmvaltool.utils.recipe_filler import run
 
-
 # Load test configuration
 with open(os.path.join(os.path.dirname(__file__),
                        'recipe_filler.yml')) as file:
@@ -65,7 +64,7 @@ def create_tree(path, filenames=None, symlinks=None):
         os.symlink(symlink['target'], link_name)
 
 
-def write_config_user_file(dirname, file_path, drs):
+def write_config_file(dirname, file_path, drs):
     config_file = dirname / 'config-user.yml'
     cfg = {
         'log_level': 'info',
@@ -102,7 +101,7 @@ def root():
 
 def setup_files(tmp_path, root, cfg):
     """Create config, recipe ,output recipe etc."""
-    user_config_file = write_config_user_file(tmp_path, root, cfg['drs'])
+    config_file = write_config_file(tmp_path, root, cfg['drs'])
     diagnostics = {}
     diagnostics["test_diagnostic"] = {}
     diagnostics["test_diagnostic"]["variables"] = {}
@@ -110,7 +109,7 @@ def setup_files(tmp_path, root, cfg):
     recipe = write_recipe(tmp_path, diagnostics)
     output_recipe = str(tmp_path / "recipe_auto.yml")
 
-    return user_config_file, recipe, output_recipe
+    return config_file, recipe, output_recipe
 
 
 @pytest.mark.parametrize('cfg', CONFIG['has_additional_datasets'])
@@ -119,13 +118,13 @@ def test_adding_datasets(tmp_path, root, cfg):
     create_tree(root, cfg.get('available_files'),
                 cfg.get('available_symlinks'))
 
-    user_config_file, recipe, output_recipe = setup_files(tmp_path, root, cfg)
+    config_file, recipe, output_recipe = setup_files(tmp_path, root, cfg)
 
     with arguments(
             'recipe_filler',
             recipe,
             '-c',
-            user_config_file,
+            config_file,
             '-o',
             output_recipe,
     ):
@@ -144,13 +143,13 @@ def test_not_adding_datasets(tmp_path, root, cfg):
     create_tree(root, cfg.get('available_files'),
                 cfg.get('available_symlinks'))
 
-    user_config_file, recipe, output_recipe = setup_files(tmp_path, root, cfg)
+    config_file, recipe, output_recipe = setup_files(tmp_path, root, cfg)
 
     with arguments(
             'recipe_filler',
             recipe,
             '-c',
-            user_config_file,
+            config_file,
             '-o',
             output_recipe,
     ):
@@ -166,7 +165,7 @@ def test_not_adding_datasets(tmp_path, root, cfg):
 def test_bad_var(tmp_path, root):
     """Test a bad variable in the works."""
     cfg = CONFIG['bad_variable'][0]
-    user_config_file, recipe, output_recipe = setup_files(tmp_path, root, cfg)
+    config_file, recipe, output_recipe = setup_files(tmp_path, root, cfg)
 
     # this doesn't fail and it shouldn't since it can go on
     # and look for data for other valid variables
@@ -174,7 +173,7 @@ def test_bad_var(tmp_path, root):
             'recipe_filler',
             recipe,
             '-c',
-            user_config_file,
+            config_file,
             '-o',
             output_recipe,
     ):
@@ -190,7 +189,7 @@ def test_bad_var(tmp_path, root):
 def test_no_short_name(tmp_path, root):
     """Test a bad variable in the works."""
     cfg = CONFIG['no_short_name'][0]
-    user_config_file, recipe, output_recipe = setup_files(tmp_path, root, cfg)
+    config_file, recipe, output_recipe = setup_files(tmp_path, root, cfg)
 
     # this doesn't fail and it shouldn't since it can go on
     # and look for data for other valid variables
@@ -198,7 +197,7 @@ def test_no_short_name(tmp_path, root):
             'recipe_filler',
             recipe,
             '-c',
-            user_config_file,
+            config_file,
             '-o',
             output_recipe,
     ):
