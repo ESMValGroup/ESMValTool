@@ -14,8 +14,7 @@ build:
     python: "miniconda-latest"
   jobs:
     pre_create_environment:
-      # install and update mamba just in case; NOT for Miniforge3
-      - conda install -c conda-forge mamba
+      # update mamba
       - mamba update --yes --quiet --name=base mamba 'zstd=1.5.2'
       - mamba --version
       - mamba list --name=base
