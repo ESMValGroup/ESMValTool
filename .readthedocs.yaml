@@ -13,12 +13,12 @@ build:
     # DO NOT use mambaforge-*; that is currently sunsetted
     python: "miniconda-latest"
   jobs:
-    pre_create_environment:
+    #pre_create_environment:
       # update mamba
-      - conda run -n ${CONDA_DEFAULT_ENV} conda install -c conda-forge mamba
-      - mamba update --yes --quiet --name=base mamba 'zstd=1.5.2'
-      - mamba --version
-      - mamba list --name=base
+   #   - conda run -n ${CONDA_DEFAULT_ENV} conda install -c conda-forge mamba
+   #   - mamba update --yes --quiet --name=base mamba 'zstd=1.5.2'
+   #   - mamba --version
+   #   - mamba list --name=base
     post_create_environment:
       - conda run -n ${CONDA_DEFAULT_ENV} mamba list
       # use conda run executable wrapper to have all env variables
