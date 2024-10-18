@@ -9,11 +9,13 @@ version: 2
 build:
   os: ubuntu-22.04
   tools:
-    # updated and deployed from Aug 1, 2023
-    python: "mambaforge-22.9"
+    # replace when miniforge3 when available
+    # DO NOT use mambaforge-*; that is currently sunsetted
+    python: "miniconda-latest"
   jobs:
     pre_create_environment:
-      # update mamba just in case
+      # install and update mamba just in case; NOT for Miniforge3
+      - conda install -c conda-forge mamba
       - mamba update --yes --quiet --name=base mamba 'zstd=1.5.2'
       - mamba --version
       - mamba list --name=base
