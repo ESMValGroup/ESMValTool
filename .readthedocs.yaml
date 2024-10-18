@@ -15,6 +15,7 @@ build:
   jobs:
     pre_create_environment:
       # update mamba
+      - conda run -n ${CONDA_DEFAULT_ENV} conda install -c conda-forge mamba
       - mamba update --yes --quiet --name=base mamba 'zstd=1.5.2'
       - mamba --version
       - mamba list --name=base
