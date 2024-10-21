@@ -568,7 +568,11 @@ def run_diagnostic():
         logger.info("Removing %s from previous run.", provenance_file)
         os.remove(provenance_file)
 
-    if not args.no_distributed and 'scheduler_address' in cfg:
+    use_distributed = not (
+       args.no_distributed
+       or cfg.get('no_distributed', False)
+    )
+    if use_distributed and 'scheduler_address' in cfg:
         try:
             client = distributed.Client(cfg['scheduler_address'])
         except OSError as exc:
