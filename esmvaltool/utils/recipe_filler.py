@@ -30,8 +30,7 @@ Key features:
 - `start_year` and `end_year` are mandatory and are used to filter out the
   datasets that don't have data in the interval; if you want all possible years
   hence no filtering on years just use "*" for start and end years;
-- `rootpath: CMIPX` in the configuration may be a list, rootpath lists are
-  supported;
+- `config-user: rootpath: CMIPX` may be a list, rootpath lists are supported;
 
 Caveats:
 
@@ -53,6 +52,7 @@ from pathlib import Path
 
 import esmvalcore
 import yaml
+
 from esmvalcore import __version__ as core_ver
 from esmvalcore.cmor.table import CMOR_TABLES, read_cmor_tables
 from packaging import version as pkg_version
@@ -183,13 +183,13 @@ def _normalize_path(path):
     return os.path.abspath(os.path.expanduser(os.path.expandvars(path)))
 
 
-def read_config_file(config_file, folder_name, options=None):
-    """Read configuration file and store settings in a dictionary."""
+def read_config_user_file(config_file, folder_name, options=None):
+    """Read config user file and store settings in a dictionary."""
     if not config_file:
-        config_file = '~/.config/esmvaltool/config-user.yml'
+        config_file = '~/.esmvaltool/config-user.yml'
     config_file = os.path.abspath(
         os.path.expandvars(os.path.expanduser(config_file)))
-    # Read config file
+    # Read user config file
     if not os.path.exists(config_file):
         print(f"ERROR: Config file {config_file} does not exist")
 
@@ -292,14 +292,14 @@ base_dict = {
 
 
 def _get_download_dir(yamlconf, cmip_era):
-    """Get the Download Directory from configuration file."""
+    """Get the Download Directory from user config file."""
     if 'download_dir' in yamlconf:
         return os.path.join(yamlconf['download_dir'], cmip_era)
     return False
 
 
 def _get_site_rootpath(cmip_era):
-    """Get site (drs) from configuration."""
+    """Get site (drs) from config-user.yml."""
     config_yml = get_args().config_file
     with open(config_yml, 'r') as yamf:
         yamlconf = yaml.safe_load(yamf)
@@ -541,7 +541,7 @@ def list_all_files(file_dict, cmip_era):
                 if not new_path.startswith(os.sep):
                     raise ValueError(
                         "Could not expand ~ to user home dir "
-                        "please expand it in the configuration file!")
+                        "please expand it in the config user file!")
                 logger.info("Expanding path to %s", new_path)
 
             # Globs all the wildcards into a list of files.
@@ -656,20 +656,20 @@ def _check_recipe(recipe_dict):
         raise ValueError("Please fix the issues in recipe and rerun")
 
 
-def _check_config_file(config_file):
+def _check_config_file(user_config_file):
     """Perform a quick recipe check for mandatory fields."""
     do_exit = False
-    if "rootpath" not in config_file:
+    if "rootpath" not in user_config_file:
         logger.error("Config file missing rootpath section.")
         do_exit = True
-    if "drs" not in config_file:
+    if "drs" not in user_config_file:
         logger.error("Config file missing drs section.")
         do_exit = True
     for proj in cmip_eras:
-        if proj not in config_file["rootpath"].keys():
+        if proj not in user_config_file["rootpath"].keys():
             logger.error("Config file missing rootpath for %s", proj)
             do_exit = True
-        if proj not in config_file["drs"].keys():
+        if proj not in user_config_file["drs"].keys():
             logger.error("Config file missing drs for %s", proj)
             do_exit = True
     if do_exit:
@@ -790,9 +790,8 @@ def get_args():
     parser.add_argument('recipe', help='Path/name of yaml pilot recipe file')
     parser.add_argument('-c',
                         '--config-file',
-                        default=os.path.expanduser(
-                            '~/.config/esmvaltool/config-user.yml'
-                        ),
+                        default=os.path.join(os.environ["HOME"], '.esmvaltool',
+                                             'config-user.yml'),
                         help='User configuration file')
 
     parser.add_argument('-o',
@@ -836,23 +835,25 @@ def run():
     cmip_eras = ["CMIP5", "CMIP6"]
 
     # read the config file
-    cfg = read_config_file(args.config_file, 'recipe_filler', options={})
+    config_user = read_config_user_file(args.config_file,
+                                        'recipe_filler',
+                                        options={})
 
     # configure logger
-    run_dir = os.path.join(cfg['output_dir'], 'recipe_filler')
+    run_dir = os.path.join(config_user['output_dir'], 'recipe_filler')
     if not os.path.isdir(run_dir):
         os.makedirs(run_dir)
     log_files = configure_logging(output_dir=run_dir,
-                                  console_log_level=cfg['log_level'])
+                                  console_log_level=config_user['log_level'])
     logger.info(HEADER)
-    logger.info("Using configuration file: %s", args.config_file)
+    logger.info("Using user configuration file: %s", args.config_file)
     logger.info("Using pilot recipe file: %s", input_recipe)
     logger.info("Writing filled out recipe to: %s", output_recipe)
     log_files = "\n".join(log_files)
     logger.info("Writing program log files to:\n%s", log_files)
 
-    # check configuration file
-    _check_config_file(cfg)
+    # check config user file
+    _check_config_file(config_user)
 
     # parse recipe
     with open(input_recipe, 'r') as yamlfile:
