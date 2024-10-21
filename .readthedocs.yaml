@@ -13,6 +13,7 @@ build:
     # DO NOT use mambaforge-*; that is currently sunsetted
     python: "miniconda-latest"  # miniforge3
   jobs:
+   # Put these back when we have Miniforge3 from RTD
    #   pre_create_environment:
    #     # update mamba
    #     - mamba update --yes --quiet --name=base mamba 'zstd=1.5.2'
