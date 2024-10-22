@@ -228,7 +228,7 @@ def global_contourf(cube,
     if cbar_range is not None:
         levels = np.linspace(*cbar_range)
         kwargs['levels'] = levels
-    axes = plt.axes(projection=ccrs.Robinson(central_longitude=10))
+    axes = plt.axes(projection=ccrs.Robinson())
     plt.sca(axes)
     map_plot = iris.plot.contourf(cube, **kwargs)
 
@@ -309,7 +309,7 @@ def global_pcolormesh(cube,
         kwargs['cmap'] = cmap
 
     # Create plot
-    axes = plt.axes(projection=ccrs.Robinson(central_longitude=10))
+    axes = plt.axes(projection=ccrs.Robinson())
     plt.sca(axes)
     map_plot = iris.plot.pcolormesh(cube, **kwargs)
 
