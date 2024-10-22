@@ -383,63 +383,6 @@ klaus.zimmermann@smhi.se
 .. _pygithub: https://pygithub.readthedocs.io/en/latest/introduction.html
 
 
-Recipe filler
-=============
-
-If you need to fill in a blank recipe with additional datasets, you can do that with
-the command `recipe_filler`. This runs a tool to obtain a set of additional datasets when
-given a blank recipe, and you can give an arbitrary number of data parameters. The blank recipe
-should contain, to the very least, a list of diagnostics, each with their variable(s).
-Example of running the tool:
-
-.. code-block:: bash
-
-    recipe_filler recipe.yml
-
-where `recipe.yml` is the recipe that needs to be filled with additional datasets; a minimal
-example of this recipe could be:
-
-.. code-block:: yaml
-
-    diagnostics:
-      diagnostic:
-        variables:
-          ta:
-            mip: Amon  # required
-            start_year: 1850  # required
-            end_year: 1900  # required
-
-
-Key features
-------------
-
-- you can add as many variable parameters as are needed; if not added, the
-  tool will use the ``"*"`` wildcard and find all available combinations;
-- you can restrict the number of datasets to be looked for with the ``dataset:``
-  key for each variable, pass a list of datasets as value, e.g.
-  ``dataset: [MPI-ESM1-2-LR, MPI-ESM-LR]``;
-- you can specify a pair of experiments, e.g. ``exp: [historical, rcp85]``
-  for each variable; this will look for each available dataset per experiment
-  and assemble an aggregated data stretch from each experiment to complete
-  for the total data length specified by ``start_year`` and ``end_year``; equivalent to
-  ESMValTool's syntax on multiple experiments; this option needs an ensemble
-  to be declared explicitly; it will return no entry if there are gaps in data;
-- ``start_year`` and ``end_year`` are required and are used to filter out the
-  datasets that don't have data in the interval; as noted above, the tool will not
-  return datasets with partial coverage from ``start_year`` to ``end_year``;
-  if you want all possible years hence no filtering on years just use ``"*"``
-  for start and end years;
-- ``config-user: rootpath: CMIPX`` may be a list, rootpath lists are supported;
-- all major DRS paths (including ``default``, ``BADC``, ``ETHZ`` etc) are supported;
-- speedup is achieved through CMIP mip tables lookup, so ``mip`` is required in recipe;
-
-Caveats
--------
-
-- the tool doesn't yet work with derived variables; it will not return any available datasets;
-- operation restricted to CMIP data only, OBS lookup is not available yet.
-
-
 Extracting a list of input files from the provenance
 ====================================================
 
