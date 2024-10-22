@@ -61,6 +61,16 @@ diagnostics:
     scripts: null
 
 
+  CMAP:
+    description: CMAP check
+    variables:
+      pr:
+    additional_datasets:
+      - {project: OBS6, dataset: CMAP, mip: Amon, tier: 2,
+        type: reanaly, version: v1}
+    scripts: null
+
+
   CRU:
     description: CRU check
     variables:
