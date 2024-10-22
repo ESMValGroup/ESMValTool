@@ -241,9 +241,7 @@ projection: str, optional (default: 'Robinson')
     :mod:`cartopy.crs`. Keyword arguments can be specified using the option
     ``projection_kwargs``.
 projection_kwargs: dict, optional
-    Optional keyword arguments for the projection given by ``projection``. For
-    the default projection ``Robinson``, the default keyword arguments
-    ``central_longitude: 10`` are used.
+    Optional keyword arguments for the projection given by ``projection``.
 pyplot_kwargs: dict, optional
     Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
@@ -739,13 +737,8 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type]['plot_kwargs_bias'].setdefault(
                     'norm', 'centered'
                 )
-                if 'projection' not in self.plots[plot_type]:
-                    self.plots[plot_type].setdefault('projection', 'Robinson')
-                    self.plots[plot_type].setdefault(
-                        'projection_kwargs', {'central_longitude': 10}
-                    )
-                else:
-                    self.plots[plot_type].setdefault('projection_kwargs', {})
+                self.plots[plot_type].setdefault('projection', 'Robinson')
+                self.plots[plot_type].setdefault('projection_kwargs', {})
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
                 self.plots[plot_type].setdefault('rasterize', True)
                 self.plots[plot_type].setdefault('show_stats', True)
