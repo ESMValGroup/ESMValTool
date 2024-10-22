@@ -71,6 +71,7 @@ Climate metrics
    :maxdepth: 1
 
    recipe_perfmetrics
+   recipe_perfmetrics_python
    recipe_smpi
 
 Future projections
