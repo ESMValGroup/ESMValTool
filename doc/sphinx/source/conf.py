@@ -15,15 +15,10 @@
 import os
 import sys
 from datetime import datetime
-from pathlib import Path
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-root = Path(__file__).absolute().parent.parent.parent.parent
-sys.path.insert(0, str(root))
 
-from esmvaltool import __version__
+# from esmvaltool import __version__
+__version__ = "2.10.0"
 
 # -- RTD configuration ------------------------------------------------
 
@@ -61,7 +56,7 @@ generate_gallery.main()
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
+    'autoapi.extension',
     'sphinx.ext.doctest',
     'sphinx.ext.extlinks',
     'sphinx.ext.intersphinx',
@@ -71,16 +66,61 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
-    'autodocsumm',
 ]
 
-autodoc_default_options = {
-    'members': True,
-    'undoc-members': True,
-    'inherited-members': True,
-    'show-inheritance': True,
-    'autosummary': True,
-}
+# Autoapi configuration
+# https://sphinx-autoapi.readthedocs.io/en/latest/reference/config.html
+autoapi_dirs = [
+    '../../../esmvaltool',
+]
+autoapi_ignore = [
+    '**/esmvaltool/cmorizers/**',
+    '**/esmvaltool/install/**',
+    '**/esmvaltool/utils/**',
+]
+autoapi_root = 'api'
+autoapi_options = [
+    'members',
+    'undoc-members',
+    'imported-members',
+    'inherited-members',
+    'special-members',
+    'show-inheritance',
+    'show-module-summary',
+]
+autoapi_member_order = "groupwise"
+# Keep the AutoAPI generated files on the filesystem after the run. Useful for
+# debugging. Keeping files will also allow AutoAPI to use incremental builds.
+# Providing none of the source files have changed, AutoAPI will skip parsing
+# the source code and regenerating the API documentation.
+autoapi_keep_files = False
+
+
+def skip_submodules(app, what, name, obj, skip, options):
+    modules_to_document = [
+        'esmvaltool',
+        'esmvaltool.diag_scripts',
+    ]
+    submodules_to_document = [
+        f"esmvaltool.diag_scripts.{module}" for module in [
+            'emergent_constraints',
+            'mlr',
+            'monitor',
+            'ocean',
+            'shared',
+            'psyplot_diag',
+            'seaborn_diag',
+        ]
+    ]
+
+    if not (name in modules_to_document or any(name.startswith(m) for m in submodules_to_document)):
+        skip = True
+    return skip
+
+
+def setup(sphinx):
+    sphinx.connect("autoapi-skip-member", skip_submodules)
+
 
 # See https://github.com/sphinx-doc/sphinx/issues/12589
 suppress_warnings = [
@@ -124,7 +164,7 @@ release = __version__
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = []
+# exclude_patterns = []
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -438,7 +478,7 @@ intersphinx_mapping = {
     'cartopy': ('https://scitools.org.uk/cartopy/docs/latest/', None),
     'cf_units': ('https://cf-units.readthedocs.io/en/latest/', None),
     'esmvalcore':
-    (f'https://docs.esmvaltool.org/projects/esmvalcore/en/{rtd_version}/',
+    (f'https://docs.esmvaltool.org/projects/ESMValCore/en/{rtd_version}/',
      None),
     'esmvaltool': (f'https://docs.esmvaltool.org/en/{rtd_version}/', None),
     'iris': ('https://scitools-iris.readthedocs.io/en/latest/', None),
