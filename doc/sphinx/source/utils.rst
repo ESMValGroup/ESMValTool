@@ -135,10 +135,11 @@ This suite is configured to work with versions of cylc older than 8.0.0 .
 To prepare for using this tool:
 
 #. Log in to a system that uses `slurm <https://slurm.schedmd.com/quickstart.html>`_
-#. Make sure the required CMIP and observational datasets are available and configured in config-user.yml
+#. Make sure the required CMIP and observational datasets are available and
+   their ``rootpath`` and ``drs`` is properly set up in the :ref:`configuration
+   <esmvalcore:config_options>`
 #. Make sure the required auxiliary data is available (see :ref:`recipe documentation <recipes>`)
 #. Install ESMValTool
-#. Update config-user.yml so it points to the right data locations
 
 Next, get started with `cylc <https://cylc.github.io/cylc-doc/7.9.3/html/index.html>`_:
 
@@ -181,7 +182,7 @@ The following parameters have to be set in the script in order to make it run:
 
 Optionally, the following parameters can be edited:
 
-* ``config_file``, *str*: Path to ``config-user.yml`` if default ``~/.esmvaltool/config-user.yml`` not used.
+* ``config_dir``, *str*: Path to :ref:`configuration directory <esmvalcore:config_yaml_files>`, by default ``~/.config/esmvaltool/``.
 * ``partition``, *str*: Name of the DKRZ partition used to run jobs. Default is ``interactive`` to minimize computing cost compared to ``compute`` for which nodes cannot be shared.
 * ``memory``, *str*: Amount of memory requested for each run. Default is ``64G`` to allow to run 4 recipes on the same node in parallel.
 * ``time``, *str*: Time limit. Default is ``04:00:00`` to increase the job priority. Jobs can run for up to 8 hours and 12 hours on the compute and interactive partitions, respectively.
@@ -230,7 +231,7 @@ script as well as a list of all available recipes. To generate the list, run the
 
    for recipe in $(esmvaltool recipes list | grep '\.yml$'); do echo $(basename "$recipe"); done > all_recipes.txt
 
-To keep the script execution fast, it is recommended to use ``log_level: info`` in your config-user.yml file so that SLURM
+To keep the script execution fast, it is recommended to use ``log_level: info`` in the configuration so that SLURM
 output files are rather small.
 
 .. _overview_page:
