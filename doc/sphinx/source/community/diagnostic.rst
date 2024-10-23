@@ -432,7 +432,7 @@ request:
 
 ::
 
-   @esmvalbot Please run recipe_xyz.yml
+   @esmvalbot please run examples/recipe_python.yml
 
 Note that only members of the `@ESMValGroup/esmvaltool-developmentteam`_
 can request runs. The memory of the `@esmvalbot`_ is limited to 16 GB and it only
