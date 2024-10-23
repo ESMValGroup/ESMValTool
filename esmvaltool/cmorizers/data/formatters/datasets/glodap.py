@@ -118,7 +118,7 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
                              bounds=[0., 12.]), 0)
 
     fix_var_metadata(cube, var_info)
-    fix_coords(cube)
+    cube = fix_coords(cube)
     _fix_data(cube, var)
     set_global_atts(cube, attrs)
     save_variable(cube, var, out_dir, attrs, unlimited_dimensions=['time'])

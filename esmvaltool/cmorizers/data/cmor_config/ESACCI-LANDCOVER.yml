@@ -1,0 +1,32 @@
+attributes:
+  project_id: 'OBS'
+  dataset_id: 'ESACCI-LANDCOVER'
+  tier: 2
+  modeling_realm: sat
+  institution: 'Universite catholique de Louvain'
+  reference: 'esacci-landcover'
+  source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/pft'
+  title: 'ESA CCI Land Cover'
+  version: 'v2.0.8'
+  comment: ''
+filename: ESACCI-LC-L4-PFT-Map-300m-P1Y-{year}-v2.0.8.nc
+variables:
+  baresoilFrac:
+    mip: Lmon
+    long_name: 'BARE'
+    frequency: yr
+  cropFrac:
+    mip: Lmon
+    long_name: 'GRASS-MAN'
+    frequency: yr
+  grassFrac:
+    mip: Lmon
+    long_name: 'GRASS-NAT'
+    frequency: yr
+  shrubFrac:
+    mip: Lmon
+    frequency: yr
+  treeFrac:
+    mip: Lmon
+    frequency: yr
+

@@ -1,6 +1,7 @@
 """Script to download NSIDC-G02202-sh."""
 import logging
 from datetime import datetime
+
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader

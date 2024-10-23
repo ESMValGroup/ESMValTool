@@ -84,10 +84,7 @@ def _fix_units(cube, definition):
 
 
 def _fix_coordinates(cube, definition, cmor_info):
-    # fix flipped latitude
-    utils.flip_dim_coord(cube, 'latitude')
-    # fix other coordinates
-    utils.fix_coords(cube)
+    cube = utils.fix_coords(cube)
 
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)
@@ -145,6 +142,9 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
         Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
 
     cube = _fix_coordinates(cube, definition, cmor_info)
+
+    if var.get("make_negative"):
+        cube.data = -1 * cube.data
 
     utils.save_variable(
         cube,
