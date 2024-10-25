@@ -39,3 +39,25 @@ variables:
     mip: Amon
     raw: omega
     file: 'omega\.mon\.mean\.nc'
+  pr_month:
+    short_name: pr
+    mip: Amon
+    raw: prate
+    file: 'prate.sfc.mon.mean.nc'
+  tauu_month:
+    short_name: tauu
+    mip: Amon
+    raw: uflx
+    file: 'uflx.sfc.mon.mean.nc'
+    make_negative: true
+  tauv_month:
+    short_name: tauv
+    mip: Amon
+    raw: vflx
+    file: 'vflx.sfc.mon.mean.nc'
+    make_negative: true
+  tos_month:
+    short_name: tos
+    mip: Amon
+    raw: skt
+    file: 'skt.sfc.mon.mean.nc'
