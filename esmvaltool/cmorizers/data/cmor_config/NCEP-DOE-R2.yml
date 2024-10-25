@@ -49,11 +49,13 @@ variables:
     mip: Amon
     raw: uflx
     file: 'uflx.sfc.mon.mean.nc'
+    make_negative: true
   tauv_month:
     short_name: tauv
     mip: Amon
     raw: vflx
     file: 'vflx.sfc.mon.mean.nc'
+    make_negative: true
   tos_month:
     short_name: tos
     mip: Amon
