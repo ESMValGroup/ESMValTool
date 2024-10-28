@@ -775,7 +775,7 @@ begin
     ; mandatory netcdf output
 
     data1@var = var0 + "_mean_" + names(imod)
-    nc_outfile_mean = ncdf_write(data1, nc_filename_mean)
+;;;    nc_outfile_mean = ncdf_write(data1, nc_filename_mean)
 
     ; =======================================================================
     ; Create difference plots (if requested)
@@ -1158,7 +1158,7 @@ begin
       ; mandatory netcdf output
 
       diff@var = var0 + "_bias_" + names(imod)
-      nc_outfile_bias = ncdf_write(diff, nc_filename_bias)
+;;;      nc_outfile_bias = ncdf_write(diff, nc_filename_bias)
 
     end if  ; if flag_diff
 
