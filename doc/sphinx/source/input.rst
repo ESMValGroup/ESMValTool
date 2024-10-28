@@ -76,7 +76,7 @@ For example, run
 
 to run the default example recipe and automatically download the required data
 to the directory ``~/climate_data``.
-The data only needs to be downloaded once, every following run will re-use
+The data only needs to be downloaded once, every following run will reuse
 previously downloaded data stored in this directory.
 See :ref:`esmvalcore:config-esgf` for a more in depth explanation and the
 available configuration options.
@@ -117,7 +117,7 @@ OBS and OBS6 data is stored in the `esmeval` Group Workspace (GWS), and to be gr
 GWS, one must apply at https://accounts.jasmin.ac.uk/services/group_workspaces/esmeval/ ; after permission has been granted, the user
 is encouraged to use the data locally, and not move it elsewhere, to minimize both data transfers and
 stale disk usage; to note that Tier 3 data is subject to data protection restrictions; for further inquiries,
-the GWS is adminstered by [Valeriu Predoi](mailto:valeriu.predoi@ncas.ac.uk).
+the GWS is administered by [Valeriu Predoi](mailto:valeriu.predoi@ncas.ac.uk).
 
 Using a CMORizer script
 -----------------------
@@ -193,8 +193,8 @@ To CMORize one or more datasets, run:
 
     esmvaltool data format --config_file [CONFIG_FILE] [DATASET_LIST]
 
-The path to the raw data to be CMORized must be specified in the :ref:`user
-configuration file<config-user>` as RAWOBS.
+The ``rootpath`` to the raw data to be CMORized must be specified in the
+:ref:`configuration <esmvalcore:config_options>` as ``RAWOBS``.
 Within this path, the data are expected to be organized in subdirectories
 corresponding to the data tier: Tier2 for freely-available datasets (other than
 obs4MIPs and ana4mips) and Tier3 for restricted datasets (i.e., dataset which
@@ -300,7 +300,17 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-FIRE                  | burntArea (Lmon)                                                                                     |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ESACCI-LANDCOVER             | baresoilFrac, cropFrac, grassFrac, shrubFrac, treeFrac (Lmon)                                        |   2  | NCL             |
+| ESACCI-LANDCOVER v1.6.1      | baresoilFrac, cropFrac, grassFrac, shrubFrac, treeFrac (Lmon)                                        |   2  | NCL             |
+|                              |                                                                                                      |      | (CMORizer       |
+|                              |                                                                                                      |      | available until |
+|                              |                                                                                                      |      | ESMValTool      |
+|                              |                                                                                                      |      | v2.11.0)        |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| ESACCI-LANDCOVER v2.0.8      | baresoilFrac, cropFrac, grassFrac, shrubFrac, treeFrac (Lmon, frequency=yr)                          |   2  | Python          |
+|                              |                                                                                                      |      | (CMORizer       |
+|                              |                                                                                                      |      | available since |
+|                              |                                                                                                      |      | ESMValTool      |
+|                              |                                                                                                      |      | v2.12.0)        |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-LST                   | ts (Amon)                                                                                            |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -358,6 +368,8 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | JRA-25                       | clt, hus, prw, rlut, rlutcs, rsut, rsutcs (Amon)                                                     |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| JRA-55                       | cli, clivi, clw, clwvi, clt, prw, rlus, rlut, rlutcs, rsus, rsuscs, rsut, rsutcs, ta, tas, wap (Amon)|   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | Kadow2020                    | tasa (Amon)                                                                                          |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | LAI3g                        | lai (Lmon)                                                                                           |   3  | Python          |
@@ -400,7 +412,7 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NIWA-BS                      | toz, tozStderr (Amon)                                                                                |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| NOAA-CIRES-20CR-V2           | clt, clwvi, hus, prw, rlut, rsut (Amon)                                                              |   2  | Python          |
+| NOAA-CIRES-20CR-V2           | clt, clwvi, hus, prw, rlut, rsut, pr, tauu, tauv (Amon)                                              |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NOAA-CIRES-20CR-V3           | clt, clwvi, hus, prw, rlut, rlutcs, rsut, rsutcs (Amon)                                              |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -482,8 +494,8 @@ A list of all currently supported native datasets is :ref:`provided here
 A detailed description of how to include new native datasets is given
 :ref:`here <esmvalcore:add_new_fix_native_datasets>`.
 
-To use this functionality, users need to provide a path in the
-:ref:`esmvalcore:user configuration file` for the ``native6`` project data
+To use this functionality, users need to provide a ``rootpath`` in the
+:ref:`configuration <config_option_rootpath>` for the ``native6`` project data
 and/or the dedicated project used for the native dataset, e.g., ``ICON``.
 Then, in the recipe, they can refer to those projects.
 For example:

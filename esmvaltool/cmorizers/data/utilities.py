@@ -94,6 +94,21 @@ def add_scalar_height_coord(cube: Cube, height: float = 2.0) -> None:
     cube.add_aux_coord(height_coord, ())
 
 
+def add_typebare(cube, value='bare_ground'):
+    """Add scalar coordinate 'typebare' with value of `value`."""
+    logger.debug("Adding typebare coordinate (%s)", value)
+    typebare_coord = iris.coords.AuxCoord(value,
+                                          var_name='typebare',
+                                          standard_name='area_type',
+                                          long_name='surface type',
+                                          units=Unit('no unit'))
+    try:
+        cube.coord('area_type')
+    except iris.exceptions.CoordinateNotFoundError:
+        cube.add_aux_coord(typebare_coord, ())
+    return cube
+
+
 @contextmanager
 def constant_metadata(cube):
     """Do cube math without modifying units, attributes etc.
@@ -204,14 +219,7 @@ def fix_coords(cube,
         if cube_coord.var_name == 'lon':
             logger.info("Fixing longitude...")
             if cube_coord.ndim == 1:
-                if cube_coord.points[0] < 0. and \
-                        cube_coord.points[-1] < 181.:
-                    cube_coord.points = \
-                        cube_coord.points + 180.
-                    cube.attributes['geospatial_lon_min'] = 0.
-                    cube.attributes['geospatial_lon_max'] = 360.
-                    nlon = len(cube_coord.points)
-                    roll_cube_data(cube, nlon // 2, -1)
+                cube = cube.intersection(longitude=(0.0, 360.0))
             if overwrite_lon_bounds or not cube_coord.has_bounds():
                 fix_bounds(cube, cube_coord)
 
@@ -220,6 +228,8 @@ def fix_coords(cube,
             logger.info("Fixing latitude...")
             if overwrite_lat_bounds or not cube.coord('latitude').has_bounds():
                 fix_bounds(cube, cube.coord('latitude'))
+            if cube_coord.core_points()[0] > cube_coord.core_points()[-1]:
+                cube = iris.util.reverse(cube, cube_coord)
 
         # fix depth
         if cube_coord.var_name == 'lev':
@@ -326,7 +336,10 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     except iris.exceptions.CoordinateNotFoundError:
         time_suffix = None
     else:
-        if len(time.points) == 1 and "mon" not in cube.attributes.get('mip'):
+        if (
+                len(time.points) == 1 and
+                "mon" not in cube.attributes.get('mip')
+        ) or cube.attributes.get("frequency") == "yr":
             year = str(time.cell(0).point.year)
             time_suffix = '-'.join([year + '01', year + '12'])
         else:
