@@ -52,7 +52,7 @@ dependencies:
   - psy-reg >=1.5.0
   - psy-simple >=1.5.0
   - pyproj >=2.1
-  - pys2index  # only from conda-forge
+  - pys2index >=0.1.5  # only from conda-forge
   - python >=3.10,<3.13
   - python-cdo
   - python-dateutil
