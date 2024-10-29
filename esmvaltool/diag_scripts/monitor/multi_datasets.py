@@ -1169,6 +1169,9 @@ class MultiDatasets(MonitorBase):
             # Options used for all subplots
             projection = self._get_map_projection()
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            if plot_func is iris.plot.contourf:
+                # see https://github.com/SciTools/cartopy/issues/2457
+                plot_kwargs['transform_first'] = True
             gridline_kwargs = self._get_gridline_kwargs(plot_type)
             fontsize = self.plots[plot_type]['fontsize']
 
@@ -1268,6 +1271,9 @@ class MultiDatasets(MonitorBase):
             axes = fig.add_subplot(projection=self._get_map_projection())
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
+            if plot_func is iris.plot.contourf:
+                # see https://github.com/SciTools/cartopy/issues/2457
+                plot_kwargs['transform_first'] = True
             plot_map = plot_func(cube, **plot_kwargs)
             axes.coastlines()
             gridline_kwargs = self._get_gridline_kwargs(plot_type)

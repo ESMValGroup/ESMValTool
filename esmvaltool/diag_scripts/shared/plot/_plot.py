@@ -228,6 +228,7 @@ def global_contourf(cube,
     if cbar_range is not None:
         levels = np.linspace(*cbar_range)
         kwargs['levels'] = levels
+    kwargs['transform_first'] = True  # see SciTools/cartopy/issues/2457
     axes = plt.axes(projection=ccrs.Robinson(central_longitude=10))
     plt.sca(axes)
     map_plot = iris.plot.contourf(cube, **kwargs)
