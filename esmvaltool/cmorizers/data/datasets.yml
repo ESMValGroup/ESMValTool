@@ -111,8 +111,8 @@ datasets:
 
   CAMS:
     tier: 3
-    source: https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-greenhouse-gas-inversion?tab=form
-    last_access: 2024-09-09
+    source: https://ads.atmosphere.copernicus.eu/datasets/cams-global-greenhouse-gas-inversion?tab=overview
+    last_access: 2024-10-28
     info: |
       You will need to make an account with the CDS data store to download the data.
       Then, select carbon dioxide, surface flux, surface air sample, monthly mean,
@@ -120,7 +120,7 @@ datasets:
 
   CAMS-EAC4:
     tier: 3
-    source: https://ads.atmosphere.copernicus.eu/datasets/cams-global-reanalysis-eac4-monthly?tab=download
+    source: https://ads.atmosphere.copernicus.eu/datasets/cams-global-reanalysis-eac4-monthly?tab=overview
     last_access: 2024-09-30
     info: |
       Requires ECMWF account for the Atmosphere Data Store.
