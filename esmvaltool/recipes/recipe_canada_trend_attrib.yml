@@ -324,17 +324,8 @@ diagnostics:
         script: attribute/damip_timeseries.py
         year_block: 1 
         warming_base: [1854, 1900]
-        warming_years: [2010, 2019]
+        warming_years: [2014, 2023]
 
-#Close to repeat of AR6 results, using GSAT.
-      fig2_2010-19_gsat: 
-        script: attribute/attrib_blended.py
-        year_block: 5 
-        warming_base: [1854, 1900]
-        exp_flag: GHG
-        rcplot: true
-        simple_uncert: false
-        warming_years: [2010, 2019]
 
       fig2_2013-22: 
         script: attribute/attrib_blended.py
