@@ -25,8 +25,8 @@ from copy import deepcopy
 from pathlib import Path
 
 import iris
-from esmvaltool.cmorizers.data import utilities as utils
 
+from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 

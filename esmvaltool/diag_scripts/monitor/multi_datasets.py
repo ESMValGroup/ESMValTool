@@ -1176,6 +1176,9 @@ class MultiDatasets(MonitorBase):
             axes_data = fig.add_subplot(gridspec[0:2, 0:2],
                                         projection=projection)
             plot_kwargs['axes'] = axes_data
+            if plot_func is iris.plot.contourf:
+                # see https://github.com/SciTools/cartopy/issues/2457
+                plot_kwargs['transform_first'] = True
             plot_data = plot_func(cube, **plot_kwargs)
             axes_data.coastlines()
             if gridline_kwargs is not False:
@@ -1212,6 +1215,9 @@ class MultiDatasets(MonitorBase):
             plot_kwargs_bias = self._get_plot_kwargs(plot_type, dataset,
                                                      bias=True)
             plot_kwargs_bias['axes'] = axes_bias
+            if plot_func is iris.plot.contourf:
+                # see https://github.com/SciTools/cartopy/issues/2457
+                plot_kwargs_bias['transform_first'] = True
             plot_bias = plot_func(bias_cube, **plot_kwargs_bias)
             axes_bias.coastlines()
             if gridline_kwargs is not False:
@@ -1268,6 +1274,9 @@ class MultiDatasets(MonitorBase):
             axes = fig.add_subplot(projection=self._get_map_projection())
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
+            if plot_func is iris.plot.contourf:
+                # see https://github.com/SciTools/cartopy/issues/2457
+                plot_kwargs['transform_first'] = True
             plot_map = plot_func(cube, **plot_kwargs)
             axes.coastlines()
             gridline_kwargs = self._get_gridline_kwargs(plot_type)
