@@ -608,6 +608,7 @@ from pathlib import Path
 from pprint import pformat
 
 import cartopy.crs as ccrs
+import dask.array as da
 import iris
 import matplotlib as mpl
 import matplotlib.dates as mdates
@@ -1178,8 +1179,15 @@ class MultiDatasets(MonitorBase):
             plot_kwargs['axes'] = axes_data
             if plot_func is iris.plot.contourf:
                 # see https://github.com/SciTools/cartopy/issues/2457
+                # and https://github.com/SciTools/cartopy/issues/2468
                 plot_kwargs['transform_first'] = True
-            plot_data = plot_func(cube, **plot_kwargs)
+                npx = da if cube.has_lazy_data() else np
+                cube_to_plot = cube.copy(
+                    npx.ma.filled(cube.core_data(), np.nan)
+                )
+            else:
+                cube_to_plot = cube
+            plot_data = plot_func(cube_to_plot, **plot_kwargs)
             axes_data.coastlines()
             if gridline_kwargs is not False:
                 axes_data.gridlines(**gridline_kwargs)
@@ -1196,7 +1204,17 @@ class MultiDatasets(MonitorBase):
             if self.plots[plot_type]['common_cbar']:
                 plot_kwargs.setdefault('vmin', plot_data.get_clim()[0])
                 plot_kwargs.setdefault('vmax', plot_data.get_clim()[1])
-            plot_ref = plot_func(ref_cube, **plot_kwargs)
+            if plot_func is iris.plot.contourf:
+                # see https://github.com/SciTools/cartopy/issues/2457
+                # and https://github.com/SciTools/cartopy/issues/2468
+                plot_kwargs['transform_first'] = True
+                npx = da if ref_cube.has_lazy_data() else np
+                ref_cube_to_plot = ref_cube.copy(
+                    npx.ma.filled(ref_cube.core_data(), np.nan)
+                )
+            else:
+                ref_cube_to_plot = ref_cube
+            plot_ref = plot_func(ref_cube_to_plot, **plot_kwargs)
             axes_ref.coastlines()
             if gridline_kwargs is not False:
                 axes_ref.gridlines(**gridline_kwargs)
@@ -1217,8 +1235,15 @@ class MultiDatasets(MonitorBase):
             plot_kwargs_bias['axes'] = axes_bias
             if plot_func is iris.plot.contourf:
                 # see https://github.com/SciTools/cartopy/issues/2457
+                # and https://github.com/SciTools/cartopy/issues/2468
                 plot_kwargs_bias['transform_first'] = True
-            plot_bias = plot_func(bias_cube, **plot_kwargs_bias)
+                npx = da if bias_cube.has_lazy_data() else np
+                bias_cube_to_plot = bias_cube.copy(
+                    npx.ma.filled(bias_cube.core_data(), np.nan)
+                )
+            else:
+                bias_cube_to_plot = bias_cube
+            plot_bias = plot_func(bias_cube_to_plot, **plot_kwargs_bias)
             axes_bias.coastlines()
             if gridline_kwargs is not False:
                 axes_bias.gridlines(**gridline_kwargs)
@@ -1276,8 +1301,15 @@ class MultiDatasets(MonitorBase):
             plot_kwargs['axes'] = axes
             if plot_func is iris.plot.contourf:
                 # see https://github.com/SciTools/cartopy/issues/2457
+                # and https://github.com/SciTools/cartopy/issues/2468
                 plot_kwargs['transform_first'] = True
-            plot_map = plot_func(cube, **plot_kwargs)
+                npx = da if cube.has_lazy_data() else np
+                cube_to_plot = cube.copy(
+                    npx.ma.filled(cube.core_data(), np.nan)
+                )
+            else:
+                cube_to_plot = cube
+            plot_map = plot_func(cube_to_plot, **plot_kwargs)
             axes.coastlines()
             gridline_kwargs = self._get_gridline_kwargs(plot_type)
             if gridline_kwargs is not False:
