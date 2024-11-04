@@ -23,24 +23,25 @@ documentation:
 
 datasets:
   # working datasets
-  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003, }
-  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003, }
-
+#  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003, }
+#  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003, }
+  - {project: NEMO, dataset: GC3p1, suite: ar766, model: nemo, freq: 1y, grid: T, timerange: '185001/185112'}
+  - {project: NEMO, dataset: GC5, suite: cq317, model: nemo, freq: 1y, grid: T, timerange: '185001/185112'}
 
 preprocessors:
   prep_quad_map: # For Global 2D fields
     extract_time:
-      start_year: 2001
+      start_year: 1850
       start_month: 1
       start_day: 1
-      end_year: 2003
+      end_year: 1851
       end_month: 12
       end_day: 31
     climate_statistics:
       operator: mean
-    regrid:
-      target_grid: 1x1
-      scheme: linear
+#    regrid:
+#     target_grid: 1x1
+#	scheme: linear
 
 
 diagnostics:
@@ -53,11 +54,13 @@ diagnostics:
        tos: # Temperature ocean surface
          preprocessor: prep_quad_map
          mip: Omon
-     additional_datasets:
-       - {dataset: ARC-SST-1-1,  project: obs4MIPs,  level: L3,  start_year: 2001,  end_year: 2003, tier: 1}
+#     additional_datasets:
+#       - {dataset: ARC-SST-1-1,  project: obs4MIPs,  level: L3,  start_year: 2001,  end_year: 2003, tier: 1}
      scripts:
        Global_Ocean_map: &Global_Ocean_map
          script: ocean/diagnostic_maps_quad.py
-         control_model: {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-         exper_model: {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-         observational_dataset: {dataset: ARC-SST-1-1, project: obs4MIPs,}
+#         control_model: {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+#         exper_model: {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+#         observational_dataset: {dataset: ARC-SST-1-1, project: obs4MIPs,}
+         control_model: {project: NEMO, dataset: GC3p1}
+         exper_model: {project: NEMO, dataset: GC5}
