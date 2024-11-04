@@ -133,7 +133,6 @@ def multi_model_maps(
     input_files = diagtools.get_input_files(cfg)
 
     model_types = [ctl_key, exp_key, obs_key]
-    model_types = [ctl_key, exp_key, obs_key]
     for model_type in model_types:
         logger.debug(model_type, cfg[model_type])
         filenames[model_type] = diagtools.match_model_to_key(
@@ -196,7 +195,7 @@ def multi_model_maps(
         zrange1 = diagtools.get_cube_range([
             cube221,
         ])
-        zrange2 = diagtools.get_cube_range_diff([cube222, cube223, cube224])
+        zrange2 = [-5.0, 5.0]
 
         linspace1 = np.linspace(zrange1[0], zrange1[1], 12, endpoint=True)
         linspace2 = np.linspace(zrange2[0], zrange2[1], 12, endpoint=True)
