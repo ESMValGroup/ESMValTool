@@ -40,7 +40,7 @@ jobs:
           branch: run-esmvalbot
           delete-branch: true
           title: '[EsmvalbotTest] Periodic reminder to run an esmvalbot test'
-          body: 'Automatic PR please DO NOT merge! This is for testing Esmvalbot only. @valeriupredoi @bouwendela @schlunma please run an ESMValBot test here. Many thanks :beers:'
+          body: 'Automatic PR please DO NOT merge! This is for testing Esmvalbot only. @valeriupredoi @bouweandela @schlunma please run an ESMValBot test here; the bot runs fine please close the PR. Many thanks :beers:'
           labels: |
             testing
             esmvalbot
