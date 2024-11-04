@@ -17,7 +17,7 @@ jobs:
   run-esmvalbot:
     runs-on: 'ubuntu-latest'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Create empty commit on branch
@@ -29,7 +29,7 @@ jobs:
       # as comment in the PR
       # see https://github.com/marketplace/actions/create-pull-request
       - name: Create Auto PR
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: empty message
