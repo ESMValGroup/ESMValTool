@@ -186,37 +186,36 @@ def multi_model_maps(
         cube2.coord("longitude").points[:] = cube3.coord("longitude").points
         cube3 = iris.util.squeeze(cube3)
 
-        cube221 = cube1
-        cube222 = cube1 - cube2
-        cube223 = cube2 - cube3
-        cube224 = cube1 - cube3
+        cube221 = cube3
+        cube222 = cube2 - cube1
+        cube223 = cube3 - cube2
+        cube224 = cube3 - cube1
 
-        # create the z axis for plots 2, 3, 4.
         zrange1 = diagtools.get_cube_range([
             cube221,
         ])
-        zrange2 = [-5.0, 5.0]
+        zrange2 = [-2.0, 2.0]
 
         linspace1 = np.linspace(zrange1[0], zrange1[1], 12, endpoint=True)
         linspace2 = np.linspace(zrange2[0], zrange2[1], 12, endpoint=True)
 
         # Add the sub plots to the figure.
-        add_map_subplot(221, cube221, linspace1, cmap='viridis', title=exper)
+        add_map_subplot(221, cube221, linspace1, cmap='viridis', title=obs)
         add_map_subplot(222,
                         cube222,
                         linspace2,
                         cmap='bwr',
-                        title=' '.join([exper, 'minus', control]))
+                        title=' '.join([control, 'minus', exper]))
         add_map_subplot(223,
                         cube223,
                         linspace2,
                         cmap='bwr',
-                        title=' '.join([control, 'minus', obs]))
+                        title=' '.join([obs, 'minus', control]))
         add_map_subplot(224,
                         cube224,
                         linspace2,
                         cmap='bwr',
-                        title=' '.join([exper, 'minus', obs]))
+                        title=' '.join([obs, 'minus', exper]))
 
         # Add overall title
         fig.suptitle(long_name, fontsize=14)
@@ -294,9 +293,21 @@ def main(cfg):
     ----------
     cfg: dict
         the opened global config dictionairy, passed by ESMValTool.
+
+
+
+    for index, metadata_filename in enumerate(cfg['input_files']):
+        logger.info(
+            'metadata filename:\t%s',
+            metadata_filename,
+        )
+        input_files = diagtools.get_input_files(cfg, index=index)
+        # #####
+        # Multi model time series
     """
 
     multi_model_maps(cfg)
+
     logger.info('Success')
 
 
