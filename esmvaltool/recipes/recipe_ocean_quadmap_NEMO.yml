@@ -23,9 +23,10 @@ documentation:
 
 datasets:
   # working datasets
-  - {project: NEMO, dataset: GC3p1, suite: ar766, model: nemo, freq: 1y, grid: T, timerange: '185001/185112'}
-  - {project: NEMO, dataset: GC5, suite: cq317, model: nemo, freq: 1y, grid: T, timerange: '185001/185112'}
-
+#  - {project: NEMO, dataset: GC3p1, suite: ar766, model: nemo, freq: 1y, grid: T, timerange: '185001/185112'}
+#  - {project: NEMO, dataset: GC5, suite: cq317, model: nemo, freq: 1y, grid: T, timerange: '185001/185112'}
+  - {project: NEMO, dataset: GC5, suite: cp656, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
+  - {project: NEMO, dataset: GC3p1, suite: co957, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
 preprocessors:
   prep_quad_map:  # For Global 2D fields
     extract_time:
@@ -52,5 +53,6 @@ diagnostics:
     scripts:
       Global_Ocean_map: &Global_Ocean_map
         script: ocean/diagnostic_maps_quad.py
-        control_model: {project: NEMO, dataset: GC3p1}
-        exper_model: {project: NEMO, dataset: GC5}
+        control_model: {project: NEMO, dataset: GC5}
+        exper_model: {project: NEMO, dataset: GC3p1}
+        observational_dataset: {project: NEMO, dataset: GC3p1}
