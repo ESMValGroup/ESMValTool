@@ -39,8 +39,8 @@ jobs:
           signoff: false
           branch: run-esmvalbot
           delete-branch: true
-          title: '[EsmvalbotTest] Run esmvalbot test'
-          body: Automatic PR please DO NOT merge! This is for testing Esmvalbot only.
+          title: '[EsmvalbotTest] Periodic reminder to run an esmvalbot test'
+          body: 'Automatic PR please DO NOT merge! This is for testing Esmvalbot only. @valeriupredoi @bouwendela @schlunma please run an ESMValBot test here. Many thanks :beers:'
           labels: |
             testing
             esmvalbot
@@ -48,9 +48,9 @@ jobs:
           assignees: valeriupredoi
           reviewers: valeriupredoi
           draft: true
-      - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          message: |
-            @esmvalbot please run examples/recipe_python.yml
-          pr_number: ${{env.PULL_REQUEST_NUMBER}}
+      #- name: Comment PR
+      #  uses: thollander/actions-comment-pull-request@v2
+      #  with:
+      #    message: |
+      #      @esmvalbot please run examples/recipe_python.yml
+      #    pr_number: ${{env.PULL_REQUEST_NUMBER}}
