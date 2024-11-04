@@ -25,7 +25,7 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy  # <8.6 safe https://github.com/SciTools/iris-esmf-regrid/issues/415
-  - esmvalcore 2.11.*
+  # - esmvalcore 2.11.*
   - fiona
   - fire
   - fsspec
