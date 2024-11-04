@@ -365,11 +365,14 @@ def plot_overlays(cfg, grid, data):
 
 
 def plot(cfg, data):
-    """Create figure with subplots for each group.
+    """Create figure with subplots for each group and save to NetCDF.
 
     sets same color range and  overlays additional references based on
     the content of data (xr.DataArray)
     """
+    # Save the dataset to NetCDF before plotting
+    save_to_netcdf(cfg, data)
+
     fig = plt.figure(1, cfg.get("figsize", (5.5, 3.5)))
     group_count = len(data.coords[cfg["group_by"]])
     grid = ImageGrid(
@@ -493,6 +496,16 @@ def sort_data(cfg, dataset):
     #     dataset = dataset.reindex({cfg["x_by"]: cfg["x_order"]})
     return dataset
 
+def save_to_netcdf(cfg, data):
+    """Save the final dataset to a NetCDF file."""
+    # Define the output filename for the NetCDF file
+    basename = "performance_metrics"
+    fname = get_diagnostic_filename(basename, cfg, extension='nc')
+    
+    # Save the dataset to a NetCDF file
+    data.to_netcdf(fname)
+    log.info("NetCDF file saved:")
+    log.info(fname)
 
 def main(cfg):
     """Run the diagnostic."""
