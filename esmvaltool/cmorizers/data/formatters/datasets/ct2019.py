@@ -11,7 +11,7 @@ Last access
 
 Download and processing instructions
     Create a new empty directory ``$RAWOBSPATH/Tier2/CT2019`` (where
-    ``$RAWOBSPATH`` is given by your user configuration file) where the raw
+    ``$RAWOBSPATH`` is given in the configuration) where the raw
     data will be stored. The download of the data is automatically handled by
     this script. If data is already present in this directory, the download is
     skipped (to force a new download delete your old files).
@@ -39,7 +39,7 @@ def _add_aux_coords(cube, input_files, coords_to_add):
         logger.info("Adding auxiliary coordinate '%s' to '%s'", coord_name,
                     cube.var_name)
         coord_cube = _load_cube(input_files, coord_name)
-        utils.fix_coords(coord_cube)
+        coord_cube = utils.fix_coords(coord_cube)
         dim_coords = [c.name() for c in coord_cube.coords(dim_coords=True)]
         if 'boundary' in dim_coords:
             (points, bounds) = _interpolate_center(coord_cube)
@@ -166,7 +166,7 @@ def _extract_variable(short_name, var, cfg, input_files, out_dir):
     utils.convert_timeunits(cube, 1950)
 
     # Fix coordinates
-    utils.fix_coords(cube)
+    cube = utils.fix_coords(cube)
 
     # Fix metadata
     attrs = cfg['attributes']
