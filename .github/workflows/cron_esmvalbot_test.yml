@@ -1,12 +1,12 @@
 name: Run Esmvalbot Test
 
 on:
-  push:
-    branches:
-      - cron_esmvalbot_test
-  # scheduled once every week
+  # push:
+  #   branches:
+  #     - cron_esmvalbot_test
+  # scheduled once every 2 weeks
   schedule:
-    - cron: '0 4 */7 * *'
+    - cron: '0 4 */14 * *'
 
 # Required shell entrypoint to have properly configured bash shell
 defaults:
