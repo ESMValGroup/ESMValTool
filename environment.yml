@@ -11,7 +11,7 @@ channels:
 
 dependencies:
   - aiohttp
-  - cartopy <0.24  # https://github.com/ESMValGroup/ESMValTool/issues/3767
+  - cartopy  # should be free https://github.com/ESMValGroup/ESMValTool/issues/3769
   - cdo >=2.3.0
   - cdsapi
   - cf-units
