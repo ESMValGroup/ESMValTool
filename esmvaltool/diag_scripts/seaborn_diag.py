@@ -148,6 +148,9 @@ def _create_plot(
         plot_func_str,
         _get_str_from_kwargs(plot_kwargs),
     )
+    if plot_func_str in ['jointplot']:
+        data_frame = data_frame.reset_index()
+                
     plot_obj = plot_func(data=data_frame, **plot_kwargs)
 
     # Adjust plot appearance
@@ -171,7 +174,10 @@ def _create_plot(
                 getattr(plot_obj, func_name)(func_args)
     if cfg['suptitle'] is not None:
         logger.debug("Setting `suptitle='%s'`", cfg['suptitle'])
-        plt.suptitle(cfg['suptitle'], y=1.05)
+        if plot_func_str in ['jointplot']:
+            plt.suptitle(cfg['suptitle'].format(data_frame["shape_id"].unique()[0]), y=1.05)
+        else:
+            plt.suptitle(cfg['suptitle'], y=1.05)
     if cfg['legend_title'] is not None:
         _set_legend_title(plot_obj, cfg['legend_title'])
 
@@ -443,6 +449,11 @@ def _set_legend_title(plot_obj, legend_title: str) -> None:
         legend = plot_obj.get_legend()
     elif hasattr(plot_obj, 'legend'):  # FacetGrid, PairGrid
         legend = plot_obj.legend
+    elif isinstance(plot_obj, sns.axisgrid.JointGrid):  # JointGrid workaround
+        # Manually create a legend if needed in JointGrid
+        handles, labels = plot_obj.ax_joint.get_legend_handles_labels()
+        if handles and labels:
+            legend = plot_obj.ax_joint.legend(handles=handles, labels=labels, title=legend_title)
     else:
         raise ValueError(
             f"Cannot set legend title, `{type(plot_obj).__name__}` does not "
