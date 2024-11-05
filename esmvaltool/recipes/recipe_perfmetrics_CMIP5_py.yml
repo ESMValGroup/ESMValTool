@@ -4,13 +4,15 @@
 documentation:
   title: Performance metrics plots.
   description: >
-    Compare performance of ICON simulations to a reference dataset.
+    Compare performance of CMIP simulations to a reference dataset.
   authors:
-    - ruhe_lukas
+  - cammarano_diego
+  - lindenlaub_lukas
   maintainer:
-    - ruhe_lukas
+  - lindenlaub_lukas
   references:
-    - eyring21ipcc
+  - eyring21ipcc
+  - gleckler08jgr
 
 preprocessors:
   pp200_3x3:
@@ -23,7 +25,7 @@ preprocessors:
       operator: mean
       period: month      
     extract_levels:
-      levels: 19900
+      levels: 20000
       scheme: linear
       coordinate: air_pressure
     mask_fillvalues:
@@ -42,7 +44,7 @@ preprocessors:
       operator: mean
       period: month      
     extract_levels:
-      levels: 85500
+      levels: 85000
       scheme: linear
       coordinate: air_pressure
     mask_fillvalues:
@@ -61,7 +63,7 @@ preprocessors:
       operator: mean
       period: month      
     extract_levels:
-      levels: 85500
+      levels: 40000
       scheme: linear
       coordinate: air_pressure
     mask_fillvalues:
@@ -246,7 +248,9 @@ preprocessors:
       exclude: [ESACCI-SST, HadISST]          
 
 diagnostics:
-  perfmetrics_rmse:  # seasonal normalized rmse
+  perfmetrics_rmse:
+    themes: [ aerosols, phys, clouds, atmDyn, chem, ghg ]
+    realms: [ atmos, land, atmosChem, ocean ]
     variables:
       zg:
         variable: zg500
@@ -2096,7 +2100,7 @@ diagnostics:
     scripts:
       portrait:
         script: perfmetrics/portrait_plot.py
-        x_by: alias
+        x_by: dataset
         y_by: variable  # use extra_facet since group and short_name don't work
         group_by: project
         normalize: "centered_median"

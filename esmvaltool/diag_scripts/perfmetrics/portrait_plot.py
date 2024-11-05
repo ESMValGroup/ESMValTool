@@ -95,6 +95,8 @@ figsize: list(float), optional
    By default [5, 3].
 dpi: int, optional
     Dots per inch for the figure. By default 300.
+domain: str, optional
+    Domain for provenance. By default 'global'.
 """
 
 import itertools
@@ -111,6 +113,7 @@ from matplotlib import patches
 from mpl_toolkits.axes_grid1 import ImageGrid
 
 from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
     get_diagnostic_filename,
     get_plot_filename,
     group_metadata,
@@ -184,7 +187,7 @@ def open_file(metadata, **selection):
     if len(metas) < 1:
         log.debug("No Metadata found for %s", selection)
         return np.nan
-    log.warning("Metadata found for %s", selection)
+    log.debug("Metadata found for %s", selection)
     das = xr.open_dataset(metas[0]["filename"])
     varname = list(das.data_vars.keys())[0]
     return das[varname].values.item()
@@ -371,7 +374,18 @@ def plot(cfg, data):
     the content of data (xr.DataArray)
     """
     # Save the dataset to NetCDF before plotting
-    save_to_netcdf(cfg, data)
+    provenance = {
+        'ancestors': list(cfg["input_data"].keys()),
+        'authors': ["cammarano_diego", "lindenlaub_lukas"],
+        'caption': 'RMSE performance metric',
+        'domains': [cfg.get('domain', 'global')],
+        'plot_types': ['portrait'],
+        'references': [
+            'gleckler08jgr',
+        ],
+        'statistics': ['rmsd'],
+    }
+    save_to_netcdf(cfg, data, provenance)
 
     fig = plt.figure(1, cfg.get("figsize", (5.5, 3.5)))
     group_count = len(data.coords[cfg["group_by"]])
@@ -404,8 +418,12 @@ def plot(cfg, data):
     if cfg["plot_legend"] and data.shape[3] > 1:
         split_legend(cfg, grid, data)
     basename = "portrait_plot"
+    print("save prov")
     fname = get_plot_filename(basename, cfg)
+    print(fname)
     plt.savefig(fname, bbox_inches="tight", dpi=cfg["dpi"])
+    with ProvenanceLogger(cfg) as prov_logger:
+        prov_logger.log(fname, provenance)
     log.info("Figure saved:")
     log.info(fname)
 
@@ -496,16 +514,18 @@ def sort_data(cfg, dataset):
     #     dataset = dataset.reindex({cfg["x_by"]: cfg["x_order"]})
     return dataset
 
-def save_to_netcdf(cfg, data):
+
+def save_to_netcdf(cfg, data, provenance):
     """Save the final dataset to a NetCDF file."""
     # Define the output filename for the NetCDF file
     basename = "performance_metrics"
     fname = get_diagnostic_filename(basename, cfg, extension='nc')
-    
-    # Save the dataset to a NetCDF file
     data.to_netcdf(fname)
     log.info("NetCDF file saved:")
     log.info(fname)
+    with ProvenanceLogger(cfg) as prov_logger:
+        prov_logger.log(fname, provenance)
+
 
 def main(cfg):
     """Run the diagnostic."""
