@@ -243,6 +243,7 @@ preprocessors:
 
 diagnostics:
 
+  # Figure 7c
   diag_tropical_ocean:
     description: compare field means
     variables:
@@ -395,6 +396,7 @@ diagnostics:
         title: 'Tropical Ocean'
 
 
+  # Figure 7b
   diag_southern_ocean:
     description: compare field means
     variables:
@@ -547,6 +549,7 @@ diagnostics:
         title: 'Southern Ocean'
 
 
+  # Figure 7d
   diag_pacific_itcz:
     description: compare field means
     variables:
@@ -699,6 +702,7 @@ diagnostics:
         title: 'Pacific ITCZ'
 
 
+  # Figure 7e
   diag_stratocumulus:
     description: compare field means
     variables:
@@ -851,6 +855,7 @@ diagnostics:
         title: 'Stratocumulus region'
 
 
+  # Figure 7a
   diag_arctic:
     description: compare field means
     variables:
