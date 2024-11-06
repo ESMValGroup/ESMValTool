@@ -307,8 +307,6 @@ def plot_group(cfg, axe, data, title=None):
     used. Other splits will be added by overlaying triangles.
     """
     split = data.sel({cfg["split_by"]: cfg["default_split"]})
-    print(f"Plotting group {title}")
-    print(split)
     plot_matrix(
         split.values.T,  # 2d numpy array
         split.coords[cfg["y_by"]].values,  # y_labels
@@ -374,6 +372,7 @@ def plot(cfg, data):
     the content of data (xr.DataArray)
     """
     # Save the dataset to NetCDF before plotting
+    # TODO: should we collect references and list them in the caption somehow?
     provenance = {
         'ancestors': list(cfg["input_data"].keys()),
         'authors': ["cammarano_diego", "lindenlaub_lukas"],
@@ -497,6 +496,7 @@ def set_defaults(cfg):
 
 def sort_data(cfg, dataset):
     """Sort the dataset along by custom or alphabetical order."""
+    # TODO: decide on (default) strategies and options.
     # custom order: dsimport xarray as xr
     # import pandas as pd
     # order = ['value3', 'value1', 'value2']  # replace by custom order
@@ -512,6 +512,20 @@ def sort_data(cfg, dataset):
     # apply custom orders if given:
     # if cfg.get("x_order"):
     #     dataset = dataset.reindex({cfg["x_by"]: cfg["x_order"]})
+    # move MMM to begin:
+    if cfg["x_by"] in ["alias", "dataset"]:
+        # TODO: not clean, but it works for many cases
+        mm_stats = [
+            v for v in dataset[cfg["x_by"]].values
+            if "Mean" in v or "Median" in v
+        ]
+        others = [
+            v for v in dataset[cfg["x_by"]].values
+            if "Mean" not in v and "Median" not in v
+        ]
+        new_order = mm_stats + others
+        dataset = dataset.reindex({cfg["x_by"]: new_order})
+    dataset[cfg["x_by"]]
     return dataset
 
 
