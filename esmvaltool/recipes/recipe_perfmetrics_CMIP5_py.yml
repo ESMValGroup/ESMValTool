@@ -15,7 +15,7 @@ documentation:
     - gleckler08jgr
 
 preprocessors:
-  pp200_3x3:
+  default: &default  # common preprocessor settings
     regrid:
       target_grid: 3x3
       scheme: linear
@@ -24,228 +24,92 @@ preprocessors:
     climate_statistics:
       operator: mean
       period: month
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      # exclude all possible reference datasets
+      exclude: [
+        AIRS-2-1,
+        CERES-EBAF,
+        ERA-Interim,
+        ESACCI-AEROSOL,
+        ESACCI-CLOUD,
+        ESACCI-OZONE,
+        ESACCI-SOILMOISTURE,
+        ESACCI-SST,
+        GPCP-V2.2,
+        HadISST,
+        NCEP-NCAR-R1,
+        MODIS,
+        NIWA-BS,
+        PATMOS-x]
+  pp200_3x3:  # only add/overwrite var specific settings
+    <<: *default
     extract_levels:
       levels: 20000
       scheme: linear
       coordinate: air_pressure
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [ERA-Interim, NCEP-NCAR-R1]
   pp850_3x3:
-    regrid:
-      target_grid: 3x3
-      scheme: linear
-    distance_metric:
-      metric: weighted_rmse
-    climate_statistics:
-      operator: mean
-      period: month
+    <<: *default
     extract_levels:
       levels: 85000
       scheme: linear
       coordinate: air_pressure
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [ERA-Interim, NCEP-NCAR-R1]
   pp400_3x3:
-    regrid:
-      target_grid: 3x3
-      scheme: linear
-    distance_metric:
-      metric: weighted_rmse
-    climate_statistics:
-      operator: mean
-      period: month
+    <<: *default
     extract_levels:
       levels: 40000
       scheme: linear
       coordinate: air_pressure
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [AIRS-2-1, ERA-Interim]
   pp500:
-    regrid:
-      target_grid: 3x3
-      scheme: linear
+    <<: *default
     extract_levels:
       levels: 50000
       scheme: linear
       coordinate: air_pressure
-    distance_metric:
-      metric: weighted_rmse
-    climate_statistics:
-      operator: mean
-      period: month
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [ERA-Interim, NCEP-NCAR-R1]
   ppNOLEV1:
-    regrid:
-      target_grid: 3x3
-      scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    distance_metric:
-      metric: weighted_rmse
-    climate_statistics:
-      operator: mean
-      period: month
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [CERES-EBAF]
+    <<: *default
   ppNOLEV1_3x3:
-    regrid:
-      target_grid: 3x3
-      scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    distance_metric:
-      metric: weighted_rmse
-    climate_statistics:
-      operator: mean
-      period: month
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [GPCP-V2.2]
+    <<: *default
   ppNOLEV1thr10:
-    regrid:
-      target_grid: 3x3
-      scheme: linear
+    <<: *default
     mask_fillvalues:
       threshold_fraction: 0.10
-    distance_metric:
-      metric: weighted_rmse
-    climate_statistics:
-      operator: mean
-      period: month
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [ESACCI-SOILMOISTURE]
   ppNOLEV1thr10_1:
-    regrid:
-      target_grid: 3x3
-      scheme: linear
+    <<: *default
     mask_fillvalues:
       threshold_fraction: 0.10
-    distance_metric:
-      metric: weighted_rmse
-    climate_statistics:
-      operator: mean
-      period: month
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [ESACCI-AEROSOL]
   ppNOLEV2thr10:
-    regrid:
-      target_grid: 3x3
-      scheme: linear
-    distance_metric:
-      metric: weighted_rmse
-    climate_statistics:
-      operator: mean
-      period: month
+    <<: *default
     mask_fillvalues:
       threshold_fraction: 0.10
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [ESACCI-OZONE, NIWA-BS]
   ppNOLEV2thr10_1:
-    regrid:
-      target_grid: 3x3
-      scheme: linear
-    distance_metric:
-      metric: weighted_rmse
-    climate_statistics:
-      operator: mean
-      period: month
+    <<: *default
     mask_fillvalues:
       threshold_fraction: 0.10
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [ESACCI-AEROSOL, MODIS]
   ppNOLEV2thr10_shpolar:
-    regrid:
-      target_grid: 3x3
-      scheme: linear
+    <<: *default
     extract_region:
       start_longitude: 0
       start_latitude: -90
       end_longitude: 360
       end_latitude: -60
-    distance_metric:
-      metric: weighted_rmse
-    climate_statistics:
-      operator: mean
-      period: month
     mask_fillvalues:
       threshold_fraction: 0.10
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [ESACCI-OZONE, NIWA-BS]
   ppNOLEV2:
-    regrid:
-      target_grid: 3x3
-      scheme: linear
-    distance_metric:
-      metric: weighted_rmse
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    climate_statistics:
-      operator: mean
-      period: month
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [PATMOS-x, ESACCI-CLOUD]
+    <<: *default
   ppNOLEV2_1:
-    regrid:
-      target_grid: 3x3
-      scheme: linear
-    distance_metric:
-      metric: weighted_rmse
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    climate_statistics:
-      operator: mean
-      period: month
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [ERA-Interim, NCEP-NCAR-R1]
+    <<: *default
   ppNOLEV1x1:
+    <<: *default
     regrid:
       target_grid: 1x1
       scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    distance_metric:
-      metric: weighted_rmse
-    climate_statistics:
-      operator: mean
-      period: month
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean, median]
-      exclude: [ESACCI-SST, HadISST]
+
+# datasets can't be defined here as there is one variable that do not use own datasets
+# is there a way to overwrite datasets rather than just put ADDITIONAL ones?
 
 diagnostics:
   perfmetrics_rmse:
