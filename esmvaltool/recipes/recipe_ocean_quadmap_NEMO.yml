@@ -52,7 +52,7 @@ diagnostics:
         mip: Omon
         additional_datasets:
           - {project: NEMO, dataset: GC5, suite: cp656, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
-          - {project: NEMO, dataset: GCep1, suite: co957, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
+          - {project: NEMO, dataset: GC3p1, suite: co957, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
       tos_obs:
         mip: Omon
         short_name: tos
@@ -81,7 +81,7 @@ diagnostics:
           - {project: OBS3, dataset: observation, suite: EN4_v1.1, model: nemo, freq: annualmean, grid: T}
     scripts:
       Global_Ocean_map:  # &Global_Ocean_map SOS
-        script: ocean/diagnostic_ocean_marineassess_sss.py
+        script: ocean/diagnostic_maps_quad_sos.py
         control_model: {project: NEMO, dataset: GC5}
         exper_model: {project: NEMO, dataset: GC3p1}
         observational_dataset: {project: OBS3, dataset: observation}

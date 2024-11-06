@@ -105,10 +105,7 @@ def add_map_subplot(subplot, cube, nspace, title='', cmap=''):
     plt.title(title)
 
 
-def multi_model_maps(
-    cfg,
-    input_files,
-):
+def multi_model_maps(cfg):
     """Make the four pane model vs model vs obs comparison plot.
 
     Parameters
