@@ -2576,7 +2576,11 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 'ancestors': ancestors,
-                'authors': ['schlund_manuel', 'kraft_jeremy', 'lindenlaub_lukas'],
+                'authors': [
+                    'schlund_manuel',
+                    'kraft_jeremy',
+                    'lindenlaub_lukas'
+                ],
                 'caption': caption,
                 'plot_types': ['zonal'],
                 'long_names': [dataset['long_name']],
