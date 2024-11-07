@@ -314,7 +314,7 @@ authors:
   pacal_aytac:
     name: Pacal, Aytac
     institute: DLR, Germany
-    orcid:
+    orcid: https://orcid.org/0000-0002-1324-2389
     github: aytacpacal
   krasting_john:
     name: Krasting, John
