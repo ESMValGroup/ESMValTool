@@ -11,21 +11,21 @@ channels:
 
 dependencies:
   - aiohttp
-  - cartopy  # should be free https://github.com/ESMValGroup/ESMValTool/issues/3769
+  - cartopy  # should be free with iris=3.11 https://github.com/ESMValGroup/ESMValTool/issues/3769
   - cdo >=2.3.0
   - cdsapi
   - cf-units
   - cfgrib
   - cftime
   - cmocean
-  - curl <8.10
+  # - curl <8.10  # unpin and remove as soon as Julia can
   - cython
   - dask !=2024.8.0  # https://github.com/dask/dask/issues/11296
   - distributed
   - ecmwf-api-client
   - eofs
   - esmpy  # <8.6 safe https://github.com/SciTools/iris-esmf-regrid/issues/415
-  # - esmvalcore 2.11.*
+  - esmvalcore 2.11.*
   - fiona
   - fire
   - fsspec
@@ -42,7 +42,7 @@ dependencies:
   - nc-time-axis
   - netCDF4
   - numba
-  - numpy !=1.24.3  # ,<2.0  # severe masking bug
+  - numpy !=1.24.3  # should be free with iris=3.11 ,<2.0  # severe masking bug
   - openpyxl
   - packaging
   - pandas  # ==2.1.4  # unpin when ESMValCore released with https://github.com/ESMValGroup/ESMValCore/pull/2529
