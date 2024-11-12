@@ -191,7 +191,10 @@ def multi_model_maps(cfg):
         zrange1 = diagtools.get_cube_range([
             cube221,
         ])
-        zrange2 = [-5.0, 5.0]
+        if cube.long_name == "Sea Surface Temperature":
+            zrange2 = [-5.0, 5.0]
+        else:
+            zrange2 = [-2.0, 2.0]
 
         linspace1 = np.linspace(zrange1[0], zrange1[1], 12, endpoint=True)
         linspace2 = np.linspace(zrange2[0], zrange2[1], 12, endpoint=True)

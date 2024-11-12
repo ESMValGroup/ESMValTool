@@ -81,7 +81,7 @@ diagnostics:
           - {project: OBS3, dataset: observation, suite: EN4_v1.1, model: nemo, freq: annualmean, grid: T}
     scripts:
       Global_Ocean_map:  # &Global_Ocean_map SOS
-        script: ocean/diagnostic_maps_quad_sos.py
+        script: ocean/diagnostic_maps_quad.py
         control_model: {project: NEMO, dataset: GC5}
         exper_model: {project: NEMO, dataset: GC3p1}
         observational_dataset: {project: OBS3, dataset: observation}
