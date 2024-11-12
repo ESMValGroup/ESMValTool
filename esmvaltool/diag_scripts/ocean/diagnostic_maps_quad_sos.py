@@ -93,7 +93,7 @@ def add_map_subplot(subplot, cube, nspace, title='', cmap=''):
                                                          ccrs.PlateCarree(),
                                                          nx=400,
                                                          ny=200)
-    qplot = qplt.contourf(cube,
+    qplot = qplt.contourf(new_cube,
                           nspace,
                           linewidth=0,
                           cmap=plt.cm.get_cmap(cmap))
@@ -113,7 +113,7 @@ def multi_model_maps(cfg):
     cfg: dict
         the opened global config dictionairy, passed by ESMValTool.
     input_files: dict
-        the metadata dictionairy
+        the metadata dictionary
     """
     from pprint import pprint
     filenames = {}
@@ -166,7 +166,6 @@ def multi_model_maps(cfg):
         fig = plt.figure()
         fig.set_size_inches(9, 6)
 
-        # Create the cubes
         ctl_cube = cubes[ctl_key][layer]
         obs_cube = cubes[obs_key][layer]
 
