@@ -10,7 +10,7 @@ channels:
 
 dependencies:
   - aiohttp
-  - cartopy <0.24  # https://github.com/ESMValGroup/ESMValTool/issues/3767
+  - cartopy
   - cdo >=2.3.0
   - cdsapi
   - cf-units
@@ -40,7 +40,7 @@ dependencies:
   - nc-time-axis
   - netCDF4
   - numba
-  - numpy !=1.24.3,<2.0  # severe masking bug
+  - numpy !=1.24.3  # severe masking bug
   - openpyxl
   - packaging
   - pandas==2.1.4  # unpin when ESMValCore released with https://github.com/ESMValGroup/ESMValCore/pull/2529

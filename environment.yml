@@ -10,20 +10,20 @@ channels:
 
 dependencies:
   - aiohttp
-  - cartopy <0.24  # https://github.com/ESMValGroup/ESMValTool/issues/3767
+  - cartopy
   - cdo >=2.3.0
   - cdsapi
   - cf-units
   - cfgrib
   - cftime
   - cmocean
-  - curl <8.10
+  - curl <8.10  # https://github.com/ESMValGroup/ESMValTool/issues/3758
   - cython
   - dask !=2024.8.0  # https://github.com/dask/dask/issues/11296
   - distributed
   - ecmwf-api-client
   - eofs
-  - esmpy  # <8.6 safe https://github.com/SciTools/iris-esmf-regrid/issues/415
+  - esmpy
   - esmvalcore 2.11.*
   - fiona
   - fire
@@ -41,7 +41,7 @@ dependencies:
   - nc-time-axis
   - netCDF4
   - numba
-  - numpy !=1.24.3,<2.0  # severe masking bug
+  - numpy !=1.24.3
   - openpyxl
   - packaging
   - pandas==2.1.4  # unpin when ESMValCore released with https://github.com/ESMValGroup/ESMValCore/pull/2529
