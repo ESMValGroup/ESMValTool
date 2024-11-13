@@ -29,7 +29,7 @@ User settings in recipe
 
    *Required settings (scripts)*
 
-   * shapefile: path to the user provided shapefile. A relative path is relative to the auxiliary_data_dir as configured in config-user.yml.
+   * shapefile: path to the user provided shapefile. A relative path is relative to the :ref:`configuration option <esmvalcore:config_options>` ``auxiliary_data_dir``.
 
    * weighting_method: the preferred weighting method 'mean_inside' - mean of all grid points inside polygon; 'representative' - one point inside or close to the polygon is used to represent the complete area.
 
