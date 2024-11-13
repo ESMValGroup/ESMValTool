@@ -1,0 +1,24 @@
+#!jinja2
+
+#Include the list of ESMValTool recipes to run
+%include example-recipes.rc
+
+#[meta]
+#	title = "Run all ESMValTool recipes"
+[scheduling]
+	[[dependencies]]
+		graph = RECIPES
+[runtime]
+	[[RECIPES]]
+		[[[directives]]]
+			--account = bd0854
+			--partition = compute
+		[[[job]]]
+			batch system = slurm
+			execution time limit = PT2H
+
+{% for i in recipes %}
+	[[{{ i|replace(".", "_")|replace("/", "-")}}]]
+		inherit = RECIPES
+		script = run-esmvaltool.sh {{i}}
+{% endfor %}

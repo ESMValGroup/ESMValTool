@@ -1,9 +1,23 @@
+# ESMValTool
+# recipe_shapeselect.yml
 ---
 documentation:
-  description: 'Selects grid points belonging to a provided shapefile.'
-  authors: ['berg_pe']
-  projects: ['c3s-magic']
-  references: ['acknow_project']
+  title: Shape selection
+
+  description: |
+    This recipe selects grid points belonging to a provided shapefile
+
+  authors:
+    - berg_peter
+
+  maintainer:
+    - lindenlaub_lukas
+
+  projects:
+    - c3s-magic
+
+  references:
+    - acknow_project
 
 datasets:
   - {dataset: EC-EARTH, project: CMIP5, mip: Amon, exp: historical, ensemble: r12i1p1, start_year: 1990, end_year: 1999}
@@ -22,8 +36,7 @@ diagnostics:
         script: shapeselect/diag_shapeselect.py
         # Example shapefiles can be found in:
         # esmvaltool/diag_scripts/shapeselect/testdata/
-        # Relative paths are relative to 'auxiliary_data_dir' as configured in
-        # the config-user.yml file.
+        # Relative paths are relative to configuration option 'auxiliary_data_dir'.
         shapefile: 'Thames.shp'
         weighting_method: 'mean_inside'
         write_xlsx: true

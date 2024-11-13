@@ -1,0 +1,31 @@
+---
+# Filename
+filename: 'Land_and_Ocean_LatLong1.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: BerkeleyEarth
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS
+  institution: 'Berkeley Earth Surface Temperature Project'
+  source: 'http://berkeleyearth.org/data/'
+  source_url: 'http://berkeleyearth.lbl.gov/auto/Global/Gridded/Land_and_Ocean_LatLong1.nc'
+  version: '2020'
+  land_source_history: '13-Jan-2020 17:22:52'
+  ocean_source_history: '07-Jan-2020 10:46:06'
+  reference: 'berkeleyearth'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  tas:
+    mip: Amon
+    raw: temperature
+    raw_units: celsius
+    rawclim: climatology
+    short_anom: tasa
+    rawsftlf_varname: sftlf
+    rawsftlf: land_mask
+    rawsftlf_units: 1
+    rawsftlf_mip: fx

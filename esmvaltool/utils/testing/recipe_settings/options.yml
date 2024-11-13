@@ -1,0 +1,357 @@
+---
+recipe_consecdrydays.yml:
+  frlim:  # days?
+    - 2.5
+    - 5
+    - 10
+  plim:  # mm
+    - 0.5
+    - 1
+    - 2
+
+recipe_ensclus.yml:
+  season:
+    - DJF
+    - DJFM
+    - NDJFM
+    - JJA
+  area:
+    - EAT  # Euro-Atlantic
+    - PNA  # Pacific North American
+    - NH   # Northern Hemisphere
+    - EU   # Europe
+  extreme:
+    - 60th_percentile
+    - 75th_percentile
+    - 90th_percentile
+    - mean
+    - maximum
+    - std
+    - trend
+  numclus:  # number of clusters
+    - 2
+    - 3
+    - 4
+  # Cluster analysis is applied on a number of PCs such as they explain
+  # Either set perc or numpcs:
+  perc:  # 'perc' of total variance
+    - 70
+    - 80
+    - 90
+  numpcs:  # number of PCs
+    - 0
+    - 3
+  max_plot_panels:
+    - 72
+    - 2
+
+recipe_shapeselect.yml:
+  shapefile:
+    - MotalaStrom.shp
+    - Elbe.shp
+    - multicatchment.shp
+    - testfile.shp
+    - Thames.shp
+  weighting_method:
+    - mean_inside
+    - representative
+
+recipe_capacity_factor.yml:
+
+recipe_combined_indices.yml:
+  region:
+    - Nino3
+    - Nino3.4
+    - Nino4
+    - NAO
+    - SOI
+  running_mean:
+    - 5
+    - 3
+  moninf:
+    - 1
+    - 12
+    - null
+  monsup:
+    - 3
+    - 5
+  standardized:
+    - false
+    - true
+
+recipe_extreme_index.yml:
+
+recipe_diurnal_temperature_index.yml:
+
+recipe_heatwaves_coldwaves.yml:
+  # test result: works with bcc-csm1-1 from badc
+  quantile:
+    - 0.8
+    - 0.9    # quantile defining the exceedance/non-exceedance threshold
+    - 0.7
+  min_duration:
+    - 5  # Min duration of a heatwave/coldwave event
+    - 30
+  operator:
+    - '>'  # or lessthan
+    - '<'
+  season:
+    - summer
+    - winter
+
+recipe_insurance_risk_index.yml:
+  metric:
+    - t90p
+    - t10p
+    - cdd
+    - rx5day
+    - Wx
+
+recipe_modes_of_variability.yml:
+  plot_type:
+    - rectangular
+    - polar
+  ncenters:
+    - 2
+    - 3
+    - 4
+  detrend_order:
+    - 0
+    - 1
+    - 2
+  cluster_method:
+    - kmeans
+    - hierarchical
+  EOFS:
+    - true
+    - false
+  frequency:
+    # Select a month (format: JAN, FEB, ...) or should work with season also but not jet format: JJA, SON, MAM, DJF
+    - JAN
+    - FEB
+    - MAR
+    - APR
+    - MAY
+    - JUN
+    - JUL
+    - AUG
+    - SEP
+    - OCT
+    - NOV
+    - DEC
+    - JJA
+    - SON
+    - MAM
+    - DJF
+
+recipe_multimodel_products.yml:
+  # Parameters for Season() function
+  moninf:
+    - 6
+    - 2
+  monsup:
+    - 6
+    - 9
+    - null
+  agreement_threshold:
+    - 80
+    - 50
+  # Time series plot options
+  running_mean:
+    - 5  # Length of running mean to use for the time series plot
+    - 1
+  # Timeseries plot
+  time_series_plot:
+    # Either mean or maxmin (plot the mean with/without shading between the max and min.
+    - single
+    - maxmin
+
+recipe_toymodel.yml:
+  beta:
+    - 0.3
+    - 0.5
+    - 2
+  number_of_members:
+    - 2
+    - 5
+    - 3
+
+recipe_miles_block.yml:
+  seasons:
+    - DJF
+    - MAM
+    - JJA
+    - SON
+    - ALL
+    - Jan_Feb_Mar
+
+recipe_miles_eof.yml:
+  seasons:
+    - DJF
+    - MAM
+    - JJA
+    - SON
+    - ALL
+    - Jan_Feb_Mar
+  teles:
+    - NAO
+    - AO
+    - PNA
+    - "0_10_80_100"  #  custom area as "lon1_lon2_lat1_lat2"
+    - "150_180_0_20"
+    - "-10_10_40_50"
+
+recipe_miles_regimes.yml:
+
+recipe_rainfarm.yml:
+  slope:  # spatial spectral slope (set to 0 to compute from large scales)
+    - 1.7
+    - 0
+  nens:  # number of ensemble members to be calculated
+    - 2
+    - 3
+    - 5
+  nf:  # subdivisions for downscaling
+    - 8
+    - 3
+  conserv_glob:  # conserve precipitation over full domain (choose either glob or smooth, glob has priority)
+    - false
+    - true
+  conserv_smooth:  # conserve precipitation using convolution (if neither is chosen box conservation is used)
+    - false
+    - true
+  weights_climo:   # orographic weights: set to false or full path to a fine-scale precipitation climatology file
+    - false
+    - wc2.0_30s_prec.nc
+
+recipe_zmnam.yml:
+
+recipe_quantilebias.yml:
+  perc_lev:
+    - 50
+    - 75
+
+recipe_hyint.yml:
+  norm_years:  # first and last year of reference normalization period to be used for normalized indices
+    - [2004, 2006]
+  selfields:  # indices to be plotted. Select one or more fields from the following list (order-sensitive) as a numerical index:
+    - ["pa_norm"]
+    - ["hyint"]
+    - ["int_norm"]
+    - ["r95_norm"]
+    - ["wsl_norm"]
+    - ["dsl_norm"]
+    - ["int"]
+    - ["dsl"]
+    - ["wsl"]
+    - ["pa_norm", "dsl", "wsl", "r95_norm", "wsl_norm", "int"]
+    - ["pa_norm", "hyint", "int_norm", "r95_norm", "wsl_norm", "dsl_norm", "int", "dsl", "wsl"]
+  selregions:  # Select regions for timeseries and maps from the following list as a numerical index:
+    - [GL]  # World
+    - [GL60]  # World60 (60S/60N)
+    - [TR]  # Tropics (30S/30N)
+    - [SA]  # South America
+    - [AF]  # Africa
+    - [NA]  # North America
+    - [IN]  # India
+    - [EU]  # Europe
+    - [EA]  # East-Asia
+    - [AU]  # Australia
+    - [GL60, AU, EU, AF]
+  plot_type:  # type of figures to be plotted. Select one or more from:
+    - [1]  # lon/lat maps per individual field/exp/multi-year mean
+    - [2]  # lon/lat maps per individual field exp-ref-diff/multi-year mean
+    - [3]  # lon/lat maps multi-field/exp-ref-diff/multi-year mean
+    - [11]  # timeseries over required individual region/exp
+    - [12]  # timeseries over multiple regions/exp
+    - [13]  # timeseries with multiple models
+    - [14]  # summary trend coefficients multiple regions
+    - [15]  # summary trend coefficients multiple models
+    - [2, 3, 12, 13, 14, 15]
+  rgrid:
+    - false
+    - r100x50
+    - REF
+  npancol:
+    - 2
+    - 4
+  npanrow:
+    - 3
+    - 5
+  autolevels:
+    - true
+    - false
+  autolevels_scale:
+    - 1
+    - 1.7
+  autolevels_scale_t:
+    - 1.5
+    - 1
+  oplot_grid:
+    - false
+    - true
+  boxregion:
+    - false
+    - -10
+    - 3
+  removedesert:
+    - false
+    - true
+  weight_tseries:
+    - true
+    - false
+  trend_years:
+    - false
+    - [2002, 2005]
+  add_trend:
+    - true
+    - false
+  add_trend_sd:
+    - true
+    - false
+  add_trend_sd_shade:
+    - true
+    - false
+  add_tseries_lines:
+    - true
+    - false
+  add_zeroline:
+    - true
+    - false
+  trend_years_only:
+    - true
+    - false
+  scale100years:
+    - true
+    - false
+  scalepercent:
+    - true
+    - false
+
+recipe_smpi.yml:
+  plot_type:
+    - cycle
+    - zonal
+    - latlon
+    - cycle_latlon
+  time_avg:
+    - annualclim
+    - seasonalclim
+    - monthlyclim
+  region:
+    - global
+    - trop
+    - nhext
+    - shext
+    - nhtrop
+    - shtrop
+    - nh
+    - sh
+    - nhmidlat
+    - shmidlat
+    - nhpolar
+    - shpolar
+    - eq
+  smpi_n_bootstrap:
+    - 80
+    - 120

@@ -27,7 +27,8 @@ An approproate preprocessor for a 3D+time field would be::
       extract_levels:
         levels:  [100., ]
         scheme: linear_extrap
-      time_average:
+      climate_statistics:
+        operator: mean
 
 This diagnostic also requires the ``exper_model``, ``exper_model`` and
 ``observational_dataset`` keys in the recipe::
@@ -60,6 +61,7 @@ import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -182,11 +184,21 @@ def multi_model_maps(
         path = path.replace(' ', '') + image_extention
 
         # Saving files:
-        if cfg['write_plots']:
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path)
-
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
         plt.close()
+
+        provenance_record = diagtools.prepare_provenance_record(
+            cfg,
+            caption=f'Quadmap models comparison against {obs}',
+            statistics=['mean', 'diff', ],
+            domain=['global'],
+            plot_type=['map'],
+            ancestors=list(input_files.keys()),
+        )
+
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(path, provenance_record)
 
 
 def main(cfg):

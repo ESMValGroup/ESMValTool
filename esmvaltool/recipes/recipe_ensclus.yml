@@ -1,20 +1,22 @@
+# ESMValTool
 # recipe_EnsClus.yml
 ---
 documentation:
+  title: Sub-ensemble Selection by Clustering
   description: |
     Recipe for sub-ensemble selection.
-    The diagnostics groups ensemble members according to similar 
-    characteristics and selects the most representative member 
+    The diagnostics groups ensemble members according to similar
+    characteristics and selects the most representative member
     for each cluster based on a k-means algorithm
 
   authors:
-    - mavi_ir
-    - hard_jo
-    - arno_en
-    - cort_su
+    - mavilia_irene
+    - vonhardenberg_jost
+    - arnone_enrico
+    - corti_susanna
 
   maintainer:
-    - hard_jo
+    - vonhardenberg_jost
 
   references:
     - straus07jcli
@@ -87,7 +89,6 @@ diagnostics:
         ## Information required:
         ##-------------------------------about data-------------------------------------------
         ## Write only letters or numbers, no punctuation marks!
-        ## If you want to leave the field empty write 'no' 
         season: 'JJA'               #seasonal average
         area: 'EU'                  #regional average (examples:'EAT':Euro-Atlantic
                                     #                           'PNA': Pacific North American
@@ -99,4 +100,5 @@ diagnostics:
         #Either set perc or numpcs:
         perc: 80               #cluster analysis is applied on a number of PCs such as they explain
                                #'perc' of total variance
-        numpcs: 'no'           #number of PCs
+        numpcs: 0              #number of PCs to retain. Has priority over perc unless set to 0
+        max_plot_panels: 72    #threshold in number of panels in a plot to create multiple figures

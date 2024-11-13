@@ -1,0 +1,243 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: MERRA2
+  project_id: OBS6
+  tier: 3
+  version: '5.12.4'
+  modeling_realm: reanaly
+  source: ''
+  reference: 'merra2'
+  comment: |
+    'Contains modified MERRA-2 data'
+
+# Variables to CMORize
+variables:
+  # monthly frequency
+  sm_monthly:
+    short_name: sm
+    mip: Lmon
+    raw: SFMC
+    file: 'MERRA2_???.tavgM_2d_lnd_Nx.{year}??.nc4'
+  # monthly frequency
+  # 2 dimensional variables
+  clt_monthly:
+    short_name: clt
+    mip: Amon
+    raw: CLDTOT
+    file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+  pr_monthly:
+    short_name: pr
+    mip: Amon
+    raw: PRECTOT
+    file: 'MERRA2_???.tavgM_2d_flx_Nx.{year}??.nc4'  
+  evspsbl_monthly:
+    short_name: evspsbl
+    mip: Amon
+    raw: EVAP
+    file: 'MERRA2_???.tavgM_2d_flx_Nx.{year}??.nc4'
+  hfss_monthly:
+    short_name: hfss
+    mip: Amon
+    raw: HFLUX
+    file: 'MERRA2_???.tavgM_2d_flx_Nx.{year}??.nc4'  
+  hfls_monthly:
+    short_name: hfls
+    mip: Amon
+    raw: EFLUX
+    file: 'MERRA2_???.tavgM_2d_flx_Nx.{year}??.nc4'  
+  huss_monthly:
+    short_name: huss
+    mip: Amon
+    raw: QV2M
+    file: 'MERRA2_???.tavgM_2d_slv_Nx.{year}??.nc4'  
+  prc_monthly:
+    short_name: prc
+    mip: Amon
+    raw: PRECCON
+    file: 'MERRA2_???.tavgM_2d_flx_Nx.{year}??.nc4'
+  prsn_monthly:
+    short_name: prsn
+    mip: Amon
+    raw: PRECSNO
+    file: 'MERRA2_???.tavgM_2d_flx_Nx.{year}??.nc4'
+  prw_monthly:
+    short_name: prw
+    mip: Amon
+    raw: TQV
+    file: 'MERRA2_???.tavgM_2d_slv_Nx.{year}??.nc4'
+  ps_monthly:
+    short_name: ps
+    mip: Amon
+    raw: PS
+    file: 'MERRA2_???.tavgM_2d_slv_Nx.{year}??.nc4'
+  psl_monthly:
+    short_name: psl
+    mip: Amon
+    raw: SLP
+    file: 'MERRA2_???.tavgM_2d_slv_Nx.{year}??.nc4'
+  rlds_monthly:
+    short_name: rlds
+    mip: Amon
+    raw: LWGAB
+    file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+  rldscs_monthly:
+    short_name: rldscs
+    mip: Amon
+    raw: LWGABCLR
+    file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+  rlus_monthly:
+    short_name: rlus
+    mip: Amon
+    raw: LWGEM
+    file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+  rlut_monthly:
+    short_name: rlut
+    mip: Amon
+    raw: LWTUP
+    file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+  rlutcs_monthly:
+    short_name: rlutcs
+    mip: Amon
+    raw: LWTUPCLR
+    file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+  rsds_monthly:
+    short_name: rsds
+    mip: Amon
+    raw: SWGDN
+    file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+  rsdscs_monthly:
+    short_name: rsdscs
+    mip: Amon
+    raw: SWGDNCLR
+    file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+  rsdt_monthly:
+    short_name: rsdt
+    mip: Amon
+    raw: SWTDN
+    file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+  tas_monthly:
+    short_name: tas
+    mip: Amon
+    raw: T2M
+    file: 'MERRA2_???.tavgM_2d_slv_Nx.{year}??.nc4'
+  tasmax_monthly:
+    short_name: tasmax
+    mip: Amon
+    raw: T2MMAX
+    file: 'MERRA2_???.statM_2d_slv_Nx.{year}??.nc4'
+  tasmin_monthly:
+    short_name: tasmin
+    mip: Amon
+    raw: T2MMIN
+    file: 'MERRA2_???.statM_2d_slv_Nx.{year}??.nc4'
+  tauu_monthly:
+    short_name: tauu
+    mip: Amon
+    raw: TAUX
+    file: 'MERRA2_???.tavgM_2d_flx_Nx.{year}??.nc4'
+  tauv_monthly:
+    short_name: tauv
+    mip: Amon
+    raw: TAUY
+    file: 'MERRA2_???.tavgM_2d_flx_Nx.{year}??.nc4'
+  ts_monthly:
+    short_name: ts
+    mip: Amon
+    raw: TS
+    file: 'MERRA2_???.tavgM_2d_slv_Nx.{year}??.nc4'
+  uas_monthly:
+    short_name: uas
+    mip: Amon
+    raw: U10M
+    file: 'MERRA2_???.tavgM_2d_slv_Nx.{year}??.nc4'   
+  vas_monthly:
+    short_name: vas
+    mip: Amon
+    raw: V10M
+    file: 'MERRA2_???.tavgM_2d_slv_Nx.{year}??.nc4'
+  rsus_monthly:
+    short_name: rsus
+    mip: Amon
+    raw: SWGDN-SWGNT
+    file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+  rsuscs_monthly:
+    short_name: rsuscs
+    mip: Amon
+    raw: SWGDNCLR-SWGNTCLR
+    file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+  rsut_monthly:
+    short_name: rsut
+    mip: Amon
+    raw: SWTDN-SWTNT  
+    file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+  rsutcs_monthly:
+    short_name: rsutcs
+    mip: Amon
+    raw: "SWTDN-SWTNTCLR"  
+    file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
+  ta_monthly:
+    short_name: ta
+    mip: Amon
+    raw: "T"
+    file: 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
+  ua_monthly:
+    short_name: ua
+    mip: Amon
+    raw: "U"
+    file: 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
+  va_monthly:
+    short_name: va
+    mip: Amon
+    raw: "V"
+    file: 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
+  tro3_monthly:
+    short_name: tro3
+    mip: Amon
+    raw: "O3"
+    file: 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
+  zg_monthly:
+    short_name: zg
+    mip: Amon
+    raw: "H"
+    file: 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
+  hus_monthly:
+    short_name: hus
+    mip: Amon
+    raw: "QV"
+    file: 'MERRA2_???.instM_3d_ana_Np.{year}??.nc4'
+  wap_monthly:
+    short_name: wap
+    mip: Amon
+    raw: "OMEGA"
+    file: 'MERRA2_???.instM_3d_asm_Np.{year}??.nc4'
+  hur_monthly:
+    short_name: hur
+    mip: Amon
+    raw: "RH"
+    file: 'MERRA2_???.instM_3d_asm_Np.{year}??.nc4'
+  cli_monthly:
+    short_name: cli
+    mip: Amon
+    raw: "QI"
+    file: 'MERRA2_???.tavgM_3d_cld_Np.{year}??.nc4'
+  clw_monthly:
+    short_name: clw
+    mip: Amon
+    raw: "QL"
+    file: 'MERRA2_???.tavgM_3d_cld_Np.{year}??.nc4'
+  cl_monthly:
+    short_name: cl
+    mip: Amon
+    raw: "CLOUD"
+    file: 'MERRA2_???.tavgM_3d_cld_Np.{year}??.nc4'
+  clivi_monthly:
+    short_name: clivi
+    mip: Amon
+    raw: TQI
+    file: 'MERRA2_???.instM_2d_asm_Nx.{year}??.nc4'
+  clwvi_monthly:
+    short_name: clwvi
+    mip: Amon
+    raw: TQI+TQL
+    file: 'MERRA2_???.instM_2d_asm_Nx.{year}??.nc4'

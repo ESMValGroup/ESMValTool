@@ -1,0 +1,18 @@
+# To build this container, go to ESMValTool root folder and execute:
+# docker build -t esmvaltool:experimental . -f docker/Dockerfile.exp
+FROM condaforge/miniforge3
+RUN apt update && apt install -y git && apt clean
+
+WORKDIR /src/ESMValTool
+COPY environment.yml .
+RUN    mamba update -y conda mamba pip \
+    && mamba env create --name esmvaltool --file environment.yml \
+    && conda clean --all -y
+
+SHELL ["conda", "run", "--name", "esmvaltool", "/bin/bash", "-c"]
+
+COPY . .
+RUN pip install --no-cache git+https://github.com/ESMValGroup/ESMValCore.git#egg=ESMValCore . \
+    && esmvaltool install Julia
+
+ENTRYPOINT ["conda", "run", "--name", "esmvaltool", "esmvaltool"]

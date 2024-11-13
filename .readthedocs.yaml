@@ -1,0 +1,31 @@
+# .readthedocs.yaml
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+# Required
+version: 2
+
+# Set the version of Python and other tools you might need
+build:
+  os: ubuntu-lts-latest
+  tools:
+    # try miniforge3 when available? see github.com/ESMValGroup/ESMValTool/issues/3779
+    # DO NOT use mambaforge-*; that is currently sunsetted
+    python: "miniconda-latest"
+  jobs:
+    post_create_environment:
+      - conda run -n ${CONDA_DEFAULT_ENV} pip install . --no-deps
+
+# Declare the requirements required to build your docs
+conda:
+  environment:
+    environment.yml
+
+# Build documentation in the doc directory with Sphinx
+sphinx:
+  configuration: doc/sphinx/source/conf.py
+  fail_on_warning: true
+
+# If using Sphinx, optionally build your docs in additional formats such as PDF
+formats:
+  - pdf

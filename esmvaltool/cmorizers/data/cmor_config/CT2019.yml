@@ -1,0 +1,26 @@
+---
+# FTP server used for downloading the data
+ftp_host: 'aftp.cmdl.noaa.gov'
+data_dir: 'products/carbontracker/co2/CT2019/molefractions/co2_total_monthly/'
+
+# Pattern of input files
+input_file_pattern: 'CT2019.molefrac_glb3x2_*.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: CT2019
+  version: '2019'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: 'https://www.esrl.noaa.gov/gmd/ccgg/carbontracker/index.php'
+  reference: 'ct2019'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  co2s:
+    mip: Amon
+    add_aux_coords:
+      air_pressure: [0, 1, 2, 3]
+    raw_long_name: mole_fraction_of_carbon_dioxide_in_air

@@ -4,7 +4,7 @@
 ; PROJECT-NAME EMBRACE
 ; ############################################################################
 ; Description
-;   Calculates the multi-model mean bias, absolute difference and relative
+;   Calculates the (multi-model mean) bias, absolute difference and relative
 ;   difference of annual mean 2-d cloud variables compared with a
 ;   reference dataset (observations).
 ;
@@ -28,15 +28,17 @@
 ;   none
 ;
 ; Modification history
-;   20190222-A_laue_ax: added output of provenance (v2.0)
-;   20181119-A_laue_ax: adapted code to multi-variable capable framework
-;   20180923-A_laue_ax: added writing of results to netcdf
-;   20180914-A_laue_ax: code rewritten for ESMValTool v2.0
-;   20170620-A_laue_ax: added tags for reporting
-;   20160901-A_laue_ax: added regridding option 1 deg x 1 deg
-;   20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;                       of the code
-;   20150428-A-laue_ax: written.
+;   20230118-lauer_axel: added support to plot just 1 model
+;   20211006-lauer_axel: removed write_plots
+;   20190222-lauer_axel: added output of provenance (v2.0)
+;   20181119-lauer_axel: adapted code to multi-variable capable framework
+;   20180923-lauer_axel: added writing of results to netcdf
+;   20180914-lauer_axel: code rewritten for ESMValTool v2.0
+;   20170620-lauer_axel: added tags for reporting
+;   20160901-lauer_axel: added regridding option 1 deg x 1 deg
+;   20151027-lauer_axel: moved call to 'write_references' to the beginning
+;                        of the code
+;   20150428-lauer_axel: written.
 ;
 ; ############################################################################
 
@@ -96,12 +98,6 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
 
-  if (config_user_info@write_plots.eq."True") then
-    write_plots = True
-  else
-    write_plots = False
-  end if
-
 end
 
 begin
@@ -131,7 +127,15 @@ begin
   mm_ind = ind(names .eq. "MultiModelMean")
 
   if (ismissing(mm_ind)) then
-    error_msg("f", DIAG_SCRIPT, "", "multi-model mean is missing (required)")
+    mod_ind = ind(names .ne. ref_ind)
+    if (all(ismissing(mod_ind))) then
+      error_msg("f", DIAG_SCRIPT, "", "no dataset besides reference " \
+                + "dataset found. Cannot continue.")
+    end if
+    mm_ind = mod_ind(0)
+    log_info("multi-model mean is missing, using first dataset (" \
+             + names(mm_ind) + ") instead")
+    delete(mod_ind)
   end if
 
   ; basename of diag_script
@@ -238,7 +242,7 @@ begin
 
   diff@res_tiMainFontHeightF  = 0.016
 
-  diff@res_tiMainString = "Multi Model Mean Bias"
+  diff@res_tiMainString = names(mm_ind) + " Bias"
 
   copy_VarMeta(diff, mmdata)
   delete(mmdata@res_cnLevels)
@@ -277,7 +281,7 @@ begin
     end if
   end if
 
-  mmdata@res_tiMainString = "Multi Model Mean"
+  mmdata@res_tiMainString = names(mm_ind)
 
   plotsperline = (/2, 0/)
   plotind = (/0, 1/)  ; mmm and mean bias are always plotted
@@ -303,7 +307,7 @@ begin
     absdiff@res_cnLevels = tmp(1:dimsizes(tmp)-1)
     delete(tmp)
 
-    absdiff@res_tiMainString = "Multi Model Mean of Absolute Error"
+    absdiff@res_tiMainString = names(mm_ind) + " Absolute Error"
 
     iadd = 2
     itmp = array_append_record(plotind, iadd, 0)
@@ -324,7 +328,7 @@ begin
     copy_VarMeta(diff, reldiff)
     delete(reldiff@res_cnLevels)
     reldiff@res_cnLevels = fspan(-90.0, 90.0, 13)
-    reldiff@res_tiMainString = "Multi Model Mean of Relative Error"
+    reldiff@res_tiMainString = names(mm_ind) + " Relative Error"
     reldiff@units = "%"
     reldiff@res_lbTitleString = "(" + reldiff@units + ")"
     if (isvar("pal4")) then
@@ -351,56 +355,54 @@ begin
   plotfile = new(numseas, string)
   plotfile(:) = ""
 
-  if (write_plots) then
-    do is = 0, numseas - 1
-      ; --------------------------------------------------------------------
-      ; create workspace
+  do is = 0, numseas - 1
+    ; --------------------------------------------------------------------
+    ; create workspace
 
-      if (isvar("wks")) then
-        delete(wks)
-      end if
+    if (isvar("wks")) then
+      delete(wks)
+    end if
 
-      wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_bias_" + var0 \
-                    + "_" + season(is))
+    wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_bias_" + var0 \
+                  + "_" + season(is))
 
-      plotfile(is) = wks@fullname
+    plotfile(is) = wks@fullname
 
-      if (numseas.gt.1) then
-        pres@txString = season(is)
-        plots(0, is) = contour_map(wks, mmdata(is, :, :), var0)
-        plots(1, is) = contour_map(wks, diff(is, :, :), var0)
-        if (plot_abs_diff) then
-          plots(2, is) = contour_map(wks, absdiff(is, :, :), var0)
-        end if
-        if (plot_rel_diff) then
-          plots(3, is) = contour_map(wks, reldiff(is, :, :), var0)
-        end if
-        gsn_panel(wks, plots(plotind, is), plotsperline, pres)
-      else
-        plots(0, 0) = contour_map(wks, mmdata, var0)
-        plots(1, 0) = contour_map(wks, diff, var0)
-        if (plot_abs_diff) then
-          plots(2, 0) = contour_map(wks, absdiff, var0)
-        end if
-        if (plot_rel_diff) then
-          plots(3, 0) = contour_map(wks, reldiff, var0)
-        end if
-        gsn_panel(wks, plots(plotind, 0), plotsperline, pres)
-      end if
-
-      ; add meta data to plot (for reporting)
-
-      caption = "Multi model values, from top left to bottom right: " \
-                + "mean, bias"
+    if (numseas.gt.1) then
+      pres@txString = season(is)
+      plots(0, is) = contour_map(wks, mmdata(is, :, :), var0)
+      plots(1, is) = contour_map(wks, diff(is, :, :), var0)
       if (plot_abs_diff) then
-        caption = caption + ", absolute error"
+        plots(2, is) = contour_map(wks, absdiff(is, :, :), var0)
       end if
       if (plot_rel_diff) then
-        caption = caption + ", relative error"
+        plots(3, is) = contour_map(wks, reldiff(is, :, :), var0)
       end if
+      gsn_panel(wks, plots(plotind, is), plotsperline, pres)
+    else
+      plots(0, 0) = contour_map(wks, mmdata, var0)
+      plots(1, 0) = contour_map(wks, diff, var0)
+      if (plot_abs_diff) then
+        plots(2, 0) = contour_map(wks, absdiff, var0)
+      end if
+      if (plot_rel_diff) then
+        plots(3, 0) = contour_map(wks, reldiff, var0)
+      end if
+      gsn_panel(wks, plots(plotind, 0), plotsperline, pres)
+    end if
 
-    end do  ; is-loop (seasons)
-  end if  ; if write_plots
+    ; add meta data to plot (for reporting)
+
+    caption = names(mm_ind) + " values, from top left to bottom right: " \
+      + "mean, bias"
+    if (plot_abs_diff) then
+      caption = caption + ", absolute error"
+    end if
+    if (plot_rel_diff) then
+      caption = caption + ", relative error"
+    end if
+
+  end do  ; is-loop (seasons)
 
   ; ###########################################
   ; # output to netCDF                        #
@@ -410,22 +412,22 @@ begin
   nc_filename@existing = "append"
 
   mmdata@var = var0 + "_mean"
-  mmdata@long_name = var0 + " (multi-model mean)"
+  mmdata@long_name = var0 + " " + names(mm_ind) + " (mean)"
   nc_outfile = ncdf_write(mmdata, nc_filename)
 
   diff@var = var0 + "_bias"
-  diff@long_name = var0 + " (multi-model bias)"
+  diff@long_name = var0 + " " + names(mm_ind) + " (bias)"
   nc_outfile = ncdf_write(diff, nc_filename)
 
   if (isvar("absdiff")) then
     absdiff@var = var0 + "_abs_bias"
-    absdiff@long_name = var0 + " (multi-model absolute bias)"
+    absdiff@long_name = var0 + " " + names(mm_ind) + " (absolute bias)"
     nc_outfile = ncdf_write(absdiff, nc_filename)
   end if
 
   if (isvar("reldiff")) then
     reldiff@var = var0 + "_rel_bias"
-    reldiff@long_name = var0 + " (multi-model relative bias)"
+    reldiff@long_name = var0 + " " + names(mm_ind) + " (relative bias)"
     reldiff@units = reldiff@units
     nc_outfile = ncdf_write(reldiff, nc_filename)
   end if
@@ -435,8 +437,8 @@ begin
   ; ------------------------------------------------------------------------
 
   statistics = (/"clim", "diff"/)
-  domain = ("glob")
-  plottype = ("geo")
+  domain = "global"
+  plottype = "geo"
   prov_caption = caption + " for variable " + var0 \
     + " (" + allseas + "), reference = " + names(ref_ind) + "."
 

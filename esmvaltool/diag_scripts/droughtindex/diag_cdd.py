@@ -3,13 +3,16 @@ import logging
 import os
 from copy import deepcopy
 
+import cmocean.cm
 import iris
 import numpy as np
 
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, run_diagnostic)
-from esmvaltool.diag_scripts.shared.plot import quickplot
+from esmvaltool.diag_scripts.shared import (
+    run_diagnostic,
+    save_data,
+    save_figure,
+)
+from esmvaltool.diag_scripts.shared.plot import global_pcolormesh
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -21,19 +24,17 @@ def save_results(cfg, cube, basename, ancestor_files):
         'caption': cube.long_name.replace('\n', ' '),
         'statistics': ['other'],
         'domains': ['global'],
-        'authors': ['berg_pe'],
+        'authors': ['berg_peter'],
         'references': ['acknow_project'],
         'ancestors': ancestor_files,
     }
-    if cfg['write_plots'] and cfg.get('quickplot'):
-        plot_file = get_plot_filename(basename, cfg)
-        quickplot(cube, plot_file, **cfg['quickplot'])
-        provenance['plot_file'] = plot_file
-    if cfg['write_netcdf']:
-        netcdf_file = get_diagnostic_filename(basename, cfg)
-        iris.save(cube, target=netcdf_file)
-        with ProvenanceLogger(cfg) as provenance_logger:
-            provenance_logger.log(netcdf_file, provenance)
+    save_data(basename, provenance, cfg, cube)
+    kwargs = dict(cfg.get('plot', {}))
+    cmap_name = kwargs.get('cmap', 'rain')
+    if cmap_name in cmocean.cm.cmap_d:
+        kwargs['cmap'] = cmocean.cm.cmap_d[cmap_name]
+    global_pcolormesh(cube, **kwargs)
+    save_figure(basename, provenance, cfg)
 
 
 def main(cfg):

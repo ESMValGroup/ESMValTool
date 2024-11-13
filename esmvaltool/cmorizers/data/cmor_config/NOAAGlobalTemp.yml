@@ -1,0 +1,24 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: NOAAGlobalTemp
+  version: 'v5.0.0'
+  tier: 2
+  modeling_realm: ground
+  project_id: OBS
+  source: 'https://www.ncei.noaa.gov/data/noaa-global-surface-temperature/v5/
+           access/gridded/'
+  reference: 'noaaglobaltemp'
+  comment: |
+    'Temperature anomaly with respect to the period 1971-2000' 
+
+filenames:
+  gridded:
+    'NOAAGlobalTemp_v5.0.0_gridded_s188001_e202205_c20220608T133245.nc'
+
+# Variables to cmorize
+variables:
+  tasa:
+    mip: Amon
+    raw: anom
+    raw_units: K

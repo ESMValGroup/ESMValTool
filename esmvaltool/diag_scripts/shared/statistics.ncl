@@ -18,6 +18,8 @@
 ;    function normalize_metric
 ;    function distrib_stats
 ;    function lognormal_dist
+;    function filter121
+;    function get_average
 ;
 ; #############################################################################
 
@@ -55,9 +57,9 @@ function dim_stddev_wgt_Wrap(field[*]:numeric,
 ;    en.wikipedia.org/wiki/Weighted_arithmetic_mean#Weighted_sample_variance
 ;
 ; Modification history
-;    20150511-A_laue_ax: modified routine "calculate_metric":
-;                        added "no weigth" (nowgt) option
-;    20141215-A_righ_ma: written.
+;    20150511-lauer_axel: modified routine "calculate_metric":
+;                         added "no weigth" (nowgt) option
+;    20141215-righi_mattia: written.
 ;
 local funcname, scriptname, wavg, wgt, v1, v2, d2, arg
 begin
@@ -122,8 +124,6 @@ function time_operations(field:numeric,
 ;           "seasonalclim": seasonal climatology for the standard seasons DJF,
 ;                           MAM, JJA, SON.
 ;           "monthlyclim": monthly climatology jan-dec.
-;                For monthly input data only! Apply mymm first, if necessary.
-;           "mymm": multi year monthly mean
 ;           "yearly": time average over every year in [y1:y2].
 ;           [month strings]: climatology of selected (consecutive) months
 ;                            (e.g., "MAM", "SONDJ").
@@ -142,8 +142,7 @@ function time_operations(field:numeric,
 ;
 ; Caveats
 ;    The weighted standard deviation is not yet implmented for all cases
-;    The weighted standard deviation is calculated using the unbiased
-;    estimator, c
+;    The weighted standard deviation is calculated using the unbiased estimator
 ;    This should take into account missing values and exclude the w_i for
 ;    which the field contains only missing values. This feature is not
 ;    implemented yet.
@@ -151,9 +150,12 @@ function time_operations(field:numeric,
 ; References
 ;
 ; Modification history
-;    20140703-A_gott_kl: added option "mymm".
-;    20140312-A_righ_ma: extended with standard deviation.
-;    20140109-A_righ_ma: written.
+;    20201214-lauer_axel:   bugfix time weights
+;    20190503-righi_mattia: removed obsolete option "mymm" (used only in
+;                           reformat_obs, now outdated).
+;    20140703-gottschaldt_klaus-dirk: added option "mymm".
+;    20140312-righi_mattia: extended with standard deviation.
+;    20140109-righi_mattia: written.
 ;
 local funcname, scriptname, monthstr, date, year, month, idx1, idx2, loc_y1, \
   loc_y2, rank, subfield, weights, idx, idx_win, idx_spr, idx_sum, idx_aut, \
@@ -196,6 +198,19 @@ begin
   date := cd_calendar(field&time, 0)
   year := date(:, 0)
   month := date(:, 1)
+  cal = field&time@calendar
+
+  ; check that calendar is supported by 'days_in_month'
+
+  valid_cal = (/"standard", "gregorian", "julian", "360_day", "360",  \
+                "365_day", "365", "366_day", "366", "noleap", "no_leap",  \
+                "allleap", "all_leap", "none"/)
+
+  if (ismissing(ind(valid_cal .eq. cal))) then
+    log_info("Warning: unsupported calendar in function " + funcname +  \
+             " (" + scriptname + "): " + cal + ". Using 'standard' instead.")
+    cal = "standard"
+  end if
 
   ; Determine indexes for the requested time range
   if (y1.eq.-1) then
@@ -243,7 +258,9 @@ begin
 
   ; Define weights as days-per-month
   if (l_wgt) then
-    weights = days_in_month(toint(year), toint(month))
+    iyear = toint(year)
+    iyear@calendar = cal
+    weights = days_in_month(iyear, toint(month))
   else
     weights = tofloat(subfield&time)
     weights = 1.
@@ -465,147 +482,6 @@ begin
     out!0 = "month"
     delete(out&month)
     out&month = (/"J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"/)
-
-    leave_msg(scriptname, funcname)
-    return(out)
-  end if
-
-  ; Multi year monthly mean
-  ;   Output 12 months for each year that occurs in variable "year".
-  ;   Months without an input value are set to missing.
-  if (opt.eq."mymm") then
-
-    ; Concatenate year and month of input field
-    ym_in = 100 * toint(year) + toint(month)
-
-    ; Init target field
-    years = ispan(toint(min(year)), toint(max(year)), 1)
-    nyear = dimsizes(years)
-    ym = new(nyear * 12, integer)
-    do yy = 0, nyear - 1
-      do mm = 0, 11  ; concatenate as well, to avoid nested loop
-        ym((yy * 12) + mm) = 100 * years(yy) + mm + 1
-      end do
-    end do
-    dims = dimsizes(subfield)
-    if(rank.eq.4) then
-      dims(0, :, :, :) = dimsizes(ym)
-    else if(rank.eq.3) then
-      dims(0, :, :) = dimsizes(ym)
-    else if(rank.eq.2) then
-      dims(0, :) = dimsizes(ym)
-    else if(rank.eq.1) then
-      dims(0) = dimsizes(ym)
-    else
-      error_msg("f", scriptname, funcname, "rank = " + tostring(rank) + \
-                " not implemented for mymm in time_operations")
-    end if
-    end if
-    end if
-    end if
-    out = new(dims, typeof(subfield))
-    copy_VarCoords_l1(subfield, out)  ; auxiliary.ncl
-    timec = create_timec(min(years), max(years))
-    out!0 = "time"
-    out&time = timec
-
-    ; Determine FillValue
-    if(isatt(subfield, "_FillValue")) then
-      FillValue = subfield@_FillValue
-    else
-      FillValue = default_fillvalue(typeof(subfield))
-    end if
-    out@_FillValue = FillValue
-
-    ; Fill target field
-    if(rank.eq.4) then
-      do i = 0, dimsizes(ym) - 1
-        index = ind(ym_in.eq.ym(i))
-        if(.not.all(ismissing(index))) then
-          out(i, :, :, :) = \
-            dim_avg_wgt_n_Wrap(subfield(index, :, :, :), weights(index), 1, 0)
-          if (oper.eq."stddev") then
-            p1 = subfield(index, :, :, :)
-            p2 = conform(p1, out(i, :, :, :), (/1, 2, 3/)) ^ 2
-            d2 = (p1 - p2) ^ 2
-            arg = dim_sum_wgt_n_Wrap(d2, weights(index), 1, 0)
-            v1 = sum(weights(index))
-            v2 = sum(weights(index) ^ 2)
-            out(i) = sqrt(v1 / (v1 ^ 2 - v2) * arg)
-            delete([/p1, p2, d2, arg, v1, v2/])
-          end if
-        else
-          out(i, :, :, :) = FillValue
-        end if
-        delete(index)
-      end do
-    else if(rank.eq.3) then
-      do i = 0, dimsizes(ym) - 1
-        index = ind(ym_in.eq.ym(i))
-        if(.not.all(ismissing(index))) then
-          out(i, :, :) = \
-            dim_avg_wgt_n_Wrap(subfield(index, :, :), weights(index), 1, 0)
-          if (oper.eq."stddev") then
-            p1 = subfield(index, :, :)
-            p2 = conform(p1, out(i, :, :), (/1, 2/)) ^ 2
-            d2 = (p1 - p2) ^ 2
-            arg = dim_sum_wgt_n_Wrap(d2, weights(index), 1, 0)
-            v1 = sum(weights(index))
-            v2 = sum(weights(index) ^ 2)
-            out(i) = sqrt(v1 / (v1 ^ 2 - v2) * arg)
-            delete([/p1, p2, d2, arg, v1, v2/])
-          end if
-        else
-          out(i, :, :) = FillValue
-        end if
-        delete(index)
-      end do
-    else if(rank.eq.2) then
-      do i = 0, dimsizes(ym) - 1
-        index = ind(ym_in.eq.ym(i))
-        if(.not.all(ismissing(index))) then
-          out(i, :) = \
-            dim_avg_wgt_n_Wrap(subfield(index, :), weights(index), 1, 0)
-          if (oper.eq."stddev") then
-            p1 = subfield(index, :)
-            p2 = conform(p1, out(i, :), 1) ^ 2
-            d2 = (p1 - p2) ^ 2
-            arg = dim_sum_wgt_n_Wrap(d2, weights(index), 1, 0)
-            v1 = sum(weights(index))
-            v2 = sum(weights(index) ^ 2)
-            out(i) = sqrt(v1 / (v1 ^ 2 - v2) * arg)
-            delete([/p1, p2, d2, arg, v1, v2/])
-          end if
-        else
-          out(i, :) = FillValue
-        end if
-        delete(index)
-      end do
-    else if(rank.eq.1) then
-      do i = 0, dimsizes(ym) - 1
-        index = ind(ym_in.eq.ym(i))
-        if(.not.all(ismissing(index))) then
-          out(i) = dim_avg_wgt_Wrap(subfield(index), weights(index), 1)
-          if (oper.eq."stddev") then
-            d2 = (subfield(index) - out(i)) ^ 2
-            arg = dim_sum_wgt_Wrap(d2, weights(index), 1)
-            v1 = sum(weights(index))
-            v2 = sum(weights(index) ^ 2)
-            out(i) = sqrt(v1 / (v1 ^ 2 - v2) * arg)
-            delete([/d2, arg, v1, v2/])
-          end if
-        else
-          out(i) = FillValue
-        end if
-        delete(index)
-      end do
-    else
-      error_msg("f", scriptname, funcname, "rank = " + tostring(rank) + \
-                " not implemented for mymm in time_operations")
-    end if
-    end if
-    end if
-    end if
 
     leave_msg(scriptname, funcname)
     return(out)
@@ -1012,7 +888,7 @@ function coswgt_areaave(field:numeric)
 ; References
 ;
 ; Modification history
-;    20131209-A_eval_ma: written.
+;    20131209-evaldsson_martin: written.
 ;
 local funcname, scriptname, lat, wgt_lat, lon, lon_size, wgt_lon, ave
 begin
@@ -1056,8 +932,8 @@ function coswgt_arearmse(field1:numeric,
 ;
 ; References
 ;
-; Modification history:
-;    20131209-A_eval_ma: written.
+; Modification history
+;    20131209-evaldsson_martin: written.
 ;
 local funcname, scriptname, lat, wgt_lat, lon, lon_size, wgt_lon, rmse, \
   local_field1, local_field2
@@ -1112,8 +988,8 @@ function coswgt_pattern_cor(field1:numeric,
 ;
 ; References
 ;
-; Modification history:
-;    20140115-A_eval_ma: written.
+; Modification history
+;    20140115-evaldsson_martin: written.
 ;
 local funcname, scriptname, lat, wgt_lat, lon, lon_size, wgt_lon, \
   pattern_correlation, local_field1, local_field2
@@ -1190,8 +1066,8 @@ function interannual_variability(field: numeric,
 ; Reference
 ;
 ; Modification history
-;    20181022-A_lore_ru: added option dtr for possible detrending of data v2
-;    20140314-A_righ_ma: written.
+;    20181022-lorenz_ruth: added option dtr for possible detrending of data v2
+;    20140314-righi_mattia: written.
 ;
 local funcname, scriptname, monthstr, rank, field_avg, field_djf, field_mam, \
   field_jja, field_son, field_avg_djf, field_avg_mam, field_avg_jja, \
@@ -1402,9 +1278,10 @@ function calculate_metric(var:numeric,
 ;    dimensionality.
 ;
 ; Modification history
-;    20140313-A_righ_ma: implemented weights calculation within the function,
-;                     depending on dimensionality.
-;    20140120-A_fran_fr: written.
+;    20190312-A_bock_lisa: added calculation of RMSDxy
+;    20140313-righi_mattia: implemented weights calculation within the
+;                           function, depending on dimensionality.
+;    20140120-winterstein_franziska: written.
 ;
 local funcname, scriptname, dims_var, dims_ref, ii, dim_names, mdays, sdays, \
   weights, var1d, ref1d, wgt1d, avg_var, avg_ref, p1, p2, p3, var3d, wgt3d, \
@@ -1470,15 +1347,37 @@ begin
       time_weights = sdays
     end if
 
-    if (dim_names(1).eq."lat" .and. dim_names(2).eq."lon") then
-      area_weights = map_area(var&lat, var&lon)
+    ; Annual-mean time-series
+    if (dim_names(0).eq."year") then
+      time_weights = new(dims_var(0), float)
+      time_weights = 1.
     end if
 
-    if (isdefined("time_weights").and.isdefined("area_weights")) then
-      weights = new(dimsizes(var), float)
-      do ii = 0, dimsizes(time_weights) - 1
-        weights(ii, :, :) = time_weights(ii) * area_weights
-      end do
+    if (metric .eq. "RMSDxy") then
+      weights = time_weights
+    else
+      if (dim_names(1).eq."lat" .and. dim_names(2).eq."lon") then
+        area_weights = map_area(var&lat, var&lon)
+      end if
+
+      if (dim_names(1).eq."plev" .and. dim_names(2).eq."lat") then
+        areas = map_area(ref&lat, (/1.0, 2.0/))
+        nlev = dimsizes(ref&plev)
+        ptop = ref&plev(nlev - 1) - \
+          0.5 * (ref&plev(nlev - 2) - ref&plev(nlev - 1))
+        delta_p = dpres_plevel(ref&plev, 101325., ptop, 0)
+        area_weights = new((/nlev, dimsizes(ref&lat)/), float)
+        wdims = dimsizes(area_weights)
+        area_weights = conform_dims(wdims, delta_p, 0) * \
+          conform_dims(wdims, areas(:, 0), 1)
+      end if
+
+      if (isdefined("time_weights").and.isdefined("area_weights")) then
+        weights = new(dimsizes(var), float)
+        do ii = 0, dimsizes(time_weights) - 1
+          weights(ii, :, :) = time_weights(ii) * area_weights
+        end do
+      end if
     end if
   end if
 
@@ -1498,13 +1397,23 @@ begin
     wgt1d = 1.0
   end if
 
-  ; Calculate weighted averages
-  avg_var = dim_avg_wgt_Wrap(var1d, wgt1d, 1)
-  avg_ref = dim_avg_wgt_Wrap(ref1d, wgt1d, 1)
+  if (isStrSubset(metric, "stddev_ratio") .or. \
+      isStrSubset(metric, "correlation")) then
+    ; Calculate weighted averages
+    avg_var = dim_avg_wgt_Wrap(var1d, wgt1d, 1)
+    avg_ref = dim_avg_wgt_Wrap(ref1d, wgt1d, 1)
+  end if
 
   ; RMSD
   if (metric.eq."RMSD") then
     out = sqrt(dim_avg_wgt_Wrap((var1d - ref1d) ^ 2, wgt1d, 1))
+    leave_msg(scriptname, funcname)
+    return(out)
+  end if
+
+  ; RMSD
+  if (metric.eq."RMSDxy") then
+    out = sqrt(dim_avg_wgt_n_Wrap((var - ref) ^ 2, weights, 1, 0))
     leave_msg(scriptname, funcname)
     return(out)
   end if
@@ -1530,6 +1439,61 @@ begin
     p2 = sqrt(dim_sum_wgt_Wrap((var1d - avg_var) ^ 2, wgt1d, 1))
     p3 = sqrt(dim_sum_wgt_Wrap((ref1d - avg_ref) ^ 2, wgt1d, 1))
     out = p1 / (p2 * p3)
+    leave_msg(scriptname, funcname)
+    return(out)
+  end if
+
+  ; Single Model Performance Index
+  if (metric.eq."SMPI") then
+    nyears = dimsizes(var&year)
+    out = new(diag_script_info@smpi_n_bootstrap + 1, float)
+    do ibootstrap = 0, diag_script_info@smpi_n_bootstrap
+      if (ibootstrap.eq.0) then
+        bootvect = ispan(0, nyears - 1, 1)
+      else
+        icnt = 0
+        do while (icnt .le. 10)
+          bootvect = generate_sample_indices(nyears, 1)
+          icnt = icnt + 1
+          if (.not.all(bootvect(:).eq.bootvect(0))) then
+            break
+          end if
+        end do
+        if (all(bootvect(:).eq.bootvect(0))) then
+          error_msg("f", scriptname, funcname, \
+                    "Number of years too small for bootstrapping. Abort.")
+        end if
+      end if
+      obs = ref(bootvect, :, :)
+      mod1D = ndtooned(dim_avg_n(var, 0))
+      ref1D = ndtooned(dim_avg_n(obs, 0))
+      sig1D = ndtooned(dim_stddev_n_Wrap(obs, 0))
+      sig1D@_FillValue = default_fillvalue(typeof(sig1D))
+      sig1D = where(sig1D.eq.0, sig1D@_FillValue, sig1D)
+
+      delete(weights)
+      delete(wgt1d)
+      if (isdim(obs, "lon").and.isdim(obs, "lat")) then
+        weights = map_area(obs&lat, obs&lon)
+      elseif (isdim(obs, "plev").and.isdim(obs, "lat")) then
+        areas = map_area(obs&lat, (/1.0, 2.0/))
+        nlev = dimsizes(obs&plev)
+        ptop = \
+          obs&plev(nlev - 1) - 0.5 * (obs&plev(nlev - 2) - obs&plev(nlev - 1))
+        delta_p = dpres_plevel(obs&plev, 101325., ptop, 0)
+        weights = new((/dimsizes(obs&plev), dimsizes(obs&lat)/), float)
+        wdims = dimsizes(weights)
+        weights = \
+          conform_dims(wdims, delta_p, 0) * conform_dims(wdims, areas(:, 0), 1)
+      else
+        error_msg("f", diag_script, "", "Unknown dimensions in variable obs.")
+      end if
+
+      wgt1d = ndtooned(weights)
+      out(ibootstrap) = \
+        dim_avg_wgt_Wrap((mod1D - ref1D) ^ 2 / sig1D ^ 2, wgt1d, 1)
+
+    end do
     leave_msg(scriptname, funcname)
     return(out)
   end if
@@ -1566,8 +1530,8 @@ function normalize_metric(var:numeric,
 ; Reference
 ;
 ; Modification history
-;    20140609-A_righ_ma: absolute value added to "mean" normalization.
-;    20140120-A_fran_fr: written.
+;    20140609-righi_mattia: absolute value added to "mean" normalization.
+;    20140120-winterstein_franziska: written.
 ;
 local funcname, scriptname, val_var, norm, stdv, p1
 begin
@@ -1644,7 +1608,7 @@ function distrib_stats(var[*]:numeric,
 ; Reference
 ;
 ; Modification history
-;    20140526-A_righ_ma: written.
+;    20140526-righi_mattia: written.
 ;
 local funcname, scriptname, lvar, nsize, idx
 begin
@@ -1750,7 +1714,7 @@ function lognormal_dist(nn:numeric,
 ;    New York, US, 1998.
 ;
 ; Modification history
-;    20130528-A_righ_ma: written.
+;    20130528-righi_mattia: written.
 ;
 local funcname, scriptname, pi, sqrt2pi, dd, ee
 begin
@@ -1796,5 +1760,131 @@ begin
 
   leave_msg(scriptname, funcname)
   return(fout)
+
+end
+
+; #############################################################################
+undef("filter121")
+function filter121(var:numeric, \
+                   iter:numeric)
+;
+; Arguments
+;     var: a 1-D array.
+;     iter: number of iterations.
+;
+; Return value
+;     Array of size and type of var.
+;
+; Description
+;     Smoothes a time series by 1-2-1 filter in iter time steps.
+;
+; Modification history
+;     20180807-schlund_manuel: ported to v2.0
+;     20140721-wenzel_sabrina: written.
+;
+local yy_sm, y_sm0, n_max
+begin
+
+  funcname = "filter121"
+  scriptname = "diag_scripts/shared/statistics.ncl"
+  enter_msg(scriptname, funcname)
+
+  rank = dimsizes(dimsizes(var))
+  n_max = dimsizes(var)
+
+  if (rank .eq. 1) then
+    yy_sm = var
+    yy_sm0 = yy_sm
+
+    ; Iteration
+    do ia = 0, iter
+      yy_sm0 = yy_sm
+      do it = 1, n_max - 2
+        yy_sm(it) = (yy_sm0(it - 1) + 2.0 * yy_sm0(it) + yy_sm0(it + 1)) / 4.0
+      end do
+    end do
+    out = yy_sm
+    delete([/yy_sm, yy_sm0/])
+  else
+    error_msg("f", scriptname, funcname, "smooting is currently not " + \
+              "implemented for more than 1 dimension")
+  end if
+
+  leave_msg(scriptname, funcname)
+  return(out)
+end
+
+; #############################################################################
+undef("get_average")
+function get_average(items: list)
+
+;
+; Arguments
+;    items: list of input_file_info metadata
+;
+; Description
+;    Calculates average over M different datasets given by items. All given
+;    datasets must be of the same shape (X1, X2, X3, ..., Xn). This function
+;    creates an intermediate array of shape (M, X1, X2, X3, ..., Xn) with
+;    'dataset' as first dimension. Then, the unweighted mean over this first
+;    dimension is returned.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20181217-schlund_manuel: written
+;
+local funcname, scriptname, dim_dat, dim_array, rank, data_array, data
+begin
+
+  funcname = "get_average"
+  scriptname = "diag_scripts/shared/statistics.ncl"
+  enter_msg(scriptname, funcname)
+
+  ; Check input list
+  dim_dat = ListCount(items)
+  if (dim_dat .lt. 1) then
+    error_msg("f", scriptname, funcname, "expected at least one dataset, " + \
+              "got empty list")
+  end if
+
+  ; Collect data
+  do idat = 0, dim_dat - 1
+    data = read_data(items[idat])
+
+    ; Create array at first iteration
+    if (.not. isvar("data_array")) then
+      dim_array = dimsizes(data)
+      rank = dimsizes(dim_array)
+      data_array = new(array_append_record(dim_dat, dim_array, 0), \
+                       typeof(data))
+    end if
+    if (rank .eq. 4) then
+      copy_VarCoords(data, data_array(0, :, :, :, :))
+      data_array(idat, :, :, :, :) = (/data/)
+    elseif (rank .eq. 3) then
+      copy_VarCoords(data, data_array(0, :, :, :))
+      data_array(idat, :, :, :) = (/data/)
+    elseif (rank .eq. 2) then
+      copy_VarCoords(data, data_array(0, :, :))
+      data_array(idat, :, :) = (/data/)
+    elseif (rank .eq. 1) then
+      copy_VarCoords(data, data_array(0, :))
+      data_array(idat, :) = (/data/)
+    else
+      error_msg("f", scriptname, funcname, "unsupported rank " + rank)
+    end if
+  end do
+
+  ; Average
+  data_array!0 = "dataset"
+  data_array := dim_avg_n_Wrap(data_array, 0)
+  copy_VarMeta(data, data_array)
+  log_info("Averaged over " + dim_dat + " dataset(s)")
+
+  leave_msg(scriptname, funcname)
+  return(data_array)
 
 end

@@ -13,6 +13,8 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
+from esmvaltool.diag_scripts.shared import save_figure
+
 # Define some colours
 BLACK = '#000000'
 RED = '#FF0000'
@@ -434,7 +436,13 @@ def normalise(test, ref, strict=False):
                     ref[metric] = 1.e-20
                     norm[metric] = test[metric] / ref[metric]
             else:
-                norm[metric] = tuple(x / ref[metric] for x in test[metric])
+                if ref[metric] != 0:
+                    norm[metric] = tuple(x / ref[metric]
+                                         for x in test[metric])
+                else:
+                    ref[metric] = 1.
+                    norm[metric] = tuple(x * 0. / ref[metric]
+                                         for x in test[metric])
 
     return norm
 
@@ -590,7 +598,8 @@ def plot_nac(cref,
              acc=None,
              extend_y=False,
              title=None,
-             ofile=None):
+             ofile=None,
+             config=None):
     """
     Routine to produce NAC plot.
 
@@ -605,6 +614,7 @@ def plot_nac(cref,
     :param bool extend_y: Extend y-axis to include obs/acc ranges
     :param str title: Plot title
     :param str ofile: Plot file name
+    :param dict config: ESMValTool configuration object
     """
     # initialize
     if metrics is None:
@@ -676,15 +686,31 @@ def plot_nac(cref,
     legend.set_title('Vs %s' % cref, prop={'size': 'small'})
 
     # Display or produce file
-    if ofile:
-        # Create directory to write file to
-        odir = os.path.dirname(ofile)
-        if not os.path.isdir(odir):
-            os.makedirs(odir)
+    if ofile and config:
+        os.makedirs(config['plot_dir'], exist_ok=True)
+        provenance = get_provenance_record(config)
         # Note that bbox_inches only works for png plots
-        plt.savefig(ofile, bbox_extra_artists=(legend, ), bbox_inches='tight')
+        save_figure(ofile, provenance, config, fig,
+                    bbox_extra_artists=(legend, ), bbox_inches='tight')
     else:
         # Need the following to attempt to display legend in frame
         fig.subplots_adjust(right=0.85)
         plt.show()
     plt.close()
+
+
+def get_provenance_record(config):
+    """Create a provenance record describing the diagnostic data and plot."""
+    filenames = [item["filename"] for item in config["input_data"].values()]
+    record = {
+        'caption': 'Normalised assessment criteria plot',
+        'plot_type': 'metrics',
+        'authors': [
+            'williams_keith',
+            'predoi_valeriu',
+            'sellar_alistair'
+        ],
+        "ancestors": filenames,
+    }
+
+    return record

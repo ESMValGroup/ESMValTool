@@ -1,0 +1,28 @@
+---
+# FTP server used for downloading the data
+download: true
+ftp_host: 'aftp.cmdl.noaa.gov'
+data_dir: '/data/trace_gases/co2/'
+
+# Pattern of input file
+input_filename_pattern: 'co2_*_surface-*_1_ccgg_*.txt'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: ESRL
+  tier: 2
+  modeling_realm: ground
+  project_id: OBS
+  source: 'https://www.esrl.noaa.gov/gmd/dv/data/'
+  reference: 'esrl'
+
+# Variables to cmorize
+variables:
+  co2s:
+    mip: Amon
+    # Supports NOAA ESRL baseline observatories: 'mlo', 'brw', 'spo', smo'
+    # Supports stations, see list at
+    # https://www.esrl.noaa.gov/gmd/dv/site/?program=ccgg
+    # Also supports NOAA ESRL global data, use key 'global'
+    # Using key 'all' all of the available data from all 3 types are formatted
+    stations: ['all']

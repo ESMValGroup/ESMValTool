@@ -1,0 +1,24 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: OSI-450-sh
+  version: 'v2'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS
+  source: 'http://osisaf.met.no/p/ice/'
+  reference: 'osi-450'
+  comment: ''
+
+# Variables to cmorize (here use only filename prefix)
+variables:
+  sic:
+    mip: [day, OImon]
+    raw: ice_conc
+    grid: ease2-250
+
+custom:
+  create_areacello: true
+  grid_cell_size: 25000.
+  # Minimum number of days with data to generate daily files
+  min_days: 50

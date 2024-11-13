@@ -1,20 +1,22 @@
-# recipe zmnam.yml
+# ESMValTool
+# recipe_zmnam.yml
 ---
 documentation:
+  title: Zonal mean annular modes
   description: |
-    Recipe for zonal mean Northern Annular Mode.
-    The diagnostics compute the index and the spatial 
-    pattern to assess the simulation of the 
-    strat-trop coupling in the boreal hemisphere
+    Recipe for zonal mean annular mode.
+    The diagnostics compute the index and the spatial
+    pattern to assess the simulation of the
+    strat-trop coupling in the extratropical regions
 
   authors:
-    - serv_fe      
-    - hard_jo
-    - arno_en
-    - cagn_ch  
+    - serva_federico
+    - vonhardenberg_jost
+    - arnone_enrico
+    - cagnazzo_chiara
 
   maintainer:
-    - serv_fe
+    - serva_federico
 
   references:
     - baldwin09qjrms
@@ -24,30 +26,24 @@ documentation:
 
 datasets:
   - {dataset: MPI-ESM-MR, project: CMIP5, mip: day, exp: amip, ensemble: r1i1p1, start_year: 1979, end_year: 2008}
-    #- {model: MPI-ESM-MR, project: CMIP5, mip: day, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2008}
 
 preprocessors:
   preproc:
     extract_levels:
-      levels: [100000., 50000., 25000., 5000.]
+      levels: [85000., 50000., 25000., 5000.]
       scheme: nearest
-    regrid:  
-      target_grid: 3x3 
+    regrid:
+      target_grid: 3x3
       scheme: area_weighted
-    extract_region:
-      start_longitude: 0.
-      end_longitude: 360.
-      start_latitude: 20.
-      end_latitude: 90.
-
 
 diagnostics:
   zmnam:
-    description: Zonal mean Northern Annular Mode
-    variables: 
+    description: Zonal mean annular mode
+    variables:
       zg:
         preprocessor: preproc
-    scripts: 
-      main: 
-        script: zmnam/zmnam.py                              
-        title: "Zonal mean NAM diagnostics"
+    scripts:
+      main:
+        script: zmnam/zmnam.py
+        title: "Zonal mean AM diagnostics"
+        hemisphere: ["NH", "SH"]

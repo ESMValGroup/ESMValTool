@@ -1,0 +1,179 @@
+# recipe_thermodyn_diagtool.yml
+
+---
+documentation:
+  title: |
+        Diagnostic tool for several thermodynamic aspects of
+        the atmosphere and oceans.
+
+  description: |
+        Recipe for the computation of various aspects associated with
+        the thermodynamics of the climate system, such as energy and
+        water mass budgets, meridional enthalpy transports, the Lorenz
+        Energy Cycle and the material entropy production.
+
+  authors:
+    - lembo_valerio
+    - koldunov_nikolay
+
+  maintainer:
+    - unmaintained
+
+  references:
+    - lembo16climdyn
+    - lucarini14revgeop
+
+  projects:
+    - esmval
+    - trr181
+
+HADGEM: &hadgem_only
+  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 2000, end_year: 2001}
+
+SFTLF_PIC: &pic_sftlf
+  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: piControl, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2001}
+  - {dataset: CNRM-ESM2-1, project: CMIP6, exp: piControl, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+
+SFTLF_OTHER: &other_sftlf
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC-ESM-CHEM, exp: historical, project: CMIP5, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+  - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2005}
+
+OTHER: &other_data
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC-ESM-CHEM, exp: historical, project: CMIP5, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+  - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+  - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2005}
+
+ALL: &all_data
+  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 2000, end_year: 2001}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MIROC-ESM-CHEM, exp: historical, project: CMIP5, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2005}
+  - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+  - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 2000, end_year: 2005}
+  - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000, end_year: 2005}
+
+preprocessors:
+  regrid_preproc:
+    regrid:
+      target_grid: 1.875x1.25
+      lon_offset: true
+      lat_offset: true
+      scheme: area_weighted
+
+diagnostics:
+  Thermodyn_Diag:
+    description: Thermodynamics diagnostics
+    variables:
+      hfls:
+        mip: Amon
+        cmor_name: hfls
+        additional_datasets: *all_data
+      hfss:
+        mip: Amon
+        additional_datasets: *all_data
+      pr:
+        mip: Amon
+        additional_datasets: *all_data
+      ps:
+        mip: Amon
+        additional_datasets: *all_data
+      prsn:
+        mip: Amon
+        additional_datasets: *all_data
+      rlds:
+        mip: Amon
+        additional_datasets: *all_data
+      rlus:
+        mip: Amon
+        additional_datasets: *all_data
+      rlut:
+        mip: Amon
+        additional_datasets: *all_data
+      rsds:
+        mip: Amon
+        additional_datasets: *all_data
+      rsus:
+        mip: Amon
+        additional_datasets: *all_data
+      rsdt:
+        mip: Amon
+        additional_datasets: *all_data
+      rsut:
+        mip: Amon
+        additional_datasets: *all_data
+      ts:
+        mip: Amon
+        additional_datasets: *all_data
+      hus:
+        mip: Amon
+        additional_datasets: *all_data
+      tas:
+        mip: day
+        additional_datasets: *all_data
+      uas:
+        mip: day
+        additional_datasets: *all_data
+      vas_1:
+        mip: day
+        short_name: vas
+        preprocessor: regrid_preproc
+        additional_datasets: *hadgem_only
+      vas_2: &variable_settings
+        mip: day
+        short_name: vas
+        additional_datasets: *all_data
+      ta:
+        mip: day
+        additional_datasets: *all_data
+      ua_1: &variable_settings_ua
+        mip: day
+        short_name: ua
+        preprocessor: regrid_preproc
+        additional_datasets: *hadgem_only
+      ua_2:
+        mip: day
+        short_name: ua
+        additional_datasets: *all_data
+      va_1: &variable_settings_va
+        mip: day
+        short_name: va
+        preprocessor: regrid_preproc
+        additional_datasets: *hadgem_only
+      va_2:
+        mip: day
+        short_name: va
+        additional_datasets: *all_data
+      wap:
+        mip: day
+        additional_datasets: *all_data
+      sftlf_piC:
+        mip: fx
+        short_name: sftlf
+        additional_datasets: *pic_sftlf
+      sftlf_other:
+        mip: fx
+        short_name: sftlf
+        additional_datasets: *other_sftlf
+    scripts:
+      Thermodyn_Diag:
+        script: thermodyn_diagtool/thermodyn_diagnostics.py
+        wat: true
+        lec: true
+        entr: true
+        met: 3
+        lsm: true

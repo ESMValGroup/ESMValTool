@@ -22,9 +22,9 @@ An approproate preprocessor for a 3D+time field would be::
         lat2:  30.
         z_min: 0.
         z_max: 3000.
-      average_region:
-        coord1: longitude
-        coord2: latitude
+      area_statistics:
+        operator: mean
+
 
 In order to add an observational dataset to the profile plot, the following
 arguments are needed in the diagnostic script::
@@ -51,11 +51,14 @@ import sys
 
 import numpy as np
 import iris
+import iris.coord_categorisation
+import iris.exceptions
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -121,10 +124,15 @@ def make_profiles_plots(
     cube = iris.load_cube(filename)
     cube = diagtools.bgc_units(cube, metadata['short_name'])
 
-    raw_times = diagtools.cube_time_to_float(cube)
+    try:
+        raw_times = diagtools.cube_time_to_float(cube)
+    except iris.exceptions.CoordinateNotFoundError:
+        return
 
     # Make annual or Decadal means from:
     if np.max(raw_times) - np.min(raw_times) < 20:
+        if not cube.coords('year'):
+            iris.coord_categorisation.add_year(cube, 'time')
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
     else:
         cube = diagtools.decadal_average(cube)
@@ -188,11 +196,21 @@ def make_profiles_plots(
         )
 
     # Saving files:
-    if cfg['write_plots']:
-        logger.info('Saving plots to %s', path)
-        plt.savefig(path)
-
+    logger.info('Saving plots to %s', path)
+    plt.savefig(path)
     plt.close()
+
+    provenance_record = diagtools.prepare_provenance_record(
+        cfg,
+        caption=f'Profiles of {title}',
+        statistics=['mean'],
+        domain=['global'],
+        plot_type=['vert'],
+        ancestors=[filename, obs_filename],
+    )
+
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(path, provenance_record)
 
 
 def main(cfg):
@@ -216,15 +234,21 @@ def main(cfg):
         obs_key = 'observational_dataset'
         obs_filename = ''
         obs_metadata = {}
+
         if obs_key in cfg:
             obs_filename = diagtools.match_model_to_key(obs_key,
                                                         cfg[obs_key],
                                                         metadatas)
-            obs_metadata = metadatas[obs_filename]
-
+            if obs_filename:
+                obs_metadata = metadatas[obs_filename]
+            else:
+                obs_metadata = ''
         for filename in sorted(metadatas.keys()):
 
             if filename == obs_filename:
+                continue
+
+            if metadatas[filename]['frequency'] == 'fx':
                 continue
 
             logger.info('-----------------')

@@ -1,0 +1,143 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: NCEP-NCAR-R1
+  project_id: OBS6
+  tier: 2
+  version: '1'
+  modeling_realm: reanaly
+  source: 'https://psl.noaa.gov/data/gridded/data.ncep.reanalysis.html'
+  reference: 'ncep-ncar-r1'
+  comment: |
+    ''
+
+# Variables to CMORize
+variables:
+# daily frequency
+  pr_day:
+    short_name: pr
+    mip: day
+    raw: prate
+    file: 'surface\/prate\.sfc\.gauss\.[0-9]{4}\.nc'
+  rlut_day:
+    short_name: rlut
+    mip: day
+    raw: ulwrf
+    file: 'surface\/ulwrf\.ntat\.gauss\.[0-9]{4}\.nc'
+  ua_day:
+    short_name: ua
+    mip: day
+    raw: uwnd
+    file: 'pressure\/uwnd\.[0-9]{4}\.nc'
+  va_day:
+    short_name: va
+    mip: day
+    raw: vwnd
+    file: 'pressure\/vwnd\.[0-9]{4}\.nc' 
+
+# monthly frequency
+  clt_month:
+    short_name: clt
+    mip: Amon
+    raw: tcdc
+    file: 'surface\/tcdc\.eatm\.mon\.mean\.nc'
+  hur_month:
+    short_name: hur
+    mip: Amon
+    raw: rhum
+    file: 'pressure\/rhum\.mon\.mean\.nc'
+  hurs_month:
+    short_name: hurs
+    mip: Amon
+    raw: rhum
+    file: 'surface\/rhum\.mon\.mean\.nc'
+  hus_month:
+    short_name: hus
+    mip: Amon
+    raw: shum
+    file: 'pressure\/shum\.mon\.mean\.nc'
+  pr_month:
+    short_name: pr
+    mip: Amon
+    raw: prate
+    file: 'surface\/prate\.mon\.mean\.nc'
+  prw_month:
+    short_name: prw
+    mip: Amon
+    raw: pr_wtr
+    file: 'surface\/pr_wtr\.mon\.mean\.nc'
+  psl_month:
+    short_name: psl
+    mip: Amon
+    raw: slp
+    file: 'surface\/slp\.mon\.mean\.nc'
+  rlut_month:
+    short_name: rlut
+    mip: Amon
+    raw: ulwrf
+    file: 'surface\/ulwrf\.ntat\.mon\.mean\.nc'
+  rlutcs_month:
+    short_name: rlutcs
+    mip: Amon
+    raw: csulf
+    file: 'surface\/csulf\.ntat\.mon\.mean\.nc'
+  rsut_month:
+    short_name: rsut
+    mip: Amon
+    raw: uswrf
+    file: 'surface\/uswrf\.ntat\.mon\.mean\.nc'
+  rsutcs_month:
+    short_name: rsutcs
+    mip: Amon
+    raw: csusf
+    file: 'surface\/csusf\.ntat\.mon\.mean\.nc'
+  sfcWind_month:
+    short_name: sfcWind
+    mip: Amon
+    raw: wspd
+    file: 'surface\/wspd\.mon\.mean\.nc'
+  ta_month:
+    short_name: ta
+    mip: Amon
+    raw: air
+    file: 'pressure\/air\.mon\.mean\.nc'
+  tas_month:
+    short_name: tas
+    mip: Amon
+    raw: air
+    file: 'surface\/air\.2m\.mon\.mean\.nc'  
+  tasmax_month:
+    short_name: tasmax
+    mip: Amon
+    raw: tmax
+    file: 'surface\/tmax\.2m\.mon\.mean\.nc'  
+  tasmin_month:
+    short_name: tasmin
+    mip: Amon
+    raw: tmin
+    file: 'surface\/tmin\.2m\.mon\.mean\.nc'  
+  ts_month:
+    short_name: ts
+    mip: Amon
+    raw: air
+    file: 'surface\/air\.mon\.mean\.nc'    
+  ua_month:
+    short_name: ua
+    mip: Amon
+    raw: uwnd
+    file: 'pressure\/uwnd\.mon\.mean\.nc'
+  va_month:
+    short_name: va
+    mip: Amon
+    raw: vwnd
+    file: 'pressure\/vwnd\.mon\.mean\.nc'
+  wap_month:
+    short_name: wap
+    mip: Amon
+    raw: omega
+    file: 'pressure\/omega\.mon\.mean\.nc'
+  zg_month:
+    short_name: zg
+    mip: Amon
+    raw: hgt
+    file: 'pressure\/hgt\.mon\.mean\.nc'

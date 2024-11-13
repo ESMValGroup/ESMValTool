@@ -1,12 +1,15 @@
 """Standard MO metrics plotter."""
-import os
 import logging
+import os
 import sys
 
-import iris
 import yaml
+
 from esmvaltool.diag_scripts.autoassess._plot_mo_metrics import (
-    read_model_metrics, read_obs_metrics, plot_nac)
+    plot_nac,
+    read_model_metrics,
+    read_obs_metrics,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -40,10 +43,12 @@ def main():
         cfg['diag_name'], vsloc, cfg['area'], control_model, 'metrics.csv')
 
     plot_title = ' '.join([cfg['area'], control_model, 'vs', exp_model])
-    # Read metrics files
+    # Read (and record) metrics files
     # metrics = read_order_metrics(args.file_ord)
     ref = read_model_metrics(file_ref)
     tests = [read_model_metrics(file_exp)]
+    cfg['input_data'] = {'ref': {'filename': file_ref},
+                         'exp': {'filename': file_exp}}
     # var = read_model_metrics(args.file_var)
     obs, acc = None, None
     if 'additional_metrics' in cfg:
@@ -65,11 +70,11 @@ def main():
         acc=acc,
         extend_y=False,
         title=plot_title,
-        ofile=os.path.join(cfg['plot_dir'], cfg['plot_name'] + '.png'))
+        ofile=cfg['plot_name'],
+        config=cfg)
 
 
 if __name__ == '__main__':
-    iris.FUTURE.netcdf_promote = True
     logging.basicConfig(format="%(asctime)s [%(process)d] %(levelname)-8s "
                         "%(name)s,%(lineno)s\t%(message)s")
     main()

@@ -1,0 +1,58 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+---
+exclude: |
+  (?x)
+  ^doc/sphinx/source/conf.py|
+  ^esmvaltool/diag_scripts/extreme_events/climdex.pcic.ncdf/|
+  ^esmvaltool/diag_scripts/cvdp/
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-ast
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+  - repo: https://github.com/adrienverge/yamllint
+    rev: 'v1.35.1'
+    hooks:
+      - id: yamllint
+  - repo: local  # nclcodestyle is installed alongside ESMValTool
+    hooks:
+      - id: nclcodestyle
+        name: nclcodestyle
+        entry: nclcodestyle
+        language: system
+        files: '\.(ncl|NCL)$'
+  - repo: https://github.com/lorenzwalthert/precommit/  # Checks for R
+    rev: 'v0.4.2'
+    hooks:
+      - id: style-files  # styler
+      - id: lintr
+  - repo: https://github.com/codespell-project/codespell
+    rev: 'v2.3.0'
+    hooks:
+      - id: codespell
+  - repo: https://github.com/PyCQA/isort
+    rev: '5.13.2'
+    hooks:
+      - id: isort
+  - repo: https://github.com/pre-commit/mirrors-yapf
+    rev: 'v0.32.0'
+    hooks:
+      - id: yapf
+        additional_dependencies:
+          - 'toml'
+  - repo: https://github.com/myint/docformatter
+    rev: 'v1.7.5'
+    hooks:
+      - id: docformatter
+  - repo: https://github.com/pycqa/flake8
+    rev: '5.0.4'
+    hooks:
+      - id: flake8

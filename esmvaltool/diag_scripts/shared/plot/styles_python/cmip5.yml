@@ -183,7 +183,7 @@ CanESM2:
   color: '#1e4c24'
   dash: --
   facecolor: none
-  mark: s
+  mark: o
   thick: 1
 EC-EARTH:
   avgstd: 0
@@ -253,28 +253,28 @@ GFDL-CM2p1:
   color: '#23366d'
   dash: '-'
   facecolor: none
-  mark: o
+  mark: x
   thick: 1
 GFDL-CM3:
   avgstd: 0
   color: '#23366d'
   dash: --
   facecolor: none
-  mark: s
+  mark: o
   thick: 1
 GFDL-ESM2G:
   avgstd: 0
   color: '#23366d'
   dash: ':'
   facecolor: none
-  mark: ^
+  mark: s
   thick: 1
 GFDL-ESM2M:
   avgstd: 0
   color: '#23366d'
   dash: -.
   facecolor: none
-  mark: x
+  mark: ^
   thick: 1
 GISS-E2-H:
   avgstd: 0
@@ -288,14 +288,14 @@ GISS-E2-H-CC:
   color: '#771d7b'
   dash: --
   facecolor: none
-  mark: s
+  mark: ^
   thick: 1
 GISS-E2-R:
   avgstd: 0
   color: '#771d7b'
   dash: ':'
   facecolor: none
-  mark: ^
+  mark: s
   thick: 1
 GISS-E2-R-CC:
   avgstd: 0
@@ -344,7 +344,7 @@ HadGEM2-ES:
   color: '#7a8b26'
   dash: -.
   facecolor: none
-  mark: x
+  mark: o
   thick: 1
 HadISST:
   avgstd: 1
@@ -379,14 +379,14 @@ IPSL-CM5A-MR:
   color: '#5b53ae'
   dash: --
   facecolor: none
-  mark: s
+  mark: ^
   thick: 1
 IPSL-CM5B-LR:
   avgstd: 0
   color: '#5b53ae'
   dash: ':'
   facecolor: none
-  mark: ^
+  mark: s
   thick: 1
 MERRA:
   avgstd: 1
@@ -400,28 +400,28 @@ MIROC-ESM:
   color: '#b85fb6'
   dash: ':'
   facecolor: none
-  mark: ^
+  mark: s
   thick: 1
 MIROC-ESM-CHEM:
   avgstd: 0
   color: '#b85fb6'
   dash: -.
   facecolor: none
-  mark: x
+  mark: ^
   thick: 1
 MIROC4h:
   avgstd: 0
   color: '#b85fb6'
   dash: '-'
   facecolor: none
-  mark: o
+  mark: x
   thick: 1
 MIROC5:
   avgstd: 0
   color: '#b85fb6'
   dash: --
   facecolor: none
-  mark: s
+  mark: o
   thick: 1
 MODIS:
   avgstd: 1
@@ -449,14 +449,14 @@ MPI-ESM-MR:
   color: '#5da1a2'
   dash: --
   facecolor: none
-  mark: s
+  mark: ^
   thick: 1
 MPI-ESM-P:
   avgstd: 0
   color: '#5da1a2'
   dash: ':'
   facecolor: none
-  mark: ^
+  mark: s
   thick: 1
 MPIESM-1-1:
   avgstd: 0
@@ -483,15 +483,15 @@ MultiModelMean:
   avgstd: 1
   color: '#ff0000'
   dash: '-'
-  facecolor: none
-  mark: '*'
+  facecolor: '#ff0000'
+  mark: 'o'
   thick: 3
 MultiModelMedian:
   avgstd: 1
   color: '#0000ff'
   dash: '-'
-  facecolor: none
-  mark: '*'
+  facecolor: '#0000ff'
+  mark: 'o'
   thick: 3
 NCEP:
   avgstd: 1
@@ -586,7 +586,7 @@ default:
   thick: 1
 inmcm4:
   avgstd: 0
-  color: '#a1252c'
+  color: '#a1452c'
   dash: '-'
   facecolor: none
   mark: o

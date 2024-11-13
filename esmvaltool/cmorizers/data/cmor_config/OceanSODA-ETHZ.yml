@@ -1,0 +1,47 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: OceanSODA-ETHZ
+  version: v2023
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0220059/
+  reference: oceansoda_ethz
+
+# Variables to cmorize
+variables:
+  areacello:
+    filename: OceanSODA_ETHZ-v2023.OCADS.01_1982-2022.nc
+    mip: Ofx
+    raw_name: area
+  co3os:
+    filename: OceanSODA_ETHZ-v2023.OCADS.01_1982-2022.nc
+    mip: Omon
+    raw_name: co3
+    raw_units: '1e-6 mol kg-1'
+    comment: 'The original units of this variable are mumol/kg. To convert to the CMOR units mol/m3, we assume a constant sea water density of 1028 kg/m3, which is approximately the sea water density for T=4°C, salinity=35PSU, and p=0bar according to the UNESCO formula (UNESCO, 1981, Tenth report of the joint panel on oceanographic tables and standards, UNESCO Technical Papers in Marine Science, see https://www.wkcgroup.com/tools-room/seawater-density-calculator/ and https://link.springer.com/content/pdf/bbm:978-3-319-18908-6/1.pdf).'
+  dissicos:
+    filename: OceanSODA_ETHZ-v2023.OCADS.01_1982-2022.nc
+    mip: Omon
+    raw_name: dic
+    raw_units: '1e-6 mol kg-1'
+    comment: 'The original units of this variable are mumol/kg. To convert to the CMOR units mol/m3, we assume a constant sea water density of 1028 kg/m3, which is approximately the sea water density for T=4°C, salinity=35PSU, and p=0bar according to the UNESCO formula (UNESCO, 1981, Tenth report of the joint panel on oceanographic tables and standards, UNESCO Technical Papers in Marine Science, see https://www.wkcgroup.com/tools-room/seawater-density-calculator/ and https://link.springer.com/content/pdf/bbm:978-3-319-18908-6/1.pdf).'
+  fgco2:
+    filename: OceanSODA_ETHZ-v2023.OCADS.01_1982-2022.nc
+    mip: Omon
+  phos:
+    filename: OceanSODA_ETHZ-v2023.OCADS.01_1982-2022.nc
+    mip: Omon
+    raw_name: ph_total
+    raw_units: '1'
+  spco2:
+    filename: OceanSODA_ETHZ-v2023.OCADS.01_1982-2022.nc
+    mip: Omon
+    raw_units: '1e-6 atm'
+  talkos:
+    filename: OceanSODA_ETHZ-v2023.OCADS.01_1982-2022.nc
+    mip: Omon
+    raw_name: talk
+    raw_units: '1e-6 mol kg-1'
+    comment: 'The original units of this variable are mumol/kg. To convert to the CMOR units mol/m3, we assume a constant sea water density of 1028 kg/m3, which is approximately the sea water density for T=4°C, salinity=35PSU, and p=0bar according to the UNESCO formula (UNESCO, 1981, Tenth report of the joint panel on oceanographic tables and standards, UNESCO Technical Papers in Marine Science, see https://www.wkcgroup.com/tools-room/seawater-density-calculator/ and https://link.springer.com/content/pdf/bbm:978-3-319-18908-6/1.pdf).'

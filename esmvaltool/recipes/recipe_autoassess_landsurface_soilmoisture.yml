@@ -4,27 +4,31 @@
 documentation:
   description: |
     Recipe that runs the Autoassess Land-surface assessment area diagnostic.
-    Climatological files are stored externally to avoid overloading the
-    ESMValTool source. See /group_workspaces/jasmin4/esmeval/autoassess_specific_files
-    (on JASMIN).
-    Missing variable mass_fraction_of_unfrozen_water_in_soil_moisture and
-    mass_fraction_of_frozen_water_in_soil_moisture.
 
   authors:
-    - pred_va
+    - predoi_valeriu
+    - sellar_alistair
+
+  title: Land-surface diagnostic that computes soilmoisture indices (from Autoassess).
+
+  references:
+    - esacci-soilmoisture
+    - dorigo17rse
+    - gruber19essd
 
   maintainer:
-    - pred_va
+    - predoi_valeriu
 
 datasets:
-  - {dataset: IPSL-CM5A-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
-  - {dataset: inmcm4,        project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
+    - {dataset: ACCESS-CM2,  project: CMIP6, exp: historical,  grid: gn,  ensemble: r1i1p1f1,  start_year: 1992,  end_year: 2002}
+    - {dataset: E3SM-1-0,  project: CMIP6, exp: historical,  grid: gr,  ensemble: r1i1p1f1,  start_year: 1992,  end_year: 2002}
 
 preprocessors:
-  pp_aa_area:
-    regrid:  # NOT USED
-      target_grid: 0.15x0.15
-      scheme: linear
+  seasonal:
+    climate_statistics:
+      operator: mean
+      period: seasonal
+      seasons: ['DJF', 'MAM', 'JJA', 'SON']
 
 diagnostics:
   aa_landsurf_soilmoisture:
@@ -32,27 +36,28 @@ diagnostics:
     variables:
       mrsos: # moisture_content_of_soil_layer
         mip: Lmon
-      # TODO: mass_fraction_of_unfrozen_water_in_soil_moisture
-      # TODO: mass_fraction_of_frozen_water_in_soil_moisture
+        preprocessor: seasonal
+      sm: # Volumetric Moisture in Upper Portion of Soil Column
+        mip: Lmon
+        project: CMIP5
+        derive: true
+        preprocessor: seasonal
+        additional_datasets:
+            - {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat, version: L3S-SSMV-COMBINED-v4.2, tier: 2, start_year: 1999, end_year: 2008}
     scripts:
       autoassess_landsurf_soilmoisture: &autoassess_landsurf_soilmoisture_settings
-        script: autoassess/autoassess_area_base.py
-        title: "Autoassess Land-Surface Soilmoisture Diagnostic"
+        script: autoassess/land_surface_soilmoisture/soilmoisture.py
         area: land_surface_soilmoisture
-        control_model: IPSL-CM5A-LR
-        exp_model: inmcm4
-        obs_models: []
-        start: 1997/12/01
-        end: 2002/12/01
-        climfiles_root: '/group_workspaces/jasmin4/esmeval/autoassess_specific_files/files'
+        control_model: ACCESS-CM2
+        exp_model: E3SM-1-0
 
   plot_standard:
     description: Wrapper to collect and plot previously calculated metrics
     scripts:
       plot_landsurf_soilmoisture: &plot_landsurf_soilmoisture_settings
         <<: *autoassess_landsurf_soilmoisture_settings
-        control_model: IPSL-CM5A-LR
-        exp_model: inmcm4
+        control_model: ACCESS-CM2
+        exp_model: E3SM-1-0
         script: autoassess/plot_autoassess_metrics.py
         ancestors: ['*/autoassess_landsurf_soilmoisture']
         title: "Plot Land-Surface Soilmoisture Metrics"

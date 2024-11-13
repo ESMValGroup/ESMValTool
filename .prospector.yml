@@ -19,4 +19,4 @@ pep257:
     # disable rules that are allowed by the numpy convention
     # see https://github.com/PyCQA/pydocstyle/blob/master/src/pydocstyle/violations.py
     # and http://pydocstyle.readthedocs.io/en/latest/error_codes.html
-    disable: ['D107', 'D203', 'D212', 'D213', 'D402', 'D413']
+    disable: ['D107', 'D203', 'D212', 'D213', 'D402', 'D413', 'D416']

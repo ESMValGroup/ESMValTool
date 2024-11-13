@@ -1,0 +1,66 @@
+# Action that runs the full development stack:
+# Steps (Python-only):
+# - creates esmvaltool conda environment and pip-installs esmvaltool
+# - downloads latest main of esmvalcore and installs it in development mode
+# - runs tests of esmvaltool
+# Triggered by a push to main and nightly
+---
+name: Test in Full Development Mode
+
+# runs on a push on main and at the end of every day
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * *'
+
+# Required shell entrypoint to have properly configured bash shell
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  linux:
+    runs-on: "ubuntu-latest"
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    name: Linux Python ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: esmvaltool
+          environment-file: environment.yml
+          python-version: ${{ matrix.python-version }}
+          miniforge-version: "latest"
+          use-mamba: true
+      - run: mkdir -p develop_test_linux_artifacts_python_${{ matrix.python-version }}
+      - name: Record versions
+        run: |
+          mamba --version 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
+          python -V 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - name: Install ESMValTool
+        run: pip install -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
+      - name: Install Julia dependencies
+        run: esmvaltool install Julia
+      - name: Install development version of ESMValCore
+        run: |
+          cd ..
+          git clone https://github.com/ESMValGroup/ESMValCore.git
+          cd ESMValCore
+          pip install -e .[develop]
+      - name: Run flake8
+        run: flake8
+      - name: Run tests
+        run: pytest -n 2 -m "not installation" 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt
+      - name: Upload artifacts
+        if: ${{ always() }}  # upload artifacts even if fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: Develop_Test_Linux_python_${{ matrix.python-version }}
+          path: develop_test_linux_artifacts_python_${{ matrix.python-version }}

@@ -1,19 +1,12 @@
 #!/usr/bin/env python
 """ESMValTool installation script."""
-# This script only installs dependencies available on PyPI
-#
-# Dependencies that need to be installed some other way (e.g. conda):
-# - ncl
-# - iris
-# - python-stratify
-
+import json
 import os
 import re
 import sys
+from pathlib import Path
 
 from setuptools import Command, setup
-
-from esmvaltool._version import __version__
 
 PACKAGES = [
     'esmvaltool',
@@ -27,56 +20,92 @@ REQUIREMENTS = {
     # Installation dependencies
     # Use with pip install . to install from source
     'install': [
-        'cartopy',
+        'aiohttp',
+        'cartopy<0.24',  # github.com/ESMValGroup/ESMValTool/issues/3767
         'cdo',
-        'cf_units',
-        'cython',
+        'cdsapi',
+        'cf-units',
+        'cfgrib',
+        'cftime',
+        'cmocean',
+        'dask!=2024.8.0',  # https://github.com/dask/dask/issues/11296
+        'distributed',
+        'ecmwf-api-client',
         'eofs',
+        'ESMPy',  # not on PyPI
+        'esmvalcore',
+        'esmf-regrid>=0.10.0',  # iris-esmf-regrid #342
         'fiona',
-        'matplotlib<3',
-        'nc-time-axis',  # needed by iris.plot
+        'fire',
+        'fsspec',
+        'GDAL',
+        'jinja2',
+        'joblib',
+        'lime',
+        'mapgenerator>=1.0.5',
+        'matplotlib',
+        'natsort',
+        'nc-time-axis',
         'netCDF4',
         'numba',
-        'numpy',
-        'pandas',
-        'pillow',
-        'prov[dot]',
-        'psutil',
+        'numpy!=1.24.3',  # severe masking bug
+        'openpyxl',
+        'packaging',
+        'pandas==2.1.4',  # see note in environment.yml
+        'progressbar2',
+        'psyplot>=1.5.0',  # psy*<1.5.0 are not py312 compat
+        'psy-maps>=1.5.0',
+        'psy-reg>=1.5.0',
+        'psy-simple>=1.5.0',
+        'pyproj>=2.1',
+        'pys2index',
+        'python-dateutil',
         'pyyaml',
-        'scitools-iris>=2.2',
-        'scikit-learn',
-        'shapely',
-        'six',
-        'stratify',
-        'vmprof',
-        'xarray',
+        'rasterio>=1.3.10',
+        'requests',
+        'ruamel.yaml',
+        'scikit-image',
+        'scikit-learn>=1.4.0',  # github.com/ESMValGroup/ESMValTool/issues/3504
+        'scipy',
+        'scitools-iris>=3.6.1',
+        'seaborn',
+        'seawater',
+        'shapely>=2',
+        'xarray>=0.12.0',
+        'xesmf>=0.7.1',
+        'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
-        'yamale',
+        'zarr',
     ],
-    # Test dependencies
-    # Execute 'python setup.py test' to run tests
+    # Test dependencies (unit tests)
+    # Execute `pip install .[test]` once and then use `pytest` to run tests
     'test': [
-        'easytest',
-        # TODO: add dummydata package, see environment.yml
-        'mock',
-        'nose',
-        'pycodestyle',
-        'pytest>=3.9',
-        'pytest-cov',
+        'flake8',
+        'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
+        'pytest-cov>=2.10.1',
         'pytest-env',
-        'pytest-html',
+        'pytest-html!=2.1.0',
         'pytest-metadata>=1.5.1',
+        'pytest-mock',
+        'pytest-xdist',
+    ],
+    # Documentation dependencies
+    'doc': [
+        'autodocsumm>=0.2.2',
+        'nbsphinx',
+        'sphinx>=6.1.3',
+        'pydata-sphinx-theme',
     ],
     # Development dependencies
     # Use pip install -e .[develop] to install in development mode
     'develop': [
+        'codespell',
+        'docformatter',
+        'imagehash',
         'isort',
-        'prospector[with_pyroma]',
-        'pycodestyle',
-        'pydocstyle',
-        'pylint',
-        'sphinx',
-        'sphinx_rtd_theme',
+        'pre-commit',
+        'prospector[with_pyroma]>=1.12',
+        'vprof',
         'yamllint',
         'yapf',
     ],
@@ -101,59 +130,7 @@ def discover_python_files(paths, ignore):
                     yield filename
 
 
-class CustomCommand(Command):
-    """Custom Command class."""
-
-    def install_deps_temp(self):
-        """Try to temporarily install packages needed to run the command."""
-        if self.distribution.install_requires:
-            self.distribution.fetch_build_eggs(
-                self.distribution.install_requires)
-        if self.distribution.tests_require:
-            self.distribution.fetch_build_eggs(self.distribution.tests_require)
-
-
-class RunTests(CustomCommand):
-    """Class to run tests and generate reports."""
-
-    user_options = [('installation', None,
-                     'Run tests that require installation.')]
-
-    def initialize_options(self):
-        """Initialize custom options."""
-        self.installation = False
-
-    def finalize_options(self):
-        """Do nothing."""
-
-    def run(self):
-        """Run tests and generate a coverage report."""
-        self.install_deps_temp()
-
-        import pytest
-
-        version = sys.version_info[0]
-        report_dir = 'test-reports/python{}'.format(version)
-        args = [
-            'tests',
-            'esmvaltool',  # for doctests
-            '--ignore=esmvaltool/cmor/tables/',
-            '--doctest-modules',
-            '--cov=esmvaltool',
-            '--cov-report=term',
-            '--cov-report=html:{}/coverage_html'.format(report_dir),
-            '--cov-report=xml:{}/coverage.xml'.format(report_dir),
-            '--junit-xml={}/report.xml'.format(report_dir),
-            '--html={}/report.html'.format(report_dir),
-        ]
-        if self.installation:
-            args.append('--installation')
-        errno = pytest.main(args)
-
-        sys.exit(errno)
-
-
-class RunLinter(CustomCommand):
+class RunLinter(Command):
     """Class to run a linter and generate reports."""
 
     user_options = []
@@ -163,6 +140,14 @@ class RunLinter(CustomCommand):
 
     def finalize_options(self):
         """Do nothing."""
+
+    def install_deps_temp(self):
+        """Try to temporarily install packages needed to run the command."""
+        if self.distribution.install_requires:
+            self.distribution.fetch_build_eggs(
+                self.distribution.install_requires)
+        if self.distribution.tests_require:
+            self.distribution.fetch_build_eggs(self.distribution.tests_require)
 
     def run(self):
         """Run prospector and generate a report."""
@@ -202,45 +187,81 @@ class RunLinter(CustomCommand):
         sys.exit(errno)
 
 
-with open('README.md') as readme:
-    setup(
-        name='ESMValTool',
-        version=__version__,
-        description='Earth System Models eValuation Tool',
-        long_description=readme.read(),
-        url='https://www.esmvaltool.org',
-        download_url='https://github.com/ESMValGroup/ESMValTool',
-        license='Apache License, Version 2.0',
-        classifiers=[
-            'Environment :: Console',
-            'License :: OSI Approved :: Apache Software License',
-            'Programming Language :: Python',
-            'Programming Language :: Python :: 3.6',
-            'Programming Language :: Python :: 3.7',
+def read_authors(filename):
+    """Read the list of authors from .zenodo.json file."""
+    with Path(filename).open() as file:
+        info = json.load(file)
+        authors = []
+        for author in info['creators']:
+            name = ' '.join(author['name'].split(',')[::-1]).strip()
+            authors.append(name)
+        return ', '.join(authors)
+
+
+def read_description(filename):
+    """Read the description from .zenodo.json file."""
+    with Path(filename).open() as file:
+        info = json.load(file)
+        return info['description']
+
+
+setup(
+    name='ESMValTool',
+    author=read_authors('.zenodo.json'),
+    description=read_description('.zenodo.json'),
+    long_description=Path('README.md').read_text(),
+    long_description_content_type='text/markdown',
+    url='https://www.esmvaltool.org',
+    download_url='https://github.com/ESMValGroup/ESMValTool',
+    license='Apache License, Version 2.0',
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: Apache Software License',
+        'Natural Language :: English',
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Topic :: Scientific/Engineering',
+        'Topic :: Scientific/Engineering :: Atmospheric Science',
+        'Topic :: Scientific/Engineering :: GIS',
+        'Topic :: Scientific/Engineering :: Hydrology',
+        'Topic :: Scientific/Engineering :: Physics',
+    ],
+    packages=PACKAGES,
+    # Include all version controlled files
+    include_package_data=True,
+    setup_requires=REQUIREMENTS['setup'],
+    install_requires=REQUIREMENTS['install'],
+    tests_require=REQUIREMENTS['test'],
+    extras_require={
+        'develop':
+        REQUIREMENTS['develop'] + REQUIREMENTS['test'] + REQUIREMENTS['doc'],
+        'doc':
+        REQUIREMENTS['doc'],
+        'test':
+        REQUIREMENTS['test'],
+    },
+    entry_points={
+        'console_scripts': [
+            'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
+            'test_recipe = '
+            'esmvaltool.utils.testing.recipe_settings.install_expand_run:main',
+            'recipe_filler = '
+            'esmvaltool.utils.recipe_filler:run'
         ],
-        packages=PACKAGES,
-        # Include all version controlled files
-        include_package_data=True,
-        setup_requires=REQUIREMENTS['setup'],
-        install_requires=REQUIREMENTS['install'],
-        tests_require=REQUIREMENTS['test'],
-        extras_require={
-            'develop': REQUIREMENTS['develop'] + REQUIREMENTS['test']
-        },
-        entry_points={
-            'console_scripts': [
-                'esmvaltool = esmvaltool._main:run',
-                'cmorize_obs = esmvaltool.'
-                'utils.cmorizers.obs.cmorize_obs:execute_cmorize',
-                'nclcodestyle = esmvaltool.'
-                'utils.nclcodestyle.nclcodestyle:_main',
-                'mip_convert_setup = esmvaltool.'
-                'utils.cmorizers.mip_convert.esmvt_mipconv_setup:main'
-            ],
-        },
-        cmdclass={
-            'test': RunTests,
-            'lint': RunLinter,
-        },
-        zip_safe=False,
-    )
+        'esmvaltool_commands': [
+            'colortables = '
+            'esmvaltool.utils.color_tables.show_color_tables:ColorTables',
+            'install = esmvaltool.install:Install',
+            'data = esmvaltool.cmorizers.data.cmorizer:DataCommand'
+        ]
+    },
+    cmdclass={
+        'lint': RunLinter,
+    },
+    zip_safe=False,
+)

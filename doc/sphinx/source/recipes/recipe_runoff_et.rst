@@ -1,5 +1,7 @@
-Runoff_ET
-=========
+.. _recipes_runoff_et:
+
+Runoff, Precipitation, Evapotranspiration
+=========================================
 
 Overview
 --------
@@ -127,4 +129,3 @@ Example plots
 
    Biases in runoff coefficient (runoff/precipitation) and precipitation for major catchments of
    the globe. The MPI-ESM-LR historical simulation (1970-2000) is used as an example.
-

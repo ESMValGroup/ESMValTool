@@ -11,7 +11,7 @@
 ;     1) perfmetrics_main.ncl
 ;     2) perfmetrics_taylor.ncl
 ;     3) perfmetrics_taylor_collect.ncl
-;   originally written by Franziska Frank (DLR, Germany).
+;   originally written by Franziska Winterstein (DLR, Germany).
 ;   Note: This code requires that all data are provided on the same grid.
 ;
 ; Required diag_script_info attributes (diagnostic specific)
@@ -34,10 +34,20 @@
 ;   filename_add:    legacy feature: arbitrary string to be added to all
 ;                    filenames of plots and netcdf output produced
 ;                    (default = "")
+;   legend_filter:   do not show individual datasets in legend that are of
+;                    project "legend_filter" (default = "")
 ;   mask_ts_sea_ice: - True = mask T < 272 K as sea ice (only for
 ;                      variable "ts")
 ;                    - False = no additional grid cells masked for
 ;                      variable "ts"
+;   multiobs_exclude: list of *observational* datasets to be excluded when
+;                    calculating uncertainty estimates from multiple
+;                    observational datasets (see also multiobs_uncertainty)
+;   multiobs_uncertainty: calculate uncertainty estimates from multiple
+;                       observational datasets (true, false); by default,
+;                    all "obs", "obs6", "obs4mips" and "native6" datasets
+;                    are used; any of such datasets can be explicitely
+;                    excluded when also specifying "multiobs_exclude"
 ;   styleset:        "CMIP5", "DEFAULT"
 ;                    (if not set, CLOUDS_TAYLOR will create a color table and
 ;                    symbols for plotting)
@@ -47,6 +57,8 @@
 ;   valid_fraction:  used for creating sea ice mask (mask_ts_sea_ice = true):
 ;                    fraction of valid time steps required to mask grid cell
 ;                    as valid data
+;   var:             short_name of variable to process (default = "" - use
+;                    first variable in variable list)
 ;
 ; Required variable_info attributes (variable specific)
 ;   reference_dataset: name of reference data set
@@ -67,20 +79,28 @@
 ;        variable has been calculated from) the *second* (third, ...)
 ;
 ; Modification history
-;   20190221-A_laue_ax: added provenance to output (v2.0)
-;   20181120-A_laue_ax: adapted code to multi-variable capable framework
-;   20180923-A_laue_ax: added writing of results to netcdf
-;   20180611-A_laue_ax: code rewritten for ESMValTool v2.0
-;   20170620-A_laue_ax: added tags for reporting
-;   20161104-A_laue_ax: changed calculation of correlation and standard
-;                       deviation ratio from unweighted to grid area weighted
-;   20160901-A_laue_ax: added regridding option 1 deg x 1 deg
-;   20160818-A_laue_ax: added support for variable attribute "ref_model"
-;   20160404-A_laue_ax: added optional drawing of observational
-;                uncertainties
-;   20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;                       of the code
-;   20150415-A-laue_ax: written.
+;   20230117-lauer_axel: added support for ICON (code from Manuel)
+;   20211028-lauer_axel: added option to calculate tcwp as lwp + iwp
+;   20211018-lauer_axel: added option to remove individual models from legend
+;   20211006-lauer_axel: removed write_plots
+;   20210407-lauer_axel: added option to estimate observational uncertainty
+;                        from multiple observational datasets
+;   20210318-lauer_axel: added option to speficfy variable if more than one
+;                        variable is present
+;   20190221-lauer_axel: added provenance to output (v2.0)
+;   20181120-lauer_axel: adapted code to multi-variable capable framework
+;   20180923-lauer_axel: added writing of results to netcdf
+;   20180611-lauer_axel: code rewritten for ESMValTool v2.0
+;   20170620-lauer_axel: added tags for reporting
+;   20161104-lauer_axel: changed calculation of correlation and standard
+;                        deviation ratio from unweighted to grid area weighted
+;   20160901-lauer_axel: added regridding option 1 deg x 1 deg
+;   20160818-lauer_axel: added support for variable attribute "ref_model"
+;   20160404-lauer_axel: added optional drawing of observational
+;                        uncertainties
+;   20151027-lauer_axel: moved call to 'write_references' to the beginning
+;                        of the code
+;   20150415-lauer_axel: written.
 ;
 ; ###########################################################################
 
@@ -90,7 +110,8 @@ load "$diag_scripts/../interface_scripts/interface.ncl"
 load "$diag_scripts/shared/plot/aux_plotting.ncl"
 load "$diag_scripts/shared/statistics.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
-load "$diag_scripts/shared/plot/taylor_diagram_less_hardcoded.ncl"
+load "$diag_scripts/shared/plot/taylor_plot.ncl"
+load "$diag_scripts/shared/dataset_selection.ncl"
 
 begin
 
@@ -99,12 +120,17 @@ begin
   set_default_att(diag_script_info, "embracelegend", False)
   set_default_att(diag_script_info, "estimate_obs_uncertainty", False)
   set_default_att(diag_script_info, "mask_ts_sea_ice", False)
+  set_default_att(diag_script_info, "legend_filter", "")
+  set_default_att(diag_script_info, "multiobs_exclude", "")
+  set_default_att(diag_script_info, "multiobs_uncertainty", False)
   set_default_att(diag_script_info, "timemean", "annualclim")
   set_default_att(diag_script_info, "valid_fraction", 0.5)
+  set_default_att(diag_script_info, "var", "")
 
   estimate_obs_uncertainty = diag_script_info@estimate_obs_uncertainty
 
-  variables = metadata_att_as_array(variable_info, "short_name")
+  variables = get_unique_values(metadata_att_as_array(variable_info, \
+                                                      "short_name"))
   numvars = dimsizes(variables)
 
   ; find "main" variable and if present uncertainty estimates or auxiliary
@@ -113,18 +139,12 @@ begin
   mainvarind = 0  ; default = main variable is first (and only) variable
   errvarind = -1  ; default = no error estimate available
 
-  if (numvars.gt.1) then
-    ; uncertainty estimates are identified by "err" in their short_name
-    do i = 0, numvars - 1
-      if (isStrSubset(variables(i), "err")) then
-        errvarind = i
-        break
-      end if
-    end do
-    ; now find the main variable:
+  if (diag_script_info@var .eq. "") then
     ; it is assumed that the main variable is either the first non-error
     ; variable or the first "derived" variable
-    idx = ind(ispan(0, numvars - 1, 1) .ne. errvarind)
+
+    ivar = ispan(0, numvars - 1, 1)
+    idx = ind(.not.(isStrSubset(variables(ivar), "err")))
     mainvarind = idx(0)  ; first non-error variable
     ; now check for possibly derived variables
     do ii = 1, dimsizes(idx) - 1
@@ -141,25 +161,62 @@ begin
         end if
       end do
     end do
+    var0 = variables(mainvarind)
   else
+    mainvarind = ind(variables .eq. diag_script_info@var)
+    var0 = diag_script_info@var
   end if
 
-  var0 = variable_info[mainvarind]@short_name
+  if (ismissing(mainvarind)) then
+    errstr = "diagnostic " + diag + " requires the following variable: " + var0
+    error_msg("f", DIAG_SCRIPT, "", errstr)
+  end if
+
+  var0_info = select_metadata_by_name(variable_info, var0)
+  var0_info := var0_info[0]
+
+  flag_multiobs_unc = diag_script_info@multiobs_uncertainty
+  multiobs_exclude = diag_script_info@multiobs_exclude
+  if (estimate_obs_uncertainty .and. flag_multiobs_unc) then
+    log_info("estimate_obs_uncertainty is not supported when " + \
+             "multiobs_uncertainty is enabled. Setting " + \
+             "estimate_obs_uncertainty to False")
+    estimate_obs_uncertainty = False
+  end if
+
+  if (.not. flag_multiobs_unc) then
+    ; check if corresponding uncertainty estimates are available;
+    ; uncertainty estimates are identified by "err" in their short_name
+
+    if (numvars.gt.1) then
+      ; uncertainty estimates are identified by "err" in their short_name
+      do i = 0, numvars - 1
+        if (isStrSubset(variables(i), var0) .and. \
+            isStrSubset(variables(i), "err")) then
+          errvarind = i
+          break
+        end if
+      end do
+    end if
+  end if
+
   info0 = select_metadata_by_name(input_file_info, var0)
   dim_MOD = ListCount(info0)
-  if (isatt(variable_info[mainvarind], "reference_dataset")) then
-    refname = variable_info[mainvarind]@reference_dataset
+  if (isatt(var0_info, "reference_dataset")) then
+    refname = var0_info@reference_dataset
   end if
-  if (isatt(variable_info[mainvarind], "alternative_dataset")) then
-    refname2 = variable_info[mainvarind]@alternative_dataset
+  if (isatt(var0_info, "alternative_dataset")) then
+    refname2 = var0_info@alternative_dataset
   end if
   names = metadata_att_as_array(info0, "dataset")
+  projects = metadata_att_as_array(info0, "project")
   infiles = metadata_att_as_array(input_file_info, "filename")
 
-  ; check for reference model definition
-
-  if (.not.isvar("refname")) then
-    error_msg("f", DIAG_SCRIPT, "", "no reference dataset defined in recipe")
+  if (.not. flag_multiobs_unc) then
+    ; check for reference model definition
+    if (.not.isvar("refname")) then
+      error_msg("f", DIAG_SCRIPT, "", "no reference dataset defined in recipe")
+    end if
   end if
 
   ; print info on variable(s) to log file
@@ -213,12 +270,19 @@ begin
     delete(auxind)
   end if
 
-  ; time averaging: at the moment, only "annualclim" and "seasonalclim"
-  ; are supported
-
   timemean = diag_script_info@timemean
   numseas  = 1          ; default
   season   = (/"annual"/)
+
+  ; time averaging: at the moment, only "annualclim" and "seasonalclim"
+  ; are supported
+
+  if (flag_multiobs_unc .and. timemean .ne. "annualclim") then
+    log_info("multiobs_uncertainty = True is currently supported for annual" \
+             + " means only (timemean = annualclim). Setting " \
+             + " multiobs_uncertainty to False.")
+    flag_multiobs_unc = False
+  end if
 
   if (timemean.eq."seasonalclim") then
     numseas = 4
@@ -239,12 +303,6 @@ begin
   ; Create work dir
   system("mkdir -p " + work_dir)
 
-  if (config_user_info@write_plots.eq."True") then
-    write_plots = True
-  else
-    write_plots = False
-  end if
-
 end
 
 begin
@@ -254,10 +312,38 @@ begin
 
   ; get reference model
 
-  ref_ind = ind(names .eq. refname)
-  if (ismissing(ref_ind)) then
-    error_msg("f", DIAG_SCRIPT, "", "reference dataset (" \
-              + refname + ") is missing")
+  ; find indices of all OBS and obs4mips datasets
+  ; (treat ERA5 as special case)
+
+  if (flag_multiobs_unc) then
+    ; find indices of all OBS and obs4mips datasets (including "native6" ERA5)
+
+    idxobs = get_obs(names, projects, multiobs_exclude)
+
+    if (idxobs(0) .eq. -1) then
+      flag_multiobs_unc = False
+      log_info("No OBS or obs4mips datasets found. Setting " \
+               + " multiobs_uncertainty to False.")
+    else
+      refname = "REF"
+      ref_ind = dimsizes(names)
+      names := array_append_record(names, (/refname/), 0)
+      dim_MOD = dim_MOD + 1
+    end if
+  end if
+
+  if (.not. flag_multiobs_unc) then
+    ; if attribute is present, use it so correlations can be calculated
+    if (isvar("refname")) then
+      ; set reference model
+      ref_ind = ind(names .eq. refname)
+      if (ismissing(ref_ind)) then
+        error_msg("f", DIAG_SCRIPT, "", "reference dataset (" + refname + \
+                  ") not found.")
+      end if
+    else
+      error_msg("f", DIAG_SCRIPT, "", "no reference dataset defined in recipe")
+    end if
   end if
 
   ; get multi-model mean index (if present)
@@ -266,6 +352,12 @@ begin
 
   if (ismissing(mm_ind)) then
     mm_ind = -1
+  end if
+
+  legend_filter = diag_script_info@legend_filter
+
+  if ((legend_filter .ne. "") .and. mm_ind .gt. -1) then
+    projects(mm_ind) = "CMIP_MMM"
   end if
 
   mask_ts_sea_ice = diag_script_info@mask_ts_sea_ice
@@ -322,6 +414,38 @@ begin
   ;  debugfile = addfile("debug.nc","c")
   ;  debugfile->mask = global_mask
 
+  ; ---------------------------------------------------------
+  ; if requested, calculate multi-observational mean and standard deviation
+
+  if (flag_multiobs_unc) then
+    nobs = dimsizes(idxobs)
+
+    ; step 1: calculate multi-obs mean
+
+    do i = 0, nobs - 1
+      A0 = read_data(info0[idxobs(i)])
+
+      ; calculate time average
+      mean = time_operations(A0, -1, -1, "average", "annualclim", True)
+      delete(A0)
+
+      if (i .eq. 0) then
+        dims = dimsizes(mean)
+        newdims = new(dimsizes(dims) + 1, integer)
+        newdims(0) = nobs
+        newdims(1:dimsizes(newdims) - 1) = dims
+        ref_tmp = new(newdims, float)
+        delete(dims)
+      end if
+      ref_tmp(i, :, :) = mean
+    end do
+    delete(mean)
+    ; note: we are using dim_avg_n_Warp so missing values are ignored
+    ;       when averaging
+    ref_avg = dim_avg_n_Wrap(ref_tmp, 0)
+    delete(ref_tmp)
+  end if
+
   ; read data and calculate time average
 
   ierridx = 0
@@ -349,26 +473,33 @@ begin
     info = select_metadata_by_name(input_file_info, variables(ivar))
 
     do imod = modelf, modell
-      data_temp = read_data(info[imod])
 
-      ; The uncertainty estimates are assumed to be given as
-      ; 1-sigma of normally distributed error estimates
-      ; Note: uncertainty estimates must have "err" in their
-      ;       variable name, otherwise variables are assumed
-      ;       to be fields used for calculating derived variables
-      ;       (in this case, fields are not squared before averaging)
-      ; ---> square sigma before averaging over time, then
-      ;      calculate square-root to get average sigma
+      if (imod .ne. ref_ind .or. .not.flag_multiobs_unc) then
+        data_temp = read_data(info[imod])
+        ; The uncertainty estimates are assumed to be given as
+        ; 1-sigma of normally distributed error estimates
+        ; Note: uncertainty estimates must have "err" in their
+        ;       variable name, otherwise variables are assumed
+        ;       to be fields used for calculating derived variables
+        ;       (in this case, fields are not squared before averaging)
+        ; ---> square sigma before averaging over time, then
+        ;      calculate square-root to get average sigma
 
-      if (ivar.eq.errvarind) then
-        data_temp = data_temp * data_temp
-      end if
+        if (ivar.eq.errvarind) then
+          data_temp = data_temp * data_temp
+        end if
 
-      data1 = time_operations(data_temp, -1, -1, "average", \
-                              timemean, True)
+        data1 = time_operations(data_temp, -1, -1, "average", \
+                                timemean, True)
 
-      if (ivar.eq.errvarind) then
-        data1 = sqrt(data1)
+        delete(data_temp)
+
+        if (ivar.eq.errvarind) then
+          data1 = sqrt(data1)
+        end if
+      else
+        data1 = ref_avg
+        delete(ref_avg)
       end if
 
       if (isdefined("global_mask")) then
@@ -393,30 +524,29 @@ begin
             copy_VarCoords(data1, data(imod, :, :, :))
           end if
         end if
-        dim_data = dimsizes(data)
-        rank = dimsizes(dim_data)
-        if (numseas.eq.1) then
-          data(imod, :, :) = data1
-        else
-          data(imod, :, :, :) = data1
-        end if
-        delete(data_temp)
-        delete(data1)
+      dim_data = dimsizes(data)
+      rank = dimsizes(dim_data)
+      if (numseas.eq.1) then
+        data(imod, :, :) = data1
       else
-        if (.not.isdefined("err")) then
-          dim_data = array_append_record((/numvars - 1/), dimsizes(data1), 0)
-          err = new(dim_data, float)
-          err!0 = "var"
-          err&var = variables(ind(variables .ne. var0))
-        end if
-        if (numseas.eq.1) then
-          err(ierridx, :, :) = data1
-        else
-          err(ierridx, :, :, :) = data1
-        end if
+        data(imod, :, :, :) = data1
       end if
+      delete(data1)
+    else
+      if (.not.isdefined("err")) then
+        dim_data = array_append_record((/numvars - 1/), dimsizes(data1), 0)
+        err = new(dim_data, float)
+        err!0 = "var"
+        err&var = variables(ind(variables .ne. var0))
+      end if
+      if (numseas.eq.1) then
+        err(ierridx, :, :) = data1
+      else
+        err(ierridx, :, :, :) = data1
+      end if
+    end if
 
-      ; debug output
+    ; debug output
 
     ; debugfile->$input_file_info@dataset(imod)$ = data1
     end do  ; imod loop
@@ -762,7 +892,7 @@ begin
         end if
         ; override alternative obs (if "EMBRACE" legend)
         if (embracelegend) then
-          if ((isStrSubset(str_lower(input_file_info@project(i)), "obs"))) \
+          if ((isStrSubset(str_lower(projects(i)), "obs"))) \
             then
             if (mm_ind .ge. 0) then
               colors(i)  = "(/1.00, 0.00, 0.00/)"  ; red
@@ -789,7 +919,7 @@ begin
         else
           if (embracelegend) then
             colors(i)  = colortab(idx)
-            if ((isStrSubset(str_lower(input_file_info@project(i)), "obs"))) \
+            if ((isStrSubset(str_lower(projects(i)), "obs"))) \
               then
               if (mm_ind .ge. 0) then
                 colors(i)  = "(/1.00, 0.00, 0.00/)"  ; red
@@ -828,12 +958,15 @@ begin
     end if
 
     ropts = True
-    ropts@Colors        = colors
-    ropts@Markers       = markers  ; marker styles
     ropts@gsMarkerSizeF = 0.0125
+    ropts@Colors     = colors
+    ropts@Markers    = markers  ; marker styles
+    ropts@caseLabels = val&models
 
-    modelnames          = val&models
-    ropts@caseLabels    = modelnames
+    if (legend_filter .ne. "") then
+      ropts@legend_filter = legend_filter
+      ropts@projects = projects
+    end if
 
     ropts@stnRad        = (/ 0.5, 1.5, 2.0, 2.5 /)
     ropts@OneX          = "1.00"
@@ -868,23 +1001,19 @@ begin
     end if
 
     ; plot
-    if (write_plots) then
-      ropts@tiMainString   = var0 + " (" + season(is) + ")"  ; title
-      ; observational uncertainties as normalized RMS error
-      ropts@rmsobs = rmsobs(is)
+    ropts@tiMainString   = var0 + " (" + season(is) + ")"  ; title
+    ; observational uncertainties as normalized RMS error
+    ropts@rmsobs = rmsobs(is)
 
-      plot = taylor_diagram(wks, legendwks, ratio(:, :, is), cc(:, :, is), \
-                            ropts)
+    plot = taylor_diagram(wks, legendwks, ratio(:, :, is), cc(:, :, is), \
+                          ropts)
 
-      plotfile(is) = wks@fullname
-      log_info("Wrote " + plotfile)
+    plotfile(is) = wks@fullname
+    log_info("Wrote " + plotfile)
 
-      if (embracelegend.and.(is.eq.(numseas-1))) then
-        frame(legendwks)
-      end if
-    else
-      plotfile(is) = ""
-    end if  ; if write_plots
+    if (embracelegend.and.(is.eq.(numseas-1))) then
+      frame(legendwks)
+    end if
   end do  ; is-loop (seasons)
 
   ; write netCDF output
@@ -900,9 +1029,9 @@ begin
   ; write provenance to netcdf output and plot file(s)
   ; ------------------------------------------------------------------------
 
-  statistics = ("clim")
-  domain = ("glob")
-  plottype = ("taylor")
+  statistics = "clim"
+  domain = "global"
+  plottype = "taylor"
 
   do is = 0, numseas - 1
     ; note: because function log_provenance does not yet support to attach

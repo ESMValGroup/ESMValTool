@@ -3,10 +3,18 @@
 import os
 import unittest
 
+IGNORE = {
+    '.git',
+    '.github',
+    '.eggs',
+    'ESMValTool.egg-info',
+    '__pycache__',
+    'test-reports',
+}
+
 
 class TestNaming(unittest.TestCase):
     """Test naming of files and folders"""
-
     def setUp(self):
         """Prepare tests"""
         folder = os.path.join(__file__, '..', '..', '..')
@@ -25,6 +33,10 @@ class TestNaming(unittest.TestCase):
         }
 
         for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
+            # we need to modify in-place dirnames so that we don't walk
+            # over the contents of the dirs that need be ignored
+            dirnames[:] = [dirn for dirn in dirnames if dirn not in IGNORE]
+            print(dirnames)
             error_msg = 'Reserved windows name found at {}.' \
                         ' Please rename it ' \
                         '(Windows reserved names are: {})' \
@@ -33,8 +45,8 @@ class TestNaming(unittest.TestCase):
             self.assertTrue(reserved_names.isdisjoint(filenames), error_msg)
             without_extensions = (os.path.splitext(filename)[0]
                                   for filename in filenames)
-            self.assertTrue(
-                reserved_names.isdisjoint(without_extensions), error_msg)
+            self.assertTrue(reserved_names.isdisjoint(without_extensions),
+                            error_msg)
 
     def test_avoid_casing_collisions(self):
         """
@@ -43,6 +55,10 @@ class TestNaming(unittest.TestCase):
         This includes folders differing from files
         """
         for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
+            # we need to modify in-place dirnames so that we don't walk
+            # over the contents of the dirs that need be ignored
+            dirnames[:] = [dirn for dirn in dirnames if dirn not in IGNORE]
+            print(dirnames)
             self.assertEqual(
                 len(filenames) + len(dirnames),
                 len({name.lower()
@@ -60,8 +76,10 @@ class TestNaming(unittest.TestCase):
         exclude_paths = ['esmvaltool/diag_scripts/cvdp/cvdp']
 
         for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
-            if '.git' in dirpath.split(os.sep):
-                continue
+            # we need to modify in-place dirnames so that we don't walk
+            # over the contents of the dirs that need be ignored
+            dirnames[:] = [dirn for dirn in dirnames if dirn not in IGNORE]
+            print(dirnames)
             if any([item in dirpath for item in exclude_paths]):
                 continue
             self.assertFalse(

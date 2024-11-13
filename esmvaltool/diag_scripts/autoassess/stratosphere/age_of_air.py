@@ -135,8 +135,7 @@ def age_of_air(run):
         # Write age of air data to CWD
         outfile = '{0}_age_of_air_{1}.nc'
         cubelist = iris.cube.CubeList([diag1, diag2])
-        with iris.FUTURE.context(netcdf_no_unlimited=True):
-            iris.save(cubelist, outfile.format(run['runid'], run.period))
+        iris.save(cubelist, outfile.format(run['runid'], run.period))
 
         # Calculate metrics
         diag1sf6 = iai.Linear(diag1, [('level_height', ZSF6_KM)])

@@ -35,7 +35,7 @@ procedure log_info(output_string[*]:string)
 ; References
 ;
 ; Modification history
-;    20180202-A_righ_ma: written to replace info_output.
+;    20180202-righi_mattia: written to replace info_output.
 ;
 local nn, ii
 begin
@@ -61,16 +61,16 @@ procedure log_debug(output_string[*]:string)
 ;    output_string: the text to be output as message on screen
 ;
 ; Description
-;    Write a debug message to the log file (only if log_level = debug in
-;    config-user.yml). If the input is an array, each element will be
-;    written on different lines.
+;    Write a debug message to the log file (only if log_level = debug in the
+;    configuration). If the input is an array, each element will be written on
+;    different lines.
 ;
 ; Caveats
 ;
 ; References
 ;
 ; Modification history
-;    20180202-A_righ_ma: written to replace info_output.
+;    20180202-righi_mattia: written to replace info_output.
 ;
 local nn, ii
 begin
@@ -105,8 +105,8 @@ procedure enter_msg(script[1]:string,
 ; References
 ;
 ; Modification history
-;    20180202_A_righ_ma: removed required verbosity.
-;    20150319-A_righ_ma: written.
+;    20180202-righi_mattia: removed required verbosity.
+;    20150319-righi_mattia: written.
 ;
 begin
 
@@ -135,8 +135,8 @@ procedure leave_msg(script[1]:string,
 ; References
 ;
 ; Modification history
-;    20180202_A_righ_ma: removed required verbosity.
-;    20150319-A_righ_ma: written.
+;    20180202-righi_mattia: removed required verbosity.
+;    20150319-righi_mattia: written.
 ;
 begin
 
@@ -169,8 +169,8 @@ procedure error_msg(type[1]:string,
 ; References
 ;
 ; Modification history
-;    20150924-A_laue_ax: added type "error" (treated as "fatal")
-;    20140929-A_righ_ma: written.
+;    20150924-lauer_axel: added type "error" (treated as "fatal").
+;    20140929-righi_mattia: written.
 ;
 local nn, ii, msg_level, msg_origin
 begin
@@ -215,7 +215,7 @@ procedure tool_stop()
 ; Arguments
 ;
 ; Description
-;    Forces the tool execution to stop at any point of an ncl script.
+;    Force the tool execution to stop at any point of an ncl script.
 ;    For dubugging purposes only.
 ;
 ; Caveats
@@ -225,7 +225,7 @@ procedure tool_stop()
 ; References
 ;
 ; Modification history
-;    20150521-A_righ_ma: written.
+;    20150521-righi_mattia: written.
 ;
 begin
 
@@ -255,7 +255,7 @@ procedure exit_if_missing_atts(in[1], \
 ; References
 ;
 ; Modification history
-;    20141002-A_righ_ma: written.
+;    20141002-righi_mattia: written.
 ;
 local funcname, scriptname
 begin
@@ -265,7 +265,7 @@ begin
   enter_msg(scriptname, funcname)
 
   if (.not.all(isatt(in, reqatts))) then
-    error_msg("f", diag_script, "", "missing required diag_script_info " + \
+    error_msg("f", DIAG_SCRIPT, "", "missing required diag_script_info " + \
               "attribute: " + reqatts(ind(.not.isatt(in, reqatts))))
   end if
 
@@ -273,99 +273,128 @@ begin
 
 end
 
-
 ; #############################################################################
 undef("log_provenance")
 procedure log_provenance(nc_file:string,
                          outfile:string,
                          caption:string,
                          statistics[*]:string,
-                         domain:string,
-                         plottype:string,
+                         domains[*]:string,
+                         plot_types[*]:string,
                          diag_authors[*]:string,
                          diag_refs[*]:string,
                          infiles[*]:string)
 ;
 ; Arguments
-;  nc_file: netcdf file with data related to the plot
-;  outfile: file name of the figure (including path)
-;  caption: figure caption
-;  statistics: list of metrics/statistics calculated
-;  domain: of the data displayed
-;  plottype: plot type of the figure
-;  diag_authors: authors related to the diagnostic
-;  diag_refs: references related to the diagnotic
+;    nc_file: netcdf file with data related to the plot
+;    outfile: file name of the figure (including path)
+;    caption: figure caption
+;    statistics: list of metrics/statistics calculated
+;    domains: of the data displayed
+;    plot_types: plot type of the figure
+;    diag_authors: authors related to the diagnostic
+;    diag_refs: references related to the diagnostic
+;    infiles: input files (from preproc) used to generate the plot
 ;
 ; Description
-;   Creates a yaml file with meta data from the diagnostic
-;   script and save it in the plot directory
+;    Create a yaml file with meta data from the diagnostic script and save it
+;    in the run directory
 ;
 ; Caveats
 ;
 ; References
 ;
-local funcname, scriptname, verbosity
+; Modification history
+;    20190415-righi_mattia: turn domains into a list.
+;    20190415-righi_mattia: extended to avoid overwriting previous call.
+;    20190225-bock_lisa: written.
+;
+local funcname, scriptname, yaml_file, outstring, existing
 begin
 
   funcname = "log_provenance"
   scriptname = "interface_scripts/logging.ncl"
   enter_msg(scriptname, funcname)
 
-  str0 = "? " + nc_file
-  n = dimsizes(infiles)
-  str1 = ": ancestors: ["
-  str1 = str1 + infiles(0)
-  if(n.ge.1) then
-    do i = 1, n-1
-      str1 = str1 + ", " + infiles(i)
-    end do
-  end if
-  str1 = str1 + "]"
-  n = dimsizes(diag_authors)
-  str2 = "  authors: ["
-  str2 = str2 + diag_authors(0)
-  if(n.ge.1) then
-    do i = 1, n-1
-      str2 = str2 + ", " + diag_authors(i)
-    end do
-  end if
-  str2 = str2 + "]"
-  str3 = "  caption: '" + caption + "'"
-  str4 = "  domain: " + domain
-  str5 = "  plot_file: " + outfile
-  str6 = "  plot_type: " + plottype
-  n = dimsizes(diag_refs)
-  str7 = "  references: ["
-  str7 = str7 + diag_refs(0)
-  if(n.ge.1) then
-    do i = 1, n-1
-      str7 = str7 + ", " + diag_refs(i)
-    end do
-  end if
-  str7 = str7 + "]"
-  n = dimsizes(statistics)
-  str8 = "  statistics: ["
-  str8 = str8 + statistics(0)
-  if(n.ge.1) then
-    do i = 1, n-1
-      str8 = str8 + ", " + statistics(i)
-    end do
-  end if
-  str8 = str8 + "]"
+  ; Define output
+  outstring = new(8, string)
 
-  str := array_append_record(str7, str8, 0)
-  str := array_append_record(str6, str, 0)
-  str := array_append_record(str5, str, 0)
-  str := array_append_record(str4, str, 0)
-  str := array_append_record(str3, str, 0)
-  str := array_append_record(str2, str, 0)
-  str := array_append_record(str1, str, 0)
-  str := array_append_record(str0, str, 0)
-
+  ; Set yaml file path
   yaml_file = config_user_info@run_dir + "diagnostic_provenance.yml"
-  asciiwrite(yaml_file, str)
 
-  log_info(" write meta data to " + yaml_file)
+  ; Save entries for NetCDF file
+  outstring(0) = "? " + nc_file
+  outstring(1) = ": ancestors: [" + str_join(infiles, ", ") + "]"
+  outstring(2) = "  authors: [" + str_join(diag_authors, ", ") + "]"
+  outstring(3) = "  caption: '" + caption + "'"
+  outstring(4) = "  domains: [" + str_join(domains, ", ") + "]"
+  outstring(5) = "  plot_types: [" + str_join(plot_types, ", ") + "]"
+  outstring(6) = "  references: [" + str_join(diag_refs, ", ") + "]"
+  outstring(7) = "  statistics: [" + str_join(statistics, ", ") + "]"
+
+  ; Save entries for outfile if not "n/a"
+  if (outfile .ne. "n/a") then
+    suffix = get_file_suffix(outfile, 0)
+
+    if (ismissing(suffix)) then
+      error_msg("f", scriptname, funcname, "got invalid value for outfile " + \
+                "(path to figure): '" + outfile + "'; expected path to a " + \
+                "file or 'n/a'")
+    end if
+
+    ; For PNGs, additionally check for existence of files like
+    ; "plot_file.000001.png", "plot_file.000002.png", etc. and save
+    ; provenance record for each of them
+    if ((suffix .eq. ".png") .and. (.not. fileexists(outfile))) then
+      do file_idx = 1, 999999
+        potential_outfile = suffix@fBase + "." + sprinti("%0.6i", file_idx) + \
+                            suffix
+        if (fileexists(potential_outfile)) then
+          if (.not. isvar("all_outfiles")) then
+            all_outfiles = potential_outfile
+          else
+            all_outfiles := array_append_record(all_outfiles, \
+                                                potential_outfile, 0)
+          end if
+        else
+          break
+        end if
+      end do
+    end if
+
+    ; For all other cases, use outfile
+    if (.not. isvar("all_outfiles")) then
+      all_outfiles = outfile
+    end if
+
+    ; Save provenance record of all files
+    original_entry = outstring
+    do outfile_idx = 0, dimsizes(all_outfiles) - 1
+      file_to_add := all_outfiles(outfile_idx)
+      if (.not. fileexists(file_to_add)) then
+        error_msg("f", scriptname, funcname, "outfile (path to figure) '" + \
+                  file_to_add + "' does not exist (for PNGs, this " + \
+                  "function also searches for 'FILE.000001.png', " + \
+                  "'FILE.000002.png', etc.); if no plot file is available " + \
+                  "use 'n/a'")
+      end if
+      new_entry = (/original_entry/)
+      new_entry(0) = "? " + file_to_add
+      outstring := array_append_record(outstring, new_entry, 0)
+    end do
+  end if
+
+  ; Save existing information to avoid overwriting
+  if (fileexists(yaml_file)) then
+    existing = asciiread(yaml_file, -1, "string")
+    outstring := array_append_record(existing, outstring, 0)
+    delete(existing)
+  end if
+
+  ; Save provenance information
+  asciiwrite(yaml_file, outstring)
+
+  log_info("Provenance information saved in " + yaml_file)
 
   leave_msg(scriptname, funcname)
 

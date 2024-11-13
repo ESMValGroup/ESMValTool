@@ -1,12 +1,13 @@
-import logging
-import os
+"""ESMValTool diagnostics package."""
+from importlib.metadata import PackageNotFoundError, version
 
-from ._version import __version__
+try:
+    __version__ = version("ESMValTool")
+except PackageNotFoundError as exc:
+    raise PackageNotFoundError(
+        "ESMValTool package not found, please run `pip install -e .` before "
+        "importing the package.") from exc
 
-logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
 
-
-def get_script_root():
-    """Return the location of the ESMValTool installation."""
-    return os.path.abspath(os.path.dirname(__file__))
+class ESMValToolDeprecationWarning(UserWarning):
+    """Custom deprecation warning."""

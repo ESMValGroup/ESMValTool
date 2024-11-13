@@ -6,7 +6,7 @@ import iris
 from iris.analysis import MEAN
 from iris.analysis.stats import pearsonr
 
-from diagnostic import plot_diagnostic
+from esmvaltool.diag_scripts.examples.diagnostic import plot_diagnostic
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -23,7 +23,7 @@ def get_provenance_record(attributes, ancestor_files, plot_type):
         'domains': ['global'],
         'plot_type': plot_type,
         'authors': [
-            'ande_bo',
+            'andela_bouwe',
         ],
         'references': [
             'acknow_project',
@@ -36,7 +36,10 @@ def get_provenance_record(attributes, ancestor_files, plot_type):
 def main(cfg):
     """Compute the time average for each input dataset."""
     input_data = group_metadata(
-        cfg['input_data'].values(), 'standard_name', sort='dataset')
+        cfg['input_data'].values(),
+        'standard_name',
+        sort='dataset',
+    )
 
     for standard_name in input_data:
         logger.info("Processing variable %s", standard_name)
@@ -67,6 +70,13 @@ def main(cfg):
                 "Computing correlation with settings %s between "
                 "reference and cube:\n%s\n%s", kwargs, filename, dataset)
             dataset = dataset.collapsed('time', MEAN)
+            # Fix issue with losing vertical bounds in extract_level
+            # preprocessor
+            if reference.coords(axis='Z'):
+                ref_coord = reference.coord(axis='Z')
+                coord = dataset.coord(ref_coord)
+                if not coord.has_bounds():
+                    coord.bounds = ref_coord.bounds
             cube = pearsonr(dataset, reference, **kwargs)
 
             name = '{}_correlation_with_{}'.format(

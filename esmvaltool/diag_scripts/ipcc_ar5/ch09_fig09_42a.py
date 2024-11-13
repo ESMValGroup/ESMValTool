@@ -17,8 +17,6 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
-save : dict, optional
-    Keyword arguments for the `fig.saveplot()` function.
 axes_functions : dict, optional
     Keyword arguments for the plot appearance functions.
 dataset_style : str, optional
@@ -27,19 +25,32 @@ dataset_style : str, optional
 matplotlib_style : str, optional
     Dataset style file (located in
     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`).
+save : dict, optional
+    Keyword arguments for :func:`matplotlib.pyplot.savefig`.
+seaborn_settings : dict, optional
+    Options for :func:`seaborn.set_theme` (affects all plots).
 
 """
 
 import logging
 import os
+from copy import deepcopy
 
 import iris
-from iris import Constraint
+import seaborn as sns
 
 from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger, extract_variables, get_diagnostic_filename,
-    get_plot_filename, group_metadata, io, plot, run_diagnostic,
-    variables_available)
+    ProvenanceLogger,
+    extract_variables,
+    get_diagnostic_filename,
+    get_plot_filename,
+    group_metadata,
+    io,
+    plot,
+    run_diagnostic,
+    sorted_metadata,
+    variables_available,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -54,8 +65,7 @@ def get_provenance_record(project, ancestor_files):
          'pre-industrial control runs (smaller symbols).'.format(project)),
         'statistics': ['mean'],
         'domains': ['global'],
-        'plot_types': ['scatter'],
-        'authors': ['schl_ma'],
+        'authors': ['schlund_manuel'],
         'references': ['flato13ipcc'],
         'realms': ['atmos'],
         'themes': ['phys'],
@@ -67,8 +77,6 @@ def get_provenance_record(project, ancestor_files):
 
 def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
     """Plot data."""
-    if not cfg['write_plots']:
-        return None
     x_data = []
     y_data = []
     dataset_names = []
@@ -76,9 +84,12 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
 
     # Collect data
     for dataset in hist_cubes:
+        ecs = ecs_cube.extract(iris.Constraint(dataset=dataset))
+        if ecs is None:
+            raise ValueError(f"No ECS data for '{dataset}' available")
 
         # Historical data
-        x_data.append(ecs_cube.extract(Constraint(dataset=dataset)).data)
+        x_data.append(ecs.data)
         y_data.append(hist_cubes[dataset].data)
         dataset_names.append(dataset)
         plot_kwargs.append({
@@ -88,7 +99,7 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
         })
 
         # PiControl data
-        x_data.append(ecs_cube.extract(Constraint(dataset=dataset)).data)
+        x_data.append(ecs.data)
         y_data.append(pi_cubes[dataset].data)
         dataset_names.append(dataset)
         plot_kwargs.append({
@@ -115,43 +126,47 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
 
 def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
     """Write netcdf file."""
-    datasets = list(hist_cubes)
-
-    # Collect data
+    datasets = []
     data_ecs = []
     data_hist = []
     data_pi = []
-    for dataset in datasets:
-        data_ecs.append(ecs_cube.extract(Constraint(dataset=dataset)).data)
+    for dataset in list(hist_cubes):
+        ecs = ecs_cube.extract(iris.Constraint(dataset=dataset))
+        if ecs is None:
+            raise ValueError(f"No ECS data for '{dataset}' available")
+        datasets.append(dataset)
+        data_ecs.append(ecs.data)
         data_hist.append(hist_cubes[dataset].data)
         data_pi.append(pi_cubes[dataset].data)
 
     # Create cube
     dataset_coord = iris.coords.AuxCoord(datasets, long_name='dataset')
-    tas_hist_coord = iris.coords.AuxCoord(
-        data_hist,
-        attributes={'exp': 'historical'},
-        **extract_variables(cfg, as_iris=True)['tas'])
-    tas_picontrol_coord = iris.coords.AuxCoord(
-        data_pi,
-        attributes={'exp': 'piControl'},
-        **extract_variables(cfg, as_iris=True)['tas'])
-    cube = iris.cube.Cube(
-        data_ecs,
-        var_name='ecs',
-        long_name='equilibrium_climate_sensitivity',
-        aux_coords_and_dims=[(dataset_coord, 0), (tas_hist_coord, 0),
-                             (tas_picontrol_coord, 0)])
+    tas_hist_coord = iris.coords.AuxCoord(data_hist,
+                                          attributes={'exp': 'historical'},
+                                          **extract_variables(
+                                              cfg, as_iris=True)['tas'])
+    tas_picontrol_coord = iris.coords.AuxCoord(data_pi,
+                                               attributes={'exp': 'piControl'},
+                                               **extract_variables(
+                                                   cfg, as_iris=True)['tas'])
+    cube = iris.cube.Cube(data_ecs,
+                          var_name='ecs',
+                          long_name='Equilibrium Climate Sensitivity (ECS)',
+                          aux_coords_and_dims=[(dataset_coord, 0),
+                                               (tas_hist_coord, 0),
+                                               (tas_picontrol_coord, 0)])
 
     # Save file
     path = get_diagnostic_filename('ch09_fig09_42a', cfg)
-    io.save_iris_cube(cube, path)
+    io.iris_save(cube, path)
     return path
 
 
 def main(cfg):
     """Run the diagnostic."""
-    input_data = cfg['input_data'].values()
+    sns.set_theme(**cfg.get('seaborn_settings', {}))
+    input_data = deepcopy(list(cfg['input_data'].values()))
+    input_data = sorted_metadata(input_data, ['short_name', 'exp', 'dataset'])
     project = list(group_metadata(input_data, 'project').keys())
     project = [p for p in project if 'obs' not in p.lower()]
     if len(project) == 1:
@@ -193,11 +208,14 @@ def main(cfg):
 
     # Provenance
     ancestor_files = [d['filename'] for d in input_data]
+    ancestor_files.append(ecs_filepath)
     provenance_record = get_provenance_record(project, ancestor_files)
-    if plot_path is not None:
-        provenance_record['plot_file'] = plot_path
+    provenance_record.update({
+        'plot_types': ['scatter'],
+    })
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
+        provenance_logger.log(plot_path, provenance_record)
 
 
 if __name__ == '__main__':

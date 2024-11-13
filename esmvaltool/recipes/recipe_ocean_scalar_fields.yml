@@ -2,6 +2,8 @@
 # recipe_ocean_scarlar_fields.yml
 ---
 documentation:
+  title: Ocean Scalar fields analysis
+
   description: |
     Recipe to demonstrate several simple plots based on the scalar fields.
     These fluxes are saved as MFO files in CMIP5.
@@ -9,10 +11,10 @@ documentation:
     fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103.
 
   authors:
-    - demo_le
+    - demora_lee
 
   maintainer:
-    - demo_le
+    - demora_lee
 
   references:
     - demora2018gmd

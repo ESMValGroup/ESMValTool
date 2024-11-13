@@ -1,37 +1,140 @@
 ---
-# conda-forge after conda switch to gcc7 (gxx conda compiler, Jan 2019)
-# Notes on ncl-cdo-R packages relation for future releases:
-# cdo=1.9.6 works only with ncl=6.6.2 but that
-# implies the use of R packages from the r channel
-# and those packages are R=3.2.2 << 3.5.1 and are
-# obsolete (installing ncl=6.6.2 automatically removes
-# the conda-forge-installed R (3.5.1) packages
-# These issues are a direct consequence of changes in conda-forge
-# related to the switch to gcc7(gxx-conda); hopefully they will be
-# fixed in future releases of conda; also note that gxx_linux-64 may have
-# to be added in the dependency list when switching from cf201901.
-# Why use conda-forge/label/cf201901:
-# https://github.com/fermi-lat/Fermitools-conda/wiki/User-Notes
-# https://github.com/NCAR/ncl/issues/87
-
 name: esmvaltool
 channels:
-  - conda-forge/label/cf201901
+  # The release candidate channel should only be activated
+  # during the rc phase right before the next release of the
+  # ESMValCore.
+  # - conda-forge/label/esmvalcore_rc
+  - conda-forge
+  - nodefaults
 
 dependencies:
-  # Python packages that cannot be installed from PyPI:
-  - esmpy
-  - iris>=2.2
-  - matplotlib<3  # Can be installed from PyPI, but is a dependency of iris and should be pinned.
-  - python-stratify
-  - xarray  # Can be installed from PyPI, but here to get a consistent set of depencies with iris.
-  # Non-Python dependencies
-  - graphviz
-  - cdo
+  - aiohttp
+  - cartopy <0.24  # https://github.com/ESMValGroup/ESMValTool/issues/3767
+  - cdo >=2.3.0
+  - cdsapi
+  - cf-units
+  - cfgrib
+  - cftime
+  - cmocean
+  - curl <8.10
+  - cython
+  - dask !=2024.8.0  # https://github.com/dask/dask/issues/11296
+  - distributed
+  - ecmwf-api-client
+  - eofs
+  - esmpy  # <8.6 safe https://github.com/SciTools/iris-esmf-regrid/issues/415
+  - esmvalcore 2.11.*
+  - fiona
+  - fire
+  - fsspec
+  - gdal >=3.9.0
+  - importlib_metadata <8  # https://github.com/ESMValGroup/ESMValTool/issues/3699 only for Python 3.10/11 and esmpy<8.6
+  - iris >=3.6.1
+  - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
+  - jinja2
+  - joblib
+  - lime
+  - mapgenerator >=1.0.5
+  - matplotlib-base
+  - natsort
+  - nc-time-axis
+  - netCDF4
+  - numba
+  - numpy !=1.24.3,<2.0  # severe masking bug
+  - openpyxl
+  - packaging
+  - pandas==2.1.4  # unpin when ESMValCore released with https://github.com/ESMValGroup/ESMValCore/pull/2529
+  - pip !=21.3
+  - progressbar2
+  - prov
+  - psyplot >=1.5.0
+  - psy-maps >=1.5.0
+  - psy-reg >=1.5.0
+  - psy-simple >=1.5.0
+  - pyproj >=2.1
+  - pys2index  # only from conda-forge
+  - python >=3.10,<3.13
+  - python-cdo
+  - python-dateutil
+  - pyyaml
+  - rasterio >=1.3.10
+  - requests
+  - ruamel.yaml
+  - scikit-image
+  - scikit-learn >= 1.4.0  # github.com/ESMValGroup/ESMValTool/issues/3504
+  - scipy
+  - seaborn
+  - seawater
+  - shapely >=2.0.2
+  - xarray >=0.12.0
+  - xesmf >=0.7.1
+  - xgboost >1.6.1  # github.com/ESMValGroup/ESMValTool/issues/2779
+  - xlsxwriter
+  - zarr
+  # Python packages needed for unit testing
+  - flake8 >=6
+  - pytest >=3.9,!=6.0.0rc1,!=6.0.0
+  - pytest-cov
+  - pytest-env
+  - pytest-html !=2.1.0
+  - pytest-metadata >=1.5.1
+  - pytest-mock
+  - pytest-xdist
+  # Python packages needed for building docs
+  - autodocsumm >=0.2.2
+  - nbsphinx
+  - sphinx >=6.1.3
+  - pydata-sphinx-theme
+  # Python packages needed for development
+  - codespell ==2.3.0
+  - docformatter ==1.7.5
+  - imagehash
+  - isort ==5.13.2
+  - pre-commit
+  - prospector >=1.12  # earliest support for Python 3.12
+  - pyroma
+  # - vprof not on conda-forge
+  - yamllint ==1.35.1
+  - yapf ==0.32.0
 
-  # Multi language support:
-  - ncl>=6.5.0
-  - jasper!=1.900.31  # pinned NCL dependency
-  - r-base
-  - libunwind  # Needed for Python3.7+
-  # - julia>=1.0.0  # The Julia package on conda is apparently broken
+  # NCL and dependencies
+  - ncl >=6.6.2
+  - cdo
+  - imagemagick
+  - nco
+
+  # R and dependencies
+  - cdo
+  - r-base >=3.5,<4.3.0
+  - r-abind
+  - r-akima
+  - r-climdex.pcic
+  - r-climprojdiags
+  - r-docopt
+  - r-dotcall64
+  - r-functional
+  - r-ggplot2
+  - r-gridextra
+  - r-logging
+  - r-mapproj
+  - r-maps
+  - r-multiapply
+  - r-ncdf4
+  - r-ncdf4.helpers
+  - r-pcict
+  - r-plyr
+  - r-rcolorbrewer
+  - r-rcpp
+  - r-s2dverification
+  - r-snow
+  - r-spei
+  - r-udunits2
+  - r-yaml
+  # R packages needed for development
+  - r-git2r  # dependency of lintr
+  - r-lintr ==3.1.2
+  - r-styler ==1.10.3
+
+  # Julia (dependencies installed by separate script)
+  - julia

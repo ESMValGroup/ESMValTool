@@ -17,6 +17,7 @@
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
 ;   explicit_cn_levels: contour levels
+;   highlight_dataset:  name of dataset to highlight ("MultiModelMean")
 ;   mask_ts_sea_ice:    - True = mask T < 272 K as sea ice (only for
 ;                         variable "ts")
 ;                       - False = no additional grid cells masked for
@@ -50,17 +51,20 @@
 ;        plot is written to 2 separate netCDFs.
 ;
 ; Modification history
-;   20190222-A_laue_ax: added output of provenance (v2.0)
-;   20181119-A_laue_ax: adapted code to multi-variable capable framework
-;   20180923-A_laue_ax: added writing of results to netcdf
-;   20180529-A_laue_ax: code rewritten for ESMValTool v2.0
-;   20170620-A_laue_ax: added tags for reporting
-;   20160920-A_laue_ax: added optional shading of observational uncertainties
-;                       to the zonal mean plot
-;   20160901-A_laue_ax: added regridding option 1 deg x 1 deg
-;   20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;                       of the code
-;   20150428A-laue_ax: written.
+;   20230118-lauer_axel: added support to highlight other dataset than
+;                        MultiModelMean
+;   20211006-lauer_axel: removed write_plots
+;   20190222-lauer_axel: added output of provenance (v2.0)
+;   20181119-lauer_axel: adapted code to multi-variable capable framework
+;   20180923-lauer_axel: added writing of results to netcdf
+;   20180529-lauer_axel: code rewritten for ESMValTool v2.0
+;   20170620-lauer_axel: added tags for reporting
+;   20160920-lauer_axel: added optional shading of observational uncertainties
+;                        to the zonal mean plot
+;   20160901-lauer_axel: added regridding option 1 deg x 1 deg
+;   20151027-lauer_axel: moved call to 'write_references' to the beginning
+;                        of the code
+;   20150428-lauer_axel: written.
 ;
 ; ############################################################################
 
@@ -126,6 +130,7 @@ begin
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   ; Set default values for non-required diag_script_info attributes
+  set_default_att(diag_script_info, "highlight_dataset", "MultiModelMean")
   set_default_att(diag_script_info, "mask_ts_sea_ice", False)
   set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
   set_default_att(diag_script_info, "timemean", "annualclim")
@@ -154,16 +159,9 @@ begin
 
   ; make sure path for (mandatory) netcdf output exists
 
-  write_nc = True
   work_dir = config_user_info@work_dir + "/"
   ; Create work dir
   system("mkdir -p " + work_dir)
-
-  if (config_user_info@write_plots.eq."True") then
-    write_plots = True
-  else
-    write_plots = False
-  end if
 
 end
 
@@ -198,11 +196,22 @@ begin
 
   ; get multi-model mean index
 
-  mm_ind = ind(names .eq. "MultiModelMean")
+  mm_ind = ind(names .eq. diag_script_info@highlight_dataset)
 
   if (ismissing(mm_ind)) then
-    error_msg("f", DIAG_SCRIPT, "", "multi-model mean is missing (required)")
+    mod_ind = ind(names .ne. ref_ind)
+    if (all(ismissing(mod_ind))) then
+      error_msg("f", DIAG_SCRIPT, "", "no dataset besides reference " \
+                + "dataset found. Cannot continue.")
+    end if
+    mm_ind = mod_ind(0)
+    log_info("highlight_dataset (" + diag_script_info@highlight_dataset \
+             + " ) not found, using first dataset (" + names(mm_ind) \
+             + ") instead.")
+    delete(mod_ind)
   end if
+
+  highlight_name = names(mm_ind)
 
   mask_ts_sea_ice = diag_script_info@mask_ts_sea_ice
 
@@ -363,7 +372,8 @@ begin
 
     delete(tmp)
 
-    ; save maps of multi-model mean and reference data
+    ; save maps of highlight_dataset (default = multi-model mean)
+    ; and reference data
 
     if (imod.eq.mm_ind) then
       mmdata = data
@@ -382,7 +392,8 @@ begin
 
   end do  ; imod
 
-  ; differences between multi-model mean and reference data set
+  ; differences between highlight_dataset (default = multi-model mean)
+  ; and reference data set
 
   diff = mmdata - refdata
   copy_VarMeta(refdata, diff)
@@ -390,17 +401,19 @@ begin
 ;  debugfile->diff = diff
 
   ; we order the zonal mean array in a way so that
-  ; the lines for the multi-model mean and reference model will
-  ; be drawn on top of the lines for the individual models, i.e.:
+  ; the lines for the highligh_dataset (default = multi-model mean)
+  ; and reference model will be drawn on top of the lines for the individual
+  ; models, i.e.:
   ;  (1) individual model(s)
   ;  (2) reference model(s) (observations)
-  ;  (3) multi-model mean
+  ;  (3) highlight_dataset (default = multi-model mean)
 
   dims = dimsizes(zm)
   zonalmean = new(dims, float)
   copy_VarMeta(zm, zonalmean)
 
-  ; model indices with no reference model(s) and no multi-model mean
+  ; model indices with no reference model(s) and no highlight_dataset
+  ; (default = multi-model mean)
 
   model_ind = ispan(0, dim_MOD0 - 1, 1)
   model_ind(ref_ind) = -1
@@ -412,17 +425,21 @@ begin
   modelsonly_ind = ind(model_ind.ge.0)
   delete(model_ind)
 
-  n = dimsizes(modelsonly_ind) - 1
+  if (.not.all(ismissing(modelsonly_ind))) then
+    n = dimsizes(modelsonly_ind) - 1
 
-  ; first entries in "zonalmean" = individual models
+    ; first entries in "zonalmean" = individual models
 
-  if (numseas.gt.1) then
-    zonalmean(0:n, :, :) = zm(modelsonly_ind, :, :)
+    if (numseas.gt.1) then
+      zonalmean(0:n, :, :) = zm(modelsonly_ind, :, :)
+    else
+      zonalmean(0:n, :) = zm(modelsonly_ind, :)
+    end if
+
+    zonalmean&model(0:n) = zm&model(modelsonly_ind)
   else
-    zonalmean(0:n, :) = zm(modelsonly_ind, :)
+    n = -1
   end if
-
-  zonalmean&model(0:n) = zm&model(modelsonly_ind)
 
   ; observation(s)
 
@@ -447,14 +464,14 @@ begin
     zonalmean&model(n) = zm&model(ref_ind2)
   end if
 
-  ; last entry in "zonalmean" = multi-model mean
+  ; last entry in "zonalmean" = highlight_dataset (default = multi-model mean)
 
   n = n + 1
 
   if (numseas.gt.1) then
-    zonalmean(n, :, :) = zm(mm_ind, :, :)  ; multi-model mean
+    zonalmean(n, :, :) = zm(mm_ind, :, :)  ; highlight_dataset
   else
-    zonalmean(n, :) = zm(mm_ind, :)  ; multi-model mean
+    zonalmean(n, :) = zm(mm_ind, :)  ; highlight_dataset
   end if
 
   zonalmean&model(n) = zm&model(mm_ind)
@@ -479,6 +496,8 @@ begin
     log_info(DIAG_SCRIPT + " (var: " + var0 + "):")
     log_info("info: using default contour levels")
     cnLevels = fspan(min(diff), max(diff), 20)
+  else
+    cnLevels = diag_script_info@explicit_cn_levels
   end if
 
   diff@diag_script = DIAG_SCRIPT
@@ -558,6 +577,12 @@ begin
     diff@res_cnFillColors         = pal
   end if
 
+  if (var0 .eq. "swcre") then
+    pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
+                             + "ipcc-ar6_misc_div.rgb")
+    diff@res_cnFillPalette = pal
+  end if
+
   plots = new((/2, numseas/), graphic)
   plotfile = new(numseas, string)
   plotfile(:) = ""
@@ -619,7 +644,7 @@ begin
     n = dimsizes(modelsonly_ind) - 1
 
     ; settings for all models that have been used to calculate the
-    ; multi-model mean (= first entries in "zonalmean")
+    ; highligh_dataset (= first entries in "zonalmean")
 
     linethickness(0:n)   = 1.0
     linecolor(0:n)       = "(/0.5, 0.5, 0.5/)"
@@ -646,9 +671,9 @@ begin
       end do
     else
       linethickness(n+1:dim_MOD0-1) = 4.0      ; reference dataset(s)
-      linethickness(mm_ind)         = 4.0      ; multi-model mean
+      linethickness(mm_ind)         = 4.0      ; highlight_dataset
       linecolor(n+1:dim_MOD0-1)     = "Black"  ; reference data set
-      linecolor(mm_ind)             = "Red"    ; multi-model mean
+      linecolor(mm_ind)             = "Red"    ; highlight_dataset
     end if
 
     res                   = True
@@ -703,17 +728,15 @@ begin
 
     ; --------------------------------------------------------------------
 
-    if (write_plots) then
-      pres                = True
-      pres@gsnPanelCenter = False
-      pres@gsnPanelXF     = (/0.075, 0.625/)  ; hor. pos. of sub-plots
-      pres@txString       = season(is)
+    pres                = True
+    pres@gsnPanelCenter = False
+    pres@gsnPanelXF     = (/0.075, 0.625/)  ; hor. pos. of sub-plots
+    pres@txString       = highlight_name + " (" + season(is) + ")"
 
-      outfile = panelling(wks, plots(:, is), 1, 2, pres)
-      log_info("Wrote " + wks@fullname)
+    outfile = panelling(wks, plots(:, is), 1, 2, pres)
+    log_info("Wrote " + wks@fullname)
 
-      plotfile(is) = wks@fullname
-    end if  ; if write_plots
+    plotfile(is) = wks@fullname
   end do  ; is-loop (seasons)
 
   ; ###########################################
@@ -742,12 +765,12 @@ begin
   ; write provenance to netcdf output and plot file(s)
   ; ------------------------------------------------------------------------
 
-  statistics = ("clim")
-  domain = ("glob")
+  statistics = "clim"
+  domain = "global"
   plottype = (/"geo", "zonal"/)
-  caption = "Multi model mean bias (left) and zonal averages (right) " \
-            + "for variable " + var0 + " (" + allseas \
-            + "), reference = " + names(ref_ind) + "."
+  caption = names(mm_ind) + " bias (left) and zonal averages (right) " \
+    + "for variable " + var0 + " (" + allseas \
+    + "), reference = " + names(ref_ind) + "."
 
   do is = 0, numseas - 1
     log_provenance(nc_outfile_bias, plotfile(is), caption, statistics, \

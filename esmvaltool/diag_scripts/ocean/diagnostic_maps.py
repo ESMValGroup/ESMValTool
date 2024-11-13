@@ -18,7 +18,8 @@ An approproate preprocessor for a 3D+time field would be::
       extract_levels:
         levels:  [100., ]
          scheme: linear_extrap
-      time_average:
+      climate_statistics:
+        operator: mean
 
 
 Note that this recipe may not function on machines with no access to the
@@ -39,18 +40,19 @@ This tool is part of the ocean diagnostic tools package in the ESMValTool.
 Author: Lee de Mora (PML)
         ledm@pml.ac.uk
 """
+import itertools
 import logging
 import os
 import sys
-from itertools import product
-import matplotlib.pyplot as plt
 
+import cartopy
 import iris
 import iris.quickplot as qplt
-import cartopy
+import matplotlib.pyplot as plt
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -113,20 +115,31 @@ def make_map_plots(
             path = diagtools.folder(
                 cfg['plot_dir']) + os.path.basename(filename).replace(
                     '.nc', '_map_' + str(layer_index) + image_extention)
+            caption = 'Multimodel map of ' + title
         else:
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
                 suffix='map_' + str(layer_index) + image_extention,
             )
+            caption = 'Map of ' + title
 
         # Saving files:
-        if cfg['write_plots']:
-
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path)
-
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
         plt.close()
+
+        provenance_record = diagtools.prepare_provenance_record(
+            cfg,
+            caption=caption,
+            statistics=['mean'],
+            domain=['global'],
+            plot_type=['map'],
+            ancestors=[filename],
+        )
+
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(path, provenance_record)
 
 
 def make_map_contour(
@@ -209,7 +222,7 @@ def make_map_contour(
         title = ' '.join([metadata['dataset'], metadata['long_name']])
         depth_units = str(cube_layer.coords('depth')[0].units)
         if layer:
-            title = '{} ({} {})'.format(title, layer, depth_units)
+            title = f'{title} ({layer} {depth_units})'
         plt.title(title)
 
         # Determine image filename:
@@ -226,11 +239,21 @@ def make_map_contour(
             )
 
         # Saving files:
-        if cfg['write_plots']:
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path)
-
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
         plt.close()
+
+        provenance_record = diagtools.prepare_provenance_record(
+            cfg,
+            caption=title,
+            statistics=['mean'],
+            domain=['global'],
+            plot_type=['map'],
+            ancestors=[filename],
+        )
+
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(path, provenance_record)
 
 
 def multi_model_contours(
@@ -268,7 +291,7 @@ def multi_model_contours(
     thresholds = diagtools.load_thresholds(cfg, metadata)
 
     # Make a plot for each layer and each threshold
-    for layer, threshold in product(layers, thresholds):
+    for layer, threshold in itertools.product(layers, thresholds):
 
         title = ''
         z_units = ''
@@ -335,19 +358,18 @@ def multi_model_contours(
         plt.legend(loc='best')
 
         # Saving files:
-        if cfg['write_plots']:
-            path = diagtools.get_image_path(
-                cfg,
-                metadata[filename],
-                prefix='MultipleModels_',
-                suffix='_'.join(['_contour_map_',
-                                 str(threshold),
-                                 str(layer) + image_extention]),
-                metadata_id_list=[
-                    'field', 'short_name', 'preprocessor', 'diagnostic',
-                    'start_year', 'end_year'
-                ],
-            )
+        path = diagtools.get_image_path(
+            cfg,
+            metadata[filename],
+            prefix='MultipleModels_',
+            suffix='_'.join(['_contour_map_',
+                             str(threshold),
+                             str(layer) + image_extention]),
+            metadata_id_list=[
+                'field', 'short_name', 'preprocessor', 'diagnostic',
+                'start_year', 'end_year'
+            ],
+        )
 
         # Resize and add legend outside thew axes.
         plt.gcf().set_size_inches(9., 6.)
@@ -357,6 +379,18 @@ def multi_model_contours(
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
         plt.close()
+
+        provenance_record = diagtools.prepare_provenance_record(
+            cfg,
+            caption=title,
+            statistics=['mean'],
+            domain=['global'],
+            plot_type=['map'],
+            ancestors=metadata.keys(),
+        )
+
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(path, provenance_record)
 
 
 def main(cfg):

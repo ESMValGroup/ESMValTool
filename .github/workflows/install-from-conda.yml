@@ -1,0 +1,87 @@
+---
+name: Install from Conda
+
+# runs on a push on main and at the end of every day
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 4 * * *'
+
+# Required shell entrypoint to have properly configured bash shell
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  linux:
+    runs-on: "ubuntu-latest"
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    name: Linux Python ${{ matrix.python-version }}
+    steps:
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+          miniforge-version: "latest"
+          use-mamba: true
+      - run: mkdir -p conda_install_linux_artifacts_python_${{ matrix.python-version }}
+      - name: Record versions
+        run: |
+          mamba --version 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
+          which conda 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_path.txt
+          which mamba 2>&1 | tee -a conda_install_linux_artifacts_python_${{ matrix.python-version }}/conda_path.txt
+          python -V 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - name: Install ESMValTool
+        run: mamba install esmvaltool 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/install.txt
+      - name: Verify installation
+        run: |
+          esmvaltool --help
+          esmvaltool version 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/version.txt
+      - name: Upload artifacts
+        if: ${{ always() }}  # upload artifacts even if fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: Conda_Install_Linux_python_${{ matrix.python-version }}
+          path: conda_install_linux_artifacts_python_${{ matrix.python-version }}
+
+# uncomment from here when we have a testing environment on an OSX machine
+# and we know that this should work
+#
+#  osx:
+#    runs-on: "macos-latest"
+#    strategy:
+#      matrix:
+#        python-version: ["3.10", "3.11"]
+#      fail-fast: false
+#    name: OSX Python ${{ matrix.python-version }}
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: conda-incubator/setup-miniconda@v3
+#        with:
+#          python-version: ${{ matrix.python-version }}
+#          miniconda-version: "latest"
+#          channels: conda-forge
+#      - run: mkdir -p conda_install_osx_artifacts_python_${{ matrix.python-version }}
+#      - run: conda --version 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/conda_version.txt
+#      - run: which conda 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/conda_path.txt
+#      - run: python -V 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
+#      # ncurses needs to be from conda-forge and not main channel
+#      # for now it's turned off since we're not testing R/Julia installs
+#      # - run: conda uninstall -y ncurses
+#      # - run: conda list ncurses
+#      # - run: conda install -y conda-forge::ncurses
+#      # - run: conda list ncurses
+#      - run: conda install esmvaltool --no-update-deps 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/install.txt
+#      - run: conda install esmvaltool-python esmvaltool-ncl 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/install.txt
+#      - run: esmvaltool --help
+#      - run: esmvaltool version 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/version.txt
+#      - name: Upload artifacts
+#        if: ${{ always() }}  # upload artifacts even if fail
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: Conda_Install_OSX_python_${{ matrix.python-version }}
+#          path: conda_install_osx_artifacts_python_${{ matrix.python-version }}

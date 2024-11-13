@@ -1,3 +1,5 @@
+.. _recipes_shapeselect:
+
 Shapeselect
 ===========
 
@@ -27,7 +29,7 @@ User settings in recipe
 
    *Required settings (scripts)*
 
-   * shapefile: path to the user provided shapefile. A relative path is relative to the auxiliary_data_dir as configured in config-user.yml.
+   * shapefile: path to the user provided shapefile. A relative path is relative to the :ref:`configuration option <esmvalcore:config_options>` ``auxiliary_data_dir``.
 
    * weighting_method: the preferred weighting method 'mean_inside' - mean of all grid points inside polygon; 'representative' - one point inside or close to the polygon is used to represent the complete area.
 
@@ -35,3 +37,17 @@ User settings in recipe
 
    * write_netcdf: true or false to write output as NetCDF or not.
 
+Variables
+---------
+
+* pr,tas      (daily)
+
+Example plots
+-------------
+
+.. _fig_shapeselect:
+.. figure::  /recipes/figures/shapeselect/shapeselect.png
+   :align:   center
+   :width:   14cm
+
+   Example of the selection of model grid points falling within (blue pluses) and without (red dots) a provided shapefile (blue contour).

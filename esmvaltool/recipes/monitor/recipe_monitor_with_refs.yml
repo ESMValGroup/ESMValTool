@@ -1,0 +1,259 @@
+# ESMValTool
+---
+documentation:
+  title: Example recipe for model monitoring with reference datasets.
+  description: |
+    Show plots that include multiple datasets that can be used to monitor
+    (ongoing) model simulations.
+  authors:
+    - schlund_manuel
+    - heuer_helge
+    - kraft_jeremy
+    - kuehbacher_birgit
+    - lindenlaub_lukas
+    - sarauer_ellen
+    - winterstein_franziska
+  maintainer:
+    - schlund_manuel
+
+
+datasets:
+  # Note: plot_label currently only used by diagnostic plot_multiple_annual_cycles
+  - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'MPI-ESM1-2-HR historical'}
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'Reference (MPI-ESM1-2-LR historical)', reference_for_monitor_diags: true}
+
+
+preprocessors:
+
+  timeseries_regular:
+    area_statistics:
+      operator: mean
+
+  annual_cycle_nh:
+    extract_region:
+      start_latitude: 0
+      end_latitude: 90
+      start_longitude: 0
+      end_longitude: 360
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: monthly
+
+  full_climatology:
+    climate_statistics:
+      period: full
+    regrid:
+      scheme: linear
+      target_grid: 2x2
+
+  zonal_mean:
+    custom_order: true
+    climate_statistics:
+      period: full
+    regrid:
+      scheme: linear
+      target_grid: 2x2
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev39}
+      scheme: linear
+      coordinate: air_pressure
+    zonal_statistics:
+      operator: mean
+
+  extract_1d_profile:
+    custom_order: true
+    climate_statistics:
+      period: full
+    area_statistics:
+      operator: mean
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev39}
+      scheme: linear
+      coordinate: air_pressure
+
+  var_vs_lat:
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    zonal_statistics:
+      operator: mean
+    convert_units:
+      units: mm day-1
+
+  global_mean_extract_levels:
+    custom_order: true
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: alt16}
+      scheme: linear
+      coordinate: altitude
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    area_statistics:
+      operator: mean
+
+  zonal_mean_2d:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    zonal_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  plot_multiple_timeseries:
+    description: Plot time series including reference datasets.
+    variables:
+      tas:
+        mip: Amon
+        preprocessor: timeseries_regular
+        timerange: '2000/2014'
+    scripts:
+      plot: &plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          timeseries:
+            annual_mean_kwargs:
+              linestyle: '--'
+            plot_kwargs:
+              MPI-ESM1-2-HR:  # = dataset since 'facet_used_for_labels' is 'dataset' by default
+                color: C0
+              MPI-ESM1-2-LR:
+                color: black
+
+  plot_multiple_annual_cycles:
+    description: Plot annual cycles including reference datasets.
+    variables:
+      tas:
+        mip: Amon
+        preprocessor: annual_cycle_nh
+        timerange: '2000/2014'
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        facet_used_for_labels: plot_label
+        plots:
+          annual_cycle:
+            legend_kwargs:
+              loc: upper right
+            plot_kwargs:
+              'MPI-ESM1-2-HR historical':  # = plot_label since 'facet_used_for_labels: plot_label'
+                color: C0
+              'Reference (MPI-ESM1-2-LR historical)':
+                color: black
+            pyplot_kwargs:
+              title: Near-Surface Air Temperature on Northern Hemisphere
+              ylim: [280, 297]
+
+  plot_maps_with_references:
+    description: Plot climatology maps including reference datasets.
+    variables:
+      tas:
+        mip: Amon
+        preprocessor: full_climatology
+        timerange: '2000/2014'
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          map:
+            common_cbar: true
+            plot_kwargs_bias:
+              levels: [-10.0, -7.5, -5.0, -2.5, 0.0, 2.5, 5.0, 7.5, 10.0]
+
+  plot_zonal_mean_profiles_with_references:
+    description: Plot 2D zonal mean profiles including reference datasets.
+    variables:
+      ta:
+        mip: Amon
+        preprocessor: zonal_mean
+        timerange: '2000/2014'
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          zonal_mean_profile:
+            common_cbar: true
+            plot_kwargs_bias:
+              levels: [-10.0, -7.5, -5.0, -2.5, 0.0, 2.5, 5.0, 7.5, 10.0]
+
+
+  plot_1D_profiles_with_references:
+    description: Plot 1D profiles including reference datasets.
+    variables:
+      ta:
+        mip: Amon
+        preprocessor: extract_1d_profile
+        timerange: '2000/2014'
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          1d_profile:
+            plot_kwargs:
+              MPI-ESM1-2-HR:  # = dataset since 'facet_used_for_labels' is 'dataset' by default
+                color: C0
+              MPI-ESM1-2-LR:
+                color: black
+
+  plot_variable_vs_latitude:
+    description: Creates a single-panel variable plot over latitude.
+    variables:
+      pr:
+        preprocessor: var_vs_lat
+        mip: Amon
+        timerange: '20000101/20030101'
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          variable_vs_lat:
+
+  plot_hovmoeller_z_vs_time:
+    description: Plot Hovmoeller Z vs. time including reference datasets.
+    variables:
+      ta:
+        preprocessor: global_mean_extract_levels
+        mip: Amon
+        timerange: '2000/2005'
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          hovmoeller_z_vs_time:
+            plot_func: contourf
+            common_cbar: true
+            time_format: '%Y'
+            log_y: false
+            pyplot_kwargs:
+              ylim: [0, 20000]
+              xticks:
+                rotation: 25
+
+  plot_time_vs_lat_with_references:
+    description: Plot Hovmoeller time vs. latitude including reference datasets.
+    variables:
+      tas:
+        mip: Amon
+        preprocessor: zonal_mean_2d
+        timerange: '2000/2005'
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          hovmoeller_time_vs_lat_or_lon:
+            common_cbar: true
+            show_x_minor_ticks: false
+            time_format: '%Y'

@@ -1,0 +1,226 @@
+# ESMValTool
+---
+documentation:
+  title: Model evaluation with focus on clouds.
+  description: >
+    Plot climatologies and zonal mean profiles of several cloud-related
+    variables of multi-year simulations.
+  authors:
+    - bonnet_pauline
+    - lauer_axel
+    - hassler_birgit
+    - schlund_manuel
+  maintainer:
+    - lauer_axel
+
+
+# Note: the following models are just examples
+datasets:
+  - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+
+# Note: for some observational datasets, we use preset time ranges due to
+# their limited temporal availability
+timerange_for_models: &time_period
+  timerange: '2005/2014'  # can be specified, this is just an example
+
+
+preprocessors:
+
+  full_climatology: &full_climatology_diag
+    climate_statistics:
+      period: full
+    regrid:
+      target_grid: 2x2
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+
+  full_climatology_pr:
+    <<: *full_climatology_diag
+    convert_units:
+      units: mm day-1
+
+  zonal_mean:
+    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
+    climate_statistics:
+      period: full
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev19}
+      scheme: linear
+      coordinate: air_pressure
+    regrid:
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+      target_grid: 2x2
+    zonal_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  plot_clt_maps:
+    description: Plot clt climatology maps including reference datasets.
+    variables:
+      clt:
+        <<: *time_period
+        mip: Amon
+        preprocessor: full_climatology
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, reference_for_monitor_diags: true}
+    scripts:
+      plot: &plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          map:
+            common_cbar: true
+
+  plot_lwcre_maps:
+    description: Plot lwcre climatology maps including reference datasets.
+    variables:
+      lwcre:
+        <<: *time_period
+        mip: Amon
+        preprocessor: full_climatology
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, timerange: '2001/2010', tier: 1, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        plots:
+          map:
+            common_cbar: true
+
+  plot_swcre_maps:
+    description: Plot swcre climatology maps including reference datasets.
+    variables:
+      swcre:
+        <<: *time_period
+        mip: Amon
+        preprocessor: full_climatology
+        derive: true
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1, timerange: '2001/2010', reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        plots:
+          map:
+            common_cbar: true
+
+  plot_lwp_maps:
+    description: Plot lwp climatology maps including reference datasets.
+    variables:
+      lwp:
+        <<: *time_period
+        mip: Amon
+        preprocessor: full_climatology
+        derive: true
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        plots:
+          map:
+            common_cbar: true
+            fontsize: 6
+
+  plot_clivi_maps:
+    description: Plot clivi climatology maps including reference datasets.
+    variables:
+      clivi:
+        <<: *time_period
+        mip: Amon
+        preprocessor: full_climatology
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        plots:
+          map:
+            common_cbar: true
+
+  plot_prw_maps:
+    description: Plot prw climatology maps including reference datasets.
+    variables:
+      prw:
+        <<: *time_period
+        mip: Amon
+        preprocessor: full_climatology
+        additional_datasets:
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat, version: CDR2-L3-COMBI-05deg-fv3.1, tier: 3, timerange: '2003/2017', reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        plots:
+          map:
+            common_cbar: true
+
+  plot_pr_maps:
+    description: Plot prw climatology maps including reference datasets.
+    variables:
+      pr:
+        <<: *time_period
+        mip: Amon
+        preprocessor: full_climatology_pr
+        additional_datasets:
+          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
+             timerange: '2003/2017', reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        plots:
+          map:
+            common_cbar: true
+
+  plot_clw_profiles:
+    description: Plot clw vertical profiles including reference datasets.
+    variables:
+      clw:
+        <<: *time_period
+        mip: Amon
+        preprocessor: zonal_mean
+        additional_datasets:
+          - {dataset: CLOUDSAT-L2, project: OBS, type: sat, version: P1-R05-gridbox-average-noprecip, timerange: '2006/2017', tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        plots:
+          profile:
+            common_cbar: true
+
+  plot_cli_profiles:
+    description: Plot cli vertical profiles including reference datasets.
+    variables:
+      cli:
+        <<: *time_period
+        mip: Amon
+        preprocessor: zonal_mean
+        additional_datasets:
+          - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, timerange: '2007/2015', tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        plots:
+          profile:
+            common_cbar: true
+
+  plot_cl_profiles:
+    description: Plot cl vertical profiles including reference datasets.
+    variables:
+      cl:
+        <<: *time_period
+        mip: Amon
+        preprocessor: zonal_mean
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        plots:
+          profile:
+            common_cbar: true

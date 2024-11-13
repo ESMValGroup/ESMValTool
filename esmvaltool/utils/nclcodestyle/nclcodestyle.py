@@ -487,7 +487,7 @@ def missing_whitespace(logical_line):
     for index in range(len(line) - 1):
         char = line[index]
         if char in ',;:' and line[index + 1] not in WHITESPACE:
-            before = line[:index]
+            # before = line[:index]
             if char == ':':
                 continue  # Slice syntax, no space required
             if char == ',' and line[index + 1] == ')':

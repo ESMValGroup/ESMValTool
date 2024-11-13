@@ -1,0 +1,63 @@
+# Install esmvaltool from a conda lock file
+# To build a conda lock file install conda-lock first then
+# run conda-lock lock --platform linux-64 -f environment.yml --mamba
+# (mamba activated for speed). Change platform for osx-64 or win-64.
+# Env creation then happens as per normal use with
+# conda create --name esmvaltool-fromlock --file conda-linux-64.lock
+# note that pip and conda are NOT installed.
+
+name: Conda-lock Install
+on:
+  push:
+    branches:
+      - main
+  #    - condalock-update
+  # run the test only if the PR is to main
+  # turn it on if required
+  #pull_request:
+  #  branches:
+  #  - main
+  schedule:
+    - cron: '0 0 * * *'
+
+# Required shell entrypoint to have properly configured bash shell
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  linux:
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+      fail-fast: false
+    name: Linux Python ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: esmvaltool-fromlock
+          python-version: ${{ matrix.python-version }}
+          miniconda-version: "latest"
+          channels: conda-forge
+      - run: mkdir -p source_install_linux_artifacts_python_${{ matrix.python-version }}
+      - run: conda --version 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
+      - run: which python
+      - run: python -V 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
+      - run: conda create --name esmvaltool-fromlock --file conda-linux-64.lock
+      - run: which python
+      - run: pip --version
+      - run: pip install -e .[develop]
+      - run: esmvaltool --help
+      - run: esmvaltool version 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/version.txt
+      - run: flake8
+      - run: pytest -n 2 -m "not installation"
+      - name: Upload artifacts
+        if: ${{ always() }}  # upload artifacts even if fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: Source_Install_Linux_python_${{ matrix.python-version }}
+          path: source_install_linux_artifacts_python_${{ matrix.python-version }}

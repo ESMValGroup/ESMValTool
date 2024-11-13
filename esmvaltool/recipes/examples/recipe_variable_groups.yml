@@ -1,16 +1,18 @@
+# ESMValTool
 # recipe_variable_groups.yml
 ---
 documentation:
-
   description: |
     Example recipe to demonstrate grouping of variables in the diagnostic
     section.
 
+  title: Recipe running various examples of grouping of variables in the diagnostic.
+
   authors:
-    - schl_ma
+    - schlund_manuel
 
   maintainer:
-    - schl_ma
+    - schlund_manuel
 
   projects:
     - crescendo
@@ -51,7 +53,7 @@ diagnostics:
         preprocessor: mask
         tag: TAS2
         additional_datasets:
-          - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
       tas_3:
         <<: *variable_settings
         exp: rcp45
@@ -59,5 +61,4 @@ diagnostics:
         end_year: 2025
         tag: TAS3
         additional_datasets: *datasets
-    scripts:
-      null
+    scripts: null

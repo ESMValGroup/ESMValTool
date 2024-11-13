@@ -37,8 +37,8 @@ function convert_units(var:numeric,
 ;
 ; References
 ;
-; Modification history:
-;    20150216-A_righ_ma: written.
+; Modification history
+;    20150216-righi_mattia: written.
 ;
 local funcname, scriptname
 begin
@@ -58,6 +58,12 @@ begin
     units_from = var@units
   end if
 
+  if (units_from.eq.units_to) then
+    error_msg("w", scriptname, funcname, "No conversion needed from " + \
+              units_from + " to " + units_to)
+    return(out)
+  end if
+
   if (units_from.eq."1") then
     if (units_to.eq."g/kg") then
       out = out * 1000.
@@ -65,14 +71,25 @@ begin
       leave_msg(scriptname, funcname)
       return(out)
     end if
+
     if (units_to.eq."ppmv") then
-      out = out * 1.e-6
+      out = out * 1.e6
       out@units = units_to
       leave_msg(scriptname, funcname)
       return(out)
     end if
+
     if (units_to.eq."ppm9") then
       out = out * 1.e-9
+      out@units = units_to
+      leave_msg(scriptname, funcname)
+      return(out)
+    end if
+  end if
+
+  if (units_from.eq."K") then
+    if (any(units_to.eq.(/"degC"/))) then
+      out = out - 273.15
       out@units = units_to
       leave_msg(scriptname, funcname)
       return(out)
@@ -107,7 +124,7 @@ begin
     end if
   end if
 
-  if (units_from.eq."mole mole-1") then
+  if (any(units_from.eq.(/"mole mole-1", "mol mol-1"/))) then
     if (any(units_to.eq.(/"ppm", "ppmv", "umol/mol"/))) then
       out = out * 1.e6
       out@units = units_to
@@ -135,6 +152,30 @@ begin
       leave_msg(scriptname, funcname)
       return(out)
     end if
+    if (any(units_to.eq.(/"g kg-1", "g/kg"/))) then
+      out = out * 1.e3
+      out@units = units_to
+      leave_msg(scriptname, funcname)
+      return(out)
+    end if
+  end if
+
+  if (units_from.eq."kg s-1") then
+    if (any(units_to.eq.(/"GtC"/))) then
+      out = out * 3600. * 24. / 1.e12
+      out@units = units_to
+      leave_msg(scriptname, funcname)
+      return(out)
+    end if
+  end if
+
+  if (units_from.eq."kg.s-1") then
+    if (any(units_to.eq.(/"PgC y-1", "GtC y-1"/))) then
+      out = out * 3600. * 24. * 365 / 1.e12
+      out@units = units_to
+      leave_msg(scriptname, funcname)
+      return(out)
+    end if
   end if
 
   if (units_from.eq."kg m-2 s-1") then
@@ -144,8 +185,14 @@ begin
       leave_msg(scriptname, funcname)
       return(out)
     end if
-    if (any(units_to.eq.(/"mm d-1", "mm/day"/))) then
+    if (any(units_to.eq.(/"mm d-1", "mm day-1", "mm/day"/))) then
       out = out * 24 * 3600
+      out@units = units_to
+      leave_msg(scriptname, funcname)
+      return(out)
+    end if
+    if (any(units_to.eq.(/"mm y-1", "mm yr-1", "mm/yr"/))) then
+      out = out * 24 * 3600 * 365
       out@units = units_to
       leave_msg(scriptname, funcname)
       return(out)
@@ -251,5 +298,4 @@ begin
 
   error_msg("f", scriptname, funcname, "conversion from " + units_from + \
             " to " + units_to + " not defined")
-
 end

@@ -1,0 +1,26 @@
+---
+# Filename (will be extended by variable name)
+filename: 'HWSD_SOIL_CLM_RES.nc4'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: HWSD
+  version: '1.2'
+  tier: 3
+  modeling_realm: reanaly
+  project_id: OBS
+  source: 'https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=1247'
+  reference: 'hwsd'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  cSoil:
+    mip: Lmon
+    raw: AWT_SOC
+  areacella:
+    mip: fx
+    raw: areaupsc
+  sftlf:
+    mip: fx
+    raw: landfrac

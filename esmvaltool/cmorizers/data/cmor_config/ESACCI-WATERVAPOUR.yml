@@ -1,0 +1,35 @@
+---
+# Common global attributes for Cmorizer output
+
+attributes:
+  dataset_id: ESACCI-WATERVAPOUR
+  version: CDR2-L3-COMBI-05deg-fv3.1
+  tier: 3
+  modeling_realm: sat
+  project_id: OBS6
+  source: https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001
+  reference: ["esacci-watervapour"]
+  comment: "This CMORizer is for the CDR2 version of dataset (global coverage).
+            Download is possible after registration and ordering of the data."
+
+# Variables to cmorize (here use only filename prefix)
+variables:
+# monthly frequency
+  prw_mon:
+    short_name: prw
+    mip: Amon
+    raw: tcwv
+    frequency: mon
+    filename: HTWmm{year}*000000313WVCCI01GL.nc
+    start_year: 2002
+    end_year: 2017
+
+# daily frequency 
+  prw_day:
+    short_name: prw
+    mip: Eday
+    raw: tcwv
+    frequency: day
+    filename: HTWdm{year}*000000313WVCCI01GL.nc
+    start_year: 2002
+    end_year: 2017

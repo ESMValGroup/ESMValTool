@@ -1,16 +1,18 @@
 """Test diagnostic script runs."""
 import contextlib
+import shutil
 import sys
+from pathlib import Path
 from textwrap import dedent
 
+import esmvalcore
 import pytest
 import yaml
-from six import text_type
+from esmvalcore._main import run
+from packaging import version
 
-from esmvaltool._main import run
 
-
-def write_config_user_file(dirname):
+def write_config_file(dirname):
     config_file = dirname / 'config-user.yml'
     cfg = {
         'output_dir': str(dirname / 'output_dir'),
@@ -51,77 +53,44 @@ def check(result_file):
     assert not missing
 
 
-SCRIPTS = {
-    'diagnostic.py':
-    dedent("""
-        import yaml
-        from esmvaltool.diag_scripts.shared import run_diagnostic
-
-        def main(cfg):
-            with open(cfg['setting_name'], 'w') as file:
-                yaml.safe_dump(cfg, file)
-
-        if __name__ == '__main__':
-            with run_diagnostic() as config:
-                main(config)
-        """),
-    'diagnostic.ncl':
-    dedent("""
-        begin
-            print("INFO    Loading settings from " + getenv("settings"))
-            loadscript("$settings")
-        end
-        print("INFO Writing " + diag_script_info@setting_name)
-        n = str_get_nl()
-        result = "run_dir: " + config_user_info@run_dir + n +\
-                 "work_dir: " + config_user_info@work_dir + n +\
-                 "plot_dir: " + config_user_info@plot_dir + n +\
-                 "log_level: " + config_user_info@log_level + n +\
-                 "input_files: []" + n
-
-        system("echo '" + result + "' > " + diag_script_info@setting_name)
-        """),
-    'diagnostic.R':
-    dedent("""
-        library(yaml)
-
-        args <- commandArgs(trailingOnly = TRUE)
-        print(paste0("INFO    Loading settings from ", args[1]))
-        settings <- yaml::read_yaml(args[1])
-
-        print(paste0("INFO    Writing settings to ", settings$setting_name))
-        yaml::write_yaml(settings, settings$setting_name)
-        """),
-    'diagnostic.jl':
-    dedent("""
-        import YAML
-        @info "Starting diagnostic script with" ARGS
-        config_file = ARGS[1]
-        cfg = YAML.load_file(config_file)
-        out_file = cfg["setting_name"]
-        @info "Copying file to" out_file
-        Base.Filesystem.cp(config_file, out_file)
-        @info "Done"
-    """),
-}
+SCRIPTS = [
+    'diagnostic.py',
+    pytest.param('diagnostic.ncl',
+                 marks=pytest.mark.skipif(
+                     sys.platform == 'darwin',
+                     reason="ESMValTool ncl not supported on OSX")),
+    pytest.param('diagnostic.R',
+                 marks=pytest.mark.skipif(
+                     sys.platform == 'darwin',
+                     reason="ESMValTool R not supported on OSX")),
+    pytest.param('diagnostic.jl',
+                 marks=pytest.mark.skipif(
+                     sys.platform == 'darwin',
+                     reason="ESMValTool Julia not supported on OSX"))
+]
 
 
-@pytest.mark.install
-@pytest.mark.parametrize('script_file, script', SCRIPTS.items())
-def test_diagnostic_run(tmp_path, script_file, script):
+@pytest.mark.skipif(
+    version.parse(esmvalcore.__version__) >= version.parse("2.14.0"),
+    reason='ESMValCore >= v2.14.0',
+)
+@pytest.mark.installation
+@pytest.mark.parametrize('script_file', SCRIPTS)
+def test_diagnostic_run_config_file(tmp_path, script_file):
+    local_script_file = Path(__file__).parent / script_file
 
     recipe_file = tmp_path / 'recipe_test.yml'
     script_file = tmp_path / script_file
     result_file = tmp_path / 'result.yml'
 
-    # Write script to file
-    script_file.write_text(text_type(script))
+    shutil.copy(local_script_file, script_file)
 
     # Create recipe
     recipe = dedent("""
         documentation:
+          title: Test recipe
           description: Recipe with no data.
-          authors: [ande_bo]
+          authors: [andela_bouwe]
 
         diagnostics:
           diagnostic_name:
@@ -130,13 +99,60 @@ def test_diagnostic_run(tmp_path, script_file, script):
                 script: {}
                 setting_name: {}
         """.format(script_file, result_file))
-    recipe_file.write_text(text_type(recipe))
+    recipe_file.write_text(str(recipe))
 
-    config_user_file = write_config_user_file(tmp_path)
+    config_file = write_config_file(tmp_path)
     with arguments(
             'esmvaltool',
-            '-c',
-            config_user_file,
+            'run',
+            '--config_file',
+            config_file,
+            str(recipe_file),
+    ):
+        run()
+
+    check(result_file)
+
+
+@pytest.mark.skipif(
+    version.parse(esmvalcore.__version__) < version.parse("2.12.0"),
+    reason='ESMValCore < v2.12.0',
+)
+@pytest.mark.installation
+@pytest.mark.parametrize('script_file', SCRIPTS)
+def test_diagnostic_run(tmp_path, script_file):
+    local_script_file = Path(__file__).parent / script_file
+
+    recipe_file = tmp_path / 'recipe_test.yml'
+    script_file = tmp_path / script_file
+    result_file = tmp_path / 'result.yml'
+    config_dir = tmp_path / 'config'
+    config_dir.mkdir(exist_ok=True, parents=True)
+
+    shutil.copy(local_script_file, script_file)
+
+    # Create recipe
+    recipe = dedent("""
+        documentation:
+          title: Test recipe
+          description: Recipe with no data.
+          authors: [andela_bouwe]
+
+        diagnostics:
+          diagnostic_name:
+            scripts:
+              script_name:
+                script: {}
+                setting_name: {}
+        """.format(script_file, result_file))
+    recipe_file.write_text(str(recipe))
+
+    write_config_file(config_dir)
+    with arguments(
+            'esmvaltool',
+            'run',
+            '--config_dir',
+            str(config_dir),
             str(recipe_file),
     ):
         run()

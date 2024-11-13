@@ -1,0 +1,24 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: Kadow2020
+  version: '5.0.1.0'
+  tier: 2
+  modeling_realm: ground
+  project_id: OBS
+  source: 'http://users.met.fu-berlin.de/~ChristopherKadow/'
+  reference: 'kadow20natgeosc'
+  comment: |
+    'Temperature anomaly with respect to the period 1961-1990, 
+    ensemble mean, infilled by AI'
+
+filenames:
+  5.0.1.0:
+    'HadCRUT.5.0.1.0.anomalies.Kadow_et_al_2020_20crAI-infilled.ensemble_mean_185001-202012.nc'
+
+# Variables to cmorize
+variables:
+  tasa:
+    mip: Amon
+    raw: tas
+    raw_units: K

@@ -1,79 +1,34 @@
 """Lint tests."""
 import os
 import subprocess
+import sys
 import textwrap
+from pathlib import Path
 
-import pycodestyle  # formerly known as pep8
+import pytest
 
+import esmvaltool
 from esmvaltool.utils.nclcodestyle import nclcodestyle
-
-
-def test_pep8_conformance():
-    """Test that we conform to PEP-8."""
-    check_paths = [
-        'esmvaltool',
-        'tests',
-    ]
-    exclude_paths = [
-        'esmvaltool/doc', 'esmvaltool/diag_scripts/cvdp/cvdp',
-        'esmvaltool/cmor/tables'
-    ]
-
-    print("PEP8 check of directories: {}\n".format(', '.join(check_paths)))
-
-    # Get paths wrt package root
-    package_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    for paths in (check_paths, exclude_paths):
-        for i, path in enumerate(paths):
-            paths[i] = os.path.join(package_root, path)
-
-    style = pycodestyle.StyleGuide()
-    style.options.exclude.extend(exclude_paths)
-
-    success = style.check_files(check_paths).total_errors == 0
-
-    if not success:
-        print(
-            textwrap.dedent("""
-            Your Python code does not conform to the official Python style
-            guide (PEP8), see https://www.python.org/dev/peps/pep-0008
-
-            A list of warning and error messages can be found above,
-            prefixed with filename:line number:column number.
-
-            Run `yapf -i yourfile.py` to automatically fix most errors.
-            Run `yapf -d yourfile.py` to preview what would be changed.
-            Run `pip install --upgrade yapf` to install the latest version
-            of yapf.
-        """))
-
-    assert success, "Your code does not conform to PEP8"
 
 
 def test_nclcodestyle():
     """Test that NCL code is formatted according to our standards."""
+    package_root = Path(esmvaltool.__file__).absolute().parent
     check_paths = [
-        'esmvaltool',
-        'tests',
+        package_root,
     ]
+
+    print("Formatting check of NCL code in directories: {}\n".format(', '.join(
+        str(p) for p in check_paths)))
 
     exclude_paths = [
-        'esmvaltool/diag_scripts/cvdp/cvdp',
+        package_root / 'diag_scripts' / 'cvdp' / 'cvdp',
     ]
 
-    print("Formatting check of NCL code in directories: {}\n".format(
-        ', '.join(check_paths)))
-
-    # Get paths wrt package root
-    package_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    for paths in (check_paths, exclude_paths):
-        for i, path in enumerate(paths):
-            paths[i] = os.path.join(package_root, path)
-
     style = nclcodestyle.StyleGuide()
-    style.options.exclude.extend(exclude_paths)
+    style.options.exclude.extend(str(p) for p in exclude_paths)
 
-    success = style.check_files(check_paths).total_errors == 0
+    success = style.check_files(str(p) for p in check_paths).total_errors == 0
 
     if not success:
         print(
@@ -89,6 +44,9 @@ def test_nclcodestyle():
     assert success, "Your NCL code does not follow our formatting standards."
 
 
+@pytest.mark.installation
+@pytest.mark.skipif(sys.platform == 'darwin',
+                    reason="ESMValTool R not supported on OSX")
 def test_r_lint(monkeypatch):
     """Test R lint."""
     monkeypatch.setenv("LINTR_COMMENT_BOT", "FALSE")
@@ -109,5 +67,5 @@ def test_r_lint(monkeypatch):
         """))
         print(ex.output)
 
-    assert False,\
+    assert False, \
         'Your R code does not follow our formatting standards.'
