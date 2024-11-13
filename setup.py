@@ -250,8 +250,6 @@ setup(
             'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
             'test_recipe = '
             'esmvaltool.utils.testing.recipe_settings.install_expand_run:main',
-            'recipe_filler = '
-            'esmvaltool.utils.recipe_filler:run'
         ],
         'esmvaltool_commands': [
             'colortables = '
