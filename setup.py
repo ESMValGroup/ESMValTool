@@ -67,7 +67,7 @@ REQUIREMENTS = {
         'scikit-image',
         'scikit-learn>=1.4.0',  # github.com/ESMValGroup/ESMValTool/issues/3504
         'scipy',
-        'scitools-iris>=3.6.1',
+        'scitools-iris>=3.11',
         'seaborn',
         'seawater',
         'shapely>=2',
