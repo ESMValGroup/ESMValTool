@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - update_environment_Nov24
   schedule:
     - cron: '0 0 * * *'
 
