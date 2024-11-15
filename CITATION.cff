@@ -396,6 +396,11 @@ authors:
     family-names: Bonnet
     given-names: Pauline
     orcid: "https://orcid.org/0000-0003-3780-0784"
+  -
+    affiliation: "ACCESS-NRI, Australia"
+    family-names: Chun
+    given-names: Felicity
+    orcid: "https://orcid.org/0009-0007-0845-0953"
   - 
     affiliation: "MetOffice, UK"
     family-names: Munday
