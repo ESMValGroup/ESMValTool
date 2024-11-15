@@ -20,7 +20,6 @@ documentation:
   projects:
     - ukesm
 
-
 # datasets:
 # working datasets
 #  - {project: NEMO, dataset: GC3p1, suite: ar766, model: nemo, freq: 1y, grid: T, timerange: '185001/185112'}
@@ -39,6 +38,21 @@ preprocessors:
     climate_statistics:
       operator: mean
 
+#  prep_timeseries_2: # For specific levels of 3D fields
+#    custom_order: true
+#    extract_levels:
+#      levels: [0., 10., 100., 1000.]
+#      scheme: linear_extrapolate
+#    area_statistics:
+#      operator: mean
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean ]
+
+#  prep_depth_integration_1: # For a 2D map global profile
+#    depth_integration:
+#    climate_statistics:
+#      operator: mean
 
 diagnostics:
   # --------------------------------------------------
@@ -85,3 +99,25 @@ diagnostics:
         control_model: {project: NEMO, dataset: GC5}
         exper_model: {project: NEMO, dataset: GC3p1}
         observational_dataset: {project: OBS3, dataset: observation}
+
+  diag_map_3:
+    description: Global surface depth so
+    variables:
+      deptht:
+        preprocessor: prep_quad_map
+        mip: Omon
+        additional_datasets:
+          - {project: NEMO, dataset: GC5, suite: cp656, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
+          - {project: NEMO, dataset: GC3p1, suite: co957, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
+      deptht_obs:
+        mip: Omon
+        short_name: deptht
+        standard_name: sea_water_salinity
+        additional_datasets:
+          - {project: OBS3, dataset: deptht, suite: EN4_v1.1_depth, model: nemo, freq: annualmean, grid: T}
+    scripts:
+      Global_Ocean_map:  # &Global_Ocean_map depth
+        script: ocean/diagnostic_maps_quad_NEMO.py
+        control_model: {project: NEMO, dataset: GC5}
+        exper_model: {project: NEMO, dataset: GC3p1}
+        observational_dataset: {project: OBS3, dataset: deptht}
