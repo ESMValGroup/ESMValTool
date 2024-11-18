@@ -26,6 +26,7 @@ import cf_units
 import iris
 import numpy as np
 from dask import array as da
+from esmvalcore.cmor._fixes.common import OceanFixGrid
 from esmvalcore.cmor.table import CMOR_TABLES
 
 from ...utilities import save_variable
@@ -33,7 +34,7 @@ from ...utilities import save_variable
 logger = logging.getLogger(__name__)
 
 
-def _create_nan_cube(cube, year, month, day):
+def _create_nan_cube(cube, year, month, day, is_daily):
     """Create cube containing only nan from existing cube."""
     nan_cube = cube.copy()
     nan_cube.data = da.ma.masked_greater(cube.core_data(), -1e20)
@@ -42,10 +43,28 @@ def _create_nan_cube(cube, year, month, day):
     dataset_time_unit = str(nan_cube.coord('time').units)
     dataset_time_calender = nan_cube.coord('time').units.calendar
     # Convert datetime
-    newtime = datetime(year=year, month=month, day=day)
-    newtime = cf_units.date2num(newtime, dataset_time_unit,
-                                dataset_time_calender)
-    nan_cube.coord('time').points = float(newtime)
+    if (is_daily):
+        hrs = 12
+    else:
+        hrs = 0
+    newtime = datetime(year=year, month=month, day=day,
+        hour=hrs, minute=0, second=0, microsecond=0)
+    newtime_num = cf_units.date2num(newtime, dataset_time_unit,
+                                    dataset_time_calender)
+    nan_cube.coord('time').points = float(newtime_num)
+
+    # remove existing time bounds and create new bounds
+    coord = nan_cube.coord('time')
+    if (is_daily):
+        bnd1 = newtime + relativedelta.relativedelta(hours=-12)
+        bnd2 = bnd1 + relativedelta.relativedelta(days=1)
+    else:
+        bnd1 = newtime + relativedelta.relativedelta(days=-day + 1)
+        bnd2 = bnd1 + relativedelta.relativedelta(months=1)
+    coord.bounds = [cf_units.date2num(bnd1, dataset_time_unit,
+                                    dataset_time_calender),
+                    cf_units.date2num(bnd2, dataset_time_unit,
+                                    dataset_time_calender)]
 
     return nan_cube
 
@@ -53,6 +72,7 @@ def _create_nan_cube(cube, year, month, day):
 def _fix_coordinates(cube, definition):
     """Fix coordinates."""
     axis2def = {'T': 'time', 'X': 'longitude', 'Y': 'latitude'}
+#    axes = ['T', 'X', 'Y']
     axes = ['T', 'X', 'Y']
 
     for axis in axes:
@@ -73,7 +93,7 @@ def _fix_coordinates(cube, definition):
     return cube
 
 
-def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0):
+def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0, region):
     logger.info("CMORizing variable '%s' from input files '%s'",
                 var['short_name'], ', '.join(in_files))
     attributes = deepcopy(cfg['attributes'])
@@ -85,6 +105,12 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0):
     # load all input files (1 year) into 1 cube
     # --> drop attributes that differ among input files
     cube_list = iris.load(in_files, var['raw'])
+    
+    # remove ancillary variables
+    for cube in cube_list:
+        for ancillary_variable in cube.ancillary_variables():
+            cube.remove_ancillary_variable(ancillary_variable.standard_name)
+
     # (global) attributes to remove
     drop_attrs = ['tracking_id', 'id', 'time_coverage_start',
                   'time_coverage_end', 'date_created',
@@ -139,7 +165,8 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0):
     for cube in new_list:
         timecoord = cube.coord('time')
         cubetime = timecoord.units.num2date(timecoord.points)
-        time_list.append(cubetime)
+        ctnew = cubetime[0].replace(hour=0, minute=0, second=0, microsecond=0)
+        time_list.append(ctnew)
 
     # create cube list for every day/month of the year by adding
     # cubes containing only nan to fill possible gaps
@@ -155,9 +182,11 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0):
             if date_available:
                 full_list.append(new_list[idx])
             else:
-                logger.debug("No data available for %d", loop_date)
+                logger.debug("No data available for %d/%d/%d", loop_date.month,
+                   loop_date.day, loop_date.year)
                 nan_cube = _create_nan_cube(new_list[0], loop_date.year,
-                                            loop_date.month, loop_date.day)
+                                            loop_date.month, loop_date.day,
+                                            is_daily)
                 full_list.append(nan_cube)
             loop_date += relativedelta.relativedelta(days=1)
     else:
@@ -171,19 +200,13 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0):
             if date_available:
                 full_list.append(new_list[idx])
             else:
-                logger.debug("No data available for %d", loop_date)
+                logger.debug("No data available for %d/%d", loop_date.month,
+                    loop_date.year)
                 nan_cube = _create_nan_cube(new_list[0], loop_date.year,
-                                            loop_date.month, loop_date.day)
+                                            loop_date.month, loop_date.day,
+                                            is_daily)
                 full_list.append(nan_cube)
             loop_date += relativedelta.relativedelta(months=1)
-
-    print("==============================================")
-    print(full_list)
-    print("==============================================")
-    for cub in full_list:
-        print(cube.coord('time'))
-        print("------------------------------------------")
-    print("==============================================")
 
     iris.util.unify_time_units(full_list)
     cube = full_list.concatenate_cube()
@@ -198,29 +221,23 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0):
     # Fix units
     cube.units = definition.units
 
-#    # Fix data type
-#    cube.data = cube.core_data().astype('float32')
-
-#    # Roll longitude
-#    cube.coord('longitude').points = cube.coord('longitude').points + 180.
-#    nlon = len(cube.coord('longitude').points)
-#    cube.data = da.roll(cube.core_data(), int(nlon / 2), axis=-1)
-#    cube.attributes.update({"geospatial_lon_min": "0",
-#                            "geospatial_lon_max": "360"})
+    # Fix ocean-type grid (2-dim lat + lon)
+    fixcube = OceanFixGrid(definition)
+    cube = fixcube.fix_metadata(cubes=[cube])[0]
 
     # Fix coordinates
-    cube = _fix_coordinates(cube, definition)
-    cube.coord('latitude').attributes = None
-    cube.coord('longitude').attributes = None
+#    cube = _fix_coordinates(cube, definition)
+#    cube.coord('latitude').attributes = None
+#    cube.coord('longitude').attributes = None
+
+    # Fix data type
+    cube.data = cube.core_data().astype('float32')
 
     # Save results
     logger.debug("Saving cube\n%s", cube)
     logger.debug("Setting time dimension to UNLIMITED while saving!")
     version = attributes['version']
-    if is_daily:
-        attributes['version'] = f'{version}-DAILY'
-    else:
-        attributes['version'] = f'{version}-MONTHLY'
+    attributes['version'] = f'{version}-{region}'
     save_variable(cube, cube.var_name,
                   out_dir, attributes,
                   unlimited_dimensions=['time'])
@@ -266,6 +283,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     logger.info('%d: no data not found for '
                                 'variable %s', loop_date.year, short_name)
                 else:
-                    _extract_variable(in_files, var, cfg, out_dir, daily, loop_date.year)
+                    _extract_variable(in_files, var, cfg, out_dir, daily,
+                                      loop_date.year, region)
 
                 loop_date += relativedelta.relativedelta(years=1)
