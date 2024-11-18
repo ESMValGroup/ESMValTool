@@ -148,8 +148,6 @@ def _create_plot(
         plot_func_str,
         _get_str_from_kwargs(plot_kwargs),
     )
-    if plot_func_str in ['jointplot']:
-        data_frame = data_frame.reset_index()
                 
     plot_obj = plot_func(data=data_frame, **plot_kwargs)
 
@@ -449,7 +447,7 @@ def _set_legend_title(plot_obj, legend_title: str) -> None:
         legend = plot_obj.get_legend()
     elif hasattr(plot_obj, 'legend'):  # FacetGrid, PairGrid
         legend = plot_obj.legend
-    elif isinstance(plot_obj, sns.axisgrid.JointGrid):  # JointGrid workaround
+    elif isinstance(plot_obj, sns.axisgrid.JointGrid):  # JointGrid
         # Manually create a legend if needed in JointGrid
         handles, labels = plot_obj.ax_joint.get_legend_handles_labels()
         if handles and labels:

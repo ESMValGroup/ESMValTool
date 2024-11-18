@@ -160,6 +160,7 @@ diagnostics:
           marker: .
           hue: dataset
         add_aux_coords: true
+        reset_index: true
         legend_title: Model
         plot_object_methods:
           set_axis_labels: 
@@ -197,6 +198,7 @@ diagnostics:
           marker: .
           hue: dataset
         add_aux_coords: true
+        reset_index: true
         legend_title: Model
         plot_object_methods:
           set_axis_labels: 
