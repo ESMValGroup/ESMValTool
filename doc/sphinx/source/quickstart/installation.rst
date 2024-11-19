@@ -72,15 +72,15 @@ https://mamba.readthedocs.io/en/latest/installation.html.
     installation.
 
 First download the installation file for
-`Linux <https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh>`_
+`Linux <https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh>`_
 or
-`MacOSX <https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-MacOSX-x86_64.sh>`_.
+`MacOSX <https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-x86_64.sh>`_.
 After downloading the installation file from one of the links above, execute it
 by running (Linux example):
 
 .. code-block:: bash
 
-    bash Mambaforge-Linux-x86_64.sh
+    bash Miniforge3-Linux-x86_64.sh
 
 and follow the instructions on your screen.
 
@@ -99,7 +99,7 @@ later by running:
     source <prefix>/etc/profile.d/conda.sh
 
 where ``<prefix>`` is the installation location of mamba (e.g.
-``/home/$USER/mambaforge`` if you chose the default installation path).
+``/home/$USER/miniforge3`` if you chose the default installation path).
 
 If you use another shell than Bash, have a look at the available configurations
 in the ``<prefix>/etc/profile.d`` directory.
@@ -111,7 +111,7 @@ You can check that mamba installed correctly by running
     which mamba
 
 this should show the path to your mamba executable, e.g.
-``~/mambaforge/bin/mamba``.
+``~/miniforge3/bin/mamba``.
 
 It is recommended to update both mamba and conda after installing:
 
@@ -489,7 +489,7 @@ To check that the installation was successful, run
 this should show the directory of the source code that you just downloaded.
 
 If the command above shows a directory inside your conda environment instead,
-e.g. ``~/mambaforge/envs/esmvaltool/lib/python3.11/site-packages/esmvalcore``,
+e.g. ``~/miniforge3/envs/esmvaltool/lib/python3.11/site-packages/esmvalcore``,
 you may need to manually remove that directory and run
 ``pip install --editable '.[develop]'`` again.
 
