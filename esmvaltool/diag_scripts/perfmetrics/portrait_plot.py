@@ -124,8 +124,23 @@ from esmvaltool.diag_scripts.shared import (
 log = logging.getLogger(__name__)
 
 
+def get_provenance(cfg):
+    # TODO: should we collect references and list them in the caption somehow?
+    return {
+        'ancestors': list(cfg["input_data"].keys()),
+        'authors': ["lindenlaub_lukas", "cammarano_diego"],
+        'caption': 'RMSE performance metric',
+        'domains': [cfg.get('domain', 'global')],
+        'plot_types': ['portrait'],
+        'references': [
+            'gleckler08jgr',
+        ],
+        'statistics': ['rmsd'],
+    }
+
+
 def unify_limits(grid):
-    """Set same limits for all subplots."""
+    """Ensure same limits for all subplots."""
     vmin, vmax = np.inf, -np.inf
     images = [ax.get_images()[0] for ax in grid]
     for img in images:
@@ -153,17 +168,14 @@ def plot_matrix(data, row_labels, col_labels, axe, plot_kwargs):
     # ax.spines[:].set_visible(False)
     axe.set_xticks(np.arange(data.shape[1] + 1) - 0.5, minor=True)
     axe.set_yticks(np.arange(data.shape[0] + 1) - 0.5, minor=True)
-    axe.grid(which="minor", color="black", linestyle="-", linewidth=1)
+    axe.grid(which="minor", color="black", linestyle="-", linewidth=0.8)
     axe.tick_params(which="both", bottom=False, left=False)
     return img
 
 
 def remove_reference(metas):
-    """Remove reference for metric from list of metadata.
-
-    NOTE: list() creates a copy with same references to allow removing in place
-    """
-    for meta in list(metas):
+    """Remove reference for metric from list of metadata."""
+    for meta in list(metas):  # list() creates a copy to allow remove in place
         if meta.get("reference_for_metric", False):
             metas.remove(meta)
 
@@ -190,7 +202,11 @@ def open_file(metadata, **selection):
     log.debug("Metadata found for %s", selection)
     das = xr.open_dataset(metas[0]["filename"])
     varname = list(das.data_vars.keys())[0]
-    return das[varname].values.item()
+    try:
+        return das[varname].values.item()
+    except ValueError:
+        msg = f"Expected scalar in input file {metas[0]['filename']}."
+        raise ValueError(msg)
     # iris.load_cube(metas[0]["filename"]).data
 
 
@@ -215,11 +231,11 @@ def load_data(cfg, metas):
     for coord_tuple in itertools.product(*coords.values()):
         selection = dict(zip(coords.keys(), coord_tuple))
         data['var'].loc[selection] = open_file(metas, **selection)
-        # data[coord_tuple] = (list(coords.keys(), value))
     if None in data.coords[cfg["split_by"]].values:
-        cfg.update({"default_split": None})
+        cfg.setdefault({"default_split": None})
     else:
-        cfg.update({"default_split": data.coords[cfg["split_by"]].values[0]})
+        cfg.setdefault(
+            {"default_split": data.coords[cfg["split_by"]].values[0]})
     log.debug("using %s as default split", cfg["default_split"])
     log.debug("Loaded Data:")
     log.debug(data)
@@ -371,20 +387,7 @@ def plot(cfg, data):
     sets same color range and  overlays additional references based on
     the content of data (xr.DataArray)
     """
-    # Save the dataset to NetCDF before plotting
-    # TODO: should we collect references and list them in the caption somehow?
-    provenance = {
-        'ancestors': list(cfg["input_data"].keys()),
-        'authors': ["cammarano_diego", "lindenlaub_lukas"],
-        'caption': 'RMSE performance metric',
-        'domains': [cfg.get('domain', 'global')],
-        'plot_types': ['portrait'],
-        'references': [
-            'gleckler08jgr',
-        ],
-        'statistics': ['rmsd'],
-    }
-    save_to_netcdf(cfg, data, provenance)
+    save_to_netcdf(cfg, data)
 
     fig = plt.figure(1, cfg.get("figsize", (5.5, 3.5)))
     group_count = len(data.coords[cfg["group_by"]])
@@ -417,12 +420,10 @@ def plot(cfg, data):
     if cfg["plot_legend"] and data.shape[3] > 1:
         split_legend(cfg, grid, data)
     basename = "portrait_plot"
-    print("save prov")
     fname = get_plot_filename(basename, cfg)
-    print(fname)
     plt.savefig(fname, bbox_inches="tight", dpi=cfg["dpi"])
     with ProvenanceLogger(cfg) as prov_logger:
-        prov_logger.log(fname, provenance)
+        prov_logger.log(fname, get_provenance(cfg))
     log.info("Figure saved:")
     log.info(fname)
 
@@ -497,12 +498,6 @@ def set_defaults(cfg):
 def sort_data(cfg, dataset):
     """Sort the dataset along by custom or alphabetical order."""
     # TODO: decide on (default) strategies and options.
-    # custom order: dsimport xarray as xr
-    # import pandas as pd
-    # order = ['value3', 'value1', 'value2']  # replace by custom order
-    # ds[cfg['y_by']] = pd.Categorical(ds[cfg['y_by']], categories=order,
-    #     ordered=True)
-    # ds = ds.sortby('y_by')
     # sort alphabetically (caseinsensitive)
     dataset = dataset.sortby([
         dataset[cfg["x_by"]].str.lower(), dataset[cfg["y_by"]].str.lower(),
@@ -514,7 +509,7 @@ def sort_data(cfg, dataset):
     #     dataset = dataset.reindex({cfg["x_by"]: cfg["x_order"]})
     # move MMM to begin:
     if cfg["x_by"] in ["alias", "dataset"]:
-        # TODO: not clean, but it works for many cases
+        # NOTE: not clean, but it works for many cases
         mm_stats = [
             v for v in dataset[cfg["x_by"]].values
             if "Mean" in v or "Median" in v
@@ -529,16 +524,16 @@ def sort_data(cfg, dataset):
     return dataset
 
 
-def save_to_netcdf(cfg, data, provenance):
+def save_to_netcdf(cfg, data):
     """Save the final dataset to a NetCDF file."""
     # Define the output filename for the NetCDF file
-    basename = "performance_metrics"
+    basename = "portrait"
     fname = get_diagnostic_filename(basename, cfg, extension='nc')
     data.to_netcdf(fname)
     log.info("NetCDF file saved:")
     log.info(fname)
     with ProvenanceLogger(cfg) as prov_logger:
-        prov_logger.log(fname, provenance)
+        prov_logger.log(fname, get_provenance(cfg))
 
 
 def main(cfg):
