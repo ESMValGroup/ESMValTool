@@ -168,8 +168,13 @@ html_theme = 'pydata_sphinx_theme'
 # `conf.py` file.Be aware that `navigation_with_keys = True` has negative
 # accessibility implications:
 # https://github.com/pydata/pydata-sphinx-theme/issues/1492"
-html_theme_options = {"navigation_with_keys": False}
-
+html_theme_options = {
+    "navigation_with_keys": False,
+    "logo": {
+        "image_light": "figures/ESMValTool-logo-2.png",
+        "image_dark": "figures/ESMValTool-logo-2-dark.png",
+    },
+}
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
 
@@ -192,7 +197,7 @@ html_logo = 'figures/ESMValTool-logo-2.png'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
+html_static_path = ["figures/ESMValTool-logo-2-dark.png"]
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
