@@ -100,12 +100,15 @@ def calculate_model_distances(
 
 
 def compute_overall_mean(dataset: 'xr.Dataset',
-                         weights: dict) -> 'xr.DataArray':
+                         weights: dict, normalize=True) -> 'xr.DataArray':
     """Normalize all variables in a dataset and return their weighted mean.
 
     Relative weights for each variable group are passed via the recipe.
     """
-    normalized = dataset / dataset.median()
+    normalized = dataset
+
+    if normalize: 
+        normalized = dataset / dataset.median()
 
     weights_selected = xr.DataArray(
         [weights[variable_group] for variable_group in dataset],
@@ -242,7 +245,10 @@ def calculate_weights(
         output_core_dims=[['model_ensemble']],
         vectorize=True,
     )
-
+    print("sigma")
+    print(performance_sigma)
+    print("weights")
+    print(weights)
     weights.name = 'weight'
     weights.attrs['variable_group'] = 'weight'  # used in barplot
     weights.attrs['units'] = '1'

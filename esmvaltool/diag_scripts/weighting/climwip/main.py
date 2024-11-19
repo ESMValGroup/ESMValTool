@@ -34,6 +34,14 @@ from esmvaltool.diag_scripts.weighting.climwip.io_functions import (
     read_observation_data_ancestor,
 )
 
+from esmvaltool.diag_scripts.shared import (
+    get_diagnostic_filename,
+    get_plot_filename,
+    run_diagnostic,
+)
+import pylab
+import scienceplots
+plt.style.use(['science','nature'])
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -107,31 +115,49 @@ def calculate_performance(model_data: 'xr.DataArray',
     return performance
 
 
-def barplot(metric: 'xr.DataArray', label: str, filename: str):
+def barplot(metric: 'xr.DataArray', label: str, filename: str, cfg: dict):
     """Visualize metric as barplot."""
     name = metric.name
     variable_group = metric.variable_group
     units = metric.units
 
     metric_df = metric.to_dataframe().reset_index()
-
+    metric_df[['model','ensemble','run']] = metric_df['model_ensemble'].str.split('_',expand=True)
+    if variable_group == "weight":
+        metric_df = metric_df.groupby(["model"])[name].sum().to_frame()
+    else:
+        metric_df = metric_df.groupby(["model"])[name].mean().to_frame()
     ylabel = f'{label} {variable_group} ({units})'
 
     figure, axes = plt.subplots(figsize=(15, 10))
-    chart = sns.barplot(x='model_ensemble',
+    chart = sns.barplot(x='model',
                         y=name,
                         data=metric_df,
                         ax=axes,
                         color="blue")
-    chart.set_xticklabels(chart.get_xticklabels(),
+    xticks_labels = chart.get_xticklabels()
+    chart.set_xticklabels(xticks_labels,
                           rotation=45,
                           horizontalalignment='right')
     if variable_group == 'weight':
-        chart.set_title('Performance weights')
+        params = {'legend.fontsize': 'small',
+        'axes.labelsize': 'large',
+        'axes.titlesize':'x-large',
+        'xtick.labelsize':'large',
+        'ytick.labelsize':'large'}
+        pylab.rcParams.update(params)
+        ref = cfg["reference"]
+        chart.set_title(f'Model weights ({ref} used as reference)')
     else:
         chart.set_title(f'{label} for {variable_group}')
-    chart.set_ylabel(ylabel)
+
+    if variable_group == 'weight':
+        chart.set_ylabel("Weight value")
+    else:
+        chart.set_ylabel(ylabel)
+
     chart.set_xlabel('')
+    chart.grid(True, which='major', color='darkgrey', linestyle='--', linewidth=0.7, axis="y")
 
     figure.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close(figure)
@@ -145,7 +171,7 @@ def visualize_and_save_performance(performance: 'xr.DataArray', cfg: dict,
     variable_group = performance.variable_group
     filename_plot = get_plot_filename(f'performance_{variable_group}', cfg)
 
-    barplot(performance, label, filename_plot)
+    barplot(performance, label, filename_plot, cfg)
 
     filename_data = get_diagnostic_filename(f'performance_{variable_group}',
                                             cfg,
@@ -183,7 +209,7 @@ def visualize_and_save_weights(weights: 'xr.DataArray', cfg: dict,
 
     filename_plot = get_plot_filename('weights', cfg)
 
-    barplot(weights, label, filename_plot)
+    barplot(weights, label, filename_plot, cfg)
 
     filename_data = get_diagnostic_filename('weights', cfg, extension='nc')
     weights.to_netcdf(filename_data)
@@ -206,6 +232,21 @@ def parse_contributions_sigma(metric: str, cfg: dict) -> dict:
     sigma = cfg.get(f'{metric}_sigma')
     return contributions, sigma
 
+def min_max_scale(da: xr.Dataset):
+    try:
+        mask = da.coords["model_ensemble"] != da.coords["model_ensemble_reference"]
+    except Exception as e:
+        mask = True
+    
+    off_diag_vals = da.where(mask)
+    
+    min_val = off_diag_vals.min()
+    max_val = off_diag_vals.max()
+
+    scaled_off_diag = (off_diag_vals - min_val) / (max_val - min_val)
+    med_val = scaled_off_diag.median()
+
+    return xr.where(mask, scaled_off_diag, da), min_val, max_val, med_val
 
 def main(cfg):
     """Perform climwip weighting method."""
@@ -230,7 +271,6 @@ def main(cfg):
 
     performances = {}
     independences = {}
-
     for variable_group in independence_contributions:
 
         logger.info('Reading model data for %s', variable_group)
@@ -242,7 +282,15 @@ def main(cfg):
             model_data, model_data_files = read_model_data(datasets_model)
 
         logger.info('Calculating independence for %s', variable_group)
-        independence = calculate_model_distances(model_data)
+        
+        if "distancefile" in cfg:
+            independence= xr.open_dataarray(cfg["distancefile"])
+        else:
+            independence = calculate_model_distances(model_data)
+        #Intersection of models
+        common_values = set(model_data['model_ensemble'].values) & set(independence['model_ensemble'].values)
+        independence = independence.sel(model_ensemble=list(common_values))
+        independence = independence.sel(model_ensemble_reference=list(common_values))
         visualize_and_save_independence(independence, cfg, model_data_files)
         logger.debug(independence.values)
         independences[variable_group] = independence
@@ -269,7 +317,14 @@ def main(cfg):
         obs_data = aggregate_obs_data(obs_data, operator='median')
 
         logger.info('Calculating performance for %s', variable_group)
-        performance = calculate_performance(model_data, obs_data)
+        if "performancefile" in cfg:
+            performance= xr.open_dataarray(cfg["performancefile"])
+        else:
+            performance = calculate_performance(model_data, obs_data)
+        #Intersection of  models
+        common_values = set(model_data['model_ensemble'].values) & set(performance['model_ensemble'].values)
+        model_data = model_data.sel(model_ensemble=list(common_values))
+        performance = performance.sel(model_ensemble=list(common_values))
         visualize_and_save_performance(performance, cfg,
                                        model_data_files + obs_data_files)
         logger.debug(performance.values)
@@ -283,8 +338,9 @@ def main(cfg):
     if independence_contributions:
         logger.info('Computing overall mean independence')
         independence = xr.Dataset(independences)
+        #independence, min_, max_, med_ = min_max_scale(independence)
         overall_independence = compute_overall_mean(
-            independence, independence_contributions)
+            independence, independence_contributions,normalize=True)
         visualize_and_save_independence(overall_independence, cfg,
                                         model_ancestors)
         if independence_sigma is None:
@@ -295,9 +351,11 @@ def main(cfg):
 
     if performance_contributions:
         logger.info('Computing overall mean performance')
+        #performance = (xr.Dataset(performances) - min_)/ (max_- min_)
+        #performance, min_, max_, med_ = min_max_scale(xr.Dataset(performances))
         performance = xr.Dataset(performances)
         overall_performance = compute_overall_mean(performance,
-                                                   performance_contributions)
+                                                   performance_contributions,normalize=True)
         visualize_and_save_performance(overall_performance, cfg,
                                        model_ancestors + obs_ancestors)
         if performance_sigma is None:

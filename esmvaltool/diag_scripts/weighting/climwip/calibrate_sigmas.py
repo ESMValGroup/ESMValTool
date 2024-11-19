@@ -151,7 +151,7 @@ def compute_cost_function(target: 'xr.DataArray',
         selected on the fly and used in the computation of weights.
     """
     percentiles = PERCENTILES
-    inside_ratio_reference = percentiles[1] - percentiles[0]
+    inside_ratio_reference = percentiles[1] - percentiles[0] - 0.1
 
     # calculate the equally weighted case once as baseline
     if len(confidence_test_values['baseline']) == 0:
@@ -284,7 +284,7 @@ def visualize_save_calibration(performance_sigma, cfg, success):
     axes.plot(sigmas,
               sharpness.mean('perfect_model_ensemble'),
               color='lightgray',
-              label='Spread relative to unweighted (mean & 80% range)')
+              label=r'Spread relative to unweighted (mean \& 80$\%$ range)')
     axes.fill_between(sigmas,
                       *sharpness.quantile((.1, .9), 'perfect_model_ensemble'),
                       facecolor='lightgray',
@@ -333,8 +333,12 @@ def calibrate_performance_sigma(performance_contributions: list,
             model_data, _ = read_model_data(datasets_model)
 
         logger.info('Calculating performance for %s', variable_group)
-        performance_matrix = calculate_model_distances(
-            model_data, 'perfect_model_ensemble')
+
+        if "distancefile" in cfg:
+            performance_matrix = xr.open_dataarray(cfg["distancefile"])
+            performance_matrix = performance_matrix.rename({'model_ensemble_reference': 'perfect_model_ensemble'})
+        else:
+            performance_matrix = calculate_model_distances(model_data, 'perfect_model_ensemble')
         logger.debug(performance_matrix.values)
         performances_matrix[variable_group] = performance_matrix
 
@@ -348,10 +352,19 @@ def calibrate_performance_sigma(performance_contributions: list,
     if settings.get('target_ref') is not None:
         target_ref = models[settings['target_ref']]
         target_ref_data, _ = read_model_data(target_ref)
-        target_data -= target_ref_data
+        target_data = target_data - target_ref_data
 
     target_data = area_weighted_mean(target_data)
 
+    common_values = set(target_data['model_ensemble'].values) & set(overall_performance['model_ensemble'].values)
+    print(common_values)
+    # Filter datasets
+    target_data = target_data.sel(model_ensemble=list(common_values))
+    overall_independence = overall_independence.sel(model_ensemble=list(common_values))
+    overall_independence = overall_independence.sel(model_ensemble_reference=list(common_values))
+    overall_performance = overall_performance.sel(model_ensemble=list(common_values))
+    overall_performance = overall_performance.sel(perfect_model_ensemble=list(common_values))
+    
     if cfg['combine_ensemble_members']:
         overall_independence, _ = combine_ensemble_members(
             overall_independence,
@@ -359,11 +372,11 @@ def calibrate_performance_sigma(performance_contributions: list,
         overall_performance, _ = combine_ensemble_members(
             overall_performance, ['model_ensemble', 'perfect_model_ensemble'])
         target_data, _ = combine_ensemble_members(target_data)
-
+    
     performance_sigma, fval, _, _ = brute(
         evaluate_target,
         ranges=(SIGMA_RANGE, ),
-        Ns=100,
+        Ns=190,
         finish=None,
         args=(overall_performance, target_data, overall_independence,
               independence_sigma),

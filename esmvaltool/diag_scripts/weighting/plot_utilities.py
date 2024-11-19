@@ -41,7 +41,7 @@ def calculate_percentiles(data: 'xr.DataArray',
     If `weights` is not specified, the non-weighted percentiles are calculated.
 
     Returns a DataArray with 'percentiles' as the dimension.
-    """
+    """    
     if weights is not None:
         weights = weights.sel(model_ensemble=data.model_ensemble)
 

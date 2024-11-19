@@ -10,6 +10,9 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
+from climwip.io_functions import log_provenance, read_model_data
+import scienceplots
+plt.style.use(['science','nature'])
 
 from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
@@ -105,11 +108,11 @@ def visualize_and_save_temperatures(temperature: 'xr.DataArray',
 
     start_year = cfg['settings']['start_year']
     end_year = cfg['settings']['end_year']
-    caption = f'Temperature anomaly relative to {start_year}-{end_year}'
+    caption = cfg['title']#f'Precipitation anomaly relative to {start_year}-{end_year}'
     plt.title(caption)
     plt.xlabel('Year')
-    plt.ylabel(r'Temperature anomaly $\degree$C')
-
+    #plt.ylabel(r'Precipitation anomaly kg.m$^{-2}$.s$^{-1}$')
+    plt.ylabel(cfg['ylabel'])
     filename_plot = get_plot_filename('temperature_anomaly_graph', cfg)
     figure.savefig(filename_plot, dpi=300, bbox_inches='tight')
     plt.close(figure)
@@ -130,7 +133,7 @@ def main(cfg):
     weights_path = Path(input_files[0]) / filename
     weights = read_weights(weights_path)
 
-    models = read_metadata(cfg, 'short_name')['tas']
+    models = read_metadata(cfg, 'short_name')['pr']
     model_data, model_data_files = read_model_data(models)
 
     settings = cfg['settings']
@@ -164,7 +167,7 @@ def main(cfg):
         percentiles,
         weights=weights,
     )
-
+    
     visualize_and_save_temperatures(
         model_data,
         central_estimate,
@@ -174,7 +177,15 @@ def main(cfg):
         cfg,
         model_data_files,
     )
+    print("Range")
+    print(uncertainty_range.time[-10:])
+    print(uncertainty_range[-10:, 0])
+    print(uncertainty_range[-10:, 1])
 
+    print("\n Weighted range")
+    print(uncertainty_range_weighted.time[-10:])
+    print(uncertainty_range_weighted[-10:, 0])
+    print(uncertainty_range_weighted[-10:, 1])
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
