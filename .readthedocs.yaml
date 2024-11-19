@@ -13,8 +13,18 @@ build:
     # DO NOT use mambaforge-*; that is currently sunsetted
     python: "miniconda-latest"
   jobs:
+    post_checkout:
+      # The ESMValTool repository is shallow i.e., has a .git/shallow,
+      # therefore complete the repository with a full history in order
+      # to allow setuptools-scm to correctly auto-discover the version.
+      - git fetch --unshallow
+      - git fetch --all
+    pre_install:
+      - git stash
     post_create_environment:
       - conda run -n ${CONDA_DEFAULT_ENV} pip install . --no-deps
+    post_install:
+      - git stash pop
 
 # Declare the requirements required to build your docs
 conda:
