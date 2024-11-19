@@ -125,7 +125,7 @@ log = logging.getLogger(__name__)
 
 
 def get_provenance(cfg):
-    """Return default provenance for this diagnostic."""
+    """Return provenance for this diagnostic."""
     return {
         'ancestors': list(cfg["input_data"].keys()),
         'authors': ["lindenlaub_lukas", "cammarano_diego"],
