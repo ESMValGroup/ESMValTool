@@ -43,7 +43,7 @@ jobs:
           use-mamba: true
           conda-remove-defaults: "true"
 
-      - name: Install Rose and Cylc
+      - name: Install Cylc and Rose
         run: conda install cylc-flow>=8.2 cylc-rose metomi-rose
 
       - name: Validate Cylc workflow
