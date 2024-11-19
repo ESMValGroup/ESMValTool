@@ -232,10 +232,9 @@ def load_data(cfg, metas):
         selection = dict(zip(coords.keys(), coord_tuple))
         data['var'].loc[selection] = open_file(metas, **selection)
     if None in data.coords[cfg["split_by"]].values:
-        cfg.setdefault({"default_split": None})
+        cfg.setdefault("default_split", None)
     else:
-        cfg.setdefault(
-            {"default_split": data.coords[cfg["split_by"]].values[0]})
+        cfg.setdefault("default_split", data.coords[cfg["split_by"]].values[0])
     log.debug("using %s as default split", cfg["default_split"])
     log.debug("Loaded Data:")
     log.debug(data)
