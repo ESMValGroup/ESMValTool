@@ -125,7 +125,7 @@ log = logging.getLogger(__name__)
 
 
 def get_provenance(cfg):
-    # TODO: should we collect references and list them in the caption somehow?
+    """Default provenance for this diagnostic."""
     return {
         'ancestors': list(cfg["input_data"].keys()),
         'authors': ["lindenlaub_lukas", "cammarano_diego"],
@@ -204,9 +204,9 @@ def open_file(metadata, **selection):
     varname = list(das.data_vars.keys())[0]
     try:
         return das[varname].values.item()
-    except ValueError:
+    except ValueError as exc:
         msg = f"Expected scalar in input file {metas[0]['filename']}."
-        raise ValueError(msg)
+        raise ValueError(msg) from exc
     # iris.load_cube(metas[0]["filename"]).data
 
 
@@ -281,9 +281,9 @@ def split_legend(cfg, grid, data):
         axes["twiny"].set_xlabel,  # top
     ]
     for i, label in enumerate(data.coords[cfg["split_by"]].values):
+        nodes = get_triangle_nodes(i, len(data.coords[cfg["split_by"]].values))
         axes["main"].add_patch(
-            patches.Polygon(get_triangle_nodes(
-                i, len(data.coords[cfg["split_by"]].values)),
+            patches.Polygon(nodes,
                             closed=True,
                             facecolor=["#bbb", "#ccc", "#ddd", "#eee"][i],
                             edgecolor="black",
@@ -519,7 +519,6 @@ def sort_data(cfg, dataset):
         ]
         new_order = mm_stats + others
         dataset = dataset.reindex({cfg["x_by"]: new_order})
-    dataset[cfg["x_by"]]
     return dataset
 
 
