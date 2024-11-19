@@ -6,7 +6,7 @@ on:
   # Triggers the workflow on push events
   push:
     paths:
-      - esmvaltool/utils/recipe_test_workflow/**
+#      - esmvaltool/utils/recipe_test_workflow/**
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -41,6 +41,9 @@ jobs:
           miniforge-version: "latest"
           miniforge-variant: Mambaforge
           use-mamba: true
+
+      - name: Install Rose and Cylc
+        run: conda install cylc-flow>=8.2 cylc-rose metomi-rose
 
       - name: Validate Cylc workflow
         run: |
