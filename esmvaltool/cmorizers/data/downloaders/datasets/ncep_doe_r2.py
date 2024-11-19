@@ -48,3 +48,11 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                              wget_options=[])
     downloader.download_file(url + "surface/pr_wtr.eatm.mon.mean.nc",
                              wget_options=[])
+    downloader.download_file(url + "gaussian_grid/prate.sfc.mon.mean.nc",
+                             wget_options=[])
+    downloader.download_file(url + "gaussian_grid/uflx.sfc.mon.mean.nc",
+                             wget_options=[])
+    downloader.download_file(url + "gaussian_grid/vflx.sfc.mon.mean.nc",
+                             wget_options=[])
+    downloader.download_file(url + "gaussian_grid/skt.sfc.mon.mean.nc",
+                             wget_options=[])

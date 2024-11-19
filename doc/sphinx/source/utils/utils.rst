@@ -135,10 +135,11 @@ This suite is configured to work with versions of cylc older than 8.0.0 .
 To prepare for using this tool:
 
 #. Log in to a system that uses `slurm <https://slurm.schedmd.com/quickstart.html>`_
-#. Make sure the required CMIP and observational datasets are available and configured in config-user.yml
+#. Make sure the required CMIP and observational datasets are available and
+   their ``rootpath`` and ``drs`` is properly set up in the :ref:`configuration
+   <esmvalcore:config_options>`
 #. Make sure the required auxiliary data is available (see :ref:`recipe documentation <recipes>`)
 #. Install ESMValTool
-#. Update config-user.yml so it points to the right data locations
 
 Next, get started with `cylc <https://cylc.github.io/cylc-doc/7.9.3/html/index.html>`_:
 
@@ -151,67 +152,6 @@ Next, get started with `cylc <https://cylc.github.io/cylc-doc/7.9.3/html/index.h
 #. Stop the cylc run once everything is done ``cylc stop run-esmvaltool-recipes``.
 
 To generate an overview page of the recipe runs, use the ``summarize.py`` :ref:`utility script <overview_page>`.
-
-Using Rose and cylc
--------------------
-It is possible to run more than one recipe in one go: currently this relies on the user
-having access to a HPC that has ``rose`` and ``cylc`` installed since the procedure involves
-installing and submitting a Rose suite. The utility that allows you to do this is
-``esmvaltool/utils/rose-cylc/esmvt_rose_wrapper.py``.
-
-Base suite
-..........
-The base suite to run esmvaltool via rose-cylc is `u-bd684`; you can find
-this suite in the Met Office Rose repository at:
-
-https://code.metoffice.gov.uk/svn/roses-u/b/d/6/8/4/trunk/
-
-When ``rose`` will be working with python3.x, this location will become
-default and the pipeline will aceess it independently of user, unless, of
-course the user will specify ``-s $SUITE_LOCATION``; until then the user needs
-to grab a copy of it in ``$HOME`` or specify the default location via ``-s`` option.
-
-Environment
-...........
-We will move to a unified and centrally-installed esmvaltool environment;
-until then, the user will have to alter the env_setup script:
-
-``u-bd684/app/esmvaltool/env_setup``
-
-with the correct pointers to esmvaltool installation, if desired.
-
-To be able to submit to cylc, you need to have the `/metomi/` suite in path
-AND use a `python2.7` environment. Use the Jasmin-example below for guidance.
-
-Jasmin-example
-..............
-This shows how to interact with rose-cylc and run esmvaltool under cylc
-using this script:
-
-.. code:: bash
-
-   export PATH=/apps/contrib/metomi/bin:$PATH
-   export PATH=/home/users/valeriu/miniconda2/bin:$PATH
-   mkdir esmvaltool_rose
-   cd esmvaltool_rose
-   cp ESMValTool/esmvaltool/utils/rose-cylc/esmvt_rose_wrapper.py .
-   svn checkout https://code.metoffice.gov.uk/svn/roses-u/b/d/6/8/4/trunk/ ~/u-bd684
-   [enter Met Office password]
-   [configure ~/u-bd684/rose_suite.conf]
-   [configure ~/u-bd684/app/esmvaltool/env_setup]
-   python esmvt_rose_wrapper.py -c config-user.yml \
-   -r recipe_autoassess_stratosphere.yml recipe_OceanPhysics.yml \
-   -d $HOME/esmvaltool_rose
-   rose suite-run u-bd684
-
-Note that you need to pass FULL PATHS to cylc, no `.` or `..` because all
-operations are done remotely on different nodes.
-
-A practical actual example of running the tool can be found on JASMIN:
-``/home/users/valeriu/esmvaltool_rose``.
-There you will find the run shell: ``run_example``, as well as an example
-how to set the configuration file. If you don't have Met Office credentials,
-a copy of `u-bd684` is always located in ``/home/users/valeriu/roses/u-bd684`` on Jasmin.
 
 .. _utils_batch_jobs:
 
@@ -238,11 +178,11 @@ The following parameters have to be set in the script in order to make it run:
 * ``submit``, *bool*: Whether or not to automatically submit the job after creating the launch script. Default value is ``False``.
 * ``account``, *str*: Name of the DKRZ account in which the job will be billed.
 * ``outputs``, *str*: Name of the directory in which the job outputs (.out and .err files) are going to be saved. The outputs will be saved in `/home/user/<outputs>`.
-* ``conda_path``, *str*: Full path to the `mambaforge/etc/profile.d/conda.sh` executable.
+* ``conda_path``, *str*: Full path to the `miniforge3/etc/profile.d/conda.sh` executable.
 
 Optionally, the following parameters can be edited:
 
-* ``config_file``, *str*: Path to ``config-user.yml`` if default ``~/.esmvaltool/config-user.yml`` not used.
+* ``config_dir``, *str*: Path to :ref:`configuration directory <esmvalcore:config_yaml_files>`, by default ``~/.config/esmvaltool/``.
 * ``partition``, *str*: Name of the DKRZ partition used to run jobs. Default is ``interactive`` to minimize computing cost compared to ``compute`` for which nodes cannot be shared.
 * ``memory``, *str*: Amount of memory requested for each run. Default is ``64G`` to allow to run 4 recipes on the same node in parallel.
 * ``time``, *str*: Time limit. Default is ``04:00:00`` to increase the job priority. Jobs can run for up to 8 hours and 12 hours on the compute and interactive partitions, respectively.
@@ -291,7 +231,7 @@ script as well as a list of all available recipes. To generate the list, run the
 
    for recipe in $(esmvaltool recipes list | grep '\.yml$'); do echo $(basename "$recipe"); done > all_recipes.txt
 
-To keep the script execution fast, it is recommended to use ``log_level: info`` in your config-user.yml file so that SLURM
+To keep the script execution fast, it is recommended to use ``log_level: info`` in the configuration so that SLURM
 output files are rather small.
 
 .. _overview_page:
@@ -441,63 +381,6 @@ klaus.zimmermann@smhi.se
 
 .. _GitHub access token: https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
 .. _pygithub: https://pygithub.readthedocs.io/en/latest/introduction.html
-
-
-Recipe filler
-=============
-
-If you need to fill in a blank recipe with additional datasets, you can do that with
-the command `recipe_filler`. This runs a tool to obtain a set of additional datasets when
-given a blank recipe, and you can give an arbitrary number of data parameters. The blank recipe
-should contain, to the very least, a list of diagnostics, each with their variable(s).
-Example of running the tool:
-
-.. code-block:: bash
-
-    recipe_filler recipe.yml
-
-where `recipe.yml` is the recipe that needs to be filled with additional datasets; a minimal
-example of this recipe could be:
-
-.. code-block:: yaml
-
-    diagnostics:
-      diagnostic:
-        variables:
-          ta:
-            mip: Amon  # required
-            start_year: 1850  # required
-            end_year: 1900  # required
-
-
-Key features
-------------
-
-- you can add as many variable parameters as are needed; if not added, the
-  tool will use the ``"*"`` wildcard and find all available combinations;
-- you can restrict the number of datasets to be looked for with the ``dataset:``
-  key for each variable, pass a list of datasets as value, e.g.
-  ``dataset: [MPI-ESM1-2-LR, MPI-ESM-LR]``;
-- you can specify a pair of experiments, e.g. ``exp: [historical, rcp85]``
-  for each variable; this will look for each available dataset per experiment
-  and assemble an aggregated data stretch from each experiment to complete
-  for the total data length specified by ``start_year`` and ``end_year``; equivalent to
-  ESMValTool's syntax on multiple experiments; this option needs an ensemble
-  to be declared explicitly; it will return no entry if there are gaps in data;
-- ``start_year`` and ``end_year`` are required and are used to filter out the
-  datasets that don't have data in the interval; as noted above, the tool will not
-  return datasets with partial coverage from ``start_year`` to ``end_year``;
-  if you want all possible years hence no filtering on years just use ``"*"``
-  for start and end years;
-- ``config-user: rootpath: CMIPX`` may be a list, rootpath lists are supported;
-- all major DRS paths (including ``default``, ``BADC``, ``ETHZ`` etc) are supported;
-- speedup is achieved through CMIP mip tables lookup, so ``mip`` is required in recipe;
-
-Caveats
--------
-
-- the tool doesn't yet work with derived variables; it will not return any available datasets;
-- operation restricted to CMIP data only, OBS lookup is not available yet.
 
 
 Extracting a list of input files from the provenance

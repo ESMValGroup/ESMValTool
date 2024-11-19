@@ -50,7 +50,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
             long_name='time')
         cube.add_dim_coord(time_dim, 0)
         utils.convert_timeunits(cube, 1950)
-    utils.fix_coords(cube)
+    cube = utils.fix_coords(cube)
 
     # Fix units
     if 'kg C' in cube.units.origin:
