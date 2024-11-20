@@ -28,6 +28,9 @@ import numpy as np
 from dask import array as da
 from esmvalcore.cmor._fixes.common import OceanFixGrid
 from esmvalcore.cmor.table import CMOR_TABLES
+from esmvaltool.cmorizers.data import utilities as utils
+from esmvalcore.preprocessor import monthly_statistics
+from iris.coords import AuxCoord
 
 from ...utilities import save_variable
 
@@ -69,10 +72,34 @@ def _create_nan_cube(cube, year, month, day, is_daily):
     return nan_cube
 
 
+def _create_areacello(cfg, cube, glob_attrs, out_dir):
+    var_info = cfg['cmor_table'].get_variable('Ofx', 'areacello')
+    glob_attrs['mip'] = 'Ofx'
+    lat_coord = cube.coord('latitude')
+
+    arcube = iris.cube.Cube(np.zeros(lat_coord.shape, np.float32),
+                            standard_name=var_info.standard_name,
+                            long_name=var_info.long_name,
+                            var_name=var_info.short_name,
+                            units='m2',
+                            # time is index 0, add cell index dim
+                            dim_coords_and_dims=[(cube.coords()[1], 0),
+                                                 (cube.coords()[2], 1)])
+
+    # each grid cell is 12.5 km x 12.5 km
+    arcube.data = arcube.core_data() + 12500 * 12500
+
+    arcube.add_aux_coord(lat_coord, (0, 1))
+    arcube.add_aux_coord(cube.coord('longitude'), (0, 1))
+    utils.fix_var_metadata(arcube, var_info)
+    utils.set_global_atts(arcube, glob_attrs)
+    utils.save_variable(arcube, var_info.short_name, out_dir, glob_attrs,
+                        zlib=True)
+
+
 def _fix_coordinates(cube, definition):
     """Fix coordinates."""
     axis2def = {'T': 'time', 'X': 'longitude', 'Y': 'latitude'}
-#    axes = ['T', 'X', 'Y']
     axes = ['T', 'X', 'Y']
 
     for axis in axes:
@@ -81,14 +108,14 @@ def _fix_coordinates(cube, definition):
             coord = cube.coord(axis=axis)
             if axis == 'T':
                 coord.convert_units('days since 1850-1-1 00:00:00.0')
+                coord.points = coord.core_points().astype('float64')
+                if len(coord.points) > 1:
+                    if coord.bounds is not None:
+                       coord.bounds = None
+                    coord.guess_bounds()
             coord.standard_name = coord_def.standard_name
             coord.var_name = coord_def.out_name
             coord.long_name = coord_def.long_name
-            coord.points = coord.core_points().astype('float64')
-            if len(coord.points) > 1:
-                if coord.bounds is not None:
-                    coord.bounds = None
-                coord.guess_bounds()
 
     return cube
 
@@ -97,10 +124,10 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0, region):
     logger.info("CMORizing variable '%s' from input files '%s'",
                 var['short_name'], ', '.join(in_files))
     attributes = deepcopy(cfg['attributes'])
-    attributes['mip'] = var['mip']
+    attributes['mip'] = var['mip1']
     attributes['raw'] = var['raw']
     cmor_table = CMOR_TABLES[attributes['project_id']]
-    definition = cmor_table.get_variable(var['mip'], var['short_name'])
+    definition = cmor_table.get_variable(var['mip1'], var['short_name'])
 
     # load all input files (1 year) into 1 cube
     # --> drop attributes that differ among input files
@@ -122,24 +149,6 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0, region):
     new_list = iris.cube.CubeList()
 
     for cube in cube_list:
-#        # get time from attributes (no time coordinate)
-#        time0 = cube.attributes['time_coverage_start']
-#        year0 = int(time0[0:4])
-#        month0 = int(time0[4:6])
-#        day0 = int(time0[6:8])
-#        if is_daily:
-#            timestamp = datetime(year0, month0, day0)
-#        else:
-#            timestamp = datetime(year0, month0, 15)
-#        time_coord = iris.coords.DimCoord(
-#            cf_units.date2num(timestamp, time_unit, time_calendar),
-#            standard_name='time',
-#            var_name='time',
-#            units=cf_units.Unit(time_unit, calendar=time_calendar)
-#        )
-#        cube = iris.util.new_axis(cube)
-#        cube.add_dim_coord(time_coord, 0)
-
         for attr in drop_attrs:
             if attr in cube.attributes.keys():
                 cube.attributes.pop(attr)
@@ -226,14 +235,24 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0, region):
     cube = fixcube.fix_metadata(cubes=[cube])[0]
 
     # Fix coordinates
-#    cube = _fix_coordinates(cube, definition)
-#    cube.coord('latitude').attributes = None
-#    cube.coord('longitude').attributes = None
+    cube = _fix_coordinates(cube, definition)
+    cube.coord('latitude').attributes = None
+    cube.coord('longitude').attributes = None
+
+    # add aux coord 'typesi'
+    area_type = AuxCoord([1.0], standard_name='area_type', var_name='type',
+                         long_name='Sea Ice area type')
+    cube.add_aux_coord(area_type)
+
+    # add attribute cell_measures
+#    siconc:cell_measures = "area: areacello"
+#    cube.attributes.update({"cell_meaures": "area: areacello"})
+    cube.attributes.locals['cell_measures'] = 'area: areacello'
 
     # Fix data type
     cube.data = cube.core_data().astype('float32')
 
-    # Save results
+    # save daily results
     logger.debug("Saving cube\n%s", cube)
     logger.debug("Setting time dimension to UNLIMITED while saving!")
     version = attributes['version']
@@ -241,6 +260,26 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0, region):
     save_variable(cube, cube.var_name,
                   out_dir, attributes,
                   unlimited_dimensions=['time'])
+
+    # calculate monthly means
+    cube = monthly_statistics(cube, operator='mean')
+    # Remove monthly statistics aux coordinates
+    cube.remove_coord(cube.coord('month_number'))
+    cube.remove_coord(cube.coord('year'))
+    # save monthly results
+    logger.debug("Saving cube\n%s", cube)
+    logger.debug("Setting time dimension to UNLIMITED while saving!")
+    version = attributes['version']
+    attributes['mip'] = var['mip2']
+    definition = cmor_table.get_variable(var['mip2'], var['short_name'])
+    save_variable(cube, cube.var_name,
+                  out_dir, attributes,
+                  unlimited_dimensions=['time'])
+
+    # create and save areacello
+    # (code adadapted from formatter 'nsidc_g02202_sh.py')
+    _create_areacello(cfg, cube, attributes, out_dir) 
+
     logger.info("Finished CMORizing %s", ', '.join(in_files))
 
 
@@ -257,7 +296,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if start_date is None:
         start_date = datetime(1992, 1, 1)
     if end_date is None:
-        end_date = datetime(1992, 12, 31)  # 2020
+        end_date = datetime(2020, 12, 31)
 
     version = cfg['attributes']['version']
     regions = ('NH', 'SH')
@@ -267,12 +306,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             if 'short_name' not in var:
                 var['short_name'] = short_name
             loop_date = start_date
-            if 'day' in short_name:
-                logger.info("Input data for %s is daily data", short_name)
-                daily = True
-            else:
-                logger.info("Input data for %s is monthly data", short_name)
-                daily = False
+            daily = True
             while loop_date <= end_date:
                 filepattern = os.path.join(
                     in_dir,

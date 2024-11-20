@@ -295,6 +295,8 @@ diagnostics:
   ESACCI-SEAICE:
     description: ESACCI-SEAICE check
     variables:
+      areacello:
+        mip: Ofx
       siconc_daily:
         short_name: siconc
         mip: SIday

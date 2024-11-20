@@ -12,18 +12,12 @@ attributes:
 
 # Variables to cmorize (here use only filename prefix)
 variables:
-# monthly frequency
-#  siconc_mon:
-#    short_name: siconc
-#    mip: SImon
-#    raw: ice_conc
-#    frequency: mon
-#    file: ESACCI-SEAICE-L4-SICONC-RE_SSMI_12.5kmEASE2-{region}-{year}010*-fv3.0.nc
-
-# daily frequency 
-  siconc_day:
+# daily and monthly frequency 
+  siconc:
     short_name: siconc
-    mip: SIday
+    mip1: SIday
+    mip2: SImon
     raw: ice_conc
-    frequency: day
-    file: ESACCI-SEAICE-L4-SICONC-RE_SSMI_12.5kmEASE2-{region}-{year}010*-fv3.0.nc
+    frequency1: day
+    frequency2: mon
+    file: ESACCI-SEAICE-L4-SICONC-RE_SSMI_12.5kmEASE2-{region}-{year}*-fv3.0.nc
