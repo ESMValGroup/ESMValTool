@@ -39,8 +39,12 @@ jobs:
           activate-environment: esmvaltool
           environment-file: environment.yml
           miniforge-version: "latest"
-          miniforge-variant: Mambaforge
+          miniforge-variant: Miniforge3
           use-mamba: true
+          conda-remove-defaults: "true"
+
+      - name: Install Cylc and Rose
+        run: conda install cylc-flow>=8.2 cylc-rose metomi-rose
 
       - name: Validate Cylc workflow
         run: |
