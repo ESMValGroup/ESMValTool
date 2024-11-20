@@ -46,7 +46,8 @@ split_by: str, optional
 default_split: str, optional
     Data labeled with this string, will be used as main rectangles. All other
     splits will be plotted as overlays. This can be used to choose the base
-    reference, while all references are labeled for the legend.
+    reference, while all references are labeled for the legend. If None, the
+    first split will be used as default.
     By default None.
 plot_legend: bool, optional
     If True, a legend is plotted, when multiple splits are given.
@@ -180,11 +181,13 @@ def remove_reference(metas):
             metas.remove(meta)
 
 
-def add_split_none(cfg, metas):
-    """List of metadata with split=None if no split is given."""
+def add_missing_facets(cfg, metas):
+    """Ensure that all facets are present in metadata."""
     for meta in metas:
-        if cfg["split_by"] not in meta:
-            meta[cfg["split_by"]] = None
+        facet_config = ["x_by", "y_by", "group_by", "split_by"]
+        facets = [cfg[key] for key in facet_config]
+        for facet in facets:
+            meta.setdefault(facet, "unknown")
 
 
 def open_file(metadata, **selection):
@@ -231,10 +234,8 @@ def load_data(cfg, metas):
     for coord_tuple in itertools.product(*coords.values()):
         selection = dict(zip(coords.keys(), coord_tuple))
         data['var'].loc[selection] = open_file(metas, **selection)
-    if None in data.coords[cfg["split_by"]].values:
-        cfg.setdefault("default_split", None)
-    else:
-        cfg.setdefault("default_split", data.coords[cfg["split_by"]].values[0])
+    if cfg["default_split"] is None:
+        cfg["default_split"] = data.coords[cfg["split_by"]].values[0]
     log.debug("using %s as default split", cfg["default_split"])
     log.debug("Loaded Data:")
     log.debug(data)
@@ -539,7 +540,7 @@ def main(cfg):
     set_defaults(cfg)
     metas = list(cfg["input_data"].values())
     remove_reference(metas)
-    add_split_none(cfg, metas)
+    add_missing_facets(cfg, metas)
     dataset = load_data(cfg, metas)
     dataset = sort_data(cfg, dataset)
     if cfg["normalize"] is not None:
