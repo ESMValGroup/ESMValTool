@@ -7,56 +7,44 @@ Portrait plot
 Overview
 --------
 Portrait plots are a flexible way to visualize performance metrics for multiple
-datasets and up to four references. In this recipe the normalized Root Mean
-Squared Deviation (RMSD) of global mean seasonal climatologies is shown for a
-selection of CMIP models is plotted. For each variable up to two observation
-based datasets are used as reference (see :ref:`_datasets` for complete list).
+datasets and up to four references. In this recipe `recipe_portrait_CMIP.yml`
+the normalized Root Mean Squared Deviation (RMSD) of global mean seasonal
+climatologies is shown for a selection of CMIP models is plotted.
+For each variable up to two observation based datasets are used as reference.
+See :ref:`variables` for complete list of references.
 
 
-Available recipes and diagnostics
----------------------------------
-
-Recipes are stored in esmvaltool/recipes/
-
-    * recipe_portrait_CMIP.yml
-
-Diagnostics are stored in esmvaltool/diag_scripts/perfmetrics/
-
-    * portrait_plot.py: Plot metrics for any variable for multiple datasets and
-      up to four references.
 
 
 User settings in recipe
 -----------------------
 
-#. Script perfmetrics/portrait_plot.py
+This plot expects a scalar value in each input file and at most one input
+file for each subset of metadata that belongs to a cell or part of cell in
+the figure.
+By default cells are plotted for combinations of `short_name`,
+`dataset`, `project` and `split`.
+Where `split` is an optional extra_facet for variables.
+However, all this can be customized using the `x_by`,
+`y_by`, `group_by` and `split_by` script settings.
+For a complete and detailed list of settings see the
+:ref:`API documentation <api.esmvaltool.diag_scripts.perfmetrics.portrait_plot>`.
+While this allows very flexible use for any kind of data, there are some
+limitations as well: The grouping (separated
+plots in the figure) and normalization is always applied along the x-axis.
+With default settings this means normalizing all metrics for each variable
+and grouping all datasets by project.
 
-   This plot expects a scalar value in each input file and at most one input
-   file for each subset of metadata that belongs to a cell or part of cell in
-   the figure.
-   By default cells are plotted for combinations of `short_name`,
-   `dataset`, `project` and `split`.
-   Where `split` is an optional extra_facet for variables.
-   However, all this can be customized using the `x_by`,
-   `y_by`, `group_by` and `split_by` script settings.
-   For a complete and detailed list of settings see the
-   :ref:`API documentation <api.esmvaltool.diag_scripts.perfmetrics.portrait_plot>`.
-   While this allows very flexible use for any kind of data, there are some
-   limitations as well: The grouping (separated
-   plots in the figure) and normalization is always applied along the x-axis.
-   With default settings this means normalizing all metrics for each variable
-   and grouping all datasets by project.
-
-   To plot distance metrics like RMSE, pearson R, bias etc. the
-   :func:`distance_metrics <esmvalcore.preprocessor.derive>` preprocessor or
-   custom diagnostics can be used.
+To plot distance metrics like RMSE, pearson R, bias etc. the
+:func:`distance_metrics <esmvalcore.preprocessor.derive>` preprocessor or
+custom diagnostics can be used.
 
 
 
-.. _datasets:
+.. _variables:
 
-Variables and References
----------
+Variables and Datasets
+------------------------
 
 .. note::
 
