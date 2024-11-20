@@ -4,9 +4,10 @@ Performance metrics for essential climate parameters
 ====================================================
 
 .. note::
-
-   We are working on a reimplemenation of the
-   :ref:`performance metrics in python <recipe_perfmetrics_python>`.
+  Some of the results of this diagnostics can also be rproduced utilizing
+  python diagnostics:
+  Portrait plot: :ref:`recipe_portrait`
+  Monitoring: :ref:`recipe_monitor`
 
 Overview
 --------

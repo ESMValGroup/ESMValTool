@@ -9,7 +9,7 @@ This module contains various reusable diagnostics and plot scripts.
 Examples
 --------
 
-* :ref:`recipe_perfmetrics_python <recipe_perfmetrics_python>`
+* :ref:`recipe_portrait <recipe_portrait>`
 
 
 Diagnostic scripts
