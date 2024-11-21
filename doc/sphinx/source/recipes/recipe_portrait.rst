@@ -23,8 +23,8 @@ This plot expects a scalar value in each input file and at most one input
 file for each subset of metadata that belongs to a cell or part of cell in
 the figure.
 By default cells are plotted for combinations of `short_name`,
-`dataset`, `project` and `split`.
-Where `split` is an optional extra_facet for variables.
+`dataset`, `project` and `split`,
+where `split` is an optional extra_facet for variables.
 However, all this can be customized using the `x_by`,
 `y_by`, `group_by` and `split_by` script settings.
 For a complete and detailed list of settings see the
