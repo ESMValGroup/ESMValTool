@@ -6,13 +6,13 @@ This diagnostic provides plot functionalities for performance metrics.
 The multi model overview heatmap might be useful for different
 tasks and therefore this diagnostic tries to be as flexible as possible.
 X and Y axis, grouping parameter and slits for each rectangle can be
-configured in the recipe. All *_by parameters can be set to any metadata
+configured in the recipe. All `*_by` parameters can be set to any metadata
 key. To split by 'reference' this key needs to be set as extra_facet in recipe.
 
 Author
 ------
-Lukas Ruhe (Universität Bremen, Germany)
-Diego Cammarano
+- Lukas Ruhe (Universität Bremen, Germany)
+- Diego Cammarano
 
 Configuration parameters through recipe:
 ----------------------------------------
@@ -58,9 +58,10 @@ legend: dict, optional
     (i.e. lengths of labels, aspect ratio of the plots...). And might require
     manual adjustment of `x`, `y` and `size` to fit the figure layout.
     Keys (each optional) that will be handled are:
+
     position: str or None, optional
-        Position of the legend. Can be 'right' or 'left'. Or set to None to
-        disable plotting the legend. By default 'right'.
+        Position of the legend. Can be 'right' or 'left'.
+        Or set to None to disable plotting the legend. By default 'right'.
     x_offset: float, optional
         Manually adjust horizontal position to save space or fix overlap.
         Number given in Inches. By default 0.
@@ -69,6 +70,7 @@ legend: dict, optional
         Number given in Inches. By default 0.
     size: float, optional
         Size of the legend in Inches. By default 0.3.
+
 plot_kwargs: dict, optional
     Dictionary that gets passed as kwargs to `matplotlib.pyplot.imshow()`.
     Colormaps will be converted to 11 discrete steps automatically. Default
@@ -91,9 +93,9 @@ nan_color: str or None, optional
     no triagnles are plotted for NaN values.
     By default 'white'.
 figsize: list(float), optional
-   [width, height] of the figure in inches. The final figure will be saved with
-   bbox_inches="tight", which can change the resulting aspect ratio.
-   By default [5, 3].
+    [width, height] of the figure in inches. The final figure will be saved
+    with bbox_inches="tight", which can change the resulting aspect ratio.
+    By default [5, 3].
 dpi: int, optional
     Dots per inch for the figure. By default 300.
 domain: str, optional
@@ -385,7 +387,7 @@ def plot(cfg, data):
     """Create figure with subplots for each group and save to NetCDF.
 
     sets same color range and  overlays additional references based on
-    the content of data (xr.DataArray)
+    the content of data (xr.DataArray).
     """
     save_to_netcdf(cfg, data)
 

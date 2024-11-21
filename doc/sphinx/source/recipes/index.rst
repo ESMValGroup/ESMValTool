@@ -65,6 +65,8 @@ Atmosphere
 
 Climate metrics
 ^^^^^^^^^^^^^^^
+.. _climate_metrics:
+
 .. toctree::
    :maxdepth: 1
 

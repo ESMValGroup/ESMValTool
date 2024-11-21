@@ -28,7 +28,7 @@ Where `split` is an optional extra_facet for variables.
 However, all this can be customized using the `x_by`,
 `y_by`, `group_by` and `split_by` script settings.
 For a complete and detailed list of settings see the
-:ref:`API documentation <api.esmvaltool.diag_scripts.perfmetrics.portrait_plot>`.
+:doc:`diagnostic documentation </api/esmvaltool.diag_scripts.portrait_plot>`.
 While this allows very flexible use for any kind of data, there are some
 limitations as well: The grouping (separated
 plots in the figure) and normalization is always applied along the x-axis.
