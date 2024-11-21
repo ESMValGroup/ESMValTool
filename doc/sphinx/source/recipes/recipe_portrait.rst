@@ -10,7 +10,7 @@ Portrait plots are a flexible way to visualize performance metrics for multiple
 datasets and up to four references. In this recipe `recipe_portrait_CMIP.yml`
 the normalized Root Mean Squared Deviation (RMSD) of global mean seasonal
 climatologies is calculated for a selection of CMIP models.
-For each variable up to two observation based datasets are used as reference.
+In the example recipe, for each variable up to two observation based datasets are used as reference.
 See :ref:`variables` for complete list of references.
 
 
