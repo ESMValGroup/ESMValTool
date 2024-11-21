@@ -107,7 +107,7 @@ def validate_user_config_file(user_config_file_content):
     ]
     for user_config_key, usr_config_value in user_config_file_content.items():
         try:
-            validatation_function = _validators[user_config_key]
+            validation_function = _validators[user_config_key]
         except KeyError as err:
             errors.append(
                 f'Key Error for {user_config_key.upper()}. May not be a valid '
@@ -116,8 +116,8 @@ def validate_user_config_file(user_config_file_content):
             try:
                 print(f'Validating {user_config_key.upper()} with value '
                       f'"{usr_config_value}" using function '
-                      f'{validatation_function.__name__.upper()}.')
-                validatation_function(usr_config_value)
+                      f'{validation_function.__name__.upper()}.')
+                validation_function(usr_config_value)
             except ValidationError as err:
                 errors.append(
                     f'Validation error for {user_config_key.upper()} with '
