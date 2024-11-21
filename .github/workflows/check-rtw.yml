@@ -41,6 +41,9 @@ jobs:
           use-mamba: true
           conda-remove-defaults: "true"
 
+      - name: Check current environment
+        run: conda list
+
       - name: Install Cylc and Rose
         run: conda install cylc-flow>=8.2 cylc-rose metomi-rose
 
