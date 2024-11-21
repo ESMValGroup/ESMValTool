@@ -116,7 +116,7 @@ def validate_user_config_file(user_config_file_content):
             try:
                 print(f'Validating {user_config_key.upper()} with value '
                       f'"{usr_config_value}" using function '
-                      f'{validatation_function.__name__.upper()}.')
+                      f'{validation_function.__name__.upper()}.')
                 validatation_function(usr_config_value)
             except ValidationError as err:
                 errors.append(
