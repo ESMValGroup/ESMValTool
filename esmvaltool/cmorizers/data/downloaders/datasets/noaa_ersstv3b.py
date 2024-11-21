@@ -1,6 +1,7 @@
 """Script to download NOAA-ERSST-v3b."""
 import logging
 from datetime import datetime
+
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader

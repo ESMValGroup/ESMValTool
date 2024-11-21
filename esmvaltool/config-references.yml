@@ -257,6 +257,10 @@ authors:
     name: Hansson, Ulf
     institute: SMHI, Sweden
     orcid:
+  hardacre_catherine:
+    name: Hardacre, Catherine
+    institute: University of Canterbury, New Zealand
+    orcid: https://orcid.org/0000-0001-9093-4656
   hassler_birgit:
     name: Hassler, Birgit
     institute: DLR, Germany
@@ -337,6 +341,11 @@ authors:
     name: Lillis, Jon
     institute: MetOffice, UK
     orcid:
+  lindenlaub_lukas:
+    name: Lindenlaub, Lukas
+    institute: University of Bremen, Germany
+    orcid: https://orcid.org/0000-0001-6349-9118
+    github: lukruh
   little_bill:
     name: Little, Bill
     institute: MetOffice, UK
@@ -405,6 +414,11 @@ authors:
     institute: BSC, Spain
     orcid:
     github: emchamarro
+  munday_gregory:
+    name: Munday, Gregory
+    institute: MetOffice, UK
+    orcid: https://orcid.org/0000-0003-4750-9923
+    github: mo-gregmunday
   nikulin_grigory:
     name: Nikulin, Grigory
     institute: SMHI, Sweden
@@ -462,11 +476,6 @@ authors:
   rol_evert:
     name: Rol, Evert
     orcid: https://orcid.org/0000-0001-8357-4453
-  lindenlaub_lukas:
-    name: Lindenlaub, Lukas
-    institute: University of Bremen, Germany
-    orcid: https://orcid.org/0000-0001-6349-9118
-    github: lukruh
   russell_joellen:
     name: Russell, Joellen
     institute: Univ. of Arizona, USA
