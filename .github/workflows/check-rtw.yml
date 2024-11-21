@@ -36,8 +36,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: conda-incubator/setup-miniconda@v3
         with:
-          activate-environment: esmvaltool
-          environment-file: environment.yml
           miniforge-version: "latest"
           miniforge-variant: Miniforge3
           use-mamba: true
