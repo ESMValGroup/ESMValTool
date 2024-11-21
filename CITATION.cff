@@ -176,6 +176,11 @@ authors:
     given-names: Stefan
     orcid: "https://orcid.org/0000-0001-5444-2945"
   -
+    affiliation: "University of Canterbury, New Zealand"
+    family-names: Hardacre
+    given-names: Catherine
+    orcid: "https://orcid.org/0000-0001-9093-4656"
+  -
     affiliation: "ISAC-CNR, Italy"
     name-particle: von
     family-names: Hardenberg
@@ -270,6 +275,11 @@ authors:
     family-names: Phillips
     given-names: Adam
     orcid: "https://orcid.org/0000-0003-4859-8585"
+  -
+    affiliation: "ACCESS-NRI, Australia"
+    family-names: Proft
+    given-names: Max
+    orcid: "https://orcid.org/0009-0003-1611-9516"
   -
     affiliation: "University of Arizona, USA"
     family-names: Russell
@@ -386,13 +396,18 @@ authors:
     family-names: Bonnet
     given-names: Pauline
     orcid: "https://orcid.org/0000-0003-3780-0784"
+  - 
+    affiliation: "MetOffice, UK"
+    family-names: Munday
+    given-names: Gregory
+    orcid: "https://orcid.org/0000-0003-4750-9923"
 
 cff-version: 1.2.0
-date-released: 2023-12-20
+date-released: 2024-07-04
 doi: "10.5281/zenodo.3401363"
 license: "Apache-2.0"
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/ESMValGroup/ESMValTool/"
 title: ESMValTool
-version: "v2.10.0"
+version: "v2.11.0"
 ...

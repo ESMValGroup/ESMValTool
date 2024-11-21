@@ -9,7 +9,7 @@ To use this script, follow these steps:
 - conda_path
 2) If needed, edit optional parameters:
 - outputs
-- config_file
+- config_dir
 3) SLURM settings
 This script is configured to optimize the computing
 footprint of the recipe testing. It is not necessary to edit
@@ -46,14 +46,14 @@ partition = 'interactive'
 memory = '64G'
 # Default walltime
 time = '04:00:00'
-# Full path to the mambaforge/etc/profile.d/conda.sh executable
+# Full path to the miniforge3/etc/profile.d/conda.sh executable
 # Set the path to conda
-conda_path = 'PATH_TO/mambaforge/etc/profile.d/conda.sh'
-# Full path to config_file
-# If none, ~/.esmvaltool/config-user.yml is used
-config_file = ''
+conda_path = 'PATH_TO/miniforge3/etc/profile.d/conda.sh'
+# Full path to configuration directory
+# If none, ~/.config/esmvaltool/
+config_dir = ''
 # Set max_parallel_tasks
-# If none, read from config_file
+# If none, read from configuration
 default_max_parallel_tasks = 8
 
 # List of recipes that require non-default SLURM options set above
@@ -315,11 +315,11 @@ def generate_submit():
             file.write(f'. {conda_path}\n')
             file.write(f'conda activate {env}\n')
             file.write('\n')
-            if not config_file:
+            if not config_dir:
                 file.write(f'esmvaltool run {str(recipe)}')
             else:
-                file.write(f'esmvaltool run --config_file '
-                           f'{str(config_file)} {str(recipe)}')
+                file.write(f'esmvaltool run --config_dir '
+                           f'{str(config_dir)} {str(recipe)}')
             # set max_parallel_tasks
             max_parallel_tasks = MAX_PARALLEL_TASKS.get(
                 recipe.stem,

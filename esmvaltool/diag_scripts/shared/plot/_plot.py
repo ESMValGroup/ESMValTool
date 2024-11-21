@@ -4,6 +4,7 @@ import os
 from copy import deepcopy
 
 import cartopy.crs as ccrs
+import dask.array as da
 import iris.quickplot
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
@@ -230,7 +231,15 @@ def global_contourf(cube,
         kwargs['levels'] = levels
     axes = plt.axes(projection=ccrs.Robinson(central_longitude=10))
     plt.sca(axes)
-    map_plot = iris.plot.contourf(cube, **kwargs)
+
+    # see https://github.com/SciTools/cartopy/issues/2457
+    # and https://github.com/SciTools/cartopy/issues/2468
+    kwargs['transform_first'] = True
+    npx = da if cube.has_lazy_data() else np
+    map_plot = iris.plot.contourf(
+        cube.copy(npx.ma.filled(cube.core_data(), np.nan)),
+        **kwargs,
+    )
 
     # Appearance
     axes.gridlines(color='lightgrey', alpha=0.5)
