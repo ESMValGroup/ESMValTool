@@ -4,7 +4,7 @@ Performance metrics for essential climate parameters
 ====================================================
 
 .. note::
-  Some of the results of this diagnostics can also be rproduced utilizing
+  Some of the results of this diagnostics can also be reproduced utilizing
   python diagnostics:
   Portrait plot: :ref:`recipe_portrait`
   Monitoring: :ref:`recipe_monitor`
