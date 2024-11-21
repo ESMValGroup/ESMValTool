@@ -104,14 +104,11 @@ domain: str, optional
 
 import itertools
 import logging
-from pathlib import Path
 
-import iris
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
-from esmvalcore import preprocessor as pp
 from matplotlib import patches
 from mpl_toolkits.axes_grid1 import ImageGrid
 
@@ -442,35 +439,6 @@ def normalize(array, method, dims):
         shift = norm
     normalized = (array - shift) / norm
     return normalized
-
-
-def apply_distance_metric(cfg, metas):
-    """Optionally apply preproc method.
-
-    reference_for_metric facet required.
-    """
-    if not cfg["distance_metric"]:
-        return
-    for y_metas in group_metadata(metas, cfg["y_by"]).values():
-        try:  # TODO: add select_single_metadata to shared?
-            reference = select_metadata(y_metas, reference_for_metric=True)[0]
-        except IndexError as exc:
-            raise IndexError("No reference found for metric.") from exc
-        ref_cube = iris.load_cube(reference["filename"])
-        for meta in y_metas:
-            if meta.get("reference_for_metric", False):
-                continue  # skip distance to itself
-            cube = iris.load_cube(meta["filename"])
-            distance = pp.distance_metric([cube],
-                                          reference=ref_cube,
-                                          metric=cfg["distance_metric"])
-            basename = f"{Path(meta['filename']).stem}"
-            basename += f"{cfg['distance_metric']}"
-            fname = get_diagnostic_filename(basename, cfg)
-            iris.save(distance, fname)
-            log.info("Distance metric saved: %s", fname)
-            # TODO: adjust all relevant meta data
-            meta["filename"] = fname
 
 
 def set_defaults(cfg):
