@@ -467,17 +467,11 @@ def set_defaults(cfg):
 
 def sort_data(cfg, dataset):
     """Sort the dataset along by custom or alphabetical order."""
-    # TODO: decide on (default) strategies and options.
-    # sort alphabetically (caseinsensitive)
     dataset = dataset.sortby([
         dataset[cfg["x_by"]].str.lower(), dataset[cfg["y_by"]].str.lower(),
         dataset[cfg["group_by"]].str.lower(),
         dataset[cfg["split_by"]].str.lower()
     ])
-    # apply custom orders if given:
-    # if cfg.get("x_order"):
-    #     dataset = dataset.reindex({cfg["x_by"]: cfg["x_order"]})
-    # move MMM to begin:
     if cfg["x_by"] in ["alias", "dataset"]:
         # NOTE: not clean, but it works for many cases
         mm_stats = [
@@ -495,7 +489,6 @@ def sort_data(cfg, dataset):
 
 def save_to_netcdf(cfg, data):
     """Save the final dataset to a NetCDF file."""
-    # Define the output filename for the NetCDF file
     basename = "portrait"
     fname = get_diagnostic_filename(basename, cfg, extension='nc')
     data.to_netcdf(fname)
