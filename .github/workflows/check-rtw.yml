@@ -6,7 +6,7 @@ on:
   # Triggers the workflow on push events
   push:
     paths:
-      - esmvaltool/utils/recipe_test_workflow/**
+#      - esmvaltool/utils/recipe_test_workflow/**
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:

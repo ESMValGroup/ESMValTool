@@ -5,7 +5,7 @@ Quick Start Guide
 
 .. include:: ../common.txt
 
-* Checkout the |RTW|::
+* Clone the ESMValTool repository (which contains the |RTW|)::
 
     git clone git@github.com:ESMValGroup/ESMValTool.git
 
