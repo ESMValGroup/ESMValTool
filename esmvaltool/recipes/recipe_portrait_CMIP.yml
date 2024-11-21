@@ -34,12 +34,10 @@ datasets:
   - {dataset: CESM2, institute: NCAR}
   - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
   - {dataset: GFDL-CM4, grid: gr1}
-  # - {dataset: IPSL-CM6A-LR, grid: gr}
   - {dataset: MIROC-ES2L, ensemble: r1i1p1f2}
   - {dataset: MPI-ESM1-2-LR}
   - {dataset: MRI-ESM2-0}
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2}
-
 
 preprocessors:
   default: &default  # common preprocessor settings
@@ -90,9 +88,6 @@ preprocessors:
     mask_fillvalues:
       threshold_fraction: 0.10
 
-# datasets can't be defined here as there is one variable that do not use own datasets
-# is there a way to overwrite datasets rather than just put ADDITIONAL ones?
-
 var_default: &var_default
   mip: Amon
   project: CMIP6
@@ -128,12 +123,8 @@ diagnostics:
         short_name: clt
         variable: clt
         additional_datasets:
-          - dataset: ESACCI-CLOUD
-            project: OBS
-            type: sat
-            version: AVHRR-AMPM-fv3.0
-            tier: 2
-            reference_for_metric: true
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2, reference_for_metric: true}
       clt_2:
         <<: *clt
         split: Ref2

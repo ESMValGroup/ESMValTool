@@ -81,9 +81,6 @@ preprocessors:
     mask_fillvalues:
       threshold_fraction: 0.10
 
-# datasets can't be defined here as there is one variable that do not use own datasets
-# is there a way to overwrite datasets rather than just put ADDITIONAL ones?
-
 var_default: &var_default
   mip: Amon
   project: CMIP6
