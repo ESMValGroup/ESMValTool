@@ -383,11 +383,9 @@ def plot_overlays(cfg, grid, data):
 def plot(cfg, data):
     """Create figure with subplots for each group and save to NetCDF.
 
-    sets same color range and  overlays additional references based on
+    Sets same color range and overlays additional references based on
     the content of data (xr.DataArray).
     """
-    save_to_netcdf(cfg, data)
-
     fig = plt.figure(1, cfg.get("figsize", (5.5, 3.5)))
     group_count = len(data.coords[cfg["group_by"]])
     grid = ImageGrid(
@@ -510,8 +508,6 @@ def main(cfg):
         dataset["var"] = normalize(dataset["var"], cfg["normalize"],
                                    [cfg["x_by"], cfg["group_by"]])
     plot(cfg, dataset["var"])
-
-
-if __name__ == "__main__":
+    save_to_netcdf(cfg, dataset["var"])
     with run_diagnostic() as config:
         main(config)
