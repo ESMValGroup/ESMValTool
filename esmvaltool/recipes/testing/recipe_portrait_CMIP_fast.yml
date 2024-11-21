@@ -4,9 +4,8 @@
 documentation:
   title: Performance metrics plots.
   description: >
-    Compare performance of CMIP simulations to a reference dataset.
+    Test recipe for the performance comparison of CMIP simulations to a reference dataset.
   authors:
-    - cammarano_diego
     - lindenlaub_lukas
   maintainer:
     - lindenlaub_lukas
@@ -22,23 +21,15 @@ datasets:
   # cmip5
   - {<<: *CMIP5, dataset: ACCESS1-0}
   - {<<: *CMIP5, dataset: CESM1-BGC}
-  - {<<: *CMIP5, dataset: CNRM-CM5}
   - {<<: *CMIP5, dataset: GFDL-ESM2M}
-  - {<<: *CMIP5, dataset: HadGEM2-CC}
-  - {<<: *CMIP5, dataset: IPSL-CM5B-LR}
   - {<<: *CMIP5, dataset: MIROC-ESM}
-  - {<<: *CMIP5, dataset: MPI-ESM-LR}
   - {<<: *CMIP5, dataset: MRI-CGCM3}
   # cmip6
   - {dataset: ACCESS-ESM1-5, institute: CSIRO}
   - {dataset: CESM2, institute: NCAR}
-  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
   - {dataset: GFDL-CM4, grid: gr1}
-  # - {dataset: IPSL-CM6A-LR, grid: gr}
   - {dataset: MIROC-ES2L, ensemble: r1i1p1f2}
-  - {dataset: MPI-ESM1-2-LR}
   - {dataset: MRI-ESM2-0}
-  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2}
 
 
 preprocessors:
@@ -109,48 +100,6 @@ diagnostics:
     themes: [aerosols, phys, clouds, atmDyn, chem, ghg]
     realms: [atmos, land, atmosChem, ocean]
     variables:
-      zg: &zg
-        <<: *var_default
-        short_name: zg
-        variable: zg500
-        preprocessor: pp500
-        additional_datasets:
-          - {dataset: ERA-Interim, project: OBS6, type: reanaly,
-             version: 1, tier: 3, reference_for_metric: true}
-      zg_2:
-        <<: *zg
-        split: Ref2
-        additional_datasets:
-          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
-             version: 1, tier: 2, reference_for_metric: true}
-      clt: &clt
-        <<: *var_default
-        short_name: clt
-        variable: clt
-        additional_datasets:
-          - dataset: ESACCI-CLOUD
-            project: OBS
-            type: sat
-            version: AVHRR-AMPM-fv3.0
-            tier: 2
-            reference_for_metric: true
-      clt_2:
-        <<: *clt
-        split: Ref2
-        additional_datasets:
-          - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, tier: 2, reference_for_metric: true}
-      ts: &ts
-        <<: *var_default
-        short_name: ts
-        variable: ts
-        preprocessor: default
-        additional_datasets:
-          - {dataset: ESACCI-SST, project: OBS, type: sat, version: 2.2, tier: 2, reference_for_metric: true}
-      ts_2:
-        <<: *ts
-        split: Ref2
-        additional_datasets:
-          - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2, reference_for_metric: true}
       tas: &tas
         <<: *var_default
         short_name: tas
@@ -170,14 +119,6 @@ diagnostics:
         split: Ref1
         additional_datasets:
           - {dataset: GPCP-V2.2, project: obs4MIPs, level: L3, tier: 1, reference_for_metric: true}
-      rlut:
-        <<: *var_default
-        variable: rlut
-        start_year: 2001
-        end_year: 2003
-        additional_datasets:
-          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
-             tier: 2, reference_for_metric: true}
       rsut:
         <<: *var_default
         variable: rsut
