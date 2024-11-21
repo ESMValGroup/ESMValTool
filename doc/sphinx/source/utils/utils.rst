@@ -400,3 +400,17 @@ The tool is based on the `prov <https://prov.readthedocs.io/en/latest/readme.htm
 library, a useful library for working with provenance files.
 With minor adaptations, this script could also print out global attributes
 of the input NetCDF files, e.g. the tracking_id.
+
+Recipe Test Workflow (RTW)
+==========================
+
+.. include:: RTW/common.txt
+
+The Recipe Test Workflow (|RTW|) is a workflow that is used to regularly run
+recipes so issues can be discovered during the development process sooner
+rather than later.
+
+.. toctree::
+   :maxdepth: 1
+
+   RTW/index

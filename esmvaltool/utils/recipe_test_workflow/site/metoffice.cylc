@@ -1,0 +1,60 @@
+#!jinja2
+[runtime]
+    [[root]]
+        [[[environment]]]
+            ESMVALCORE_DIR = ${CYLC_WORKFLOW_RUN_DIR}/share/lib/python/ESMValCore
+            ESMVALTOOL_DIR = ${CYLC_WORKFLOW_RUN_DIR}/share/lib/python/ESMValTool
+            PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
+
+    # COMPUTE provides defaults for computation-heavy tasks.
+    # Specific tasks below override some defaults, e.g. time & memory.
+    [[COMPUTE]]
+        platform = spice
+        execution time limit = PT2M
+        [[[directives]]]
+            --wckey = RTW
+            --ntasks = {{ MAX_PARALLEL_TASKS }}
+            --mem = 2G
+
+    [[configure]]
+        platform = localhost
+
+    [[get_esmval]]
+        platform = localhost
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 2G
+
+    # Resources for recipes that need more than the default. Both time and
+    # memory should be specified, in case the default changes.
+    # Variable (fast, medium) must be consistent with flow.cylc.
+    # Comment should indicate example recorded usage at Met Office.
+    [[process<fast=recipe_autoassess_landsurface_soilmoisture>]]
+        # Actual: 0m36s, 2.8 GB on 2024-03-29.
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 3G
+
+    [[process<fast=recipe_albedolandcover>]]
+        # Actual: 0m31s, 2.5 GB on 2024-04-08.
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 3G
+
+    [[process<fast=recipe_ocean_amoc>]]
+        # Actual: 1m47s, 3.4 GB on 2024-06-17.
+        execution time limit = PT3M
+        [[[directives]]]
+            --mem = 4G
+
+    [[process<fast=recipe_ocean_multimap>]]
+        # Actual: 6m52s, 2.5 GB on 2024-05-28.
+        execution time limit = PT8M
+        [[[directives]]]
+            --mem = 3G
+
+    [[process<medium=recipe_ensclus>]]
+        # Actual: 2m10s, 2.4 GB on 2024-03-29.
+        execution time limit = PT4M
+        [[[directives]]]
+            --mem = 3G
