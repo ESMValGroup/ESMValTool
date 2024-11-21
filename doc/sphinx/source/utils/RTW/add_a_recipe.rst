@@ -86,6 +86,12 @@ How to add a recipe to the |RTW|
 
        cp -r ${HOME}/cylc-run/recipe_test_workflow/runN/share/cycle/<cycle>/recipe_<recipe>_<date>_<time> <KGO_ROOT_PATH>
 
+     .. note::
+        Cylc is typically configured such that
+        ``${HOME}/cylc-run/recipe_test_workflow/runN/share`` is a symbolic link
+        to a share directory located on a scratch disk; the recipe output
+        directory is not stored in ``${HOME}``.
+
    * Enable write permissions for all users on the recipe output directory in
      your site-specific |KGO| directory::
 
