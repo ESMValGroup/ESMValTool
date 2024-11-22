@@ -25,13 +25,13 @@ User settings in recipe
 By default cells are plotted for combinations of `short_name`,
 `dataset`, `project` and `split`,
 where `split` is an optional extra_facet for variables.
-However, all this can be customized using the `x_by`,
+However, this can be customized using the `x_by`,
 `y_by`, `group_by` and `split_by` script settings.
-For a complete and detailed list of settings see the
+For a complete and detailed list of settings, see the
 :doc:`diagnostic documentation </api/esmvaltool.diag_scripts.portrait_plot>`.
 While this allows very flexible use for any kind of data, there are some
-limitations as well: The grouping (separated
-plots in the figure) and normalization is always applied along the x-axis.
+limitations as well: The grouping (subplots) and normalization is always
+applied along the x-axis.
 With default settings this means normalizing all metrics for each variable
 and grouping all datasets by project.
 
@@ -51,13 +51,13 @@ Variables and Datasets
    The recipe generally works for any variable that is preprocessed correctly.
    To use different preprocessors or reference datasets it could be useful
    to create different variable groups and link them with the same extra_facet
-   like `variable_name` See recipe for examples. Below listed are the variables
+   like `variable_name`. See recipe for examples. Listed below are the variables
    used to produce the example figure.
 
 
 The following list shows which observational dataset is used as reference for
 each variable in this recipe. All variables are atmospheric monthly means.
-For 3D variables the selected pressure level is given in parentheses.
+For 3D variables the selected pressure level is specified in parentheses.
 
 * clt (Ref1: ESACCI-CLOUD, Ref2: PATMOS-x)
 * pr (Ref1: GPCP-V2.2)
@@ -75,7 +75,7 @@ References
   Geophys. Res., 113, D06104, doi: 10.1029/2007JD008972 (2008).
 
 * Righi, M., Eyring, V., Klinger, C., Frank, F., Gottschaldt, K.-D., Jöckel, P.,
-  and Cionni, I.: Quantitative evaluation of oone and selected climate parameters in a set of EMAC simulations,
+  and Cionni, I.: Quantitative evaluation of ozone and selected climate parameters in a set of EMAC simulations,
   Geosci. Model Dev., 8, 733, doi: 10.5194/gmd-8-733-2015 (2015).
 
 
@@ -92,4 +92,4 @@ Example plots
    Relative space-time root-mean-square deviation (RMSD) calculated from the climatological
    seasonal cycle of CMIP5 and CMIP6 simulations. A relative performance is displayed, with blue shading
    indicating better and red shading indicating worse performance than the median of all model results.
-   A diagonal split of a grid square shows the relative error with respect to the reference data set
+   A diagonal split of a grid square shows the relative error with respect to the reference data set.
