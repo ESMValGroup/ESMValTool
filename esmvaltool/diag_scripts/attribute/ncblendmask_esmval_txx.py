@@ -68,7 +68,7 @@ def calc_diag(cube, year_block):
    
    area_av_cb = eprep.area_statistics(cube, 'mean')
    area_av_arr = area_av_cb.data
-   reshaped_data = area_av_arr.reshape(-1, 12*year_block)
+   reshaped_data = area_av_arr.reshape(-1, year_block)
    block_arr = reshaped_data.mean(axis=1)
    diag = block_arr - block_arr.mean()
    

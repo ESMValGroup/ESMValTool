@@ -9,7 +9,7 @@ import matplotlib
 from scipy import stats
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import esmvaltool.diag_scripts.attribute.ncblendmask_esmval as ncbm
+import esmvaltool.diag_scripts.attribute.ncblendmask_esmval_txx as ncbm
 import random
 import math
 
@@ -29,23 +29,26 @@ def main(cfg):
     warming_base = cfg.get('warming_base')
     warming_years = cfg.get('warming_years')
 
-    obs_file = select_metadata(input_data, variable_group='obs_mean')[0]['filename']
+    sh_name = select_metadata(input_data, variable_group='models')[0]['short_name']
+    obs_file = os.path.join(cfg['auxiliary_data_dir'], f'{sh_name}_gridded.nc')
+    # obs_file = select_metadata(input_data, variable_group='obs_mean')[0]['filename']
+    # obs_cb = iris.load_cube(obs_file)
+
     obs_cb = iris.load_cube(obs_file)
     y_start = obs_cb.coord('time').cell(0).point.year
     y_end = obs_cb.coord('time').cell(-1).point.year
 
-    hadlabel=select_metadata(input_data, variable_group='obs_mean')[0]['dataset']
+    hadlabel=f'{sh_name}_gridded' # change 
+    # hadlabel=select_metadata(input_data, variable_group='obs_mean')[0]['dataset'] 
 
-    ens_obs_files = [m['filename'] for m in select_metadata(input_data, variable_group='obs_ens')]
-    ens_obs_cblst = iris.load(ens_obs_files)
+    ens_obs_cblst = ''
 
     grouped_input_data = group_metadata(
         input_data, 'dataset', sort='ensemble')
-    grouped_input_data.pop(hadlabel)
     logger.info(
         "Group input data by model and sort by ensemble:"
         "\n%s", pformat(grouped_input_data))
-    type (grouped_input_data)
+    # grouped_input_data.pop(hadlabel) # to delete
     nmodel=len(grouped_input_data)
 
 #Initialise variables.
@@ -166,13 +169,13 @@ def main(cfg):
 
     
     plt.plot(years,obs_diag,color='black',linewidth=1,label=hadlabel)
-    plt.plot(years,numpy.mean(mean_diag[:,0,:],axis=1),color=cols[1],linewidth=1,label='Model mean GMST')
+    plt.plot(years,numpy.mean(mean_diag[:,0,:],axis=1),color=cols[1],linewidth=1,label='Model mean')
     print ('Mean GMST',numpy.mean(mean_diag[:,0,:],axis=1))
     plt.plot([y_start,2025],[0,0],color='black',linewidth=0.5,ls='--',zorder=0)
-    plt.axis([y_start,2025,-1.5, 3])
+    plt.axis([y_start,2025,-4, 4])
     plt.xlabel('Year')
-    plt.ylabel('Canada mean temperature anomaly ($^\circ$C)')
-    plt.legend(loc="upper left",fancybox=False, frameon=False,ncol=2)
+    plt.ylabel(f'Canada {sh_name} anomaly ($^\circ$C)')
+    plt.legend(loc="upper left",ncol=2, fancybox=False, frameon=False)
     for experiment in range(nexp):
         wts=numpy.zeros((nmodel,nensmax))
         for mm in range(nmodel):
@@ -209,10 +212,10 @@ def main(cfg):
                  label=labels[experiment],zorder=zzs[experiment]+4)
 
     plt.plot(years,obs_diag,color='black',linewidth=1,label=hadlabel,zorder=8)
-    plt.axis([y_start,2025,-2, 3])
+    plt.axis([y_start,2025,-4, 4])
     plt.plot([y_start,2025],[0,0],color='black',linewidth=0.5,ls='--',zorder=0)
     plt.xlabel('Year')
-    plt.ylabel('Canada mean surface temperature anomaly ($^\circ$C)')
+    plt.ylabel(f'Canada {sh_name} anomaly ($^\circ$C)')
     plt.legend(loc="upper left", fancybox=False, frameon=False,ncol=2)
     plt.text (1825,2.25,'b',fontsize =7,fontweight='bold', va='center', ha='center')        
     plt.savefig(plot_dir+'/timeseries.'+output_file_type)
@@ -272,19 +275,7 @@ def main(cfg):
     plt.close()
 
 #Calculate uncertainty in GMST and GSAT warming in obs (as reported in Gillett et al.).
-    ensobs_dec_warming=numpy.sort(ensobs_dec_warming)
-    enssize=len(ensobs_dec_warming)
-    print ('Obs GMST warming: mean, 5, 95%',numpy.mean(ensobs_dec_warming),ensobs_dec_warming[math.floor((enssize-1)*0.05)],
-           ensobs_dec_warming[math.ceil((enssize-1)*0.95)])
-    nmc=10000
-    obs_gsat=numpy.zeros((nmc))
-    for mc_counter in range(nmc):
-      ens=random.randint(0,enssize-1)
-      mm=random.randint(0,nmodel-1)
-      ee=random.randint(0,ens_sizes[0,mm]-1)
-      obs_gsat[mc_counter]=ensobs_dec_warming[ens]*numpy.mean(all_ann_warming_gsat[(warming_years[0]-y_start):(warming_years[1] +1 -y_start),0,mm,ee],axis=0)/numpy.mean(all_ann_warming[warming_years[0]-y_start:warming_years[1] +1 -y_start,0,mm,ee],axis=0)
-    obs_gsat=numpy.sort(obs_gsat)
-    print ('Obs GSAT warming: mean, 5, 95%',numpy.mean(obs_gsat),obs_gsat[math.floor((nmc-1)*0.05)],obs_gsat[math.ceil((nmc-1)*0.95)])
+ 
 
     plt.figure(2,figsize=[180*mm_conv,60*mm_conv], dpi=200) 
     plt.plot(years,all_ann_warming[:,3,1,0],color='green')

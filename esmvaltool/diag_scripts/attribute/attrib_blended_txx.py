@@ -13,7 +13,7 @@ import esmvaltool.diag_scripts.attribute.detatt_mk as da
 import matplotlib
 matplotlib.use('Agg') #Turn off interactive plots.
 import matplotlib.pyplot as plt
-import esmvaltool.diag_scripts.attribute.ncblendmask_esmval as ncbm
+import esmvaltool.diag_scripts.attribute.ncblendmask_esmval_txx as ncbm
 
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic, select_metadata)
 
@@ -52,19 +52,20 @@ def main(cfg):
     pool_int_var=True #Flag to pool internal variability estimates.
 
 
-    obs_file = select_metadata(input_data, variable_group='obs_mean')[0]['filename']
+    sh_name = select_metadata(input_data, variable_group='models')[0]['short_name']
+    obs_file = os.path.join(cfg['auxiliary_data_dir'], f'{sh_name}_gridded.nc')
+    # obs_file = select_metadata(input_data, variable_group='obs_mean')[0]['filename']
     obs_cb = iris.load_cube(obs_file)
     y_start = obs_cb.coord('time').cell(0).point.year
     y_end = obs_cb.coord('time').cell(-1).point.year
 
-    hadlabel=select_metadata(input_data, variable_group='obs_mean')[0]['dataset']
+    # hadlabel=select_metadata(input_data, variable_group='obs_mean')[0]['dataset']
 
-    ens_obs_files = [m['filename'] for m in select_metadata(input_data, variable_group='obs_ens')]
-    ens_obs_cblst = iris.load(ens_obs_files)
+    ens_obs_cblst = ''
 
     grouped_input_data = group_metadata(
         input_data, 'dataset', sort='ensemble')
-    grouped_input_data.pop(hadlabel)
+    # grouped_input_data.pop(hadlabel)
     logger.info(
         "Group input data by model and sort by ensemble:"
         "\n%s", pformat(grouped_input_data))
@@ -539,7 +540,7 @@ def main(cfg):
 #    for mm in range(3):
     plt.plot(years,mean_diag[:,1,0],color='black')
     plt.plot(years,mean_diag[:,1,1],color='green')
-    plt.plot(years,mean_diag[:,1,2],color='gray')
+    # plt.plot(years,mean_diag[:,1,2],color='gray')
     plt.savefig(plot_dir+'/mean_diag.pdf')
     plt.close()
 
