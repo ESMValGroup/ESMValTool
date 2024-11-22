@@ -229,7 +229,7 @@ References
   Geophys. Res., 113, D06104, doi: 10.1029/2007JD008972 (2008).
 
 * Righi, M., Eyring, V., Klinger, C., Frank, F., Gottschaldt, K.-D., Jöckel, P.,
-  and Cionni, I.: Quantitative evaluation of oone and selected climate parameters in a set of EMAC simulations,
+  and Cionni, I.: Quantitative evaluation of ozone and selected climate parameters in a set of EMAC simulations,
   Geosci. Model Dev., 8, 733, doi: 10.5194/gmd-8-733-2015 (2015).
 
 

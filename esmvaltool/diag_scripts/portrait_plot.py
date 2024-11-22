@@ -86,7 +86,7 @@ plot_properties: dict, optional
     By default {}.
 nan_color: str or None, optional
     Matplotlib named color or hexcode for NaN values. If set to None,
-    no triagnles are plotted for NaN values.
+    no triangles are plotted for NaN values.
     By default 'white'.
 figsize: list(float), optional
     [width, height] of the figure in inches. The final figure will be saved
@@ -203,7 +203,6 @@ def open_file(metadata, **selection):
     except ValueError as exc:
         msg = f"Expected scalar in input file {metas[0]['filename']}."
         raise ValueError(msg) from exc
-    # iris.load_cube(metas[0]["filename"]).data
 
 
 def load_data(cfg, metas):
@@ -229,9 +228,8 @@ def load_data(cfg, metas):
         data['var'].loc[selection] = open_file(metas, **selection)
     if cfg["default_split"] is None:
         cfg["default_split"] = data.coords[cfg["split_by"]].values[0]
-    log.debug("using %s as default split", cfg["default_split"])
-    log.debug("Loaded Data:")
-    log.debug(data)
+    log.debug("Using %s as default split", cfg["default_split"])
+    log.debug("Loaded Data: %s", data)
     return data
 
 
@@ -240,7 +238,7 @@ def split_legend(cfg, grid, data):
 
     Mpl handles axes positions in relative figure coordinates. To anchor the
     legend to the origin of the first graph (bottom left) with fixed size,
-    without messing up the layout for changing figure sizes a few extra steps
+    without messing up the layout for changing figure sizes, a few extra steps
     are required.
     NOTE: maybe `mpl_toolkits.axes_grid1.axes_divider.AxesDivider` simplifies
     this a bit by using `append_axes`.
@@ -312,7 +310,7 @@ def overlay_reference(cfg, axe, data, triangle):
 def plot_group(cfg, axe, data, title=None):
     """Create matrix for one subplot in ax using plt.imshow.
 
-    by default split None is used, if all splits are named the first is
+    By default split None is used, if all splits are named the first is
     used. Other splits will be added by overlaying triangles.
     """
     split = data.sel({cfg["split_by"]: cfg["default_split"]})
@@ -331,7 +329,7 @@ def plot_group(cfg, axe, data, title=None):
 def get_triangle_nodes(position, total_count=2):
     """Return list of nodes with relative x, y coordinates.
 
-    The nodes of the triangle are given as list of three tuples. Each tuples
+    The nodes of the triangle are given as list of three tuples. Each tuple
     contains relative coordinates (-0.5 to +0.5). For total of <= 2 a top left
     (position=0) and bottom right (position=1) rectangle is returned.
     For higher counts (3 or 4) one quartile is returned for each position.
