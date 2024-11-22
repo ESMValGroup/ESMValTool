@@ -21,8 +21,8 @@ build:
       - git fetch --all
     pre_install:
       - git stash
-    post_create_environment:
-      - conda run -n ${CONDA_DEFAULT_ENV} pip install . --no-deps
+    # post_create_environment:
+    #   - conda run -n ${CONDA_DEFAULT_ENV} pip install . --no-deps
     post_install:
       - git stash pop
 
