@@ -1,11 +1,10 @@
-"""Overview plot for performance metrics.
+"""Portrait Plot Diagnostic.
 
 Description
 -----------
-This diagnostic provides plot functionalities for performance metrics.
-The multi model overview heatmap might be useful for different
-tasks and therefore this diagnostic tries to be as flexible as possible.
-X and Y axis, grouping parameter and slits for each rectangle can be
+This diagnostic provides plot functionalities for performance metrics,
+and is written to be as flexible as possible to be adaptable to further use
+cases. X and Y axis, grouping parameter and splits for each rectangle can be
 configured in the recipe. All `*_by` parameters can be set to any metadata
 key. To split by 'reference' this key needs to be set as extra_facet in recipe.
 
@@ -18,7 +17,8 @@ Configuration parameters through recipe:
 ----------------------------------------
 normalize: str or None, optional
     ('mean', 'median', 'centered_mean', 'centered_median', None).
-    Subtract median/mean if centered. Divide by median/mean if not None.
+    Divide by median or mean if not None. Subtract median/mean afterwards if
+    centered.
     By default 'centered_median'.
 x_by: str, optional
     Metadata key for x coordinate.
@@ -51,7 +51,7 @@ plot_legend: bool, optional
 legend: dict, optional
     Customize, if, how and where the legend is plotted. The 'best' position
     and size of the legend depends on multiple parameters of the figure
-    (i.e. lengths of labels, aspect ratio of the plots...). And might require
+    (i.e. lengths of labels, aspect ratio of the plots...). Might require
     manual adjustment of `x`, `y` and `size` to fit the figure layout.
     Keys (each optional) that will be handled are:
 
@@ -160,8 +160,6 @@ def plot_matrix(data, row_labels, col_labels, axe, plot_kwargs):
         va="center",
         rotation_mode="anchor",
     )
-    # Turn spines off and create white grid.
-    # ax.spines[:].set_visible(False)
     axe.set_xticks(np.arange(data.shape[1] + 1) - 0.5, minor=True)
     axe.set_yticks(np.arange(data.shape[0] + 1) - 0.5, minor=True)
     axe.grid(which="minor", color="black", linestyle="-", linewidth=0.8)
@@ -195,9 +193,9 @@ def open_file(metadata, **selection):
     if len(metas) > 1:
         raise ValueError(f"Multiple files found for {selection}")
     if len(metas) < 1:
-        log.debug("No Metadata found for %s", selection)
+        log.debug("No files found for %s", selection)
         return np.nan
-    log.debug("Metadata found for %s", selection)
+    log.debug("File found for %s", selection)
     das = xr.open_dataset(metas[0]["filename"])
     varname = list(das.data_vars.keys())[0]
     try:
@@ -209,7 +207,7 @@ def open_file(metadata, **selection):
 
 
 def load_data(cfg, metas):
-    """Load all nc files from metadata into xarray dataset.
+    """Load all netcdf files from metadata into xarray dataset.
 
     The dataset contains all relevant information for the plot. Coord
     names are metadata keys, ordered as x, y, group, split. The default
