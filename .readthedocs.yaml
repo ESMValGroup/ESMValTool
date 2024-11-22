@@ -36,6 +36,11 @@ sphinx:
   configuration: doc/sphinx/source/conf.py
   fail_on_warning: true
 
+python:
+  install:
+    - method: pip
+      path: .
+
 # If using Sphinx, optionally build your docs in additional formats such as PDF
 formats:
   - pdf
