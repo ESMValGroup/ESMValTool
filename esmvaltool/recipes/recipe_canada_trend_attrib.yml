@@ -52,9 +52,6 @@ datasets_models: &datasets_models
   - {dataset: CanESM5, ensemble: "r(1:10)i1p1f1", grid: gn, exp: [hist-GHG,ssp245-GHG]}
   - {dataset: CanESM5, ensemble: "r(1:10)i1p1f1", grid: gn, exp: [hist-aer,ssp245-aer]}
   - {dataset: CanESM5, ensemble: "r(1:10)i1p1f1", grid: gn, exp: [hist-stratO3,ssp245-stratO3]}
-  # - {dataset: GISS-E2-1-G, ensemble: "r(1:10)i1p1f2", grid: gn}
-  # - {dataset: GISS-E2-1-G, ensemble: "r(1:5)i1p1f2", grid: gn, exp: [hist-nat,ssp245-nat]}
-  # - {dataset: GISS-E2-1-G, ensemble: "r(1:5)i1p1f2", grid: gn, exp: [hist-GHG,ssp245-GHG]}
   - {dataset: IPSL-CM6A-LR, ensemble: "r(1:6)i1p1f1"}
   - {dataset: IPSL-CM6A-LR, ensemble: "r10i1p1f1"}
   - {dataset: IPSL-CM6A-LR, ensemble: "r11i1p1f1"}
@@ -69,10 +66,10 @@ datasets_models: &datasets_models
   - {dataset: MIROC6, ensemble: "r(1:50)i1p1f1", grid: gn, exp: [hist-GHG,ssp245-GHG]}
   - {dataset: MIROC6, ensemble: "r(1:10)i1p1f1", grid: gn, exp: [hist-aer,ssp245-aer]}
   - {dataset: MIROC6, ensemble: "r(1:3)i1p1f1", grid: gn, exp: [hist-stratO3,ssp245-stratO3]}
-  - {dataset: NorESM2-LM, ensemble: "r(2:3)i1p1f1", grid: gn} #1 didn't work.
-  - {dataset: NorESM2-LM, ensemble: "r1i1p1f1", grid: gn, exp: [hist-nat,ssp245-nat]}
-  - {dataset: NorESM2-LM, ensemble: "r1i1p1f1", grid: gn, exp: [hist-GHG,ssp245-GHG]}
-  - {dataset: NorESM2-LM, ensemble: "r1i1p1f1", grid: gn, exp: [hist-aer,ssp245-aer]}
+  # - {dataset: NorESM2-LM, ensemble: "r(2:3)i1p1f1", grid: gn} #1 didn't work.
+  # - {dataset: NorESM2-LM, ensemble: "r1i1p1f1", grid: gn, exp: [hist-nat,ssp245-nat]}
+  # - {dataset: NorESM2-LM, ensemble: "r1i1p1f1", grid: gn, exp: [hist-GHG,ssp245-GHG]}
+  # - {dataset: NorESM2-LM, ensemble: "r1i1p1f1", grid: gn, exp: [hist-aer,ssp245-aer]}
 
 data_obs_mean: &data_obs_mean
   - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.2.0-noninfilled, tier: 2}
@@ -298,40 +295,66 @@ diagnostics:
         project: CMIP6
         exp: [historical,ssp245]
         grid: gr
-        start_year: 1854
-        end_year: 2023
+        start_year: 1855
+        end_year: 2024
         additional_datasets: *datasets_models
 
       obs_mean:
         short_name: tasa
         preprocessor: get_canada 
         mip: Amon
-        start_year: 1854
-        end_year: 2023
+        start_year: 1855
+        end_year: 2024
         additional_datasets: *data_obs_mean
 
       obs_ens:
         short_name: tasa
         preprocessor: get_canada  
         mip: Amon
-        start_year: 1854
-        end_year: 2023
+        start_year: 1855
+        end_year: 2024
         additional_datasets: *data_obs_ens
 
 
     scripts:
       fig1:
         script: attribute/damip_timeseries.py
-        year_block: 1 
-        warming_base: [1854, 1900]
-        warming_years: [2014, 2023]
+        year_block: 2 
+        warming_base: [1855, 1900]
+        warming_years: [2015, 2024]
 
-
-      fig2_2013-22: 
+      fig2_15-24: 
         script: attribute/attrib_blended.py
         year_block: 5 
-        warming_base: [1854, 1900]
+        warming_base: [1855, 1900]
         exp_flag: GHG
         rcplot: true
         simple_uncert: false
-        warming_years: [2014, 2023]
+        warming_years: [2015, 2024]
+
+      fig2_95-14: 
+        script: attribute/attrib_blended.py
+        year_block: 5 
+        warming_base: [1855, 1900]
+        exp_flag: GHG
+        rcplot: true
+        simple_uncert: false
+        warming_years: [1995, 2014]
+
+      fig2_70-99: 
+        script: attribute/attrib_blended.py
+        year_block: 5 
+        warming_base: [1855, 1900]
+        exp_flag: GHG
+        rcplot: true
+        simple_uncert: false
+        warming_years: [1970, 1999]
+
+      fig2_85-04: 
+        script: attribute/attrib_blended.py
+        year_block: 5 
+        warming_base: [1855, 1900]
+        exp_flag: GHG
+        rcplot: true
+        simple_uncert: false
+        warming_years: [1985, 2004]
