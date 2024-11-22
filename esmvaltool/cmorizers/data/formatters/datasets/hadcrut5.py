@@ -39,7 +39,7 @@ def _extract_variable(short_name, var, version, filename, cfg, in_dir,
     # load data
     filepath = os.path.join(in_dir, filename)
     raw_var = var.get('raw', short_name)
-    cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
+    cube = iris.load_cube(filepath)
 
     if short_name == 'tas':
         # load climatology
