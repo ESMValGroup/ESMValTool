@@ -25,7 +25,7 @@ User settings in recipe
 By default cells are plotted for combinations of `short_name`,
 `dataset`, `project` and `split`,
 where `split` is an optional extra_facet for variables.
-However, all this can be customized using the `x_by`,
+However, this can be customized using the `x_by`,
 `y_by`, `group_by` and `split_by` script settings.
 For a complete and detailed list of settings see the
 :doc:`diagnostic documentation </api/esmvaltool.diag_scripts.portrait_plot>`.
