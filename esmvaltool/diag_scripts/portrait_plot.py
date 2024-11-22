@@ -9,9 +9,9 @@ X and Y axis, grouping parameter and slits for each rectangle can be
 configured in the recipe. All `*_by` parameters can be set to any metadata
 key. To split by 'reference' this key needs to be set as extra_facet in recipe.
 
-Author
-------
-- Lukas Ruhe (Universität Bremen, Germany)
+Authors
+-------
+- Lukas Lindenlaub (Universität Bremen, Germany)
 - Diego Cammarano
 
 Configuration parameters through recipe:
@@ -20,10 +20,6 @@ normalize: str or None, optional
     ('mean', 'median', 'centered_mean', 'centered_median', None).
     Subtract median/mean if centered. Divide by median/mean if not None.
     By default 'centered_median'.
-distance_metric: str or None, optional
-    A method for the distance_metric preprocessor can be set, to apply it to
-    the input data along all axis before plotting. If set to None, the input
-    is expected to contain scalar values for each input file. By default, None.
 x_by: str, optional
     Metadata key for x coordinate.
     By default 'alias'.
