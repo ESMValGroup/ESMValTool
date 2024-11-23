@@ -974,6 +974,9 @@ def plot_maps(wt: np.array, cfg: dict, cube: iris.cube.Cube,
                   f'{timerange}, wt: {wt}')
         unit = '[hPa]'
         im = iplt.contourf(cube / 100, cmap=psl_cmap)
+        cb = plt.colorbar(im)
+        cb.ax.tick_params(labelsize=8)
+        cb.set_label(label=f'{var_name} {mode} {unit}')
     elif var_name == 'pr':
         prcp_cmap = get_colormap('prcp')
         if dataset == 'ERA5':
@@ -985,16 +988,18 @@ def plot_maps(wt: np.array, cfg: dict, cube: iris.cube.Cube,
             plt.title(f'{dataset} {ensemble}, {var_name} flux {mode}\n' +
                       f'{timerange}, wt: {wt}')
         im = iplt.contourf(cube, cmap=prcp_cmap)
+        cb = plt.colorbar(im)
+        cb.ax.tick_params(labelsize=8)
+        cb.set_label(label=f'{var_name} {mode} {unit}')
     elif var_name == 'tas':
         temp_cmap = get_colormap('temp')
         unit = '[K]'
         plt.title(f'{dataset} {ensemble}, 1000 hPa {var_name} {mode}\n' +
                   f'{timerange}, wt: {wt}')
         im = iplt.contourf(cube, cmap=temp_cmap)
-
-    cb = plt.colorbar(im)
-    cb.ax.tick_params(labelsize=8)
-    cb.set_label(label=f'{var_name} {mode} {unit}')
+        cb = plt.colorbar(im)
+        cb.ax.tick_params(labelsize=8)
+        cb.set_label(label=f'{var_name} {mode} {unit}')
 
     gl = ax.gridlines(
         crs=ccrs.PlateCarree(),
@@ -1253,6 +1258,8 @@ def calc_wt_means(cfg: dict, cube: iris.cube.Cube,
     logger.info('Calculating %s %s means for %s', dataset, var_name, wt_string)
 
     work_dir = cfg.get('work_dir')
+    
+    num_slwt = 0
 
     if wt_string == 'slwt_ERA5':
         slwt_era5_cube = wt_cubes[1]
@@ -1279,6 +1286,7 @@ def calc_wt_means(cfg: dict, cube: iris.cube.Cube,
 
     if 'slwt' in wt_string:
         for wt in range(1, num_slwt + 1):
+            target_indices = []
             if wt_string == 'slwt_ERA5':
                 target_indices = np.where(slwt_era5 == wt)
             elif wt_string == 'slwt_EOBS':

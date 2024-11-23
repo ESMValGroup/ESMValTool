@@ -1,7 +1,7 @@
 """ This script calculates weathertypes for the input datasets and writes \
-    to file. It also plots the means and seasonal occurrence of the weathertypes, \
-    and offers the option to calculate simplified weathertypes based on \ 
-    precipitation patterns."""
+    to file. It also plots the means and seasonal occurrence of the
+    weathertypes, and offers the option to calculate simplified
+    weathertypes based on precipitation patterns."""
 import iris
 from wt_utils import get_cfg_vars, load_wt_preprocessors, wt_algorithm, \
     get_ancestors_era5_eobs, calc_slwt_obs, run_predefined_slwt, \
