@@ -1364,7 +1364,7 @@ def calc_wt_anomalies(cfg: dict, cube: iris.cube.Cube,
 
     logger.info('Calculating %s %s anomalies for %s', dataset, var_name,
                 wt_string)
-    
+
     target_indices = []
     lwt, slwt_eobs, slwt_era5 = [], [], []
 
@@ -1475,6 +1475,9 @@ def calc_wt_std(cfg: dict, cube: iris.cube.Cube,
 
     logger.info('Calculating %s %s standard deviation for %s', dataset,
                 var_name, wt_string)
+
+    target_indices = []
+    lwt, slwt_eobs, slwt_era5 = [], [], []
 
     if wt_string == 'slwt_ERA5':
         slwt_era5_cube = wt_cubes[1]
