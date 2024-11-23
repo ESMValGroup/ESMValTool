@@ -51,6 +51,9 @@ preprocessors:
       end_month: 12
       end_day: 31
     regrid:
+      # this is the region for which the Lamb weathertypes will be calculated
+      # the objective classification scheme of Jones et al. 1993 is used
+      # these grid points are the same ones as used in the paper
       target_grid: &grid
         start_longitude: -5
         end_longitude: 25
@@ -63,7 +66,14 @@ preprocessors:
   weathertype_preproc_pr:
     extract_time: 
       *time
-    extract_region: #choose region which will be used for weathertype and precipitation correlation
+    extract_region:
+      # This is the region for which precipitation data can be used to
+      # calculate correlations between weathertypes and this said region
+      # to further be able to combine them into 'simplified' weathertypes.
+      # Combined weathertypes correspond to a specific precipitation
+      # pattern over this region. You can change this to a region of your liking
+      # to see which types of weathertypes are associated with which precipitation 
+      # patterns.
       start_longitude: 9.5
       end_longitude: 17.25
       start_latitude: 46.25

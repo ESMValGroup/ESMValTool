@@ -1260,6 +1260,8 @@ def calc_wt_means(cfg: dict, cube: iris.cube.Cube,
     work_dir = cfg.get('work_dir')
 
     num_slwt = 0
+    target_indices = []
+    lwt, slwt_eobs, slwt_era5 = [], [], []
 
     if wt_string == 'slwt_ERA5':
         slwt_era5_cube = wt_cubes[1]
@@ -1286,7 +1288,6 @@ def calc_wt_means(cfg: dict, cube: iris.cube.Cube,
 
     if 'slwt' in wt_string:
         for wt in range(1, num_slwt + 1):
-            target_indices = []
             if wt_string == 'slwt_ERA5':
                 target_indices = np.where(slwt_era5 == wt)
             elif wt_string == 'slwt_EOBS':
