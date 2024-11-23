@@ -51,9 +51,9 @@ preprocessors:
       end_month: 12
       end_day: 31
     regrid:
-      # this is the region for which the Lamb weathertypes will be calculated
-      # the objective classification scheme of Jones et al. 1993 is used
-      # these grid points are the same ones as used in the paper
+      # This is the region for which the Lamb weathertypes will be calculated.
+      # The objective classification scheme of Jones et al. 1993 is used,
+      # these grid points are the same ones as used in the paper.
       target_grid: &grid
         start_longitude: -5
         end_longitude: 25
