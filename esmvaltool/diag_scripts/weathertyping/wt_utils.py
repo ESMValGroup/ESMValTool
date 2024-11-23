@@ -1258,7 +1258,7 @@ def calc_wt_means(cfg: dict, cube: iris.cube.Cube,
     logger.info('Calculating %s %s means for %s', dataset, var_name, wt_string)
 
     work_dir = cfg.get('work_dir')
-    
+
     num_slwt = 0
 
     if wt_string == 'slwt_ERA5':
