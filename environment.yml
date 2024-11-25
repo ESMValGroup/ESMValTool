@@ -53,7 +53,7 @@ dependencies:
   - psy-reg >=1.5.0
   - psy-simple >=1.5.0
   - pyproj >=2.1
-  - pys2index  # only from conda-forge
+  # - pys2index  # only from conda-forge  # not py313 compat
   - python >=3.10
   - python-cdo
   - python-dateutil
