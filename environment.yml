@@ -6,7 +6,6 @@ channels:
   # ESMValCore.
   # - conda-forge/label/esmvalcore_rc
   - conda-forge
-  - conda-forge/label/rc_iris  # only to test with iris==3.11rc0
   - nodefaults
 
 dependencies:
