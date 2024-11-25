@@ -28,8 +28,8 @@ import numpy as np
 from dask import array as da
 from esmvalcore.cmor._fixes.common import OceanFixGrid
 from esmvalcore.cmor.table import CMOR_TABLES
-from esmvaltool.cmorizers.data import utilities as utils
 from esmvalcore.preprocessor import monthly_statistics
+from esmvaltool.cmorizers.data import utilities as utils
 from iris.coords import AuxCoord
 
 from ...utilities import save_variable
@@ -46,28 +46,28 @@ def _create_nan_cube(cube, year, month, day, is_daily):
     dataset_time_unit = str(nan_cube.coord('time').units)
     dataset_time_calender = nan_cube.coord('time').units.calendar
     # Convert datetime
-    if (is_daily):
+    if is_daily:
         hrs = 12
     else:
         hrs = 0
     newtime = datetime(year=year, month=month, day=day,
-        hour=hrs, minute=0, second=0, microsecond=0)
+                       hour=hrs, minute=0, second=0, microsecond=0)
     newtime_num = cf_units.date2num(newtime, dataset_time_unit,
                                     dataset_time_calender)
     nan_cube.coord('time').points = float(newtime_num)
 
     # remove existing time bounds and create new bounds
     coord = nan_cube.coord('time')
-    if (is_daily):
+    if is_daily:
         bnd1 = newtime + relativedelta.relativedelta(hours=-12)
         bnd2 = bnd1 + relativedelta.relativedelta(days=1)
     else:
         bnd1 = newtime + relativedelta.relativedelta(days=-day + 1)
         bnd2 = bnd1 + relativedelta.relativedelta(months=1)
     coord.bounds = [cf_units.date2num(bnd1, dataset_time_unit,
-                                    dataset_time_calender),
+                                      dataset_time_calender),
                     cf_units.date2num(bnd2, dataset_time_unit,
-                                    dataset_time_calender)]
+                                      dataset_time_calender)]
 
     return nan_cube
 
@@ -111,7 +111,7 @@ def _fix_coordinates(cube, definition):
                 coord.points = coord.core_points().astype('float64')
                 if len(coord.points) > 1:
                     if coord.bounds is not None:
-                       coord.bounds = None
+                        coord.bounds = None
                     coord.guess_bounds()
             coord.standard_name = coord_def.standard_name
             coord.var_name = coord_def.out_name
@@ -132,7 +132,7 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0, region):
     # load all input files (1 year) into 1 cube
     # --> drop attributes that differ among input files
     cube_list = iris.load(in_files, var['raw'])
-    
+
     # remove ancillary variables
     for cube in cube_list:
         for ancillary_variable in cube.ancillary_variables():
@@ -142,9 +142,6 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0, region):
     drop_attrs = ['tracking_id', 'id', 'time_coverage_start',
                   'time_coverage_end', 'date_created',
                   'inputfilelist', 'history']
-
-    time_unit = 'days since 1850-01-01 00:00:00'
-    time_calendar = 'standard'
 
     new_list = iris.cube.CubeList()
 
@@ -192,7 +189,7 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0, region):
                 full_list.append(new_list[idx])
             else:
                 logger.debug("No data available for %d/%d/%d", loop_date.month,
-                   loop_date.day, loop_date.year)
+                             loop_date.day, loop_date.year)
                 nan_cube = _create_nan_cube(new_list[0], loop_date.year,
                                             loop_date.month, loop_date.day,
                                             is_daily)
@@ -210,7 +207,7 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0, region):
                 full_list.append(new_list[idx])
             else:
                 logger.debug("No data available for %d/%d", loop_date.month,
-                    loop_date.year)
+                             loop_date.year)
                 nan_cube = _create_nan_cube(new_list[0], loop_date.year,
                                             loop_date.month, loop_date.day,
                                             is_daily)
@@ -278,7 +275,7 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0, region):
 
     # create and save areacello
     # (code adadapted from formatter 'nsidc_g02202_sh.py')
-    _create_areacello(cfg, cube, attributes, out_dir) 
+    _create_areacello(cfg, cube, attributes, out_dir)
 
     logger.info("Finished CMORizing %s", ', '.join(in_files))
 
@@ -294,11 +291,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     logger.info('CMORizing ESACCI-SEAICE version %s', glob_attrs['version'])
 
     if start_date is None:
-        start_date = datetime(1992, 1, 1)
+        start_date = datetime(1991, 1, 1)
     if end_date is None:
         end_date = datetime(2020, 12, 31)
 
-    version = cfg['attributes']['version']
     regions = ('NH', 'SH')
 
     for region in regions:
@@ -309,7 +305,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             daily = True
             while loop_date <= end_date:
                 filepattern = os.path.join(
-                    in_dir,
+                    in_dir, region,
                     var['file'].format(year=loop_date.year, region=region)
                     )
                 in_files = glob.glob(filepattern)

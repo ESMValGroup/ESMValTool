@@ -38,14 +38,15 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     )
     downloader.ftp_name = 'sea_ice'
     downloader.connect()
-    
+
     regions = ('NH', 'SH')
-    basepath =  'sea_ice_concentration/L4/ssmi_ssmis/12.5km/v3.0'
+    basepath = 'sea_ice_concentration/L4/ssmi_ssmis/12.5km/v3.0'
 
     loop_date = start_date
     while loop_date <= end_date:
         for region in regions:
-            path = f'{basepath}/{region}/{loop_date.year}/{loop_date.month:02d}'
+            path = (f'{basepath}/{region}/{loop_date.year}/'
+                    f'{loop_date.month:02d}')
             downloader.set_cwd(path)
-            downloader.download_folder('.')
-            loop_date += relativedelta.relativedelta(months=1)
+            downloader.download_folder('.', sub_folder=region)
+        loop_date += relativedelta.relativedelta(months=1)
