@@ -24,10 +24,10 @@ plot_folder: str, optional
     Path to the folder to store figures. Defaults to
     ``{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}``.  All
     tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
-    replaced with the corresponding tags).  ``{plot_dir}`` is replaced with the
+    replaced with the corresponding tags). ``{plot_dir}`` is replaced with the
     default ESMValTool plot directory (i.e.,
     ``output_dir/plots/diagnostic_name/script_name/``, see
-    :ref:`esmvalcore:user configuration file`).
+    :ref:`esmvalcore:outputdata`).
 rasterize_maps: bool, optional (default: True)
     If ``True``, use `rasterization
     <https://matplotlib.org/stable/gallery/misc/rasterization_demo.html>`_ for
