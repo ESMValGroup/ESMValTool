@@ -61,7 +61,7 @@ begin
 
   var0 = variable_info[0]@short_name
 
-  plotpath = config_user_info@plot_dir + "/Russell_figure7i_" + var0 + "_" \
+  plotpath = config_user_info@plot_dir + "Russell_figure7i_" + var0 + "_" \
     + sprinti("%0.4i", min(toint(start_years_data))) + "-" \
     + sprinti("%0.4i", max(toint(end_years_data)))
 
@@ -156,9 +156,8 @@ begin
         fx_variable = "areacello"
         error_msg("f", "russell_fig-7i.ncl", " ", "areacello file for " + \
                   datasetnames(iii) + " not found in the metadata file," + \
-                  " please add 'fx_files: [areacello]' to the variable " + \
-                  "dictionary in the recipe or add the location of " + \
-                  " file to config-user.yml")
+                  + " not found in the metadata file, please specify " \
+                  + "'areacello' as supplementary variable in the recipe.")
       end if
       areacello_2d = fx_var
       delete(fx_var)
@@ -201,16 +200,6 @@ begin
       overlay(plot(0), plot(iii))
     end if
 
-    log_provenance(ncdf_outfile, \
-                   plotpath + "." + output_type(), \
-                   "Russell et al 2018 figure 7i", \
-                   "mean", \
-                   "sh", \
-                   "zonal", \
-                   "russell_joellen", \
-                   "russell18jgr", \
-                   infile_path)
-
   end do
   draw(plot(0))
 
@@ -222,12 +211,24 @@ begin
   "lgPerimOn"                : False                  ; no perimeter
   "lgItemCount"              : dimsizes(annots)       ; how many
   "lgLineLabelStrings"       : annots                 ; labels
-  "lgLabelsOn"               : False                  ; no default lables
+  "lgLabelsOn"               : False                  ; no default labsels
   "lgLineLabelFontHeightF"   : 0.0085                 ; font height
-  "lgDashIndexes"            : dashes                 ; line paterns
+  "lgDashIndexes"            : dashes                 ; line patterns
   "lgLineColors"             : colors
   "lgMonoLineLabelFontColor" : True                   ; one label color
   end create
   draw(legend)
+
+  frame(wks)
+
+  log_provenance(ncdf_outfile, \
+                 plotpath + "." + output_type(), \
+                 "Russell et al 2018 figure 7i", \
+                 "mean", \
+                 "sh", \
+                 "zonal", \
+                 "russell_joellen", \
+                 "russell18jgr", \
+                 infile_path)
 
 end

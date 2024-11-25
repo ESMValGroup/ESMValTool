@@ -22,11 +22,12 @@
 ;        --reject="index.html*"
 ;        https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/
 ;          CLD_PRODUCTS/v3.0/L3C/AVHRR-PM/
-
+;
 ;    All files are expected in a single directory (no subdirectories
 ;    with years).
 ;
 ; Modification history
+;    20230818-lauer_axel: added output of clwvi (in addition to iwp, lwp)
 ;    20210428-lauer_axel: AVHRR-AM and AVHRR-PM data are now averaged during
 ;                         the overlapping time; TOA radiative fluxes are now
 ;                         also processed
@@ -56,24 +57,25 @@ begin
   YEAR2 = get_year(end_year, 2016)
 
   ; Selected variable (standard name)
-  VAR = (/"clt", "cltStderr", "clivi", "lwp", "rlut", "rlutcs", \
+  VAR = (/"clt", "cltStderr", "clivi", "lwp", "clwvi", "rlut", "rlutcs", \
           "rsut", "rsutcs", "rsdt", "rlus", "rsus", "rsuscs"/)
 
   ; Name in the raw data
-  NAME = (/"cfc", "cfc_unc", "iwp_allsky", "lwp_allsky", "toa_lwup", \
-           "toa_lwup_clr", "toa_swup", "toa_swup_clr", "toa_swdn", \
-           "boa_lwup", "boa_swup", "boa_swup_clr"/)
+  NAME = (/"cfc", "cfc_unc", "iwp_allsky", "lwp_allsky", "iwp_allsky", \
+           "toa_lwup", "toa_lwup_clr", "toa_swup", "toa_swup_clr", \
+           "toa_swdn", "boa_lwup", "boa_swup", "boa_swup_clr"/)
 
   ; Conversion factor
-  CONV = (/100., 1., 0.001, 0.001, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0/)
+  CONV = (/100., 1., 0.001, 0.001, 0.001, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, \
+          1.0, 1.0/)
 
   ; MIP
   MIP = (/"Amon", "Amon", "Amon", "Amon", "Amon", "Amon", "Amon", "Amon", \
-          "Amon", "Amon", "Amon", "Amon"/)
+          "Amon", "Amon", "Amon", "Amon", "Amon"/)
 
   ; Frequency
   FREQ = (/"mon", "mon", "mon", "mon", "mon", "mon", "mon", "mon", "mon", \
-           "mon", "mon", "mon"/)
+           "mon", "mon", "mon", "mon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("cmor_tables") + \
@@ -81,6 +83,7 @@ begin
       "/custom/CMOR_cltStderr.dat", \
       "/cmip5/Tables/CMIP5_Amon", \
       "/custom/CMOR_lwp.dat", \
+      "/cmip5/Tables/CMIP5_Amon", \
       "/cmip5/Tables/CMIP5_Amon", \
       "/cmip5/Tables/CMIP5_Amon", \
       "/cmip5/Tables/CMIP5_Amon", \
@@ -151,6 +154,13 @@ begin
           ; Convert units
           xx_all(i, :, :, :) = xx * CONV(vv)
 
+          ; *** calculate clwvi (lwp + iwp) ***
+          if (VAR(vv) .eq. "clwvi") then
+            xx2 = f->lwp_allsky * 0.001
+            xx_all(i, :, :, :) = xx_all(i, :, :, :) + xx2
+            delete(xx2)
+          end if
+
           if (firstime) then
             lat = f->lat
             lon = f->lon
@@ -161,6 +171,7 @@ begin
 
         delete(fname)
         delete(xx)
+
         xx = dim_avg_n(xx_all, 0)  ; ignore missing values
         delete(xx_all)
 

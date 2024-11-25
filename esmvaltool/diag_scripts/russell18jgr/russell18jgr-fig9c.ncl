@@ -107,7 +107,7 @@ end
 
 begin
 
-  plotpath = config_user_info@plot_dir + "/russell18jgr-fig9c_" \
+  plotpath = config_user_info@plot_dir + "russell18jgr-fig9c_" \
             + sprinti("%0.4i", min(toint(start_years_data))) + "-" \
             + sprinti("%0.4i", max(toint(end_years_data)))
 
@@ -227,9 +227,8 @@ begin
     if (all(ismissing(fx_var))) then
       error_msg("f", "russell18jgr-fig9c.ncl", " ", "areacello file for " + \
                 datasetnames(iii) + " not found in the metadata file, " + \
-                "please add 'fx_files: [areacello]' to the variable " + \
-                "dictionary in the recipe or add the location of " + \
-                " file to config-user.yml ")
+                + " not found in the metadata file, please specify " \
+                + "'areacello' as supplementary variable in the recipe.")
     end if
     areacello_2d = fx_var
 
@@ -304,13 +303,15 @@ begin
   "lgPerimOn"                : False                ; no perimeter
   "lgItemCount"              : dimsizes(annots)     ; how many
   "lgLabelStrings"           : annots               ; labels
-  "lgLabelsOn"               : True                 ; no default lables
+  "lgLabelsOn"               : True                 ; no default labels
   "lgLabelFontHeightF"       : 0.001                ; font height
-  "lgItemType"               : "markers"            ; line paterns
+  "lgItemType"               : "markers"            ; line patterns
   "lgMarkerColors"           : colors
   "lgMarkerIndexes"          : markers              ; one label color
   end create
   draw(legend)
+
+  frame(wks)
 
   do idd = 0, dimsizes(lat_width) - 1
     nc_filename = config_user_info@work_dir + "russell18jgr_fig9c_" \

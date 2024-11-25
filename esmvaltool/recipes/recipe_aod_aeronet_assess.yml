@@ -1,0 +1,65 @@
+# ESMValTool
+# recipe_aod_aeronet_assess.yml
+---
+documentation:
+  description: |
+    Recipe to plot seasonal maps of global aerosol optical depth (AOD) at 440nm.
+
+  title: Recipe that runs an AOD diagnostic
+
+  authors:
+    - hogan_emma
+    - lillis_jon
+    - hardacre_catherine
+
+  maintainer:
+    - hogan_emma
+    - lillis_jon
+    - hardacre_catherine
+
+  projects:
+    - esmval
+
+preprocessors:
+  ma_season_mean:
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: nearest
+    climate_statistics:
+      operator: mean
+      period: season
+      seasons: ['DJF', 'MAM', 'JJA', 'SON']
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+
+diagnostics:
+  od440aer_climatologies:
+    description: Visualise spatial multi-annual seasonal means AOD at 440nm.
+    variables:
+
+      od440aer: &var_od440aer
+        mip: AERmon
+        short_name: od440aer
+        start_year: 1994
+        end_year: 2014
+        additional_datasets:
+          - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20240406}
+
+      od440aer_season:
+        <<: *var_od440aer
+        preprocessor: ma_season_mean
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f2, grid: gn}
+          - {dataset: HadGEM3-GC31-LL, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f3, grid: gn}
+          - {dataset: EC-Earth3-AerChem, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f1, grid: gn}
+#          - {dataset: NorESM2-LM, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: GFDL-ESM4, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f1, grid: gr1}
+          - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f1, grid: gn}
+
+    scripts:
+      aeronet:
+        script: aerosols/aod_aeronet_assess.py
+        observational_dataset: AERONET
+        quickplot:
+          plot_type: plot
