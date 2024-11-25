@@ -42,6 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-arguments
 
+import warnings
 from copy import deepcopy
 
 import numpy as np
@@ -720,9 +721,9 @@ class TestAdvancedTransformedTargetRegressor():
             inverse_func=self.square,
             check_inverse=False,
         )
-        with pytest.warns(None) as record:
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")  # make sure no warning is raised
             areg._fit_transformer(self.Y_2D)
-        assert not record
 
     def test_fit_transformer_transformer(self):
         """Test ``_fit_transformer`` with transformer."""

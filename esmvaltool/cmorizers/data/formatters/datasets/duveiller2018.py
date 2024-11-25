@@ -111,13 +111,9 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             # Fix metadata
             fix_var_metadata(cube, var_info)
             # Fix coords
-            fix_coords(cube)
+            cube = fix_coords(cube)
             # Now set the time coordinate properly
             fix_time_coord_duveiller2018(cube)
-            # Latitude has to be increasing so flip it
-            # (this is not fixed in fix_coords)
-            logger.info("Flipping dimensional coordinate latitude")
-            cube = cube[:, ::-1, :]
             # Global attributes
             set_global_atts(cube, attrs)
             save_variable(cube, var, out_dir, attrs, local_keys=['positive'])

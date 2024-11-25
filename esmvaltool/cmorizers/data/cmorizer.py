@@ -10,6 +10,7 @@ import logging
 import os
 import shutil
 import subprocess
+import warnings
 from pathlib import Path
 
 import esmvalcore
@@ -18,13 +19,14 @@ from esmvalcore._task import write_ncl_settings
 from esmvalcore.config import CFG
 from esmvalcore.config._logging import configure_logging
 
+from esmvaltool import ESMValToolDeprecationWarning
 from esmvaltool.cmorizers.data.utilities import read_cmor_config
 
 logger = logging.getLogger(__name__)
 datasets_file = os.path.join(os.path.dirname(__file__), 'datasets.yml')
 
 
-class Formatter():
+class _Formatter():
     """
     Class to manage the download and formatting of datasets.
 
@@ -39,26 +41,40 @@ class Formatter():
         self.datasets_info = info
         self.config = ''
 
-    def start(self, command, datasets, config_file, options):
+    def start(self, command, datasets, config_file, config_dir, options):
         """Read configuration and set up formatter for data processing.
 
         Parameters
         ----------
         command: str
-            Name of the command to execute
+            Name of the command to execute.
         datasets: str
-            List of datasets to process, comma separated
+            List of datasets to process, comma separated.
         config_file: str
-            Config file to use
+            Config file to use. Option will be removed in v2.14.0.
+        config_dir: str
+            Config directory to use.
         options: dict()
-            Extra options to overwrite config user file
+            Extra options to overwrite configuration.
+
         """
         if isinstance(datasets, str):
             self.datasets = datasets.split(',')
         else:
             self.datasets = datasets
 
-        CFG.load_from_file(config_file)
+        if config_file is not None:  # remove in v2.14.0
+            CFG.load_from_file(config_file)
+        elif config_dir is not None:
+            config_dir = Path(
+                os.path.expandvars(config_dir)
+            ).expanduser().absolute()
+            if not config_dir.is_dir():
+                raise NotADirectoryError(
+                    f"Invalid --config_dir given: {config_dir} is not an "
+                    f"existing directory"
+                )
+            CFG.update_from_dirs([config_dir])
         CFG.update(options)
         self.config = CFG.start_session(f'data_{command}')
 
@@ -199,8 +215,9 @@ class Formatter():
                 failed_datasets.append(dataset)
 
         if failed_datasets:
-            raise Exception(
-                f'Format failed for datasets {" ".join(failed_datasets)}')
+            raise RuntimeError(
+                f'Format failed for datasets {" ".join(failed_datasets)}'
+            )
 
     @staticmethod
     def has_downloader(dataset):
@@ -400,7 +417,7 @@ class DataCommand():
     def __init__(self):
         with open(datasets_file, 'r', encoding='utf8') as data:
             self._info = yaml.safe_load(data)
-        self.formatter = Formatter(self._info)
+        self.formatter = _Formatter(self._info)
 
     def _has_downloader(self, dataset):
         return 'Yes' if self.formatter.has_downloader(dataset) else "No"
@@ -441,28 +458,48 @@ class DataCommand():
                  start=None,
                  end=None,
                  overwrite=False,
+                 config_dir=None,
                  **kwargs):
         """Download datasets.
 
         Parameters
         ----------
-        datasets : list(str)
+        datasets: list(str)
             List of datasets to format
-        config_file : str, optional
-            Path to ESMValTool's config user file, by default None
-        start : str, optional
+        config_file: str, optional
+            Path to ESMValTool's config user file, by default None.
+
+            .. deprecated:: 2.12.0
+                This option has been deprecated in ESMValTool version 2.12.0
+                and is scheduled for removal in version 2.14.0. Please use the
+                option `config_dir` instead.
+        start: str, optional
             Start of the interval to process, by default None. Valid formats
             are YYYY, YYYYMM and YYYYMMDD.
-        end : str, optional
+        end: str, optional
             End of the interval to process, by default None. Valid formats
             are YYYY, YYYYMM and YYYYMMDD.
-        overwrite : bool, optional
+        overwrite: bool, optional
             If true, download already present data again
+        config_dir: str, optional
+            Path to additional ESMValTool configuration directory. See
+            :ref:`esmvalcore:config_yaml_files` for details.
+
         """
+        if config_file is not None:
+            msg = (
+                "The option `config_file` has been deprecated in ESMValTool "
+                "version 2.12.0 and is scheduled for removal in version "
+                "2.14.0. Please use the option ``config_dir`` instead."
+            )
+            warnings.warn(msg, ESMValToolDeprecationWarning)
+
         start = self._parse_date(start)
         end = self._parse_date(end)
 
-        self.formatter.start('download', datasets, config_file, kwargs)
+        self.formatter.start(
+            'download', datasets, config_file, config_dir, kwargs
+        )
         self.formatter.download(start, end, overwrite)
 
     def format(self,
@@ -471,6 +508,7 @@ class DataCommand():
                start=None,
                end=None,
                install=False,
+               config_dir=None,
                **kwargs):
         """Format datasets.
 
@@ -480,6 +518,11 @@ class DataCommand():
             List of datasets to format
         config_file : str, optional
             Path to ESMValTool's config user file, by default None
+
+            .. deprecated:: 2.12.0
+                This option has been deprecated in ESMValTool version 2.12.0
+                and is scheduled for removal in version 2.14.0. Please use the
+                option `config_dir` instead.
         start : str, optional
             Start of the interval to process, by default None. Valid formats
             are YYYY, YYYYMM and YYYYMMDD.
@@ -488,11 +531,25 @@ class DataCommand():
             are YYYY, YYYYMM and YYYYMMDD.
         install : bool, optional
             If true, move processed data to the folder, by default False
+        config_dir: str, optional
+            Path to additional ESMValTool configuration directory. See
+            :ref:`esmvalcore:config_yaml_files` for details.
+
         """
+        if config_file is not None:
+            msg = (
+                "The option `config_file` has been deprecated in ESMValTool "
+                "version 2.12.0 and is scheduled for removal in version "
+                "2.14.0. Please use the option ``config_dir`` instead."
+            )
+            warnings.warn(msg, ESMValToolDeprecationWarning)
+
         start = self._parse_date(start)
         end = self._parse_date(end)
 
-        self.formatter.start('formatting', datasets, config_file, kwargs)
+        self.formatter.start(
+            'formatting', datasets, config_file, config_dir, kwargs
+        )
         self.formatter.format(start, end, install)
 
     def prepare(self,
@@ -502,6 +559,7 @@ class DataCommand():
                 end=None,
                 overwrite=False,
                 install=False,
+                config_dir=None,
                 **kwargs):
         """Download and format a set of datasets.
 
@@ -511,6 +569,11 @@ class DataCommand():
             List of datasets to format
         config_file : str, optional
             Path to ESMValTool's config user file, by default None
+
+            .. deprecated:: 2.12.0
+                This option has been deprecated in ESMValTool version 2.12.0
+                and is scheduled for removal in version 2.14.0. Please use the
+                option `config_dir` instead.
         start : str, optional
             Start of the interval to process, by default None. Valid formats
             are YYYY, YYYYMM and YYYYMMDD.
@@ -521,11 +584,25 @@ class DataCommand():
             If true, move processed data to the folder, by default False
         overwrite : bool, optional
             If true, download already present data again
+        config_dir: str, optional
+            Path to additional ESMValTool configuration directory. See
+            :ref:`esmvalcore:config_yaml_files` for details.
+
         """
+        if config_file is not None:
+            msg = (
+                "The option `config_file` has been deprecated in ESMValTool "
+                "version 2.12.0 and is scheduled for removal in version "
+                "2.14.0. Please use the option ``config_dir`` instead."
+            )
+            warnings.warn(msg, ESMValToolDeprecationWarning)
+
         start = self._parse_date(start)
         end = self._parse_date(end)
 
-        self.formatter.start('preparation', datasets, config_file, kwargs)
+        self.formatter.start(
+            'preparation', datasets, config_file, config_dir, kwargs
+        )
         if self.formatter.download(start, end, overwrite):
             self.formatter.format(start, end, install)
         else:
