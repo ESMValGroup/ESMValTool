@@ -24,6 +24,7 @@ def run_automatic_slwt(cfg: dict):
     preproc_variables_dict, _, _, \
         work_dir, plotting, _, predefined_slwt = get_cfg_vars(cfg)
     for dataset_name, dataset_vars in preproc_variables_dict.items():
+        timerange = dataset_vars[0].get('timerange').replace('/', '-')
         if dataset_name == 'ERA5':
             wt_preproc, wt_preproc_prcp, wt_preproc_prcp_eobs = \
                 load_wt_preprocessors(dataset_name, preproc_variables_dict)
@@ -43,6 +44,7 @@ def run_automatic_slwt(cfg: dict):
                     wt_preproc_prcp,
                     dataset_name,
                     era5_ancestors,
+                    timerange
                 )
                 slwt_eobs = calc_slwt_obs(
                     cfg,
@@ -50,6 +52,7 @@ def run_automatic_slwt(cfg: dict):
                     wt_preproc_prcp_eobs,
                     'E-OBS',
                     eobs_ancestors,
+                    timerange
                 )
             else:
                 slwt_era5, slwt_eobs = run_predefined_slwt(work_dir,
@@ -76,10 +79,10 @@ def run_automatic_slwt(cfg: dict):
                                  'preproc_path': var_data[1],
                                  'ensemble':
                                      dataset_vars[0].get('ensemble', ''),
-                                 'timerange': dataset_vars[0].
-                                     get('timerange').replace('/', '-')}
+                                 'timerange': timerange}
                     plot_means(cfg, var_data[0], wt_cubes, data_info)
-                plot_seasonal_occurrence(cfg, wt_cubes, dataset_name)
+                plot_seasonal_occurrence(cfg, wt_cubes, dataset_name,
+                                         timerange)
         else:
             if dataset_name == 'E-OBS':
                 continue
@@ -87,14 +90,12 @@ def run_automatic_slwt(cfg: dict):
 
             output_file_path, preproc_path = get_model_output_filepath(
                 dataset_name, dataset_vars)
-
             # calculate weathertypes
             data_info = {'dataset': dataset_name,
                          'preproc_path': preproc_path,
                          'output_file_path': output_file_path,
                          'ensemble': dataset_vars[0].get('ensemble', ''),
-                         'timerange': dataset_vars[0].get(
-                             'timerange').replace('/', '-')}
+                         'timerange': timerange}
             calc_lwt_slwt_model(cfg, wt_preproc, data_info, predefined_slwt)
 
             # load wt files
@@ -113,12 +114,11 @@ def run_automatic_slwt(cfg: dict):
                                  'preproc_path': var_data[1],
                                  'ensemble': dataset_vars[0].get(
                                      'ensemble', ''),
-                                 'timerange':
-                                     dataset_vars[0].
-                                     get('timerange').replace('/', '-')}
+                                 'timerange': timerange}
                     plot_means(cfg, var_data[0], wt_cubes, data_info,
                                only_lwt=True)
                 plot_seasonal_occurrence(cfg, wt_cubes, dataset_name,
+                                         timerange,
                                          ensemble=dataset_vars[0].
                                          get('ensemble', ''))
 
@@ -172,17 +172,18 @@ def run_lwt(cfg: dict):
 
             if plotting:
                 # plot means
+                timerange = dataset_vars[0].get('timerange').replace('/', '-')
                 for var_name, var_data in var_dict.items():
                     data_info = {'dataset': dataset_name,
                                  'var': var_name,
                                  'preproc_path': var_data[1],
                                  'ensemble': dataset_vars[0].get(
                                      'ensemble', ''),
-                                 'timerange': dataset_vars[0].get(
-                                     'timerange').replace('/', '-')}
+                                 'timerange': timerange}
                     plot_means(cfg, var_data[0], wt_cubes, data_info,
                                only_lwt=True)
-                plot_seasonal_occurrence(cfg, wt_cubes, dataset_name)
+                plot_seasonal_occurrence(cfg, wt_cubes, dataset_name,
+                                         timerange)
         else:
             if dataset_name == 'E-OBS':
                 continue
@@ -192,7 +193,11 @@ def run_lwt(cfg: dict):
                 dataset_name, dataset_vars)[1]
 
             # calculate weathertypes
-            calc_lwt_model(cfg, wt_preproc, dataset_name, output_file_path)
+            data_info = {'output_file_path': output_file_path,
+                         'ensemble': dataset_vars[0].get('ensemble', ''),
+                         'timerange': timerange}
+            calc_lwt_model(cfg, wt_preproc, dataset_name, output_file_path,
+                           data_info)
 
             # load wt files
             wt_cubes = load_wt_files(f'{work_dir}/{dataset_name}.nc',
@@ -204,6 +209,7 @@ def run_lwt(cfg: dict):
 
             if plotting:
                 # plot means
+                timerange = dataset_vars[0].get('timerange').replace('/', '-')
                 ensemble = dataset_vars[0].get('ensemble')
                 for var_name, var_data in var_dict.items():
                     data_info = {'dataset': dataset_name,
@@ -211,11 +217,11 @@ def run_lwt(cfg: dict):
                                  'preproc_path': var_data[1],
                                  'ensemble': dataset_vars[0].get(
                                      'ensemble', ''),
-                                 'timerange': dataset_vars[0].get(
-                                     'timerange').replace('/', '-')}
+                                 'timerange': timerange}
                     plot_means(cfg, var_data[0], wt_cubes, data_info,
                                only_lwt=True)
                 plot_seasonal_occurrence(cfg, wt_cubes, dataset_name,
+                                         timerange,
                                          ensemble=ensemble)
 
 

@@ -83,31 +83,31 @@ Example plots
 -------------
 
 .. _fig_weathertyping_1:
-.. figure::  /recipes/figures/weathertyping/lwt_1_ERA5_psl_mean.png
+.. figure::  /recipes/figures/weathertyping/lwt_1_ERA5__psl_mean_1958-2014.png
    :align:   center
 
    PSL mean map of Lamb WT 1 for ERA5.
 
 .. _fig_weathertyping_2:
-.. figure::  /recipes/figures/weathertyping/lwt_1_TaiESM1_psl_mean.png
+.. figure::  /recipes/figures/weathertyping/lwt_1_TaiESM1_r1i1p1f1_psl_mean_1958-2014.png
    :align:   center
 
    PSL mean map of Lamb WT 1 for TaiESM1.
 
 .. _fig_weathertyping_3:
-.. figure::  /recipes/figures/weathertyping/slwt_EOBS_4_ERA5_psl_mean.png
+.. figure::  /recipes/figures/weathertyping/slwt_EOBS_4_ERA5__psl_mean_1958-2014.png
    :align:   center
 
    PSL mean map of slwt_EOBS 4 for ERA5 (in this case combined Lamb WT 24 and 23).
 
 .. _fig_weathertyping_4:
-.. figure::  /recipes/figures/weathertyping/correlation_matrix_E-OBS.png
+.. figure::  /recipes/figures/weathertyping/correlation_matrix_E-OBS_1958-2014.png
    :align:   center
 
    Heatmap of correlation values for Lamb WTs 1-27.
 
 .. _fig_weathertyping_5:
-.. figure::  /recipes/figures/weathertyping/ERA5__lwt_rel_occurrence.png
+.. figure::  /recipes/figures/weathertyping/ERA5__lwt_rel_occurrence_1958-2014.png
    :align:   center
 
    Stackplot of seasonal relative occureences of each WT for ERA5.

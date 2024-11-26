@@ -51,7 +51,8 @@ def generate_grayscale_hex_values(x):
 
 
 def plot_seasonal_occurrence(cfg: dict, wt_cubes: iris.cube.Cube,
-                             dataset_name: str, ensemble: str = ""):
+                             dataset_name: str, timerange: str,
+                             ensemble: str = ""):
     """Plot relative monthly/seasonal occurrence of weathertypes.
 
     Args:
@@ -99,7 +100,8 @@ def plot_seasonal_occurrence(cfg: dict, wt_cubes: iris.cube.Cube,
         # plot
         _, ax_ = plt.subplots(figsize=(10, 10))
 
-        ax_.set_title(f'{dataset_name}')
+        ax_.set_title(f'Seasonal occurence of {wt_string}, \
+            {dataset_name}, {timerange}')
 
         ax_.stackplot(x, y, colors=colors)
 
@@ -113,9 +115,9 @@ def plot_seasonal_occurrence(cfg: dict, wt_cubes: iris.cube.Cube,
         ax_.set_ylabel('Cumulative Relative occurrence')
 
         plt.savefig(f'{output_path}/{dataset_name}_{ensemble}_'
-                    f'{wt_string}_rel_occurrence.png')
+                    f'{wt_string}_rel_occurrence_{timerange}.png')
         plt.savefig(f'{output_path}/{dataset_name}_{ensemble}_'
-                    f'{wt_string}_rel_occurrence.pdf')
+                    f'{wt_string}_rel_occurrence_{timerange}.pdf')
         plt.close()
 
 
@@ -445,7 +447,7 @@ def write_mapping_dict(work_dir: str, dataset: str, mapping_dict: dict):
 
 
 def calc_slwt_obs(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
-                  dataset: str, ancestors: list) -> np.array:
+                  dataset: str, ancestors: list, timerange: str) -> np.array:
     """Calculate simplified weathertypes for observation datasets based on \
         precipitation patterns over specified area.
 
@@ -489,7 +491,7 @@ def calc_slwt_obs(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
         wt_data_prcp.append(wt_cube_mean.data.compressed())
     selected_pairs = process_prcp_mean(cfg, wt_data_prcp,
                                        correlation_threshold,
-                                       rmse_threshold, dataset)
+                                       rmse_threshold, dataset, timerange)
 
     with open(f'{work_dir}/wt_selected_pairs_{dataset}.json',
               'w',
@@ -809,6 +811,8 @@ def calc_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube,
     dataset = data_info.get('dataset')
     preproc_path = data_info.get('preproc_path')
     output_file_path = data_info.get('output_file_path')
+    ensemble = data_info.get('ensemble', '')
+    timerange = data_info.get('timerange')
 
     if not os.path.exists(f'{work_dir}/{output_file_path}'):
         os.makedirs(f'{work_dir}/{output_file_path}')
@@ -851,7 +855,8 @@ def calc_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube,
     wt_cube[1].add_dim_coord(tcoord, 0)
     wt_cube[2].add_dim_coord(tcoord, 0)
 
-    iris.save(wt_cube, f'{work_dir}/{output_file_path}/{dataset}.nc')
+    iris.save(wt_cube, f'{work_dir}/{output_file_path}/{dataset}_'
+              f'{ensemble}_{timerange}.nc')
 
     # write to csv file
     d = {
@@ -861,7 +866,9 @@ def calc_lwt_slwt_model(cfg: dict, cube: iris.cube.Cube,
         'slwt_EOBS': np.int8(slwt_eobs),
     }
     df = pd.DataFrame(data=d)
-    df.to_csv(f'{work_dir}/{output_file_path}/{dataset}.csv', index=False)
+    df.to_csv(f'{work_dir}/{output_file_path}/{dataset}_{ensemble}_'
+              f'{timerange}.csv',
+              index=False)
 
     ancestors = [
         preproc_path, f'{work_dir}/wt_mapping_dict_ERA5.json',
@@ -1083,7 +1090,8 @@ def reverse_convert_dict(dict_: dict) -> dict:
 
 
 def plot_corr_rmse_heatmaps(cfg: dict, pattern_correlation_matrix: np.array,
-                            rmse_matrix: np.array, dataset: str):
+                            rmse_matrix: np.array, dataset: str,
+                            timerange: str):
     """Plot heatmaps for correlation and rmse matrices.
 
     Args:
@@ -1104,7 +1112,7 @@ def plot_corr_rmse_heatmaps(cfg: dict, pattern_correlation_matrix: np.array,
     mask[np.triu_indices_from(mask)] = True
     with sns.axes_style('white'):
         plt.figure(figsize=(10, 10))
-        plt.title('Correlation Matrix')
+        plt.title(f'Correlation Matrix , {dataset}, {timerange}')
         levels = np.linspace(np.min(pattern_correlation_matrix),
                              np.max(pattern_correlation_matrix), 9)
         ax = sns.heatmap(pattern_correlation_matrix,
@@ -1125,15 +1133,17 @@ def plot_corr_rmse_heatmaps(cfg: dict, pattern_correlation_matrix: np.array,
         ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
         ax.set_ylabel('lwt', fontsize=8)
         plt.tight_layout()
-        plt.savefig(f'{output_path}/correlation_matrix_{dataset}.png')
-        plt.savefig(f'{output_path}/correlation_matrix_{dataset}.pdf')
+        plt.savefig(f'{output_path}/correlation_matrix_{dataset}_'
+                    f'{timerange}.png')
+        plt.savefig(f'{output_path}/correlation_matrix_{dataset}_'
+                    f'{timerange}.pdf')
         plt.close()
 
     mask = np.zeros_like(rmse_matrix)
     mask[np.triu_indices_from(mask)] = True
     with sns.axes_style('white'):
         plt.figure(figsize=(10, 10))
-        plt.title('RMSE Matrix')
+        plt.title(f'RMSE Matrix, {dataset}, {timerange}')
         levels = np.linspace(np.min(rmse_matrix), np.max(rmse_matrix), 9)
         ax = sns.heatmap(rmse_matrix,
                          mask=mask,
@@ -1153,8 +1163,10 @@ def plot_corr_rmse_heatmaps(cfg: dict, pattern_correlation_matrix: np.array,
         ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
         ax.set_ylabel('lwt', fontsize=8)
         plt.tight_layout()
-        plt.savefig(f'{output_path}/rmse_matrix_{dataset}.png')
-        plt.savefig(f'{output_path}/rmse_matrix_{dataset}.pdf')
+        plt.savefig(f'{output_path}/rmse_matrix_{dataset}_'
+                    f'{timerange}.png')
+        plt.savefig(f'{output_path}/rmse_matrix_{dataset}_'
+                    f'{timerange}.pdf')
         plt.close()
 
 
@@ -1187,7 +1199,8 @@ def write_corr_rmse_to_csv(cfg: dict, pattern_correlation_matrix: np.array,
 
 
 def process_prcp_mean(cfg: dict, data: np.array, correlation_threshold: float,
-                      rmse_threshold: float, dataset: str) -> list:
+                      rmse_threshold: float, dataset: str,
+                      timerange: str) -> list:
     """Process precipitation fields for specified area to get a list of
     selected pairs of weathertypes with the highest correlation (higher than
     correlation_threshold) and smallest RSME (smaller than rsme_threshold) for
@@ -1226,7 +1239,7 @@ def process_prcp_mean(cfg: dict, data: np.array, correlation_threshold: float,
                            dataset)
     # plot heatmaps for matrices
     plot_corr_rmse_heatmaps(cfg, pattern_correlation_matrix, rmse_matrix,
-                            dataset)
+                            dataset, timerange)
 
     return selected_pairs
 
@@ -1646,7 +1659,7 @@ def write_lwt_to_file(cfg: dict, lwt: np.array, cube: iris.cube.Cube,
 
 
 def calc_lwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str,
-                   output_file_path: str):
+                   data_info: dict):
     """Calculate lwt for model data.
 
     Args:
@@ -1657,6 +1670,10 @@ def calc_lwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str,
     """
 
     work_dir = cfg.get('work_dir')
+    dataset = data_info.get('dataset')
+    output_file_path = data_info.get('output_file_path')
+    ensemble = data_info.get('ensemble', '')
+    timerange = data_info.get('timerange')
 
     if not os.path.exists(f'{work_dir}/{output_file_path}'):
         os.makedirs(f'{work_dir}/{output_file_path}')
@@ -1675,12 +1692,24 @@ def calc_lwt_model(cfg: dict, cube: iris.cube.Cube, dataset: str,
 
     wt_cube[0].add_dim_coord(tcoord, 0)
 
-    iris.save(wt_cube, f'{work_dir}/{output_file_path}/{dataset}.nc')
+    iris.save(wt_cube, f'{work_dir}/{output_file_path}/{dataset}'
+              f'_{ensemble}_{timerange}.nc')
 
     # write to csv file
     d = {'date': time_points[:], 'lwt': np.int8(wt)}
     df = pd.DataFrame(data=d)
-    df.to_csv(f'{work_dir}/{output_file_path}/{dataset}.csv', index=False)
+    df.to_csv(f'{work_dir}/{output_file_path}/{dataset}_{ensemble}_'
+              f'{timerange}.csv', index=False)
+
+    ancestors = [f'{work_dir}/wt_mapping_dict_ERA5.json',
+                 f'{work_dir}/wt_mapping_dict_E-OBS.json']
+    provenance_record = get_provenance_record('Lamb Weathertypes',
+                                              ancestors,
+                                              ['Lamb Weathertypes'],
+                                              False, False)
+
+    log_provenance(f'{work_dir}/{output_file_path}/{dataset}',
+                   cfg, provenance_record)
 
 
 def map_lwt_to_slwt(lwt: np.array, mapping_dict: dict) -> np.array:
