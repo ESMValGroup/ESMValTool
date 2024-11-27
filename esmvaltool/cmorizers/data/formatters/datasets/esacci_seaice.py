@@ -141,7 +141,7 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0, region):
     # (global) attributes to remove
     drop_attrs = ['tracking_id', 'id', 'time_coverage_start',
                   'time_coverage_end', 'date_created',
-                  'inputfilelist', 'history']
+                  'inputfilelist', 'history', 'valid_min', 'valid_max']
 
     new_list = iris.cube.CubeList()
 
