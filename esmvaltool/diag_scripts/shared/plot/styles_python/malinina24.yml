@@ -44,8 +44,8 @@ ssp245:
   thick: 1
 default:
   avgstd: 0
-  color: '#000000'
+  color: '#1A0F50'
   dash: '-'
-  facecolor: '#000000'
+  facecolor: '#1A0F50'
   mark: o
   thick: 1
