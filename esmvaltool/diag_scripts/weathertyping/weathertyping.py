@@ -133,6 +133,7 @@ def run_lwt(cfg: dict):
     preproc_variables_dict, _, _, \
         work_dir, plotting, _, _ = get_cfg_vars(cfg)
     for dataset_name, dataset_vars in preproc_variables_dict.items():
+        timerange = dataset_vars[0].get('timerange').replace('/', '-')
         if dataset_name == 'ERA5':
             wt_preproc, wt_preproc_prcp, wt_preproc_prcp_eobs = \
                 load_wt_preprocessors(dataset_name, preproc_variables_dict)
@@ -150,6 +151,7 @@ def run_lwt(cfg: dict):
                     wt_preproc_prcp,
                     dataset_name,
                     era5_ancestors,
+                    timerange
                 )
             _ = calc_slwt_obs(
                 cfg,
@@ -157,6 +159,7 @@ def run_lwt(cfg: dict):
                 wt_preproc_prcp_eobs,
                 'E-OBS',
                 eobs_ancestors,
+                timerange
             )
 
             # write only lwt to file
@@ -196,8 +199,7 @@ def run_lwt(cfg: dict):
             data_info = {'output_file_path': output_file_path,
                          'ensemble': dataset_vars[0].get('ensemble', ''),
                          'timerange': timerange}
-            calc_lwt_model(cfg, wt_preproc, dataset_name, output_file_path,
-                           data_info)
+            calc_lwt_model(cfg, wt_preproc, dataset_name, data_info)
 
             # load wt files
             wt_cubes = load_wt_files(f'{work_dir}/{dataset_name}.nc',
