@@ -307,7 +307,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 filepattern = os.path.join(
                     in_dir, region,
                     var['file'].format(year=loop_date.year, region=region)
-                                          )
+                )
                 in_files = glob.glob(filepattern)
                 if not in_files:
                     logger.info('%d: no data not found for '
