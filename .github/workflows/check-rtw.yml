@@ -33,16 +33,13 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job
       # can access it
-      - uses: actions/checkout@v4
-      - uses: conda-incubator/setup-miniconda@v3
-        with:
-          miniforge-version: "latest"
-          miniforge-variant: Miniforge3
-          use-mamba: true
-          conda-remove-defaults: "true"
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Install Cylc and Rose
-        run: conda install cylc-flow>=8.2 cylc-rose metomi-rose
+      - name: Setup Cylc
+        uses: cylc/setup-cylc@v1
+        with:
+          cylc_rose: true
 
       - name: Check current environment
         run: conda list
