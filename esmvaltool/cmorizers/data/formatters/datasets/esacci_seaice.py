@@ -29,8 +29,8 @@ from dask import array as da
 from esmvalcore.cmor._fixes.common import OceanFixGrid
 from esmvalcore.cmor.table import CMOR_TABLES
 from esmvalcore.preprocessor import monthly_statistics
-from esmvaltool.cmorizers.data import utilities as utils
 from iris.coords import AuxCoord
+from esmvaltool.cmorizers.data import utilities as utils
 
 from ...utilities import save_variable
 
@@ -307,7 +307,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 filepattern = os.path.join(
                     in_dir, region,
                     var['file'].format(year=loop_date.year, region=region)
-                    )
+                                          )
                 in_files = glob.glob(filepattern)
                 if not in_files:
                     logger.info('%d: no data not found for '
