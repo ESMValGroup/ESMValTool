@@ -11,7 +11,7 @@ documentation:
     - malinina_elizaveta
 
 preprocessors:
-  preproc_txnx_flat:
+  preproc_model:
     custom_order: True
     regrid:
       target_grid: 0.5x0.5
@@ -41,7 +41,7 @@ preprocessors:
         end_month: 6
         end_day: 30
 
-  preproc_era_txnx:
+  preproc_era:
     custom_order: True  
     extract_shape:
       shapefile: Stone_regions_WRAF05_v4_1_Canada.shp
@@ -52,7 +52,8 @@ preprocessors:
           - Alberta
     area_statistics:
       operator: mean 
-    annual_statistics:
+    sesonal_statistics:
+      seasons: JASONDJFMAMJ
       operator: min
     anomalies:
       period: full
@@ -80,7 +81,9 @@ datasets_cmip: &datasets_cmip
   - {dataset: EC-Earth3, ensemble: r4i1p1f1, grid: gr}
   - {dataset: EC-Earth3, ensemble: r(6:7)i1p1f1, grid: gr}
   - {dataset: EC-Earth3, ensemble: r(9:10)i1p1f1, grid: gr}
-  - {dataset: EC-Earth3-Veg, ensemble: r(1:5)i1p1f1, grid: gr}
+  - {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr}
+  - {dataset: EC-Earth3-Veg, ensemble: r3i1p1f1, grid: gr}
+  - {dataset: EC-Earth3-Veg, ensemble: r5i1p1f1, grid: gr}
   - {dataset: EC-Earth3-Veg-LR, ensemble: r(1:3)i1p1f1, grid: gr}
   - {dataset: FGOALS-g3, institute: CAS, ensemble: r1i1p1f1, grid: gn}
   - {dataset: FGOALS-g3, institute: CAS, ensemble: r3i1p1f1, grid: gn}
@@ -96,6 +99,7 @@ datasets_cmip: &datasets_cmip
   - {dataset: IPSL-CM6A-LR, institute: IPSL, ensemble: r25i1p1f1, grid: gr}
   - {dataset: KACE-1-0-G, ensemble: r(1:3)i1p1f1, grid: gr}
   - {dataset: MIROC6, institute: MIROC, ensemble: r(1:50)i1p1f1, grid: gn}
+  - {dataset: MIROC-ES2L, institute: MIROC, ensemble: r1i1p1f2, grid: gn}
   - {dataset: MPI-ESM1-2-LR, institute: MPI-M, ensemble: r(1:49)i1p1f1, grid: gn} 
   - {dataset: MPI-ESM1-2-HR, ensemble: r(1:2)i1p1f1, grid: gn} 
   - {dataset: MRI-ESM2-0, institute: MRI, ensemble: r(1:5)i1p1f1, grid: gn}
@@ -117,16 +121,14 @@ diagnostics:
       txnx_all:
         short_name: tasmin
         exp: [historical, ssp245]
-        start_year: 1941
-        end_year: 2023
+        timerange: '19410701/20230630'
         mip: day
         project: CMIP6
         preprocessor: preproc_txnx_flat
         additional_datasets: *datasets_cmip
       reference: 
         short_name: tasmin
-        start_year: 1941
-        end_year: 2023
+        timerange: '19410701/20230630'
         mip: day
         preprocessor: preproc_era_txnx 
         additional_datasets: *dataset_era
@@ -136,16 +138,16 @@ diagnostics:
         mpl_style: malinina24
         color_style: malinina24
         model_weighting: False
-        figure_label: 
+        units: C
         region: Alberta # needed for the figure title
         var_label: TNn # needed for axis name
-        figure_caption: '' 
+        # figure_caption: '' 
       variability:
         script: eccc_extremes/variability_evaluation.py
         mpl_style: malinina24
         color_style: malinina24
         model_weighting: True
-        figure_label: 
+        units: C
         region: Alberta # needed for the figure title
         var_label: TNn # needed for axis name
-        figure_caption: '' 
+        # figure_caption: '' 
