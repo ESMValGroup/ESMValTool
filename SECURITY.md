@@ -16,4 +16,4 @@ If you find a vulnerability, please contact the
 [ESMValTool Tech Lead Team][TLT].
 
 [latest]: https://github.com/ESMValGroup/ESMValTool/releases
-[TLT]: https://github.com/ESMValGroup/Community/tree/main/Tech%20Lead
+[TLT]: mailto:esmvaltool_tech_lead_team@listserv.dfn.de
