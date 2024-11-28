@@ -68,7 +68,7 @@ dependencies:
   - seawater
   - shapely >=2.0.2
   - xarray >=0.12.0
-  - xesmf >=0.7.1
+  # - xesmf >=0.7.1  # nay Py3.13 yet via Numba
   - xgboost >1.6.1  # github.com/ESMValGroup/ESMValTool/issues/2779
   - xlsxwriter
   - zarr
