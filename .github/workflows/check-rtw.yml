@@ -8,9 +8,6 @@ on:
     paths:
       - esmvaltool/utils/recipe_test_workflow/**
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
   # Schedule this workflow to run at 04:00 every 10 days
   schedule:
     - cron: '0 4 */10 * *'
