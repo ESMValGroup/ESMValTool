@@ -1,0 +1,23 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: ESACCI-SEAICE
+  version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0
+  tier: 2
+  modeling_realm: sat
+  project_id: OBS6
+  source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sea_ice_'
+  reference: 'esacci-seaice'
+  comment: ''
+
+# Variables to cmorize (here use only filename prefix)
+variables:
+# daily and monthly frequency 
+  siconc:
+    short_name: siconc
+    mip1: SIday
+    mip2: SImon
+    raw: ice_conc
+    frequency1: day
+    frequency2: mon
+    file: ESACCI-SEAICE-L4-SICONC-RE_SSMI_12.5kmEASE2-{region}-{year}*-fv3.0.nc
