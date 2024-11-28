@@ -24,7 +24,7 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
-  - esmvalcore 2.11.*
+  # - esmvalcore 2.11.*  # nay Py3.13 yet
   - fiona
   - fire
   - fsspec
