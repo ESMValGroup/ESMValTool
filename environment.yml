@@ -50,7 +50,7 @@ dependencies:
   - prov
   - psyplot >=1.5.0
   - psy-maps >=1.5.0
-  - psy-reg >=1.5.0
+  # - psy-reg >=1.5.0  # nay Py3.13 yet
   # - psy-simple >=1.5.0  # nay Py3.13 yet
   - pyproj >=2.1
   # - pys2index  # only from conda-forge  # not py313 compat
@@ -99,7 +99,7 @@ dependencies:
   - yapf ==0.32.0
 
   # NCL and dependencies
-  # - ncl >=6.6.2
+  # - ncl >=6.6.2  # nay Py3.13 yet
   - cdo
   - imagemagick
   - nco
