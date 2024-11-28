@@ -40,7 +40,7 @@ dependencies:
   - natsort
   - nc-time-axis
   - netCDF4
-  - numba
+  # - numba  # nay Py3.13 yet
   - numpy !=1.24.3  # severe masking bug
   - openpyxl
   - packaging
