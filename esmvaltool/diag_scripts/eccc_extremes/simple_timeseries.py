@@ -40,8 +40,13 @@ def obtain_reference(data_group: list):
     maxs = list()
 
     for dataset_f in ref_fnames.keys():
+        dataset_n = ref_fnames[dataset_f][0]['dataset']
+        if len(group_metadata(data_group, 'dataset')[dataset_n])>1:
+            key = ref_fnames[dataset_f][0]['alias']
+        else: 
+            key = dataset_n
         ref_cb = iris.load_cube(dataset_f)
-        reference_dic[dataset_f] = ref_cb
+        reference_dic[key] = ref_cb
         # make key dataset if there's only one filename of this dataset otherwise alias
         mins.append(ref_cb.collapsed('time', iris.analysis.MIN).data)
         maxs.append(ref_cb.collapsed('time', iris.analysis.MAX).data)
@@ -55,7 +60,7 @@ def obtain_reference(data_group: list):
 def create_provenance(caption: str):
     '''Creates provenance dictionary'''
 
-    provenance_dic = {'authors': ['malinina24'], 
+    provenance_dic = {'authors': ['malinina_elizaveta'], 
                       'caption': caption,
                       'references': ['malinina24']}
 
@@ -93,28 +98,28 @@ def plot_timeseries(data_dic: dict, reference_dic: dict, cfg: dict,
         model_var_data = list()
         weights = list()
 
-        for i in range(0,len(data_dic[dataset]['var_data'])):
-            var_cb = data_dic[dataset]['var_data'][i]
+        for i in range(0,len(data_dic[dataset])):
+            var_cb = data_dic[dataset][i]
             model_var_data.append(var_cb.data)
             weights.append(var_cb.attributes['ensemble_weight']*
-                            var_cb[i].attributes['reverse_dtsts_n'])
+                            var_cb.attributes['reverse_dtsts_n'])
         weights = np.array(weights)
         model_var_data = np.array(model_var_data)
         mean_var_arr = np.average(model_var_data, axis=0)
         min_var_arr = np.min(model_var_data, axis=0)
         max_var_arr = np.max(model_var_data, axis=0)
         
-        years = [var_cb.coord('time').cell(i).year for i in range(len(var_cb.coord('time')))]
+        years = [var_cb.coord('time').cell(i).point.year for i in range(var_cb.coord('time').shape[0])]
 
         color_st = eplot.get_dataset_style(dataset, cfg.get('color_style'))
         ax_ts.plot(years, mean_var_arr, c=color_st['color'], zorder=3, label=dataset)
-        if len(data_dic[dataset]['var_data'])>1:
+        if len(data_dic[dataset])>1:
             ax_ts.fill_between(years, min_var_arr, max_var_arr, color=color_st['color'], lw=0, alpha=0.25)
 
         for ref_data in reference_dic.keys():
             ref_cb = reference_dic.get(ref_data)
             ref_color_st = eplot.get_dataset_style(ref_data, cfg.get('color_style'))
-            ref_years = [ref_cb.coord('time').cell(i).year for i in range(len(ref_cb.coord('time')))]
+            ref_years = [ref_cb.coord('time').cell(i).point.year for i in range(ref_cb.coord('time').shape[0])]
             ax_ts.plot(ref_years,ref_cb.data, label=ref_data, c=ref_color_st['color'], zorder=3)
 
         ax_ts.axhline(color='grey', zorder=1)
@@ -122,12 +127,14 @@ def plot_timeseries(data_dic: dict, reference_dic: dict, cfg: dict,
         ax_ts.legend(loc=0, ncols=4, fancybox=False, frameon=False)
 
         variable = cfg['var_label'] if cfg.get('var_label') else var_cb.var_name
+        exp_variable = variable.replace('_', ' ')
         units = cfg['units'] if cfg.get('units') else var_cb.units
         region = cfg['region'] if cfg.get('units') else 'region'
 
-        ax_ts.set_ylabel(f'{variable.replace('_', ' ')} , {units}')
+        ax_ts.set_ylabel(f'{exp_variable}, {units}')
+        ax_ts.set_xlabel('year')
 
-        default_caption = f'Timeseries of {variable} in {region}'
+        default_caption = f'Timeseries of {exp_variable} in {region}'
 
         caption = cfg['figure_caption'] if cfg.get('figure_caption') else default_caption
         
@@ -160,7 +167,11 @@ def main(cfg):
     maxs.append(ref_max)
     mins.append(ref_min)
 
-    datasets = group_metadata(groups, 'dataset')
+    remaining_metadata = []
+    for k in groups.keys():
+        remaining_metadata.extend(groups[k])
+
+    datasets = group_metadata(remaining_metadata, 'dataset')
     ens_var_cubelist = iris.cube.CubeList()
     for dataset in datasets.keys():
         filepaths = list(group_metadata(datasets[dataset], 'filename').keys())
@@ -175,8 +186,8 @@ def main(cfg):
             mod_var_cubelist.append(mod_cb)
             mins.append(mod_cb.collapsed('time', iris.analysis.MIN).data)
             maxs.append(mod_cb.collapsed('time', iris.analysis.MAX).data)
-        data_dic[dataset] = {'var_data': mod_var_cubelist}
-        data_dic['Multi-Model-Mean'] = {'var_data' : ens_var_cubelist}
+        data_dic[dataset] = mod_var_cubelist
+    data_dic['Multi-Model'] = ens_var_cubelist
 
     plot_timeseries(data_dic, reference_dic, cfg, 
                     min_val=np.asarray(mins).min(), 

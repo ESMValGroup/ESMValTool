@@ -1,18 +1,13 @@
-import csv
 import iris
-import climextremes as cex
 import iris.cube
-import pandas as pd
 import logging
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from scipy.stats import genextreme as gev
 
 # import internal esmvaltool modules here
-from esmvaltool.diag_scripts.shared import run_diagnostic, select_metadata, group_metadata, save_figure
+from esmvaltool.diag_scripts.shared import run_diagnostic, group_metadata, save_figure
 import esmvaltool.diag_scripts.shared.plot as eplot
-from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 # # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 # logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
@@ -38,9 +33,13 @@ def obtain_reference(data_group: list):
     ref_fnames = group_metadata(data_group, 'filename')
 
     for dataset_f in ref_fnames.keys():
+        dataset_n = ref_fnames[dataset_f][0]['dataset']
+        if len(group_metadata(data_group, 'dataset')[dataset_n])>1:
+            key = ref_fnames[dataset_f][0]['alias']
+        else: 
+            key = dataset_n
         ref_cb = iris.load_cube(dataset_f)
-        reference_dic[dataset_f] = ref_cb.data.std()
-        # make key dataset if there's only one filename of this dataset otherwise alias
+        reference_dic[key] = ref_cb.data.std()
 
     return reference_dic
 
@@ -48,7 +47,7 @@ def obtain_reference(data_group: list):
 def create_provenance(caption: str):
     '''Creates provenance dictionary'''
 
-    provenance_dic = {'authors': ['malinina24'], 
+    provenance_dic = {'authors': ['malinina_elizaveta'], 
                       'caption': caption,
                       'references': ['malinina24']}
 
@@ -109,9 +108,6 @@ def plot_stdevs(data_dic, reference_dic, cfg):
     mpl_st_file = eplot.get_path_to_mpl_style(cfg.get('mpl_style'))
     plt.style.use(mpl_st_file)
     
-    col_mod = (25/255, 14/255, 79/255)
-    col_obs = 'indianred'
-
     fig_stds, ax_stds = plt.subplots(nrows=1, ncols=1)
 
     fig_stds.set_size_inches(8., 9.)
@@ -124,28 +120,33 @@ def plot_stdevs(data_dic, reference_dic, cfg):
         color_st = eplot.get_dataset_style(model, cfg.get('color_style'))
         if model != 'Multi-Model':
             for i in range(0, len(data_dic[model])):
-                ax_stds.scatter(data_dic[model][i], nm+1, marker='o',
-                                    c=color_st['color'], zorder=2, label='individual member')
+                single_dot = ax_stds.scatter(data_dic[model][i], nm+1, marker='o',
+                                    c=color_st['color'], zorder=2, 
+                                    label='individual member')
             y_labs[nm+1] = model
         else:
-            ax_stds.scatter(data_dic[model], 0, c=color_st['color'], s=70, marker='s', zorder=3)
+            square = ax_stds.scatter(data_dic[model], 0, c=color_st['color'], s=70, 
+                                     marker='s', zorder=3, label='full ensemble')
             y_labs[0] = 'ALL'
     
+    legend_handles = [square, single_dot]
+
     for ref_dataset in reference_dic.keys():
         ref_color_st = eplot.get_dataset_style(ref_dataset, cfg.get('color_style'))
-        ax_stds.axvline(reference_dic[ref_dataset], c=ref_color_st['color'], zorder=2, 
+        ref_line = ax_stds.axvline(reference_dic[ref_dataset], c=ref_color_st['color'], zorder=2, 
                                                         label=ref_dataset)
+        legend_handles.append(ref_line)
     ax_stds.set_ylim(len(data_dic.keys()) -0.8, -0.2)
 
     ax_stds.set_yticks(y_ticks, labels=y_labs)
     ax_stds.grid(which='both', c='silver', zorder=1)
 
-    ax_stds.set_xlabel('StD of '+cfg['var_label'] + ' anomalies, C')
-    ax_stds.text(0.02, 0.97, cfg.get('litera')+' '+cfg['region'], fontsize='xx-large', transform=ax_stds.transAxes)
-
     variable = cfg.get('var_label')
+    exp_variable = variable.replace('_', ' ')
     units = cfg.get('units')
     region = cfg['region'] if cfg.get('units') else 'region'
+
+    ax_stds.set_xlabel(f'StD of {exp_variable}, {units}')
 
     default_caption = f'{variable} varibility in {region}'
 
@@ -153,6 +154,9 @@ def plot_stdevs(data_dic, reference_dic, cfg):
     fig_stds.suptitle(caption)
 
     prov_dic = create_provenance(caption)
+
+    plt.legend(handles=legend_handles, bbox_to_anchor =(0.5,-0.1), 
+               loc='lower center', ncols=4, fancybox=False, frameon=False)
     
     plt.tight_layout()
 
@@ -171,9 +175,13 @@ def main(cfg):
 
     reference_dic = obtain_reference(groups.pop('reference'))
 
+    remaining_metadata = []
+    for k in groups.keys():
+        remaining_metadata.extend(groups[k])
+
     data_dic = {}
 
-    datasets = group_metadata(groups, 'dataset')
+    datasets = group_metadata(remaining_metadata, 'dataset')
     ens_var_cubelist = iris.cube.CubeList()
     for dataset in datasets.keys():
         filepaths = list(group_metadata(datasets[dataset], 'filename').keys())

@@ -27,19 +27,20 @@ preprocessors:
           - Alberta
     area_statistics:
       operator: mean
-    sesonal_statistics:
-      seasons: JASONDJFMAMJ
+    seasonal_statistics:
+      seasons: [SONDJFMAMJ, JA]
+      operator: min
+    annual_statistics:
       operator: min
     anomalies:
       period: full
       reference:
-      reference:
-        start_year: 1980
-        start_month: 7
+        start_year: 1981
+        start_month: 1
         start_day: 1
         end_year: 2010
-        end_month: 6
-        end_day: 30
+        end_month: 12
+        end_day: 31
 
   preproc_era:
     custom_order: True  
@@ -52,19 +53,20 @@ preprocessors:
           - Alberta
     area_statistics:
       operator: mean 
-    sesonal_statistics:
-      seasons: JASONDJFMAMJ
+    seasonal_statistics:
+      seasons: [SONDJFMAMJ, JA]
+      operator: min
+    annual_statistics:
       operator: min
     anomalies:
       period: full
       reference:
-        start_year: 1980
-        start_month: 7
+        start_year: 1981
+        start_month: 1
         start_day: 1
         end_year: 2010
-        end_month: 6
-        end_day: 30
-
+        end_month: 12
+        end_day: 31
 
 datasets_cmip: &datasets_cmip
   - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, ensemble: r(1:10)i1p1f1, grid: gn}
@@ -121,16 +123,16 @@ diagnostics:
       txnx_all:
         short_name: tasmin
         exp: [historical, ssp245]
-        timerange: '19410701/20230630'
+        timerange: '19410901/20230630'
         mip: day
         project: CMIP6
-        preprocessor: preproc_txnx_flat
+        preprocessor: preproc_model
         additional_datasets: *datasets_cmip
       reference: 
         short_name: tasmin
-        timerange: '19410701/20230630'
+        timerange: '19410901/20230630'
         mip: day
-        preprocessor: preproc_era_txnx 
+        preprocessor: preproc_era
         additional_datasets: *dataset_era
     scripts:
       timeseries:
