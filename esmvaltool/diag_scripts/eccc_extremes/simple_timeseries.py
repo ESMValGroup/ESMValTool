@@ -7,8 +7,7 @@ import os
 # import internal esmvaltool modules here
 from esmvaltool.diag_scripts.shared import run_diagnostic, group_metadata, save_figure
 import esmvaltool.diag_scripts.shared.plot as eplot
-from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-from esmvaltool.diag_scripts.shared import ProvenanceLogger
+
 # # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 
