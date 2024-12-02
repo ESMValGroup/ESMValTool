@@ -1,11 +1,15 @@
 """Portrait Plot Diagnostic.
 
+Plot performance metrics of multiple datasets vs up to four references
+A :doc:`documented example recipe </recipes/recipe_portrait>` to use this
+diagnostic is provided as ``recipes/recipe_portrait_CMIP.yml``.
+
 Description
 -----------
 This diagnostic provides plot functionalities for performance metrics,
 and is written to be as flexible as possible to be adaptable to further use
 cases. X and Y axis, grouping parameter and splits for each rectangle can be
-configured in the recipe. All `*_by` parameters can be set to any metadata
+configured in the recipe. All ``*_by`` parameters can be set to any metadata
 key. To split by 'reference' this key needs to be set as extra_facet in recipe.
 
 Authors
@@ -34,7 +38,7 @@ group_by: str, optional
 split_by: str, optional
     The rectangles can be split into 2-4 triangles. This is used to show
     metrics for different references. For this case there is no need to change
-    this parameter. Multiple variables can be set in the recipe with `split`
+    this parameter. Multiple variables can be set in the recipe with ``split``
     assigned as extra_facet to label the different references. Data without
     a split assigned will be plotted as main rectangles, this can be changed
     by setting default_split parameter.
@@ -52,7 +56,7 @@ legend: dict, optional
     Customize, if, how and where the legend is plotted. The 'best' position
     and size of the legend depends on multiple parameters of the figure
     (i.e. lengths of labels, aspect ratio of the plots...). Might require
-    manual adjustment of `x`, `y` and `size` to fit the figure layout.
+    manual adjustment of ``x``, ``y`` and ``size`` to fit the figure layout.
     Keys (each optional) that will be handled are:
 
     position: str or None, optional
@@ -68,17 +72,18 @@ legend: dict, optional
         Size of the legend in Inches. By default 0.3.
 
 plot_kwargs: dict, optional
-    Dictionary that gets passed as kwargs to `matplotlib.pyplot.imshow()`.
-    Colormaps will be converted to 11 discrete steps automatically. Default
-    colormap RdYlBu_r and limits vmin=-0.5, vmax=0.5 can be changed using
-    keywords like: cmap, vmin, vmax.
+    Dictionary that gets passed as kwargs to
+    :meth:`matplotlib.axes.Axes.imshow`. Colormaps will be converted to 11
+    discrete steps automatically.
+    Default colormap RdYlBu_r and limits vmin=-0.5, vmax=0.5 can be changed
+    using keywords like: cmap, vmin, vmax.
     By default {}.
 cbar_kwargs: dict, optional
-    Dictionary that gets passed to `matplotlib.pyplot.colorbar()`.
+    Dictionary that gets passed to :meth:`matplotlib.pyplot.colorbar`.
     E.g. label, ticks...
     By default {}.
 plot_properties: dict, optional
-    Dictionary that gets passed to `matplotlib.axes.Axes.set()`.
+    Dictionary that gets passed to :meth:`matplotlib.axes.Axes.set`.
     Subplots can be widely customized. For a full list of
     properties see:
     https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set.html
@@ -240,8 +245,8 @@ def split_legend(cfg, grid, data):
     legend to the origin of the first graph (bottom left) with fixed size,
     without messing up the layout for changing figure sizes, a few extra steps
     are required.
-    NOTE: maybe `mpl_toolkits.axes_grid1.axes_divider.AxesDivider` simplifies
-    this a bit by using `append_axes`.
+    NOTE: maybe ``mpl_toolkits.axes_grid1.axes_divider.AxesDivider`` simplifies
+    this a bit by using ``append_axes``.
     """
     grid[0].get_figure().canvas.draw()  # set axes position in figure
     size = cfg["legend"].get("size", 0.5)  # rect width in physical size (inch)

@@ -7,7 +7,7 @@ Portrait plot
 Overview
 --------
 Portrait plots are a flexible way to visualize performance metrics for multiple
-datasets and up to four references. In this recipe `recipe_portrait_CMIP.yml`
+datasets and up to four references. In this recipe ``recipe_portrait_CMIP.yml``
 the normalized Root Mean Squared Deviation (RMSD) of global mean seasonal
 climatologies is calculated for a selection of CMIP models.
 In the example recipe, for each variable up to two observation based datasets
@@ -15,18 +15,18 @@ are used as reference.
 See :ref:`variables` for complete list of references.
 The recipe uses preprocessor functions (distance metrics, global mean,
 climate statistics) to calculate a scalar metric for each combination of
-dataset, variable and reference, which is plotted by the `portrait_plot.py`
+dataset, variable and reference, which is plotted by the ``portrait_plot.py``
 diagnostic script.
 
 
 User settings in recipe
 -----------------------
 
-By default cells are plotted for combinations of `short_name`,
-`dataset`, `project` and `split`,
-where `split` is an optional extra_facet for variables.
-However, this can be customized using the `x_by`,
-`y_by`, `group_by` and `split_by` script settings.
+By default cells are plotted for combinations of ``short_name``,
+``dataset``, ``project`` and ``split``,
+where ``split`` is an optional extra_facet for variables.
+However, this can be customized using the ``x_by``,
+``y_by``, ``group_by`` and ``split_by`` script settings.
 For a complete and detailed list of settings, see the
 :doc:`diagnostic documentation </api/esmvaltool.diag_scripts.portrait_plot>`.
 While this allows very flexible use for any kind of data, there are some
@@ -36,8 +36,8 @@ With default settings this means normalizing all metrics for each variable
 and grouping all datasets by project.
 
 To plot distance metrics like RMSE, pearson R, bias etc. the
-:func:`distance_metrics <esmvalcore.preprocessor.derive>` preprocessor or
-custom diagnostics can be used.
+:func:`distance_metric <esmvalcore.preprocessor.distance_metric>` preprocessor
+or custom diagnostics can be used.
 
 
 
@@ -51,7 +51,7 @@ Variables and Datasets
    The recipe generally works for any variable that is preprocessed correctly.
    To use different preprocessors or reference datasets it could be useful
    to create different variable groups and link them with the same extra_facet
-   like `variable_name`. See recipe for examples. Listed below are the variables
+   like ``variable_name``. See recipe for examples. Listed below are the variables
    used to produce the example figure.
 
 
