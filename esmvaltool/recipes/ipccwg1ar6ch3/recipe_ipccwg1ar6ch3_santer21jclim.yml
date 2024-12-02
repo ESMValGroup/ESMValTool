@@ -36,15 +36,17 @@ diagnostics:
     variables:
       prw:
         preprocessor: tropical_ocean
-        reference_dataset: ERA5
+        reference_dataset: RSS
         mip: Amon
         field: T2Ms
         start_year: 1988
         end_year: 2019
         derive: false
     additional_datasets:
-      - {dataset: RSS, project: OBS, type: reanaly_1, version: v07r01,
-        tier: 2}
+      - {dataset: RSS, project: OBS6, type: reanaly, version: v07r01,
+         tier: 2}
+      # - {dataset: RSS, project: OBS, type: reanaly_1, version: v07r01,
+      #   tier: 2}
       - {dataset: ERA5, project: native6, type: reanaly, version: 'v1',
          tier: 3, start_year: 1988, end_year: 2019}
       - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, project: CMIP6,
@@ -163,7 +165,7 @@ diagnostics:
         # The mask for the RSS sampling can be produced with
         # esmvaltool/cmorizers/obs/cmorize_obs_rssanom.ncl
         # It has to be stored in the auxiliary_data_dir defined in config-user.yml
-        # If the keyword filter is not given the recipe runs withoout filtering
-        # sample_obs: 'OBS_RSSANOM_filter_anom_v07r01_Amon_prw_198801-201912.nc'
+        # If the keyword sample_obs is not given the recipe it runs without filtering
+        sample_obs: 'OBS6_RSS_reanaly_v07r01_Amon_filter_198801-202010.nc'
         # Add model names for additional figure with pdf of ensemble members
         add_model_dist: ['MPI-ESM1-2-LR', 'CanESM5']

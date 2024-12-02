@@ -24,4 +24,6 @@ variables:
     short_name: prw
     mip: Amon
     raw: precipitable_water
+    anomaly: precipitable_water_anomaly
+    climatology: precipitable_water_climatology
     file: 'tpw_v07r01_198801_202010.nc4.nc'

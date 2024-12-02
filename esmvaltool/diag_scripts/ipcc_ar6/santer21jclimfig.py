@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """Diagnostic script to plot figure 3.12 of IPCC AR 6 chapter 3
+
 (based on Santer et al. (2007) and Santer et al. (2021)).
 
 ##############################################################################
@@ -56,7 +57,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 def _apply_filter(cfg, cube):
     """Apply filter from RSS Anomalies to all data and calculates mean."""
     if "sample_obs" in cfg:
-        filt = iris.load(os.path.join(cfg["auxiliary_data_dir"], cfg["sample_obs"]))[0]
+        filt = iris.load(os.path.join(cfg["auxiliary_data_dir"],
+                                      cfg["sample_obs"]))[0]
 
         for iii, dim_str in enumerate(["time", "latitude", "longitude"]):
             filt = _fit_dim(filt, cube, dim_str, iii)
@@ -77,6 +79,7 @@ def _fit_dim(filt, cube, dim_str, dim_nr):
     """Adjust array for given dimension."""
     dimfil = filt.coord(dim_str)
     dimcu = cube.coord(dim_str)
+    
     if dim_str == "time":
         start = dimcu.units.num2date(dimcu.points[0])
         end = dimcu.units.num2date(dimcu.points[-1])
@@ -89,11 +92,11 @@ def _fit_dim(filt, cube, dim_str, dim_nr):
         edim = dimfil.nearest_neighbour_index(end)
 
     if dim_nr == 0:
-        filt = filt[sdim : edim + 1, :, :]
+        filt = filt[sdim:edim + 1, :, :]
     elif dim_nr == 1:
-        filt = filt[:, sdim : edim + 1, :]
+        filt = filt[:, sdim:edim + 1, :]
     elif dim_nr == 2:
-        filt = filt[:, :, sdim : edim + 1]
+        filt = filt[:, :, sdim:edim + 1]
 
     return filt
 
@@ -117,8 +120,8 @@ def _calculate_anomalies(cube):
     data_in = cube.data
     data_new = np.full(data_in.shape, 0.5)
     for iii in range((startind[0])[0], (endind[0])[-1], 12):
-        data_new[iii : iii + 12] = (
-            ((cube.data[iii : iii + 12] - c_n.data) / c_n.data)
+        data_new[iii:iii + 12] = (
+            ((cube.data[iii:iii + 12] - c_n.data) / c_n.data)
             * 100.0 * 120.0
         )
 
@@ -200,10 +203,12 @@ def _get_valid_datasets(input_data):
         period["end_year"]
     ) == max(period["end_year"]):
         period["common_period"] = (
-            str(min(period["start_year"])) + " - " + str(min(period["end_year"]))
+            str(min(period["start_year"])) + " - "
+            + str(min(period["end_year"]))
         )
 
-    if min(period["slat"]) == max(period["slat"]) and min(period["elat"]) == max(
+    if min(period["slat"]) == max(
+        period["slat"]) and min(period["elat"]) == max(
         period["elat"]
     ):
         shem = _get_hem_letter(min(period["slat"]))
@@ -234,7 +239,8 @@ def _plot_extratrends(cfg, extratrends, trends, period, axx_lim):
     for xtrmdl in cfg["add_model_dist"]:
         alias = list(extratrends[xtrmdl].keys())[0]
         valid_datasets.append(
-            select_metadata(cfg["input_data"].values(), alias=alias)[0]["filename"]
+            select_metadata(cfg["input_data"].values(),
+                            alias=alias)[0]["filename"]
         )
         if alias in trends["cmip6"].keys():
             style = plot.get_dataset_style(xtrmdl, style_file="cmip6")
@@ -266,16 +272,16 @@ def _plot_extratrends(cfg, extratrends, trends, period, axx_lim):
         )
     axx_lim["maxh"] = (1.0 + 0.5 * axx_lim["factor"]) * np.max(hbin)
     caption = _plot_obs(trends, axx, axx_lim)
-    caption = _plot_settings(cfg, axx, fig, "fig2", period, axx_lim) + caption
+    caption = _plot_settings(cfg, axx, period, axx_lim) + caption
+    fig.tight_layout()
+    fig.savefig(get_plot_filename("fig2", cfg), dpi=300)
     plt.close()
 
-    vars = list(extract_variables(cfg).keys())
-    var = " ".join(vars)
-    print_long_name = extract_variables(cfg)[var]["long_name"]
+    var = " ".join(list(extract_variables(cfg).keys()))
     caption = (
         "Probability density function of the decadal trend in "
         + "the "
-        + print_long_name
+        + extract_variables(cfg)[var]["long_name"]
         + caption
     )
 
@@ -309,37 +315,40 @@ def _plot_obs(trends, axx, axx_lim):
     if trends["obs"]:
         obs_str = " Vertical lines show the trend for"
         for iii, obsname in enumerate(trends["obs"].keys()):
+
             obscoli = float(iii)
-            if iii > 4:
-                obscoli = float(iii) - 4.5
-            if iii > 8:
-                obscoli = float(iii) - 8.75
             if iii > 12:
                 obscoli = float(iii) - 12.25
-            plotobscol = (1.0 - 0.25 * obscoli, 0.25 * obscoli, 0.5 + obscoli * 0.1)
+            elif iii > 8:
+                obscoli = float(iii) - 8.75
+            elif iii > 4:
+                obscoli = float(iii) - 4.5
+            else:
+                obscoli = float(iii)
+
             if obsname == "RSS":
                 plotobscol = (
                     221 / 255.0,
                     84 / 255.0,
                     46 / 255.0,
                 )
-                # obsnamep = 'RSS'
-            if obsname == "CRU":
+            elif obsname == "CRU":
                 plotobscol = (0.8, 0.4, 0.1, 1)
-            if obsname == "ERA5":
-                # obscol = [(0.8, 0.4, 0.1, 1), (1, 0, 0.2, 1),
-                #          (0.8, 0.1, 0.4, 1), (1, 0.6, 0, 1)]
-                # plotobscol = (1, 0, 0.2, 1)
+            elif obsname == "ERA5":
                 plotobscol = (
                     128 / 255.0,
                     54 / 255.0,
                     168 / 255.0,
                 )
-                # obsnamep = 'ERA5.1'
-            if obsname == "MERRA2":
+            elif obsname == "MERRA2":
                 plotobscol = (0.8, 0.1, 0.4, 1)
-            if obsname == "NCEP-NCAR-R1":
+            elif obsname == "NCEP-NCAR-R1":
                 plotobscol = (1, 0.6, 0, 1)
+            else:
+                plotobscol = (1.0 - 0.25 * obscoli,
+                              0.25 * obscoli,
+                              0.5 + obscoli * 0.1)
+
             axx.vlines(
                 trends["obs"][obsname],
                 0,
@@ -360,45 +369,69 @@ def _get_ax_limits(cfg, trends):
     """
     axx_lim = {"factor": 0.3}
 
-    if "histmin" in cfg.keys():
+    if "histmin" in cfg.keys() and "histmax" in cfg.keys():
         histmin = cfg["histmin"]
         xmin = histmin
-    else:
-        histmin = 1000
-        for label in ["cmip5", "cmip6", "obs"]:
-            if trends[label]:
-                histmin = np.min(
-                    np.array(
-                        [
-                            histmin,
-                            np.min(np.fromiter(trends[label].values(),
-                            dtype=float)),
-                        ]
-                    )
-                )
-
-    if "histmax" in cfg.keys():
         histmax = cfg["histmax"]
         xmax = histmax
     else:
-        histmax = -1000
-        for label in ["cmip5", "cmip6", "obs"]:
-            if trends[label]:
-                histmax = np.max(
-                    np.array(
-                        [
-                            histmax,
-                            np.max(np.fromiter(trends[label].values(),
-                            dtype=float)),
-                        ]
+        if "histmin" in cfg.keys():
+            histmin = cfg["histmin"]
+            xmin = histmin
+            histmax = -1000
+            for label in ["cmip5", "cmip6", "obs"]:
+                if trends[label]:
+                    histmax = np.max(
+                        np.array(
+                            [
+                                histmax,
+                                np.max(np.fromiter(trends[label].values(),
+                                dtype=float)),
+                            ]
+                        )
                     )
-                )
-
-    if "histmin" not in cfg.keys():
-        xmin = histmin - axx_lim["factor"] * abs(abs(histmax) - abs(histmin))
-
-    if "histmax" not in cfg.keys():
-        xmax = histmax + axx_lim["factor"] * abs(abs(histmax) - abs(histmin))
+            xmax = histmax + axx_lim["factor"] * abs(abs(histmax) - abs(histmin))
+        elif "histmax" in cfg.keys():
+            histmax = cfg["histmax"]
+            xmax = histmax
+            histmin = 1000
+            for label in ["cmip5", "cmip6", "obs"]:
+                if trends[label]:
+                    histmin = np.min(
+                        np.array(
+                            [
+                                histmin,
+                                np.min(np.fromiter(trends[label].values(),
+                                dtype=float)),
+                            ]
+                        )
+                    )
+            xmin = histmin - axx_lim["factor"] * abs(abs(histmax) - abs(histmin))
+        else:
+            histmin = 1000
+            histmax = -1000
+            for label in ["cmip5", "cmip6", "obs"]:
+                if trends[label]:
+                    histmin = np.min(
+                        np.array(
+                            [
+                                histmin,
+                                np.min(np.fromiter(trends[label].values(),
+                                dtype=float)),
+                            ]
+                        )
+                    )                
+                    histmax = np.max(
+                        np.array(
+                            [
+                                histmax,
+                                np.max(np.fromiter(trends[label].values(),
+                                dtype=float)),
+                            ]
+                        )
+                    ) 
+            xmin = histmin - axx_lim["factor"] * abs(abs(histmax) - abs(histmin))
+            xmax = histmax + axx_lim["factor"] * abs(abs(histmax) - abs(histmin))
 
     # Saving values in dictionary axx_lim:
     axx_lim["xmin"] = xmin
@@ -429,7 +462,8 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
     # categorical_colors_rgb_0-255/cmip_cat.txt
     # CMIP5
     if trends["cmip5"]:
-        res_ar["artrend_c5"] = np.fromiter(trends["cmip5"].values(), dtype=float)
+        res_ar["artrend_c5"] = np.fromiter(trends["cmip5"].values(),
+                                           dtype=float)
         res_ar["weights_c5"] = np.fromiter(trends["cmip5weights"].values(),
                                            dtype=float)
         res_ar["kde1_c5"] = stats.gaussian_kde(
@@ -456,11 +490,13 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
 
     # CMIP6
     if trends["cmip6"]:
-        res_ar["artrend_c6"] = np.fromiter(trends["cmip6"].values(), dtype=float)
+        res_ar["artrend_c6"] = np.fromiter(trends["cmip6"].values(),
+                                           dtype=float)
         res_ar["weights_c6"] = np.fromiter(trends["cmip6weights"].values(),
                                            dtype=float)
         res_ar["kde1_c6"] = stats.gaussian_kde(
-            res_ar["artrend_c6"], weights=res_ar["weights_c6"], bw_method="scott"
+            res_ar["artrend_c6"], weights=res_ar["weights_c6"],
+            bw_method="scott"
         )
         hbinx2, bins1, patches = axx.hist(
             res_ar["artrend_c6"],
@@ -483,11 +519,12 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
     # Find the highest bin in the histograms for the y-axis limit
     axx_lim["maxh"] = maxh * (1.0 + 0.5 * axx_lim["factor"])
     caption = _plot_obs(trends, axx, axx_lim)
-    caption = _plot_settings(cfg, axx, fig, "fig1", period, axx_lim) + caption
+    caption = _plot_settings(cfg, axx, period, axx_lim) + caption
+    fig.tight_layout()
+    fig.savefig(get_plot_filename("fig1", cfg), dpi=300)
     plt.close()
 
-    vars = list(extract_variables(cfg).keys())
-    var = " ".join(vars)
+    var = " ".join(list(extract_variables(cfg).keys()))
     print_long_name = extract_variables(cfg)[var]["long_name"]
     caption = (
         "Probability density function of the decadal trend in "
@@ -502,11 +539,8 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
 
     diagnostic_file = get_diagnostic_filename("fig1", cfg)
 
-    logger.info("Saving analysis results to %s", diagnostic_file)
-
-    vars = list(extract_variables(cfg).keys())
-    var = " ".join(vars)
-    print_long_name = extract_variables(cfg)[var]["long_name"]
+    logger.info("Saving analysis results to %s", 
+                diagnostic_file)
 
     list_dict = {}
     list_dict["data"] = [res_ar["xhist"]]
@@ -538,7 +572,8 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
         list_dict["name"].append(
             {
                 "var_name": var + "_trend_distribution_cmip5",
-                "long_name": print_long_name + " Trends " + "distribution CMIP5",
+                "long_name": print_long_name + " Trends "
+                             + "distribution CMIP5",
                 "units": "1",
             }
         )
@@ -563,7 +598,8 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
         list_dict["name"].append(
             {
                 "var_name": var + "_trend_distribution_cmip6",
-                "long_name": print_long_name + " Trends " + "distribution CMIP6",
+                "long_name": print_long_name + " Trends "
+                             + "distribution CMIP6",
                 "units": "1",
             }
         )
@@ -589,7 +625,7 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
         provenance_logger.log(diagnostic_file, provenance_record)
 
 
-def _plot_settings(cfg, axx, fig, figname, period, axx_lim):
+def _plot_settings(cfg, axx, period, axx_lim):
     """Define Settings for pdf figures."""
     for spine in ["top", "right"]:
         axx.spines[spine].set_visible(False)
@@ -609,15 +645,12 @@ def _plot_settings(cfg, axx, fig, figname, period, axx_lim):
     if "common_lats" in period.keys():
         add = " between " + period["common_lats"] + add
 
-    vars = list(extract_variables(cfg).keys())
-    var = " ".join(vars)
+    var = " ".join(list(extract_variables(cfg).keys()))
     print_long_name = extract_variables(cfg)[var]["long_name"]
     axx.set_title("Trends in" + print_long_name + add)
     axx.set_xlabel("Trend (%/decade)")
 
     axx.set_xlim(axx_lim["xmin"], axx_lim["xmax"])
-    fig.tight_layout()
-    fig.savefig(get_plot_filename(figname, cfg), dpi=300)
 
     return add
 
@@ -632,9 +665,7 @@ def _set_extratrends_dict(cfg):
 
 def _write_list_dict(cfg, trends, res_ar):
     """Collect data for provenance."""
-
-    vars = list(extract_variables(cfg).keys())
-    var = " ".join(vars)
+    var = " ".join(list(extract_variables(cfg).keys()))
     print_long_name = extract_variables(cfg)[var]["long_name"]
 
     list_dict = {}
@@ -768,8 +799,7 @@ def main(cfg):
 
     for dataset_path in input_data:
         project = dataset_path["project"]
-        cube_load = iris.load(dataset_path["filename"])[0]
-        cube = _apply_filter(cfg, cube_load)
+        cube = _apply_filter(cfg, iris.load(dataset_path["filename"])[0])
         cat.add_month_number(cube, "time", name="month_number")
         cat.add_year(cube, "time", name="year")
         alias = dataset_path["alias"]
