@@ -64,6 +64,7 @@ Atmosphere
    recipe_validation
    recipe_radiation_budget
    recipe_aod_aeronet_assess
+   recipe_weathertyping
 
 Climate metrics
 ^^^^^^^^^^^^^^^
