@@ -225,6 +225,84 @@ def _get_valid_datasets(input_data):
     return valid_datasets, number_of_subdata, period
 
 
+def _make_list_dict(res_ar, trends, var, print_long_name):
+    """Make List diectionary."""
+    list_dict = {}
+    list_dict["data"] = [res_ar["xhist"]]
+    list_dict["name"] = [
+        {
+            "var_name": var + "_trends_bins",
+            "long_name": print_long_name + " Trend bins",
+            "units": "percent",
+        }
+    ]
+    if trends["cmip5"]:
+        list_dict["data"].append(res_ar["artrend_c5"])
+        list_dict["name"].append(
+            {
+                "var_name": var + "_trends_cmip5",
+                "long_name": print_long_name + " Trends CMIP5",
+                "units": "percent",
+            }
+        )
+        list_dict["data"].append(res_ar["weights_c5"])
+        list_dict["name"].append(
+            {
+                "var_name": "data_set_weights",
+                "long_name": "Weights for each data set.",
+                "units": "1",
+            }
+        )
+        list_dict["data"].append(res_ar["kde1_c5"](res_ar["xhist"]))
+        list_dict["name"].append(
+            {
+                "var_name": var + "_trend_distribution_cmip5",
+                "long_name": print_long_name + " Trends " +
+                "distribution CMIP5",
+                "units": "1",
+            }
+        )
+    if trends["cmip6"]:
+        list_dict["data"].append(res_ar["artrend_c6"])
+        list_dict["name"].append(
+            {
+                "var_name": var + "_trends_cmip6",
+                "long_name": print_long_name + " Trends CMIP6",
+                "units": "percent",
+            }
+        )
+        list_dict["data"].append(res_ar["weights_c6"])
+        list_dict["name"].append(
+            {
+                "var_name": "data_set_weights",
+                "long_name": "Weights for each data set.",
+                "units": "1",
+            }
+        )
+        list_dict["data"].append(res_ar["kde1_c6"](res_ar["xhist"]))
+        list_dict["name"].append(
+            {
+                "var_name": var + "_trend_distribution_cmip6",
+                "long_name": print_long_name + " Trends " +
+                "distribution CMIP6",
+                "units": "1",
+            }
+        )
+
+    if trends["obs"]:
+        for obsname in trends["obs"].keys():
+            list_dict["data"].append(trends["obs"][obsname])
+            list_dict["name"].append(
+                {
+                    "var_name": var + "_trend_" + obsname,
+                    "long_name": print_long_name + " Trend " + obsname,
+                    "units": "percent",
+                }
+            )
+
+    return list_dict
+
+
 def _plot_extratrends(cfg, extratrends, trends, period, axx_lim):
     """Plot trends for ensembles."""
     res_ar = {"artrend": {}, "kde1": {}}
@@ -314,7 +392,6 @@ def _plot_obs(trends, axx, axx_lim):
         obs_str = " Vertical lines show the trend for"
         for iii, obsname in enumerate(trends["obs"].keys()):
 
-            obscoli = float(iii)
             if iii > 12:
                 obscoli = float(iii) - 12.25
             elif iii > 8:
@@ -388,7 +465,7 @@ def _get_ax_limits(cfg, trends):
                             ]
                         )
                     )
-            xmax = histmax + axx_lim["factor"] * abs(abs(histmax) - 
+            xmax = histmax + axx_lim["factor"] * abs(abs(histmax) -
                                                      abs(histmin))
         elif "histmax" in cfg.keys():
             histmax = cfg["histmax"]
@@ -401,7 +478,7 @@ def _get_ax_limits(cfg, trends):
                             [
                                 histmin,
                                 np.min(np.fromiter(trends[label].values(),
-                                dtype=float)),
+                                                   dtype=float)),
                             ]
                         )
                     )
@@ -417,7 +494,7 @@ def _get_ax_limits(cfg, trends):
                             [
                                 histmin,
                                 np.min(np.fromiter(trends[label].values(),
-                                dtype=float)),
+                                                   dtype=float)),
                             ]
                         )
                     )
@@ -426,7 +503,7 @@ def _get_ax_limits(cfg, trends):
                             [
                                 histmax,
                                 np.max(np.fromiter(trends[label].values(),
-                                dtype=float)),
+                                                   dtype=float)),
                             ]
                         )
                     )
@@ -544,78 +621,7 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
     logger.info("Saving analysis results to %s",
                 diagnostic_file)
 
-    list_dict = {}
-    list_dict["data"] = [res_ar["xhist"]]
-    list_dict["name"] = [
-        {
-            "var_name": var + "_trends_bins",
-            "long_name": print_long_name + " Trend bins",
-            "units": "percent",
-        }
-    ]
-    if trends["cmip5"]:
-        list_dict["data"].append(res_ar["artrend_c5"])
-        list_dict["name"].append(
-            {
-                "var_name": var + "_trends_cmip5",
-                "long_name": print_long_name + " Trends CMIP5",
-                "units": "percent",
-            }
-        )
-        list_dict["data"].append(res_ar["weights_c5"])
-        list_dict["name"].append(
-            {
-                "var_name": "data_set_weights",
-                "long_name": "Weights for each data set.",
-                "units": "1",
-            }
-        )
-        list_dict["data"].append(res_ar["kde1_c5"](res_ar["xhist"]))
-        list_dict["name"].append(
-            {
-                "var_name": var + "_trend_distribution_cmip5",
-                "long_name": print_long_name + " Trends " + \
-                    "distribution CMIP5",
-                "units": "1",
-            }
-        )
-    if trends["cmip6"]:
-        list_dict["data"].append(res_ar["artrend_c6"])
-        list_dict["name"].append(
-            {
-                "var_name": var + "_trends_cmip6",
-                "long_name": print_long_name + " Trends CMIP6",
-                "units": "percent",
-            }
-        )
-        list_dict["data"].append(res_ar["weights_c6"])
-        list_dict["name"].append(
-            {
-                "var_name": "data_set_weights",
-                "long_name": "Weights for each data set.",
-                "units": "1",
-            }
-        )
-        list_dict["data"].append(res_ar["kde1_c6"](res_ar["xhist"]))
-        list_dict["name"].append(
-            {
-                "var_name": var + "_trend_distribution_cmip6",
-                "long_name": print_long_name + " Trends " + \
-                    "distribution CMIP6",
-                "units": "1",
-            }
-        )
-
-    if trends["obs"]:
-        for obsname in trends["obs"].keys():
-            list_dict["data"].append(trends["obs"][obsname])
-            list_dict["name"].append(
-                {
-                    "var_name": var + "_trend_" + obsname,
-                    "long_name": print_long_name + " Trend " + obsname,
-                    "units": "percent",
-                }
-            )
+    list_dict = _make_list_dict(res_ar, trends, var, print_long_name)
 
     iris.save(cube_to_save_vars(list_dict), target=diagnostic_file)
 

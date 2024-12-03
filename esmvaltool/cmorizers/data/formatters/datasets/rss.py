@@ -81,8 +81,7 @@ def _fix_coordinates(cube, definition):
             if len(coord.points) > 1:
                 coord.guess_bounds()
         else:
-            raise logger.error("Bounds for coordinate %s "
-                               "cannot be guessed", str(coord.standard_name))
+            raise logger.error("Bounds cannot be guessed")
 
     return cube
 
