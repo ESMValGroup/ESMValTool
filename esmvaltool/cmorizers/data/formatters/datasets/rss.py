@@ -41,34 +41,25 @@ def _load_cube(in_files, var):
     da_tmp = dataset[var['raw']]
     cube = da_tmp.to_iris()
 
-    
     ano_tmp = dataset[var['anomaly']]
     anocube = ano_tmp.to_iris()
     clim_tmp = dataset[var['climatology']]
     climcube = clim_tmp.to_iris()
-
-    logger.info("anocube KW")
-    logger.info(anocube)
-    logger.info("climcube KW")
-    logger.info(climcube)
-
 
     cube.data = da.ma.masked_equal(cube.core_data(), -500)
     anocube.data = da.ma.masked_equal(anocube.core_data(), -500)
     climcube.data = da.ma.masked_equal(climcube.core_data(), -500)
 
     outputano = anocube.data
-    
+
     for iii in range(0, len(anocube.coord('time').points) - 1, 12):
         for jjj in range(0, 12):
             if iii + jjj < len(anocube.coord('time').points):
                 # Necessary, because last year is incomplete
                 outputano[iii + jjj, :, :] = anocube.data[iii + jjj, :, :] + \
-                                             climcube.data[jjj, :, :]
-    
+                    climcube.data[jjj, :, :]
 
     anocube.data = np.where(np.isfinite(outputano), 1, 1.e+20)
-
 
     return (cube, anocube)
 
@@ -91,7 +82,7 @@ def _fix_coordinates(cube, definition):
                 coord.guess_bounds()
         else:
             raise logger.error("Bounds for coordinate %s "
-                               "cannot be guessed", coord.standard_name)
+                               "cannot be guessed", str(coord.standard_name))
 
     return cube
 
@@ -106,10 +97,8 @@ def _extract_variable(in_files, var, cfg, out_dir):
     cmor_table = CMOR_TABLES[attributes['project_id']]
     definition = cmor_table.get_variable(var['mip'], var['short_name'])
 
-
     logger.info("var KW")
     logger.info(var)
-
 
     (cube, anocube) = _load_cube(in_files, var)
 
@@ -152,16 +141,9 @@ def _extract_variable(in_files, var, cfg, out_dir):
     cube.data = cube.core_data().astype('float32')
     anocube.data = anocube.core_data().astype('float32')
 
-    # Roll longitude
-    # cube.coord('longitude').points = cube.coord('longitude').points + 180.
-    # anocube.coord('longitude').points = anocube.coord('longitude').points + 180.
-    # nlon = len(cube.coord('longitude').points)
-    # cube.data = da.roll(cube.core_data(), int(nlon / 2), axis=-1)
-    # anocube.data = da.roll(anocube.core_data(), int(nlon / 2), axis=-1)
-
     # Fix coordinates
     cube = _fix_coordinates(cube, definition)
-    
+
     cube.coord('latitude').attributes = None
     cube.coord('longitude').attributes = None
 
@@ -182,7 +164,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Run CMORizer for RSS."""
     cfg.pop('cmor_table')
-    
+
     for short_name, var in cfg['variables'].items():
         if 'short_name' not in var:
             var['short_name'] = short_name

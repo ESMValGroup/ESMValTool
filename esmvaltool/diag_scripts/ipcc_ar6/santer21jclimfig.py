@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Diagnostic script to plot figure 3.12 of IPCC AR 6 chapter 3
 
 (based on Santer et al. (2007) and Santer et al. (2021)).
@@ -28,7 +27,6 @@ sample_obs: optional, filter all data sets (netCDF file with 0 and 1 for
 ##############################################################################
 
 """
-
 import logging
 import os
 from collections import OrderedDict
@@ -79,7 +77,7 @@ def _fit_dim(filt, cube, dim_str, dim_nr):
     """Adjust array for given dimension."""
     dimfil = filt.coord(dim_str)
     dimcu = cube.coord(dim_str)
-    
+
     if dim_str == "time":
         start = dimcu.units.num2date(dimcu.points[0])
         end = dimcu.units.num2date(dimcu.points[-1])
@@ -386,11 +384,12 @@ def _get_ax_limits(cfg, trends):
                             [
                                 histmax,
                                 np.max(np.fromiter(trends[label].values(),
-                                dtype=float)),
+                                                   dtype=float)),
                             ]
                         )
                     )
-            xmax = histmax + axx_lim["factor"] * abs(abs(histmax) - abs(histmin))
+            xmax = histmax + axx_lim["factor"] * abs(abs(histmax) - 
+                                                     abs(histmin))
         elif "histmax" in cfg.keys():
             histmax = cfg["histmax"]
             xmax = histmax
@@ -406,7 +405,8 @@ def _get_ax_limits(cfg, trends):
                             ]
                         )
                     )
-            xmin = histmin - axx_lim["factor"] * abs(abs(histmax) - abs(histmin))
+            xmin = histmin - axx_lim["factor"] * abs(abs(histmax) -
+                                                     abs(histmin))
         else:
             histmin = 1000
             histmax = -1000
@@ -420,7 +420,7 @@ def _get_ax_limits(cfg, trends):
                                 dtype=float)),
                             ]
                         )
-                    )                
+                    )
                     histmax = np.max(
                         np.array(
                             [
@@ -429,9 +429,11 @@ def _get_ax_limits(cfg, trends):
                                 dtype=float)),
                             ]
                         )
-                    ) 
-            xmin = histmin - axx_lim["factor"] * abs(abs(histmax) - abs(histmin))
-            xmax = histmax + axx_lim["factor"] * abs(abs(histmax) - abs(histmin))
+                    )
+            xmin = histmin - axx_lim["factor"] * abs(abs(histmax) -
+                                                     abs(histmin))
+            xmax = histmax + axx_lim["factor"] * abs(abs(histmax) -
+                                                     abs(histmin))
 
     # Saving values in dictionary axx_lim:
     axx_lim["xmin"] = xmin
@@ -518,8 +520,8 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
 
     # Find the highest bin in the histograms for the y-axis limit
     axx_lim["maxh"] = maxh * (1.0 + 0.5 * axx_lim["factor"])
-    caption = _plot_obs(trends, axx, axx_lim)
-    caption = _plot_settings(cfg, axx, period, axx_lim) + caption
+    caption = _plot_settings(cfg, axx, period, axx_lim) + \
+        _plot_obs(trends, axx, axx_lim)
     fig.tight_layout()
     fig.savefig(get_plot_filename("fig1", cfg), dpi=300)
     plt.close()
@@ -539,7 +541,7 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
 
     diagnostic_file = get_diagnostic_filename("fig1", cfg)
 
-    logger.info("Saving analysis results to %s", 
+    logger.info("Saving analysis results to %s",
                 diagnostic_file)
 
     list_dict = {}
@@ -572,8 +574,8 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
         list_dict["name"].append(
             {
                 "var_name": var + "_trend_distribution_cmip5",
-                "long_name": print_long_name + " Trends "
-                             + "distribution CMIP5",
+                "long_name": print_long_name + " Trends " + \
+                    "distribution CMIP5",
                 "units": "1",
             }
         )
@@ -598,8 +600,8 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
         list_dict["name"].append(
             {
                 "var_name": var + "_trend_distribution_cmip6",
-                "long_name": print_long_name + " Trends "
-                             + "distribution CMIP6",
+                "long_name": print_long_name + " Trends " + \
+                    "distribution CMIP6",
                 "units": "1",
             }
         )
