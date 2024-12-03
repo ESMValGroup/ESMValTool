@@ -37,7 +37,9 @@ def _get_input_cubes(metadata):
     """
     inputs = {}
     ancestors = {}
+    print('/\/\/\/\/\/\/\/\/\/\/')
     for attributes in metadata:
+        print(attributes)
         short_name = attributes['short_name']
         filename = attributes['filename']
         logger.info("Loading variable %s", short_name)
@@ -45,7 +47,7 @@ def _get_input_cubes(metadata):
         cube.attributes.clear()
         inputs[short_name] = cube
         ancestors[short_name] = [filename]
-
+        print('@@@@@@@@@@@@@@@@@@@@@@')
     return inputs, ancestors
 
 
@@ -161,13 +163,24 @@ def _diagnostic(config):
     """
     # this loading function is based on the hydrology diagnostic
     input_metadata = config['input_data'].values()
-
+    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+    print(input_metadata)
+    print('bbbbbbbbbbbbbbbbb')
     loaded_data = {}
     ancestor_list = []
+    print('ccccccccccccccccccccccccccccccccccccccccccccccccc')
+    print(group_metadata(input_metadata, 'dataset'))
+    print('dddddddddddddddddddddddddddddddddddddddddddddddddddddddd')
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
+        print(dataset, metadata)
         cubes, ancestors = _get_input_cubes(metadata)
+        print(cubes, ancestors)
         loaded_data[dataset] = cubes
-        ancestor_list.append(ancestors['ts'][0])
+        # ancestor_list.append(ancestors['ts'][0])
+
+    print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+    print(ancestor_list)
+    print('*************************************')
 
     # loaded data is a nested dictionary
     # KEY1 model ESACCI-LST or something else
@@ -177,6 +190,9 @@ def _diagnostic(config):
     #    similarly dor Std, see preprocessor
 
     # The Diagnostic uses CCI - MODEL
+    print('###########################################')
+    print(loaded_data)
+    print('##########################################')
 
     # CMIP data had 360 day calendar, CCI data has 365 day calendar
     # Assume the loaded data is all the same shape
