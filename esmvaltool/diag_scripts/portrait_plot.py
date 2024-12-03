@@ -84,9 +84,7 @@ cbar_kwargs: dict, optional
     By default {}.
 plot_properties: dict, optional
     Dictionary that gets passed to :meth:`matplotlib.axes.Axes.set`.
-    Subplots can be widely customized. For a full list of
-    properties see:
-    https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set.html
+    Subplots can be widely customized. 
     E.g. xlabel, ylabel, yticklabels, xmargin...
     By default {}.
 nan_color: str or None, optional
