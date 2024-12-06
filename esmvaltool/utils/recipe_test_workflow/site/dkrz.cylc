@@ -17,7 +17,7 @@
             ROSE_APP_OPT_CONF_KEYS = {{ SITE }}
             SINGULARITY_ENV_FILE=singularity-env
             SINGULARITY_ENV_FILE_SITE_PATH=${CYLC_WORKFLOW_RUN_DIR}/site/${SITE}-singularity-env
-            
+
     [[get_esmval]]
         platform = localhost
         execution time limit = PT10M  # Actual: 2m17s on 2024-12-06.
