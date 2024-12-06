@@ -1,0 +1,47 @@
+#!jinja2
+[runtime]
+
+    # COMPUTE provides defaults for computation-heavy tasks.
+    # Specific tasks below override some defaults, e.g. time & memory.
+    [[COMPUTE]]
+        platform = levante
+        execution time limit = PT3M
+        [[[directives]]]
+            --wckey = RTW
+            --account = bk1088
+            --partition = interactive
+            --mem = 2G
+
+    [[install_env_file]]
+        [[[environment]]]
+            ROSE_APP_OPT_CONF_KEYS = {{ SITE }}
+            SINGULARITY_ENV_FILE=singularity-env
+            SINGULARITY_ENV_FILE_SITE_PATH=${CYLC_WORKFLOW_RUN_DIR}/site/${SITE}-singularity-env
+            
+    [[get_esmval]]
+        platform = localhost
+        execution time limit = PT10M  # Actual: 2m17s on 2024-12-06.
+        [[[directives]]]
+            --mem = 10G
+
+    [[configure]]
+        inherit = locahost
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 2G
+
+    # Resources for recipes that need more than the default. Both time and
+    # memory should be specified, in case the default changes.
+    # Variable (fast, medium) must be consistent with flow.cylc.
+    # Comment indicates example recorded usage on DKRZ.
+    [[process<fast=recipe_autoassess_landsurface_soilmoisture>]]
+        # Actual: 1m35s, 2.1 GB on 2024-03-29.
+        execution time limit = PT3M
+        [[[directives]]]
+            --mem = 3G
+
+    [[process<medium=recipe_ensclus>]]
+        # Actual: 4m23s, 1.5 GB on 2024-03-29.
+        execution time limit = PT6M
+        [[[directives]]]
+            --mem = 2G
