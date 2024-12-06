@@ -25,7 +25,7 @@
             --mem = 10G
 
     [[configure]]
-        inherit = locahost
+        inherit = localhost
         execution time limit = PT2M
         [[[directives]]]
             --mem = 2G
