@@ -125,8 +125,11 @@ def moving_average(cube, window):
         A cube with the movinage average set as the data points.
 
     """
-    window = window.split()
-    if (len(window)==0) and ('_' in window): window = window.split('_') # KW edit for A4D
+    # window = window.split()
+    #  KW edit for A4D ########################################################
+    if (' ' in window): window = window.split()
+    elif ('_' in window): window = window.split('_') 
+    ###########################################################################
     window_len = int(window[0]) / 2.
     win_units = str(window[1])
 
@@ -141,7 +144,7 @@ def moving_average(cube, window):
 
     datetime = diagtools.guess_calendar_datetime(cube)
 
-    output = []
+    cubes_in_windows = []
 
     times = np.array([
         datetime(time_itr.year, time_itr.month, time_itr.day, time_itr.hour,
@@ -169,9 +172,18 @@ def moving_average(cube, window):
                             time_itr.day + window_len, time_itr.hour,
                             time_itr.minute)
 
-        arr = np.ma.masked_where((times < tmin) + (times > tmax), cube.data)
-        output.append(arr.mean())
-    cube.data = np.array(output)
+        # arr = np.ma.masked_where((times < tmin) + (times > tmax), cube.data)
+        # IndexError: Inconsistent shape between the condition and the input (got (372,) and (372, 3, 290))
+
+        print( tmin, tmax )
+        cube_window = cube.extract(iris.Constraint(time=lambda cell: (cell.point < tmin) + (cell.point > tmax) ))
+        cube_window = cube_window.collapsed( cube.coords(), iris.analysis.MEAN )
+
+        cubes_in_windows.append(cube_window)
+
+    # merge list
+    cube = iris.cube.CubeList(cubes_in_windows).merge_cube()
+
     return cube
 
 
