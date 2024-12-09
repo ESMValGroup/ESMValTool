@@ -87,7 +87,7 @@ def _extract_variable(cmor_info, attrs, filepaths, out_dir):
     for cbls in [cbls_1, cbls_2]:
         iris.util.equalise_attributes(cbls)
         cubesave = cbls.concatenate_cube()
-        utils.fix_coords(cubesave)
+        cubesave = utils.fix_coords(cubesave)
 
         logger.info("Saving file")
         utils.save_variable(cubesave,

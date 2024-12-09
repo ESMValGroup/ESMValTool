@@ -100,10 +100,10 @@ plot_folder: str, optional
     Path to the folder to store figures. Defaults to
     ``{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}``.  All
     tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
-    replaced with the corresponding tags).  ``{plot_dir}`` is replaced with the
+    replaced with the corresponding tags). ``{plot_dir}`` is replaced with the
     default ESMValTool plot directory (i.e.,
     ``output_dir/plots/diagnostic_name/script_name/``, see
-    :ref:`esmvalcore:user configuration file`).
+    :ref:`esmvalcore:outputdata`).
 savefig_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
     default, uses ``bbox_inches: tight, dpi: 300, orientation: landscape``.
@@ -583,6 +583,11 @@ time_format: str, optional (default: None)
     :func:`~datetime.datetime.strftime` format string that is used to format
     the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
     use the default formatting imposed by the iris plotting function.
+time_on: str, optional (default: y-axis)
+    Optional switch to change the orientation of the plot so that time is on
+    the x-axis ``time_on: x-axis``. Default orientation is time on y-axis and
+    lat/lon on x-axis.
+
 
 .. hint::
 
@@ -603,6 +608,7 @@ from pathlib import Path
 from pprint import pformat
 
 import cartopy.crs as ccrs
+import dask.array as da
 import iris
 import matplotlib as mpl
 import matplotlib.dates as mdates
@@ -612,6 +618,7 @@ import seaborn as sns
 from iris.analysis.cartography import area_weights
 from iris.coord_categorisation import add_year
 from iris.coords import AuxCoord
+from iris.exceptions import ConstraintMismatchError
 from matplotlib.colors import CenteredNorm
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import (
@@ -850,6 +857,7 @@ class MultiDatasets(MonitorBase):
                     'show_x_minor_ticks', True
                 )
                 self.plots[plot_type].setdefault('time_format', None)
+                self.plots[plot_type].setdefault('time_on', 'y-axis')
 
         # Check that facet_used_for_labels is present for every dataset
         for dataset in self.input_data:
@@ -1107,7 +1115,22 @@ class MultiDatasets(MonitorBase):
         for dataset in input_data:
             filename = dataset['filename']
             logger.info("Loading %s", filename)
-            cube = iris.load_cube(filename)
+            cubes = iris.load(filename)
+            if len(cubes) == 1:
+                cube = cubes[0]
+            else:
+                var_name = dataset['short_name']
+                try:
+                    cube = cubes.extract_cube(iris.NameConstraint(
+                        var_name=var_name
+                    ))
+                except ConstraintMismatchError as exc:
+                    var_names = [c.var_name for c in cubes]
+                    raise ValueError(
+                        f"Cannot load data: multiple variables ({var_names}) "
+                        f"are available in file {filename}, but not the "
+                        f"requested '{var_name}'"
+                    ) from exc
 
             # Fix time coordinate if present
             if cube.coords('time', dim_coords=True):
@@ -1154,7 +1177,17 @@ class MultiDatasets(MonitorBase):
             axes_data = fig.add_subplot(gridspec[0:2, 0:2],
                                         projection=projection)
             plot_kwargs['axes'] = axes_data
-            plot_data = plot_func(cube, **plot_kwargs)
+            if plot_func is iris.plot.contourf:
+                # see https://github.com/SciTools/cartopy/issues/2457
+                # and https://github.com/SciTools/cartopy/issues/2468
+                plot_kwargs['transform_first'] = True
+                npx = da if cube.has_lazy_data() else np
+                cube_to_plot = cube.copy(
+                    npx.ma.filled(cube.core_data(), np.nan)
+                )
+            else:
+                cube_to_plot = cube
+            plot_data = plot_func(cube_to_plot, **plot_kwargs)
             axes_data.coastlines()
             if gridline_kwargs is not False:
                 axes_data.gridlines(**gridline_kwargs)
@@ -1171,7 +1204,17 @@ class MultiDatasets(MonitorBase):
             if self.plots[plot_type]['common_cbar']:
                 plot_kwargs.setdefault('vmin', plot_data.get_clim()[0])
                 plot_kwargs.setdefault('vmax', plot_data.get_clim()[1])
-            plot_ref = plot_func(ref_cube, **plot_kwargs)
+            if plot_func is iris.plot.contourf:
+                # see https://github.com/SciTools/cartopy/issues/2457
+                # and https://github.com/SciTools/cartopy/issues/2468
+                plot_kwargs['transform_first'] = True
+                npx = da if ref_cube.has_lazy_data() else np
+                ref_cube_to_plot = ref_cube.copy(
+                    npx.ma.filled(ref_cube.core_data(), np.nan)
+                )
+            else:
+                ref_cube_to_plot = ref_cube
+            plot_ref = plot_func(ref_cube_to_plot, **plot_kwargs)
             axes_ref.coastlines()
             if gridline_kwargs is not False:
                 axes_ref.gridlines(**gridline_kwargs)
@@ -1190,7 +1233,17 @@ class MultiDatasets(MonitorBase):
             plot_kwargs_bias = self._get_plot_kwargs(plot_type, dataset,
                                                      bias=True)
             plot_kwargs_bias['axes'] = axes_bias
-            plot_bias = plot_func(bias_cube, **plot_kwargs_bias)
+            if plot_func is iris.plot.contourf:
+                # see https://github.com/SciTools/cartopy/issues/2457
+                # and https://github.com/SciTools/cartopy/issues/2468
+                plot_kwargs_bias['transform_first'] = True
+                npx = da if bias_cube.has_lazy_data() else np
+                bias_cube_to_plot = bias_cube.copy(
+                    npx.ma.filled(bias_cube.core_data(), np.nan)
+                )
+            else:
+                bias_cube_to_plot = bias_cube
+            plot_bias = plot_func(bias_cube_to_plot, **plot_kwargs_bias)
             axes_bias.coastlines()
             if gridline_kwargs is not False:
                 axes_bias.gridlines(**gridline_kwargs)
@@ -1246,7 +1299,17 @@ class MultiDatasets(MonitorBase):
             axes = fig.add_subplot(projection=self._get_map_projection())
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
-            plot_map = plot_func(cube, **plot_kwargs)
+            if plot_func is iris.plot.contourf:
+                # see https://github.com/SciTools/cartopy/issues/2457
+                # and https://github.com/SciTools/cartopy/issues/2468
+                plot_kwargs['transform_first'] = True
+                npx = da if cube.has_lazy_data() else np
+                cube_to_plot = cube.copy(
+                    npx.ma.filled(cube.core_data(), np.nan)
+                )
+            else:
+                cube_to_plot = cube
+            plot_map = plot_func(cube_to_plot, **plot_kwargs)
             axes.coastlines()
             gridline_kwargs = self._get_gridline_kwargs(plot_type)
             if gridline_kwargs is not False:
@@ -1634,6 +1697,10 @@ class MultiDatasets(MonitorBase):
         ref_cube = ref_dataset['cube']
         dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
         self._check_cube_dimensions(ref_cube, plot_type)
+        if 'latitude' in dim_coords_dat:
+            non_time_label = 'latitude [°N]'
+        else:
+            non_time_label = 'longitude [°E]'
 
         # Create single figure with multiple axes
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
@@ -1648,16 +1715,23 @@ class MultiDatasets(MonitorBase):
             # Plot dataset (top left)
             axes_data = fig.add_subplot(gridspec[0:2, 0:2])
             plot_kwargs['axes'] = axes_data
-            coord_names = [coord[0].name() for coord in cube.dim_coords]
-            if coord_names[0] == "time":
-                coord_names.reverse()
-            plot_kwargs['coords'] = coord_names
+            if self.plots[plot_type]['time_on'] == 'x-axis':
+                plot_kwargs['coords'] = list(dim_coords_dat)
+                x_label = 'time'
+                y_label = non_time_label
+                time_axis = axes_data.get_xaxis()
+            else:
+                plot_kwargs['coords'] = list(reversed(dim_coords_dat))
+                x_label = non_time_label
+                y_label = 'time'
+                time_axis = axes_data.get_yaxis()
             plot_data = plot_func(cube, **plot_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
-            axes_data.set_ylabel('time')
+            axes_data.set_ylabel(y_label)
             if self.plots[plot_type]['time_format'] is not None:
-                axes_data.get_yaxis().set_major_formatter(mdates.DateFormatter(
-                    self.plots[plot_type]['time_format']))
+                time_axis.set_major_formatter(mdates.DateFormatter(
+                    self.plots[plot_type]['time_format']
+                ))
             if self.plots[plot_type]['show_y_minor_ticks']:
                 axes_data.get_yaxis().set_minor_locator(AutoMinorLocator())
             if self.plots[plot_type]['show_x_minor_ticks']:
@@ -1689,17 +1763,14 @@ class MultiDatasets(MonitorBase):
             plot_kwargs_bias = self._get_plot_kwargs(plot_type, dataset,
                                                      bias=True)
             plot_kwargs_bias['axes'] = axes_bias
-            plot_kwargs_bias['coords'] = coord_names
+            plot_kwargs_bias['coords'] = plot_kwargs['coords']
             plot_bias = plot_func(bias_cube, **plot_kwargs_bias)
             axes_bias.set_title(
                 f"{self._get_label(dataset)} - {self._get_label(ref_dataset)}",
                 pad=3.0,
             )
-            axes_bias.set_ylabel('time')
-            if 'latitude' in dim_coords_dat:
-                axes_bias.set_xlabel('latitude [°N]')
-            elif 'longitude' in dim_coords_dat:
-                axes_bias.set_xlabel('longitude [°E]')
+            axes_bias.set_xlabel(x_label)
+            axes_bias.set_ylabel(y_label)
             cbar_kwargs_bias = self._get_cbar_kwargs(plot_type, bias=True)
             cbar_bias = fig.colorbar(plot_bias, ax=axes_bias,
                                      **cbar_kwargs_bias)
@@ -1740,6 +1811,10 @@ class MultiDatasets(MonitorBase):
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
         dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
+        if 'latitude' in dim_coords_dat:
+            non_time_label = 'latitude [°N]'
+        else:
+            non_time_label = 'longitude [°E]'
 
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
@@ -1748,8 +1823,17 @@ class MultiDatasets(MonitorBase):
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
 
-            # Make sure time is on y-axis
-            plot_kwargs['coords'] = list(reversed(dim_coords_dat))
+            # Put time on desired axis
+            if self.plots[plot_type]['time_on'] == 'x-axis':
+                plot_kwargs['coords'] = list(dim_coords_dat)
+                x_label = 'time'
+                y_label = non_time_label
+                time_axis = axes.get_xaxis()
+            else:
+                plot_kwargs['coords'] = list(reversed(dim_coords_dat))
+                x_label = non_time_label
+                y_label = 'time'
+                time_axis = axes.get_yaxis()
             plot_hovmoeller = plot_func(cube, **plot_kwargs)
 
             # Setup colorbar
@@ -1763,15 +1847,12 @@ class MultiDatasets(MonitorBase):
             # Customize plot
             axes.set_title(self._get_label(dataset))
             fig.suptitle(dataset['long_name'])
-            if 'latitude' in dim_coords_dat:
-                axes.set_xlabel('latitude [°N]')
-            elif 'longitude' in dim_coords_dat:
-                axes.set_xlabel('longitude [°E]')
-            axes.set_ylabel('time')
+            axes.set_xlabel(x_label)
+            axes.set_ylabel(y_label)
             if self.plots[plot_type]['time_format'] is not None:
-                axes.get_yaxis().set_major_formatter(mdates.DateFormatter(
-                    self.plots[plot_type]['time_format'])
-                )
+                time_axis.set_major_formatter(mdates.DateFormatter(
+                    self.plots[plot_type]['time_format']
+                ))
             if self.plots[plot_type]['show_y_minor_ticks']:
                 axes.get_yaxis().set_minor_locator(AutoMinorLocator())
             if self.plots[plot_type]['show_x_minor_ticks']:
@@ -2495,7 +2576,11 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 'ancestors': ancestors,
-                'authors': ['schlund_manuel', 'kraft_jeremy', 'ruhe_lukas'],
+                'authors': [
+                    'schlund_manuel',
+                    'kraft_jeremy',
+                    'lindenlaub_lukas'
+                ],
                 'caption': caption,
                 'plot_types': ['zonal'],
                 'long_names': [dataset['long_name']],

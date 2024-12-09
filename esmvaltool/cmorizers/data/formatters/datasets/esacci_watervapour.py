@@ -53,7 +53,7 @@ def extract_variable(var_info, raw_info, attrs, year):
     # Fix cube
     fix_var_metadata(cube, var_info)
     convert_timeunits(cube, year)
-    fix_coords(cube, overwrite_time_bounds=False)
+    cube = fix_coords(cube, overwrite_time_bounds=False)
     set_global_atts(cube, attrs)
     # Remove dysfunctional ancillary data without sandard name
     for ancillary_variable in cube.ancillary_variables():
