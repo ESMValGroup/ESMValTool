@@ -329,11 +329,11 @@ diagnostics:
     variables:
       tos:
         additional_datasets:
-          - {dataset: ESACCI-SST, project: OBS6, mip: Omon, tier: 3,
+          - {dataset: ESACCI-SST, project: OBS6, mip: Omon, tier: 2,
              type: sat, version: 3.0-L4-analysis, timerange: '198001/202112'}
       tosStderr:
     additional_datasets:
-      - {dataset: ESACCI-SST, project: OBS6, mip: Oday, tier: 3,
+      - {dataset: ESACCI-SST, project: OBS6, mip: Oday, tier: 2,
          type: sat, version: 3.0-L4-analysis, timerange: '202001/202112'}
     scripts: null
 

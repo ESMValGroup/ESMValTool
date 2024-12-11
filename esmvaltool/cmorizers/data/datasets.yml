@@ -550,9 +550,9 @@ datasets:
       Put all files under a single directory (no subdirectories with years).
 
   ESACCI-SST:
-    tier: 3
-    source: ftp3.ceda.ac.uk/neodc/eocis/data/global_and_regional/sea_surface_temperature/
-    last_access: 2024-07-01
+    tier: 2
+    source: data.ceda.ac.uk/neodc/eocis/data/global_and_regional/sea_surface_temperature/
+    last_access: 2024-12-11
     info: |
       Download the data from:
         CDR_v3/Analysis/L4/v3.0.1/ 

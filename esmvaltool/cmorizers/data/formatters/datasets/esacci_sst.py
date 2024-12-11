@@ -1,19 +1,19 @@
 """ESMValTool CMORizer for ESACCI-SST data.
 
 Tier
-   Tier 3: need to register at CEDA
+   Tier 2: other freely-available dataset.
 
 Source
-   https://catalogue.ceda.ac.uk/uuid/4a9654136a7148e39b7feb56f8bb02d2
+   https://catalogue.ceda.ac.uk/uuid/4a9654136a7148e39b7feb56f8bb02d2/
 
 Last access
-   20240628
+   20241211
 
-Download and processing instructions
-   A donwnloader is provided by ESMValTool. First you need
-   to register.
-   Go to https://services.ceda.ac.uk/cedasite/register/info/
-   and create an account at CEDA if needed.
+#Download and processing instructions
+#   A donwnloader is provided by ESMValTool. First you need
+#   to register.
+#   Go to https://services.ceda.ac.uk/cedasite/register/info/
+#   and create an account at CEDA if needed.
 
 """
 
