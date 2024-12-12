@@ -10,10 +10,8 @@ Last access
    20241211
 
 #Download and processing instructions
-#   A donwnloader is provided by ESMValTool. First you need
-#   to register.
-#   Go to https://services.ceda.ac.uk/cedasite/register/info/
-#   and create an account at CEDA if needed.
+#   A donwnloader is provided by ESMValTool.
+#   (esmvaltool/cmorizers/data/downloaders/esacci_sst.py)
 
 """
 

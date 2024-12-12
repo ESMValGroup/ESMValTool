@@ -551,7 +551,7 @@ datasets:
 
   ESACCI-SST:
     tier: 2
-    source: data.ceda.ac.uk/neodc/eocis/data/global_and_regional/sea_surface_temperature/
+    source: dap.ceda.ac.uk/neodc/eocis/data/global_and_regional/sea_surface_temperature/
     last_access: 2024-12-11
     info: |
       Download the data from:
