@@ -2056,7 +2056,6 @@ class MultiDatasets(MonitorBase):
             hatching.set_edgecolor('black')
             hatching.set_linewidth(0.)
 
-
             axes.coastlines()
             # gridline_kwargs = self._get_gridline_kwargs(plot_type)
             # if gridline_kwargs is not False:
