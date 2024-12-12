@@ -69,7 +69,7 @@ def _extract_variable(raw_var, cmor_info, attrs, filepaths, out_dir):
     cube = iris.util.squeeze(cube)
 
     utils.fix_var_metadata(cube, cmor_info)
-    utils.fix_coords(cube)
+    cube = utils.fix_coords(cube)
 
     utils.set_global_atts(cube, attrs)
     utils.save_variable(cube,
