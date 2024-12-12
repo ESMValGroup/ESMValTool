@@ -1,0 +1,6 @@
+owner=ESMValTool community
+project=RTW
+title=The Recipe Test Workflow (RTW)
+description=The RTW is a Cylc 8 workflow that is used to regularly run recipes so
+           =issues can be discovered during the development process sooner
+           =rather than later

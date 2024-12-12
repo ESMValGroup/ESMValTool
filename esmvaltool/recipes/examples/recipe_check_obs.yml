@@ -61,6 +61,16 @@ diagnostics:
     scripts: null
 
 
+  CMAP:
+    description: CMAP check
+    variables:
+      pr:
+    additional_datasets:
+      - {project: OBS6, dataset: CMAP, mip: Amon, tier: 2,
+        type: reanaly, version: v1}
+    scripts: null
+
+
   CRU:
     description: CRU check
     variables:
@@ -245,8 +255,8 @@ diagnostics:
       treeFrac:
     additional_datasets:
       - {dataset: ESACCI-LANDCOVER, project: OBS, mip: Lmon, tier: 2,
-         type: sat, version: L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg,
-         start_year: 1998, end_year: 2012}
+         type: sat, version: v2.0.8, frequency: yr,
+         start_year: 1992, end_year: 2020}
     scripts: null
 
   ESACCI-LST:
@@ -558,6 +568,30 @@ diagnostics:
          type: reanaly, version: 1, start_year: 1979, end_year: 2007}
     scripts: null
 
+  JRA-55:
+    description: JRA-55 check
+    variables:
+      cli:
+      clivi:
+      clw:
+      clwvi:
+      clt:
+      prw:
+      rlus:
+      rlut:
+      rlutcs:
+      rsus:
+      rsuscs:
+      rsut:
+      rsutcs:
+      ta:
+      tas:
+      wap:
+    additional_datasets:
+      - {dataset: JRA-55, project: OBS6, mip: Amon, tier: 2,
+         type: reanaly, version: 1, start_year: 1958, end_year: 2022} 
+    scripts: null
+
   Kadow2020:
     description: Kadow2020 check
     variables:
@@ -685,6 +719,10 @@ diagnostics:
       prw:
       ta:
       wap:
+      pr:
+      tauu:
+      tauv:
+      tos:
     additional_datasets:
       - {dataset: NCEP-DOE-R2, project: OBS6, mip: Amon, tier: 2,
          type: reanaly, version: 2, start_year: 1979, end_year: 2022}
@@ -700,6 +738,9 @@ diagnostics:
       prw:
       rlut:
       rsut:
+      pr:
+      tauu:
+      tauv:
     additional_datasets:
       - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, mip: Amon, tier: 2,
          type: reanaly, version: v2, start_year: 1871, end_year: 2012}

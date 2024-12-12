@@ -13,7 +13,6 @@ import os.path
 import cf_units
 import iris
 import iris.coord_categorisation
-from iris.coord_categorisation import _pt_date
 import numpy as np
 
 
@@ -204,6 +203,28 @@ def add_start_hour(cube, coord, name='diurnal_sampling_hour'):
     bounds exist.
     """
     _add_categorised_coord(cube, name, coord, start_hour_from_bounds)
+
+
+# lifted from iris==3.10 last iris to have it in iris.coord_categorisation
+# Private "helper" function
+def _pt_date(coord, time):
+    """Return the datetime of a time-coordinate point.
+
+    Parameters
+    ----------
+    coord : Coord
+        Coordinate (must be Time-type).
+    time : float
+        Value of a coordinate point.
+
+    Returns
+    -------
+    cftime.datetime
+
+    """
+    # NOTE: All of the currently defined categorisation functions are
+    # calendar operations on Time coordinates.
+    return coord.units.num2date(time, only_use_cftime_datetimes=True)
 
 
 def start_hour_from_bounds(coord, _, bounds):
