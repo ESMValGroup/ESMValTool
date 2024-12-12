@@ -1,14 +1,16 @@
-"""Script to download daily and monthly ESACCI-CLOUD."""
+"""Script to download daily and monthly ESACCI-CLOUD data."""
 import logging
 from datetime import datetime
+
 from dateutil import relativedelta
+
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date,
-                     end_date, overwrite):
+def download_dataset(config, dataset, dataset_info, start_date, end_date,
+                     overwrite):
     """Download dataset.
 
     Parameters
@@ -50,18 +52,17 @@ def download_dataset(config, dataset, dataset_info, start_date,
         "*-ESACCI-L3U_CLOUD-CLD_MASKTYPE-AVHRR_*-fv3.0.nc",
         "*-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc"
     ]
-    files_l3c = [
-        "*-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc"
-    ]
+    files_l3c = ["*-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc"]
 
     wget_options = [
         '-r',
-        '-nH',                 # Disable the creation of directory structure
-        '-e', 'robots=off',    # Ignore robots.txt
+        '-nH',  # Disable the creation of directory structure
+        '-e',
+        'robots=off',  # Ignore robots.txt
         '--cut-dirs=9',
-        '--no-parent',         # Don't ascend to the parent directory
+        '--no-parent',  # Don't ascend to the parent directory
         '--reject="index.html"',  # Reject any HTML files
-        '--accept=*.nc'      # Accept only .nc files
+        '--accept=*.nc'  # Accept only .nc files
     ]
 
     while loop_date <= end_date:
