@@ -25,7 +25,7 @@ export PYTHONNOUSERSITE=True
 WORKFLOW_RUN_BIN_DIR="${CYLC_WORKFLOW_RUN_DIR}/bin"
 WORKFLOW_SHARE_BIN_DIR="${CYLC_WORKFLOW_SHARE_DIR}/cycle/bin"
 ROSE_APP_BIN_DIR="${CYLC_WORKFLOW_RUN_DIR}/app/${ROSE_TASK_APP:-$CYLC_TASK_NAME}/bin"
-CONTAINER=${ROSE_DATAC}/container/esmvaltool.sif
+CONTAINER=${CONTAINER_PATH}
 
 # Bind paths for container. Where symbolic links are used in file paths (e.g.
 # under /badc/cmip6 and /home/users) need to bind the root dirs of both the
