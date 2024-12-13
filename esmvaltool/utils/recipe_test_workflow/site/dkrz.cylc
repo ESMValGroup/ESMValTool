@@ -1,10 +1,10 @@
 #!jinja2
 [runtime]
-   [[root]]
-       [[[environment]]]
-          CONTAINER_DIR = ${ROSE_DATAC}/container
-          CONTAINER_FILE = esmvaltool.sif
-          CONTAINER_PATH = ${CONTAINER_DIR}/${CONTAINER_FILE}
+    [[root]]
+        [[[environment]]]
+            CONTAINER_DIR = ${ROSE_DATAC}/container
+            CONTAINER_FILE = esmvaltool.sif
+            CONTAINER_PATH = ${CONTAINER_DIR}/${CONTAINER_FILE}
 
     # COMPUTE provides defaults for computation-heavy tasks.
     # Specific tasks below override some defaults, e.g. time & memory.
