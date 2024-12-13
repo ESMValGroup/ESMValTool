@@ -41,7 +41,31 @@ variables:
     raw: [cot_desc, cot_asc]
     raw_units: 1
     file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
-
+  # clt:
+  #   mip: 
+  #   raw: [cmask_desc, cmask_asc]
+  #   raw_units: '1'
+  #   file: '-ESACCI-L3U_CLOUD-CLD_MASKTYPE-AVHRR_*-fv3.0.nc'
+  clwvi:
+    mip: mon
+    raw: [cwp_desc, cwp_asc]
+    raw_units: g/m2
+    file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
+  ctp:
+    mip: day
+    raw: [ctp_desc, ctp_asc]
+    raw_units: hPa
+    file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
+  reff:
+    mip: mon
+    raw: [cer_desc, cer_asc]
+    raw_units: um
+    file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
+  cod:
+    mip: mon
+    raw: [cot_desc, cot_asc]
+    raw_units: 1
+    file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
 
     #rlut:
     #  mip: day
