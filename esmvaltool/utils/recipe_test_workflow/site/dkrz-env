@@ -51,7 +51,6 @@ if [[ ! -z ${PYTHONPATH_PREPEND:-} ]]; then
     export PYTHONPATH=${PYTHONPATH_PREPEND}:${PYTHONPATH:-}
 fi
 
-
 if [[ -z ${QUIET_MODE:-} ]]; then
     echo "[INFO] Using the ${ENV_NAME} container"
 fi
