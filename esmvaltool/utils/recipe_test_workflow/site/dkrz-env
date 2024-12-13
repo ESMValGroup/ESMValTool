@@ -56,4 +56,6 @@ if [[ -z ${QUIET_MODE:-} ]]; then
     echo "[INFO] Using the ${ENV_NAME} container"
 fi
 
-/usr/bin/time -v -o "${CYLC_TASK_LOG_ROOT}.time" singularity-env singularity -q exec "${CONTAINER}" "$@"
+singularity_command="singularity-env singularity -q exec ${CONTAINER} $@"
+command="/usr/bin/time -v -o ${CYLC_TASK_LOG_ROOT}.time ${singularity_command}"
+exec ${command}
