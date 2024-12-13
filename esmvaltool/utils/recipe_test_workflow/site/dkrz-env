@@ -30,7 +30,7 @@ CONTAINER=${ROSE_DATAC}/container/esmvaltool.sif
 # Bind paths for container. Where symbolic links are used in file paths (e.g.
 # under /badc/cmip6 and /home/users) need to bind the root dirs of both the
 # source and target files or directories.
-export SINGULARITY_BIND="/home/b,/work"
+export SINGULARITY_BIND="/home/b,/work,/scratch/b"
 
 # Suppress an ESMValTool "file not found" warning
 export SINGULARITYENV_PROJ_DATA="/opt/conda/envs/esmvaltool/share/proj"
