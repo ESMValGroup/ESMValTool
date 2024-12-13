@@ -32,6 +32,7 @@ from esmvalcore.preprocessor import regrid, daily_statistics
 
 logger = logging.getLogger(__name__)
 
+
 def _create_nan_cube(cube, year, month, day):
     """Create cube containing only NaN values from an existing cube."""
     nan_cube = cube.copy()
@@ -40,7 +41,7 @@ def _create_nan_cube(cube, year, month, day):
     # Read dataset time unit and calendar from file
     dataset_time_unit = str(nan_cube.coord('time').units)
     dataset_time_calendar = nan_cube.coord('time').units.calendar
-    
+
     # Convert datetime to numeric time
     new_time = cf_units.date2num(datetime(year=year, month=month, day=day),
                                  dataset_time_unit, dataset_time_calendar)
@@ -48,7 +49,9 @@ def _create_nan_cube(cube, year, month, day):
 
     return nan_cube
 
-def _extract_variable(short_name, var, cfg, in_dir, out_dir, start_date, end_date):
+
+def _extract_variable(short_name, var, cfg, in_dir, out_dir, start_date,
+                      end_date):
     """Extract and process a variable."""
 
     fill_cube = None
@@ -76,10 +79,12 @@ def _extract_variable(short_name, var, cfg, in_dir, out_dir, start_date, end_dat
                         raw_var = var.get('raw', [short_name])
 
                         for var_index, raw_name in enumerate(raw_var):
-                            daily_cube = iris.load_cube(file_path, NameConstraint(var_name=raw_name))
+                            daily_cube = iris.load_cube(
+                                file_path, NameConstraint(var_name=raw_name))
 
                             # Adjust time
-                            daily_cube.coord('time').points += (file_index + 0.5 * var_index) * 0.1
+                            daily_cube.coord('time').points += (
+                                file_index + 0.5 * var_index) * 0.1
                             daily_cube.attributes.clear()
                             daily_cube.coord('time').long_name = 'time'
 
@@ -93,7 +98,8 @@ def _extract_variable(short_name, var, cfg, in_dir, out_dir, start_date, end_dat
 
                             cubes.append(daily_cube)
                 else:
-                    logger.info("Filling missing day: %s-%s-%s", year, month, day)
+                    logger.info("Filling missing day: %s-%s-%s",
+                                year, month, day)
                     daily_cube = _create_nan_cube(fill_cube, year, month, day)
                     cubes.append(daily_cube)
 
@@ -118,10 +124,14 @@ def _extract_variable(short_name, var, cfg, in_dir, out_dir, start_date, end_dat
             utils.set_global_atts(cube, attrs)
 
             # Save the variable
-            utils.save_variable(cube, short_name, out_dir, attrs, unlimited_dimensions=['time'])
+            utils.save_variable(cube, short_name, out_dir, attrs,
+                                unlimited_dimensions=['time'])
 
-def cmorization(in_dir, out_dir, cfg, cfg_user, start_date=None, end_date=None):
+
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date=None,
+                end_date=None):
     """Main cmorization function."""
     for short_name, var in cfg['variables'].items():
         logger.info("CMORizing variable: %s", short_name)
-        _extract_variable(short_name, var, cfg, in_dir, out_dir, start_date, end_date)
+        _extract_variable(short_name, var, cfg, in_dir, out_dir,
+                          start_date, end_date)
