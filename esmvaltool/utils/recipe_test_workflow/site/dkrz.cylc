@@ -10,7 +10,7 @@
             --wckey = RTW
             --account = bk1088
             --partition = interactive
-            --mem = 2G
+            --mem = 15G
 
     [[install_env_file]]
         [[[environment]]]
