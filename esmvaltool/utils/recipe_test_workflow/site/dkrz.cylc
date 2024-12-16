@@ -29,6 +29,8 @@
     [[get_esmval]]
         platform = localhost
         execution time limit = PT10M  # Actual: 2m17s on 2024-12-06.
+        [[[environment]]]
+            SINGULARITY_CACHEDIR = ${CONTAINER_PATH}
         [[[directives]]]
             --mem = 10G
 
