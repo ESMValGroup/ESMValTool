@@ -1,4 +1,4 @@
-# CMORIZE ESA CCI CLOUD daily data
+# CMORIZE ESA CCI CLOUD daily/monthly data
 ---
 
 # Common global attributes for Cmorizer output
@@ -11,65 +11,85 @@ attributes:
   modeling_realm: sat
   reference: 'esacci_cloud'
   comment: ''
-  start_year: 2003
-  end_year: 2007
+  # start_year: 2003
+  # end_year: 2007
+  start_year: 1982  
+  end_year: 1982
 
 # Variables to cmorize
 variables:
-  clt:
-    mip: day
-    raw: [cmask_desc, cmask_asc]
-    raw_units: '1'
-    file: '-ESACCI-L3U_CLOUD-CLD_MASKTYPE-AVHRR_*-fv3.0.nc'
-  clwvi:
-    mip: CFday
-    raw: [cwp_desc, cwp_asc]
-    raw_units: g/m2
-    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
-  ctp:
-    mip: day
-    raw: [ctp_desc, ctp_asc]
-    raw_units: hPa
-    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
-  reff:
-    mip: day
-    raw: [cer_desc, cer_asc]
-    raw_units: um
-    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
-  cod:
-    mip: AERday
-    raw: [cot_desc, cot_asc]
-    raw_units: 1
-    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
   # clt:
-  #   mip: 
+  #   mip: day
   #   raw: [cmask_desc, cmask_asc]
   #   raw_units: '1'
   #   file: '-ESACCI-L3U_CLOUD-CLD_MASKTYPE-AVHRR_*-fv3.0.nc'
+  # clwvi:
+  #   mip: CFday
+  #   raw: [cwp_desc, cwp_asc]
+  #   raw_units: g/m2
+  #   file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
+  # ctp:
+  #   mip: day
+  #   raw: [ctp_desc, ctp_asc]
+  #   raw_units: hPa
+  #   file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
+  # reff:
+  #   mip: day
+  #   raw: [cer_desc, cer_asc]
+  #   raw_units: um
+  #   file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
+  # Monthly data
+  # clt:
+  #   mip: Amon
+  #   raw: cfc
+  #   raw_units: '1'
+  #   file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
+  # lwp:
+  #   mip: Amon
+  #   raw_units: g/m2
+  #   file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'    
   clwvi:
-    mip: mon
-    raw: [cwp_desc, cwp_asc]
+    mip: Amon
+    raw: iwp_allsky
     raw_units: g/m2
     file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
-  ctp:
-    mip: day
-    raw: [ctp_desc, ctp_asc]
-    raw_units: hPa
-    file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
-  reff:
-    mip: mon
-    raw: [cer_desc, cer_asc]
-    raw_units: um
-    file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
-  cod:
-    mip: mon
-    raw: [cot_desc, cot_asc]
-    raw_units: 1
-    file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
-
-    #rlut:
-    #  mip: day
-    #  raw: toa_lwup_desc
-    #  raw_units: W/m2
-    #  file: '-ESACCI-L3U_CLOUD-RAD_PRODUCTS-AVHRR_NOAA-*-fv3.0.nc'
-
+  # rlut:
+  #   mip: Amon
+  #   raw: toa_lwup
+  #   raw_units: W m-2
+  #   file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
+  # rlutcs:
+  #   mip: Amon
+  #   raw: toa_lwup_clr
+  #   raw_units: W m-2
+  #   file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
+  # rsut:
+  #   mip: Amon
+  #   raw: toa_swup
+  #   raw_units: W m-2
+  #   file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
+  # rsutcs:
+  #   mip: Amon
+  #   raw: toa_swup_clr
+  #   raw_units: W m-2
+  #   file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
+  # rsdt:
+  #   mip: Amon
+  #   raw: toa_swdn
+  #   raw_units: W m-2
+  #   file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
+  # rlus:
+  #   mip: Amon
+  #   raw: boa_lwup
+  #   raw_units: W m-2
+  #   file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
+  # rsus:
+  #   mip: Amon
+  #   raw: boa_swup
+  #   raw_units: W m-2
+  #   file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'                         
+  # rsuscs:
+  #   mip: Amon
+  #   raw: boa_swup_clr
+  #   raw_units: W m-2
+  #   file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc' 
