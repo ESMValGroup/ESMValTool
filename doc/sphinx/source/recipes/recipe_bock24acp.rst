@@ -6,7 +6,7 @@ Cloud properties and their projected changes in CMIP models with low to high cli
 Overview
 --------
 
-The recipes recipe_bock24acp_*.yml reproduce figures (Fig. 3, 4, 6 and 7) from the publication Bock and Lauer, 2024.
+The recipes recipe_bock24acp_*.yml reproduce figures (Fig. 3, 4, 6 and 7) from the publication `Bock and Lauer, 2024`_ investigating cloud properties and their projected changes in CMIP models with low to high climate sensitivity.
 
 
 Available recipes and diagnostics
