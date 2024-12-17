@@ -91,7 +91,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-* CERES-EBAF - CERES TOA radiation fluxes (used for calculation of
+* CERES-EBAF (Ed4.2) - TOA radiation fluxes (used for calculation of
   cloud forcing)
 
   *Reformat script:* cmorizers/data/formatters/datasets/ceres_ebaf.py
