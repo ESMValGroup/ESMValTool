@@ -80,7 +80,7 @@ Variables
 
 * clt (atmos, monthly, longitude latitude time)
 * clivi (atmos, monthly, longitude latitude time)
-* lwp (atmos, monthly, longitude latitude time)
+* clwvi (atmos, monthly, longitude latitude time)
 * rlut (atmos, monthly, longitude latitude time)
 * rsut (atmos, monthly, longitude latitude time)
 * rlutcs (atmos, monthly, longitude latitude time)
