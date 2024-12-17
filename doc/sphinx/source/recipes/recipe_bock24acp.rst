@@ -135,7 +135,7 @@ Example plots
    Relative change (calculated as the difference between the scenario value and the
    historical value divided by the historical value) of total cloud fraction (clt),
    ice water path (iwp), liquid water path (lwp), and net cloud radiative effect
-   (netcre) per degree of warming averaged over the Southern Ocean (30–65∘ S). In the
+   (netcre) per degree of warming averaged over the Southern Ocean (30–65°S). In the
    box plot, each box indicates the range from the first
    quartile to the third quartile, the vertical line shows the median, and the
    whiskers the minimum and maximum values, excluding the outliers. Outliers are
