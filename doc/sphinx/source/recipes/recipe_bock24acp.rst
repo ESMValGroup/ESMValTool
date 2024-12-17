@@ -6,8 +6,9 @@ Cloud properties and their projected changes in CMIP models with low to high cli
 Overview
 --------
 
-The recipes recipe_bock24acp_*.yml reproduce figures (Fig. 3, 4, 6 and 7) from the publication Bock and Lauer, 2024.
+The recipes recipe_bock24acp_*.yml reproduce figures (Fig. 3, 4, 6 and 7) from the publication `Bock and Lauer, 2024`_ investigating cloud properties and their projected changes in CMIP models with low to high climate sensitivity.
 
+.. _`Bock and Lauer, 2024`: https://doi.org/10.5194/acp-24-1587-2024
 
 Available recipes and diagnostics
 ---------------------------------
@@ -78,8 +79,8 @@ Variables
 ---------
 
 * clt (atmos, monthly, longitude latitude time)
-* iwp (atmos, monthly, longitude latitude time)
-* lwp (atmos, monthly, longitude latitude time)
+* clivi (atmos, monthly, longitude latitude time)
+* clwvi (atmos, monthly, longitude latitude time)
 * rlut (atmos, monthly, longitude latitude time)
 * rsut (atmos, monthly, longitude latitude time)
 * rlutcs (atmos, monthly, longitude latitude time)
@@ -90,8 +91,8 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-* CERES-EBAF - CERES TOA radiation fluxes (used for calculation of
-  cloud forcing)
+* CERES-EBAF (Ed4.2) - TOA radiation fluxes (used for calculation of
+  the cloud radiative effects)
 
   *Reformat script:* cmorizers/data/formatters/datasets/ceres_ebaf.py
 
@@ -134,7 +135,7 @@ Example plots
    Relative change (calculated as the difference between the scenario value and the
    historical value divided by the historical value) of total cloud fraction (clt),
    ice water path (iwp), liquid water path (lwp), and net cloud radiative effect
-   (netcre) per degree of warming averaged over the Southern Ocean (30–65∘ S). In the
+   (netcre) per degree of warming averaged over the Southern Ocean (30–65°S). In the
    box plot, each box indicates the range from the first
    quartile to the third quartile, the vertical line shows the median, and the
    whiskers the minimum and maximum values, excluding the outliers. Outliers are
