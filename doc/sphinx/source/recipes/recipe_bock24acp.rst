@@ -92,7 +92,7 @@ Observations and reformat scripts
 ---------------------------------
 
 * CERES-EBAF (Ed4.2) - TOA radiation fluxes (used for calculation of
-  cloud forcing)
+  the cloud radiative effects)
 
   *Reformat script:* cmorizers/data/formatters/datasets/ceres_ebaf.py
 
