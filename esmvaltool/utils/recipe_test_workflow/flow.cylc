@@ -1,21 +1,35 @@
 #!jinja2
+
+# See "How to add a recipe to the RTW" documentation for more information. Recipe paths
+# are specified relative to esmvaltool/recipes. For recipes in subdirectories,
+# `--` stands for `/` since the latter is an illegal char.
+{% set FAST_RECIPES =
+    [
+        'recipe_radiation_budget',
+        'recipe_albedolandcover',
+        'recipe_heatwaves_coldwaves',
+        'recipe_autoassess_landsurface_soilmoisture',
+        'recipe_consecdrydays',
+        'examples--recipe_python',
+        'recipe_ocean_multimap',
+        'recipe_ocean_amoc',
+    ]
+%}
+# `recipe_ensclus` should be in fast: is in medium temporarily to avoid empty variable.
+{% set MEDIUM_RECIPES =
+    [
+        'recipe_ensclus',
+    ]
+%}
+
 [scheduler]
     UTC mode = True
 
 [task parameters]
-    # See "How to add a recipe to the RTW" documentation for more information.
-    # Recipe paths are specified relative to esmvaltool/recipes. For recipes in
-    # subdirectories, `--` stands for `/` since the latter is an illegal char.
-    fast = recipe_radiation_budget, \
-        recipe_albedolandcover, \
-        recipe_heatwaves_coldwaves, \
-        recipe_autoassess_landsurface_soilmoisture, \
-        recipe_consecdrydays, \
-        examples--recipe_python, \
-        recipe_ocean_multimap, \
-        recipe_ocean_amoc
-    medium = recipe_ensclus  # Should be in fast: is in medium temporarily to
-                             # avoid empty variable.
+    # By default all recipes are run. To override this, add to the RECIPES_TO_EXCLUDE
+    # list in your specific SITE `.cylc` file.
+    fast = {{ FAST_RECIPES | join(', ') }}
+    medium = {{ MEDIUM_RECIPES | join(', ') }}
 
 [scheduling]
     initial cycle point = now

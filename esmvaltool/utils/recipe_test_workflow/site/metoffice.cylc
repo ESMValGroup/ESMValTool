@@ -1,4 +1,21 @@
 #!jinja2
+
+# Add recipes you DO NOT want to run at your site here. (Both medium and fast
+# recipes can be added to this list). NOTE: No error will be raised if you make a typo.
+# It it recommended to double-check recipes are actually excluded.
+{% set RECIPES_TO_EXCLUDE =
+    [
+        'examples--recipe_python',
+        'recipe_consecdrydays',
+        'recipe_heatwaves_coldwaves',
+        'recipe_radiation_budget',
+    ]
+%}
+
+[task parameters]
+    fast = {{ FAST_RECIPES | reject("in", RECIPES_TO_EXCLUDE) | join(', ') }}
+    medium = {{ MEDIUM_RECIPES | reject("in", RECIPES_TO_EXCLUDE) | join(', ') }}
+
 [runtime]
     [[root]]
         [[[environment]]]
