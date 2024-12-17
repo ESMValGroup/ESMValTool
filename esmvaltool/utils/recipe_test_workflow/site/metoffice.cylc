@@ -1,8 +1,13 @@
 #!jinja2
 
-# Add recipes you DO NOT want to run at your site here. (Both medium and fast
-# recipes can be added to this list). NOTE: No error will be raised if you make a typo.
-# It it recommended to double-check recipes are actually excluded.
+# Recipes added to `RECIPES_TO_EXCLUDE` will not be run by RTW. Both medium and fast
+# recipes can be added. # NOTE: No error will be raised if you make a typo. It is
+# recommended to double-check recipes are actually excluded. This can be done quickly
+# by viewing the Cylc graph with `cylc gui .`.
+
+# WARNING: The RTW will error if you exclude a recipe with custom time/memory limits
+# already set. e.g. If this file has a '[[process<fast=EXCLUDED_RECIPE>]` section, it
+# should be commented out/removed before the recipe is excluded.
 {% set RECIPES_TO_EXCLUDE =
     [
         'examples--recipe_python',

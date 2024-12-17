@@ -26,8 +26,9 @@
     UTC mode = True
 
 [task parameters]
-    # By default all recipes are run. To override this, add to the RECIPES_TO_EXCLUDE
-    # list in your specific SITE `.cylc` file.
+    # By default, RTW runs all `FAST_RECIPES` and all `MEDIUM_RECIPES`. To override
+    # this, add recipes to the RECIPES_TO_EXCLUDE list in your site-specific `.cylc`
+    # file.
     fast = {{ FAST_RECIPES | join(', ') }}
     medium = {{ MEDIUM_RECIPES | join(', ') }}
 
