@@ -29,6 +29,13 @@
     [[get_esmval]]
         platform = localhost
         execution time limit = PT10M  # Actual: 2m17s on 2024-12-06.
+        [[[environment]]]
+            # Move the location of the singularity cache from the user's
+            # home area to the directory where the container is saved.
+            # This variable must be specified only for the 'get_esmval'
+            # task, otherwise, for some reason, subsequent steps take much
+            # longer to run than the resources specified.
+            SINGULARITY_CACHEDIR = ${CONTAINER_DIR}
 
     [[configure]]
         platform = localhost
