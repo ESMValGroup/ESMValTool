@@ -87,9 +87,9 @@ group_variables_by: str, optional (default: 'short_name')
 matplotlib_rc_params: dict, optional (default: {})
     Optional :class:`matplotlib.RcParams` used to customize matplotlib plots.
     Options given here will be passed to :func:`matplotlib.rc_context` and used
-    for all plots produced with this diagnostic. Note: font sizes specified
-    here might be overwritten by the plot-type-specific option ``fontsize``
-    (see below).
+    for all plots produced with this diagnostic. Note: fontsizes specified here
+    might be overwritten by the plot-type-specific option ``fontsize`` (see
+    below).
 plots: dict, optional
     Plot types plotted by this diagnostic (see list above). Dictionary keys
     must be ``timeseries``, ``annual_cycle``, ``map``, ``zonal_mean_profile``,
@@ -214,9 +214,9 @@ common_cbar: bool, optional (default: False)
     true``. This option has no effect if no reference dataset is given.
 fontsize: int, optional (default: None)
     Fontsize used for ticks, labels and titles. For the latter, use the given
-    fontsize plus 2. Does not affect suptitles. For a more fine-grained
-    definition of font sizes, use the option ``matplotlib_rc_params`` (see
-    above).
+    fontsize plus 2. Does not affect suptitles. If not given, use default
+    matplotlib values. For a more fine-grained definition of fontsizes, use the
+    option ``matplotlib_rc_params`` (see above).
 gridline_kwargs: dict, optional
     Optional keyword arguments for grid lines. By default, ``color: lightgrey,
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
@@ -306,9 +306,9 @@ common_cbar: bool, optional (default: False)
     true``. This option has no effect if no reference dataset is given.
 fontsize: int, optional (default: None)
     Fontsize used for ticks, labels and titles. For the latter, use the given
-    fontsize plus 2. Does not affect suptitles. For a more fine-grained
-    definition of font sizes, use the option ``matplotlib_rc_params`` (see
-    above).
+    fontsize plus 2. Does not affect suptitles. If not given, use default
+    matplotlib values. For a more fine-grained definition of fontsizes, use the
+    option ``matplotlib_rc_params`` (see above).
 log_y: bool, optional (default: True)
     Use logarithmic Y-axis.
 plot_func: str, optional (default: 'contourf')
@@ -460,9 +460,9 @@ common_cbar: bool, optional (default: False)
     true``. This option has no effect if no reference dataset is given.
 fontsize: int, optional (default: None)
     Fontsize used for ticks, labels and titles. For the latter, use the given
-    fontsize plus 2. Does not affect suptitles. For a more fine-grained
-    definition of font sizes, use the option ``matplotlib_rc_params`` (see
-    above).
+    fontsize plus 2. Does not affect suptitles. If not given, use default
+    matplotlib values. For a more fine-grained definition of fontsizes, use the
+    option ``matplotlib_rc_params`` (see above).
 log_y: bool, optional (default: True)
     Use logarithmic Y-axis.
 plot_func: str, optional (default: 'contourf')
@@ -549,9 +549,9 @@ common_cbar: bool, optional (default: False)
     true``. This option has no effect if no reference dataset is given.
 fontsize: int, optional (default: None)
     Fontsize used for ticks, labels and titles. For the latter, use the given
-    fontsize plus 2. Does not affect suptitles. For a more fine-grained
-    definition of font sizes, use the option ``matplotlib_rc_params`` (see
-    above).
+    fontsize plus 2. Does not affect suptitles. If not given, use default
+    matplotlib values. For a more fine-grained definition of fontsizes, use the
+    option ``matplotlib_rc_params`` (see above).
 plot_func: str, optional (default: 'contourf')
     Plot function used to plot the profiles. Must be a function of
     :mod:`iris.plot` that supports plotting of 2D cubes with coordinates
