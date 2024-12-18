@@ -29,9 +29,9 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         Overwrite already downloaded files
     """
     if start_date is None:
-        start_date = datetime(2003, 1, 1)
+        start_date = datetime(1982, 1, 1)
     if end_date is None:
-        end_date = datetime(2003, 12, 31)
+        end_date = datetime(2016, 12, 31)
     loop_date = start_date
 
     downloader = WGetDownloader(
@@ -116,17 +116,19 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                                  folder_l3c, str(e))
 
                 # daily data
-                logger.info("Downloading daily data (L3U) for sat = %s", sat)
-                folder_l3u = base_path_l3u + sat + f'{year}/{month:02}'
-                wget_options_l3u = wget_options.copy()
-                wget_options_l3u.append(f'--accept={date}*CLD_MASKTYPE*.nc,{date}*CLD_PRODUCTS*.nc')
-                logger.info("Download folder for daily data (L3U): %s",
-                            folder_l3u)
-                try:
-                    downloader.download_file(folder_l3u, wget_options_l3u)
-                except Exception as e:
-                    logger.error("Failed to download daily data from %s: %s",
-                                 folder_l3u, str(e))
+                if year in range(2003, 2008):
+                    logger.info("Downloading daily data (L3U) for sat = %s", sat)
+                    folder_l3u = base_path_l3u + sat + f'{year}/{month:02}'
+                    wget_options_l3u = wget_options.copy()
+                    wget_options_l3u.append(f'--accept={date}*CLD_MASKTYPE*.nc,'
+                                            f'{date}*CLD_PRODUCTS*.nc')
+                    logger.info("Download folder for daily data (L3U): %s",
+                                folder_l3u)
+                    try:
+                        downloader.download_file(folder_l3u, wget_options_l3u)
+                    except Exception as e:
+                        logger.error("Failed to download daily data from %s: %s",
+                                     folder_l3u, str(e))
 
         # Increment the loop_date by one month
         loop_date += relativedelta.relativedelta(months=1)
