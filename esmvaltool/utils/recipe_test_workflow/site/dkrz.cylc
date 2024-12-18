@@ -28,7 +28,7 @@
 
     [[get_esmval]]
         platform = localhost
-        execution time limit = PT10M  # Actual: 2m17s on 2024-12-06.
+        execution time limit = PT10M  # Actual: 3m06s on 2024-12-18.
         [[[environment]]]
             # Move the location of the singularity cache from the user's
             # home area to the directory where the container is saved.
@@ -39,7 +39,7 @@
 
     [[configure]]
         platform = localhost
-        execution time limit = PT2M
+        execution time limit = PT2M  # Actual: 0m14s on 2024-12-18.
         [[[directives]]]
             --mem = 2G
 
