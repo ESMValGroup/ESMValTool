@@ -31,8 +31,6 @@
         execution time limit = PT10M  # Actual: 2m17s on 2024-12-06.
         [[[environment]]]
             SINGULARITY_CACHEDIR = ${CONTAINER_PATH}
-        [[[directives]]]
-            --mem = 10G
 
     [[configure]]
         platform = localhost
@@ -44,14 +42,56 @@
     # memory should be specified, in case the default changes.
     # Variable (fast, medium) must be consistent with flow.cylc.
     # Comment indicates example recorded usage on DKRZ.
-    # [[process<fast=recipe_autoassess_landsurface_soilmoisture>]]
-    #     # Actual: 1m35s, 2.1 GB on 2024-03-29.
-    #     execution time limit = PT3M
-    #     [[[directives]]]
-    #         --mem = 3G
+    [[process_examples--recipe_python]]
+        # Actual: 0m07s 2.1 GB on 2024-12-18.
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 15G
 
-    # [[process<medium=recipe_ensclus>]]
-    #     # Actual: 4m23s, 1.5 GB on 2024-03-29.
-    #     execution time limit = PT6M
-    #     [[[directives]]]
-    #         --mem = 2G
+    [[process_recipe_albedolandcover]]
+        # Actual: 0m10s 3.2 GB on 2024-12-18.
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 15G
+
+    [[process_recipe_autoassess_landsurface_soilmoisture]]
+        # Actual: 0m13s 3.8 GB on 2024-12-18.
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 15G
+
+    [[process_recipe_consecdrydays]]
+        # Actual: 0m08s 2.3 GB on 2024-12-18.
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 15G
+
+    [[process_recipe_ensclus]]
+        # Actual: 0m35s 2.0 GB on 2024-12-18.
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 15G
+
+    [[process_recipe_heatwaves_coldwaves]]
+        # Actual: 0m30s 1.6 GB on 2024-12-18.
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 15G
+
+    [[process_recipe_ocean_amoc]]
+        # Actual: Currently broken: No input files found for Dataset
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 15G
+
+    [[process_recipe_ocean_multimap]]
+        # Actual: Currently broken: No input files found for Dataset
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 15G
+
+    [[process_recipe_radiation_budget]]
+        # Actual: Currently broken: No input files found for Dataset
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem =15G
