@@ -4,6 +4,13 @@
 #
 # OPTIONS
 #   COMMAND             The command to execute with options
+#
+# Since DKRZ uses the module environment to dynamically modify a user's
+# environment via modulefiles (more details are available at
+# https://docs.dkrz.de/doc/levante/access-and-environment.html#module-environment)
+# this additional environment file is required to enable access to singularity
+# on DKRZ. This file is used directly in the 'get_esmval' app for DKRZ, as well
+# as in the 'dkrz-env' environment file.
 set -eu
 
 module_count(){
