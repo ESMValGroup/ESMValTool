@@ -30,5 +30,9 @@ safe_load(){
 }
 safe_load "singularity"
 
+# Move the location of the singularity cache from the user's home area to the
+# directory where the container is saved.
+export SINGULARITY_CACHEDIR=${CONTAINER_PATH}
+
 command="/usr/bin/time -v -o ${CYLC_TASK_LOG_ROOT}.time $@"
 exec ${command}
