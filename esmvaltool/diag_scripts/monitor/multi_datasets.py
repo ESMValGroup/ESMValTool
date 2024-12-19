@@ -84,6 +84,12 @@ figure_kwargs: dict, optional
 group_variables_by: str, optional (default: 'short_name')
     Facet which is used to create variable groups. For each variable group, an
     individual plot is created.
+matplotlib_rc_params: dict, optional (default: {})
+    Optional :class:`matplotlib.RcParams` used to customize matplotlib plots.
+    Options given here will be passed to :func:`matplotlib.rc_context` and used
+    for all plots produced with this diagnostic. Note: fontsizes specified here
+    might be overwritten by the plot-type-specific option ``fontsize`` (see
+    below).
 plots: dict, optional
     Plot types plotted by this diagnostic (see list above). Dictionary keys
     must be ``timeseries``, ``annual_cycle``, ``map``, ``zonal_mean_profile``,
@@ -206,9 +212,11 @@ common_cbar: bool, optional (default: False)
     (top right panel). Thus, the use of the ``plot_kwargs`` ``vmin`` and
     ``vmax`` or ``levels`` is highly recommend when using this ``common_cbar:
     true``. This option has no effect if no reference dataset is given.
-fontsize: int, optional (default: 10)
+fontsize: int, optional (default: None)
     Fontsize used for ticks, labels and titles. For the latter, use the given
-    fontsize plus 2. Does not affect suptitles.
+    fontsize plus 2. Does not affect suptitles. If not given, use default
+    matplotlib values. For a more fine-grained definition of fontsizes, use the
+    option ``matplotlib_rc_params`` (see above).
 gridline_kwargs: dict, optional
     Optional keyword arguments for grid lines. By default, ``color: lightgrey,
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
@@ -296,9 +304,11 @@ common_cbar: bool, optional (default: False)
     (top right panel). Thus, the use of the ``plot_kwargs`` ``vmin`` and
     ``vmax`` or ``levels`` is highly recommend when using this ``common_cbar:
     true``. This option has no effect if no reference dataset is given.
-fontsize: int, optional (default: 10)
+fontsize: int, optional (default: None)
     Fontsize used for ticks, labels and titles. For the latter, use the given
-    fontsize plus 2. Does not affect suptitles.
+    fontsize plus 2. Does not affect suptitles. If not given, use default
+    matplotlib values. For a more fine-grained definition of fontsizes, use the
+    option ``matplotlib_rc_params`` (see above).
 log_y: bool, optional (default: True)
     Use logarithmic Y-axis.
 plot_func: str, optional (default: 'contourf')
@@ -448,9 +458,11 @@ common_cbar: bool, optional (default: False)
     (top right panel). Thus, the use of the ``plot_kwargs`` ``vmin`` and
     ``vmax`` or ``levels`` is highly recommend when using this ``common_cbar:
     true``. This option has no effect if no reference dataset is given.
-fontsize: int, optional (default: 10)
+fontsize: int, optional (default: None)
     Fontsize used for ticks, labels and titles. For the latter, use the given
-    fontsize plus 2. Does not affect suptitles.
+    fontsize plus 2. Does not affect suptitles. If not given, use default
+    matplotlib values. For a more fine-grained definition of fontsizes, use the
+    option ``matplotlib_rc_params`` (see above).
 log_y: bool, optional (default: True)
     Use logarithmic Y-axis.
 plot_func: str, optional (default: 'contourf')
@@ -535,9 +547,11 @@ common_cbar: bool, optional (default: False)
     (top right panel). Thus, the use of the ``plot_kwargs`` ``vmin`` and
     ``vmax`` or ``levels`` is highly recommend when using this ``common_cbar:
     true``. This option has no effect if no reference dataset is given.
-fontsize: int, optional (default: 10)
+fontsize: int, optional (default: None)
     Fontsize used for ticks, labels and titles. For the latter, use the given
-    fontsize plus 2. Does not affect suptitles.
+    fontsize plus 2. Does not affect suptitles. If not given, use default
+    matplotlib values. For a more fine-grained definition of fontsizes, use the
+    option ``matplotlib_rc_params`` (see above).
 plot_func: str, optional (default: 'contourf')
     Plot function used to plot the profiles. Must be a function of
     :mod:`iris.plot` that supports plotting of 2D cubes with coordinates
@@ -654,6 +668,7 @@ class MultiDatasets(MonitorBase):
         self.cfg.setdefault('facet_used_for_labels', 'dataset')
         self.cfg.setdefault('figure_kwargs', {'constrained_layout': True})
         self.cfg.setdefault('group_variables_by', 'short_name')
+        self.cfg.setdefault('matplotlib_rc_params', {})
         self.cfg.setdefault('savefig_kwargs', {
             'bbox_inches': 'tight',
             'dpi': 300,
@@ -729,7 +744,7 @@ class MultiDatasets(MonitorBase):
                 )
                 self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
                 self.plots[plot_type].setdefault('common_cbar', False)
-                self.plots[plot_type].setdefault('fontsize', 10)
+                self.plots[plot_type].setdefault('fontsize', None)
                 self.plots[plot_type].setdefault('gridline_kwargs', {})
                 self.plots[plot_type].setdefault('plot_func', 'contourf')
                 self.plots[plot_type].setdefault('plot_kwargs', {})
@@ -763,7 +778,7 @@ class MultiDatasets(MonitorBase):
                 )
                 self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
                 self.plots[plot_type].setdefault('common_cbar', False)
-                self.plots[plot_type].setdefault('fontsize', 10)
+                self.plots[plot_type].setdefault('fontsize', None)
                 self.plots[plot_type].setdefault('log_y', True)
                 self.plots[plot_type].setdefault('plot_func', 'contourf')
                 self.plots[plot_type].setdefault('plot_kwargs', {})
@@ -809,7 +824,7 @@ class MultiDatasets(MonitorBase):
                                                  {'orientation': 'vertical'})
                 self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
                 self.plots[plot_type].setdefault('common_cbar', False)
-                self.plots[plot_type].setdefault('fontsize', 10)
+                self.plots[plot_type].setdefault('fontsize', None)
                 self.plots[plot_type].setdefault('log_y', True)
                 self.plots[plot_type].setdefault('plot_func', 'contourf')
                 self.plots[plot_type].setdefault('plot_kwargs', {})
@@ -838,7 +853,7 @@ class MultiDatasets(MonitorBase):
                 )
                 self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
                 self.plots[plot_type].setdefault('common_cbar', False)
-                self.plots[plot_type].setdefault('fontsize', 10)
+                self.plots[plot_type].setdefault('fontsize', None)
                 self.plots[plot_type].setdefault('plot_func', 'contourf')
                 self.plots[plot_type].setdefault('plot_kwargs', {})
                 self.plots[plot_type].setdefault('plot_kwargs_bias', {})
@@ -873,7 +888,9 @@ class MultiDatasets(MonitorBase):
     def _add_colorbar(self, plot_type, plot_left, plot_right, axes_left,
                       axes_right, dataset_left, dataset_right):
         """Add colorbar(s) for plots."""
-        fontsize = self.plots[plot_type]['fontsize']
+        fontsize = (
+            self.plots[plot_type]['fontsize'] or mpl.rcParams['axes.labelsize']
+        )
         cbar_kwargs = self._get_cbar_kwargs(plot_type)
         cbar_label_left = self._get_cbar_label(plot_type, dataset_left)
         cbar_label_right = self._get_cbar_label(plot_type, dataset_right)
@@ -1007,13 +1024,15 @@ class MultiDatasets(MonitorBase):
 
     def _get_custom_mpl_rc_params(self, plot_type):
         """Get custom matplotlib rcParams."""
+        custom_rc_params = {}
         fontsize = self.plots[plot_type]['fontsize']
-        custom_rc_params = {
-            'axes.titlesize': fontsize + 2.0,
-            'axes.labelsize': fontsize,
-            'xtick.labelsize': fontsize,
-            'ytick.labelsize': fontsize,
-        }
+        if fontsize is not None:
+            custom_rc_params.update({
+                'axes.titlesize': fontsize + 2.0,
+                'axes.labelsize': fontsize,
+                'xtick.labelsize': fontsize,
+                'ytick.labelsize': fontsize,
+            })
         return custom_rc_params
 
     def _get_label(self, dataset):
@@ -1171,7 +1190,10 @@ class MultiDatasets(MonitorBase):
             projection = self._get_map_projection()
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             gridline_kwargs = self._get_gridline_kwargs(plot_type)
-            fontsize = self.plots[plot_type]['fontsize']
+            fontsize = (
+                self.plots[plot_type]['fontsize'] or
+                mpl.rcParams['axes.labelsize']
+            )
 
             # Plot dataset (top left)
             axes_data = fig.add_subplot(gridspec[0:2, 0:2],
@@ -1319,7 +1341,10 @@ class MultiDatasets(MonitorBase):
             self._add_stats(plot_type, axes, dim_coords_dat, dataset)
 
             # Setup colorbar
-            fontsize = self.plots[plot_type]['fontsize']
+            fontsize = (
+                self.plots[plot_type]['fontsize'] or
+                mpl.rcParams['axes.labelsize']
+            )
             colorbar = fig.colorbar(plot_map, ax=axes,
                                     **self._get_cbar_kwargs(plot_type))
             colorbar.set_label(self._get_cbar_label(plot_type, dataset),
@@ -1363,7 +1388,10 @@ class MultiDatasets(MonitorBase):
 
             # Options used for all subplots
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-            fontsize = self.plots[plot_type]['fontsize']
+            fontsize = (
+                self.plots[plot_type]['fontsize'] or
+                mpl.rcParams['axes.labelsize']
+            )
 
             # Plot dataset (top left)
             axes_data = fig.add_subplot(gridspec[0:2, 0:2])
@@ -1472,7 +1500,10 @@ class MultiDatasets(MonitorBase):
             self._add_stats(plot_type, axes, dim_coords_dat, dataset)
 
             # Setup colorbar
-            fontsize = self.plots[plot_type]['fontsize']
+            fontsize = (
+                self.plots[plot_type]['fontsize'] or
+                mpl.rcParams['axes.labelsize']
+            )
             colorbar = fig.colorbar(plot_zonal_mean_profile, ax=axes,
                                     **self._get_cbar_kwargs(plot_type))
             colorbar.set_label(self._get_cbar_label(plot_type, dataset),
@@ -1529,7 +1560,10 @@ class MultiDatasets(MonitorBase):
             self._add_stats(plot_type, axes, dim_coords_dat, dataset)
 
             # Setup colorbar
-            fontsize = self.plots[plot_type]['fontsize']
+            fontsize = (
+                self.plots[plot_type]['fontsize'] or
+                mpl.rcParams['axes.labelsize']
+            )
             colorbar = fig.colorbar(plot_hovmoeller,
                                     ax=axes,
                                     **self._get_cbar_kwargs(plot_type))
@@ -1592,7 +1626,10 @@ class MultiDatasets(MonitorBase):
 
             # Options used for all subplots
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-            fontsize = self.plots[plot_type]['fontsize']
+            fontsize = (
+                self.plots[plot_type]['fontsize'] or
+                mpl.rcParams['axes.labelsize']
+            )
 
             # Plot dataset (top left)
             axes_data = fig.add_subplot(gridspec[0:2, 0:2])
@@ -1710,7 +1747,10 @@ class MultiDatasets(MonitorBase):
 
             # Options used for all subplots
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-            fontsize = self.plots[plot_type]['fontsize']
+            fontsize = (
+                self.plots[plot_type]['fontsize'] or
+                mpl.rcParams['axes.labelsize']
+            )
 
             # Plot dataset (top left)
             axes_data = fig.add_subplot(gridspec[0:2, 0:2])
@@ -1837,7 +1877,10 @@ class MultiDatasets(MonitorBase):
             plot_hovmoeller = plot_func(cube, **plot_kwargs)
 
             # Setup colorbar
-            fontsize = self.plots[plot_type]['fontsize']
+            fontsize = (
+                self.plots[plot_type]['fontsize'] or
+                mpl.rcParams['axes.labelsize']
+            )
             colorbar = fig.colorbar(plot_hovmoeller, ax=axes,
                                     **self._get_cbar_kwargs(plot_type))
             colorbar.set_label(self._get_cbar_label(plot_type, dataset),
@@ -2592,16 +2635,17 @@ class MultiDatasets(MonitorBase):
 
     def compute(self):
         """Plot preprocessed data."""
-        for (var_key, datasets) in self.grouped_input_data.items():
-            logger.info("Processing variable %s", var_key)
-            self.create_timeseries_plot(datasets)
-            self.create_annual_cycle_plot(datasets)
-            self.create_map_plot(datasets)
-            self.create_zonal_mean_profile_plot(datasets)
-            self.create_1d_profile_plot(datasets)
-            self.create_variable_vs_lat_plot(datasets)
-            self.create_hovmoeller_z_vs_time_plot(datasets)
-            self.create_hovmoeller_time_vs_lat_or_lon_plot(datasets)
+        with mpl.rc_context(self.cfg['matplotlib_rc_params']):
+            for (var_key, datasets) in self.grouped_input_data.items():
+                logger.info("Processing variable %s", var_key)
+                self.create_timeseries_plot(datasets)
+                self.create_annual_cycle_plot(datasets)
+                self.create_map_plot(datasets)
+                self.create_zonal_mean_profile_plot(datasets)
+                self.create_1d_profile_plot(datasets)
+                self.create_variable_vs_lat_plot(datasets)
+                self.create_hovmoeller_z_vs_time_plot(datasets)
+                self.create_hovmoeller_time_vs_lat_or_lon_plot(datasets)
 
 
 def main():
