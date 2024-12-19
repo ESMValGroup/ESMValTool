@@ -27,6 +27,7 @@ from iris import NameConstraint
 from iris.exceptions import ConstraintMismatchError, MergeError
 from calendar import monthrange
 from datetime import datetime
+from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data import utilities as utils
 from esmvalcore.preprocessor import regrid, daily_statistics, monthly_statistics
@@ -34,19 +35,55 @@ from esmvalcore.preprocessor import regrid, daily_statistics, monthly_statistics
 logger = logging.getLogger(__name__)
 
 
-def _create_nan_cube(cube, year, month, day):
-    """Create cube containing only NaN from existing cube."""
+#def _create_nan_cube(cube, year, month, day):
+#    """Create cube containing only NaN from existing cube."""
+#    nan_cube = cube.copy()
+#    nan_cube.data = da.ma.masked_greater(cube.core_data(), -1e20)
+#
+#    # Read dataset time unit and calendar from file
+#    dataset_time_unit = str(nan_cube.coord('time').units)
+#    dataset_time_calender = nan_cube.coord('time').units.calendar
+#    # Convert datetime
+#    newtime = datetime(year=year, month=month, day=day)
+#    newtime = cf_units.date2num(newtime, dataset_time_unit,
+#                                dataset_time_calender)
+#    nan_cube.coord('time').points = float(newtime) + 0.025390625
+#
+#    return nan_cube
+
+
+def _create_nan_cube(cube, year, month, day, is_daily):
+    """Create cube containing only nan from existing cube."""
     nan_cube = cube.copy()
     nan_cube.data = da.ma.masked_greater(cube.core_data(), -1e20)
 
     # Read dataset time unit and calendar from file
     dataset_time_unit = str(nan_cube.coord('time').units)
     dataset_time_calender = nan_cube.coord('time').units.calendar
-    # Convert datetime
+    ## Convert datetime
+    #if is_daily:
+    #    hrs = 12
+    #else:
+    #    hrs = 0
     newtime = datetime(year=year, month=month, day=day)
-    newtime = cf_units.date2num(newtime, dataset_time_unit,
-                                dataset_time_calender)
-    nan_cube.coord('time').points = float(newtime) + 0.025390625
+    #newtime = datetime(year=year, month=month, day=day,
+    #                   hour=hrs, minute=0, second=0, microsecond=0)
+    newtime_num = cf_units.date2num(newtime, dataset_time_unit,
+                                    dataset_time_calender)
+    nan_cube.coord('time').points = float(newtime_num)
+
+    ## remove existing time bounds and create new bounds
+    #coord = nan_cube.coord('time')
+    #if is_daily:
+    #    bnd1 = newtime + relativedelta.relativedelta(hours=-12)
+    #    bnd2 = bnd1 + relativedelta.relativedelta(days=1)
+    #else:
+    #    bnd1 = newtime + relativedelta.relativedelta(days=-day + 1)
+    #    bnd2 = bnd1 + relativedelta.relativedelta(months=1)
+    #coord.bounds = [cf_units.date2num(bnd1, dataset_time_unit,
+    #                                  dataset_time_calender),
+    #                cf_units.date2num(bnd2, dataset_time_unit,
+    #                                  dataset_time_calender)]
 
     return nan_cube
 
@@ -163,7 +200,7 @@ def _extract_variable_monthly(short_name, var, cfg, in_dir, out_dir, start_date,
                 continue
 
             for ifile in filelist:
-                logger.info("CMORizing file %s", ifile)
+                logger.info("CMORizing file %s for variable %s", ifile, short_name)
 
                 try:
                     # Extract raw names from the variable dictionary, like in the daily function
@@ -171,12 +208,17 @@ def _extract_variable_monthly(short_name, var, cfg, in_dir, out_dir, start_date,
                     # Try to load the cube using a constraint based on the raw_name
                     monthly_cube = iris.load_cube(ifile, NameConstraint(var_name=raw_name))
 
+                    if short_name == 'clwvi':
+                        logger.info("Adding lwp and clivi")
+                        cube_lwp = iris.load_cube(ifile, NameConstraint(var_name='lwp_allsky'))
+                        monthly_cube.data = monthly_cube.core_data() + cube_lwp.core_data()
+                        #monthly_cube.data = np.add(np.stack([monthly_cube.core_data(),
+                        #                                     cube_lwp.core_data()]), axis = 0)
+
                     if monthly_cube is None:
                         logger.warning("Cube could not be loaded for file '%s'", ifile)
                         continue  # Skip this file and move to the next
 
-                    # Set an arbitrary time of day for the monthly data (similar to daily)
-                    #cube.coord('time').points = (cube.coord('time').points + (ivar + 0.5) * 0.1)
                     monthly_cube.attributes.clear()
                     monthly_cube.coord('time').long_name = 'time'
 
@@ -265,9 +307,48 @@ def _extract_variable_monthly(short_name, var, cfg, in_dir, out_dir, start_date,
 
     if cube_am and cube_pm: 
 
+        year0 = min(cube_am.coord('time').cell(0).point.year,
+                    cube_pm.coord('time').cell(0).point.year)
+        year1 = max(cube_am.coord('time').cell(-1).point.year,
+                    cube_pm.coord('time').cell(-1).point.year)
+        loop_date = datetime(year0, 1, 1)
+        print(loop_date)
+        is_daily = False
+        while loop_date <= datetime(year1, 12, 1):
+            #date_available = False
+            if loop_date not in cube_am.coord('time').cells():
+                logger.debug("No AM data available for %d/%d", loop_date.month,
+                        loop_date.year)
+                nan_cube = _create_nan_cube(cubes_am[0], loop_date.year,
+                                            loop_date.month, loop_date.day,
+                                            is_daily)
+                cubes_am.append(nan_cube)
+            if loop_date not in cube_pm.coord('time').cells():
+                logger.debug("No PM data available for %d/%d", loop_date.month,
+                        loop_date.year)
+                nan_cube = _create_nan_cube(cubes_pm[0], loop_date.year,
+                                            loop_date.month, loop_date.day,
+                                            is_daily)
+                cubes_pm.append(nan_cube)
+            loop_date += relativedelta.relativedelta(months=1)
+
+        cube_am = cubes_am.concatenate_cube()
+        cube_pm = cubes_pm.concatenate_cube()
+
         cube_total = cube_am.copy()
         cube_total.data = np.mean(np.stack([cube_am.core_data(),
                                             cube_pm.core_data()]), axis = 0)
+
+        # Regrid the cube to the target grid (e.g., 0.5x0.5)
+        cube_total = regrid(cube_total, target_grid='0.5x0.5', scheme='area_weighted')
+
+        # Fix units and handle any special cases like 'clt'
+        if short_name == 'clt':
+            cube_total.data = 100 * cube_total.core_data()  # Example conversion
+        else:
+            if 'raw_units' in var:
+                cube_total.units = var['raw_units']
+            cube_total.convert_units(cmor_info.units)
 
         # Set global attributes and fix metadata
         attrs = copy.deepcopy(cfg['attributes'])
@@ -283,6 +364,9 @@ def _extract_variable_monthly(short_name, var, cfg, in_dir, out_dir, start_date,
             attrs,
             unlimited_dimensions=['time']
         )
+
+    else:
+        logger.info("Not creating an averaged AM-PM product as one of two is not available.")
 
     if not (cube_am or cube_pm):
         logger.warning("No valid cubes processed")
