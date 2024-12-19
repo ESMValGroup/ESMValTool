@@ -32,7 +32,9 @@ def download_dataset(config, dataset, dataset_info,
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
+    path = "https://gml.noaa.gov/aftp/data/trace_gases/co2/flask/surface/"
+    file = "co2_surface-flask_ccgg_text.tar.gz"
     downloader.download_file(
-        "https://gml.noaa.gov/aftp/data/trace_gases/co2/flask/surface/co2_surface-flask_ccgg_text.tar.gz",
+        path + file,
         wget_options=[],
     )

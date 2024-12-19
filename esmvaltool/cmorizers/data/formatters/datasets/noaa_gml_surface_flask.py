@@ -38,6 +38,7 @@ FLASK_COLUMNS = ['site', 'year', 'month', 'value']
 DTYPE_FLASK_COLUMNS = {'site': str, 'year': int, 'month': int, 'value': float}
 TRACE_GAS_UNITS = {'ch4s': '1e-09', 'co2s': '1e-06', 'n2os': '1e-09'}
 
+
 class FlaskStation(NamedTuple):
     """NOAA GML surface flask station data."""
 
@@ -83,7 +84,8 @@ def load_file(filesystem, filepath, filelist):
             dtype=DTYPE_FLASK_COLUMNS,
             engine='python'
         )
-    # Fetch data from event file : code, full_name, country, latitude, longitude, elevation, timezone 
+    # Fetch data from event file : code, full_name, country,
+    #  latitude, longitude, elevation, timezone
     # Check first if the surface-flask or shipboard-flask file exists
     filepath_event_alt1 = filepath.replace('month', 'event')
     filepath_event_alt2 = filepath.replace('month', 'event').replace(
@@ -132,7 +134,9 @@ def load_file(filesystem, filepath, filelist):
     else:
         # Datetime index
         data_frame.index = pd.to_datetime(
-            data_frame['year'].astype(str) + '-' + data_frame['month'].astype(str))    
+            data_frame['year'].astype(str)
+            + '-' + data_frame['month'].astype(str)
+        )
         # Create FlaskCO2Station object
         station = FlaskStation(
             site_code,
@@ -260,11 +264,12 @@ def assemble_cube(stations, idx, var_attrs):
         units="degrees_east",
     )
     cube = iris.cube.Cube(
-        data=da.ma.masked_array(trace_gas, da.isnan(trace_gas), fill_value=-999.999),
+        data=da.ma.masked_array(
+            trace_gas, da.isnan(trace_gas), fill_value=-999.999),
         standard_name=(var_attrs['standard_name']),
         long_name=var_attrs['long_name'],
         var_name=var_attrs['raw_name'],
-        units=TRACE_GAS_UNITS[var_attrs['raw_name']],  # var_attrs['raw_units'],
+        units=TRACE_GAS_UNITS[var_attrs['raw_name']],
         dim_coords_and_dims=[
             (time_coord, 0),
             (index_coord, 1),
@@ -284,9 +289,14 @@ def build_cube(filesystem, paths, filelist, var_attrs):
     individual_stations = [
         load_file(filesystem, file_path, filelist) for file_path in paths
     ]
-    individual_stations = [s for s in individual_stations if s is not None]
+    individual_stations = [
+        s for s in individual_stations if s is not None
+    ]
     stations = merge_stations(individual_stations)
-    latlon_points = np.stack([stations.site_latitude, stations.site_longitude], axis=-1)
+    latlon_points = np.stack(
+        [stations.site_latitude, stations.site_longitude],
+        axis=-1
+    )
     index = S2PointIndex(latlon_points)
     cell_ids = index.get_cell_ids()
     idx = np.argsort(cell_ids)
@@ -304,7 +314,7 @@ def cmorization_noaa_gml_surface_flask_trace_gas(
         f'{cfg['trace_gas']}_surface-flask_ccgg_text/{cfg['trace_gas']}_*_month.txt')
     filelist = tar_file_system.glob(
         f'{cfg['trace_gas']}_surface-flask_ccgg_text/{cfg['trace_gas']}_*.txt')
-    
+
     versions = np.unique(
         np.array([os.path.basename(p).split("_")[-3] for p in paths],
                  dtype=str))

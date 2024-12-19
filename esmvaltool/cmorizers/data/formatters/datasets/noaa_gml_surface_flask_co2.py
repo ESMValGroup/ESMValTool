@@ -19,4 +19,6 @@ from esmvaltool.cmorizers.data.formatters.datasets.noaa_gml_surface_flask import
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cmorization_noaa_gml_surface_flask_trace_gas(in_dir, out_dir, cfg, cfg_user, start_date, end_date)
+    cmorization_noaa_gml_surface_flask_trace_gas(
+        in_dir, out_dir, cfg, cfg_user, start_date, end_date
+    )
