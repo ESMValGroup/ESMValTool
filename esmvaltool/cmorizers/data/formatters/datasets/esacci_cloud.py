@@ -88,6 +88,23 @@ def _create_nan_cube(cube, year, month, day, is_daily):
     return nan_cube
 
 
+def _check_for_missing_dates(year0, year1, cube, cubes, is_daily):
+    """Check for date which are missing in the cube and fill with NaNs."""
+    loop_date = datetime(year0, 1, 1)
+    while loop_date <= datetime(year1, 12, 1):
+        if loop_date not in cube.coord('time').cells():
+            logger.debug("No data available for %d/%d", loop_date.month,
+                    loop_date.year)
+            nan_cube = _create_nan_cube(cubes[0], loop_date.year,
+                                        loop_date.month, loop_date.day,
+                                        is_daily)
+            cubes.append(nan_cube)
+        loop_date += relativedelta.relativedelta(months=1)
+    cube = cubes.concatenate_cube()
+
+    return cube
+
+
 def _extract_variable_daily(short_name, var, cfg, in_dir,
                             out_dir, start_date, end_date):
     """Extract daily variable."""
@@ -248,10 +265,17 @@ def _extract_variable_monthly(short_name, var, cfg, in_dir, out_dir, start_date,
 
     # After gathering all cubes for all years, concatenate them
     if cubes_am:
+
         cube_am = cubes_am.concatenate_cube()
 
         # Regrid the cube to the target grid (e.g., 0.5x0.5)
         cube_am = regrid(cube_am, target_grid='0.5x0.5', scheme='area_weighted')
+
+        # Check for missing months
+        year0 = cube_am.coord('time').cell(0).point.year
+        year1 = cube_am.coord('time').cell(-1).point.year
+        is_daily = False
+        cube_am = _check_for_missing_dates(year0, year1, cube_am, cubes_am, is_daily)
 
         # Fix units and handle any special cases like 'clt'
         if short_name == 'clt':
@@ -282,6 +306,12 @@ def _extract_variable_monthly(short_name, var, cfg, in_dir, out_dir, start_date,
         # Regrid the cube to the target grid (e.g., 0.5x0.5)
         cube_pm = regrid(cube_pm, target_grid='0.5x0.5', scheme='area_weighted')
 
+        # Check for missing months
+        year0 = cube_pm.coord('time').cell(0).point.year
+        year1 = cube_pm.coord('time').cell(-1).point.year
+        is_daily = False
+        cube_pm = _check_for_missing_dates(year0, year1, cube_pm, cubes_pm, is_daily)
+
         # Fix units and handle any special cases like 'clt'
         if short_name == 'clt':
             cube_pm.data = 100 * cube_pm.core_data()  # Example conversion
@@ -311,29 +341,11 @@ def _extract_variable_monthly(short_name, var, cfg, in_dir, out_dir, start_date,
                     cube_pm.coord('time').cell(0).point.year)
         year1 = max(cube_am.coord('time').cell(-1).point.year,
                     cube_pm.coord('time').cell(-1).point.year)
-        loop_date = datetime(year0, 1, 1)
-        print(loop_date)
-        is_daily = False
-        while loop_date <= datetime(year1, 12, 1):
-            #date_available = False
-            if loop_date not in cube_am.coord('time').cells():
-                logger.debug("No AM data available for %d/%d", loop_date.month,
-                        loop_date.year)
-                nan_cube = _create_nan_cube(cubes_am[0], loop_date.year,
-                                            loop_date.month, loop_date.day,
-                                            is_daily)
-                cubes_am.append(nan_cube)
-            if loop_date not in cube_pm.coord('time').cells():
-                logger.debug("No PM data available for %d/%d", loop_date.month,
-                        loop_date.year)
-                nan_cube = _create_nan_cube(cubes_pm[0], loop_date.year,
-                                            loop_date.month, loop_date.day,
-                                            is_daily)
-                cubes_pm.append(nan_cube)
-            loop_date += relativedelta.relativedelta(months=1)
 
-        cube_am = cubes_am.concatenate_cube()
-        cube_pm = cubes_pm.concatenate_cube()
+        is_daily = False
+
+        cube_am = _check_for_missing_dates(year0, year1, cube_am, cubes_am, is_daily)
+        cube_pm = _check_for_missing_dates(year0, year1, cube_pm, cubes_pm, is_daily)
 
         cube_total = cube_am.copy()
         cube_total.data = np.mean(np.stack([cube_am.core_data(),
