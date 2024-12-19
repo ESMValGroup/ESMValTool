@@ -1,0 +1,102 @@
+#!jinja2
+[runtime]
+    [[root]]
+        [[[environment]]]
+            CONTAINER_DIR = ${ROSE_DATAC}/container
+            CONTAINER_FILE = esmvaltool.sif
+            CONTAINER_PATH = ${CONTAINER_DIR}/${CONTAINER_FILE}
+            # Warning: fragile assumption of location of esmvaltool code,
+            # issue #3437 contains more details.
+            ESMVALTOOL_DIR = /opt/conda/envs/esmvaltool/lib/python3.12/site-packages
+
+    # COMPUTE provides defaults for computation-heavy tasks.
+    # Specific tasks below override some defaults, e.g. time & memory.
+    [[COMPUTE]]
+        platform = levante
+        execution time limit = PT3M
+        [[[directives]]]
+            --wckey = RTW
+            --account = bk1088
+            --partition = interactive
+            --mem = 15G
+
+    [[install_env_file]]
+        [[[environment]]]
+            ROSE_APP_OPT_CONF_KEYS = {{ SITE }}
+            SINGULARITY_ENV_FILE=singularity-env
+            SINGULARITY_ENV_FILE_SITE_PATH=${CYLC_WORKFLOW_RUN_DIR}/site/${SITE}-singularity-env
+
+    [[get_esmval]]
+        platform = localhost
+        execution time limit = PT10M  # Actual: 3m06s on 2024-12-18.
+        [[[environment]]]
+            # Move the location of the singularity cache from the user's
+            # home area to the directory where the container is saved.
+            # This variable must be specified only for the 'get_esmval'
+            # task, otherwise, for some reason, subsequent steps take much
+            # longer to run than the resources specified.
+            SINGULARITY_CACHEDIR = ${CONTAINER_DIR}
+
+    [[configure]]
+        platform = localhost
+        execution time limit = PT2M  # Actual: 0m14s on 2024-12-18.
+        [[[directives]]]
+            --mem = 2G
+
+    # Resources for recipes that need more than the default. Both time and
+    # memory should be specified, in case the default changes.
+    # Variable (fast, medium) must be consistent with flow.cylc.
+    # Comment indicates example recorded usage on DKRZ.
+    [[process_examples--recipe_python]]
+        # Actual: 0m07s 2.1 GB on 2024-12-18.
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 15G
+
+    [[process_recipe_albedolandcover]]
+        # Actual: 0m10s 3.2 GB on 2024-12-18.
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 15G
+
+    [[process_recipe_autoassess_landsurface_soilmoisture]]
+        # Actual: 0m13s 3.8 GB on 2024-12-18.
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 15G
+
+    [[process_recipe_consecdrydays]]
+        # Actual: 0m08s 2.3 GB on 2024-12-18.
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 15G
+
+    [[process_recipe_ensclus]]
+        # Actual: 0m35s 2.0 GB on 2024-12-18.
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 15G
+
+    [[process_recipe_heatwaves_coldwaves]]
+        # Actual: 0m30s 1.6 GB on 2024-12-18.
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 15G
+
+    [[process_recipe_ocean_amoc]]
+        # Actual: Currently broken: No input files found for Dataset
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 15G
+
+    [[process_recipe_ocean_multimap]]
+        # Actual: Currently broken: No input files found for Dataset
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem = 15G
+
+    [[process_recipe_radiation_budget]]
+        # Actual: Currently broken: No input files found for Dataset
+        execution time limit = PT2M
+        [[[directives]]]
+            --mem =15G
