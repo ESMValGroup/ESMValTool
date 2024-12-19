@@ -28,8 +28,10 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     overwrite : bool
         Overwrite already downloaded files
     """
+    defined_time = True
     if start_date is None:
         start_date = datetime(1982, 1, 1)
+        defined_time = False
     if end_date is None:
         end_date = datetime(2016, 12, 31)
     loop_date = start_date
@@ -116,7 +118,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                                  folder_l3c, str(e))
 
                 # daily data
-                if year in range(2003, 2008):
+                if defined_time or (not defined_time and (year in range(2003, 2008))):
                     logger.info("Downloading daily data (L3U) for sat = %s", sat)
                     folder_l3u = base_path_l3u + sat + f'{year}/{month:02}'
                     wget_options_l3u = wget_options.copy()
