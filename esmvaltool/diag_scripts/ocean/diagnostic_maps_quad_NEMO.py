@@ -61,10 +61,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger,
-    group_metadata,
-    run_diagnostic,
+from esmvaltool.diag_scripts.shared import (  # ProvenanceLogger,
+    group_metadata, run_diagnostic, save_figure,
 )
 
 # This part sends debug statements to stdout
@@ -135,63 +133,79 @@ def multi_model_maps(cfg):
         filenames[model_type] = diagtools.match_model_to_key(
             model_type, cfg[model_type], input_files)
 
-    # ####
-    # Load the data for each layer as a separate cube
-    layers = {}
-    cubes = {}
+    # Load the data for each cube
+    model_type_cube = {}
+    cube_depth = {}
     for model_type, input_file in filenames.items():
-        cube = iris.load_cube(input_file)
-        remove_extra_time_axis(cube)
-        cube = diagtools.bgc_units(cube, input_files[input_file]['short_name'])
+        nemo_cube = iris.load_cube(input_file)
+        remove_extra_time_axis(nemo_cube)
+        nemo_cube = diagtools.bgc_units(nemo_cube,
+                                        input_files[input_file]['short_name'])
+        #        cube_depth[model_type] = False
+        cube_depth[model_type] = [0]
+        for coord in nemo_cube.coords():
+            if coord.standard_name == 'depth' and coord.shape[0] > 1:
+                cube_depth[model_type] = coord.points
+        model_type_cube[model_type] = nemo_cube
 
-        cubes[model_type] = diagtools.make_cube_layer_dict(cube)
-        for layer in cubes[model_type]:
-            layers[layer] = True
-
-    logger.debug('layers: %s', ', '.join(layers))
-    logger.debug('cubes: %s', ', '.join(cubes.keys()))
+    # Workaround to allow us to subtract cubes...
+    for model_type in [exp_key, ctl_key]:
+        model_type_cube[model_type].coord(
+            "latitude").points[:] = model_type_cube[obs_key].coord(
+                "latitude").points
+        model_type_cube[model_type].coord(
+            "longitude").points[:] = model_type_cube[obs_key].coord(
+                "longitude").points
 
     # ####
     # load names:
     exper = input_files[filenames[exp_key]]['dataset']
     control = input_files[filenames[ctl_key]]['dataset']
     obs = input_files[filenames[obs_key]]['dataset']
-    long_name = cubes[exp_key][list(layers.keys())[0]].long_name
+    long_name = model_type_cube[exp_key].long_name
 
     # Load image format extension
     image_extention = diagtools.get_image_format(cfg)
 
     # Make a plot for each layer
-    for layer in layers:
+    if len(cube_depth[exp_key]) == 1:
+        indices = [0]
+    else:
+        indices = [2, 5, 10, 15]
+
+    for index in indices:
         fig = plt.figure()
         fig.set_size_inches(9, 6)
 
-        ctl_cube = cubes[ctl_key][layer]
-        obs_cube = cubes[obs_key][layer]
+        # Take slices of the cubes for this index
+        cube_slice = {}
+        for model_type in model_types:
+            if len(cube_depth[model_type]) == 1:
+                # 2D cube
+                cube_slice[model_type] = iris.util.squeeze(
+                    model_type_cube[model_type])
+            else:
+                # 3D cube - select relevant layer
+                slices = [
+                    slice(None) for ii in model_type_cube[model_type].shape
+                ]
+                print("model_type, model_type_cube[model_type].coords() : ",
+                      model_type, model_type_cube[model_type].coords())
+                coord_dim = model_type_cube[model_type].coord_dims('depth')[0]
+                slices[coord_dim] = index
+                cube_slice[model_type] = iris.util.squeeze(
+                    model_type_cube[model_type][tuple(slices)])
 
-        print(ctl_cube.coord("latitude").points)
-        print(obs_cube.coord("latitude").points)
-
-        # Create the cubes
-        cube1 = cubes[exp_key][layer]
-        cube2 = cubes[ctl_key][layer]
-        cube3 = cubes[obs_key][layer]
-        cube1.coord("latitude").points[:] = cube3.coord("latitude").points
-        cube1.coord("longitude").points[:] = cube3.coord("longitude").points
-        cube2.coord("latitude").points[:] = cube3.coord("latitude").points
-        cube2.coord("longitude").points[:] = cube3.coord("longitude").points
-        cube3 = iris.util.squeeze(cube3)
-
-        cube221 = cube1
-        cube222 = cube1 - cube2
-        cube223 = cube2 - cube3
-        cube224 = cube1 - cube3
+        cube221 = cube_slice[exp_key]
+        cube222 = cube_slice[exp_key] - cube_slice[ctl_key]
+        cube223 = cube_slice[ctl_key] - cube_slice[obs_key]
+        cube224 = cube_slice[exp_key] - cube_slice[obs_key]
 
         # create the z axis for plots 2, 3, 4.
         zrange1 = diagtools.get_cube_range([
             cube221,
         ])
-        if cube.long_name == "Sea Surface Temperature":
+        if model_type_cube[exp_key].long_name == "Sea Surface Temperature":
             zrange2 = [-5.0, 5.0]
         else:
             zrange2 = [-2.0, 2.0]
@@ -218,21 +232,47 @@ def multi_model_maps(cfg):
                         title=' '.join([exper, 'minus', obs]))
 
         # Add overall title
-        fig.suptitle(long_name, fontsize=14)
+
+
+#        formatted_layer = f"{layer:.3f}"
+#        fig.suptitle(long_name, fontsize=14)
+
+# Add overall title
+    layers = cube_depth["exper_model"]
+    for index in indices:
+        layer = layers[index]
+        print('layers', layers)
+        print('cube depth : ', cube_depth.items())
+        value = model_type_cube.values()
+        print('value :', value)
+        keys = model_type_cube.keys()
+        print('key:', keys)
+        key_length = len(keys)
+        print('key_length', key_length)
+
+        if len(layers) == 1:
+            fig.suptitle(long_name, fontsize=14)
+        else:
+            try:
+                print("PRINTED CORRECTLY")
+                #                layer_value = float(layer)
+                formatted_layer = f"{layer:.3f}"
+                fig.suptitle(long_name + ' at ' + formatted_layer + 'm',
+                             fontsize=14)
+            except ValueError:
+                print(f"Error: Could not convert layer '{layer}' to float.")
 
         # Determine image filename:
-        fn_list = [long_name, exper, control, obs, str(layer)]
-        path = diagtools.folder(cfg['plot_dir']) + '_'.join(fn_list)
+        fn_list = [long_name, exper, control, obs, str(index), model_type]
+        path = diagtools.folder(
+            cfg['plot_dir']) + '_'.join(fn_list) + str(layer)
         path = path.replace(' ', '') + image_extention
 
         # Saving files:
         logger.info('Saving plots to %s', path)
-        plt.savefig(path)
-        plt.close()
-
         provenance_record = diagtools.prepare_provenance_record(
             cfg,
-            caption=f'Quadmap models comparison against {obs}',
+            caption=f'Quadmap models comparison against {obs}{layer}',
             statistics=[
                 'mean',
                 'diff',
@@ -241,9 +281,7 @@ def multi_model_maps(cfg):
             plot_type=['map'],
             ancestors=list(input_files.keys()),
         )
-
-        with ProvenanceLogger(cfg) as provenance_logger:
-            provenance_logger.log(path, provenance_record)
+        save_figure('_'.join(fn_list), provenance_record, cfg, fig, close=True)
 
 
 def remove_extra_time_axis(cube):
