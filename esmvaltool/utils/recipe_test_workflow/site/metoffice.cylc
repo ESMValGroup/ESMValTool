@@ -26,6 +26,11 @@
         [[[directives]]]
             --mem = 2G
 
+    {% set MISSING_RECIPE_ERROR =
+        " has custom directives set but the recipe is not being run - either add it to
+        your'" ~ SITE_RECIPES_FILE ~ "' or remove the custom directives from 'site/"
+        ~ SITE ~ ".cylc'"
+    %}
     # Resources for recipes that need more than the default. Both time and
     # memory should be specified, in case the default changes.
     # Variable (fast, medium) must be consistent with flow.cylc.
@@ -36,7 +41,9 @@
         [[[directives]]]
             --mem = 3G
 
-    [[process<fast=recipe_albedolandcover>]]
+    {% set RECIPE = "recipe_albedolandcover" %}
+    {{ assert (RECIPE in FAST_RECIPES, RECIPE|upper ~ MISSING_RECIPE_ERROR ) }}
+    [[process<fast={{ RECIPE }}>]]
         # Actual: 0m31s, 2.5 GB on 2024-04-08.
         execution time limit = PT2M
         [[[directives]]]
