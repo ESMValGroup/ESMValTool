@@ -177,32 +177,29 @@ def compute_diff_temp(input_data, group, dataset, plot_type):
         ta_data_1 = select_metadata(input_data,
                                     short_name='tas',
                                     dataset=dataset_name,
-                                    variable_group='tas_'+group[0])
+                                    variable_group='tas_' + group[0])
         ta_data_2 = select_metadata(input_data,
                                     short_name='tas',
                                     dataset=dataset_name,
-                                    variable_group='tas_'+group[1])
+                                    variable_group='tas_' + group[1])
     elif plot_type == 'height':
         ta_data_1 = select_metadata(input_data,
                                     short_name='ta',
                                     dataset=dataset_name,
-                                    variable_group='ta_'+group[0])
+                                    variable_group='ta_' + group[0])
         ta_data_2 = select_metadata(input_data,
                                     short_name='ta',
                                     dataset=dataset_name,
-                                    variable_group='ta_'+group[1])
+                                    variable_group='ta_' + group[1])
     else:
-        raise ValueError(
-            f"The plot_type '{var}' is not implemented.")
+        raise ValueError(f"The plot_type '{var}' is not implemented.")
 
     if not ta_data_1:
-        raise ValueError(
-            f"No temperature data for '{dataset_name}' "
-            f"in '{group[0]}' available")
+        raise ValueError(f"No temperature data for '{dataset_name}' "
+                         f"in '{group[0]}' available")
     if not ta_data_2:
-        raise ValueError(
-            f"No temperature data for '{dataset_name}' "
-            f"in '{group[1]}' available")
+        raise ValueError(f"No temperature data for '{dataset_name}' "
+                         f"in '{group[1]}' available")
     input_file_ta_1 = ta_data_1[0]['filename']
     input_file_ta_2 = ta_data_2[0]['filename']
 
@@ -219,8 +216,8 @@ def compute_diff_temp(input_data, group, dataset, plot_type):
 
     cube_ta_diff.data[cube_ta_diff.data < 1.] = np.nan
 
-    cube_diff = (100. * (cube_diff / iris.analysis.maths.abs(cube))
-                 / cube_ta_diff)
+    cube_diff = (100. * (cube_diff / iris.analysis.maths.abs(cube)) /
+                 cube_ta_diff)
 
     cube_diff.metadata = cube.metadata
 
@@ -253,11 +250,17 @@ def plot_diagnostic(cube, legend, plot_type):
     if plot_type == 'height':
         cube.coord('air_pressure').convert_units('hPa')
         y_axis = cube.coord('air_pressure')
-        qplt.plot(cube, y_axis, label=cube_label, color=line_color,
+        qplt.plot(cube,
+                  y_axis,
+                  label=cube_label,
+                  color=line_color,
                   linestyle=line_dash)
     else:
         lat = cube.coord('latitude')
-        qplt.plot(lat, cube, label=cube_label, color=line_color,
+        qplt.plot(lat,
+                  cube,
+                  label=cube_label,
+                  color=line_color,
                   linestyle=line_dash)
 
     logger.info("Plotting %s", legend)
@@ -284,11 +287,17 @@ def plot_diagnostic_diff(cube, legend, plot_type):
     if plot_type == 'height':
         cube.coord('air_pressure').convert_units('hPa')
         y_axis = cube.coord('air_pressure')
-        qplt.plot(cube, y_axis, label=cube_label, color=line_color,
+        qplt.plot(cube,
+                  y_axis,
+                  label=cube_label,
+                  color=line_color,
                   linestyle=line_dash)
     else:
         lat = cube.coord('latitude')
-        qplt.plot(lat, cube, label=cube_label, color=line_color,
+        qplt.plot(lat,
+                  cube,
+                  label=cube_label,
+                  color=line_color,
                   linestyle=line_dash)
 
     logger.info("Plotting %s", legend)
@@ -320,12 +329,20 @@ def plot_errorband(cube1, cube2, legend, plot_type):
         cube1.coord('air_pressure').convert_units('hPa')
         cube2.coord('air_pressure').convert_units('hPa')
         y_axis = cube1.coord('air_pressure').points
-        plt.fill_betweenx(y_axis, cube1.data, cube2.data, color=line_color,
-                          linestyle=line_dash, alpha=.1)
+        plt.fill_betweenx(y_axis,
+                          cube1.data,
+                          cube2.data,
+                          color=line_color,
+                          linestyle=line_dash,
+                          alpha=.1)
     else:
         lat = cube1.coord('latitude').points
-        plt.fill_between(lat, cube1.data, cube2.data, color=line_color,
-                         linestyle=line_dash, alpha=.1)
+        plt.fill_between(lat,
+                         cube1.data,
+                         cube2.data,
+                         color=line_color,
+                         linestyle=line_dash,
+                         alpha=.1)
     logger.info("Plotting %s", legend)
 
 
@@ -354,8 +371,9 @@ def main(cfg):
                 dataset_name = dataset['dataset']
                 var = dataset['short_name']
 
-                if dataset_name not in ['MultiModelMean', 'MultiModelP5',
-                                        'MultiModelP95']:
+                if dataset_name not in [
+                        'MultiModelMean', 'MultiModelP5', 'MultiModelP95'
+                ]:
 
                     logger.info("Loop dataset %s", dataset_name)
 
@@ -366,13 +384,13 @@ def main(cfg):
                         cube = cube.collapsed('longitude', iris.analysis.MEAN)
                     elif plot_type == 'height':
                         grid_areas = (
-                          iris.analysis.cartography.area_weights(cube))
+                            iris.analysis.cartography.area_weights(cube))
                         cube = cube.collapsed(['longitude', 'latitude'],
                                               iris.analysis.MEAN,
                                               weights=grid_areas)
                     else:
                         raise ValueError(
-                                f"Plot type {plot_type} is not implemented.")
+                            f"Plot type {plot_type} is not implemented.")
 
                     cubes[dataset_name] = cube
 
@@ -414,8 +432,9 @@ def main(cfg):
             dataset_name = dataset['dataset']
             var = dataset['short_name']
 
-            if dataset_name not in ['MultiModelMean', 'MultiModelP5',
-                                    'MultiModelP95']:
+            if dataset_name not in [
+                    'MultiModelMean', 'MultiModelP5', 'MultiModelP95'
+            ]:
                 logger.info("Loop dataset %s", dataset_name)
                 dataset_names.append(dataset_name)
 
@@ -450,11 +469,11 @@ def main(cfg):
         dataset['short_name'], ancestor_files=cfg['input_files'])
 
     if plot_type == 'height':
-        basename = ('level_diff_' + dataset['short_name'] + '_'
-                    + cfg['filename_attach'])
+        basename = ('level_diff_' + dataset['short_name'] + '_' +
+                    cfg['filename_attach'])
     else:
-        basename = ('zonal_diff_' + dataset['short_name'] + '_'
-                    + cfg['filename_attach'])
+        basename = ('zonal_diff_' + dataset['short_name'] + '_' +
+                    cfg['filename_attach'])
 
     # Save the data used for the plot
     save_data(basename, provenance_record, cfg, cube_mmm)

@@ -10,10 +10,10 @@ import seaborn as sns
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
-    group_metadata,
-    run_diagnostic,
     get_diagnostic_filename,
     get_plot_filename,
+    group_metadata,
+    run_diagnostic,
     select_metadata,
 )
 
@@ -115,7 +115,7 @@ def compute_diff_temp(input_data, group, var, dataset):
     var_data_2 = select_metadata(input_data,
                                  short_name=var,
                                  dataset=dataset_name,
-                                 variable_group=var+"_"+group[1])
+                                 variable_group=var + "_" + group[1])
     if not var_data_2:
         raise ValueError(
             f"No '{var}' data for '{dataset_name}' in '{group[1]}' available")
@@ -125,11 +125,11 @@ def compute_diff_temp(input_data, group, var, dataset):
     tas_data_1 = select_metadata(input_data,
                                  short_name='tas',
                                  dataset=dataset_name,
-                                 variable_group='tas_'+group[0])
+                                 variable_group='tas_' + group[0])
     tas_data_2 = select_metadata(input_data,
                                  short_name='tas',
                                  dataset=dataset_name,
-                                 variable_group='tas_'+group[1])
+                                 variable_group='tas_' + group[1])
     if not tas_data_1:
         raise ValueError(
             f"No 'tas' data for '{dataset_name}' in '{group[0]}' available")
@@ -144,8 +144,8 @@ def compute_diff_temp(input_data, group, var, dataset):
     cube_diff = compute_diff(input_file_1, input_file_2)
     cube_tas_diff = compute_diff(input_file_tas_1, input_file_tas_2)
 
-    cube_diff = (100. * (cube_diff / iris.analysis.maths.abs(cube))
-                 / cube_tas_diff)
+    cube_diff = (100. * (cube_diff / iris.analysis.maths.abs(cube)) /
+                 cube_tas_diff)
 
     return cube_diff
 
@@ -181,8 +181,9 @@ def create_data_frame(input_data, cfg):
 
                         group_name = group_names[0].split('_')[1] + " ECS"
 
-                        data_frame.loc[ifile] = [varname, group_name,
-                                                 dataset_name, cube_diff.data]
+                        data_frame.loc[ifile] = [
+                            varname, group_name, dataset_name, cube_diff.data
+                        ]
                         ifile = ifile + 1
 
     data_frame['Data'] = data_frame['Data'].astype(str).astype(float)
@@ -194,7 +195,10 @@ def plot_boxplot(data_frame, cfg):
 
     sns.set_style('darkgrid')
     sns.set(font_scale=2)
-    sns.boxplot(data=data_frame, x='Variable', y='Data', hue='Group',
+    sns.boxplot(data=data_frame,
+                x='Variable',
+                y='Data',
+                hue='Group',
                 palette=PALETTE)
     plt.ylabel('Relative change (%/K)')
     if 'y_range' in cfg:
@@ -202,7 +206,7 @@ def plot_boxplot(data_frame, cfg):
     plt.title(cfg['title'])
 
     provenance_record = get_provenance_record(
-            ancestor_files=cfg['input_files'])
+        ancestor_files=cfg['input_files'])
 
     # Save plot
     plot_path = get_plot_filename('boxplot' + '_' + cfg['filename_attach'],
@@ -217,8 +221,8 @@ def plot_boxplot(data_frame, cfg):
 
 def main(cfg):
     """Run diagnostic."""
-    cfg.setdefault('exclude_datasets', ['MultiModelMean', 'MultiModelP5',
-                                        'MultiModelP95'])
+    cfg.setdefault('exclude_datasets',
+                   ['MultiModelMean', 'MultiModelP5', 'MultiModelP95'])
     cfg.setdefault('title', 'Test')
 
     plt.figure(constrained_layout=True, figsize=(12, 8))
