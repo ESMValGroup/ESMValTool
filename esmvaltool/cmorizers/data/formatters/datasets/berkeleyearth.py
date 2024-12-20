@@ -172,7 +172,7 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
     for s_name, cube in zip(short_names, [cube_abs, cube_anom]):
         cmor_info = cfg['cmor_table'].get_variable(var['mip'], s_name)
 
-        utils.fix_coords(cube)
+        cube = utils.fix_coords(cube)
         if 'height2m' in cmor_info.dimensions:
             utils.add_height2m(cube)
 
@@ -209,7 +209,7 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
     cube_sftlf = cubes.extract(NameConstraint(var_name=raw_var_sftlf))[0]
 
     # fix coordinates
-    utils.fix_coords(cube_sftlf)
+    cube_sftlf = utils.fix_coords(cube_sftlf)
 
     # cmorize sftlf units
     cmor_info_sftlf = cfg['cmor_table'].get_variable(var['rawsftlf_mip'],

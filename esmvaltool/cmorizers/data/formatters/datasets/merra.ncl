@@ -14,7 +14,7 @@
 ; Download and processing instructions
 ; (requires EarthData login; see https://urs.earthdata.nasa.gov/)
 ;    Use ESMValTool automatic download:
-;       esmvaltool data download --config_file <config-user.yml> MERRA
+;       esmvaltool data download MERRA
 ;
 ; Modification history
 ;    20230818-lauer_axel: added output of clwvi (iwp + lwp)
@@ -209,7 +209,7 @@ begin
 
         delete(tmp)
 
-        ; calcuation of outgoing fluxes: out = in - net
+        ; calculation of outgoing fluxes: out = in - net
         if ((VAR(vv) .eq. "rsut") .or. (VAR(vv) .eq. "rsutcs")) then
           tmp = f->SWTDN
           if (isatt(tmp, "scale_factor") .or. isatt(tmp, "add_offset")) then
@@ -220,7 +220,8 @@ begin
           delete(tmp)
         end if
 
-        ; calcuation of total precipitation flux = large-scale+convective+anvil
+        ; calculation of total precipitation flux =
+        ; large-scale+convective+anvil
         if (VAR(vv) .eq. "pr") then
           tmp = f->PRECCON  ; surface precipitation flux from convection
           if (isatt(tmp, "scale_factor") .or. isatt(tmp, "add_offset")) then
