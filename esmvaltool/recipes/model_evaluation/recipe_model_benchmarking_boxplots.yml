@@ -3,8 +3,11 @@
 documentation:
   title: Benchmarkig of a single model.
 
-  description: >
-          Benchmarking: Box plots.
+  description: |
+    Benchmarking: Box plots.
+    The diagnostic called in this recipe uses the seaborn.boxplot function.
+    See seaborn manual for detailed information
+    (https://seaborn.pydata.org/generated/seaborn.boxplot.html).
 
   authors:
     - lauer_axel
