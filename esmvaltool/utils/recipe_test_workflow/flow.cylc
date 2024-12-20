@@ -1,34 +1,13 @@
 #!jinja2
 
-# See "How to add a recipe to the RTW" documentation for more information. Recipe paths
-# are specified relative to esmvaltool/recipes. For recipes in subdirectories,
-# `--` stands for `/` since the latter is an illegal char.
-{% set FAST_RECIPES =
-    [
-        'recipe_radiation_budget',
-        'recipe_albedolandcover',
-        'recipe_heatwaves_coldwaves',
-        'recipe_autoassess_landsurface_soilmoisture',
-        'recipe_consecdrydays',
-        'examples--recipe_python',
-        'recipe_ocean_multimap',
-        'recipe_ocean_amoc',
-    ]
-%}
-# `recipe_ensclus` should be in fast: is in medium temporarily to avoid empty variable.
-{% set MEDIUM_RECIPES =
-    [
-        'recipe_ensclus',
-    ]
-%}
+# Add recipes to the RTW in your site specific `-recipes.cylc` file in the 'inc'
+# directory. See "How to add a recipe to the RTW" documentation for more information.
+{% from 'inc/' ~ SITE ~ '-recipes.cylc' import FAST_RECIPES, MEDIUM_RECIPES %}
 
 [scheduler]
     UTC mode = True
 
 [task parameters]
-    # By default, RTW runs all `FAST_RECIPES` and all `MEDIUM_RECIPES`. To override
-    # this, add recipes to the RECIPES_TO_EXCLUDE list in your site-specific `.cylc`
-    # file.
     fast = {{ FAST_RECIPES | join(', ') }}
     medium = {{ MEDIUM_RECIPES | join(', ') }}
 

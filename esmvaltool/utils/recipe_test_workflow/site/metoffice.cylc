@@ -1,26 +1,5 @@
 #!jinja2
 
-# Recipes added to `RECIPES_TO_EXCLUDE` will not be run by RTW. Both medium and fast
-# recipes can be added. # NOTE: No error will be raised if you make a typo. It is
-# recommended to double-check recipes are actually excluded. This can be done quickly
-# by viewing the Cylc graph with `cylc gui .`.
-
-# WARNING: The RTW will error if you exclude a recipe with custom time/memory limits
-# already set. e.g. If this file has a '[[process<fast=EXCLUDED_RECIPE>]` section, it
-# should be commented out/removed before the recipe is excluded.
-{% set RECIPES_TO_EXCLUDE =
-    [
-        'examples--recipe_python',
-        'recipe_consecdrydays',
-        'recipe_heatwaves_coldwaves',
-        'recipe_radiation_budget',
-    ]
-%}
-
-[task parameters]
-    fast = {{ FAST_RECIPES | reject("in", RECIPES_TO_EXCLUDE) | join(', ') }}
-    medium = {{ MEDIUM_RECIPES | reject("in", RECIPES_TO_EXCLUDE) | join(', ') }}
-
 [runtime]
     [[root]]
         [[[environment]]]
