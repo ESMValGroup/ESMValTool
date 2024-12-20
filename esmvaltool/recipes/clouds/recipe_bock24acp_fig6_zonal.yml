@@ -162,19 +162,6 @@ DATASETS_ECS_LOW_scenario: &datasets_ecs_low_scenario
 
 preprocessors:
 
-  zonal_mmm:
-    custom_order: true
-    regrid:
-      target_grid: 2x2
-      scheme: linear
-    zonal_statistics:
-      operator: mean
-    multi_model_statistics:
-      span: full
-      statistics: [mean, p5, p95]
-    climate_statistics:
-      operator: mean
-
   zonal:
     regrid:
       target_grid: 2x2

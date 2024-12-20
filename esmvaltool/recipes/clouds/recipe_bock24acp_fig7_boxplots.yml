@@ -50,8 +50,6 @@ BOXPLOT_SETTINGS: &boxplot_settings
 DATASETS_ECS_HIGH: &datasets_ecs_high
   # CMIP6
   - {dataset: CanESM5, grid: gn}
-    #  - {dataset: CESM2, grid: gn, ensemble: r4i1p1f1}
-    #  - {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
   - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
   - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
   - {dataset: HadGEM3-GC31-LL, grid: gn, ensemble: r1i1p1f3}
@@ -71,8 +69,6 @@ DATASETS_ECS_HIGH: &datasets_ecs_high
 DATASETS_ECS_HIGH_scenario: &datasets_ecs_high_scenario
   # CMIP6
   - {dataset: CanESM5, grid: gn, exp: ssp585}
-    #  - {dataset: CESM2, grid: gn, ensemble: r4i1p1f1, exp: ssp585}
-    #  - {dataset: CESM2-WACCM, grid: gn, institute: NCAR, exp: ssp585}
   - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, exp: ssp585}
   - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, exp: ssp585}
   - {dataset: HadGEM3-GC31-LL, grid: gn, ensemble: r1i1p1f3, exp: ssp585}
