@@ -56,7 +56,6 @@
             ROSE_APP_OPT_CONF_KEYS = {{ SITE }}
 
     [[configure]]
-        pre-script = "mkdir -p ${USER_CONFIG_DIR}"
         [[[environment]]]
             ROSE_TASK_APP = configure
             DRS_CMIP3 = {{ DRS_CMIP3 }}
