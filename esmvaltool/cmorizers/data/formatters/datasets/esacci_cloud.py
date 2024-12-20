@@ -35,24 +35,7 @@ from esmvalcore.preprocessor import regrid, daily_statistics, monthly_statistics
 logger = logging.getLogger(__name__)
 
 
-#def _create_nan_cube(cube, year, month, day):
-#    """Create cube containing only NaN from existing cube."""
-#    nan_cube = cube.copy()
-#    nan_cube.data = da.ma.masked_greater(cube.core_data(), -1e20)
-#
-#    # Read dataset time unit and calendar from file
-#    dataset_time_unit = str(nan_cube.coord('time').units)
-#    dataset_time_calender = nan_cube.coord('time').units.calendar
-#    # Convert datetime
-#    newtime = datetime(year=year, month=month, day=day)
-#    newtime = cf_units.date2num(newtime, dataset_time_unit,
-#                                dataset_time_calender)
-#    nan_cube.coord('time').points = float(newtime) + 0.025390625
-#
-#    return nan_cube
-
-
-def _create_nan_cube(cube, year, month, day, is_daily):
+def _create_nan_cube(cube, year, month, day):
     """Create cube containing only nan from existing cube."""
     nan_cube = cube.copy()
     nan_cube.data = da.ma.masked_greater(cube.core_data(), -1e20)
@@ -88,7 +71,7 @@ def _create_nan_cube(cube, year, month, day, is_daily):
     return nan_cube
 
 
-def _check_for_missing_dates(year0, year1, cube, cubes, is_daily):
+def _check_for_missing_dates(year0, year1, cube, cubes):
     """Check for date which are missing in the cube and fill with NaNs."""
     loop_date = datetime(year0, 1, 1)
     while loop_date <= datetime(year1, 12, 1):
@@ -96,8 +79,7 @@ def _check_for_missing_dates(year0, year1, cube, cubes, is_daily):
             logger.debug("No data available for %d/%d", loop_date.month,
                     loop_date.year)
             nan_cube = _create_nan_cube(cubes[0], loop_date.year,
-                                        loop_date.month, loop_date.day,
-                                        is_daily)
+                                        loop_date.month, loop_date.day)
             cubes.append(nan_cube)
         loop_date += relativedelta.relativedelta(months=1)
     cube = cubes.concatenate_cube()
@@ -275,7 +257,7 @@ def _extract_variable_monthly(short_name, var, cfg, in_dir, out_dir, start_date,
         year0 = cube_am.coord('time').cell(0).point.year
         year1 = cube_am.coord('time').cell(-1).point.year
         is_daily = False
-        cube_am = _check_for_missing_dates(year0, year1, cube_am, cubes_am, is_daily)
+        cube_am = _check_for_missing_dates(year0, year1, cube_am, cubes_am)
 
         # Fix units and handle any special cases like 'clt'
         if short_name == 'clt':
@@ -310,7 +292,7 @@ def _extract_variable_monthly(short_name, var, cfg, in_dir, out_dir, start_date,
         year0 = cube_pm.coord('time').cell(0).point.year
         year1 = cube_pm.coord('time').cell(-1).point.year
         is_daily = False
-        cube_pm = _check_for_missing_dates(year0, year1, cube_pm, cubes_pm, is_daily)
+        cube_pm = _check_for_missing_dates(year0, year1, cube_pm, cubes_pm)
 
         # Fix units and handle any special cases like 'clt'
         if short_name == 'clt':
@@ -342,10 +324,8 @@ def _extract_variable_monthly(short_name, var, cfg, in_dir, out_dir, start_date,
         year1 = max(cube_am.coord('time').cell(-1).point.year,
                     cube_pm.coord('time').cell(-1).point.year)
 
-        is_daily = False
-
-        cube_am = _check_for_missing_dates(year0, year1, cube_am, cubes_am, is_daily)
-        cube_pm = _check_for_missing_dates(year0, year1, cube_pm, cubes_pm, is_daily)
+        cube_am = _check_for_missing_dates(year0, year1, cube_am, cubes_am)
+        cube_pm = _check_for_missing_dates(year0, year1, cube_pm, cubes_pm)
 
         cube_total = cube_am.copy()
         cube_total.data = np.mean(np.stack([cube_am.core_data(),
