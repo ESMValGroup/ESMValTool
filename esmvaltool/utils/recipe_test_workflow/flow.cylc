@@ -1,8 +1,17 @@
 #!jinja2
 
+{{ assert(SITE != "", "SITE must be set to something other than an empty string") }}
+
 # Add recipes to the RTW in your site specific `-recipes.cylc` file in the 'inc'
 # directory. See "How to add a recipe to the RTW" documentation for more information.
-{% from 'inc/' ~ SITE ~ '-recipes.cylc' import FAST_RECIPES, MEDIUM_RECIPES %}
+{% set SITE_RECIPES_FILE = 'inc/' ~ SITE ~ '-recipes.cylc' %}
+{% from SITE_RECIPES_FILE import FAST_RECIPES, MEDIUM_RECIPES %}
+
+{% set ERROR_MSG =
+    "must be set to a list of recipes, usually in '" ~ SITE_RECIPES_FILE ~ "'"
+%}
+{{ assert(FAST_RECIPES is defined, "FAST_RECIPES " ~ ERROR_MSG)}}
+{{ assert(MEDIUM_RECIPES is defined, "MEDIUM_RECIPES " ~ ERROR_MSG)}}
 
 [scheduler]
     UTC mode = True

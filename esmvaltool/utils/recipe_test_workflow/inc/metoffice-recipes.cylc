@@ -1,6 +1,7 @@
-# Add recipes to the RTW here. See "How to add a recipe to the RTW" documentation for
-# more information. Recipe paths are specified relative to esmvaltool/recipes. For
-# recipes in subdirectories, `--` stands for `/` since the latter is an illegal char.
+# Add recipes to the RTW at your site here. See "How to add a recipe to the RTW"
+# documentation for more information. Recipe paths are specified relative to
+# esmvaltool/recipes. For recipes in subdirectories, `--` stands for `/` since the
+# latter is an illegal char.
 
 {% set FAST_RECIPES =
     [
