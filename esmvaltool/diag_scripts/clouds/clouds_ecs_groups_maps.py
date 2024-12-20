@@ -54,7 +54,7 @@ PANDAS_PRINT_OPTIONS = ['display.max_rows', None, 'display.max_colwidth', -1]
 
 def get_provenance_record(attributes, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
-    caption = ("Climatology of {standard_name}.".format(**attributes))
+    caption = f"Climatology of {attributes['short_name']}."
 
     record = {
         'caption': caption,
@@ -73,6 +73,7 @@ def get_provenance_record(attributes, ancestor_files):
 
 
 def area_weighted_mean(cube):
+    """Calculate area weighted mean over the globe."""
     logger.debug("Computing field mean")
     grid_areas = iris.analysis.cartography.area_weights(cube)
     mean = cube.collapsed(['longitude', 'latitude'],
@@ -82,6 +83,7 @@ def area_weighted_mean(cube):
 
 
 def calculate_bias(model_cube, obs_cube):
+    """Calculate area weighted mean over the globe."""
     logger.debug("Computing bias")
     diff = model_cube - obs_cube
     bias = area_weighted_mean(diff)
@@ -90,6 +92,7 @@ def calculate_bias(model_cube, obs_cube):
 
 
 def calculate_rmsd(model_cube, obs_cube):
+    """Calculate global RMSD."""
     logger.debug("Computing RMSD")
     diff = model_cube - obs_cube
     rmsd = area_weighted_mean(diff**2)**0.5
@@ -98,6 +101,7 @@ def calculate_rmsd(model_cube, obs_cube):
 
 
 def calculate_corr(model_cube, obs_cube):
+    """Calculate pattern correlation."""
     logger.debug("Computing Correlation")
     grid_areas = iris.analysis.cartography.area_weights(model_cube)
     corr = pearsonr(model_cube, obs_cube, weights=grid_areas)
@@ -105,7 +109,7 @@ def calculate_corr(model_cube, obs_cube):
 
 
 def compute_diagnostic(filename):
-
+    """Load cube."""
     logger.debug("Loading %s", filename)
     cube = iris.load_cube(filename)
 
@@ -115,7 +119,6 @@ def compute_diagnostic(filename):
 
 def plot_model(cube, attributes, cfg):
     # Plot each model.
-
     levels = [10, 20, 30, 40, 50, 60, 70, 80, 90]
     if attributes['short_name'] == 'clt':
         levels = [10, 20, 30, 40, 50, 60, 70, 80, 90]
@@ -174,6 +177,7 @@ def plot_model(cube, attributes, cfg):
 
 
 def read_data(groups, cfg):
+    """Collect cubes."""
     logger.debug("Read data")
     cubes = iris.cube.CubeList()
     cubes_out = iris.cube.CubeList()
@@ -202,7 +206,6 @@ def read_data(groups, cfg):
 
 def plot_diagnostic(cubes, attributes, cfg):
     """Create diagnostic data and plot it."""
-
     if cfg['reference']:
         fig = plt.figure(figsize=(14, 9))
         title = attributes['long_name']
@@ -311,10 +314,10 @@ def plot_diagnostic(cubes, attributes, cfg):
         cbar_ax = fig.add_axes([0.2, 0.18, 0.6, 0.03])
         colorbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal')
 
-    if cube.var_name == "clivi":
-        colorbar.set_label('iwp / ' + cube.units.origin)
+    if cubes[0].var_name == "clivi":
+        colorbar.set_label('iwp / ' + cubes[0].units.origin)
     else:
-        colorbar.set_label(cube.var_name + ' / ' + cube.units.origin)
+        colorbar.set_label(cubes[0].var_name + ' / ' + cubes[0].units.origin)
     if attributes['short_name'] == 'clt':
         ticks = [10, 20, 30, 40, 50, 60, 70, 80, 90]
     elif attributes['short_name'] == 'clivi':
@@ -358,7 +361,7 @@ def plot_diagnostic(cubes, attributes, cfg):
 
 
 def get_dataframe(cubes, cube_obs):
-
+    """Create dataframe."""
     df = pd.DataFrame(columns=['Dataset', 'Group', 'Statistic', 'Value'])
     idf = 0
 
@@ -385,6 +388,7 @@ def get_dataframe(cubes, cube_obs):
 
 
 def write_statistics(df, attributes, cfg):
+    """Write statistics in csv file."""
     df['Value'] = df['Value'].astype(str).astype(float)
 
     basename = "statistic_all_" + attributes['short_name']
@@ -400,6 +404,7 @@ def write_statistics(df, attributes, cfg):
 
 
 def bootstrapping(cubes, cube_obs, all_groups, attributes, cfg):
+    """Calculates bootstrapping."""
     logger.info("Bootstrapping")
 
     for group in all_groups:

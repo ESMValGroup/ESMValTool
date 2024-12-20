@@ -52,26 +52,6 @@ def get_provenance_record(ancestor_files):
     return record
 
 
-def _get_multi_model_mean(cubes, var):
-    """Compute multi-model mean."""
-
-    logger.debug("Calculating multi-model mean")
-    dataset_names = []
-    mmm = {}
-    for (dataset, cube) in cubes.items():
-        dataset_names.append(dataset)
-        mmm['dataset'] = cube.data
-    mmm = np.ma.masked_invalid(list(mmm.values()))
-    mmm_cube = cube.copy(data=np.ma.mean(mmm, axis=0))
-    attributes = {
-        'dataset': 'MultiModelMean',
-        'short_name': var,
-        'datasets': '|'.join(dataset_names),
-    }
-    mmm_cube.attributes = attributes
-    return mmm_cube
-
-
 def read_data(filename):
     """Compute an example diagnostic."""
     logger.debug("Loading %s", filename)
@@ -106,7 +86,6 @@ def compute_diff(filename1, filename2):
 
 def compute_diff_temp(input_data, group, var, dataset):
     """Compute relative change per temperture change."""
-
     dataset_name = dataset['dataset']
     var = dataset['short_name']
 
@@ -192,7 +171,7 @@ def create_data_frame(input_data, cfg):
 
 
 def plot_boxplot(data_frame, cfg):
-
+    """Create boxplot."""
     sns.set_style('darkgrid')
     sns.set(font_scale=2)
     sns.boxplot(data=data_frame,
