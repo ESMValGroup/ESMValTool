@@ -103,7 +103,7 @@ def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
 
     # Fix coordinates
     _fix_climatological_time(cube)
-    utils.fix_coords(
+    cube = utils.fix_coords(
         cube,
         overwrite_lat_bounds=False,
         overwrite_lon_bounds=False,

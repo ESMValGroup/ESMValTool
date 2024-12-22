@@ -11,7 +11,7 @@ documentation:
     - berg_peter
 
   maintainer:
-    - ruhe_lukas
+    - lindenlaub_lukas
 
   projects:
     - c3s-magic
@@ -36,8 +36,7 @@ diagnostics:
         script: shapeselect/diag_shapeselect.py
         # Example shapefiles can be found in:
         # esmvaltool/diag_scripts/shapeselect/testdata/
-        # Relative paths are relative to 'auxiliary_data_dir' as configured in
-        # the config-user.yml file.
+        # Relative paths are relative to configuration option 'auxiliary_data_dir'.
         shapefile: 'Thames.shp'
         weighting_method: 'mean_inside'
         write_xlsx: true

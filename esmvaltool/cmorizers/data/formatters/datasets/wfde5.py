@@ -72,7 +72,7 @@ def _extract_variable(var, cfg, filenames, out_dir):
     _fix_time_coord(cube, var)
 
     # Fix coordinates
-    utils.fix_coords(cube)
+    cube = utils.fix_coords(cube)
     if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)
 

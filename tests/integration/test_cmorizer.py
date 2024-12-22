@@ -4,6 +4,7 @@ import contextlib
 import os
 import sys
 
+import esmvalcore
 import iris
 import iris.coord_systems
 import iris.coords
@@ -13,7 +14,9 @@ import numpy as np
 import pytest
 import yaml
 from cf_units import Unit
+from packaging import version
 
+from esmvaltool import ESMValToolDeprecationWarning
 from esmvaltool.cmorizers.data.cmorizer import DataCommand
 
 
@@ -28,8 +31,8 @@ def keep_cwd():
         os.chdir(curr_path)
 
 
-def write_config_user_file(dirname):
-    """Replace config_user file values for testing."""
+def write_config_file(dirname):
+    """Replace configuration values for testing."""
     config_file = dirname / 'config-user.yml'
     cfg = {
         'output_dir': str(dirname / 'output_dir'),
@@ -143,14 +146,19 @@ def arguments(*args):
     sys.argv = backup
 
 
-def test_cmorize_obs_woa_no_data(tmp_path):
+@pytest.mark.skipif(
+    version.parse(esmvalcore.__version__) >= version.parse("2.14.0"),
+    reason='ESMValCore >= v2.14.0',
+)
+def test_cmorize_obs_woa_no_data_config_file(tmp_path):
     """Test for example run of cmorize_obs command."""
-
-    config_user_file = write_config_user_file(tmp_path)
+    config_file = write_config_file(tmp_path)
     os.makedirs(os.path.join(tmp_path, 'raw_stuff', 'Tier2'))
+    os.makedirs(os.path.join(tmp_path, 'output_dir'))
     with keep_cwd():
-        with pytest.raises(Exception):
-            DataCommand().format('WOA', config_user_file)
+        with pytest.raises(RuntimeError):
+            with pytest.warns(ESMValToolDeprecationWarning):
+                DataCommand().format('WOA', config_file=config_file)
 
     log_dir = os.path.join(tmp_path, 'output_dir')
     log_file = os.path.join(log_dir,
@@ -158,14 +166,57 @@ def test_cmorize_obs_woa_no_data(tmp_path):
     check_log_file(log_file, no_data=True)
 
 
-def test_cmorize_obs_woa_data(tmp_path):
+@pytest.mark.skipif(
+    version.parse(esmvalcore.__version__) >= version.parse("2.14.0"),
+    reason='ESMValCore >= v2.14.0',
+)
+def test_cmorize_obs_woa_data_config_file(tmp_path):
     """Test for example run of cmorize_obs command."""
-
-    config_user_file = write_config_user_file(tmp_path)
+    config_file = write_config_file(tmp_path)
     data_path = os.path.join(tmp_path, 'raw_stuff', 'Tier2', 'WOA')
     put_dummy_data(data_path)
     with keep_cwd():
-        DataCommand().format('WOA', config_user_file)
+        with pytest.warns(ESMValToolDeprecationWarning):
+            DataCommand().format('WOA', config_file=config_file)
+
+    log_dir = os.path.join(tmp_path, 'output_dir')
+    log_file = os.path.join(log_dir,
+                            os.listdir(log_dir)[0], 'run', 'main_log.txt')
+    check_log_file(log_file, no_data=False)
+    output_path = os.path.join(log_dir, os.listdir(log_dir)[0], 'Tier2', 'WOA')
+    check_output_exists(output_path)
+    check_conversion(output_path)
+
+
+@pytest.mark.skipif(
+    version.parse(esmvalcore.__version__) < version.parse("2.12.0"),
+    reason='ESMValCore < v2.12.0',
+)
+def test_cmorize_obs_woa_no_data(tmp_path):
+    """Test for example run of cmorize_obs command."""
+    write_config_file(tmp_path)
+    os.makedirs(os.path.join(tmp_path, 'raw_stuff', 'Tier2'))
+    with keep_cwd():
+        with pytest.raises(RuntimeError):
+            DataCommand().format('WOA', config_dir=str(tmp_path))
+
+    log_dir = os.path.join(tmp_path, 'output_dir')
+    log_file = os.path.join(log_dir,
+                            os.listdir(log_dir)[0], 'run', 'main_log.txt')
+    check_log_file(log_file, no_data=True)
+
+
+@pytest.mark.skipif(
+    version.parse(esmvalcore.__version__) < version.parse("2.12.0"),
+    reason='ESMValCore < v2.12.0',
+)
+def test_cmorize_obs_woa_data(tmp_path):
+    """Test for example run of cmorize_obs command."""
+    write_config_file(tmp_path)
+    data_path = os.path.join(tmp_path, 'raw_stuff', 'Tier2', 'WOA')
+    put_dummy_data(data_path)
+    with keep_cwd():
+        DataCommand().format('WOA', config_dir=str(tmp_path))
 
     log_dir = os.path.join(tmp_path, 'output_dir')
     log_file = os.path.join(log_dir,
