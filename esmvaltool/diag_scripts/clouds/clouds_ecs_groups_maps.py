@@ -1,6 +1,6 @@
 """Python diagnostic for plotting geographical maps."""
 import logging
-import secrtes
+import secrets
 from copy import deepcopy
 from pathlib import Path
 

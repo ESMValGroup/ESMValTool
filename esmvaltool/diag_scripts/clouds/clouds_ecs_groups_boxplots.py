@@ -1,4 +1,4 @@
-"""Python diagnostic for plotting boxplots for different regions."""
+"""Python diagnostic for plotting boxplots."""
 import logging
 from pathlib import Path
 

@@ -447,6 +447,7 @@ def main(cfg):
 
         plot_diagnostic_diff(cube_mmm, group_name[0], plot_type)
 
+    title = 'Mean plot'
     if plot_type == 'height':
         plt.xlim(0., 1.)
         plt.ylim(1000., 100.)
@@ -464,7 +465,6 @@ def main(cfg):
         else:
             title = dataset['long_name']
     except NameError: dataset = None
-        title = 'Mean plot'
 
     plt.title(title)
     plt.legend(ncol=1)
