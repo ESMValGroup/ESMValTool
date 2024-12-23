@@ -403,18 +403,16 @@ def main(cfg):
         plt.yticks([1000., 800., 600., 400., 300., 200., 100.],
                    [1000, 800, 600, 400, 300, 200, 100])
 
-    title = 'Mean plot'
-    try:
-        if plot_type == 'height':
-            title = 'Vertical mean of ' + dataset['long_name']
-        elif plot_type == 'zonal':
-            if dataset['long_name'] == 'Total Cloud Cover Percentage':
-                title = 'Zonal mean of Total Cloud Fraction'
-            else:
-                title = 'Zonal mean of ' + dataset['long_name']
+    long_name = input_data[0]['long_name']
+    if plot_type == 'height':
+        title = 'Vertical mean of ' + long_name
+    elif plot_type == 'zonal':
+        if long_name == 'Total Cloud Cover Percentage':
+            title = 'Zonal mean of Total Cloud Fraction'
         else:
-            title = dataset['long_name']
-    except NameError: dataset = None
+            title = 'Zonal mean of ' + long_name
+    else:
+        title = long_name
 
     plt.title(title)
     plt.legend(ncol=1)
@@ -446,7 +444,6 @@ def main(cfg):
 
         plot_diagnostic_diff(cube_mmm, group_name[0], plot_type)
 
-    title = 'Mean plot'
     if plot_type == 'height':
         plt.xlim(0., 1.)
         plt.ylim(1000., 100.)
@@ -454,35 +451,27 @@ def main(cfg):
         plt.yticks([1000., 800., 600., 400., 300., 200., 100.],
                    [1000, 800, 600, 400, 300, 200, 100])
         plt.axvline(x=0, ymin=0., ymax=1., color='black', linewidth=3)
-
-    try:
-        if plot_type == 'height':
-            title = 'Difference of vertical mean of ' + dataset['long_name']
-        elif plot_type == 'zonal':
-            plt.axhline(y=0, xmin=-90., xmax=90., color='black', linewidth=3)
-            title = 'Difference of zonal mean of ' + dataset['long_name']
-        else:
-            title = dataset['long_name']
-    except NameError: dataset = None
+        title = 'Difference of vertical mean of ' + long_name
+    elif plot_type == 'zonal':
+        plt.axhline(y=0, xmin=-90., xmax=90., color='black', linewidth=3)
+        title = 'Difference of zonal mean of ' + long_name
+    else:
+        title = long_name
 
     plt.title(title)
     plt.legend(ncol=1)
     plt.grid(True)
 
+    short_name = input_data[0]['short_name']
     provenance_record = get_provenance_record(
-        'short_name', ancestor_files=cfg['input_files'])
-    basename = ''
-    try:
-        provenance_record = get_provenance_record(
-            dataset['short_name'], ancestor_files=cfg['input_files'])
+        short_name, ancestor_files=cfg['input_files'])
 
-        if plot_type == 'height':
-            basename = ('level_diff_' + dataset['short_name'] + '_' +
-                        cfg['filename_attach'])
-        else:
-            basename = ('zonal_diff_' + dataset['short_name'] + '_' +
-                        cfg['filename_attach'])
-    except NameError: dataset = None
+    if plot_type == 'height':
+        basename = ('level_diff_' + short_name + '_' +
+                    cfg['filename_attach'])
+    else:
+        basename = ('zonal_diff_' + short_name + '_' +
+                    cfg['filename_attach'])
 
     # Save the data used for the plot
     save_data(basename, provenance_record, cfg, cube_mmm)
