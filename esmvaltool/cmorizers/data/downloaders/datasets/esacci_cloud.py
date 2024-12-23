@@ -98,8 +98,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
             sat_am = 'AVHRR-AM/AVHRR_METOPA/'
             sat_pm = 'AVHRR-PM/AVHRR_NOAA-19/'
         else:
-            logger.error("Data for this date %s is not available",
-                         date)
+            logger.error("Data for this date %s is not available", date)
 
         # Download monthly data from L3C
         for sat in (sat_am, sat_pm):
@@ -118,19 +117,23 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                                  folder_l3c, str(e))
 
                 # daily data
-                if defined_time or (not defined_time and (year in range(2003, 2008))):
-                    logger.info("Downloading daily data (L3U) for sat = %s", sat)
+                if defined_time or (not defined_time and
+                                    (year in range(2003, 2008))):
+                    logger.info("Downloading daily data (L3U) for sat = %s",
+                                sat)
                     folder_l3u = base_path_l3u + sat + f'{year}/{month:02}'
                     wget_options_l3u = wget_options.copy()
-                    wget_options_l3u.append(f'--accept={date}*CLD_MASKTYPE*.nc,'
-                                            f'{date}*CLD_PRODUCTS*.nc')
+                    wget_options_l3u.append(
+                        f'--accept={date}*CLD_MASKTYPE*.nc,'
+                        f'{date}*CLD_PRODUCTS*.nc')
                     logger.info("Download folder for daily data (L3U): %s",
                                 folder_l3u)
                     try:
                         downloader.download_file(folder_l3u, wget_options_l3u)
                     except Exception as e:
-                        logger.error("Failed to download daily data from %s: %s",
-                                     folder_l3u, str(e))
+                        logger.error(
+                            "Failed to download daily data from %s: %s",
+                            folder_l3u, str(e))
 
         # Increment the loop_date by one month
         loop_date += relativedelta.relativedelta(months=1)
