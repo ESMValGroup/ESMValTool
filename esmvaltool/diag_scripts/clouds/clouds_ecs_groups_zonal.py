@@ -404,7 +404,7 @@ def main(cfg):
         plt.yticks([1000., 800., 600., 400., 300., 200., 100.],
                    [1000, 800, 600, 400, 300, 200, 100])
 
-    if dataset is not None:
+    try:
         if plot_type == 'height':
             title = 'Vertical mean of ' + dataset['long_name']
         elif plot_type == 'zonal':
@@ -414,7 +414,7 @@ def main(cfg):
                 title = 'Zonal mean of ' + dataset['long_name']
         else:
             title = dataset['long_name']
-    else:
+    except NameError: dataset = None
         title = 'Mean plot'
 
     plt.title(title)
@@ -455,7 +455,7 @@ def main(cfg):
                    [1000, 800, 600, 400, 300, 200, 100])
         plt.axvline(x=0, ymin=0., ymax=1., color='black', linewidth=3)
 
-    if dataset is not None:
+    try:
         if plot_type == 'height':
             title = 'Difference of vertical mean of ' + dataset['long_name']
         elif plot_type == 'zonal':
@@ -463,14 +463,14 @@ def main(cfg):
             title = 'Difference of zonal mean of ' + dataset['long_name']
         else:
             title = dataset['long_name']
-    else:
+    except NameError: dataset = None
         title = 'Mean plot'
 
     plt.title(title)
     plt.legend(ncol=1)
     plt.grid(True)
 
-    if dataset is not None:
+    try:
         provenance_record = get_provenance_record(
             dataset['short_name'], ancestor_files=cfg['input_files'])
 
@@ -480,7 +480,7 @@ def main(cfg):
         else:
             basename = ('zonal_diff_' + dataset['short_name'] + '_' +
                         cfg['filename_attach'])
-    else:
+    except NameError: dataset = None
         provenance_record = get_provenance_record(
             'short_name', ancestor_files=cfg['input_files'])
         basename = ''
