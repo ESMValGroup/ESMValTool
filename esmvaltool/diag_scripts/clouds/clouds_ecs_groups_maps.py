@@ -1,6 +1,6 @@
 """Python diagnostic for plotting geographical maps."""
 import logging
-import random
+import secrtes
 from copy import deepcopy
 from pathlib import Path
 
@@ -118,7 +118,7 @@ def compute_diagnostic(filename):
 
 
 def plot_model(cube, attributes, cfg):
-    # Plot each model.
+    """Plot each model."""
     levels = [10, 20, 30, 40, 50, 60, 70, 80, 90]
     if attributes['short_name'] == 'clt':
         levels = [10, 20, 30, 40, 50, 60, 70, 80, 90]
@@ -404,7 +404,7 @@ def write_statistics(df, attributes, cfg):
 
 
 def bootstrapping(cubes, cube_obs, all_groups, attributes, cfg):
-    """Calculates bootstrapping."""
+    """Calculate bootstrapping."""
     logger.info("Bootstrapping")
 
     for group in all_groups:
@@ -425,7 +425,8 @@ def bootstrapping(cubes, cube_obs, all_groups, attributes, cfg):
             ncubes = len(cubes_part)
             array = list(np.arange(0, ncubes))
             for iboot in range(0, nsample):
-                ires = random.choices(array, k=len(array))
+                cube = cubes_part[0].copy()
+                ires = secrets.choices(array, k=len(array))
                 for i, icube in enumerate(ires):
                     if i == 0:
                         cube = cubes_part[datasets[icube]].copy()

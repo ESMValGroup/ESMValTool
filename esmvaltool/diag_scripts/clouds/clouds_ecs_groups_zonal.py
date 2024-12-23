@@ -404,6 +404,7 @@ def main(cfg):
         plt.yticks([1000., 800., 600., 400., 300., 200., 100.],
                    [1000, 800, 600, 400, 300, 200, 100])
 
+    title = 'Mean plot'
     try:
         if plot_type == 'height':
             title = 'Vertical mean of ' + dataset['long_name']
@@ -415,7 +416,6 @@ def main(cfg):
         else:
             title = dataset['long_name']
     except NameError: dataset = None
-        title = 'Mean plot'
 
     plt.title(title)
     plt.legend(ncol=1)
@@ -470,6 +470,9 @@ def main(cfg):
     plt.legend(ncol=1)
     plt.grid(True)
 
+    provenance_record = get_provenance_record(
+        'short_name', ancestor_files=cfg['input_files'])
+    basename = ''
     try:
         provenance_record = get_provenance_record(
             dataset['short_name'], ancestor_files=cfg['input_files'])
@@ -481,9 +484,6 @@ def main(cfg):
             basename = ('zonal_diff_' + dataset['short_name'] + '_' +
                         cfg['filename_attach'])
     except NameError: dataset = None
-        provenance_record = get_provenance_record(
-            'short_name', ancestor_files=cfg['input_files'])
-        basename = ''
 
     # Save the data used for the plot
     save_data(basename, provenance_record, cfg, cube_mmm)
