@@ -81,7 +81,6 @@ def get_provenance_record(short_name, ancestor_files):
 
 def _get_multi_model_mean(cubes, var):
     """Compute multi-model mean."""
-
     logger.debug("Calculating multi-model mean")
     datasets = []
     mmm = []
@@ -102,7 +101,6 @@ def _get_multi_model_mean(cubes, var):
 
 def _get_multi_model_quantile(cubes, var, quantile):
     """Compute multi-model quantile."""
-
     logger.debug("Calculating multi-model %s quantile", quantile)
     datasets = []
     mmq = []
@@ -240,7 +238,6 @@ def compute_diff_temp(input_data, group, dataset, plot_type):
 
 def plot_diagnostic(cube, legend, plot_type):
     """Create diagnostic data and plot it."""
-
     cube_label = legend
     line_color = LINE_COLOR.get(legend, legend)
     line_dash = LINE_DASH.get(legend, legend)
@@ -268,7 +265,6 @@ def plot_diagnostic(cube, legend, plot_type):
 
 def plot_diagnostic_diff(cube, legend, plot_type):
     """Create diagnostic data and plot it."""
-
     cube_label = LINE_LEGEND.get(legend, legend)
     line_color = LINE_COLOR.get(legend, legend)
     line_dash = LINE_DASH.get(legend, legend)
@@ -305,7 +301,6 @@ def plot_diagnostic_diff(cube, legend, plot_type):
 
 def plot_errorband(cube1, cube2, legend, plot_type):
     """Create diagnostic data and plot it."""
-
     line_color = LINE_COLOR.get(legend, legend)
     line_dash = LINE_DASH.get(legend, legend)
 
@@ -408,14 +403,17 @@ def main(cfg):
         plt.yscale('log')
         plt.yticks([1000., 800., 600., 400., 300., 200., 100.],
                    [1000, 800, 600, 400, 300, 200, 100])
-        title = 'Vertical mean of ' + dataset['long_name']
-    elif plot_type == 'zonal':
-        if dataset['long_name'] == 'Total Cloud Cover Percentage':
-            title = 'Zonal mean of Total Cloud Fraction'
-        else:
-            title = 'Zonal mean of ' + dataset['long_name']
-    else:
-        title = dataset['long_name']
+    
+    if dataset is not None:
+       if plot_type == 'height':
+           title = 'Vertical mean of ' + dataset['long_name']
+       elif plot_type == 'zonal':
+           if dataset['long_name'] == 'Total Cloud Cover Percentage':
+               title = 'Zonal mean of Total Cloud Fraction'
+           else:
+               title = 'Zonal mean of ' + dataset['long_name']
+       else:
+           title = dataset['long_name']
 
     plt.title(title)
     plt.legend(ncol=1)
@@ -454,26 +452,34 @@ def main(cfg):
         plt.yticks([1000., 800., 600., 400., 300., 200., 100.],
                    [1000, 800, 600, 400, 300, 200, 100])
         plt.axvline(x=0, ymin=0., ymax=1., color='black', linewidth=3)
-        title = 'Difference of vertical mean of ' + dataset['long_name']
-    elif plot_type == 'zonal':
-        plt.axhline(y=0, xmin=-90., xmax=90., color='black', linewidth=3)
-        title = 'Difference of zonal mean of ' + dataset['long_name']
-    else:
-        title = dataset['long_name']
+
+    if dataset is not None:
+        if plot_type == 'height':
+            title = 'Difference of vertical mean of ' + dataset['long_name']
+        elif plot_type == 'zonal':
+            plt.axhline(y=0, xmin=-90., xmax=90., color='black', linewidth=3)
+            title = 'Difference of zonal mean of ' + dataset['long_name']
+        else:
+            title = dataset['long_name']
 
     plt.title(title)
     plt.legend(ncol=1)
     plt.grid(True)
 
-    provenance_record = get_provenance_record(
-        dataset['short_name'], ancestor_files=cfg['input_files'])
+    if dataset is not None:
+        provenance_record = get_provenance_record(
+            dataset['short_name'], ancestor_files=cfg['input_files'])
 
-    if plot_type == 'height':
-        basename = ('level_diff_' + dataset['short_name'] + '_' +
-                    cfg['filename_attach'])
+        if plot_type == 'height':
+            basename = ('level_diff_' + dataset['short_name'] + '_' +
+                        cfg['filename_attach'])
+        else:
+            basename = ('zonal_diff_' + dataset['short_name'] + '_' +
+                        cfg['filename_attach'])
     else:
-        basename = ('zonal_diff_' + dataset['short_name'] + '_' +
-                    cfg['filename_attach'])
+        provenance_record = get_provenance_record(
+            'short_name', ancestor_files=cfg['input_files'])
+        basename = ('')
 
     # Save the data used for the plot
     save_data(basename, provenance_record, cfg, cube_mmm)
