@@ -155,7 +155,6 @@ def compute_diff(filename1, filename2):
 
 def compute_diff_temp(input_data, group, dataset, plot_type):
     """Compute relative change per temperture change."""
-
     dataset_name = dataset['dataset']
     var = dataset['short_name']
 

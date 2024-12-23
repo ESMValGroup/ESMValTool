@@ -426,7 +426,8 @@ def bootstrapping(cubes, cube_obs, all_groups, attributes, cfg):
             array = list(np.arange(0, ncubes))
             for iboot in range(0, nsample):
                 cube = cubes_part[0].copy()
-                ires = secrets.choices(array, k=len(array))
+                #ires = random.choices(array, k=len(array))
+                ires = secrets.choice(array) for _ in range(k)
                 for i, icube in enumerate(ires):
                     if i == 0:
                         cube = cubes_part[datasets[icube]].copy()
