@@ -7,9 +7,10 @@
 {% set SITE_RECIPES_FILE = 'inc/' ~ SITE ~ '-recipes.cylc' %}
 {% from SITE_RECIPES_FILE import FAST_RECIPES, MEDIUM_RECIPES %}
 
-{% set ERROR_MSG =
-    "must be set to a list of recipes, usually in '" ~ SITE_RECIPES_FILE ~ "'"
-%}
+{%- set ERROR_MSG =
+    "is undefined and must be set, usually in '" ~ SITE_RECIPES_FILE ~ " - see 'How to "
+    "add a recipe to the RTW' documentation for more information."
+-%}
 {{ assert(FAST_RECIPES is defined, "FAST_RECIPES " ~ ERROR_MSG)}}
 {{ assert(MEDIUM_RECIPES is defined, "MEDIUM_RECIPES " ~ ERROR_MSG)}}
 
@@ -17,8 +18,8 @@
     UTC mode = True
 
 [task parameters]
-    fast = {{ FAST_RECIPES | join(', ') }}
-    medium = {{ MEDIUM_RECIPES | join(', ') }}
+    fast = {{ FAST_RECIPES | map(attribute='recipe_path') | join(', ') }}
+    medium = {{ MEDIUM_RECIPES | map(attribute='recipe_path') | join(', ') }}
 
 [scheduling]
     initial cycle point = now

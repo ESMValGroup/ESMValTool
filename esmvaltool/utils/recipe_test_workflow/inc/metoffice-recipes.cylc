@@ -1,25 +1,80 @@
-# Add recipes to the RTW at your site here. See "How to add a recipe to the RTW"
-# documentation for more information. Recipe paths are specified relative to
-# esmvaltool/recipes. For recipes in subdirectories, `--` stands for `/` since the
-# latter is an illegal char.
+#   Add recipes to the RTW at your site by adding the required key, value pairs below.
+#   See "How to add a recipe to the RTW" documentation for more information.
+#
+#   KEYS                VALUES
+#   ----                ------
+#   recipe_path         Recipe paths are specified relative to esmvaltool/recipes. For
+#                       recipes in subdirectories, `--` stands for `/` since the latter
+#                       is an illegal char.
+#
+#   actual              Example recorded usage at your site.
+#
+#   max_time /          Set to 'default' to use site's default resources or specify
+#   max_memory          custom resources. When setting custom resources, both time and
+#                       memory must be set - 'default' cannot be used for only one value
+#                       (as 'default' may change).
 
 {% set FAST_RECIPES =
     [
-        'recipe_radiation_budget',
-        'recipe_heatwaves_coldwaves',
-        'recipe_autoassess_landsurface_soilmoisture',
-        'recipe_consecdrydays',
-        'examples--recipe_python',
-        'recipe_ocean_multimap',
-        'recipe_ocean_amoc',
+        {
+            'recipe_path': 'recipe_radiation_budget',
+            'actual': 'na',
+            'max_time': 'default',
+            'max_memory': 'default',
+        },
+        {
+            'recipe_path': 'recipe_albedolandcover',
+            'actual': '0m31s, 2.5 GB on 2024-04-08',
+            'max_time': 'PT2M',
+            'max_memory': '3GB',
+        },
+        {
+            'recipe_path': 'recipe_heatwaves_coldwaves',
+            'actual': 'na',
+            'max_time': 'default',
+            'max_memory': 'default',
+        },
+        {
+            'recipe_path': 'recipe_autoassess_landsurface_soilmoisture',
+            'actual': '0m36s, 2.8 GB on 2024-03-29',
+            'max_time': 'PT2M',
+            'max_memory': '3G',
+        },
+        {
+            'recipe_path': 'recipe_consecdrydays',
+            'actual': 'na',
+            'max_time': 'default',
+            'max_memory': 'default',
+        },
+        {
+            'recipe_path': 'examples--recipe_python',
+            'actual': 'na',
+            'max_time': 'default',
+            'max_memory': 'default',
+        },
+        {
+            'recipe_path': 'recipe_ocean_amoc',
+            'actual': '1m47s, 3.4 GB on 2024-06-17',
+            'max_time': 'PT3M',
+            'max_memory': '4G',
+        },
+        {
+            'recipe_path': 'recipe_ocean_multimap',
+            'actual': '6m52s, 2.5 GB on 2024-05-28',
+            'max_time': 'PT8M',
+            'max_memory': '3G',
+        },
     ]
 %}
 
 # `recipe_ensclus` should be in fast: is in medium temporarily to avoid empty variable.
 {% set MEDIUM_RECIPES =
     [
-        'recipe_ensclus',
+        {
+            'recipe_path': 'recipe_ensclus',
+            'actual': '2m10s, 2.4 GB on 2024-03-29',
+            'max_time': 'PT4M',
+            'max_memory': '3G',
+        },
     ]
 %}
-
-#         'recipe_albedolandcover',
