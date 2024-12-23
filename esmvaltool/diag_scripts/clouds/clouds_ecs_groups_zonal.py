@@ -403,17 +403,19 @@ def main(cfg):
         plt.yscale('log')
         plt.yticks([1000., 800., 600., 400., 300., 200., 100.],
                    [1000, 800, 600, 400, 300, 200, 100])
-    
+
     if dataset is not None:
-       if plot_type == 'height':
-           title = 'Vertical mean of ' + dataset['long_name']
-       elif plot_type == 'zonal':
-           if dataset['long_name'] == 'Total Cloud Cover Percentage':
-               title = 'Zonal mean of Total Cloud Fraction'
-           else:
-               title = 'Zonal mean of ' + dataset['long_name']
-       else:
-           title = dataset['long_name']
+        if plot_type == 'height':
+            title = 'Vertical mean of ' + dataset['long_name']
+        elif plot_type == 'zonal':
+            if dataset['long_name'] == 'Total Cloud Cover Percentage':
+                title = 'Zonal mean of Total Cloud Fraction'
+            else:
+                title = 'Zonal mean of ' + dataset['long_name']
+        else:
+            title = dataset['long_name']
+    else:
+        title = 'Mean plot'
 
     plt.title(title)
     plt.legend(ncol=1)
@@ -461,6 +463,8 @@ def main(cfg):
             title = 'Difference of zonal mean of ' + dataset['long_name']
         else:
             title = dataset['long_name']
+    else:
+        title = 'Mean plot'
 
     plt.title(title)
     plt.legend(ncol=1)
@@ -479,7 +483,7 @@ def main(cfg):
     else:
         provenance_record = get_provenance_record(
             'short_name', ancestor_files=cfg['input_files'])
-        basename = ('')
+        basename = ''
 
     # Save the data used for the plot
     save_data(basename, provenance_record, cfg, cube_mmm)
