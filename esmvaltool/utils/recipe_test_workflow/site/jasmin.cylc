@@ -2,7 +2,8 @@
 [runtime]
     [[root]]
         [[[environment]]]
-            # Warning: fragile assumption of location of esmvaltool code, see #3437
+            # Warning: fragile assumption of location of esmvaltool code,
+            # issue #3437 contains more details.
             ESMVALTOOL_DIR = /opt/conda/envs/esmvaltool/lib/python3.11/site-packages
 
     # COMPUTE provides defaults for computation-heavy tasks.
