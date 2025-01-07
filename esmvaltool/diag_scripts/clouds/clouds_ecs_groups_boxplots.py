@@ -169,7 +169,7 @@ def create_data_frame(input_data, cfg):
     return data_frame
 
 
-def plot_boxplot(data_frame, cfg):
+def plot_boxplot(data_frame, input_data, cfg):
     """Create boxplot."""
     sns.set_style('darkgrid')
     sns.set(font_scale=2)
@@ -184,7 +184,7 @@ def plot_boxplot(data_frame, cfg):
     plt.title(cfg['title'])
 
     provenance_record = get_provenance_record(
-        ancestor_files=cfg['input_files'])
+        ancestor_files=[d['filename'] for d in input_data])
 
     # Save plot
     plot_path = get_plot_filename('boxplot' + '_' + cfg['filename_attach'],
@@ -212,7 +212,7 @@ def main(cfg):
     data_frame = create_data_frame(input_data, cfg)
 
     # Create plot
-    plot_boxplot(data_frame, cfg)
+    plot_boxplot(data_frame, input_data, cfg)
 
     # Save file
     basename = "boxplot_region_" + cfg['filename_attach']
