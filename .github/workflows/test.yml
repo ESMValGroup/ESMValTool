@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - remove_ncl
   schedule:
     - cron: '0 0 * * *'
 
