@@ -32,36 +32,11 @@ preprocessors:
     climate_statistics:
       operator: mean
 
-#  prep_map_3: # For specific levels of 3D fields with regrid
-#    custom_order: true
-#    extract_levels:
-#      levels: [0., 10., 100., 1000.,]
-#      scheme: linear_extrapolate
-#    climate_statistics:
-#      operator: mean
-#    regrid:
-#      target_grid: 1x1
-#      scheme: linear
-#     multi_model_statistics:
-#       span: overlap
-#       statistics: [mean ]
-
-#  prep_timeseries_2: # For specific levels of 3D fields
-#    custom_order: true
-#    extract_levels:
-#      levels: [0., 10., 100., 1000.]
-#      scheme: linear_extrapolate
-#    area_statistics:
-#      operator: mean
-#    multi_model_statistics:
-#      span: overlap
-#      statistics: [mean ]
-
 diagnostics:
   # --------------------------------------------------
   # Quad Maps diagnostics
   # -----------------------------------------------
-  diag_map_1:
+  sea surface temperature:
     description: Global surface quad plots
     variables:
       tos:  # Temperature ocean surface
@@ -82,7 +57,7 @@ diagnostics:
         exper_model: {project: NEMO, dataset: GC3p1}
         observational_dataset: {project: OBS2, dataset: observation}
 
-  diag_map_2:
+  sea surface salinity:
     description: Global surface quad plots sos
     variables:
       sos:
@@ -103,7 +78,7 @@ diagnostics:
         exper_model: {project: NEMO, dataset: GC3p1}
         observational_dataset: {project: OBS3, dataset: observation}
 
-  diag_map_3:
+  sea water salinity:
     description: Global surface depth so
     variables:
       so:
@@ -125,7 +100,7 @@ diagnostics:
         exper_model: {project: NEMO, dataset: GC3p1}
         observational_dataset: {project: OBS3, dataset: so_obs}
 
-  diag_map_4:
+  sea water potential temperature:
     description: Global surface depth thetao
     variables:
       thetao:
