@@ -4,9 +4,10 @@ on:
   # Trigger on push on main or other branch for testing
   # NOTE that push: main will create the file very often
   # and hence lots of automated PRs
-  # push:
-  #   branches:
+  push:
+    branches:
   #     - main
+      - unpin_mamba
   schedule:
     - cron: '0 4 */10 * *'
 
@@ -36,9 +37,7 @@ jobs:
           conda --version
           # setup-miniconda@v3 installs an old conda and mamba
           # forcing a modern mamba updates both mamba and conda
-          # unpin mamba after conda-lock=3 release
-          # see github.com/ESMValGroup/ESMValTool/issues/3782
-          conda install -c conda-forge "mamba>=1.4.8,<2"
+          conda install -c conda-forge "mamba>=1.4.8"
           conda config --show-sources
           conda config --show
           conda --version
