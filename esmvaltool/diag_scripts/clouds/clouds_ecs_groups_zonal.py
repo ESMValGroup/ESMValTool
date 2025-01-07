@@ -464,7 +464,7 @@ def main(cfg):
 
     short_name = input_data[0]['short_name']
     provenance_record = get_provenance_record(
-        short_name, ancestor_files=cfg['input_files'])
+        short_name, ancestor_files=[d['filename'] for d in input_data])
 
     if plot_type == 'height':
         basename = ('level_diff_' + short_name + '_' +
