@@ -11,11 +11,9 @@
     # Specific tasks below override some defaults, e.g. time & memory.
     [[COMPUTE]]
         platform = spice
-        execution time limit = PT2M
         [[[directives]]]
             --wckey = RTW
             --ntasks = {{ MAX_PARALLEL_TASKS }}
-            --mem = 2G
 
     [[configure]]
         platform = localhost
@@ -27,19 +25,15 @@
             --mem = 2G
 
 {% for RECIPE in FAST_RECIPES %}
-    {% if RECIPE['max_time'] != 'default' and RECIPE['max_memory'] != 'default' %}
     [[process<fast={{ RECIPE['recipe_path'] }}>]]
         execution time limit = {{ RECIPE['max_time'] }}
         [[[directives]]]
             --mem = {{ RECIPE['max_memory'] }}
-    {% endif %}
 {% endfor %}
 
 {% for RECIPE in MEDIUM_RECIPES %}
-    {% if RECIPE['max_time'] != 'default' and RECIPE['max_memory'] != 'default' %}
     [[process<medium={{ RECIPE['recipe_path'] }}>]]
         execution time limit = {{ RECIPE['max_time'] }}
         [[[directives]]]
             --mem = {{ RECIPE['max_memory'] }}
-    {% endif %}
 {% endfor %}

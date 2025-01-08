@@ -9,18 +9,16 @@
 #
 #   actual              Example recorded usage at your site.
 #
-#   max_time /          Set to 'default' to use site's default resources or specify
-#   max_memory          custom resources. When setting custom resources, both time and
-#                       memory must be set - 'default' cannot be used for only one value
-#                       (as 'default' may change).
+#   max_time /          #TODO:
+#   max_memory
 
 {% set FAST_RECIPES =
     [
         {
             'recipe_path': 'recipe_radiation_budget',
             'actual': 'na',
-            'max_time': 'default',
-            'max_memory': 'default',
+            'max_time': 'PT2M',
+            'max_memory': '2G',
         },
         {
             'recipe_path': 'recipe_albedolandcover',
@@ -31,8 +29,8 @@
         {
             'recipe_path': 'recipe_heatwaves_coldwaves',
             'actual': 'na',
-            'max_time': 'default',
-            'max_memory': 'default',
+            'max_time': 'PT2M',
+            'max_memory': '2G',
         },
         {
             'recipe_path': 'recipe_autoassess_landsurface_soilmoisture',
@@ -43,14 +41,14 @@
         {
             'recipe_path': 'recipe_consecdrydays',
             'actual': 'na',
-            'max_time': 'default',
-            'max_memory': 'default',
+            'max_time': 'PT2M',
+            'max_memory': '2G',
         },
         {
             'recipe_path': 'examples--recipe_python',
             'actual': 'na',
-            'max_time': 'default',
-            'max_memory': 'default',
+            'max_time': 'PT2M',
+            'max_memory': '2G',
         },
         {
             'recipe_path': 'recipe_ocean_amoc',
