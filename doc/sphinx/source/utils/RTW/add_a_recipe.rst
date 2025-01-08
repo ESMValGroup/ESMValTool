@@ -26,47 +26,67 @@ How to add a recipe to the |RTW|
      [...]
      YYYY-MM-DD HH:MM:SS:sss UTC [12345] INFO    Run was successful
 
-#. Add the recipe to the ``[task parameters]`` section in the
-   ``esmvaltool/utils/recipe_test_workflow/flow.cylc`` file.
+Run a Recipe in the |RTW|
+-------------------------
+
+#. The recipe should now be added to your ``<site>-recipes.cylc`` file. Find this in the
+   ``esmvaltool/utils/recipe_test_workflow/site/`` directory.
+
+#. ``<site>-recipes.cylc`` contains **two lists of dictionaries**. The lists are
+   ``FAST_RECIPES`` and ``MEDIUM_RECIPES``.
 
    .. hint::
-      If the recipe takes less than 10 minutes to run then it should be added
-      to the ``fast`` option. Recipes that take longer than ten minutes should
-      be added to the ``medium`` option.
+      ``FAST_RECIPES`` take *less* than 10 minutes to run at your site.
+      ``MEDIUM_RECIPES`` take *more* than 10 minutes.
+
+#. Add your recipe to one of lists. Add the recipe as a dictionary of ``key, value``
+   pairs. E.g.::
+
+      {
+         'recipe_path': 'recipe_a_fast_recipe',
+         'actual': '1m30s, 1.5 GB on 2025-01-01',
+         'max_time': 'PT2M',
+         'max_memory': '2G',
+      }
+
+   Add the following information for each key:
+
+   .. list-table::
+      :widths: 25 75
+      :header-rows: 1
+
+      * - Key
+        - Value
+      * - ``recipe_path``
+        - The path to the recipe. Recipe paths are specified relative to
+          ``esmvaltool/recipes``. For recipes in subdirectories, ``--`` stands for
+          ``/`` since the latter is an illegal char.
+      * - ``actual``
+        - A note of  the recipe's actual resource usage. From the successful run of the
+          recipe on the compute server at your site.
+      * - ``max_time``
+        - Set the maximum amount of time the recipe has to complete.
+      * - ``max_memory``
+        - Set the memory to allocate to running the recipe.
 
    .. hint::
-      The line added should follow the format of ``recipe_new_recipe, \``,
-      unless the line is the last one in the list, in which case the line added
-      should follow the format of ``recipe_new_recipe``.
-
-#. If the duration of the recipe is larger than the value specified by the
-   ``execution time limit`` option in the ``[[COMPUTE]]`` section in the
-   aforementioned site-specific ``.cylc`` file, and / or the memory usage of
-   the recipe is larger than the value specified by the ``--mem`` option in the
-   ``[[[directives]]]`` section in the ``[[COMPUTE]]`` section, add a section
-   (in alphabetical order) to this file as shown below (round the duration to
-   the nearest second)::
-
-     [[process<fast=recipe_albedolandcover>]]
-     # Actual: 0m31s, 2.5 GB on 2024-04-08.
-     execution time limit = PT2M
-     [[[directives]]]
-         --mem = 3G
-
-   .. hint::
-      The ``fast`` key in the example task definition above
-      (``[[process<fast=recipe_albedolandcover>]]``) should match name of the
-      option the recipe was added to in the ``[task parameters]`` section in
-      the ``esmvaltool/utils/recipe_test_workflow/flow.cylc`` file
-
-   .. hint::
-      Set the ``execution time limit`` to 10-20% more than the actual duration.
-      For actual durations of up to ``1m45s``, set the ``execution time limit``
-      to ``PT2M`` (2 minutes).
+      Set the ``max_time`` to 10-20% more than the actual duration. For actual durations
+      of up to ``1m45s``, set the ``execution time limit`` to ``PT2M`` (2 minutes).
 
    .. hint::
       Try not to regularly waste more than 500 MiB in memory usage. Typically,
       rounding the actual memory usage up to the nearest integer is acceptable.
+
+#. Once the recipe dictionary is added, the recipe will run as part of the |RTW| at
+   your site. Next, the recipe will need |KGOs| to run successfully.
+
+   .. note::
+      The ``<site>-recipes.cylc`` file is actually written in the `Jinja2`_ templating
+      language. Jinja2 gives Cylc many powerful features (see `Cylc Jinja2`_). This is
+      beyond the scope of this guide. Follow the links for more information.
+
+Update the KGOs
+---------------
 
 #. Stop any running ``recipe_test_workflow`` workflows::
 
@@ -103,6 +123,9 @@ How to add a recipe to the |RTW|
 
 #. Run the |RTW| again, as detailed in the :ref:`quick_start_guide`; the
    ``compare`` task should now succeed.
+
+Add the recipe to the documentation
+------------------------------------
 
 #. Add the recipe to the documentation:
 

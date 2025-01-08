@@ -6,11 +6,9 @@
 #   recipe_path         Recipe paths are specified relative to esmvaltool/recipes. For
 #                       recipes in subdirectories, `--` stands for `/` since the latter
 #                       is an illegal char.
-#
 #   actual              Example recorded usage at your site.
-#
-#   max_time /          #TODO:
-#   max_memory
+#   max_time            The maximum amount of time the recipe has to complete.
+#   max_memory          The memory to allocate to running the recipe.
 
 {% set FAST_RECIPES =
     [
