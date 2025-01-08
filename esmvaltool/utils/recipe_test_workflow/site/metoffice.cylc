@@ -23,17 +23,3 @@
         execution time limit = PT2M
         [[[directives]]]
             --mem = 2G
-
-{% for RECIPE in FAST_RECIPES %}
-    [[process<fast={{ RECIPE['recipe_path'] }}>]]
-        execution time limit = {{ RECIPE['max_time'] }}
-        [[[directives]]]
-            --mem = {{ RECIPE['max_memory'] }}
-{% endfor %}
-
-{% for RECIPE in MEDIUM_RECIPES %}
-    [[process<medium={{ RECIPE['recipe_path'] }}>]]
-        execution time limit = {{ RECIPE['max_time'] }}
-        [[[directives]]]
-            --mem = {{ RECIPE['max_memory'] }}
-{% endfor %}

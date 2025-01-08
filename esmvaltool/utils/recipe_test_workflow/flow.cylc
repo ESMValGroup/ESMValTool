@@ -81,17 +81,27 @@
 
     # Bash variable substitution below replaces `--` with `/` to obtain path to
     # recipe.
-    [[process<fast>]]
+    {% for RECIPE in FAST_RECIPES %}
+    [[process<fast={{ RECIPE['recipe_path'] }}>]]
         inherit = None, COMPUTE
+        execution time limit = {{ RECIPE['max_time'] }}
         [[[environment]]]
             ROSE_TASK_APP = process
             RECIPE_PATH = "${CYLC_TASK_PARAM_fast//--//}.yml"
+        [[[directives]]]
+            --mem = {{ RECIPE['max_memory'] }}
+    {% endfor %}
 
-    [[process<medium>]]
+    {% for RECIPE in MEDIUM_RECIPES %}
+    [[process<medium={{ RECIPE['recipe_path'] }}>]]
         inherit = None, COMPUTE
+        execution time limit = {{ RECIPE['max_time'] }}
         [[[environment]]]
             ROSE_TASK_APP = process
             RECIPE_PATH = "${CYLC_TASK_PARAM_medium//--//}.yml"
+        [[[directives]]]
+            --mem = {{ RECIPE['max_memory'] }}
+    {% endfor %}
 
     [[COMPARE]]
         inherit = None, COMPUTE
