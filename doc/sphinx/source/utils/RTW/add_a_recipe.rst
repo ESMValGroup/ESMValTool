@@ -33,14 +33,15 @@ Run a Recipe in the |RTW|
    ``<site>`` is your site). Find this in the
    ``esmvaltool/utils/recipe_test_workflow/site/`` directory.
 
-#. ``<site>-recipes.cylc`` contains **two lists of dictionaries**. The lists are
-   ``FAST_RECIPES`` and ``MEDIUM_RECIPES``.
+#. ``<site>-recipes.cylc`` contains **two lists of dictionaries**. The lists
+   are ``FAST_RECIPES`` and ``MEDIUM_RECIPES``.
 
    .. hint::
       ``FAST_RECIPES`` take *less* than 10 minutes to run at your site.
       ``MEDIUM_RECIPES`` take *more* than 10 minutes.
 
-#. Add the recipe to one of lists as as a dictionary of ``key, value`` pairs. E.g.::
+#. Add the recipe to one of lists as as a dictionary of ``key, value`` pairs.
+   E.g.::
 
       {
          'recipe_path': 'recipe_a_fast_recipe',
@@ -59,32 +60,33 @@ Run a Recipe in the |RTW|
         - Value
       * - ``recipe_path``
         - The path to the recipe. Recipe paths are specified relative to
-          ``esmvaltool/recipes``. For recipes in subdirectories, ``--`` stands for
-          ``/`` since the latter is an illegal char.
+          ``esmvaltool/recipes``. For recipes in subdirectories, ``--`` stands
+          for ``/`` since the latter is an illegal char.
       * - ``actual``
-        - A note of  the recipe's actual resource usage. From the successful run of the
-          recipe on the compute server at your site.
+        - A note of  the recipe's actual resource usage. From the successful run
+          of the recipe on the compute server at your site.
       * - ``max_time``
         - Set the maximum amount of time the recipe has to complete.
       * - ``max_memory``
         - Set the memory to allocate to running the recipe.
 
    .. hint::
-      Set the ``max_time`` to 10-20% more than the actual duration. For actual durations
-      of up to ``1m45s``, set ``max_time`` to ``PT2M`` (2 minutes).
+      Set the ``max_time`` to 10-20% more than the actual duration. For actual
+      durations of up to ``1m45s``, set ``max_time`` to ``PT2M`` (2 minutes).
 
    .. hint::
       Try not to regularly waste more than 500 MiB in memory usage. Typically,
       rounding the actual memory usage up to the nearest integer is acceptable.
 
-#. Once the recipe dictionary is added to either ``FAST_RECIPES`` or ``MEDIUM_RECIPES``,
-   the recipe will run as part of the |RTW| at your site. Next, the recipe will need
-   |KGOs| to run successfully in the RTW.
+#. Once the recipe dictionary is added to either ``FAST_RECIPES`` or
+   ``MEDIUM_RECIPES``, the recipe will run as part of the |RTW| at your site.
+   Next, the recipe will need |KGOs| to run successfully in the RTW.
 
    .. note::
-      The ``<site>-recipes.cylc`` file is actually written in the `Jinja2`_ templating
-      language. Jinja2 gives Cylc many powerful features (see `Cylc Jinja2`_). This is
-      beyond the scope of this guide. Follow the links for more information.
+      The ``<site>-recipes.cylc`` file is actually written in the `Jinja2`_
+      templating language. Jinja2 gives |Cylc| many powerful features (see
+      `Cylc Jinja2`_). This is beyond the scope of this guide. Follow the links
+      for more information.
 
 Update the KGOs
 ---------------
