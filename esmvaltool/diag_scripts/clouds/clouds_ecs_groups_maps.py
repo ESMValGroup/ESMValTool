@@ -204,7 +204,7 @@ def read_data(groups, cfg):
     return cubes, cubes_out
 
 
-def plot_diagnostic(cubes, attributes, cfg):
+def plot_diagnostic(cubes, attributes, input_data, cfg):
     """Create diagnostic data and plot it."""
     if cfg['reference']:
         fig = plt.figure(figsize=(14, 9))
@@ -353,7 +353,7 @@ def plot_diagnostic(cubes, attributes, cfg):
 
     # Save the data and the plot
     provenance_record = get_provenance_record(
-        attributes, ancestor_files=d['filename'] for d in input_data])
+        attributes, ancestor_files=[d['filename'] for d in input_data])
     basename = 'map_' + attributes['short_name']
 
     save_data(basename, provenance_record, cfg, cubes)
@@ -465,7 +465,7 @@ def main(cfg):
     cubes, cubes_out = read_data(groups, cfg)
 
     # Plotting climatologies
-    plot_diagnostic(cubes_out, attributes, cfg)
+    plot_diagnostic(cubes_out, attributes, input_data, cfg)
 
     if cfg['reference']:
         # Compute bias plots
