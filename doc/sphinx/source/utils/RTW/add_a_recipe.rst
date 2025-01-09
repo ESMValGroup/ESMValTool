@@ -26,6 +26,8 @@ How to add a recipe to the |RTW|
      [...]
      YYYY-MM-DD HH:MM:SS:sss UTC [12345] INFO    Run was successful
 
+.. _run_a_recipe_in_the_rtw:
+
 Run a Recipe in the |RTW|
 -------------------------
 
@@ -66,9 +68,12 @@ Run a Recipe in the |RTW|
         - A note of  the recipe's actual resource usage. From the successful run
           of the recipe on the compute server at your site.
       * - ``max_time``
-        - Set the maximum amount of time the recipe has to complete.
+        - Set the maximum amount of time the recipe has to complete. Use the
+          ISO8601 duration format (see `Cylc ISO8601 Durations`_ for more).
       * - ``max_memory``
-        - Set the memory to allocate to running the recipe.
+        - Set the memory to allocate to running the recipe. Default units are
+          megabytes. Different units can be specified using the
+          suffix [K|M|G|T] (see `Slurm sbatch --mem`_ for more).
 
    .. hint::
       Set the ``max_time`` to 10-20% more than the actual duration. For actual
@@ -81,6 +86,8 @@ Run a Recipe in the |RTW|
 #. Once the recipe dictionary is added to either ``FAST_RECIPES`` or
    ``MEDIUM_RECIPES``, the recipe will run as part of the |RTW| at your site.
    Next, the recipe will need |KGOs| to run successfully in the RTW.
+
+   .. _jinja2_templating_language:
 
    .. note::
       The ``<site>-recipes.cylc`` file is actually written in the `Jinja2`_
