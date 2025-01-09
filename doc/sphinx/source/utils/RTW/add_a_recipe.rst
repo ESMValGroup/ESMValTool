@@ -29,7 +29,8 @@ How to add a recipe to the |RTW|
 Run a Recipe in the |RTW|
 -------------------------
 
-#. The recipe should now be added to your ``<site>-recipes.cylc`` file. Find this in the
+#. The recipe should now be added to your ``<site>-recipes.cylc`` file. (Where
+   ``<site>`` is your site). Find this in the
    ``esmvaltool/utils/recipe_test_workflow/site/`` directory.
 
 #. ``<site>-recipes.cylc`` contains **two lists of dictionaries**. The lists are
@@ -39,8 +40,7 @@ Run a Recipe in the |RTW|
       ``FAST_RECIPES`` take *less* than 10 minutes to run at your site.
       ``MEDIUM_RECIPES`` take *more* than 10 minutes.
 
-#. Add your recipe to one of lists. Add the recipe as a dictionary of ``key, value``
-   pairs. E.g.::
+#. Add the recipe to one of lists as as a dictionary of ``key, value`` pairs. E.g.::
 
       {
          'recipe_path': 'recipe_a_fast_recipe',
@@ -71,14 +71,15 @@ Run a Recipe in the |RTW|
 
    .. hint::
       Set the ``max_time`` to 10-20% more than the actual duration. For actual durations
-      of up to ``1m45s``, set the ``execution time limit`` to ``PT2M`` (2 minutes).
+      of up to ``1m45s``, set ``max_time`` to ``PT2M`` (2 minutes).
 
    .. hint::
       Try not to regularly waste more than 500 MiB in memory usage. Typically,
       rounding the actual memory usage up to the nearest integer is acceptable.
 
-#. Once the recipe dictionary is added, the recipe will run as part of the |RTW| at
-   your site. Next, the recipe will need |KGOs| to run successfully.
+#. Once the recipe dictionary is added to either ``FAST_RECIPES`` or ``MEDIUM_RECIPES``,
+   the recipe will run as part of the |RTW| at your site. Next, the recipe will need
+   |KGOs| to run successfully in the RTW.
 
    .. note::
       The ``<site>-recipes.cylc`` file is actually written in the `Jinja2`_ templating
