@@ -353,7 +353,7 @@ def plot_diagnostic(cubes, attributes, cfg):
 
     # Save the data and the plot
     provenance_record = get_provenance_record(
-        attributes, ancestor_files=cfg['input_files'])
+        attributes, ancestor_files=d['filename'] for d in input_data])
     basename = 'map_' + attributes['short_name']
 
     save_data(basename, provenance_record, cfg, cubes)
