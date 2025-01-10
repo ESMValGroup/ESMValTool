@@ -14,7 +14,7 @@
     [
         {
             "recipe_path": "recipe_radiation_budget",
-            "actual": "na",
+            "actual": "0m29s, 2.1 GB on 2025-01-08",
             "max_time": "PT2M",
             "max_memory": "2G",
         },
@@ -26,7 +26,7 @@
         },
         {
             "recipe_path": "recipe_heatwaves_coldwaves",
-            "actual": "na",
+            "actual": "1m21s, 1.4 GB on 2025-01-08",
             "max_time": "PT2M",
             "max_memory": "2G",
         },
@@ -38,15 +38,15 @@
         },
         {
             "recipe_path": "recipe_consecdrydays",
-            "actual": "na",
+            "actual": "0m19s, 2.1 GB on 2025-01-08",
             "max_time": "PT2M",
-            "max_memory": "2G",
+            "max_memory": "3G",
         },
         {
             "recipe_path": "examples--recipe_python",
-            "actual": "na",
+            "actual": "0m17s, 1.9 GB on 2025-01-08",
             "max_time": "PT2M",
-            "max_memory": "2G",
+            "max_memory": "3G",
         },
         {
             "recipe_path": "recipe_ocean_amoc",
