@@ -22,7 +22,7 @@
             'recipe_path': 'recipe_albedolandcover',
             'actual': '0m31s, 2.5 GB on 2024-04-08',
             'max_time': 'PT2M',
-            'max_memory': '3GB',
+            'max_memory': '3G',
         },
         {
             'recipe_path': 'recipe_heatwaves_coldwaves',
