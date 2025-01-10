@@ -93,7 +93,7 @@ Run a Recipe in the |RTW|
 
    .. note::
       The ``<site>-recipes.cylc`` file is actually written in the `Jinja2`_
-      templating language. Jinja2 gives |Cylc| many powerful features (see
+      templating language. Jinja2 gives |Cylc| many powerful features (visit
       `Cylc Jinja2`_). This is beyond the scope of this guide. Follow the links
       for more information.
 
