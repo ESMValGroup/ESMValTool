@@ -33,7 +33,9 @@ Run a Recipe in the |RTW|
 
 #. The recipe should now be added to your ``<site>-recipes.cylc`` file. (Where
    ``<site>`` is your site). Find this in the
-   ``esmvaltool/utils/recipe_test_workflow/site/`` directory.
+   ``esmvaltool/utils/recipe_test_workflow/site/`` directory. Add the recipe in
+   alphabetical order for easy user reference:
+   :ref:`Currently tested recipes <currently_tested_recipes>`.
 
 #. ``<site>-recipes.cylc`` contains **two lists of dictionaries**. The lists
    are ``FAST_RECIPES`` and ``MEDIUM_RECIPES``.
@@ -133,18 +135,6 @@ Update the KGOs
 
 #. Run the |RTW| again, as detailed in the :ref:`quick_start_guide`; the
    ``compare`` task should now succeed.
-
-Add the recipe to the documentation
-------------------------------------
-
-#. Add the recipe to the documentation:
-
-   * Add a URL for the recipe in ``doc/sphinx/source/utils/RTW/common.txt``
-     under the ``.. Links`` section in alphabetical order (follow the format
-     ``.. _<name>: <URL>``).
-
-   * Add the recipe to the list of :ref:`currently_tested_recipes` in
-     alphabetical order (follow the format ``* `<name>`_``).
 
 #. Commit and push your changes, create a PR, assign yourself to the PR, and
    add the ``Recipe Test Workflow (RTW)`` label to the PR, see
