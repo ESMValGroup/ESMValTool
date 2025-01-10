@@ -507,7 +507,7 @@ def main(cfg):
                                 rmsd.data, corr.data)
 
             # Plotting biases
-            plot_diagnostic(cubes_diff, attributes, cfg)
+            plot_diagnostic(cubes_diff, attributes, input_data, cfg)
 
 
 if __name__ == '__main__':
