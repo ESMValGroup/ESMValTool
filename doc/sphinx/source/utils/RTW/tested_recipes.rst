@@ -6,7 +6,7 @@ Currently tested recipes
 
 .. include:: common.txt
 
-The recipes tested with the |RTW| at each site:
+The recipes tested with the |RTW| at each site are defined in the following files:
 
 * `metoffice-recipes.cylc`_
 * dkrz-recipes.cylc **(COMING SOON!)**
