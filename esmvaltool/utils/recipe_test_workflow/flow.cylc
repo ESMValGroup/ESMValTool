@@ -1,11 +1,11 @@
 #!jinja2
 {{ assert(SITE != "", "SITE must be set to something other than an empty string") }}
 
-{% set SITE_RECIPES_FILE = 'site/' ~ SITE ~ '-recipes.cylc' %}
+{% set SITE_RECIPES_FILE = "site/" ~ SITE ~ "-recipes.cylc" %}
 {% from SITE_RECIPES_FILE import FAST_RECIPES, MEDIUM_RECIPES %}
 
 {% set ERROR_MSG =
-    "is undefined and must be set in '" ~ SITE_RECIPES_FILE ~ ". The 'How to "
+    "is undefined and must be set in '" ~ SITE_RECIPES_FILE ~ "'. The 'How to "
     "add a recipe to the RTW' documentation provides more information."
 %}
 {{ assert(FAST_RECIPES is defined, "FAST_RECIPES " ~ ERROR_MSG)}}
@@ -15,8 +15,8 @@
     UTC mode = True
 
 [task parameters]
-    fast = {{ FAST_RECIPES | map(attribute='recipe_path') | join(', ') }}
-    medium = {{ MEDIUM_RECIPES | map(attribute='recipe_path') | join(', ') }}
+    fast = {{ FAST_RECIPES | map(attribute="recipe_path") | join(", ") }}
+    medium = {{ MEDIUM_RECIPES | map(attribute="recipe_path") | join(", ") }}
 
 [scheduling]
     initial cycle point = now
@@ -80,25 +80,25 @@
     # Bash variable substitution below replaces `--` with `/` to obtain path to
     # recipe.
 {% for RECIPE in FAST_RECIPES %}
-    [[process<fast={{ RECIPE['recipe_path'] }}>]]
+    [[process<fast={{ RECIPE["recipe_path"] }}>]]
         inherit = None, COMPUTE
-        execution time limit = {{ RECIPE['max_time'] }}
+        execution time limit = {{ RECIPE["max_time"] }}
         [[[environment]]]
             ROSE_TASK_APP = process
             RECIPE_PATH = "${CYLC_TASK_PARAM_fast//--//}.yml"
         [[[directives]]]
-            --mem = {{ RECIPE['max_memory'] }}
+            --mem = {{ RECIPE["max_memory"] }}
 {% endfor %}
 
 {% for RECIPE in MEDIUM_RECIPES %}
-    [[process<medium={{ RECIPE['recipe_path'] }}>]]
+    [[process<medium={{ RECIPE["recipe_path"] }}>]]
         inherit = None, COMPUTE
-        execution time limit = {{ RECIPE['max_time'] }}
+        execution time limit = {{ RECIPE["max_time"] }}
         [[[environment]]]
             ROSE_TASK_APP = process
             RECIPE_PATH = "${CYLC_TASK_PARAM_medium//--//}.yml"
         [[[directives]]]
-            --mem = {{ RECIPE['max_memory'] }}
+            --mem = {{ RECIPE["max_memory"] }}
 {% endfor %}
 
     [[COMPARE]]
@@ -127,4 +127,4 @@
             COMPARISON_OUTPUT_DIR=${OUTPUT_DIR}/${RECIPE_NAME}*
             KGO_DIR=${KGO_ROOT_PATH}/${RECIPE_NAME}*
 
-{% include 'site/' ~ SITE ~ '.cylc' %}
+{% include "site/" ~ SITE ~ ".cylc" %}
