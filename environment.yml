@@ -17,14 +17,14 @@ dependencies:
   - cfgrib
   - cftime
   - cmocean
-  - curl <8.10  # https://github.com/ESMValGroup/ESMValTool/issues/3758
+  # - curl <8.10  # nay Py3.13 yet  # https://github.com/ESMValGroup/ESMValTool/issues/3758
   - cython
   - dask !=2024.8.0  # https://github.com/dask/dask/issues/11296
   - distributed
   - ecmwf-api-client
   - eofs
   - esmpy
-  - esmvalcore 2.11.*
+  # - esmvalcore 2.11.*  # nay Py3.13 yet
   - fiona
   - fire
   - fsspec
@@ -40,21 +40,21 @@ dependencies:
   - natsort
   - nc-time-axis
   - netCDF4
-  - numba
+  # - numba  # nay Py3.13 yet
   - numpy !=1.24.3  # severe masking bug
   - openpyxl
   - packaging
-  - pandas==2.1.4  # unpin when ESMValCore released with https://github.com/ESMValGroup/ESMValCore/pull/2529
+  - pandas  # ==2.1.4  # unpin when ESMValCore released with https://github.com/ESMValGroup/ESMValCore/pull/2529
   - pip !=21.3
   - progressbar2
   - prov
   - psyplot >=1.5.0
-  - psy-maps >=1.5.0
-  - psy-reg >=1.5.0
-  - psy-simple >=1.5.0
+  # - psy-maps >=1.5.0  # nay Py3.13 yet
+  # - psy-reg >=1.5.0  # nay Py3.13 yet
+  # - psy-simple >=1.5.0  # nay Py3.13 yet
   - pyproj >=2.1
-  - pys2index  # only from conda-forge
-  - python >=3.10,<3.13
+  # - pys2index  # only from conda-forge  # not py313 compat
+  - python >=3.10
   - python-cdo
   - python-dateutil
   - pyyaml
@@ -68,7 +68,7 @@ dependencies:
   - seawater
   - shapely >=2.0.2
   - xarray >=0.12.0
-  - xesmf >=0.7.1
+  # - xesmf >=0.7.1  # nay Py3.13 yet via Numba
   - xgboost >1.6.1  # github.com/ESMValGroup/ESMValTool/issues/2779
   - xlsxwriter
   - zarr
