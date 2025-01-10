@@ -1,12 +1,12 @@
-#   Add recipes to the RTW at your site by adding the required key, value pairs below.
-#   See "How to add a recipe to the RTW" documentation for more information.
+#   This file contains the recipes that are run by the RTW at the Met Office.
+#   The "How to add a recipe to the RTW" documentation provides more information.
 #
 #   KEYS                VALUES
 #   ----                ------
 #   recipe_path         Recipe paths are specified relative to esmvaltool/recipes. For
 #                       recipes in subdirectories, `--` stands for `/` since the latter
 #                       is an illegal char.
-#   actual              Example recorded usage at your site.
+#   actual              Example recorded usage at Met Office.
 #   max_time            The maximum amount of time the recipe has to complete.
 #   max_memory          The memory to allocate to running the recipe.
 
