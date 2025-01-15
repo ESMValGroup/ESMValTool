@@ -1254,6 +1254,14 @@ datasets:
     last_access: 2023-01-17
     info: |
       Download the file zmn2o_TCOM_plev_T2Dz_1991_2021.nc.
+  
+  TROPFLUX:
+    tier: 2
+    source: "https://incois.gov.in/tropflux"
+    last_access: 2025-01-15
+    info: |
+      The TropFlux project aims at providing daily, timely, accurate air-sea heat and momentum
+      flux data for the entire 30°N-30°S region.
 
   UWisc:
     tier: 3

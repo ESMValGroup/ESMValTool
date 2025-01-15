@@ -1,0 +1,62 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: TROPFLUX
+  project_id: OBS6
+  tier: 2
+  version: "v1"
+  modeling_realm: reanaly
+  source: 'https://psl.noaa.gov/data/gridded/data.20thC_ReanV2.html'
+  reference: 'tropflux'
+  comment: |
+    ''
+
+# Variables to CMORise
+variables:
+  # monthly frequency
+  ts_month:
+    short_name: ts
+    mip: Amon
+    raw: t2m
+    file: '/t2m_tropflux_1m_\d{4}\.nc$'
+
+  tos_month:
+    short_name: tos
+    mip: Omon
+    raw: sst
+    file: '/sst_tropflux_1m_\d{4}\.nc$'
+
+  hfls_month_Lmon:
+    short_name: hfls
+    mip: Lmon
+    raw: lhf
+    file: '/lhf_tropflux_1m_\d{4}\.nc$'
+
+  hfls_month_CFmon:
+    short_name: hfls
+    mip: CFmon
+    raw: lhf
+    file: '/lhf_tropflux_1m_\d{4}\.nc$'
+
+  rlut_month:
+    short_name: rlut
+    mip: Amon
+    raw: lwr
+    file: '/lwr_tropflux_1m_\d{4}\.nc$'
+
+  tau_month:
+    short_name: tau
+    mip: Omon
+    raw: tauy
+    file: '/tauy_tropflux_1m_\d{4}\.nc$'
+
+  rsds_month:
+    short_name: rsds
+    mip: Amon
+    raw: swr
+    file: '/swr_tropflux_1m_\d{4}\.nc$'
+
+
+
+
+    
