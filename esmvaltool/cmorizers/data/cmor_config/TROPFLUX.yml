@@ -6,7 +6,7 @@ attributes:
   tier: 2
   version: "v1"
   modeling_realm: reanaly
-  source: 'https://psl.noaa.gov/data/gridded/data.20thC_ReanV2.html'
+  source: 'https://incois.gov.in/tropflux/'
   reference: 'tropflux'
   comment: |
     ''
@@ -55,8 +55,3 @@ variables:
     mip: Amon
     raw: swr
     file: '/swr_tropflux_1m_\d{4}\.nc$'
-
-
-
-
-    
