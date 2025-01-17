@@ -1,0 +1,275 @@
+# ESMValTool
+# recipe_seaborn.yml
+---
+documentation:
+  title: Scatter Plot of Total Cloud Cover vs. Longwave Cloud Forcing
+
+  description: >
+    This recipe generates a scatter plot of total cloud cover (clt) vs. 
+    longwave cloud radiative effect (lwcre) using the Seaborn diagnostic 
+    in ESMValTool. It combines datasets and variables from CMIP5 and observational data.
+
+  authors:
+    - schlund_manuel
+    - debeire_kevin
+    - kraft_jeremy
+    #- pacal_aytac
+    #- cammarano_diego
+
+  maintainer:
+    - schlund_manuel
+
+  references:
+    - waskom21joss
+
+  projects:
+    - 4c
+    - esm2025
+    - isenes3
+    - usmile
+
+diagnostics:
+  plot_clt_vs_lwcre:
+    description: Scatter plot of total cloud cover vs. longwave cloud radiative effect.
+    variables:
+      clt:
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1
+        timerange: '1982/1990'
+      lwcre:
+        mip: Amon
+        derive: true
+        force_derivation: false
+        exp: historical
+        ensemble: r1i1p1
+        timerange: '1982/1990'
+    additional_datasets:
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: scatterplot
+        seaborn_kwargs:
+          x: clt
+          y: lwcre
+          #hue: dataset
+          #style: ensemble
+          marker: .
+          s: 50
+        add_aux_coords: true
+        #legend_title: Dataset
+        plot_object_methods:
+          set_xlabel: 
+            xlabel: 'Total Cloud Cover [%]'
+          set_ylabel:
+            ylabel: 'Longwave Cloud Radiative Effect [W/m²]'
+        suptitle: 'Total Cloud Cover vs. Longwave Cloud Radiative Effect (1982-2000)'
+
+  plot_clt_vs_swcre:
+    description: Scatter plot of total cloud cover vs. Shortwave cloud radiative effect.
+    variables:
+      clt:
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1
+        timerange: '1982/1990'
+      swcre:
+        mip: Amon
+        derive: true
+        force_derivation: false
+        exp: historical
+        timerange: '1982/1990'
+    additional_datasets:
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: scatterplot
+        seaborn_kwargs:
+          x: clt
+          y: swcre
+          #hue: dataset
+          #style: ensemble
+          marker: .
+          s: 50
+        add_aux_coords: true
+        #legend_title: Dataset
+        plot_object_methods:
+          set_xlabel: 
+            xlabel: 'Total Cloud Cover [%]'
+          set_ylabel:
+            ylabel: 'Shortwave Cloud Radiative Effect [W/m²]'
+        suptitle: 'Total Cloud Cover vs. Shortwave Cloud Radiative Effect (1982-2000)'
+
+  plot_hist_scatter_clt_lwcre:
+    description: Plot histogram over scatterplot for variables clt and lwcre.
+    variables:
+      clt:
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1
+        timerange: '1982/1990'
+      lwcre:
+        mip: Amon
+        derive: true
+        force_derivation: false
+        exp: historical
+        ensemble: r1i1p1
+        timerange: '1982/1990'
+    additional_datasets:
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: jointplot
+        seaborn_kwargs:
+          kind: hist
+          bins: 100
+          fill: true
+          x: clt
+          y: lwcre
+          hue: alias
+        add_aux_coords: true
+        dropna_kwargs:
+          axis: 0
+          how: any
+        #legend_title: Model
+        plot_object_methods:
+          set_axis_labels:
+            xlabel: 'Cloud Fraction (clt)'
+            ylabel: 'Longwave Cloud Radiative Effect (lwcre)'
+        seaborn_settings:
+          style: white
+          rc:
+            axes.titlepad: 15.0
+        suptitle: Histogram over Scatterplot of clt and lwcre (1982-2000)
+
+  plot_hist_scatter_clt_swcre:
+    description: Plot histogram over scatterplot for variables clt and swcre.
+    variables:
+      clt:
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1
+        timerange: '1982/1990'
+      swcre:
+        mip: Amon
+        derive: true
+        force_derivation: false
+        exp: historical
+        ensemble: r1i1p1
+        timerange: '1982/1990'
+    additional_datasets:
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: jointplot
+        seaborn_kwargs:
+          kind: hist
+          bins: 100
+          fill: true
+          x: clt
+          y: swcre
+          hue: alias
+        add_aux_coords: true
+        dropna_kwargs:
+          axis: 0
+          how: any
+        #legend_title: Model
+        plot_object_methods:
+          set_axis_labels:
+            xlabel: 'Cloud Fraction (clt)'
+            ylabel: 'Shortwave Cloud Radiative Effect (swcre)'
+        seaborn_settings:
+          style: white
+          rc:
+            axes.titlepad: 15.0
+        suptitle: Histogram over Scatterplot of clt and swcre (1982-1999)
+
+  plot_hex_scatter_clt_swcre:
+    description: Plot histogram over scatterplot for variables clt and swcre.
+    variables:
+      clt:
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1
+        timerange: '1982/1990'
+      swcre:
+        mip: Amon
+        derive: true
+        force_derivation: false
+        exp: historical
+        ensemble: r1i1p1
+        timerange: '1982/1990'
+    additional_datasets:
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: jointplot
+        seaborn_kwargs:
+          kind: hex
+          bins: 100
+          #fill: true
+          x: clt
+          y: swcre
+          #hue: alias
+        add_aux_coords: true
+        dropna_kwargs:
+          axis: 0
+          how: any
+        #legend_title: Model
+        plot_object_methods:
+          set_axis_labels:
+            xlabel: 'Cloud Fraction (clt)'
+            ylabel: 'Shortwave Cloud Radiative Effect (lwcre)'
+        seaborn_settings:
+          style: white
+          rc:
+            axes.titlepad: 15.0
+        suptitle: Histogram over Scatterplot of clt and lwcre (1982-2000) 
+
+  plot_hex_scatter_clt_lwcre:
+    description: Plot histogram over scatterplot for variables clt and swcre.
+    variables:
+      clt:
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1
+        timerange: '1982/1990'
+      lwcre:
+        mip: Amon
+        derive: true
+        force_derivation: false
+        exp: historical
+        ensemble: r1i1p1
+        timerange: '1982/1990'
+    additional_datasets:
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: jointplot
+        seaborn_kwargs:
+          kind: hex
+          bins: 100
+          #fill: true
+          x: clt
+          y: lwcre
+          #hue: alias
+        add_aux_coords: true
+        dropna_kwargs:
+          axis: 0
+          how: any
+        #legend_title: Model
+        plot_object_methods:
+          set_axis_labels:
+            xlabel: 'Cloud Fraction (clt)'
+            ylabel: 'Longwave Cloud Radiative Effect (lwcre)'
+        seaborn_settings:
+          style: white
+          rc:
+            axes.titlepad: 15.0
+        suptitle: Histogram over Scatterplot of clt and lwcre (1982-2000)        
