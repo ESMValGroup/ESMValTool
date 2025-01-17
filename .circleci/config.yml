@@ -90,11 +90,10 @@ commands:
             # Install
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            mamba env create  # >> /logs/conda.txt - 2>&1 this contains zero information, output flushed when env created
+            mamba env create
             conda activate esmvaltool
+            conda env list >> /logs/conda.txt
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
-            conda list curl
-            conda list julia
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             if [[ "<<parameters.flags>>" != *'--editable'* ]]
             then
