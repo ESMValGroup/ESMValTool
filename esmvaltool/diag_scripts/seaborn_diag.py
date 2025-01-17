@@ -151,6 +151,13 @@ def _create_plot(
 
     plot_obj = plot_func(data=data_frame, **plot_kwargs)
 
+    # Set legend title if specified
+    if cfg['legend_title'] is not None:
+        try:
+            _set_legend_title(plot_obj, cfg['legend_title'])
+        except ValueError as e:
+            logger.warning("Legend title could not be set: %s", e)
+
     # Adjust plot appearance
     if cfg['plot_object_methods']:
         for (func_name, func_args) in cfg['plot_object_methods'].items():
@@ -170,15 +177,21 @@ def _create_plot(
                     func_args,
                 )
                 getattr(plot_obj, func_name)(func_args)
-    if cfg['suptitle'] is not None:
+
+    # Custom handling for JointGrid (if applicable)
+    if isinstance(plot_obj, sns.axisgrid.JointGrid):
+        if cfg.get('suptitle') is not None:
+            logger.debug("Setting suptitle for JointGrid: '%s'",
+                         cfg['suptitle'])
+            plot_obj.ax_joint.set_title(cfg['suptitle'], pad=20)
+        if cfg.get('plot_object_methods', {}).get('set_axis_labels'):
+            labels = cfg['plot_object_methods']['set_axis_labels']
+            plot_obj.ax_joint.set_xlabel(labels.get('xlabel', ''), labelpad=15)
+            plot_obj.ax_joint.set_ylabel(labels.get('ylabel', ''), labelpad=15)
+
+    elif cfg['suptitle'] is not None:
         logger.debug("Setting `suptitle='%s'`", cfg['suptitle'])
-        if plot_func_str in ['jointplot']:
-            plt.suptitle(cfg['suptitle']
-                         .format(data_frame["shape_id"].unique()[0]), y=1.05)
-        else:
-            plt.suptitle(cfg['suptitle'], y=1.05)
-    if cfg['legend_title'] is not None:
-        _set_legend_title(plot_obj, cfg['legend_title'])
+        plt.suptitle(cfg['suptitle'], y=1.05)
 
     # Save plot
     plot_path = get_plot_filename(f"seaborn_{plot_func_str}", cfg)
@@ -444,25 +457,37 @@ def _modify_dataframe(data_frame: pd.DataFrame, cfg: dict) -> pd.DataFrame:
 
 def _set_legend_title(plot_obj, legend_title: str) -> None:
     """Set legend title."""
+    legend = None
+
     if hasattr(plot_obj, 'get_legend'):  # Axes
         legend = plot_obj.get_legend()
     elif hasattr(plot_obj, 'legend'):  # FacetGrid, PairGrid
         legend = plot_obj.legend
     elif isinstance(plot_obj, sns.axisgrid.JointGrid):  # JointGrid
-        # Manually create a legend if needed in JointGrid
+        # Check if a legend exists for JointGrid
         handles, labels = plot_obj.ax_joint.get_legend_handles_labels()
         if handles and labels:
             legend = plot_obj.ax_joint.legend(handles=handles, labels=labels,
                                               title=legend_title)
+        else:
+            logger.warning(
+                "No legend handles or labels found for `JointGrid`. "
+                "Skipping legend title setting."
+            )
+            return
     else:
-        raise ValueError(
+        logger.warning(
             f"Cannot set legend title, `{type(plot_obj).__name__}` does not "
-            f"support legends"
+            f"support legends."
         )
+        return
+
     if legend is None:
-        raise ValueError(
-            "Cannot set legend title, plot does not contain legend"
+        logger.warning(
+            "Legend object is None; unable to set legend title. Skipping."
         )
+        return
+
     logger.debug("Setting `legend_title='%s'`", legend_title)
     legend.set_title(legend_title)
 
