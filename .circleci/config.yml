@@ -92,7 +92,7 @@ commands:
             mkdir /logs
             mamba env create
             conda activate esmvaltool
-            conda env list >> /logs/conda.txt
+            conda list >> /logs/conda.txt
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             if [[ "<<parameters.flags>>" != *'--editable'* ]]
