@@ -204,7 +204,7 @@ jobs:
             mkdir /logs
             mamba env create
             conda activate esmvaltool
-            mamba list >> /logs/conda.txt 2>&1
+            mamba list >> /logs/conda.txt
             pip install --editable .[develop]
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
