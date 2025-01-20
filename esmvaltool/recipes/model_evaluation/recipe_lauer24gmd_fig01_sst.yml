@@ -1,0 +1,58 @@
+# ESMValTool
+---
+documentation:
+  title: Lauer et al., Geosci. Model Dev., Figure 1.
+  description: >
+    Map plots for SST.
+  authors:
+    - bock_lisa
+    - hassler_birgit
+    - lindenlaub_lukas
+    - schlund_manuel
+  maintainer:
+    - lauer_axel
+  references:
+    - lauer24gmd
+  projects:
+    - dlrmabak
+
+
+datasets:
+  - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}]}
+
+
+preprocessors:
+
+  pp:
+    mask_landsea:
+      mask_out: land
+    mask_below_threshold:
+      threshold: 273.15
+
+
+diagnostics:
+
+  fig_01a:
+    description: Plot SST map.
+    variables:
+      sst: &var_settings
+        timerange: '2004/2004'
+        preprocessor: pp
+        mip: Amon
+        short_name: ts
+        ensemble: r1i1p1f1
+    scripts: &script_settings
+      avgsst:
+        script: clouds/clouds.ncl
+        projection: Robinson
+        timemean: annualclim
+        var: ts
+
+  fig_01b:
+    description: Plot SST map.
+    variables:
+      sst:
+        <<: *var_settings
+        timerange: '2005/2005'
+    scripts:
+      <<: *script_settings

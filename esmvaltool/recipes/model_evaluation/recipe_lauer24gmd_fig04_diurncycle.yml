@@ -1,9 +1,9 @@
 # ESMValTool
 ---
 documentation:
-  title: Benchmarking of a single model.
+  title: Lauer et al., Geosci. Model Dev., Figure 4.
   description: >
-    Benchmarking: time series.
+    Benchmarking: diurnal cycle.
   authors:
     - lauer_axel
     - bock_lisa
@@ -24,64 +24,52 @@ datasets:
   - {dataset: AWI-CM-1-1-MR, grid: gn}
   - {dataset: AWI-ESM-1-1-LR, grid: gn}
   - {dataset: BCC-CSM2-MR, grid: gn}
-  - {dataset: BCC-ESM1, grid: gn}
-  - {dataset: CAMS-CSM1-0, grid: gn}
-  - {dataset: CanESM5, grid: gn}
-  - {dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1}
-  - {dataset: CESM2, grid: gn}
-  - {dataset: CESM2-FV2, grid: gn, institute: NCAR}
-  - {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
-  - {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
-  - {dataset: CIESM}
   - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
-  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2}
   - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
-  - {dataset: E3SM-1-0}
-  - {dataset: E3SM-1-1, institute: E3SM-Project}
   - {dataset: EC-Earth3-Veg}
-  - {dataset: FGOALS-f3-L}
   - {dataset: FGOALS-g3, grid: gn}
-  - {dataset: FIO-ESM-2-0, grid: gn}
-  - {dataset: GFDL-ESM4, grid: gr1}
   - {dataset: GISS-E2-1-G, grid: gn}
-  - {dataset: GISS-E2-1-H, grid: gn}
   - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
   - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
-  - {dataset: INM-CM4-8, grid: gr1}
-  - {dataset: INM-CM5-0, grid: gr1}
   - {dataset: IPSL-CM6A-LR}
   - {dataset: KACE-1-0-G}
-  - {dataset: MCM-UA-1-0, grid: gn}
+  - {dataset: MIROC6, grid: gn}
   - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
   - {dataset: MPI-ESM-1-2-HAM, grid: gn}
   - {dataset: MPI-ESM1-2-HR, grid: gn}
   - {dataset: MPI-ESM1-2-LR, grid: gn}
   - {dataset: MRI-ESM2-0, grid: gn}
   - {dataset: NESM3, grid: gn}
-  - {dataset: NorESM2-LM, grid: gn, institute: NCC}
-  - {dataset: NorESM2-MM, grid: gn, institute: NCC}
   - {dataset: SAM0-UNICON, grid: gn}
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
-  # Dataset to be benchmarked
-  - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
+  - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, channel: 3hr, frequency: 3hr, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}], timerange: '2004/2004', alias: 'EMAC (2004)'}
+  - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, channel: 3hr, frequency: 3hr, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}], timerange: '2005/2005', alias: 'EMAC (2005)'}
 
 preprocessors:
 
-  pp_tas:
+  pp_diurn_Tropics:
+    custom_order: true
     regrid:
       target_grid: 2x2
       scheme: linear
-    anomalies:
-      period: month
-      reference:
-        start_year: 2000
-        start_month: 1
-        start_day: 1
-        end_year: 2009
-        end_month: 12
-        end_day: 31
+    local_solar_time:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -30
+      end_latitude: 30
+    mask_landsea:
+      mask_out: land
+    resample_hours:
+      interval: 3
+      offset: 1
+      interpolate: linear
     area_statistics:
       operator: mean
+    climate_statistics:
+      period: hourly
+    convert_units:
+      units: mm day-1
     multi_model_statistics:
       span: overlap
       statistics:
@@ -91,22 +79,27 @@ preprocessors:
           percent: 90
       exclude: [reference_dataset, EMAC]
 
-  pp_tas_metric:
+  pp_diurn_Tropics_metric:
     custom_order: true
-    regrid_time:
-      calendar: standard
     regrid:
       target_grid: 2x2
       scheme: linear
-    anomalies:
-      period: month
-      reference:
-        start_year: 2000
-        start_month: 1
-        start_day: 1
-        end_year: 2009
-        end_month: 12
-        end_day: 31
+    local_solar_time:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -30
+      end_latitude: 30
+    mask_landsea:
+      mask_out: land
+    resample_hours:
+      interval: 3
+      offset: 1
+      interpolate: linear
+    climate_statistics:
+      period: hourly
+    convert_units:
+      units: mm day-1
     distance_metric:
       metric: rmse
       coords: [longitude, latitude]
@@ -122,36 +115,48 @@ preprocessors:
 
 diagnostics:
 
-  timeseries:
-    description: Plot "classical" time series of global mean anomalies including a reference dataset.
+  fig_04a:
+    description: Classical diurnal cycle plot including reference dataset.
     variables:
-      tas:
-        timerange: '2000/2014'
-        preprocessor: pp_tas
+      pr_tropics:
         project: CMIP6
-        mip: Amon
+        timerange: 2004/2005
+        preprocessor: pp_diurn_Tropics
+        short_name: pr
         exp: historical
+        mip: 3hr
         ensemble: r1i1p1f1
         grid: gr
-        reference_dataset: HadCRUT5
+        reference_dataset: ERA5
         additional_datasets:
-          - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis, tier: 2, reference_for_metric: true}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', frequency: 1hr,
+             tier: 3, alias: ERA5}
     scripts:
       allplots:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
         group_variables_by: variable_group
+        facet_used_for_labels: alias
         plots:
-          timeseries:
+          diurnal_cycle:
             annual_mean_kwargs: False
+            legend_kwargs:
+              loc: upper right
             plot_kwargs:
-              MIROC6:
+              'EMAC (2004)':
                 color: red
-                label: '{dataset}'
+                label: '{alias}'
                 linestyle: '-'
                 linewidth: 2
                 zorder: 4
-              HadCRUT5:
+              'EMAC (2005)':
+                color: darkblue
+                label: '{alias}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 4
+              ERA5:
                 color: black
                 label: '{dataset}'
                 linestyle: '-'
@@ -176,33 +181,45 @@ diagnostics:
                 linewidth: 1
                 zorder: 1
 
-  benchmarking_timeseries:
-    description: Plot "benchmarking" time series of global mean anomalies.
+  fig_04b:
+    description: Create "benchmarking" diurnal cycle plot.
     variables:
-      tas:
-        timerange: '2000/2014'
-        preprocessor: pp_tas_metric
+      pr_tropics:
         project: CMIP6
-        mip: Amon
+        timerange: 2004/2005
+        preprocessor: pp_diurn_Tropics_metric
+        short_name: pr
         exp: historical
+        mip: 3hr
         ensemble: r1i1p1f1
         grid: gr
-        reference_dataset: HadCRUT5
+        reference_dataset: ERA5
         additional_datasets:
-          - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis, tier: 2, reference_for_metric: true}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', frequency: 1hr,
+             tier: 3, reference_for_metric: true, alias: ERA5}
     scripts:
       allplots:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
         group_variables_by: variable_group
+        facet_used_for_labels: alias
         plots:
-          benchmarking_timeseries:
+          benchmarking_diurnal_cycle:
+            legend_kwargs:
+              loc: upper right
             plot_kwargs:
-            annual_mean_kwargs: False
-            plot_kwargs:
-              MIROC6:
+              'EMAC (2004)':
                 color: red
-                label: '{dataset}'
+                label: '{alias}'
                 linestyle: '-'
-                linewidth: 1.5
-                zorder: 3
+                linewidth: 2
+                zorder: 4
+              'EMAC (2005)':
+                color: darkblue
+                label: '{alias}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 4
+            pyplot_kwargs:
+              title: '{short_name}'

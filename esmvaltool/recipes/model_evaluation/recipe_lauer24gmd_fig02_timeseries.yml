@@ -1,7 +1,7 @@
 # ESMValTool
 ---
 documentation:
-  title: Benchmarking of a single model.
+  title: Lauer et al., Geosci. Model Dev., Figure 2.
   description: >
     Benchmarking: time series.
   authors:
@@ -52,6 +52,7 @@ datasets:
   - {dataset: IPSL-CM6A-LR}
   - {dataset: KACE-1-0-G}
   - {dataset: MCM-UA-1-0, grid: gn}
+  - {dataset: MIROC6, grid: gn}
   - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
   - {dataset: MPI-ESM-1-2-HAM, grid: gn}
   - {dataset: MPI-ESM1-2-HR, grid: gn}
@@ -62,8 +63,7 @@ datasets:
   - {dataset: NorESM2-MM, grid: gn, institute: NCC}
   - {dataset: SAM0-UNICON, grid: gn}
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
-  # Dataset to be benchmarked
-  - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
+  - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, supplementary_variables: [{short_name: areacella, skip: true}]}
 
 preprocessors:
 
@@ -122,11 +122,11 @@ preprocessors:
 
 diagnostics:
 
-  timeseries:
+  fig_02a:
     description: Plot "classical" time series of global mean anomalies including a reference dataset.
     variables:
       tas:
-        timerange: '2000/2014'
+        timerange: '2000/2009'
         preprocessor: pp_tas
         project: CMIP6
         mip: Amon
@@ -145,7 +145,7 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: False
             plot_kwargs:
-              MIROC6:
+              EMAC:
                 color: red
                 label: '{dataset}'
                 linestyle: '-'
@@ -176,11 +176,11 @@ diagnostics:
                 linewidth: 1
                 zorder: 1
 
-  benchmarking_timeseries:
-    description: Plot "benchmarking" time series of global mean anomalies.
+  fig_02b:
+    description: Plot "benchmarking" time series of global means.
     variables:
       tas:
-        timerange: '2000/2014'
+        timerange: '2000/2009'
         preprocessor: pp_tas_metric
         project: CMIP6
         mip: Amon
@@ -200,7 +200,7 @@ diagnostics:
             plot_kwargs:
             annual_mean_kwargs: False
             plot_kwargs:
-              MIROC6:
+              EMAC:
                 color: red
                 label: '{dataset}'
                 linestyle: '-'

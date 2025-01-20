@@ -1,9 +1,9 @@
 # ESMValTool
 ---
 documentation:
-  title: Benchmarking of a single model.
+  title: Lauer et al., Geosci. Model Dev., Figure 3.
   description: >
-    Benchmarking: time series.
+    Benchmarking: seasonal cycle.
   authors:
     - lauer_axel
     - bock_lisa
@@ -52,6 +52,7 @@ datasets:
   - {dataset: IPSL-CM6A-LR}
   - {dataset: KACE-1-0-G}
   - {dataset: MCM-UA-1-0, grid: gn}
+  - {dataset: MIROC6, grid: gn}
   - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
   - {dataset: MPI-ESM-1-2-HAM, grid: gn}
   - {dataset: MPI-ESM1-2-HR, grid: gn}
@@ -62,8 +63,9 @@ datasets:
   - {dataset: NorESM2-MM, grid: gn, institute: NCC}
   - {dataset: SAM0-UNICON, grid: gn}
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
-  # Dataset to be benchmarked
-  - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
+  - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, supplementary_variables: [{short_name: areacella, skip: true}], timerange: '2000/2004', alias: 'EMAC (2000-2004)'}
+  - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, supplementary_variables: [{short_name: areacella, skip: true}], timerange: '2005/2009', alias: 'EMAC (2005-2009)'}
+
 
 preprocessors:
 
@@ -71,15 +73,8 @@ preprocessors:
     regrid:
       target_grid: 2x2
       scheme: linear
-    anomalies:
+    climate_statistics:
       period: month
-      reference:
-        start_year: 2000
-        start_month: 1
-        start_day: 1
-        end_year: 2009
-        end_month: 12
-        end_day: 31
     area_statistics:
       operator: mean
     multi_model_statistics:
@@ -98,15 +93,8 @@ preprocessors:
     regrid:
       target_grid: 2x2
       scheme: linear
-    anomalies:
+    climate_statistics:
       period: month
-      reference:
-        start_year: 2000
-        start_month: 1
-        start_day: 1
-        end_year: 2009
-        end_month: 12
-        end_day: 31
     distance_metric:
       metric: rmse
       coords: [longitude, latitude]
@@ -122,11 +110,11 @@ preprocessors:
 
 diagnostics:
 
-  timeseries:
-    description: Plot "classical" time series of global mean anomalies including a reference dataset.
+  fig_03a:
+    description: Create "classical" seasonal cycle plot including a reference dataset.
     variables:
       tas:
-        timerange: '2000/2014'
+        timerange: '2000/2009'
         preprocessor: pp_tas
         project: CMIP6
         mip: Amon
@@ -135,19 +123,26 @@ diagnostics:
         grid: gr
         reference_dataset: HadCRUT5
         additional_datasets:
-          - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis, tier: 2, reference_for_metric: true}
+          - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis, tier: 2, alias: HadCRUT5}
     scripts:
       allplots:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         group_variables_by: variable_group
+        facet_used_for_labels: alias
         plots:
-          timeseries:
+          annual_cycle:
             annual_mean_kwargs: False
             plot_kwargs:
-              MIROC6:
+              'EMAC (2000-2004)':
                 color: red
-                label: '{dataset}'
+                label: '{alias}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 4
+              'EMAC (2005-2009)':
+                color: darkblue
+                label: '{alias}'
                 linestyle: '-'
                 linewidth: 2
                 zorder: 4
@@ -176,11 +171,11 @@ diagnostics:
                 linewidth: 1
                 zorder: 1
 
-  benchmarking_timeseries:
-    description: Plot "benchmarking" time series of global mean anomalies.
+  fig_03b:
+    description: Create "benchmarking" seasonal cycle plot.
     variables:
       tas:
-        timerange: '2000/2014'
+        timerange: '2000/2009'
         preprocessor: pp_tas_metric
         project: CMIP6
         mip: Amon
@@ -195,14 +190,20 @@ diagnostics:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         group_variables_by: variable_group
+        facet_used_for_labels: alias
         plots:
-          benchmarking_timeseries:
-            plot_kwargs:
+          benchmarking_annual_cycle:
             annual_mean_kwargs: False
             plot_kwargs:
-              MIROC6:
+              'EMAC (2000-2004)':
                 color: red
-                label: '{dataset}'
+                label: '{alias}'
+                linestyle: '-'
+                linewidth: 1.5
+                zorder: 3
+              'EMAC (2005-2009)':
+                color: darkblue
+                label: '{alias}'
                 linestyle: '-'
                 linewidth: 1.5
                 zorder: 3

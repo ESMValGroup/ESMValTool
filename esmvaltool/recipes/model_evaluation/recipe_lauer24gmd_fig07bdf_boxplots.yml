@@ -1,27 +1,19 @@
 # ESMValTool
 ---
 documentation:
-  title: Benchmarkig of a single model.
-
-  description: |
-    Benchmarking: Box plots.
-    The diagnostic called in this recipe uses the seaborn.boxplot function.
-    See seaborn manual for detailed information
-    (https://seaborn.pydata.org/generated/seaborn.boxplot.html).
-
+  title: Lauer et al., Geosci. Model Dev., Figure 7 b,d,f.
+  description: >
+          Benchmarking: Box plots.
   authors:
     - lauer_axel
     - bock_lisa
     - hassler_birgit
     - lindenlaub_lukas
     - schlund_manuel
-
   maintainer:
     - bock_lisa
-
   references:
     - lauer24gmd
-
   projects:
     - dlrmabak
 
@@ -68,8 +60,9 @@ datasets:
   - {dataset: NorESM2-MM, grid: gn, institute: NCC}
   - {dataset: SAM0-UNICON, grid: gn}
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+  - {dataset: MIROC6, grid: gn}
   # Dataset to be benchmarked
-  - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
+  - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}]}
 
 
 VAR_SETTINGS: &var_settings
@@ -78,7 +71,7 @@ VAR_SETTINGS: &var_settings
   exp: historical
   ensemble: r1i1p1f1
   grid: gr
-  timerange: '2000/2004'
+  timerange: '2005/2009'
 
 
 preprocessors:
@@ -236,7 +229,7 @@ preprocessors:
 
 diagnostics:
 
-  plot_boxplots_rmse:
+  fig_07b:
     description: Plot boxplots for different variables.
     variables:
       tas_land:
@@ -304,7 +297,7 @@ diagnostics:
             var_order: ['tas_land', 'sst', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
 
 
-  plot_boxplots_pearsonr:
+  fig_07d:
     description: Plot boxplots for different variables.
     variables:
       tas_land:
@@ -372,7 +365,7 @@ diagnostics:
             var_order: ['tas_land', 'sst', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
 
 
-  plot_boxplots_emd:
+  fig_07f:
     description: Plot boxplots for different variables.
     variables:
       tas_land:

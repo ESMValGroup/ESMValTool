@@ -8,7 +8,7 @@ documentation:
     - lauer_axel
     - bock_lisa
     - hassler_birgit
-    - ruhe_lukas
+    - lindenlaub_lukas
     - schlund_manuel
   maintainer:
     - lauer_axel
@@ -63,7 +63,7 @@ preprocessors:
     resample_hours:
       interval: 3
       offset: 1
-      interpolate: true
+      interpolate: linear
     area_statistics:
       operator: mean
     climate_statistics:
@@ -95,7 +95,7 @@ preprocessors:
     resample_hours:
       interval: 3
       offset: 1
-      interpolate: true
+      interpolate: linear
     climate_statistics:
       period: hourly
     convert_units:

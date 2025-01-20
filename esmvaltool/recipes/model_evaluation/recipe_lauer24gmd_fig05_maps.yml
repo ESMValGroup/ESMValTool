@@ -1,7 +1,7 @@
 # ESMValTool
 ---
 documentation:
-  title: Benchmarking of a single model.
+  title: Lauer et al., Geosci. Model Dev., Figure 5.
   description: >
     Benchmarking: map plots.
   authors:
@@ -52,6 +52,7 @@ datasets:
   - {dataset: IPSL-CM6A-LR}
   - {dataset: KACE-1-0-G}
   - {dataset: MCM-UA-1-0, grid: gn}
+  - {dataset: MIROC6, grid: gn}
   - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
   - {dataset: MPI-ESM-1-2-HAM, grid: gn}
   - {dataset: MPI-ESM1-2-HR, grid: gn}
@@ -62,8 +63,7 @@ datasets:
   - {dataset: NorESM2-MM, grid: gn, institute: NCC}
   - {dataset: SAM0-UNICON, grid: gn}
   - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
-  # Dataset to be benchmarked
-  - {dataset: MIROC6, grid: gn, benchmark_dataset: true, alias: MIROC6}
+  - {dataset: EMAC, project: EMAC, benchmark_dataset: true, exp: esmvaltest01, supplementary_variables: [{short_name: areacella, skip: true}]}
 
 
 preprocessors:
@@ -85,15 +85,15 @@ preprocessors:
       statistics:
         - operator: percentile
           percent: 90
-      exclude: [reference_dataset, MIROC6]
+      exclude: [reference_dataset, EMAC]
 
 
 diagnostics:
 
-  benchmarking_maps:
+  fig_05a:
     description: Plot RMSE map.
     variables:
-      pr:
+      pr: &var_settings
         timerange: '2000/2004'
         preprocessor: pp_pr
         project: CMIP6
@@ -104,14 +104,24 @@ diagnostics:
         reference_dataset: GPCP-SG
         additional_datasets:
           - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2, reference_for_metric: true, alias: GPCP-SG}
-    scripts:
+    scripts: &script_settings
       allplots:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         group_variables_by: variable_group
         plots:
           benchmarking_map:
+            rasterize: False
             plot_kwargs:
               default:
                 cmap: 'cool'
                 levels: [0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 7.5, 10.0]
+
+  fig_05b:
+    description: Plot RMSE map.
+    variables:
+      pr:
+        <<: *var_settings
+        timerange: '2005/2009'
+    scripts:
+      <<: *script_settings
