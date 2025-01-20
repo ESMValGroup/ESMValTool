@@ -2,12 +2,20 @@
 {{ assert(SITE != "", "SITE must be set to something other than an empty string") }}
 
 {% set SITE_RECIPES_FILE = "site/" ~ SITE ~ "-recipes.cylc" %}
+
+# --- Leave a blank line below for a clean error message ---
+
+# If you see `<-- TemplateNotFound` error below, a `<site>-recipes.cylc` file is missing from the `site` directory.
+# Refer to the the 'How to add a recipe to the RTW' documentation for more information.
+{% include SITE_RECIPES_FILE %}
+
 {% from SITE_RECIPES_FILE import FAST_RECIPES, MEDIUM_RECIPES %}
 
 {% set ERROR_MSG =
     "is undefined and must be set in '" ~ SITE_RECIPES_FILE ~ "' - the 'How to "
     "add a recipe to the RTW' documentation provides more information."
 %}
+
 {{ assert(FAST_RECIPES is defined, "FAST_RECIPES " ~ ERROR_MSG)}}
 {{ assert(MEDIUM_RECIPES is defined, "MEDIUM_RECIPES " ~ ERROR_MSG)}}
 
