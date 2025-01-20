@@ -1,9 +1,9 @@
 # ESMValTool
 ---
 documentation:
-  title: Lauer et al., Geosci. Model Dev., Figure 5.
+  title: Lauer et al., Geosci. Model Dev., Figure 6.
   description: >
-    Benchmarking: map plots.
+    Benchmarking: zonal mean plots.
   authors:
     - lauer_axel
     - bock_lisa
@@ -13,7 +13,7 @@ documentation:
   maintainer:
     - lauer_axel
   references:
-    - lauer24gmd
+    - lauer25gmd
   projects:
     - dlrmabak
 
@@ -41,7 +41,6 @@ datasets:
   - {dataset: EC-Earth3-Veg}
   - {dataset: FGOALS-f3-L}
   - {dataset: FGOALS-g3, grid: gn}
-  - {dataset: FIO-ESM-2-0, grid: gn}
   - {dataset: GFDL-ESM4, grid: gr1}
   - {dataset: GISS-E2-1-G, grid: gn}
   - {dataset: GISS-E2-1-H, grid: gn}
@@ -67,22 +66,30 @@ datasets:
 
 
 preprocessors:
-
-  pp_pr:
+  pp_ta:
     custom_order: true
     regrid_time:
       calendar: standard
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev27}
+      coordinate: air_pressure
+      scheme: linear
     regrid:
       target_grid: 2x2
       scheme: linear
-    convert_units:
-      units: mm day-1
-    distance_metric:
-      metric: rmse
-      coords: [time]
+    mask_below_threshold:
+      threshold: 0.0
+    climate_statistics:
+      operator: mean
+    zonal_statistics:
+      operator: mean
+    bias:
+      bias_type: absolute
     multi_model_statistics:
       span: overlap
       statistics:
+        - operator: percentile
+          percent: 10
         - operator: percentile
           percent: 90
       exclude: [reference_dataset, EMAC]
@@ -90,37 +97,38 @@ preprocessors:
 
 diagnostics:
 
-  fig_05a:
-    description: Plot RMSE map.
+  fig_06a:
+    description: Plot zonal mean profile.
     variables:
-      pr: &var_settings
+      ta: &var_settings
         timerange: '2000/2004'
-        preprocessor: pp_pr
+        raw_name: [tm1_p39_ave]
+        preprocessor: pp_ta
         project: CMIP6
         mip: Amon
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
-        reference_dataset: GPCP-SG
+        reference_dataset: ERA5
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2, reference_for_metric: true, alias: GPCP-SG}
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', tier: 3, reference_for_metric: true, reference_for_bias: true}
     scripts: &script_settings
       allplots:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         group_variables_by: variable_group
         plots:
-          benchmarking_map:
+          benchmarking_zonal:
             rasterize: False
             plot_kwargs:
               default:
-                cmap: 'cool'
-                levels: [0.0, 0.5, 1.0, 2.0, 3.0, 5.0, 7.5, 10.0]
+                cmap: 'bwr'
+                levels: [-5, -3, -2, -1, 0, 1, 2, 3, 5]
 
-  fig_05b:
-    description: Plot RMSE map.
+  fig_06b:
+    description: Plot zonal mean profile.
     variables:
-      pr:
+      ta:
         <<: *var_settings
         timerange: '2005/2009'
     scripts:
