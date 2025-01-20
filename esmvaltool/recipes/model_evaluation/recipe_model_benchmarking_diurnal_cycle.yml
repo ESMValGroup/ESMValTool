@@ -95,7 +95,7 @@ preprocessors:
     resample_hours:
       interval: 3
       offset: 1
-      interpolate: true
+      interpolate: linear
     climate_statistics:
       period: hourly
     convert_units:
