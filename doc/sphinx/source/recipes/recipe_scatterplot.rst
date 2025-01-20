@@ -69,14 +69,5 @@ Example plots
    :align: center
    :width: 50%
 
-.. _fig_seaborn_1:
-.. figure:: /recipes/figures/seaborn/hex_clt_vs_swcre.png
-   :align: center
-   :width: 50%
-
-.. _fig_seaborn_2:
-.. figure:: /recipes/figures/seaborn/hex_clt_vs_lwcre.png
-   :align: center
-   :width: 50%      
 
    
