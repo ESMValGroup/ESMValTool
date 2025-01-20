@@ -63,7 +63,7 @@ preprocessors:
     resample_hours:
       interval: 3
       offset: 1
-      interpolate: true
+      interpolate: linear
     area_statistics:
       operator: mean
     climate_statistics:
