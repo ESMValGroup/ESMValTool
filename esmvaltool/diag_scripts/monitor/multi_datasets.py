@@ -71,7 +71,7 @@ Currently supported plot types (use the option ``plots`` to specify them):
     Benchmarking plots
     - annual cycles (``benchmarking_annual_cycle``)
     - box plots (``benchmarking_boxplot``)
-    - diurnal cycles (``benchmarking_annual_cycle``)
+    - diurnal cycles (``benchmarking_diurnal_cycle``)
     - maps (``benchmarking_map``)
     - time series (``benchmarking_timeseries``)
     - zonal mean profiles (plot type ``benchmarking_zonal``)
@@ -617,21 +617,56 @@ time_on: str, optional (default: y-axis)
 
 Configuration options for plot type ``benchmarking_annual_cycle``
 -----------------------------------------------------------------
+Same as for plot type ``annual_cycle``.
 
 Configuration options for plot type ``benchmarking_boxplot``
 ------------------------------------------------------------
+plot_kwargs: dict, optional
+    Optional keyword arguments for the plot function defined by ``plot_func``.
+    Dictionary keys are elements identified by ``facet_used_for_labels`` or
+    ``default``, e.g., ``CMIP6`` if ``facet_used_for_labels: project`` or
+    ``historical`` if ``facet_used_for_labels: exp``. Dictionary values are
+    dictionaries used as keyword arguments for the plot function defined by
+    ``plot_func``. String arguments can include facets in curly brackets which
+    will be derived from the corresponding dataset, e.g., ``{project}``,
+    ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
+    {vmin: 200, vmax: 250}``.
+pyplot_kwargs: dict, optional
+    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
+    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
+    argument(s) for these functions (if values are dictionaries, these are
+    interpreted as keyword arguments; otherwise a single argument is assumed).
+    String arguments can include facets in curly brackets which will be derived
+    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
+    '{short_name}'``, ``xlim: [0, 5]``.
+var_order: str (list), optional
+    Optional list of strings containing variable names to define the order of
+    the variables plotted. 
+label: str, optional
+    Facet_used_for_labels.
+fontsize: int, optional (default: 10)
+    Fontsize used for ticks, labels and titles. For the latter, use the given
+    fontsize plus 2. Does not affect suptitles. If not given, use default
+    matplotlib values. For a more fine-grained definition of fontsizes, use the
+    option ``matplotlib_rc_params`` (see above).
 
 Configuration options for plot type ``benchmarking_diurnal_cycle``
 ------------------------------------------------------------------
+Same as for plot type ``diurnal_cycle``.
 
 Configuration options for plot type ``benchmarking_map``
 --------------------------------------------------------
+Same as for plot type ``map``.
 
 Configuration options for plot type ``benchmarking_timeseries``
 ---------------------------------------------------------------
+Same as for plot type ``timeseries``.
 
 Configuration options for plot type ``benchmarking_zonal``
 ----------------------------------------------------------
+Same as for plot type ``zonal_mean_profile``.
+
 
 .. hint::
 

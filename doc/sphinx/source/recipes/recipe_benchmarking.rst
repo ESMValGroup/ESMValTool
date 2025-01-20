@@ -40,48 +40,48 @@ See :ref:`multi_datasets.py<api.esmvaltool.diag_scripts.monitor.multi_datasets>`
 .. code-block:: yaml
 
    scripts:
-         allplots:
-           script: monitor/multi_datasets.py
-           plot_folder: '{plot_dir}'
-           plot_filename: '{plot_type}_{real_name}_{mip}'
-           group_variables_by: variable_group
-           facet_used_for_labels: alias
-           plots:
-             diurnal_cycle:
-               annual_mean_kwargs: False
-               legend_kwargs:
-                 loc: upper right
-               plot_kwargs:
-                 'MIROC6':
-                   color: red
-                   label: '{alias}'
-                   linestyle: '-'
-                   linewidth: 2
-                   zorder: 4
-                 ERA5:
-                   color: black
-                   label: '{dataset}'
-                   linestyle: '-'
-                   linewidth: 2
-                   zorder: 3
-                 MultiModelPercentile10:
-                   color: gray
-                   label: '{dataset}'
-                   linestyle: '--'
-                   linewidth: 1
-                   zorder: 2
-                 MultiModelPercentile90:
-                   color: gray
-                   label: '{dataset}'
-                   linestyle: '--'
-                   linewidth: 1
-                   zorder: 2
-                 default:
-                   color: lightgray
-                   label: null
-                   linestyle: '-'
-                   linewidth: 1
-                   zorder: 1
+     allplots:
+       script: monitor/multi_datasets.py
+       plot_folder: '{plot_dir}'
+       plot_filename: '{plot_type}_{real_name}_{mip}'
+       group_variables_by: variable_group
+       facet_used_for_labels: alias
+       plots:
+         diurnal_cycle:
+           annual_mean_kwargs: False
+           legend_kwargs:
+             loc: upper right
+           plot_kwargs:
+             'MIROC6':
+               color: red
+               label: '{alias}'
+               linestyle: '-'
+               linewidth: 2
+               zorder: 4
+             ERA5:
+               color: black
+               label: '{dataset}'
+               linestyle: '-'
+               linewidth: 2
+               zorder: 3
+             MultiModelPercentile10:
+               color: gray
+               label: '{dataset}'
+               linestyle: '--'
+               linewidth: 1
+               zorder: 2
+             MultiModelPercentile90:
+               color: gray
+               label: '{dataset}'
+               linestyle: '--'
+               linewidth: 1
+               zorder: 2
+             default:
+               color: lightgray
+               label: null
+               linestyle: '-'
+               linewidth: 1
+               zorder: 1
 
 Variables
 ---------
