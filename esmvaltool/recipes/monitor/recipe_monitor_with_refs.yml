@@ -178,6 +178,7 @@ diagnostics:
         plots:
           map:
             common_cbar: true
+            fontsize: 10
             plot_kwargs_bias:
               levels: [-10.0, -7.5, -5.0, -2.5, 0.0, 2.5, 5.0, 7.5, 10.0]
 
@@ -195,6 +196,7 @@ diagnostics:
         plots:
           zonal_mean_profile:
             common_cbar: true
+            fontsize: 10
             plot_kwargs_bias:
               levels: [-10.0, -7.5, -5.0, -2.5, 0.0, 2.5, 5.0, 7.5, 10.0]
 
@@ -243,6 +245,11 @@ diagnostics:
       plot:
         <<: *plot_multi_dataset_default
         script: monitor/multi_datasets.py
+        matplotlib_rc_params:
+          axes.labelsize: small
+          axes.titlesize: small
+          xtick.labelsize: x-small
+          ytick.labelsize: x-small
         plots:
           hovmoeller_z_vs_time:
             plot_func: contourf
@@ -268,6 +275,7 @@ diagnostics:
         plots:
           hovmoeller_time_vs_lat_or_lon:
             common_cbar: true
+            fontsize: 10
             show_x_minor_ticks: false
             time_format: '%Y'
 
