@@ -37,14 +37,14 @@ diagnostics:
         mip: Amon
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/2000'
+        timerange: '1982/2002'
       swcre:
         mip: Amon
         derive: true
         force_derivation: false
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/2000'
+        timerange: '1982/2002'
     additional_datasets:
       - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
     scripts:
@@ -70,7 +70,7 @@ diagnostics:
           style: white
           rc:
             axes.titlepad: 15.0
-        suptitle: clt vs swcre (1982-2000)
+        suptitle: clt vs swcre (1982-2002)
 
   plot_hist_scatter_clt_lwcre_esacci_cloud:
     description: Scatterplot for variables clt and lwcre combining ESACCI-CLOUD observational data.
@@ -79,14 +79,14 @@ diagnostics:
         mip: Amon
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/2000'
+        timerange: '1982/2002'
       lwcre:
         mip: Amon
         derive: true
         force_derivation: false
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/2000'
+        timerange: '1982/2002'
     additional_datasets:
       - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
     scripts:
@@ -112,7 +112,7 @@ diagnostics:
           style: white
           rc:
             axes.titlepad: 15.0
-        suptitle: clt vs lwcre (1982-2000)
+        suptitle: clt vs lwcre (1982-2002)
 
   plot_hist_scatter_clt_lwcre_AWI-ESM-1-1-LR:
     description: Scatterplot for variables clt and lwcre combining CMIP6 model AWI-ESM-1-1-LR .
@@ -122,7 +122,7 @@ diagnostics:
         project: CMIP6
         exp: historical
         ensemble: r1i1p1 
-        timerange: '1982/2000'
+        timerange: '1982/2002'
       lwcre:
         mip: Amon
         project: CMIP6
@@ -130,7 +130,7 @@ diagnostics:
         force_derivation: false
         exp: historical
         ensemble: r1i1p1 
-        timerange: '1982/2000'
+        timerange: '1982/2002'
     additional_datasets:
       - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
     scripts:
@@ -156,7 +156,7 @@ diagnostics:
           style: white
           rc:
             axes.titlepad: 15.0
-        suptitle: clt vs lwcre (1982-2000)
+        suptitle: clt vs lwcre (1982-2002)
 
   plot_hist_scatter_clt_swcre_AWI-ESM-1-1-LR:
     description: Scatterplot for variables clt and swcre combining CMIP6 model AWI-ESM-1-1-LR.
@@ -166,7 +166,7 @@ diagnostics:
         project: CMIP6
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/2000'
+        timerange: '1982/2002'
       swcre:
         mip: Amon
         project: CMIP6
@@ -174,7 +174,7 @@ diagnostics:
         force_derivation: false
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/2000'
+        timerange: '1982/2002'
     additional_datasets:
       - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
     scripts:
@@ -200,7 +200,7 @@ diagnostics:
           style: white
           rc:
             axes.titlepad: 15.0
-        suptitle: clt vs swcre (1982-2000)
+        suptitle: clt vs swcre (1982-2002)
 
   plot_hist_scatter_clt_lwcre_CESM2-FV2:
     description: Scatterplot for variables clt and lwcre combining CMIP6 model CESM2-FV2.
@@ -210,7 +210,7 @@ diagnostics:
         project: CMIP6
         exp: historical
         ensemble: r1i1p1 
-        timerange: '1982/2000'
+        timerange: '1982/2002'
       lwcre:
         mip: Amon
         project: CMIP6
@@ -218,7 +218,7 @@ diagnostics:
         force_derivation: false
         exp: historical
         ensemble: r1i1p1 
-        timerange: '1982/2000'
+        timerange: '1982/2002'
     additional_datasets:
       - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
     scripts:
@@ -244,7 +244,7 @@ diagnostics:
           style: white
           rc:
             axes.titlepad: 15.0
-        suptitle: clt vs lwcre (1982-2000)
+        suptitle: clt vs lwcre (1982-2002)
 
   plot_hist_scatter_clt_swcre_CESM2-FV2:
     description: Scatterplot for variables clt and swcre combining CMIP6 model CESM2-FV2.
@@ -254,7 +254,7 @@ diagnostics:
         project: CMIP6
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/2000'
+        timerange: '1982/2002'
       swcre:
         mip: Amon
         project: CMIP6
@@ -262,7 +262,7 @@ diagnostics:
         force_derivation: false
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/2000'
+        timerange: '1982/2002'
     additional_datasets:
       - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
     scripts:
@@ -288,5 +288,5 @@ diagnostics:
           style: white
           rc:
             axes.titlepad: 15.0
-        suptitle: clt vs swcre (1982-2000)
+        suptitle: clt vs swcre (1982-2002)
   
