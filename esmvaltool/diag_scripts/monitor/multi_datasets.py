@@ -745,14 +745,9 @@ class MultiDatasets(MonitorBase):
 
         # Get default settings
         self.cfg = deepcopy(self.cfg)
-        self.cfg.setdefault('add_ancillary_variables', False)
-        self.cfg.setdefault('add_aux_coords', False)
-        self.cfg.setdefault('add_cell_measures', False)
         self.cfg.setdefault('facet_used_for_labels', 'dataset')
-        self.cfg.setdefault('facets_as_columns', [])
         self.cfg.setdefault('figure_kwargs', {'constrained_layout': True})
         self.cfg.setdefault('group_variables_by', 'short_name')
-        self.cfg.setdefault('groupby_facet', 'short_name')
         self.cfg.setdefault('matplotlib_rc_params', {})
         self.cfg.setdefault('savefig_kwargs', {
             'bbox_inches': 'tight',
