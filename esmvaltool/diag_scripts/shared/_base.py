@@ -468,6 +468,10 @@ def run_diagnostic():
             with run_diagnostic() as cfg:
                 main(cfg)
 
+    To prevent the diagnostic script from using the Dask Distributed scheduler,
+    set ``no_distributed: true`` in the diagnostic script definition in the
+    recipe or in the resulting settings.yml file.
+
     The `cfg` dict passed to `main` contains the script configuration that
     can be used with the other functions in this module.
     """
