@@ -335,7 +335,6 @@ fontsize: int, optional (default: None)
     matplotlib values. For a more fine-grained definition of fontsizes, use the
     option ``matplotlib_rc_params`` (see above).
 log_y: bool, optional (default: True)
-    variables = var_order
     Use logarithmic Y-axis.
 plot_func: str, optional (default: 'contourf')
     Plot function used to plot the profiles. Must be a function of
