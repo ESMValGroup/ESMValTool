@@ -21,7 +21,7 @@ REQUIREMENTS = {
     # Use with pip install . to install from source
     'install': [
         'aiohttp',
-        'cartopy<0.24',  # github.com/ESMValGroup/ESMValTool/issues/3767
+        'cartopy',
         'cdo',
         'cdsapi',
         'cf-units',
@@ -67,7 +67,7 @@ REQUIREMENTS = {
         'scikit-image',
         'scikit-learn>=1.4.0',  # github.com/ESMValGroup/ESMValTool/issues/3504
         'scipy',
-        'scitools-iris>=3.6.1',
+        'scitools-iris>=3.11',
         'seaborn',
         'seawater',
         'shapely>=2',
