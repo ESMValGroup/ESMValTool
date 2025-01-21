@@ -253,7 +253,7 @@ def select_metadata(metadata, **attributes):
     """
     selection = []
     for attribs in metadata:
-        if all(a in attribs and (attribs[a] == v or v == '*')
+        if all(a in attribs and v in (attribs[a], '*')
                for a, v in attributes.items()):
             selection.append(attribs)
     return selection
