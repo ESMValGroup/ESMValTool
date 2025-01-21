@@ -50,24 +50,32 @@ Example plots
 -------------
 
 .. _fig_seaborn_1:
-.. figure:: /recipes/figures/seaborn/clt_vs_swcre.png
+.. figure:: /recipes/figures/seaborn/plot_hist_scatter_clt_lwcre_AWI-ESM-1-1-LR.png
    :align: center
    :width: 50%
 
 .. _fig_seaborn_2:
-.. figure:: /recipes/figures/seaborn/clt_vs_lwcre.png
+.. figure:: /recipes/figures/seaborn/plot_hist_scatter_clt_lwcre_CESM2-FV2.png
    :align: center
    :width: 50%
 
 .. _fig_seaborn_1:
-.. figure:: /recipes/figures/seaborn/hist_clt_vs_swcre.png
+.. figure:: /recipes/figures/seaborn/plot_hist_scatter_clt_lwcre_esacci_cloud.png
    :align: center
    :width: 50%
 
 .. _fig_seaborn_2:
-.. figure:: /recipes/figures/seaborn/hist_clt_vs_lwcre.png
+.. figure:: /recipes/figures/seaborn/plot_hist_scatter_clt_swcre_AWI-ESM-1-1-LR.png
    :align: center
    :width: 50%
 
+.. _fig_seaborn_1:
+.. figure:: /recipes/figures/seaborn/plot_hist_scatter_clt_swcre_CESM2-FV2.png
+   :align: center
+   :width: 50%
 
+.. _fig_seaborn_2:
+.. figure:: /recipes/figures/seaborn/plot_hist_scatter_clt_swcre_esacci_cloud.png
+   :align: center
+   :width: 50%
    
