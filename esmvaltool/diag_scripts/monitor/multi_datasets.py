@@ -67,14 +67,28 @@ Currently supported plot types (use the option ``plots`` to specify them):
       :func:`esmvalcore.preprocessor.regrid_time` and
       :func:`esmvalcore.preprocessor.regrid` for this). Input data
       needs to be 2D with dimensions `time`, `latitude`/`longitude`.
-
-    Benchmarking plots
-    - annual cycles (``benchmarking_annual_cycle``)
-    - box plots (``benchmarking_boxplot``)
-    - diurnal cycles (``benchmarking_diurnal_cycle``)
-    - maps (``benchmarking_map``)
-    - time series (``benchmarking_timeseries``)
-    - zonal mean profiles (plot type ``benchmarking_zonal``)
+    - Benchmarking plot annual cycles (``benchmarking_annual_cycle``)
+      Same as plot type ``annual_cycle`` but including the range of metric
+      results from an ensemble of models as shading. 
+    - Benchmarking box plots (``benchmarking_boxplot``)
+      Box plots showing the metric results for given variables from a given
+      model and the range from the first quartile to the third quartile, the
+      median, and minimum and maximum values (excluding the outliers) from
+      an ensemble of models for comparison. 
+    - Benchmarking plot diurnal cycles (``benchmarking_diurnal_cycle``)
+      Same as plot type ``diurnal_cycle`` but including range of metric results
+      from an ensemble of models as shading.
+    - Benchmarking map plots (``benchmarking_map``)
+      Same as plot type ``map`` but with stippled areas masking grid cells
+      where the selected metric is smaller than the 90% percentile of corresponding
+      values from an ensemble of models used for comparison.
+    - Benchmarking plot time series (``benchmarking_timeseries``)
+      Same as plot type ``timeseries`` but including the range of metric
+      results from an ensemble of models as shading.
+    - Benchmarking plot zonal mean profiles (plot type ``benchmarking_zonal``)
+      Same as plot type ``zonal_mean_profile`` but with stippled areas masking
+      grid cells where the selected metric is smaller than the 90% percentile
+      of corresponding values from an ensemble of models used for comparison.
 
 Author
 ------
