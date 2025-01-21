@@ -1,0 +1,34 @@
+#!/bin/bash
+#
+# USAGE dkrz-singularity-env COMMAND
+#
+# OPTIONS
+#   COMMAND             The command to execute with options
+#
+# Since DKRZ uses the module environment to dynamically modify a user's
+# environment via modulefiles (more details are available at
+# https://docs.dkrz.de/doc/levante/access-and-environment.html#module-environment)
+# this additional environment file is required to enable access to singularity
+# on DKRZ. This file is used directly in the 'get_esmval' app for DKRZ, as well
+# as in the 'dkrz-env' environment file.
+set -eu
+
+module_count(){
+    module list -t 2>&1 | wc -l
+}
+
+safe_load(){
+    PRE_LOAD_COUNT=$(module_count)
+
+    module load "${1}"
+    # Check module count to determine whether module load was successful.
+    
+    if (( PRE_LOAD_COUNT == $(module_count) )); then
+        echo "[ERROR] Failed to load: ${1}"
+        exit 1
+    fi
+}
+safe_load "singularity"
+
+command="/usr/bin/time -v -o ${CYLC_TASK_LOG_ROOT}.time $@"
+exec ${command}

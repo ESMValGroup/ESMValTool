@@ -61,6 +61,16 @@ diagnostics:
     scripts: null
 
 
+  CMAP:
+    description: CMAP check
+    variables:
+      pr:
+    additional_datasets:
+      - {project: OBS6, dataset: CMAP, mip: Amon, tier: 2,
+        type: reanaly, version: v1}
+    scripts: null
+
+
   CRU:
     description: CRU check
     variables:
@@ -699,6 +709,10 @@ diagnostics:
       prw:
       ta:
       wap:
+      pr:
+      tauu:
+      tauv:
+      tos:
     additional_datasets:
       - {dataset: NCEP-DOE-R2, project: OBS6, mip: Amon, tier: 2,
          type: reanaly, version: 2, start_year: 1979, end_year: 2022}
@@ -714,6 +728,9 @@ diagnostics:
       prw:
       rlut:
       rsut:
+      pr:
+      tauu:
+      tauv:
     additional_datasets:
       - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, mip: Amon, tier: 2,
          type: reanaly, version: v2, start_year: 1871, end_year: 2012}

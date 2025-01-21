@@ -1,13 +1,11 @@
 """Script to download JRA-55 from RDA."""
 import logging
 import os
-
 from datetime import datetime
 
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
-
 
 logger = logging.getLogger(__name__)
 
