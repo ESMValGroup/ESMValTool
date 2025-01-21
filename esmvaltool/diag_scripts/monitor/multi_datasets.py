@@ -2113,7 +2113,6 @@ class MultiDatasets(MonitorBase):
 
         # Make sure that the data has the correct dimensions
         cube = dataset['cube']
-        # dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
 
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
@@ -2143,9 +2142,6 @@ class MultiDatasets(MonitorBase):
             hatching.set_linewidth(0.)
 
             axes.coastlines()
-            # gridline_kwargs = self._get_gridline_kwargs(plot_type)
-            # if gridline_kwargs is not False:
-            #     axes.gridlines(**gridline_kwargs)
 
             # Setup colorbar
             fontsize = self.plots[plot_type]['fontsize']
@@ -2194,7 +2190,6 @@ class MultiDatasets(MonitorBase):
 
                 plot_boxplot = sns.boxplot(data=df[df['Variable'] == var])
                 plot_boxplot.set(xticklabels=[])
-                # plot_map = plot_func(cube, **plot_kwargs)
 
                 plt.scatter(0, cubes[i].data, marker='x', s=200, linewidths=2,
                             color="red", zorder=3)
@@ -2202,9 +2197,6 @@ class MultiDatasets(MonitorBase):
                 plt.xlabel(var)
                 if cubes[i].units != 1:
                     plt.ylabel(cubes[i].units)
-
-                # Setup fontsize
-                # fontsize = self.plots[plot_type]['fontsize']
 
                 # Customize plot
                 self._process_pyplot_kwargs(plot_type, datasets[i])
@@ -2252,9 +2244,6 @@ class MultiDatasets(MonitorBase):
             # set color for stippling to 'black' (default = 'white')
             hatching.set_edgecolor('black')
             hatching.set_linewidth(0.)
-
-            # Print statistics if desired
-            # self._add_stats(plot_type, axes, dim_coords_dat, dataset)
 
             # Setup colorbar
             fontsize = self.plots[plot_type]['fontsize']
@@ -2422,7 +2411,6 @@ class MultiDatasets(MonitorBase):
 
     def _get_benchmark_group(self, datasets):
         """Get datasets for benchmarking."""
-        # variable = datasets[0][self.cfg['group_variables_by']]
         benchmark_datasets = [d for d in datasets if not
                               (d.get('benchmark_dataset', False) or
                                d.get('reference_for_metric', False))]
@@ -3128,9 +3116,6 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             caption = (
                 "Boxplot."
-                # f"Boxplot of {dataset['long_name']} of dataset "
-                # f"{dataset['dataset']} (project {dataset['project']}) "
-                # f"from {dataset['start_year']} to {dataset['end_year']}."
                 )
             provenance_record = {
                 'ancestors': ancestors,
@@ -3371,8 +3356,6 @@ class MultiDatasets(MonitorBase):
         if not datasets:
             raise ValueError(f"No input data to plot '{plot_type}' given")
 
-        # Get reference dataset
-        # ref_dataset = self._get_benchmarking_reference(datasets)
         # Get dataset to be benchmarked
         plot_datasets = self._get_benchmark_datasets(datasets)
         # Get percentiles from multi-model statistics
@@ -3408,13 +3391,6 @@ class MultiDatasets(MonitorBase):
                 f"{dataset['dataset']} (project {dataset['project']}) from "
                 f"{dataset['start_year']} to {dataset['end_year']}."
             )
-            # ancestors.append(ref_dataset['filename'])
-
-            # If statistics are shown add a brief description to the caption
-            # if self.plots[plot_type]['show_stats']:
-            #    caption += (
-            #         " The number in the top left corner corresponds to the "
-            #         "spatial mean (weighted by grid cell areas).")
 
             # Save plot
             plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
