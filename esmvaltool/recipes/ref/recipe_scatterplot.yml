@@ -2,12 +2,13 @@
 # recipe_seaborn.yml
 ---
 documentation:
-  title: Scatter Plot of Total Cloud Cover vs. Longwave Cloud Forcing
+  title: Scatter Plot of Total Cloud Cover vs. Longwave Cloud Forcing and Total Cloud Cover vs. Shortwave Cloud Forcing
 
   description: >
-    This recipe generates a scatter plot of total cloud cover (clt) vs. 
-    longwave cloud radiative effect (lwcre) using the Seaborn diagnostic 
-    in ESMValTool. It combines datasets and variables from CMIP5 and observational data.
+    This recipe generates a scatter plots of total cloud cover (clt) vs. 
+    longwave cloud radiative effect (lwcre) and total cloud cover (clt) vs. 
+    shortwave cloud radiative effect (swcre) using the Seaborn diagnostic 
+    in ESMValTool. It combines datasets and variables from CMIP6 and observational data.
 
   authors:
     - schlund_manuel
@@ -30,20 +31,20 @@ documentation:
 
 diagnostics:
   plot_hist_scatter_clt_swcre_esacci_cloud:
-    description: Plot histogram over scatterplot for variables clt and swcre.
+    description: Scatterplot for variables clt and swcre combining ESACCI-CLOUD observational data.
     variables:
       clt:
         mip: Amon
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/1990'
+        timerange: '1982/2000'
       swcre:
         mip: Amon
         derive: true
         force_derivation: false
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/1990'
+        timerange: '1982/2000'
     additional_datasets:
       - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
     scripts:
@@ -61,7 +62,6 @@ diagnostics:
         dropna_kwargs:
           axis: 0
           how: any
-        #legend_title: Model
         plot_object_methods:
           set_axis_labels:
             xlabel: 'Cloud Fraction (clt)'
@@ -70,23 +70,23 @@ diagnostics:
           style: white
           rc:
             axes.titlepad: 15.0
-        suptitle: clt vs swcre (1982-1990)
+        suptitle: clt vs swcre (1982-2000)
 
   plot_hist_scatter_clt_lwcre_esacci_cloud:
-    description: Plot histogram over scatterplot for variables clt and swcre.
+    description: Scatterplot for variables clt and lwcre combining ESACCI-CLOUD observational data.
     variables:
       clt:
         mip: Amon
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/1990'
+        timerange: '1982/2000'
       lwcre:
         mip: Amon
         derive: true
         force_derivation: false
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/1990'
+        timerange: '1982/2000'
     additional_datasets:
       - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
     scripts:
@@ -104,7 +104,6 @@ diagnostics:
         dropna_kwargs:
           axis: 0
           how: any
-        #legend_title: Model
         plot_object_methods:
           set_axis_labels:
             xlabel: 'Cloud Fraction (clt)'
@@ -113,17 +112,17 @@ diagnostics:
           style: white
           rc:
             axes.titlepad: 15.0
-        suptitle: clt vs lwcre (1982-1990)
+        suptitle: clt vs lwcre (1982-2000)
 
   plot_hist_scatter_clt_lwcre_AWI-ESM-1-1-LR:
-    description: Plot histogram over scatterplot for variables clt and lwcre.
+    description: Scatterplot for variables clt and lwcre combining CMIP6 model AWI-ESM-1-1-LR .
     variables:
       clt:
         mip: Amon
         project: CMIP6
         exp: historical
         ensemble: r1i1p1 
-        timerange: '1982/1990'
+        timerange: '1982/2000'
       lwcre:
         mip: Amon
         project: CMIP6
@@ -131,7 +130,7 @@ diagnostics:
         force_derivation: false
         exp: historical
         ensemble: r1i1p1 
-        timerange: '1982/1990'
+        timerange: '1982/2000'
     additional_datasets:
       - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
     scripts:
@@ -149,7 +148,6 @@ diagnostics:
         dropna_kwargs:
           axis: 0
           how: any
-        #legend_title: Model
         plot_object_methods:
           set_axis_labels:
             xlabel: 'Cloud Fraction (clt)'
@@ -158,17 +156,17 @@ diagnostics:
           style: white
           rc:
             axes.titlepad: 15.0
-        suptitle: clt vs lwcre (1982-1990)
+        suptitle: clt vs lwcre (1982-2000)
 
   plot_hist_scatter_clt_swcre_AWI-ESM-1-1-LR:
-    description: Plot histogram over scatterplot for variables clt and swcre.
+    description: Scatterplot for variables clt and swcre combining CMIP6 model AWI-ESM-1-1-LR.
     variables:
       clt:
         mip: Amon
         project: CMIP6
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/1990'
+        timerange: '1982/2000'
       swcre:
         mip: Amon
         project: CMIP6
@@ -176,7 +174,7 @@ diagnostics:
         force_derivation: false
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/1990'
+        timerange: '1982/2000'
     additional_datasets:
       - {dataset: AWI-ESM-1-1-LR, ensemble: r1i1p1f1, grid: gn}
     scripts:
@@ -194,7 +192,6 @@ diagnostics:
         dropna_kwargs:
           axis: 0
           how: any
-        #legend_title: Model
         plot_object_methods:
           set_axis_labels:
             xlabel: 'Cloud Fraction (clt)'
@@ -203,17 +200,17 @@ diagnostics:
           style: white
           rc:
             axes.titlepad: 15.0
-        suptitle: clt vs swcre (1982-1990)
+        suptitle: clt vs swcre (1982-2000)
 
   plot_hist_scatter_clt_lwcre_CESM2-FV2:
-    description: Plot histogram over scatterplot for variables clt and lwcre.
+    description: Scatterplot for variables clt and lwcre combining CMIP6 model CESM2-FV2.
     variables:
       clt:
         mip: Amon
         project: CMIP6
         exp: historical
         ensemble: r1i1p1 
-        timerange: '1982/1990'
+        timerange: '1982/2000'
       lwcre:
         mip: Amon
         project: CMIP6
@@ -221,7 +218,7 @@ diagnostics:
         force_derivation: false
         exp: historical
         ensemble: r1i1p1 
-        timerange: '1982/1990'
+        timerange: '1982/2000'
     additional_datasets:
       - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
     scripts:
@@ -239,7 +236,6 @@ diagnostics:
         dropna_kwargs:
           axis: 0
           how: any
-        #legend_title: Model
         plot_object_methods:
           set_axis_labels:
             xlabel: 'Cloud Fraction (clt)'
@@ -248,17 +244,17 @@ diagnostics:
           style: white
           rc:
             axes.titlepad: 15.0
-        suptitle: clt vs lwcre (1982-1990)
+        suptitle: clt vs lwcre (1982-2000)
 
   plot_hist_scatter_clt_swcre_CESM2-FV2:
-    description: Plot histogram over scatterplot for variables clt and swcre.
+    description: Scatterplot for variables clt and swcre combining CMIP6 model CESM2-FV2.
     variables:
       clt:
         mip: Amon
         project: CMIP6
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/1990'
+        timerange: '1982/2000'
       swcre:
         mip: Amon
         project: CMIP6
@@ -266,7 +262,7 @@ diagnostics:
         force_derivation: false
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/1990'
+        timerange: '1982/2000'
     additional_datasets:
       - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn}
     scripts:
@@ -284,7 +280,6 @@ diagnostics:
         dropna_kwargs:
           axis: 0
           how: any
-        #legend_title: Model
         plot_object_methods:
           set_axis_labels:
             xlabel: 'Cloud Fraction (clt)'
@@ -293,5 +288,5 @@ diagnostics:
           style: white
           rc:
             axes.titlepad: 15.0
-        suptitle: clt vs swcre (1982-1990)
+        suptitle: clt vs swcre (1982-2000)
   
