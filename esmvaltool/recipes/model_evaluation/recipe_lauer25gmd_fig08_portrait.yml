@@ -229,7 +229,7 @@ diagnostics:
           - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2, <<: *ref_tag}
     scripts:
       portrait:
-        script: perfmetrics/portrait_plot.py
+        script: portrait_plot.py
         x_by: alias
         y_by: variable  # use extra_facet since group and short_name don't work
         group_by: project
