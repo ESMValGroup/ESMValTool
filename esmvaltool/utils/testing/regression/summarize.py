@@ -346,15 +346,18 @@ def main():
                         default='.',
                         type=Path,
                         help='ESMValTool output directory.')
-    parser.add_argument('--add_dkrz_legal_notice',
-                        default=True,
-                        type=bool,
-                        help='Add DKRZ legal notice links'
-                        '(legally required when page is shown on DKRZ servers).')
+    parser.add_argument(
+        '--add_dkrz_legal_notice',
+        default=True,
+        type=bool,
+        help='Add DKRZ legal notice links'
+        '(legally required when page is shown on DKRZ servers).')
     args = parser.parse_args()
 
-    write_debug_html(generate_summary(args.output_dir), args.output_dir, args.add_dkrz_legal_notice)
-    write_index_html(generate_overview(args.output_dir), args.output_dir, args.add_dkrz_legal_notice)
+    write_debug_html(generate_summary(args.output_dir), args.output_dir,
+                     args.add_dkrz_legal_notice)
+    write_index_html(generate_overview(args.output_dir), args.output_dir,
+                     args.add_dkrz_legal_notice)
 
 
 if __name__ == '__main__':
