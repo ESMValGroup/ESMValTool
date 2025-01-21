@@ -368,7 +368,12 @@ def test_run_diagnostic(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize("no_distributed", [False, True])
-def test_run_diagnostic_configures_dask(tmp_path, monkeypatch, mocker, no_distributed):
+def test_run_diagnostic_configures_dask(
+    tmp_path,
+    monkeypatch,
+    mocker,
+    no_distributed,
+):
 
     settings = create_settings(tmp_path)
     scheduler_address = "tcp://127.0.0.1:38789"
@@ -392,7 +397,8 @@ def test_run_diagnostic_configures_dask(tmp_path, monkeypatch, mocker, no_distri
     if no_distributed:
         shared._base.distributed.Client.assert_not_called()
     else:
-        shared._base.distributed.Client.assert_called_once_with(scheduler_address)
+        shared._base.distributed.Client.assert_called_once_with(
+            scheduler_address)
 
 
 @pytest.mark.parametrize('flag', ['-l', '--log-level'])
