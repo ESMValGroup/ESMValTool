@@ -38,10 +38,13 @@ dpi: int, optional
     Dots per inch for the figure. By default 300.
 domain: str, optional
     Domain for provenance. By default 'global'.
-figsize: list(float), optional
+figsize: tuple of float, optional
     [width, height] of the figure in inches. The final figure will be saved
     with bbox_inches="tight", which can change the resulting aspect ratio.
-    By default [5, 3].
+    By default [7.5, 3.5].
+group_by: str, optional
+    Split portrait groups into multiple groups (one matrix per group).
+    By default 'project'.
 legend: dict, optional
     Customize, if, how and where the legend is plotted. The 'best' position
     and size of the legend depends on multiple parameters of the figure
@@ -52,16 +55,16 @@ legend: dict, optional
     position: str or None, optional
         Position of the legend. Can be 'right' or 'left'.
         Or set to None to disable plotting the legend. By default 'right'.
+    size: float, optional
+        Size of the legend in Inches. By default 0.3.
     x_offset: float, optional
         Manually adjust horizontal position to save space or fix overlap.
         Number given in Inches. By default 0.
     y_offset: float, optional
         Manually adjust vertical position to save space or fix overlap.
         Number given in Inches. By default 0.
-    size: float, optional
-        Size of the legend in Inches. By default 0.3.
 
-matplotlib_rc_params: dict, optional (default: {})
+matplotlib_rc_params: dict, optional
     Optional :class:`matplotlib.RcParams` used to customize matplotlib plots.
     Options given here will be passed to :func:`matplotlib.rc_context` and used
     for all plots produced with this diagnostic. Note: fontsizes specified here
@@ -80,9 +83,8 @@ plot_kwargs: dict, optional
     Dictionary that gets passed as kwargs to
     :meth:`matplotlib.axes.Axes.imshow`. Colormaps will be converted to 11
     discrete steps automatically.
-    Default colormap RdYlBu_r and limits vmin=-0.5, vmax=0.5 can be changed
-    using keywords like: cmap, vmin, vmax.
-    By default {}.
+    Default colormap is ``cmap='RdYlBu_r'`` with limits ``vmin=-0.5`` and
+    ``vmax=0.5``.
 plot_legend: bool, optional
     If True, a legend is plotted, when multiple splits are given.
     By default True.
@@ -131,7 +133,7 @@ def get_provenance(cfg):
         'ancestors': list(cfg["input_data"].keys()),
         'authors': ["lindenlaub_lukas", "cammarano_diego"],
         'caption': 'RMSE performance metric',
-        'domains': [cfg.get('domain', 'global')],
+        'domains': [cfg["domain"]],
         'plot_types': ['portrait'],
         'references': [
             'gleckler08jgr',
@@ -249,13 +251,13 @@ def split_legend(cfg, grid, data):
     this a bit by using ``append_axes``.
     """
     grid[0].get_figure().canvas.draw()  # set axes position in figure
-    size = cfg["legend"].get("size", 0.5)  # rect width in physical size (inch)
+    size = cfg["legend"]["size"]  # rect width in physical size (inch)
     fig_size = grid[0].get_figure().get_size_inches()  # physical figure size
     ax_size = (size / fig_size[0], size / fig_size[1])  # legend (fig coords)
     gaps = [0.3 / fig_size[0], 0.3 / fig_size[1]]  # margins (fig coords)
     # anchor legend on origin of first plot or colorbar
     anchor = grid[0].get_position().bounds  # relative figure coordinates
-    if cfg["legend"].get("position", "right") == "right":
+    if cfg["legend"]["position"] == "right":
         cbar_x = grid.cbar_axes[0].get_position().bounds[0]
         gaps[0] *= 0.8  # compensate colorbar padding
         anchor = (cbar_x + gaps[0] + cfg["legend"]["x_offset"],
@@ -383,7 +385,7 @@ def plot(cfg, data):
     Sets same color range and overlays additional references based on
     the content of data (xr.DataArray).
     """
-    fig = plt.figure(1, cfg.get("figsize", (5.5, 3.5)))
+    fig = plt.figure(1, cfg["figsize"])
     group_count = len(data.coords[cfg["group_by"]])
     grid = ImageGrid(
         fig,
@@ -438,26 +440,29 @@ def normalize(array, method, dims):
 
 def set_defaults(cfg):
     """Set default values for most important config parameters."""
-    cfg.setdefault("normalize", "centered_median")
-    cfg.setdefault("x_by", "alias")
-    cfg.setdefault("y_by", "variable_group")
-    cfg.setdefault("group_by", "project")
-    cfg.setdefault("split_by", "split")  # extra facet
-    cfg.setdefault("default_split", None)
-    cfg.setdefault("cbar_kwargs", {})
     cfg.setdefault("axes_properties", {})
-    cfg.setdefault("nan_color", 'white')
-    cfg.setdefault("figsize", (7.5, 3.5))
+    cfg.setdefault("cbar_kwargs", {})
+    cfg.setdefault("default_split", None)
     cfg.setdefault("dpi", 300)
-    cfg.setdefault("plot_legend", True)
+    cfg.setdefault("domain", "global")
+    cfg.setdefault("figsize", (7.5, 3.5))
+    cfg.setdefault("group_by", "project")
+    cfg.setdefault("legend", {})
+    cfg["legend"].setdefault("position", "right")
+    cfg["legend"].setdefault("size", 0.3)
+    cfg["legend"].setdefault("x_offset", 0)
+    cfg["legend"].setdefault("y_offset", 0)
+    cfg.setdefault("matplotlib_rc_params", {})
+    cfg.setdefault("nan_color", 'white')
+    cfg.setdefault("normalize", "centered_median")
     cfg.setdefault("plot_kwargs", {})
     cfg["plot_kwargs"].setdefault("cmap", "RdYlBu_r")
     cfg["plot_kwargs"].setdefault("vmin", -0.5)
     cfg["plot_kwargs"].setdefault("vmax", 0.5)
-    cfg.setdefault("legend", {})
-    cfg["legend"].setdefault("x_offset", 0)
-    cfg["legend"].setdefault("y_offset", 0)
-    cfg["legend"].setdefault("size", 0.3)
+    cfg.setdefault("plot_legend", True)
+    cfg.setdefault("split_by", "split")  # extra facet
+    cfg.setdefault("x_by", "alias")
+    cfg.setdefault("y_by", "variable_group")
 
 
 def sort_data(cfg, dataset):
