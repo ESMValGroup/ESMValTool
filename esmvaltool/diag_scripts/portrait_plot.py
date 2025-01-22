@@ -504,5 +504,7 @@ def main(cfg):
                                    [cfg["x_by"], cfg["group_by"]])
     plot(cfg, dataset["var"])
     save_to_netcdf(cfg, dataset["var"])
+
+if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
