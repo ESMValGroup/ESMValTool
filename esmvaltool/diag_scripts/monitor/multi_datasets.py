@@ -670,7 +670,56 @@ Same as for plot type ``diurnal_cycle``.
 
 Configuration options for plot type ``benchmarking_map``
 --------------------------------------------------------
-Same as for plot type ``map``.
+cbar_label: str, optional (default: '{short_name} [{units}]')
+    Colorbar label. Can include facets in curly brackets which will be derived
+    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``.
+cbar_kwargs: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar`. By
+    default, uses ``orientation: horizontal, aspect: 30``.
+fontsize: int, optional (default: None)
+    Fontsize used for ticks, labels and titles. For the latter, use the given
+    fontsize plus 2. Does not affect suptitles. If not given, use default
+    matplotlib values. For a more fine-grained definition of fontsizes, use the
+    option ``matplotlib_rc_params`` (see above).
+plot_func: str, optional (default: 'contourf')
+    Plot function used to plot the maps. Must be a function of :mod:`iris.plot`
+    that supports plotting of 2D cubes with coordinates latitude and longitude.
+plot_kwargs: dict, optional
+    Optional keyword arguments for the plot function defined by ``plot_func``.
+    Dictionary keys are elements identified by ``facet_used_for_labels`` or
+    ``default``, e.g., ``CMIP6`` if ``facet_used_for_labels: project`` or
+    ``historical`` if ``facet_used_for_labels: exp``. Dictionary values are
+    dictionaries used as keyword arguments for the plot function defined by
+    ``plot_func``. String arguments can include facets in curly brackets which
+    will be derived from the corresponding dataset, e.g., ``{project}``,
+    ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
+    {vmin: 200, vmax: 250}``. In addition to the normalization_ options
+    supported by the plot function, the option ``norm: centered`` can be
+    specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
+    be used instead of ``vmin`` or ``vmax`` (see
+    :class:`~matplotlib.colors.CenteredNorm`).
+projection: str, optional (default: 'Robinson')
+    Projection used for the map plot. Needs to be a valid projection class of
+    :mod:`cartopy.crs`. Keyword arguments can be specified using the option
+    ``projection_kwargs``.
+projection_kwargs: dict, optional
+    Optional keyword arguments for the projection given by ``projection``. For
+    the default projection ``Robinson``, the default keyword arguments
+    ``central_longitude: 10`` are used.
+pyplot_kwargs: dict, optional
+    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
+    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
+    argument(s) for these functions (if values are dictionaries, these are
+    interpreted as keyword arguments; otherwise a single argument is assumed).
+    String arguments can include facets in curly brackets which will be derived
+    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
+    '{short_name}'``, ``xlim: [0, 5]``.
+rasterize: bool, optional (default: True)
+    If ``True``, use rasterization_ for map plots to produce smaller files.
+    This is only relevant for vector graphics (e.g., ``output_file_type:
+    pdf,svg,ps``).
 
 Configuration options for plot type ``benchmarking_timeseries``
 ---------------------------------------------------------------
@@ -678,7 +727,53 @@ Same as for plot type ``timeseries``.
 
 Configuration options for plot type ``benchmarking_zonal``
 ----------------------------------------------------------
-Same as for plot type ``zonal_mean_profile``.
+cbar_label: str, optional (default: '{short_name} [{units}]')
+    Colorbar label. Can include facets in curly brackets which will be derived
+    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``.
+cbar_kwargs: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar`. By
+    default, uses ``orientation: vertical``.
+fontsize: int, optional (default: None)
+    Fontsize used for ticks, labels and titles. For the latter, use the given
+    fontsize plus 2. Does not affect suptitles. If not given, use default
+    matplotlib values. For a more fine-grained definition of fontsizes, use the
+    option ``matplotlib_rc_params`` (see above).
+log_y: bool, optional (default: True)
+    Use logarithmic Y-axis.
+plot_func: str, optional (default: 'contourf')
+    Plot function used to plot the profiles. Must be a function of
+    :mod:`iris.plot` that supports plotting of 2D cubes with coordinates
+    latitude and altitude/air_pressure.
+plot_kwargs: dict, optional
+    Optional keyword arguments for the plot function defined by ``plot_func``.
+    Dictionary keys are elements identified by ``facet_used_for_labels`` or
+    ``default``, e.g., ``CMIP6`` if ``facet_used_for_labels: project`` or
+    ``historical`` if ``facet_used_for_labels: exp``. Dictionary values are
+    dictionaries used as keyword arguments for the plot function defined by
+    ``plot_func``. String arguments can include facets in curly brackets which
+    will be derived from the corresponding dataset, e.g., ``{project}``,
+    ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
+    {vmin: 200, vmax: 250}``. In addition to the normalization_ options
+    supported by the plot function, the option ``norm: centered`` can be
+    specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
+    be used instead of ``vmin`` or ``vmax`` (see
+    :class:`~matplotlib.colors.CenteredNorm`).
+pyplot_kwargs: dict, optional
+    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
+    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
+    argument(s) for these functions (if values are dictionaries, these are
+    interpreted as keyword arguments; otherwise a single argument is assumed).
+    String arguments can include facets in curly brackets which will be derived
+    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
+    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
+    '{short_name}'``, ``xlim: [0, 5]``.
+rasterize: bool, optional (default: True)
+    If ``True``, use rasterization_ for profile plots to produce smaller files.
+    This is only relevant for vector graphics (e.g., ``output_file_type:
+    pdf,svg,ps``).
+show_y_minor_ticklabels: bool, optional (default: False)
+    Show tick labels for the minor ticks on the Y axis.
 
 
 .. hint::
@@ -891,14 +986,9 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault(
                     'cbar_label', '{short_name} [{units}]')
                 self.plots[plot_type].setdefault(
-                    'cbar_label_bias', '{short_name} [{units}]')
-                self.plots[plot_type].setdefault(
                     'cbar_kwargs', {'orientation': 'horizontal', 'aspect': 30}
                 )
-                self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
-                self.plots[plot_type].setdefault('common_cbar', False)
                 self.plots[plot_type].setdefault('fontsize', 10)
-                self.plots[plot_type].setdefault('gridline_kwargs', {})
                 self.plots[plot_type].setdefault('plot_func', 'contourf')
                 self.plots[plot_type].setdefault('plot_kwargs', {})
                 if 'projection' not in self.plots[plot_type]:
@@ -910,9 +1000,6 @@ class MultiDatasets(MonitorBase):
                     self.plots[plot_type].setdefault('projection_kwargs', {})
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
                 self.plots[plot_type].setdefault('rasterize', True)
-                self.plots[plot_type].setdefault('show_stats', True)
-                self.plots[plot_type].setdefault('x_pos_stats_avg', 0.0)
-                self.plots[plot_type].setdefault('x_pos_stats_bias', 0.92)
 
             elif plot_type == 'zonal_mean_profile':
                 self.plots[plot_type].setdefault(
@@ -937,7 +1024,6 @@ class MultiDatasets(MonitorBase):
                 )
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
                 self.plots[plot_type].setdefault('rasterize', True)
-                self.plots[plot_type].setdefault('show_stats', True)
                 self.plots[plot_type].setdefault(
                     'show_y_minor_ticklabels', False
                 )
@@ -948,31 +1034,17 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault(
                     'cbar_label', '{short_name} [{units}]')
                 self.plots[plot_type].setdefault(
-                    'cbar_label_bias', 'Δ{short_name} [{units}]')
-                self.plots[plot_type].setdefault(
                     'cbar_kwargs', {'orientation': 'vertical'}
                 )
-                self.plots[plot_type].setdefault('cbar_kwargs_bias', {})
-                self.plots[plot_type].setdefault('common_cbar', False)
                 self.plots[plot_type].setdefault('fontsize', 10)
                 self.plots[plot_type].setdefault('log_y', True)
                 self.plots[plot_type].setdefault('plot_func', 'contourf')
                 self.plots[plot_type].setdefault('plot_kwargs', {})
-                self.plots[plot_type].setdefault('plot_kwargs_bias', {})
-                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
-                    'cmap', 'bwr'
-                )
-                self.plots[plot_type]['plot_kwargs_bias'].setdefault(
-                    'norm', 'centered'
-                )
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
                 self.plots[plot_type].setdefault('rasterize', True)
-                self.plots[plot_type].setdefault('show_stats', True)
                 self.plots[plot_type].setdefault(
                     'show_y_minor_ticklabels', False
                 )
-                self.plots[plot_type].setdefault('x_pos_stats_avg', 0.01)
-                self.plots[plot_type].setdefault('x_pos_stats_bias', 0.7)
 
             elif plot_type == '1d_profile':
                 self.plots[plot_type].setdefault('aspect_ratio', 1.5)
@@ -3243,12 +3315,6 @@ class MultiDatasets(MonitorBase):
                 f"from {dataset['start_year']} to {dataset['end_year']}."
             )
             ancestors.append(ref_dataset['filename'])
-
-            # If statistics are shown add a brief description to the caption
-            if self.plots[plot_type]['show_stats']:
-                caption += (
-                    " The number in the top left corner corresponds to the "
-                    "spatial mean (weighted by grid cell areas).")
 
             # Save plot
             plt.savefig(plot_path, **self.cfg['savefig_kwargs'])
