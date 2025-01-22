@@ -19,40 +19,29 @@ Authors
 
 Configuration parameters through recipe:
 ----------------------------------------
-matplotlib_rc_params: dict, optional (default: {})
-    Optional :class:`matplotlib.RcParams` used to customize matplotlib plots.
-    Options given here will be passed to :func:`matplotlib.rc_context` and used
-    for all plots produced with this diagnostic. Note: fontsizes specified here
-    might be overwritten by the plot-type-specific option ``fontsize`` (see
-    below).
-normalize: str or None, optional
-    ('mean', 'median', 'centered_mean', 'centered_median', None).
-    Divide by median or mean if not None. Subtract median/mean afterwards if
-    centered.
-    By default 'centered_median'.
-x_by: str, optional
-    Metadata key for x coordinate.
-    By default 'alias'.
-y_by: str, optional
-    Metadata key for y coordinate.
-    By default 'variable_group'.
-split_by: str, optional
-    The rectangles can be split into 2-4 triangles. This is used to show
-    metrics for different references. For this case there is no need to change
-    this parameter. Multiple variables can be set in the recipe with ``split``
-    assigned as extra_facet to label the different references. Data without
-    a split assigned will be plotted as main rectangles, this can be changed
-    by setting default_split parameter.
-    By default 'split'.
+axes_properties: dict, optional
+    Dictionary that gets passed to :meth:`matplotlib.axes.Axes.set`.
+    Subplots can be widely customized.
+    E.g. xlabel, ylabel, yticklabels, xmargin...
+    By default {}.
+cbar_kwargs: dict, optional
+    Dictionary that gets passed to :meth:`matplotlib.pyplot.colorbar`.
+    E.g. label, ticks...
+    By default {}.
 default_split: str, optional
     Data labeled with this string, will be used as main rectangles. All other
     splits will be plotted as overlays. This can be used to choose the base
     reference, while all references are labeled for the legend. If None, the
     first split will be used as default.
     By default None.
-plot_legend: bool, optional
-    If True, a legend is plotted, when multiple splits are given.
-    By default True.
+dpi: int, optional
+    Dots per inch for the figure. By default 300.
+domain: str, optional
+    Domain for provenance. By default 'global'.
+figsize: list(float), optional
+    [width, height] of the figure in inches. The final figure will be saved
+    with bbox_inches="tight", which can change the resulting aspect ratio.
+    By default [5, 3].
 legend: dict, optional
     Customize, if, how and where the legend is plotted. The 'best' position
     and size of the legend depends on multiple parameters of the figure
@@ -72,6 +61,21 @@ legend: dict, optional
     size: float, optional
         Size of the legend in Inches. By default 0.3.
 
+matplotlib_rc_params: dict, optional (default: {})
+    Optional :class:`matplotlib.RcParams` used to customize matplotlib plots.
+    Options given here will be passed to :func:`matplotlib.rc_context` and used
+    for all plots produced with this diagnostic. Note: fontsizes specified here
+    might be overwritten by the plot-type-specific option ``fontsize`` (see
+    below).
+nan_color: str or None, optional
+    Matplotlib named color or hexcode for NaN values. If set to None,
+    no triangles are plotted for NaN values.
+    By default 'white'.
+normalize: str or None, optional
+    ('mean', 'median', 'centered_mean', 'centered_median', None).
+    Divide by median or mean if not None. Subtract median/mean afterwards if
+    centered.
+    By default 'centered_median'.
 plot_kwargs: dict, optional
     Dictionary that gets passed as kwargs to
     :meth:`matplotlib.axes.Axes.imshow`. Colormaps will be converted to 11
@@ -79,27 +83,23 @@ plot_kwargs: dict, optional
     Default colormap RdYlBu_r and limits vmin=-0.5, vmax=0.5 can be changed
     using keywords like: cmap, vmin, vmax.
     By default {}.
-cbar_kwargs: dict, optional
-    Dictionary that gets passed to :meth:`matplotlib.pyplot.colorbar`.
-    E.g. label, ticks...
-    By default {}.
-axes_properties: dict, optional
-    Dictionary that gets passed to :meth:`matplotlib.axes.Axes.set`.
-    Subplots can be widely customized.
-    E.g. xlabel, ylabel, yticklabels, xmargin...
-    By default {}.
-nan_color: str or None, optional
-    Matplotlib named color or hexcode for NaN values. If set to None,
-    no triangles are plotted for NaN values.
-    By default 'white'.
-figsize: list(float), optional
-    [width, height] of the figure in inches. The final figure will be saved
-    with bbox_inches="tight", which can change the resulting aspect ratio.
-    By default [5, 3].
-dpi: int, optional
-    Dots per inch for the figure. By default 300.
-domain: str, optional
-    Domain for provenance. By default 'global'.
+plot_legend: bool, optional
+    If True, a legend is plotted, when multiple splits are given.
+    By default True.
+split_by: str, optional
+    The rectangles can be split into 2-4 triangles. This is used to show
+    metrics for different references. For this case there is no need to change
+    this parameter. Multiple variables can be set in the recipe with ``split``
+    assigned as extra_facet to label the different references. Data without
+    a split assigned will be plotted as main rectangles, this can be changed
+    by setting default_split parameter.
+    By default 'split'.
+x_by: str, optional
+    Metadata key for x coordinate.
+    By default 'alias'.
+y_by: str, optional
+    Metadata key for y coordinate.
+    By default 'variable_group'.
 
 """
 
