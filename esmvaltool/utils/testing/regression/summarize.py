@@ -8,8 +8,14 @@ import yaml
 
 DKRZ_LEGAL_NOTICE = """
 <div style="text-align: center;">
-    <a href="https://www.dkrz.de/en/about-en/contact/impressum" target="_blank">Imprint</a> and
-    <a href="https://www.dkrz.de/en/about-en/contact/en-datenschutzhinweise" target="_blank">Privacy Policy</a>
+    <a
+        href="https://www.dkrz.de/en/about-en/contact/impressum"
+        target="_blank"
+    >Imprint</a> and
+    <a
+        href="https://www.dkrz.de/en/about-en/contact/en-datenschutzhinweise"
+        target="_blank"
+    >Privacy Policy</a>
 </div>
 """
 
