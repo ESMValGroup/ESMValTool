@@ -187,8 +187,6 @@ diagnostics:
         plots:
           benchmarking_annual_cycle:
             plot_kwargs:
-            annual_mean_kwargs: False
-            plot_kwargs:
               'MIROC6':
                 color: red
                 label: '{alias}'

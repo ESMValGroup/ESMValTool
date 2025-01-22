@@ -634,6 +634,11 @@ Same as for plot type ``annual_cycle``.
 
 Configuration options for plot type ``benchmarking_boxplot``
 ------------------------------------------------------------
+fontsize: int, optional (default: None)
+    Fontsize used for ticks, labels and titles. For the latter, use the given
+    fontsize plus 2. Does not affect suptitles. If not given, use default
+    matplotlib values. For a more fine-grained definition of fontsizes, use the
+    option ``matplotlib_rc_params`` (see above).
 plot_kwargs: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``.
     Dictionary keys are elements identified by ``facet_used_for_labels`` or
@@ -935,6 +940,7 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
 
             elif plot_type == 'benchmarking_boxplot':
+                self.plots[plot_type].setdefault('fontsize', None)
                 self.plots[plot_type].setdefault('plot_kwargs', {})
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
                 self.plots[plot_type].setdefault('var_order', None)
@@ -3814,6 +3820,7 @@ class MultiDatasets(MonitorBase):
     def compute(self):
         """Plot preprocessed data."""
         with mpl.rc_context(self.cfg['matplotlib_rc_params']):
+            self.create_benchmarking_boxplot()
             for (var_key, datasets) in self.grouped_input_data.items():
                 logger.info("Processing variable %s", var_key)
                 self.create_timeseries_plot(datasets)
