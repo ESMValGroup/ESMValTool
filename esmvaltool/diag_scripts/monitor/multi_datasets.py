@@ -2225,8 +2225,7 @@ class MultiDatasets(MonitorBase):
 
             # Customize plot
             axes.set_title(self._get_label(dataset))
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             self._process_pyplot_kwargs(plot_type, dataset)
 
             # Rasterization
@@ -2249,9 +2248,7 @@ class MultiDatasets(MonitorBase):
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg['figure_kwargs'])
             metric = cubes[0].long_name.partition("of")[0]
-            fig.suptitle(f"{metric}of {self._get_label(datasets[0])}"
-                         f" ({datasets[0]['start_year']} - "
-                         f"{datasets[0]['end_year']})")
+            fig.suptitle(f"{metric}of {self._get_label(datasets[0])}")
 
             sns.set_style('darkgrid')
 
@@ -2327,8 +2324,7 @@ class MultiDatasets(MonitorBase):
 
             # Customize plot
             axes.set_title(self._get_label(dataset))
-            fig.suptitle(f"{dataset['long_name']} ({dataset['start_year']}-"
-                         f"{dataset['end_year']})")
+            fig.suptitle(dataset['long_name'])
             axes.set_xlabel('latitude [°N]')
             z_coord = cube.coord(axis='Z')
             axes.set_ylabel(f'{z_coord.long_name} [{z_coord.units}]')
@@ -2515,7 +2511,7 @@ class MultiDatasets(MonitorBase):
 
     def _get_benchmark_metric(self, datasets):
         """Get benchmarking metric."""
-        short_name = datasets[0].get('short_name')
+        short_name = datasets[0].get('short_name', '')
         if 'rmse' in short_name:
             metric = 'rmse'
         elif 'pearsonr' in short_name:
@@ -3311,8 +3307,7 @@ class MultiDatasets(MonitorBase):
             )
             caption = (
                 f"Map plot of {dataset['long_name']} of dataset "
-                f"{dataset['dataset']} (project {dataset['project']}) "
-                f"from {dataset['start_year']} to {dataset['end_year']}."
+                f"{dataset['alias']}."
             )
             ancestors.append(ref_dataset['filename'])
 
@@ -3454,8 +3449,7 @@ class MultiDatasets(MonitorBase):
 
             caption = (
                 f"Zonal mean profile of {dataset['long_name']} of dataset "
-                f"{dataset['dataset']} (project {dataset['project']}) from "
-                f"{dataset['start_year']} to {dataset['end_year']}."
+                f"{dataset['alias']}."
             )
 
             # Save plot
