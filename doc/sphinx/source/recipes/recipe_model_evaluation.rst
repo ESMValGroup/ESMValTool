@@ -62,42 +62,36 @@ section).
 Example plots
 -------------
 
-.. _fig_1:
 .. figure::  /recipes/figures/model_evaluation/map_tas_MPI-ESM1-2-HR_Amon.jpg
    :align:   center
    :width:   14cm
 
    Global climatology of 2m near-surface air temperature.
 
-.. _fig_2:
 .. figure::  /recipes/figures/model_evaluation/map_swcre_MPI-ESM1-2-HR_Amon.jpg
    :align:   center
    :width:   14cm
 
    Global climatology of the shortwave cloud radiative effect (SWCRE).
 
-.. _fig_3:
 .. figure::  /recipes/figures/model_evaluation/timeseries_rtnt_ambiguous_dataset_Amon.jpg
    :align:   center
    :width:   14cm
 
    Time series of the global mean top-of-the-atmosphere net radiative flux.
 
-.. _fig_4:
 .. figure::  /recipes/figures/model_evaluation/variable_vs_lat_pr_Amon.jpg
    :align:   center
    :width:   14cm
 
    Zonal mean precipitation.
 
-.. _fig_5:
 .. figure::  /recipes/figures/model_evaluation/annual_cycle_clt_southerocean_Amon.jpg
    :align:   center
    :width:   14cm
 
    Annual cycle of Southern Ocean total cloud cover.
 
-.. _fig_6:
 .. figure::  /recipes/figures/model_evaluation/diurnal_cycle_clt_sepacific_3hr.png
    :align:   center
    :width:   14cm
