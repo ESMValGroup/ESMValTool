@@ -67,7 +67,7 @@ preprocessors:
         ESACCI-OZONE,
         ESACCI-SOILMOISTURE,
         ESACCI-SST,
-        GPCP-V2.2,
+        GPCP-SG,
         HadISST,
         NCEP-NCAR-R1,
         MODIS,
@@ -162,7 +162,8 @@ diagnostics:
         variable: pr
         split: Ref1
         additional_datasets:
-          - {dataset: GPCP-V2.2, project: obs4MIPs, level: L3, tier: 1, reference_for_metric: true}
+          - {dataset: GPCP-SG, project: OBS, type: atmos,
+             version: 2.3, tier: 2, reference_for_metric: true}
       rlut:
         <<: *var_default
         variable: rlut
@@ -177,7 +178,8 @@ diagnostics:
         start_year: 2001
         end_year: 2003
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1, reference_for_metric: true}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, reference_for_metric: true}
       ua200: &ua200
         <<: *var_default
         variable: ua200
