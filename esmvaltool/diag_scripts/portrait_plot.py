@@ -476,11 +476,11 @@ def sort_data(cfg, dataset):
         # NOTE: not clean, but it works for many cases
         mm_stats = [
             v for v in dataset[cfg["x_by"]].values
-            if "Mean" in v or "Median" in v
+            if "Mean" in v or "Median" in v or "Percentile" in v
         ]
         others = [
             v for v in dataset[cfg["x_by"]].values
-            if "Mean" not in v and "Median" not in v
+            if "Mean" not in v and "Median" not in v and "Percentile" not in v
         ]
         new_order = mm_stats + others
         dataset = dataset.reindex({cfg["x_by"]: new_order})
