@@ -24,6 +24,7 @@ large variety of input data.
    recipe_benchmarking
    recipe_model_evaluation
    recipe_monitor
+   recipe_portrait
    recipe_psyplot
    recipe_seaborn
 
