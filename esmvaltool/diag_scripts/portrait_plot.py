@@ -19,6 +19,12 @@ Authors
 
 Configuration parameters through recipe:
 ----------------------------------------
+matplotlib_rc_params: dict, optional (default: {})
+    Optional :class:`matplotlib.RcParams` used to customize matplotlib plots.
+    Options given here will be passed to :func:`matplotlib.rc_context` and used
+    for all plots produced with this diagnostic. Note: fontsizes specified here
+    might be overwritten by the plot-type-specific option ``fontsize`` (see
+    below).
 normalize: str or None, optional
     ('mean', 'median', 'centered_mean', 'centered_median', None).
     Divide by median or mean if not None. Subtract median/mean afterwards if
@@ -30,11 +36,6 @@ x_by: str, optional
 y_by: str, optional
     Metadata key for y coordinate.
     By default 'variable_group'.
-group_by: str, optional
-    Metadata key for grouping.
-    Grouping is always applied in x direction. Can be set to None to skip
-    grouping into subplots.
-    By default 'project'.
 split_by: str, optional
     The rectangles can be split into 2-4 triangles. This is used to show
     metrics for different references. For this case there is no need to change
@@ -84,7 +85,7 @@ cbar_kwargs: dict, optional
     By default {}.
 axes_properties: dict, optional
     Dictionary that gets passed to :meth:`matplotlib.axes.Axes.set`.
-    Subplots can be widely customized. 
+    Subplots can be widely customized.
     E.g. xlabel, ylabel, yticklabels, xmargin...
     By default {}.
 nan_color: str or None, optional
@@ -99,6 +100,7 @@ dpi: int, optional
     Dots per inch for the figure. By default 300.
 domain: str, optional
     Domain for provenance. By default 'global'.
+
 """
 
 import itertools
@@ -502,8 +504,10 @@ def main(cfg):
     if cfg["normalize"] is not None:
         dataset["var"] = normalize(dataset["var"], cfg["normalize"],
                                    [cfg["x_by"], cfg["group_by"]])
-    plot(cfg, dataset["var"])
+    with mpl.rc_context(cfg['matplotlib_rc_params']):
+        plot(cfg, dataset["var"])
     save_to_netcdf(cfg, dataset["var"])
+
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
