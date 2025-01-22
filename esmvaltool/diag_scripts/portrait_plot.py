@@ -82,7 +82,7 @@ cbar_kwargs: dict, optional
     Dictionary that gets passed to :meth:`matplotlib.pyplot.colorbar`.
     E.g. label, ticks...
     By default {}.
-plot_properties: dict, optional
+axes_properties: dict, optional
     Dictionary that gets passed to :meth:`matplotlib.axes.Axes.set`.
     Subplots can be widely customized. 
     E.g. xlabel, ylabel, yticklabels, xmargin...
