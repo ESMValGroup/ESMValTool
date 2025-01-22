@@ -1021,6 +1021,7 @@ class MultiDatasets(MonitorBase):
                 )
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
                 self.plots[plot_type].setdefault('rasterize', True)
+                self.plots[plot_type].setdefault('show_stats', True)
                 self.plots[plot_type].setdefault(
                     'show_y_minor_ticklabels', False
                 )
