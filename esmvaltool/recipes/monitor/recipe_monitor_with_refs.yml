@@ -287,8 +287,6 @@ diagnostics:
         short_name: clt
         mip: 3hr
         timerange: '20060101/20060201'
-        additional_datasets:
-          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', frequency: 1hr, tier: 3}
     scripts:
       allplots:
         script: monitor/multi_datasets.py
@@ -304,7 +302,5 @@ diagnostics:
                 color: C0
               MPI-ESM1-2-LR:
                 color: C1
-              ERA5:
-                color: black
             pyplot_kwargs:
               title: '{short_name}'
