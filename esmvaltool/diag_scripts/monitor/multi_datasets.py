@@ -653,7 +653,7 @@ pyplot_kwargs: dict, optional
     from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
     ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
     '{short_name}'``, ``xlim: [0, 5]``.
-var_order: str (list), optional
+var_order: list of str, optional
     Optional list of strings containing variable names to define the order of
     the variables plotted.
 label: str, optional
@@ -2194,20 +2194,36 @@ class MultiDatasets(MonitorBase):
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs['axes'] = axes
             plot_kwargs['extend'] = "both"
-            plot_map = plot_func(cube, **plot_kwargs)
 
             # apply stippling (dots) to all grid cells that do not exceed
             # the upper percentile given by 'percentile_dataset[]'
-
             mask_cube = self._get_benchmark_mask(cube, percentile_dataset,
                                                  metric)
+            hatching_plot_kwargs = {
+                'colors': 'none',
+                'levels': [.5, 1.5],
+                'hatches': ['......'],
+            }
 
-            hatching = plot_func(
-               mask_cube,
-               colors='none',
-               levels=[.5, 1.5],
-               hatches=['......'],
-            )
+            if plot_func is iris.plot.contourf:
+                # see https://github.com/SciTools/cartopy/issues/2457
+                # and https://github.com/SciTools/cartopy/issues/2468
+                plot_kwargs['transform_first'] = True
+                hatching_plot_kwargs['transform_first'] = True
+                npx = da if cube.has_lazy_data() else np
+                cube_to_plot = cube.copy(
+                    npx.ma.filled(cube.core_data(), np.nan)
+                )
+                mask_cube_to_plot = mask_cube.copy(
+                    npx.ma.filled(mask_cube.core_data(), np.nan)
+                )
+            else:
+                cube_to_plot = cube
+                mask_cube_to_plot = mask_cube
+
+            # Plot
+            plot_map = plot_func(cube_to_plot, **plot_kwargs)
+            hatching = plot_func(mask_cube_to_plot, **hatching_plot_kwargs)
 
             # set color for stippling to 'black' (default = 'white')
             hatching.set_edgecolor('black')
