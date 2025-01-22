@@ -656,13 +656,6 @@ pyplot_kwargs: dict, optional
 var_order: list of str, optional
     Optional list of strings containing variable names to define the order of
     the variables plotted.
-label: str, optional
-    Facet_used_for_labels.
-fontsize: int, optional (default: 10)
-    Fontsize used for ticks, labels and titles. For the latter, use the given
-    fontsize plus 2. Does not affect suptitles. If not given, use default
-    matplotlib values. For a more fine-grained definition of fontsizes, use the
-    option ``matplotlib_rc_params`` (see above).
 
 Configuration options for plot type ``benchmarking_diurnal_cycle``
 ------------------------------------------------------------------
@@ -945,8 +938,6 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault('plot_kwargs', {})
                 self.plots[plot_type].setdefault('pyplot_kwargs', {})
                 self.plots[plot_type].setdefault('var_order', None)
-                self.plots[plot_type].setdefault('label', [])
-                self.plots[plot_type].setdefault('fontsize', 10)
 
             elif plot_type == 'map':
                 self.plots[plot_type].setdefault(
@@ -988,7 +979,7 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault(
                     'cbar_kwargs', {'orientation': 'horizontal', 'aspect': 30}
                 )
-                self.plots[plot_type].setdefault('fontsize', 10)
+                self.plots[plot_type].setdefault('fontsize', None)
                 self.plots[plot_type].setdefault('plot_func', 'contourf')
                 self.plots[plot_type].setdefault('plot_kwargs', {})
                 if 'projection' not in self.plots[plot_type]:
@@ -1036,7 +1027,7 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault(
                     'cbar_kwargs', {'orientation': 'vertical'}
                 )
-                self.plots[plot_type].setdefault('fontsize', 10)
+                self.plots[plot_type].setdefault('fontsize', None)
                 self.plots[plot_type].setdefault('log_y', True)
                 self.plots[plot_type].setdefault('plot_func', 'contourf')
                 self.plots[plot_type].setdefault('plot_kwargs', {})
@@ -2232,7 +2223,10 @@ class MultiDatasets(MonitorBase):
             axes.coastlines()
 
             # Setup colorbar
-            fontsize = self.plots[plot_type]['fontsize']
+            fontsize = (
+                self.plots[plot_type]['fontsize'] or
+                mpl.rcParams['axes.labelsize']
+            )
             colorbar = fig.colorbar(plot_map, ax=axes,
                                     **self._get_cbar_kwargs(plot_type))
             colorbar.set_label(self._get_cbar_label(plot_type, dataset),
@@ -2331,7 +2325,10 @@ class MultiDatasets(MonitorBase):
             hatching.set_linewidth(0.)
 
             # Setup colorbar
-            fontsize = self.plots[plot_type]['fontsize']
+            fontsize = (
+                self.plots[plot_type]['fontsize'] or
+                mpl.rcParams['axes.labelsize']
+            )
             colorbar = fig.colorbar(plot_benchmarking_zonal, ax=axes,
                                     **self._get_cbar_kwargs(plot_type))
             colorbar.set_label(self._get_cbar_label(plot_type, dataset),
