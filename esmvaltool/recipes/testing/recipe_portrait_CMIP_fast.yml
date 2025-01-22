@@ -1,5 +1,4 @@
 # ESMValTool
-#
 ---
 documentation:
   title: Performance metrics plots.
@@ -46,7 +45,10 @@ preprocessors:
       threshold_fraction: 0.95
     multi_model_statistics:
       span: overlap
-      statistics: [mean, median]
+      statistics:
+        - operator: mean
+        - operator: percentile
+          percent: 50
       groupby: ['project']
       # exclude all possible reference datasets
       exclude: [
