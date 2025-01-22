@@ -6,7 +6,7 @@ Model Benchmarking
 Overview
 --------
 
-These recipes and diagnostics are based on :ref:`recipe_monitor <recipe_monitor>`: that allow plotting arbitrary preprocessor output, i.e., arbitrary variables from arbitrary datasets. An extension of these diagnostics is used to benchmark a model simulation with other datasets (e.g. CMIP6). The benchmarking features are described in `Lauer et al.`_.
+These recipes and diagnostics are based on :ref:`recipe_monitor <recipe_monitor>` that allow plotting arbitrary preprocessor output, i.e., arbitrary variables from arbitrary datasets. An extension of these diagnostics is used to benchmark a model simulation with other datasets (e.g. CMIP6). The benchmarking features are described in `Lauer et al.`_.
 
 .. _`Lauer et al.`: A. Lauer, Bock, L., Hassler, B., Jöckel, P., Ruhe, L., and Schlund, M.: Monitoring and benchmarking Earth System Model simulations with ESMValTool v2.12.0, Geosci. Model Dev., 2025.
 
@@ -32,7 +32,7 @@ Diagnostics are stored in `diag_scripts/monitor/`
 Recipe settings
 ~~~~~~~~~~~~~~~
 
-See :ref:`multi_datasets.py<api.esmvaltool.diag_scripts.monitor.multi_datasets>`: for a list of all possible configuration options that can be specified in the recipe.
+See :ref:`multi_datasets.py<api.esmvaltool.diag_scripts.monitor.multi_datasets>` for a list of all possible configuration options that can be specified in the recipe.
 
 .. note::
    Please note that exactly one dataset (the dataset to be benchmarked) needs to specify the facet ``benchmark_dataset: True`` in the dataset entry of the recipe. For line plots (i.e. annual cycle, seasonal cycle, diurnal cycle, time series), it is recommended, to specify a particular line color and line style in the ``scripts`` section of the recipe for the dataset to be benchmarked (``benchmark_dataset: True``) so that this dataset is easy to identify in the plot. In the example below, MIROC6 is the dataset to be benchmarked and ERA5 is used as a reference dataset.
