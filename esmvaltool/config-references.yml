@@ -29,6 +29,7 @@ authors:
     institute: DLR, Germany
     email: diego.cammarano@dlr.de
     github: diegokam
+    orcid:
   debeire_kevin:
     name: Debeire, Kevin
     institute: DLR, Germany
@@ -246,7 +247,7 @@ authors:
     name: Gillett, Nathan
     institute: CCCma, ECCC, Canada
     orcid: https://orcid.org/0000-0002-2957-0002
-    github: npgillett    
+    github: npgillett
   gonzalez-reviriego_nube:
     name: Gonzalez-Reviriego, Nube
     institute: BSC, Spain
