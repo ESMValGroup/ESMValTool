@@ -398,7 +398,7 @@ def plot(cfg, data):
         axes_pad=0.1,
     )
     # remap colorbar to 10 discrete steps
-    cmap = mpl.cm.get_cmap(cfg.get("cmap", "RdYlBu_r"), 10)
+    cmap = mpl.cm.get_cmap(cfg["plot_kwargs"]["cmap"], 10)
     cfg["plot_kwargs"]["cmap"] = cmap
     for i in range(group_count):
         group = data.isel({cfg["group_by"]: i})
