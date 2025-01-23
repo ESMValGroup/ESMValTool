@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument
+# flake8: noqa
 """ESMValTool CMORizer for TROPFLUX data.
 
 Tier
@@ -125,7 +127,6 @@ def _extract_variable(short_name, var, cfg, raw_filepaths, out_dir):
         attributes,
         unlimited_dimensions=['time'],
     )
-
 
 def cmorization(in_dir, out_dir, cfg, *args, **kwargs):
     """Run CMORizer for TROPFLUX."""
