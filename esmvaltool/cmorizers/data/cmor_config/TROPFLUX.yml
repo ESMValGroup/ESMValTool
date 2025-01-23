@@ -45,11 +45,16 @@ variables:
     raw: lwr
     file: '/lwr_tropflux_1m_\d{4}\.nc$'
 
-  tau_month:
-    short_name: tau
-    mip: Omon
+  tauv_month:
+    short_name: tauv
+    mip: Amon
     raw: tauy
     file: '/tauy_tropflux_1m_\d{4}\.nc$'
+  tauu_month:
+    short_name: tauu
+    mip: Amon
+    raw: taux
+    file: '/taux_tropflux_1m_\d{4}\.nc$'
 
   rsds_month:
     short_name: rsds
