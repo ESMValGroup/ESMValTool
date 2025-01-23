@@ -32,9 +32,10 @@ variables:
     raw: lhf
     file: '/lhf_tropflux_1m_\d{4}\.nc$'
 
-  hfls_month_CFmon:
+  hfls_month_Amon:
     short_name: hfls
-    mip: CFmon
+    mip: Amon
+
     raw: lhf
     file: '/lhf_tropflux_1m_\d{4}\.nc$'
   hfds_month:
