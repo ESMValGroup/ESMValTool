@@ -106,10 +106,6 @@ datasets:
   - {dataset: EMAC, project: EMAC, exp: esmvaltest01, supplementary_variables: [{short_name: sftlf, skip: true}, {short_name: areacella, skip: true}], timerange: 2000/2004, alias: EMAC (2000-2004)}
   - {dataset: EMAC, project: EMAC, exp: esmvaltest01, supplementary_variables: [{short_name: sftlf, skip: true}, {short_name: areacella, skip: true}], timerange: 2005/2009, alias: EMAC (2005-2009)}
 
-ERA5_REF: &era5_ref
-  split: Ref1
-  additional_datasets:
-    - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, <<: *ref_tag}
 
 diagnostics:
   fig_08:
@@ -118,20 +114,22 @@ diagnostics:
         <<: *var_settings
         variable: tas_land
         preprocessor: rmse_land
-        <<: *era5_ref
+        split: Ref1
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, <<: *ref_tag}
       tas_2:
         <<: *var_settings
         short_name: tas
+        variable: tas_land
         preprocessor: rmse_land
         split: Ref2
-        variable: tas_land
         additional_datasets:
           - {dataset: HadCRUT5, project: OBS, type: ground,
              version: 5.0.1.0-analysis, tier: 2, <<: *ref_tag}
       lwcre:
         <<: *var_settings
-        preprocessor: rmse
         variable: lwcre
+        preprocessor: rmse
         derive: true
         force_derivation: true
         channel: Amon
@@ -152,30 +150,36 @@ diagnostics:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2009, <<: *ref_tag}
       pr: &var_rmse
-        variable: pr
         <<: *var_settings
-        preprocessor: rmse
-        <<: *era5_ref
-      pr_2:
         variable: pr
-        short_name: pr
+        preprocessor: rmse
+        split: Ref1
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, <<: *ref_tag}
+      pr_2:
         <<: *var_rmse
+        short_name: pr
+        variable: pr
         split: Ref2
         additional_datasets:
           - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
              <<: *ref_tag}
       psl:
+        <<: *var_rmse
         variable: psl
-        <<: *var_rmse
-        <<: *era5_ref
+        split: Ref1
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, <<: *ref_tag}
       rlut:
-        variable: rlut
         <<: *var_rmse
-        <<: *era5_ref
+        variable: rlut
+        split: Ref1
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, <<: *ref_tag}
       rlut_2:
-        variable: rlut
-        short_name: rlut
         <<: *var_rmse
+        short_name: rlut
+        variable: rlut
         split: Ref2
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
@@ -187,16 +191,16 @@ diagnostics:
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
              tier: 2, start_year: 2000, end_year: 2009, <<: *ref_tag}
       rsut_2:
-        variable: rsut
-        short_name: rsut
         <<: *var_rmse
+        short_name: rsut
+        variable: rsut
         split: Ref2
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2009, <<: *ref_tag}
       swcre:
-        variable: swcre
         <<: *var_rmse
+        variable: swcre
         derive: true
         force_derivation: true
         channel: Amon
@@ -204,9 +208,9 @@ diagnostics:
           - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
              tier: 2, start_year: 2000, end_year: 2009, <<: *ref_tag}
       swcre_2:
-        variable: swcre
-        short_name: swcre
         <<: *var_rmse
+        short_name: swcre
+        variable: swcre
         channel: Amon
         derive: true
         force_derivation: true
@@ -215,14 +219,16 @@ diagnostics:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
              tier: 2, start_year: 2001, end_year: 2009, <<: *ref_tag}
       ts:
-        variable: sst
         <<: *var_rmse
-        <<: *era5_ref
+        variable: sst
+        split: Ref1
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, <<: *ref_tag}
         preprocessor: rmse_ocean
       ts_2:
-        variable: sst
-        short_name: ts
         <<: *var_rmse
+        short_name: ts
+        variable: sst
         split: Ref2
         preprocessor: rmse_ocean
         additional_datasets:
@@ -234,7 +240,7 @@ diagnostics:
         y_by: variable  # use extra_facet since group and short_name don't work
         group_by: project
         normalize: "centered_median"
-        default_split: ERA5
+        default_split: Ref1
         nan_color: null
         plot_kwargs:
           vmin: -0.3
