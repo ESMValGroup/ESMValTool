@@ -1,4 +1,6 @@
 # pylint: disable=unused-argument
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-function-args
 # flake8: noqa
 """ESMValTool CMORizer for TROPFLUX data.
 
