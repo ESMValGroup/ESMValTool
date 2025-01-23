@@ -35,7 +35,7 @@ Recipe settings
 See :ref:`multi_datasets.py<api.esmvaltool.diag_scripts.monitor.multi_datasets>` for a list of all possible configuration options that can be specified in the recipe.
 
 .. note::
-   Please note that exactly one dataset (the dataset to be benchmarked) needs to specify the facet ``benchmark_dataset: true`` in the dataset entry of the recipe. For line plots (i.e. annual cycle, seasonal cycle, diurnal cycle, time series), it is recommended, to specify a particular line color and line style in the ``scripts`` section of the recipe for the dataset to be benchmarked (``benchmark_dataset: true``) so that this dataset is easy to identify in the plot. In the example below, MIROC6 is the dataset to be benchmarked and ERA5 is used as a reference dataset.
+   Please note that exactly one dataset (the dataset to be benchmarked) needs to specify the facet ``benchmark_dataset: true`` in the dataset entry of the recipe. For line plots (i.e. annual cycle, diurnal cycle, time series), it is recommended, to specify a particular line color and line style in the ``scripts`` section of the recipe for the dataset to be benchmarked (``benchmark_dataset: true``) so that this dataset is easy to identify in the plot. In the example below, MIROC6 is the dataset to be benchmarked and ERA5 is used as a reference dataset.
 
 .. code-block:: yaml
 

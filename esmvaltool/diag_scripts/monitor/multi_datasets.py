@@ -10,6 +10,15 @@ For some plot types, a reference dataset can be defined. For this, use the
 facet ``reference_for_monitor_diags: true`` in the definition of the dataset in
 the recipe. Note that at most one reference dataset per variable is supported.
 
+Please note that all benchmarking plot types (i.e. all plot types starting
+with ``benchmarking_``) require exactly one dataset (the dataset to be benchmarked)
+to have the facet ``benchmark_dataset: true`` in the dataset entry of the recipe.
+For benchmarking line plots (i.e. ``benchmarking_annual_cycle``,
+``benchmarking_diurnal_cycle``, ``benchmarking_timeseries``), it is recommended
+to specify a particular line color and line style in the ``scripts`` section of
+the recipe for the dataset to be benchmarked (``benchmark_dataset: true``) so that
+this dataset is easy to identify in the plot.
+
 Currently supported plot types (use the option ``plots`` to specify them):
     - Time series (plot type ``timeseries``): for each variable separately, all
       datasets are plotted in one single figure. Input data needs to be 1D with
