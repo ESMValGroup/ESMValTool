@@ -127,7 +127,7 @@ def _extract_variable(short_name, var, cfg, raw_filepaths, out_dir):
     )
 
 
-def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
+def cmorization(in_dir, out_dir, cfg, *args, **kwargs):
     """Run CMORizer for TROPFLUX."""
     for (short_name, var) in cfg['variables'].items():
         logger.info("CMORizing variable '%s'", short_name)
