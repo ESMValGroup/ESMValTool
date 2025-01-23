@@ -37,6 +37,11 @@ variables:
     mip: CFmon
     raw: lhf
     file: '/lhf_tropflux_1m_\d{4}\.nc$'
+  hfds_month:
+    short_name: hfds
+    mip: Omon
+    raw: netflux
+    file: '/netflux_tropflux_1m_\d{4}\.nc$'
 
   rlus_month:
     short_name: rlus
