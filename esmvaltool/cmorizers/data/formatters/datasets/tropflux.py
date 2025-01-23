@@ -112,7 +112,7 @@ def _extract_variable(short_name, var, cfg, raw_filepaths, out_dir):
 
     cube = _fix_coordinates(cube, definition, cmor_info)
 
-    if var.get("make_negative"):
+    if  raw_var == 'taux': 
         cube.data = -1 * cube.data
 
     utils.save_variable(
