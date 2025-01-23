@@ -51,17 +51,20 @@ from esmvaltool.cmorizers.data import utilities as utils
 try:
     iris.FUTURE.date_microseconds = True
     iris.FUTURE.save_split_attrs = True
-except AttributeError:
-    # Handle the case where the attributes or FUTURE don't exist
-    pass
-except Exception as e:
-    # Log or handle other unexpected exceptions
+except AttributeError as e:
+    # Handle cases where FUTURE or the attributes don't exist
+    print(f"AttributeError: {e}")
+except (TypeError, ValueError) as e:
+    # Handle specific errors if these might occur
+    print(f"TypeError or ValueError: {e}")
+except BaseException as e:
+    # Fallback for rare or unknown issues, but avoid catching Exception
     print(f"An unexpected error occurred: {e}")
 
 logger = logging.getLogger(__name__)
 
 
-def _fix_coordinates(cube, definition, cmor_info):
+def _fix_coordinates(cube, definition):
     cube = utils.fix_coords(cube)
 
     for coord_def in definition.coordinates.values():
@@ -110,9 +113,9 @@ def _extract_variable(short_name, var, cfg, raw_filepaths, out_dir):
     cube.coord('time').convert_units(
         cf_units.Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
 
-    cube = _fix_coordinates(cube, definition, cmor_info)
+    cube = _fix_coordinates(cube, definition)
 
-    if  raw_var == 'taux': 
+    if raw_var == 'taux':
         cube.data = -1 * cube.data
 
     utils.save_variable(
