@@ -1,26 +1,17 @@
 #!jinja2
 {{ assert(SITE != "", "SITE must be set to something other than an empty string") }}
 
-{% set SITE_RECIPES_FILE = "site/" ~ SITE ~ "-recipes.cylc" %}
+{% set SITE_RECIPES_FILE = "site/" ~ SITE ~ "-recipes.jinja" %}
 {% set MISSING_FILE_MSG =
     "'" ~ SITE_RECIPES_FILE ~ "' is required for the Recipe Test Workflow and was not "
     "found - the 'How to add a recipe to the RTW' documentation provides more "
     "information"%}
 {% set UNDEFINED_VARIABLE_MSG =
-    "variable must be set in your '" ~ SITE_RECIPES_FILE ~ "'- the 'How to add a recipe "
-    "to the RTW' documentation provides more information."%}
-
-# Assert 'site/<site>-recipes.cylc' exists and assert FAST_RECIPES and MEDIUM_RECIPES
-# are imported from it. Produce readable errors if not.
-# --- Text in the three lines above an assert appears in the Jinja2 error ---
-
-
+    "variable must be set in your '" ~ SITE_RECIPES_FILE ~ "' file - the 'How "
+    "to add a recipe to the RTW' documentation provides more information."%}
 
 {{ assert(SITE_RECIPES_FILE is file_exists, MISSING_FILE_MSG) }}
 {% from SITE_RECIPES_FILE import FAST_RECIPES, MEDIUM_RECIPES %}
-# --- Text in the three lines above an assert appears in the Jinja2 error ---
-
-
 
 {{ assert(FAST_RECIPES is defined, "The FAST_RECIPES " ~ UNDEFINED_VARIABLE_MSG) }}
 {{ assert(MEDIUM_RECIPES is defined, "The MEDIUM_RECIPES " ~ UNDEFINED_VARIABLE_MSG) }}
