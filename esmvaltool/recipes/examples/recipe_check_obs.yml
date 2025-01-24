@@ -2020,8 +2020,10 @@ diagnostics:
       siconc:
         mip: SImon
     additional_datasets:
+      - {dataset: NSIDC-G02202-nh, project: OBS6, tier: 3,
+        type: reanaly, version: 5, start_year: 1979, end_year: 2024}
       - {dataset: NSIDC-G02202-sh, project: OBS6, tier: 3,
-        type: reanaly, version: 4, start_year: 1979, end_year: 2022}
+        type: reanaly, version: 5, start_year: 1979, end_year: 2024}
     scripts: null
 
   UWisc:

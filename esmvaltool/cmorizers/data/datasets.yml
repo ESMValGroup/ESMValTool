@@ -1131,15 +1131,15 @@ datasets:
 
   NSIDC-G02202-sh:
     tier: 3
-    source: https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4shmday
-    last_access: 2023-05-13
+    source: https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v5shmday
+    last_access: 2025-01-24
     info: |
       Download monthly data.
       Login required for download, and also requires citation only to use
   
   NSIDC-G02202-nh:
     tier: 3
-    source: https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4shmday
+    source: https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v5shmday
     last_access: 2025-01-24
     info: |
       Download monthly data. 
