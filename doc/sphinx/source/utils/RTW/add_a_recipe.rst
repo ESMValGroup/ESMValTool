@@ -3,79 +3,73 @@ How to add a recipe to the |RTW|
 
 .. include:: common.txt
 
-.. note::
-   Before you follow these steps to add your recipe, you must be able to
-   successfully run the recipe with the latest version of ESMValTool on the
-   compute server you use at your site, as detailed by the ``platform`` option
-   in the ``[[COMPUTE]]`` section in the site-specific ``.cylc`` file in the
-   ``esmvaltool/utils/recipe_test_workflow/site/`` directory.
+Overview
+--------
 
-#. Open a `new ESMValTool issue`_ on GitHub, assign yourself to the issue, and
-   add the ``Recipe Test Workflow (RTW)`` label to the issue, see
-   `ESMValTool issue #3663`_ for an example.
+To add a recipe to the |RTW| you will:
+
+* Run the recipe at your site
+* Note the actual duration and memory usage
+* Edit your site's recipe file
+* Run the |RTW| at your site
+* Update the recipe's KGOs
+
+The recipe will then run at your site whenever the |RTW| is run.
+
+Preparation
+-----------
+
+#. Open a `new ESMValTool issue`_ on GitHub. Assign yourself to the issue and
+   add the ``Recipe Test Workflow (RTW)`` label. `ESMValTool issue #3663`_
+   provides an example.
 
 #. Create a branch.
 
-#. Obtain the duration and memory usage of the recipe from the messages printed
-   to screen, or at the end of the ``run/main_log.txt`` file in the recipe
-   output directory after running your recipe on the compute cluster you use at
-   your site; these messages will look something like::
+#. Run the recipe:
 
-     YYYY-MM-DD HH:MM:SS:sss UTC [12345] INFO    Time for running the recipe was: 0:02:13.334742
-     YYYY-MM-DD HH:MM:SS:sss UTC [12345] INFO    Maximum memory used (estimate): 2.4 GB
-     [...]
-     YYYY-MM-DD HH:MM:SS:sss UTC [12345] INFO    Run was successful
-
-.. _run_a_recipe_in_the_rtw:
-
-Run a Recipe in the |RTW|
--------------------------
-
-#. The recipe should now be added to your ``<site>-recipes.cylc`` file. (Where
-   ``<site>`` is your site). Find this in the
-   ``esmvaltool/utils/recipe_test_workflow/site/`` directory. Add the recipe in
-   alphabetical order for easy user reference:
-   :ref:`Currently tested recipes <currently_tested_recipes>`.
-
-#. ``<site>-recipes.cylc`` contains **two lists of dictionaries**. The lists
-   are ``FAST_RECIPES`` and ``MEDIUM_RECIPES``.
+   * with the latest version of ESMValTool
+   * on the compute server you use at your site
 
    .. hint::
-      ``FAST_RECIPES`` take *less* than 10 minutes to run at your site.
-      ``MEDIUM_RECIPES`` take *more* than 10 minutes.
+      Your compute server is defined in the
+      ``esmvaltool/utils/recipe_test_workflow/site/<site>.cylc`` file as
+      follows::
 
-#. Add the recipe to one of lists as as a dictionary of ``key, value`` pairs.
-   E.g.::
+         [[COMPUTE]]
+            platform = <your compute server>
+
+#. Obtain the actual duration and memory usage of the recipe. This can be found
+   either in the message printed to screen, or at the end of the
+   ``run/main_log.txt`` file in the recipe output directory. The relevant lines will
+   look something like::
+
+      YYYY-MM-DD HH:MM:SS:sss UTC [12345] INFO    Time for running the recipe was: 0:02:13.334742
+      YYYY-MM-DD HH:MM:SS:sss UTC [12345] INFO    Maximum memory used (estimate): 2.4 GB
+      [...]
+      YYYY-MM-DD HH:MM:SS:sss UTC [12345] INFO    Run was successful
+
+Adding the recipe
+-----------------
+
+#. Add the recipe in alphabetical order to either ``FAST_RECIPES`` or
+   ``MEDIUM_RECIPES`` in the ``<site>-recipes.jinja`` file. It should look
+   something like::
 
       {
          'recipe_path': 'recipe_a_fast_recipe',
-         'actual': '1m30s, 1.5 GB on 2025-01-01',
-         'max_time': 'PT2M',
-         'max_memory': '2G',
+         'actual': '2m13s, 2.4 GB on YYYY-MM-DD',
+         'max_time': 'PT3M',
+         'max_memory': '3G',
       }
 
-   Add the following information for each key:
+   .. important::
+      Add the recipe to ``FAST_RECIPES`` if it takes *less* than 10 mins to
+      run at your site. Add the recipe to ``MEDIUM_RECIPES`` if it takes *more*
+      than 10 mins.
 
-   .. list-table::
-      :widths: 25 75
-      :header-rows: 1
-
-      * - Key
-        - Value
-      * - ``recipe_path``
-        - The path to the recipe. Recipe paths are specified relative to
-          ``esmvaltool/recipes``. For recipes in subdirectories, ``--`` stands
-          for ``/`` since the latter is an illegal char.
-      * - ``actual``
-        - A note of  the recipe's actual resource usage. From the successful run
-          of the recipe on the compute server at your site.
-      * - ``max_time``
-        - Set the maximum amount of time the recipe has to complete. Use the
-          ISO8601 duration format (see `Cylc ISO8601 Durations`_ for more).
-      * - ``max_memory``
-        - Set the memory to allocate to running the recipe. Default units are
-          megabytes. Different units can be specified using the
-          suffix [K|M|G|T] (see `Slurm sbatch --mem`_ for more).
+   .. hint::
+      For more information about the file refer to
+      :ref:`site/site-recipes.jinja' <site_recipes_file>`.
 
    .. hint::
       Set the ``max_time`` to 10-20% more than the actual duration. For actual
@@ -85,57 +79,67 @@ Run a Recipe in the |RTW|
       Try not to regularly waste more than 500 MiB in memory usage. Typically,
       rounding the actual memory usage up to the nearest integer is acceptable.
 
-#. Once the recipe dictionary is added to either ``FAST_RECIPES`` or
-   ``MEDIUM_RECIPES``, the recipe will run as part of the |RTW| at your site.
-   Next, the recipe will need |KGOs| to run successfully in the RTW.
-
-   .. _jinja2_templating_language:
-
-   .. note::
-      The ``<site>-recipes.cylc`` file is actually written in the `Jinja2`_
-      templating language. Jinja2 gives |Cylc| many powerful features (visit
-      `Cylc Jinja2`_). This is beyond the scope of this guide. Follow the links
-      for more information.
-
-Update the KGOs
----------------
-
-#. Stop any running ``recipe_test_workflow`` workflows::
-
-    cylc stop recipe_test_workflow/*
+Run the |RTW|
+-------------
 
 #. Run the |RTW|, as detailed in the :ref:`quick_start_guide`; it is expected
    that the ``compare`` task will fail.
 
-#. Update the Known Good Outputs (|KGOs|):
+   .. note::
+      The purpose of running the |RTW| here is to generate |KGOs| for the next
+      step.
 
-   * Recursively copy the recipe output directory (i.e.
-     ``recipe_<recipe>_<date>_<time>/``) from the
-     ``${HOME}/cylc-run/recipe_test_workflow/runN/share/cycle/<cycle>/``
-     directory to your site-specific |KGO| directory, as detailed by the
-     ``KGO_ROOT_PATH`` option in the site-specific ``.conf`` file in the
-     ``esmvaltool/utils/recipe_test_workflow/opt/`` directory::
+Update the |KGOs|
+-----------------
 
-       cp -r ${HOME}/cylc-run/recipe_test_workflow/runN/share/cycle/<cycle>/recipe_<recipe>_<date>_<time> <KGO_ROOT_PATH>
+#. Recursively copy the recipe output directory
+   ``recipe_<recipe>_<date>_<time>/`` to your site-specific |KGO| directory::
 
-     .. note::
-        Cylc is typically configured such that
-        ``${HOME}/cylc-run/recipe_test_workflow/runN/share`` is a symbolic link
-        to a share directory located on a scratch disk; the recipe output
-        directory is not stored in ``${HOME}``.
+      cp -r ${HOME}/cylc-run/recipe_test_workflow/runN/share/cycle/<cycle>/recipe_<recipe>_<date>_<time> <KGO_ROOT_PATH>
 
-   * Enable write permissions for all users on the recipe output directory in
-     your site-specific |KGO| directory::
+   .. hint::
+      ``<cycle>`` will look something like: ``20250101T0900Z``. The recipe output
+      directory will look something like: ``recipe_python_20250101_090000``
 
-       chmod -R a+w <KGO_ROOT_PATH>/recipe_<recipe>_<date>_<time>
+   .. hint::
+      Find your site specific ``KGO_ROOT_PATH`` in ``rose-suite-<site>.conf``
+      in the ``esmvaltool/utils/recipe_test_workflow/opt/`` directory.
+
+   .. note::
+      Cylc is typically configured such that
+      ``${HOME}/cylc-run/recipe_test_workflow/runN/share`` is a symbolic link
+      to a share directory located on a scratch disk; the recipe output
+      directory is not stored in ``${HOME}``.
+
+#. Enable write permissions for all users on the recipe output directory in
+   your site-specific |KGO| directory::
+
+      chmod -R a+w <KGO_ROOT_PATH>/recipe_<recipe>_<date>_<time>
 
 #. Stop any running ``recipe_test_workflow`` workflows::
 
-     cylc stop recipe_test_workflow/*
+      cylc stop recipe_test_workflow/*
 
 #. Run the |RTW| again, as detailed in the :ref:`quick_start_guide`; the
    ``compare`` task should now succeed.
 
-#. Commit and push your changes, create a PR, assign yourself to the PR, and
-   add the ``Recipe Test Workflow (RTW)`` label to the PR, see
+   .. important::
+      Unless you want the |RTW| to continue running every night, repeat the
+      previous step to stop the workflow.
+
+Request a review
+----------------
+
+#. Commit and push your changes.
+
+#. Create a PR. Assign yourself to the PR, and add the
+   ``Recipe Test Workflow (RTW)`` label to the PR. Refer to
    `ESMValTool PR #3664`_ for an example.
+
+   .. note::
+      Reviewers will automatically be assigned to your PR.
+
+Congratulations!
+----------------
+
+The recipe will now run at your site whenever the RTW is run.
