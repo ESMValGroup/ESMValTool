@@ -69,8 +69,8 @@ Adding the recipe
       than 10 mins.
 
    .. hint::
-      For more information about the file refer to
-      :ref:`site/site-recipes.jinja' <site_recipes_file>`.
+      The :ref:`site/site-recipes.jinja <site_recipes_file>`.
+      file provides more information.
 
    .. hint::
       Set the ``max_time`` to 10-20% more than the actual duration. For actual
