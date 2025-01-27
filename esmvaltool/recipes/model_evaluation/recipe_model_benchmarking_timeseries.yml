@@ -89,7 +89,7 @@ preprocessors:
           percent: 10
         - operator: percentile
           percent: 90
-      exclude: [reference_dataset, EMAC]
+      exclude: [reference_dataset, MIROC6]
 
   pp_tas_metric:
     custom_order: true
@@ -117,7 +117,7 @@ preprocessors:
           percent: 10
         - operator: percentile
           percent: 90
-      exclude: [reference_dataset, EMAC]
+      exclude: [reference_dataset, MIROC6]
 
 
 diagnostics:
