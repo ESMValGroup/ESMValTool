@@ -103,7 +103,7 @@ Update the |KGOs|
       directory will look something like: ``recipe_python_20250101_090000``
 
    .. hint::
-      Find your site specific ``KGO_ROOT_PATH`` in ``rose-suite-<site>.conf``
+      Find your site specific ``KGO_ROOT_PATH`` in the ``rose-suite-<site>.conf`` file
       in the ``esmvaltool/utils/recipe_test_workflow/opt/`` directory.
 
    .. note::
