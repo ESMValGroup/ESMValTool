@@ -13,6 +13,7 @@ To add a recipe to the |RTW| you will:
 * Edit your site's recipe file
 * Run the |RTW| at your site
 * Update the recipe's KGOs
+* Request a review
 
 The recipe will then run at your site whenever the |RTW| is run.
 
