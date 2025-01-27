@@ -11,8 +11,7 @@ To add a recipe to the |RTW| you will:
 * Run the recipe at your site
 * Note the actual duration and memory usage
 * Edit your site's recipe file
-* Run the |RTW| at your site
-* Update the recipe's KGOs
+* Create the recipe's KGOs
 * Request a review
 
 The recipe will then run at your site whenever the |RTW| is run.
@@ -80,18 +79,16 @@ Adding the recipe
       Try not to regularly waste more than 500 MiB in memory usage. Typically,
       rounding the actual memory usage up to the nearest integer is acceptable.
 
-Run the |RTW|
--------------
+Create the |KGOs|
+-----------------
 
 #. Run the |RTW|, as detailed in the :ref:`quick_start_guide`; it is expected
    that the ``compare`` task will fail.
 
-   .. note::
-      The purpose of running the |RTW| here is to generate |KGOs| for the next
-      step.
-
-Update the |KGOs|
------------------
+   .. important::
+      The ``compare`` task fails because the |KGOs| for the recipe do not yet
+      exist. This run of the |RTW| will generate the outputs that will be
+      used as |KGOs|.
 
 #. Recursively copy the recipe output directory
    ``recipe_<recipe>_<date>_<time>/`` to your site-specific |KGO| directory::
