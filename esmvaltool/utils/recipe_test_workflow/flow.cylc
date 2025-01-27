@@ -3,7 +3,7 @@
 
 {% set SITE_RECIPES_FILE = "site/" ~ SITE ~ "-recipes.jinja" %}
 {% set MISSING_FILE_MSG =
-    "'" ~ SITE_RECIPES_FILE ~ "' is required for the Recipe Test Workflow and was not "
+    "'" ~ SITE_RECIPES_FILE ~ "' is required for the RTW and was not "
     "found - the 'How to add a recipe to the RTW' documentation provides more "
     "information"%}
 {% set UNDEFINED_VARIABLE_MSG =
