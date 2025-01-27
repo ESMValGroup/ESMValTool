@@ -14,5 +14,5 @@ files:
 * jasmin-recipes.cylc **(COMING SOON!)**
 
 .. hint::
-   For more information about these files refer to
-   :ref:`site/site-recipes.jinja' <site_recipes_file>`.
+   The :ref:`site/site-recipes.jinja <site_recipes_file>`.
+   file provides more information.

@@ -77,7 +77,7 @@ and ``opt`` directories within the |RTW|. The files required are:
 .. _site_recipes_file:
 
 ``site/<site>-recipes.jinja``
-   Lists all the recipes the |RTW| runs at a given site.
+   Contains all the recipes run at the ``SITE``
 
 .. hint::
    * The file uses the `Jinja2`_ templating language, which has a similar syntax
