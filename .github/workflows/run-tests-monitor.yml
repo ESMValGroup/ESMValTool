@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +35,6 @@ jobs:
           environment-file: environment.yml
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
-          miniforge-variant: Mambaforge
           use-mamba: true
       - run: mkdir -p test_linux_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
@@ -67,7 +66,7 @@ jobs:
     runs-on: "macos-latest"
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12"]
         architecture: ["x64"]  # need to force Intel, arm64 builds have issues
       fail-fast: false
     name: OSX Python ${{ matrix.python-version }}
@@ -82,7 +81,6 @@ jobs:
           environment-file: environment_osx.yml
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
-          miniforge-variant: Mambaforge
           use-mamba: true
       # - name: Install libomp with homebrew
       #   run: brew install libomp

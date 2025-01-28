@@ -16,8 +16,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from iris import NameConstraint
 from matplotlib import gridspec, rcParams
-from poisson_solver import SphericalPoisson
 
+from esmvaltool.diag_scripts.iht_toa.poisson_solver import SphericalPoisson
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,

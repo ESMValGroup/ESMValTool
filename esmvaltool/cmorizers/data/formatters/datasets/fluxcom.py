@@ -29,7 +29,6 @@ import os
 import re
 
 import iris
-import numpy as np
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -66,11 +65,8 @@ def _extract_variable(cmor_info, attrs, filepath, out_dir):
         cube.coord('lon').standard_name = 'longitude'
         utils.fix_var_metadata(cube, cmor_info)
         utils.convert_timeunits(cube, 1950)
-        utils.fix_coords(cube)
+        cube = utils.fix_coords(cube)
         utils.set_global_atts(cube, attrs)
-        utils.flip_dim_coord(cube, 'latitude')
-        coord = cube.coord('latitude')
-        coord.bounds = np.flip(coord.bounds, axis=1)
         logger.info("Saving file")
         utils.save_variable(cube,
                             var,
