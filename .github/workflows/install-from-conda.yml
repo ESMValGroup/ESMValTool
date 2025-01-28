@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - pin-mamba-ga
   schedule:
     - cron: '0 4 * * *'
 
@@ -28,6 +29,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
           use-mamba: true
+          mamba-version: "2.0.5"
       - run: mkdir -p conda_install_linux_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
         run: |
