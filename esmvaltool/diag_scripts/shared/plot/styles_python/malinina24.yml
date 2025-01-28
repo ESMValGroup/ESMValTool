@@ -21,6 +21,13 @@ ERA5:
   facecolor: '#cd5c5c'
   mark: 'o'
   thick: 1
+JRA3Q:
+  avgstd: 1
+  color: '#45503B'
+  dash: '-'
+  facecolor: '#45503B'
+  mark: 'o'
+  thick: 1
 nat: 
   avgstd: 1
   color: '#005000'
