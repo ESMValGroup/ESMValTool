@@ -12,6 +12,7 @@ on:
   push:
     branches:
       - main
+      - pin-mamba-ga
   schedule:
     - cron: '0 0 * * *'
 
@@ -39,6 +40,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
           use-mamba: true
+          mamba-version: "2.0.5"
       - run: mkdir -p develop_test_linux_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
         run: |
