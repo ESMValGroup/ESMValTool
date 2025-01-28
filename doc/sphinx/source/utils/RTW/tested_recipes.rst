@@ -6,14 +6,13 @@ Currently tested recipes
 
 .. include:: common.txt
 
-The following currently tested recipes are available in the |RTW|:
+The recipes tested with the |RTW| at each site are defined in the following
+files:
 
-* `Autoassess landsurface soilmoisture`_
-* `Consecutive dry days`_
-* `Ensclus`_
-* `Examples python`_
-* `Heatwaves coldwaves`_
-* `Landcover - Albedo`_
-* `Ocean Atlantic Meridional Overturning Circulation (AMOC)`_
-* `Ocean multimap`_
-* `Radiation budget`_
+* `metoffice-recipes.cylc`_
+* dkrz-recipes.cylc **(COMING SOON!)**
+* jasmin-recipes.cylc **(COMING SOON!)**
+
+.. hint::
+   The :ref:`site/site-recipes.jinja <site_recipes_file>`.
+   file provides more information.
