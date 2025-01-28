@@ -72,8 +72,8 @@ diagnostics:
           how: any
         plot_object_methods:
           set_axis_labels:
-            xlabel: 'Cloud Fraction (clt)'
-            ylabel: 'Longwave Cloud Radiative Effect (lwcre)'
+            xlabel: 'clt [%]'
+            ylabel: 'lwcre [W m-2]'
         seaborn_settings:
           style: ticks
           rc:
@@ -115,15 +115,15 @@ diagnostics:
           color: blue                 # Sets the color for the plots
           cbar: True                  # Includes a color bar
           # xlabel: 'clt [%]'
-          # ylabel: 'lwcre [W m-2]'
+          # ylabel: 'swcre [W m-2]'
         add_aux_coords: true
         dropna_kwargs:
           axis: 0
           how: any
         plot_object_methods:
           set_axis_labels:
-            xlabel: 'Cloud Fraction (clt)'
-            ylabel: 'Shortwave Cloud Radiative Effect (swcre)'
+            xlabel: 'clt [%]'
+            ylabel: 'swcre [W m-2]'
         seaborn_settings:
           style: ticks
           rc:
