@@ -2,11 +2,11 @@
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: IAP
-  version: 'v4'
+  version: 'v4.2'
   tier: 2
   modeling_realm: reanaly
   project_id: OBS6
-  source: 'http://osisaf.met.no/p/ice/'
+  source: 'http://www.ocean.iap.ac.cn/'
   reference: 'iap'
   comment: ''
 
@@ -20,3 +20,4 @@ variables:
 
 custom:
   create_areacello: false
+  reference_year: 2000

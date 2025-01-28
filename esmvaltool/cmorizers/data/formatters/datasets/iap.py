@@ -11,7 +11,7 @@ Last access: 20250220
 Download and processing instructions
    All handled by the script (download only if local data are missing)
 
-   Alternatively, download the following files:
+   Alternatively, download and unzip the following files:
      Temperature_IAPv4.2_gridded_data_1940_1949.zip
      Temperature_IAPv4.2_gridded_data_1950_1959.zip
      Temperature_IAPv4.2_gridded_data_1960_1969.zip
@@ -25,12 +25,14 @@ Download and processing instructions
 
 import logging
 import os
-from warnings import catch_warnings, filterwarnings
+import warnings
+from warnings import catch_warnings
 from datetime import datetime
 from dateutil import relativedelta
 
 import iris
-from cf_units import Unit
+import cf_units
+import numpy as np
 
 from esmvaltool.cmorizers.data.utilities import (
     fix_coords,
@@ -39,13 +41,24 @@ from esmvaltool.cmorizers.data.utilities import (
     set_global_atts,
 )
 
+try:
+    iris.FUTURE.date_microseconds = True
+    iris.FUTURE.save_split_attrs = True
+except AttributeError as e:
+    # Handle cases where FUTURE or the attributes don't exist
+    print(f"AttributeError: {e}")
+except (TypeError, ValueError) as e:
+    # Handle specific errors if these might occur
+    print(f"TypeError or ValueError: {e}")
+except BaseException as e:
+    # Fallback for rare or unknown issues, but avoid catching Exception
+    print(f"An unexpected error occurred: {e}")
+
 logger = logging.getLogger(__name__)
 
 
 def collect_files(in_dir, var, cfg, start_date, end_date):
     file_list = []
-    #var_dict = cfg['variables'][var]
-    #in_dir = os.path.join(in_dir, var_dict['name'])
 
     if start_date is None:
         start_date = datetime(year=1940, month=1, day=1)
@@ -63,35 +76,51 @@ def collect_files(in_dir, var, cfg, start_date, end_date):
     return file_list
 
 
+def process_data(cube, reference_year):
+    # Convert temperature from Celsius to Kelvin and add time dimension
+    temperature_data = cube.data + 273.15
+    temperature_data = np.expand_dims(temperature_data, axis=0)  # Add time dimension
+    temperature_data = np.moveaxis(temperature_data, (0, 1, 2, 3), (0, 2, 3, 1))  # Reorder axes
+
+    # Create time coordinate
+    start_date = datetime(int(cube.attributes["StartYear"]), int(cube.attributes["StartMonth"]), int(cube.attributes["StartDay"]))
+    reference_date = datetime(2000, 1, 1)
+    time_points = [(start_date - reference_date).days]
+
+    time_coord = iris.coords.DimCoord(time_points, standard_name="time", units=f"days since {reference_date.year}-{reference_date.month}-{reference_date.day}")
+
+    # Remove old date attributes
+    for key in ["StartDay", "StartMonth", "StartYear", "EndDay", "EndMonth", "EndYear"]:
+        del cube.attributes[key]
+
+    # Get existing coordinates and rename 'standard depth' to 'depth'
+    latitude_coord = cube.coord("latitude")
+    longitude_coord = cube.coord("longitude")
+    depth_coord = cube.coord("standard depth")
+    depth_coord.rename("depth")
+
+    # Create and return the new cube
+    return iris.cube.Cube(
+        temperature_data,
+        var_name="Temperature",
+        dim_coords_and_dims=[(time_coord, 0), (depth_coord, 1), (latitude_coord, 2), (longitude_coord, 3)],
+        attributes=cube.attributes,
+        units=cf_units.Unit('K')
+    )
+
 def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
     """Extract variables and create OBS dataset."""
-    print(raw_info)
     var = raw_info['var']
     var_info = cmor_table.get_variable(raw_info['mip'], var)
     rawvar = raw_info['raw_var']
-    #with catch_warnings():
-    #    filterwarnings(
-    #        action='ignore',
-    #        message='Ignoring netCDF variable .* invalid units .*',
-    #        category=UserWarning,
-    #        module='iris',
-    #    )
-    #    cubes = iris.load(in_files, rawvar)
-    cubes = iris.load(in_files, rawvar)
-
-    print(in_files)
-
-    print(cubes)
+    with catch_warnings():
+        warnings.simplefilter('ignore')  # Ignore all warnings
+        cubes = iris.load(in_files, rawvar)
+        reference_year = raw_info['reference_year']
+        cubes = iris.cube.CubeList([process_data(cube, reference_year) for cube in cubes])
+    
     iris.util.equalise_attributes(cubes)
     cube = cubes.concatenate_cube()
-
-    # set reference time
-    #year = raw_info['reference_year']
-    #cube.coord('time').climatological = False
-    #cube.coord('time').points = 6.5
-    #cube.coord('time').units = Unit('months since ' + str(year) +
-    #                                '-01-01 00:00:00',
-    #                                calendar='gregorian')
 
     fix_var_metadata(cube, var_info)
     fix_coords(cube)
@@ -103,7 +132,7 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
         var_info = cmor_table.get_variable(raw_info['mip'],
                                            raw_info['srf_var'])
         logger.info("Extract surface OBS for %s", raw_info['srf_var'])
-        level_constraint = iris.Constraint(cube.var_name, depth=0)
+        level_constraint = iris.Constraint(cube.var_name, depth=1)
         cube_os = cube.extract(level_constraint)
         fix_var_metadata(cube_os, var_info)
         save_variable(cube_os,
@@ -125,7 +154,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         raw_info = cfg['variables'][var]
         raw_info.update({
             'var': var,
-            #'reference_year': cfg['custom']['reference_year'],
+            'reference_year': cfg['custom']['reference_year'],
         })
         glob_attrs['mip'] = vals['mip']
         extract_variable(in_files, out_dir, glob_attrs, raw_info, cmor_table)
