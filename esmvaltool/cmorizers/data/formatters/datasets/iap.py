@@ -80,14 +80,24 @@ def process_data(cube, reference_year):
     # Convert temperature from Celsius to Kelvin and add time dimension
     temperature_data = cube.data + 273.15
     temperature_data = np.expand_dims(temperature_data, axis=0)  # Add time dimension
-    temperature_data = np.moveaxis(temperature_data, (0, 1, 2, 3), (0, 2, 3, 1))  # Reorder axes
+    temperature_data = np.moveaxis(
+        temperature_data, (0, 1, 2, 3), (0, 2, 3, 1)
+    )  # Reorder axes
 
     # Create time coordinate
-    start_date = datetime(int(cube.attributes["StartYear"]), int(cube.attributes["StartMonth"]), int(cube.attributes["StartDay"]))
+    start_date = datetime(
+        int(cube.attributes["StartYear"]),
+        int(cube.attributes["StartMonth"]),
+        int(cube.attributes["StartDay"]),
+    )
     reference_date = datetime(2000, 1, 1)
     time_points = [(start_date - reference_date).days]
 
-    time_coord = iris.coords.DimCoord(time_points, standard_name="time", units=f"days since {reference_date.year}-{reference_date.month}-{reference_date.day}")
+    time_coord = iris.coords.DimCoord(
+        time_points,
+        standard_name="time",
+        units=f"days since {reference_date.year}-{reference_date.month}-{reference_date.day}",
+    )
 
     # Remove old date attributes
     for key in ["StartDay", "StartMonth", "StartYear", "EndDay", "EndMonth", "EndYear"]:
@@ -103,58 +113,65 @@ def process_data(cube, reference_year):
     return iris.cube.Cube(
         temperature_data,
         var_name="Temperature",
-        dim_coords_and_dims=[(time_coord, 0), (depth_coord, 1), (latitude_coord, 2), (longitude_coord, 3)],
+        dim_coords_and_dims=[
+            (time_coord, 0),
+            (depth_coord, 1),
+            (latitude_coord, 2),
+            (longitude_coord, 3),
+        ],
         attributes=cube.attributes,
-        units=cf_units.Unit('K')
+        units=cf_units.Unit("K"),
     )
+
 
 def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
     """Extract variables and create OBS dataset."""
-    var = raw_info['var']
-    var_info = cmor_table.get_variable(raw_info['mip'], var)
-    rawvar = raw_info['raw_var']
+    var = raw_info["var"]
+    var_info = cmor_table.get_variable(raw_info["mip"], var)
+    rawvar = raw_info["raw_var"]
     with catch_warnings():
-        warnings.simplefilter('ignore')  # Ignore all warnings
+        warnings.simplefilter("ignore")  # Ignore all warnings
         cubes = iris.load(in_files, rawvar)
-        reference_year = raw_info['reference_year']
-        cubes = iris.cube.CubeList([process_data(cube, reference_year) for cube in cubes])
-    
+        reference_year = raw_info["reference_year"]
+        cubes = iris.cube.CubeList(
+            [process_data(cube, reference_year) for cube in cubes]
+        )
+
     iris.util.equalise_attributes(cubes)
     cube = cubes.concatenate_cube()
 
     fix_var_metadata(cube, var_info)
     fix_coords(cube)
     set_global_atts(cube, attrs)
-    save_variable(cube, var, out_dir, attrs, unlimited_dimensions=['time'])
+    save_variable(cube, var, out_dir, attrs, unlimited_dimensions=["time"])
 
     # derive ocean surface
-    if 'srf_var' in raw_info:
-        var_info = cmor_table.get_variable(raw_info['mip'],
-                                           raw_info['srf_var'])
-        logger.info("Extract surface OBS for %s", raw_info['srf_var'])
+    if "srf_var" in raw_info:
+        var_info = cmor_table.get_variable(raw_info["mip"], raw_info["srf_var"])
+        logger.info("Extract surface OBS for %s", raw_info["srf_var"])
         level_constraint = iris.Constraint(cube.var_name, depth=1)
         cube_os = cube.extract(level_constraint)
         fix_var_metadata(cube_os, var_info)
-        save_variable(cube_os,
-                      raw_info['srf_var'],
-                      out_dir,
-                      attrs,
-                      unlimited_dimensions=['time'])
+        save_variable(
+            cube_os, raw_info["srf_var"], out_dir, attrs, unlimited_dimensions=["time"]
+        )
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cmor_table = cfg['cmor_table']
-    glob_attrs = cfg['attributes']
+    cmor_table = cfg["cmor_table"]
+    glob_attrs = cfg["attributes"]
 
     # run the cmorization
-    for var, vals in cfg['variables'].items():
+    for var, vals in cfg["variables"].items():
         in_files = collect_files(in_dir, var, cfg, start_date, end_date)
-        logger.info("CMORizing var %s from input set %s", var, vals['name'])
-        raw_info = cfg['variables'][var]
-        raw_info.update({
-            'var': var,
-            'reference_year': cfg['custom']['reference_year'],
-        })
-        glob_attrs['mip'] = vals['mip']
+        logger.info("CMORizing var %s from input set %s", var, vals["name"])
+        raw_info = cfg["variables"][var]
+        raw_info.update(
+            {
+                "var": var,
+                "reference_year": cfg["custom"]["reference_year"],
+            }
+        )
+        glob_attrs["mip"] = vals["mip"]
         extract_variable(in_files, out_dir, glob_attrs, raw_info, cmor_table)
