@@ -83,6 +83,8 @@ datasets_cmip: &datasets_cmip
   - {dataset: EC-Earth3, ensemble: r4i1p1f1, grid: gr}
   - {dataset: EC-Earth3, ensemble: r(6:7)i1p1f1, grid: gr}
   - {dataset: EC-Earth3, ensemble: r(9:10)i1p1f1, grid: gr}
+  - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr}
+  - {dataset: EC-Earth3-CC, ensemble: r(6:13)i1p1f1, grid: gr}
   - {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr}
   - {dataset: EC-Earth3-Veg, ensemble: r3i1p1f1, grid: gr}
   - {dataset: EC-Earth3-Veg, ensemble: r5i1p1f1, grid: gr}
@@ -115,6 +117,7 @@ datasets_cmip: &datasets_cmip
 
 dataset_era: &dataset_era
   - {dataset: ERA5, project: OBS6, type: reanaly, version: v1, tier: 3}
+  - {dataset: JRA3Q, project: OBS6, type: reanaly, version: v1, tier: 3}
 
 diagnostics:
   analytics:
@@ -122,15 +125,15 @@ diagnostics:
     variables:
       txnx_all:
         short_name: tasmin
-        exp: [historical, ssp245]
-        timerange: '19410901/20230630'
+        exp: historical
+        timerange: '19800901/20100630'
         mip: day
         project: CMIP6
         preprocessor: preproc_model
         additional_datasets: *datasets_cmip
       reference: 
         short_name: tasmin
-        timerange: '19410901/20230630'
+        timerange: '19800901/20100630'
         mip: day
         preprocessor: preproc_era
         additional_datasets: *dataset_era
