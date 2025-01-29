@@ -1,3 +1,9 @@
+# pylint: disable=unused-argument
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-function-args
+# pylint: disable=R0917
+# pylint: disable=E1121
+# flake8: noqa
 """ESMValTool CMORizer for IAP data.
 
 Tier
@@ -58,7 +64,8 @@ except BaseException as e:
 logger = logging.getLogger(__name__)
 
 
-def collect_files(in_dir, var, cfg, start_date, end_date):
+def collect_files(in_dir, cfg, start_date, end_date):
+    """ Create list of files path to be processed."""
     file_list = []
 
     if start_date is None:
@@ -81,6 +88,9 @@ def collect_files(in_dir, var, cfg, start_date, end_date):
 
 
 def process_data(cube, reference_year):
+    """ Process raw data. Convert to Kelvin and add time dimension.
+        Concatenate the cubes and return the new cube.
+    """
     # Convert temperature from Celsius to Kelvin and add time dimension
     temperature_data = cube.data + 273.15
     temperature_data = np.expand_dims(temperature_data, axis=0)
@@ -156,8 +166,7 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
     # derive ocean surface
     if "srf_var" in raw_info:
         var_info = cmor_table.get_variable(
-            raw_info["mip"], raw_info["srf_var"]
-            )
+            raw_info["mip"], raw_info["srf_var"])
         logger.info("Extract surface OBS for %s", raw_info["srf_var"])
         level_constraint = iris.Constraint(cube.var_name, depth=1)
         cube_os = cube.extract(level_constraint)
@@ -175,7 +184,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
     # run the cmorization
     for var, vals in cfg["variables"].items():
-        in_files = collect_files(in_dir, var, cfg, start_date, end_date)
+        in_files = collect_files(in_dir, cfg, start_date, end_date)
         logger.info("CMORizing var %s from input set %s", var, vals["name"])
         raw_info = cfg["variables"][var]
         raw_info.update(
