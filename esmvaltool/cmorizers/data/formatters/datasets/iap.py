@@ -4,7 +4,8 @@ Tier
    Tier 2: other freely-available dataset.
 
 Source
-   IAPv4.2: http://www.ocean.iap.ac.cn/ftp/cheng/IAPv4.2_IAP_Temperature_gridded_1month_netcdf/Monthly/
+   IAPv4.2: "http://www.ocean.iap.ac.cn/ftp/cheng/"
+            "IAPv4.2_IAP_Temperature_gridded_1month_netcdf/Monthly/"
 
 Last access: 20250220
 
@@ -68,7 +69,10 @@ def collect_files(in_dir, var, cfg, start_date, end_date):
     loop_date = start_date
 
     while loop_date <= end_date:
-        fname = f"IAPv4_Temp_monthly_1_6000m_year_{loop_date.year}_month_{loop_date.month:02d}.nc"
+        fname = (
+            f"IAPv4_Temp_monthly_1_6000m_year_{loop_date.year}"
+            f"_month_{loop_date.month:02d}.nc"
+        )
         in_file = os.path.join(in_dir, fname)
         file_list.append(in_file)
         loop_date += relativedelta.relativedelta(months=1)
@@ -79,7 +83,7 @@ def collect_files(in_dir, var, cfg, start_date, end_date):
 def process_data(cube, reference_year):
     # Convert temperature from Celsius to Kelvin and add time dimension
     temperature_data = cube.data + 273.15
-    temperature_data = np.expand_dims(temperature_data, axis=0)  # Add time dimension
+    temperature_data = np.expand_dims(temperature_data, axis=0)
     temperature_data = np.moveaxis(
         temperature_data, (0, 1, 2, 3), (0, 2, 3, 1)
     )  # Reorder axes
@@ -96,11 +100,15 @@ def process_data(cube, reference_year):
     time_coord = iris.coords.DimCoord(
         time_points,
         standard_name="time",
-        units=f"days since {reference_date.year}-{reference_date.month}-{reference_date.day}",
+        units=(
+            f"days since {reference_date.year}-"
+            f"{reference_date.month}-{reference_date.day}"
+        ),
     )
 
     # Remove old date attributes
-    for key in ["StartDay", "StartMonth", "StartYear", "EndDay", "EndMonth", "EndYear"]:
+    for key in ["StartDay", "StartMonth", "StartYear",
+                "EndDay", "EndMonth", "EndYear"]:
         del cube.attributes[key]
 
     # Get existing coordinates and rename 'standard depth' to 'depth'
@@ -147,13 +155,16 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
 
     # derive ocean surface
     if "srf_var" in raw_info:
-        var_info = cmor_table.get_variable(raw_info["mip"], raw_info["srf_var"])
+        var_info = cmor_table.get_variable(
+            raw_info["mip"], raw_info["srf_var"]
+            )
         logger.info("Extract surface OBS for %s", raw_info["srf_var"])
         level_constraint = iris.Constraint(cube.var_name, depth=1)
         cube_os = cube.extract(level_constraint)
         fix_var_metadata(cube_os, var_info)
         save_variable(
-            cube_os, raw_info["srf_var"], out_dir, attrs, unlimited_dimensions=["time"]
+            cube_os, raw_info["srf_var"], out_dir, attrs,
+            unlimited_dimensions=["time"]
         )
 
 

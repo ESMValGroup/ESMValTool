@@ -47,6 +47,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         downloader.download_file(
             "http://www.ocean.iap.ac.cn/ftp/cheng/"
             "IAPv4.2_IAP_Temperature_gridded_1month_netcdf/Monthly/"
-            f"IAPv4_Temp_monthly_1_6000m_year_{loop_date.year}_month_{loop_date.month:02d}.nc",
+            f"IAPv4_Temp_monthly_1_6000m_year_{loop_date.year}"
+            f"_month_{loop_date.month:02d}.nc",
             wget_options=[])
         loop_date += relativedelta.relativedelta(months=1)
