@@ -1,0 +1,64 @@
+# ESMValTool
+---
+documentation:
+  title: O3.
+  description: Example recipe for LMU lecture (2023) for O3.
+  authors:
+    - schlund_manuel
+
+
+preprocessors:
+
+  create_zonal_mean_profile:  # this is a custom name
+    climate_statistics:  # elements from https://docs.esmvaltool.org/projects/ESMValCore/en/latest/recipe/preprocessor.html
+      operator: mean
+      period: full
+    extract_month:
+      month: 10
+    zonal_statistics:
+      operator: mean
+    convert_units:
+      units: ppm
+
+
+datasets:
+  - {project: CMIP6, dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2, exp: historical}
+  # - {project: CMIP6, dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2, exp: [historical, ssp126]}
+  # - {project: CMIP6, dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2, exp: [historical, ssp585]}
+  - {project: CMIP6, dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, exp: historical}
+  # - {project: CMIP6, dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, exp: [historical, ssp126]}
+  # - {project: CMIP6, dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, exp: [historical, ssp585]}
+
+
+diagnostics:
+
+
+  zonal_mean_profiles:  # this is a custom name
+    variables:
+      o3:
+        mip: Amon
+        exp: historical
+        preprocessor: create_zonal_mean_profile
+        timerange: '1990/2000'
+    additional_datasets:
+      - {project: OBS6, dataset: BSVertOzone, type: sat, version: v1.0-Tier1.4, tier: 3, timerange: '1990/2000'}
+    scripts:
+      plot:  # this is a custom name
+        script: monitor/multi_datasets.py
+        plot_folder: ~/esmvaltool_output/o3_part3
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{exp}'
+        facet_used_for_labels: alias
+        savefig_kwargs:
+          dpi: 150
+          bbox_inches: tight
+          orientation: landscape
+        plots:
+          zonal_mean_profile:
+            pyplot_kwargs:
+              suptitle: '{long_name} (October 1990-2000)'  # large title
+            plot_kwargs:
+              default:
+                # cmap: YlOrRd  # colormap; e.g., 'YlOrRd' for temperatures 'bwr' for anomalies
+                # cmap: bwr
+                # norm: centered  # center colormap around zero; useful when showing anomalies
+                levels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]  # colorbar intervals
