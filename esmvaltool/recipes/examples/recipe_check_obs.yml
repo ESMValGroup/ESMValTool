@@ -2034,7 +2034,7 @@ diagnostics:
       hfls:
         mip: Lmon
       hfls:
-        mip: CFmon
+        mip: Amon
       rlut:
         mip: Amon
       tau:
