@@ -61,13 +61,13 @@ try:
     iris.FUTURE.save_split_attrs = True
 except AttributeError as e:
     # Handle cases where FUTURE or the attributes don't exist
-    logger.warning("AttributeError: %s", e) 
+    logger.warning("AttributeError: %s", e)
 except (TypeError, ValueError) as e:
     # Handle specific errors if these might occur
-    logger.warning("TypeError or ValueError: %s", e) 
+    logger.warning("TypeError or ValueError: %s", e)
 except BaseException as e:
     # Fallback for rare or unknown issues, but avoid catching Exception
-    logger.warning("An unexpected error occurred: %s", e) 
+    logger.warning("An unexpected error occurred: %s", e)
 
 
 def _fix_coordinates(cube, definition):
