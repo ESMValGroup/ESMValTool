@@ -1,4 +1,7 @@
-"""Script to download IAP"""
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments
+# pylint: disable=too-many-locals
+"""Script to download IAP datasets."""
 import logging
 from datetime import datetime
 from dateutil import relativedelta
@@ -27,7 +30,6 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     overwrite : bool
         Overwrite already downloaded files
     """
-
     if start_date is None:
         start_date = datetime(year=1940, month=1, day=1)
     if end_date is None:
