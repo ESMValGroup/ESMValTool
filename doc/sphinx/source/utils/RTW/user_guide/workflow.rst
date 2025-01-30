@@ -74,6 +74,17 @@ Portability
 The |RTW| is portable; site-specific information can be found in the ``site``
 and ``opt`` directories within the |RTW|. The files required are:
 
+.. _site_recipes_file:
+
+``site/<site>-recipes.jinja``
+   Contains all the recipes run at the ``SITE``
+
+.. hint::
+   * The file uses the `Jinja2`_ templating language, which has a similar syntax
+     to Python
+   * Jinja2 gives |Cylc| many powerful features. Refer to `Cylc Jinja2`_ for
+     more information
+
 ``site/<site>.cylc``
   Contains task definitions specific to the ``SITE``, for example, ``COMPUTE``
 
