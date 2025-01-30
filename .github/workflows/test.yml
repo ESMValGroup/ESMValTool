@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - restrict_GAs_from_forks
   schedule:
     - cron: '0 0 * * *'
 
