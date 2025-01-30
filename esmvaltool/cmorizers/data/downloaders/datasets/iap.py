@@ -1,5 +1,5 @@
 # pylint: disable=too-many-arguments
-# pylint: disable=too-many-positional-arguments
+# pylint: disable=R0917
 # pylint: disable=too-many-locals
 """Script to download IAP datasets."""
 import logging
