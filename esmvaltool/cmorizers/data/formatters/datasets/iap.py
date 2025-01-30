@@ -48,21 +48,20 @@ from esmvaltool.cmorizers.data.utilities import (
     set_global_atts,
 )
 
+logger = logging.getLogger(__name__)
+
 try:
     iris.FUTURE.date_microseconds = True
     iris.FUTURE.save_split_attrs = True
 except AttributeError as e:
     # Handle cases where FUTURE or the attributes don't exist
-    print(f"AttributeError: {e}")
+    logger.warning("AttributeError: %s", e)
 except (TypeError, ValueError) as e:
     # Handle specific errors if these might occur
-    print(f"TypeError or ValueError: {e}")
+    logger.warning("TypeError or ValueError: %s", e)
 except BaseException as e:
     # Fallback for rare or unknown issues, but avoid catching Exception
-    print(f"An unexpected error occurred: {e}")
-
-logger = logging.getLogger(__name__)
-
+    logger.warning("An unexpected error occurred: %s", e)
 
 def collect_files(in_dir, cfg, start_date, end_date):
     """ Create list of files path to be processed."""
