@@ -54,20 +54,20 @@ from iris.util import equalise_attributes
 
 from esmvaltool.cmorizers.data import utilities as utils
 
+logger = logging.getLogger(__name__)
+
 try:
     iris.FUTURE.date_microseconds = True
     iris.FUTURE.save_split_attrs = True
 except AttributeError as e:
     # Handle cases where FUTURE or the attributes don't exist
-    print(f"AttributeError: {e}")
+    logger.warning(f"AttributeError: {e}")
 except (TypeError, ValueError) as e:
     # Handle specific errors if these might occur
-    print(f"TypeError or ValueError: {e}")
+    logger.warning(f"TypeError or ValueError: {e}")
 except BaseException as e:
     # Fallback for rare or unknown issues, but avoid catching Exception
-    print(f"An unexpected error occurred: {e}")
-
-logger = logging.getLogger(__name__)
+    logger.warning(f"An unexpected error occurred: {e}")
 
 
 def _fix_coordinates(cube, definition):
