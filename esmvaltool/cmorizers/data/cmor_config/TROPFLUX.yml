@@ -45,7 +45,6 @@ variables:
 
   rlus_month:
     short_name: rlus
-
     mip: Amon
     raw: lwr
     file: '/lwr_tropflux_1m_\d{4}\.nc$'
