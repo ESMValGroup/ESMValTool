@@ -2037,8 +2037,10 @@ diagnostics:
         mip: Amon
       rlut:
         mip: Amon
-      tau:
-        mip: Omon
+      tauu:
+        mip: Amon
+      tauv:
+        mip: Amon
       rsds:
         mip: Amon
     additional_datasets:
