@@ -1,3 +1,9 @@
+# pylint: disable=unused-argument
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-function-args
+# pylint: disable=R0917
+# pylint: disable=E1121
+# flake8: noqa
 """ESMValTool CMORizer for Sea Ice Concentration CDR (Southern Hemisphere).
 
 Tier
@@ -148,42 +154,39 @@ def _create_areacello(cfg, in_dir, sample_cube, glob_attrs, out_dir):
     utils.save_variable(cube, var_info.short_name, out_dir, glob_attrs,
                         zlib=True)
 
-
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    glob_attrs = cfg['attributes']
-    cmor_table = cfg['cmor_table']
+    glob_attrs = cfg["attributes"]
+    cmor_table = cfg["cmor_table"]
 
     # get aux nc file
-    cubesaux = iris.load(
-        os.path.join(in_dir, 'G02202-ancillary-pss25-v05r00.nc'))
-    lat_coord = _create_coord(cubesaux, 'lat', 'latitude')
-    lon_coord = _create_coord(cubesaux, 'lon', 'longitude')
+    cubesaux = iris.load(os.path.join(in_dir, "G02202-ancillary-pss25-v05r00.nc"))
+    coords = [_create_coord(cubesaux, "lat", "latitude"),
+              _create_coord(cubesaux, "lon", "longitude")]
 
-    year = 1978
-    # split by year..
     sample_cube = None
-    for year in range(1979, 2025, 1):
+    for year in range(1979, 2025):
+        filepaths = _get_filepaths(in_dir, cfg["filename"], year)
 
-        filepaths = _get_filepaths(in_dir, cfg['filename'], year)
+        if filepaths:
+            logger.info("Found %d files in '%s'", len(filepaths), in_dir)
 
-        if len(filepaths) > 0:
-            logger.info("Year %d: Found %d files in '%s'",
-                        year, len(filepaths), in_dir)
-
-            for (var, var_info) in cfg['variables'].items():
+            for var, var_info in cfg["variables"].items():
                 logger.info("CMORizing variable '%s'", var)
-                glob_attrs['mip'] = var_info['mip']
-                cmor_info = cmor_table.get_variable(var_info['mip'], var)
-                raw_var = var_info.get('raw', var)
-                sample_cube = _extract_variable(raw_var, cmor_info,
-                                                glob_attrs, filepaths,
-                                                out_dir, [lat_coord,
-                                                          lon_coord])
-
+                glob_attrs["mip"] = var_info["mip"]
+                cmor_info = cmor_table.get_variable(var_info["mip"], var)
+                sample_cube = _extract_variable(
+                    var_info.get("raw", var),
+                    cmor_info,
+                    glob_attrs,
+                    filepaths,
+                    out_dir,
+                    coords,
+                )
         else:
-            logger.info("No files found year: %d basename: %s",
-                        year, cfg['filename'])
+            logger.info("No files found ")
+            logger.info("year: %d basename: %s", year, cfg["filename"])
 
     if sample_cube is not None:
         _create_areacello(cfg, in_dir, sample_cube, glob_attrs, out_dir)
+

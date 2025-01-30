@@ -1,5 +1,7 @@
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-function-args
+# pylint: disable=too-many-positional-arguments
+# pylint: disable=too-many-locals
 """Script to download NSIDC-G02202-nh."""
 import logging
 from datetime import datetime
