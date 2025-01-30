@@ -3,6 +3,7 @@
 # pylint: disable=too-many-function-args
 # pylint: disable=R0917
 # pylint: disable=E1121
+# pylint: disable=too-many-locals
 # flake8: noqa
 """ESMValTool CMORizer for Sea Ice Concentration CDR (Northern Hemisphere).
 
@@ -157,7 +158,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     cmor_table = cfg["cmor_table"]
 
     # get aux nc file
-    cubesaux = iris.load(os.path.join(in_dir, "G02202-ancillary-psn25-v05r00.nc"))
+    cubesaux = iris.load(
+        os.path.join(
+            in_dir, "G02202-ancillary-psn25-v05r00.nc")
+        )
     coords = [_create_coord(cubesaux, "lat", "latitude"),
               _create_coord(cubesaux, "lon", "longitude")]
 

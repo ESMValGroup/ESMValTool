@@ -160,7 +160,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     cmor_table = cfg["cmor_table"]
 
     # get aux nc file
-    cubesaux = iris.load(os.path.join(in_dir, "G02202-ancillary-pss25-v05r00.nc"))
+    cubesaux = iris.load(
+        os.path.join(
+            in_dir, "G02202-ancillary-pss25-v05r00.nc")
+        )
     coords = [_create_coord(cubesaux, "lat", "latitude"),
               _create_coord(cubesaux, "lon", "longitude")]
 
@@ -189,4 +192,3 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
     if sample_cube is not None:
         _create_areacello(cfg, in_dir, sample_cube, glob_attrs, out_dir)
-
