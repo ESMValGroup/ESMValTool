@@ -112,6 +112,21 @@ ESMValTool currently supports two ways to perform this reformatting (aka
    checks and fixes').  Details on this second method are given at the
    :ref:`end of this chapter <inputdata_native_datasets>`.
 
+Tiers
+-----
+
+All observational datasets are grouped into in three tiers:
+
+* **Tier 1**: obs4mips and ana4mips datasets. These datasets are publicly and freely available without any license restrictions. These datasets do not need any reformatting and can be used as is with ESMValTool.
+* **Tier 2** other freely available datasets that are not obs4mips. There are no license restrictions. These datasets need to be reformatted to be used with ESMValTool ('CMORization', see above). 
+* **Tier 3** restricted datasets. Datasets which require registration to be downloaded or that can only be obtained upon request from the respective authors. License restrictions do not allow us to redistribute Tier 3 datasets. The data have to be obtained and reformatted by the user ('CMORization', see above).
+
+[!NOTE]
+.. _tier3_note:
+For some of the Tier 3 datasets, we obtained permission from the dataset providers to share the data among ESMValTool users on HPC systems. These Tier 3 datasets are marked with an asterisk in the table in section :ref:`supported datasets below<supported_datasets>`.
+
+An overview of the Tier 2 and Tier 3 datasets for which a CMORizing script is available in ESMValTool v2.0 is given in section :ref:`supported datasets below<supported_datasets>`.
+
 A collection of readily CMORized OBS and OBS6 datasets can be accessed directly on CEDA/JASMIN and DKRZ. At CEDA/JASMIN
 OBS and OBS6 data is stored in the `esmeval` Group Workspace (GWS), and to be granted read (and execute) permissions to the
 GWS, one must apply at https://accounts.jasmin.ac.uk/services/group_workspaces/esmeval/ ; after permission has been granted, the user
@@ -246,7 +261,7 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CALIPSO-GOCCP                | clcalipso (cfMon)                                                                                    |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| CALIPSO-ICECLOUD             | cli (AMon)                                                                                           |   3  | NCL             |
+| CALIPSO-ICECLOUD* [#t3]_     | cli (AMon)                                                                                           |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CDS-SATELLITE-ALBEDO         | bdalb (Lmon), bhalb (Lmon)                                                                           |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -332,7 +347,7 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESRL                         | co2s (Amon)                                                                                          |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| FLUXCOM                      | gpp (Lmon)                                                                                           |   3  | Python          |
+| FLUXCOM* [#t3]_              | gpp (Lmon)                                                                                           |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | GCP2018                      | fgco2 (Omon [#note3]_), nbp (Lmon [#note3]_)                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -382,17 +397,17 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | Landschuetzer2020            | spco2 (Omon)                                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| MAC-LWP                      | lwp, lwpStderr (Amon)                                                                                |   3  | NCL             |
+| MAC-LWP* [#t3]_              | lwp, lwpStderr (Amon)                                                                                |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MERRA                        | cli, clivi, clt, clw, clwvi, hur, hus, lwp, pr, prw, ps, psl, rlut, rlutcs, rsdt, rsut, rsutcs, ta,  |   3  | NCL             |
 |                              | tas, ts, ua, va, wap, zg (Amon)                                                                      |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| MERRA2                       | sm (Lmon)                                                                                            |   3  | Python          |
+| MERRA2* [#t3]_               | sm (Lmon)                                                                                            |   3  | Python          |
 |                              | clt, pr, evspsbl, hfss, hfls, huss, prc, prsn, prw, ps, psl, rlds, rldscs, rlus, rlut, rlutcs, rsds, |      |                 |
 |                              | rsdscs, rsdt, tas, tasmin, tasmax, tauu, tauv, ts, uas, vas, rsus, rsuscs, rsut, rsutcs, ta, ua, va, |      |                 |
 |                              | tro3, zg, hus, wap, hur, cl, clw, cli, clwvi, clivi (Amon)                                           |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| MLS-AURA                     | hur, hurStderr (day)                                                                                 |   3  | Python          |
+| MLS-AURA* [#t3]_             | hur, hurStderr (day)                                                                                 |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MOBO-DIC_MPIM                | dissic (Omon)                                                                                        |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -402,7 +417,7 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MSWEP [#note1]_              | pr                                                                                                   |   3  | n/a             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| MTE                          | gpp, gppStderr (Lmon)                                                                                |   3  | Python          |
+| MTE* [#t3]_                  | gpp, gppStderr (Lmon)                                                                                |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NCEP-NCAR-R1                 | clt, hur, hurs, hus, pr, prw, psl, rlut, rlutcs, rsut, rsutcs, sfcWind, ta, tas,                     |   2  | Python          |
 |                              | tasmax, tasmin, ts, ua, va, wap, zg (Amon)                                                           |      |                 |
@@ -412,7 +427,7 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NDP                          | cVeg (Lmon)                                                                                          |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| NIWA-BS                      | toz, tozStderr (Amon)                                                                                |   3  | NCL             |
+| NIWA-BS* [#t3]_              | toz, tozStderr (Amon)                                                                                |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | NOAA-CIRES-20CR-V2           | clt, clwvi, hus, prw, rlut, rsut, pr, tauu, tauv (Amon)                                              |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -450,13 +465,16 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | TCOM-N2O                     | n2o (Amon [#note3]_)                                                                                 |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| UWisc                        | clwvi, lwpStderr (Amon)                                                                              |   3  | NCL             |
+| UWisc* [#t3]_                | clwvi, lwpStderr (Amon)                                                                              |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | WFDE5                        | tas, pr (Amon, day)                                                                                  |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | WOA                          | thetao, so, tos, sos (Omon)                                                                          |   2  | Python          |
 |                              | no3, o2, po4, si (Oyr)                                                                               |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+
+.. [#t3] We obtained permission from the dataset provider to share this dataset
+         among ESMValTool users on HPC systems.
 
 .. [#note1] CMORization is built into ESMValTool through the native6 project,
             so there is no separate CMORizer script.

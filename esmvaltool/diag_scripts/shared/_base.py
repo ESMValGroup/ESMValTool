@@ -181,7 +181,7 @@ class ProvenanceLogger:
         if not os.path.exists(self._log_file):
             self.table = {}
         else:
-            with open(self._log_file, 'r') as file:
+            with open(self._log_file, 'r', encoding='utf-8') as file:
                 self.table = yaml.safe_load(file)
 
     def log(self, filename, record):
@@ -212,8 +212,8 @@ class ProvenanceLogger:
         if isinstance(filename, Path):
             filename = str(filename)
         if filename in self.table:
-            raise KeyError(
-                "Provenance record for {} already exists.".format(filename))
+            msg = f"Provenance record for {filename} already exists."
+            raise KeyError(msg)
 
         self.table[filename] = record
 
@@ -222,7 +222,7 @@ class ProvenanceLogger:
         dirname = os.path.dirname(self._log_file)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
-        with open(self._log_file, 'w') as file:
+        with open(self._log_file, 'w', encoding='utf-8') as file:
             yaml.safe_dump(self.table, file)
 
     def __enter__(self):
@@ -253,9 +253,8 @@ def select_metadata(metadata, **attributes):
     """
     selection = []
     for attribs in metadata:
-        if all(a in attribs and (
-                attribs[a] == attributes[a] or attributes[a] == '*')
-               for a in attributes):
+        if all(a in attribs and v in (attribs[a], '*')
+               for a, v in attributes.items()):
             selection.append(attribs)
     return selection
 
@@ -424,7 +423,7 @@ def get_cfg(filename=None):
     """Read diagnostic script configuration from settings.yml."""
     if filename is None:
         filename = sys.argv[1]
-    with open(filename) as file:
+    with open(filename, encoding='utf-8') as file:
         cfg = yaml.safe_load(file)
     return cfg
 
@@ -441,7 +440,7 @@ def _get_input_data_files(cfg):
 
     input_files = {}
     for filename in metadata_files:
-        with open(filename) as file:
+        with open(filename, encoding='utf-8') as file:
             metadata = yaml.safe_load(file)
             input_files.update(metadata)
 
@@ -468,6 +467,10 @@ def run_diagnostic():
         if __name__ == '__main__':
             with run_diagnostic() as cfg:
                 main(cfg)
+
+    To prevent the diagnostic script from using the Dask Distributed scheduler,
+    set ``no_distributed: true`` in the diagnostic script definition in the
+    recipe or in the resulting settings.yml file.
 
     The `cfg` dict passed to `main` contains the script configuration that
     can be used with the other functions in this module.
@@ -568,7 +571,9 @@ def run_diagnostic():
         logger.info("Removing %s from previous run.", provenance_file)
         os.remove(provenance_file)
 
-    if not args.no_distributed and 'scheduler_address' in cfg:
+    use_distributed = not (args.no_distributed
+                           or cfg.get('no_distributed', False))
+    if use_distributed and 'scheduler_address' in cfg:
         try:
             client = distributed.Client(cfg['scheduler_address'])
         except OSError as exc:

@@ -1,0 +1,213 @@
+# ESMValTool
+---
+documentation:
+  title: Performance metrics plots.
+  description: >
+    Compare performance of CMIP simulations to a reference dataset.
+  authors:
+    - cammarano_diego
+    - lindenlaub_lukas
+  maintainer:
+    - lindenlaub_lukas
+  references:
+    - eyring21ipcc
+    - gleckler08jgr
+
+cmip5: &CMIP5
+  project: CMIP5
+  ensemble: r1i1p1
+
+datasets:
+  # cmip5
+  - {<<: *CMIP5, dataset: ACCESS1-0}
+  - {<<: *CMIP5, dataset: CESM1-BGC}
+  - {<<: *CMIP5, dataset: CNRM-CM5}
+  - {<<: *CMIP5, dataset: GFDL-ESM2M}
+  - {<<: *CMIP5, dataset: HadGEM2-CC}
+  - {<<: *CMIP5, dataset: IPSL-CM5B-LR}
+  - {<<: *CMIP5, dataset: MIROC-ESM}
+  - {<<: *CMIP5, dataset: MPI-ESM-LR}
+  - {<<: *CMIP5, dataset: MRI-CGCM3}
+  # cmip6
+  - {dataset: ACCESS-ESM1-5, institute: CSIRO}
+  - {dataset: CESM2, institute: NCAR}
+  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
+  - {dataset: GFDL-CM4, grid: gr1}
+  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2}
+  - {dataset: MPI-ESM1-2-LR}
+  - {dataset: MRI-ESM2-0}
+  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2}
+
+preprocessors:
+  default: &default  # common preprocessor settings
+    regrid:
+      target_grid: 3x3
+      scheme: linear
+    distance_metric:
+      metric: weighted_rmse
+    climate_statistics:
+      operator: mean
+      period: month
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics:
+        - operator: mean
+        - operator: percentile
+          percent: 50
+      groupby: ['project']
+      # exclude all possible reference datasets
+      exclude: [
+        AIRS-2-1,
+        CERES-EBAF,
+        ERA-Interim,
+        ESACCI-AEROSOL,
+        ESACCI-CLOUD,
+        ESACCI-OZONE,
+        ESACCI-SOILMOISTURE,
+        ESACCI-SST,
+        GPCP-SG,
+        HadISST,
+        NCEP-NCAR-R1,
+        MODIS,
+        NIWA-BS,
+        PATMOS-x]
+  pp200:  # only add/overwrite var specific settings
+    <<: *default
+    extract_levels:
+      levels: 20000
+      scheme: linear
+      coordinate: air_pressure
+  pp500:  # only add/overwrite var specific settings
+    <<: *default
+    extract_levels:
+      levels: 50000
+      scheme: linear
+      coordinate: air_pressure
+  thr10:  # only add/overwrite var specific settings
+    <<: *default
+    mask_fillvalues:
+      threshold_fraction: 0.10
+
+var_default: &var_default
+  mip: Amon
+  project: CMIP6
+  exp: historical
+  ensemble: r1i1p1f1
+  preprocessor: default
+  grid: gn
+  start_year: 2000
+  end_year: 2002
+  split: Ref1  # first triangle
+
+diagnostics:
+  portrait_rmse:
+    themes: [aerosols, phys, clouds, atmDyn, chem, ghg]
+    realms: [atmos, land, atmosChem, ocean]
+    variables:
+      zg: &zg
+        <<: *var_default
+        short_name: zg
+        variable: zg500
+        preprocessor: pp500
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+             version: 1, tier: 3, reference_for_metric: true}
+      zg_2:
+        <<: *zg
+        split: Ref2
+        additional_datasets:
+          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+             version: 1, tier: 2, reference_for_metric: true}
+      clt: &clt
+        <<: *var_default
+        short_name: clt
+        variable: clt
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2, reference_for_metric: true}
+      clt_2:
+        <<: *clt
+        split: Ref2
+        additional_datasets:
+          - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, tier: 2, reference_for_metric: true}
+      ts: &ts
+        <<: *var_default
+        short_name: ts
+        variable: ts
+        preprocessor: default
+        additional_datasets:
+          - {dataset: ESACCI-SST, project: OBS, type: sat, version: 2.2, tier: 2, reference_for_metric: true}
+      ts_2:
+        <<: *ts
+        split: Ref2
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2, reference_for_metric: true}
+      tas: &tas
+        <<: *var_default
+        short_name: tas
+        variable: tas
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+             version: 1, tier: 3, reference_for_metric: true}
+      tas_2:
+        <<: *tas
+        split: Ref2
+        additional_datasets:
+          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+             version: 1, tier: 2, reference_for_metric: true}
+      pr:
+        <<: *var_default
+        variable: pr
+        split: Ref1
+        additional_datasets:
+          - {dataset: GPCP-SG, project: OBS, type: atmos,
+             version: 2.3, tier: 2, reference_for_metric: true}
+      rlut:
+        <<: *var_default
+        variable: rlut
+        start_year: 2001
+        end_year: 2003
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, reference_for_metric: true}
+      rsut:
+        <<: *var_default
+        variable: rsut
+        start_year: 2001
+        end_year: 2003
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, reference_for_metric: true}
+      ua200: &ua200
+        <<: *var_default
+        variable: ua200
+        short_name: ua
+        preprocessor: pp200
+        split: Ref1
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+             version: 1, tier: 3, reference_for_metric: true}
+      ua200_2:
+        <<: *ua200
+        split: Ref2
+        additional_datasets:
+          - {dataset: NCEP-NCAR-R1, project: OBS6, type: reanaly,
+             version: 1, tier: 2, reference_for_metric: true}
+
+    scripts:
+      portrait:
+        script: portrait_plot.py
+        x_by: dataset
+        y_by: variable  # extra_facet
+        group_by: project
+        normalize: "centered_median"
+        default_split: Ref1
+        nan_color: null
+        plot_kwargs:
+          vmin: -0.5
+          vmax: +0.5
+        cbar_kwargs:
+          label: Relative RMSE
+          extend: both
