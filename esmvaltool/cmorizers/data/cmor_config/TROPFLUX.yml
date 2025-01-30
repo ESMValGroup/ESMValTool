@@ -35,7 +35,6 @@ variables:
   hfls_month_Amon:
     short_name: hfls
     mip: Amon
-
     raw: lhf
     file: '/lhf_tropflux_1m_\d{4}\.nc$'
   hfds_month:
