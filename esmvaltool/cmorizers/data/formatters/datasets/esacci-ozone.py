@@ -9,6 +9,7 @@ from . import utilities as utils
 
 logger = logging.getLogger(__name__)
 
+
 def _add_longitude_coordinate(cube):
     """Add longitude coordinate to cube."""
     lon_coord = iris.coords.DimCoord(
@@ -28,6 +29,7 @@ def _add_longitude_coordinate(cube):
     cube.metadata = new_metadata
     return cube
 
+
 def _get_input_file_dicts(in_dir, cfg):
     """Get input files."""
     in_path = Path(in_dir).resolve()
@@ -39,8 +41,10 @@ def _get_input_file_dicts(in_dir, cfg):
             metadata = dict(match.groupdict())
             metadata['filename'] = path
             input_files_dicts.append(metadata)
-    logger.debug("Found input files:\n%s", pformat([str(f['filename']) for f in input_files_dicts]))
+    logger.debug("Found input files:\n%s",
+                 pformat([str(f['filename']) for f in input_files_dicts]))
     return input_files_dicts
+
 
 def _extract_variable(short_name, var, cfg, file_dict, out_dir):
     """Extract variable."""
@@ -58,10 +62,11 @@ def _extract_variable(short_name, var, cfg, file_dict, out_dir):
 
     # Fix coordinates
     utils.fix_coords(cube)
-    
+
     # Add longitude coordinate if missing
     if 'longitude' not in [coord.standard_name for coord in cube.coords()]:
-        logger.info("Adding 'longitude' coordinate to variable '%s'", short_name)
+        logger.info("Adding 'longitude' coordinate to variable '%s'",
+                    short_name)
         cube = _add_longitude_coordinate(cube)
 
     # Fix metadata
@@ -74,13 +79,16 @@ def _extract_variable(short_name, var, cfg, file_dict, out_dir):
     utils.set_global_atts(cube, attrs)
 
     # Save variable
-    utils.save_variable(cube, short_name, out_dir, attrs, unlimited_dimensions=['time'])
+    utils.save_variable(cube, short_name, out_dir, attrs,
+                        unlimited_dimensions=['time'])
+
 
 def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization function."""
     input_files_dicts = _get_input_file_dicts(in_dir, cfg)
-    
+
     for file_dict in input_files_dicts:
         for (short_name, var) in cfg['variables'].items():
-            logger.info("CMORizing variable '%s' from file '%s'", short_name, str(file_dict['filename']))
+            logger.info("CMORizing variable '%s' from file '%s'",
+                        short_name, str(file_dict['filename']))
             _extract_variable(short_name, var, cfg, file_dict, out_dir)
