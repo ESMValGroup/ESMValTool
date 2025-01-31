@@ -1,0 +1,21 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: ESACCI-OZONE
+  version: 'v0008'
+  tier: 2
+  modeling_realm: sat
+  project_id: OBS
+
+# Variables to cmorize (here use only filename prefix)
+variables:
+  toz:
+    mip: Amon
+    #raw: sst
+    file: C3S-L3_OZONE-O3_PRODUCTS-CONC_MZM-MERGED-ALG-MONTHLY-v0008.nc
+    file: C3S-L3_OZONE-O3_PRODUCTS-MERGED_UV-MERGED-ALG-MONTHLY-v2000.nc
+  o3:
+    mip: Amon
+    #raw: sst_uncertainty
+    file: C3S-L3_OZONE-O3_PRODUCTS-CONC_MZM-MERGED-ALG-MONTHLY-v0008.nc
+    file: C3S-L3_OZONE-O3_PRODUCTS-MERGED_UV-MERGED-ALG-MONTHLY-v2000.nc
