@@ -49,8 +49,9 @@ def obtain_reference(data_group: list):
         else:
             key = dataset_n
         ref_cb = iris.load_cube(dataset_f)
+        # make key dataset if there's only one filename 
+        # of this dataset otherwise alias
         reference_dic[key] = ref_cb
-        # make key dataset if there's only one filename of this dataset otherwise alias
         mins.append(ref_cb.collapsed('time', iris.analysis.MIN).data)
         maxs.append(ref_cb.collapsed('time', iris.analysis.MAX).data)
 
@@ -62,7 +63,6 @@ def obtain_reference(data_group: list):
 
 def create_provenance(caption: str):
     """Creates provenance dictionary."""
-
     provenance_dic = {
         'authors': ['malinina_elizaveta'],
         'caption': caption,
@@ -74,7 +74,8 @@ def create_provenance(caption: str):
 
 def plot_timeseries(data_dic: dict, reference_dic: dict, cfg: dict,
                     min_val: float, max_val: float):
-    """This function plots timeseries and the max/min values.
+    """
+    This function plots timeseries and the max/min values.
 
     Parameters:
     -----------
@@ -181,7 +182,7 @@ def plot_timeseries(data_dic: dict, reference_dic: dict, cfg: dict,
 
 
 def main(cfg):
-
+    """Initiates diagnostic"""
     input_data = cfg['input_data']
 
     groups = group_metadata(input_data.values(), 'variable_group', sort=True)
