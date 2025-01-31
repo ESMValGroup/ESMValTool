@@ -19,13 +19,13 @@ user defined number of days.
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in recipes/
+Recipes are stored in recipes/droughts/
 
-    * recipe_consecdrydays.yml
+    * recipe_cdd.yml
 
-Diagnostics are stored in diag_scripts/droughtindex/
+Diagnostics are stored in diag_scripts/droughts/
 
-    * diag_cdd.py: calculates the longest period of consecutive dry days, and
+    * cdd.py: calculates the longest period of consecutive dry days, and
       the frequency of dry day periods longer than a user defined length
 
 
