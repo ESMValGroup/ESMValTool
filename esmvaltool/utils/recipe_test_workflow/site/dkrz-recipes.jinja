@@ -32,12 +32,6 @@
         {
             "recipe_path": "clouds--recipe_lauer13jclim",
             "actual": "3m17s, 7.9 GB on 2025-01-31",
-            "max_time": "PT5M",
-            "max_memory": "40G",
-        },
-        {
-            "recipe_path": "clouds--recipe_lauer22jclim_fig9-11ab_scatter",
-            "actual": "8m18s, 7.4 GB on 2025-01-31",
             "max_time": "PT10M",
             "max_memory": "40G",
         },
@@ -84,6 +78,12 @@
             "max_memory": "20G",
         },
         {
+            "recipe_path": "examples--recipe_my_personal_diagnostic",
+            "actual": "0m20s, 2.3 GB on 2025-01-31",
+            "max_time": "PT2M",
+            "max_memory": "20G",
+        },
+        {
             "recipe_path": "hydrology--recipe_globwat",
             "actual": "3m32s, 5.4 GB on 2025-01-30",
             "max_time": "PT5M",
@@ -105,6 +105,12 @@
             "recipe_path": "hydrology--recipe_lisflood",
             "actual": "0m18s, 6.7 GB on 2025-01-31",
             "max_time": "PT2M",
+            "max_memory": "20G",
+        },
+        {
+            "recipe_path": "hydrology--recipe_marrmot",
+            "actual": "4m29s, 11.3 GB on 2025-01-31",
+            "max_time": "PT6M",
             "max_memory": "20G",
         },
         {
@@ -143,7 +149,30 @@
             "max_time": "PT4M",
             "max_memory": "50G",
         },
-
+        {
+            "recipe_path": "model_evaluation--recipe_model_evaluation_clouds_clim",
+            "actual": "4m07s, 41.5 GB on 2025-01-31",
+            "max_time": "PT6M",
+            "max_memory": "64G",
+        },
+        {
+            "recipe_path": "model_evaluation--recipe_model_evaluation_clouds_cycles",
+            "actual": "1m54s, 4.1 GB on 2025-01-31",
+            "max_time": "PT4M",
+            "max_memory": "20G",
+        },
+        {
+            "recipe_path": "model_evaluation--recipe_model_evaluation_precip_zonal",
+            "actual": "0m30s, 3.5 GB on 2025-01-31",
+            "max_time": "PT2M",
+            "max_memory": "20G",
+        },
+        {
+            "recipe_path": "monitor--recipe_monitor_with_refs",
+            "actual": "1m20s, 5.1 GB on 2025-01-31",
+            "max_time": "PT3M",
+            "max_memory": "20G",
+        },
         {
             "recipe_path": "recipe_capacity_factor",
             "actual": "0m34s, 2.1 GB on 2025-01-29",
@@ -169,12 +198,6 @@
             "max_memory": "20G",
         },
         {
-            "recipe_path": "recipe_cmug_h2o",
-            "actual": "9m27s, 15.8 GB on 2025-01-30",
-            "max_time": "PT10M",
-            "max_memory": "40G",
-        },
-        {
             "recipe_path": "recipe_consecdrydays",
             "actual": "0m19s, 2.1 GB on 2025-01-08",
             "max_time": "PT2M",
@@ -196,12 +219,6 @@
             "recipe_path": "recipe_diurnal_temperature_index",
             "actual": "1m24s, 2.7 GB on 2025-01-30",
             "max_time": "PT4M",
-            "max_memory": "20G",
-        },
-        {
-            "recipe_path": "recipe_ecs_scatter",
-            "actual": "08m18s, 9.9 GB on 2025-01-30",
-            "max_time": "PT10M",
             "max_memory": "20G",
         },
         {
@@ -255,7 +272,19 @@
         {
             "recipe_path": "recipe_li17natcc",
             "actual": "5m29s, 4.4 GB on 2025-01-31",
-            "max_time": "PT10M",
+            "max_time": "PT7M",
+            "max_memory": "20G",
+        },
+        {
+            "recipe_path": "recipe_modes_of_variability",
+            "actual": "0m29s, 2.9 GB on 2025-01-31",
+            "max_time": "PT2M",
+            "max_memory": "20G",
+        },
+        {
+            "recipe_path": "recipe_multimodel_products",
+            "actual": "0m14s, 2.5 GB on 2025-01-31",
+            "max_time": "PT2M",
             "max_memory": "20G",
         },
         {
@@ -272,10 +301,29 @@
 {% set MEDIUM_RECIPES =
     [
         {
+            "recipe_path": "clouds--recipe_lauer22jclim_fig9-11ab_scatter",
+            "actual": "8m18s, 7.4 GB on 2025-01-31",
+            "max_time": "PT15M",
+            "max_memory": "40G",
+        },
+        {
+            "recipe_path": "recipe_cmug_h2o",
+            "actual": "9m27s, 15.8 GB on 2025-01-30",
+            "max_time": "PT15M",
+            "max_memory": "40G",
+        },
+        {
+            "recipe_path": "recipe_ecs_scatter",
+            "actual": "08m18s, 9.9 GB on 2025-01-30",
+            "max_time": "PT10M",
+            "max_memory": "20G",
+        },
+        {
             "recipe_path": "recipe_ensclus",
             "actual": "2m10s, 2.4 GB on 2024-03-29",
             "max_time": "PT4M",
             "max_memory": "3G",
         },
+
     ]
 %}
