@@ -1,0 +1,85 @@
+# ESMValTool
+---
+documentation:
+  title: Model evaluation with focus on clouds.
+  description: >
+    Plot climatologies and zonal mean profiles of several cloud-related
+    variables of multi-year simulations.
+  authors:
+    - lauer_axel
+    - bock_lisa
+  maintainer:
+    - lauer_axel
+
+
+# Note: the CMIP6 model is just an example
+datasets:
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2, reference_for_monitor_diags: true}
+
+
+preprocessors:
+
+  full_climatology: &full_climatology_diag
+    climate_statistics:
+      period: full
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+
+  zonal_mean:
+    climate_statistics:
+      period: full
+    zonal_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  maps:
+    description: Plot climatological maps including reference datasets.
+    variables:
+      lwcre:
+        timerange: '2001/2014' 
+        mip: Amon
+        derive: true
+        preprocessor: full_climatology
+      swcre:
+        timerange: '2001/2014' 
+        mip: Amon
+        derive: true
+        preprocessor: full_climatology
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          map:
+            common_cbar: true
+
+  zonal:
+    description: Plot climatological zonal means including reference datasets.
+    variables:
+      lwcre:
+        timerange: '2001/2014' 
+        mip: Amon
+        derive: true
+        preprocessor: zonal_mean
+      swcre:
+        timerange: '2001/2014' 
+        mip: Amon
+        derive: true
+        preprocessor: zonal_mean
+    additional_datasets:
+    - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+    - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2}
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          variable_vs_lat:
+  
