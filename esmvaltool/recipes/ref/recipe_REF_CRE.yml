@@ -42,7 +42,7 @@ preprocessors:
 
 diagnostics:
 
-  plot_lwcre_maps:
+  plot_maps:
     description: Plot lwcre climatology maps including reference datasets.
     variables:
       lwcre:
