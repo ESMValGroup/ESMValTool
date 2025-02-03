@@ -51,7 +51,7 @@ diagnostics:
         preprocessor: full_climatology
         derive: true
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, timerange: '2001/2010', tier: 1, reference_for_monitor_diags: true}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2, reference_for_monitor_diags: true}
     scripts:
       plot: &plot_multi_dataset_default
         script: monitor/multi_datasets.py
