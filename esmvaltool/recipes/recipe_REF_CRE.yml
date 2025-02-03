@@ -3,7 +3,7 @@
 documentation:
   title: Model evaluation with focus on the cloud radiative effect.
   description: >
-    Plot climatologies and zonal mean profiles of ckoud radiative effect for the REF.
+    Plot climatologies and zonal mean profiles of cloud radiative effects (sw + lw) for the REF.
   authors:
     - bock_lisa
     - lauer_axel
