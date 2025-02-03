@@ -30,7 +30,6 @@ preprocessors:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
 
   zonal_mean:
-    custom_order: true  # makes preprocessor much faster since input for extract_levels is smaller
     climate_statistics:
       period: full
     regrid:
