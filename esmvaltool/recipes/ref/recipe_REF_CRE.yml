@@ -42,7 +42,7 @@ preprocessors:
 
 diagnostics:
 
-  plot_lwcre_maps:
+  plot_maps:
     description: Plot lwcre climatology maps including reference datasets.
     variables:
       lwcre:
@@ -66,7 +66,7 @@ diagnostics:
           map:
             common_cbar: true
 
-  plot_lwcre_profiles:
+  plot_profiles:
     description: Plot lwcre zonal mean including reference datasets.
     variables:
       lwcre:
