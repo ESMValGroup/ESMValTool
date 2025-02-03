@@ -35,7 +35,7 @@ preprocessors:
     regrid:
       scheme:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
-      target_grid: 2x2
+      target_grid: 1x1
     zonal_statistics:
       operator: mean
 
