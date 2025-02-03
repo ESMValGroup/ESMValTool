@@ -55,8 +55,8 @@ diagnostics:
         mip: Amon
         preprocessor: full_climatology
         derive: true
-      additional_datasets:
-        - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2, reference_for_monitor_diags: true}
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2, reference_for_monitor_diags: true}
     scripts:
       plot: &plot_multi_dataset_default
         script: monitor/multi_datasets.py
@@ -79,10 +79,10 @@ diagnostics:
         mip: Amon
         preprocessor: zonal_mean
         derive: true
-      additional_datasets:
-        - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2, reference_for_monitor_diags: true}
-        - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
-        - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2}
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2, reference_for_monitor_diags: true}
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+      - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
