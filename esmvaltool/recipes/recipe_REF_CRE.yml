@@ -1,7 +1,7 @@
 # ESMValTool
 ---
 documentation:
-  title: Model evaluation with focus on the radiative effect of the cloud radiative effect.
+  title: Model evaluation with focus on the cloud radiative effect.
   description: >
     Plot climatologies and zonal mean profiles of ckoud radiative effect for the REF.
   authors:
