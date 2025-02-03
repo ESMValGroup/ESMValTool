@@ -25,7 +25,7 @@ preprocessors:
     climate_statistics:
       period: full
     regrid:
-      target_grid: 2x2
+      target_grid: 1x1
       scheme:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
 
