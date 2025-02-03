@@ -927,7 +927,7 @@ datasets:
       information).
       A registration is required.
 
-  MOBO-DIC_MPIM:
+  MOBO-DIC-MPIM:
     tier: 2
     source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0221526/
     last_access: 2022-11-03
