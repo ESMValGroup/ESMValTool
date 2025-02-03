@@ -1,0 +1,91 @@
+# ESMValTool
+# recipe_etcre.yml
+---
+documentation:
+  title: >
+    Effective Transient Climate Response to Cumulative Carbon Emissions (eTCRE).
+  description: >
+    Calculate Effective Transient Climate Response to Cumulative Carbon Emissions (eTCRE).
+  authors:
+    - schlund_manuel
+  maintainer:
+    - schlund_manuel
+  references:
+    - vakilifard22bg
+  domains:
+    - global
+  realms:
+    - atmos
+  themes:
+    - carbon
+    - bgphys
+
+
+preprocessors:
+  global_annual_mean_anomaly:
+    custom_order: true
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      reference:
+        start_year: 1850
+        start_month: 1
+        start_day: 1
+        end_year: 1899
+        end_month: 12
+        end_day: 31
+    rolling_window_statistics:
+      coordinate: time
+      operator: mean
+      window_length: 10
+
+  global_sum_annual_mean:
+    custom_order: true
+    area_statistics:
+      operator: sum
+    annual_statistics:
+      operator: mean
+    cumulative_sum:
+      coord: time
+      weights: true
+    rolling_window_statistics:
+      coordinate: time
+      operator: mean
+      window_length: 10
+    convert_units:
+      units: Pg
+
+
+diagnostics:
+  etcre:
+    variables:
+      tas:
+        project: CMIP6
+        mip: Amon
+        exp: [esm-hist, esm-ssp585]
+        timerange: 1850/2099  # MPI model does not have year 2100
+        preprocessor: global_annual_mean_anomaly
+      fco2antt:
+        project: CMIP6
+        mip: Amon
+        exp: [esm-hist, esm-ssp585]
+        timerange: 1850/2099  # MPI model does not have year 2100
+        preprocessor: global_sum_annual_mean
+    additional_datasets:
+      - {dataset: AWI-ESM-1-REcoM, ensemble: r1i1p1f1, grid: gn, institute: AWI}
+      - {dataset: BCC-CSM2-MR,     ensemble: r1i1p1f1, grid: gn}  # very high emissions
+      - {dataset: CNRM-ESM2-1,     ensemble: r1i1p1f3, grid: gr}
+      - {dataset: EC-Earth3-CC,    ensemble: r1i1p1f1, grid: gr}  # very low emissions
+      - {dataset: MRI-ESM2-0,      ensemble: r1i2p1f1, grid: gn}
+      - {dataset: MPI-ESM1-2-LR,   ensemble: r1i1p1f1, grid: gn}
+      - {dataset: UKESM1-0-LL,     ensemble: r1i1p1f2, grid: gn}
+    scripts:
+      calculate_etcre:
+        script: climate_metrics/etcre.py
+        pyplot_kwargs:
+          title: Effective Transient Climate Response to Emissions (eTCRE)
+          xlabel: Cumulative CO$_2$ emissions [PgC]
+          ylabel: Global mean surface air temperature change [K]
