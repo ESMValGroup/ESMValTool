@@ -62,9 +62,14 @@ diagnostics:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        matplotlib_rc_params:
+          #legend.fontsize: small
+          #figure.labelsize: small
         plots:
           map:
             common_cbar: true
+            x_pos_stats_avg: -0.1 
+            fontsize: 10
 
   plot_profiles:
     description: Plot lwcre zonal mean including reference datasets.
