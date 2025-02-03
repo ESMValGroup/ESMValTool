@@ -104,7 +104,9 @@ diagnostics:
         preprocessor: zonal_mean
         derive: true
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1, timerange: '2001/2010', reference_for_monitor_diags: true}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2, reference_for_monitor_diags: true}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+          - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
