@@ -33,6 +33,6 @@ Example plots:
 .. figure::  /recipes/figures/ref/variable_vs_lat_lwcre_ambiguous_dataset_Amon.png
    :align:   center
 
-   Zonal averages of the climatological annual mean longwave cloud radiative
+   Zonal averages of the climatological mean longwave cloud radiative
    effect from CERES-EBAF Ed4.2 (solid black), ESACCI-CLOUD (dashed black), 
    ISCCP-FH (dotted black) and the MPI-ESM1-2-LR model (blue).
