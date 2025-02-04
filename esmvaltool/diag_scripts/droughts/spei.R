@@ -5,7 +5,7 @@
 # functionality as the previous diag_spei.R as a special case.
 # Calculation of PET and plotting of results is covered in seperate diagnostics.
 #
-# Authors: [Peter Berg, Katja Weigel, Lukas Ruhe]
+# Authors: [Peter Berg, Katja Weigel, Lukas Lindenlaub]
 #
 # CHANGELOG:
 #
@@ -51,10 +51,14 @@
 # NOTE: set log-Logistic as default distribution if nothing is given in the 
 # recipe. Missing distribution raised an unclear error before.
 #
+# NOTE: forced to write netcdf-4 format (v4) to ensure compatibility with
+# other tools
+#
 # OPTIONS:
 #
 # write_coeffs: boolean, default FALSE
 #   write xi, alpha and kappa to netcdf files
+#   TODO: hardcoded for this 3 parameters. Only works for log-Logistic yet.
 # write_wb: boolean, default FALSE
 #   write water balance to netcdf file
 # short_name_pet: string, default "evspsblpot"
@@ -75,33 +79,33 @@ library(R.utils)
 setwd(dirname(commandArgs(asValues=TRUE)$file))
 source("utils.R")
 
-fill_refperiod <- function(params, tsvec) {
-  params <- list_default(params, "refstart_year", tsvec[1])
-  params <- list_default(params, "refstart_month", tsvec[2])
-  params <- list_default(params, "refend_year", tsvec[3])
-  params <- list_default(params, "refend_month", tsvec[4])
+fill_refperiod <- function(cfg, tsvec) {
+  cfg <- list_default(cfg, "refstart_year", tsvec[1])
+  cfg <- list_default(cfg, "refstart_month", tsvec[2])
+  cfg <- list_default(cfg, "refend_year", tsvec[3])
+  cfg <- list_default(cfg, "refend_month", tsvec[4])
 }
 
 # ---------------------------------------------------------------------------- #
 # Script starts here --------------------------------------------------------- #
 # ---------------------------------------------------------------------------- #
-params <- read_yaml(commandArgs(trailingOnly = TRUE)[1])
-params <- list_default(params, "write_coeffs", FALSE)
-params <- list_default(params, "write_wb", FALSE)
-params <- list_default(params, "short_name_pet", "evspsblpot")
-params <- list_default(params, "distribution", "log-Logistic")
-dir.create(params$work_dir, recursive = TRUE)
-dir.create(params$plot_dir, recursive = TRUE)
+cfg <- read_yaml(commandArgs(trailingOnly = TRUE)[1])
+cfg <- list_default(cfg, "write_coeffs", FALSE)
+cfg <- list_default(cfg, "write_wb", FALSE)
+cfg <- list_default(cfg, "short_name_pet", "evspsblpot")
+cfg <- list_default(cfg, "distribution", "log-Logistic")
+dir.create(cfg$work_dir, recursive = TRUE)
+dir.create(cfg$plot_dir, recursive = TRUE)
 fillfloat <- 1.e+20
 as.single(fillfloat)
-provenance_file <- paste0(params$run_dir, "/", "diagnostic_provenance.yml")
-meta_file <- paste0(params$work_dir, "/metadata.yml")
+provenance_file <- paste0(cfg$run_dir, "/", "diagnostic_provenance.yml")
+meta_file <- paste0(cfg$work_dir, "/metadata.yml")
 provenance <- list()
 meta <- list()  # collect output files metadata
 
 print("--- Load input meta")
 ancestor_meta <- list()
-for (anc in params$input_files){
+for (anc in cfg$input_files){
   if (!endsWith(anc, 'metadata.yml')){anc <- paste0(anc, "/metadata.yml")}
   ancestor_meta <- append(ancestor_meta, read_yaml(anc))
 }
@@ -112,20 +116,38 @@ for (dataset in names(grouped_meta)){
   print(paste("-- processing dataset:", dataset))
   metas <- grouped_meta[[dataset]]  # list of files for this dataset
   mask <- get_merged_mask(metas) # use mask per dataset
-  # START SPEI CALC
   pr_meta <- select_var(metas, "pr")
   pr <- get_var_from_nc(pr_meta)
   lat <- get_var_from_nc(pr_meta, custom_var="lat")
   tsvec <- get_var_from_nc(pr_meta, custom_var="time")
-  pet <- get_var_from_nc(select_var(metas, params$short_name_pet))
-  pme <- pr - pet
-  if (params$write_wb) {
-    filename_wb <- write_nc_file_like(params, pr_meta, pme, fillfloat, short_name="wb")
+  pet_meta <- select_var(metas, cfg$short_name_pet, strict=FALSE)
+  if (is.null(pet_meta)) {
+    print("PET not found, calculating SPI")
+    cfg$indexname <- "SPI"
+    pme <- pr
+  } else {
+    cfg$indexname <- "SPEI"
+    pet <- get_var_from_nc(pet_meta)
+    pme <- pr - pet
+  }
+  if (cfg$write_wb) {
+    filename_wb <- write_nc_file_like(cfg, pr_meta, pme, fillfloat, short_name="wb")
   }
 
-  fill_refperiod(params, tsvec)
+  fill_refperiod(cfg, tsvec)
   pme_spei <- pme * NA
-  coeffs <- array(numeric(), c(3, dim(pme)[1], dim(pme)[2], 12)) # xi, alpha, kappa
+  # coeffs <- array(numeric(), c(3, dim(pme)[1], dim(pme)[2], 12)) # xi, alpha, kappa
+  # get dimensions and attributes from pr to save coeffs in similar format
+  # prepare cube fot coeffs
+  # if (cfg$write_coeffs) {
+  #   dims <- get_dims_from_nc(pr_meta)
+  #   month_dim <- ncdim_def("month", 1, 1:12, longname="Month of the Year")
+  #   dims <- append(dims, list(month_dim))
+  #   attrs <- get_attrs_from_nc(pr_meta)
+  #   coeffs <- list()
+  # }
+  coeffs <- list()
+  # TODO: save from results$coefficients (dimension depends on distribution)
   for (i in 1:dim(pme)[1]){
     wh <- which(!is.na(mask[i,]))
     if (length(wh) > 1){
@@ -133,58 +155,51 @@ for (dataset in names(grouped_meta)){
       ts_data <- ts(t(tmp), freq=12, start=c(tsvec[1], tsvec[2]))
       spei_results <- spei(
         ts_data,
-        params$smooth_month,
+        cfg$smooth_month,
         na.rm = TRUE,
-        distribution = params$distribution,
-        ref.start = c(params$refstart_year, params$refstart_month),
-        ref.end = c(params$refend_year, params$refend_month)
+        distribution = cfg$distribution,
+        ref.start = c(cfg$refstart_year, cfg$refstart_month),
+        ref.end = c(cfg$refend_year, cfg$refend_month)
       )
-      coeffs[, i, wh, ] <- spei_results$coefficients
       pme_spei[i, wh, ] <- t(spei_results$fitted)
+      if (cfg$write_coeffs) {
+        for (c_name in rownames(spei_results$coefficients)){
+          if (is.null(coeffs[[c_name]])){
+            coeffs[[c_name]] <- array(NA, dim=c(dim(pme)[1], dim(pme)[2], 12))
+          }
+          coeffs[[c_name]][i, wh, ] <- spei_results$coefficients[c_name, ,]
+        }
+      }
     }
   }
   pme_spei[pme_spei > 10000] <- NA  # replaced with fillfloat in write function
-  filename <- write_nc_file_like(params, pr_meta, pme_spei, fillfloat)
-  if (params$write_coeffs) {
-    filename_xi <- write_nc_file_like(
-      params, pr_meta, coeffs[1, , ,], fillfloat, 
-      short_name = "xi", 
-      moty=TRUE)
-    meta[[filename_xi]] <- list(
-      filename=filename_xi, 
-      short_name="xi", 
-      dataset=dataset)
-    filename_alpha <- write_nc_file_like(
-      params, pr_meta, coeffs[2, , ,], fillfloat, 
-      short_name = "alpha", 
-      moty = TRUE)
-    meta[[filename_alpha]] <- list(
-      filename=filename_xi, 
-      short_name="alpha", 
-      dataset=dataset)
-    filename_kappa <- write_nc_file_like(
-      params, pr_meta, coeffs[3, , ,], fillfloat, 
-      short_name = "kappa", 
-      moty=TRUE)
-    meta[[filename_kappa]] <- list(
-      filename=filename_kappa, 
-      short_name="kappa", 
-      dataset=dataset)
+  filename <- write_nc_file_like(cfg, pr_meta, pme_spei, fillfloat, short_name=cfg$indexname)
+  if (cfg$write_coeffs) {
+    print("Coeffs are:")
+    for (c_name in names(coeffs)){
+      print(c_name)
+      filename_c <- write_nc_file_like(cfg, pr_meta, coeffs[[c_name]], fillfloat, short_name=c_name, moty=TRUE)
+      meta[[filename_c]] <- list(
+        filename = filename_c,
+        short_name = c_name,
+        dataset = dataset
+      )
+    }
   }
 
   print("-- prepare metadata for output")
   meta[[filename]] <- list(
     filename = filename,
-    short_name = "spei",
+    short_name = tolower(cfg$indexname),
     dataset = dataset)
-  xprov$caption <- "SPEI index per grid point."
+  xprov$caption <- paste(cfg$indexname, " index per grid point.")
   # generate metadata.yml
   input_meta = select_var(metas, "pr")
   input_meta$filename = filename
-  input_meta$short_name = "spei"
-  input_meta$long_name = "SPEI"
+  input_meta$short_name = tolower(cfg$indexname)
+  input_meta$long_name = cfg$indexname
   input_meta$units = "1"
-  input_meta$index = "SPEI"
+  input_meta$index = cfg$indexname
   meta[[filename]] <- input_meta
   # meta[[filename]][["index"]] <- "SPEI"
   for (t in 1:dim(pme)[3]) {
@@ -195,5 +210,5 @@ for (dataset in names(grouped_meta)){
 }  # end of big dataset loop
 
 provenance[[filename]] <- xprov
-write_yaml(provenance, provenance_file)
+# write_yaml(provenance, provenance_file)
 write_yaml(meta, meta_file)

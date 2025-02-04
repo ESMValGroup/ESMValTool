@@ -32,7 +32,7 @@
 
 xprov <- list(
   ancestors = list(""),
-  authors = list("berg_peter", "weigel_katja", "ruhe_lukas"),
+  authors = list("berg_peter", "weigel_katja", "lindenlaub_lukas"),
   references = list("vicente10jclim"),
   projects = list("c3s-magic"),
   caption = "",
@@ -120,6 +120,24 @@ convert_to_cf <- function(id, v) {
     cnt <- cnt + 1
   }
   return(v)
+}
+
+get_dims_from_nc <- function(meta) {
+  id <- nc_open(meta$filename)
+  xdim <- ncvar_dim(id, "lon")
+  if (length(xdim)==0) xdim <- ncvar_dim(id, "longitude")
+  ydim <- ncvar_dim(id, "lat")
+  if (length(ydim)==0) ydim <- ncvar_dim(id, "latitude")
+  tdim <- ncvar_dim(id, "time")
+  nc_close(id)
+  return(list(xdim, ydim, tdim))
+}
+
+get_attrs_from_nc <- function(meta) {
+  id <- nc_open(meta$filename)
+  allatt <- ncatt_get(id, meta$short_name)
+  nc_close(id)
+  return(allatt)
 }
 
 get_merged_mask <- function(metas, variables="all") {
@@ -213,7 +231,6 @@ leap_year <- function(year) {
 list_default <- function(list, key, default) {
   # TODO: use `key %in% names` instead of is.null? would allow explicit NULL
   # list[[key]] <- if(is.null(list[[key]])) default else list[[key]]
-  print("defaulting")
   if (!key %in% names(list)) {
     print("key not existing")
     print(key)
@@ -223,7 +240,7 @@ list_default <- function(list, key, default) {
   return(list)
 }
 
-select_var <- function(metas, short_name) {
+select_var <- function(metas, short_name, strict=TRUE) {
   # NOTE: metas should be a list of metadata entries, but R seems to handle it 
   # differently if this list ist of length 1.
   for (meta in metas) {
@@ -231,7 +248,12 @@ select_var <- function(metas, short_name) {
       return(meta)
     }
   }
-  stop(paste("No metadata found for", short_name, "in", meta$dataset))
+  if (strict) {
+    stop(paste("No metadata found for", short_name, "in", meta$dataset))
+  } else {
+    print(paste("No metadata found for", short_name, "in", meta$dataset))
+    return(NULL)
+  }
 }
 
 
@@ -276,6 +298,7 @@ write_nc_file_like <- function(
   # save the file. evspsblpot will be converted from monthly to cf units.
   # NOTE: cf convert skipped for debugging
   new_meta <- update_short_name(params, meta, short_name)
+  print(paste("create new file:", new_meta$filename))
   ncid_in <- nc_open(meta$filename) 
   xdim <- ncid_in$dim[["lon"]]
   if (length(xdim)==0) xdim <- ncid_in$dim[["longitude"]]
@@ -288,7 +311,7 @@ write_nc_file_like <- function(
   }
   allatt <- ncatt_get(ncid_in, meta$short_name)
   var_data <- ncvar_def(short_name, units, list(xdim, ydim, tdim), fillfloat)
-  idw <- nc_create(new_meta$filename, var_data)
+  idw <- nc_create(new_meta$filename, var_data, force_v4=TRUE)
   # convert units back to kg/m2/s before writing file
   # if (short_name == "evspsblpot") {
   #   # NOTE: fillfloat will be converted too.

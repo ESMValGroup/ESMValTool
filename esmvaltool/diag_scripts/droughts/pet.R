@@ -25,7 +25,7 @@
 # 
 # NOTE: add latitude and longitude as valid dim coords in addition to lat/lon
 # 
-# NOTE: added weigel_katja, ruhe_lukas to authors
+# NOTE: added weigel_katja, lindenlaub_lukas to authors
 #
 # NOTE: Provenance is written for each output file within the loop over datasets
 # instead of afterwards (was it a bug?)
@@ -35,7 +35,7 @@
 #
 # NOTE: Remove pr as reference, since pr is not mandatory input for all methods.
 # 
-# Authors: [Peter Berg, Katja Weigel, Lukas Ruhe]
+# Authors: [Peter Berg, Katja Weigel, Lukas Lindenlaub]
 
 library(yaml)
 library(ncdf4)
