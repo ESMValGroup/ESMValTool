@@ -1,0 +1,62 @@
+
+# ESMValTool
+# recipe_spei.yml
+---
+documentation:
+  title: SPI and SPEI Drought Indices
+
+  description: |
+    Example calculates for the SPI and SPEI drought indices
+
+  authors:
+    - berg_peter
+    - lindenlaub_lukas
+
+  maintainer:
+    - weigel_katja
+
+  projects:
+    - c3s-magic
+
+  references:
+    - acknow_project
+
+CMIP6: &cmip6 {project: CMIP6, mip: Amon, ensemble: r1i1p1f1, grid: gn}
+
+datasets:
+- {<<: *cmip6, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
+
+preprocessors:
+  preprocessor:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+
+diagnostics:
+  diagnostic:
+    description: Calculating SPI and SPEI index
+    variables:
+      pr: &var
+        reference_dataset: ACCESS-CM2
+        preprocessor: preprocessor
+        start_year: 2000
+        end_year: 2005
+        mip: Amon
+        exp: [historical]
+      tasmin: *var
+      tasmax: *var
+    scripts:
+      spi:
+        script: droughts/spei.R
+        ancestors: [pr]
+        distribution: Gamma
+        smooth_month: 6
+        write_coeffs: True
+      pet:
+        pet_type: "Hargreaves"  # "Penman_clt"
+        script: droughts/pet.R
+      spei:
+        script: droughts/spei.R
+        ancestors: [pr, pet]
+        distribution: log-Logistic
+        smooth_month: 6
