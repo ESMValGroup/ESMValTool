@@ -1,7 +1,7 @@
 .. _recipes_REF:
 
 CMIP Rapid Evaluation Framework (REF)
-======
+======================================
 
 Overview
 --------
