@@ -5,7 +5,7 @@
 https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2#d7c89558ba9fa0495403155b64376d81
 https://conda.anaconda.org/conda-forge/linux-64/_py-xgboost-mutex-2.0-gpu_0.tar.bz2#7702188077361f43a4d61e64c694f850
 https://conda.anaconda.org/conda-forge/noarch/_r-mutex-1.0.1-anacondar_1.tar.bz2#19f9db5f4f1b7f5ef5f6d67207f25f38
-https://conda.anaconda.org/conda-forge/linux-64/ca-certificates-2024.12.14-hbcca054_0.conda#720523eb0d6a9b0f6120c16b2aa4e7de
+https://conda.anaconda.org/conda-forge/linux-64/ca-certificates-2025.1.31-hbcca054_0.conda#19f3a56f68d2fd06c516076bff482c52
 https://conda.anaconda.org/conda-forge/noarch/cuda-version-11.8-h70ddcb2_3.conda#670f0e1593b8c1d84f57ad5fe5256799
 https://conda.anaconda.org/conda-forge/noarch/font-ttf-dejavu-sans-mono-2.37-hab24e00_0.tar.bz2#0c96522c6bdaed4b1566d11387caaf45
 https://conda.anaconda.org/conda-forge/noarch/font-ttf-inconsolata-3.000-h77eed37_0.tar.bz2#34893075a5c9e55cdafac56607368fc6
@@ -272,7 +272,7 @@ https://conda.anaconda.org/conda-forge/noarch/pysocks-1.7.1-pyha55dd90_7.conda#4
 https://conda.anaconda.org/conda-forge/noarch/python-fastjsonschema-2.21.1-pyhd8ed1ab_0.conda#38e34d2d1d9dca4fb2b9a0a04f604e2c
 https://conda.anaconda.org/conda-forge/noarch/python-tzdata-2025.1-pyhd8ed1ab_0.conda#392c91c42edd569a7ec99ed8648f597a
 https://conda.anaconda.org/conda-forge/linux-64/python-xxhash-3.5.0-py312h66e93f0_1.conda#39aed2afe4d0cf76ab3d6b09eecdbea7
-https://conda.anaconda.org/conda-forge/noarch/pytz-2024.2-pyhd8ed1ab_1.conda#f26ec986456c30f6dff154b670ae140f
+https://conda.anaconda.org/conda-forge/noarch/pytz-2025.1-pyhd8ed1ab_0.conda#d451ccded808abf6511f0a2ac9bb9dcc
 https://conda.anaconda.org/conda-forge/linux-64/pyyaml-6.0.2-py312h178313f_2.conda#cf2485f39740de96e2a7f2bb18ed2fee
 https://conda.anaconda.org/conda-forge/linux-64/rpds-py-0.22.3-py312h12e396e_0.conda#bfb49da0cc9098597d527def04d66f8b
 https://conda.anaconda.org/conda-forge/linux-64/ruamel.yaml.clib-0.2.8-py312h66e93f0_1.conda#532c3e5d0280be4fea52396ec1fa7d5d
@@ -527,8 +527,8 @@ https://conda.anaconda.org/conda-forge/noarch/seawater-3.3.5-pyhd8ed1ab_1.conda#
 https://conda.anaconda.org/conda-forge/noarch/sparse-0.15.5-pyh72ffeb9_0.conda#e640762c293807bbd75c003e18d8ff0c
 https://conda.anaconda.org/conda-forge/linux-64/statsmodels-0.14.4-py312hc0a28a1_0.conda#97dc960f3d9911964d73c2cf240baea5
 https://conda.anaconda.org/conda-forge/noarch/tifffile-2024.12.12-pyhd8ed1ab_0.conda#59d646aa704b6024cb965be43493ed45
-https://conda.anaconda.org/conda-forge/noarch/xarray-2025.1.1-pyhd8ed1ab_0.conda#81db80ba986122da460800a67bf8ac7f
-https://conda.anaconda.org/conda-forge/noarch/zarr-3.0.1-pyhd8ed1ab_1.conda#03153ba3563632ab2acd5514616dd68a
+https://conda.anaconda.org/conda-forge/noarch/xarray-2025.1.2-pyhd8ed1ab_0.conda#b8d9af89c48fa3359f05f3324809fcde
+https://conda.anaconda.org/conda-forge/noarch/zarr-3.0.2-pyhd8ed1ab_0.conda#12fe59e621bee295428ba54ad862d3c5
 https://conda.anaconda.org/conda-forge/linux-64/cartopy-0.24.0-py312hf9745cd_0.conda#ea213e31805199cb7d0da457b879ceed
 https://conda.anaconda.org/conda-forge/noarch/cf_xarray-0.10.0-pyhd8ed1ab_2.conda#ed15dcf944706ae6ea54968dfa4a06a5
 https://conda.anaconda.org/conda-forge/noarch/chart-studio-1.1.0-pyhd8ed1ab_1.conda#a8dc13f40343dd9706cab9b9cbc49099
