@@ -35,9 +35,9 @@ User settings
 -------------
 
 It is recommended to use a vector graphic file type (e.g., SVG) for the output
-format when running this recipe, i.e., run the recipe with the command line
-option ``--output_file_type=svg`` or use ``output_file_type: svg`` in your
-:ref:`esmvalcore:user configuration file`.
+format when running this recipe, i.e., run the recipe with the
+:ref:`configuration options <esmvalcore:config_options>` ``output_file_type:
+svg``.
 Note that map and profile plots are rasterized by default.
 Use ``rasterize: false`` in the recipe to disable
 this.

@@ -90,8 +90,9 @@ commands:
             # Install
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            mamba env create >> /logs/conda.txt 2>&1
+            mamba env create
             conda activate esmvaltool
+            mamba list >> /logs/conda.txt
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             if [[ "<<parameters.flags>>" != *'--editable'* ]]
@@ -158,7 +159,7 @@ jobs:
   test_installation_from_source_test_mode:
     # Test installation from source
     docker:
-      - image: condaforge/mambaforge:latest
+      - image: condaforge/miniforge3:latest
     resource_class: large
     steps:
       - test_installation_from_source:
@@ -167,7 +168,7 @@ jobs:
   test_installation_from_source_develop_mode:
     # Test development installation
     docker:
-      - image: condaforge/mambaforge:latest
+      - image: condaforge/miniforge3:latest
     resource_class: large
     steps:
       - test_installation_from_source:
@@ -179,7 +180,7 @@ jobs:
     # purpose of this test to discover backward-incompatible changes early on in
     # the development cycle.
     docker:
-      - image: condaforge/mambaforge:latest
+      - image: condaforge/miniforge3:latest
     resource_class: large
     steps:
       - run:
@@ -201,8 +202,9 @@ jobs:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            mamba env create >> /logs/conda.txt 2>&1
+            mamba env create
             conda activate esmvaltool
+            mamba list >> /logs/conda.txt
             pip install --editable .[develop]
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
@@ -216,8 +218,8 @@ jobs:
             conda activate esmvaltool
             mkdir -p ~/climate_data
             esmvaltool config get_config_user
-            echo "search_esgf: when_missing" >> ~/.esmvaltool/config-user.yml
-            cat ~/.esmvaltool/config-user.yml
+            echo "search_esgf: when_missing" >> ~/.config/esmvaltool/config-user.yml
+            cat ~/.config/esmvaltool/config-user.yml
             for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
               esmvaltool run "$recipe"
             done
@@ -233,7 +235,7 @@ jobs:
   build_documentation:
     # Test building documentation
     docker:
-      - image: condaforge/mambaforge:latest
+      - image: condaforge/miniforge3:latest
     resource_class: medium
     steps:
       - checkout
@@ -257,7 +259,7 @@ jobs:
   test_installation_from_conda:
     # Test conda package installation
     docker:
-      - image: condaforge/mambaforge:latest
+      - image: condaforge/miniforge3:latest
     resource_class: large
     steps:
       - run:

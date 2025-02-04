@@ -23,8 +23,10 @@ large variety of input data.
 
    recipe_model_evaluation
    recipe_monitor
+   recipe_portrait
    recipe_psyplot
    recipe_seaborn
+   recipe_ref
 
 Atmosphere
 ^^^^^^^^^^
@@ -32,6 +34,7 @@ Atmosphere
    :maxdepth: 1
 
    recipe_miles
+   recipe_climate_patterns
    recipe_clouds
    recipe_cmug_h2o
    recipe_crem
@@ -93,6 +96,7 @@ Future projections
    recipe_tcr
    recipe_tebaldi21esd
    recipe_climate_change_hotspot
+   recipe_bock24acp
 
 IPCC
 ^^^^

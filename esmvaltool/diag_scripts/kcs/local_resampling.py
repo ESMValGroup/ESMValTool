@@ -292,7 +292,7 @@ def select_final_subset(cfg, subsets, prov=None):
 
     Final set of eight samples should have with minimal reuse of the
     same ensemble member for the same period. From 10.000 randomly
-    selected sets of 8 samples, count and penalize re-used segments (1
+    selected sets of 8 samples, count and penalize reused segments (1
     for 3*reuse, 5 for 4*reuse). Choose the set with the lowest penalty.
     """
     n_samples = cfg['n_samples']
@@ -387,7 +387,7 @@ def _get_climatology(cfg, scenario_name, table, prov=None):
 
     resampled_control = _recombine(segments_control, table['control'])
     resampled_future = _recombine(segments_future, table['future'])
-    # Store the resampled contol climates
+    # Store the resampled control climates
     filename = get_diagnostic_filename(f'resampled_control_{scenario_name}',
                                        cfg,
                                        extension='nc')

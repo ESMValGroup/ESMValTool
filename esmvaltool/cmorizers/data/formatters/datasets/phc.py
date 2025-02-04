@@ -101,7 +101,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
 
     cube = _fix_data(xr_time, var)
     fix_var_metadata(cube, var_info)
-    fix_coords(cube)
+    cube = fix_coords(cube)
     set_global_atts(cube, attrs)
     print(out_dir)
     if var != "areacello":

@@ -1,6 +1,13 @@
 # Dataset information
 ---
 datasets:
+  AERONET:
+    tier: 3
+    source: "https://aeronet.gsfc.nasa.gov/"
+    last_access: 2024-04-06
+    info: |
+      Aerosol Optical Depth information from a worldwide network of stations.
+
   AGCD:
     tier: 2
     source: "http://dx.doi.org/10.25914/6009600786063"
@@ -10,16 +17,16 @@ datasets:
       analyses covering analysis of monthly rainfall. The dataset provides consistent temporal and spatial analyses
       across Australia for each observed data variable. This accounts for spatial and temporal gaps in observations.
       Where possible, the gridded analysis techniques provide useful estimates in data-sparse regions
-      such as central Australia. 
-      
+      such as central Australia.
+
       Time coverage: Site-based data are used to provide gridded climate data at the monthly timescale for rainfall (1900+).
       Reference: Evans, A., Jones, D.A., Smalley, R., and Lellyett, S. 2020. An enhanced gridded rainfall analysis scheme
       for Australia. Bureau of Meteorology Research Report. No. 41.
       National Computational Infrastructure (NCI) - Catalogue Record: http://dx.doi.org/10.25914/6009600786063.
-      Data from NCI (National Computing Infrastructure Australia https://nci.org.au/), 
+      Data from NCI (National Computing Infrastructure Australia https://nci.org.au/),
       requires an NCI account and access to Gadi(Supercomputer in Canberra) and the project found in catalogue record.
       Access can be requested through NCI. NCI is an ESGF node (https://esgf.nci.org.au/projects/esgf-nci/)
-  
+
   ANUClimate:
     tier: 3
     source: "https://dx.doi.org/10.25914/60a10aa56dd1b"
@@ -28,7 +35,7 @@ datasets:
       Data from NCI project requiring an NCI account and access to GADI
 
       ANUClimate 2.0 consists of gridded daily and monthly climate variables across the terrestrial landmass of Australia
-      from at least 1970 to the present. Rainfall grids are generated from 1900 to the present. The underpinning spatial 
+      from at least 1970 to the present. Rainfall grids are generated from 1900 to the present. The underpinning spatial
       models have been developed at the Fenner School of Environment and Society of the Australian National University.
 
   APHRO-MA:
@@ -257,6 +264,15 @@ datasets:
          named like the year (e.g. 2007), no subdirectories with
          days etc.
 
+  CMAP:
+    tier: 2
+    source: https://psl.noaa.gov/data/gridded/data.cmap.html
+    last_access: 2024-09-09
+    info: |
+      To facilitate the download, the links to the https server are provided.
+      https://downloads.psl.noaa.gov/Datasets/cmap/enh/
+        precip.mon.mean.nc
+
   CowtanWay:
     tier: 2
     source: https://www-users.york.ac.uk/~kdc3/papers/coverage2013/series.html
@@ -274,12 +290,19 @@ datasets:
 
   CRU:
     tier: 2
-    source: https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/cruts.1811131722.v4.02/
-    last_access: 2019-05-16
+    source: https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.07/cruts.2304141047.v4.07/
+    last_access: 2023-11-06
     info: |
-      Download the following files:
-        {raw_name}/cru_ts4.02.1901.2017.{raw_name}.dat.nc.gz
+      Files can be downloaded using the download script (latest version only)
+      or manually:
+        {raw_name}/cru_ts4.07.1901.2022.{raw_name}.dat.nc.gz
       where {raw_name} is the name of the desired variable(s).
+      Previous versions can be downloaded from the corresponding folders in
+      https://crudata.uea.ac.uk/cru/data/hrg/. ESMValTools formatter can be used
+      for older versions with minor adjustments of
+      ``esmvaltool/cmorizers/data/cmor_config/CRU.yml``
+      Exact time coordinates and number of stations are not available version
+      TS4.02.
 
   CT2019:
     tier: 2
@@ -287,7 +310,7 @@ datasets:
     last_access: 2020-03-23
     info: |
       Create a new empty directory ``$RAWOBSPATH/Tier2/CT2019`` (where
-      ``$RAWOBSPATH`` is given by your user configuration file) where the raw
+      ``$RAWOBSPATH`` is given by your configuration) where the raw
       data will be stored. The download of the data is automatically handled by
       this script. If data is already present in this directory, the download is
       skipped (to force a new download delete your old files).
@@ -459,24 +482,16 @@ datasets:
 
   ESACCI-LANDCOVER:
     tier: 2
-    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/land_cover_maps/
-    last_access: 2019-01-10
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/pft/v2.0.8/
+    last_access: 2024-07-11
     info: |
-      Download the 3 NetCDF files for 2000, 2005 and 2010.
-      Download the CCI-LC Tools from:
-        http://maps.elie.ucl.ac.be/CCI/viewer/download/lc-user-tools-3.14.zip
-      Unpack and run the CCI-LC Tools on each of the NetCDF files as follows:
-        bash lc-user-tools-3.14/bin/aggregate-map.sh \
-          -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 \
-          -PoutputAccuracy=false -PoutputPFTClasses=true \
-          -PoutputLCCSClasses=false -PnumRows=360 <inputfile.nc>
-      Put the resulting processed data in input_dir_path.
-
-      Caveats
-        The CCI-LC Tools must be applied before running this script.
-        The CCI-LC Tools require Java Version 7 or higher.
-        The input data are available for a single year and are copied over to
-        generate a time series over their time range of validity.
+        Download and processing instructions:
+        Use the following CLI to download all the files:
+        esmvaltool data download ESACCI-LANDCOVER
+        The underlying downloader is located here:
+        /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_landcover.py
+        and it will download all the files currently available on CEDA (1992-2020)
+        under a single directory as follow: ${RAWOBS}/Tier2/ESACCI-LANDCOVER
 
   ESACCI-LST:
     tier: 2
@@ -517,11 +532,11 @@ datasets:
   ESACCI-SOILMOISTURE:
     tier: 2
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/soil_moisture/data/
-    last_access: 2019-02-01
+    last_access: 2024-06-19
     info: |
       Download the data from:
-        daily_files/COMBINED/v04.2/
-        ancillary/v04.2/
+        daily_files/COMBINED/v08.1/
+        ancillary/v08.1/
       Put all files under a single directory (no subdirectories with years).
 
   ESACCI-SEA-SURFACE-SALINITY:
@@ -548,7 +563,7 @@ datasets:
     source: https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001
     last_access: 2024-02-21
     info: |
-      CDR2 requires registration at EUMETSAT CM SAF, the information on how to 
+      CDR2 requires registration at EUMETSAT CM SAF, the information on how to
           download the order will be emailed once the order is ready.
       All files need to be in one directory, not in yearly subdirectories.
 
@@ -812,6 +827,15 @@ datasets:
         mon/atmos/rsut/rsut_Amon_reanalysis_JRA-25_197901-201312.nc
         mon/atmos/rsutcs/rsutcs_Amon_reanalysis_JRA-25_197901-201312.nc
 
+  JRA-55:
+    tier: 2
+    source: https://rda.ucar.edu/datasets/ds628.1/
+    last_access: 2023-03-22
+    info: |
+      Create an account on the research data archive (RDA) in order to be able
+      to download the data (1.25 degree, pressure levels). See
+      https://rda.ucar.edu/login/register/ for more details.
+
   Kadow2020:
     tier: 2
     source: http://users.met.fu-berlin.de/~ChristopherKadow/
@@ -898,13 +922,13 @@ datasets:
       Select "Data Access" -> "Subset/Get Data" -> "Get Data" and follow the
       "Instructions for downloading". All *.he5 files need to be saved in the
       $RAWOBS/Tier3/MLS-AURA directory, where $RAWOBS refers to the RAWOBS
-      directory defined in the user configuration file. Apply this procedure to
-      both links provided above. The temperature fields are necessary for quality
+      directory defined in the configuration. Apply this procedure to both
+      links provided above. The temperature fields are necessary for quality
       control of the RHI data (see Data Quality Document for MLS-AURA for more
       information).
-      A registration is required
+      A registration is required.
 
-  MOBO-DIC_MPIM:
+  MOBO-DIC-MPIM:
     tier: 2
     source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0221526/
     last_access: 2022-11-03
@@ -956,9 +980,14 @@ datasets:
       pressure/
         rhum.mon.mean.nc
         air.mon.mean.nc
+        omega.mon.mean.nc
       https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
       gaussian_grid
         tcdc.eatm.mon.mean.nc
+        prate.sfc.mon.mean.nc
+        uflx.sfc.mon.mean.nc
+        vflx.sfc.mon.mean.nc
+        skt.sfc.mon.mean.nc
       https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
       surface
         pr_wtr.eatm.mon.mean.nc
@@ -1049,7 +1078,9 @@ datasets:
         gaussian/monolevel/tcdc.eatm.mon.mean.nc
         gaussian/monolevel/ulwrf.ntat.mon.mean.nc
         gaussian/monolevel/uswrf.ntat.mon.mean.nc
-
+        gaussian/monolevel/prate.mon.mean.nc
+        gaussian/monolevel/uflx.mon.mean.nc
+        gaussian/monolevel/vflx.mon.mean.nc
   NOAA-CIRES-20CR-V3:
     tier: 2
     source: ftp.cdc.noaa.gov/Projects/20thC_ReanV3/Monthlies/
@@ -1071,7 +1102,7 @@ datasets:
     last_access: 2023-12-04
     info: |
       Download the following files:
-        ersst.yyyymm.nc 
+        ersst.yyyymm.nc
         for years 1854 to 2020
 
   NOAA-ERSSTv5:
@@ -1080,7 +1111,7 @@ datasets:
     last_access: 2023-12-04
     info: |
       Download the following files:
-        ersst.v5.yyyymm.nc 
+        ersst.v5.yyyymm.nc
         for years 1854 onwards
 
   NOAAGlobalTemp:
@@ -1107,13 +1138,13 @@ datasets:
       Download daily data from:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
-   
+
   NSIDC-G02202-sh:
     tier: 3
     source: https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4shmday
     last_access: 2023-05-13
     info: |
-      Download monthly data. 
+      Download monthly data.
       Login required for download, and also requires citation only to use
 
   OceanSODA-ETHZ:

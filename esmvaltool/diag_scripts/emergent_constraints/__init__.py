@@ -9,10 +9,16 @@ import iris.pandas
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import scipy
 import seaborn as sns
 import yaml
+from packaging.version import Version
 from scipy import integrate
 from scipy.stats import linregress
+if Version(scipy.version.version) < Version('1.14.0'):
+    from scipy.integrate import simps as simpson
+else:
+    from scipy.integrate import simpson
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -1673,7 +1679,7 @@ def cdf(data, pdf):
 
     """
     idx_range = range(1, len(data) + 1)
-    cum_dens = [integrate.simps(pdf[:idx], data[:idx]) for idx in idx_range]
+    cum_dens = [simpson(pdf[:idx], x=data[:idx]) for idx in idx_range]
     return np.array(cum_dens)
 
 
