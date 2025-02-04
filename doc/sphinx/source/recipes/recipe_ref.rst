@@ -7,7 +7,7 @@ Overview
 --------
 
 Here ESMValTool recipes are collected which will be used in the CMIP 
-Rapid Evaluation Framework (REF), <https://wcrp-cmip.org/cmip7/rapid-evaluation-framework/>.
+`Rapid Evaluation Framework (REF) <https://wcrp-cmip.org/cmip7/rapid-evaluation-framework/>`__.
 
 
 Available recipes 
