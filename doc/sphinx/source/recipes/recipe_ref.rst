@@ -15,7 +15,7 @@ Available recipes
 
 Recipes are stored in recipes/ref
 
-* recipe_REF_CRE.yml:
+* recipe_ref_cre.yml:
     Maps and zonal means of longwave and shortwave cloud radiative effect
 
 
