@@ -9,6 +9,7 @@ Overview
 Here ESMValTool recipes are collected which will be used in the CMIP 
 Rapid Evaluation Framework (REF), <https://wcrp-cmip.org/cmip7/rapid-evaluation-framework/>.
 
+
 Available recipes 
 -----------------
 
@@ -17,7 +18,9 @@ Recipes are stored in recipes/ref
 * recipe_REF_CRE.yml:
     Maps and zonal means of longwave and shortwave cloud radiative effect
 
-    Example plots:
+
+Example plots:
+-----------------
 
 .. _fig_ref_1:
 .. figure::  /recipes/figures/ref/map_lwcre_MPI-ESM1-2-LR_Amon.png
