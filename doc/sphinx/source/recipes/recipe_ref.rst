@@ -26,7 +26,7 @@ Example plots:
 .. figure::  /recipes/figures/ref/map_lwcre_MPI-ESM1-2-LR_Amon.png
    :align:   center
    
-   Geographical map of the climatological annual mean longwave cloud radiative 
+   Geographical map of the climatological mean longwave cloud radiative 
    effect from MPI-ESM1-2-LR and CERES-EBAF Ed4.2 and their difference.
 
 .. _fig_ref_2:
