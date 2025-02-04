@@ -45,8 +45,13 @@ from scipy.spatial import ConvexHull
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.shared import (
-    get_plot_filename, group_metadata, plot, run_diagnostic, select_metadata,
-    variables_available)
+    get_plot_filename,
+    group_metadata,
+    plot,
+    run_diagnostic,
+    select_metadata,
+    variables_available,
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 plt.style.use(plot.get_path_to_mpl_style('small_font'))
