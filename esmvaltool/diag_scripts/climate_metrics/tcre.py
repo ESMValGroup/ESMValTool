@@ -14,9 +14,11 @@ Manuel Schlund (DLR, Germany)
 Configuration options in recipe
 -------------------------------
 calc_tcre_period: list of int, optional (default: [90, 110])
-    Period considered to calculate TCRE. These elements are used to index the
-    data arrays. For example, if the input data are annual means, this
-    corresponds to the number of years after simulation start.
+    Period considered to calculate TCRE. TCRE is calculated by averaging over a
+    subarray of the temperature change arrays; the values given here are used
+    as indices to get this subarray. For example, if the input data are annual
+    means, this corresponds to the years (measured from simulation start) over
+    which the temperature change is averaged.
 exp_control: str, optional (default: 'esm-piControl')
     Name of the control experiment.
 exp_target: str, optional (default: 'esm-flat10')
