@@ -1,5 +1,5 @@
 ---
-filename: 'HadEX3_{raw_variable}_{raw_frequency}.nc'
+filename: 'HadEX3_{raw}_{raw_frequency}.nc'
 
 # Common global attributes for CMORizer output
 attributes:
@@ -7,7 +7,7 @@ attributes:
   version: v3.0.4
   tier: 2
   modeling_realm: ground
-  project_id: OBS
+  project_id: OBS6
   source: https://www.metoffice.gov.uk/hadobs/hadex3/download.html
   reference: 'hadex3'
   comment: 'ETCCDI (Expert Team on Climate Change Detection and Indices)'
@@ -17,29 +17,28 @@ variables:
   txx_yr:
     short_name: txx
     raw: TXx
-    raw_units: celsius
+    raw_units: degrees_C
     raw_frequency: ANN
     mip: yr
   txx_mon:
     short_name: txx
     raw: TXx
-    raw_units: celsius
+    raw_units: degrees_C
     raw_frequency: MON
     mip: Amon
   tnn_yr:
     short_name: tnn
     raw: TNn
-    raw_units: celsius
+    raw_units: degrees_C
     raw_frequency: ANN
     mip: yr
   tnn_mon:
     short_name: tnn
     raw: TNn
-    raw_units: celsius
+    raw_units: degrees_C
     raw_frequency: MON
+    frequency: mon
     mip: Amon
-  # For precitation extremes technically raw units are mm, but since 
-  # the pr CMOR units are kg m-2 s-1, we use kg m-2 for raw units
   rx1day_yr:
     short_name: rx1day
     raw: Rx1day

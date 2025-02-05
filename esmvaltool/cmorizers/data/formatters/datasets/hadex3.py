@@ -14,45 +14,50 @@ Download and processing instructions
         Annual.nc.gz and Monthly.nc.gz for TXx, TNn, Rx1day and Rx5day
     No registration is required for downloading the data.
 
-When using the dataset in a paper, the following are possible citations to use.
+When using the dataset in a paper, the following are citations to use:
 
-Dunn, R. J. H., et al. (2020), Development of an updated global land in-situ-based
-dataset of temperature and precipitation extremes: HadEX3 JGR-A
+Dunn, R. J. H., et al. (2020), Development of an updated global land
+in-situ-based dataset of temperature and precipitation extremes: HadEX3 JGR-A
 
-Dunn, R. J. H., Donat, M. G., Alexander, L. V., al. (2014), Investigating uncertainties
-in global gridded datasets of climate extremes, Climate of the Past, 10, 2171-2199
+Dunn, R. J. H., Donat, M. G., Alexander, L. V., al. (2014), Investigating
+uncertainties in global gridded datasets of climate extremes,
+Climate of the Past, 10, 2171-2199
 
-Donat, M. G., Alexander, L. V., .... Dunn, R. J. H., et al. (2013), Updated analyses
-of temperature and precipitation extreme indices since the beginning of the twentieth century:
-The HadEX2 dataset, J. Geophys. Res. Atmos., 118, 2098-2118
+Donat, M. G., Alexander, L. V., .... Dunn, R. J. H., et al. (2013), Updated
+analyses of temperature and precipitation extreme indices since the beginning
+of the twentieth century: The HadEX2 dataset, J. Geophys. Res. Atmos., 118,
+2098-2118
 """
 
 import logging
 import os
 
+import cftime
 import iris
 from cf_units import Unit
-import cftime
+from iris import NameConstraint
 
-import ...utilities as utils
+from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 
 
 def _fix_time_coord(cube):
-    """Convert the time to the gregorian calendar. """
+    """Convert the time to the gregorian calendar."""
     time_coord = cube.coord('time')
     time_coord.guess_bounds()
     new_unit = Unit('days since 1850-01-01 00:00:00', calendar='gregorian')
     new_time_points = cftime.num2pydate(time_coord.points,
                                         time_coord.units.origin,
                                         time_coord.units.calendar)
-    time_points = cftime.date2num(new_time_points, new_unit.origin,
+    time_points = cftime.date2num(new_time_points,
+                                  new_unit.origin,
                                   calendar=new_unit.calendar)
     new_time_bounds = cftime.num2pydate(time_coord.bounds,
                                         time_coord.units.origin,
                                         time_coord.units.calendar)
-    time_bounds = cftime.date2num(new_time_bounds, new_unit.origin,
+    time_bounds = cftime.date2num(new_time_bounds,
+                                  new_unit.origin,
                                   calendar=new_unit.calendar)
 
     cube.coord('time').points = time_points
@@ -64,7 +69,7 @@ def _extract_variable(var, var_info, cmor_info, attrs, filepath, out_dir):
     """Extract variable."""
     raw_var = var_info.get('raw', var)
     var = cmor_info.short_name
-    cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
+    cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
     # Fix units
     cube.units = var_info.get('raw_units', var)
     cube.convert_units(cmor_info.units)
@@ -81,7 +86,7 @@ def _extract_variable(var, var_info, cmor_info, attrs, filepath, out_dir):
                         unlimited_dimensions=['time'])
 
 
-def cmorization(in_dir, out_dir, cfg, _):
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization function call."""
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
@@ -91,15 +96,18 @@ def cmorization(in_dir, out_dir, cfg, _):
     for (var, var_info) in cfg['variables'].items():
         var_name = var_info['short_name']
         var_mip = var_info['mip']
-        filepath = os.path.join(in_dir, filename.format(var_info))
+        filepath = os.path.join(
+            in_dir,
+            filename.format(raw=var_info['raw'],
+                            raw_frequency=var_info['raw_frequency']))
         if os.path.isfile(filepath):
             logger.info(f"Found input file {filepath}")
         else:
             raise ValueError(f"Couldn't find {filepath}")
         logger.info(f"CMORizing variable {var_name} in {var_mip} table")
         glob_attrs['mip'] = var_info['mip']
-        cmor_info = cmor_table.get_variable(var_info['mip'], var)
+        cmor_info = cmor_table.get_variable(var_info['mip'], var_name)
         _extract_variable(var, var_info, cmor_info, glob_attrs, filepath,
                           out_dir)
         logger.info(f"CMORization of {var_name} in {var_mip} table was "
-                                                                "successful")
+                    "successful")

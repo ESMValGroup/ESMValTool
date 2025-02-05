@@ -749,7 +749,7 @@ datasets:
   HadEX3:
     tier: 2
     source: https://www.metoffice.gov.uk/hadobs/hadex3/download_etccdi.html
-    last_access: 2024-05-29
+    last_access: 2025-02-05
     info: |
       Download and unzip "HadEX3_TXx_MON.nc.gz", "HadEX3_TXx_ANN.nc.gz", 
       "HadEX3_TNn_MON.nc.gz", "HadEX3_TNn_ANN.nc.gz", 
