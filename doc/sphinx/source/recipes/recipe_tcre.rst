@@ -12,11 +12,12 @@ fundamental to climate policy.
 The concept stems from research showing a clear linear relationship between
 cumulative CO\ :sub:`2` emissions and global temperature change in climate
 models (Allen et al. 2009; Matthews et al. 2009; Zickfeld et al. 2009).
-This relationship is called the **Transient Climate Response to Cumulative CO\
-:sub:`2` Emissions (TCRE)**, which represents the amount of global warming
-caused by each trillion tonnes of carbon emitted. This simple yet powerful tool
-allows policymakers to directly link emission budgets to specific temperature
-targets and compare the long-term effects of different emissions scenarios.
+This relationship is called the Transient Climate Response to Cumulative CO\
+:sub:`2` Emissions (TCRE), which represents the amount of global warming caused
+by each trillion tonnes of carbon emitted.
+This simple yet powerful tool allows policymakers to directly link emission
+budgets to specific temperature targets and compare the long-term effects of
+different emissions scenarios.
 
 
 Available recipes and diagnostics
@@ -29,7 +30,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/
 
-* :ref:`climate_metrics/tcre.py <api.esmvaltool.diag_scripts.tcre>`
+* :ref:`climate_metrics/tcre.py <api.esmvaltool.diag_scripts.climate_metrics.tcre>`
 * :ref:`climate_metrics/barplot.py <create_barplot.py>`
 
 
@@ -55,7 +56,7 @@ References
   Sandstad, M., Schwinger, J., Seferian, R., Sentman, L., Simpson, I., Smith,
   C., Steinert, N., Swann, A., Tjiputra, J., and Ziehn, T.: flat10MIP: An
   emissions-driven experiment to diagnose the climate response to positive,
-  zero, and negative CO2 emissions, EGUsphere [preprint],
+  zero, and negative CO\ :sub:`2` emissions, EGUsphere [preprint],
   https://doi.org/10.5194/egusphere-2024-3356, 2024.
 * Allen, M., Frame, D., Huntingford, C. et al.: Warming caused by cumulative
   carbon emissions towards the trillionth tonne, Nature 458, 1163–1166,
@@ -77,6 +78,6 @@ Example plots
    :align: center
    :width: 50%
 
-   Global mean surface air temperature anomaly versus cumulative CO2 emissions
-   for MPI-ESM1-2-LR using the emission-driven 1% CO\ :sub:`2` increase per
-   year experiment.
+   Global mean surface air temperature anomaly versus cumulative CO\ :sub:`2`
+   emissions for MPI-ESM1-2-LR using the emission-driven 1% CO\ :sub:`2`
+   increase per year experiment.
