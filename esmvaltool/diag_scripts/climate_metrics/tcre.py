@@ -290,7 +290,7 @@ def _load_and_preprocess_data(cfg: dict) -> list[dict]:
             raise ValueError(
                 f"The index given by calc_tcre_period needs to be smaller or "
                 f"equal to the array size of {filename}, got "
-                f"{cfg["calc_tcre_period"][1]} and {cube.shape[0]}, "
+                f"{cfg['calc_tcre_period'][1]} and {cube.shape[0]}, "
                 f"respectively"
             )
 
