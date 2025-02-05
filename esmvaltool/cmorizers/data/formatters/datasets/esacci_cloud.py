@@ -102,13 +102,16 @@ def _extract_variable_daily(short_name, var, cfg, in_dir, out_dir, start_date,
     if not start_date:
         start_date = datetime(glob_attrs['start_year_daily'], 1, 1)
     if not end_date:
-        end_date = datetime(glob_attrs['end_year_daily'], 12, 31)
+        #end_date = datetime(glob_attrs['end_year_daily'], 12, 31)
+        end_date = datetime(glob_attrs['end_year_daily'], 1, 31)
 
     for year in range(start_date.year, end_date.year + 1):
         for month in range(start_date.month, end_date.month + 1):
             cubes = iris.cube.CubeList()
+            cubes_day = iris.cube.CubeList()
             num_days = monthrange(year, month)[1]
-            for iday in range(1, num_days + 1):
+            #for iday in range(1, num_days + 1):
+            for iday in range(1, 3):
 
                 filelist = glob.glob(
                     os.path.join(
@@ -123,10 +126,15 @@ def _extract_variable_daily(short_name, var, cfg, in_dir, out_dir, start_date,
                         # load data
                         raw_var = var.get('raw', short_name)
 
+                        if '_asc' in raw_var: illum = 'illum_asc'
+                        else: illum = 'illum_desc'
+
                         for ivar, raw_name in enumerate(raw_var):
                             logger.info("Extracting raw variable %s", raw_name)
                             daily_cube = iris.load_cube(
                                 ifile, NameConstraint(var_name=raw_name))
+                            daily_cube_ilum = iris.load_cube(
+                                ifile, NameConstraint(var_name=illum))
 
                             # set arbitrary time of day
                             daily_cube.coord('time').points = (
@@ -145,31 +153,45 @@ def _extract_variable_daily(short_name, var, cfg, in_dir, out_dir, start_date,
                             if fill_cube is None:
                                 fill_cube = daily_cube
 
+                            # check for day
+                            daily_cube_day = daily_cube.copy()
+                            daily_cube_day.data = da.ma.masked_where(
+                                daily_cube_ilum.core_data() == 1, daily_cube_day.core_data())
+
                             cubes.append(daily_cube)
+                            cubes_day.append(daily_cube_day)
 
                 else:
 
                     logger.info("Fill missing day %s in month %s and year %s",
                                 iday, month, year)
                     daily_cube = _create_nan_cube(fill_cube, year, month, iday)
+                    daily_cube_day = _create_nan_cube(fill_cube, year, month, iday)
                     cubes.append(daily_cube)
+                    cubes_day.append(daily_cube_day)
 
             cube = cubes.concatenate_cube()
+            cube_day = cubes_day.concatenate_cube()
 
             # regridding from 0.05x0.05 to 0.5x0.5
             cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
+            cube_day = regrid(cube_day, target_grid='0.5x0.5', scheme='area_weighted')
 
             logger.info("Building daily means")
             # Calc daily
             cube = daily_statistics(cube)
+            cube_day = daily_statistics(cube_day)
 
             # Fix units
             if short_name == 'clt':
                 cube.data = 100 * cube.core_data()
+                cube_day.data = 100 * cube_day.core_data()
             else:
                 if 'raw_units' in var:
                     cube.units = var['raw_units']
+                    cube_day.units = var['raw_units']
                 cube.convert_units(cmor_info.units)
+                cube_day.convert_units(cmor_info.units)
 
             # Fix metadata and  update version information
             attrs = copy.deepcopy(cfg['attributes'])
@@ -178,6 +200,18 @@ def _extract_variable_daily(short_name, var, cfg, in_dir, out_dir, start_date,
 
             # Save variable
             utils.save_variable(cube,
+                                short_name,
+                                out_dir,
+                                attrs,
+                                unlimited_dimensions=['time'])
+            
+            # Fix metadata and  update version information
+            attrs = copy.deepcopy(cfg['attributes'])
+            attrs['mip'] = var['mip']
+            attrs['version'] += '_day'
+            utils.set_global_atts(cube_day, attrs)
+
+            utils.save_variable(cube_day,
                                 short_name,
                                 out_dir,
                                 attrs,
