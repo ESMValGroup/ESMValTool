@@ -80,7 +80,7 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
 
     try:
         cube.convert_units(cmor_info.units)
-    except Exception as ex: # pylint: disable=broad-except
+    except Exception as ex:  # pylint: disable=broad-except
         logger.warning('Warning: could not convert units from %s to %s (%r)',
                        cube.units, cmor_info.units, ex)
 
