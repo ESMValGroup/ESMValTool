@@ -1,4 +1,4 @@
-"""ESMValTool CMORizer for MOBO-DIC_MPIM data.
+"""ESMValTool CMORizer for MOBO-DIC-MPIM data.
 
 Tier
     Tier 2: other freely-available dataset.
@@ -166,7 +166,7 @@ def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
     _fix_var_metadata(var_info, cmor_info, cube)
 
     # Fix coordinates
-    if cube.coords('month of the year'):  # MOBO-DIC_MPIM
+    if cube.coords('month of the year'):  # MOBO-DIC-MPIM
         _fix_climatological_time(cube)
     elif cube.coords('Julian Day'):  # MOBO-DIC2004-2019
         _fix_time(cube)

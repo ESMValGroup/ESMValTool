@@ -1,4 +1,4 @@
-"""Script to download MOBO-DIC_MPIM."""
+"""Script to download MOBO-DIC-MPIM."""
 import logging
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
