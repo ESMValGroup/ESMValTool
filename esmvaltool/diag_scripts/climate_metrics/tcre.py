@@ -29,8 +29,8 @@ gridline_kwargs: dict, optional
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
     lines.
 groupby_facet: str, optional (default: 'dataset')
-    Facet used to group datasets. Each group must contain exactly two datasets,
-    one for the variable ``tas``, and on for the variable ``fco2antt``.
+    Facet used to group datasets. TCRE is calculated for each group element
+    individually.
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
