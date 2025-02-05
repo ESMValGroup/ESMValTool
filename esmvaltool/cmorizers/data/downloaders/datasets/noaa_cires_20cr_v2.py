@@ -34,7 +34,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     )
     downloader.connect()
 
-    downloader.set_cwd("Projects/20thC_ReanV2/Monthlies/")
+    downloader.set_cwd("/Projects/20thC_ReanV2/Monthlies/")
     downloader.download_file("monolevel/cldwtr.eatm.mon.mean.nc",
                              sub_folder='surface')
     downloader.download_file("monolevel/pr_wtr.eatm.mon.mean.nc",
@@ -46,4 +46,10 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     downloader.download_file("gaussian/monolevel/ulwrf.ntat.mon.mean.nc",
                              sub_folder='surface_gauss')
     downloader.download_file("gaussian/monolevel/uswrf.ntat.mon.mean.nc",
+                             sub_folder='surface_gauss')
+    downloader.download_file("gaussian/monolevel/prate.mon.mean.nc",
+                             sub_folder='surface_gauss')
+    downloader.download_file("gaussian/monolevel/uflx.mon.mean.nc",
+                             sub_folder='surface_gauss')
+    downloader.download_file("gaussian/monolevel/vflx.mon.mean.nc",
                              sub_folder='surface_gauss')
