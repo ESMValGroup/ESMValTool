@@ -54,7 +54,8 @@ Observations and reformat scripts
 References
 ----------
 
-* xxx
+* [1] https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/portrait_plot/enso_metric/enso_metrics_interactive_portrait_plots_v20231121.html
+* [2] https://github.com/CLIVAR-PRP/ENSO_metrics/
 
 Example plots
 -------------
