@@ -3,9 +3,9 @@
 ---
 documentation:
   title: >
-    Transient Climate Response to Cumulative Carbon Emissions (TCRE).
+    Transient Climate Response to Cumulative CO2 Emissions (TCRE).
   description: >
-    Calculate Transient Climate Response to Cumulative Carbon Emissions (TCRE).
+    Calculate Transient Climate Response to Cumulative CO2 Emissions (TCRE).
   authors:
     - schlund_manuel
   maintainer:
@@ -78,6 +78,6 @@ diagnostics:
         calc_tcre_period: [45, 65]
         exp_target: esm-1pctCO2
         pyplot_kwargs:
-          title: Transient Climate Response to Emissions (TCRE)
+          title: Transient Climate Response to Cumulative CO2 Emissions (TCRE)
           xlabel: Cumulative CO$_2$ emissions [PgC]
           ylabel: Global mean surface air temperature change [K]

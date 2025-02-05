@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Calculate Transient Climate Response to Emissions (TCRE).
+"""Calculate Transient Climate Response to Cumulative CO2 Emissions (TCRE).
 
 Description
 -----------
-This diagnostics calculates the Transient Climate Response to Emissions (TCRE)
-and produces relevant plots.
+This diagnostics calculates the Transient Climate Response to Cumulative CO2
+Emissions (TCRE) and produces relevant plots.
 
 Author
 ------
@@ -93,7 +93,7 @@ def _calculate_tcre(
     cfg: dict,
     grouped_anomaly_data: dict[str, tuple[Cube, Cube]],
 ) -> str:
-    """Calculate Transient Climate Response to Emissions (TCRE)."""
+    """Calculate TCRE."""
     # Get center index at interval for emissions calculations
     # Note: For the default flat10 experiment, emissions reach 1000 Pg at the
     # END of year 99 (starting with year 0). For the default calculation period
@@ -116,13 +116,21 @@ def _calculate_tcre(
         tcre_cube.convert_units(target_units)
         tcre[group] = tcre_cube.data
 
+    netcdf_path = get_diagnostic_filename("tcre", cfg)
     var_attrs = {
         "short_name": "tcre",
-        "long_name": "Transient Climate Response to Emissions (TCRE)",
+        "long_name": (
+            "Transient Climate Response to Cumulative CO2 Emissions (TCRE)"
+        ),
         "units": target_units,
     }
-    netcdf_path = get_diagnostic_filename(var_attrs['short_name'], cfg)
-    io.save_scalar_data(tcre, netcdf_path, var_attrs)
+    attrs = {
+        "comment": (
+            "Expressed relative to mass of carbon (not CO2), i.e., units are "
+            "K/EgC.",
+        ),
+    }
+    io.save_scalar_data(tcre, netcdf_path, var_attrs, attributes=attrs)
 
     return netcdf_path
 
@@ -366,8 +374,8 @@ def main(cfg: dict) -> None:
         "authors": ["schlund_manuel"],
         "ancestors": [d["filename"] for d in input_data],
         "caption": (
-            "Transient Climate Response to Emissions (TCRE) for multiple "
-            "datasets"
+            "Transient Climate Response to Cumulative CO2 Emissions (TCRE) "
+            "for multiple datasets."
         ),
         "references": ["sanderson24gmd"],
         "realms": ["atmos"],
