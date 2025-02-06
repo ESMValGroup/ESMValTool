@@ -37,7 +37,7 @@ from ...utilities import save_variable
 logger = logging.getLogger(__name__)
 
 
-def _create_nan_cube(cube, year, month, day, is_daily):
+def _create_nan_cube(cube, year, month, day):
     """Create cube containing only nan from existing cube."""
     nan_cube = cube.copy()
     nan_cube.data = da.ma.masked_greater(cube.core_data(), -1e20)
@@ -46,24 +46,16 @@ def _create_nan_cube(cube, year, month, day, is_daily):
     dataset_time_unit = str(nan_cube.coord('time').units)
     dataset_time_calender = nan_cube.coord('time').units.calendar
     # Convert datetime
-    if is_daily:
-        hrs = 12
-    else:
-        hrs = 0
     newtime = datetime(year=year, month=month, day=day,
-                       hour=hrs, minute=0, second=0, microsecond=0)
+                       hour=12, minute=0, second=0, microsecond=0)
     newtime_num = cf_units.date2num(newtime, dataset_time_unit,
                                     dataset_time_calender)
     nan_cube.coord('time').points = float(newtime_num)
 
     # remove existing time bounds and create new bounds
     coord = nan_cube.coord('time')
-    if is_daily:
-        bnd1 = newtime + relativedelta.relativedelta(hours=-12)
-        bnd2 = bnd1 + relativedelta.relativedelta(days=1)
-    else:
-        bnd1 = newtime + relativedelta.relativedelta(days=-day + 1)
-        bnd2 = bnd1 + relativedelta.relativedelta(months=1)
+    bnd1 = newtime + relativedelta.relativedelta(hours=-12)
+    bnd2 = bnd1 + relativedelta.relativedelta(days=1)
     coord.bounds = [cf_units.date2num(bnd1, dataset_time_unit,
                                       dataset_time_calender),
                     cf_units.date2num(bnd2, dataset_time_unit,
@@ -120,7 +112,7 @@ def _fix_coordinates(cube, definition):
     return cube
 
 
-def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0, region):
+def _extract_variable(in_files, var, cfg, out_dir, year0, region):
     logger.info("CMORizing variable '%s' from input files '%s'",
                 var['short_name'], ', '.join(in_files))
     attributes = deepcopy(cfg['attributes'])
@@ -152,9 +144,8 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0, region):
 
         new_list.append(cube)
 
-    # make sure there is one cube for every day (daily data) or
-    # every month (monthly data) of the year
-    # (print debug info about missing days/months and add cube with
+    # make sure there is one cube for every day of the year
+    # (print debug info about missing days and add cube with
     # nan to fill gaps
 
     full_list = iris.cube.CubeList()
@@ -177,42 +168,22 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily, year0, region):
     # create cube list for every day/month of the year by adding
     # cubes containing only nan to fill possible gaps
 
-    if is_daily:
-        loop_date = datetime(year0, 1, 1)
-        while loop_date <= datetime(year0, 12, 31):
-            date_available = False
-            for idx, cubetime in enumerate(time_list):
-                if loop_date == cubetime:
-                    date_available = True
-                    break
-            if date_available:
-                full_list.append(new_list[idx])
-            else:
-                logger.debug("No data available for %d/%d/%d", loop_date.month,
-                             loop_date.day, loop_date.year)
-                nan_cube = _create_nan_cube(new_list[0], loop_date.year,
-                                            loop_date.month, loop_date.day,
-                                            is_daily)
+    loop_date = datetime(year0, 1, 1)
+    while loop_date <= datetime(year0, 12, 31):
+        date_available = False
+        for idx, cubetime in enumerate(time_list):
+            if loop_date == cubetime:
+                date_available = True
+                break
+        if date_available:
+            full_list.append(new_list[idx])
+        else:
+            logger.debug("No data available for %d/%d/%d", loop_date.month,
+                         loop_date.day, loop_date.year)
+            nan_cube = _create_nan_cube(new_list[0], loop_date.year,
+                                        loop_date.month, loop_date.day)
                 full_list.append(nan_cube)
             loop_date += relativedelta.relativedelta(days=1)
-    else:
-        loop_date = datetime(year0, 1, 15)
-        while loop_date <= datetime(year0, 12, 31):
-            date_available = False
-            for idx, cubetime in enumerate(time_list):
-                if loop_date == cubetime:
-                    date_available = True
-                    break
-            if date_available:
-                full_list.append(new_list[idx])
-            else:
-                logger.debug("No data available for %d/%d", loop_date.month,
-                             loop_date.year)
-                nan_cube = _create_nan_cube(new_list[0], loop_date.year,
-                                            loop_date.month, loop_date.day,
-                                            is_daily)
-                full_list.append(nan_cube)
-            loop_date += relativedelta.relativedelta(months=1)
 
     iris.util.unify_time_units(full_list)
     cube = full_list.concatenate_cube()
@@ -302,7 +273,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             if 'short_name' not in var:
                 var['short_name'] = short_name
             loop_date = start_date
-            daily = True
             while loop_date <= end_date:
                 filepattern = os.path.join(
                     in_dir, region,
@@ -313,7 +283,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     logger.info('%d: no data not found for '
                                 'variable %s', loop_date.year, short_name)
                 else:
-                    _extract_variable(in_files, var, cfg, out_dir, daily,
+                    _extract_variable(in_files, var, cfg, out_dir,
                                       loop_date.year, region)
 
                 loop_date += relativedelta.relativedelta(years=1)
