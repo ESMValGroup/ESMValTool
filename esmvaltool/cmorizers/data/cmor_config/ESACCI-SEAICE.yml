@@ -18,6 +18,4 @@ variables:
     mip1: SIday
     mip2: SImon
     raw: ice_conc
-    frequency1: day
-    frequency2: mon
     file: ESACCI-SEAICE-L4-SICONC-RE_SSMI_12.5kmEASE2-{region}-{year}*-fv3.0.nc
