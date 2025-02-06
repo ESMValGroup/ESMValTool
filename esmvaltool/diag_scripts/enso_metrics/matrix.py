@@ -20,12 +20,12 @@ def plot_matrix(diag_path):
     # run normalisation on all these values
     metric_df[2] = (metric_df[2] - metric_df[2].mean()) / metric_df[2].std()
 
-    transformls = []
-    for mod in metric_df[0].unique():  #iterate model, translate metrics
-        mod_df = metric_df.loc[metric_df[0]==mod, :]
-        transformls.append(mod_df[[1, 2]].set_index(1).T.rename(index={2:mod}))
+    t_list = []
+    for mod in metric_df[0].unique():  # iterate model, translate metrics
+        mod_df = metric_df.loc[metric_df[0] == mod, :]
+        t_list.append(mod_df[[1, 2]].set_index(1).T.rename(index={2: mod}))
 
-    matrixdf = pd.concat(transformls)
+    matrixdf = pd.concat(t_list)
     figure = plt.figure(dpi=300)
     plt.imshow(matrixdf, cmap='coolwarm')
     plt.colorbar()

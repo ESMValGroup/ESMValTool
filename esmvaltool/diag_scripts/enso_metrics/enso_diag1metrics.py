@@ -34,7 +34,7 @@ def plot_level1(input_data, metricval, y_label, title, dtls):
         plt.plot(*input_data[1], label=f'ref: {dtls[1]}', color='black')
         plt.text(0.5, 0.95, f"RMSE: {metricval:.2f}", fontsize=12,
                  ha='center', transform=plt.gca().transAxes,
-                 bbox={'facecolor'='white', 'alpha'=0.8, 'edgecolor'='none'})
+                 bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
 
     else:
         plt.scatter(range(len(input_data)), input_data,

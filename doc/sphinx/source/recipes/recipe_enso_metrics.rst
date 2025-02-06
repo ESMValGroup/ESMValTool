@@ -61,13 +61,13 @@ Example plots
 -------------
 
 .. _fig_matrix:
-.. figure::  /recipes/figures/<mynewdiagnostic>/plot_matrix_enso.png
+.. figure::  /recipes/figures/enso_metrics/plot_matrix_enso.png
    :align:   center
 
    Add figure caption here.
 
 .. _fig_lifecycle:
-.. figure::  /recipes/figures/<mynewdiagnostic>/ensolifecycle.png
+.. figure::  /recipes/figures/enso_metrics/ensolifecycle.png
    :align:   center
 
    Add figure caption here.
