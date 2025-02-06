@@ -116,10 +116,10 @@ def _extract_variable(in_files, var, cfg, out_dir, year0, region):
     logger.info("CMORizing variable '%s' from input files '%s'",
                 var['short_name'], ', '.join(in_files))
     attributes = deepcopy(cfg['attributes'])
-    attributes['mip'] = var['mip1']
+    attributes['mip'] = var['mip_day']
     attributes['raw'] = var['raw']
     cmor_table = CMOR_TABLES[attributes['project_id']]
-    definition = cmor_table.get_variable(var['mip1'], var['short_name'])
+    definition = cmor_table.get_variable(var['mip_day'], var['short_name'])
 
     # load all input files (1 year) into 1 cube
     # --> drop attributes that differ among input files
@@ -182,7 +182,7 @@ def _extract_variable(in_files, var, cfg, out_dir, year0, region):
                          loop_date.day, loop_date.year)
             nan_cube = _create_nan_cube(new_list[0], loop_date.year,
                                         loop_date.month, loop_date.day)
-                full_list.append(nan_cube)
+            full_list.append(nan_cube)
             loop_date += relativedelta.relativedelta(days=1)
 
     iris.util.unify_time_units(full_list)
@@ -238,8 +238,8 @@ def _extract_variable(in_files, var, cfg, out_dir, year0, region):
     logger.debug("Saving cube\n%s", cube)
     logger.debug("Setting time dimension to UNLIMITED while saving!")
     version = attributes['version']
-    attributes['mip'] = var['mip2']
-    definition = cmor_table.get_variable(var['mip2'], var['short_name'])
+    attributes['mip'] = var['mip_mon']
+    definition = cmor_table.get_variable(var['mip_mon'], var['short_name'])
     save_variable(cube, cube.var_name,
                   out_dir, attributes,
                   unlimited_dimensions=['time'])
@@ -266,7 +266,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if end_date is None:
         end_date = datetime(2020, 12, 31)
 
-    regions = ('NH', 'SH')
+    for var in cfg['variables']:
+        if 'regions' in cfg['variables'][var]:
+            regions = cfg['variables'][var]['regions']
+        else:
+            regions = ('NH', 'SH')
 
     for region in regions:
         for short_name, var in cfg['variables'].items():

@@ -4,7 +4,7 @@ from datetime import datetime
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
-
+from esmvaltool.cmorizers.data.utilities import read_cmor_config
 
 def download_dataset(config, dataset, dataset_info, start_date, end_date,
                      overwrite):
@@ -39,7 +39,13 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     downloader.ftp_name = 'sea_ice'
     downloader.connect()
 
-    regions = ('NH', 'SH')
+    atts = read_cmor_config(dataset)['variables']
+    for att in atts:
+        if 'regions' in atts[att]:
+            regions = atts[att]['regions']
+        else:
+            regions = ('NH', 'SH')
+
     basepath = 'sea_ice_concentration/L4/ssmi_ssmis/12.5km/v3.0'
 
     loop_date = start_date

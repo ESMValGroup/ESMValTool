@@ -12,10 +12,11 @@ attributes:
 
 # Variables to cmorize (here use only filename prefix)
 variables:
-# daily and monthly frequency 
+# input files are daily only, formatter writes daily and monthly files 
   siconc:
     short_name: siconc
-    mip1: SIday
-    mip2: SImon
+    mip_day: SIday
+    mip_mon: SImon
+    regions: ['NH', 'SH']
     raw: ice_conc
     file: ESACCI-SEAICE-L4-SICONC-RE_SSMI_12.5kmEASE2-{region}-{year}*-fv3.0.nc
