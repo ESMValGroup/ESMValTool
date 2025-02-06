@@ -122,7 +122,6 @@ for (dataset in names(grouped_meta)){
   tsvec <- get_var_from_nc(pr_meta, custom_var="time")
   pet_meta <- select_var(metas, cfg$short_name_pet, strict=FALSE)
   if (is.null(pet_meta)) {
-    print("PET not found, calculating SPI")
     cfg$indexname <- "SPI"
     pme <- pr
   } else {
@@ -136,18 +135,7 @@ for (dataset in names(grouped_meta)){
 
   fill_refperiod(cfg, tsvec)
   pme_spei <- pme * NA
-  # coeffs <- array(numeric(), c(3, dim(pme)[1], dim(pme)[2], 12)) # xi, alpha, kappa
-  # get dimensions and attributes from pr to save coeffs in similar format
-  # prepare cube fot coeffs
-  # if (cfg$write_coeffs) {
-  #   dims <- get_dims_from_nc(pr_meta)
-  #   month_dim <- ncdim_def("month", 1, 1:12, longname="Month of the Year")
-  #   dims <- append(dims, list(month_dim))
-  #   attrs <- get_attrs_from_nc(pr_meta)
-  #   coeffs <- list()
-  # }
   coeffs <- list()
-  # TODO: save from results$coefficients (dimension depends on distribution)
   for (i in 1:dim(pme)[1]){
     wh <- which(!is.na(mask[i,]))
     if (length(wh) > 1){
@@ -175,9 +163,7 @@ for (dataset in names(grouped_meta)){
   pme_spei[pme_spei > 10000] <- NA  # replaced with fillfloat in write function
   filename <- write_nc_file_like(cfg, pr_meta, pme_spei, fillfloat, short_name=cfg$indexname)
   if (cfg$write_coeffs) {
-    print("Coeffs are:")
     for (c_name in names(coeffs)){
-      print(c_name)
       filename_c <- write_nc_file_like(cfg, pr_meta, coeffs[[c_name]], fillfloat, short_name=c_name, moty=TRUE)
       meta[[filename_c]] <- list(
         filename = filename_c,
@@ -201,14 +187,14 @@ for (dataset in names(grouped_meta)){
   input_meta$units = "1"
   input_meta$index = cfg$indexname
   meta[[filename]] <- input_meta
-  # meta[[filename]][["index"]] <- "SPEI"
+  meta[[filename]][["index"]] <- cfg$indexname
   for (t in 1:dim(pme)[3]) {
     tmp <- pme_spei[, , t]
     tmp[is.na(mask)] <- NA
     pme_spei[, , t] <- tmp
   }
-}  # end of big dataset loop
+}  # end of dataset loop
 
 provenance[[filename]] <- xprov
-# write_yaml(provenance, provenance_file)
+write_yaml(provenance, provenance_file)
 write_yaml(meta, meta_file)

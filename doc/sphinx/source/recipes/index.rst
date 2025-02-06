@@ -40,6 +40,7 @@ Atmosphere
    recipe_consecdrydays
    recipe_deangelis15nat
    recipe_diurnal_temperature_index
+   recipe_droughts
    recipe_eady_growth_rate
    recipe_extreme_events
    recipe_extreme_index
