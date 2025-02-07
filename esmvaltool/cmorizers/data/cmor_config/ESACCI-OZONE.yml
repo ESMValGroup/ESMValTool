@@ -1,21 +1,25 @@
----
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: ESACCI-OZONE
-  version: 'v0008'
+  version: L3 
   tier: 2
   modeling_realm: sat
   project_id: OBS
+  source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/ozone/data/ 
+  references: "Loyola et al., Int. J. Remote Sens. doi:10.1080/01431160902825016, 2009." 
+  comment: "" 
 
-# Variables to cmorize (here use only filename prefix)
 variables:
   toz:
-    mip: Amon
-    #raw: sst
-    file: C3S-L3_OZONE-O3_PRODUCTS-CONC_MZM-MERGED-ALG-MONTHLY-v0008.nc
-    file: C3S-L3_OZONE-O3_PRODUCTS-MERGED_UV-MERGED-ALG-MONTHLY-v2000.nc
+    mip: AERmon
+    raw: total_ozone_column
+    filename: C3S-L3_OZONE-O3_PRODUCTS-MERGED_UV-MERGED-ALG-MONTHLY-v2000.nc
+    min_year: 1995
+    max_year: 2022
   o3:
-    mip: Amon
-    #raw: sst_uncertainty
-    file: C3S-L3_OZONE-O3_PRODUCTS-CONC_MZM-MERGED-ALG-MONTHLY-v0008.nc
-    file: C3S-L3_OZONE-O3_PRODUCTS-MERGED_UV-MERGED-ALG-MONTHLY-v2000.nc
+    mip: AERmon
+    raw: merged_ozone_concentration
+    filename: C3S-L3_OZONE-O3_PRODUCTS-CONC_MZM-MERGED-ALG-MONTHLY-v0008.nc
+    min_year: 1984
+    max_year: 2023
+ 
