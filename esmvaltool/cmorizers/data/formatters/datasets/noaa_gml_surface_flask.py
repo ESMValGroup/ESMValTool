@@ -25,6 +25,7 @@ import iris.coords
 import iris.cube
 import pandas as pd
 import numpy as np
+import requests
 from datetime import datetime
 from typing import NamedTuple
 from pys2index import S2PointIndex
@@ -65,7 +66,23 @@ class FlaskStations(NamedTuple):
     data_frame: list[pd.DataFrame]
 
 
-def load_file(filesystem, filepath, filelist):
+def get_station_dict():
+    """
+    Get station information from online table:
+        'Code', 'Name', 'Country', 'Latitude', 'Longitude', 
+        'Elevation (meters)', 'Time from GMT', 'Project'
+    """
+    url = "https://www.esrl.noaa.gov/gmd/dv/site/?program=ccgg"
+    stat_list = pd.read_html(requests.get(url).content)
+    stats = stat_list[-1]
+    # Remove asterisk from station names (flags inactive stations)
+    stats['Code'] = stats['Code'].str.replace('*', '')
+    stats.set_index("Code", drop=False, inplace=True)
+    station_dict = stats.to_dict(orient="index")
+    return station_dict
+
+
+def load_file(filesystem, filepath, filelist, station_dict):
     """Load NOAA GML surface flask station data from the text file."""
     # Determine how many lines to skip in the header
     skiprows = 0
@@ -84,50 +101,23 @@ def load_file(filesystem, filepath, filelist):
             dtype=DTYPE_FLASK_COLUMNS,
             engine='python'
         )
-    # Fetch data from event file : code, full_name, country,
-    #  latitude, longitude, elevation, timezone
-    # Check first if the surface-flask or shipboard-flask file exists
-    filepath_event_alt1 = filepath.replace('month', 'event')
-    filepath_event_alt2 = filepath.replace('month', 'event').replace(
-            'surface-flask_1_ccgg', 'shipboard-flask_1_ccgg')
-    filepath_event = None
-    if filepath_event_alt1 in filelist:
-        filepath_event = filepath_event_alt1
-    elif filepath_event_alt2 in filelist:
-        filepath_event = filepath_event_alt2
-    # Setup default values for additional attributes
+    # Fetch data from station dictionary if available:
+    # code, full_name, country, latitude, longitude, elevation, timezone
     site_code = filepath.split('/')[-1].split('_')[1].upper()
-    site_name = 'N/A'
-    site_country = 'N/A'
-    site_latitude = np.nan
-    site_longitude = np.nan
-    site_elevation = np.nan
-    site_utc2lst = 'N/A'
-    # Fetch attributes in event file if it exists
-    if filepath_event is not None:
-        with filesystem.open(filepath_event, mode='rt') as file:
-            for line in file:
-                # Observation site code
-                if line.startswith('# site_code :'):
-                    site_code = line.strip().split(' : ')[-1]
-                # Site full name
-                if line.startswith('# site_name :'):
-                    site_name = line.strip().split(' : ')[-1]
-                # Site country
-                if line.startswith('# site_country :'):
-                    site_country = line.strip().split(' : ')[-1]
-                # Site latitude
-                if line.startswith('# site_latitude :'):
-                    site_latitude = float(line.strip().split(' : ')[-1])
-                # Site longitude
-                if line.startswith('# site_longitude :'):
-                    site_longitude = float(line.strip().split(' : ')[-1])
-                # Site elevation
-                if line.startswith('# site_elevation :'):
-                    site_elevation = float(line.strip().split(' : ')[-1])
-                # Site timezone
-                if line.startswith('# site_utc2lst :'):
-                    site_utc2lst = line.strip().split(' : ')[-1]
+    if site_code in station_dict.keys():
+        site_name = station_dict[site_code]['Name']
+        site_country = station_dict[site_code]['Country']
+        site_latitude = station_dict[site_code]['Latitude']
+        site_longitude = station_dict[site_code]['Longitude']
+        site_elevation = station_dict[site_code]['Elevation (meters)']
+        site_utc2lst = station_dict[site_code]['Time from GMT']
+    else:
+        site_name = 'N/A'
+        site_country = 'N/A'
+        site_latitude = np.nan
+        site_longitude = np.nan
+        site_elevation = np.nan
+        site_utc2lst = 'N/A'
     # Check if site location is available otherwise return None
     if np.any(np.isnan([site_latitude, site_longitude])):
         return None
@@ -206,9 +196,10 @@ def assemble_cube(stations, idx, var_attrs):
             "Station data frames has different sets of column names."
         )
 
-    trace_gas = da.stack([
-        df["value"].values for df in data_frames
-        ], axis=-1)[..., idx]
+    trace_gas = da.stack(
+        [df["value"].values for df in data_frames],
+        axis=-1
+    )[..., idx]
 
     times = date_index.to_pydatetime()
     time_points = np.array(
@@ -286,8 +277,11 @@ def assemble_cube(stations, idx, var_attrs):
 
 def build_cube(filesystem, paths, filelist, var_attrs):
     """Build station data cube."""
+    stations_dict = get_station_dict()
     individual_stations = [
-        load_file(filesystem, file_path, filelist) for file_path in paths
+        load_file(
+            filesystem, file_path, filelist, stations_dict
+        ) for file_path in paths
     ]
     individual_stations = [
         s for s in individual_stations if s is not None
@@ -311,9 +305,11 @@ def cmorization_noaa_gml_surface_flask_trace_gas(
 
     tar_file_system = TarFileSystem(f"{in_dir}/{raw_filename}")
     paths = tar_file_system.glob(
-        f'{cfg['trace_gas']}_surface-flask_ccgg_text/{cfg['trace_gas']}_*_month.txt')
+        f'{cfg['trace_gas']}_surface-flask_ccgg_text/' +
+        f'{cfg['trace_gas']}_*_month.txt')
     filelist = tar_file_system.glob(
-        f'{cfg['trace_gas']}_surface-flask_ccgg_text/{cfg['trace_gas']}_*.txt')
+        f'{cfg['trace_gas']}_surface-flask_ccgg_text/' +
+        f'{cfg['trace_gas']}_*.txt')
 
     versions = np.unique(
         np.array([os.path.basename(p).split("_")[-3] for p in paths],
