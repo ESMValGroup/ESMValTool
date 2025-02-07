@@ -10,6 +10,9 @@ documentation:
 preprocessors:
 
   create_climatology:  # this is a custom name
+    regrid:
+      scheme: linear
+      target_grid: 5x5
     climate_statistics:  # elements from https://docs.esmvaltool.org/projects/ESMValCore/en/latest/recipe/preprocessor.html
       operator: mean
       period: full
@@ -26,11 +29,7 @@ preprocessors:
 
 datasets:
    - {project: CMIP6, dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2, exp: historical}
-  # - {project: CMIP6, dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2, exp: [historical, ssp126]}
-  # - {project: CMIP6, dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2, exp: [historical, ssp585]}
    - {project: CMIP6, dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, exp: historical}
-  # - {project: CMIP6, dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, exp: [historical, ssp126]}
-  # - {project: CMIP6, dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, exp: [historical, ssp585]}
 
 
 diagnostics:
@@ -41,13 +40,13 @@ diagnostics:
         mip: AERmon
         exp: historical
         preprocessor: create_climatology
-        timerange: '1990/2000'
+        timerange: '2000/2010'
     additional_datasets:
-      - {project: OBS, dataset: NIWA-BS, type: sat, version: v3.3, tier: 3, mip: Amon, timerange: '1990/2000'}
+      - {project: OBS, dataset: NIWA-BS, type: sat, version: v3.3, tier: 3, mip: Amon, timerange: '2000/2010', reference_for_monitor_diags: true}
     scripts:
       plot:  # this is a custom name
         script: monitor/multi_datasets.py
-        plot_folder: ~/esmvaltool_output/o3_part2
+        #plot_folder: ~/esmvaltool_output/o3_part2
         plot_filename: '{plot_type}_{real_name}_{dataset}_{exp}'
         facet_used_for_labels: alias
         savefig_kwargs:
@@ -58,10 +57,13 @@ diagnostics:
           map:
             projection: SouthPolarStereo  # to focus on South Pole. Omit  to show "regular" map
             pyplot_kwargs:
-              suptitle: 'Total Column Ozone (October 1990-2000)'  # large title
+              suptitle: 'Total Column Ozone (October 2000-2010)'  # large title
+            common_cbar: true
+            fontsize: 7
+            show_x_minor_ticks: false
             plot_kwargs:
               default:
-                # cmap: YlOrRd  # colormap; e.g., 'YlOrRd' for temperatures 'bwr' for anomalies
+                cmap: YlOrRd  # colormap; e.g., 'YlOrRd' for temperatures 'bwr' for anomalies
                 # cmap: bwr
                 # norm: centered  # center colormap around zero; useful when showing anomalies
-                levels: [80, 120, 160, 200, 240, 280, 320, 360, 400, 440]  # colorbar intervals
+                #levels: [80, 120, 160, 200, 240, 280, 320, 360, 400, 440]  # colorbar intervals
