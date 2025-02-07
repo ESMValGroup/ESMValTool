@@ -1,12 +1,13 @@
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: ESACCI-OZONE
-  version: L3 
+  version: L3
+  mip: AERmon 
   tier: 2
   modeling_realm: sat
   project_id: OBS
   source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/ozone/data/ 
-  references: "Loyola et al., Int. J. Remote Sens. doi:10.1080/01431160902825016, 2009." 
+  reference: "Loyola et al., Int. J. Remote Sens. doi:10.1080/01431160902825016, 2009." 
   comment: "" 
 
 variables:
