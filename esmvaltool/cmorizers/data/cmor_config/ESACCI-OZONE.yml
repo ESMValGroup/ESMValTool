@@ -6,7 +6,7 @@ attributes:
   tier: 2
   modeling_realm: sat
   project_id: OBS
-  source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/ozone/data/ 
+  source: ""
   reference: "esacci-ozone" 
   comment: "" 
 

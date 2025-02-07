@@ -1,10 +1,27 @@
+"""ESMValTool CMORizer for ESACCI-OZONE GTO-ECV and SAGE-CCI-OMPS data.
+
+Tier
+    Tier 2: other freely-available dataset.
+
+Source
+
+Last access
+    20250107
+
+Download and processing instructions
+    Download the data from:
+
+    Put all files under a single directory (no subdirectories with years).
+    in ${RAWOBS}/Tier2/ESACCI-OZONE
+
+"""
+import glob
 import logging
 import re
+from datetime import datetime
+import os
 import iris
 import iris.util
-import os
-import glob
-from datetime import datetime
 from cf_units import Unit
 from esmvalcore.preprocessor import (
     concatenate
@@ -50,7 +67,7 @@ def _extract_variable(short_name, var, cfg, filename, out_dir):
 
     cube = _convert_units(cubes, short_name, var)
 
-    logger.info(f"Checking CMOR info for {short_name}: {cmor_info}")
+    logger.info("Checking CMOR info for %s: %s", short_name, cmor_info)
     if cmor_info is None:
         raise ValueError(f"CMOR info for {short_name} in MIP {mip} not found!")
 
@@ -70,7 +87,8 @@ def _extract_variable(short_name, var, cfg, filename, out_dir):
     # Add time coordinate to cube.
     time_coord = iris.coords.DimCoord(
         time_points,
-        var_name='time', standard_name='time',
+        var_name='time',
+        standard_name='time',
         long_name='time',
         units=time_units)
     cube.add_aux_coord(time_coord, ())
@@ -114,14 +132,15 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     fname = glob.glob(os.path.join(in_dir, fname_pattern))
                     if not fname:
                         logger.warning(
-                            f"No file found for {var_name} in {year}-"
-                            f"{month:02}"
+                            "No file found for %s in %s-%02d", var_name, year,
+                            month
                         )
+
                         continue
 
                 filename = fname[0]  # Take the first matching file (if any)
-                logger.info(
-                    f"CMORizing variable '{var_name}' from file '{filename}'")
+                logger.info("CMORizing variable '%s' from file '%s'", var_name,
+                            filename)
                 cube = _extract_variable(var_name, var, cfg, filename, out_dir)
                 all_data_cubes.append(cube)
         final_cube = concatenate(all_data_cubes)
