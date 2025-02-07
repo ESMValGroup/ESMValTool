@@ -320,7 +320,7 @@ def cmorization(
         )
     version = versions[0]
 
-    var_attrs = cfg['variables'][f'{cfg['trace_gas']}s']
+    var_attrs = cfg['variables'][f"{cfg['trace_gas']}s"]
     cube = build_cube(tar_file_system, paths, filelist, var_attrs)
 
     attrs = cfg['attributes'].copy()

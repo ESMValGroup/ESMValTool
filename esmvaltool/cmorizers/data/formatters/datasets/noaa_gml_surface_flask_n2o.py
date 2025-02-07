@@ -14,7 +14,8 @@ Download and processing instructions
     https://gml.noaa.gov/aftp/data/trace_gases/n2o/flask/surface/n2o_surface-flask_ccgg_text.tar.gz
 """
 
-from esmvaltool.cmorizers.data.formatters.datasets import noaa_gml_surface_flask
+from esmvaltool.cmorizers.data.formatters.datasets import \
+    noaa_gml_surface_flask
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
