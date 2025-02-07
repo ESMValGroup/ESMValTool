@@ -56,6 +56,7 @@ from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 
+# scitools-iris.readthedocs.io/en/stable/generated/api/iris.html#iris.Future
 try:
     iris.FUTURE.date_microseconds = True
     iris.FUTURE.save_split_attrs = True
