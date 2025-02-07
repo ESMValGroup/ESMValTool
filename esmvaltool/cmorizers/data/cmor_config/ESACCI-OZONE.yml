@@ -7,7 +7,7 @@ attributes:
   modeling_realm: sat
   project_id: OBS
   source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/ozone/data/ 
-  reference: "Loyola et al., Int. J. Remote Sens. doi:10.1080/01431160902825016, 2009." 
+  reference: "esacci-ozone" 
   comment: "" 
 
 variables:

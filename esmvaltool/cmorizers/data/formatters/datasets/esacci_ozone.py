@@ -88,7 +88,6 @@ def _extract_variable(short_name, var, cfg, filename, out_dir):
         cube.add_aux_coord(lon_coord, ())
         cube = iris.util.new_axis(cube, lon_coord)
         cube.transpose([1, 2, 0, 3])
-    print(cube)
     fix_var_metadata(cube, cmor_info)
     set_global_atts(cube, cfg['attributes'])
     return cube
