@@ -1,0 +1,103 @@
+# ESMValTool
+---
+documentation:
+  title: Model evaluation with focus on the cloud radiative effect.
+  description: >
+    Plot climatologies and zonal mean profiles of cloud radiative effects (sw + lw) for the REF.
+  authors:
+    - bock_lisa
+    - lauer_axel
+  maintainer:
+    - bock_lisa
+
+
+# Note: the following models are just examples
+datasets:
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+
+timerange_for_models: &time_period
+  timerange: '2005/2014'  # can be specified, this is just an example
+
+
+preprocessors:
+
+  full_climatology:
+    climate_statistics:
+      period: full
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+
+  zonal_mean:
+    climate_statistics:
+      period: full
+    regrid:
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+      target_grid: 1x1
+    zonal_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  plot_maps:
+    description: Plot lwcre climatology maps including reference datasets.
+    variables:
+      lwcre:
+        <<: *time_period
+        mip: Amon
+        preprocessor: full_climatology
+        derive: true
+      swcre:
+        <<: *time_period
+        mip: Amon
+        preprocessor: full_climatology
+        derive: true
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2, reference_for_monitor_diags: true}
+    scripts:
+      plot: &plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        plots:
+          map:
+            common_cbar: true
+            x_pos_stats_avg: -0.1 
+            fontsize: 10
+
+  plot_profiles:
+    description: Plot lwcre zonal mean including reference datasets.
+    variables:
+      lwcre:
+        <<: *time_period
+        mip: Amon
+        preprocessor: zonal_mean
+        derive: true
+      swcre:
+        <<: *time_period
+        mip: Amon
+        preprocessor: zonal_mean
+        derive: true
+    additional_datasets:
+      - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2, reference_for_monitor_diags: true}
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
+      - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        plots:
+          variable_vs_lat:
+            legend_kwargs:
+                loc: upper right
+            plot_kwargs:
+              CERES-EBAF:
+                color: black
+              ESACCI-CLOUD:
+                color: black
+                linestyle: dashed
+              ISCCP-FH:
+                color: black
+                linestyle: dotted
