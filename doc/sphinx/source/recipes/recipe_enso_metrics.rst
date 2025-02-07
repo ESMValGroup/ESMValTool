@@ -60,14 +60,14 @@ References
 Example plots
 -------------
 
-.. _fig_matrix:
-.. figure::  /recipes/figures/enso_metrics/plot_matrix_enso.png
+.. _fig_seasonality:
+.. figure::  /recipes/figures/enso_metrics/seasonality.png
    :align:   center
 
    Add figure caption here.
 
 .. _fig_lifecycle:
-.. figure::  /recipes/figures/enso_metrics/ensolifecycle.png
+.. figure::  /recipes/figures/enso_metrics/lifecycle.png
    :align:   center
 
    Add figure caption here.
