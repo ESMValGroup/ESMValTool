@@ -69,7 +69,7 @@ class FlaskStations(NamedTuple):
 def get_station_dict():
     """
     Get station information from online table:
-        'Code', 'Name', 'Country', 'Latitude', 'Longitude', 
+        'Code', 'Name', 'Country', 'Latitude', 'Longitude',
         'Elevation (meters)', 'Time from GMT', 'Project'
     """
     url = "https://www.esrl.noaa.gov/gmd/dv/site/?program=ccgg"
