@@ -14,12 +14,11 @@ Download and processing instructions
     https://gml.noaa.gov/aftp/data/trace_gases/co2/flask/surface/co2_surface-flask_ccgg_text.tar.gz
 """
 
-from esmvaltool.cmorizers.data.formatters.datasets.noaa_gml_surface_flask \
-    import cmorization_noaa_gml_surface_flask_trace_gas
+from esmvaltool.cmorizers.data.formatters.datasets import noaa_gml_surface_flask
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cmorization_noaa_gml_surface_flask_trace_gas(
+    noaa_gml_surface_flask.cmorization(
         in_dir, out_dir, cfg, cfg_user, start_date, end_date
     )

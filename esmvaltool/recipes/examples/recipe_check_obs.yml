@@ -757,7 +757,7 @@ diagnostics:
   NOAA-GML-SURFACE-FLASK-CH4:
     description: NOAA Global Monitoring Lab Surface flask CH4 data check
     variables:
-      ch4s:
+      ch4:
     additional_datasets:
       - {dataset: NOAA-GML-SURFACE-FLASK-CH4, project: OBS6, mip: Amon, type: atmos, version: 1.0, tier: 2,
          start_year: 1983, end_year: 2023}
@@ -766,7 +766,7 @@ diagnostics:
   NOAA-GML-SURFACE-FLASK-CO2:
     description: NOAA Global Monitoring Lab Surface flask CO2 data check
     variables:
-      co2s:
+      co2:
     additional_datasets:
       - {dataset: NOAA-GML-SURFACE-FLASK-CO2, project: OBS6, mip: Amon, type: atmos, version: 1.0, tier: 2,
          start_year: 1968, end_year: 2023}
@@ -775,7 +775,7 @@ diagnostics:
   NOAA-GML-SURFACE-FLASK-N2O:
     description: NOAA Global Monitoring Lab Surface flask N2O data check
     variables:
-      n2os:
+      n2o:
     additional_datasets:
       - {dataset: NOAA-GML-SURFACE-FLASK-N2O, project: OBS6, mip: Amon, type: atmos, version: 1.0, tier: 2,
          start_year: 1997, end_year: 2023}
