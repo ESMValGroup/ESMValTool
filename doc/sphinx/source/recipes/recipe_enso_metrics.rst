@@ -1,7 +1,7 @@
 .. _recipes_enso_metrics:
 
 ENSO CLIVAR metrics - reproducing ENSO characteristics lifecycle and seasonality
-=====
+================================================================================
 
 Overview
 --------
@@ -31,8 +31,7 @@ User settings in recipe
    *Required settings for script*
 
    * **diag_metrics**: diagnostic name and script name in *yml* of the diagnostic that computes all the metrics 
-   so it can find the *csv* in the `work_dir`
-   - eg. diagnostic_metrics/plot_script
+   so it can find the *csv* in the `work_dir` - eg. diagnostic_metrics/plot_script
 
 
 Variables
