@@ -91,8 +91,7 @@ def process_data(cube, reference_year):
         Concatenate the cubes and return the new cube.
     """
     # Convert temperature from Celsius to Kelvin and add time dimension
-    temperature_data = cube.data + 273.15
-    temperature_data = np.expand_dims(temperature_data, axis=0)
+    temperature_data = np.expand_dims(cube.data, axis=0)
     temperature_data = np.moveaxis(
         temperature_data, (0, 1, 2, 3), (0, 2, 3, 1)
     )  # Reorder axes
@@ -137,7 +136,6 @@ def process_data(cube, reference_year):
             (longitude_coord, 3),
         ],
         attributes=cube.attributes,
-        units=cf_units.Unit("K"),
     )
 
 
@@ -156,7 +154,6 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
 
     iris.util.equalise_attributes(cubes)
     cube = cubes.concatenate_cube()
-
     fix_var_metadata(cube, var_info)
     fix_coords(cube)
     set_global_atts(cube, attrs)
