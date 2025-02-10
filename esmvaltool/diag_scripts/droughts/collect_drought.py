@@ -57,7 +57,10 @@ def _get_and_plot_obsmodel(cfg, cube, all_drought, all_drought_obs,
 
 
 def ini_time_series_plot(cfg, cube, area, filename):
-    """Set up cube for time series plot."""
+    """Set up cube for time series plot.
+    TODO: This should be configurable in recipe. And maybe find nearest point
+    instead of crash if the resolution changes.
+    """
     coords = ('longitude', 'latitude')
     if area == 'Bremen':
         index_lat = get_latlon_index(cube.coord('latitude').points, 52, 53)
@@ -88,62 +91,35 @@ def main(cfg):
 
     """
     # Read input data
-    input_filenames = (cfg[n.INPUT_FILES])[0] + "/*_" + \
-        (cfg['indexname']).lower() + "_*.nc"
-    first_run = 1
-    iobs = 0
+    input_data = cfg["input_data"].values()
+    proj_groups = e.group_metadata(input_data, 'project')
 
-    # For loop: "glob.iglob" findes all files which match the
-    # pattern of "input_filenames".
-    # It writes the resulting exact file name onto spei_file
-    # and runs the following indented lines for all possibilities
-    # for spei_file.
-    for iii, spei_file in enumerate(glob.iglob(input_filenames)):
-        # Loads the file into a special structure (IRIS cube)
-        cube = iris.load(spei_file)[0]
+    all_drought = None
+    count = len(proj_groups["OBS"])
+    print("Number of datasets: ", count)
+    # Loop over all OBS datasets and plot event characteristics
+    for iii, meta in enumerate(proj_groups["OBS"]):
+        print(meta)
+        cube = iris.load_cube(meta["filename"])
         cube.coord('latitude').guess_bounds()
         cube.coord('longitude').guess_bounds()
-        # time = cube.coord('time')
-
-        # The data are 3D (time x latitude x longitude)
-        # To plot them, we need to reduce them to 2D or 1D
-        # First here is an average over time, i.e. data you need
-        # to plot the average over the time series of SPEI on a map
-        cube2 = cube.collapsed('time', iris.analysis.MEAN)
-
-        # This is only possible because all data must be on the same grid
-        if first_run == 1:
-            files = os.listdir((cfg[n.INPUT_FILES])[0])
-            ncfiles = list(filter(lambda f: f.endswith('.nc'), files))
-            shape_all = cube2.data.shape + (4,) + \
-                (len(ncfiles) - 1, )
-            all_drought = np.full(shape_all, np.nan)
-            first_run = 0
-
-        ini_time_series_plot(cfg, cube, 'Bremen', spei_file)
-        ini_time_series_plot(cfg, cube, 'Nigeria', spei_file)
+        cube_mean = cube.collapsed('time', iris.analysis.MEAN)
+        # we could use one cube(list) instead of np to keep lazyness and meta
+        if all_drought is None:
+            shape = cube_mean.data.shape + (4, count)
+            all_drought = np.full(shape, np.nan)
+        # ini_time_series_plot(cfg, cube, 'Bremen', meta["filename"])
+        # ini_time_series_plot(cfg, cube, 'Nigeria', meta["filename"])
 
         drought_show = _get_drought_data(cfg, cube)
-
         # Distinguish between model and observations/reanalysis.
         # Collest all model data in one array.
-        try:
-            dataset_name = cube.metadata.attributes['model_id']
-            all_drought[:, :, :, iii - iobs] = drought_show.data
-        except KeyError:
-            try:
-                dataset_name = cube.metadata.attributes['source_id']
-                all_drought[:, :, :, iii - iobs] = drought_show.data
-            except KeyError:
-                dataset_name = 'Observations'
-                all_drought_obs = drought_show.data
-                iobs = 1
-        print(dataset_name)
-        _plot_single_maps(cfg, cube2, drought_show, 'Historic', spei_file)
+        all_drought[:, :, :, iii] = drought_show.data
+        _plot_single_maps(cfg, cube_mean, drought_show, 'Historic', meta["filename"])
 
     # Calculating multi model mean and plot it
-    _get_and_plot_obsmodel(cfg, cube, all_drought, all_drought_obs,
-                           glob.glob(input_filenames))
+    # _get_and_plot_obsmodel(cfg, cube, all_drought, all_drought_obs,
+    #                        glob.glob(input_filenames))
 
 
 if __name__ == '__main__':
