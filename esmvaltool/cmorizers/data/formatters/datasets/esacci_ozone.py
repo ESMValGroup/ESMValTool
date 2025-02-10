@@ -1,4 +1,4 @@
-"""ESMValTool CMORizer for ESACCI-OZONE GTO-ECV and SAGE-CCI-OMPS data.
+"""ESMValTool CMORizer for ESACCI-OZONE data.
 
 Tier
     Tier 2: other freely-available dataset.
@@ -17,7 +17,6 @@ Download and processing instructions
 """
 import glob
 import logging
-import re
 from datetime import datetime
 import os
 import iris
@@ -44,8 +43,8 @@ def _convert_units(cubes, short_name, var):
         t_cube = cubes.extract_cube('air_temperature')
         p_cube = cubes.extract_cube('air_pressure')
 
-        air_density = p_cube / (r * t_cube)  # mol m-3
-        mixing_ratio = cube / air_density
+        air_mol_concentration = p_cube / (r * t_cube)  # mol m-3
+        mixing_ratio = cube / air_mol_concentration
         cube = mixing_ratio / (1.0 + mixing_ratio)
         cube.units = 'mol mol-1'
 
@@ -57,7 +56,7 @@ def _convert_units(cubes, short_name, var):
     return cube
 
 
-def _extract_variable(short_name, var, cfg, filename, out_dir):
+def _extract_variable(short_name, var, cfg, filename, year, month, out_dir):
     """Extract variable, add time coordinate, and scalar longitude."""
 
     mip = var['mip']
@@ -71,18 +70,12 @@ def _extract_variable(short_name, var, cfg, filename, out_dir):
     if cmor_info is None:
         raise ValueError(f"CMOR info for {short_name} in MIP {mip} not found!")
 
-    match = re.search(r'(\d{4})(\d{2})-', filename)  # Capture YYYYMM
-    if match:
-        year = int(match.group(1))
-        month = int(match.group(2))
-        day = 15  # Mid-month
-        time_units = Unit("days since 1950-01-01")
-        time_points = time_units.date2num(datetime(year, month, day))
-        print(f"Filename: {filename}, Extracted Year: {year}, Month: {month}")
-    else:
-        raise ValueError(
-            f"Could not extract date (YYYYMM) from filename: {filename}"
-        )
+    year = year
+    month = month
+    day = 15  # Mid-month
+    time_units = Unit("days since 1950-01-01")
+    time_points = time_units.date2num(datetime(year, month, day))
+    print(f"Filename: {filename}, Extracted Year: {year}, Month: {month}")
 
     # Add time coordinate to cube.
     time_coord = iris.coords.DimCoord(
@@ -91,6 +84,7 @@ def _extract_variable(short_name, var, cfg, filename, out_dir):
         standard_name='time',
         long_name='time',
         units=time_units)
+    time_coord.guess_bounds(monthly=True)
     cube.add_aux_coord(time_coord, ())
     cube = iris.util.new_axis(cube, time_coord)
 
@@ -105,7 +99,7 @@ def _extract_variable(short_name, var, cfg, filename, out_dir):
             units='degrees_east')
         cube.add_aux_coord(lon_coord, ())
         cube = iris.util.new_axis(cube, lon_coord)
-        cube.transpose([1, 2, 0, 3])
+        cube.transpose([1, 3, 2, 0])
     fix_var_metadata(cube, cmor_info)
     set_global_atts(cube, cfg['attributes'])
     return cube
@@ -113,13 +107,17 @@ def _extract_variable(short_name, var, cfg, filename, out_dir):
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization process."""
+    glob_attrs = cfg['attributes']
+    if not start_date:
+        start_date = datetime(1984, 1, 1)
+    if not end_date:
+        end_date = datetime(2023, 12, 31)
 
     for var_name, var in cfg['variables'].items():
 
-        start_year = var['min_year']
-        end_year = var['max_year']
         all_data_cubes = []
-        for year in range(start_year, end_year + 1):
+        glob_attrs['mip'] = var['mip']
+        for year in range(start_date.year, end_date.year + 1):
             for month in range(1, 13):
                 date_str = f"{year}{month:02}"  # YYYYMM format
 
@@ -128,22 +126,20 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 fname = glob.glob(os.path.join(in_dir, fname_pattern))
 
                 if not fname:
-                    fname_pattern = var['filename'].replace("_DATE_", date_str)
                     fname = glob.glob(os.path.join(in_dir, fname_pattern))
                     if not fname:
-                        logger.warning(
+                        raise ValueError(
                             "No file found for %s in %s-%02d", var_name, year,
                             month
                         )
 
-                        continue
-
                 filename = fname[0]  # Take the first matching file (if any)
                 logger.info("CMORizing variable '%s' from file '%s'", var_name,
                             filename)
-                cube = _extract_variable(var_name, var, cfg, filename, out_dir)
+                cube = _extract_variable(var_name, var, cfg, filename, year,
+                                         month, out_dir)
                 all_data_cubes.append(cube)
         final_cube = concatenate(all_data_cubes)
         save_variable(
-            final_cube, var_name, out_dir, cfg['attributes'],
+            final_cube, var_name, out_dir, glob_attrs,
             unlimited_dimensions=['time'])
