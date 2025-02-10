@@ -14,8 +14,8 @@ Download and processing instructions
     Download the following files:
         full_data_monthly_{version}.nc.gz
 
-Two files are generated per version, one with version_grid (i.e. v2018_25),
-one with version_grid-numgauge1 (i.e. v2018_25-numgauge1), which is constrained
+Two files are generated per version, one with version_grid (i.e. v2018-25),
+one with version-grid-numgauge1 (i.e. v2018-25-numgauge1), which is constrained
 on holding gridpoint values relying on data from at least one station (i.e.
 removing gridpoints solely relying on climatological infilling).
 """

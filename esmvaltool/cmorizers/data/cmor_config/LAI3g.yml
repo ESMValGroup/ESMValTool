@@ -14,7 +14,7 @@ regrid:
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: LAI3g
-  version: '1_regridded'
+  version: '1-regridded'
   tier: 3
   modeling_realm: reanaly
   project_id: OBS
