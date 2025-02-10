@@ -2,7 +2,6 @@
 attributes:
   dataset_id: ESACCI-OZONE
   version: L3
-  mip: AERmon 
   tier: 2
   modeling_realm: sat
   project_id: OBS
@@ -14,13 +13,9 @@ variables:
   toz:
     mip: AERmon
     raw: total_ozone_column
-    filename: C3S-L3_OZONE-O3_PRODUCTS-MERGED_UV-MERGED-ALG-MONTHLY-v2000.nc
-    min_year: 1995
-    max_year: 2022
+    filename: C3S-L3_OZONE-O3_PRODUCTS-MERGED_UV-MERGED-ALG-MONTHLY-v2000.nc #The filename needs also "YYYYMM-" as prefix added during the cmorization
   o3:
     mip: AERmon
     raw: merged_ozone_concentration
-    filename: C3S-L3_OZONE-O3_PRODUCTS-CONC_MZM-MERGED-ALG-MONTHLY-v0008.nc
-    min_year: 1984
-    max_year: 2023
+    filename: C3S-L3_OZONE-O3_PRODUCTS-CONC_MZM-MERGED-ALG-MONTHLY-v0008.nc #The filename needs also "YYYYMM-" as prefix added during the cmorization
  
