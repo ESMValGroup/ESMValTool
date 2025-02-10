@@ -46,11 +46,11 @@ if on_rtd:
 if rtd_version not in ["latest", "stable", "doc"]:
     rtd_version = "latest"
 
-# Generate gallery
+# # Generate gallery
 sys.path.append(os.path.dirname(__file__))
-import generate_gallery
+# import generate_gallery
 
-generate_gallery.main()
+# generate_gallery.main()
 
 # -- General configuration ------------------------------------------------
 
@@ -174,6 +174,7 @@ html_theme_options = {
         "image_light": "figures/ESMValTool-logo-2.png",
         "image_dark": "figures/ESMValTool-logo-2-dark.png",
     },
+    # "navbar_center": ["cross_proj_navbar"],
 }
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
@@ -213,7 +214,9 @@ html_static_path = ["figures/ESMValTool-logo-2-dark.png"]
 # html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-# html_sidebars = {}
+html_sidebars = {
+    "**": ["sidebar_nav_lv1", "sidebar-ethical-ads"]
+}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
@@ -486,7 +489,7 @@ extlinks = {
     ),
 }
 
-# -- Custom Document processing ----------------------------------------------
+# # -- Custom Document processing ----------------------------------------------
 
 import gensidebar
 
