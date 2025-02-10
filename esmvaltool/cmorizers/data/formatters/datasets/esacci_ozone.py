@@ -28,6 +28,7 @@ from esmvalcore.preprocessor import (
 
 from ...utilities import (
     fix_var_metadata,
+    fix_coords,
     save_variable,
     set_global_atts
 )
@@ -101,6 +102,7 @@ def _extract_variable(short_name, var, cfg, filename, year, month, out_dir):
         cube = iris.util.new_axis(cube, lon_coord)
         cube.transpose([1, 3, 2, 0])
     fix_var_metadata(cube, cmor_info)
+    cube = fix_coords(cube)
     set_global_atts(cube, cfg['attributes'])
     return cube
 
