@@ -4,7 +4,7 @@ attributes:
   version: L3
   tier: 2
   modeling_realm: sat
-  project_id: OBS
+  project_id: OBS6
   source: ""
   reference: "esacci-ozone" 
   comment: "" 

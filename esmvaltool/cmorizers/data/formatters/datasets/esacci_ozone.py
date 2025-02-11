@@ -11,6 +11,31 @@ Last access
 Download and processing instructions
     Download the data from:
 
+    GTO-ECV total column
+    Select the following from the CDS:
+    https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+
+    Processing Level = "Level 3"
+    Variable = "Atm. mole content of ozone"
+    Vertical aggregation = "Total column"
+    Sensor = "MERGED-UV"
+    Year = select all (1995-2023)
+    Month = select all (1-12)
+    Version = "v2000"
+
+    SAGE-CCI-OMPS
+    Select the following options from the same link:
+    https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+
+    Processing Level = "Level 3"
+    Variable = "Mole concentration of ozone in air"
+    Vertical aggregation = " Vertical profiles from limb sensors"
+    Sensor = " CMZM (Monthly zonal mean merged concentration product from limb
+            sensors ACE, GOMOS, MIPAS, OMPS, OSIRIS, SAGE-2 and SCIAMACHY)"
+    Year = select all (1984-2022)
+    Month = select all (1-12)
+    Version = "v0008"
+
     Put all files under a single directory (no subdirectories with years).
     in ${RAWOBS}/Tier2/ESACCI-OZONE
 
@@ -24,6 +49,7 @@ from pathlib import Path
 from esmvalcore.preprocessor import (
     concatenate
 )
+from esmvalcore.cmor._fixes.native_datasets import NativeDatasetFix
 
 from ...utilities import (
     fix_var_metadata,
@@ -99,6 +125,7 @@ def _extract_variable(short_name, var, cfg, filename, year, month, out_dir):
         cube.add_aux_coord(lon_coord, ())
         cube = iris.util.new_axis(cube, lon_coord)
         cube.transpose([1, 3, 2, 0])
+        NativeDatasetFix.fix_alt16_metadata(cube)
     fix_var_metadata(cube, cmor_info)
     cube = fix_coords(cube)
     set_global_atts(cube, cfg['attributes'])
