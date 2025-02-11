@@ -9,9 +9,8 @@ Last access
     20250107
 
 Download and processing instructions
-    Download the data from:
 
-    GTO-ECV total column
+    GTO-ECV total column (variable toz)
     Select the following from the CDS:
     https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
 
@@ -23,7 +22,7 @@ Download and processing instructions
     Month = select all (1-12)
     Version = "v2000"
 
-    SAGE-CCI-OMPS
+    SAGE-CCI-OMPS (variable o3)
     Select the following options from the same link:
     https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
 
