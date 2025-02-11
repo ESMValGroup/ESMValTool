@@ -2,124 +2,121 @@
 # -*- coding: utf-8 -*-
 
 
-"""Collects SPI or SPEI data comparing models and observations/reanalysis.
-
-Applies drought characteristics based on Martin (2018).
+"""Compares SPI or SPEI data from models with observations/reanalysis.
 
 ###############################################################################
-droughtindex/collect_drought_obs_multi.py
+droughs/collect_drought.py
 Author: Katja Weigel (IUP, Uni Bremen, Germany)
 EVal4CMIP project
 ###############################################################################
 
 Description
 -----------
-    Collects data produced by diag_save_spi.R or diad_save_spei_all.R
-    to plot/process them further.
+    Collects data produced by spei.R to plot/process them further.
+    Applies drought characteristics based on Martin (2018).
 
 Configuration options
 ---------------------
     indexname: "SPI" or "SPEI"
-
-###############################################################################
-
-Updates:
-- changed the filename pattern search to read the metadata.yml produced by
-  new spei.R diagnostic.
+    reference_dataset: Dataset name to use for comparison (excluded from MMM)
+    threshold: Threshold for binary classifiaction of a drought
+    compare_intervals: bool, false
+        If true,  begin and end of the time periods are compared instead of
+        models and reference.
+    comparison_period: should be < (end_year - start_year)/2
+    start_year: year, start of historical time series
+    end_year: year, end of future scenario
 """
-import os
-import glob
+
 import iris
 import numpy as np
+import datetime as dt
 import esmvaltool.diag_scripts.shared as e
-import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.droughts.collect_drought_func import (
-    _get_drought_data, _plot_multi_model_maps, _plot_single_maps,
-    get_latlon_index, plot_time_series_spei)
+    _get_drought_data, _plot_multi_model_maps, _plot_single_maps)
 
 
-def _get_and_plot_obsmodel(cfg, cube, all_drought, all_drought_obs,
-                           input_filenames):
-    """Calculate multi-model mean and compare it to observations."""
-    lats = cube.coord('latitude').points
-    lons = cube.coord('longitude').points
-    all_drought_hist_mean = np.nanmean(all_drought, axis=-1)
-    perc_diff = ((all_drought_obs - all_drought_hist_mean)
-                 / (all_drought_obs + all_drought_hist_mean) * 200)
-
-    # Plot multi model means
-    _plot_multi_model_maps(cfg, all_drought_hist_mean, [lats, lons],
-                           input_filenames, 'Historic')
-    _plot_multi_model_maps(cfg, all_drought_obs, [lats, lons],
-                           input_filenames, 'Observations')
-    _plot_multi_model_maps(cfg, perc_diff, [lats, lons],
-                           input_filenames, 'Difference')
+def _plot_models_vs_obs(cfg, cube, mmm, obs, fnames):
+    """Compare drought metrics of multi-model mean to observations."""
+    latslons = [cube.coord(i).points for i in ["latitude", "longitude"]]
+    perc_diff = ((obs-mmm) / (obs + mmm) * 200)
+    _plot_multi_model_maps(cfg, mmm, latslons, fnames, 'Historic')
+    _plot_multi_model_maps(cfg, obs, latslons, fnames, 'Observations')
+    _plot_multi_model_maps(cfg, perc_diff, latslons, fnames, 'Difference')
 
 
-def ini_time_series_plot(cfg, cube, area, filename):
-    """Set up cube for time series plot.
-    TODO: This should be configurable in recipe. And maybe find nearest point
-    instead of crash if the resolution changes.
-    """
-    coords = ('longitude', 'latitude')
-    if area == 'Bremen':
-        index_lat = get_latlon_index(cube.coord('latitude').points, 52, 53)
-        index_lon = get_latlon_index(cube.coord('longitude').points, 7, 9)
-    elif area == 'Nigeria':
-        index_lat = get_latlon_index(cube.coord('latitude').points, 7, 9)
-        index_lon = get_latlon_index(cube.coord('longitude').points, 8, 10)
+def _plot_future_vs_past(cfg, cube, slices, fnames):
+    """Compare drought metrics of future and historic time slices."""
+    latslons = [cube.coord(i).points for i in ["latitude", "longitude"]]
+    slices["Difference"] = ((slices["Future"] - slices["Historic"]) /
+        (slices["Future"] + slices["Historic"]) * 200)
+    for tstype in ['Historic', 'Future', 'Difference']:
+        _plot_multi_model_maps(cfg, slices[tstype], latslons, fnames, tstype)
 
-    cube_grid_areas = iris.analysis.cartography.area_weights(
-        cube[:, index_lat[0]:index_lat[-1] + 1,
-             index_lon[0]:index_lon[-1] + 1])
-    cube4 = ((cube[:, index_lat[0]:index_lat[-1] + 1,
-                   index_lon[0]:index_lon[-1] +
-                   1]).collapsed(coords, iris.analysis.MEAN,
-                                 weights=cube_grid_areas))
 
-    plot_time_series_spei(cfg, cube4, filename, area)
+def _set_tscube(cfg, cube, time, tstype):
+    """Time slice from a cube with start/end given by cfg."""
+    print("sett time slice")
+    if tstype == 'Future':
+        print("future")
+        start_year = cfg["end_year"] - cfg["comparison_period"]
+        start = dt.datetime(start_year , 1, 15, 0, 0, 0)
+        end = dt.datetime(cfg['end_year'], 12, 16, 0, 0, 0)
+    elif tstype == 'Historic':
+        print("historic")
+        start = dt.datetime(cfg['start_year'], 1, 15, 0, 0, 0)
+        end_year = cfg["start_year"] + cfg["comparison_period"]
+        end = dt.datetime(end_year, 12, 16, 0, 0, 0)
+    print(start, end)
+    stime = time.nearest_neighbour_index(time.units.date2num(start))
+    etime = time.nearest_neighbour_index(time.units.date2num(end))
+    print(stime, etime)
+    print(cube)
+    tscube = cube[stime:etime, :, :]
+    return tscube
 
 
 def main(cfg):
-    """Run the diagnostic.
-
-    Parameters :
-
-    ------------
-    cfg : dict
-        Configuration dictionary of the recipe.
-
-    """
+    """Run the diagnostic."""
     # Read input data
     input_data = cfg["input_data"].values()
-    proj_groups = e.group_metadata(input_data, 'project')
-
-    all_drought = None
-    count = len(proj_groups["OBS"])
-    print("Number of datasets: ", count)
-    # Loop over all OBS datasets and plot event characteristics
-    for iii, meta in enumerate(proj_groups["OBS"]):
-        print(meta)
-        cube = iris.load_cube(meta["filename"])
+    drought_data = []
+    drought_slices = {"Historic": [], "Future": []}
+    fnames = []  # why do we need them?
+    ref_data = None
+    for iii, meta in enumerate(input_data):
+        fname = meta["filename"]
+        cube = iris.load_cube(fname)
+        fnames.append(fname)
         cube.coord('latitude').guess_bounds()
         cube.coord('longitude').guess_bounds()
         cube_mean = cube.collapsed('time', iris.analysis.MEAN)
-        # we could use one cube(list) instead of np to keep lazyness and meta
-        if all_drought is None:
-            shape = cube_mean.data.shape + (4, count)
-            all_drought = np.full(shape, np.nan)
-        # ini_time_series_plot(cfg, cube, 'Bremen', meta["filename"])
-        # ini_time_series_plot(cfg, cube, 'Nigeria', meta["filename"])
+        if cfg.get("compare_intervals", False):
+            # calculate and plot metrics per time slice
+            for tstype in ['Historic', 'Future']:
+                ts_cube = _set_tscube(cfg, cube, cube.coord('time'), tstype)
+                drought_show = _get_drought_data(cfg, ts_cube)
+                drought_slices[tstype].append(drought_show.data)
+                _plot_single_maps(cfg, cube_mean, drought_show, tstype, fname)
+        else:
+            # calculate and plot metrics per dataset
+            drought_show = _get_drought_data(cfg, cube)
+            if meta["dataset"] == cfg["reference_dataset"]:
+                ref_data = drought_show.data
+            else:
+                drought_data.append(drought_show.data)
+            _plot_single_maps(cfg, cube_mean, drought_show, 'Historic', fname)
 
-        drought_show = _get_drought_data(cfg, cube)
-        # Distinguish between model and observations/reanalysis.
-        # Collest all model data in one array.
-        all_drought[:, :, :, iii] = drought_show.data
-        _plot_single_maps(cfg, cube_mean, drought_show, 'Historic', meta["filename"])
-
-    # Calculating multi model mean and plot it
-    # _get_and_plot_obsmodel(cfg, cube, all_drought, all_drought_obs,
-    #                        glob.glob(input_filenames))
+    if cfg.get("compare_intervals", False):
+        # calculate multi model mean for time slices
+        slices = {k: np.array(v) for k, v in drought_slices.items()}
+        mean_slices = {k: np.nanmean(v, axis=0) for k, v in slices.items()}
+        _plot_future_vs_past(cfg, cube, mean_slices, fnames)
+    else:
+        # calculate multi model mean and compare with reference dataset
+        drought_data = np.array(drought_data)
+        mmm = np.nanmean(np.array(drought_data), axis=0)
+        _plot_models_vs_obs(cfg, cube, mmm, ref_data, fnames)
 
 
 if __name__ == '__main__':
