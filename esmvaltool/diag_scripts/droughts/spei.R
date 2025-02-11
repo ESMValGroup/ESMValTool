@@ -131,6 +131,8 @@ for (dataset in names(grouped_meta)){
   }
   if (cfg$write_wb) {
     filename_wb <- write_nc_file_like(cfg, pr_meta, pme, fillfloat, short_name="wb")
+    meta[[filename_wb]] <- list(filename=filename_wb, short_name="wb", dataset = dataset)
+    provenance[[filename_wb]] <- list(caption="Water balance per grid point.")
   }
 
   fill_refperiod(cfg, tsvec)
@@ -161,40 +163,26 @@ for (dataset in names(grouped_meta)){
     }
   }
   pme_spei[pme_spei > 10000] <- NA  # replaced with fillfloat in write function
+  # TODO: check if we need to apply mask to pme_spei
+  # apply mask
+  # for (t in 1:dim(pme)[3]) {
+  #   tmp <- pme_spei[, , t]
+  #   tmp[is.na(mask)] <- NA
+  #   pme_spei[, , t] <- tmp
+  # }
   filename <- write_nc_file_like(cfg, pr_meta, pme_spei, fillfloat, short_name=cfg$indexname)
+  new_meta = list(filename=filename, short_name=tolower(cfg$indexname),
+      long_name=cfg$indexname, units="1", dataset=dataset)
+  meta[[filename]] <- modifyList(pr_meta, new_meta)
+  provenance[[filename]] = list(caption=paste(cfg$indexname, " index per grid point."))
   if (cfg$write_coeffs) {
     for (c_name in names(coeffs)){
       filename_c <- write_nc_file_like(cfg, pr_meta, coeffs[[c_name]], fillfloat, short_name=c_name, moty=TRUE)
-      meta[[filename_c]] <- list(
-        filename = filename_c,
-        short_name = c_name,
-        dataset = dataset
-      )
+      meta[[filename_c]] <- list(filename=filename_c, short_name=c_name, dataset=dataset)
+      provenance[[filename_c]] <- list(caption=paste(c_name, " (fitting parameter) per grid point."))
     }
-  }
-
-  print("-- prepare metadata for output")
-  meta[[filename]] <- list(
-    filename = filename,
-    short_name = tolower(cfg$indexname),
-    dataset = dataset)
-  xprov$caption <- paste(cfg$indexname, " index per grid point.")
-  # generate metadata.yml
-  input_meta = select_var(metas, "pr")
-  input_meta$filename = filename
-  input_meta$short_name = tolower(cfg$indexname)
-  input_meta$long_name = cfg$indexname
-  input_meta$units = "1"
-  input_meta$index = cfg$indexname
-  meta[[filename]] <- input_meta
-  meta[[filename]][["index"]] <- cfg$indexname
-  for (t in 1:dim(pme)[3]) {
-    tmp <- pme_spei[, , t]
-    tmp[is.na(mask)] <- NA
-    pme_spei[, , t] <- tmp
   }
 }  # end of dataset loop
 
-provenance[[filename]] <- xprov
 write_yaml(provenance, provenance_file)
 write_yaml(meta, meta_file)
