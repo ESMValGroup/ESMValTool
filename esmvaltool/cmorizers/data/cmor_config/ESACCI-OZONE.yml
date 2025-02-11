@@ -5,7 +5,7 @@ attributes:
   tier: 2
   modeling_realm: sat
   project_id: OBS6
-  source: ""
+  source: "https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1"
   reference: "esacci-ozone" 
   comment: "" 
 
