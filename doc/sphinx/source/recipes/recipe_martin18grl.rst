@@ -6,7 +6,6 @@ Drought characteristics following Martin (2018)
 Overview
 --------
 
-
 Following `Martin (2018)`_ drought characteristics are calculated based on the
 standard precipitation index (SPI), see `Mckee et al. (1993)`_.
 These characteristics are frequency, average duration, SPI index and severity
