@@ -23,8 +23,7 @@ reference_dataset: str
     Dataset name to use for comparison (excluded from MMM). With 
     ``compare_intervals=True`` this option has no effect.
 threshold: float, optional (default: -2.0)
-    Threshold for binary classifiaction of a drought.
-    Not yet implemented.
+    Threshold for an event to be considered as drought.
 compare_intervals: bool, false
     If true, begin and end of the time periods are compared instead of
     models and reference. The lengths of begin and end period is given by

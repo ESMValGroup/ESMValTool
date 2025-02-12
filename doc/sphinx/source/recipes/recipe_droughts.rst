@@ -40,18 +40,17 @@ Recipes:
 
 * :ref:`droughts/recipe_cdd.yml <recipes_consecdrydays>`
 * :ref:`droughts/recipe_spei.yml <recipes_spei>`
-* :ref:`recipe_martin18grl.yml <recipes_martin18grl>`
+* :ref:`droughts/recipe_martin18grl.yml <recipes_martin18grl>`
 
 
-Diagnostics are stored in ``diag_scripts/droughts/``. General index
-calculattions are done by:
+Diagnostics are stored in ``diag_scripts/droughts/``. An incomplete list of
+diagnostics that are used in different recipes is shown below. Some recipes
+might use additional diagnostics. See the corresponding recipe documentation
+for more details.:
 
 * cdd.py: calculate Consecutive Dry Days
 * pet.R: calculate Potential Evapo-Transpiration
 * spei.R: calculate Standardized Evapo-Transpiration Index
-
-The recipes might use additional diagnostics, see the corresponding recipe
-documentation for more details.
 
 
 User settings
