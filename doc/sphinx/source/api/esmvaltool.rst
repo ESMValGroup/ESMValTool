@@ -23,6 +23,7 @@ Diagnostic Scripts
 .. toctree::
    :maxdepth: 1
 
+   esmvaltool.diag_scripts.droughts
    esmvaltool.diag_scripts.emergent_constraints
    esmvaltool.diag_scripts.mlr
    esmvaltool.diag_scripts.monitor

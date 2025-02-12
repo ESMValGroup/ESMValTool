@@ -1,31 +1,42 @@
 ﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-
-"""Compares SPI or SPEI data from models with observations/reanalysis.
-
-###############################################################################
-droughs/collect_drought.py
-Author: Katja Weigel (IUP, Uni Bremen, Germany)
-EVal4CMIP project
-###############################################################################
+# Author: Katja Weigel (IUP, Uni Bremen, Germany)
+# EVal4CMIP project
+"""Compares SPI/SPEI data from models with observations/reanalysis.
 
 Description
 -----------
-    Collects data produced by spei.R to plot/process them further.
-    Applies drought characteristics based on Martin (2018).
+This diagnostic applies drought charactristics based on Martin (2018)
+to data produced by spei.R. This characteristics and differences to
+a reference dataset or between different time periods are plotted for each
+dataset and multi-model mean.
+It expects multiple datasets for a particular index as input. The reference
+dataset can be specified with ``reference_dataset`` and is not part of the
+multi-model mean.
 
 Configuration options
 ---------------------
-    indexname: "SPI" or "SPEI"
-    reference_dataset: Dataset name to use for comparison (excluded from MMM)
-    threshold: Threshold for binary classifiaction of a drought
-    compare_intervals: bool, false
-        If true,  begin and end of the time periods are compared instead of
-        models and reference.
-    comparison_period: should be < (end_year - start_year)/2
-    start_year: year, start of historical time series
-    end_year: year, end of future scenario
+indexname: str
+    The indexname is used to generate filenames, plot titles and captions.
+    Should be ``SPI`` or ``SPEI``
+reference_dataset: str
+    Dataset name to use for comparison (excluded from MMM). With 
+    ``compare_intervals=True`` this option has no effect.
+threshold: float, optional (default: -2.0)
+    Threshold for binary classifiaction of a drought.
+    Not yet implemented.
+compare_intervals: bool, false
+    If true, begin and end of the time periods are compared instead of
+    models and reference. The lengths of begin and end period is given by
+    ``comparison_period``.
+comparison_period: int
+    Number of years from begin and end of the full period to be compared.
+    Should be < (end_year - start_year)/2.
+    If ``compare_intervals=False`` this option has no effect.
+start_year: int
+    This option is used to select the time slices for comparison if ``compare_intervals=True``.
+end_year: int
+    This option is used to select the time slices for comparison if ``compare_intervals=True``.
 """
 
 import iris
