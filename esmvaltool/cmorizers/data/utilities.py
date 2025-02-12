@@ -220,8 +220,8 @@ def fix_coords(cube,
             logger.info("Fixing longitude...")
             if cube_coord.ndim == 1:
                 cube = cube.intersection(longitude=(0.0, 360.0))
-            if overwrite_lon_bounds or not cube_coord.has_bounds():
-                fix_bounds(cube, cube_coord)
+            if overwrite_lon_bounds or not cube.coord('longitude').has_bounds():
+                fix_bounds(cube, cube.coord('longitude'))
 
         # fix latitude
         if cube_coord.var_name == 'lat':
