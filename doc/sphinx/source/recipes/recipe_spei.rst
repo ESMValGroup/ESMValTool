@@ -43,7 +43,7 @@ pet_type: str
 spei.R
 ~~~~~~
 
-    Calculating the SPI is a specialcase of the SPEI. Provide only precipitation
+    SPI is considered as a special case of the SPEI. Provide only precipitation
     as input variable or ancestor and set ``distribution="Gamma"``, to calculate
     SPI.
 
