@@ -50,7 +50,7 @@ if rtd_version not in ["latest", "stable", "doc"]:
 sys.path.append(os.path.dirname(__file__))
 import generate_gallery
 
-generate_gallery.main()
+# generate_gallery.main()
 
 # -- General configuration ------------------------------------------------
 
@@ -489,7 +489,7 @@ extlinks = {
     ),
 }
 
-# # -- Custom Document processing ----------------------------------------------
+# -- Custom Document processing ----------------------------------------------
 
 import gensidebar
 
