@@ -64,6 +64,5 @@ Example plots
 .. figure::  /recipes/figures/consecdrydays/consec_example_freq.png
    :align:   center
    :width:   14cm
-
-    Example of the number of occurrences with consecutive dry days of more than
-    five days in the period 2001 to 2002 for the CMIP5 model bcc-csm1-1-m.
+   
+   Example of the number of occurrences with consecutive dry days of more than five days in the period 2001 to 2002 for the CMIP5 model bcc-csm1-1-m.
