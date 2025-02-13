@@ -46,11 +46,11 @@ if on_rtd:
 if rtd_version not in ["latest", "stable", "doc"]:
     rtd_version = "latest"
 
-# # Generate gallery
+# Generate gallery
 sys.path.append(os.path.dirname(__file__))
-# import generate_gallery
+import generate_gallery
 
-# generate_gallery.main()
+generate_gallery.main()
 
 # -- General configuration ------------------------------------------------
 
