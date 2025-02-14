@@ -66,22 +66,16 @@ def _plot_future_vs_past(cfg, cube, slices, fnames):
 
 def _set_tscube(cfg, cube, time, tstype):
     """Time slice from a cube with start/end given by cfg."""
-    print("sett time slice")
     if tstype == 'Future':
-        print("future")
-        start_year = cfg["end_year"] - cfg["comparison_period"]
+        start_year = cfg["end_year"] - cfg["comparison_period"] + 1
         start = dt.datetime(start_year , 1, 15, 0, 0, 0)
         end = dt.datetime(cfg['end_year'], 12, 16, 0, 0, 0)
     elif tstype == 'Historic':
-        print("historic")
         start = dt.datetime(cfg['start_year'], 1, 15, 0, 0, 0)
-        end_year = cfg["start_year"] + cfg["comparison_period"]
+        end_year = cfg["start_year"] + cfg["comparison_period"] - 1
         end = dt.datetime(end_year, 12, 16, 0, 0, 0)
-    print(start, end)
     stime = time.nearest_neighbour_index(time.units.date2num(start))
     etime = time.nearest_neighbour_index(time.units.date2num(end))
-    print(stime, etime)
-    print(cube)
     tscube = cube[stime:etime, :, :]
     return tscube
 
