@@ -75,7 +75,7 @@ diagnostics:
     scripts:
       calculate_tcre:
         script: climate_metrics/tcre.py
-        calc_tcre_period: [45, 65]
+        calc_tcre_range: [45, 65]
         exp_target: esm-1pctCO2
         pyplot_kwargs:
           title: Transient Climate Response to Cumulative CO2 Emissions (TCRE)

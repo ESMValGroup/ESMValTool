@@ -13,12 +13,14 @@ Manuel Schlund (DLR, Germany)
 
 Configuration options in recipe
 -------------------------------
-calc_tcre_period: list of int, optional (default: [90, 110])
-    Period considered to calculate TCRE. TCRE is calculated by averaging over a
-    subarray of the temperature change arrays; the values given here are used
-    as indices to get this subarray. For example, if the input data are annual
-    means, this corresponds to the years (measured from simulation start) over
-    which the temperature change is averaged.
+calc_tcre_range: list of int, optional (default: [90, 110])
+    Range considered to calculate TCRE. This needs to be a sequence of two
+    integers, where the first integer defines the start and the second integer
+    the end of a slice. TCRE is calculated by averaging over a subarray of the
+    temperature change array which is determined by this slice. For example, if
+    the input data are annual means, the values here correspond to the years
+    (measured from simulation start) over which the temperature change is
+    averaged (by default from years 90 to 110).
 exp_control: str, optional (default: 'esm-piControl')
     Name of the control experiment.
 exp_target: str, optional (default: 'esm-flat10')
@@ -65,6 +67,7 @@ var_temperature: str, optional (default: 'tas')
 
 """
 import logging
+from collections.abc import Sequence
 from copy import deepcopy
 from pathlib import Path
 
@@ -102,8 +105,8 @@ def _calculate_tcre(
     # for TCRE, we use 10 years before and after that, which gives us the
     # default [90, 110]. The following formula basically calculates the center
     # (by default: 99) for the calculation period (by default: [90, 110]).
-    idx_start = cfg["calc_tcre_period"][0]
-    idx_end = cfg["calc_tcre_period"][1]
+    idx_start = cfg["calc_tcre_range"][0]
+    idx_end = cfg["calc_tcre_range"][1]
     idx_center = int((idx_start + idx_end) / 2.0) - 1
 
     tcre = {}
@@ -141,7 +144,7 @@ def _get_default_cfg(cfg: dict) -> dict:
     """Get default options for configuration dictionary."""
     cfg = deepcopy(cfg)
 
-    cfg.setdefault('calc_tcre_period', [90, 110])
+    cfg.setdefault('calc_tcre_range', [90, 110])
     cfg.setdefault('exp_control', 'esm-piControl')
     cfg.setdefault('exp_target', 'esm-flat10')
     cfg.setdefault('figure_kwargs', {'constrained_layout': True})
@@ -160,10 +163,26 @@ def _get_default_cfg(cfg: dict) -> dict:
     cfg.setdefault("var_emissions", "cumulative_fco2antt")
     cfg.setdefault("var_temperature", "tas")
 
-    if cfg["calc_tcre_period"][0] >= cfg["calc_tcre_period"][1]:
+    if not isinstance(cfg["calc_tcre_range"], Sequence):
         raise ValueError(
-            f"Invalid calc_tcre_period: the first index needs to be smaller "
-            f"than the second, got {cfg['calc_tcre_period']}"
+            f"Option 'calc_tcre_range' needs to be a sequence of exactly 2 "
+            f"integers, got {type(cfg["calc_tcre_range"])}"
+        )
+    if len(cfg["calc_tcre_range"]) != 2:
+        raise ValueError(
+            f"Option 'calc_tcre_range' needs to be a sequence of exactly 2 "
+            f"integers, got {cfg["calc_tcre_range"]}"
+        )
+    if any(not isinstance(i, int) for i in cfg["calc_tcre_range"]):
+        raise ValueError(
+            f"Option 'calc_tcre_range' needs to be a sequence of exactly 2 "
+            f"integers, got {cfg["calc_tcre_range"]}"
+        )
+    if cfg["calc_tcre_range"][0] >= cfg["calc_tcre_range"][1]:
+        raise ValueError(
+            f"Invalid value for option 'calc_tcre_range': the first integer "
+            f"needs to be smaller than the second, got "
+            f"{cfg['calc_tcre_range']}"
         )
 
     return cfg
@@ -288,11 +307,11 @@ def _load_and_preprocess_data(cfg: dict) -> list[dict]:
             raise ValueError(
                 f"Dimensional coordinate 'time' not found for {filename}"
             )
-        if cube.shape[0] < cfg["calc_tcre_period"][1]:
+        if cube.shape[0] < cfg["calc_tcre_range"][1]:
             raise ValueError(
-                f"The index given by calc_tcre_period needs to be smaller or "
+                f"The index given by calc_tcre_range needs to be smaller or "
                 f"equal to the array size of {filename}, got "
-                f"{cfg['calc_tcre_period'][1]} and {cube.shape[0]}, "
+                f"{cfg['calc_tcre_range'][1]} and {cube.shape[0]}, "
                 f"respectively"
             )
 
