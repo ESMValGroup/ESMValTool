@@ -120,6 +120,7 @@ def _calculate_tcre(
         )
         tcre_cube.convert_units(target_units)
         tcre[group] = tcre_cube.data
+        logger.info("TCRE of %s: %.2f %s", group, tcre_cube.data, target_units)
 
     netcdf_path = get_diagnostic_filename("tcre", cfg)
     var_attrs = {
@@ -166,23 +167,24 @@ def _get_default_cfg(cfg: dict) -> dict:
     if not isinstance(cfg["calc_tcre_range"], Sequence):
         raise ValueError(
             f"Option 'calc_tcre_range' needs to be a sequence of exactly 2 "
-            f"integers, got {type(cfg["calc_tcre_range"])}"
+            f"integers, got '{cfg["calc_tcre_range"]}' of type "
+            f"{type(cfg["calc_tcre_range"])}"
         )
     if len(cfg["calc_tcre_range"]) != 2:
         raise ValueError(
             f"Option 'calc_tcre_range' needs to be a sequence of exactly 2 "
-            f"integers, got {cfg["calc_tcre_range"]}"
+            f"integers, got '{cfg["calc_tcre_range"]}'"
         )
     if any(not isinstance(i, int) for i in cfg["calc_tcre_range"]):
         raise ValueError(
             f"Option 'calc_tcre_range' needs to be a sequence of exactly 2 "
-            f"integers, got {cfg["calc_tcre_range"]}"
+            f"integers, got '{cfg["calc_tcre_range"]}'"
         )
     if cfg["calc_tcre_range"][0] >= cfg["calc_tcre_range"][1]:
         raise ValueError(
             f"Invalid value for option 'calc_tcre_range': the first integer "
             f"needs to be smaller than the second, got "
-            f"{cfg['calc_tcre_range']}"
+            f"'{cfg["calc_tcre_range"]}'"
         )
 
     return cfg
