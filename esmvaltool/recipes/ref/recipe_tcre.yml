@@ -39,7 +39,7 @@ preprocessors:
     annual_statistics:
       operator: mean
 
-  global_sum_annual_mean:
+  global_cumulative_sum:
     custom_order: true
     area_statistics:
       operator: sum
