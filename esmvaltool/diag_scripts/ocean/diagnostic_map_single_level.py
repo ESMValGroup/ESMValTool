@@ -1,0 +1,267 @@
+from esmvaltool.diag_scripts.shared import run_diagnostic
+
+
+def main(config):
+    """Diagnostic to produce an image showing four maps, based on a comparison
+    of two different models results against an observational dataset.
+
+    Parameters
+    ----------
+    config : dictionary
+        configuration dictionary that contains
+        all the necessary informationfor the function to run.
+        It includes details about the
+        models, observational datasets, file paths, and other settings.
+
+    Notes
+    -----
+    The function starts by loading the configuration dictionary.
+    This dictionary contains information about the models,
+    observational datasets, file paths, and other settings.
+
+    After successfully generating the plots,
+    the function logs a success message.
+
+    The if statement checks if the script is being run directly
+    (as opposed to being imported as a module).
+    If it is, the code inside this block will be executed.
+    """
+
+
+#    create_logger()
+
+#    control, experiment, observation = load_data(config)
+
+#    fix_coords()
+
+#    remove_extra_time_axis(cube)
+
+#    (experiment, experiment_minus_control, control_minus_observation,
+#     experiment_minus_observation) = create_plotting_data(
+#      control, experiment, observation)
+
+#    extract_global_single_level(ADD)
+
+#    experiment_plot = plot_global_single_level(
+#    experiment)
+#    experiment_minus_control_plot = plot_global_single_level(
+#    experiment_minus_control)
+#    control_minus_observation_plot = plot_global_single_level(
+#    control_minus_observation)
+#    experiment_minus_observation_plot = plot_global_single_level(
+#    experiment_minus_observation)
+
+#    create_quadmap(
+#    experiment_plot, experiment_minus_control_plot,
+#    control_minus_observation_plot, experiment_minus_observation_plot)
+
+
+def create_logger():
+    """The script configures the logging system to create a logger named after
+    the current file and to print log messages to the console.
+
+    This helps in monitoring the script's progress and debugging any
+    issues.
+    """
+
+
+def load_data(cfg):
+    """Loading in all necessary data to output control, experiment, observation
+    to be passed into create_plotting_data()
+
+    Parameters
+    ----------
+    cfg : dictionary
+        configuration dictionary that contains all the necessary information
+        for the function to run. It includes details about the
+        models, observational datasets, file paths, and other settings.
+
+    Returns
+    -------
+    control : iris cube
+        Data as defined as control_model from the recipe.
+    experiment : iris cube
+        Data as defined as exper_model from the recipe.
+    observation : iris cube
+        Data as defined as observational_dataset from the recipe.
+
+    Notes
+    -----
+    The function starts by loading the configuration dictionary.
+    This dictionary contains information about the
+    models, observational datasets, file paths, and other settings.
+
+    The datasets defined bycontrol_model, exper_model, observational_datasets
+    in the recipe determine what is loaded in this function.
+
+    The input data is grouped by dataset. This helps in organising the data for
+    easier processing and plotting.
+
+    For each file listed in the input_files section of the configuration,
+    the function logs the filename. This helps in tracking which files are
+    being processed.
+
+    The function retrieves the input files using the
+    diagtools.get_input_files function.
+    This prepares the necessary data files for further processing.
+    """
+
+
+def create_plotting_data(control, experiment, observation):
+    """Calculating the differences between the control, experiment and
+    observation datasets to prepare data for plotting.
+
+    Parameters
+    ----------
+    control : iris cube
+        Data as defined as control_model from the recipe.
+    experiment : iris cube
+        Data as defined as exper_model from the recipe.
+    observation : iris cube
+        Data as defined as observational_dataset from the recipe.
+
+    Returns
+    -------
+    experiment : iris cube
+        Untouched experimental input.
+    experiment_minus_control : iris cube
+        Experiment model minus control model.
+    control_minus_observation : iris cube
+        Control model minus observational dataset.
+    experiment_minus_observation : iris cube
+        Experimental model minus observational dataset.
+
+    Notes
+    -----
+    The data for each model and the observational dataset is loaded into
+    Iris cubes. These cubes contain the climate data that will be plotted.
+    """
+
+
+def extract_global_single_level(cube, level):
+    """Extracts a single level from the cube."""
+
+
+def plot_global_single_level(cube, cmap, title, contour_levels):
+    """Creating each individual plot before being added to create_quadmap.
+
+    Parameters
+    ----------
+    cube : iris cube
+        This is a data structure that contains the climate data to be plotted.
+        Including information like temperature values, latitude, longitude,
+        and depth.
+    cmap : str
+        This is a string that specifies the color map to be used for the plot.
+    title : str
+        This is a string that will be used as the title of the subplot.
+    contour_levels : numpy.array
+        nspace is used to set the ticks on the colour bar and used to define
+        levels for the contour plot.
+
+    Returns
+    -------
+    plot of single depth (called four times)
+
+    Notes
+    -----
+    The climate data is projected onto a 2D map using a specific map projection
+    (PlateCarree). This step transforms the data so it can be displayed on a
+    flat map.
+
+    The function then creates a filled contour plot of the projected data.
+    The array is used to set the color scale, and the input determines the
+    color scheme.
+
+    A color bar is added to the plot to show the range of values represented by
+    different colors. The ticks on the color bar are set to the minimum,
+    midpoint, and maximum values of nspace.
+
+    Coastlines are added to the map to provide geographical context.
+    The title of the subplot is set using the title input.
+
+    The overall title of the figure is set based on the data being plotted.
+
+    Titles are added to each plot.
+
+    The plots are then saved as image files in the specified directory.
+
+    Plots are then passed as parameters in create_quadmap().
+    """
+
+
+def create_quadmap(experiment_plot, experiment_minus_control_plot,
+                   control_minus_observation_plot,
+                   experiment_minus_observation_plot):
+    """The function starts by specifying the position of each of the plots in
+    the quadmap. We want this to be set.
+
+    Parameters
+    ----------
+    experiment_plot : iris cube
+        Untouched experimental input.
+    experiment_minus_control_plot : iris cube
+        Experiment model minus control model.
+    control_minus_observation_plot : iris cube
+        Control model minus observational dataset.
+    experiment_minus_observation_plot : iris cube
+        Experimental model minus observational dataset.
+
+    Returns
+    -------
+    quadmap :
+        Make the four pane model vs model vs obs comparison plot
+
+    Notes
+    -----
+    Top left: Experiment model
+    Top right: Experiment model minus control model
+    Bottom left: Control model minus observational dataset
+    Bottom right: Experiment model minus observational dataset
+
+    Set the number that tells the function where to place the map within the
+    larger figure. 224 means the map will be placed in the fourth position
+    of a 2x2 grid. We want this to be unchanged.
+
+    The function matches the models to their respective keys using the
+    information in the configuration dictionary.
+    """
+
+
+def fix_coords():
+    """The latitude and longitude coordinates of the cubes are adjusted to
+    ensure they match.
+
+    This is necessary for subtracting one cube from another to calculate
+    differences.
+    """
+
+
+def remove_extra_time_axis(cube):
+    """Remove the extra time axis from the |input variable| provided by the
+    ``cube`` parameter.
+
+    Parameters
+    ----------
+    cube : iris cube
+        This is a data structure that contains the climate data to be plotted.
+        Including information like temperature values, latitude, longitude,
+        and depth.
+
+    Notes
+    -----
+    The function starts by counting the number of time coordinates in the cube.
+    This helps in identifying if there are any extra time coordinates that need
+    to be removed.
+
+    If the cube has multiple time coordinates with the same standard name,
+    the function removes the auxiliary time coordinates.
+    This ensures that only one time coordinate remains.
+
+    If the cube has a time_counter coordinate, the function removes it.
+    """
+
+
+if __name__ == '__main__':
+    with run_diagnostic() as config:
+        main(config)

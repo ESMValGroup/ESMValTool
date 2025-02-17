@@ -36,69 +36,69 @@ diagnostics:
   # --------------------------------------------------
   # Quad Maps diagnostics
   # -----------------------------------------------
-  sea surface temperature:
-    description: Global surface quad plots
-    variables:
-      tos:  # Temperature ocean surface
-        preprocessor: prep_quad_map
-        mip: Omon
-        additional_datasets:
-          - {project: NEMO, dataset: GC5, suite: cp656, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
-          - {project: NEMO, dataset: GC3p1, suite: co957, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
-      tos_obs:
-        mip: Omon
-        short_name: tos
-        additional_datasets:
-          - {project: OBS2, dataset: observation, suite: CCI_SST, model: nemo, freq: annualmean, grid: T}
-    scripts:
-      Global_Ocean_map: &Global_Ocean_map
-        script: ocean/diagnostic_maps_quad_NEMO.py
-        control_model: {project: NEMO, dataset: GC5}
-        exper_model: {project: NEMO, dataset: GC3p1}
-        observational_dataset: {project: OBS2, dataset: observation}
+#  sea surface temperature:
+#    description: Global surface quad plots
+#    variables:
+#      tos:  # Temperature ocean surface
+#        preprocessor: prep_quad_map
+#        mip: Omon
+#        additional_datasets:
+#          - {project: NEMO, dataset: GC5, suite: cp656, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
+#          - {project: NEMO, dataset: GC3p1, suite: co957, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
+#      tos_obs:
+#        mip: Omon
+#        short_name: tos
+#        additional_datasets:
+#          - {project: OBS2, dataset: observation, suite: CCI_SST, model: nemo, freq: annualmean, grid: T}
+#    scripts:
+#      Global_Ocean_map: &Global_Ocean_map
+#        script: ocean/diagnostic_map_single_level.py
+#        control_model: {project: NEMO, dataset: GC5}
+#        exper_model: {project: NEMO, dataset: GC3p1}
+#        observational_dataset: {project: OBS2, dataset: observation}
 
-  sea surface salinity:
-    description: Global surface quad plots sos
-    variables:
-      sos:
-        preprocessor: prep_quad_map
-        mip: Omon
-        additional_datasets:
-          - {project: NEMO, dataset: GC5, suite: cp656, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
-          - {project: NEMO, dataset: GC3p1, suite: co957, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
-      sos_obs:
-        mip: Omon
-        short_name: sos
-        additional_datasets:
-          - {project: OBS3, dataset: observation, suite: EN4_v1.1, model: nemo, freq: annualmean, grid: T}
-    scripts:
-      Global_Ocean_map:  # &Global_Ocean_map
-        script: ocean/diagnostic_maps_quad_NEMO.py
-        control_model: {project: NEMO, dataset: GC5}
-        exper_model: {project: NEMO, dataset: GC3p1}
-        observational_dataset: {project: OBS3, dataset: observation}
+#  sea surface salinity:
+#    description: Global surface quad plots sos
+#    variables:
+#      sos:
+#        preprocessor: prep_quad_map
+#        mip: Omon
+#        additional_datasets:
+#          - {project: NEMO, dataset: GC5, suite: cp656, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
+#          - {project: NEMO, dataset: GC3p1, suite: co957, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
+#      sos_obs:
+#        mip: Omon
+#        short_name: sos
+#        additional_datasets:
+#          - {project: OBS3, dataset: observation, suite: EN4_v1.1, model: nemo, freq: annualmean, grid: T}
+#    scripts:
+#      Global_Ocean_map:  # &Global_Ocean_map
+#        script: ocean/diagnostic_map_single_level.py
+#        control_model: {project: NEMO, dataset: GC5}
+#        exper_model: {project: NEMO, dataset: GC3p1}
+#        observational_dataset: {project: OBS3, dataset: observation}
 
-  sea water salinity:
-    description: Global surface depth so
-    variables:
-      so:
-        preprocessor: prep_quad_map
-        mip: Omon
-        additional_datasets:
-          - {project: NEMO, dataset: GC5, suite: cp656, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
-          - {project: NEMO, dataset: GC3p1, suite: co957, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
-      so_obs:
-        mip: Omon
-        short_name: so
-        standard_name: sea_water_salinity
-        additional_datasets:
-          - {project: OBS3, dataset: so_obs, suite: EN4_v1.1_depth, model: nemo, freq: annualmean, grid: T}
-    scripts:
-      Global_Ocean_map:  # &Global_Ocean_map
-        script: ocean/diagnostic_maps_quad_NEMO.py
-        control_model: {project: NEMO, dataset: GC5}
-        exper_model: {project: NEMO, dataset: GC3p1}
-        observational_dataset: {project: OBS3, dataset: so_obs}
+#  sea water salinity:
+#    description: Global surface depth so
+#    variables:
+#      so:
+#        preprocessor: prep_quad_map
+#        mip: Omon
+#        additional_datasets:
+#          - {project: NEMO, dataset: GC5, suite: cp656, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
+#          - {project: NEMO, dataset: GC3p1, suite: co957, model: nemo, freq: 1y, grid: T, timerange: '199501/200501'}
+#      so_obs:
+#        mip: Omon
+#        short_name: so
+#        standard_name: sea_water_salinity
+#        additional_datasets:
+#          - {project: OBS3, dataset: so_obs, suite: EN4_v1.1_depth, model: nemo, freq: annualmean, grid: T}
+#    scripts:
+#      Global_Ocean_map:  # &Global_Ocean_map
+#        script: ocean/diagnostic_map_single_level.py
+#        control_model: {project: NEMO, dataset: GC5}
+#        exper_model: {project: NEMO, dataset: GC3p1}
+#        observational_dataset: {project: OBS3, dataset: so_obs}
 
   sea water potential temperature:
     description: Global surface depth thetao
@@ -117,7 +117,7 @@ diagnostics:
           - {project: OBS3, dataset: thetao_obs, suite: EN4_v1.1_depth, model: nemo, freq: annualmean, grid: T}
     scripts:
       Global_Ocean_map:  # &Global_Ocean_map
-        script: ocean/diagnostic_maps_quad_NEMO.py
+        script: ocean/diagnostic_map_single_level.py
         control_model: {project: NEMO, dataset: GC5}
         exper_model: {project: NEMO, dataset: GC3p1}
         observational_dataset: {project: OBS3, dataset: thetao_obs}
