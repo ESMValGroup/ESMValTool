@@ -19,6 +19,7 @@ jobs:
   create-lock-file:
     name: Create conda lock file for latest Python
     runs-on: 'ubuntu-latest'
+    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     steps:
       - uses: actions/checkout@v4
         with:

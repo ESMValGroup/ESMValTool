@@ -65,11 +65,8 @@ legend: dict, optional
         Number given in Inches. By default 0.
 
 matplotlib_rc_params: dict, optional
-    Optional :class:`matplotlib.RcParams` used to customize matplotlib plots.
-    Options given here will be passed to :func:`matplotlib.rc_context` and used
-    for all plots produced with this diagnostic. Note: fontsizes specified here
-    might be overwritten by the plot-type-specific option ``fontsize`` (see
-    below).
+    Optional :class:`matplotlib.RcParams` used to customize the portrait plot.
+    Options given here will be passed to :func:`matplotlib.rc_context`.
 nan_color: str or None, optional
     Matplotlib named color or hexcode for NaN values. If set to None,
     no triangles are plotted for NaN values.

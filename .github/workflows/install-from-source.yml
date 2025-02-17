@@ -17,6 +17,7 @@ defaults:
 jobs:
   linux:
     runs-on: "ubuntu-latest"
+    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
@@ -56,6 +57,7 @@ jobs:
 #
 #  osx:
 #    runs-on: "macos-latest"
+#    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
 #    strategy:
 #      matrix:
 #        python-version: ["3.10", "3.11"]
