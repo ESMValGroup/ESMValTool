@@ -70,7 +70,7 @@ diagnostics:
       fco2antt:
         mip: Amon
         exp: esm-1pctCO2  # esm-flat10 for CMIP7
-        preprocessor: global_sum_annual_mean
+        preprocessor: global_cumulative_sum
         additional_datasets: *datasets_target_exp
     scripts:
       calculate_tcre:
