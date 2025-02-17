@@ -1,3 +1,6 @@
+import iris
+
+from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 
@@ -27,12 +30,13 @@ def main(config):
     If it is, the code inside this block will be executed.
     """
 
+    #    create_logger()
 
-#    create_logger()
+    control, experiment, observation = load_data(config)
 
-#    control, experiment, observation = load_data(config)
+    fix_cube(cube_to_fix=control, cube_with_good_values=observation)
+    fix_cube(cube_to_fix=experiment, cube_with_good_values=observation)
 
-#    fix_coords()
 
 #    remove_extra_time_axis(cube)
 
@@ -65,13 +69,13 @@ def create_logger():
     """
 
 
-def load_data(cfg):
+def load_data(config):
     """Loading in all necessary data to output control, experiment, observation
     to be passed into create_plotting_data()
 
     Parameters
     ----------
-    cfg : dictionary
+    config : dictionary
         configuration dictionary that contains all the necessary information
         for the function to run. It includes details about the
         models, observational datasets, file paths, and other settings.
@@ -91,9 +95,6 @@ def load_data(cfg):
     This dictionary contains information about the
     models, observational datasets, file paths, and other settings.
 
-    The datasets defined bycontrol_model, exper_model, observational_datasets
-    in the recipe determine what is loaded in this function.
-
     The input data is grouped by dataset. This helps in organising the data for
     easier processing and plotting.
 
@@ -105,6 +106,33 @@ def load_data(cfg):
     diagtools.get_input_files function.
     This prepares the necessary data files for further processing.
     """
+    # The datasets defined by
+    # control_model, exper_model, observational_datasets in the recipe
+    # determine what is loaded in this function.
+    ctl_label_from_recipe = 'control_model'
+    exp_label_from_recipe = 'exper_model'
+    obs_label_from_recipe = 'observational_dataset'
+
+    input_files = diagtools.get_input_files(config)
+
+    ctl_filename = diagtools.match_model_to_key(ctl_label_from_recipe, config,
+                                                input_files)
+
+    exp_filename = diagtools.match_model_to_key(exp_label_from_recipe, config,
+                                                input_files)
+
+    obs_filename = diagtools.match_model_to_key(obs_label_from_recipe, config,
+                                                input_files)
+
+    control = iris.load_cube(ctl_filename)
+    experiment = iris.load_cube(exp_filename)
+    observation = iris.load_cube(obs_filename)
+
+    print(f'{control=}')
+    print(f'{experiment=}')
+    print(f'{observation=}')
+
+    return control, experiment, observation
 
 
 def create_plotting_data(control, experiment, observation):
@@ -228,13 +256,17 @@ def create_quadmap(experiment_plot, experiment_minus_control_plot,
     """
 
 
-def fix_coords():
+def fix_cube(cube_to_fix, cube_with_good_values):
     """The latitude and longitude coordinates of the cubes are adjusted to
-    ensure they match.
+    ensure they match cube with good values.
 
     This is necessary for subtracting one cube from another to calculate
     differences.
     """
+    cube_to_fix.coord("latitude").points[:] = cube_with_good_values.coord(
+        "latitude").points
+    cube_to_fix.coord("longitude").points[:] = cube_with_good_values.coord(
+        "longitude").points
 
 
 def remove_extra_time_axis(cube):
