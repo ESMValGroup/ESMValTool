@@ -40,8 +40,10 @@ def main(config):
     fix_cube(cube_to_fix=control, cube_with_good_values=observation)
     fix_cube(cube_to_fix=experiment, cube_with_good_values=observation)
 
+    remove_extra_time_axis(control)
+    remove_extra_time_axis(experiment)
+    remove_extra_time_axis(observation)
 
-#    remove_extra_time_axis(cube)
 
 #    (experiment, experiment_minus_control, control_minus_observation,
 #     experiment_minus_observation) = create_plotting_data(
@@ -296,6 +298,29 @@ def remove_extra_time_axis(cube):
 
     If the cube has a time_counter coordinate, the function removes it.
     """
+    print('cube', cube)
+    time_coords = [
+        coord for coord in cube.coords()
+        if iris.util.guess_coord_axis(coord) == 'T'
+    ]
+    time_axes_names = [coord.standard_name for coord in time_coords]
+
+    if len(time_coords) >= 2 and len(set(time_axes_names)) == 1:
+        for aux_coord in time_coords:
+            if not aux_coord.is_dim_coord():
+                cube.remove_coord(aux_coord)
+    else:
+        time_counter_coord = next(
+            (coord
+             for coord in cube.coords() if coord.var_name == 'time_counter'),
+            None)
+        if time_counter_coord:
+            cube.remove_coord(time_counter_coord)
+
+    print('time_coords:', time_coords)
+    print('time_axes_names:', time_axes_names)
+    print('time_counter_coord:', time_counter_coord)
+    print('Remove time axis complete')
 
 
 if __name__ == '__main__':
