@@ -61,9 +61,12 @@ seaborn_settings: dict, optional
     ``style: ticks``.
 var_emissions: str, optional (default: 'cumulative_fco2antt')
     Short name of the variable describing the cumulative anthropogenic CO2
-    emissions.
+    emissions. This must be the name of the variable given in the recipe. Note
+    that using the :func:`~esmvalcore.preprocessor.cumulative_sum` preprends
+    ``cumulative_`` to this name.
 var_temperature: str, optional (default: 'tas')
-    Short name of the variable describing the temperature change.
+    Short name of the variable describing the temperature change. This must be
+    the name of the variable given in the recipe.
 
 """
 import logging
