@@ -75,7 +75,7 @@ diagnostics:
     scripts:
       calculate_tcre:
         script: climate_metrics/tcre.py
-        calc_tcre_range: [45, 65]  # this should be removed when the CMIP7 esm-flat10 experiment is used
+        calc_tcre_period: [45, 65]  # this should be removed when the CMIP7 esm-flat10 experiment is used
         exp_target: esm-1pctCO2  # this should be removed when the CMIP7 esm-flat10 experiment is used
         pyplot_kwargs:
           title: Transient Climate Response to Cumulative CO2 Emissions (TCRE)
