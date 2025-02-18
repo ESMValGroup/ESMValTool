@@ -1,3 +1,6 @@
+import logging
+import sys
+
 import iris
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
@@ -30,7 +33,7 @@ def main(config):
     If it is, the code inside this block will be executed.
     """
 
-    #    create_logger()
+    create_logger()
 
     control, experiment, observation = load_data(config)
 
@@ -67,6 +70,7 @@ def create_logger():
     This helps in monitoring the script's progress and debugging any
     issues.
     """
+    logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
 def load_data(config):
