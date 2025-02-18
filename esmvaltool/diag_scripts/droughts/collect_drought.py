@@ -32,6 +32,8 @@ comparison_period: int
     Number of years from begin and end of the full period to be compared.
     Should be < (end_year - start_year)/2.
     If ``compare_intervals=False`` this option has no effect.
+plot_models: bool, false
+    Save plots for each individual model, in addition to multi-model mean.
 start_year: int
     This option is used to select the time slices for comparison if ``compare_intervals=True``.
 end_year: int
@@ -101,7 +103,9 @@ def main(cfg):
                 ts_cube = _set_tscube(cfg, cube, cube.coord('time'), tstype)
                 drought_show = _get_drought_data(cfg, ts_cube)
                 drought_slices[tstype].append(drought_show.data)
-                _plot_single_maps(cfg, cube_mean, drought_show, tstype, fname)
+                if cfg.get("plot_models", False):
+                    _plot_single_maps(
+                        cfg, cube_mean, drought_show, tstype, fname)
         else:
             # calculate and plot metrics per dataset
             drought_show = _get_drought_data(cfg, cube)
@@ -109,7 +113,9 @@ def main(cfg):
                 ref_data = drought_show.data
             else:
                 drought_data.append(drought_show.data)
-            _plot_single_maps(cfg, cube_mean, drought_show, 'Historic', fname)
+            if cfg.get("plot_models", False):
+                _plot_single_maps(
+                    cfg, cube_mean, drought_show, 'Historic', fname)
 
     if cfg.get("compare_intervals", False):
         # calculate multi model mean for time slices
