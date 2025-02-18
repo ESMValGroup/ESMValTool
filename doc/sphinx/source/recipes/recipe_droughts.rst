@@ -14,6 +14,24 @@ period frequency of dry days based on user defined thresholds.
 More details and usage examples can be found in the
 :ref:`CDD recipe documentation <recipes_consecdrydays>`.
 
+
+Potential or Reference Evapo-Transpiration (PET, ET0)
+-----------------------------------------------------
+
+The Potential Evapo-Transpiration (PET) is a measure of the evaporative demand
+of the atmosphere. It represents the amount of water, that would evaporate from
+a reference surface, i.e. an fully watered alfalfa field. ``pet.R`` is able to
+calculate PET based on a method of users choice (``pet_type``). The methods
+require different input variables for example:
+
+- Penman: tas, tasmin, tasmax, sfcWind, rsds, clt, hurs, ps
+- Hargreaves: tas, tasmin, tasmax, (rsds, pr)
+- Thornthwaite: tas
+
+A complete list and more details can be found in 
+:ref:`SPEI recipe documentation <recipes_spei>`.
+
+
 Standardized Precipitation-Evapotranspiration Index (SPEI)
 ----------------------------------------------------------
 
@@ -38,10 +56,9 @@ Available recipes and diagnostics
 
 Recipes:
 
-* :ref:`droughts/recipe_cdd.yml <recipes_consecdrydays>`
-* :ref:`droughts/recipe_spei.yml <recipes_spei>`
-* :ref:`droughts/recipe_martin18grl.yml <recipes_martin18grl>`
-
+* :ref:`recipes_consecdrydays`
+* :ref:`recipes_spei`
+* :ref:`recipes_martin18grl`
 
 Diagnostics are stored in ``diag_scripts/droughts/``. An incomplete list of
 diagnostics that are used in different recipes is shown below. Some recipes

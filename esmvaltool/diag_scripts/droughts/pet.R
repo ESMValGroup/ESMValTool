@@ -35,6 +35,9 @@
 #
 # NOTE: Remove pr as reference, since pr is not mandatory input for all methods.
 # 
+# NOTE: all PET methods pass data as t() and do therefore not account for leap
+# years.
+#
 # Authors: [Peter Berg, Katja Weigel, Lukas Lindenlaub]
 
 library(yaml)
@@ -46,10 +49,10 @@ setwd(dirname(commandArgs(asValues=TRUE)$file))
 source("utils.R")
 
 
-calculate_hargreaves <- function(metas, xprov) {
-  data <- list(tasmin=NULL, tasmax=NULL, rsdt=NULL) #, pr=NULL)
+calculate_hargreaves <- function(metas, xprov, use_pr=FALSE) {
+  data <- list(tasmin=NULL, tasmax=NULL, rsdt=NULL, pr=NULL)
   for (meta in metas) {
-    if (meta$short_name %in% names(data)) {
+    if (meta$short_name %in% names(data) && !(meta$short_name == "pr" && !use_pr)) {
       print(paste("read", meta$short_name))
       data[[meta$short_name]] <- get_var_from_nc(meta)
       if (meta$short_name == "tasmin") {
@@ -63,6 +66,8 @@ calculate_hargreaves <- function(metas, xprov) {
   }
   dpet <- data$tasmin * NA
   for (i in 1:dim(dpet)[2]) {
+    print("IS TS?")
+    print(is.ts(t(data$tasmin[, i, ])))
     pet_tmp <- hargreaves(
       t(data$tasmin[, i, ]), 
       t(data$tasmax[, i, ]),
@@ -104,7 +109,7 @@ calculate_thornthwaite <- function(metas, xprov) {
 }
 
 
-calculate_penman <- function(metas, xprov) {
+calculate_penman <- function(metas, xprov, method="ICID", crop="tall") {
   data <- list(
     tasmin = NULL, 
     tasmax = NULL, 
@@ -144,8 +149,8 @@ calculate_penman <- function(metas, xprov) {
       Ra = t_or_null(data$rsdt[, i, ]),
       Rs = t_or_null(data$rsds[, i, ]),
       na.rm = TRUE,
-      # method="FAO",
-      crop = "tall"  # TODO: read from params with fallback?
+      method = method,
+      crop = "tall"
     )
     d2 <- dim(pet_tmp)
     pet_tmp <- as.numeric(pet_tmp)
@@ -161,6 +166,8 @@ calculate_penman <- function(metas, xprov) {
 # ---------------------------------------------------------------------------- #
 
 params <- read_yaml(commandArgs(trailingOnly = TRUE)[1])
+ifelse(!is.null(params$method), params$method, "ICID")
+ifelse(!is.null(params$crop), params$crop, "tall")
 dir.create(params$work_dir, recursive = TRUE)
 dir.create(params$plot_dir, recursive = TRUE)
 fillfloat <- 1.e+20
@@ -183,7 +190,8 @@ for (dataset in names(grouped_meta)){
   metas <- grouped_meta[[dataset]]  # list of files for this dataset
   xprov$ancestors <- list()
   switch(params$pet_type, 
-    Penman = {pet <- calculate_penman(metas, xprov)},
+    Penman = {pet <- calculate_penman(metas, xprov,
+      method=params$method, crop=params$crop)},
     Thornthwaite = {pet <- calculate_thornthwaite(metas, xprov)},
     Hargreaves = {pet <- calculate_hargreaves(metas, xprov)},
     stop("pet_type must be one of: Penman, Hargreaves, Thornthwaite")
