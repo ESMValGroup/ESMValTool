@@ -30,7 +30,7 @@ For more detailed information, the documentation for Tool and Core is available.
 
 Get in touch! Contact information is available :ref:`here <Support-and-Contact>`.
 
-.. include: _sidebar.rst.inc
+.. include:: _sidebar.rst.inc
 
 Indices and tables
 ==================
