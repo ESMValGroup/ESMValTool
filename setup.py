@@ -24,7 +24,7 @@ REQUIREMENTS = {
         'cartopy',
         'cdo',
         'cdsapi',
-        'cf-units',
+        # 'cf-units',
         'cfgrib',
         'cftime',
         'cmocean',
@@ -32,13 +32,13 @@ REQUIREMENTS = {
         'distributed',
         'ecmwf-api-client',
         'eofs',
-        'ESMPy',  # not on PyPI
+        # 'ESMPy',  # not on PyPI
         'esmvalcore',
         'esmf-regrid>=0.10.0',  # iris-esmf-regrid #342
         'fiona',
         'fire',
         'fsspec',
-        'GDAL',
+        # 'GDAL',
         'jinja2',
         'joblib',
         'lime',
@@ -58,7 +58,7 @@ REQUIREMENTS = {
         'psy-reg>=1.5.0',
         'psy-simple>=1.5.0',
         'pyproj>=2.1',
-        'pys2index',
+        # 'pys2index',
         'python-dateutil',
         'pyyaml',
         'rasterio>=1.3.10',

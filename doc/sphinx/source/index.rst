@@ -14,6 +14,9 @@ and
 
 A tutorial is available on https://tutorial.esmvaltool.org.
 
+Add .. Brief description on ESMValTool and ESMValCore
+Add .. simplified schematic
+
 A series of video lectures has been created by `ACCESS-NRI <https://access-nri.org.au>`_.
 While these are tailored for ACCESS users, they are still very informative.
 
@@ -23,11 +26,11 @@ While these are tailored for ACCESS users, they are still very informative.
 
 |
 
-For more detailed information, the documentation is available below.
+For more detailed information, the documentation for Tool and Core is available.
 
 Get in touch! Contact information is available :ref:`here <Support-and-Contact>`.
 
-.. include:: _sidebar.rst.inc
+.. include: _sidebar.rst.inc
 
 Indices and tables
 ==================

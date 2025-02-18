@@ -50,7 +50,7 @@ if rtd_version not in ["latest", "stable", "doc"]:
 sys.path.append(os.path.dirname(__file__))
 import generate_gallery
 
-# generate_gallery.main()
+generate_gallery.main()
 
 # -- General configuration ------------------------------------------------
 
@@ -174,7 +174,7 @@ html_theme_options = {
         "image_light": "figures/ESMValTool-logo-2.png",
         "image_dark": "figures/ESMValTool-logo-2-dark.png",
     },
-    # "navbar_center": ["cross_proj_navbar"],
+    "navbar_center": ["cross_proj_navbar"],
 }
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
