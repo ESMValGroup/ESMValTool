@@ -1,6 +1,6 @@
-#--------------------------- 
+#---------------------------
 # TURBINE CHARACTERISTICS
-#--------------------------- 
+#---------------------------
 # Name: Enercon_E70_2.3MW [string]
 # Manufacturer: Enercon [string]
 # Diameter: 71 m
@@ -13,7 +13,7 @@
 # Control: pitch [pitch/stall/active_stall/flaps]
 # HubHeights: 57,64,74,85,98,113 m
 #
-#--------------------------- 
+#---------------------------
 # POWER CURVE
 # Density: 1.225 kg/m^3
 #---------------------------

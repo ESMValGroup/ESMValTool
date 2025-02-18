@@ -1,4 +1,5 @@
 """Common plot functions."""
+
 import logging
 import os
 from copy import deepcopy
@@ -19,7 +20,7 @@ def _process_axes_functions(axes, axes_functions):
     if axes_functions is None:
         return None
     output = None
-    for (func, attr) in axes_functions.items():
+    for func, attr in axes_functions.items():
         axes_function = getattr(axes, func)
 
         # Simple functions (argument directly given)
@@ -31,16 +32,16 @@ def _process_axes_functions(axes, axes_functions):
 
         # More complicated functions (args and kwargs given)
         else:
-            args = attr.get('args', [])
-            kwargs = attr.get('kwargs', {})
+            args = attr.get("args", [])
+            kwargs = attr.get("kwargs", {})
 
             # Process 'transform' kwargs
-            if 'transform' in kwargs:
-                kwargs['transform'] = getattr(axes, kwargs['transform'])
+            if "transform" in kwargs:
+                kwargs["transform"] = getattr(axes, kwargs["transform"])
             out = axes_function(*args, **kwargs)
 
         # Return legend if possible
-        if func == 'legend':
+        if func == "legend":
             output = out
     return output
 
@@ -54,23 +55,27 @@ def _check_size_of_parameters(*args):
     for arg in args:
         try:
             if len(arg_0) != len(arg):
-                raise ValueError("Invalid input: array-like parameters need "
-                                 "to have the same size")
-        except TypeError:
-            raise TypeError("Invalid input: some parameters are not "
-                            "array-like")
+                raise ValueError(
+                    "Invalid input: array-like parameters need "
+                    "to have the same size"
+                )
+        except TypeError as exc:
+            raise TypeError(
+                "Invalid input: some parameters are not array-like"
+            ) from exc
     return
 
 
 def get_path_to_mpl_style(style_file=None):
     """Get path to matplotlib style file."""
     if style_file is None:
-        style_file = 'default.mplstyle'
-    if not style_file.endswith('.mplstyle'):
-        style_file += '.mplstyle'
+        style_file = "default.mplstyle"
+    if not style_file.endswith(".mplstyle"):
+        style_file += ".mplstyle"
     base_dir = os.path.dirname(os.path.realpath(__file__))
-    filepath = os.path.join(base_dir, 'styles_python', 'matplotlib',
-                            style_file)
+    filepath = os.path.join(
+        base_dir, "styles_python", "matplotlib", style_file
+    )
     logger.debug("Using matplotlib style: %s", filepath)
     return filepath
 
@@ -78,39 +83,43 @@ def get_path_to_mpl_style(style_file=None):
 def get_dataset_style(dataset, style_file=None):
     """Retrieve the style information for the given dataset."""
     if style_file is None:
-        style_file = 'cmip5.yml'
+        style_file = "cmip5.yml"
         logger.debug("Using default style file {style_file}")
-    if not style_file.endswith('.yml'):
-        style_file += '.yml'
+    if not style_file.endswith(".yml"):
+        style_file += ".yml"
     base_dir = os.path.dirname(os.path.realpath(__file__))
-    default_dir = os.path.join(base_dir, 'styles_python')
+    default_dir = os.path.join(base_dir, "styles_python")
 
     # Check if style_file is valid
     filepath = os.path.join(default_dir, style_file)
     if os.path.isfile(filepath):
-        with open(filepath, 'r') as infile:
+        with open(filepath) as infile:
             style = yaml.safe_load(infile)
     else:
         raise FileNotFoundError(f"Cannot open style file {filepath}")
     logger.debug("Using style file %s for dataset %s", filepath, dataset)
 
     # Check if file has entry for unknown dataset
-    default_dataset = 'default'
-    options = ['color', 'dash', 'thick', 'mark', 'avgstd', 'facecolor']
+    default_dataset = "default"
+    options = ["color", "dash", "thick", "mark", "avgstd", "facecolor"]
     if default_dataset not in style:
-        raise ValueError(f"Style file {filepath} does not contain section "
-                         f"[{default_dataset}] (used for unknown datasets)")
+        raise ValueError(
+            f"Style file {filepath} does not contain section "
+            f"[{default_dataset}] (used for unknown datasets)"
+        )
     for option in options:
         if option not in style[default_dataset]:
             raise ValueError(
                 f"Style file {filepath} does not contain default information "
-                f"for '{option}' (under section [{default_dataset}])")
+                f"for '{option}' (under section [{default_dataset}])"
+            )
 
     # Check if dataset is available
     if not style.get(dataset):
         logger.warning(
-            "Dataset '%s' not found in style file, using default "
-            "entry", dataset)
+            "Dataset '%s' not found in style file, using default entry",
+            dataset,
+        )
         return style[default_dataset]
 
     # Get compulsory information
@@ -119,8 +128,11 @@ def get_dataset_style(dataset, style_file=None):
             default_option = style[default_dataset][option]
             logger.warning(
                 "No style information '%s' found for dataset '%s', using "
-                "default value '%s' for unknown datasets", option, dataset,
-                default_option)
+                "default value '%s' for unknown datasets",
+                option,
+                dataset,
+                default_option,
+            )
             style[dataset][option] = default_option
 
     return style[dataset]
@@ -131,22 +143,25 @@ def _check_cube(cube):
     if cube.ndim != 2:
         raise ValueError(
             f"Expected 2D cube, got {cube.ndim:d}D cube: "
-            f"{cube.summary(shorten=True)}")
-    required_coords = ['latitude', 'longitude']
+            f"{cube.summary(shorten=True)}"
+        )
+    required_coords = ["latitude", "longitude"]
     for coord_name in required_coords:
         if not cube.coords(coord_name, dim_coords=True):
             raise iris.exceptions.CoordinateNotFoundError(
                 f"Cube {cube.summary(shorten=True)} does not contain "
                 f"necessary dimensional coordinate '{coord_name}' for "
-                f"plotting global map plot")
+                f"plotting global map plot"
+            )
 
 
 def _truncate_colormap(cmap_name, minval=0.0, maxval=1.0, n_colors=100):
     """Truncate colormaps."""
     cmap = plt.get_cmap(cmap_name)
     new_cmap = colors.LinearSegmentedColormap.from_list(
-        f'trunc({cmap_name},{minval:.2f},{maxval:.2f})',
-        cmap(np.linspace(minval, maxval, n_colors)))
+        f"trunc({cmap_name},{minval:.2f},{maxval:.2f})",
+        cmap(np.linspace(minval, maxval, n_colors)),
+    )
     return new_cmap
 
 
@@ -155,7 +170,8 @@ def _get_centered_cmap(cmap_name, vmin, vmax, center, n_colors=100):
     if not vmin < center < vmax:
         raise ValueError(
             f"Expected monotonic increase vmin < center < vmax, got vmin = "
-            f"{vmin}, vmax = {vmax}, center = {center}")
+            f"{vmin}, vmax = {vmax}, center = {center}"
+        )
     if center - vmin > vmax - center:
         minval = 0.0
         maxval = 0.5 + (vmax - center) / (center - vmin) / 2.0
@@ -165,12 +181,14 @@ def _get_centered_cmap(cmap_name, vmin, vmax, center, n_colors=100):
     return _truncate_colormap(cmap_name, minval, maxval, n_colors)
 
 
-def global_contourf(cube,
-                    cbar_center=None,
-                    cbar_label=None,
-                    cbar_range=None,
-                    cbar_ticks=None,
-                    **kwargs):
+def global_contourf(
+    cube,
+    cbar_center=None,
+    cbar_label=None,
+    cbar_range=None,
+    cbar_ticks=None,
+    **kwargs,
+):
     """Plot global filled contour plot.
 
     Note
@@ -210,31 +228,35 @@ def global_contourf(cube,
 
     """
     kwargs = deepcopy(kwargs)
-    logger.debug("Plotting global filled contour plot for cube %s",
-                 cube.summary(shorten=True))
+    logger.debug(
+        "Plotting global filled contour plot for cube %s",
+        cube.summary(shorten=True),
+    )
     _check_cube(cube)
 
     # Adapt colormap if necessary
     if cbar_center is not None:
         if cbar_range is None:
             raise ValueError(
-                "'cbar_center' can only be used if 'cbar_range' is given")
-        cmap = kwargs.get('cmap', plt.get_cmap())
+                "'cbar_center' can only be used if 'cbar_range' is given"
+            )
+        cmap = kwargs.get("cmap", plt.get_cmap())
         n_colors = cbar_range[2] if len(cbar_range) > 2 else 100
-        cmap = _get_centered_cmap(cmap, cbar_range[0], cbar_range[1],
-                                  cbar_center, n_colors)
-        kwargs['cmap'] = cmap
+        cmap = _get_centered_cmap(
+            cmap, cbar_range[0], cbar_range[1], cbar_center, n_colors
+        )
+        kwargs["cmap"] = cmap
 
     # Create plot
     if cbar_range is not None:
         levels = np.linspace(*cbar_range)
-        kwargs['levels'] = levels
+        kwargs["levels"] = levels
     axes = plt.axes(projection=ccrs.Robinson(central_longitude=10))
     plt.sca(axes)
 
     # see https://github.com/SciTools/cartopy/issues/2457
     # and https://github.com/SciTools/cartopy/issues/2468
-    kwargs['transform_first'] = True
+    kwargs["transform_first"] = True
     npx = da if cube.has_lazy_data() else np
     map_plot = iris.plot.contourf(
         cube.copy(npx.ma.filled(cube.core_data(), np.nan)),
@@ -242,18 +264,17 @@ def global_contourf(cube,
     )
 
     # Appearance
-    axes.gridlines(color='lightgrey', alpha=0.5)
+    axes.gridlines(color="lightgrey", alpha=0.5)
     axes.coastlines()
     axes.set_global()
-    colorbar = plt.colorbar(orientation='horizontal', aspect=30)
+    colorbar = plt.colorbar(orientation="horizontal", aspect=30)
     if cbar_ticks is not None:
         colorbar.set_ticks(cbar_ticks)
         colorbar.set_ticklabels([str(tick) for tick in cbar_ticks])
     elif cbar_range is not None:
-        ticks = np.linspace(*cbar_range[:2],
-                            10,
-                            endpoint=False,
-                            dtype=type(cbar_range[0]))
+        ticks = np.linspace(
+            *cbar_range[:2], 10, endpoint=False, dtype=type(cbar_range[0])
+        )
         colorbar.set_ticks(ticks)
         colorbar.set_ticklabels([str(tick) for tick in ticks])
     if cbar_label is not None:
@@ -261,11 +282,9 @@ def global_contourf(cube,
     return map_plot
 
 
-def global_pcolormesh(cube,
-                      cbar_center=None,
-                      cbar_label=None,
-                      cbar_ticks=None,
-                      **kwargs):
+def global_pcolormesh(
+    cube, cbar_center=None, cbar_label=None, cbar_ticks=None, **kwargs
+):
     """Plot global color mesh.
 
     Note
@@ -302,20 +321,23 @@ def global_pcolormesh(cube,
 
     """
     kwargs = deepcopy(kwargs)
-    logger.debug("Plotting global filled contour plot for cube %s",
-                 cube.summary(shorten=True))
+    logger.debug(
+        "Plotting global filled contour plot for cube %s",
+        cube.summary(shorten=True),
+    )
     _check_cube(cube)
 
     # Adapt colormap if necessary
     if cbar_center is not None:
-        if not ('vmin' in kwargs and 'vmax' in kwargs):
+        if not ("vmin" in kwargs and "vmax" in kwargs):
             raise ValueError(
-                "'cbar_center' can only be used if 'vmin' and 'vmax' are "
-                "given")
-        cmap = kwargs.get('cmap', plt.get_cmap())
-        cmap = _get_centered_cmap(cmap, kwargs['vmin'], kwargs['vmax'],
-                                  cbar_center)
-        kwargs['cmap'] = cmap
+                "'cbar_center' can only be used if 'vmin' and 'vmax' are given"
+            )
+        cmap = kwargs.get("cmap", plt.get_cmap())
+        cmap = _get_centered_cmap(
+            cmap, kwargs["vmin"], kwargs["vmax"], cbar_center
+        )
+        kwargs["cmap"] = cmap
 
     # Create plot
     axes = plt.axes(projection=ccrs.Robinson(central_longitude=10))
@@ -323,10 +345,10 @@ def global_pcolormesh(cube,
     map_plot = iris.plot.pcolormesh(cube, **kwargs)
 
     # Appearance
-    axes.gridlines(color='lightgrey', alpha=0.5)
+    axes.gridlines(color="lightgrey", alpha=0.5)
     axes.coastlines()
     axes.set_global()
-    colorbar = plt.colorbar(orientation='horizontal', aspect=30)
+    colorbar = plt.colorbar(orientation="horizontal", aspect=30)
     if cbar_ticks is not None:
         colorbar.set_ticks(cbar_ticks)
         colorbar.set_ticklabels([str(tick) for tick in cbar_ticks])
@@ -389,48 +411,52 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
     """
     # Allowed kwargs
     allowed_kwargs = [
-        'mpl_style_file',
-        'dataset_style_file',
-        'plot_kwargs',
-        'save_kwargs',
-        'axes_functions',
+        "mpl_style_file",
+        "dataset_style_file",
+        "plot_kwargs",
+        "save_kwargs",
+        "axes_functions",
     ]
     for kwarg in kwargs:
         if kwarg not in allowed_kwargs:
-            raise TypeError("{} is not a valid keyword argument".format(kwarg))
+            raise TypeError(f"{kwarg} is not a valid keyword argument")
 
     # Check parameters
-    _check_size_of_parameters(x_data, y_data, datasets,
-                              kwargs.get('plot_kwargs', x_data))
+    _check_size_of_parameters(
+        x_data, y_data, datasets, kwargs.get("plot_kwargs", x_data)
+    )
     empty_dict = [{} for _ in x_data]
 
     # Create matplotlib instances
-    plt.style.use(get_path_to_mpl_style(kwargs.get('mpl_style_file')))
+    plt.style.use(get_path_to_mpl_style(kwargs.get("mpl_style_file")))
     (fig, axes) = plt.subplots()
 
     # Plot data
-    for (idx, dataset) in enumerate(datasets):
-        style = get_dataset_style(dataset, kwargs.get('dataset_style_file'))
+    for idx, dataset in enumerate(datasets):
+        style = get_dataset_style(dataset, kwargs.get("dataset_style_file"))
 
         # Fix problem when plotting ps file
-        facecolor = style['color'] if filepath.endswith('ps') else \
-            style['facecolor']
+        facecolor = (
+            style["color"] if filepath.endswith("ps") else style["facecolor"]
+        )
 
         # Plot
-        axes.plot(x_data[idx],
-                  y_data[idx],
-                  markeredgecolor=style['color'],
-                  markerfacecolor=facecolor,
-                  marker=style['mark'],
-                  **(kwargs.get('plot_kwargs', empty_dict)[idx]))
+        axes.plot(
+            x_data[idx],
+            y_data[idx],
+            markeredgecolor=style["color"],
+            markerfacecolor=facecolor,
+            marker=style["mark"],
+            **(kwargs.get("plot_kwargs", empty_dict)[idx]),
+        )
 
     # Customize plot
-    legend = _process_axes_functions(axes, kwargs.get('axes_functions'))
+    legend = _process_axes_functions(axes, kwargs.get("axes_functions"))
 
     # Save plot
-    savefig_kwargs = dict(kwargs.get('save_kwargs', {}))
+    savefig_kwargs = dict(kwargs.get("save_kwargs", {}))
     if legend is not None:
-        savefig_kwargs['bbox_extra_artists'] = [legend]
+        savefig_kwargs["bbox_extra_artists"] = [legend]
     fig.savefig(filepath, **savefig_kwargs)
     logger.info("Wrote %s", filepath)
     plt.close()
@@ -474,42 +500,44 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
     """
     # Allowed kwargs
     allowed_kwargs = [
-        'mpl_style_file',
-        'plot_kwargs',
-        'save_kwargs',
-        'axes_functions',
+        "mpl_style_file",
+        "plot_kwargs",
+        "save_kwargs",
+        "axes_functions",
     ]
     for kwarg in kwargs:
         if kwarg not in allowed_kwargs:
-            raise TypeError("{} is not a valid keyword argument".format(kwarg))
+            raise TypeError(f"{kwarg} is not a valid keyword argument")
 
     # Check parameters
-    _check_size_of_parameters(x_data, y_data,
-                              kwargs.get('plot_kwargs', x_data))
+    _check_size_of_parameters(
+        x_data, y_data, kwargs.get("plot_kwargs", x_data)
+    )
     empty_dict = [{} for _ in x_data]
 
     # Create matplotlib instances
-    plt.style.use(get_path_to_mpl_style(kwargs.get('mpl_style_file')))
+    plt.style.use(get_path_to_mpl_style(kwargs.get("mpl_style_file")))
     (fig, axes) = plt.subplots()
 
     # Plot data
-    for (idx, x_vals) in enumerate(x_data):
-        plot_kwargs = kwargs.get('plot_kwargs', empty_dict)[idx]
+    for idx, x_vals in enumerate(x_data):
+        plot_kwargs = kwargs.get("plot_kwargs", empty_dict)[idx]
 
         # Fix problem when plotting ps file
-        if 'markerfacecolor' in plot_kwargs and filepath.endswith('ps'):
-            plot_kwargs.pop('markerfacecolor')
+        if "markerfacecolor" in plot_kwargs and filepath.endswith("ps"):
+            plot_kwargs.pop("markerfacecolor")
 
         # Plot
-        axes.plot(x_vals, y_data[idx],
-                  **(kwargs.get('plot_kwargs', empty_dict)[idx]))
+        axes.plot(
+            x_vals, y_data[idx], **(kwargs.get("plot_kwargs", empty_dict)[idx])
+        )
 
     # Customize plot
-    legend = _process_axes_functions(axes, kwargs.get('axes_functions'))
+    legend = _process_axes_functions(axes, kwargs.get("axes_functions"))
 
     # Save plot
-    fig.savefig(filepath,
-                bbox_extra_artists=[legend],
-                **kwargs.get('save_kwargs', {}))
+    fig.savefig(
+        filepath, bbox_extra_artists=[legend], **kwargs.get("save_kwargs", {})
+    )
     logger.info("Wrote %s", filepath)
     plt.close()

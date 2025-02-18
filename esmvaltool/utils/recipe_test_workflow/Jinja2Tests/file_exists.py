@@ -15,6 +15,7 @@ Cylc supports custom filters, tests and globals as described here:
 https://cylc.github.io/cylc-doc/stable/html/user-guide/writing-workflows/jinja2.html#custom-jinja2-filters-tests-and-globals
 
 """
+
 from pathlib import Path
 
 

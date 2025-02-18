@@ -1,4 +1,5 @@
 """Tests for the module :mod:`esmvaltool.diag_scripts.shared.iris_helpers`."""
+
 from unittest import mock
 
 import iris
@@ -11,69 +12,81 @@ from cf_units import Unit
 
 from esmvaltool.diag_scripts.shared import iris_helpers as ih
 
-LONG_NAME = 'x'
+LONG_NAME = "x"
 DIM_COORD_1 = iris.coords.DimCoord(np.arange(3.0) - 1.0, long_name=LONG_NAME)
 AUX_COORD_1 = iris.coords.AuxCoord(np.arange(3.0) - 1.0, long_name=LONG_NAME)
-AUX_COORD_2 = iris.coords.AuxCoord([10.0, 20.0, 30.0], long_name='longer')
+AUX_COORD_2 = iris.coords.AuxCoord([10.0, 20.0, 30.0], long_name="longer")
 SMALL_COORD = iris.coords.DimCoord([0.0], long_name=LONG_NAME)
-LONG_COORD_1 = iris.coords.AuxCoord([-1.0, 0.0, 1.0, 1.], long_name=LONG_NAME)
-LONG_COORD_2 = iris.coords.DimCoord([-1.0, -0.5, 0.0, 1.0],
-                                    long_name=LONG_NAME)
+LONG_COORD_1 = iris.coords.AuxCoord([-1.0, 0.0, 1.0, 1.0], long_name=LONG_NAME)
+LONG_COORD_2 = iris.coords.DimCoord(
+    [-1.0, -0.5, 0.0, 1.0], long_name=LONG_NAME
+)
 WRONG_COORD = iris.coords.DimCoord([-200.0, +200.0], long_name=LONG_NAME)
-SCALAR_COORD = iris.coords.AuxCoord(2.71, long_name='e')
+SCALAR_COORD = iris.coords.AuxCoord(2.71, long_name="e")
 DUP_COORD = iris.coords.AuxCoord([-1.0, 0.0, 1.0, 1.0], long_name=LONG_NAME)
 CUBE_1 = iris.cube.Cube(
     np.ma.masked_invalid([-1.0, np.nan, 2.0]),
-    var_name='a',
-    attributes={'1': '2'},
+    var_name="a",
+    attributes={"1": "2"},
     dim_coords_and_dims=[(DIM_COORD_1, 0)],
-    aux_coords_and_dims=[(SCALAR_COORD, []), (AUX_COORD_2, 0)])
+    aux_coords_and_dims=[(SCALAR_COORD, []), (AUX_COORD_2, 0)],
+)
 CUBE_2 = iris.cube.Cube(
     np.ma.masked_invalid([-1.0, np.nan, 2.0]),
-    var_name='a',
-    attributes={'1': '2'},
+    var_name="a",
+    attributes={"1": "2"},
     dim_coords_and_dims=[(DIM_COORD_1, 0)],
-    aux_coords_and_dims=[(SCALAR_COORD, [])])
+    aux_coords_and_dims=[(SCALAR_COORD, [])],
+)
 CUBE_3 = iris.cube.Cube(
     np.ma.masked_invalid([np.nan, 3.14, np.nan]),
-    var_name='a',
-    attributes={'1': '2'},
-    dim_coords_and_dims=[(DIM_COORD_1, 0)])
+    var_name="a",
+    attributes={"1": "2"},
+    dim_coords_and_dims=[(DIM_COORD_1, 0)],
+)
 CUBE_4 = iris.cube.Cube(
     np.ma.masked_invalid([1.0, 2.0, 3.0, 3.0]),
-    var_name='a',
-    attributes={'1': '2'},
-    aux_coords_and_dims=[(SCALAR_COORD, []), (LONG_COORD_1, 0)])
+    var_name="a",
+    attributes={"1": "2"},
+    aux_coords_and_dims=[(SCALAR_COORD, []), (LONG_COORD_1, 0)],
+)
 CUBE_5 = iris.cube.Cube(
     np.ma.masked_invalid([np.nan, 3.14, np.nan, np.nan]),
-    var_name='a',
-    attributes={'1': '2'},
-    aux_coords_and_dims=[(LONG_COORD_1, 0)])
-CUBE_SMALL = iris.cube.Cube([3.14],
-                            var_name='a',
-                            attributes={'1': '2'},
-                            dim_coords_and_dims=[(SMALL_COORD, 0)])
+    var_name="a",
+    attributes={"1": "2"},
+    aux_coords_and_dims=[(LONG_COORD_1, 0)],
+)
+CUBE_SMALL = iris.cube.Cube(
+    [3.14],
+    var_name="a",
+    attributes={"1": "2"},
+    dim_coords_and_dims=[(SMALL_COORD, 0)],
+)
 CUBE_LONG = iris.cube.Cube(
     np.ma.masked_invalid([-1.0, np.nan, np.nan, 2.0]),
-    var_name='a',
-    attributes={'1': '2'},
+    var_name="a",
+    attributes={"1": "2"},
     dim_coords_and_dims=[(LONG_COORD_2, 0)],
-    aux_coords_and_dims=[(SCALAR_COORD, [])])
+    aux_coords_and_dims=[(SCALAR_COORD, [])],
+)
 CUBE_SMALL_LONG = iris.cube.Cube(
     np.ma.masked_invalid([np.nan, np.nan, 3.14, np.nan]),
-    var_name='a',
-    attributes={'1': '2'},
-    dim_coords_and_dims=[(LONG_COORD_2, 0)])
+    var_name="a",
+    attributes={"1": "2"},
+    dim_coords_and_dims=[(LONG_COORD_2, 0)],
+)
 CUBE_WRONG = iris.cube.Cube(
     np.arange(2.0),
-    var_name='a',
-    attributes={'1': '2'},
-    dim_coords_and_dims=[(WRONG_COORD, 0)])
+    var_name="a",
+    attributes={"1": "2"},
+    dim_coords_and_dims=[(WRONG_COORD, 0)],
+)
 CUBE_DUP = iris.cube.Cube(
     np.ma.masked_invalid([np.nan, 3.14, 2.71, 6.28]),
-    var_name='a',
-    attributes={'1': '2'},
-    aux_coords_and_dims=[(DUP_COORD, 0)])
+    var_name="a",
+    attributes={"1": "2"},
+    aux_coords_and_dims=[(DUP_COORD, 0)],
+)
 TEST_TRANSFORM_COORD_TO_REF = [
     (DIM_COORD_1, [CUBE_1, CUBE_1], [CUBE_2, CUBE_2]),
     (DIM_COORD_1, [CUBE_SMALL, CUBE_1], [CUBE_3, CUBE_2]),
@@ -110,7 +123,7 @@ TEST_TRANSFORM_COORD_TO_REF = [
 ]
 
 
-@pytest.mark.parametrize('ref_coord,cubes,output', TEST_TRANSFORM_COORD_TO_REF)
+@pytest.mark.parametrize("ref_coord,cubes,output", TEST_TRANSFORM_COORD_TO_REF)
 def test_transform_coord_to_ref(ref_coord, cubes, output):
     """Test transforming coordinate to reference."""
     # ValueErrors
@@ -126,16 +139,18 @@ def test_transform_coord_to_ref(ref_coord, cubes, output):
     assert new_cubes == output
 
 
-DIM_COORD_2 = iris.coords.DimCoord(np.arange(3.0) - 1.0, long_name='aaa')
+DIM_COORD_2 = iris.coords.DimCoord(np.arange(3.0) - 1.0, long_name="aaa")
 DIM_COORD_3 = iris.coords.DimCoord(np.arange(3.0) + 1.0, long_name=LONG_NAME)
 CUBE_6 = iris.cube.Cube(
     np.ma.arange(3.0) + 100.0,
-    var_name='a',
-    dim_coords_and_dims=[(DIM_COORD_2, 0)])
+    var_name="a",
+    dim_coords_and_dims=[(DIM_COORD_2, 0)],
+)
 CUBE_7 = iris.cube.Cube(
     np.ma.arange(3.0) - 100.0,
-    var_name='a',
-    dim_coords_and_dims=[(DIM_COORD_3, 0)])
+    var_name="a",
+    dim_coords_and_dims=[(DIM_COORD_3, 0)],
+)
 TEST_CHECK_COORDINATE = [
     ([CUBE_1, CUBE_1, CUBE_1], DIM_COORD_1.points),
     ([CUBE_1], DIM_COORD_1.points),
@@ -144,7 +159,7 @@ TEST_CHECK_COORDINATE = [
 ]
 
 
-@pytest.mark.parametrize('cubes,output', TEST_CHECK_COORDINATE)
+@pytest.mark.parametrize("cubes,output", TEST_CHECK_COORDINATE)
 def test_check_coordinate(cubes, output):
     """Test checking of coordinates."""
     if isinstance(output, type):
@@ -155,42 +170,51 @@ def test_check_coordinate(cubes, output):
         assert np.array_equal(out, output)
 
 
-DICT_1 = {'a': 'b', 'c': 'd'}
-DICT_2 = {'short_name': 'x'}
-DICT_3 = {'var_name': 'x'}
+DICT_1 = {"a": "b", "c": "d"}
+DICT_2 = {"short_name": "x"}
+DICT_3 = {"var_name": "x"}
 TEST_CONVERT_TO_IRIS = [
     (DICT_1, DICT_1),
     (DICT_2, DICT_3),
     (DICT_3, DICT_3),
-    ({
-        **DICT_1,
-        **DICT_2,
-    }, {
-        **DICT_1,
-        **DICT_3,
-    }),
-    ({
-        **DICT_1,
-        **DICT_3,
-    }, {
-        **DICT_1,
-        **DICT_3,
-    }),
-    ({
-        **DICT_1,
-        **DICT_2,
-        'var_name': ':(',
-    }, {
-        **DICT_1,
-        **DICT_3,
-    }),
+    (
+        {
+            **DICT_1,
+            **DICT_2,
+        },
+        {
+            **DICT_1,
+            **DICT_3,
+        },
+    ),
+    (
+        {
+            **DICT_1,
+            **DICT_3,
+        },
+        {
+            **DICT_1,
+            **DICT_3,
+        },
+    ),
+    (
+        {
+            **DICT_1,
+            **DICT_2,
+            "var_name": ":(",
+        },
+        {
+            **DICT_1,
+            **DICT_3,
+        },
+    ),
 ]
 
 
-@pytest.mark.parametrize('dict_in,dict_out', TEST_CONVERT_TO_IRIS)
+@pytest.mark.parametrize("dict_in,dict_out", TEST_CONVERT_TO_IRIS)
 def test_convert_to_iris(dict_in, dict_out):
     """Test converting metadata dictionary checking of coordinates."""
-    if 'short_name' in dict_in and 'var_name' in dict_in:
+    if "short_name" in dict_in and "var_name" in dict_in:
         with pytest.raises(KeyError):
             ih.convert_to_iris(dict_in)
         return
@@ -199,130 +223,153 @@ def test_convert_to_iris(dict_in, dict_out):
     assert new_dict is not dict_in
 
 
-@mock.patch('esmvaltool.diag_scripts.shared.iris_helpers.iris.load_cube',
-            autospec=True)
+@mock.patch(
+    "esmvaltool.diag_scripts.shared.iris_helpers.iris.load_cube", autospec=True
+)
 def test_get_mean_cube(mock_load_cube):
     """Test calculation of mean cubes."""
     datasets = [
-        {'test': 'x', 'filename': 'a/b.nc'},
-        {'test': 'y', 'filename': 'a/b/c.nc'},
-        {'test': 'z', 'filename': 'c/d.nc'},
+        {"test": "x", "filename": "a/b.nc"},
+        {"test": "y", "filename": "a/b/c.nc"},
+        {"test": "z", "filename": "c/d.nc"},
     ]
     cube = CUBE_1.copy([-4.0, 2.0, -4.0])
-    cube.coord(DIM_COORD_1).attributes = {'test': 1}
-    cube.cell_methods = [iris.coords.CellMethod('mean', coords=LONG_NAME)]
+    cube.coord(DIM_COORD_1).attributes = {"test": 1}
+    cube.cell_methods = [iris.coords.CellMethod("mean", coords=LONG_NAME)]
     cubes = [CUBE_1, CUBE_2, cube]
     mock_load_cube.side_effect = cubes
     cube_out = iris.cube.Cube(
         [-2.0, 2.0, 0.0],
-        var_name='a',
+        var_name="a",
         dim_coords_and_dims=[(DIM_COORD_1, 0)],
-        cell_methods=[iris.coords.CellMethod('mean', coords='cube_label')],
+        cell_methods=[iris.coords.CellMethod("mean", coords="cube_label")],
     )
     result = ih.get_mean_cube(datasets)
     assert result == cube_out
 
 
 TEST_IRIS_PROJECT_CONSTRAINT = [
-    (['ONE'], False, [2.0, 6.0], ['a', 'e']),
-    (['ONE'], True, [3.0, 4.0, 5.0], ['b', 'c', 'd']),
-    (['ONE', 'THREE'], False, [2.0, 4.0, 6.0], ['a', 'c', 'e']),
-    (['ONE', 'THREE'], True, [3.0, 5.0], ['b', 'd']),
+    (["ONE"], False, [2.0, 6.0], ["a", "e"]),
+    (["ONE"], True, [3.0, 4.0, 5.0], ["b", "c", "d"]),
+    (["ONE", "THREE"], False, [2.0, 4.0, 6.0], ["a", "c", "e"]),
+    (["ONE", "THREE"], True, [3.0, 5.0], ["b", "d"]),
 ]
 
 
-@pytest.mark.parametrize('constr,negate,data,points',
-                         TEST_IRIS_PROJECT_CONSTRAINT)
+@pytest.mark.parametrize(
+    "constr,negate,data,points", TEST_IRIS_PROJECT_CONSTRAINT
+)
 def test_iris_project_constraint(constr, negate, data, points):
     """Test iris constraint for projects."""
-    input_data = [{
-        'project': 'ONE',
-        'dataset': 'a',
-    }, {
-        'project': 'TWO',
-        'dataset': 'b',
-    }, {
-        'project': 'THREE',
-        'dataset': 'c',
-    }, {
-        'project': 'ONE',
-        'dataset': 'e',
-    }]
-    dataset_coord = iris.coords.AuxCoord(['a', 'b', 'c', 'd', 'e'],
-                                         long_name='dataset')
+    input_data = [
+        {
+            "project": "ONE",
+            "dataset": "a",
+        },
+        {
+            "project": "TWO",
+            "dataset": "b",
+        },
+        {
+            "project": "THREE",
+            "dataset": "c",
+        },
+        {
+            "project": "ONE",
+            "dataset": "e",
+        },
+    ]
+    dataset_coord = iris.coords.AuxCoord(
+        ["a", "b", "c", "d", "e"], long_name="dataset"
+    )
     cube = iris.cube.Cube(
-        np.arange(5.0) + 2.0, aux_coords_and_dims=[(dataset_coord, 0)])
+        np.arange(5.0) + 2.0, aux_coords_and_dims=[(dataset_coord, 0)]
+    )
     new_cube = iris.cube.Cube(
         data,
-        aux_coords_and_dims=[(iris.coords.AuxCoord(
-            points, long_name='dataset'), 0)])
+        aux_coords_and_dims=[
+            (iris.coords.AuxCoord(points, long_name="dataset"), 0)
+        ],
+    )
     constraint = ih.iris_project_constraint(constr, input_data, negate=negate)
     assert cube.extract(constraint) == new_cube
 
 
 ATTRS = [
     {
-        'test': 1,
-        'oh': 'yeah',
+        "test": 1,
+        "oh": "yeah",
     },
     {
-        'a2': 'c2',
+        "a2": "c2",
     },
 ]
 VAR_ATTRS = [
     {
-        'var_name': 'var',
-        'long_name': 'LOOONG NAME',
+        "var_name": "var",
+        "long_name": "LOOONG NAME",
     },
     {
-        'standard_name': 'air_temperature',
-        'units': 'K',
+        "standard_name": "air_temperature",
+        "units": "K",
     },
 ]
-DATSET_COORD_1 = iris.coords.AuxCoord(['x', 'b', 'c', 'a', 'y', 'z'],
-                                      long_name='dataset')
-DATSET_COORD_1_SORTED = iris.coords.AuxCoord(['a', 'b', 'c', 'x', 'y', 'z'],
-                                             long_name='dataset')
-DATSET_COORD_2 = iris.coords.AuxCoord(['t', 'w', 'z', 'b', 'x'],
-                                      long_name='dataset')
-DATSET_COORD_3 = iris.coords.AuxCoord(['r', 's'], long_name='dataset')
-DATSET_COORD_4 = iris.coords.AuxCoord(['c', 'c', 'b', 'a'],
-                                      long_name='dataset')
-DATSET_COORD_5 = iris.coords.AuxCoord(['b', 'x', 'z'], long_name='dataset')
+DATSET_COORD_1 = iris.coords.AuxCoord(
+    ["x", "b", "c", "a", "y", "z"], long_name="dataset"
+)
+DATSET_COORD_1_SORTED = iris.coords.AuxCoord(
+    ["a", "b", "c", "x", "y", "z"], long_name="dataset"
+)
+DATSET_COORD_2 = iris.coords.AuxCoord(
+    ["t", "w", "z", "b", "x"], long_name="dataset"
+)
+DATSET_COORD_3 = iris.coords.AuxCoord(["r", "s"], long_name="dataset")
+DATSET_COORD_4 = iris.coords.AuxCoord(
+    ["c", "c", "b", "a"], long_name="dataset"
+)
+DATSET_COORD_5 = iris.coords.AuxCoord(["b", "x", "z"], long_name="dataset")
 CUBE_DAT_1 = iris.cube.Cube(
     np.arange(6.0) - 2.0,
     aux_coords_and_dims=[(DATSET_COORD_1, 0)],
     attributes=ATTRS[0],
-    **VAR_ATTRS[0])
-CUBE_DAT_1_SORTED = iris.cube.Cube([1.0, -1.0, 0.0, -2.0, 2.0, 3.0],
-                                   aux_coords_and_dims=[(DATSET_COORD_1_SORTED,
-                                                         0)],
-                                   attributes=ATTRS[0],
-                                   **VAR_ATTRS[0])
-CUBE_DAT_1_OUT = iris.cube.Cube([-1.0, -2.0, 3.0],
-                                aux_coords_and_dims=[(DATSET_COORD_5, 0)],
-                                attributes=ATTRS[0],
-                                **VAR_ATTRS[0])
+    **VAR_ATTRS[0],
+)
+CUBE_DAT_1_SORTED = iris.cube.Cube(
+    [1.0, -1.0, 0.0, -2.0, 2.0, 3.0],
+    aux_coords_and_dims=[(DATSET_COORD_1_SORTED, 0)],
+    attributes=ATTRS[0],
+    **VAR_ATTRS[0],
+)
+CUBE_DAT_1_OUT = iris.cube.Cube(
+    [-1.0, -2.0, 3.0],
+    aux_coords_and_dims=[(DATSET_COORD_5, 0)],
+    attributes=ATTRS[0],
+    **VAR_ATTRS[0],
+)
 CUBE_DAT_2 = iris.cube.Cube(
     np.ma.masked_invalid([np.nan, 0.0, np.nan, 3.14, 2.71]),
     aux_coords_and_dims=[(DATSET_COORD_2, 0)],
     attributes=ATTRS[1],
-    **VAR_ATTRS[1])
+    **VAR_ATTRS[1],
+)
 CUBE_DAT_2_OUT = iris.cube.Cube(
     np.ma.masked_invalid([3.14, 2.71, np.nan]),
     aux_coords_and_dims=[(DATSET_COORD_5, 0)],
     attributes=ATTRS[1],
-    **VAR_ATTRS[1])
+    **VAR_ATTRS[1],
+)
 CUBE_DAT_3 = iris.cube.Cube(
     np.arange(2.0),
     aux_coords_and_dims=[(DATSET_COORD_3, 0)],
     attributes=ATTRS[0],
-    **VAR_ATTRS[0])
+    **VAR_ATTRS[0],
+)
 CUBE_DAT_4 = iris.cube.Cube(
     np.ma.masked_invalid([np.nan, 2.0, 3.0, 42.0]),
     aux_coords_and_dims=[(DATSET_COORD_4, 0)],
     attributes=ATTRS[1],
-    **VAR_ATTRS[1])
+    **VAR_ATTRS[1],
+)
 TEST_INTERSECT_DATASET_COORDS = [
     ([CUBE_DAT_1, CUBE_1], iris.exceptions.CoordinateNotFoundError),
     ([CUBE_DAT_1, CUBE_DAT_4], ValueError),
@@ -334,7 +381,7 @@ TEST_INTERSECT_DATASET_COORDS = [
 ]
 
 
-@pytest.mark.parametrize('cubes,output', TEST_INTERSECT_DATASET_COORDS)
+@pytest.mark.parametrize("cubes,output", TEST_INTERSECT_DATASET_COORDS)
 def test_intersect_dataset_coords(cubes, output):
     """Test intersecting dataset coordinates."""
     # ValueErrors
@@ -352,16 +399,16 @@ def test_intersect_dataset_coords(cubes, output):
 
 def test_prepare_cube_for_merging():
     """Test preprocessing cubes before merging."""
-    label = 'abcde'
-    aux_coord = iris.coords.AuxCoord(label,
-                                     var_name='cube_label',
-                                     long_name='cube_label')
+    label = "abcde"
+    aux_coord = iris.coords.AuxCoord(
+        label, var_name="cube_label", long_name="cube_label"
+    )
     cube_in = CUBE_1.copy()
-    cube_in.coord(DIM_COORD_1).attributes = {'test_attr': 1}
-    cube_in.cell_methods = [iris.coords.CellMethod('mean', coords=LONG_NAME)]
+    cube_in.coord(DIM_COORD_1).attributes = {"test_attr": 1}
+    cube_in.cell_methods = [iris.coords.CellMethod("mean", coords=LONG_NAME)]
     cube_out = iris.cube.Cube(
         np.ma.masked_invalid([-1.0, np.nan, 2.0]),
-        var_name='a',
+        var_name="a",
         dim_coords_and_dims=[(DIM_COORD_1, 0)],
         aux_coords_and_dims=[(aux_coord, [])],
     )
@@ -371,13 +418,13 @@ def test_prepare_cube_for_merging():
 
 
 DIM_COORD_4 = DIM_COORD_1.copy([100.0, 150.0, 160.0])
-DIM_COORD_4.rename('time')
+DIM_COORD_4.rename("time")
 DIM_COORD_LONGEST = DIM_COORD_1.copy([-200.0, -1.0, 0.0, 1.0, 2.0, 3.0, 200.0])
 CUBE_8 = CUBE_1.copy()
 CUBE_8.coord(LONG_NAME).points = np.array([100.0, 150.0, 160.0])
-CUBE_8.coord(LONG_NAME).rename('time')
+CUBE_8.coord(LONG_NAME).rename("time")
 CUBE_WRONG_COORD = CUBE_WRONG.copy()
-CUBE_WRONG_COORD.coord(LONG_NAME).rename('wrooong')
+CUBE_WRONG_COORD.coord(LONG_NAME).rename("wrooong")
 TEST_UNIFY_1D_CUBES = [
     ([CUBE_1, iris.cube.Cube([[1.0]])], LONG_NAME, ValueError),
     ([CUBE_1, iris.cube.Cube(0.0)], LONG_NAME, ValueError),
@@ -393,17 +440,19 @@ TEST_UNIFY_1D_CUBES = [
     ),
     ([CUBE_1, CUBE_4, CUBE_3], LONG_NAME, ValueError),
     ([CUBE_7, CUBE_1, CUBE_WRONG], LONG_NAME, DIM_COORD_LONGEST),
-    ([CUBE_8], 'time', DIM_COORD_4),
+    ([CUBE_8], "time", DIM_COORD_4),
 ]
 
 
-@pytest.mark.parametrize('cubes,coord_name,output', TEST_UNIFY_1D_CUBES)
-@mock.patch.object(ih, '_transform_coord_to_ref', autospec=True)
+@pytest.mark.parametrize("cubes,coord_name,output", TEST_UNIFY_1D_CUBES)
+@mock.patch.object(ih, "_transform_coord_to_ref", autospec=True)
 @mock.patch(
-    'esmvaltool.diag_scripts.shared.io.iris.util.unify_time_units',
-    autospec=True)
-def test_unify_1d_cubes(mock_unify_time, mock_transform, cubes, coord_name,
-                        output):
+    "esmvaltool.diag_scripts.shared.io.iris.util.unify_time_units",
+    autospec=True,
+)
+def test_unify_1d_cubes(
+    mock_unify_time, mock_transform, cubes, coord_name, output
+):
     """Test unifying 1D cubes."""
     # ValueErrors
     if isinstance(output, type):
@@ -416,7 +465,7 @@ def test_unify_1d_cubes(mock_unify_time, mock_transform, cubes, coord_name,
     ih.unify_1d_cubes(cubes, coord_name)
     assert mock_transform.call_args_list == [mock.call(cubes, output)]
     mock_transform.reset_mock()
-    if coord_name == 'time':
+    if coord_name == "time":
         assert mock_unify_time.call_count == 1
     else:
         assert not mock_unify_time.called
@@ -428,12 +477,12 @@ def cube_with_time():
     time_coord = iris.coords.DimCoord(
         [1, 3],
         bounds=[[0, 2], [2, 4]],
-        standard_name='time',
-        units='days since 1850-01-03',
+        standard_name="time",
+        units="days since 1850-01-03",
     )
     cube = iris.cube.Cube(
         [1, 2],
-        var_name='x',
+        var_name="x",
         dim_coords_and_dims=[(time_coord, 0)],
     )
     return cube
@@ -443,13 +492,14 @@ def test_unify_time_coord_str(cube_with_time):
     """Test ``unify_time_coord``."""
     ih.unify_time_coord(cube_with_time)
 
-    expected_units = Unit('days since 1850-01-01 00:00:00',
-                          calendar='standard')
-    time_coord = cube_with_time.coord('time')
+    expected_units = Unit(
+        "days since 1850-01-01 00:00:00", calendar="standard"
+    )
+    time_coord = cube_with_time.coord("time")
 
-    assert time_coord.var_name == 'time'
-    assert time_coord.standard_name == 'time'
-    assert time_coord.long_name == 'time'
+    assert time_coord.var_name == "time"
+    assert time_coord.standard_name == "time"
+    assert time_coord.long_name == "time"
     assert time_coord.units == expected_units
     assert time_coord.attributes == {}
 
@@ -459,16 +509,17 @@ def test_unify_time_coord_str(cube_with_time):
 
 def test_unify_time_coord_unit(cube_with_time):
     """Test ``unify_time_coord``."""
-    target_units = Unit('days since 1850-01-02 00:00:00', calendar='gregorian')
+    target_units = Unit("days since 1850-01-02 00:00:00", calendar="gregorian")
     ih.unify_time_coord(cube_with_time, target_units=target_units)
 
-    expected_units = Unit('days since 1850-01-02 00:00:00',
-                          calendar='gregorian')
-    time_coord = cube_with_time.coord('time')
+    expected_units = Unit(
+        "days since 1850-01-02 00:00:00", calendar="gregorian"
+    )
+    time_coord = cube_with_time.coord("time")
 
-    assert time_coord.var_name == 'time'
-    assert time_coord.standard_name == 'time'
-    assert time_coord.long_name == 'time'
+    assert time_coord.var_name == "time"
+    assert time_coord.standard_name == "time"
+    assert time_coord.long_name == "time"
     assert time_coord.units == expected_units
     assert time_coord.attributes == {}
     assert time_coord.units == expected_units
@@ -479,15 +530,15 @@ def test_unify_time_coord_unit(cube_with_time):
 
 def test_unify_time_coord_no_bounds(cube_with_time):
     """Test ``unify_time_coord``."""
-    cube_with_time.coord('time').bounds = None
-    ih.unify_time_coord(cube_with_time, 'days since 1850-01-04')
+    cube_with_time.coord("time").bounds = None
+    ih.unify_time_coord(cube_with_time, "days since 1850-01-04")
 
-    expected_units = Unit('days since 1850-01-04 00:00:00')
-    time_coord = cube_with_time.coord('time')
+    expected_units = Unit("days since 1850-01-04 00:00:00")
+    time_coord = cube_with_time.coord("time")
 
-    assert time_coord.var_name == 'time'
-    assert time_coord.standard_name == 'time'
-    assert time_coord.long_name == 'time'
+    assert time_coord.var_name == "time"
+    assert time_coord.standard_name == "time"
+    assert time_coord.long_name == "time"
     assert time_coord.units == expected_units
     assert time_coord.attributes == {}
 
@@ -497,6 +548,6 @@ def test_unify_time_coord_no_bounds(cube_with_time):
 
 def test_unify_time_coord_no_time(cube_with_time):
     """Test ``unify_time_coord``."""
-    cube_with_time.remove_coord('time')
+    cube_with_time.remove_coord("time")
     with pytest.raises(iris.exceptions.CoordinateNotFoundError):
         ih.unify_time_coord(cube_with_time)

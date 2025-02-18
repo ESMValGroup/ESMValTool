@@ -4,3 +4,61 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
 version_scheme = "release-branch-semver"
+
+[tool.ruff]
+fix = true
+line-length = 79
+show-fixes = true
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    # TODO: when replacing `prospector` with `ruff`, ignore rules that are
+    # overly technical or conflict with other rules.
+    "E501",  # Disable line-too-long as this is taken care of by the formatter.
+    "D105",  # Disable Missing docstring in magic method as these are well defined.
+]
+[tool.ruff.lint.per-file-ignores]
+"tests/**.py" = [
+    "B011",  # `assert False` is valid test code.
+    # Docstrings in tests are only needed if the code is not self-explanatory.
+    "D100",  # Missing docstring in public module
+    "D101",  # Missing docstring in public class
+    "D102",  # Missing docstring in public method
+    "D103",  # Missing docstring in public function
+    "D104",  # Missing docstring in public package
+]
+"test_*.py" = [
+    "B011",  # `assert False` is valid test code.
+    # Docstrings in tests are only needed if the code is not self-explanatory.
+    "D100",  # Missing docstring in public module
+    "D101",  # Missing docstring in public class
+    "D102",  # Missing docstring in public method
+    "D103",  # Missing docstring in public function
+    "D104",  # Missing docstring in public package
+]
+[tool.ruff.lint.isort]
+known-first-party = ["esmvaltool"]
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+# Configure linters that are run by Prospector
+[tool.pylint.main]
+jobs = 1  # Running more than one job in parallel crashes prospector.
+[tool.pylint.basic]
+good-names = [
+    "_",            # Used by convention for unused variables
+    "i", "j", "k",  # Used by convention for indices
+    "logger",       # Our preferred name for the logger
+]
+[tool.pylint.format]
+max-line-length = 79
+[tool.pylint."messages control"]
+disable = [
+    "import-error",      # Needed because Codacy does not install dependencies
+    "file-ignored",      # Disable messages about disabling checks
+    "line-too-long",     # Disable line-too-long as this is taken care of by the formatter.
+    "locally-disabled",  # Disable messages about disabling checks
+]
+
+[tool.pydocstyle]
+convention = "numpy"

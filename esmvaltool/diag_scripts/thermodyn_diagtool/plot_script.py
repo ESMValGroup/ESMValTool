@@ -14,6 +14,7 @@ The module provides plots for a single model of:
 
 @author: valerio.lembo@uni-hamburg.de, Valerio Lembo, Hamburg University, 2018.
 """
+
 import math
 import os
 from shutil import move
@@ -56,9 +57,9 @@ def balances(cfg, wdir, plotpath, filena, name, model):
     provlog = ProvenanceLogger(cfg)
     nsub = len(filena)
     pdir = plotpath
-    plotentname = pdir + '/{}_heat_transp.png'.format(model)
-    plotwmbname = pdir + '/{}_wmb_transp.png'.format(model)
-    plotlatname = pdir + '/{}_latent_transp.png'.format(model)
+    plotentname = pdir + f"/{model}_heat_transp.png"
+    plotwmbname = pdir + f"/{model}_wmb_transp.png"
+    plotlatname = pdir + f"/{model}_latent_transp.png"
 
     # timesery = np.zeros([nsub, 2])
     dims, ndims, tmean, zmean, timeser = global_averages(nsub, filena, name)
@@ -69,40 +70,40 @@ def balances(cfg, wdir, plotpath, filena, name, model):
     for i_f in np.arange(nsub):
         transp = transport(zmean[i_f, :, :], timeser[i_f, :, 0], dims[1])
         transp_mean[i_f, :], list_peak = transports_preproc(
-            dims[1], ndims[3], lim[i_f], transp)
+            dims[1], ndims[3], lim[i_f], transp
+        )
         lat_maxm[i_f, :, :] = list_peak[0]
         tr_maxm[i_f, :, :] = list_peak[1]
     if nsub == 3:
         ext_name = [
-            'TOA Energy Budget', 'Atmospheric Energy Budget',
-            'Surface Energy Budget'
+            "TOA Energy Budget",
+            "Atmospheric Energy Budget",
+            "Surface Energy Budget",
         ]
-        transpty = (-6.75E15, 6.75E15)
+        transpty = (-6.75e15, 6.75e15)
         coords = [dims[0], dims[1]]
         plot_climap_eb(model, pdir, coords, tmean, ext_name)
         fig = plt.figure()
-        strings = ['Meridional heat transports', 'Latitude [deg]', '[W]']
+        strings = ["Meridional heat transports", "Latitude [deg]", "[W]"]
         lats = dims[1]
         for i in np.arange(nsub):
-            filename = filena[i] + '.nc'
-            if name[i] == 'toab':
-                nameout = 'total'
-            elif name[i] == 'atmb':
-                nameout = 'atmos'
-            elif name[i] == 'surb':
-                nameout = 'ocean'
-            nc_f = wdir + '/{}_transp_mean_{}.nc'.format(nameout, model)
+            filename = filena[i] + ".nc"
+            if name[i] == "toab":
+                nameout = "total"
+            elif name[i] == "atmb":
+                nameout = "atmos"
+            elif name[i] == "surb":
+                nameout = "ocean"
+            nc_f = wdir + f"/{nameout}_transp_mean_{model}.nc"
             removeif(nc_f)
-            lat_model = 'lat_{}'.format(model)
+            lat_model = f"lat_{model}"
             pr_output(transp_mean[i, :], filename, nc_f, nameout, lat_model)
-            name_model = '{}_{}'.format(nameout, model)
-            cdo.chname('{},{}'.format(nameout, name_model),
-                       input=nc_f,
-                       output='aux.nc')
-            move('aux.nc', nc_f)
-            cdo.chname('lat,{}'.format(lat_model), input=nc_f, output='aux.nc')
-            move('aux.nc', nc_f)
-            attr = ['{} meridional enthalpy transports'.format(nameout), model]
+            name_model = f"{nameout}_{model}"
+            cdo.chname(f"{nameout},{name_model}", input=nc_f, output="aux.nc")
+            move("aux.nc", nc_f)
+            cdo.chname(f"lat,{lat_model}", input=nc_f, output="aux.nc")
+            move("aux.nc", nc_f)
+            attr = [f"{nameout} meridional enthalpy transports", model]
             provrec = provenance_meta.get_prov_transp(attr, filename)
             provlog.log(nc_f, provrec)
             # provlog.log(plotentname, provrec)
@@ -112,36 +113,36 @@ def balances(cfg, wdir, plotpath, filena, name, model):
         plt.close(fig)
         plot_1m_scatter(model, pdir, lat_maxm, tr_maxm)
     elif nsub == 2:
-        ext_name = ['Water mass budget', 'Latent heat budget']
-        transpwy = (-2E9, 2E9)
-        transply = (-6E15, 6E15)
+        ext_name = ["Water mass budget", "Latent heat budget"]
+        transpwy = (-2e9, 2e9)
+        transply = (-6e15, 6e15)
         coords = [dims[0], dims[1]]
         plot_climap_wm(model, pdir, coords, tmean, ext_name, name)
-        nc_f = wdir + '/{}_transp_mean_{}.nc'.format('wmb', model)
+        nc_f = wdir + "/{}_transp_mean_{}.nc".format("wmb", model)
         removeif(nc_f)
-        filena[0] = filena[0].split('.nc', 1)[0]
-        filename = filena[0] + '.nc'
-        pr_output(transp_mean[0, :], filename, nc_f, 'wmb', 'lat')
-        attr = ['water mass transport', model]
+        filena[0] = filena[0].split(".nc", 1)[0]
+        filename = filena[0] + ".nc"
+        pr_output(transp_mean[0, :], filename, nc_f, "wmb", "lat")
+        attr = ["water mass transport", model]
         provrec = provenance_meta.get_prov_transp(attr, filename)
         provlog.log(nc_f, provrec)
         # provlog.log(plotwmbname, provrec)
-        nc_f = wdir + '/{}_transp_mean_{}.nc'.format('latent', model)
+        nc_f = wdir + "/{}_transp_mean_{}.nc".format("latent", model)
         removeif(nc_f)
-        filena[1] = filena[1].split('.nc', 1)[0]
-        filename = filena[1] + '.nc'
-        pr_output(transp_mean[1, :], filename, nc_f, 'latent', 'lat')
-        attr = ['latent energy transport', model]
+        filena[1] = filena[1].split(".nc", 1)[0]
+        filename = filena[1] + ".nc"
+        pr_output(transp_mean[1, :], filename, nc_f, "latent", "lat")
+        attr = ["latent energy transport", model]
         provrec = provenance_meta.get_prov_transp(attr, filename)
         provlog.log(nc_f, provrec)
         # provlog.log(plotlatname, provrec)
-        strings = ['Water mass transports', 'Latitude [deg]', '[kg*s-1]']
+        strings = ["Water mass transports", "Latitude [deg]", "[kg*s-1]"]
         fig = plt.figure()
         plot_1m_transp(dims[1], transp_mean[0, :], transpwy, strings)
         plt.grid()
         plt.savefig(plotwmbname)
         plt.close(fig)
-        strings = ['Latent heat transports', 'Latitude [deg]', '[W]']
+        strings = ["Latent heat transports", "Latitude [deg]", "[W]"]
         fig = plt.figure()
         plot_1m_transp(dims[1], transp_mean[1, :], transply, strings)
         plt.grid()
@@ -150,22 +151,24 @@ def balances(cfg, wdir, plotpath, filena, name, model):
     for i_f in np.arange(nsub):
         fig = plt.figure()
         axi = plt.subplot(111)
-        axi.plot(dims[3], timeser[i_f, :, 0], 'k', label='Global')
-        axi.plot(dims[3], timeser[i_f, :, 1], 'r', label='SH')
-        axi.plot(dims[3], timeser[i_f, :, 2], 'b', label='NH')
-        plt.title('Annual mean {}'.format(ext_name[i_f]))
-        plt.xlabel('Years')
-        if ext_name[i_f] == 'Water mass budget':
-            plt.ylabel('[Kg m-2 s-1]')
+        axi.plot(dims[3], timeser[i_f, :, 0], "k", label="Global")
+        axi.plot(dims[3], timeser[i_f, :, 1], "r", label="SH")
+        axi.plot(dims[3], timeser[i_f, :, 2], "b", label="NH")
+        plt.title(f"Annual mean {ext_name[i_f]}")
+        plt.xlabel("Years")
+        if ext_name[i_f] == "Water mass budget":
+            plt.ylabel("[Kg m-2 s-1]")
         else:
-            plt.ylabel('[W/m2]')
-        axi.legend(loc='upper center',
-                   bbox_to_anchor=(0.5, -0.13),
-                   shadow=True,
-                   ncol=3)
+            plt.ylabel("[W/m2]")
+        axi.legend(
+            loc="upper center",
+            bbox_to_anchor=(0.5, -0.13),
+            shadow=True,
+            ncol=3,
+        )
         plt.tight_layout()
         plt.grid()
-        plt.savefig(pdir + '/{}_{}_timeser.png'.format(model, name[i_f]))
+        plt.savefig(pdir + f"/{model}_{name[i_f]}_timeser.png")
         plt.close(fig)
 
 
@@ -183,41 +186,41 @@ def entropy(plotpath, filename, name, ext_name, model):
     @author: Valerio Lembo, Hamburg University, 2018.
     """
     pdir = plotpath
-    if ext_name == 'Vertical entropy production':
+    if ext_name == "Vertical entropy production":
         rangec = [-0.01, 0.1]
-        c_m = 'YlOrBr'
-    elif ext_name == 'Horizontal entropy production':
+        c_m = "YlOrBr"
+    elif ext_name == "Horizontal entropy production":
         rangec = [-0.5, 0.5]
-        c_m = 'bwr'
-    elif ext_name == 'Sensible Heat entropy production':
+        c_m = "bwr"
+    elif ext_name == "Sensible Heat entropy production":
         rangec = [-0.01, 0.01]
-        c_m = 'YlOrBr'
-    elif ext_name == 'Evaporation entropy production':
+        c_m = "YlOrBr"
+    elif ext_name == "Evaporation entropy production":
         rangec = [0, 1]
-        c_m = 'YlOrBr'
-    elif ext_name == 'Rainfall entropy production':
+        c_m = "YlOrBr"
+    elif ext_name == "Rainfall entropy production":
         rangec = [0, 1]
-        c_m = 'YlOrBr'
-    elif ext_name == 'Snowfall entropy production':
+        c_m = "YlOrBr"
+    elif ext_name == "Snowfall entropy production":
         rangec = [0, 0.25]
-        c_m = 'YlOrBr'
-    elif ext_name == 'Snowmelt entropy production':
+        c_m = "YlOrBr"
+    elif ext_name == "Snowmelt entropy production":
         rangec = [0, 0.05]
-        c_m = 'YlOrBr'
-    elif ext_name == 'Potential energy entropy production':
+        c_m = "YlOrBr"
+    elif ext_name == "Potential energy entropy production":
         rangec = [0, 0.1]
-        c_m = 'YlOrBr'
+        c_m = "YlOrBr"
     with Dataset(filename) as dataset:
         var = dataset.variables[name][:, :, :]
-        lats = dataset.variables['lat'][:]
-        lons = dataset.variables['lon'][:]
+        lats = dataset.variables["lat"][:]
+        lons = dataset.variables["lon"][:]
     tmean = np.nanmean(var, axis=0)
     fig = plt.figure()
     axi = plt.axes(projection=ccrs.PlateCarree())
     coords = [lons, lats]
-    title = '{} (mW m-2 K-1)'.format(ext_name)
+    title = f"{ext_name} (mW m-2 K-1)"
     plot_climap(axi, coords, tmean, title, rangec, c_m)
-    plt.savefig(pdir + '/{}_{}_climap.png'.format(model, name))
+    plt.savefig(pdir + f"/{model}_{name}_climap.png")
     plt.close(fig)
 
 
@@ -237,13 +240,13 @@ def global_averages(nsub, filena, name):
 
     @author: Valerio Lembo, Hamburg University, 2018.
     """
-    sep = '.nc'
+    sep = ".nc"
     filena[0] = filena[0].split(sep, 1)[0]
     filename = filena[0] + sep
     with Dataset(filename) as dataset:
-        lats = dataset.variables['lat'][:]
-        lons = dataset.variables['lon'][:]
-        time = dataset.variables['time'][:]
+        lats = dataset.variables["lat"][:]
+        lons = dataset.variables["lon"][:]
+        time = dataset.variables["time"][:]
     nlats = len(lats)
     nlons = len(lons)
     ntime = len(time)
@@ -254,12 +257,13 @@ def global_averages(nsub, filena, name):
     var = np.zeros([nsub, ntime, nlats, nlons])
     for i in np.arange(nsub):
         filena[i] = filena[i].split(sep, 1)[0]
-        filename = filena[i] + '.nc'
+        filename = filena[i] + ".nc"
         with Dataset(filename) as dataset:
             dataset = Dataset(filename)
             var[i, :, :, :] = dataset.variables[name[i]][:, :, :]
-    var_r = np.reshape(var,
-                       (nsub, int(np.shape(var)[1] / 12), 12, nlats, nlons))
+    var_r = np.reshape(
+        var, (nsub, int(np.shape(var)[1] / 12), 12, nlats, nlons)
+    )
     vary = np.nanmean(var_r, axis=2)
     zmean = np.nanmean(vary, axis=3)
     tmean = np.nanmean(vary, axis=1)
@@ -293,14 +297,14 @@ def hemean(hem, lat, inp):
     hmean = []
     if hem == 1:
         if j_end % 2 == 0:
-            hmean = 2 * np.nansum(zmn[:, int(j_end / 2):j_end], axis=1)
+            hmean = 2 * np.nansum(zmn[:, int(j_end / 2) : j_end], axis=1)
         else:
-            hmean = 2 * np.nansum(zmn[:, int((j_end + 1) / 2):j_end], axis=1)
+            hmean = 2 * np.nansum(zmn[:, int((j_end + 1) / 2) : j_end], axis=1)
     else:
         if j_end % 2 == 0:
-            hmean = 2 * np.nansum(zmn[:, 1:int(j_end / 2)], axis=1)
+            hmean = 2 * np.nansum(zmn[:, 1 : int(j_end / 2)], axis=1)
         else:
-            hmean = 2 * np.nansum(zmn[:, 1:int((j_end - 1) / 2)], axis=1)
+            hmean = 2 * np.nansum(zmn[:, 1 : int((j_end - 1) / 2)], axis=1)
     return hmean
 
 
@@ -316,13 +320,14 @@ def init_plotentr(model, pdir, flist):
 
     @author: Valerio Lembo, Hamburg University, 2018.
     """
-    entropy(pdir, flist[0], 'ssens', 'Sensible Heat entropy production', model)
-    entropy(pdir, flist[1], 'sevap', 'Evaporation entropy production', model)
-    entropy(pdir, flist[2], 'srain', 'Rainfall entropy production', model)
-    entropy(pdir, flist[3], 'ssnow', 'Snowfall entropy production', model)
-    entropy(pdir, flist[4], 'smelt', 'Snowmelt entropy production', model)
-    entropy(pdir, flist[5], 'spotp', 'Potential energy entropy production',
-            model)
+    entropy(pdir, flist[0], "ssens", "Sensible Heat entropy production", model)
+    entropy(pdir, flist[1], "sevap", "Evaporation entropy production", model)
+    entropy(pdir, flist[2], "srain", "Rainfall entropy production", model)
+    entropy(pdir, flist[3], "ssnow", "Snowfall entropy production", model)
+    entropy(pdir, flist[4], "smelt", "Snowmelt entropy production", model)
+    entropy(
+        pdir, flist[5], "spotp", "Potential energy entropy production", model
+    )
 
 
 def latwgt(lat, t_r):
@@ -367,13 +372,13 @@ def lec_plot(model, pdir, lect):
     fig = plt.figure()
     axi = plt.subplot(111)
     time = np.linspace(0, len(lect), len(lect))
-    axi.plot(time, lect, 'k')
-    plt.title('Annual mean LEC intensity for {}'.format(model))
-    plt.xlabel('Years')
-    plt.ylabel('[W/m2]')
+    axi.plot(time, lect, "k")
+    plt.title(f"Annual mean LEC intensity for {model}")
+    plt.xlabel("Years")
+    plt.ylabel("[W/m2]")
     plt.tight_layout()
     plt.grid()
-    plt.savefig(pdir + '/{}_lec_timeser.png'.format(model))
+    plt.savefig(pdir + f"/{model}_lec_timeser.png")
     plt.close(fig)
 
 
@@ -393,15 +398,15 @@ def plot_climap_eb(model, pdir, coords, tmean, ext_name):
     rangect = [-100, 100]
     fig = plt.figure(figsize=(12, 22))
     axi = plt.subplot(311, projection=ccrs.PlateCarree())
-    title = '{} (W/m2)'.format(ext_name[0])
-    plot_climap(axi, coords, tmean[0, :, :], title, rangect, 'bwr')
+    title = f"{ext_name[0]} (W/m2)"
+    plot_climap(axi, coords, tmean[0, :, :], title, rangect, "bwr")
     axi = plt.subplot(312, projection=ccrs.PlateCarree())
-    title = '{} (W/m2)'.format(ext_name[1])
-    plot_climap(axi, coords, tmean[1, :, :], title, rangect, 'bwr')
+    title = f"{ext_name[1]} (W/m2)"
+    plot_climap(axi, coords, tmean[1, :, :], title, rangect, "bwr")
     axi = plt.subplot(313, projection=ccrs.PlateCarree())
-    title = '{} (W/m2)'.format(ext_name[2])
-    plot_climap(axi, coords, tmean[2, :, :], title, rangect, 'bwr')
-    plt.savefig(pdir + '/{}_energy_climap.png'.format(model))
+    title = f"{ext_name[2]} (W/m2)"
+    plot_climap(axi, coords, tmean[2, :, :], title, rangect, "bwr")
+    plt.savefig(pdir + f"/{model}_energy_climap.png")
     plt.close(fig)
 
 
@@ -419,19 +424,19 @@ def plot_climap_wm(model, pdir, coords, tmean, ext_name, name):
 
     @author: Valerio Lembo, Hamburg University, 2018.
     """
-    rangecw = [-1E-4, 1E-4]
+    rangecw = [-1e-4, 1e-4]
     rangecl = [-150, 150]
     fig = plt.figure()
     axi = plt.subplot(111, projection=ccrs.PlateCarree())
-    title = '{} (Km m-2 s-1)'.format(ext_name[0])
-    plot_climap(axi, coords, tmean[0, :, :], title, rangecw, 'bwr')
-    plt.savefig(pdir + '/{}_{}_climap.png'.format(model, name[0]))
+    title = f"{ext_name[0]} (Km m-2 s-1)"
+    plot_climap(axi, coords, tmean[0, :, :], title, rangecw, "bwr")
+    plt.savefig(pdir + f"/{model}_{name[0]}_climap.png")
     plt.close(fig)
     fig = plt.figure()
     axi = plt.subplot(111, projection=ccrs.PlateCarree())
-    title = '{} (W/m2)'.format(ext_name[1])
-    plot_climap(axi, coords, tmean[1, :, :], title, rangecl, 'bwr')
-    plt.savefig(pdir + '/{}_{}_climap.png'.format(model, name[1]))
+    title = f"{ext_name[1]} (W/m2)"
+    plot_climap(axi, coords, tmean[1, :, :], title, rangecl, "bwr")
+    plt.savefig(pdir + f"/{model}_{name[1]}_climap.png")
     plt.close(fig)
 
 
@@ -452,13 +457,15 @@ def plot_climap(axi, coords, fld, title, rrange, c_m):
     axi.coastlines()
     lons = np.linspace(0, 360, len(coords[0])) - (coords[0][1] - coords[0][0])
     plt.contourf(lons, coords[1], fld, 60, transform=ccrs.PlateCarree())
-    plt.pcolor(lons,
-               coords[1],
-               fld,
-               vmin=rrange[0],
-               vmax=rrange[1],
-               cmap=c_m,
-               antialiaseds='True')
+    plt.pcolor(
+        lons,
+        coords[1],
+        fld,
+        vmin=rrange[0],
+        vmax=rrange[1],
+        cmap=c_m,
+        antialiaseds="True",
+    )
     plt.colorbar()
     plt.title(title, fontsize=14)
 
@@ -479,18 +486,19 @@ def plot_ellipse(semimaj, semimin, phi, x_cent, y_cent, a_x):
     @author: Valerio Lembo, Hamburg University, 2018.
     """
     theta = np.linspace(0, 2 * np.pi, 100)
-    r_r = 1 / np.sqrt((np.cos(theta))**2 + (np.sin(theta))**2)
+    r_r = 1 / np.sqrt((np.cos(theta)) ** 2 + (np.sin(theta)) ** 2)
     x_x = r_r * np.cos(theta)
     y_x = r_r * np.sin(theta)
     data = np.array([x_x, y_x])
     s_ax = np.array([[semimaj, 0], [0, semimin]])
-    r_angle = np.array([[np.cos(phi), -np.sin(phi)],
-                        [np.sin(phi), np.cos(phi)]])
+    r_angle = np.array(
+        [[np.cos(phi), -np.sin(phi)], [np.sin(phi), np.cos(phi)]]
+    )
     t_t = np.dot(r_angle, s_ax)
     data = np.dot(t_t, data)
     data[0] += x_cent
     data[1] += y_cent
-    a_x.plot(data[0], data[1], color='b', linestyle='-')
+    a_x.plot(data[0], data[1], color="b", linestyle="-")
 
 
 def plot_1m_scatter(model, pdir, lat_maxm, tr_maxm):
@@ -514,32 +522,32 @@ def plot_1m_scatter(model, pdir, lat_maxm, tr_maxm):
     axi = plt.subplot(221)
     axi.set_figsize = (50, 50)
     plt.scatter(tr_maxm[1, 0, :], tr_maxm[2, 0, :], c=(0, 0, 0), alpha=1)
-    plt.title('(a) Atm. vs ocean magnitude - SH', fontsize=13, y=1.02)
-    plt.xlabel('Atmos. trans. [W]', fontsize=11)
-    plt.ylabel('Oceanic trans. [W]', fontsize=11)
+    plt.title("(a) Atm. vs ocean magnitude - SH", fontsize=13, y=1.02)
+    plt.xlabel("Atmos. trans. [W]", fontsize=11)
+    plt.ylabel("Oceanic trans. [W]", fontsize=11)
     plt.grid()
     axi = plt.subplot(222)
     axi.set_figsize = (50, 50)
     plt.scatter(tr_maxm[1, 1, :], tr_maxm[2, 1, :], c=(0, 0, 0), alpha=1)
-    plt.title('(b) Atm. vs ocean magnitude - NH', fontsize=13, y=1.02)
-    plt.xlabel('Atmos. trans. [W]', fontsize=11)
-    plt.ylabel('Oceanic trans. [W]', fontsize=11)
+    plt.title("(b) Atm. vs ocean magnitude - NH", fontsize=13, y=1.02)
+    plt.xlabel("Atmos. trans. [W]", fontsize=11)
+    plt.ylabel("Oceanic trans. [W]", fontsize=11)
     plt.grid()
     axi = plt.subplot(223)
     axi.set_figsize = (50, 50)
     plt.scatter(lat_maxm[1, 0, :], lat_maxm[2, 0, :], c=(0, 0, 0), alpha=1)
-    plt.title('(c) Atm. vs ocean location - SH', fontsize=13, y=1.02)
-    plt.xlabel('Atmos. trans. position [degrees of latitude]', fontsize=11)
-    plt.ylabel('Oceanic trans. position [degrees of latitude]', fontsize=11)
+    plt.title("(c) Atm. vs ocean location - SH", fontsize=13, y=1.02)
+    plt.xlabel("Atmos. trans. position [degrees of latitude]", fontsize=11)
+    plt.ylabel("Oceanic trans. position [degrees of latitude]", fontsize=11)
     plt.grid()
     axi = plt.subplot(224)
     axi.set_figsize = (50, 50)
     plt.scatter(lat_maxm[1, 1, :], lat_maxm[2, 1, :], c=(0, 0, 0), alpha=1)
-    plt.title('(d) Atm. vs ocean location - NH', fontsize=13, y=1.02)
-    plt.xlabel('Atmos. trans. position [degrees of latitude]', fontsize=11)
-    plt.ylabel('Oceanic trans. position [degrees of latitude]', fontsize=11)
+    plt.title("(d) Atm. vs ocean location - NH", fontsize=13, y=1.02)
+    plt.xlabel("Atmos. trans. position [degrees of latitude]", fontsize=11)
+    plt.ylabel("Oceanic trans. position [degrees of latitude]", fontsize=11)
     plt.grid()
-    plt.savefig(pdir + '/{}_scatpeak.png'.format(model))
+    plt.savefig(pdir + f"/{model}_scatpeak.png")
     plt.close(fig)
 
 
@@ -597,39 +605,41 @@ def plot_mm_ebscatter(pdir, eb_list):
     fig.set_size_inches(12, 22)
     axi = plt.subplot(221)
     plt.ylim(bottom=0)
-    title = '(a) TOA energy budget'
-    xlabel = 'R_t [W m-2]'
-    ylabel = 'Sigma (R_t) [W m-2]'
+    title = "(a) TOA energy budget"
+    xlabel = "R_t [W m-2]"
+    ylabel = "Sigma (R_t) [W m-2]"
     varlist = [toab_all[:, 0], toab_all[:, 1]]
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
     axi = plt.subplot(222)
     plt.ylim(bottom=0)
-    title = '(b) Atmospheric energy budget'
-    xlabel = 'F_a [W m-2]'
-    ylabel = 'Sigma (F_a) [W m-2]'
+    title = "(b) Atmospheric energy budget"
+    xlabel = "F_a [W m-2]"
+    ylabel = "Sigma (F_a) [W m-2]"
     varlist = [atmb_all[:, 0], atmb_all[:, 1]]
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
     axi = plt.subplot(223)
     plt.ylim(bottom=0)
-    title = '(b) Surface energy budget'
-    xlabel = 'F_s [W m-2]'
-    ylabel = 'Sigma (F_s) [W m-2]'
+    title = "(b) Surface energy budget"
+    xlabel = "F_s [W m-2]"
+    ylabel = "Sigma (F_s) [W m-2]"
     varlist = [surb_all[:, 0], surb_all[:, 1]]
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
     axi = plt.subplot(224)
     axi.set_figsize = (50, 50)
-    plt.errorbar(x=atmb_all[:, 0],
-                 y=surb_all[:, 0],
-                 xerr=atmb_all[:, 1],
-                 yerr=surb_all[:, 1],
-                 fmt='none',
-                 ecolor=(0, 0, 0))
-    title = '(b) Atmospheric vs. Surface budget'
-    xlabel = 'F_a [W m-2]'
-    ylabel = 'F_s [W m-2]'
+    plt.errorbar(
+        x=atmb_all[:, 0],
+        y=surb_all[:, 0],
+        xerr=atmb_all[:, 1],
+        yerr=surb_all[:, 1],
+        fmt="none",
+        ecolor=(0, 0, 0),
+    )
+    title = "(b) Atmospheric vs. Surface budget"
+    xlabel = "F_a [W m-2]"
+    ylabel = "F_s [W m-2]"
     varlist = [atmb_all[:, 0], surb_all[:, 0]]
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
-    plt.savefig(pdir + '/scatters_variability.png')
+    plt.savefig(pdir + "/scatters_variability.png")
     plt.close(fig)
 
 
@@ -655,30 +665,35 @@ def plot_mm_scatter(axi, varlist, title, xlabel, ylabel):
     modnum = len(xval)
     axi.set_figsize = (50, 50)
     plt.scatter(xval, yval, c=(0, 0, 0), alpha=1)
-    plt.scatter(np.nanmean(xval), np.nanmean(yval), c='red')
+    plt.scatter(np.nanmean(xval), np.nanmean(yval), c="red")
     s_l, _, _, _, _ = stats.linregress(xval, yval)
     semimaj = np.max([np.nanstd(xval), np.nanstd(yval)])
     semimin = np.min([np.nanstd(xval), np.nanstd(yval)])
-    plot_ellipse(semimaj,
-                 semimin,
-                 phi=np.arctan(s_l),
-                 x_cent=np.nanmean(xval),
-                 y_cent=np.nanmean(yval),
-                 a_x=axi)
+    plot_ellipse(
+        semimaj,
+        semimin,
+        phi=np.arctan(s_l),
+        x_cent=np.nanmean(xval),
+        y_cent=np.nanmean(yval),
+        a_x=axi,
+    )
     plt.title(title, fontsize=12)
-    rcParams['axes.titlepad'] = 1
-    rcParams['axes.labelpad'] = 1
+    rcParams["axes.titlepad"] = 1
+    rcParams["axes.labelpad"] = 1
     plt.xlabel(xlabel, fontsize=14)
     plt.ylabel(ylabel, fontsize=14)
     d_x = 0.01 * (max(xval) - min(xval))
     d_y = 0.01 * (max(yval) - min(yval))
     for i_m in np.arange(modnum):
-        axi.annotate(str(i_m + 1), (xval[i_m], yval[i_m]),
-                     xytext=(xval[i_m] + d_x, yval[i_m] + d_y),
-                     fontsize=12)
-    axi.tick_params(axis='both', which='major', labelsize=12)
+        axi.annotate(
+            str(i_m + 1),
+            (xval[i_m], yval[i_m]),
+            xytext=(xval[i_m] + d_x, yval[i_m] + d_y),
+            fontsize=12,
+        )
+    axi.tick_params(axis="both", which="major", labelsize=12)
     axi.margins(0.002)
-    plt.axis('auto')
+    plt.axis("auto")
     plt.grid()
 
 
@@ -708,12 +723,9 @@ def plot_mm_scatter_spec(axi, varlist, title, xlabel, ylabel):
     y_y = np.linspace(min(yval) - 0.1 * yrang, max(yval) + 0.1 * yrang, 10)
     x_m, y_m = np.meshgrid(x_x, y_y)
     z_m = x_m + y_m
-    c_p = plt.contour(x_m,
-                      y_m,
-                      z_m,
-                      colors='black',
-                      linestyles='dashed',
-                      linewidths=1.)
+    c_p = plt.contour(
+        x_m, y_m, z_m, colors="black", linestyles="dashed", linewidths=1.0
+    )
     plt.clabel(c_p, inline=True, inline_spacing=-4, fontsize=8)
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
 
@@ -751,47 +763,48 @@ def plot_mm_summaryscat(pdir, summary_varlist):
     fig = plt.figure()
     fig.set_size_inches(14, 22)
     axi = plt.subplot(321)
-    title = '(a) TOA vs. atmospheric energy budget'
-    xlabel = 'R_t [W m-2]'
-    ylabel = 'F_a [W m-2]'
+    title = "(a) TOA vs. atmospheric energy budget"
+    xlabel = "R_t [W m-2]"
+    ylabel = "F_a [W m-2]"
     varlist = [toab_all[:, 0], atmb_all[:, 0]]
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
     axi = plt.subplot(322)
-    title = '(b) Baroclinic efficiency vs. Intensity of LEC'
-    xlabel = r'$\eta$'
-    ylabel = 'W [W/m2]'
+    title = "(b) Baroclinic efficiency vs. Intensity of LEC"
+    xlabel = r"$\eta$"
+    ylabel = "W [W/m2]"
     varlist = [baroceff_all, lec_all[:, 0]]
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
     axi = plt.subplot(323)
-    title = '(c) Vertical vs. horizontal component'
-    xlabel = r'S$_{hor}$ [W m-2 K-1]'
-    ylabel = r'S$_{ver}$ [W m-2 K-1]'
+    title = "(c) Vertical vs. horizontal component"
+    xlabel = r"S$_{hor}$ [W m-2 K-1]"
+    ylabel = r"S$_{ver}$ [W m-2 K-1]"
     varlist = [horzentr_all[:, 0], vertentr_all[:, 0]]
     plot_mm_scatter_spec(axi, varlist, title, xlabel, ylabel)
     axi = plt.subplot(324)
-    title = '(d) Indirect vs. direct method'
-    xlabel = r'S$_{ind}$ [W m-2 K-1]'
-    ylabel = r'S$_{dir}$ [W m-2 K-1]'
+    title = "(d) Indirect vs. direct method"
+    xlabel = r"S$_{ind}$ [W m-2 K-1]"
+    ylabel = r"S$_{dir}$ [W m-2 K-1]"
     varlist = [indentr_all, matentr_all[:, 0]]
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
-    axi.set(xlim=(min(indentr_all) - 0.003, max(indentr_all) + 0.003),
-            ylim=(min(matentr_all[:, 0]) - 0.003,
-                  max(matentr_all[:, 0]) + 0.003))
+    axi.set(
+        xlim=(min(indentr_all) - 0.003, max(indentr_all) + 0.003),
+        ylim=(min(matentr_all[:, 0]) - 0.003, max(matentr_all[:, 0]) + 0.003),
+    )
     axi = plt.subplot(325)
-    title = '(e) Indirect vs. emission temperature'
-    xlabel = r'T$_E$ [K]'
-    ylabel = r'S$_{mat}$ [W m-2 K-1]'
+    title = "(e) Indirect vs. emission temperature"
+    xlabel = r"T$_E$ [K]"
+    ylabel = r"S$_{mat}$ [W m-2 K-1]"
     varlist = [te_all, indentr_all]
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
     axi = plt.subplot(326)
-    title = '(f) Baroclinic efficiency vs. emission temperature'
-    xlabel = r'T$_E$ [K]'
-    ylabel = r'$\eta$'
+    title = "(f) Baroclinic efficiency vs. emission temperature"
+    xlabel = r"T$_E$ [K]"
+    ylabel = r"$\eta$"
     varlist = [te_all, baroceff_all]
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
-    oname = pdir + '/scatters_summary.png'
+    oname = pdir + "/scatters_summary.png"
     plt.savefig(oname)
-    plt.subplots_adjust(hspace=.3)
+    plt.subplots_adjust(hspace=0.3)
 
 
 def plot_mm_transp(model_names, wdir, pdir):
@@ -811,14 +824,14 @@ def plot_mm_transp(model_names, wdir, pdir):
     fig = plt.figure()
     fig.set_size_inches(12, 22)
     axi = plt.subplot(311)
-    yrange = [-6.75E15, 6.75E15]
-    plot_mm_transp_panel(model_names, wdir, axi, 'total', yrange)
+    yrange = [-6.75e15, 6.75e15]
+    plot_mm_transp_panel(model_names, wdir, axi, "total", yrange)
     axi = plt.subplot(312)
-    plot_mm_transp_panel(model_names, wdir, axi, 'atmos', yrange)
+    plot_mm_transp_panel(model_names, wdir, axi, "atmos", yrange)
     axi = plt.subplot(313)
-    yrange = [-3E15, 3E15]
-    plot_mm_transp_panel(model_names, wdir, axi, 'ocean', yrange)
-    oname = pdir + '/meridional_transp.png'
+    yrange = [-3e15, 3e15]
+    plot_mm_transp_panel(model_names, wdir, axi, "ocean", yrange)
+    oname = pdir + "/meridional_transp.png"
     plt.savefig(oname)
     plt.close(fig)
 
@@ -838,19 +851,19 @@ def plot_mm_transp_panel(model_names, wdir, axi, domn, yrange):
     """
     axi.set_figsize = (50, 50)
     for model in model_names:
-        tot_transp_file = (wdir + '/{}_transp_mean_{}.nc'.format(domn, model))
-        name = '{}_{}'.format(domn, model)
+        tot_transp_file = wdir + f"/{domn}_transp_mean_{model}.nc"
+        name = f"{domn}_{model}"
         with Dataset(tot_transp_file) as dataset:
             toat = dataset.variables[name][:]
-            lats = dataset.variables['lat_{}'.format(model)][:]
-        plt.plot(np.array(lats), np.array(toat), color='black', linewidth=1.)
-    plt.title('(a) {} heat transports'.format(domn), fontsize=18)
-    plt.xlabel('Latitude [deg]', fontsize=14)
-    plt.ylabel('[W]', fontsize=14)
+            lats = dataset.variables[f"lat_{model}"][:]
+        plt.plot(np.array(lats), np.array(toat), color="black", linewidth=1.0)
+    plt.title(f"(a) {domn} heat transports", fontsize=18)
+    plt.xlabel("Latitude [deg]", fontsize=14)
+    plt.ylabel("[W]", fontsize=14)
     plt.tight_layout()
     plt.ylim(yrange)
     plt.xlim(-90, 90)
-    axi.tick_params(axis='both', which='major', labelsize=12)
+    axi.tick_params(axis="both", which="major", labelsize=12)
     plt.grid()
 
 
@@ -874,12 +887,14 @@ def pr_output(varout, filep, nc_f, nameout, latn):
     @author: Chris Slocum (2014), modified by Valerio Lembo (2018).
     """
     fourc = fourier_coefficients
-    nc_fid = Dataset(filep, 'r')
-    w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
-    w_nc_fid.description = ("Total, atmospheric and oceanic annual ",
-                            "mean meridional heat transports")
+    nc_fid = Dataset(filep, "r")
+    w_nc_fid = Dataset(nc_f, "w", format="NETCDF4")
+    w_nc_fid.description = (
+        "Total, atmospheric and oceanic annual ",
+        "mean meridional heat transports",
+    )
     fourc.extr_lat(nc_fid, w_nc_fid, latn)
-    w_nc_var = w_nc_fid.createVariable(nameout, 'f8', (latn))
+    w_nc_var = w_nc_fid.createVariable(nameout, "f8", (latn))
     varatts(w_nc_var, nameout)
     w_nc_fid.variables[nameout][:] = varout
     w_nc_fid.close()
@@ -922,8 +937,9 @@ def transport(zmean, gmean, lat):
     cumb = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
     transp = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
     for j_l in range(len(lat) - 1):
-        cumb[:, j_l] = (-2 * np.nansum(
-            latwgt(lat[j_l:len(lat)], zmn_ub[:, j_l:len(lat)]), axis=1))
+        cumb[:, j_l] = -2 * np.nansum(
+            latwgt(lat[j_l : len(lat)], zmn_ub[:, j_l : len(lat)]), axis=1
+        )
     r_earth = 6.371 * 10**6
     transp = 2 * p_i * cumb * r_earth * r_earth
     return [zmn_ub, transp]
@@ -953,7 +969,7 @@ def transp_max(lat, transp, lim):
     for value in x_c:
         if abs(value) <= lim:
             xc_cut[j_p] = value
-            y_i[j_p] = interpolate.interp1d(lat, transp, kind='cubic')(value)
+            y_i[j_p] = interpolate.interp1d(lat, transp, kind="cubic")(value)
             j_p = j_p + 1
             if j_p == 2:
                 break
@@ -1009,36 +1025,46 @@ def varatts(w_nc_var, varname):
 
     @author: Valerio Lembo, Hamburg University, 2018.
     """
-    if varname == 'total':
-        w_nc_var.setncatts({
-            'long_name': "Total merid. heat transport",
-            'units': "W",
-            'level_desc': 'TOA'
-        })
-    elif varname == 'atmos':
-        w_nc_var.setncatts({
-            'long_name': "Atmos. merid. heat transport",
-            'units': "W",
-            'level_desc': 'Vertically integrated'
-        })
-    elif varname == 'ocean':
-        w_nc_var.setncatts({
-            'long_name': "Ocean. merid. heat transport",
-            'units': "W",
-            'level_desc': 'sfc'
-        })
-    elif varname == 'wmb':
-        w_nc_var.setncatts({
-            'long_name': "Merid. water mass transport",
-            'units': "Kg*s-1",
-            'level_desc': 'sfc'
-        })
-    elif varname == 'latent':
-        w_nc_var.setncatts({
-            'long_name': "Merid. latent heat transport",
-            'units': "W",
-            'level_desc': 'sfc'
-        })
+    if varname == "total":
+        w_nc_var.setncatts(
+            {
+                "long_name": "Total merid. heat transport",
+                "units": "W",
+                "level_desc": "TOA",
+            }
+        )
+    elif varname == "atmos":
+        w_nc_var.setncatts(
+            {
+                "long_name": "Atmos. merid. heat transport",
+                "units": "W",
+                "level_desc": "Vertically integrated",
+            }
+        )
+    elif varname == "ocean":
+        w_nc_var.setncatts(
+            {
+                "long_name": "Ocean. merid. heat transport",
+                "units": "W",
+                "level_desc": "sfc",
+            }
+        )
+    elif varname == "wmb":
+        w_nc_var.setncatts(
+            {
+                "long_name": "Merid. water mass transport",
+                "units": "Kg*s-1",
+                "level_desc": "sfc",
+            }
+        )
+    elif varname == "latent":
+        w_nc_var.setncatts(
+            {
+                "long_name": "Merid. latent heat transport",
+                "units": "W",
+                "level_desc": "sfc",
+            }
+        )
 
 
 def zerocross1d(x_x, y_y):

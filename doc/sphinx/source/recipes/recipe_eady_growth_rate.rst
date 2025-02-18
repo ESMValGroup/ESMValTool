@@ -6,8 +6,8 @@ Eady growth rate
 Overview
 --------
 
-This recipe computes the maximum Eady Growth Rate and performs the annual and seasonal means, storing 
-the results for each dataset. 
+This recipe computes the maximum Eady Growth Rate and performs the annual and seasonal means, storing
+the results for each dataset.
 For the seasonal means, the results are plotted over the North-Atlantic region for the selected
 pressure levels.
 
@@ -21,7 +21,7 @@ Recipes are stored in ``esmvaltool/recipes/``
 
 Diagnostics are stored in ``esmvaltool/diag_scripts/eady_growth_rate/``
 
-    * ``eady_growth_rate.py``: Computes and stores the eady growth rate. 
+    * ``eady_growth_rate.py``: Computes and stores the eady growth rate.
       Plots can be produced for the seasonal mean over the North Atlantic region.
 
 
@@ -44,7 +44,7 @@ Variables
 
 * ta (atmos, monthly mean, longitude latitude level time)
 * zg (atmos, monthly mean, longitude latitude level time)
-* ua (atmos, monthly mean, longitude latitude level time) 
+* ua (atmos, monthly mean, longitude latitude level time)
 
 References
 ----------
@@ -55,7 +55,7 @@ Example plots
 -------------
 
 .. _fig_eady_growth_rate:
-.. figure::  /recipes/figures/eady_growth_rate/HadGEM3-GC31-LM_winter_eady_growth_rate_70000.png 
+.. figure::  /recipes/figures/eady_growth_rate/HadGEM3-GC31-LM_winter_eady_growth_rate_70000.png
    :align:   center
 
    Eady Growth Rate values over the North-Atlantic region at 70000 Pa.

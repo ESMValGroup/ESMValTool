@@ -6,9 +6,9 @@ Capacity factor for solar photovoltaic (PV) systems
 Overview
 --------
 
-This diagnostic computes the photovoltaic (PV) capacity factor, 
-a measure of the fraction of the 
-maximum possible energy produced per PV grid cell. It uses the daily incoming 
+This diagnostic computes the photovoltaic (PV) capacity factor,
+a measure of the fraction of the
+maximum possible energy produced per PV grid cell. It uses the daily incoming
 surface solar radiation and the surface temperature with a method described
 in `Bett and Thornton (2016)`_. The user can select temporal
 range, season, and region of interest.
@@ -43,9 +43,9 @@ User setting files are stored in recipes/
      It will be converted to upper case. This season should be the one set in the preprocessor,
      since it is only used as a string and does not affect the data in the diagnostic.
      In the default recipe this is solved through a node anchor.
-   
+
    *Optional settings for script*
-   
+
    * maxval_colorbar: Optional upper limit for the colorbar.
 
 Variables

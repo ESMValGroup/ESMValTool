@@ -7,25 +7,25 @@ http://www.climate.be:3000/TECLIM/ClimateData.git
 branch develop-fmasson
 """
 
-import os
 import logging
 import math
+import os
 import warnings
-import numpy as np
 
-import scipy.stats
 import iris
 import matplotlib.pyplot as plt
+import numpy as np
+import scipy.stats
 
 import esmvaltool.diag_scripts.shared
-from esmvaltool.diag_scripts.shared import group_metadata
 import esmvaltool.diag_scripts.shared.names as n
+from esmvaltool.diag_scripts.shared import group_metadata
 from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-class NegativeSeaIceFeedback(object):
+class NegativeSeaIceFeedback:
     """
     Diagnostic to evaluate the negative ice growth-ice thickness feedback
 
@@ -50,12 +50,13 @@ class NegativeSeaIceFeedback(object):
         p_value = list()
         datasets = list()
         grouped_input_data = group_metadata(
-            self.cfg['input_data'].values(), 'alias', sort='alias')
+            self.cfg["input_data"].values(), "alias", sort="alias"
+        )
         for alias, dataset in grouped_input_data.items():
             try:
                 feedback, p_val = self._compute_dataset(alias, dataset)
             except Exception as ex:
-                logger.error('Failed to compute for %s', alias)
+                logger.error("Failed to compute for %s", alias)
                 logger.exception(ex)
             else:
                 negative_feedback.append(feedback)
@@ -66,31 +67,26 @@ class NegativeSeaIceFeedback(object):
         self._plot_comparison(p_value, datasets, p_values=True)
 
     def _compute_dataset(self, alias, dataset):
-        var_info = group_metadata(dataset, 'short_name')
-        logger.info('Computing %s', alias)
-        area_cello = iris.load_cube(
-            var_info['areacello'][0]['filename']
-        )
+        var_info = group_metadata(dataset, "short_name")
+        logger.info("Computing %s", alias)
+        area_cello = iris.load_cube(var_info["areacello"][0]["filename"])
         cellarea = area_cello.data
-        sit = iris.load_cube(var_info['sit'][0]['filename'])
-        mask = np.asarray(
-            sit.coord('latitude').points > 80.0,
-            dtype=np.int8
-        )
+        sit = iris.load_cube(var_info["sit"][0]["filename"])
+        mask = np.asarray(sit.coord("latitude").points > 80.0, dtype=np.int8)
         try:
             mask = np.broadcast_to(mask, cellarea.shape)
         except ValueError:
             try:
-                mask = np.broadcast_to(np.expand_dims(mask, -1),
-                                       cellarea.shape)
+                mask = np.broadcast_to(
+                    np.expand_dims(mask, -1), cellarea.shape
+                )
             except ValueError:
-                mask = np.broadcast_to(np.expand_dims(mask, 0),
-                                       cellarea.shape)
+                mask = np.broadcast_to(np.expand_dims(mask, 0), cellarea.shape)
         volume = self.compute_volume(sit, cellarea, mask=mask)
         del cellarea, sit
 
         neg_feedback, stats, _ = self.negative_seaice_feedback(
-            var_info['sit'][0], volume, period=12, order=2
+            var_info["sit"][0], volume, period=12, order=2
         )
         del volume
         logger.info("Negative feedback: %10.4f", neg_feedback)
@@ -129,17 +125,13 @@ class NegativeSeaIceFeedback(object):
                 avg_thick.coords(), iris.analysis.MAX
             )
         if float(max_thick.data) > 20.0:
-            logger.warning("Large sea ice thickness:"
-                           "Max = %f",
-                           max_thick.data)
+            logger.warning("Large sea ice thickness:Max = %f", max_thick.data)
 
-        if avg_thick.coords('time'):
+        if avg_thick.coords("time"):
             vol = []
-            for thick_slice in avg_thick.slices_over('time'):
+            for thick_slice in avg_thick.slices_over("time"):
                 vol.append(
-                    np.sum(
-                        thick_slice.data * cellarea.data * mask.data
-                    ) / 1e12
+                    np.sum(thick_slice.data * cellarea.data * mask.data) / 1e12
                 )
             vol = np.asarray(vol)
         elif len(avg_thick.shape) == 2:
@@ -203,8 +195,10 @@ class NegativeSeaIceFeedback(object):
             time_nonan = np.arange(len(data_nonan))
             time = np.arange(len(data))
             polynom = np.polyfit(time_nonan, data_nonan, order)
-            residuals = data - np.sum([polynom[i] * time ** (order - i)
-                                       for i in range(order + 1)], axis=0)
+            residuals = data - np.sum(
+                [polynom[i] * time ** (order - i) for i in range(order + 1)],
+                axis=0,
+            )
 
         # If the signal contains a periodical component, we do the regression
         # time step per time step
@@ -227,9 +221,13 @@ class NegativeSeaIceFeedback(object):
                 time = np.arange(len(raw))
                 time_nonan = np.arange(len(raw_nonan))
                 polynom = np.polyfit(time_nonan, raw_nonan, order)
-                residuals[np.arange(i, n, period)] = \
-                    raw - np.sum([polynom[i] * time ** (order - i)
-                                  for i in range(order + 1)], axis=0)
+                residuals[np.arange(i, n, period)] = raw - np.sum(
+                    [
+                        polynom[i] * time ** (order - i)
+                        for i in range(order + 1)
+                    ],
+                    axis=0,
+                )
         return residuals
 
     def negative_seaice_feedback(self, dataset_info, volume, period, order=1):
@@ -278,12 +276,16 @@ class NegativeSeaIceFeedback(object):
             )
 
         # 1. Locate the minima for each year
-        imin = [t + np.nanargmin(volume.data[t:t + period])
-                for t in range(0, volume.size, period)]
+        imin = [
+            t + np.nanargmin(volume.data[t : t + period])
+            for t in range(0, volume.size, period)
+        ]
 
         # 2. Locate the maxima for each year
-        imax = [t + np.nanargmax(volume.data[t:t + period])
-                for t in np.arange(0, volume.size, period)]
+        imax = [
+            t + np.nanargmax(volume.data[t : t + period])
+            for t in np.arange(0, volume.size, period)
+        ]
 
         # 3. Detrend series. A one-year shift is introduced to make sure we
         #    compute volume production *after* the summer minimum
@@ -302,7 +304,7 @@ class NegativeSeaIceFeedback(object):
         else:
             corr = np.corrcoef(vol_min, dvol)[0, 1]
             # The t-statistic.
-            tstat = corr / np.sqrt((1 - corr ** 2) / (len(vol_min) - 2))
+            tstat = corr / np.sqrt((1 - corr**2) / (len(vol_min) - 2))
             # Under the null hypothesis of no correlation,
             # tstat follows a student's law with  N - 2 dof.
             pval = 1.0 - scipy.stats.t.cdf(np.abs(tstat), len(vol_min) - 2)
@@ -311,7 +313,8 @@ class NegativeSeaIceFeedback(object):
                 logger.warning(
                     "Check the scatterplot of dV versus V_min, it is most "
                     "likely suspicious, and the feedback factor likely "
-                    "meaningless: p-value: %f", pval
+                    "meaningless: p-value: %f",
+                    pval,
                 )
 
             try:
@@ -320,10 +323,14 @@ class NegativeSeaIceFeedback(object):
                 fit = fit_complete[0]  # Fit parameter
                 std = np.sqrt(cov[0, 0])  # Standard deviation on it
             except ValueError:
-                logger.error("(negative_seaice_feedback) PROBLEM,"
-                             "series badly conditioned: "
-                             "Input volume: %f Vmin: %f dv: %f",
-                             volume, vol_min, dvol)
+                logger.error(
+                    "(negative_seaice_feedback) PROBLEM,"
+                    "series badly conditioned: "
+                    "Input volume: %f Vmin: %f dv: %f",
+                    volume,
+                    vol_min,
+                    dvol,
+                )
                 raise
 
         self._plot_ife(dataset_info, vol_min, dvol, fit_complete)
@@ -333,60 +340,62 @@ class NegativeSeaIceFeedback(object):
     def _plot_ife(self, dataset_info, vol_min, dvol, fit_complete):
         path = os.path.join(
             self.cfg[n.PLOT_DIR],
-            f'ife_{dataset_info[n.ALIAS]}.{self.cfg[n.OUTPUT_FILE_TYPE]}'
+            f"ife_{dataset_info[n.ALIAS]}.{self.cfg[n.OUTPUT_FILE_TYPE]}",
         )
-        plot_options = self.cfg.get('plot', {})
+        plot_options = self.cfg.get("plot", {})
         fig = plt.figure()
         plt.scatter(
             vol_min,
             dvol,
-            plot_options.get('point_size', 8),
-            color=plot_options.get('point_color', 'black'),
+            plot_options.get("point_size", 8),
+            color=plot_options.get("point_color", "black"),
         )
         minx, maxx = plt.xlim()
         xvals = np.linspace(minx, maxx)
         plt.plot(xvals, xvals * fit_complete[0] + fit_complete[1])
         axes = plt.gca()
         axes.set_title(
-            f'Evaluation of the IFE \n{dataset_info[n.ALIAS]} '
-            f'({dataset_info[n.START_YEAR]}-{dataset_info[n.END_YEAR]})'
+            f"Evaluation of the IFE \n{dataset_info[n.ALIAS]} "
+            f"({dataset_info[n.START_YEAR]}-{dataset_info[n.END_YEAR]})"
         )
-        axes.set_ylabel('Wintertime volume range \n(anomalies) [10³ km³]')
-        axes.set_xlabel('Volume at minimum\n(anomalies) [10³ km³]')
-        plt.grid(True, 'both', 'both')
+        axes.set_ylabel("Wintertime volume range \n(anomalies) [10³ km³]")
+        axes.set_xlabel("Volume at minimum\n(anomalies) [10³ km³]")
+        plt.grid(True, "both", "both")
         plt.tight_layout()
         fig.savefig(path)
         plt.close(fig)
         self._create_prov_record(
-            path, f'Evaluation of IFE for {dataset_info[n.ALIAS]}',
-            [info['filename'] for info in group_metadata(
-                self.cfg['input_data'].values(), n.ALIAS
-            )[dataset_info[n.ALIAS]]
-            ]
+            path,
+            f"Evaluation of IFE for {dataset_info[n.ALIAS]}",
+            [
+                info["filename"]
+                for info in group_metadata(
+                    self.cfg["input_data"].values(), n.ALIAS
+                )[dataset_info[n.ALIAS]]
+            ],
         )
 
     def _plot_comparison(self, data, datasets, p_values=False):
         if p_values:
-            filename = 'feedback_p_values'
+            filename = "feedback_p_values"
         else:
-            filename = 'feedback'
+            filename = "feedback"
 
         path = os.path.join(
-            self.cfg[n.PLOT_DIR],
-            f'{filename}.{self.cfg[n.OUTPUT_FILE_TYPE]}'
+            self.cfg[n.PLOT_DIR], f"{filename}.{self.cfg[n.OUTPUT_FILE_TYPE]}"
         )
 
-        plot_options = self.cfg.get('plot', {})
+        plot_options = self.cfg.get("plot", {})
         fig = plt.figure()
         index = np.arange(len(data))
         plt.scatter(
             index,
             data,
-            plot_options.get('point_size', 8),
-            color=plot_options.get('point_color', 'black'),
+            plot_options.get("point_size", 8),
+            color=plot_options.get("point_color", "black"),
         )
         if p_values:
-            plt.hlines(0.05, -1, index[-1] + 1, colors='red')
+            plt.hlines(0.05, -1, index[-1] + 1, colors="red")
         axes = plt.gca()
         logger.debug(data)
         max_limit = math.ceil(max(data))
@@ -395,7 +404,8 @@ class NegativeSeaIceFeedback(object):
         min_limit = math.floor(min(data))
         separation = max_limit - min_limit
 
-        if plot_options.get('show_values', False):
+        if plot_options.get("show_values", False):
+
             def _get_y_position(value):
                 if value > min_limit + separation * 0.75:
                     return value - separation * 0.05
@@ -403,10 +413,10 @@ class NegativeSeaIceFeedback(object):
 
             for i, value in enumerate(data):
                 axes.annotate(
-                    f'{value:.2f}',
+                    f"{value:.2f}",
                     xy=(index[i], value),
-                    xycoords='data',
-                    textcoords='data',
+                    xycoords="data",
+                    textcoords="data",
                     xytext=(index[i], _get_y_position(value)),
                     rotation=90,
                 )
@@ -414,28 +424,29 @@ class NegativeSeaIceFeedback(object):
         # axes and labels
         axes.set_ylim(min_limit, max_limit)
         if p_values:
-            axes.set_ylabel('P-value [log]')
+            axes.set_ylabel("P-value [log]")
             plt.ylim(0, max(0.25, max(data)))
         else:
-            axes.set_ylabel('IFE')
-        axes.set_title('IFE comparison')
+            axes.set_ylabel("IFE")
+        axes.set_title("IFE comparison")
         _, xtick_names = plt.xticks(index, datasets)
         plt.xlim(index[0] - 0.5, index[-1] + 0.5)
         plt.setp(xtick_names, rotation=90, fontsize=10)
-        plt.grid(True, 'both', 'y')
+        plt.grid(True, "both", "y")
         plt.tight_layout()
         fig.savefig(path)
         plt.close(fig)
         self._create_prov_record(
-            path, f'IFE {filename} comparison for all datasets',
-            group_metadata(self.cfg['input_data'].values(), n.ALIAS)
+            path,
+            f"IFE {filename} comparison for all datasets",
+            group_metadata(self.cfg["input_data"].values(), n.ALIAS),
         )
 
     def _create_prov_record(self, filepath, caption, ancestors):
         record = {
-            'caption': caption,
-            'domains': ['nhpolar'],
-            'ancestors': ancestors
+            "caption": caption,
+            "domains": ["nhpolar"],
+            "ancestors": ancestors,
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(filepath, record)
@@ -447,5 +458,5 @@ def main():
         NegativeSeaIceFeedback(config).compute()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

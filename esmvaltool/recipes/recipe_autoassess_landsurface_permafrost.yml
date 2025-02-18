@@ -5,7 +5,7 @@ documentation:
   description: |
     Recipe that runs the Autoassess Land-surface assessment area diagnostic.
     Land surface area and ice masks are time independent.
-    
+
   authors:
     - predoi_valeriu
     - sellar_alistair

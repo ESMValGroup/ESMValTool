@@ -1,6 +1,7 @@
 """Implement the AOD climatology metric from ground-based
-   AeroNet observations.
+AeroNet observations.
 """
+
 import logging
 import os
 
@@ -58,15 +59,15 @@ def plot_aod_mod_obs(md_data, obs_data, aeronet_obs_cube, plot_dict):
         Holds plotting settings.
     """
     # Plot model data
-    cf_plot = iplt.contourf(md_data,
-                            plot_dict["Levels"],
-                            colors=plot_dict["Colours"],
-                            extend="max")
+    cf_plot = iplt.contourf(
+        md_data, plot_dict["Levels"], colors=plot_dict["Colours"], extend="max"
+    )
 
     # Latitude and longitude of stations.
     anet_aod_lats = aeronet_obs_cube.coord("latitude").points
-    anet_aod_lons = ((aeronet_obs_cube.coord("longitude").points + 180) % 360 -
-                     180)
+    anet_aod_lons = (
+        aeronet_obs_cube.coord("longitude").points + 180
+    ) % 360 - 180
 
     # Loop over stations
     for istn, stn_data in enumerate(obs_data):
@@ -103,10 +104,12 @@ def plot_aod_mod_obs(md_data, obs_data, aeronet_obs_cube, plot_dict):
     plt.figtext(
         0.12,
         0.27,
-        (f'''Global mean AOD={plot_dict["Mean_aod"]:.3f}; RMSE='''
-         f'''{plot_dict["RMS_aod"]:.3f}; Stn mean: md='''
-         f'''{plot_dict["Stn_mn_md"]:.3f}; obs='''
-         f'''{plot_dict["Stn_mn_obs"]:.3f}'''),
+        (
+            f"""Global mean AOD={plot_dict["Mean_aod"]:.3f}; RMSE="""
+            f"""{plot_dict["RMS_aod"]:.3f}; Stn mean: md="""
+            f"""{plot_dict["Stn_mn_md"]:.3f}; obs="""
+            f"""{plot_dict["Stn_mn_obs"]:.3f}"""
+        ),
         size=16,
     )
 
@@ -158,7 +161,18 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
 
     clevs = [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 2.0]
     clabs = [
-        "0.0", "", "0.1", "", "0.2", "", "0.3", "", "0.4", "", "0.5", "2.0"
+        "0.0",
+        "",
+        "0.1",
+        "",
+        "0.2",
+        "",
+        "0.3",
+        "",
+        "0.4",
+        "",
+        "0.5",
+        "2.0",
     ]
     cmapr = mpl_cm.get_cmap("brewer_Spectral_11")
     cmap = colors.ListedColormap(cmapr(range(cmapr.N))[-1::-1])
@@ -173,14 +187,15 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
 
     # Loop over seasons
     for season in aeronet_obs_cube.slices_over("clim_season"):
-
         # Match Aeronet obs season with model season number
-        model_sn = [c.lower() for c in clim_seas
-                    ].index(season.coord("clim_season").points[0])
+        model_sn = [c.lower() for c in clim_seas].index(
+            season.coord("clim_season").points[0]
+        )
         model_season = model_data[model_sn]
 
-        logger.info('Analysing AOD for %s: %s', {model_id},
-                    {clim_seas[model_sn]})
+        logger.info(
+            "Analysing AOD for %s: %s", {model_id}, {clim_seas[model_sn]}
+        )
 
         # Generate statistics required - area-weighted mean
         grid_areas = iris.analysis.cartography.area_weights(model_season)
@@ -220,15 +235,24 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
                 label=label,
                 markersize=15,
                 markerfacecolor=col_scatter[model_sn],
-            ))
+            )
+        )
 
         # Plot contours overlaid with obs for this run and season
         fig_cf = plt.figure(figsize=(11, 8), dpi=300)
 
         n_stn = str(len(valid_obs))
-        title = ("\nTotal Aerosol Optical Depth at " + wv_mi + " microns" +
-                 "\n" + model_id + ", " + clim_seas[model_sn] +
-                 ", N stations=" + n_stn)
+        title = (
+            "\nTotal Aerosol Optical Depth at "
+            + wv_mi
+            + " microns"
+            + "\n"
+            + model_id
+            + ", "
+            + clim_seas[model_sn]
+            + ", N stations="
+            + n_stn
+        )
 
         # Plot dictionary
         plot_dict = {
@@ -242,8 +266,9 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
             "Title": title,
             "Season": clim_seas[model_sn],
         }
-        plot_aod_mod_obs(model_season, seas_anet_obs, aeronet_obs_cube,
-                         plot_dict)
+        plot_aod_mod_obs(
+            model_season, seas_anet_obs, aeronet_obs_cube, plot_dict
+        )
 
         figures.append(fig_cf)
 
@@ -262,13 +287,14 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
     ax_scatter.set_xlabel("AeroNET AOD", fontsize=fontsizedict["axis"])
     ax_scatter.set_ylabel(model_id + " AOD", fontsize=fontsizedict["axis"])
 
-    ax_scatter.tick_params(axis="both",
-                           which="major",
-                           labelsize=fontsizedict["ticklabel"])
+    ax_scatter.tick_params(
+        axis="both", which="major", labelsize=fontsizedict["ticklabel"]
+    )
 
     ax_scatter.set_title(
-        "Model vs obs: Total Aerosol Optical Depth \n at " + wv_mi +
-        " microns",
+        "Model vs obs: Total Aerosol Optical Depth \n at "
+        + wv_mi
+        + " microns",
         fontsize=fontsizedict["title"],
     )
 
@@ -313,30 +339,33 @@ def preprocess_aod_obs_dataset(obs_dataset):
     min_seas_per_clim = 5
 
     # Add the clim_season and season_year coordinates.
-    iris.coord_categorisation.add_year(obs_cube, 'time', name='year')
+    iris.coord_categorisation.add_year(obs_cube, "time", name="year")
 
-    iris.coord_categorisation.add_season(obs_cube, 'time', name='clim_season')
+    iris.coord_categorisation.add_season(obs_cube, "time", name="clim_season")
 
-    iris.coord_categorisation.add_season_year(obs_cube,
-                                              'time',
-                                              name='season_year')
+    iris.coord_categorisation.add_season_year(
+        obs_cube, "time", name="season_year"
+    )
 
     # Copy obs cube and mask all months with fewer
     # "Number of days" than given threshold.
     num_days_var = obs_cube.ancillary_variable("Number of days")
-    masked_months_obs_cube = obs_cube.copy(data=ma.masked_where(
-        num_days_var.data < min_days_per_mon, obs_cube.data))
+    masked_months_obs_cube = obs_cube.copy(
+        data=ma.masked_where(
+            num_days_var.data < min_days_per_mon, obs_cube.data
+        )
+    )
 
     # Aggregate (mean) by season.
     # The number of unmasked months per season is counted,
     # and where there are fewer unmasked months than the
     # given threshold, the computed mean is masked.
     annual_seasonal_mean = masked_months_obs_cube.aggregated_by(
-        ['clim_season', 'season_year'],
+        ["clim_season", "season_year"],
         iris.analysis.MEAN,
     )
     annual_seasonal_count = masked_months_obs_cube.aggregated_by(
-        ['clim_season', 'season_year'],
+        ["clim_season", "season_year"],
         iris.analysis.COUNT,
         function=lambda values: ~ma.getmask(values),
     )
@@ -351,11 +380,11 @@ def preprocess_aod_obs_dataset(obs_dataset):
     # than the given threshold, the computed multi-annual
     # season is masked.
     multi_annual_seasonal_mean = annual_seasonal_mean.aggregated_by(
-        'clim_season',
+        "clim_season",
         iris.analysis.MEAN,
     )
     clim_season_agg_count = annual_seasonal_mean.aggregated_by(
-        'clim_season',
+        "clim_season",
         iris.analysis.COUNT,
         function=lambda values: ~ma.getmask(values),
     )
@@ -364,13 +393,14 @@ def preprocess_aod_obs_dataset(obs_dataset):
         multi_annual_seasonal_mean.data,
     )
     year_agg_count = multi_annual_seasonal_mean.aggregated_by(
-        'year',
+        "year",
         iris.analysis.COUNT,
         function=lambda values: ~ma.getmask(values),
     )
 
-    counter = range(len(
-        multi_annual_seasonal_mean.coord('clim_season').points))
+    counter = range(
+        len(multi_annual_seasonal_mean.coord("clim_season").points)
+    )
     for iseas in counter:
         multi_annual_seasonal_mean.data[iseas, :] = ma.masked_where(
             year_agg_count.data[0, :] < min_seas_per_year,
@@ -418,18 +448,27 @@ def main(config):
             # Set up for analysis and plotting
             seasons = ["DJF", "MAM", "JJA", "SON"]
 
-            plot_file_prefix = (model_dataset + "_" + attributes["activity"] +
-                                "_" + attributes["mip"] + "_" +
-                                attributes["exp"] + "_" +
-                                attributes["short_name"] + "_" +
-                                str(attributes["start_year"]) + "_" +
-                                str(attributes["end_year"]) + "_")
+            plot_file_prefix = (
+                model_dataset
+                + "_"
+                + attributes["activity"]
+                + "_"
+                + attributes["mip"]
+                + "_"
+                + attributes["exp"]
+                + "_"
+                + attributes["short_name"]
+                + "_"
+                + str(attributes["start_year"])
+                + "_"
+                + str(attributes["end_year"])
+                + "_"
+            )
 
             # Analysis and plotting for model-obs comparison
-            figures, fig_scatter = aod_analyse(cube,
-                                               obs_cube,
-                                               seasons,
-                                               wavel=wavel)
+            figures, fig_scatter = aod_analyse(
+                cube, obs_cube, seasons, wavel=wavel
+            )
 
         # Save the scatter plot
         output_file = plot_file_prefix + "scatter"

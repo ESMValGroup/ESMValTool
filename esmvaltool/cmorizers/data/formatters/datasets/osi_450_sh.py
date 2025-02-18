@@ -21,10 +21,11 @@ Download and processing instructions
     for OSI-450-nh pointing to the data folder. Both cmorizers will ignore
     files belonging to the other hemisphere.
 """
+
 from esmvaltool.cmorizers.data.formatters.osi_common import OSICmorizer
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cmorizer = OSICmorizer(in_dir, out_dir, cfg, 'sh')
+    cmorizer = OSICmorizer(in_dir, out_dir, cfg, "sh")
     cmorizer.cmorize()

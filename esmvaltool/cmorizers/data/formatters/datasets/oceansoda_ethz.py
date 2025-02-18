@@ -32,20 +32,20 @@ logger = logging.getLogger(__name__)
 def _fix_coords(cube, cmor_info):
     """Fix coordinates."""
     # Dimensional coordinates
-    if 'time' in cmor_info.dimensions:
-        unify_time_coord(cube, 'days since 1950-01-01 00:00:00')
+    if "time" in cmor_info.dimensions:
+        unify_time_coord(cube, "days since 1950-01-01 00:00:00")
 
         # Move time points to center of month
-        time_coord = cube.coord('time')
+        time_coord = cube.coord("time")
         old_dates = time_coord.units.num2date(time_coord.points)
         new_dates = [datetime(t.year, t.month, 15) for t in old_dates]
         time_coord.points = time_coord.units.date2num(new_dates)
-    cube.coord('lat').standard_name = 'latitude'
-    cube.coord('lon').standard_name = 'longitude'
+    cube.coord("lat").standard_name = "latitude"
+    cube.coord("lon").standard_name = "longitude"
     cube = utils.fix_coords(cube)
 
     # Scalar coordinates
-    if cmor_info.short_name in ('fgco2', 'spco2'):
+    if cmor_info.short_name in ("fgco2", "spco2"):
         utils.add_scalar_depth_coord(cube)
 
     return cube
@@ -53,23 +53,23 @@ def _fix_coords(cube, cmor_info):
 
 def _fix_data(cube, var):
     """Fix data."""
-    if var == 'areacello':
+    if var == "areacello":
         cube.data = da.ma.masked_equal(cube.core_data(), 0.0)
 
 
 def _fix_var_metadata(var_info, cmor_info, attrs, cube):
     """Fix variable metadata."""
-    if 'raw_units' in var_info:
-        cube.units = var_info['raw_units']
+    if "raw_units" in var_info:
+        cube.units = var_info["raw_units"]
 
     # fgco2:
     # Convert from mol(CO2) to kgC (note that one CO2 molecule contains one C
     # atom) and fix wrong sign (the dataset reports sea->air flux, while CMOR
     # expects "positive into ocean")
-    if cmor_info.short_name == 'fgco2':
+    if cmor_info.short_name == "fgco2":
         cube.data = -cube.core_data() * 12.01  # molar mass of C [g/mol]
-        cube.units *= 'g mol-1'
-        attrs['positive'] = 'down'
+        cube.units *= "g mol-1"
+        attrs["positive"] = "down"
 
     # co3os, dissicos, talkos:
     # The original units of these variables are mumol/kg. To convert to the
@@ -80,9 +80,9 @@ def _fix_var_metadata(var_info, cmor_info, attrs, cube):
     # Papers in Marine Science, see
     # https://www.wkcgroup.com/tools-room/seawater-density-calculator/ and
     # https://link.springer.com/content/pdf/bbm:978-3-319-18908-6/1.pdf).
-    if cmor_info.short_name in ('co3os', 'dissicos', 'talkos'):
+    if cmor_info.short_name in ("co3os", "dissicos", "talkos"):
         cube.data = cube.core_data() * 1028.0
-        cube.units *= 'kg m-3'
+        cube.units *= "kg m-3"
 
     cube.convert_units(cmor_info.units)
 
@@ -92,15 +92,15 @@ def _fix_var_metadata(var_info, cmor_info, attrs, cube):
 def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
     """Extract variable."""
     var = cmor_info.short_name
-    raw_var = var_info.get('raw_name', var)
+    raw_var = var_info.get("raw_name", var)
 
     # Load data
     with warnings.catch_warnings():
         warnings.filterwarnings(
-            action='ignore',
-            message='Ignoring netCDF variable .* invalid units .*',
+            action="ignore",
+            message="Ignoring netCDF variable .* invalid units .*",
             category=UserWarning,
-            module='iris',
+            module="iris",
         )
         cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
 
@@ -122,21 +122,21 @@ def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
         var,
         out_dir,
         attrs,
-        local_keys=['comment', 'positive'],
-        unlimited_dimensions=['time'],
+        local_keys=["comment", "positive"],
+        unlimited_dimensions=["time"],
     )
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cmor_table = cfg['cmor_table']
-    glob_attrs = cfg['attributes']
+    cmor_table = cfg["cmor_table"]
+    glob_attrs = cfg["attributes"]
 
     # Run the cmorization
-    for (var, var_info) in cfg['variables'].items():
-        filepath = Path(in_dir) / var_info['filename']
+    for var, var_info in cfg["variables"].items():
+        filepath = Path(in_dir) / var_info["filename"]
         logger.info("CMORizing variable '%s' from file %s", var, filepath)
-        glob_attrs['comment'] = var_info.get('comment', '')
-        glob_attrs['mip'] = var_info['mip']
-        cmor_info = cmor_table.get_variable(var_info['mip'], var)
+        glob_attrs["comment"] = var_info.get("comment", "")
+        glob_attrs["mip"] = var_info["mip"]
+        cmor_info = cmor_table.get_variable(var_info["mip"], var)
         _extract_variable(var_info, cmor_info, glob_attrs, filepath, out_dir)

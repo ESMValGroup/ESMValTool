@@ -1,4 +1,5 @@
 """Write an index.html file in a directory containing recipe runs."""
+
 import argparse
 import datetime
 import textwrap
@@ -22,7 +23,7 @@ DKRZ_LEGAL_NOTICE = """
 
 def read_resource_usage_file(recipe_dir):
     """Read resource usage from the log."""
-    resource_file = recipe_dir / 'run' / 'resource_usage.txt'
+    resource_file = recipe_dir / "run" / "resource_usage.txt"
     usage = {}
 
     if not resource_file.exists():
@@ -32,13 +33,13 @@ def read_resource_usage_file(recipe_dir):
     if not text:
         return usage
 
-    lines = text.split('\n')
-    for name in lines[0].split('\t'):
+    lines = text.split("\n")
+    for name in lines[0].split("\t"):
         usage[name] = []
 
     for line in lines[1:]:
-        for key, value in zip(usage, line.split('\t')):
-            if key != 'Date and time (UTC)':
+        for key, value in zip(usage, line.split("\t")):
+            if key != "Date and time (UTC)":
                 value = float(value)
             usage[key].append(value)
 
@@ -47,7 +48,7 @@ def read_resource_usage_file(recipe_dir):
 
 def get_runtime_from_debug(recipe_dir):
     """Try to read the runtime from the debug log."""
-    debug_file = recipe_dir / 'run' / 'main_log_debug.txt'
+    debug_file = recipe_dir / "run" / "main_log_debug.txt"
     if not debug_file.exists():
         return None
 
@@ -55,7 +56,7 @@ def get_runtime_from_debug(recipe_dir):
     if not text:
         return None
 
-    lines = text.split('\n')
+    lines = text.split("\n")
     fmt = "%Y-%m-%d %H:%M:%S"
     end_date = None
     for line in lines[::-1]:
@@ -78,22 +79,22 @@ def get_resource_usage(recipe_dir):
     """Get recipe runtime (minutes), max memory (GB), avg CPU."""
     resource_usage = read_resource_usage_file(recipe_dir)
 
-    if not resource_usage or not resource_usage['Real time (s)']:
+    if not resource_usage or not resource_usage["Real time (s)"]:
         runtime = get_runtime_from_debug(recipe_dir)
         runtime = "" if runtime is None else f"{runtime}"
-        return [runtime, '', '']
+        return [runtime, "", ""]
 
-    runtime = resource_usage['Real time (s)'][-1]
-    avg_cpu = resource_usage['CPU time (s)'][-1] / runtime * 100.
+    runtime = resource_usage["Real time (s)"][-1]
+    avg_cpu = resource_usage["CPU time (s)"][-1] / runtime * 100.0
     runtime = datetime.timedelta(seconds=round(runtime))
-    memory = max(resource_usage['Memory (GB)'])
+    memory = max(resource_usage["Memory (GB)"])
 
     return [f"{runtime}", f"{memory:.1f}", f"{avg_cpu:.1f}"]
 
 
 def get_first_figure(recipe_dir):
     """Get the first figure."""
-    plot_dir = recipe_dir / 'plots'
+    plot_dir = recipe_dir / "plots"
     figures = plot_dir.glob("**/*.png")
     try:
         return next(figures)
@@ -109,20 +110,20 @@ def get_recipe_name(recipe_dir):
 def get_title_and_description(recipe_dir):
     """Get recipe title and description."""
     name = get_recipe_name(recipe_dir)
-    recipe_file = recipe_dir / 'run' / f'recipe_{name}.yml'
+    recipe_file = recipe_dir / "run" / f"recipe_{name}.yml"
 
-    with open(recipe_file, 'rb') as file:
+    with open(recipe_file, "rb") as file:
         recipe = yaml.safe_load(file)
 
-    docs = recipe['documentation']
-    title = docs.get('title', name.replace('_', ' ').title())
+    docs = recipe["documentation"]
+    title = docs.get("title", name.replace("_", " ").title())
 
-    return title, docs['description']
+    return title, docs["description"]
 
 
 def link(url, text):
     """Format text as html link."""
-    return '<a href="' + url + '">' + text + '</a>'
+    return '<a href="' + url + '">' + text + "</a>"
 
 
 def tr(entries):
@@ -159,17 +160,18 @@ def generate_summary(output_dir):
     ]
     lines.append(tr(th(txt) for txt in column_titles))
 
-    for recipe_dir in sorted(Path(output_dir).glob('recipe_*')):
-        log = recipe_dir / 'run' / 'main_log.txt'
-        success = log.read_text().endswith('Run was successful\n')
+    for recipe_dir in sorted(Path(output_dir).glob("recipe_*")):
+        log = recipe_dir / "run" / "main_log.txt"
+        success = log.read_text().endswith("Run was successful\n")
         if success:
-            status = 'success'
+            status = "success"
         else:
             debug_log = f"{recipe_dir.name}/run/main_log_debug.txt"
-            status = "failed (" + link(debug_log, 'debug') + ")"
+            status = "failed (" + link(debug_log, "debug") + ")"
         name = recipe_dir.name[:-16]
-        date = datetime.datetime.strptime(recipe_dir.name[-15:],
-                                          "%Y%m%d_%H%M%S")
+        date = datetime.datetime.strptime(
+            recipe_dir.name[-15:], "%Y%m%d_%H%M%S"
+        )
         resource_usage = get_resource_usage(recipe_dir)
 
         entry = []
@@ -189,12 +191,13 @@ def generate_overview(output_dir):
     recipes = {}
 
     def get_date(recipe_dir):
-        return datetime.datetime.strptime(recipe_dir.stem[-15:],
-                                          "%Y%m%d_%H%M%S")
+        return datetime.datetime.strptime(
+            recipe_dir.stem[-15:], "%Y%m%d_%H%M%S"
+        )
 
-    for recipe_dir in sorted(Path(output_dir).glob('recipe_*')):
-        log = recipe_dir / 'run' / 'main_log.txt'
-        success = log.read_text().endswith('Run was successful\n')
+    for recipe_dir in sorted(Path(output_dir).glob("recipe_*")):
+        log = recipe_dir / "run" / "main_log.txt"
+        success = log.read_text().endswith("Run was successful\n")
         if not success:
             continue
         name = get_recipe_name(recipe_dir)
@@ -207,26 +210,32 @@ def generate_overview(output_dir):
 
     print(f"Found {len(recipes)} recipes")
     lines = []
-    for name, recipe_dir in recipes.items():
+    for recipe_dir in recipes.values():
         title, description = get_title_and_description(recipe_dir)
         figure = get_first_figure(recipe_dir)
         recipe_url = recipe_dir.relative_to(output_dir)
         entry_txt = div(
             div(
-                "\n".join([
-                    f"<img src='{figure.relative_to(output_dir)}' "
-                    "class='card-img-top'/>" if figure else "",
-                    div(
-                        "\n".join([
-                            f'<h5 class="card-title">{title}</h5>',
-                            f'<p class="card-text">{description} '
-                            f'<a href="{recipe_url}">'
-                            '<i class="bi bi-arrow-right-circle"></i>'
-                            '</a></p>',
-                        ]),
-                        "card-body",
-                    ),
-                ]),
+                "\n".join(
+                    [
+                        f"<img src='{figure.relative_to(output_dir)}' "
+                        "class='card-img-top'/>"
+                        if figure
+                        else "",
+                        div(
+                            "\n".join(
+                                [
+                                    f'<h5 class="card-title">{title}</h5>',
+                                    f'<p class="card-text">{description} '
+                                    f'<a href="{recipe_url}">'
+                                    '<i class="bi bi-arrow-right-circle"></i>'
+                                    "</a></p>",
+                                ]
+                            ),
+                            "card-body",
+                        ),
+                    ]
+                ),
                 "card",
             ),
             "col",
@@ -281,7 +290,7 @@ def write_debug_html(lines, output_dir, legal_notice):
     lines = ["      " + line for line in lines]
     text = header + "\n".join(lines) + footer
 
-    index_file = output_dir / 'debug.html'
+    index_file = output_dir / "debug.html"
     index_file.write_text(text)
     print(f"Wrote file://{index_file.absolute()}")
 
@@ -340,7 +349,7 @@ def write_index_html(lines, output_dir, legal_notice):
     lines = ["        " + line for line in lines]
     text = header + "\n".join(lines) + footer
 
-    index_file = output_dir / 'index.html'
+    index_file = output_dir / "index.html"
     index_file.write_text(text)
     print(f"Wrote file://{index_file.absolute()}")
 
@@ -348,23 +357,32 @@ def write_index_html(lines, output_dir, legal_notice):
 def main():
     """Run the program."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('output_dir',
-                        default='.',
-                        type=Path,
-                        help='ESMValTool output directory.')
     parser.add_argument(
-        '--add_dkrz_legal_notice',
+        "output_dir",
+        default=".",
+        type=Path,
+        help="ESMValTool output directory.",
+    )
+    parser.add_argument(
+        "--add_dkrz_legal_notice",
         default=True,
         type=bool,
-        help='Add DKRZ legal notice links'
-        '(legally required when page is shown on DKRZ servers).')
+        help="Add DKRZ legal notice links"
+        "(legally required when page is shown on DKRZ servers).",
+    )
     args = parser.parse_args()
 
-    write_debug_html(generate_summary(args.output_dir), args.output_dir,
-                     args.add_dkrz_legal_notice)
-    write_index_html(generate_overview(args.output_dir), args.output_dir,
-                     args.add_dkrz_legal_notice)
+    write_debug_html(
+        generate_summary(args.output_dir),
+        args.output_dir,
+        args.add_dkrz_legal_notice,
+    )
+    write_index_html(
+        generate_overview(args.output_dir),
+        args.output_dir,
+        args.add_dkrz_legal_notice,
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

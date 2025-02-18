@@ -51,13 +51,14 @@ logger = logging.getLogger(__name__)
 
 def extract_variable(var_info, raw_info, attrs, year):
     """Extract to all vars."""
-    rawvar = raw_info['name']
+    rawvar = raw_info["name"]
     constraint = iris.NameConstraint(var_name=rawvar)
     try:
-        cube = iris.load_cube(raw_info['file'], constraint)
+        cube = iris.load_cube(raw_info["file"], constraint)
     except iris.exceptions.ConstraintMismatchError as constraint_error:
-        raise ValueError(f"No data available for variable {rawvar}"
-                         f"and year {year}") from constraint_error
+        raise ValueError(
+            f"No data available for variable {rawvar}and year {year}"
+        ) from constraint_error
 
     # Fix cube
     fix_var_metadata(cube, var_info)
@@ -69,29 +70,32 @@ def extract_variable(var_info, raw_info, attrs, year):
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cmor_table = cfg['cmor_table']
-    glob_attrs = cfg['attributes']
+    cmor_table = cfg["cmor_table"]
+    glob_attrs = cfg["attributes"]
 
     # run the cmorization
-    for var, vals in cfg['variables'].items():
-        var_info = cmor_table.get_variable(vals['mip'], var)
-        glob_attrs['mip'] = vals['mip']
-        raw_info = {'name': vals['raw'], 'file': vals['file']}
-        inpfile = os.path.join(in_dir, cfg['filename'])
+    for var, vals in cfg["variables"].items():
+        var_info = cmor_table.get_variable(vals["mip"], var)
+        glob_attrs["mip"] = vals["mip"]
+        raw_info = {"name": vals["raw"], "file": vals["file"]}
+        inpfile = os.path.join(in_dir, cfg["filename"])
         logger.info("CMORizing var %s from file type %s", var, inpfile)
         years = range(1982, 2020)
         months = ["0" + str(mo) for mo in range(1, 10)] + ["10", "11", "12"]
         for year in years:
             monthly_cubes = []
             for month in months:
-                raw_info['file'] = inpfile.format(year=year, month=month)
-                logger.info("CMORizing var %s from file type %s", var,
-                            raw_info['file'])
+                raw_info["file"] = inpfile.format(year=year, month=month)
+                logger.info(
+                    "CMORizing var %s from file type %s", var, raw_info["file"]
+                )
                 cube = extract_variable(var_info, raw_info, glob_attrs, year)
                 monthly_cubes.append(cube)
             yearly_cube = concatenate(monthly_cubes)
-            save_variable(yearly_cube,
-                          var,
-                          out_dir,
-                          glob_attrs,
-                          unlimited_dimensions=['time'])
+            save_variable(
+                yearly_cube,
+                var,
+                out_dir,
+                glob_attrs,
+                unlimited_dimensions=["time"],
+            )

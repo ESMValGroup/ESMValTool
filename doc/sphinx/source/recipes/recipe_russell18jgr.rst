@@ -27,11 +27,11 @@ Diagnostics are stored in diag_scripts/russell18jgr/
 * russell18jgr-fig3b.ncl: calculates and plots the latitudinal position of Subantarctic Front. Using definitions from Orsi et al (1995).
 * russell18jgr-fig3b-2.ncl: calculates and plots the latitudinal position of Polar Front. Using definitions from Orsi et al (1995).
 * russell18jgr-fig4.ncl:  calculates and plots the zonal velocity through Drake Passage (at 69W) and total transport through the passage if the volcello file is available.
-* russell18jgr-fig5.ncl:  calculates and plots the mean extent of sea ice for September(max) in blue and mean extent of sea ice for February(min) in red. 
+* russell18jgr-fig5.ncl:  calculates and plots the mean extent of sea ice for September(max) in blue and mean extent of sea ice for February(min) in red.
 * russell18jgr-fig5g.ncl: calculates and plots the annual cycle of sea ice area in southern ocean.
 * russell18jgr-fig6a.ncl: calculates and plots the density layer based volume transport(in Sv) across 30S based on the layer definitions in Talley (2008).
 * russell18jgr-fig6b.ncl: calculates and plots the Density layer based heat transport(in PW) across 30S based on the layer definitions in Talley (2008).
-* russell18jgr-fig7h.ncl: calculates and plots the zonal mean flux of fgco2 in gC/(yr * m\ :sup:`2`\). 
+* russell18jgr-fig7h.ncl: calculates and plots the zonal mean flux of fgco2 in gC/(yr * m\ :sup:`2`\).
 * russell18jgr-fig7i.ncl: calculates and plots the cumulative integral of the net CO2 flux from 90S to 30S (in PgC/yr).
 * russell18jgr-fig9a.ncl: calculates and plots the scatter plot of the width of the Southern Hemisphere westerly wind band against the annual-mean integrated heat uptake south of 30S (in PW), along with the line of best fit.
 * russell18jgr-fig9b.ncl: calculates and plots the scatter plot of the width of the Southern Hemisphere westerly wind band against the annual-mean integrated carbon uptake south of 30S (in Pg C/yr), along with the line of best fit.
@@ -267,7 +267,7 @@ Example plots
    :align:   center
    :width: 50%
 
-   Figure 1: Annual-mean zonal wind stress (tauu - N/m\ :sup:`2`\) with eastward wind stress as positive plotted as a polar contour map. 
+   Figure 1: Annual-mean zonal wind stress (tauu - N/m\ :sup:`2`\) with eastward wind stress as positive plotted as a polar contour map.
 
 .. _fig_russell_2:
 .. figure::  /recipes/figures/russell18jgr/Fig2_1986-2005.png
@@ -347,7 +347,7 @@ Example plots
    :align:   center
    :width: 50%
 
-   Figure 7i is the cumulative integral of the net CO\ :sub:`2`\  flux from 90S to 30S (in PgC/yr) plotted as a line plot. 
+   Figure 7i is the cumulative integral of the net CO\ :sub:`2`\  flux from 90S to 30S (in PgC/yr) plotted as a line plot.
 
 .. _fig_russell_8:
 .. figure::  /recipes/figures/russell18jgr/Fig8_polar-ph.png

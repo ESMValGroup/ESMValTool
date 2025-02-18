@@ -118,7 +118,7 @@ Tiers
 All observational datasets are grouped into in three tiers:
 
 * **Tier 1**: obs4mips and ana4mips datasets. These datasets are publicly and freely available without any license restrictions. These datasets do not need any reformatting and can be used as is with ESMValTool.
-* **Tier 2** other freely available datasets that are not obs4mips. There are no license restrictions. These datasets need to be reformatted to be used with ESMValTool ('CMORization', see above). 
+* **Tier 2** other freely available datasets that are not obs4mips. There are no license restrictions. These datasets need to be reformatted to be used with ESMValTool ('CMORization', see above).
 * **Tier 3** restricted datasets. Datasets which require registration to be downloaded or that can only be obtained upon request from the respective authors. License restrictions do not allow us to redistribute Tier 3 datasets. The data have to be obtained and reformatted by the user ('CMORization', see above).
 
 [!NOTE]

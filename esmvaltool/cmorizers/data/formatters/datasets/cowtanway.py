@@ -34,46 +34,46 @@ logger = logging.getLogger(__name__)
 
 def _extract_variable(short_name, var, vkey, version, cfg, filepath, out_dir):
     """Extract variable."""
-    raw_var = var.get('raw', short_name)
+    raw_var = var.get("raw", short_name)
     cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
 
     # Fix units
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name).copy()
+    cmor_info = cfg["cmor_table"].get_variable(var["mip"], short_name).copy()
     cube.convert_units(cmor_info.units)
     utils.convert_timeunits(cube, 1950)
 
     # Fix coordinates
     cube = utils.fix_coords(cube)
-    if 'height2m' in cmor_info.dimensions:
+    if "height2m" in cmor_info.dimensions:
         utils.add_height2m(cube)
 
     # Fix metadata
-    attrs = cfg['attributes'].copy()
-    attrs['mip'] = var['mip']
-    attrs['version'] = version
-    baseline = cfg['attributes']['baseline'][vkey]
-    attrs['baseline'] = baseline
-    attrs['comment'] = attrs['comment'].format(baseline=baseline)
+    attrs = cfg["attributes"].copy()
+    attrs["mip"] = var["mip"]
+    attrs["version"] = version
+    baseline = cfg["attributes"]["baseline"][vkey]
+    attrs["baseline"] = baseline
+    attrs["comment"] = attrs["comment"].format(baseline=baseline)
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
 
     # Save variable
-    utils.save_variable(cube,
-                        short_name,
-                        out_dir,
-                        attrs,
-                        unlimited_dimensions=['time'])
+    utils.save_variable(
+        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+    )
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    raw_filepath = os.path.join(in_dir, cfg['filename'])
+    raw_filepath = os.path.join(in_dir, cfg["filename"])
 
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
-        for (vkey, version) in cfg['attributes']['version'].items():
-            logger.info("CMORizing variable '%s' version '%s'", short_name,
-                        version)
+    for short_name, var in cfg["variables"].items():
+        for vkey, version in cfg["attributes"]["version"].items():
+            logger.info(
+                "CMORizing variable '%s' version '%s'", short_name, version
+            )
             filepath = raw_filepath.format(version=version)
-            _extract_variable(short_name, var, vkey, version, cfg, filepath,
-                              out_dir)
+            _extract_variable(
+                short_name, var, vkey, version, cfg, filepath, out_dir
+            )

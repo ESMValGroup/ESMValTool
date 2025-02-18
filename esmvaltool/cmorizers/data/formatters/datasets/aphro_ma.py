@@ -64,86 +64,85 @@ logger = logging.getLogger(__name__)
 
 def _extract_variable(short_name, var, cfg, filepath, out_dir, version):
     """Extract variable."""
-    logger.info("CMORizing variable '%s' from input file '%s'", short_name,
-                filepath)
+    logger.info(
+        "CMORizing variable '%s' from input file '%s'", short_name, filepath
+    )
 
     with catch_warnings():
         filterwarnings(
-            action='ignore',
+            action="ignore",
             message="Skipping global attribute 'calendar': 'calendar' is .*",
             category=UserWarning,
-            module='iris',
+            module="iris",
         )
         try:
             cube = iris.load_cube(
                 str(filepath),
-                constraint=NameConstraint(var_name=var['raw']),
+                constraint=NameConstraint(var_name=var["raw"]),
             )
         except iris.exceptions.ConstraintMismatchError:
             cube = iris.load_cube(
                 str(filepath),
-                constraint=NameConstraint(var_name=var['raw_fallback']),
+                constraint=NameConstraint(var_name=var["raw_fallback"]),
             )
 
     # Fix var units
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
-    cube.units = var.get('raw_units', short_name)
+    cmor_info = cfg["cmor_table"].get_variable(var["mip"], short_name)
+    cube.units = var.get("raw_units", short_name)
     cube.convert_units(cmor_info.units)
     utils.fix_var_metadata(cube, cmor_info)
 
     # fix coordinates
-    if 'height2m' in cmor_info.dimensions:
+    if "height2m" in cmor_info.dimensions:
         utils.add_height2m(cube)
     cube = utils.fix_coords(cube)
 
     # Fix metadata
-    attrs = cfg['attributes'].copy()
-    attrs['mip'] = var['mip']
-    attrs['version'] = version.replace('_', '-')
-    attrs['reference'] = var['reference']
-    attrs['source'] = attrs['source']
+    attrs = cfg["attributes"].copy()
+    attrs["mip"] = var["mip"]
+    attrs["version"] = version.replace("_", "-")
+    attrs["reference"] = var["reference"]
+    attrs["source"] = attrs["source"]
     utils.set_global_atts(cube, attrs)
 
     # Save variable
-    utils.save_variable(cube,
-                        short_name,
-                        out_dir,
-                        attrs,
-                        unlimited_dimensions=['time'])
+    utils.save_variable(
+        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+    )
 
-    if 'add_mon' in var.keys():
-        if var['add_mon']:
+    if "add_mon" in var.keys():
+        if var["add_mon"]:
             logger.info("Building monthly means")
 
             # Calc monthly
             cube = monthly_statistics(cube)
-            cube.remove_coord('month_number')
-            cube.remove_coord('year')
+            cube.remove_coord("month_number")
+            cube.remove_coord("year")
 
             # Fix metadata
-            attrs['mip'] = 'Amon'
+            attrs["mip"] = "Amon"
 
             # Fix coordinates
             cube = utils.fix_coords(cube)
 
             # Save variable
-            utils.save_variable(cube,
-                                short_name,
-                                out_dir,
-                                attrs,
-                                unlimited_dimensions=['time'])
+            utils.save_variable(
+                cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+            )
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    raw_filename = cfg['filename']
+    raw_filename = cfg["filename"]
 
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
-        for version in var['version'].values():
+    for short_name, var in cfg["variables"].items():
+        for version in var["version"].values():
             logger.info("CMORizing variable '%s'", short_name)
-            filenames = raw_filename.format(raw_file_var=var['raw_file_var'],
-                                            version=version)
+            filenames = raw_filename.format(
+                raw_file_var=var["raw_file_var"], version=version
+            )
             for filepath in sorted(Path(in_dir).glob(filenames)):
-                _extract_variable(short_name, var, cfg, filepath, out_dir,
-                                  version)
+                _extract_variable(
+                    short_name, var, cfg, filepath, out_dir, version
+                )

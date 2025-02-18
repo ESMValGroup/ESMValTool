@@ -17,7 +17,7 @@ Performance metrics:
 * median absolute error (model minus observations) net surface shortwave (SW) radiation
 * median absolute error (model minus observations) net surface longwave (LW) radiation
 
-Metrics are calculated using model and observation multi-year climatologies (seasonal means) 
+Metrics are calculated using model and observation multi-year climatologies (seasonal means)
 for meteorological seasons:
 * December-January-February (djf)
 * March-April-May (mam)

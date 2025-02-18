@@ -7,27 +7,27 @@
 ; Mattia Righi, DLR (Germany)
 ;
 ; Revision 0.34
-;  - Updated to include new functions, resources, and 
+;  - Updated to include new functions, resources, and
 ;    keywords added in NCL 6.0.0
-; 
+;
 ; Revision 0.33
-; Changes to 0.32 by T. Corti, ETH Zurich and David Brown, 
+; Changes to 0.32 by T. Corti, ETH Zurich and David Brown,
 ; Changes between 0.2 and 0.3 by C. Schreck and A. Srock, University at Albany
 ; Changes between 0.1 and 0.2 Provided by Heiko Klein of Norway
 
-; August 19 2003 Sylvia Murphy 
+; August 19 2003 Sylvia Murphy
 ; National Center for Atmospheric Research
-; Does text highlighting for NCL reserved words, built-in functions, 
+; Does text highlighting for NCL reserved words, built-in functions,
 ; gsn* functions, contributed and shea-util functions, text, and comments.
 ; Does automatic indenting between begin and end statments, and within
 ; do loops and if statements.
-; 
+;
 ; Emacs has a lot more power that these functions. I do not use that
 ; functionality, so i did not spend any more time trying to add abbreviations,
 ; special keymaps etc.
 ;
 ; Updates in version 0.32
-; Added Comment Handling (M-;). 
+; Added Comment Handling (M-;).
 ;  - Insert a comment at the end of the current line
 ;  - Alternatively comment/uncomment selected region
 ; Use syntactic fontification for comments and strings
@@ -51,7 +51,7 @@
 ;
 ; KNOWN PROBLEMS in version 0.32:
 ; 1) Comment Handling does not work in xemacs
-; 2) Comments may not fontify on file open in xemacs 
+; 2) Comments may not fontify on file open in xemacs
 ;
 ; KNOWN PROBLEMS in version 0.3:
 ; 1) Comments with embedded strings don't initially fontify properly, but
@@ -67,7 +67,7 @@
 ;    a) highlights only comments and text, and only after tabs
 ;    b) indentation appears to work
 ; 2) Does not work with xemacs
-; 3) Not all NCL built-in functions are highlighted. I listed MY favorite 
+; 3) Not all NCL built-in functions are highlighted. I listed MY favorite
 ;    ones.
 ; 4) Have not demonstrated how to change the indentation value in .emacs
 ; 5) The ncl-in-comment function does not work. Its calls are commented out.
@@ -80,9 +80,9 @@
 ; 2) in your .emacs or .xemacs/custom.el file, add and properly modify //
 ; the following (without the comments):
   ;(setq auto-mode-alist (cons '("\.ncl$" . ncl-mode) auto-mode-alist))
-  ;(autoload 'ncl-mode "LOCATION/ncl.el") 
+  ;(autoload 'ncl-mode "LOCATION/ncl.el")
   ;(add-hook 'ncl-mode-hook
-  ;      (lambda ()  
+  ;      (lambda ()
   ;       )
   ;   )
 
@@ -93,7 +93,7 @@
 ;         (set-face-foreground font-lock-comment-face "FireBrick")
 ;     ; highlight strings
 ;         (set-face-foreground font-lock-string-face "SlateGray")
-;     ; highlight keywords, array descriptors, and tests                             
+;     ; highlight keywords, array descriptors, and tests
 ;         (set-face-foreground font-lock-keyword-face "Purple")
 ;     ; highlight built-in functions
 ;         (set-face-foreground font-lock-builtin-face "Blue")
@@ -102,7 +102,7 @@
 ;     ; highlight shea_util and contributed functions
 ;         (set-face-foreground font-lock-function-name-face  "CadetBlue")
 ;     ; highlight ESMValTool interface and lib functions
-;         (set-face-foreground font-lock-type-face  "OrangeRed1") 
+;         (set-face-foreground font-lock-type-face  "OrangeRed1")
 ;     ; highlight resources
 ;         (set-face-foreground font-lock-constant-face  "ForestGreen")
 
@@ -115,13 +115,13 @@
    '(
 
 
-    ;; comments. the period (.) means a ; and any character after it except a 
+    ;; comments. the period (.) means a ; and any character after it except a
     ;; newline while the asterisk (*) means repeated all occurrences.
 
     ; this is only for XEmacs!
     ("\\(;.*\\)" 1 font-lock-comment-face)
-	
- 
+
+
     ;; strings.  .*? means the shortest possible group of characters within
     ;; the quotes (only on one line)
     ;("\\(\".*?\"\\)" 1 font-lock-string-face )
@@ -240,7 +240,7 @@
     ;; ESMValTool interface, shared and utility scripts
     ("\\<\\(read_data\\|select_metadata_by_atts\\|select_metadata_by_name\\|metadata_att_as_array\\|bname\\|basename\\|att2var\\|att2var_default\\|get_ncdf_name\\|get_ncdf_dir\\|ncdf_read\\|ncdf_define\\|ncdf_write\\|ncdf_att\\|copy_CoordNames_n\\|extend_var_at\\|remove_index\\|set_default_att\\|empty_str\\|log_info\\|log_debug\\|enter_msg\\|leave_msg\\|error_msg\\|tool_stop\\|exit_if_missing_atts\\|log_provenance\\|taylor_plot\\|contour_map\\|contour_map_polar\\|contour_map_ce\\|add_markers_to_map\\|get_title_suffix\\|remove_attrs\\|plot_two_by_one\\|plot_three_by_one_diff\\|two_by_one\\|three_by_one_diff\\|plot_three_by_one_vector\\|three_by_one_vector\\|plot_multipanel\\|multipanel\\|plot_multipanel_vector\\|multipanel_vector\\|seasonal_plot\\|xy_plot_wrapper\\|ts_line_wrapper\\|pr_u850_mean_plot\\|mjo_xcor_lag_plot\\|mjo_pr_ua_vari_plot\\|mjo_unvari_eof_plot\\|get_title_suffix\\|remove_attrs\\|plot_two_by_one\\|plot_three_by_one_diff\\|two_by_one\\|three_by_one_diff\\|plot_three_by_one_vector\\|three_by_one_vector\\|plot_multipanel\\|multipanel\\|plot_multipanel_vector\\|multipanel_vector\\|seasonal_plot\\|xy_plot_wrapper\\|ts_line_wrapper\\|xy_line_overlap\\|plot_precip_domain\\|precip_domain\\|month_sel\\|lat_names\\|add_line\\|add_scatt\\|add_legend\\|calcRegCoeffs\\|genZonalMeans\\|calcMeanAnnCycleMonthly\\|calcMeanAnnCycleAnnual\\|rmMeanAnnCycle\\|apfiltersmooth\\|smoothAnomalies\\|clmMon2clmDayn\\|scatterplot\\|scatterplot3D\\|scatterplot_markers\\|zonalmean_profile\\|contourplot\\|portrait_plot\\|circle_plot\\|profile_plev\\|aerosol_profile\\|aerosol_sizedist\\|xy_line\\|xy_line_anom\\|timeseries_station\\|cycle_plot\\|errorbar_plot\\|create_legend_lines\\|output_type\\|copy_VarAtt_sel\\|panelling\\|get_plot_dir\\|get_outfile_name\\|get_wks\\|add_markers\\|add_num_markers\\|add_errorbar\\|horizontal_whiskers\\|add_prediction_error\\|mjo_wave_freq_plot\\|addHorVertLinesCross_extended\\|mjo_cross_spectra_plot\\|mjo_ceof_plot\\|mjo_life_cycle_plot\\|vector_scalar_map_polar\\|project_style\\|place_debuginfo\\|place_description\\|gsnColorRange\\|format_units\\|set_log_ticks\\|sort_alphabetically\\|legend_lines\\|legend_markers\\|roi\\|extract_area\\|gridcell_area\\|map_area\\|area_operations\\|select_region\\|make_latlon2D\\|cdo_remapdis\\|guestimate_average_grid_area\\|get_lower_limits\\|get_upper_limits\\|is_regional\\|esmf_conserve_wrapper\\|rect2rect_interp\\|plev_lat_interp\\|get_dataset_minus_ref\\|esmf_conserve_wrapper_time\\|regrid_3D_to_rectilinear_grid\\|get_start_year\\|get_end_year\\|convert_units\\|UNIQ\\|union\\|set_inclusive_OR\\|intersection\\|is_array_subset\\|relative_complement\\|set_symmetric_difference\\|dim_stddev_wgt_Wrap\\|time_operations\\|calc_season_index\\|extract_season\\|month_to_season_extended\\|coswgt_areaave\\|coswgt_arearmse\\|coswgt_pattern_cor\\|interannual_variability\\|calculate_metric\\|normalize_metric\\|distrib_stats\\|lognormal_dist\\|add_labelbar\\|create_empty_array\\|data_read_in\\|data_read_in_ocean_MOC\\|data_read_in_ice\\|y_axis_check\\|check_custom_climo\\|isfilepresent2\\|table_link_setup\\|set_varAtts\\|create_timec\\|format_time\\|format_plev\\|format_lev\\|format_lat\\|format_lon\\|format_coords\\|read_cmor\\|format_variable\\|guess_bounds_time\\|guess_bounds_lev\\|guess_bounds_lat\\|guess_bounds_lon\\|guess_coord_bounds\\|set_global_atts\\|write_nc\\|write_nc_profile\\|set_size_array\\|process_EBAS_data\\|\\)\\>" 1 font-lock-type-face)
 
-    ) 
+    )
   "words used in ncl-mode highlighting"
   )
 
@@ -308,7 +308,7 @@
 ;; indenting variables
 ;;****************************************************************************
 (defvar ncl-main-block-indent 2
-  "*Extra indentation for the main block of code. That is the block between 
+  "*Extra indentation for the main block of code. That is the block between
 the begin statement and the end statement.")
 
 (defvar ncl-main-block-end -2
@@ -322,27 +322,27 @@ the negative of `ncl-main-block-indent`")
   "*The offset that places the `end do` statement back to it origin.")
 
 (defconst ncl-comment-line-start-skip "^[ \t]*;"
-  "Regexp to match the start of a full-line comment. That is the 
-_beginning_ of a line containing a comment delmiter `\;' preceded 
+  "Regexp to match the start of a full-line comment. That is the
+_beginning_ of a line containing a comment delmiter `\;' preceded
 only by whitespace.")
 
-;; defconst are constants that never change 
+;; defconst are constants that never change
 ;; the \` matches only those at the beginning of the buffer and no other
-(defconst ncl-begin "\\<\\(begin\\)\\>\\|\\`" 
+(defconst ncl-begin "\\<\\(begin\\)\\>\\|\\`"
   "Regular expression to find the begin statement.")
 
 ;; the \' matches only those at the end of the buffer and no other
-(defconst ncl-end "\\<\\(^end$\\)\\>\\|\\'" 
+(defconst ncl-end "\\<\\(^end$\\)\\>\\|\\'"
   "Regular expression to find the line that indicates the end of a
 script.")
 
-(defconst ncl-begin-do "^[ /t]*do" 
+(defconst ncl-begin-do "^[ /t]*do"
   "Regular expression to find the beginning of a do loop.")
 
-(defconst ncl-else "^[ /t]*else" 
+(defconst ncl-else "^[ /t]*else"
   "Regular expression to find an else statment.")
 
-(defconst ncl-begin-if "^[ /t]*if" 
+(defconst ncl-begin-if "^[ /t]*if"
   "Regular expression to find the beginning of a if statment.")
 
 (defconst ncl-enddo "end[ ]do"
@@ -377,15 +377,15 @@ the comment is not preceded by whitespace it is unchanged.")
 ;; indenting functions
 ;;****************************************************************************
 (defun ncl-beginning-of-statement ()
-  "Move to beginning of the current statement. Skips back past statement 
-continuations. Point is placed at the beginning of the line whether or not 
+  "Move to beginning of the current statement. Skips back past statement
+continuations. Point is placed at the beginning of the line whether or not
 this is an actual statement."
   (if (save-excursion (forward-line -1) (ncl-is-continuation-line))
       (ncl-previous-statement)
     (beginning-of-line)))
 
 (defun ncl-end-of-statement ()
-  "Moves point to the end of the current NCL statement. If not in a statement 
+  "Moves point to the end of the current NCL statement. If not in a statement
 just moves to end of line. Returns position."
   (interactive)
   (while (and (ncl-is-continuation-line)
@@ -393,8 +393,8 @@ just moves to end of line. Returns position."
   (end-of-line) (point))
 
 (defun ncl-previous-statement ()
-  "Moves point to beginning of the previous statement. Returns t if the 
-current line before moving is the beginning of the first non-comment 
+  "Moves point to beginning of the previous statement. Returns t if the
+current line before moving is the beginning of the first non-comment
 statement in the file, and nil otherwise."
   (interactive)
   (let (first-statement)
@@ -402,18 +402,18 @@ statement in the file, and nil otherwise."
         ;; first line in file
         t
       ;; skip blank lines, label lines, include lines and line comments
-      (while (and 
+      (while (and
               ;; The current statement is the first statement until we
               ;; reach another statement.
               (setq first-statement
-                    (or 
+                    (or
                      (looking-at ncl-comment-line-start-skip)
                      (looking-at "[ \t]*$")
                      (looking-at (concat "[ \t]*" ncl-label "[ \t]*$"))
                      (looking-at "^@")))
               (= (forward-line -1) 0)))
       ;; skip continuation lines
-      (while (and 
+      (while (and
               (save-excursion
                 (forward-line -1)
                 (ncl-is-continuation-line))
@@ -427,12 +427,12 @@ statement in the file, and nil otherwise."
 
 (defun ncl-look-at (regexp &optional cont beg)
   "Searches current line from current point for the regular expression REGEXP.
-If optional argument CONT is non-nil, searches to the end of the current 
-statement. If optional arg BEG is non-nil, search starts from the beginning 
-of the current statement. Ignores matches that end in a comment or inside a 
-string expression. Returns point if successful, nil otherwise.  This function 
-produces unexpected results if REGEXP contains quotes or a comment delimiter. 
-The search is case insensitive.  If successful leaves point after the match, 
+If optional argument CONT is non-nil, searches to the end of the current
+statement. If optional arg BEG is non-nil, search starts from the beginning
+of the current statement. Ignores matches that end in a comment or inside a
+string expression. Returns point if successful, nil otherwise.  This function
+produces unexpected results if REGEXP contains quotes or a comment delimiter.
+The search is case insensitive.  If successful leaves point after the match,
 otherwise, does not move point."
   (let ((here (point))
         (old-syntax-table (syntax-table))
@@ -450,11 +450,11 @@ otherwise, does not move point."
     (set-syntax-table old-syntax-table)
     (if (not found) (goto-char here))
     found))
- 
+
 (defun ncl-in-quote ()
   "Returns location of the opening quote if point is in a NCL string constant,
-nil otherwise. Ignores comment delimiters on the current line. Properly 
-handles nested quotation marks and octal constants - a double quote followed 
+nil otherwise. Ignores comment delimiters on the current line. Properly
+handles nested quotation marks and octal constants - a double quote followed
 by an octal digit."
 ;;; Treat an octal inside an apostrophe to be a normal string. Treat a
 ;;; double quote followed by an octal digit to be an octal constant
@@ -474,12 +474,12 @@ by an octal digit."
             ;; Find string start
             ;; Don't find an octal constant beginning with a double quote
             (if (re-search-forward "\"[^0-7]\\|'\\|\"$" eol 'lim)
-                ;; Find the string end. In NCL, two consecutive delimiters 
-		;; after the start of a string act as an escape for the 
-                ;; delimiter in the string. Two consecutive delimiters alone 
-		;; (i.e., not after the start of a string) is the the 
+                ;; Find the string end. In NCL, two consecutive delimiters
+		;; after the start of a string act as an escape for the
+                ;; delimiter in the string. Two consecutive delimiters alone
+		;; (i.e., not after the start of a string) is the the
 		;; null string.
-                (progn 
+                (progn
                   ;; Move to position after quote
                   (goto-char (1+ (match-beginning 0)))
                   (setq bq (1- (point)))
@@ -516,7 +516,7 @@ by an octal digit."
 
 (defun ncl-goto-comment ()
   "Move to start of comment delimiter on current line. Moves to end of line if
-there is no comment delimiter. Ignores comment delimiters in strings. Returns 
+there is no comment delimiter. Ignores comment delimiters in strings. Returns
 point if comment found and nil otherwise."
   (let ((eos (progn (end-of-line) (point)))
         (data (match-data))
@@ -533,13 +533,13 @@ point if comment found and nil otherwise."
            (point)))))
 
 (defun ncl-current-statement-indent ()
-  "Return indentation of the current statement. If in a statement, moves to 
+  "Return indentation of the current statement. If in a statement, moves to
 beginning of statement before finding indent."
   (ncl-beginning-of-statement)
   (ncl-current-indent))
 
 (defun ncl-current-indent ()
-  "Return the column of the indentation of the current line.  Skips any 
+  "Return the column of the indentation of the current line.  Skips any
 whitespace. Returns 0 if the end-of-line follows the whitespace."
   (save-excursion
     (beginning-of-line)
@@ -552,7 +552,7 @@ whitespace. Returns 0 if the end-of-line follows the whitespace."
   "Return appropriate indentation for current line as NCL code."
   (save-excursion
     (beginning-of-line)
-    (cond 
+    (cond
      ;; if line is "begin" do nothing and exit
      ((ncl-look-at ncl-begin) 0)
      ;; calculate indent based on previous and current statements
@@ -566,12 +566,12 @@ whitespace. Returns 0 if the end-of-line follows the whitespace."
 		 ;; indent if previous statment is begin
 		 ((ncl-look-at ncl-begin t)
 		  (+ (ncl-current-statement-indent) ncl-main-block-indent))
-		 
-		 ;; indent if previous statment is do 
+
+		 ;; indent if previous statment is do
 		 ((ncl-look-at ncl-begin-do t)
 		  (+ (ncl-current-statement-indent) ncl-block-indent))
 
-		 ;; indent if previous statment is if 
+		 ;; indent if previous statment is if
 		 ((ncl-look-at ncl-begin-if t)
 		  (+ (ncl-current-statement-indent) ncl-block-indent))
 
@@ -600,15 +600,15 @@ whitespace. Returns 0 if the end-of-line follows the whitespace."
 	  )))))
 
 (defun ncl-indent-to (col &optional min)
-  "Indent from point with spaces until column COL. Inserts space before 
+  "Indent from point with spaces until column COL. Inserts space before
 markers at point."
   (if (not min) (setq min 0))
   (insert-before-markers
    (make-string (max min (- col (current-column))) ? )))
 
 (defun ncl-indent-left-margin (col)
-  "Indent the current line to column COL. Indents such that first 
-non-whitespace character is at column COL. Inserts spaces before markers at 
+  "Indent the current line to column COL. Indents such that first
+non-whitespace character is at column COL. Inserts spaces before markers at
 point."
   (save-excursion
     (beginning-of-line)
@@ -661,7 +661,7 @@ point."
           ;; indent the line
           (ncl-indent-left-margin (ncl-calculate-indent)))
         ;; Adjust parallel comment
-;        (end-of-line) 
+;        (end-of-line)
 ;        (if (ncl-in-comment)
 ;            (indent-for-comment))
 	))
@@ -696,7 +696,7 @@ For detail, see `comment-dwim'."
 
   (if ncl-startup-message
       (message "Emacs NCL mode version %s." ncl-mode-version)
-    ) 
+    )
 ;**************************
 ;; indentation
 ;**************************

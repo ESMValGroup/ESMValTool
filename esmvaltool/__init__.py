@@ -1,4 +1,5 @@
 """ESMValTool diagnostics package."""
+
 from importlib.metadata import PackageNotFoundError, version
 
 try:
@@ -6,7 +7,8 @@ try:
 except PackageNotFoundError as exc:
     raise PackageNotFoundError(
         "ESMValTool package not found, please run `pip install -e .` before "
-        "importing the package.") from exc
+        "importing the package."
+    ) from exc
 
 
 class ESMValToolDeprecationWarning(UserWarning):

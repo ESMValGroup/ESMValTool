@@ -1,4 +1,5 @@
 """Script to download NSIDC-G02202-sh."""
+
 import logging
 from datetime import datetime
 
@@ -9,8 +10,9 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -43,24 +45,35 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     )
 
     # need area file
-    area_dat = ('ftp://sidads.colorado.edu/DATASETS/seaice'
-                '/polar-stereo/tools/pss25area_v3.dat')
+    area_dat = (
+        "ftp://sidads.colorado.edu/DATASETS/seaice"
+        "/polar-stereo/tools/pss25area_v3.dat"
+    )
     downloader.download_folder(area_dat, [])
 
-    anc_path = ('https://noaadata.apps.nsidc.org/NOAA/G02202_V4/'
-                'ancillary/G02202-cdr-ancillary-sh.nc')
+    anc_path = (
+        "https://noaadata.apps.nsidc.org/NOAA/G02202_V4/"
+        "ancillary/G02202-cdr-ancillary-sh.nc"
+    )
     downloader.download_folder(anc_path, [])
 
-    base_path = ('https://noaadata.apps.nsidc.org/NOAA/G02202_V4/south/monthly'
-                 '/seaice_conc_monthly_sh_{year}{month:02d}_{other}_v04r00.nc')
+    base_path = (
+        "https://noaadata.apps.nsidc.org/NOAA/G02202_V4/south/monthly"
+        "/seaice_conc_monthly_sh_{year}{month:02d}_{other}_v04r00.nc"
+    )
 
     # regex for n07 changes to f08.. file names
     # bins #{'197811':'n07','198708':'f08',
     # '199201':'f11','199510':'f13', '200801':'f17'}
-    datels = [datetime(1978, 11, 1), datetime(1987, 7, 30),
-              datetime(1991, 12, 30), datetime(1995, 9, 30),
-              datetime(2007, 12, 30), end_date]
-    suffls = ['n07', 'f08', 'f11', 'f13', 'f17']
+    datels = [
+        datetime(1978, 11, 1),
+        datetime(1987, 7, 30),
+        datetime(1991, 12, 30),
+        datetime(1995, 9, 30),
+        datetime(2007, 12, 30),
+        end_date,
+    ]
+    suffls = ["n07", "f08", "f11", "f13", "f17"]
     isuf = 0
     suffix = suffls[isuf]
     # initialize suffix if dates start higher than initial
@@ -69,13 +82,15 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         isuf += 1
 
     while loop_date <= end_date:
-
         if loop_date > datels[isuf]:
             suffix = suffls[isuf]
             isuf += 1
 
         downloader.download_folder(
-            base_path.format(year=loop_date.year, month=loop_date.month,
-                             other=suffix), [])
+            base_path.format(
+                year=loop_date.year, month=loop_date.month, other=suffix
+            ),
+            [],
+        )
         loop_date += relativedelta.relativedelta(months=1)
         # check loop_date is => next bin

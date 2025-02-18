@@ -1,4 +1,5 @@
 """Script to download CRU from its webpage."""
+
 import logging
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
@@ -33,7 +34,7 @@ def download_dataset(
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
-    for var in ['tmp', 'pre', 'pet', 'tmn', 'tmx', 'cld']:
+    for var in ["tmp", "pre", "pet", "tmn", "tmx", "cld"]:
         downloader.download_file(
             "https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.07/"
             f"cruts.2304141047.v4.07/{var}/"

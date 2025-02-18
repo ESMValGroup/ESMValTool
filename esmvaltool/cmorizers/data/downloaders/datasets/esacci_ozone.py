@@ -7,8 +7,9 @@ from dateutil import relativedelta
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -39,15 +40,16 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
-    downloader.ftp_name = 'ozone'
+    downloader.ftp_name = "ozone"
     downloader.connect()
     downloader.set_cwd(
-        'limb_profiles/l3/merged/merged_monthly_zonal_mean/v0002')
-    downloader.download_folder('.')
+        "limb_profiles/l3/merged/merged_monthly_zonal_mean/v0002"
+    )
+    downloader.download_folder(".")
 
-    downloader.set_cwd('total_columns/l3/merged/v0100/')
+    downloader.set_cwd("total_columns/l3/merged/v0100/")
     while loop_date <= end_date:
         year = loop_date.year
-        downloader.set_cwd('total_columns/l3/merged/v0100/')
-        downloader.download_year(f'{year}')
+        downloader.set_cwd("total_columns/l3/merged/v0100/")
+        downloader.download_year(f"{year}")
         loop_date += relativedelta.relativedelta(years=1)

@@ -45,7 +45,7 @@ User settings in recipe
    * ``e13fig12_season``: season (default: ANN (annual))
 
    *Required settings for variables*
-   
+
    * ``preprocessor``: zonal
    * ``reference_dataset``: name of the reference model or observation for regridding and bias calculation (e.g. ERA5).
    *  ``mip``:  Amon.

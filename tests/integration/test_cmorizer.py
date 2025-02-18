@@ -33,13 +33,13 @@ def keep_cwd():
 
 def write_config_file(dirname):
     """Replace configuration values for testing."""
-    config_file = dirname / 'config-user.yml'
+    config_file = dirname / "config-user.yml"
     cfg = {
-        'output_dir': str(dirname / 'output_dir'),
-        'rootpath': {
-            'RAWOBS': str(dirname / 'raw_stuff'),
+        "output_dir": str(dirname / "output_dir"),
+        "rootpath": {
+            "RAWOBS": str(dirname / "raw_stuff"),
         },
-        'log_level': 'debug',
+        "log_level": "debug",
     }
     config_file.write_text(yaml.safe_dump(cfg, encoding=None))
     return str(config_file)
@@ -49,30 +49,37 @@ def _create_sample_cube(time_step):
     """Create a quick CMOR-compliant sample cube."""
     coord_sys = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
     cube_data = np.ones((1, 3, 2, 2))
-    cube_data[0, 1, 1, 1] = 22.
-    time = iris.coords.DimCoord([
-        time_step,
-    ],
-                                standard_name='time',
-                                bounds=[[time_step - 0.5, time_step + 0.5]],
-                                units=Unit('days since 0000-01-01',
-                                           calendar='gregorian'))
-    zcoord = iris.coords.DimCoord([0.5, 5., 50.],
-                                  var_name='depth',
-                                  standard_name='depth',
-                                  bounds=[[0., 2.5], [2.5, 25.], [25., 250.]],
-                                  units='m',
-                                  attributes={'positive': 'down'})
-    lons = iris.coords.DimCoord([1.5, 2.5],
-                                standard_name='longitude',
-                                bounds=[[1., 2.], [2., 3.]],
-                                units='K',
-                                coord_system=coord_sys)
-    lats = iris.coords.DimCoord([1.5, 2.5],
-                                standard_name='latitude',
-                                bounds=[[1., 2.], [2., 3.]],
-                                units='K',
-                                coord_system=coord_sys)
+    cube_data[0, 1, 1, 1] = 22.0
+    time = iris.coords.DimCoord(
+        [
+            time_step,
+        ],
+        standard_name="time",
+        bounds=[[time_step - 0.5, time_step + 0.5]],
+        units=Unit("days since 0000-01-01", calendar="gregorian"),
+    )
+    zcoord = iris.coords.DimCoord(
+        [0.5, 5.0, 50.0],
+        var_name="depth",
+        standard_name="depth",
+        bounds=[[0.0, 2.5], [2.5, 25.0], [25.0, 250.0]],
+        units="m",
+        attributes={"positive": "down"},
+    )
+    lons = iris.coords.DimCoord(
+        [1.5, 2.5],
+        standard_name="longitude",
+        bounds=[[1.0, 2.0], [2.0, 3.0]],
+        units="K",
+        coord_system=coord_sys,
+    )
+    lats = iris.coords.DimCoord(
+        [1.5, 2.5],
+        standard_name="latitude",
+        bounds=[[1.0, 2.0], [2.0, 3.0]],
+        units="K",
+        coord_system=coord_sys,
+    )
     coords_spec = [(time, 0), (zcoord, 1), (lats, 2), (lons, 3)]
     cube = iris.cube.Cube(cube_data, dim_coords_and_dims=coords_spec)
     return cube
@@ -90,7 +97,7 @@ def put_dummy_data(data_path):
         ("silicate", "woa18_all_i", "i_an"),
     ]
 
-    for (dir_name, file_name_prefix, var_name) in data_info:
+    for dir_name, file_name_prefix, var_name in data_info:
         file_dir = os.path.join(data_path, dir_name)
         os.makedirs(file_dir)
         for month, step in enumerate(np.arange(0.5, 12.5)):
@@ -103,7 +110,7 @@ def put_dummy_data(data_path):
 
 def check_log_file(log_file, no_data=False):
     """Check the cmorization log file."""
-    with open(log_file, 'r') as log:
+    with open(log_file) as log:
         if no_data:
             msg = "Data for WOA not found"
         else:
@@ -116,25 +123,27 @@ def check_output_exists(output_path):
     # eg Tier2/WOA/OBS6_WOA_clim_2018_Omon_thetao_200001-200012.nc
     output_files = os.listdir(output_path)
     assert len(output_files) == 8
-    assert 'OBS6_WOA_clim' in output_files[0]
+    assert "OBS6_WOA_clim" in output_files[0]
     out_files = [s.split("_")[5] for s in output_files]
-    assert 'thetao' in out_files
-    assert 'so' in out_files
-    assert 'no3' in out_files
-    assert 'po4' in out_files
-    assert 'o2' in out_files
-    assert 'si' in out_files
-    assert 'sos' in out_files
-    assert 'tos' in out_files
+    assert "thetao" in out_files
+    assert "so" in out_files
+    assert "no3" in out_files
+    assert "po4" in out_files
+    assert "o2" in out_files
+    assert "si" in out_files
+    assert "sos" in out_files
+    assert "tos" in out_files
 
 
 def check_conversion(output_path):
     """Check basic cmorization."""
-    cube = iris.load_cube(os.path.join(output_path,
-                                       os.listdir(output_path)[0]))
-    assert cube.coord("time").units == Unit('days since 1950-1-1 00:00:00',
-                                            calendar='gregorian')
-    assert cube.coord("latitude").units == 'degrees'
+    cube = iris.load_cube(
+        os.path.join(output_path, os.listdir(output_path)[0])
+    )
+    assert cube.coord("time").units == Unit(
+        "days since 1950-1-1 00:00:00", calendar="gregorian"
+    )
+    assert cube.coord("latitude").units == "degrees"
 
 
 @contextlib.contextmanager
@@ -148,80 +157,84 @@ def arguments(*args):
 
 @pytest.mark.skipif(
     version.parse(esmvalcore.__version__) >= version.parse("2.14.0"),
-    reason='ESMValCore >= v2.14.0',
+    reason="ESMValCore >= v2.14.0",
 )
 def test_cmorize_obs_woa_no_data_config_file(tmp_path):
     """Test for example run of cmorize_obs command."""
     config_file = write_config_file(tmp_path)
-    os.makedirs(os.path.join(tmp_path, 'raw_stuff', 'Tier2'))
-    os.makedirs(os.path.join(tmp_path, 'output_dir'))
+    os.makedirs(os.path.join(tmp_path, "raw_stuff", "Tier2"))
+    os.makedirs(os.path.join(tmp_path, "output_dir"))
     with keep_cwd():
         with pytest.raises(RuntimeError):
             with pytest.warns(ESMValToolDeprecationWarning):
-                DataCommand().format('WOA', config_file=config_file)
+                DataCommand().format("WOA", config_file=config_file)
 
-    log_dir = os.path.join(tmp_path, 'output_dir')
-    log_file = os.path.join(log_dir,
-                            os.listdir(log_dir)[0], 'run', 'main_log.txt')
+    log_dir = os.path.join(tmp_path, "output_dir")
+    log_file = os.path.join(
+        log_dir, os.listdir(log_dir)[0], "run", "main_log.txt"
+    )
     check_log_file(log_file, no_data=True)
 
 
 @pytest.mark.skipif(
     version.parse(esmvalcore.__version__) >= version.parse("2.14.0"),
-    reason='ESMValCore >= v2.14.0',
+    reason="ESMValCore >= v2.14.0",
 )
 def test_cmorize_obs_woa_data_config_file(tmp_path):
     """Test for example run of cmorize_obs command."""
     config_file = write_config_file(tmp_path)
-    data_path = os.path.join(tmp_path, 'raw_stuff', 'Tier2', 'WOA')
+    data_path = os.path.join(tmp_path, "raw_stuff", "Tier2", "WOA")
     put_dummy_data(data_path)
     with keep_cwd():
         with pytest.warns(ESMValToolDeprecationWarning):
-            DataCommand().format('WOA', config_file=config_file)
+            DataCommand().format("WOA", config_file=config_file)
 
-    log_dir = os.path.join(tmp_path, 'output_dir')
-    log_file = os.path.join(log_dir,
-                            os.listdir(log_dir)[0], 'run', 'main_log.txt')
+    log_dir = os.path.join(tmp_path, "output_dir")
+    log_file = os.path.join(
+        log_dir, os.listdir(log_dir)[0], "run", "main_log.txt"
+    )
     check_log_file(log_file, no_data=False)
-    output_path = os.path.join(log_dir, os.listdir(log_dir)[0], 'Tier2', 'WOA')
+    output_path = os.path.join(log_dir, os.listdir(log_dir)[0], "Tier2", "WOA")
     check_output_exists(output_path)
     check_conversion(output_path)
 
 
 @pytest.mark.skipif(
     version.parse(esmvalcore.__version__) < version.parse("2.12.0"),
-    reason='ESMValCore < v2.12.0',
+    reason="ESMValCore < v2.12.0",
 )
 def test_cmorize_obs_woa_no_data(tmp_path):
     """Test for example run of cmorize_obs command."""
     write_config_file(tmp_path)
-    os.makedirs(os.path.join(tmp_path, 'raw_stuff', 'Tier2'))
+    os.makedirs(os.path.join(tmp_path, "raw_stuff", "Tier2"))
     with keep_cwd():
         with pytest.raises(RuntimeError):
-            DataCommand().format('WOA', config_dir=str(tmp_path))
+            DataCommand().format("WOA", config_dir=str(tmp_path))
 
-    log_dir = os.path.join(tmp_path, 'output_dir')
-    log_file = os.path.join(log_dir,
-                            os.listdir(log_dir)[0], 'run', 'main_log.txt')
+    log_dir = os.path.join(tmp_path, "output_dir")
+    log_file = os.path.join(
+        log_dir, os.listdir(log_dir)[0], "run", "main_log.txt"
+    )
     check_log_file(log_file, no_data=True)
 
 
 @pytest.mark.skipif(
     version.parse(esmvalcore.__version__) < version.parse("2.12.0"),
-    reason='ESMValCore < v2.12.0',
+    reason="ESMValCore < v2.12.0",
 )
 def test_cmorize_obs_woa_data(tmp_path):
     """Test for example run of cmorize_obs command."""
     write_config_file(tmp_path)
-    data_path = os.path.join(tmp_path, 'raw_stuff', 'Tier2', 'WOA')
+    data_path = os.path.join(tmp_path, "raw_stuff", "Tier2", "WOA")
     put_dummy_data(data_path)
     with keep_cwd():
-        DataCommand().format('WOA', config_dir=str(tmp_path))
+        DataCommand().format("WOA", config_dir=str(tmp_path))
 
-    log_dir = os.path.join(tmp_path, 'output_dir')
-    log_file = os.path.join(log_dir,
-                            os.listdir(log_dir)[0], 'run', 'main_log.txt')
+    log_dir = os.path.join(tmp_path, "output_dir")
+    log_file = os.path.join(
+        log_dir, os.listdir(log_dir)[0], "run", "main_log.txt"
+    )
     check_log_file(log_file, no_data=False)
-    output_path = os.path.join(log_dir, os.listdir(log_dir)[0], 'Tier2', 'WOA')
+    output_path = os.path.join(log_dir, os.listdir(log_dir)[0], "Tier2", "WOA")
     check_output_exists(output_path)
     check_conversion(output_path)

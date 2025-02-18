@@ -15,7 +15,7 @@ from esmvaltool.diag_scripts.mlr.models.linear_base import LinearModel
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-@MLRModel.register_mlr_model('ridge_cv')
+@MLRModel.register_mlr_model("ridge_cv")
 class RidgeCVModel(LinearModel):
     """Ridge Regression model with built-in CV."""
 
@@ -24,5 +24,7 @@ class RidgeCVModel(LinearModel):
     def fit(self):
         """Print final ``alpha`` after successful fitting."""
         super().fit()
-        logger.info("Optimal alpha of Ridge model: α = %.5f",
-                    self._clf.steps[-1][1].regressor_.alpha_)
+        logger.info(
+            "Optimal alpha of Ridge model: α = %.5f",
+            self._clf.steps[-1][1].regressor_.alpha_,
+        )

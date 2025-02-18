@@ -47,7 +47,8 @@ def _center_timecoord(cube):
     starts = [cftime.DatetimeNoLeap(c.year, c.month, 1) for c in times]
     ends = [
         cftime.DatetimeNoLeap(c.year, c.month + 1, 1)
-        if c.month < 12 else cftime.DatetimeNoLeap(c.year + 1, 1, 1)
+        if c.month < 12
+        else cftime.DatetimeNoLeap(c.year + 1, 1, 1)
         for c in times
     ]
     time.bounds = time.units.date2num(np.stack([starts, ends], -1))
@@ -69,7 +70,8 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
         utils.convert_timeunits(cube, 1950)
     else:
         cube.coord("time").convert_units(
-            Unit("days since 1950-1-1 00:00:00", calendar="gregorian"))
+            Unit("days since 1950-1-1 00:00:00", calendar="gregorian")
+        )
 
     # Fix coordinates
     cube = utils.fix_coords(cube)
@@ -85,11 +87,9 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     utils.set_global_atts(cube, attrs)
 
     # Save variable
-    utils.save_variable(cube,
-                        short_name,
-                        out_dir,
-                        attrs,
-                        unlimited_dimensions=["time"])
+    utils.save_variable(
+        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+    )
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):

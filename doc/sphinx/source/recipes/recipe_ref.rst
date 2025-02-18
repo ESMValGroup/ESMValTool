@@ -6,11 +6,11 @@ CMIP Rapid Evaluation Framework (REF)
 Overview
 --------
 
-Here ESMValTool recipes are collected which will be used in the CMIP 
+Here ESMValTool recipes are collected which will be used in the CMIP
 `Rapid Evaluation Framework (REF) <https://wcrp-cmip.org/cmip7/rapid-evaluation-framework/>`__.
 
 
-Available recipes 
+Available recipes
 -----------------
 
 Recipes are stored in recipes/ref
@@ -25,8 +25,8 @@ Example plots:
 .. _fig_ref_1:
 .. figure::  /recipes/figures/ref/map_lwcre_MPI-ESM1-2-LR_Amon.png
    :align:   center
-   
-   Geographical map of the climatological mean longwave cloud radiative 
+
+   Geographical map of the climatological mean longwave cloud radiative
    effect from MPI-ESM1-2-LR and CERES-EBAF Ed4.2 and their difference.
 
 .. _fig_ref_2:
@@ -34,5 +34,5 @@ Example plots:
    :align:   center
 
    Zonal averages of the climatological mean longwave cloud radiative
-   effect from CERES-EBAF Ed4.2 (solid black), ESACCI-CLOUD (dashed black), 
+   effect from CERES-EBAF Ed4.2 (solid black), ESACCI-CLOUD (dashed black),
    ISCCP-FH (dotted black) and the MPI-ESM1-2-LR model (blue).

@@ -125,13 +125,13 @@ class NonStandardScaler(StandardScaler):
         return return_value
 
 
-class TestAdvancedPipeline():
+class TestAdvancedPipeline:
     """Tests for ``AdvancedPipeline``."""
 
     def test_coef_(self):
         """Test ``coef_`` property."""
         pipeline = AdvancedPipeline(
-            [('t', StandardScaler(with_std=False)), ('r', LinearRegression())],
+            [("t", StandardScaler(with_std=False)), ("r", LinearRegression())],
         )
         pipeline.fit(np.arange(3).reshape(3, 1), np.arange(3))
         np.testing.assert_allclose(pipeline.coef_, [1.0])
@@ -139,7 +139,7 @@ class TestAdvancedPipeline():
     def test_feature_importances_(self):
         """Test ``feature_importances_`` property."""
         pipeline = AdvancedPipeline(
-            [('t', StandardScaler()), ('r', FeatureImportanceRegressor())],
+            [("t", StandardScaler()), ("r", FeatureImportanceRegressor())],
         )
         assert pipeline.feature_importances_ == 42
 
@@ -152,31 +152,31 @@ class TestAdvancedPipeline():
         regressor=LinearRegression(),
     )
     STEPS = [
-        [('t', NonStandardScaler())],
-        [('t', NonStandardScaler()), ('r', LinearRegression())],
-        [('t', NonStandardScaler()), ('r', REG)],
-        [('t', NonStandardScaler()), ('r', AREG)],
-        [('t', NonStandardScaler()), ('r', AREG)],
-        [('t', NonStandardScaler()), ('r', AREG)],
-        [('t', NonStandardScaler()), ('r', AREG)],
+        [("t", NonStandardScaler())],
+        [("t", NonStandardScaler()), ("r", LinearRegression())],
+        [("t", NonStandardScaler()), ("r", REG)],
+        [("t", NonStandardScaler()), ("r", AREG)],
+        [("t", NonStandardScaler()), ("r", AREG)],
+        [("t", NonStandardScaler()), ("r", AREG)],
+        [("t", NonStandardScaler()), ("r", AREG)],
     ]
     PIPELINES = [AdvancedPipeline(step) for step in STEPS]
-    KW_X0 = {'a': 1, 't__f': 2.0}
-    KW_X1 = {'b__a': 1, 't__f': 2.0}
-    KW_X2 = {'t__wrongparam': 1, 't__f': 2.0}
-    KW_X3 = {'r__wrongparam': 1, 't__f': 2.0}
-    KW_X4 = {'r__wrongstep__f': 1, 't__f': 2.0}
-    KW_X5 = {'r__regressor__wrongparam': 1, 't__f': 2.0}
-    KW_0 = {'t__f': 2.0}
-    KW_1 = {'t__f': 2.0, 'r__sample_weight': np.arange(3.0)}
-    KW_2 = {'t__f': 2.0, 'r__transformer__f': 3.0}
+    KW_X0 = {"a": 1, "t__f": 2.0}
+    KW_X1 = {"b__a": 1, "t__f": 2.0}
+    KW_X2 = {"t__wrongparam": 1, "t__f": 2.0}
+    KW_X3 = {"r__wrongparam": 1, "t__f": 2.0}
+    KW_X4 = {"r__wrongstep__f": 1, "t__f": 2.0}
+    KW_X5 = {"r__regressor__wrongparam": 1, "t__f": 2.0}
+    KW_0 = {"t__f": 2.0}
+    KW_1 = {"t__f": 2.0, "r__sample_weight": np.arange(3.0)}
+    KW_2 = {"t__f": 2.0, "r__transformer__f": 3.0}
 
     TEST_CHECK_FINAL_STEP = zip(
         PIPELINES,
         [TypeError, TypeError, TypeError, True, True, True, True, True],
     )
 
-    @pytest.mark.parametrize('pipeline,output', TEST_CHECK_FINAL_STEP)
+    @pytest.mark.parametrize("pipeline,output", TEST_CHECK_FINAL_STEP)
     def test_check_final_step(self, pipeline, output):
         """Test checking if final step."""
         pipeline = clone(pipeline)
@@ -189,17 +189,20 @@ class TestAdvancedPipeline():
     TEST_FIT_TARGET_TRANSFORMER_ONLY = zip(
         PIPELINES,
         [{}, {}, {}, KW_X3, KW_X4, KW_0, KW_2],
-        [TypeError,
-         TypeError,
-         TypeError,
-         ValueError,
-         ValueError,
-         (np.array([20.0]), np.array([200.0 / 3.0])),
-         NotImplementedError],
+        [
+            TypeError,
+            TypeError,
+            TypeError,
+            ValueError,
+            ValueError,
+            (np.array([20.0]), np.array([200.0 / 3.0])),
+            NotImplementedError,
+        ],
     )
 
-    @pytest.mark.parametrize('pipeline,kwargs,output',
-                             TEST_FIT_TARGET_TRANSFORMER_ONLY)
+    @pytest.mark.parametrize(
+        "pipeline,kwargs,output", TEST_FIT_TARGET_TRANSFORMER_ONLY
+    )
     def test_fit_target_transformer_only(self, pipeline, kwargs, output):
         """Test fitting of target transformer only."""
         pipeline = clone(pipeline)
@@ -211,7 +214,7 @@ class TestAdvancedPipeline():
         transformer = pipeline.steps[-1][1].transformer_
         np.testing.assert_allclose(transformer.mean_, output[0])
         np.testing.assert_allclose(transformer.var_, output[1])
-        assert not hasattr(pipeline.steps[-1][1], 'regressor_')
+        assert not hasattr(pipeline.steps[-1][1], "regressor_")
         with pytest.raises(NotFittedError):
             pipeline.predict(X_TRAIN)
         with pytest.raises(NotFittedError):
@@ -220,17 +223,20 @@ class TestAdvancedPipeline():
     TEST_FIT_TRANSFORMERS_ONLY = zip(
         PIPELINES,
         [KW_0, KW_0, KW_1, {}, KW_X0, KW_X1, KW_2],
-        [None,
-         (np.array([8.333333]), np.array([8.222222])),
-         (np.array([8.333333]), np.array([8.222222])),
-         (np.array([6.333333]), np.array([8.222222])),
-         ValueError,
-         KeyError,
-         (np.array([8.333333]), np.array([8.222222]))],
+        [
+            None,
+            (np.array([8.333333]), np.array([8.222222])),
+            (np.array([8.333333]), np.array([8.222222])),
+            (np.array([6.333333]), np.array([8.222222])),
+            ValueError,
+            KeyError,
+            (np.array([8.333333]), np.array([8.222222])),
+        ],
     )
 
-    @pytest.mark.parametrize('pipeline,kwargs,output',
-                             TEST_FIT_TRANSFORMERS_ONLY)
+    @pytest.mark.parametrize(
+        "pipeline,kwargs,output", TEST_FIT_TRANSFORMERS_ONLY
+    )
     def test_fit_transformers_only(self, pipeline, kwargs, output):
         """Test fitting transformers only."""
         pipeline = clone(pipeline)
@@ -241,13 +247,13 @@ class TestAdvancedPipeline():
         pipeline.fit_transformers_only(X_TRAIN, Y_TRAIN, **kwargs)
         transformer = pipeline.steps[0][1]
         if output is None:
-            assert not hasattr(transformer, 'mean_')
-            assert not hasattr(transformer, 'var_')
+            assert not hasattr(transformer, "mean_")
+            assert not hasattr(transformer, "var_")
             return
         np.testing.assert_allclose(transformer.mean_, output[0])
         np.testing.assert_allclose(transformer.var_, output[1])
-        assert pipeline.steps[-1][0] == 'r'
-        assert pipeline.steps[-1][1] != 'passthrough'
+        assert pipeline.steps[-1][0] == "r"
+        assert pipeline.steps[-1][1] != "passthrough"
         with pytest.raises(NotFittedError):
             pipeline.predict(X_TRAIN)
         with pytest.raises(NotFittedError):
@@ -260,14 +266,16 @@ class TestAdvancedPipeline():
         (KW_0, np.array([[-3.1624763874], [-2.1162476387], [-0.7212759738]])),
     ]
 
-    @pytest.mark.parametrize('kwargs,output', TEST_TRANSFORM_ONLY)
+    @pytest.mark.parametrize("kwargs,output", TEST_TRANSFORM_ONLY)
     def test_transform_only(self, kwargs, output):
         """Test transforming only."""
-        pipeline = AdvancedPipeline([
-            ('s', StandardScaler()),
-            ('t', NonStandardScaler()),
-            ('r', LinearRegression()),
-        ])
+        pipeline = AdvancedPipeline(
+            [
+                ("s", StandardScaler()),
+                ("t", NonStandardScaler()),
+                ("r", LinearRegression()),
+            ]
+        )
         with pytest.raises(NotFittedError):
             pipeline.transform_only(X_TRAIN)
         if isinstance(output, type):
@@ -281,17 +289,20 @@ class TestAdvancedPipeline():
     TEST_TRANSFORM_TARGET_ONLY = zip(
         PIPELINES,
         [{}, {}, {}, {}, KW_X2, KW_0, KW_X5],
-        [TypeError,
-         TypeError,
-         TypeError,
-         np.array([-1.22474487, 0.0, 1.22474487]),
-         np.array([-1.22474487, 0.0, 1.22474487]),
-         np.array([-1.22474487, 0.0, 1.22474487]),
-         np.array([-1.22474487, 0.0, 1.22474487])],
+        [
+            TypeError,
+            TypeError,
+            TypeError,
+            np.array([-1.22474487, 0.0, 1.22474487]),
+            np.array([-1.22474487, 0.0, 1.22474487]),
+            np.array([-1.22474487, 0.0, 1.22474487]),
+            np.array([-1.22474487, 0.0, 1.22474487]),
+        ],
     )
 
-    @pytest.mark.parametrize('pipeline,kwargs,output',
-                             TEST_TRANSFORM_TARGET_ONLY)
+    @pytest.mark.parametrize(
+        "pipeline,kwargs,output", TEST_TRANSFORM_TARGET_ONLY
+    )
     def test_transform_target_only(self, pipeline, kwargs, output):
         """Test transforming of target only."""
         pipeline = clone(pipeline)
@@ -304,7 +315,7 @@ class TestAdvancedPipeline():
         pipeline.fit_target_transformer_only(Y_TRAIN, **kwargs)
         y_trans = pipeline.transform_target_only(Y_TRAIN)
         np.testing.assert_allclose(y_trans, output)
-        assert not hasattr(pipeline.steps[-1][1], 'regressor_')
+        assert not hasattr(pipeline.steps[-1][1], "regressor_")
         with pytest.raises(NotFittedError):
             pipeline.predict(X_TRAIN)
         with pytest.raises(NotFittedError):
@@ -320,21 +331,18 @@ class NewLinearRegression(LinearRegression):
     def predict(self, x_data, always_one=False):
         """Add dummy predict_kwargs to function."""
         if always_one:
-            return 'one'
+            return "one"
         return super().predict(x_data)
 
 
-class TestAdvancedRFE():
+class TestAdvancedRFE:
     """Tests for ``AdvancedRFE``."""
 
     X_TRAIN = np.array(
-        [[0.0, 0.0, 0.0],
-         [2.0, 0.0, 1.0],
-         [3.0, 0.0, -2.0]],
+        [[0.0, 0.0, 0.0], [2.0, 0.0, 1.0], [3.0, 0.0, -2.0]],
     )
     X_PRED = np.array(
-        [[1000.0, 100.0, 10.0],
-         [2000.0, 200.0, 20.0]],
+        [[1000.0, 100.0, 10.0], [2000.0, 200.0, 20.0]],
     )
 
     Y_TRAIN = np.array([0.0, 1.0, -2.0])
@@ -343,23 +351,29 @@ class TestAdvancedRFE():
     def get_rfe(self, drop=False):
         """``AdvancedRFE`` object."""
         if drop:
-            column_transformer_args = [[
-                ('drop', 'drop', [2]),
-                ('passthrough', 'passthrough', [0, 1]),
-            ]]
+            column_transformer_args = [
+                [
+                    ("drop", "drop", [2]),
+                    ("passthrough", "passthrough", [0, 1]),
+                ]
+            ]
         else:
-            column_transformer_args = [[
-                ('passthrough', 'passthrough', [0, 1, 2]),
-            ]]
-        pipeline_args = [[
-            ('trans', ColumnTransformer(*column_transformer_args)),
-            ('lin', NewLinearRegression()),
-        ]]
+            column_transformer_args = [
+                [
+                    ("passthrough", "passthrough", [0, 1, 2]),
+                ]
+            ]
+        pipeline_args = [
+            [
+                ("trans", ColumnTransformer(*column_transformer_args)),
+                ("lin", NewLinearRegression()),
+            ]
+        ]
         rfe_kwargs = {
-            'estimator': AdvancedPipeline(*pipeline_args),
-            'n_features_to_select': 1,
-            'step': 1,
-            'verbose': 1000,
+            "estimator": AdvancedPipeline(*pipeline_args),
+            "n_features_to_select": 1,
+            "step": 1,
+            "verbose": 1000,
         }
         return AdvancedRFE(**rfe_kwargs)
 
@@ -387,8 +401,10 @@ class TestAdvancedRFE():
             rfe_drop.fit(self.X_TRAIN, self.Y_TRAIN)
 
         # Regressor without coef_ or feature_importances_
-        msg = ("The classifier does not expose 'coef_' or "
-               "'feature_importances_' attributes")
+        msg = (
+            "The classifier does not expose 'coef_' or "
+            "'feature_importances_' attributes"
+        )
         fail_rfe = AdvancedRFE(self.NoCoefReg())
         with pytest.raises(RuntimeError, match=msg):
             fail_rfe.fit(np.arange(6).reshape(3, 2), np.arange(3))
@@ -418,8 +434,9 @@ class TestAdvancedRFE():
         firfe.fit(x_data, y_data)
         assert firfe.n_features_ == 3
         np.testing.assert_array_equal(firfe.ranking_, [4, 3, 2, 1, 1, 1])
-        np.testing.assert_array_equal(firfe.support_,
-                                      [False, False, False, True, True, True])
+        np.testing.assert_array_equal(
+            firfe.support_, [False, False, False, True, True, True]
+        )
 
     def test_advanced_rfe_no_fit_kwargs(self, rfe):
         """Test ``AdvancedRFE`` without fit_kwargs."""
@@ -431,7 +448,7 @@ class TestAdvancedRFE():
         assert isinstance(est, AdvancedPipeline)
         assert len(est.steps[0][1].transformers_) == 1
         transformer = est.steps[0][1].transformers_[0]
-        assert transformer[0] == 'passthrough'
+        assert transformer[0] == "passthrough"
         assert isinstance(transformer[1], FunctionTransformer)
         assert transformer[2] == [0]
         np.testing.assert_allclose(est.steps[1][1].coef_, [1.0])
@@ -439,12 +456,13 @@ class TestAdvancedRFE():
         pred = rfe.predict(self.X_PRED)
         np.testing.assert_allclose(pred, [10.0, 20.0])
         pred_one = rfe.predict(self.X_PRED, always_one=True)
-        assert pred_one == 'one'
+        assert pred_one == "one"
 
     def test_advanced_rfe_fit_kwargs(self, rfe):
         """Test ``AdvancedRFE`` with fit_kwargs."""
-        rfe.fit(self.X_TRAIN, self.Y_TRAIN,
-                lin__sample_weight=self.SAMPLE_WEIGHTS)
+        rfe.fit(
+            self.X_TRAIN, self.Y_TRAIN, lin__sample_weight=self.SAMPLE_WEIGHTS
+        )
         assert rfe.n_features_ == 1
         np.testing.assert_array_equal(rfe.ranking_, [1, 3, 2])
         np.testing.assert_array_equal(rfe.support_, [True, False, False])
@@ -452,7 +470,7 @@ class TestAdvancedRFE():
         assert isinstance(est, AdvancedPipeline)
         assert len(est.steps[0][1].transformers_) == 1
         transformer = est.steps[0][1].transformers_[0]
-        assert transformer[0] == 'passthrough'
+        assert transformer[0] == "passthrough"
         assert isinstance(transformer[1], FunctionTransformer)
         assert transformer[2] == [0]
         np.testing.assert_allclose(est.steps[1][1].coef_, [0.5])
@@ -460,7 +478,7 @@ class TestAdvancedRFE():
         pred = rfe.predict(self.X_PRED)
         np.testing.assert_allclose(pred, [500.0, 1000.0])
         pred_one = rfe.predict(self.X_PRED, always_one=True)
-        assert pred_one == 'one'
+        assert pred_one == "one"
 
     def step_score(self, estimator, features):
         """Score for a single step rfe."""
@@ -472,9 +490,9 @@ class TestAdvancedRFE():
     def test_alternative_kwargs(self):
         """Test alternative kwargs."""
         rfe_kwargs = {
-            'estimator': LinearRegression(),
-            'n_features_to_select': None,
-            'step': 0.1,
+            "estimator": LinearRegression(),
+            "n_features_to_select": None,
+            "step": 0.1,
         }
         rfe = AdvancedRFE(**rfe_kwargs)
         zero_idx = np.array([1, 3, 5, 7, 9, 11, 13, 15, 17, 19])
@@ -496,7 +514,7 @@ class TestAdvancedRFE():
 # AdvancedRFECV
 
 
-class TestAdvancedRFECV():
+class TestAdvancedRFECV:
     """Tests for ``AdvancedRFECV``."""
 
     @pytest.fixture
@@ -506,47 +524,62 @@ class TestAdvancedRFECV():
 
     def test_init(self, lin):
         """Test ``__init__``."""
-        rfecv = AdvancedRFECV(estimator=lin, step=2, min_features_to_select=3,
-                              cv=5, scoring='neg_mean_absolute_error',
-                              verbose=42, n_jobs=32)
+        rfecv = AdvancedRFECV(
+            estimator=lin,
+            step=2,
+            min_features_to_select=3,
+            cv=5,
+            scoring="neg_mean_absolute_error",
+            verbose=42,
+            n_jobs=32,
+        )
         assert rfecv.estimator is lin
         assert rfecv.step == 2
         assert rfecv.min_features_to_select == 3
         assert rfecv.cv == 5
-        assert rfecv.scoring == 'neg_mean_absolute_error'
+        assert rfecv.scoring == "neg_mean_absolute_error"
         assert rfecv.verbose == 42
         assert rfecv.n_jobs == 32
 
-    X_DATA = np.array([
-        [0, 0, 0],
-        [1, 1, 0],
-        [2, 0, 0],
-        [0, 3, 0],
-        [0, 3, 0],
-        [4, 4, 0],
-        [4, 4, 0],
-        [1000.0, 2000.0, 0.0],
-    ])
+    X_DATA = np.array(
+        [
+            [0, 0, 0],
+            [1, 1, 0],
+            [2, 0, 0],
+            [0, 3, 0],
+            [0, 3, 0],
+            [4, 4, 0],
+            [4, 4, 0],
+            [1000.0, 2000.0, 0.0],
+        ]
+    )
     Y_DATA = np.array([1, 0, 3, -5, -5, -3, -3, -4])
     SAMPLE_WEIGHTS = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0])
 
     def test_fail(self, lin):
         """Test ``AdvancedRFECV`` expected fail."""
-        msg = 'Step must be >0'
+        msg = "Step must be >0"
         rfecv = AdvancedRFECV(estimator=lin, step=-1)
         with pytest.raises(ValueError, match=msg):
             rfecv.fit(self.X_DATA, self.Y_DATA)
 
     def test_fit(self, lin):
         """Test ``fit``."""
-        rfecv = AdvancedRFECV(estimator=lin, step=1, min_features_to_select=1,
-                              cv=2, verbose=1000, n_jobs=2)
+        rfecv = AdvancedRFECV(
+            estimator=lin,
+            step=1,
+            min_features_to_select=1,
+            cv=2,
+            verbose=1000,
+            n_jobs=2,
+        )
         rfecv.fit(self.X_DATA, self.Y_DATA, sample_weight=self.SAMPLE_WEIGHTS)
         assert rfecv.n_features_ == 2
         np.testing.assert_array_equal(rfecv.support_, [True, True, False])
         np.testing.assert_array_equal(rfecv.ranking_, [1, 1, 2])
-        np.testing.assert_allclose(rfecv.grid_scores_,
-                                   [-7.28912807, -0.69779194, -0.69779194])
+        np.testing.assert_allclose(
+            rfecv.grid_scores_, [-7.28912807, -0.69779194, -0.69779194]
+        )
 
         est = rfecv.estimator_
         assert isinstance(est, LinearRegression)
@@ -563,7 +596,8 @@ class TestAdvancedRFECV():
         np.testing.assert_array_equal(rfecv.ranking_, [1, 1, 2])
         np.testing.assert_allclose(
             rfecv.grid_scores_,
-            [-3949286.19763361, -1630913.74908173, -1630913.74908173])
+            [-3949286.19763361, -1630913.74908173, -1630913.74908173],
+        )
 
         est = rfecv.estimator_
         assert isinstance(est, LinearRegression)
@@ -574,7 +608,7 @@ class TestAdvancedRFECV():
 # AdvancedTransformedTargetRegressor
 
 
-class TestAdvancedTransformedTargetRegressor():
+class TestAdvancedTransformedTargetRegressor:
     """Tests for ``AdvancedTransformedTargetRegressor``."""
 
     def test_regressor_none(self):
@@ -592,7 +626,8 @@ class TestAdvancedTransformedTargetRegressor():
     def test_feature_importances_(self):
         """Test ``feature_importances_`` property."""
         areg = AdvancedTransformedTargetRegressor(
-            regressor=FeatureImportanceRegressor())
+            regressor=FeatureImportanceRegressor()
+        )
         areg.fit(np.arange(3).reshape(3, 1), np.arange(3))
         assert areg.feature_importances_ == 42
 
@@ -601,28 +636,39 @@ class TestAdvancedTransformedTargetRegressor():
         regressor=LinearRegression(),
     )
     FIT_KWARGS = [
-        {'a': 1},
-        {'b__a': 1, 't__f': 2.0},
-        {'regressor__wrongparam': 1},
-        {'transformer__fails': 1, 'regressor__a': 1, 'regressor__b': 1},
+        {"a": 1},
+        {"b__a": 1, "t__f": 2.0},
+        {"regressor__wrongparam": 1},
+        {"transformer__fails": 1, "regressor__a": 1, "regressor__b": 1},
         {},
-        {'regressor__sample_weight': np.arange(3.0)},
+        {"regressor__sample_weight": np.arange(3.0)},
     ]
 
     TEST_FIT = zip(
         FIT_KWARGS,
-        [ValueError,
-         ValueError,
-         TypeError,
-         NotImplementedError,
-         (np.array([20.0]), np.array([200.0 / 3.0]), np.array([0.34756273]),
-          -2.2012306472308283,
-          np.array([10.54054054, 19.05405405, 30.40540541])),
-         (np.array([20.0]), np.array([200.0 / 3.0]), np.array([0.30618622]),
-          -1.8371173070873827, np.array([12.5, 20.0, 30.0]))],
+        [
+            ValueError,
+            ValueError,
+            TypeError,
+            NotImplementedError,
+            (
+                np.array([20.0]),
+                np.array([200.0 / 3.0]),
+                np.array([0.34756273]),
+                -2.2012306472308283,
+                np.array([10.54054054, 19.05405405, 30.40540541]),
+            ),
+            (
+                np.array([20.0]),
+                np.array([200.0 / 3.0]),
+                np.array([0.30618622]),
+                -1.8371173070873827,
+                np.array([12.5, 20.0, 30.0]),
+            ),
+        ],
     )
 
-    @pytest.mark.parametrize('kwargs,output', TEST_FIT)
+    @pytest.mark.parametrize("kwargs,output", TEST_FIT)
     def test_fit(self, kwargs, output):
         """Test fitting with kwargs."""
         reg = clone(self.AREG)
@@ -642,17 +688,27 @@ class TestAdvancedTransformedTargetRegressor():
     Y_2D = np.array([[10.0], [20.0], [30.0]])
     TEST_FIT_TRANSFORMER_ONLY = zip(
         FIT_KWARGS,
-        [ValueError,
-         ValueError,
-         (Y_2D, {'wrongparam': 1}, np.array([20.0]), np.array([200.0 / 3.0])),
-         NotImplementedError,
-         (Y_2D, {}, np.array([20.0]), np.array([200.0 / 3.0])),
-         (Y_2D,
-          {'sample_weight': np.arange(3.0)},
-          np.array([20.0]), np.array([200.0 / 3.0]))],
+        [
+            ValueError,
+            ValueError,
+            (
+                Y_2D,
+                {"wrongparam": 1},
+                np.array([20.0]),
+                np.array([200.0 / 3.0]),
+            ),
+            NotImplementedError,
+            (Y_2D, {}, np.array([20.0]), np.array([200.0 / 3.0])),
+            (
+                Y_2D,
+                {"sample_weight": np.arange(3.0)},
+                np.array([20.0]),
+                np.array([200.0 / 3.0]),
+            ),
+        ],
     )
 
-    @pytest.mark.parametrize('kwargs,output', TEST_FIT_TRANSFORMER_ONLY)
+    @pytest.mark.parametrize("kwargs,output", TEST_FIT_TRANSFORMER_ONLY)
     def test_fit_transformer_only(self, kwargs, output):
         """Test fitting of transformer only."""
         reg = clone(self.AREG)
@@ -664,12 +720,12 @@ class TestAdvancedTransformedTargetRegressor():
         np.testing.assert_allclose(y_2d, output[0])
         assert isinstance(reg_kwargs, dict)
         assert reg_kwargs.keys() == output[1].keys()
-        for (key, val) in reg_kwargs.items():
+        for key, val in reg_kwargs.items():
             np.testing.assert_allclose(val, output[1][key])
         transformer = reg.transformer_
         np.testing.assert_allclose(transformer.mean_, output[2])
         np.testing.assert_allclose(transformer.var_, output[3])
-        assert not hasattr(reg, 'regressor_')
+        assert not hasattr(reg, "regressor_")
         with pytest.raises(NotFittedError):
             reg.predict(X_TRAIN)
 
@@ -684,8 +740,10 @@ class TestAdvancedTransformedTargetRegressor():
     def test_fit_transformer_fail(self):
         """Test ``_fit_transformer`` expected fail."""
         # Give transformer and func/inverse_func
-        msg = ("'transformer' and functions 'func'/'inverse_func' cannot both "
-               "be set.")
+        msg = (
+            "'transformer' and functions 'func'/'inverse_func' cannot both "
+            "be set."
+        )
         areg = AdvancedTransformedTargetRegressor(
             transformer=StandardScaler(),
             func=self.identity,
@@ -704,9 +762,11 @@ class TestAdvancedTransformedTargetRegressor():
             areg._fit_transformer(self.Y_2D)
 
         # Warn if inverse_func is not true inverse of func
-        msg = ("The provided functions or transformer are not strictly "
-               "inverse of each other. If you are sure you want to proceed "
-               "regardless, set 'check_inverse=False'")
+        msg = (
+            "The provided functions or transformer are not strictly "
+            "inverse of each other. If you are sure you want to proceed "
+            "regardless, set 'check_inverse=False'"
+        )
         areg = AdvancedTransformedTargetRegressor(
             func=self.identity,
             inverse_func=self.square,
@@ -745,9 +805,11 @@ class TestAdvancedTransformedTargetRegressor():
         areg._fit_transformer(self.Y_2D)
         assert isinstance(areg.transformer_, FunctionTransformer)
         np.testing.assert_allclose(
-            areg.transformer_.transform([[42.0]]), [[42.0]])
+            areg.transformer_.transform([[42.0]]), [[42.0]]
+        )
         np.testing.assert_allclose(
-            areg.transformer_.inverse_transform([[42.0]]), [[1764.0]])
+            areg.transformer_.inverse_transform([[42.0]]), [[1764.0]]
+        )
 
     VAR_AREG = AdvancedTransformedTargetRegressor(
         transformer=NonStandardScaler(),
@@ -787,30 +849,30 @@ class TestAdvancedTransformedTargetRegressor():
         {},
         {},
         {},
-        {'wrong_kwarg': 1},
-        {'wrong_kwarg': 1},
-        {'wrong_kwarg': 1},
-        {'always_return_1d': False},
-        {'always_return_1d': False},
-        {'always_return_1d': False},
-        {'always_return_1d': False, 'return_std': True},
-        {'always_return_1d': False, 'return_std': True},
-        {'always_return_1d': False, 'return_std': True},
-        {'always_return_1d': False, 'return_var': True},
-        {'always_return_1d': False, 'return_var': True},
-        {'always_return_1d': False, 'return_var': True},
-        {'always_return_1d': False, 'return_var': True, 'err_2d': True},
-        {'always_return_1d': False, 'return_var': True, 'err_2d': True},
-        {'always_return_1d': False, 'return_var': True, 'err_2d': True},
-        {'always_return_1d': False, 'return_cov': True},
-        {'always_return_1d': False, 'return_cov': True},
-        {'always_return_1d': False, 'return_cov': True},
-        {'return_var': True, 'err_2d': True},
-        {'return_var': True, 'err_2d': True},
-        {'return_var': True, 'err_2d': True},
-        {'return_var': True, 'return_cov': True},
-        {'return_var': True, 'return_cov': True},
-        {'return_var': True, 'return_cov': True},
+        {"wrong_kwarg": 1},
+        {"wrong_kwarg": 1},
+        {"wrong_kwarg": 1},
+        {"always_return_1d": False},
+        {"always_return_1d": False},
+        {"always_return_1d": False},
+        {"always_return_1d": False, "return_std": True},
+        {"always_return_1d": False, "return_std": True},
+        {"always_return_1d": False, "return_std": True},
+        {"always_return_1d": False, "return_var": True},
+        {"always_return_1d": False, "return_var": True},
+        {"always_return_1d": False, "return_var": True},
+        {"always_return_1d": False, "return_var": True, "err_2d": True},
+        {"always_return_1d": False, "return_var": True, "err_2d": True},
+        {"always_return_1d": False, "return_var": True, "err_2d": True},
+        {"always_return_1d": False, "return_cov": True},
+        {"always_return_1d": False, "return_cov": True},
+        {"always_return_1d": False, "return_cov": True},
+        {"return_var": True, "err_2d": True},
+        {"return_var": True, "err_2d": True},
+        {"return_var": True, "err_2d": True},
+        {"return_var": True, "return_cov": True},
+        {"return_var": True, "return_cov": True},
+        {"return_var": True, "return_cov": True},
     ]
     PREDS_1D = [
         np.array([10.5405405405, 19.0540540541, 30.4054054054]),
@@ -850,11 +912,12 @@ class TestAdvancedTransformedTargetRegressor():
 
     TEST_PREDICT_1D = zip(REGS, PREDICT_KWARGS, PRED_OUTPUT_1D)
 
-    @pytest.mark.parametrize('reg,kwargs,output', TEST_PREDICT_1D)
+    @pytest.mark.parametrize("reg,kwargs,output", TEST_PREDICT_1D)
     def test_predict_1d(self, reg, kwargs, output):
         """Test prediction."""
-        for (idx, fit_kwargs) in enumerate(
-                ({}, {'regressor__sample_weight': [0.0, 1.0, 1.0]})):
+        for idx, fit_kwargs in enumerate(
+            ({}, {"regressor__sample_weight": [0.0, 1.0, 1.0]})
+        ):
             new_reg = clone(reg)
             with pytest.raises(NotFittedError):
                 new_reg.predict(X_TRAIN)
@@ -946,12 +1009,13 @@ class TestAdvancedTransformedTargetRegressor():
 
     TEST_PREDICT_2D = zip(REGS, PREDICT_KWARGS, PRED_OUTPUT_2D)
 
-    @pytest.mark.parametrize('reg,kwargs,output', TEST_PREDICT_2D)
+    @pytest.mark.parametrize("reg,kwargs,output", TEST_PREDICT_2D)
     def test_predict_2d(self, reg, kwargs, output):
         """Test prediction."""
         y_train = Y_TRAIN.reshape(-1, 1)
-        for (idx, fit_kwargs) in enumerate(
-                ({}, {'regressor__sample_weight': [0.0, 1.0, 1.0]})):
+        for idx, fit_kwargs in enumerate(
+            ({}, {"regressor__sample_weight": [0.0, 1.0, 1.0]})
+        ):
             new_reg = clone(reg)
             with pytest.raises(NotFittedError):
                 new_reg.predict(X_TRAIN)
@@ -994,16 +1058,18 @@ class TestAdvancedTransformedTargetRegressor():
         np.testing.assert_allclose(pred, [42.0 * 0.8164965809 + 1.0])
 
     TEST_GET_FIT_PARAMS = zip(
-        FIT_KWARGS[:-1] + [{'regressor__a': 1, 'regressor__b': 2}],
-        [ValueError,
-         ValueError,
-         ({}, {'wrongparam': 1}),
-         NotImplementedError,
-         ({}, {}),
-         ({}, {'a': 1, 'b': 2})],
+        FIT_KWARGS[:-1] + [{"regressor__a": 1, "regressor__b": 2}],
+        [
+            ValueError,
+            ValueError,
+            ({}, {"wrongparam": 1}),
+            NotImplementedError,
+            ({}, {}),
+            ({}, {"a": 1, "b": 2}),
+        ],
     )
 
-    @pytest.mark.parametrize('kwargs,output', TEST_GET_FIT_PARAMS)
+    @pytest.mark.parametrize("kwargs,output", TEST_GET_FIT_PARAMS)
     def test_get_fit_params(self, kwargs, output):
         """Test retrieving of fit kwargs."""
         if isinstance(output, type):
@@ -1028,8 +1094,9 @@ class TestAdvancedTransformedTargetRegressor():
         (np.array([[0, 0], [0, 0]]), False, 2, False),
     ]
 
-    @pytest.mark.parametrize('array,always_1d,training_dim,output',
-                             TEST_TO_BE_SQUEEZED)
+    @pytest.mark.parametrize(
+        "array,always_1d,training_dim,output", TEST_TO_BE_SQUEEZED
+    )
     def test_to_be_squeezed(self, array, always_1d, training_dim, output):
         """Test check if array should be squeezed."""
         reg = clone(self.AREG)
@@ -1041,14 +1108,15 @@ class TestAdvancedTransformedTargetRegressor():
 # FeatureSelectionTransformer
 
 
-class TestFeatureSelectionTransformer():
+class TestFeatureSelectionTransformer:
     """Tests for ``FeatureSelectionTransformer``."""
 
     @pytest.fixture
     def fst(self):
         """Return ``FeatureSelectionTransformer`` instance."""
-        return FeatureSelectionTransformer(grid_scores=1, n_features=2,
-                                           ranking=3, support=4)
+        return FeatureSelectionTransformer(
+            grid_scores=1, n_features=2, ranking=3, support=4
+        )
 
     def test_init(self, fst):
         """Test ``__init__``."""
@@ -1061,7 +1129,7 @@ class TestFeatureSelectionTransformer():
         """Test ``fit``."""
         output = fst.fit()
         assert output is fst
-        output = fst.fit(1, 'a', valid_kwarg=2)
+        output = fst.fit(1, "a", valid_kwarg=2)
         assert output is fst
 
     def test_get_support_mask(self, fst):
@@ -1072,8 +1140,8 @@ class TestFeatureSelectionTransformer():
     def test_more_tags(self, fst):
         """Test ``_more_tags``."""
         tags = fst._more_tags()
-        assert tags['allow_nan'] is True
+        assert tags["allow_nan"] is True
         assert tags is not _DEFAULT_TAGS
         new_tags = deepcopy(_DEFAULT_TAGS)
-        new_tags['allow_nan'] = True
+        new_tags["allow_nan"] = True
         assert tags == new_tags

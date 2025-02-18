@@ -41,10 +41,10 @@ def _fix_data(cube, var):
     logger.info("Fixing data ...")
     with constant_metadata(cube):
         if var in [
-                'dissic',
-                'talk',
+            "dissic",
+            "talk",
         ]:
-            cube /= 1000.  # Convert from umol/kg to mol/m^3
+            cube /= 1000.0  # Convert from umol/kg to mol/m^3
     return cube
 
 
@@ -54,9 +54,9 @@ def collect_files(
     cfg,
 ):
     """Compose input file list and download if missing."""
-    var_dict = cfg['variables'][var]
+    var_dict = cfg["variables"][var]
 
-    fname = '.'.join([var_dict['file'], var_dict['raw_var'], 'nc'])
+    fname = ".".join([var_dict["file"], var_dict["raw_var"], "nc"])
     in_file = os.path.join(in_dir, fname)
 
     # check if input file is missing
@@ -65,17 +65,17 @@ def collect_files(
             os.makedirs(in_dir)
 
         # check if raw tar file is in place
-        tar_file = os.path.basename(cfg['attributes']['source'])
+        tar_file = os.path.basename(cfg["attributes"]["source"])
         tar_file = os.path.join(in_dir, tar_file)
         if not os.path.isfile(tar_file):
-            logger.info('Input file %s is missing\n', tar_file)
-            logger.info('Start download (requested space ~250Mb)... ')
-            url_file = requests.get(cfg['attributes']['source'])
-            open(tar_file, 'wb').write(url_file.content)
+            logger.info("Input file %s is missing\n", tar_file)
+            logger.info("Start download (requested space ~250Mb)... ")
+            url_file = requests.get(cfg["attributes"]["source"])
+            open(tar_file, "wb").write(url_file.content)
 
         # get input file from tar archive
-        tar_file = tarfile.open(name=tar_file, mode='r')
-        tar_base = os.path.basename(cfg['attributes']['source'])[:-7]
+        tar_file = tarfile.open(name=tar_file, mode="r")
+        tar_base = os.path.basename(cfg["attributes"]["source"])[:-7]
         member = tar_file.getmember(os.path.join(tar_base, fname))
         member.name = fname
         tar_file.extract(member, path=in_dir)
@@ -86,57 +86,65 @@ def collect_files(
 
 def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
     """Extract variables and create OBS dataset."""
-    var = raw_info['var']
-    var_info = cmor_table.get_variable(raw_info['mip'], var)
-    rawvar = raw_info['raw_var']
+    var = raw_info["var"]
+    var_info = cmor_table.get_variable(raw_info["mip"], var)
+    rawvar = raw_info["raw_var"]
 
     with catch_warnings():
         filterwarnings(
-            action='ignore',
-            message='Ignoring netCDF variable .* invalid units .*',
+            action="ignore",
+            message="Ignoring netCDF variable .* invalid units .*",
             category=UserWarning,
-            module='iris',
+            module="iris",
         )
         cube = iris.load_cube(in_files, rawvar)
-        depth = iris.load_cube(in_files, 'Depth')
+        depth = iris.load_cube(in_files, "Depth")
 
     # add depth coord
     cube.add_dim_coord(
-        iris.coords.DimCoord(depth.data,
-                             var_name='depth',
-                             units='m',
-                             attributes={'positive': 'down'}), 0)
+        iris.coords.DimCoord(
+            depth.data,
+            var_name="depth",
+            units="m",
+            attributes={"positive": "down"},
+        ),
+        0,
+    )
     # add time coord
-    year = raw_info['reference_year']
-    time = Unit('months since ' + str(year) + '-01-01 00:00:00',
-                calendar='gregorian')
+    year = raw_info["reference_year"]
+    time = Unit(
+        "months since " + str(year) + "-01-01 00:00:00", calendar="gregorian"
+    )
     cube = iris.util.new_axis(cube)
     cube.add_dim_coord(
-        iris.coords.DimCoord(6.,
-                             standard_name='time',
-                             units=time,
-                             bounds=[0., 12.]), 0)
+        iris.coords.DimCoord(
+            6.0, standard_name="time", units=time, bounds=[0.0, 12.0]
+        ),
+        0,
+    )
 
     fix_var_metadata(cube, var_info)
     cube = fix_coords(cube)
     _fix_data(cube, var)
     set_global_atts(cube, attrs)
-    save_variable(cube, var, out_dir, attrs, unlimited_dimensions=['time'])
+    save_variable(cube, var, out_dir, attrs, unlimited_dimensions=["time"])
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cmor_table = cfg['cmor_table']
-    glob_attrs = cfg['attributes']
+    cmor_table = cfg["cmor_table"]
+    glob_attrs = cfg["attributes"]
 
     # run the cmorization
-    for var, vals in cfg['variables'].items():
+    for var, vals in cfg["variables"].items():
         in_files = collect_files(in_dir, var, cfg)
-        logger.info("CMORizing var %s from input set %s", var, vals['file'])
-        raw_info = cfg['variables'][var]
-        raw_info.update({
-            'var': var,
-            'reference_year': cfg['custom']['reference_year'],
-        })
-        glob_attrs['mip'] = vals['mip']
+        logger.info("CMORizing var %s from input set %s", var, vals["file"])
+        raw_info = cfg["variables"][var]
+        raw_info.update(
+            {
+                "var": var,
+                "reference_year": cfg["custom"]["reference_year"],
+            }
+        )
+        glob_attrs["mip"] = vals["mip"]
         extract_variable(in_files, out_dir, glob_attrs, raw_info, cmor_table)

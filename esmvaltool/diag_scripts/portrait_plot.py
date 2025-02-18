@@ -127,15 +127,15 @@ log = logging.getLogger(__name__)
 def get_provenance(cfg):
     """Return provenance for this diagnostic."""
     return {
-        'ancestors': list(cfg["input_data"].keys()),
-        'authors': ["lindenlaub_lukas", "cammarano_diego"],
-        'caption': 'RMSE performance metric',
-        'domains': [cfg["domain"]],
-        'plot_types': ['portrait'],
-        'references': [
-            'gleckler08jgr',
+        "ancestors": list(cfg["input_data"].keys()),
+        "authors": ["lindenlaub_lukas", "cammarano_diego"],
+        "caption": "RMSE performance metric",
+        "domains": [cfg["domain"]],
+        "plot_types": ["portrait"],
+        "references": [
+            "gleckler08jgr",
         ],
-        'statistics': ['rmsd'],
+        "statistics": ["rmsd"],
     }
 
 
@@ -229,7 +229,7 @@ def load_data(cfg, metas):
     # loop over each cell (coord combination) and load data if existing
     for coord_tuple in itertools.product(*coords.values()):
         selection = dict(zip(coords.keys(), coord_tuple))
-        data['var'].loc[selection] = open_file(metas, **selection)
+        data["var"].loc[selection] = open_file(metas, **selection)
     if cfg["default_split"] is None:
         cfg["default_split"] = data.coords[cfg["split_by"]].values[0]
     log.debug("Using %s as default split", cfg["default_split"])
@@ -257,11 +257,15 @@ def split_legend(cfg, grid, data):
     if cfg["legend"]["position"] == "right":
         cbar_x = grid.cbar_axes[0].get_position().bounds[0]
         gaps[0] *= 0.8  # compensate colorbar padding
-        anchor = (cbar_x + gaps[0] + cfg["legend"]["x_offset"],
-                  anchor[1] - gaps[1] - ax_size[1] + cfg["legend"]["y_offset"])
+        anchor = (
+            cbar_x + gaps[0] + cfg["legend"]["x_offset"],
+            anchor[1] - gaps[1] - ax_size[1] + cfg["legend"]["y_offset"],
+        )
     else:
-        anchor = (anchor[0] - gaps[0] - ax_size[0] + cfg["legend"]["x_offset"],
-                  anchor[1] - gaps[1] - ax_size[1] + cfg["legend"]["y_offset"])
+        anchor = (
+            anchor[0] - gaps[0] - ax_size[0] + cfg["legend"]["x_offset"],
+            anchor[1] - gaps[1] - ax_size[1] + cfg["legend"]["y_offset"],
+        )
     # create legend as empty imshow like axes in figure coordinates
     axes = {"main": grid[0].get_figure().add_axes([*anchor, *ax_size])}
     axes["main"].imshow(np.zeros((1, 1)))  # same axes properties as main plot
@@ -279,12 +283,15 @@ def split_legend(cfg, grid, data):
     for i, label in enumerate(data.coords[cfg["split_by"]].values):
         nodes = get_triangle_nodes(i, len(data.coords[cfg["split_by"]].values))
         axes["main"].add_patch(
-            patches.Polygon(nodes,
-                            closed=True,
-                            facecolor=["#bbb", "#ccc", "#ddd", "#eee"][i],
-                            edgecolor="black",
-                            linewidth=0.5,
-                            fill=True))
+            patches.Polygon(
+                nodes,
+                closed=True,
+                facecolor=["#bbb", "#ccc", "#ddd", "#eee"][i],
+                edgecolor="black",
+                linewidth=0.5,
+                fill=True,
+            )
+        )
         label_at[i](label)
 
 
@@ -450,7 +457,7 @@ def set_defaults(cfg):
     cfg["legend"].setdefault("x_offset", 0)
     cfg["legend"].setdefault("y_offset", 0)
     cfg.setdefault("matplotlib_rc_params", {})
-    cfg.setdefault("nan_color", 'white')
+    cfg.setdefault("nan_color", "white")
     cfg.setdefault("normalize", "centered_median")
     cfg.setdefault("plot_kwargs", {})
     cfg["plot_kwargs"].setdefault("cmap", "RdYlBu_r")
@@ -464,19 +471,24 @@ def set_defaults(cfg):
 
 def sort_data(cfg, dataset):
     """Sort the dataset along by custom or alphabetical order."""
-    dataset = dataset.sortby([
-        dataset[cfg["x_by"]].str.lower(), dataset[cfg["y_by"]].str.lower(),
-        dataset[cfg["group_by"]].str.lower(),
-        dataset[cfg["split_by"]].str.lower()
-    ])
+    dataset = dataset.sortby(
+        [
+            dataset[cfg["x_by"]].str.lower(),
+            dataset[cfg["y_by"]].str.lower(),
+            dataset[cfg["group_by"]].str.lower(),
+            dataset[cfg["split_by"]].str.lower(),
+        ]
+    )
     if cfg["x_by"] in ["alias", "dataset"]:
         # NOTE: not clean, but it works for many cases
         mm_stats = [
-            v for v in dataset[cfg["x_by"]].values
+            v
+            for v in dataset[cfg["x_by"]].values
             if "Mean" in v or "Median" in v or "Percentile" in v
         ]
         others = [
-            v for v in dataset[cfg["x_by"]].values
+            v
+            for v in dataset[cfg["x_by"]].values
             if "Mean" not in v and "Median" not in v and "Percentile" not in v
         ]
         new_order = mm_stats + others
@@ -487,7 +499,7 @@ def sort_data(cfg, dataset):
 def save_to_netcdf(cfg, data):
     """Save the final dataset to a NetCDF file."""
     basename = "portrait"
-    fname = get_diagnostic_filename(basename, cfg, extension='nc')
+    fname = get_diagnostic_filename(basename, cfg, extension="nc")
     data.to_netcdf(fname)
     log.info("NetCDF file saved:")
     log.info(fname)
@@ -504,13 +516,14 @@ def main(cfg):
     dataset = load_data(cfg, metas)
     dataset = sort_data(cfg, dataset)
     if cfg["normalize"] is not None:
-        dataset["var"] = normalize(dataset["var"], cfg["normalize"],
-                                   [cfg["x_by"], cfg["group_by"]])
-    with mpl.rc_context(cfg['matplotlib_rc_params']):
+        dataset["var"] = normalize(
+            dataset["var"], cfg["normalize"], [cfg["x_by"], cfg["group_by"]]
+        )
+    with mpl.rc_context(cfg["matplotlib_rc_params"]):
         plot(cfg, dataset["var"])
     save_to_netcdf(cfg, dataset["var"])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with run_diagnostic() as config:
         main(config)

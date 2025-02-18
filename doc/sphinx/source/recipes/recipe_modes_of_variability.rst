@@ -41,7 +41,7 @@ User setting files are stored in recipes/
 
    * plot type: rectangular or polar
    * ncenters: number of centers to be computed by the clustering algorithm (maximum 4)
-   * cluster_method: kmeans (only psl variable) or hierarchical clustering (for psl or sic variables) 
+   * cluster_method: kmeans (only psl variable) or hierarchical clustering (for psl or sic variables)
    * detrend_order: the order of the polynomial detrending to be applied (0, 1 or 2)
    * EOFs: logical indicating wether the k-means clustering algorithm is applied directly to the spatial data ('false') or to the EOFs ('true')
    * frequency: select the month (format: JAN, FEB, ...) or season (format: JJA, SON, MAM, DJF) for the diagnostic to be computed for (does not work yet for MAM with daily data).
@@ -69,7 +69,7 @@ References
 
 * Hannachi, A., D. M. Straus, C. L. E. Franzke, S. Corti, and T. Woollings, 2017: Low Frequency Nonlinearity and Regime Behavior in the Northern Hemisphere Extra-Tropical Atmosphere. Reviews of Geophysics, https://doi.org/10.1002/2015RG000509.
 
-* Michelangeli, P.-A., R. Vautard, and B. Legras, 1995: Weather regimes: Recurrence and quasi stationarity. Journal of the atmospheric sciences, 52 (8), 1237-1256, doi: `10.1175/1520-0469(1995)052<1237:WRRAQS>2.0.CO <https://journals.ametsoc.org/doi/10.1175/1520-0469%281995%29052%3C1237%3AWRRAQS%3E2.0.CO%3B2>`_. 
+* Michelangeli, P.-A., R. Vautard, and B. Legras, 1995: Weather regimes: Recurrence and quasi stationarity. Journal of the atmospheric sciences, 52 (8), 1237-1256, doi: `10.1175/1520-0469(1995)052<1237:WRRAQS>2.0.CO <https://journals.ametsoc.org/doi/10.1175/1520-0469%281995%29052%3C1237%3AWRRAQS%3E2.0.CO%3B2>`_.
 
 * Vautard, R., 1990: Multiple weather regimes over the North Atlantic: Analysis of precursors and successors. Monthly weather review, 118 (10), 2056-2081, doi: `10.1175/1520-0493(1990)118<2056:MWROTN>2.0.CO;2 <https://journals.ametsoc.org/doi/10.1175/1520-0493%281990%29118%3C2056%3AMWROTN%3E2.0.CO%3B2>`_.
 
@@ -87,5 +87,3 @@ Example plots
    :width:   14cm
 
 Four modes of variability for autumn (September-October-November) in the North Atlantic European Sector for the RCP 8.5 scenario using BCC-CSM1-1 future projection during the period 2020-2075. The frequency of occurrence of each variability mode is indicated in the title of each map.
-
-

@@ -12,10 +12,10 @@ import os
 from functools import partial
 from pathlib import Path
 
+import dask as da
 import iris
 import iris.analysis.cartography
 import iris.coord_categorisation
-import dask as da
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -55,9 +55,7 @@ def ocean_fraction_calc(sftlf):
     land_frac: cube
         land_fraction cube for area-weights
     """
-    sftlf.coord("latitude").coord_system = iris.coord_systems.GeogCS(
-        6371229.0
-    )
+    sftlf.coord("latitude").coord_system = iris.coord_systems.GeogCS(6371229.0)
     sftlf.coord("longitude").coord_system = iris.coord_systems.GeogCS(
         6371229.0
     )
@@ -69,11 +67,9 @@ def ocean_fraction_calc(sftlf):
     return ocean_frac, land_frac
 
 
-def area_avg_landsea(cube,
-                     ocean_frac,
-                     land_frac,
-                     land=True,
-                     return_cube=False):
+def area_avg_landsea(
+    cube, ocean_frac, land_frac, land=True, return_cube=False
+):
     """Calculate the global mean of a variable in a cube.
 
     Parameters
@@ -102,15 +98,13 @@ def area_avg_landsea(cube,
         cube.coord("longitude").guess_bounds()
 
     global_weights = iris.analysis.cartography.area_weights(
-        cube,
-        normalize=False
+        cube, normalize=False
     )
 
     if land is False:
         ocean_frac.data = da.array.ma.masked_less(ocean_frac.core_data(), 0.01)
         weights = iris.analysis.cartography.area_weights(
-            ocean_frac,
-            normalize=False
+            ocean_frac, normalize=False
         )
         ocean_area = (
             ocean_frac.collapsed(
@@ -129,8 +123,7 @@ def area_avg_landsea(cube,
     if land:
         land_frac.data = da.array.ma.masked_less(land_frac.core_data(), 0.01)
         weights = iris.analysis.cartography.area_weights(
-            land_frac,
-            normalize=False
+            land_frac, normalize=False
         )
         land_area = (
             land_frac.collapsed(
@@ -200,10 +193,26 @@ def rename_variables(cube, has_orig_vars=True, new_extension=""):
     cube : cube
         cube with renamed variables
     """
-    original_var_names = ["tas", "range_tl1", "huss", "pr",
-                          "sfcWind", "ps", "rsds", "rlds"]
-    new_var_names = ["tl1", "range_tl1", "ql1", "precip",
-                     "wind", "pstar", "swdown", "lwdown"]
+    original_var_names = [
+        "tas",
+        "range_tl1",
+        "huss",
+        "pr",
+        "sfcWind",
+        "ps",
+        "rsds",
+        "rlds",
+    ]
+    new_var_names = [
+        "tl1",
+        "range_tl1",
+        "ql1",
+        "precip",
+        "wind",
+        "pstar",
+        "swdown",
+        "lwdown",
+    ]
     long_var_names = [
         "Air Temperature",
         "Diurnal Range",
@@ -212,7 +221,7 @@ def rename_variables(cube, has_orig_vars=True, new_extension=""):
         "Wind Speed",
         "Surface Pressure",
         "Surface Downwelling Shortwave Radiation",
-        "Surface Downwelling Longwave Radiation"
+        "Surface Downwelling Longwave Radiation",
     ]
     for orig_var, new_var, long_var in zip(
         original_var_names, new_var_names, long_var_names

@@ -47,12 +47,12 @@ logger = logging.getLogger(__name__)
 def fix_time_coord_duveiller2018(cube):
     """Fix the time coordinate for dataset Duveiller2018."""
     # Rename 'Month' to 'time'
-    cube.coord('Month').rename('time')
+    cube.coord("Month").rename("time")
 
     # Create arrays for storing datetime objects
     custom_time = np.zeros((12), dtype=object)
     custom_time_bounds = np.empty((12, 2), dtype=object)
-    custom_time_units = 'days since 1950-01-01 00:00:00.0'
+    custom_time_units = "days since 1950-01-01 00:00:00.0"
 
     # Now fill the object arrays defined above with datetime objects
     # corresponding to correct time and time_bnds
@@ -71,17 +71,19 @@ def fix_time_coord_duveiller2018(cube):
         custom_time[n_month - 1] = time_midpoint
 
     # Convert them
-    time_bnds = cf_units.date2num(custom_time_bounds, custom_time_units,
-                                  cf_units.CALENDAR_GREGORIAN)
-    time_midpoints = cf_units.date2num(custom_time, custom_time_units,
-                                       cf_units.CALENDAR_GREGORIAN)
+    time_bnds = cf_units.date2num(
+        custom_time_bounds, custom_time_units, cf_units.CALENDAR_GREGORIAN
+    )
+    time_midpoints = cf_units.date2num(
+        custom_time, custom_time_units, cf_units.CALENDAR_GREGORIAN
+    )
 
     # Add them to the cube
-    cube.coord('time').bounds = time_bnds
-    cube.coord('time').points = time_midpoints
+    cube.coord("time").bounds = time_bnds
+    cube.coord("time").points = time_midpoints
 
     # Set the correct time unit, as defined above
-    cube.coord('time').units = cf_units.Unit(custom_time_units)
+    cube.coord("time").units = cf_units.Unit(custom_time_units)
 
 
 def extract_variable(var_info, raw_info, out_dir, attrs):
@@ -89,25 +91,26 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
     var = var_info.short_name
     with catch_warnings():
         filterwarnings(
-            action='ignore',
-            message='Ignoring netCDF variable .* invalid units .*',
+            action="ignore",
+            message="Ignoring netCDF variable .* invalid units .*",
             category=UserWarning,
-            module='iris',
+            module="iris",
         )
-        cubes = iris.load(raw_info['file'])
-    rawvar = raw_info['name']
+        cubes = iris.load(raw_info["file"])
+    rawvar = raw_info["name"]
     for cube in cubes:
         if cube.var_name == rawvar:
             # Extracting a certain vegetation transition code
-            itr = raw_info['iTr']
+            itr = raw_info["iTr"]
             itr_index = np.where(
-                cube.coord('Vegetation transition code').points == itr)[0][0]
+                cube.coord("Vegetation transition code").points == itr
+            )[0][0]
             cube = cube[itr_index, :, :, :]
             # Add the vegetation transition code as an attribute
-            cube.attributes['Vegetation transition code'] = itr
+            cube.attributes["Vegetation transition code"] = itr
             # Remove it as a coordinate, since otherwise it would
             # violate CMOR standards
-            cube.remove_coord('Vegetation transition code')
+            cube.remove_coord("Vegetation transition code")
             # Fix metadata
             fix_var_metadata(cube, var_info)
             # Fix coords
@@ -116,32 +119,37 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             fix_time_coord_duveiller2018(cube)
             # Global attributes
             set_global_atts(cube, attrs)
-            save_variable(cube, var, out_dir, attrs, local_keys=['positive'])
+            save_variable(cube, var, out_dir, attrs, local_keys=["positive"])
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cmor_table = cfg['cmor_table']
-    glob_attrs = cfg['attributes']
+    cmor_table = cfg["cmor_table"]
+    glob_attrs = cfg["attributes"]
 
-    logger.info("Starting cmorization for Tier%s OBS files: %s",
-                glob_attrs['tier'], glob_attrs['dataset_id'])
+    logger.info(
+        "Starting cmorization for Tier%s OBS files: %s",
+        glob_attrs["tier"],
+        glob_attrs["dataset_id"],
+    )
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
 
     # run the cmorization
-    for var, vals in cfg['variables'].items():
-        inpfile = os.path.join(in_dir, vals['file'])
+    for var, vals in cfg["variables"].items():
+        inpfile = os.path.join(in_dir, vals["file"])
         logger.info("CMORizing var %s from file %s", var, inpfile)
-        var_info = cmor_table.get_variable(vals['mip'], var)
-        raw_info = {'name': vals['raw'], 'file': inpfile, 'iTr': vals['iTr']}
-        glob_attrs['mip'] = vals['mip']
+        var_info = cmor_table.get_variable(vals["mip"], var)
+        raw_info = {"name": vals["raw"], "file": inpfile, "iTr": vals["iTr"]}
+        glob_attrs["mip"] = vals["mip"]
         with catch_warnings():
             filterwarnings(
-                action='ignore',
-                message=('WARNING: missing_value not used since it\n'
-                         'cannot be safely cast to variable data type'),
+                action="ignore",
+                message=(
+                    "WARNING: missing_value not used since it\n"
+                    "cannot be safely cast to variable data type"
+                ),
                 category=UserWarning,
-                module='iris',
+                module="iris",
             )
             extract_variable(var_info, raw_info, out_dir, glob_attrs)

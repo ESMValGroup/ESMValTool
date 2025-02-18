@@ -1,18 +1,20 @@
 """Run module for soil moisture metrics."""
 
-import os
-import logging
 import csv
+import logging
+import os
 from collections.abc import Iterable
-import numpy as np
+
 import iris
+import numpy as np
 from esmvalcore.preprocessor import regrid
-from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
+
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
     save_data,
 )
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 # Order of seasons must agree with preprocessor definition in recipe
 SEASONS = ("djf", "mam", "jja", "son")
@@ -23,18 +25,18 @@ logger = logging.getLogger(__name__)
 def get_provenance_record(caption, ancestor_filenames):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
-        'caption': caption,
-        'statistics': ['mean'],
-        'domains': ['global'],
-        'plot_type': 'metrics',
-        'authors': [
-            'rumbold_heather',
-            'sellar_alistair',
+        "caption": caption,
+        "statistics": ["mean"],
+        "domains": ["global"],
+        "plot_type": "metrics",
+        "authors": [
+            "rumbold_heather",
+            "sellar_alistair",
         ],
-        'references': [
-            'esacci-soilmoisture',
-            'dorigo17rse',
-            'gruber19essd',
+        "references": [
+            "esacci-soilmoisture",
+            "dorigo17rse",
+            "gruber19essd",
         ],
         "ancestors": ancestor_filenames,
     }
@@ -89,21 +91,19 @@ def volumetric_soil_moisture(model_file, constr_season):
         Volumetric soil moisture
     """
     # Constant: density of water
-    rhow = 1000.
+    rhow = 1000.0
 
     # m01s08i223
     # CMOR name: mrsos (soil moisture in top model layer kg/m2)
     mrsos = iris.load_cube(
-        model_file,
-        "mass_content_of_water_in_soil_layer" & constr_season
+        model_file, "mass_content_of_water_in_soil_layer" & constr_season
     )
 
     # Set soil moisture to missing data where no soil (moisture=0)
     np.ma.masked_where(mrsos.data == 0, mrsos.data, copy=False)
 
     # first soil layer depth
-    dz1 = mrsos.coord('depth').bounds[0, 1] - \
-        mrsos.coord('depth').bounds[0, 0]
+    dz1 = mrsos.coord("depth").bounds[0, 1] - mrsos.coord("depth").bounds[0, 0]
 
     # Calculate the volumetric soil moisture in m3/m3
     # volumetric soil moisture = volume of water / volume of soil layer
@@ -167,7 +167,6 @@ def land_sm_top(clim_file, model_file, model_dataset, config, ancestors):
     # Work through each season
     metrics = {}
     for index, season in enumerate(SEASONS):
-
         constr_season = iris.Constraint(season_number=index)
         ecv_clim = iris.load_cube(clim_file, constr_season)
 
@@ -175,21 +174,23 @@ def land_sm_top(clim_file, model_file, model_dataset, config, ancestors):
 
         # update the coordinate system ECV data with a WGS84 coord system
         # unify coord systems for regridder
-        vol_sm1_run.coord('longitude').coord_system = \
-            iris.coord_systems.GeogCS(semi_major_axis=6378137.0,
-                                      inverse_flattening=298.257223563)
-        vol_sm1_run.coord('latitude').coord_system = \
-            iris.coord_systems.GeogCS(semi_major_axis=6378137.0,
-                                      inverse_flattening=298.257223563)
-        ecv_clim.coord('longitude').coord_system = \
-            iris.coord_systems.GeogCS(semi_major_axis=6378137.0,
-                                      inverse_flattening=298.257223563)
-        ecv_clim.coord('latitude').coord_system = \
-            iris.coord_systems.GeogCS(semi_major_axis=6378137.0,
-                                      inverse_flattening=298.257223563)
+        vol_sm1_run.coord(
+            "longitude"
+        ).coord_system = iris.coord_systems.GeogCS(
+            semi_major_axis=6378137.0, inverse_flattening=298.257223563
+        )
+        vol_sm1_run.coord("latitude").coord_system = iris.coord_systems.GeogCS(
+            semi_major_axis=6378137.0, inverse_flattening=298.257223563
+        )
+        ecv_clim.coord("longitude").coord_system = iris.coord_systems.GeogCS(
+            semi_major_axis=6378137.0, inverse_flattening=298.257223563
+        )
+        ecv_clim.coord("latitude").coord_system = iris.coord_systems.GeogCS(
+            semi_major_axis=6378137.0, inverse_flattening=298.257223563
+        )
 
         # Interpolate to the grid of the climatology and form the difference
-        vol_sm1_run = regrid(vol_sm1_run, ecv_clim, 'linear')
+        vol_sm1_run = regrid(vol_sm1_run, ecv_clim, "linear")
 
         # mask invalids
         vol_sm1_run.data = np.ma.masked_invalid(vol_sm1_run.data)
@@ -201,8 +202,12 @@ def land_sm_top(clim_file, model_file, model_dataset, config, ancestors):
         # save output and populate metric
         caption = f"{model_dataset} minus CCI soil moisture clim for {season}"
         provenance_record = get_provenance_record(caption, ancestors)
-        save_data(f"soilmoist_diff_{model_dataset}_{season}",
-                  provenance_record, config, dff)
+        save_data(
+            f"soilmoist_diff_{model_dataset}_{season}",
+            provenance_record,
+            config,
+            dff,
+        )
 
         name = f"soilmoisture MedAbsErr {season}"
         metrics[name] = float(np.ma.median(np.ma.abs(dff.data)))
@@ -238,8 +243,8 @@ def main(config):
     clim_file = obs[0]["filename"]
 
     models = group_metadata(
-        [v for v in input_data.values() if v["project"] != "OBS"],
-        "dataset")
+        [v for v in input_data.values() if v["project"] != "OBS"], "dataset"
+    )
 
     for model_dataset, group in models.items():
         # 'model_dataset' is the name of the model dataset.
@@ -251,8 +256,9 @@ def main(config):
         ancestors = flatten([model_file, clim_file])
 
         # Calculate metrics
-        metrics = land_sm_top(clim_file, model_file, model_dataset, config,
-                              ancestors)
+        metrics = land_sm_top(
+            clim_file, model_file, model_dataset, config, ancestors
+        )
 
         # Write metrics
         metrics_dir = os.path.join(

@@ -27,7 +27,7 @@ in pressure levels, the daily fields of 2D near-surface temperature and horizont
 required to perform a vertical interpolation, substituting data in pressure levels where surface pressure is
 lower than the respective level and fields are not stored as an output of the analysed model.
 
-The material entropy production is computed by using the indirect or the direct method (or both). The former 
+The material entropy production is computed by using the indirect or the direct method (or both). The former
 method relies on the convergence of radiative heat in the atmosphere (cfr. Lucarini et al., 2011; Pascale et al., 2011),
 the latter on all viscous and non-viscous dissipative processes occurring in the atmosphere
 (namely the sensible heat fluxes, the hydrological cycle with its components and the kinetic energy dissipation).

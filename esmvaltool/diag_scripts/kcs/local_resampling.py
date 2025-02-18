@@ -1,4 +1,5 @@
 """Resample the target model for the selected time periods."""
+
 import logging
 from itertools import product
 from pathlib import Path
@@ -22,15 +23,15 @@ LOGGER = logging.getLogger(Path(__file__).name)
 def _create_provenance_record(ancestor_files):
     """Create a provenance record."""
     record = {
-        'caption': "Resampling of local climate model.",
-        'domains': ['global'],
-        'authors': [
-            'kalverla_peter',
-            'alidoost_sarah',
-            'rol_evert',
-            'daniels_emma',
+        "caption": "Resampling of local climate model.",
+        "domains": ["global"],
+        "authors": [
+            "kalverla_peter",
+            "alidoost_sarah",
+            "rol_evert",
+            "daniels_emma",
         ],
-        'ancestors': ancestor_files,
+        "ancestors": ancestor_files,
     }
     return record
 
@@ -38,17 +39,18 @@ def _create_provenance_record(ancestor_files):
 def _get_data_target_model(cfg):
     """Load ensembles for each variable and merge."""
     LOGGER.info("Reading input data for target model")
-    dataset_dicts = cfg['input_data'].values()
+    dataset_dicts = cfg["input_data"].values()
     dataset = []
     ancestor_files = []
     for short_name in "pr", "tas":
-        group = f'{short_name}_target'
+        group = f"{short_name}_target"
         var = select_metadata(dataset_dicts, variable_group=group)
-        files = [metadata['filename'] for metadata in var]
+        files = [metadata["filename"] for metadata in var]
         dataset.append(
-            xr.open_mfdataset(files,
-                              concat_dim='ensemble_member',
-                              combine='nested'))
+            xr.open_mfdataset(
+                files, concat_dim="ensemble_member", combine="nested"
+            )
+        )
         ancestor_files.extend(files)
     provenance = _create_provenance_record(ancestor_files)
     return xr.merge(dataset).load(), provenance
@@ -59,8 +61,9 @@ def _segment(dataset, period, step=5):
     segments = []
     for year in range(*period, step):
         segments.append(
-            dataset.sel(time=slice(str(year), str(year + step - 1))))
-    segmented_dataset = xr.concat(segments, dim='segment')
+            dataset.sel(time=slice(str(year), str(year + step - 1)))
+        )
+    segmented_dataset = xr.concat(segments, dim="segment")
     return segmented_dataset
 
 
@@ -77,10 +80,10 @@ def get_segment_season_means(cfg):
     # Combine the future scenarios (name and resampling period)
     # with the control period in a single dictionary
     periods = {
-        name: info['resampling_period']
-        for name, info in cfg['scenarios'].items()
+        name: info["resampling_period"]
+        for name, info in cfg["scenarios"].items()
     }
-    periods['control'] = cfg['control_period']
+    periods["control"] = cfg["control_period"]
 
     # Get the segment season means for each of these periods
     segments_season_means = {}
@@ -91,7 +94,7 @@ def get_segment_season_means(cfg):
             LOGGER.info("Found intermediate file %s", filename)
         else:
             LOGGER.info("Computing seasonal means for segmented dataset")
-            means = _segment(dataset, period).groupby('time.season').mean()
+            means = _segment(dataset, period).groupby("time.season").mean()
             means.to_netcdf(filename)
             LOGGER.info("Intermediate results stored as %s", filename)
         segments_season_means[name] = xr.open_dataset(filename)
@@ -114,13 +117,19 @@ def _find_single_top1000(segment_means, target):
 
     for combination in all_possible_combinations:
         results.append(
-            list(combination) +
-            [abs(segment_means[segment_indices, combination].mean() - target)])
+            list(combination)
+            + [
+                abs(
+                    segment_means[segment_indices, combination].mean() - target
+                )
+            ]
+        )
 
     # Create a pandas dataframe with the combinations and distance to target
-    dataframe = pd.DataFrame(results,
-                             columns=list(segment_indices) + ['distance'])
-    top1000 = dataframe.sort_values('distance').head(1000)
+    dataframe = pd.DataFrame(
+        results, columns=list(segment_indices) + ["distance"]
+    )
+    top1000 = dataframe.sort_values("distance").head(1000)
     return top1000
 
 
@@ -134,21 +143,21 @@ def get_all_top1000s(cfg, segment_season_means):
     with respect to the overall mean of the control period.
     """
     # Create a dict of target values for control and all futures
-    control_segments = segment_season_means['control'].pr.sel(season='DJF')
+    control_segments = segment_season_means["control"].pr.sel(season="DJF")
     control_mean = control_segments.mean().values
-    target_values = {'control': control_mean}
-    for name, info in cfg['scenarios'].items():
-        target_values[name] = control_mean * (1 + info['dpr_winter'] / 100)
+    target_values = {"control": control_mean}
+    for name, info in cfg["scenarios"].items():
+        target_values[name] = control_mean * (1 + info["dpr_winter"] / 100)
 
     # Find the 1000 recombinations that are closest to the target values
     top1000s = {}
     for name, target in target_values.items():
-        LOGGER.info('Get 1000 recombinations for %s', name)
+        LOGGER.info("Get 1000 recombinations for %s", name)
         filename = f"{cfg['run_dir']}/top1000_{name}.csv"
         if Path(filename).exists():
             LOGGER.info("Found intermediate file %s", filename)
         else:
-            segments = segment_season_means[name].pr.sel(season='DJF')
+            segments = segment_season_means[name].pr.sel(season="DJF")
             top1000 = _find_single_top1000(segments, target)
             top1000.to_csv(filename, index=False)
             LOGGER.info("Intermediate results stored as %s.", filename)
@@ -167,9 +176,11 @@ def _index_with_xarray(combinations):
     n_segments = len(combinations[0])
 
     # Create a DataArray once...
-    indices = xr.DataArray(data=np.zeros(n_segments),
-                           dims=['segment'],
-                           coords={'segment': np.arange(n_segments)})
+    indices = xr.DataArray(
+        data=np.zeros(n_segments),
+        dims=["segment"],
+        coords={"segment": np.arange(n_segments)},
+    )
 
     # ...and update its values for each selected combination
     for combination in combinations:
@@ -180,17 +191,19 @@ def _index_with_xarray(combinations):
 def _season_means(combinations, segment_means):
     """Compute summer pr,and summer and winter tas for recombined climates."""
     interesting_variables = []
-    columns = ['combination', 'pr_summer', 'tas_winter', 'tas_summer']
+    columns = ["combination", "pr_summer", "tas_winter", "tas_summer"]
     for combination in _index_with_xarray(combinations):
         recombined_segments = segment_means.sel(ensemble_member=combination)
-        season_means = recombined_segments.mean('segment')
+        season_means = recombined_segments.mean("segment")
 
-        interesting_variables.append([
-            combination.values,
-            season_means.pr.sel(season='JJA').values,
-            season_means.tas.sel(season='DJF').values,
-            season_means.tas.sel(season='JJA').values
-        ])
+        interesting_variables.append(
+            [
+                combination.values,
+                season_means.pr.sel(season="JJA").values,
+                season_means.tas.sel(season="DJF").values,
+                season_means.tas.sel(season="JJA").values,
+            ]
+        )
     return pd.DataFrame(interesting_variables, columns=columns)
 
 
@@ -206,12 +219,15 @@ def _get_subset(top1000, info, period):
     Select samples for which summer pr, and summer and winter tas are
     within the percentile bounds specified in the recipe.
     """
-    pr_summer = _within_bounds(top1000['pr_summer'],
-                               info[f'pr_summer_{period}'])
-    tas_winter = _within_bounds(top1000['tas_winter'],
-                                info[f'tas_winter_{period}'])
-    tas_summer = _within_bounds(top1000['tas_summer'],
-                                info[f'tas_summer_{period}'])
+    pr_summer = _within_bounds(
+        top1000["pr_summer"], info[f"pr_summer_{period}"]
+    )
+    tas_winter = _within_bounds(
+        top1000["tas_winter"], info[f"tas_winter_{period}"]
+    )
+    tas_summer = _within_bounds(
+        top1000["tas_summer"], info[f"tas_summer_{period}"]
+    )
     subset = top1000[np.all([pr_summer, tas_winter, tas_summer], axis=0)]
     return subset
 
@@ -229,18 +245,20 @@ def get_percentile_subsets(cfg, segment_season_means, top1000s):
     for name, dataframe in top1000s.items():
         LOGGER.info(
             "Compute summer mean pr and summer and winter "
-            "mean tas for 1000 selected combinations for %s", name)
+            "mean tas for 1000 selected combinations for %s",
+            name,
+        )
         segment_means = segment_season_means[name]
-        combinations = dataframe.drop('distance', axis=1).values
+        combinations = dataframe.drop("distance", axis=1).values
         top1000s[name] = _season_means(combinations, segment_means)
 
     # For each scenario, get a subset for the control and future period.
     subsets = {}
-    for scenario, info in cfg['scenarios'].items():
+    for scenario, info in cfg["scenarios"].items():
         LOGGER.info("Get percentile-based subsets for scenario %s", scenario)
         subsets[scenario] = {
-            'control': _get_subset(top1000s['control'], info, 'control'),
-            'future': _get_subset(top1000s[scenario], info, 'future')
+            "control": _get_subset(top1000s["control"], info, "control"),
+            "future": _get_subset(top1000s[scenario], info, "future"),
         }
     return subsets
 
@@ -250,7 +268,8 @@ def _penalties(overlap):
     return np.piecewise(
         overlap,
         condlist=[overlap < 3, overlap == 3, overlap == 4, overlap > 4],
-        funclist=[0, 1, 5, 100])
+        funclist=[0, 1, 5, 100],
+    )
 
 
 def _best_subset(combinations, n_sample=8):
@@ -261,14 +280,16 @@ def _best_subset(combinations, n_sample=8):
     """
     # Convert series of 1d arrays to 2d array (much faster!)
     combinations = np.array(
-        [list(combination) for combination in combinations])
+        [list(combination) for combination in combinations]
+    )
 
     # Store the indices in a nice dataframe
     n_segments = combinations.shape[1]
     best_subset = pd.DataFrame(
         data=np.empty((n_sample, n_segments), dtype=np.int64),
-        columns=[f'Segment {x}' for x in range(n_segments)],
-        index=[f'Combination {x}' for x in range(n_sample)])
+        columns=[f"Segment {x}" for x in range(n_segments)],
+        index=[f"Combination {x}" for x in range(n_sample)],
+    )
 
     # Random number generator
     rng = np.random.default_rng()
@@ -295,27 +316,29 @@ def select_final_subset(cfg, subsets, prov=None):
     selected sets of 8 samples, count and penalize reused segments (1
     for 3*reuse, 5 for 4*reuse). Choose the set with the lowest penalty.
     """
-    n_samples = cfg['n_samples']
+    n_samples = cfg["n_samples"]
     all_scenarios = {}
     for scenario, dataframes in subsets.items():
         # Make a table with the final indices
-        LOGGER.info("Selecting %s final samples for scenario %s", n_samples,
-                    scenario)
-        control = _best_subset(dataframes['control'].combination, n_samples)
-        future = _best_subset(dataframes['future'].combination, n_samples)
-        table = pd.concat([control, future],
-                          axis=1,
-                          keys=['control', 'future'])
+        LOGGER.info(
+            "Selecting %s final samples for scenario %s", n_samples, scenario
+        )
+        control = _best_subset(dataframes["control"].combination, n_samples)
+        future = _best_subset(dataframes["future"].combination, n_samples)
+        table = pd.concat(
+            [control, future], axis=1, keys=["control", "future"]
+        )
         all_scenarios[scenario] = table
 
         # Store the output
-        filename = get_diagnostic_filename(f'indices_{scenario}',
-                                           cfg,
-                                           extension='csv')
+        filename = get_diagnostic_filename(
+            f"indices_{scenario}", cfg, extension="csv"
+        )
         table.to_csv(filename)
-        LOGGER.info("Selected recombinations for scenario %s: \n %s", scenario,
-                    table)
-        LOGGER.info('Output stored as %s', filename)
+        LOGGER.info(
+            "Selected recombinations for scenario %s: \n %s", scenario, table
+        )
+        LOGGER.info("Output stored as %s", filename)
 
         # Write provenance information
         with ProvenanceLogger(cfg) as provenance_logger:
@@ -328,33 +351,35 @@ def _cmip_envelope(datasetlist, variable, target_year, control_period):
 
     Note: using mf_dataset not possible due to different calendars.
     """
-    cmip = select_metadata(datasetlist, variable_group=f'{variable}_cmip')
+    cmip = select_metadata(datasetlist, variable_group=f"{variable}_cmip")
     envelope = []
     ancestors = []
     for data_dict in cmip:
-        dataset = xr.open_dataset(data_dict['filename'])[variable]
-        control = dataset.sel(time=slice(str(control_period[0]),
-                                         str(control_period[1])))
-        future = dataset.sel(time=slice(str(target_year -
-                                            15), str(target_year + 15)))
+        dataset = xr.open_dataset(data_dict["filename"])[variable]
+        control = dataset.sel(
+            time=slice(str(control_period[0]), str(control_period[1]))
+        )
+        future = dataset.sel(
+            time=slice(str(target_year - 15), str(target_year + 15))
+        )
 
-        quantiles = [.05, .1, .25, .5, .75, .90, .95]
-        qcontrol = control.groupby('time.season').quantile(quantiles)
-        qfuture = future.groupby('time.season').quantile(quantiles)
+        quantiles = [0.05, 0.1, 0.25, 0.5, 0.75, 0.90, 0.95]
+        qcontrol = control.groupby("time.season").quantile(quantiles)
+        qfuture = future.groupby("time.season").quantile(quantiles)
 
-        if variable == 'tas':
+        if variable == "tas":
             # absolute diff
             envelope.append(qfuture - qcontrol)
         else:
             # pr; relative diff
             envelope.append((qfuture - qcontrol) / qcontrol * 100)
-        ancestors.append(data_dict['filename'])
+        ancestors.append(data_dict["filename"])
 
-    cmip = xr.concat(envelope, dim='multimodel')
+    cmip = xr.concat(envelope, dim="multimodel")
     provenance = _create_provenance_record(ancestors)
 
     # Prevent confusion between dimension 'quantile' and method 'quantile'
-    return cmip.rename({'quantile': 'percentile'}), provenance
+    return cmip.rename({"quantile": "percentile"}), provenance
 
 
 def _recombine(segments, combinations):
@@ -363,15 +388,16 @@ def _recombine(segments, combinations):
     new_climates = []
     for _, indices in combinations.iterrows():
         # Create indexer array
-        indexer = xr.DataArray(indices,
-                               dims=['segment'],
-                               coords={'segment': range(n_segments)})
+        indexer = xr.DataArray(
+            indices, dims=["segment"], coords={"segment": range(n_segments)}
+        )
 
         # Recombine the segments using the indexer
-        resample = segments.sel(ensemble_member=indexer).mean('segment',
-                                                              keep_attrs=True)
+        resample = segments.sel(ensemble_member=indexer).mean(
+            "segment", keep_attrs=True
+        )
         new_climates.append(resample)
-    return xr.concat(new_climates, dim='sample')
+    return xr.concat(new_climates, dim="sample")
 
 
 def _get_climatology(cfg, scenario_name, table, prov=None):
@@ -381,41 +407,47 @@ def _get_climatology(cfg, scenario_name, table, prov=None):
     """
     dataset, _ = _get_data_target_model(cfg)
 
-    future = cfg['scenarios'][scenario_name]['resampling_period']
-    segments_control = _segment(dataset, cfg['control_period'])
+    future = cfg["scenarios"][scenario_name]["resampling_period"]
+    segments_control = _segment(dataset, cfg["control_period"])
     segments_future = _segment(dataset, future)
 
-    resampled_control = _recombine(segments_control, table['control'])
-    resampled_future = _recombine(segments_future, table['future'])
+    resampled_control = _recombine(segments_control, table["control"])
+    resampled_future = _recombine(segments_future, table["future"])
     # Store the resampled control climates
-    filename = get_diagnostic_filename(f'resampled_control_{scenario_name}',
-                                       cfg,
-                                       extension='nc')
+    filename = get_diagnostic_filename(
+        f"resampled_control_{scenario_name}", cfg, extension="nc"
+    )
     resampled_control.to_netcdf(filename)
-    LOGGER.info("Created control resamples for scenario %s: \n %s",
-                scenario_name, table)
-    LOGGER.info('Output stored as %s', filename)
+    LOGGER.info(
+        "Created control resamples for scenario %s: \n %s",
+        scenario_name,
+        table,
+    )
+    LOGGER.info("Output stored as %s", filename)
     # # Write provenance information
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, prov)
 
         # Store the resampled future climates
-    filename = get_diagnostic_filename(f'resampled_future_{scenario_name}',
-                                       cfg,
-                                       extension='nc')
+    filename = get_diagnostic_filename(
+        f"resampled_future_{scenario_name}", cfg, extension="nc"
+    )
     resampled_future.to_netcdf(filename)
-    LOGGER.info("Created future resamples for scenario %s: \n %s",
-                scenario_name, table)
-    LOGGER.info('Output stored as %s', filename)
+    LOGGER.info(
+        "Created future resamples for scenario %s: \n %s", scenario_name, table
+    )
+    LOGGER.info("Output stored as %s", filename)
     # # Write provenance information
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, prov)
 
-    quantiles = [.05, .1, .25, .5, .75, .90, .95]
-    qcontrol = resampled_control.groupby('time.season').quantile(
-        quantiles, dim=['sample', 'time'])
-    qfuture = resampled_future.groupby('time.season').quantile(
-        quantiles, dim=['sample', 'time'])
+    quantiles = [0.05, 0.1, 0.25, 0.5, 0.75, 0.90, 0.95]
+    qcontrol = resampled_control.groupby("time.season").quantile(
+        quantiles, dim=["sample", "time"]
+    )
+    qfuture = resampled_future.groupby("time.season").quantile(
+        quantiles, dim=["sample", "time"]
+    )
 
     qchange_tas = (qfuture - qcontrol).tas
     qchange_pr = ((qfuture - qcontrol) / qcontrol * 100).pr
@@ -425,9 +457,10 @@ def _get_climatology(cfg, scenario_name, table, prov=None):
 def get_climatologies(cfg, scenario_tables, prov=None):
     """Determine the changes in <variable> PDF of all scenarios."""
     climates = {}
-    for name in cfg['scenarios'].keys():
-        climatology = _get_climatology(cfg, name, table=scenario_tables[name],
-                                       prov=prov)
+    for name in cfg["scenarios"].keys():
+        climatology = _get_climatology(
+            cfg, name, table=scenario_tables[name], prov=prov
+        )
         climates[name] = climatology
     return climates
 
@@ -436,43 +469,49 @@ def make_plots(cfg, climates):
     """Reproduce figure 5 from the paper."""
     # Note that quantile is applied twice! Once to get the pdf's of seasonal
     # tas/pr and once to get the multimodel pdf of the quantile changes
-    metadata = cfg['input_data'].values()
+    metadata = cfg["input_data"].values()
 
-    years = np.unique([scenario['scenario_year']
-                       for scenario in cfg['scenarios'].values()])
+    years = np.unique(
+        [scenario["scenario_year"] for scenario in cfg["scenarios"].values()]
+    )
     for year in years:
         fig, subplots = plt.subplots(2, 2, figsize=(12, 8))
 
-        for row, variable in zip(subplots, ['pr', 'tas']):
-            cmip, prov = _cmip_envelope(metadata, variable, year,
-                                        cfg['control_period'])
+        for row, variable in zip(subplots, ["pr", "tas"]):
+            cmip, prov = _cmip_envelope(
+                metadata, variable, year, cfg["control_period"]
+            )
 
-            for axes, season in zip(row, ['DJF', 'JJA']):
+            for axes, season in zip(row, ["DJF", "JJA"]):
                 percentiles = cmip.percentile.values
                 xlocs = np.arange(len(percentiles))
 
                 # Plot the cmip envelope
                 seasondata = cmip.sel(season=season)
                 for high, low in [[0.9, 0.1], [0.75, 0.25]]:
-                    upper = seasondata.quantile(high, dim='multimodel')
-                    lower = seasondata.quantile(low, dim='multimodel')
-                    axes.fill_between(xlocs, upper, lower, color='k', alpha=.3)
-                    axes.set_title(f'{variable} / {season}')
+                    upper = seasondata.quantile(high, dim="multimodel")
+                    lower = seasondata.quantile(low, dim="multimodel")
+                    axes.fill_between(
+                        xlocs, upper, lower, color="k", alpha=0.3
+                    )
+                    axes.set_title(f"{variable} / {season}")
 
                 # Plot the recombined scenarios
-                for name, info in cfg['scenarios'].items():
-                    if year == info['scenario_year']:
+                for name, info in cfg["scenarios"].items():
+                    if year == info["scenario_year"]:
                         climate = climates[name].sel(season=season)[variable]
                         axes.plot(xlocs, climate, lw=3, label=name)
 
                 axes.set_xticks(xlocs)
-                axes.set_xticklabels([f'P{100*x:02.0f}' for x in percentiles])
-        subplots[0, 0].set_ylabel('change (%)')
-        subplots[1, 0].set_ylabel('change (K)')
+                axes.set_xticklabels(
+                    [f"P{100 * x:02.0f}" for x in percentiles]
+                )
+        subplots[0, 0].set_ylabel("change (%)")
+        subplots[1, 0].set_ylabel("change (K)")
         subplots[1, 1].legend()
-        filename = get_plot_filename(f'local_validation_{year}', cfg)
-        fig.suptitle(f'Year: {year}')
-        fig.savefig(filename, bbox_inches='tight', dpi=300)
+        filename = get_plot_filename(f"local_validation_{year}", cfg)
+        fig.suptitle(f"Year: {year}")
+        fig.savefig(filename, bbox_inches="tight", dpi=300)
         LOGGER.info("Envelope figure stored as %s", filename)
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(filename, prov)
@@ -499,6 +538,6 @@ def main(cfg):
     make_plots(cfg, climates)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with run_diagnostic() as config:
         main(config)

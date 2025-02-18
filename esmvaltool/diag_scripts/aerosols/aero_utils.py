@@ -9,7 +9,6 @@ import numpy as np
 
 
 class AeroAnsError(Exception):
-
     """Exception class for errors raised when model data is checked in the
     extract_pt module.
     """
@@ -29,10 +28,10 @@ def add_bounds(cube):
         Iris cube with bounds added to the latitude and longitude coordinates.
     """
 
-    if not cube.coord('latitude').has_bounds():
-        cube.coord('latitude').guess_bounds()
-    if not cube.coord('longitude').has_bounds():
-        cube.coord('longitude').guess_bounds()
+    if not cube.coord("latitude").has_bounds():
+        cube.coord("latitude").guess_bounds()
+    if not cube.coord("longitude").has_bounds():
+        cube.coord("longitude").guess_bounds()
 
     return cube
 
@@ -80,13 +79,14 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
 
     # Check that input data is a (single) cube
     if not isinstance(icube, iris.cube.Cube):
-        raise AeroAnsError('Extract_pt:First argument must be a single cube')
+        raise AeroAnsError("Extract_pt:First argument must be a single cube")
 
     # Check if the cube contains a time dimension, which is
     # currently unsupported.
-    if icube.coords()[0].name() == 'time':
+    if icube.coords()[0].name() == "time":
         raise AeroAnsError(
-            'Extract_pt:Cannot handle time dimension at present')
+            "Extract_pt:Cannot handle time dimension at present"
+        )
 
     # Check that equal number of lat/lon pairs are passed in point coordinates.
     # Convert arguments to lists for easier processing if necessary.
@@ -103,16 +103,19 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
             pt_lon1.append(pt_lon[n_lat])
 
     if len(pt_lat1) != len(pt_lon1):
-        raise AeroAnsError('Extract_pt:Mismatch in number of lat/long values')
+        raise AeroAnsError("Extract_pt:Mismatch in number of lat/long values")
 
     # Check that both level and height haven't been requested.
     if level is not None and height is not None:
-        raise AeroAnsError('Extract_pt: Both Level and Height requested')
+        raise AeroAnsError("Extract_pt: Both Level and Height requested")
 
     # Check that the cube has a level coordinate if level has been requested.
-    if level is not None and not icube.coord(
-            'model_level_number') and not icube.coord('pseudo_level'):
-        raise AeroAnsError('Extract_pt:Level requested, but not found in cube')
+    if (
+        level is not None
+        and not icube.coord("model_level_number")
+        and not icube.coord("pseudo_level")
+    ):
+        raise AeroAnsError("Extract_pt:Level requested, but not found in cube")
 
     # Check that the number of height points is equal to the number of
     # lat/lon pairs. Convert the argument to a list for easier
@@ -120,45 +123,44 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
     if height is not None:
         pt_hgt = []
 
-#        if isinstance(height, list):
-#            pt_hgt.extend(height)
-#        else:
-#            pt_hgt.append(height)
-        pt_hgt.extend(height) if \
-            isinstance(height, list) else \
-            pt_hgt.append(height)
+        #        if isinstance(height, list):
+        #            pt_hgt.extend(height)
+        #        else:
+        #            pt_hgt.append(height)
+        pt_hgt.extend(height) if isinstance(height, list) else pt_hgt.append(
+            height
+        )
 
         if len(pt_lat1) != len(pt_hgt):
             raise AeroAnsError(
-                'Extract_pt:Mismatch in number of points for lat/long/height')
+                "Extract_pt:Mismatch in number of points for lat/long/height"
+            )
 
         # Check that heights have been merged with orography.
-        if not icube.coords('altitude'):
+        if not icube.coords("altitude"):
             raise AeroAnsError(
                 'Extract_pt:Height requested but input data does not contain \
-                "Altitude" coordinate')
+                "Altitude" coordinate'
+            )
 
         # Store the min and max altitudes from cube data so that user
         # cannot request points located below/ above that.
         # Will extract =min/max if beyond limits.
-        hgt_min = icube.coord('altitude').points.min()
-        hgt_max = icube.coord('altitude').points.max()
+        hgt_min = icube.coord("altitude").points.min()
+        hgt_max = icube.coord("altitude").points.max()
 
     # ---------- Finished checks -- begin processing -------------------------
 
     # If level specified, extract slice first
     if level is not None:
-
         try:
-            icube = icube.extract(
-                iris.Constraint(model_level_number=level))
+            icube = icube.extract(iris.Constraint(model_level_number=level))
 
         except Exception:
-            print('Model level number not available. Use pseudo level')
+            print("Model level number not available. Use pseudo level")
 
         else:
-            icube = icube.extract(
-                iris.Constraint(pseudo_level=level))
+            icube = icube.extract(iris.Constraint(pseudo_level=level))
 
     # Extract values for specified points lat/lon
     # NOTE: Does not seem to handle multiple points if 3-D
@@ -166,8 +168,10 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
 
     # Set lat/lon coordinates for model grid cell interpolation
     for n_lat1 in np.arange(len(pt_lat1)):
-        latlon_coords = [('latitude', pt_lat1[n_lat1]),
-                         ('longitude', pt_lon1[n_lat1])]
+        latlon_coords = [
+            ("latitude", pt_lat1[n_lat1]),
+            ("longitude", pt_lon1[n_lat1]),
+        ]
 
         if nearest:
             tcube = icube.interpolate(latlon_coords, iris.analysis.Nearest())
@@ -176,11 +180,10 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
 
         # If height specified, interpolate to requested height
         if height is not None:
-
             # Set vertical coordinates for model grid cell interpolation
             point = max(pt_hgt[n_lat1], hgt_min)
             point = min(pt_hgt[n_lat1], hgt_max)
-            hgt_coords = [('altitude', point)]
+            hgt_coords = [("altitude", point)]
 
             if nearest:
                 tcube = tcube.interpolate(hgt_coords, iris.analysis.Nearest())

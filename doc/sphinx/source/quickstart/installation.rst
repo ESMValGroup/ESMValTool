@@ -396,6 +396,16 @@ install the ESMValTool Julia dependencies:
 
     esmvaltool install Julia
 
+If you are planning to do any coding, install the :ref:`esmvaltool:pre-commit`
+hooks by running:
+
+.. code-block:: bash
+
+    pre-commit install
+
+these will make sure that when you commit your changes, they will be formatted
+correctly.
+
 The next step is to check that the installation works properly.
 To do this, run the tool with:
 
@@ -492,6 +502,15 @@ If the command above shows a directory inside your conda environment instead,
 e.g. ``~/miniforge3/envs/esmvaltool/lib/python3.11/site-packages/esmvalcore``,
 you may need to manually remove that directory and run
 ``pip install --editable '.[develop]'`` again.
+
+Finally, also install the :ref:`esmvaltool:pre-commit` hooks by running:
+
+.. code-block:: bash
+
+    pre-commit install
+
+these will make sure that when you commit your changes, they will be formatted
+correctly.
 
 .. _install_on_hpc:
 

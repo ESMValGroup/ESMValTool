@@ -1,4 +1,5 @@
 """Utility script for inspecting and converting ncl color tables."""
+
 # pylint: disable=import-outside-toplevel
 import logging
 
@@ -26,21 +27,27 @@ COLOR_SNIPPET = """
 
 def load_ncl_color_map(name, colorpath):
     """Load ncl color map to a list that is returned."""
+
     def _format(content):
         out = []
         for item in content.split("\n"):
             item = item.strip()
-            if item and not ('ncolors' in item or item.startswith('#')
-                             or item.startswith(';')):
-                out.append([int(elem) / 256
-                            for elem in item.split()[0:3]] + [1])
+            if item and not (
+                "ncolors" in item
+                or item.startswith("#")
+                or item.startswith(";")
+            ):
+                out.append(
+                    [int(elem) / 256 for elem in item.split()[0:3]] + [1]
+                )
         return out
 
-    filename = "{0}/{1}.rgb".format(colorpath, name)
+    filename = f"{colorpath}/{name}.rgb"
     import os
+
     if not os.path.exists(filename):
-        raise ValueError("Path {0} does not exist.".format(filename))
-    with open(filename, 'r') as ncl_color_map:
+        raise ValueError(f"Path {filename} does not exist.")
+    with open(filename) as ncl_color_map:
         return _format(ncl_color_map.read())
 
 
@@ -57,6 +64,7 @@ def get_color_map(name, colorpath):
     """
     import matplotlib
     import yaml
+
     colors = load_ncl_color_map(name, colorpath)
     logger.debug("RGB values for '%s':\n%s", name, yaml.dump(colors))
     return matplotlib.colors.ListedColormap(colors, name=name, N=None)
@@ -70,33 +78,41 @@ def list_ncl_color_maps(colorpath):
         return os.path.splitext(os.path.basename(name))[0]
 
     out = []
-    for (_, _, filenames) in os.walk(colorpath):
-        out.extend([
-            _format(filename) for filename in filenames
-            if 'rgb' in filename.split('.')
-        ])
+    for _, _, filenames in os.walk(colorpath):
+        out.extend(
+            [
+                _format(filename)
+                for filename in filenames
+                if "rgb" in filename.split(".")
+            ]
+        )
     return out
 
 
-def plot_example_for_colormap(name, colorpath, outdir='./'):
+def plot_example_for_colormap(name, colorpath, outdir="./"):
     """Create plots of given color map using python."""
     logger.info("Plotting example for '%s'", name)
     import os
+
     import matplotlib
+
     matplotlib.use("Agg")  # noqa
     import matplotlib.pyplot as plt
     import numpy as np
+
     fig = plt.figure(1)
     axis = fig.add_axes([0.1, 0.3, 0.5, 0.5])
     np.random.seed(12345678)
     data = np.random.randn(30, 30)
-    psm = axis.pcolormesh(data,
-                          cmap=get_color_map(name, colorpath),
-                          rasterized=True,
-                          vmin=-4,
-                          vmax=4)
+    psm = axis.pcolormesh(
+        data,
+        cmap=get_color_map(name, colorpath),
+        rasterized=True,
+        vmin=-4,
+        vmax=4,
+    )
     fig.colorbar(psm, ax=axis)
-    plt.savefig(os.path.join(outdir, "{0}.png".format(name)))
+    plt.savefig(os.path.join(outdir, f"{name}.png"))
     plt.close()
 
 
@@ -109,24 +125,28 @@ def main_plot_python_cm(colorpath, outpath):
 def main_plot_ncl_cm(colorpath, outpath):
     """Execute functions for ncl plots."""
     from jinja2 import Template
+
     t_color_snippet = Template(COLOR_SNIPPET)
     template = Template(NCL_SCRIPT)
     list_of_snippets = []
     import glob
+    import os
     import subprocess
     import tempfile
-    import os
+
     for path in glob.glob(colorpath + "/*rgb"):
         _, tail = os.path.split(path)
         list_of_snippets.append(t_color_snippet.render(path=path, name=tail))
-    with tempfile.NamedTemporaryFile(mode='w', suffix='ncl') as fname:
+    with tempfile.NamedTemporaryFile(mode="w", suffix="ncl") as fname:
         fname.write(
-            template.render(list_of_snippets=sorted(list_of_snippets),
-                            outdir=outpath))
+            template.render(
+                list_of_snippets=sorted(list_of_snippets), outdir=outpath
+            )
+        )
         subprocess.check_call(["ncl", fname.name])
 
 
-class ColorTables():
+class ColorTables:
     """Generate colormap samples for ESMValTool's default colormaps."""
 
     def __init__(self):
@@ -135,16 +155,21 @@ class ColorTables():
         console_handler.setLevel(logging.INFO)
         console_handler.setFormatter(
             logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            )
+        )
         logger.addHandler(console_handler)
         self._colorpath = None
         self._outpath = None
 
     def _prepare_paths(self, colorpath, outpath):
         import os
+
         if colorpath is None:
-            from esmvaltool.diag_scripts.shared.plot  \
-                import __file__ as plot_path
+            from esmvaltool.diag_scripts.shared.plot import (
+                __file__ as plot_path,
+            )
+
             colorpath = os.path.join(os.path.dirname(plot_path), "rgb")
 
         if not os.path.isdir(colorpath):

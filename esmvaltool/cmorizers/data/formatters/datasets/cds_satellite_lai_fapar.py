@@ -62,27 +62,32 @@ def _attrs_are_the_same(cubelist):
         # array and therefore not hashable
         except TypeError:
             unique_attr_vals = {
-                tuple(cube.attributes[key])
-                for cube in cubelist
+                tuple(cube.attributes[key]) for cube in cubelist
             }
         if len(unique_attr_vals) > 1:
             attrs_the_same = False
-            print(f"Different values found for {key}-attribute: "
-                  f"{unique_attr_vals}")
+            print(
+                f"Different values found for {key}-attribute: "
+                f"{unique_attr_vals}"
+            )
     return attrs_the_same
 
 
 def _cmorize_dataset(in_file, var, cfg, out_dir):
-    logger.info("CMORizing variable '%s' from input file '%s'",
-                var['short_name'], in_file)
-    attributes = deepcopy(cfg['attributes'])
-    attributes['mip'] = var['mip']
+    logger.info(
+        "CMORizing variable '%s' from input file '%s'",
+        var["short_name"],
+        in_file,
+    )
+    attributes = deepcopy(cfg["attributes"])
+    attributes["mip"] = var["mip"]
 
-    cmor_table = cfg['cmor_table']
-    definition = cmor_table.get_variable(var['mip'], var['short_name'])
+    cmor_table = cfg["cmor_table"]
+    definition = cmor_table.get_variable(var["mip"], var["short_name"])
 
-    cube = iris.load_cube(str(in_file),
-                          constraint=NameConstraint(var_name=var['raw']))
+    cube = iris.load_cube(
+        str(in_file), constraint=NameConstraint(var_name=var["raw"])
+    )
 
     # Set correct names
     cube.var_name = definition.short_name
@@ -109,26 +114,27 @@ def _regrid_dataset(in_dir, var, cfg):
     This function regrids each file and write to disk appending 'regrid'
     in front of filename.
     """
-    filelist = glob.glob(os.path.join(in_dir, var['file']))
+    filelist = glob.glob(os.path.join(in_dir, var["file"]))
     for infile in filelist:
         _, infile_tail = os.path.split(infile)
-        outfile_tail = infile_tail.replace('c3s', 'c3s_regridded')
-        outfile = os.path.join(cfg['work_dir'], outfile_tail)
+        outfile_tail = infile_tail.replace("c3s", "c3s_regridded")
+        outfile = os.path.join(cfg["work_dir"], outfile_tail)
         with catch_warnings():
             filterwarnings(
-                action='ignore',
+                action="ignore",
                 # Full message:
                 # UserWarning: Skipping global attribute 'long_name':
                 #              'long_name' is not a permitted attribute
                 message="Skipping global attribute 'long_name'",
                 category=UserWarning,
-                module='iris',
+                module="iris",
             )
-            lai_cube = iris.load_cube(infile,
-                                      constraint=NameConstraint(
-                                          var_name=var['raw']))
-        lai_cube = regrid(lai_cube, cfg['custom']['regrid_resolution'],
-                          'nearest')
+            lai_cube = iris.load_cube(
+                infile, constraint=NameConstraint(var_name=var["raw"])
+            )
+        lai_cube = regrid(
+            lai_cube, cfg["custom"]["regrid_resolution"], "nearest"
+        )
         logger.info("Saving: %s", outfile)
 
         iris.save(lai_cube, outfile)
@@ -140,17 +146,21 @@ def _set_time_bnds(in_dir, var):
     # variables below the limit, otherwise prospector complains.
     cubelist = iris.load(
         glob.glob(
-            os.path.join(in_dir, var['file'].replace('c3s', 'c3s_regridded'))))
+            os.path.join(in_dir, var["file"].replace("c3s", "c3s_regridded"))
+        )
+    )
 
     # The purpose of the following loop is to remove any attributes
     # that differ between cubes (otherwise concatenation over time fails).
     # In addition, care is taken of the time coordinate, by adding the
     # time_coverage attributes as time_bnds to the time coordinate.
     for n_cube, _ in enumerate(cubelist):
-        time_coverage_start = cubelist[n_cube].\
-            attributes.pop('time_coverage_start')
-        time_coverage_end = cubelist[n_cube].\
-            attributes.pop('time_coverage_end')
+        time_coverage_start = cubelist[n_cube].attributes.pop(
+            "time_coverage_start"
+        )
+        time_coverage_end = cubelist[n_cube].attributes.pop(
+            "time_coverage_end"
+        )
 
         # Now put time_coverage_start/end as time_bnds
         # Convert time_coverage_xxxx to datetime
@@ -161,13 +171,14 @@ def _set_time_bnds(in_dir, var):
         time_bnds_datetime = [bnd_a, bnd_b]
 
         # Read dataset time unit and calendar from file
-        dataset_time_unit = str(cubelist[n_cube].coord('time').units)
-        dataset_time_calender = cubelist[n_cube].coord('time').units.calendar
+        dataset_time_unit = str(cubelist[n_cube].coord("time").units)
+        dataset_time_calender = cubelist[n_cube].coord("time").units.calendar
         # Convert datetime
-        time_bnds = cf_units.date2num(time_bnds_datetime, dataset_time_unit,
-                                      dataset_time_calender)
+        time_bnds = cf_units.date2num(
+            time_bnds_datetime, dataset_time_unit, dataset_time_calender
+        )
         # Put them on the file
-        cubelist[n_cube].coord('time').bounds = time_bnds
+        cubelist[n_cube].coord("time").bounds = time_bnds
 
     return cubelist
 
@@ -176,45 +187,51 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     # run the cmorization
     # Pass on the workdir to the cfg dictionary
-    cfg['work_dir'] = cfg_user.work_dir
+    cfg["work_dir"] = cfg_user.work_dir
     # If it doesn't exist, create it
-    if not os.path.isdir(cfg['work_dir']):
-        logger.info("Creating working directory for regridding: %s",
-                    cfg['work_dir'])
-        os.mkdir(cfg['work_dir'])
+    if not os.path.isdir(cfg["work_dir"]):
+        logger.info(
+            "Creating working directory for regridding: %s", cfg["work_dir"]
+        )
+        os.mkdir(cfg["work_dir"])
 
-    for short_name, var in cfg['variables'].items():
-        var['short_name'] = short_name
+    for short_name, var in cfg["variables"].items():
+        var["short_name"] = short_name
         logger.info("Processing var %s", short_name)
 
         # Regridding
-        logger.info("Start regridding to: %s",
-                    cfg['custom']['regrid_resolution'])
+        logger.info(
+            "Start regridding to: %s", cfg["custom"]["regrid_resolution"]
+        )
         _regrid_dataset(in_dir, var, cfg)
         logger.info("Finished regridding")
 
         # File concatenation
         logger.info("Start setting time_bnds")
-        cubelist = _set_time_bnds(cfg['work_dir'], var)
+        cubelist = _set_time_bnds(cfg["work_dir"], var)
 
         # Loop over two different platform names
-        for platformname in ['SPOT-4', 'SPOT-5']:
+        for platformname in ["SPOT-4", "SPOT-5"]:
             # Now split the cubelist on the different platform
             logger.info("Start processing part of dataset: %s", platformname)
             cubelist_platform = cubelist.extract(
-                iris.AttributeConstraint(platform=platformname))
+                iris.AttributeConstraint(platform=platformname)
+            )
             for n_cube, _ in enumerate(cubelist_platform):
-                cubelist_platform[n_cube].attributes.pop('identifier')
+                cubelist_platform[n_cube].attributes.pop("identifier")
             if cubelist_platform:
                 assert _attrs_are_the_same(cubelist_platform)
                 cube = cubelist_platform.concatenate_cube()
             else:
                 logger.warning(
                     "No files found for platform %s \
-                               (check input data)", platformname)
+                               (check input data)",
+                    platformname,
+                )
                 continue
-            savename = os.path.join(cfg['work_dir'],
-                                    var['short_name'] + platformname + '.nc')
+            savename = os.path.join(
+                cfg["work_dir"], var["short_name"] + platformname + ".nc"
+            )
             logger.info("Saving as: %s", savename)
             iris.save(cube, savename)
             logger.info("Finished file concatenation over time")

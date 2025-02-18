@@ -126,7 +126,7 @@ References
 
 * The soil temperature metrics are calcuated following: Charles D. Koven, William
   J. Riley, and Alex Stern, 2013: Analysis of Permafrost Thermal Dynamics and
-  Response to Climate Change in the CMIP5 Earth System Models. J. Climate, 26. 
+  Response to Climate Change in the CMIP5 Earth System Models. J. Climate, 26.
   (Table 3) http://dx.doi.org/10.1175/JCLI-D-12-00228.1 The
   locations used for Table 3 were extracted from the model and the modelled
   metrics calculated.

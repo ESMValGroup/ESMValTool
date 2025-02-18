@@ -29,8 +29,8 @@ logger = logging.getLogger(__name__)
 
 def _fix_time_coord(cube):
     """Set time points to central day of month."""
-    time_coord = cube.coord('time')
-    new_unit = Unit('days since 1850-01-01 00:00:00', calendar='standard')
+    time_coord = cube.coord("time")
+    new_unit = Unit("days since 1850-01-01 00:00:00", calendar="standard")
     time_coord.convert_units(new_unit)
     old_time = new_unit.num2date(time_coord.points)
     new_time = [d.replace(day=15) for d in old_time]
@@ -40,14 +40,16 @@ def _fix_time_coord(cube):
 def _get_filepath(in_dir, basename):
     """Find correct name of file (extend basename with timestamp)."""
     all_files = [
-        f for f in os.listdir(in_dir)
+        f
+        for f in os.listdir(in_dir)
         if os.path.isfile(os.path.join(in_dir, f))
     ]
     for filename in all_files:
         if filename.endswith(basename):
             return os.path.join(in_dir, filename)
     raise OSError(
-        f"Cannot find input file ending with '{basename}' in '{in_dir}'")
+        f"Cannot find input file ending with '{basename}' in '{in_dir}'"
+    )
 
 
 def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
@@ -59,24 +61,22 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     utils.convert_timeunits(cube, 1950)
     cube = utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
-    utils.save_variable(cube,
-                        var,
-                        out_dir,
-                        attrs,
-                        unlimited_dimensions=['time'])
+    utils.save_variable(
+        cube, var, out_dir, attrs, unlimited_dimensions=["time"]
+    )
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    glob_attrs = cfg['attributes']
-    cmor_table = cfg['cmor_table']
-    filepath = _get_filepath(in_dir, cfg['filename'])
+    glob_attrs = cfg["attributes"]
+    cmor_table = cfg["cmor_table"]
+    filepath = _get_filepath(in_dir, cfg["filename"])
     logger.info("Found input file '%s'", filepath)
 
     # Run the cmorization
-    for (var, var_info) in cfg['variables'].items():
+    for var, var_info in cfg["variables"].items():
         logger.info("CMORizing variable '%s'", var)
-        glob_attrs['mip'] = var_info['mip']
-        cmor_info = cmor_table.get_variable(var_info['mip'], var)
-        raw_var = var_info.get('raw', var)
+        glob_attrs["mip"] = var_info["mip"]
+        cmor_info = cmor_table.get_variable(var_info["mip"], var)
+        raw_var = var_info.get("raw", var)
         _extract_variable(raw_var, cmor_info, glob_attrs, filepath, out_dir)

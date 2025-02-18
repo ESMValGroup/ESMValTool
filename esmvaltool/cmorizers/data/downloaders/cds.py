@@ -32,34 +32,35 @@ class CDSDownloader(BaseDownloader):
         Some products have a subfix appended to their name for certain
         variables. This parameter is to specify it, by default ''
     """
-    def __init__(self,
-                 product_name,
-                 config,
-                 request_dictionary,
-                 dataset,
-                 dataset_info,
-                 overwrite,
-                 extra_name=''):
+
+    def __init__(
+        self,
+        product_name,
+        config,
+        request_dictionary,
+        dataset,
+        dataset_info,
+        overwrite,
+        extra_name="",
+    ):
         super().__init__(config, dataset, dataset_info, overwrite)
         try:
             self._client = cdsapi.Client()
         except Exception as ex:
             if str(ex).endswith(".cdsapirc"):
                 logger.error(
-                    'Could not connect to the CDS due to issues with your '
+                    "Could not connect to the CDS due to issues with your "
                     '".cdsapirc" file. More info in '
-                    'https://cds.climate.copernicus.eu/api-how-to.')
+                    "https://cds.climate.copernicus.eu/api-how-to."
+                )
             raise
         self._product_name = product_name
         self._request_dict = request_dictionary
         self.extra_name = extra_name
 
-    def download(self,
-                 year,
-                 month,
-                 day=None,
-                 file_pattern=None,
-                 file_format='tar'):
+    def download(
+        self, year, month, day=None, file_pattern=None, file_format="tar"
+    ):
         """Download a specific month from the CDS.
 
         Parameters
@@ -76,13 +77,13 @@ class CDSDownloader(BaseDownloader):
             File format, by default tar
         """
         request_dict = self._request_dict.copy()
-        request_dict['year'] = f'{year}'
-        request_dict['month'] = f"{month:02d}"
+        request_dict["year"] = f"{year}"
+        request_dict["month"] = f"{month:02d}"
         if day:
             if isinstance(day, Iterable):
-                request_dict['day'] = day
+                request_dict["day"] = day
             else:
-                request_dict['day'] = f"{day:02d}"
+                request_dict["day"] = f"{day:02d}"
 
         date_str = f"{year}{month:02d}"
         if day:
@@ -114,8 +115,9 @@ class CDSDownloader(BaseDownloader):
             if self.overwrite:
                 os.remove(filename)
             else:
-                logger.info('File %s already downloaded. Skipping...',
-                            filename)
+                logger.info(
+                    "File %s already downloaded. Skipping...", filename
+                )
                 return
         try:
             self._client.retrieve(
@@ -124,5 +126,5 @@ class CDSDownloader(BaseDownloader):
                 filename,
             )
         except Exception:
-            logger.error('Failed request: %s', request)
+            logger.error("Failed request: %s", request)
             raise

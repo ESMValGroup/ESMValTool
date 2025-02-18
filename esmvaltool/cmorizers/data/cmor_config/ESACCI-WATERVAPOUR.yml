@@ -24,7 +24,7 @@ variables:
     start_year: 2002
     end_year: 2017
 
-# daily frequency 
+# daily frequency
   prw_day:
     short_name: prw
     mip: Eday

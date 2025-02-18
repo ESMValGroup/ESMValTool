@@ -9,7 +9,7 @@ attributes:
   source: 'http://users.met.fu-berlin.de/~ChristopherKadow/'
   reference: 'kadow20natgeosc'
   comment: |
-    'Temperature anomaly with respect to the period 1961-1990, 
+    'Temperature anomaly with respect to the period 1961-1990,
     ensemble mean, infilled by AI'
 
 filenames:

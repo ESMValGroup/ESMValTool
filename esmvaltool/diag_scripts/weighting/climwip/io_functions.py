@@ -1,4 +1,5 @@
 """A collection of input-output functions."""
+
 import logging
 import os
 from collections import defaultdict
@@ -16,22 +17,20 @@ logger = logging.getLogger(os.path.basename(__file__))
 def get_provenance_record(caption: str, ancestors: list):
     """Create a provenance record describing the diagnostic data and plots."""
     record = {
-        'caption':
-        caption,
-        'domains': ['reg'],
-        'authors': [
-            'kalverla_peter',
-            'smeets_stef',
-            'brunner_lukas',
-            'camphuijsen_jaro',
+        "caption": caption,
+        "domains": ["reg"],
+        "authors": [
+            "kalverla_peter",
+            "smeets_stef",
+            "brunner_lukas",
+            "camphuijsen_jaro",
         ],
-        'references': [
-            'brunner2019',
-            'lorenz2018',
-            'knutti2017',
+        "references": [
+            "brunner2019",
+            "lorenz2018",
+            "knutti2017",
         ],
-        'ancestors':
-        ancestors,
+        "ancestors": ancestors,
     }
     return record
 
@@ -42,7 +41,7 @@ def log_provenance(caption: str, filename: str, cfg: dict, ancestors: list):
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance_record)
 
-    logger.info('Output stored as %s', filename)
+    logger.info("Output stored as %s", filename)
 
 
 def read_metadata(cfg: dict) -> tuple:
@@ -53,20 +52,19 @@ def read_metadata(cfg: dict) -> tuple:
     'obs_data' variable in the recipe. The dictionaries are sorted by
     the variable.
     """
-    obs_ids = cfg['obs_data']
+    obs_ids = cfg["obs_data"]
     if isinstance(obs_ids, str):
         obs_ids = [obs_ids]
 
-    input_data = cfg['input_data'].values()
-    projects = group_metadata(input_data, attribute='project')
+    input_data = cfg["input_data"].values()
+    projects = group_metadata(input_data, attribute="project")
 
     observations = defaultdict(list)
     models = defaultdict(list)
 
     for project, metadata in projects.items():
-
         for item in metadata:
-            variable_group = item['variable_group']
+            variable_group = item["variable_group"]
 
             if project in obs_ids:
                 observations[variable_group].append(item)
@@ -76,7 +74,7 @@ def read_metadata(cfg: dict) -> tuple:
     return models, observations
 
 
-def make_standard_calendar(xrds: 'xr.Dataset'):
+def make_standard_calendar(xrds: "xr.Dataset"):
     """Make sure time coordinate uses the default calendar.
 
     Workaround for incompatible calendars 'standard' and 'no-leap'.
@@ -84,7 +82,7 @@ def make_standard_calendar(xrds: 'xr.Dataset'):
     """
     try:
         years = xrds.time.dt.year.values
-        xrds['time'] = [datetime(year, 7, 1) for year in years]
+        xrds["time"] = [datetime(year, 7, 1) for year in years]
     except TypeError:
         # Time dimension is 0-d array
         pass
@@ -93,9 +91,11 @@ def make_standard_calendar(xrds: 'xr.Dataset'):
         pass
 
 
-def read_input_data(metadata: list,
-                    dim: str = 'data_ensemble',
-                    identifier_fmt: str = '{dataset}') -> tuple:
+def read_input_data(
+    metadata: list,
+    dim: str = "data_ensemble",
+    identifier_fmt: str = "{dataset}",
+) -> tuple:
     """Load data from metadata.
 
     Read the input data from the list of given data sets. `metadata` is
@@ -107,9 +107,9 @@ def read_input_data(metadata: list,
     identifiers = []
     input_files = []
     for info in metadata:
-        filename = info['filename']
-        short_name = info['short_name']
-        variable_group = info['variable_group']
+        filename = info["filename"]
+        short_name = info["short_name"]
+        variable_group = info["variable_group"]
 
         xrds = xr.open_dataset(filename)
         make_standard_calendar(xrds)
@@ -137,14 +137,16 @@ def read_input_data(metadata: list,
 
 def read_model_data(datasets: list) -> tuple:
     """Load model data from list of metadata."""
-    return read_input_data(datasets,
-                           dim='model_ensemble',
-                           identifier_fmt='{dataset}_{ensemble}_{exp}')
+    return read_input_data(
+        datasets,
+        dim="model_ensemble",
+        identifier_fmt="{dataset}_{ensemble}_{exp}",
+    )
 
 
 def read_model_data_ancestor(cfg, variable_group) -> tuple:
     """Load model data from ancestor folder."""
-    filepath = io.get_ancestor_file(cfg, 'MODELS_' + variable_group + '.nc')
+    filepath = io.get_ancestor_file(cfg, "MODELS_" + variable_group + ".nc")
     ancestor_ds = xr.open_dataset(filepath)
 
     anc_da = ancestor_ds[variable_group].load()
@@ -155,14 +157,14 @@ def read_model_data_ancestor(cfg, variable_group) -> tuple:
 
 def read_observation_data(datasets: list) -> tuple:
     """Load observation data from list of metadata."""
-    return read_input_data(datasets,
-                           dim='obs_ensemble',
-                           identifier_fmt='{dataset}')
+    return read_input_data(
+        datasets, dim="obs_ensemble", identifier_fmt="{dataset}"
+    )
 
 
 def read_observation_data_ancestor(cfg, variable_group) -> tuple:
     """Load model data from ancestor folder."""
-    filepath = io.get_ancestor_file(cfg, 'OBS_' + variable_group + '.nc')
+    filepath = io.get_ancestor_file(cfg, "OBS_" + variable_group + ".nc")
     ancestor_ds = xr.open_dataset(filepath)
 
     anc_da = ancestor_ds[variable_group].load()

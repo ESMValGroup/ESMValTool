@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 """Part of the ESMValTool Arctic Ocean diagnostics.
 
 This module contains functions for data interpolation.
 """
+
 try:
     import esmpy
 except ImportError as exc:
@@ -10,14 +10,16 @@ except ImportError as exc:
     try:
         import ESMF as esmpy  # noqa: N811
     except ImportError:
-        raise exc
+        raise exc from None
 import logging
 import os
+
 import numpy as np
+
 # import pyresample
 from cartopy.util import add_cyclic_point
-# from netCDF4 import Dataset
 
+# from netCDF4 import Dataset
 from esmvaltool.diag_scripts.arctic_ocean.getdata import load_meta
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -32,7 +34,7 @@ def closest_depth(depths, depth):
     """
     target_level = abs(abs(depths) - abs(depth)).argmin()
     target_depth = depths[target_level]
-    logger.debug('target_depth: %s', target_depth)
+    logger.debug("target_depth: %s", target_depth)
     return target_depth, target_level
 
 
@@ -74,7 +76,7 @@ def define_esmf_field(ifile, data_onlevel, name):
 
     grid_obs = esmpy.Grid(filename=ifile, filetype=esmpy.FileFormat.GRIDSPEC)
     mask_obs = grid_obs.add_item(esmpy.GridItem.MASK)
-    mask_obs[:] = data_onlevel.mask.astype('int').T
+    mask_obs[:] = data_onlevel.mask.astype("int").T
     esmf_field = esmpy.Field(
         grid_obs,
         staggerloc=esmpy.StaggerLoc.CENTER,
@@ -87,12 +89,14 @@ def add_esmf_cyclic(metadata_obs, data_onlevel, interpolated):
     """Add cyclic points to interpolated data."""
 
     data_onlevel_cyc, lon_obs_cyc = add_cyclic_point(
-        data_onlevel, coord=metadata_obs['lon2d'][0, :])
+        data_onlevel, coord=metadata_obs["lon2d"][0, :]
+    )
 
-    lonc, latc = np.meshgrid(lon_obs_cyc, metadata_obs['lat2d'][:, 0])
+    lonc, latc = np.meshgrid(lon_obs_cyc, metadata_obs["lat2d"][:, 0])
 
     interpolated_cyc, lon_obs_cyc = add_cyclic_point(
-        interpolated, coord=metadata_obs['lon2d'][0, :])
+        interpolated, coord=metadata_obs["lon2d"][0, :]
+    )
     return lonc, latc, data_onlevel_cyc, interpolated_cyc
 
 
@@ -106,14 +110,16 @@ def esmf_regriding(sourcefield, distfield, metadata_obs, data_onlev_obs):
         # regrid_method=esmpy.RegridMethod.BILINEAR,
         unmapped_action=esmpy.UnmappedAction.IGNORE,
         dst_mask_values=np.array([1]),
-        src_mask_values=np.array([1]))
+        src_mask_values=np.array([1]),
+    )
     # actual regriding
     distfield = regrid(sourcefield, distfield)
     # reshape the data and convert to masked array
     data_interpolated = distfield.data[:].T
     data_interpolated = np.ma.masked_equal(data_interpolated, 0)
     lonc, latc, data_onlevel_cyc, interpolated_cyc = add_esmf_cyclic(
-        metadata_obs, data_onlev_obs, data_interpolated)
+        metadata_obs, data_onlev_obs, data_interpolated
+    )
     return lonc, latc, data_onlevel_cyc, interpolated_cyc
 
 
@@ -134,25 +140,27 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
     metadata_obs = load_meta(obs_file, fxpath=None)
     metadata_mod = load_meta(mod_file, fxpath=None)
 
-    data_obs = metadata_obs['datafile'].variables[cmor_var][:]
-    data_model = metadata_mod['datafile'].variables[cmor_var][:]
+    data_obs = metadata_obs["datafile"].variables[cmor_var][:]
+    data_model = metadata_mod["datafile"].variables[cmor_var][:]
 
     # Select depth in climatology that is closest to the desired depth
-    target_depth, level_depth = closest_depth(metadata_obs['lev'], depth)
+    target_depth, level_depth = closest_depth(metadata_obs["lev"], depth)
 
     # climatology and model data on the level
     data_onlev_obs = data_obs[0, level_depth, :, :]
-    data_onlev_mod = interpolate_vert(metadata_mod['lev'], target_depth,
-                                      data_model[0, :, :, :])
+    data_onlev_mod = interpolate_vert(
+        metadata_mod["lev"], target_depth, data_model[0, :, :, :]
+    )
 
     # prepear interpolation fields
-    distfield = define_esmf_field(obs_file, data_onlev_obs, 'OBS')
+    distfield = define_esmf_field(obs_file, data_onlev_obs, "OBS")
     distfield.data[:] = 0.0
 
-    sourcefield = define_esmf_field(mod_file, data_onlev_mod, 'Model')
+    sourcefield = define_esmf_field(mod_file, data_onlev_mod, "Model")
     sourcefield.data[...] = data_onlev_mod.T
 
     lonc, latc, data_onlev_obs_cyc, data_interpolated_cyc = esmf_regriding(
-        sourcefield, distfield, metadata_obs, data_onlev_obs)
+        sourcefield, distfield, metadata_obs, data_onlev_obs
+    )
 
     return lonc, latc, target_depth, data_onlev_obs_cyc, data_interpolated_cyc

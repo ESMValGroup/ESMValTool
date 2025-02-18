@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Diagnostic script to evaluate multiple emergent constraints simultaneously.
 
 Description
@@ -77,24 +76,27 @@ logger = logging.getLogger(os.path.basename(__file__))
 def get_default_settings(cfg):
     """Get default configuration settings."""
     cfg = deepcopy(cfg)
-    cfg.setdefault('all_data_label', 'all')
-    cfg.setdefault('combine_groups', False)
-    cfg.setdefault('confidence_level', 0.66)
-    cfg.setdefault('merge_identical_pred_input', True)
-    cfg.setdefault('patterns', [])
-    cfg.setdefault('savefig_kwargs', {
-        'bbox_inches': 'tight',
-        'dpi': 600,
-        'orientation': 'landscape',
-    })
-    cfg.setdefault('seaborn_settings', {})
+    cfg.setdefault("all_data_label", "all")
+    cfg.setdefault("combine_groups", False)
+    cfg.setdefault("confidence_level", 0.66)
+    cfg.setdefault("merge_identical_pred_input", True)
+    cfg.setdefault("patterns", [])
+    cfg.setdefault(
+        "savefig_kwargs",
+        {
+            "bbox_inches": "tight",
+            "dpi": 600,
+            "orientation": "landscape",
+        },
+    )
+    cfg.setdefault("seaborn_settings", {})
     return cfg
 
 
 def main(cfg):
     """Run the diagnostic."""
     cfg = get_default_settings(cfg)
-    sns.set_theme(**cfg['seaborn_settings'])
+    sns.set_theme(**cfg["seaborn_settings"])
 
     # Load data and perform PCA
     (training_data, prediction_data, attributes) = ec.get_input_data(cfg)
@@ -104,28 +106,32 @@ def main(cfg):
     with pd.option_context(*ec.PANDAS_PRINT_OPTIONS):
         logger.info(
             "Correlation of training data (considering all available data):\n"
-            "%s", training_data.corr())
+            "%s",
+            training_data.corr(),
+        )
         logger.info(
             "Correlation of training data (considering only climate models "
             "where data for all constraints is available):\n%s",
-            training_data_no_nans.corr())
-    ec.plot_individual_scatterplots(training_data,
-                                    prediction_data,
-                                    attributes,
-                                    'training_data',
-                                    cfg)
-    ec.plot_merged_scatterplots(training_data, prediction_data, attributes,
-                                'training_data', cfg)
-    ec.plot_target_distributions(training_data, prediction_data, attributes,
-                                 'training_data', cfg)
+            training_data_no_nans.corr(),
+        )
+    ec.plot_individual_scatterplots(
+        training_data, prediction_data, attributes, "training_data", cfg
+    )
+    ec.plot_merged_scatterplots(
+        training_data, prediction_data, attributes, "training_data", cfg
+    )
+    ec.plot_target_distributions(
+        training_data, prediction_data, attributes, "training_data", cfg
+    )
 
     # Export CSV
-    ec.export_csv(training_data, attributes, 'training_data', cfg)
-    ec.export_csv(training_data_no_nans, attributes, 'training_data_no_nans',
-                  cfg)
-    ec.export_csv(prediction_data, attributes, 'prediction_data', cfg)
+    ec.export_csv(training_data, attributes, "training_data", cfg)
+    ec.export_csv(
+        training_data_no_nans, attributes, "training_data_no_nans", cfg
+    )
+    ec.export_csv(prediction_data, attributes, "prediction_data", cfg)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with run_diagnostic() as config:
         main(config)

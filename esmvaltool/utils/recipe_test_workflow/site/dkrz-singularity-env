@@ -22,7 +22,7 @@ safe_load(){
 
     module load "${1}"
     # Check module count to determine whether module load was successful.
-    
+
     if (( PRE_LOAD_COUNT == $(module_count) )); then
         echo "[ERROR] Failed to load: ${1}"
         exit 1

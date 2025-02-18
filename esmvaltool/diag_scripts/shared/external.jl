@@ -1,6 +1,6 @@
 using PyPlot, PyCall
 using NetCDF
-	
+
 """
     create_yaml(filename, dict)
 Write a dictionary to a YAML file.
@@ -72,7 +72,7 @@ Optional:
 
 Author: Jost von Hardenberg, 2019
 """
-function plotmap(fname::String, var::String; lon="lon", lat="lat", 
+function plotmap(fname::String, var::String; lon="lon", lat="lat",
                  lonb="lon_bnds", latb="lat_bnds", title="", cstep=[],
                  cmap="RdBu_r", proj="", cpad=0.08, tpad=24, sub=111,
                  clabel="NONE", cdir="horizontal", cscale=0.65, tfs=14,
@@ -81,7 +81,7 @@ function plotmap(fname::String, var::String; lon="lon", lat="lat",
 
 # pcolormesh needs cell boundaries
 if style=="pcolormesh"
-    try 
+    try
         lonb=ncread(fname, lonb);
         lonv=vcat(lonb[1,:],lonb[2,end])
     catch
@@ -209,7 +209,7 @@ end
 
 if style=="contourf"
     data_cyc, lon_cyc = cutil.add_cyclic_point(data, coord=lon)
-    if levels==0 
+    if levels==0
         contourf(lon_cyc, lat, data_cyc, transform=ccrs.PlateCarree(),
                  cmap=cmap, extend=extend)
     else
@@ -225,9 +225,8 @@ if length(title)>1 PyPlot.title(title, pad=tpad, fontsize=tfs, weight=tweight) e
 cbar=colorbar(orientation=cdir, extend="both", pad=cpad, label=clabel,
               shrink=cscale)
 cbar.set_label(label=clabel,size=lfs)
-cbar.ax.tick_params(labelsize=cfs) 
+cbar.ax.tick_params(labelsize=cfs)
 if length(cstep)>0 cbar.set_ticks(cstep) end
 tight_layout()
 
 end
-                  

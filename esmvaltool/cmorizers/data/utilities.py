@@ -1,4 +1,5 @@
 """Utils module for Python cmorizers."""
+
 import datetime
 import gzip
 import logging
@@ -21,7 +22,7 @@ from esmvaltool import __version__ as version
 
 logger = logging.getLogger(__name__)
 
-REFERENCES_PATH = Path(esmvaltool_file).absolute().parent / 'references'
+REFERENCES_PATH = Path(esmvaltool_file).absolute().parent / "references"
 
 
 def add_height2m(cube: Cube) -> None:
@@ -33,7 +34,7 @@ def add_height2m(cube: Cube) -> None:
         Cube which will get the 2m-height coordinate in-place.
 
     """
-    add_scalar_height_coord(cube, height=2.)
+    add_scalar_height_coord(cube, height=2.0)
 
 
 def add_height10m(cube: Cube) -> None:
@@ -45,7 +46,7 @@ def add_height10m(cube: Cube) -> None:
         Cube which will get the 10m-height coordinate in-place.
 
     """
-    add_scalar_height_coord(cube, height=10.)
+    add_scalar_height_coord(cube, height=10.0)
 
 
 def add_scalar_depth_coord(cube: Cube, depth: float = 0.0) -> None:
@@ -60,14 +61,16 @@ def add_scalar_depth_coord(cube: Cube, depth: float = 0.0) -> None:
 
     """
     logger.debug("Adding depth coordinate (%sm)", depth)
-    depth_coord = iris.coords.AuxCoord(depth,
-                                       var_name='depth',
-                                       standard_name='depth',
-                                       long_name='depth',
-                                       units=Unit('m'),
-                                       attributes={'positive': 'down'})
+    depth_coord = iris.coords.AuxCoord(
+        depth,
+        var_name="depth",
+        standard_name="depth",
+        long_name="depth",
+        units=Unit("m"),
+        attributes={"positive": "down"},
+    )
     try:
-        cube.coord('depth')
+        cube.coord("depth")
     except iris.exceptions.CoordinateNotFoundError:
         cube.add_aux_coord(depth_coord, ())
     return cube
@@ -85,25 +88,29 @@ def add_scalar_height_coord(cube: Cube, height: float = 2.0) -> None:
 
     """
     logger.debug("Adding height coordinate (%sm)", height)
-    height_coord = iris.coords.AuxCoord(height,
-                                        var_name='height',
-                                        standard_name='height',
-                                        long_name='height',
-                                        units=Unit('m'),
-                                        attributes={'positive': 'up'})
+    height_coord = iris.coords.AuxCoord(
+        height,
+        var_name="height",
+        standard_name="height",
+        long_name="height",
+        units=Unit("m"),
+        attributes={"positive": "up"},
+    )
     cube.add_aux_coord(height_coord, ())
 
 
-def add_typebare(cube, value='bare_ground'):
+def add_typebare(cube, value="bare_ground"):
     """Add scalar coordinate 'typebare' with value of `value`."""
     logger.debug("Adding typebare coordinate (%s)", value)
-    typebare_coord = iris.coords.AuxCoord(value,
-                                          var_name='typebare',
-                                          standard_name='area_type',
-                                          long_name='surface type',
-                                          units=Unit('no unit'))
+    typebare_coord = iris.coords.AuxCoord(
+        value,
+        var_name="typebare",
+        standard_name="area_type",
+        long_name="surface type",
+        units=Unit("no unit"),
+    )
     try:
-        cube.coord('area_type')
+        cube.coord("area_type")
     except iris.exceptions.CoordinateNotFoundError:
         cube.add_aux_coord(typebare_coord, ())
     return cube
@@ -153,24 +160,26 @@ def convert_timeunits(cube, start_year):
     iris.cube.Cube
         Returns the original iris cube with time coordinate reformatted.
     """
-    if cube.coord('time').units == 'months since 0000-01-01 00:00:00':
-        real_unit = f'months since {str(start_year)}-01-01 00:00:00'
-    elif cube.coord('time').units == 'days since 0000-01-01 00:00:00':
-        real_unit = f'days since {str(start_year)}-01-01 00:00:00'
-    elif cube.coord('time').units == 'days since 1950-1-1':
-        real_unit = 'days since 1950-1-1 00:00:00'
+    if cube.coord("time").units == "months since 0000-01-01 00:00:00":
+        real_unit = f"months since {str(start_year)}-01-01 00:00:00"
+    elif cube.coord("time").units == "days since 0000-01-01 00:00:00":
+        real_unit = f"days since {str(start_year)}-01-01 00:00:00"
+    elif cube.coord("time").units == "days since 1950-1-1":
+        real_unit = "days since 1950-1-1 00:00:00"
     else:
-        real_unit = cube.coord('time').units
-    cube.coord('time').units = real_unit
+        real_unit = cube.coord("time").units
+    cube.coord("time").units = real_unit
     return cube
 
 
-def fix_coords(cube,
-               overwrite_time_bounds=True,
-               overwrite_lon_bounds=True,
-               overwrite_lat_bounds=True,
-               overwrite_lev_bounds=True,
-               overwrite_airpres_bounds=True):
+def fix_coords(
+    cube,
+    overwrite_time_bounds=True,
+    overwrite_lon_bounds=True,
+    overwrite_lat_bounds=True,
+    overwrite_lev_bounds=True,
+    overwrite_airpres_bounds=True,
+):
     """Fix coordinates to CMOR standards.
 
     Fixes coordinates eg time to have correct units, bounds etc;
@@ -208,15 +217,16 @@ def fix_coords(cube,
     # fix individual coords
     for cube_coord in cube.coords():
         # fix time
-        if cube_coord.var_name == 'time':
+        if cube_coord.var_name == "time":
             logger.info("Fixing time...")
-            cube.coord('time').convert_units(
-                Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
-            if overwrite_time_bounds or not cube.coord('time').has_bounds():
-                fix_bounds(cube, cube.coord('time'))
+            cube.coord("time").convert_units(
+                Unit("days since 1950-1-1 00:00:00", calendar="gregorian")
+            )
+            if overwrite_time_bounds or not cube.coord("time").has_bounds():
+                fix_bounds(cube, cube.coord("time"))
 
         # fix longitude
-        if cube_coord.var_name == 'lon':
+        if cube_coord.var_name == "lon":
             logger.info("Fixing longitude...")
             if cube_coord.ndim == 1:
                 cube = cube.intersection(longitude=(0.0, 360.0))
@@ -224,29 +234,31 @@ def fix_coords(cube,
                 fix_bounds(cube, cube_coord)
 
         # fix latitude
-        if cube_coord.var_name == 'lat':
+        if cube_coord.var_name == "lat":
             logger.info("Fixing latitude...")
-            if overwrite_lat_bounds or not cube.coord('latitude').has_bounds():
-                fix_bounds(cube, cube.coord('latitude'))
+            if overwrite_lat_bounds or not cube.coord("latitude").has_bounds():
+                fix_bounds(cube, cube.coord("latitude"))
             if cube_coord.core_points()[0] > cube_coord.core_points()[-1]:
                 cube = iris.util.reverse(cube, cube_coord)
 
         # fix depth
-        if cube_coord.var_name == 'lev':
+        if cube_coord.var_name == "lev":
             logger.info("Fixing depth...")
-            if overwrite_lev_bounds or not cube.coord('depth').has_bounds():
-                fix_bounds(cube, cube.coord('depth'))
+            if overwrite_lev_bounds or not cube.coord("depth").has_bounds():
+                fix_bounds(cube, cube.coord("depth"))
 
         # fix air_pressure
-        if cube_coord.var_name == 'air_pressure':
+        if cube_coord.var_name == "air_pressure":
             logger.info("Fixing air pressure...")
-            if overwrite_airpres_bounds \
-                    or not cube.coord('air_pressure').has_bounds():
-                fix_bounds(cube, cube.coord('air_pressure'))
+            if (
+                overwrite_airpres_bounds
+                or not cube.coord("air_pressure").has_bounds()
+            ):
+                fix_bounds(cube, cube.coord("air_pressure"))
 
     # remove CS
-    cube.coord('latitude').coord_system = None
-    cube.coord('longitude').coord_system = None
+    cube.coord("latitude").coord_system = None
+    cube.coord("longitude").coord_system = None
 
     return cube
 
@@ -272,7 +284,7 @@ def fix_var_metadata(cube, var_info):
     iris.cube.Cube
         Returns the masked iris cube.
     """
-    if var_info.standard_name == '':
+    if var_info.standard_name == "":
         cube.standard_name = None
     else:
         cube.standard_name = var_info.standard_name
@@ -295,14 +307,14 @@ def flip_dim_coord(cube, coord_name):
 
 def read_cmor_config(dataset):
     """Read the associated dataset-specific config file."""
-    reg_path = os.path.join(os.path.dirname(__file__), 'cmor_config',
-                            dataset + '.yml')
-    with open(reg_path, 'r', encoding='utf-8') as file:
+    reg_path = os.path.join(
+        os.path.dirname(__file__), "cmor_config", dataset + ".yml"
+    )
+    with open(reg_path, encoding="utf-8") as file:
         cfg = yaml.safe_load(file)
-    cfg['cmor_table'] = \
-        CMOR_TABLES[cfg['attributes']['project_id']]
-    if 'comment' not in cfg['attributes']:
-        cfg['attributes']['comment'] = ''
+    cfg["cmor_table"] = CMOR_TABLES[cfg["attributes"]["project_id"]]
+    if "comment" not in cfg["attributes"]:
+        cfg["attributes"]["comment"] = ""
     return cfg
 
 
@@ -332,16 +344,15 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     fix_dtype(cube)
     # CMOR standard
     try:
-        time = cube.coord('time')
+        time = cube.coord("time")
     except iris.exceptions.CoordinateNotFoundError:
         time_suffix = None
     else:
         if (
-                len(time.points) == 1 and
-                "mon" not in cube.attributes.get('mip')
+            len(time.points) == 1 and "mon" not in cube.attributes.get("mip")
         ) or cube.attributes.get("frequency") == "yr":
             year = str(time.cell(0).point.year)
-            time_suffix = '-'.join([year + '01', year + '12'])
+            time_suffix = "-".join([year + "01", year + "12"])
         else:
             date1 = (
                 f"{time.cell(0).point.year:d}{time.cell(0).point.month:02d}"
@@ -349,51 +360,53 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
             date2 = (
                 f"{time.cell(-1).point.year:d}{time.cell(-1).point.month:02d}"
             )
-            time_suffix = '-'.join([date1, date2])
+            time_suffix = "-".join([date1, date2])
 
     name_elements = [
-        attrs['project_id'],
-        attrs['dataset_id'],
-        attrs['modeling_realm'],
-        attrs['version'],
-        attrs['mip'],
+        attrs["project_id"],
+        attrs["dataset_id"],
+        attrs["modeling_realm"],
+        attrs["version"],
+        attrs["mip"],
         var,
     ]
     if time_suffix:
         name_elements.append(time_suffix)
-    file_name = '_'.join(name_elements) + '.nc'
+    file_name = "_".join(name_elements) + ".nc"
     file_path = os.path.join(outdir, file_name)
-    logger.info('Saving: %s', file_path)
-    status = 'lazy' if cube.has_lazy_data() else 'realized'
-    logger.info('Cube has %s data [lazy is preferred]', status)
+    logger.info("Saving: %s", file_path)
+    status = "lazy" if cube.has_lazy_data() else "realized"
+    logger.info("Cube has %s data [lazy is preferred]", status)
     iris.save(cube, file_path, fill_value=1e20, **kwargs)
 
 
 def extract_doi_value(tags):
     """Extract doi(s) from a bibtex entry."""
     reference_doi = []
-    pattern = r'doi\s*=\s*{([^}]+)}'
+    pattern = r"doi\s*=\s*{([^}]+)}"
 
     if not isinstance(tags, list):
         tags = [tags]
 
     for tag in tags:
-        bibtex_file = REFERENCES_PATH / f'{tag}.bibtex'
+        bibtex_file = REFERENCES_PATH / f"{tag}.bibtex"
         if bibtex_file.is_file():
             reference_entry = bibtex_file.read_text()
             dois = re.findall(pattern, reference_entry)
             if dois:
                 for doi in dois:
-                    reference_doi.append(f'doi:{doi}')
+                    reference_doi.append(f"doi:{doi}")
             else:
-                reference_doi.append('doi not found')
+                reference_doi.append("doi not found")
                 logger.warning(
-                    'The reference file %s does not have a doi.', bibtex_file)
+                    "The reference file %s does not have a doi.", bibtex_file
+                )
         else:
-            reference_doi.append('doi not found')
+            reference_doi.append("doi not found")
             logger.warning(
-                'The reference file %s does not exist.', bibtex_file)
-    return ', '.join(reference_doi)
+                "The reference file %s does not exist.", bibtex_file
+            )
+    return ", ".join(reference_doi)
 
 
 def set_global_atts(cube, attrs):
@@ -408,32 +421,27 @@ def set_global_atts(cube, attrs):
     # Necessary attributes
     try:
         glob_dict = {
-            'title': (f"{attrs.pop('dataset_id')} data reformatted for "
-                      f"ESMValTool v{version}"),
-            'version':
-            attrs.pop('version'),
-            'tier':
-            str(attrs.pop('tier')),
-            'source':
-            attrs.pop('source'),
-            'reference':
-            extract_doi_value(attrs.pop('reference')),
-            'comment':
-            attrs.pop('comment'),
-            'user':
-            os.environ.get("USER", "unknown user"),
-            'host':
-            os.environ.get("HOSTNAME", "unknown host"),
-            'history':
-            f'Created on {now_time}',
-            'project_id':
-            attrs.pop('project_id'),
+            "title": (
+                f"{attrs.pop('dataset_id')} data reformatted for "
+                f"ESMValTool v{version}"
+            ),
+            "version": attrs.pop("version"),
+            "tier": str(attrs.pop("tier")),
+            "source": attrs.pop("source"),
+            "reference": extract_doi_value(attrs.pop("reference")),
+            "comment": attrs.pop("comment"),
+            "user": os.environ.get("USER", "unknown user"),
+            "host": os.environ.get("HOSTNAME", "unknown host"),
+            "history": f"Created on {now_time}",
+            "project_id": attrs.pop("project_id"),
         }
     except KeyError as original_error:
-        msg = ("All CMORized datasets need the global attributes "
-               "'dataset_id', 'version', 'tier', 'source', 'reference', "
-               "'comment' and 'project_id' "
-               "specified in the configuration file")
+        msg = (
+            "All CMORized datasets need the global attributes "
+            "'dataset_id', 'version', 'tier', 'source', 'reference', "
+            "'comment' and 'project_id' "
+            "specified in the configuration file"
+        )
         raise KeyError(msg) from original_error
 
     # Additional attributes
@@ -450,7 +458,8 @@ def fix_bounds(cube, dim_coord):
 
     if cube.coord(dim_coord).has_bounds():
         cube.coord(dim_coord).bounds = da.array(
-            cube.coord(dim_coord).core_bounds(), dtype='float64')
+            cube.coord(dim_coord).core_bounds(), dtype="float64"
+        )
     return cube
 
 
@@ -464,63 +473,72 @@ def fix_dim_coordnames(cube):
             coord = cube.coord(axis=coord_type)
         except iris.exceptions.CoordinateNotFoundError:
             logger.warning(
-                'Multiple coordinates for axis %s. '
-                'This may be an error, specially for regular grids',
-                coord_type)
+                "Multiple coordinates for axis %s. "
+                "This may be an error, specially for regular grids",
+                coord_type,
+            )
             continue
 
-        if coord_type == 'T':
-            coord.var_name = 'time'
+        if coord_type == "T":
+            coord.var_name = "time"
             coord.attributes = {}
 
-        if coord_type == 'X':
-            coord.var_name = 'lon'
-            coord.standard_name = 'longitude'
-            coord.long_name = 'longitude coordinate'
-            coord.units = Unit('degrees')
+        if coord_type == "X":
+            coord.var_name = "lon"
+            coord.standard_name = "longitude"
+            coord.long_name = "longitude coordinate"
+            coord.units = Unit("degrees")
             coord.attributes = {}
 
-        if coord_type == 'Y':
-            coord.var_name = 'lat'
-            coord.standard_name = 'latitude'
-            coord.long_name = 'latitude coordinate'
-            coord.units = Unit('degrees')
+        if coord_type == "Y":
+            coord.var_name = "lat"
+            coord.standard_name = "latitude"
+            coord.long_name = "latitude coordinate"
+            coord.units = Unit("degrees")
             coord.attributes = {}
 
-        if coord_type == 'Z':
-            if coord.var_name == 'depth':
-                coord.standard_name = 'depth'
-                coord.long_name = \
-                    'ocean depth coordinate'
-                coord.var_name = 'lev'
-                coord.attributes['positive'] = 'down'
-            if coord.var_name == 'pressure':
-                coord.standard_name = 'air_pressure'
-                coord.long_name = 'pressure'
-                coord.var_name = 'air_pressure'
-                coord.attributes['positive'] = 'up'
+        if coord_type == "Z":
+            if coord.var_name == "depth":
+                coord.standard_name = "depth"
+                coord.long_name = "ocean depth coordinate"
+                coord.var_name = "lev"
+                coord.attributes["positive"] = "down"
+            if coord.var_name == "pressure":
+                coord.standard_name = "air_pressure"
+                coord.long_name = "pressure"
+                coord.var_name = "air_pressure"
+                coord.attributes["positive"] = "up"
     return cube
 
 
 def fix_dtype(cube):
     """Fix `dtype` of a cube and its coordinates."""
     if cube.dtype != np.float32:
-        logger.info("Converting data type of data from '%s' to 'float32'",
-                    cube.dtype)
-        cube.data = cube.core_data().astype(np.float32, casting='same_kind')
+        logger.info(
+            "Converting data type of data from '%s' to 'float32'", cube.dtype
+        )
+        cube.data = cube.core_data().astype(np.float32, casting="same_kind")
     for coord in cube.coords():
         if coord.dtype.kind != "U" and coord.dtype != np.float64:
             logger.info(
                 "Converting data type of coordinate points of '%s' from '%s' "
-                "to 'float64'", coord.name(), coord.dtype)
-            coord.points = coord.core_points().astype(np.float64,
-                                                      casting='same_kind')
+                "to 'float64'",
+                coord.name(),
+                coord.dtype,
+            )
+            coord.points = coord.core_points().astype(
+                np.float64, casting="same_kind"
+            )
         if coord.has_bounds() and coord.bounds_dtype != np.float64:
             logger.info(
                 "Converting data type of coordinate bounds of '%s' from '%s' "
-                "to 'float64'", coord.name(), coord.bounds_dtype)
-            coord.bounds = coord.core_bounds().astype(np.float64,
-                                                      casting='same_kind')
+                "to 'float64'",
+                coord.name(),
+                coord.bounds_dtype,
+            )
+            coord.bounds = coord.core_bounds().astype(
+                np.float64, casting="same_kind"
+            )
 
 
 def roll_cube_data(cube, shift, axis):
@@ -531,7 +549,7 @@ def roll_cube_data(cube, shift, axis):
 
 def set_units(cube, units):
     """Set units in compliance with cf_unit."""
-    special = {'psu': 1, 'Sv': '1e6 m3 s-1'}
+    special = {"psu": 1, "Sv": "1e6 m3 s-1"}
     if units in special:
         cube.units = special[units]
     else:
@@ -558,18 +576,18 @@ def unpack_files_in_folder(folder):
         for filename in files:
             full_path = os.path.join(folder, filename)
             if os.path.isdir(full_path):
-                logger.info('Moving files from folder %s', filename)
+                logger.info("Moving files from folder %s", filename)
                 folder_files = os.listdir(full_path)
                 for file_path in folder_files:
                     shutil.move(os.path.join(full_path, file_path), folder)
                 os.rmdir(full_path)
                 decompress = True
                 continue
-            if filename.startswith('.'):
+            if filename.startswith("."):
                 continue
-            if not filename.endswith(('.gz', '.tgz', '.tar')):
+            if not filename.endswith((".gz", ".tgz", ".tar")):
                 continue
-            logger.info('Unpacking %s', filename)
+            logger.info("Unpacking %s", filename)
             shutil.unpack_archive(full_path, folder)
             os.remove(full_path)
             decompress = True
@@ -579,14 +597,18 @@ def _gunzip(file_name, work_dir):
     filename = os.path.split(file_name)[-1]
     filename = re.sub(r"\.gz$", "", filename, flags=re.IGNORECASE)
 
-    with gzip.open(file_name, 'rb') as f_in:
-        with open(os.path.join(work_dir, filename), 'wb') as f_out:
+    with gzip.open(file_name, "rb") as f_in:
+        with open(os.path.join(work_dir, filename), "wb") as f_out:
             shutil.copyfileobj(f_in, f_out)
 
 
 try:
-    shutil.register_unpack_format('gz', [
-        '.gz',
-    ], _gunzip)
+    shutil.register_unpack_format(
+        "gz",
+        [
+            ".gz",
+        ],
+        _gunzip,
+    )
 except shutil.RegistryError:
-    logger.debug('Format gz already registered. Skipping...')
+    logger.debug("Format gz already registered. Skipping...")

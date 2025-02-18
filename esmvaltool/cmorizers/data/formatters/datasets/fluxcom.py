@@ -24,6 +24,7 @@ Download and processing instructions
     This constraint will not exist once iris is updated to
     version 2.3.0 Aug 2019
 """
+
 import logging
 import os
 import re
@@ -40,14 +41,16 @@ def _get_filepath(in_dir, basename):
     regex = re.compile(basename)
 
     all_files = [
-        f for f in os.listdir(in_dir)
+        f
+        for f in os.listdir(in_dir)
         if os.path.isfile(os.path.join(in_dir, f))
     ]
     for filename in all_files:
         if regex.match(filename):
             return os.path.join(in_dir, basename)
     raise OSError(
-        f"Cannot find input file matching pattern  '{basename}' in '{in_dir}'")
+        f"Cannot find input file matching pattern  '{basename}' in '{in_dir}'"
+    )
 
 
 def _extract_variable(cmor_info, attrs, filepath, out_dir):
@@ -58,34 +61,32 @@ def _extract_variable(cmor_info, attrs, filepath, out_dir):
     for cube in cubes:
         # convert data from gc/m2/day to kg/m2/s
         cube = cube / (1000 * 86400)
-        cube.units = 'kg m-2 s-1'
+        cube.units = "kg m-2 s-1"
 
         # The following two lines are needed for iris.util.guess_coord_axis
-        cube.coord('lat').standard_name = 'latitude'
-        cube.coord('lon').standard_name = 'longitude'
+        cube.coord("lat").standard_name = "latitude"
+        cube.coord("lon").standard_name = "longitude"
         utils.fix_var_metadata(cube, cmor_info)
         utils.convert_timeunits(cube, 1950)
         cube = utils.fix_coords(cube)
         utils.set_global_atts(cube, attrs)
         logger.info("Saving file")
-        utils.save_variable(cube,
-                            var,
-                            out_dir,
-                            attrs,
-                            unlimited_dimensions=['time'])
+        utils.save_variable(
+            cube, var, out_dir, attrs, unlimited_dimensions=["time"]
+        )
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    glob_attrs = cfg['attributes']
-    cmor_table = cfg['cmor_table']
-    filepath = _get_filepath(in_dir, cfg['filename'])
+    glob_attrs = cfg["attributes"]
+    cmor_table = cfg["cmor_table"]
+    filepath = _get_filepath(in_dir, cfg["filename"])
     logger.info("Found input file '%s'", filepath)
 
     # Run the cmorization
-    for (var, var_info) in cfg['variables'].items():
+    for var, var_info in cfg["variables"].items():
         logger.info("CMORizing variable '%s'", var)
-        glob_attrs['mip'] = var_info['mip']
-        logger.info(var_info['mip'])
-        cmor_info = cmor_table.get_variable(var_info['mip'], var)
+        glob_attrs["mip"] = var_info["mip"]
+        logger.info(var_info["mip"])
+        cmor_info = cmor_table.get_variable(var_info["mip"], var)
         _extract_variable(cmor_info, glob_attrs, filepath, out_dir)

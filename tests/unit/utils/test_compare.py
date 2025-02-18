@@ -1,8 +1,9 @@
 """Test the esmvaltool.utils.testing.regression.compare module."""
+
 import os
 
 from esmvaltool.utils.testing.regression.compare import (
-    get_recipe_name_from_file
+    get_recipe_name_from_file,
 )
 
 

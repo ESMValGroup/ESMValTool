@@ -1,4 +1,5 @@
 """Convenience functions for writing netcdf files."""
+
 import fnmatch
 import logging
 import os
@@ -12,32 +13,35 @@ from .iris_helpers import unify_1d_cubes
 logger = logging.getLogger(__name__)
 
 VAR_KEYS = [
-    'long_name',
-    'units',
+    "long_name",
+    "units",
 ]
 NECESSARY_KEYS = VAR_KEYS + [
-    'dataset',
-    'filename',
-    'project',
-    'short_name',
+    "dataset",
+    "filename",
+    "project",
+    "short_name",
 ]
 
 iris.FUTURE.save_split_attrs = True
 
 
-def _has_necessary_attributes(metadata,
-                              only_var_attrs=False,
-                              log_level='debug'):
+def _has_necessary_attributes(
+    metadata, only_var_attrs=False, log_level="debug"
+):
     """Check if dataset metadata has necessary attributes."""
     output = True
-    keys_to_check = (VAR_KEYS +
-                     ['short_name'] if only_var_attrs else NECESSARY_KEYS)
+    keys_to_check = (
+        VAR_KEYS + ["short_name"] if only_var_attrs else NECESSARY_KEYS
+    )
     for dataset in metadata:
         for key in keys_to_check:
             if key not in dataset:
                 getattr(logger, log_level)(
                     "Dataset '%s' does not have necessary attribute '%s'",
-                    dataset, key)
+                    dataset,
+                    key,
+                )
                 output = False
     return output
 
@@ -60,10 +64,10 @@ def get_all_ancestor_files(cfg, pattern=None):
     """
     ancestor_files = []
     input_dirs = [
-        d for d in cfg['input_files'] if not d.endswith('metadata.yml')
+        d for d in cfg["input_files"] if not d.endswith("metadata.yml")
     ]
     for input_dir in input_dirs:
-        for (root, _, files) in os.walk(input_dir):
+        for root, _, files in os.walk(input_dir):
             if pattern is not None:
                 files = fnmatch.filter(files, pattern)
             files = [os.path.join(root, f) for f in files]
@@ -96,7 +100,8 @@ def get_ancestor_file(cfg, pattern):
     if len(files) != 1:
         raise ValueError(
             f"Expected to find exactly one ancestor file for pattern "
-            f"'{pattern}', got {len(files):d}:\n{pformat(files)}")
+            f"'{pattern}', got {len(files):d}:\n{pformat(files)}"
+        )
     return files[0]
 
 
@@ -127,12 +132,12 @@ def netcdf_to_metadata(cfg, pattern=None, root=None):
         all_files = get_all_ancestor_files(cfg, pattern)
     else:
         all_files = []
-        for (base, _, files) in os.walk(root):
+        for base, _, files in os.walk(root):
             if pattern is not None:
                 files = fnmatch.filter(files, pattern)
             files = [os.path.join(base, f) for f in files]
             all_files.extend(files)
-    all_files = fnmatch.filter(all_files, '*.nc')
+    all_files = fnmatch.filter(all_files, "*.nc")
     all_files = sorted(all_files)
 
     # Iterate over netcdf files
@@ -142,13 +147,13 @@ def netcdf_to_metadata(cfg, pattern=None, root=None):
         dataset_info = dict(cube.attributes)
         for var_key in VAR_KEYS:
             dataset_info[var_key] = str(getattr(cube, var_key))
-        dataset_info['short_name'] = cube.var_name
-        dataset_info['standard_name'] = cube.standard_name
-        dataset_info['filename'] = path
+        dataset_info["short_name"] = cube.var_name
+        dataset_info["standard_name"] = cube.standard_name
+        dataset_info["filename"] = path
         metadata.append(dataset_info)
 
     # Check if necessary keys are available
-    if not _has_necessary_attributes(metadata, log_level='error'):
+    if not _has_necessary_attributes(metadata, log_level="error"):
         raise ValueError("Necessary attributes are missing for metadata")
 
     return metadata
@@ -171,26 +176,27 @@ def metadata_to_netcdf(cube, metadata):
 
     """
     metadata = dict(metadata)
-    if not _has_necessary_attributes([metadata], log_level='error'):
+    if not _has_necessary_attributes([metadata], log_level="error"):
         raise ValueError(f"Cannot save cube {cube.summary(shorten=True)}")
     for var_key in VAR_KEYS:
         setattr(cube, var_key, metadata.pop(var_key))
-    cube.var_name = metadata.pop('short_name')
+    cube.var_name = metadata.pop("short_name")
     cube.standard_name = None
-    if 'standard_name' in metadata:
-        standard_name = metadata.pop('standard_name')
+    if "standard_name" in metadata:
+        standard_name = metadata.pop("standard_name")
         try:
             cube.standard_name = standard_name
         except ValueError:
             logger.warning(
                 "Got invalid standard_name '%s', setting it to 'None'",
-                standard_name)
-            cube.attributes['invalid_standard_name'] = standard_name
-    for (attr, val) in metadata.items():
+                standard_name,
+            )
+            cube.attributes["invalid_standard_name"] = standard_name
+    for attr, val in metadata.items():
         if isinstance(val, bool):
             metadata[attr] = str(val)
     cube.attributes.update(metadata)
-    iris_save(cube, metadata['filename'])
+    iris_save(cube, metadata["filename"])
 
 
 def iris_save(source, path):
@@ -205,10 +211,10 @@ def iris_save(source, path):
 
     """
     if isinstance(source, iris.cube.Cube):
-        source.attributes['filename'] = path
+        source.attributes["filename"] = path
     else:
         for cube in source:
-            cube.attributes['filename'] = path
+            cube.attributes["filename"] = path
     iris.save(source, path)
     logger.info("Wrote %s", path)
 
@@ -251,25 +257,29 @@ def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
     if not cubes:
         raise ValueError("Cannot save 1D data, no cubes given")
     if not _has_necessary_attributes(
-            [var_attrs], only_var_attrs=True, log_level='error'):
+        [var_attrs], only_var_attrs=True, log_level="error"
+    ):
         raise ValueError(
             f"Cannot save 1D data to {path} because necessary variable "
-            f"attributes are missing")
+            f"attributes are missing"
+        )
     datasets = list(cubes.keys())
     cube_list = iris.cube.CubeList(list(cubes.values()))
     cube_list = unify_1d_cubes(cube_list, coord_name)
     data = [c.data for c in cube_list]
-    dataset_coord = iris.coords.AuxCoord(datasets, long_name='dataset')
+    dataset_coord = iris.coords.AuxCoord(datasets, long_name="dataset")
     coord = cube_list[0].coord(coord_name)
     if attributes is None:
         attributes = {}
-    var_attrs['var_name'] = var_attrs.pop('short_name')
+    var_attrs["var_name"] = var_attrs.pop("short_name")
 
     # Create new cube
-    cube = iris.cube.Cube(np.ma.array(data),
-                          aux_coords_and_dims=[(dataset_coord, 0), (coord, 1)],
-                          attributes=attributes,
-                          **var_attrs)
+    cube = iris.cube.Cube(
+        np.ma.array(data),
+        aux_coords_and_dims=[(dataset_coord, 0), (coord, 1)],
+        attributes=attributes,
+        **var_attrs,
+    )
     iris_save(cube, path)
 
 
@@ -307,19 +317,23 @@ def save_scalar_data(data, path, var_attrs, aux_coord=None, attributes=None):
     if not data:
         raise ValueError("Cannot save scalar data, no data given")
     if not _has_necessary_attributes(
-            [var_attrs], only_var_attrs=True, log_level='error'):
+        [var_attrs], only_var_attrs=True, log_level="error"
+    ):
         raise ValueError(
             f"Cannot save scalar data to {path} because necessary variable "
-            f"attributes are missing")
-    dataset_coord = iris.coords.AuxCoord(list(data), long_name='dataset')
+            f"attributes are missing"
+        )
+    dataset_coord = iris.coords.AuxCoord(list(data), long_name="dataset")
     if attributes is None:
         attributes = {}
-    var_attrs['var_name'] = var_attrs.pop('short_name')
+    var_attrs["var_name"] = var_attrs.pop("short_name")
     coords = [(dataset_coord, 0)]
     if aux_coord is not None:
         coords.append((aux_coord, 0))
-    cube = iris.cube.Cube(np.ma.masked_invalid(list(data.values())),
-                          aux_coords_and_dims=coords,
-                          attributes=attributes,
-                          **var_attrs)
+    cube = iris.cube.Cube(
+        np.ma.masked_invalid(list(data.values())),
+        aux_coords_and_dims=coords,
+        attributes=attributes,
+        **var_attrs,
+    )
     iris_save(cube, path)
