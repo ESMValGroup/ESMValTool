@@ -102,16 +102,17 @@ def _extract_variable_daily(short_name, var, cfg, in_dir, out_dir, start_date,
     if not start_date:
         start_date = datetime(glob_attrs['start_year_daily'], 1, 1)
     if not end_date:
-        #end_date = datetime(glob_attrs['end_year_daily'], 12, 31)
-        end_date = datetime(glob_attrs['end_year_daily'], 1, 31)
+        end_date = datetime(glob_attrs['end_year_daily'], 12, 31)
 
     for year in range(start_date.year, end_date.year + 1):
-        for month in range(start_date.month, end_date.month + 1):
-            cubes = iris.cube.CubeList()
-            cubes_day = iris.cube.CubeList()
+
+        cubes = iris.cube.CubeList()
+        cubes_day = iris.cube.CubeList()
+        
+        #for month in range(start_date.month, end_date.month + 1):
+        for month in range(1, 13):
             num_days = monthrange(year, month)[1]
-            #for iday in range(1, num_days + 1):
-            for iday in range(1, 3):
+            for iday in range(1, num_days + 1):
 
                 filelist = glob.glob(
                     os.path.join(
@@ -119,48 +120,51 @@ def _extract_variable_daily(short_name, var, cfg, in_dir, out_dir, start_date,
                         f'{year}{month:02}' + f'{iday:02}' + var['file']))
 
                 if filelist:
-
                     for inum, ifile in enumerate(filelist):
                         logger.info("CMORizing file %s", ifile)
+                        try:
+                            # Extract raw names from the variable dictionary
+                            raw_var = var.get('raw', short_name)
 
-                        # load data
-                        raw_var = var.get('raw', short_name)
+                            for ivar, raw_name in enumerate(raw_var):
+                                logger.info("Extracting raw variable %s", raw_name)
+                                
+                                # Define variable for daylight
+                                if '_asc' in raw_name: illum = 'illum_asc'
+                                else: illum = 'illum_desc'
 
-                        if '_asc' in raw_var: illum = 'illum_asc'
-                        else: illum = 'illum_desc'
+                                daily_cube = iris.load_cube(
+                                    ifile, NameConstraint(var_name=raw_name))
+                                daily_cube_ilum = iris.load_cube(
+                                    ifile, NameConstraint(var_name=illum))
 
-                        for ivar, raw_name in enumerate(raw_var):
-                            logger.info("Extracting raw variable %s", raw_name)
-                            daily_cube = iris.load_cube(
-                                ifile, NameConstraint(var_name=raw_name))
-                            daily_cube_ilum = iris.load_cube(
-                                ifile, NameConstraint(var_name=illum))
+                                # set arbitrary time of day
+                                daily_cube.coord('time').points = (
+                                    daily_cube.coord('time').points +
+                                    (inum + 0.5 * ivar) * 0.1)
+                                daily_cube.attributes.clear()
+                                daily_cube.coord('time').long_name = 'time'
 
-                            # set arbitrary time of day
-                            daily_cube.coord('time').points = (
-                                daily_cube.coord('time').points +
-                                (inum + 0.5 * ivar) * 0.1)
-                            daily_cube.attributes.clear()
-                            daily_cube.coord('time').long_name = 'time'
+                                # Fix coordinates
+                                daily_cube = utils.fix_coords(daily_cube)
+                                #Fix dtype
+                                utils.fix_dtype(daily_cube)
+                                #Fix metadata
+                                utils.fix_var_metadata(daily_cube, cmor_info)
 
-                            # Fix coordinates
-                            daily_cube = utils.fix_coords(daily_cube)
-                            #Fix dtype
-                            utils.fix_dtype(daily_cube)
-                            #Fix metadata
-                            utils.fix_var_metadata(daily_cube, cmor_info)
+                                #if fill_cube is None:
+                                #    fill_cube = daily_cube
 
-                            if fill_cube is None:
-                                fill_cube = daily_cube
+                                # check for daylight
+                                daily_cube_day = daily_cube.copy()
+                                daily_cube_day.data = da.ma.masked_where(
+                                    daily_cube_ilum.core_data() == 1, daily_cube_day.core_data())
 
-                            # check for day
-                            daily_cube_day = daily_cube.copy()
-                            daily_cube_day.data = da.ma.masked_where(
-                                daily_cube_ilum.core_data() == 1, daily_cube_day.core_data())
-
-                            cubes.append(daily_cube)
-                            cubes_day.append(daily_cube_day)
-
+                                cubes.append(daily_cube)
+                                cubes_day.append(daily_cube_day)
+                            
+                        except Exception as e:
+                            logger.error("Error processing file '%s': %s", ifile, e)
                 else:
 
                     logger.info("Fill missing day %s in month %s and year %s",
@@ -168,54 +172,58 @@ def _extract_variable_daily(short_name, var, cfg, in_dir, out_dir, start_date,
                     daily_cube = _create_nan_cube(fill_cube, year, month, iday)
                     daily_cube_day = _create_nan_cube(fill_cube, year, month, iday)
                     cubes.append(daily_cube)
-                    cubes_day.append(daily_cube_day)
+                    cubes_day.aeppend(daily_cube_day)
 
-            cube = cubes.concatenate_cube()
-            cube_day = cubes_day.concatenate_cube()
+        cube = cubes.concatenate_cube()
+        cube_day = cubes_day.concatenate_cube()
 
-            # regridding from 0.05x0.05 to 0.5x0.5
-            cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
-            cube_day = regrid(cube_day, target_grid='0.5x0.5', scheme='area_weighted')
+        logger.info("Building daily means")
+        # Calc daily
+        cube = daily_statistics(cube)
+        cube_day = daily_statistics(cube_day)
 
-            logger.info("Building daily means")
-            # Calc daily
-            cube = daily_statistics(cube)
-            cube_day = daily_statistics(cube_day)
+        # regridding from 0.05x0.05 to 0.5x0.5
+        cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
+        cube_day = regrid(cube_day, target_grid='0.5x0.5', scheme='area_weighted')
 
-            # Fix units
-            if short_name == 'clt':
-                cube.data = 100 * cube.core_data()
-                cube_day.data = 100 * cube_day.core_data()
-            else:
-                if 'raw_units' in var:
-                    cube.units = var['raw_units']
-                    cube_day.units = var['raw_units']
-                cube.convert_units(cmor_info.units)
-                cube_day.convert_units(cmor_info.units)
+        # Fix units
+        if short_name == 'clt':
+            cube.data = 100 * cube.core_data()
+            cube_day.data = 100 * cube_day.core_data()
+        else:
+            if 'raw_units' in var:
+                cube.units = var['raw_units']
+                cube_day.units = var['raw_units']
+            cube.convert_units(cmor_info.units)
+            cube_day.convert_units(cmor_info.units)
 
-            # Fix metadata and  update version information
-            attrs = copy.deepcopy(cfg['attributes'])
-            attrs['mip'] = var['mip']
-            utils.set_global_atts(cube, attrs)
+        # Fix metadata and  update version information
+        attrs = copy.deepcopy(cfg['attributes'])
+        attrs['mip'] = var['mip']
+        utils.set_global_atts(cube, attrs)
 
-            # Save variable
-            utils.save_variable(cube,
-                                short_name,
-                                out_dir,
-                                attrs,
-                                unlimited_dimensions=['time'])
-            
-            # Fix metadata and  update version information
-            attrs = copy.deepcopy(cfg['attributes'])
-            attrs['mip'] = var['mip']
-            attrs['version'] += '_day'
-            utils.set_global_atts(cube_day, attrs)
+        logger.info(attrs)
 
-            utils.save_variable(cube_day,
-                                short_name,
-                                out_dir,
-                                attrs,
-                                unlimited_dimensions=['time'])
+        # Save variable
+        utils.save_variable(cube,
+                            short_name,
+                            out_dir,
+                            attrs,
+                            unlimited_dimensions=['time'])
+        
+        # Fix metadata and  update version information
+        attrs_day = copy.deepcopy(cfg['attributes'])
+        attrs_day['mip'] = var['mip']
+        attrs_day['version'] += '_day'
+        utils.set_global_atts(cube_day, attrs_day)
+
+        logger.info(attrs_day)
+
+        utils.save_variable(cube_day,
+                            short_name,
+                            out_dir,
+                            attrs_day,
+                            unlimited_dimensions=['time'])
 
 
 def _extract_variable_monthly(short_name, var, cfg, in_dir, out_dir,
@@ -260,10 +268,7 @@ def _extract_variable_monthly(short_name, var, cfg, in_dir, out_dir,
                         logger.info("Adding lwp and clivi")
                         cube_lwp = iris.load_cube(
                             ifile, NameConstraint(var_name='lwp_allsky'))
-                        monthly_cube.data = monthly_cube.core_data(
-                        ) + cube_lwp.core_data()
-                        #monthly_cube.data = np.add(np.stack([monthly_cube.core_data(),
-                        #                                     cube_lwp.core_data()]), axis = 0)
+                        monthly_cube.data = monthly_cube.core_data() + cube_lwp.core_data()
 
                     if monthly_cube is None:
                         logger.warning(
@@ -275,10 +280,8 @@ def _extract_variable_monthly(short_name, var, cfg, in_dir, out_dir,
 
                     # Fix coordinates
                     monthly_cube = utils.fix_coords(monthly_cube)
-
                     # Fix data type
                     utils.fix_dtype(monthly_cube)
-
                     # Fix metadata
                     utils.fix_var_metadata(monthly_cube, cmor_info)
 
