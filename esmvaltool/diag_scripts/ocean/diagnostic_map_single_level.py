@@ -21,16 +21,16 @@ def main(config):
 
     Notes
     -----
-    The function starts by loading the configuration dictionary.
-    This dictionary contains information about the models,
-    observational datasets, file paths, and other settings.
-
     After successfully generating the plots,
     the function logs a success message.
 
     The if statement checks if the script is being run directly
     (as opposed to being imported as a module).
     If it is, the code inside this block will be executed.
+
+    The function starts by loading the configuration dictionary.
+    This dictionary contains information about the models,
+    observational datasets, file paths, and other settings.
     """
 
     create_logger()
@@ -48,8 +48,22 @@ def main(config):
      experiment_minus_observation) = create_plotting_data(
          control, experiment, observation)
 
+    #    level = 2
+    #    single_level_experiment = extract_global_single_level(
+    #    experiment, level)
+    #    single_level_control = extract_global_single_level(
+    #        experiment_minus_control, level)
+    #    single_level_observation = extract_global_single_level(
+    #        control_minus_observation, level)
+    #    single_level_observation = extract_global_single_level(
+    #        experiment_minus_observation, level)
 
-#    extract_global_single_level(ADD)
+    level = 2
+    extract_global_single_level(experiment, level)
+    extract_global_single_level(experiment_minus_control, level)
+    extract_global_single_level(control_minus_observation, level)
+    extract_global_single_level(experiment_minus_observation, level)
+
 
 #    experiment_plot = plot_global_single_level(
 #    experiment)
@@ -179,17 +193,43 @@ def create_plotting_data(control, experiment, observation):
 
     experiment_minus_observation = experiment - observation
 
-    print('experiment:', experiment)
-    print('exper minus cont:', experiment_minus_control)
-    print('cont minus obs:', control_minus_observation)
-    print('exp minus obs:', experiment_minus_observation)
-
     return (experiment, experiment_minus_control, control_minus_observation,
             experiment_minus_observation)
 
 
 def extract_global_single_level(cube, level):
-    """Extracts a single level from the cube."""
+    """Extracts a single level from the cube.
+
+    Parameters
+    ----------
+    cube : iris cube
+        The input data cube.
+    level : float
+        The depth level to extract.
+
+    Returns
+    -------
+    iris cube
+        The extracted single level cube.
+
+    Notes
+    -----
+    Pick a value for layer and loop over the cubes.
+    """
+    if len(cube.coord('depth').points) == 1:
+        # 2D cube
+        print('aaaaaaaaaaasection 1')
+        return iris.util.squeeze(cube)
+    else:
+        # 3D cube - select relevant layer
+        slices = [slice(None)] * len(cube.shape)
+        coord_dim = cube.coord_dims('depth')[0]
+        slices[coord_dim] = level
+        print('aaaaaaaaaaaasection 2')
+        return iris.util.squeeze(cube[tuple(slices)])
+
+    print('aaaaaaaacube:', cube)
+    print('aaaaaaaaaaalevel:', cube)
 
 
 def plot_global_single_level(cube, cmap, title, contour_levels):
