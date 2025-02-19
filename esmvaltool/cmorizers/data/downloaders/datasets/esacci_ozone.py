@@ -1,53 +1,56 @@
-"""Script to download ESACCI-OZONE from the Climate Data Store(CDS)."""
+# """Script to download ESACCI-OZONE from the CDS."""
 
-from datetime import datetime
-
-from dateutil import relativedelta
-
-from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
+import cdsapi
+from pathlib import Path
+from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
 
 def download_dataset(config, dataset, dataset_info, start_date, end_date,
                      overwrite):
-    """Download dataset.
+    """Download ESACCI-OZONE dataset using CDS API and create tar
+     file for each variable."""
 
-    Parameters
-    ----------
-    config : dict
-        ESMValTool's user configuration
-    dataset : str
-        Name of the dataset
-    dataset_info : dict
-         Dataset information from the datasets.yml file
-    start_date : datetime
-        Start of the interval to download
-    end_date : datetime
-        End of the interval to download
-    overwrite : bool
-        Overwrite already downloaded files
-    """
-    if start_date is None:
-        start_date = datetime(1997, 1, 1)
-    if end_date is None:
-        end_date = datetime(2010, 1, 1)
+    if dataset == "ESACCI-OZONE":
+        requests = {
+            "toz": {
+                "processing_level": "level_3",
+                "variable": "atmosphere_mole_content_of_ozone",
+                "vertical_aggregation": "total_column",
+                "sensor": ["merged_uv"],
+                "year": [str(y) for y in range(1995, 2023)],
+                "month": [f"{m:02d}" for m in range(1, 13)],
+                "version": ["v2000"]
+            },
+            "o3": {
+                "processing_level": "level_3",
+                "variable": "mole_concentration_of_ozone_in_air",
+                "vertical_aggregation": "vertical_profiles_from_limb_sensors",
+                "sensor": ["cmzm"],
+                "year": [str(y) for y in range(1984, 2022)],
+                "month": [f"{m:02d}" for m in range(1, 13)],
+                "version": ["v0008"]
+            }
+        }
 
-    loop_date = start_date
+        client = cdsapi.Client()
+        output_folder = Path(config["rootpath"][dataset][0])
+        output_folder.mkdir(parents=True, exist_ok=True)
 
-    downloader = CCIDownloader(
-        config=config,
-        dataset=dataset,
-        dataset_info=dataset_info,
-        overwrite=overwrite,
-    )
-    downloader.ftp_name = 'ozone'
-    downloader.connect()
-    downloader.set_cwd(
-        'limb_profiles/l3/merged/merged_monthly_zonal_mean/v0002')
-    downloader.download_folder('.')
+        for var_name, request in requests.items():
+            print(f"Downloading {var_name} data to {output_folder}...")
 
-    downloader.set_cwd('total_columns/l3/merged/v0100/')
-    while loop_date <= end_date:
-        year = loop_date.year
-        downloader.set_cwd('total_columns/l3/merged/v0100/')
-        downloader.download_year(f'{year}')
-        loop_date += relativedelta.relativedelta(years=1)
+            # Get the expected filename from the CDS API request
+            file_path = output_folder / f"{var_name}.tar.gz"
+
+            if file_path.exists() and not overwrite:
+                print(f"File {file_path} already exists. Skipping download.")
+                continue
+
+            # Download file to the specified path
+            client.retrieve("satellite-ozone-v1", request,
+                            file_path.as_posix())
+
+        unpack_files_in_folder(output_folder)
+
+    else:
+        raise ValueError(f"Unknown dataset: {dataset}")
