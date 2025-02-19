@@ -6,6 +6,7 @@ documentation:
   title: Reproducing basic ENSO characteristics metrics by Yann Planton
   authors:
     - chun_felicity
+    - beucher_romain
     # - sullivan_arnold
   maintainer:
     - chun_felicity
@@ -59,7 +60,7 @@ datasets:
 
   # observations
   # - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, mip: Omon}
-  - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
+  # - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
   
 preprocessors:
   ssta_enso: &base_enso #pattern, lifecycle w/o month, duration, diversity
@@ -107,6 +108,37 @@ preprocessors:
     area_statistics:
       operator: mean
 
+  base_telecon: &telecon_enso
+    custom_order: true
+    convert_units:
+      units: degC
+    regrid:
+      target_grid: 1x1 
+      scheme: linear
+    extract_region:
+      <<: *nino34
+    detrend:
+      dimension: time
+      method: linear
+  
+  enso_sst:
+    <<: *telecon_enso
+    area_statistics:
+      operator: mean
+
+  global_pr:
+    <<: *telecon_enso
+    convert_units:
+      units: mm/day
+    extract_region: &glb
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -60.
+      end_latitude: 60.
+  global_sst:
+    <<: *telecon_enso
+    extract_region:
+      <<: *glb
 
 diagnostics:
   diagnostic_metrics:
@@ -116,14 +148,43 @@ diagnostics:
         short_name: tos
         mip: Omon
         preprocessor: enso_seas_asym
+        addtional_datasets:
+          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
       tos_lifdur1: # lifecycle duration pt1
         short_name: tos
         mip: Omon
         preprocessor: ssta_ninoarea
+        addtional_datasets:
+          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
       tos_lifdurdiv2: # pt2 diversity lifecycle duration
         short_name: tos
         mip: Omon
         preprocessor: ssta_meridional
+        addtional_datasets:
+          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
+
+      tos_enso:
+        short_name: ts
+        mip: Amon
+        preprocessor: enso_sst
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3}
+
+      tos_global:
+        short_name: ts
+        mip: Amon
+        preprocessor: global_sst
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3}
+
+      pr_global:
+        short_name: pr
+        mip: Amon
+        preprocessor: global_pr
+        additional_datasets:
+          - {dataset: GPCP-SG, project: OBS, type: atmos, tier: 2, 
+            mip: Amon, start_year: 1979, end_year: 2018}
+
     scripts:
       plot_script:
         script: enso_metrics/enso_diag1metrics.py
