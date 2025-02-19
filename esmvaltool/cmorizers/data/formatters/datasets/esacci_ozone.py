@@ -67,16 +67,27 @@ def _convert_units(cubes, short_name, var):
         r = 8.31446261815324  # Ideal gas constant (J mol-1 K-1)
         t_cube = cubes.extract_cube('air_temperature')
         p_cube = cubes.extract_cube('air_pressure')
-
+        p_cube.convert_units('Pa')
         air_mol_concentration = p_cube / (r * t_cube)  # mol m-3
-        mixing_ratio = cube / air_mol_concentration
-        cube = mixing_ratio / (1.0 + mixing_ratio)
+        cube = cube / air_mol_concentration
         cube.units = 'mol mol-1'
 
-    elif short_name == 'toz':  # Total ozone column (DU or m)
-        cube = cube * 2241.399
-        cube.units = 'DU'
-        cube = cube * 2.24115e-5
+    # elif short_name == 'toz':  # Total ozone column (DU or m)
+    #     cube = cube * 2241.399
+    #     cube.units = 'DU'
+    #     cube = cube * 2.24115e-5
+    #     cube.units = 'm'
+    elif short_name == 'toz':  # Total ozone column (m)
+        # Convert from mol m-2 to m
+        # -------------------------
+        # 1e-5 m (gas @ T = 273 K and p = 101325 Pa) ~ 2.69e20 molecules m-2
+        # (see https://en.wikipedia.org/wiki/Dobson_unit)
+        # 1 m (O3 @ standard conditions) = 1e5 * 2.69e20 molecules m-2
+        #                              = 2.69e25 moelcules m-2 / N_A mol m-2
+        #                              = 2.69e25 molecules m-2 /
+        #                                    (6.022e23 molecules mol-1) mol m-2
+        #                              = 44.67 mol m-2
+        cube = cube / 44.67
         cube.units = 'm'
     return cube
 
@@ -132,35 +143,58 @@ def _extract_variable(short_name, var, cfg, filename, year, month, out_dir):
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
-    """Cmorization process."""
+    """Cmorization process with dataset-specific time ranges."""
     glob_attrs = cfg['attributes']
-    if not start_date:
-        start_date = datetime(1984, 1, 1)
-    if not end_date:
-        end_date = datetime(2023, 12, 31)
 
     for var_name, var in cfg['variables'].items():
+
+        # Define dataset-specific time ranges
+        if var_name == 'toz':  # GTO-ECV
+            dataset_start = datetime(1995, 7, 1)
+            dataset_end = datetime(2023, 4, 30)
+        elif var_name == 'o3':  # SAGE-CCI-OMPS
+            dataset_start = datetime(1984, 10, 1)
+            dataset_end = datetime(2022, 12, 31)
+        else:
+            raise ValueError(f"Unknown dataset for variable {var_name}")
+
+        # Adjust start and end dates if not provided
+        start_date = start_date or dataset_start
+        end_date = end_date or dataset_end
+
+        # Ensure the requested date range falls within the dataset limits
+        start_date = max(start_date, dataset_start)
+        end_date = min(end_date, dataset_end)
 
         all_data_cubes = []
         glob_attrs['mip'] = var['mip']
         for year in range(start_date.year, end_date.year + 1):
             for month in range(1, 13):
+
+                # Skip months outside the dataset range
+                current_date = datetime(year, month, 1)
+                if current_date < dataset_start or current_date > dataset_end:
+                    continue
+
                 date_str = f"{year}{month:02}"  # YYYYMM format
                 filename = Path(in_dir) / f"{date_str}-{var['filename']}"
                 if not filename.is_file():
-                    raise ValueError(
-                        "No file found for %s in %s-%02d",
-                        var_name,
-                        year,
-                        month,
-                    )
+                    logger.warning("No file found for %s in %s-%02d",
+                                   var_name, year, month)
+                    continue
 
-                logger.info("CMORizing variable '%s' from file '%s'", var_name,
-                            filename)
-                cube = _extract_variable(var_name, var, cfg, filename, year,
-                                         month, out_dir)
+                logger.info("CMORizing variable '%s' from file '%s'",
+                            var_name, filename)
+                cube = _extract_variable(var_name, var, cfg, filename,
+                                         year, month, out_dir)
                 all_data_cubes.append(cube)
+
+        if not all_data_cubes:
+            raise ValueError("No valid data found for %s within the"
+                             "selected time range.", var_name)
+
         final_cube = concatenate(all_data_cubes)
         save_variable(
             final_cube, var_name, out_dir, glob_attrs,
-            unlimited_dimensions=['time'])
+            unlimited_dimensions=['time']
+        )
