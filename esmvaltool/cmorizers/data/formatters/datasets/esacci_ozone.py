@@ -72,11 +72,6 @@ def _convert_units(cubes, short_name, var):
         cube = cube / air_mol_concentration
         cube.units = 'mol mol-1'
 
-    # elif short_name == 'toz':  # Total ozone column (DU or m)
-    #     cube = cube * 2241.399
-    #     cube.units = 'DU'
-    #     cube = cube * 2.24115e-5
-    #     cube.units = 'm'
     elif short_name == 'toz':  # Total ozone column (m)
         # Convert from mol m-2 to m
         # -------------------------
