@@ -19,7 +19,7 @@ This simple yet powerful tool allows policymakers to directly link emission
 budgets to specific temperature targets and compare the long-term effects of
 different emissions scenarios.
 
-For CMIP7, TCRE should be calculated from the ``esm-flat10``` experiment,
+For CMIP7, TCRE should be calculated from the ``esm-flat10`` experiment,
 following the experimental protocol of Sanderson et al (2024).
 
 Available recipes and diagnostics
