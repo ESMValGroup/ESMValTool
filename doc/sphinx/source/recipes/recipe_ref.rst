@@ -20,7 +20,7 @@ Recipes are stored in recipes
 * :ref:`recipe_tcr.yml <recipes_tcr>`:
   Calculate transient climate response (TCR)
 * :ref:`recipe_tcre.yml <recipes_tcre>`:
-  Calculate transient climate response to cumulative CO2 emissions (TCRE).
+  Calculate transient climate response to cumulative CO2 emissions (TCRE)
 * ref/recipe_ref_cre.yml:
   Maps and zonal means of longwave and shortwave cloud radiative effect
 
