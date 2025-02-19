@@ -44,10 +44,10 @@ def main(config):
     remove_extra_time_axis(experiment)
     remove_extra_time_axis(observation)
 
+    (experiment, experiment_minus_control, control_minus_observation,
+     experiment_minus_observation) = create_plotting_data(
+         control, experiment, observation)
 
-#    (experiment, experiment_minus_control, control_minus_observation,
-#     experiment_minus_observation) = create_plotting_data(
-#      control, experiment, observation)
 
 #    extract_global_single_level(ADD)
 
@@ -171,6 +171,22 @@ def create_plotting_data(control, experiment, observation):
     Iris cubes. These cubes contain the climate data that will be plotted.
     """
 
+    experiment = experiment
+
+    experiment_minus_control = experiment - control
+
+    control_minus_observation = control - observation
+
+    experiment_minus_observation = experiment - observation
+
+    print('experiment:', experiment)
+    print('exper minus cont:', experiment_minus_control)
+    print('cont minus obs:', control_minus_observation)
+    print('exp minus obs:', experiment_minus_observation)
+
+    return (experiment, experiment_minus_control, control_minus_observation,
+            experiment_minus_observation)
+
 
 def extract_global_single_level(cube, level):
     """Extracts a single level from the cube."""
@@ -282,27 +298,16 @@ def remove_extra_time_axis(cube):
     Parameters
     ----------
     cube : iris cube
-        This is a data structure that contains the climate data to be plotted.
-        Including information like temperature values, latitude, longitude,
-        and depth.
-
-    Notes
-    -----
-    The function starts by counting the number of time coordinates in the cube.
-    This helps in identifying if there are any extra time coordinates that need
-    to be removed.
-
-    If the cube has multiple time coordinates with the same standard name,
-    the function removes the auxiliary time coordinates.
-    This ensures that only one time coordinate remains.
-
-    If the cube has a time_counter coordinate, the function removes it.
+        Contains the climate data to be plotted. Including information like:
+        temperature values, latitude, longitude, and depth.
     """
-    print('cube', cube)
+    # Counting the number of time coordinates in the cube.
     time_coords = [
         coord for coord in cube.coords()
         if iris.util.guess_coord_axis(coord) == 'T'
     ]
+    # If the cube has multiple time coordinates with the same standard name,
+    # the function removes the auxiliary time coordinates.
     time_axes_names = [coord.standard_name for coord in time_coords]
 
     if len(time_coords) >= 2 and len(set(time_axes_names)) == 1:
@@ -314,13 +319,9 @@ def remove_extra_time_axis(cube):
             (coord
              for coord in cube.coords() if coord.var_name == 'time_counter'),
             None)
+        # If the cube has a time_counter coordinate, the function removes it.
         if time_counter_coord:
             cube.remove_coord(time_counter_coord)
-
-    print('time_coords:', time_coords)
-    print('time_axes_names:', time_axes_names)
-    print('time_counter_coord:', time_counter_coord)
-    print('Remove time axis complete')
 
 
 if __name__ == '__main__':
