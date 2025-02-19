@@ -102,6 +102,19 @@ preprocessors:
     zonal_statistics:
       operator: mean
 
+  pp_diurn_Tropics:
+    custom_order: true
+    local_solar_time:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -30
+      end_latitude: 30
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: hourly
+
 
 diagnostics:
 
@@ -265,3 +278,29 @@ diagnostics:
             fontsize: 10
             show_x_minor_ticks: false
             time_format: '%Y'
+
+  plot_diurnal_cycle:
+    description: Example plot diurnal cycle including reference dataset.
+    variables:
+      clt_tropics:
+        preprocessor: pp_diurn_Tropics
+        short_name: clt
+        mip: 3hr
+        timerange: '20060101/20060201'
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        group_variables_by: variable_group
+        plots:
+          diurnal_cycle:
+            legend_kwargs:
+              loc: upper right
+            plot_kwargs:
+              MPI-ESM1-2-HR:
+                color: C0
+              MPI-ESM1-2-LR:
+                color: C1
+            pyplot_kwargs:
+              title: '{short_name}'

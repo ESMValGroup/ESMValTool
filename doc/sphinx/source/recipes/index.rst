@@ -21,6 +21,7 @@ large variety of input data.
 .. toctree::
    :maxdepth: 1
 
+   recipe_benchmarking
    recipe_model_evaluation
    recipe_monitor
    recipe_portrait
