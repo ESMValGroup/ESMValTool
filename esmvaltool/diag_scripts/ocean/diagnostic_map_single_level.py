@@ -1,7 +1,11 @@
 import logging
 import sys
 
+import cartopy.crs as ccrs
 import iris
+import iris.plot as qplt
+import matplotlib.pyplot as plt
+import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -64,9 +68,16 @@ def main(config):
     extract_global_single_level(control_minus_observation, level)
     extract_global_single_level(experiment_minus_observation, level)
 
+    plot_global_single_level(experiment, level, 'experiment')
+    plot_global_single_level(experiment_minus_control, level,
+                             'experiment_minus_control')
+    plot_global_single_level(control_minus_observation, level,
+                             'control_minus_observation')
+    plot_global_single_level(experiment_minus_observation, level,
+                             'experiment_minus_observation')
 
-#    experiment_plot = plot_global_single_level(
-#    experiment)
+
+#    experiment_plot = plot_global_single_level(experiment)
 #    experiment_minus_control_plot = plot_global_single_level(
 #    experiment_minus_control)
 #    control_minus_observation_plot = plot_global_single_level(
@@ -218,21 +229,16 @@ def extract_global_single_level(cube, level):
     """
     if len(cube.coord('depth').points) == 1:
         # 2D cube
-        print('aaaaaaaaaaasection 1')
-        return iris.util.squeeze(cube)
+        return iris.util.squeeze(cube)  # is this working as I want it to? If
     else:
         # 3D cube - select relevant layer
         slices = [slice(None)] * len(cube.shape)
         coord_dim = cube.coord_dims('depth')[0]
         slices[coord_dim] = level
-        print('aaaaaaaaaaaasection 2')
         return iris.util.squeeze(cube[tuple(slices)])
 
-    print('aaaaaaaacube:', cube)
-    print('aaaaaaaaaaalevel:', cube)
 
-
-def plot_global_single_level(cube, cmap, title, contour_levels):
+def plot_global_single_level(cube, level, title):
     """Creating each individual plot before being added to create_quadmap.
 
     Parameters
@@ -245,7 +251,7 @@ def plot_global_single_level(cube, cmap, title, contour_levels):
         This is a string that specifies the color map to be used for the plot.
     title : str
         This is a string that will be used as the title of the subplot.
-    contour_levels : numpy.array
+    nspace : numpy.array
         nspace is used to set the ticks on the colour bar and used to define
         levels for the contour plot.
 
@@ -278,6 +284,51 @@ def plot_global_single_level(cube, cmap, title, contour_levels):
 
     Plots are then passed as parameters in create_quadmap().
     """
+    print('cube.name()', cube.name())
+    print('cube', cube)
+    # Extract a single level if the cube is 3-dimensional
+    if len(cube.shape) == 3:
+        cube = extract_global_single_level(cube, level)
+
+    if cube.long_name == "Sea Surface Temperature":
+        cmap = 'viridis'
+        nspace = np.linspace(-5.0, 5.0, 21)
+    elif title == "experiment":
+        cmap = 'viridis'
+        nspace = np.linspace(
+            diagtools.get_cube_range([cube])[0],
+            diagtools.get_cube_range([cube])[1], 21)
+    else:
+        cmap = 'bwr'
+        nspace = np.linspace(-2.0, 2.0, 21)
+
+    # Project the cube data onto a 2D map
+    new_cube, extent = iris.analysis.cartography.project(cube,
+                                                         ccrs.PlateCarree(),
+                                                         nx=400,
+                                                         ny=200)
+
+    # Create the contour plot
+    qplot = qplt.contourf(new_cube,
+                          nspace,
+                          linewidth=0,
+                          cmap=plt.cm.get_cmap(cmap))
+
+    if qplot is None:
+        raise ValueError(
+            "Failed to create contour plot. The qplot object is None.")
+
+    # Explicitly create the color bar
+    colorbar = plt.colorbar(qplot, orientation='vertical')
+    colorbar.set_ticks(
+        [nspace.min(), (nspace.max() + nspace.min()) / 2.,
+         nspace.max()])
+
+    # Add coastlines and title
+    plt.gca().coastlines()
+    plt.title(title)
+    print('title:', title)
+    print('nspace:', nspace)
 
 
 def create_quadmap(experiment_plot, experiment_minus_control_plot,
