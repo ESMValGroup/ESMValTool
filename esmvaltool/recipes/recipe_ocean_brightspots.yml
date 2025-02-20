@@ -1,0 +1,129 @@
+# ESMValTool
+# recipe_ocean_example.yml
+---
+documentation:
+  description: |
+    Recipe to demonstrate several simple plots based on the monthly ocean
+    temperature. Please use this file as a template for adding additional
+    fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103.
+
+  authors:
+    - demora_lee
+
+  maintainer:
+    - demora_lee
+
+  references:
+    - demora2018gmd
+
+  projects:
+    - ukesm
+
+
+#datasets:
+
+# Test multimodel statistics in 2D + time
+# Add additional time periods
+# Add additional models
+
+
+preprocessors:
+  prep_1:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    regrid_time:
+      frequency: mon
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean]
+#    climate_statistics:
+#      operator: 'mean'
+
+# prep_2:
+#   regrid:
+#     target_grid: 1x1
+#     scheme: linear
+#   regrid_time:
+#     frequency: min
+#   multi_model_statistics:
+#     span: overlap
+#     statistics: [mean]
+#   climate_statistics:
+#       operator: std_dev
+#
+
+
+diagnostics:
+  # --------------------------------------------------
+  # Time series diagnostics
+  # --------------------------------------------------
+  mm_stats:
+    variables:
+      tos_historical:
+        short_name: tos
+        preprocessor: prep_1
+        project: CMIP6
+        mip: Omon
+        exp: historical
+        grid: gn
+        start_year: 1990
+        end_year: 2000
+#       additional_datasets:
+#        - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f2, start_year: 1990, end_year: 1991, grid: gn}
+#        - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: historical, ensemble: r2i1p1f2, start_year: 1990, end_year: 1991, grid: gn}
+
+      tos_ssp126:
+        short_name: tos
+        preprocessor: prep_1
+        project: CMIP6
+        mip: Omon
+        exp: ssp126
+        grid: gn
+        start_year: 2040
+        end_year: 2050
+
+      tos_ssp126:
+        short_name: tos
+        preprocessor: prep_1
+        project: CMIP6
+        mip: Omon
+        exp: ssp126
+        grid: gn
+        start_year: 2040
+        end_year: 2050
+
+      tos_ssp245:
+        short_name: tos
+        preprocessor: prep_1
+        project: CMIP6
+        mip: Omon
+        exp: ssp245
+        grid: gn
+        start_year: 2040
+        end_year: 2050
+
+      tos_ssp370:
+        short_name: tos
+        preprocessor: prep_1
+        project: CMIP6
+        mip: Omon
+        exp: ssp370
+        grid: gn
+        start_year: 2040
+        end_year: 2050
+
+      tos_ssp585:
+        short_name: tos
+        preprocessor: prep_1
+        project: CMIP6
+        mip: Omon
+        exp: ssp585
+        grid: gn
+        start_year: 2040
+        end_year: 2050
+
+
+    scripts:
+      maps_plots:
+        script: ocean/diagnostic_bright_spots.py
