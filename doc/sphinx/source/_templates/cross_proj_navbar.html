@@ -1,0 +1,22 @@
+{# Displays links to the top-level TOCtree elements, in the header navbar. #}
+{% set href = pathto(root_doc) %}
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    {# { generate_header_nav_html(n_links_before_dropdown=theme_header_links_before_dropdown, dropdown_text=theme_header_dropdown_text) } #}
+        <li class="nav-item current active">
+            <a class="nav-link nav-internal" href="{{ href }}">
+            {{ (" ESMValTOOL ") }}
+            </a>
+        </li>
+        <li class="nav-item ">
+            <a class="nav-link nav-external" href="https://docs.esmvaltool.org/projects/ESMValCore/en/latest/index.html">
+             ESMValCORE 
+            </a>
+        </li>
+        <li class="nav-item ">
+            <a class="nav-link nav-external" href="https://esmvaltool.dkrz.de/shared/esmvaltool/stable_release/">
+            Gallery
+            </a>
+        </li>
+  </ul>
+</nav>
