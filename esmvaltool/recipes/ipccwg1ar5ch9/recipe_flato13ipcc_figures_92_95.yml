@@ -492,7 +492,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          start_year: 2001, end_year: 2010, tier: 1}
       - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
@@ -596,7 +596,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          start_year: 2001, end_year: 2010, tier: 1}
       - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
