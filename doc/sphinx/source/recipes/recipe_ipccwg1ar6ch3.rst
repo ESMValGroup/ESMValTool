@@ -35,6 +35,8 @@ following figures from `Eyring et al. (2021)`_ can currently be reproduced:
 
     * Figure 3.19: Speed-Up Of Zonal Mean Wind
 
+    * Figure 3.23: Sea surface Temperature and Salinity - Model Bias
+
     * Figure 3.42: Relative Model Performance
 
     * Figure 3.43: Correlation Pattern
@@ -60,6 +62,7 @@ Recipes are stored in esmvaltool/recipes/ipccwg1ar6ch3/
     * recipe_ipccwg1ar6ch3_atmosphere.yml
     * recipe_ipccwg1ar6ch3_fig_3_9.yml
     * recipe_ipccwg1ar6ch3_fig_3_19.yml
+    * recipe_ipccwg1ar6ch3_fig_3_23.yml
     * recipe_ipccwg1ar6ch3_fig_3_42_a.yml
     * recipe_ipccwg1ar6ch3_fig_3_42_b.yml
     * recipe_ipccwg1ar6ch3_fig_3_43.yml
@@ -96,6 +99,11 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     Fig. 3.19:
 
     * ipcc_ar6/zonal_westerly_winds.ncl
+
+    Fig. 3.23:
+
+    * ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl: See :ref:`here:<ch12_calc_IAV_for_stippandhatch.ncl>`.
+    * ipcc_ar6/model_bias.ncl
 
     Fig. 3.42:
 
@@ -329,11 +337,12 @@ Variables
 * sm (land, monthly mean, longitude latitude time)
 * sic (seaice, monthly mean, longitude latitude time)
 * siconc (seaice, monthly mean, longitude latitude time)
+* sos (ocean, monthly mean, longitude latitude time)
 * swcre (atmos, monthly mean, longitude latitude time)
 * ta (atmos, monthly mean, longitude latitude level time)
 * tas (atmos, monthly mean, longitude latitude time)
 * tasa (atmos, monthly mean, longitude latitude time)
-* tos (atmos, monthly mean, longitude latitude time)
+* tos (ocean, monthly mean, longitude latitude time)
 * ts (atmos, monthly mean, longitude latitude time)
 * ua (atmos, monthly mean, longitude latitude level time)
 * va (atmos, monthly mean, longitude latitude level time)
@@ -367,6 +376,7 @@ Observations and reformat scripts
 * MTE (gpp - esmvaltool/cmorizers/data/formatters/datasets/mte.py)
 * NCEP-NCAR-R1 (ta, tas, ua, va, zg - esmvaltool/cmorizers/data/formatters/datasets/ncep_ncar_r1.py)
 * NOAAGlobalTemp (tasa - esmvaltool/cmorizers/data/formatters/datasets/noaaglobaltemp.py)
+* WOA (sos, tos - esmvaltool/cmorizers/data/formatters/datasets/woa.py)
 
 
 References
