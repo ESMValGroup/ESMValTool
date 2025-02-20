@@ -20,6 +20,7 @@ defaults:
 jobs:
   linux:
     runs-on: "ubuntu-latest"
+    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     strategy:
       fail-fast: false
       matrix:
