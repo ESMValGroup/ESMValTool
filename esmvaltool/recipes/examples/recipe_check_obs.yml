@@ -219,8 +219,8 @@ diagnostics:
       rsus:
       rsuscs:
     additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS, mip: Amon, tier: 2,
-         type: sat, version: AVHRR-AMPM-fv3.0, start_year: 1982, end_year: 2016}
+      - {dataset: ESACCI-CLOUD, project: OBS6, mip: Amon, tier: 2,
+         type: sat, version: v3.0-AVHRR-AMPM, start_year: 1982, end_year: 2016}
     scripts: null
 
 
