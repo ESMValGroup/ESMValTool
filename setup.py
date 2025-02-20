@@ -58,7 +58,7 @@ REQUIREMENTS = {
         'psy-reg>=1.5.0',
         'psy-simple>=1.5.0',
         'pyproj>=2.1',
-        'pys2index',
+        # 'pys2index',  # not Py313 compat
         'python-dateutil',
         'pyyaml',
         'rasterio>=1.3.10',
