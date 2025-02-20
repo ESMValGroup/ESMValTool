@@ -1,0 +1,102 @@
+# ESMValTool
+---
+documentation:
+  title: Seasonal cycle of NH sea ice extent
+  description: >
+    Example plot of the seasonal cycle of NH and SH sea ice extent (here: CMIP6 model MPI-ESM1-2-LR).
+  authors:
+    - lauer_axel
+  maintainer:
+    - lauer_axel
+
+
+datasets:
+  - {dataset: MPI-ESM1-2-LR, grid: gn, benchmark_dataset: true}
+
+
+preprocessors:
+
+  pp_nh:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 30
+      end_latitude: 90
+    climate_statistics:
+      period: month
+    area_statistics:
+      operator: sum
+
+  pp_sh:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -90
+      end_latitude: -30
+    climate_statistics:
+      period: month
+    area_statistics:
+      operator: sum
+
+
+diagnostics:
+
+  sie_seas:
+    description: Create "classical" seasonal cycle plot including a reference dataset.
+    variables:
+      siextent_nh:
+        short_name: siextent 
+        timerange: '1995/2014'
+        preprocessor: pp_nh
+        project: CMIP6
+        mip: SImon
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        derive: true
+        reference_dataset: ESACCI-SEAICE
+        additional_datasets:
+        - {dataset: ESACCI-SEAICE, project: OBS6, tier: 2, type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-NH,
+           supplementary_variables: [{short_name: areacello, mip: Ofx}]}
+      siextent_sh:
+        short_name: siextent 
+        timerange: '1995/2014'
+        preprocessor: pp_sh
+        project: CMIP6
+        mip: SImon
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        derive: true
+        reference_dataset: ESACCI-SEAICE
+        additional_datasets:
+        - {dataset: ESACCI-SEAICE, project: OBS6, tier: 2, type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-SH,
+           supplementary_variables: [{short_name: areacello, mip: Ofx}]}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: variable_group
+        facet_used_for_labels: dataset
+        plots:
+          annual_cycle:
+            annual_mean_kwargs: False
+            plot_kwargs:
+              'MPI-ESM1-2-LR':
+                color: red
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 4
+              ESACCI-SEAICE:
+                color: black
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              default:
+                color: lightgray
+                label: null
+                linestyle: '-'
+                linewidth: 1
+                zorder: 1
