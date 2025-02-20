@@ -17,7 +17,6 @@ dependencies:
   - cfgrib
   - cftime
   - cmocean
-  - curl <8.10  # https://github.com/ESMValGroup/ESMValTool/issues/3758
   - cython
   - dask !=2024.8.0  # https://github.com/dask/dask/issues/11296
   - distributed
@@ -135,6 +134,3 @@ dependencies:
   - r-git2r  # dependency of lintr
   - r-lintr ==3.1.2
   - r-styler ==1.10.3
-
-  # Julia (dependencies installed by separate script)
-  - julia
