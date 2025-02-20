@@ -1,0 +1,15 @@
+# Recipe to make CMUG WP4.9 plots around LST-Tair difference
+---
+documentation:
+  description: |
+    Please add description here
+  authors:
+    - king_robert
+
+  title: CMUG WP4.9
+
+  maintainer:
+    - king_robert
+
+  references:
+    - esacci-lst
