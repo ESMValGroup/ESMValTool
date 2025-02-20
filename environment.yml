@@ -4,7 +4,7 @@ channels:
   # The release candidate channel should only be activated
   # during the rc phase right before the next release of the
   # ESMValCore.
-  # - conda-forge/label/esmvalcore_rc
+  - conda-forge/label/esmvalcore_rc
   - conda-forge
   - nodefaults
 
@@ -24,7 +24,7 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
-  # - esmvalcore 2.11.*  # nay Py3.13 yet
+  - esmvalcore 2.12.*  # test the RC1
   - fiona
   - fire
   - fsspec
@@ -40,7 +40,7 @@ dependencies:
   - natsort
   - nc-time-axis
   - netCDF4
-  # - numba  # nay Py3.13 yet
+  - numba
   - numpy !=1.24.3  # severe masking bug
   - openpyxl
   - packaging
@@ -68,7 +68,7 @@ dependencies:
   - seawater
   - shapely >=2.0.2
   - xarray >=0.12.0
-  # - xesmf >=0.7.1  # nay Py3.13 yet via Numba
+  - xesmf >=0.7.1  # nay Py3.13 yet via Numba
   - xgboost >1.6.1  # github.com/ESMValGroup/ESMValTool/issues/2779
   - xlsxwriter
   - zarr
