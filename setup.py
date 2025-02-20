@@ -51,14 +51,14 @@ REQUIREMENTS = {
         'numpy!=1.24.3',  # severe masking bug
         'openpyxl',
         'packaging',
-        'pandas==2.1.4',  # see note in environment.yml
+        'pandas',
         'progressbar2',
         'psyplot>=1.5.0',  # psy*<1.5.0 are not py312 compat
         'psy-maps>=1.5.0',
         'psy-reg>=1.5.0',
         'psy-simple>=1.5.0',
         'pyproj>=2.1',
-        'pys2index',
+        # 'pys2index',  # not Py313 compat
         'python-dateutil',
         'pyyaml',
         'rasterio>=1.3.10',
