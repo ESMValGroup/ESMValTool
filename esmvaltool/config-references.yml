@@ -302,6 +302,11 @@ authors:
     name: Juckes, Martin
     institute: BADC, UK
     orcid:
+  jury_martin:
+    name: Jury, Martin
+    institute: WEGC, Austria
+    e-mail: martin.jury@uni-graz.at
+    orcid: https://orcid.org/0000-0003-0590-7843
   kadygrov_nikolay:
     name: Kadygrov, Nikolay
     institute: IPSL, France
@@ -331,6 +336,12 @@ authors:
     name: Krasting, John
     institute: NOAA, USA
     orcid: https://orcid.org/0000-0002-4650-9844
+  kroissenbrunner_thomas:
+    name: Kroissenbrunner, Thomas
+    institute: WEGC, Austria
+    email: thomas.kroissenbrunner@uni-graz.at
+    github: thomaskroi1996
+    orcid: 
   kuehbacher_birgit:
     name: Kuehbacher, Birgit
     institute: DLR, Germany
@@ -824,6 +835,7 @@ projects:
   trr181: DFG Project TRR-181, Energy transfers in Atmosphere and Ocean
   ukesm: UKESM, UK Earth System Model project (NERC)
   usmile: ERC Synergy Grant USMILE
+  preval: PREVAL ÖKS
 
 
 realms:
