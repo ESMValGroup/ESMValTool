@@ -76,9 +76,9 @@ def grouped_data(cfg):
                 f"{exp} is not a valid experiment for calculating ZEC, "
                 f"please check the configuration value of 'experiments'. "
                 f"Current accepted experiments are {cfg['experiments']}")
-    try:
+    if 'zecmip_data' in locals() and 'anom' in locals():
         return zecmip_data, anom
-    except ValueError:
+    else:
         raise ValueError(
             f"Data does not include experiments valid for ZEC computation, "
             f"please check the configuration value of 'experiments'. "
@@ -93,7 +93,7 @@ def calculate_zec(cfg):
     for data in zecmip_data:
         # Account for ensembles by using alias, remove exp name
         name = data['alias'].replace('_' + data['exp'], '')
-        logger.info(f'Processing {name}')
+        logger.info('Processing %s' % name)
         tas = iris.load_cube(data['filename'])
         # Match the correct anomaly data, no ensemble key for ensemble mean
         if '_r' in data['alias']:
@@ -230,8 +230,8 @@ def main(cfg):
     plot_zec_timeseries(zec, cfg)
 
     # Calculate ZEC_X
-    x = cfg['zec_x'] if isinstance(cfg['zec_x'], list) else [cfg['zec_x']]
-    for x_i in x:
+    x_val = cfg['zec_x'] if isinstance(cfg['zec_x'], list) else [cfg['zec_x']]
+    for x_i in x_val:
         zec_x = calc_zec_x(zec, x_i)
         write_zec_x(zec_x, x_i, cfg)
         plot_zec_x_bar(zec_x, x_i, cfg)
