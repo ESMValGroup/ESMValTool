@@ -1,6 +1,6 @@
 .. _broken-recipe-policy:
 
-Broken /outdated recipe policy
+Broken/outdated recipe policy
 ==============================
 
 Recipes might stop working for different reasons. Among those are, for instance, withdrawal of datasets
