@@ -19,21 +19,19 @@ documentation:
     - eval4cmip
 
 preprocessors:
-  preprocessor1:
+  default:
     regrid:
       target_grid: 2x2
       scheme: linear
-  preprocessor2:
-    regrid:
-      target_grid: 2x2
-      scheme: linear
+    convert_units:
+      units: mm/day
 
 diagnostics:
   diagnostic1:
     variables:
       pr:
         reference_dataset: MIROC-ESM
-        preprocessor: preprocessor1
+        preprocessor: default
         field: T2Ms
         start_year: 1901
         end_year: 2000
@@ -100,7 +98,7 @@ diagnostics:
     variables:
       pr:
         reference_dataset: MIROC-ESM
-        preprocessor: preprocessor2
+        preprocessor: default
         field: T2Ms
         mip: Amon
         project: CMIP5

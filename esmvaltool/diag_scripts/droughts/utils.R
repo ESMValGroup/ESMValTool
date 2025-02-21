@@ -81,13 +81,49 @@ convert_to_monthly <- function(id, v) {
   return(v)
 }
 
-convert_to_monthly_simple <- function(id, v) {
-  # converts kg/m2/s to mm/month
-  return(v * 30 * 24 * 3600.)
+daily_to_monthly <- function(v, dim=1) {
+  # multiplies by number of days (i.e. mm/day -> mm/mon)
+  # ignores leap years to be compatible to SPEI library
+  mlen <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+  mlen_rep <- rep(mlen, length.out = dim(v)[dim])
+  for (i in 1:dim(v)[dim]){
+    if (dim == 1) {
+      v[i,,] <- v[i,,] * mlen_rep[i]
+    } else if (dim == 2) {
+      v[,i,] <- v[,i,] * mlen_rep[i]
+    } else if (dim == 3) {
+      v[,,i] <- v[,,i] * mlen_rep[i]
+    } else {
+      stop("time dimension must be 1, 2 or 3")
+    }
+  }
+  return(v)
+}
+
+monthly_to_daily <- function(v, dim=1){
+  # divide by number of days (i.e. mm/mon -> mm/day)
+  # ignores leap years to be compatible to SPEI library
+  mlen <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+  mlen_rep <- rep(mlen, length.out = dim(v)[dim])
+  for (i in 1:dim(v)[dim]){
+    if (dim == 1) {
+      v[i,,] <- v[i,,] / mlen_rep[i]
+    } else if (dim == 2) {
+      v[,i,] <- v[,i,] / mlen_rep[i]
+    } else if (dim == 3) {
+      v[,,i] <- v[,,i] / mlen_rep[i]
+    } else {
+      stop("time dimension must be 1, 2 or 3")
+    }
+  }
+  return(v)
 }
 
 
 convert_to_cf <- function(id, v) {
+  # NOTE: use mm/day converted by preprocessor if possible and convert
+  # it to/from month using daily_to_monthly and monthly_to_daily instead.
+  # 
   # converts mm/mon back to kg/m2/s assuming the input ncfile to have the 
   # correct calendar set. (inverse of `convert_to_monthly`)
   tcal <- ncatt_get(id, "time", attname = "calendar")
@@ -166,6 +202,8 @@ get_var_from_nc <- function(meta, custom_var=FALSE) {
   else var <- meta$short_name
   id <- nc_open(meta$filename, readunlim=FALSE)
   data <- ncvar_get(id, var)
+  dim_names <- attributes(id$dim)$names
+  time_dim <- which(sapply(dim_names, function(x) x == "time"))
   # convert to required units
   if (var == "time") {
     tcal <- ncatt_get(id, "time", attname = "calendar")
@@ -188,16 +226,21 @@ get_var_from_nc <- function(meta, custom_var=FALSE) {
     data <- data - 273.15
   } else if (var %in% list("rsdt", "rsds")) {
     data <- data * (86400.0 / 1e6) # W/(m2) to MJ/(m2 d)  
-  } else if (var %in% list("pr", "evspsbl")) {  
-    # TODO: pet convert temp removed
-    # TODO: don't convert only by name, check units or attributes
-    data <- convert_to_monthly(id, data)
+  } else if (var %in% list("pr", "evspsbl", "evspsblpot")) {  
+    if (meta$units == "mm/day") {
+      data <- daily_to_monthly(data, dim=time_dim)
+    } else if (meta$units == "mm/month") {  # do nothing
+    } else {
+      stop(paste(var, 
+        " is expected to be in mm/day or mm/month not in ", meta$units))
+    }
   } else if (var == "sfcWind") {
+    if (meta$units != "m s-1") {stop("sfcWind is expected to at 10m in m/s")}
     data <- data * (4.87/(log(67.9 * 10.0 - 5.42))) # U10m to U2m (*0.74778)
-  } else if (var == "psl") {
+  } else if (var %in% list("psl", "ps")) {
     data <- data * 0.001 # Pa to kPa
-  } else if (var == "ps") {
-    data <- data * 0.001 # Pa to kPa
+  } else {
+    print(paste("No conversion for", var))
   }
   nc_close(id)
   return(data)

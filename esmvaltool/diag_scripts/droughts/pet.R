@@ -198,34 +198,29 @@ for (dataset in names(grouped_meta)){
   )
   mask <- get_merged_mask(metas)
   for (t in 1:dim(pet)[3]){
-    # print(t)
     tmp <- pet[, , t]
-    print(dim(tmp))
     tmp[is.na(mask)] <- NA
-    print(dim(tmp))
     pet[, , t] <- tmp
   }
+  pet <- monthly_to_daily(pet, dim=3)
   
-  # postprocess and write PET
+  # write PET to file
   first_meta = metas[[names(metas)[1]]]
   filename <- write_nc_file_like(
     params, first_meta, pet, fillfloat, 
     short_name="evspsblpot", 
     long_name="Potential Evapotranspiration",
-    units="mm month-1")  # temp default units to be converted in python
-    #units="kg m-2 s-1")
-  input_meta = select_var(metas, "tasmin")  # TODO: create duplicate()?
-  input_meta$filename = filename
-  input_meta$short_name = "evspsblpot"
-  input_meta$long_name = "Potential Evapotranspiration"
-  input_meta$units = "mm month-1"
+    units="mm day-1")
+  input_meta <- select_var(metas, "tasmin")  # TODO: create duplicate()?
+  input_meta$filename <- filename
+  input_meta$short_name <- "evspsblpot"
+  input_meta$long_name <- "Potential Evapotranspiration"
+  input_meta$units <- "mm day-1"
   meta[[filename]] <- input_meta
 
   xprov$caption <- "PET per grid point."
   provenance[[filename]] <- xprov
 }
-
-
 
 write_yaml(provenance, provenance_file)
 write_yaml(meta, meta_file)

@@ -24,6 +24,7 @@ documentation:
 CMIP6: &cmip6 {project: CMIP6, mip: Amon, ensemble: r1i1p1f1, grid: gn}
 
 datasets:
+# - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
 - {<<: *cmip6, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
 
 preprocessors:
@@ -31,20 +32,28 @@ preprocessors:
     regrid:
       target_grid: reference_dataset
       scheme: linear
+  perday:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    convert_units:
+      units: mm/day
 
 diagnostics:
   diagnostic:
     description: Calculating SPI and SPEI index
     variables:
-      pr: &var
+      tasmin: &var
         reference_dataset: ACCESS-CM2
         preprocessor: preprocessor
         start_year: 2000
         end_year: 2005
         mip: Amon
         exp: [historical]
-      tasmin: *var
       tasmax: *var
+      pr: 
+        <<: *var
+        preprocessor: perday
     scripts:
       spi:
         script: droughts/spei.R

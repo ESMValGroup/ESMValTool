@@ -84,6 +84,7 @@ fill_refperiod <- function(cfg, tsvec) {
   cfg <- list_default(cfg, "refstart_month", tsvec[2])
   cfg <- list_default(cfg, "refend_year", tsvec[3])
   cfg <- list_default(cfg, "refend_month", tsvec[4])
+  return(cfg)
 }
 
 # ---------------------------------------------------------------------------- #
@@ -135,7 +136,7 @@ for (dataset in names(grouped_meta)){
     provenance[[filename_wb]] <- list(caption="Water balance per grid point.")
   }
 
-  fill_refperiod(cfg, tsvec)
+  cfg <- fill_refperiod(cfg, tsvec)
   pme_spei <- pme * NA
   coeffs <- list()
   for (i in 1:dim(pme)[1]){
@@ -163,13 +164,12 @@ for (dataset in names(grouped_meta)){
     }
   }
   pme_spei[pme_spei > 10000] <- NA  # replaced with fillfloat in write function
-  # TODO: check if we need to apply mask to pme_spei
   # apply mask
-  # for (t in 1:dim(pme)[3]) {
-  #   tmp <- pme_spei[, , t]
-  #   tmp[is.na(mask)] <- NA
-  #   pme_spei[, , t] <- tmp
-  # }
+  for (t in 1:dim(pme)[3]) {
+    tmp <- pme_spei[, , t]
+    tmp[is.na(mask)] <- NA
+    pme_spei[, , t] <- tmp
+  }
   filename <- write_nc_file_like(cfg, pr_meta, pme_spei, fillfloat, short_name=cfg$indexname)
   new_meta = list(filename=filename, short_name=tolower(cfg$indexname),
       long_name=cfg$indexname, units="1", dataset=dataset)
