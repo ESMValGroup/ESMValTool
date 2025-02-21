@@ -50,8 +50,8 @@ def _get_default_cfg(cfg):
     return cfg
 
 
-def group_data(cfg):
-    """Groups input data in preparation of ZEC calculation."""
+def grouped_data(cfg):
+    """Group input data in preparation of ZEC calculation."""
     input_data = cfg['input_data'].values()
     group_data = group_metadata(input_data, 'exp')
     for exp in group_data:
@@ -66,17 +66,24 @@ def group_data(cfg):
                 f"{exp} is not a valid experiment for calculating ZEC, "
                 f"please check the configuration value of 'experiments'. "
                 f"Current accepted experiments are {cfg['experiments']}")
-    return zecmip_data, anom
+    try:
+        return zecmip_data, anom
+    except ValueError:
+        raise ValueError(
+            f"Data does not include experiments valid for ZEC computation, "
+            f"please check the configuration value of 'experiments'. "
+            f"Current accepted experiments are {cfg['experiments']}, "
+            f"received experiments are {list(group_data.keys())}")
 
 
 def calculate_zec(cfg):
     """Calculate ZEC for each model."""
     zec = {}
-    zecmip_data, anom = group_data(cfg)
+    zecmip_data, anom = grouped_data(cfg)
     for data in zecmip_data:
         # Account for ensembles by using alias, remove exp name
         name = data['alias'].replace('_' + data['exp'], '')
-        logger.info('Processing %s' % name)
+        logger.info(f'Processing {name}')
         tas = iris.load_cube(data['filename'])
         # Match the correct anomaly data, no ensemble key for ensemble mean
         if '_r' in data['alias']:
@@ -145,16 +152,18 @@ def plot_zec_timeseries(zec, cfg):
     write_provenance(cfg, plot_path, prov_dict)
 
 
-def calc_zec_x(zec, x):
+def calc_zec_x(zec, x_i):
+    """Calculate ZEC mean of 20 years centered on year x."""
     zec_x = {}
     for model in zec:
         # ZEC_X is the 20-year anomaly centered at year x
-        zec_x[model] = np.mean(zec[model].data[x - 10:x + 9])
+        zec_x[model] = np.mean(zec[model].data[x_i - 10:x_i + 9])
     return zec_x
 
 
-def write_zec_x(zec_x, x, cfg):
-    netcdf_path = get_diagnostic_filename("zec_%s" % str(x), cfg)
+def write_zec_x(zec_x, x_i, cfg):
+    """Save ZEC_x data with provenance."""
+    netcdf_path = get_diagnostic_filename(f"zec_{x_i}", cfg)
     var_attrs = {
         'short_name': 'zec',
         'long_name': 'Zero Emissions Commitment (ZEC)',
@@ -175,25 +184,29 @@ def plot_zec_x_bar(zec_x, x_i, cfg):
     axes.axhline(color="lightgrey", linestyle="--")
     axes.set_ylabel(r'ZEC$_{%s}$' % str(x_i))
     # Save plot
-    plot_path = get_plot_filename('zec_%s_barplot' % str(x_i), cfg)
+    plot_path = get_plot_filename(f'zec_{x_i}_barplot', cfg)
     plt.tight_layout()
     fig.savefig(plot_path)
     plt.close()
     logger.info("Wrote %s", plot_path)
-    prov_dict = {'caption': 'Barplot of ZEC_%s' % str(x_i), 'plot_type': 'bar'}
+    prov_dict = {'caption': f'Barplot of ZEC_{x_i}', 'plot_type': 'bar'}
     write_provenance(cfg, plot_path, prov_dict)
 
 
-def write_provenance(cfg, path, add_dict={}):
-    """Helper function to write provenance record."""
+def write_provenance(cfg, path, *args):
+    """Function to write provenance record.
+
+    Optionally pass additional dictionary entries as args.
+    """
     input_data = cfg['input_data'].values()
     provenance_record = {
         'authors': ['gier_bettina'],
-        'references': ['macdougall20'],  # add sanderson24gmd later
+        'references': ['macdougall20'],
         'ancestors': [d["filename"] for d in input_data],
     }
-    for key in add_dict:
-        provenance_record[key] = add_dict[key]
+    for add_dict in args:
+        for key in add_dict:
+            provenance_record[key] = add_dict[key]
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(path, provenance_record)
 
