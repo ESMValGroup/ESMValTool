@@ -76,14 +76,13 @@ def grouped_data(cfg):
                 f"{exp} is not a valid experiment for calculating ZEC, "
                 f"please check the configuration value of 'experiments'. "
                 f"Current accepted experiments are {cfg['experiments']}")
-    if 'zecmip_data' in locals() and 'anom' in locals():
-        return zecmip_data, anom
-    else:
+    if 'zecmip_data' not in locals() or 'anom' not in locals():
         raise ValueError(
             f"Data does not include experiments valid for ZEC computation, "
             f"please check the configuration value of 'experiments'. "
             f"Current accepted experiments are {cfg['experiments']}, "
             f"received experiments are {list(group_data.keys())}")
+    return zecmip_data, anom
 
 
 def calculate_zec(cfg):
