@@ -9,7 +9,8 @@ Description
 This diagnostic applies drought charactristics based on Martin (2018)
 to data produced by spei.R. This characteristics and differences to
 a reference dataset or between different time periods are plotted for each
-dataset and multi-model mean.
+dataset and multi-model mean. The calculated frequency, duration and severity
+of drought events are saved to netcdf files for further use.
 It expects multiple datasets for a particular index as input. The reference
 dataset can be specified with ``reference_dataset`` and is not part of the
 multi-model mean.
@@ -35,16 +36,18 @@ comparison_period: int
 plot_models: bool, false
     Save plots for each individual model, in addition to multi-model mean.
 start_year: int
-    This option is used to select the time slices for comparison if ``compare_intervals=True``.
+    This option is used to select the time slices for comparison if
+    ``compare_intervals=True``.
 end_year: int
-    This option is used to select the time slices for comparison if ``compare_intervals=True``.
+    This option is used to select the time slices for comparison if
+    ``compare_intervals=True``.
 """
 
 import iris
 import numpy as np
 import datetime as dt
 import esmvaltool.diag_scripts.shared as e
-from esmvaltool.diag_scripts.droughts.collect_drought_func import (
+from esmvaltool.diag_scripts.droughts.utils import (
     _get_drought_data, _plot_multi_model_maps, _plot_single_maps)
 
 
