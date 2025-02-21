@@ -450,6 +450,8 @@ def _set_legend_title(plot_obj, legend_title: str) -> None:
         if handles and labels:
             legend = plot_obj.ax_joint.legend(handles=handles, labels=labels,
                                               title=legend_title)
+        else:
+            legend = None
     else:
         raise ValueError(
             f"Cannot set legend title, `{type(plot_obj).__name__}` does not "
