@@ -170,24 +170,24 @@ def _get_default_cfg(cfg: dict) -> dict:
     if not isinstance(cfg["calc_tcre_period"], Sequence):
         raise ValueError(
             f"Option 'calc_tcre_period' needs to be a sequence of exactly 2 "
-            f"integers, got '{cfg["calc_tcre_period"]}' of type "
-            f"{type(cfg["calc_tcre_period"])}"
+            f"integers, got '{cfg['calc_tcre_period']}' of type "
+            f"{type(cfg['calc_tcre_period'])}"
         )
     if len(cfg["calc_tcre_period"]) != 2:
         raise ValueError(
             f"Option 'calc_tcre_period' needs to be a sequence of exactly 2 "
-            f"integers, got '{cfg["calc_tcre_period"]}'"
+            f"integers, got '{cfg['calc_tcre_period']}'"
         )
     if any(not isinstance(i, int) for i in cfg["calc_tcre_period"]):
         raise ValueError(
             f"Option 'calc_tcre_period' needs to be a sequence of exactly 2 "
-            f"integers, got '{cfg["calc_tcre_period"]}'"
+            f"integers, got '{cfg['calc_tcre_period']}'"
         )
     if cfg["calc_tcre_period"][0] >= cfg["calc_tcre_period"][1]:
         raise ValueError(
             f"Invalid value for option 'calc_tcre_period': the first integer "
             f"needs to be smaller than the second, got "
-            f"'{cfg["calc_tcre_period"]}'"
+            f"'{cfg['calc_tcre_period']}'"
         )
 
     return cfg
