@@ -53,12 +53,13 @@ More details and usage examples can be found in the
 Available recipes and diagnostics
 ---------------------------------
 
+.. toctree::
+   :maxdepth: 1
 
-Recipes:
+   droughts/recipes_consecdrydays
+   droughts/recipe_spei
+   droughts/recipe_martin18grl
 
-* :ref:`recipes_consecdrydays`
-* :ref:`recipes_spei`
-* :ref:`recipes_martin18grl`
 
 Diagnostics are stored in ``diag_scripts/droughts/``. An incomplete list of
 diagnostics that are used in different recipes is shown below. Some recipes

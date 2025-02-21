@@ -37,7 +37,6 @@ Atmosphere
    recipe_clouds
    recipe_cmug_h2o
    recipe_crem
-   recipe_consecdrydays
    recipe_deangelis15nat
    recipe_diurnal_temperature_index
    recipe_droughts
@@ -55,8 +54,6 @@ Atmosphere
    recipe_mpqb_xch4
    recipe_quantilebias
    recipe_bock20jgr
-   recipe_spei
-   recipe_martin18grl
    recipe_autoassess_stratosphere
    recipe_autoassess_landsurface_permafrost
    recipe_autoassess_landsurface_surfrad
