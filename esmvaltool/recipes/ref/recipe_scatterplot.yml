@@ -1,71 +1,59 @@
 # ESMValTool
-# recipe_seaborn.yml
 ---
 documentation:
-  title: Scatter Plot of Total Cloud Cover vs. Longwave Cloud Forcing and Total Cloud Cover vs. Shortwave Cloud Forcing
-
+  title: Model evaluation with focus on clouds.
   description: >
-    This recipe generates a scatter plots of total cloud cover (clt) vs. 
-    longwave cloud radiative effect (lwcre) and total cloud cover (clt) vs. 
-    shortwave cloud radiative effect (swcre) using the Seaborn diagnostic 
-    in ESMValTool. It combines datasets and variables from CMIP6 and observational data.
-
+    Plot scatter plots of two different variables using the Seaborn diagnostic 
+    in ESMValTool.
   authors:
-    - schlund_manuel
-    - debeire_kevin
-    - kraft_jeremy
-    #- pacal_aytac
-    #- cammarano_diego
-
+    - bock_lisa
+    - lauer_axel
   maintainer:
-    - schlund_manuel
+    - bock_lisa
 
-  references:
-    - waskom21joss
-
-  projects:
-    - 4c
-    - esm2025
-    - isenes3
-    - usmile
+timerange_for_models: &time_period
+  timerange: '2005/2014'  # can be specified, this is just an example
 
 diagnostics:
-  plot_hist_scatter_clt_lwcre:
-    description: Scatterplot clt vs lwcre using ESACCI-CLOUD and CESM2-WACCM datasets.
+  plot_joint_clt_lwcre:
+    description: Scatterplot clt vs lwcre.
     variables:
       clt:
         mip: Amon
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/2002'
+        <<: *time_period
       lwcre:
         mip: Amon
         derive: true
         force_derivation: false
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/2002'
+        <<: *time_period
     additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
       - {dataset: CESM2-WACCM, project: CMIP6, grid: gn, ensemble: r1i1p1f1}
     scripts:
       plot:
         script: seaborn_diag.py
-        seaborn_func: displot
+        seaborn_func: jointplot
+        title: 
         seaborn_kwargs:
           kind: hist
-          col: alias                  # Creates side-by-side plots for each dataset
           x: clt
           y: lwcre
-          bins: 50                    # Adjust binning for histograms
-          height: 5                   # Set height of each subplot
-          aspect: 1.2                 # Set aspect ratio
-          stat: probability 
-          common_norm: false
-          color: blue                 # Sets the color for the plots
-          cbar: True                  # Includes a color bar
-          # xlabel: 'clt [%]'
-          # ylabel: 'lwcre [W m-2]'
+          bins: 20                    # Adjust binning for histograms
+          stat: probability
+          cmap: YlGnBu
+          marginal_ticks: True
+          marginal_kws:
+            color: darkturquoise
+            bins: 20
+            fill: True
+            stat: probability
+          #cbar: True
+          #cbar_kws:
+          #  use_gridspec: False
+          #  location: "bottom"
         add_aux_coords: true
         dropna_kwargs:
           axis: 0
@@ -78,44 +66,43 @@ diagnostics:
           style: ticks
           rc:
             axes.titlepad: 15.0
-        suptitle: 'clt vs lwcre for ESACCI-CLOUD and CESM2-WACCM (1982-2002)'
 
-  plot_hist_scatter_clt_swcre:
-    description: Scatterplot clt vs swcre using ESACCI-CLOUD and CESM2-WACCM datasets.
+  plot_hist_with_ref_clt_lwcre:
+    description: Scatterplot clt vs swcre with reference.
     variables:
       clt:
         mip: Amon
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/2002'
-      swcre:
+        <<: *time_period
+      lwcre:
         mip: Amon
         derive: true
         force_derivation: false
         exp: historical
         ensemble: r1i1p1
-        timerange: '1982/2002'
+        <<: *time_period
     additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
-      - {dataset: CESM2-WACCM, project: CMIP6, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
+      - {dataset: CESM2-WACCM, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2-WACCM}
     scripts:
       plot:
         script: seaborn_diag.py
         seaborn_func: displot
         seaborn_kwargs:
           kind: hist
-          col: alias                  # Creates side-by-side plots for each dataset
+          col: alias                # Creates side-by-side plots for each dataset
           x: clt
-          y: swcre
-          bins: 50                    # Adjust binning for histograms
+          y: lwcre
+          bins: 20                    # Adjust binning for histograms
           height: 5                   # Set height of each subplot
           aspect: 1.2                 # Set aspect ratio
           stat: probability 
-          common_norm: false
-          color: blue                 # Sets the color for the plots
+          common_norm: True
+          cmap: YlGnBu
           cbar: True                  # Includes a color bar
-          # xlabel: 'clt [%]'
-          # ylabel: 'swcre [W m-2]'
+          cbar_kws:
+            label: "Probability"
         add_aux_coords: true
         dropna_kwargs:
           axis: 0
@@ -128,4 +115,3 @@ diagnostics:
           style: ticks
           rc:
             axes.titlepad: 15.0
-        suptitle: 'clt vs lwcre for ESACCI-CLOUD and CESM2-WACCM (1982-2002)'
