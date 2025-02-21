@@ -16,7 +16,10 @@ Available recipes
 Recipes are stored in recipes/ref
 
 * recipe_ref_cre.yml:
-    Maps and zonal means of longwave and shortwave cloud radiative effect
+   Maps and zonal means of longwave and shortwave cloud radiative effect
+
+* recipe_ref_scatterplot.yml
+   2D histograms with focus on clouds.
 
 
 Example plots:
@@ -36,3 +39,17 @@ Example plots:
    Zonal averages of the climatological mean longwave cloud radiative
    effect from CERES-EBAF Ed4.2 (solid black), ESACCI-CLOUD (dashed black), 
    ISCCP-FH (dotted black) and the MPI-ESM1-2-LR model (blue).
+
+.. _fig_ref_3:
+.. figure::  /recipes/figures/ref/seaborn_jointplot.png
+   :align:   center
+
+   2D histogram of total cloud fraction and longwave cloud radiative
+   effect from CESM2-WACCM for the years 2002-2014 with 1D histograms attached.
+
+.. _fig_ref_4:
+.. figure::  /recipes/figures/ref/seaborn_displot.png
+   :align:   center
+
+   2D histogram of total cloud fraction and longwave cloud radiative
+   effect from CESM2-WACCM and ESACCI-CLOUD for the years 2002-2014.
