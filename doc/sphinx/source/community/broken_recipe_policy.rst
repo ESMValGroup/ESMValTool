@@ -6,7 +6,7 @@ Broken /outdated recipe policy
 Recipes might stop working for different reasons. Among those are, for instance, withdrawal of datasets
 used by the recipe (i.e. the recipe contains data that are no longer publicly available), backward incompatible development
 of the ESMValTool including new features or retiring old ones as well as
-changes to Python or used dependencies such as library functions. Recipes might also be considered outdated by the :ref:`Maintaining a recipe<recipe-maintainer>`.
+changes to Python or used dependencies such as library functions. Recipes might also be considered outdated by the :ref:`recipe maintainer<recipe-maintainer>`.
 
 In case a recipe stopped working, the :ref:`Maintaining a recipe<recipe-maintainer>` is contacted by the technical lead development team (`@ESMValGroup/technical-lead-development-team`_) to find
 a solution, fixing the affected recipe and checking the scientific output after applying the fix. If no recipe maintainer is
