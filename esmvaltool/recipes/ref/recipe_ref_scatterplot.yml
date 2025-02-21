@@ -50,10 +50,6 @@ diagnostics:
             bins: 20
             fill: True
             stat: probability
-          #cbar: True
-          #cbar_kws:
-          #  use_gridspec: False
-          #  location: "bottom"
         add_aux_coords: true
         dropna_kwargs:
           axis: 0
