@@ -39,7 +39,7 @@ def plot_level1(model_data, obs, metric_values, y_label, title, dtls):
         # model first :list
         for datamod, name in zip(model_data[1], modls):
             plt.plot(model_data[0], datamod, label=name)
-        plt.plot(*obs, label=f'ref: {dtls[0]}', color='black')
+        plt.plot(*obs, label=f'ref: {dtls[0]}', linestyle='dashdot', linewidth=3, color='black')
 
     else:
         plt.scatter(0, obs, c=['black'], marker='D')
@@ -64,6 +64,7 @@ def plot_level1(model_data, obs, metric_values, y_label, title, dtls):
         plt.xticks(xticks, xtick_labels)
         plt.yticks(np.arange(-2, 2.5, step=1))
 
+    plt.tight_layout
     return figure
 
 def plot_map1(input_data, rmse, title): #input data is 2 - model and obs
@@ -238,7 +239,7 @@ def compute_telecon_metrics(input_pair, var_group, metric):
             cubes[label] = reg_masked
 
         val[seas] = np.sqrt(np.mean((data_values[0] - data_values[1]) ** 2))
-        fig[seas] = plot_level1(cubes, val[seas], title.format(seas))
+        fig[seas] = plot_map1(cubes, val[seas], title.format(seas))
 
     return val, fig 
 
@@ -276,7 +277,7 @@ def get_provenance_record(caption, ancestor_files):
         'plot_types': ['line'], #map telecon
         'authors': [
             'chun_felicity',
-            'beucher_romain',
+            # 'beucher_romain',
             # 'sullivan_arnold',
         ],
         'references': [
