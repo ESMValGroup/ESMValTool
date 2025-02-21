@@ -1,4 +1,4 @@
-.. _recipes_tcr:
+.. _recipes_zec:
 
 Zero Emissions Commitment (ZEC)
 ===============================
