@@ -42,7 +42,10 @@ def _get_default_cfg(cfg):
     cfg.setdefault(
         'experiments', {
             'reference': ['esm-flat10', '1pctCO2'],
-            'simulation': ['esm-flat10-zec', 'esm-1pct-brch-1000PgC']
+            'simulation': [
+                'esm-flat10-zec', 'esm-1pct-brch-1000PgC',
+                'esm-1pct-brch-750PgC', 'esm-1pct-brch-2000PgC'
+            ]
         })
     return cfg
 
@@ -52,7 +55,6 @@ def group_data(cfg):
     input_data = cfg['input_data'].values()
     group_data = group_metadata(input_data, 'exp')
     for exp in group_data:
-        logger.info(exp)
         if exp in cfg['experiments']['simulation']:
             zecmip_data = select_metadata(input_data,
                                           short_name='tas',
@@ -60,7 +62,6 @@ def group_data(cfg):
         elif exp in cfg['experiments']['reference']:
             anom = select_metadata(input_data, short_name='tas', exp=exp)
         else:
-            logger.info('in raise error')
             raise ValueError(
                 f"{exp} is not a valid experiment for calculating ZEC, "
                 f"please check the configuration value of 'experiments'. "
@@ -77,10 +78,13 @@ def calculate_zec(cfg):
         name = data['alias'].replace('_' + data['exp'], '')
         logger.info('Processing %s' % name)
         tas = iris.load_cube(data['filename'])
-        # Match the correct anomaly data
-        match_anom = select_metadata(anom,
-                                     dataset=data['dataset'],
-                                     ensemble=data['ensemble'])
+        # Match the correct anomaly data, no ensemble key for ensemble mean
+        if '_r' in data['alias']:
+            match_anom = select_metadata(anom,
+                                         dataset=data['dataset'],
+                                         ensemble=data['ensemble'])
+        else:
+            match_anom = select_metadata(anom, dataset=data['dataset'])
         tas_anom = iris.load_cube(match_anom[0]['filename'])
         zec_model = deepcopy(tas)
         # Fix time to start at 0
@@ -119,14 +123,14 @@ def plot_zec_timeseries(zec, cfg):
     """Plot all ZEC timeseries."""
     fig, axes = plt.subplots(figsize=(10, 6))
     for model in zec:
-        iris.plot.plot(zec[model], axes=axes, label=model)
+        iris.plot.plot(zec[model], axes=axes, label=model.replace('_', ' '))
         axes.axhline(color="lightgrey", linestyle="--")
     axes.set_title('ZEC')
     axes.set_xlabel('Time [yr]')
     axes.set_ylabel('ZEC [K]')
     axes.set_xlim([0, 100])
-    axes.legend(bbox_to_anchor=(0.10, -0.09),
-                loc="upper left",
+    axes.legend(bbox_to_anchor=(0.50, -0.25),
+                loc="center",
                 ncol=3,
                 handlelength=3.5,
                 fontsize=12)
