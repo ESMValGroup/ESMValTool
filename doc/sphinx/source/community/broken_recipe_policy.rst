@@ -17,7 +17,7 @@ number of the last known release in which the recipe was still working.
 If a recipe continues to be broken for three releases of the ESMValTool (about one year) and no recipe maintainer could be found
 during this time, or the affected recipe and diagnostics will be retired. This means the recipe and diagnostic code are
 moved from the folders ``esmvaltool/recipes`` and ``esmvaltool/diag_scripts`` to ``archive/legacy_recipes`` and ``archive/legacy_diag_scripts`` by the release manager. In case of recipes considered
-outdated by the :ref:`Maintaining a recipe<recipe-maintainer>`, a pull request can be opened to move recipe and diagnostic code to the ``archive`` folders at any time.
+outdated by the :ref:`recipe maintainer<recipe-maintainer>`, a pull request can be opened to move recipe and diagnostic code to the ``archive`` folders at any time.
 
 In both cases, the scientific documentation of the recipe (and diagnostics) will be kept in the user and developer guide with an
 additional note and link to the last release in which the recipe was still fully functional and a reference to the ``archive`` folder.
