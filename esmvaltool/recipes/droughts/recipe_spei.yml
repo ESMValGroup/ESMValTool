@@ -37,7 +37,7 @@ preprocessors:
       target_grid: reference_dataset
       scheme: linear
     convert_units:
-      units: mm/day
+      units: mm day-1
 
 diagnostics:
   diagnostic:
@@ -65,7 +65,26 @@ diagnostics:
         pet_type: "Hargreaves"  # "Penman_clt"
         script: droughts/pet.R
       spei:
+        indexname: SPEI
         script: droughts/spei.R
         ancestors: [pr, pet]
         distribution: log-Logistic
         smooth_month: 6
+  plot:
+    scripts:
+      map:
+        script: droughts/diffmap.py
+        plot_models: True
+        plot_mmm: False
+        comparison_period: 1
+        metrics: "last"
+        strip_plots: False
+        plot_kwargs:
+          cbar_label: "{long_name}"
+          cmap: RdYlBu
+          extend: both
+          vmin: -2
+          vmax: 2
+        titles:
+          last: "Mean 2005"
+        ancestors: [diagnostic/spi, diagnostic/spei]
