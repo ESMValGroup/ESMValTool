@@ -64,31 +64,36 @@ def grouped_data(cfg):
     """Group input data in preparation of ZEC calculation."""
     input_data = cfg['input_data'].values()
     group_data = group_metadata(input_data, 'exp')
+    data_grouped = {}
     for exp in group_data:
         if exp in cfg['experiments']['simulation']:
-            zecmip_data = select_metadata(input_data,
-                                          short_name='tas',
-                                          exp=exp)
+            data_grouped['zecmip_data'] = select_metadata(input_data,
+                                                          short_name='tas',
+                                                          exp=exp)
         elif exp in cfg['experiments']['reference']:
-            anom = select_metadata(input_data, short_name='tas', exp=exp)
+            data_grouped['anom'] = select_metadata(input_data,
+                                                   short_name='tas',
+                                                   exp=exp)
         else:
             raise ValueError(
                 f"{exp} is not a valid experiment for calculating ZEC, "
                 f"please check the configuration value of 'experiments'. "
                 f"Current accepted experiments are {cfg['experiments']}")
-    if 'zecmip_data' not in locals() or 'anom' not in locals():
+    if 'zecmip_data' not in data_grouped or 'anom' not in data_grouped:
         raise ValueError(
             f"Data does not include experiments valid for ZEC computation, "
             f"please check the configuration value of 'experiments'. "
             f"Current accepted experiments are {cfg['experiments']}, "
             f"received experiments are {list(group_data.keys())}")
-    return zecmip_data, anom
+    return data_grouped
 
 
 def calculate_zec(cfg):
     """Calculate ZEC for each model."""
     zec = {}
-    zecmip_data, anom = grouped_data(cfg)
+    data_grouped = grouped_data(cfg)
+    zecmip_data = data_grouped['zecmip_data']
+    anom = data_grouped['anom']
     for data in zecmip_data:
         # Account for ensembles by using alias, remove exp name
         name = data['alias'].replace('_' + data['exp'], '')
