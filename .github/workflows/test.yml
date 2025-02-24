@@ -35,6 +35,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
           use-mamba: true
+          mamba-version: "2.0.5"  # https://github.com/conda-incubator/setup-miniconda/issues/392
       - run: mkdir -p test_linux_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
         run: |
@@ -92,6 +93,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
           use-mamba: true
+          mamba-version: "2.0.5"  # https://github.com/conda-incubator/setup-miniconda/issues/392
       # - name: Install libomp with homebrew
       #   run: brew install libomp
       - run: mkdir -p test_osx_artifacts_python_${{ matrix.python-version }}
