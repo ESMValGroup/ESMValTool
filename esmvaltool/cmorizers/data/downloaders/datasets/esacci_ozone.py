@@ -1,10 +1,10 @@
 # # """Script to download ESACCI-OZONE from the CDS."""
 
-import cdsapi
 from pathlib import Path
 import shutil
 import gzip
 import zipfile
+import cdsapi
 
 
 def download_dataset(config, dataset, dataset_info, start_date, end_date,
@@ -15,7 +15,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1
 
         - The file named .cdspirc containing the key associated to
-        the ECMWF account needs to be saved in user's HOME directory.
+        the ECMWF account needs to be saved in user's ${HOME} directory.
 
         - All the files will be saved in ${RAWOBS}/Tier2/ESACCI-OZONE
         """
