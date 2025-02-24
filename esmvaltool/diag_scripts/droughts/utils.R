@@ -8,7 +8,7 @@
 #   time -> start_year, start_month, end_year, end_month
 #   lat -> fails > 90
 #   tas/min/max -> kelvin to celsius
-#   pr -> to mm/month  TODO: same for PET when output is fixed
+#   pr -> to mm month-1  TODO: same for PET when output is fixed
 #   sfcWind -> U10 to U2
 #   psl -> hPa to kPa
 #   rsdt/rsds -> Wm-2 to MJm-2d-1
@@ -47,7 +47,7 @@ xprov <- list(
 # ---------------------------------------------------------------------------- #
 
 convert_to_monthly <- function(id, v) {
-  # converts kg/m2/s to mm/month depending on the calendar of the nc files
+  # converts kg/m2/s to mm month-1 depending on the calendar of the nc files
   # time coordinate. Assuming a density of 1000 kg m-3
   tcal <- ncatt_get(id, "time", attname = "calendar")
   if (tcal$value == "360_day") return(v* 30 * 24 * 3600.)
@@ -82,7 +82,7 @@ convert_to_monthly <- function(id, v) {
 }
 
 daily_to_monthly <- function(v, dim=1) {
-  # multiplies by number of days (i.e. mm/day -> mm/mon)
+  # multiplies by number of days (i.e. mm day-1 -> mm/mon)
   # ignores leap years to be compatible to SPEI library
   mlen <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
   mlen_rep <- rep(mlen, length.out = dim(v)[dim])
@@ -101,7 +101,7 @@ daily_to_monthly <- function(v, dim=1) {
 }
 
 monthly_to_daily <- function(v, dim=1){
-  # divide by number of days (i.e. mm/mon -> mm/day)
+  # divide by number of days (i.e. mm/mon -> mm day-1)
   # ignores leap years to be compatible to SPEI library
   mlen <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
   mlen_rep <- rep(mlen, length.out = dim(v)[dim])
@@ -121,7 +121,7 @@ monthly_to_daily <- function(v, dim=1){
 
 
 convert_to_cf <- function(id, v) {
-  # NOTE: use mm/day converted by preprocessor if possible and convert
+  # NOTE: use mm day-1 converted by preprocessor if possible and convert
   # it to/from month using daily_to_monthly and monthly_to_daily instead.
   # 
   # converts mm/mon back to kg/m2/s assuming the input ncfile to have the 
@@ -227,12 +227,12 @@ get_var_from_nc <- function(meta, custom_var=FALSE) {
   } else if (var %in% list("rsdt", "rsds")) {
     data <- data * (86400.0 / 1e6) # W/(m2) to MJ/(m2 d)  
   } else if (var %in% list("pr", "evspsbl", "evspsblpot")) {  
-    if (meta$units == "mm/day") {
+    if (meta$units == "mm day-1") {
       data <- daily_to_monthly(data, dim=time_dim)
-    } else if (meta$units == "mm/month") {  # do nothing
+    } else if (meta$units == "mm month-1") {  # do nothing
     } else {
       stop(paste(var, 
-        " is expected to be in mm/day or mm/month not in ", meta$units))
+        " is expected to be in mm day-1 or mm month-1 not in ", meta$units))
     }
   } else if (var == "sfcWind") {
     if (meta$units != "m s-1") {stop("sfcWind is expected to at 10m in m/s")}
