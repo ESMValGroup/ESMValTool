@@ -10,13 +10,12 @@ import zipfile
 def download_dataset(config, dataset, dataset_info, start_date, end_date,
                      overwrite):
     """Download ESACCI-OZONE dataset using CDS API
-    
-        An ECMWF account is needed to download the datasets from: 
+
+        An ECMWF account is needed to download the datasets from:
         https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1"""
 
-
     cds_url = "https://cds.climate.copernicus.eu/api"
-    cds_key = "" # Insert here the ECMWF account key associated to a registered user.   
+    cds_key = ""  # Insert here the ECMWF user account key.
     if dataset == "ESACCI-OZONE":
         requests = {
             "toz": {
