@@ -1,15 +1,22 @@
-# """Script to download ESACCI-OZONE from the CDS."""
+# # """Script to download ESACCI-OZONE from the CDS."""
 
 import cdsapi
 from pathlib import Path
-from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
+import shutil
+import gzip
+import zipfile
 
 
 def download_dataset(config, dataset, dataset_info, start_date, end_date,
                      overwrite):
-    """Download ESACCI-OZONE dataset using CDS API and create tar
-     file for each variable."""
+    """Download ESACCI-OZONE dataset using CDS API
+    
+        An ECMWF account is needed to download the datasets from: 
+        https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1"""
 
+
+    cds_url = "https://cds.climate.copernicus.eu/api"
+    cds_key = "" # Insert here the ECMWF account key associated to a registered user.   
     if dataset == "ESACCI-OZONE":
         requests = {
             "toz": {
@@ -32,25 +39,36 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
             }
         }
 
-        client = cdsapi.Client()
-        output_folder = Path(config["rootpath"][dataset][0])
+        client = cdsapi.Client(cds_url, cds_key)
+        raw_obs_dir = Path(config['rootpath']['RAWOBS'][0])
+        output_folder = raw_obs_dir / f"Tier{dataset_info['tier']}" / dataset
         output_folder.mkdir(parents=True, exist_ok=True)
 
         for var_name, request in requests.items():
             print(f"Downloading {var_name} data to {output_folder}...")
 
-            # Get the expected filename from the CDS API request
-            file_path = output_folder / f"{var_name}.tar.gz"
+            file_path = output_folder / f"{var_name}.gz"
 
             if file_path.exists() and not overwrite:
                 print(f"File {file_path} already exists. Skipping download.")
                 continue
 
-            # Download file to the specified path
             client.retrieve("satellite-ozone-v1", request,
                             file_path.as_posix())
 
-        unpack_files_in_folder(output_folder)
+            # Handle both .gz and .zip files
+            with open(file_path, "rb") as f:
+                magic = f.read(2)
+
+            if magic == b'PK':  # ZIP file signature
+                print(f"Detected ZIP file: {file_path}")
+                with zipfile.ZipFile(file_path, 'r') as zip_ref:
+                    zip_ref.extractall(output_folder)
+            else:
+                print(f"Detected GZIP file: {file_path}")
+                with gzip.open(file_path, 'rb') as f_in:
+                    with open(output_folder / file_path.stem, 'wb') as f_out:
+                        shutil.copyfileobj(f_in, f_out)
 
     else:
         raise ValueError(f"Unknown dataset: {dataset}")
