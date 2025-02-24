@@ -124,9 +124,11 @@ for (dataset in names(grouped_meta)){
   pet_meta <- select_var(metas, cfg$short_name_pet, strict=FALSE)
   if (is.null(pet_meta)) {
     cfg$indexname <- "SPI"
+    cfg$long_name <- "Standardized Precipitation Index"
     pme <- pr
   } else {
     cfg$indexname <- "SPEI"
+    cfg$long_name <- "Standardized Precipitation Evapotranspiration Index"
     pet <- get_var_from_nc(pet_meta)
     pme <- pr - pet
   }
@@ -171,7 +173,7 @@ for (dataset in names(grouped_meta)){
     pme_spei[, , t] <- tmp
   }
   filename <- write_nc_file_like(cfg, pr_meta, pme_spei, fillfloat, short_name=cfg$indexname)
-  new_meta = list(filename=filename, short_name=tolower(cfg$indexname),
+  new_meta = list(filename=filename, short_name=cfg$indexname,
       long_name=cfg$indexname, units="1", dataset=dataset)
   meta[[filename]] <- modifyList(pr_meta, new_meta)
   provenance[[filename]] = list(caption=paste(cfg$indexname, " index per grid point."))
