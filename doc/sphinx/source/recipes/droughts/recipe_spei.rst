@@ -149,3 +149,23 @@ References
 * Droogers P., Allen R. G., (2002). Estimating reference evapotranspiration under inaccurate data conditions. Irrigation and Drainage Systems 16: 33-45.
 
 * Monteith, J.L., 1965. Evaporation and Environment. 19th Symposia of the Society for Experimental Biology, University Press, Cambridge, 19:205-234.
+
+
+Example plots
+-------------
+
+.. _fig_spei_fig1:
+.. figure:: /recipes/figures/droughts/spi_example.png
+   :align: center
+   :width: 80%
+
+   Example plot of SPI averaged over the year 2005. The reference period for
+   index calibration is 2000-2005.
+
+.. _fig_spei_fig2:
+.. figure:: /recipes/figures/droughts/spei_example.png
+   :align: center
+   :width: 80%
+
+   Example plot of SPEI averaged over the year 2005. The reference period for
+   index calibration is 2000-2005.

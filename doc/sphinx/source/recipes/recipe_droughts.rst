@@ -56,7 +56,7 @@ Available recipes and diagnostics
 .. toctree::
    :maxdepth: 1
 
-   droughts/recipes_consecdrydays
+   droughts/recipe_consecdrydays
    droughts/recipe_spei
    droughts/recipe_martin18grl
 

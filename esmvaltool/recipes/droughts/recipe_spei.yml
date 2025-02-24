@@ -80,11 +80,11 @@ diagnostics:
         metrics: "last"
         strip_plots: False
         plot_kwargs:
-          cbar_label: "{long_name}"
+          cbar_label: "{short_name}"
           cmap: RdYlBu
           extend: both
           vmin: -2
           vmax: 2
         titles:
-          last: "Mean 2005"
+          last: "{dataset} Yearly Average 2005"
         ancestors: [diagnostic/spi, diagnostic/spei]
