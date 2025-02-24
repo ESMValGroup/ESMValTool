@@ -37,6 +37,7 @@ diagnostics:
         field: T2Ms
         start_year: 1901
         end_year: 2000
+        units: mm day-1
     additional_datasets:
       # - {dataset: ERA-Interim, project: OBS6, mip: Amon, type: reanaly,
       #   version: 1, start_year: 1979, end_year: 2005, tier: 3}
