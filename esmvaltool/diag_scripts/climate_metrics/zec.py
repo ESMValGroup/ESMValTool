@@ -14,10 +14,10 @@ zec_x : list, optional (default: [50])
     Calculate ZEC for the 20-year average centered around year x,
     multiple values are possible.
 experiments: dict, optional (default: {
-            'reference': ['esm-flat10', '1pctCO2'],
-            'simulation': ['esm-flat10-zec', 'esm-1pct-brch-1000PgC',
-                'esm-1pct-brch-750PgC', 'esm-1pct-brch-2000PgC']
-            })
+    'reference': ['esm-flat10', '1pctCO2'],
+    'simulation': ['esm-flat10-zec', 'esm-1pct-brch-1000PgC',
+    'esm-1pct-brch-750PgC', 'esm-1pct-brch-2000PgC']
+    })
     When using non-default experiments
     to calculate ZEC, the experiment setting is required with values for
     ``reference`` and ``simulation``.
@@ -92,7 +92,6 @@ def calculate_zec(cfg):
     for data in zecmip_data:
         # Account for ensembles by using alias, remove exp name
         name = data['alias'].replace('_' + data['exp'], '')
-        logger.info('Processing %s' % name)
         tas = iris.load_cube(data['filename'])
         # Match the correct anomaly data, no ensemble key for ensemble mean
         if '_r' in data['alias']:
@@ -203,7 +202,7 @@ def plot_zec_x_bar(zec_x, x_i, cfg):
 
 
 def write_provenance(cfg, path, *args):
-    """Function to write provenance record.
+    """Write provenance record.
 
     Optionally pass additional dictionary entries as args.
     """
