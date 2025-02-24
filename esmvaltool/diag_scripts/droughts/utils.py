@@ -1,3 +1,4 @@
+from __future__ import annotations
 import datetime as dt
 import itertools as it
 import logging
@@ -6,6 +7,7 @@ from contextlib import suppress
 from os.path import dirname as par_dir
 from pathlib import Path
 from pprint import pformat
+from tkinter import W
 
 import cartopy as ct
 import cartopy.crs as cart
@@ -61,72 +63,70 @@ CONTINENTAL_REGIONS = {
 # fmt: on
 
 # REGION_NAMES = {
-# 'Arabian-Peninsula', 
-# 'Arabian-Sea', 
-# 'Arctic-Ocean', 
+# 'Arabian-Peninsula',
+# 'Arabian-Sea',
+# 'Arctic-Ocean',
 # 'Bay-of-Bengal'
-# 'C.Australia', 
-# 'C.North-America', 
-# 'Caribbean', 
+# 'C.Australia',
+# 'C.North-America',
+# 'Caribbean',
 # 'Central-Africa'
-# 'E.Antarctica', 
-# 'E.Asia', 
-# 'E.Australia', 
-# 'E.C.Asia', 
+# 'E.Antarctica',
+# 'E.Asia',
+# 'E.Australia',
+# 'E.C.Asia',
 # 'E.Europe'
-# 'E.North-America', 
-# 'E.Siberia', 
+# 'E.North-America',
+# 'E.Siberia',
 # 'E.Southern-Africa'
-# 'Equatorial.Atlantic-Ocean', 
+# 'Equatorial.Atlantic-Ocean',
 # 'Equatorial.Indic-Ocean'
-# 'Equatorial.Pacific-Ocean', 
-# 'Greenland/Iceland', 
+# 'Equatorial.Pacific-Ocean',
+# 'Greenland/Iceland',
 # 'Madagascar',
-# 'Mediterranean', 
-# 'N.Atlantic-Ocean', 
-# 'N.Australia', 
+# 'Mediterranean',
+# 'N.Atlantic-Ocean',
+# 'N.Australia',
 # 'N.Central-America'
-# 'N.E.North-America', 
-# 'N.E.South-America', 
-# 'N.Eastern-Africa', 
+# 'N.E.North-America',
+# 'N.E.South-America',
+# 'N.Eastern-Africa',
 # 'N.Europe',
-# 'N.Pacific-Ocean', 
-# 'N.South-America', 
+# 'N.Pacific-Ocean',
+# 'N.South-America',
 # 'N.W.North-America'
-# 'N.W.South-America', 
-# 'New-Zealand', 
-# 'Russian-Arctic', 
+# 'N.W.South-America',
+# 'New-Zealand',
+# 'Russian-Arctic',
 # 'Russian-Far-East',
-# 'S.Asia', 
-# 'S.Atlantic-Ocean', 
-# 'S.Australia', 
-# 'S.Central-America', 
+# 'S.Asia',
+# 'S.Atlantic-Ocean',
+# 'S.Australia',
+# 'S.Central-America',
 # 'S.E.Asia',
-# 'S.E.South-America', 
-# 'S.Eastern-Africa', 
-# 'S.Indic-Ocean', 
+# 'S.E.South-America',
+# 'S.Eastern-Africa',
+# 'S.Indic-Ocean',
 # 'S.Pacific-Ocean',
-# 'S.South-America', 
-# 'S.W.South-America', 
-# 'Sahara', 
+# 'S.South-America',
+# 'S.W.South-America',
+# 'Sahara',
 # 'South-American-Monsoon',
-# 'Southern-Ocean', 
-# 'Tibetan-Plateau', 
-# 'W.Antarctica', 
+# 'Southern-Ocean',
+# 'Tibetan-Plateau',
+# 'W.Antarctica',
 # 'W.C.Asia',
-# 'W.North-America', 
-# 'W.Siberia', 
-# 'W.Southern-Africa', 
+# 'W.North-America',
+# 'W.Siberia',
+# 'W.Southern-Africa',
 # 'West&Central-Europe',
 # 'Western-Africa'
 # }
 
 
-
 def merge_list_cube(cube_list, aux_name="dataset", points=None, equalize=True):
-    """
-    Merges a list of cubes into a single cube with an enumerated auxiliary
-    variable.
+    """Merge a list of cubes into a single one with an auxiliary variable.
+
     Useful for applying statistics along multiple cubes. The time coordinate is
     removed by this function.
 
@@ -151,21 +151,26 @@ def merge_list_cube(cube_list, aux_name="dataset", points=None, equalize=True):
         coord = iris.coords.AuxCoord(ds_index, long_name=aux_name)
         ds_cube.add_aux_coord(coord)
     cubes = iris.cube.CubeList(cube_list)
-    logger.info(f"formed {type(cubes)}: {cubes}")
+    logger.info("formed %s: %s", type(cubes), cubes)
     if equalize:
         removed = equalise_attributes(cubes)
-        logger.info(f"removed different attributes: {removed}")
+        logger.info("removed different attributes: %s", removed)
     for cube in cubes:
         cube.remove_coord("time")
     merged = cubes.merge_cube()
     return merged
 
 
-def fold_meta(cfg, meta, cfg_keys=["locations", "intervals"],
-              meta_keys=["dataset", "exp"], vars=None):
-    """
-    Creates all combinations of available metadata (meta_keys) and data 
-    specific constraints (cfg_keys). cfg.variables overwrites meta.short_names.
+def fold_meta(
+    cfg: dict,
+    meta: dict,
+    cfg_keys: list|None=None,
+    meta_keys: list|None=None,
+    variables: list|None=None,
+) -> tuple:
+    """Create combinations of meta data and data constraints.
+    
+    cfg["variables"] overwrites meta["short_names"].
 
     Parameters
     ----------
@@ -174,11 +179,12 @@ def fold_meta(cfg, meta, cfg_keys=["locations", "intervals"],
     meta : list
         Full meta data including ancestor files.
     cfg_keys : list, optional
-        Config entries used for product. Defaults to ["locations", "intervals"].
+        Data constraints as config entries used for product.
+        Defaults to ["locations", "intervals"].
     meta_keys : list, optional
-        Keys for each meta used for product, short_name added automatically. 
+        Keys for each meta used for product, short_name added automatically.
         Defaults to ["dataset", "exp"].
-    vars : list, optional
+    variables : list, optional
         Variables to be used. Defaults to None.
 
     Returns
@@ -190,30 +196,49 @@ def fold_meta(cfg, meta, cfg_keys=["locations", "intervals"],
     meta_keys : list
         List of metadata keys.
     """
-    if not vars:
-        vars = cfg.get("variables", ["pdsi", "spi"])
+    if variables is None:
+        variables = cfg.get("variables", ["pdsi", "spi"])
+    if cfg_keys is None:
+        cfg_keys = ["locations", "intervals"]
+    if meta_keys is None:
+        meta_keys = ["dataset", "exp"]
 
-    groups = {gk: list(group_metadata(select_metadata(meta, short_name=vars[0]), gk).keys())
-              for gk in meta_keys}
+    groups = {
+        gk: list(
+            group_metadata(
+                select_metadata(meta, short_name=variables[0]), gk
+            ).keys()
+        )
+        for gk in meta_keys
+    }
     meta_keys.append("short_name")
-    groups["short_name"] = vars
+    groups["short_name"] = variables
     g_map = {"locations": "location", "intervals": "interval"}
-    for ck in cfg_keys:
+    for ckey in cfg_keys:
         try:
-            groups[g_map.get(ck, ck)] = cfg[ck]
+            groups[g_map.get(ckey, ckey)] = cfg[ckey]
         except KeyError:
-            logger.warning(f"No '{ck}' found in plot config")
+            logger.warning("No '%s' found in plot config", ckey)
     combinations = it.product(*groups.values())
     return combinations, groups, meta_keys
 
 
-def select_meta_from_combi(meta, combi, groups):
-    """selects one meta data from list (filter valid keys)
+def select_meta_from_combi(meta: list, combi: dict, groups: dict) -> tuple:
+    """Select one meta data from list (filter valid keys).
 
-    Args:
-        meta (list): [description]
-        combi (dict): [description]
-        groups (dict): [description]
+    Parameters
+    ----------
+    meta : list
+        List of metadata dictionaries.
+    combi : dict
+        Dictionary containing the combination of metadata values.
+    groups : dict
+        Dictionary containing the groups of metadata.
+
+    Returns
+    -------
+    tuple
+        A tuple containing the selected metadata and the configuration dictionary.
     """
     this_cfg = dict(zip(groups.keys(), combi))
     filter_cfg = clean_meta(this_cfg)  # remove non meta keys
@@ -221,72 +246,88 @@ def select_meta_from_combi(meta, combi, groups):
     return this_meta, this_cfg
 
 
-def list_meta_keys(meta, group):
+def list_meta_keys(meta:list, group:dict) -> list:
+    """Return a list of all keys found for a group in the meta data."""
     return list(group_metadata(meta, group).keys())
 
 
+def mkplotdir(cfg: dict, dname: str|Path)-> None:
+    """Create a sub directory for plots if it does not exist."""
+    new_dir = Path(cfg["plot_dir"] / dname)
+    if not new_dir.is_dir():
+        Path.mkdir(new_dir)
 
-def mkplotdir(cfg, dname):
-    new_dir = os.path.join(cfg["plot_dir"], dname)
-    if not os.path.isdir(new_dir):
-        os.mkdir(new_dir)
 
+def sort_cube(cube:iris.cube, coord:str="longitude")-> iris.cube:
+    """Sort data along a one-dimensional numerical coordinate.
 
-def sort_cube(cube, coord="longitude"):
-    """ return a cube with data sorted along a one
-    dimensional numerical coordinate.
-    Source: https://gist.github.com/pelson/9763057
+    Parameters
+    ----------
+    cube : iris.cube.Cube
+        The iris cube that should be sorted.
+    coord : str
+        The name of the one-dimensional coordinate to sort the cube by.
 
-    :param cube: iris cube that should be sorted
-    :param coord: 1dim coord to sort the cube
-    :return:
+    Returns
+    -------
+    iris.cube.Cube
+        The sorted cube.
+
+    Source
+    ------
+    https://gist.github.com/pelson/9763057
     """
     coord_to_sort = cube.coord(coord)
-    assert coord_to_sort.ndim == 1, 'One dim coords only please.'
-    dim, = cube.coord_dims(coord_to_sort)
+    if coord_to_sort.ndim == 1:
+        msg = "Only dim coords are supported."
+        raise NotImplementedError(msg)
+    (dim,) = cube.coord_dims(coord_to_sort)
     index = [slice(None)] * cube.ndim
     index[dim] = np.argsort(coord_to_sort.points)
     return cube[tuple(index)]
 
 
-def fix_longitude(cube):
-    """ return a cube with 0 centered longitude coords.
+def fix_longitude(cube: iris.cube) -> iris.cube.Cube:
+    """Return a cube with 0 centered longitude coords.
+
     updating the longitude coord and sorting the data accordingly
     """
     # make sure coords are -180 to 180
-    fixed_lons = [l if l < 180 else l -
-                  360 for l in cube.coord("longitude").points]
+    fixed_lons = [
+        l if l < 180 else l - 360 for l in cube.coord("longitude").points
+    ]
     try:
-        cube.add_aux_coord(iris.coords.AuxCoord(
-            fixed_lons, long_name='fixed_lon'), 2)
+        cube.add_aux_coord(
+            iris.coords.AuxCoord(fixed_lons, long_name="fixed_lon"), 2,
+        )
     except Exception as e:
         logger.warning("TODO: hardcoded dimensions in ut.fix_longitude")
-        cube.add_aux_coord(iris.coords.AuxCoord(
-            fixed_lons, long_name='fixed_lon'), 1)
+        cube.add_aux_coord(
+            iris.coords.AuxCoord(fixed_lons, long_name="fixed_lon"), 1
+        )
     # sort data and fixed coordinates
-    cube = sort_cube(cube, coord='fixed_lon')
+    cube = sort_cube(cube, coord="fixed_lon")
     # set new coordinates as dimcoords
-    new_lon = cube.coord('fixed_lon')
+    new_lon = cube.coord("fixed_lon")
     new_lon_dims = cube.coord_dims(new_lon)
-    # print(new_lon_dims)
     # Create a new coordinate which is a DimCoord.
     # NOTE: The var name becomes the dim name
     longitude = iris.coords.DimCoord.from_coord(new_lon)
-    longitude.rename('longitude')
+    longitude.rename("longitude")
     # Remove the AuxCoord, old longitude and add the new DimCoord.
     cube.remove_coord(new_lon)
-    cube.remove_coord(cube.coord('longitude'))
+    cube.remove_coord(cube.coord("longitude"))
     cube.add_dim_coord(longitude, new_lon_dims)
     return cube
 
 
 def get_datetime_coords(cube, coord="time"):
-    """ returns the time coordinate of the cube converted
+    """returns the time coordinate of the cube converted
     from cf_date to mpl compatible datetime objects.
-    TODO: this seems not to work with current Iris version? 
+    TODO: this seems not to work with current Iris version?
     but cf_date.dateime contains the year aswell
     TODO: the difference behaviour may be caused by different time coords in datasets
-    nc.num2date default behaviour changed to use only_cf_times, change back with 
+    nc.num2date default behaviour changed to use only_cf_times, change back with
     only_use_python_datetimes=True
     """
     tc = cube.coord(coord)
@@ -304,7 +345,7 @@ def get_datetime_coords(cube, coord="time"):
 
 
 def get_start_year(cube, coord="time"):
-    """ returns the year of the first time coord point.
+    """returns the year of the first time coord point.
     Works for datetime and cf_calendar types
     """
     tc = cube.coord(coord)
@@ -333,8 +374,8 @@ def get_meta_list(meta, group, select=None):
 
 
 def get_datasets(cfg):
-    metadata = cfg['input_data'].values()
-    return group_metadata(metadata, 'dataset').keys()
+    metadata = cfg["input_data"].values()
+    return group_metadata(metadata, "dataset").keys()
 
 
 def get_dataset_scenarios(cfg):
@@ -343,18 +384,14 @@ def get_dataset_scenarios(cfg):
     :param cfg:
     :return:
     """
-    metadata = cfg['input_data'].values()
-    input_datasets = group_metadata(metadata, 'dataset').keys()
-    input_scenarios = group_metadata(metadata, 'alias').keys()
+    metadata = cfg["input_data"].values()
+    input_datasets = group_metadata(metadata, "dataset").keys()
+    input_scenarios = group_metadata(metadata, "alias").keys()
     return it.product(input_datasets, input_scenarios)
 
 
-def date_tick_layout(fig, ax,
-                     dates=None,
-                     label="Time",
-                     auto=True,
-                     years=1):
-    """ update a figure (timeline) to use
+def date_tick_layout(fig, ax, dates=None, label="Time", auto=True, years=1):
+    """update a figure (timeline) to use
     date/year ticks and grid.
     :param fig: figure that will be updated
     :param ax: ax to set ticks/labels/limits on
@@ -366,8 +403,8 @@ def date_tick_layout(fig, ax,
     """
     ax.set_xlabel(label)
     if dates is not None:
-        datemin = np.datetime64(dates[0], 'Y')
-        datemax = np.datetime64(dates[-1], 'Y') + np.timedelta64(1, 'Y')
+        datemin = np.datetime64(dates[0], "Y")
+        datemax = np.datetime64(dates[-1], "Y") + np.timedelta64(1, "Y")
         ax.set_xlim(datemin, datemax)
     if auto:
         locator = mdates.AutoDateLocator()
@@ -375,7 +412,7 @@ def date_tick_layout(fig, ax,
     else:
         locator = mdates.YearLocator(years)
         min_locator = mdates.YearLocator(1)
-    year_formatter = mdates.DateFormatter('%Y')
+    year_formatter = mdates.DateFormatter("%Y")
     ax.grid(True)
     ax.xaxis.set_major_locator(locator)
     ax.xaxis.set_major_formatter(year_formatter)
@@ -384,14 +421,14 @@ def date_tick_layout(fig, ax,
 
 
 def auto_tick_layout(fig, ax, dates=None):
-    ax.set_xlabel('Time')
+    ax.set_xlabel("Time")
     if dates is not None:
-        datemin = np.datetime64(dates[0], 'Y')
-        datemax = np.datetime64(dates[-1], 'Y') + np.timedelta64(1, 'Y')
+        datemin = np.datetime64(dates[0], "Y")
+        datemax = np.datetime64(dates[-1], "Y") + np.timedelta64(1, "Y")
         ax.set_xlim(datemin, datemax)
     year_locator = mdates.YearLocator(1)
     months_locator = mdates.MonthLocator()
-    year_formatter = mdates.DateFormatter('%Y')
+    year_formatter = mdates.DateFormatter("%Y")
     ax.grid(True)
     ax.xaxis.set_major_locator(year_locator)
     ax.xaxis.set_major_formatter(year_formatter)
@@ -400,28 +437,31 @@ def auto_tick_layout(fig, ax, dates=None):
 
 
 def map_land_layout(fig, ax, plot, bounds, var, cbar=True):
-    """ plot style for rectangular drought maps
+    """plot style for rectangular drought maps
     masks the ocean by overlay,
     add gridlines,
     set left/bottom tick labels
     TODO: make this a method of MapPlot class
     """
     ax.coastlines()
-    ax.add_feature(ct.feature.OCEAN,
-                   edgecolor='black',
-                   facecolor='white',
-                   zorder=1)
-    gl = ax.gridlines(crs=ct.crs.PlateCarree(),
-                      linewidth=1,
-                      color='black',
-                      alpha=0.6,
-                      linestyle='--',
-                      draw_labels=True, zorder=2)
+    ax.add_feature(
+        ct.feature.OCEAN, edgecolor="black", facecolor="white", zorder=1
+    )
+    gl = ax.gridlines(
+        crs=ct.crs.PlateCarree(),
+        linewidth=1,
+        color="black",
+        alpha=0.6,
+        linestyle="--",
+        draw_labels=True,
+        zorder=2,
+    )
     gl.xlabels_top = False
     gl.ylabels_right = False
     if bounds is not None and cbar:
-        cb = plt.colorbar(plot, ax=ax, ticks=bounds,
-                          extend="both", fraction=0.022)
+        cb = plt.colorbar(
+            plot, ax=ax, ticks=bounds, extend="both", fraction=0.022
+        )
         # cb = plt.colorbar(plot, ax=ax, ticks=bounds[0:-1:]+[bounds[-1]], extend="both", fraction=0.022)
     elif cbar:
         cb = plt.colorbar(plot, ax=ax, extend="both", fraction=0.022)
@@ -435,19 +475,21 @@ def get_cubes_dataset_alias(cfg):
 
 def get_scenarios(meta, **kwargs):
     selected = select_metadata(meta, **kwargs)
-    return list(group_metadata(selected, 'alias').keys())
+    return list(group_metadata(selected, "alias").keys())
 
 
 def add_preprocessor_input(cfg):
-    """ 
+    """
     NOTE: One can add preprocessor output/variables as ancestor too, no need
     to do it in the diagnostic...
     """
-    logger.warning("Please add variables to the ancestor list instead. This function will be removed in the future.")
-    run_dir = os.path.dirname(cfg['run_dir'])
-    pp_dir = '/preproc/'.join(run_dir.rsplit('/run/', 1))
-    fake_cfg = {'input_files': [pp_dir]}
-    cfg['input_data'].update(_get_input_data_files(fake_cfg))
+    logger.warning(
+        "Please add variables to the ancestor list instead. This function will be removed in the future."
+    )
+    run_dir = os.path.dirname(cfg["run_dir"])
+    pp_dir = "/preproc/".join(run_dir.rsplit("/run/", 1))
+    fake_cfg = {"input_files": [pp_dir]}
+    cfg["input_data"].update(_get_input_data_files(fake_cfg))
 
 
 def add_ancestor_input(cfg):
@@ -458,10 +500,11 @@ def add_ancestor_input(cfg):
     """
     logger.info(f"add ancestors for {cfg[n.INPUT_FILES]}")
     for input_file in cfg[n.INPUT_FILES]:
-        cfg_anc_file = '/run/'.join(input_file.rsplit('/work/', 1)
-                                    ) + '/settings.yml'
+        cfg_anc_file = (
+            "/run/".join(input_file.rsplit("/work/", 1)) + "/settings.yml"
+        )
         cfg_anc = get_cfg(cfg_anc_file)
-        cfg['input_data'].update(_get_input_data_files(cfg_anc))
+        cfg["input_data"].update(_get_input_data_files(cfg_anc))
 
 
 def add_meta_files(cfg):
@@ -469,7 +512,7 @@ def add_meta_files(cfg):
 
 
 def _fixup_dates(coord, values):
-    """ copy from iris plot.py source code """
+    """copy from iris plot.py source code"""
     if coord.units.calendar is not None and values.ndim == 1:
         # Convert coordinate values into tuples of
         # (year, month, day, hour, min, sec)
@@ -509,9 +552,9 @@ def quick_save(cube, name, cfg):
         name: basename for the created netcdf file
         cfg: user configuration containing file output path
     """
-    if cfg.get('write_netcdf', True):
+    if cfg.get("write_netcdf", True):
         diag_file = get_diagnostic_filename(name, cfg)
-        logger.info(f'quick save {diag_file}')
+        logger.info(f"quick save {diag_file}")
         iris.save(cube, target=diag_file)
 
 
@@ -543,18 +586,20 @@ def smooth(dat, window=32, mode="same"):
 
 def get_basename(cfg, meta, prefix=None, suffix=None):
     formats = {  # TODO: load this from config-developer.yml?
-        'CMIP6': '{project}_{dataset}_{mip}_{exp}_{ensemble}_{short_name}_{grid}_{start_year}-{end_year}',
-        'OBS': '{project}_{dataset}_{type}_{version}_{mip}_{short_name}_{start_year}-{end_year}'
+        "CMIP6": "{project}_{dataset}_{mip}_{exp}_{ensemble}_{short_name}_{grid}_{start_year}-{end_year}",
+        "OBS": "{project}_{dataset}_{type}_{version}_{mip}_{short_name}_{start_year}-{end_year}",
     }
-    basename = formats[meta['project']].format(**meta)
-    if suffix: basename += f"_{suffix}"
-    if prefix: basename = f"{prefix}_{basename}"
+    basename = formats[meta["project"]].format(**meta)
+    if suffix:
+        basename += f"_{suffix}"
+    if prefix:
+        basename = f"{prefix}_{basename}"
     return basename
 
 
 def get_custom_basename(meta, folder="plots", prefix=None, suffix=None):
     """manually create basenames for output files
-    
+
     NOTE: for basename in configured naming format use get_basename
     """
     defaults = {
@@ -621,11 +666,11 @@ def select_single_meta(*args, **kwargs):
 
 
 def date_to_months(date, start_year):
-    """translates datestings YYYY-MM to 
+    """translates datestings YYYY-MM to
     total months since begin of start_year
     """
     years, months = [int(x) for x in date.split("-")]
-    return 12*(years-start_year)+months
+    return 12 * (years - start_year) + months
 
 
 def fix_interval(interval):
@@ -643,7 +688,7 @@ def get_plot_filename(cfg, basename, meta=dict(), replace=dict()):
     """Get a valid path for saving a diagnostic plot.
     This is an alternative to shared.get_diagnostic_filename.
     It uses cfg as first argument and accept metadata to format the basename.
-    
+
     Parameters
     ----------
     cfg: dict
@@ -664,18 +709,18 @@ def get_plot_filename(cfg, basename, meta=dict(), replace=dict()):
     for key, value in replace.items():
         basename = basename.replace(key, value)
     return os.path.join(
-        cfg['plot_dir'],
+        cfg["plot_dir"],
         f"{basename}.{cfg['output_file_type']}",
     )
 
 
 def slice_cube_interval(cube, interval):
-    """ returns a cube slice for given interval 
+    """returns a cube slice for given interval
     which is a list of strings (YYYY-mm) or int (index of cube)
     NOTE: For 3D cubes (time first)
     """
     if isinstance(interval[0], int) and isinstance(interval[1], int):
-        return cube[interval[0]:interval[1], :, :]
+        return cube[interval[0] : interval[1], :, :]
     dt_start = dt.datetime.strptime(interval[0], "%Y-%m")
     dt_end = dt.datetime.strptime(interval[1], "%Y-%m")
     time = cube.coord("time")
@@ -686,7 +731,7 @@ def slice_cube_interval(cube, interval):
 
 def find_first(nparr):
     """finds first nonzero element of numpy array and returns index or -1.
-    Its faster than looping or using numpy.where. 
+    Its faster than looping or using numpy.where.
     https://stackoverflow.com/a/61117770/7268121
     nparr: (numpy.array) requires numerical data without negative zeroes.
     """
@@ -695,22 +740,22 @@ def find_first(nparr):
 
 
 def add_spei_meta(cfg, name="spei", pos=0):
-    """ NOTE: workaround to add missing meta for specific ancestor script
-    """
-    logger.info('adding meta file for save_spei output')
-    spei_fname = cfg['tmp_meta']['filename'].split(
-        '/')[-1].replace('_pr_', f'_{name}_')
+    """NOTE: workaround to add missing meta for specific ancestor script"""
+    logger.info("adding meta file for save_spei output")
+    spei_fname = (
+        cfg["tmp_meta"]["filename"].split("/")[-1].replace("_pr_", f"_{name}_")
+    )
     # FIXME: hardcoded index in input files.. needs to match recipe
-    spei_file = os.path.join(cfg['input_files'][pos], spei_fname)
-    logger.info(f'spei file path: {spei_file}')
-    logger.info('generating missing meta info')
+    spei_file = os.path.join(cfg["input_files"][pos], spei_fname)
+    logger.info(f"spei file path: {spei_file}")
+    logger.info("generating missing meta info")
     meta = cfg["tmp_meta"].copy()
-    meta['filename'] = spei_file
-    meta['short_name'] = name
-    meta['long_name'] = 'Standardised Precipitation-Evapotranspiration Index'
+    meta["filename"] = spei_file
+    meta["short_name"] = name
+    meta["long_name"] = "Standardised Precipitation-Evapotranspiration Index"
     # meta['standard_name'] = 'standardised_precipitation_evapotranspiration_index'
     if name.lower() == "spi":
-        meta['long_name'] = 'Standardised Precipitation Index'
+        meta["long_name"] = "Standardised Precipitation Index"
         # meta['standard_name'] = 'standardised_precipitation_index'
     cfg["input_data"][spei_file] = meta
 
@@ -727,23 +772,21 @@ def fix_calendar(cube):
         iris.cube.Cube: with fixed calendars
 
     """
-    time = cube.coord('time')
+    time = cube.coord("time")
     # if time.units.name == "days since 1850-1-1 00:00:00":
     logger.info("renaming unit")
-    time.units = Unit("days since 1850-01-01",
-                      calendar=time.units.calendar)
-    if time.units.calendar == 'proleptic_gregorian':
-        time.units = Unit(time.units.name, calendar='gregorian')
+    time.units = Unit("days since 1850-01-01", calendar=time.units.calendar)
+    if time.units.calendar == "proleptic_gregorian":
+        time.units = Unit(time.units.name, calendar="gregorian")
         logger.info(f"renamed calendar: {time.units.calendar}")
-    if time.units.calendar != 'gregorian':
-        time.convert_units(Unit("days since 1850-01-01",
-                           calendar='gregorian'))
+    if time.units.calendar != "gregorian":
+        time.convert_units(Unit("days since 1850-01-01", calendar="gregorian"))
         logger.info(f"converted time to: {time.units}")
     return cube
 
 
 def latlon_coords(cube):
-    """replace latitude and longitude 
+    """replace latitude and longitude
     with lat and lon inplace
     TODO: make this good!
     """
@@ -773,11 +816,12 @@ def standard_time(cubes):
     from datetime import datetime
 
     from esmvalcore.iris_helpers import date2num
+
     t_unit = Unit("days since 1850-01-01", calendar="standard")
 
     for cube in cubes:
         # Extract date info from cube
-        coord = cube.coord('time')
+        coord = cube.coord("time")
         years = [p.year for p in coord.units.num2date(coord.points)]
         months = [p.month for p in coord.units.num2date(coord.points)]
         days = [p.day for p in coord.units.num2date(coord.points)]
@@ -802,22 +846,23 @@ def standard_time(cubes):
                 logger.warning(
                     "Multimodel encountered (sub)daily data and inconsistent "
                     "time units or calendars. Attempting to continue, but "
-                    "might produce unexpected results.")
+                    "might produce unexpected results."
+                )
         else:
             raise ValueError(
                 "Multimodel statistics preprocessor currently does not "
-                "support sub-daily data.")
+                "support sub-daily data."
+            )
 
         # Update the cubes' time coordinate (both point values and the units!)
-        cube.coord('time').points = date2num(dates, t_unit, coord.dtype)
-        cube.coord('time').units = t_unit
-        cube.coord('time').bounds = None
-        cube.coord('time').guess_bounds()
+        cube.coord("time").points = date2num(dates, t_unit, coord.dtype)
+        cube.coord("time").units = t_unit
+        cube.coord("time").bounds = None
+        cube.coord("time").guess_bounds()
 
 
 def guess_lat_lon_bounds(cube):
-    """guesses bounds for latitude and longitude if not existent.
-    """
+    """guesses bounds for latitude and longitude if not existent."""
     if not cube.coord("latitude").has_bounds():
         cube.coord("latitude").guess_bounds()
     if not cube.coord("longitude").has_bounds():
@@ -837,13 +882,12 @@ def mmm(cube_list, mdtol=0, dropcoords=["time"], dropmethods=False):
                 cube.remove_coord(coord_name)
         if dropmethods:
             cube.cell_methods = None
-        cube.add_aux_coord(iris.coords.AuxCoord(
-            i, long_name="dataset"))
+        cube.add_aux_coord(iris.coords.AuxCoord(i, long_name="dataset"))
     # equalise_attributes(cube_list)
-        # cube.remove_coord("season_number")  # add as drop_coord
+    # cube.remove_coord("season_number")  # add as drop_coord
     cube_list = iris.cube.CubeList(cube_list)
     equalise_attributes(cube_list)
-    # common_depth = 
+    # common_depth =
     try:
         # Note: just for testing:
         merged = cube_list.merge_cube()
@@ -858,8 +902,8 @@ def mmm(cube_list, mdtol=0, dropcoords=["time"], dropmethods=False):
         raise err
     if mdtol > 0:
         logger.info(f"performing MMM with tolerance: {mdtol}")
-    mean = merged.collapsed('dataset', iris.analysis.MEAN, mdtol=mdtol)
-    sdev = merged.collapsed('dataset', iris.analysis.STD_DEV)
+    mean = merged.collapsed("dataset", iris.analysis.MEAN, mdtol=mdtol)
+    sdev = merged.collapsed("dataset", iris.analysis.STD_DEV)
     return mean, sdev
 
 
@@ -914,8 +958,7 @@ def get_hex_positions():
 
 
 def get_region_data():
-    """reads shapes.txt as csv file and returns a list of region names
-    """
+    """reads shapes.txt as csv file and returns a list of region names"""
     fname = "/work/bd0854/b309169/ESMValTool-private/esmvaltool/diag_scripts/droughtindex/shapes.txt"
     data = pd.read_csv(fname, sep=",", header=0, skiprows=0)
     print(data)
@@ -926,30 +969,34 @@ def get_region_abbrs():
     # abbr_positions = get_hex_positions()
     data = get_region_data()
     data.set_index("Name", inplace=True)
-    return {
-        i: data.loc[i]["Abbr"]
-        for i in data.index.tolist()
-    }
+    return {i: data.loc[i]["Abbr"] for i in data.index.tolist()}
 
 
 def add_aux_regions(cube, mask=None):
-    """ Add an auxilary coordinate with region numbers.
+    """Add an auxilary coordinate with region numbers.
     Dimension names: 'lat' and 'lon'.
     TODO: add option/fallback to use pp with shapefile instead
     """
     import regionmask
+
     region = regionmask.defined_regions.ar6.land
     xarr = xr.DataArray.from_iris(cube)
     mask2d = mask if mask else region.mask(xarr).to_iris()
     # newcube = cube.copy()
     region_coord = iris.coords.AuxCoord(
-        mask2d.data, long_name="AR6 reference region", var_name="region")
+        mask2d.data, long_name="AR6 reference region", var_name="region"
+    )
     cube.add_aux_coord(region_coord, [1, 2])
     return cube
 
 
-def regional_mean(cube, mask=None, minmax=False, stddev=False,):
-    """ Returns a cube with one dim_coord 'region'
+def regional_mean(
+    cube,
+    mask=None,
+    minmax=False,
+    stddev=False,
+):
+    """Returns a cube with one dim_coord 'region'
     which contains weighted means over 'lat', 'lon'.
     TODO: allow minmax and stddev at the same time. Different returns or
     return a dict? maybe add an metrics array: [mean, min, max, sum ...]
@@ -960,16 +1007,20 @@ def regional_mean(cube, mask=None, minmax=False, stddev=False,):
     """
     logger.warning("Please use regional_stats instead of regional_mean")
     if minmax:
-        res = regional_stats_xarr({}, cube, operators=["min", "mean", "max"]).values()
+        res = regional_stats_xarr(
+            {}, cube, operators=["min", "mean", "max"]
+        ).values()
         return res["min", "mean", "max"]
     if stddev:
-        res = regional_stats_xarr({}, cube, operators['mean', "std_dev"])
+        res = regional_stats_xarr({}, cube, operators["mean", "std_dev"])
         return res["mean"], res["std_dev"]
-    res = regional_stats_xarr({}, cube, operators=["min", "mean", "max"]).values()
+    res = regional_stats_xarr(
+        {}, cube, operators=["min", "mean", "max"]
+    ).values()
     return res["mean"]
-    
 
-def regional_stats_xarr(cfg, cube, operators=['mean'], shapefile=None):
+
+def regional_stats_xarr(cfg, cube, operators=["mean"], shapefile=None):
     results = {}
     if shapefile:
         return regional_stats(cfg, cube, operators, shapefile)
@@ -987,24 +1038,24 @@ def regional_stats_xarr(cfg, cube, operators=['mean'], shapefile=None):
     weighted = xarr.weighted(weights3d)
     if "mean" in operators:
         mean = weighted.mean(dim=("lat", "lon"))
-        result['mean'] = mean.to_iris(),
+        result["mean"] = (mean.to_iris(),)
     # stddev = weighted.sum_of_squares() / weights3d.sum()
     if "std_dev" in operators:
         stddev = weighted.std(dim=("lat", "lon"))
-        result['std_dev'] = stddev.to_iris()
+        result["std_dev"] = stddev.to_iris()
     if "min" in operators:
         mini = xarr.where(mask3d).min(dim=("lat", "lon"))
-        result['min'] = mini.to_iris()
+        result["min"] = mini.to_iris()
     if "max" in operators:
         maxi = xarr.where(mask3d).max(dim=("lat", "lon"))
-        result['max'] = maxi.to_iris()
+        result["max"] = maxi.to_iris()
     return result
 
 
-def regional_stats(cfg, cube, operator='mean'):
+def regional_stats(cfg, cube, operator="mean"):
     """Mean over IPCC Reference regions using shape file.
-    The shapefile (string) must be contained in cft (given by recipe). 
-    It can be an absolute path or relative to the folder for auxilary data 
+    The shapefile (string) must be contained in cft (given by recipe).
+    It can be an absolute path or relative to the folder for auxilary data
     configured in esmvaltool config.
     """
     # if "shapefile" not in cfg:
@@ -1012,13 +1063,13 @@ def regional_stats(cfg, cube, operator='mean'):
     #         utils.regional_stats_xarr() be used with module regionmask.")
     # shapefile = Path(cfg['auxiliary_data_dir']) / cfg['shapefile']
     guess_lat_lon_bounds(cube)
-    extracted = pp.extract_shape(cube, 'ar6', decomposed=True)
+    extracted = pp.extract_shape(cube, "ar6", decomposed=True)
 
     return pp.area_statistics(extracted, operator)
 
 
 def transpose_by_names(cube, names):
-    """ transposes an iris cube by dim-coords or their names """
+    """transposes an iris cube by dim-coords or their names"""
     new_dims = [cube.coord_dims(name)[0] for name in names]
     print(new_dims)
     cube.transpose(new_dims)
@@ -1026,7 +1077,7 @@ def transpose_by_names(cube, names):
 
 def generate_metadata(work_folder, diag=None):
     """create metadata from ancestor config and nc files.
-    
+
     Can be used as workaround, to handle output of ancestors, that don't create
     metadata.yml, similar to preprocessed variables. If metadata.yml exists in
     the work folder (subfolders ignored) its content is returned instead.
@@ -1039,7 +1090,7 @@ def generate_metadata(work_folder, diag=None):
     # TODO: provide fixes for some diagnostics or directly implement it.
     # meta = {}
     # cfg = yaml.read()
-    # nc_files = 
+    # nc_files =
 
 
 def save_metadata(cfg, metadata):
@@ -1052,18 +1103,20 @@ def get_meta(index):
     index = index.lower()
     if index == "pdsi":
         return dict(
-            variable_group='index',
-            standard_name='palmer_drought_severity_index',
-            short_name='pdsi',
-            long_name='Palmer Drought Severity Index',
-            units='1')
+            variable_group="index",
+            standard_name="palmer_drought_severity_index",
+            short_name="pdsi",
+            long_name="Palmer Drought Severity Index",
+            units="1",
+        )
     elif index in ["scpdsi", "sc-pdsi"]:
         return dict(
-            variable_group='index',
-            standard_name='self_calibrated_palmer_drought_severity_index',
-            short_name='scpdsi',
-            long_name='Self Calibrated Palmer Drought Severity Index',
-            units='1')
+            variable_group="index",
+            standard_name="self_calibrated_palmer_drought_severity_index",
+            short_name="scpdsi",
+            long_name="Self Calibrated Palmer Drought Severity Index",
+            units="1",
+        )
     else:
         logger.error(f"No default meta data for Index: {index}")
         raise NotImplementedError
@@ -1075,7 +1128,7 @@ def set_defaults(target, defaults):
     This checks if a key exists in target, and only if not the keys are set with
     values. It does not checks recursively for nested entries.
 
-    NOTE: this might be obsolete since python 3.9, as there are direct 
+    NOTE: this might be obsolete since python 3.9, as there are direct
     fallback assignments like: `target = defaults | target`
 
     Parameters
@@ -1114,7 +1167,7 @@ def aux_path(cfg, path):
 def remove_attributes(cube, ignore=[]):
     """remove attributes of cubes or coords in place
     used to clean up differences in cubes coordinates before merging
-    
+
     Parameters
     ----------
     cube
@@ -1137,8 +1190,8 @@ def convert_to_mmday_xarray(pr):
     Args:
         pr: xarray.dataarrray precipitation in kgm-2s-1
     """
-    pr.values = pr.values * 60 *60 * 24
-    pr.attrs['units'] = "mm day-1"
+    pr.values = pr.values * 60 * 60 * 24
+    pr.attrs["units"] = "mm day-1"
     return pr
 
 
@@ -1157,14 +1210,12 @@ def font_color(background):
 
 
 def log_provenance(cfg, fname, record):
-    
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(fname, record)
 
 
 def get_time_range(cube):
-    """guesses the period of a cube based on the time coordinate.
-    """
+    """guesses the period of a cube based on the time coordinate."""
     if not isinstance(cube, iris.cube.Cube):
         cube = iris.load_cube(cube)
     time = cube.coord("time")
@@ -1172,12 +1223,12 @@ def get_time_range(cube):
     print(time.points)
     start = time.units.num2date(time.points[0])
     end = time.units.num2date(time.points[-1])
-    return {'start_year': start.year, 'end_year': end.year}
+    return {"start_year": start.year, "end_year": end.year}
 
 
 def guess_experiment(meta):
     """guess experiment from filename
-    TODO: this is a workaround for incomplete meta data.. 
+    TODO: this is a workaround for incomplete meta data..
     fix this in ancestor diagnostics rather than use this function.
     """
     exps = ["historical", "ssp126", "ssp245", "ssp370", "ssp585"]
@@ -1187,16 +1238,16 @@ def guess_experiment(meta):
 
 
 def monthly_to_daily(cube, units="mm day-1", leap_years=True):
-    """convert monthly data to daily data inplace ignoring leap years
-    """
+    """convert monthly data to daily data inplace ignoring leap years"""
     months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    months = months * int((cube.shape[0] / 12)+1)
+    months = months * int((cube.shape[0] / 12) + 1)
     for i, s in enumerate(cube.slices_over(["time"])):
         if not leap_years:
             days = months[i]
             cube.data[i] = cube.data[i] / days
         try:
             from calendar import monthrange
+
             time = s.coord("time")
             date = time.units.num2date(time.points[0])
             days = monthrange(date.year, date.month)[1]
@@ -1214,14 +1265,15 @@ def daily_to_monthly(cube, units="mm month-1", leap_years=True):
     and compatible with pet.R
     """
     months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    months = months * int((cube.shape[0] / 12)+1)
+    months = months * int((cube.shape[0] / 12) + 1)
     for i, s in enumerate(cube.slices_over(["time"])):
         if not leap_years:
             days = months[i]
             cube.data[i] = cube.data[i] * days
             continue
-        try:  # consider leapday 
+        try:  # consider leapday
             from calendar import monthrange
+
             time = s.coord("time")
             date = time.units.num2date(time.points[0])
             days = monthrange(date.year, date.month)[1]
@@ -1231,49 +1283,6 @@ def daily_to_monthly(cube, units="mm month-1", leap_years=True):
             days = months[i]
         cube.data[i] = cube.data[i] * days
     cube.units = units
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def _get_data_hlp(axis, data, ilat, ilon):
@@ -1292,58 +1301,82 @@ def _get_drought_data(cfg, cube):
     """Prepare data and calculate characteristics."""
     # make a new cube to increase the size of the data array
     # Make an aggregator from the user function.
-    spell_no = Aggregator('spell_count',
-                          count_spells,
-                          units_func=lambda units: 1)
+    spell_no = Aggregator(
+        "spell_count", count_spells, units_func=lambda units: 1
+    )
     new_cube = _make_new_cube(cube)
 
     # calculate the number of drought events and their average duration
-    drought_show = new_cube.collapsed('time', spell_no,
-                                      threshold=cfg['threshold'])
-    drought_show.rename('Drought characteristics')
+    drought_show = new_cube.collapsed(
+        "time", spell_no, threshold=cfg["threshold"]
+    )
+    drought_show.rename("Drought characteristics")
     # length of time series
-    time_length = len(new_cube.coord('time').points) / 12.0
+    time_length = len(new_cube.coord("time").points) / 12.0
     # Convert number of droughtevents to frequency (per year)
-    drought_show.data[:, :, 0] = drought_show.data[:, :,
-                                                   0] / time_length
+    drought_show.data[:, :, 0] = drought_show.data[:, :, 0] / time_length
     return drought_show
 
 
 def _provenance_map_spei(cfg, name_dict, spei, dataset_name):
     """Set provenance for plot_map_spei."""
-    caption = 'Global map of ' + \
-              name_dict['drought_char'] + \
-              ' [' + name_dict['unit'] + '] ' + \
-              'based on ' + cfg['indexname'] + '.'
+    caption = (
+        "Global map of "
+        + name_dict["drought_char"]
+        + " ["
+        + name_dict["unit"]
+        + "] "
+        + "based on "
+        + cfg["indexname"]
+        + "."
+    )
 
-    if cfg['indexname'].lower == "spei":
-        set_refs = ['martin18grl', 'vicente10jclim', ]
-    elif cfg['indexname'].lower == "spi":
-        set_refs = ['martin18grl', 'mckee93proc', ]
+    if cfg["indexname"].lower == "spei":
+        set_refs = [
+            "martin18grl",
+            "vicente10jclim",
+        ]
+    elif cfg["indexname"].lower == "spi":
+        set_refs = [
+            "martin18grl",
+            "mckee93proc",
+        ]
     else:
-        set_refs = ['martin18grl', ]
+        set_refs = [
+            "martin18grl",
+        ]
 
-    provenance_record = get_provenance_record([name_dict['input_filenames']],
-                                              caption,
-                                              ['global'],
-                                              set_refs)
+    provenance_record = get_provenance_record(
+        [name_dict["input_filenames"]], caption, ["global"], set_refs
+    )
 
-    diagnostic_file = get_diagnostic_filename(cfg['indexname'] + '_map' +
-                                              name_dict['add_to_filename'] +
-                                              '_' +
-                                              dataset_name, cfg)
-    plot_file = get_plot_filename(cfg['indexname'] + '_map' +
-                                  name_dict['add_to_filename'] +
-                                  '_' +
-                                  dataset_name, cfg)
+    diagnostic_file = get_diagnostic_filename(
+        cfg["indexname"]
+        + "_map"
+        + name_dict["add_to_filename"]
+        + "_"
+        + dataset_name,
+        cfg,
+    )
+    plot_file = get_plot_filename(
+        cfg["indexname"]
+        + "_map"
+        + name_dict["add_to_filename"]
+        + "_"
+        + dataset_name,
+        cfg,
+    )
 
     logger.info("Saving analysis results to %s", diagnostic_file)
 
     cubesave = cube_to_save_ploted(spei, name_dict)
     iris.save(cubesave, target=diagnostic_file)
 
-    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
-                pformat(provenance_record))
+    logger.info(
+        "Recording provenance of %s:\n%s",
+        diagnostic_file,
+        pformat(provenance_record),
+    )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(plot_file, provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
@@ -1351,35 +1384,62 @@ def _provenance_map_spei(cfg, name_dict, spei, dataset_name):
 
 def _provenance_map_spei_multi(cfg, data_dict, spei, input_filenames):
     """Set provenance for plot_map_spei_multi."""
-    caption = 'Global map of the multi-model mean of ' + \
-              data_dict['drought_char'] + \
-              ' [' + data_dict['unit'] + '] ' + \
-              'based on ' + cfg['indexname'] + '.'
+    caption = (
+        "Global map of the multi-model mean of "
+        + data_dict["drought_char"]
+        + " ["
+        + data_dict["unit"]
+        + "] "
+        + "based on "
+        + cfg["indexname"]
+        + "."
+    )
 
-    if cfg['indexname'].lower == "spei":
-        set_refs = ['martin18grl', 'vicente10jclim', ]
-    elif cfg['indexname'].lower == "spi":
-        set_refs = ['martin18grl', 'mckee93proc', ]
+    if cfg["indexname"].lower == "spei":
+        set_refs = [
+            "martin18grl",
+            "vicente10jclim",
+        ]
+    elif cfg["indexname"].lower == "spi":
+        set_refs = [
+            "martin18grl",
+            "mckee93proc",
+        ]
     else:
-        set_refs = ['martin18grl', ]
+        set_refs = [
+            "martin18grl",
+        ]
 
-    provenance_record = get_provenance_record(input_filenames, caption,
-                                              ['global'],
-                                              set_refs)
+    provenance_record = get_provenance_record(
+        input_filenames, caption, ["global"], set_refs
+    )
 
-    diagnostic_file = get_diagnostic_filename(cfg['indexname'] + '_map' +
-                                              data_dict['filename'] + '_' +
-                                              data_dict['datasetname'], cfg)
-    plot_file = get_plot_filename(cfg['indexname'] + '_map' +
-                                  data_dict['filename'] + '_' +
-                                  data_dict['datasetname'], cfg)
+    diagnostic_file = get_diagnostic_filename(
+        cfg["indexname"]
+        + "_map"
+        + data_dict["filename"]
+        + "_"
+        + data_dict["datasetname"],
+        cfg,
+    )
+    plot_file = get_plot_filename(
+        cfg["indexname"]
+        + "_map"
+        + data_dict["filename"]
+        + "_"
+        + data_dict["datasetname"],
+        cfg,
+    )
 
     logger.info("Saving analysis results to %s", diagnostic_file)
 
     iris.save(cube_to_save_ploted(spei, data_dict), target=diagnostic_file)
 
-    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
-                pformat(provenance_record))
+    logger.info(
+        "Recording provenance of %s:\n%s",
+        diagnostic_file,
+        pformat(provenance_record),
+    )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(plot_file, provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
@@ -1387,39 +1447,53 @@ def _provenance_map_spei_multi(cfg, data_dict, spei, input_filenames):
 
 def _provenance_time_series_spei(cfg, data_dict):
     """Provenance for time series plots."""
-    caption = 'Time series of ' + \
-              data_dict['var'] + \
-              ' at' + data_dict['area'] + '.'
+    caption = (
+        "Time series of " + data_dict["var"] + " at" + data_dict["area"] + "."
+    )
 
-    if cfg['indexname'].lower == "spei":
-        set_refs = ['vicente10jclim', ]
-    elif cfg['indexname'].lower == "spi":
-        set_refs = ['mckee93proc', ]
+    if cfg["indexname"].lower == "spei":
+        set_refs = [
+            "vicente10jclim",
+        ]
+    elif cfg["indexname"].lower == "spi":
+        set_refs = [
+            "mckee93proc",
+        ]
     else:
-        set_refs = ['martin18grl', ]
+        set_refs = [
+            "martin18grl",
+        ]
 
-    provenance_record = get_provenance_record([data_dict['filename']],
-                                              caption,
-                                              ['reg'], set_refs,
-                                              plot_type='times')
+    provenance_record = get_provenance_record(
+        [data_dict["filename"]], caption, ["reg"], set_refs, plot_type="times"
+    )
 
-    diagnostic_file = get_diagnostic_filename(cfg['indexname'] +
-                                              '_time_series_' +
-                                              data_dict['area'] +
-                                              '_' +
-                                              data_dict['dataset_name'], cfg)
-    plot_file = get_plot_filename(cfg['indexname'] +
-                                  '_time_series_' +
-                                  data_dict['area'] +
-                                  '_' +
-                                  data_dict['dataset_name'], cfg)
+    diagnostic_file = get_diagnostic_filename(
+        cfg["indexname"]
+        + "_time_series_"
+        + data_dict["area"]
+        + "_"
+        + data_dict["dataset_name"],
+        cfg,
+    )
+    plot_file = get_plot_filename(
+        cfg["indexname"]
+        + "_time_series_"
+        + data_dict["area"]
+        + "_"
+        + data_dict["dataset_name"],
+        cfg,
+    )
     logger.info("Saving analysis results to %s", diagnostic_file)
 
     cubesave = cube_to_save_ploted_ts(data_dict)
     iris.save(cubesave, target=diagnostic_file)
 
-    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
-                pformat(provenance_record))
+    logger.info(
+        "Recording provenance of %s:\n%s",
+        diagnostic_file,
+        pformat(provenance_record),
+    )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(plot_file, provenance_record)
         provenance_logger.log(diagnostic_file, provenance_record)
@@ -1427,49 +1501,68 @@ def _provenance_time_series_spei(cfg, data_dict):
 
 def cube_to_save_ploted(var, data_dict):
     """Create cube to prepare plotted data for saving to netCDF."""
-    plot_cube = iris.cube.Cube(var, var_name=data_dict['var'],
-                               long_name=data_dict['drought_char'],
-                               units=data_dict['unit'])
-    plot_cube.add_dim_coord(iris.coords.DimCoord(data_dict['latitude'],
-                                                 var_name='lat',
-                                                 long_name='latitude',
-                                                 units='degrees_north'), 0)
-    plot_cube.add_dim_coord(iris.coords.DimCoord(data_dict['longitude'],
-                                                 var_name='lon',
-                                                 long_name='longitude',
-                                                 units='degrees_east'), 1)
+    plot_cube = iris.cube.Cube(
+        var,
+        var_name=data_dict["var"],
+        long_name=data_dict["drought_char"],
+        units=data_dict["unit"],
+    )
+    plot_cube.add_dim_coord(
+        iris.coords.DimCoord(
+            data_dict["latitude"],
+            var_name="lat",
+            long_name="latitude",
+            units="degrees_north",
+        ),
+        0,
+    )
+    plot_cube.add_dim_coord(
+        iris.coords.DimCoord(
+            data_dict["longitude"],
+            var_name="lon",
+            long_name="longitude",
+            units="degrees_east",
+        ),
+        1,
+    )
 
     return plot_cube
 
 
 def cube_to_save_ploted_ts(data_dict):
     """Create cube to prepare plotted time series for saving to netCDF."""
-    plot_cube = iris.cube.Cube(data_dict['data'], var_name=data_dict['var'],
-                               long_name=data_dict['var'],
-                               units=data_dict['unit'])
-    plot_cube.add_dim_coord(iris.coords.DimCoord(data_dict['time'],
-                                                 var_name='time',
-                                                 long_name='Time',
-                                                 units='month'), 0)
+    plot_cube = iris.cube.Cube(
+        data_dict["data"],
+        var_name=data_dict["var"],
+        long_name=data_dict["var"],
+        units=data_dict["unit"],
+    )
+    plot_cube.add_dim_coord(
+        iris.coords.DimCoord(
+            data_dict["time"], var_name="time", long_name="Time", units="month"
+        ),
+        0,
+    )
 
     return plot_cube
 
 
-def get_provenance_record(ancestor_files, caption,
-                          domains, refs, plot_type='geo'):
+def get_provenance_record(
+    ancestor_files, caption, domains, refs, plot_type="geo"
+):
     """Get Provenance record."""
     record = {
-        'caption': caption,
-        'statistics': ['mean'],
-        'domains': domains,
-        'plot_type': plot_type,
-        'themes': ['phys'],
-        'authors': [
-            'weigel_katja',
-            'adeniyi_kemisola',
+        "caption": caption,
+        "statistics": ["mean"],
+        "domains": domains,
+        "plot_type": plot_type,
+        "themes": ["phys"],
+        "authors": [
+            "weigel_katja",
+            "adeniyi_kemisola",
         ],
-        'references': refs,
-        'ancestors': ancestor_files,
+        "references": refs,
+        "ancestors": ancestor_files,
     }
     return record
 
@@ -1479,146 +1572,190 @@ def _make_new_cube(cube):
     new_shape = cube.shape + (4,)
     new_data = iris.util.broadcast_to_shape(cube.data, new_shape, [0, 1, 2])
     new_cube = iris.cube.Cube(new_data)
-    new_cube.add_dim_coord(iris.coords.DimCoord(
-        cube.coord('time').points, long_name='time'), 0)
-    new_cube.add_dim_coord(iris.coords.DimCoord(
-        cube.coord('latitude').points, long_name='latitude'), 1)
-    new_cube.add_dim_coord(iris.coords.DimCoord(
-        cube.coord('longitude').points, long_name='longitude'), 2)
-    new_cube.add_dim_coord(iris.coords.DimCoord(
-        [0, 1, 2, 3], long_name='z'), 3)
+    new_cube.add_dim_coord(
+        iris.coords.DimCoord(cube.coord("time").points, long_name="time"), 0
+    )
+    new_cube.add_dim_coord(
+        iris.coords.DimCoord(
+            cube.coord("latitude").points, long_name="latitude"
+        ),
+        1,
+    )
+    new_cube.add_dim_coord(
+        iris.coords.DimCoord(
+            cube.coord("longitude").points, long_name="longitude"
+        ),
+        2,
+    )
+    new_cube.add_dim_coord(
+        iris.coords.DimCoord([0, 1, 2, 3], long_name="z"), 3
+    )
     return new_cube
 
 
-def _plot_multi_model_maps(cfg, all_drought_mean, lats_lons, input_filenames,
-                           tstype):
+def _plot_multi_model_maps(
+    cfg, all_drought_mean, lats_lons, input_filenames, tstype
+):
     """Prepare plots for multi-model mean."""
-    data_dict = {'latitude': lats_lons[0],
-                 'longitude': lats_lons[1],
-                 'model_kind': tstype
-                 }
-    if tstype == 'Difference':
+    data_dict = {
+        "latitude": lats_lons[0],
+        "longitude": lats_lons[1],
+        "model_kind": tstype,
+    }
+    if tstype == "Difference":
         # RCP85 Percentage difference
-        data_dict.update({'data': all_drought_mean[:, :, 0],
-                          'var': 'diffnumber',
-                          'datasetname': 'Percentage',
-                          'drought_char': 'Number of drought events',
-                          'unit': '%',
-                          'filename': 'Percentage_difference_of_No_of_Events',
-                          'drought_numbers_level': np.arange(-100, 110, 10)})
-        plot_map_spei_multi(cfg, data_dict, input_filenames,
-                            colormap='rainbow')
+        data_dict.update({
+            "data": all_drought_mean[:, :, 0],
+            "var": "diffnumber",
+            "datasetname": "Percentage",
+            "drought_char": "Number of drought events",
+            "unit": "%",
+            "filename": "Percentage_difference_of_No_of_Events",
+            "drought_numbers_level": np.arange(-100, 110, 10),
+        })
+        plot_map_spei_multi(
+            cfg, data_dict, input_filenames, colormap="rainbow"
+        )
 
-        data_dict.update({'data': all_drought_mean[:, :, 1],
-                          'var': 'diffduration',
-                          'drought_char': 'Duration of drought events',
-                          'filename': 'Percentage_difference_of_Dur_of_Events',
-                          'drought_numbers_level': np.arange(-100, 110, 10)})
-        plot_map_spei_multi(cfg, data_dict, input_filenames,
-                            colormap='rainbow')
+        data_dict.update({
+            "data": all_drought_mean[:, :, 1],
+            "var": "diffduration",
+            "drought_char": "Duration of drought events",
+            "filename": "Percentage_difference_of_Dur_of_Events",
+            "drought_numbers_level": np.arange(-100, 110, 10),
+        })
+        plot_map_spei_multi(
+            cfg, data_dict, input_filenames, colormap="rainbow"
+        )
 
-        data_dict.update({'data': all_drought_mean[:, :, 2],
-                          'var': 'diffseverity',
-                          'drought_char': 'Severity Index of drought events',
-                          'filename': 'Percentage_difference_of_Sev_of_Events',
-                          'drought_numbers_level': np.arange(-50, 60, 10)})
-        plot_map_spei_multi(cfg, data_dict, input_filenames,
-                            colormap='rainbow')
+        data_dict.update({
+            "data": all_drought_mean[:, :, 2],
+            "var": "diffseverity",
+            "drought_char": "Severity Index of drought events",
+            "filename": "Percentage_difference_of_Sev_of_Events",
+            "drought_numbers_level": np.arange(-50, 60, 10),
+        })
+        plot_map_spei_multi(
+            cfg, data_dict, input_filenames, colormap="rainbow"
+        )
 
-        data_dict.update({'data': all_drought_mean[:, :, 3],
-                          'var': 'diff' + (cfg['indexname']).lower(),
-                          'drought_char': 'Average ' + cfg['indexname'] +
-                                          ' of drought events',
-                          'filename': 'Percentage_difference_of_Avr_of_Events',
-                          'drought_numbers_level': np.arange(-50, 60, 10)})
-        plot_map_spei_multi(cfg, data_dict, input_filenames,
-                            colormap='rainbow')
+        data_dict.update({
+            "data": all_drought_mean[:, :, 3],
+            "var": "diff" + (cfg["indexname"]).lower(),
+            "drought_char": "Average "
+            + cfg["indexname"]
+            + " of drought events",
+            "filename": "Percentage_difference_of_Avr_of_Events",
+            "drought_numbers_level": np.arange(-50, 60, 10),
+        })
+        plot_map_spei_multi(
+            cfg, data_dict, input_filenames, colormap="rainbow"
+        )
     else:
-        data_dict.update({'data': all_drought_mean[:, :, 0],
-                          'var': 'frequency',
-                          'unit': 'year-1',
-                          'drought_char': 'Number of drought events per year',
-                          'filename': tstype + '_No_of_Events_per_year',
-                          'drought_numbers_level': np.arange(0, 0.4, 0.05)})
-        if tstype == 'Observations':
-            data_dict['datasetname'] = 'Mean'
+        data_dict.update({
+            "data": all_drought_mean[:, :, 0],
+            "var": "frequency",
+            "unit": "year-1",
+            "drought_char": "Number of drought events per year",
+            "filename": tstype + "_No_of_Events_per_year",
+            "drought_numbers_level": np.arange(0, 0.4, 0.05),
+        })
+        if tstype == "Observations":
+            data_dict["datasetname"] = "Mean"
         else:
-            data_dict['datasetname'] = 'MultiModelMean'
-        plot_map_spei_multi(cfg, data_dict, input_filenames,
-                            colormap='gnuplot')
+            data_dict["datasetname"] = "MultiModelMean"
+        plot_map_spei_multi(
+            cfg, data_dict, input_filenames, colormap="gnuplot"
+        )
 
-        data_dict.update({'data': all_drought_mean[:, :, 1],
-                          'var': 'duration',
-                          'unit': 'month',
-                          'drought_char': 'Duration of drought events [month]',
-                          'filename': tstype + '_Dur_of_Events',
-                          'drought_numbers_level': np.arange(0, 6, 1)})
-        plot_map_spei_multi(cfg, data_dict, input_filenames,
-                            colormap='gnuplot')
+        data_dict.update({
+            "data": all_drought_mean[:, :, 1],
+            "var": "duration",
+            "unit": "month",
+            "drought_char": "Duration of drought events [month]",
+            "filename": tstype + "_Dur_of_Events",
+            "drought_numbers_level": np.arange(0, 6, 1),
+        })
+        plot_map_spei_multi(
+            cfg, data_dict, input_filenames, colormap="gnuplot"
+        )
 
-        data_dict.update({'data': all_drought_mean[:, :, 2],
-                          'var': 'severity',
-                          'unit': '1',
-                          'drought_char': 'Severity Index of drought events',
-                          'filename': tstype + '_Sev_index_of_Events',
-                          'drought_numbers_level': np.arange(0, 9, 1)})
-        plot_map_spei_multi(cfg, data_dict, input_filenames,
-                            colormap='gnuplot')
-        namehlp = 'Average ' + cfg['indexname'] + ' of drought events'
-        namehlp2 = tstype + '_Average_' + cfg['indexname'] + '_of_Events'
-        data_dict.update({'data': all_drought_mean[:, :, 3],
-                          'var': (cfg['indexname']).lower(),
-                          'unit': '1',
-                          'drought_char': namehlp,
-                          'filename': namehlp2,
-                          'drought_numbers_level': np.arange(-2.8, -1.8, 0.2)})
-        plot_map_spei_multi(cfg, data_dict, input_filenames,
-                            colormap='gnuplot')
+        data_dict.update({
+            "data": all_drought_mean[:, :, 2],
+            "var": "severity",
+            "unit": "1",
+            "drought_char": "Severity Index of drought events",
+            "filename": tstype + "_Sev_index_of_Events",
+            "drought_numbers_level": np.arange(0, 9, 1),
+        })
+        plot_map_spei_multi(
+            cfg, data_dict, input_filenames, colormap="gnuplot"
+        )
+        namehlp = "Average " + cfg["indexname"] + " of drought events"
+        namehlp2 = tstype + "_Average_" + cfg["indexname"] + "_of_Events"
+        data_dict.update({
+            "data": all_drought_mean[:, :, 3],
+            "var": (cfg["indexname"]).lower(),
+            "unit": "1",
+            "drought_char": namehlp,
+            "filename": namehlp2,
+            "drought_numbers_level": np.arange(-2.8, -1.8, 0.2),
+        })
+        plot_map_spei_multi(
+            cfg, data_dict, input_filenames, colormap="gnuplot"
+        )
 
 
 def _plot_single_maps(cfg, cube2, drought_show, tstype, input_filenames):
     """Plot map of drought characteristics for individual models and times."""
     cube2.data = drought_show.data[:, :, 0]
-    name_dict = {'add_to_filename': tstype + '_No_of_Events_per_year',
-                 'name': tstype + ' Number of drought events per year',
-                 'var': 'frequency',
-                 'unit': 'year-1',
-                 'drought_char': 'Number of drought events per year',
-                 'input_filenames': input_filenames}
-    plot_map_spei(cfg, cube2, np.arange(0, 0.4, 0.05),
-                  name_dict)
+    name_dict = {
+        "add_to_filename": tstype + "_No_of_Events_per_year",
+        "name": tstype + " Number of drought events per year",
+        "var": "frequency",
+        "unit": "year-1",
+        "drought_char": "Number of drought events per year",
+        "input_filenames": input_filenames,
+    }
+    plot_map_spei(cfg, cube2, np.arange(0, 0.4, 0.05), name_dict)
 
     # plot the average duration of drought events
     cube2.data = drought_show.data[:, :, 1]
-    name_dict.update({'add_to_filename': tstype + '_Dur_of_Events',
-                      'name': tstype + ' Duration of drought events(month)',
-                      'var': 'duration',
-                      'unit': 'month',
-                      'drought_char': 'Number of drought events per year',
-                      'input_filenames': input_filenames})
+    name_dict.update({
+        "add_to_filename": tstype + "_Dur_of_Events",
+        "name": tstype + " Duration of drought events(month)",
+        "var": "duration",
+        "unit": "month",
+        "drought_char": "Number of drought events per year",
+        "input_filenames": input_filenames,
+    })
     plot_map_spei(cfg, cube2, np.arange(0, 6, 1), name_dict)
 
     # plot the average severity index of drought events
     cube2.data = drought_show.data[:, :, 2]
-    name_dict.update({'add_to_filename': tstype + '_Sev_index_of_Events',
-                      'name': tstype + ' Severity Index of drought events',
-                      'var': 'severity',
-                      'unit': '1',
-                      'drought_char': 'Number of drought events per year',
-                      'input_filenames': input_filenames})
+    name_dict.update({
+        "add_to_filename": tstype + "_Sev_index_of_Events",
+        "name": tstype + " Severity Index of drought events",
+        "var": "severity",
+        "unit": "1",
+        "drought_char": "Number of drought events per year",
+        "input_filenames": input_filenames,
+    })
     plot_map_spei(cfg, cube2, np.arange(0, 9, 1), name_dict)
 
     # plot the average spei of drought events
     cube2.data = drought_show.data[:, :, 3]
 
-    namehlp = tstype + '_Avr_' + cfg['indexname'] + '_of_Events'
-    namehlp2 = tstype + '_Average_' + cfg['indexname'] + '_of_Events'
-    name_dict.update({'add_to_filename': namehlp,
-                      'name': namehlp2,
-                      'var': 'severity',
-                      'unit': '1',
-                      'drought_char': 'Number of drought events per year',
-                      'input_filenames': input_filenames})
+    namehlp = tstype + "_Avr_" + cfg["indexname"] + "_of_Events"
+    namehlp2 = tstype + "_Average_" + cfg["indexname"] + "_of_Events"
+    name_dict.update({
+        "add_to_filename": namehlp,
+        "name": namehlp2,
+        "var": "severity",
+        "unit": "1",
+        "drought_char": "Number of drought events per year",
+        "input_filenames": input_filenames,
+    })
     plot_map_spei(cfg, cube2, np.arange(-2.8, -1.8, 0.2), name_dict)
 
 
@@ -1628,11 +1765,11 @@ def runs_of_ones_array_spei(bits, spei):
     bounded = np.hstack(([0], bits, [0]))
     # get 1 at run starts and -1 at run ends
     difs = np.diff(bounded)
-    run_starts, = np.where(difs > 0)
-    run_ends, = np.where(difs < 0)
+    (run_starts,) = np.where(difs > 0)
+    (run_ends,) = np.where(difs < 0)
     spei_sum = np.full(len(run_starts), 0.5)
     for iii, indexs in enumerate(run_starts):
-        spei_sum[iii] = np.sum(spei[indexs:run_ends[iii]])
+        spei_sum[iii] = np.sum(spei[indexs : run_ends[iii]])
 
     return [run_ends - run_starts, spei_sum]
 
@@ -1667,15 +1804,16 @@ def count_spells(data, threshold, axis):
                 return_var[ilat, ilon, 3] = data_help[0]
             else:
                 data_hits = data_help < threshold
-                [events, spei_sum] = runs_of_ones_array_spei(data_hits,
-                                                             data_help)
+                [events, spei_sum] = runs_of_ones_array_spei(
+                    data_hits, data_help
+                )
 
                 return_var[ilat, ilon, 0] = np.count_nonzero(events)
                 return_var[ilat, ilon, 1] = np.mean(events)
-                return_var[ilat, ilon, 2] = np.mean((spei_sum * events) /
-                                                    (np.mean(data_help
-                                                             [data_hits])
-                                                     * np.mean(events)))
+                return_var[ilat, ilon, 2] = np.mean(
+                    (spei_sum * events)
+                    / (np.mean(data_help[data_hits]) * np.mean(events))
+                )
                 return_var[ilat, ilon, 3] = np.mean(spei_sum / events)
 
     return return_var
@@ -1683,73 +1821,102 @@ def count_spells(data, threshold, axis):
 
 def get_latlon_index(coords, lim1, lim2):
     """Get index for given values between two limits (1D), e.g. lats, lons."""
-    index = (np.where(np.absolute(coords - (lim2 + lim1)
-                                  / 2.0) <= (lim2 - lim1)
-                      / 2.0))[0]
+    index = (
+        np.where(
+            np.absolute(coords - (lim2 + lim1) / 2.0) <= (lim2 - lim1) / 2.0
+        )
+    )[0]
     return index
 
 
-def plot_map_spei_multi(cfg, data_dict, input_filenames, colormap='jet'):
+def plot_map_spei_multi(cfg, data_dict, input_filenames, colormap="jet"):
     """Plot contour maps for multi model mean."""
-    spei = np.ma.array(data_dict['data'], mask=np.isnan(data_dict['data']))
+    spei = np.ma.array(data_dict["data"], mask=np.isnan(data_dict["data"]))
 
     # Get latitudes and longitudes from cube
-    lons = data_dict['longitude']
+    lons = data_dict["longitude"]
     if max(lons) > 180.0:
         lons = np.where(lons > 180, lons - 360, lons)
         # sort the array
         index = np.argsort(lons)
         lons = lons[index]
-        spei = spei[np.ix_(range(data_dict['latitude'].size), index)]
+        spei = spei[np.ix_(range(data_dict["latitude"].size), index)]
 
     # Plot data
     # Create figure and axes instances
-    subplot_kw = {'projection': cart.PlateCarree(central_longitude=0.0)}
+    subplot_kw = {"projection": cart.PlateCarree(central_longitude=0.0)}
     fig, axx = plt.subplots(figsize=(6.5, 4), subplot_kw=subplot_kw)
-    axx.set_extent([-180.0, 180.0, -90.0, 90.0],
-                   cart.PlateCarree(central_longitude=0.0))
+    axx.set_extent(
+        [-180.0, 180.0, -90.0, 90.0], cart.PlateCarree(central_longitude=0.0)
+    )
 
     # Draw filled contours
-    cnplot = plt.contourf(lons, data_dict['latitude'], spei,
-                          data_dict['drought_numbers_level'],
-                          transform=cart.PlateCarree(central_longitude=0.0),
-                          cmap=colormap, extend='both', corner_mask=False)
+    cnplot = plt.contourf(
+        lons,
+        data_dict["latitude"],
+        spei,
+        data_dict["drought_numbers_level"],
+        transform=cart.PlateCarree(central_longitude=0.0),
+        cmap=colormap,
+        extend="both",
+        corner_mask=False,
+    )
     # Draw coastlines
     axx.coastlines()
 
     # Add colorbar
-    cbar = fig.colorbar(cnplot, ax=axx, shrink=0.6, orientation='horizontal')
+    cbar = fig.colorbar(cnplot, ax=axx, shrink=0.6, orientation="horizontal")
 
     # Add colorbar title string
-    if data_dict['model_kind'] == 'Difference':
-        cbar.set_label(data_dict['model_kind'] + ' '
-                       + data_dict['drought_char'] + ' [%]')
+    if data_dict["model_kind"] == "Difference":
+        cbar.set_label(
+            data_dict["model_kind"] + " " + data_dict["drought_char"] + " [%]"
+        )
     else:
-        cbar.set_label(data_dict['model_kind'] + ' '
-                       + data_dict['drought_char'])
+        cbar.set_label(
+            data_dict["model_kind"] + " " + data_dict["drought_char"]
+        )
 
     # Set labels and title to each plot
-    axx.set_xlabel('Longitude')
-    axx.set_ylabel('Latitude')
-    axx.set_title(data_dict['datasetname'] + ' ' + data_dict['model_kind'] +
-                  ' ' + data_dict['drought_char'])
+    axx.set_xlabel("Longitude")
+    axx.set_ylabel("Latitude")
+    axx.set_title(
+        data_dict["datasetname"]
+        + " "
+        + data_dict["model_kind"]
+        + " "
+        + data_dict["drought_char"]
+    )
 
     # Sets number and distance of x ticks
     axx.set_xticks(np.linspace(-180, 180, 7))
     # Sets strings for x ticks
-    axx.set_xticklabels(['180°W', '120°W', '60°W',
-                         '0°', '60°E', '120°E',
-                         '180°E'])
+    axx.set_xticklabels([
+        "180°W",
+        "120°W",
+        "60°W",
+        "0°",
+        "60°E",
+        "120°E",
+        "180°E",
+    ])
     # Sets number and distance of y ticks
     axx.set_yticks(np.linspace(-90, 90, 7))
     # Sets strings for y ticks
-    axx.set_yticklabels(['90°S', '60°S', '30°S', '0°',
-                         '30°N', '60°N', '90°N'])
+    axx.set_yticklabels(["90°S", "60°S", "30°S", "0°", "30°N", "60°N", "90°N"])
 
     fig.tight_layout()
-    fig.savefig(get_plot_filename(cfg['indexname'] + '_map' +
-                                  data_dict['filename'] + '_' +
-                                  data_dict['datasetname'], cfg), dpi=300)
+    fig.savefig(
+        get_plot_filename(
+            cfg["indexname"]
+            + "_map"
+            + data_dict["filename"]
+            + "_"
+            + data_dict["datasetname"],
+            cfg,
+        ),
+        dpi=300,
+    )
     plt.close()
 
     _provenance_map_spei_multi(cfg, data_dict, spei, input_filenames)
@@ -1762,113 +1929,150 @@ def plot_map_spei(cfg, cube, levels, name_dict):
     np.ma.masked_less_equal(spei, 0)
 
     # Get latitudes and longitudes from cube
-    name_dict.update({'latitude': cube.coord('latitude').points})
-    lons = cube.coord('longitude').points
+    name_dict.update({"latitude": cube.coord("latitude").points})
+    lons = cube.coord("longitude").points
     lons = np.where(lons > 180, lons - 360, lons)
     # sort the array
     index = np.argsort(lons)
     lons = lons[index]
-    name_dict.update({'longitude': lons})
-    spei = spei[np.ix_(range(len(cube.coord('latitude').points)), index)]
+    name_dict.update({"longitude": lons})
+    spei = spei[np.ix_(range(len(cube.coord("latitude").points)), index)]
 
     # Get data set name from cube
     try:
-        dataset_name = cube.metadata.attributes['model_id']
+        dataset_name = cube.metadata.attributes["model_id"]
     except KeyError:
         try:
-            dataset_name = cube.metadata.attributes['source_id']
+            dataset_name = cube.metadata.attributes["source_id"]
         except KeyError:
-            dataset_name = 'Observations'
+            dataset_name = "Observations"
 
     # Plot data
     # Create figure and axes instances
-    subplot_kw = {'projection': cart.PlateCarree(central_longitude=0.0)}
+    subplot_kw = {"projection": cart.PlateCarree(central_longitude=0.0)}
     fig, axx = plt.subplots(figsize=(8, 4), subplot_kw=subplot_kw)
-    axx.set_extent([-180.0, 180.0, -90.0, 90.0],
-                   cart.PlateCarree(central_longitude=0.0))
+    axx.set_extent(
+        [-180.0, 180.0, -90.0, 90.0], cart.PlateCarree(central_longitude=0.0)
+    )
 
     # np.set_printoptions(threshold=np.nan)
 
     # Draw filled contours
-    cnplot = plt.contourf(lons, cube.coord('latitude').points, spei,
-                          levels,
-                          transform=cart.PlateCarree(central_longitude=0.0),
-                          cmap='gnuplot', extend='both', corner_mask=False)
+    cnplot = plt.contourf(
+        lons,
+        cube.coord("latitude").points,
+        spei,
+        levels,
+        transform=cart.PlateCarree(central_longitude=0.0),
+        cmap="gnuplot",
+        extend="both",
+        corner_mask=False,
+    )
     # Draw coastlines
     axx.coastlines()
 
     # Add colorbar
-    cbar = fig.colorbar(cnplot, ax=axx, shrink=0.6, orientation='horizontal')
+    cbar = fig.colorbar(cnplot, ax=axx, shrink=0.6, orientation="horizontal")
 
     # Add colorbar title string
-    cbar.set_label(name_dict['name'])
+    cbar.set_label(name_dict["name"])
 
     # Set labels and title to each plot
-    axx.set_xlabel('Longitude')
-    axx.set_ylabel('Latitude')
-    axx.set_title(dataset_name + ' ' + name_dict['name'])
+    axx.set_xlabel("Longitude")
+    axx.set_ylabel("Latitude")
+    axx.set_title(dataset_name + " " + name_dict["name"])
 
     # Sets number and distance of x ticks
     axx.set_xticks(np.linspace(-180, 180, 7))
     # Sets strings for x ticks
-    axx.set_xticklabels(['180°W', '120°W', '60°W',
-                         '0°', '60°E', '120°E',
-                         '180°E'])
+    axx.set_xticklabels([
+        "180°W",
+        "120°W",
+        "60°W",
+        "0°",
+        "60°E",
+        "120°E",
+        "180°E",
+    ])
     # Sets number and distance of y ticks
     axx.set_yticks(np.linspace(-90, 90, 7))
     # Sets strings for y ticks
-    axx.set_yticklabels(['90°S', '60°S', '30°S', '0°',
-                         '30°N', '60°N', '90°N'])
+    axx.set_yticklabels(["90°S", "60°S", "30°S", "0°", "30°N", "60°N", "90°N"])
 
     fig.tight_layout()
 
-    fig.savefig(get_plot_filename(cfg['indexname'] + '_map' +
-                                  name_dict['add_to_filename'] + '_' +
-                                  dataset_name, cfg), dpi=300)
+    fig.savefig(
+        get_plot_filename(
+            cfg["indexname"]
+            + "_map"
+            + name_dict["add_to_filename"]
+            + "_"
+            + dataset_name,
+            cfg,
+        ),
+        dpi=300,
+    )
     plt.close()
 
     _provenance_map_spei(cfg, name_dict, spei, dataset_name)
 
 
-def plot_time_series_spei(cfg, cube, filename, add_to_filename=''):
+def plot_time_series_spei(cfg, cube, filename, add_to_filename=""):
     """Plot time series."""
     # SPEI vector to plot
     spei = cube.data
     # Get time from cube
-    time = cube.coord('time').points
+    time = cube.coord("time").points
     # Adjust (ncdf) time to the format matplotlib expects
-    add_m_delta = mda.datestr2num('1850-01-01 00:00:00')
+    add_m_delta = mda.datestr2num("1850-01-01 00:00:00")
     time = time + add_m_delta
 
     # Get data set name from cube
     try:
-        dataset_name = cube.metadata.attributes['model_id']
+        dataset_name = cube.metadata.attributes["model_id"]
     except KeyError:
         try:
-            dataset_name = cube.metadata.attributes['source_id']
+            dataset_name = cube.metadata.attributes["source_id"]
         except KeyError:
-            dataset_name = 'Observations'
+            dataset_name = "Observations"
 
-    data_dict = {'data': spei,
-                 'time': time,
-                 'var': cfg['indexname'],
-                 'dataset_name': dataset_name,
-                 'unit': '1',
-                 'filename': filename,
-                 'area': add_to_filename}
+    data_dict = {
+        "data": spei,
+        "time": time,
+        "var": cfg["indexname"],
+        "dataset_name": dataset_name,
+        "unit": "1",
+        "filename": filename,
+        "area": add_to_filename,
+    }
 
     fig, axx = plt.subplots(figsize=(16, 4))
-    axx.plot_date(time, spei, '-', tz=None, xdate=True, ydate=False,
-                  color='r', linewidth=4., linestyle='-', alpha=1.,
-                  marker='x')
-    axx.axhline(y=-2, color='k')
+    axx.plot_date(
+        time,
+        spei,
+        "-",
+        tz=None,
+        xdate=True,
+        ydate=False,
+        color="r",
+        linewidth=4.0,
+        linestyle="-",
+        alpha=1.0,
+        marker="x",
+    )
+    axx.axhline(y=-2, color="k")
 
     # Plot labels and title
-    axx.set_xlabel('Time')
-    axx.set_ylabel(cfg['indexname'])
-    axx.set_title('Mean ' + cfg['indexname'] + ' ' +
-                  data_dict['dataset_name'] + ' '
-                  + data_dict['area'])
+    axx.set_xlabel("Time")
+    axx.set_ylabel(cfg["indexname"])
+    axx.set_title(
+        "Mean "
+        + cfg["indexname"]
+        + " "
+        + data_dict["dataset_name"]
+        + " "
+        + data_dict["area"]
+    )
 
     # Set limits for y-axis
     axx.set_ylim(-4.0, 4.0)
@@ -1876,11 +2080,17 @@ def plot_time_series_spei(cfg, cube, filename, add_to_filename=''):
     # Often improves the layout
     fig.tight_layout()
     # Save plot to file
-    fig.savefig(get_plot_filename(cfg['indexname'] +
-                                  '_time_series_' +
-                                  data_dict['area'] +
-                                  '_' +
-                                  data_dict['dataset_name'], cfg), dpi=300)
+    fig.savefig(
+        get_plot_filename(
+            cfg["indexname"]
+            + "_time_series_"
+            + data_dict["area"]
+            + "_"
+            + data_dict["dataset_name"],
+            cfg,
+        ),
+        dpi=300,
+    )
     plt.close()
 
     _provenance_time_series_spei(cfg, data_dict)

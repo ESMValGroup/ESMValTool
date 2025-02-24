@@ -340,8 +340,7 @@ def main(cfg) -> None:
             calculate_diff(cfg, meta, mm, output, group, norm)
         do_mmm = cfg.get("plot_mmm", True) or cfg.get("save_mmm", True)
         if do_mmm and len(metas) > 1:
-            for metric in cfg.get("metrics", METRICS):
-                calculate_mmm(cfg, metas[0], mm, output, group, metric)
+            calculate_mmm(cfg, metas[0], mm, output, group)
     ut.save_metadata(cfg, output)
     # TODO@lukruh: close all and everything to free up memory
 
