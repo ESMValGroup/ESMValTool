@@ -1,0 +1,108 @@
+# ESMValTool
+---
+documentation:
+  title: Model Monitoring - for regions
+  description: |
+    This a recipe to monitor experiments by automatizing the creation of plots
+    from raw preprocessor output.
+  authors:
+    - vegas-regidor_javier
+  maintainer:
+    - loosveldt-tomas_saskia
+
+datasets:
+  # Note: plot_label currently only used by diagnostic plot_multiple_annual_cycles
+  - {project: CMIP6, dataset: EC-Earth3, exp: historical, grid: gr, ensemble: r1i1p1f1, tag: 'EC-Earth3'}
+  # - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn, tag: 'MPI-ESM1-2-HR'}
+  # - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, tag: 'MPI-ESM1-2-LR'}
+  # - {project: CMIP6, dataset: ACCESS-CM2,      exp: historical, ensemble: r1i1p1f1, grid: gn, institute: CSIRO-ARCCSS, tag: 'ACCESS-CM2'}
+  # - {project: CMIP6, dataset: ACCESS-ESM1-5,   exp: historical, ensemble: r1i1p1f1, grid: gn, tag: 'ACCESS-ESM1-5'}
+  # - {project: CMIP6, dataset: AWI-CM-1-1-MR,   exp: historical, ensemble: r1i1p1f1, grid: gn, tag: 'AWI-CM-1-1-MR'}
+  # # - {project: CMIP6, dataset: BCC-CSM2-MR,     exp: historical, ensemble: r1i1p1f1, grid: gn}
+  # # - {project: CMIP6, dataset: BCC-ESM1,        exp: historical, ensemble: r1i1p1f1, grid: gn}
+  # # - {project: CMIP6, dataset: CanESM5,         exp: historical, ensemble: r1i1p1f1, grid: gn}
+  # - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, tag: 'ERA5'}
+
+
+preprocessors:
+
+  timeseries_regular_reg:
+    extract_shape:
+      shapefile: ar6
+      crop: true
+      decomposed: true
+      ids:
+        Name: &regions_to_extract
+          - N.Europe
+          - Mediterranean
+          - Equatorial.Pacific-Ocean
+    area_statistics:
+      operator: mean
+    # multi_model_statistics:
+    #   span: overlap
+    #   statistics: [mean, std_dev]
+    #   exclude: [ERA5]
+
+  # annual_cycle_reg:
+  #   extract_shape:
+  #     shapefile: IPCC-WGI-reference-regions-v4.shp
+  #     crop: true
+  #     decomposed: true
+  #     ids:
+  #       Name: *regions_to_extract
+  #   area_statistics:
+  #     operator: mean
+  #   climate_statistics:
+  #     period: monthly
+
+  # full_climatology_reg:
+  #   extract_shape:
+  #     shapefile: ar6
+  #     crop: true
+  #     decomposed: true
+  #     ids:
+  #       Name: *regions_to_extract
+  #   climate_statistics:
+  #     period: full
+  #   regrid:
+  #     scheme: linear
+  #     target_grid: 2x2
+
+  # extract_1d_profile_reg:
+  #   custom_order: true
+  #   extract_shape:
+  #     shapefile: ar6
+  #     crop: true
+  #     decomposed: true
+  #     ids:
+  #       Name: *regions_to_extract
+  #   climate_statistics:
+  #     period: full
+  #   area_statistics:
+  #     operator: mean
+  #   extract_levels:
+  #     levels: {cmor_table: CMIP6, coordinate: plev39}
+  #     scheme: linear
+  #     coordinate: air_pressure
+
+
+diagnostics:
+
+  plot_timeseries_annual_cycle:
+    description: "Plot time series and annualcycles"
+    variables:
+      tas:
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1f
+        preprocessor: timeseries_regular_reg
+        timerange: '2001/2014'
+    scripts:
+      plot: &plot_default
+        script: monitor/monitor.py
+        # plot_folder: ~/plots/{expid}/{modeling_realm}/{real_name}
+        # cartopy_data_dir: /esarchive/scratch/Earth/jvegas/cartopy
+        plots:
+          timeseries: {}
+          annual_cycle: {}
+
