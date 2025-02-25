@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - force_mamba2
   schedule:
     - cron: '0 0 * * *'
 
