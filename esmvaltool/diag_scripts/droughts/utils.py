@@ -1,3 +1,9 @@
+"""Utility functions for drought diagnostics.
+
+Functions and variables shared by several diagnostics in the drought folder.
+Added functions should have a meaningfull name and docstring.
+"""
+
 from __future__ import annotations
 
 import datetime as dt
@@ -41,6 +47,7 @@ from esmvaltool.diag_scripts.shared._base import _get_input_data_files
 log = logging.getLogger(Path(__file__).name)
 
 # fmt: off
+# pylint: disable=line-too-long
 DENSITY = AuxCoord(
     1000,
     long_name="density",
@@ -64,8 +71,8 @@ HEX_POSITIONS ={
         "RAR": [20, 0], "WNA": [1, 1], "CNA": [3, 1], "ENA": [5, 1],
         "WCE": [13, 1], "EEU": [15, 1], "WSB": [17, 1], "ESB": [19, 1],
         "RFE": [21, 1], "NCA": [2, 2], "MED": [14, 2], "WCA": [16, 2],
-        "ECA": [18, 2], "TIB": [20, 2], "EAS": [22, 2], "SCA": [3, 3], # "CAR": [5, 3],
-        "SAH": [13, 3], "ARP": [15, 3], "SAS": [19, 3], "SEA": [23, 3], # "PAC": [27.5, 3.3],
+        "ECA": [18, 2], "TIB": [20, 2], "EAS": [22, 2], "SCA": [3, 3],  # "CAR": [5, 3],
+        "SAH": [13, 3], "ARP": [15, 3], "SAS": [19, 3], "SEA": [23, 3],  # "PAC": [27.5, 3.3],
         "NWS": [6, 4], "NSA": [8, 4], "WAF": [12, 4], "CAF": [14, 4],
         "NEAF": [16, 4], "NAU": [24.5, 4.3], "SAM": [7, 5], "NES": [9, 5],
         "WSAF": [13, 5], "SEAF": [15, 5], "MDG": [17.5, 5.3],
@@ -106,6 +113,7 @@ INDEX_META = {
     },
 }
 # fmt: on
+# pylint: enable=line-too-long
 
 
 # REGION_NAMES = {
@@ -171,7 +179,10 @@ INDEX_META = {
 
 
 def merge_list_cube(
-    cube_list: list, aux_name: str = "dataset", *, equalize: bool = True,
+    cube_list: list,
+    aux_name: str = "dataset",
+    *,
+    equalize: bool = True,
 ) -> Cube:
     """Merge a list of cubes into a single one with an auxiliary variable.
 
@@ -370,35 +381,6 @@ def fix_longitude(cube: Cube) -> Cube:
     return cube
 
 
-def get_datetime_coords(cube, coord="time") -> np.ndarray:
-    """Return mpl compatible points of time coordinate.
-
-    Converted from cf_date to mpl compatible datetime objects.
-    TODO: this seems not to work with current Iris version?
-    but cf_date.dateime contains the year aswell
-    TODO: the difference behaviour may be caused by different time coords in
-    datasets
-    nc.num2date default behaviour changed to use only_cf_times, change back
-    swith
-    only_use_python_datetimes=True
-    """
-    tc = cube.coord(coord)
-    return iplt._fixup_dates(tc, tc.points)
-
-
-def get_start_year(cube: Cube, coord: str = "time") -> int:
-    """Get the year of the first time coord point.
-
-    Works for datetime and cf_calendar types
-    """
-    tc = cube.coord(coord)
-    first = iplt._fixup_dates(tc, tc.points)[0]
-    try:
-        return first.datetime.year
-    except:
-        return first.year
-
-
 def get_meta_list(meta: dict, group: str, select: dict | None = None) -> list:
     """
     List all entries found for the group key as a list.
@@ -463,7 +445,7 @@ def date_tick_layout(
         locator = mdates.AutoDateLocator()
         min_locator = mdates.YearLocator(1)
     else:
-        locator = mdates.YearLocator(years)  # type: ignore[assignement]
+        locator = mdates.YearLocator(years)  # type: ignore[assignment]
         min_locator = mdates.YearLocator(1)
     year_formatter = mdates.DateFormatter("%Y")
     ax.grid(True)
@@ -474,6 +456,10 @@ def date_tick_layout(
 
 
 def auto_tick_layout(fig, ax, dates=None):
+    """Update a time series figure to use auto date ticks and grid.
+
+    NOTE: can this be merged with date_tick_layout?
+    """
     ax.set_xlabel("Time")
     if dates is not None:
         datemin = np.datetime64(dates[0], "Y")
@@ -489,21 +475,19 @@ def auto_tick_layout(fig, ax, dates=None):
     fig.autofmt_xdate()  # align, rotate and space for tick labels
 
 
-def map_land_layout(
-    fig: Figure, ax: GeoAxes, plot, bounds, *, cbar: bool = True,
-) -> None:
+def map_land_layout(axes: GeoAxes, plot, bounds, *, cbar: bool = True) -> None:
     """Plot style for rectangular drought maps with land overlay.
 
     Mask the ocean by overlay, add gridlines, set left/bottom tick labels.
     """
-    ax.coastlines()
-    ax.add_feature(
+    axes.coastlines()
+    axes.add_feature(
         ct.feature.OCEAN,
         edgecolor="black",
         facecolor="white",
         zorder=1,
     )
-    gl = ax.gridlines(
+    gl = axes.gridlines(
         crs=ct.crs.PlateCarree(),
         linewidth=1,
         color="black",
@@ -517,16 +501,17 @@ def map_land_layout(
     if bounds is not None and cbar:
         plt.colorbar(
             plot,
-            ax=ax,
+            ax=axes,
             ticks=bounds,
             extend="both",
             fraction=0.022,
         )
     elif cbar:
-        plt.colorbar(plot, ax=ax, extend="both", fraction=0.022)
+        plt.colorbar(plot, ax=axes, extend="both", fraction=0.022)
 
 
-def get_scenarios(meta, **kwargs):
+def get_scenarios(meta, **kwargs) -> list:
+    """Return a list of alias values for scenario names."""
     selected = select_metadata(meta, **kwargs)
     return list(group_metadata(selected, "alias").keys())
 
@@ -544,40 +529,6 @@ def add_ancestor_input(cfg: dict) -> None:
         )
         cfg_anc = get_cfg(cfg_anc_file)
         cfg["input_data"].update(_get_input_data_files(cfg_anc))
-
-
-def _fixup_dates(coord, values):
-    """Copy from iris plot.py source code"""
-    if coord.units.calendar is not None and values.ndim == 1:
-        # Convert coordinate values into tuples of
-        # (year, month, day, hour, min, sec)
-        dates = [coord.units.num2date(val).timetuple()[0:6] for val in values]
-        if coord.units.calendar == "gregorian":
-            r = [dt.datetime(*date) for date in dates]
-        else:
-            try:
-                import cftime
-                import nc_time_axis
-            except ImportError as err:
-                msg = (
-                    "Cannot plot against time in a non-gregorian "
-                    'calendar, because "nc_time_axis" is not available :  '
-                    "Install the package from "
-                    "https://github.com/SciTools/nc-time-axis to enable "
-                    "this usage."
-                )
-                raise iris.IrisError(msg) from err
-
-            r = [
-                nc_time_axis.CalendarDateTime(
-                    cftime.datetime(*date),
-                    coord.units.calendar,
-                )
-                for date in dates
-            ]
-        values = np.empty(len(r), dtype=object)
-        values[:] = r
-    return values
 
 
 def quick_save(cube: Cube, name: str, cfg: dict) -> None:
@@ -598,23 +549,29 @@ def quick_load(cfg: dict, context: dict, *, strict=True) -> Cube:
     var_meta = select_metadata(meta, **context)
     if len(var_meta) != 1:
         if strict:
-            raise ValueError("Metadata missmatch")
+            raise ValueError("Wrong number of meta data found.")
         log.warning("warning meta data missmatch")
     return iris.load_cube(var_meta[0]["filename"])
 
 
-def smooth(dat, window=32, mode="same"):
-    # smooth
-    # from scipy.ndimage.filters import uniform_filter1d as unifilter
-    # TODO: iris can also directly filter on cubes:
-    # https://scitools-iris.readthedocs.io/en/latest/generated/gallery/general/plot_SOI_filtering.html#sphx-glr-generated-gallery-general-plot-soi-filtering-py
-    # smoothed = unifilter(dat, 32)  # smooth over 4 year window
+def smooth(dat, window=32, mode="same") -> np.ndarray:
+    """Smooth a 1D array with a window size.
+
+    from scipy.ndimage.filters import uniform_filter1d as unifilter
+    TODO: iris can also directly filter on cubes:
+    https://scitools-iris.readthedocs.io/en/latest/generated/gallery/general/
+    plot_SOI_filtering.html#sphx-glr-generated-gallery-general-plot-soi-
+    filtering-py
+    smoothed = unifilter(dat, 32)  # smooth over 4 year window
+    """
     # using numpy convol
-    filter = np.ones(window)
-    return np.convolve(dat, filter, mode) / window
+    np_filter = np.ones(window)
+    return np.convolve(dat, np_filter, mode) / window
 
 
-def get_basename(cfg, meta, prefix=None, suffix=None):
+def get_basename(cfg, meta, prefix=None, suffix=None) -> str:
+    """Return a formatted basename for a diagnostic file."""
+    _ = cfg  # we might need this in the future. dont tell codacy!
     formats = {  # TODO: load this from config-developer.yml?
         "CMIP6": "{project}_{dataset}_{mip}_{exp}_{ensemble}_{short_name}_{grid}_{start_year}-{end_year}",
         "OBS": "{project}_{dataset}_{type}_{version}_{mip}_{short_name}_{start_year}-{end_year}",
@@ -627,27 +584,11 @@ def get_basename(cfg, meta, prefix=None, suffix=None):
     return basename
 
 
-def get_custom_basename(meta, folder="plots", prefix=None, suffix=None):
-    """Manually create basenames for output files
+def clean_meta(meta) -> dict:
+    """Return a copy of meta data with only selected keys.
 
-    NOTE: for basename in configured naming format use get_basename
+    Keys are: short_name, dataset, alias, exp
     """
-    defaults = {
-        "variable": "variable",
-        "alias": "alias",
-    }
-    defaults.update(meta)
-    base = f"{folder}/"
-    if prefix:
-        base += f"{prefix}_"
-    base += "{alias}_{variable}".format(**defaults)
-    if suffix:
-        base += f"_{suffix}"
-    return base
-
-
-def clean_meta(meta, **kwargs):
-    # TODO: incomplete keylist
     valid_keys = ["short_name", "dataset", "alias", "exp"]
     return {key: val for key, val in meta.items() if key in valid_keys}
 
@@ -682,7 +623,6 @@ def select_single_metadata(
         No matching entry
     """
     selected_meta = select_metadata(meta, **kwargs)
-    # log.info("dataset from alias: " + dataset)
     if len(selected_meta) > 1:
         log.warning("Multiple entries found for Metadata: %s", selected_meta)
         if strict:
@@ -789,7 +729,7 @@ def add_spei_meta(cfg: dict, name: str = "spei", pos: int = 0) -> None:
     spei_fname = (
         cfg["tmp_meta"]["filename"].split("/")[-1].replace("_pr_", f"_{name}_")
     )
-    spei_file = str(Path(cfg["input_files"][pos])/spei_fname)
+    spei_file = str(Path(cfg["input_files"][pos]) / spei_fname)
     log.info("spei file path: %s", spei_file)
     meta = cfg["tmp_meta"].copy()
     meta.update(INDEX_META[name.upper()])
@@ -823,7 +763,7 @@ def latlon_coords(cube: Cube) -> None:
         cube.coord("longitude").rename("lon")
 
 
-def standard_time(cubes):
+def standard_time(cubes: Cube) -> None:
     """Make sure all cubes share the same standard time coordinate.
 
     This function extracts the date information from the cube and
@@ -909,6 +849,8 @@ def mmm(
     dropcoords : list|None, optional
         Coordinates to be dropped from the cubes. If None, only time will be
         dropped. To keep all coords pass an empty list.
+    dropmethods: bool, optional
+        Drop cell_methods from the cubes, by default False
     """
     if dropcoords is None:
         dropcoords = ["time"]
@@ -940,6 +882,7 @@ def get_hex_positions() -> dict:
 
 def regional_stats(cfg, cube, operator="mean") -> dict:
     """Calculate statistic over AR6 IPCC reference regions."""
+    _ = cfg  # we might need this in the future. dont tell codacy!
     guess_lat_lon_bounds(cube)
     extracted = pp.extract_shape(cube, "ar6", decomposed=True)
     return pp.area_statistics(extracted, operator)
@@ -957,7 +900,7 @@ def save_metadata(cfg: dict, metadata: dict) -> None:
         yaml.dump(metadata, wom)
 
 
-def get_index_meta(index)->dict:
+def get_index_meta(index) -> dict:
     """Return default meta data for a given index.
 
     kept for compability. Use INDEX_META dict instead.
@@ -1075,19 +1018,19 @@ def monthly_to_daily(
     """
     months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     months = months * int((cube.shape[0] / 12) + 1)
-    for i, s in enumerate(cube.slices_over(["time"])):
+    for idx, sli in enumerate(cube.slices_over(["time"])):
         if not leap_years:
-            days = months[i]
-            cube.data[i] = cube.data[i] / days
+            days = months[idx]
+            cube.data[idx] = cube.data[idx] / days
         try:
-            time = s.coord("time")
+            time = sli.coord("time")
             date = time.units.num2date(time.points[0])
             days = monthrange(date.year, date.month)[1]
         except Exception as e:
             log.warning("date failed, using fixed days without leap year")
             log.warning(e)
-            days = months[i]
-        cube.data[i] = cube.data[i] / days
+            days = months[idx]
+        cube.data[idx] = cube.data[idx] / days
     cube.units = units
 
 
@@ -1129,7 +1072,8 @@ def _get_data_hlp(axis, data, ilat, ilon):
         data_help = (data[ilat, :, ilon])[:, 0]
     elif axis == 2:
         data_help = data[ilat, ilon, :]
-
+    else:
+        data_help = None
     return data_help
 
 
@@ -1172,19 +1116,11 @@ def _provenance_map_spei(cfg, name_dict, spei, dataset_name):
     )
 
     if cfg["indexname"].lower == "spei":
-        set_refs = [
-            "martin18grl",
-            "vicente10jclim",
-        ]
+        set_refs = ["martin18grl", "vicente10jclim"]
     elif cfg["indexname"].lower == "spi":
-        set_refs = [
-            "martin18grl",
-            "mckee93proc",
-        ]
+        set_refs = ["martin18grl", "mckee93proc"]
     else:
-        set_refs = [
-            "martin18grl",
-        ]
+        set_refs = ["martin18grl"]
 
     provenance_record = get_provenance_record(
         [name_dict["input_filenames"]],
@@ -1230,11 +1166,11 @@ def _provenance_map_spei_multi(cfg, data_dict, spei, input_filenames):
         f"{cfg['indexname']}."
     )
     if cfg["indexname"].lower == "spei":
-        set_refs = [ "martin18grl", "vicente10jclim"]
+        set_refs = ["martin18grl", "vicente10jclim"]
     elif cfg["indexname"].lower == "spi":
-        set_refs = [ "martin18grl", "mckee93proc"]
+        set_refs = ["martin18grl", "mckee93proc"]
     else:
-        set_refs = [ "martin18grl"]
+        set_refs = ["martin18grl"]
 
     provenance_record = get_provenance_record(
         input_filenames,
@@ -1361,7 +1297,7 @@ def cube_to_save_ploted(var, data_dict) -> Cube:
     return plot_cube
 
 
-def cube_to_save_ploted_ts(data_dict:dict)->Cube:
+def cube_to_save_ploted_ts(data_dict: dict) -> Cube:
     """Create cube to prepare plotted time series for saving to netCDF."""
     cube = Cube(
         data_dict["data"],
@@ -1697,7 +1633,10 @@ def get_latlon_index(coords, lim1, lim2) -> np.ndarray:
 
 
 def plot_map_spei_multi(
-    cfg, data_dict, input_filenames, colormap="jet",
+    cfg,
+    data_dict,
+    input_filenames,
+    colormap="jet",
 ) -> None:
     """Plot contour maps for multi model mean."""
     spei = np.ma.array(data_dict["data"], mask=np.isnan(data_dict["data"]))
