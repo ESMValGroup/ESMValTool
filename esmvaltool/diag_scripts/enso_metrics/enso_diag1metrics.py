@@ -30,15 +30,15 @@ from esmvaltool.diag_scripts.shared import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def plot_level1(model_data, obs, metric_values, y_label, title, dtls):
+def plot_level1(model_data, obs, metric_values, labels_ls):
     """Plot ENSO metric data, input data is model and obs."""
     figure = plt.figure(figsize=(10, 6), dpi=300)
     modls = [d[0] for d in metric_values]
-    if title in ['ENSO lifecycle']:
+    if labels_ls[1] in ['ENSO lifecycle']:
         # model first :list
         for datamod, name in zip(model_data[1], modls):
             plt.plot(model_data[0], datamod, label=name)
-        plt.plot(*obs, label=f'ref: {dtls[0]}', linestyle='dashdot',
+        plt.plot(*obs, label=f'ref: {labels_ls[2]}', linestyle='dashdot',
                  linewidth=3, color='black')
 
     else:
@@ -49,15 +49,15 @@ def plot_level1(model_data, obs, metric_values, y_label, title, dtls):
         plt.xticks([])
         logger.info("number of models:%s", len(model_data))
 
-        plt.text(0.75, 0.9, f'* ref: {dtls[0]}', color='black',
+        plt.text(0.75, 0.9, f'* ref: {labels_ls[2]}', color='black',
                  transform=plt.gca().transAxes)
 
-    plt.title(title)  # metric name
+    plt.title(labels_ls[1])  # metric name
     plt.legend()
     plt.grid(linestyle='--')
-    plt.ylabel(y_label)
+    plt.ylabel(labels_ls[0])
 
-    if title == 'ENSO lifecycle':
+    if labels_ls[1] == 'ENSO lifecycle':
         plt.axhline(y=0, color='black', linewidth=2)
         xticks = np.arange(1, 73, 6) - 36  # Adjust for lead/lag months
         xtick_labels = ['Jan', 'Jul'] * (len(xticks) // 2)
@@ -68,7 +68,7 @@ def plot_level1(model_data, obs, metric_values, y_label, title, dtls):
 
 
 def plot_map1(input_data, rmse, title):
-    """Plot maps for teleconnections. input data is model and obs"""
+    """Plot maps for teleconnections. input data is model and obs."""
     figure = plt.figure(figsize=(20, 6), dpi=300)
 
     proj = ccrs.PlateCarree(central_longitude=180)
@@ -136,9 +136,9 @@ def sst_regressed(n34_cube):
 
 def lin_regress_matrix(cube_a, cube_b):
     """
+    
     Calculate the linear regression of cube_a on cube_b using
-    matrix operations.
-    Array must not contain infs or NaNs.
+    matrix operations. Array must not contain infs or NaNs.
 
     Parameters
     ----------
@@ -200,7 +200,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
         months = np.arange(1, 73) - 36
         # plot function, xticks, labels as dict/ls
         fig = plot_level1((months, model_plot), (months, obs), metric_values,
-                          'Degree C / C', f'ENSO {metric}', dt_ls)
+                          ['Degree C / C', f'ENSO {metric}', dt_ls])
 
     elif metric == 'seasonality':
         obs = seasonality_calc(input_pair[0][var_group[0]])
@@ -217,8 +217,8 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             metric_values.append((dataset, val))
             model_plot.append(model)
         fig = plot_level1(model_plot, obs, metric_values,
-                          'SSTA std (NDJ/MAM)(°C/°C)',
-                          f'ENSO {metric}', dt_ls)
+                          ['SSTA std (NDJ/MAM)(°C/°C)',
+                          f'ENSO {metric}', dt_ls])
 
     return metric_values, fig
 
@@ -331,17 +331,16 @@ def main(cfg):
         model_ds = group_metadata(models, 'dataset', sort='project')
 
         if metric.endswith('telecon'):
-            for dataset in model_ds:
+            for dataset, ds_ls in model_ds.items():
                 logger.info("%s, preprocessed cubes:%d, dataset:%s",
-                    metric, len(model_ds), dataset
-                )
+                            metric, len(model_ds), dataset)
                 dt_files = [ds['filename']
                             for ds in obs] + [ds['filename']
-                                              for ds in model_ds[dataset]]
+                                              for ds in ds_ls]
 
                 model_datasets = {attributes['variable_group']:
                                   iris.load_cube(attributes['filename'])
-                                  for attributes in model_ds[dataset]}
+                                  for attributes in ds_ls}
                 input_pair = {obs[0]['dataset']: obs_datasets,
                               dataset: model_datasets}
 
@@ -352,8 +351,8 @@ def main(cfg):
                 for seas, val in values.items():
                     metricfile = get_diagnostic_filename('matrix', cfg,
                                                          extension='csv')
-                    with open(metricfile, 'a+') as f:
-                        f.write(f"{dataset},{seas}_{metric},{val}\n")
+                    with open(metricfile, 'a+', encoding='utf-8') as csvfile:
+                        csvfile.write(f"{dataset},{seas}_{metric},{val}\n")
 
                     prov_record = get_prov_rec(f'ENSO {seas} {metric}',
                                                'map', dt_files)
@@ -361,7 +360,7 @@ def main(cfg):
                                 figure=fig[seas], dpi=300)
 
         else:
-            input_pair = [obs_datasets, model_ds]
+            in_pair = [obs_datasets, model_ds]
 
             dt_files = [datas['filename'] for datas in obs]
             for dset in models:
@@ -370,7 +369,7 @@ def main(cfg):
                                        'line', dt_files)
 
             # process function for each metric
-            values, fig = compute_enso_metrics(input_pair, [obs[0]['dataset']],
+            values, fig = compute_enso_metrics(in_pair, obs[0]['dataset'],
                                                var_preproc, metric)
             save_figure(metric, prov_record, cfg,
                         figure=fig, dpi=300)
@@ -380,7 +379,7 @@ def main(cfg):
                                                  extension='csv')
             with open(metricfile, 'a+', encoding='utf-8') as csvfile:
                 for dataset, value in values:
-                    f.write(f"{dataset},{metric},{value}\n")
+                    csvfile.write(f"{dataset},{metric},{value}\n")
 
 
 if __name__ == '__main__':
