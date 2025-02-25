@@ -49,86 +49,101 @@ preprocessors:
     convert_units:
       units: DU
 
+  create_lat_month_map:
+    regrid: 
+      scheme: linear
+      target_grid: 5x5
+    climate_statistics:
+      operator: mean
+      period: month
+    zonal_statistics:
+      operator: mean
+    convert_units:
+      units: DU
+
 datasets:
-   - {project: CMIP6, dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2, exp: historical}
+   - {project: CMIP6, dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2, exp: historical, alias: CNRM-ESM2-1}
 #   - {project: CMIP6, dataset: UKESM1-0-LL, grid: gn, ensemble: r1i1p1f2, exp: historical}
 
 
 diagnostics:
 
-  # polar_cap_time_series_SH:  # this is a custom name
-    # variables:
-      # toz:
-        # mip: AERmon
-        # exp: historical
-        # preprocessor: create_time_series_SH
-        # timerange: '1950/2014'
-    # additional_datasets:
-      # #- {project: OBS, dataset: NIWA-BS, type: sat, version: v3.3, tier: 3, mip: Amon, timerange: '1979/2016'}
-      # - {project: OBS, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: Amon, timerange: '1997/2010'}
-    # scripts:
-      # plot:  # this is a custom name
-        # script: monitor/multi_datasets.py
-        # plot_filename: '{plot_type}_{real_name}_SH_Oct'
-        # facet_used_for_labels: alias
-        # savefig_kwargs:
-          # dpi: 150
-          # bbox_inches: tight
-          # orientation: landscape
-        # plots:
-          # timeseries:
-            # annual_mean_kwargs: false
-            # plot_kwargs:  # The following lines are used to customize the individual lines in the plot
-              # OBS:
-                # color: black
-              # CMIP6_CNRM-ESM2-1:
-                # color: cyan
-              # CMIP6_CNRM-ESM2-1:
-                # color: cornflowerblue
-              # CMIP6_UKESM1-0-LL:
-                # color: gold
-              # CMIP6_UKESM1-0-LL:
-                # color: darkorange
-            # pyplot_kwargs:
-              # title: Total Column Ozone, 60-90S, October  # title of the plot
-              # # ylim: [220, 350]  # range of y-axis
+  polar_cap_time_series_SH:  # this is a custom name
+    variables:
+      toz:
+        mip: AERmon
+        exp: historical
+        preprocessor: create_time_series_SH
+        timerange: '1950/2014'
+    additional_datasets:
+      - {project: OBS, dataset: NIWA-BS, type: sat, version: v3.3, tier: 3, mip: Amon, timerange: '1979/2014', alias: NIWA-BS}
+      #- {project: OBS, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: Amon, timerange: '1997/2010'}
+    scripts:
+      plot:  # this is a custom name
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_SH_Oct'
+        facet_used_for_labels: alias
+        savefig_kwargs:
+          dpi: 150
+          bbox_inches: tight
+          orientation: landscape
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            plot_kwargs:  # The following lines are used to customize the individual lines in the plot
+              OBS:
+                color: black
+              CMIP6_CNRM-ESM2-1:
+                color: cyan
+              CMIP6_CNRM-ESM2-1:
+                color: cornflowerblue
+              CMIP6_UKESM1-0-LL:
+                color: gold
+              CMIP6_UKESM1-0-LL:
+                color: darkorange
+            pyplot_kwargs:
+              title: Total Column Ozone, 60-90S, October  # title of the plot
+              # ylim: [220, 350]  # range of y-axis
 
-  # polar_cap_time_series_NH:  # this is a custom name
-    # variables:
-      # toz:
-        # mip: AERmon
-        # exp: historical
-        # preprocessor: create_time_series_NH
-        # timerange: '1950/2014'
-    # additional_datasets:
-      # #- {project: OBS, dataset: NIWA-BS, type: sat, version: v3.3, tier: 3, mip: Amon, timerange: '1979/2016'}
-      # - {project: OBS, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: Amon, timerange: '1997/2010'}
-    # scripts:
-      # plot:  # this is a custom name
-        # script: monitor/multi_datasets.py
-        # plot_filename: '{plot_type}_{real_name}_NH_MAR'
-        # facet_used_for_labels: alias
-        # savefig_kwargs:
-          # dpi: 150
-          # bbox_inches: tight
-          # orientation: landscape
-        # plots:
-          # timeseries:
-            # annual_mean_kwargs: false
-            # plot_kwargs:  # The following lines are used to customize the individual lines in the plot
-              # OBS:
-                # color: black
-              # CMIP6_CNRM-ESM2-1:
-                # color: cyan
-              # CMIP6_CNRM-ESM2-1:
-                # color: cornflowerblue
-              # CMIP6_UKESM1-0-LL:
-                # color: gold
-              # CMIP6_UKESM1-0-LL:
-                # color: darkorange
-            # pyplot_kwargs:
-              # title: Total Column Ozone, 60-90N, March  # title of the plot
-              # # ylim: [220, 350]  # range of y-axis
+  polar_cap_time_series_NH:  # this is a custom name
+    variables:
+      toz:
+        mip: AERmon
+        exp: historical
+        preprocessor: create_time_series_NH
+        facet_used_for_labels: alias
+        timerange: '1950/2014'
+    additional_datasets:
+      - {project: OBS, dataset: NIWA-BS, type: sat, version: v3.3, tier: 3, mip: Amon, timerange: '1979/2014', alias: NIWA-BS}
+      #- {project: OBS, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: Amon, timerange: '1997/2010'}
+    scripts:
+      plot:  # this is a custom name
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_NH_MAR'
+        facet_used_for_labels: alias
+        savefig_kwargs:
+          dpi: 150
+          bbox_inches: tight
+          orientation: landscape
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            plot_kwargs:  # The following lines are used to customize the individual lines in the plot
+              OBS:
+                color: black
+              CMIP6_CNRM-ESM2-1:
+                color: cyan
+              CMIP6_CNRM-ESM2-1:
+                color: cornflowerblue
+              CMIP6_UKESM1-0-LL:
+                color: gold
+              CMIP6_UKESM1-0-LL:
+                color: darkorange
+            pyplot_kwargs:
+              title: Total Column Ozone, 60-90N, March  # title of the plot
+              # ylim: [220, 350]  # range of y-axis
 
   lat_time_mapplot:
     variables:
@@ -136,15 +151,22 @@ diagnostics:
         mip: AERmon
         exp: historical
         preprocessor: create_lat_time_map
-        timerange: '1997/2010'
+        timerange: '1997/2014'
     additional_datasets:
-      #- {project: OBS, dataset: NIWA-BS, type: sat, version: v3.3, tier: 3, mip: Amon, timerange: '1979/2016'}
-      - {project: OBS, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: Amon, timerange: '1997/2010', reference_for_monitor_diags: true}
+      - {project: OBS, dataset: NIWA-BS, type: sat, version: v3.3, tier: 3, mip: Amon, timerange: '1997/2014', reference_for_monitor_diags: true, alias: NIWA-BS}
+      #- {project: OBS, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: Amon, timerange: '1997/2010', reference_for_monitor_diags: true}
     scripts:
       plot:  # this is a custom name
         script: monitor/multi_datasets.py
+        facet_used_for_labels: alias
+        plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_LatTime_Map'
         facet_used_for_labels: alias
+        matplotlib_rc_params: 
+          xtick.labelsize: 6
+          ytick.labelsize: 8
+          axes.labelsize: 8
+          axes.titlesize: 8
         savefig_kwargs:
           dpi: 150
           bbox_inches: tight
@@ -152,7 +174,43 @@ diagnostics:
         plots:
           hovmoeller_time_vs_lat_or_lon:
             common_cbar: true
-            fontsize: 7
+            #fontsize: 7
+            show_x_minor_ticks: false
+            time_format: '%Y'
+            time_on: x-axis
+          #pyplot_kwargs:
+            #title: Total Column Ozone, Zonal means  # title of the plot
+
+  lat_month_mapplot:
+    variables:
+      toz:
+        mip: AERmon
+        exp: historical
+        preprocessor: create_lat_month_map
+        timerange: '1997/2014'
+    additional_datasets:
+      - {project: OBS, dataset: NIWA-BS, type: sat, version: v3.3, tier: 3, mip: Amon, timerange: '1997/2014', reference_for_monitor_diags: true, alias: NIWA-BS}
+      #- {project: OBS, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: Amon, timerange: '1997/2010', reference_for_monitor_diags: true}
+    scripts:
+      plot:  # this is a custom name
+        script: monitor/multi_datasets.py
+        facet_used_for_labels: alias
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_LatTime_Map'
+        facet_used_for_labels: alias
+        matplotlib_rc_params: 
+          xtick.labelsize: 6
+          ytick.labelsize: 8
+          axes.labelsize: 8
+          axes.titlesize: 8
+        savefig_kwargs:
+          dpi: 150
+          bbox_inches: tight
+          orientation: landscape
+        plots:
+          hovmoeller_time_vs_lat_or_lon:
+            common_cbar: true
+            #fontsize: 7
             show_x_minor_ticks: false
             time_format: '%Y'
             time_on: x-axis
