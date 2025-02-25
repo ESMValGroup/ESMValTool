@@ -31,7 +31,7 @@ diagnostics:
         ensemble: r1i1p1
         <<: *time_period
     additional_datasets:
-      - {dataset: CESM2-WACCM, project: CMIP6, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
     scripts:
       plot:
         script: seaborn_diag.py

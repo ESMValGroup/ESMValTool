@@ -174,11 +174,24 @@ def _create_plot(
         logger.debug("Setting `suptitle='%s'`", cfg['suptitle'])
         if plot_func_str in ['jointplot']:
             plt.suptitle(cfg['suptitle']
-                         .format(data_frame["shape_id"].unique()[0]), y=1.05)
+                         .format(data_frame["alias"].unique()[0]), y=1.05)
         else:
             plt.suptitle(cfg['suptitle'], y=1.05)
+        #plt.suptitle(cfg['suptitle'], y=1.05)
     if cfg['legend_title'] is not None:
         _set_legend_title(plot_obj, cfg['legend_title'])
+    if plot_func_str in ['jointplot'] and plot_kwargs['cbar'] is True:
+        plt.subplots_adjust(left=0.1, right=0.8, top=0.9, bottom=0.1)
+        # get the current positions of the joint ax and the ax for the marginal x
+        pos_joint_ax = plot_obj.ax_joint.get_position()
+        pos_marg_x_ax = plot_obj.ax_marg_x.get_position()
+        # reposition the joint ax so it has the same width as the marginal x ax
+        plot_obj.ax_joint.set_position([pos_joint_ax.x0, pos_joint_ax.y0, pos_marg_x_ax.width, pos_joint_ax.height])
+        # reposition the colorbar using new x positions and y positions of the joint ax
+        plot_obj.fig.axes[-1].set_position([.83, pos_joint_ax.y0, .07, pos_joint_ax.height])
+    #    # make new ax object for the cbar
+    #    cbar_ax = plot_obj.fig.add_axes([.85, .25, .05, .4])  # x, y, width, height
+    #    plt.colorbar(cax=cbar_ax)
 
     # Save plot
     plot_path = get_plot_filename(f"seaborn_{plot_func_str}", cfg)
