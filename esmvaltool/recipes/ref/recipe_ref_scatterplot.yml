@@ -3,8 +3,7 @@
 documentation:
   title: Model evaluation with focus on clouds.
   description: >
-    Plot scatter plots of two different variables using the Seaborn diagnostic 
-    in ESMValTool.
+    Plot 2D histograms using the Seaborn diagnostic in ESMValTool.
   authors:
     - bock_lisa
     - lauer_axel
@@ -12,16 +11,24 @@ documentation:
     - bock_lisa
 
 timerange_for_models: &time_period
-  timerange: '2005/2014'  # can be specified, this is just an example
+  timerange: '2005/2005'  # can be specified, this is just an example
+
+preprocessors:
+  common_grid:
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
 
 diagnostics:
   plot_joint_clt_lwcre:
     description: Scatterplot clt vs lwcre.
-    variables:
+    variables: &vars_clt_lwcre
       clt:
         mip: Amon
         exp: historical
         ensemble: r1i1p1
+        preprocessor: common_grid
         <<: *time_period
       lwcre:
         mip: Amon
@@ -29,62 +36,75 @@ diagnostics:
         force_derivation: false
         exp: historical
         ensemble: r1i1p1
+        preprocessor: common_grid
         <<: *time_period
     additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
+      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2}
     scripts:
-      plot:
+      plot: &plot_settings_jointplot
         script: seaborn_diag.py
         seaborn_func: jointplot
         title: 
         seaborn_kwargs:
           kind: hist
           x: clt
-          y: lwcre
-          bins: 20                    # Adjust binning for histograms
+          y: lwcre                 # Adjust binning for histograms
+          binwidth: [5., 5.]
+          binrange: [[0., 100.], [-10., 120.]]
+          xlim: [0., 100.]
+          ylim: [-10., 120.]
+          vmax: 0.02
           stat: probability
           cmap: YlGnBu
+          cbar: True
+          cbar_kws:
+            extend: 'max'
           marginal_ticks: True
           marginal_kws:
             color: darkturquoise
-            bins: 20
+            binwidth: 5.
+            #binrange: [[0., 100.], [-10., 120.]]
             fill: True
             stat: probability
-          #cbar: True
-          #cbar_kws:
-          #  use_gridspec: False
-          #  location: "bottom"
+          #marg_x_kws:
+          #  binwidth: 5
+          #  binrange: [0., 100.]
+          #marg_y_kws:
+          #  binwidth: 5
+          #  binrange: [-10., 120.]
         add_aux_coords: true
-        dropna_kwargs:
-          axis: 0
-          how: any
+        #dropna_kwargs:
+        #  axis: 0
+        #  how: any
         plot_object_methods:
           set_axis_labels:
             xlabel: 'clt [%]'
             ylabel: 'lwcre [W m-2]'
+          #set_title: '{alias}'
         seaborn_settings:
           style: ticks
           rc:
             axes.titlepad: 15.0
+        suptitle: 'CESM2'
+
+  plot_joint_clt_lwcre_ref:
+    description: Scatterplot clt vs lwcre.
+    variables:
+      <<: *vars_clt_lwcre
+    additional_datasets:
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
+    scripts:
+      plot:
+        <<: *plot_settings_jointplot
+        suptitle: 'ESACCI-CLOUD'
 
   plot_hist_with_ref_clt_lwcre:
     description: Scatterplot clt vs swcre with reference.
     variables:
-      clt:
-        mip: Amon
-        exp: historical
-        ensemble: r1i1p1
-        <<: *time_period
-      lwcre:
-        mip: Amon
-        derive: true
-        force_derivation: false
-        exp: historical
-        ensemble: r1i1p1
-        <<: *time_period
+      <<: *vars_clt_lwcre
     additional_datasets:
       - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
-      - {dataset: CESM2-WACCM, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2-WACCM}
+      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2-WACCM}
     scripts:
       plot:
         script: seaborn_diag.py
@@ -94,7 +114,12 @@ diagnostics:
           col: alias                # Creates side-by-side plots for each dataset
           x: clt
           y: lwcre
-          bins: 20                    # Adjust binning for histograms
+          binwidth: [5., 5.]
+          binrange: [[0., 100.], [-10., 120.]]
+          facet_kws:
+            xlim: [0., 100.]
+            ylim: [-10., 120.]
+          vmax: 0.02
           height: 5                   # Set height of each subplot
           aspect: 1.2                 # Set aspect ratio
           stat: probability 
@@ -103,10 +128,11 @@ diagnostics:
           cbar: True                  # Includes a color bar
           cbar_kws:
             label: "Probability"
+            extend: 'max'
         add_aux_coords: true
-        dropna_kwargs:
-          axis: 0
-          how: any
+        #dropna_kwargs:
+        #  axis: 0
+        #  how: any
         plot_object_methods:
           set_axis_labels:
             xlabel: 'clt [%]'
