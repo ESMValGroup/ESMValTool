@@ -31,7 +31,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def plot_level1(model_data, obs, metric_values, y_label, title, dtls):
-    """Plots ENSO metric data, input data- model and obs."""
+    """Plot ENSO metric data, input data is model and obs."""
     figure = plt.figure(figsize=(10, 6), dpi=300)
     modls = [d[0] for d in metric_values]
     if title in ['ENSO lifecycle']:
@@ -64,12 +64,11 @@ def plot_level1(model_data, obs, metric_values, y_label, title, dtls):
         plt.xticks(xticks, xtick_labels)
         plt.yticks(np.arange(-2, 2.5, step=1))
 
-    plt.tight_layout
     return figure
 
 
 def plot_map1(input_data, rmse, title):
-    "Plot maps for teleconnections. input data is - model and obs"
+    """Plot maps for teleconnections. input data is model and obs"""
     figure = plt.figure(figsize=(20, 6), dpi=300)
 
     proj = ccrs.PlateCarree(central_longitude=180)
@@ -96,7 +95,7 @@ def plot_map1(input_data, rmse, title):
     cbar = figure.colorbar(cf1, cax=cax, orientation='horizontal',
                            extend='both', ticks=np.arange(-1, 1.5, 0.5))
     cbar.set_label('regression (°C/°C)')
-    logger.info(f"{title}, {label} : metric:{rmse}")
+    logger.info("%s, %s : metric:%f", title, input_data.keys()[0], rmse)
     plt.tight_layout
 
     return figure
@@ -105,17 +104,17 @@ def plot_map1(input_data, rmse, title):
 def sst_regressed(n34_cube):
     """Regression function for sst_time_series on sst_enso."""
     n34_dec = extract_month(n34_cube, 12)
-    leadlagyr = 3
     n34_dec_years = [n34_dec.coord('time').units.num2date(time).year
                      for time in n34_dec.coord('time').points]
-    event_years = n34_dec_years[leadlagyr:-leadlagyr]
+    event_years = n34_dec_years[3:-3]  # leadlagyr
     # Ensure that the selected years are not the last years
-    years_of_interest = []
-    for yr in event_years:
-        years_of_interest.append([yr - 2, yr - 1, yr, yr + 1, yr + 2, yr + 3])
+    years_epochs = []
+    for year in event_years:
+        years_epochs.append([year - 2, year - 1, year,
+                             year + 1, year + 2, year + 3])
 
     n34_selected = []
-    for enso_epoch in years_of_interest:
+    for enso_epoch in years_epochs:
         # Select the data for the current year and append it to n34_selected
         year_enso = iris.Constraint(time=lambda cell: cell.point.year in
                                     enso_epoch)
@@ -214,7 +213,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
                               for attr in input_pair[1][dataset]}
             model = seasonality_calc(model_datasets[var_group[0]])
 
-            val = abs((model-obs)/obs)*100
+            val = abs((model-obs) / obs) * 100
             metric_values.append((dataset, val))
             model_plot.append(model)
         fig = plot_level1(model_plot, obs, metric_values,
@@ -225,28 +224,27 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
 
 
 def compute_telecon_metrics(input_pair, var_group, metric):
-
+    """Compute teleconnections."""
+    title = '{} SST Teleconnection'
     if metric == 'pr_telecon':
         title = '{} PR Teleconnection'  # both seasons
-    elif metric == 'ts_telecon':
-        title = '{} SST Teleconnection'
 
     val, fig = {}, {}
     for seas in ['DJF', 'JJA']:
         data_values = []
         cubes = {}
-        for label, ds in input_pair.items():  # obs 0, mod 1
+        for label, dataset in input_pair.items():  # obs 0, mod 1
             preproc = {}
             for variable in var_group:
-                cube = extract_season(ds[variable].copy(), seas)
+                cube = extract_season(dataset[variable].copy(), seas)
                 preproc[variable] = anomalies(cube, period="full")
 
             regcube = lin_regress_matrix(preproc[var_group[1]],
                                          preproc[var_group[0]])
-            reg_masked = mask_pacific(regcube)
+            regcube = mask_pacific(regcube)
 
-            data_values.append(reg_masked.data)
-            cubes[label] = reg_masked
+            data_values.append(regcube.data)
+            cubes[label] = regcube
 
         val[seas] = np.sqrt(np.mean((data_values[0] - data_values[1]) ** 2))
         fig[seas] = plot_map1(cubes, val[seas], title.format(seas))
@@ -255,6 +253,7 @@ def compute_telecon_metrics(input_pair, var_group, metric):
 
 
 def seasonality_calc(dset_cube):
+    """Calculate seasonality for dataset."""
     preproc = {}
     for seas in ['NDJ', 'MAM']:
         cube = extract_season(dset_cube, seas)
@@ -262,10 +261,11 @@ def seasonality_calc(dset_cube):
                                   period="full")
         preproc[seas] = cube.data
 
-    return preproc['NDJ']/preproc['MAM']
+    return preproc['NDJ'] / preproc['MAM']
 
 
 def mask_pacific(cube):
+    """Mask pacific region from cube."""
     region = box(130., -15., 270., 15)  # to do: remove land
     x_p, y_p = np.meshgrid(
         cube.coord(axis="X").points,
@@ -279,7 +279,6 @@ def mask_pacific(cube):
 
 def get_prov_rec(caption, plot_type, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
-
     record = {
         'caption': caption,
         'statistics': ['anomaly'],
@@ -300,7 +299,6 @@ def get_prov_rec(caption, plot_type, ancestor_files):
 
 def main(cfg):
     """Run ENSO metrics."""
-
     input_data = cfg['input_data'].values()
 
     # iterate through each metric and get variable group preprocessed data
@@ -334,9 +332,9 @@ def main(cfg):
 
         if metric.endswith('telecon'):
             for dataset in model_ds:
-                logger.info("{}, preprocessed cubes:{}, dataset:{}".format(
+                logger.info("%s, preprocessed cubes:%d, dataset:%s",
                     metric, len(model_ds), dataset
-                ))
+                )
                 dt_files = [ds['filename']
                             for ds in obs] + [ds['filename']
                                               for ds in model_ds[dataset]]
@@ -380,7 +378,7 @@ def main(cfg):
             # save metric for each pair, check not none
             metricfile = get_diagnostic_filename('matrix', cfg,
                                                  extension='csv')
-            with open(metricfile, 'a+') as f:
+            with open(metricfile, 'a+', encoding='utf-8') as csvfile:
                 for dataset, value in values:
                     f.write(f"{dataset},{metric},{value}\n")
 
