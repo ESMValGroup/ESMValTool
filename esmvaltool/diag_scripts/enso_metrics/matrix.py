@@ -1,14 +1,13 @@
 """Diagnostic script to plot ENSO metrics portrait matrix."""
 
-import os
 import logging
+import os
 
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
-from esmvaltool.diag_scripts.shared import (run_diagnostic,
-                                            save_figure)
+from esmvaltool.diag_scripts.shared import run_diagnostic, save_figure
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -26,9 +25,10 @@ def plot_matrix(diag_path):
         t_list.append(mod_df[[1, 2]].set_index(1).T.rename(index={2: mod}))
 
     matrixdf = pd.concat(t_list)
-    #normalise column by column
+    # normalise column by column
     for col in matrixdf.columns:
-        matrixdf[col] = (matrixdf[col] - matrixdf[col].mean()) / matrixdf[col].std()
+        stdev = matrixdf[col].std()
+        matrixdf[col] = (matrixdf[col] - matrixdf[col].mean()) / stdev
 
     figure = plt.figure(dpi=300)
     plt.imshow(matrixdf, cmap='coolwarm')

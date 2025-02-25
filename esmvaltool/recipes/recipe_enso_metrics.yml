@@ -3,7 +3,7 @@
 ---
 documentation:
   description: ENSO CLIVAR metrics - basic ENSO characteristics
-  title: Reproducing basic ENSO characteristics metrics by Yann Planton
+  title: Reproducing some basic ENSO characteristics metrics by Yann Planton
   authors:
     - chun_felicity
     # - beucher_romain
@@ -29,10 +29,10 @@ datasets:
   - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
   - {dataset: FGOALS-g3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
   - {dataset: FIO-ESM-2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: GISS-E2-1-G-CC, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014} # dimensions
+  # - {dataset: GISS-E2-1-G-CC, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014} # dimensions error
   # - {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
   - {dataset: GISS-E2-1-H, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: IITM-ESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1900, end_year: 2014} # error supp
+  # - {dataset: IITM-ESM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1900, end_year: 2014} # error supplementary
   - {dataset: MCM-UA-1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
   - {dataset: MIROC6, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
   - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
@@ -51,7 +51,7 @@ datasets:
   # - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
   
 preprocessors:
-  ssta_enso: &base_enso #pattern, lifecycle w/o month, duration, diversity
+  ssta_enso: &base_enso
     custom_order: true
     convert_units:
       units: degC
@@ -63,29 +63,19 @@ preprocessors:
       end_longitude: 240.
       start_latitude: -5.
       end_latitude: 5.
-    rolling_window_statistics: #twice
+    rolling_window_statistics:
       coordinate: time
       operator: mean
       window_length: 5
     anomalies:
       period: monthly
 
-  ssta_ninoarea: ##lifecycle duration
+  ssta_ninoarea:
     <<: *base_enso
     area_statistics:
       operator: mean
 
-  ssta_meridional: #diversity more smoothing, lifecycle duration
-    <<: *base_enso
-    extract_region: &eqp #lifecycle 160 280
-      start_longitude: 150.
-      end_longitude: 270.
-      start_latitude: -5.
-      end_latitude: 5.
-    meridional_statistics:
-      operator: mean
-
-  enso_seas_asym: #boreal season in script, climate stddev
+  enso_seas_asym:
     custom_order: true
     extract_region: 
       <<: *nino34
@@ -142,12 +132,6 @@ diagnostics:
         short_name: tos
         mip: Omon
         preprocessor: ssta_ninoarea
-        additional_datasets:
-          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2}
-      tos_lifdurdiv2: # pt2 diversity lifecycle duration
-        short_name: tos
-        mip: Omon
-        preprocessor: ssta_meridional
         additional_datasets:
           - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2}
 
