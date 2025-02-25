@@ -11,7 +11,7 @@ documentation:
     - bock_lisa
 
 timerange_for_models: &time_period
-  timerange: '2005/2005'  # can be specified, this is just an example
+  timerange: '2007/2011'  # can be specified, this is just an example
 
 preprocessors:
   common_grid:
@@ -19,41 +19,66 @@ preprocessors:
       target_grid: 1x1
       scheme:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
+  common_grid_pr:
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    convert_units:
+      units: mm day-1
+  common_grid_levels:
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev27}
+      coordinate: air_pressure
+      scheme: linear
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+  common_grid_levels_cli:
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev27}
+      coordinate: air_pressure
+      scheme: linear
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    convert_units:
+      units: g kg-1
+
 
 diagnostics:
-  plot_joint_clt_lwcre:
-    description: Scatterplot clt vs lwcre.
-    variables: &vars_clt_lwcre
-      clt:
+  plot_joint_clt_swcre:
+    description: Scatterplot clt vs swcre.
+    variables: &vars_clt_swcre
+      clt: &var_clt
         mip: Amon
         exp: historical
         ensemble: r1i1p1
         preprocessor: common_grid
         <<: *time_period
-      lwcre:
-        mip: Amon
+      swcre: &var_swcre
+        <<: *var_clt
         derive: true
         force_derivation: false
-        exp: historical
-        ensemble: r1i1p1
-        preprocessor: common_grid
-        <<: *time_period
     additional_datasets:
       - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2}
     scripts:
-      plot: &plot_settings_jointplot
+      plot: &plot_settings_jointplot_clt_swcre
         script: seaborn_diag.py
         seaborn_func: jointplot
         title: 
         seaborn_kwargs:
           kind: hist
           x: clt
-          y: lwcre                 # Adjust binning for histograms
-          binwidth: [5., 5.]
-          binrange: [[0., 100.], [-10., 120.]]
+          y: swcre                 # Adjust binning for histograms
+          bins: 20
+          #binwidth: [5., 5.]
+          binrange: [[0., 100.], [-200., 0.]]
           xlim: [0., 100.]
-          ylim: [-10., 120.]
-          vmax: 0.02
+          ylim: [-200., 0.]
+          vmax: 0.015
           stat: probability
           cmap: YlGnBu
           cbar: True
@@ -62,7 +87,8 @@ diagnostics:
           marginal_ticks: True
           marginal_kws:
             color: darkturquoise
-            binwidth: 5.
+            #binwidth: 5.
+            bins: 20
             #binrange: [[0., 100.], [-10., 120.]]
             fill: True
             stat: probability
@@ -79,65 +105,256 @@ diagnostics:
         plot_object_methods:
           set_axis_labels:
             xlabel: 'clt [%]'
-            ylabel: 'lwcre [W m-2]'
-          #set_title: '{alias}'
-        seaborn_settings:
-          style: ticks
-          rc:
-            axes.titlepad: 15.0
-        suptitle: 'CESM2'
-
-  plot_joint_clt_lwcre_ref:
-    description: Scatterplot clt vs lwcre.
-    variables:
-      <<: *vars_clt_lwcre
-    additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
-    scripts:
-      plot:
-        <<: *plot_settings_jointplot
-        suptitle: 'ESACCI-CLOUD'
-
-  plot_hist_with_ref_clt_lwcre:
-    description: Scatterplot clt vs swcre with reference.
-    variables:
-      <<: *vars_clt_lwcre
-    additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
-      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2-WACCM}
-    scripts:
-      plot:
-        script: seaborn_diag.py
-        seaborn_func: displot
-        seaborn_kwargs:
-          kind: hist
-          col: alias                # Creates side-by-side plots for each dataset
-          x: clt
-          y: lwcre
-          binwidth: [5., 5.]
-          binrange: [[0., 100.], [-10., 120.]]
-          facet_kws:
-            xlim: [0., 100.]
-            ylim: [-10., 120.]
-          vmax: 0.02
-          height: 5                   # Set height of each subplot
-          aspect: 1.2                 # Set aspect ratio
-          stat: probability 
-          common_norm: True
-          cmap: YlGnBu
-          cbar: True                  # Includes a color bar
-          cbar_kws:
-            label: "Probability"
-            extend: 'max'
-        add_aux_coords: true
-        #dropna_kwargs:
-        #  axis: 0
-        #  how: any
-        plot_object_methods:
-          set_axis_labels:
-            xlabel: 'clt [%]'
             ylabel: 'swcre [W m-2]'
         seaborn_settings:
           style: ticks
           rc:
             axes.titlepad: 15.0
+        suptitle: '{}'
+
+  plot_joint_clt_swcre_ref:
+    description: Scatterplot clt vs swcre.
+    variables:
+      <<: *vars_clt_swcre
+    additional_datasets:
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
+    scripts:
+      plot:
+        <<: *plot_settings_jointplot_clt_swcre
+
+  plot_joint_clwvi_pr_ref:
+    description: Scatterplot clwvi vs pr.
+    variables:
+      clwvi:
+        <<: *var_clt
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
+      pr:
+        <<: *var_clt
+        preprocessor: common_grid_pr
+        additional_datasets:
+          - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3, tier: 1,  alias: GPCP-SG}
+    scripts:
+      plot: &plot_settings_jointplot_clwvi_pr
+        <<: *plot_settings_jointplot
+        seaborn_kwargs:
+          kind: hist
+          x: clwvi
+          y: pr                 # Adjust binning for histograms
+          #binwidth: [0.01, 0.01]
+          bins: 20
+          binrange: [[0., 0.1], [0., 0.3]]
+          xlim: [0., 0.1]
+          ylim: [0., 0.3]
+          vmax: 0.03
+          stat: probability
+          cmap: YlGnBu
+          cbar: True
+          cbar_kws:
+            extend: 'max'
+          marginal_ticks: True
+          marginal_kws:
+            color: darkturquoise
+            bins: 20
+            #binwidth: 0.01
+            #binrange: [[0., 100.], [-10., 120.]]
+            fill: True
+            stat: probability
+          #marg_x_kws:
+          #  binwidth: 5
+          #  binrange: [0., 100.]
+          #marg_y_kws:
+          #  binwidth: 5
+          #  binrange: [-10., 120.]
+        plot_object_methods:
+          set_axis_labels:
+            xlabel: 'clwvi [kg m-2]'
+            ylabel: 'pr [mm day-1]'
+          #ax_marg_x.hist: 
+          #  binrange: [0., 0.25]
+          #ax_marg_y.hist:
+          #  binrange: [0., 0.3]
+
+  plot_joint_clwvi_pr_model:
+    description: Scatterplot clwvi vs pr.
+    variables:
+      clwvi:
+        <<: *var_clt
+      pr:
+        <<: *var_clt
+        preprocessor: common_grid_pr
+    additional_datasets:
+      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2}
+    scripts:
+      plot:
+        <<: *plot_settings_jointplot_clwvi_pr
+
+  plot_joint_clivi_lwcre_ref:
+    description: Scatterplot clt vs lwcre.
+    variables:
+      clivi:
+        <<: *var_clt
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
+      lwcre:
+        <<: *var_swcre
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
+    scripts:
+      plot: &plot_settings_jointplot_clivi_lwcre
+        <<: *plot_settings_jointplot
+        seaborn_kwargs:
+          kind: hist
+          x: clivi
+          y: lwcre                 # Adjust binning for histograms
+          #binwidth: [0.01, 5.]
+          bins: 20
+          binrange: [[0., 0.2], [-10., 100.]]
+          xlim: [0., 0.2]
+          ylim: [-10., 100.]
+          vmax: 0.03
+          stat: probability
+          cmap: YlGnBu
+          cbar: True
+          cbar_kws:
+            extend: 'max'
+          marginal_ticks: True
+          marginal_kws:
+            color: darkturquoise
+            #binwidth: 0.01
+            bins: 20
+            #binrange: [[0., 100.], [-10., 120.]]
+            fill: True
+            stat: probability
+          #marg_x_kws:
+          #  binwidth: 5
+          #  binrange: [0., 100.]
+          #marg_y_kws:
+          #  binwidth: 5
+          #  binrange: [-10., 120.]
+        plot_object_methods:
+          set_axis_labels:
+            xlabel: 'clivi [kg m-2]'
+            ylabel: 'lwcre [W m-2]'
+
+  plot_joint_clivi_lwcre_model:
+    description: Scatterplot clt vs lwcre.
+    variables:
+      clivi:
+        <<: *var_clt
+      lwcre:
+        <<: *var_swcre
+    additional_datasets:
+      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2}
+    scripts:
+      plot:
+        <<: *plot_settings_jointplot_clivi_lwcre
+
+  plot_joint_cli_ta_ref:
+    description: Scatterplot clt vs lwcre.
+    variables:
+      cli:
+        <<: *var_clt
+        preprocessor: common_grid_levels_cli
+        additional_datasets:
+          - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, tier: 3, alias: CALIPSO-ICECLOUD}
+      ta:
+        <<: *var_clt
+        preprocessor: common_grid_levels
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, ERA5}
+    scripts:
+      plot: &plot_settings_jointplot_cli_ta
+        <<: *plot_settings_jointplot
+        seaborn_kwargs:
+          kind: hist
+          x: cli
+          y: ta                 # Adjust binning for histograms
+          #binwidth: [0.01, 5.]
+          bins: 20
+          binrange: [[0., 0.01], [190., 310.]]
+          xlim: [0., 0.01]
+          ylim: [180., 320.]
+          vmax: 0.02
+          stat: probability
+          cmap: YlGnBu
+          cbar: True
+          cbar_kws:
+            extend: 'max'
+          marginal_ticks: True
+          marginal_kws:
+            color: darkturquoise
+            #binwidth: 0.01
+            bins: 20
+            #binrange: [[0., 100.], [-10., 120.]]
+            fill: True
+            stat: probability
+          #marg_x_kws:
+          #  binwidth: 5
+          #  binrange: [0., 100.]
+          #marg_y_kws:
+          #  binwidth: 5
+          #  binrange: [-10., 120.]
+        plot_object_methods:
+          set_axis_labels:
+            xlabel: 'cli [g kg]'
+            ylabel: 'ta [K]'
+
+  plot_joint_cli_ta_model:
+    description: Scatterplot clt vs lwcre.
+    variables:
+      cli:
+        <<: *var_clt
+        preprocessor: common_grid_levels_cli
+      ta:
+        <<: *var_clt
+        preprocessor: common_grid_levels
+    additional_datasets:
+      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2}
+    scripts:
+      plot: 
+        <<: *plot_settings_jointplot_cli_ta
+
+  # plot_hist_with_ref_clt_lwcre:
+  #   description: Scatterplot clt vs swcre with reference.
+  #   variables:
+  #     <<: *vars_clt_lwcre
+  #   additional_datasets:
+  #     - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
+  #     - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2-WACCM}
+  #   scripts:
+  #     plot:
+  #       script: seaborn_diag.py
+  #       seaborn_func: displot
+  #       seaborn_kwargs:
+  #         kind: hist
+  #         col: alias                # Creates side-by-side plots for each dataset
+  #         x: clt
+  #         y: lwcre
+  #         binwidth: [5., 5.]
+  #         binrange: [[0., 100.], [-10., 120.]]
+  #         facet_kws:
+  #           xlim: [0., 100.]
+  #           ylim: [-10., 120.]
+  #         #vmax: 0.025
+  #         height: 5                   # Set height of each subplot
+  #         aspect: 1.2                 # Set aspect ratio
+  #         stat: probability 
+  #         common_norm: True
+  #         cmap: YlGnBu
+  #         cbar: True                  # Includes a color bar
+  #         cbar_kws:
+  #           label: "Probability"
+  #           extend: 'max'
+  #       add_aux_coords: true
+  #       #dropna_kwargs:
+  #       #  axis: 0
+  #       #  how: any
+  #       plot_object_methods:
+  #         set_axis_labels:
+  #           xlabel: 'clt [%]'
+  #           ylabel: 'swcre [W m-2]'
+  #       seaborn_settings:
+  #         style: ticks
+  #         rc:
+  #           axes.titlepad: 15.0
