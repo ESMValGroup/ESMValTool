@@ -53,7 +53,7 @@ def plot_level1(model_data, obs, metric_values, labels_ls):
                  transform=plt.gca().transAxes)
 
     plt.title(labels_ls[1])  # metric name
-    plt.legend()
+    plt.legend(loc='center left', bbox_to_anchor=(1,0.5))
     plt.grid(linestyle='--')
     plt.ylabel(labels_ls[0])
 
@@ -95,8 +95,8 @@ def plot_map1(input_data, rmse, title):
     cbar = figure.colorbar(cf1, cax=cax, orientation='horizontal',
                            extend='both', ticks=np.arange(-1, 1.5, 0.5))
     cbar.set_label('regression (°C/°C)')
-    logger.info("%s, %s : metric:%f", title, input_data.keys()[0], rmse)
-    plt.tight_layout
+    logger.info("%s, %s : metric:%f", title, [*input_data][0], rmse)
+    # plt.tight_layout
 
     return figure
 
@@ -136,7 +136,7 @@ def sst_regressed(n34_cube):
 
 def lin_regress_matrix(cube_a, cube_b):
     """
-    
+
     Calculate the linear regression of cube_a on cube_b using
     matrix operations. Array must not contain infs or NaNs.
 
@@ -218,7 +218,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             model_plot.append(model)
         fig = plot_level1(model_plot, obs, metric_values,
                           ['SSTA std (NDJ/MAM)(°C/°C)',
-                          f'ENSO {metric}', dt_ls])
+                           f'ENSO {metric}', dt_ls])
 
     return metric_values, fig
 

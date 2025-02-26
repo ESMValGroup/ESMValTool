@@ -1,7 +1,7 @@
 .. _recipes_enso_metrics:
 
-ENSO CLIVAR metrics - reproducing ENSO characteristics lifecycle and seasonality
-================================================================================
+ENSO CLIVAR metrics - reproducing ENSO characteristics lifecycle, seasonality and teleconnections
+=================================================================================================
 
 Overview
 --------
@@ -39,7 +39,8 @@ Variables
 
 * tos (Omon, monthly)
 * areacello (Ofx)
-
+* pr (Amon, monthly)
+* ts (Amon, monthly)
 
 
 Observations and reformat scripts
@@ -48,7 +49,8 @@ Observations and reformat scripts
 
 * HadISST
 * TropFLUX
-
+* GPCP-SG
+* ERA-Interim
 
 References
 ----------
@@ -63,10 +65,24 @@ Example plots
 .. figure::  /recipes/figures/enso_metrics/seasonality.png
    :align:   center
 
-   Add figure caption here.
+    Ratio of winter over spring's standard deviation of SST anomalies.
+    All models on the same line.
 
 .. _fig_lifecycle:
 .. figure::  /recipes/figures/enso_metrics/lifecycle.png
    :align:   center
 
-   Add figure caption here.
+   Temporal structure of SST anomalies. Observation is dashed black line.
+
+.. _fig_teleconnections:
+.. figure::  /recipes/figures/enso_metrics/ACCESS-CM2_DJF_ts_telecon.png
+   :align:   center
+
+   PR or SST anomalies on Earth (between 60°S-60°N),
+   showing the location associated with ENSO.
+
+.. _fig_metrics:
+.. figure::  /recipes/figures/enso_metrics/plot_matrix.png
+   :align:   center
+
+   Portrait plot of normalized metrics for models against reference observation.
