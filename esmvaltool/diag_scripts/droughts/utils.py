@@ -7,6 +7,7 @@ Added functions should have a meaningfull name and docstring.
 from __future__ import annotations
 
 import datetime as dt
+import errno
 import itertools as it
 import logging
 from calendar import monthrange
@@ -17,9 +18,7 @@ from typing import Any
 import cartopy as ct
 import cartopy.crs as cart
 import iris
-import iris.plot as iplt
 import matplotlib as mpl
-import matplotlib.dates as mda
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
@@ -27,11 +26,11 @@ import yaml
 from cartopy.mpl.geoaxes import GeoAxes
 from cf_units import Unit
 from esmvalcore import preprocessor as pp
+from esmvalcore.iris_helpers import date2num
 from iris.analysis import Aggregator
 from iris.coords import AuxCoord
 from iris.cube import Cube, CubeList
 from iris.util import equalise_attributes
-from matplotlib.figure import Figure
 
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import (
@@ -54,6 +53,8 @@ DENSITY = AuxCoord(
     units="kg m-3")
 
 FNAME_FORMAT = "{project}_{reference_dataset}_{mip}_{exp}_{ensemble}_{short_name}_{start_year}-{end_year}"
+CMIP6 = "{project}_{dataset}_{mip}_{exp}_{ensemble}_{short_name}_{grid}_{start_year}-{end_year}"
+OBS = "{project}_{dataset}_{type}_{version}_{mip}_{short_name}_{start_year}-{end_year}"
 
 CONTINENTAL_REGIONS = {
     "Global": ["GLO"],  # global
@@ -114,68 +115,6 @@ INDEX_META = {
 }
 # fmt: on
 # pylint: enable=line-too-long
-
-
-# REGION_NAMES = {
-# 'Arabian-Peninsula',
-# 'Arabian-Sea',
-# 'Arctic-Ocean',
-# 'Bay-of-Bengal'
-# 'C.Australia',
-# 'C.North-America',
-# 'Caribbean',
-# 'Central-Africa'
-# 'E.Antarctica',
-# 'E.Asia',
-# 'E.Australia',
-# 'E.C.Asia',
-# 'E.Europe'
-# 'E.North-America',
-# 'E.Siberia',
-# 'E.Southern-Africa'
-# 'Equatorial.Atlantic-Ocean',
-# 'Equatorial.Indic-Ocean'
-# 'Equatorial.Pacific-Ocean',
-# 'Greenland/Iceland',
-# 'Madagascar',
-# 'Mediterranean',
-# 'N.Atlantic-Ocean',
-# 'N.Australia',
-# 'N.Central-America'
-# 'N.E.North-America',
-# 'N.E.South-America',
-# 'N.Eastern-Africa',
-# 'N.Europe',
-# 'N.Pacific-Ocean',
-# 'N.South-America',
-# 'N.W.North-America'
-# 'N.W.South-America',
-# 'New-Zealand',
-# 'Russian-Arctic',
-# 'Russian-Far-East',
-# 'S.Asia',
-# 'S.Atlantic-Ocean',
-# 'S.Australia',
-# 'S.Central-America',
-# 'S.E.Asia',
-# 'S.E.South-America',
-# 'S.Eastern-Africa',
-# 'S.Indic-Ocean',
-# 'S.Pacific-Ocean',
-# 'S.South-America',
-# 'S.W.South-America',
-# 'Sahara',
-# 'South-American-Monsoon',
-# 'Southern-Ocean',
-# 'Tibetan-Plateau',
-# 'W.Antarctica',
-# 'W.C.Asia',
-# 'W.North-America',
-# 'W.Siberia',
-# 'W.Southern-Africa',
-# 'West&Central-Europe',
-# 'Western-Africa'
-# }
 
 
 def merge_list_cube(
@@ -352,14 +291,15 @@ def fix_longitude(cube: Cube) -> Cube:
     """
     # make sure coords are -180 to 180
     fixed_lons = [
-        l if l < 180 else l - 360 for l in cube.coord("longitude").points
+        lon if lon < 180 else lon - 360
+        for lon in cube.coord("longitude").points
     ]
     try:
         cube.add_aux_coord(
             iris.coords.AuxCoord(fixed_lons, long_name="fixed_lon"),
             2,
         )
-    except Exception:
+    except ValueError:
         log.warning("TODO: hardcoded dimensions in ut.fix_longitude")
         cube.add_aux_coord(
             iris.coords.AuxCoord(fixed_lons, long_name="fixed_lon"),
@@ -371,7 +311,7 @@ def fix_longitude(cube: Cube) -> Cube:
     new_lon = cube.coord("fixed_lon")
     new_lon_dims = cube.coord_dims(new_lon)
     # Create a new coordinate which is a DimCoord.
-    # NOTE: The var name becomes the dim name
+    # The var name becomes the dim name
     longitude = iris.coords.DimCoord.from_coord(new_lon)
     longitude.rename("longitude")
     # Remove the AuxCoord, old longitude and add the new DimCoord.
@@ -422,7 +362,7 @@ def get_dataset_scenarios(cfg: dict) -> list:
 
 def date_tick_layout(
     fig,
-    ax,
+    axes,
     dates: list | None = None,
     label: str = "Time",
     years: int | None = 1,
@@ -436,11 +376,11 @@ def date_tick_layout(
     :param years: tick every x years, if None auto formatter is used
     :return: nothing, updates figure in place
     """
-    ax.set_xlabel(label)
+    axes.set_xlabel(label)
     if dates is not None:
         datemin = np.datetime64(dates[0], "Y")
         datemax = np.datetime64(dates[-1], "Y") + np.timedelta64(1, "Y")
-        ax.set_xlim(datemin, datemax)
+        axes.set_xlim(datemin, datemax)
     if years is None:
         locator = mdates.AutoDateLocator()
         min_locator = mdates.YearLocator(1)
@@ -448,30 +388,30 @@ def date_tick_layout(
         locator = mdates.YearLocator(years)  # type: ignore[assignment]
         min_locator = mdates.YearLocator(1)
     year_formatter = mdates.DateFormatter("%Y")
-    ax.grid(True)
-    ax.xaxis.set_major_locator(locator)
-    ax.xaxis.set_major_formatter(year_formatter)
-    ax.xaxis.set_minor_locator(min_locator)
+    axes.grid(True)
+    axes.xaxis.set_major_locator(locator)
+    axes.xaxis.set_major_formatter(year_formatter)
+    axes.xaxis.set_minor_locator(min_locator)
     fig.autofmt_xdate()  # align, rotate and space for tick labels
 
 
-def auto_tick_layout(fig, ax, dates=None):
+def auto_tick_layout(fig, axes, dates=None) -> None:
     """Update a time series figure to use auto date ticks and grid.
 
     NOTE: can this be merged with date_tick_layout?
     """
-    ax.set_xlabel("Time")
+    axes.set_xlabel("Time")
     if dates is not None:
         datemin = np.datetime64(dates[0], "Y")
         datemax = np.datetime64(dates[-1], "Y") + np.timedelta64(1, "Y")
-        ax.set_xlim(datemin, datemax)
+        axes.set_xlim(datemin, datemax)
     year_locator = mdates.YearLocator(1)
     months_locator = mdates.MonthLocator()
     year_formatter = mdates.DateFormatter("%Y")
-    ax.grid(True)
-    ax.xaxis.set_major_locator(year_locator)
-    ax.xaxis.set_major_formatter(year_formatter)
-    ax.xaxis.set_minor_locator(months_locator)
+    axes.grid(True)
+    axes.xaxis.set_major_locator(year_locator)
+    axes.xaxis.set_major_formatter(year_formatter)
+    axes.xaxis.set_minor_locator(months_locator)
     fig.autofmt_xdate()  # align, rotate and space for tick labels
 
 
@@ -487,7 +427,7 @@ def map_land_layout(axes: GeoAxes, plot, bounds, *, cbar: bool = True) -> None:
         facecolor="white",
         zorder=1,
     )
-    gl = axes.gridlines(
+    glines = axes.gridlines(
         crs=ct.crs.PlateCarree(),
         linewidth=1,
         color="black",
@@ -496,8 +436,8 @@ def map_land_layout(axes: GeoAxes, plot, bounds, *, cbar: bool = True) -> None:
         draw_labels=True,
         zorder=2,
     )
-    gl.xlabels_top = False
-    gl.ylabels_right = False
+    glines.xlabels_top = False
+    glines.ylabels_right = False
     if bounds is not None and cbar:
         plt.colorbar(
             plot,
@@ -573,8 +513,8 @@ def get_basename(cfg, meta, prefix=None, suffix=None) -> str:
     """Return a formatted basename for a diagnostic file."""
     _ = cfg  # we might need this in the future. dont tell codacy!
     formats = {  # TODO: load this from config-developer.yml?
-        "CMIP6": "{project}_{dataset}_{mip}_{exp}_{ensemble}_{short_name}_{grid}_{start_year}-{end_year}",
-        "OBS": "{project}_{dataset}_{type}_{version}_{mip}_{short_name}_{start_year}-{end_year}",
+        "CMIP6": CMIP6_FNAME,
+        "OBS": OBS_FNAME,
     }
     basename = formats[meta["project"]].format(**meta)
     if suffix:
@@ -776,8 +716,6 @@ def standard_time(cubes: Cube) -> None:
     different number of days in the year.
     NOTE: this might be replaced by preprocessor
     """
-    from esmvalcore.iris_helpers import date2num
-
     t_unit = Unit("days since 1850-01-01", calendar="standard")
     for cube in cubes:
         # Extract date info from cube
@@ -854,13 +792,13 @@ def mmm(
     """
     if dropcoords is None:
         dropcoords = ["time"]
-    for i, cube in enumerate(cube_list):
+    for idx, cube in enumerate(cube_list):
         for coord_name in dropcoords:
             if cube.coords(coord_name):
                 cube.remove_coord(coord_name)
         if dropmethods:
             cube.cell_methods = None
-        cube.add_aux_coord(iris.coords.AuxCoord(i, long_name="dataset"))
+        cube.add_aux_coord(iris.coords.AuxCoord(idx, long_name="dataset"))
     cube_list = CubeList(cube_list)
     equalise_attributes(cube_list)
     try:
@@ -1022,14 +960,10 @@ def monthly_to_daily(
         if not leap_years:
             days = months[idx]
             cube.data[idx] = cube.data[idx] / days
-        try:
-            time = sli.coord("time")
-            date = time.units.num2date(time.points[0])
-            days = monthrange(date.year, date.month)[1]
-        except Exception as e:
-            log.warning("date failed, using fixed days without leap year")
-            log.warning(e)
-            days = months[idx]
+            continue
+        time = sli.coord("time")
+        date = time.units.num2date(time.points[0])
+        days = monthrange(date.year, date.month)[1]
         cube.data[idx] = cube.data[idx] / days
     cube.units = units
 
@@ -1047,20 +981,20 @@ def daily_to_monthly(
     """
     months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     months = months * int((cube.shape[0] / 12) + 1)
-    for i, s in enumerate(cube.slices_over(["time"])):
+    for idx, sli in enumerate(cube.slices_over(["time"])):
         if not leap_years:
-            days = months[i]
-            cube.data[i] = cube.data[i] * days
+            days = months[idx]
+            cube.data[idx] = cube.data[idx] * days
             continue
         try:  # consider leapday
-            time = s.coord("time")
+            time = sli.coord("time")
             date = time.units.num2date(time.points[0])
             days = monthrange(date.year, date.month)[1]
-        except Exception as e:
+        except Exception as err:
             log.warning("date failed, using fixed days without leap year")
-            log.warning(e)
-            days = months[i]
-        cube.data[i] = cube.data[i] * days
+            log.warning(err)
+            days = months[idx]
+        cube.data[idx] = cube.data[idx] * days
     cube.units = units
 
 
@@ -1572,7 +1506,7 @@ def runs_of_ones_array_spei(bits, spei) -> list:
     (run_ends,) = np.where(difs < 0)
     spei_sum = np.full(len(run_starts), 0.5)
     for iii, indexs in enumerate(run_starts):
-        spei_sum[iii] = np.sum(spei[indexs : run_ends[iii]])
+        spei_sum[iii] = np.sum(spei[indexs: run_ends[iii]])
 
     return [run_ends - run_starts, spei_sum]
 
@@ -1690,7 +1624,8 @@ def plot_map_spei_multi(
     axx.set_xlabel("Longitude")
     axx.set_ylabel("Latitude")
     axx.set_title(
-        "{datasetname} {model_kind} {drought_char}".format(**data_dict),
+        f"{data_dict['datasetname']} {data_dict['model_kind']} "
+        f"{data_dict['drought_char']}",
     )
 
     # Sets number and distance of x ticks
@@ -1723,7 +1658,6 @@ def plot_map_spei_multi(
         dpi=300,
     )
     plt.close()
-
     _provenance_map_spei_multi(cfg, data_dict, spei, input_filenames)
 
 
@@ -1798,7 +1732,7 @@ def plot_time_series_spei(cfg, cube, filename, add_to_filename="") -> None:
     # Get time from cube
     time = cube.coord("time").points
     # Adjust (ncdf) time to the format matplotlib expects
-    add_m_delta = mda.datestr2num("1850-01-01 00:00:00")
+    add_m_delta = mdates.datestr2num("1850-01-01 00:00:00")
     time = time + add_m_delta
 
     # Get data set name from cube
@@ -1836,7 +1770,8 @@ def plot_time_series_spei(cfg, cube, filename, add_to_filename="") -> None:
     axx.set_xlabel("Time")
     axx.set_ylabel(cfg["indexname"])
     axx.set_title(
-        f"Mean {cfg['indexname']} {data_dict['dataset_name']} {data_dict['area']}",
+        f"Mean {cfg['indexname']} {data_dict['dataset_name']} "
+        f"{data_dict['area']}",
     )
     axx.set_ylim(-4.0, 4.0)
     fig.tight_layout()
