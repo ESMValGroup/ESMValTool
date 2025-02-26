@@ -6,6 +6,19 @@ from pathlib import Path
 
 import yaml
 
+DKRZ_LEGAL_NOTICE = """
+<div style="text-align: center;">
+    <a
+        href="https://www.dkrz.de/en/about-en/contact/impressum"
+        target="_blank"
+    >Imprint</a> and
+    <a
+        href="https://www.dkrz.de/en/about-en/contact/en-datenschutzhinweise"
+        target="_blank"
+    >Privacy Policy</a>
+</div>
+"""
+
 
 def read_resource_usage_file(recipe_dir):
     """Read resource usage from the log."""
@@ -223,7 +236,7 @@ def generate_overview(output_dir):
     return lines
 
 
-def write_debug_html(lines, output_dir):
+def write_debug_html(lines, output_dir, legal_notice):
     """Write lines to debug.html."""
     header = textwrap.dedent("""
     <!doctype html>
@@ -263,6 +276,8 @@ def write_debug_html(lines, output_dir):
       </body>
     </html>
     """)
+    if legal_notice:
+        footer = DKRZ_LEGAL_NOTICE + footer
     lines = ["      " + line for line in lines]
     text = header + "\n".join(lines) + footer
 
@@ -271,7 +286,7 @@ def write_debug_html(lines, output_dir):
     print(f"Wrote file://{index_file.absolute()}")
 
 
-def write_index_html(lines, output_dir):
+def write_index_html(lines, output_dir, legal_notice):
     """Write lines to index.html."""
     header = textwrap.dedent("""
     <!doctype html>
@@ -301,7 +316,7 @@ def write_index_html(lines, output_dir):
           <br>
           <div class="row row-cols-1 row-cols-md-3 g-4">
     """)  # noqa: E501
-    footer = textwrap.dedent("""
+    endtable = textwrap.dedent("""
           </div>
         </div>
         <script>
@@ -314,10 +329,14 @@ def write_index_html(lines, output_dir):
             });
           });
         </script>
+    """)  # noqa: E501
+    footer = textwrap.dedent("""
       </body>
     </html>
-    """)  # noqa: E501
-
+    """)
+    if legal_notice:
+        footer = DKRZ_LEGAL_NOTICE + footer
+    footer = endtable + footer
     lines = ["        " + line for line in lines]
     text = header + "\n".join(lines) + footer
 
@@ -333,10 +352,18 @@ def main():
                         default='.',
                         type=Path,
                         help='ESMValTool output directory.')
+    parser.add_argument(
+        '--add_dkrz_legal_notice',
+        default=True,
+        type=bool,
+        help='Add DKRZ legal notice links'
+        '(legally required when page is shown on DKRZ servers).')
     args = parser.parse_args()
 
-    write_debug_html(generate_summary(args.output_dir), args.output_dir)
-    write_index_html(generate_overview(args.output_dir), args.output_dir)
+    write_debug_html(generate_summary(args.output_dir), args.output_dir,
+                     args.add_dkrz_legal_notice)
+    write_index_html(generate_overview(args.output_dir), args.output_dir,
+                     args.add_dkrz_legal_notice)
 
 
 if __name__ == '__main__':

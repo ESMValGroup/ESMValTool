@@ -688,7 +688,6 @@ begin
     ; function in aux_plotting.ncl
 
     if (ii.eq.0) then
-      nframe = 0
       ndframe = 0
       ; note: an array of workspaces (i.e. wks(numseas)) does not work as
       ;       attributes cannot be assigned to each array element
@@ -767,8 +766,6 @@ begin
 
       maps(imod, 0) = gsn_csm_contour_map(wks0, data1, res)
     end if
-
-    nframe = nframe + 1
 
     ; mandatory netcdf output
 
@@ -1310,17 +1307,8 @@ begin
     end if
   end if  ; if embracesetup
 
-  nframe = nframe + 1
-
   do is = 0, numseas - 1
     log_info("Wrote " + outfile(is))
-  end do
-
-  do is = 0, numseas - 1
-    suffix = get_file_suffix(outfile(is), 0)
-    if (suffix .eq. ".png") then
-      outfile(is) = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
-    end if
   end do
 
   ; ------------------------------------------------------------------------
@@ -1481,13 +1469,6 @@ begin
                                  (dim_MOD + 3) / 4, 4, pres)
       end if
     end if  ; end if embracesetup
-
-    do is = 0, numseas - 1
-      suffix = get_file_suffix(outfile_d(is), 0)
-      if (suffix .eq. ".png") then
-        outfile_d(is) = suffix@fBase + "." + sprinti("%0.6i", ndframe) + suffix
-      end if
-    end do
 
     do is = 0, numseas - 1
       log_info(" Wrote " + outfile(is))

@@ -17,17 +17,17 @@ defaults:
 jobs:
   linux:
     runs-on: "ubuntu-latest"
+    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
-          miniforge-variant: Mambaforge
           use-mamba: true
       - run: mkdir -p conda_install_linux_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
@@ -44,7 +44,7 @@ jobs:
           esmvaltool version 2>&1 | tee conda_install_linux_artifacts_python_${{ matrix.python-version }}/version.txt
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: Conda_Install_Linux_python_${{ matrix.python-version }}
           path: conda_install_linux_artifacts_python_${{ matrix.python-version }}
@@ -54,14 +54,15 @@ jobs:
 #
 #  osx:
 #    runs-on: "macos-latest"
+#    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
 #    strategy:
 #      matrix:
-#        python-version: ["3.9", "3.10", "3.11"]
+#        python-version: ["3.10", "3.11"]
 #      fail-fast: false
 #    name: OSX Python ${{ matrix.python-version }}
 #    steps:
 #      - uses: actions/checkout@v2
-#      - uses: conda-incubator/setup-miniconda@v2
+#      - uses: conda-incubator/setup-miniconda@v3
 #        with:
 #          python-version: ${{ matrix.python-version }}
 #          miniconda-version: "latest"
@@ -82,7 +83,7 @@ jobs:
 #      - run: esmvaltool version 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/version.txt
 #      - name: Upload artifacts
 #        if: ${{ always() }}  # upload artifacts even if fail
-#        uses: actions/upload-artifact@v2
+#        uses: actions/upload-artifact@v4
 #        with:
 #          name: Conda_Install_OSX_python_${{ matrix.python-version }}
 #          path: conda_install_osx_artifacts_python_${{ matrix.python-version }}

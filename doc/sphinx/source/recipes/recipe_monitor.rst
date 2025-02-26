@@ -18,28 +18,27 @@ Available recipes and diagnostics
 
 Recipes are stored in `recipes/monitor`
 
-   * recipe_monitor.yml
-   * recipe_monitor_with_refs.yml
+* recipe_monitor.yml
+* recipe_monitor_with_refs.yml
 
 Diagnostics are stored in `diag_scripts/monitor/`
 
-   * :ref:`monitor.py <api.esmvaltool.diag_scripts.monitor.monitor>`:
-     Monitoring diagnostic to plot arbitrary preprocessor output.
-   * :ref:`compute_eofs.py <api.esmvaltool.diag_scripts.monitor.compute_eofs>`:
-     Monitoring diagnostic to plot EOF maps and associated PC timeseries.
-   * :ref:`multi_datasets.py
-     <api.esmvaltool.diag_scripts.monitor.multi_datasets>`:
-     Monitoring diagnostic to show multiple datasets in one plot (incl.
-     biases).
+* :ref:`monitor.py <api.esmvaltool.diag_scripts.monitor.monitor>`:
+  Monitoring diagnostic to plot arbitrary preprocessor output.
+* :ref:`compute_eofs.py <api.esmvaltool.diag_scripts.monitor.compute_eofs>`:
+  Monitoring diagnostic to plot EOF maps and associated PC timeseries.
+* :ref:`multi_datasets.py
+  <api.esmvaltool.diag_scripts.monitor.multi_datasets>`:
+  Monitoring diagnostic to show multiple datasets in one plot (incl. biases).
 
 
 User settings
 -------------
 
 It is recommended to use a vector graphic file type (e.g., SVG) for the output
-files when running this recipe, i.e., run the recipe with the command line
-option ``--output_file_type=svg`` or use ``output_file_type: svg`` in your
-:ref:`esmvalcore:user configuration file`.
+format when running this recipe, i.e., run the recipe with the
+:ref:`configuration options <esmvalcore:config_options>` ``output_file_type:
+svg``.
 Note that map and profile plots are rasterized by default.
 Use ``rasterize_maps: false`` or ``rasterize: false`` (see `Recipe settings`_)
 in the recipe to disable this.
@@ -210,3 +209,24 @@ Zonal mean profile of ta including a reference dataset.
    :width:   14cm
 
 1D profile of ta including a reference dataset.
+
+.. _fig_variable_vs_lat_with_ref:
+.. figure::  /recipes/figures/monitor/variable_vs_lat_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Zonal mean pr including a reference dataset.
+
+.. _fig_hovmoeller_z_vs_time_with_ref:
+.. figure::  /recipes/figures/monitor/hovmoeller_z_vs_time_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Hovmoeller plot (pressure vs. time) of ta including a reference dataset.
+
+.. _fig_hovmoeller_time_vs_lat_with_ref:
+.. figure:: /recipes/figures/monitor/hovmoeller_time_vs_lat_with_ref.png
+   :align:   center
+   :width:   14cm
+
+Hovmoeller plot (time vs. latitude) of tas including a reference dataset

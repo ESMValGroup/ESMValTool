@@ -670,9 +670,18 @@ class AdvancedPipeline(Pipeline):
 
     def fit_transformers_only(self, x_data, y_data, **fit_kwargs):
         """Fit only ``transform`` steps of Pipeline."""
-        fit_params = _get_fit_parameters(fit_kwargs, self.steps,
-                                         self.__class__)
-        return self._fit(x_data, y_data, **fit_params)
+        # Temporarily set the final estimator to 'passthrough' to avoid fitting
+        # it
+        final_step = self.steps[-1]
+        self.steps[-1] = (final_step[0], 'passthrough')
+
+        # This will now fit all transformers, but not the final estimator
+        self.fit(x_data, y_data, **fit_kwargs)
+
+        # Re-assign the original (non-fitted) final estimator
+        self.steps[-1] = final_step
+
+        return self
 
     def transform_only(self, x_data):
         """Only perform ``transform`` steps of Pipeline."""

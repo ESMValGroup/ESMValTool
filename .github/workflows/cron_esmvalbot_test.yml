@@ -1,0 +1,51 @@
+name: Run Esmvalbot Test
+
+on:
+  # push:
+  #   branches:
+  #     - cron_esmvalbot_test
+  # scheduled once every 2 weeks
+  schedule:
+    - cron: '0 4 */14 * *'
+
+# Required shell entrypoint to have properly configured bash shell
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  run-esmvalbot:
+    runs-on: 'ubuntu-latest'
+    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create empty commit on branch
+        run: |
+          git config user.name 'Valeriu Predoi'
+          git config user.email 'valeriu.predoi@gmail.com'
+          git commit --allow-empty -m "empty commit"
+      # Automated PR where we run "@esmvalbot please run examples/recipe_python.yml"
+      # as comment in the PR
+      # see https://github.com/marketplace/actions/create-pull-request
+      - name: Create Auto PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: empty message
+          # defaults are GH bot: # ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          committer: Valeriu Predoi <valeriu.predoi@gmail.com>
+          author: Valeriu Predoi <valeriu.predoi@gmail.com>
+          signoff: false
+          branch: run-esmvalbot
+          delete-branch: true
+          title: '[EsmvalbotTest] Periodic reminder to run an esmvalbot test'
+          body: 'Automatic PR; please DO NOT merge! This is for testing Esmvalbot only. @valeriupredoi @bouweandela @schlunma please run an ESMValBot test here; if the bot runs fine, please close the auto PR, if it has issues, please open a Github issue and tag @valeriupredoi. Many thanks :beers:'
+          labels: |
+            testing
+            esmvalbot
+            automatedPR
+          assignees: valeriupredoi
+          reviewers: valeriupredoi
+          draft: true

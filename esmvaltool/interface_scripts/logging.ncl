@@ -61,9 +61,9 @@ procedure log_debug(output_string[*]:string)
 ;    output_string: the text to be output as message on screen
 ;
 ; Description
-;    Write a debug message to the log file (only if log_level = debug in
-;    config-user.yml). If the input is an array, each element will be
-;    written on different lines.
+;    Write a debug message to the log file (only if log_level = debug in the
+;    configuration). If the input is an array, each element will be written on
+;    different lines.
 ;
 ; Caveats
 ;
@@ -334,9 +334,54 @@ begin
 
   ; Save entries for outfile if not "n/a"
   if (outfile .ne. "n/a") then
-    outstring2 = outstring
-    outstring2(0) = "? " + outfile
-    outstring := array_append_record(outstring, outstring2, 0)
+    suffix = get_file_suffix(outfile, 0)
+
+    if (ismissing(suffix)) then
+      error_msg("f", scriptname, funcname, "got invalid value for outfile " + \
+                "(path to figure): '" + outfile + "'; expected path to a " + \
+                "file or 'n/a'")
+    end if
+
+    ; For PNGs, additionally check for existence of files like
+    ; "plot_file.000001.png", "plot_file.000002.png", etc. and save
+    ; provenance record for each of them
+    if ((suffix .eq. ".png") .and. (.not. fileexists(outfile))) then
+      do file_idx = 1, 999999
+        potential_outfile = suffix@fBase + "." + sprinti("%0.6i", file_idx) + \
+                            suffix
+        if (fileexists(potential_outfile)) then
+          if (.not. isvar("all_outfiles")) then
+            all_outfiles = potential_outfile
+          else
+            all_outfiles := array_append_record(all_outfiles, \
+                                                potential_outfile, 0)
+          end if
+        else
+          break
+        end if
+      end do
+    end if
+
+    ; For all other cases, use outfile
+    if (.not. isvar("all_outfiles")) then
+      all_outfiles = outfile
+    end if
+
+    ; Save provenance record of all files
+    original_entry = outstring
+    do outfile_idx = 0, dimsizes(all_outfiles) - 1
+      file_to_add := all_outfiles(outfile_idx)
+      if (.not. fileexists(file_to_add)) then
+        error_msg("f", scriptname, funcname, "outfile (path to figure) '" + \
+                  file_to_add + "' does not exist (for PNGs, this " + \
+                  "function also searches for 'FILE.000001.png', " + \
+                  "'FILE.000002.png', etc.); if no plot file is available " + \
+                  "use 'n/a'")
+      end if
+      new_entry = (/original_entry/)
+      new_entry(0) = "? " + file_to_add
+      outstring := array_append_record(outstring, new_entry, 0)
+    end do
   end if
 
   ; Save existing information to avoid overwriting

@@ -86,10 +86,19 @@ authors:
     given-names: Peter
     orcid: "https://orcid.org/0000-0002-1469-2568"
   -
+    affiliation: "Met Office, UK"
+    family-names: Billows
+    given-names: Chris
+  -
     affiliation: "DLR, Germany"
     family-names: Bock
     given-names: Lisa
     orcid: "https://orcid.org/0000-0001-7058-5938"
+  -
+    affiliation: "Met Office, UK"
+    family-names: Bodas-Salcedo
+    given-names: Alejandro
+    orcid: "https://orcid.org/0000-0002-7890-2536"
   -
     affiliation: "BSC, Spain"
     family-names: Caron
@@ -141,7 +150,7 @@ authors:
     family-names: Docquier
     given-names: David
   -
-    affiliation: "MetOffice, UK"
+    affiliation: "Met Office, UK"
     family-names: Dreyer
     given-names: Laura
   -
@@ -149,13 +158,21 @@ authors:
     family-names: Ehbrecht
     given-names: Carsten
   -
-    affiliation: "MetOffice, UK"
+    affiliation: "Met Office, UK"
     family-names: Earnshaw
     given-names: Paul
+  -
+    affiliation: "Met Office, UK"
+    family-names: Geddes
+    given-names: Theo
   -
     affiliation: "University of Bremen, Germany"
     family-names: Gier
     given-names: Bettina
+  -
+    affiliation: "Met Office, UK"
+    family-names: Gillett
+    given-names: Ed
   -
     affiliation: "BSC, Spain"
     family-names: Gonzalez-Reviriego
@@ -171,6 +188,11 @@ authors:
     given-names: Stefan
     orcid: "https://orcid.org/0000-0001-5444-2945"
   -
+    affiliation: "University of Canterbury, New Zealand"
+    family-names: Hardacre
+    given-names: Catherine
+    orcid: "https://orcid.org/0000-0001-9093-4656"
+  -
     affiliation: "ISAC-CNR, Italy"
     name-particle: von
     family-names: Hardenberg
@@ -181,6 +203,15 @@ authors:
     family-names: Hassler
     given-names: Birgit
     orcid: "https://orcid.org/0000-0003-2724-709X"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Heuer
+    given-names: Helge
+    orcid: "https://orcid.org/0000-0003-2411-7150"
+  -
+    affiliation: "Met Office, UK"
+    family-names: Hogan
+    given-names: Emma
   -
     affiliation: "BSC, Spain"
     family-names: Hunter
@@ -200,6 +231,10 @@ authors:
     family-names: Koirala
     given-names: Sujan
   -
+    affiliation: "DLR, Germany"
+    family-names: Kuehbacher
+    given-names: Birgit
+  -
     affiliation: "BSC, Spain"
     family-names: Lledó
     given-names: Llorenç
@@ -213,7 +248,7 @@ authors:
     given-names: Valerio
     orcid: "https://orcid.org/0000-0001-6085-5914"
   -
-    affiliation: "MetOffice, UK"
+    affiliation: "Met Office, UK"
     family-names: Little
     given-names: Bill
   -
@@ -257,6 +292,11 @@ authors:
     given-names: Adam
     orcid: "https://orcid.org/0000-0003-4859-8585"
   -
+    affiliation: "ACCESS-NRI, Australia"
+    family-names: Proft
+    given-names: Max
+    orcid: "https://orcid.org/0009-0003-1611-9516"
+  -
     affiliation: "University of Arizona, USA"
     family-names: Russell
     given-names: Joellen
@@ -265,7 +305,7 @@ authors:
     family-names: Sandstad
     given-names: Marit
   -
-    affiliation: "MetOffice, UK"
+    affiliation: "Met Office, UK"
     family-names: Sellar
     given-names: Alistair
   -
@@ -292,6 +332,10 @@ authors:
     given-names: Ranjini
     orcid: "https://orcid.org/0000-0001-5853-2673"
   -
+    affiliation: "Met Office, UK"
+    family-names: Tomkins
+    given-names: Katherine
+  -
     affiliation: "BSC, Spain"
     family-names: Torralba
     given-names: Verónica
@@ -300,6 +344,10 @@ authors:
     family-names: Weigel
     given-names: Katja
     orcid: "https://orcid.org/0000-0001-6133-7801"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Sarauer
+    given-names: Ellen
   -
     affiliation: "University of Reading, UK"
     family-names: Roberts
@@ -354,13 +402,32 @@ authors:
     family-names: Beucher
     given-names: Romain
     orcid: "https://orcid.org/0000-0003-3891-5444"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Kraft
+    given-names: Jeremy
+  -
+    affiliation: "University of Bremen, Germany"
+    family-names: Ruhe
+    given-names: Lukas
+    orcid: "https://orcid.org/0000-0001-6349-9118"
+  -
+    affiliation: "DLR, Germany"
+    family-names: Bonnet
+    given-names: Pauline
+    orcid: "https://orcid.org/0000-0003-3780-0784"
+  -
+    affiliation: "Met Office, UK"
+    family-names: Munday
+    given-names: Gregory
+    orcid: "https://orcid.org/0000-0003-4750-9923"
 
 cff-version: 1.2.0
-date-released: 2023-07-06
+date-released: 2024-07-04
 doi: "10.5281/zenodo.3401363"
 license: "Apache-2.0"
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/ESMValGroup/ESMValTool/"
 title: ESMValTool
-version: "v2.9.0"
+version: "v2.11.0"
 ...

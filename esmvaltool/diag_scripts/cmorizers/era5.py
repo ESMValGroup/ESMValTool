@@ -41,10 +41,14 @@ def main(cfg):
             if info['diagnostic'] == "monthly":
                 start = time.cell(0).point.strftime("%Y%m")
                 end = time.cell(-1).point.strftime("%Y%m")
+<<<<<<< HEAD
             elif info['diagnostic'] == "3hourly":
                 start = time.cell(0).point.strftime("%Y%m%d%H%M")
                 end = time.cell(-1).point.strftime("%Y%m%d%H%M")
             elif info['diagnostic'] == "hourly":
+=======
+            elif "hourly" in info['diagnostic']:
+>>>>>>> main
                 start = time.cell(0).point.strftime("%Y%m%d%H%M")
                 end = time.cell(-1).point.strftime("%Y%m%d%H%M")
             else:

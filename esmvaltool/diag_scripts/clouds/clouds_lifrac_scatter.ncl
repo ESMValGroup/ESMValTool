@@ -652,8 +652,6 @@ begin
     data_l(0, :) = data@_FillValue
   end if
 
-  nframe = 0
-
   do ii = 0, dim_MOD + add_dim_MOD - 1
     if (ii .eq. refidx_ta) then
       continue
@@ -724,8 +722,6 @@ begin
     frame(wks_i)
     draw(plots_l(ii))
     frame(wks_l)
-
-    nframe = nframe + 1
   end do
 
   pres                      = True    ; needed to override
@@ -746,17 +742,6 @@ begin
   outfile_l = panelling(wks_l, plots_l(idx0), (n + 3) / 4, 4, pres)
   log_info("Wrote " + outfile_l)
   delete(idx0)
-
-  nframe = nframe + 1
-
-  suffix = get_file_suffix(outfile_i, 0)
-  if (suffix .eq. ".png") then
-    outfile_i = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
-  end if
-  suffix = get_file_suffix(outfile_l, 0)
-  if (suffix .eq. ".png") then
-    outfile_l = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
-  end if
 
   ; ==========================================================================
 

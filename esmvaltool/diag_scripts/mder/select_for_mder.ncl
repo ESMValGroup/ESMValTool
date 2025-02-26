@@ -97,7 +97,7 @@ begin
   AUTHORS = (/"wenzel_sabrina", "schlund_manuel"/)
   DOMAIN = diag_script_info@domain
   PLOT_TYPE = ""
-  PLOT_FILE = "missing"
+  PLOT_FILE = "n/a"
   REFERENCES = (/"wenzel16jclim"/)
 
   ; Get reference dataset(s)

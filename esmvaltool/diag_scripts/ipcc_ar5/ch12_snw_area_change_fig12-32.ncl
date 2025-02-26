@@ -66,13 +66,6 @@ begin
 end
 
 begin
-  ; Get environment variables
-  if (isatt(diag_script_info, "plot_type")) then
-    file_type = diag_script_info@plot_type
-  else
-    file_type = "pdf"
-  end if
-
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
   system("mkdir -p " + work_dir)

@@ -283,7 +283,7 @@ diagnostics:
       - {dataset: NorESM1-ME}
 
       - {dataset: LAI3g, project: OBS, type: reanaly,
-         version: 1_regridded, tier: 3, start_year: 1981}
+         version: 1-regridded, tier: 3, start_year: 1981}
     scripts:
       grading:
         <<: *grading_settings
@@ -420,7 +420,7 @@ diagnostics:
       rlus:
         short_name: rlus
         preprocessor: ppNOLEV1
-        reference_dataset: CERES-EBAF
+        reference_dataset: CERES-EBAF_Surface
         mip: Amon
         project: CMIP5
         exp: historical
@@ -460,9 +460,7 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
-         version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
+      - {dataset: CERES-EBAF_Surface, project: obs4MIPs, level: L3B, tier: 1, start_year: 2001, end_year: 2013}
     scripts:
       grading:
         <<: *grading_settings
@@ -478,7 +476,7 @@ diagnostics:
       rlds:
         short_name: rlds
         preprocessor: ppNOLEV1
-        reference_dataset: CERES-EBAF
+        reference_dataset: CERES-EBAF_Surface
         mip: Amon
         project: CMIP5
         exp: historical
@@ -519,9 +517,7 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
-         version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
+      - {dataset: CERES-EBAF_Surface, project: obs4MIPs, level: L3B, tier: 1, start_year: 2001, end_year: 2013}
     scripts:
       grading:
         <<: *grading_settings
@@ -537,7 +533,7 @@ diagnostics:
       rsus:
         short_name: rsus
         preprocessor: ppNOLEV1
-        reference_dataset: CERES-EBAF
+        reference_dataset: CERES-EBAF_Surface
         mip: Amon
         project: CMIP5
         exp: historical
@@ -577,9 +573,7 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
-         version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
+      - {dataset: CERES-EBAF_Surface, project: obs4MIPs, level: L3B, tier: 1, start_year: 2001, end_year: 2013}
     scripts:
       grading:
         <<: *grading_settings
@@ -595,7 +589,7 @@ diagnostics:
       rsds:
         short_name: rsds
         preprocessor: ppNOLEV1
-        reference_dataset: CERES-EBAF
+        reference_dataset: CERES-EBAF_Surface
         mip: Amon
         project: CMIP5
         exp: historical
@@ -637,8 +631,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
-         version: Ed2-8, tier: 1, start_year: 2001, end_year: 2015}
+      - {dataset: CERES-EBAF_Surface, project: obs4MIPs, level: L3B, tier: 1, start_year: 2001, end_year: 2013}
     scripts:
       grading:
         <<: *grading_settings

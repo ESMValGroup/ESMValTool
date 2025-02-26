@@ -24,6 +24,12 @@ authors:
     institute: DLR, Germany
     email: bjoern.broetz@dlr.de
     orcid:
+  cammarano_diego:
+    name: Cammarano, Diego
+    institute: DLR, Germany
+    email: diego.cammarano@dlr.de
+    github: diegokam
+    orcid:
   debeire_kevin:
     name: Debeire, Kevin
     institute: DLR, Germany
@@ -120,10 +126,19 @@ authors:
     institute: DLR, Germany
     orcid: https://orcid.org/0000-0001-7058-5938
     github: LisaBock
+  bodas-salcedo_alejandro:
+    name: Bodas-Salcedo, Alejandro
+    institute: MetOffice, UK
+    orcid:
   bojovic_dragana:
     name: Bojovic, Dragana
     institute: BSC, Spain
     orcid: https://orcid.org/0000-0001-7354-1885
+  bonnet_pauline:
+    name: Bonnet, Pauline
+    institute: DLR, Germany
+    orcid: https://orcid.org/0000-0003-3780-0784
+    github: Paulinebonnet111
   brunner_lukas:
     name: Brunner, Lukas
     institute: ETH Zurich, Switzerland
@@ -214,6 +229,11 @@ authors:
     name: Galytska, Evgenia
     institute: IUP, Bremen
     orcid: https://orcid.org/0000-0001-6575-1559
+  garcia_perdomo_karen:
+    name: Garcia Perdomo, Karen
+    institute: CCCma, ECCC, Canada
+    orcid: https://orcid.org/0009-0004-2333-3358
+    github: Karen-A-Garcia
   gettelman_andrew:
     name: Gettelman, Andrew
     institute: NCAR, USA
@@ -223,6 +243,11 @@ authors:
     institute: University of Bremen, Germany
     orcid: https://orcid.org/0000-0002-2928-8664
     github: bettina-gier
+  gillett_nathan:
+    name: Gillett, Nathan
+    institute: CCCma, ECCC, Canada
+    orcid: https://orcid.org/0000-0002-2957-0002
+    github: npgillett
   gonzalez-reviriego_nube:
     name: Gonzalez-Reviriego, Nube
     institute: BSC, Spain
@@ -243,6 +268,10 @@ authors:
     name: Hansson, Ulf
     institute: SMHI, Sweden
     orcid:
+  hardacre_catherine:
+    name: Hardacre, Catherine
+    institute: University of Canterbury, New Zealand
+    orcid: https://orcid.org/0000-0001-9093-4656
   hassler_birgit:
     name: Hassler, Birgit
     institute: DLR, Germany
@@ -252,6 +281,11 @@ authors:
     name: Hempelmann, Nils
     institute: IPSL, France
     orcid:
+  heuer_helge:
+    name: Heuer, Helge
+    institute: DLR, Germany
+    email: helge.heuer@dlr.de
+    orcid: https://orcid.org/0000-0003-2411-7150
   hogan_emma:
     name: Hogan, Emma
     institute: MetOffice, UK
@@ -288,10 +322,20 @@ authors:
     name: Koirala, Sujan
     institute: MPI-BGC, Germany
     orcid: https://orcid.org/0000-0001-5681-1986
+  kraft_jeremy:
+    name: Kraft, Jeremy
+    institute: DLR, Germany
+    orcid:
+    github: jeremykraftdlr
   krasting_john:
     name: Krasting, John
     institute: NOAA, USA
     orcid: https://orcid.org/0000-0002-4650-9844
+  kuehbacher_birgit:
+    name: Kuehbacher, Birgit
+    institute: DLR, Germany
+    email: birgit.kuehbacher@dlr.de
+    orcid:
   lejeune_quentin:
     name: Lejeune, Quentin
     institute: Climate Analytics, Germany
@@ -308,6 +352,11 @@ authors:
     name: Lillis, Jon
     institute: MetOffice, UK
     orcid:
+  lindenlaub_lukas:
+    name: Lindenlaub, Lukas
+    institute: University of Bremen, Germany
+    orcid: https://orcid.org/0000-0001-6349-9118
+    github: lukruh
   little_bill:
     name: Little, Bill
     institute: MetOffice, UK
@@ -336,8 +385,8 @@ authors:
     orcid:
   malinina_elizaveta:
     name: Malinina, Elizaveta
-    institute: CCCma, Canada
-    orchid: https://orcid.org/0000-0002-4102-2877
+    institute: CCCma, ECCC, Canada
+    orcid: https://orcid.org/0000-0002-4102-2877
     github: malininae
   maloney_eric:
     name: Maloney, Eric
@@ -367,6 +416,11 @@ authors:
     name: Mello, Felipe
     institute: INPE, Brazil
     orcid: https://orcid.org/0000-0002-8832-2869
+  menelaou_konstantinos:
+    name: Menelaou, Konstantinos
+    institute: CCCma, ECCC, Canada
+    orcid: https://orcid.org/0000-0002-9676-7657
+    github: konmenelaou
   mohr_christianwilhelm:
     name: Mohr, Christian Wilhelm
     institute: Cicero, Norway
@@ -376,6 +430,11 @@ authors:
     institute: BSC, Spain
     orcid:
     github: emchamarro
+  munday_gregory:
+    name: Munday, Gregory
+    institute: MetOffice, UK
+    orcid: https://orcid.org/0000-0003-4750-9923
+    github: mo-gregmunday
   nikulin_grigory:
     name: Nikulin, Grigory
     institute: SMHI, Sweden
@@ -390,6 +449,10 @@ authors:
   pandde_amarjiit:
     name: Pandde, Amarjiit
     institute: Univ. of Arizona, USA
+    orcid:
+  pearce_francesca:
+    name: Pearce, Francesca
+    institute: MetOffice, UK
     orcid:
   perez-zanon_nuria:
     name: Perez-Zanon, Nuria
@@ -429,11 +492,6 @@ authors:
   rol_evert:
     name: Rol, Evert
     orcid: https://orcid.org/0000-0001-8357-4453
-  ruhe_lukas:
-    name: Ruhe, Lukas
-    institute: University of Bremen, Germany
-    orcid: https://orcid.org/0000-0001-6349-9118
-    github: lukruh
   russell_joellen:
     name: Russell, Joellen
     institute: Univ. of Arizona, USA
@@ -446,6 +504,11 @@ authors:
     name: Sandstad, Marit
     institute: Cicero, Norway
     orcid:
+  sarauer_ellen:
+    name: Sarauer, Ellen
+    institute: DLR, Germany
+    orcid:
+    github: ellensarauer
   serva_federico:
     name: Serva, Federico
     institute: CNR, Italy
@@ -467,6 +530,11 @@ authors:
     name: Sterl, Andreas
     institute: KNMI, Netherlands
     orcid: https://orcid.org/0000-0003-3457-0434
+  stevens_robin:
+    name: Stevens, Robin
+    institute: CCCma, ECCC, Canada
+    orcid: https://orcid.org/0000-0002-8737-6988
+    github: Row-Bean
   swaminathan_ranjini:
     name: Swaminathan, Ranjini
     institute: University of Reading, UK
@@ -508,6 +576,11 @@ authors:
     institute: University of Bremen and DLR, Germany
     orcid: https://orcid.org/0000-0001-6133-7801
     github: katjaweigel
+  webb_kristi:
+    name: Webb, Kristi
+    institute: CCCma, ECCC, Canada
+    orcid: https://orcid.org/0000-0002-8610-0672
+    github: k-a-webb
   wenzel_sabrina:
     name: Wenzel, Sabrina
     institute: DLR, Germany
@@ -665,7 +738,7 @@ authors:
     orcid:
   reader_cathy:
     name: Reader, Cathy
-    institute:
+    institute: CCCma, ECCC, Canada
     orcid:
     github: mcreader97
   rumbold_heather:

@@ -34,6 +34,7 @@ IGNORE_GLOBAL_ATTRIBUTES: tuple[str, ...] = (
     # see https://github.com/ESMValGroup/ESMValCore/issues/1657
     'auxiliary_data_dir',
     'creation_date',
+    'filename',
     'history',
     'provenance',
     'software',
@@ -80,7 +81,7 @@ def diff_attrs(ref: dict, cur: dict) -> str:
             msg.append(f"missing attribute '{key}'")
         elif not np.array_equal(ref[key], cur[key]):
             msg.append(f"value of attribute '{key}' is different: "
-                       f"expected '{cur[key]}' but found '{ref[key]}'")
+                       f"expected '{ref[key]}' but found '{cur[key]}'")
     for key in cur:
         if key not in ref:
             msg.append(f"extra attribute '{key}' with value '{cur[key]}'")
@@ -96,12 +97,15 @@ def diff_array(ref: np.ndarray, cur: np.ndarray) -> str:
     msg = []
     if cur.shape != ref.shape:
         msg.append("data has different shape")
+    elif np.issubdtype(ref.dtype, np.inexact) and np.issubdtype(
+            cur.dtype, np.inexact):
+        if not np.array_equal(ref, cur, equal_nan=True):
+            if np.allclose(ref, cur, equal_nan=True):
+                msg.append("data is almost but not quite the same")
+            else:
+                msg.append("data is different")
     elif not np.array_equal(ref, cur):
-        if np.issubdtype(ref.dtype, np.inexact) and np.issubdtype(
-                cur.dtype, np.inexact) and np.allclose(ref, cur):
-            msg.append("data is almost but not quite the same")
-        else:
-            msg.append("data is different")
+        msg.append("data is different")
     return as_txt(msg)
 
 

@@ -25,16 +25,19 @@ REQUIREMENTS = {
         'cdo',
         'cdsapi',
         'cf-units',
+        'cfgrib',
         'cftime',
         'cmocean',
-        'dask',
+        'dask!=2024.8.0',  # https://github.com/dask/dask/issues/11296
         'distributed',
         'ecmwf-api-client',
         'eofs',
-        'ESMPy',
+        'ESMPy',  # not on PyPI
         'esmvalcore',
-        'esmf-regrid>=0.7.0',
+        'esmf-regrid>=0.10.0',  # iris-esmf-regrid #342
         'fiona',
+        'fire',
+        'fsspec',
         'GDAL',
         'jinja2',
         'joblib',
@@ -44,36 +47,38 @@ REQUIREMENTS = {
         'natsort',
         'nc-time-axis',
         'netCDF4',
+        'numba',
         'numpy!=1.24.3',  # severe masking bug
-        'packaging',
         'openpyxl',
-        'pandas',
-        'pyproj>=2.1',
-        'pyyaml',
+        'packaging',
+        'pandas==2.1.4',  # see note in environment.yml
         'progressbar2',
-        'psyplot',
-        'psy-maps',
-        'psy-reg',
-        'psy-simple',
-        'rasterio',
+        'psyplot>=1.5.0',  # psy*<1.5.0 are not py312 compat
+        'psy-maps>=1.5.0',
+        'psy-reg>=1.5.0',
+        'psy-simple>=1.5.0',
+        'pyproj>=2.1',
+        'pys2index',
+        'python-dateutil',
+        'pyyaml',
+        'rasterio>=1.3.10',
+        'requests',
         'ruamel.yaml',
         'scikit-image',
-        'scikit-learn',
+        'scikit-learn>=1.4.0',  # github.com/ESMValGroup/ESMValTool/issues/3504
         'scipy',
-        # See the following issue for info on the iris pin below:
-        # https://github.com/ESMValGroup/ESMValTool/issues/3239#issuecomment-1613298587
-        'scitools-iris>=3.4.0',
+        'scitools-iris>=3.11',
         'seaborn',
         'seawater',
-        'shapely',
+        'shapely>=2',
         'xarray>=0.12.0',
         'xesmf>=0.7.1',
         'xgboost>1.6.1',  # github.com/ESMValGroup/ESMValTool/issues/2779
         'xlsxwriter',
         'zarr',
     ],
-    # Test dependencies
-    # Execute `pip install .[test]` once and the use `pytest` to run tests
+    # Test dependencies (unit tests)
+    # Execute `pip install .[test]` once and then use `pytest` to run tests
     'test': [
         'flake8',
         'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
@@ -96,9 +101,10 @@ REQUIREMENTS = {
     'develop': [
         'codespell',
         'docformatter',
+        'imagehash',
         'isort',
         'pre-commit',
-        'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',
+        'prospector[with_pyroma]>=1.12',
         'vprof',
         'yamllint',
         'yapf',
@@ -216,9 +222,9 @@ setup(
         'Natural Language :: English',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
         'Topic :: Scientific/Engineering',
         'Topic :: Scientific/Engineering :: Atmospheric Science',
         'Topic :: Scientific/Engineering :: GIS',
@@ -241,13 +247,9 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'mip_convert_setup = '
-            'esmvaltool.cmorizers.mip_convert.esmvt_mipconv_setup:main',
             'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
             'test_recipe = '
             'esmvaltool.utils.testing.recipe_settings.install_expand_run:main',
-            'recipe_filler = '
-            'esmvaltool.utils.recipe_filler:run'
         ],
         'esmvaltool_commands': [
             'colortables = '

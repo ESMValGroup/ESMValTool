@@ -6,14 +6,14 @@ filename: '{version}_0_0.nc'
 attributes:
   dataset_id: CowtanWay
   version:
-    v1: 'had4_krig_v1'
-    v2: 'had4_uah_v1'
-    v3: 'had4_short_krig_v2'
-    v4: 'had4_short_uah_v2'
-    v5: 'ghcn_short_krig_v2'
-    v6: 'ghcn_short_uah_v2'
-    v7: 'had4sst4_krig_v2'
-    v8: 'had4_krig_v2'
+    v1: 'had4-krig-v1'
+    v2: 'had4-uah-v1'
+    v3: 'had4-short-krig-v2'
+    v4: 'had4-short-uah-v2'
+    v5: 'ghcn-short-krig-v2'
+    v6: 'ghcn-short-uah-v2'
+    v7: 'had4sst4-krig-v2'
+    v8: 'had4-krig-v2'
   baseline:
     v1: '1981-2010'
     v2: '1981-2010'

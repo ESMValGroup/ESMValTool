@@ -7,9 +7,9 @@ from pprint import pformat
 import iris
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
-from mpqb_utils import get_mpqb_cfg
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
+from esmvaltool.diag_scripts.mpqb.mpqb_utils import get_mpqb_cfg
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import (
     ProvenanceLogger,
@@ -100,7 +100,7 @@ def main(cfg):
 
     h1, l1 = ax1.get_legend_handles_labels()
     leg = lax.legend(h1, l1, borderaxespad=0, ncol=4, loc='center')
-    for legobj in leg.legendHandles:
+    for legobj in leg.legend_handles:
         legobj.set_linewidth(2.0)
     lax.axis("off")
 

@@ -2,13 +2,13 @@
 # recipe_psyplot.yml
 ---
 documentation:
-  title: >
-    Create arbitrary Psyplot plots.
+  title: Example recipe for the Psyplot diagnostic.
 
   description: >
     This recipes showcases the use of the Psyplot diagnostic that provides a
     high-level interface to Psyplot for ESMValTool recipes. For each input
-    dataset, an individual plot is created.
+    dataset, an individual plot is created. With the Psyplot diagnostic,
+    arbitrary Psyplot plots can be created.
 
   authors:
     - schlund_manuel

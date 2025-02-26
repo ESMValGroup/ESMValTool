@@ -97,7 +97,9 @@ class MonitorBase():
         )
         plot_folder = plot_folder.replace('{plot_dir}',
                                           self.cfg[names.PLOT_DIR])
-        self.plot_folder = os.path.abspath(plot_folder)
+        self.plot_folder = os.path.abspath(
+            os.path.expandvars(os.path.expanduser(plot_folder))
+        )
         self.plot_filename = config.get(
             'plot_filename',
             '{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}')
@@ -293,11 +295,7 @@ class MonitorBase():
             'real_name': self._real_name(var_info['variable_group']),
             **var_info
         }
-        folder = os.path.expandvars(
-            os.path.expanduser(
-                list(_replace_tags(self.plot_folder, info))[0]
-            )
-        )
+        folder = list(_replace_tags(self.plot_folder, info))[0]
         if self.plot_folder.startswith('/'):
             folder = '/' + folder
         if not os.path.isdir(folder):

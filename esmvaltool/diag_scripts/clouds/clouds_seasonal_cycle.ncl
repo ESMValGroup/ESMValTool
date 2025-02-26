@@ -405,11 +405,9 @@ begin
     if (ii.eq.0) then
       wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_seasonal_cycle_" \
                     + var0 + filename_add)
-      nframe = 0
     end if
 
     maps(ii) = gsn_csm_contour_map(wks, data1, res)
-    nframe = nframe + 1
 
     ; #########################################
     ; # output all datasets to common netCDF  #
@@ -438,12 +436,6 @@ begin
   pres@pmLabelBarOrthogonalPosF   = -0.01     ; shift label bar a bit to
                                               ; the bottom
   outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
-  nframe = nframe + 1
-
-  suffix = get_file_suffix(outfile, 0)
-  if (suffix .eq. ".png") then
-    outfile = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
-  end if
 
   ; plot multi-obs and multi-model average (if requested)
 
@@ -455,7 +447,6 @@ begin
     res@gsnLeftString = "mean = " + sprintf("%6.3f", gavg)
     res@tiMainString = "Multi-obs average"
     map_multiobs = gsn_csm_contour_map(wks, multiobs, res)
-    nframe = nframe + 1
   end if
 
   if (flag_multimod) then
@@ -488,7 +479,6 @@ begin
     res@gsnRightString = "rmsd = " + sprintf("%6.3f", rmsd)
     res@tiMainString = "Multi-model average"
     map_multimod = gsn_csm_contour_map(wks, multimod, res)
-    nframe = nframe + 1
   end if
 
   log_info(" Wrote " + outfile)

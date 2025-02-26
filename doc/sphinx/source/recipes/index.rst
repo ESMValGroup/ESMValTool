@@ -21,9 +21,12 @@ large variety of input data.
 .. toctree::
    :maxdepth: 1
 
+   recipe_model_evaluation
    recipe_monitor
+   recipe_portrait
    recipe_psyplot
    recipe_seaborn
+   recipe_ref
 
 Atmosphere
 ^^^^^^^^^^
@@ -31,6 +34,7 @@ Atmosphere
    :maxdepth: 1
 
    recipe_miles
+   recipe_climate_patterns
    recipe_clouds
    recipe_cmug_h2o
    recipe_crem
@@ -45,6 +49,7 @@ Atmosphere
    recipe_gier20bg
    recipe_heatwaves_coldwaves
    recipe_hyint
+   recipe_iht_toa
    recipe_impact
    recipe_modes_of_variability
    recipe_mpqb_xch4
@@ -60,6 +65,7 @@ Atmosphere
    recipe_thermodyn_diagtool
    recipe_validation
    recipe_radiation_budget
+   recipe_aod_aeronet_assess
 
 Climate metrics
 ^^^^^^^^^^^^^^^
@@ -90,6 +96,7 @@ Future projections
    recipe_tcr
    recipe_tebaldi21esd
    recipe_climate_change_hotspot
+   recipe_bock24acp
 
 IPCC
 ^^^^
@@ -99,6 +106,7 @@ IPCC
    recipe_ipccwg1ar6ch3
    recipe_ipccwg1ar5ch9
    recipe_collins13ipcc
+   recipe_examples
 
 Land
 ^^^^

@@ -20,6 +20,9 @@ logger = logging.getLogger(Path(__file__).stem)
 
 def get_provenance_record(attributes, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
+    # Associated recipe uses contains a caption string with placeholders
+    # like {long_name} that are now populated from attributes dictionary.
+    # Note that for simple recipes, caption can be set here as a simple string
     caption = attributes['caption'].format(**attributes)
 
     record = {

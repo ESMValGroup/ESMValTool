@@ -445,11 +445,9 @@ begin
     if (ii.eq.0) then
       wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_interannual_" \
                     + var0 + filename_add)
-      nframe = 0
     end if
 
     maps(ii) = gsn_csm_contour_map(wks, data1, res)
-    nframe = nframe + 1
 
     ; #########################################
     ; # output all datasets to common netCDF  #
@@ -478,7 +476,6 @@ begin
   pres@pmLabelBarOrthogonalPosF   = -0.01     ; shift label bar a bit to
                                               ; the bottom
   outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
-  nframe = nframe + 1
 
   ; plot multi-obs and multi-model average (if requested)
 
@@ -534,11 +531,6 @@ begin
   end if
 
   log_info(" Wrote " + outfile)
-
-  suffix = get_file_suffix(outfile, 0)
-  if (suffix .eq. ".png") then
-    outfile = suffix@fBase + "." + sprinti("%0.6i", nframe) + suffix
-  end if
 
   ; ------------------------------------------------------------------------
   ; write provenance to common netcdf and plot file

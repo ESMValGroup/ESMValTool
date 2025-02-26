@@ -504,9 +504,7 @@ def test_is_pairwise():
     """Test ``_is_pairwise``."""
     # Simple checks for _is_pairwise
     pca = KernelPCA(kernel='precomputed')
-    with pytest.warns(None) as record:
-        assert _is_pairwise(pca)
-    assert not record
+    assert _is_pairwise(pca)
 
     # Pairwise attribute that is not consistent with the pairwise tag
     class IncorrectTagPCA(KernelPCA):
@@ -532,9 +530,7 @@ def test_is_pairwise():
 
     # Pairwise attribute is not defined thus tag is used
     est = BaseEstimator()
-    with pytest.warns(None) as record:
-        assert not _is_pairwise(est)
-    assert not record
+    assert not _is_pairwise(est)
 
 
 # _safe_split
