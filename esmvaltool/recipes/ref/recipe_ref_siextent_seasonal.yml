@@ -12,7 +12,10 @@ documentation:
 
 datasets:
   - {dataset: MPI-ESM1-2-LR, grid: gn, benchmark_dataset: true}
-
+###  - {dataset: MPI-ESM-LR, project: CMIP5, mip: OImon, ensemble: r1i1p1, timerange: '1995/2004'}
+###  - {dataset: GISS-E2-1-H, grid: gr} # CMIP6 sic data 
+###  - {dataset: GISS-E2-1-H, exp: piControl, grid: gn, timerange: '3180/3189'} # CMIP6 siconca data
+###  - {dataset: GISS-E2-H-CC, project: CMIP5, ensemble: r1i1p1, mip: OImon, timerange: '1995/2004'} # CMIP5 sic data
 
 preprocessors:
 
