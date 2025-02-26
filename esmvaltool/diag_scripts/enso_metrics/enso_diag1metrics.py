@@ -45,7 +45,7 @@ def plot_level1(model_data, obs, metric_values, labels_ls):
         plt.scatter(0, obs, c=['black'], marker='D')
         plt.scatter(np.ones(len(model_data), np.int8), model_data,
                     c=model_data, cmap='tab10', marker='D')
-        plt.xlim(-0.5, 2)
+        plt.xlim(-0.5, 1.5)
         plt.xticks([])
         logger.info("number of models:%s", len(model_data))
 
@@ -53,17 +53,17 @@ def plot_level1(model_data, obs, metric_values, labels_ls):
                  transform=plt.gca().transAxes)
 
     plt.title(labels_ls[1])  # metric name
-    plt.legend(loc='center left', bbox_to_anchor=(1,0.5))
     plt.grid(linestyle='--')
     plt.ylabel(labels_ls[0])
 
     if labels_ls[1] == 'ENSO lifecycle':
+        plt.legend(loc='center left', bbox_to_anchor=(0.9, 0.5))
         plt.axhline(y=0, color='black', linewidth=2)
         xticks = np.arange(1, 73, 6) - 36  # Adjust for lead/lag months
         xtick_labels = ['Jan', 'Jul'] * (len(xticks) // 2)
         plt.xticks(xticks, xtick_labels)
         plt.yticks(np.arange(-2, 2.5, step=1))
-
+    plt.tight_layout()
     return figure
 
 
@@ -73,7 +73,8 @@ def plot_map1(input_data, rmse, title):
 
     proj = ccrs.PlateCarree(central_longitude=180)
     figure.suptitle(title)
-    i = 121
+    i = 121 # make subplot for all models? 
+    #nrows ncols set number of models+1, /4 cols, ceil (*figsize)
 
     for label, cube in input_data.items():
 
@@ -96,7 +97,7 @@ def plot_map1(input_data, rmse, title):
                            extend='both', ticks=np.arange(-1, 1.5, 0.5))
     cbar.set_label('regression (°C/°C)')
     logger.info("%s, %s : metric:%f", title, [*input_data][0], rmse)
-    # plt.tight_layout
+    plt.tight_layout()
 
     return figure
 
@@ -135,7 +136,7 @@ def sst_regressed(n34_cube):
 
 
 def lin_regress_matrix(cube_a, cube_b):
-    """
+    """ Calculate linear regression.
 
     Calculate the linear regression of cube_a on cube_b using
     matrix operations. Array must not contain infs or NaNs.
@@ -166,12 +167,12 @@ def lin_regress_matrix(cube_a, cube_b):
     logger.info("%s, %s", cube_a.coords(), cube_a.shape)
     # Extract slopes from coefficients #coefs 1
     slopes = coefs[0].reshape(cube_a.shape[1], cube_a.shape[2])
-
+    
     # Create a new Iris Cube for the regression results
+    coords = [cube_a.coord(name) for name in ['latitude', 'longitude']]
     result_cube = iris.cube.Cube(slopes, long_name='regression ENSO SSTA',
-                                 dim_coords_and_dims=[
-                                    (cube_a.coord('latitude'), 0),
-                                    (cube_a.coord('longitude'), 1)])
+                                 dim_coords_and_dims=[(coords[0], 0),
+                                                      (coords[1], 1)])
 
     return result_cube
 
@@ -213,9 +214,11 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
                               for attr in input_pair[1][dataset]}
             model = seasonality_calc(model_datasets[var_group[0]])
 
-            val = abs((model-obs) / obs) * 100
+            val = abs((model - obs) / obs) * 100
             metric_values.append((dataset, val))
             model_plot.append(model)
+        # to change: plot line for all models over year 
+        # climate_statistics(cube, operator="std_dev", period="monthly")
         fig = plot_level1(model_plot, obs, metric_values,
                           ['SSTA std (NDJ/MAM)(°C/°C)',
                            f'ENSO {metric}', dt_ls])

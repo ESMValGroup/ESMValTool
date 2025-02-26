@@ -30,8 +30,7 @@ User settings in recipe
 
    *Required settings for script*
 
-   * **diag_metrics**: diagnostic name and script name in *yml* of the diagnostic that computes all the metrics 
-   so it can find the *csv* in the `work_dir` - eg. diagnostic_metrics/plot_script
+   * **diag_metrics**: diagnostic name and script name in *yml* of the diagnostic that computes all the metrics so it can find the *csv* in the `work_dir` - eg. diagnostic_metrics/plot_script
 
 
 Variables
@@ -62,27 +61,25 @@ Example plots
 -------------
 
 .. _fig_seasonality:
-.. figure::  /recipes/figures/enso_metrics/seasonality.png
-   :align:   center
+.. figure:: /recipes/figures/enso_metrics/seasonality.png
+   :align: center
 
-    Ratio of winter over spring's standard deviation of SST anomalies.
-    All models on the same line.
+    Ratio of winter over spring's standard deviation of SST anomalies. All models are on the same line.
 
 .. _fig_lifecycle:
-.. figure::  /recipes/figures/enso_metrics/lifecycle.png
-   :align:   center
+.. figure:: /recipes/figures/enso_metrics/lifecycle.png
+   :align: center
 
    Temporal structure of SST anomalies. Observation is dashed black line.
 
 .. _fig_teleconnections:
-.. figure::  /recipes/figures/enso_metrics/ACCESS-CM2_DJF_ts_telecon.png
-   :align:   center
+.. figure:: /recipes/figures/enso_metrics/ACCESS-CM2_DJF_ts_telecon.png
+   :align: center
 
-   PR or SST anomalies on Earth (between 60°S-60°N),
-   showing the location associated with ENSO.
+   PR or SST anomalies on Earth (between 60°S-60°N), showing the location associated with ENSO.
 
 .. _fig_metrics:
-.. figure::  /recipes/figures/enso_metrics/plot_matrix.png
-   :align:   center
+.. figure:: /recipes/figures/enso_metrics/plot_matrix.png
+   :align: center
 
    Portrait plot of normalized metrics for models against reference observation.
