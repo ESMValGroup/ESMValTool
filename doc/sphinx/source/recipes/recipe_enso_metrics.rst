@@ -64,13 +64,15 @@ Example plots
 .. figure:: /recipes/figures/enso_metrics/seasonality.png
    :align: center
 
-    Ratio of winter over spring's standard deviation of SST anomalies. All models are on the same line.
+   Ratio of winter over spring's standard deviation of sea surface temperature anomalies (SSTA) in the central equatorial Pacific (Niño3.4 averaged), showing the seasonal timing of SSTA. 
+   All models are on the same line.
 
 .. _fig_lifecycle:
 .. figure:: /recipes/figures/enso_metrics/lifecycle.png
    :align: center
 
-   Temporal structure of SST anomalies. Observation is dashed black line.
+   Temporal structure of sea surface temperature anomalies (SSTA) in the central equatorial Pacific (Niño3.4 averaged), showing the temporal evolution of SSTA associated with ENSO. 
+   Observation is dashed black line.
 
 .. _fig_teleconnections:
 .. figure:: /recipes/figures/enso_metrics/ACCESS-CM2_DJF_ts_telecon.png

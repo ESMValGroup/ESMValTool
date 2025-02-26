@@ -73,8 +73,8 @@ def plot_map1(input_data, rmse, title):
 
     proj = ccrs.PlateCarree(central_longitude=180)
     figure.suptitle(title)
-    i = 121 # make subplot for all models? 
-    #nrows ncols set number of models+1, /4 cols, ceil (*figsize)
+    i = 121  # make subplot for all models?
+    # nrows ncols set number of models+1, /4 cols, ceil (*figsize)
 
     for label, cube in input_data.items():
 
@@ -167,7 +167,7 @@ def lin_regress_matrix(cube_a, cube_b):
     logger.info("%s, %s", cube_a.coords(), cube_a.shape)
     # Extract slopes from coefficients #coefs 1
     slopes = coefs[0].reshape(cube_a.shape[1], cube_a.shape[2])
-    
+
     # Create a new Iris Cube for the regression results
     coords = [cube_a.coord(name) for name in ['latitude', 'longitude']]
     result_cube = iris.cube.Cube(slopes, long_name='regression ENSO SSTA',
@@ -217,7 +217,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             val = abs((model - obs) / obs) * 100
             metric_values.append((dataset, val))
             model_plot.append(model)
-        # to change: plot line for all models over year 
+        # to change: plot line for all models over year
         # climate_statistics(cube, operator="std_dev", period="monthly")
         fig = plot_level1(model_plot, obs, metric_values,
                           ['SSTA std (NDJ/MAM)(°C/°C)',
