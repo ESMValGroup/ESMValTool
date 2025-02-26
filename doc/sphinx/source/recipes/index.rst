@@ -130,6 +130,7 @@ Ocean
    recipe_cvdp
    recipe_combined_indices
    recipe_esacci_oc
+   recipe_enso_metrics
    recipe_oceans
    recipe_sea_surface_salinity
    recipe_russell18jgr
