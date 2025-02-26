@@ -1,5 +1,3 @@
-#!/usr/bin/env  python
-# -*- coding: utf-8 -*-
 """Creates a difference map for any given drought index.
 
 A global map is plotted for each dataset with an index (must be unique).
@@ -14,14 +12,6 @@ observations and models seperatly.
 The produced maps can be clipped to non polar landmasses (220, 170, -55, 90)
 with `clip_land: True`.
 
-TODO: rename metric and group to their real keys in plotkwargs (allow
-multi match?) and make group_by accept a list. make sure diffmap_metrics is
-always added so that it can be consiedered as extra facet for this diagnostic.
-see yml for more notes..
-
-TODO: plot_kwargs overwrites from cfg seems not to overwrite those from
-diffmap.yml rename them to 'extra_plot_kwargs' or 'meta_plot_kwargs' and add a
-meta key to match any selection (order matters). This allows more flexibility.
 
 Configuration options in recipe
 -------------------------------
@@ -86,7 +76,7 @@ from iris.analysis import MEAN
 import esmvaltool.diag_scripts.droughts.utils as ut
 import esmvaltool.diag_scripts.shared as e
 
-# from esmvaltool.diag_scripts.droughts import colors  # noqa: F401
+# from esmvaltool.diag_scripts.droughts import colors
 
 log = logging.getLogger(__file__)
 
@@ -113,7 +103,7 @@ def plot_colorbar(
     """Plot colorbar in its own figure for strip_plots."""
     fig = plt.figure(figsize=(1.5, 3))
     # fixed size axes in fixed size figure
-    cbar_ax = fig.add_axes([0.01, 0.04, 0.2, 0.92])  # type: ignore[call-overload]
+    cbar_ax = fig.add_axes([0.01, 0.04, 0.2, 0.92])
     if mappable is None:
         cmap = plot_kwargs.get("cmap", "RdYlBu")
         norm = mpl.colors.Normalize(
@@ -166,12 +156,12 @@ def plot(
             log.info("NO BOUNDS GUESSING: %s", coord.name())
             cube.coord(coord.name()).guess_bounds()
     cyclic_data, cyclic_lon = add_cyclic_point(
-        cube.data, cube.coord("longitude").points
+        cube.data, cube.coord("longitude").points,
     )
     if (
         meta["dataset"] == "ERA5"
         and meta["short_name"] == "evspsblpot"
-        and len(cube.data[0]) == 360  # noqa: PLR2004
+        and len(cube.data[0]) == 360
     ):
         # NOTE: fill missing gap at 360 for era5 pet calculation
         cube.data[:, 359] = cube.data[:, 0]
@@ -228,7 +218,7 @@ def calculate_diff(cfg, meta, mm, output_meta, group, norm):
     if "start_year" in cfg or "end_year" in cfg:
         log.info("selecting time period")
         cube = pp.extract_time(
-            cube, cfg["start_year"], 1, 1, cfg["end_year"], 12, 31
+            cube, cfg["start_year"], 1, 1, cfg["end_year"], 12, 31,
         )
     dtime = cfg.get("comparison_period", 10) * 12
     cubes = {}
@@ -316,14 +306,13 @@ def main(cfg) -> None:
         mm = defaultdict(list)
         skipped = 0
         for meta in metas:
-            # TODO@lukruh: fix diag_spei output to contain all relevant meta data
-            ut.guess_experiment(meta)
+            ut.guess_experiment(meta)  # TODO: add in SPEI.R instead
             if "end_year" not in meta:
                 try:
                     meta.update(ut.get_time_range(meta["filename"]))
                 except Exception:
                     log.error(
-                        "failed to get time range for %s", meta["filename"]
+                        "failed to get time range for %s", meta["filename"],
                     )
                     skipped += 1
                     log.error("skipped datasets: %s", skipped)

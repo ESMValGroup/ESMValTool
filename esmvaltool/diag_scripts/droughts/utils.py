@@ -7,7 +7,6 @@ Added functions should have a meaningfull name and docstring.
 from __future__ import annotations
 
 import datetime as dt
-import errno
 import itertools as it
 import logging
 from calendar import monthrange
@@ -46,15 +45,11 @@ from esmvaltool.diag_scripts.shared._base import _get_input_data_files
 log = logging.getLogger(Path(__file__).name)
 
 # fmt: off
-# pylint: disable=line-too-long
-DENSITY = AuxCoord(
-    1000,
-    long_name="density",
-    units="kg m-3")
+DENSITY = AuxCoord(1000, long_name="density", units="kg m-3")
 
-FNAME_FORMAT = "{project}_{reference_dataset}_{mip}_{exp}_{ensemble}_{short_name}_{start_year}-{end_year}"
-CMIP6 = "{project}_{dataset}_{mip}_{exp}_{ensemble}_{short_name}_{grid}_{start_year}-{end_year}"
-OBS = "{project}_{dataset}_{type}_{version}_{mip}_{short_name}_{start_year}-{end_year}"
+FNAME_FORMAT = "{project}_{reference_dataset}_{mip}_{exp}_{ensemble}_{short_name}_{start_year}-{end_year}"  # noqa: E501
+CMIP6_FNAME = "{project}_{dataset}_{mip}_{exp}_{ensemble}_{short_name}_{grid}_{start_year}-{end_year}"  # noqa: E501
+OBS_FNAME = "{project}_{dataset}_{type}_{version}_{mip}_{short_name}_{start_year}-{end_year}"  # noqa: E501
 
 CONTINENTAL_REGIONS = {
     "Global": ["GLO"],  # global
@@ -63,17 +58,17 @@ CONTINENTAL_REGIONS = {
     "Southern America": ["NWS", "NSA", "NES", "SAM", "SWS", "SES", "SSA"],
     "Europe": ["NEU", "WCE", "EEU", "MED"],
     "Africa": ["SAH", "WAF", "CAF", "NEAF", "SEAF", "WSAF", "ESAF", "MDG"],
-    "Asia": ["RAR", "WSB", "ESB", "RFE", "WCA", "ECA", "TIB", "EAS", "ARP", "SAS", "SEA"],
+    "Asia": ["RAR", "WSB", "ESB", "RFE", "WCA", "ECA", "TIB", "EAS", "ARP", "SAS", "SEA"],  # noqa: E501
     "Australia": ["NAU", "CAU", "EAU", "SAU", "NZ", "WAN", "EAN"],
 }
 
-HEX_POSITIONS ={
+HEX_POSITIONS = {
         "NWN": [2, 0], "NEN": [4, 0], "GIC": [6.5, -0.5], "NEU": [14, 0],
         "RAR": [20, 0], "WNA": [1, 1], "CNA": [3, 1], "ENA": [5, 1],
         "WCE": [13, 1], "EEU": [15, 1], "WSB": [17, 1], "ESB": [19, 1],
         "RFE": [21, 1], "NCA": [2, 2], "MED": [14, 2], "WCA": [16, 2],
-        "ECA": [18, 2], "TIB": [20, 2], "EAS": [22, 2], "SCA": [3, 3],  # "CAR": [5, 3],
-        "SAH": [13, 3], "ARP": [15, 3], "SAS": [19, 3], "SEA": [23, 3],  # "PAC": [27.5, 3.3],
+        "ECA": [18, 2], "TIB": [20, 2], "EAS": [22, 2], "SCA": [3, 3],  # "CAR": [5, 3],  # noqa: E501
+        "SAH": [13, 3], "ARP": [15, 3], "SAS": [19, 3], "SEA": [23, 3],  # "PAC": [27.5, 3.3],  # noqa: E501
         "NWS": [6, 4], "NSA": [8, 4], "WAF": [12, 4], "CAF": [14, 4],
         "NEAF": [16, 4], "NAU": [24.5, 4.3], "SAM": [7, 5], "NES": [9, 5],
         "WSAF": [13, 5], "SEAF": [15, 5], "MDG": [17.5, 5.3],
@@ -114,7 +109,6 @@ INDEX_META = {
     },
 }
 # fmt: on
-# pylint: enable=line-too-long
 
 
 def merge_list_cube(
@@ -641,7 +635,7 @@ def slice_cube_interval(cube: Cube, interval: list) -> Cube:
     For 3D cubes time needs to be first dim.
     """
     if isinstance(interval[0], int) and isinstance(interval[1], int):
-        return cube[interval[0] : interval[1], :, :]
+        return cube[interval[0]: interval[1], :, :]
     dt_start = dt.datetime.strptime(interval[0], "%Y-%m")
     dt_end = dt.datetime.strptime(interval[1], "%Y-%m")
     time = cube.coord("time")
