@@ -38,7 +38,7 @@ begin
 
   ; Period
   YEAR1 = 2003
-  YEAR2 = 2018
+  YEAR2 = 2022
 
   ; Selected variable (standard name)
   VAR = (/"xch4"/)
@@ -62,8 +62,8 @@ begin
   VERSION = "L3"
 
   ; Global attributes
-  SOURCE = "https://cds.climate.copernicus.eu/cdsapp#!/dataset/" + \
-    "satellite-methane?tab=form"
+  SOURCE = "https://cds.climate.copernicus.eu/datasets/" + \
+    "satellite-methane?tab=download"
   REF = "Buchwitz et al., Adv. Astronaut. Sci. Technol., " + \
     "doi:10.1007/s42423-018-0004-6, 2018."
   COMMENT = ""
@@ -79,8 +79,8 @@ begin
 
     ; Read variables
 
-    fname = input_dir_path + "200301_201812-C3S-L3_GHG-GHG_PRODUCTS-" + \
-      "MERGED-MERGED-OBS4MIPS-MERGED-v4.1.nc"
+    fname = input_dir_path + "200301_202212-C3S-L3_XCH4-GHG_PRODUCTS-" + \
+      "MERGED-MERGED-OBS4MIPS-MERGED-v4.5.nc"
     setfileoption("nc", "MissingToFillValue", False)
     f = addfile(fname, "r")
     output = f->xch4
