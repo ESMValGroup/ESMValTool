@@ -35,11 +35,12 @@ Diagnostics are stored in diag_scripts/
 User settings in recipe
 -----------------------
 
-* Preprocessor
-Note: These preprocessor settings should not be changed. When changing the recipe,
+*Note*: The preprocessor settings should not be changed. When changing the recipe,
 ensure that the reference simulation period is the 20-year period around the time
 the ZEC simulation branches off of. This point may vary in CMIP6 for 1pctCO2, while
 in CMIP7 it should be at year 100 of ``esm-flat10``.
+
+* Preprocessor
 
    * ``area_statistics`` (*operation: mean*): Calculate global mean.
    * ``annual_statistics`` (*operation: mean*): For the ZEC simulation,
