@@ -138,6 +138,7 @@ def _extract_variable(in_files, var, cfg, out_dir, year0, region):
     new_list = iris.cube.CubeList()
 
     for cube in cube_list:
+        print(cube)
         for attr in drop_attrs:
             if attr in cube.attributes.keys():
                 cube.attributes.pop(attr)
@@ -170,7 +171,6 @@ def _extract_variable(in_files, var, cfg, out_dir, year0, region):
 
     loop_date = datetime(year0, 1, 1)
     while loop_date <= datetime(year0, 12, 31):
-        date_available = False
         for idx, cubetime in enumerate(time_list):
             if loop_date == cubetime:
                 date_available = True
@@ -183,7 +183,7 @@ def _extract_variable(in_files, var, cfg, out_dir, year0, region):
             nan_cube = _create_nan_cube(new_list[0], loop_date.year,
                                         loop_date.month, loop_date.day)
             full_list.append(nan_cube)
-            loop_date += relativedelta.relativedelta(days=1)
+        loop_date += relativedelta.relativedelta(days=1)
 
     iris.util.unify_time_units(full_list)
     cube = full_list.concatenate_cube()
@@ -213,8 +213,6 @@ def _extract_variable(in_files, var, cfg, out_dir, year0, region):
     cube.add_aux_coord(area_type)
 
     # add attribute cell_measures
-#    siconc:cell_measures = "area: areacello"
-#    cube.attributes.update({"cell_meaures": "area: areacello"})
     cube.attributes.locals['cell_measures'] = 'area: areacello'
 
     # Fix data type
@@ -266,16 +264,14 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     if end_date is None:
         end_date = datetime(2020, 12, 31)
 
-    for var in cfg['variables']:
-        if 'regions' in cfg['variables'][var]:
-            regions = cfg['variables'][var]['regions']
-        else:
+    for short_name, var in cfg['variables'].items():
+        if 'short_name' not in var:
+            var['short_name'] = short_name
+        if 'regions' not in var:
             regions = ('NH', 'SH')
-
-    for region in regions:
-        for short_name, var in cfg['variables'].items():
-            if 'short_name' not in var:
-                var['short_name'] = short_name
+        else:
+            regions = var['regions']
+        for region in regions:
             loop_date = start_date
             while loop_date <= end_date:
                 filepattern = os.path.join(
