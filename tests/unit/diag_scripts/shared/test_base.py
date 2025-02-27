@@ -367,6 +367,40 @@ def test_run_diagnostic(tmp_path, monkeypatch):
         assert 'example_setting' in cfg
 
 
+@pytest.mark.parametrize("no_distributed", [False, True])
+def test_run_diagnostic_configures_dask(
+    tmp_path,
+    monkeypatch,
+    mocker,
+    no_distributed,
+):
+
+    settings = create_settings(tmp_path)
+    scheduler_address = "tcp://127.0.0.1:38789"
+    settings["scheduler_address"] = scheduler_address
+    if no_distributed:
+        settings["no_distributed"] = True
+    settings_file = write_settings(settings)
+
+    monkeypatch.setattr(sys, 'argv', ['', settings_file])
+
+    # Create files created by ESMValCore
+    for filename in ('log.txt', 'profile.bin', 'resource_usage.txt'):
+        file = Path(settings['run_dir']) / filename
+        file.touch()
+
+    mocker.patch.object(shared._base.distributed, "Client")
+
+    with shared.run_diagnostic() as cfg:
+        assert 'example_setting' in cfg
+
+    if no_distributed:
+        shared._base.distributed.Client.assert_not_called()
+    else:
+        shared._base.distributed.Client.assert_called_once_with(
+            scheduler_address)
+
+
 @pytest.mark.parametrize('flag', ['-l', '--log-level'])
 def test_run_diagnostic_log_level(tmp_path, monkeypatch, flag):
     """Test if setting the log level from the command line works."""

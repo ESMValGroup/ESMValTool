@@ -23,8 +23,10 @@ large variety of input data.
 
    recipe_model_evaluation
    recipe_monitor
+   recipe_portrait
    recipe_psyplot
    recipe_seaborn
+   recipe_ref
 
 Atmosphere
 ^^^^^^^^^^
@@ -94,6 +96,7 @@ Future projections
    recipe_tcr
    recipe_tebaldi21esd
    recipe_climate_change_hotspot
+   recipe_bock24acp
 
 IPCC
 ^^^^

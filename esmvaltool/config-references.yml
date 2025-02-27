@@ -24,6 +24,12 @@ authors:
     institute: DLR, Germany
     email: bjoern.broetz@dlr.de
     orcid:
+  cammarano_diego:
+    name: Cammarano, Diego
+    institute: DLR, Germany
+    email: diego.cammarano@dlr.de
+    github: diegokam
+    orcid:
   debeire_kevin:
     name: Debeire, Kevin
     institute: DLR, Germany
@@ -223,6 +229,11 @@ authors:
     name: Galytska, Evgenia
     institute: IUP, Bremen
     orcid: https://orcid.org/0000-0001-6575-1559
+  garcia_perdomo_karen:
+    name: Garcia Perdomo, Karen
+    institute: CCCma, ECCC, Canada
+    orcid: https://orcid.org/0009-0004-2333-3358
+    github: Karen-A-Garcia
   gettelman_andrew:
     name: Gettelman, Andrew
     institute: NCAR, USA
@@ -232,6 +243,11 @@ authors:
     institute: University of Bremen, Germany
     orcid: https://orcid.org/0000-0002-2928-8664
     github: bettina-gier
+  gillett_nathan:
+    name: Gillett, Nathan
+    institute: CCCma, ECCC, Canada
+    orcid: https://orcid.org/0000-0002-2957-0002
+    github: npgillett
   gonzalez-reviriego_nube:
     name: Gonzalez-Reviriego, Nube
     institute: BSC, Spain
@@ -336,6 +352,11 @@ authors:
     name: Lillis, Jon
     institute: MetOffice, UK
     orcid:
+  lindenlaub_lukas:
+    name: Lindenlaub, Lukas
+    institute: University of Bremen, Germany
+    orcid: https://orcid.org/0000-0001-6349-9118
+    github: lukruh
   little_bill:
     name: Little, Bill
     institute: MetOffice, UK
@@ -364,7 +385,7 @@ authors:
     orcid:
   malinina_elizaveta:
     name: Malinina, Elizaveta
-    institute: CCCma, Canada
+    institute: CCCma, ECCC, Canada
     orcid: https://orcid.org/0000-0002-4102-2877
     github: malininae
   maloney_eric:
@@ -395,6 +416,11 @@ authors:
     name: Mello, Felipe
     institute: INPE, Brazil
     orcid: https://orcid.org/0000-0002-8832-2869
+  menelaou_konstantinos:
+    name: Menelaou, Konstantinos
+    institute: CCCma, ECCC, Canada
+    orcid: https://orcid.org/0000-0002-9676-7657
+    github: konmenelaou
   mohr_christianwilhelm:
     name: Mohr, Christian Wilhelm
     institute: Cicero, Norway
@@ -466,11 +492,6 @@ authors:
   rol_evert:
     name: Rol, Evert
     orcid: https://orcid.org/0000-0001-8357-4453
-  ruhe_lukas:
-    name: Ruhe, Lukas
-    institute: University of Bremen, Germany
-    orcid: https://orcid.org/0000-0001-6349-9118
-    github: lukruh
   russell_joellen:
     name: Russell, Joellen
     institute: Univ. of Arizona, USA
@@ -509,6 +530,11 @@ authors:
     name: Sterl, Andreas
     institute: KNMI, Netherlands
     orcid: https://orcid.org/0000-0003-3457-0434
+  stevens_robin:
+    name: Stevens, Robin
+    institute: CCCma, ECCC, Canada
+    orcid: https://orcid.org/0000-0002-8737-6988
+    github: Row-Bean
   swaminathan_ranjini:
     name: Swaminathan, Ranjini
     institute: University of Reading, UK
@@ -550,6 +576,11 @@ authors:
     institute: University of Bremen and DLR, Germany
     orcid: https://orcid.org/0000-0001-6133-7801
     github: katjaweigel
+  webb_kristi:
+    name: Webb, Kristi
+    institute: CCCma, ECCC, Canada
+    orcid: https://orcid.org/0000-0002-8610-0672
+    github: k-a-webb
   wenzel_sabrina:
     name: Wenzel, Sabrina
     institute: DLR, Germany
@@ -707,7 +738,7 @@ authors:
     orcid:
   reader_cathy:
     name: Reader, Cathy
-    institute:
+    institute: CCCma, ECCC, Canada
     orcid:
     github: mcreader97
   rumbold_heather:

@@ -17,16 +17,16 @@ datasets:
       analyses covering analysis of monthly rainfall. The dataset provides consistent temporal and spatial analyses
       across Australia for each observed data variable. This accounts for spatial and temporal gaps in observations.
       Where possible, the gridded analysis techniques provide useful estimates in data-sparse regions
-      such as central Australia. 
-      
+      such as central Australia.
+
       Time coverage: Site-based data are used to provide gridded climate data at the monthly timescale for rainfall (1900+).
       Reference: Evans, A., Jones, D.A., Smalley, R., and Lellyett, S. 2020. An enhanced gridded rainfall analysis scheme
       for Australia. Bureau of Meteorology Research Report. No. 41.
       National Computational Infrastructure (NCI) - Catalogue Record: http://dx.doi.org/10.25914/6009600786063.
-      Data from NCI (National Computing Infrastructure Australia https://nci.org.au/), 
+      Data from NCI (National Computing Infrastructure Australia https://nci.org.au/),
       requires an NCI account and access to Gadi(Supercomputer in Canberra) and the project found in catalogue record.
       Access can be requested through NCI. NCI is an ESGF node (https://esgf.nci.org.au/projects/esgf-nci/)
-  
+
   ANUClimate:
     tier: 3
     source: "https://dx.doi.org/10.25914/60a10aa56dd1b"
@@ -35,7 +35,7 @@ datasets:
       Data from NCI project requiring an NCI account and access to GADI
 
       ANUClimate 2.0 consists of gridded daily and monthly climate variables across the terrestrial landmass of Australia
-      from at least 1970 to the present. Rainfall grids are generated from 1900 to the present. The underpinning spatial 
+      from at least 1970 to the present. Rainfall grids are generated from 1900 to the present. The underpinning spatial
       models have been developed at the Fenner School of Environment and Society of the Australian National University.
 
   APHRO-MA:
@@ -264,6 +264,15 @@ datasets:
          named like the year (e.g. 2007), no subdirectories with
          days etc.
 
+  CMAP:
+    tier: 2
+    source: https://psl.noaa.gov/data/gridded/data.cmap.html
+    last_access: 2024-09-09
+    info: |
+      To facilitate the download, the links to the https server are provided.
+      https://downloads.psl.noaa.gov/Datasets/cmap/enh/
+        precip.mon.mean.nc
+
   CowtanWay:
     tier: 2
     source: https://www-users.york.ac.uk/~kdc3/papers/coverage2013/series.html
@@ -301,7 +310,7 @@ datasets:
     last_access: 2020-03-23
     info: |
       Create a new empty directory ``$RAWOBSPATH/Tier2/CT2019`` (where
-      ``$RAWOBSPATH`` is given by your user configuration file) where the raw
+      ``$RAWOBSPATH`` is given by your configuration) where the raw
       data will be stored. The download of the data is automatically handled by
       this script. If data is already present in this directory, the download is
       skipped (to force a new download delete your old files).
@@ -479,11 +488,11 @@ datasets:
         Download and processing instructions:
         Use the following CLI to download all the files:
         esmvaltool data download ESACCI-LANDCOVER
-        The underlying downloader is located here: 
+        The underlying downloader is located here:
         /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_landcover.py
-        and it will download all the files currently available on CEDA (1992-2020) 
+        and it will download all the files currently available on CEDA (1992-2020)
         under a single directory as follow: ${RAWOBS}/Tier2/ESACCI-LANDCOVER
-  
+
   ESACCI-LST:
     tier: 2
     source: On CEDA-JASMIN, /gws/nopw/j04/esacci_lst/public
@@ -554,7 +563,7 @@ datasets:
     source: https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001
     last_access: 2024-02-21
     info: |
-      CDR2 requires registration at EUMETSAT CM SAF, the information on how to 
+      CDR2 requires registration at EUMETSAT CM SAF, the information on how to
           download the order will be emailed once the order is ready.
       All files need to be in one directory, not in yearly subdirectories.
 
@@ -903,13 +912,13 @@ datasets:
       Select "Data Access" -> "Subset/Get Data" -> "Get Data" and follow the
       "Instructions for downloading". All *.he5 files need to be saved in the
       $RAWOBS/Tier3/MLS-AURA directory, where $RAWOBS refers to the RAWOBS
-      directory defined in the user configuration file. Apply this procedure to
-      both links provided above. The temperature fields are necessary for quality
+      directory defined in the configuration. Apply this procedure to both
+      links provided above. The temperature fields are necessary for quality
       control of the RHI data (see Data Quality Document for MLS-AURA for more
       information).
-      A registration is required
+      A registration is required.
 
-  MOBO-DIC_MPIM:
+  MOBO-DIC-MPIM:
     tier: 2
     source: https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0221526/
     last_access: 2022-11-03
@@ -961,9 +970,14 @@ datasets:
       pressure/
         rhum.mon.mean.nc
         air.mon.mean.nc
+        omega.mon.mean.nc
       https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
       gaussian_grid
         tcdc.eatm.mon.mean.nc
+        prate.sfc.mon.mean.nc
+        uflx.sfc.mon.mean.nc
+        vflx.sfc.mon.mean.nc
+        skt.sfc.mon.mean.nc
       https://downloads.psl.noaa.gov/Datasets/ncep.reanalysis2/Monthlies/
       surface
         pr_wtr.eatm.mon.mean.nc
@@ -1054,7 +1068,9 @@ datasets:
         gaussian/monolevel/tcdc.eatm.mon.mean.nc
         gaussian/monolevel/ulwrf.ntat.mon.mean.nc
         gaussian/monolevel/uswrf.ntat.mon.mean.nc
-
+        gaussian/monolevel/prate.mon.mean.nc
+        gaussian/monolevel/uflx.mon.mean.nc
+        gaussian/monolevel/vflx.mon.mean.nc
   NOAA-CIRES-20CR-V3:
     tier: 2
     source: ftp.cdc.noaa.gov/Projects/20thC_ReanV3/Monthlies/
@@ -1076,7 +1092,7 @@ datasets:
     last_access: 2023-12-04
     info: |
       Download the following files:
-        ersst.yyyymm.nc 
+        ersst.yyyymm.nc
         for years 1854 to 2020
 
   NOAA-ERSSTv5:
@@ -1085,7 +1101,7 @@ datasets:
     last_access: 2023-12-04
     info: |
       Download the following files:
-        ersst.v5.yyyymm.nc 
+        ersst.v5.yyyymm.nc
         for years 1854 onwards
 
   NOAAGlobalTemp:
@@ -1112,13 +1128,13 @@ datasets:
       Download daily data from:
       https://nsidc.org/data/NSIDC-0116
       Login required for download, and also requires citation only to use
-   
+
   NSIDC-G02202-sh:
     tier: 3
     source: https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4shmday
     last_access: 2023-05-13
     info: |
-      Download monthly data. 
+      Download monthly data.
       Login required for download, and also requires citation only to use
 
   OceanSODA-ETHZ:
@@ -1238,6 +1254,14 @@ datasets:
     last_access: 2023-01-17
     info: |
       Download the file zmn2o_TCOM_plev_T2Dz_1991_2021.nc.
+  
+  TROPFLUX:
+    tier: 2
+    source: "https://incois.gov.in/tropflux"
+    last_access: 2025-01-15
+    info: |
+      The TropFlux project aims at providing daily, timely, accurate air-sea heat and momentum
+      flux data for the entire 30°N-30°S region.
 
   UWisc:
     tier: 3
