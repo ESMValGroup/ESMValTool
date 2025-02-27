@@ -11,6 +11,12 @@ It expects multiple datasets for a particular index as input. The reference
 dataset can be specified with ``reference_dataset`` and is not part of the
 multi-model mean.
 
+.. note:: Previouis Version:
+   With ESMValTool v2.12 and previous, multiple collect_drought_*.py
+   diagnostics and a collect_drought_func.py diagnostic existed in the
+   `droughtindex` folders. Those have been archived and replaced by this
+   diagnostic in v2.13.
+
 Configuration options
 ---------------------
 indexname: str
@@ -40,16 +46,571 @@ end_year: int
 """
 
 import datetime as dt
+import logging
+from pathlib import Path
+from pprint import pformat
 
+import cartopy.crs as cart
 import iris
 import numpy as np
+from iris.analysis import Aggregator
 
 import esmvaltool.diag_scripts.shared as e
 from esmvaltool.diag_scripts.droughts.utils import (
-    _get_drought_data,
-    _plot_multi_model_maps,
-    _plot_single_maps,
+    _make_new_cube,
+    count_spells,
+    create_cube_from_data,
 )
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
+    get_diagnostic_filename,
+    get_plot_filename,
+)
+
+log = logging.getLogger(Path(__file__).name)
+
+
+def get_provenance_record(
+    ancestor_files,
+    caption,
+    domains,
+    refs,
+    plot_type="geo",
+) -> dict:
+    """Get Provenance record."""
+    return {
+        "caption": caption,
+        "statistics": ["mean"],
+        "domains": domains,
+        "plot_type": plot_type,
+        "themes": ["phys"],
+        "authors": [
+            "weigel_katja",
+            "adeniyi_kemisola",
+        ],
+        "references": refs,
+        "ancestors": ancestor_files,
+    }
+
+
+def _get_drought_data(cfg, cube):
+    """Prepare data and calculate characteristics."""
+    # make a new cube to increase the size of the data array
+    # Make an aggregator from the user function.
+    spell_no = Aggregator(
+        "spell_count",
+        count_spells,
+        units_func=lambda units: 1,
+    )
+    new_cube = _make_new_cube(cube)
+
+    # calculate the number of drought events and their average duration
+    drought_show = new_cube.collapsed(
+        "time",
+        spell_no,
+        threshold=cfg["threshold"],
+    )
+    drought_show.rename("Drought characteristics")
+    # length of time series
+    time_length = len(new_cube.coord("time").points) / 12.0
+    # Convert number of droughtevents to frequency (per year)
+    drought_show.data[:, :, 0] = drought_show.data[:, :, 0] / time_length
+    return drought_show
+
+
+def _provenance_map_spei(cfg, name_dict, spei, dataset_name):
+    """Set provenance for plot_map_spei."""
+    caption = (
+        "Global map of "
+        + name_dict["drought_char"]
+        + " ["
+        + name_dict["unit"]
+        + "] "
+        + "based on "
+        + cfg["indexname"]
+        + "."
+    )
+
+    if cfg["indexname"].lower == "spei":
+        set_refs = ["martin18grl", "vicente10jclim"]
+    elif cfg["indexname"].lower == "spi":
+        set_refs = ["martin18grl", "mckee93proc"]
+    else:
+        set_refs = ["martin18grl"]
+
+    provenance_record = get_provenance_record(
+        [name_dict["input_filenames"]],
+        caption,
+        ["global"],
+        set_refs,
+    )
+
+    diagnostic_file = get_diagnostic_filename(
+        cfg["indexname"]
+        + "_map"
+        + name_dict["add_to_filename"]
+        + "_"
+        + dataset_name,
+        cfg,
+    )
+    plot_file = get_plot_filename(
+        cfg["indexname"]
+        + "_map"
+        + name_dict["add_to_filename"]
+        + "_"
+        + dataset_name,
+        cfg,
+    )
+    log.info("Saving analysis results to %s", diagnostic_file)
+    cubesave = create_cube_from_data(spei, name_dict)
+    iris.save(cubesave, target=diagnostic_file)
+    log.info(
+        "Recording provenance of %s:\n%s",
+        diagnostic_file,
+        pformat(provenance_record),
+    )
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(plot_file, provenance_record)
+        provenance_logger.log(diagnostic_file, provenance_record)
+
+
+def _provenance_map_spei_multi(cfg, data_dict, spei, input_filenames):
+    """Set provenance for plot_map_spei_multi."""
+    caption = (
+        f"Global map of the multi-model mean of "
+        f"{data_dict['drought_char']} [{data_dict['unit']}] based on "
+        f"{cfg['indexname']}."
+    )
+    if cfg["indexname"].lower == "spei":
+        set_refs = ["martin18grl", "vicente10jclim"]
+    elif cfg["indexname"].lower == "spi":
+        set_refs = ["martin18grl", "mckee93proc"]
+    else:
+        set_refs = ["martin18grl"]
+
+    provenance_record = get_provenance_record(
+        input_filenames,
+        caption,
+        ["global"],
+        set_refs,
+    )
+
+    diagnostic_file = get_diagnostic_filename(
+        cfg["indexname"]
+        + "_map"
+        + data_dict["filename"]
+        + "_"
+        + data_dict["datasetname"],
+        cfg,
+    )
+    plot_file = get_plot_filename(
+        cfg["indexname"]
+        + "_map"
+        + data_dict["filename"]
+        + "_"
+        + data_dict["datasetname"],
+        cfg,
+    )
+    log.info("Saving analysis results to %s", diagnostic_file)
+    iris.save(create_cube_from_data(spei, data_dict), target=diagnostic_file)
+    log.info(
+        "Recording provenance of %s:\n%s",
+        diagnostic_file,
+        pformat(provenance_record),
+    )
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(plot_file, provenance_record)
+        provenance_logger.log(diagnostic_file, provenance_record)
+
+
+def _plot_multi_model_maps(
+    cfg,
+    all_drought_mean,
+    lats_lons,
+    input_filenames,
+    tstype,
+):
+    """Prepare plots for multi-model mean."""
+    data_dict = {
+        "latitude": lats_lons[0],
+        "longitude": lats_lons[1],
+        "model_kind": tstype,
+    }
+    if tstype == "Difference":
+        # RCP85 Percentage difference
+        data_dict.update({
+            "data": all_drought_mean[:, :, 0],
+            "var": "diffnumber",
+            "datasetname": "Percentage",
+            "drought_char": "Number of drought events",
+            "unit": "%",
+            "filename": "Percentage_difference_of_No_of_Events",
+            "drought_numbers_level": np.arange(-100, 110, 10),
+        })
+        plot_map_spei_multi(
+            cfg,
+            data_dict,
+            input_filenames,
+            colormap="rainbow",
+        )
+
+        data_dict.update({
+            "data": all_drought_mean[:, :, 1],
+            "var": "diffduration",
+            "drought_char": "Duration of drought events",
+            "filename": "Percentage_difference_of_Dur_of_Events",
+            "drought_numbers_level": np.arange(-100, 110, 10),
+        })
+        plot_map_spei_multi(
+            cfg,
+            data_dict,
+            input_filenames,
+            colormap="rainbow",
+        )
+
+        data_dict.update({
+            "data": all_drought_mean[:, :, 2],
+            "var": "diffseverity",
+            "drought_char": "Severity Index of drought events",
+            "filename": "Percentage_difference_of_Sev_of_Events",
+            "drought_numbers_level": np.arange(-50, 60, 10),
+        })
+        plot_map_spei_multi(
+            cfg,
+            data_dict,
+            input_filenames,
+            colormap="rainbow",
+        )
+
+        data_dict.update({
+            "data": all_drought_mean[:, :, 3],
+            "var": "diff" + (cfg["indexname"]).lower(),
+            "drought_char": "Average "
+            + cfg["indexname"]
+            + " of drought events",
+            "filename": "Percentage_difference_of_Avr_of_Events",
+            "drought_numbers_level": np.arange(-50, 60, 10),
+        })
+        plot_map_spei_multi(
+            cfg,
+            data_dict,
+            input_filenames,
+            colormap="rainbow",
+        )
+    else:
+        data_dict.update({
+            "data": all_drought_mean[:, :, 0],
+            "var": "frequency",
+            "unit": "year-1",
+            "drought_char": "Number of drought events per year",
+            "filename": tstype + "_No_of_Events_per_year",
+            "drought_numbers_level": np.arange(0, 0.4, 0.05),
+        })
+        if tstype == "Observations":
+            data_dict["datasetname"] = "Mean"
+        else:
+            data_dict["datasetname"] = "MultiModelMean"
+        plot_map_spei_multi(
+            cfg,
+            data_dict,
+            input_filenames,
+            colormap="gnuplot",
+        )
+
+        data_dict.update({
+            "data": all_drought_mean[:, :, 1],
+            "var": "duration",
+            "unit": "month",
+            "drought_char": "Duration of drought events [month]",
+            "filename": tstype + "_Dur_of_Events",
+            "drought_numbers_level": np.arange(0, 6, 1),
+        })
+        plot_map_spei_multi(
+            cfg,
+            data_dict,
+            input_filenames,
+            colormap="gnuplot",
+        )
+
+        data_dict.update({
+            "data": all_drought_mean[:, :, 2],
+            "var": "severity",
+            "unit": "1",
+            "drought_char": "Severity Index of drought events",
+            "filename": tstype + "_Sev_index_of_Events",
+            "drought_numbers_level": np.arange(0, 9, 1),
+        })
+        plot_map_spei_multi(
+            cfg,
+            data_dict,
+            input_filenames,
+            colormap="gnuplot",
+        )
+        namehlp = "Average " + cfg["indexname"] + " of drought events"
+        namehlp2 = tstype + "_Average_" + cfg["indexname"] + "_of_Events"
+        data_dict.update({
+            "data": all_drought_mean[:, :, 3],
+            "var": (cfg["indexname"]).lower(),
+            "unit": "1",
+            "drought_char": namehlp,
+            "filename": namehlp2,
+            "drought_numbers_level": np.arange(-2.8, -1.8, 0.2),
+        })
+        plot_map_spei_multi(
+            cfg,
+            data_dict,
+            input_filenames,
+            colormap="gnuplot",
+        )
+
+
+def _plot_single_maps(cfg, cube2, drought_show, tstype, input_filenames):
+    """Plot map of drought characteristics for individual models and times."""
+    cube2.data = drought_show.data[:, :, 0]
+    name_dict = {
+        "add_to_filename": tstype + "_No_of_Events_per_year",
+        "name": tstype + " Number of drought events per year",
+        "var": "frequency",
+        "unit": "year-1",
+        "drought_char": "Number of drought events per year",
+        "input_filenames": input_filenames,
+    }
+    plot_map_spei(cfg, cube2, np.arange(0, 0.4, 0.05), name_dict)
+    # plot the average duration of drought events
+    cube2.data = drought_show.data[:, :, 1]
+    name_dict.update({
+        "add_to_filename": tstype + "_Dur_of_Events",
+        "name": tstype + " Duration of drought events(month)",
+        "var": "duration",
+        "unit": "month",
+        "drought_char": "Number of drought events per year",
+        "input_filenames": input_filenames,
+    })
+    plot_map_spei(cfg, cube2, np.arange(0, 6, 1), name_dict)
+    # plot the average severity index of drought events
+    cube2.data = drought_show.data[:, :, 2]
+    name_dict.update({
+        "add_to_filename": tstype + "_Sev_index_of_Events",
+        "name": tstype + " Severity Index of drought events",
+        "var": "severity",
+        "unit": "1",
+        "drought_char": "Number of drought events per year",
+        "input_filenames": input_filenames,
+    })
+    plot_map_spei(cfg, cube2, np.arange(0, 9, 1), name_dict)
+    # plot the average spei of drought events
+    cube2.data = drought_show.data[:, :, 3]
+    namehlp = tstype + "_Avr_" + cfg["indexname"] + "_of_Events"
+    namehlp2 = tstype + "_Average_" + cfg["indexname"] + "_of_Events"
+    name_dict.update({
+        "add_to_filename": namehlp,
+        "name": namehlp2,
+        "var": "severity",
+        "unit": "1",
+        "drought_char": "Number of drought events per year",
+        "input_filenames": input_filenames,
+    })
+    plot_map_spei(cfg, cube2, np.arange(-2.8, -1.8, 0.2), name_dict)
+
+
+def plot_map_spei_multi(
+    cfg,
+    data_dict,
+    input_filenames,
+    colormap="jet",
+) -> None:
+    """Plot contour maps for multi model mean."""
+    spei = np.ma.array(data_dict["data"], mask=np.isnan(data_dict["data"]))
+    # Get latitudes and longitudes from cube
+    lons = data_dict["longitude"]
+    if max(lons) > 180.0:
+        lons = np.where(lons > 180, lons - 360, lons)
+        # sort the array
+        index = np.argsort(lons)
+        lons = lons[index]
+        spei = spei[np.ix_(range(data_dict["latitude"].size), index)]
+    # Plot data
+    # Create figure and axes instances
+    subplot_kw = {"projection": cart.PlateCarree(central_longitude=0.0)}
+    fig, axx = plt.subplots(figsize=(6.5, 4), subplot_kw=subplot_kw)
+    axx.set_extent(
+        [-180.0, 180.0, -90.0, 90.0],
+        cart.PlateCarree(central_longitude=0.0),
+    )
+    # Draw filled contours
+    cnplot = plt.contourf(
+        lons,
+        data_dict["latitude"],
+        spei,
+        data_dict["drought_numbers_level"],
+        transform=cart.PlateCarree(central_longitude=0.0),
+        cmap=colormap,
+        extend="both",
+        corner_mask=False,
+    )
+    # Style plot
+    axx.coastlines()
+    cbar = fig.colorbar(cnplot, ax=axx, shrink=0.6, orientation="horizontal")
+    if data_dict["model_kind"] == "Difference":
+        cbar.set_label(
+            data_dict["model_kind"] + " " + data_dict["drought_char"] + " [%]",
+        )
+    else:
+        cbar.set_label(
+            data_dict["model_kind"] + " " + data_dict["drought_char"],
+        )
+    axx.set_xlabel("Longitude")
+    axx.set_ylabel("Latitude")
+    axx.set_title(
+        f"{data_dict['datasetname']} {data_dict['model_kind']} "
+        f"{data_dict['drought_char']}",
+    )
+    # set ticks
+    axx.set_xticks(np.linspace(-180, 180, 7))
+    axx.set_xticklabels([
+        "180°W",
+        "120°W",
+        "60°W",
+        "0°",
+        "60°E",
+        "120°E",
+        "180°E",
+    ])
+    axx.set_yticks(np.linspace(-90, 90, 7))
+    axx.set_yticklabels(["90°S", "60°S", "30°S", "0°", "30°N", "60°N", "90°N"])
+
+    fig.tight_layout()
+    fig.savefig(
+        get_plot_filename(
+            cfg["indexname"]
+            + "_map"
+            + data_dict["filename"]
+            + "_"
+            + data_dict["datasetname"],
+            cfg,
+        ),
+        dpi=300,
+    )
+    plt.close()
+    _provenance_map_spei_multi(cfg, data_dict, spei, input_filenames)
+
+
+def plot_map_spei(cfg, cube, levels, name_dict) -> None:
+    """Plot contour map."""
+    mask = np.isnan(cube.data)
+    spei = np.ma.array(cube.data, mask=mask)
+    np.ma.masked_less_equal(spei, 0)
+    # Get latitudes and longitudes from cube
+    name_dict.update({"latitude": cube.coord("latitude").points})
+    lons = cube.coord("longitude").points
+    lons = np.where(lons > 180, lons - 360, lons)
+    # sort the array
+    index = np.argsort(lons)
+    lons = lons[index]
+    name_dict.update({"longitude": lons})
+    spei = spei[np.ix_(range(len(cube.coord("latitude").points)), index)]
+    # Get data set name from cube
+    try:
+        dataset_name = cube.metadata.attributes["model_id"]
+    except KeyError:
+        try:
+            dataset_name = cube.metadata.attributes["source_id"]
+        except KeyError:
+            dataset_name = "Observations"
+    # Plot data
+    # Create figure and axes instances
+    subplot_kw = {"projection": cart.PlateCarree(central_longitude=0.0)}
+    fig, axx = plt.subplots(figsize=(8, 4), subplot_kw=subplot_kw)
+    axx.set_extent(
+        [-180.0, 180.0, -90.0, 90.0],
+        cart.PlateCarree(central_longitude=0.0),
+    )
+    # Draw filled contours
+    cnplot = plt.contourf(
+        lons,
+        cube.coord("latitude").points,
+        spei,
+        levels,
+        transform=cart.PlateCarree(central_longitude=0.0),
+        cmap="gnuplot",
+        extend="both",
+        corner_mask=False,
+    )
+    axx.coastlines()
+    cbar = fig.colorbar(cnplot, ax=axx, shrink=0.6, orientation="horizontal")
+    cbar.set_label(name_dict["name"])
+    axx.set_xlabel("Longitude")
+    axx.set_ylabel("Latitude")
+    axx.set_title(dataset_name + " " + name_dict["name"])
+
+    # Set up x and y ticks
+    axx.set_xticks(np.linspace(-180, 180, 7))
+    axx.set_xticklabels(
+        ["180°W", "120°W", "60°W", "0°", "60°E", "120°E", "180°E"],
+    )
+    axx.set_yticks(np.linspace(-90, 90, 7))
+    axx.set_yticklabels(["90°S", "60°S", "30°S", "0°", "30°N", "60°N", "90°N"])
+    fig.tight_layout()
+    basename = (
+        f"{cfg['indexname']}_map_{name_dict['add_to_filename']}_{dataset_name}"
+    )
+    fig.savefig(get_plot_filename(basename, cfg), dpi=300)
+    plt.close()
+    _provenance_map_spei(cfg, name_dict, spei, dataset_name)
+
+
+def plot_time_series_spei(cfg, cube, filename, add_to_filename="") -> None:
+    """Plot time series."""
+    spei = cube.data
+    time = cube.coord("time").points
+    # Adjust (ncdf) time to the format matplotlib expects
+    add_m_delta = mdates.datestr2num("1850-01-01 00:00:00")
+    time = time + add_m_delta
+    # Get data set name from cube
+    try:
+        dataset_name = cube.metadata.attributes["model_id"]
+    except KeyError:
+        try:
+            dataset_name = cube.metadata.attributes["source_id"]
+        except KeyError:
+            dataset_name = "Observations"
+    data_dict = {
+        "data": spei,
+        "time": time,
+        "var": cfg["indexname"],
+        "dataset_name": dataset_name,
+        "unit": "1",
+        "filename": filename,
+        "area": add_to_filename,
+    }
+    fig, axx = plt.subplots(figsize=(16, 4))
+    axx.plot_date(
+        time,
+        spei,
+        "-",
+        tz=None,
+        xdate=True,
+        ydate=False,
+        color="r",
+        linewidth=4.0,
+        linestyle="-",
+        alpha=1.0,
+        marker="x",
+    )
+    axx.axhline(y=-2, color="k")
+    axx.set_xlabel("Time")
+    axx.set_ylabel(cfg["indexname"])
+    axx.set_title(
+        f"Mean {cfg['indexname']} {data_dict['dataset_name']} "
+        f"{data_dict['area']}",
+    )
+    axx.set_ylim(-4.0, 4.0)
+    fig.tight_layout()
+    basename = f"{cfg['indexname']}_time_series_{data_dict['area']}_"
+    basename += data_dict["dataset_name"]
+    fig.savefig(get_plot_filename(basename, cfg), dpi=300)
+    plt.close()
+    _provenance_time_series_spei(cfg, data_dict)
 
 
 def _plot_models_vs_obs(cfg, cube, mmm, obs, fnames):
@@ -112,7 +673,11 @@ def main(cfg) -> None:
                 drought_slices[tstype].append(drought_show.data)
                 if cfg.get("plot_models", False):
                     _plot_single_maps(
-                        cfg, cube_mean, drought_show, tstype, fname
+                        cfg,
+                        cube_mean,
+                        drought_show,
+                        tstype,
+                        fname,
                     )
         else:
             # calculate and plot metrics per dataset
@@ -123,7 +688,11 @@ def main(cfg) -> None:
                 drought_data.append(drought_show.data)
             if cfg.get("plot_models", False):
                 _plot_single_maps(
-                    cfg, cube_mean, drought_show, "Historic", fname
+                    cfg,
+                    cube_mean,
+                    drought_show,
+                    "Historic",
+                    fname,
                 )
 
     if cfg.get("compare_intervals", False):
