@@ -449,6 +449,10 @@ diagnostics:
         plots:
           benchmarking_boxplot:
             var_order: ['tas_land', 'sst', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
+        figure_kwargs:
+          figsize: [9, 5]
+          layout: constrained
+
 
 
   plot_boxplots_pearsonr:
@@ -585,71 +589,7 @@ diagnostics:
         plots:
           benchmarking_boxplot:
             var_order: ['tas_land', 'sst', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
+        figure_kwargs:
+          figsize: [9, 5]
+          layout: constrained
 
-
-
-  plot_boxplots_trend:
-    description: Plot boxplots for different variables.
-    variables:
-      tas_land:
-        <<: *var_settings
-        preprocessor: trend_land
-        short_name: tas
-        additional_datasets:
-          - {dataset: HadCRUT5, project: OBS, type: ground,
-             version: 5.0.1.0-analysis, tier: 2}
-      lwcre:
-        <<: *var_settings
-        preprocessor: trend
-        derive: true
-        force_derivation: true
-        channel: Amon
-        additional_datasets:
-          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
-             tier: 2, start_year: 2001, end_year: 2020}
-      pr:
-        <<: *var_settings
-        preprocessor: trend_pr
-        additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2}
-      psl:
-        <<: *var_settings
-        preprocessor: trend
-        additional_datasets:
-          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3}
-      rlut:
-        <<: *var_settings
-        preprocessor: trend
-        additional_datasets:
-          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
-             tier: 2, start_year: 2001, end_year: 2020}
-      rsut:
-        <<: *var_settings
-        preprocessor: trend
-        additional_datasets:
-          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
-             tier: 2, start_year: 2001, end_year: 2020}
-      swcre:
-        <<: *var_settings
-        preprocessor: trend
-        derive: true
-        force_derivation: true
-        channel: Amon
-        additional_datasets:
-          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
-             tier: 2, start_year: 2001, end_year: 2020}
-      sst:
-        <<: *var_settings
-        preprocessor: trend_sst
-        short_name: ts
-        additional_datasets:
-          - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
-    scripts:
-      allplots:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        group_variables_by: variable_group
-        plots:
-          benchmarking_boxplot:
-            var_order: ['tas_land', 'sst', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
