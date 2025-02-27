@@ -138,7 +138,6 @@ def _extract_variable(in_files, var, cfg, out_dir, year0, region):
     new_list = iris.cube.CubeList()
 
     for cube in cube_list:
-        print(cube)
         for attr in drop_attrs:
             if attr in cube.attributes.keys():
                 cube.attributes.pop(attr)
