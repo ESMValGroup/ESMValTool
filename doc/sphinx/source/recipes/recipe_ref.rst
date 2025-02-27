@@ -44,12 +44,5 @@ Example plots:
 .. figure::  /recipes/figures/ref/seaborn_jointplot.png
    :align:   center
 
-   2D histogram of total cloud fraction and longwave cloud radiative
-   effect from CESM2-WACCM for the years 2002-2014 with 1D histograms attached.
-
-.. _fig_ref_4:
-.. figure::  /recipes/figures/ref/seaborn_displot.png
-   :align:   center
-
-   2D histogram of total cloud fraction and longwave cloud radiative
-   effect from CESM2-WACCM and ESACCI-CLOUD for the years 2002-2014.
+   2D histogram of total cloud fraction and shortwave cloud radiative
+   effect from ESACCI-CLOUD for the years 2007-2011 with 1D histograms attached.
