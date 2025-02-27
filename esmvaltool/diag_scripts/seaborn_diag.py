@@ -172,7 +172,7 @@ def _create_plot(
                 getattr(plot_obj, func_name)(func_args)
     if cfg['suptitle'] is not None:
         logger.debug("Setting `suptitle='%s'`", cfg['suptitle'])
-        if plot_func_str in ['jointplot']:
+        if plot_func_str in ['jointplot'] and cfg['suptitle'] in ['{}']:
             plt.suptitle(cfg['suptitle']
                          .format(data_frame["alias"].unique()[0]), y=1.05)
         else:

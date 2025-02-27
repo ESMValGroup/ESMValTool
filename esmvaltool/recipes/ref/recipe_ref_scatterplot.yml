@@ -10,61 +10,52 @@ documentation:
   maintainer:
     - bock_lisa
 
-timerange_for_models: &time_period
+timerange_for_data: &time_period
   timerange: '2007/2011'  # can be specified, this is just an example
+regridding: &regridding
+  regrid:
+    target_grid: 1x1
+    scheme:
+      reference: esmf_regrid.schemes:ESMFAreaWeighted
+levels_for_3d_vars: &extracting_levels
+  extract_levels:
+    levels: {cmor_table: CMIP6, coordinate: plev27}
+    coordinate: air_pressure
+    scheme: linear
+
 
 preprocessors:
   common_grid_clt:
-    regrid:
-      target_grid: 1x1
-      scheme:
-        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    <<: *regridding
+    custom_order: True
     mask_below_threshold:
       threshold: 0.001
     mask_above_threshold:
       threshold: 100.
-  common_grid_clivi:
-    regrid:
-      target_grid: 1x1
-      scheme:
-        reference: esmf_regrid.schemes:ESMFAreaWeighted
-    mask_below_threshold:
-      threshold: 0.001
-    mask_above_threshold:
-      threshold: 0.2
-  common_grid_clwvi:
-    regrid:
-      target_grid: 1x1
-      scheme:
-        reference: esmf_regrid.schemes:ESMFAreaWeighted
+  common_grid_clivi_clwvi:
+    custom_order: True
+    <<: *regridding
     mask_below_threshold:
       threshold: 0.001
     mask_above_threshold:
       threshold: 0.2
   common_grid_lwcre:
-    regrid:
-      target_grid: 1x1
-      scheme:
-        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    custom_order: True
+    <<: *regridding
     mask_below_threshold:
       threshold: -10.
     mask_above_threshold:
       threshold: 100.
   common_grid_swcre:
-    regrid:
-      target_grid: 1x1
-      scheme:
-        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    custom_order: True
+    <<: *regridding
     mask_below_threshold:
       threshold: -200.
     mask_above_threshold:
       threshold: -0.001
   common_grid_pr:
     custom_order: True
-    regrid:
-      target_grid: 1x1
-      scheme:
-        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    <<: *regridding
     convert_units:
       units: mm day-1
     mask_below_threshold:
@@ -72,28 +63,17 @@ preprocessors:
     mask_above_threshold:
       threshold: 8
   common_grid_levels_ta:
-    extract_levels:
-      levels: {cmor_table: CMIP6, coordinate: plev27}
-      coordinate: air_pressure
-      scheme: linear
-    regrid:
-      target_grid: 1x1
-      scheme:
-        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    custom_order: True
+    <<: *extracting_levels
+    <<: *regridding
     mask_below_threshold:
       threshold: 180
     mask_above_threshold:
       threshold: 320
   common_grid_levels_cli:
     custom_order: True
-    extract_levels:
-      levels: {cmor_table: CMIP6, coordinate: plev27}
-      coordinate: air_pressure
-      scheme: linear
-    regrid:
-      target_grid: 1x1
-      scheme:
-        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    <<: *extracting_levels
+    <<: *regridding
     convert_units:
       units: g kg-1
     mask_below_threshold:
@@ -127,12 +107,8 @@ diagnostics:
         seaborn_kwargs:
           kind: hist
           x: clt
-          y: swcre                 # Adjust binning for histograms
+          y: swcre
           bins: 20
-          #binwidth: [5., 5.]
-          #binrange: [[0., 100.], [-200., 0.]]
-          #xlim: [0., 100.]
-          #ylim: [-200., 0.]
           vmax: 0.015
           stat: probability
           cmap: YlGnBu
@@ -146,9 +122,6 @@ diagnostics:
             fill: True
             stat: probability
         add_aux_coords: true
-        #dropna_kwargs:
-        #  axis: 0
-        #  how: any
         plot_object_methods:
           set_axis_labels:
             xlabel: 'clt [%]'
@@ -164,20 +137,23 @@ diagnostics:
     variables:
       clt:
         <<: *var_clt
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
       swcre:
         <<: *var_swcre
-    additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2, alias: CERES-EBAF}
     scripts:
       plot:
         <<: *plot_settings_jointplot_clt_swcre
+        suptitle: 'ESACCI-CLOUD / CERES-EBAF'
 
   plot_joint_clwvi_pr_ref:
     description: Scatterplot clwvi vs pr.
     variables:
       clwvi:
         <<: *var_clt
-        preprocessor: common_grid_clwvi
+        preprocessor: common_grid_clivi_clwvi
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
       pr:
@@ -193,9 +169,6 @@ diagnostics:
           x: clwvi
           y: pr
           bins: 20
-          #binrange: [[0., 0.06], [0., 0.3]]
-          #xlim: [0., 0.06]
-          #ylim: [0., 0.3]
           vmax: 0.03
           stat: probability
           cmap: YlGnBu
@@ -212,6 +185,7 @@ diagnostics:
           set_axis_labels:
             xlabel: 'clwvi [kg m-2]'
             ylabel: 'pr [mm day-1]'
+        suptitle: 'ESACCI-CLOUD / GPCP-SG'
 
 
   plot_joint_clwvi_pr_model:
@@ -219,7 +193,7 @@ diagnostics:
     variables:
       clwvi:
         <<: *var_clt
-        preprocessor: common_grid_clwvi
+        preprocessor: common_grid_clivi_clwvi
       pr:
         <<: *var_clt
         preprocessor: common_grid_pr
@@ -228,20 +202,21 @@ diagnostics:
     scripts:
       plot:
         <<: *plot_settings_jointplot_clwvi_pr
+        suptitle: '{}'
 
   plot_joint_clivi_lwcre_ref:
     description: Scatterplot clt vs lwcre.
     variables:
       clivi:
         <<: *var_clt
-        preprocessor: common_grid_clivi
+        preprocessor: common_grid_clivi_clwvi
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
       lwcre:
         <<: *var_swcre
         preprocessor: common_grid_lwcre
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2, alias: CERES-EBAF}
     scripts:
       plot: &plot_settings_jointplot_clivi_lwcre
         <<: *plot_settings_jointplot_clt_swcre
@@ -249,11 +224,7 @@ diagnostics:
           kind: hist
           x: clivi
           y: lwcre
-          #binwidth: [0.01, 5.]
           bins: 20
-          #binrange: [[0., 0.2], [-10., 100.]]
-          #xlim: [0., 0.2]
-          #ylim: [-10., 100.]
           vmax: 0.03
           stat: probability
           cmap: YlGnBu
@@ -270,13 +241,14 @@ diagnostics:
           set_axis_labels:
             xlabel: 'clivi [kg m-2]'
             ylabel: 'lwcre [W m-2]'
+        suptitle: 'ESACCI-CLOUD / CERES-EBAF'
 
   plot_joint_clivi_lwcre_model:
     description: Scatterplot clt vs lwcre.
     variables:
       clivi:
         <<: *var_clt
-        preprocessor: common_grid_clivi
+        preprocessor: common_grid_clivi_clwvi
       lwcre:
         <<: *var_swcre
         preprocessor: common_grid_lwcre
@@ -285,6 +257,7 @@ diagnostics:
     scripts:
       plot:
         <<: *plot_settings_jointplot_clivi_lwcre
+        suptitle: '{}'
 
   plot_joint_cli_ta_ref:
     description: Scatterplot clt vs lwcre.
@@ -306,9 +279,7 @@ diagnostics:
           kind: hist
           x: cli
           y: ta
-          #binwidth: [0.01, 5.]
           bins: 20
-          #binrange: [[0., 0.005], [190., 310.]]
           xlim: [0., 0.005]
           ylim: [180., 320.]
           vmax: 0.02
@@ -327,6 +298,7 @@ diagnostics:
           set_axis_labels:
             xlabel: 'cli [g kg]'
             ylabel: 'ta [K]'
+        suptitle: 'CALIPSO-ICECLOUD / ERA5'
 
   plot_joint_cli_ta_model:
     description: Scatterplot clt vs lwcre.
@@ -342,3 +314,4 @@ diagnostics:
     scripts:
       plot: 
         <<: *plot_settings_jointplot_cli_ta
+        suptitle: '{}'
