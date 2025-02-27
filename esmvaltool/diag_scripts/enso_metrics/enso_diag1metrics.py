@@ -57,7 +57,7 @@ def plot_level1(model_data, obs, metric_values, labels_ls):
     plt.ylabel(labels_ls[0])
 
     if labels_ls[1] == 'ENSO lifecycle':
-        plt.legend(loc='center left', bbox_to_anchor=(0.9, 0.5))
+        plt.legend(loc='center left', bbox_to_anchor=(0.98, 0.5))
         plt.axhline(y=0, color='black', linewidth=2)
         xticks = np.arange(1, 73, 6) - 36  # Adjust for lead/lag months
         xtick_labels = ['Jan', 'Jul'] * (len(xticks) // 2)
@@ -136,10 +136,9 @@ def sst_regressed(n34_cube):
 
 
 def lin_regress_matrix(cube_a, cube_b):
-    """ Calculate linear regression.
+    """Calculate linear regression using matrix operations.
 
-    Calculate the linear regression of cube_a on cube_b using
-    matrix operations. Array must not contain infs or NaNs.
+    Array must not contain infs or NaNs.
 
     Parameters
     ----------
