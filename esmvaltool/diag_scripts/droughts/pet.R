@@ -203,7 +203,7 @@ for (dataset in names(grouped_meta)){
     pet[, , t] <- tmp
   }
   pet <- monthly_to_daily(pet, dim=3)
-  
+
   # write PET to file
   first_meta = metas[[names(metas)[1]]]
   filename <- write_nc_file_like(
@@ -213,7 +213,7 @@ for (dataset in names(grouped_meta)){
     units="mm day-1")
   input_meta <- select_var(metas, "tasmin")  # TODO: create duplicate()?
   input_meta$filename <- filename
-  input_meta$short_name <- "evspsblpot"
+  input_meta$short_name <- "evspsblpot" 
   input_meta$long_name <- "Potential Evapotranspiration"
   input_meta$units <- "mm day-1"
   meta[[filename]] <- input_meta

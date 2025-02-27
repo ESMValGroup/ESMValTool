@@ -94,7 +94,7 @@ METRICS = ["first", "last", "diff", "total", "percent"]
 
 
 def plot_colorbar(
-    cfg: dict,  # noqa: ARG001
+    cfg: dict,
     plotfile: str,
     plot_kwargs: dict,
     orientation: str = "vertical",
@@ -111,7 +111,7 @@ def plot_colorbar(
             vmax=plot_kwargs.get("vmax"),
         )
         mappable = mpl.cm.ScalarMappable(norm=norm, cmap=cmap)
-    cb = fig.colorbar(
+    cbar = fig.colorbar(
         mappable,
         cax=cbar_ax,
         orientation=orientation,
@@ -119,10 +119,10 @@ def plot_colorbar(
         pad=0.0,
     )
     if "cbar_ticks" in plot_kwargs:
-        cb.set_ticks(plot_kwargs["cbar_ticks"], minor=False)
+        cbar.set_ticks(plot_kwargs["cbar_ticks"], minor=False)
     fontsize = plot_kwargs.get("cbar_fontsize", 14)
-    cb.ax.tick_params(labelsize=fontsize)
-    cb.set_label(
+    cbar.ax.tick_params(labelsize=fontsize)
+    cbar.set_label(
         plot_kwargs["cbar_label"],
         fontsize=fontsize,
         labelpad=fontsize,
@@ -155,9 +155,7 @@ def plot(
         if not coord.has_bounds():
             log.info("NO BOUNDS GUESSING: %s", coord.name())
             cube.coord(coord.name()).guess_bounds()
-    cyclic_data, cyclic_lon = add_cyclic_point(
-        cube.data, cube.coord("longitude").points,
-    )
+    add_cyclic_point(cube.data, cube.coord("longitude").points)
     if (
         meta["dataset"] == "ERA5"
         and meta["short_name"] == "evspsblpot"
@@ -183,7 +181,10 @@ def plot(
 
 
 def apply_plot_kwargs_overwrite(
-    kwargs: dict, overwrites: dict, metric: str, group: str,
+    kwargs: dict,
+    overwrites: dict,
+    metric: str,
+    group: str,
 ) -> dict:
     """Apply plot_kwargs_overwrite to kwargs dict for selected plots."""
     for overwrite in overwrites:
@@ -202,14 +203,13 @@ def apply_plot_kwargs_overwrite(
     return kwargs
 
 
-def calculate_diff(cfg, meta, mm, output_meta, group, norm):
+def calculate_diff(cfg, meta, mm_data, output_meta, group):
     """Absolute difference between first and last years of a cube.
 
     Calculates the absolut difference between the first and last period of
     a cube. Writing data to mm and plotting each dataset depends on cfg.
     """
-    fname = meta["filename"]
-    cube = iris.load_cube(fname)
+    cube = iris.load_cube(meta["filename"])
     if meta["short_name"] in cfg.get("convert_units", {}):
         pp.convert_units(cube, cfg["convert_units"][meta["short_name"]])
     with contextlib.suppress(Exception):
@@ -218,14 +218,25 @@ def calculate_diff(cfg, meta, mm, output_meta, group, norm):
     if "start_year" in cfg or "end_year" in cfg:
         log.info("selecting time period")
         cube = pp.extract_time(
-            cube, cfg["start_year"], 1, 1, cfg["end_year"], 12, 31,
+            cube,
+            cfg["start_year"],
+            1,
+            1,
+            cfg["end_year"],
+            12,
+            31,
         )
     dtime = cfg.get("comparison_period", 10) * 12
     cubes = {}
     cubes["total"] = cube.collapsed("time", MEAN)
     do_metrics = cfg.get("metrics", METRICS)
-    calc_metrics = ["first", "last", "diff", "percent"]
-    if any(m in do_metrics for m in calc_metrics):
+    norm = (
+        int(meta["end_year"])
+        - int(meta["start_year"])
+        + 1  # count full end year
+        - cfg.get("comparison_period", 10)  # decades center to center
+    ) / 10
+    if any(m in do_metrics for m in ["first", "last", "diff", "percent"]):
         cubes["first"] = cube[0:dtime].collapsed("time", MEAN)
         cubes["last"] = cube[-dtime:].collapsed("time", MEAN)
     if any(m in do_metrics for m in ["diff", "percent"]):
@@ -236,19 +247,19 @@ def calculate_diff(cfg, meta, mm, output_meta, group, norm):
         cubes["percent"].units = "% / 10 years"
     if cfg.get("plot_mmm", True):
         for key in do_metrics:
-            mm[key].append(cubes[key])
+            mm_data[key].append(cubes[key])
     for key, cube in cubes.items():
         if key not in do_metrics:
             continue  # i.e. first/last if only diff is needed
         meta["diffmap_metric"] = key
         meta["exp"] = meta.get("exp", "exp")
         basename = cfg["basename"].format(**meta)
-        titles = cfg.get("titles", TITLES)
-        meta["title"] = titles[key].format(**meta)
+        meta["title"] = cfg.get("titles", TITLES)[key].format(**meta)
         if cfg.get("plot_models", True):
             plot_kwargs = cfg.get("plot_kwargs", {}).copy()
-            overwrites = cfg.get("plot_kwargs_overwrite", [])
-            apply_plot_kwargs_overwrite(plot_kwargs, overwrites, key, group)
+            apply_plot_kwargs_overwrite(
+                plot_kwargs, cfg.get("plot_kwargs_overwrite", []), key, group,
+            )
             plot(cfg, meta, cube, basename, kwargs=plot_kwargs)
             plt.close()
         if cfg.get("save_models", True):
@@ -258,7 +269,7 @@ def calculate_diff(cfg, meta, mm, output_meta, group, norm):
             output_meta[work_file] = meta.copy()
 
 
-def calculate_mmm(cfg, meta, mm, output_meta, group) -> None:
+def calculate_mmm(cfg, meta, mm_data, output_meta, group) -> None:
     """Calculate multi-model mean for a given metric."""
     for metric in cfg.get("metrics", METRICS):
         drop = cfg.get("dropcoords", ["time", "height"])
@@ -267,7 +278,7 @@ def calculate_mmm(cfg, meta, mm, output_meta, group) -> None:
         meta["diffmap_metric"] = metric
         basename = cfg["basename"].format(**meta)
         mmm, _ = ut.mmm(
-            mm[metric],
+            mm_data[metric],
             dropcoords=drop,
             dropmethods=metric != "diff",
             mdtol=cfg.get("mdtol", 0.3),
@@ -288,9 +299,9 @@ def calculate_mmm(cfg, meta, mm, output_meta, group) -> None:
 
 def set_defaults(cfg: dict) -> None:
     """Update cfg with default values from diffmap.yml in place."""
-    config_file = os.path.realpath(__file__)[:-3] + ".yml"
-    with open(config_file, encoding="utf-8") as f:
-        defaults = yaml.safe_load(f)
+    config_fpath = os.path.realpath(__file__)[:-3] + ".yml"
+    with open(config_fpath, encoding="utf-8") as config_file:
+        defaults = yaml.safe_load(config_file)
     for key, val in defaults.items():
         cfg.setdefault(key, val)
     if cfg["plot_kwargs_overwrite"] is not defaults["plot_kwargs_overwrite"]:
@@ -303,35 +314,19 @@ def main(cfg) -> None:
     groups = e.group_metadata(cfg["input_data"].values(), cfg["group_by"])
     output = {}
     for group, metas in groups.items():
-        mm = defaultdict(list)
-        skipped = 0
+        mm_data = defaultdict(list)
         for meta in metas:
             ut.guess_experiment(meta)  # TODO: add in SPEI.R instead
             if "end_year" not in meta:
-                try:
-                    meta.update(ut.get_time_range(meta["filename"]))
-                except Exception:
-                    log.error(
-                        "failed to get time range for %s", meta["filename"],
-                    )
-                    skipped += 1
-                    log.error("skipped datasets: %s", skipped)
-                    continue
+                meta.update(ut.get_time_range(meta["filename"]))
             # adjust norm for selected time period
             meta["end_year"] = cfg.get("end_year", meta["end_year"])
             meta["start_year"] = cfg.get("start_year", meta["start_year"])
-            norm = (
-                int(meta["end_year"])
-                - int(meta["start_year"])
-                + 1  # count full end year
-                - cfg.get("comparison_period", 10)  # decades center to center
-            ) / 10
-            calculate_diff(cfg, meta, mm, output, group, norm)
+            calculate_diff(cfg, meta, mm_data, output, group, norm)
         do_mmm = cfg.get("plot_mmm", True) or cfg.get("save_mmm", True)
         if do_mmm and len(metas) > 1:
-            calculate_mmm(cfg, metas[0], mm, output, group)
+            calculate_mmm(cfg, metas[0], mm_data, output, group)
     ut.save_metadata(cfg, output)
-    # TODO@lukruh: close all and everything to free up memory
 
 
 if __name__ == "__main__":

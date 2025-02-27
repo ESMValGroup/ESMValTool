@@ -47,9 +47,12 @@ log = logging.getLogger(Path(__file__).name)
 # fmt: off
 DENSITY = AuxCoord(1000, long_name="density", units="kg m-3")
 
-FNAME_FORMAT = "{project}_{reference_dataset}_{mip}_{exp}_{ensemble}_{short_name}_{start_year}-{end_year}"  # noqa: E501
-CMIP6_FNAME = "{project}_{dataset}_{mip}_{exp}_{ensemble}_{short_name}_{grid}_{start_year}-{end_year}"  # noqa: E501
-OBS_FNAME = "{project}_{dataset}_{type}_{version}_{mip}_{short_name}_{start_year}-{end_year}"  # noqa: E501
+FNAME_FORMAT = "{project}_{reference_dataset}_{mip}_{exp}_{ensemble}_"
+"{short_name}_{start_year}-{end_year}"
+CMIP6_FNAME = "{project}_{dataset}_{mip}_{exp}_{ensemble}_{short_name}_"
+"{grid}_{start_year}-{end_year}"
+OBS_FNAME = "{project}_{dataset}_{type}_{version}_{mip}_{short_name}_"
+"{start_year}-{end_year}"
 
 CONTINENTAL_REGIONS = {
     "Global": ["GLO"],  # global
@@ -58,7 +61,8 @@ CONTINENTAL_REGIONS = {
     "Southern America": ["NWS", "NSA", "NES", "SAM", "SWS", "SES", "SSA"],
     "Europe": ["NEU", "WCE", "EEU", "MED"],
     "Africa": ["SAH", "WAF", "CAF", "NEAF", "SEAF", "WSAF", "ESAF", "MDG"],
-    "Asia": ["RAR", "WSB", "ESB", "RFE", "WCA", "ECA", "TIB", "EAS", "ARP", "SAS", "SEA"],  # noqa: E501
+    "Asia": ["RAR", "WSB", "ESB", "RFE", "WCA", "ECA", "TIB", "EAS", "ARP",
+             "SAS", "SEA"],
     "Australia": ["NAU", "CAU", "EAU", "SAU", "NZ", "WAN", "EAN"],
 }
 
@@ -67,8 +71,10 @@ HEX_POSITIONS = {
         "RAR": [20, 0], "WNA": [1, 1], "CNA": [3, 1], "ENA": [5, 1],
         "WCE": [13, 1], "EEU": [15, 1], "WSB": [17, 1], "ESB": [19, 1],
         "RFE": [21, 1], "NCA": [2, 2], "MED": [14, 2], "WCA": [16, 2],
-        "ECA": [18, 2], "TIB": [20, 2], "EAS": [22, 2], "SCA": [3, 3],  # "CAR": [5, 3],  # noqa: E501
-        "SAH": [13, 3], "ARP": [15, 3], "SAS": [19, 3], "SEA": [23, 3],  # "PAC": [27.5, 3.3],  # noqa: E501
+        "ECA": [18, 2], "TIB": [20, 2], "EAS": [22, 2], "SCA": [3, 3],
+        # "CAR": [5, 3],
+        "SAH": [13, 3], "ARP": [15, 3], "SAS": [19, 3], "SEA": [23, 3],
+        # "PAC": [27.5, 3.3],
         "NWS": [6, 4], "NSA": [8, 4], "WAF": [12, 4], "CAF": [14, 4],
         "NEAF": [16, 4], "NAU": [24.5, 4.3], "SAM": [7, 5], "NES": [9, 5],
         "WSAF": [13, 5], "SEAF": [15, 5], "MDG": [17.5, 5.3],
@@ -896,13 +902,15 @@ def remove_attributes(
         del cube.attributes[attr]
 
 
-def font_color(background: str) -> str:
+def font_color(background: str|tuple|float) -> str:
     """Black or white depending on greyscale of the background.
+
+    Can be used to make text more readable on a colored background.
 
     Parameters
     ----------
-    bacgkround
-        matplotlib color
+    bacgkround: str
+        color as string (grayscale value, name, hex) or tuple (rgb, rgba)
     """
     if sum(mpl.colors.to_rgb(background)) > 1.5:
         return "black"
@@ -955,6 +963,7 @@ def monthly_to_daily(
             days = months[idx]
             cube.data[idx] = cube.data[idx] / days
             continue
+        # consider leap days
         time = sli.coord("time")
         date = time.units.num2date(time.points[0])
         days = monthrange(date.year, date.month)[1]
@@ -980,14 +989,10 @@ def daily_to_monthly(
             days = months[idx]
             cube.data[idx] = cube.data[idx] * days
             continue
-        try:  # consider leapday
-            time = sli.coord("time")
-            date = time.units.num2date(time.points[0])
-            days = monthrange(date.year, date.month)[1]
-        except Exception as err:
-            log.warning("date failed, using fixed days without leap year")
-            log.warning(err)
-            days = months[idx]
+        # consider leap days
+        time = sli.coord("time")
+        date = time.units.num2date(time.points[0])
+        days = monthrange(date.year, date.month)[1]
         cube.data[idx] = cube.data[idx] * days
     cube.units = units
 

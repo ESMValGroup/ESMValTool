@@ -39,9 +39,11 @@ end_year: int
     ``compare_intervals=True``.
 """
 
+import datetime as dt
+
 import iris
 import numpy as np
-import datetime as dt
+
 import esmvaltool.diag_scripts.shared as e
 from esmvaltool.diag_scripts.droughts.utils import (
     _get_drought_data,
@@ -81,21 +83,21 @@ def _set_tscube(cfg, cube, time, tstype):
         start = dt.datetime(cfg["start_year"], 1, 15, 0, 0, 0)
         end_year = cfg["start_year"] + cfg["comparison_period"] - 1
         end = dt.datetime(end_year, 12, 16, 0, 0, 0)
+    else:
+        raise ValueError("Unknown time slice type: " + tstype)
     stime = time.nearest_neighbour_index(time.units.date2num(start))
     etime = time.nearest_neighbour_index(time.units.date2num(end))
-    tscube = cube[stime:etime, :, :]
-    return tscube
+    return cube[stime:etime, :, :]
 
 
-def main(cfg):
+def main(cfg) -> None:
     """Run the diagnostic."""
     # Read input data
-    input_data = cfg["input_data"].values()
     drought_data = []
     drought_slices = {"Historic": [], "Future": []}
     fnames = []  # why do we need them?
     ref_data = None
-    for iii, meta in enumerate(input_data):
+    for meta in cfg["input_data"].values():
         fname = meta["filename"]
         cube = iris.load_cube(fname)
         fnames.append(fname)
