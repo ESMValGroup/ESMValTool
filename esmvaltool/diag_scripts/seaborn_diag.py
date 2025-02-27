@@ -173,8 +173,18 @@ def _create_plot(
     if cfg['suptitle'] is not None:
         logger.debug("Setting `suptitle='%s'`", cfg['suptitle'])
         if plot_func_str in ['jointplot']:
-            plt.suptitle(cfg['suptitle']
-                         .format(data_frame["alias"].unique()[0]), y=1.05)
+            data_dim = data_frame["alias"].unique().ndim
+            if data_dim == 2: 
+                print(data_dim)
+                print(data_frame["alias"].unique()[0])
+                print(data_frame["alias"].unique()[1])
+                plt.suptitle('{0} \ {1}'
+                             .format(data_frame["alias"].unique()[0],
+                                     data_frame["alias"].unique()[1]), y=1.05)
+                             #.format(data_frame["alias"].unique()), y=1.05)
+            else:
+                plt.suptitle(cfg['suptitle']
+                             .format(data_frame["alias"].unique()[0]), y=1.05)
         else:
             plt.suptitle(cfg['suptitle'], y=1.05)
     if cfg['legend_title'] is not None:

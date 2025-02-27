@@ -19,6 +19,20 @@ preprocessors:
       target_grid: 1x1
       scheme:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
+  common_grid_thres_below:
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    mask_below_threshold:
+      threshold: 0.000001
+  common_grid_thres_above:
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    mask_above_threshold:
+      threshold: -0.000001
   common_grid_pr:
     regrid:
       target_grid: 1x1
@@ -26,6 +40,8 @@ preprocessors:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
     convert_units:
       units: mm day-1
+    #mask_below_threshold:
+    #  threshold: 0.00001
   common_grid_levels:
     extract_levels:
       levels: {cmor_table: CMIP6, coordinate: plev27}
@@ -46,20 +62,23 @@ preprocessors:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
     convert_units:
       units: g kg-1
+    mask_below_threshold:
+      threshold: 0.00000000001
 
 
 diagnostics:
-  plot_joint_clt_swcre:
+  plot_joint_clt_swcre_model:
     description: Scatterplot clt vs swcre.
-    variables: &vars_clt_swcre
+    variables:
       clt: &var_clt
         mip: Amon
         exp: historical
         ensemble: r1i1p1
-        preprocessor: common_grid
+        preprocessor: common_grid_thres_below
         <<: *time_period
       swcre: &var_swcre
         <<: *var_clt
+        preprocessor: common_grid_thres_above
         derive: true
         force_derivation: false
     additional_datasets:
@@ -115,7 +134,10 @@ diagnostics:
   plot_joint_clt_swcre_ref:
     description: Scatterplot clt vs swcre.
     variables:
-      <<: *vars_clt_swcre
+      clt:
+        <<: *var_clt
+      swcre:
+        <<: *var_swcre
     additional_datasets:
       - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
     scripts:
@@ -127,6 +149,7 @@ diagnostics:
     variables:
       clwvi:
         <<: *var_clt
+        preprocessor: common_grid_thres_below
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
       pr:
@@ -136,15 +159,14 @@ diagnostics:
           - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3, tier: 1,  alias: GPCP-SG}
     scripts:
       plot: &plot_settings_jointplot_clwvi_pr
-        <<: *plot_settings_jointplot
+        <<: *plot_settings_jointplot_clt_swcre
         seaborn_kwargs:
           kind: hist
           x: clwvi
-          y: pr                 # Adjust binning for histograms
-          #binwidth: [0.01, 0.01]
+          y: pr
           bins: 20
-          binrange: [[0., 0.1], [0., 0.3]]
-          xlim: [0., 0.1]
+          binrange: [[0., 0.06], [0., 0.3]]
+          xlim: [0., 0.06]
           ylim: [0., 0.3]
           vmax: 0.03
           stat: probability
@@ -156,30 +178,20 @@ diagnostics:
           marginal_kws:
             color: darkturquoise
             bins: 20
-            #binwidth: 0.01
-            #binrange: [[0., 100.], [-10., 120.]]
             fill: True
             stat: probability
-          #marg_x_kws:
-          #  binwidth: 5
-          #  binrange: [0., 100.]
-          #marg_y_kws:
-          #  binwidth: 5
-          #  binrange: [-10., 120.]
         plot_object_methods:
           set_axis_labels:
             xlabel: 'clwvi [kg m-2]'
             ylabel: 'pr [mm day-1]'
-          #ax_marg_x.hist: 
-          #  binrange: [0., 0.25]
-          #ax_marg_y.hist:
-          #  binrange: [0., 0.3]
+
 
   plot_joint_clwvi_pr_model:
     description: Scatterplot clwvi vs pr.
     variables:
       clwvi:
         <<: *var_clt
+        preprocessor: common_grid_thres_below
       pr:
         <<: *var_clt
         preprocessor: common_grid_pr
@@ -194,19 +206,21 @@ diagnostics:
     variables:
       clivi:
         <<: *var_clt
+        #preprocessor: common_grid_thres_below
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
       lwcre:
         <<: *var_swcre
+        preprocessor: common_grid
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
     scripts:
       plot: &plot_settings_jointplot_clivi_lwcre
-        <<: *plot_settings_jointplot
+        <<: *plot_settings_jointplot_clt_swcre
         seaborn_kwargs:
           kind: hist
           x: clivi
-          y: lwcre                 # Adjust binning for histograms
+          y: lwcre
           #binwidth: [0.01, 5.]
           bins: 20
           binrange: [[0., 0.2], [-10., 100.]]
@@ -221,17 +235,9 @@ diagnostics:
           marginal_ticks: True
           marginal_kws:
             color: darkturquoise
-            #binwidth: 0.01
             bins: 20
-            #binrange: [[0., 100.], [-10., 120.]]
             fill: True
-            stat: probability
-          #marg_x_kws:
-          #  binwidth: 5
-          #  binrange: [0., 100.]
-          #marg_y_kws:
-          #  binwidth: 5
-          #  binrange: [-10., 120.]
+            stat: probability    
         plot_object_methods:
           set_axis_labels:
             xlabel: 'clivi [kg m-2]'
@@ -244,6 +250,7 @@ diagnostics:
         <<: *var_clt
       lwcre:
         <<: *var_swcre
+        preprocessor: common_grid
     additional_datasets:
       - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2}
     scripts:
@@ -265,15 +272,15 @@ diagnostics:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, ERA5}
     scripts:
       plot: &plot_settings_jointplot_cli_ta
-        <<: *plot_settings_jointplot
+        <<: *plot_settings_jointplot_clt_swcre
         seaborn_kwargs:
           kind: hist
           x: cli
-          y: ta                 # Adjust binning for histograms
+          y: ta
           #binwidth: [0.01, 5.]
           bins: 20
-          binrange: [[0., 0.01], [190., 310.]]
-          xlim: [0., 0.01]
+          binrange: [[0., 0.005], [190., 310.]]
+          xlim: [0., 0.005]
           ylim: [180., 320.]
           vmax: 0.02
           stat: probability
@@ -284,17 +291,9 @@ diagnostics:
           marginal_ticks: True
           marginal_kws:
             color: darkturquoise
-            #binwidth: 0.01
             bins: 20
-            #binrange: [[0., 100.], [-10., 120.]]
             fill: True
             stat: probability
-          #marg_x_kws:
-          #  binwidth: 5
-          #  binrange: [0., 100.]
-          #marg_y_kws:
-          #  binwidth: 5
-          #  binrange: [-10., 120.]
         plot_object_methods:
           set_axis_labels:
             xlabel: 'cli [g kg]'
