@@ -14,35 +14,64 @@ timerange_for_models: &time_period
   timerange: '2007/2011'  # can be specified, this is just an example
 
 preprocessors:
-  common_grid:
-    regrid:
-      target_grid: 1x1
-      scheme:
-        reference: esmf_regrid.schemes:ESMFAreaWeighted
-  common_grid_thres_below:
+  common_grid_clt:
     regrid:
       target_grid: 1x1
       scheme:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
     mask_below_threshold:
-      threshold: 0.000001
-  common_grid_thres_above:
+      threshold: 0.001
+    mask_above_threshold:
+      threshold: 100.
+  common_grid_clivi:
     regrid:
       target_grid: 1x1
       scheme:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
+    mask_below_threshold:
+      threshold: 0.001
     mask_above_threshold:
-      threshold: -0.000001
+      threshold: 0.2
+  common_grid_clwvi:
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    mask_below_threshold:
+      threshold: 0.001
+    mask_above_threshold:
+      threshold: 0.2
+  common_grid_lwcre:
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    mask_below_threshold:
+      threshold: -10.
+    mask_above_threshold:
+      threshold: 100.
+  common_grid_swcre:
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    mask_below_threshold:
+      threshold: -200.
+    mask_above_threshold:
+      threshold: -0.001
   common_grid_pr:
+    custom_order: True
     regrid:
       target_grid: 1x1
       scheme:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
     convert_units:
       units: mm day-1
-    #mask_below_threshold:
-    #  threshold: 0.00001
-  common_grid_levels:
+    mask_below_threshold:
+      threshold: 0.00001
+    mask_above_threshold:
+      threshold: 8
+  common_grid_levels_ta:
     extract_levels:
       levels: {cmor_table: CMIP6, coordinate: plev27}
       coordinate: air_pressure
@@ -51,7 +80,12 @@ preprocessors:
       target_grid: 1x1
       scheme:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
+    mask_below_threshold:
+      threshold: 180
+    mask_above_threshold:
+      threshold: 320
   common_grid_levels_cli:
+    custom_order: True
     extract_levels:
       levels: {cmor_table: CMIP6, coordinate: plev27}
       coordinate: air_pressure
@@ -63,7 +97,9 @@ preprocessors:
     convert_units:
       units: g kg-1
     mask_below_threshold:
-      threshold: 0.00000000001
+      threshold: 0.000001
+    mask_above_threshold:
+      threshold: 0.005
 
 
 diagnostics:
@@ -74,11 +110,11 @@ diagnostics:
         mip: Amon
         exp: historical
         ensemble: r1i1p1
-        preprocessor: common_grid_thres_below
+        preprocessor: common_grid_clt
         <<: *time_period
       swcre: &var_swcre
         <<: *var_clt
-        preprocessor: common_grid_thres_above
+        preprocessor: common_grid_swcre
         derive: true
         force_derivation: false
     additional_datasets:
@@ -94,9 +130,9 @@ diagnostics:
           y: swcre                 # Adjust binning for histograms
           bins: 20
           #binwidth: [5., 5.]
-          binrange: [[0., 100.], [-200., 0.]]
-          xlim: [0., 100.]
-          ylim: [-200., 0.]
+          #binrange: [[0., 100.], [-200., 0.]]
+          #xlim: [0., 100.]
+          #ylim: [-200., 0.]
           vmax: 0.015
           stat: probability
           cmap: YlGnBu
@@ -106,17 +142,9 @@ diagnostics:
           marginal_ticks: True
           marginal_kws:
             color: darkturquoise
-            #binwidth: 5.
             bins: 20
-            #binrange: [[0., 100.], [-10., 120.]]
             fill: True
             stat: probability
-          #marg_x_kws:
-          #  binwidth: 5
-          #  binrange: [0., 100.]
-          #marg_y_kws:
-          #  binwidth: 5
-          #  binrange: [-10., 120.]
         add_aux_coords: true
         #dropna_kwargs:
         #  axis: 0
@@ -149,7 +177,7 @@ diagnostics:
     variables:
       clwvi:
         <<: *var_clt
-        preprocessor: common_grid_thres_below
+        preprocessor: common_grid_clwvi
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
       pr:
@@ -165,9 +193,9 @@ diagnostics:
           x: clwvi
           y: pr
           bins: 20
-          binrange: [[0., 0.06], [0., 0.3]]
-          xlim: [0., 0.06]
-          ylim: [0., 0.3]
+          #binrange: [[0., 0.06], [0., 0.3]]
+          #xlim: [0., 0.06]
+          #ylim: [0., 0.3]
           vmax: 0.03
           stat: probability
           cmap: YlGnBu
@@ -191,7 +219,7 @@ diagnostics:
     variables:
       clwvi:
         <<: *var_clt
-        preprocessor: common_grid_thres_below
+        preprocessor: common_grid_clwvi
       pr:
         <<: *var_clt
         preprocessor: common_grid_pr
@@ -206,12 +234,12 @@ diagnostics:
     variables:
       clivi:
         <<: *var_clt
-        #preprocessor: common_grid_thres_below
+        preprocessor: common_grid_clivi
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
       lwcre:
         <<: *var_swcre
-        preprocessor: common_grid
+        preprocessor: common_grid_lwcre
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
     scripts:
@@ -223,9 +251,9 @@ diagnostics:
           y: lwcre
           #binwidth: [0.01, 5.]
           bins: 20
-          binrange: [[0., 0.2], [-10., 100.]]
-          xlim: [0., 0.2]
-          ylim: [-10., 100.]
+          #binrange: [[0., 0.2], [-10., 100.]]
+          #xlim: [0., 0.2]
+          #ylim: [-10., 100.]
           vmax: 0.03
           stat: probability
           cmap: YlGnBu
@@ -248,9 +276,10 @@ diagnostics:
     variables:
       clivi:
         <<: *var_clt
+        preprocessor: common_grid_clivi
       lwcre:
         <<: *var_swcre
-        preprocessor: common_grid
+        preprocessor: common_grid_lwcre
     additional_datasets:
       - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2}
     scripts:
@@ -267,9 +296,9 @@ diagnostics:
           - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, tier: 3, alias: CALIPSO-ICECLOUD}
       ta:
         <<: *var_clt
-        preprocessor: common_grid_levels
+        preprocessor: common_grid_levels_ta
         additional_datasets:
-          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, ERA5}
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, alias: ERA5}
     scripts:
       plot: &plot_settings_jointplot_cli_ta
         <<: *plot_settings_jointplot_clt_swcre
@@ -279,7 +308,7 @@ diagnostics:
           y: ta
           #binwidth: [0.01, 5.]
           bins: 20
-          binrange: [[0., 0.005], [190., 310.]]
+          #binrange: [[0., 0.005], [190., 310.]]
           xlim: [0., 0.005]
           ylim: [180., 320.]
           vmax: 0.02
@@ -307,53 +336,9 @@ diagnostics:
         preprocessor: common_grid_levels_cli
       ta:
         <<: *var_clt
-        preprocessor: common_grid_levels
+        preprocessor: common_grid_levels_ta
     additional_datasets:
       - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2}
     scripts:
       plot: 
         <<: *plot_settings_jointplot_cli_ta
-
-  # plot_hist_with_ref_clt_lwcre:
-  #   description: Scatterplot clt vs swcre with reference.
-  #   variables:
-  #     <<: *vars_clt_lwcre
-  #   additional_datasets:
-  #     - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
-  #     - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2-WACCM}
-  #   scripts:
-  #     plot:
-  #       script: seaborn_diag.py
-  #       seaborn_func: displot
-  #       seaborn_kwargs:
-  #         kind: hist
-  #         col: alias                # Creates side-by-side plots for each dataset
-  #         x: clt
-  #         y: lwcre
-  #         binwidth: [5., 5.]
-  #         binrange: [[0., 100.], [-10., 120.]]
-  #         facet_kws:
-  #           xlim: [0., 100.]
-  #           ylim: [-10., 120.]
-  #         #vmax: 0.025
-  #         height: 5                   # Set height of each subplot
-  #         aspect: 1.2                 # Set aspect ratio
-  #         stat: probability 
-  #         common_norm: True
-  #         cmap: YlGnBu
-  #         cbar: True                  # Includes a color bar
-  #         cbar_kws:
-  #           label: "Probability"
-  #           extend: 'max'
-  #       add_aux_coords: true
-  #       #dropna_kwargs:
-  #       #  axis: 0
-  #       #  how: any
-  #       plot_object_methods:
-  #         set_axis_labels:
-  #           xlabel: 'clt [%]'
-  #           ylabel: 'swcre [W m-2]'
-  #       seaborn_settings:
-  #         style: ticks
-  #         rc:
-  #           axes.titlepad: 15.0
