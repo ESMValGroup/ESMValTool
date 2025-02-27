@@ -22,7 +22,10 @@ Recipes are stored in recipes/ref
     Time series in comparison with refernce data for a region defined through a shape file, based on model_evaluation/recipe_model_benchmarking_timeseries.yml
 
 * recipe_model_benchmarking_boxplots_region.yml:
-    Benchmarking plot with differnt distance metrix for a region defined through a shape file, based on model_evaluation/recipe_model_benchmarking_boxplots.yml
+    Benchmarking plot with differnt distance metrics for a region defined through a shape file, based on model_evaluation/recipe_model_benchmarking_boxplots.yml
+
+* recipe_model_benchmarking_boxplots_region_trend.yml:
+    Benchmarking plot with the linear trend for a region defined through a shape file
 
 * recipe_monitor_regions.yml:
     Time series and annual cycle for several regions as multi panel plot, based on monitor/recipe_monitor.yml
@@ -48,5 +51,16 @@ Example plots:
    Zonal averages of the climatological mean longwave cloud radiative
    effect from CERES-EBAF Ed4.2 (solid black), ESACCI-CLOUD (dashed black), 
    ISCCP-FH (dotted black) and the MPI-ESM1-2-LR model (blue).
+
+
+.. _fig_ref_3:
+.. figure::  /recipes/figures/ref/benchmarking_boxplot_tas_MIROC6_Amon_historical_r1i1p1f1.png
+   :align:   center
+
+   Comparing the linear trend for one models (MIROC6 as examlple) to a CMIP6 ensemble (boxes) and observations for the period 2001 to 2014.
+   Each box indicates the range from the first quartile to the third quartile, the vertical lines show the median, 
+   and the whiskers present the minimum and maximum values, excluding the outliers. Outliers are defined as being 
+   outside 1.5 times the interquartile range.
+
 
 
