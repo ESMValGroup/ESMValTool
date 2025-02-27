@@ -26,20 +26,10 @@ def main(config):
         all the necessary informationfor the function to run.
         It includes details about the
         models, observational datasets, file paths, and other settings.
-
-    Notes
-    -----
-    After successfully generating the plots,
-    the function logs a success message.
-
-    The if statement checks if the script is being run directly
-    (as opposed to being imported as a module).
-    If it is, the code inside this block will be executed.
-
-    The function starts by loading the configuration dictionary.
-    This dictionary contains information about the models,
-    observational datasets, file paths, and other settings.
     """
+
+    # function starts by loading the config files.
+    # this contains info about the models, obs, file paths and settings.
 
     control, experiment, observation = load_data(config)
 
@@ -54,34 +44,27 @@ def main(config):
      experiment_minus_observation) = create_plotting_data(
          control, experiment, observation)
 
+    # Pick a value for level.
     level = 2
     experiment_single_level = extract_global_single_level(experiment, level)
-    experiment_plot = plot_global_single_level(221, experiment_single_level,
-                                               level, "experiment")
+    plot_global_single_level(221, experiment_single_level, level, "experiment")
 
     experiment_minus_control_single_level = extract_global_single_level(
         experiment_minus_control, level)
-    experiment_minus_control_plot = plot_global_single_level(
-        222, experiment_minus_control_single_level, level,
-        "experiment minus control")
+    plot_global_single_level(222, experiment_minus_control_single_level, level,
+                             "experiment minus control")
 
     control_minus_observation_single_level = extract_global_single_level(
         control_minus_observation, level)
-    control_minus_observation_plot = plot_global_single_level(
-        223, control_minus_observation_single_level, level,
-        "control minus observation")
+    plot_global_single_level(223, control_minus_observation_single_level,
+                             level, "control minus observation")
 
     experiment_minus_observation_single_level = extract_global_single_level(
         experiment_minus_observation, level)
-    experiment_minus_observation_plot = plot_global_single_level(
-        224, experiment_minus_observation_single_level, level,
-        "experiment minus observation")
+    plot_global_single_level(224, experiment_minus_observation_single_level,
+                             level, "experiment minus observation")
 
-    create_quadmap(experiment_plot, experiment_minus_control_plot,
-                   control_minus_observation_plot,
-                   experiment_minus_observation_plot)
-
-    fig = plt.figure(figsize=(15, 10))
+    fig = plt.gcf()
     fig.set_size_inches(9, 6)
     fn_list = [experiment.long_name, str(level)]
     input_files = diagtools.get_input_files(config)
@@ -104,6 +87,9 @@ def main(config):
         ancestors=list(input_files.keys()),
     )
     save_figure('_'.join(fn_list), provenance_record, config, fig, close=True)
+
+    # After successfully generating plots, function logs a success message.
+    logger.info('Success')
 
 
 def load_data(config):
@@ -136,7 +122,6 @@ def load_data(config):
     diagtools.get_input_files function.
     This prepares the necessary data files for further processing.
     """
-    # The function starts by loading the configuration dictionary.
 
     # The datasets defined by
     # control_model, exper_model, observational_datasets in the recipe
@@ -163,7 +148,7 @@ def load_data(config):
     print(f'{control=}')
     print(f'{experiment=}')
     print(f'{observation=}')
-
+    print("load_data success")
     return control, experiment, observation
 
 
@@ -171,13 +156,19 @@ def fix_cube(cube_to_fix, cube_with_good_values):
     """The latitude and longitude coordinates of the cubes are adjusted to
     ensure they match cube with good values.
 
-    This is necessary for subtracting one cube from another to calculate
-    differences.
+    Parameters
+    ----------
+    cube_to_fix :
+        The cubes experiment and control with bad coord values.
+    cube_with_good_values :
+        The cube observation with the good coord values.
     """
+    # This is necessary for subtracting one cube from another.
     cube_to_fix.coord("latitude").points[:] = cube_with_good_values.coord(
         "latitude").points
     cube_to_fix.coord("longitude").points[:] = cube_with_good_values.coord(
         "longitude").points
+    print("fix_cube success")
 
 
 def remove_extra_time_axis(cube):
@@ -211,6 +202,7 @@ def remove_extra_time_axis(cube):
         # If the cube has a time_counter coordinate, the function removes it.
         if time_counter_coord:
             cube.remove_coord(time_counter_coord)
+    print("remove_extra_time success")
 
 
 def create_plotting_data(control, experiment, observation):
@@ -239,25 +231,15 @@ def create_plotting_data(control, experiment, observation):
     """
     # The data for models and the obs dataset is loaded into Iris cubes.
     # These cubes contain the climate data that will be plotted.
-
     experiment = experiment
-
     experiment_minus_control = experiment - control
-
     control_minus_observation = control - observation
-
     experiment_minus_observation = experiment - observation
 
-    # long_name fix
+    # Fixing the long_name of the cubes
     experiment_minus_control.long_name = experiment.long_name
     control_minus_observation.long_name = experiment.long_name
     experiment_minus_observation.long_name = experiment.long_name
-
-    print("experiment.long_name:", experiment.long_name)
-    print("experiment_min_con.long_name:", experiment_minus_control.long_name)
-    print("con_min_obs.long_name:", control_minus_observation.long_name)
-    print("experiment_min_obs.long_name:",
-          experiment_minus_observation.long_name)
 
     return (experiment, experiment_minus_control, control_minus_observation,
             experiment_minus_observation)
@@ -277,21 +259,19 @@ def extract_global_single_level(cube, level):
     -------
     iris cube
         The extracted single level cube.
-
-    Notes
-    -----
-    Pick a value for level and loop over the cubes.
     """
+
     if len(cube.coord('depth').points) == 1:
         # 2D cube
-        return iris.util.squeeze(cube)  # is this working as I want it to? If
+        print("extract_glob_sin_lev1 success")
+        return iris.util.squeeze(cube)
     else:
         # 3D cube - select relevant level
         slices = [slice(None)] * len(cube.shape)
         coord_dim = cube.coord_dims('depth')[0]
         slices[coord_dim] = level
+        print("extract_glob_sin_lev2 success")
         return iris.util.squeeze(cube[tuple(slices)])
-        print("working!")
 
 
 def plot_global_single_level(subplot, cube, level, title):
@@ -319,13 +299,10 @@ def plot_global_single_level(subplot, cube, level, title):
     -----
     The plots are then saved as image files in the specified directory.
     """
-
+    # Setting cmap and nspace.
     if title == "experiment":
         cmap = 'viridis'
         nspace = diagtools.get_cube_range([cube])
-        print("title:", title)
-        print("cmap:", cmap)
-        print("nspace:", nspace)
     elif (cube.long_name == "Sea Surface Salinity"
           or cube.long_name == "Sea Water Potential Salinity"):
         cmap = 'bwr'
@@ -335,8 +312,6 @@ def plot_global_single_level(subplot, cube, level, title):
         nspace = np.linspace(-5.0, 5.0, 21)
 
     plt.subplot(subplot, projection=ccrs.PlateCarree())
-
-    plt.subplot(subplot)
 
     # This step transforms the data so it can be displayed as 2D
     new_cube, extent = iris.analysis.cartography.project(cube,
@@ -354,13 +329,20 @@ def plot_global_single_level(subplot, cube, level, title):
         raise ValueError(
             "Failed to create contour plot. The qplot object is None.")
 
-    # A color bar is added to the plot to show the range of values
+    # A color bar is added to the plot to show the range of values.
     colorbar = plt.colorbar(qplot, orientation='vertical')
-    # The ticks on color bar are set to min, mid, and max values of nspace.
+
+    # The ticks on color bar are set to the cubes range.
     colorbar.set_ticks(diagtools.get_cube_range([cube]))
+
     # Coastlines are added to the map to provide geographical context.
     plt.gca().coastlines()
+
+    # title plotted
     plt.title(title)
+    print("plot_global_single_level success")
+
+    return qplot
 
 
 def create_quadmap(*plots):
@@ -392,11 +374,13 @@ def create_quadmap(*plots):
     The function matches the models to their respective keys using the
     information in the configuration dictionary.
     """
-    for plot in plots:
-        plot
-    plt.tight_layout()
-    plt.show()
 
+
+#    for plot in plots:
+#        plot
+#    plt.tight_layout()
+#    plt.show()
+#    print("create_quadmap success")
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
