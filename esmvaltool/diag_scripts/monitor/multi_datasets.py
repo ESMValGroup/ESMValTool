@@ -648,6 +648,9 @@ fontsize: int, optional (default: None)
     fontsize plus 2. Does not affect suptitles. If not given, use default
     matplotlib values. For a more fine-grained definition of fontsizes, use the
     option ``matplotlib_rc_params`` (see above).
+legend_kwargs: dict, optional
+    Turns on legend if given, allows to include any parameters for
+    matplotlib.pyplot.legend, e.g. ``loc``.
 plot_kwargs: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``.
     Dictionary keys are elements identified by ``facet_used_for_labels`` or
@@ -667,6 +670,9 @@ pyplot_kwargs: dict, optional
     from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
     ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
     '{short_name}'``, ``xlim: [0, 5]``.
+title_metric: string, optional
+    Overwrites metric in title, necessary, if a metric is used, which is no
+    distance metric like linear trend.
 var_order: list of str, optional
     Optional list of strings containing variable names to define the order of
     the variables plotted.
@@ -2264,7 +2270,7 @@ class MultiDatasets(MonitorBase):
 
         return (plot_path, {netcdf_path: cube})
 
-    def _plot_benchmarking_boxplot(self, df, cubes, variables, datasets):
+    def _plot_benchmarking_boxplot(self, df, cubes, variables, datasets, ref_dict):
         """Plot benchmarking boxplot."""
         plot_type = 'benchmarking_boxplot'
         logger.info("Plotting benchmarking boxplot for '%s'",
@@ -2273,25 +2279,47 @@ class MultiDatasets(MonitorBase):
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg['figure_kwargs'])
-            metric = cubes[0].long_name.partition("of")[0]
-            fig.suptitle(f"{metric}of {self._get_label(datasets[0])}")
+
+            if "title_metric" in self.cfg:
+                metric = self.cfg['title_metric'] + ' '
+            else:
+                metric = cubes[0].long_name.partition("of")[0]
+
+            region_str = ""
+            region_coords = ('shape_id', 'region')
+            for region_coord in region_coords:
+                if cubes[0].coords(region_coord):
+                    region_str = " for " + cubes[0].coords(region_coord)[0].points[0]
+
+            fig.suptitle(f"{metric}of {self._get_label(datasets[0])}{region_str}")
 
             sns.set_style('darkgrid')
 
             for i, var in enumerate(variables):
                 axes = plt.subplot(1, len(variables), i+1)
                 plot_kwargs = self._get_plot_kwargs(plot_type, datasets[i])
+
                 plot_kwargs['axes'] = axes
 
                 plot_boxplot = sns.boxplot(data=df[df['Variable'] == var])
                 plot_boxplot.set(xticklabels=[])
 
                 plt.scatter(0, cubes[i].data, marker='x', s=200, linewidths=2,
-                            color="red", zorder=3)
+                            color="red", zorder=3, label = datasets[i]["dataset"])
+                
+                if "cubes" in ref_dict:
+                    plt.scatter(0, ref_dict["cubes"][i].data, marker='o', facecolors='none', edgecolors='blue', s=200, linewidths=2,
+                            color="blue", zorder=3, label = ref_dict["datasets"][i]["dataset"])
 
                 plt.xlabel(var)
                 if cubes[i].units != 1:
                     plt.ylabel(cubes[i].units)
+                
+                
+                # Legend
+                if "legend_kwargs" in self.cfg:
+                    legend_kwargs = self.cfg['legend_kwargs']
+                    axes.legend(**legend_kwargs)
 
                 # Customize plot
                 self._process_pyplot_kwargs(plot_type, datasets[i])
@@ -2510,7 +2538,8 @@ class MultiDatasets(MonitorBase):
         """Get datasets for benchmarking."""
         benchmark_datasets = [d for d in datasets if not
                               (d.get('benchmark_dataset', False) or
-                               d.get('reference_for_metric', False))]
+                               d.get('reference_for_metric', False) or
+                               d.get('reference_for_monitor_diags', False))]
         return benchmark_datasets
 
     def _get_benchmark_mask(self, cube, percentile_dataset, metric):
@@ -3146,7 +3175,10 @@ class MultiDatasets(MonitorBase):
         ifile = 0
 
         cubes = iris.cube.CubeList()
+        cubesref = iris.cube.CubeList()
         benchmark_datasets = []
+        ref_datasets = []
+        ref_dict = {}
         variables = []
 
         for (var_key, datasets) in self.grouped_input_data.items():
@@ -3161,6 +3193,12 @@ class MultiDatasets(MonitorBase):
 
             logger.info("Plotting %s for dataset %s",
                         plot_type, benchmark_dataset['dataset'])
+            
+            # Get dataset reference data set
+            plotref_dataset = self._get_reference_dataset(datasets)
+            if plotref_dataset is not None:
+                logger.info("Plotting %s for dataset %s",
+                        plot_type, plotref_dataset['dataset'])
 
             # Get datasets for benchmarking
             benchmark_group = self._get_benchmark_group(datasets)
@@ -3168,6 +3206,9 @@ class MultiDatasets(MonitorBase):
                         len(benchmark_group))
 
             ancestors = [benchmark_dataset['filename']]
+            if plotref_dataset is not None:
+                ancestors.append(plotref_dataset['filename'])
+
             for dataset in benchmark_group:
                 ancestors.append(dataset['filename'])
 
@@ -3181,6 +3222,9 @@ class MultiDatasets(MonitorBase):
 
             cubes.append(benchmark_dataset['cube'])
             benchmark_datasets.append(benchmark_dataset)
+            if plotref_dataset is not None:
+                cubesref.append(plotref_dataset['cube'])
+                ref_datasets.append(plotref_dataset)
             variables.append(var_key)
 
         # order of variables
@@ -3191,14 +3235,21 @@ class MultiDatasets(MonitorBase):
                        for i in range(len(variables))]
                 cubes = iris.cube.CubeList([cubes[i] for i in ind])
                 benchmark_datasets = [benchmark_datasets[i] for i in ind]
+                if plotref_dataset is not None:
+                    ref_datasets = [ref_datasets[i] for i in ind]
+                    cubesref = iris.cube.CubeList([cubesref[i] for i in ind])
                 variables = var_order
             else:
                 raise ValueError("List of ordered variables do not agree with"
                                  " processed variables")
 
+        if plotref_dataset is not None:
+            ref_dict['cubes'] = cubesref
+            ref_dict['datasets'] = ref_datasets
+
         (plot_path, netcdf_paths) = (
             self._plot_benchmarking_boxplot(dframe, cubes, variables,
-                                            benchmark_datasets)
+                                            benchmark_datasets, ref_dict)
         )
 
         # Save plot
