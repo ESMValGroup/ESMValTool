@@ -20,49 +20,6 @@ documentation:
 
 
 datasets:
-  - {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS}
-  - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO}
-  - {dataset: AWI-CM-1-1-MR, grid: gn}
-  - {dataset: AWI-ESM-1-1-LR, grid: gn}
-  - {dataset: BCC-CSM2-MR, grid: gn}
-  - {dataset: BCC-ESM1, grid: gn}
-  # - {dataset: CAMS-CSM1-0, grid: gn}
-  - {dataset: CanESM5, grid: gn}
-  - {dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1}
-  # - {dataset: CESM2, grid: gn}
-  # - {dataset: CESM2-FV2, grid: gn, institute: NCAR}
-  # - {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
-  # - {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
-  # - {dataset: CIESM}
-  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
-  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2}
-  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
-  # - {dataset: E3SM-1-0}
-  # - {dataset: E3SM-1-1, institute: E3SM-Project}
-  - {dataset: EC-Earth3-Veg}
-  - {dataset: FGOALS-f3-L}
-  # - {dataset: FGOALS-g3, grid: gn}
-  # - {dataset: FIO-ESM-2-0, grid: gn}
-  - {dataset: GFDL-ESM4, grid: gr1}
-  - {dataset: GISS-E2-1-G, grid: gn}
-  - {dataset: GISS-E2-1-H, grid: gn}
-  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
-  - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
-  - {dataset: INM-CM4-8, grid: gr1}
-  - {dataset: INM-CM5-0, grid: gr1}
-  - {dataset: IPSL-CM6A-LR}
-  - {dataset: KACE-1-0-G}
-  # - {dataset: MCM-UA-1-0, grid: gn}
-  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
-  - {dataset: MPI-ESM-1-2-HAM, grid: gn}
-  - {dataset: MPI-ESM1-2-HR, grid: gn}
-  - {dataset: MPI-ESM1-2-LR, grid: gn}
-  - {dataset: MRI-ESM2-0, grid: gn}
-  # - {dataset: NESM3, grid: gn}
-  # - {dataset: NorESM2-LM, grid: gn, institute: NCC}
-  # - {dataset: NorESM2-MM, grid: gn, institute: NCC}
-  # - {dataset: SAM0-UNICON, grid: gn}
-  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
   # Dataset to be benchmarked
   - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
 
@@ -88,6 +45,33 @@ preprocessors:
         - operator: percentile
           percent: 90
       exclude: [reference_dataset, MIROC6]
+
+  pp_abs_200:
+    extract_levels:
+      levels: 20000
+      scheme: linear
+      coordinate: air_pressure
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_shape:
+      shapefile: ar6
+      crop: true
+      decomposed: true
+      ids:
+        Name: 
+          - N.Europe
+    area_statistics:
+      operator: mean
+    multi_model_statistics:
+      span: overlap
+      statistics:
+        - operator: percentile
+          percent: 10
+        - operator: percentile
+          percent: 90
+      exclude: [reference_dataset, MIROC6]
+
 
   pp:
     regrid:
@@ -120,10 +104,12 @@ preprocessors:
           percent: 90
       exclude: [reference_dataset, MIROC6]
 
-  pp_metric:
-    custom_order: true
-    regrid_time:
-      calendar: standard
+
+  pp_200:
+    extract_levels:
+      levels: 20000
+      scheme: linear
+      coordinate: air_pressure
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -143,9 +129,8 @@ preprocessors:
         end_year: 2010
         end_month: 12
         end_day: 31
-    distance_metric:
-      metric: rmse
-      coords: [longitude, latitude]
+    area_statistics:
+      operator: mean
     multi_model_statistics:
       span: overlap
       statistics:
@@ -154,6 +139,7 @@ preprocessors:
         - operator: percentile
           percent: 90
       exclude: [reference_dataset, MIROC6]
+
 
 
 diagnostics:
@@ -183,17 +169,21 @@ diagnostics:
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
-      huss: 
+      hus_200: 
         <<: *var_default
-        reference_dataset: MERRA2
+        short_name: hus
+        reference_dataset: ERA5
+        preprocessor: pp_200
         additional_datasets:
-          - {dataset: MERRA2, project: OBS6, mip: Amon, type: reanaly, version: 5.12.4,
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
-      uas: 
+      ua_200: 
         <<: *var_default
-        reference_dataset: MERRA2
+        short_name: ua
+        reference_dataset: ERA5
+        preprocessor: pp_200
         additional_datasets:
-          - {dataset: MERRA2, project: OBS6, mip: Amon, type: reanaly, version: 5.12.4,
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
     scripts:
       allplots:
@@ -211,12 +201,6 @@ diagnostics:
                 linewidth: 2
                 zorder: 4
               HadCRUT5:
-                color: black
-                label: '{dataset}'
-                linestyle: '-'
-                linewidth: 2
-                zorder: 3
-              MERRA2:
                 color: black
                 label: '{dataset}'
                 linestyle: '-'
@@ -280,17 +264,21 @@ diagnostics:
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
-      huss: 
-        <<: *var_default_abs
-        reference_dataset: MERRA2
+      hus_200: 
+        <<: *var_default
+        short_name: hus
+        reference_dataset: ERA5
+        preprocessor: pp_abs_200
         additional_datasets:
-          - {dataset: MERRA2, project: OBS6, mip: Amon, type: reanaly, version: 5.12.4,
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
-      uas: 
-        <<: *var_default_abs
-        reference_dataset: MERRA2
+      ua_200: 
+        <<: *var_default
+        short_name: ua
+        reference_dataset: ERA5
+        preprocessor: pp_abs_200
         additional_datasets:
-          - {dataset: MERRA2, project: OBS6, mip: Amon, type: reanaly, version: 5.12.4,
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
     scripts:
       allplots:
@@ -308,12 +296,6 @@ diagnostics:
                 linewidth: 2
                 zorder: 4
               HadCRUT5:
-                color: black
-                label: '{dataset}'
-                linestyle: '-'
-                linewidth: 2
-                zorder: 3
-              MERRA2:
                 color: black
                 label: '{dataset}'
                 linestyle: '-'
@@ -351,59 +333,3 @@ diagnostics:
                 zorder: 1
             pyplot_kwargs:
               title: '{long_name} N.Europe'
-
-
-  benchmarking_timeseries:
-    description: Plot "benchmarking" time series of global mean anomalies.
-    variables:
-      tas: &var_default_bench
-        timerange: '2001/2014'
-        preprocessor: pp_metric
-        project: CMIP6
-        mip: Amon
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        reference_dataset: HadCRUT5
-        additional_datasets:
-          - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis, tier: 2, reference_for_metric: true}
-      pr: 
-        <<: *var_default_bench
-        reference_dataset: GPCP-SG
-        additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2, start_year: 2001, end_year: 2014, reference_for_metric: true}
-      psl: 
-        <<: *var_default_bench
-        reference_dataset: ERA5
-        additional_datasets:
-          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
-      huss: 
-        <<: *var_default_bench
-        reference_dataset: MERRA2
-        additional_datasets:
-          - {dataset: MERRA2, project: OBS6, mip: Amon, type: reanaly, version: 5.12.4,
-             tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
-      uas: 
-        <<: *var_default_bench
-        reference_dataset: MERRA2
-        additional_datasets:
-          - {dataset: MERRA2, project: OBS6, mip: Amon, type: reanaly, version: 5.12.4,
-             tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
-    scripts:
-      allplots:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        group_variables_by: variable_group
-        plots:
-          benchmarking_timeseries:
-            plot_kwargs:
-            annual_mean_kwargs: False
-            plot_kwargs:
-              MIROC6:
-                color: red
-                label: '{dataset}'
-                linestyle: '-'
-                linewidth: 1.5
-                zorder: 3
-
