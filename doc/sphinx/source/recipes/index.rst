@@ -27,6 +27,7 @@ large variety of input data.
    recipe_portrait
    recipe_psyplot
    recipe_seaborn
+   recipe_ref
 
 Atmosphere
 ^^^^^^^^^^
