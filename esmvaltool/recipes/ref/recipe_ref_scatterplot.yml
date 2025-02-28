@@ -28,58 +28,51 @@ preprocessors:
   common_grid_clt:
     <<: *regridding
     custom_order: true
-    mask_below_threshold:
-      threshold: 0.001
-    mask_above_threshold:
-      threshold: 100.
+    mask_outside_range:
+      minimum: 0.001
+      maximum: 100. 
   common_grid_clivi_clwvi:
     custom_order: true
     <<: *regridding
-    mask_below_threshold:
-      threshold: 0.001
-    mask_above_threshold:
-      threshold: 0.2
+    mask_outside_range:
+      minimum: 0.001
+      maximum: 0.2
   common_grid_lwcre:
     custom_order: true
     <<: *regridding
-    mask_below_threshold:
-      threshold: -10.
-    mask_above_threshold:
-      threshold: 100.
+    mask_outside_range:
+      minimum: -10.
+      maximum: 100.
   common_grid_swcre:
     custom_order: true
     <<: *regridding
-    mask_below_threshold:
-      threshold: -200.
-    mask_above_threshold:
-      threshold: -0.001
+    mask_outside_range:
+      minimum: -200.
+      maximum: -0.001
   common_grid_pr:
     custom_order: true
     <<: *regridding
     convert_units:
       units: mm day-1
-    mask_below_threshold:
-      threshold: 0.00001
-    mask_above_threshold:
-      threshold: 8
+    mask_outside_range:
+      minimum: 0.00001
+      maximum: 8
   common_grid_levels_ta:
     custom_order: true
     <<: *extracting_levels
     <<: *regridding
-    mask_below_threshold:
-      threshold: 180
-    mask_above_threshold:
-      threshold: 320
+    mask_outside_range:
+      minimum: 180
+      maximum: 320
   common_grid_levels_cli:
     custom_order: true
     <<: *extracting_levels
     <<: *regridding
     convert_units:
       units: g kg-1
-    mask_below_threshold:
-      threshold: 0.000001
-    mask_above_threshold:
-      threshold: 0.005
+    mask_outside_range:
+      minimum: 0.000001
+      maximum: 0.005 
 
 
 diagnostics:
@@ -115,7 +108,6 @@ diagnostics:
           cbar: true
           cbar_kws:
             extend: 'max'
-          marginal_ticks: true
           marginal_kws:
             color: darkturquoise
             bins: 20
@@ -175,7 +167,6 @@ diagnostics:
           cbar: true
           cbar_kws:
             extend: 'max'
-          marginal_ticks: true
           marginal_kws:
             color: darkturquoise
             bins: 20
@@ -231,7 +222,6 @@ diagnostics:
           cbar: true
           cbar_kws:
             extend: 'max'
-          marginal_ticks: true
           marginal_kws:
             color: darkturquoise
             bins: 20
@@ -288,7 +278,6 @@ diagnostics:
           cbar: true
           cbar_kws:
             extend: 'max'
-          marginal_ticks: true
           marginal_kws:
             color: darkturquoise
             bins: 20
