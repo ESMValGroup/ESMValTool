@@ -51,7 +51,6 @@ Example plots:
    effect from CERES-EBAF Ed4.2 (solid black), ESACCI-CLOUD (dashed black),
    ISCCP-FH (dotted black) and the MPI-ESM1-2-LR model (blue).
 
-
 .. _fig_ref_3:
 .. figure::  /recipes/figures/ref/benchmarking_boxplot_tas_MIROC6_Amon_historical_r1i1p1f1.png
    :align:   center
