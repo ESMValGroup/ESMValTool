@@ -2310,7 +2310,7 @@ class MultiDatasets(MonitorBase):
                 plt.scatter(0, cubes[i].data, marker='x', s=200, linewidths=2,
                             color="red", zorder=3,
                             label=datasets[i]["dataset"])
-                
+
                 if "cubes" in ref_dict:
                     plt.scatter(0, ref_dict["cubes"][i].data, marker='o',
                                 facecolors='none', edgecolors='blue',
@@ -3198,7 +3198,7 @@ class MultiDatasets(MonitorBase):
 
             logger.info("Plotting %s for dataset %s",
                         plot_type, benchmark_dataset['dataset'])
-            
+
             # Get dataset reference data set
             plotref_dataset = self._get_reference_dataset(datasets)
             if plotref_dataset is not None:
