@@ -60,7 +60,6 @@ diagnostics:
         ancestors: [pr]
         distribution: Gamma
         smooth_month: 6
-        write_coeffs: True
       pet:
         pet_type: "Hargreaves"  # "Penman_clt"
         script: droughts/pet.R

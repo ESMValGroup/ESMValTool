@@ -1,4 +1,4 @@
-"""Creates a difference map for any given drought index.
+"""Plot relative and absolute differences between two time intervals.
 
 A global map is plotted for each dataset with an index (must be unique).
 The map shows the difference of the first and last N years
@@ -54,6 +54,13 @@ metrics: list, optional
     "diff") the mean over two comparison periods ("first" and "last") is
     calculated. The "total" periods mean can be calculated and plotted as well.
     By default ["first", "last", "diff", "total", "percent"]
+filters: dict, or list, optional
+    Filter for metadata keys to select datasets. Only datasets with matching
+    values will be processed. This can be usefull, if ancestors or preprocessed
+    data is abailable, that should not be processed by the diagnostic.
+    If a list of dicts is given, all datasets matching any of the filters will
+    be considered.
+    By default None.
 """
 
 from __future__ import annotations
@@ -304,14 +311,28 @@ def set_defaults(cfg: dict) -> None:
         cfg["plot_kwargs_overwrite"].extend(defaults["plot_kwargs_overwrite"])
 
 
+def filter_metas(metas: list, filters: dict|list) -> list:
+    """Filter metas by filter dicts."""
+    if isinstance(filters, dict):
+        filters = [filters]
+    filtered = {}
+    for selection in filters:
+        for meta in e.select_metadata(metas, **selection):
+            filtered[meta["filename"]] = meta  # unique
+    return list(filtered.values())
+
+
 def main(cfg) -> None:
     """Execute Diagnostic."""
     set_defaults(cfg)
-    groups = e.group_metadata(cfg["input_data"].values(), cfg["group_by"])
+    metas = cfg["input_data"].values()
+    if cfg.get("filters") is not None:
+        metas = filter_metas(metas, cfg["filters"])
+    groups = e.group_metadata(metas, cfg["group_by"])
     output = {}
-    for group, metas in groups.items():
+    for group, g_metas in groups.items():
         mm_data = defaultdict(list)
-        for meta in metas:
+        for meta in g_metas:
             ut.guess_experiment(meta)  # TODO: add in SPEI.R instead
             if "end_year" not in meta:
                 meta.update(ut.get_time_range(meta["filename"]))
@@ -320,8 +341,8 @@ def main(cfg) -> None:
             meta["start_year"] = cfg.get("start_year", meta["start_year"])
             calculate_diff(cfg, meta, mm_data, output, group)
         do_mmm = cfg.get("plot_mmm", True) or cfg.get("save_mmm", True)
-        if do_mmm and len(metas) > 1:
-            calculate_mmm(cfg, metas[0], mm_data, output, group)
+        if do_mmm and len(g_metas) > 1:
+            calculate_mmm(cfg, g_metas[0], mm_data, output, group)
     ut.save_metadata(cfg, output)
 
 
