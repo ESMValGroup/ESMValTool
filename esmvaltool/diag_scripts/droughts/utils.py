@@ -63,19 +63,19 @@ CONTINENTAL_REGIONS = {
 }
 
 HEX_POSITIONS = {
-        "NWN": [2, 0], "NEN": [4, 0], "GIC": [6.5, -0.5], "NEU": [14, 0],
-        "RAR": [20, 0], "WNA": [1, 1], "CNA": [3, 1], "ENA": [5, 1],
-        "WCE": [13, 1], "EEU": [15, 1], "WSB": [17, 1], "ESB": [19, 1],
-        "RFE": [21, 1], "NCA": [2, 2], "MED": [14, 2], "WCA": [16, 2],
-        "ECA": [18, 2], "TIB": [20, 2], "EAS": [22, 2], "SCA": [3, 3],
-        # "CAR": [5, 3],
-        "SAH": [13, 3], "ARP": [15, 3], "SAS": [19, 3], "SEA": [23, 3],
-        # "PAC": [27.5, 3.3],
-        "NWS": [6, 4], "NSA": [8, 4], "WAF": [12, 4], "CAF": [14, 4],
-        "NEAF": [16, 4], "NAU": [24.5, 4.3], "SAM": [7, 5], "NES": [9, 5],
-        "WSAF": [13, 5], "SEAF": [15, 5], "MDG": [17.5, 5.3],
-        "CAU": [23.5, 5.3], "EAU": [25.5, 5.3], "SWS": [6, 6], "SES": [8, 6],
-        "ESAF": [14, 6], "SAU": [24.5, 6.3], "NZ": [27, 6.5], "SSA": [7, 7],
+    "NWN": [2, 0], "NEN": [4, 0], "GIC": [6.5, -0.5], "NEU": [14, 0],
+    "RAR": [20, 0], "WNA": [1, 1], "CNA": [3, 1], "ENA": [5, 1],
+    "WCE": [13, 1], "EEU": [15, 1], "WSB": [17, 1], "ESB": [19, 1],
+    "RFE": [21, 1], "NCA": [2, 2], "MED": [14, 2], "WCA": [16, 2],
+    "ECA": [18, 2], "TIB": [20, 2], "EAS": [22, 2], "SCA": [3, 3],
+    # "CAR": [5, 3],
+    "SAH": [13, 3], "ARP": [15, 3], "SAS": [19, 3], "SEA": [23, 3],
+    # "PAC": [27.5, 3.3],
+    "NWS": [6, 4], "NSA": [8, 4], "WAF": [12, 4], "CAF": [14, 4],
+    "NEAF": [16, 4], "NAU": [24.5, 4.3], "SAM": [7, 5], "NES": [9, 5],
+    "WSAF": [13, 5], "SEAF": [15, 5], "MDG": [17.5, 5.3],
+    "CAU": [23.5, 5.3], "EAU": [25.5, 5.3], "SWS": [6, 6], "SES": [8, 6],
+    "ESAF": [14, 6], "SAU": [24.5, 6.3], "NZ": [27, 6.5], "SSA": [7, 7],
 }
 
 INDEX_META = {
@@ -126,11 +126,11 @@ def merge_list_cube(
 
     Parameters
     ----------
-    cube_list : list
+    cube_list: list
         List or iterable of cubes with the same coordinates.
-    aux_name : str, optional
+    aux_name: str, optional
         Name of the new auxiliary coordinate. Defaults to "dataset".
-    equalize : bool, optional
+    equalize: bool, optional
         Drops differences in attributes, otherwise raises an error.
         Defaults to True.
 
@@ -165,17 +165,17 @@ def fold_meta(
 
     Parameters
     ----------
-    cfg : dict
+    cfg: dict
         Plot specific configuration with cfg_keys on root level.
-    meta : list
+    meta: list
         Full meta data including ancestor files.
-    cfg_keys : list, optional
+    cfg_keys: list, optional
         Data constraints as config entries used for product.
         Defaults to ["locations", "intervals"].
-    meta_keys : list, optional
+    meta_keys: list, optional
         Keys for each meta used for product, short_name added automatically.
         Defaults to ["dataset", "exp"].
-    variables : list, optional
+    variables: list, optional
         Variables to be used. Defaults to None.
 
     Returns
@@ -280,7 +280,7 @@ def sort_cube(cube: Cube, coord: str = "longitude") -> Cube:
     return cube[tuple(index)]
 
 
-def fix_longitude(cube: Cube) -> Cube:
+def fix_longitude(cube: Cube, coord="longitude") -> Cube:
     """Return a cube with 0 centered longitude coords.
 
     updating the longitude coord and sorting the data accordingly
@@ -288,31 +288,20 @@ def fix_longitude(cube: Cube) -> Cube:
     # make sure coords are -180 to 180
     fixed_lons = [
         lon if lon < 180 else lon - 360
-        for lon in cube.coord("longitude").points
+        for lon in cube.coord(coord).points
     ]
-    try:
-        cube.add_aux_coord(
-            iris.coords.AuxCoord(fixed_lons, long_name="fixed_lon"),
-            2,
-        )
-    except ValueError:
-        log.warning("TODO: hardcoded dimensions in ut.fix_longitude")
-        cube.add_aux_coord(
-            iris.coords.AuxCoord(fixed_lons, long_name="fixed_lon"),
-            1,
-        )
-    # sort data and fixed coordinates
+    lon_dim = cube.coord_dims(cube.coord(coord))[0]
+    cube.add_aux_coord(
+        iris.coords.AuxCoord(fixed_lons, long_name="fixed_lon"), lon_dim,
+    )
     cube = sort_cube(cube, coord="fixed_lon")
-    # set new coordinates as dimcoords
+    # set new coordinates as dimcoords, add new dim and remove old and aux
     new_lon = cube.coord("fixed_lon")
     new_lon_dims = cube.coord_dims(new_lon)
-    # Create a new coordinate which is a DimCoord.
-    # The var name becomes the dim name
     longitude = iris.coords.DimCoord.from_coord(new_lon)
-    longitude.rename("longitude")
-    # Remove the AuxCoord, old longitude and add the new DimCoord.
+    longitude.rename(coord)
     cube.remove_coord(new_lon)
-    cube.remove_coord(cube.coord("longitude"))
+    cube.remove_coord(cube.coord(coord))
     cube.add_dim_coord(longitude, new_lon_dims)
     return cube
 
@@ -363,15 +352,7 @@ def date_tick_layout(
     label: str = "Time",
     years: int | None = 1,
 ) -> None:
-    """Update a time series figure to use date/year ticks and grid.
-
-    :param fig: figure that will be updated
-    :param ax: ax to set ticks/labels/limits on
-    :param dates: optional, to set limits
-    :param label: ax label
-    :param years: tick every x years, if None auto formatter is used
-    :return: nothing, updates figure in place
-    """
+    """Update a time series figure to use date/year ticks and grid."""
     axes.set_xlabel(label)
     if dates is not None:
         datemin = np.datetime64(dates[0], "Y")
@@ -453,11 +434,7 @@ def get_scenarios(meta, **kwargs) -> list:
 
 
 def add_ancestor_input(cfg: dict) -> None:
-    """Read ancestors settings.yml and add it's input_data to this config.
-
-    TODO: make sure it don't break for non ancestor scripts
-    TODO: recursive? (optional)
-    """
+    """Read ancestors settings.yml and add it's input_data to this config."""
     log.info("add ancestors for %s", cfg[n.INPUT_FILES])
     for input_file in cfg[n.INPUT_FILES]:
         cfg_anc_file = (
@@ -482,12 +459,8 @@ def quick_load(cfg: dict, context: dict, *, strict=True) -> Cube:
     raises an error (if strict) or a warning for multiple matches.
     """
     meta = cfg["input_data"].values()
-    var_meta = select_metadata(meta, **context)
-    if len(var_meta) != 1:
-        if strict:
-            raise ValueError("Wrong number of meta data found.")
-        log.warning("warning meta data missmatch")
-    return iris.load_cube(var_meta[0]["filename"])
+    var_meta = select_single_meta(meta, strict=strict, **context)
+    return iris.load_cube(var_meta["filename"])
 
 
 def smooth(dat, window=32, mode="same") -> np.ndarray:
@@ -508,7 +481,7 @@ def smooth(dat, window=32, mode="same") -> np.ndarray:
 def get_basename(cfg, meta, prefix=None, suffix=None) -> str:
     """Return a formatted basename for a diagnostic file."""
     _ = cfg  # we might need this in the future. dont tell codacy!
-    formats = {  # TODO: load this from config-developer.yml?
+    formats = {
         "CMIP6": CMIP6_FNAME,
         "OBS": OBS_FNAME,
     }
@@ -606,13 +579,13 @@ def get_plot_fname(
 
     Parameters
     ----------
-    cfg: dict
+    cfg : dict
         Dictionary with diagnostic configuration.
-    basename: str
+    basename : str
         The basename of the file.
-    meta: dict, optional
+    meta : dict, optional
         Metadata to format the basename. If None, empty dict is used.
-    replace: dict
+    replace : dict
         Dictionary with strings to replace in the basename.
         If None, empty dict is used.
 
@@ -637,7 +610,7 @@ def slice_cube_interval(cube: Cube, interval: list) -> Cube:
     For 3D cubes time needs to be first dim.
     """
     if isinstance(interval[0], int) and isinstance(interval[1], int):
-        return cube[interval[0] : interval[1], :, :]
+        return cube[interval[0]: interval[1], :, :]
     dt_start = dt.datetime.strptime(interval[0], "%Y-%m")
     dt_end = dt.datetime.strptime(interval[1], "%Y-%m")
     time = cube.coord("time")
@@ -901,11 +874,9 @@ def remove_attributes(
 def font_color(background: str | tuple | float) -> str:
     """Black or white depending on greyscale of the background.
 
-    Can be used to make text more readable on a colored background.
-
     Parameters
     ----------
-    bacgkround: str
+    bacgkround : str, tuple, or float
         color as string (grayscale value, name, hex) or tuple (rgb, rgba)
     """
     if sum(mpl.colors.to_rgb(background)) > 1.5:
@@ -930,11 +901,7 @@ def get_time_range(cube: Cube) -> dict:
 
 
 def guess_experiment(meta: dict) -> None:
-    """Guess missing 'exp' in metadata from filename.
-
-    TODO: This is a workaround for incomplete meta data.
-    fix this in ancestor diagnostics rather than use this function.
-    """
+    """Guess missing 'exp' in metadata from filename."""
     exps = ["historical", "ssp126", "ssp245", "ssp370", "ssp585"]
     for exp in exps:
         if exp in meta["filename"]:
@@ -1104,7 +1071,7 @@ def runs_of_ones_array_spei(bits, spei) -> list:
     (run_ends,) = np.where(difs < 0)
     spei_sum = np.full(len(run_starts), 0.5)
     for iii, indexs in enumerate(run_starts):
-        spei_sum[iii] = np.sum(spei[indexs : run_ends[iii]])
+        spei_sum[iii] = np.sum(spei[indexs: run_ends[iii]])
     return [run_ends - run_starts, spei_sum]
 
 

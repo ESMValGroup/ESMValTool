@@ -49,6 +49,8 @@ import datetime as dt
 import logging
 from pathlib import Path
 from pprint import pformat
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 import cartopy.crs as cart
 import iris
@@ -557,60 +559,6 @@ def plot_map_spei(cfg, cube, levels, name_dict) -> None:
     fig.savefig(get_plot_filename(basename, cfg), dpi=300)
     plt.close()
     _provenance_map_spei(cfg, name_dict, spei, dataset_name)
-
-
-def plot_time_series_spei(cfg, cube, filename, add_to_filename="") -> None:
-    """Plot time series."""
-    spei = cube.data
-    time = cube.coord("time").points
-    # Adjust (ncdf) time to the format matplotlib expects
-    add_m_delta = mdates.datestr2num("1850-01-01 00:00:00")
-    time = time + add_m_delta
-    # Get data set name from cube
-    try:
-        dataset_name = cube.metadata.attributes["model_id"]
-    except KeyError:
-        try:
-            dataset_name = cube.metadata.attributes["source_id"]
-        except KeyError:
-            dataset_name = "Observations"
-    data_dict = {
-        "data": spei,
-        "time": time,
-        "var": cfg["indexname"],
-        "dataset_name": dataset_name,
-        "unit": "1",
-        "filename": filename,
-        "area": add_to_filename,
-    }
-    fig, axx = plt.subplots(figsize=(16, 4))
-    axx.plot_date(
-        time,
-        spei,
-        "-",
-        tz=None,
-        xdate=True,
-        ydate=False,
-        color="r",
-        linewidth=4.0,
-        linestyle="-",
-        alpha=1.0,
-        marker="x",
-    )
-    axx.axhline(y=-2, color="k")
-    axx.set_xlabel("Time")
-    axx.set_ylabel(cfg["indexname"])
-    axx.set_title(
-        f"Mean {cfg['indexname']} {data_dict['dataset_name']} "
-        f"{data_dict['area']}",
-    )
-    axx.set_ylim(-4.0, 4.0)
-    fig.tight_layout()
-    basename = f"{cfg['indexname']}_time_series_{data_dict['area']}_"
-    basename += data_dict["dataset_name"]
-    fig.savefig(get_plot_filename(basename, cfg), dpi=300)
-    plt.close()
-    _provenance_time_series_spei(cfg, data_dict)
 
 
 def _plot_models_vs_obs(cfg, cube, mmm, obs, fnames):

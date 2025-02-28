@@ -101,6 +101,7 @@ def plot_colorbar(
     mappable: mpl.cm.ScalarMappable | None = None,
 ) -> None:
     """Plot colorbar in its own figure for strip_plots."""
+    _ = cfg  # we might need this in the future
     fig = plt.figure(figsize=(1.5, 3))
     # fixed size axes in fixed size figure
     cbar_ax = fig.add_axes([0.01, 0.04, 0.2, 0.92])
@@ -218,13 +219,7 @@ def calculate_diff(cfg, meta, mm_data, output_meta, group):
     if "start_year" in cfg or "end_year" in cfg:
         log.info("selecting time period")
         cube = pp.extract_time(
-            cube,
-            cfg["start_year"],
-            1,
-            1,
-            cfg["end_year"],
-            12,
-            31,
+            cube, cfg["start_year"], 1, 1, cfg["end_year"], 12, 31
         )
     dtime = cfg.get("comparison_period", 10) * 12
     cubes = {}
@@ -236,13 +231,14 @@ def calculate_diff(cfg, meta, mm_data, output_meta, group):
         + 1  # count full end year
         - cfg.get("comparison_period", 10)  # decades center to center
     ) / 10
-    if any(m in do_metrics for m in ["first", "last", "diff", "percent"]):
+    if do_metrics != ["total"]:  # anything else needs start/end periods
         cubes["first"] = cube[0:dtime].collapsed("time", MEAN)
         cubes["last"] = cube[-dtime:].collapsed("time", MEAN)
-    if any(m in do_metrics for m in ["diff", "percent"]):
+    if "diff" in do_metrics or "percent" in do_metrics:
         cubes["diff"] = cubes["last"] - cubes["first"]
         cubes["diff"].data /= norm
         cubes["diff"].units = str(cubes["diff"].units) + " / 10 years"
+    if "percent" in do_metrics:
         cubes["percent"] = cubes["diff"] / cubes["first"] * 100
         cubes["percent"].units = "% / 10 years"
     if cfg.get("plot_mmm", True):
@@ -258,7 +254,10 @@ def calculate_diff(cfg, meta, mm_data, output_meta, group):
         if cfg.get("plot_models", True):
             plot_kwargs = cfg.get("plot_kwargs", {}).copy()
             apply_plot_kwargs_overwrite(
-                plot_kwargs, cfg.get("plot_kwargs_overwrite", []), key, group,
+                plot_kwargs,
+                cfg.get("plot_kwargs_overwrite", []),
+                key,
+                group,
             )
             plot(cfg, meta, cube, basename, kwargs=plot_kwargs)
             plt.close()
@@ -322,7 +321,7 @@ def main(cfg) -> None:
             # adjust norm for selected time period
             meta["end_year"] = cfg.get("end_year", meta["end_year"])
             meta["start_year"] = cfg.get("start_year", meta["start_year"])
-            calculate_diff(cfg, meta, mm_data, output, group, norm)
+            calculate_diff(cfg, meta, mm_data, output, group)
         do_mmm = cfg.get("plot_mmm", True) or cfg.get("save_mmm", True)
         if do_mmm and len(metas) > 1:
             calculate_mmm(cfg, metas[0], mm_data, output, group)
