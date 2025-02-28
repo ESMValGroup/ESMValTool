@@ -2294,8 +2294,8 @@ class MultiDatasets(MonitorBase):
                     region_str = " for " + \
                         cubes[0].coords(region_coord)[0].points[0]
 
-            fig.suptitle(f"{metric}of {self._get_label(datasets[0])}
-                         {region_str}")
+            fig.suptitle(f"{metric}of "
+                         f"{self._get_label(datasets[0])}{region_str}")
 
             sns.set_style('darkgrid')
 
