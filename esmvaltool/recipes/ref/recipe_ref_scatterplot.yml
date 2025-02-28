@@ -27,34 +27,34 @@ levels_for_3d_vars: &extracting_levels
 preprocessors:
   common_grid_clt:
     <<: *regridding
-    custom_order: True
+    custom_order: true
     mask_below_threshold:
       threshold: 0.001
     mask_above_threshold:
       threshold: 100.
   common_grid_clivi_clwvi:
-    custom_order: True
+    custom_order: true
     <<: *regridding
     mask_below_threshold:
       threshold: 0.001
     mask_above_threshold:
       threshold: 0.2
   common_grid_lwcre:
-    custom_order: True
+    custom_order: true
     <<: *regridding
     mask_below_threshold:
       threshold: -10.
     mask_above_threshold:
       threshold: 100.
   common_grid_swcre:
-    custom_order: True
+    custom_order: true
     <<: *regridding
     mask_below_threshold:
       threshold: -200.
     mask_above_threshold:
       threshold: -0.001
   common_grid_pr:
-    custom_order: True
+    custom_order: true
     <<: *regridding
     convert_units:
       units: mm day-1
@@ -63,7 +63,7 @@ preprocessors:
     mask_above_threshold:
       threshold: 8
   common_grid_levels_ta:
-    custom_order: True
+    custom_order: true
     <<: *extracting_levels
     <<: *regridding
     mask_below_threshold:
@@ -71,7 +71,7 @@ preprocessors:
     mask_above_threshold:
       threshold: 320
   common_grid_levels_cli:
-    custom_order: True
+    custom_order: true
     <<: *extracting_levels
     <<: *regridding
     convert_units:
@@ -103,7 +103,7 @@ diagnostics:
       plot: &plot_settings_jointplot_clt_swcre
         script: seaborn_diag.py
         seaborn_func: jointplot
-        title: 
+        title:
         seaborn_kwargs:
           kind: hist
           x: clt
@@ -112,14 +112,14 @@ diagnostics:
           vmax: 0.015
           stat: probability
           cmap: YlGnBu
-          cbar: True
+          cbar: true
           cbar_kws:
             extend: 'max'
-          marginal_ticks: True
+          marginal_ticks: true
           marginal_kws:
             color: darkturquoise
             bins: 20
-            fill: True
+            fill: true
             stat: probability
         add_aux_coords: true
         plot_object_methods:
@@ -160,7 +160,7 @@ diagnostics:
         <<: *var_clt
         preprocessor: common_grid_pr
         additional_datasets:
-          - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3, tier: 1,  alias: GPCP-SG}
+          - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3, tier: 1, alias: GPCP-SG}
     scripts:
       plot: &plot_settings_jointplot_clwvi_pr
         <<: *plot_settings_jointplot_clt_swcre
@@ -172,14 +172,14 @@ diagnostics:
           vmax: 0.03
           stat: probability
           cmap: YlGnBu
-          cbar: True
+          cbar: true
           cbar_kws:
             extend: 'max'
-          marginal_ticks: True
+          marginal_ticks: true
           marginal_kws:
             color: darkturquoise
             bins: 20
-            fill: True
+            fill: true
             stat: probability
         plot_object_methods:
           set_axis_labels:
@@ -228,15 +228,15 @@ diagnostics:
           vmax: 0.03
           stat: probability
           cmap: YlGnBu
-          cbar: True
+          cbar: true
           cbar_kws:
             extend: 'max'
-          marginal_ticks: True
+          marginal_ticks: true
           marginal_kws:
             color: darkturquoise
             bins: 20
-            fill: True
-            stat: probability    
+            fill: true
+            stat: probability
         plot_object_methods:
           set_axis_labels:
             xlabel: 'clivi [kg m-2]'
@@ -285,14 +285,14 @@ diagnostics:
           vmax: 0.02
           stat: probability
           cmap: YlGnBu
-          cbar: True
+          cbar: true
           cbar_kws:
             extend: 'max'
-          marginal_ticks: True
+          marginal_ticks: true
           marginal_kws:
             color: darkturquoise
             bins: 20
-            fill: True
+            fill: true
             stat: probability
         plot_object_methods:
           set_axis_labels:
@@ -312,6 +312,6 @@ diagnostics:
     additional_datasets:
       - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2}
     scripts:
-      plot: 
+      plot:
         <<: *plot_settings_jointplot_cli_ta
         suptitle: '{}'
