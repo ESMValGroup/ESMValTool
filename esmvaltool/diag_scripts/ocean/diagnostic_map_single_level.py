@@ -4,7 +4,7 @@ import sys
 
 import cartopy.crs as ccrs
 import iris
-import iris.plot as qplt
+import iris.plot as iplt
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -47,46 +47,17 @@ def main(config):
     # Pick a value for level.
     level = 2
     experiment_single_level = extract_global_single_level(experiment, level)
-    plot_global_single_level(221, experiment_single_level, level, "experiment")
-
     experiment_minus_control_single_level = extract_global_single_level(
         experiment_minus_control, level)
-    plot_global_single_level(222, experiment_minus_control_single_level, level,
-                             "experiment minus control")
-
     control_minus_observation_single_level = extract_global_single_level(
         control_minus_observation, level)
-    plot_global_single_level(223, control_minus_observation_single_level,
-                             level, "control minus observation")
-
     experiment_minus_observation_single_level = extract_global_single_level(
         experiment_minus_observation, level)
-    plot_global_single_level(224, experiment_minus_observation_single_level,
-                             level, "experiment minus observation")
 
-    fig = plt.gcf()
-    fig.set_size_inches(9, 6)
-    fn_list = [experiment.long_name, str(level)]
-    input_files = diagtools.get_input_files(config)
-    image_extention = diagtools.get_image_format(config)
-    path = diagtools.folder(
-        config['plot_dir']) + '_'.join(fn_list) + str(level)
-    path = path.replace(' ', '') + image_extention
-
-    # Saving files:
-    logger.info('Saving plots to %s', path)
-    provenance_record = diagtools.prepare_provenance_record(
-        config,
-        caption=f'Quadmap models comparison against observation level={level}',
-        statistics=[
-            'mean',
-            'diff',
-        ],
-        domain=['global'],
-        plot_type=['map'],
-        ancestors=list(input_files.keys()),
-    )
-    save_figure('_'.join(fn_list), provenance_record, config, fig, close=True)
+    create_quadmap(experiment_single_level,
+                   experiment_minus_control_single_level,
+                   control_minus_observation_single_level,
+                   experiment_minus_observation_single_level, level)
 
     # After successfully generating plots, function logs a success message.
     logger.info('Success')
@@ -130,19 +101,26 @@ def load_data(config):
     exp_label_from_recipe = 'exper_model'
     obs_label_from_recipe = 'observational_dataset'
 
+    # Getting all input files from configuration.
     input_files = diagtools.get_input_files(config)
 
-    ctl_filename = diagtools.match_model_to_key(ctl_label_from_recipe, config,
+    # Get control input files from config
+    ctl_filename = diagtools.match_model_to_key(ctl_label_from_recipe,
+                                                config[ctl_label_from_recipe],
                                                 input_files)
-
-    exp_filename = diagtools.match_model_to_key(exp_label_from_recipe, config,
+    # Get experiment input files from config
+    exp_filename = diagtools.match_model_to_key(exp_label_from_recipe,
+                                                config[exp_label_from_recipe],
                                                 input_files)
-
-    obs_filename = diagtools.match_model_to_key(obs_label_from_recipe, config,
+    # Get observation input files from config
+    obs_filename = diagtools.match_model_to_key(obs_label_from_recipe,
+                                                config[obs_label_from_recipe],
                                                 input_files)
-
+    print(f'{ctl_filename=}')
     control = iris.load_cube(ctl_filename)
+    print(f'{exp_filename=}')
     experiment = iris.load_cube(exp_filename)
+    print(f'{obs_filename=}')
     observation = iris.load_cube(obs_filename)
 
     print(f'{control=}')
@@ -231,7 +209,6 @@ def create_plotting_data(control, experiment, observation):
     """
     # The data for models and the obs dataset is loaded into Iris cubes.
     # These cubes contain the climate data that will be plotted.
-    experiment = experiment
     experiment_minus_control = experiment - control
     control_minus_observation = control - observation
     experiment_minus_observation = experiment - observation
@@ -260,21 +237,21 @@ def extract_global_single_level(cube, level):
     iris cube
         The extracted single level cube.
     """
-
+    print(f'{cube.shape=}')
     if len(cube.coord('depth').points) == 1:
-        # 2D cube
-        print("extract_glob_sin_lev1 success")
-        return iris.util.squeeze(cube)
+        # 2D cube - Sea Surface
+        single_level = cube
     else:
         # 3D cube - select relevant level
-        slices = [slice(None)] * len(cube.shape)
-        coord_dim = cube.coord_dims('depth')[0]
-        slices[coord_dim] = level
-        print("extract_glob_sin_lev2 success")
-        return iris.util.squeeze(cube[tuple(slices)])
+        constraint = iris.Constraint(depth=level)
+        single_level = cube.extract(constraint)
+
+    single_level = iris.util.squeeze(single_level)
+    print(f'{single_level.shape=}')
+    return single_level
 
 
-def plot_global_single_level(subplot, cube, level, title):
+def plot_global_single_level(axis, cube, contour_levels, title):
     """Creating each individual plot before being added to create_quadmap.
 
     Parameters
@@ -299,53 +276,52 @@ def plot_global_single_level(subplot, cube, level, title):
     -----
     The plots are then saved as image files in the specified directory.
     """
-    # Setting cmap and nspace.
     if title == "experiment":
         cmap = 'viridis'
-        nspace = diagtools.get_cube_range([cube])
-    elif (cube.long_name == "Sea Surface Salinity"
-          or cube.long_name == "Sea Water Potential Salinity"):
-        cmap = 'bwr'
-        nspace = np.linspace(-2.0, 2.0, 21)
     else:
         cmap = 'bwr'
-        nspace = np.linspace(-5.0, 5.0, 21)
-
-    plt.subplot(subplot, projection=ccrs.PlateCarree())
 
     # This step transforms the data so it can be displayed as 2D
     new_cube, extent = iris.analysis.cartography.project(cube,
                                                          ccrs.PlateCarree(),
                                                          nx=400,
                                                          ny=200)
+    # Set at the top of the function.s
+    plt.sca(axis)
 
     # The function then creates a filled contour plot of the projected data.
-    qplot = qplt.contourf(new_cube,
-                          nspace,
-                          linewidth=0,
-                          cmap=plt.cm.get_cmap(cmap))
+    contour_result = iplt.contourf(new_cube,
+                                   levels=contour_levels,
+                                   linewidth=0,
+                                   cmap=plt.cm.get_cmap(cmap))
 
-    if qplot is None:
+    contour_levels = np.array(contour_levels)
+
+    if contour_result is None:
         raise ValueError(
-            "Failed to create contour plot. The qplot object is None.")
+            "Failed to create contour plot. The plt object is None.")
 
     # A color bar is added to the plot to show the range of values.
-    colorbar = plt.colorbar(qplot, orientation='vertical')
-
-    # The ticks on color bar are set to the cubes range.
-    colorbar.set_ticks(diagtools.get_cube_range([cube]))
-
+    colorbar = plt.colorbar(contour_result, orientation='horizontal')
+    colorbar.set_ticks([
+        contour_levels.min(),
+        (contour_levels.max() + contour_levels.min()) / 2.,
+        contour_levels.max()
+    ])
     # Coastlines are added to the map to provide geographical context.
     plt.gca().coastlines()
-
     # title plotted
     plt.title(title)
-    print("plot_global_single_level success")
-
-    return qplot
+    iplt.show()
 
 
-def create_quadmap(*plots):
+#    return qplot
+
+
+def create_quadmap(experiment_single_level,
+                   experiment_minus_control_single_level,
+                   control_minus_observation_single_level,
+                   experiment_minus_observation_single_level, level):
     """The function starts by specifying the position of each of the plots in
     the quadmap. We want this to be set.
 
@@ -371,16 +347,52 @@ def create_quadmap(*plots):
     larger figure. 224 means the map will be placed in the fourth position
     of a 2x2 grid. We want this to be unchanged.
 
-    The function matches the models to their respective keys using the
+    The function matches the mo    ProvenanceLogger,
+    group_metadata,dels to their respective keys using the
     information in the configuration dictionary.
     """
+    # Setting cmap and nspace.
 
+    # fig.title and plt.title
 
-#    for plot in plots:
-#        plot
-#    plt.tight_layout()
-#    plt.show()
-#    print("create_quadmap success")
+    zrange1 = diagtools.get_cube_range([experiment_single_level])
+    zrange2 = [-5.0, 5.0]
+
+    linspace1 = np.linspace(zrange1[0], zrange1[1], 12, endpoint=True)
+    linspace2 = np.linspace(zrange2[0], zrange2[1], 12, endpoint=True)
+    # prepare image and figure
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(9, 6))
+
+    plot_global_single_level(ax1, experiment_single_level, linspace1,
+                             "experiment")
+    plot_global_single_level(ax2, experiment_minus_control_single_level,
+                             linspace2, "experiment minus control")
+    plot_global_single_level(ax3, control_minus_observation_single_level,
+                             linspace2, "control minus observation")
+    plot_global_single_level(ax4, experiment_minus_observation_single_level,
+                             linspace2, "experiment minus observation")
+
+    # Saving files:
+    fn_list = [experiment_single_level.long_name, str(level)]
+    input_files = diagtools.get_input_files(config)
+    image_extention = diagtools.get_image_format(config)
+    path = diagtools.folder(
+        config['plot_dir']) + '_'.join(fn_list) + str(level)
+    path = path.replace(' ', '') + image_extention
+    logger.info('Saving plots to %s', path)
+    provenance_record = diagtools.prepare_provenance_record(
+        config,
+        caption=f'Quadmap models comparison against observation level={level}',
+        statistics=[
+            'mean',
+            'diff',
+        ],
+        domain=['global'],
+        plot_type=['map'],
+        ancestors=list(input_files.keys()),
+    )
+    save_figure('_'.join(fn_list), provenance_record, config, fig, close=True)
+
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
