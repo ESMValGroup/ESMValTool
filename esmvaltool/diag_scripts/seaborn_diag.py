@@ -173,7 +173,7 @@ def _create_plot(
         if plot_func_str in ['jointplot'] and cfg['suptitle'] in ['{}']:
             plt.suptitle(cfg['suptitle'].format(
                 data_frame["alias"].unique()[0]),
-                         y=1.05)
+                y=1.05)
         else:
             plt.suptitle(cfg['suptitle'], y=1.05)
     if cfg['legend_title'] is not None:
