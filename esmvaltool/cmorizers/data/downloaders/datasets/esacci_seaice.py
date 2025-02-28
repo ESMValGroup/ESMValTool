@@ -6,6 +6,7 @@ from dateutil import relativedelta
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 from esmvaltool.cmorizers.data.utilities import read_cmor_config
 
+
 def download_dataset(config, dataset, dataset_info, start_date, end_date,
                      overwrite):
     """Download dataset.

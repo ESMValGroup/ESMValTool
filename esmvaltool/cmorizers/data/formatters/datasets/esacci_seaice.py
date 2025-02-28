@@ -20,16 +20,17 @@ import logging
 import os
 from copy import deepcopy
 from datetime import datetime
-from dateutil import relativedelta
 
 import cf_units
 import iris
 import numpy as np
 from dask import array as da
+from dateutil import relativedelta
 from esmvalcore.cmor._fixes.common import OceanFixGrid
 from esmvalcore.cmor.table import CMOR_TABLES
 from esmvalcore.preprocessor import monthly_statistics
 from iris.coords import AuxCoord
+
 from esmvaltool.cmorizers.data import utilities as utils
 
 from ...utilities import save_variable
