@@ -1,10 +1,13 @@
-# # """Script to download ESACCI-OZONE from the CDS."""
+"""Script to download ESACCI-OZONE from the CDS."""
 
+import logging
 from pathlib import Path
 import shutil
 import gzip
 import zipfile
 import cdsapi
+
+logger = logging.getLogger(__name__)
 
 
 def download_dataset(config, dataset, dataset_info, start_date, end_date,
@@ -50,12 +53,13 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         output_folder.mkdir(parents=True, exist_ok=True)
 
         for var_name, request in requests.items():
-            print(f"Downloading {var_name} data to {output_folder}...")
+            logger.info("Downloading %s data to %s", var_name, output_folder)
 
             file_path = output_folder / f"{var_name}.gz"
 
             if file_path.exists() and not overwrite:
-                print(f"File {file_path} already exists. Skipping download.")
+                logger.info("File %s already exists. Skipping download.",
+                            file_path)
                 continue
 
             client.retrieve("satellite-ozone-v1", request,
@@ -66,11 +70,11 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                 magic = f.read(2)
 
             if magic == b'PK':  # ZIP file signature
-                print(f"Detected ZIP file: {file_path}")
+                logger.info("Detected ZIP file: %s", file_path)
                 with zipfile.ZipFile(file_path, 'r') as zip_ref:
                     zip_ref.extractall(output_folder)
             else:
-                print(f"Detected GZIP file: {file_path}")
+                logger.info("Detected GZIP file: %s", file_path)
                 with gzip.open(file_path, 'rb') as f_in:
                     with open(output_folder / file_path.stem, 'wb') as f_out:
                         shutil.copyfileobj(f_in, f_out)
