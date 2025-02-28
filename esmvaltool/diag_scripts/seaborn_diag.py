@@ -178,7 +178,8 @@ def _create_plot(
             plt.suptitle(cfg['suptitle'], y=1.05)
     if cfg['legend_title'] is not None:
         _set_legend_title(plot_obj, cfg['legend_title'])
-    if plot_func_str in ['jointplot'] and plot_kwargs['cbar'] is True:
+    if plot_func_str == 'jointplot' and plot_kwargs['cbar']:
+        # Reposition colorbar so it is to the right of marginals plot
         plt.subplots_adjust(left=0.1, right=0.8, top=0.9, bottom=0.1)
         # get the current positions of the joint ax and the ax for
         # the marginal x
