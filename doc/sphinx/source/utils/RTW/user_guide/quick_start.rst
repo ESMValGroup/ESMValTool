@@ -38,5 +38,17 @@ Quick Start Guide
         export CYLC_VERSION=8
         cylc vip -O jasmin
 
-* Browse the logs using `Cylc Review`_, a web service for browsing logs via an
-  HTTP interface.
+  * on DKRZ:
+
+    * add the following line to your ``~/.bashrc`` file to ensure the Cylc and
+      Rose executables can be found::
+
+        export PATH=/work/bd0854/metomi/bin:$PATH
+
+    * run the RTW on DKRZ::
+
+        cd ESMValTool/esmvaltool/utils/recipe_test_workflow
+        cylc vip -O dkrz
+
+* Optionally browse the logs using `Cylc Review`_,
+  a web service for browsing logs via an HTTP interface.

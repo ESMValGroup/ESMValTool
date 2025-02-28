@@ -25,9 +25,7 @@ The |RTW| performs the following steps:
      GitHub, or gets the latest container image from DockerHub and converts to
      a singularity image, depending on ``SITE``
   :Runs on:
-     Localhost (if cloning), or ``COMPUTE`` (if getting container), which
-     depends on the ``SITE``; on JASMIN, the ``get_esmval`` jobs will run on
-     LOTUS
+     Localhost, or ``COMPUTE`` on JASMIN
   :Executes:
      The ``clone_latest_esmval.sh`` script (if cloning), or a
      ``singularity build`` command (if getting container) from the |Rose| app
@@ -48,8 +46,7 @@ The |RTW| performs the following steps:
   :Description:
      Runs the requested recipes using |ESMValTool|
   :Runs on:
-     ``COMPUTE``, which depends on the ``SITE``; at the Met Office, the
-     ``process`` jobs will run on SPICE
+     ``COMPUTE``, which depends on the ``SITE``
   :Executes:
      The |ESMValTool| command line script from the |Rose| app
   :Details:
@@ -60,8 +57,7 @@ The |RTW| performs the following steps:
   :Description:
      Compares the output from the ``process`` job with |KGOs|
   :Runs on:
-     ``COMPUTE``, which depends on the ``SITE``; at the Met Office, the
-     ``compare`` jobs will run on SPICE
+     ``COMPUTE``, which depends on the ``SITE``
   :Executes:
      The :ref:`compare.py <compare_recipe_runs>` script from |ESMValTool|
      from the |Rose| app
@@ -77,6 +73,17 @@ Portability
 
 The |RTW| is portable; site-specific information can be found in the ``site``
 and ``opt`` directories within the |RTW|. The files required are:
+
+.. _site_recipes_file:
+
+``site/<site>-recipes.jinja``
+   Contains all the recipes run at the ``SITE``
+
+.. hint::
+   * The file uses the `Jinja2`_ templating language, which has a similar syntax
+     to Python
+   * Jinja2 gives |Cylc| many powerful features. Refer to `Cylc Jinja2`_ for
+     more information
 
 ``site/<site>.cylc``
   Contains task definitions specific to the ``SITE``, for example, ``COMPUTE``
