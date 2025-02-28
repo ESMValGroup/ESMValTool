@@ -2271,6 +2271,7 @@ class MultiDatasets(MonitorBase):
         return (plot_path, {netcdf_path: cube})
 
     def _plot_benchmarking_boxplot(self, df, cubes, variables, datasets, ref_dict):
+
         """Plot benchmarking boxplot."""
         plot_type = 'benchmarking_boxplot'
         logger.info("Plotting benchmarking boxplot for '%s'",
@@ -2293,12 +2294,12 @@ class MultiDatasets(MonitorBase):
 
             fig.suptitle(f"{metric}of {self._get_label(datasets[0])}{region_str}")
 
+
             sns.set_style('darkgrid')
 
             for i, var in enumerate(variables):
                 axes = plt.subplot(1, len(variables), i+1)
                 plot_kwargs = self._get_plot_kwargs(plot_type, datasets[i])
-
                 plot_kwargs['axes'] = axes
 
                 plot_boxplot = sns.boxplot(data=df[df['Variable'] == var])
@@ -2314,7 +2315,6 @@ class MultiDatasets(MonitorBase):
                 plt.xlabel(var)
                 if cubes[i].units != 1:
                     plt.ylabel(cubes[i].units)
-                
                 
                 # Legend
                 if "legend_kwargs" in self.cfg:
