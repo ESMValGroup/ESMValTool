@@ -174,5 +174,5 @@ diagnostics:
           figsize: [4, 5]
           layout: constrained
         # Overwrites metric in title, necessary, if no distance metric is used
-        title_metric: 'Linear trend' 
+        title_metric: 'Linear trend (2001-2014)' 
 

@@ -148,7 +148,8 @@ diagnostics:
     description: Plot "classical" time series of global mean anomalies including a reference dataset.
     variables:
       tas: &var_default
-        timerange: '2001/2014'
+        start_year: 2001
+        end_year: 2014
         preprocessor: pp
         project: CMIP6
         mip: Amon
@@ -157,18 +158,21 @@ diagnostics:
         grid: gr
         reference_dataset: HadCRUT5
         additional_datasets:
-          - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis, tier: 2, reference_for_metric: true}
+          - {dataset: HadCRUT5, project: OBS, type: ground,
+             version: 5.0.1.0-analysis, tier: 2,
+             reference_for_metric: true}
       pr: 
         <<: *var_default
         reference_dataset: GPCP-SG
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2, start_year: 2001, end_year: 2014, reference_for_metric: true}
+          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
+             reference_for_metric: true}
       psl: 
         <<: *var_default
         reference_dataset: ERA5
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
+             tier: 3, reference_for_metric: true}
       hus_200: 
         <<: *var_default
         short_name: hus
@@ -176,7 +180,7 @@ diagnostics:
         preprocessor: pp_200
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
+             tier: 3, reference_for_metric: true}
       ua_200: 
         <<: *var_default
         short_name: ua
@@ -184,7 +188,7 @@ diagnostics:
         preprocessor: pp_200
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
+             tier: 3, reference_for_metric: true}
     scripts:
       allplots:
         script: monitor/multi_datasets.py
@@ -243,7 +247,8 @@ diagnostics:
     description: Plot "classical" time series of global mean including a reference dataset.
     variables:
       tas: &var_default_abs
-        timerange: '2001/2014'
+        start_year: 2001
+        end_year: 2014
         preprocessor: pp_abs
         project: CMIP6
         mip: Amon
@@ -252,18 +257,20 @@ diagnostics:
         grid: gr
         reference_dataset: HadCRUT5
         additional_datasets:
-          - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis, tier: 2, reference_for_metric: true}
+          - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis,
+             tier: 2, reference_for_metric: true}
       pr: 
         <<: *var_default_abs
         reference_dataset: GPCP-SG
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2, start_year: 2001, end_year: 2014, reference_for_metric: true}
+          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
+             reference_for_metric: true}
       psl: 
         <<: *var_default_abs
         reference_dataset: ERA5
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
+             tier: 3, reference_for_metric: true}
       hus_200: 
         <<: *var_default
         short_name: hus
@@ -271,7 +278,7 @@ diagnostics:
         preprocessor: pp_abs_200
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
+             tier: 3, reference_for_metric: true}
       ua_200: 
         <<: *var_default
         short_name: ua
@@ -279,7 +286,7 @@ diagnostics:
         preprocessor: pp_abs_200
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
+             tier: 3, reference_for_metric: true}
     scripts:
       allplots:
         script: monitor/multi_datasets.py

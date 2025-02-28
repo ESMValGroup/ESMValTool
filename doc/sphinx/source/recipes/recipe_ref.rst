@@ -21,22 +21,15 @@ Recipes are stored in recipes
   Calculate transient climate response (TCR)
 * :ref:`recipe_tcre.yml <recipes_tcre>`:
   Calculate transient climate response to cumulative CO2 emissions (TCRE)
-* ref/recipe_ref_cre.yml:
+* :ref:`recipe_ref_cre.yml <recipe_ref_cre>`:
   Maps and zonal means of longwave and shortwave cloud radiative effect
-
-* recipe_model_benchmarking_timeseries_region.yml:
-    Time series in comparison with refernce data for a region defined through a shape file, based on model_evaluation/recipe_model_benchmarking_timeseries.yml
-
-* recipe_model_benchmarking_boxplots_region.yml:
-    Benchmarking plot with differnt distance metrics for a region defined through a shape file, based on model_evaluation/recipe_model_benchmarking_boxplots.yml
-
-* recipe_model_benchmarking_boxplots_region_trend.yml:
-    Benchmarking plot with the linear trend for a region defined through a shape file
-
-* recipe_monitor_regions.yml:
-    Time series and annual cycle for several regions as multi panel plot, based on monitor/recipe_monitor.yml
-
-* recipe_portrait_regions.yml:
+* :ref:`recipe_model_benchmarking_timeseries_region.yml <recipes_trecipe_model_benchmarking_timeseries_region>`:
+  Time series in comparison with refernce data for a region defined through a shape file, based on model_evaluation/recipe_model_benchmarking_timeseries.yml
+* :ref:`recipe_model_benchmarking_boxplots_region_trend.yml <recipes_model_benchmarking_boxplots_region_trend>`:
+  Benchmarking plot with the linear trend for a region defined through a shape file
+* :ref:`recipe_monitor_anncyc_regions.yml <recipe_monitor_anncyc_regions>`:
+  Annual cycle for several regions as multi panel plot, based on monitor/recipe_monitor.yml
+* :ref:`recipe_portrait_regions.yml <recipe_portrait_regions>`:
     Portrait plot for several regions and variables, based on recipe_portrait.yml
 
 
@@ -63,10 +56,10 @@ Example plots:
 .. figure::  /recipes/figures/ref/benchmarking_boxplot_tas_MIROC6_Amon_historical_r1i1p1f1.png
    :align:   center
 
-   Comparing the linear trend for one models (MIROC6 as examlple) to a CMIP6 ensemble (boxes) and observations for the period 2001 to 2014.
+   Comparing the linear trend for one models (MIROC6 as examlple) to observational data set
+   (tas_land: HadCRUT5 and ERA5; sst: HadISST and ERA5; pr: GPCP-SG and ERA5) for the period 2001 to 2014.
    Each box indicates the range from the first quartile to the third quartile, the vertical lines show the median, 
-   and the whiskers present the minimum and maximum values, excluding the outliers. Outliers are defined as being 
-   outside 1.5 times the interquartile range.
+   and the whiskers present the minimum and maximum values.
 
 
 

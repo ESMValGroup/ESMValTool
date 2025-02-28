@@ -133,7 +133,7 @@ diagnostics:
         ppregion: ECA
         additional_datasets:
           - {dataset: HadCRUT5, project: OBS, type: ground,
-             version: 5.0.1.0-analysis, tier: 2, start_year: 2001, end_year: 2014,
+             version: 5.0.1.0-analysis, tier: 2, 
              reference_for_metric: true}
       tas_ECA_2: &tas_2
         <<: *tas
@@ -187,8 +187,7 @@ diagnostics:
         split: Ref1
         additional_datasets:
           - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3,
-             tier: 2, start_year: 2001, end_year: 2014,
-             reference_for_metric: true}
+             tier: 2, reference_for_metric: true}
       pr_ECA_2: &pr_2
         <<: *pr
         split: Ref2
@@ -236,8 +235,7 @@ diagnostics:
         ppregion: ECA
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, start_year: 2001, end_year: 2014,
-             reference_for_metric: true}
+             tier: 3, reference_for_metric: true}
       psl_ENA:
         <<: *psl
         ppregion: ENA
@@ -263,8 +261,7 @@ diagnostics:
         ppregion: ECA
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, start_year: 2001, end_year: 2014,
-             reference_for_metric: true}
+             tier: 3, reference_for_metric: true}
       hus_ENA:
         <<: *hus
         ppregion: ENA
@@ -290,8 +287,7 @@ diagnostics:
         ppregion: ECA
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, start_year: 2001, end_year: 2014,
-             reference_for_metric: true}
+             tier: 3, reference_for_metric: true}
       ua_ENA:
         <<: *ua
         ppregion: ENA
