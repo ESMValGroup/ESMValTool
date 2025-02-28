@@ -19,13 +19,13 @@ import copy
 import glob
 import logging
 import os
+from datetime import datetime
 
 import iris
-from datetime import datetime
 from esmvalcore.cmor.fixes import get_time_bounds
-from esmvalcore.preprocessor import regrid
+from esmvalcore.preprocessor import concatenate, regrid
+
 from esmvaltool.cmorizers.data import utilities as utils
-from esmvalcore.preprocessor import concatenate
 
 from ...utilities import (
     fix_coords,
@@ -60,11 +60,11 @@ def extract_variable(raw_info):
     return cube
 
 
-def get_monthly_cube(cfg, var, vals, raw_info, attrs,
-                     inpfile_pattern, year, month):
+def get_monthly_cube(cfg, var, vals, raw_info, attrs, inpfile_pattern, year,
+                     month):
     data_cubes = []
-    month_inpfile_pattern = inpfile_pattern.format(
-                            year=str(year)+"{:02}".format(month))
+    month_inpfile_pattern = inpfile_pattern.format(year=str(year) +
+                                                   "{:02}".format(month))
     logger.info("Pattern: %s", month_inpfile_pattern)
     inpfiles = sorted(glob.glob(month_inpfile_pattern))
     if inpfiles == []:
@@ -141,12 +141,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 # Calculate monthly mean
                 if 'Stderr' not in var:
                     logger.info("Calculating monthly mean")
-                    iris.coord_categorisation.add_month_number(monthly_cube,
-                                                               'time')
+                    iris.coord_categorisation.add_month_number(
+                        monthly_cube, 'time')
                     iris.coord_categorisation.add_year(monthly_cube, 'time')
                     monthly_cube = monthly_cube.aggregated_by(
-                                    ['month_number', 'year'],
-                                    iris.analysis.MEAN)
+                        ['month_number', 'year'], iris.analysis.MEAN)
                     monthly_cube.remove_coord('month_number')
                     monthly_cube.remove_coord('year')
                     mon_cubes.append(monthly_cube)
