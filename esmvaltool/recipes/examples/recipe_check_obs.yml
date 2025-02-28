@@ -292,6 +292,26 @@ diagnostics:
              type: sat, version: L3, start_year: 2007, end_year: 2008}
     scripts: null
 
+  ESACCI-SEAICE:
+    description: ESACCI-SEAICE check
+    variables:
+      areacello:
+        mip: Ofx
+      siconc_daily:
+        short_name: siconc
+        mip: SIday
+        frequency: day
+      siconc_monthly:
+        short_name: siconc
+        mip: SImon
+        frequency: mon
+    additional_datasets:
+      - {dataset: ESACCI-SEAICE, project: OBS6, tier: 2,
+         type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-SH, start_year: 1991, end_year: 2020}
+      - {dataset: ESACCI-SEAICE, project: OBS6, tier: 2,
+         type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-NH, start_year: 1991, end_year: 2020}
+    scripts: null
+
   ESACCI-SEA-SURFACE-SALINITY:
     description: ESACCI-SEA-SURFACE-SALINITY check
     variables:
