@@ -50,7 +50,6 @@ import logging
 from pathlib import Path
 from pprint import pformat
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 
 import cartopy.crs as cart
 import iris

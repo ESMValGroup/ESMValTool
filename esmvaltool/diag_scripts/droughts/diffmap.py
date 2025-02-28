@@ -207,8 +207,8 @@ def apply_plot_kwargs_overwrite(
 def calculate_diff(cfg, meta, mm_data, output_meta, group):
     """Absolute difference between first and last years of a cube.
 
-    Calculates the absolut difference between the first and last period of
-    a cube. Writing data to mm and plotting each dataset depends on cfg.
+    Calculates the absolut and relative difference between the first and last
+    period of a cube. Write data to mm and optionally plot each dataset.
     """
     cube = iris.load_cube(meta["filename"])
     if meta["short_name"] in cfg.get("convert_units", {}):
@@ -231,16 +231,13 @@ def calculate_diff(cfg, meta, mm_data, output_meta, group):
         + 1  # count full end year
         - cfg.get("comparison_period", 10)  # decades center to center
     ) / 10
-    if do_metrics != ["total"]:  # anything else needs start/end periods
-        cubes["first"] = cube[0:dtime].collapsed("time", MEAN)
-        cubes["last"] = cube[-dtime:].collapsed("time", MEAN)
-    if "diff" in do_metrics or "percent" in do_metrics:
-        cubes["diff"] = cubes["last"] - cubes["first"]
-        cubes["diff"].data /= norm
-        cubes["diff"].units = str(cubes["diff"].units) + " / 10 years"
-    if "percent" in do_metrics:
-        cubes["percent"] = cubes["diff"] / cubes["first"] * 100
-        cubes["percent"].units = "% / 10 years"
+    cubes["first"] = cube[0:dtime].collapsed("time", MEAN)
+    cubes["last"] = cube[-dtime:].collapsed("time", MEAN)
+    cubes["diff"] = cubes["last"] - cubes["first"]
+    cubes["diff"].data /= norm
+    cubes["diff"].units = str(cubes["diff"].units) + " / 10 years"
+    cubes["percent"] = cubes["diff"] / cubes["first"] * 100
+    cubes["percent"].units = "% / 10 years"
     if cfg.get("plot_mmm", True):
         for key in do_metrics:
             mm_data[key].append(cubes[key])

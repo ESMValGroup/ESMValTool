@@ -872,11 +872,11 @@ def remove_attributes(
 
 
 def font_color(background: str | tuple | float) -> str:
-    """Black or white depending on greyscale of the background.
+    """Return black or white depending on backgrounds greyscale.
 
     Parameters
     ----------
-    bacgkround : str, tuple, or float
+    background : str, tuple, or float
         color as string (grayscale value, name, hex) or tuple (rgb, rgba)
     """
     if sum(mpl.colors.to_rgb(background)) > 1.5:
