@@ -13,7 +13,7 @@ Here ESMValTool recipes are collected which will be used in the CMIP
 Available recipes
 -----------------
 
-Recipes are stored in recipes
+Recipes are stored in `recipes/ref`
 
 * :ref:`recipe_ecs.yml <recipes_ecs>`:
   Calculate equilibrium climate sensitivity (ECS)
@@ -21,16 +21,16 @@ Recipes are stored in recipes
   Calculate transient climate response (TCR)
 * :ref:`recipe_tcre.yml <recipes_tcre>`:
   Calculate transient climate response to cumulative CO2 emissions (TCRE)
-* :ref:`recipe_ref_cre.yml <recipe_ref_cre>`:
+* recipe_ref_cre.yml:
   Maps and zonal means of longwave and shortwave cloud radiative effect
-* :ref:`recipe_model_benchmarking_timeseries_region.yml <recipes_trecipe_model_benchmarking_timeseries_region>`:
-  Time series in comparison with refernce data for a region defined through a shape file, based on model_evaluation/recipe_model_benchmarking_timeseries.yml
-* :ref:`recipe_model_benchmarking_boxplots_region_trend.yml <recipes_model_benchmarking_boxplots_region_trend>`:
-  Benchmarking plot with the linear trend for a region defined through a shape file
-* :ref:`recipe_monitor_anncyc_regions.yml <recipe_monitor_anncyc_regions>`:
-  Annual cycle for several regions as multi panel plot, based on monitor/recipe_monitor.yml
-* :ref:`recipe_portrait_regions.yml <recipe_portrait_regions>`:
-    Portrait plot for several regions and variables, based on recipe_portrait.yml
+* recipe_model_benchmarking_timeseries_region.yml:
+  Time series in comparison with refernce data for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_timeseries.yml <recipe_benchmarking>` 
+* recipe_model_benchmarking_boxplots_region_trend.yml:
+  Benchmarking plot with the linear trend for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_boxplots.yml <recipe_benchmarking>` 
+* recipe_monitor_anncyc_regions.yml:
+  Annual cycle for several regions as multi panel plot, based on :ref:`recipe_monitor.yml <recipe_monitor>`
+* recipe_portrait_regions.yml:
+    Portrait plot for several regions and variables, based on :ref:`recipe_portrait_CMIP.yml <recipe_portrait>` 
 
 
 Example plots:
