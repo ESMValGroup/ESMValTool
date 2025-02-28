@@ -62,6 +62,54 @@ preprocessors:
       method: contains
       ids: {Acronym: [WCE]}
 
+  default_200: &default_200  # common preprocessor settings
+    extract_levels:
+      levels: 20000
+      scheme: linear
+      coordinate: air_pressure
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    distance_metric:
+      metric: weighted_rmse
+    climate_statistics:
+      operator: mean
+      period: month
+    mask_fillvalues:
+      threshold_fraction: 0.95
+  ECA_200: 
+    <<: *default_200
+    extract_shape:
+      shapefile: ar6
+      method: contains
+      ids: {Acronym: [ECA]}
+  ENA_200: 
+    <<: *default_200
+    extract_shape:
+      shapefile: ar6
+      method: contains
+      ids: {Acronym: [ENA]}
+  MED_200: 
+    <<: *default_200
+    extract_shape:
+      shapefile: ar6
+      method: contains
+      ids: {Acronym: [MED]}
+  SAH_200: 
+    <<: *default_200
+    extract_shape:
+      shapefile: ar6
+      method: contains
+      ids: {Acronym: [SAH]}
+  WCE_200: 
+    <<: *default_200
+    extract_shape:
+      shapefile: ar6
+      method: contains
+      ids: {Acronym: [WCE]}
+
+
+
 var_default: &var_default
   mip: Amon
   project: CMIP6
@@ -156,63 +204,63 @@ diagnostics:
         ppregion: WCE
         preprocessor: WCE
 
-      huss_ECA: &huss
+      hus_ECA: &hus
         <<: *var_default
-        short_name: huss
-        variable: huss
-        preprocessor: ECA
+        short_name: hus
+        variable: hus200
+        preprocessor: ECA_200
         ppregion: ECA
         additional_datasets:
-          - {dataset: MERRA2, project: OBS6, mip: Amon, type: reanaly, version: 5.12.4,
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
-      huss_ENA:
-        <<: *huss
+      hus_ENA:
+        <<: *hus
         ppregion: ENA
-        preprocessor: ENA
-      huss_MED:
-        <<: *huss
+        preprocessor: ENA_200
+      hus_MED:
+        <<: *hus
         ppregion: MED
-        preprocessor: MED
-      huss_SAH:
-        <<: *huss
+        preprocessor: MED_200
+      hus_SAH:
+        <<: *hus
         ppregion: SAH
-        preprocessor: SAH
-      huss_WCE:
-        <<: *huss
+        preprocessor: SAH_200
+      hus_WCE:
+        <<: *hus
         ppregion: WCE
-        preprocessor: WCE
+        preprocessor: WCE_200
 
-      uas_ECA: &uas
+      ua_ECA: &ua
         <<: *var_default
-        short_name: uas
-        variable: uas
-        preprocessor: ECA
+        short_name: ua
+        variable: ua200
+        preprocessor: ECA_200
         ppregion: ECA
         additional_datasets:
-          - {dataset: MERRA2, project: OBS6, mip: Amon, type: reanaly, version: 5.12.4,
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
-      uas_ENA:
-        <<: *uas
+      ua_ENA:
+        <<: *ua
         ppregion: ENA
-        preprocessor: ENA
-      uas_MED:
-        <<: *uas
+        preprocessor: ENA_200
+      ua_MED:
+        <<: *ua
         ppregion: MED
-        preprocessor: MED
-      uas_SAH:
-        <<: *uas
+        preprocessor: MED_200
+      ua_SAH:
+        <<: *ua
         ppregion: SAH
-        preprocessor: SAH
-      uas_WCE:
-        <<: *uas
+        preprocessor: SAH_200
+      ua_WCE:
+        <<: *ua
         ppregion: WCE
-        preprocessor: WCE
+        preprocessor: WCE_200
 
     scripts:
       portrait:
         script: portrait_plot.py
         x_by: ppregion  # extra_facet
-        y_by: short_name
+        y_by: variable #short_name
         group_by: project
         normalize: "centered_median"
         # default_split: Ref1

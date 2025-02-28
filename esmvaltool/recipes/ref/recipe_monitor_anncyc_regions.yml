@@ -26,6 +26,9 @@ preprocessors:
           - N.Europe
           - Mediterranean
           - Equatorial.Pacific-Ocean
+          - Central-Africa
+          - E.C.Asia
+          - New-Zealand
     area_statistics:
       operator: mean
 
@@ -44,6 +47,6 @@ diagnostics:
       plot: 
         script: monitor/monitor.py
         plots:
-          timeseries: {}
+          # timeseries: {}
           annual_cycle: {}
 
