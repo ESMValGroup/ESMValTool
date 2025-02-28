@@ -2270,7 +2270,8 @@ class MultiDatasets(MonitorBase):
 
         return (plot_path, {netcdf_path: cube})
 
-    def _plot_benchmarking_boxplot(self, df, cubes, variables, datasets, ref_dict):
+    def _plot_benchmarking_boxplot(self, df, cubes, variables, datasets,
+                                   ref_dict):
 
         """Plot benchmarking boxplot."""
         plot_type = 'benchmarking_boxplot'
@@ -2290,10 +2291,11 @@ class MultiDatasets(MonitorBase):
             region_coords = ('shape_id', 'region')
             for region_coord in region_coords:
                 if cubes[0].coords(region_coord):
-                    region_str = " for " + cubes[0].coords(region_coord)[0].points[0]
+                    region_str = " for " + \
+                        cubes[0].coords(region_coord)[0].points[0]
 
-            fig.suptitle(f"{metric}of {self._get_label(datasets[0])}{region_str}")
-
+            fig.suptitle(f"{metric}of 
+                         {self._get_label(datasets[0])}{region_str}")
 
             sns.set_style('darkgrid')
 
@@ -2306,16 +2308,19 @@ class MultiDatasets(MonitorBase):
                 plot_boxplot.set(xticklabels=[])
 
                 plt.scatter(0, cubes[i].data, marker='x', s=200, linewidths=2,
-                            color="red", zorder=3, label = datasets[i]["dataset"])
+                            color="red", zorder=3,
+                            label=datasets[i]["dataset"])
                 
                 if "cubes" in ref_dict:
-                    plt.scatter(0, ref_dict["cubes"][i].data, marker='o', facecolors='none', edgecolors='blue', s=200, linewidths=2,
-                            color="blue", zorder=3, label = ref_dict["datasets"][i]["dataset"])
+                    plt.scatter(0, ref_dict["cubes"][i].data, marker='o',
+                                facecolors='none', edgecolors='blue',
+                                s=200, linewidths=2, color="blue", zorder=3,
+                                label=ref_dict["datasets"][i]["dataset"])
 
                 plt.xlabel(var)
                 if cubes[i].units != 1:
                     plt.ylabel(cubes[i].units)
-                
+
                 # Legend
                 if "legend_kwargs" in self.cfg:
                     legend_kwargs = self.cfg['legend_kwargs']
@@ -3198,7 +3203,7 @@ class MultiDatasets(MonitorBase):
             plotref_dataset = self._get_reference_dataset(datasets)
             if plotref_dataset is not None:
                 logger.info("Plotting %s for dataset %s",
-                        plot_type, plotref_dataset['dataset'])
+                            plot_type, plotref_dataset['dataset'])
 
             # Get datasets for benchmarking
             benchmark_group = self._get_benchmark_group(datasets)
