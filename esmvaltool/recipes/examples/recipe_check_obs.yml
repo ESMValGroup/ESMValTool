@@ -2044,6 +2044,30 @@ diagnostics:
         type: reanaly, version: 4, start_year: 1979, end_year: 2022}
     scripts: null
 
+  TROPFLUX:
+    description: TROPFLUX
+    variables:
+      ts:
+        mip: Amon
+      tos:
+        mip: Omon
+      hfls:
+        mip: Lmon
+      hfls:
+        mip: Amon
+      rlut:
+        mip: Amon
+      tauu:
+        mip: Amon
+      tauv:
+        mip: Amon
+      rsds:
+        mip: Amon
+    additional_datasets:
+      - {dataset: TROPFLUX, project: OBS6, tier: 2,
+        type: reanaly, version: v1, start_year: 1979, end_year: 2018}
+    scripts: null
+
   UWisc:
     description: UWisc check
     variables:
