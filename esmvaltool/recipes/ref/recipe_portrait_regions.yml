@@ -1,9 +1,9 @@
 # ESMValTool
 ---
 documentation:
-  title: Performance metrics plots.
+  title: Performance metrics plots for several regions using extract_shape.
   description: >
-    Compare performance of CMIP simulations to a reference dataset.
+    Compare performance of simulations to a reference dataset.
   authors:
     - cammarano_diego
     - lindenlaub_lukas
@@ -133,9 +133,20 @@ diagnostics:
         ppregion: ECA
         additional_datasets:
           - {dataset: HadCRUT5, project: OBS, type: ground,
-             version: 5.0.1.0-analysis, tier: 2, start_year: 2001, end_year: 2014, reference_for_metric: true}
+             version: 5.0.1.0-analysis, tier: 2, start_year: 2001, end_year: 2014,
+             reference_for_metric: true}
+      tas_ECA_2: &tas_2
+        <<: *tas
+        split: Ref2
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, reference_for_metric: true}
       tas_ENA:
         <<: *tas
+        ppregion: ENA
+        preprocessor: ENA
+      tas_ENA_2:
+        <<: *tas_2
         ppregion: ENA
         preprocessor: ENA
       tas_MED:
@@ -143,12 +154,26 @@ diagnostics:
         short_name: tas
         ppregion: MED
         preprocessor: MED
+      tas_MED_2:
+        <<: *tas_2
+        short_name: tas
+        ppregion: MED
+        preprocessor: MED
       tas_SAH:
         <<: *tas
         ppregion: SAH
         preprocessor: SAH
+      tas_SAH_2:
+        <<: *tas_2
+        ppregion: SAH
+        preprocessor: SAH
       tas_WCE:
         <<: *tas
+        short_name: tas
+        ppregion: WCE
+        preprocessor: WCE
+      tas_WCE_2:
+        <<: *tas_2
         short_name: tas
         ppregion: WCE
         preprocessor: WCE
@@ -159,22 +184,47 @@ diagnostics:
         variable: pr
         preprocessor: ECA
         ppregion: ECA
+        split: Ref1
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2, start_year: 2001, end_year: 2014, reference_for_metric: true}
+          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3,
+             tier: 2, start_year: 2001, end_year: 2014,
+             reference_for_metric: true}
+      pr_ECA_2: &pr_2
+        <<: *pr
+        split: Ref2
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, reference_for_metric: true}
       pr_ENA:
         <<: *pr
+        ppregion: ENA
+        preprocessor: ENA
+      pr_ENA_2:
+        <<: *pr_2
         ppregion: ENA
         preprocessor: ENA
       pr_MED:
         <<: *pr
         ppregion: MED
         preprocessor: MED
+      pr_MED_2:
+        <<: *pr_2
+        ppregion: MED
+        preprocessor: MED
       pr_SAH:
         <<: *pr
         ppregion: SAH
         preprocessor: SAH
+      pr_SAH_2:
+        <<: *pr_2
+        ppregion: SAH
+        preprocessor: SAH
       pr_WCE:
         <<: *pr
+        ppregion: WCE
+        preprocessor: WCE
+      pr_WCE_2:
+        <<: *pr_2
         ppregion: WCE
         preprocessor: WCE
 
@@ -186,7 +236,8 @@ diagnostics:
         ppregion: ECA
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
+             tier: 3, start_year: 2001, end_year: 2014,
+             reference_for_metric: true}
       psl_ENA:
         <<: *psl
         ppregion: ENA
@@ -212,7 +263,8 @@ diagnostics:
         ppregion: ECA
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
+             tier: 3, start_year: 2001, end_year: 2014,
+             reference_for_metric: true}
       hus_ENA:
         <<: *hus
         ppregion: ENA
@@ -238,7 +290,8 @@ diagnostics:
         ppregion: ECA
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, start_year: 2001, end_year: 2014, reference_for_metric: true}
+             tier: 3, start_year: 2001, end_year: 2014,
+             reference_for_metric: true}
       ua_ENA:
         <<: *ua
         ppregion: ENA

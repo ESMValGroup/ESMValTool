@@ -1,7 +1,7 @@
 # ESMValTool
 ---
 documentation:
-  title: Benchmarking of a single model.
+  title: Benchmarking of a single model for a region through extract_shape.
   description: >
     Benchmarking: time series.
   authors:

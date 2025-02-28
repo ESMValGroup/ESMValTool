@@ -3,8 +3,7 @@
 documentation:
   title: Model Monitoring - for regions
   description: |
-    This a recipe to monitor experiments by automatizing the creation of plots
-    from raw preprocessor output.
+    This a recipe plots the annual cycle for severl regions using extract_shape.
   authors:
     - vegas-regidor_javier
     - weigel_katja
@@ -47,6 +46,5 @@ diagnostics:
       plot: 
         script: monitor/monitor.py
         plots:
-          # timeseries: {}
           annual_cycle: {}
 
