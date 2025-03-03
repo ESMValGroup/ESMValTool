@@ -2516,8 +2516,6 @@ class MultiDatasets(MonitorBase):
 
         # try variable attribute "reference_dataset"
         for dataset in datasets:
-            print(dataset.get('reference_dataset'))
-            print(dataset.get('dataset'))
             if dataset.get('reference_dataset') == dataset.get('dataset'):
                 ref_datasets = dataset
                 break
