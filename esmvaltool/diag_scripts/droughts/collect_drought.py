@@ -49,16 +49,15 @@ import datetime as dt
 import logging
 from pathlib import Path
 from pprint import pformat
-import matplotlib.pyplot as plt
 
 import cartopy.crs as cart
 import iris
+import matplotlib.pyplot as plt
 import numpy as np
 from iris.analysis import Aggregator
 
 import esmvaltool.diag_scripts.shared as e
 from esmvaltool.diag_scripts.droughts.utils import (
-    _make_new_cube,
     count_spells,
     create_cube_from_data,
 )
@@ -579,6 +578,36 @@ def _plot_future_vs_past(cfg, cube, slices, fnames):
     )
     for tstype in ["Historic", "Future", "Difference"]:
         _plot_multi_model_maps(cfg, slices[tstype], latslons, fnames, tstype)
+
+
+def _make_new_cube(cube):
+    """Make a new cube with an extra dimension for result of spell count."""
+    new_shape = (*cube.shape, 4)
+    new_data = iris.util.broadcast_to_shape(cube.data, new_shape, [0, 1, 2])
+    new_cube = iris.cube.Cube(new_data)
+    new_cube.add_dim_coord(
+        iris.coords.DimCoord(cube.coord("time").points, long_name="time"),
+        0,
+    )
+    new_cube.add_dim_coord(
+        iris.coords.DimCoord(
+            cube.coord("latitude").points,
+            long_name="latitude",
+        ),
+        1,
+    )
+    new_cube.add_dim_coord(
+        iris.coords.DimCoord(
+            cube.coord("longitude").points,
+            long_name="longitude",
+        ),
+        2,
+    )
+    new_cube.add_dim_coord(
+        iris.coords.DimCoord([0, 1, 2, 3], long_name="z"),
+        3,
+    )
+    return new_cube
 
 
 def _set_tscube(cfg, cube, time, tstype):
