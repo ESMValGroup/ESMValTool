@@ -649,8 +649,8 @@ fontsize: int, optional (default: None)
     matplotlib values. For a more fine-grained definition of fontsizes, use the
     option ``matplotlib_rc_params`` (see above).
 legend_kwargs: dict, optional
-    Turns on legend if given, allows to include any parameters for
-    matplotlib.pyplot.legend, e.g. ``loc``.
+    Optional keyword arguments for matplotlib.pyplot.legend, e.g. ``loc``.
+    Turns on a legend if given.
 plot_kwargs: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``.
     Dictionary keys are elements identified by ``facet_used_for_labels`` or
@@ -671,8 +671,9 @@ pyplot_kwargs: dict, optional
     ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
     '{short_name}'``, ``xlim: [0, 5]``.
 title_metric: string, optional
-    Overwrites metric in title, necessary, if a metric is used, which is no
-    distance metric like linear trend.
+    Overwrites metric name in plot title. Optional for distance metrics.
+    Necessary, if a differnt metric is used (e.g. linear trend), because this
+    is else not identified and yieds arbitarry strings in the title.
 var_order: list of str, optional
     Optional list of strings containing variable names to define the order of
     the variables plotted.
