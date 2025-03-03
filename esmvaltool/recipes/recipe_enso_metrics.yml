@@ -1,0 +1,40 @@
+# recipe_EnsClus.yml
+---
+documentation:
+  description: |
+    Recipe to run the ENSOMetrics package
+  authors:
+    - vegas-regidor_javier
+
+  maintainer:
+    - vegas-regidor_javier
+
+  references:
+    - contact_authors
+
+  projects:
+    - isenes3
+
+datasets:
+  - {dataset: MPI-ESM-LR,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 2000}
+  - {dataset: MPI-ESM-MR,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 2000}
+
+diagnostics:
+  ENSOMetrics:
+    description: ENSO metrics package run
+    variables:
+      tos:
+        mip: Omon
+        reference_dataset: ERA-Interim
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3, start_year: 1979,  end_year: 2000}
+      areacello:
+        mip: fx
+      sftof:
+        mip: fx
+
+    scripts:
+      main:
+        script: enso_metrics/run_metrics.py
+        title: "Run enso metrics"
+        metrics_collection: "ENSO_perf"
