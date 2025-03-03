@@ -649,8 +649,9 @@ fontsize: int, optional (default: None)
     matplotlib values. For a more fine-grained definition of fontsizes, use the
     option ``matplotlib_rc_params`` (see above).
 legend_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.legend`, e.g. ``loc``.
-    A legend is only shown if legend_kwargs are given, default is no legend.
+    Optional keyword arguments for :func:`matplotlib.pyplot.legend`,
+    e.g. ``loc``. A legend is only shown if legend_kwargs are given,
+    default is no legend.
 plot_kwargs: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``.
     Dictionary keys are elements identified by ``facet_used_for_labels`` or
