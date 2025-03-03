@@ -44,6 +44,114 @@ from esmvaltool.diag_scripts.shared._base import _get_input_data_files
 log = logging.getLogger(Path(__file__).name)
 
 
+### GENERAL HELPER ###
+
+def mkplotdir(cfg: dict, dname: str | Path) -> None:
+    """Create a sub directory for plots if it does not exist."""
+    new_dir = Path(cfg["plot_dir"] / dname)
+    if not new_dir.is_dir():
+        Path.mkdir(new_dir)
+
+
+def quick_save(cube: Cube, name: str, cfg: dict) -> None:
+    """Simply save cube to netcdf file without additional information."""
+    if cfg.get("write_netcdf", True):
+        diag_file = get_diagnostic_filename(name, cfg)
+        log.info("quick save %s", diag_file)
+        iris.save(cube, target=diag_file)
+
+
+def quick_load(cfg: dict, context: dict, *, strict=True) -> Cube:
+    """Load input files from config wich matches the selection.
+
+    Select, load and return the first match.
+    raises an error (if strict) or a warning for multiple matches.
+    """
+    meta = cfg["input_data"].values()
+    var_meta = select_single_meta(meta, strict=strict, **context)
+    return iris.load_cube(var_meta["filename"])
+
+
+def get_plot_fname(
+    cfg: dict,
+    basename,
+    meta: dict | None = None,
+    replace: dict | None = None,
+) -> str:
+    """Get a valid path for saving a diagnostic plot.
+
+    This is an alternative to shared.get_diagnostic_filename.
+    It uses cfg as first argument and accept metadata to format the basename.
+
+    Parameters
+    ----------
+    cfg : dict
+        Dictionary with diagnostic configuration.
+    basename : str
+        The basename of the file.
+    meta : dict, optional
+        Metadata to format the basename. If None, empty dict is used.
+    replace : dict
+        Dictionary with strings to replace in the basename.
+        If None, empty dict is used.
+
+    Returns
+    -------
+    str:
+        A valid path for saving a diagnostic plot.
+    """
+    meta = {} if meta is None else meta
+    replace = {} if replace is None else replace
+    basename = basename.format(**meta)
+    for key, value in replace.items():
+        basename = basename.replace(key, value)
+    fpath = Path(cfg["plot_dir"]) / basename
+    return str(fpath.with_suffix(cfg["output_file_type"]))
+
+
+def add_ancestor_input(cfg: dict) -> None:
+    """Read ancestors settings.yml and add it's input_data to this config."""
+    log.info("add ancestors for %s", cfg[n.INPUT_FILES])
+    for input_file in cfg[n.INPUT_FILES]:
+        cfg_anc_file = (
+            "/run/".join(input_file.rsplit("/work/", 1)) + "/settings.yml"
+        )
+        cfg_anc = get_cfg(cfg_anc_file)
+        cfg["input_data"].update(_get_input_data_files(cfg_anc))
+
+
+def abs_auxilary_path(cfg: dict, path: str | Path) -> str:
+    """Return absolut path of an auxilary file."""
+    if Path(path).is_absolute():
+        return str(path)
+    return str(Path(cfg["auxiliary_data_dir"]) / path)
+
+
+def save_metadata(cfg: dict, metadata: dict) -> None:
+    """Save dict as metadata.yml in work folder."""
+    with (Path(cfg["work_dir"]) / "metadata.yml").open("w") as wom:
+        yaml.dump(metadata, wom)
+
+def fix_interval(interval: dict) -> dict:
+    """Ensure that an interval has a label and a range.
+
+    TODO: replace "/" with "_" in diagnostics who use this.
+    """
+    if "range" not in interval:
+        interval["range"] = f"{interval['start']}/{interval['end']}"
+    if "label" not in interval:
+        interval["label"] = interval["range"]
+    return interval
+
+
+def log_provenance(cfg: dict, fname: str | Path, record: dict) -> None:
+    """Add provenance information to the Provenancelog."""
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(fname, record)
+
+
+### DATA PROCESSING ###
+
 def merge_list_cube(
     cube_list: list,
     aux_name: str = "dataset",
@@ -81,105 +189,6 @@ def merge_list_cube(
     for cube in cubes:
         cube.remove_coord("time")
     return cubes.merge_cube()
-
-
-def fold_meta(
-    cfg: dict,
-    meta: dict,
-    cfg_keys: list | None = None,
-    meta_keys: list | None = None,
-    variables: list | None = None,
-) -> tuple:
-    """Create combinations of meta data and data constraints.
-
-    cfg["variables"] overwrites meta["short_names"].
-
-    Parameters
-    ----------
-    cfg: dict
-        Plot specific configuration with cfg_keys on root level.
-    meta: list
-        Full meta data including ancestor files.
-    cfg_keys: list, optional
-        Data constraints as config entries used for product.
-        Defaults to ["locations", "intervals"].
-    meta_keys: list, optional
-        Keys for each meta used for product, short_name added automatically.
-        Defaults to ["dataset", "exp"].
-    variables: list, optional
-        Variables to be used. Defaults to None.
-
-    Returns
-    -------
-    combinations : itertools.product
-        All combinations of the metadata and constraints.
-    groups : dict
-        Grouped metadata.
-    meta_keys : list
-        List of metadata keys.
-    """
-    if variables is None:
-        variables = cfg.get("variables", ["pdsi", "spi"])
-    if cfg_keys is None:
-        cfg_keys = ["locations", "intervals"]
-    if meta_keys is None:
-        meta_keys = ["dataset", "exp"]
-
-    groups = {
-        gk: list(
-            group_metadata(
-                select_metadata(meta, short_name=variables[0]),
-                gk,
-            ).keys(),
-        )
-        for gk in meta_keys
-    }
-    meta_keys.append("short_name")
-    groups["short_name"] = variables
-    g_map = {"locations": "location", "intervals": "interval"}
-    for ckey in cfg_keys:
-        try:
-            groups[g_map.get(ckey, ckey)] = cfg[ckey]
-        except KeyError:
-            log.warning("No '%s' found in plot config", ckey)
-    combinations = it.product(*groups.values())
-    return combinations, groups, meta_keys
-
-
-def select_meta_from_combi(meta: list, combi: dict, groups: dict) -> tuple:
-    """Select one meta data from list (filter valid keys).
-
-    Parameters
-    ----------
-    meta : list
-        List of metadata dictionaries.
-    combi : dict
-        Dictionary containing the combination of metadata values.
-    groups : dict
-        Dictionary containing the groups of metadata.
-
-    Returns
-    -------
-    tuple
-        A tuple containing the selected metadata and the configuration
-        dictionary.
-    """
-    this_cfg = dict(zip(groups.keys(), combi))
-    filter_cfg = clean_meta(this_cfg)  # remove non meta keys
-    this_meta = select_metadata(meta, **filter_cfg)[0]
-    return this_meta, this_cfg
-
-
-def list_meta_keys(meta: list, group: dict) -> list:
-    """Return a list of all keys found for a group in the meta data."""
-    return list(group_metadata(meta, group).keys())
-
-
-def mkplotdir(cfg: dict, dname: str | Path) -> None:
-    """Create a sub directory for plots if it does not exist."""
-    new_dir = Path(cfg["plot_dir"] / dname)
-    if not new_dir.is_dir():
-        Path.mkdir(new_dir)
 
 
 def sort_cube(cube: Cube, coord: str = "longitude") -> Cube:
@@ -237,163 +246,6 @@ def fix_longitude(cube: Cube, coord="longitude") -> Cube:
     return cube
 
 
-def get_meta_list(meta: dict, group: str, select: dict | None = None) -> list:
-    """
-    List all entries found for the group key as a list.
-
-    With a given selection, the meta data will be filtered first.
-
-    Parameters
-    ----------
-    meta : dict
-        Full meta data.
-    group : str
-        Key to search for. Defaults to "alias".
-    select : dict, optional
-        Dictionary like {'short_name': 'pdsi'} that is passed to a selection.
-
-    Returns
-    -------
-    list
-        Collected values for the group key.
-    """
-    if select is not None:
-        meta = select_metadata(meta, **select)
-    return list(group_metadata(meta, group).keys())
-
-
-def get_datasets(cfg: dict) -> dict:
-    """Return a dictionary of datasets and their metadata."""
-    metadata = cfg["input_data"].values()
-    return group_metadata(metadata, "dataset").keys()
-
-
-def get_dataset_scenarios(cfg: dict) -> list:
-    """Combine datasets and scenarios to a list of pairs of strings."""
-    metadata = cfg["input_data"].values()
-    input_datasets = group_metadata(metadata, "dataset").keys()
-    input_scenarios = group_metadata(metadata, "alias").keys()
-    return list(it.product(input_datasets, input_scenarios))
-
-
-def date_tick_layout(
-    fig,
-    axes,
-    dates: list | None = None,
-    label: str = "Time",
-    years: int | None = 1,
-) -> None:
-    """Update a time series figure to use date/year ticks and grid."""
-    axes.set_xlabel(label)
-    if dates is not None:
-        datemin = np.datetime64(dates[0], "Y")
-        datemax = np.datetime64(dates[-1], "Y") + np.timedelta64(1, "Y")
-        axes.set_xlim(datemin, datemax)
-    if years is None:
-        locator = mdates.AutoDateLocator()
-        min_locator = mdates.YearLocator(1)
-    else:
-        locator = mdates.YearLocator(years)  # type: ignore[assignment]
-        min_locator = mdates.YearLocator(1)
-    year_formatter = mdates.DateFormatter("%Y")
-    axes.grid(True)
-    axes.xaxis.set_major_locator(locator)
-    axes.xaxis.set_major_formatter(year_formatter)
-    axes.xaxis.set_minor_locator(min_locator)
-    fig.autofmt_xdate()  # align, rotate and space for tick labels
-
-
-def auto_tick_layout(fig, axes, dates=None) -> None:
-    """Update a time series figure to use auto date ticks and grid.
-
-    NOTE: can this be merged with date_tick_layout?
-    """
-    axes.set_xlabel("Time")
-    if dates is not None:
-        datemin = np.datetime64(dates[0], "Y")
-        datemax = np.datetime64(dates[-1], "Y") + np.timedelta64(1, "Y")
-        axes.set_xlim(datemin, datemax)
-    year_locator = mdates.YearLocator(1)
-    months_locator = mdates.MonthLocator()
-    year_formatter = mdates.DateFormatter("%Y")
-    axes.grid(True)
-    axes.xaxis.set_major_locator(year_locator)
-    axes.xaxis.set_major_formatter(year_formatter)
-    axes.xaxis.set_minor_locator(months_locator)
-    fig.autofmt_xdate()  # align, rotate and space for tick labels
-
-
-def map_land_layout(axes: GeoAxes, plot, bounds, *, cbar: bool = True) -> None:
-    """Plot style for rectangular drought maps with land overlay.
-
-    Mask the ocean by overlay, add gridlines, set left/bottom tick labels.
-    """
-    axes.coastlines()
-    axes.add_feature(
-        ct.feature.OCEAN,
-        edgecolor="black",
-        facecolor="white",
-        zorder=1,
-    )
-    glines = axes.gridlines(
-        crs=ct.crs.PlateCarree(),
-        linewidth=1,
-        color="black",
-        alpha=0.6,
-        linestyle="--",
-        draw_labels=True,
-        zorder=2,
-    )
-    glines.xlabels_top = False
-    glines.ylabels_right = False
-    if bounds is not None and cbar:
-        plt.colorbar(
-            plot,
-            ax=axes,
-            ticks=bounds,
-            extend="both",
-            fraction=0.022,
-        )
-    elif cbar:
-        plt.colorbar(plot, ax=axes, extend="both", fraction=0.022)
-
-
-def get_scenarios(meta, **kwargs) -> list:
-    """Return a list of alias values for scenario names."""
-    selected = select_metadata(meta, **kwargs)
-    return list(group_metadata(selected, "alias").keys())
-
-
-def add_ancestor_input(cfg: dict) -> None:
-    """Read ancestors settings.yml and add it's input_data to this config."""
-    log.info("add ancestors for %s", cfg[n.INPUT_FILES])
-    for input_file in cfg[n.INPUT_FILES]:
-        cfg_anc_file = (
-            "/run/".join(input_file.rsplit("/work/", 1)) + "/settings.yml"
-        )
-        cfg_anc = get_cfg(cfg_anc_file)
-        cfg["input_data"].update(_get_input_data_files(cfg_anc))
-
-
-def quick_save(cube: Cube, name: str, cfg: dict) -> None:
-    """Simply save cube to netcdf file without additional information."""
-    if cfg.get("write_netcdf", True):
-        diag_file = get_diagnostic_filename(name, cfg)
-        log.info("quick save %s", diag_file)
-        iris.save(cube, target=diag_file)
-
-
-def quick_load(cfg: dict, context: dict, *, strict=True) -> Cube:
-    """Load input files from config wich matches the selection.
-
-    Select, load and return the first match.
-    raises an error (if strict) or a warning for multiple matches.
-    """
-    meta = cfg["input_data"].values()
-    var_meta = select_single_meta(meta, strict=strict, **context)
-    return iris.load_cube(var_meta["filename"])
-
-
 def smooth(dat, window=32, mode="same") -> np.ndarray:
     """Smooth a 1D array with a window size.
 
@@ -409,293 +261,10 @@ def smooth(dat, window=32, mode="same") -> np.ndarray:
     return np.convolve(dat, np_filter, mode) / window
 
 
-def get_basename(cfg, meta, prefix=None, suffix=None) -> str:
-    """Return a formatted basename for a diagnostic file."""
-    _ = cfg  # we might need this in the future. dont tell codacy!
-    formats = {
-        "CMIP6": CMIP6_FNAME,
-        "OBS": OBS_FNAME,
-    }
-    basename = formats[meta["project"]].format(**meta)
-    if suffix:
-        basename += f"_{suffix}"
-    if prefix:
-        basename = f"{prefix}_{basename}"
-    return basename
-
-
-def clean_meta(meta) -> dict:
-    """Return a copy of meta data with only selected keys.
-
-    Keys are: short_name, dataset, alias, exp
-    """
-    valid_keys = ["short_name", "dataset", "alias", "exp"]
-    return {key: val for key, val in meta.items() if key in valid_keys}
-
-
-def select_single_metadata(
-    meta: list,
-    *,
-    strict: bool = True,
-    **kwargs: dict[str, Any],
-) -> dict | None:
-    """Filter meta data by arbitrary keys and return one matching result.
-
-    For more/less then one match the first/none is returned or an error is
-    raised with strict=True.
-
-    Parameters
-    ----------
-    meta
-        esmvaltool meta data dict
-    strict, optional
-        Raise error if not exactly one match exists, by default True
-
-    Returns
-    -------
-        Dict: One value from the input meta
-
-    Raises
-    ------
-    ValueError
-        Too many matching entries
-    ValueError
-        No matching entry
-    """
-    selected_meta = select_metadata(meta, **kwargs)
-    if len(selected_meta) > 1:
-        log.warning("Multiple entries found for Metadata: %s", selected_meta)
-        if strict:
-            raise ValueError("Too many matching entries")
-    elif len(selected_meta) == 0:
-        log.warning("No Metadata found! For: %s", kwargs)
-        if strict:
-            raise ValueError("No matching entry")
-        return None
-    return selected_meta[0]
-
-
-# alias for convenience
-select_single_meta = select_single_metadata
-
-
 def date_to_months(date: str, start_year: int) -> int:
     """Translate date YYYY-MM to number of months since start_year."""
     years, months = [int(x) for x in date.split("-")]
     return int(12 * (years - start_year) + months)
-
-
-def fix_interval(interval: dict) -> dict:
-    """Ensure that an interval has a label and a range.
-
-    TODO: replace "/" with "_" in diagnostics who use this.
-    """
-    if "range" not in interval:
-        interval["range"] = f"{interval['start']}/{interval['end']}"
-    if "label" not in interval:
-        interval["label"] = interval["range"]
-    return interval
-
-
-def get_plot_fname(
-    cfg: dict,
-    basename,
-    meta: dict | None = None,
-    replace: dict | None = None,
-) -> str:
-    """Get a valid path for saving a diagnostic plot.
-
-    This is an alternative to shared.get_diagnostic_filename.
-    It uses cfg as first argument and accept metadata to format the basename.
-
-    Parameters
-    ----------
-    cfg : dict
-        Dictionary with diagnostic configuration.
-    basename : str
-        The basename of the file.
-    meta : dict, optional
-        Metadata to format the basename. If None, empty dict is used.
-    replace : dict
-        Dictionary with strings to replace in the basename.
-        If None, empty dict is used.
-
-    Returns
-    -------
-    str:
-        A valid path for saving a diagnostic plot.
-    """
-    meta = {} if meta is None else meta
-    replace = {} if replace is None else replace
-    basename = basename.format(**meta)
-    for key, value in replace.items():
-        basename = basename.replace(key, value)
-    fpath = Path(cfg["plot_dir"]) / basename
-    return str(fpath.with_suffix(cfg["output_file_type"]))
-
-
-def slice_cube_interval(cube: Cube, interval: list) -> Cube:
-    """Return cube slice for given interval.
-
-    which is a list of strings (YYYY-mm) or int (index of cube)
-    For 3D cubes time needs to be first dim.
-    """
-    if isinstance(interval[0], int) and isinstance(interval[1], int):
-        return cube[interval[0]: interval[1], :, :]
-    dt_start = dt.datetime.strptime(interval[0], "%Y-%m")
-    dt_end = dt.datetime.strptime(interval[1], "%Y-%m")
-    time = cube.coord("time")
-    t_start = time.nearest_neighbour_index(time.units.date2num(dt_start))
-    t_end = time.nearest_neighbour_index(time.units.date2num(dt_end))
-    return cube[t_start:t_end, :, :]
-
-
-def find_first(nparr: np.ndarray) -> int:
-    """Return index of first nonzero element of numpy array or -1.
-
-    Its faster than looping or using numpy.where.
-    nparr requires numerical data without negative zeroes.
-    """
-    idx = nparr.view(bool).argmax() // nparr.itemsize
-    return int(idx if np.arr[idx] else -1)
-
-
-def add_spei_meta(cfg: dict, name: str = "spei", pos: int = 0) -> None:
-    """Add missing meta for specific ancestor script (workaround).
-
-    NOTE: should be obsolete, since PET.R and SPEI.R write metadata.
-    """
-    log.info("adding meta file for save_spei output")
-    spei_fname = (
-        cfg["tmp_meta"]["filename"].split("/")[-1].replace("_pr_", f"_{name}_")
-    )
-    spei_file = str(Path(cfg["input_files"][pos]) / spei_fname)
-    log.info("spei file path: %s", spei_file)
-    meta = cfg["tmp_meta"].copy()
-    meta.update(INDEX_META[name.upper()])
-    meta["filename"] = spei_file
-    cfg["input_data"][spei_file] = meta
-
-
-def fix_calendar(cube: Cube) -> Cube:
-    """Convert cubes calendar to gregorian.
-
-    TODO: use pp.regrid_time when available in esmvalcore.
-    """
-    time = cube.coord("time")
-    # if time.units.name == "days since 1850-1-1 00:00:00":
-    log.info("renaming unit")
-    time.units = Unit("days since 1850-01-01", calendar=time.units.calendar)
-    if time.units.calendar == "proleptic_gregorian":
-        time.units = Unit(time.units.name, calendar="gregorian")
-        log.info("renamed calendar: %s", time.units.calendar)
-    if time.units.calendar != "gregorian":
-        time.convert_units(Unit("days since 1850-01-01", calendar="gregorian"))
-        log.info("converted time to: %s", time.units)
-    return cube
-
-
-def latlon_coords(cube: Cube) -> None:
-    """Rename latitude, longitude coords to lat, lon inplace."""
-    if "latitude" in cube.coords():
-        cube.coord("latitude").rename("lat")
-    if "longitude" in cube.coords():
-        cube.coord("longitude").rename("lon")
-
-
-def guess_lat_lon_bounds(cube: Cube) -> None:
-    """Guess bounds for latitude and longitude if missing."""
-    if not cube.coord("latitude").has_bounds():
-        cube.coord("latitude").guess_bounds()
-    if not cube.coord("longitude").has_bounds():
-        cube.coord("longitude").guess_bounds()
-
-
-def mmm(
-    cube_list: list | CubeList,
-    mdtol: float = 0,
-    dropcoords: list | None = None,
-    *,
-    dropmethods=False,
-) -> tuple:
-    """Calculate mean and stdev along a cube list over all cubes.
-
-    Return two (mean and stdev) of same shape
-
-    Parameters
-    ----------
-    cube_list : list|CubeList
-        List of iris cubes to be merged by mean.
-    mdtol : float, optional
-        Tolerance for mean calculation, by default 0
-    dropcoords : list|None, optional
-        Coordinates to be dropped from the cubes. If None, only time will be
-        dropped. To keep all coords pass an empty list.
-    dropmethods: bool, optional
-        Drop cell_methods from the cubes, by default False
-    """
-    if dropcoords is None:
-        dropcoords = ["time"]
-    for idx, cube in enumerate(cube_list):
-        for coord_name in dropcoords:
-            if cube.coords(coord_name):
-                cube.remove_coord(coord_name)
-        if dropmethods:
-            cube.cell_methods = None
-        cube.add_aux_coord(iris.coords.AuxCoord(idx, long_name="dataset"))
-    cube_list = CubeList(cube_list)
-    equalise_attributes(cube_list)
-    try:
-        merged = cube_list.merge_cube()
-    except iris.exceptions.MergeError as err:
-        iris.util.describe_diff(cube_list[0], cube_list[1])
-        raise iris.exceptions.MergeError from err
-    if mdtol > 0:
-        log.info("performing MMM with tolerance: %s", mdtol)
-    mean = merged.collapsed("dataset", iris.analysis.MEAN, mdtol=mdtol)
-    sdev = merged.collapsed("dataset", iris.analysis.STD_DEV)
-    return mean, sdev
-
-
-def regional_stats(cfg, cube, operator="mean") -> dict:
-    """Calculate statistic over AR6 IPCC reference regions."""
-    _ = cfg  # we might need this in the future. dont tell codacy!
-    guess_lat_lon_bounds(cube)
-    extracted = pp.extract_shape(cube, "ar6", decomposed=True)
-    return pp.area_statistics(extracted, operator)
-
-
-def transpose_by_names(cube: Cube, names: list) -> None:
-    """Transpose a cube by dim-coords or their names."""
-    new_dims = [cube.coord_dims(name)[0] for name in names]
-    cube.transpose(new_dims)
-
-
-def save_metadata(cfg: dict, metadata: dict) -> None:
-    """Save dict as metadata.yml in work folder."""
-    with (Path(cfg["work_dir"]) / "metadata.yml").open("w") as wom:
-        yaml.dump(metadata, wom)
-
-
-def sub_cfg(cfg: dict, plot: str, key: str) -> dict:
-    """Get get merged general and plot type specific kwargs."""
-    if isinstance(cfg.get(key, {}), dict):
-        general = cfg.get(key, {}).copy()
-        specific = cfg.get(plot, {}).get(key, {})
-        general.update(specific)
-        return general
-    try:
-        return cfg[plot][key]
-    except KeyError:
-        return cfg[key]
-
-
-def abs_auxilary_path(cfg: dict, path: str | Path) -> str:
-    """Return absolut path of an auxilary file."""
-    if Path(path).is_absolute():
-        return str(path)
-    return str(Path(cfg["auxiliary_data_dir"]) / path)
-
 
 def remove_attributes(
     cube: Cube | iris.Coord,
@@ -720,25 +289,6 @@ def remove_attributes(
         del cube.attributes[attr]
 
 
-def font_color(background: str | tuple | float) -> str:
-    """Return black or white depending on backgrounds greyscale.
-
-    Parameters
-    ----------
-    background : str, tuple, or float
-        color as string (grayscale value, name, hex) or tuple (rgb, rgba)
-    """
-    if sum(mpl.colors.to_rgb(background)) > 1.5:
-        return "black"
-    return "white"
-
-
-def log_provenance(cfg: dict, fname: str | Path, record: dict) -> None:
-    """Add provenance information to the Provenancelog."""
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(fname, record)
-
-
 def get_time_range(cube: Cube) -> dict:
     """Guess the period of a cube based on the time coordinate."""
     if not isinstance(cube, Cube):
@@ -747,14 +297,6 @@ def get_time_range(cube: Cube) -> dict:
     start = time.units.num2date(time.points[0])
     end = time.units.num2date(time.points[-1])
     return {"start_year": start.year, "end_year": end.year}
-
-
-def guess_experiment(meta: dict) -> None:
-    """Guess missing 'exp' in metadata from filename."""
-    exps = ["historical", "ssp126", "ssp245", "ssp370", "ssp585"]
-    for exp in exps:
-        if exp in meta["filename"]:
-            meta["exp"] = exp
 
 
 def monthly_to_daily(
@@ -941,3 +483,446 @@ def get_latlon_index(coords, lim1, lim2) -> np.ndarray:
             np.absolute(coords - (lim2 + lim1) / 2.0) <= (lim2 - lim1) / 2.0,
         )
     )[0]
+
+
+def slice_cube_interval(cube: Cube, interval: list) -> Cube:
+    """Return cube slice for given interval.
+
+    which is a list of strings (YYYY-mm) or int (index of cube)
+    For 3D cubes time needs to be first dim.
+    """
+    if isinstance(interval[0], int) and isinstance(interval[1], int):
+        return cube[interval[0]: interval[1], :, :]
+    dt_start = dt.datetime.strptime(interval[0], "%Y-%m")
+    dt_end = dt.datetime.strptime(interval[1], "%Y-%m")
+    time = cube.coord("time")
+    t_start = time.nearest_neighbour_index(time.units.date2num(dt_start))
+    t_end = time.nearest_neighbour_index(time.units.date2num(dt_end))
+    return cube[t_start:t_end, :, :]
+
+
+def find_first(nparr: np.ndarray) -> int:
+    """Return index of first nonzero element of numpy array or -1.
+
+    Its faster than looping or using numpy.where.
+    nparr requires numerical data without negative zeroes.
+    """
+    idx = nparr.view(bool).argmax() // nparr.itemsize
+    return int(idx if np.arr[idx] else -1)
+
+
+def fix_calendar(cube: Cube) -> Cube:
+    """Convert cubes calendar to gregorian.
+
+    TODO: use pp.regrid_time when available in esmvalcore.
+    """
+    time = cube.coord("time")
+    # if time.units.name == "days since 1850-1-1 00:00:00":
+    log.info("renaming unit")
+    time.units = Unit("days since 1850-01-01", calendar=time.units.calendar)
+    if time.units.calendar == "proleptic_gregorian":
+        time.units = Unit(time.units.name, calendar="gregorian")
+        log.info("renamed calendar: %s", time.units.calendar)
+    if time.units.calendar != "gregorian":
+        time.convert_units(Unit("days since 1850-01-01", calendar="gregorian"))
+        log.info("converted time to: %s", time.units)
+    return cube
+
+
+def latlon_coords(cube: Cube) -> None:
+    """Rename latitude, longitude coords to lat, lon inplace."""
+    if "latitude" in cube.coords():
+        cube.coord("latitude").rename("lat")
+    if "longitude" in cube.coords():
+        cube.coord("longitude").rename("lon")
+
+
+def guess_lat_lon_bounds(cube: Cube) -> None:
+    """Guess bounds for latitude and longitude if missing."""
+    if not cube.coord("latitude").has_bounds():
+        cube.coord("latitude").guess_bounds()
+    if not cube.coord("longitude").has_bounds():
+        cube.coord("longitude").guess_bounds()
+
+
+def mmm(
+    cube_list: list | CubeList,
+    mdtol: float = 0,
+    dropcoords: list | None = None,
+    *,
+    dropmethods=False,
+) -> tuple:
+    """Calculate mean and stdev along a cube list over all cubes.
+
+    Return two (mean and stdev) of same shape
+
+    Parameters
+    ----------
+    cube_list : list|CubeList
+        List of iris cubes to be merged by mean.
+    mdtol : float, optional
+        Tolerance for mean calculation, by default 0
+    dropcoords : list|None, optional
+        Coordinates to be dropped from the cubes. If None, only time will be
+        dropped. To keep all coords pass an empty list.
+    dropmethods: bool, optional
+        Drop cell_methods from the cubes, by default False
+    """
+    if dropcoords is None:
+        dropcoords = ["time"]
+    for idx, cube in enumerate(cube_list):
+        for coord_name in dropcoords:
+            if cube.coords(coord_name):
+                cube.remove_coord(coord_name)
+        if dropmethods:
+            cube.cell_methods = None
+        cube.add_aux_coord(iris.coords.AuxCoord(idx, long_name="dataset"))
+    cube_list = CubeList(cube_list)
+    equalise_attributes(cube_list)
+    try:
+        merged = cube_list.merge_cube()
+    except iris.exceptions.MergeError as err:
+        iris.util.describe_diff(cube_list[0], cube_list[1])
+        raise iris.exceptions.MergeError from err
+    if mdtol > 0:
+        log.info("performing MMM with tolerance: %s", mdtol)
+    mean = merged.collapsed("dataset", iris.analysis.MEAN, mdtol=mdtol)
+    sdev = merged.collapsed("dataset", iris.analysis.STD_DEV)
+    return mean, sdev
+
+
+def regional_stats(cfg, cube, operator="mean") -> dict:
+    """Calculate statistic over AR6 IPCC reference regions."""
+    _ = cfg  # we might need this in the future. dont tell codacy!
+    guess_lat_lon_bounds(cube)
+    extracted = pp.extract_shape(cube, "ar6", decomposed=True)
+    return pp.area_statistics(extracted, operator)
+
+
+def transpose_by_names(cube: Cube, names: list) -> None:
+    """Transpose a cube by dim-coords or their names."""
+    new_dims = [cube.coord_dims(name)[0] for name in names]
+    cube.transpose(new_dims)
+
+
+### META DATA ###
+
+def fold_meta(
+    cfg: dict,
+    meta: dict,
+    cfg_keys: list | None = None,
+    meta_keys: list | None = None,
+    variables: list | None = None,
+) -> tuple:
+    """Create combinations of meta data and data constraints.
+
+    cfg["variables"] overwrites meta["short_names"].
+
+    Parameters
+    ----------
+    cfg: dict
+        Plot specific configuration with cfg_keys on root level.
+    meta: list
+        Full meta data including ancestor files.
+    cfg_keys: list, optional
+        Data constraints as config entries used for product.
+        Defaults to ["locations", "intervals"].
+    meta_keys: list, optional
+        Keys for each meta used for product, short_name added automatically.
+        Defaults to ["dataset", "exp"].
+    variables: list, optional
+        Variables to be used. Defaults to None.
+
+    Returns
+    -------
+    combinations : itertools.product
+        All combinations of the metadata and constraints.
+    groups : dict
+        Grouped metadata.
+    meta_keys : list
+        List of metadata keys.
+    """
+    if variables is None:
+        variables = cfg.get("variables", ["pdsi", "spi"])
+    if cfg_keys is None:
+        cfg_keys = ["locations", "intervals"]
+    if meta_keys is None:
+        meta_keys = ["dataset", "exp"]
+
+    groups = {
+        gk: list(
+            group_metadata(
+                select_metadata(meta, short_name=variables[0]),
+                gk,
+            ).keys(),
+        )
+        for gk in meta_keys
+    }
+    meta_keys.append("short_name")
+    groups["short_name"] = variables
+    g_map = {"locations": "location", "intervals": "interval"}
+    for ckey in cfg_keys:
+        try:
+            groups[g_map.get(ckey, ckey)] = cfg[ckey]
+        except KeyError:
+            log.warning("No '%s' found in plot config", ckey)
+    combinations = it.product(*groups.values())
+    return combinations, groups, meta_keys
+
+
+def select_meta_from_combi(meta: list, combi: dict, groups: dict) -> tuple:
+    """Select one meta data from list (filter valid keys).
+
+    Parameters
+    ----------
+    meta : list
+        List of metadata dictionaries.
+    combi : dict
+        Dictionary containing the combination of metadata values.
+    groups : dict
+        Dictionary containing the groups of metadata.
+
+    Returns
+    -------
+    tuple
+        A tuple containing the selected metadata and the configuration
+        dictionary.
+    """
+    this_cfg = dict(zip(groups.keys(), combi))
+    filter_cfg = clean_meta(this_cfg)  # remove non meta keys
+    this_meta = select_metadata(meta, **filter_cfg)[0]
+    return this_meta, this_cfg
+
+
+def list_meta_keys(meta: list, group: dict) -> list:
+    """Return a list of all keys found for a group in the meta data."""
+    return list(group_metadata(meta, group).keys())
+
+
+def get_meta_list(meta: dict, group: str, select: dict | None = None) -> list:
+    """
+    List all entries found for the group key as a list.
+
+    With a given selection, the meta data will be filtered first.
+
+    Parameters
+    ----------
+    meta : dict
+        Full meta data.
+    group : str
+        Key to search for. Defaults to "alias".
+    select : dict, optional
+        Dictionary like {'short_name': 'pdsi'} that is passed to a selection.
+
+    Returns
+    -------
+    list
+        Collected values for the group key.
+    """
+    if select is not None:
+        meta = select_metadata(meta, **select)
+    return list(group_metadata(meta, group).keys())
+
+
+def get_datasets(cfg: dict) -> dict:
+    """Return a dictionary of datasets and their metadata."""
+    metadata = cfg["input_data"].values()
+    return group_metadata(metadata, "dataset").keys()
+
+
+def get_dataset_scenarios(cfg: dict) -> list:
+    """Combine datasets and scenarios to a list of pairs of strings."""
+    metadata = cfg["input_data"].values()
+    input_datasets = group_metadata(metadata, "dataset").keys()
+    input_scenarios = group_metadata(metadata, "alias").keys()
+    return list(it.product(input_datasets, input_scenarios))
+
+
+def get_scenarios(meta, **kwargs) -> list:
+    """Return a list of alias values for scenario names."""
+    selected = select_metadata(meta, **kwargs)
+    return list(group_metadata(selected, "alias").keys())
+
+
+def get_basename(cfg, meta, prefix=None, suffix=None) -> str:
+    """Return a formatted basename for a diagnostic file."""
+    _ = cfg  # we might need this in the future. dont tell codacy!
+    formats = {
+        "CMIP6": CMIP6_FNAME,
+        "OBS": OBS_FNAME,
+    }
+    basename = formats[meta["project"]].format(**meta)
+    if suffix:
+        basename += f"_{suffix}"
+    if prefix:
+        basename = f"{prefix}_{basename}"
+    return basename
+
+
+def clean_meta(meta) -> dict:
+    """Return a copy of meta data with only selected keys.
+
+    Keys are: short_name, dataset, alias, exp
+    """
+    valid_keys = ["short_name", "dataset", "alias", "exp"]
+    return {key: val for key, val in meta.items() if key in valid_keys}
+
+
+def select_single_metadata(
+    meta: list,
+    *,
+    strict: bool = True,
+    **kwargs: dict[str, Any],
+) -> dict | None:
+    """Filter meta data by arbitrary keys and return one matching result.
+
+    For more/less then one match the first/none is returned or an error is
+    raised with strict=True.
+
+    Parameters
+    ----------
+    meta
+        esmvaltool meta data dict
+    strict, optional
+        Raise error if not exactly one match exists, by default True
+
+    Returns
+    -------
+        Dict: One value from the input meta
+
+    Raises
+    ------
+    ValueError
+        Too many matching entries
+    ValueError
+        No matching entry
+    """
+    selected_meta = select_metadata(meta, **kwargs)
+    if len(selected_meta) > 1:
+        log.warning("Multiple entries found for Metadata: %s", selected_meta)
+        if strict:
+            raise ValueError("Too many matching entries")
+    elif len(selected_meta) == 0:
+        log.warning("No Metadata found! For: %s", kwargs)
+        if strict:
+            raise ValueError("No matching entry")
+        return None
+    return selected_meta[0]
+
+select_single_meta = select_single_metadata
+
+def sub_cfg(cfg: dict, plot: str, key: str) -> dict:
+    """Get get merged general and plot type specific kwargs."""
+    if isinstance(cfg.get(key, {}), dict):
+        general = cfg.get(key, {}).copy()
+        specific = cfg.get(plot, {}).get(key, {})
+        general.update(specific)
+        return general
+    try:
+        return cfg[plot][key]
+    except KeyError:
+        return cfg[key]
+
+def guess_experiment(meta: dict) -> None:
+    """Guess missing 'exp' in metadata from filename."""
+    exps = ["historical", "ssp126", "ssp245", "ssp370", "ssp585"]
+    for exp in exps:
+        if exp in meta["filename"]:
+            meta["exp"] = exp
+
+
+### PLOT HELPER ###
+
+def date_tick_layout(
+    fig,
+    axes,
+    dates: list | None = None,
+    label: str = "Time",
+    years: int | None = 1,
+) -> None:
+    """Update a time series figure to use date/year ticks and grid."""
+    axes.set_xlabel(label)
+    if dates is not None:
+        datemin = np.datetime64(dates[0], "Y")
+        datemax = np.datetime64(dates[-1], "Y") + np.timedelta64(1, "Y")
+        axes.set_xlim(datemin, datemax)
+    if years is None:
+        locator = mdates.AutoDateLocator()
+        min_locator = mdates.YearLocator(1)
+    else:
+        locator = mdates.YearLocator(years)  # type: ignore[assignment]
+        min_locator = mdates.YearLocator(1)
+    year_formatter = mdates.DateFormatter("%Y")
+    axes.grid(True)
+    axes.xaxis.set_major_locator(locator)
+    axes.xaxis.set_major_formatter(year_formatter)
+    axes.xaxis.set_minor_locator(min_locator)
+    fig.autofmt_xdate()  # align, rotate and space for tick labels
+
+
+def auto_tick_layout(fig, axes, dates=None) -> None:
+    """Update a time series figure to use auto date ticks and grid.
+
+    NOTE: can this be merged with date_tick_layout?
+    """
+    axes.set_xlabel("Time")
+    if dates is not None:
+        datemin = np.datetime64(dates[0], "Y")
+        datemax = np.datetime64(dates[-1], "Y") + np.timedelta64(1, "Y")
+        axes.set_xlim(datemin, datemax)
+    year_locator = mdates.YearLocator(1)
+    months_locator = mdates.MonthLocator()
+    year_formatter = mdates.DateFormatter("%Y")
+    axes.grid(True)
+    axes.xaxis.set_major_locator(year_locator)
+    axes.xaxis.set_major_formatter(year_formatter)
+    axes.xaxis.set_minor_locator(months_locator)
+    fig.autofmt_xdate()  # align, rotate and space for tick labels
+
+
+def map_land_layout(axes: GeoAxes, plot, bounds, *, cbar: bool = True) -> None:
+    """Plot style for rectangular drought maps with land overlay.
+
+    Mask the ocean by overlay, add gridlines, set left/bottom tick labels.
+    """
+    axes.coastlines()
+    axes.add_feature(
+        ct.feature.OCEAN,
+        edgecolor="black",
+        facecolor="white",
+        zorder=1,
+    )
+    glines = axes.gridlines(
+        crs=ct.crs.PlateCarree(),
+        linewidth=1,
+        color="black",
+        alpha=0.6,
+        linestyle="--",
+        draw_labels=True,
+        zorder=2,
+    )
+    glines.xlabels_top = False
+    glines.ylabels_right = False
+    if bounds is not None and cbar:
+        plt.colorbar(
+            plot,
+            ax=axes,
+            ticks=bounds,
+            extend="both",
+            fraction=0.022,
+        )
+    elif cbar:
+        plt.colorbar(plot, ax=axes, extend="both", fraction=0.022)
+
+
+def font_color(background: str | tuple | float) -> str:
+    """Return black or white depending on backgrounds greyscale.
+
+    Parameters
+    ----------
+    background : str, tuple, or float
+        color as string (grayscale value, name, hex) or tuple (rgb, rgba)
+    """
+    if sum(mpl.colors.to_rgb(background)) > 1.5:
+        return "black"
+    return "white"
