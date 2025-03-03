@@ -32,6 +32,7 @@ class CDSDownloader(BaseDownloader):
         Some products have a subfix appended to their name for certain
         variables. This parameter is to specify it, by default ''
     """
+
     def __init__(self,
                  product_name,
                  config,
@@ -39,10 +40,11 @@ class CDSDownloader(BaseDownloader):
                  dataset,
                  dataset_info,
                  overwrite,
-                 extra_name=''):
+                 extra_name='',
+                 cds_url='https://cds.climate.copernicus.eu/api'):
         super().__init__(config, dataset, dataset_info, overwrite)
         try:
-            self._client = cdsapi.Client()
+            self._client = cdsapi.Client(url=cds_url)
         except Exception as ex:
             if str(ex).endswith(".cdsapirc"):
                 logger.error(
