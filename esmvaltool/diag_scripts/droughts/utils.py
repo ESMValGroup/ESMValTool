@@ -29,7 +29,6 @@ from iris.util import equalise_attributes
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.droughts.constants import (
     CMIP6_FNAME,
-    INDEX_META,
     OBS_FNAME,
 )
 from esmvaltool.diag_scripts.shared import (
@@ -44,7 +43,8 @@ from esmvaltool.diag_scripts.shared._base import _get_input_data_files
 log = logging.getLogger(Path(__file__).name)
 
 
-### GENERAL HELPER ###
+# GENERAL HELPER
+
 
 def mkplotdir(cfg: dict, dname: str | Path) -> None:
     """Create a sub directory for plots if it does not exist."""
@@ -132,6 +132,7 @@ def save_metadata(cfg: dict, metadata: dict) -> None:
     with (Path(cfg["work_dir"]) / "metadata.yml").open("w") as wom:
         yaml.dump(metadata, wom)
 
+
 def fix_interval(interval: dict) -> dict:
     """Ensure that an interval has a label and a range.
 
@@ -150,7 +151,8 @@ def log_provenance(cfg: dict, fname: str | Path, record: dict) -> None:
         provenance_logger.log(fname, record)
 
 
-### DATA PROCESSING ###
+# DATA PROCESSING
+
 
 def merge_list_cube(
     cube_list: list,
@@ -227,12 +229,12 @@ def fix_longitude(cube: Cube, coord="longitude") -> Cube:
     """
     # make sure coords are -180 to 180
     fixed_lons = [
-        lon if lon < 180 else lon - 360
-        for lon in cube.coord(coord).points
+        lon if lon < 180 else lon - 360 for lon in cube.coord(coord).points
     ]
     lon_dim = cube.coord_dims(cube.coord(coord))[0]
     cube.add_aux_coord(
-        iris.coords.AuxCoord(fixed_lons, long_name="fixed_lon"), lon_dim,
+        iris.coords.AuxCoord(fixed_lons, long_name="fixed_lon"),
+        lon_dim,
     )
     cube = sort_cube(cube, coord="fixed_lon")
     # set new coordinates as dimcoords, add new dim and remove old and aux
@@ -265,6 +267,7 @@ def date_to_months(date: str, start_year: int) -> int:
     """Translate date YYYY-MM to number of months since start_year."""
     years, months = [int(x) for x in date.split("-")]
     return int(12 * (years - start_year) + months)
+
 
 def remove_attributes(
     cube: Cube | iris.Coord,
@@ -432,7 +435,7 @@ def runs_of_ones_array_spei(bits, spei) -> list:
     (run_ends,) = np.where(difs < 0)
     spei_sum = np.full(len(run_starts), 0.5)
     for iii, indexs in enumerate(run_starts):
-        spei_sum[iii] = np.sum(spei[indexs: run_ends[iii]])
+        spei_sum[iii] = np.sum(spei[indexs : run_ends[iii]])
     return [run_ends - run_starts, spei_sum]
 
 
@@ -492,7 +495,7 @@ def slice_cube_interval(cube: Cube, interval: list) -> Cube:
     For 3D cubes time needs to be first dim.
     """
     if isinstance(interval[0], int) and isinstance(interval[1], int):
-        return cube[interval[0]: interval[1], :, :]
+        return cube[interval[0] : interval[1], :, :]
     dt_start = dt.datetime.strptime(interval[0], "%Y-%m")
     dt_end = dt.datetime.strptime(interval[1], "%Y-%m")
     time = cube.coord("time")
@@ -605,7 +608,8 @@ def transpose_by_names(cube: Cube, names: list) -> None:
     cube.transpose(new_dims)
 
 
-### META DATA ###
+# META DATA
+
 
 def fold_meta(
     cfg: dict,
@@ -809,7 +813,9 @@ def select_single_metadata(
         return None
     return selected_meta[0]
 
+
 select_single_meta = select_single_metadata
+
 
 def sub_cfg(cfg: dict, plot: str, key: str) -> dict:
     """Get get merged general and plot type specific kwargs."""
@@ -823,6 +829,7 @@ def sub_cfg(cfg: dict, plot: str, key: str) -> dict:
     except KeyError:
         return cfg[key]
 
+
 def guess_experiment(meta: dict) -> None:
     """Guess missing 'exp' in metadata from filename."""
     exps = ["historical", "ssp126", "ssp245", "ssp370", "ssp585"]
@@ -831,7 +838,8 @@ def guess_experiment(meta: dict) -> None:
             meta["exp"] = exp
 
 
-### PLOT HELPER ###
+# PLOT HELPER
+
 
 def date_tick_layout(
     fig,
