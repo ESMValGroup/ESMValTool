@@ -16,3 +16,4 @@ Diagnostic scripts
    :maxdepth: 1
 
    esmvaltool.diag_scripts.droughts/collect_drought
+   esmvaltool.diag_scripts.droughts/diffmap
