@@ -560,11 +560,11 @@ datasets:
 
   ESACCI-SST:
     tier: 2
-    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sst/data/
-    last_access: 2019-02-01
+    source: dap.ceda.ac.uk/neodc/eocis/data/global_and_regional/sea_surface_temperature/
+    last_access: 2024-12-11
     info: |
       Download the data from:
-        lt/Analysis/L4/v01.1/
+        CDR_v3/Analysis/L4/v3.0.1/ 
       Put all files under a single directory (no subdirectories with years).
 
   ESACCI-WATERVAPOUR:
