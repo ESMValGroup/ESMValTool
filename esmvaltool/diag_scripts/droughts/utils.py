@@ -23,16 +23,15 @@ import yaml
 from cartopy.mpl.geoaxes import GeoAxes
 from cf_units import Unit
 from esmvalcore import preprocessor as pp
-from esmvalcore.iris_helpers import date2num
 from iris.cube import Cube, CubeList
 from iris.util import equalise_attributes
+
+import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.droughts.constants import (
     CMIP6_FNAME,
     INDEX_META,
     OBS_FNAME,
 )
-
-import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
     get_cfg,
