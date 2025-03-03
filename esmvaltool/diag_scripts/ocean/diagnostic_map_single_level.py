@@ -356,13 +356,19 @@ def create_quadmap(experiment_single_level,
     # fig.title and plt.title
 
     zrange1 = diagtools.get_cube_range([experiment_single_level])
-    zrange2 = [-5.0, 5.0]
+    if (experiment_single_level.long_name == 'Sea Surface Salinity'
+            or experiment_single_level.long_name == 'Sea Water Salinity'):
+        zrange2 = [-2.0, 2.0]
+    else:
+        zrange2 = [-5.0, 5.0]
 
     linspace1 = np.linspace(zrange1[0], zrange1[1], 12, endpoint=True)
     linspace2 = np.linspace(zrange2[0], zrange2[1], 12, endpoint=True)
     # prepare image and figure
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(9, 6))
-
+    level = str(level)
+    fig.suptitle(experiment_single_level.long_name + ' at ' + level + 'm',
+                 fontsize=14)
     plot_global_single_level(ax1, experiment_single_level, linspace1,
                              "experiment")
     plot_global_single_level(ax2, experiment_minus_control_single_level,
@@ -376,6 +382,7 @@ def create_quadmap(experiment_single_level,
     fn_list = [experiment_single_level.long_name, str(level)]
     input_files = diagtools.get_input_files(config)
     image_extention = diagtools.get_image_format(config)
+
     path = diagtools.folder(
         config['plot_dir']) + '_'.join(fn_list) + str(level)
     path = path.replace(' ', '') + image_extention
