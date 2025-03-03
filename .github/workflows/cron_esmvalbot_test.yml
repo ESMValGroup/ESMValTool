@@ -16,6 +16,7 @@ defaults:
 jobs:
   run-esmvalbot:
     runs-on: 'ubuntu-latest'
+    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     steps:
       - uses: actions/checkout@v4
         with:

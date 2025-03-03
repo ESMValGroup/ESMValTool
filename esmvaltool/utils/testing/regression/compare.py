@@ -34,6 +34,7 @@ IGNORE_GLOBAL_ATTRIBUTES: tuple[str, ...] = (
     # see https://github.com/ESMValGroup/ESMValCore/issues/1657
     'auxiliary_data_dir',
     'creation_date',
+    'filename',
     'history',
     'provenance',
     'software',

@@ -35,16 +35,22 @@ class FTPDownloader(BaseDownloader):
     overwrite : bool
         Overwrite already downloaded files
     """
-    def __init__(self, config, server, dataset, dataset_info, overwrite):
+    def __init__(self, config, server, dataset, dataset_info, overwrite,
+                 user=None, passwd=None):
         super().__init__(config, dataset, dataset_info, overwrite)
         self._client = None
         self.server = server
+        self.user = user
+        self.passwd = passwd
 
     def connect(self):
         """Connect to the FTP server."""
         self._client = ftplib.FTP(self.server)
         logger.info(self._client.getwelcome())
-        self._client.login()
+        if self.user is None:
+            self._client.login()
+        else:
+            self._client.login(user=self.user, passwd=self.passwd)
 
     def set_cwd(self, path):
         """Set current working directory in the remote.
