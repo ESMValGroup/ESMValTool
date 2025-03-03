@@ -290,6 +290,14 @@ diagnostics:
         additional_datasets:
           - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
              type: sat, version: L3, start_year: 2007, end_year: 2008}
+      toz:
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
+             type: sat, version: L3, start_year: 1995, end_year: 2023}
+      o3:
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
+             type: sat, version: L3, start_year: 1984, end_year: 2022}        
     scripts: null
 
   ESACCI-SEAICE:
