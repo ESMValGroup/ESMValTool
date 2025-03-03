@@ -45,19 +45,21 @@ def main(config):
          control, experiment, observation)
 
     # Pick a value for level.
-    level = 2
-    experiment_single_level = extract_global_single_level(experiment, level)
-    experiment_minus_control_single_level = extract_global_single_level(
-        experiment_minus_control, level)
-    control_minus_observation_single_level = extract_global_single_level(
-        control_minus_observation, level)
-    experiment_minus_observation_single_level = extract_global_single_level(
-        experiment_minus_observation, level)
+    levels = [2, 50, 100, 300]
+    for level in levels:
+        experiment_single_level = extract_global_single_level(
+            experiment, level)
+        experiment_minus_control_single_level = extract_global_single_level(
+            experiment_minus_control, level)
+        control_minus_observation_single_level = extract_global_single_level(
+            control_minus_observation, level)
+        experiment_minus_observation_single_level = (
+            extract_global_single_level(experiment_minus_observation, level))
 
-    create_quadmap(experiment_single_level,
-                   experiment_minus_control_single_level,
-                   control_minus_observation_single_level,
-                   experiment_minus_observation_single_level, level)
+        create_quadmap(experiment_single_level,
+                       experiment_minus_control_single_level,
+                       control_minus_observation_single_level,
+                       experiment_minus_observation_single_level, level)
 
     # After successfully generating plots, function logs a success message.
     logger.info('Success')
