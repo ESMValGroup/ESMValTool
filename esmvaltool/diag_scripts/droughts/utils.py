@@ -24,9 +24,13 @@ from cartopy.mpl.geoaxes import GeoAxes
 from cf_units import Unit
 from esmvalcore import preprocessor as pp
 from esmvalcore.iris_helpers import date2num
-from iris.coords import AuxCoord
 from iris.cube import Cube, CubeList
 from iris.util import equalise_attributes
+from esmvaltool.diag_scripts.droughts.constants import (
+    CMIP6_FNAME,
+    INDEX_META,
+    OBS_FNAME,
+)
 
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import (
@@ -39,78 +43,6 @@ from esmvaltool.diag_scripts.shared import (
 from esmvaltool.diag_scripts.shared._base import _get_input_data_files
 
 log = logging.getLogger(Path(__file__).name)
-
-# fmt: off
-DENSITY = AuxCoord(1000, long_name="density", units="kg m-3")
-
-FNAME_FORMAT = "{project}_{reference_dataset}_{mip}_{exp}_{ensemble}_"
-"{short_name}_{start_year}-{end_year}"
-CMIP6_FNAME = "{project}_{dataset}_{mip}_{exp}_{ensemble}_{short_name}_"
-"{grid}_{start_year}-{end_year}"
-OBS_FNAME = "{project}_{dataset}_{type}_{version}_{mip}_{short_name}_"
-"{start_year}-{end_year}"
-
-CONTINENTAL_REGIONS = {
-    "Global": ["GLO"],  # global
-    "North America": ["GIC", "NWN", "NEN", "WNA", "CNA", "ENA"],
-    "Central America": ["NCA", "SCA", "CAR"],
-    "Southern America": ["NWS", "NSA", "NES", "SAM", "SWS", "SES", "SSA"],
-    "Europe": ["NEU", "WCE", "EEU", "MED"],
-    "Africa": ["SAH", "WAF", "CAF", "NEAF", "SEAF", "WSAF", "ESAF", "MDG"],
-    "Asia": ["RAR", "WSB", "ESB", "RFE", "WCA", "ECA", "TIB", "EAS", "ARP",
-             "SAS", "SEA"],
-    "Australia": ["NAU", "CAU", "EAU", "SAU", "NZ", "WAN", "EAN"],
-}
-
-HEX_POSITIONS = {
-    "NWN": [2, 0], "NEN": [4, 0], "GIC": [6.5, -0.5], "NEU": [14, 0],
-    "RAR": [20, 0], "WNA": [1, 1], "CNA": [3, 1], "ENA": [5, 1],
-    "WCE": [13, 1], "EEU": [15, 1], "WSB": [17, 1], "ESB": [19, 1],
-    "RFE": [21, 1], "NCA": [2, 2], "MED": [14, 2], "WCA": [16, 2],
-    "ECA": [18, 2], "TIB": [20, 2], "EAS": [22, 2], "SCA": [3, 3],
-    # "CAR": [5, 3],
-    "SAH": [13, 3], "ARP": [15, 3], "SAS": [19, 3], "SEA": [23, 3],
-    # "PAC": [27.5, 3.3],
-    "NWS": [6, 4], "NSA": [8, 4], "WAF": [12, 4], "CAF": [14, 4],
-    "NEAF": [16, 4], "NAU": [24.5, 4.3], "SAM": [7, 5], "NES": [9, 5],
-    "WSAF": [13, 5], "SEAF": [15, 5], "MDG": [17.5, 5.3],
-    "CAU": [23.5, 5.3], "EAU": [25.5, 5.3], "SWS": [6, 6], "SES": [8, 6],
-    "ESAF": [14, 6], "SAU": [24.5, 6.3], "NZ": [27, 6.5], "SSA": [7, 7],
-}
-
-INDEX_META = {
-    "CDD": {
-        "long_name": "Conscutive Dry Days",
-        "short_name": "CDD",
-        "units": "days",
-        "standard_name": "consecutive_dry_days",
-    },
-    "PDSI": {
-        "long_name": "Palmer Drought Severity Index",
-        "showrt_name": "PDSI",
-        "units": "1",
-        "standard_name": "palmer_drought_severity_index",
-    },
-    "SCPDSI": {
-        "long_name": "Self-calibrated Palmer Drought Severity Index",
-        "short_name": "scPDSI",
-        "units": "1",
-        "standard_name": "self_calibrated_palmer_drought_severity_index",
-    },
-    "SPI": {
-        "long_name": "Standardized Precipitation Index",
-        "short_name": "SPI",
-        "units": "1",
-        "standard_name": "standardized_precipitation_index",
-    },
-    "SPEI": {
-        "long_name": "Standardized Precipitation Evapotranspiration Index",
-        "short_name": "SPEI",
-        "units": "1",
-        "standard_name": "standardized_precipitation_evapotranspiration_index",
-    },
-}
-# fmt: on
 
 
 def merge_list_cube(
@@ -672,61 +604,6 @@ def latlon_coords(cube: Cube) -> None:
         cube.coord("longitude").rename("lon")
 
 
-def standard_time(cubes: Cube) -> None:
-    """Make sure all cubes share the same standard time coordinate.
-
-    This function extracts the date information from the cube and
-    reconstructs the time coordinate, resetting the actual dates to the
-    15th of the month or 1st of july for yearly data (consistent with
-    `regrid_time`), so that there are no mismatches in the time arrays.
-    It will use reset the calendar to
-    a default gregorian calendar with unit "days since 1850-01-01".
-    Might not work for (sub)daily data, because different calendars may have
-    different number of days in the year.
-    NOTE: this might be replaced by preprocessor
-    """
-    t_unit = Unit("days since 1850-01-01", calendar="standard")
-    for cube in cubes:
-        # Extract date info from cube
-        coord = cube.coord("time")
-        years = [p.year for p in coord.units.num2date(coord.points)]
-        months = [p.month for p in coord.units.num2date(coord.points)]
-        days = [p.day for p in coord.units.num2date(coord.points)]
-        # Reconstruct default calendar
-        if 0 not in np.diff(years):
-            # yearly data
-            dates = [dt.datetime(year, 7, 1, 0, 0, 0) for year in years]
-        elif 0 not in np.diff(months):
-            # monthly data
-            dates = [
-                dt.datetime(year, month, 15, 0, 0, 0)
-                for year, month in zip(years, months)
-            ]
-        elif 0 not in np.diff(days):
-            # daily data
-            dates = [
-                dt.datetime(year, month, day, 0, 0, 0)
-                for year, month, day in zip(years, months, days)
-            ]
-            if coord.units != t_unit:
-                log.warning(
-                    "Multimodel encountered (sub)daily data and inconsistent "
-                    "time units or calendars. Attempting to continue, but "
-                    "might produce unexpected results.",
-                )
-        else:
-            raise ValueError(
-                "Multimodel statistics preprocessor currently does not "
-                "support sub-daily data.",
-            )
-
-        # Update the cubes' time coordinate (both point values and the units!)
-        cube.coord("time").points = date2num(dates, t_unit, coord.dtype)
-        cube.coord("time").units = t_unit
-        cube.coord("time").bounds = None
-        cube.coord("time").guess_bounds()
-
-
 def guess_lat_lon_bounds(cube: Cube) -> None:
     """Guess bounds for latitude and longitude if missing."""
     if not cube.coord("latitude").has_bounds():
@@ -745,7 +622,6 @@ def mmm(
     """Calculate mean and stdev along a cube list over all cubes.
 
     Return two (mean and stdev) of same shape
-    TODO: merge alreadey exist, use that one, mean and std is trivial than.
 
     Parameters
     ----------
@@ -782,11 +658,6 @@ def mmm(
     return mean, sdev
 
 
-def get_hex_positions() -> dict:
-    """Return a dictionary with hexagon positions for AR6 regions."""
-    return HEX_POSITIONS
-
-
 def regional_stats(cfg, cube, operator="mean") -> dict:
     """Calculate statistic over AR6 IPCC reference regions."""
     _ = cfg  # we might need this in the future. dont tell codacy!
@@ -805,27 +676,6 @@ def save_metadata(cfg: dict, metadata: dict) -> None:
     """Save dict as metadata.yml in work folder."""
     with (Path(cfg["work_dir"]) / "metadata.yml").open("w") as wom:
         yaml.dump(metadata, wom)
-
-
-def get_index_meta(index) -> dict:
-    """Return default meta data for a given index.
-
-    kept for compability. Use INDEX_META dict instead.
-    """
-    return INDEX_META[index]
-
-
-def set_defaults(target: dict, defaults: dict) -> None:
-    """Apply set_default on target for each entry of a dictionary.
-
-    This checks if a key exists in target, and only if not the keys are set
-    with values. It does not checks recursively for nested entries.
-
-    NOTE: this might be obsolete since python 3.9, as there are direct
-    fallback assignments like: `target = defaults | target`
-    """
-    for key in defaults:
-        target.setdefault(key, defaults[key])
 
 
 def sub_cfg(cfg: dict, plot: str, key: str) -> dict:
@@ -1029,36 +879,6 @@ def cube_to_save_ploted_ts(data_dict: dict) -> Cube:
     )
     cube.add_dim_coord(coord, 0)
     return cube
-
-
-def _make_new_cube(cube):
-    """Make a new cube with an extra dimension for result of spell count."""
-    new_shape = (*cube.shape, 4)
-    new_data = iris.util.broadcast_to_shape(cube.data, new_shape, [0, 1, 2])
-    new_cube = Cube(new_data)
-    new_cube.add_dim_coord(
-        iris.coords.DimCoord(cube.coord("time").points, long_name="time"),
-        0,
-    )
-    new_cube.add_dim_coord(
-        iris.coords.DimCoord(
-            cube.coord("latitude").points,
-            long_name="latitude",
-        ),
-        1,
-    )
-    new_cube.add_dim_coord(
-        iris.coords.DimCoord(
-            cube.coord("longitude").points,
-            long_name="longitude",
-        ),
-        2,
-    )
-    new_cube.add_dim_coord(
-        iris.coords.DimCoord([0, 1, 2, 3], long_name="z"),
-        3,
-    )
-    return new_cube
 
 
 def runs_of_ones_array_spei(bits, spei) -> list:
