@@ -311,7 +311,7 @@ def set_defaults(cfg: dict) -> None:
         cfg["plot_kwargs_overwrite"].extend(defaults["plot_kwargs_overwrite"])
 
 
-def filter_metas(metas: list, filters: dict|list) -> list:
+def filter_metas(metas: list, filters: dict | list) -> list:
     """Filter metas by filter dicts."""
     if isinstance(filters, dict):
         filters = [filters]
