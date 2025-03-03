@@ -435,7 +435,7 @@ def runs_of_ones_array_spei(bits, spei) -> list:
     (run_ends,) = np.where(difs < 0)
     spei_sum = np.full(len(run_starts), 0.5)
     for iii, indexs in enumerate(run_starts):
-        spei_sum[iii] = np.sum(spei[indexs : run_ends[iii]])
+        spei_sum[iii] = np.sum(spei[indexs: run_ends[iii]])
     return [run_ends - run_starts, spei_sum]
 
 
@@ -495,7 +495,7 @@ def slice_cube_interval(cube: Cube, interval: list) -> Cube:
     For 3D cubes time needs to be first dim.
     """
     if isinstance(interval[0], int) and isinstance(interval[1], int):
-        return cube[interval[0] : interval[1], :, :]
+        return cube[interval[0]: interval[1], :, :]
     dt_start = dt.datetime.strptime(interval[0], "%Y-%m")
     dt_end = dt.datetime.strptime(interval[1], "%Y-%m")
     time = cube.coord("time")
