@@ -98,6 +98,7 @@ Automatic testing
 -  Remove portrait plot test recipe (:pull:`3871`) by :user:`schlunma`
 -  Restrict cron Github Actions tests to run from forks (:pull:`3894`) by :user:`valeriupredoi`
 -  Force mamba 2 in Github Actions that solve environment (:pull:`3929`) by :user:`valeriupredoi`
+-  Force install mamba2 in CircleCI and add ipython and pin it to <9.0 (:pull:`3947`) by :user:`valeriupredoi`
 
 Installation
 ~~~~~~~~~~~~
