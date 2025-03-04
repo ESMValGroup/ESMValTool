@@ -21,6 +21,7 @@ large variety of input data.
 .. toctree::
    :maxdepth: 1
 
+   recipe_benchmarking
    recipe_model_evaluation
    recipe_monitor
    recipe_portrait
@@ -92,6 +93,7 @@ Future projections
    recipe_wenzel16jclim
    recipe_wenzel16nat
    recipe_tcr
+   recipe_tcre
    recipe_tebaldi21esd
    recipe_climate_change_hotspot
    recipe_bock24acp

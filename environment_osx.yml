@@ -43,7 +43,7 @@ dependencies:
   - numpy !=1.24.3  # severe masking bug
   - openpyxl
   - packaging
-  - pandas==2.1.4  # unpin when ESMValCore released with https://github.com/ESMValGroup/ESMValCore/pull/2529
+  - pandas
   - pip !=21.3
   - progressbar2
   - prov
@@ -61,7 +61,7 @@ dependencies:
   - requests
   - ruamel.yaml
   - scikit-image
-  - scikit-learn >= 1.4.0  # github.com/ESMValGroup/ESMValTool/issues/3504
+  - scikit-learn >=1.4.0  # github.com/ESMValGroup/ESMValTool/issues/3504
   - scipy
   - seaborn
   - seawater
