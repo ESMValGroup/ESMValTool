@@ -1,0 +1,25 @@
+---
+# Filename
+filename: 'co2_surface-flask_ccgg_text.tar.gz'
+
+# Trace gas
+trace_gas: co2
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: NOAA-GML-SURFACE-FLASK-CO2
+  version: '1.0'
+  tier: 2
+  modeling_realm: atmos
+  project_id: OBS6
+  source: 'https://gml.noaa.gov/aftp/data/trace_gases/co2/flask/surface/co2_surface-flask_ccgg_text.tar.gz'
+  reference: 'noaa-gml-surface-flask-co2'
+
+# Variables to cmorize
+variables:
+  co2s:
+    mip: Amon
+    raw_name: co2s
+    raw_units: 'micromol mol-1'
+    standard_name: mole_fraction_of_carbon_dioxide_in_air
+    long_name: 'Mole Fraction of CO2'
