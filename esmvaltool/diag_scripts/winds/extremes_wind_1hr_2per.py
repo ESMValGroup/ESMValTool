@@ -1,7 +1,6 @@
 import csv
 import esmvalcore.preprocessor as eprep
 import iris
-from iris.util import equalise_attributes
 import cf_units
 import cftime
 import climextremes as cex
@@ -10,15 +9,13 @@ import logging
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-import glob
 from scipy.stats import genextreme as gev
 from scipy.stats import kstest, cramervonmises
 
 # import internal esmvaltool modules here
-from esmvaltool.diag_scripts.shared import run_diagnostic, select_metadata, group_metadata, get_diagnostic_filename, save_data, ProvenanceLogger
+from esmvaltool.diag_scripts.shared import run_diagnostic, select_metadata, group_metadata
 import esmvaltool.diag_scripts.shared.plot as eplot
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 # # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -54,6 +51,7 @@ def obtain_obs_info(ano_obs_cb, abs_obs_cb, groups, cfg):
     orig_nonstat_rp = np.exp(obs_non_stat['logReturnPeriod'][ana_arg])
 
     bootstrap_rps = list()
+    bootstrap_st_rps = list()
     rng = np.random.default_rng(501)
 
     for i in range(1000): 
@@ -63,6 +61,9 @@ def obtain_obs_info(ano_obs_cb, abs_obs_cb, groups, cfg):
                                locationFun=1, initial={'location':float(np.around(obs_stat['mle'][0],2)),
                                             'scale':float(np.around(obs_stat['mle'][1],2)), 
                                             'shape':float(np.around(obs_stat['mle'][2],2))}, getParams=True)
+        temp_st_gev = cex.fit_gev(ano_obs_arr[for_fit_indices], initial={'location':float(np.around(obs_stat['mle'][0],2)),
+                                            'scale':float(np.around(obs_stat['mle'][1],2)), 
+                                            'shape':float(np.around(obs_stat['mle'][2],2))}, getParams=True)
         try:
             temp_loc = temp_gev['mle'][0] + temp_gev['mle'][1]*ana_gsat
             temp_rp = np.around(1/gev.sf(ana_year_value, -1*temp_gev['mle'][3],
@@ -70,10 +71,17 @@ def obtain_obs_info(ano_obs_cb, abs_obs_cb, groups, cfg):
             bootstrap_rps.append(temp_rp)
         except:
             bootstrap_rps.append(np.nan)
+        try:
+            temp_st_rp = np.around(np.exp(temp_st_gev['logReturnPeriod'][0]), 1)
+            bootstrap_st_rps.append(temp_st_rp)
+        except:
+            bootstrap_st_rps.append(np.nan)
     
     bootstrap_rps = np.asarray(bootstrap_rps)
+    bootstrap_st_rps = np.asarray(bootstrap_st_rps)
 
     rp_perc = np.nanpercentile(bootstrap_rps, [5,10,50,90,95]).round(1)
+    rp_st_perc = np.nanpercentile(bootstrap_st_rps, [5,10,50,90,95]).round(1)
 
     era_csv = open(os.path.join(cfg['work_dir'], 'gev_era_data_'+cfg['region'].lower()+'_'+cfg['ax_var_label'].lower()+'.csv'), 'w', newline='')
     era_csv_writer = csv.writer(era_csv, delimiter=',')
@@ -89,6 +97,9 @@ def obtain_obs_info(ano_obs_cb, abs_obs_cb, groups, cfg):
     era_csv_writer.writerow(list(obs_stat['mle_names']))
     era_csv_writer.writerow(list(obs_stat['mle']))
     era_csv_writer.writerow(['ERA5 stationary return period', str(np.around(orig_stat_rp,1))])
+    era_csv_writer.writerow(['Bootstrapped uncertanties on ERA5 stationary return period'])
+    era_csv_writer.writerow(['5_perc', '10_perc', '50_perc', '90_perc', '95_perc'])
+    era_csv_writer.writerow(rp_st_perc)
     era_csv.close()
 
     obs_gev_data={'gev_param_names' : obs_non_stat['mle_names'],
@@ -98,6 +109,8 @@ def obtain_obs_info(ano_obs_cb, abs_obs_cb, groups, cfg):
                   'ana_gsat_value': ana_gsat, 
                   'ana_year_RP': orig_nonstat_rp,
                   'ana_year_RP_CI': rp_perc,
+                #   'ana_year_RP': orig_stat_rp,
+                #   'ana_year_RP_CI': rp_st_perc,
                   'ano_obs_cb': ano_obs_cb,
                   'smoothed_gsat':gsat_smooth_arr}
 
@@ -107,7 +120,6 @@ def obtain_obs_info(ano_obs_cb, abs_obs_cb, groups, cfg):
 def get_era_wxx(cfg):
 
     wind_dir = cfg['ERA_wind_loc']
-    work_dir = cfg['work_dir']
     aux_dir = cfg['auxiliary_data_dir']
 
     dates_csv = open(os.path.join(cfg['work_dir'], 'dates_max_wind.csv'), 'w', newline='')
@@ -209,9 +221,9 @@ def bootstrap_gev(data_dic):
 def make_uncert_figures(data_dic, cfg, border):
 
     colors = {}
-    colors['wind_now'] = (196 / 255, 121 / 255, 0)
-    colors['wind_nat'] = (0, 79 / 255, 0)
-    colors['wind_fut'] = (69 / 255, 118 / 255, 191 / 255)
+    colors['wind_now'] = '#c57900'
+    colors['wind_nat'] = '#005000'
+    colors['wind_fut'] = '#8036A8'
 
     exp_list = list(data_dic.keys())  ; exp_list.remove('obs_info') 
     models = list(data_dic[exp_list[0]].keys())
@@ -327,9 +339,10 @@ def make_hist_figure(data_dic, cfg, uncert_band, border):
 
     quantile_measures = np.arange(0, 1.01, 0.01); quantile_measures[0] = 0.001
 
-    colors = {'wind_now' : (196 / 255, 121 / 255, 0), 
-              'wind_nat' : (0, 79 / 255, 0), 
-              'wind_fut' : (69 / 255, 118 / 255, 191 / 255)}
+    colors = {}
+    colors['wind_now'] = '#c57900'
+    colors['wind_nat'] = '#005000'
+    colors['wind_fut'] = '#8036A8'
 
     csv_file = open(os.path.join(cfg['work_dir'], 'gev_'+cfg['region']+'_'+cfg['ax_var_label'] +'_parameters.csv'), 'w', newline='')
     gevs_csv_writer = csv.writer(csv_file, delimiter=',')
@@ -390,7 +403,7 @@ def make_hist_figure(data_dic, cfg, uncert_band, border):
             x_gev = uncert_band[exp_key][model]['x_gev']
             w_distr_par = cex.fit_gev(distrib_data, getParams=True)
             try:
-                w_distr_loc = w_distr_par['mle'][0]; w_distr_scale = w_distr_par['mle'][1]; 
+                w_distr_loc = w_distr_par['mle'][0]; w_distr_scale = w_distr_par['mle'][1] 
                 w_distr_shape = w_distr_par['mle'][2]
             except:
                 w_distr_loc = np.nan ; w_distr_scale = np.nan ; w_distr_shape = np.nan
@@ -432,14 +445,14 @@ def make_hist_figure(data_dic, cfg, uncert_band, border):
             pract_quants = np.quantile(distrib_data, quantile_measures)
             ax_qq.scatter(theor_quants, pract_quants, edgecolors=colors[exp_key], marker='o', facecolors='None', lw=0.75, label=cfg['name_' + exp_key], zorder=3)
             ax_surv.plot(x_gev, 1/w_survival, color=colors[exp_key], zorder=3)
-            ax_hist.scatter(intens, 0, s=100)
+            # ax_hist.scatter(intens, 0, s=100)
         gevs_csv_writer.writerow(model_row)
         risk_csv_writer.writerow(risk_model_row)
 
         ylims = ax_hist.get_ylim()
         ax_hist.set_ylim(*ylims)
 
-        ax_hist.text(border[1]/2.5, ylims[1]*0.65,'  Number of\nrealisations ' +str(len(ens_cubelist)), fontsize='large')
+        # ax_hist.text(border[1]/2.5, ylims[1]*0.65,'  Number of\nrealisations ' +str(len(ens_cubelist)), fontsize='large')
         ax_hist.vlines(event, *ylims, color = 'indianred', linestyle = 'solid', lw=1.5, zorder=1, label = 'ERA5 ('+str(cfg['analysis_year'])+')')
         ax_hist.vlines(mock_event_int, *ylims, color = 'indianred', linestyle = 'dashed', lw=1.5, zorder=1, label = 'mock event')
 
