@@ -8,7 +8,6 @@ Changelog
 
 v2.12.0
 -------
-
 Highlights
 
 - Recipe :ref:`recipe_portrait_CMIP.yml <recipe_portrait>` allows the creation
