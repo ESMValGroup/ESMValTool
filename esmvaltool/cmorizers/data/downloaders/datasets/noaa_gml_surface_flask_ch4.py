@@ -1,5 +1,10 @@
 """Script to download NOAA Global Monitoring Lab surface flask data
-for CH4 from NOAA's archive."""
+for CH4 from NOAA's archive.
+
+File to download:
+https://gml.noaa.gov/aftp/data/trace_gases/ch4/flask/surface/
+    ch4_surface-flask_ccgg_text.tar.gz
+"""
 import logging
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
