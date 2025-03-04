@@ -92,6 +92,7 @@ commands:
             mkdir /logs
             mamba --version
             mamba install -c conda-forge "mamba>=2"
+            mamba --help
             mamba shell init
             mamba env create
             conda activate esmvaltool
