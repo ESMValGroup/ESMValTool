@@ -90,9 +90,9 @@ commands:
             # Install
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            mamba shell init
             mamba --version
             mamba install -c conda-forge "mamba>=2"
+            mamba shell init
             mamba env create
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
