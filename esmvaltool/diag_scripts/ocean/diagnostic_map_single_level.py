@@ -45,7 +45,11 @@ def main(config):
          control, experiment, observation)
 
     # Pick a value for level.
-    levels = [2, 50, 100, 300]
+    if (experiment.long_name == 'Sea Surface Temperature'
+            or experiment.long_name == 'Sea Surface Salinity'):
+        levels = [1]
+    else:
+        levels = [2, 50, 100, 300]
     for level in levels:
         experiment_single_level = extract_global_single_level(
             experiment, level)
@@ -239,16 +243,20 @@ def extract_global_single_level(cube, level):
     iris cube
         The extracted single level cube.
     """
-    print(f'{cube.shape=}')
-    if len(cube.coord('depth').points) == 1:
-        # 2D cube - Sea Surface
+    print("cube.shape", cube.shape)
+    if cube.shape == (1207, 1442):
+        # 2D cube - Sea Surface (experiment & control)
         single_level = cube
+    elif cube.shape == (1, 1207, 1442) or cube.shape == (1, 1, 1207, 1442):
+        # 2D cube - Sea Surface (observation)
+        single_level = cube
+        single_level = iris.util.squeeze(single_level)
     else:
-        # 3D cube - select relevant level
+        # 3D cube - Sea Water Potential
         constraint = iris.Constraint(depth=level)
         single_level = cube.extract(constraint)
+        single_level = iris.util.squeeze(single_level)
 
-    single_level = iris.util.squeeze(single_level)
     print(f'{single_level.shape=}')
     return single_level
 
@@ -369,8 +377,14 @@ def create_quadmap(experiment_single_level,
     # prepare image and figure
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(9, 6))
     level = str(level)
-    fig.suptitle(experiment_single_level.long_name + ' at ' + level + 'm',
-                 fontsize=14)
+
+    if (experiment_single_level.long_name == 'Sea Surface Temperature'
+            or experiment_single_level.long_name == 'Sea Surface Salinity'):
+        fig.suptitle(experiment_single_level.long_name)
+    else:
+        fig.suptitle(experiment_single_level.long_name + ' at ' + level + 'm',
+                     fontsize=14)
+
     plot_global_single_level(ax1, experiment_single_level, linspace1,
                              "experiment")
     plot_global_single_level(ax2, experiment_minus_control_single_level,
