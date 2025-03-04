@@ -1,8 +1,8 @@
 ---
-filename: sic_pss25_{year}.*.nc
+filename: sic_psn25_{year}.*.nc
 # Common global attributes for Cmorizer output
 attributes:
-  dataset_id: NSIDC-G02202-sh
+  dataset_id: NSIDC-G02202-nh
   version: '5'
   tier: 3
   modeling_realm: reanaly
@@ -20,4 +20,4 @@ variables:
 
 custom:
   create_areacello: true
-  area_file: pss25area_v3.dat
+  area_file: psn25area_v3.dat
