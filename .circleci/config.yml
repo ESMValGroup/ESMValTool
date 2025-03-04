@@ -90,9 +90,10 @@ commands:
             # Install
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
+            mamba --version
+            mamba install -c conda-forge "mamba>=2"
             mamba env create
             conda activate esmvaltool
-            mamba list  # to produce some stdout so job doesn't go over 10min with no stdout
             mamba list >> /logs/conda.txt
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
