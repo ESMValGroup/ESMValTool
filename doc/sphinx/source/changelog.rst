@@ -21,7 +21,7 @@ Backwards incompatible changes
 -  Remove recipe filler utility (:pull:`3777`) by :user:`schlunma`.
    ESMValTool accepts the use of wildcards in the recipe, and a filled
    version of the recipe is automatically created and stored in the 
-   ``run`` directory. 
+   `run` directory. 
 
 Deprecations
 ~~~~~~~~~~~~
