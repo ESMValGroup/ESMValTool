@@ -102,7 +102,7 @@ diagnostics:
       obs_gsat:
         short_name: tas
         start_year: 1940
-        end_year: 2022
+        end_year: 2023
         mip: Amon
         version: v1
         preprocessor: preproc_era_gsat 
@@ -113,10 +113,10 @@ diagnostics:
         mpl_style: ipcc_ar6_fgd
         shape_region: pei_ns_nb_newfoundland.shp
         reference_period: [1950, 1979]
-        model_weighting: True # determines, if each realisation gets a weight of 1 (false) or 1/number of relisation
+        model_weighting: False # determines, if each realisation gets a weight of 1 (false) or 1/number of relisation
         name_wind_now: 2008-2037 # this is needed for legend, it's name_{name of a group}
         name_wind_nat: 1950-1979 
-        ERA_wind_loc: /space/hall5/sitestore/eccc/crd/ccrn/users/emr001/OBS/Tier3/ERA5/E1hr/sfcWind/
+        ERA_wind_loc: /space/hall6/sitestore/eccc/crd/ccrn/users/emr001/CMOROBS/reanaly/ERA5/v1/1hrPt/sfcWind/
         region: Atlantic Canada # needed for the figure title
         season: JJASO
         ax_var_label: windspeed # needed for axis name
