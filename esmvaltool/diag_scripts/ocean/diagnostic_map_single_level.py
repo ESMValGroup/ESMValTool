@@ -11,6 +11,7 @@ import numpy as np
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic, save_figure
 
+# Create a logger object.
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
@@ -22,34 +23,37 @@ def main(config):
     Parameters
     ----------
     config : dictionary
-        configuration dictionary that contains
-        all the necessary informationfor the function to run.
-        It includes details about the
-        models, observational datasets, file paths, and other settings.
+        configuration dictionary that contains all the necessary information
+        for the function to run. It includes details about the models,
+        observational datasets, file paths, and other settings.
     """
 
-    # function starts by loading the config files.
-    # this contains info about the models, obs, file paths and settings.
-
+    # Call load_data function
     control, experiment, observation = load_data(config)
 
-    fix_cube(cube_to_fix=control, cube_with_good_values=observation)
+    # Call fix_cube function
     fix_cube(cube_to_fix=experiment, cube_with_good_values=observation)
+    fix_cube(cube_to_fix=control, cube_with_good_values=observation)
 
-    remove_extra_time_axis(control)
+    # Call remove_extra_time_axis for each cube
     remove_extra_time_axis(experiment)
+    remove_extra_time_axis(control)
     remove_extra_time_axis(observation)
 
+    # Call create_plotting_data
     (experiment, experiment_minus_control, control_minus_observation,
      experiment_minus_observation) = create_plotting_data(
          control, experiment, observation)
 
-    # Pick a value for level.
+    # If 'Sea Surface' set only 1 level to plot. Otherwise set array of levels.
+    # Level is the chosen depth we wish to plot.
     if (experiment.long_name == 'Sea Surface Temperature'
             or experiment.long_name == 'Sea Surface Salinity'):
         levels = [1]
     else:
         levels = [2, 50, 100, 300]
+
+    # Loop over levels to extract_single_level.
     for level in levels:
         experiment_single_level = extract_global_single_level(
             experiment, level)
@@ -60,6 +64,7 @@ def main(config):
         experiment_minus_observation_single_level = (
             extract_global_single_level(experiment_minus_observation, level))
 
+        # Call create_quadmap, which contains plot_global_single_level
         create_quadmap(experiment_single_level,
                        experiment_minus_control_single_level,
                        control_minus_observation_single_level,
@@ -88,21 +93,11 @@ def load_data(config):
         Data as defined as exper_model from the recipe.
     observation : iris cube
         Data as defined as observational_dataset from the recipe.
-
-    Notes
-    -----
-    For each file listed in the input_files section of the configuration,
-    the function logs the filename. This helps in tracking which files are
-    being processed.
-
-    The function retrieves the input files using the
-    diagtools.get_input_files function.
-    This prepares the necessary data files for further processing.
     """
 
-    # The datasets defined by
-    # control_model, exper_model, observational_datasets in the recipe
-    # determine what is loaded in this function.
+    # The datasets defined by:
+    # control_model, exper_model, observational_datasets
+    # in the recipe determine what is loaded in this function.
     ctl_label_from_recipe = 'control_model'
     exp_label_from_recipe = 'exper_model'
     obs_label_from_recipe = 'observational_dataset'
@@ -110,29 +105,24 @@ def load_data(config):
     # Getting all input files from configuration.
     input_files = diagtools.get_input_files(config)
 
-    # Get control input files from config
-    ctl_filename = diagtools.match_model_to_key(ctl_label_from_recipe,
-                                                config[ctl_label_from_recipe],
-                                                input_files)
     # Get experiment input files from config
     exp_filename = diagtools.match_model_to_key(exp_label_from_recipe,
                                                 config[exp_label_from_recipe],
+                                                input_files)
+    # Get control input files from config
+    ctl_filename = diagtools.match_model_to_key(ctl_label_from_recipe,
+                                                config[ctl_label_from_recipe],
                                                 input_files)
     # Get observation input files from config
     obs_filename = diagtools.match_model_to_key(obs_label_from_recipe,
                                                 config[obs_label_from_recipe],
                                                 input_files)
-    print(f'{ctl_filename=}')
-    control = iris.load_cube(ctl_filename)
-    print(f'{exp_filename=}')
+
+    # Set variable names to filename cubes above.
     experiment = iris.load_cube(exp_filename)
-    print(f'{obs_filename=}')
+    control = iris.load_cube(ctl_filename)
     observation = iris.load_cube(obs_filename)
 
-    print(f'{control=}')
-    print(f'{experiment=}')
-    print(f'{observation=}')
-    print("load_data success")
     return control, experiment, observation
 
 
@@ -142,17 +132,17 @@ def fix_cube(cube_to_fix, cube_with_good_values):
 
     Parameters
     ----------
-    cube_to_fix :
+    cube_to_fix : iris cube
         The cubes experiment and control with bad coord values.
-    cube_with_good_values :
+    cube_with_good_values : iris cube
         The cube observation with the good coord values.
     """
+
     # This is necessary for subtracting one cube from another.
     cube_to_fix.coord("latitude").points[:] = cube_with_good_values.coord(
         "latitude").points
     cube_to_fix.coord("longitude").points[:] = cube_with_good_values.coord(
         "longitude").points
-    print("fix_cube success")
 
 
 def remove_extra_time_axis(cube):
@@ -186,7 +176,6 @@ def remove_extra_time_axis(cube):
         # If the cube has a time_counter coordinate, the function removes it.
         if time_counter_coord:
             cube.remove_coord(time_counter_coord)
-    print("remove_extra_time success")
 
 
 def create_plotting_data(control, experiment, observation):
@@ -240,24 +229,26 @@ def extract_global_single_level(cube, level):
 
     Returns
     -------
-    iris cube
+    single_level: iris cube
         The extracted single level cube.
     """
-    print("cube.shape", cube.shape)
+    # Making all cubes 2D for plotting.
     if cube.shape == (1207, 1442):
         # 2D cube - Sea Surface (experiment & control)
+        # If cube is 2D, make no change.
         single_level = cube
     elif cube.shape == (1, 1207, 1442) or cube.shape == (1, 1, 1207, 1442):
         # 2D cube - Sea Surface (observation)
+        # If cube has depth coords = 1, squeeze.
         single_level = cube
         single_level = iris.util.squeeze(single_level)
     else:
         # 3D cube - Sea Water Potential
+        # For 3D cubes, select level squeeze.
         constraint = iris.Constraint(depth=level)
         single_level = cube.extract(constraint)
         single_level = iris.util.squeeze(single_level)
 
-    print(f'{single_level.shape=}')
     return single_level
 
 
@@ -266,28 +257,23 @@ def plot_global_single_level(axis, cube, contour_levels, title):
 
     Parameters
     ----------
+    axis: matplotlib 'ax'
+        Represents one (sub-)plot in a figure.
+        It contains the plotted data, axis ticks, labels, title, legend, etc.
     cube : iris cube
         This is a data structure that contains the climate data to be plotted.
         Including information like temperature values, latitude, longitude,
         and depth.
-    cmap : str
-        This is a string that specifies the color map to be used for the plot.
+    contour_levels : numpy.array
+        Used to set the ticks on the colour bar and used to define
+        levels for the contour plot.
     title : str
         This is a string that will be used as the title of the subplot.
-    nspace : numpy.array
-        nspace is used to set the ticks on the colour bar and used to define
-        levels for the contour plot.
-
-    Returns
-    -------
-    plot of single depth (called four times)
-
-    Notes
-    -----
-    The plots are then saved as image files in the specified directory.
     """
+    # Setting the colour of axis 1 always to viridis.
     if title == "experiment":
         cmap = 'viridis'
+    # Setting the colour of all other plots to bwr.
     else:
         cmap = 'bwr'
 
@@ -296,17 +282,20 @@ def plot_global_single_level(axis, cube, contour_levels, title):
                                                          ccrs.PlateCarree(),
                                                          nx=400,
                                                          ny=200)
-    # Set at the top of the function.s
+
+    # Sets the current Axes instance to the specified axis
     plt.sca(axis)
 
-    # The function then creates a filled contour plot of the projected data.
+    # Creates a filled contour plot of the projected data.
     contour_result = iplt.contourf(new_cube,
                                    levels=contour_levels,
                                    linewidth=0,
                                    cmap=plt.cm.get_cmap(cmap))
 
+    # Converts contour_levels to a numpy array.
     contour_levels = np.array(contour_levels)
 
+    # Checks if the contour plot was created successfully
     if contour_result is None:
         raise ValueError(
             "Failed to create contour plot. The plt object is None.")
@@ -320,71 +309,68 @@ def plot_global_single_level(axis, cube, contour_levels, title):
     ])
     # Coastlines are added to the map to provide geographical context.
     plt.gca().coastlines()
-    # title plotted
+
+    # Sets the title of the plot
     plt.title(title)
+
+    # Display the plots
     iplt.show()
-
-
-#    return qplot
 
 
 def create_quadmap(experiment_single_level,
                    experiment_minus_control_single_level,
                    control_minus_observation_single_level,
                    experiment_minus_observation_single_level, level):
-    """The function starts by specifying the position of each of the plots in
-    the quadmap. We want this to be set.
+    """Adds all subplots to a main plot with positions of plots pre-set.
 
     Parameters
     ----------
-    experiment_plot : iris cube
-        Untouched experimental input.
-    experiment_minus_control_plot : iris cube
-        Experiment model minus control model.
-    control_minus_observation_plot : iris cube
-        Control model minus observational dataset.
-    experiment_minus_observation_plot : iris cube
-        Experimental model minus observational dataset.
+    experiment_single_level : iris cube
+        Extracted single level of experiment cube.
+    experiment_minus_control_single_level : iris cube
+        Extracted single level of experiment_minus_control cube.
+    control_minus_observation_single_level : iris cube
+        Extracted single level of control_minus_observation cube.
+    experiment_minus_observation_single_level : iris cube
+        Extracted single level of experiment_minus_observation cube.
+    level : str
+        Set depth that we wish to plot.
 
     Returns
     -------
     quadmap :
         Make the four pane model vs model vs obs comparison plot
-
-    Notes
-    -----
-    Set the number that tells the function where to place the map within the
-    larger figure. 224 means the map will be placed in the fourth position
-    of a 2x2 grid. We want this to be unchanged.
-
-    The function matches the mo    ProvenanceLogger,
-    group_metadata,dels to their respective keys using the
-    information in the configuration dictionary.
     """
-    # Setting cmap and nspace.
-
-    # fig.title and plt.title
-
+    # Setting zrange1 that is used for axis1
     zrange1 = diagtools.get_cube_range([experiment_single_level])
+
     if (experiment_single_level.long_name == 'Sea Surface Salinity'
             or experiment_single_level.long_name == 'Sea Water Salinity'):
+        # zrange2 set for salinity at -2,2 due to a smaller range.
         zrange2 = [-2.0, 2.0]
     else:
+        # zrange2 set for all other plots (temp)
         zrange2 = [-5.0, 5.0]
 
+    # Generates 12 evenly spaced values between zrange1[0] and zrange1[1]
     linspace1 = np.linspace(zrange1[0], zrange1[1], 12, endpoint=True)
+    # Generates 12 evenly spaced values between zrange2[0] and zrange2[1]
     linspace2 = np.linspace(zrange2[0], zrange2[1], 12, endpoint=True)
-    # prepare image and figure
+
+    # Prepare image and figure with a 2x2 grid of subplots
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(9, 6))
     level = str(level)
 
+    # Set the figure title for Sea Surface to include depth level.
     if (experiment_single_level.long_name == 'Sea Surface Temperature'
             or experiment_single_level.long_name == 'Sea Surface Salinity'):
         fig.suptitle(experiment_single_level.long_name)
+    # Set the figure for others to include the depth level plotted.
     else:
         fig.suptitle(experiment_single_level.long_name + ' at ' + level + 'm',
                      fontsize=14)
 
+    # Calling the plot_global_single_level plot with set parameters
     plot_global_single_level(ax1, experiment_single_level, linspace1,
                              "experiment")
     plot_global_single_level(ax2, experiment_minus_control_single_level,
@@ -394,15 +380,18 @@ def create_quadmap(experiment_single_level,
     plot_global_single_level(ax4, experiment_minus_observation_single_level,
                              linspace2, "experiment minus observation")
 
-    # Saving files:
+    # Prepare to save the figure
     fn_list = [experiment_single_level.long_name, str(level)]
     input_files = diagtools.get_input_files(config)
     image_extention = diagtools.get_image_format(config)
 
+    # Construct the file path for saving the plot
     path = diagtools.folder(
         config['plot_dir']) + '_'.join(fn_list) + str(level)
     path = path.replace(' ', '') + image_extention
     logger.info('Saving plots to %s', path)
+
+    # Prepare provenance record for the plot
     provenance_record = diagtools.prepare_provenance_record(
         config,
         caption=f'Quadmap models comparison against observation level={level}',
@@ -414,6 +403,8 @@ def create_quadmap(experiment_single_level,
         plot_type=['map'],
         ancestors=list(input_files.keys()),
     )
+
+    # Save the figure and close it
     save_figure('_'.join(fn_list), provenance_record, config, fig, close=True)
 
 
