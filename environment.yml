@@ -17,7 +17,6 @@ dependencies:
   - cfgrib
   - cftime
   - cmocean
-  - curl <8.10  # https://github.com/ESMValGroup/ESMValTool/issues/3758
   - cython
   - dask !=2024.8.0  # https://github.com/dask/dask/issues/11296
   - distributed
@@ -97,12 +96,6 @@ dependencies:
   # - vprof not on conda-forge
   - yamllint ==1.35.1
   - yapf ==0.32.0
-
-  # NCL and dependencies
-  - ncl >=6.6.2
-  - cdo
-  - imagemagick
-  - nco
 
   # R and dependencies
   - cdo
