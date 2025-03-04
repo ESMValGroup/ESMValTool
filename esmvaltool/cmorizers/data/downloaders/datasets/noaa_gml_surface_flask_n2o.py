@@ -1,10 +1,4 @@
-"""Script to download NOAA Global Monitoring Lab surface flask data
-for N2O from NOAA's archive.
-
-File to download:
-https://gml.noaa.gov/aftp/data/trace_gases/n2o/flask/surface/
-    n2o_surface-flask_ccgg_text.tar.gz
-"""
+"""Script to download NOAA GML surface N2O flask data from its website."""
 import logging
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader

@@ -1,10 +1,4 @@
-"""Script to download NOAA Global Monitoring Lab surface flask data
-for CO2 from NOAA's archive.
-
-File to download:
-https://gml.noaa.gov/aftp/data/trace_gases/co2/flask/surface/
-    co2_surface-flask_ccgg_text.tar.gz
-"""
+"""Script to download NOAA GML surface CO2 flask data from its website."""
 import logging
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
