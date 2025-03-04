@@ -16,20 +16,21 @@ Download and processing instructions
     https://gml.noaa.gov/aftp/data/trace_gases/n2o/flask/surface/n2o_surface-flask_ccgg_text.tar.gz
 """
 
-import os
-import logging
+from datetime import datetime
+from typing import NamedTuple
+from pys2index import S2PointIndex
+from fsspec.implementations.tar import TarFileSystem
+
 import cf_units
 import dask.array as da
 import iris
 import iris.coords
 import iris.cube
-import pandas as pd
+import logging
 import numpy as np
+import os
+import pandas as pd
 import requests
-from datetime import datetime
-from typing import NamedTuple
-from pys2index import S2PointIndex
-from fsspec.implementations.tar import TarFileSystem
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -67,22 +68,29 @@ class FlaskStations(NamedTuple):
 
 
 def get_station_dict():
-    """
-    Get station information from online table:
-        'Code', 'Name', 'Country', 'Latitude', 'Longitude',
-        'Elevation (meters)', 'Time from GMT', 'Project'
+    """Get station information from online table:
+
+    'Code', 'Name', 'Country', 'Latitude', 'Longitude',
+    'Elevation (meters)', 'Time from GMT', 'Project'
     """
     url = "https://www.esrl.noaa.gov/gmd/dv/site/?program=ccgg"
-    stat_list = pd.read_html(requests.get(url).content)
-    stats = stat_list[-1]
-    # Remove asterisk from station names (flags inactive stations)
-    stats['Code'] = stats['Code'].str.replace('*', '')
-    stats.set_index("Code", drop=False, inplace=True)
-    station_dict = stats.to_dict(orient="index")
+    try:
+        r = requests.get(url, timeout=30).content
+    except requests.exceptions.Timeout:
+        logger.debug(f'Request timed out for URL {url}')
+        r = None
+        station_dict = None
+    if r is not None:
+        stat_list = pd.read_html(r)
+        stats = stat_list[-1]
+        # Remove asterisk from station names (flags inactive stations)
+        stats['Code'] = stats['Code'].str.replace('*', '')
+        stats.set_index("Code", drop=False, inplace=True)
+        station_dict = stats.to_dict(orient="index")
     return station_dict
 
 
-def load_file(filesystem, filepath, filelist, station_dict):
+def load_file(filesystem, filepath, station_dict):
     """Load NOAA GML surface flask station data from the text file."""
     # Determine how many lines to skip in the header
     skiprows = 0
@@ -104,24 +112,25 @@ def load_file(filesystem, filepath, filelist, station_dict):
     # Fetch data from station dictionary if available:
     # code, full_name, country, latitude, longitude, elevation, timezone
     site_code = filepath.split('/')[-1].split('_')[1].upper()
-    if site_code in station_dict.keys():
-        site_name = station_dict[site_code]['Name']
-        site_country = station_dict[site_code]['Country']
-        site_latitude = station_dict[site_code]['Latitude']
-        site_longitude = station_dict[site_code]['Longitude']
-        site_elevation = station_dict[site_code]['Elevation (meters)']
-        site_utc2lst = station_dict[site_code]['Time from GMT']
-    else:
-        site_name = 'N/A'
-        site_country = 'N/A'
-        site_latitude = np.nan
-        site_longitude = np.nan
-        site_elevation = np.nan
-        site_utc2lst = 'N/A'
+    site_name = 'N/A'
+    site_country = 'N/A'
+    site_latitude = np.nan
+    site_longitude = np.nan
+    site_elevation = np.nan
+    site_utc2lst = 'N/A'
+    if isinstance(station_dict, dict):
+        if site_code in station_dict.keys():
+            site_name = station_dict[site_code]['Name']
+            site_country = station_dict[site_code]['Country']
+            site_latitude = station_dict[site_code]['Latitude']
+            site_longitude = station_dict[site_code]['Longitude']
+            site_elevation = station_dict[site_code]['Elevation (meters)']
+            site_utc2lst = station_dict[site_code]['Time from GMT']
+        
     # Check if site location is available otherwise return None
     if np.any(np.isnan([site_latitude, site_longitude])):
         return None
-    else:
+    if np.any(~ np.isnan([site_latitude, site_longitude])):
         # Datetime index
         data_frame.index = pd.to_datetime(
             data_frame['year'].astype(str)
