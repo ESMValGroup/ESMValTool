@@ -1,10 +1,10 @@
 
 .. _api.esmvaltool.diag_scripts.droughts.diffmap:
 
-Calculation and plotting of drought metrics following Martin (2018)
-===================================================================
+Difference Maps
+===============
 
-.. automodule:: esmvaltool.diag_scripts.droughts.collect_drought
+.. automodule:: esmvaltool.diag_scripts.droughts.diffmap
    :no-members:
    :no-inherited-members:
    :no-show-inheritance:
