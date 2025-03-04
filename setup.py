@@ -39,6 +39,7 @@ REQUIREMENTS = {
         'fire',
         'fsspec',
         'GDAL',
+        'ipython<9.0',  # github.com/ESMValGroup/ESMValCore/issues/2680
         'jinja2',
         'joblib',
         'lime',
