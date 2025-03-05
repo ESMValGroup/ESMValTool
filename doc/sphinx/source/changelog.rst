@@ -8,10 +8,16 @@ Changelog
 
 v2.12.0
 -------
+
 Highlights
+~~~~~~~~~~
 
 - Recipe :ref:`recipe_portrait_CMIP.yml <recipe_portrait>` allows the creation
   of portrait plots to visualize performance metrics.
+
+- A set of new :ref:`recipes <recipe_benchmarking>` allow plotting
+  arbitrary preprocessor output to benchmark a model simulation with
+  other datasets.
 
 This release includes
 
