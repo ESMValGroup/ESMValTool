@@ -28,6 +28,17 @@ Deprecations
 
 -  Adapt ESMValTool to new configuration (:pull:`3761`) by :user:`schlunma`
 
+   - The single configuration file ``config-user.yml`` has been deprecated in favour of configuration directories.
+     By default, the directory ``~/.config/esmvaltool`` will be considered.
+     To switch to the new format run:
+
+       .. code-block:: bash
+
+          mkdir -p ~/.config/esmvaltool && mv ~/.esmvaltool/config-user.yml ~/.config/esmvaltool
+
+     You can also specify the location of the configuration directory with the ``--config_dir`` flag.
+     Please refer to :ref:`esmvalcore:config` for a detailed description on how to configure the tool.
+
 Bug fixes
 ~~~~~~~~~
 
@@ -99,6 +110,7 @@ Automatic testing
 -  Restrict cron Github Actions tests to run from forks (:pull:`3894`) by :user:`valeriupredoi`
 -  Force mamba 2 in Github Actions that solve environment (:pull:`3929`) by :user:`valeriupredoi`
 -  Force install mamba2 in CircleCI and add ipython and pin it to <9.0 (:pull:`3947`) by :user:`valeriupredoi`
+-  Use mamba>=2 for Circle CI upstream development test  (:pull:`3949`) by :user:`valeriupredoi`
 
 Installation
 ~~~~~~~~~~~~
