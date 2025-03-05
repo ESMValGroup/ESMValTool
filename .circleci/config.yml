@@ -293,7 +293,6 @@ workflows:
       - run_tests
       - test_installation_from_source_test_mode
       - test_installation_from_source_develop_mode
-      - test_upstream_development  # remove in PR
   nightly:
     triggers:
       - schedule:
