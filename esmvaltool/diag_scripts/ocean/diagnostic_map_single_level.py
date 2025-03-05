@@ -4,9 +4,11 @@ import sys
 
 import cartopy.crs as ccrs
 import iris
+import iris.analysis.cartography
 import iris.plot as iplt
 import matplotlib.pyplot as plt
 import numpy as np
+from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic, save_figure
@@ -123,7 +125,7 @@ def load_data(config):
     control = iris.load_cube(ctl_filename)
     observation = iris.load_cube(obs_filename)
 
-    return control, experiment, observation
+    return experiment, control, observation
 
 
 def fix_cube(cube_to_fix, cube_with_good_values):
@@ -233,18 +235,16 @@ def extract_global_single_level(cube, level):
         The extracted single level cube.
     """
     # Making all cubes 2D for plotting.
-    if cube.shape == (1207, 1442):
-        # 2D cube - Sea Surface (experiment & control)
-        # If cube is 2D, make no change.
+
+    if len(cube.shape) == 2:
+        # If cube.shape is already 2D make no change
         single_level = cube
-    elif cube.shape == (1, 1207, 1442) or cube.shape == (1, 1, 1207, 1442):
-        # 2D cube - Sea Surface (observation)
-        # If cube has depth coords = 1, squeeze.
-        single_level = cube
-        single_level = iris.util.squeeze(single_level)
+    elif len(cube.shape) > 2 and cube.shape[0] == 1 and (cube.shape[1] == 1 or
+                                                         len(cube.shape) == 3):
+        # If the cube.shape is (1, 1, 1207, 1442) or (1, 1207, 1442)
+        single_level = iris.util.squeeze(cube)
     else:
-        # 3D cube - Sea Water Potential
-        # For 3D cubes, select level squeeze.
+        # 3D cube - Takes cubes with depth levels and extracts one
         constraint = iris.Constraint(depth=level)
         single_level = cube.extract(constraint)
         single_level = iris.util.squeeze(single_level)
@@ -307,6 +307,19 @@ def plot_global_single_level(axis, cube, contour_levels, title):
         (contour_levels.max() + contour_levels.min()) / 2.,
         contour_levels.max()
     ])
+    # Adding lat/lon grids.
+    fontsize = 7
+    ax = plt.gca()
+    gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True)
+    gl.xlines = False
+    gl.ylines = False
+    gl.top_labels = False
+    gl.right_labels = False
+    gl.xlabel_style = {'size': fontsize, 'color': 'gray'}
+    gl.ylabel_style = {'size': fontsize, 'color': 'gray'}
+    gl.xformatter = LONGITUDE_FORMATTER
+    gl.yformatter = LATITUDE_FORMATTER
+
     # Coastlines are added to the map to provide geographical context.
     plt.gca().coastlines()
 
@@ -359,7 +372,7 @@ def create_quadmap(experiment_single_level,
 
     # Prepare image and figure with a 2x2 grid of subplots
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(9, 6))
-    level = str(level)
+    #   level = str(level)
 
     # Set the figure title for Sea Surface to include depth level.
     if (experiment_single_level.long_name == 'Sea Surface Temperature'
@@ -367,7 +380,10 @@ def create_quadmap(experiment_single_level,
         fig.suptitle(experiment_single_level.long_name)
     # Set the figure for others to include the depth level plotted.
     else:
-        fig.suptitle(experiment_single_level.long_name + ' at ' + level + 'm',
+        depth = experiment_single_level.coords("depth")[0].points[0]
+        formatted_depth = str(f"{depth:.3f}")
+        fig.suptitle(experiment_single_level.long_name + ' at ' +
+                     formatted_depth + 'm',
                      fontsize=14)
 
     # Calling the plot_global_single_level plot with set parameters
