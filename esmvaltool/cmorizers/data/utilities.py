@@ -31,7 +31,6 @@ def add_height2m(cube: Cube) -> None:
     ----------
     cube: iris.cube.Cube
         Cube which will get the 2m-height coordinate in-place.
-
     """
     add_scalar_height_coord(cube, height=2.)
 
@@ -43,7 +42,6 @@ def add_height10m(cube: Cube) -> None:
     ----------
     cube: iris.cube.Cube
         Cube which will get the 10m-height coordinate in-place.
-
     """
     add_scalar_height_coord(cube, height=10.)
 
@@ -57,7 +55,6 @@ def add_scalar_depth_coord(cube: Cube, depth: float = 0.0) -> None:
         Cube which will get the depth coordinate in-place.
     depth: float, optional (default: 0.0)
         Value for the depth in meters.
-
     """
     logger.debug("Adding depth coordinate (%sm)", depth)
     depth_coord = iris.coords.AuxCoord(depth,
@@ -82,7 +79,6 @@ def add_scalar_height_coord(cube: Cube, height: float = 2.0) -> None:
         Cube which will get the height coordinate in-place.
     height: float, optional (default: 2.0)
         Value for the height in meters.
-
     """
     logger.debug("Adding height coordinate (%sm)", height)
     height_coord = iris.coords.AuxCoord(height,
@@ -336,19 +332,15 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     except iris.exceptions.CoordinateNotFoundError:
         time_suffix = None
     else:
-        if (
-                len(time.points) == 1 and
-                "mon" not in cube.attributes.get('mip')
-        ) or cube.attributes.get("frequency") == "yr":
+        if (len(time.points) == 1 and "mon" not in cube.attributes.get('mip')
+            ) or cube.attributes.get("frequency") == "yr":
             year = str(time.cell(0).point.year)
             time_suffix = '-'.join([year + '01', year + '12'])
         else:
             date1 = (
-                f"{time.cell(0).point.year:d}{time.cell(0).point.month:02d}"
-            )
+                f"{time.cell(0).point.year:d}{time.cell(0).point.month:02d}")
             date2 = (
-                f"{time.cell(-1).point.year:d}{time.cell(-1).point.month:02d}"
-            )
+                f"{time.cell(-1).point.year:d}{time.cell(-1).point.month:02d}")
             time_suffix = '-'.join([date1, date2])
 
     name_elements = [
@@ -387,12 +379,12 @@ def extract_doi_value(tags):
                     reference_doi.append(f'doi:{doi}')
             else:
                 reference_doi.append('doi not found')
-                logger.warning(
-                    'The reference file %s does not have a doi.', bibtex_file)
+                logger.warning('The reference file %s does not have a doi.',
+                               bibtex_file)
         else:
             reference_doi.append('doi not found')
-            logger.warning(
-                'The reference file %s does not exist.', bibtex_file)
+            logger.warning('The reference file %s does not exist.',
+                           bibtex_file)
     return ', '.join(reference_doi)
 
 
@@ -567,7 +559,7 @@ def unpack_files_in_folder(folder):
                 continue
             if filename.startswith('.'):
                 continue
-            if not filename.endswith(('.gz', '.tgz', '.tar')):
+            if not filename.endswith(('.gz', '.tgz', '.tar', '.zip')):
                 continue
             logger.info('Unpacking %s', filename)
             shutil.unpack_archive(full_path, folder)
