@@ -77,12 +77,12 @@ def get_station_dict():
     url = "https://www.esrl.noaa.gov/gmd/dv/site/?program=ccgg"
     station_dict = None
     try:
-        req = requests.get(url, timeout=30).content
+        req = requests.get(url, timeout=30)
     except requests.exceptions.Timeout:
         logger.debug('Request timed out for URL %s', url)
         req = None
     if req is not None:
-        stat_list = pd.read_html(req)
+        stat_list = pd.read_html(req.content)
         stats = stat_list[-1]
         # Remove asterisk from station names (flags inactive stations)
         stats['Code'] = stats['Code'].str.replace('*', '')
