@@ -23,8 +23,8 @@ Recipes are stored in recipes
   Calculate transient climate response to cumulative CO2 emissions (TCRE)
 * ref/recipe_ref_cre.yml:
   Maps and zonal means of longwave and shortwave cloud radiative effect
-* ref/recipe_ref_scatterplot.yml
-  2D histograms with focus on clouds.
+* ref/recipe_ref_scatterplot.yml:
+  2D histograms with focus on clouds
 
 
 Example plots:
