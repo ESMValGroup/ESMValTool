@@ -1,0 +1,347 @@
+---
+documentation:
+  title: "Validation of drought related CMIP6 variables with ERA5"
+  description: |
+    This recipe calculates PET for ERA5 and a subset of CMIP6 models and 
+    compares the results and each individual input variable and derived 
+    soil moisture. For the comparison averages and change rates are plotted as 
+    maps and pattern correlation between ERA5 and CMIP6 multi-model mean are 
+    calculated. The normalized centered root mean square error vs ERA5 is 
+    calculated for each individual variable and CMIP6 model and displayed as
+    portrait plot.
+
+    The recipe is split into blocks that can be run individually by using the 
+    `--diagnostics` argument, e.g. `pet_obs`, `validate_models/diffmaps` or 
+    `validate_models/pattern_correlation` on the esmvaltool run command:
+    `esmvaltool run recipes/droughts/recipe_lindenlaub25_validation.yml`
+  authors:
+    - lindenlaub_lukas
+  maintainers:
+    - lindenlaub_lukas
+  projects:
+    - eval4cmip
+
+GRID: &grid
+  # target_grid: 3x3
+  target_grid: 1x1
+
+OBS_PERIOD: &obs_period
+  start_year: 1980
+  end_year: 2014
+
+CMIP_DEFAULT: &cmip_default
+  project: CMIP6
+  mip: Amon
+  ensemble: r1i1p1f1
+  grid: gn
+
+
+# Subset of models with soil moisture:
+CMIP6_DATA_LMON: &cmip6_data_lmon
+  - {<<: *cmip_default, mip: Lmon, dataset: ACCESS-CM2,        institute: CSIRO-ARCCSS     }
+  - {<<: *cmip_default, mip: Lmon, dataset: BCC-CSM2-MR,       institute: BCC              }
+  - {<<: *cmip_default, mip: Lmon, dataset: CanESM5,           institute: CCCma            }
+  - {<<: *cmip_default, mip: Lmon, dataset: CMCC-ESM2,         institute: CMCC             }   # retry other ds name
+  - {<<: *cmip_default, mip: Lmon, dataset: CNRM-CM6-1,        institute: CNRM-CERFACS,    ensemble: r1i1p1f2, grid: gr}   # pet works 3x3
+  - {<<: *cmip_default, mip: Lmon, dataset: EC-Earth3-Veg-LR,  institute: EC-Earth-Consortium, grid: gr}
+  - {<<: *cmip_default, mip: Lmon, dataset: FGOALS-g3,         institute: CAS              }   # latitude as auxilary (not monotonic)
+  - {<<: *cmip_default, mip: Lmon, dataset: FIO-ESM-2-0,       institute: FIO-QLNM         }
+  - {<<: *cmip_default, mip: Lmon, dataset: GFDL-ESM4 ,        institute: NOAA-GFDL,       grid: gr1}
+  - {<<: *cmip_default, mip: Lmon, dataset: GISS-E2-1-G,       institute: NASA-GISS,       ensemble: r1i1p1f2}
+  - {<<: *cmip_default, mip: Lmon, dataset: IPSL-CM6A-LR,      institute: IPSL,            grid: gr}
+  - {<<: *cmip_default, mip: Lmon, dataset: KACE-1-0-G,        institute: NIMS-KMA,        grid: gr}
+  - {<<: *cmip_default, mip: Lmon, dataset: MIROC6,            institute: MIROC,           grid: gn}  # works as single source
+  - {<<: *cmip_default, mip: Lmon, dataset: MPI-ESM1-2-LR,     institute: MPI-M,           grid: gn}
+  - {<<: *cmip_default, mip: Lmon, dataset: MRI-ESM2-0,        institute: MRI              }  # also calendar issues.. but works solo
+  - {<<: *cmip_default, mip: Lmon, dataset: UKESM1-0-LL,       institute: MOHC,            ensemble: r1i1p1f2          }  # pet works 3x3
+
+
+CMIP6_DATA: &cmip6_data
+  - {<<: *cmip_default, dataset: ACCESS-CM2,        institute: CSIRO-ARCCSS}
+  - {<<: *cmip_default, dataset: AWI-CM-1-1-MR}
+  - {<<: *cmip_default, dataset: BCC-CSM2-MR,       institute: BCC}
+  - {<<: *cmip_default, dataset: CanESM5,           institute: CCCma}
+  - {<<: *cmip_default, dataset: CAS-ESM2-0,        institute: CAS}
+  - {<<: *cmip_default, dataset: CMCC-ESM2}   # retry other ds name
+  - {<<: *cmip_default, dataset: CNRM-CM6-1,        ensemble: r1i1p1f2,             grid: gr}   # pet works 3x3
+  - {<<: *cmip_default, dataset: EC-Earth3-Veg-LR,  institute: EC-Earth-Consortium, grid: gr}
+  - {<<: *cmip_default, dataset: FGOALS-g3,         institute: CAS}   # latitude as auxilary (not monotonic)
+  - {<<: *cmip_default, dataset: FIO-ESM-2-0,       institute: FIO-QLNM}
+  - {<<: *cmip_default, dataset: GFDL-ESM4 ,        institute: NOAA-GFDL,           grid: gr1}
+  - {<<: *cmip_default, dataset: GISS-E2-1-G,       institute: NASA-GISS,           ensemble: r1i1p1f2}
+  - {<<: *cmip_default, dataset: INM-CM5-0,         grid: gr1}  # no mrsos? works for pr/tas pet 3x3
+  - {<<: *cmip_default, dataset: INM-CM5-0,         institute: INM,                 grid: gr1}  # no mrsos? works for pr/tas
+  - {<<: *cmip_default, dataset: IPSL-CM6A-LR,      institute: IPSL,                grid: gr}
+  - {<<: *cmip_default, dataset: KACE-1-0-G,        grid: gr}
+  - {<<: *cmip_default, dataset: MIROC6,            institute: MIROC,               grid: gn}  # works as single source
+  - {<<: *cmip_default, dataset: MPI-ESM1-2-LR,     institute: MPI-M,               grid: gn}
+  - {<<: *cmip_default, dataset: MRI-ESM2-0,        institute: MRI}  # also calendar issues.. but works solo
+  - {<<: *cmip_default, dataset: UKESM1-0-LL,       ensemble: r1i1p1f2}  # pet works 3x3
+
+
+ERA5: &era5
+  dataset: ERA5
+  project: native6
+  type: reanaly
+  version: v1
+  tier: 3
+  <<: *obs_period
+  reference_for_metric: true
+  split: ERA5
+
+CRU: &cru
+  dataset: CRU
+  project: OBS6
+  type: reanaly
+  version: TS4.07
+  tier: 2
+  <<: *obs_period
+  split: REF2
+  reference_for_metric: true
+
+GPCP-SG: &gpcp
+  dataset: GPCP-SG
+  project: OBS
+  type: atmos
+  version: 2.3
+  tier: 2
+  <<: *obs_period
+  reference_for_metric: true
+
+CDS: &cds
+  dataset: CDS-SATELLITE-SOIL-MOISTURE
+  project: OBS
+  type: sat
+  split: REF2
+  tier: 3
+  version: COMBINED
+  start_year: 1979
+  end_year: 2014
+  reference_for_metric: true
+
+# ERA5 and CRU data is available for most variables. PET is derived only for 
+# ERA5 and soil moisture is derived from ERA5 and CDS-SATELLITE-SOIL-MOISTURE
+# for this variables datasets need to set manually and/or added. 
+# Also note that both variables are found in different mips.
+OBS_DATA: &obs_data
+  - <<: *era5
+    mip: Amon
+  - <<: *cru
+    mip: Amon
+
+
+VAR_DEFAULT: &var_default
+  grid: gn
+  preprocessor: default
+  mip: Amon
+  project: CMIP6
+  exp: historical
+  <<: *obs_period
+  
+
+# RECIPE STARTS HERE
+preprocessors:
+  default: &default
+    regrid:
+      <<: *grid
+      scheme: nearest
+    regrid_time:
+      calendar: standard
+    mask_landsea:
+      mask_out: sea
+    mask_glaciated:
+      mask_out: glaciated
+
+diagnostics:
+  pet_historical: &pet_historical
+    variables:
+      pr: &pet_default
+        <<: *var_default
+        exp: ["historical"]
+        <<: *obs_period
+        additional_datasets: *cmip6_data
+      tasmin: *pet_default
+      tasmax: *pet_default
+      sfcWind: *pet_default
+      # clt: *pet_default
+      rsds: *pet_default
+      ps: *pet_default
+    scripts: &scripts_pet
+      pet_pm:
+        script: droughts/pet.R
+        pet_type: "Penman"
+  
+  spei_historical: &spei_historical
+    scripts:
+      spei:
+        script: droughts/spei.R
+        spei_type: "SPEI"
+        ancestors:
+          - pet_historical/pet_pm
+          - pet_historical/pr
+        smooth_month: 6
+        distribution: "log-Logistic"
+        refstart_year: 1950
+        refend_year: 2014
+        refstart_month: 1
+        refend_month: 12
+  
+  pet_obs: &pet_obs
+    variables:
+      pr: &pet_default_obs
+        <<: *obs_period
+        preprocessor: default
+        mip: Amon
+        additional_datasets:
+          - <<: *era5
+      tasmin: *pet_default_obs
+      tasmax: *pet_default_obs
+      sfcWind: *pet_default_obs
+      # clt: *pet_default_obs
+      rsds: *pet_default_obs
+      ps: *pet_default_obs
+    scripts:
+      pet_pm:
+        script: droughts/pet.R
+        pet_type: "Penman"  # "Penman_clt"
+
+  validate_obs:
+    variables:
+      sm:
+        additional_datasets:
+        - <<: *era5
+          mip: Lmon
+          start_year: 1979
+          end_year: 2014
+        - <<: *cds
+          mip: Lmon
+      pr: &add_cru
+        mip: Amon
+        additional_datasets:
+          - <<: *cru
+      tasmin: *add_cru
+      tasmax: *add_cru
+      # clt: *add_cru
+      evspsblpot: 
+        additional_datasets:
+          - <<: *cru
+            mip: Emon
+    scripts:
+      diffmaps:
+        script: droughts/diffmap.py
+        ancestors:
+            - pet_obs/pr
+            - pet_obs/tasmin
+            - pet_obs/tasmax
+            - pet_obs/sfcWind
+            - pet_obs/rsds
+            - pet_obs/ps
+            - validate_obs/pr
+            - validate_obs/sm
+            - validate_obs/tasmin
+            - validate_obs/tasmax
+            - pet_obs/pet_pm
+            - validate_obs/evspsblpot
+  
+  validate_models: &validate_models
+    # additional_datasets: *cmip6_data
+    variables:
+      # pr: &var_default_historical
+      #   <<: *var_default
+      #   <<: *obs_period
+      #   exp: ["historical"]
+      #   additional_datasets: *cmip6_data
+      # tasmin:
+      #   <<: *var_default_historical
+      # tasmax:
+      #   <<: *var_default_historical
+      sm:
+        <<: *var_default
+        mip: Lmon
+        start_year: 1979
+        end_year: 2014
+        derive: true
+        exp: ["historical"]
+        additional_datasets: *cmip6_data_lmon
+      # sfcWind:
+      #   <<: *var_default_historical
+      # ps: 
+      #   <<: *var_default_historical
+    scripts:
+      diffmaps:
+        script: droughts/diffmap.py
+        plot_models: False
+        save_models: True
+        plot_mmm: True
+        save_mmm: True
+        ancestors:
+          - pet_historical/pr
+          - pet_historical/tasmin
+          - pet_historical/tasmax
+          - pet_historical/sfcWind
+          - pet_historical/rsds
+          - pet_historical/ps
+          - pet_historical/pet_pm
+          - validate_models/sm
+
+      pattern_correlation:
+        reference: ERA5
+        relative_change: true
+        group_by: diffmap_metric
+        script: droughts/pattern_correlation.py
+        labels:
+          pr: $P$
+          evspsblpot: $ET_0$
+          tasmax: $T_{\text{max}}$
+          tasmin: $T_{\text{min}}$
+          sfcWind: $V_{\text{10m}}$
+          clt: $C_{\text{total}}$
+          rsds: $RS_{\text{down}}$
+          ps: $p_{\text{surf}}$
+          sm: $SM_{\text{surf}}$
+        ancestors:
+          - validate_models/diffmaps
+          - validate_obs/diffmaps
+      perfmetric:
+        script: perfmetrics/portrait_plot.py
+        distance_metric: rmse
+        nan_color: null
+        y_labels:
+          pr: $PR$
+          evspsblpot: $ET_0$
+          tasmax: $T_{\text{max}}$
+          tasmin: $T_{\text{min}}$
+          sfcWind: $V_{\text{10m}}$
+          ps: $p_{\text{surf}}$
+          sm: $SM_{\text{surf}}$
+          rsds: $RS_{\text{down}}$
+        y_order:
+          - pr
+          - evspsblpot
+          - tasmax
+          - tasmin
+          - sfcWind
+          - rsds
+          - ps
+          - sm
+        ancestors:
+          - pet_obs/pet_pm
+          - pet_obs/pr
+          - pet_obs/tasmin
+          - pet_obs/tasmax
+          - pet_obs/ps
+          - pet_obs/rsds
+          - pet_obs/sfcWind
+          - pet_historical/pet_pm
+          - pet_historical/pr
+          - pet_historical/tasmin
+          - pet_historical/tasmax
+          - pet_historical/ps
+          - pet_historical/rsds
+          - pet_historical/sfcWind
+          - validate_obs/pr
+          - validate_obs/tasmin
+          - validate_obs/tasmax
+          - validate_obs/evspsblpot
+          - validate_obs/sm
+          - validate_models/sm
