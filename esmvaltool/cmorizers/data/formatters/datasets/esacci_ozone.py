@@ -87,7 +87,7 @@ def _convert_units(cubes, short_name, var):
     return cube
 
 
-def _extract_variable(short_name, var, cfg, filename, year, month, out_dir):
+def _extract_variable(short_name, var, cfg, filename, year, month):
     """Extract variable, add time coordinate, and scalar longitude."""
     mip = var['mip']
     cmor_info = cfg['cmor_table'].get_variable(mip, short_name)
@@ -180,7 +180,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 logger.info("CMORizing variable '%s' from file '%s'",
                             var_name, filename)
                 cube = _extract_variable(var_name, var, cfg, filename,
-                                         year, month, out_dir)
+                                         year, month)
                 all_data_cubes.append(cube)
 
         if not all_data_cubes:
