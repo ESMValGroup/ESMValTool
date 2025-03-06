@@ -90,7 +90,9 @@ commands:
             # Install
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            mamba env create
+            mamba --version
+            mamba install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
+            mamba env create -n esmvaltool -f environment.yml
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
@@ -202,7 +204,8 @@ jobs:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            mamba env create
+            mamba install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
+            mamba env create -n esmvaltool -f environment.yml
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
             pip install --editable .[develop]
