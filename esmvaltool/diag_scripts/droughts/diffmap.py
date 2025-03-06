@@ -15,15 +15,33 @@ with `clip_land: True`.
 
 Configuration options in recipe
 -------------------------------
-plot_mmm: bool, optional (default: True)
-    Calculate and plot the average over all datasets.
-plot_models: bool, optional (default: True)
-    Plot maps for each dataset.
 basename: str, optional
     Format string for the plot filename. Can use meta keys and diffmap_metric.
     For multi-model mean the dataset will be set to "MMM". Data will be saved
     as same name with .nc extension.
     By default: "{short_name}_{exp}_{diffmap_metric}_{dataset}"
+clip_land: bool, optional (default: False)
+    Clips map plots to non polar land area (220, 170, -55, 90).
+comparison_period: int, optional (default: 10)
+    Number of years to compare (first and last N years). Must be less or equal
+    half of the total time period.
+filters: dict, or list, optional
+    Filter for metadata keys to select datasets. Only datasets with matching
+    values will be processed. This can be usefull, if ancestors or preprocessed
+    data is abailable, that should not be processed by the diagnostic.
+    If a list of dicts is given, all datasets matching any of the filters will
+    be considered.
+    By default None.
+group_by: str, optional (default: short_name)
+    Meta key to loop over for multiple datasets.
+metrics: list, optional
+    List of metrics to calculate and plot. For the difference ("percent" and
+    "diff") the mean over two comparison periods ("first" and "last") is
+    calculated. The "total" periods mean can be calculated and plotted as well.
+    By default ["first", "last", "diff", "total", "percent"]
+mdtol: float, optional (default: 0.5)
+    Tolerance for missing data in multi-model mean calculation. 0 means no
+    missing data is allowed. For 1 mean is calculated if any data is available.
 plot_kwargs: dict, optional
     Kwargs passed to diag_scripts.shared.plot.global_contourf function.
     The "cbar_label" parameter is formatted with meta keys. So placeholders
@@ -37,30 +55,19 @@ plot_kwargs_overwrite: list, optional (default: [])
     All other given keys are applied to the plot_kwargs dict for this plot.
     Settings will be applied in order of the list, so later entries can
     overwrite previous ones.
-comparison_period: int, optional (default: 10)
-    Number of years to compare (first and last N years). Must be less or equal
-    half of the total time period.
-group_by: str, optional (default: short_name)
-    Meta key to loop over for multiple datasets.
-clip_land: bool, optional (default: False)
-    Clips map plots to non polar land area (220, 170, -55, 90).
+plot_mmm: bool, optional (default: True)
+    Calculate and plot the average over all datasets.
+plot_models: bool, optional (default: True)
+    Plot maps for each dataset.
 strip_plots: bool, optional (default: False)
     Removes titles, margins and colorbars from plots (to use them in panels).
-mdtol: float, optional (default: 0.5)
-    Tolerance for missing data in multi-model mean calculation. 0 means no
-    missing data is allowed. For 1 mean is calculated if any data is available.
-metrics: list, optional
-    List of metrics to calculate and plot. For the difference ("percent" and
-    "diff") the mean over two comparison periods ("first" and "last") is
-    calculated. The "total" periods mean can be calculated and plotted as well.
-    By default ["first", "last", "diff", "total", "percent"]
-filters: dict, or list, optional
-    Filter for metadata keys to select datasets. Only datasets with matching
-    values will be processed. This can be usefull, if ancestors or preprocessed
-    data is abailable, that should not be processed by the diagnostic.
-    If a list of dicts is given, all datasets matching any of the filters will
-    be considered.
-    By default None.
+titles: dict, optional
+    Customize plot titles for different metrics. Possible dict keys are
+    "first", "last", "trend", "diff", "total", "percent". The values are
+    formatted using meta data. Placeholders like "{short_name}" can be used.
+    By default {"first": "Mean Historical", "last": "Mean Future",
+    "trend": "Future - Historical", "diff": "Future - Historical",
+    "total": "Mean Full Period", "percent": "Relative Change"}.
 """
 
 from __future__ import annotations
@@ -79,6 +86,7 @@ import yaml
 from cartopy.util import add_cyclic_point
 from esmvalcore import preprocessor as pp
 from iris.analysis import MEAN
+from iris.cube import Cube
 
 import esmvaltool.diag_scripts.droughts.utils as ut
 import esmvaltool.diag_scripts.shared as e
@@ -87,15 +95,6 @@ import esmvaltool.diag_scripts.shared as e
 
 log = logging.getLogger(__file__)
 
-
-TITLES = {
-    "first": "Mean Historical",
-    "last": "Mean Future",
-    "trend": "Future - Historical",
-    "diff": "Future - Historical",
-    "total": "Mean Full Period",
-    "percent": "Relative Change",
-}
 
 METRICS = ["first", "last", "diff", "total", "percent"]
 
@@ -139,10 +138,20 @@ def plot_colorbar(
     fig.savefig(plotfile + "_cb.png")  # , bbox_inches="tight")
 
 
+def fill_era5_gap(meta: dict, cube: Cube) -> None:
+    """Fill missing gap at 360 for era5 pet calculation."""
+    if (
+        meta["dataset"] == "ERA5"
+        and meta["short_name"] == "evspsblpot"
+        and len(cube.data[0]) == 360
+    ):
+        cube.data[:, 359] = cube.data[:, 0]
+
+
 def plot(
     cfg: dict,
     meta: dict,
-    cube: iris.cube,
+    cube: Cube,
     basename: str,
     kwargs: dict | None = None,
 ) -> None:
@@ -161,16 +170,10 @@ def plot(
     plot_kwargs["cbar_label"] = label.format(**meta)
     for coord in cube.coords(dim_coords=True):
         if not coord.has_bounds():
-            log.info("NO BOUNDS GUESSING: %s", coord.name())
+            log.warning("NO BOUNDS. GUESSING: %s", coord.name())
             cube.coord(coord.name()).guess_bounds()
+    fill_era5_gap(meta, cube)
     add_cyclic_point(cube.data, cube.coord("longitude").points)
-    if (
-        meta["dataset"] == "ERA5"
-        and meta["short_name"] == "evspsblpot"
-        and len(cube.data[0]) == 360
-    ):
-        # NOTE: fill missing gap at 360 for era5 pet calculation
-        cube.data[:, 359] = cube.data[:, 0]
     mapplot = e.plot.global_contourf(cube, **plot_kwargs)
     if cfg.get("clip_land", False):
         plt.gca().set_extent((220, 170, -55, 90))  # type: ignore[attr-defined]
@@ -211,7 +214,7 @@ def apply_plot_kwargs_overwrite(
     return kwargs
 
 
-def calculate_diff(cfg, meta, mm_data, output_meta, group):
+def calculate_diff(cfg, meta, mm_data, output_meta, group) -> None:
     """Absolute difference between first and last years of a cube.
 
     Calculates the absolut and relative difference between the first and last
@@ -254,7 +257,7 @@ def calculate_diff(cfg, meta, mm_data, output_meta, group):
         meta["diffmap_metric"] = key
         meta["exp"] = meta.get("exp", "exp")
         basename = cfg["basename"].format(**meta)
-        meta["title"] = cfg.get("titles", TITLES)[key].format(**meta)
+        meta["title"] = cfg["titles"][key].format(**meta)
         if cfg.get("plot_models", True):
             plot_kwargs = cfg.get("plot_kwargs", {}).copy()
             apply_plot_kwargs_overwrite(
@@ -309,6 +312,9 @@ def set_defaults(cfg: dict) -> None:
         cfg.setdefault(key, val)
     if cfg["plot_kwargs_overwrite"] is not defaults["plot_kwargs_overwrite"]:
         cfg["plot_kwargs_overwrite"].extend(defaults["plot_kwargs_overwrite"])
+    titles = defaults.get("titles", {})
+    titles.update(cfg["titles"])
+    cfg["titles"] = titles
 
 
 def filter_metas(metas: list, filters: dict | list) -> list:
@@ -333,7 +339,6 @@ def main(cfg) -> None:
     for group, g_metas in groups.items():
         mm_data = defaultdict(list)
         for meta in g_metas:
-            ut.guess_experiment(meta)  # TODO: add in SPEI.R instead
             if "end_year" not in meta:
                 meta.update(ut.get_time_range(meta["filename"]))
             # adjust norm for selected time period
