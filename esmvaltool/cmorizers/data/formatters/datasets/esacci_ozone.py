@@ -41,10 +41,10 @@ Download and processing instructions
 """
 import logging
 from datetime import datetime
+from pathlib import Path
 import iris
 import iris.util
 from cf_units import Unit
-from pathlib import Path
 from esmvalcore.preprocessor import (
     concatenate
 )
@@ -64,11 +64,11 @@ def _convert_units(cubes, short_name, var):
     """Perform variable-specific calculations."""
     cube = cubes.extract_cube(var['raw'])
     if short_name == 'o3':  # Ozone mole fraction
-        r = 8.31446261815324  # Ideal gas constant (J mol-1 K-1)
+        gas_constant = 8.31446261815324  # Ideal gas constant (J mol-1 K-1)
         t_cube = cubes.extract_cube('air_temperature')
         p_cube = cubes.extract_cube('air_pressure')
         p_cube.convert_units('Pa')
-        air_mol_concentration = p_cube / (r * t_cube)  # mol m-3
+        air_mol_concentration = p_cube / (gas_constant * t_cube)  # mol m-3
         cube = cube / air_mol_concentration
         cube.units = 'mol mol-1'
 
@@ -89,7 +89,6 @@ def _convert_units(cubes, short_name, var):
 
 def _extract_variable(short_name, var, cfg, filename, year, month, out_dir):
     """Extract variable, add time coordinate, and scalar longitude."""
-
     mip = var['mip']
     cmor_info = cfg['cmor_table'].get_variable(mip, short_name)
 
@@ -186,7 +185,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
         if not all_data_cubes:
             raise ValueError("No valid data found for %s within the"
-                             "selected time range.", var_name)
+                             "selected time range." % var_name)
 
         final_cube = concatenate(all_data_cubes)
         save_variable(

@@ -66,8 +66,8 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                             file_path.as_posix())
 
             # Handle both .gz and .zip files
-            with open(file_path, "rb") as f:
-                magic = f.read(2)
+            with open(file_path, "rb") as file:
+                magic = file.read(2)
 
             if magic == b'PK':  # ZIP file signature
                 logger.info("Detected ZIP file: %s", file_path)
