@@ -122,7 +122,7 @@ diagnostics:
           style: ticks
           rc:
             axes.titlepad: 15.0
-        suptitle: '{}'
+        suptitle: 'CESM2'
 
   plot_joint_clt_swcre_ref:
     description: Scatterplot clt vs swcre.
@@ -193,7 +193,7 @@ diagnostics:
     scripts:
       plot:
         <<: *plot_settings_jointplot_clwvi_pr
-        suptitle: '{}'
+        suptitle: 'CESM2'
 
   plot_joint_clivi_lwcre_ref:
     description: Scatterplot clt vs lwcre.
@@ -247,7 +247,7 @@ diagnostics:
     scripts:
       plot:
         <<: *plot_settings_jointplot_clivi_lwcre
-        suptitle: '{}'
+        suptitle: 'CESM2'
 
   plot_joint_cli_ta_ref:
     description: Scatterplot clt vs lwcre.
@@ -303,4 +303,4 @@ diagnostics:
     scripts:
       plot:
         <<: *plot_settings_jointplot_cli_ta
-        suptitle: '{}'
+        suptitle: 'CESM2'
