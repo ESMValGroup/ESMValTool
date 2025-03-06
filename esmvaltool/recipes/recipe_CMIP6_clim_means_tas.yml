@@ -1,0 +1,68 @@
+# ESMValTool
+# recipe_CMIP6_clim_means_tas.yml
+---
+documentation:
+  description: Recipe that conducts the ClimatoloPy standard climatological analysis for CMIP5 model projections 
+    for a given scenario and time period
+
+  title: Process ClimatoloPy for CMIP5
+
+  authors:
+    - righi_mattia #actually Katy Richardson
+
+datasets:
+  - {dataset: BCC-ESM1, project: CMIP6, ensemble: r1i1p1f1, grid: gn}
+
+
+regions: &regions
+  CORDEX_SEA: &cordex_sea
+    start_longitude: 86
+    end_longitude: 150
+    start_latitude: -18
+    end_latitude: 33
+
+preprocessors:
+
+  seasonal_means:
+    extract_region:
+      <<: *cordex_sea
+    convert_units:
+      units: degrees_C
+    climate_statistics:
+      operator: mean
+      period: season
+
+  annual_means:
+    extract_region:
+      <<: *cordex_sea
+    convert_units:
+      units: degrees_C
+    climate_statistics:
+      operator: mean
+      period: full
+
+
+diagnostics:
+  seasonal_map:
+    description: Produces seasonal mean map for given region and scenario
+    variables:
+      tas:
+        activity: [ CMIP, ScenarioMIP ]
+        mip: Amon
+        exp: [ historical, ssp585 ]
+        start_year: 1985
+        end_year: 2010
+        preprocessor: seasonal_means
+    scripts: null
+
+  annual_map:
+    description: Produces annual mean map for given region and scenario
+    variables:
+      tas:
+        activity: [ CMIP, ScenarioMIP ]
+        mip: Amon
+        exp: [ historical, ssp585 ]
+        start_year: 1985
+        end_year: 2010
+        preprocessor: annual_means
+    scripts: null

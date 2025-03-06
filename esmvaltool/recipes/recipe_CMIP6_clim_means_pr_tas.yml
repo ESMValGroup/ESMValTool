@@ -1,0 +1,92 @@
+# ESMValTool
+# recipe_process_climatolopy_ERA5.yml
+---
+documentation:
+  description: Recipe that conducts the ClimatoloPy standard climatological analysis for CMIP5 model projections 
+    for a given scenario and time period
+
+  title: Process ClimatoloPy for CMIP5
+
+  authors:
+    - righi_mattia #actually Katy Richardson
+
+datasets:
+  - {dataset: BCC-ESM1, project: CMIP6, ensemble: r1i1p1f1, grid: gn}
+
+
+# For regions we define a broad box covering the region here in the recipe to extract the data, and then include
+# more of the properties of the shape in the diagnostics
+regions: &regions
+  CORDEX_SEA: &cordex_sea
+    start_longitude: 86
+    end_longitude: 150
+    start_latitude: -18
+    end_latitude: 33
+
+preprocessors:
+
+  seasonal_means: &seas_mean
+    extract_region:
+      <<: *cordex_sea
+    climate_statistics:
+      operator: mean
+      period: season
+
+  seasonal_means_tas: 
+    <<: *seas_mean
+    convert_units:
+      units: degrees_C
+
+  seasonal_means_pr: 
+    <<: *seas_mean
+    convert_units:
+      units: mm/day
+
+  annual_means: &ann_mean
+    extract_region:
+      <<: *cordex_sea
+    climate_statistics:
+      operator: mean
+      period: full
+
+  annual_means_tas:
+    <<: *ann_mean
+    convert_units:
+      units: degrees_C
+
+  annual_means_pr :
+    <<: *ann_mean
+    convert_units:
+      units: mm/day
+
+diagnostics:
+  seasonal_map:
+    description: Produces seasonal mean map for given region and scenario
+    variables:
+      pr:
+        activity: [ CMIP, ScenarioMIP ]
+        mip: Amon
+        exp: [ historical, ssp585 ]
+        start_year: 1985
+        end_year: 2010
+        preprocessor: seasonal_means_pr
+      tas:
+        activity: [ CMIP, ScenarioMIP ]
+        mip: Amon
+        exp: [ historical, ssp585 ]
+        start_year: 1985
+        end_year: 2010
+        preprocessor: seasonal_means_tas
+    scripts: null
+
+  annual_map:
+    description: Produces annual mean map for given region and scenario
+    variables:
+      pr:
+        activity: [ CMIP, ScenarioMIP ]
+        mip: Amon
+        exp: [ historical, ssp585 ]
+        start_year: 1985
+        end_year: 2010
+        preprocessor: annual_means_pr
+    scripts: null
