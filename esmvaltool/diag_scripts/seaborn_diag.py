@@ -170,12 +170,7 @@ def _create_plot(
                 getattr(plot_obj, func_name)(func_args)
     if cfg['suptitle'] is not None:
         logger.debug("Setting `suptitle='%s'`", cfg['suptitle'])
-        if plot_func_str in ['jointplot'] and cfg['suptitle'] in ['{}']:
-            plt.suptitle(cfg['suptitle'].format(
-                data_frame["alias"].unique()[0]),
-                y=1.05)
-        else:
-            plt.suptitle(cfg['suptitle'], y=1.05)
+        plt.suptitle(cfg['suptitle'], y=1.05)
     if cfg['legend_title'] is not None:
         _set_legend_title(plot_obj, cfg['legend_title'])
     if plot_func_str == 'jointplot' and plot_kwargs['cbar']:
