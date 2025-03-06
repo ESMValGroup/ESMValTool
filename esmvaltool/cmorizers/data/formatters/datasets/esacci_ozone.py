@@ -184,8 +184,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 all_data_cubes.append(cube)
 
         if not all_data_cubes:
-            raise ValueError("No valid data found for %s within the"
-                             "selected time range.".format(var_name))
+            raise ValueError(
+                f"No valid data found for {var_name} within the selected time"
+                " range"
+            )
 
         final_cube = concatenate(all_data_cubes)
         save_variable(
