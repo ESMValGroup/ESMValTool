@@ -32,7 +32,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                 "variable": "atmosphere_mole_content_of_ozone",
                 "vertical_aggregation": "total_column",
                 "sensor": ["merged_uv"],
-                "year": [str(y) for y in range(1995, 2023)],
+                "year": [str(y) for y in range(1995, 2024)],
                 "month": [f"{m:02d}" for m in range(1, 13)],
                 "version": ["v2000"]
             },
@@ -41,7 +41,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                 "variable": "mole_concentration_of_ozone_in_air",
                 "vertical_aggregation": "vertical_profiles_from_limb_sensors",
                 "sensor": ["cmzm"],
-                "year": [str(y) for y in range(1984, 2022)],
+                "year": [str(y) for y in range(1984, 2023)],
                 "month": [f"{m:02d}" for m in range(1, 13)],
                 "version": ["v0008"]
             }

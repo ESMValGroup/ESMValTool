@@ -154,16 +154,16 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             raise ValueError(f"Unknown dataset for variable {var_name}")
 
         # Adjust start and end dates if not provided
-        start_date = start_date or dataset_start
-        end_date = end_date or dataset_end
+        start_date_x = start_date or dataset_start
+        end_date_x = end_date or dataset_end
 
         # Ensure the requested date range falls within the dataset limits
-        start_date = max(start_date, dataset_start)
-        end_date = min(end_date, dataset_end)
+        start_date_x = max(start_date_x, dataset_start)
+        end_date_x = min(end_date_x, dataset_end)
 
         all_data_cubes = []
         glob_attrs['mip'] = var['mip']
-        for year in range(start_date.year, end_date.year + 1):
+        for year in range(start_date_x.year, end_date_x.year + 1):
             for month in range(1, 13):
 
                 # Skip months outside the dataset range
