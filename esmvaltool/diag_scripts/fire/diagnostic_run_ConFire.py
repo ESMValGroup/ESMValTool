@@ -2,8 +2,9 @@
 
 Functions are taken from:
 https://github.com/douglask3/Bayesian_fire_models/tree/AR7_REF
-maintainer: Douglas Kelley 
-    https://orcid.org/0000-0003-1413-4969 https://github.com/douglask3
+maintainer: Douglas Kelley kelley_douglas
+    https://orcid.org/0000-0003-1413-4969
+    https://github.com/douglask3
 
 Functions from:
     - /libs directory

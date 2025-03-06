@@ -10,6 +10,7 @@ documentation:
 
   authors:
     - lenhardt_julien
+    - kelley_douglas
 
   maintainer:
     - lenhardt_julien
@@ -51,6 +52,18 @@ diagnostics:
       cVeg:
         mip: Lmon
         preprocessor: preproc
+      # Wind speed near surface
+      sfcWind:
+        mip: Amon
+        preprocessor: preproc
+      # Leaf area index
+      lai:
+        mip: Lmon
+        preprocessor: preproc
+      # Soil moisture (surface layer)
+      mrsos:
+        mip: Lmon
+        preprocessor: preproc
       # To compute the vapor pressure deficit (vpd)
       # Surface temperature
       tas:
@@ -64,7 +77,7 @@ diagnostics:
     scripts:
       fire_evaluation:
         script: fire/fire_diagnostic.py
-        # IMPORTANT = variables order should fit the configuration files
+        # IMPORTANT = the order of the variables should fit the configuration files of the ConFire model run
         confire_model: '6-frac_points_0.8-nvariables_-frac_random_sample0.8-nvars_6-niterations_4000'
         var_order: ['pr', 'tasmax', 'treeFrac', 'vegFrac', 'vpd', 'cVeg']
         remove_vpd_files: False

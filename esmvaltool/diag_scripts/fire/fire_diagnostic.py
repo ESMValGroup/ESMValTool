@@ -4,8 +4,13 @@ Diagnostic is based on:
 - Jones et al., State of wildfires (2023-2024), Earth Syst. Sci. Data, 16,
     3601-3685, https://doi.org/10.5194/essd-16-3601-2024, 2024.
 - https://github.com/douglask3/Bayesian_fire_models/tree/AR7_REF
-    maintainer: Douglas Kelley 
-        https://orcid.org/0000-0003-1413-4969 https://github.com/douglask3
+    maintainer: Douglas Kelley, kelley_douglas
+        https://orcid.org/0000-0003-1413-4969
+        https://github.com/douglask3
+
+authors:
+- lenhardt_julien
+- kelley_douglas
 
 """
 import logging
@@ -115,6 +120,7 @@ def compute_vpd(config, tas, hurs, provenance):
         data,
         dim_coords_and_dims=dim_coords,
         long_name='vapor_pressure_deficit',
+        standard_name='Vapor pressure deficit',
         var_name='vpd',
         units='hPa'
     )
