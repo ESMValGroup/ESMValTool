@@ -232,7 +232,7 @@ def main(cfg):
     # Plot ZEC Timeseries
     plot_zec_timeseries(zec, cfg)
 
-    # Calculate ZEC_X
+    # Calculate ZEC at the years given in the recipe with default 50
     x_val = cfg['zec_year'] if isinstance(cfg['zec_year'],
                                           list) else [cfg['zec_year']]
     for x_i in x_val:

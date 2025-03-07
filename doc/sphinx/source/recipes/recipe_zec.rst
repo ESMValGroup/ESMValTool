@@ -55,7 +55,7 @@ year 100 of ``esm-flat10``.
 
 * Script climate_metrics/zec.py
 
-   * ``zec_x``, *list*, optional (default: ``[50]``): Calculate ZEC for
+   * ``zec_year``, *list*, optional (default: ``[50]``): Calculate ZEC for
      the 20-year average centered around year x, multiple values are possible.
      Barplots are generated for all ZEC\ :sub:`x`.
    * ``experiments``, *dict*, optional: When using non-default experiments
