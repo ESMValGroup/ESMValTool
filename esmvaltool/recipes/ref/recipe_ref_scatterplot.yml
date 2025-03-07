@@ -48,7 +48,7 @@ preprocessors:
     <<: *regridding
     mask_outside_range:
       minimum: -200.
-      maximum: -0.001
+      maximum: -1.
   common_grid_pr:
     custom_order: true
     <<: *regridding
@@ -91,7 +91,8 @@ diagnostics:
         derive: true
         force_derivation: false
     additional_datasets:
-      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2}
+      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1,
+         alias: CESM2}
     scripts:
       plot: &plot_settings_jointplot_clt_swcre
         script: seaborn_diag.py
@@ -130,11 +131,15 @@ diagnostics:
       clt:
         <<: *var_clt
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD,
+             start_year: 2001, end_year: 2016}
       swcre:
         <<: *var_swcre
         additional_datasets:
-          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2, alias: CERES-EBAF}
+          - {dataset: CERES-EBAF, project: OBS, type: sat,
+             version: Ed4.2, tier: 2, alias: CERES-EBAF,
+             start_year: 2001, end_year: 2016}
     scripts:
       plot:
         <<: *plot_settings_jointplot_clt_swcre
@@ -147,12 +152,16 @@ diagnostics:
         <<: *var_clt
         preprocessor: common_grid_clivi_clwvi
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD,
+             start_year: 1992, end_year: 2016}
       pr:
         <<: *var_clt
         preprocessor: common_grid_pr
         additional_datasets:
-          - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3, tier: 1, alias: GPCP-SG}
+          - {dataset: GPCP-SG, project: obs4MIPs, level: L3,
+             version: v2.3, tier: 1, alias: GPCP-SG,
+             start_year: 1992, end_year: 2016}
     scripts:
       plot: &plot_settings_jointplot_clwvi_pr
         <<: *plot_settings_jointplot_clt_swcre
@@ -189,7 +198,8 @@ diagnostics:
         <<: *var_clt
         preprocessor: common_grid_pr
     additional_datasets:
-      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2}
+      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1,
+         alias: CESM2}
     scripts:
       plot:
         <<: *plot_settings_jointplot_clwvi_pr
@@ -202,12 +212,16 @@ diagnostics:
         <<: *var_clt
         preprocessor: common_grid_clivi_clwvi
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD}
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD,
+             start_year: 2001, end_year: 2016}
       lwcre:
         <<: *var_swcre
         preprocessor: common_grid_lwcre
         additional_datasets:
-          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2, alias: CERES-EBAF}
+          - {dataset: CERES-EBAF, project: OBS, type: sat,
+             version: Ed4.2, tier: 2, alias: CERES-EBAF,
+             start_year: 2001, end_year: 2016}
     scripts:
       plot: &plot_settings_jointplot_clivi_lwcre
         <<: *plot_settings_jointplot_clt_swcre
@@ -243,7 +257,8 @@ diagnostics:
         <<: *var_swcre
         preprocessor: common_grid_lwcre
     additional_datasets:
-      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2}
+      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1,
+         alias: CESM2}
     scripts:
       plot:
         <<: *plot_settings_jointplot_clivi_lwcre
@@ -256,12 +271,16 @@ diagnostics:
         <<: *var_clt
         preprocessor: common_grid_levels_cli
         additional_datasets:
-          - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat, version: 1-00, tier: 3, alias: CALIPSO-ICECLOUD}
+          - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat,
+             version: 1-00, tier: 3, alias: CALIPSO-ICECLOUD,
+             start_year: 2007, end_year: 2015}
       ta:
         <<: *var_clt
         preprocessor: common_grid_levels_ta
         additional_datasets:
-          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, alias: ERA5}
+          - {dataset: ERA5, project: native6, type: reanaly,
+             version: v1, tier: 3, alias: ERA5,
+             start_year: 2007, end_year: 2015}
     scripts:
       plot: &plot_settings_jointplot_cli_ta
         <<: *plot_settings_jointplot_clt_swcre
@@ -299,7 +318,8 @@ diagnostics:
         <<: *var_clt
         preprocessor: common_grid_levels_ta
     additional_datasets:
-      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1, alias: CESM2}
+      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1,
+         alias: CESM2}
     scripts:
       plot:
         <<: *plot_settings_jointplot_cli_ta
