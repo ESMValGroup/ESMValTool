@@ -6,7 +6,7 @@ filename: 'dt_global_allsat_phy_l4.*.nc'
 attributes:
   project_id: OBS6
   dataset_id: CMEMS
-  version: 'SEALEVEL_GLO_PHY_L4'
+  version: 'SEALEVEL-GLO-PHY-L4'
   tier: 2
   modeling_realm: sat
   source: ''
