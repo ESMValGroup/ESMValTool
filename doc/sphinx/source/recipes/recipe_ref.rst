@@ -49,5 +49,5 @@ Example plots:
 .. figure::  /recipes/figures/ref/seaborn_jointplot.png
    :align:   center
 
-   2D histogram of total cloud fraction and shortwave cloud radiative
-   effect from ESACCI-CLOUD for the years 2007-2011 with 1D histograms attached.
+   2D histogram of total cloud fraction (ESACCI-CLOUD) and shortwave cloud radiative
+   effect (CERES-EBAF) for the years 2001-2016 with 1D histograms attached.
