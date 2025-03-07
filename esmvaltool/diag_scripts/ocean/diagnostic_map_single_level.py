@@ -48,11 +48,11 @@ def main(config):
          control, experiment, observation)
 
     # If 'Sea Surface' set only 1 level to plot. Otherwise set array of levels.
-    # Level is the chosen depth we wish to plot.
     if (experiment.long_name == 'Sea Surface Temperature'
             or experiment.long_name == 'Sea Surface Salinity'):
         levels = [1]
     else:
+        # Level is the chosen depth we wish to plot.
         levels = [2, 50, 100, 300]
 
     # Loop over levels to extract_single_level.
