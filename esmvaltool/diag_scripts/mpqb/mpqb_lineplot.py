@@ -100,7 +100,7 @@ def main(cfg):
 
     h1, l1 = ax1.get_legend_handles_labels()
     leg = lax.legend(h1, l1, borderaxespad=0, ncol=4, loc='center')
-    for legobj in leg.legendHandles:
+    for legobj in leg.legend_handles:
         legobj.set_linewidth(2.0)
     lax.axis("off")
 

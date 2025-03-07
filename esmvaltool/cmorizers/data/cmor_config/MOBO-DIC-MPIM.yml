@@ -1,7 +1,7 @@
 ---
 # Common global attributes for Cmorizer output
 attributes:
-  dataset_id: MOBO-DIC_MPIM
+  dataset_id: MOBO-DIC-MPIM
   version: '1.1'
   tier: 2
   modeling_realm: clim

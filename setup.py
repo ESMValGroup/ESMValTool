@@ -21,7 +21,7 @@ REQUIREMENTS = {
     # Use with pip install . to install from source
     'install': [
         'aiohttp',
-        'cartopy<0.24',  # github.com/ESMValGroup/ESMValTool/issues/3767
+        'cartopy',
         'cdo',
         'cdsapi',
         'cf-units',
@@ -39,6 +39,7 @@ REQUIREMENTS = {
         'fire',
         'fsspec',
         'GDAL',
+        'ipython<9.0',  # github.com/ESMValGroup/ESMValCore/issues/2680
         'jinja2',
         'joblib',
         'lime',
@@ -51,7 +52,7 @@ REQUIREMENTS = {
         'numpy!=1.24.3',  # severe masking bug
         'openpyxl',
         'packaging',
-        'pandas==2.1.4',  # see note in environment.yml
+        'pandas',
         'progressbar2',
         'psyplot>=1.5.0',  # psy*<1.5.0 are not py312 compat
         'psy-maps>=1.5.0',
@@ -67,7 +68,7 @@ REQUIREMENTS = {
         'scikit-image',
         'scikit-learn>=1.4.0',  # github.com/ESMValGroup/ESMValTool/issues/3504
         'scipy',
-        'scitools-iris>=3.6.1',
+        'scitools-iris>=3.11',
         'seaborn',
         'seawater',
         'shapely>=2',
@@ -250,8 +251,6 @@ setup(
             'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
             'test_recipe = '
             'esmvaltool.utils.testing.recipe_settings.install_expand_run:main',
-            'recipe_filler = '
-            'esmvaltool.utils.recipe_filler:run'
         ],
         'esmvaltool_commands': [
             'colortables = '
