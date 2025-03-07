@@ -66,8 +66,6 @@ calculate_hargreaves <- function(metas, xprov, use_pr=FALSE) {
   }
   dpet <- data$tasmin * NA
   for (i in 1:dim(dpet)[2]) {
-    print("IS TS?")
-    print(is.ts(t(data$tasmin[, i, ])))
     pet_tmp <- hargreaves(
       t(data$tasmin[, i, ]), 
       t(data$tasmax[, i, ]),
@@ -123,7 +121,6 @@ calculate_penman <- function(metas, xprov, method="ICID", crop="tall") {
   # load relevant variables
   for(meta in metas){
     if (meta$short_name %in% names(data)){
-      print(meta$filename)
       data[[meta$short_name]] <- get_var_from_nc(meta)
       xprov$ancestors <- append(xprov$ancestors, meta$filename)
       if(meta$short_name == "tasmin"){
@@ -150,7 +147,7 @@ calculate_penman <- function(metas, xprov, method="ICID", crop="tall") {
       Rs = t_or_null(data$rsds[, i, ]),
       na.rm = TRUE,
       method = method,
-      crop = "tall"
+      crop = crop
     )
     d2 <- dim(pet_tmp)
     pet_tmp <- as.numeric(pet_tmp)
@@ -166,8 +163,8 @@ calculate_penman <- function(metas, xprov, method="ICID", crop="tall") {
 # ---------------------------------------------------------------------------- #
 
 params <- read_yaml(commandArgs(trailingOnly = TRUE)[1])
-ifelse(!is.null(params$method), params$method, "ICID")
-ifelse(!is.null(params$crop), params$crop, "tall")
+params$method = ifelse(!is.null(params$method), params$method, "ICID")
+params$crop = ifelse(!is.null(params$crop), params$crop, "tall")
 dir.create(params$work_dir, recursive = TRUE)
 dir.create(params$plot_dir, recursive = TRUE)
 fillfloat <- 1.e+20
