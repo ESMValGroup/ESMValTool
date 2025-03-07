@@ -29,19 +29,19 @@ preprocessors:
     <<: *regridding
     custom_order: true
     mask_outside_range:
-      minimum: 0.001
+      minimum: 1.
       maximum: 100. 
   common_grid_clivi_clwvi:
     custom_order: true
     <<: *regridding
     mask_outside_range:
-      minimum: 0.001
+      minimum: 0.01
       maximum: 0.2
   common_grid_lwcre:
     custom_order: true
     <<: *regridding
     mask_outside_range:
-      minimum: -10.
+      minimum: 1.
       maximum: 100.
   common_grid_swcre:
     custom_order: true
@@ -55,15 +55,15 @@ preprocessors:
     convert_units:
       units: mm day-1
     mask_outside_range:
-      minimum: 0.00001
-      maximum: 8
+      minimum: 0.1
+      maximum: 4
   common_grid_levels_ta:
     custom_order: true
     <<: *extracting_levels
     <<: *regridding
     mask_outside_range:
-      minimum: 180
-      maximum: 320
+      minimum: 200
+      maximum: 280
   common_grid_levels_cli:
     custom_order: true
     <<: *extracting_levels
@@ -71,7 +71,7 @@ preprocessors:
     convert_units:
       units: g kg-1
     mask_outside_range:
-      minimum: 0.000001
+      minimum: 0.0001
       maximum: 0.005 
 
 
@@ -289,8 +289,6 @@ diagnostics:
           x: cli
           y: ta
           bins: 20
-          xlim: [0., 0.005]
-          ylim: [180., 320.]
           vmax: 0.02
           stat: probability
           cmap: YlGnBu
