@@ -87,4 +87,4 @@ diagnostics:
     scripts:
       zec:
         script: climate_metrics/zec.py
-        zec_x: 50
+        zec_year: 50

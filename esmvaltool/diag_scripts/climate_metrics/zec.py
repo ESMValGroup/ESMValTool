@@ -10,7 +10,7 @@ and a dedicated ZEC simulation (e.g. esm-flat10-zec, esm-1pct-brch-1000PgC).
 
 Configuration options in recipe
 -------------------------------
-zec_x : list, optional (default: [50])
+zec_year : list, optional (default: [50])
     Calculate ZEC for the 20-year average centered around year x,
     multiple values are possible.
 experiments: dict, optional (default: {
@@ -48,7 +48,7 @@ def _get_default_cfg(cfg):
     """Get default options for configuration dictionary."""
     cfg = deepcopy(cfg)
 
-    cfg.setdefault('zec_x', [50])
+    cfg.setdefault('zec_year', [50])
     cfg.setdefault(
         'experiments', {
             'reference': ['esm-flat10', '1pctCO2'],
@@ -71,7 +71,7 @@ def grouped_data(cfg):
                                                           short_name='tas',
                                                           exp=exp)
         elif exp in cfg['experiments']['reference']:
-            data_grouped['anom'] = select_metadata(input_data,
+            data_grouped['base'] = select_metadata(input_data,
                                                    short_name='tas',
                                                    exp=exp)
         else:
@@ -79,7 +79,7 @@ def grouped_data(cfg):
                 f"{exp} is not a valid experiment for calculating ZEC, "
                 f"please check the configuration value of 'experiments'. "
                 f"Current accepted experiments are {cfg['experiments']}")
-    if 'zecmip_data' not in data_grouped or 'anom' not in data_grouped:
+    if 'zecmip_data' not in data_grouped or 'base' not in data_grouped:
         raise ValueError(
             f"Data does not include experiments valid for ZEC computation, "
             f"please check the configuration value of 'experiments'. "
@@ -93,23 +93,23 @@ def calculate_zec(cfg):
     zec = {}
     data_grouped = grouped_data(cfg)
     zecmip_data = data_grouped['zecmip_data']
-    anom = data_grouped['anom']
+    base = data_grouped['base']
     for data in zecmip_data:
         # Account for ensembles by using alias, remove exp name
         name = data['alias'].replace('_' + data['exp'], '')
         tas = iris.load_cube(data['filename'])
-        # Match the correct anomaly data, no ensemble key for ensemble mean
+        # Match correct anomaly base data, no ensemble key for means
         if '_r' in data['alias']:
-            match_anom = select_metadata(anom,
+            match_base = select_metadata(base,
                                          dataset=data['dataset'],
                                          ensemble=data['ensemble'])
         else:
-            match_anom = select_metadata(anom, dataset=data['dataset'])
-        tas_anom = iris.load_cube(match_anom[0]['filename'])
+            match_base = select_metadata(base, dataset=data['dataset'])
+        tas_base = iris.load_cube(match_base[0]['filename'])
         zec_model = deepcopy(tas)
         # Fix time to start at 0
         fix_time(zec_model)
-        zec[name] = zec_model - tas_anom.data
+        zec[name] = zec_model - tas_base.data
     save_zec(zec, cfg)
     return zec
 
@@ -233,7 +233,8 @@ def main(cfg):
     plot_zec_timeseries(zec, cfg)
 
     # Calculate ZEC_X
-    x_val = cfg['zec_x'] if isinstance(cfg['zec_x'], list) else [cfg['zec_x']]
+    x_val = cfg['zec_year'] if isinstance(cfg['zec_year'],
+                                          list) else [cfg['zec_year']]
     for x_i in x_val:
         zec_x = calc_zec_x(zec, x_i)
         write_zec_x(zec_x, x_i, cfg)
