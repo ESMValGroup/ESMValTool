@@ -3,7 +3,7 @@ Model 1 vs Model 2 vs Observations diagnostics.
 ===============================================
 
 Diagnostic to produce an image showing four maps, based on a comparison of two
-differnt models results against an observational dataset. This process is
+different models results against an observational dataset. This process is
 often used to compare a new iteration of a model under development against
 a previous version of the same model. The four map plots are:
 
@@ -20,7 +20,7 @@ hard work, and that the cube received by this diagnostic (via the settings.yml
 and metadata.yml files) has no time component, a small number of depth layers,
 and a latitude and longitude coordinates.
 
-An approproate preprocessor for a 3D+time field would be::
+An appropriate preprocessor for a 3D+time field would be::
 
   preprocessors:
     prep_map:
@@ -60,8 +60,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-from esmvaltool.diag_scripts.shared import run_diagnostic
-from esmvaltool.diag_scripts.shared import ProvenanceLogger
+from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -69,8 +68,7 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
 def add_map_subplot(subplot, cube, nspace, title='', cmap=''):
-    """
-    Add a map subplot to the current pyplot figure.
+    """Add a map subplot to the current pyplot figure.
 
     Parameters
     ----------
@@ -84,25 +82,25 @@ def add_map_subplot(subplot, cube, nspace, title='', cmap=''):
         A string to set as the subplot title.
     cmap: str
         A string to describe the matplotlib colour map.
-
     """
     plt.subplot(subplot)
-    qplot = qplt.contourf(cube, nspace, linewidth=0,
+    qplot = qplt.contourf(cube,
+                          nspace,
+                          linewidth=0,
                           cmap=plt.cm.get_cmap(cmap))
-    qplot.colorbar.set_ticks([nspace.min(),
-                              (nspace.max() + nspace.min()) / 2.,
-                              nspace.max()])
+    qplot.colorbar.set_ticks(
+        [nspace.min(), (nspace.max() + nspace.min()) / 2.,
+         nspace.max()])
 
     plt.gca().coastlines()
     plt.title(title)
 
 
 def multi_model_maps(
-        cfg,
-        input_files,
+    cfg,
+    input_files,
 ):
-    """
-    Make the four pane model vs model vs obs comparison plot.
+    """Make the four pane model vs model vs obs comparison plot.
 
     Parameters
     ----------
@@ -110,7 +108,6 @@ def multi_model_maps(
         the opened global config dictionairy, passed by ESMValTool.
     input_files: dict
         the metadata dictionairy
-
     """
     filenames = {}
     ctl_key = 'control_model'
@@ -119,9 +116,8 @@ def multi_model_maps(
     model_types = [ctl_key, exp_key, obs_key]
     for model_type in model_types:
         logger.debug(model_type, cfg[model_type])
-        filenames[model_type] = diagtools.match_model_to_key(model_type,
-                                                             cfg[model_type],
-                                                             input_files)
+        filenames[model_type] = diagtools.match_model_to_key(
+            model_type, cfg[model_type], input_files)
 
     # ####
     # Load the data for each layer as a separate cube
@@ -145,8 +141,8 @@ def multi_model_maps(
     obs = input_files[filenames[obs_key]]['dataset']
     long_name = cubes[exp_key][list(layers.keys())[0]].long_name
 
-    # Load image format extention
-    image_extention = diagtools.get_image_format(cfg)
+    # Load image format extension
+    image_extension = diagtools.get_image_format(cfg)
 
     # Make a plot for each layer
     for layer in layers:
@@ -160,7 +156,9 @@ def multi_model_maps(
         cube224 = cubes[exp_key][layer] - cubes[obs_key][layer]
 
         # create the z axis for plots 2, 3, 4.
-        zrange1 = diagtools.get_cube_range([cube221, ])
+        zrange1 = diagtools.get_cube_range([
+            cube221,
+        ])
         zrange2 = diagtools.get_cube_range_diff([cube222, cube223, cube224])
 
         linspace1 = np.linspace(zrange1[0], zrange1[1], 12, endpoint=True)
@@ -168,11 +166,20 @@ def multi_model_maps(
 
         # Add the sub plots to the figure.
         add_map_subplot(221, cube221, linspace1, cmap='viridis', title=exper)
-        add_map_subplot(222, cube222, linspace2, cmap='bwr',
+        add_map_subplot(222,
+                        cube222,
+                        linspace2,
+                        cmap='bwr',
                         title=' '.join([exper, 'minus', control]))
-        add_map_subplot(223, cube223, linspace2, cmap='bwr',
+        add_map_subplot(223,
+                        cube223,
+                        linspace2,
+                        cmap='bwr',
                         title=' '.join([control, 'minus', obs]))
-        add_map_subplot(224, cube224, linspace2, cmap='bwr',
+        add_map_subplot(224,
+                        cube224,
+                        linspace2,
+                        cmap='bwr',
                         title=' '.join([exper, 'minus', obs]))
 
         # Add overall title
@@ -181,7 +188,7 @@ def multi_model_maps(
         # Determine image filename:
         fn_list = [long_name, exper, control, obs, str(layer)]
         path = diagtools.folder(cfg['plot_dir']) + '_'.join(fn_list)
-        path = path.replace(' ', '') + image_extention
+        path = path.replace(' ', '') + image_extension
 
         # Saving files:
         logger.info('Saving plots to %s', path)
@@ -191,7 +198,10 @@ def multi_model_maps(
         provenance_record = diagtools.prepare_provenance_record(
             cfg,
             caption=f'Quadmap models comparison against {obs}',
-            statistics=['mean', 'diff', ],
+            statistics=[
+                'mean',
+                'diff',
+            ],
             domain=['global'],
             plot_type=['map'],
             ancestors=list(input_files.keys()),
@@ -202,14 +212,12 @@ def multi_model_maps(
 
 
 def main(cfg):
-    """
-    Load the config file, and send it to the plot maker.
+    """Load the config file, and send it to the plot maker.
 
     Parameters
     ----------
     cfg: dict
         the opened global config dictionairy, passed by ESMValTool.
-
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
