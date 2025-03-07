@@ -303,7 +303,7 @@ diagnostics:
           - validate_models/diffmaps
           - validate_obs/diffmaps
       perfmetric:
-        script: perfmetrics/portrait_plot.py
+        script: portrait_plot.py
         distance_metric: rmse
         nan_color: null
         y_labels:
