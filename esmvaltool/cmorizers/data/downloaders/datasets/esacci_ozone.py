@@ -13,16 +13,13 @@ logger = logging.getLogger(__name__)
 def download_dataset(config, dataset, dataset_info, start_date, end_date,
                      overwrite):
     """Download ESACCI-OZONE dataset using CDS API
-
     An ECMWF account is needed to download the datasets from:
     https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1
 
     - The file named .cdspirc containing the key associated to
     the ECMWF account needs to be saved in user's ${HOME} directory.
-
     - All the files will be saved in ${RAWOBS}/Tier2/ESACCI-OZONE
     """
-
     cds_url = "https://cds.climate.copernicus.eu/api"
 
     if dataset == "ESACCI-OZONE":
