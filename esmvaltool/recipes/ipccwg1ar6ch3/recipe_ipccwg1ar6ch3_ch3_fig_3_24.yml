@@ -14,6 +14,12 @@ documentation:
   maintainer:
     - malinina_elizaveta
 
+  references:
+    - eyring21ipcc
+
+  projects:
+    - ipcc_ar6
+
 models_cmip5: &models_cmip5
   # CMIP5
   - {dataset: ACCESS1-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
@@ -126,6 +132,8 @@ preprocessors:
       scheme: linear
     zonal_statistics:
       operator: mean
+    convert_units:
+      units: degrees_C    
 
   prep_3_24b:
     custom_order: true
@@ -142,6 +150,8 @@ preprocessors:
       end_latitude: 10.
     meridional_statistics:
       operator: mean
+    convert_units:
+      units: degrees_C
 
   prep_3_24_eq_mask:
     custom_order: true
@@ -156,12 +166,14 @@ preprocessors:
       end_longitude: 360.
       start_latitude: -10.
       end_latitude: 10.
+    convert_units:
+      units: degrees_C
 
 diagnostics:
-  diag_3_24a:
+  zonal:
     variables:
       tos_zonal_cmip5:
-        short_name: tos # ocean surface temperature
+        short_name: tos 
         preprocessor: prep_3_24a
         field: TO2M
         start_year: 1979
@@ -169,7 +181,7 @@ diagnostics:
         reference_dataset: HadISST
         additional_datasets: *models_cmip5
       tos_zonal_cmip6:
-        short_name: tos # ocean surface temperature
+        short_name: tos 
         preprocessor: prep_3_24a
         field: TO2M
         start_year: 1979
@@ -177,7 +189,7 @@ diagnostics:
         reference_dataset: HadISST
         additional_datasets: *models_cmip6
       tos_zonal_highres:
-        short_name: tos # ocean surface temperature
+        short_name: tos 
         preprocessor: prep_3_24a
         field: TO2M
         start_year: 1979
@@ -185,7 +197,7 @@ diagnostics:
         reference_dataset: HadISST
         additional_datasets: *models_highres
     scripts:
-      sst_bias:
+      panel_a:
         script: ocean/diagnostic_3_24_zonal_sst.py
         bias: True
         mask: 
@@ -198,72 +210,78 @@ diagnostics:
               percent: 5
             - operator: percentile
               percent: 95
-        # observational_dataset: {dataset: HadISST, project: OBS,}
         mpl_style: ipcc_ar6_fgd
+        # add caption
+        # add color file
 
-
-
-  diag_3_24b:
+  equatorial:
     variables:
-      tos_equator_cmip5:
-        short_name: tos # ocean surface temperature
+      tos_eq_cmip5:
+        short_name: tos 
         preprocessor: prep_3_24b
         field: TO2M
         start_year: 1979
         end_year: 1999
         reference_dataset: HadISST
         additional_datasets: *models_cmip5
-      tos_equator_cmip6:
-        short_name: tos # ocean surface temperature
+      tos_eq_cmip6:
+        short_name: tos 
         preprocessor: prep_3_24b
         field: TO2M
         start_year: 1979
         end_year: 1999
         reference_dataset: HadISST
         additional_datasets: *models_cmip6
-      tos_equator_highres:
-        short_name: tos # ocean surface temperature
+      tos_eq_highres:
+        short_name: tos 
         preprocessor: prep_3_24b
         field: TO2M
         start_year: 1979
         end_year: 1999
         reference_dataset: HadISST
         additional_datasets: *models_highres
-      # tos_eq_mask:
-      #   short_name: tos # ocean surface temperature
-      #   preprocessor: prep_3_24_eq_mask
-      #   field: TO2M
-      #   start_year: 1979
-      #   end_year: 1999
-      #   additional_datasets:
-      #   - {dataset: HadISST, project: OBS, field: T2Ms, mip: Omon, type: reanaly, version: 1, tier: 2}
-
+      eq_mask:
+        short_name: tos 
+        preprocessor: prep_3_24_eq_mask
+        field: TO2M
+        start_year: 1979
+        end_year: 1999
+        reference_dataset: HadISST
+        additional_datasets: 
+         - {dataset: HadISST, project: OBS, field: T2Ms, mip: Omon, type: reanaly, version: 1, tier: 2}    
+    
     scripts:
-      sst_bias:
+      panel_b:
         script: ocean/diagnostic_3_24_zonal_sst.py
-        bias: True
-        # observational_dataset: {dataset: HadISST, project: OBS,}
+        bias: True      
+        mask: 
+          flag: true
+          type: resolved
+          group: eq_mask
+        statistics:
+          best_guess: mean
+          borders: 
+            - operator: percentile 
+              percent: 5
+            - operator: percentile
+              percent: 95
         mpl_style: ipcc_ar6_fgd
-
-    # tos_equator:
-    #     short_name: tos # ocean surface temperature
-    #     preprocessor: prep_3_24b
-    #     field: TO2M
-    #     start_year: 1979
-    #     end_year: 1999
-    #     additional_datasets: *models
-
-    #   tos_eq_mask:
-    #     short_name: tos # ocean surface temperature
-    #     preprocessor: prep_3_24_eq_mask
-    #     field: TO2M
-    #     start_year: 1979
-    #     end_year: 1999
-    #     additional_datasets:
-    #     - {dataset: HadISST, project: OBS, field: T2Ms, mip: Omon, type: reanaly, version: 1, tier: 2}
-
-    # scripts:
-    #   sst_bias:
-    #     script: ocean/diagnostic_3_24_zonal_sst.py
-    #     observational_dataset: {dataset: HadISST, project: OBS,}
-    #     mpl_style: ipcc_ar6_fgd
+        # add caption
+        # add color file
+      panel_c:
+        script: ocean/diagnostic_3_24_zonal_sst.py
+        bias: True      
+        mask: 
+          flag: true
+          type: resolved
+          group: eq_mask
+        statistics:
+          best_guess: mean
+          borders: 
+            - operator: percentile 
+              percent: 5
+            - operator: percentile
+              percent: 95
+        mpl_style: ipcc_ar6_fgd
+        # add caption
+        # add color file
