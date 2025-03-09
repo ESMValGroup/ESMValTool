@@ -81,7 +81,7 @@ REQUIREMENTS = {
     # Test dependencies (unit tests)
     # Execute `pip install .[test]` once and then use `pytest` to run tests
     'test': [
-        'flake8',
+        'pre-commit',
         'pytest>=3.9,!=6.0.0rc1,!=6.0.0',
         'pytest-cov>=2.10.1',
         'pytest-env',
@@ -103,12 +103,10 @@ REQUIREMENTS = {
         'codespell',
         'docformatter',
         'imagehash',
-        'isort',
         'pre-commit',
         'prospector[with_pyroma]>=1.12',
         'vprof',
         'yamllint',
-        'yapf',
     ],
 }
 

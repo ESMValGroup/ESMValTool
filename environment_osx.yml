@@ -73,7 +73,7 @@ dependencies:
   - xlsxwriter
   - zarr
   # Python packages needed for unit testing
-  - flake8 >=6
+  - pre-commit
   - pytest >=3.9,!=6.0.0rc1,!=6.0.0
   - pytest-cov
   - pytest-env
@@ -90,10 +90,7 @@ dependencies:
   - codespell ==2.3.0
   - docformatter ==1.7.5
   - imagehash
-  - isort ==5.13.2
-  - pre-commit
   - prospector >=1.12  # earliest support for Python 3.12
   - pyroma
   # - vprof not on conda-forge
   - yamllint ==1.35.1
-  - yapf ==0.32.0
