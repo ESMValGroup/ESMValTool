@@ -10,15 +10,16 @@ This tool is part of the ocean diagnostic tools package in the ESMValTool.
 Author: Lee de Mora (PML)
     ledm@pml.ac.uk
 """
+
 import logging
 import os
 import sys
 from pathlib import Path
-import iris
 
-import numpy as np
 import cftime
+import iris
 import matplotlib.pyplot as plt
+import numpy as np
 import yaml
 
 from esmvaltool.diag_scripts.shared._base import _get_input_data_files
@@ -41,7 +42,7 @@ def get_obs_projects():
         Returns a list of strings of the various types of observational data.
     """
     obs_projects = [
-        'obs4MIPs',
+        "obs4MIPs",
     ]
     return obs_projects
 
@@ -71,11 +72,11 @@ def folder(name):
         name = name + sep
     if os.path.exists(name) is False:
         os.makedirs(name)
-        logger.info('Making new directory:\t%s', str(name))
+        logger.info("Making new directory:\t%s", str(name))
     return name
 
 
-def get_input_files(cfg, index=''):
+def get_input_files(cfg, index=""):
     """
     Load input configuration file as a Dictionairy.
 
@@ -96,7 +97,7 @@ def get_input_files(cfg, index=''):
         A dictionary of the input files and their linked details.
     """
     if isinstance(index, int):
-        metadata_file = cfg['input_files'][index]
+        metadata_file = cfg["input_files"][index]
         with open(metadata_file) as input_file:
             metadata = yaml.safe_load(input_file)
         return metadata
@@ -122,45 +123,54 @@ def bgc_units(cube, name):
     iris.cube.Cube
         the cube with the new units.
     """
-    new_units = ''
-    if name in ['tos', 'thetao']:
-        new_units = 'celsius'
+    new_units = ""
+    if name in ["tos", "thetao"]:
+        new_units = "celsius"
 
-    if name in ['sos', 'so']:
-        cube.units = '0.001'
+    if name in ["sos", "so"]:
+        cube.units = "0.001"
 
-    if name in ['no3', 'o2', 'po4', 'si', 'dissic', 'talk']:
-        new_units = 'mmol m-3'
+    if name in ["no3", "o2", "po4", "si", "dissic", "talk"]:
+        new_units = "mmol m-3"
 
-    if name in ['chl', ]:
-        new_units = 'mg m-3'
+    if name in [
+        "chl",
+    ]:
+        new_units = "mg m-3"
 
-    if name in ['intpp', ]:
-        new_units = 'mol m-2 yr-1'
+    if name in [
+        "intpp",
+    ]:
+        new_units = "mol m-2 yr-1"
 
-    if name in ['fgco2', ]:
-        new_units = 'g m-2 d-1'
+    if name in [
+        "fgco2",
+    ]:
+        new_units = "g m-2 d-1"
 
-    if name in ['spco2', 'dpco2', ]:
-        new_units = 'uatm'
+    if name in [
+        "spco2",
+        "dpco2",
+    ]:
+        new_units = "uatm"
 
-    if name in ['mfo', 'amoc', 'msftmyz']:
+    if name in ["mfo", "amoc", "msftmyz"]:
         # sverdrup are 1000000 m3.s-1, but mfo is kg s-1.
-        new_units = 'Tg s-1'
+        new_units = "Tg s-1"
 
-    if new_units != '':
-        logger.info(' '.join(
-            ["Changing units from",
-             str(cube.units), 'to', new_units]))
+    if new_units != "":
+        logger.info(
+            " ".join(["Changing units from", str(cube.units), "to", new_units])
+        )
         cube.convert_units(new_units)
 
     return cube
 
 
 def match_model_to_key(
-        model_type,
-        cfg_dict,
-        input_files_dict,
+    model_type,
+    cfg_dict,
+    input_files_dict,
 ):
     """
     Match up model or observations dataset dictionairies from config file.
@@ -195,7 +205,7 @@ def match_model_to_key(
         if match:
             return input_file
     logger.warning("Unable to match model: %s", model_type)
-    return ''
+    return ""
 
 
 def cube_time_to_float(cube):
@@ -214,7 +224,7 @@ def cube_time_to_float(cube):
         List of floats showing the time coordinate in decimal time.
 
     """
-    times = cube.coord('time')
+    times = cube.coord("time")
     datetime = guess_calendar_datetime(cube)
 
     dtimes = times.units.num2date(times.points)
@@ -231,12 +241,15 @@ def cube_time_to_float(cube):
             time0 = datetime(dtime.year, 1, 1, 0, 0)
             dayofyr = (time - time0).days
 
-        floattime = dtime.year + dayofyr / daysperyear + dtime.hour / (
-            24. * daysperyear)
+        floattime = (
+            dtime.year
+            + dayofyr / daysperyear
+            + dtime.hour / (24.0 * daysperyear)
+        )
         if dtime.hour:
-            floattime += dtime.hour / (24. * daysperyear)
+            floattime += dtime.hour / (24.0 * daysperyear)
         if dtime.minute:
-            floattime += dtime.minute / (24. * 60. * daysperyear)
+            floattime += dtime.minute / (24.0 * 60.0 * daysperyear)
         floattimes.append(floattime)
     return floattimes
 
@@ -255,29 +268,31 @@ def guess_calendar_datetime(cube):
     cftime.datetime
         A datetime creator function from cftime, based on the cube's calendar.
     """
-    time_coord = cube.coord('time')
+    time_coord = cube.coord("time")
 
     if time_coord.units.calendar in [
-            '360_day',
+        "360_day",
     ]:
         datetime = cftime.Datetime360Day
-    elif time_coord.units.calendar in ['365_day', 'noleap']:
+    elif time_coord.units.calendar in ["365_day", "noleap"]:
         datetime = cftime.DatetimeNoLeap
     elif time_coord.units.calendar in [
-            'julian',
+        "julian",
     ]:
         datetime = cftime.DatetimeJulian
     elif time_coord.units.calendar in [
-            'gregorian',
+        "gregorian",
     ]:
         datetime = cftime.DatetimeGregorian
     elif time_coord.units.calendar in [
-            'proleptic_gregorian',
+        "proleptic_gregorian",
     ]:
         datetime = cftime.DatetimeProlepticGregorian
     else:
-        logger.warning('Calendar set to Gregorian, instead of %s',
-                       time_coord.units.calendar)
+        logger.warning(
+            "Calendar set to Gregorian, instead of %s",
+            time_coord.units.calendar,
+        )
         datetime = cftime.DatetimeGregorian
     return datetime
 
@@ -305,9 +320,10 @@ def decadal_average(cube):
     -------
     iris.cube
     """
-    iris.coord_categorisation.add_categorised_coord(cube, 'decade', 'time',
-                                                    get_decade)
-    return cube.aggregated_by('decade', iris.analysis.MEAN)
+    iris.coord_categorisation.add_categorised_coord(
+        cube, "decade", "time", get_decade
+    )
+    return cube.aggregated_by("decade", iris.analysis.MEAN)
 
 
 def load_thresholds(cfg, metadata):
@@ -328,22 +344,22 @@ def load_thresholds(cfg, metadata):
     """
     thresholds = set()
 
-    if 'threshold' in cfg:
-        thresholds.update(float(cfg['threshold']))
+    if "threshold" in cfg:
+        thresholds.update(float(cfg["threshold"]))
 
-    if 'threshold' in metadata:
-        thresholds.update(float(metadata['threshold']))
+    if "threshold" in metadata:
+        thresholds.update(float(metadata["threshold"]))
 
-    if 'thresholds' in cfg:
-        thresholds.update([float(thres) for thres in cfg['thresholds']])
+    if "thresholds" in cfg:
+        thresholds.update([float(thres) for thres in cfg["thresholds"]])
 
-    if 'thresholds' in metadata:
-        thresholds.update([float(thres) for thres in metadata['thresholds']])
+    if "thresholds" in metadata:
+        thresholds.update([float(thres) for thres in metadata["thresholds"]])
 
     return sorted(list(thresholds))
 
 
-def get_colour_from_cmap(number, total, cmap='jet'):
+def get_colour_from_cmap(number, total, cmap="jet"):
     """
     Get a colour `number` of `total` from a cmap.
 
@@ -363,17 +379,19 @@ def get_colour_from_cmap(number, total, cmap='jet'):
         cmap = plt.get_cmap(cmap)
 
     if number > total:
-        raise ValueError(f'The cannot be larger than the total length '
-                         f' of the list ie: {number} > {total}')
+        raise ValueError(
+            f"The cannot be larger than the total length "
+            f" of the list ie: {number} > {total}"
+        )
 
     if total > 1:
-        colour = cmap(float(number) / float(total - 1.))
+        colour = cmap(float(number) / float(total - 1.0))
     else:
-        colour = cmap(0.)
+        colour = cmap(0.0)
     return colour
 
 
-def add_legend_outside_right(plot_details, ax1, column_width=0.1, loc='right'):
+def add_legend_outside_right(plot_details, ax1, column_width=0.1, loc="right"):
     """
     Add a legend outside the plot, to the right.
 
@@ -407,48 +425,61 @@ def add_legend_outside_right(plot_details, ax1, column_width=0.1, loc='right'):
     # Create dummy axes:
     legend_size = len(plot_details) + 1
     box = ax1.get_position()
-    if loc.lower() == 'right':
+    if loc.lower() == "right":
         nrows = 25
         ncols = int(legend_size / nrows) + 1
-        ax1.set_position([
-            box.x0, box.y0, box.width * (1. - column_width * ncols), box.height
-        ])
+        ax1.set_position(
+            [
+                box.x0,
+                box.y0,
+                box.width * (1.0 - column_width * ncols),
+                box.height,
+            ]
+        )
 
-    if loc.lower() == 'below':
+    if loc.lower() == "below":
         ncols = 4
         nrows = int(legend_size / ncols) + 1
-        ax1.set_position([
-            box.x0, box.y0 + (nrows * column_width), box.width,
-            box.height - (nrows * column_width)
-        ])
+        ax1.set_position(
+            [
+                box.x0,
+                box.y0 + (nrows * column_width),
+                box.width,
+                box.height - (nrows * column_width),
+            ]
+        )
 
     # Add emply plots to dummy axis.
     for index in sorted(plot_details):
-        colour = plot_details[index]['c']
+        colour = plot_details[index]["c"]
 
-        linewidth = plot_details[index].get('lw', 1)
+        linewidth = plot_details[index].get("lw", 1)
 
-        linestyle = plot_details[index].get('ls', '-')
+        linestyle = plot_details[index].get("ls", "-")
 
-        label = plot_details[index].get('label', str(index))
+        label = plot_details[index].get("label", str(index))
 
         plt.plot([], [], c=colour, lw=linewidth, ls=linestyle, label=label)
 
-    if loc.lower() == 'right':
-        legd = ax1.legend(loc='center left',
-                          ncol=ncols,
-                          prop={'size': 10},
-                          bbox_to_anchor=(1., 0.5))
-    if loc.lower() == 'below':
-        legd = ax1.legend(loc='upper center',
-                          ncol=ncols,
-                          prop={'size': 10},
-                          bbox_to_anchor=(0.5, -2. * column_width))
+    if loc.lower() == "right":
+        legd = ax1.legend(
+            loc="center left",
+            ncol=ncols,
+            prop={"size": 10},
+            bbox_to_anchor=(1.0, 0.5),
+        )
+    if loc.lower() == "below":
+        legd = ax1.legend(
+            loc="upper center",
+            ncol=ncols,
+            prop={"size": 10},
+            bbox_to_anchor=(0.5, -2.0 * column_width),
+        )
     legd.draw_frame(False)
-    legd.get_frame().set_alpha(0.)
+    legd.get_frame().set_alpha(0.0)
 
 
-def get_image_format(cfg, default='png'):
+def get_image_format(cfg, default="png"):
     """
     Load the image format from the global config file.
 
@@ -473,31 +504,37 @@ def get_image_format(cfg, default='png'):
     image_extention = default
 
     # Load format from config.yml and set it as default
-    if 'output_file_type' in cfg:
-        image_extention = cfg['output_file_type']
+    if "output_file_type" in cfg:
+        image_extention = cfg["output_file_type"]
 
     # Load format from config.yml and set it as default
-    if 'image_format' in cfg:
-        image_extention = cfg['image_format']
+    if "image_format" in cfg:
+        image_extention = cfg["image_format"]
 
     matplotlib_image_formats = plt.gcf().canvas.get_supported_filetypes()
     if image_extention not in matplotlib_image_formats:
-        logger.warning(' '.join([
-            'Image format ', image_extention, 'not in matplot:',
-            ', '.join(matplotlib_image_formats)
-        ]))
+        logger.warning(
+            " ".join(
+                [
+                    "Image format ",
+                    image_extention,
+                    "not in matplot:",
+                    ", ".join(matplotlib_image_formats),
+                ]
+            )
+        )
 
-    image_extention = '.' + image_extention
-    image_extention = image_extention.replace('..', '.')
+    image_extention = "." + image_extention
+    image_extention = image_extention.replace("..", ".")
     return image_extention
 
 
 def get_image_path(
-        cfg,
-        metadata,
-        prefix='diag',
-        suffix='image',
-        metadata_id_list='default',
+    cfg,
+    metadata,
+    prefix="diag",
+    suffix="image",
+    metadata_id_list="default",
 ):
     """
     Produce a path to the final location of the image.
@@ -525,36 +562,36 @@ def get_image_path(
 
     """
     #####
-    if metadata_id_list == 'default':
+    if metadata_id_list == "default":
         metadata_id_list = [
-            'project',
-            'dataset',
-            'mip',
-            'exp',
-            'ensemble',
-            'field',
-            'short_name',
-            'preprocessor',
-            'diagnostic',
-            'start_year',
-            'end_year',
+            "project",
+            "dataset",
+            "mip",
+            "exp",
+            "ensemble",
+            "field",
+            "short_name",
+            "preprocessor",
+            "diagnostic",
+            "start_year",
+            "end_year",
         ]
 
-    path = folder(cfg['plot_dir'])
+    path = folder(cfg["plot_dir"])
     if prefix:
-        path += prefix + '_'
+        path += prefix + "_"
     # Check that the keys are in the dict.
     intersection = [va for va in metadata_id_list if va in metadata]
-    path += '_'.join([str(metadata[b]) for b in intersection])
+    path += "_".join([str(metadata[b]) for b in intersection])
     if suffix:
-        path += '_' + suffix
+        path += "_" + suffix
 
     image_extention = get_image_format(cfg)
 
     if path.find(image_extention) == -1:
         path += image_extention
 
-    path = path.replace(' ', '_')
+    path = path.replace(" ", "_")
 
     logger.info("Image path will be: %s", path)
     return path
@@ -585,12 +622,12 @@ def make_cube_layer_dict(cube):
     coords = cube.coords()
     layers = []
     for coord in coords:
-        if coord.standard_name in ['depth', 'region']:
+        if coord.standard_name in ["depth", "region"]:
             layers.append(coord)
 
     cubes = {}
     if not layers:
-        cubes[''] = cube
+        cubes[""] = cube
         return cubes
 
     # if len(layers) > 1:
@@ -603,24 +640,24 @@ def make_cube_layer_dict(cube):
     # iris stores coords as a list with one entry:
     layer_dim = layers[0]
     if len(layer_dim.points) in [
-            1,
+        1,
     ]:
-        cubes[''] = cube
+        cubes[""] = cube
         return cubes
 
-    if layer_dim.standard_name == 'depth':
-        coord_dim = cube.coord_dims('depth')[0]
+    if layer_dim.standard_name == "depth":
+        coord_dim = cube.coord_dims("depth")[0]
         for layer_index, layer in enumerate(layer_dim.points):
             slices = [slice(None) for index in cube.shape]
             slices[coord_dim] = layer_index
             cubes[layer] = cube[tuple(slices)]
 
-    if layer_dim.standard_name == 'region':
-        coord_dim = cube.coord_dims('region')[0]
+    if layer_dim.standard_name == "region":
+        coord_dim = cube.coord_dims("region")[0]
         for layer_index, layer in enumerate(layer_dim.points):
             slices = [slice(None) for index in cube.shape]
             slices[coord_dim] = layer_index
-            layer = layer.replace('_', ' ').title()
+            layer = layer.replace("_", " ").title()
             cubes[layer] = cube[tuple(slices)]
     return cubes
 
@@ -670,7 +707,7 @@ def get_cube_range_diff(cubes):
     for cube in cubes:
         ranges.append(np.abs(cube.data.min()))
         ranges.append(np.abs(cube.data.max()))
-    return [-1. * np.max(ranges), np.max(ranges)]
+    return [-1.0 * np.max(ranges), np.max(ranges)]
 
 
 def get_array_range(arrays):
@@ -693,7 +730,7 @@ def get_array_range(arrays):
     for arr in arrays:
         mins.append(arr.min())
         maxs.append(arr.max())
-    logger.info('get_array_range: %s, %s', np.min(mins), np.max(maxs))
+    logger.info("get_array_range: %s, %s", np.min(mins), np.max(maxs))
     return [
         np.min(mins),
         np.max(maxs),
@@ -711,22 +748,23 @@ def prepare_provenance_record(cfg, **provenance_record):
     provenance_record: dict
         dictionary for a specific diagnostic provenance details.
     """
-    recipe_path = Path(cfg['run_dir']).parents[1] / cfg['recipe']
+    recipe_path = Path(cfg["run_dir"]).parents[1] / cfg["recipe"]
     with recipe_path.open() as recipe_file:
         recipe = yaml.safe_load(recipe_file)
 
-    doc = recipe['documentation']
-    authors = doc.get('authors', [])
+    doc = recipe["documentation"]
+    authors = doc.get("authors", [])
     authors += [
-        maintainer for maintainer in doc.get('maintainer', [])
+        maintainer
+        for maintainer in doc.get("maintainer", [])
         if maintainer not in authors
     ]
-    provenance_record['authors'] = authors
-    for key in ['title', 'description', 'projects']:
+    provenance_record["authors"] = authors
+    for key in ["title", "description", "projects"]:
         val = doc[key]
         if val:
             provenance_record[key] = val
-    for key in ['realms', 'themes']:
+    for key in ["realms", "themes"]:
         val = cfg.get(key)
         if val:
             provenance_record[key] = val

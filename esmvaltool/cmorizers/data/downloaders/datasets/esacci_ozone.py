@@ -1,17 +1,19 @@
 """Script to download ESACCI-OZONE from the CDS."""
 
-import logging
-from pathlib import Path
-import shutil
 import gzip
+import logging
+import shutil
 import zipfile
+from pathlib import Path
+
 import cdsapi
 
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download ESACCI-OZONE dataset using CDS API.
 
     - An ECMWF account is needed to download the datasets from
@@ -31,7 +33,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                 "sensor": ["merged_uv"],
                 "year": [str(y) for y in range(1995, 2024)],
                 "month": [f"{m:02d}" for m in range(1, 13)],
-                "version": ["v2000"]
+                "version": ["v2000"],
             },
             "o3": {
                 "processing_level": "level_3",
@@ -40,12 +42,12 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
                 "sensor": ["cmzm"],
                 "year": [str(y) for y in range(1984, 2023)],
                 "month": [f"{m:02d}" for m in range(1, 13)],
-                "version": ["v0008"]
-            }
+                "version": ["v0008"],
+            },
         }
 
         client = cdsapi.Client(cds_url)
-        raw_obs_dir = Path(config['rootpath']['RAWOBS'][0])
+        raw_obs_dir = Path(config["rootpath"]["RAWOBS"][0])
         output_folder = raw_obs_dir / f"Tier{dataset_info['tier']}" / dataset
         output_folder.mkdir(parents=True, exist_ok=True)
 
@@ -55,25 +57,27 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
             file_path = output_folder / f"{var_name}.gz"
 
             if file_path.exists() and not overwrite:
-                logger.info("File %s already exists. Skipping download.",
-                            file_path)
+                logger.info(
+                    "File %s already exists. Skipping download.", file_path
+                )
                 continue
 
-            client.retrieve("satellite-ozone-v1", request,
-                            file_path.as_posix())
+            client.retrieve(
+                "satellite-ozone-v1", request, file_path.as_posix()
+            )
 
             # Handle both .gz and .zip files
             with open(file_path, "rb") as file:
                 magic = file.read(2)
 
-            if magic == b'PK':  # ZIP file signature
+            if magic == b"PK":  # ZIP file signature
                 logger.info("Detected ZIP file: %s", file_path)
-                with zipfile.ZipFile(file_path, 'r') as zip_ref:
+                with zipfile.ZipFile(file_path, "r") as zip_ref:
                     zip_ref.extractall(output_folder)
             else:
                 logger.info("Detected GZIP file: %s", file_path)
-                with gzip.open(file_path, 'rb') as f_in:
-                    with open(output_folder / file_path.stem, 'wb') as f_out:
+                with gzip.open(file_path, "rb") as f_in:
+                    with open(output_folder / file_path.stem, "wb") as f_out:
                         shutil.copyfileobj(f_in, f_out)
 
     else:

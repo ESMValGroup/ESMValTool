@@ -1,6 +1,7 @@
 import pytest
-from bin.configure import validate_user_config_file
 from esmvalcore.config._config_validators import ValidationError
+
+from bin.configure import validate_user_config_file
 
 
 def test_validate_user_config_file():
@@ -31,9 +32,10 @@ def test_validate_user_config_file_one_validation_error():
         "output_file_type": "png",
     }
     with pytest.raises(
-            ValidationError,
-            match='Validation error for EXIT_ON_WARNING with value "100"\n'
-            'ERROR: Could not convert `100` to `bool`\n'):
+        ValidationError,
+        match='Validation error for EXIT_ON_WARNING with value "100"\n'
+        "ERROR: Could not convert `100` to `bool`\n",
+    ):
         validate_user_config_file(mock_one_invalid_config)
 
 
@@ -49,11 +51,12 @@ def test_validate_user_config_file_two_validation_errors():
         "output_file_type": "png",
     }
     with pytest.raises(
-            ValidationError,
-            match='Validation error for OUTPUT_DIR with value "111"\nERROR: '
-            'Expected a path, but got 111\n\nValidation error for '
-            'EXIT_ON_WARNING with value "100"\nERROR: Could not convert `100` '
-            'to `bool`\n'):
+        ValidationError,
+        match='Validation error for OUTPUT_DIR with value "111"\nERROR: '
+        "Expected a path, but got 111\n\nValidation error for "
+        'EXIT_ON_WARNING with value "100"\nERROR: Could not convert `100` '
+        "to `bool`\n",
+    ):
         validate_user_config_file(mock_two_invalids_config)
 
 
@@ -70,7 +73,8 @@ def test_validate_user_config_file_key_error():
         "output_file_type": "png",
     }
     with pytest.raises(
-            ValidationError,
-            match="Key Error for ONE_ROGUE_FIELD. May not be a valid "
-            "ESMValTool user configuration key\nERROR: 'one_rogue_field'\n"):
+        ValidationError,
+        match="Key Error for ONE_ROGUE_FIELD. May not be a valid "
+        "ESMValTool user configuration key\nERROR: 'one_rogue_field'\n",
+    ):
         validate_user_config_file(mock_one_key_error)

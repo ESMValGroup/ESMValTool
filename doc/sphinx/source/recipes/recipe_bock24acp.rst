@@ -37,7 +37,7 @@ Diagnostics are stored in diag_scripts/
 User settings in recipe
 -----------------------
 
-#. Script clouds_ecs_groups_maps.py 
+#. Script clouds_ecs_groups_maps.py
 
    *Required settings (scripts)*
 
@@ -53,7 +53,7 @@ User settings in recipe
    *Required settings (scripts)*
 
    group_by: list of 'variable_group's to have the order
-   plot_type: 'zonal' and 'height' plots are available 
+   plot_type: 'zonal' and 'height' plots are available
 
    *Optional settings (scripts)*
 
@@ -66,7 +66,7 @@ User settings in recipe
 
    exclude_datasets: list of datasets which are not used for the statistics, default is ['MultiModelMean', 'MultiModelP5', 'MultiModelP95']
    group_by: list of 'variable_group's to have the order
-   plot_type: 'zonal' and 'height' plots are available 
+   plot_type: 'zonal' and 'height' plots are available
 
    *Optional settings (scripts)*
 
@@ -112,7 +112,7 @@ Example plots
 .. figure::  /recipes/figures/bock24acp/map_netcre.png
    :align:   center
 
-   Geographical map of the multi-year annual mean net cloud radiative effect from 
+   Geographical map of the multi-year annual mean net cloud radiative effect from
    (a) CERES–EBAF Ed4.2 (OBS) and (b–d) group means of historical CMIP simulations
    from all three ECS groups (Fig. 4).
 
@@ -140,4 +140,3 @@ Example plots
    quartile to the third quartile, the vertical line shows the median, and the
    whiskers the minimum and maximum values, excluding the outliers. Outliers are
    defined as being outside 1.5 times the interquartile range (Fig. 7b).
-
