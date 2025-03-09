@@ -268,10 +268,13 @@ import numpy as np
 
 import esmvaltool.diag_scripts.shared as e
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
-from esmvaltool.diag_scripts.thermodyn_diagtool import (computations,
-                                                        lorenz_cycle, mkthe,
-                                                        plot_script,
-                                                        provenance_meta)
+from esmvaltool.diag_scripts.thermodyn_diagtool import (
+    computations,
+    lorenz_cycle,
+    mkthe,
+    plot_script,
+    provenance_meta,
+)
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 logger = logging.getLogger(os.path.basename(__file__))
@@ -290,29 +293,29 @@ def main(cfg):
     provlog = ProvenanceLogger(cfg)
     lorenz = lorenz_cycle
     comp = computations
-    logger.info('Entering the diagnostic tool')
+    logger.info("Entering the diagnostic tool")
     # Load paths
-    wdir_up = cfg['work_dir']
-    pdir_up = cfg['plot_dir']
-    input_data = cfg['input_data'].values()
-    logger.info('Work directory: %s \n', wdir_up)
-    logger.info('Plot directory: %s \n', pdir_up)
+    wdir_up = cfg["work_dir"]
+    pdir_up = cfg["plot_dir"]
+    input_data = cfg["input_data"].values()
+    logger.info("Work directory: %s \n", wdir_up)
+    logger.info("Plot directory: %s \n", pdir_up)
     plotsmod = plot_script
     data = e.Datasets(cfg)
     logger.debug(data)
-    models = data.get_info_list('dataset')
+    models = data.get_info_list("dataset")
     model_names = list(set(models))
     model_names.sort()
     logger.info(model_names)
-    varnames = data.get_info_list('short_name')
+    varnames = data.get_info_list("short_name")
     curr_vars = list(set(varnames))
     logger.debug(curr_vars)
     # load user-defined options
-    lsm = str(cfg['lsm'])
-    wat = str(cfg['wat'])
-    lec = str(cfg['lec'])
-    entr = str(cfg['entr'])
-    met = str(cfg['met'])
+    lsm = str(cfg["lsm"])
+    wat = str(cfg["wat"])
+    lec = str(cfg["lec"])
+    entr = str(cfg["entr"])
+    met = str(cfg["met"])
     flags = [wat, lec, entr, met]
     # Initialize multi-model arrays
     modnum = len(model_names)
@@ -347,28 +350,45 @@ def main(cfg):
         pdir = os.path.join(pdir_up, model)
         os.makedirs(wdir)
         os.makedirs(pdir)
-        aux_file = wdir + '/aux.nc'
+        aux_file = wdir + "/aux.nc"
         te_ymm_file, te_gmean_constant, te_file = mkthe.init_mkthe_te(
-            model, wdir, input_data)
+            model, wdir, input_data
+        )
         te_all[i_m] = te_gmean_constant
-        logger.info('Computing energy budgets\n')
+        logger.info("Computing energy budgets\n")
         in_list, eb_gmean, eb_file, toab_ymm_file = comp.budgets(
-            model, wdir, aux_file, input_data)
+            model, wdir, aux_file, input_data
+        )
         prov_rec = provenance_meta.get_prov_map(
-            ['TOA energy budgets', model],
-            [in_list[4], in_list[6], in_list[7]])
+            ["TOA energy budgets", model], [in_list[4], in_list[6], in_list[7]]
+        )
         provlog.log(eb_file[0], prov_rec)
         prov_rec = provenance_meta.get_prov_map(
-            ['atmospheric energy budgets', model], [
-                in_list[0], in_list[1], in_list[2], in_list[3], in_list[4],
-                in_list[5], in_list[6], in_list[7], in_list[8]
-            ])
+            ["atmospheric energy budgets", model],
+            [
+                in_list[0],
+                in_list[1],
+                in_list[2],
+                in_list[3],
+                in_list[4],
+                in_list[5],
+                in_list[6],
+                in_list[7],
+                in_list[8],
+            ],
+        )
         provlog.log(eb_file[1], prov_rec)
         prov_rec = provenance_meta.get_prov_map(
-            ['surface energy budgets', model], [
-                in_list[0], in_list[1], in_list[2], in_list[3], in_list[5],
-                in_list[7]
-            ])
+            ["surface energy budgets", model],
+            [
+                in_list[0],
+                in_list[1],
+                in_list[2],
+                in_list[3],
+                in_list[5],
+                in_list[7],
+            ],
+        )
         provlog.log(eb_file[2], prov_rec)
         toab_all[i_m, 0] = np.nanmean(eb_gmean[0])
         toab_all[i_m, 1] = np.nanstd(eb_gmean[0])
@@ -376,75 +396,109 @@ def main(cfg):
         atmb_all[i_m, 1] = np.nanstd(eb_gmean[1])
         surb_all[i_m, 0] = np.nanmean(eb_gmean[2])
         surb_all[i_m, 1] = np.nanstd(eb_gmean[2])
-        logger.info('Global mean emission temperature: %s\n',
-                    te_gmean_constant)
-        logger.info('TOA energy budget: %s\n', toab_all[i_m, 0])
-        logger.info('Atmospheric energy budget: %s\n', atmb_all[i_m, 0])
-        logger.info('Surface energy budget: %s\n', surb_all[i_m, 0])
-        logger.info('Done\n')
-        baroc_eff_all[i_m] = comp.baroceff(model, wdir, aux_file,
-                                           toab_ymm_file, te_ymm_file)
-        logger.info('Baroclinic efficiency (Lucarini et al., 2011): %s\n',
-                    baroc_eff_all[i_m])
-        logger.info('Running the plotting module for the budgets\n')
-        plotsmod.balances(cfg, wdir_up, pdir,
-                          [eb_file[0], eb_file[1], eb_file[2]],
-                          ['toab', 'atmb', 'surb'], model)
-        logger.info('Done\n')
+        logger.info(
+            "Global mean emission temperature: %s\n", te_gmean_constant
+        )
+        logger.info("TOA energy budget: %s\n", toab_all[i_m, 0])
+        logger.info("Atmospheric energy budget: %s\n", atmb_all[i_m, 0])
+        logger.info("Surface energy budget: %s\n", surb_all[i_m, 0])
+        logger.info("Done\n")
+        baroc_eff_all[i_m] = comp.baroceff(
+            model, wdir, aux_file, toab_ymm_file, te_ymm_file
+        )
+        logger.info(
+            "Baroclinic efficiency (Lucarini et al., 2011): %s\n",
+            baroc_eff_all[i_m],
+        )
+        logger.info("Running the plotting module for the budgets\n")
+        plotsmod.balances(
+            cfg,
+            wdir_up,
+            pdir,
+            [eb_file[0], eb_file[1], eb_file[2]],
+            ["toab", "atmb", "surb"],
+            model,
+        )
+        logger.info("Done\n")
         # Water mass budget
-        if wat == 'True':
-            (wm_file, wmb_all[i_m, 0], wmb_all[i_m, 1], latent_all[i_m, 0],
-             latent_all[i_m, 1]) = compute_water_mass_budget(
-                 cfg, wdir_up, pdir, model, wdir, input_data, flags, aux_file)
-        if lsm == 'True':
-            sftlf_files = e.select_metadata(input_data, short_name='sftlf',
-                                            dataset=model)
-            if model in ['HadGEM3-GC31-LL', 'CNRM-ESM2-1']:
-                sftlf_files = e.select_metadata(sftlf_files,
-                                                variable_group='sftlf_piC')
+        if wat == "True":
+            (
+                wm_file,
+                wmb_all[i_m, 0],
+                wmb_all[i_m, 1],
+                latent_all[i_m, 0],
+                latent_all[i_m, 1],
+            ) = compute_water_mass_budget(
+                cfg, wdir_up, pdir, model, wdir, input_data, flags, aux_file
+            )
+        if lsm == "True":
+            sftlf_files = e.select_metadata(
+                input_data, short_name="sftlf", dataset=model
+            )
+            if model in ["HadGEM3-GC31-LL", "CNRM-ESM2-1"]:
+                sftlf_files = e.select_metadata(
+                    sftlf_files, variable_group="sftlf_piC"
+                )
             else:
-                sftlf_files = e.select_metadata(sftlf_files,
-                                                variable_group='sftlf_other')
-            sftlf_fx = sftlf_files[0]['filename']
-            logger.info('Computing energy budgets over land and oceans\n')
+                sftlf_files = e.select_metadata(
+                    sftlf_files, variable_group="sftlf_other"
+                )
+            sftlf_fx = sftlf_files[0]["filename"]
+            logger.info("Computing energy budgets over land and oceans\n")
             toab_oc_all[i_m], toab_la_all[i_m] = compute_land_ocean(
-                model, wdir, eb_file[0], sftlf_fx, 'toab')
+                model, wdir, eb_file[0], sftlf_fx, "toab"
+            )
             atmb_oc_all[i_m], atmb_la_all[i_m] = compute_land_ocean(
-                model, wdir, eb_file[1], sftlf_fx, 'atmb')
+                model, wdir, eb_file[1], sftlf_fx, "atmb"
+            )
             surb_oc_all[i_m], surb_la_all[i_m] = compute_land_ocean(
-                model, wdir, eb_file[2], sftlf_fx, 'surb')
-            if wat == 'True':
-                logger.info('Computing water mass and latent energy'
-                            ' budgets over land and oceans\n')
+                model, wdir, eb_file[2], sftlf_fx, "surb"
+            )
+            if wat == "True":
+                logger.info(
+                    "Computing water mass and latent energy"
+                    " budgets over land and oceans\n"
+                )
                 wmb_oc_all[i_m], wmb_la_all[i_m] = compute_land_ocean(
-                    model, wdir, wm_file[0], sftlf_fx, 'wmb')
+                    model, wdir, wm_file[0], sftlf_fx, "wmb"
+                )
                 latent_oc_all[i_m], latent_la_all[i_m] = compute_land_ocean(
-                    model, wdir, wm_file[1], sftlf_fx, 'latent')
-            logger.info('Done\n')
-        if lec == 'True':
-            logger.info('Computation of the Lorenz Energy '
-                        'Cycle (year by year)\n')
+                    model, wdir, wm_file[1], sftlf_fx, "latent"
+                )
+            logger.info("Done\n")
+        if lec == "True":
+            logger.info(
+                "Computation of the Lorenz Energy Cycle (year by year)\n"
+            )
             _, _ = mkthe.init_mkthe_lec(model, wdir, input_data)
             lect = lorenz.preproc_lec(model, wdir, pdir, input_data)
             plotsmod.lec_plot(model, pdir, lect)
             lec_all[i_m, 0] = np.nanmean(lect)
             lec_all[i_m, 1] = np.nanstd(lect)
             logger.info(
-                'Intensity of the annual mean Lorenz Energy '
-                'Cycle: %s\n', lec_all[i_m, 0])
-            logger.info('Done\n')
+                "Intensity of the annual mean Lorenz Energy Cycle: %s\n",
+                lec_all[i_m, 0],
+            )
+            logger.info("Done\n")
         else:
             lect = np.repeat(2.0, len(eb_gmean[0]))
             lec_all[i_m, 0] = 2.0
             lec_all[i_m, 1] = 0.2
-        if entr == 'True':
-            if met in {'1', '3'}:
-                logger.info('Computation of the material entropy production '
-                            'with the indirect method\n')
+        if entr == "True":
+            if met in {"1", "3"}:
+                logger.info(
+                    "Computation of the material entropy production "
+                    "with the indirect method\n"
+                )
                 indentr_list = [te_file, eb_file[0]]
                 horz_mn, vert_mn, horzentr_file, vertentr_file = comp.indentr(
-                    model, wdir, indentr_list, input_data, aux_file,
-                    eb_gmean[0])
+                    model,
+                    wdir,
+                    indentr_list,
+                    input_data,
+                    aux_file,
+                    eb_gmean[0],
+                )
                 listind = [horzentr_file, vertentr_file]
                 provenance_meta.meta_indentr(cfg, model, input_data, listind)
                 horzentr_all[i_m, 0] = np.nanmean(horz_mn)
@@ -452,58 +506,91 @@ def main(cfg):
                 vertentr_all[i_m, 0] = np.nanmean(vert_mn)
                 vertentr_all[i_m, 1] = np.nanstd(vert_mn)
                 logger.info(
-                    'Horizontal component of the material entropy '
-                    'production: %s\n', horzentr_all[i_m, 0])
+                    "Horizontal component of the material entropy "
+                    "production: %s\n",
+                    horzentr_all[i_m, 0],
+                )
                 logger.info(
-                    'Vertical component of the material entropy '
-                    'production: %s\n', vertentr_all[i_m, 0])
-                logger.info('Done\n')
-                logger.info('Running the plotting module for the material '
-                            'entropy production (indirect method)\n')
-                plotsmod.entropy(pdir, vertentr_file, 'sver',
-                                 'Vertical entropy production', model)
-                logger.info('Done\n')
-            if met in {'2', '3'}:
+                    "Vertical component of the material entropy "
+                    "production: %s\n",
+                    vertentr_all[i_m, 0],
+                )
+                logger.info("Done\n")
+                logger.info(
+                    "Running the plotting module for the material "
+                    "entropy production (indirect method)\n"
+                )
+                plotsmod.entropy(
+                    pdir,
+                    vertentr_file,
+                    "sver",
+                    "Vertical entropy production",
+                    model,
+                )
+                logger.info("Done\n")
+            if met in {"2", "3"}:
                 matentr, irrevers, entr_list = comp.direntr(
-                    logger, model, wdir, input_data, aux_file, te_file, lect,
-                    flags)
+                    logger,
+                    model,
+                    wdir,
+                    input_data,
+                    aux_file,
+                    te_file,
+                    lect,
+                    flags,
+                )
                 provenance_meta.meta_direntr(cfg, model, input_data, entr_list)
                 matentr_all[i_m, 0] = matentr
-                if met in {'3'}:
-                    diffentr = (float(np.nanmean(vert_mn)) +
-                                float(np.nanmean(horz_mn)) - matentr)
-                    logger.info('Difference between the two '
-                                'methods: %s\n', diffentr)
+                if met in {"3"}:
+                    diffentr = (
+                        float(np.nanmean(vert_mn))
+                        + float(np.nanmean(horz_mn))
+                        - matentr
+                    )
+                    logger.info(
+                        "Difference between the two methods: %s\n", diffentr
+                    )
                     diffentr_all[i_m, 0] = diffentr
-                logger.info('Degree of irreversibility of the '
-                            'system: %s\n', irrevers)
+                logger.info(
+                    "Degree of irreversibility of the system: %s\n", irrevers
+                )
                 irrevers_all[i_m] = irrevers
-                logger.info('Running the plotting module for the material '
-                            'entropy production (direct method)\n')
+                logger.info(
+                    "Running the plotting module for the material "
+                    "entropy production (direct method)\n"
+                )
                 plotsmod.init_plotentr(model, pdir, entr_list)
-                logger.info('Done\n')
+                logger.info("Done\n")
             os.remove(te_file)
         os.remove(te_ymm_file)
-        logger.info('Done for model: %s \n', model)
+        logger.info("Done for model: %s \n", model)
         i_m = i_m + 1
-    logger.info('I will now start multi-model plots')
-    logger.info('Meridional heat transports\n')
+    logger.info("I will now start multi-model plots")
+    logger.info("Meridional heat transports\n")
     plotsmod.plot_mm_transp(model_names, wdir_up, pdir_up)
-    logger.info('Scatter plots')
+    logger.info("Scatter plots")
     summary_varlist = [
-        atmb_all, baroc_eff_all, horzentr_all, lec_all, matentr_all, te_all,
-        toab_all, vertentr_all
+        atmb_all,
+        baroc_eff_all,
+        horzentr_all,
+        lec_all,
+        matentr_all,
+        te_all,
+        toab_all,
+        vertentr_all,
     ]
     plotsmod.plot_mm_summaryscat(pdir_up, summary_varlist)
-    logger.info('Scatter plots for inter-annual variability of'
-                ' some quantities')
+    logger.info(
+        "Scatter plots for inter-annual variability of some quantities"
+    )
     eb_list = [toab_all, atmb_all, surb_all]
     plotsmod.plot_mm_ebscatter(pdir_up, eb_list)
     logger.info("The diagnostic has finished. Now closing...\n")
 
 
-def compute_water_mass_budget(cfg, wdir_up, pdir, model, wdir, input_data,
-                              flags, aux_file):
+def compute_water_mass_budget(
+    cfg, wdir_up, pdir, model, wdir, input_data, flags, aux_file
+):
     """Initialise computations of the water mass and latent heat budget.
 
     This function calls the functions for the retrieveal of water mass and
@@ -527,25 +614,32 @@ def compute_water_mass_budget(cfg, wdir_up, pdir, model, wdir, input_data,
 
     @author: Valerio Lembo, Hamburg University, 2018.
     """
-    logger.info('Computing water mass and latent energy budgets\n')
+    logger.info("Computing water mass and latent energy budgets\n")
     aux_list = mkthe.init_mkthe_wat(model, wdir, input_data, flags)
-    wm_gmean, wm_file = computations.wmbudg(model, wdir, aux_file, input_data,
-                                            aux_list)
+    wm_gmean, wm_file = computations.wmbudg(
+        model, wdir, aux_file, input_data, aux_list
+    )
     wm_time_mean = np.nanmean(wm_gmean[0])
     wm_time_std = np.nanstd(wm_gmean[0])
-    logger.info('Water mass budget: %s\n', wm_time_mean)
+    logger.info("Water mass budget: %s\n", wm_time_mean)
     latent_time_mean = np.nanmean(wm_gmean[1])
     latent_time_std = np.nanstd(wm_gmean[1])
-    logger.info('Latent energy budget: %s\n', latent_time_mean)
-    logger.info('Done\n')
-    logger.info('Plotting the water mass and latent energy budgets\n')
-    plot_script.balances(cfg, wdir_up, pdir, [wm_file[0], wm_file[1]],
-                         ['wmb', 'latent'], model)
-    logger.info('Done\n')
+    logger.info("Latent energy budget: %s\n", latent_time_mean)
+    logger.info("Done\n")
+    logger.info("Plotting the water mass and latent energy budgets\n")
+    plot_script.balances(
+        cfg, wdir_up, pdir, [wm_file[0], wm_file[1]], ["wmb", "latent"], model
+    )
+    logger.info("Done\n")
     for filen in aux_list:
         os.remove(filen)
-    return (wm_file, wm_time_mean, wm_time_std, latent_time_mean,
-            latent_time_std)
+    return (
+        wm_file,
+        wm_time_mean,
+        wm_time_std,
+        latent_time_mean,
+        latent_time_std,
+    )
 
 
 def compute_land_ocean(model, wdir, filein, sftlf_fx, name):
@@ -568,13 +662,14 @@ def compute_land_ocean(model, wdir, filein, sftlf_fx, name):
 
     @author: Valerio Lembo, Hamburg University, 2018.
     """
-    ocean_mean, land_mean = computations.landoc_budg(model, wdir, filein,
-                                                     sftlf_fx, name)
-    logger.info('%s budget over oceans: %s\n', name, ocean_mean)
-    logger.info('%s budget over land: %s\n', name, land_mean)
+    ocean_mean, land_mean = computations.landoc_budg(
+        model, wdir, filein, sftlf_fx, name
+    )
+    logger.info("%s budget over oceans: %s\n", name, ocean_mean)
+    logger.info("%s budget over land: %s\n", name, land_mean)
     return (ocean_mean, land_mean)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with e.run_diagnostic() as config:
         main(config)
