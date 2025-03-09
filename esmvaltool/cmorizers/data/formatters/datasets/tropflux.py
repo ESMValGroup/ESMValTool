@@ -77,30 +77,30 @@ def _fix_coordinates(cube, definition):
     for coord_def in definition.coordinates.values():
         axis = coord_def.axis
         coord = cube.coord(axis=axis)
-        if axis == 'Z':
+        if axis == "Z":
             coord.convert_units(coord_def.units)
         coord.standard_name = coord_def.standard_name
         coord.var_name = coord_def.out_name
         coord.long_name = coord_def.long_name
-        coord.points = coord.core_points().astype('float64')
-        if coord.var_name == 'plev':
-            coord.attributes['positive'] = 'down'
+        coord.points = coord.core_points().astype("float64")
+        if coord.var_name == "plev":
+            coord.attributes["positive"] = "down"
 
     return cube
 
 
 def _extract_variable(short_name, var, cfg, raw_filepaths, out_dir):
-    attributes = deepcopy(cfg['attributes'])
-    attributes['mip'] = var['mip']
-    cmor_table = CMOR_TABLES[attributes['project_id']]
-    definition = cmor_table.get_variable(var['mip'], short_name)
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    attributes = deepcopy(cfg["attributes"])
+    attributes["mip"] = var["mip"]
+    cmor_table = CMOR_TABLES[attributes["project_id"]]
+    definition = cmor_table.get_variable(var["mip"], short_name)
+    cmor_info = cfg["cmor_table"].get_variable(var["mip"], short_name)
 
-    if cmor_info.positive != '':
-        attributes['positive'] = cmor_info.positive
+    if cmor_info.positive != "":
+        attributes["positive"] = cmor_info.positive
 
     # load data
-    raw_var = var.get('raw', short_name)
+    raw_var = var.get("raw", short_name)
     cubes = iris.load(raw_filepaths, NameConstraint(var_name=raw_var))
     equalise_attributes(cubes)
     for cube in cubes:
@@ -117,12 +117,13 @@ def _extract_variable(short_name, var, cfg, raw_filepaths, out_dir):
     utils.fix_var_metadata(cube, cmor_info)
 
     # fix time units
-    cube.coord('time').convert_units(
-        cf_units.Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
+    cube.coord("time").convert_units(
+        cf_units.Unit("days since 1950-1-1 00:00:00", calendar="gregorian")
+    )
 
     cube = _fix_coordinates(cube, definition)
 
-    if raw_var == 'taux':
+    if raw_var == "taux":
         cube.data = -1 * cube.data
 
     utils.save_variable(
@@ -130,14 +131,15 @@ def _extract_variable(short_name, var, cfg, raw_filepaths, out_dir):
         short_name,
         out_dir,
         attributes,
-        unlimited_dimensions=['time'],
+        unlimited_dimensions=["time"],
     )
+
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Run CMORizer for TROPFLUX."""
-    for (short_name, var) in cfg['variables'].items():
+    for short_name, var in cfg["variables"].items():
         logger.info("CMORizing variable '%s'", short_name)
-        short_name = var['short_name']
+        short_name = var["short_name"]
         raw_filenames = Path(in_dir).rglob("*.nc")
         filenames = []
         for raw_filename in raw_filenames:

@@ -74,8 +74,8 @@ jobs:
         run: esmvaltool --help
       - name: Check ESMValTool help
         run: esmvaltool version
-      - name: Run flake8
-        run: flake8
+      - name: Check code quality
+        run: pre-commit run -a
       - name: Run tests
         run: pytest -n 2 -m "not installation"
       # Automated PR

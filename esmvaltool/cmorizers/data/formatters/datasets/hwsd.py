@@ -29,55 +29,54 @@ logger = logging.getLogger(__name__)
 
 def _extract_variable(short_name, var, cfg, filepath, out_dir):
     """Extract variable."""
-    raw_var = var.get('raw', short_name)
+    raw_var = var.get("raw", short_name)
     cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
 
     # Sum over levels
-    if short_name in ('cSoil', ):
-        level_coord = iris.coords.DimCoord([0, 1], long_name='level')
+    if short_name in ("cSoil",):
+        level_coord = iris.coords.DimCoord([0, 1], long_name="level")
         cube.add_dim_coord(level_coord, 0)
-        cube = cube.collapsed('level', iris.analysis.SUM)
+        cube = cube.collapsed("level", iris.analysis.SUM)
 
     # Fix coordinates
-    if var['mip'] != 'fx':
+    if var["mip"] != "fx":
         cube = iris.util.new_axis(cube)
         time_dim = iris.coords.DimCoord(
             [183.0],
             bounds=[0.0, 366.0],
-            units=Unit('days since 2000-01-01 00:00:00'),
-            standard_name='time',
-            var_name='time',
-            long_name='time')
+            units=Unit("days since 2000-01-01 00:00:00"),
+            standard_name="time",
+            var_name="time",
+            long_name="time",
+        )
         cube.add_dim_coord(time_dim, 0)
         utils.convert_timeunits(cube, 1950)
     cube = utils.fix_coords(cube)
 
     # Fix units
-    if 'kg C' in cube.units.origin:
-        cube.units = Unit(cube.units.origin.replace('C', ''))
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    if "kg C" in cube.units.origin:
+        cube.units = Unit(cube.units.origin.replace("C", ""))
+    cmor_info = cfg["cmor_table"].get_variable(var["mip"], short_name)
     cube.convert_units(cmor_info.units)
 
     # Fix metadata
-    attrs = cfg['attributes']
-    attrs['mip'] = var['mip']
+    attrs = cfg["attributes"]
+    attrs["mip"] = var["mip"]
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
 
     # Save variable
-    utils.save_variable(cube,
-                        short_name,
-                        out_dir,
-                        attrs,
-                        unlimited_dimensions=['time'])
+    utils.save_variable(
+        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+    )
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    filepath = os.path.join(in_dir, cfg['filename'])
+    filepath = os.path.join(in_dir, cfg["filename"])
     logger.info("Reading file '%s'", filepath)
 
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
+    for short_name, var in cfg["variables"].items():
         logger.info("CMORizing variable '%s'", short_name)
         _extract_variable(short_name, var, cfg, filepath, out_dir)
