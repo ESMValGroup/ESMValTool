@@ -1,4 +1,5 @@
 """
+
 Diagnostic for fig 3.24 in Chapter 3 of IPCC AR6 WGI.
 ========================
 
@@ -106,7 +107,6 @@ class Data4Analyis:
         mask_meta:
             Metadata for the mask group if mask_type='resolved'
         """
-
         self.name = name
         self.bias = bool(cfg.get("bias"))
         self.mask = cfg.get("mask").get("flag") if cfg.get("mask") else False
@@ -114,7 +114,7 @@ class Data4Analyis:
         self.determine_reference(group)
         self.obtain_data(group, mask_meta)
         stats = cfg.get("data_statistics")
-        if not (stats):
+        if not stats:
             raise ValueError(
                 "statistics dictionary should be provided in the recipe. "
                 "The keywords 'best_guess' and 'borders' should be provided."
@@ -134,7 +134,6 @@ class Data4Analyis:
         ValueError
             if more than one or no reference datasets have been provided
         """
-
         if self.bias or self.mask:
             reference = list(group_metadata(group, "reference_dataset").keys())
             if len(reference) > 1:
@@ -160,7 +159,6 @@ class Data4Analyis:
         mask_meta:
             List with the mask_metadata in case mask_type='resolved'
         """
-
         files = list(group_metadata(group, "filename", sort=True).keys())
         data_cblst = iris.load(files)
         self.data = data_cblst
@@ -188,7 +186,6 @@ class Data4Analyis:
             or if data cubes have more than one dimension or if an
             unsupported type of mask is provided
         """
-
         if self.mask_type == "simple":
             mask = self.ref_cube.data.mask
         elif self.mask_type == "resolved":
@@ -212,7 +209,7 @@ class Data4Analyis:
             dim = [c.name() for c in mask_cb.dim_coords].index(
                 data_coord.name()
             )
-            mask = list()
+            mask = []
             # if there is less than half of data over the dimension the cell
             # is masked
             for i in range(mask_cb.shape[dim]):
@@ -242,7 +239,6 @@ class Data4Analyis:
             dictionary with the statistics which will be calculated.
             Dictionary should have keywords 'best_guess' and 'borders'.
         """
-
         if len(self.data) > 1:
             bg_dic = eprep.multi_model_statistics(
                 self.data,
@@ -288,7 +284,6 @@ def plot_bias_plot(data_list: list[Data4Analyis], cfg: dict):
     cfg:
         Config dictionary coming from ESMValCore
     """
-
     caption = cfg.get("caption") if cfg.get("caption") else ""
     prov_dic = create_provenance(caption=caption)
 
