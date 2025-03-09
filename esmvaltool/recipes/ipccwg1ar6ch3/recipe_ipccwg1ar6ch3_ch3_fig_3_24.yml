@@ -21,51 +21,49 @@ documentation:
     - ipcc_ar6
 
 models_cmip5: &models_cmip5
-  # CMIP5
   - {dataset: ACCESS1-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: ACCESS1-3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: bcc-csm1-1-m, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: bcc-csm1-1, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: bcc-csm1-1-m, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: bcc-csm1-1, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: CanCM4, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: CanESM2, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: CCSM4, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: CanESM2, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: CCSM4, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: CESM1-BGC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: CESM1-CAM5, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: CESM1-CAM5, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: CESM1-FASTCHEM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: CESM1-WACCM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: CESM1-WACCM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: CMCC-CESM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: CMCC-CM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: CMCC-CMS, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: CNRM-CM5-2, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: CNRM-CM5, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: FGOALS-g2, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: CNRM-CM5, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: FGOALS-g2, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: GISS-E2-H-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: GISS-E2-H, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: GISS-E2-R-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: GISS-E2-R, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: GISS-E2-R, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: HadCM3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: HadGEM2-AO, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: HadGEM2-AO, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: IPSL-CM5A-MR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: IPSL-CM5B-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: MIROC-ESM-CHEM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: MIROC-ESM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: MPI-ESM-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: MPI-ESM-MR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: MIROC-ESM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-MR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: MPI-ESM-P, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: MRI-CGCM3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: MRI-ESM1, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: NorESM1-M, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  # - {dataset: NorESM1-ME, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-# Observations
+  - {dataset: MRI-CGCM3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: MRI-ESM1, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: NorESM1-M, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  - {dataset: NorESM1-ME, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
+  # observations/reference dataset
   - {dataset: HadISST, project: OBS, field: T2Ms, mip: Omon, type: reanaly, version: 1, tier: 2}
 
 models_cmip6: &models_cmip6
-# CMIP6 data (available on 2019-08-23)
   - {dataset: ACCESS-ESM1-5 , project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f1, grid: gn}
   - {dataset: ACCESS-CM2 , institute: CSIRO-ARCCSS, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f1, grid: gn}
   - {dataset: BCC-CSM2-MR , project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f1, grid: gn }
@@ -109,20 +107,19 @@ models_cmip6: &models_cmip6
   - {dataset: NESM3, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f1, grid: gn}
   - {dataset: SAM0-UNICON , project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f1, grid: gn}
   - {dataset: TaiESM1 , project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f1, grid: gn}
-# Observations
+  # observations/reference dataset
   - {dataset: HadISST, project: OBS, field: T2Ms, mip: Omon, type: reanaly, version: 1, tier: 2}
 
 models_highres: &models_highres
-# HighResMIP
   - {dataset: CNRM-CM6-1-HR, project: CMIP6, mip: Omon, exp: hist-1950, ensemble: r1i1p1f2, grid: gn}
-  # - {dataset: EC-Earth3P-HR, project: CMIP6, mip: Omon, exp: hist-1950, ensemble: r1i1p2f1, grid: gn}
+  - {dataset: EC-Earth3P-HR, project: CMIP6, mip: Omon, exp: hist-1950, ensemble: r1i1p2f1, grid: gn}
   - {dataset: ECMWF-IFS-HR, project: CMIP6, mip: Omon, exp: hist-1950, ensemble: r1i1p1f1, grid: gn}
   - {dataset: HadGEM3-GC31-HH, project: CMIP6, mip: Omon, exp: hist-1950, ensemble: r1i1p1f1, grid: gn}
-# Observations
+  # observations/reference dataset
   - {dataset: HadISST, project: OBS, field: T2Ms, mip: Omon, type: reanaly, version: 1, tier: 2}
 
 preprocessors:
-  prep_3_24a:
+  prep_zonal:
     custom_order: true
     climate_statistics:
       operator: mean
@@ -135,7 +132,7 @@ preprocessors:
     convert_units:
       units: degrees_C    
 
-  prep_3_24b:
+  prep_equatorial:
     custom_order: true
     climate_statistics:
       operator: mean
@@ -153,7 +150,7 @@ preprocessors:
     convert_units:
       units: degrees_C
 
-  prep_3_24_eq_mask:
+  prep_eq_mask:
     custom_order: true
     climate_statistics:
       operator: mean
@@ -172,25 +169,25 @@ preprocessors:
 diagnostics:
   zonal:
     variables:
-      tos_zonal_cmip5:
+      cmip5:
         short_name: tos 
-        preprocessor: prep_3_24a
+        preprocessor: prep_zonal
         field: TO2M
         start_year: 1979
         end_year: 1999
         reference_dataset: HadISST
         additional_datasets: *models_cmip5
-      tos_zonal_cmip6:
+      cmip6:
         short_name: tos 
-        preprocessor: prep_3_24a
+        preprocessor: prep_zonal
         field: TO2M
         start_year: 1979
         end_year: 1999
         reference_dataset: HadISST
         additional_datasets: *models_cmip6
-      tos_zonal_highres:
+      highresmip:
         short_name: tos 
-        preprocessor: prep_3_24a
+        preprocessor: prep_zonal
         field: TO2M
         start_year: 1979
         end_year: 1999
@@ -199,42 +196,42 @@ diagnostics:
     scripts:
       panel_a:
         script: ocean/diagnostic_3_24_zonal_sst.py
-        bias: True
-        mask: 
+        bias: True # if bias should be calculated (optional), default: false
+        mask: # if the data should be masked (optional), default: false
           flag: true
-          type: simple
+          type: simple # accepted values: 'simple' and 'resolved'
         statistics:
-          best_guess: mean
-          borders: 
+          best_guess: mean # best guess statistic
+          borders: # borders for the shading
             - operator: percentile 
               percent: 5
             - operator: percentile
               percent: 95
-        mpl_style: ipcc_ar6_fgd
-        # add caption
-        # add color file
+        mpl_style: ipcc_ar6_fgd # name of the matplotlib style file (optional)
+        caption: Zonal mean SST bias # Figure caption (optional) 
+        color_style: sst_bias # name of the color style, colors are defined for variable groups
 
   equatorial:
     variables:
-      tos_eq_cmip5:
+      cmip5:
         short_name: tos 
-        preprocessor: prep_3_24b
+        preprocessor: prep_equatorial
         field: TO2M
         start_year: 1979
         end_year: 1999
         reference_dataset: HadISST
         additional_datasets: *models_cmip5
-      tos_eq_cmip6:
+      cmip6:
         short_name: tos 
-        preprocessor: prep_3_24b
+        preprocessor: prep_equatorial
         field: TO2M
         start_year: 1979
         end_year: 1999
         reference_dataset: HadISST
         additional_datasets: *models_cmip6
-      tos_eq_highres:
+      highresmip:
         short_name: tos 
-        preprocessor: prep_3_24b
+        preprocessor: prep_equatorial
         field: TO2M
         start_year: 1979
         end_year: 1999
@@ -242,11 +239,10 @@ diagnostics:
         additional_datasets: *models_highres
       eq_mask:
         short_name: tos 
-        preprocessor: prep_3_24_eq_mask
+        preprocessor: prep_eq_mask
         field: TO2M
         start_year: 1979
         end_year: 1999
-        reference_dataset: HadISST
         additional_datasets: 
          - {dataset: HadISST, project: OBS, field: T2Ms, mip: Omon, type: reanaly, version: 1, tier: 2}    
     
@@ -266,11 +262,12 @@ diagnostics:
             - operator: percentile
               percent: 95
         mpl_style: ipcc_ar6_fgd
-        # add caption
-        # add color file
+        caption: Equatorial SST bias
+        color_style: sst_bias 
+
       panel_c:
         script: ocean/diagnostic_3_24_zonal_sst.py
-        bias: True      
+        bias: False      
         mask: 
           flag: true
           type: resolved
@@ -283,5 +280,5 @@ diagnostics:
             - operator: percentile
               percent: 95
         mpl_style: ipcc_ar6_fgd
-        # add caption
-        # add color file
+        caption: Equatorial SST
+        color_style: sst_bias
