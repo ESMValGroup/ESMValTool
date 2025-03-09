@@ -99,7 +99,7 @@ def make_profiles_plots(
     cfg,
     metadata,
     filename,
-    obs_metadata={},
+    obs_metadata=None,
     obs_filename="",
 ):
     """
@@ -122,6 +122,8 @@ def make_profiles_plots(
 
     """
     # Load cube and set up units
+    if obs_metadata is None:
+        obs_metadata = {}
     cube = iris.load_cube(filename)
     cube = diagtools.bgc_units(cube, metadata["short_name"])
 

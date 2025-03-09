@@ -76,7 +76,7 @@ class OSICmorizer:
                         sample_file,
                         iris.Constraint(
                             # pylint: disable=cell-var-from-loop
-                            cube_func=lambda c: c.var_name == raw_info["name"]
+                            cube_func=lambda c: c.var_name == raw_info["name"]  # noqa: B023
                         ),
                     )
                     self._create_areacello(cube)
@@ -140,7 +140,7 @@ class OSICmorizer:
         for month in range(1, 13):
             month_constraint = iris.Constraint(
                 # pylint: disable=cell-var-from-loop
-                time=lambda cell: cell.point.month == month
+                time=lambda cell: cell.point.month == month  # noqa: B023
             )
             if cubes.extract(month_constraint):
                 continue

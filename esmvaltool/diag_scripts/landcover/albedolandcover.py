@@ -249,7 +249,7 @@ def _write_albedochanges_to_disk(alb_lc, template_cube, datadict, cfg):
                 .units.num2date(template_cube.coord("time").points)[0]
                 .strftime("%b")
             )
-            basename = "{0}-{1}-{2}".format(
+            basename = "{}-{}-{}".format(
                 month_string,
                 datadict["alb"]["dataset"],
                 transition_cube.name(),
@@ -265,7 +265,7 @@ def _write_albedochanges_to_disk(alb_lc, template_cube, datadict, cfg):
             # Create provenance record
             # Create caption
             prov_rec = {
-                "caption": "{0} {1}".format(
+                "caption": "{} {}".format(
                     transition_cube.attributes["plottitle"],
                     transition_cube.attributes["plotsuptitle"],
                 ),

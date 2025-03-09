@@ -249,11 +249,7 @@ def write_netcdf(path, var, plon, plat, cube, cfg):
     """Write results to a netcdf file."""
     polyid = []
     for row in range(var.shape[1]):
-        polyid.append(
-            str("%#.3f" % round(plon[row], 3))
-            + "_"
-            + str("%#.3f" % round(plat[row], 3))
-        )
+        polyid.append(f"{round(plon[row], 3):#.3f}_{round(plat[row], 3):#.3f}")
     ncout = Dataset(path, mode="w")
     ncout.createDimension("time", None)
     ncout.createDimension("polygon", len(polyid))

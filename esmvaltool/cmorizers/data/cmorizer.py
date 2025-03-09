@@ -541,7 +541,7 @@ class DataCommand:
                 "version 2.12.0 and is scheduled for removal in version "
                 "2.14.0. Please use the option ``config_dir`` instead."
             )
-            warnings.warn(msg, ESMValToolDeprecationWarning)
+            warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
 
         start = self._parse_date(start)
         end = self._parse_date(end)
@@ -593,7 +593,7 @@ class DataCommand:
                 "version 2.12.0 and is scheduled for removal in version "
                 "2.14.0. Please use the option ``config_dir`` instead."
             )
-            warnings.warn(msg, ESMValToolDeprecationWarning)
+            warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
 
         start = self._parse_date(start)
         end = self._parse_date(end)
@@ -648,7 +648,7 @@ class DataCommand:
                 "version 2.12.0 and is scheduled for removal in version "
                 "2.14.0. Please use the option ``config_dir`` instead."
             )
-            warnings.warn(msg, ESMValToolDeprecationWarning)
+            warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
 
         start = self._parse_date(start)
         end = self._parse_date(end)

@@ -202,7 +202,7 @@ def plot_zec_x_bar(zec_x, x_i, cfg):
     fig, axes = plt.subplots(figsize=(10, 6))
     axes.bar(labels, list(data.values()))
     axes.axhline(color="lightgrey", linestyle="--")
-    axes.set_ylabel(r"ZEC$_{%s}$" % str(x_i))
+    axes.set_ylabel(f"ZEC$_{{{x_i}}}$")
     # Save plot
     plot_path = get_plot_filename(f"zec_{x_i}_barplot", cfg)
     plt.tight_layout()

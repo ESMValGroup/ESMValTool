@@ -110,7 +110,7 @@ def _make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high, config):
     lons = lst_diff_data.coord("longitude").bounds
     lats = lst_diff_data.coord("latitude").bounds
 
-    ax.set_title("Area: lon %s lat %s" % (lons[0], lats[0]), fontsize=22)
+    ax.set_title(f"Area: lon {lons[0]} lat {lats[0]}", fontsize=22)
 
     fig.suptitle("ESACCI LST - CMIP6 Historical Ensemble Mean", fontsize=24)
 
@@ -236,7 +236,7 @@ def _diagnostic(config):
             or "OBS" in item["alias"]
         ):
             continue
-        data_attributes["ensembles"] += "%s " % item["alias"]
+        data_attributes["ensembles"] += f"{item['alias']} "
 
     record = _get_provenance_record(data_attributes, ancestor_list)
     plot_file = get_plot_filename("timeseries", config)

@@ -156,7 +156,7 @@ def _get_filelists(cfg):
     metrics_dict, additional_metrics, obs_types = _setup_data_dict(cfg)
     obs_list = []
 
-    for filename, attributes in cfg["input_data"].items():
+    for filename in cfg["input_data"]:
         base_file = os.path.basename(filename)
         fullpath_file = filename
         if base_file.split("_")[1] == cfg["control_model"]:

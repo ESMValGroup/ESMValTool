@@ -67,7 +67,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     glob_attrs = cfg["attributes"]
 
     # run the cmorization
-    for var_name, vals in cfg["variables"].items():
+    for vals in cfg["variables"].values():
         var = vals["short_name"]
         var_info = cfg["cmor_table"].get_variable(vals["mip"], var)
         glob_attrs["mip"] = vals["mip"]

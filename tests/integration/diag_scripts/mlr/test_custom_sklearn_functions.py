@@ -621,8 +621,10 @@ def test_fit_and_score_weighted_failing():
     # The warning message we're expecting to see
     warning_message = (
         "Estimator fit failed. The score on this train-test "
-        "partition for these parameters will be set to %f. "
-        "Details: \n%s" % (fit_and_score_kwargs["error_score"], error_message)
+        "partition for these parameters will be set to {:f}. "
+        "Details: \n{}".format(
+            fit_and_score_kwargs["error_score"], error_message
+        )
     )
 
     def test_warn_trace(msg):

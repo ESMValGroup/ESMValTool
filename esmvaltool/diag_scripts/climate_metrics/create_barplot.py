@@ -133,11 +133,11 @@ def get_all_data(cfg, input_files):
         cube = iris.load_cube(filename)
         try:
             cube.coord("dataset")
-        except iris.exceptions.CoordinateNotFoundError:
+        except iris.exceptions.CoordinateNotFoundError as exc:
             raise iris.exceptions.CoordinateNotFoundError(
                 f"File '{filename}' does not contain necessary coordinate "
                 f"'dataset'"
-            )
+            ) from exc
         logger.info("Processing '%s'", filename)
 
         # Add to data dictionary

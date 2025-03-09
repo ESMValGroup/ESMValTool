@@ -70,9 +70,7 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
         )
         exctperc = min(enumerate(acc), key=lambda x: x[1] <= perc)[1]
     print(
-        "(the first {0} PCs explain exactly the {1}% of variance)".format(
-            numpcs, "%.2f" % exctperc
-        )
+        f"(the first {numpcs} PCs explain exactly the {exctperc:.2f}% of variance)"
     )
 
     # ____________Compute k-means analysis using a subset of PCs
@@ -98,9 +96,7 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     labels = clus.labels_  # shape---> (numens,)
 
     print(
-        "\nClusters are identified for {0} PCs (explained variance {1}%)".format(
-            numpcs, "%.2f" % exctperc
-        )
+        f"\nClusters are identified for {numpcs} PCs (explained variance {exctperc:.2f}%)"
     )
     print(
         f"PCs dim: (number of ensemble members, number of PCs)={pcs_unscal0[:, :numpcs].shape}, "

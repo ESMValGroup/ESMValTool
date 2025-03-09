@@ -55,6 +55,7 @@ class Variable(BaseVariable):
         warnings.warn(
             DEPRECATION_MSG.format(class_name=str(cls)),
             ESMValToolDeprecationWarning,
+            stacklevel=2,
         )
         self = super().__new__(
             cls, short_name, standard_name, long_name, units
@@ -108,6 +109,7 @@ class Variables:
         warnings.warn(
             DEPRECATION_MSG.format(class_name=str(self.__class__)),
             ESMValToolDeprecationWarning,
+            stacklevel=2,
         )
         self._dict = {}
 
@@ -411,6 +413,7 @@ class Datasets:
         warnings.warn(
             DEPRECATION_MSG.format(class_name=str(self.__class__)),
             ESMValToolDeprecationWarning,
+            stacklevel=2,
         )
         self._iter_counter = 0
         self._paths = []

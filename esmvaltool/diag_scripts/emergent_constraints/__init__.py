@@ -974,11 +974,11 @@ def pandas_object_to_cube(
             pandas_object.columns = pandas_object.columns.droplevel(
                 columns_droplevel
             )
-        except AttributeError:
+        except AttributeError as exc:
             raise TypeError(
                 f"'columns_droplevel' only supported for pandas.DataFrame "
                 f"object, got {type(pandas_object)}"
-            )
+            ) from exc
     cube = _get_pandas_cube(pandas_object)
     for key, val in kwargs.items():
         setattr(cube, key, val)

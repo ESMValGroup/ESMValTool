@@ -356,6 +356,7 @@ def _is_pairwise(estimator):
                 "_pairwise attribute is inconsistent with tags. Set the "
                 "estimator tags of your estimator instead",
                 FutureWarning,
+                stacklevel=2,
             )
         return pairwise_attribute
 
@@ -438,6 +439,7 @@ def _fit_and_score_weighted(
                 f"partition for these parameters will be set to "
                 f"{error_score:f}. Details: \n{format_exc()}",
                 FitFailedWarning,
+                stacklevel=2,
             )
         else:
             raise ValueError(
@@ -1199,6 +1201,7 @@ class AdvancedTransformedTargetRegressor(TransformedTargetRegressor):
                     "you are sure you want to proceed regardless, "
                     "set 'check_inverse=False'",
                     UserWarning,
+                    stacklevel=2,
                 )
 
     def _to_be_squeezed(self, array, always_return_1d=True):

@@ -145,12 +145,12 @@ def format_coef_plot(my_ax):
     my_ax.set_ylim(ymax * -1, ymax)
     # remove 0 from y and x axis
     for key in ["x", "y"]:
-        ticks = list(getattr(my_ax, "get_%sticks" % key)())
+        ticks = list(getattr(my_ax, f"get_{key}ticks")())
         try:
             ticks.remove(0)
         except ValueError:
             pass
-        getattr(my_ax, "set_%sticks" % key)(ticks)
+        getattr(my_ax, f"set_{key}ticks")(ticks)
 
     # Move left y-axis and bottim x-axis to centre, passing through (0,0)
     my_ax.spines["left"].set_position("center")

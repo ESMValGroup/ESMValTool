@@ -12,7 +12,6 @@ import sys
 from collections.abc import Iterator
 from pathlib import Path
 from textwrap import indent
-from typing import Optional
 
 import numpy as np
 import xarray as xr
@@ -307,7 +306,7 @@ def compare_files(
 
 
 def compare(
-    reference_dir: Optional[Path], current_dir: Path, verbose: bool
+    reference_dir: Path | None, current_dir: Path, verbose: bool
 ) -> bool:
     """Compare a recipe run to a reference run.
 
@@ -369,7 +368,7 @@ def get_recipe_name_from_file(filename: Path) -> str:
     raise ValueError(f"Failed to extract recipe name from file {filename}")
 
 
-def get_recipe_dir_from_str(str_in: str, recipe_name: str) -> Optional[Path]:
+def get_recipe_dir_from_str(str_in: str, recipe_name: str) -> Path | None:
     """Try to extract recipe directory from arbitrary string."""
     recipe_dir_pattern = (
         rf"recipe_{recipe_name}_" + RECIPE_DIR_DATETIME_PATTERN
@@ -430,7 +429,7 @@ def find_successful_runs(dirname: Path, recipe_name: str = "*") -> list[Path]:
 
 def find_recipes(
     reference: Path, current: list[Path]
-) -> Iterator[tuple[Path, Optional[Path]]]:
+) -> Iterator[tuple[Path, Path | None]]:
     """Yield tuples of current and reference directories."""
     for current_dir in current:
         for recipe_dir in find_successful_runs(current_dir):

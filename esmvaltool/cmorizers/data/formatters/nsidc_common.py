@@ -54,7 +54,7 @@ def cmorize(cfg, region, in_dir, out_dir):
             if zlib:
                 # Realize data to speed-up writing
                 # pylint: disable=pointless-statement
-                cube.data
+                cube.data  # noqa: B018
             save_variable(cube, var, out_dir, glob_attrs, zlib=zlib)
             cubes.remove(cube)
 

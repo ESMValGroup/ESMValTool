@@ -49,7 +49,7 @@ def _get_slow_tests(cur):
             executable_test = pth + "::" + test_var
             if ", " in executable_test:
                 executable_test = executable_test.replace(", ", "-")
-            mssg = "%.2f" % test_duration + "s " + executable_test
+            mssg = f"{test_duration:.2f}" + "s " + executable_test
             print(mssg)
     else:
         print("Could not retrieve test timing data.")

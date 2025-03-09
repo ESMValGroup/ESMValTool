@@ -690,7 +690,7 @@ def plot_nac(
         fancybox=True,
         fontsize="small",
     )
-    legend.set_title("Vs %s" % cref, prop={"size": "small"})
+    legend.set_title(f"Vs {cref}", prop={"size": "small"})
 
     # Display or produce file
     if ofile and config:

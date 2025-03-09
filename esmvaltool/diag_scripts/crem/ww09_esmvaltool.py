@@ -653,7 +653,7 @@ def crem_calc(pointers):
                 model_ncf[idx_region, i] = 0.0
 
     # Calculation of eq 3 in WW09
-    for idx_region, (region, regime) in enumerate(nregimes.items()):
+    for idx_region, regime in enumerate(nregimes.values()):
         r_crem_pd[idx_region, 0:regime] = (
             area_weights[idx_region]
             * (

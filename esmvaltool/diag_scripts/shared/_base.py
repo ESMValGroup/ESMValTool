@@ -577,9 +577,9 @@ def run_diagnostic():
             raise FileExistsError(
                 "Script will abort to prevent accidentally overwriting "
                 "your data in the following output files or directories:"
-                "\n%s\n Use -f or --force to force emptying the output "
+                "\n{}\n Use -f or --force to force emptying the output "
                 "directories or use -i or --ignore-existing to ignore "
-                "existing output directories." % "\n".join(old_content)
+                "existing output directories.".format("\n".join(old_content))
             )
 
     # Create output directories

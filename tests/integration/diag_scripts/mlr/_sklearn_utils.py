@@ -104,14 +104,13 @@ def assert_warns(warning_class, func, *args, **kw):
         # Verify some things
         if not len(warn) > 0:
             raise AssertionError(
-                "No warning raised when calling %s" % func.__name__
+                f"No warning raised when calling {func.__name__}"
             )
 
         found = any(warning.category is warning_class for warning in warn)
         if not found:
             raise AssertionError(
-                "%s did not give warning: %s( is %s)"
-                % (func.__name__, warning_class, warn)
+                f"{func.__name__} did not give warning: {warning_class}( is {warn})"
             )
     return result
 
@@ -153,7 +152,7 @@ def assert_warns_message(warning_class, message, func, *args, **kw):
         # Verify some things
         if not len(warn) > 0:
             raise AssertionError(
-                "No warning raised when calling %s" % func.__name__
+                f"No warning raised when calling {func.__name__}"
             )
 
         found = [
@@ -161,8 +160,8 @@ def assert_warns_message(warning_class, message, func, *args, **kw):
         ]
         if not any(found):
             raise AssertionError(
-                "No warning raised for %s with class "
-                "%s" % (func.__name__, warning_class)
+                f"No warning raised for {func.__name__} with class "
+                f"{warning_class}"
             )
 
         message_found = False
@@ -185,7 +184,7 @@ def assert_warns_message(warning_class, message, func, *args, **kw):
         if not message_found:
             raise AssertionError(
                 "Did not receive the message you expected "
-                "('%s') for <%s>, got: '%s'" % (message, func.__name__, msg)
+                f"('{message}') for <{func.__name__}>, got: '{msg}'"
             )
 
     return result
@@ -222,9 +221,8 @@ def assert_raise_message(exceptions, message, function, *args, **kwargs):
         if message not in error_message:
             raise AssertionError(
                 "Error message does not include the expected "
-                "string: %r. Observed error message: %r"
-                % (message, error_message)
-            )
+                f"string: {message!r}. Observed error message: {error_message!r}"
+            ) from exc
     else:
         # concatenate exception names
         if isinstance(exceptions, tuple):
@@ -232,9 +230,7 @@ def assert_raise_message(exceptions, message, function, *args, **kwargs):
         else:
             names = exceptions.__name__
 
-        raise AssertionError(
-            "%s not raised by %s" % (names, function.__name__)
-        )
+        raise AssertionError(f"{names} not raised by {function.__name__}")
 
 
 def assert_allclose_dense_sparse(

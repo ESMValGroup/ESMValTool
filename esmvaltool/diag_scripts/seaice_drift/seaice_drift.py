@@ -607,7 +607,7 @@ class InsidePolygonFactory(AuxCoordFactory):
         * lon: Coord
             The coordinate providing the longitudes.
         """
-        super(InsidePolygonFactory, self).__init__()
+        super().__init__()
         self.lat = lat
         self.lon = lon
         self.standard_name = None

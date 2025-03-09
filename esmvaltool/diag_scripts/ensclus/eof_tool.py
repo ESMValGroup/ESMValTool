@@ -62,7 +62,7 @@ def eof_plots(
     axes = figpc_scal1.gca()
     plt.plot(pcs_scal1[:, neof])
     plt.axhline(y=0, color="k", linestyle="--")
-    tt_pc = "{0}   PC{1}: explained variance {2}%\n".format(
+    tt_pc = "{}   PC{}: explained variance {}%\n".format(
         tit, neof + 1, "%.2f" % (varfrac[neof] * 100)
     )
     plt.title(tt_pc, fontsize=34, fontweight="bold")
@@ -98,7 +98,7 @@ def eof_plots(
     # cb.ax.set_position([0.9, 0.1, 0.001, 0.7])#([0.9, 0.1, 0.02, 0.8])
     cbar.set_label(varunits, rotation=0, fontsize=20)
     cbar.ax.tick_params(labelsize=20)
-    tt_eof = "{0}\nEOF{1}: explained variance {2}%\n".format(
+    tt_eof = "{}\nEOF{}: explained variance {}%\n".format(
         tit, neof + 1, "%.2f" % (varfrac[neof] * 100)
     )
     plt.title(tt_eof, fontsize=34, fontweight="bold")

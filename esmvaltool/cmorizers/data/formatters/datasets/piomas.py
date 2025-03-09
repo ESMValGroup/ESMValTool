@@ -116,9 +116,7 @@ class PIOMAS:
                 self._cmorize_var(var_info, vals, coords)
 
     def _cmorize_var(self, var_info, vals, coords):
-        file_expression = os.path.join(
-            self.in_dir, "{0}.H????".format(vals["raw"])
-        )
+        file_expression = os.path.join(self.in_dir, f"{vals['raw']}.H????")
         for file_path in glob.glob(file_expression):
             cube = PIOMAS._create_cube(
                 PIOMAS._read_binary_file(file_path),

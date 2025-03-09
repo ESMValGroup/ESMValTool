@@ -59,10 +59,10 @@ def _check_size_of_parameters(*args):
                     "Invalid input: array-like parameters need "
                     "to have the same size"
                 )
-        except TypeError:
+        except TypeError as exc:
             raise TypeError(
                 "Invalid input: some parameters are not array-like"
-            )
+            ) from exc
     return
 
 

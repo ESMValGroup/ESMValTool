@@ -195,10 +195,8 @@ def _extract_variable(in_files, var, cfg, out_dir, year0, region):
     while loop_date <= datetime(year0, 12, 31):
         for idx, cubetime in enumerate(time_list):
             if loop_date == cubetime:
-                date_available = True
+                full_list.append(new_list[idx])
                 break
-        if date_available:
-            full_list.append(new_list[idx])
         else:
             logger.debug(
                 "No data available for %d/%d/%d",

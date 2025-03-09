@@ -471,8 +471,8 @@ def _create_table(table, cfg, description=None):
     # Create plot
     cell_text = np.vectorize("{:.2f}".format)(cell_data)
     col_labels = [
-        f"{NICE_SYMBOLS.get(l, l)} / {NICE_UNITS.get(col_units[i], 'unknown')}"
-        for (i, l) in enumerate(col_labels)
+        f"{NICE_SYMBOLS.get(label, label)} / {NICE_UNITS.get(col_units[i], 'unknown')}"
+        for (i, label) in enumerate(col_labels)
     ]
     (_, axes) = plt.subplots()
     axes.axis("off")

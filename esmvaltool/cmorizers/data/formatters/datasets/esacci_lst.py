@@ -114,14 +114,12 @@ def load_cubes(in_dir, file_day, file_night, year, month, variable):
     platform = AQUA not used for now
                but in place for future expansion to all ESC CCI LST platforms
     """
-    logger.info("Loading %s/%s%s%s*.nc", in_dir, file_day, year, month)
-    day_cube = iris.load_cube(
-        "%s/%s%s%02d*.nc" % (in_dir, file_day, year, month), variable
-    )
-    logger.info("Loading %s/%s%s%s*.nc", in_dir, file_night, year, month)
-    night_cube = iris.load_cube(
-        "%s/%s%s%02d*.nc" % (in_dir, file_night, year, month), variable
-    )
+    path = f"{in_dir}/{file_day}{year}{month:02d}*.nc"
+    logger.info("Loading %s", path)
+    day_cube = iris.load_cube(path, variable)
+    path = f"{in_dir}/{file_night}{year}{month:02d}*.nc"
+    logger.info("Loading %s", path)
+    night_cube = iris.load_cube(path, variable)
 
     return day_cube, night_cube
 

@@ -210,7 +210,7 @@ def generate_overview(output_dir):
 
     print(f"Found {len(recipes)} recipes")
     lines = []
-    for name, recipe_dir in recipes.items():
+    for recipe_dir in recipes.values():
         title, description = get_title_and_description(recipe_dir)
         figure = get_first_figure(recipe_dir)
         recipe_url = recipe_dir.relative_to(output_dir)

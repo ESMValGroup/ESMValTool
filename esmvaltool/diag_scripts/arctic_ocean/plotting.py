@@ -936,10 +936,13 @@ def plot_aw_core_stat(aw_core_parameters, diagplotdir):
     plt.savefig(pltoutname, dpi=100)
 
 
+DEFAULT_PROJECTION = ccrs.NorthPolarStereo()
+
+
 def transect_map(
     cfg,
     region,
-    projection=ccrs.NorthPolarStereo(),
+    projection=DEFAULT_PROJECTION,
     bbox=(-180, 180, 60, 90),
     mult=2,
 ):

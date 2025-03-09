@@ -278,7 +278,7 @@ def _add_categorised_coord(
         from_coord = cube.coord(from_coord)
 
     if cube.coords(name):
-        msg = 'A coordinate "%s" already exists in the cube.' % name
+        msg = f'A coordinate "{name}" already exists in the cube.'
         raise ValueError(msg)
 
     new_coord = iris.coords.AuxCoord(

@@ -556,11 +556,11 @@ def _get_single_constraint(
     if interpret_as_range:
         try:
             len_range = len(val)
-        except TypeError:
+        except TypeError as exc:
             raise TypeError(
                 f"Expected iterable for values of 'extract_range' for "
                 f"coordinate '{coord_name}', got '{val}'"
-            )
+            ) from exc
         if len_range != 2:
             raise ValueError(
                 f"Expected exactly two elements for range of '{coord_name}' "
@@ -911,11 +911,11 @@ def convert_units_to(cfg, cube, data):
         )
         try:
             cube.convert_units(units_to)
-        except ValueError:
+        except ValueError as exc:
             raise ValueError(
                 f"Cannot convert units of cube {cube.summary(shorten=True)} "
                 f"from '{cube.units}' to '{units_to}'"
-            )
+            ) from exc
         data["units"] = str(cube.units)
     return (cube, data)
 

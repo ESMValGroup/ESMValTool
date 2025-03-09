@@ -166,11 +166,11 @@ def _get_multi_model_mean(input_data):
         for dataset in datasets:
             try:
                 cube = dataset["cube"]
-            except KeyError:
+            except KeyError as exc:
                 raise KeyError(
                     f"No data for '{var}' of dataset '{dataset['dataset']}' "
                     f"for multi-model mean calculation"
-                )
+                ) from exc
             if cube.ndim > 1:
                 raise ValueError(
                     f"Calculation of multi-model mean not supported for input "

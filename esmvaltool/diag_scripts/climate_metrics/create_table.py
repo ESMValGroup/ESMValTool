@@ -123,10 +123,10 @@ def check_cube(cube, filename):
         )
     try:
         cube.coord("dataset")
-    except iris.exceptions.CoordinateNotFoundError:
+    except iris.exceptions.CoordinateNotFoundError as exc:
         raise iris.exceptions.CoordinateNotFoundError(
             f"Necessary coordinate 'dataset' not found in file '{filename}'"
-        )
+        ) from exc
 
 
 def create_data_frame(input_files, exclude_datasets):

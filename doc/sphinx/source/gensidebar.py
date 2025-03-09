@@ -42,15 +42,15 @@ def generate_sidebar(conf, conf_api):
         if project != conf_api:
             if do_gen:
                 args = desc, mapping[project][0], link
-                lines.append("    %s <%s%s.html>" % args)
+                lines.append("    {} <{}{}.html>".format(*args))
         else:
             args = desc, link
-            lines.append("    %s <%s>" % args)
+            lines.append("    {} <{}>".format(*args))
 
     def _header(project, text):
         if project == conf_api or do_gen:
             lines.extend([".. toctree::", "   :maxdepth: 2"])
-            lines.extend(["   :caption: %s" % text, ""])
+            lines.extend([f"   :caption: {text}", ""])
 
     #
     # Specify the sidebar contents here

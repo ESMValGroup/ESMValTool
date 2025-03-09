@@ -84,10 +84,10 @@ def check_coordinate(cubes, coord_name):
     for cube in cubes:
         try:
             new_coord = cube.coord(coord_name)
-        except CoordinateNotFoundError:
+        except CoordinateNotFoundError as exc:
             raise CoordinateNotFoundError(
                 f"'{coord_name}' is not a coordinate of cube\n{cube}"
-            )
+            ) from exc
         if coord is None:
             coord = new_coord
         else:
@@ -225,10 +225,10 @@ def intersect_dataset_coordinates(cubes):
     for cube in cubes:
         try:
             coord_points = cube.coord("dataset").points
-        except CoordinateNotFoundError:
+        except CoordinateNotFoundError as exc:
             raise CoordinateNotFoundError(
                 f"'dataset' is not a coordinate of cube\n{cube}"
-            )
+            ) from exc
         if len(set(coord_points)) != len(coord_points):
             raise ValueError(
                 f"Coordinate 'dataset' of cube\n{cube}\n contains duplicate "
@@ -314,10 +314,10 @@ def unify_1d_cubes(cubes, coord_name):
             raise ValueError(f"Dimension of cube\n{cube}\nis not 1")
         try:
             new_coord = cube.coord(coord_name)
-        except CoordinateNotFoundError:
+        except CoordinateNotFoundError as exc:
             raise CoordinateNotFoundError(
                 f"'{coord_name}' is not a coordinate of cube\n{cube}"
-            )
+            ) from exc
         if not np.array_equal(
             np.unique(new_coord.points), np.sort(new_coord.points)
         ):
