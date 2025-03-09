@@ -107,7 +107,7 @@ class Data4Analyis:
         self.mask_type = mask_type
         self.determine_reference(group)
         self.obtain_data(group, mask_meta)
-        stats = cfg.get('statistics')
+        stats = cfg.get('data_statistics')
         if not(stats): 
             raise ValueError("statistics dictionary should be provided in the recipe. "
                              "The keywords 'best_guess' and 'borders' should be provided.")
