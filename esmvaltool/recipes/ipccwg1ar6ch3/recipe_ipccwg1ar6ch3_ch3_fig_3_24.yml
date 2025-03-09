@@ -130,7 +130,7 @@ preprocessors:
     zonal_statistics:
       operator: mean
     convert_units:
-      units: degrees_C    
+      units: degrees_C
 
   prep_equatorial:
     custom_order: true
@@ -170,7 +170,7 @@ diagnostics:
   zonal:
     variables:
       cmip5:
-        short_name: tos 
+        short_name: tos
         preprocessor: prep_zonal
         field: TO2M
         start_year: 1979
@@ -178,7 +178,7 @@ diagnostics:
         reference_dataset: HadISST
         additional_datasets: *models_cmip5
       cmip6:
-        short_name: tos 
+        short_name: tos
         preprocessor: prep_zonal
         field: TO2M
         start_year: 1979
@@ -186,7 +186,7 @@ diagnostics:
         reference_dataset: HadISST
         additional_datasets: *models_cmip6
       highresmip:
-        short_name: tos 
+        short_name: tos
         preprocessor: prep_zonal
         field: TO2M
         start_year: 1979
@@ -203,18 +203,18 @@ diagnostics:
         data_statistics:
           best_guess: mean # best guess statistic
           borders: # borders for the shading
-            - operator: percentile 
+            - operator: percentile
               percent: 5
             - operator: percentile
               percent: 95
         mpl_style: ipcc_ar6_fgd # name of the matplotlib style file (optional)
-        caption: Zonal mean SST bias # Figure caption (optional) 
+        caption: Zonal mean SST bias # Figure caption (optional)
         color_style: sst_bias # name of the color style, colors are defined for variable groups
 
   equatorial:
     variables:
       cmip5:
-        short_name: tos 
+        short_name: tos
         preprocessor: prep_equatorial
         field: TO2M
         start_year: 1979
@@ -222,7 +222,7 @@ diagnostics:
         reference_dataset: HadISST
         additional_datasets: *models_cmip5
       cmip6:
-        short_name: tos 
+        short_name: tos
         preprocessor: prep_equatorial
         field: TO2M
         start_year: 1979
@@ -230,7 +230,7 @@ diagnostics:
         reference_dataset: HadISST
         additional_datasets: *models_cmip6
       highresmip:
-        short_name: tos 
+        short_name: tos
         preprocessor: prep_equatorial
         field: TO2M
         start_year: 1979
@@ -238,44 +238,44 @@ diagnostics:
         reference_dataset: HadISST
         additional_datasets: *models_highres
       eq_mask:
-        short_name: tos 
+        short_name: tos
         preprocessor: prep_eq_mask
         field: TO2M
         start_year: 1979
         end_year: 1999
-        additional_datasets: 
-         - {dataset: HadISST, project: OBS, field: T2Ms, mip: Omon, type: reanaly, version: 1, tier: 2}    
-    
+        additional_datasets:
+         - {dataset: HadISST, project: OBS, field: T2Ms, mip: Omon, type: reanaly, version: 1, tier: 2}
+
     scripts:
       panel_b:
         script: ocean/diagnostic_3_24_zonal_sst.py
-        bias: True      
-        mask: 
+        bias: True
+        mask:
           flag: true
           type: resolved
           group: eq_mask
         data_statistics:
           best_guess: mean
-          borders: 
-            - operator: percentile 
+          borders:
+            - operator: percentile
               percent: 5
             - operator: percentile
               percent: 95
         mpl_style: ipcc_ar6_fgd
         caption: Equatorial SST bias
-        color_style: sst_bias 
+        color_style: sst_bias
 
       panel_c:
         script: ocean/diagnostic_3_24_zonal_sst.py
-        bias: False      
-        mask: 
+        bias: False
+        mask:
           flag: true
           type: resolved
           group: eq_mask
         data_statistics:
           best_guess: mean
-          borders: 
-            - operator: percentile 
+          borders:
+            - operator: percentile
               percent: 5
             - operator: percentile
               percent: 95
