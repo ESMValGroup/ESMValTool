@@ -51,7 +51,7 @@ highresmip:
   facecolor: '#1f9583'
   mark: v
   thick: 1
-obs:
+HadISST:
   avgstd: 1
   color: '#000000'
   dash: '-'
