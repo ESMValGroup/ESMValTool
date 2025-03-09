@@ -200,7 +200,7 @@ diagnostics:
         mask: # if the data should be masked (optional), default: false
           flag: true
           type: simple # accepted values: 'simple' and 'resolved'
-        statistics:
+        data_statistics:
           best_guess: mean # best guess statistic
           borders: # borders for the shading
             - operator: percentile 
@@ -254,7 +254,7 @@ diagnostics:
           flag: true
           type: resolved
           group: eq_mask
-        statistics:
+        data_statistics:
           best_guess: mean
           borders: 
             - operator: percentile 
@@ -272,7 +272,7 @@ diagnostics:
           flag: true
           type: resolved
           group: eq_mask
-        statistics:
+        data_statistics:
           best_guess: mean
           borders: 
             - operator: percentile 
