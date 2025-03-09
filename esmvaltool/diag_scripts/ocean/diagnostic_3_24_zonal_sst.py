@@ -1,7 +1,5 @@
 """
-
 Diagnostic for fig 3.24 in Chapter 3 of IPCC AR6 WGI.
-========================
 
 This diagnostic either calculates bias with respect to the reference
 dataset or plots the data and the reference dataset.
