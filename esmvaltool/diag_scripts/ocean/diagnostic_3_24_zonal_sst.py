@@ -1,5 +1,5 @@
 """
-Diagnostic for fig 3.24 in Chapter 3 of IPCC AR6 WGI
+Diagnostic for fig 3.24 in Chapter 3 of IPCC AR6 WGI.
 ========================
 
 This diagnostic either calculates bias with respect to the reference
@@ -89,7 +89,6 @@ class Data4Analyis:
         name: str,
         group: list,
         cfg: dict,
-        mask_type: str | bool,
         mask_meta: list[dict] | None,
     ):
         """Initialization of the class.
@@ -109,9 +108,9 @@ class Data4Analyis:
         """
 
         self.name = name
-        self.bias = True if cfg.get("bias") else False
+        self.bias = bool(cfg.get("bias"))
         self.mask = cfg.get("mask").get("flag") if cfg.get("mask") else False
-        self.mask_type = mask_type
+        self.mask_type = cfg["mask"].get("type") if self.mask else False
         self.determine_reference(group)
         self.obtain_data(group, mask_meta)
         stats = cfg.get("data_statistics")
@@ -270,7 +269,6 @@ class Data4Analyis:
 
 def create_provenance(caption: str):
     """Creates provenance dictionary."""
-
     provenance_dic = {
         "authors": ["malinina_elizaveta", "demora_lee"],
         "caption": caption,
@@ -337,7 +335,6 @@ def plot_bias_plot(data_list: list[Data4Analyis], cfg: dict):
 
 def main(cfg: dict):
     """Diagnostic itself."""
-
     input_data = cfg["input_data"]
 
     groups = group_metadata(input_data.values(), "variable_group", sort=True)
@@ -354,7 +351,6 @@ def main(cfg: dict):
             name=group,
             group=groups[group],
             cfg=cfg,
-            mask_type=mask_type,
             mask_meta=mask_meta,
         )
         data_list.append(group_data)
