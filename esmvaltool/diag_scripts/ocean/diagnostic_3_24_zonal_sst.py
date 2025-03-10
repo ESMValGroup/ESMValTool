@@ -217,8 +217,8 @@ class Data4Analyis:
                 "Only 'simple' and 'resolved' are supported."
             )
 
-        for cb in self.data:
-            cb.data.mask = cb.data.mask | mask
+        for n_cb in enumerate(self.data):
+            self.data[n_cb[0]].data.mask = self.data[n_cb[0]].data.mask | mask
 
         return
 
@@ -329,10 +329,10 @@ def main(cfg: dict):
     mask_meta = groups.pop(mask_group) if mask_group else None
 
     data_list = []
-    for group in groups.keys():
+    for group, group_cont in groups.items():
         group_data = Data4Analyis(
             name=group,
-            group=groups[group],
+            group=group_cont,
             cfg=cfg,
             mask_meta=mask_meta,
         )
