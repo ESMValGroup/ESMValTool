@@ -15,8 +15,8 @@ build:
   jobs:
     pre_create_environment:
       # install mamba2: essential since mamba2 is the only one that can solve the env
-      - conda run -n ${CONDA_DEFAULT_ENV} conda install -y -c conda-forge "mamba>2"
-      - conda run -n ${CONDA_DEFAULT_ENV} mamba --version
+      - conda install -y -c conda-forge "mamba>2"
+      - mamba --version
     post_create_environment:
       - conda run -n ${CONDA_DEFAULT_ENV} mamba --version
     post_checkout:
