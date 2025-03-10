@@ -80,7 +80,9 @@ class Data4Analyis:
     border1: iris.cube.Cube
         iris cube with the bottom/top for the shading
     border2: iris.cube.Cube
-        iris cube with the top/bottom for the shading"""
+        iris cube with the top/bottom for the shading
+
+    """
 
     def __init__(
         self,
@@ -89,10 +91,10 @@ class Data4Analyis:
         cfg: dict,
         mask_meta: list[dict] | None,
     ):
-        """Initialization of the class.
+        """Initialize the class.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         name:
             Name of the data class, comes from the name of the group
         group:
@@ -102,7 +104,9 @@ class Data4Analyis:
         mask_type:
             Type of the mask to be used, if no mask to be used set to False
         mask_meta:
-            Metadata for the mask group if mask_type='resolved'"""
+            Metadata for the mask group if mask_type='resolved'
+
+        """
         self.name = name
         self.bias = bool(cfg.get("bias"))
         self.mask = cfg.get("mask").get("flag") if cfg.get("mask") else False
@@ -118,17 +122,19 @@ class Data4Analyis:
         self.calculate_statistics(stats)
 
     def determine_reference(self, group: list):
-        """Determines the reference dataset from the data group.
+        """Determine the reference dataset from the data group.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         group:
             List with the metadata of the variable group
 
-        Raises:
-        -------
+        Raises
+        ------
         ValueError
-            if more than one or no reference datasets have been provided"""
+            if more than one or no reference datasets have been provided
+
+        """
         if self.bias or self.mask:
             reference = list(group_metadata(group, "reference_dataset").keys())
             if len(reference) > 1:
@@ -144,14 +150,16 @@ class Data4Analyis:
                 raise ValueError("No reference dataset has been provided")
 
     def obtain_data(self, group: list, mask_meta: list[dict] | None):
-        """Obtains data for further statistics calculation.
+        """Obtain data for further statistics calculation.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         group:
             List with the metadata of the variable group
         mask_meta:
-            List with the mask_metadata in case mask_type='resolved'"""
+            List with the mask_metadata in case mask_type='resolved'
+
+        """
         files = list(group_metadata(group, "filename", sort=True).keys())
         data_cblst = iris.load(files)
         self.data = data_cblst
@@ -162,22 +170,22 @@ class Data4Analyis:
         if self.bias:
             self.data = eprep.bias(self.data, reference=self.ref_cube)
 
-        return
-
     def mask_data(self, mask_meta: list[dict] | None):
         """Masks data.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         mask_meta:
             List with the mask_metadata in case mask_type='resolved'
 
-        Raises:
-        -------
+        Raises
+        ------
         ValueError
             if more than one datasets for resolved mask are provided
             or if data cubes have more than one dimension or if an
-            unsupported type of mask is provided"""
+            unsupported type of mask is provided
+
+        """
         if self.mask_type == "simple":
             mask = self.ref_cube.data.mask
         elif self.mask_type == "resolved":
@@ -220,15 +228,16 @@ class Data4Analyis:
         for n_cb in enumerate(self.data):
             self.data[n_cb[0]].data.mask = self.data[n_cb[0]].data.mask | mask
 
-        return
-
     def calculate_statistics(self, stats: dict):
-        """Calculates statistics which later will be plotted.
-        Parameters:
-        -----------
+        """Calculate statistics which later will be plotted.
+
+        Parameters
+        ----------
         stats:
             dictionary with the statistics which will be calculated.
-            Dictionary should have keywords 'best_guess' and 'borders'."""
+            Dictionary should have keywords 'best_guess' and 'borders'.
+
+        """
         if len(self.data) > 1:
             bg_dic = eprep.multi_model_statistics(
                 self.data,
@@ -254,7 +263,7 @@ class Data4Analyis:
 
 
 def create_provenance(caption: str):
-    """Creates provenance dictionary."""
+    """Create provenance dictionary."""
     provenance_dic = {
         "authors": ["malinina_elizaveta", "demora_lee"],
         "caption": caption,
@@ -265,13 +274,16 @@ def create_provenance(caption: str):
 
 
 def plot_bias_plot(data_list: list[Data4Analyis], cfg: dict):
-    """Plots the diagnostic figure.
-    Parameters:
-    -----------
+    """Plot the diagnostic figure.
+
+    Parameters
+    ----------
     data_list:
         List with the data classes which will be plotted
     cfg:
-        Config dictionary coming from ESMValCore"""
+        Config dictionary coming from ESMValCore
+
+    """
     caption = cfg.get("caption") if cfg.get("caption") else ""
     prov_dic = create_provenance(caption=caption)
 
