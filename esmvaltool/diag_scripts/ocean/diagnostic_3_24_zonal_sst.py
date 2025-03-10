@@ -217,8 +217,8 @@ class Data4Analyis:
                 "Only 'simple' and 'resolved' are supported."
             )
 
-        for n_cb in range(len(self.data)):
-            self.data[n_cb].data.mask = self.data[n_cb].data.mask | mask
+        for cb in self.data:
+            cb.data.mask = cb.data.mask | mask
 
         return
 
