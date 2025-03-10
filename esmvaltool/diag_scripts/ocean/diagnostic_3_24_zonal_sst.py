@@ -58,7 +58,6 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 class Data4Analyis:
     """Data class which later will be used for plotting.
-
     Attributes
     ----------
     name: str
@@ -91,7 +90,6 @@ class Data4Analyis:
         mask_meta: list[dict] | None,
     ):
         """Initialization of the class.
-
         Parameters:
         -----------
         name:
@@ -121,7 +119,6 @@ class Data4Analyis:
 
     def determine_reference(self, group: list):
         """Determines the reference dataset from the data group.
-
         Parameters:
         -----------
         group:
@@ -136,8 +133,7 @@ class Data4Analyis:
             reference = list(group_metadata(group, "reference_dataset").keys())
             if len(reference) > 1:
                 raise ValueError("More then one reference dataset was given")
-            else:
-                self.reference = reference[0]
+            self.reference = reference[0]
             if reference:
                 ref_metadata = select_metadata(group, dataset=self.reference)[
                     0
@@ -149,7 +145,6 @@ class Data4Analyis:
 
     def obtain_data(self, group: list, mask_meta: list[dict] | None):
         """Obtains data for further statistics calculation.
-
         Parameters:
         -----------
         group:
@@ -171,7 +166,6 @@ class Data4Analyis:
 
     def mask_data(self, mask_meta: list[dict] | None):
         """Masks data.
-
         Parameters:
         -----------
         mask_meta:
@@ -230,7 +224,6 @@ class Data4Analyis:
 
     def calculate_statistics(self, stats: dict):
         """Calculates statistics which later will be plotted.
-
         Parameters:
         -----------
         stats:
@@ -274,7 +267,6 @@ def create_provenance(caption: str):
 
 def plot_bias_plot(data_list: list[Data4Analyis], cfg: dict):
     """Plots the diagnostic figure.
-
     Parameters:
     -----------
     data_list:
