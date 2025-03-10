@@ -1,8 +1,8 @@
-# This file contains utility functions that are available in all 
+# This file contains utility functions that are available in all
 # R diagnostics related to drought indices.
 
 # NOTE: Several codeblocks applying masks to combinations of variables are
-# replaced by reusable get_merged_mask function. 
+# replaced by reusable get_merged_mask function.
 #
 # NOTE: Variables are converted to Units required by SPEI library when loaded
 #   time -> start_year, start_month, end_year, end_month
@@ -12,14 +12,14 @@
 #   sfcWind -> U10 to U2
 #   psl -> hPa to kPa
 #   rsdt/rsds -> Wm-2 to MJm-2d-1
-# 
+#
 # TODO: The PET produced by R diag seems to be in the "correct" unit for SPEI,
 # but does not match the units of pr and evspsbl(pot), which are loaded from
-# native data. PET should be converted before saved to nc files and 
+# native data. PET should be converted before saved to nc files and
 # converted back at loading time.
 #
 # TODO: same files are opened multiple times. Does keeping the file open
-# improve performance? 
+# improve performance?
 #
 # NOTE: `fillfloat` and `fillvalue` are variables that are used both for the
 # same purpose but can have different values? fillvalue is read from reference
@@ -123,8 +123,8 @@ monthly_to_daily <- function(v, dim=1){
 convert_to_cf <- function(id, v) {
   # NOTE: use mm day-1 converted by preprocessor if possible and convert
   # it to/from month using daily_to_monthly and monthly_to_daily instead.
-  # 
-  # converts mm/mon back to kg/m2/s assuming the input ncfile to have the 
+  #
+  # converts mm/mon back to kg/m2/s assuming the input ncfile to have the
   # correct calendar set. (inverse of `convert_to_monthly`)
   tcal <- ncatt_get(id, "time", attname = "calendar")
   if (tcal$value == "360_day") return(v / 30 / 24 / 3600.)
@@ -225,13 +225,13 @@ get_var_from_nc <- function(meta, custom_var=FALSE) {
   } else if (var %in% list("tas", "tasmin", "tasmax")) {
     data <- data - 273.15
   } else if (var %in% list("rsdt", "rsds")) {
-    data <- data * (86400.0 / 1e6) # W/(m2) to MJ/(m2 d)  
-  } else if (var %in% list("pr", "evspsbl", "evspsblpot")) {  
+    data <- data * (86400.0 / 1e6) # W/(m2) to MJ/(m2 d)
+  } else if (var %in% list("pr", "evspsbl", "evspsblpot")) {
     if (meta$units == "mm day-1") {
       data <- daily_to_monthly(data, dim=time_dim)
     } else if (meta$units == "mm month-1") {  # do nothing
     } else {
-      stop(paste(var, 
+      stop(paste(var,
         " is expected to be in mm day-1 or mm month-1 not in ", meta$units))
     }
   } else if (var == "sfcWind") {
@@ -264,8 +264,8 @@ group_meta <- function(metadata) {
 
 leap_year <- function(year) {
   return(
-    ifelse( 
-      (year %% 4 == 0 & year %% 100 != 0) | year %% 400 == 0, 
+    ifelse(
+      (year %% 4 == 0 & year %% 100 != 0) | year %% 400 == 0,
       TRUE, FALSE
     )
   )
@@ -284,7 +284,7 @@ list_default <- function(list, key, default) {
 }
 
 select_var <- function(metas, short_name, strict=TRUE) {
-  # NOTE: metas should be a list of metadata entries, but R seems to handle it 
+  # NOTE: metas should be a list of metadata entries, but R seems to handle it
   # differently if this list ist of length 1.
   for (meta in metas) {
     if (meta$short_name == short_name) {
@@ -302,14 +302,14 @@ select_var <- function(metas, short_name, strict=TRUE) {
 
 t_or_null <- function(arr) {
   if (is.null(arr)) {
-    return(NULL) 
+    return(NULL)
   } else {
     return(t(arr))
   }
 }
 
 update_short_name <- function(params, meta, short_name) {
-  # NOTE: this expects meta from reference data and replaces short_name and 
+  # NOTE: this expects meta from reference data and replaces short_name and
   # its occurance in the filename by string replacement.
   # A more general get_output_filename(meta) that reconstruct fname
   # would be better.
@@ -330,8 +330,8 @@ whfcn <- function(x, ilow, ihigh){ # TODO: rename function
 
 
 write_nc_file_like <- function(
-  params, meta, data, fillfloat, 
-  short_name="spei", 
+  params, meta, data, fillfloat,
+  short_name="spei",
   units="1",
   long_name="Standardized Precipitation-Evapotranspiration Index",
   moty=FALSE
@@ -342,7 +342,7 @@ write_nc_file_like <- function(
   # NOTE: cf convert skipped for debugging
   new_meta <- update_short_name(params, meta, short_name)
   print(paste("create new file:", new_meta$filename))
-  ncid_in <- nc_open(meta$filename) 
+  ncid_in <- nc_open(meta$filename)
   xdim <- ncid_in$dim[["lon"]]
   if (length(xdim)==0) xdim <- ncid_in$dim[["longitude"]]
   ydim <- ncid_in$dim[["lat"]]

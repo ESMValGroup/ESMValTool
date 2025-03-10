@@ -28,7 +28,7 @@ require different input variables for example:
 - Hargreaves: tas, tasmin, tasmax, (rsds, pr)
 - Thornthwaite: tas
 
-A complete list and more details can be found in 
+A complete list and more details can be found in
 :ref:`SPEI recipe documentation <recipes_spei>`.
 
 
@@ -101,4 +101,3 @@ References
 * McKee, T. B., Doesken, N. J., & Kleist, J. (1993). The relationship of drought frequency and duration to time scales. In Proceedings of the 8th Conference on Applied Climatology (Vol. 17, No. 22, pp. 179-183). Boston, MA: American Meteorological Society.
 
 * Vicente-Serrano, S. M., Beguería, S., & López-Moreno, J. I. (2010). A multiscalar drought index sensitive to global warming: the standardized precipitation evapotranspiration index. Journal of climate, 23(7), 1696-1718.
-

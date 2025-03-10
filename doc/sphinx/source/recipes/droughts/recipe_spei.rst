@@ -14,8 +14,8 @@ Meteorological droughts are often described using the standardized precipitation
 A hydrological drought occurs when low water supply becomes evident, especially in streams, reservoirs, and groundwater levels, usually after extended periods of meteorological drought. GCMs normally do not simulate hydrological processes in sufficient detail to give deeper insights into hydrological drought processes. Neither do they properly describe agricultural droughts, when crops become affected by the hydrological drought. However, hydrological drought can be estimated by accounting for evapotranspiration, and thereby estimate the surface retention of water. The standardized precipitation-evapotranspiration index (SPEI; Vicente-Serrano et al., 2010) has been developed to also account for temperature effects on the surface water fluxes. Evapotranspiration is not normally calculated in GCMs, so SPEI often takes other inputs to estimate the evapotranspiration. Here, the Thornthwaite (Thornthwaite, 1948) method based on temperature is applied.
 
 This page documents a set of R diagnostics based on the
-`SPEI.R library <https://CRAN.R-project.org/package=SPEI>`_. 
-``recipes/roughts/recipe_spei.yml`` is an example how to calculate and plot 
+`SPEI.R library <https://CRAN.R-project.org/package=SPEI>`_.
+``recipes/roughts/recipe_spei.yml`` is an example how to calculate and plot
 SPEI using ``diag_scripts/droughts/pet.R`` and ``diag_scripts/droughts/spei.R``.
 
 
@@ -39,7 +39,7 @@ set explicitly as ancestors.
 The Thornthwaite equation (Thornthwaite, 1948) is the simplest one based solely
 on temperature. Hargreaves (1994) provides an equation based on daily minimum
 (tasmin) and maximum temperature (tasmax) and external radiation (rsdt).
-If precipitation data (pr) is provided and `use_pr: TRUE` it will be used as a 
+If precipitation data (pr) is provided and `use_pr: TRUE` it will be used as a
 proxy for irradation to correct PET following Droogers and Allen (2002).
 The Penman-Monteith formular additionally considers surface windspeed (sfcWind),
 pressure (ps), and relative humidity (hurs). Some of these variables can be
@@ -100,7 +100,7 @@ short_name_pet: string, optional
     By default "evspsblpot"
 
 distributionn: string, optional
-    Type of distribution used for SPEI calibration. 
+    Type of distribution used for SPEI calibration.
     Possible options are: "Gamma", "log-Logistic", "Pearson III".
     By default "log-Logistic".
 

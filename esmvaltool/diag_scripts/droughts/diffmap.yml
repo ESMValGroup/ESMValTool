@@ -1,5 +1,5 @@
-# this file contains default setup for the diffmap map plots i.e. 
-# limits, colormaps, etc. every root level key will be overwritten by 
+# this file contains default setup for the diffmap map plots i.e.
+# limits, colormaps, etc. every root level key will be overwritten by
 # optional script parameters in the recipe file.
 # The plot_kwargs_overwrite list however will get merged with the script
 # parameters to allow modifications only for specific variables/metrics.

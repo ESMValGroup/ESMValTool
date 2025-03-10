@@ -16,39 +16,39 @@
 # settings.yml. Variables from ancestors can be added in recipe (i.e. pet/pr)
 #
 # NOTE: In the output folder are now (ESMValTool update) additinal xml and yml
-# files which need to be skipped when manually loaded. 
-# UPDATE: reduced this diag to work only with ancestors producing metadata.yml 
+# files which need to be skipped when manually loaded.
+# UPDATE: reduced this diag to work only with ancestors producing metadata.yml
 # or preprocessed variables.
-# 
+#
 # NOTE: Is the reference dataset used to apply the mask (NaNs) to all other
 # datasets? What should be chosen for reference? and why?
 # UPDATE: refrence_dataset will be read from script settings instead of dataset
 # UPDATE2: individual masks and refperiods should be fine. Reference dataset
 # completly removed.
-# 
-# NOTE: All metadata is kept in a named list with model keys. Removed some loops 
+#
+# NOTE: All metadata is kept in a named list with model keys. Removed some loops
 # and variables. In most functions meta just replaces yml[m][1].
 #
 # NOTE: A similar correction for time unit was hardcoded for each
 # variable. Changed it to a function that is called multiple times. #DRY
-# 
-# UPDATE: cleaned up getnc/getpetnc -> get_var_from_nc() getpetnc 
+#
+# UPDATE: cleaned up getnc/getpetnc -> get_var_from_nc() getpetnc
 # UPDATE: gettimenc is another special case of get_var_from_nc() #DRY
 #
 # NOTE: latitude is taken from reference dataset, but also for each ds during
-# calculation. 
-# 
-# NOTE: Common functions moved to utils.R this includes general read and write 
+# calculation.
+#
+# NOTE: Common functions moved to utils.R this includes general read and write
 # functions for nc files that replace ncwrite, ncwritespei, ncwritepet, getpetnc
 # gettimenc... and general utility functions like default values for lists
-# 
+#
 # NOTE: move all if conditions for each refperiod param into a seperate function
 # fill_refperiod. #DRY
 #
-# NOTE: added optional parameter `short_name_pet` to use variables other than 
+# NOTE: added optional parameter `short_name_pet` to use variables other than
 # evspsblpot from recipe.
-# 
-# NOTE: set log-Logistic as default distribution if nothing is given in the 
+#
+# NOTE: set log-Logistic as default distribution if nothing is given in the
 # recipe. Missing distribution raised an unclear error before.
 #
 # NOTE: forced to write netcdf-4 format (v4) to ensure compatibility with
@@ -64,7 +64,7 @@
 # short_name_pet: string, default "evspsblpot"
 #   short name of the variable to use as PET (i.e. ET)
 # distributionn: string, default "log-Logistic"
-#   type of distribution used for SPEI calibration. 
+#   type of distribution used for SPEI calibration.
 #   Options: "Gamma", "log-Logistic", "Pearson III"
 # refstart_year: integer, default first year of time series
 # refstart_month: integer, default 1

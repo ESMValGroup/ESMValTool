@@ -51,7 +51,7 @@ diagnostics:
         mip: Amon
         exp: [historical]
       tasmax: *var
-      pr: 
+      pr:
         <<: *var
         preprocessor: perday
     scripts:
