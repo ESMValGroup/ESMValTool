@@ -1,10 +1,9 @@
 #!/usr/bin/env  python
-# -*- coding: utf-8 -*-
 """Creates histograms and regional boxplots for given timeperiods.
 
 Global histograms are plotted to compare distributions of any variable in given
 intervals and/or by experiment. Combined experiments (historical-ssp*) will
-be splitted into individual ones. 
+be splitted into individual ones.
 
 NOTE: This diagnostic loads all values from all datasets into memory. If you
 provide a lot of data make sure enough memory is available.
@@ -26,8 +25,8 @@ split_by: str, optional (default: exp)
     parameter must be given.
     TODO: For 'exp' consider changing split_experiments.
 intervals: list of dicts, optional (default: [])
-    List of dicts containing a `label` (optional) and a `range` 
-    (timerange in ISO 8601 format. For example YYYY/YYYY) or 
+    List of dicts containing a `label` (optional) and a `range`
+    (timerange in ISO 8601 format. For example YYYY/YYYY) or
     `start` and `end` (ISO 8601).
     In the diagnostics `interval_label` and `interval_range` will be added
     to metadata and can be used as split_by option and in basename.
@@ -55,9 +54,9 @@ plot_properties: dict, optional (default: {})
     Use `histogram.plot_properties` or `regional_stats.plot_properties`
     to specify kwargs for corresponding plots.
 plot_kwargs: dict, optional (default: {})
-    Kwargs to all plot functions. Use `histogram.plot_kwargs` or 
+    Kwargs to all plot functions. Use `histogram.plot_kwargs` or
     `regional_stats.plot_kwargs` to specify kwargs for corresponding plots.
-regional_stats.fig_kwargs: dict, optional (default: 
+regional_stats.fig_kwargs: dict, optional (default:
     {'figsize': (15, 3), 'dpi': 300})
     Kwargs passed to the figure function for the scenarios plot. The best size
     for the figure depends on the number of splits and regions and the wanted
@@ -67,58 +66,79 @@ colors: dict, optional (default: {})
     dataset splits colors are used from ipcc colors, if available.
     TODO: add ipcc dataset colors.
 labels: dict, optional (default: {})
-    Define labels as dict. Keys are the split_by values. Values are strings 
+    Define labels as dict. Keys are the split_by values. Values are strings
     shown in the legend.
 strip_plots: bool, optional (default: False)
     Removes titles, margins and colorbars from plots (to use them in panels).
 grid_lines: list of float, optional (default: [])
     Draw helper lines to the plots to indicate threshholds or ranges. At
     given locations hlines are drawn in boxplots and vlines in histograms.
-grid_line_style: dict, optional (default: 
+grid_line_style: dict, optional (default:
     {'color': 'gray', 'linestyle': '--', 'linewidth': 0.5})
     Style of the grid lines. See matplotlib documentation for all options.
 """
 
-import iris
-import yaml
 import copy
-import numpy as np
-import xarray as xr
-from cycler import cycler
-from esmvalcore import preprocessor as pp
-# from matplotlib.lines import Line2D
-from matplotlib import cbook
-from iris.analysis.cartography import area_weights
-from iris.time import PartialDateTime
 import logging
 from collections import defaultdict
+
+import iris
 import matplotlib.pyplot as plt
+import numpy as np
+import xarray as xr
+import yaml
+from cycler import cycler
+from esmvalcore import preprocessor as pp
+from iris.analysis.cartography import area_weights
+from iris.time import PartialDateTime
+
+# from matplotlib.lines import Line2D
+from matplotlib import cbook
+from scipy.stats import norm
+
+from esmvaltool.diag_scripts.droughtindex import (
+    colors as ipcc_colors,
+)
+from esmvaltool.diag_scripts.droughtindex import (
+    utils as ut,
+)
 from esmvaltool.diag_scripts.shared import (
+    get_diagnostic_filename,
     # get_plot_filename,
     group_metadata,
     run_diagnostic,
-    get_diagnostic_filename,
-)
-from scipy.stats import norm
-from esmvaltool.diag_scripts.droughtindex import (
-    colors as ipcc_colors,
-    utils as ut,
 )
 
 log = logging.getLogger(__file__)
 
 
-SER_KEYS = ["mean", "med", "q1", "q3", "iqr", 
-            "whislo", "whishi", "cihi", "cilo"]
+SER_KEYS = [
+    "mean",
+    "med",
+    "q1",
+    "q3",
+    "iqr",
+    "whislo",
+    "whishi",
+    "cihi",
+    "cilo",
+]
 BOX_PLOT_KWARGS = {}
 
-def load_constrained(cfg, meta, regions=[]):
+
+def load_constrained(cfg, meta, regions=None):
     """Load cube with constraints in meta."""
+    if regions is None:
+        regions = []
     cube = iris.load_cube(meta["filename"], constraint=meta.get("cons", None))
     ut.guess_lat_lon_bounds(cube)
     if regions != []:
         log.debug("Extracting regions: %s", regions)
-        cube = pp.extract_shape(cube, shapefile="ar6", ids={"Acronym": regions})
+        cube = pp.extract_shape(
+            cube,
+            shapefile="ar6",
+            ids={"Acronym": regions},
+        )
     if "interval_range" in meta:
         log.debug("clipping timerange to %s", meta["interval_range"])
         cube = pp.clip_timerange(cube, meta["interval_range"])
@@ -138,7 +158,7 @@ def group_by_interval(cfg, metas: list):
 
 
 def group_by_exp(cfg, metas, historical_first=False):
-    """similar to shared.group_metadata but splits combined experiments.
+    """Similar to shared.group_metadata but splits combined experiments.
     meta data will be added to individual experiments.
     To keep this function lazy an iris constraint is added (`meta["cons"]`),
     to be applied when loading the file.
@@ -178,9 +198,8 @@ def group_by_exp(cfg, metas, historical_first=False):
     return groups
 
 
-
 def calculate_histogram(cfg, splits, output, group):
-    """load data for each split and calculate counts, bins and fit parameters.
+    """Load data for each split and calculate counts, bins and fit parameters.
     Safe parameters to netcdf file, to optionally skip this part on rerun.
     """
     labels = []
@@ -195,6 +214,7 @@ def calculate_histogram(cfg, splits, output, group):
         split_weights = []
         for meta in metas:  # merge everything else
             import warnings
+
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 cube = load_constrained(cfg, meta, regions=cfg["regions"])
@@ -211,14 +231,24 @@ def calculate_histogram(cfg, splits, output, group):
         bins.append(split_bins_center)
         log.info("split done")
     # save output
-    data = xr.Dataset({
-        "fits": xr.DataArray(fits, dims=["split", "param"], name="fit"),
-        "counts": xr.DataArray(counts, dims=["split", "bin"], name="counts"),
-        "bins": xr.DataArray(bins, dims=["split", "bin"], name="bins"),
-        "labels": xr.DataArray(labels, dims=["split"], name="labels")
-    })
+    data = xr.Dataset(
+        {
+            "fits": xr.DataArray(fits, dims=["split", "param"], name="fit"),
+            "counts": xr.DataArray(
+                counts,
+                dims=["split", "bin"],
+                name="counts",
+            ),
+            "bins": xr.DataArray(bins, dims=["split", "bin"], name="bins"),
+            "labels": xr.DataArray(labels, dims=["split"], name="labels"),
+        },
+    )
     fname = get_diagnostic_filename(f"histogram_{group}", cfg)
-    output["fname"] = {"filename": fname, "plottype": "histogram", "group": group}
+    output["fname"] = {
+        "filename": fname,
+        "plottype": "histogram",
+        "group": group,
+    }
     data.to_netcdf(fname)
     return data
 
@@ -247,7 +277,13 @@ def plot_histogram(cfg, splits, output, group, fit=True):
         "alpha": 0.75,
     }
     log.info("plotting histogram (%s)", group)
-    _, bins, patches = plt.hist(bins, weights=counts, color=colors, **plot_kwargs, zorder=3)
+    _, bins, patches = plt.hist(
+        bins,
+        weights=counts,
+        color=colors,
+        **plot_kwargs,
+        zorder=3,
+    )
     legend = plt.legend()
     for patch in legend.get_patches():
         patch.set_alpha(1)
@@ -257,10 +293,12 @@ def plot_histogram(cfg, splits, output, group, fit=True):
         plt.axvline(line, **cfg["grid_line_style"])
 
     meta = next(iter(splits.values()))[0].copy()  # first meta from dict
-    meta.update({
-        "plot_type": "histogram",
-        "group": group,
-    })
+    meta.update(
+        {
+            "plot_type": "histogram",
+            "group": group,
+        },
+    )
     filename = ut.get_plot_filename(cfg, cfg["basename"], meta, {"/": "_"})
     plt.savefig(filename)
     log.info("saved %s", filename)
@@ -324,12 +362,18 @@ def calculate_regional_stats(cfg, splits, output, group):
     if cfg["sort_regions_by"]:
         data, regions = sort_regions(data, regions, by=cfg["sort_regions_by"])
     for split, dat in data.items():
-        stats[split] = cbook.boxplot_stats(dat, whis=(2.3, 97.7), labels=regions)
+        stats[split] = cbook.boxplot_stats(
+            dat,
+            whis=(2.3, 97.7),
+            labels=regions,
+        )
     # save stats
     fname = get_diagnostic_filename(f"regional_stats_{group}", cfg)
     fname = fname.replace(".nc", ".yml")
     output["fname"] = {
-        "filename": fname, "plottype": "regional_stats", "group": group
+        "filename": fname,
+        "plottype": "regional_stats",
+        "group": group,
     }
     for split_stats in stats.values():
         for stat in split_stats:
@@ -346,7 +390,7 @@ def load_regional_stats(cfg, group):
     """Load regional statistics from netcdf file."""
     fname = get_diagnostic_filename(f"regional_stats_{group}", cfg)
     fname = fname.replace(".nc", ".yml")
-    with open(fname, "r") as f:
+    with open(fname) as f:
         stats = yaml.load(f, Loader=yaml.SafeLoader)
     for split in stats:
         for stat in stats[split]:
@@ -367,7 +411,7 @@ def plot_regional_stats(cfg, splits, output, group):
     colors = get_split_colors(cfg, splits)
     for line in cfg["grid_lines"]:
         plt.hlines(line, -1, len(regions), **cfg["grid_line_style"])
-    for i, (split, stat) in enumerate(stats.items()):
+    for i, (split, _stat) in enumerate(stats.items()):
         n = len(stats)
         group_width = 0.9
         width = group_width / (n + 1)
@@ -400,12 +444,12 @@ def plot_regional_stats(cfg, splits, output, group):
 
 
 def get_split_colors(cfg, splits):
-    """adds colors for each split to the config if not yet present.
+    """Adds colors for each split to the config if not yet present.
     ipcc colors are used if available, matplotlib defaults otherwise.
     TODO: add ipcc model colors.
     """
-    colors = cfg.get("colors", {}).copy() # new instance for each group
-    mpl_default = plt.rcParams["axes.prop_cycle"].by_key()['color']
+    colors = cfg.get("colors", {}).copy()  # new instance for each group
+    mpl_default = plt.rcParams["axes.prop_cycle"].by_key()["color"]
     cycle = iter(cycler(color=mpl_default))
     missing_splits = [s for s in splits if s not in colors]
     for split in missing_splits:
@@ -430,18 +474,21 @@ def set_defaults(cfg):
     cfg.setdefault("plot_kwargs", {})
     cfg.setdefault("histogram", {})
     cfg.setdefault("regional_stats", {})
-    cfg["regional_stats"].setdefault("fig_kwargs", 
-                                     {"figsize": (15, 3), "dpi": 300})
+    cfg["regional_stats"].setdefault(
+        "fig_kwargs",
+        {"figsize": (15, 3), "dpi": 300},
+    )
     cfg.setdefault("reuse", False)
     cfg.setdefault("strip_plots", False)
     cfg.setdefault("grid_lines", [])
-    cfg.setdefault("grid_line_style", {
-        "color": "gray", "linestyle": "--", "linewidth": 0.5
-    })
+    cfg.setdefault(
+        "grid_line_style",
+        {"color": "gray", "linestyle": "--", "linewidth": 0.5},
+    )
 
 
 def main(cfg):
-    """main function. executing all plots for each group."""
+    """Main function. executing all plots for each group."""
     set_defaults(cfg)
     groups = group_metadata(cfg["input_data"].values(), cfg["group_by"])
     output = {}

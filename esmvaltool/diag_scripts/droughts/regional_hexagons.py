@@ -85,12 +85,13 @@ def plot_colorbar(
     orientation="vertical",
     mappable=None,
 ) -> None:
-    """creates a colorbar in its own figure. Usefull for multi panel plots."""
+    """Creates a colorbar in its own figure. Usefull for multi panel plots."""
     fig, ax = plt.subplots(figsize=(1, 4), layout="constrained")
     if mappable is None:
         cmap = plot_kwargs.get("cmap", "RdYlBu")
         norm = mplcolors.Normalize(
-            vmin=plot_kwargs.get("vmin"), vmax=plot_kwargs.get("vmax")
+            vmin=plot_kwargs.get("vmin"),
+            vmax=plot_kwargs.get("vmax"),
         )
         mappable = mplcm.ScalarMappable(norm=norm, cmap=cmap)
     fig.colorbar(
@@ -99,8 +100,7 @@ def plot_colorbar(
         orientation=orientation,
         label=plot_kwargs["cbar_label"],
     )
-    if plotfile.endswith(".png"):
-        plotfile = plotfile[:-4]
+    plotfile = plotfile.removesuffix(".png")
     fig.savefig(plotfile + "_cb.png", bbox_inches="tight")
 
 
@@ -157,7 +157,10 @@ def hexmap(
     figsize = (12, 6) if cfg["cbar"] and not cfg["strip_plot"] else (10, 6)
     fig, axx = plt.subplots(figsize=figsize, dpi=300, frameon=False)
     axx.tick_params(
-        bottom=False, left=False, labelbottom=False, labelleft=False
+        bottom=False,
+        left=False,
+        labelbottom=False,
+        labelleft=False,
     )
     axx.set_xlim(-0.5, 19.5)
     axx.set_ylim(0, 12)
@@ -176,7 +179,7 @@ def hexmap(
             [0, -r],
             [-rx, -r / 2],
             [-rx, r / 2],
-        ]
+        ],
     )
     cells = ut.get_hex_positions()  # dict of coordinates for hexagons
     cells = {
@@ -190,7 +193,7 @@ def hexmap(
     if "levels" in cfg:
         lvls = cfg["levels"]
         # cmap_colors = [cmap(i/(vmax-vmin)) for i in lvls]
-        cmap_colors = [cmap(norm(l)) for l in lvls]
+        cmap_colors = [cmap(norm(lvl)) for lvl in lvls]
         cmap = mplcolors.ListedColormap(cmap_colors)
         norm = mplcolors.BoundaryNorm(lvls, cmap.N)
         cmap.set_bad(cfg.get("cmap_nan", "lightgray"), 1.0)
@@ -292,16 +295,16 @@ def hexmap(
 
 
 def ensure_single_meta(meta, txt):
-    """raise error if there is not exactly one entry in meta list"""
+    """Raise error if there is not exactly one entry in meta list."""
     if len(meta) == 0:
         raise ValueError(f"No files for {txt}.")
-    elif len(meta) > 1:
+    if len(meta) > 1:
         raise ValueError(f"Too many files for {txt}.")
     return meta[0]
 
 
 def load_and_plot_splits(cfg, splits, group, operator):
-    """create hexmap with tiles belonging to different meta data / files"""
+    """Create hexmap with tiles belonging to different meta data / files."""
     if len(splits) > 6:
         raise ValueError("Too many inputs for {group}. Max: 6.")
     labels = cfg.get("labels", list(splits.keys()))
@@ -321,7 +324,7 @@ def load_and_plot_splits(cfg, splits, group, operator):
 
 
 def load_and_plot_stats(cfg, metas, group, split, statistics):
-    """create hexmap with tiles for different operators for the same data"""
+    """Create hexmap with tiles for different operators for the same data."""
     meta = ensure_single_meta(metas, f"{group}")
     cube = iris.load_cube(meta["filename"])
     values, regions = [], []
@@ -339,7 +342,7 @@ def load_and_plot_stats(cfg, metas, group, split, statistics):
 
 
 def set_defaults(cfg):
-    """ensure all config parameters are set."""
+    """Ensure all config parameters are set."""
     cfg.setdefault("group_by", "dataset")
     cfg.setdefault("statistics", ["mean"])
     cfg.setdefault("cmap", "YlOrRd")
@@ -357,7 +360,8 @@ def set_defaults(cfg):
     cfg.setdefault("regions", [])
     cfg.setdefault("filename", "{group}_{split}_{operator}.png")
     cfg.setdefault(
-        "select_metadata", {"short_name": "spei", "diffmap_metric": "diff"}
+        "select_metadata",
+        {"short_name": "spei", "diffmap_metric": "diff"},
     )
 
 

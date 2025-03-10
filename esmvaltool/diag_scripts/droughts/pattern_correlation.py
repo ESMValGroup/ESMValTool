@@ -113,7 +113,9 @@ def process(metas, cfg, key=None):
     for var, var_metas in shared.group_metadata(metas, "short_name").items():
         logger.info("Processing %s (%s datasets)", var, len(var_metas))
         reference = ut.select_single_metadata(
-            var_metas, dataset=cfg["reference"], short_name=var
+            var_metas,
+            dataset=cfg["reference"],
+            short_name=var,
         )
         ref_cube = iris.load_cube(reference["filename"])
         results[var] = defaultdict(list)
@@ -253,7 +255,11 @@ def plot(
                 label = "CDS-SM"
             x_pos, y_pos = zip(*values)
             axes.scatter(
-                x_pos, y_pos, marker=markers[ds], color="gray", label=label
+                x_pos,
+                y_pos,
+                marker=markers[ds],
+                color="gray",
+                label=label,
             )
     axes.legend()
     if cfg.get("plot_properties"):

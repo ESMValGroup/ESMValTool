@@ -64,7 +64,6 @@ def convert_units(cube):
         ut.monthly2daily(cube)
         cube.long_name = "Potential Evapotranspiration"  # NOTE: not working?
         cube.rename("Potential Evapotranspiration")
-    return None
 
 
 def global_mean(cfg, cube):
@@ -73,11 +72,15 @@ def global_mean(cfg, cube):
     if "regions" in cfg:
         print("Extracting regions")
         cube = pp.extract_shape(
-            cube, shapefile="ar6", ids={"Acronym": cfg["regions"]}
+            cube,
+            shapefile="ar6",
+            ids={"Acronym": cfg["regions"]},
         )
     area_weights = cartography.area_weights(cube)
     mean = cube.collapsed(
-        ["latitude", "longitude"], MEAN, weights=area_weights
+        ["latitude", "longitude"],
+        MEAN,
+        weights=area_weights,
     )
     return mean
 
@@ -148,7 +151,9 @@ def plot_models(cfg, metas, ax, smooth=False):
         # mean = global_mean(mm["mean"])
         if recalc:
             mm = pp.multi_model_statistics(
-                cubes, "overlap", ["mean", "std_dev"]
+                cubes,
+                "overlap",
+                ["mean", "std_dev"],
             )
             std_dev = mm["std_dev"]  # global_mean(mm["std_dev"])
             mean = mm["mean"]
@@ -170,7 +175,11 @@ def plot_models(cfg, metas, ax, smooth=False):
             )
             if not historical_plotted:
                 plot_experiment(
-                    cfg, mean[:steps], std_dev[:steps], "historical", ax
+                    cfg,
+                    mean[:steps],
+                    std_dev[:steps],
+                    "historical",
+                    ax,
                 )
                 historical_plotted = True
             continue
@@ -207,7 +216,11 @@ def process_variable(cfg, metas, short_name, fig=None, ax: Axes = None):
         ax.set_xticklabels([])
         ax.set_xticks([])
     ax.grid(
-        axis="both", color="0.6", which="major", linestyle="--", linewidth=0.5
+        axis="both",
+        color="0.6",
+        which="major",
+        linestyle="--",
+        linewidth=0.5,
     )
     # ax.set_frame_on(False)
     ax.set_xlim([dt.datetime(1950, 1, 1), dt.datetime(2100, 1, 1)])
@@ -231,7 +244,10 @@ def main(cfg):
         figsize = cfg.get("figsize", (9, 2))
         height = len(groups) * (figsize[1] + 0.5)
         fig, axs = plt.subplots(
-            len(groups), 1, figsize=(figsize[0], height), dpi=300
+            len(groups),
+            1,
+            figsize=(figsize[0], height),
+            dpi=300,
         )
     for i, (short_name, metas) in enumerate(groups.items()):
         process_variable(cfg, metas, short_name, fig=fig, ax=axs[i])
@@ -257,13 +273,18 @@ def main(cfg):
             for spine in ["top", "bottom"]:
                 ax.spines[spine].set_visible(False)
         axs[-1].tick_params(
-            axis="x", which="both", bottom=True, top=False, labelbottom=True
+            axis="x",
+            which="both",
+            bottom=True,
+            top=False,
+            labelbottom=True,
         )
         axs[-1].spines["bottom"].set_visible(True)
         axs[0].spines["top"].set_visible(True)
         lines, labels = axs[-1].get_legend_handles_labels()
         if cfg.get(
-            "legend", cfg.get("subplots", False)
+            "legend",
+            cfg.get("subplots", False),
         ):  # rename and reorder handles and labels
             leg_dict = dict(zip(labels, lines))
             print(labels)

@@ -57,13 +57,13 @@ import iris
 import iris.plot as iplt
 import matplotlib.pyplot as plt
 import numpy as np
-import numpy.ma as ma
 import xarray as xr
 import yaml
 from esmvalcore import preprocessor as pp
 from iris.analysis.cartography import area_weights
 from matplotlib import gridspec
 from matplotlib.dates import DateFormatter, YearLocator  # MonthLocator
+from numpy import ma
 
 import esmvaltool.diag_scripts.droughtindex.utils as ut
 from esmvaltool.diag_scripts.shared import (
@@ -77,14 +77,14 @@ log = logging.getLogger(__file__)
 
 
 def load_and_prepare(cfg, fname):
-    """apply mask and guess lat/lon bounds."""
+    """Apply mask and guess lat/lon bounds."""
     cube = iris.load_cube(fname)
     ut.guess_lat_lon_bounds(cube)
     old_mask = cube.data.mask
     new_mask = get_2d_mask(cube, tile=True)
     diff_mask = np.logical_xor(old_mask, new_mask)
     cube.data.mask = new_mask
-    cube.data.data[diff_mask] = np.NaN
+    cube.data.data[diff_mask] = np.nan
     return cube
 
 
@@ -130,7 +130,7 @@ def calc_ratio(cube, event, weights):
 
 
 def get_2d_mask(cube, mask_any=False, tile=False):
-    """return a 2d (lat/lon) mask where any or all entries are masked.
+    """Return a 2d (lat/lon) mask where any or all entries are masked.
 
     Parameters
     ----------
@@ -151,7 +151,7 @@ def get_2d_mask(cube, mask_any=False, tile=False):
 
 
 def plot_area_ratios(cfg, meta, cube):
-    """plot area ratio of given event types for a cube of index values
+    """Plot area ratio of given event types for a cube of index values
 
     The area weights are normalized on the masked cube data, resulting in the
     ratio between area with index values in a given range and the area of all
@@ -198,7 +198,7 @@ def plot_area_ratios(cfg, meta, cube):
 
 
 def plot(cfg, i, y, fname=None, fig=None, ax=None, label=None, full=False):
-    """plot area ratios for given interval and events.
+    """Plot area ratios for given interval and events.
     pass either fname to save single plots, or fig and ax to plot one axis into
     existing figure.
     """
@@ -253,8 +253,10 @@ def plot(cfg, i, y, fname=None, fig=None, ax=None, label=None, full=False):
         plt.close()
 
 
-def plot_mmm(cfg, region=None, fig=None, axs=None, label=None, meta={}):
-    """plot multi model mean of area ratios for given interval and events."""
+def plot_mmm(cfg, region=None, fig=None, axs=None, label=None, meta=None):
+    """Plot multi model mean of area ratios for given interval and events."""
+    if meta is None:
+        meta = {}
     mmm_key = f"mmm_{region}" if region else "mmm"
     mm_key = f"mm_{region}" if region else "mm"
     for event in cfg["events"]:
@@ -263,7 +265,7 @@ def plot_mmm(cfg, region=None, fig=None, axs=None, label=None, meta={}):
     if cfg.get("intervals", None) is not None:
         for n, i in enumerate(cfg["intervals"]):
             meta["interval"] = f"{i[0]}-{i[1]}"
-            basename = cfg["basename"].format(**meta)
+            cfg["basename"].format(**meta)
             if cfg["subplots"]:
                 plot(cfg, i, y, fig=fig, ax=axs[n], label=label)
             # else:
@@ -274,7 +276,7 @@ def plot_mmm(cfg, region=None, fig=None, axs=None, label=None, meta={}):
 
 
 def set_defaults(cfg):
-    """update cfg with default values from diffmap.yml
+    """Update cfg with default values from diffmap.yml
     TODO: This could be a shared function reused in other diagnostics.
     """
     config_file = os.path.realpath(__file__)[:-3] + ".yml"
@@ -309,7 +311,7 @@ def set_timecoords(cfg):
 
 
 def plot_overview(cfg, data, group="unnamed"):
-    """prepare a figure with 1 histogrical and 3 future scenario intervals."""
+    """Prepare a figure with 1 histogrical and 3 future scenario intervals."""
     fig = plt.figure(**ut.sub_cfg(cfg, "overview", "fig_kwargs"), dpi=300)
     gs = gridspec.GridSpec(3, 2)
     scenario_axs = [
@@ -325,7 +327,7 @@ def plot_overview(cfg, data, group="unnamed"):
     twin.set_yticks(cfg.get("yticks", None))
     leg_ax = fig.add_subplot(gs[1:, 0])
     hist_plotted = False
-    for n, ((exp), e_data) in enumerate(data.groupby(["exp"])):
+    for n, ((_exp), e_data) in enumerate(data.groupby(["exp"])):
         dat = e_data.squeeze()
         # pick first and last interval:
         if not hist_plotted:
@@ -377,11 +379,10 @@ def plot_overview(cfg, data, group="unnamed"):
     fig.tight_layout()
     fig.subplots_adjust(hspace=0.2)
     fig.savefig(get_plot_filename(f"overview_{cfg['index']}_MMM_{group}", cfg))
-    return
 
 
 def plot_full_periods(cfg, data):
-    """prepare a figure with full time series for each scenario/region."""
+    """Prepare a figure with full time series for each scenario/region."""
     # setup figure with 1 row for legend and 1 for each scenario/region pair
     fig = plt.figure(**ut.sub_cfg(cfg, "fullperiod", "fig_kwargs"), dpi=300)
     rows = len(data["exp"]) * len(data["region"])
@@ -439,20 +440,23 @@ def plot_full_periods(cfg, data):
     fig.tight_layout()
     # fig.subplots_adjust(hspace=0.2)
     fig.subplots_adjust(
-        left=0.05, right=0.95, top=0.95, bottom=0.05, hspace=0.2
+        left=0.05,
+        right=0.95,
+        top=0.95,
+        bottom=0.05,
+        hspace=0.2,
     )
     fig.savefig(get_plot_filename(f"{cfg['index']}_MMM", cfg))
-    return
 
 
 def plot_each_interval(cfg, exp_metas):
-    """create an individual figure for each interval and each scenario."""
-    for i, (exp, emetas) in enumerate(exp_metas):
+    """Create an individual figure for each interval and each scenario."""
+    for _i, (_exp, emetas) in enumerate(exp_metas):
         process_datasets(cfg, emetas, fig=None, axs=None)
 
 
 def process_datasets(cfg, metas, fig=None, axs=None):
-    """load all models and call event area calculation for each."""
+    """Load all models and call event area calculation for each."""
     last_meta = None
     for meta in metas:
         fname = meta["filename"]
@@ -467,13 +471,17 @@ def process_datasets(cfg, metas, fig=None, axs=None):
                 log.info("-- region %s", region)
                 meta["region"] = region
                 extracted = pp.extract_shape(
-                    cube, shapefile="ar6", ids={"Acronym": [region]}
+                    cube,
+                    shapefile="ar6",
+                    ids={"Acronym": [region]},
                 )
                 plot_area_ratios(cfg, meta, extracted)
         elif cfg.get("regions", False):
             log.info("-- combined region")
             extracted = pp.extract_shape(
-                cube, shapefile="ar6", ids={"Acronym": cfg["regions"]}
+                cube,
+                shapefile="ar6",
+                ids={"Acronym": cfg["regions"]},
             )
             if "region" in meta:
                 del meta["region"]
@@ -499,7 +507,7 @@ def process_datasets(cfg, metas, fig=None, axs=None):
 
 
 def extract_regions(cfg, cube):
-    """extract regions and return a list of cubes."""
+    """Extract regions and return a list of cubes."""
     extracted = {}
     params = {"shapefile": "ar6", "ids": {"Acronym": cfg["regions"]}}
     if cfg["regions"] and cfg["combine_regions"]:
@@ -516,7 +524,7 @@ def extract_regions(cfg, cube):
 
 
 def regional_weights(cfg, cube):
-    """calculate area weights normalized to the total unmasked area."""
+    """Calculate area weights normalized to the total unmasked area."""
     # NOTE: area_weights does not apply cubes mask, normalize manually
     if cfg["weighted"]:
         weights = area_weights(cube, normalize=True)
@@ -531,7 +539,7 @@ def regional_weights(cfg, cube):
 
 
 def calculate_event_ratios(cfg, metas, output):
-    """load data and save calculated event ratio timelines."""
+    """Load data and save calculated event ratio timelines."""
     # data: dataset x exp x region x event
     # data_mmm: exp x region x event
     if cfg["regions"] and cfg["combine_regions"]:
@@ -548,7 +556,7 @@ def calculate_event_ratios(cfg, metas, output):
         "time": cfg["times"],
     }
     dims = list(coords.keys())
-    nans = np.full([len(c) for c in coords.values()], np.NaN)
+    nans = np.full([len(c) for c in coords.values()], np.nan)
     data = xr.Dataset({"event_ratio": (dims, nans)}, coords=coords)
     for meta in metas.values():
         cube = load_and_prepare(cfg, meta["filename"])
@@ -574,7 +582,7 @@ def calculate_event_ratios(cfg, metas, output):
 
 
 def load_event_ratios(cfg):
-    """load calculated event ratios for datasets and MMM from files."""
+    """Load calculated event ratios for datasets and MMM from files."""
     names = ["event_area", "event_area_mmm"]
     fnames = [get_diagnostic_filename(f, cfg) for f in names]
     datas = {}
@@ -588,7 +596,7 @@ def load_event_ratios(cfg):
 
 
 def main(cfg):
-    """get common time coordinates, execute the diagnostic code.
+    """Get common time coordinates, execute the diagnostic code.
     Loop over experiments, than datasets.
     """
     set_defaults(cfg)
@@ -600,7 +608,7 @@ def main(cfg):
     else:
         data, data_mmm = calculate_event_ratios(cfg, metas, output)
     if not cfg["overview"]["skip"]:
-        for (reg), reg_data in data_mmm.groupby("region"):
+        for (reg), _reg_data in data_mmm.groupby("region"):
             plot_overview(cfg, data_mmm, group=reg)
     if not cfg["fullperiod"]["skip"]:
         plot_full_periods(cfg, data_mmm)
