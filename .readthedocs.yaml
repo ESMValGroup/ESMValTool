@@ -11,15 +11,8 @@ build:
   tools:
     # try miniforge3 when available? see github.com/ESMValGroup/ESMValTool/issues/3779
     # DO NOT use mambaforge-*; that is currently sunsetted
-    python: "mambaforge-latest"  # "miniconda-latest"
+    python: "miniconda-latest"
   jobs:
-    pre_create_environment:
-      # install mamba2: essential since mamba2 is the only one that can solve the env
-      - mamba update --yes --quiet --name=base mamba
-      - mamba --version
-    post_create_environment:
-      - conda run -n ${CONDA_DEFAULT_ENV} mamba --version
-      - conda run -n ${CONDA_DEFAULT_ENV} pip install . --no-deps
     post_checkout:
       # The ESMValTool repository is shallow i.e., has a .git/shallow,
       # therefore complete the repository with a full history in order
@@ -41,10 +34,10 @@ sphinx:
   configuration: doc/sphinx/source/conf.py
   fail_on_warning: true
 
-#python:
-#  install:
-#    - method: pip
-#      path: .
+python:
+  install:
+    - method: pip
+      path: .
 
 # If using Sphinx, optionally build your docs in additional formats such as PDF
 formats:
