@@ -39,7 +39,7 @@ plim: float
     limit for a day to be considered dry [mm/day]
 
 frlim: int
-    the shortest number of consecutive dry days for entering statistic on 
+    the shortest number of consecutive dry days for entering statistic on
     frequency of dry periods.
 
 Under ``plot``:
@@ -47,8 +47,8 @@ Under ``plot``:
 cmap: str, optional
     the name of a colormap. cmocean colormaps are also supported.
 
-other keyword arguments to 
-:func:`esmvaltool.diag_scripts.shared.plot.global_pcolormesh` can also be 
+other keyword arguments to
+:func:`esmvaltool.diag_scripts.shared.plot.global_pcolormesh` can also be
 supplied.
 
 Variables
@@ -64,5 +64,5 @@ Example plots
 .. figure::  /recipes/figures/consecdrydays/consec_example_freq.png
    :align:   center
    :width:   14cm
-   
+
    Example of the number of occurrences with consecutive dry days of more than five days in the period 2001 to 2002 for the CMIP5 model bcc-csm1-1-m.

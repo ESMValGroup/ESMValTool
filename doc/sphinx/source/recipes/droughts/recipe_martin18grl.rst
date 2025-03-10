@@ -84,5 +84,3 @@ Example plots
    :width: 80%
 
    Global map of the percentage difference between multi-model mean for RCP8.5 scenarios (2050-2100) runs and historical data (1950-2000) for 15 CMIP models for the number of drought events [%] based on SPI.
-
-

@@ -8,33 +8,33 @@
 # the calculated PET with correct units and metadata to be used as an ancestor
 # for diag_spei.R or diag_spei.py, but also allows to use pet as a variable from
 # a preprocessed dataset in the same way.
-# 
+#
 # Some functions that are used by diag_spei.R too are moved to a shared utils.R
 #
 # NOTE: Masking is done for each dataset instead of using the mask from the
 # reference dataset everytime.
-# 
-# NOTE: renamed variables to use shortnames/named lists instead of var1, 
+#
+# NOTE: renamed variables to use shortnames/named lists instead of var1,
 # tmp1, tmp2, tmp3.. which differ for pet_types
 #
-# NOTE: added pet_type Penman, which use best available data and let SPEI 
+# NOTE: added pet_type Penman, which use best available data and let SPEI
 # library approximate everything else
 #
 # NOTE: Loop over datasets and use params and meta dicts whenever possible to
 # save some loops, switches and many extra variables.
-# 
+#
 # NOTE: add latitude and longitude as valid dim coords in addition to lat/lon
-# 
+#
 # NOTE: added weigel_katja, lindenlaub_lukas to authors
 #
 # NOTE: Provenance is written for each output file within the loop over datasets
 # instead of afterwards (was it a bug?)
 #
-# NOTE: Precipitation is removed from input data for hargreaves method, since it 
+# NOTE: Precipitation is removed from input data for hargreaves method, since it
 # cause failures within SPEI functions. Hargreaves.R line 494 wrong shapes
 #
 # NOTE: Remove pr as reference, since pr is not mandatory input for all methods.
-# 
+#
 # NOTE: all PET methods pass data as t() and do therefore not account for leap
 # years.
 #
@@ -67,7 +67,7 @@ calculate_hargreaves <- function(metas, xprov, use_pr=FALSE) {
   dpet <- data$tasmin * NA
   for (i in 1:dim(dpet)[2]) {
     pet_tmp <- hargreaves(
-      t(data$tasmin[, i, ]), 
+      t(data$tasmin[, i, ]),
       t(data$tasmax[, i, ]),
       lat = rep(data$lat[i], dim(dpet)[1]),
       Pre = t_or_null(data$pr[, i, ]),
@@ -109,14 +109,14 @@ calculate_thornthwaite <- function(metas, xprov) {
 
 calculate_penman <- function(metas, xprov, method="ICID", crop="tall") {
   data <- list(
-    tasmin = NULL, 
-    tasmax = NULL, 
-    clt = NULL, 
+    tasmin = NULL,
+    tasmax = NULL,
+    clt = NULL,
     sfcWind = NULL,
     ps = NULL,
-    psl = NULL, 
-    hurs = NULL, 
-    rsds = NULL, 
+    psl = NULL,
+    hurs = NULL,
+    rsds = NULL,
     rsdt=NULL)
   # load relevant variables
   for(meta in metas){
@@ -186,7 +186,7 @@ print("--- Process each dataset")
 for (dataset in names(grouped_meta)){
   metas <- grouped_meta[[dataset]]  # list of files for this dataset
   xprov$ancestors <- list()
-  switch(params$pet_type, 
+  switch(params$pet_type,
     Penman = {pet <- calculate_penman(metas, xprov,
       method=params$method, crop=params$crop)},
     Thornthwaite = {pet <- calculate_thornthwaite(metas, xprov)},
@@ -204,13 +204,13 @@ for (dataset in names(grouped_meta)){
   # write PET to file
   first_meta = metas[[names(metas)[1]]]
   filename <- write_nc_file_like(
-    params, first_meta, pet, fillfloat, 
-    short_name="evspsblpot", 
+    params, first_meta, pet, fillfloat,
+    short_name="evspsblpot",
     long_name="Potential Evapotranspiration",
     units="mm day-1")
   input_meta <- select_var(metas, "tasmin")  # TODO: create duplicate()?
   input_meta$filename <- filename
-  input_meta$short_name <- "evspsblpot" 
+  input_meta$short_name <- "evspsblpot"
   input_meta$long_name <- "Potential Evapotranspiration"
   input_meta$units <- "mm day-1"
   meta[[filename]] <- input_meta

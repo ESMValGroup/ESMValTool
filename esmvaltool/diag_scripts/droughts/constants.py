@@ -1,4 +1,5 @@
 """Constants that might be usefull by any drought diagnostic."""
+
 from iris.coords import AuxCoord
 
 # fmt: off
