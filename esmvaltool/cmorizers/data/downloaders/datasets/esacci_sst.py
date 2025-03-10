@@ -1,7 +1,8 @@
 """Script to download ESACCI-SST."""
-import logging
 
+import logging
 from datetime import datetime
+
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
@@ -9,8 +10,9 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -42,15 +44,18 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         overwrite=overwrite,
     )
 
-    path = ("https://dap.ceda.ac.uk/neodc/eocis/data/global_and_regional/"
-            "sea_surface_temperature/CDR_v3/Analysis/L4/v3.0.1/")
+    path = (
+        "https://dap.ceda.ac.uk/neodc/eocis/data/global_and_regional/"
+        "sea_surface_temperature/CDR_v3/Analysis/L4/v3.0.1/"
+    )
 
     while loop_date <= end_date:
         year = loop_date.year
         month = loop_date.strftime("%m")
         day = loop_date.strftime("%d")
-        folder = path + f'{year}/{month}/{day}/'
-        downloader.download_folder(folder, wget_options=['-e robots=off',
-                                                         '--no-parent',
-                                                         '--accept=nc'])
+        folder = path + f"{year}/{month}/{day}/"
+        downloader.download_folder(
+            folder,
+            wget_options=["-e robots=off", "--no-parent", "--accept=nc"],
+        )
         loop_date += relativedelta.relativedelta(days=1)

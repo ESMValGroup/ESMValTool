@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Diagnostic script to evaluate a single emergent constraint.
 
 Description
@@ -79,29 +78,33 @@ def check_training_data(training_data):
     if len(features.columns) != 1:
         raise ValueError(
             f"Expected exactly 1 'feature' variable, got "
-            f"{len(features.columns):d}")
+            f"{len(features.columns):d}"
+        )
 
 
 def get_default_settings(cfg):
     """Get default configuration settings."""
     cfg = deepcopy(cfg)
-    cfg.setdefault('all_data_label', 'all')
-    cfg.setdefault('combine_groups', False)
-    cfg.setdefault('confidence_level', 0.66)
-    cfg.setdefault('merge_identical_pred_input', True)
-    cfg.setdefault('savefig_kwargs', {
-        'bbox_inches': 'tight',
-        'dpi': 600,
-        'orientation': 'landscape',
-    })
-    cfg.setdefault('seaborn_settings', {})
+    cfg.setdefault("all_data_label", "all")
+    cfg.setdefault("combine_groups", False)
+    cfg.setdefault("confidence_level", 0.66)
+    cfg.setdefault("merge_identical_pred_input", True)
+    cfg.setdefault(
+        "savefig_kwargs",
+        {
+            "bbox_inches": "tight",
+            "dpi": 600,
+            "orientation": "landscape",
+        },
+    )
+    cfg.setdefault("seaborn_settings", {})
     return cfg
 
 
 def main(cfg):
     """Run the diagnostic."""
     cfg = get_default_settings(cfg)
-    sns.set_theme(**cfg['seaborn_settings'])
+    sns.set_theme(**cfg["seaborn_settings"])
 
     # Load data
     (training_data, prediction_data, attributes) = ec.get_input_data(cfg)
@@ -111,34 +114,38 @@ def main(cfg):
     with pd.option_context(*ec.PANDAS_PRINT_OPTIONS):
         logger.info(
             "Correlation of training data (considering all available data):\n"
-            "%s", training_data.corr())
-    ec.plot_individual_scatterplots(training_data,
-                                    prediction_data,
-                                    attributes,
-                                    'training_data',
-                                    cfg)
-    ec.plot_merged_scatterplots(training_data,
-                                prediction_data,
-                                attributes,
-                                'training_data',
-                                cfg)
+            "%s",
+            training_data.corr(),
+        )
+    ec.plot_individual_scatterplots(
+        training_data, prediction_data, attributes, "training_data", cfg
+    )
+    ec.plot_merged_scatterplots(
+        training_data, prediction_data, attributes, "training_data", cfg
+    )
 
     # Export CSV
-    ec.export_csv(training_data, attributes, 'training_data', cfg)
-    ec.export_csv(prediction_data, attributes, 'prediction_data', cfg)
+    ec.export_csv(training_data, attributes, "training_data", cfg)
+    ec.export_csv(prediction_data, attributes, "prediction_data", cfg)
 
     # Print constraint
     label = training_data.y.columns[0]
-    units = attributes[label]['units']
-    constrained_target = ec.get_constraint_from_df(training_data,
-                                                   prediction_data,
-                                                   cfg['confidence_level'])
+    units = attributes[label]["units"]
+    constrained_target = ec.get_constraint_from_df(
+        training_data, prediction_data, cfg["confidence_level"]
+    )
     logger.info(
         "Constraint on target variable '%s': [%.2f, %.2f] %s with best "
-        "estimate %.2f %s", label, constrained_target[0],
-        constrained_target[2], units, constrained_target[1], units)
+        "estimate %.2f %s",
+        label,
+        constrained_target[0],
+        constrained_target[2],
+        units,
+        constrained_target[1],
+        units,
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with run_diagnostic() as config:
         main(config)
