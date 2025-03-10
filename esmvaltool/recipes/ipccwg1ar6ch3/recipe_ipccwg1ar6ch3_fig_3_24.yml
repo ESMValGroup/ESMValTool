@@ -195,7 +195,7 @@ diagnostics:
         additional_datasets: *models_highres
     scripts:
       panel_a:
-        script: ocean/diagnostic_3_24_zonal_sst.py
+        script: ocean/diagnostic_biases.py
         bias: True # if bias should be calculated (optional), default: false
         mask: # if the data should be masked (optional), default: false
           flag: true
@@ -248,7 +248,7 @@ diagnostics:
 
     scripts:
       panel_b:
-        script: ocean/diagnostic_3_24_zonal_sst.py
+        script: ocean/diagnostic_biases.py
         bias: True
         mask:
           flag: true
@@ -266,7 +266,7 @@ diagnostics:
         color_style: sst_bias
 
       panel_c:
-        script: ocean/diagnostic_3_24_zonal_sst.py
+        script: ocean/diagnostic_biases.py
         bias: False
         mask:
           flag: true
