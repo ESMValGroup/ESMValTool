@@ -6,8 +6,8 @@ attributes:
   modeling_realm: sat
   project_id: OBS6
   source: "https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1"
-  reference: "esacci-ozone" 
-  comment: "" 
+  reference: "esacci-ozone"
+  comment: ""
 
 variables:
   toz:
@@ -18,4 +18,3 @@ variables:
     mip: AERmon
     raw: merged_ozone_concentration
     filename: C3S-L3_OZONE-O3_PRODUCTS-CONC_MZM-MERGED-ALG-MONTHLY-v0008.nc #The filename needs also "YYYYMM-" as prefix added during the cmorization
- 

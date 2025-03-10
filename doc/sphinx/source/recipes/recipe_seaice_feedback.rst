@@ -73,4 +73,3 @@ Example plots
    :width:   14cm
 
    Seaice negative feedback values (CMIP5 historical experiment 1979-2004).
-

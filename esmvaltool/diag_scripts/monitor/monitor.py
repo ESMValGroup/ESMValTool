@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Diagnostic to plot preprocessor output.
 
 Description
@@ -141,26 +140,26 @@ class Monitor(MonitorBase):
 
     def __init__(self, config):
         super().__init__(config)
-        self.plots = config.get('plots', {})
+        self.plots = config.get("plots", {})
         self.has_errors = False
 
         # Get default settings
         self.cfg = deepcopy(self.cfg)
-        self.cfg.setdefault('rasterize_maps', True)
+        self.cfg.setdefault("rasterize_maps", True)
 
     def compute(self):
         """Plot preprocessed data."""
-        for module in ['matplotlib', 'fiona']:
+        for module in ["matplotlib", "fiona"]:
             module_logger = logging.getLogger(module)
             module_logger.setLevel(logging.WARNING)
-        data = group_metadata(self.cfg['input_data'].values(), 'alias')
+        data = group_metadata(self.cfg["input_data"].values(), "alias")
         for alias in data:
-            variables = group_metadata(data[alias], 'variable_group')
+            variables = group_metadata(data[alias], "variable_group")
 
             for var_name, var_info in variables.items():
-                logger.info('Plotting variable %s', var_name)
+                logger.info("Plotting variable %s", var_name)
                 var_info = var_info[0]
-                cubes = iris.load(var_info['filename'])
+                cubes = iris.load(var_info["filename"])
                 if len(cubes) == 1:
                     cube = cubes[0]
                 else:
@@ -169,9 +168,10 @@ class Monitor(MonitorBase):
                             break
                     else:
                         raise ValueError(
-                            f'Can not find cube {var_name} in {cubes}')
+                            f"Can not find cube {var_name} in {cubes}"
+                        )
                 cube.var_name = self._real_name(var_name)
-                cube.attributes['plot_name'] = var_info.get('plot_name', '')
+                cube.attributes["plot_name"] = var_info.get("plot_name", "")
 
                 self.timeseries(cube, var_info)
                 self.plot_annual_cycle(cube, var_info)
@@ -181,27 +181,33 @@ class Monitor(MonitorBase):
                 self.plot_climatology(cube, var_info)
         if self.has_errors:
             raise Exception(
-                'Errors detected. Please check log for more details')
+                "Errors detected. Please check log for more details"
+            )
 
     @staticmethod
     def _add_month_name(cube):
-        if cube.coords('month_number'):
-            month_number = cube.coord('month_number')
-            points = np.empty(month_number.shape, dtype='|S12')
+        if cube.coords("month_number"):
+            month_number = cube.coord("month_number")
+            points = np.empty(month_number.shape, dtype="|S12")
             for i in range(1, 13):
                 points[month_number.points == i] = calendar.month_name[i]
             cube.add_aux_coord(
-                AuxCoord(points=points,
-                         var_name='month_name',
-                         long_name='month_name'),
-                cube.coord_dims(month_number))
-            points = np.empty(month_number.shape, dtype='|S3')
+                AuxCoord(
+                    points=points,
+                    var_name="month_name",
+                    long_name="month_name",
+                ),
+                cube.coord_dims(month_number),
+            )
+            points = np.empty(month_number.shape, dtype="|S3")
             for i in range(1, 13):
                 points[month_number.points == i] = str(
-                    calendar.month_name[i].upper())
+                    calendar.month_name[i].upper()
+                )
             cube.add_aux_coord(
-                AuxCoord(points=points, var_name='month', long_name='month'),
-                cube.coord_dims(month_number))
+                AuxCoord(points=points, var_name="month", long_name="month"),
+                cube.coord_dims(month_number),
+            )
             return
 
     def timeseries(self, cube, var_info):
@@ -219,24 +225,32 @@ class Monitor(MonitorBase):
         var_info: dict
             Variable's metadata from ESMValTool
         """
-        if 'timeseries' not in self.plots:
+        if "timeseries" not in self.plots:
             return
-        if not cube.coords('year'):
-            iris.coord_categorisation.add_year(cube, 'time')
-        self.plot_timeseries(cube, var_info, suptitle='Full period')
+        if not cube.coords("year"):
+            iris.coord_categorisation.add_year(cube, "time")
+        self.plot_timeseries(cube, var_info, suptitle="Full period")
         if var_info[n.END_YEAR] - var_info[n.START_YEAR] > 75:
-            self.plot_timeseries(cube.extract(
-                iris.Constraint(
-                    year=lambda cell: cell <= (var_info[n.START_YEAR] + 50))),
+            self.plot_timeseries(
+                cube.extract(
+                    iris.Constraint(
+                        year=lambda cell: cell <= (var_info[n.START_YEAR] + 50)
+                    )
+                ),
                 var_info,
-                period='start',
-                suptitle='First 50 years')
-            self.plot_timeseries(cube.extract(
-                iris.Constraint(
-                    year=lambda cell: cell >= (var_info[n.END_YEAR] - 50))),
+                period="start",
+                suptitle="First 50 years",
+            )
+            self.plot_timeseries(
+                cube.extract(
+                    iris.Constraint(
+                        year=lambda cell: cell >= (var_info[n.END_YEAR] - 50)
+                    )
+                ),
                 var_info,
-                period='end',
-                suptitle='Last 50 years')
+                period="end",
+                suptitle="Last 50 years",
+            )
 
     def plot_annual_cycle(self, cube, var_info):
         """Plot the annual cycle according to configuration.
@@ -258,35 +272,38 @@ class Monitor(MonitorBase):
         The monthly climatology is done inside the function so the users can
         plot both the timeseries and the annual cycle in one go
         """
-        if 'annual_cycle' not in self.plots:
+        if "annual_cycle" not in self.plots:
             return
-        cube = climate_statistics(cube, period='month')
+        cube = climate_statistics(cube, period="month")
         self._add_month_name(cube)
 
         plotter = PlotSeries()
         plotter.outdir = self.get_plot_folder(var_info)
-        plotter.img_template = self.get_plot_path('annualcycle', var_info,
-                                                  add_ext=False)
-        plotter.filefmt = self.cfg['output_file_type']
-        region_coords = ('shape_id', 'region')
+        plotter.img_template = self.get_plot_path(
+            "annualcycle", var_info, add_ext=False
+        )
+        plotter.filefmt = self.cfg["output_file_type"]
+        region_coords = ("shape_id", "region")
         options = {
-            'xlabel': '',
-            'xlimits': None,
-            'suptitle': 'Annual cycle',
+            "xlabel": "",
+            "xlimits": None,
+            "suptitle": "Annual cycle",
         }
         for region_coord in region_coords:
             if cube.coords(region_coord):
-                plotter.multiplot_cube(cube, 'month', region_coord, **options)
+                plotter.multiplot_cube(cube, "month", region_coord, **options)
                 return
-        plotter.plot_cube(cube, 'month', **options)
-        caption = (f"Annual cycle of {var_info[n.LONG_NAME]} of "
-                   f"dataset {var_info[n.DATASET]} (project "
-                   f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} to "
-                   f"{var_info[n.END_YEAR]}.")
+        plotter.plot_cube(cube, "month", **options)
+        caption = (
+            f"Annual cycle of {var_info[n.LONG_NAME]} of "
+            f"dataset {var_info[n.DATASET]} (project "
+            f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} to "
+            f"{var_info[n.END_YEAR]}."
+        )
         self.record_plot_provenance(
-            self.get_plot_path('annualcycle', var_info),
+            self.get_plot_path("annualcycle", var_info),
             var_info,
-            'Annual cycle',
+            "Annual cycle",
             caption=caption,
         )
 
@@ -310,34 +327,37 @@ class Monitor(MonitorBase):
         The hourly climatology is done inside the function so the users can
         plot both the timeseries and the diurnal cycle in one go
         """
-        if 'diurnal_cycle' not in self.plots:
+        if "diurnal_cycle" not in self.plots:
             return
-        cube = climate_statistics(cube, period='hour')
+        cube = climate_statistics(cube, period="hour")
 
         plotter = PlotSeries()
         plotter.outdir = self.get_plot_folder(var_info)
-        plotter.img_template = self.get_plot_path('diurnalcycle', var_info,
-                                                  add_ext=False)
-        plotter.filefmt = self.cfg['output_file_type']
-        region_coords = ('shape_id', 'region')
+        plotter.img_template = self.get_plot_path(
+            "diurnalcycle", var_info, add_ext=False
+        )
+        plotter.filefmt = self.cfg["output_file_type"]
+        region_coords = ("shape_id", "region")
         options = {
-            'xlabel': '',
-            'xlimits': None,
-            'suptitle': 'Diurnal cycle',
+            "xlabel": "",
+            "xlimits": None,
+            "suptitle": "Diurnal cycle",
         }
         for region_coord in region_coords:
             if cube.coords(region_coord):
-                plotter.multiplot_cube(cube, 'month', region_coord, **options)
+                plotter.multiplot_cube(cube, "month", region_coord, **options)
                 return
-        plotter.plot_cube(cube, 'hour', **options)
-        caption = (f"Diurnal cycle of {var_info[n.LONG_NAME]} of "
-                   f"dataset {var_info[n.DATASET]} (project "
-                   f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} to "
-                   f"{var_info[n.END_YEAR]}.")
+        plotter.plot_cube(cube, "hour", **options)
+        caption = (
+            f"Diurnal cycle of {var_info[n.LONG_NAME]} of "
+            f"dataset {var_info[n.DATASET]} (project "
+            f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} to "
+            f"{var_info[n.END_YEAR]}."
+        )
         self.record_plot_provenance(
-            self.get_plot_path('diurnalcycle', var_info),
+            self.get_plot_path("diurnalcycle", var_info),
             var_info,
-            'Diurnal cycle',
+            "Diurnal cycle",
             caption=caption,
         )
 
@@ -354,76 +374,96 @@ class Monitor(MonitorBase):
         var_info: dict
             Variable's metadata from ESMValTool
         """
-        if 'monclim' not in self.plots:
+        if "monclim" not in self.plots:
             return
 
         plot_map = PlotMap()
-        maps = self.plots['monclim'].get('maps', ['global'])
-        months = self.plots['monclim'].get('months', None)
-        plot_size = self.plots['monclim'].get('plot_size', (5, 4))
-        columns = self.plots['monclim'].get('columns', 3)
-        rows = self.plots['monclim'].get('rows', 4)
+        maps = self.plots["monclim"].get("maps", ["global"])
+        months = self.plots["monclim"].get("months", None)
+        plot_size = self.plots["monclim"].get("plot_size", (5, 4))
+        columns = self.plots["monclim"].get("columns", 3)
+        rows = self.plots["monclim"].get("rows", 4)
         if months:
             cube = cube.extract(
-                iris.Constraint(month_number=lambda cell: cell in months))
+                iris.Constraint(month_number=lambda cell: cell in months)
+            )
         self._add_month_name(cube)
         for map_name in maps:
             map_options = self._get_proj_options(map_name)
             variable_options = self._get_variable_options(
-                var_info['variable_group'], map_name)
-            plt.figure(figsize=(plot_size[0] * columns, plot_size[1] * rows),
-                       dpi=120)
+                var_info["variable_group"], map_name
+            )
+            plt.figure(
+                figsize=(plot_size[0] * columns, plot_size[1] * rows), dpi=120
+            )
 
-            for cube_slice in cube.slices_over('month_number'):
+            for cube_slice in cube.slices_over("month_number"):
                 if cube_slice.ndim != 2:
                     logger.error(
-                        'Climatologies can only be plotted for 2D vars. '
-                        'Skipping...')
+                        "Climatologies can only be plotted for 2D vars. "
+                        "Skipping..."
+                    )
                     self.has_errors = True
                     return
-                self._plot_monthly_cube(plot_map, months, columns, rows,
-                                        map_options, variable_options,
-                                        cube_slice)
+                self._plot_monthly_cube(
+                    plot_map,
+                    months,
+                    columns,
+                    rows,
+                    map_options,
+                    variable_options,
+                    cube_slice,
+                )
             plt.suptitle(
-                'Monthly climatology '
-                f'({var_info[n.START_YEAR]}-{var_info[n.END_YEAR]})'
-                f'\n{cube.long_name} ({cube.units})',
-                fontsize=plot_map.fontsize + 4.,
+                "Monthly climatology "
+                f"({var_info[n.START_YEAR]}-{var_info[n.END_YEAR]})"
+                f"\n{cube.long_name} ({cube.units})",
+                fontsize=plot_map.fontsize + 4.0,
                 y=1.2 - rows * 0.07,
             )
             plt.subplots_adjust(
                 top=0.85,
-                bottom=.05,
+                bottom=0.05,
                 left=0,
                 right=1,
-                hspace=.20,
-                wspace=.15,
+                hspace=0.20,
+                wspace=0.15,
             )
-            filename = self.get_plot_path(f'monclim{map_name}', var_info)
+            filename = self.get_plot_path(f"monclim{map_name}", var_info)
             plt.savefig(
                 filename,
-                bbox_inches='tight',
-                pad_inches=.2,
+                bbox_inches="tight",
+                pad_inches=0.2,
             )
             plt.close(plt.gcf())
-            caption = (f"Monthly climatology of {var_info[n.LONG_NAME]} of "
-                       f"dataset {var_info[n.DATASET]} (project "
-                       f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} "
-                       f"to {var_info[n.END_YEAR]}.")
+            caption = (
+                f"Monthly climatology of {var_info[n.LONG_NAME]} of "
+                f"dataset {var_info[n.DATASET]} (project "
+                f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} "
+                f"to {var_info[n.END_YEAR]}."
+            )
             self.record_plot_provenance(
                 filename,
                 var_info,
-                'Monthly climatology',
+                "Monthly climatology",
                 region=map_name,
                 caption=caption,
             )
-        cube.remove_coord('month')
-        cube.remove_coord('month_name')
+        cube.remove_coord("month")
+        cube.remove_coord("month_name")
 
-    def _plot_monthly_cube(self, plot_map, months, columns, rows, map_options,
-                           variable_options, cube_slice):
-        month = cube_slice.coord('month_number').points[0]
-        month_name = cube_slice.coord('month_name').points[0]
+    def _plot_monthly_cube(
+        self,
+        plot_map,
+        months,
+        columns,
+        rows,
+        map_options,
+        variable_options,
+        cube_slice,
+    ):
+        month = cube_slice.coord("month_number").points[0]
+        month_name = cube_slice.coord("month_name").points[0]
         if months:
             index = months.index(month) + 1
         else:
@@ -437,12 +477,9 @@ class Monitor(MonitorBase):
             subplot=(rows, columns, index),
             keep_aspect=True,
             title=month_name.decode(),
-            **{
-                **map_options,
-                **variable_options
-            },
+            **{**map_options, **variable_options},
         )
-        if self.cfg['rasterize_maps']:
+        if self.cfg["rasterize_maps"]:
             self._set_rasterized()
 
     def plot_seasonal_climatology(self, cube, var_info):
@@ -464,45 +501,49 @@ class Monitor(MonitorBase):
         The seasonal climatology can be done inside the function so the users
         can plot monthly, seasonal and yearly climatologies in one go
         """
-        if 'seasonclim' not in self.plots:
+        if "seasonclim" not in self.plots:
             return
 
         season = {
-            12: 'DJF',
-            1: 'DJF',
-            2: 'DJF',
-            3: 'MAM',
-            4: 'MAM',
-            5: 'MAM',
-            6: 'JJA',
-            7: 'JJA',
-            8: 'JJA',
-            9: 'SON',
-            10: 'SON',
-            11: 'SON'
+            12: "DJF",
+            1: "DJF",
+            2: "DJF",
+            3: "MAM",
+            4: "MAM",
+            5: "MAM",
+            6: "JJA",
+            7: "JJA",
+            8: "JJA",
+            9: "SON",
+            10: "SON",
+            11: "SON",
         }
-        if cube.coords('month_number'):
+        if cube.coords("month_number"):
             points = [
-                season[point] for point in cube.coord('month_number').points
+                season[point] for point in cube.coord("month_number").points
             ]
-            cube.add_aux_coord(iris.coords.AuxCoord(points, var_name='season'),
-                               cube.coord_dims('month_number'))
-            cube = cube.aggregated_by('season', iris.analysis.MEAN)
+            cube.add_aux_coord(
+                iris.coords.AuxCoord(points, var_name="season"),
+                cube.coord_dims("month_number"),
+            )
+            cube = cube.aggregated_by("season", iris.analysis.MEAN)
 
         plot_map = PlotMap()
-        maps = self.plots['seasonclim'].get('maps', ['global'])
+        maps = self.plots["seasonclim"].get("maps", ["global"])
         for map_name in maps:
             map_options = self._get_proj_options(map_name)
             variable_options = self._get_variable_options(
-                var_info['variable_group'], map_name)
+                var_info["variable_group"], map_name
+            )
             index = 0
-            for cube_slice in cube.slices_over('season'):
+            for cube_slice in cube.slices_over("season"):
                 index += 1
-                season = cube_slice.coord('season').points[0]
+                season = cube_slice.coord("season").points[0]
                 if cube_slice.ndim != 2:
                     logger.error(
-                        'Climatologies can only be plotted for 2D vars. '
-                        'Skipping...')
+                        "Climatologies can only be plotted for 2D vars. "
+                        "Skipping..."
+                    )
                     self.has_errors = True
                     return
                 plot_map.plot_cube(
@@ -516,42 +557,44 @@ class Monitor(MonitorBase):
                         **variable_options,
                     },
                 )
-                if self.cfg['rasterize_maps']:
+                if self.cfg["rasterize_maps"]:
                     self._set_rasterized()
             plt.tight_layout()
             plt.suptitle(
-                'Seasonal climatology  '
-                f'({var_info[n.START_YEAR]}-{var_info[n.END_YEAR]})\n'
-                f'{cube.long_name} ({cube.units})',
+                "Seasonal climatology  "
+                f"({var_info[n.START_YEAR]}-{var_info[n.END_YEAR]})\n"
+                f"{cube.long_name} ({cube.units})",
                 fontsize=plot_map.fontsize + 4,
             )
             plt.subplots_adjust(
                 top=0.85,
-                bottom=.05,
+                bottom=0.05,
                 left=0,
                 right=1,
-                hspace=.20,
-                wspace=.15,
+                hspace=0.20,
+                wspace=0.15,
             )
-            filename = self.get_plot_path(f'seasonclim{map_name}', var_info)
+            filename = self.get_plot_path(f"seasonclim{map_name}", var_info)
             plt.savefig(
                 filename,
-                bbox_inches='tight',
-                pad_inches=.2,
+                bbox_inches="tight",
+                pad_inches=0.2,
             )
             plt.close(plt.gcf())
-            caption = (f"Seasonal climatology of {var_info[n.LONG_NAME]} of "
-                       f"dataset {var_info[n.DATASET]} (project "
-                       f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} "
-                       f"to {var_info[n.END_YEAR]}.")
+            caption = (
+                f"Seasonal climatology of {var_info[n.LONG_NAME]} of "
+                f"dataset {var_info[n.DATASET]} (project "
+                f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} "
+                f"to {var_info[n.END_YEAR]}."
+            )
             self.record_plot_provenance(
                 filename,
                 var_info,
-                'Seasonal climatology',
+                "Seasonal climatology",
                 region=map_name,
                 caption=caption,
             )
-        cube.remove_coord('season')
+        cube.remove_coord("season")
 
     def plot_climatology(self, cube, var_info):
         """Plot the climatology as a multipanel plot.
@@ -572,57 +615,59 @@ class Monitor(MonitorBase):
         The climatology can be done inside the function from the monthly and
         seasonal climatologies so the users can plot several of them in one go
         """
-        if 'clim' not in self.plots:
+        if "clim" not in self.plots:
             return
 
-        if cube.coords('month_number'):
-            cube = cube.collapsed('month_number', iris.analysis.MEAN)
-        elif cube.coords('season'):
-            cube = cube.collapsed('season', iris.analysis.MEAN)
-        maps = self.plots['clim'].get('maps', ['global'])
-        plot_map = PlotMap(loglevel='INFO')
+        if cube.coords("month_number"):
+            cube = cube.collapsed("month_number", iris.analysis.MEAN)
+        elif cube.coords("season"):
+            cube = cube.collapsed("season", iris.analysis.MEAN)
+        maps = self.plots["clim"].get("maps", ["global"])
+        plot_map = PlotMap(loglevel="INFO")
         plot_map.outdir = self.get_plot_folder(var_info)
         for map_name in maps:
             map_options = self._get_proj_options(map_name)
 
             variable_options = self._get_variable_options(
-                var_info['variable_group'], map_name)
+                var_info["variable_group"], map_name
+            )
             if cube.ndim != 2:
-                logger.error('Climatologies can only be plotted for 2D vars. '
-                             'Skipping...')
+                logger.error(
+                    "Climatologies can only be plotted for 2D vars. "
+                    "Skipping..."
+                )
                 self.has_errors = True
                 return
 
-            plot_map.plot_cube(cube,
-                               save=False,
-                               **{
-                                   **map_options,
-                                   **variable_options
-                               })
+            plot_map.plot_cube(
+                cube, save=False, **{**map_options, **variable_options}
+            )
 
             # Note: plt.gca() is the colorbar here, use plt.gcf().axes to
             # access the correct axes
-            if self.cfg['rasterize_maps']:
+            if self.cfg["rasterize_maps"]:
                 self._set_rasterized(plt.gcf().axes[0])
             plt.suptitle(
-                f'Climatology ({var_info[n.START_YEAR]}'
-                f'-{var_info[n.END_YEAR]})',
-                y=map_options.get('suptitle_pos', 0.95),
-                fontsize=plot_map.fontsize + 4)
-            filename = self.get_plot_path(f'clim{map_name}', var_info)
-            plt.savefig(filename,
-                        bbox_inches='tight',
-                        pad_inches=.2,
-                        dpi=plot_map.dpi)
+                f"Climatology ({var_info[n.START_YEAR]}"
+                f"-{var_info[n.END_YEAR]})",
+                y=map_options.get("suptitle_pos", 0.95),
+                fontsize=plot_map.fontsize + 4,
+            )
+            filename = self.get_plot_path(f"clim{map_name}", var_info)
+            plt.savefig(
+                filename, bbox_inches="tight", pad_inches=0.2, dpi=plot_map.dpi
+            )
             plt.close(plt.gcf())
-            caption = (f"Climatology of {var_info[n.LONG_NAME]} of dataset "
-                       f"{var_info[n.DATASET]} (project "
-                       f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} "
-                       f"to {var_info[n.END_YEAR]}.")
+            caption = (
+                f"Climatology of {var_info[n.LONG_NAME]} of dataset "
+                f"{var_info[n.DATASET]} (project "
+                f"{var_info[n.PROJECT]}) from {var_info[n.START_YEAR]} "
+                f"to {var_info[n.END_YEAR]}."
+            )
             self.record_plot_provenance(
                 filename,
                 var_info,
-                'Climatology',
+                "Climatology",
                 region=map_name,
                 caption=caption,
             )

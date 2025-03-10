@@ -12,7 +12,7 @@ attributes:
 
 # Variables to cmorize (here use only filename prefix)
 variables:
-# input files are daily only, formatter writes daily and monthly files 
+# input files are daily only, formatter writes daily and monthly files
   siconc:
     short_name: siconc
     mip_day: SIday

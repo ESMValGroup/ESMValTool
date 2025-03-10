@@ -586,7 +586,7 @@ datasets:
     last_access: 2024-12-11
     info: |
       Download the data from:
-        CDR_v3/Analysis/L4/v3.0.1/ 
+        CDR_v3/Analysis/L4/v3.0.1/
       Put all files under a single directory (no subdirectories with years).
 
   ESACCI-WATERVAPOUR:
@@ -1285,7 +1285,7 @@ datasets:
     last_access: 2023-01-17
     info: |
       Download the file zmn2o_TCOM_plev_T2Dz_1991_2021.nc.
-  
+
   TROPFLUX:
     tier: 2
     source: "https://incois.gov.in/tropflux"
