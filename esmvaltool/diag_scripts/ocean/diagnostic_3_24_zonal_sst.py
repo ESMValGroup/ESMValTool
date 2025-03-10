@@ -58,6 +58,7 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 class Data4Analyis:
     """Data class which later will be used for plotting.
+
     Attributes
     ----------
     name: str
@@ -305,9 +306,9 @@ def plot_bias_plot(data_list: list[Data4Analyis], cfg: dict):
         plt.xlim(*xlim)  # to make the xlims the same as before
     else:
         ref_col = eplot.get_dataset_style(
-            data.reference, cfg.get("color_style")
+            data_list[0].reference, cfg.get("color_style")
         )
-        iris.plot.plot(data.ref_cube, c=ref_col["color"])
+        iris.plot.plot(data_list[0].ref_cube, c=ref_col["color"])
 
     plt.title(caption)
     plt.tight_layout()
