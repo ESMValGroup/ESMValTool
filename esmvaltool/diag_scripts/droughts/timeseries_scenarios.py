@@ -1,4 +1,4 @@
-""" Plot timeseries of historical period and different ssps for each variable.
+"""Plot timeseries of historical period and different ssps for each variable.
 Observations will be shown as reference when given. Shaded area shows MM stddv.
 Works with combined or individual inputs for historical/ssp experiments.
 
@@ -9,7 +9,7 @@ smooth: bool, optional (default: True)
     Yearly averages for each variable, before mm operations and plot.
 combined_split_years: int, optional (default: 65)
     If experiments are already combined, this is the number of full years that
-    is used to split the data into two seperated experiments. Historical data 
+    is used to split the data into two seperated experiments. Historical data
     is only plotted once.
 plot_properties: dict, optional
     Additional properties to set on the plot. Passed to ax.set().
@@ -21,26 +21,23 @@ legend: dict, optional (default: {})
     Names to rename the default legend labels. Keys are the original labels.
 """
 
-from cProfile import label
+import datetime as dt
 import logging
+import os
 from copy import deepcopy
 from pathlib import Path
-from esmvalcore import preprocessor as pp
-from esmvaltool.diag_scripts.droughtindex import utils as ut
-from esmvaltool.diag_scripts.droughtindex import styles
-import numpy as np
-import os
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from matplotlib.axes import Axes
+
 import iris
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
+from esmvalcore import preprocessor as pp
 from iris import plot as iplt
-from iris.iterate import izip
-from iris.analysis import MEAN, STD_DEV, cartography
-from iris.plot import _fixup_dates
+from iris.analysis import MEAN, cartography
 from iris.coord_categorisation import add_year
-import datetime as dt
+from matplotlib.axes import Axes
+
+from esmvaltool.diag_scripts.droughtindex import styles
+from esmvaltool.diag_scripts.droughtindex import utils as ut
 from esmvaltool.diag_scripts.shared import (
     # ProvenanceLogger,
     get_plot_filename,
@@ -75,7 +72,9 @@ def global_mean(cfg, cube):
     ut.guess_lat_lon_bounds(cube)
     if "regions" in cfg:
         print("Extracting regions")
-        cube = pp.extract_shape(cube, shapefile='ar6', ids={"Acronym": cfg["regions"]})
+        cube = pp.extract_shape(
+            cube, shapefile="ar6", ids={"Acronym": cfg["regions"]}
+        )
     area_weights = cartography.area_weights(cube)
     mean = cube.collapsed(
         ["latitude", "longitude"], MEAN, weights=area_weights

@@ -1,5 +1,4 @@
 #!/usr/bin/env  python
-# -*- coding: utf-8 -*-
 """Hexagonal overview plot for IPCC AR6 WG1 reference regions.
 
 Configuration options in recipe
@@ -10,7 +9,7 @@ group_by: str, optional (default: "dataset")
 split_by: str, optional (default: "exp")
     Metadata key to split the data into different tiles of the hexagon.
     This is ignored for `split_by_statistic: True`.
-    Only keys with 6 or less different values are supported 
+    Only keys with 6 or less different values are supported
     (1,2,3,6 can be distributed symmetrically).
 split_by_statistic: bool, optional (default: False)
     Split the hexagons into different tiles for each statistic,
@@ -60,12 +59,14 @@ show_values: bool, optional (default: False)
 """
 
 import logging
+
 import iris
-from matplotlib.patches import Polygon
-from matplotlib import colors as mplcolors
-from matplotlib import cm as mplcm
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib import cm as mplcm
+from matplotlib import colors as mplcolors
+from matplotlib.patches import Polygon
+
 import esmvaltool.diag_scripts.droughtindex.utils as ut
 import esmvaltool.diag_scripts.shared as e
 from esmvaltool.diag_scripts.shared import (
@@ -153,10 +154,11 @@ def hexmap(
     if labels and not len(labels) == len(values):
         raise ValueError("values and labels must have the same length")
     values = np.array(values)  # np array makes it easier to deal with inf/nan
-    figsize = (12, 6)  if cfg["cbar"] and not cfg["strip_plot"] else (10, 6)
+    figsize = (12, 6) if cfg["cbar"] and not cfg["strip_plot"] else (10, 6)
     fig, axx = plt.subplots(figsize=figsize, dpi=300, frameon=False)
     axx.tick_params(
-        bottom=False, left=False, labelbottom=False, labelleft=False)
+        bottom=False, left=False, labelbottom=False, labelleft=False
+    )
     axx.set_xlim(-0.5, 19.5)
     axx.set_ylim(0, 12)
     cmap = plt.get_cmap(cfg.get("cmap", "YlOrRd"))
@@ -166,14 +168,16 @@ def hexmap(
         plt.axis("off")
     # calculate hexagon positions based on figure and scale
     rx = np.sqrt(3) / 2 * r  # 0.8660254037844386
-    corners = np.array([
-        [0, r],
-        [rx, r / 2],
-        [rx, -r / 2],
-        [0, -r],
-        [-rx, -r / 2],
-        [-rx, r / 2],
-    ])
+    corners = np.array(
+        [
+            [0, r],
+            [rx, r / 2],
+            [rx, -r / 2],
+            [0, -r],
+            [-rx, -r / 2],
+            [-rx, r / 2],
+        ]
+    )
     cells = ut.get_hex_positions()  # dict of coordinates for hexagons
     cells = {
         a: [c[0] * rx, (8 - c[1]) * (3 / 2 * r)] for a, c in cells.items()
@@ -352,8 +356,9 @@ def set_defaults(cfg):
     cfg.setdefault("exclude_regions", [])
     cfg.setdefault("regions", [])
     cfg.setdefault("filename", "{group}_{split}_{operator}.png")
-    cfg.setdefault("select_metadata", 
-        {"short_name": "spei", "diffmap_metric": "diff"})
+    cfg.setdefault(
+        "select_metadata", {"short_name": "spei", "diffmap_metric": "diff"}
+    )
 
 
 def main(cfg):

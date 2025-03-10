@@ -71,7 +71,7 @@ CMIP6_DATA: &cmip6_data
   # trying to add:
   # - {<<: *cmip_default, dataset: HadGEM3-GC31-LL,   ensemble: r1i1p1f3}  # only -MM in picontrol but only -LL in ssp245
   - {<<: *cmip_default, dataset: ACCESS-CM2,        institute: CSIRO-ARCCSS     }
-  - {<<: *cmip_default, dataset: AWI-CM-1-1-MR,     institute: AWI              } 
+  - {<<: *cmip_default, dataset: AWI-CM-1-1-MR,     institute: AWI              }
   - {<<: *cmip_default, dataset: BCC-CSM2-MR,       institute: BCC              }
   - {<<: *cmip_default, dataset: CanESM5,           institute: CCCma            }
   - {<<: *cmip_default, dataset: CMCC-ESM2,         institute: CMCC             }   # retry other ds name
@@ -103,7 +103,7 @@ VAR_SM: &var_sm
   mip: Lmon
   project: CMIP6
   additional_datasets: *cmip6_data_lmon
-  
+
 preprocessors:
   default:
     regrid:
@@ -130,7 +130,7 @@ diagnostics:
     scripts:
       diffmaps: &pr_plot
         <<: *diffmaps_default
-    
+
   sm_ssp585: &sm_ssp585
     variables:
       sm: &sm_default
@@ -179,7 +179,7 @@ diagnostics:
       # clt: *pet_585
       rsds: *pet_585
       ps: *pet_585
-    scripts: 
+    scripts:
       pet_pm:
         script: droughtindex/diag_pet.R
         pet_type: "Penman"  # "Penman_clt"
@@ -196,7 +196,7 @@ diagnostics:
       # clt: *pet_245
       rsds: *pet_245
       ps: *pet_245
-    scripts: 
+    scripts:
       pet_pm:
         script: droughtindex/diag_pet.R
         pet_type: "Penman"  # "Penman_clt"
@@ -213,7 +213,7 @@ diagnostics:
       # clt: *pet_126
       rsds: *pet_126
       ps: *pet_126
-    scripts: 
+    scripts:
       pet_pm:
         script: droughtindex/diag_pet.R
         pet_type: "Penman"  # "Penman_clt"
@@ -239,20 +239,20 @@ diagnostics:
       spei:
         <<: *script_spei_585
         ancestors: [pet_ssp126/pet_pm, pet_ssp126/pr]
-  
+
   # --- EXTRA WB --- #
   wb_ssp126: &wb_ssp126
-    scripts: 
+    scripts:
       wb:
         script: droughtindex/diag_wb.py
         ancestors: [pet_ssp126/pet_pm, pet_ssp126/pr]
   wb_ssp245: &wb_ssp245
-    scripts: 
+    scripts:
       wb:
         script: droughtindex/diag_wb.py
         ancestors: [pet_ssp245/pet_pm, pet_ssp245/pr]
   wb_ssp585: &wb_ssp585
-    scripts: 
+    scripts:
       wb:
         script: droughtindex/diag_wb.py
         ancestors: [pet_ssp585/pet_pm, pet_ssp585/pr]
@@ -265,7 +265,7 @@ diagnostics:
         # or allow multiple group_by keys as combination.. (or based on basename?)
         # until than use diffmap/spei_ssp126..  runs
         script: droughtindex/diffmap.py
-        ancestors: 
+        ancestors:
          - pet_ssp126/pr
          - pet_ssp245/pr
          - pet_ssp585/pr
@@ -286,7 +286,7 @@ diagnostics:
           vmin: 0
       ssp585: &diff_pet_default
         script: droughtindex/diffmap.py
-        ancestors: 
+        ancestors:
          - "pet_ssp585/pet_pm"
          - "spei_ssp585/spei"
         save_models: True
@@ -342,11 +342,11 @@ diagnostics:
         subplots: True
         figsize: [9, 1.3]
         yticks: [0, 0.2, 0.4, 0.6, 0.8, 1]
-        ylabels: 
+        ylabels:
           historical-ssp126: SSP1-2.6
           historical-ssp245: SSP2-4.5
           historical-ssp585: SSP5-8.5
-        intervals: 
+        intervals:
           - [240, 481]
           # - [780, 1021]
           - [1560, null]
@@ -367,7 +367,7 @@ diagnostics:
         ancestors: [diffmap/spei_ssp585]
         select_metadata:
           experiment: ssp585
-          short_name: spei 
+          short_name: spei
           dataset: MMM
           diffmap_metric: diff
         script: droughtindex/regional_hexagons.py
@@ -381,7 +381,7 @@ diagnostics:
         cmap: "RdYlBu"
         strip_plot: true
       trend_spei_scenarios:
-        ancestors: 
+        ancestors:
           - diffmap/spei_ssp126
           - diffmap/spei_ssp245
           - diffmap/spei_ssp585
@@ -421,7 +421,7 @@ diagnostics:
     scripts:
       scenarios:
         script: droughtindex/timeseries.py
-        ancestors: 
+        ancestors:
           - pet_ssp126/pr
           - pet_ssp245/pr
           - pet_ssp585/pr
@@ -437,7 +437,7 @@ diagnostics:
         reuse_mm: True
         smooth: True
         figsize: [9, 2]
-        y_labels: 
+        y_labels:
           pr: $PR$ [mm/day]
           evspsblpot: $ET_0$ [mm/day]
           spei: $SPEI$

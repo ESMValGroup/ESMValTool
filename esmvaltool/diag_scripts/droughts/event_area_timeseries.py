@@ -1,5 +1,4 @@
 #!/usr/bin/env  python
-# -*- coding: utf-8 -*-
 """Calculate and plot relative area of drought events.
 
 Creates timeseries of the spatial extend of all drought events. Different types
@@ -25,16 +24,16 @@ events: list of dicts
     See event_area_timeseries.yml for an example.
 fig_kwargs: dict, optional
     Additional keyword arguments for the figure creation. This can be set for
-    specific plottypes as ``fullperiod.fig_kwargs`` or ``overview.fig_kwargs``. 
+    specific plottypes as ``fullperiod.fig_kwargs`` or ``overview.fig_kwargs``.
 overview: dict, optional
     Setup for a figure with multiple plots for selected intervals. The first
     interval is expected to be plotted once, all others are plotted for each
     scenario. plot_kwargs and fig_kwargs can be set as for this figure.
-    Set ``overview.skip: True`` to not create this figure. 
+    Set ``overview.skip: True`` to not create this figure.
 fullperiod: dict, optional
-    Setup for a figure with one plot for each pair of scenario and region. 
+    Setup for a figure with one plot for each pair of scenario and region.
     ``plot_kwargs`` and ``fig_kwargs`` can be set as for this figure.
-    Set ``fullperiod.skip: True`` to not create this figure. 
+    Set ``fullperiod.skip: True`` to not create this figure.
 regions: list of str, optional
     List of regions (acronyms) for which the area ratios are plotted.
     If not given, global data is used.
@@ -53,22 +52,23 @@ reuse: bool, optional (default: False)
 
 import logging
 import os
-import xarray as xr
+
 import iris
 import iris.plot as iplt
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.ma as ma
+import xarray as xr
 import yaml
 from esmvalcore import preprocessor as pp
+from iris.analysis.cartography import area_weights
 from matplotlib import gridspec
 from matplotlib.dates import DateFormatter, YearLocator  # MonthLocator
-from iris.analysis.cartography import area_weights
 
 import esmvaltool.diag_scripts.droughtindex.utils as ut
 from esmvaltool.diag_scripts.shared import (
-    get_plot_filename,
     get_diagnostic_filename,
+    get_plot_filename,
     group_metadata,
     run_diagnostic,
 )
@@ -219,7 +219,6 @@ def plot(cfg, i, y, fname=None, fig=None, ax=None, label=None, full=False):
     ax.set_ylim(*cfg["ylim"])
     ax.set(**cfg.get("axes_properties", {}))
     ax.tick_params(direction="in", which="both")
-    import datetime as dt
     # ax.set_xlim(t[0]-dt.timedelta(days=20), t[-1])  # show first tick
     ax.set_xlim(t[0], t[-1])
     ax.set_xticklabels(ax.get_xticklabels(), rotation=00, ha="center")
@@ -241,14 +240,14 @@ def plot(cfg, i, y, fname=None, fig=None, ax=None, label=None, full=False):
         fig2.legend(mode="expand", ncol=2, fancybox=False, framealpha=1)
         fig2.savefig(lfname)
     # elif not cfg.get("legend_latest", True) or i[1] is None:
-        # add legend last or every figure
-        # if not cfg.get("subplots") and not cfg.get("subplots_full"):
-        #     fig.legend(
-        #         loc="center right",
-        #         fancybox=False,
-        #         framealpha=1,
-        #         labelspacing=0.3,
-        #     )  # 'center right'
+    # add legend last or every figure
+    # if not cfg.get("subplots") and not cfg.get("subplots_full"):
+    #     fig.legend(
+    #         loc="center right",
+    #         fancybox=False,
+    #         framealpha=1,
+    #         labelspacing=0.3,
+    #     )  # 'center right'
     if fname:
         fig.savefig(fname)
         plt.close()
@@ -279,7 +278,7 @@ def set_defaults(cfg):
     TODO: This could be a shared function reused in other diagnostics.
     """
     config_file = os.path.realpath(__file__)[:-3] + ".yml"
-    with open(config_file, "r", encoding="utf-8") as f:
+    with open(config_file, encoding="utf-8") as f:
         defaults = yaml.safe_load(f)
     for key, val in defaults.items():
         cfg.setdefault(key, val)
@@ -332,9 +331,21 @@ def plot_overview(cfg, data, group="unnamed"):
         if not hist_plotted:
             # first = dat.isel(time=slice(0, cfg["intervals"][0][1]))
             # print(first["event_ratio"])
-            plot(cfg, cfg["intervals"][0], dat["event_ratio"].data, fig=fig, ax=hist_ax)
+            plot(
+                cfg,
+                cfg["intervals"][0],
+                dat["event_ratio"].data,
+                fig=fig,
+                ax=hist_ax,
+            )
         # last = dat.isel(time=slice(cfg["intervals"][-1][0], None))
-        plot(cfg, cfg["intervals"][-1], dat["event_ratio"].data, fig=fig, ax=scenario_axs[n])
+        plot(
+            cfg,
+            cfg["intervals"][-1],
+            dat["event_ratio"].data,
+            fig=fig,
+            ax=scenario_axs[n],
+        )
     for ax in [hist_ax, *scenario_axs]:  # all plots
         ax.set_yticks(cfg.get("yticks", None))
         ax.grid(True, which="major", linestyle="--", linewidth=0.5)
@@ -374,12 +385,12 @@ def plot_full_periods(cfg, data):
     # setup figure with 1 row for legend and 1 for each scenario/region pair
     fig = plt.figure(**ut.sub_cfg(cfg, "fullperiod", "fig_kwargs"), dpi=300)
     rows = len(data["exp"]) * len(data["region"])
-    gs = gridspec.GridSpec(rows+1, 1, height_ratios=[0.3] + [1]*(rows))
+    gs = gridspec.GridSpec(rows + 1, 1, height_ratios=[0.3] + [1] * (rows))
     leg_ax = fig.add_subplot(gs[0, 0])
     axs = []
     # loop through data slices and plot to axis
     for n, ((exp, reg), dat) in enumerate(data.groupby(["exp", "region"])):
-        ax = fig.add_subplot(gs[n+1, 0])
+        ax = fig.add_subplot(gs[n + 1, 0])
         dat = dat.squeeze()
         y = dat["event_ratio"].data
         # hardcode full interval for this plot
@@ -399,7 +410,7 @@ def plot_full_periods(cfg, data):
     # for i, (exp, emetas) in enumerate(exp_metas.items()):
     #     exp_axs = [scenario_axs[i]]
     #     process_datasets(cfg, emetas, fig=fig, axs=exp_axs)
-    
+
     for ax in axs:  # all plots
         ax.set_yticks(cfg.get("yticks", None))
         ax.grid(True, which="both", linestyle="--", linewidth=0.5)
@@ -427,7 +438,9 @@ def plot_full_periods(cfg, data):
     leg_ax.axis("off")
     fig.tight_layout()
     # fig.subplots_adjust(hspace=0.2)
-    fig.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05, hspace=0.2)
+    fig.subplots_adjust(
+        left=0.05, right=0.95, top=0.95, bottom=0.05, hspace=0.2
+    )
     fig.savefig(get_plot_filename(f"{cfg['index']}_MMM", cfg))
     return
 
@@ -454,13 +467,13 @@ def process_datasets(cfg, metas, fig=None, axs=None):
                 log.info("-- region %s", region)
                 meta["region"] = region
                 extracted = pp.extract_shape(
-                    cube, shapefile='ar6', ids={"Acronym": [region]}
+                    cube, shapefile="ar6", ids={"Acronym": [region]}
                 )
                 plot_area_ratios(cfg, meta, extracted)
         elif cfg.get("regions", False):
             log.info("-- combined region")
             extracted = pp.extract_shape(
-                cube, shapefile='ar6', ids={"Acronym": cfg["regions"]}
+                cube, shapefile="ar6", ids={"Acronym": cfg["regions"]}
             )
             if "region" in meta:
                 del meta["region"]
@@ -484,10 +497,11 @@ def process_datasets(cfg, metas, fig=None, axs=None):
                     meta=last_meta,
                 )
 
+
 def extract_regions(cfg, cube):
     """extract regions and return a list of cubes."""
     extracted = {}
-    params = {"shapefile": "ar6", "ids": {"Acronym": cfg['regions']}}
+    params = {"shapefile": "ar6", "ids": {"Acronym": cfg["regions"]}}
     if cfg["regions"] and cfg["combine_regions"]:
         log.info("extracting combined region")
         extracted["combined"] = pp.extract_shape(cube, **params)
@@ -531,7 +545,7 @@ def calculate_event_ratios(cfg, metas, output):
         "region": regions,
         "exp": list(group_metadata(metas.values(), "exp").keys()),
         "event": [e["label"] for e in cfg["events"]],
-        "time": cfg["times"]
+        "time": cfg["times"],
     }
     dims = list(coords.keys())
     nans = np.full([len(c) for c in coords.values()], np.NaN)

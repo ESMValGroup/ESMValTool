@@ -21,7 +21,7 @@ Recipes are stored in ``recipes/droughts/``
 Diagnostics used by this recipes:
 
    * :ref:`droughts/diffmap.py <api.esmvaltool.diag_scripts.droughts.diffmap>`
-   
+
 
 References
 ----------

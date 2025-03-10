@@ -4,7 +4,7 @@
 This diagnostic calculates the pattern correlation between pairs of datasets
 over several datasets and plots them for all variables and datasets in one
 overview plot. In each figure the correlations are grouped by variable and
-project. Only projects listed in the recipe are used everything else is added 
+project. Only projects listed in the recipe are used everything else is added
 with individual markers and labels if `extra_datasets` is True.
 A single reference dataset needs to be specified in the recipe.
 
@@ -45,23 +45,20 @@ labels: dict, optional
     name if not present.
 """
 
-import iris
-from pprint import PrettyPrinter
-import iris.analysis
-import iris.analysis.cartography
-import iris.plot as iplt
-import matplotlib.pyplot as plt
-import numpy as np
-import numpy.ma as ma
-from pathlib import Path
-from collections import defaultdict
-from iris.analysis.stats import pearsonr
-from esmvaltool.diag_scripts.droughtindex import utils as ut
-from esmvaltool.diag_scripts import shared
-from iris.analysis import MEAN
-
 # from esmvalcore import preprocessor as pp
 import logging
+from collections import defaultdict
+from pprint import PrettyPrinter
+
+import iris
+import iris.analysis
+import iris.analysis.cartography
+import matplotlib.pyplot as plt
+from iris.analysis import MEAN
+from iris.analysis.stats import pearsonr
+
+from esmvaltool.diag_scripts import shared
+from esmvaltool.diag_scripts.droughtindex import utils as ut
 
 logger = logging.getLogger(__file__)
 p = PrettyPrinter(indent=4)

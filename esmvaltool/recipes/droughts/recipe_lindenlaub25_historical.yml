@@ -2,16 +2,16 @@
 documentation:
   title: "Validation of drought related CMIP6 variables with ERA5"
   description: |
-    This recipe calculates PET for ERA5 and a subset of CMIP6 models and 
-    compares the results and each individual input variable and derived 
-    soil moisture. For the comparison averages and change rates are plotted as 
-    maps and pattern correlation between ERA5 and CMIP6 multi-model mean are 
-    calculated. The normalized centered root mean square error vs ERA5 is 
+    This recipe calculates PET for ERA5 and a subset of CMIP6 models and
+    compares the results and each individual input variable and derived
+    soil moisture. For the comparison averages and change rates are plotted as
+    maps and pattern correlation between ERA5 and CMIP6 multi-model mean are
+    calculated. The normalized centered root mean square error vs ERA5 is
     calculated for each individual variable and CMIP6 model and displayed as
     portrait plot.
 
-    The recipe is split into blocks that can be run individually by using the 
-    `--diagnostics` argument, e.g. `pet_obs`, `validate_models/diffmaps` or 
+    The recipe is split into blocks that can be run individually by using the
+    `--diagnostics` argument, e.g. `pet_obs`, `validate_models/diffmaps` or
     `validate_models/pattern_correlation` on the esmvaltool run command:
     `esmvaltool run recipes/droughts/recipe_lindenlaub25_validation.yml`
   authors:
@@ -119,9 +119,9 @@ CDS: &cds
   end_year: 2014
   reference_for_metric: true
 
-# ERA5 and CRU data is available for most variables. PET is derived only for 
+# ERA5 and CRU data is available for most variables. PET is derived only for
 # ERA5 and soil moisture is derived from ERA5 and CDS-SATELLITE-SOIL-MOISTURE
-# for this variables datasets need to set manually and/or added. 
+# for this variables datasets need to set manually and/or added.
 # Also note that both variables are found in different mips.
 OBS_DATA: &obs_data
   - <<: *era5
@@ -137,7 +137,7 @@ VAR_DEFAULT: &var_default
   project: CMIP6
   exp: historical
   <<: *obs_period
-  
+
 
 # RECIPE STARTS HERE
 preprocessors:
@@ -170,7 +170,7 @@ diagnostics:
       pet_pm:
         script: droughts/pet.R
         pet_type: "Penman"
-  
+
   spei_historical: &spei_historical
     scripts:
       spei:
@@ -185,7 +185,7 @@ diagnostics:
         refend_year: 2014
         refstart_month: 1
         refend_month: 12
-  
+
   pet_obs: &pet_obs
     variables:
       pr: &pet_default_obs
@@ -222,7 +222,7 @@ diagnostics:
       tasmin: *add_cru
       tasmax: *add_cru
       # clt: *add_cru
-      evspsblpot: 
+      evspsblpot:
         additional_datasets:
           - <<: *cru
             mip: Emon
@@ -242,7 +242,7 @@ diagnostics:
             - validate_obs/tasmax
             - pet_obs/pet_pm
             - validate_obs/evspsblpot
-  
+
   validate_models: &validate_models
     # additional_datasets: *cmip6_data
     variables:
@@ -265,7 +265,7 @@ diagnostics:
         additional_datasets: *cmip6_data_lmon
       # sfcWind:
       #   <<: *var_default_historical
-      # ps: 
+      # ps:
       #   <<: *var_default_historical
     scripts:
       diffmaps:
