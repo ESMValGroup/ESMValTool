@@ -6,6 +6,7 @@ of the data. To reduce memory use, we re-chunk the time dimension.
 Related iris issue:
 https://github.com/SciTools/iris/issues/3808
 """
+
 import numpy as np
 
 
@@ -18,9 +19,9 @@ def compute_chunks(src, tgt):
     else:
         dtype_bytes = 8  # size of float64 in bytes
 
-    ntime = src.coord('time').shape[0]
-    tgt_nlat = tgt.coord('latitude').shape[0]
-    tgt_nlon = tgt.coord('longitude').shape[0]
+    ntime = src.coord("time").shape[0]
+    tgt_nlat = tgt.coord("latitude").shape[0]
+    tgt_nlon = tgt.coord("longitude").shape[0]
 
     # Define blocks along the time dimension
     min_nblocks = int(ntime * tgt_nlat * tgt_nlon * dtype_bytes / block_bytes)
@@ -31,10 +32,10 @@ def compute_chunks(src, tgt):
     nfullblocks = ntime // timefull
     npartblocks = int(timepart > 0)
 
-    time_chunks = (timefull, ) * nfullblocks + (timepart, ) * npartblocks
+    time_chunks = (timefull,) * nfullblocks + (timepart,) * npartblocks
     src_chunks = (
         time_chunks,
-        (src.coord('latitude').shape[0], ),
-        (src.coord('longitude').shape[0], ),
+        (src.coord("latitude").shape[0],),
+        (src.coord("longitude").shape[0],),
     )
     return src_chunks
