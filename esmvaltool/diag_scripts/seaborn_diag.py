@@ -133,8 +133,9 @@ def _create_plot(
     cfg: dict,
 ) -> None:
     """Create plot."""
-    logger.debug("Using main data frame as input for plotting:\n%s",
-                 data_frame)
+    logger.debug(
+        "Using main data frame as input for plotting:\n%s", data_frame
+    )
 
     # Plot
     plot_kwargs = cfg["seaborn_kwargs"]
@@ -168,12 +169,12 @@ def _create_plot(
                     func_args,
                 )
                 getattr(plot_obj, func_name)(func_args)
-    if cfg['suptitle'] is not None:
-        logger.debug("Setting `suptitle='%s'`", cfg['suptitle'])
-        plt.suptitle(cfg['suptitle'], y=1.05)
-    if cfg['legend_title'] is not None:
-        _set_legend_title(plot_obj, cfg['legend_title'])
-    if plot_func_str == 'jointplot' and plot_kwargs['cbar']:
+    if cfg["suptitle"] is not None:
+        logger.debug("Setting `suptitle='%s'`", cfg["suptitle"])
+        plt.suptitle(cfg["suptitle"], y=1.05)
+    if cfg["legend_title"] is not None:
+        _set_legend_title(plot_obj, cfg["legend_title"])
+    if plot_func_str == "jointplot" and plot_kwargs["cbar"]:
         # Reposition colorbar so it is to the right of marginals plot
         plt.subplots_adjust(left=0.1, right=0.8, top=0.9, bottom=0.1)
         # get the current positions of the joint ax and the ax for
@@ -182,14 +183,19 @@ def _create_plot(
         pos_marg_x_ax = plot_obj.ax_marg_x.get_position()
         # reposition the joint ax so it has the same width as the
         # marginal x ax
-        plot_obj.ax_joint.set_position([
-            pos_joint_ax.x0, pos_joint_ax.y0, pos_marg_x_ax.width,
-            pos_joint_ax.height
-        ])
+        plot_obj.ax_joint.set_position(
+            [
+                pos_joint_ax.x0,
+                pos_joint_ax.y0,
+                pos_marg_x_ax.width,
+                pos_joint_ax.height,
+            ]
+        )
         # reposition the colorbar using new x positions and y
         # positions of the joint ax
         plot_obj.fig.axes[-1].set_position(
-            [.83, pos_joint_ax.y0, .07, pos_joint_ax.height])
+            [0.83, pos_joint_ax.y0, 0.07, pos_joint_ax.height]
+        )
 
     # Save plot
     plot_path = get_plot_filename(f"seaborn_{plot_func_str}", cfg)
@@ -225,7 +231,8 @@ def _get_grouped_data(cfg: dict) -> dict:
             if facet not in dataset:
                 raise ValueError(
                     f"Facet '{facet}' used for option 'facets_as_columns' is "
-                    f"not available for dataset {dataset['filename']}")
+                    f"not available for dataset {dataset['filename']}"
+                )
 
     # Group data accordingly
     grouped_data = group_metadata(
@@ -304,7 +311,8 @@ def _get_df_for_group(
         if variable_group in UNITS and UNITS[variable_group] != units:
             raise ValueError(
                 f"Got duplicate units for variable '{variable_group}': "
-                f"'{units}' and '{UNITS[variable_group]}'")
+                f"'{units}' and '{UNITS[variable_group]}'"
+            )
         UNITS.setdefault(variable_group, units)
 
         # Get data frame for individual dataset with proper name
@@ -331,7 +339,8 @@ def _get_df_for_group(
                 raise ValueError(
                     f"Dimensions of cube {filename} differ from other cubes "
                     f"of group '{group}'. Cubes of that group:\n"
-                    f"{pformat([d['filename'] for d in datasets])}")
+                    f"{pformat([d['filename'] for d in datasets])}"
+                )
 
             # Make sure that facet values used as columns match across datasets
             # within a cube
@@ -343,7 +352,8 @@ def _get_df_for_group(
                         f"from value of other datasets of group '{group}': "
                         f"expected '{val}', got '{dataset[facet]}'. Datasets "
                         f"of that group:\n"
-                        f"{pformat([d['filename'] for d in datasets])}")
+                        f"{pformat([d['filename'] for d in datasets])}"
+                    )
             df_group = pd.merge(
                 df_group,
                 df_dataset,
@@ -430,12 +440,14 @@ def _modify_dataframe(data_frame: pd.DataFrame, cfg: dict) -> pd.DataFrame:
         if func not in allowed_funcs:
             raise ValueError(
                 f"Got invalid operation '{func}' for option 'data_frame_ops', "
-                f"expected one of {allowed_funcs}")
+                f"expected one of {allowed_funcs}"
+            )
         op_str = f"'{func}' with argument '{expr}'"
         logger.info("Modifying main data frame through operation %s", op_str)
         data_frame = getattr(data_frame, func)(expr)
-        logger.debug("Main data frame after operation %s:\n%s", op_str,
-                     data_frame)
+        logger.debug(
+            "Main data frame after operation %s:\n%s", op_str, data_frame
+        )
 
     # dropna_kwargs
     if cfg["dropna_kwargs"]:
@@ -458,18 +470,20 @@ def _set_legend_title(plot_obj, legend_title: str) -> None:
         # Manually create a legend if needed in JointGrid
         handles, labels = plot_obj.ax_joint.get_legend_handles_labels()
         if handles and labels:
-            legend = plot_obj.ax_joint.legend(handles=handles,
-                                              labels=labels,
-                                              title=legend_title)
+            legend = plot_obj.ax_joint.legend(
+                handles=handles, labels=labels, title=legend_title
+            )
         else:
             legend = None
     else:
         raise ValueError(
             f"Cannot set legend title, `{type(plot_obj).__name__}` does not "
-            f"support legends")
+            f"support legends"
+        )
     if legend is None:
         raise ValueError(
-            "Cannot set legend title, plot does not contain legend")
+            "Cannot set legend title, plot does not contain legend"
+        )
     logger.debug("Setting `legend_title='%s'`", legend_title)
     legend.set_title(legend_title)
 

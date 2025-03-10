@@ -30,7 +30,7 @@ preprocessors:
     custom_order: true
     mask_outside_range:
       minimum: 1.
-      maximum: 100. 
+      maximum: 100.
   common_grid_clivi_clwvi:
     custom_order: true
     <<: *regridding
@@ -72,7 +72,7 @@ preprocessors:
       units: g kg-1
     mask_outside_range:
       minimum: 0.0001
-      maximum: 0.005 
+      maximum: 0.005
 
 
 diagnostics:
