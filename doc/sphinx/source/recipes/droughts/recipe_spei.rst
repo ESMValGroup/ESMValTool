@@ -5,13 +5,38 @@ Standardized Precipitation-Evapotranspiration Index (SPEI)
 
 Overview
 --------
-Droughts can be separated into three main types: meteorological, hydrological, and agricultural drought.
+Droughts can be separated into three main types: meteorological, hydrological,
+and agricultural drought.
+Common for all types is that a drought needs to be put in context of local and
+seasonal characteristics, i.e. a drought should not be defined with an absolute
+threshold, but as an anomalous condition.
 
-Common for all types is that a drought needs to be put in context of local and seasonal characteristics, i.e. a drought should not be defined with an absolute threshold, but as an anomalous condition.
+Meteorological droughts are often described using the
+Standardized Precipitation Index (SPI; McKee et al, 1993), which in a
+standardized way describes local precipitation anomalies.
+It is calculated on monthly mean precipitation, and is therefore not accounting
+for the intensity of precipitation and the runoff process.
+Because SPI does not account for evaporation from the ground, it lacks one
+component of the water fluxes at the surface and is therefore not compatible
+with the concept of hydrological drought.
 
-Meteorological droughts are often described using the standardized precipitation index (SPI; McKee et al, 1993), which in a standardized way describes local precipitation anomalies. It is calculated on monthly mean precipitation, and is therefore not accounting for the intensity of precipitation and the runoff process. Because SPI does not account for evaporation from the ground, it lacks one component of the water fluxes at the surface and is therefore not compatible with the concept of hydrological drought.
+A hydrological drought occurs when low water supply becomes evident, especially
+in streams, reservoirs, and groundwater levels, usually after extended periods
+of meteorological drought.
 
-A hydrological drought occurs when low water supply becomes evident, especially in streams, reservoirs, and groundwater levels, usually after extended periods of meteorological drought. GCMs normally do not simulate hydrological processes in sufficient detail to give deeper insights into hydrological drought processes. Neither do they properly describe agricultural droughts, when crops become affected by the hydrological drought. However, hydrological drought can be estimated by accounting for evapotranspiration, and thereby estimate the surface retention of water. The standardized precipitation-evapotranspiration index (SPEI; Vicente-Serrano et al., 2010) has been developed to also account for temperature effects on the surface water fluxes. Evapotranspiration is not normally calculated in GCMs, so SPEI often takes other inputs to estimate the evapotranspiration. Here, the Thornthwaite (Thornthwaite, 1948) method based on temperature is applied.
+GCMs normally do not simulate hydrological processes in sufficient detail to
+give deeper insights into hydrological drought processes.
+Neither do they properly describe agricultural droughts, when crops become
+affected by the hydrological drought.
+However, hydrological drought can be estimated by accounting for
+evapotranspiration, and thereby estimate the surface retention of water.
+The standardized precipitation-evapotranspiration index
+(SPEI; Vicente-Serrano et al., 2010) has been developed to also account for
+temperature effects on the surface water fluxes.
+To consider evapotranspiration and plant water stress Potential
+Evapotranspiration (PET) is calculated based on atmospheric variables.
+Different methods to derive PET are described below.
+
 
 This page documents a set of R diagnostics based on the
 `SPEI.R library <https://CRAN.R-project.org/package=SPEI>`_.
@@ -33,7 +58,7 @@ are available to which diagnostic script in a more complex recipe they can be
 set explicitly as ancestors.
 
 - Thornthwaite: tas
-- Hargreaves: tasmin, tasmax, rsdt, (pr)
+- Hargreaves: tasmin, tasmax, (rsdt, pr)
 - Penman: tasmin, tasmax, sfcWind, ps, rsds, (rsdt, clt, hurs)
 
 The Thornthwaite equation (Thornthwaite, 1948) is the simplest one based solely
@@ -43,7 +68,7 @@ If precipitation data (pr) is provided and `use_pr: TRUE` it will be used as a
 proxy for irradation to correct PET following Droogers and Allen (2002).
 The Penman-Monteith formular additionally considers surface windspeed (sfcWind),
 pressure (ps), and relative humidity (hurs). Some of these variables can be
-approximated if not available (for example by providing clt instaed of rsds).
+approximated if not available (for example by providing clt instead of rsds).
 There are further modifications to the Penman-Monteith equation, that can be
 selected using the ``method`` key for ``pet_type: Penman``. Details about
 the different method can be found in the SPEI.R package documentation
@@ -77,6 +102,18 @@ crop: str, optional
 spei.R
 ------
 
+The Standardized Precipitation-Evapotranspiration Index (SPEI) is calculated by
+fitting a probability distribution to the accumulated water budget
+(pr-PET) for each grid cell and month of the year. The accumulation period is
+configurable using the ``smooth_month`` setting.
+The PDF is transformed to a normal distribution. Based on given percentiles,
+index values from -2 (extreme droughts) to 2 (extreme wet spells) are assigned.
+The distribution used to fit the water budget can be configured through the
+``distribution`` setting. The required PET can be provided by setting the
+pet.R diagnostic as an ancestor or adding an ``evspsblpot`` variable. To use
+alternative variables (i.e. actual evapotranspiration) change the
+``short_name`` setting accordingly.
+
     SPI is considered as a special case of the SPEI. Provide only precipitation
     as input variable or ancestor and set ``distribution="Gamma"``, to calculate
     SPI.
@@ -105,33 +142,20 @@ distributionn: string, optional
     By default "log-Logistic".
 
 refstart_year: int, optional
-    First of reference period.
+    First year of the reference period.
     By default first year of time series
 
 refstart_month: int, optional
-    first month of reference period.
+    First month of reference period.
     By default 1.
 
 refend_year: int, optional
     Last year of the reference period.
     By default last year of time series.
 
-refend_month``: integer, optional
+refend_month: integer, optional
     Last month of reference period.
     By default 12.
-
-
-Variables
----------
-
-* pr      (atmos, monthly mean, time latitude longitude)
-* tas     (atmos, monthly mean, time latitude longitude)
-
-Which variables are required or used for index calculation depends on the index
-and calculation method of the PET. The Thornthwaite method requires tas, while
-the Hargreaves method requires tas and sfcWind. The Penman method requires tas,
-sfcWind, rsds, clt, hurs, and ps, but it is possible to approximate some of the
-variables if not available.
 
 
 References

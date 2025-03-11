@@ -35,7 +35,7 @@ User settings in recipe
 
 The recipe calculates SPI for two different time periods. The first part
 compares CMIP5 models with the CRU observational dataset. The second part
-compares the last 50 years of the 21st century with the historical period
+compares the last 51 years of the 21st century with the historical period
 (1950-2000) for the RCP8.5 scenario.
 
 The recipe can be run with different CMIP5 and CMIP6 models and one

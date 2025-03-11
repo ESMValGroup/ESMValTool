@@ -25,7 +25,7 @@ calculate PET based on a method of users choice (``pet_type``). The methods
 require different input variables for example:
 
 - Penman: tas, tasmin, tasmax, sfcWind, rsds, clt, hurs, ps
-- Hargreaves: tas, tasmin, tasmax, (rsds, pr)
+- Hargreaves: tasmin, tasmax, (rsds, pr)
 - Thornthwaite: tas
 
 A complete list and more details can be found in
@@ -39,12 +39,13 @@ Meteorological droughts are often described using the Standardized Precipitation
 Index (SPI; McKee et al, 1993), which in a standardized way describes local
 precipitation anomalies.
 
-Because SPI does not account for evaporation from the ground, it lacks one it
-lacks one component of the water fluxes at the surface and is therefore not
-compatible with the concept of hydrological or agricultural drought. The
-Standardized Precipitation-Evapotranspiration Index (SPEI; Vicente-Serrano et
-al., 2010) has been developed to also account for temperature effects on the
-surface water fluxes, by estimating the Potential Evapo-Transpiration (PET).
+Because SPI does not account for evaporation from the ground, it lacks one
+component of the water fluxes at the surface and is therefore not compatible
+with the concept of hydrological or agricultural drought. The Standardized
+Precipitation-Evapotranspiration Index
+(SPEI; Vicente-Serrano et al., 2010) has been developed to also account for
+temperature effects on the surface water fluxes, by estimating the
+Potential Evapo-Transpiration (PET).
 
 More details and usage examples can be found in the
 :ref:`SPEI recipe documentation <recipes_spei>`.
@@ -88,6 +89,7 @@ Variables
 * tasmax     (atmos, monthly mean, time latitude longitude)
 * sfcWind     (atmos, monthly mean, time latitude longitude)
 * rsds     (atmos, monthly mean, time latitude longitude)
+* rsdt     (atmos, monthly mean, time latitude longitude)
 * clt    (atmos, monthly mean, time latitude longitude)
 * hurs    (atmos, monthly mean, time latitude longitude)
 * ps    (atmos, monthly mean, time latitude longitude)
