@@ -321,27 +321,27 @@ User settings in recipe
    *Required settings for script*
 
    * data_statistics: a dictionary with the statistics to be calculated
-   for each variable group. Should contain keywords 'best_guess' and
-   'borders'. 'borders' should be a list with two statistics. The statistics
-   values are the same as 'operator' as in the preprocessors.
+     for each variable group. Should contain keywords 'best_guess' and
+     'borders'. 'borders' should be a list with two statistics. The statistics
+     values are the same as 'operator' as in the preprocessors.
 
    *Optional settings for script*
 
    * bias: boolean flag, indicating, if bias should be calculated.
-   If none provided, absolute values will be used.
+     If none provided, absolute values will be used.
    * mask: a dictionary with the mask information. The accepted
-   keywords are 'flag' (required), 'type' (required) and 'group' (optional).
-   'flag' is a boolean flag if the mask should be used.
-   'type' accepts two values: 'simple' and 'resolved'.
-   If 'simple' option is used, the data will be masked to the existing
-   mask from the reference dataset. If 'resolved' is used, the values
-   along the dimension of the data will be masked using the data from
-   the variable group 'group'.
+     keywords are 'flag' (required), 'type' (required) and 'group' (optional).
+     'flag' is a boolean flag if the mask should be used.
+     'type' accepts two values: 'simple' and 'resolved'.
+     If 'simple' option is used, the data will be masked to the existing
+     mask from the reference dataset. If 'resolved' is used, the values
+     along the dimension of the data will be masked using the data from
+     the variable group 'group'.
    * mpl_style: name of the matplotlib style file. If none provided, the
-   default style will be used.
+     default style will be used.
    * caption: figure caption. If none, an empty string will be used.
    * color_style: a name of the color_style to be used. If none provided,
-   the default style file will be used.
+     the default style file will be used.
 
 
 Variables

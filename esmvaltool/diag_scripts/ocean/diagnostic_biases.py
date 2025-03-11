@@ -6,22 +6,20 @@ dataset or plots the data and the reference dataset.
 The diagnostic accepts the groups of the 1D datasets (with exception
 of the resolved mask).
 The additional keywords for the diagnostic provided through the recipe:
-
-bias: True # if bias should be calculated (optional), default: false
-mask: # if the data should be masked (optional), default: false
-    flag: true
-    type: simple # accepted values: 'simple' and 'resolved'
-statistics:
-    best_guess: mean # best guess statistic
-    borders: # borders for the shading
-    - operator: percentile
-        percent: 5
-    - operator: percentile
-        percent: 95
-mpl_style: ipcc_ar6_fgd # name of the matplotlib style file (optional)
-caption: Zonal mean SST bias # Figure caption (optional)
-color_style: sst_bias # name of the color style, colors are defined for
-                      # variable groups
+bias: an option boolean flag showing if bias is calculated, default: false
+mask: an optional dictionary if the data should be masked, default: false
+mask is a dictionary and should contain keywords:
+flag: flag showing if the data should be masked
+type: type of mask, accepted values: 'simple' and 'resolved'
+group: name of the variable group with resolved mask (needed only if
+type='resolved')
+statistics: a dictionary with the statistics which will be plotted. Needs
+keywords 'best_guess': a string with the statistical operator, and
+'borders' a list with the statistics to be the borders for teh shading.
+mpl_style: name of the matplotlib style file (optional)
+caption: figure caption (optional)
+color_style: optional name of the color style, colors are defined for
+variable groups.
 
 The resolved mask can have as many dimensions as one needs.
 
