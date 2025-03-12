@@ -97,7 +97,11 @@ log = logging.getLogger(__file__)
 
 
 METRICS = ["first", "last", "diff", "total", "percent"]
-
+PROVENANCE = {
+    "authors": ["lindenlaub_lukas"],
+    "domains": ["global"],
+    "plot_types": ["map"],
+}
 
 def plot_colorbar(
     cfg: dict,
@@ -154,8 +158,11 @@ def plot(
     cube: Cube,
     basename: str,
     kwargs: dict | None = None,
-) -> None:
-    """Plot map using diag_scripts.shared module."""
+) -> str:
+    """Plot map using diag_scripts.shared module.
+
+    Returns the plot filename.
+    """
     plotfile = e.get_plot_filename(basename, cfg)
     plot_kwargs = cfg.get("plot_kwargs", {}).copy()
     if kwargs is not None:
@@ -189,6 +196,7 @@ def plot(
     fig.savefig(plotfile, bbox_inches="tight")
     plt.close()
     log.info("saved figure: %s", plotfile)
+    return plotfile
 
 
 def apply_plot_kwargs_overwrite(
@@ -213,6 +221,51 @@ def apply_plot_kwargs_overwrite(
         kwargs.update(new_kwargs)
     return kwargs
 
+def get_provenance(cfg: dict, meta: dict) -> dict:
+    """Create provenance dict for single model plots."""
+    prov = PROVENANCE.copy()
+    prov["statistics"] = ["mean"]
+    dataset = meta.get("dataset", "unknown")
+    if dataset == "MMM":
+        dataset = "Multi-Model Mean"
+    if meta["diffmap_metric"] == "diff":
+        prov["statistics"] = ["diff", "mean"]
+        prov["caption"] = (
+            f"Absolute difference in {meta['long_name']} between first and "
+            f"last {cfg['comparison_period']} years of the period "
+            f"{meta['start_year']}-{meta['end_year']}, based on "
+            f"{meta['dataset']}."
+        )
+    elif meta["diffmap_metric"] == "percent":
+        prov["statistics"] = ["diff", "mean"]
+        prov["caption"] = (
+            f"Relative difference in {meta['long_name']} between first and "
+            f"last {cfg['comparison_period']} years of the period "
+            f"{meta['start_year']}-{meta['end_year']}, based on "
+            f"{meta['dataset']}."
+        )
+    elif meta["diffmap_metric"] == "first":
+        prov["caption"] = (
+            f"Average {meta['long_name']} over the period "
+            f"{meta['start_year']}-"
+            f"{meta['start_year']+cfg['comparison_period']-1}, based on "
+            f"{meta['dataset']}."
+        )
+    elif meta["diffmap_metric"] == "last":
+        prov["caption"] = (
+            f"Average {meta['long_name']} over the period "
+            f"{meta['end_year']-cfg['comparison_period']+1}-"
+            f"{meta['end_year']}, based on "
+            f"{meta['dataset']}."
+        )
+    elif meta["diffmap_metric"] == "total":
+        prov["caption"] = (
+            f"Average {meta['long_name']} over the period "
+            f"{meta['start_year']}-{meta['end_year']}, based on "
+            f"{meta['dataset']}."
+        )
+    return prov
+
 
 def calculate_diff(cfg, meta, mm_data, output_meta, group) -> None:
     """Absolute difference between first and last years of a cube.
@@ -231,7 +284,7 @@ def calculate_diff(cfg, meta, mm_data, output_meta, group) -> None:
         cube = pp.extract_time(
             cube, cfg["start_year"], 1, 1, cfg["end_year"], 12, 31
         )
-    dtime = cfg.get("comparison_period", 10) * 12
+    dtime = cfg["comparison_period"] * 12
     cubes = {}
     cubes["total"] = cube.collapsed("time", MEAN)
     do_metrics = cfg.get("metrics", METRICS)
@@ -239,7 +292,7 @@ def calculate_diff(cfg, meta, mm_data, output_meta, group) -> None:
         int(meta["end_year"])
         - int(meta["start_year"])
         + 1  # count full end year
-        - cfg.get("comparison_period", 10)  # decades center to center
+        - cfg["comparison_period"]  # decades center to center
     ) / 10
     cubes["first"] = cube[0:dtime].collapsed("time", MEAN)
     cubes["last"] = cube[-dtime:].collapsed("time", MEAN)
@@ -258,6 +311,8 @@ def calculate_diff(cfg, meta, mm_data, output_meta, group) -> None:
         meta["exp"] = meta.get("exp", "exp")
         basename = cfg["basename"].format(**meta)
         meta["title"] = cfg["titles"][key].format(**meta)
+        prov = get_provenance(cfg, meta)
+        prov["ancestors"] = [meta["filename"]]
         if cfg.get("plot_models", True):
             plot_kwargs = cfg.get("plot_kwargs", {}).copy()
             apply_plot_kwargs_overwrite(
@@ -266,23 +321,25 @@ def calculate_diff(cfg, meta, mm_data, output_meta, group) -> None:
                 key,
                 group,
             )
-            plot(cfg, meta, cube, basename, kwargs=plot_kwargs)
+            plotfile = plot(cfg, meta, cube, basename, kwargs=plot_kwargs)
             plt.close()
+            ut.log_provenance(cfg, plotfile, prov)
         if cfg.get("save_models", True):
             work_file = str(Path(cfg["work_dir"]) / f"{basename}.nc")
             iris.save(cube, work_file)
             meta["filename"] = work_file
             output_meta[work_file] = meta.copy()
+            ut.log_provenance(cfg, work_file, prov)
 
 
 def calculate_mmm(cfg, meta, mm_data, output_meta, group) -> None:
     """Calculate multi-model mean for a given metric."""
     for metric in cfg.get("metrics", METRICS):
-        drop = cfg.get("dropcoords", ["time", "height"])
         meta = meta.copy()  # don't modify meta in place:
-        meta["dataset"] = "MMM"
         meta["diffmap_metric"] = metric
         basename = cfg["basename"].format(**meta)
+        drop = cfg.get("dropcoords", ["time", "height", "realization"])
+        # TODO: use pp mean and stdv instead of iris?
         mmm, _ = ut.mmm(
             mm_data[metric],
             dropcoords=drop,
@@ -298,7 +355,6 @@ def calculate_mmm(cfg, meta, mm_data, output_meta, group) -> None:
         if cfg.get("save_mmm", True):
             work_file = str(Path(cfg["work_dir"]) / f"{basename}.nc")
             meta["filename"] = work_file
-            meta["diffmap_metric"] = metric
             output_meta[work_file] = meta.copy()
             iris.save(mmm, work_file)
 
@@ -341,13 +397,19 @@ def main(cfg) -> None:
         for meta in g_metas:
             if "end_year" not in meta:
                 meta.update(ut.get_time_range(meta["filename"]))
+                print(meta['end_year'])
             # adjust norm for selected time period
             meta["end_year"] = cfg.get("end_year", meta["end_year"])
             meta["start_year"] = cfg.get("start_year", meta["start_year"])
             calculate_diff(cfg, meta, mm_data, output, group)
         do_mmm = cfg.get("plot_mmm", True) or cfg.get("save_mmm", True)
         if do_mmm and len(g_metas) > 1:
-            calculate_mmm(cfg, g_metas[0], mm_data, output, group)
+            # copy meta from first dataset and add all ancestors
+            meta = ut.get_common_meta(g_metas)
+            meta["ancestors"] = [met["filename"] for met in g_metas]
+            meta["dataset"] = "MMM"
+            del meta["institute"]
+            calculate_mmm(cfg, meta, mm_data, output, group)
     ut.save_metadata(cfg, output)
 
 

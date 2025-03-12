@@ -553,7 +553,7 @@ def mmm(
     mdtol: float = 0,
     dropcoords: list | None = None,
     *,
-    dropmethods=False,
+    dropmethods: bool = False,
 ) -> tuple:
     """Calculate mean and stdev along a cube list over all cubes.
 
@@ -586,7 +586,7 @@ def mmm(
         merged = cube_list.merge_cube()
     except iris.exceptions.MergeError as err:
         iris.util.describe_diff(cube_list[0], cube_list[1])
-        raise iris.exceptions.MergeError from err
+        raise err
     if mdtol > 0:
         log.info("performing MMM with tolerance: %s", mdtol)
     mean = merged.collapsed("dataset", iris.analysis.MEAN, mdtol=mdtol)
@@ -696,6 +696,16 @@ def select_meta_from_combi(meta: list, combi: dict, groups: dict) -> tuple:
     filter_cfg = clean_meta(this_cfg)  # remove non meta keys
     this_meta = select_metadata(meta, **filter_cfg)[0]
     return this_meta, this_cfg
+
+
+def get_common_meta(metas: list) -> dict:
+    """Return a dictionary of meta data, that is common between all inputs."""
+    common = {}
+    for key in metas[0]:
+        unique_values = {m[key] for m in metas}
+        if len(unique_values) == 1:
+            common[key] = unique_values.pop()
+    return common
 
 
 def list_meta_keys(meta: list, group: dict) -> list:
