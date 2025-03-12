@@ -18,6 +18,7 @@ from pathlib import Path
 import numpy as np
 import glob
 import os
+import requests
 
 import iris
 
@@ -73,6 +74,101 @@ def setup_basename_file(filename, var, table):
     return '_'.join(file)
 
 
+def download_files_from_zenodo(zenodo_link, output_dir):
+    # Extract the record ID from the Zenodo link
+    record_id = zenodo_link.split('/')[-1]
+    try:
+        int(record_id)
+    except ValueError:
+        raise ValueError(
+            f"Extracted Zenodo id '{record_id}' is not a valid integer.")
+    api_url = f"https://zenodo.org/api/records/{record_id}"
+
+    # Fetch the record metadata
+    response = requests.get(api_url)
+    if response.status_code != 200:
+        raise ValueError("Failed to fetch Zenodo record metadata.")
+
+    record_metadata = response.json()
+
+    # Download relevant files in the record
+    # - trace.nc
+    # - none_trace-params.txt
+    # - scalers.csv
+    files_to_download = [
+        ('trace', 'nc'), ('none_trace-params', 'txt'), ('scalers', 'csv')]
+    for file_info in record_metadata['files']:
+        file_url = file_info['links']['self']
+        file_name = file_info['key']
+        if any([
+            (f[0] in file_name) and
+            (f[1] == file_name.split('.')[-1]) for f in files_to_download]):
+            file_path = os.path.join(output_dir, file_name)
+            file_response = requests.get(file_url)
+            if file_response.status_code == 200:
+                with open(file_path, 'wb') as file:
+                    file.write(file_response.content)
+                logger.info(f"Downloaded {file_name} to {output_dir}.")
+            else:
+                raise ValueError(
+                    f'Failed to download {file_name} to {output_dir}.')
+
+
+def get_parameter_directory(config):
+    param_dir = None
+    # If confire_param is a local directory = return this directory
+    if os.path.isdir(config['confire_param']):
+        logger.info(
+            'Using ConFire model parameter files from directory ' +
+            config['confire_param']
+        )
+        # Check if the needed files are present in the directory
+        # trace.nc file
+        file_trace = glob.glob(param_dir + "trace*.nc")
+        if not file_trace:
+            raise ValueError(
+                f'{param_dir} should contain a trace file named trace*.nc.'
+            )
+        # none_trace-params.txt file
+        file_none_trace = glob.glob(param_dir + "none_trace-params*.txt")
+        if not file_none_trace:
+            raise ValueError(
+                f'{param_dir} should contain a trace parameter file named ' +
+                'none_trace-params*.txt.'
+            )
+        # scalers.csv file
+        scale_file = glob.glob(param_dir + "scalers*.csv")
+        if not scale_file:
+            raise ValueError(
+                f'{param_dir} should contain a scalers file named ' +
+                'scalers*.csv.'
+            )
+        # Return input directory
+        param_dir = config['confire_param']        
+    # If confire_param is a Zenodo URL = download relevant files
+    # Zenodo URL should follow the layout:
+    #   https://zenodo.org/records/{record_id}
+    # where record_id is a number typically corresponding to
+    # the attribute zenodo.{record_id} in the DOI.
+    elif "https://zenodo.org/records/" in config['confire_param']:
+        logger.info(
+            'Retrieving ConFire model parameter files from ' +
+            config['confire_param']
+        )
+        param_dir = config['work_dir'] + '/ConFire_parameter_files/'
+        os.makedirs(param_dir, exist_ok=True)
+        download_files_from_zenodo(
+            zenodo_link=config['confire_param'],
+            output_dir=param_dir)
+    # Otherwise raise an error
+    else:
+        raise ValueError(
+            'Recipe input confire_param should either be a directory or a ' +
+            f'Zenodo URL. Parameter was set to {config['confire_param']}.'
+        )
+    return param_dir
+
+
 def compute_vpd(config, tas, hurs, provenance):
     """Compute the Vapor Pressure Deficit (VPD) using tas and hurs following
     equations 4 and 5 in:
@@ -120,7 +216,6 @@ def compute_vpd(config, tas, hurs, provenance):
         data,
         dim_coords_and_dims=dim_coords,
         long_name='vapor_pressure_deficit',
-        standard_name='Vapor pressure deficit',
         var_name='vpd',
         units='hPa'
     )
@@ -152,9 +247,11 @@ def main(config):
     diag_dir = os.path.abspath(os.path.dirname(__file__))
     logger.info(f'Diagnostic directory {diag_dir}')
     config['diag_dir'] = diag_dir
-    # Add the namelists to the config
-    # config['training_namelist'] = f'{diag_dir}/{config_namelist}'
-    # config['config_namelist'] = f'{diag_dir}/{config_namelist}'
+
+    # ConFire model parameter files
+    # - download files from a Zenodo archive
+    # - use a local path to files
+    config['confire_param_dir'] = get_parameter_directory(config)
 
     for model_dataset, group in datasets.items():
         # 'model_dataset' is the name of the model dataset.

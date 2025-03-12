@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pandas as pd
+import glob
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -635,7 +636,6 @@ class ConFire(object):
 
 def diagnostic_run_ConFire(config):
     # --------------------------------------------------------
-    # **Pantanal Example: Running ConFire Model**
     # This script runs the ConFire model using pre-generated parameter files.
     # It calculates burnt area under different control conditions and saves
     # results.
@@ -643,17 +643,15 @@ def diagnostic_run_ConFire(config):
 
     work_dir = config['work_dir']
     diag_dir = config['diag_dir']
-    confire_model = config['confire_model']
+    confire_param = config['confire_param_dir']
 
     # **Define Paths for Parameter Files  and for outputs**
-    info_dir = diag_dir + '/parameter_files/'
     output_dir = work_dir + '/ConFire_outputs/'
 
     # Parameter files (traces, scalers, and other model parameters)
-    param_file_trace = info_dir + f"trace-_{confire_model}.nc"
-    param_file_none_trace = info_dir + \
-        f"none_trace-params-_{confire_model}.txt"
-    scale_file = info_dir + f"scalers-_{confire_model}.csv"
+    param_file_trace = glob.glob(confire_param + "trace*.nc")
+    param_file_none_trace = glob.glob(confire_param + "none_trace-params*.txt")
+    scale_file = glob.glob(confire_param + "scalers*.csv")
 
     # Number of samples to run from the trace file
     nsample_for_running = 100
@@ -706,7 +704,6 @@ def diagnostic_run_ConFire(config):
             id, params, params_names, extra_params
         )
         
-        Fmax = param_in['Fmax0'].copy()
         # **Run Full Model**
         out_cubes[0].append(run_model_into_cube(param_in, coord))
 
@@ -717,12 +714,10 @@ def diagnostic_run_ConFire(config):
             param_in = construct_param_comb(
                 cn, params, params_names, extra_params
             )
-            param_in['Fmax0'] = np.array([1.0])
             out_cubes[cn+1].append(run_model_into_cube(param_in, coord))
 
         # **Run Model with All Controls Off (Stochastic Control)**
         param_in['control_Direction'][:] = [0] * Nexp
-        param_in['Fmax0'] = Fmax
         out_cubes[cn+2].append(run_model_into_cube(param_in, coord))
 
     # **Save Output Cubes**
@@ -742,7 +737,8 @@ def diagnostic_run_ConFire(config):
     # **Load and Plot Output Data**
     logger.info('Plotting model diagnostic outputs...')
     fig, axes = plt.subplots(
-        4, 2, figsize=(8, 10), subplot_kw={'projection': ccrs.PlateCarree()})
+        nrows=4, ncols=2, figsize=(8, 10),
+        subplot_kw={'projection': ccrs.PlateCarree()})
     axes = axes.flatten()   # Flatten to handle looping easily
     plotN = 0
     for i, filename in enumerate(filenames_out):

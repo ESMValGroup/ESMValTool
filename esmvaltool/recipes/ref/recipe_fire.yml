@@ -77,8 +77,12 @@ diagnostics:
     scripts:
       fire_evaluation:
         script: fire/fire_diagnostic.py
+        # Path or Zenodo URL to the ConFire model parameter files
+        # confire_param: 'https://zenodo.org/records/14917245'
+        confire_param: '~/projects/ESMValTool/esmvaltool/diag_scripts/fire/parameter_files/'
         # IMPORTANT = the order of the variables should fit the configuration files of the ConFire model run
-        confire_model: '6-frac_points_0.8-nvariables_-frac_random_sample0.8-nvars_6-niterations_4000'
         var_order: ['pr', 'tasmax', 'treeFrac', 'vegFrac', 'vpd', 'cVeg']
+        # Removing or not the computed vapor pressure deficit files
         remove_vpd_files: False
+        # Removing or not the files produced during the ConFire model evaluation
         remove_confire_files: False
