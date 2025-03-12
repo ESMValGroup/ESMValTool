@@ -6,10 +6,11 @@ on:
   # Triggers the workflow on push events
   push:
     paths:
-#      - esmvaltool/utils/recipe_test_workflow/**
+      - esmvaltool/utils/recipe_test_workflow/**
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  # Schedule this workflow to run at 04:00 every 10 days
+  schedule:
+    - cron: '0 4 */10 * *'
 
 # Common variables are defined here
 env:
@@ -27,25 +28,20 @@ jobs:
   check-rtw:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || github.repository == 'ESMValGroup/ESMValTool' # avoid scheduled GHAs in forks
 
     # Steps represent a sequence of tasks that will be executed as part
     # of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job
       # can access it
-      - uses: actions/checkout@v4
-      - uses: conda-incubator/setup-miniconda@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Cylc
+        uses: cylc/setup-cylc@v1
         with:
-          miniforge-version: "latest"
-          miniforge-variant: Miniforge3
-          use-mamba: true
-          conda-remove-defaults: "true"
-
-      - name: Install Cylc and Rose
-        run: conda install cylc-flow>=8.2 cylc-rose metomi-rose
-
-      - name: Check current environment
-        run: conda list
+          cylc_rose: true
 
       - name: Validate Cylc workflow
         run: |
