@@ -1,5 +1,4 @@
 """Overview plots for pattern correlations of multiple variables.
-=================================================================
 
 This diagnostic calculates the pattern correlation between pairs of datasets
 over several datasets and plots them for all variables and datasets in one
@@ -48,17 +47,21 @@ labels: dict, optional
 # from esmvalcore import preprocessor as pp
 import logging
 from collections import defaultdict
+from pathlib import Path
 from pprint import PrettyPrinter
 
 import iris
 import iris.analysis
 import iris.analysis.cartography
+import iris.plot as iplt
 import matplotlib.pyplot as plt
+import numpy as np
 from iris.analysis import MEAN
 from iris.analysis.stats import pearsonr
+from numpy import ma
 
 from esmvaltool.diag_scripts import shared
-from esmvaltool.diag_scripts.droughtindex import utils as ut
+from esmvaltool.diag_scripts.droughts import utils as ut
 
 logger = logging.getLogger(__file__)
 p = PrettyPrinter(indent=4)
@@ -66,7 +69,8 @@ p = PrettyPrinter(indent=4)
 
 def pattern_correlation(cube1, cube2, centered=False, weighted=False):
     """Calculate pattern correlation between two 2d-cubes.
-    uses pearsonr from scipy.stats to calculate the correlation coefficient
+
+    Uses pearsonr from scipy.stats to calculate the correlation coefficient
     along latitude and longitude coordinates. Returns area weighted
     coefficient.
     weighted applies only to the centering (weighted mean subtraction) and not
@@ -104,18 +108,10 @@ def process(metas, cfg, key=None):
     # reference = shared.select_metadata(metas, dataset=cfg["reference"])
     cfg["variables"] = shared.group_metadata(metas, "short_name").keys()
     extra_labels = defaultdict(list)
-    # print(
-    #     [
-    #         m["short_name"]
-    #         for m in shared.group_metadata(metas, "dataset")["ERA5"]
-    #     ]
-    # )
     for var, var_metas in shared.group_metadata(metas, "short_name").items():
         logger.info("Processing %s (%s datasets)", var, len(var_metas))
         reference = ut.select_single_metadata(
-            var_metas,
-            dataset=cfg["reference"],
-            short_name=var,
+            var_metas, dataset=cfg["reference"], short_name=var
         )
         ref_cube = iris.load_cube(reference["filename"])
         results[var] = defaultdict(list)
@@ -123,20 +119,13 @@ def process(metas, cfg, key=None):
             if ds_meta["dataset"] in ["MMM", cfg["reference"]]:
                 continue
             ds_meta["project"] = ds_meta.get("project", "unknown")
-            # TODO: this need to be fixed in diag_pet.R:
-            if var == "evspsblpot" and ds_meta["project"] == "unknown":
-                ds_meta["project"] = "CMIP6"
             cube = iris.load_cube(ds_meta["filename"])
-            # print(ds_meta['filename'])
-            # print(cube)
             ds_result = float(pattern_correlation(ref_cube, cube))
             if ds_meta["project"] in cfg.get("projects", ["CMIP6"]):
                 results[var][ds_meta["project"]].append(ds_result)
             elif cfg.get("extra_datasets", True):
                 results[var]["extra"].append(ds_result)
                 extra_labels[var].append(ds_meta["dataset"])
-            # print("RSULTS")
-            # print(ds_result)
     title = None
     if cfg.get("plot_title", False):
         title = f"Pattern Correlation with {cfg['reference']} ({key})"
@@ -165,7 +154,6 @@ def process_relative_change(metas, cfg):
             cube = iris.load_cube(ds_meta["filename"])
             iris.analysis.maths.abs(cube, in_place=True)
             rel = cube.collapsed(["latitude", "longitude"], iris.analysis.MEAN)
-            print(rel)
             ds_result = float(rel.data)
             if ds_meta["project"] in cfg.get("projects", ["CMIP6"]):
                 results[var][ds_meta["project"]].append(ds_result)
@@ -209,8 +197,6 @@ def plot(
     var_count = len(results.keys())
     # TODO: Start with simple case for 2 groups (add multiple groups later)
     projects = cfg.get("projects", ["CMIP6"])
-    # proj_count = len(groups)
-    # shift = 0.8 / group_count
 
     axes.set_title(title)
     axes.plot([], **plot_kwargs)
@@ -241,12 +227,9 @@ def plot(
     if cfg.get("extra_datasets", True):
         markers = ds_markers(extra_labels)
         scatters = defaultdict(list)
-        print("plotting extra data")
         for i, var in enumerate(results.keys()):
             # TODO add label here manually?
             y_pos = results[var]["extra"]
-            print(var)
-            print(y_pos)
             for j, value in enumerate(y_pos):
                 scatters[extra_labels[var][j]].append((i + 0.2, value))
         for ds, values in scatters.items():
@@ -255,11 +238,7 @@ def plot(
                 label = "CDS-SM"
             x_pos, y_pos = zip(*values)
             axes.scatter(
-                x_pos,
-                y_pos,
-                marker=markers[ds],
-                color="gray",
-                label=label,
+                x_pos, y_pos, marker=markers[ds], color="gray", label=label
             )
     axes.legend()
     if cfg.get("plot_properties"):
