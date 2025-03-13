@@ -22,6 +22,9 @@ datasets:
 timerange_for_models: &time_period
   timerange: '2000/2014'  # can be specified, this is just an example
 
+timerange_diurnal: &time_diurnal_period
+  timerange: '20060101/20060201'  # can be specified, this is just an example
+
 
 preprocessors:
 
@@ -30,6 +33,14 @@ preprocessors:
       operator: mean
     climate_statistics:
       period: month
+
+  pp_Tropics:
+    <<: *global_settings
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -30
+      end_latitude: 30
 
   pp_SEPacific:
     <<: *global_settings
@@ -59,21 +70,76 @@ preprocessors:
       start_latitude: 45
       end_latitude: 60
 
+  pp_diurn_Tropics:
+    custom_order: true
+    local_solar_time:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -30
+      end_latitude: 30
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: hourly
+
+  pp_diurn_SEPacific:
+    custom_order: true
+    local_solar_time:
+    extract_region:
+      start_longitude: 265
+      end_longitude: 275
+      start_latitude: -25
+      end_latitude: -5
+    mask_landsea:
+      mask_out: land
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: hourly
+
+  pp_diurn_SouthernOcean:
+    custom_order: true
+    local_solar_time:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -65
+      end_latitude: -30
+    mask_landsea:
+      mask_out: land
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: hourly
+
+  pp_diurn_StormTracks:
+    custom_order: true
+    local_solar_time:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 45
+      end_latitude: 60
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: hourly
+
 
 diagnostics:
 
   anncyc:
     description: Plot annual cycles including reference datasets.
     variables:
-      clt_global: &clt_settings
+      clt_tropics: &clt_settings
+        <<: *clt_settings
         <<: *time_period
-        preprocessor: pp_global
+        preprocessor: pp_Tropics
         short_name: clt
         mip: Amon
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
-      clt_tropics:
-        <<: *clt_settings
       clt_sepacific:
         <<: *clt_settings
         preprocessor: pp_SEPacific
@@ -83,15 +149,13 @@ diagnostics:
       clt_stormtracks:
         <<: *clt_settings
         preprocessor: pp_StormTracks
-      clivi_global: &clivi_settings
+      clivi_tropics: &clivi_settings
         <<: *time_period
-        preprocessor: pp_global
+        preprocessor: pp_Tropics
         short_name: clivi
         mip: Amon
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
-      clivi_tropics:
-        <<: *clivi_settings
       clivi_sepacific:
         <<: *clivi_settings
         preprocessor: pp_SEPacific
@@ -101,16 +165,14 @@ diagnostics:
       clivi_stormtracks:
         <<: *clivi_settings
         preprocessor: pp_StormTracks
-      lwp_global: &lwp_settings
+      lwp_tropics: &lwp_settings
         <<: *time_period
-        preprocessor: pp_global
+        preprocessor: pp_Tropics
         short_name: lwp
         derive: true
         mip: Amon
         additional_datasets:
           - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
-      lwp_tropics:
-        <<: *lwp_settings
       lwp_sepacific:
         <<: *lwp_settings
         preprocessor: pp_SEPacific
@@ -120,16 +182,14 @@ diagnostics:
       lwp_stormtracks:
         <<: *lwp_settings
         preprocessor: pp_StormTracks
-      swcre_global: &swcre_settings
+      swcre_tropics: &swcre_settings
         <<: *time_period
-        preprocessor: pp_global
+        preprocessor: pp_Tropics
         short_name: swcre
         derive: true
         mip: Amon
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1, tier: 2}
-      swcre_tropics:
-        <<: *swcre_settings
       swcre_sepacific:
         <<: *swcre_settings
         preprocessor: pp_SEPacific
@@ -139,16 +199,14 @@ diagnostics:
       swcre_stormtracks:
         <<: *swcre_settings
         preprocessor: pp_StormTracks
-      lwcre_global: &lwcre_settings
+      lwcre_tropics: &lwcre_settings
         <<: *time_period
-        preprocessor: pp_global
+        preprocessor: pp_Tropics
         short_name: lwcre
         derive: true
         mip: Amon
         additional_datasets:
           - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1, tier: 2}
-      lwcre_tropics:
-        <<: *lwcre_settings
       lwcre_sepacific:
         <<: *lwcre_settings
         preprocessor: pp_SEPacific
@@ -174,6 +232,47 @@ diagnostics:
               MPI-ESM1-2-LR:
                 color: C1
               ESACCI-CLOUD:
+                color: black
+              CERES-EBAF:
+                color: black
+            pyplot_kwargs:
+              title: '{short_name}'
+
+  diurncyc:
+    description: Example plot diurnal cycles including reference datasets.
+    variables:
+      clt_tropics: &clt_diurn_settings
+        <<: *time_diurnal_period
+        preprocessor: pp_diurn_Tropics
+        short_name: clt
+        mip: 3hr
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', frequency: 1hr, tier: 3}
+      clt_sepacific:
+        <<: *clt_diurn_settings
+        preprocessor: pp_diurn_SEPacific
+      clt_southerocean:
+        <<: *clt_diurn_settings
+        preprocessor: pp_diurn_SouthernOcean
+      clt_stormtracks:
+        <<: *clt_diurn_settings
+        preprocessor: pp_diurn_StormTracks
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        group_variables_by: variable_group
+        plots:
+          diurnal_cycle:
+            legend_kwargs:
+              loc: upper right
+            plot_kwargs:
+              MPI-ESM1-2-HR:
+                color: C0
+              MPI-ESM1-2-LR:
+                color: C1
+              ERA5:
                 color: black
             pyplot_kwargs:
               title: '{short_name}'

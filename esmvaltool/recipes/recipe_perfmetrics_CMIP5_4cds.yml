@@ -1877,7 +1877,7 @@ diagnostics:
   #    - atmosChem
   #  variables:
   #    toz:
-  #      preprocessor: ppNOLEV2thr10
+  #      preprocessor: ppNOLEV2thr10  # TODO: add convert_units preprocessor (to DU)
   #      reference_dataset: ESACCI-OZONE
   #      alternative_dataset: NIWA-BS
   #      mip: Amon

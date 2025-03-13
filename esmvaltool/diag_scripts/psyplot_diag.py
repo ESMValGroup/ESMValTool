@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Create arbitrary Psyplot plots.
 
 Description
@@ -36,6 +35,7 @@ seaborn_settings: dict, optional
     Options for :func:`seaborn.set_theme` (affects all plots).
 
 """
+
 import logging
 from contextlib import redirect_stdout
 from copy import deepcopy
@@ -59,44 +59,50 @@ logger = logging.getLogger(Path(__file__).stem)
 def _get_default_cfg(cfg):
     """Get default options for configuration dictionary."""
     cfg = deepcopy(cfg)
-    cfg.setdefault('psyplot_kwargs', {})
-    cfg.setdefault('savefig_kwargs', {
-        'bbox_inches': 'tight',
-        'dpi': 300,
-        'orientation': 'landscape',
-    })
-    cfg.setdefault('seaborn_settings', {})
+    cfg.setdefault("psyplot_kwargs", {})
+    cfg.setdefault(
+        "savefig_kwargs",
+        {
+            "bbox_inches": "tight",
+            "dpi": 300,
+            "orientation": "landscape",
+        },
+    )
+    cfg.setdefault("seaborn_settings", {})
     return cfg
 
 
 def _get_plot_func(cfg):
     """Get psyplot plot function."""
-    if 'psyplot_func' not in cfg:
+    if "psyplot_func" not in cfg:
         raise ValueError("Necessary option 'psyplot_func' missing")
-    if not hasattr(psy.plot, cfg['psyplot_func']):
+    if not hasattr(psy.plot, cfg["psyplot_func"]):
         with redirect_stdout(StringIO()) as str_in:
             psy.plot.show_plot_methods()
         all_plot_funcs = str_in.getvalue()
         raise AttributeError(
             f"Invalid psyplot_func '{cfg['psyplot_func']}' (must be a "
             f"function of the module psyplot.project.plot). Currently "
-            f"supported:\n{all_plot_funcs}")
+            f"supported:\n{all_plot_funcs}"
+        )
     logger.info(
-        "Using plotting function psyplot.project.plot.%s", cfg['psyplot_func'])
-    return getattr(psy.plot, cfg['psyplot_func'])
+        "Using plotting function psyplot.project.plot.%s", cfg["psyplot_func"]
+    )
+    return getattr(psy.plot, cfg["psyplot_func"])
 
 
 def _get_psyplot_kwargs(cfg, dataset):
     """Get keyword arguments for psyplot plotting function."""
-    psyplot_kwargs = deepcopy(cfg['psyplot_kwargs'])
-    for (key, val) in psyplot_kwargs.items():
+    psyplot_kwargs = deepcopy(cfg["psyplot_kwargs"])
+    for key, val in psyplot_kwargs.items():
         if isinstance(val, str):
             try:
                 val = val.format(**dataset)
             except KeyError as exc:
                 raise ValueError(
                     f"Not all necessary facets psyplot_kwargs '{key}: {val}' "
-                    f"available for dataset" f"\n{pformat(dataset)}") from exc
+                    f"available for dataset\n{pformat(dataset)}"
+                ) from exc
             psyplot_kwargs[key] = val
     return psyplot_kwargs
 
@@ -104,14 +110,14 @@ def _get_psyplot_kwargs(cfg, dataset):
 def main(cfg):
     """Run diagnostic."""
     cfg = _get_default_cfg(cfg)
-    sns.set_theme(**cfg['seaborn_settings'])
+    sns.set_theme(**cfg["seaborn_settings"])
     plot_func = _get_plot_func(cfg)
 
     # Create individual plots for each dataset
-    input_data = list(cfg['input_data'].values())
+    input_data = list(cfg["input_data"].values())
     for dataset in input_data:
-        filename = dataset['filename']
-        logger.info("Creating plot '%s' for %s", cfg['psyplot_func'], filename)
+        filename = dataset["filename"]
+        logger.info("Creating plot '%s' for %s", cfg["psyplot_func"], filename)
 
         # Create plot
         psyplot_kwargs = _get_psyplot_kwargs(cfg, dataset)
@@ -120,24 +126,25 @@ def main(cfg):
         # Save plot
         basename = Path(filename).stem
         plot_path = get_plot_filename(basename, cfg)
-        plt.savefig(plot_path, **cfg['savefig_kwargs'])
+        plt.savefig(plot_path, **cfg["savefig_kwargs"])
         logger.info("Wrote %s", plot_path)
         plt.close()
 
         # Provenance tracking
-        caption = (f"Plot {cfg['psyplot_func']} of {dataset['long_name']} of "
-                   f"dataset {dataset['dataset']} ({dataset['start_year']}-"
-                   f"{dataset['end_year']}).")
+        caption = (
+            f"Plot {cfg['psyplot_func']} of {dataset['long_name']} of "
+            f"dataset {dataset['dataset']} ({dataset['start_year']}-"
+            f"{dataset['end_year']})."
+        )
         provenance_record = {
-            'ancestors': [filename],
-            'authors': ['schlund_manuel'],
-            'caption': caption,
+            "ancestors": [filename],
+            "authors": ["schlund_manuel"],
+            "caption": caption,
         }
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
 
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     with run_diagnostic() as config:
         main(config)
