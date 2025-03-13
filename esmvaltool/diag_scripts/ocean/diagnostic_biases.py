@@ -45,6 +45,7 @@ import esmvaltool.diag_scripts.shared.plot as eplot
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
+    save_data,
     save_figure,
     select_metadata,
 )
@@ -117,7 +118,7 @@ class Data4Analyis:
                 "statistics dictionary should be provided in the recipe. "
                 "The keywords 'best_guess' and 'borders' should be provided."
             )
-        self.calculate_statistics(stats)
+        self.calculate_statistics(stats, cfg)
 
     def determine_reference(self, group: list):
         """Determine the reference dataset from the data group.
@@ -226,7 +227,7 @@ class Data4Analyis:
         for n_cb in enumerate(self.data):
             self.data[n_cb[0]].data.mask = self.data[n_cb[0]].data.mask | mask
 
-    def calculate_statistics(self, stats: dict):
+    def calculate_statistics(self, stats: dict, cfg: dict):
         """Calculate statistics which later will be plotted.
 
         Parameters
@@ -234,8 +235,11 @@ class Data4Analyis:
         stats:
             dictionary with the statistics which will be calculated.
             Dictionary should have keywords 'best_guess' and 'borders'.
+        cfg:
+            Config dictionary coming from ESMValCore
 
         """
+        prov_dic = create_provenance("")
         if len(self.data) > 1:
             bg_dic = eprep.multi_model_statistics(
                 self.data,
@@ -244,6 +248,11 @@ class Data4Analyis:
                 ignore_scalar_coords=True,
             )
             self.best_guess = bg_dic[list(bg_dic.keys())[0]]
+            f_name = f"{self.name}_{self.best_guess.var_name}_"
+            f_name = f_name + "bias_" if self.bias else f_name
+            save_data(
+                f_name + list(bg_dic.keys())[0], prov_dic, cfg, self.best_guess
+            )
             bord_dic = eprep.multi_model_statistics(
                 self.data,
                 span="full",
@@ -251,13 +260,23 @@ class Data4Analyis:
                 ignore_scalar_coords=True,
             )
             self.border1 = bord_dic[list(bord_dic.keys())[0]]
+            save_data(
+                f_name + list(bord_dic.keys())[0], prov_dic, cfg, self.border1
+            )
             self.border2 = bord_dic[list(bord_dic.keys())[1]]
+            save_data(
+                f_name + list(bord_dic.keys())[1], prov_dic, cfg, self.border2
+            )
         else:
             # if just one dataset is in the group there is no need
             # to calculate the borders
             self.best_guess = self.data[0]
             self.border1 = None
             self.border2 = None
+            logger.info(
+                f"There were no statistics calculated for {self.name}"
+                "because only one cube was provided"
+            )
 
 
 def create_provenance(caption: str):
@@ -321,6 +340,11 @@ def plot_bias_plot(data_list: list[Data4Analyis], cfg: dict):
         iris.plot.plot(data_list[0].ref_cube, c=ref_col["color"])
 
     plt.title(caption)
+    plt.xlabel(data_list[0].best_guess.dim_coords[0].name())
+    y_label = data_list[0].best_guess.var_name
+    y_label = y_label + " bias" if cfg.get("bias") else y_label
+    y_label = y_label + f", {data_list[0].best_guess.units.origin}"
+    plt.ylabel(y_label)
     plt.tight_layout()
     fig_path = os.path.join(cfg["plot_dir"], "figure")
     save_figure(fig_path, prov_dic, cfg, fig, close=True)
