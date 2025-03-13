@@ -3,9 +3,20 @@
 ---
 documentation:
 
-  title: SST bias
+  title: Zonal and equatorial SST bias
 
-  description: Recipe to produce figure 3.24 for IPCC WG1
+  description: Recipe to produce figure 3.24 for AR6 IPCC WG1.
+    Biases in zonal mean and equatorial sea surface temperature (SST)
+    in CMIP5, CMIP6 and HighResMIP models. Panel (a) shows multi-model
+    mean zonally averaged SST bias; (b) equatorial SST bias;
+    and (c) equatorial SST compared to observed mean SST (black line)
+    for 1979–1999. The inter-model 5th and 95th percentiles are
+    depicted by the respective shaded range. Model climatologies are
+    derived from the 1979–1999 mean of the historical simulations,
+    using one simulation per model. The Hadley Centre Sea Ice and
+    Sea Surface Temperature version 1 (HadISST) observational
+    climatology for 1979–1999 is used as the reference for the error
+    calculation in (a) and (b); and for observations in (c).
 
   authors:
     - malinina_elizaveta
@@ -56,8 +67,6 @@ models_cmip5: &models_cmip5
   - {dataset: MPI-ESM-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: MPI-ESM-MR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: MPI-ESM-P, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  - {dataset: MRI-CGCM3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-  - {dataset: MRI-ESM1, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: NorESM1-M, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: NorESM1-ME, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   # observations/reference dataset
@@ -172,7 +181,6 @@ diagnostics:
       cmip5:
         short_name: tos
         preprocessor: prep_zonal
-        field: TO2M
         start_year: 1979
         end_year: 1999
         reference_dataset: HadISST
@@ -180,7 +188,6 @@ diagnostics:
       cmip6:
         short_name: tos
         preprocessor: prep_zonal
-        field: TO2M
         start_year: 1979
         end_year: 1999
         reference_dataset: HadISST
@@ -188,7 +195,6 @@ diagnostics:
       highresmip:
         short_name: tos
         preprocessor: prep_zonal
-        field: TO2M
         start_year: 1979
         end_year: 1999
         reference_dataset: HadISST
@@ -208,7 +214,7 @@ diagnostics:
             - operator: percentile
               percent: 95
         mpl_style: ipcc_ar6_fgd # name of the matplotlib style file (optional)
-        caption: Zonal mean SST bias # Figure caption (optional)
+        caption: (a) Zonal mean SST bias # Figure caption (optional)
         color_style: sst_bias # name of the color style, colors are defined for variable groups
 
   equatorial:
@@ -216,7 +222,6 @@ diagnostics:
       cmip5:
         short_name: tos
         preprocessor: prep_equatorial
-        field: TO2M
         start_year: 1979
         end_year: 1999
         reference_dataset: HadISST
@@ -224,7 +229,6 @@ diagnostics:
       cmip6:
         short_name: tos
         preprocessor: prep_equatorial
-        field: TO2M
         start_year: 1979
         end_year: 1999
         reference_dataset: HadISST
@@ -232,7 +236,6 @@ diagnostics:
       highresmip:
         short_name: tos
         preprocessor: prep_equatorial
-        field: TO2M
         start_year: 1979
         end_year: 1999
         reference_dataset: HadISST
@@ -240,7 +243,6 @@ diagnostics:
       eq_mask:
         short_name: tos
         preprocessor: prep_eq_mask
-        field: TO2M
         start_year: 1979
         end_year: 1999
         additional_datasets:
@@ -262,7 +264,7 @@ diagnostics:
             - operator: percentile
               percent: 95
         mpl_style: ipcc_ar6_fgd
-        caption: Equatorial SST bias
+        caption: (b) Equatorial SST bias
         color_style: sst_bias
 
       panel_c:
@@ -280,5 +282,5 @@ diagnostics:
             - operator: percentile
               percent: 95
         mpl_style: ipcc_ar6_fgd
-        caption: Equatorial SST
+        caption: (c) Equatorial SST
         color_style: sst_bias
