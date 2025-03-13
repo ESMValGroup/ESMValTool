@@ -698,13 +698,43 @@ def select_meta_from_combi(meta: list, combi: dict, groups: dict) -> tuple:
     return this_meta, this_cfg
 
 
-def get_common_meta(metas: list) -> dict:
-    """Return a dictionary of meta data, that is common between all inputs."""
+def _compare_dicts(dict1, dict2, sort) -> bool:
+    if dict1.kyes() != dict2.keys():
+        return False
+    return all(_compare_values(dict1[key], dict2[key], sort) for key in dict1)
+
+
+def _compare_values(val1, val2, sort) -> bool:
+    if isinstance(val1, dict) and isinstance(val2, dict):
+        return _compare_dicts(val1, val2)
+    if isinstance(val1, list) and isinstance(val2, list):
+        if len(val1) != len(val2):
+            return False
+        if sort:
+            val1 = sorted(val1)
+            val2 = sorted(val2)
+        return all(_compare_values(v1, v2, sort) for v1, v2 in zip(val1, val2))
+    try:
+        return val1 == val2
+    except ValueError:
+        return False
+
+
+def get_common_meta(metas: list, *, sort: bool = False) -> dict:
+    """Return a dictionary of meta data, that is common between all inputs.
+
+    Parameters
+    ----------
+    metas : list
+        List of meta data dictionaries.
+    sort : bool, optional
+        Sort lists before comparison. If true lists with same elements but
+        different order are considered to be equal. By default False.
+    """
     common = {}
     for key in metas[0]:
-        unique_values = {m[key] for m in metas}
-        if len(unique_values) == 1:
-            common[key] = unique_values.pop()
+        if all(_compare_values(metas[0][key], m[key], sort) for m in metas):
+            common[key] = metas[0][key]
     return common
 
 

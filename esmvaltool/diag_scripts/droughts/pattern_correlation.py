@@ -26,39 +26,38 @@ Configuration options in recipe
 -------------------------------
 reference: str, required
     Dataset name used to correlate all other datasets against.
+extra_datasets: bool, optional
+    Add datasets not belonging to any of the ``projects`` as individual markers.
+    This can be used to add individual reanalysis. By default: True
+fig_kwargs: dict, optional
+    Kwargs passed to the figure creation. By default: {"figsize": (4, 3)}
 group_by: str, optional (default: None)
     Plot figures for each entry of the given key.
+labels: dict, optional
+    Mapping of variable names to custom xtick labels. Falls back to variable
+    name if not present.
 project_plot_kwargs: dict, optional (default: {})
     Kwargs passed to the patches for specific projects the plot function.
 plot_kwargs: dict, optional (default: {})
     Kwargs passed to the plot function.
 projects: list, optional (default: ["CMIP6"])
     List of projects to include as individual colors in the plot.
-extra_datasets: bool, optional (default: True)
-    Add datasets not belonging to any of the projects as individual markers.
 relative_change: bool, optional (default: False)
     Creates an additional plot with global relative changes fo each variable
     in all datasets.
-labels: dict, optional
-    Mapping of variable names to custom xtick labels. Falls back to variable
-    name if not present.
 """
 
 # from esmvalcore import preprocessor as pp
 import logging
 from collections import defaultdict
-from pathlib import Path
 from pprint import PrettyPrinter
 
 import iris
 import iris.analysis
 import iris.analysis.cartography
-import iris.plot as iplt
 import matplotlib.pyplot as plt
-import numpy as np
 from iris.analysis import MEAN
 from iris.analysis.stats import pearsonr
-from numpy import ma
 
 from esmvaltool.diag_scripts import shared
 from esmvaltool.diag_scripts.droughts import utils as ut
@@ -110,6 +109,7 @@ def process(metas, cfg, key=None):
     extra_labels = defaultdict(list)
     for var, var_metas in shared.group_metadata(metas, "short_name").items():
         logger.info("Processing %s (%s datasets)", var, len(var_metas))
+        print(var_metas)
         reference = ut.select_single_metadata(
             var_metas, dataset=cfg["reference"], short_name=var
         )
@@ -190,12 +190,17 @@ def plot(
             )
         else:
             results = {key: results[key] for key in cfg["order"]}
-
-    fig, axes = plt.subplots(figsize=(4, 3))
-    plot_kwargs = dict(marker="_", linestyle="", markersize="5")
+    fig_kwargs = {"figsize": (4, 3)}
+    fig_kwargs.update(cfg.get("fig_kwargs", {}))
+    fig, axes = plt.subplots(**fig_kwargs)
+    plot_kwargs = {
+        "marker": "_",
+        "linestyle": "",
+        "markersize": "5",
+        "color": "darkred",
+    }
     plot_kwargs.update(cfg.get("plot_kwargs", {}))
     var_count = len(results.keys())
-    # TODO: Start with simple case for 2 groups (add multiple groups later)
     projects = cfg.get("projects", ["CMIP6"])
 
     axes.set_title(title)

@@ -152,24 +152,33 @@ preprocessors:
     mask_glaciated:
       mask_out: glaciated
 
+  perday:
+    <<: *default
+    convert_units:
+      units: mm day-1
+
+
 diagnostics:
   pet_historical: &pet_historical
     variables:
-      pr: &pet_default
+      tasmin: &pet_default
         <<: *var_default
         exp: ["historical"]
         <<: *obs_period
         additional_datasets: *cmip6_data
-      tasmin: *pet_default
       tasmax: *pet_default
       sfcWind: *pet_default
       # clt: *pet_default
       rsds: *pet_default
       ps: *pet_default
+      pr:
+        <<: *pet_default
+        preprocessor: perday
     scripts: &scripts_pet
       pet_pm:
         script: droughts/pet.R
         pet_type: "Penman"
+        method: ICID
 
   spei_historical: &spei_historical
     scripts:
@@ -188,18 +197,20 @@ diagnostics:
 
   pet_obs: &pet_obs
     variables:
-      pr: &pet_default_obs
+      tasmin: &pet_default_obs
         <<: *obs_period
         preprocessor: default
         mip: Amon
         additional_datasets:
           - <<: *era5
-      tasmin: *pet_default_obs
       tasmax: *pet_default_obs
       sfcWind: *pet_default_obs
       # clt: *pet_default_obs
       rsds: *pet_default_obs
       ps: *pet_default_obs
+      pr:
+        <<: *pet_default_obs
+        preprocessor: perday
     scripts:
       pet_pm:
         script: droughts/pet.R
@@ -215,17 +226,20 @@ diagnostics:
           end_year: 2014
         - <<: *cds
           mip: Lmon
-      pr: &add_cru
+      tasmin: &add_cru
         mip: Amon
         additional_datasets:
           - <<: *cru
-      tasmin: *add_cru
       tasmax: *add_cru
       # clt: *add_cru
       evspsblpot:
+        preprocessor: perday
         additional_datasets:
           - <<: *cru
             mip: Emon
+      pr:
+        <<: *add_cru
+        preprocessor: perday
     scripts:
       diffmaps:
         script: droughts/diffmap.py
@@ -246,13 +260,11 @@ diagnostics:
   validate_models: &validate_models
     # additional_datasets: *cmip6_data
     variables:
-      # pr: &var_default_historical
+      # tasmin: &var_default_historical
       #   <<: *var_default
       #   <<: *obs_period
       #   exp: ["historical"]
       #   additional_datasets: *cmip6_data
-      # tasmin:
-      #   <<: *var_default_historical
       # tasmax:
       #   <<: *var_default_historical
       sm:
@@ -267,6 +279,9 @@ diagnostics:
       #   <<: *var_default_historical
       # ps:
       #   <<: *var_default_historical
+      # pr:
+      #   <<: *var_default_historical
+      #   preprocessor: perday
     scripts:
       diffmaps:
         script: droughts/diffmap.py

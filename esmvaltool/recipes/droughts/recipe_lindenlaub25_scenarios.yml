@@ -11,15 +11,18 @@ documentation:
     - `pet_*, spei_*` for PET and index calculation.
     - `*_trend` for trend maps of PET and SPEI.
   authors:
-    - ruhe_lukas
+    - lindenlaub_lukas
   maintainers:
-    - ruhe_lukas
+    - lindenlaub_lukas
   projects:
     - eval4cmip
+  realms: [atmos, land]
+  themes: [phys]
 
 GRID: &grid
   # target_grid: 0.25x0.25
-  target_grid: 1x1  # might require a lot of memory (limit parallel tasks)
+  target_grid: 3x3
+  # target_grid: 1x1  # might require a lot of memory (limit parallel tasks)
 
 
 # longest period for CMIP6 only analysis
@@ -34,7 +37,7 @@ SSP_PERIOD: &ssp_period
 
 
 DIFFMAPS_DEFAULT: &diffmaps_default
-  script: droughtindex/diffmap.py
+  script: droughts/diffmap.py
   plot_models: False
   plot_mmm: True
   clip_land: True
@@ -51,43 +54,39 @@ CMIP_DEFAULT: &cmip_default
 CMIP6_DATA_LMON: &cmip6_data_lmon  # no awi or inm
   - {<<: *cmip_default, mip: Lmon, dataset: ACCESS-CM2,        institute: CSIRO-ARCCSS     }
   - {<<: *cmip_default, mip: Lmon, dataset: BCC-CSM2-MR,       institute: BCC              }
-  - {<<: *cmip_default, mip: Lmon, dataset: CanESM5,           institute: CCCma            }
-  - {<<: *cmip_default, mip: Lmon, dataset: CMCC-ESM2,         institute: CMCC             }   # retry other ds name
-  - {<<: *cmip_default, mip: Lmon, dataset: CNRM-CM6-1,        institute: CNRM-CERFACS,    ensemble: r1i1p1f2, grid: gr}   # pet works 3x3
-  - {<<: *cmip_default, mip: Lmon, dataset: EC-Earth3-Veg-LR,  institute: EC-Earth-Consortium, grid: gr}
-  - {<<: *cmip_default, mip: Lmon, dataset: FGOALS-g3,         institute: CAS              }   # latitude as auxilary (not monotonic)
-  # - {<<: *cmip_default, mip: Lmon, dataset: FIO-ESM-2-0,       institute: FIO-QLNM         }  # cmor error in mrsos
-  # - {<<: *cmip_default, mip: Lmon, dataset: GFDL-ESM4 ,        institute: NOAA-GFDL,       grid: gr1}  # cmor error sdepths
-  - {<<: *cmip_default, mip: Lmon, dataset: GISS-E2-1-G,       institute: NASA-GISS,       ensemble: r1i1p1f2}
-  - {<<: *cmip_default, mip: Lmon, dataset: IPSL-CM6A-LR,      institute: IPSL,            grid: gr}
-  - {<<: *cmip_default, mip: Lmon, dataset: KACE-1-0-G,        institute: NIMS-KMA,        grid: gr}
-  - {<<: *cmip_default, mip: Lmon, dataset: MIROC6,            institute: MIROC,           grid: gn}  # works as single source
-  - {<<: *cmip_default, mip: Lmon, dataset: MPI-ESM1-2-LR,     institute: MPI-M,           grid: gn}
-  - {<<: *cmip_default, mip: Lmon, dataset: MRI-ESM2-0,        institute: MRI              }  # also calendar issues.. but works solo
-  - {<<: *cmip_default, mip: Lmon, dataset: UKESM1-0-LL,       institute: MOHC,            ensemble: r1i1p1f2          }  # pet works 3x3
+  # - {<<: *cmip_default, mip: Lmon, dataset: CanESM5,           institute: CCCma            }
+  # - {<<: *cmip_default, mip: Lmon, dataset: CMCC-ESM2,         institute: CMCC             }   # retry other ds name
+  # - {<<: *cmip_default, mip: Lmon, dataset: CNRM-CM6-1,        institute: CNRM-CERFACS,    ensemble: r1i1p1f2, grid: gr}   # pet works 3x3
+  # - {<<: *cmip_default, mip: Lmon, dataset: EC-Earth3-Veg-LR,  institute: EC-Earth-Consortium, grid: gr}
+  # - {<<: *cmip_default, mip: Lmon, dataset: FGOALS-g3,         institute: CAS              }   # latitude as auxilary (not monotonic)
+  # - {<<: *cmip_default, mip: Lmon, dataset: GISS-E2-1-G,       institute: NASA-GISS,       ensemble: r1i1p1f2}
+  # - {<<: *cmip_default, mip: Lmon, dataset: IPSL-CM6A-LR,      institute: IPSL,            grid: gr}
+  # - {<<: *cmip_default, mip: Lmon, dataset: KACE-1-0-G,        institute: NIMS-KMA,        grid: gr}
+  # - {<<: *cmip_default, mip: Lmon, dataset: MIROC6,            institute: MIROC,           grid: gn}  # works as single source
+  # - {<<: *cmip_default, mip: Lmon, dataset: MPI-ESM1-2-LR,     institute: MPI-M,           grid: gn}
+  # - {<<: *cmip_default, mip: Lmon, dataset: MRI-ESM2-0,        institute: MRI              }  # also calendar issues.. but works solo
+  # - {<<: *cmip_default, mip: Lmon, dataset: UKESM1-0-LL,       institute: MOHC,            ensemble: r1i1p1f2          }  # pet works 3x3
 
 
 CMIP6_DATA: &cmip6_data
-  # trying to add:
-  # - {<<: *cmip_default, dataset: HadGEM3-GC31-LL,   ensemble: r1i1p1f3}  # only -MM in picontrol but only -LL in ssp245
   - {<<: *cmip_default, dataset: ACCESS-CM2,        institute: CSIRO-ARCCSS     }
   - {<<: *cmip_default, dataset: AWI-CM-1-1-MR,     institute: AWI              }
   - {<<: *cmip_default, dataset: BCC-CSM2-MR,       institute: BCC              }
-  - {<<: *cmip_default, dataset: CanESM5,           institute: CCCma            }
-  - {<<: *cmip_default, dataset: CMCC-ESM2,         institute: CMCC             }   # retry other ds name
-  - {<<: *cmip_default, dataset: CNRM-CM6-1,        institute: CNRM-CERFACS,    ensemble: r1i1p1f2, grid: gr}   # pet works 3x3
-  - {<<: *cmip_default, dataset: EC-Earth3-Veg-LR,  institute: EC-Earth-Consortium, grid: gr}
-  - {<<: *cmip_default, dataset: FGOALS-g3,         institute: CAS              }   # latitude as auxilary (not monotonic)
-  - {<<: *cmip_default, dataset: FIO-ESM-2-0,       institute: FIO-QLNM         }
-  - {<<: *cmip_default, dataset: GFDL-ESM4 ,        institute: NOAA-GFDL,       grid: gr1}
-  - {<<: *cmip_default, dataset: GISS-E2-1-G,       institute: NASA-GISS,       ensemble: r1i1p1f2}
-  - {<<: *cmip_default, dataset: INM-CM5-0,         institute: INM,             grid: gr1}  # no mrsos? works for pr/tas
-  - {<<: *cmip_default, dataset: IPSL-CM6A-LR,      institute: IPSL,            grid: gr}
-  - {<<: *cmip_default, dataset: KACE-1-0-G,        institute: NIMS-KMA,        grid: gr}
-  - {<<: *cmip_default, dataset: MIROC6,            institute: MIROC,           grid: gn}  # works as single source
-  - {<<: *cmip_default, dataset: MPI-ESM1-2-LR,     institute: MPI-M,           grid: gn}
-  - {<<: *cmip_default, dataset: MRI-ESM2-0,        institute: MRI              }  # also calendar issues.. but works solo
-  - {<<: *cmip_default, dataset: UKESM1-0-LL,       institute: MOHC,            ensemble: r1i1p1f2          }  # pet works 3x3
+  # - {<<: *cmip_default, dataset: CanESM5,           institute: CCCma            }
+  # - {<<: *cmip_default, dataset: CMCC-ESM2,         institute: CMCC             }   # retry other ds name
+  # - {<<: *cmip_default, dataset: CNRM-CM6-1,        institute: CNRM-CERFACS,    ensemble: r1i1p1f2, grid: gr}   # pet works 3x3
+  # - {<<: *cmip_default, dataset: EC-Earth3-Veg-LR,  institute: EC-Earth-Consortium, grid: gr}
+  # - {<<: *cmip_default, dataset: FGOALS-g3,         institute: CAS              }   # latitude as auxilary (not monotonic)
+  # - {<<: *cmip_default, dataset: FIO-ESM-2-0,       institute: FIO-QLNM         }
+  # - {<<: *cmip_default, dataset: GFDL-ESM4 ,        institute: NOAA-GFDL,       grid: gr1}
+  # - {<<: *cmip_default, dataset: GISS-E2-1-G,       institute: NASA-GISS,       ensemble: r1i1p1f2}
+  # - {<<: *cmip_default, dataset: INM-CM5-0,         institute: INM,             grid: gr1}  # no mrsos? works for pr/tas
+  # - {<<: *cmip_default, dataset: IPSL-CM6A-LR,      institute: IPSL,            grid: gr}
+  # - {<<: *cmip_default, dataset: KACE-1-0-G,        institute: NIMS-KMA,        grid: gr}
+  # - {<<: *cmip_default, dataset: MIROC6,            institute: MIROC,           grid: gn}  # works as single source
+  # - {<<: *cmip_default, dataset: MPI-ESM1-2-LR,     institute: MPI-M,           grid: gn}
+  # - {<<: *cmip_default, dataset: MRI-ESM2-0,        institute: MRI              }  # also calendar issues.. but works solo
+  # - {<<: *cmip_default, dataset: UKESM1-0-LL,       institute: MOHC,            ensemble: r1i1p1f2          }  # pet works 3x3
 
 
 
@@ -105,7 +104,7 @@ VAR_SM: &var_sm
   additional_datasets: *cmip6_data_lmon
 
 preprocessors:
-  default:
+  default: &default_preproc
     regrid:
       <<: *grid
       scheme: nearest
@@ -115,17 +114,23 @@ preprocessors:
       mask_out: sea
     mask_glaciated:
       mask_out: glaciated
+  perday:
+    <<: *default_preproc
+    convert_units:
+      units: mm day-1
 
 
 diagnostics:
   ssp_maps:
     variables:
-      pr: &ssp585_variable
+      tasmin: &ssp585_variable
         <<: *var_default
         exp: ssp585
         <<: *ssp_period
       tasmax: *ssp585_variable
-      tasmin: *ssp585_variable
+      pr:
+        <<: *ssp585_variable
+        preprocessor: perday
       # sm: *var_sm
     scripts:
       diffmaps: &pr_plot
@@ -168,60 +173,66 @@ diagnostics:
   # TODO: test with python repo
   pet_ssp585: &pet_ssp585
     variables:
-      pr: &pet_585
+      tasmin: &pet_585
         <<: *var_default
         exp: ["historical", "ssp585"]
         <<: *full_period
         additional_datasets: *cmip6_data
-      tasmin: *pet_585
       tasmax: *pet_585
       sfcWind: *pet_585
       # clt: *pet_585
       rsds: *pet_585
       ps: *pet_585
+      pr:
+        <<: *pet_585
+        preprocessor: perday
     scripts:
       pet_pm:
-        script: droughtindex/diag_pet.R
+        script: droughts/pet.R
         pet_type: "Penman"  # "Penman_clt"
   pet_ssp245: &pet_ssp245
     variables:
-      pr: &pet_245
+      tasmin: &pet_245
         <<: *var_default
         exp: ["historical", "ssp245"]
         <<: *full_period
         additional_datasets: *cmip6_data
-      tasmin: *pet_245
       tasmax: *pet_245
       sfcWind: *pet_245
       # clt: *pet_245
       rsds: *pet_245
       ps: *pet_245
+      pr:
+        <<: *pet_245
+        preprocessor: perday
     scripts:
       pet_pm:
-        script: droughtindex/diag_pet.R
+        script: droughts/pet.R
         pet_type: "Penman"  # "Penman_clt"
   pet_ssp126: &pet_ssp126
     variables:
-      pr: &pet_126
+      tasmin: &pet_126
         <<: *var_default
         exp: ["historical", "ssp126"]
         <<: *full_period
         additional_datasets: *cmip6_data
-      tasmin: *pet_126
       tasmax: *pet_126
       sfcWind: *pet_126
       # clt: *pet_126
       rsds: *pet_126
       ps: *pet_126
+      pr:
+        <<: *pet_126
+        preprocessor: perday
     scripts:
       pet_pm:
-        script: droughtindex/diag_pet.R
+        script: droughts/pet.R
         pet_type: "Penman"  # "Penman_clt"
 
   spei_ssp585: &spei_ssp585
     scripts:
       spei: &script_spei_585
-        script: droughtindex/diag_spei.R
+        script: droughts/spei.R
         smooth_month: 6
         distribution: "log-Logistic"
         refstart_year: 1950
@@ -241,21 +252,21 @@ diagnostics:
         ancestors: [pet_ssp126/pet_pm, pet_ssp126/pr]
 
   # --- EXTRA WB --- #
-  wb_ssp126: &wb_ssp126
-    scripts:
-      wb:
-        script: droughtindex/diag_wb.py
-        ancestors: [pet_ssp126/pet_pm, pet_ssp126/pr]
-  wb_ssp245: &wb_ssp245
-    scripts:
-      wb:
-        script: droughtindex/diag_wb.py
-        ancestors: [pet_ssp245/pet_pm, pet_ssp245/pr]
-  wb_ssp585: &wb_ssp585
-    scripts:
-      wb:
-        script: droughtindex/diag_wb.py
-        ancestors: [pet_ssp585/pet_pm, pet_ssp585/pr]
+  # wb_ssp126: &wb_ssp126
+  #   scripts:
+  #     wb:
+  #       script: droughts/diag_wb.py
+  #       ancestors: [pet_ssp126/pet_pm, pet_ssp126/pr]
+  # wb_ssp245: &wb_ssp245
+  #   scripts:
+  #     wb:
+  #       script: droughts/diag_wb.py
+  #       ancestors: [pet_ssp245/pet_pm, pet_ssp245/pr]
+  # wb_ssp585: &wb_ssp585
+  #   scripts:
+  #     wb:
+  #       script: droughts/diag_wb.py
+  #       ancestors: [pet_ssp585/pet_pm, pet_ssp585/pr]
   # --- SPEI Plots --- #
   diffmap:
     scripts:
@@ -264,7 +275,7 @@ diagnostics:
         # not scenarios. The loop to calc multi model means need to be aware of exp (hardcoded)
         # or allow multiple group_by keys as combination.. (or based on basename?)
         # until than use diffmap/spei_ssp126..  runs
-        script: droughtindex/diffmap.py
+        script: droughts/diffmap.py
         ancestors:
          - pet_ssp126/pr
          - pet_ssp245/pr
@@ -285,7 +296,7 @@ diagnostics:
           vmax: 6e-5
           vmin: 0
       ssp585: &diff_pet_default
-        script: droughtindex/diffmap.py
+        script: droughts/diffmap.py
         ancestors:
          - "pet_ssp585/pet_pm"
          - "spei_ssp585/spei"
@@ -305,7 +316,7 @@ diagnostics:
         <<: *diff_pet_default
         ancestors: ["pet_ssp126/pet_pm"]
       spei_ssp585: &diff_spei_default
-        script: droughtindex/diffmap.py
+        script: droughts/diffmap.py
         ancestors: ["spei_ssp585/spei"]
         <<: *ssp_period
         save_models: True
@@ -322,20 +333,20 @@ diagnostics:
       spei_ssp126:
         <<: *diff_spei_default
         ancestors: ["spei_ssp126/spei"]
-      wb_ssp126: &diff_wb_default
-        script: droughtindex/diffmap.py
-        ancestors: ["wb_ssp126/wb"]
-        <<: *ssp_period
-        save_models: False
-        save_mmm: True
-        plot_models: False
-        plot_mmm: True
-      wb_ssp245:
-        <<: *diff_wb_default
-        ancestors: ["wb_ssp245/wb"]
-      wb_ssp585:
-        <<: *diff_wb_default
-        ancestors: ["wb_ssp585/wb"]
+      # wb_ssp126: &diff_wb_default
+      #   script: droughts/diffmap.py
+      #   ancestors: ["wb_ssp126/wb"]
+      #   <<: *ssp_period
+      #   save_models: False
+      #   save_mmm: True
+      #   plot_models: False
+      #   plot_mmm: True
+      # wb_ssp245:
+      #   <<: *diff_wb_default
+      #   ancestors: ["wb_ssp245/wb"]
+      # wb_ssp585:
+      #   <<: *diff_wb_default
+      #   ancestors: ["wb_ssp585/wb"]
   event_area:
     scripts:
       ssps:
@@ -352,7 +363,7 @@ diagnostics:
           - [1560, null]
         reference_dataset: MIROC6  # to pick timeseries from
         ancestors: [spei_ssp585/spei, spei_ssp245/spei, spei_ssp126/spei]
-        script: droughtindex/event_area_timeseries.py
+        script: droughts/event_area_timeseries.py
         interval: 240
         latest_legend: true
         plot_models: False
@@ -370,7 +381,7 @@ diagnostics:
           short_name: spei
           dataset: MMM
           diffmap_metric: diff
-        script: droughtindex/regional_hexagons.py
+        script: droughts/regional_hexagons.py
         shapefile: ar6_regions/IPCC-WGI-reference-regions-v4.shp
         exclude_regions: []
         statistics: [mean]
@@ -385,7 +396,7 @@ diagnostics:
           - diffmap/spei_ssp126
           - diffmap/spei_ssp245
           - diffmap/spei_ssp585
-        script: droughtindex/regional_hexagons.py
+        script: droughts/regional_hexagons.py
         # TODO: use preproc instead of shapefile
         shapefile: ar6_regions/IPCC-WGI-reference-regions-v4.shp
         exclude_regions: []
@@ -397,7 +408,7 @@ diagnostics:
   statistics:
     scripts:
       histogram:
-        script: droughtindex/distribution.py
+        script: droughts/distribution.py
         clip_land: true
         # comparison_period: 20
         ancestors:
@@ -420,7 +431,7 @@ diagnostics:
   timeseries:
     scripts:
       scenarios:
-        script: droughtindex/timeseries.py
+        script: droughts/timeseries_scenarios.py
         ancestors:
           - pet_ssp126/pr
           - pet_ssp245/pr
