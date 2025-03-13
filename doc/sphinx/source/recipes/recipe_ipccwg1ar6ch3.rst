@@ -576,8 +576,7 @@ Example plots
    Sea Surface Temperature version 1 (HadISST) observational climatology for
    1979–1999 is used as the reference for the error calculation in (a) and (b);
    and for observations in (c). (The panels were obtained individually and
-   combined together and the borders for the oceans for panels (a) and (b)
-   have been added.)
+   combined together.)
 
 .. figure::  /recipes/figures/ipccwg1ar6ch3/fig_3_42_a.png
    :align:   center
