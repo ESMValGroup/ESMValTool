@@ -15,7 +15,7 @@ from esmvaltool.diag_scripts.mlr.models.linear_base import LinearModel
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-@MLRModel.register_mlr_model('lasso')
+@MLRModel.register_mlr_model("lasso")
 class LassoModel(LinearModel):
     """Lasso Regression model."""
 

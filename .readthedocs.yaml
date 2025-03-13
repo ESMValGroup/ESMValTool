@@ -7,21 +7,22 @@ version: 2
 
 # Set the version of Python and other tools you might need
 build:
-  os: ubuntu-22.04
+  os: ubuntu-lts-latest
   tools:
-    # updated and deployed from Aug 1, 2023
-    python: "mambaforge-22.9"
+    # try miniforge3 when available? see github.com/ESMValGroup/ESMValTool/issues/3779
+    # DO NOT use mambaforge-*; that is currently sunsetted
+    python: "miniconda-latest"
   jobs:
-    pre_create_environment:
-      # update mamba just in case
-      - mamba update --yes --quiet --name=base mamba 'zstd=1.5.2'
-      - mamba --version
-      - mamba list --name=base
-    post_create_environment:
-      - conda run -n ${CONDA_DEFAULT_ENV} mamba list
-      # use conda run executable wrapper to have all env variables
-      - conda run -n ${CONDA_DEFAULT_ENV} mamba --version
-      - conda run -n ${CONDA_DEFAULT_ENV} pip install . --no-deps
+    post_checkout:
+      # The ESMValTool repository is shallow i.e., has a .git/shallow,
+      # therefore complete the repository with a full history in order
+      # to allow setuptools-scm to correctly auto-discover the version.
+      - git fetch --unshallow
+      - git fetch --all
+    pre_install:
+      - git stash
+    post_install:
+      - git stash pop
 
 # Declare the requirements required to build your docs
 conda:
@@ -32,6 +33,11 @@ conda:
 sphinx:
   configuration: doc/sphinx/source/conf.py
   fail_on_warning: true
+
+python:
+  install:
+    - method: pip
+      path: .
 
 # If using Sphinx, optionally build your docs in additional formats such as PDF
 formats:

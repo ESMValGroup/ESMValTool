@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 
 """Interpolate given variable to tropopause height.
@@ -21,7 +20,6 @@ Configuration options
 ###############################################################################
 
 """
-
 
 import logging
 import os
@@ -52,39 +50,47 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def _cube_to_save_ploted(var, lats, lons, names):
     """Create cube to prepare plotted data for saving to netCDF."""
-    new_cube = iris.cube.Cube(var, var_name=names['var_name'],
-                              long_name=names['long_name'],
-                              units=names['units'])
-    new_cube.add_dim_coord(iris.coords.DimCoord(lats,
-                                                var_name='lat',
-                                                long_name='latitude',
-                                                units='degrees_north'), 0)
-    new_cube.add_dim_coord(iris.coords.DimCoord(lons,
-                                                var_name='lon',
-                                                long_name='longitude',
-                                                units='degrees_east'), 1)
+    new_cube = iris.cube.Cube(
+        var,
+        var_name=names["var_name"],
+        long_name=names["long_name"],
+        units=names["units"],
+    )
+    new_cube.add_dim_coord(
+        iris.coords.DimCoord(
+            lats, var_name="lat", long_name="latitude", units="degrees_north"
+        ),
+        0,
+    )
+    new_cube.add_dim_coord(
+        iris.coords.DimCoord(
+            lons, var_name="lon", long_name="longitude", units="degrees_east"
+        ),
+        1,
+    )
 
     return new_cube
 
 
-def _get_provenance_record(ancestor_files, caption, statistics,
-                           domains, plot_type='geo'):
+def _get_provenance_record(
+    ancestor_files, caption, statistics, domains, plot_type="geo"
+):
     """Get Provenance record."""
     record = {
-        'caption': caption,
-        'statistics': statistics,
-        'domains': domains,
-        'plot_type': plot_type,
-        'projects': ['cmug'],
-        'realms': ['atmos'],
-        'themes': ['atmDyn'],
-        'authors': [
-            'weigel_katja',
+        "caption": caption,
+        "statistics": statistics,
+        "domains": domains,
+        "plot_type": plot_type,
+        "projects": ["cmug"],
+        "realms": ["atmos"],
+        "themes": ["atmDyn"],
+        "authors": [
+            "weigel_katja",
         ],
-        'references': [
-            'acknow_project',
+        "references": [
+            "acknow_project",
         ],
-        'ancestors': ancestor_files,
+        "ancestors": ancestor_files,
     }
     return record
 
@@ -93,9 +99,9 @@ def _press_interp_cube(cube, pstart=60000, pend=2500, pgrid=221):
     """Interpolate cube onto dense pressure grid."""
     # interpolate to dense grid, use equal dist points in log(p)
     logpr = np.log(np.array([pstart, pend]))
-    sample_points = [('air_pressure', np.exp(np.linspace(logpr[0],
-                                                         logpr[1],
-                                                         pgrid)))]
+    sample_points = [
+        ("air_pressure", np.exp(np.linspace(logpr[0], logpr[1], pgrid)))
+    ]
     new_cube = cube.interpolate(sample_points, iris.analysis.Linear())
 
     return new_cube
@@ -104,27 +110,35 @@ def _press_interp_cube(cube, pstart=60000, pend=2500, pgrid=221):
 def _set_new_dims(new_tacube, new_svarcube):
     """Set dimensions to unroll."""
     dims_to_collapse = set()
-    dims_to_collapse.update(new_svarcube.coord_dims('air_pressure'))
+    dims_to_collapse.update(new_svarcube.coord_dims("air_pressure"))
     untouched_dims = set(range(new_svarcube.ndim)) - set(dims_to_collapse)
     dims = list(untouched_dims) + list(dims_to_collapse)
-    unrolled_data = np.moveaxis(new_tacube.data, dims,
-                                range(new_svarcube.ndim))
+    unrolled_data = np.moveaxis(
+        new_tacube.data, dims, range(new_svarcube.ndim)
+    )
     return unrolled_data
 
 
 def cube_to_save_ploted_map(var, lats, lons, names):
     """Create cube to prepare plotted data for saving to netCDF."""
-    new_cube = iris.cube.Cube(var, var_name=names['var_name'],
-                              long_name=names['long_name'],
-                              units=names['units'])
-    new_cube.add_dim_coord(iris.coords.DimCoord(lats,
-                                                var_name='lat',
-                                                long_name='latitude',
-                                                units='degrees_north'), 0)
-    new_cube.add_dim_coord(iris.coords.DimCoord(lons,
-                                                var_name='lon',
-                                                long_name='longitude',
-                                                units='degrees_east'), 1)
+    new_cube = iris.cube.Cube(
+        var,
+        var_name=names["var_name"],
+        long_name=names["long_name"],
+        units=names["units"],
+    )
+    new_cube.add_dim_coord(
+        iris.coords.DimCoord(
+            lats, var_name="lat", long_name="latitude", units="degrees_north"
+        ),
+        0,
+    )
+    new_cube.add_dim_coord(
+        iris.coords.DimCoord(
+            lons, var_name="lon", long_name="longitude", units="degrees_east"
+        ),
+        1,
+    )
 
     return new_cube
 
@@ -145,12 +159,13 @@ def plot_tp_map(cfg, mean_cube, titlestr, variable, listdata):
     """Plot contour map."""
     # create figure and axes instances
 
-    subplot_kw = {'projection': cart.PlateCarree(central_longitude=0.0)}
+    subplot_kw = {"projection": cart.PlateCarree(central_longitude=0.0)}
     fig, axx = plt.subplots(figsize=(7, 5), subplot_kw=subplot_kw)
     axx.set_extent([-180, 180, -90, 90], cart.PlateCarree())
 
-    data_c, lon_c = add_cyclic_point(mean_cube.data,
-                                     coord=mean_cube.coord('longitude').points)
+    data_c, lon_c = add_cyclic_point(
+        mean_cube.data, coord=mean_cube.coord("longitude").points
+    )
 
     if variable == "Air Temperature":
         print_var = "Temperature [K]"
@@ -166,18 +181,20 @@ def plot_tp_map(cfg, mean_cube, titlestr, variable, listdata):
         set_range = np.linspace(0.1e-5, 2.5e-5, 25)
     else:
         print_var = mean_cube.long_name
-        set_range = np.linspace(np.nanmin(mean_cube.data),
-                                np.nanmax(mean_cube.data), 21)
+        set_range = np.linspace(
+            np.nanmin(mean_cube.data), np.nanmax(mean_cube.data), 21
+        )
     # draw filled contours
     cnplot = plt.contourf(
         lon_c,
-        mean_cube.coord('latitude').points,
+        mean_cube.coord("latitude").points,
         data_c,
         set_range,
         transform=cart.PlateCarree(),
-        cmap='rainbow',
+        cmap="rainbow",
         # cmap='RdBu_r',
-        extend='both')
+        extend="both",
+    )
 
     axx.coastlines()
 
@@ -186,70 +203,91 @@ def plot_tp_map(cfg, mean_cube, titlestr, variable, listdata):
     # add colorbar title string
     cbar.set_label(print_var)
 
-    axx.set_xlabel('Longitude')
-    axx.set_ylabel('Latitude')
+    axx.set_xlabel("Longitude")
+    axx.set_ylabel("Latitude")
     axx.set_title(titlestr + variable)
 
     fig.tight_layout()
-    figname = 'fig_' + titlestr.replace(" ", "_") +\
-        variable.replace(" ", "_") + '_map'
+    figname = (
+        "fig_"
+        + titlestr.replace(" ", "_")
+        + variable.replace(" ", "_")
+        + "_map"
+    )
     fig.savefig(get_plot_filename(figname, cfg), dpi=300)
     plt.close()
 
-    logger.info("Saving analysis results to %s",
-                get_diagnostic_filename(figname, cfg))
+    logger.info(
+        "Saving analysis results to %s", get_diagnostic_filename(figname, cfg)
+    )
 
-    iris.save(_cube_to_save_ploted(data_c,
-                                   mean_cube.coord('latitude').points,
-                                   lon_c,
-                                   {'var_name': mean_cube.var_name,
-                                    'long_name': variable,
-                                    'units': mean_cube.units}),
-              target=get_diagnostic_filename(figname, cfg))
+    iris.save(
+        _cube_to_save_ploted(
+            data_c,
+            mean_cube.coord("latitude").points,
+            lon_c,
+            {
+                "var_name": mean_cube.var_name,
+                "long_name": variable,
+                "units": mean_cube.units,
+            },
+        ),
+        target=get_diagnostic_filename(figname, cfg),
+    )
 
-    logger.info("Recording provenance of %s:\n%s",
-                get_diagnostic_filename(figname, cfg),
-                pformat(_get_provenance_record(listdata,
-                                               titlestr + variable,
-                                               ['other'], ['global'])))
+    logger.info(
+        "Recording provenance of %s:\n%s",
+        get_diagnostic_filename(figname, cfg),
+        pformat(
+            _get_provenance_record(
+                listdata, titlestr + variable, ["other"], ["global"]
+            )
+        ),
+    )
     with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(get_diagnostic_filename(figname, cfg),
-                              _get_provenance_record(listdata,
-                                                     titlestr + variable,
-                                                     ['other'], ['global']))
-        provenance_logger.log(get_plot_filename(figname, cfg),
-                              _get_provenance_record(listdata,
-                                                     titlestr + variable,
-                                                     ['other'], ['global']))
+        provenance_logger.log(
+            get_diagnostic_filename(figname, cfg),
+            _get_provenance_record(
+                listdata, titlestr + variable, ["other"], ["global"]
+            ),
+        )
+        provenance_logger.log(
+            get_plot_filename(figname, cfg),
+            _get_provenance_record(
+                listdata, titlestr + variable, ["other"], ["global"]
+            ),
+        )
 
 
 def main(cfg):
     """Read in data for tropopause calculation."""
-    available_vars = list(group_metadata(cfg['input_data'].values(),
-                                         'short_name'))
+    available_vars = list(
+        group_metadata(cfg["input_data"].values(), "short_name")
+    )
 
     logging.debug("Found variables in recipe:\n%s", available_vars)
     available_vars_min_tas = deepcopy(available_vars)
-    available_vars_min_tas.remove('ta')
+    available_vars_min_tas.remove("ta")
     # Make an iris aggregator to find value based on minimum different cube.
-    min_pos = Aggregator('ag_find_min', find_min,
-                         units_func=lambda units: 1)
+    min_pos = Aggregator("ag_find_min", find_min, units_func=lambda units: 1)
     # Get input data
     data = {}
     for varname in available_vars:
-        data[varname] = select_metadata(cfg['input_data'].values(),
-                                        short_name=varname)
-        data[varname] = sorted_metadata(data[varname], sort='dataset')
+        data[varname] = select_metadata(
+            cfg["input_data"].values(), short_name=varname
+        )
+        data[varname] = sorted_metadata(data[varname], sort="dataset")
 
-    for attributes in data['ta']:
-        logger.info("Processing dataset %s", attributes['dataset'])
-        dataset = attributes['dataset']
-        logger.debug("Loading %s", attributes['filename'])
-        new_tacube = _press_interp_cube(iris.load_cube(attributes['filename']))
+    for attributes in data["ta"]:
+        logger.info("Processing dataset %s", attributes["dataset"])
+        dataset = attributes["dataset"]
+        logger.debug("Loading %s", attributes["filename"])
+        new_tacube = _press_interp_cube(iris.load_cube(attributes["filename"]))
         for svar in available_vars_min_tas:
-            input_file_svar = attributes['filename'].replace('/ta/',
-                                                             '/' + svar + '/')
-            input_file_svar = input_file_svar.replace('_ta_', '_' + svar + '_')
+            input_file_svar = attributes["filename"].replace(
+                "/ta/", "/" + svar + "/"
+            )
+            input_file_svar = input_file_svar.replace("_ta_", "_" + svar + "_")
 
             # load, interpolate to dense grid, use equal dist points in log(p)
             logger.debug("Loading %s", input_file_svar)
@@ -258,22 +296,30 @@ def main(cfg):
             # set new dims
             unrolled_data = _set_new_dims(new_tacube, new_svarcube)
 
-            trop_svar = new_svarcube.collapsed('air_pressure', min_pos,
-                                               data_min=unrolled_data)
-            plot_tp_map(cfg, trop_svar.collapsed('time', iris.analysis.MEAN),
-                        dataset + " Cold point tropopause ",
-                        new_svarcube.long_name,
-                        [data['ta'][0]['filename'], data[svar][0]['filename']])
+            trop_svar = new_svarcube.collapsed(
+                "air_pressure", min_pos, data_min=unrolled_data
+            )
+            plot_tp_map(
+                cfg,
+                trop_svar.collapsed("time", iris.analysis.MEAN),
+                dataset + " Cold point tropopause ",
+                new_svarcube.long_name,
+                [data["ta"][0]["filename"], data[svar][0]["filename"]],
+            )
 
-        trop_ta = new_tacube.collapsed('air_pressure', min_pos,
-                                       data_min=unrolled_data)
+        trop_ta = new_tacube.collapsed(
+            "air_pressure", min_pos, data_min=unrolled_data
+        )
 
-        plot_tp_map(cfg, trop_ta.collapsed('time', iris.analysis.MEAN),
-                    dataset + " Cold point tropopause ",
-                    "Air Temperature", [data['ta'][0]['filename']])
+        plot_tp_map(
+            cfg,
+            trop_ta.collapsed("time", iris.analysis.MEAN),
+            dataset + " Cold point tropopause ",
+            "Air Temperature",
+            [data["ta"][0]["filename"]],
+        )
 
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     with run_diagnostic() as config:
         main(config)

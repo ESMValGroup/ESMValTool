@@ -40,7 +40,7 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-    * ``recipe_climate_change_hotspot.yml``: Loads and ensembles the data, 
+    * ``recipe_climate_change_hotspot.yml``: Loads and ensembles the data,
        computes the necessary climate change hotspot diagnostics
        and plots the results figures.
 

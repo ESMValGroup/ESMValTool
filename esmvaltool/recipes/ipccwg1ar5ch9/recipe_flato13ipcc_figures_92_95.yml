@@ -685,4 +685,3 @@ diagnostics:
     scripts:
       fig09-5c:
         <<: *fig-9-5_settings
-

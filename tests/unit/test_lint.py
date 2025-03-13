@@ -1,4 +1,5 @@
 """Lint tests."""
+
 import os
 import subprocess
 import sys
@@ -18,11 +19,14 @@ def test_nclcodestyle():
         package_root,
     ]
 
-    print("Formatting check of NCL code in directories: {}\n".format(', '.join(
-        str(p) for p in check_paths)))
+    print(
+        "Formatting check of NCL code in directories: {}\n".format(
+            ", ".join(str(p) for p in check_paths)
+        )
+    )
 
     exclude_paths = [
-        package_root / 'diag_scripts' / 'cvdp' / 'cvdp',
+        package_root / "diag_scripts" / "cvdp" / "cvdp",
     ]
 
     style = nclcodestyle.StyleGuide()
@@ -39,23 +43,27 @@ def test_nclcodestyle():
             prefixed with filename:line number:column number.
 
             Please fix the mentioned issues.
-        """))
+        """)
+        )
 
     assert success, "Your NCL code does not follow our formatting standards."
 
 
 @pytest.mark.installation
-@pytest.mark.skipif(sys.platform == 'darwin',
-                    reason="ESMValTool R not supported on OSX")
+@pytest.mark.skipif(
+    sys.platform == "darwin", reason="ESMValTool R not supported on OSX"
+)
 def test_r_lint(monkeypatch):
     """Test R lint."""
     monkeypatch.setenv("LINTR_COMMENT_BOT", "FALSE")
     package_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    checker = os.path.join(package_root, 'tests', 'unit', 'check_r_code.R')
+    checker = os.path.join(package_root, "tests", "unit", "check_r_code.R")
     try:
-        output = subprocess.check_output(('Rscript', checker, package_root),
-                                         stderr=subprocess.STDOUT,
-                                         universal_newlines=True)
+        output = subprocess.check_output(
+            ("Rscript", checker, package_root),
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
+        )
         print(output)
         return
     except subprocess.CalledProcessError as ex:
@@ -64,8 +72,8 @@ def test_r_lint(monkeypatch):
             Your R code does not follow our formatting standards.
 
             Please fix the following issues:
-        """))
+        """)
+        )
         print(ex.output)
 
-    assert False, \
-        'Your R code does not follow our formatting standards.'
+    assert False, "Your R code does not follow our formatting standards."

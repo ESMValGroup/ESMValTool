@@ -35,7 +35,6 @@ def _get_filepaths(in_dir, basename):
     regex = re.compile(basename)
     return_files = []
     for files in os.listdir(in_dir):
-
         if regex.match(files):
             return_files.append(os.path.join(in_dir, files))
 
@@ -44,8 +43,8 @@ def _get_filepaths(in_dir, basename):
 
 def _fix_time_coord(cube, _field, _filename):
     """Set time points to central day of month."""
-    time_coord = cube.coord('time')
-    new_unit = Unit('days since 1850-01-01 00:00:00', calendar='standard')
+    time_coord = cube.coord("time")
+    new_unit = Unit("days since 1850-01-01 00:00:00", calendar="standard")
     time_coord.convert_units(new_unit)
     old_time = new_unit.num2date(time_coord.points)
     new_time = [d.replace(day=15) for d in old_time]
@@ -62,28 +61,26 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
 
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
-    utils.save_variable(cube,
-                        var,
-                        out_dir,
-                        attrs,
-                        unlimited_dimensions=['time'])
+    utils.save_variable(
+        cube, var, out_dir, attrs, unlimited_dimensions=["time"]
+    )
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    glob_attrs = cfg['attributes']
-    cmor_table = cfg['cmor_table']
+    glob_attrs = cfg["attributes"]
+    cmor_table = cfg["cmor_table"]
 
-    filepaths = _get_filepaths(in_dir, cfg['filename'])
+    filepaths = _get_filepaths(in_dir, cfg["filename"])
 
     if len(filepaths) > 0:
         logger.info("Found %d input files in '%s'", len(filepaths), in_dir)
     else:
-        logger.info("No files found, basename: %s", cfg['filename'])
+        logger.info("No files found, basename: %s", cfg["filename"])
 
-    for (var, var_info) in cfg['variables'].items():
+    for var, var_info in cfg["variables"].items():
         logger.info("CMORizing variable '%s'", var)
-        glob_attrs['mip'] = var_info['mip']
-        cmor_info = cmor_table.get_variable(var_info['mip'], var)
-        raw_var = var_info.get('raw', var)
+        glob_attrs["mip"] = var_info["mip"]
+        cmor_info = cmor_table.get_variable(var_info["mip"], var)
+        raw_var = var_info.get("raw", var)
         _extract_variable(raw_var, cmor_info, glob_attrs, filepaths, out_dir)

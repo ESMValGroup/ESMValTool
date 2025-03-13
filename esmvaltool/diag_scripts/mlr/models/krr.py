@@ -14,7 +14,7 @@ from esmvaltool.diag_scripts.mlr.models import MLRModel
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-@MLRModel.register_mlr_model('krr')
+@MLRModel.register_mlr_model("krr")
 class KRRModel(MLRModel):
     """Kernel Ridge Regression model."""
 

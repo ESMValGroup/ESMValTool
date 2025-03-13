@@ -645,7 +645,7 @@ diagnostics:
         start_year: 1982
         end_year: 2005
         additional_datasets:
-          - {dataset: LAI3g, project: OBS, type: reanaly, version: 1_regridded, tier: 3}
+          - {dataset: LAI3g, project: OBS, type: reanaly, version: 1-regridded, tier: 3}
     scripts:
       preprocess_mean:
         <<: *preprocess_mean_script

@@ -28,7 +28,8 @@ preprocessors:
   daily: &daily
     extract_shape:
       # Lumped model: needs catchment-aggregated input data
-      shapefile: Meuse/Meuse.shp  # In aux (config-user.yml)
+      # Relative to auxiliary_data_dir defined in configuration
+      shapefile: Meuse/Meuse.shp
       method: contains
       crop: true
 

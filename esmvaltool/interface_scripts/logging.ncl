@@ -61,9 +61,9 @@ procedure log_debug(output_string[*]:string)
 ;    output_string: the text to be output as message on screen
 ;
 ; Description
-;    Write a debug message to the log file (only if log_level = debug in
-;    config-user.yml). If the input is an array, each element will be
-;    written on different lines.
+;    Write a debug message to the log file (only if log_level = debug in the
+;    configuration). If the input is an array, each element will be written on
+;    different lines.
 ;
 ; Caveats
 ;

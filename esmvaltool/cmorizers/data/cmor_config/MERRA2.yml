@@ -30,7 +30,7 @@ variables:
     short_name: pr
     mip: Amon
     raw: PRECTOT
-    file: 'MERRA2_???.tavgM_2d_flx_Nx.{year}??.nc4'  
+    file: 'MERRA2_???.tavgM_2d_flx_Nx.{year}??.nc4'
   evspsbl_monthly:
     short_name: evspsbl
     mip: Amon
@@ -40,17 +40,17 @@ variables:
     short_name: hfss
     mip: Amon
     raw: HFLUX
-    file: 'MERRA2_???.tavgM_2d_flx_Nx.{year}??.nc4'  
+    file: 'MERRA2_???.tavgM_2d_flx_Nx.{year}??.nc4'
   hfls_monthly:
     short_name: hfls
     mip: Amon
     raw: EFLUX
-    file: 'MERRA2_???.tavgM_2d_flx_Nx.{year}??.nc4'  
+    file: 'MERRA2_???.tavgM_2d_flx_Nx.{year}??.nc4'
   huss_monthly:
     short_name: huss
     mip: Amon
     raw: QV2M
-    file: 'MERRA2_???.tavgM_2d_slv_Nx.{year}??.nc4'  
+    file: 'MERRA2_???.tavgM_2d_slv_Nx.{year}??.nc4'
   prc_monthly:
     short_name: prc
     mip: Amon
@@ -150,7 +150,7 @@ variables:
     short_name: uas
     mip: Amon
     raw: U10M
-    file: 'MERRA2_???.tavgM_2d_slv_Nx.{year}??.nc4'   
+    file: 'MERRA2_???.tavgM_2d_slv_Nx.{year}??.nc4'
   vas_monthly:
     short_name: vas
     mip: Amon
@@ -169,12 +169,12 @@ variables:
   rsut_monthly:
     short_name: rsut
     mip: Amon
-    raw: SWTDN-SWTNT  
+    raw: SWTDN-SWTNT
     file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
   rsutcs_monthly:
     short_name: rsutcs
     mip: Amon
-    raw: "SWTDN-SWTNTCLR"  
+    raw: "SWTDN-SWTNTCLR"
     file: 'MERRA2_???.tavgM_2d_rad_Nx.{year}??.nc4'
   ta_monthly:
     short_name: ta

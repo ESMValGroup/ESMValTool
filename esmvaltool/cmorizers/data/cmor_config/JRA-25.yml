@@ -9,7 +9,7 @@ attributes:
   source: 'https://esgf.nccs.nasa.gov/thredds/fileServer/CREATE-IP/reanalysis/JMA/JRA-25/JRA-25/'
   reference: 'jra_25'
   comment: |
-    '' 
+    ''
 
 # Variables to cmorize
 variables:

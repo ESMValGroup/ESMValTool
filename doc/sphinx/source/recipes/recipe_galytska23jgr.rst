@@ -6,12 +6,12 @@ Timeseries for Arctic-Midlatitude Teleconnections
 Overview
 --------
 
-The recipe produces the timeseries of selected variables to study Arctic-midlatitude teleconnections for further application of Causal Model Evaluation (CME) described 
+The recipe produces the timeseries of selected variables to study Arctic-midlatitude teleconnections for further application of Causal Model Evaluation (CME) described
 in Galytska et al. (2023).
 
-The output of the recipe consists of the .nc files named after the data source (e.g. ERA5, ACCESS-CM2.nc etc.). 
+The output of the recipe consists of the .nc files named after the data source (e.g. ERA5, ACCESS-CM2.nc etc.).
 Each file contains the area-weighted spatial average of climatological monthly anomalies of selected variables.
-The recipe also applies the CVDP package. 
+The recipe also applies the CVDP package.
 
 
 Available recipes and diagnostics
@@ -71,7 +71,7 @@ References
 
 * Galytska, E., Weigel, K., Handorf, D., Jaiser, R., Köhler, R. H.,
   Runge, J., & Eyring, V.: Causal model evaluation of Arctic-midlatitude
-  teleconnections in CMIP6. Authorea Preprints. 
+  teleconnections in CMIP6. Authorea Preprints.
   https://doi.org/10.1002/essoar.10512569.1.
 
 

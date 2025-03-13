@@ -59,13 +59,15 @@ from cdo import Cdo
 from netCDF4 import Dataset
 
 import esmvaltool.diag_scripts.shared as e
-from esmvaltool.diag_scripts.thermodyn_diagtool import (fluxogram,
-                                                        fourier_coefficients)
+from esmvaltool.diag_scripts.thermodyn_diagtool import (
+    fluxogram,
+    fourier_coefficients,
+)
 
 G = 9.81
 R = 287.00
 CP = 1003.5
-AA = 6.371E6
+AA = 6.371e6
 PS = 101100.0
 NW_1 = 3
 NW_2 = 9
@@ -127,63 +129,98 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
         # Compute conversion between kin.en. and pot.en.
         a2k[:, t_t, :, :] = mka2k(wap_tan, ta_tan, wap_tgan, ta_tgan, lev)
         # Compute conversion between zonal and eddy APE
-        ae2az[:, t_t, :, :] = mkaeaz(va_tan, wap_tan, ta_tan, ta_tmn, ta_gmn,
-                                     lev, y_l, gam_tmn, nlat, nlev)
+        ae2az[:, t_t, :, :] = mkaeaz(
+            va_tan,
+            wap_tan,
+            ta_tan,
+            ta_tmn,
+            ta_gmn,
+            lev,
+            y_l,
+            gam_tmn,
+            nlat,
+            nlev,
+        )
         # Compute conversion between zonal and eddy KE
-        ke2kz[:, t_t, :, :] = mkkekz(ua_tan, va_tan, wap_tan, ua_tmn, va_tmn,
-                                     lev, y_l, nlat, ntp, nlev)
+        ke2kz[:, t_t, :, :] = mkkekz(
+            ua_tan, va_tan, wap_tan, ua_tmn, va_tmn, lev, y_l, nlat, ntp, nlev
+        )
         # Compute conversion between stationary and transient eddy APE
-        at2as[:, t_t, :, :] = mkatas(ua_tan, va_tan, wap_tan, ta_tan, ta_ztmn,
-                                     gam_ztmn, lev, y_l, nlat, ntp, nlev)
+        at2as[:, t_t, :, :] = mkatas(
+            ua_tan,
+            va_tan,
+            wap_tan,
+            ta_tan,
+            ta_ztmn,
+            gam_ztmn,
+            lev,
+            y_l,
+            nlat,
+            ntp,
+            nlev,
+        )
         # Compute conversion between stationary and transient eddy KE
-        kt2ks[:, t_t, :, :] = mkktks(ua_tan, va_tan, ua_tmn, va_tmn, y_l, nlat,
-                                     ntp, nlev)
+        kt2ks[:, t_t, :, :] = mkktks(
+            ua_tan, va_tan, ua_tmn, va_tmn, y_l, nlat, ntp, nlev
+        )
     ek_tgmn = averages_comp(e_k, g_w, d_s, dims)
-    table(ek_tgmn, ntp, 'TOT. KIN. EN.    ', logfile, flag=0)
+    table(ek_tgmn, ntp, "TOT. KIN. EN.    ", logfile, flag=0)
     ape_tgmn = averages_comp(ape, g_w, d_s, dims)
-    table(ape_tgmn, ntp, 'TOT. POT. EN.     ', logfile, flag=0)
+    table(ape_tgmn, ntp, "TOT. POT. EN.     ", logfile, flag=0)
     a2k_tgmn = averages_comp(a2k, g_w, d_s, dims)
-    table(a2k_tgmn, ntp, 'KE -> APE (trans) ', logfile, flag=1)
+    table(a2k_tgmn, ntp, "KE -> APE (trans) ", logfile, flag=1)
     ae2az_tgmn = averages_comp(ae2az, g_w, d_s, dims)
-    table(ae2az_tgmn, ntp, 'AZ <-> AE (trans) ', logfile, flag=1)
+    table(ae2az_tgmn, ntp, "AZ <-> AE (trans) ", logfile, flag=1)
     ke2kz_tgmn = averages_comp(ke2kz, g_w, d_s, dims)
-    table(ke2kz_tgmn, ntp, 'KZ <-> KE (trans) ', logfile, flag=1)
+    table(ke2kz_tgmn, ntp, "KZ <-> KE (trans) ", logfile, flag=1)
     at2as_tgmn = averages_comp(at2as, g_w, d_s, dims)
-    table(at2as_tgmn, ntp, 'ASE  <->  ATE   ', logfile, flag=1)
+    table(at2as_tgmn, ntp, "ASE  <->  ATE   ", logfile, flag=1)
     kt2ks_tgmn = averages_comp(kt2ks, g_w, d_s, dims)
-    table(kt2ks_tgmn, ntp, 'KSE  <->  KTE   ', logfile, flag=1)
+    table(kt2ks_tgmn, ntp, "KSE  <->  KTE   ", logfile, flag=1)
     ek_st = makek(ua_tmn, va_tmn)
     ek_stgmn = globall_cg(ek_st, g_w, d_s, dims)
-    table(ek_stgmn, ntp, 'STAT. KIN. EN.    ', logfile, flag=0)
+    table(ek_stgmn, ntp, "STAT. KIN. EN.    ", logfile, flag=0)
     ape_st = makea(ta_tmn, ta_gmn, gam_tmn)
     ape_stgmn = globall_cg(ape_st, g_w, d_s, dims)
-    table(ape_stgmn, ntp, 'STAT. POT. EN.    ', logfile, flag=0)
+    table(ape_stgmn, ntp, "STAT. POT. EN.    ", logfile, flag=0)
     a2k_st = mka2k(wap_tmn, ta_tmn, wap_gmn, ta_gmn, lev)
     a2k_stgmn = globall_cg(a2k_st, g_w, d_s, dims)
-    table(a2k_stgmn, ntp, 'KE -> APE (stat)', logfile, flag=1)
-    ae2az_st = mkaeaz(va_tmn, wap_tmn, ta_tmn, ta_tmn, ta_gmn, lev, y_l,
-                      gam_tmn, nlat, nlev)
+    table(a2k_stgmn, ntp, "KE -> APE (stat)", logfile, flag=1)
+    ae2az_st = mkaeaz(
+        va_tmn, wap_tmn, ta_tmn, ta_tmn, ta_gmn, lev, y_l, gam_tmn, nlat, nlev
+    )
     ae2az_stgmn = globall_cg(ae2az_st, g_w, d_s, dims)
-    table(ae2az_stgmn, ntp, 'AZ <-> AE (stat)', logfile, flag=1)
-    ke2kz_st = mkkekz(ua_tmn, va_tmn, wap_tmn, ua_tmn, va_tmn, lev, y_l, nlat,
-                      ntp, nlev)
+    table(ae2az_stgmn, ntp, "AZ <-> AE (stat)", logfile, flag=1)
+    ke2kz_st = mkkekz(
+        ua_tmn, va_tmn, wap_tmn, ua_tmn, va_tmn, lev, y_l, nlat, ntp, nlev
+    )
     ke2kz_stgmn = globall_cg(ke2kz_st, g_w, d_s, dims)
     # table(ke2kz_stgmn, ntp, 'KZ <-> KE (stat)', logfile, flag=1)
     list_diag = [
-        ape_tgmn, ape_stgmn, ek_tgmn, ek_stgmn, ae2az_tgmn, ae2az_stgmn,
-        a2k_tgmn, a2k_stgmn, at2as_tgmn, kt2ks_tgmn, ke2kz_tgmn, ke2kz_stgmn
+        ape_tgmn,
+        ape_stgmn,
+        ek_tgmn,
+        ek_stgmn,
+        ae2az_tgmn,
+        ae2az_stgmn,
+        a2k_tgmn,
+        a2k_stgmn,
+        at2as_tgmn,
+        kt2ks_tgmn,
+        ke2kz_tgmn,
+        ke2kz_stgmn,
     ]
     lec_strength = diagram(plotfile, list_diag, dims)
-    nc_f = outpath + '/ek_tmap_{}_{}.nc'.format(model, year)
-    output(e_k, d_s, filenc, 'ek', nc_f)
-    nc_f = outpath + '/ape_tmap_{}_{}.nc'.format(model, year)
-    output(ape, d_s, filenc, 'ape', nc_f)
-    nc_f = outpath + '/a2k_tmap_{}_{}.nc'.format(model, year)
-    output(a2k, d_s, filenc, 'a2k', nc_f)
-    nc_f = outpath + '/ae2az_tmap_{}_{}.nc'.format(model, year)
-    output(ae2az, d_s, filenc, 'ae2az', nc_f)
-    nc_f = outpath + '/ke2kz_tmap_{}_{}.nc'.format(model, year)
-    output(ke2kz, d_s, filenc, 'ke2kz', nc_f)
+    nc_f = outpath + f"/ek_tmap_{model}_{year}.nc"
+    output(e_k, d_s, filenc, "ek", nc_f)
+    nc_f = outpath + f"/ape_tmap_{model}_{year}.nc"
+    output(ape, d_s, filenc, "ape", nc_f)
+    nc_f = outpath + f"/a2k_tmap_{model}_{year}.nc"
+    output(a2k, d_s, filenc, "a2k", nc_f)
+    nc_f = outpath + f"/ae2az_tmap_{model}_{year}.nc"
+    output(ae2az, d_s, filenc, "ae2az", nc_f)
+    nc_f = outpath + f"/ke2kz_tmap_{model}_{year}.nc"
+    output(ke2kz, d_s, filenc, "ke2kz", nc_f)
     return lec_strength
 
 
@@ -223,19 +260,56 @@ def bsslzr(kdim):
     ndim = 50
     p_i = math.pi
     zbes = [
-        2.4048255577, 5.5200781103, 8.6537279129, 11.7915344391, 14.9309177086,
-        18.0710639679, 21.2116366299, 24.3524715308, 27.4934791320,
-        30.6346064684, 33.7758202136, 36.9170983537, 40.0584257646,
-        43.1997917132, 46.3411883717, 49.4826098974, 52.6240518411,
-        55.7655107550, 58.9069839261, 62.0484691902, 65.1899648002,
-        68.3314693299, 71.4729816036, 74.6145006437, 77.7560256304,
-        80.8975558711, 84.0390907769, 87.1806298436, 90.3221726372,
-        93.4637187819, 96.6052679510, 99.7468198587, 102.8883742542,
-        106.0299309165, 109.1714896498, 112.3130502805, 115.4546126537,
-        118.5961766309, 121.7377420880, 124.8793089132, 128.0208770059,
-        131.1624462752, 134.3040166383, 137.4455880203, 140.5871603528,
-        143.7287335737, 146.8703076258, 150.0118824570, 153.1534580192,
-        156.2950342685
+        2.4048255577,
+        5.5200781103,
+        8.6537279129,
+        11.7915344391,
+        14.9309177086,
+        18.0710639679,
+        21.2116366299,
+        24.3524715308,
+        27.4934791320,
+        30.6346064684,
+        33.7758202136,
+        36.9170983537,
+        40.0584257646,
+        43.1997917132,
+        46.3411883717,
+        49.4826098974,
+        52.6240518411,
+        55.7655107550,
+        58.9069839261,
+        62.0484691902,
+        65.1899648002,
+        68.3314693299,
+        71.4729816036,
+        74.6145006437,
+        77.7560256304,
+        80.8975558711,
+        84.0390907769,
+        87.1806298436,
+        90.3221726372,
+        93.4637187819,
+        96.6052679510,
+        99.7468198587,
+        102.8883742542,
+        106.0299309165,
+        109.1714896498,
+        112.3130502805,
+        115.4546126537,
+        118.5961766309,
+        121.7377420880,
+        124.8793089132,
+        128.0208770059,
+        131.1624462752,
+        134.3040166383,
+        137.4455880203,
+        140.5871603528,
+        143.7287335737,
+        146.8703076258,
+        150.0118824570,
+        153.1534580192,
+        156.2950342685,
     ]
     pbes = np.zeros(kdim)
     idim = min([kdim, ndim])
@@ -271,30 +345,49 @@ def diagram(filen, listf, dims):
     kt2ks = listf[9]
     ke2kzt = listf[10]
     ke2kzs = listf[11]
-    apz = '{:.2f}'.format(apet[0, 0] + apes[0, 0])
-    az2kz = '{:.2f}'.format(-1e5 * (a2kt[0, 0]))
-    az2at = '{:.2f}'.format(-1e5 * np.nansum(ae2azt[0, 1:ntp - 1]))
-    aps = '{:.2f}'.format(np.nansum(apes[0, 1:ntp - 1]))
-    as2ks = '{:.2f}'.format(1e5 * np.nansum(a2ks[0, 1:ntp - 1]))
-    apt = '{:.2f}'.format(np.nansum(apet[0, 1:ntp - 1]))
-    at2kt = '{:.2f}'.format(1e5 * np.nansum(a2kt[0, 1:ntp - 1]))
-    az2as = '{:.2f}'.format(-1e5 * np.nansum(ae2azs[0, 1:ntp - 1]))
-    as2at = '{:.2f}'.format(1e5 * np.nansum(at2as[0, 1:ntp - 1]))
-    azin = '{:.2f}'.format((float(az2at) + float(az2as) - float(az2kz)))
-    asein = '{:.2f}'.format((float(as2ks) + float(as2at) - float(az2as)))
-    atein = '{:.2f}'.format(float(at2kt) - float(az2at) - float(as2at))
-    k_z = '{:.2f}'.format(ekt[0, 0] + eks[0, 0])
-    kte = '{:.2f}'.format(np.nansum(ekt[0, 1:ntp - 1]))
-    kse = '{:.2f}'.format(np.nansum(eks[0, 1:ntp - 1]))
-    kt2kz = '{:.2f}'.format(1e5 * np.nansum(ke2kzt[0, 1:ntp - 1]))
-    ks2kt = '{:.2f}'.format(-1e5 * np.nansum(kt2ks[0, 1:ntp - 1]))
-    ks2kz = '{:.2f}'.format(1e5 * np.nansum(ke2kzs[0, 1:ntp - 1]))
-    kteout = '{:.2f}'.format(float(at2kt) - float(ks2kt) - float(kt2kz))
-    kseout = '{:.2f}'.format(float(ks2kt) + float(as2ks) - float(ks2kz))
-    kzout = '{:.2f}'.format(float(kt2kz) + float(ks2kz) - float(az2kz))
+    apz = f"{apet[0, 0] + apes[0, 0]:.2f}"
+    az2kz = f"{-1e5 * (a2kt[0, 0]):.2f}"
+    az2at = f"{-1e5 * np.nansum(ae2azt[0, 1 : ntp - 1]):.2f}"
+    aps = f"{np.nansum(apes[0, 1 : ntp - 1]):.2f}"
+    as2ks = f"{1e5 * np.nansum(a2ks[0, 1 : ntp - 1]):.2f}"
+    apt = f"{np.nansum(apet[0, 1 : ntp - 1]):.2f}"
+    at2kt = f"{1e5 * np.nansum(a2kt[0, 1 : ntp - 1]):.2f}"
+    az2as = f"{-1e5 * np.nansum(ae2azs[0, 1 : ntp - 1]):.2f}"
+    as2at = f"{1e5 * np.nansum(at2as[0, 1 : ntp - 1]):.2f}"
+    azin = f"{float(az2at) + float(az2as) - float(az2kz):.2f}"
+    asein = f"{float(as2ks) + float(as2at) - float(az2as):.2f}"
+    atein = f"{float(at2kt) - float(az2at) - float(as2at):.2f}"
+    k_z = f"{ekt[0, 0] + eks[0, 0]:.2f}"
+    kte = f"{np.nansum(ekt[0, 1 : ntp - 1]):.2f}"
+    kse = f"{np.nansum(eks[0, 1 : ntp - 1]):.2f}"
+    kt2kz = f"{1e5 * np.nansum(ke2kzt[0, 1 : ntp - 1]):.2f}"
+    ks2kt = f"{-1e5 * np.nansum(kt2ks[0, 1 : ntp - 1]):.2f}"
+    ks2kz = f"{1e5 * np.nansum(ke2kzs[0, 1 : ntp - 1]):.2f}"
+    kteout = f"{float(at2kt) - float(ks2kt) - float(kt2kz):.2f}"
+    kseout = f"{float(ks2kt) + float(as2ks) - float(ks2kz):.2f}"
+    kzout = f"{float(kt2kz) + float(ks2kz) - float(az2kz):.2f}"
     list_lorenz = [
-        azin, apz, asein, aps, atein, apt, as2ks, at2kt, kteout, kte, kseout,
-        kse, kzout, k_z, az2kz, az2at, az2as, as2at, kt2kz, ks2kt, ks2kz
+        azin,
+        apz,
+        asein,
+        aps,
+        atein,
+        apt,
+        as2ks,
+        at2kt,
+        kteout,
+        kte,
+        kseout,
+        kse,
+        kzout,
+        k_z,
+        az2kz,
+        az2at,
+        az2as,
+        as2at,
+        kt2kz,
+        ks2kt,
+        ks2kz,
     ]
     flux = fluxogram.Fluxogram(1000, 1000)
     flux.add_storage("AZ", 600, 0, 0)
@@ -336,17 +429,17 @@ def gauaw(n_y):
     ----------
     n_y: the latitude dimension;
     """
-    c_c = (1 - (2 / math.pi)**2) / 4
+    c_c = (1 - (2 / math.pi) ** 2) / 4
     eps = 0.00000000000001
     k_k = n_y / 2
     p_a = np.zeros(n_y)
     p_a[0:k_k] = bsslzr(k_k)
     p_w = np.zeros(n_y)
     for i_l in range(k_k):
-        x_z = np.cos(p_a[i_l] / math.sqrt((n_y + 0.5)**2 + c_c))
-        iterr = 0.
+        x_z = np.cos(p_a[i_l] / math.sqrt((n_y + 0.5) ** 2 + c_c))
+        iterr = 0.0
         zsp = 1.0
-        while (abs(zsp) > eps and iterr <= 10):
+        while abs(zsp) > eps and iterr <= 10:
             pkm1 = x_z
             pkm2 = 1.0
             for n_n in range(2, n_y, 1):
@@ -392,14 +485,23 @@ def globall_cg(d3v, g_w, d_s, dims):
     for l_l in range(nlev):
         for i_h in range(nhem):
             aux1[l_l, i_h, :] = fac * np.real(d3v[l_l, i_h, :]) * g_w[i_h]
-            aux2[l_l, i_h, :] = (fac * np.real(d3v[l_l, i_h + nhem - 1, :]) *
-                                 g_w[i_h + nhem - 1])
-        aux1v[l_l, :] = (np.nansum(aux1[l_l, :, :], axis=0) /
-                         np.nansum(g_w[0:nhem]) * d_s[l_l])
-        aux2v[l_l, :] = (np.nansum(aux2[l_l, :, :], axis=0) /
-                         np.nansum(g_w[0:nhem]) * d_s[l_l])
-    gmn[1, :] = (np.nansum(aux1v, axis=0) / np.nansum(d_s))
-    gmn[2, :] = (np.nansum(aux2v, axis=0) / np.nansum(d_s))
+            aux2[l_l, i_h, :] = (
+                fac
+                * np.real(d3v[l_l, i_h + nhem - 1, :])
+                * g_w[i_h + nhem - 1]
+            )
+        aux1v[l_l, :] = (
+            np.nansum(aux1[l_l, :, :], axis=0)
+            / np.nansum(g_w[0:nhem])
+            * d_s[l_l]
+        )
+        aux2v[l_l, :] = (
+            np.nansum(aux2[l_l, :, :], axis=0)
+            / np.nansum(g_w[0:nhem])
+            * d_s[l_l]
+        )
+    gmn[1, :] = np.nansum(aux1v, axis=0) / np.nansum(d_s)
+    gmn[2, :] = np.nansum(aux2v, axis=0) / np.nansum(d_s)
     gmn[0, :] = 0.5 * (gmn[1, :] + gmn[2, :])
     return gmn
 
@@ -416,21 +518,21 @@ def init(logfile, filep):
     filenc: name of the file containing the input fields;
     logfile: name of the file containing the table as a .txt file.
     """
-    with open(logfile, 'w') as log:
-        log.write('########################################################\n')
-        log.write('#                                                      #\n')
-        log.write('#      LORENZ     ENERGY    CYCLE                      #\n')
-        log.write('#                                                      #\n')
-        log.write('########################################################\n')
+    with open(logfile, "w") as log:
+        log.write("########################################################\n")
+        log.write("#                                                      #\n")
+        log.write("#      LORENZ     ENERGY    CYCLE                      #\n")
+        log.write("#                                                      #\n")
+        log.write("########################################################\n")
         log.close()
     with Dataset(filep) as dataset0:
-        t_a = dataset0.variables['ta'][:, :, :, :]
-        u_a = dataset0.variables['ua'][:, :, :, :]
-        v_a = dataset0.variables['va'][:, :, :, :]
-        wap = dataset0.variables['wap'][:, :, :, :]
-        lev = dataset0.variables['plev'][:]
-        time = dataset0.variables['time'][:]
-        lat = dataset0.variables['lat'][:]
+        t_a = dataset0.variables["ta"][:, :, :, :]
+        u_a = dataset0.variables["ua"][:, :, :, :]
+        v_a = dataset0.variables["va"][:, :, :, :]
+        wap = dataset0.variables["wap"][:, :, :, :]
+        lev = dataset0.variables["plev"][:]
+        time = dataset0.variables["time"][:]
+        lat = dataset0.variables["lat"][:]
     nfc = np.shape(t_a)[3]
     nlev = len(lev)
     ntime = len(time)
@@ -456,27 +558,27 @@ def init(logfile, filep):
     ua_c = ua_r + 1j * ua_i
     va_c = va_r + 1j * va_i
     wap_c = wap_r + 1j * wap_i
-    with open(logfile, 'a+') as log:
-        log.write(' \n')
-        log.write(' \n')
-        log.write('INPUT DATA:\n')
-        log.write('-----------\n')
-        log.write(' \n')
-        log.write('SPECTRAL RESOLUTION : {}\n'.format(nfc))
-        log.write('NUMBER OF LATITUDES : {}\n'.format(nlat))
-        log.write('NUMBER OF LEVEL : {}'.format(nlev))
-        log.write('LEVEL  : {} Pa\n'.format(lev))
-        log.write(' \n')
-        log.write('WAVES:\n')
-        log.write(' \n')
-        log.write('(1) : 1 - {}\n'.format(NW_1))
-        log.write('(2) : {} - {}\n'.format(NW_1, NW_2))
-        log.write('(3) : {} - {}\n'.format(NW_2, NW_3))
-        log.write(' \n')
-        log.write('GLOBAL DIAGNOSTIC: \n')
-        log.write('  \n')
-        log.write('                            I GLOBAL I NORTH I SOUTH I\n')
-        log.write('------------------------------------------------------\n')
+    with open(logfile, "a+") as log:
+        log.write(" \n")
+        log.write(" \n")
+        log.write("INPUT DATA:\n")
+        log.write("-----------\n")
+        log.write(" \n")
+        log.write(f"SPECTRAL RESOLUTION : {nfc}\n")
+        log.write(f"NUMBER OF LATITUDES : {nlat}\n")
+        log.write(f"NUMBER OF LEVEL : {nlev}")
+        log.write(f"LEVEL  : {lev} Pa\n")
+        log.write(" \n")
+        log.write("WAVES:\n")
+        log.write(" \n")
+        log.write(f"(1) : 1 - {NW_1}\n")
+        log.write(f"(2) : {NW_1} - {NW_2}\n")
+        log.write(f"(3) : {NW_2} - {NW_3}\n")
+        log.write(" \n")
+        log.write("GLOBAL DIAGNOSTIC: \n")
+        log.write("  \n")
+        log.write("                            I GLOBAL I NORTH I SOUTH I\n")
+        log.write("------------------------------------------------------\n")
         log.close()
     return ta_c, ua_c, va_c, wap_c, dims, lev, lat
 
@@ -492,8 +594,9 @@ def makek(u_t, v_t):
     ck1 = u_t * np.conj(u_t)
     ck2 = v_t * np.conj(v_t)
     e_k = np.real(ck1 + ck2)
-    e_k[:, :, 0] = 0.5 * np.real(u_t[:, :, 0] * u_t[:, :, 0] +
-                                 v_t[:, :, 0] * v_t[:, :, 0])
+    e_k[:, :, 0] = 0.5 * np.real(
+        u_t[:, :, 0] * u_t[:, :, 0] + v_t[:, :, 0] * v_t[:, :, 0]
+    )
     return e_k
 
 
@@ -507,9 +610,14 @@ def makea(t_t, t_g, gam):
     gam: a vertical profile of the stability parameter;
     """
     ape = gam[:, np.newaxis, np.newaxis] * np.real(t_t * np.conj(t_t))
-    ape[:, :, 0] = (gam[:, np.newaxis] * 0.5 * np.real(
-        (t_t[:, :, 0] - t_g[:, np.newaxis]) *
-        (t_t[:, :, 0] - t_g[:, np.newaxis])))
+    ape[:, :, 0] = (
+        gam[:, np.newaxis]
+        * 0.5
+        * np.real(
+            (t_t[:, :, 0] - t_g[:, np.newaxis])
+            * (t_t[:, :, 0] - t_g[:, np.newaxis])
+        )
+    )
     return ape
 
 
@@ -524,11 +632,17 @@ def mka2k(wap, t_t, w_g, t_g, p_l):
     t_g: a temperature vertical profile;
     p_l: the pressure levels;
     """
-    a2k = -np.real(R / p_l[:, np.newaxis, np.newaxis] *
-                   (t_t * np.conj(wap) + np.conj(t_t) * wap))
-    a2k[:, :, 0] = -np.real(R / p_l[:, np.newaxis] *
-                            (t_t[:, :, 0] - t_g[:, np.newaxis]) *
-                            (wap[:, :, 0] - w_g[:, np.newaxis]))
+    a2k = -np.real(
+        R
+        / p_l[:, np.newaxis, np.newaxis]
+        * (t_t * np.conj(wap) + np.conj(t_t) * wap)
+    )
+    a2k[:, :, 0] = -np.real(
+        R
+        / p_l[:, np.newaxis]
+        * (t_t[:, :, 0] - t_g[:, np.newaxis])
+        * (wap[:, :, 0] - w_g[:, np.newaxis])
+    )
     return a2k
 
 
@@ -566,11 +680,13 @@ def mkaeaz(v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
             t_2 = t_1
             t_1 = ttt[l_l - 1, :, 0] - ttg[l_l - 1]
             dtdp2 = (t_2 - t_1) / (p_l[l_l] - p_l[l_l - 1])
-            dtdp[l_l, :] = ((dtdp1 * (p_l[l_l] - p_l[l_l - 1]) + dtdp2 *
-                             (p_l[l_l + 1] - p_l[l_l])) /
-                            (p_l[l_l + 1] - p_l[l_l - 1]))
-        dtdp[l_l, :] = dtdp[l_l, :] - (R / (CP * p_l[l_l]) *
-                                       (ttt[l_l, :, 0] - ttg[l_l]))
+            dtdp[l_l, :] = (
+                dtdp1 * (p_l[l_l] - p_l[l_l - 1])
+                + dtdp2 * (p_l[l_l + 1] - p_l[l_l])
+            ) / (p_l[l_l + 1] - p_l[l_l - 1])
+        dtdp[l_l, :] = dtdp[l_l, :] - (
+            R / (CP * p_l[l_l]) * (ttt[l_l, :, 0] - ttg[l_l])
+        )
     for i_l in np.arange(nlat):
         if i_l == 0:
             t_1 = ttt[:, i_l, 0]
@@ -587,9 +703,10 @@ def mkaeaz(v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
     dtdy = dtdy / AA
     c_1 = np.real(v_t * np.conj(t_t) + t_t * np.conj(v_t))
     c_2 = np.real(wap * np.conj(t_t) + t_t * np.conj(wap))
-    ae2az = (gam[:, np.newaxis, np.newaxis] *
-             (dtdy[:, :, np.newaxis] * c_1 + dtdp[:, :, np.newaxis] * c_2))
-    ae2az[:, :, 0] = 0.
+    ae2az = gam[:, np.newaxis, np.newaxis] * (
+        dtdy[:, :, np.newaxis] * c_1 + dtdp[:, :, np.newaxis] * c_2
+    )
+    ae2az[:, :, 0] = 0.0
     return ae2az
 
 
@@ -615,48 +732,62 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
     dvdy = np.zeros([nlev, nlat])
     for l_l in np.arange(nlev):
         if l_l == 0:
-            dudp[l_l, :] = ((np.real(utt[l_l + 1, :, 0] - utt[l_l, :, 0])) /
-                            (p_l[l_l + 1] - p_l[l_l]))
-            dvdp[l_l, :] = ((np.real(vtt[l_l + 1, :, 0] - vtt[l_l, :, 0])) /
-                            (p_l[l_l + 1] - p_l[l_l]))
+            dudp[l_l, :] = (np.real(utt[l_l + 1, :, 0] - utt[l_l, :, 0])) / (
+                p_l[l_l + 1] - p_l[l_l]
+            )
+            dvdp[l_l, :] = (np.real(vtt[l_l + 1, :, 0] - vtt[l_l, :, 0])) / (
+                p_l[l_l + 1] - p_l[l_l]
+            )
         elif l_l == nlev - 1:
-            dudp[l_l, :] = ((np.real(utt[l_l, :, 0] - utt[l_l - 1, :, 0])) /
-                            (p_l[l_l] - p_l[l_l - 1]))
-            dvdp[l_l, :] = ((np.real(vtt[l_l, :, 0] - vtt[l_l - 1, :, 0])) /
-                            (p_l[l_l] - p_l[l_l - 1]))
+            dudp[l_l, :] = (np.real(utt[l_l, :, 0] - utt[l_l - 1, :, 0])) / (
+                p_l[l_l] - p_l[l_l - 1]
+            )
+            dvdp[l_l, :] = (np.real(vtt[l_l, :, 0] - vtt[l_l - 1, :, 0])) / (
+                p_l[l_l] - p_l[l_l - 1]
+            )
         else:
-            dudp1 = ((np.real(utt[l_l + 1, :, 0] - utt[l_l, :, 0])) /
-                     (p_l[l_l + 1] - p_l[l_l]))
-            dvdp1 = ((np.real(vtt[l_l + 1, :, 0] - vtt[l_l, :, 0])) /
-                     (p_l[l_l + 1] - p_l[l_l]))
-            dudp2 = ((np.real(utt[l_l, :, 0] - utt[l_l - 1, :, 0])) /
-                     (p_l[l_l] - p_l[l_l - 1]))
-            dvdp2 = ((np.real(vtt[l_l, :, 0] - vtt[l_l - 1, :, 0])) /
-                     (p_l[l_l] - p_l[l_l - 1]))
-            dudp[l_l, :] = ((dudp1 * (p_l[l_l] - p_l[l_l - 1]) + dudp2 *
-                             (p_l[l_l + 1] - p_l[l_l])) /
-                            (p_l[l_l + 1] - p_l[l_l - 1]))
-            dvdp[l_l, :] = ((dvdp1 * (p_l[l_l] - p_l[l_l - 1]) + dvdp2 *
-                             (p_l[l_l + 1] - p_l[l_l])) /
-                            (p_l[l_l + 1] - p_l[l_l - 1]))
+            dudp1 = (np.real(utt[l_l + 1, :, 0] - utt[l_l, :, 0])) / (
+                p_l[l_l + 1] - p_l[l_l]
+            )
+            dvdp1 = (np.real(vtt[l_l + 1, :, 0] - vtt[l_l, :, 0])) / (
+                p_l[l_l + 1] - p_l[l_l]
+            )
+            dudp2 = (np.real(utt[l_l, :, 0] - utt[l_l - 1, :, 0])) / (
+                p_l[l_l] - p_l[l_l - 1]
+            )
+            dvdp2 = (np.real(vtt[l_l, :, 0] - vtt[l_l - 1, :, 0])) / (
+                p_l[l_l] - p_l[l_l - 1]
+            )
+            dudp[l_l, :] = (
+                dudp1 * (p_l[l_l] - p_l[l_l - 1])
+                + dudp2 * (p_l[l_l + 1] - p_l[l_l])
+            ) / (p_l[l_l + 1] - p_l[l_l - 1])
+            dvdp[l_l, :] = (
+                dvdp1 * (p_l[l_l] - p_l[l_l - 1])
+                + dvdp2 * (p_l[l_l + 1] - p_l[l_l])
+            ) / (p_l[l_l + 1] - p_l[l_l - 1])
     for i_l in np.arange(nlat):
         if i_l == 0:
-            dudy[:, i_l] = ((np.real(utt[:, i_l + 1, 0] - utt[:, i_l, 0])) /
-                            (lat[i_l + 1] - lat[i_l]))
-            dvdy[:, i_l] = ((np.real(vtt[:, i_l + 1, 0] - vtt[:, i_l, 0])) /
-                            (lat[i_l + 1] - lat[i_l]))
+            dudy[:, i_l] = (np.real(utt[:, i_l + 1, 0] - utt[:, i_l, 0])) / (
+                lat[i_l + 1] - lat[i_l]
+            )
+            dvdy[:, i_l] = (np.real(vtt[:, i_l + 1, 0] - vtt[:, i_l, 0])) / (
+                lat[i_l + 1] - lat[i_l]
+            )
         elif i_l == nlat - 1:
-            dudy[:, i_l] = ((np.real(utt[:, i_l, 0] - utt[:, i_l - 1, 0])) /
-                            (lat[i_l] - lat[i_l - 1]))
-            dvdy[:, i_l] = ((np.real(vtt[:, i_l, 0] - vtt[:, i_l - 1, 0])) /
-                            (lat[i_l] - lat[i_l - 1]))
+            dudy[:, i_l] = (np.real(utt[:, i_l, 0] - utt[:, i_l - 1, 0])) / (
+                lat[i_l] - lat[i_l - 1]
+            )
+            dvdy[:, i_l] = (np.real(vtt[:, i_l, 0] - vtt[:, i_l - 1, 0])) / (
+                lat[i_l] - lat[i_l - 1]
+            )
         else:
-            dudy[:,
-                 i_l] = ((np.real(utt[:, i_l + 1, 0] - utt[:, i_l - 1, 0])) /
-                         (lat[i_l + 1] - lat[i_l - 1]))
-            dvdy[:,
-                 i_l] = ((np.real(vtt[:, i_l + 1, 0] - vtt[:, i_l - 1, 0])) /
-                         (lat[i_l + 1] - lat[i_l - 1]))
+            dudy[:, i_l] = (
+                np.real(utt[:, i_l + 1, 0] - utt[:, i_l - 1, 0])
+            ) / (lat[i_l + 1] - lat[i_l - 1])
+            dvdy[:, i_l] = (
+                np.real(vtt[:, i_l + 1, 0] - vtt[:, i_l - 1, 0])
+            ) / (lat[i_l + 1] - lat[i_l - 1])
     dudy = dudy / AA
     dvdy = dvdy / AA
     c_1 = np.zeros([nlev, nlat, ntp - 1])
@@ -673,17 +804,23 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
     for i_l in np.arange(nlat):
         c_1[:, i_l, :] = dudy[:, i_l][:, np.newaxis] * u_v[:, i_l, :]
         c_2[:, i_l, :] = dvdy[:, i_l][:, np.newaxis] * v_v[:, i_l, :]
-        c_5[:, i_l, :] = (np.tan(lat[i_l]) / AA *
-                          np.real(utt[:, i_l, 0])[:, np.newaxis] *
-                          (u_v[:, i_l, :]))
-        c_6[:, i_l, :] = -(np.tan(lat[i_l]) / AA *
-                           np.real(vtt[:, i_l, 0])[:, np.newaxis] *
-                           (u_u[:, i_l, :]))
+        c_5[:, i_l, :] = (
+            np.tan(lat[i_l])
+            / AA
+            * np.real(utt[:, i_l, 0])[:, np.newaxis]
+            * (u_v[:, i_l, :])
+        )
+        c_6[:, i_l, :] = -(
+            np.tan(lat[i_l])
+            / AA
+            * np.real(vtt[:, i_l, 0])[:, np.newaxis]
+            * (u_u[:, i_l, :])
+        )
     for l_l in np.arange(nlev):
         c_3[l_l, :, :] = dudp[l_l, :][:, np.newaxis] * u_w[l_l, :, :]
         c_4[l_l, :, :] = dvdp[l_l, :][:, np.newaxis] * v_w[l_l, :, :]
-    ke2kz = (c_1 + c_2 + c_3 + c_4 + c_5 + c_6)
-    ke2kz[:, :, 0] = 0.
+    ke2kz = c_1 + c_2 + c_3 + c_4 + c_5 + c_6
+    ke2kz[:, :, 0] = 0.0
     return ke2kz
 
 
@@ -714,62 +851,85 @@ def mkatas(u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
     t_u = np.fft.fft(tur, axis=2)
     t_v = np.fft.fft(tvr, axis=2)
     t_w = np.fft.fft(twr, axis=2)
-    c_1 = (t_u * np.conj(ttt[:, :, np.newaxis]) -
-           ttt[:, :, np.newaxis] * np.conj(t_u))
-    c_6 = (t_w * np.conj(ttt[:, :, np.newaxis]) -
-           ttt[:, :, np.newaxis] * np.conj(t_w))
+    c_1 = t_u * np.conj(ttt[:, :, np.newaxis]) - ttt[
+        :, :, np.newaxis
+    ] * np.conj(t_u)
+    c_6 = t_w * np.conj(ttt[:, :, np.newaxis]) - ttt[
+        :, :, np.newaxis
+    ] * np.conj(t_w)
     c_2 = np.zeros([nlev, nlat, ntp - 1])
     c_3 = np.zeros([nlev, nlat, ntp - 1])
     c_5 = np.zeros([nlev, nlat, ntp - 1])
     for i_l in range(nlat):
         if i_l == 0:
             c_2[:, i_l, :] = np.real(
-                t_v[:, i_l, :] / (AA * (lat[i_l + 1] - lat[i_l])) *
-                np.conj(ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis]))
+                t_v[:, i_l, :]
+                / (AA * (lat[i_l + 1] - lat[i_l]))
+                * np.conj(
+                    ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis]
+                )
+            )
             c_3[:, i_l, :] = np.real(
-                np.conj(t_v[:, i_l, :]) / (AA * (lat[i_l + 1] - lat[i_l])) *
-                (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis]))
+                np.conj(t_v[:, i_l, :])
+                / (AA * (lat[i_l + 1] - lat[i_l]))
+                * (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis])
+            )
         elif i_l == nlat - 1:
             c_2[:, i_l, :] = np.real(
-                t_v[:, i_l, :] / (AA * (lat[i_l] - lat[i_l - 1])) *
-                np.conj(ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
+                t_v[:, i_l, :]
+                / (AA * (lat[i_l] - lat[i_l - 1]))
+                * np.conj(
+                    ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]
+                )
+            )
             c_3[:, i_l, :] = np.real(
-                np.conj(t_v[:, i_l, :]) / (AA * (lat[i_l] - lat[i_l - 1])) *
-                (ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
+                np.conj(t_v[:, i_l, :])
+                / (AA * (lat[i_l] - lat[i_l - 1]))
+                * (ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis])
+            )
         else:
-            c_2[:, i_l, :] = np.real(t_v[:, i_l, :] /
-                                     (AA * (lat[i_l + 1] - lat[i_l - 1])) *
-                                     np.conj(ttt[:, i_l + 1, np.newaxis] -
-                                             ttt[:, i_l - 1, np.newaxis]))
+            c_2[:, i_l, :] = np.real(
+                t_v[:, i_l, :]
+                / (AA * (lat[i_l + 1] - lat[i_l - 1]))
+                * np.conj(
+                    ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l - 1, np.newaxis]
+                )
+            )
             c_3[:, i_l, :] = np.real(
-                np.conj(t_v[:, i_l, :]) / (AA *
-                                           (lat[i_l + 1] - lat[i_l - 1])) *
-                (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
+                np.conj(t_v[:, i_l, :])
+                / (AA * (lat[i_l + 1] - lat[i_l - 1]))
+                * (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l - 1, np.newaxis])
+            )
     for l_l in range(nlev):
         if l_l == 0:
             c_5[l_l, :, :] = (
-                (ttt[l_l + 1, :, np.newaxis] - ttt[l_l, :, np.newaxis]) /
-                (p_l[l_l + 1] - p_l[l_l]))
+                ttt[l_l + 1, :, np.newaxis] - ttt[l_l, :, np.newaxis]
+            ) / (p_l[l_l + 1] - p_l[l_l])
         elif l_l == nlev - 1:
             c_5[l_l, :, :] = (
-                (ttt[l_l, :, np.newaxis] - ttt[l_l - 1, :, np.newaxis]) /
-                (p_l[l_l] - p_l[l_l - 1]))
+                ttt[l_l, :, np.newaxis] - ttt[l_l - 1, :, np.newaxis]
+            ) / (p_l[l_l] - p_l[l_l - 1])
         else:
-            c51 = ((ttt[l_l + 1, :, np.newaxis] - ttt[l_l, :, np.newaxis]) /
-                   (p_l[l_l + 1] - p_l[l_l]))
-            c52 = ((ttt[l_l, :, np.newaxis] - ttt[l_l - 1, :, np.newaxis]) /
-                   (p_l[l_l] - p_l[l_l - 1]))
-            c_5[l_l, :, :] = ((c51 * (p_l[l_l] - p_l[l_l - 1]) + c52 *
-                               (p_l[l_l + 1] - p_l[l_l])) /
-                              (p_l[l_l + 1] - p_l[l_l - 1]))
+            c51 = (ttt[l_l + 1, :, np.newaxis] - ttt[l_l, :, np.newaxis]) / (
+                p_l[l_l + 1] - p_l[l_l]
+            )
+            c52 = (ttt[l_l, :, np.newaxis] - ttt[l_l - 1, :, np.newaxis]) / (
+                p_l[l_l] - p_l[l_l - 1]
+            )
+            c_5[l_l, :, :] = (
+                c51 * (p_l[l_l] - p_l[l_l - 1])
+                + c52 * (p_l[l_l + 1] - p_l[l_l])
+            ) / (p_l[l_l + 1] - p_l[l_l - 1])
     k_k = np.arange(0, ntp - 1)
-    at2as = (((k_k - 1)[np.newaxis, np.newaxis, :] * np.imag(c_1) /
-              (AA * np.cos(lat[np.newaxis, :, np.newaxis])) +
-              np.real(t_w * np.conj(c_5) + np.conj(t_w) * c_5) +
-              np.real(c_2 + c_3) + R /
-              (CP * p_l[:, np.newaxis, np.newaxis]) * np.real(c_6)) *
-             g_w[:, :, np.newaxis])
-    at2as[:, :, 0] = 0.
+    at2as = (
+        (k_k - 1)[np.newaxis, np.newaxis, :]
+        * np.imag(c_1)
+        / (AA * np.cos(lat[np.newaxis, :, np.newaxis]))
+        + np.real(t_w * np.conj(c_5) + np.conj(t_w) * c_5)
+        + np.real(c_2 + c_3)
+        + R / (CP * p_l[:, np.newaxis, np.newaxis]) * np.real(c_6)
+    ) * g_w[:, :, np.newaxis]
+    at2as[:, :, 0] = 0.0
     return at2as
 
 
@@ -806,26 +966,29 @@ def mkktks(u_t, v_t, utt, vtt, lat, nlat, ntp, nlev):
     c_6 = u_v * np.conj(v_t) - v_t * np.conj(u_v)
     for i_l in range(nlat):
         if i_l == 0:
-            dut[:, i_l, :] = (utt[:, i_l + 1, :] - utt[:, i_l, :])
-            dvt[:, i_l, :] = (vtt[:, i_l + 1, :] - vtt[:, i_l, :])
-            dlat[i_l] = (lat[i_l + 1] - lat[i_l])
+            dut[:, i_l, :] = utt[:, i_l + 1, :] - utt[:, i_l, :]
+            dvt[:, i_l, :] = vtt[:, i_l + 1, :] - vtt[:, i_l, :]
+            dlat[i_l] = lat[i_l + 1] - lat[i_l]
         elif i_l == nlat - 1:
-            dut[:, i_l, :] = (utt[:, i_l, :] - utt[:, i_l - 1, :])
-            dvt[:, i_l, :] = (vtt[:, i_l, :] - vtt[:, i_l - 1, :])
-            dlat[i_l] = (lat[i_l] - lat[i_l - 1])
+            dut[:, i_l, :] = utt[:, i_l, :] - utt[:, i_l - 1, :]
+            dvt[:, i_l, :] = vtt[:, i_l, :] - vtt[:, i_l - 1, :]
+            dlat[i_l] = lat[i_l] - lat[i_l - 1]
         else:
-            dut[:, i_l, :] = (utt[:, i_l + 1, :] - utt[:, i_l - 1, :])
-            dvt[:, i_l, :] = (vtt[:, i_l + 1, :] - vtt[:, i_l - 1, :])
-            dlat[i_l] = (lat[i_l + 1] - lat[i_l - 1])
+            dut[:, i_l, :] = utt[:, i_l + 1, :] - utt[:, i_l - 1, :]
+            dvt[:, i_l, :] = vtt[:, i_l + 1, :] - vtt[:, i_l - 1, :]
+            dlat[i_l] = lat[i_l + 1] - lat[i_l - 1]
     c21 = np.conj(u_u) * dut / dlat[np.newaxis, :, np.newaxis]
     c22 = u_u * np.conj(dut) / dlat[np.newaxis, :, np.newaxis]
     c41 = np.conj(v_v) * dvt / dlat[np.newaxis, :, np.newaxis]
     c42 = v_v * np.conj(dvt) / dlat[np.newaxis, :, np.newaxis]
     k_k = np.arange(0, ntp - 1)
-    kt2ks = (np.real(c21 + c22 + c41 + c42) / AA +
-             np.tan(lat)[np.newaxis, :, np.newaxis] * np.real(c_1 - c_5) / AA +
-             np.imag(c_1 + c_6) * (k_k - 1)[np.newaxis, np.newaxis, :] /
-             (AA * np.cos(lat)[np.newaxis, :, np.newaxis]))
+    kt2ks = (
+        np.real(c21 + c22 + c41 + c42) / AA
+        + np.tan(lat)[np.newaxis, :, np.newaxis] * np.real(c_1 - c_5) / AA
+        + np.imag(c_1 + c_6)
+        * (k_k - 1)[np.newaxis, np.newaxis, :]
+        / (AA * np.cos(lat)[np.newaxis, :, np.newaxis])
+    )
     kt2ks[:, :, 0] = 0
     return kt2ks
 
@@ -865,23 +1028,24 @@ def pr_output(varo, varname, filep, nc_f):
     @author: Chris Slocum (2014), modified by Valerio Lembo (2018).
     """
     fourc = fourier_coefficients
-    with Dataset(nc_f, 'w', format='NETCDF4') as w_nc_fid:
+    with Dataset(nc_f, "w", format="NETCDF4") as w_nc_fid:
         w_nc_fid.description = "Outputs of LEC program"
-        with Dataset(filep, 'r') as nc_fid:
+        with Dataset(filep, "r") as nc_fid:
             # Extract data from NetCDF file
-            wave = nc_fid.variables['wave'][:]
+            wave = nc_fid.variables["wave"][:]
             ntp = int(len(wave) / 2)
             # Writing NetCDF files
-            fourc.extr_lat(nc_fid, w_nc_fid, 'lat')
-            w_nc_fid.createDimension('wave', ntp)
-            w_nc_dim = w_nc_fid.createVariable('wave',
-                                               nc_fid.variables['wave'].dtype,
-                                               ('wave', ))
-            for ncattr in nc_fid.variables['wave'].ncattrs():
-                w_nc_dim.setncattr(ncattr,
-                                   nc_fid.variables['wave'].getncattr(ncattr))
-        w_nc_fid.variables['wave'][:] = wave[0:ntp]
-        w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('lat', 'wave'))
+            fourc.extr_lat(nc_fid, w_nc_fid, "lat")
+            w_nc_fid.createDimension("wave", ntp)
+            w_nc_dim = w_nc_fid.createVariable(
+                "wave", nc_fid.variables["wave"].dtype, ("wave",)
+            )
+            for ncattr in nc_fid.variables["wave"].ncattrs():
+                w_nc_dim.setncattr(
+                    ncattr, nc_fid.variables["wave"].getncattr(ncattr)
+                )
+        w_nc_fid.variables["wave"][:] = wave[0:ntp]
+        w_nc_var = w_nc_fid.createVariable(varname, "f8", ("lat", "wave"))
         varatts(w_nc_var, varname, 1, 0)
         w_nc_fid.variables[varname][:] = varo
 
@@ -906,54 +1070,69 @@ def preproc_lec(model, wdir, pdir, input_data):
     """
     cdo = Cdo()
     fourc = fourier_coefficients
-    ta_file = e.select_metadata(input_data, short_name='ta',
-                                dataset=model)[0]['filename']
-    tas_file = e.select_metadata(input_data, short_name='tas',
-                                 dataset=model)[0]['filename']
-    ua_files = e.select_metadata(input_data, short_name='ua', dataset=model)
+    ta_file = e.select_metadata(input_data, short_name="ta", dataset=model)[0][
+        "filename"
+    ]
+    tas_file = e.select_metadata(input_data, short_name="tas", dataset=model)[
+        0
+    ]["filename"]
+    ua_files = e.select_metadata(input_data, short_name="ua", dataset=model)
     print(ua_files)
     if len(ua_files) > 1:
-        ua_files = e.select_metadata(ua_files, variable_group='ua_1')
-    ua_file = ua_files[0]['filename']
+        ua_files = e.select_metadata(ua_files, variable_group="ua_1")
+    ua_file = ua_files[0]["filename"]
     print(ua_file)
-    uas_file = e.select_metadata(input_data, short_name='uas',
-                                 dataset=model)[0]['filename']
-    va_files = e.select_metadata(input_data, short_name='va', dataset=model)
+    uas_file = e.select_metadata(input_data, short_name="uas", dataset=model)[
+        0
+    ]["filename"]
+    va_files = e.select_metadata(input_data, short_name="va", dataset=model)
     if len(va_files) > 1:
-        va_files = e.select_metadata(va_files, variable_group='va_1')
-    va_file = va_files[0]['filename']
-    vas_files = e.select_metadata(input_data, short_name='vas', dataset=model)
+        va_files = e.select_metadata(va_files, variable_group="va_1")
+    va_file = va_files[0]["filename"]
+    vas_files = e.select_metadata(input_data, short_name="vas", dataset=model)
     if len(vas_files) > 1:
-        vas_files = e.select_metadata(vas_files, variable_group='vas_1')
-    vas_file = vas_files[0]['filename']
-    wap_file = e.select_metadata(input_data, short_name='wap',
-                                 dataset=model)[0]['filename']
-    ldir = os.path.join(pdir, 'LEC_results')
+        vas_files = e.select_metadata(vas_files, variable_group="vas_1")
+    vas_file = vas_files[0]["filename"]
+    wap_file = e.select_metadata(input_data, short_name="wap", dataset=model)[
+        0
+    ]["filename"]
+    ldir = os.path.join(pdir, "LEC_results")
     os.makedirs(ldir)
-    maskorog = wdir + '/orog.nc'
-    ua_file_mask = wdir + '/ua_fill.nc'
-    va_file_mask = wdir + '/va_fill.nc'
-    energy3_file = wdir + '/energy_short.nc'
-    cdo.setmisstoc('0',
-                   input='-setmisstoc,1 -sub {0} {0}'.format(ua_file),
-                   options='-b F32',
-                   output=maskorog)
-    cdo.add(input=('-setmisstoc,0 -selvar,ua {} '
-                   '-setmisstoc,0 -mul -selvar,uas {} -selvar,ua {}').format(
-                       ua_file, uas_file, maskorog),
-            options='-b F32',
-            output=ua_file_mask)
-    cdo.add(input=('-setmisstoc,0 -selvar,va {} '
-                   '-setmisstoc,0 -mul -selvar,vas {} -selvar,ua {}').format(
-                       va_file, vas_file, maskorog),
-            options='-b F32',
-            output=va_file_mask)
-    cdo.setmisstoc('0',
-                   input=('-invertlat -sellevel,10000/90000 '
-                          '-merge {} {} {} {}').format(ta_file, ua_file_mask,
-                                                       va_file_mask, wap_file),
-                   options='-b F32',
-                   output=energy3_file)
+    maskorog = wdir + "/orog.nc"
+    ua_file_mask = wdir + "/ua_fill.nc"
+    va_file_mask = wdir + "/va_fill.nc"
+    energy3_file = wdir + "/energy_short.nc"
+    cdo.setmisstoc(
+        "0",
+        input=f"-setmisstoc,1 -sub {ua_file} {ua_file}",
+        options="-b F32",
+        output=maskorog,
+    )
+    cdo.add(
+        input=(
+            f"-setmisstoc,0 -selvar,ua {ua_file} "
+            f"-setmisstoc,0 -mul -selvar,uas {uas_file} -selvar,ua {maskorog}"
+        ),
+        options="-b F32",
+        output=ua_file_mask,
+    )
+    cdo.add(
+        input=(
+            f"-setmisstoc,0 -selvar,va {va_file} "
+            f"-setmisstoc,0 -mul -selvar,vas {vas_file} -selvar,ua {maskorog}"
+        ),
+        options="-b F32",
+        output=va_file_mask,
+    )
+    cdo.setmisstoc(
+        "0",
+        input=(
+            "-invertlat -sellevel,10000/90000 "
+            f"-merge {ta_file} {ua_file_mask} {va_file_mask} {wap_file}"
+        ),
+        options="-b F32",
+        output=energy3_file,
+    )
     yrs = cdo.showyear(input=energy3_file)
     yrs = str(yrs)
     yrs2 = yrs.split()
@@ -961,24 +1140,23 @@ def preproc_lec(model, wdir, pdir, input_data):
     lect = np.zeros(len(yrs2))
     for y_r in yrs2:
         y_rl = [y_n for y_n in y_r]
-        y_ro = ''
+        y_ro = ""
         for e_l in y_rl:
             e_l = str(e_l)
             if e_l.isdigit() is True:
                 y_ro += e_l
         # print(filter(str.isdigit, str(y_r)))
-        enfile_yr = wdir + '/inputen.nc'
-        tasfile_yr = wdir + '/tas_yr.nc'
-        tadiag_file = wdir + '/ta_filled.nc'
-        ncfile = wdir + '/fourier_coeff.nc'
-        cdo.selyear(y_ro,
-                    input=energy3_file,
-                    options='-b F32',
-                    output=enfile_yr)
-        cdo.selyear(y_ro, input=tas_file, options='-b F32', output=tasfile_yr)
+        enfile_yr = wdir + "/inputen.nc"
+        tasfile_yr = wdir + "/tas_yr.nc"
+        tadiag_file = wdir + "/ta_filled.nc"
+        ncfile = wdir + "/fourier_coeff.nc"
+        cdo.selyear(
+            y_ro, input=energy3_file, options="-b F32", output=enfile_yr
+        )
+        cdo.selyear(y_ro, input=tas_file, options="-b F32", output=tasfile_yr)
         fourc.fourier_coeff(tadiag_file, ncfile, enfile_yr, tasfile_yr)
-        diagfile = (ldir + '/{}_{}_lec_diagram.png'.format(model, y_ro))
-        logfile = (ldir + '/{}_{}_lec_table.txt'.format(model, y_ro))
+        diagfile = ldir + f"/{model}_{y_ro}_lec_diagram.png"
+        logfile = ldir + f"/{model}_{y_ro}_lec_table.txt"
         lect[y_i] = lorenz(wdir, model, y_ro, ncfile, diagfile, logfile)
         y_i = y_i + 1
         os.remove(enfile_yr)
@@ -1020,9 +1198,10 @@ def stabil(ta_gmn, p_l, nlev):
         else:
             dtdp1 = (t_g[i_l + 1] - t_g[i_l]) / (p_l[i_l + 1] - p_l[i_l])
             dtdp2 = (t_g[i_l] - t_g[i_l - 1]) / (p_l[i_l] - p_l[i_l - 1])
-            dtdp = ((dtdp1 * (p_l[i_l] - p_l[i_l - 1]) + dtdp2 *
-                     (p_l[i_l + 1] - p_l[i_l])) /
-                    (p_l[i_l + 1] - p_l[i_l - 1]))
+            dtdp = (
+                dtdp1 * (p_l[i_l] - p_l[i_l - 1])
+                + dtdp2 * (p_l[i_l + 1] - p_l[i_l])
+            ) / (p_l[i_l + 1] - p_l[i_l - 1])
         g_s[i_l] = CP / (t_g[i_l] - p_l[i_l] * dtdp * cpdr)
     return g_s
 
@@ -1042,10 +1221,10 @@ def table(varin, ntp, name, logfile, flag):
         fac = 1e5
         varin = fac * varin
     varzon = varin[:, 0]
-    vared = np.nansum(varin[:, 1:ntp - 1], axis=1)
-    vared1 = np.nansum(varin[:, 1:NW_1 - 1], axis=1)
-    vared2 = np.nansum(varin[:, NW_1:NW_2 - 1], axis=1)
-    vared3 = np.nansum(varin[:, NW_2:NW_3 - 1], axis=1)
+    vared = np.nansum(varin[:, 1 : ntp - 1], axis=1)
+    vared1 = np.nansum(varin[:, 1 : NW_1 - 1], axis=1)
+    vared2 = np.nansum(varin[:, NW_1 : NW_2 - 1], axis=1)
+    vared3 = np.nansum(varin[:, NW_2 : NW_3 - 1], axis=1)
     vared_tog = [vared, vared1, vared2, vared3]
     write_to_tab(logfile, name, vared_tog, varzon)
 
@@ -1070,38 +1249,46 @@ def varatts(w_nc_var, varname, tres, vres):
         vatt = "Pressure levels\n"
     elif vres == 1:
         vatt = "Vertically integrated\n"
-    if varname == 'a':
-        w_nc_var.setncatts({
-            'long_name': "Available Potential Energy",
-            'units': "W m-2",
-            'level_desc': vatt,
-            'var_desc': "APE -> KE",
-            'statistic': tatt
-        })
-    elif varname == 'ek':
-        w_nc_var.setncatts({
-            'long_name': "Kinetic Energy",
-            'units': "W m-2",
-            'level_desc': vatt,
-            'var_desc': "APE -> KE",
-            'statistic': tatt
-        })
-    elif varname == 'a2k':
-        w_nc_var.setncatts({
-            'long_name': "Conversion between APE and KE",
-            'units': "W m-2",
-            'level_desc': vatt,
-            'var_desc': "APE <-> KE",
-            'statistic': tatt
-        })
-    elif varname == 'k':
-        w_nc_var.setncatts({
-            'long_name': "Kinetic Energy",
-            'units': "W m-2",
-            'level_desc': vatt,
-            'var_desc': "APE -> KE",
-            'statistic': tatt
-        })
+    if varname == "a":
+        w_nc_var.setncatts(
+            {
+                "long_name": "Available Potential Energy",
+                "units": "W m-2",
+                "level_desc": vatt,
+                "var_desc": "APE -> KE",
+                "statistic": tatt,
+            }
+        )
+    elif varname == "ek":
+        w_nc_var.setncatts(
+            {
+                "long_name": "Kinetic Energy",
+                "units": "W m-2",
+                "level_desc": vatt,
+                "var_desc": "APE -> KE",
+                "statistic": tatt,
+            }
+        )
+    elif varname == "a2k":
+        w_nc_var.setncatts(
+            {
+                "long_name": "Conversion between APE and KE",
+                "units": "W m-2",
+                "level_desc": vatt,
+                "var_desc": "APE <-> KE",
+                "statistic": tatt,
+            }
+        )
+    elif varname == "k":
+        w_nc_var.setncatts(
+            {
+                "long_name": "Kinetic Energy",
+                "units": "W m-2",
+                "level_desc": vatt,
+                "var_desc": "APE -> KE",
+                "statistic": tatt,
+            }
+        )
 
 
 def weights(lev, nlev, lat):
@@ -1120,8 +1307,9 @@ def weights(lev, nlev, lat):
     for j_l in range(1, nlev - 1, 1):
         d_s[j_l] = 0.5 * abs(sig[j_l + 1] - sig[j_l - 1])
     d_s[0] = sig[0] + 0.5 * abs(sig[1] - sig[0])
-    d_s[nlev -
-        1] = 1 - sig[nlev - 1] + 0.5 * abs(sig[nlev - 1] - sig[nlev - 2])
+    d_s[nlev - 1] = (
+        1 - sig[nlev - 1] + 0.5 * abs(sig[nlev - 1] - sig[nlev - 2])
+    )
     # Compute Gaussian weights
     y_l = np.zeros(lat.shape)
     np.deg2rad(lat, out=y_l)
@@ -1141,23 +1329,29 @@ def write_to_tab(logfile, name, vared, varzon):
     varzon: an array containing the zonal mean component;
     """
     vartot = varzon + vared[0]
-    with open(logfile, 'a+') as log:
-        log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
-            name, vartot[0], vartot[1], vartot[2]))
-        log.write('--------------------------------------\n')
-        log.write(' {} ZONAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
-            name, varzon[0], varzon[1], varzon[2]))
-        log.write('--------------------------------------\n')
-        log.write(' {} EDDY     {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
-            name, vared[0][0], vared[0][1], vared[0][2]))
-        log.write('--------------------------------------\n')
-        log.write(' {} EDDY(LW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
-            name, vared[1][0], vared[1][1], vared[1][2]))
-        log.write('--------------------------------------\n')
-        log.write(' {} EDDY(SW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
-            name, vared[2][0], vared[2][1], vared[2][2]))
-        log.write('--------------------------------------\n')
-        log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
-            name, vared[3][0], vared[3][1], vared[3][2]))
-        log.write('--------------------------------------\n')
+    with open(logfile, "a+") as log:
+        log.write(
+            f" {name} TOTAL    {vartot[0]: 4.3f}  {vartot[1]: 4.3f}  {vartot[2]: 4.3f}\n"
+        )
+        log.write("--------------------------------------\n")
+        log.write(
+            f" {name} ZONAL    {varzon[0]: 4.3f}  {varzon[1]: 4.3f}  {varzon[2]: 4.3f}\n"
+        )
+        log.write("--------------------------------------\n")
+        log.write(
+            f" {name} EDDY     {vared[0][0]: 4.3f}  {vared[0][1]: 4.3f}  {vared[0][2]: 4.3f}\n"
+        )
+        log.write("--------------------------------------\n")
+        log.write(
+            f" {name} EDDY(LW) {vared[1][0]: 4.3f}  {vared[1][1]: 4.3f}  {vared[1][2]: 4.3f}\n"
+        )
+        log.write("--------------------------------------\n")
+        log.write(
+            f" {name} EDDY(SW) {vared[2][0]: 4.3f}  {vared[2][1]: 4.3f}  {vared[2][2]: 4.3f}\n"
+        )
+        log.write("--------------------------------------\n")
+        log.write(
+            f" {name} EDDY(KW) {vared[3][0]: 4.3f}  {vared[3][1]: 4.3f}  {vared[3][2]: 4.3f}\n"
+        )
+        log.write("--------------------------------------\n")
         log.close()

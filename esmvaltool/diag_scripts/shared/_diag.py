@@ -10,7 +10,6 @@ Import and use these basic classes by e.g.::
 
 """
 
-
 import collections
 import logging
 import warnings
@@ -23,21 +22,22 @@ logger = logging.getLogger(__name__)
 
 
 # Global variables
-DEFAULT_INFO = 'not_specified'
+DEFAULT_INFO = "not_specified"
 
-DEPRECATION_MSG = ("The class {class_name} has been deprecated in version 2.2 "
-                   "and is not maintained anymore. Please consider using "
-                   "alternative functions such as 'select_metadata', "
-                   "'sorted_metadata', 'group_metadata' or "
-                   "sorted_group_metadata' that are provided by the module "
-                   "esmvaltool.diag_scripts.shared.")
+DEPRECATION_MSG = (
+    "The class {class_name} has been deprecated in version 2.2 "
+    "and is not maintained anymore. Please consider using "
+    "alternative functions such as 'select_metadata', "
+    "'sorted_metadata', 'group_metadata' or "
+    "sorted_group_metadata' that are provided by the module "
+    "esmvaltool.diag_scripts.shared."
+)
 
 
 # Variable class containing all relevant information
-BaseVariable = collections.namedtuple('Variable', [n.SHORT_NAME,
-                                                   n.STANDARD_NAME,
-                                                   n.LONG_NAME,
-                                                   n.UNITS])
+BaseVariable = collections.namedtuple(
+    "Variable", [n.SHORT_NAME, n.STANDARD_NAME, n.LONG_NAME, n.UNITS]
+)
 
 
 class Variable(BaseVariable):
@@ -54,9 +54,12 @@ class Variable(BaseVariable):
         """Deprecate this class."""
         warnings.warn(
             DEPRECATION_MSG.format(class_name=str(cls)),
-            ESMValToolDeprecationWarning)
-        self = super().__new__(cls, short_name, standard_name, long_name,
-                               units)
+            ESMValToolDeprecationWarning,
+            stacklevel=2,
+        )
+        self = super().__new__(
+            cls, short_name, standard_name, long_name, units
+        )
         return self
 
 
@@ -105,7 +108,9 @@ class Variables:
         """
         warnings.warn(
             DEPRECATION_MSG.format(class_name=str(self.__class__)),
-            ESMValToolDeprecationWarning)
+            ESMValToolDeprecationWarning,
+            stacklevel=2,
+        )
         self._dict = {}
 
         # Add variables from cfg file
@@ -120,7 +125,8 @@ class Variables:
                             name,
                             info.get(n.STANDARD_NAME, DEFAULT_INFO),
                             info.get(n.LONG_NAME, DEFAULT_INFO),
-                            info.get(n.UNITS, DEFAULT_INFO))
+                            info.get(n.UNITS, DEFAULT_INFO),
+                        )
                         self._add_to_dict(name, attr)
                 else:
                     success = False
@@ -129,9 +135,11 @@ class Variables:
             if not success:
                 logger.warning("%s is not a valid configuration file!", cfg)
         if not self._dict:
-            logger.warning("Empty recipe configuration: the automatic "
-                           "import of variables does not work for chained "
-                           "scripts (using 'ancestors' key)")
+            logger.warning(
+                "Empty recipe configuration: the automatic "
+                "import of variables does not work for chained "
+                "scripts (using 'ancestors' key)"
+            )
 
         # Add custom variables
         self.add_vars(**names)
@@ -140,9 +148,9 @@ class Variables:
 
     def __repr__(self):
         """Representation of the class."""
-        output = ''
-        for (name, attr) in self._dict.items():
-            output += '{}: {}\n'.format(name, attr)
+        output = ""
+        for name, attr in self._dict.items():
+            output += f"{name}: {attr}\n"
         return output
 
     def _add_to_dict(self, name, attr):
@@ -170,7 +178,7 @@ class Variables:
             `Variable_object` can be given as :obj:`dict` or :class:`Variable`.
 
         """
-        for (name, attr) in names.items():
+        for name, attr in names.items():
             if isinstance(attr, Variable):
                 attr_var = attr
             else:
@@ -178,7 +186,8 @@ class Variables:
                     name,
                     attr.get(n.STANDARD_NAME, DEFAULT_INFO),
                     attr.get(n.LONG_NAME, DEFAULT_INFO),
-                    attr.get(n.UNITS, DEFAULT_INFO))
+                    attr.get(n.UNITS, DEFAULT_INFO),
+                )
             self._add_to_dict(name, attr_var)
 
     def iris_dict(self, var):
@@ -235,8 +244,9 @@ class Variables:
 
         """
         if var not in self._dict:
-            raise ValueError("Variable '{}' does not exist yet and cannot be "
-                             "modified".format(var))
+            raise ValueError(
+                f"Variable '{var}' does not exist yet and cannot be modified"
+            )
         old_var = self._dict.pop(var)
         new_var = {}
         for name in Variable._fields:
@@ -244,8 +254,7 @@ class Variables:
 
         # Check if names is not empty (=non-valid keyword argument given)
         if names:
-            raise TypeError("Non-valid keyword arguments "
-                            "given: {}".format(names))
+            raise TypeError(f"Non-valid keyword arguments given: {names}")
         new_var = Variable(**new_var)
         self._add_to_dict(var, new_var)
 
@@ -403,7 +412,9 @@ class Datasets:
         """
         warnings.warn(
             DEPRECATION_MSG.format(class_name=str(self.__class__)),
-            ESMValToolDeprecationWarning)
+            ESMValToolDeprecationWarning,
+            stacklevel=2,
+        )
         self._iter_counter = 0
         self._paths = []
         self._data = {}
@@ -424,19 +435,20 @@ class Datasets:
         else:
             success = False
         if not success:
-            raise TypeError("{} is not a valid configuration "
-                            "file".format(repr(cfg)))
+            raise TypeError(f"{repr(cfg)} is not a valid configuration file")
         self._n_datasets = len(self._paths)
         if not self._paths:
             logger.warning("No datasets found!")
-            logger.warning("Note: the automatic import of datasets does not "
-                           "work for chained scripts (using 'ancestors' key)")
+            logger.warning(
+                "Note: the automatic import of datasets does not "
+                "work for chained scripts (using 'ancestors' key)"
+            )
 
     def __repr__(self):
         """Representation of the class."""
-        output = ''
+        output = ""
         for path in self._datasets:
-            output += repr(self._datasets[path]) + '\n'
+            output += repr(self._datasets[path]) + "\n"
         return output
 
     def __iter__(self):
@@ -495,15 +507,18 @@ class Datasets:
         """
         paths = list(self._datasets)
         for info in dataset_info:
-            paths = [path for path in paths if
-                     self._datasets[path].get(info) == dataset_info[info]]
+            paths = [
+                path
+                for path in paths
+                if self._datasets[path].get(info) == dataset_info[info]
+            ]
         if not paths:
             logger.warning("%s does not match any dataset", dataset_info)
             return paths
         if not fail_when_ambiguous:
             return sorted(paths)
         if len(paths) > 1:
-            msg = 'Given dataset information is ambiguous'
+            msg = "Given dataset information is ambiguous"
             logger.error(msg)
             raise RuntimeError(msg)
         return sorted(paths)
@@ -713,8 +728,11 @@ class Datasets:
             if self._is_valid_path(path):
                 output = self._datasets[path].get(key)
                 if output is None:
-                    logger.warning("Dataset %s does not contain '%s' "
-                                   "information", path, key)
+                    logger.warning(
+                        "Dataset %s does not contain '%s' information",
+                        path,
+                        key,
+                    )
                 return output
             return None
         paths = self._extract_paths(dataset_info, fail_when_ambiguous=True)
@@ -722,8 +740,9 @@ class Datasets:
             return None
         output = self._datasets[paths[0]].get(key)
         if output is None:
-            logger.warning("Dataset %s does not contain '%s' information",
-                           path, key)
+            logger.warning(
+                "Dataset %s does not contain '%s' information", path, key
+            )
         return output
 
     def get_info_list(self, key, **dataset_info):
@@ -750,8 +769,9 @@ class Datasets:
         paths = self._extract_paths(dataset_info)
         output = [self._datasets[path].get(key) for path in paths]
         if None in output:
-            logger.warning("One or more datasets do not contain '%s' "
-                           "information", key)
+            logger.warning(
+                "One or more datasets do not contain '%s' information", key
+            )
         return output
 
     def get_path(self, **dataset_info):

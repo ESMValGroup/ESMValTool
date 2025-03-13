@@ -1,0 +1,20 @@
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: ESACCI-OZONE
+  version: L3
+  tier: 2
+  modeling_realm: sat
+  project_id: OBS6
+  source: "https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1"
+  reference: "esacci-ozone"
+  comment: ""
+
+variables:
+  toz:
+    mip: AERmon
+    raw: total_ozone_column
+    filename: C3S-L3_OZONE-O3_PRODUCTS-MERGED_UV-MERGED-ALG-MONTHLY-v2000.nc #The filename needs also "YYYYMM-" as prefix added during the cmorization
+  o3:
+    mip: AERmon
+    raw: merged_ozone_concentration
+    filename: C3S-L3_OZONE-O3_PRODUCTS-CONC_MZM-MERGED-ALG-MONTHLY-v0008.nc #The filename needs also "YYYYMM-" as prefix added during the cmorization

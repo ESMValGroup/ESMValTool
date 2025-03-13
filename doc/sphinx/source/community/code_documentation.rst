@@ -180,13 +180,13 @@ the repository is cloned, e.g. ``cd ESMValTool``, and run `prospector <http://pr
 
    prospector esmvaltool/diag_scripts/your_diagnostic/your_script.py
 
-In addition to prospector, we also use `flake8 <https://flake8.pycqa.org/en/latest/>`_
+In addition to prospector, we also use `ruff <https://docs.astral.sh/ruff/>`_
 to automatically check for obvious bugs and formatting mistakes.
 
 When you make a pull request, adherence to the Python development best practices
 is checked in two ways:
 
-#. As part of the unit tests, flake8_ is run by
+#. As part of the unit tests, pre-commit is run by
    `CircleCI <https://app.circleci.com/pipelines/github/ESMValGroup/ESMValTool>`_,
    see the section on Tests_ for more information.
 #. `Codacy <https://app.codacy.com/gh/ESMValGroup/ESMValTool/pullRequests>`_
@@ -201,7 +201,8 @@ A pull request should preferably not introduce any new prospector issues.
 However, we understand that there is a limit to how much time can be spent on
 polishing code, so up to 10 new (non-trivial) issues is still an acceptable
 amount.
-Formatting issues are considered trivial and need to be addressed.
+Formatting issues are considered trivial and need to be addressed by running
+``pre-commit run -a``.
 Note that the automatic code quality checks by prospector are really helpful to
 improve the quality of your code, but they are not flawless.
 If you suspect prospector or Codacy may be wrong, please ask the
@@ -211,27 +212,11 @@ Note that running prospector locally will give you quicker and sometimes more
 accurate results than waiting for Codacy.
 
 Most formatting issues in Python code can be fixed automatically by
-running the commands
+running the command:
 
 ::
 
-   isort some_file.py
-
-to sort the imports in `the standard way <https://www.python.org/dev/peps/pep-0008/#imports>`__
-using `isort <https://pycqa.github.io/isort/>`__ and
-
-::
-
-   yapf -i some_file.py
-
-to add/remove whitespace as required by the standard using `yapf <https://github.com/google/yapf>`__,
-
-::
-
-   docformatter -i some_file.py
-
-to run `docformatter <https://github.com/myint/docformatter>`__ which helps
-formatting the docstrings (such as line length, spaces).
+   pre-commit run --all
 
 NCL
 ~~~

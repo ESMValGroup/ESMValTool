@@ -64,7 +64,7 @@ If it is just a few simple scripts or packaging is not possible (i.e. for NCL) y
 and paste the source code into the ``esmvaltool/diag_scripts`` directory.
 
 If you have existing code in a compiled language like
-C, C++, or Fortran that you want to re-use, the recommended way to proceed is to add Python bindings and publish
+C, C++, or Fortran that you want to reuse, the recommended way to proceed is to add Python bindings and publish
 the package on PyPI so it can be installed as a Python dependency. You can then call the functions it provides
 using a Python diagnostic.
 
@@ -134,9 +134,8 @@ Diagnostic output
 Typically, diagnostic scripts create plots, but any other output such as e.g.
 text files or tables is also possible.
 Figures should be saved in the ``plot_dir``, either in both ``.pdf`` and
-``.png`` format (preferred), or
-respect the ``output_file_type`` specified in the
-:ref:`esmvalcore:user configuration file`.
+``.png`` format (preferred), or respect the :ref:`configuration option
+<esmvalcore:config_options>` ``output_file_type`` .
 Data should be saved in the ``work_dir``, preferably as a ``.nc``
 (`NetCDF <https://www.unidata.ucar.edu/software/netcdf/>`__) file, following the
 `CF-Conventions <https://cfconventions.org/>`__ as much as possible.
@@ -181,7 +180,7 @@ human inspection.
 In addition to provenance information, a caption is also added to the plots.
 
 Provenance information from the recipe is automatically recorded by ESMValCore, whereas
-diagnostic scripts must include code specifically to record provenance. See below for 
+diagnostic scripts must include code specifically to record provenance. See below for
 documentation of provenance attributes that can be included in a recipe.
 When contributing a diagnostic, please make sure it records the provenance,
 and that no warnings related to provenance are generated when running the recipe.
@@ -252,7 +251,7 @@ for example
   plot_types:
     errorbar: error bar plot
 
-To use these items, include them in the provenance record dictionary in the form 
+To use these items, include them in the provenance record dictionary in the form
 :code:`key: [value]`
 i.e. for the example above as
 :code:`'plot_types': ['errorbar']`.
@@ -275,8 +274,8 @@ Always use :func:`esmvaltool.diag_scripts.shared.run_diagnostic` at the end of y
     with run_diagnostic() as config:
         main(config)
 
-Create a ``provenance_record`` for each diagnostic file (i.e. image or data 
-file) that the diagnostic script outputs. The ``provenance_record`` is a 
+Create a ``provenance_record`` for each diagnostic file (i.e. image or data
+file) that the diagnostic script outputs. The ``provenance_record`` is a
 dictionary of provenance items, for example:
 
 .. code-block:: python
@@ -296,15 +295,15 @@ dictionary of provenance items, for example:
         'statistics': ['mean'],
       }
 
-To save a matplotlib figure, use the convenience function 
-:func:`esmvaltool.diag_scripts.shared.save_figure`. Similarly, to save Iris cubes use 
+To save a matplotlib figure, use the convenience function
+:func:`esmvaltool.diag_scripts.shared.save_figure`. Similarly, to save Iris cubes use
 :func:`esmvaltool.diag_scripts.shared.save_data`. Both of these functions take
 ``provenance_record`` as an argument and log the provenance accordingly.
 Have a look at the example Python diagnostic in
 `esmvaltool/diag_scripts/examples/diagnostic.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.py>`_
 for a complete example.
 
-For any other files created, you will need to make use of a 
+For any other files created, you will need to make use of a
 :class:`esmvaltool.diag_scripts.shared.ProvenanceLogger` to log provenance. Include the
 following code directly after the file is saved:
 
@@ -489,7 +488,7 @@ This includes the following items:
 * In-code documentation (comments, docstrings)
 * Code quality (e.g. no hardcoded pathnames)
 * No Codacy errors reported
-* Re-use of existing functions whenever possible
+* Reuse of existing functions whenever possible
 * Provenance implemented
 
 Run recipe

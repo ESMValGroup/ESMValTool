@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Diagnostic script to create simple multi-dataset scatterplots.
 
 Description
@@ -52,10 +51,10 @@ logger = logging.getLogger(os.path.basename(__file__))
 def get_provenance_record(caption, ancestor_files, **kwargs):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
-        'caption': caption,
-        'authors': ['schlund_manuel'],
-        'references': ['acknow_project'],
-        'ancestors': ancestor_files,
+        "caption": caption,
+        "authors": ["schlund_manuel"],
+        "references": ["acknow_project"],
+        "ancestors": ancestor_files,
     }
     record.update(kwargs)
     return record
@@ -63,46 +62,51 @@ def get_provenance_record(caption, ancestor_files, **kwargs):
 
 def plot_data(cfg, cube):
     """Create scatterplot for cube."""
-    logger.debug("Plotting scatterplot for cube %s",
-                 cube.summary(shorten=True))
+    logger.debug(
+        "Plotting scatterplot for cube %s", cube.summary(shorten=True)
+    )
     (_, axes) = plt.subplots()
-    project = cube.attributes.get('project')
+    project = cube.attributes.get("project")
 
     # Plot
-    for (idx, dataset_name) in enumerate(cube.coord('dataset').points):
-        style = plot.get_dataset_style(dataset_name, cfg.get('dataset_style'))
+    for idx, dataset_name in enumerate(cube.coord("dataset").points):
+        style = plot.get_dataset_style(dataset_name, cfg.get("dataset_style"))
         y_data = cube.extract(iris.Constraint(dataset=dataset_name)).data
-        axes.plot(idx + 1,
-                  y_data,
-                  marker=style['mark'],
-                  linestyle='none',
-                  markeredgecolor=style['color'],
-                  markerfacecolor=style['facecolor'],
-                  label=dataset_name)
+        axes.plot(
+            idx + 1,
+            y_data,
+            marker=style["mark"],
+            linestyle="none",
+            markeredgecolor=style["color"],
+            markerfacecolor=style["facecolor"],
+            label=dataset_name,
+        )
 
     # Plot appearance
     title = cube.long_name
     if project is not None:
-        title += f' for {project}'
+        title += f" for {project}"
     axes.set_title(title)
-    axes.tick_params(axis='x',
-                     which='both',
-                     bottom=False,
-                     top=False,
-                     labelbottom=False)
+    axes.tick_params(
+        axis="x", which="both", bottom=False, top=False, labelbottom=False
+    )
     axes.set_ylabel(f"{cube.var_name.upper()} / {cube.units}")
-    axes.set_ylim(cfg.get('y_range'))
-    legend = axes.legend(loc='center left',
-                         bbox_to_anchor=[1.05, 0.5],
-                         borderaxespad=0.0,
-                         ncol=2)
+    axes.set_ylim(cfg.get("y_range"))
+    legend = axes.legend(
+        loc="center left",
+        bbox_to_anchor=[1.05, 0.5],
+        borderaxespad=0.0,
+        ncol=2,
+    )
 
     # Save plot
     plot_path = get_plot_filename(cube.var_name, cfg)
-    plt.savefig(plot_path,
-                orientation='landscape',
-                bbox_inches='tight',
-                bbox_extra_artists=[legend])
+    plt.savefig(
+        plot_path,
+        orientation="landscape",
+        bbox_inches="tight",
+        bbox_extra_artists=[legend],
+    )
     logger.info("Wrote %s", plot_path)
     plt.close()
     return plot_path
@@ -110,7 +114,7 @@ def plot_data(cfg, cube):
 
 def write_data(cfg, cube):
     """Write netcdf file."""
-    cube.attributes.pop('provenance', None)
+    cube.attributes.pop("provenance", None)
     netcdf_path = get_diagnostic_filename(cube.var_name, cfg)
     io.iris_save(cube, netcdf_path)
     return netcdf_path
@@ -118,8 +122,8 @@ def write_data(cfg, cube):
 
 def main(cfg):
     """Run the diagnostic."""
-    sns.set_theme(**cfg.get('seaborn_settings', {}))
-    input_files = io.get_all_ancestor_files(cfg, pattern=cfg.get('pattern'))
+    sns.set_theme(**cfg.get("seaborn_settings", {}))
+    input_files = io.get_all_ancestor_files(cfg, pattern=cfg.get("pattern"))
     if len(input_files) != 1:
         raise ValueError(f"Expected exactly 1 file, got {len(input_files)}")
     input_file = input_files[0]
@@ -128,11 +132,12 @@ def main(cfg):
     # Create plots
     cube = iris.load_cube(input_file)
     try:
-        cube.coord('dataset')
+        cube.coord("dataset")
     except iris.exceptions.CoordinateNotFoundError as exc:
         logger.error(
             "File '%s' does not contain necessary coordinate 'dataset'",
-            input_file)
+            input_file,
+        )
         raise exc
 
     # Sort coordinate 'dataset'
@@ -143,18 +148,21 @@ def main(cfg):
     netcdf_path = write_data(cfg, cube)
 
     # Provenance
-    project = cube.attributes.get('project')
+    project = cube.attributes.get("project")
     caption = "{}{} for multiple datasets.".format(
-        cube.long_name, '' if project is None else f' for {project}')
+        cube.long_name, "" if project is None else f" for {project}"
+    )
     provenance_record = get_provenance_record(caption, [input_file])
-    provenance_record.update({
-        'plot_types': ['scatter'],
-    })
+    provenance_record.update(
+        {
+            "plot_types": ["scatter"],
+        }
+    )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
         provenance_logger.log(plot_path, provenance_record)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with run_diagnostic() as config:
         main(config)

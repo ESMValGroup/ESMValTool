@@ -50,6 +50,7 @@ Author: Lee de Mora (PML)
         ledm@pml.ac.uk
 
 """
+
 import logging
 import os
 import sys
@@ -60,15 +61,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-from esmvaltool.diag_scripts.shared import run_diagnostic
-from esmvaltool.diag_scripts.shared import ProvenanceLogger
+from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def add_map_subplot(subplot, cube, nspace, title='', cmap=''):
+def add_map_subplot(subplot, cube, nspace, title="", cmap=""):
     """
     Add a map subplot to the current pyplot figure.
 
@@ -87,19 +87,20 @@ def add_map_subplot(subplot, cube, nspace, title='', cmap=''):
 
     """
     plt.subplot(subplot)
-    qplot = qplt.contourf(cube, nspace, linewidth=0,
-                          cmap=plt.cm.get_cmap(cmap))
-    qplot.colorbar.set_ticks([nspace.min(),
-                              (nspace.max() + nspace.min()) / 2.,
-                              nspace.max()])
+    qplot = qplt.contourf(
+        cube, nspace, linewidth=0, cmap=plt.cm.get_cmap(cmap)
+    )
+    qplot.colorbar.set_ticks(
+        [nspace.min(), (nspace.max() + nspace.min()) / 2.0, nspace.max()]
+    )
 
     plt.gca().coastlines()
     plt.title(title)
 
 
 def multi_model_maps(
-        cfg,
-        input_files,
+    cfg,
+    input_files,
 ):
     """
     Make the four pane model vs model vs obs comparison plot.
@@ -113,15 +114,15 @@ def multi_model_maps(
 
     """
     filenames = {}
-    ctl_key = 'control_model'
-    exp_key = 'exper_model'
-    obs_key = 'observational_dataset'
+    ctl_key = "control_model"
+    exp_key = "exper_model"
+    obs_key = "observational_dataset"
     model_types = [ctl_key, exp_key, obs_key]
     for model_type in model_types:
         logger.debug(model_type, cfg[model_type])
-        filenames[model_type] = diagtools.match_model_to_key(model_type,
-                                                             cfg[model_type],
-                                                             input_files)
+        filenames[model_type] = diagtools.match_model_to_key(
+            model_type, cfg[model_type], input_files
+        )
 
     # ####
     # Load the data for each layer as a separate cube
@@ -129,20 +130,20 @@ def multi_model_maps(
     cubes = {}
     for model_type, input_file in filenames.items():
         cube = iris.load_cube(input_file)
-        cube = diagtools.bgc_units(cube, input_files[input_file]['short_name'])
+        cube = diagtools.bgc_units(cube, input_files[input_file]["short_name"])
 
         cubes[model_type] = diagtools.make_cube_layer_dict(cube)
         for layer in cubes[model_type]:
             layers[layer] = True
 
-    logger.debug('layers: %s', ', '.join(layers))
-    logger.debug('cubes: %s', ', '.join(cubes.keys()))
+    logger.debug("layers: %s", ", ".join(layers))
+    logger.debug("cubes: %s", ", ".join(cubes.keys()))
 
     # ####
     # load names:
-    exper = input_files[filenames[exp_key]]['dataset']
-    control = input_files[filenames[ctl_key]]['dataset']
-    obs = input_files[filenames[obs_key]]['dataset']
+    exper = input_files[filenames[exp_key]]["dataset"]
+    control = input_files[filenames[ctl_key]]["dataset"]
+    obs = input_files[filenames[obs_key]]["dataset"]
     long_name = cubes[exp_key][list(layers.keys())[0]].long_name
 
     # Load image format extention
@@ -160,40 +161,62 @@ def multi_model_maps(
         cube224 = cubes[exp_key][layer] - cubes[obs_key][layer]
 
         # create the z axis for plots 2, 3, 4.
-        zrange1 = diagtools.get_cube_range([cube221, ])
+        zrange1 = diagtools.get_cube_range(
+            [
+                cube221,
+            ]
+        )
         zrange2 = diagtools.get_cube_range_diff([cube222, cube223, cube224])
 
         linspace1 = np.linspace(zrange1[0], zrange1[1], 12, endpoint=True)
         linspace2 = np.linspace(zrange2[0], zrange2[1], 12, endpoint=True)
 
         # Add the sub plots to the figure.
-        add_map_subplot(221, cube221, linspace1, cmap='viridis', title=exper)
-        add_map_subplot(222, cube222, linspace2, cmap='bwr',
-                        title=' '.join([exper, 'minus', control]))
-        add_map_subplot(223, cube223, linspace2, cmap='bwr',
-                        title=' '.join([control, 'minus', obs]))
-        add_map_subplot(224, cube224, linspace2, cmap='bwr',
-                        title=' '.join([exper, 'minus', obs]))
+        add_map_subplot(221, cube221, linspace1, cmap="viridis", title=exper)
+        add_map_subplot(
+            222,
+            cube222,
+            linspace2,
+            cmap="bwr",
+            title=" ".join([exper, "minus", control]),
+        )
+        add_map_subplot(
+            223,
+            cube223,
+            linspace2,
+            cmap="bwr",
+            title=" ".join([control, "minus", obs]),
+        )
+        add_map_subplot(
+            224,
+            cube224,
+            linspace2,
+            cmap="bwr",
+            title=" ".join([exper, "minus", obs]),
+        )
 
         # Add overall title
         fig.suptitle(long_name, fontsize=14)
 
         # Determine image filename:
         fn_list = [long_name, exper, control, obs, str(layer)]
-        path = diagtools.folder(cfg['plot_dir']) + '_'.join(fn_list)
-        path = path.replace(' ', '') + image_extention
+        path = diagtools.folder(cfg["plot_dir"]) + "_".join(fn_list)
+        path = path.replace(" ", "") + image_extention
 
         # Saving files:
-        logger.info('Saving plots to %s', path)
+        logger.info("Saving plots to %s", path)
         plt.savefig(path)
         plt.close()
 
         provenance_record = diagtools.prepare_provenance_record(
             cfg,
-            caption=f'Quadmap models comparison against {obs}',
-            statistics=['mean', 'diff', ],
-            domain=['global'],
-            plot_type=['map'],
+            caption=f"Quadmap models comparison against {obs}",
+            statistics=[
+                "mean",
+                "diff",
+            ],
+            domain=["global"],
+            plot_type=["map"],
             ancestors=list(input_files.keys()),
         )
 
@@ -211,9 +234,9 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
-    for index, metadata_filename in enumerate(cfg['input_files']):
+    for index, metadata_filename in enumerate(cfg["input_files"]):
         logger.info(
-            'metadata filename:\t%s',
+            "metadata filename:\t%s",
             metadata_filename,
         )
         input_files = diagtools.get_input_files(cfg, index=index)
@@ -224,9 +247,9 @@ def main(cfg):
             input_files,
         )
 
-    logger.info('Success')
+    logger.info("Success")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with run_diagnostic() as config:
         main(config)

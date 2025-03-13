@@ -5,12 +5,12 @@ Author
 ------
 Gregory Munday (Met Office, UK)
 """
+
 import os
 
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 import numpy as np
-
 from esmvalcore.preprocessor import area_statistics
 
 
@@ -69,8 +69,9 @@ def plot_patterns(cube_list, plot_path):
         months = np.arange(1, 13)
         # plots patterns for an arbitrary grid cell
         axis[x_pos, y_pos].plot(months, cube[:, 50, 50].data)
-        axis[x_pos,
-             y_pos].set_ylabel(str(cube.var_name) + " / " + str(cube.units))
+        axis[x_pos, y_pos].set_ylabel(
+            str(cube.var_name) + " / " + str(cube.units)
+        )
         if j > 5:
             axis[x_pos, y_pos].set_xlabel("Time")
 
@@ -114,13 +115,12 @@ def plot_timeseries(cubelist, plot_path, title, save_name):
         months = np.arange(1, 13)
 
         # anomaly timeseries
-        avg_cube = area_statistics(cube, 'mean').data
+        avg_cube = area_statistics(cube, "mean").data
         if save_name == "Climatologies":
             axs[x_pos, y_pos].plot(months, avg_cube)
         else:
             axs[x_pos, y_pos].plot(yrs, avg_cube)
-        axs[x_pos,
-            y_pos].set_ylabel(cube.long_name + " / " + str(cube.units))
+        axs[x_pos, y_pos].set_ylabel(cube.long_name + " / " + str(cube.units))
         if j > 5:
             axs[x_pos, y_pos].set_xlabel("Time")
 

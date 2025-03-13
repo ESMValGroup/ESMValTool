@@ -45,10 +45,10 @@
 ;
 ; Caveats
 ;
-;  - MIROC-ESM and BNU-ESM doesnot work as depth variable is not called lev.
-;  - MRI_ESM1 doesnot work as the data is ofset by 80 degrees in longitude
+;  - MIROC-ESM and BNU-ESM does not work as depth variable is not called lev.
+;  - MRI_ESM1 does not work as the data is offset by 80 degrees in longitude
 ;        and causes problem in interpolation.
-;  - CCSM4 ans CESM1-CAM5 dont work as the units for so is 1, not accepted
+;  - CCSM4 and CESM1-CAM5 dont work as the units for so is 1, not accepted
 ;        by ESMValTool.
 ;  - Transport is very small in case of NorESM1-M and ME as volcello
 ;        values look incorrect(very small).
@@ -153,11 +153,10 @@ begin
 
     if (all(ismissing(fx_var))) then
       fx_variable = "volcello"
-      error_msg("f", "russell_fig-7i.ncl", " ", "areacello file for " + \
+      error_msg("f", "russell_fig-7i.ncl", " ", "volcello file for " + \
                 vo_datasets(iii) \
-                + " not found in the metadata file, please " + \
-                "add 'fx_files: [volcello]' to the variable dictionary in" + \
-                " the recipe or add the location of file to config-user.yml")
+                + " not found in the metadata file, please specify " \
+                + "'volcello' as supplementary variable in the recipe.")
     end if
 
     dataset_so_time = read_data(so_items[iii])

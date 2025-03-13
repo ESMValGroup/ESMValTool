@@ -43,22 +43,26 @@ NY = 120
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    glob_attrs = cfg['attributes']
+    glob_attrs = cfg["attributes"]
 
     cmorizer = PIOMAS(cfg, in_dir, out_dir)
-    logger.info("Starting cmorization for Tier%s OBS files: %s",
-                glob_attrs['tier'], glob_attrs['dataset_id'])
+    logger.info(
+        "Starting cmorization for Tier%s OBS files: %s",
+        glob_attrs["tier"],
+        glob_attrs["dataset_id"],
+    )
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
     cmorizer.prepare_grid_info()
     cmorizer.cmorize()
 
 
-Coords = collections.namedtuple('Coords', 'lat lon')
+Coords = collections.namedtuple("Coords", "lat lon")
 
 
-class PIOMAS():
+class PIOMAS:
     """Cmorizer class for PIOMAS."""
+
     def __init__(self, cfg, in_dir, out_dir):
         self.cfg = cfg
         self.in_dir = in_dir
@@ -70,16 +74,20 @@ class PIOMAS():
     def prepare_grid_info(self):
         """Read grid information."""
         grids = np.loadtxt(
-            os.path.join(self.in_dir, self.cfg['custom']['scalar_file']))
+            os.path.join(self.in_dir, self.cfg["custom"]["scalar_file"])
+        )
         grids = grids.reshape(2, NY, NX)
         self.scalar_coords = self._create_lat_lon_coords(
-            grids[1, ...], grids[0, ...])
+            grids[1, ...], grids[0, ...]
+        )
 
         grids = np.loadtxt(
-            os.path.join(self.in_dir, self.cfg['custom']['vector_file']))
+            os.path.join(self.in_dir, self.cfg["custom"]["vector_file"])
+        )
         grids = grids.reshape(7, NY, NX)
         self.vector_coords = self._create_lat_lon_coords(
-            grids[1, ...], grids[0, ...])
+            grids[1, ...], grids[0, ...]
+        )
 
         # Area in m2
         self.areacello = grids[2, ...] * grids[3, ...] * 1e6
@@ -87,57 +95,65 @@ class PIOMAS():
     def cmorize(self):
         """Cmorize available data."""
         # run the cmorization
-        for var, vals in self.cfg['variables'].items():
-            var_info = self.cfg['cmor_table'].get_variable(vals['mip'], var)
-            self.cfg['attributes']['mip'] = vals['mip']
+        for var, vals in self.cfg["variables"].items():
+            var_info = self.cfg["cmor_table"].get_variable(vals["mip"], var)
+            self.cfg["attributes"]["mip"] = vals["mip"]
 
-            if vals['type'] == 'scalar':
+            if vals["type"] == "scalar":
                 coords = self.scalar_coords
             else:
                 coords = self.vector_coords
             if var == "areacello":
                 cube = self._create_areacello(coords, var_info)
-                set_global_atts(cube, self.cfg['attributes'])
+                set_global_atts(cube, self.cfg["attributes"])
                 save_variable(
                     cube,
                     var_info.short_name,
                     self.out_dir,
-                    self.cfg['attributes'],
+                    self.cfg["attributes"],
                 )
             else:
                 self._cmorize_var(var_info, vals, coords)
 
     def _cmorize_var(self, var_info, vals, coords):
-        file_expression = os.path.join(self.in_dir,
-                                       '{0}.H????'.format(vals['raw']))
+        file_expression = os.path.join(self.in_dir, f"{vals['raw']}.H????")
         for file_path in glob.glob(file_expression):
-            cube = PIOMAS._create_cube(PIOMAS._read_binary_file(file_path),
-                                       coords, int(file_path[-4:]), var_info,
-                                       vals['units'])
-            set_global_atts(cube, self.cfg['attributes'])
-            save_variable(cube, var_info.short_name, self.out_dir,
-                          self.cfg['attributes'])
+            cube = PIOMAS._create_cube(
+                PIOMAS._read_binary_file(file_path),
+                coords,
+                int(file_path[-4:]),
+                var_info,
+                vals["units"],
+            )
+            set_global_atts(cube, self.cfg["attributes"])
+            save_variable(
+                cube, var_info.short_name, self.out_dir, self.cfg["attributes"]
+            )
 
     @staticmethod
     def _create_lat_lon_coords(lat, lon):
-        lon_coord = AuxCoord(lon,
-                             standard_name='longitude',
-                             var_name='lon',
-                             units='degrees_east')
+        lon_coord = AuxCoord(
+            lon,
+            standard_name="longitude",
+            var_name="lon",
+            units="degrees_east",
+        )
 
-        lat_coord = AuxCoord(lat,
-                             standard_name='latitude',
-                             var_name='lat',
-                             units='degrees_north')
+        lat_coord = AuxCoord(
+            lat,
+            standard_name="latitude",
+            var_name="lat",
+            units="degrees_north",
+        )
         return Coords(lat_coord, lon_coord)
 
     @staticmethod
     def _create_cube(data, coords, year, var_info, raw_units):
         time_coord = DimCoord(
             np.arange(0, data.shape[0]),
-            standard_name='time',
-            var_name='time',
-            units=Unit(f'days since {year}-01-01', calendar='noleap'),
+            standard_name="time",
+            var_name="time",
+            units=Unit(f"days since {year}-01-01", calendar="noleap"),
         )
 
         cube = iris.cube.Cube(
@@ -156,7 +172,7 @@ class PIOMAS():
             self.areacello,
             standard_name=var_info.standard_name,
             var_name=var_info.short_name,
-            units='m2',
+            units="m2",
         )
         cube.add_aux_coord(coords.lon, (0, 1))
         cube.add_aux_coord(coords.lat, (0, 1))
@@ -164,8 +180,8 @@ class PIOMAS():
 
     @staticmethod
     def _read_binary_file(data_path, vector=False):
-        fd_data = open(data_path, 'rb')
-        data = np.fromfile(fd_data, dtype=np.dtype('f'), count=-1)
+        fd_data = open(data_path, "rb")
+        data = np.fromfile(fd_data, dtype=np.dtype("f"), count=-1)
         days = data.shape[0] // NX // NY
         data = data.reshape(days, NY, NX)
         if vector:

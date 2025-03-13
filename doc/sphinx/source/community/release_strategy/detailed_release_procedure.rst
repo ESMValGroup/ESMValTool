@@ -49,7 +49,7 @@ and attach it in the release testing issue; to record the environment in a yaml 
 
 Modifications to configuration files need to be documented as well.
 To test recipes, it is recommended to only use the default options and DKRZ data directories, simply by uncommenting
-the DKRZ-Levante block of a newly generated ``config-user.yml`` file.
+the DKRZ-Levante block of a :ref:`newly generated configuration file <esmvalcore:config_yaml_files>`.
 
 Submit run scripts - test recipe runs
 -------------------------------------
@@ -61,7 +61,7 @@ You will have to set the name of your environment, your email address (if you wa
 More information on running jobs with SLURM on DKRZ/Levante can be found in the DKRZ `documentation
 <https://docs.dkrz.de/doc/levante/running-jobs/index.html>`_.
 
-You can also specify the path to your ``config-user.yml`` file where ``max_parallel_tasks`` can be set. The script was found to work well with ``max_parallel_tasks=8``. Some recipes need to be run with ``max_parallel_tasks=1`` (large memory requirements, CMIP3 data, diagnostic issues, ...). These recipes are listed in `ONE_TASK_RECIPES`.
+You can also specify the path to your configuration directory where ``max_parallel_tasks`` can be set in a YAML file. The script was found to work well with ``max_parallel_tasks=8``. Some recipes need to be run with ``max_parallel_tasks=1`` (large memory requirements, CMIP3 data, diagnostic issues, ...). These recipes are listed in `ONE_TASK_RECIPES`.
 
 Some recipes need other job requirements, you can add their headers in the `SPECIAL_RECIPES` dictionary. Otherwise the header will be written following the template that is written in the lines below. If you want to exclude recipes, you can do so by uncommenting the `exclude` lines.
 

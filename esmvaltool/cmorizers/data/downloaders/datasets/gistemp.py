@@ -1,4 +1,5 @@
 """Script to download GISTEMP from its webpage."""
+
 import logging
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
@@ -7,8 +8,9 @@ from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -35,5 +37,6 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     downloader.download_file(
         "https://data.giss.nasa.gov/pub/gistemp/gistemp250_GHCNv4.nc.gz",
-        wget_options=['--no-check-certificate'])
+        wget_options=["--no-check-certificate"],
+    )
     unpack_files_in_folder(downloader.local_folder)

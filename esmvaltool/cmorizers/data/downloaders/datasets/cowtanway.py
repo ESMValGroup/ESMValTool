@@ -1,4 +1,5 @@
 """Script to download CowtanWay from its webpage."""
+
 import logging
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
@@ -7,8 +8,9 @@ from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -36,7 +38,8 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     def download_file(path):
         downloader.download_file(
             "https://www-users.york.ac.uk/~kdc3/papers/coverage2013/" + path,
-            [])
+            [],
+        )
 
     download_file("had4_krig_v1_0_0.nc.gz")
     download_file("had4_uah_v1_0_0.nc.gz")

@@ -5,11 +5,12 @@ recipes that have succeeded or failed; display results in a convenient
 Markdown format, to be added to a GitHub issue or any other such
 documentation.
 """
+
 import datetime
 import os
 import re
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
 import fire
 
@@ -33,43 +34,43 @@ def parse_output_file(slurm_out_dir: str) -> dict[str, list[str]]:
     diagnostic errors, recipes that failed due to missing data.
     """
     categories = [
-        'success',
-        'diagnostic error',
-        'missing data',
-        'out of memory',
-        'out of time',
-        'unknown',
+        "success",
+        "diagnostic error",
+        "missing data",
+        "out of memory",
+        "out of time",
+        "unknown",
     ]
     results: dict[str, list[str]] = {k: [] for k in categories}
 
-    files = parse_slurm_output(slurm_out_dir, '*.out')
+    files = parse_slurm_output(slurm_out_dir, "*.out")
     for file in files:
-        recipe = str(Path(file.stem).with_suffix('.yml'))
-        with open(file, "r", encoding='utf-8') as outfile:
+        recipe = str(Path(file.stem).with_suffix(".yml"))
+        with open(file, encoding="utf-8") as outfile:
             lines = outfile.readlines()
             for line in lines:
                 if "Run was successful\n" in line:
-                    results['success'].append(recipe)
+                    results["success"].append(recipe)
                     break
                 elif "esmvalcore._task.DiagnosticError" in line:
-                    results['diagnostic error'].append(recipe)
+                    results["diagnostic error"].append(recipe)
                     break
                 elif "ERROR   Missing data for preprocessor" in line:
-                    results['missing data'].append(recipe)
+                    results["missing data"].append(recipe)
                     break
             else:
-                if not file.with_suffix('.err').exists():
-                    results['unknown'].append(recipe)
+                if not file.with_suffix(".err").exists():
+                    results["unknown"].append(recipe)
                 else:
-                    err = file.with_suffix('.err').read_text(encoding='utf-8')
+                    err = file.with_suffix(".err").read_text(encoding="utf-8")
                     if "killed by the cgroup out-of-memory" in err:
-                        results['out of memory'].append(recipe)
+                        results["out of memory"].append(recipe)
                     elif "step tasks have been OOM Killed" in err:
-                        results['out of memory'].append(recipe)
+                        results["out of memory"].append(recipe)
                     elif re.match(".* CANCELLED AT .* DUE TO TIME LIMIT", err):
-                        results['out of time'].append(recipe)
+                        results["out of time"].append(recipe)
                     else:
-                        results['unknown'].append(recipe)
+                        results["unknown"].append(recipe)
 
     results = {k: sorted(v) for k, v in results.items()}
 
@@ -77,8 +78,8 @@ def parse_output_file(slurm_out_dir: str) -> dict[str, list[str]]:
 
 
 def display_in_md(
-    slurm_out_dir: str = '.',
-    all_recipes_file: str = 'all_recipes.txt',
+    slurm_out_dir: str = ".",
+    all_recipes_file: str = "all_recipes.txt",
 ) -> None:
     """Print out recipes in Markdown list.
 
@@ -92,7 +93,7 @@ def display_in_md(
     """
     todaynow = datetime.datetime.now()
     print(f"## Recipe running session {todaynow}\n")
-    with open(all_recipes_file, "r", encoding='utf-8') as file:
+    with open(all_recipes_file, encoding="utf-8") as file:
         all_recipes = [
             os.path.basename(line.strip()) for line in file.readlines()
         ]
@@ -100,8 +101,9 @@ def display_in_md(
 
     results = parse_output_file(slurm_out_dir)
     results["no run"] = sorted(
-        set(all_recipes) - set(recipe for v in results.values()
-                               for recipe in v))
+        set(all_recipes)
+        - set(recipe for v in results.values() for recipe in v)
+    )
     prefix = "Recipes that"
     err_prefix = f"{prefix} failed because"
     messages = {
@@ -122,5 +124,5 @@ def display_in_md(
             print()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     fire.Fire(display_in_md)

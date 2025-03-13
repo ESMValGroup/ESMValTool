@@ -15,7 +15,7 @@ Performance metrics:
 
 * median absolute error (model minus observations)
 
-Metrics are calculated using model and observation multi-year climatologies (seasonal means) 
+Metrics are calculated using model and observation multi-year climatologies (seasonal means)
 for meteorological seasons:
 
 * December-January-February (djf)

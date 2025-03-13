@@ -156,6 +156,19 @@ preprocessors:
       statistics: [mean, median]
       exclude: [reference_dataset, alternative_dataset]
 
+  ppNOLEV2thr10_o3:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.10
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+    convert_units:
+      units: DU
+
   ppNOLEV1x1:
     regrid:
       target_grid: 1x1
@@ -1896,7 +1909,7 @@ diagnostics:
       - atmosChem
     variables:
       toz:
-        preprocessor: ppNOLEV2thr10
+        preprocessor: ppNOLEV2thr10_o3
         reference_dataset: ESACCI-OZONE
         alternative_dataset: NIWA-BS
         mip: Amon

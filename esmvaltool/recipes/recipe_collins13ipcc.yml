@@ -3193,4 +3193,3 @@ diagnostics:
         month: "9"
         # Fill polar hole in data with sic = 1.
         fill_pole_hole: true
-

@@ -458,7 +458,7 @@ and a latitude and longitude coordinates.
 
 This diagnostic also includes the optional arguments, `maps_range` and
 `diff_range` to manually define plot ranges. Both arguments are a list of two floats
-to set plot range minimun and maximum values respectively for Model and Observations
+to set plot range minimum and maximum values respectively for Model and Observations
 maps (Top panels) and for the Model minus Observations panel (bottom left).
 Note that if input data have negative values the Model over Observations map
 (bottom right) is not produced.
@@ -491,14 +491,14 @@ diagnostic_maps_multimodel.py
 The diagnostic_maps_multimodel.py_ diagnostic makes model(s) vs observations maps
 and if data are not provided it draws only model field.
 
-It is always nessary to define the overall layout trough the argument `layout_rowcol`,
+It is always necessary to define the overall layout through the argument `layout_rowcol`,
 which is a list of two integers indicating respectively the number of rows and columns
 to organize the plot. Observations has not be accounted in here as they are automatically
 added at the top of the figure.
 
 This diagnostic also includes the optional arguments, `maps_range` and
 `diff_range` to manually define plot ranges. Both arguments are a list of two floats
-to set plot range minimun and maximum values respectively for variable data and
+to set plot range minimum and maximum values respectively for variable data and
 the Model minus Observations range.
 
 Note that this diagnostic assumes that the preprocessors do the bulk of the
@@ -748,7 +748,7 @@ These tools are:
 - bgc_units: converts to sensible units where appropriate (ie Celsius, mmol/m3)
 - timecoord_to_float: Converts time series to decimal time ie: Midnight on January 1st 1970 is 1970.0
 - add_legend_outside_right: a plotting tool, which adds a legend outside the axes.
-- get_image_format: loads the image format, as defined in the global user config.yml.
+- get_image_format: loads the image format, as defined in the global configuration.
 - get_image_path: creates a path for an image output.
 - make_cube_layer_dict: makes a dictionary for several layers of a cube.
 
@@ -762,8 +762,8 @@ A note on the auxiliary data directory
 Some of these diagnostic scripts may not function on machines with no access
 to the internet, as cartopy may try to download the shape files. The solution
 to this issue is the put the relevant cartopy shapefiles in a directory which
-is visible to esmvaltool, then link that path to ESMValTool via
-the `auxiliary_data_dir` variable in your config-user.yml file.
+is visible to esmvaltool, then link that path to ESMValTool via the
+:ref:`configuration option <esmvalcore:config_options>` ``auxiliary_data_dir``.
 
 The cartopy masking files can be downloaded from:
 https://www.naturalearthdata.com/downloads/

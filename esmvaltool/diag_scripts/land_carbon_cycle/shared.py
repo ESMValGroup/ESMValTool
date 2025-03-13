@@ -1,4 +1,5 @@
 """Provide shared functions for land carbon cycle diagnostic."""
+
 import os
 
 import iris
@@ -23,13 +24,13 @@ def _apply_common_mask(*args):
     nargs = len(args)
     for arg_ in range(nargs):
         _dat = args[arg_]
-        vars()['dat_mask' + str(arg_)] = np.ones((np.shape(_dat)))
-        vars()['dat_mask_inv' + str(arg_)] = np.ma.masked_invalid(_dat).mask
-        vars()['dat_mask' + str(arg_)][vars()['dat_mask_inv' + str(arg_)]] = 0
-    dat_mask = vars()['dat_mask0']
+        vars()["dat_mask" + str(arg_)] = np.ones(np.shape(_dat))
+        vars()["dat_mask_inv" + str(arg_)] = np.ma.masked_invalid(_dat).mask
+        vars()["dat_mask" + str(arg_)][vars()["dat_mask_inv" + str(arg_)]] = 0
+    dat_mask = vars()["dat_mask0"]
     for arg_ in range(nargs):
-        dat_mask = dat_mask * vars()['dat_mask' + str(arg_)]
-    mask_where = np.ma.getmask(np.ma.masked_less(dat_mask, 1.))
+        dat_mask = dat_mask * vars()["dat_mask" + str(arg_)]
+    mask_where = np.ma.getmask(np.ma.masked_less(dat_mask, 1.0))
     odat = []
     for arg_ in range(nargs):
         _dat = args[arg_].astype(np.float64)
@@ -42,9 +43,10 @@ def _apply_common_mask(*args):
 def _apply_gpp_threshold(gpp_dat, fig_config):
     """Mask the gpp array below threshold."""
     # converting gC m-2 yr-1 to kgC m-2 s-1
-    gpp_thres = fig_config["gpp_threshold"] / (86400.0 * 365 * 1000.)
-    gpp_dat = np.ma.masked_less(gpp_dat,
-                                gpp_thres).filled(fig_config["fill_value"])
+    gpp_thres = fig_config["gpp_threshold"] / (86400.0 * 365 * 1000.0)
+    gpp_dat = np.ma.masked_less(gpp_dat, gpp_thres).filled(
+        fig_config["fill_value"]
+    )
     return gpp_dat
 
 
@@ -60,26 +62,32 @@ def _get_obs_data_zonal(diag_config):
     ------
         dictionary with observation data with different variables as keys
     """
-    if not diag_config.get('obs_variable'):
-        raise ValueError('The observation variable needs to be specified in '
-                         'the recipe (see recipe description for details)')
-    obs_dir = os.path.join(diag_config['auxiliary_data_dir'],
-                           diag_config['obs_info']['obs_data_subdir'])
+    if not diag_config.get("obs_variable"):
+        raise ValueError(
+            "The observation variable needs to be specified in "
+            "the recipe (see recipe description for details)"
+        )
+    obs_dir = os.path.join(
+        diag_config["auxiliary_data_dir"],
+        diag_config["obs_info"]["obs_data_subdir"],
+    )
 
     all_data = {}
-    var_list = diag_config.get('obs_variable')
+    var_list = diag_config.get("obs_variable")
 
     input_files = []
     for _var in var_list:
-        var_list = np.append(var_list, '{var}_{perc:d}'.format(var=_var,
-                                                               perc=5))
-        var_list = np.append(var_list, '{var}_{perc:d}'.format(var=_var,
-                                                               perc=95))
-        obs_filename = (f'{_var}_{{frequency}}_{{source_label}}_'
-                        f'{{variant_label}}_{{grid_label}}z.nc'.format(
-                            **diag_config['obs_info']))
-        input_files = np.append(input_files,
-                                os.path.join(obs_dir, obs_filename))
+        var_list = np.append(var_list, f"{_var}_{5:d}")
+        var_list = np.append(var_list, f"{_var}_{95:d}")
+        obs_filename = (
+            f"{_var}_{{frequency}}_{{source_label}}_"
+            f"{{variant_label}}_{{grid_label}}z.nc".format(
+                **diag_config["obs_info"]
+            )
+        )
+        input_files = np.append(
+            input_files, os.path.join(obs_dir, obs_filename)
+        )
 
     nvars = len(var_list)
     for v_ind in range(nvars):
@@ -106,12 +114,12 @@ def _load_variable(metadata, var_name):
     """
     candidates = select_metadata(metadata, short_name=var_name)
     assert len(candidates) == 1
-    filename = candidates[0]['filename']
+    filename = candidates[0]["filename"]
     cube = iris.load_cube(filename)
     return cube
 
 
-def _remove_invalid(tmp, fill_value=-9999.):
+def _remove_invalid(tmp, fill_value=-9999.0):
     """
     Remove the invalid non-numeric values from the input array.
 

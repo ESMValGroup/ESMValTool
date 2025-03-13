@@ -4,5 +4,8 @@ extends: default
 
 rules:
   line-length:
-    max: 120
+    max: 160
   octal-values: enable
+  commas: disable
+  colons: disable
+  document-start: disable

@@ -5,10 +5,11 @@ exclude: |
   (?x)
   ^doc/sphinx/source/conf.py|
   ^esmvaltool/diag_scripts/extreme_events/climdex.pcic.ncdf/|
-  ^esmvaltool/diag_scripts/cvdp/
+  ^esmvaltool/diag_scripts/cvdp/|
+  ^esmvaltool/utils/nclcodestyle/
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: check-added-large-files
       - id: check-ast
@@ -18,41 +19,34 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
-  - repo: https://github.com/adrienverge/yamllint
-    rev: 'v1.35.1'
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: "v0.9.3"
     hooks:
-      - id: yamllint
-  - repo: local  # nclcodestyle is installed alongside ESMValTool
-    hooks:
-      - id: nclcodestyle
-        name: nclcodestyle
-        entry: nclcodestyle
-        language: system
-        files: '\.(ncl|NCL)$'
-  - repo: https://github.com/lorenzwalthert/precommit/  # Checks for R
-    rev: 'v0.4.2'
-    hooks:
-      - id: style-files  # styler
-      - id: lintr
-  - repo: https://github.com/codespell-project/codespell
-    rev: 'v2.3.0'
-    hooks:
-      - id: codespell
-  - repo: https://github.com/PyCQA/isort
-    rev: '5.13.2'
-    hooks:
-      - id: isort
-  - repo: https://github.com/pre-commit/mirrors-yapf
-    rev: 'v0.32.0'
-    hooks:
-      - id: yapf
-        additional_dependencies:
-          - 'toml'
-  - repo: https://github.com/myint/docformatter
-    rev: 'v1.7.5'
-    hooks:
-      - id: docformatter
-  - repo: https://github.com/pycqa/flake8
-    rev: '5.0.4'
-    hooks:
-      - id: flake8
+      - id: ruff
+        args:
+          - "--fix"
+          # Do not use the configuration file but configure here so we can
+          # enable more rules that are not mandatory in the configuration file.
+          - "--select=B,E,F,I,ISC001,UP,W"  # TODO: select D
+          - "--ignore=E501"
+      - id: ruff-format
+  # - repo: https://github.com/adrienverge/yamllint
+  #   rev: 'v1.35.1'
+  #   hooks:
+  #     - id: yamllint
+  # - repo: local  # nclcodestyle is installed alongside ESMValTool
+  #   hooks:
+  #     - id: nclcodestyle
+  #       name: nclcodestyle
+  #       entry: nclcodestyle
+  #       language: system
+  #       files: '\.(ncl|NCL)$'
+  # - repo: https://github.com/lorenzwalthert/precommit/  # Checks for R
+  #   rev: 'v0.4.2'
+  #   hooks:
+  #     - id: style-files  # styler
+  #     - id: lintr
+  # - repo: https://github.com/codespell-project/codespell
+  #   rev: 'v2.3.0'
+  #   hooks:
+  #     - id: codespell

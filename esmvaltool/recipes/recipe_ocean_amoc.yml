@@ -3,7 +3,7 @@
 ---
 documentation:
   title: Atlantic Meridional Overturning Circulation Recipe
-  
+
   description: |
     Recipe to produce time series figures of the derived variable, the
     Atlantic meriodinal overturning circulation (AMOC).

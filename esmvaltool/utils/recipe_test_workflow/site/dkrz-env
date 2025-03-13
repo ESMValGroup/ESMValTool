@@ -1,0 +1,57 @@
+#!/bin/bash
+#
+# USAGE dkrz-env COMMAND
+#
+# ENVIRONMENT
+#   ENV_NAME            The name of the container being used
+#   QUIET_MODE          Don't print confirmation messages
+#   PYTHONPATH_PREPEND  The path to prepend to PYTHONPATH
+#
+# OPTIONS
+#   COMMAND             The command to execute with options
+set -eu
+
+# Must be run before importing numpy, see
+# https://docs.dask.org/en/stable/array-best-practices.html#avoid-oversubscribing-threads
+export OMP_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+export VECLIB_MAXIMUM_THREADS=1
+export NUMEXPR_NUM_THREADS=1
+
+# Ensure '~/.local' isn't added to 'sys.path'.
+export PYTHONNOUSERSITE=True
+
+WORKFLOW_RUN_BIN_DIR="${CYLC_WORKFLOW_RUN_DIR}/bin"
+WORKFLOW_SHARE_BIN_DIR="${CYLC_WORKFLOW_SHARE_DIR}/cycle/bin"
+ROSE_APP_BIN_DIR="${CYLC_WORKFLOW_RUN_DIR}/app/${ROSE_TASK_APP:-$CYLC_TASK_NAME}/bin"
+
+# Bind paths for container.
+export SINGULARITY_BIND="/home/b,/work,/scratch/b"
+
+# Suppress an ESMValTool "file not found" warning.
+export SINGULARITYENV_PROJ_DATA="/opt/conda/envs/esmvaltool/share/proj"
+
+# Provide mkfile needed to build esmfpy package.
+export SINGULARITYENV_ESMFMKFILE="/opt/conda/envs/esmvaltool/lib/esmf.mk"
+
+# Ensure that `singularity exec` finds the right version of python.
+export SINGULARITYENV_PREPEND_PATH="/opt/conda/envs/esmvaltool/bin"
+
+# Include Rose/Cylc workflow directories in container PATH.
+export SINGULARITYENV_APPEND_PATH="${WORKFLOW_RUN_BIN_DIR}:${WORKFLOW_SHARE_BIN_DIR}:${ROSE_APP_BIN_DIR}"
+
+# If PYTHONPATH_PREPEND has been set, prepend it to PYTHONPATH to extend the
+# Python environment.
+if [[ ! -z ${PYTHONPATH_PREPEND:-} ]]; then
+    echo "[INFO] Prepending the following to PYTHONPATH: ${PYTHONPATH_PREPEND}"
+    export PYTHONPATH=${PYTHONPATH_PREPEND}:${PYTHONPATH:-}
+fi
+
+if [[ -z ${QUIET_MODE:-} ]]; then
+    echo "[INFO] Using the ${ENV_NAME} container"
+fi
+
+singularity_command="singularity-env singularity -q exec ${CONTAINER_PATH} $@"
+command="/usr/bin/time -v -o ${CYLC_TASK_LOG_ROOT}.time ${singularity_command}"
+exec ${command}

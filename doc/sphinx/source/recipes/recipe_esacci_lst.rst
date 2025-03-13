@@ -35,19 +35,19 @@ User settings in recipe
 #. Script ``recipe_esacci_lst.yml``
 
    *No required settings for script*
-  
+
    *No user defined inputs to the diagnostic*
 
    *Required settings for variables*
-    
+
     * The diagnostic works with all data sources on having the same start_year and end_year, and hence that data is also available.
 
    *Required settings for preprocessor*
-     
+
     * start_longitude, end_longitude The western and eastern bounds of the region to work with.
     * start_latitude, end_latitude The southern and northern bounds of the region to work with.
     * target_grid This should be one of the model grids.
-   
+
 
 Variables
 ---------

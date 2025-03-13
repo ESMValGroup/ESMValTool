@@ -10,7 +10,7 @@ documentation:
     Contribution to the Sixth Assessment Report: Chapter 3
     Processing of CMIP3 models currently works only in serial mode, due to
     an issue in the input data still under investigation. To run the recipe
-    set: max_parallel_tasks: 1 in the config-user.yml file.
+    set the configuration option ``max_parallel_tasks: 1``.
 
   authors:
     - bock_lisa
@@ -313,7 +313,7 @@ diagnostics:
       pr:
         <<: *perf_var
         preprocessor: ppNOLEV1
-        reference_dataset: GPCP-SG
+        reference_dataset: GPCP-V2.3
         alternative_dataset: GHCN
     additional_datasets:
       - {<<: *cmip3, dataset: bccr_bcm2_0, institute: BCCR}
@@ -344,7 +344,7 @@ diagnostics:
       - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
       - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
       - {<<: *cmip6, dataset: MCM-UA-1-0}
-      - {dataset: GPCP-SG, project: obs4MIPs, level: L3, version: v2.3, tier: 1}
+      - {dataset: GPCP-V2.3, project: obs4MIPs, level: L3, tier: 1}
       - {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
 
 
@@ -462,7 +462,7 @@ diagnostics:
       - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
       - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-8,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          tier: 1, start_year: 2001, end_year: 2015}
 
 
@@ -503,7 +503,7 @@ diagnostics:
       - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
       - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-8,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          tier: 1, start_year: 2001, end_year: 2015}
 
 
@@ -547,7 +547,7 @@ diagnostics:
       - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
       - {<<: *cmip6, dataset: MCM-UA-1-0}
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-8,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          tier: 1, start_year: 2001, end_year: 2015}
 
 
@@ -620,7 +620,7 @@ diagnostics:
       - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
       - {<<: *cmip6, dataset: KACE-1-0-G, grid: gr}
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
-      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-8,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          tier: 1, start_year: 2001, end_year: 2015}
 
 

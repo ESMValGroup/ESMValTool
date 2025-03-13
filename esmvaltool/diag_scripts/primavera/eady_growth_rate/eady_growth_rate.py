@@ -1,4 +1,5 @@
 """Diagnostic for PRIMAVERA Eady Growth Rate."""
+
 import logging
 import os
 import sys
@@ -52,55 +53,57 @@ class EadyGrowthRate:
         """Constant."""
         self.omega = 7.292e-5
         """Rotation of the Earth [rad/s]."""
-        self.time_statistic = self.cfg['time_statistic']
+        self.time_statistic = self.cfg["time_statistic"]
         """Time statistic to perform."""
 
     def compute(self):
         """Compute Eady Growth Rate and either it's annual or seasonal mean."""
-        data = group_metadata(self.cfg['input_data'].values(), 'alias')
+        data = group_metadata(self.cfg["input_data"].values(), "alias")
         for alias in data:
-            var = group_metadata(data[alias], 'short_name')
-            temperature = iris.load_cube(var['ta'][0]['filename'])
-            plev = temperature.coord('air_pressure')
+            var = group_metadata(data[alias], "short_name")
+            temperature = iris.load_cube(var["ta"][0]["filename"])
+            plev = temperature.coord("air_pressure")
 
             theta = self.potential_temperature(temperature, plev)
 
             del temperature
 
-            geopotential = iris.load_cube(var['zg'][0]['filename'])
+            geopotential = iris.load_cube(var["zg"][0]["filename"])
 
             brunt = self.brunt_vaisala_frq(theta, geopotential)
 
-            lats = geopotential.coord('latitude')
+            lats = geopotential.coord("latitude")
             fcor = self.coriolis(lats, geopotential.shape)
 
-            eastward_wind = iris.load_cube(var['ua'][0]['filename'])
+            eastward_wind = iris.load_cube(var["ua"][0]["filename"])
             if eastward_wind.shape is not geopotential.shape:
-                eastward_wind = regrid(eastward_wind,
-                                       geopotential,
-                                       scheme='linear')
+                eastward_wind = regrid(
+                    eastward_wind, geopotential, scheme="linear"
+                )
 
-            egr = self.eady_growth_rate(fcor, eastward_wind, geopotential,
-                                        brunt)
+            egr = self.eady_growth_rate(
+                fcor, eastward_wind, geopotential, brunt
+            )
 
             cube_egr = eastward_wind.copy(egr * 86400)
 
             cube_egr.standard_name = None
-            cube_egr.long_name = 'eady_growth_rate'
-            cube_egr.var_name = 'egr'
-            cube_egr.units = 'day-1'
+            cube_egr.long_name = "eady_growth_rate"
+            cube_egr.var_name = "egr"
+            cube_egr.units = "day-1"
 
-            if self.time_statistic == 'annual_mean':
+            if self.time_statistic == "annual_mean":
                 cube_egr = annual_statistics(cube_egr)
-                cube_egr = cube_egr.collapsed('time', iris.analysis.MEAN)
-            elif self.time_statistic == 'seasonal_mean':
+                cube_egr = cube_egr.collapsed("time", iris.analysis.MEAN)
+            elif self.time_statistic == "seasonal_mean":
                 cube_egr = seasonal_statistics(cube_egr)
-                cube_egr = cube_egr.collapsed('time', iris.analysis.MEAN)
+                cube_egr = cube_egr.collapsed("time", iris.analysis.MEAN)
                 self.seasonal_plots(cube_egr, alias)
             else:
                 logger.info(
                     "Parameter time_statistic is not well set in the recipe."
-                    "Must be 'annual_mean' or 'seasonal_mean'")
+                    "Must be 'annual_mean' or 'seasonal_mean'"
+                )
                 sys.exit()
 
             self.save(cube_egr, alias, data)
@@ -121,13 +124,14 @@ class EadyGrowthRate:
             Cube of potential temperature theta.
         """
         reference_pressure = iris.coords.AuxCoord(
-            self.ref_p, long_name='reference_pressure', units='hPa')
+            self.ref_p, long_name="reference_pressure", units="hPa"
+        )
         reference_pressure.convert_units(plev.units)
-        pressure = (reference_pressure.points / plev.points)**(2 / 7)
+        pressure = (reference_pressure.points / plev.points) ** (2 / 7)
         theta = temperature * iris.util.broadcast_to_shape(
-            pressure, temperature.shape,
-            temperature.coord_dims('air_pressure'))
-        theta.long_name = 'potential_air_temperature'
+            pressure, temperature.shape, temperature.coord_dims("air_pressure")
+        )
+        theta.long_name = "potential_air_temperature"
 
         return theta
 
@@ -154,18 +158,24 @@ class EadyGrowthRate:
         plevs = var_x.shape[1]
 
         dxdy_0 = (
-            (var_x[:, 1, :, :].lazy_data() - var_x[:, 0, :, :].lazy_data()) /
-            (var_y[:, 1, :, :].lazy_data() - var_y[:, 0, :, :].lazy_data()))
+            var_x[:, 1, :, :].lazy_data() - var_x[:, 0, :, :].lazy_data()
+        ) / (var_y[:, 1, :, :].lazy_data() - var_y[:, 0, :, :].lazy_data())
 
-        dxdy_centre = ((var_x[:, 2:plevs, :, :].lazy_data() -
-                        var_x[:, 0:plevs - 2, :, :].lazy_data()) /
-                       (var_y[:, 2:plevs, :, :].lazy_data() -
-                        var_y[:, 0:plevs - 2, :, :].lazy_data()))
+        dxdy_centre = (
+            var_x[:, 2:plevs, :, :].lazy_data()
+            - var_x[:, 0 : plevs - 2, :, :].lazy_data()
+        ) / (
+            var_y[:, 2:plevs, :, :].lazy_data()
+            - var_y[:, 0 : plevs - 2, :, :].lazy_data()
+        )
 
-        dxdy_end = ((var_x[:, plevs - 1, :, :].lazy_data() -
-                     var_x[:, plevs - 2, :, :].lazy_data()) /
-                    (var_y[:, plevs - 1, :, :].lazy_data() -
-                     var_y[:, plevs - 2, :, :].lazy_data()))
+        dxdy_end = (
+            var_x[:, plevs - 1, :, :].lazy_data()
+            - var_x[:, plevs - 2, :, :].lazy_data()
+        ) / (
+            var_y[:, plevs - 1, :, :].lazy_data()
+            - var_y[:, plevs - 2, :, :].lazy_data()
+        )
 
         bounds = [dxdy_end, dxdy_0]
         stacked_bounds = da.stack(bounds, axis=1)
@@ -259,25 +269,29 @@ class EadyGrowthRate:
             Alias of the dataset.
         """
         try:
-            levels = self.cfg['plot_levels']
+            levels = self.cfg["plot_levels"]
         except KeyError:
-            logger.info("Parameter plot_levels is not set in the recipe."
-                        "Plotting all pressure levels instead.")
-            levels = egr.coord('air_pressure').points
+            logger.info(
+                "Parameter plot_levels is not set in the recipe."
+                "Plotting all pressure levels instead."
+            )
+            levels = egr.coord("air_pressure").points
         for level in levels:
-            cube = extract_levels(egr, level, scheme='linear')
+            cube = extract_levels(egr, level, scheme="linear")
             crs_latlon = ccrs.PlateCarree()
             axes = plt.axes(projection=ccrs.PlateCarree())
-            axes.coastlines(linewidth=1, color='black')
+            axes.coastlines(linewidth=1, color="black")
             # North Atlantic
             axes.set_extent((-90.0, 30.0, 20.0, 80.0), crs=crs_latlon)
             axes.set_yticks(np.linspace(25, 75, 6))
             # Relevant range
             qplt.contourf(cube, levels=np.arange(0, 1.1, 0.05))
-            extension = self.cfg['output_file_type']
-            diagnostic = self.cfg['script']
-            plotname = '_'.join([alias, diagnostic,
-                                 str(int(level))]) + f'.{extension}'
+            extension = self.cfg["output_file_type"]
+            diagnostic = self.cfg["script"]
+            plotname = (
+                "_".join([alias, diagnostic, str(int(level))])
+                + f".{extension}"
+            )
             plt.savefig(os.path.join(self.cfg[names.PLOT_DIR], plotname))
             plt.close()
 
@@ -286,26 +300,36 @@ class EadyGrowthRate:
         script = self.cfg[names.SCRIPT]
         info = data[alias][0]
         keys = [
-            str(info[key]) for key in ('project', 'dataset', 'exp', 'ensemble',
-                                       'diagnostic', 'start_year', 'end_year')
+            str(info[key])
+            for key in (
+                "project",
+                "dataset",
+                "exp",
+                "ensemble",
+                "diagnostic",
+                "start_year",
+                "end_year",
+            )
             if key in info
         ]
-        output_name = '_'.join(keys) + '.nc'
+        output_name = "_".join(keys) + ".nc"
         output_file = os.path.join(self.cfg[names.WORK_DIR], output_name)
         iris.save(egr, output_file)
 
-        script_name = script.replace(" ", '_')
-        caption = (f"{script_name} between {info['start_year']} "
-                   f"and {info['end_year']} according to {info['dataset']}")
+        script_name = script.replace(" ", "_")
+        caption = (
+            f"{script_name} between {info['start_year']} "
+            f"and {info['end_year']} according to {info['dataset']}"
+        )
         ancestors = []
         for i in range(len(data[alias])):
-            ancestors.append(data[alias][i]['filename'])
+            ancestors.append(data[alias][i]["filename"])
         record = {
-            'caption': caption,
-            'domains': ['global'],
-            'authors': ['sanchez-gomez_emilia', 'moreno-chamarro_eduardo'],
-            'references': ['morenochamarro2021', 'acknow_project'],
-            'ancestors': ancestors
+            "caption": caption,
+            "domains": ["global"],
+            "authors": ["sanchez-gomez_emilia", "moreno-chamarro_eduardo"],
+            "references": ["morenochamarro2021", "acknow_project"],
+            "ancestors": ancestors,
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(output_file, record)

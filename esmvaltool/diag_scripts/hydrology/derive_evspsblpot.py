@@ -6,8 +6,9 @@ Grass Field Close to FAO Reference, Suitable for Remote Sensing Application,
 American Meteorological Society, 17, 1373-1382, DOI: 10.1175/JHM-D-15-0006.1,
 2016.
 """
-import numpy as np
+
 import iris
+import numpy as np
 
 
 def tetens_derivative(tas):
@@ -20,20 +21,20 @@ def tetens_derivative(tas):
     des / dT = a * b * e0 * exp(a * T / (b + T)) / (b + T)^2
     """
     # Ensure temperature is in degC
-    tas.convert_units('degC')
+    tas.convert_units("degC")
 
     # Saturated vapour pressure at 273 Kelvin
-    e0_const = iris.coords.AuxCoord(np.float32(6.112),
-                                    long_name='Saturated vapour pressure',
-                                    units='hPa')
+    e0_const = iris.coords.AuxCoord(
+        np.float32(6.112), long_name="Saturated vapour pressure", units="hPa"
+    )
     emp_a = np.float32(17.67)  # empirical constant a
 
     # Empirical constant b in Tetens formula
-    emp_b = iris.coords.AuxCoord(np.float32(243.5),
-                                 long_name='Empirical constant b',
-                                 units='degC')
+    emp_b = iris.coords.AuxCoord(
+        np.float32(243.5), long_name="Empirical constant b", units="degC"
+    )
     exponent = iris.analysis.maths.exp(emp_a * tas / (tas + emp_b))
-    return (exponent * e0_const / (tas + emp_b)**2) * (emp_a * emp_b)
+    return (exponent * e0_const / (tas + emp_b) ** 2) * (emp_a * emp_b)
 
 
 def get_constants(psl):
@@ -45,39 +46,45 @@ def get_constants(psl):
     The Definition of beta and cs is provided in De Bruin (2016), section 4a.
     """
     # Ensure psl is in hPa
-    psl.convert_units('hPa')
+    psl.convert_units("hPa")
 
     # Definition of constants
     # source='Wallace and Hobbs (2006), 2.6 equation 3.14',
-    rv_const = iris.coords.AuxCoord(np.float32(461.51),
-                                    long_name='Gas constant water vapour',
-                                    units='J K-1 kg-1')
+    rv_const = iris.coords.AuxCoord(
+        np.float32(461.51),
+        long_name="Gas constant water vapour",
+        units="J K-1 kg-1",
+    )
     # source='Wallace and Hobbs (2006), 2.6 equation 3.14',
-    rd_const = iris.coords.AuxCoord(np.float32(287.0),
-                                    long_name='Gas constant dry air',
-                                    units='J K-1 kg-1')
+    rd_const = iris.coords.AuxCoord(
+        np.float32(287.0), long_name="Gas constant dry air", units="J K-1 kg-1"
+    )
 
     # Latent heat of vaporization in J kg-1 (or J m-2 day-1)
     # source='Wallace and Hobbs 2006'
-    lambda_ = iris.coords.AuxCoord(np.float32(2.5e6),
-                                   long_name='Latent heat of vaporization',
-                                   units='J kg-1')
+    lambda_ = iris.coords.AuxCoord(
+        np.float32(2.5e6),
+        long_name="Latent heat of vaporization",
+        units="J kg-1",
+    )
 
     # Specific heat of dry air constant pressure
     # source='Wallace and Hobbs 2006',
-    cp_const = iris.coords.AuxCoord(np.float32(1004),
-                                    long_name='Specific heat of dry air',
-                                    units='J K-1 kg-1')
+    cp_const = iris.coords.AuxCoord(
+        np.float32(1004),
+        long_name="Specific heat of dry air",
+        units="J K-1 kg-1",
+    )
 
     # source='De Bruin (2016), section 4a',
-    beta = iris.coords.AuxCoord(np.float32(20),
-                                long_name='Correction Constant',
-                                units='W m-2')
+    beta = iris.coords.AuxCoord(
+        np.float32(20), long_name="Correction Constant", units="W m-2"
+    )
 
     # source = 'De Bruin (2016), section 4a',
-    cs_const = iris.coords.AuxCoord(np.float32(110),
-                                    long_name='Empirical constant',
-                                    units='W m-2')
+    cs_const = iris.coords.AuxCoord(
+        np.float32(110), long_name="Empirical constant", units="W m-2"
+    )
 
     # source = De Bruin (10.1175/JHM-D-15-0006.1), page 1376
     # gamma = (rv/rd) * (cp*msl/lambda_)
@@ -107,7 +114,7 @@ def debruin_pet(psl, rsds, rsdt, tas):
     ref_evap = ((delta_svp / (delta_svp + gamma)) * net_radiation) + beta
 
     pet = ref_evap / lambda_
-    pet.var_name = 'evspsblpot'
-    pet.standard_name = 'water_potential_evaporation_flux'
-    pet.long_name = 'Potential Evapotranspiration'
+    pet.var_name = "evspsblpot"
+    pet.standard_name = "water_potential_evaporation_flux"
+    pet.long_name = "Potential Evapotranspiration"
     return pet

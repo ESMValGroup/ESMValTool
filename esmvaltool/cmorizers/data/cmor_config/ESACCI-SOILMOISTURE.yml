@@ -18,4 +18,3 @@ variables:
     mip: Eday
     raw: sm_uncertainty
     filename: ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc
-     

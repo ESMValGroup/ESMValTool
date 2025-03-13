@@ -18,4 +18,4 @@ from esmvaltool.cmorizers.data.formatters.datasets.era_interim import (
     cmorization,
 )
 
-__all__ = ['cmorization']
+__all__ = ["cmorization"]

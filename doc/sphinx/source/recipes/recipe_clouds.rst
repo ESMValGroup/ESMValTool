@@ -597,7 +597,7 @@ Example plots
    Multi-year seasonal average (December-January-February) of cloud shortwave
    radiative effect (W m\ :sup:`-2`) vs. total cloud fraction (clt, %) averaged over the
    Southern Ocean defined as latitude belt 30°S-65°S (ocean grid cells only).
-   Shown are the CMIP6 multi-model mean (red filled circles and lines) and 
+   Shown are the CMIP6 multi-model mean (red filled circles and lines) and
    observational estimates from ESACCI-CLOUD (black circles and lines).
    The red shaded areas represent the range between the 10th and 90th percentiles
    of the results from all individual models. Produced with

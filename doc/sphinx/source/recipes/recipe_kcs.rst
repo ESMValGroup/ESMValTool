@@ -30,7 +30,7 @@ In the second diagnostic, for both the control and future periods, the N target 
 2. Further constrain the selection by picking samples that represent either high or low changes in summer precipitation and summer and winter temperature, by limiting the remaining samples to certain percentile ranges: relatively wet/cold in the control and dry/warm in the future, or vice versa. The percentile ranges are listed in table 1 of Lenderink 2014's supplement. This should result is approximately 50 remaining samples for each scenario, for both control and future.
 3. Use a Monte-Carlo method to make a final selection of 8 resamples with minimal reuse of the same ensemble member/segment.
 
-Datasets have been split in two parts: the CMIP datasets and the target model datasets. An example use case for this recipe is to compare between CMIP5 and CMIP6, for example. The recipe can work with a target model that is not part of CMIP, provided that the data are CMOR compatible, and using the same data referece syntax as the CMIP data. Note that you can specify :ref:`multiple data paths<config-user-rootpath>` in the user configuration file.
+Datasets have been split in two parts: the CMIP datasets and the target model datasets. An example use case for this recipe is to compare between CMIP5 and CMIP6, for example. The recipe can work with a target model that is not part of CMIP, provided that the data are CMOR compatible, and using the same data reference syntax as the CMIP data. Note that you can specify :ref:`multiple data paths<config_option_rootpath>` in the configuration.
 
 
 Available recipes and diagnostics
@@ -128,7 +128,7 @@ AND highlighting the selected steering parameters and resampling periods:
 .. figure::  /recipes/figures/kcs/global_matching.png
    :align:   center
 
-The diagnostic ``local_resampling`` procudes a number of output files:
+The diagnostic ``local_resampling`` produces a number of output files:
 
 * ``season_means_<scenario>.nc``: intermediate results, containing the season means for each segment of the original target model ensemble.
 * ``top1000_<scenario>.csv``: intermediate results, containing the 1000 combinations that have been selected based on winter mean precipitation.

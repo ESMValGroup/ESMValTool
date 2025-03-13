@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Diagnostic script to temperature variability metric psi (Cox et al., 2018).
 
 Description
@@ -50,15 +49,15 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def calculate_psi(cube, cfg):
     """Calculate temperature variability metric psi for a given cube."""
-    window_length = cfg.get('window_length', 55)
-    lag = cfg.get('lag', 1)
+    window_length = cfg.get("window_length", 55)
+    lag = cfg.get("lag", 1)
     psi_years = []
     psis = []
 
     # Moving average
     for yr_idx in range(cube.shape[0] - window_length):
         slc = slice(yr_idx, yr_idx + window_length)
-        years = cube.coord('year').points[slc]
+        years = cube.coord("year").points[slc]
         tas = np.copy(cube.data[slc])
 
         # De-trend data
@@ -67,24 +66,26 @@ def calculate_psi(cube, cfg):
 
         # Autocorrelation
         norm = np.sum(np.square(tas))
-        [autocorr] = np.correlate(tas[:-lag], tas[lag:], mode='valid') / norm
+        [autocorr] = np.correlate(tas[:-lag], tas[lag:], mode="valid") / norm
 
         # Psi
         psi_years.append(years[-1])
         psis.append(np.std(tas) / np.sqrt(-np.log(autocorr)))
 
     # Return new cube
-    year_coord = iris.coords.DimCoord(np.array(psi_years),
-                                      var_name='year',
-                                      long_name='year',
-                                      units=cf_units.Unit('year'))
+    year_coord = iris.coords.DimCoord(
+        np.array(psi_years),
+        var_name="year",
+        long_name="year",
+        units=cf_units.Unit("year"),
+    )
     psi_cube = iris.cube.Cube(
         np.array(psis),
         dim_coords_and_dims=[(year_coord, 0)],
         attributes={
-            'window_length': window_length,
-            'lag': lag,
-            **cfg.get('output_attributes', {}),
+            "window_length": window_length,
+            "lag": lag,
+            **cfg.get("output_attributes", {}),
         },
     )
     return psi_cube
@@ -93,91 +94,94 @@ def calculate_psi(cube, cfg):
 def get_provenance_record(caption, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
-        'caption': caption,
-        'statistics': ['var', 'diff', 'corr', 'detrend'],
-        'domains': ['global'],
-        'authors': ['schlund_manuel'],
-        'references': ['cox18nature'],
-        'realms': ['atmos'],
-        'themes': ['phys'],
-        'ancestors': ancestor_files,
+        "caption": caption,
+        "statistics": ["var", "diff", "corr", "detrend"],
+        "domains": ["global"],
+        "authors": ["schlund_manuel"],
+        "references": ["cox18nature"],
+        "realms": ["atmos"],
+        "themes": ["phys"],
+        "ancestors": ancestor_files,
     }
     return record
 
 
 def get_attributes(cfg, single_psi_cube, input_data):
     """Get attributes for psi cube for all datasets."""
-    datasets = sorted(list({str(d['dataset']) for d in input_data}))
-    projects = sorted(list({str(d['project']) for d in input_data}))
-    ref = sorted(list({str(d.get('reference_dataset')) for d in input_data}))
+    datasets = sorted(list({str(d["dataset"]) for d in input_data}))
+    projects = sorted(list({str(d["project"]) for d in input_data}))
+    ref = sorted(list({str(d.get("reference_dataset")) for d in input_data}))
     datasets = "|".join(datasets)
     projects = "|".join(projects)
     ref = "|".join(ref)
     attrs = single_psi_cube.attributes
-    attrs.update({
-        'dataset': datasets,
-        'project': projects,
-        'reference_dataset': ref,
-    })
-    attrs.update(cfg.get('output_attributes', {}))
+    attrs.update(
+        {
+            "dataset": datasets,
+            "project": projects,
+            "reference_dataset": ref,
+        }
+    )
+    attrs.update(cfg.get("output_attributes", {}))
     return attrs
 
 
 def main(cfg):
     """Run the diagnostic."""
-    input_data = (
-        select_metadata(cfg['input_data'].values(), short_name='tas') +
-        select_metadata(cfg['input_data'].values(), short_name='tasa'))
-    input_data = sorted_metadata(input_data, ['short_name', 'exp', 'dataset'])
+    input_data = select_metadata(
+        cfg["input_data"].values(), short_name="tas"
+    ) + select_metadata(cfg["input_data"].values(), short_name="tasa")
+    input_data = sorted_metadata(input_data, ["short_name", "exp", "dataset"])
     if not input_data:
         raise ValueError("This diagnostics needs 'tas' or 'tasa' variable")
 
     # Calculate psi for every dataset
     psis = {}
     psi_attrs = {
-        'short_name': 'psi',
-        'long_name': 'Temperature variability metric',
-        'units': 'K',
+        "short_name": "psi",
+        "long_name": "Temperature variability metric",
+        "units": "K",
     }
-    grouped_data = group_metadata(input_data, 'dataset')
-    for (dataset, [data]) in grouped_data.items():
+    grouped_data = group_metadata(input_data, "dataset")
+    for dataset, [data] in grouped_data.items():
         logger.info("Processing %s", dataset)
-        cube = iris.load_cube(data['filename'])
-        iris.coord_categorisation.add_year(cube, 'time')
-        cube = cube.aggregated_by('year', iris.analysis.MEAN)
+        cube = iris.load_cube(data["filename"])
+        iris.coord_categorisation.add_year(cube, "time")
+        cube = cube.aggregated_by("year", iris.analysis.MEAN)
         psi_cube = calculate_psi(cube, cfg)
         data.update(psi_attrs)
-        data.pop('standard_name', '')
+        data.pop("standard_name", "")
 
         # Provenance
-        caption = ("Temporal evolution of temperature variability metric psi "
-                   "between {start_year} and {end_year} for {dataset}.".format(
-                       **data))
-        provenance_record = get_provenance_record(caption, [data['filename']])
-        out_path = get_diagnostic_filename('psi_' + dataset, cfg)
+        caption = (
+            "Temporal evolution of temperature variability metric psi "
+            "between {start_year} and {end_year} for {dataset}.".format(**data)
+        )
+        provenance_record = get_provenance_record(caption, [data["filename"]])
+        out_path = get_diagnostic_filename("psi_" + dataset, cfg)
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(out_path, provenance_record)
 
         # Save psi for every dataset
-        data['filename'] = out_path
+        data["filename"] = out_path
         io.metadata_to_netcdf(psi_cube, data)
 
         # Save averaged psi
         psis[dataset] = np.mean(psi_cube.data)
 
     # Save averaged psis for every dataset in one file
-    out_path = get_diagnostic_filename('psi', cfg)
+    out_path = get_diagnostic_filename("psi", cfg)
     attrs = get_attributes(cfg, psi_cube, input_data)
     io.save_scalar_data(psis, out_path, psi_attrs, attributes=attrs)
 
     # Provenance
     caption = "{long_name} for multiple climate models.".format(**psi_attrs)
-    ancestor_files = [d['filename'] for d in input_data]
+    ancestor_files = [d["filename"] for d in input_data]
     provenance_record = get_provenance_record(caption, ancestor_files)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(out_path, provenance_record)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with run_diagnostic() as config:
         main(config)

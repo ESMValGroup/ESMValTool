@@ -14,6 +14,7 @@ jobs:
   validate:
     name: "validate"
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || github.repository == 'ESMValGroup/ESMValTool' # avoid scheduled GHAs in forks
     steps:
       - name: Check out a copy of the repository
         uses: actions/checkout@v4

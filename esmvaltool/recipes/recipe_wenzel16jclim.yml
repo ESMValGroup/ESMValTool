@@ -303,7 +303,7 @@ diagnostics:
         end_year: 2005
         derive: true
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, version: Ed2-7, tier: 1, start_year: 2001}
+          - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B, tier: 1, start_year: 2001}
     additional_datasets: *datasets
     scripts:
       asr_sh: &asr_sh

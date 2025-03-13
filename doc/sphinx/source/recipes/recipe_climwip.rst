@@ -43,9 +43,9 @@ Using shapefiles for cutting scientific regions
 
 To use shapefiles for selecting SREX or AR6 regions by name it is necessary to download them, e.g.,
 from the sources below and reference the file using the `shapefile` parameter. This can either be a
-absolute or a relative path. In the example recipes they are stored in  a subfolder `shapefiles`
-in the `auxiliary_data_dir` (with is specified in the
-`config-user.yml <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/configure.html#user-configuration-file>`_).
+absolute or a relative path. In the example recipes they are stored in a subfolder `shapefiles`
+in the :ref:`configuration option <esmvalcore:config_options>`
+``auxiliary_data_dir``.
 
 SREX regions (AR5 reference regions): http://www.ipcc-data.org/guidelines/pages/ar5_regions.html
 
@@ -249,7 +249,7 @@ Brunner et al. (2020) recipe and example independence weighting
 
 The recipe uses an additional step between pre-processor and weight calculation to calculate anomalies relative to the global mean (e.g., tas_ANOM = tas_CLIM - global_mean(tas_CLIM)). This means we do not use the absolute temperatures of a model as performance criterion but rather the horizontal temperature distribution (see `Brunner et al. 2020 <https://doi.org/10.5194/esd-11-995-2020>`_ for a discussion).
 
-This recipe also implements a somewhat general independence weighting for CMIP6. In contrast to model performance (which should be case specific) model independence can largely be seen as only dependet on the multi-model ensemble in use but not the target variable or region. This means that the configuration used should be valid for similar subsets of CMIP6 as used in this recipe:
+This recipe also implements a somewhat general independence weighting for CMIP6. In contrast to model performance (which should be case specific) model independence can largely be seen as only dependent on the multi-model ensemble in use but not the target variable or region. This means that the configuration used should be valid for similar subsets of CMIP6 as used in this recipe:
 
 
 .. code-block:: yaml

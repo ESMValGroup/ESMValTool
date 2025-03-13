@@ -10,12 +10,12 @@ from esmvaltool.diag_scripts.cvdp.cvdp_wrapper import create_link
 # def test_setup_driver():
 #     assert False
 #
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def test_create_links(tmpdir_factory):
     """Test create_link function."""
     cfg = dict()
     link_dir = tmpdir_factory.mkdir("link")
-    cfg['run_dir'] = os.path.join(link_dir.dirname)
+    cfg["run_dir"] = os.path.join(link_dir.dirname)
 
     testfile = tmpdir_factory.mkdir("sub").join("file_2009-2010.nc")
     testfile.write("Test")

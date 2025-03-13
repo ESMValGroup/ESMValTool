@@ -1,53 +1,84 @@
-"""Script to download ESACCI-OZONE from the Climate Data Store(CDS)."""
+"""Script to download ESACCI-OZONE from the CDS."""
 
-from datetime import datetime
+import gzip
+import logging
+import shutil
+import zipfile
+from pathlib import Path
 
-from dateutil import relativedelta
+import cdsapi
 
-from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
+logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
-    """Download dataset.
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
+    """Download ESACCI-OZONE dataset using CDS API.
 
-    Parameters
-    ----------
-    config : dict
-        ESMValTool's user configuration
-    dataset : str
-        Name of the dataset
-    dataset_info : dict
-         Dataset information from the datasets.yml file
-    start_date : datetime
-        Start of the interval to download
-    end_date : datetime
-        End of the interval to download
-    overwrite : bool
-        Overwrite already downloaded files
+    - An ECMWF account is needed to download the datasets from
+      https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1.
+    - The file named .cdspirc containing the key associated to
+      the ECMWF account needs to be saved in user's ${HOME} directory.
+    - All the files will be saved in ${RAWOBS}/Tier2/ESACCI-OZONE.
     """
-    if start_date is None:
-        start_date = datetime(1997, 1, 1)
-    if end_date is None:
-        end_date = datetime(2010, 1, 1)
+    cds_url = "https://cds.climate.copernicus.eu/api"
 
-    loop_date = start_date
+    if dataset == "ESACCI-OZONE":
+        requests = {
+            "toz": {
+                "processing_level": "level_3",
+                "variable": "atmosphere_mole_content_of_ozone",
+                "vertical_aggregation": "total_column",
+                "sensor": ["merged_uv"],
+                "year": [str(y) for y in range(1995, 2024)],
+                "month": [f"{m:02d}" for m in range(1, 13)],
+                "version": ["v2000"],
+            },
+            "o3": {
+                "processing_level": "level_3",
+                "variable": "mole_concentration_of_ozone_in_air",
+                "vertical_aggregation": "vertical_profiles_from_limb_sensors",
+                "sensor": ["cmzm"],
+                "year": [str(y) for y in range(1984, 2023)],
+                "month": [f"{m:02d}" for m in range(1, 13)],
+                "version": ["v0008"],
+            },
+        }
 
-    downloader = CCIDownloader(
-        config=config,
-        dataset=dataset,
-        dataset_info=dataset_info,
-        overwrite=overwrite,
-    )
-    downloader.ftp_name = 'ozone'
-    downloader.connect()
-    downloader.set_cwd(
-        'limb_profiles/l3/merged/merged_monthly_zonal_mean/v0002')
-    downloader.download_folder('.')
+        client = cdsapi.Client(cds_url)
+        raw_obs_dir = Path(config["rootpath"]["RAWOBS"][0])
+        output_folder = raw_obs_dir / f"Tier{dataset_info['tier']}" / dataset
+        output_folder.mkdir(parents=True, exist_ok=True)
 
-    downloader.set_cwd('total_columns/l3/merged/v0100/')
-    while loop_date <= end_date:
-        year = loop_date.year
-        downloader.set_cwd('total_columns/l3/merged/v0100/')
-        downloader.download_year(f'{year}')
-        loop_date += relativedelta.relativedelta(years=1)
+        for var_name, request in requests.items():
+            logger.info("Downloading %s data to %s", var_name, output_folder)
+
+            file_path = output_folder / f"{var_name}.gz"
+
+            if file_path.exists() and not overwrite:
+                logger.info(
+                    "File %s already exists. Skipping download.", file_path
+                )
+                continue
+
+            client.retrieve(
+                "satellite-ozone-v1", request, file_path.as_posix()
+            )
+
+            # Handle both .gz and .zip files
+            with open(file_path, "rb") as file:
+                magic = file.read(2)
+
+            if magic == b"PK":  # ZIP file signature
+                logger.info("Detected ZIP file: %s", file_path)
+                with zipfile.ZipFile(file_path, "r") as zip_ref:
+                    zip_ref.extractall(output_folder)
+            else:
+                logger.info("Detected GZIP file: %s", file_path)
+                with gzip.open(file_path, "rb") as f_in:
+                    with open(output_folder / file_path.stem, "wb") as f_out:
+                        shutil.copyfileobj(f_in, f_out)
+
+    else:
+        raise ValueError(f"Unknown dataset: {dataset}")

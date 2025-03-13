@@ -73,7 +73,7 @@ The settings needed for loading the observational dataset in all diagnostics
 are provided in the recipe through `obs_info` within `obs_details` section.
 
     * ``obs_data_subdir``: subdirectory of auxiliary_data_dir (set in
-      config-user file) where observation data are stored {e.g.,
+      configuration) where observation data are stored {e.g.,
       data_ESMValTool_Carvalhais2014}.
     * ``source_label``: source data label {'Carvalhais2014'}.
     * ``variant_label``: variant of the observation {'BE'} for best estimate.
@@ -112,7 +112,7 @@ Script land_carbon_cycle/diag_global_turnover.py
     * ``y0``: {``float``, 1.0} Y - coordinate of the upper edge of the figure.
     * ``wp``: {``float``, 1 / number of models} - width of each map.
     * ``hp``: {``float``, = wp} - height of each map.
-    * ``xsp``: {``float``, 0} - spacing betweeen maps in X - direction.
+    * ``xsp``: {``float``, 0} - spacing between maps in X - direction.
     * ``ysp``: {``float``, -0.03} - spacing between maps in Y -direction.
       Negative to reduce the spacing below default.
     * ``aspect_map``: {``float``, 0.5} - aspect of the maps.
@@ -217,10 +217,10 @@ Due to inherent dependence of the diagnostic on uncertainty estimates in
 observation, the data needed for each diagnostic script are processed at
 different spatial resolutions (as in Carvalhais et al., 2014), and provided in
 11 different resolutions (see Table 1). Note that the uncertainties were
-estimated at the resolution of the selected models, and, thus, only the 
-pre-processed observed data can be used with the recipe. 
-It is not possible to use regridding functionalities of ESMValTool to regrid 
-the observational data to other spatial resolutions, as the uncertainty 
+estimated at the resolution of the selected models, and, thus, only the
+pre-processed observed data can be used with the recipe.
+It is not possible to use regridding functionalities of ESMValTool to regrid
+the observational data to other spatial resolutions, as the uncertainty
 estimates cannot be regridded.
 
 Table 1. A summary of the observation datasets at different resolutions.
@@ -309,7 +309,7 @@ Example plots
 
    Comparison of latitudinal (zonal) variations of pearson correlation between
    turnover time and climate: turnover time and precipitation, controlled for
-   temperature (left) and vice-versa (right). Reproduces figures 2c and 2d in 
+   temperature (left) and vice-versa (right). Reproduces figures 2c and 2d in
    `Carvalhais et al. (2014)`_.
 
 .. _fig_carvalhais14nat_2:
@@ -320,7 +320,7 @@ Example plots
 
    Comparison of observation-based and modelled ecosystem carbon turnover time.
    Along the diagnonal, tau_ctotal are plotted, above the bias, and below
-   density plots. The inset text in density plots indicate the correlation. 
+   density plots. The inset text in density plots indicate the correlation.
 
 .. _fig_carvalhais14nat_3:
 
@@ -328,11 +328,11 @@ Example plots
    :align: center
    :width: 80%
 
-   Global distributions of multimodel bias and model agreement. Multimodel bias 
-   is calculated as the ratio of multimodel median turnover time and that from 
-   observation.  Stippling indicates the regions where only less than one 
-   quarter of the models fall within the range of observational uncertainties 
-   (`5^{th}` and `95^{th}` percentiles). Reproduces figure 3 in `Carvalhais et 
+   Global distributions of multimodel bias and model agreement. Multimodel bias
+   is calculated as the ratio of multimodel median turnover time and that from
+   observation.  Stippling indicates the regions where only less than one
+   quarter of the models fall within the range of observational uncertainties
+   (`5^{th}` and `95^{th}` percentiles). Reproduces figure 3 in `Carvalhais et
    al. (2014)`_.
 
 .. _fig_carvalhais14nat_4:
@@ -341,7 +341,7 @@ Example plots
    :align: center
    :width: 80%
 
-   Comparison of latitudinal (zonal) variations of observation-based and 
-   modelled ecosystem carbon turnover time. The zonal turnover time is 
-   calculated as the ratio of zonal `ctotal` and `gpp`. Reproduces figures 2a 
+   Comparison of latitudinal (zonal) variations of observation-based and
+   modelled ecosystem carbon turnover time. The zonal turnover time is
+   calculated as the ratio of zonal `ctotal` and `gpp`. Reproduces figures 2a
    and 2b in `Carvalhais et al. (2014)`_.

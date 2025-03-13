@@ -3,6 +3,151 @@
 Changelog
 =========
 
+
+.. _changelog-v2-12-0:
+
+v2.12.0
+-------
+
+Highlights
+~~~~~~~~~~
+
+- Recipe :ref:`recipe_portrait_CMIP.yml <recipe_portrait>` allows the creation
+  of portrait plots to visualize performance metrics.
+
+- A set of new :ref:`recipes <recipe_benchmarking>` allow plotting
+  arbitrary preprocessor output to benchmark a model simulation with
+  other datasets.
+
+This release includes
+
+Backwards incompatible changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Remove recipe filler utility (:pull:`3777`) by :user:`schlunma`.
+   ESMValTool accepts the use of wildcards in the recipe, and a filled
+   version of the recipe is automatically created and stored in the
+   `run` directory.
+
+Deprecations
+~~~~~~~~~~~~
+
+-  Adapt ESMValTool to new configuration (:pull:`3761`) by :user:`schlunma`
+
+   - The single configuration file ``config-user.yml`` has been deprecated in favour of configuration directories.
+     By default, the directory ``~/.config/esmvaltool`` will be considered.
+     To switch to the new format run:
+
+       .. code-block:: bash
+
+          mkdir -p ~/.config/esmvaltool && mv ~/.esmvaltool/config-user.yml ~/.config/esmvaltool
+
+     You can also specify the location of the configuration directory with the ``--config_dir`` flag.
+     Please refer to :ref:`esmvalcore:config` for a detailed description on how to configure the tool.
+
+Bug fixes
+~~~~~~~~~
+
+-  Fix for setting global attributes in cmorizers (:pull:`3717`) by :user:`LisaBock`
+
+Community
+~~~~~~~~~
+
+-  Add a security policy (:pull:`3456`) by :user:`ehogan`
+
+Documentation
+~~~~~~~~~~~~~
+
+-  Ignore autosummary warning in documentation build (:pull:`3718`) by :user:`valeriupredoi`
+-  Retire mambaforge - addendum to 3774 (:pull:`3778`) by :user:`valeriupredoi`
+-  Update Docker builds badge in README (:pull:`3783`) by :user:`valeriupredoi`
+-  Readthedocs configuration/builds: revert to miniconda before miniforge is available (:pull:`3785`) by :user:`valeriupredoi`
+-  Add info on obs tiers to docu (:pull:`3624`) by :user:`axel-lauer`
+-  Fix wrong version in title in Readthedocs documentation (:pull:`3815`) by :user:`valeriupredoi`
+-  Removed wrong description of option in portrait plot docstring (:pull:`3908`) by :user:`schlunma`
+-  Update broken recipes (:pull:`3940`) by :user:`sloosvel`
+-  Add next release schedule (:pull:`3794`) by :user:`sloosvel`
+
+Diagnostics
+~~~~~~~~~~~
+
+-  More flexible file loading in `monitor/multi_datasets.py` (:pull:`3728`) by :user:`schlunma`
+-  Add option to plot time on x-axis in monitoring Hovmoeller plots (:pull:`3732`) by :user:`FranziskaWinterstein`
+-  Use `transform_first=True` for contourf plots with Robinson projection to avoid cartopy bug (:pull:`3789`) by :user:`schlunma`
+-  Fix contourf plots for masked data (:pull:`3797`) by :user:`schlunma`
+-  Fix issue related to removal/change of private function imported in `diag_scripts/shared/_supermeans.py` (deprecation in iris=3.11) (:pull:`3810`) by :user:`valeriupredoi`
+-  Allow setting `matplotlib.rcParams` in `monitor/multi_datasets.py` (:pull:`3844`) by :user:`schlunma`
+-  Adding figures of Bock and Lauer (2024) (:pull:`3526`) by :user:`LisaBock`
+-  Added Python portrait plot diagnostic (:pull:`3551`) by :user:`lukruh`
+-  Fix Autoassess diagnostic for new matplotlib 3.10 api change (:pull:`3917`) by :user:`valeriupredoi`
+-  Fix diagnostic mpqb (:pull:`3918`) by :user:`sloosvel`
+-  Add diagnostic to calculate Transient Climate Response to Emissions (TCRE) (:pull:`3904`) by :user:`schlunma`
+-  Benchmarking recipes (Lauer et al.) (:pull:`3598`) by :user:`axel-lauer`
+-  Add Cloud Radiative Effects recipe for REF (:pull:`3903`) by :user:`LisaBock`
+
+Observational and re-analysis dataset support
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Update esacci-soilmoisture(v08.1) downloader and CMORizer (Python version) (:pull:`3676`) by :user:`diegokam`
+-  Update ESACCI Landcover CMORizer (python version) and downloader (pft yearly data, v2.0.8) (:pull:`3727`) by :user:`diegokam`
+-  CMORizer for JRA-55 (:pull:`3141`) by :user:`axel-lauer`
+-  Replace underscores in facets of observational datasets with minuses (:pull:`3840`) by :user:`schlunma`
+-  Add TropFlux CMORiser (:pull:`3863`) by :user:`rbeucher`
+-  CMORizer for ESACCI-SEAICE (:pull:`3821`) by :user:`axel-lauer`
+-  Update ESACCI-SST cmorizer to v3.0 (:pull:`3697`) by :user:`LisaBock`
+-  Adding pr, tauu, tauv NOAA-CIRES-20CR-V2 CMORISER (:pull:`3763`) by :user:`max-anu`
+-  Adding pr, tauu, tauv, tos to NCEP2 CMORISer (:pull:`3765`) by :user:`max-anu`
+-  Adding a CMORiser for CMAP data for pr (:pull:`3766`) by :user:`max-anu`
+-  Update NSIDC_G02202_sh CMORiser to add bounds for lat,lon and time (:pull:`3744`) by :user:`flicj191`
+
+Automatic testing
+~~~~~~~~~~~~~~~~~
+
+-  Remove obsolete utility `esmvt_rose_wrapper` and its documentation and very obsolete `mip_convert` cmorizer (:pull:`3759`) by :user:`valeriupredoi`
+-  Remove obsolete and inactive `tests/system` tests (:pull:`3760`) by :user:`valeriupredoi`
+-  Retire Mambaforge (:pull:`3774`) by :user:`valeriupredoi`
+-  Pin mamba<2 for conda-lock: solution by Ben Mares @maresb (:pull:`3771`) by :user:`valeriupredoi`
+-  Update comment in conda lock creation Github action (:pull:`3788`) by :user:`valeriupredoi`
+-  Run a periodic esmvalbot test via automated PR (:pull:`3465`) by :user:`valeriupredoi`
+-  Add init files in package-like diagnostic directories to comply with `pytest >=8.3.4` (:pull:`3834`) by :user:`valeriupredoi`
+-  Fix failing sklearn test (:pull:`3850`) by :user:`schlunma`
+-  Fix circle ci nightly test installation from source development mode (and test mode) that times out (:pull:`3864`) by :user:`valeriupredoi`
+-  Remove portrait plot test recipe (:pull:`3871`) by :user:`schlunma`
+-  Restrict cron Github Actions tests to run from forks (:pull:`3894`) by :user:`valeriupredoi`
+-  Force mamba 2 in Github Actions that solve environment (:pull:`3929`) by :user:`valeriupredoi`
+-  Force install mamba2 in CircleCI and add ipython and pin it to <9.0 (:pull:`3947`) by :user:`valeriupredoi`
+-  Use mamba>=2 for Circle CI upstream development test  (:pull:`3949`) by :user:`valeriupredoi`
+
+Installation
+~~~~~~~~~~~~
+
+-  Retire support for Python 3.9 (:pull:`3683`) by :user:`valeriupredoi`
+-  [Julia] pin `curl <8.10` to restrict `libcurl <8.10` so Julia installs packages correctly (:pull:`3755`) by :user:`valeriupredoi`
+-  Add support for Python=3.12 (:pull:`3501`) by :user:`valeriupredoi`
+-  Pin cartopy to `cartopy<0.24` (:pull:`3768`) by :user:`valeriupredoi`
+-  Pin pys2index >=0.1.5 in osx environment (:pull:`3792`) by :user:`valeriupredoi`
+-  Update environment: pin `iris>=3.11`, unpin `cartopy` and allow for `numpy >=2` (:pull:`3811`) by :user:`valeriupredoi`
+-  Unpin pandas  (:pull:`3924`) by :user:`valeriupredoi`
+
+Improvements
+~~~~~~~~~~~~
+
+-  Update ERA5 renaming script for hourly (:pull:`3630`) by :user:`malininae`
+-  Avoid masking issues in Dask 2024.8.0 (:pull:`3736`) by :user:`bouweandela`
+-  Dark mode compatible transparent background logo (:pull:`3751`) by :user:`lukruh`
+-  Change authors name (:pull:`3806`) by :user:`lukruh`
+-  Recipe Test Workflow (RTW) prototype (:pull:`3210`) by :user:`ehogan`
+-  Update obs4MIPs names to match ESGF see #2974 (:pull:`3439`) by :user:`rbeucher`
+-  Recipe_wenzel16jclim: Remove CERES-EBAF version to fix ESGF (:pull:`3442`) by :user:`rbeucher`
+-  Update RTW checks (:pull:`3823`) by :user:`ehogan`
+-  Add cccma collaborators (:pull:`3831`) by :user:`malininae`
+-  Add DKRZ as a site to RTW (:pull:`3837`) by :user:`ehogan`
+-  Add an option to disable using the distributed scheduler from the diagnostic script (:pull:`3787`) by :user:`bouweandela`
+-  Use site-specific lists of recipes in the RTW (:pull:`3856`) by :user:`chrisbillowsMO`
+-  Add links to summary page that are required for hosting at DKRZ (:pull:`3866`) by :user:`bouweandela`
+-  Add `filename` to list of ignored attributes in `compare.py` (:pull:`3919`) by :user:`sloosvel`
+-  Add unit conversion to `DU` to recipes that use `toz` (:pull:`3784`) by :user:`schlunma`
+
 .. _changelog-v2-11-0:
 
 v2.11.0

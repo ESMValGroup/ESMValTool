@@ -38,14 +38,16 @@ AERONET_HEADER = "AERONET Version 3;"
 LEVEL_HEADER = "Version 3: AOD Level 2.0"
 LEVEL_DESCRIPTION = (
     "The following data are automatically cloud cleared and quality assured "
-    "with pre-field and post-field calibration applied.")
+    "with pre-field and post-field calibration applied."
+)
 UNITS_HEADER = (
     "UNITS can be found at,,, https://aeronet.gsfc.nasa.gov/new_web/units.html"
 )
 DATA_QUALITY_LEVEL = "lev20"
 
 CONTACT_PATTERN = re.compile(
-    "Contact: PI=(?P<names>[^;]*); PI Email=(?P<emails>.*)")
+    "Contact: PI=(?P<names>[^;]*); PI Email=(?P<emails>.*)"
+)
 
 
 def compress_column(data_frame, name):
@@ -88,9 +90,9 @@ def parse_contact(contact):
         raise RuntimeError(f"Could not parse contact line {contact}")
     names = match.group("names").replace("_", " ").split(" and ")
     emails = match.group("emails").split("_and_")
-    mailboxes = ", ".join([
-        f'"{name}" <{email}>' for name, email in zip(names, emails)
-    ])
+    mailboxes = ", ".join(
+        [f'"{name}" <{email}>' for name, email in zip(names, emails)]
+    )
     return mailboxes
 
 
@@ -156,9 +158,7 @@ def sort_data_columns(columns):
     """Sort AOD station data columns."""
     data_columns = [c for c in columns if "NUM_" not in c]
     if len(columns) != 3 * len(data_columns):
-        raise ValueError(
-            "Station data contains unexpected number of columns."
-        )
+        raise ValueError("Station data contains unexpected number of columns.")
     aod_columns = [c for c in data_columns if c.startswith("AOD_")]
     precipitable_water_columns = [
         c for c in data_columns if c == "Precipitable_Water(cm)"
@@ -166,12 +166,12 @@ def sort_data_columns(columns):
     angstrom_exponent_columns = [
         c for c in data_columns if "_Angstrom_Exponent" in c
     ]
-    if len(data_columns) != (len(aod_columns) +
-                             len(precipitable_water_columns) +
-                             len(angstrom_exponent_columns)):
-        raise ValueError(
-            "Station data contains unexpected number of columns."
-        )
+    if len(data_columns) != (
+        len(aod_columns)
+        + len(precipitable_water_columns)
+        + len(angstrom_exponent_columns)
+    ):
+        raise ValueError("Station data contains unexpected number of columns.")
     return (aod_columns, precipitable_water_columns, angstrom_exponent_columns)
 
 
@@ -231,22 +231,39 @@ def assemble_cube(stations, idx, wavelengths=None):
     if wavelengths is None:
         wavelengths = sorted([int(c[4:-2]) for c in aod_columns])
 
-    aod = da.stack([
-        da.stack([df[f"AOD_{wl}nm"].values for wl in wavelengths], axis=-1)
-        for df in data_frames
-    ], axis=-1)[..., idx]
-    num_days = da.stack([
-        da.stack([
-            df[f"NUM_DAYS[AOD_{wl}nm]"].values.astype(np.float32)
-            for wl in wavelengths
-        ], axis=-1) for df in data_frames
-    ], axis=-1)[..., idx]
-    num_points = da.stack([
-        da.stack([
-            df[f"NUM_POINTS[AOD_{wl}nm]"].values.astype(np.float32)
-            for wl in wavelengths
-        ], axis=-1) for df in data_frames
-    ], axis=-1)[..., idx]
+    aod = da.stack(
+        [
+            da.stack([df[f"AOD_{wl}nm"].values for wl in wavelengths], axis=-1)
+            for df in data_frames
+        ],
+        axis=-1,
+    )[..., idx]
+    num_days = da.stack(
+        [
+            da.stack(
+                [
+                    df[f"NUM_DAYS[AOD_{wl}nm]"].values.astype(np.float32)
+                    for wl in wavelengths
+                ],
+                axis=-1,
+            )
+            for df in data_frames
+        ],
+        axis=-1,
+    )[..., idx]
+    num_points = da.stack(
+        [
+            da.stack(
+                [
+                    df[f"NUM_POINTS[AOD_{wl}nm]"].values.astype(np.float32)
+                    for wl in wavelengths
+                ],
+                axis=-1,
+            )
+            for df in data_frames
+        ],
+        axis=-1,
+    )[..., idx]
 
     wavelength_points = da.array(wavelengths, dtype=np.float64)
     wavelength_coord = iris.coords.DimCoord(
@@ -258,13 +275,19 @@ def assemble_cube(stations, idx, wavelengths=None):
     )
     times = date_index.to_pydatetime()
     time_points = np.array(
-        [datetime(year=t.year, month=t.month, day=15) for t in times])
+        [datetime(year=t.year, month=t.month, day=15) for t in times]
+    )
     time_bounds_lower = times
-    time_bounds_upper = np.array([
-        datetime(year=t.year + (t.month == 12),
-                 month=t.month + 1 - (t.month == 12) * 12,
-                 day=1) for t in times
-    ])
+    time_bounds_upper = np.array(
+        [
+            datetime(
+                year=t.year + (t.month == 12),
+                month=t.month + 1 - (t.month == 12) * 12,
+                day=1,
+            )
+            for t in times
+        ]
+    )
     time_bounds = np.stack([time_bounds_lower, time_bounds_upper], axis=-1)
     time_units = cf_units.Unit("days since 1850-01-01", calendar="standard")
     time_coord = iris.coords.DimCoord(
@@ -310,26 +333,28 @@ def assemble_cube(stations, idx, wavelengths=None):
         units="degrees_east",
     )
     num_days_ancillary = iris.coords.AncillaryVariable(
-        data=da.ma.masked_array(num_days, da.isnan(num_days),
-                                fill_value=1.e20),
+        data=da.ma.masked_array(
+            num_days, da.isnan(num_days), fill_value=1.0e20
+        ),
         standard_name=None,
         long_name="Number of days",
         var_name="num_days",
         units="1",
     )
     num_points_ancillary = iris.coords.AncillaryVariable(
-        data=da.ma.masked_array(num_days,
-                                da.isnan(num_points),
-                                fill_value=1.e20),
+        data=da.ma.masked_array(
+            num_days, da.isnan(num_points), fill_value=1.0e20
+        ),
         standard_name="number_of_observations",
         long_name="Number of observations",
         var_name="num_points",
         units="1",
     )
     cube = iris.cube.Cube(
-        data=da.ma.masked_array(aod, da.isnan(aod), fill_value=1.e20),
+        data=da.ma.masked_array(aod, da.isnan(aod), fill_value=1.0e20),
         standard_name=(
-            "atmosphere_optical_thickness_due_to_ambient_aerosol_particles"),
+            "atmosphere_optical_thickness_due_to_ambient_aerosol_particles"
+        ),
         long_name="Aerosol Optical Thickness",
         var_name="aod",
         units="1",
@@ -368,34 +393,35 @@ def build_cube(filesystem, paths, wavelengths=None):
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    raw_filename = cfg['filename']
+    raw_filename = cfg["filename"]
 
     tar_file_system = TarFileSystem(f"{in_dir}/{raw_filename}")
     paths = tar_file_system.glob("AOD/AOD20/MONTHLY/*.lev20")
     versions = np.unique(
-        np.array([os.path.basename(p).split("_")[1] for p in paths],
-                 dtype=str))
+        np.array([os.path.basename(p).split("_")[1] for p in paths], dtype=str)
+    )
     if len(versions) != 1:
         raise ValueError(
             "All station datasets in tar file must have same version."
         )
     version = versions[0]
     wavelengths = sorted(
-        [var["wavelength"] for var in cfg['variables'].values()])
+        [var["wavelength"] for var in cfg["variables"].values()]
+    )
     cube = build_cube(tar_file_system, paths, wavelengths)
 
-    attrs = cfg['attributes'].copy()
-    attrs['version'] = version
-    attrs['source'] = attrs['source']
+    attrs = cfg["attributes"].copy()
+    attrs["version"] = version
+    attrs["source"] = attrs["source"]
 
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
+    for short_name, var in cfg["variables"].items():
         logger.info("CMORizing variable '%s'", short_name)
 
         idx = wavelengths.index(var["wavelength"])
         sub_cube = cube[:, idx]
 
-        attrs['mip'] = var['mip']
+        attrs["mip"] = var["mip"]
         # attrs['reference'] = var['reference']
         # Fix metadata
         utils.set_global_atts(sub_cube, attrs)
@@ -406,5 +432,5 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             short_name,
             out_dir,
             attrs,
-            unlimited_dimensions=['time'],
+            unlimited_dimensions=["time"],
         )

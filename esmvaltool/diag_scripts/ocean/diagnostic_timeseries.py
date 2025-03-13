@@ -56,8 +56,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-from esmvaltool.diag_scripts.shared import run_diagnostic
-from esmvaltool.diag_scripts.shared import ProvenanceLogger
+from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -126,47 +125,92 @@ def moving_average(cube, window):
 
     """
     window = window.split()
-    window_len = int(window[0]) / 2.
+    window_len = int(window[0]) / 2.0
     win_units = str(window[1])
 
     if win_units not in [
-            'days', 'day', 'dy', 'months', 'month', 'mn', 'years', 'yrs',
-            'year', 'yr'
+        "days",
+        "day",
+        "dy",
+        "months",
+        "month",
+        "mn",
+        "years",
+        "yrs",
+        "year",
+        "yr",
     ]:
         raise ValueError(
-            f'Moving average window units not recognised: {win_units}')
+            f"Moving average window units not recognised: {win_units}"
+        )
 
-    times = cube.coord('time').units.num2date(cube.coord('time').points)
+    times = cube.coord("time").units.num2date(cube.coord("time").points)
 
     datetime = diagtools.guess_calendar_datetime(cube)
 
     output = []
 
-    times = np.array([
-        datetime(time_itr.year, time_itr.month, time_itr.day, time_itr.hour,
-                 time_itr.minute) for time_itr in times
-    ])
+    times = np.array(
+        [
+            datetime(
+                time_itr.year,
+                time_itr.month,
+                time_itr.day,
+                time_itr.hour,
+                time_itr.minute,
+            )
+            for time_itr in times
+        ]
+    )
 
     for time_itr in times:
-        if win_units in ['years', 'yrs', 'year', 'yr']:
-            tmin = datetime(time_itr.year - window_len, time_itr.month,
-                            time_itr.day, time_itr.hour, time_itr.minute)
-            tmax = datetime(time_itr.year + window_len, time_itr.month,
-                            time_itr.day, time_itr.hour, time_itr.minute)
+        if win_units in ["years", "yrs", "year", "yr"]:
+            tmin = datetime(
+                time_itr.year - window_len,
+                time_itr.month,
+                time_itr.day,
+                time_itr.hour,
+                time_itr.minute,
+            )
+            tmax = datetime(
+                time_itr.year + window_len,
+                time_itr.month,
+                time_itr.day,
+                time_itr.hour,
+                time_itr.minute,
+            )
 
-        if win_units in ['months', 'month', 'mn']:
-            tmin = datetime(time_itr.year, time_itr.month - window_len,
-                            time_itr.day, time_itr.hour, time_itr.minute)
-            tmax = datetime(time_itr.year, time_itr.month + window_len,
-                            time_itr.day, time_itr.hour, time_itr.minute)
+        if win_units in ["months", "month", "mn"]:
+            tmin = datetime(
+                time_itr.year,
+                time_itr.month - window_len,
+                time_itr.day,
+                time_itr.hour,
+                time_itr.minute,
+            )
+            tmax = datetime(
+                time_itr.year,
+                time_itr.month + window_len,
+                time_itr.day,
+                time_itr.hour,
+                time_itr.minute,
+            )
 
-        if win_units in ['days', 'day', 'dy']:
-            tmin = datetime(time_itr.year, time_itr.month,
-                            time_itr.day - window_len, time_itr.hour,
-                            time_itr.minute)
-            tmax = datetime(time_itr.year, time_itr.month,
-                            time_itr.day + window_len, time_itr.hour,
-                            time_itr.minute)
+        if win_units in ["days", "day", "dy"]:
+            tmin = datetime(
+                time_itr.year,
+                time_itr.month,
+                time_itr.day - window_len,
+                time_itr.hour,
+                time_itr.minute,
+            )
+            tmax = datetime(
+                time_itr.year,
+                time_itr.month,
+                time_itr.day + window_len,
+                time_itr.hour,
+                time_itr.minute,
+            )
 
         arr = np.ma.masked_where((times < tmin) + (times > tmax), cube.data)
         output.append(arr.mean())
@@ -175,9 +219,9 @@ def moving_average(cube, window):
 
 
 def make_time_series_plots(
-        cfg,
-        metadata,
-        filename,
+    cfg,
+    metadata,
+    filename,
 ):
     """
     Make a simple time series plot for an indivudual model 1D cube.
@@ -198,10 +242,10 @@ def make_time_series_plots(
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
-    cube = diagtools.bgc_units(cube, metadata['short_name'])
+    cube = diagtools.bgc_units(cube, metadata["short_name"])
 
     # Is this data is a multi-model dataset?
-    multi_model = metadata['dataset'].find('MultiModel') > -1
+    multi_model = metadata["dataset"].find("MultiModel") > -1
 
     # Make a dict of cubes for each layer.
     cubes = diagtools.make_cube_layer_dict(cube)
@@ -212,24 +256,24 @@ def make_time_series_plots(
     # Making plots for each layer
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
         layer = str(layer)
-        if 'moving_average' in cfg:
-            cube_layer = moving_average(cube_layer, cfg['moving_average'])
+        if "moving_average" in cfg:
+            cube_layer = moving_average(cube_layer, cfg["moving_average"])
 
         if multi_model:
-            timeplot(cube_layer, label=metadata['dataset'], ls=':')
+            timeplot(cube_layer, label=metadata["dataset"], ls=":")
         else:
-            timeplot(cube_layer, label=metadata['dataset'])
+            timeplot(cube_layer, label=metadata["dataset"])
 
         # Add title, legend to plots
-        title = ' '.join([metadata['dataset'], metadata['long_name']])
-        if layer != '':
-            if cube_layer.coords('depth'):
-                z_units = cube_layer.coord('depth').units
+        title = " ".join([metadata["dataset"], metadata["long_name"]])
+        if layer != "":
+            if cube_layer.coords("depth"):
+                z_units = cube_layer.coord("depth").units
             else:
-                z_units = ''
-            title = ' '.join([title, '(', layer, str(z_units), ')'])
+                z_units = ""
+            title = " ".join([title, "(", layer, str(z_units), ")"])
         plt.title(title)
-        plt.legend(loc='best')
+        plt.legend(loc="best")
         plt.ylabel(str(cube_layer.units))
 
         # Determine image filename:
@@ -237,40 +281,51 @@ def make_time_series_plots(
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
-                prefix='MultiModel',
-                suffix='_'.join(['timeseries',
-                                 str(layer) + image_extention]),
+                prefix="MultiModel",
+                suffix="_".join(["timeseries", str(layer) + image_extention]),
                 metadata_id_list=[
-                    'field', 'short_name', 'preprocessor', 'diagnostic',
-                    'start_year', 'end_year'
+                    "field",
+                    "short_name",
+                    "preprocessor",
+                    "diagnostic",
+                    "start_year",
+                    "end_year",
                 ],
             )
-            caption = ' '.join([
-                'Time series of', metadata["dataset"], metadata["long_name"],
-                'with MultiModel value',
-            ])
+            caption = " ".join(
+                [
+                    "Time series of",
+                    metadata["dataset"],
+                    metadata["long_name"],
+                    "with MultiModel value",
+                ]
+            )
 
         else:
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
-                suffix='timeseries_' + str(layer_index) + image_extention,
+                suffix="timeseries_" + str(layer_index) + image_extention,
             )
-            caption = ' '.join([
-                'Time series of', metadata["dataset"], metadata["long_name"],
-            ])
+            caption = " ".join(
+                [
+                    "Time series of",
+                    metadata["dataset"],
+                    metadata["long_name"],
+                ]
+            )
 
         # Saving files
-        logger.info('Saving plots to %s', path)
+        logger.info("Saving plots to %s", path)
         plt.savefig(path)
         plt.close()
 
         provenance_record = diagtools.prepare_provenance_record(
             cfg,
             caption=caption,
-            statistics=['mean'],
-            domain=['global'],
-            plot_type=['times'],
+            statistics=["mean"],
+            domain=["global"],
+            plot_type=["times"],
             ancestors=filename,
         )
 
@@ -279,8 +334,8 @@ def make_time_series_plots(
 
 
 def multi_model_time_series(
-        cfg,
-        metadata,
+    cfg,
+    metadata,
 ):
     """
     Make a time series plot showing several preprocesssed datasets.
@@ -303,9 +358,9 @@ def multi_model_time_series(
     model_cubes = {}
     layers = {}
     for filename in sorted(metadata):
-        if metadata[filename]['frequency'] != 'fx':
+        if metadata[filename]["frequency"] != "fx":
             cube = iris.load_cube(filename)
-            cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
+            cube = diagtools.bgc_units(cube, metadata[filename]["short_name"])
 
             cubes = diagtools.make_cube_layer_dict(cube)
             model_cubes[filename] = cubes
@@ -317,96 +372,100 @@ def multi_model_time_series(
 
     # Make a plot for each layer
     for layer in layers:
-
-        title = ''
-        z_units = ''
+        title = ""
+        z_units = ""
         plot_details = {}
-        cmap = plt.cm.get_cmap('viridis')
+        cmap = plt.cm.get_cmap("viridis")
 
         # Plot each file in the group
         for index, filename in enumerate(sorted(metadata)):
             if len(metadata) > 1:
-                color = cmap(index / (len(metadata) - 1.))
+                color = cmap(index / (len(metadata) - 1.0))
             else:
-                color = 'blue'
+                color = "blue"
 
             # Take a moving average, if needed.
-            if 'moving_average' in cfg:
-                cube = moving_average(model_cubes[filename][layer],
-                                      cfg['moving_average'])
+            if "moving_average" in cfg:
+                cube = moving_average(
+                    model_cubes[filename][layer], cfg["moving_average"]
+                )
             else:
                 cube = model_cubes[filename][layer]
 
-            if 'MultiModel' in metadata[filename]['dataset']:
+            if "MultiModel" in metadata[filename]["dataset"]:
                 timeplot(
                     cube,
                     c=color,
                     # label=metadata[filename]['dataset'],
-                    ls=':',
-                    lw=2.,
+                    ls=":",
+                    lw=2.0,
                 )
                 plot_details[filename] = {
-                    'c': color,
-                    'ls': ':',
-                    'lw': 2.,
-                    'label': metadata[filename]['dataset']
+                    "c": color,
+                    "ls": ":",
+                    "lw": 2.0,
+                    "label": metadata[filename]["dataset"],
                 }
             else:
                 timeplot(
                     cube,
                     c=color,
                     # label=metadata[filename]['dataset'])
-                    ls='-',
-                    lw=2.,
+                    ls="-",
+                    lw=2.0,
                 )
                 plot_details[filename] = {
-                    'c': color,
-                    'ls': '-',
-                    'lw': 2.,
-                    'label': metadata[filename]['dataset']
+                    "c": color,
+                    "ls": "-",
+                    "lw": 2.0,
+                    "label": metadata[filename]["dataset"],
                 }
 
-            title = metadata[filename]['long_name']
-            if layer != '':
-                if model_cubes[filename][layer].coords('depth'):
-                    z_units = model_cubes[filename][layer].coord('depth').units
+            title = metadata[filename]["long_name"]
+            if layer != "":
+                if model_cubes[filename][layer].coords("depth"):
+                    z_units = model_cubes[filename][layer].coord("depth").units
                 else:
-                    z_units = ''
+                    z_units = ""
         # Add title, legend to plots
         if layer:
-            title = ' '.join([title, '(', str(layer), str(z_units), ')'])
+            title = " ".join([title, "(", str(layer), str(z_units), ")"])
         plt.title(title)
-        plt.legend(loc='best')
+        plt.legend(loc="best")
         plt.ylabel(str(model_cubes[filename][layer].units))
 
         # Saving files:
         path = diagtools.get_image_path(
             cfg,
             metadata[filename],
-            prefix='MultipleModels_',
-            suffix='_'.join(['timeseries',
-                             str(layer) + image_extention]),
+            prefix="MultipleModels_",
+            suffix="_".join(["timeseries", str(layer) + image_extention]),
             metadata_id_list=[
-                'field', 'short_name', 'preprocessor', 'diagnostic',
-                'start_year', 'end_year'
+                "field",
+                "short_name",
+                "preprocessor",
+                "diagnostic",
+                "start_year",
+                "end_year",
             ],
         )
 
         # Resize and add legend outside thew axes.
-        plt.gcf().set_size_inches(9., 6.)
+        plt.gcf().set_size_inches(9.0, 6.0)
         diagtools.add_legend_outside_right(
-            plot_details, plt.gca(), column_width=0.15)
+            plot_details, plt.gca(), column_width=0.15
+        )
 
-        logger.info('Saving plots to %s', path)
+        logger.info("Saving plots to %s", path)
         plt.savefig(path)
         plt.close()
 
         provenance_record = diagtools.prepare_provenance_record(
             cfg,
-            caption=f'Time series of {title}',
-            statistics=['mean'],
-            domain=['global'],
-            plot_type=['times'],
+            caption=f"Time series of {title}",
+            statistics=["mean"],
+            domain=["global"],
+            plot_type=["times"],
             ancestors=list(metadata.keys()),
         )
 
@@ -425,8 +484,8 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
-    for index, metadata_filename in enumerate(cfg['input_files']):
-        logger.info('metadata filename:\t%s', metadata_filename)
+    for index, metadata_filename in enumerate(cfg["input_files"]):
+        logger.info("metadata filename:\t%s", metadata_filename)
 
         metadatas = diagtools.get_input_files(cfg, index=index)
 
@@ -438,19 +497,19 @@ def main(cfg):
         )
 
         for filename in sorted(metadatas):
-            if metadatas[filename]['frequency'] != 'fx':
-                logger.info('-----------------')
+            if metadatas[filename]["frequency"] != "fx":
+                logger.info("-----------------")
                 logger.info(
-                    'model filenames:\t%s',
+                    "model filenames:\t%s",
                     filename,
                 )
 
                 ######
                 # Time series of individual model
                 make_time_series_plots(cfg, metadatas[filename], filename)
-    logger.info('Success')
+    logger.info("Success")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with run_diagnostic() as config:
         main(config)

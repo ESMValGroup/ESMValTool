@@ -42,14 +42,15 @@ and run the recipe, to make sure the CMOR checks pass without warnings or errors
 
 To test a pull request for a new CMORizer script:
 
-#. Download the data following the instructions included in the script and place
-   it in the ``RAWOBS`` path specified in your ``config-user.yml``
+#. Download the data following the instructions included in the script and
+   place it in the ``RAWOBS`` ``rootpath`` specified in your
+   :ref:`configuration <esmvalcore:config_options>`
 #. If available, use the downloading script by running
    ``esmvaltool data download --config_file <config-file>  <dataset>``
 #. Run the cmorization by running ``esmvaltool data format <config-file> <dataset>``
 #. Copy the resulting data to the ``OBS`` (for CMIP5 compliant data) or ``OBS6``
-   (for CMIP6 compliant data) path specified in your
-   ``config-user.yml``
+   (for CMIP6 compliant data) ``rootpath`` specified in your
+   :ref:`configuration <esmvalcore:config_options>`
 #. Run ``recipes/examples/recipe_check_obs.yml`` with the new dataset to check that
    the data can be used
 

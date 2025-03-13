@@ -92,7 +92,7 @@ CMIP6_no_tasmax: &cmip6_no_tasmax
   - {dataset: NorESM2-MM,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
   - {dataset: TaiESM1,         exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}
 
-CMIP6_DAY: &cmip6_day 
+CMIP6_DAY: &cmip6_day
   # - {dataset: E3SM-1-0,        exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 2099} # bad tasmin/tasmax
   # - {dataset: NorESM2-LM,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100} # bad tasmin/tasmax
   - {dataset: NorESM2-MM,      exp: [historical, ssp585], ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2100}

@@ -35,7 +35,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-None. 
+None.
 
 References
 ----------
@@ -49,5 +49,5 @@ Example plots
 .. figure::  /recipes/figures/cvdp/nam.prreg.ann.png
    :align:   center
 
-   Regression of the precipitation anomalies (PR) onto the Northern Annular 
+   Regression of the precipitation anomalies (PR) onto the Northern Annular
    Mode (NAM) index for the time period 1900-2005 for 30 CMIP5 models and observations (GPCP (pr) / IFS-Cy31r2 (psl); time period 1984-2005).

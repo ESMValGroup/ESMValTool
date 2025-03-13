@@ -1,4 +1,5 @@
 """Script to download GHCN-CAMS from its webpage."""
+
 import logging
 import os
 
@@ -7,8 +8,9 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -36,4 +38,5 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     os.makedirs(downloader.local_folder, exist_ok=True)
     downloader.download_file(
         "ftp://ftp.cdc.noaa.gov/Datasets/ghcncams/air.mon.mean.nc",
-        wget_options=[])
+        wget_options=[],
+    )

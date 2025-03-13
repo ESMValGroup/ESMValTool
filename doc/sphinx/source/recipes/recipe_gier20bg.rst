@@ -53,7 +53,7 @@ User settings in recipe
 
     * Optional diag_script_info attributes:
         * ``styleset``: styleset for color coding panels
-        * ``output_file_type``: output file type for plots, default: config_user -> png
+        * ``output_file_type``: output file type for plots, default: png
         * ``var_plotname``: NCL string formatting how variable should be named in plots
           defaults to short_name if not assigned.
 
@@ -64,7 +64,7 @@ User settings in recipe
           amplitude contour plot
 
     * Optional diag_script_info attributes:
-        * ``output_file_type``: output file type for plots, default: config_user -> png
+        * ``output_file_type``: output file type for plots, default: png
 
 #. Script xco2_analysis/main.ncl:
 
@@ -77,7 +77,7 @@ User settings in recipe
           accounting for the ensemble member named in "ensemble_refs"
 
     * Optional diag_script_info attributes:
-        * ``output_file_type``: output file type for plots, default: config_user -> png
+        * ``output_file_type``: output file type for plots, default: png
         * ``ensemble_refs``: list of model-ensemble pairs to denote which ensemble
           member to use for calculating multi-model mean. required if
           ensemble_mean = true
@@ -97,17 +97,17 @@ User settings in recipe
         * ``plot_var2_mean``: If True adds mean of seasonal cycle to panel as string.
 
     * Optional diag_script_info attributes:
-        * ``output_file_type``: output file type for plots, default: config_user -> png
+        * ``output_file_type``: output file type for plots, default: png
         * ``var_plotname``: String formatting how variable should be named in plots
           defaults to short_name if not assigned
 
 #. Script xco2_analysis/sat_masks.ncl:
 
     * Optional diag_script_info attributes:
-        * ``output_file_type``: output file type for plots, default: config_user -> png
+        * ``output_file_type``: output file type for plots, default: png
         * ``var_plotname``: String formatting how variable should be named in plots
           defaults to short_name if not assigned
-        * ``c3s_plots``: Missing value plots seperated by timeseries of c3s satellites
+        * ``c3s_plots``: Missing value plots separated by timeseries of c3s satellites
 
 #. Script xco2_analysis/station_comparison.ncl:
 
@@ -116,7 +116,7 @@ User settings in recipe
           first, then 2D variable, followed by surface stations
 
     * Optional diag_script_info attributes:
-        * ``output_file_type``: output file type for plots, default: config_user -> png
+        * ``output_file_type``: output file type for plots, default: png
         * ``var_plotnames``: String formatting how variables should be named in plots
           defaults to short_name if not assigned
         * ``overwrite_altitudes``: Give other altitude values than the ones attached in

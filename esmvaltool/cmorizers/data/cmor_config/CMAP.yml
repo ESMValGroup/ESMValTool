@@ -1,0 +1,21 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: CMAP
+  project_id: OBS6
+  tier: 2
+  version: "v1"
+  modeling_realm: reanaly
+  source: "https://psl.noaa.gov/data/gridded/data.cmap.html"
+  reference: "cmap"
+  comment: |
+    ''
+
+# Variables to CMORize
+variables:
+  # monthly frequency
+  pr_month:
+    short_name: pr
+    mip: Amon
+    raw: precip
+    file: "precip.mon.mean.nc"

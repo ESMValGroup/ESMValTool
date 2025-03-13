@@ -32,7 +32,7 @@ def organise_seasonal_data(model_data):
             value = season.data
             seasonal_data.append([f"{long_name} {season_name}", str(value)])
         average_value = cube.data.mean()
-        seasonal_data.append([f'{long_name} {"ann"}', str(average_value)])
+        seasonal_data.append([f"{long_name} {'ann'}", str(average_value)])
     return seasonal_data
 
 
@@ -82,8 +82,9 @@ def main(config):
         model_data = iris.load(filenames)
         seasonal_data = organise_seasonal_data(model_data)
 
-        write_seasonal_data_output(config["work_dir"], model_dataset,
-                                   seasonal_data)
+        write_seasonal_data_output(
+            config["work_dir"], model_dataset, seasonal_data
+        )
 
 
 if __name__ == "__main__":

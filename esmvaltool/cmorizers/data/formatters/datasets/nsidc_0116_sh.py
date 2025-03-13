@@ -15,9 +15,10 @@ Download and processing instructions
 
     Login required for download, but requires citation only to use
 """
+
 from esmvaltool.cmorizers.data.formatters.nsidc_common import cmorize
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cmorize(cfg, 'sh', in_dir, out_dir)
+    cmorize(cfg, "sh", in_dir, out_dir)

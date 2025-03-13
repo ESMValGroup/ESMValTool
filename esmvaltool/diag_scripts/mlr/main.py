@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Main Diagnostic script to create MLR models.
 
 Description
@@ -129,23 +128,25 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def _get_grouped_data(cfg, input_data):
     """Group input data to create individual MLR models for each group."""
-    group_attribute = cfg['group_metadata']
+    group_attribute = cfg["group_metadata"]
     logger.info(
         "Grouping training data by attribute '%s' and creating individual MLR "
-        "model for each group member", group_attribute)
+        "model for each group member",
+        group_attribute,
+    )
 
     # Group data using var types
-    var_types = group_metadata(input_data, 'var_type')
-    training_data = var_types.get('feature', []) + var_types.get('label', [])
+    var_types = group_metadata(input_data, "var_type")
+    training_data = var_types.get("feature", []) + var_types.get("label", [])
     prediction_data = []
     for pred_type in var_types:
-        if 'prediction_' in pred_type:
+        if "prediction_" in pred_type:
             prediction_data.extend(var_types[pred_type])
 
     # Create groups of dataset using training data
     grouped_datasets = group_metadata(training_data, group_attribute)
     grouped_input_data = {}
-    for (group_val, datasets) in grouped_datasets.items():
+    for group_val, datasets in grouped_datasets.items():
         datasets.extend(prediction_data)
         grouped_input_data[group_val] = datasets
     return (group_attribute, grouped_input_data)
@@ -153,56 +154,60 @@ def _get_grouped_data(cfg, input_data):
 
 def _get_pseudo_reality_data(cfg, input_data):
     """Get input data groups for pseudo-reality experiment."""
-    pseudo_reality_attrs = cfg['pseudo_reality']
+    pseudo_reality_attrs = cfg["pseudo_reality"]
     logger.info(
         "Grouping input data for pseudo-reality experiment using attributes "
-        "%s", pseudo_reality_attrs)
+        "%s",
+        pseudo_reality_attrs,
+    )
 
     # Extract training data
-    var_types = group_metadata(input_data, 'var_type')
-    training_data = var_types.get('feature', []) + var_types.get('label', [])
+    var_types = group_metadata(input_data, "var_type")
+    training_data = var_types.get("feature", []) + var_types.get("label", [])
 
     # Extract given prediction datasets
     original_prediction_data = []
     for pred_type in var_types:
-        if 'prediction_' in pred_type:
+        if "prediction_" in pred_type:
             original_prediction_data.extend(var_types[pred_type])
     original_prediction_data = deepcopy(original_prediction_data)
 
     # Add aliases and group datasets
     for dataset in training_data:
-        dataset['pseudo_reality_group'] = mlr.create_alias(
-            dataset, pseudo_reality_attrs)
-    grouped_datasets = group_metadata(training_data, 'pseudo_reality_group')
+        dataset["pseudo_reality_group"] = mlr.create_alias(
+            dataset, pseudo_reality_attrs
+        )
+    grouped_datasets = group_metadata(training_data, "pseudo_reality_group")
     grouped_input_data = {}
-    for (group_val, datasets) in grouped_datasets.items():
+    for group_val, datasets in grouped_datasets.items():
         logger.debug("Found pseudo reality group '%s'", group_val)
         pred_datasets = deepcopy(datasets)
         for dataset in pred_datasets:
-            dataset['prediction_name'] = group_val
-            if dataset['var_type'] == 'feature':
-                dataset['var_type'] = 'prediction_input'
+            dataset["prediction_name"] = group_val
+            if dataset["var_type"] == "feature":
+                dataset["var_type"] = "prediction_input"
             else:
-                dataset['var_type'] = 'prediction_reference'
+                dataset["var_type"] = "prediction_reference"
         remaining_datasets = []
         for data in training_data:
-            if data['pseudo_reality_group'] != group_val:
+            if data["pseudo_reality_group"] != group_val:
                 remaining_datasets.append(deepcopy(data))
-        grouped_input_data[group_val] = (pred_datasets + remaining_datasets +
-                                         original_prediction_data)
-    return ('pseudo-reality', grouped_input_data)
+        grouped_input_data[group_val] = (
+            pred_datasets + remaining_datasets + original_prediction_data
+        )
+    return ("pseudo-reality", grouped_input_data)
 
 
 def _get_raw_input_data(cfg):
     """Extract all input datasets."""
-    input_data = mlr.get_input_data(cfg,
-                                    pattern=cfg.get('pattern'),
-                                    ignore=cfg.get('ignore'))
-    select_kwargs = cfg.get('select_metadata', {})
+    input_data = mlr.get_input_data(
+        cfg, pattern=cfg.get("pattern"), ignore=cfg.get("ignore")
+    )
+    select_kwargs = cfg.get("select_metadata", {})
     if select_kwargs:
         logger.info("Only selecting files matching %s", select_kwargs)
         input_data = select_metadata(input_data, **select_kwargs)
-        paths = [d['filename'] for d in input_data]
+        paths = [d["filename"] for d in input_data]
         logger.debug("Remaining files:")
         logger.debug(pformat(paths))
     return input_data
@@ -210,38 +215,42 @@ def _get_raw_input_data(cfg):
 
 def _update_mlr_model(mlr_model_type, mlr_model):
     """Update MLR model parameters during run time."""
-    if mlr_model_type == 'gpr_sklearn':
-        new_kernel = (sklearn_kernels.ConstantKernel(1.0, (1e-5, 1e5)) *
-                      sklearn_kernels.RBF(1.0, (1e-5, 1e5)))
+    if mlr_model_type == "gpr_sklearn":
+        new_kernel = sklearn_kernels.ConstantKernel(
+            1.0, (1e-5, 1e5)
+        ) * sklearn_kernels.RBF(1.0, (1e-5, 1e5))
         mlr_model.update_parameters(final__regressor__kernel=new_kernel)
 
 
 def check_cfg(cfg):
     """Check recipe configuration for invalid options."""
-    if 'mlr_model_type' not in cfg:
+    if "mlr_model_type" not in cfg:
         raise ValueError(
-            "Necessary configuration option 'mlr_model_type' not given")
-    if cfg.get('group_metadata') and cfg.get('pseudo_reality'):
+            "Necessary configuration option 'mlr_model_type' not given"
+        )
+    if cfg.get("group_metadata") and cfg.get("pseudo_reality"):
         raise ValueError(
             "The options 'group_metadata' and 'pseudo_reality' may be used "
-            "together")
+            "together"
+        )
     mutual_exclusive_options = [
-        int('efecv_kwargs' in cfg),
-        int('grid_search_cv_param_grid' in cfg),
-        int('rfecv_kwargs' in cfg),
+        int("efecv_kwargs" in cfg),
+        int("grid_search_cv_param_grid" in cfg),
+        int("rfecv_kwargs" in cfg),
     ]
     if sum(mutual_exclusive_options) > 1:
         raise ValueError(
             "The options 'efecv_kwargs', 'grid_search_cv_param_grid' and "
-            "'rfecv_kwargs' may not be used together")
+            "'rfecv_kwargs' may not be used together"
+        )
 
 
 def get_grouped_data(cfg):
     """Get (grouped) input datasets according to given settings."""
     input_data = _get_raw_input_data(cfg)
-    if cfg.get('group_metadata'):
+    if cfg.get("group_metadata"):
         return _get_grouped_data(cfg, input_data)
-    if cfg.get('pseudo_reality'):
+    if cfg.get("pseudo_reality"):
         return _get_pseudo_reality_data(cfg, input_data)
     logger.info("Creating single MLR model")
     return (None, {None: input_data})
@@ -249,34 +258,40 @@ def get_grouped_data(cfg):
 
 def run_mlr_model(cfg, mlr_model_type, group_attribute, grouped_datasets):
     """Run MLR model(s) of desired type on input data."""
-    for (descr, datasets) in grouped_datasets.items():
+    for descr, datasets in grouped_datasets.items():
         if descr is not None:
-            attr = '' if group_attribute is None else f'{group_attribute} '
-            logger.info("Creating MLR model '%s' for %s'%s'", mlr_model_type,
-                        attr, descr)
-            cfg['sub_dir'] = descr
+            attr = "" if group_attribute is None else f"{group_attribute} "
+            logger.info(
+                "Creating MLR model '%s' for %s'%s'",
+                mlr_model_type,
+                attr,
+                descr,
+            )
+            cfg["sub_dir"] = descr
         mlr_model = MLRModel.create(mlr_model_type, datasets, **cfg)
 
         # Update MLR model parameters dynamically
         _update_mlr_model(mlr_model_type, mlr_model)
 
         # Fit and predict
-        if ('grid_search_cv_param_grid' in cfg and
-                cfg['grid_search_cv_param_grid']):
-            cv_param_grid = cfg['grid_search_cv_param_grid']
-            cv_kwargs = cfg.get('grid_search_cv_kwargs', {})
+        if (
+            "grid_search_cv_param_grid" in cfg
+            and cfg["grid_search_cv_param_grid"]
+        ):
+            cv_param_grid = cfg["grid_search_cv_param_grid"]
+            cv_kwargs = cfg.get("grid_search_cv_kwargs", {})
             mlr_model.grid_search_cv(cv_param_grid, **cv_kwargs)
-        elif 'efecv_kwargs' in cfg:
-            mlr_model.efecv(**cfg['efecv_kwargs'])
-        elif 'rfecv_kwargs' in cfg:
-            mlr_model.rfecv(**cfg['rfecv_kwargs'])
+        elif "efecv_kwargs" in cfg:
+            mlr_model.efecv(**cfg["efecv_kwargs"])
+        elif "rfecv_kwargs" in cfg:
+            mlr_model.rfecv(**cfg["rfecv_kwargs"])
         else:
             mlr_model.fit()
         predict_args = {
-            'save_mlr_model_error': cfg.get('save_mlr_model_error'),
-            'save_lime_importance': cfg.get('save_lime_importance'),
-            'save_propagated_errors': cfg.get('save_propagated_errors'),
-            **cfg.get('predict_kwargs', {}),
+            "save_mlr_model_error": cfg.get("save_mlr_model_error"),
+            "save_lime_importance": cfg.get("save_lime_importance"),
+            "save_propagated_errors": cfg.get("save_propagated_errors"),
+            **cfg.get("predict_kwargs", {}),
         }
         mlr_model.predict(**predict_args)
 
@@ -286,7 +301,7 @@ def run_mlr_model(cfg, mlr_model_type, group_attribute, grouped_datasets):
         mlr_model.test_normality_of_residuals()
 
         # Skip further output if desired
-        if not cfg.get('only_predict'):
+        if not cfg.get("only_predict"):
             mlr_model.export_training_data()
             mlr_model.export_prediction_data()
             run_mlr_model_plots(cfg, mlr_model, mlr_model_type)
@@ -299,21 +314,24 @@ def run_mlr_model_plots(cfg, mlr_model, mlr_model_type):
     mlr_model.plot_residuals_distribution()
     mlr_model.plot_prediction_errors()
     mlr_model.plot_scatterplots()
-    if not cfg.get('accept_only_scalar_data') and cfg.get(
-            'plot_partial_dependences'):
+    if not cfg.get("accept_only_scalar_data") and cfg.get(
+        "plot_partial_dependences"
+    ):
         mlr_model.plot_partial_dependences()
-    if 'gbr' in mlr_model_type:
+    if "gbr" in mlr_model_type:
         mlr_model.plot_feature_importance()
-        if ('rfecv_kwargs' not in cfg and 'efecv_kwargs' not in cfg):
+        if "rfecv_kwargs" not in cfg and "efecv_kwargs" not in cfg:
             mlr_model.plot_training_progress()
-    if 'gpr' in mlr_model_type and not cfg.get('accept_only_scalar_data'):
+    if "gpr" in mlr_model_type and not cfg.get("accept_only_scalar_data"):
         mlr_model.print_kernel_info()
-    is_linear_model = any([
-        'lasso' in mlr_model_type,
-        'linear' in mlr_model_type,
-        'ridge' in mlr_model_type,
-        mlr_model_type == 'huber',
-    ])
+    is_linear_model = any(
+        [
+            "lasso" in mlr_model_type,
+            "linear" in mlr_model_type,
+            "ridge" in mlr_model_type,
+            mlr_model_type == "huber",
+        ]
+    )
     if is_linear_model:
         mlr_model.plot_coefs()
         mlr_model.plot_feature_importance()
@@ -323,9 +341,9 @@ def run_mlr_model_plots(cfg, mlr_model, mlr_model_type):
 
 def run_mmm_model(cfg, group_attribute, grouped_datasets):
     """Run simple MMM model(s) on input data."""
-    for (descr, datasets) in grouped_datasets.items():
+    for descr, datasets in grouped_datasets.items():
         if descr is not None:
-            attr = '' if group_attribute is None else f'{group_attribute} '
+            attr = "" if group_attribute is None else f"{group_attribute} "
             logger.info("Creating MMM model for %s'%s'", attr, descr)
         create_mmm_model(cfg, input_data=datasets, description=descr)
 
@@ -333,17 +351,17 @@ def run_mmm_model(cfg, group_attribute, grouped_datasets):
 def main(cfg):
     """Run the diagnostic."""
     check_cfg(cfg)
-    mlr_model_type = cfg.pop('mlr_model_type')
+    mlr_model_type = cfg.pop("mlr_model_type")
     logger.info("Found MLR model type '%s'", mlr_model_type)
     (group_attr, grouped_datasets) = get_grouped_data(cfg)
-    if mlr_model_type == 'mmm':
+    if mlr_model_type == "mmm":
         run_mmm_model(cfg, group_attr, grouped_datasets)
     else:
         run_mlr_model(cfg, mlr_model_type, group_attr, grouped_datasets)
 
 
 # Run main function when this script is called
-if __name__ == '__main__':
+if __name__ == "__main__":
     mlr.ignore_warnings()
     with run_diagnostic() as config:
         main(config)

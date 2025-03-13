@@ -7,8 +7,9 @@ from dateutil import relativedelta
 from esmvaltool.cmorizers.data.downloaders.wget import NASADownloader
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -43,15 +44,19 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         year = loop_date.year
         downloader.download_folder(
             "https://goldsmr3.gesdisc.eosdis.nasa.gov/data/MERRA_MONTHLY/"
-            f"MAIMNXINT.5.2.0/{year}/")
+            f"MAIMNXINT.5.2.0/{year}/"
+        )
         downloader.download_folder(
             "https://goldsmr3.gesdisc.eosdis.nasa.gov/data/MERRA_MONTHLY/"
-            f"MAIMCPASM.5.2.0/{year}/")
+            f"MAIMCPASM.5.2.0/{year}/"
+        )
         downloader.download_folder(
             "https://goldsmr3.gesdisc.eosdis.nasa.gov/data/MERRA_MONTHLY/"
-            f"MATMNXRAD.5.2.0/{year}/")
+            f"MATMNXRAD.5.2.0/{year}/"
+        )
         downloader.download_folder(
             "https://goldsmr3.gesdisc.eosdis.nasa.gov/data/MERRA_MONTHLY/"
-            f"MATMFXCHM.5.2.0/{year}/")
+            f"MATMFXCHM.5.2.0/{year}/"
+        )
 
         loop_date += relativedelta.relativedelta(years=1)

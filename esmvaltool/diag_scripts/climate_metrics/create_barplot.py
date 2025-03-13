@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Diagnostic script to create simple multi-dataset barplots.
 
 Description
@@ -75,19 +74,19 @@ def _adjust_lightness(rgb_color, amount=0.6):
 
 def _get_data_for_label(cfg, cube):
     """Extract data from :class:`iris.cube.Cube`."""
-    datasets = cube.coord('dataset').points
+    datasets = cube.coord("dataset").points
     values = cube.data
 
     # Add mean if desired
-    if 'add_mean' in cfg:
+    if "add_mean" in cfg:
         logger.debug("Adding mean")
-        datasets = np.hstack((datasets, 'Mean'))
+        datasets = np.hstack((datasets, "Mean"))
         values = np.hstack((values, np.ma.mean(values)))
 
     # Sort if desired
-    if cfg.get('sort_ascending'):
+    if cfg.get("sort_ascending"):
         sort_idx = np.argsort(values)
-    elif cfg.get('sort_descending'):
+    elif cfg.get("sort_descending"):
         sort_idx = np.argsort(values)[::-1]
     else:
         sort_idx = np.argsort(datasets)
@@ -99,24 +98,27 @@ def _get_data_for_label(cfg, cube):
 
 def _get_ordered_dict(cfg, all_data):
     """Get desired order of data."""
-    if 'order' not in cfg:
+    if "order" not in cfg:
         return all_data
     new_dict = []
-    order = cfg['order']
+    order = cfg["order"]
     if len(order) != len(set(order)):
         raise ValueError(
-            f"Expected unique elements for 'order' option, got {order}")
+            f"Expected unique elements for 'order' option, got {order}"
+        )
     logger.info("Using order %s for barplot", order)
     if len(order) != len(all_data):
         raise ValueError(
             f"Expected {len(all_data):d} unique elements for 'order' option "
             f"(number of different labels for the barplot), got "
-            f"{len(order):d}")
+            f"{len(order):d}"
+        )
     for label in order:
         if label not in all_data:
             raise ValueError(
                 f"Got invalid label '{label}' in 'order' option, expected one "
-                f"of {list(all_data.keys())}")
+                f"of {list(all_data.keys())}"
+            )
         new_dict.append((label, all_data[label]))
     return OrderedDict(new_dict)
 
@@ -130,25 +132,26 @@ def get_all_data(cfg, input_files):
         all_files.append(filename)
         cube = iris.load_cube(filename)
         try:
-            cube.coord('dataset')
-        except iris.exceptions.CoordinateNotFoundError:
+            cube.coord("dataset")
+        except iris.exceptions.CoordinateNotFoundError as exc:
             raise iris.exceptions.CoordinateNotFoundError(
                 f"File '{filename}' does not contain necessary coordinate "
-                f"'dataset'")
+                f"'dataset'"
+            ) from exc
         logger.info("Processing '%s'", filename)
 
         # Add to data dictionary
-        if cfg.get('label_attribute') in cube.attributes:
-            label = cube.attributes[cfg.get('label_attribute')]
+        if cfg.get("label_attribute") in cube.attributes:
+            label = cube.attributes[cfg.get("label_attribute")]
         else:
             label = filename
         all_data[label] = _get_data_for_label(cfg, cube)
 
         # Check cube metadata
         new_metadata = {
-            'long_name': cube.long_name,
-            'units': cube.units,
-            'var_name': cube.var_name.upper(),
+            "long_name": cube.long_name,
+            "units": cube.units,
+            "var_name": cube.var_name.upper(),
         }
         if metadata is None:
             metadata = new_metadata
@@ -156,17 +159,18 @@ def get_all_data(cfg, input_files):
             if metadata != new_metadata:
                 raise ValueError(
                     f"Got differing metadata for the different input files, "
-                    f"{metadata} and {new_metadata}")
+                    f"{metadata} and {new_metadata}"
+                )
     return (all_data, all_files, metadata)
 
 
 def get_provenance_record(caption, ancestor_files, **kwargs):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
-        'caption': caption,
-        'authors': ['schlund_manuel'],
-        'references': ['acknow_project'],
-        'ancestors': ancestor_files,
+        "caption": caption,
+        "authors": ["schlund_manuel"],
+        "references": ["acknow_project"],
+        "ancestors": ancestor_files,
     }
     record.update(kwargs)
     return record
@@ -175,47 +179,50 @@ def get_provenance_record(caption, ancestor_files, **kwargs):
 def plot_data(cfg, all_data, metadata):
     """Create barplot."""
     logger.debug("Plotting barplot")
-    (_, axes) = plt.subplots(**cfg.get('subplots_kwargs', {}))
+    (_, axes) = plt.subplots(**cfg.get("subplots_kwargs", {}))
 
     # Plot
     all_pos = []
     x_labels = []
     offset = 0.0
     all_data = _get_ordered_dict(cfg, all_data)
-    for (label, xy_data) in all_data.items():
+    for label, xy_data in all_data.items():
         xy_data = (xy_data[0], xy_data[1])
         pos = np.arange(len(xy_data[0])) + offset + 0.5
-        bars = axes.bar(pos, xy_data[1], align='center', label=label)
+        bars = axes.bar(pos, xy_data[1], align="center", label=label)
         all_pos.extend(pos)
         x_labels.extend(xy_data[0])
         offset += len(pos) + 1.0
-        if 'Mean' in xy_data[0]:
-            mean_idx = np.nonzero(xy_data[0] == 'Mean')[0][0]
+        if "Mean" in xy_data[0]:
+            mean_idx = np.nonzero(xy_data[0] == "Mean")[0][0]
             bars[mean_idx].set_facecolor(
-                _adjust_lightness(bars[mean_idx].get_facecolor()[:3]))
+                _adjust_lightness(bars[mean_idx].get_facecolor()[:3])
+            )
 
     # Plot appearance
-    axes.set_title(metadata['long_name'])
+    axes.set_title(metadata["long_name"])
     axes.set_xticks(all_pos)
-    axes.set_xticklabels(x_labels, rotation=45.0, ha='right', size=4.0)
-    axes.tick_params(axis='x', which='major', pad=-5.0)
+    axes.set_xticklabels(x_labels, rotation=45.0, ha="right", size=4.0)
+    axes.tick_params(axis="x", which="major", pad=-5.0)
     axes.set_ylabel(f"{metadata['var_name']} / {metadata['units']}")
-    axes.set_ylim(cfg.get('y_range'))
-    if 'label_attribute' in cfg:
-        axes.legend(loc='upper right')
-    if cfg.get('value_labels'):
+    axes.set_ylim(cfg.get("y_range"))
+    if "label_attribute" in cfg:
+        axes.legend(loc="upper right")
+    if cfg.get("value_labels"):
         for rect in axes.patches:
-            axes.text(rect.get_x() + rect.get_width() / 2.0,
-                      rect.get_height() + 0.05,
-                      "{:.2f}".format(rect.get_height()),
-                      rotation=90.0,
-                      ha='center',
-                      va='bottom',
-                      size=5.0)
+            axes.text(
+                rect.get_x() + rect.get_width() / 2.0,
+                rect.get_height() + 0.05,
+                f"{rect.get_height():.2f}",
+                rotation=90.0,
+                ha="center",
+                va="bottom",
+                size=5.0,
+            )
 
     # Save plot
-    plot_path = get_plot_filename(metadata['var_name'], cfg)
-    plt.savefig(plot_path, **cfg['savefig_kwargs'])
+    plot_path = get_plot_filename(metadata["var_name"], cfg)
+    plt.savefig(plot_path, **cfg["savefig_kwargs"])
     logger.info("Wrote %s", plot_path)
     plt.close()
     return plot_path
@@ -224,14 +231,14 @@ def plot_data(cfg, all_data, metadata):
 def write_data(cfg, all_data, metadata):
     """Write netcdf file."""
     new_data = {}
-    for (label, xy_data) in all_data.items():
-        for (idx, dataset_name) in enumerate(xy_data[0]):
-            key = f'{label}-{dataset_name}'
+    for label, xy_data in all_data.items():
+        for idx, dataset_name in enumerate(xy_data[0]):
+            key = f"{label}-{dataset_name}"
             value = xy_data[1][idx]
             new_data[key] = value
-    netcdf_path = get_diagnostic_filename(metadata['var_name'], cfg)
+    netcdf_path = get_diagnostic_filename(metadata["var_name"], cfg)
     var_attrs = metadata.copy()
-    var_attrs['short_name'] = var_attrs.pop('var_name')
+    var_attrs["short_name"] = var_attrs.pop("var_name")
     io.save_scalar_data(new_data, netcdf_path, var_attrs)
     return netcdf_path
 
@@ -239,13 +246,16 @@ def write_data(cfg, all_data, metadata):
 def main(cfg):
     """Run the diagnostic."""
     cfg = deepcopy(cfg)
-    cfg.setdefault('savefig_kwargs', {
-        'dpi': 300,
-        'orientation': 'landscape',
-        'bbox_inches': 'tight',
-    })
-    sns.set_theme(**cfg.get('seaborn_settings', {}))
-    patterns = cfg.get('patterns')
+    cfg.setdefault(
+        "savefig_kwargs",
+        {
+            "dpi": 300,
+            "orientation": "landscape",
+            "bbox_inches": "tight",
+        },
+    )
+    sns.set_theme(**cfg.get("seaborn_settings", {}))
+    patterns = cfg.get("patterns")
     if patterns is None:
         input_files = io.get_all_ancestor_files(cfg)
     else:
@@ -266,14 +276,16 @@ def main(cfg):
     # Provenance
     caption = f"{metadata['long_name']} for multiple datasets."
     provenance_record = get_provenance_record(caption, all_files)
-    provenance_record.update({
-        'plot_types': ['bar'],
-    })
+    provenance_record.update(
+        {
+            "plot_types": ["bar"],
+        }
+    )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
         provenance_logger.log(plot_path, provenance_record)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with run_diagnostic() as config:
         main(config)

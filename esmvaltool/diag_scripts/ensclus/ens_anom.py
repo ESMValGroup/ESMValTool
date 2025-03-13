@@ -16,8 +16,9 @@ from esmvaltool.diag_scripts.ensclus.sel_season_area import (
 )
 
 
-def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
-             area, extreme):
+def ens_anom(
+    filenames, dir_output, name_outputs, varname, numens, season, area, extreme
+):
     """Ensemble anomalies.
 
     Computation of the ensemble anomalies based on the desired value
@@ -26,9 +27,10 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
     OUTPUT: NetCDF files of ensemble mean of climatology, selected value and
     anomaly maps.
     """
-    print('The name of the output files will be <variable>_{0}.txt'
-          .format(name_outputs))
-    print('Number of ensemble members: {0}'.format(numens))
+    print(
+        f"The name of the output files will be <variable>_{name_outputs}.txt"
+    )
+    print(f"Number of ensemble members: {numens}")
 
     outfiles = []
     # Reading the netCDF file of 3Dfield, for all the ensemble members
@@ -39,9 +41,9 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
         var, varunits, lat, lon, dates, _ = read_iris(ifile)
 
         # Convertion from kg m-2 s-1 to mm/day
-        if varunits == 'kg m-2 s-1':
+        if varunits == "kg m-2 s-1":
             var = var * 86400  # there are 86400 seconds in a day
-            varunits = 'mm/day'
+            varunits = "mm/day"
 
         # Selecting a season (DJF,DJFM,NDJFM,JJA)
         var_season, _ = sel_season(var, dates, season)
@@ -51,76 +53,80 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
 
         var_ens.append(var_area)
 
-    if varunits == 'kg m-2 s-1':
-        print('\nPrecipitation rate units were converted from kg m-2 s-1 '
-              'to mm/day')
+    if varunits == "kg m-2 s-1":
+        print(
+            "\nPrecipitation rate units were converted from kg m-2 s-1 "
+            "to mm/day"
+        )
 
-    print('The variable is {0} ({1})'.format(varname, varunits))
-    print('Original var shape: (time x lat x lon)={0}'.format(var.shape))
-    print('var shape after selecting season {0} and area {1}: '
-          '(time x lat x lon)={2}'.format(season, area, var_area.shape))
+    print(f"The variable is {varname} ({varunits})")
+    print(f"Original var shape: (time x lat x lon)={var.shape}")
+    print(
+        f"var shape after selecting season {season} and area {area}: "
+        f"(time x lat x lon)={var_area.shape}"
+    )
 
-    if extreme == 'mean':
+    if extreme == "mean":
         # Compute the time mean over the entire period, for each ens member
-        varextreme_ens = [np.nanmean(var_ens[i], axis=0)
-                          for i in range(numens)]
+        varextreme_ens = [
+            np.nanmean(var_ens[i], axis=0) for i in range(numens)
+        ]
 
     elif len(extreme.split("_")) == 2:
         # Compute the chosen percentile over the period, for each ens member
         quant = int(extreme.partition("th")[0])
-        varextreme_ens = [np.nanpercentile(var_ens[i], quant, axis=0)
-                          for i in range(numens)]
+        varextreme_ens = [
+            np.nanpercentile(var_ens[i], quant, axis=0) for i in range(numens)
+        ]
 
-    elif extreme == 'maximum':
+    elif extreme == "maximum":
         # Compute the maximum value over the period, for each ensemble member
         varextreme_ens = [np.nanmax(var_ens[i], axis=0) for i in range(numens)]
 
-    elif extreme == 'std':
+    elif extreme == "std":
         # Compute the standard deviation over the period, for each ens member
         varextreme_ens = [np.nanstd(var_ens[i], axis=0) for i in range(numens)]
 
-    elif extreme == 'trend':
+    elif extreme == "trend":
         # Compute the linear trend over the period, for each ensemble member
         trendmap = np.empty((var_ens[0].shape[1], var_ens[0].shape[2]))
         trendmap_ens = []
         for i in range(numens):
             for jla in range(var_ens[0].shape[1]):
                 for jlo in range(var_ens[0].shape[2]):
-                    slope, _, _, _, _ = \
-                        stats.linregress(range(var_ens[0].shape[0]),
-                                         var_ens[i][:, jla, jlo])
+                    slope, _, _, _, _ = stats.linregress(
+                        range(var_ens[0].shape[0]), var_ens[i][:, jla, jlo]
+                    )
                     trendmap[jla, jlo] = slope
             trendmap_ens.append(trendmap.copy())
         varextreme_ens = trendmap_ens
 
     varextreme_ens_np = np.array(varextreme_ens)
-    print('Anomalies are computed with respect to the {0}'.format(extreme))
+    print(f"Anomalies are computed with respect to the {extreme}")
 
     # Compute and save the anomalies with respect to the ensemble
     ens_anomalies = varextreme_ens_np - np.nanmean(varextreme_ens_np, axis=0)
-    varsave = 'ens_anomalies'
-    ofile = os.path.join(dir_output, 'ens_anomalies_{0}.nc'
-                         .format(name_outputs))
+    varsave = "ens_anomalies"
+    ofile = os.path.join(dir_output, f"ens_anomalies_{name_outputs}.nc")
     # print(ofile)
-    print('ens_anomalies shape: (numens x lat x lon)={0}'
-          .format(ens_anomalies.shape))
-    save_n_2d_fields(lat_area, lon_area, ens_anomalies, varsave,
-                     varunits, ofile)
+    print(f"ens_anomalies shape: (numens x lat x lon)={ens_anomalies.shape}")
+    save_n_2d_fields(
+        lat_area, lon_area, ens_anomalies, varsave, varunits, ofile
+    )
     outfiles.append(ofile)
     # Compute and save the climatology
     vartimemean_ens = [np.mean(var_ens[i], axis=0) for i in range(numens)]
     ens_climatologies = np.array(vartimemean_ens)
-    varsave = 'ens_climatologies'
-    ofile = os.path.join(dir_output, 'ens_climatologies_{0}.nc'
-                         .format(name_outputs))
-    save_n_2d_fields(lat_area, lon_area, ens_climatologies, varsave,
-                     varunits, ofile)
+    varsave = "ens_climatologies"
+    ofile = os.path.join(dir_output, f"ens_climatologies_{name_outputs}.nc")
+    save_n_2d_fields(
+        lat_area, lon_area, ens_climatologies, varsave, varunits, ofile
+    )
     outfiles.append(ofile)
     ens_extreme = varextreme_ens_np
-    varsave = 'ens_extreme'
-    ofile = os.path.join(dir_output, 'ens_extreme_{0}.nc'.format(name_outputs))
-    save_n_2d_fields(lat_area, lon_area, ens_extreme, varsave,
-                     varunits, ofile)
+    varsave = "ens_extreme"
+    ofile = os.path.join(dir_output, f"ens_extreme_{name_outputs}.nc")
+    save_n_2d_fields(lat_area, lon_area, ens_extreme, varsave, varunits, ofile)
     outfiles.append(ofile)
 
     return outfiles

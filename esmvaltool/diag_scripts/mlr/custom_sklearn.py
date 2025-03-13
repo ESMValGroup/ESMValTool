@@ -86,25 +86,25 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 _DEFAULT_TAGS = {
-    'array_api_support': False,
-    'non_deterministic': False,
-    'requires_positive_X': False,
-    'requires_positive_y': False,
-    'X_types': ['2darray'],
-    'poor_score': False,
-    'no_validation': False,
-    'multioutput': False,
+    "array_api_support": False,
+    "non_deterministic": False,
+    "requires_positive_X": False,
+    "requires_positive_y": False,
+    "X_types": ["2darray"],
+    "poor_score": False,
+    "no_validation": False,
+    "multioutput": False,
     "allow_nan": False,
-    'stateless': False,
-    'multilabel': False,
-    '_skip_test': False,
-    '_xfail_checks': False,
-    'multioutput_only': False,
-    'binary_only': False,
-    'requires_fit': True,
-    'preserves_dtype': [np.float64],
-    'requires_y': False,
-    'pairwise': False,
+    "stateless": False,
+    "multilabel": False,
+    "_skip_test": False,
+    "_xfail_checks": False,
+    "multioutput_only": False,
+    "binary_only": False,
+    "requires_fit": True,
+    "preserves_dtype": [np.float64],
+    "requires_y": False,
+    "pairwise": False,
 }
 
 
@@ -124,13 +124,21 @@ def _estimator_has(attr):
 
 def _determine_key_type(key, accept_slice=True):
     """Determine the data type of key."""
-    err_msg = ("No valid specification of the columns. Only a scalar, list or "
-               "slice of all integers or all strings, or boolean mask is "
-               "allowed")
+    err_msg = (
+        "No valid specification of the columns. Only a scalar, list or "
+        "slice of all integers or all strings, or boolean mask is "
+        "allowed"
+    )
 
-    dtype_to_str = {int: 'int', str: 'str', bool: 'bool', np.bool_: 'bool'}
-    array_dtype_to_str = {'i': 'int', 'u': 'int', 'b': 'bool', 'O': 'str',
-                          'U': 'str', 'S': 'str'}
+    dtype_to_str = {int: "int", str: "str", bool: "bool", np.bool_: "bool"}
+    array_dtype_to_str = {
+        "i": "int",
+        "u": "int",
+        "b": "bool",
+        "O": "str",
+        "U": "str",
+        "S": "str",
+    }
 
     if key is None:
         return None
@@ -142,8 +150,8 @@ def _determine_key_type(key, accept_slice=True):
     if isinstance(key, slice):
         if not accept_slice:
             raise TypeError(
-                'Only array-like or scalar are supported. '
-                'A Python slice was given.'
+                "Only array-like or scalar are supported. "
+                "A Python slice was given."
             )
         if key.start is None and key.stop is None:
             return None
@@ -163,7 +171,7 @@ def _determine_key_type(key, accept_slice=True):
         if len(key_type) != 1:
             raise ValueError(err_msg)
         return key_type.pop()
-    if hasattr(key, 'dtype'):
+    if hasattr(key, "dtype"):
         try:
             return array_dtype_to_str[key.dtype.kind]
         except KeyError as exc:
@@ -173,8 +181,8 @@ def _determine_key_type(key, accept_slice=True):
 
 def _array_indexing(array, key, key_dtype, axis):
     """Index an array or scipy.sparse consistently across numpy version."""
-    if np_version < parse_version('1.12') or sp.issparse(array):
-        if key_dtype == 'bool':
+    if np_version < parse_version("1.12") or sp.issparse(array):
+        if key_dtype == "bool":
             key = np.asarray(key)
     if isinstance(key, tuple):
         key = list(key)
@@ -186,7 +194,7 @@ def _list_indexing(x_data, key, key_dtype):
     if np.isscalar(key) or isinstance(key, slice):
         # key is a slice or a scalar
         return x_data[key]
-    if key_dtype == 'bool':
+    if key_dtype == "bool":
         # key is a boolean array-like
         return list(itertools.compress(x_data, key))
     # key is a integer array-like of key
@@ -195,13 +203,13 @@ def _list_indexing(x_data, key, key_dtype):
 
 def _pandas_indexing(x_data, key, key_dtype, axis):
     """Index a pandas dataframe or a series."""
-    if hasattr(key, 'shape'):
+    if hasattr(key, "shape"):
         key = np.asarray(key)
         key = key if key.flags.writeable else key.copy()
     elif isinstance(key, tuple):
         key = list(key)
     # check whether we should index with loc or iloc
-    indexer = x_data.iloc if key_dtype == 'int' else x_data.loc
+    indexer = x_data.iloc if key_dtype == "int" else x_data.loc
     return indexer[:, key] if axis else indexer[key]
 
 
@@ -218,10 +226,8 @@ def _safe_indexing(x_data, indices, *_, axis=0):
 
     indices_dtype = _determine_key_type(indices)
 
-    if axis == 0 and indices_dtype == 'str':
-        raise ValueError(
-            "String indexing is not supported with 'axis=0'"
-        )
+    if axis == 0 and indices_dtype == "str":
+        raise ValueError("String indexing is not supported with 'axis=0'")
 
     if axis == 1 and x_data.ndim != 2:
         raise ValueError(
@@ -230,7 +236,7 @@ def _safe_indexing(x_data, indices, *_, axis=0):
             f"Got {type(x_data)} instead with {x_data.ndim} dimension(s)."
         )
 
-    if axis == 1 and indices_dtype == 'str' and not hasattr(x_data, 'loc'):
+    if axis == 1 and indices_dtype == "str" and not hasattr(x_data, "loc"):
         raise ValueError(
             "Specifying the columns using strings is only supported for "
             "pandas DataFrames"
@@ -245,9 +251,11 @@ def _safe_indexing(x_data, indices, *_, axis=0):
 
 def _is_arraylike(input_array):
     """Check whether the input is array-like."""
-    return (hasattr(input_array, '__len__') or
-            hasattr(input_array, 'shape') or
-            hasattr(input_array, '__array__'))
+    return (
+        hasattr(input_array, "__len__")
+        or hasattr(input_array, "shape")
+        or hasattr(input_array, "__array__")
+    )
 
 
 def _make_indexable(iterable):
@@ -264,17 +272,17 @@ def _make_indexable(iterable):
 def _num_samples(x_data):
     """Return number of samples in array-like x_data."""
     message = f"Expected sequence or array-like, got {type(x_data)}"
-    if hasattr(x_data, 'fit') and callable(x_data.fit):
+    if hasattr(x_data, "fit") and callable(x_data.fit):
         # Don't get num_samples from an ensembles length!
         raise TypeError(message)
 
-    if not hasattr(x_data, '__len__') and not hasattr(x_data, 'shape'):
-        if hasattr(x_data, '__array__'):
+    if not hasattr(x_data, "__len__") and not hasattr(x_data, "shape"):
+        if hasattr(x_data, "__array__"):
             x_data = np.asarray(x_data)
         else:
             raise TypeError(message)
 
-    if hasattr(x_data, 'shape') and x_data.shape is not None:
+    if hasattr(x_data, "shape") and x_data.shape is not None:
         if len(x_data.shape) == 0:
             raise TypeError(
                 f"Singleton array {x_data!r} cannot be considered a valid "
@@ -295,8 +303,9 @@ def _check_fit_params(x_data, fit_params, indices=None):
     """Check and validate the parameters passed during ``fit``."""
     fit_params_validated = {}
     for param_key, param_value in fit_params.items():
-        if (not _is_arraylike(param_value) or
-                _num_samples(param_value) != _num_samples(x_data)):
+        if not _is_arraylike(param_value) or _num_samples(
+            param_value
+        ) != _num_samples(x_data):
             # Non-indexable pass-through (for now for backward-compatibility).
             # https://github.com/scikit-learn/scikit-learn/issues/15805
             fit_params_validated[param_key] = param_value
@@ -336,16 +345,18 @@ def _safe_tags(estimator, key=None):
 def _is_pairwise(estimator):
     """Return ``True`` if estimator is pairwise."""
     with warnings.catch_warnings():
-        warnings.filterwarnings('ignore', category=FutureWarning)
-        has_pairwise_attribute = hasattr(estimator, '_pairwise')
-        pairwise_attribute = getattr(estimator, '_pairwise', False)
+        warnings.filterwarnings("ignore", category=FutureWarning)
+        has_pairwise_attribute = hasattr(estimator, "_pairwise")
+        pairwise_attribute = getattr(estimator, "_pairwise", False)
     pairwise_tag = _safe_tags(estimator, key="pairwise")
 
     if has_pairwise_attribute:
         if pairwise_attribute != pairwise_tag:
             warnings.warn(
                 "_pairwise attribute is inconsistent with tags. Set the "
-                "estimator tags of your estimator instead", FutureWarning,
+                "estimator tags of your estimator instead",
+                FutureWarning,
+                stacklevel=2,
             )
         return pairwise_attribute
 
@@ -357,8 +368,10 @@ def _safe_split(estimator, x_data, y_data, indices, train_indices=None):
     """Create subset of dataset and properly handle kernels."""
     if _is_pairwise(estimator):
         if not hasattr(x_data, "shape"):
-            raise ValueError("Precomputed kernels or affinity matrices have "
-                             "to be passed as arrays or sparse matrices.")
+            raise ValueError(
+                "Precomputed kernels or affinity matrices have "
+                "to be passed as arrays or sparse matrices."
+            )
         # x_data is a precomputed square kernel matrix
         if x_data.shape[0] != x_data.shape[1]:
             raise ValueError("x_data should be a square kernel matrix")
@@ -377,9 +390,18 @@ def _safe_split(estimator, x_data, y_data, indices, train_indices=None):
     return (x_subset, y_subset)
 
 
-def _fit_and_score_weighted(estimator, x_data, y_data, scorer, train, test,
-                            parameters, fit_params, error_score=np.nan,
-                            sample_weights=None):
+def _fit_and_score_weighted(
+    estimator,
+    x_data,
+    y_data,
+    scorer,
+    train,
+    test,
+    parameters,
+    fit_params,
+    error_score=np.nan,
+    sample_weights=None,
+):
     """Expand :func:`sklearn.model_selection._validation._fit_and_score`."""
     # Adjust length of sample weights
     fit_params = fit_params if fit_params is not None else {}
@@ -390,7 +412,7 @@ def _fit_and_score_weighted(estimator, x_data, y_data, scorer, train, test,
         # are estimators (like pipeline steps)
         # because pipeline doesn't clone steps in fit
         cloned_parameters = {}
-        for (key, val) in parameters.items():
+        for key, val in parameters.items():
             cloned_parameters[key] = clone(val, safe=False)
 
         estimator = estimator.set_params(**cloned_parameters)
@@ -408,7 +430,7 @@ def _fit_and_score_weighted(estimator, x_data, y_data, scorer, train, test,
         else:
             estimator.fit(x_train, y_train, **fit_params)
     except Exception as exc:
-        if error_score == 'raise':
+        if error_score == "raise":
             raise
         if isinstance(error_score, numbers.Number):
             test_score = error_score
@@ -416,15 +438,23 @@ def _fit_and_score_weighted(estimator, x_data, y_data, scorer, train, test,
                 f"Estimator fit failed. The score on this train-test "
                 f"partition for these parameters will be set to "
                 f"{error_score:f}. Details: \n{format_exc()}",
-                FitFailedWarning)
+                FitFailedWarning,
+                stacklevel=2,
+            )
         else:
             raise ValueError(
                 "error_score must be the string 'raise' or a "
                 "numeric value. (Hint: if using 'raise', please "
-                "make sure that it has been spelled correctly.)") from exc
+                "make sure that it has been spelled correctly.)"
+            ) from exc
     else:
-        test_score = _score_weighted(estimator, x_test, y_test, scorer,
-                                     sample_weights=sample_weights_test)
+        test_score = _score_weighted(
+            estimator,
+            x_test,
+            y_test,
+            scorer,
+            sample_weights=sample_weights_test,
+        )
 
     return test_score
 
@@ -433,19 +463,21 @@ def _get_fit_parameters(fit_kwargs, steps, cls):
     """Retrieve fit parameters from ``fit_kwargs``."""
     params = {name: {} for (name, step) in steps if step is not None}
     step_names = list(params.keys())
-    for (param_name, param_val) in fit_kwargs.items():
-        param_split = param_name.split('__', 1)
+    for param_name, param_val in fit_kwargs.items():
+        param_split = param_name.split("__", 1)
         if len(param_split) != 2:
             raise ValueError(
                 f"Fit parameters for {cls} have to be given in the form "
                 f"'s__p', where 's' is the name of the step and 'p' the name "
-                f"of the parameter, got '{param_name}'")
+                f"of the parameter, got '{param_name}'"
+            )
         try:
             params[param_split[0]][param_split[1]] = param_val
         except KeyError as exc:
             raise ValueError(
                 f"Expected one of {step_names} for step of fit parameter, got "
-                f"'{param_split[0]}' for parameter '{param_name}'") from exc
+                f"'{param_split[0]}' for parameter '{param_name}'"
+            ) from exc
     return params
 
 
@@ -456,9 +488,10 @@ def _score_weighted(estimator, x_test, y_test, scorer, sample_weights=None):
     else:
         score = scorer(estimator, x_test, y_test, sample_weight=sample_weights)
 
-    error_msg = ("Scoring must return a number, got %s (%s) instead. "
-                 "(scorer=%s)")
-    if hasattr(score, 'item'):
+    error_msg = (
+        "Scoring must return a number, got %s (%s) instead. (scorer=%s)"
+    )
+    if hasattr(score, "item"):
         with suppress(ValueError):
             # e.g. unwrap memmapped scalars
             score = score.item()
@@ -471,8 +504,8 @@ def _split_fit_kwargs(fit_kwargs, train_idx, test_idx):
     """Get split fit kwargs for single CV step."""
     fit_kwargs_train = {}
     fit_kwargs_test = {}
-    for (key, val) in fit_kwargs.items():
-        if 'sample_weight' in key and 'sample_weight_eval_set' not in key:
+    for key, val in fit_kwargs.items():
+        if "sample_weight" in key and "sample_weight_eval_set" not in key:
             fit_kwargs_train[key] = deepcopy(val)[train_idx]
             fit_kwargs_test[key] = deepcopy(val)[test_idx]
         else:
@@ -481,31 +514,36 @@ def _split_fit_kwargs(fit_kwargs, train_idx, test_idx):
     return (fit_kwargs_train, fit_kwargs_test)
 
 
-def _rfe_single_fit(rfe, estimator, x_data, y_data, train, test, scorer,
-                    **fit_kwargs):
+def _rfe_single_fit(
+    rfe, estimator, x_data, y_data, train, test, scorer, **fit_kwargs
+):
     """Return the score for a fit across one fold."""
     (x_train, y_train) = _safe_split(estimator, x_data, y_data, train)
     (x_test, y_test) = _safe_split(estimator, x_data, y_data, test, train)
-    (fit_kwargs_train, fit_kwargs_test) = _split_fit_kwargs(fit_kwargs, train,
-                                                            test)
-    if 'sample_weight' in fit_kwargs_test:
-        fit_kwargs_test['sample_weights'] = fit_kwargs_test.pop(
-            'sample_weight')
+    (fit_kwargs_train, fit_kwargs_test) = _split_fit_kwargs(
+        fit_kwargs, train, test
+    )
+    if "sample_weight" in fit_kwargs_test:
+        fit_kwargs_test["sample_weights"] = fit_kwargs_test.pop(
+            "sample_weight"
+        )
 
     def step_score(estimator, features):
         """Score for a single step in the recursive feature elimination."""
-        return _score_weighted(estimator, x_test[:, features], y_test, scorer,
-                               **fit_kwargs_test)
+        return _score_weighted(
+            estimator, x_test[:, features], y_test, scorer, **fit_kwargs_test
+        )
 
-    return rfe._fit(x_train, y_train, step_score=step_score,
-                    **fit_kwargs_train).scores_
+    return rfe._fit(
+        x_train, y_train, step_score=step_score, **fit_kwargs_train
+    ).scores_
 
 
 def _map_features(features, support):
     """Map old features indices to new ones using boolean mask."""
     feature_mapping = {}
     new_idx = 0
-    for (old_idx, supported) in enumerate(support):
+    for old_idx, supported in enumerate(support):
         if supported:
             val = new_idx
             new_idx += 1
@@ -525,35 +563,48 @@ def _update_transformers_param(estimator, support):
     all_params = estimator.get_params()
     params = []
     for key in all_params:
-        if key.endswith('transformers'):
+        if key.endswith("transformers"):
             params.append(key)
             if isinstance(estimator, (Pipeline, AdvancedPipeline)):
-                step = estimator.named_steps[key.split('__')[0]]
+                step = estimator.named_steps[key.split("__")[0]]
                 if not isinstance(step, ColumnTransformer):
                     raise TypeError(
                         f"Found 'transformers' parameter ('{key}'), but the "
                         f"corresponding pipeline step is not a "
-                        f"ColumnTransformer (got '{type(step)}')")
+                        f"ColumnTransformer (got '{type(step)}')"
+                    )
             else:
                 raise TypeError(
                     f"Found 'transformers' parameter ('{key}'), but the "
                     f"corresponding estimator is not a Pipeline or "
-                    f"AdvancedPipeline")
+                    f"AdvancedPipeline"
+                )
     new_params = {}
     for param in params:
         new_transformers = []
         for transformer in all_params[param]:
             new_columns = _map_features(transformer[2], support)
             new_transformers.append(
-                (transformer[0], transformer[1], new_columns))
+                (transformer[0], transformer[1], new_columns)
+            )
         new_params[param] = new_transformers
     estimator.set_params(**new_params)
 
 
-def cross_val_score_weighted(estimator, x_data, y_data=None, groups=None,
-                             scoring=None, cv=None, n_jobs=None, verbose=0,
-                             fit_params=None, pre_dispatch='2*n_jobs',
-                             error_score=np.nan, sample_weights=None):
+def cross_val_score_weighted(
+    estimator,
+    x_data,
+    y_data=None,
+    groups=None,
+    scoring=None,
+    cv=None,
+    n_jobs=None,
+    verbose=0,
+    fit_params=None,
+    pre_dispatch="2*n_jobs",
+    error_score=np.nan,
+    sample_weights=None,
+):
     """Expand :func:`sklearn.model_selection.cross_val_score`."""
     scorer = check_scoring(estimator, scoring=scoring)
     (x_data, y_data, groups) = indexable(x_data, y_data, groups)
@@ -562,13 +613,24 @@ def cross_val_score_weighted(estimator, x_data, y_data=None, groups=None,
 
     # We clone the estimator to make sure that all the folds are
     # independent, and that it is pickle-able.
-    parallel = Parallel(n_jobs=n_jobs, verbose=verbose,
-                        pre_dispatch=pre_dispatch)
+    parallel = Parallel(
+        n_jobs=n_jobs, verbose=verbose, pre_dispatch=pre_dispatch
+    )
     scores = parallel(
         delayed(_fit_and_score_weighted)(
-            clone(estimator), x_data, y_data, scorer, train, test, None,
-            fit_params, error_score=error_score, sample_weights=sample_weights)
-        for train, test in cv.split(x_data, y_data, groups))
+            clone(estimator),
+            x_data,
+            y_data,
+            scorer,
+            train,
+            test,
+            None,
+            fit_params,
+            error_score=error_score,
+            sample_weights=sample_weights,
+        )
+        for train, test in cv.split(x_data, y_data, groups)
+    )
     return np.array(scores)
 
 
@@ -579,7 +641,8 @@ def get_rfecv_transformer(rfecv_estimator):
     except NotFittedError as exc:
         raise NotFittedError(
             "RFECV instance used to initialize FeatureSelectionTransformer "
-            "must be fitted") from exc
+            "must be fitted"
+        ) from exc
     transformer = FeatureSelectionTransformer(
         grid_scores=rfecv_estimator.grid_scores_,
         n_features=rfecv_estimator.n_features_,
@@ -592,7 +655,8 @@ def get_rfecv_transformer(rfecv_estimator):
 def perform_efecv(estimator, x_data, y_data, **kwargs):
     """Perform exhaustive feature selection."""
     x_data, y_data = check_X_y(
-        x_data, y_data, ensure_min_features=2, force_all_finite='allow-nan')
+        x_data, y_data, ensure_min_features=2, force_all_finite="allow-nan"
+    )
     n_all_features = x_data.shape[1]
 
     # Iterate over all possible feature combinations
@@ -600,7 +664,9 @@ def perform_efecv(estimator, x_data, y_data, **kwargs):
     supports.remove(tuple([False] * n_all_features))
     logger.info(
         "Testing all %i possible feature combinations for exhaustive feature "
-        "selection", len(supports))
+        "selection",
+        len(supports),
+    )
     grid_scores = []
     for support in supports:
         support = np.array(support)
@@ -609,11 +675,15 @@ def perform_efecv(estimator, x_data, y_data, **kwargs):
         # Evaluate estimator on new subset of features
         new_estimator = clone(estimator)
         _update_transformers_param(new_estimator, support)
-        scores = cross_val_score_weighted(new_estimator, x_data[:, features],
-                                          y_data, **kwargs)
+        scores = cross_val_score_weighted(
+            new_estimator, x_data[:, features], y_data, **kwargs
+        )
         grid_scores.append(np.mean(scores))
-        logger.debug("Fitted estimator with %i features, CV score was %.5f",
-                     support.sum(), np.mean(scores))
+        logger.debug(
+            "Fitted estimator with %i features, CV score was %.5f",
+            support.sum(),
+            np.mean(scores),
+        )
 
     # Final parameters
     grid_scores = np.array(grid_scores)
@@ -623,17 +693,24 @@ def perform_efecv(estimator, x_data, y_data, **kwargs):
     n_features = support.sum()
     ranking = np.where(support, 1, 2)
     transformer = FeatureSelectionTransformer(
-        grid_scores=grid_scores, n_features=n_features, ranking=ranking,
-        support=support)
+        grid_scores=grid_scores,
+        n_features=n_features,
+        ranking=ranking,
+        support=support,
+    )
 
     # Get final estimator
     best_estimator = clone(estimator)
     _update_transformers_param(best_estimator, support)
-    best_estimator.fit(x_data[:, features], y_data,
-                       **kwargs.get('fit_params', {}))
+    best_estimator.fit(
+        x_data[:, features], y_data, **kwargs.get("fit_params", {})
+    )
 
-    logger.info("Found optimal score %.5f for %i features",
-                grid_scores[best_idx], n_features)
+    logger.info(
+        "Found optimal score %.5f for %i features",
+        grid_scores[best_idx],
+        n_features,
+    )
     return (best_estimator, transformer)
 
 
@@ -657,14 +734,16 @@ class AdvancedPipeline(Pipeline):
             raise TypeError(
                 f"Expected estimator of type "
                 f"{AdvancedTransformedTargetRegressor} for final step of "
-                f"pipeline, got {final_step.__class__}")
+                f"pipeline, got {final_step.__class__}"
+            )
 
     def fit_target_transformer_only(self, y_data, **fit_kwargs):
         """Fit only ``transform`` step of of target regressor."""
         self._check_final_step()
         reg = self.steps[-1][1]
-        fit_params = _get_fit_parameters(fit_kwargs, self.steps,
-                                         self.__class__)
+        fit_params = _get_fit_parameters(
+            fit_kwargs, self.steps, self.__class__
+        )
         reg_fit_params = fit_params[self.steps[-1][0]]
         reg.fit_transformer_only(y_data, **reg_fit_params)
 
@@ -673,7 +752,7 @@ class AdvancedPipeline(Pipeline):
         # Temporarily set the final estimator to 'passthrough' to avoid fitting
         # it
         final_step = self.steps[-1]
-        self.steps[-1] = (final_step[0], 'passthrough')
+        self.steps[-1] = (final_step[0], "passthrough")
 
         # This will now fit all transformers, but not the final estimator
         self.fit(x_data, y_data, **fit_kwargs)
@@ -685,7 +764,7 @@ class AdvancedPipeline(Pipeline):
 
     def transform_only(self, x_data):
         """Only perform ``transform`` steps of Pipeline."""
-        for (_, transformer) in self.steps[:-1]:
+        for _, transformer in self.steps[:-1]:
             x_data = transformer.transform(x_data)
         return x_data
 
@@ -693,11 +772,12 @@ class AdvancedPipeline(Pipeline):
         """Only perform ``transform`` steps of target regressor."""
         self._check_final_step()
         reg = self.steps[-1][1]
-        if not hasattr(reg, 'transformer_'):
+        if not hasattr(reg, "transformer_"):
             raise NotFittedError(
                 "Transforming target not possible, final regressor is not "
                 "fitted yet, call fit() or fit_target_transformer_only() "
-                "first")
+                "first"
+            )
         if y_data.ndim == 1:
             y_data = y_data.reshape(-1, 1)
         y_trans = reg.transformer_.transform(y_data)
@@ -719,9 +799,13 @@ class AdvancedRFE(RFE):
         # step_score is not exposed to users
         # and is used when implementing AdvancedRFECV
         # self.scores_ will not be calculated when calling _fit through fit
-        x_data, y_data = check_X_y(x_data, y_data, "csc",
-                                   ensure_min_features=2,
-                                   force_all_finite=False)
+        x_data, y_data = check_X_y(
+            x_data,
+            y_data,
+            "csc",
+            ensure_min_features=2,
+            force_all_finite=False,
+        )
 
         # Initialization
         n_features = x_data.shape[1]
@@ -761,11 +845,13 @@ class AdvancedRFE(RFE):
             try:
                 coefs = estimator.coef_
             except (AttributeError, KeyError):
-                coefs = getattr(estimator, 'feature_importances_', None)
+                coefs = getattr(estimator, "feature_importances_", None)
             if coefs is None:
-                raise RuntimeError("The classifier does not expose "
-                                   "'coef_' or 'feature_importances_' "
-                                   "attributes")
+                raise RuntimeError(
+                    "The classifier does not expose "
+                    "'coef_' or 'feature_importances_' "
+                    "attributes"
+                )
 
             # Get ranks
             if coefs.ndim > 1:
@@ -781,7 +867,8 @@ class AdvancedRFE(RFE):
                     f"{self.__class__}, got {len(features):d} features for ",
                     f"fit(), but only {len(ranks):d} elements for 'coefs_' / "
                     f"'feature_importances_' are provided. Estimator:\n"
-                    f"{estimator}")
+                    f"{estimator}",
+                )
 
             # for sparse case ranks is matrix
             ranks = np.ravel(ranks)
@@ -816,15 +903,24 @@ class AdvancedRFE(RFE):
     def predict(self, x_data, **predict_kwargs):
         """Expand :meth:`predict()` to accept kwargs."""
         check_is_fitted(self)
-        return self.estimator_.predict(self.transform(x_data),
-                                       **predict_kwargs)
+        return self.estimator_.predict(
+            self.transform(x_data), **predict_kwargs
+        )
 
 
 class AdvancedRFECV(AdvancedRFE):
     """Expand :class:`sklearn.feature_selection.RFECV`."""
 
-    def __init__(self, estimator, step=1, min_features_to_select=1, cv=None,
-                 scoring=None, verbose=0, n_jobs=None):
+    def __init__(
+        self,
+        estimator,
+        step=1,
+        min_features_to_select=1,
+        cv=None,
+        scoring=None,
+        verbose=0,
+        n_jobs=None,
+    ):
         """Original constructor of :class:`sklearn.feature_selection.RFECV`."""
         self.estimator = estimator
         self.step = step
@@ -837,12 +933,17 @@ class AdvancedRFECV(AdvancedRFE):
     def fit(self, x_data, y_data, groups=None, **fit_kwargs):
         """Expand :meth:`fit` to accept kwargs."""
         x_data, y_data = check_X_y(
-            x_data, y_data, "csr", ensure_min_features=2,
-            force_all_finite=False)
+            x_data,
+            y_data,
+            "csr",
+            ensure_min_features=2,
+            force_all_finite=False,
+        )
 
         # Initialization
-        cv = check_cv(self.cv, y_data,
-                      classifier=is_classifier(self.estimator))
+        cv = check_cv(
+            self.cv, y_data, classifier=is_classifier(self.estimator)
+        )
         scorer = check_scoring(self.estimator, scoring=self.scoring)
         n_features = x_data.shape[1]
 
@@ -855,9 +956,12 @@ class AdvancedRFECV(AdvancedRFE):
 
         # Build an AdvancedRFE object, which will evaluate and score each
         # possible feature count, down to self.min_features_to_select
-        rfe = AdvancedRFE(estimator=self.estimator,
-                          n_features_to_select=self.min_features_to_select,
-                          step=self.step, verbose=self.verbose)
+        rfe = AdvancedRFE(
+            estimator=self.estimator,
+            n_features_to_select=self.min_features_to_select,
+            step=self.step,
+            verbose=self.verbose,
+        )
 
         # Determine the number of subsets of features by fitting across
         # the train folds and choosing the "features_to_select" parameter
@@ -878,21 +982,33 @@ class AdvancedRFECV(AdvancedRFE):
             func = delayed(_rfe_single_fit)
 
         scores = parallel(
-            func(rfe, self.estimator, x_data, y_data, train, test, scorer,
-                 **fit_kwargs)
-            for train, test in cv.split(x_data, y_data, groups))
+            func(
+                rfe,
+                self.estimator,
+                x_data,
+                y_data,
+                train,
+                test,
+                scorer,
+                **fit_kwargs,
+            )
+            for train, test in cv.split(x_data, y_data, groups)
+        )
 
         scores = np.sum(scores, axis=0)
         scores_rev = scores[::-1]
         argmax_idx = len(scores) - np.argmax(scores_rev) - 1
         n_features_to_select = max(
-            n_features - (argmax_idx * step),
-            self.min_features_to_select)
+            n_features - (argmax_idx * step), self.min_features_to_select
+        )
 
         # Re-execute an elimination with best_k over the whole set
-        rfe = AdvancedRFE(estimator=self.estimator,
-                          n_features_to_select=n_features_to_select,
-                          step=self.step, verbose=self.verbose)
+        rfe = AdvancedRFE(
+            estimator=self.estimator,
+            n_features_to_select=n_features_to_select,
+            step=self.step,
+            verbose=self.verbose,
+        )
 
         rfe.fit(x_data, y_data, **fit_kwargs)
 
@@ -907,8 +1023,9 @@ class AdvancedRFECV(AdvancedRFE):
         # Fixing a normalization error, n is equal to
         # get_n_splits(x_data, y_data) - 1 here, the scores are normalized by
         # get_n_splits(x_data, y_data)
-        self.grid_scores_ = scores[::-1] / cv.get_n_splits(x_data, y_data,
-                                                           groups)
+        self.grid_scores_ = scores[::-1] / cv.get_n_splits(
+            x_data, y_data, groups
+        )
         return self
 
 
@@ -927,8 +1044,9 @@ class AdvancedTransformedTargetRegressor(TransformedTargetRegressor):
 
     def fit(self, x_data, y_data, **fit_kwargs):
         """Expand :meth:`fit` to accept kwargs."""
-        (y_2d,
-         regressor_kwargs) = self.fit_transformer_only(y_data, **fit_kwargs)
+        (y_2d, regressor_kwargs) = self.fit_transformer_only(
+            y_data, **fit_kwargs
+        )
 
         # Transform y and convert back to 1d array if necessary
         y_trans = self.transformer_.transform(y_2d)
@@ -947,11 +1065,13 @@ class AdvancedTransformedTargetRegressor(TransformedTargetRegressor):
 
     def fit_transformer_only(self, y_data, **fit_kwargs):
         """Fit only ``transformer`` step."""
-        y_data = check_array(y_data,
-                             accept_sparse=False,
-                             force_all_finite=True,
-                             ensure_2d=False,
-                             dtype='numeric')
+        y_data = check_array(
+            y_data,
+            accept_sparse=False,
+            force_all_finite=True,
+            ensure_2d=False,
+            dtype="numeric",
+        )
         self._training_dim = y_data.ndim
 
         # Process kwargs
@@ -969,23 +1089,27 @@ class AdvancedTransformedTargetRegressor(TransformedTargetRegressor):
     def predict(self, x_data, always_return_1d=True, **predict_kwargs):
         """Expand :meth:`predict()` to accept kwargs."""
         check_is_fitted(self)
-        if not hasattr(self, 'regressor_'):
+        if not hasattr(self, "regressor_"):
             raise NotFittedError(
                 f"Regressor of {self.__class__} is not fitted yet, call fit() "
-                f"first")
+                f"first"
+            )
 
         # Kwargs for returning variance or covariance
-        if ('return_std' in predict_kwargs and 'return_std' in getfullargspec(
-                self.regressor_.predict).args):
+        if (
+            "return_std" in predict_kwargs
+            and "return_std" in getfullargspec(self.regressor_.predict).args
+        ):
             raise NotImplementedError(
                 f"Using keyword argument 'return_std' for final regressor "
                 f"{self.regressor_.__class__} is not supported yet, only "
                 f"'return_var' is allowed. Expand the regressor to accept "
                 f"'return_var' instead (see 'esmvaltool/diag_scripts/mlr"
-                f"/models/gpr_sklearn.py' for an example)")
+                f"/models/gpr_sklearn.py' for an example)"
+            )
         mlr.check_predict_kwargs(predict_kwargs)
-        return_var = predict_kwargs.get('return_var', False)
-        return_cov = predict_kwargs.get('return_cov', False)
+        return_var = predict_kwargs.get("return_var", False)
+        return_cov = predict_kwargs.get("return_cov", False)
 
         # Prediction
         prediction = self.regressor_.predict(x_data, **predict_kwargs)
@@ -995,7 +1119,8 @@ class AdvancedTransformedTargetRegressor(TransformedTargetRegressor):
             pred = prediction
         if pred.ndim == 1:
             pred_trans = self.transformer_.inverse_transform(
-                pred.reshape(-1, 1))
+                pred.reshape(-1, 1)
+            )
         else:
             pred_trans = self.transformer_.inverse_transform(pred)
         if self._to_be_squeezed(pred_trans, always_return_1d=always_return_1d):
@@ -1005,12 +1130,13 @@ class AdvancedTransformedTargetRegressor(TransformedTargetRegressor):
 
         # Return scaled variance or covariance if desired
         err = prediction[1]
-        if not hasattr(self.transformer_, 'scale_'):
+        if not hasattr(self.transformer_, "scale_"):
             raise NotImplementedError(
                 f"Transforming of additional prediction output (e.g. by "
                 f"'return_var' or 'return_cov') is not supported for "
                 f"transformer {self.transformer_.__class__} yet, the "
-                f"necessary attribute 'scale_' is missing")
+                f"necessary attribute 'scale_' is missing"
+            )
         scale = self.transformer_.scale_
         if scale is not None:
             err *= scale**2
@@ -1021,49 +1147,62 @@ class AdvancedTransformedTargetRegressor(TransformedTargetRegressor):
     def _get_fit_params(self, fit_kwargs):
         """Separate ``transformer`` and ``regressor`` kwargs."""
         steps = [
-            ('transformer', self.transformer),
-            ('regressor', self.regressor),
+            ("transformer", self.transformer),
+            ("regressor", self.regressor),
         ]
         fit_params = _get_fit_parameters(fit_kwargs, steps, self.__class__)
-        fit_params.setdefault('transformer', {})
-        fit_params.setdefault('regressor', {})
+        fit_params.setdefault("transformer", {})
+        fit_params.setdefault("regressor", {})
 
         # FIXME
-        if fit_params['transformer']:
+        if fit_params["transformer"]:
             raise NotImplementedError(
                 f"Fit parameters {fit_params['transformer']} for transformer "
                 f"{self.transformer.__class__} of {self.__class__} are not "
-                f"supported at the moment")
+                f"supported at the moment"
+            )
 
-        return (fit_params['transformer'], fit_params['regressor'])
+        return (fit_params["transformer"], fit_params["regressor"])
 
     def _fit_transformer(self, y_data):
         """Check transformer and fit transformer."""
-        if (self.transformer is not None and
-                (self.func is not None or self.inverse_func is not None)):
-            raise ValueError("'transformer' and functions 'func'/"
-                             "'inverse_func' cannot both be set.")
+        if self.transformer is not None and (
+            self.func is not None or self.inverse_func is not None
+        ):
+            raise ValueError(
+                "'transformer' and functions 'func'/"
+                "'inverse_func' cannot both be set."
+            )
         if self.transformer is not None:
             self.transformer_ = clone(self.transformer)
         else:
             if self.func is not None and self.inverse_func is None:
                 raise ValueError(
                     "When 'func' is provided, 'inverse_func' must also be "
-                    "provided")
+                    "provided"
+                )
             self.transformer_ = FunctionTransformer(
-                func=self.func, inverse_func=self.inverse_func, validate=True,
-                check_inverse=self.check_inverse)
+                func=self.func,
+                inverse_func=self.inverse_func,
+                validate=True,
+                check_inverse=self.check_inverse,
+            )
         self.transformer_.fit(y_data)
         if self.check_inverse:
             idx_selected = slice(None, None, max(1, y_data.shape[0] // 10))
             y_sel = _safe_indexing(y_data, idx_selected)
             y_sel_t = self.transformer_.transform(y_sel)
-            if not np.allclose(y_sel,
-                               self.transformer_.inverse_transform(y_sel_t)):
-                warnings.warn("The provided functions or transformer are "
-                              "not strictly inverse of each other. If "
-                              "you are sure you want to proceed regardless, "
-                              "set 'check_inverse=False'", UserWarning)
+            if not np.allclose(
+                y_sel, self.transformer_.inverse_transform(y_sel_t)
+            ):
+                warnings.warn(
+                    "The provided functions or transformer are "
+                    "not strictly inverse of each other. If "
+                    "you are sure you want to proceed regardless, "
+                    "set 'check_inverse=False'",
+                    UserWarning,
+                    stacklevel=2,
+                )
 
     def _to_be_squeezed(self, array, always_return_1d=True):
         """Check if ``array`` should be squeezed or not."""
@@ -1094,5 +1233,5 @@ class FeatureSelectionTransformer(BaseEstimator, SelectorMixin):
     def _more_tags(self):
         """Additional estimator tags."""
         more_tags = deepcopy(_DEFAULT_TAGS)
-        more_tags['allow_nan'] = True
+        more_tags["allow_nan"] = True
         return more_tags

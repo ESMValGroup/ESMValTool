@@ -47,11 +47,11 @@ User setting files are stored in recipes/
 
 
      *Required settings for preprocessor (only for 3D variables)*
-     
+
 	  extract_levels:
    *   levels: [50000] # e.g. for 500 hPa level
    *   scheme: nearest
-   
+
 Variables
 ---------
 

@@ -7,7 +7,7 @@ documentation:
 
     The example shapefile(s) can be copied from
     esmvaltool/diag_scripts/shapeselect/testdata/Elbe.* and
-    placed in the auxiliary_data_dir defined in config-user.yml.
+    placed in the auxiliary_data_dir defined in the configuration.
 
   title: Example recipe extracting precipitation in the Elbe catchment.
 

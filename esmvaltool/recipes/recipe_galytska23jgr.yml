@@ -3,7 +3,7 @@
 ---
 documentation:
   title: Arctic-Midlatitude Teleconnections recipe
-  
+
   description: >
     Recipe to select variables that reproduce Arctic-midlatitude
     teleconnections for further application of
@@ -325,7 +325,7 @@ diagnostics:
     scripts:
       output:
         script: galytska23/select_variables_for_tigramite.py
-        plot_timeseries: True 
+        plot_timeseries: True
         variable_to_plot: Arctic_temperature
 
   diagnostic_cvdp:
