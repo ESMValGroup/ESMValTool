@@ -198,7 +198,10 @@ def _create_plot(
         )
 
     # Save plot
-    plot_path = get_plot_filename(f"seaborn_{plot_func_str}", cfg)
+    if cfg["plot_filename"] is not None:
+        plot_path = get_plot_filename(f"seaborn_{plot_func_str}_{cfg["plot_filename"]}", cfg)
+    else:
+        plot_path = get_plot_filename(f"seaborn_{plot_func_str}", cfg)
     plt.savefig(plot_path, **cfg["savefig_kwargs"])
     logger.info("Wrote %s", plot_path)
     plt.close()

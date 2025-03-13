@@ -97,7 +97,6 @@ diagnostics:
       plot: &plot_settings_jointplot_clt_swcre
         script: seaborn_diag.py
         seaborn_func: jointplot
-        title:
         seaborn_kwargs:
           kind: hist
           x: clt
@@ -124,6 +123,7 @@ diagnostics:
           rc:
             axes.titlepad: 15.0
         suptitle: 'CESM2'
+        plot_filename: 'clt_swcre_CESM2'
 
   plot_joint_clt_swcre_ref:
     description: Scatterplot clt vs swcre.
@@ -144,6 +144,7 @@ diagnostics:
       plot:
         <<: *plot_settings_jointplot_clt_swcre
         suptitle: 'ESACCI-CLOUD / CERES-EBAF'
+        plot_filename: 'clt_swcre_ESACCI_CLOUD_CERES-EBAF'
 
   plot_joint_clwvi_pr_ref:
     description: Scatterplot clwvi vs pr.
@@ -186,7 +187,7 @@ diagnostics:
             xlabel: 'clwvi [kg m-2]'
             ylabel: 'pr [mm day-1]'
         suptitle: 'ESACCI-CLOUD / GPCP-SG'
-
+        plot_filename: 'clwvi_pr_ESACCI-CLOUD_GPCP-SG'
 
   plot_joint_clwvi_pr_model:
     description: Scatterplot clwvi vs pr.
@@ -204,6 +205,7 @@ diagnostics:
       plot:
         <<: *plot_settings_jointplot_clwvi_pr
         suptitle: 'CESM2'
+        plot_filename: 'clwvi_pr_CESM2'
 
   plot_joint_clivi_lwcre_ref:
     description: Scatterplot clt vs lwcre.
@@ -246,6 +248,7 @@ diagnostics:
             xlabel: 'clivi [kg m-2]'
             ylabel: 'lwcre [W m-2]'
         suptitle: 'ESACCI-CLOUD / CERES-EBAF'
+        plot_filename: 'clivi_lwcre_ESACCI-CLOUD_CERES-EBAF'
 
   plot_joint_clivi_lwcre_model:
     description: Scatterplot clt vs lwcre.
@@ -263,6 +266,8 @@ diagnostics:
       plot:
         <<: *plot_settings_jointplot_clivi_lwcre
         suptitle: 'CESM2'
+        plot_filename: 'clivi_lwcre_CESM2'
+
 
   plot_joint_cli_ta_ref:
     description: Scatterplot clt vs lwcre.
@@ -305,6 +310,7 @@ diagnostics:
             xlabel: 'cli [g kg]'
             ylabel: 'ta [K]'
         suptitle: 'CALIPSO-ICECLOUD / ERA5'
+        plot_filename: 'cli_ta_CALIPSO-ICECLOUD_ERA5'
 
   plot_joint_cli_ta_model:
     description: Scatterplot clt vs lwcre.
@@ -322,3 +328,4 @@ diagnostics:
       plot:
         <<: *plot_settings_jointplot_cli_ta
         suptitle: 'CESM2'
+        plot_filename: 'cli_ta_CESM2'
