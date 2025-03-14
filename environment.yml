@@ -4,7 +4,7 @@ channels:
   # The release candidate channel should only be activated
   # during the rc phase right before the next release of the
   # ESMValCore.
-  - conda-forge/label/esmvalcore_rc
+  # - conda-forge/label/esmvalcore_rc
   - conda-forge
   - nodefaults
 
@@ -17,7 +17,6 @@ dependencies:
   - cfgrib
   - cftime
   - cmocean
-  # - curl <8.10  # nay Py3.13 yet  # https://github.com/ESMValGroup/ESMValTool/issues/3758
   - cython
   - dask !=2024.8.0  # https://github.com/dask/dask/issues/11296
   - distributed
