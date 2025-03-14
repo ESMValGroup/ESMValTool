@@ -6,6 +6,10 @@ documentation:
     Recipe for reproducing the plots from B. D. Santer
 
   authors:
+    - mammes_mareike
+    - weigel_katja
+
+  maintainer:
     - weigel_katja
 
   references:
@@ -16,6 +20,7 @@ documentation:
   projects:
     - eval4cmip
     - 4c
+    - trr181
 
 preprocessors:
   tropical_ocean:
