@@ -19,21 +19,19 @@ documentation:
     - eval4cmip
 
 preprocessors:
-  preprocessor1:
+  default:
     regrid:
-      target_grid: 2.0x2.0
+      target_grid: 2x2
       scheme: linear
-  preprocessor2:
-    regrid:
-      target_grid: 2.0x2.0
-      scheme: linear
+    convert_units:
+      units: mm day-1
 
 diagnostics:
   diagnostic1:
     variables:
       pr:
         reference_dataset: MIROC-ESM
-        preprocessor: preprocessor1
+        preprocessor: default
         field: T2Ms
         start_year: 1901
         end_year: 2000
@@ -80,19 +78,16 @@ diagnostics:
 
     scripts:
       script1:
-        script: droughtindex/diag_save_spi.R
+        script: droughts/spei.R
         smooth_month: 6
-        # distribution: "Gamma" usually for SPI.
-        # distribution: "log-Logistic" usually for SPEI-
-        # Also available distribution: "PearsonIII"
         distribution: "Gamma"
-
   spi_collect:
     description: Wrapper to collect and plot previously calculated SPEI index
     scripts:
       spi_collect:
-        script: droughtindex/collect_drought_obs_multi.py
+        script: droughts/collect_drought.py
         indexname: "SPI"
+        reference_dataset: CRU
         # Threshold under which an event is defined as drought.
         # Usually -2.0 for SPI and SPEI.
         threshold: -2.0
@@ -103,7 +98,7 @@ diagnostics:
     variables:
       pr:
         reference_dataset: MIROC-ESM
-        preprocessor: preprocessor2
+        preprocessor: default
         field: T2Ms
         mip: Amon
         project: CMIP5
@@ -140,22 +135,20 @@ diagnostics:
       #    start_year: 1950, end_year: 2100}
     scripts:
       script2:
-        script: droughtindex/diag_save_spi.R
+        script: droughts/spei.R
         smooth_month: 6
-        # distribution: "Gamma" usually for SPI.
-        # distribution: "log-Logistic" usually for SPEI.
-        # Also available distribution: "PearsonIII".
         distribution: "Gamma"
 
   spi_collect2:
     description: Wrapper to collect and plot previously calculated SPI index
     scripts:
       spi_collect2:
-        script: droughtindex/collect_drought_model.py
+        script: droughts/collect_drought.py
         start_year: 1950
         end_year: 2100
         # comparison_period should be < (end_year - start_year)/2
-        comparison_period: 50
+        comparison_period: 51
+        compare_intervals: True
         indexname: "SPI"
         # Threshold under which an event is defined as drought.
         # Usually -2.0 for SPI and SPEI.
