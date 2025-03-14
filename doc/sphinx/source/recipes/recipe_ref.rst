@@ -23,6 +23,8 @@ Recipes are stored in recipes
   Calculate transient climate response to cumulative CO2 emissions (TCRE)
 * ref/recipe_ref_cre.yml:
   Maps and zonal means of longwave and shortwave cloud radiative effect
+* ref/recipe_ref_siextent_seasonal.yml:
+  Seasonal cycle of Arctic (NH) and Antarctic (SH) sea ice extent
 
 
 Example plots:
@@ -42,3 +44,11 @@ Example plots:
    Zonal averages of the climatological mean longwave cloud radiative
    effect from CERES-EBAF Ed4.2 (solid black), ESACCI-CLOUD (dashed black),
    ISCCP-FH (dotted black) and the MPI-ESM1-2-LR model (blue).
+
+.. _fig_ref_3:
+.. figure::  /recipes/figures/ref/annual_cycle_siextent_nh_ambiguous_dataset_SImon_historical_r1i1p1f1.png
+   :align:   center
+   :width:   8cm
+
+   Average seasonal cycle of the Arctic (NH) sea ice extent from MPI-ESM1-2-LR 
+   (red line) compared with ESACCI-SEAICE (black line).
