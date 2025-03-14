@@ -10,7 +10,7 @@ attributes:
            access/gridded/'
   reference: 'noaaglobaltemp'
   comment: |
-    'Temperature anomaly with respect to the period 1971-2000' 
+    'Temperature anomaly with respect to the period 1971-2000'
 
 filenames:
   gridded:

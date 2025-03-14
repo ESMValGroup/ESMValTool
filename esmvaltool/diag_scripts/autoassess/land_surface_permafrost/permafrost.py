@@ -3,36 +3,36 @@
 import os
 
 import cartopy.crs as ccrs
-import matplotlib.pyplot as plt
-import numpy as np
-
 import iris
 import iris.coord_categorisation
 import iris.quickplot as qplt
 import iris.util as ut
+import matplotlib.pyplot as plt
+import numpy as np
 
 from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
 from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
+
 from . import permafrost_koven_sites
 
 
 def get_provenance_record(caption, run):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
-        'caption': caption,
-        'statistics': ['mean'],
-        'domains': ['global'],
-        'plot_types': ['map', 'metrics'],
-        'authors': [
-            'burke_eleanor',
-            'sellar_alistair',
+        "caption": caption,
+        "statistics": ["mean"],
+        "domains": ["global"],
+        "plot_types": ["map", "metrics"],
+        "authors": [
+            "burke_eleanor",
+            "sellar_alistair",
         ],
-        'references': [
-            'brown02nsidc',
-            'legates90tac',
-            'koven13jclim',
+        "references": [
+            "brown02nsidc",
+            "legates90tac",
+            "koven13jclim",
         ],
-        'ancestors': run,
+        "ancestors": run,
     }
 
     return record
@@ -64,27 +64,30 @@ def land_permafrost_top(run):
     # STASH m01s08i225
     period = "monthly"
     soiltemp = load_run_ss(
-        run, period, 'soil_temperature')  # has dims(time, depth, lat, long)
+        run, period, "soil_temperature"
+    )  # has dims(time, depth, lat, long)
 
     # check soil depths
     expected_soil_depths = [0.05, 0.225, 0.675, 2.0]
-    soil_depths = soiltemp.coord('depth')
+    soil_depths = soiltemp.coord("depth")
     if np.array_equal(soil_depths, expected_soil_depths):
-        msg = ('Soil has changed levels from usual {}, '
-               'following not supported: {}'.format(expected_soil_depths,
-                                                    soil_depths))
+        msg = (
+            f"Soil has changed levels from usual {expected_soil_depths}, "
+            f"following not supported: {soil_depths}"
+        )
         raise Exception(msg)
 
     # load the whole monthly air temperature (STASH m01s03i236)
-    airtemp = load_run_ss(run, period, 'air_temperature')
+    airtemp = load_run_ss(run, period, "air_temperature")
 
     # get the land fraction mask using whole cube
     landfrac = get_landfr_mask(run)
 
     # extract northern latitudes
     airtemp = airtemp.extract(iris.Constraint(latitude=lambda cell: cell > 0))
-    soiltemp = soiltemp.extract(iris.Constraint(
-        latitude=lambda cell: cell > 0))
+    soiltemp = soiltemp.extract(
+        iris.Constraint(latitude=lambda cell: cell > 0)
+    )
 
     # calculate the permafrost area and fraction less than zero
     # permafrost_area returns a dict, which is added to the main metrics dict
@@ -117,17 +120,19 @@ def permafrost_area(soiltemp, airtemp, landfrac, run):
     # Make an aggregator to define the permafrost extent
     # I dont really understand this but it works
     frozen_count = iris.analysis.Aggregator(
-        'frozen_count', num_frozen, units_func=lambda units: 1)
+        "frozen_count", num_frozen, units_func=lambda units: 1
+    )
 
     # Calculate the permafrost locations
     pf_periods = soiltemp.collapsed(
-        'time',
+        "time",
         frozen_count,
         threshold=thresh_temperature,
-        frozen_length=frozen_months)
-    tot_time = len(soiltemp.coord('time').points)
+        frozen_length=frozen_months,
+    )
+    tot_time = len(soiltemp.coord("time").points)
     pf_periods = pf_periods / float(tot_time)
-    pf_periods.rename('Fraction of months layer 4 (-1m to -3m) soil is frozen')
+    pf_periods.rename("Fraction of months layer 4 (-1m to -3m) soil is frozen")
 
     # mask out non permafrost points, sea points and ice points
     pf_periods.data = np.ma.masked_less(pf_periods.data, prop_months_frozen)
@@ -136,22 +141,23 @@ def permafrost_area(soiltemp, airtemp, landfrac, run):
     pf_periods = pf_periods / pf_periods
     # mask for land area also; using `sftlf` which has percents data
     # divide by 100 to account for absolute fraction and not percents
-    pf_periods = pf_periods * mask / 100.
+    pf_periods = pf_periods * mask / 100.0
 
     # calculate the area of permafrost
     # Generate area-weights array. This method requires bounds on lat/lon
     # coords, add some in sensible locations using the "guess_bounds"
     # method.
-    for coord in ['latitude', 'longitude']:
+    for coord in ["latitude", "longitude"]:
         if not pf_periods.coord(coord).has_bounds():
             pf_periods.coord(coord).guess_bounds()
     grid_areas = iris.analysis.cartography.area_weights(pf_periods)
     # calculate the areas not masked in pf_periods
     pf_area = pf_periods.collapsed(
-        ['longitude', 'latitude'], iris.analysis.SUM, weights=grid_areas).data
+        ["longitude", "latitude"], iris.analysis.SUM, weights=grid_areas
+    ).data
 
     # what is the area where the temperature is less than 0 degrees C?
-    airtemp = airtemp.collapsed('time', iris.analysis.MEAN)
+    airtemp = airtemp.collapsed("time", iris.analysis.MEAN)
     # if more than 2 dims, select the ground level
     if airtemp.ndim > 2:
         airtemp = airtemp[0]
@@ -165,44 +171,51 @@ def permafrost_area(soiltemp, airtemp, landfrac, run):
     plt.figure(figsize=(8, 8))
     ax = plt.axes(
         projection=ccrs.Orthographic(
-            central_longitude=-80.0, central_latitude=60.0))
+            central_longitude=-80.0, central_latitude=60.0
+        )
+    )
     qplt.pcolormesh(pf_periods)
     ax.gridlines()
     ax.coastlines()
     levels = [thresh_temperature]
-    qplt.contour(airtemp, levels, colors='k', linewidths=3)
-    plt.title('Permafrost extent & zero degree isotherm ({})'.format(
-        run['runid']))
-    plt.savefig('pf_extent_north_america_' + run['runid'] + '.png')
+    qplt.contour(airtemp, levels, colors="k", linewidths=3)
+    plt.title(
+        "Permafrost extent & zero degree isotherm ({})".format(run["runid"])
+    )
+    plt.savefig("pf_extent_north_america_" + run["runid"] + ".png")
 
     # Figure Permafrost extent asia
     plt.figure(figsize=(8, 8))
     ax = plt.axes(
         projection=ccrs.Orthographic(
-            central_longitude=100.0, central_latitude=50.0))
+            central_longitude=100.0, central_latitude=50.0
+        )
+    )
     qplt.pcolormesh(pf_periods)
     ax.gridlines()
     ax.coastlines()
     levels = [thresh_temperature]
-    qplt.contour(airtemp, levels, colors='k', linewidths=3)
-    plt.title('Permafrost extent & zero degree isotherm ({})'.format(
-        run['runid']))
-    plt.savefig('pf_extent_asia_' + run['runid'] + '.png')
+    qplt.contour(airtemp, levels, colors="k", linewidths=3)
+    plt.title(
+        "Permafrost extent & zero degree isotherm ({})".format(run["runid"])
+    )
+    plt.savefig("pf_extent_asia_" + run["runid"] + ".png")
 
     # record provenance
-    plot_file = 'pf_extent_asia_' + run['runid']
-    caption = 'Permafrost extent & zero degree isotherm ({})'.format(
-        run['runid'])
+    plot_file = "pf_extent_asia_" + run["runid"]
+    caption = "Permafrost extent & zero degree isotherm ({})".format(
+        run["runid"]
+    )
     provenance_record = get_provenance_record(caption, run)
     cfg = {}
-    cfg['run_dir'] = run['out_dir']
+    cfg["run_dir"] = run["out_dir"]
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(plot_file, provenance_record)
 
     # defining metrics for return up to top level
     metrics = {
-        'permafrost area': pf_area,
-        'fraction area permafrost over zerodeg': pf_prop,
+        "permafrost area": pf_area,
+        "fraction area permafrost over zerodeg": pf_prop,
     }
 
     return metrics
@@ -238,14 +251,15 @@ def num_frozen(data, threshold, axis, frozen_length):
 # land fraction
 def get_landfr_mask(run):
     """Get the land fraction mask."""
-    supermean_data_dir = os.path.join(run['data_root'], run['runid'],
-                                      run['_area'] + '_supermeans')
+    supermean_data_dir = os.path.join(
+        run["data_root"], run["runid"], run["_area"] + "_supermeans"
+    )
     # m01s03i395
     # TODO: replacing time-varying mask with fixed sftfx
     # cube = get_supermean('land_area_fraction', 'ann', supermean_data_dir)
     # replaced momentarily with:
-    name_constraint = iris.Constraint(name='land_area_fraction')
-    cubes_path = os.path.join(supermean_data_dir, 'cubeList.nc')
+    name_constraint = iris.Constraint(name="land_area_fraction")
+    cubes_path = os.path.join(supermean_data_dir, "cubeList.nc")
     cubes = iris.load(cubes_path)
     cube = cubes.extract_cube(name_constraint)
 
@@ -260,19 +274,20 @@ def get_nonice_mask(run):
     Derive ice mask from points that have zero liquid water content.
 
     """
-    supermean_data_dir = os.path.join(run['data_root'], run['runid'],
-                                      run['_area'] + '_supermeans')
+    supermean_data_dir = os.path.join(
+        run["data_root"], run["runid"], run["_area"] + "_supermeans"
+    )
 
     # m01s08i223
     # use mrsos (moisture in surface soil layer), Lmon
     name_constraint = iris.Constraint(
-        name='mass_content_of_water_in_soil_layer'
+        name="mass_content_of_water_in_soil_layer"
     )
-    cubes_path = os.path.join(supermean_data_dir, 'cubeList.nc')
+    cubes_path = os.path.join(supermean_data_dir, "cubeList.nc")
     cubes = iris.load(cubes_path)
     cube = cubes.extract_cube(name_constraint)
     # mrsol data comes a time-lat-lon, collapse on time
-    cube = cube.collapsed('time', iris.analysis.MEAN)
+    cube = cube.collapsed("time", iris.analysis.MEAN)
 
     # make it into a mask of ones - extract first layer
     # use masked_values for floating point fuzzy equals
@@ -300,8 +315,8 @@ def koven_temp_offsets(soiltemp, airtemp):
     # the soil temperatures are for the middle of the layer not the bottom of
     # the layer
     linear = iris.analysis.Linear()
-    soiltemp_surf = soiltemp.interpolate([('depth', 0.0)], linear)
-    soiltemp_1m = soiltemp.interpolate([('depth', 1.0)], linear)
+    soiltemp_surf = soiltemp.interpolate([("depth", 0.0)], linear)
+    soiltemp_1m = soiltemp.interpolate([("depth", 1.0)], linear)
 
     # extract points for eachsite
     airtemp_1d = extract_sites(ex_points, airtemp)
@@ -314,18 +329,19 @@ def koven_temp_offsets(soiltemp, airtemp):
     metrics = {}
     off_surf = soiltemp_1m_1d - soiltemp_surf_1d
     off_air = soiltemp_surf_1d - airtemp_1d
-    metrics['offset 1m minus surface'] = np.ma.median(off_surf)
-    metrics['offset surface minus air'] = np.ma.median(off_air)
+    metrics["offset 1m minus surface"] = np.ma.median(off_surf)
+    metrics["offset surface minus air"] = np.ma.median(off_air)
 
     return metrics
 
 
 def make_monthly_amp(cube):
     """Make monthly climatology."""
-    iris.coord_categorisation.add_month(cube, 'time', name='month')
-    cube_clim = cube.aggregated_by('month', iris.analysis.MEAN)
-    cube_ampl = cube_clim.collapsed('time', iris.analysis.MAX) - \
-        cube_clim.collapsed('time', iris.analysis.MIN)
+    iris.coord_categorisation.add_month(cube, "time", name="month")
+    cube_clim = cube.aggregated_by("month", iris.analysis.MEAN)
+    cube_ampl = cube_clim.collapsed(
+        "time", iris.analysis.MAX
+    ) - cube_clim.collapsed("time", iris.analysis.MIN)
     return cube_ampl
 
 
@@ -341,9 +357,9 @@ def koven_temp_atten(soiltemp, airtemp):
     # interpolate the log to the correct depth
     soiltemp_log = iris.analysis.maths.log(soiltemp_ampl)
     linear = iris.analysis.Linear()
-    soiltemp_log_surf = soiltemp_log.interpolate([('depth', 0.0)], linear)
+    soiltemp_log_surf = soiltemp_log.interpolate([("depth", 0.0)], linear)
     soiltemp_ampl_surf = iris.analysis.maths.exp(soiltemp_log_surf)
-    soiltemp_log_1m = soiltemp_log.interpolate([('depth', 1.0)], linear)
+    soiltemp_log_1m = soiltemp_log.interpolate([("depth", 1.0)], linear)
     soiltemp_ampl_1m = iris.analysis.maths.exp(soiltemp_log_1m)
 
     # extract points for eachsite
@@ -355,9 +371,11 @@ def koven_temp_atten(soiltemp, airtemp):
 
     # assign metrics
     metrics = {}
-    metrics['attenuation 1m over surface'] = np.median(
-        soiltemp_ampl_1m_1d / soiltemp_ampl_surf_1d)
-    metrics['attenuation surface over air'] = np.median(
-        soiltemp_ampl_surf_1d / airtemp_ampl_1d)
+    metrics["attenuation 1m over surface"] = np.median(
+        soiltemp_ampl_1m_1d / soiltemp_ampl_surf_1d
+    )
+    metrics["attenuation surface over air"] = np.median(
+        soiltemp_ampl_surf_1d / airtemp_ampl_1d
+    )
 
     return metrics
