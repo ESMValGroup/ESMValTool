@@ -198,12 +198,7 @@ def _create_plot(
         )
 
     # Save plot
-    if cfg["plot_filename"] is not None:
-        plot_path = get_plot_filename(
-            f"seaborn_{plot_func_str}_{cfg['plot_filename']}", cfg
-        )
-    else:
-        plot_path = get_plot_filename(f"seaborn_{plot_func_str}", cfg)
+    plot_path = get_plot_filename(cfg["plot_filename"], cfg)
     plt.savefig(plot_path, **cfg["savefig_kwargs"])
     logger.info("Wrote %s", plot_path)
     plt.close()
@@ -400,6 +395,7 @@ def _get_default_cfg(cfg: dict) -> dict:
     cfg.setdefault("groupby_facet", "alias")
     cfg.setdefault("legend_title", None)
     cfg.setdefault("plot_object_methods", {})
+    cfg.setdefault("plot_filename", f"seaborn_{cfg.get('seaborn_func', '')}")
     cfg.setdefault("reset_index", False)
     cfg.setdefault(
         "savefig_kwargs",
