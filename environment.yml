@@ -96,7 +96,7 @@ dependencies:
   - yamllint ==1.35.1
 
   # NCL and dependencies
-  - ncl >=6.6.2
+  # - ncl >=6.6.2  # temporary removal test env solving speed
   - cdo
   - imagemagick
   - nco
