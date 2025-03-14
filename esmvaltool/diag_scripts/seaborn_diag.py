@@ -69,6 +69,8 @@ plot_object_methods: dict, optional
     :obj:`dict` to specify keyword arguments). Example (for
     :func:`~seaborn.relplot`): ``{'set': {'xlabel': 'X [km]'}, 'set_titles':
     'Model {col_name}'}``.
+plot_filename: str, optional
+    Filename for the final plot. By default, uses 'seaborn_(`seaborn_func`)'.
 reset_index: bool, optional (default: False)
     Put coordinate information of datasets into columns instead of (multi-)
     indices. This avoids the deletion of coordinate information if different
