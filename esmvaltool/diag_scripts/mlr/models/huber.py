@@ -15,7 +15,7 @@ from esmvaltool.diag_scripts.mlr.models.linear_base import LinearModel
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-@MLRModel.register_mlr_model('huber')
+@MLRModel.register_mlr_model("huber")
 class HuberRegressionModel(LinearModel):
     """Huber Regression model."""
 
