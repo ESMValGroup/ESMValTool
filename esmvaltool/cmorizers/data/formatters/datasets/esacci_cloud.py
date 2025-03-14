@@ -110,7 +110,7 @@ def _extract_variable_daily(short_name, var, cfg, in_dir, out_dir, start_date,
         cubes_day = iris.cube.CubeList()
         
         #for month in range(start_date.month, end_date.month + 1):
-        for month in range(1, 13):
+        for month in range(1, 2):
             num_days = monthrange(year, month)[1]
             for iday in range(1, num_days + 1):
 
@@ -214,7 +214,7 @@ def _extract_variable_daily(short_name, var, cfg, in_dir, out_dir, start_date,
         # Fix metadata and  update version information
         attrs_day = copy.deepcopy(cfg['attributes'])
         attrs_day['mip'] = var['mip']
-        attrs_day['version'] += '_day'
+        attrs_day['version'] += '-day'
         utils.set_global_atts(cube_day, attrs_day)
 
         logger.info(attrs_day)
