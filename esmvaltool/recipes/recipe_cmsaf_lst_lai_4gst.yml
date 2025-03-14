@@ -1,0 +1,28 @@
+# Recipe to apply LAI 4GST classification from Peano et al.
+---
+documentation:
+  title: test recipe
+  description: |
+    Please add description here
+  authors:
+    - king_robert
+
+  maintainer:
+    - king_robert
+
+  references:
+    - esacci_lst
+
+  projects:
+    - cmsaf
+
+diagnostics:
+   4gst:
+     description: LAI 4gst
+     variables:
+       lairpk:
+     additional_datasets:
+       - {dataset: GLOBMAP_LAI, project: OBS, type: sat, tier: 2, mip: custom,
+          start_year: 1991, end_year: 2020, version: '3'}
+
+     scripts: null
