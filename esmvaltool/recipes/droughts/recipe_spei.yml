@@ -61,7 +61,7 @@ diagnostics:
         distribution: Gamma
         smooth_month: 6
       pet:
-        pet_type: "Hargreaves"  # "Penman_clt"
+        pet_type: "Hargreaves"
         script: droughts/pet.R
       spei:
         indexname: SPEI
