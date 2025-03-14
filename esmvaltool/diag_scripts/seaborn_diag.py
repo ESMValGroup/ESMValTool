@@ -57,6 +57,8 @@ groupby_facet: str, optional (default: 'alias')
 legend_title: str, optional (default: None)
     Title for legend. If ``None``, Seaborn will determine the legend title (if
     possible).
+plot_filename: str, optional
+    Filename for the final plot. By default, uses 'seaborn_(`seaborn_func`)'.
 plot_object_methods: dict, optional
     Execute methods of the object returned by the plotting function
     (`seaborn_func`). This object will either be a
@@ -69,8 +71,6 @@ plot_object_methods: dict, optional
     :obj:`dict` to specify keyword arguments). Example (for
     :func:`~seaborn.relplot`): ``{'set': {'xlabel': 'X [km]'}, 'set_titles':
     'Model {col_name}'}``.
-plot_filename: str, optional
-    Filename for the final plot. By default, uses 'seaborn_(`seaborn_func`)'.
 reset_index: bool, optional (default: False)
     Put coordinate information of datasets into columns instead of (multi-)
     indices. This avoids the deletion of coordinate information if different
