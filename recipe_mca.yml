@@ -1,0 +1,121 @@
+# ESMValTool
+# recipe_python.yml
+---
+define: &start_longitude_preditand 80
+define: &end_longitude_preditand 240
+define: &start_latitude_preditand -30
+define: &end_latitude_preditand 30
+define: &season_preditand jja
+
+define: &start_longitude_predictor -30
+define: &end_longitude_predictor 35
+define: &start_latitude_predictor 15 
+define: &end_latitude_predictor 70
+define: &season_predictor jja
+
+documentation:
+  description: |
+    Example recipe that plots a map and timeseries of temperature.
+
+  title: Recipe that runs an example diagnostic written in Python.
+
+  authors:
+    - vegas-regidor_javier
+
+  maintainer:
+    - vegas-regidor_javier
+
+  references:
+    - acknow_project
+
+  projects:
+    - proyecto_off
+
+preprocessors:
+  predictor_preproc:
+    # regrid:
+    #   extra:
+    #     start_longitude: *start_longitude_preditand
+    #     end_longitude: *end_longitude_preditand
+    #     start_latitude: *start_latitude_preditand
+    #     end_latitude: *end_latitude_preditand
+    #     step_longitude: 2 #El regrid se puede hacer más rápido según si trabajamos con grids regulares o no etc
+    #     step_latitude: 2
+    #   scheme: linear
+    extract_season:
+      season: *season_preditand 
+    extract_region:
+      start_longitude: *start_longitude_preditand
+      end_longitude: *end_longitude_preditand
+      start_latitude: *start_latitude_preditand
+      end_latitude: *end_latitude_preditand
+    mask_landsea:
+      mask_out: land
+
+  predictand_preproc:
+    # regrid:
+    #   target_grid:
+    #     start_longitude: *start_longitude_predictor
+    #     end_longitude: *end_longitude_predictor
+    #     start_latitude: *start_latitude_predictor
+    #     end_latitude: *end_latitude_predictor
+    #     step_longitude: 2
+    #     step_latitude: 2
+    #   scheme: linear
+    extract_season:
+      season: *season_predictor
+    extract_region:
+      start_longitude: *start_longitude_predictor
+      end_longitude: *end_longitude_predictor
+      start_latitude: *start_latitude_predictor
+      end_latitude: *end_latitude_predictor
+
+diagnostics:
+  spy4cast:
+    description: sp4cast mca sst vs slp historical since 1850.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      predictor:
+        short_name: tos
+        mip: Omon
+        preprocessor: predictor_preproc
+        project: CMIP6
+        exp: historical
+        timerange: 197001/200012
+        activity: '*'
+        supplementary_variables:
+        - short_name: sftof
+          mip: Ofx
+          activity: '*'
+          ensemble: '*'
+          exp: '*'
+        additional_datasets:
+          - dataset: EC-Earth3
+            ensemble: r1i1p1f1
+            grid: '*'
+            institute: EC-Earth-Consortium
+
+          - dataset: MIROC6
+            ensemble: r1i1p1f1
+            grid: gn
+            institute: MIROC
+      
+      predictand:
+        short_name: tas
+        mip: Amon
+        preprocessor: predictand_preproc
+        timerange: 197001/200012
+        additional_datasets:
+          - {dataset: ERA5, alias: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+
+        
+    scripts:
+      mca:
+        script: spy4cast/mca.py
+        cross_validation: False
+        modes: 3
+        alpha: 0.1  # Significance level
+

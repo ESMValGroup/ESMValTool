@@ -1,0 +1,183 @@
+# ESMValTool
+# recipe_python.yml
+---
+define: &start_longitude_preditand 80
+define: &end_longitude_preditand 240
+define: &start_latitude_preditand -30
+define: &end_latitude_preditand 30
+define: &season_preditand jja
+
+define: &start_longitude_predictor -30
+define: &end_longitude_predictor 35
+define: &start_latitude_predictor 15 
+define: &end_latitude_predictor 70
+define: &season_predictor jja
+
+documentation:
+  description: |
+    Example recipe that plots a map and timeseries of temperature.
+
+  title: Recipe that runs an example diagnostic written in Python.
+
+  authors:
+    - vegas-regidor_javier
+
+  maintainer:
+    - vegas-regidor_javier
+
+  references:
+    - acknow_project
+
+  projects:
+    - proyecto_off
+
+preprocessors:
+  predictor_preproc:
+    # regrid:
+    #   extra:
+    #     start_longitude: *start_longitude_preditand
+    #     end_longitude: *end_longitude_preditand
+    #     start_latitude: *start_latitude_preditand
+    #     end_latitude: *end_latitude_preditand
+    #     step_longitude: 2 #El regrid se puede hacer más rápido según si trabajamos con grids regulares o no etc
+    #     step_latitude: 2
+    #   scheme: linear
+    extract_season:
+      season: *season_preditand 
+    extract_region:
+      start_longitude: *start_longitude_preditand
+      end_longitude: *end_longitude_preditand
+      start_latitude: *start_latitude_preditand
+      end_latitude: *end_latitude_preditand
+    mask_landsea:
+      mask_out: land
+
+  predictand_preproc:
+    # regrid:
+    #   target_grid:
+    #     start_longitude: *start_longitude_predictor
+    #     end_longitude: *end_longitude_predictor
+    #     start_latitude: *start_latitude_predictor
+    #     end_latitude: *end_latitude_predictor
+    #     step_longitude: 2
+    #     step_latitude: 2
+    #   scheme: linear
+    extract_season:
+      season: *season_predictor
+    extract_region:
+      start_longitude: *start_longitude_predictor
+      end_longitude: *end_longitude_predictor
+      start_latitude: *start_latitude_predictor
+      end_latitude: *end_latitude_predictor
+
+diagnostics:
+  spy4cast:
+    description: sp4cast mca sst vs slp historical since 1850.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      predictor:
+        short_name: tos
+        mip: Omon
+        preprocessor: predictor_preproc
+        project: CMIP6
+        exp: historical
+        timerange: 197001/200012
+        activity: '*'
+        supplementary_variables:
+        - short_name: sftof
+          mip: Ofx
+          activity: '*'
+          ensemble: '*'
+          exp: '*'
+        additional_datasets:
+          - dataset: EC-Earth3
+            ensemble: r1i1p1f1
+            grid: '*'
+            institute: EC-Earth-Consortium
+
+          - dataset: MIROC6
+            ensemble: r1i1p1f1
+            grid: gn
+            institute: MIROC
+      
+      predictand:
+        short_name: tas
+        mip: Amon
+        preprocessor: predictand_preproc
+        timerange: 197001/200012
+        additional_datasets:
+          - {dataset: ERA5, alias: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
+
+        
+    scripts:
+      mca:
+        script: nn4cast/nn4cast.py
+        hyperparameters:
+          # Time limits
+          time_lims: [1940, 2019]
+          jump_year: 0 #this is necesary when the predictor and predictand has different years for each sample (default=0)
+
+          # Train, validation, and testing years: if dealing with X and Y of different years for each sample,
+          # the years policy is from the input (X)
+          train_years: [1940, 1989]
+          validation_years: [1990,1999]
+          testing_years: [2000, 2019]
+
+          # Input and output limits: for latitude first the northernmost, for longitude either -
+          # -180-(+180) or 0-360, putting first the smaller number
+          lat_lims_x: [+75, -20]
+          lon_lims_x: [+120, +280]
+          lat_lims_y: [+75, -20]
+          lon_lims_y: [-180, +180]
+
+          # Months and months to skip
+          months_x: [9, 10]
+          months_skip_x: ['None']
+          months_y: [11, 12]
+          months_skip_y: ['None']
+
+          # Seasonal method: select if computing seasonal means of aggregrates (true if means)
+          mean_seasonal_method_x: true
+          mean_seasonal_method_y: true
+          
+          # Regrid degrees: if you want to do a regrid of the data, if not, just put 0
+          regrid_degree_x: 2
+          regrid_degree_y: 2
+
+          # Data scales: if you want to do a scale of the data, if not, just put 1
+          scale_x: 1
+          scale_y: 100
+
+          # Detrending:
+          detrend_x: true
+          detrend_x_window: 50
+          detrend_y: true
+          detrend_y_window: 50
+
+          # Neural network hyperparameters (default parameters)
+          layer_sizes: [1024, 256, 64, 256, 1024]
+          activations: [activations.elu, activations.elu, activations.elu, activations.elu, tf.keras.activations.elu]
+          dropout_rates: [0.1]
+          kernel_regularizer: 'l2'
+          learning_rate: 0.0001
+          epochs: 2500
+          num_conv_layers: 0
+          use_batch_norm: true 
+          use_initializer: true
+          use_dropout: true
+          use_init_skip_connections: false
+          use_inter_skip_connections: false
+
+          # Plotting parameters
+          mapbar: 'bwr'
+          units_x: '[$^{\circ} C$]'
+          units_y: '[$hPa$]'
+          region_predictor: Pacific
+          p_value: 0.1
+
+          # Outputs path: define where to save all the plots and datasets, replace this with the actual paths to the files on your system.
+          outputs_path: /path/to/the/directory/Outputs_ND_sst_SO_Pac/
+

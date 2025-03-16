@@ -458,7 +458,18 @@ diagnostics:
           institute: EC-Earth-Consortium
 
         - dataset: EC-Earth3-Veg
-          ensemble: r(1:6)i1p1f1
+          ensemble: r(1:4)i1p1f1
+          grid: gn
+          institute: EC-Earth-Consortium
+
+        # can not concatenate
+        # - dataset: EC-Earth3-Veg
+        #   ensemble: r5i1p1f1
+        #   grid: gn
+        #   institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3-Veg
+          ensemble: r6i1p1f1
           grid: gn
           institute: EC-Earth-Consortium
 
@@ -480,14 +491,9 @@ diagnostics:
 
         # Can not concatenate
         # - dataset: EC-Earth3-Veg-LR
-        #   ensemble: r2i1p1f1
+        #   ensemble: r(2:3)i1p1f1
         #   grid: gn
         #   institute: EC-Earth-Consortium
-
-        - dataset: EC-Earth3-Veg-LR
-          ensemble: r3)i1p1f1
-          grid: gn
-          institute: EC-Earth-Consortium
 
         # No sftof
         # - dataset: FGOALS-f3-L
@@ -785,6 +791,174 @@ diagnostics:
     scripts:
       mca:
         script: spy4cast/mca.py
-        cross_validation: True
+        cross_validation: False
         modes: 3
-        alpha: 0.1  # Significance level
+        alpha: 0.9  # Significance level
+      
+  spy4cast_obs:
+    description: Annual mean temperature in Amsterdam and global mean since 1850.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      predictor:
+        short_name: tos
+        mip: Omon
+        preprocessor: predictor_preproc
+        project: OBS
+        timerange: 185001/201412       
+        additional_datasets:
+        - dataset: HadSST
+          alias: observations
+
+      predictand:
+        short_name: ps
+        mip: Amon
+        preprocessor: predictand_preproc
+        project: CMIP6
+        exp: historical
+        timerange: 185001/201412
+        additional_datasets:
+        - dataset: OBsPSL
+          project: OBS
+          tier: 2
+          alias: observations
+        - dataset: ACCESS-ESM1-5
+          ensemble: r(1:10)i1p1f1
+          grid: gn
+          institute: CSIRO
+
+        - dataset: CIESM
+          ensemble: r(1:3)i1p1f1
+          grid: gr
+          institute: THU
+
+        - dataset: CNRM-CM6-1
+          ensemble: r(1:18)i1p1f2
+          grid: gr
+          institute: CNRM-CERFACS
+
+        - dataset: CNRM-CM6-1-HR
+          ensemble: r1i1p1f2
+          grid: gr
+          institute: CNRM-CERFACS
+
+        - dataset: CNRM-ESM2-1
+          ensemble: r(1:5)i1p1f2
+          grid: gr
+          institute: CNRM-CERFACS
+
+        - dataset: CNRM-ESM2-1
+          ensemble: r(7:10)i1p1f2
+          grid: gr
+          institute: CNRM-CERFACS
+
+        - dataset: CanESM5
+          ensemble: r(1:10)i1p2f1
+          grid: gn
+          institute: CCCma
+
+        - dataset: CanESM5
+          ensemble: r22i1p2f1
+          grid: gn
+          institute: CCCma
+
+        - dataset: EC-Earth3
+          ensemble: r1i1p1f1
+          grid: gr
+          institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3-AerChem
+          ensemble: r1i1p1f1
+          grid: gr
+          institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3-CC
+          ensemble: r1i1p1f1
+          grid: gr
+          institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3-Veg
+          ensemble: r1i1p1f1
+          grid: gr
+          institute: EC-Earth-Consortium
+
+        - dataset: EC-Earth3-Veg-LR
+          ensemble: r1i1p1f1
+          grid: gr
+          institute: EC-Earth-Consortium
+
+        - dataset: FGOALS-f3-L
+          ensemble: r(1:3)i1p1f1
+          grid: gr
+          institute: CAS
+
+        - dataset: FGOALS-g3
+          ensemble: r(1:6)i1p1f1
+          grid: gn
+          institute: CAS
+
+        - dataset: GFDL-CM4
+          ensemble: r1i1p1f1
+          grid: gr1
+          institute: NOAA-GFDL
+
+        - dataset: GFDL-ESM4
+          ensemble: r(1:3)i1p1f1
+          grid: gr1
+          institute: NOAA-GFDL
+
+        - dataset: GISS-E2-1-G
+          ensemble: r(1:10)i1p1f(1:2)
+          grid: gn
+          institute: NASA-GISS
+
+        - dataset: IPSL-CM5A2-INCA
+          ensemble: r1i1p1f1
+          grid: gr
+          institute: IPSL
+
+        - dataset: IPSL-CM6A-LR
+          ensemble: r(1:32)i1p1f1
+          grid: gr
+          institute: IPSL
+
+        # - dataset: MIROC-ES2H
+        #   ensemble: r1i1p1f2
+        #   grid: gn
+        #   institute: MIROC
+        #   timerange: 185001/185012
+        - dataset: MIROC-ES2H
+          ensemble: r1i1p4f2
+          grid: gn
+          institute: MIROC
+
+        - dataset: MIROC-ES2L
+          ensemble: r(1:3)i1p1f2
+          grid: gn
+          institute: MIROC
+
+        - dataset: NorCPM1
+          ensemble: r1i1p1f1
+          grid: gn
+          institute: NCC
+
+        - dataset: NorESM2-MM
+          ensemble: r(1:2)i1p1f1
+          grid: gn
+          institute: NCC
+
+        # No predictor available
+        # - dataset: UKESM1-0-LL
+        #   ensemble: r(13:14)i1p1f2
+        #   grid: gn
+        #   institute: NIMS-KMA
+
+    scripts:
+      mca:
+        script: spy4cast/mca.py
+        cross_validation: False
+        modes: 3
+        alpha: 0.9  # Significance level
+      
