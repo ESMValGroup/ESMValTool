@@ -2,21 +2,29 @@
 
 import datetime
 import gzip
+import json
 import logging
 import os
 import re
 import shutil
+import uuid
+from collections.abc import Callable
 from contextlib import contextmanager
+from functools import lru_cache
 from pathlib import Path
 
+import esmvalcore.cmor
 import iris
 import numpy as np
 import yaml
 from cf_units import Unit
 from dask import array as da
+from esmvalcore.cmor.check import CheckLevels, CMORCheckError, cmor_check
 from esmvalcore.cmor.table import CMOR_TABLES
+from esmvalcore.config import CFG
 from iris.cube import Cube
 
+import esmvaltool
 from esmvaltool import __file__ as esmvaltool_file
 from esmvaltool import __version__ as version
 
@@ -312,10 +320,282 @@ def read_cmor_config(dataset):
     )
     with open(reg_path, encoding="utf-8") as file:
         cfg = yaml.safe_load(file)
-    cfg["cmor_table"] = CMOR_TABLES[cfg["attributes"]["project_id"]]
-    if "comment" not in cfg["attributes"]:
-        cfg["attributes"]["comment"] = ""
+    attributes = cfg["attributes"]
+    if attributes.get("activity_id", "") == "obs4MIPs":
+        # Fill in various attributes automatically.
+        attributes["project_id"] = "obs4MIPs"
+        attributes["tier"] = "1"
+        attributes["source_id"] = dataset
+        cv = load_controlled_vocabulary("obs4MIPs")
+        for key, value in cv["source_id"][dataset].items():
+            attributes[key] = value
+        attributes["institution"] = cv["institution_id"][
+            attributes["institution_id"]
+        ]
+    elif "comment" not in attributes:
+        attributes["comment"] = ""
+
+    cfg["cmor_table"] = CMOR_TABLES[attributes["project_id"]]
+
     return cfg
+
+
+# See https://zenodo.org/records/11500474 for the obs4MIPs specification
+# See https://github.com/PCMDI/obs4MIPs-cmor-tables for the obs4MIPs CMOR tables
+
+DRS_ATTRIBUTE = "^[a-zA-Z0-9-]+$"
+FREE_FORM_ATTRIBUTE = ".*"
+
+
+@lru_cache
+def load_controlled_vocabulary(project: str) -> dict:
+    project_config = yaml.safe_load(
+        CFG["config_developer_file"].read_text(encoding="utf-8")
+    )[project]
+    install_dir = os.path.dirname(os.path.realpath(esmvalcore.cmor.__file__))
+    cmor_type = project_config.get("cmor_type", "CMIP5")
+    default_path = os.path.join(install_dir, "tables", cmor_type.lower())
+    tables_path = project_config.get("cmor_path", default_path)
+    tables_path = os.path.expandvars(os.path.expanduser(tables_path))
+    if not os.path.exists(tables_path):
+        tables_path = os.path.join(install_dir, "tables", tables_path)
+    cv_paths = list(Path(tables_path, "Tables").glob("*_CV.json"))
+    if not cv_paths:
+        return {}
+    cv_path = cv_paths[0]
+    cv = json.loads(cv_path.read_text(encoding="utf-8"))
+    return cv["CV"]
+
+
+def check_with_controlled_vocabulary(
+    project: str,
+    attribute: str,
+    value: str,
+    attributes: dict[str, str],
+) -> bool:
+    cv = load_controlled_vocabulary(project)
+    values = cv[attribute]
+    if attribute in values:
+        values = values[attribute]
+    return value in values
+
+
+def check_institutution(
+    project: str,
+    attribute: str,
+    value: str,
+    attributes: dict[str, str],
+) -> bool:
+    cv = load_controlled_vocabulary(project)
+    institution_id = attributes["institution_id"]
+    return value == cv["institution_id"][institution_id]
+
+
+def create_source_checker(
+    source_attr: str,
+) -> Callable:
+    def checker(
+        project: str, attribute: str, value: str, attributes: dict[str, str]
+    ) -> bool:
+        cv = load_controlled_vocabulary(project)
+        source_id = attributes["source_id"]
+        return value == cv["source_id"][source_id][source_attr]
+
+    return checker
+
+
+def check_source_label(
+    project: str,
+    attribute: str,
+    value: str,
+    attributes: dict[str, str],
+) -> bool:
+    source_id = attributes["source_id"]
+    return source_id.startswith(f"{value}-")
+
+
+def check_variant_label(
+    project: str,
+    attribute: str,
+    value: str,
+    attributes: dict[str, str],
+) -> bool:
+    institution_id = attributes["institution_id"]
+    return (value == institution_id) or re.match(
+        f"^{institution_id}-[a-zA-Z0-9-]+$", value
+    )
+
+
+def check_datetime(
+    project: str,
+    attribute: str,
+    value: str,
+    attributes: dict[str, str],
+) -> bool:
+    try:
+        datetime.datetime.fromisoformat(value)
+    except ValueError as exc:
+        logger.error("Invalid datetime format '%s'", exc)
+        return False
+    return True
+
+
+REQUIRED_GLOBAL_ATTRIBUTES = {
+    "obs4MIPs": {
+        "activity_id": "obs4MIPs",
+        "contact": FREE_FORM_ATTRIBUTE,
+        "creation_date": check_datetime,
+        "dataset_contributor": FREE_FORM_ATTRIBUTE,
+        "data_specs_version": FREE_FORM_ATTRIBUTE,  # TODO: automate, this should be the GH release of obs4MIPs CMOR tables
+        "frequency": check_with_controlled_vocabulary,
+        "grid": FREE_FORM_ATTRIBUTE,
+        "grid_label": check_with_controlled_vocabulary,
+        "institution": check_institutution,
+        "institution_id": check_with_controlled_vocabulary,
+        "license": FREE_FORM_ATTRIBUTE,
+        "nominal_resolution": check_with_controlled_vocabulary,
+        "processing_code_location": FREE_FORM_ATTRIBUTE,  # TODO: automate and add check
+        "product": check_with_controlled_vocabulary,
+        "realm": check_with_controlled_vocabulary,
+        "references": FREE_FORM_ATTRIBUTE,
+        "region": create_source_checker("region"),
+        "source": create_source_checker("source"),
+        "source_id": check_with_controlled_vocabulary,
+        "source_label": check_source_label,
+        "source_type": create_source_checker("source_type"),
+        "source_version_number": create_source_checker(
+            "source_version_number"
+        ),
+        "tracking_id": FREE_FORM_ATTRIBUTE,  # TODO: improve check
+        "variable_id": DRS_ATTRIBUTE,
+        "variant_label": check_variant_label,
+    }
+}
+
+OPTIONAL_GLOBAL_ATTRIBUTES = {
+    "obs4MIPs": {
+        "comment": FREE_FORM_ATTRIBUTE,
+        "external_variables": check_with_controlled_vocabulary,
+        "history": FREE_FORM_ATTRIBUTE,
+        "source_data_notes": FREE_FORM_ATTRIBUTE,
+        # TODO: Maybe we can add the two attributes below based on info from
+        # the automatic download.
+        "source_data_retrieval_date": check_datetime,
+        "source_data_url": FREE_FORM_ATTRIBUTE,
+        "title": FREE_FORM_ATTRIBUTE,
+        "variant_info": FREE_FORM_ATTRIBUTE,
+    }
+}
+
+
+def check_global_attributes(project: str, attributes: dict[str, str]) -> bool:
+    """Check if the required attributes are available for the project."""
+    success = True
+    # Check that required attributes are present.
+    for attr in REQUIRED_GLOBAL_ATTRIBUTES.get(project, {}):
+        if attr not in attributes:
+            logger.error("Missing global attribute '%s'", attr)
+            success = False
+
+    # Check attribute values.
+    attr_definitions = REQUIRED_GLOBAL_ATTRIBUTES.get(
+        project, {}
+    ) | OPTIONAL_GLOBAL_ATTRIBUTES.get(project, {})
+
+    for attr, checker in attr_definitions.items():
+        if attr in attributes:
+            value = attributes[attr]
+            if not isinstance(checker, str):
+                result = checker(project, attr, value, attributes)
+            else:
+                result = re.match(checker, value)
+
+            if not result:
+                logger.error(
+                    "Invalid value '%s' for attribute '%s', expected a value "
+                    "matching '%s'",
+                    value,
+                    attr,
+                    checker,
+                )
+                success = False
+
+    return success
+
+
+def _get_attr_from_field_coord(ncfield, coord_name, attr):
+    if coord_name is not None:
+        attrs = ncfield.cf_group[coord_name].cf_attrs()
+        attr_val = [value for (key, value) in attrs if key == attr]
+        if attr_val:
+            return attr_val[0]
+    return None
+
+
+def _load_callback(raw_cube, field, _):
+    """Use this callback to fix anything Iris tries to break."""
+    for coord in raw_cube.coords():
+        # Iris chooses to change longitude and latitude units to degrees
+        # regardless of value in file, so reinstating file value
+        if coord.standard_name in ["longitude", "latitude"]:
+            units = _get_attr_from_field_coord(field, coord.var_name, "units")
+            if units is not None:
+                coord.units = units
+
+
+def _check_formatting(filename: str, attributes: dict[str, str]) -> None:
+    """Run final cmorization checks."""
+    project = attributes["project_id"]
+    logger.info("Checking compliance with '%s' project standards", project)
+    cube = iris.load_cube(filename, callback=_load_callback)
+
+    attribute_success = check_global_attributes(
+        project, cube.attributes.globals
+    )
+
+    try:
+        cmor_check(
+            cube=cube,
+            cmor_table=project,
+            mip=attributes["mip"],
+            short_name=cube.var_name,
+            frequency=cube.attributes.globals.get("frequency"),
+            check_level=CheckLevels.STRICT,
+        )
+    except CMORCheckError as exc:
+        logger.error("%s", exc)
+        cmor_check_success = False
+    else:
+        cmor_check_success = True
+
+    success = attribute_success and cmor_check_success
+    msg = (
+        f"Data in file {filename} is {'' if success else 'not '}"
+        f"compliant with '{project}' project standards"
+    )
+    if success:
+        logger.info(msg)
+    else:
+        raise ValueError(msg)
+    # TODO: add concatenate test
+    # TODO: add time coverage test
+
+
+FILENAME_TEMPLATE = {
+    "obs4MIPs": "{variable_id}_{frequency}_{source_id}_{variant_label}_{grid_label}",
+    "OBS6": "{project_id}_{dataset_id}_{modeling_realm}_{version}_{mip}_{variable_id}",
+    "OBS": "{project_id}_{dataset_id}_{modeling_realm}_{version}_{mip}_{variable_id}",
+}
+
+
+def get_output_filename(attrs: dict[str, str], time_range: str | None) -> str:
+    """Get the output filename."""
+    project = attrs["project_id"]
+    filename = FILENAME_TEMPLATE[project].format(**attrs)
+    if time_range is not None:
+        filename = f"{filename}_{time_range}"
+    filename = f"{filename}.nc"
+    return filename
 
 
 def save_variable(cube, var, outdir, attrs, **kwargs):
@@ -341,15 +621,29 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     **kwargs: kwargs
         Keyword arguments to be passed to `iris.save`
     """
+    if var != cube.var_name:
+        msg = (
+            f"Attempted to save cube with var_name '{cube.var_name}' as "
+            f"variable '{var}'"
+        )
+        raise ValueError(msg)
+
+    # Set global attributes.
+    attrs["variable_id"] = cube.var_name
+    set_global_atts(cube, attrs)
+
+    # Ensure correct dtypes.
     fix_dtype(cube)
-    # CMOR standard
+
+    # Determine the output filename.
     try:
         time = cube.coord("time")
     except iris.exceptions.CoordinateNotFoundError:
         time_suffix = None
     else:
         if (
-            len(time.points) == 1 and "mon" not in cube.attributes.get("mip")
+            len(time.points) == 1
+            and "mon" not in cube.attributes.get("mip", "")
         ) or cube.attributes.get("frequency") == "yr":
             year = str(time.cell(0).point.year)
             time_suffix = "-".join([year + "01", year + "12"])
@@ -362,22 +656,17 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
             )
             time_suffix = "-".join([date1, date2])
 
-    name_elements = [
-        attrs["project_id"],
-        attrs["dataset_id"],
-        attrs["modeling_realm"],
-        attrs["version"],
-        attrs["mip"],
-        var,
-    ]
-    if time_suffix:
-        name_elements.append(time_suffix)
-    file_name = "_".join(name_elements) + ".nc"
+    file_name = get_output_filename(attrs, time_suffix)
     file_path = os.path.join(outdir, file_name)
     logger.info("Saving: %s", file_path)
+
+    # Save the cube.
     status = "lazy" if cube.has_lazy_data() else "realized"
     logger.info("Cube has %s data [lazy is preferred]", status)
     iris.save(cube, file_path, fill_value=1e20, **kwargs)
+
+    # Check that the cube complies with the CMOR tables for the project.
+    _check_formatting(file_path, attrs)
 
 
 def extract_doi_value(tags):
@@ -409,43 +698,69 @@ def extract_doi_value(tags):
     return ", ".join(reference_doi)
 
 
+def _get_processing_code_location() -> str:
+    # TODO: make sure current working dir is not dirty and replace version
+    # by commit that is available online
+    version = ".".join(esmvaltool.__version__.split(".", 3)[:3])
+    return f"https://github.com/ESMValGroup/ESMValTool/tree/{version}"
+
+
 def set_global_atts(cube, attrs):
     """Complete the cmorized file with global metadata."""
     logger.debug("Setting global metadata...")
     attrs = dict(attrs)
     cube.attributes.clear()
-    timestamp = datetime.datetime.utcnow()
-    timestamp_format = "%Y-%m-%d %H:%M:%S"
+    timestamp = datetime.datetime.now(datetime.timezone.utc)
+    timestamp_format = "%Y-%m-%dT%H:%M:%SZ"
     now_time = timestamp.strftime(timestamp_format)
 
     # Necessary attributes
-    try:
+    if attrs["project_id"] == "obs4MIPs":
         glob_dict = {
-            "title": (
-                f"{attrs.pop('dataset_id')} data reformatted for "
-                f"ESMValTool v{version}"
-            ),
-            "version": attrs.pop("version"),
-            "tier": str(attrs.pop("tier")),
-            "source": attrs.pop("source"),
-            "reference": extract_doi_value(attrs.pop("reference")),
-            "comment": attrs.pop("comment"),
-            "user": os.environ.get("USER", "unknown user"),
-            "host": os.environ.get("HOSTNAME", "unknown host"),
-            "history": f"Created on {now_time}",
-            "project_id": attrs.pop("project_id"),
+            "creation_date": now_time,
+            "tracking_id": f"hdl:21.14102/{uuid.uuid4()}",
+            "processing_code_location": _get_processing_code_location(),
+            "variable_id": cube.var_name,
         }
-    except KeyError as original_error:
-        msg = (
-            "All CMORized datasets need the global attributes "
-            "'dataset_id', 'version', 'tier', 'source', 'reference', "
-            "'comment' and 'project_id' "
-            "specified in the configuration file"
-        )
-        raise KeyError(msg) from original_error
+        required_keys = set(REQUIRED_GLOBAL_ATTRIBUTES["obs4MIPs"])
+        for key in required_keys | set(OPTIONAL_GLOBAL_ATTRIBUTES["obs4MIPs"]):
+            if key in attrs:
+                glob_dict[key] = attrs[key]
+        missing = required_keys - set(glob_dict)
+        if missing:
+            msg = (
+                "The following required keys are missing from the "
+                f"configuration file: {', '.join(sorted(missing))}"
+            )
+            raise KeyError(msg)
+    else:
+        try:
+            glob_dict = {
+                "title": (
+                    f"{attrs.pop('dataset_id')} data reformatted for "
+                    f"ESMValTool v{version}"
+                ),
+                "version": attrs.pop("version"),
+                "tier": str(attrs.pop("tier")),
+                "source": attrs.pop("source"),
+                "reference": extract_doi_value(attrs.pop("reference")),
+                "comment": attrs.pop("comment"),
+                "user": os.environ.get("USER", "unknown user"),
+                "host": os.environ.get("HOSTNAME", "unknown host"),
+                "history": f"Created on {now_time}",
+                "project_id": attrs.pop("project_id"),
+            }
+        except KeyError as original_error:
+            msg = (
+                "All CMORized datasets need the global attributes "
+                "'dataset_id', 'version', 'tier', 'source', 'reference', "
+                "'comment' and 'project_id' "
+                "specified in the configuration file"
+            )
+            raise KeyError(msg) from original_error
+        # Additional attributes
+        glob_dict.update(attrs)
 
-    # Additional attributes
-    glob_dict.update(attrs)
     cube.attributes.globals = glob_dict
 
 
