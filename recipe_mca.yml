@@ -33,15 +33,15 @@ documentation:
 
 preprocessors:
   predictor_preproc:
-    # regrid:
-    #   extra:
-    #     start_longitude: *start_longitude_preditand
-    #     end_longitude: *end_longitude_preditand
-    #     start_latitude: *start_latitude_preditand
-    #     end_latitude: *end_latitude_preditand
-    #     step_longitude: 2 #El regrid se puede hacer más rápido según si trabajamos con grids regulares o no etc
-    #     step_latitude: 2
-    #   scheme: linear
+    regrid:
+      target_grid:
+        start_longitude: *start_longitude_preditand
+        end_longitude: *end_longitude_preditand
+        start_latitude: *start_latitude_preditand
+        end_latitude: *end_latitude_preditand
+        step_longitude: 2 #El regrid se puede hacer más rápido según si trabajamos con grids regulares o no etc
+        step_latitude: 2
+      scheme: linear
     extract_season:
       season: *season_preditand 
     extract_region:
