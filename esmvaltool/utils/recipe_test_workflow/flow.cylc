@@ -1,0 +1,135 @@
+#!jinja2
+{{ assert(SITE != "", "SITE must be set to something other than an empty string") }}
+
+{% set SITE_RECIPES_FILE = "site/" ~ SITE ~ "-recipes.jinja" %}
+{% set MISSING_FILE_MSG =
+    "'" ~ SITE_RECIPES_FILE ~ "' is required for the RTW and was not "
+    "found - the 'How to add a recipe to the RTW' documentation provides more "
+    "information"%}
+{% set UNDEFINED_VARIABLE_MSG =
+    "variable must be set in your '" ~ SITE_RECIPES_FILE ~ "' file - the 'How "
+    "to add a recipe to the RTW' documentation provides more information."%}
+
+{{ assert(SITE_RECIPES_FILE is file_exists, MISSING_FILE_MSG) }}
+{% from SITE_RECIPES_FILE import FAST_RECIPES, MEDIUM_RECIPES %}
+
+{{ assert(FAST_RECIPES is defined, "The FAST_RECIPES " ~ UNDEFINED_VARIABLE_MSG) }}
+{{ assert(MEDIUM_RECIPES is defined, "The MEDIUM_RECIPES " ~ UNDEFINED_VARIABLE_MSG) }}
+
+[scheduler]
+    UTC mode = True
+
+[task parameters]
+    fast = {{ FAST_RECIPES | map(attribute="recipe_path") | join(", ") }}
+    medium = {{ MEDIUM_RECIPES | map(attribute="recipe_path") | join(", ") }}
+
+[scheduling]
+    initial cycle point = now
+    [[graph]]
+        R1 = """install_env_file => get_esmval => configure
+            configure => process<fast> => compare<fast>
+            configure => process<medium> => compare<medium>"""
+        T01 = """@wall_clock => get_esmval => configure
+            configure => process<fast> => compare<fast>
+            configure => process<medium> => compare<medium>"""
+
+[runtime]
+    [[root]]
+        script = rose task-run
+        env-script = "eval $(rose task-env)"
+        [[[environment]]]
+            ENV_NAME = {{ ENV_NAME }}
+            USER_CONFIG_DIR = ${ROSE_DATAC}
+            USER_CONFIG_PATH = ${USER_CONFIG_DIR}/config-user.yml
+            OUTPUT_DIR = ${ROSE_DATAC}
+            ESMVALCORE_DIR = ""
+            ESMVALTOOL_DIR = ""
+            PYTHONPATH_PREPEND = ""
+
+    [[install_env_file]]
+        platform = localhost
+        [[[environment]]]
+            SITE = {{ SITE }}
+            ENV_FILE=rtw-env
+            ENV_FILE_SITE_PATH=${CYLC_WORKFLOW_RUN_DIR}/site/${SITE}-env
+            SHARE_BIN_DIR=${CYLC_WORKFLOW_SHARE_DIR}/bin
+
+    [[get_esmval]]
+        [[[environment]]]
+            ROSE_APP_OPT_CONF_KEYS = {{ SITE }}
+
+    [[configure]]
+        [[[environment]]]
+            ROSE_TASK_APP = configure
+            DRS_CMIP3 = {{ DRS_CMIP3 }}
+            DRS_CMIP5 = {{ DRS_CMIP5 }}
+            DRS_CMIP6 = {{ DRS_CMIP6 }}
+            DRS_CORDEX = {{ DRS_CORDEX }}
+            DRS_OBS = {{ DRS_OBS }}
+            DRS_OBS6 = {{ DRS_OBS6 }}
+            DRS_ANA4MIPS = {{ DRS_ANA4MIPS }}
+            DRS_NATIVE6 = {{ DRS_NATIVE6 }}
+            DRS_OBS4MIPS = {{ DRS_OBS4MIPS }}
+            MAX_PARALLEL_TASKS = {{ MAX_PARALLEL_TASKS }}
+            ROOTPATH_CMIP3 = {{ ROOTPATH_CMIP3 }}
+            ROOTPATH_CMIP5 = {{ ROOTPATH_CMIP5 }}
+            ROOTPATH_CMIP6 = {{ ROOTPATH_CMIP6 }}
+            ROOTPATH_CORDEX = {{ ROOTPATH_CORDEX }}
+            ROOTPATH_OBS = {{ ROOTPATH_OBS }}
+            ROOTPATH_OBS6 = {{ ROOTPATH_OBS6 }}
+            ROOTPATH_ANA4MIPS = {{ ROOTPATH_ANA4MIPS }}
+            ROOTPATH_NATIVE6 = {{ ROOTPATH_NATIVE6 }}
+            ROOTPATH_OBS4MIPS = {{ ROOTPATH_OBS4MIPS }}
+            ROOTPATH_RAWOBS = {{ ROOTPATH_RAWOBS }}
+
+    # Bash variable substitution below replaces `--` with `/` to obtain path to
+    # recipe.
+{% for RECIPE in FAST_RECIPES %}
+    [[process<fast={{ RECIPE["recipe_path"] }}>]]
+        inherit = None, COMPUTE
+        execution time limit = {{ RECIPE["max_time"] }}
+        [[[environment]]]
+            ROSE_TASK_APP = process
+            RECIPE_PATH = "${CYLC_TASK_PARAM_fast//--//}.yml"
+        [[[directives]]]
+            --mem = {{ RECIPE["max_memory"] }}
+{% endfor %}
+
+{% for RECIPE in MEDIUM_RECIPES %}
+    [[process<medium={{ RECIPE["recipe_path"] }}>]]
+        inherit = None, COMPUTE
+        execution time limit = {{ RECIPE["max_time"] }}
+        [[[environment]]]
+            ROSE_TASK_APP = process
+            RECIPE_PATH = "${CYLC_TASK_PARAM_medium//--//}.yml"
+        [[[directives]]]
+            --mem = {{ RECIPE["max_memory"] }}
+{% endfor %}
+
+    [[COMPARE]]
+        inherit = None, COMPUTE
+        [[[environment]]]
+            ROSE_TASK_APP = compare
+            KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
+            COMPARE_SCRIPT=${ESMVALTOOL_DIR}/esmvaltool/utils/testing/regression/compare.py
+
+    # Bash variable manipulation `##*--` below strips leading path from recipe
+    # parameter to obtain RECIPE_NAME.
+    # RECIPE_NAME is the recipe file basename without yml extension, as used by
+    # ESMValTool for naming output directories. E.g. for the recipe
+    # examples/recipe_python.yml, RECIPE_NAME=recipe_python
+    [[compare<fast>]]
+        inherit = COMPARE
+        [[[environment]]]
+            RECIPE_NAME = "${CYLC_TASK_PARAM_fast##*--}"
+            COMPARISON_OUTPUT_DIR=${OUTPUT_DIR}/${RECIPE_NAME}*
+            KGO_DIR=${KGO_ROOT_PATH}/${RECIPE_NAME}*
+
+    [[compare<medium>]]
+        inherit = COMPARE
+        [[[environment]]]
+            RECIPE_NAME = "${CYLC_TASK_PARAM_medium##*--}"
+            COMPARISON_OUTPUT_DIR=${OUTPUT_DIR}/${RECIPE_NAME}*
+            KGO_DIR=${KGO_ROOT_PATH}/${RECIPE_NAME}*
+
+{% include "site/" ~ SITE ~ ".cylc" %}

@@ -8,7 +8,7 @@ Installation
    ESMValTool now uses `mamba` instead of `conda` for the recommended installation.
    For more information about the change, have a look at :ref:`Move to Mamba<move-to-mamba>`.
 
-ESMValTool supports Python 3.9 and later and requires Linux or MacOS.
+ESMValTool supports Python 3.10 and later and requires Linux or MacOS.
 Successful usage on Windows has been reported by following the Linux
 installation instructions with
 `WSL <https://learn.microsoft.com/en-us/windows/wsl/install>`__.
@@ -72,15 +72,15 @@ https://mamba.readthedocs.io/en/latest/installation.html.
     installation.
 
 First download the installation file for
-`Linux <https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh>`_
+`Linux <https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh>`_
 or
-`MacOSX <https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-MacOSX-x86_64.sh>`_.
+`MacOSX <https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-x86_64.sh>`_.
 After downloading the installation file from one of the links above, execute it
 by running (Linux example):
 
 .. code-block:: bash
 
-    bash Mambaforge-Linux-x86_64.sh
+    bash Miniforge3-Linux-x86_64.sh
 
 and follow the instructions on your screen.
 
@@ -99,7 +99,7 @@ later by running:
     source <prefix>/etc/profile.d/conda.sh
 
 where ``<prefix>`` is the installation location of mamba (e.g.
-``/home/$USER/mambaforge`` if you chose the default installation path).
+``/home/$USER/miniforge3`` if you chose the default installation path).
 
 If you use another shell than Bash, have a look at the available configurations
 in the ``<prefix>/etc/profile.d`` directory.
@@ -111,7 +111,7 @@ You can check that mamba installed correctly by running
     which mamba
 
 this should show the path to your mamba executable, e.g.
-``~/mambaforge/bin/mamba``.
+``~/miniforge3/bin/mamba``.
 
 It is recommended to update both mamba and conda after installing:
 
@@ -396,6 +396,16 @@ install the ESMValTool Julia dependencies:
 
     esmvaltool install Julia
 
+If you are planning to do any coding, install the :ref:`esmvaltool:pre-commit`
+hooks by running:
+
+.. code-block:: bash
+
+    pre-commit install
+
+these will make sure that when you commit your changes, they will be formatted
+correctly.
+
 The next step is to check that the installation works properly.
 To do this, run the tool with:
 
@@ -489,9 +499,18 @@ To check that the installation was successful, run
 this should show the directory of the source code that you just downloaded.
 
 If the command above shows a directory inside your conda environment instead,
-e.g. ``~/mambaforge/envs/esmvaltool/lib/python3.9/site-packages/esmvalcore``,
+e.g. ``~/miniforge3/envs/esmvaltool/lib/python3.11/site-packages/esmvalcore``,
 you may need to manually remove that directory and run
 ``pip install --editable '.[develop]'`` again.
+
+Finally, also install the :ref:`esmvaltool:pre-commit` hooks by running:
+
+.. code-block:: bash
+
+    pre-commit install
+
+these will make sure that when you commit your changes, they will be formatted
+correctly.
 
 .. _install_on_hpc:
 
@@ -684,40 +703,6 @@ repository, a direct download link can be found `here <https://raw.githubusercon
 Common installation problems and their solutions
 ================================================
 
-Mamba fails to solve the environment
-------------------------------------
-If you see the text ``Solving environment:`` with the characters ``-\|/`` rotating
-behind it for more than 10 minutes, mamba may be having problems finding a
-working combination of versions of the packages that the ESMValTool depends on.
-Because the ESMValTool is a community tool, there is no strict selection of
-which tools can be used and installing the ESMValTool requires installing almost
-any package that is available for processing climate data.
-To help mamba solve the environment, you can try the following.
-
-Always use the latest version of mamba, as problems have been reported by people
-using older versions, to update, run:
-
-.. code-block:: bash
-
-    mamba update --name base mamba
-
-Usually mamba is much better at solving new environments than updating older
-environments, so it is often a good idea to create a new environment if updating
-does not work.
-
-It can help mamba if you let it know what version of certain packages you want,
-for example by running
-
-.. code-block:: bash
-
-    mamba create -n esmvaltool esmvaltool 'python=3.11'
-
-you ask for Python 3.11 specifically and that makes it much easier for mamba to
-solve the environment, because now it can ignore any packages that were built
-for other Python versions. Note that, since the esmvaltool package is built
-with Python>=3.9, asking for an older Python version, e.g. `python=3.7`, in
-this way, it will result in installation failure.
-
 Problems with proxies
 ---------------------
 If you are installing ESMValTool from source from behind a proxy that does not
@@ -778,7 +763,7 @@ Problems when updating the conda environment
 --------------------------------------------
 Usually mamba is much better at solving new environments than updating older
 environments, so it is often a good idea to create a new environment if updating
-does not work. See also `Mamba fails to solve the environment`_.
+does not work.
 
 Do not run ``mamba update --update-all`` in the ``esmvaltool``
 environment since that will update some packages that are pinned to

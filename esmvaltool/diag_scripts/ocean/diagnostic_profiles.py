@@ -45,16 +45,17 @@ This tool is part of the ocean diagnostic tools package in the ESMValTool.
 Author: Lee de Mora (PML)
         ledm@pml.ac.uk
 """
+
 import logging
 import os
 import sys
 
-import numpy as np
 import iris
 import iris.coord_categorisation
 import iris.exceptions
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
+import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -79,27 +80,27 @@ def determine_profiles_str(cube):
     str
         Returns a string which describes the profile.
     """
-    options = ['latitude', 'longitude']
+    options = ["latitude", "longitude"]
     for option in options:
         coord = cube.coord(option)
         if len(coord.points) > 1:
             continue
         value = coord.points.mean()
-        if option == 'latitude':
-            return str(value) + ' N'
-        if option == 'longitude':
-            if value > 180.:
-                return str(value - 360.) + ' W'
-            return str(value) + ' E'
-    return ''
+        if option == "latitude":
+            return str(value) + " N"
+        if option == "longitude":
+            if value > 180.0:
+                return str(value - 360.0) + " W"
+            return str(value) + " E"
+    return ""
 
 
 def make_profiles_plots(
-        cfg,
-        metadata,
-        filename,
-        obs_metadata={},
-        obs_filename='',
+    cfg,
+    metadata,
+    filename,
+    obs_metadata=None,
+    obs_filename="",
 ):
     """
     Make a profile plot for an individual model.
@@ -121,8 +122,10 @@ def make_profiles_plots(
 
     """
     # Load cube and set up units
+    if obs_metadata is None:
+        obs_metadata = {}
     cube = iris.load_cube(filename)
-    cube = diagtools.bgc_units(cube, metadata['short_name'])
+    cube = diagtools.bgc_units(cube, metadata["short_name"])
 
     try:
         raw_times = diagtools.cube_time_to_float(cube)
@@ -131,9 +134,9 @@ def make_profiles_plots(
 
     # Make annual or Decadal means from:
     if np.max(raw_times) - np.min(raw_times) < 20:
-        if not cube.coords('year'):
-            iris.coord_categorisation.add_year(cube, 'time')
-        cube = cube.aggregated_by('year', iris.analysis.MEAN)
+        if not cube.coords("year"):
+            iris.coord_categorisation.add_year(cube, "time")
+        cube = cube.aggregated_by("year", iris.analysis.MEAN)
     else:
         cube = diagtools.decadal_average(cube)
 
@@ -141,40 +144,51 @@ def make_profiles_plots(
     time_0 = times_float[0]
 
     # Is this data is a multi-model dataset?
-    multi_model = metadata['dataset'].find('MultiModel') > -1
+    multi_model = metadata["dataset"].find("MultiModel") > -1
 
-    cmap = plt.cm.get_cmap('jet')
+    cmap = plt.cm.get_cmap("jet")
 
     plot_details = {}
     for time_index, time in enumerate(times_float):
         if times_float[-1] == time_0:
-            color = 'black'
+            color = "black"
         else:
             color = cmap((time - time_0) / (times_float[-1] - time_0))
 
-        qplt.plot(cube[time_index, :], cube[time_index, :].coord('depth'),
-                  c=color)
+        qplt.plot(
+            cube[time_index, :], cube[time_index, :].coord("depth"), c=color
+        )
 
-        plot_details[str(time_index)] = {'c': color, 'ls': '-', 'lw': 1,
-                                         'label': str(int(time))}
+        plot_details[str(time_index)] = {
+            "c": color,
+            "ls": "-",
+            "lw": 1,
+            "label": str(int(time)),
+        }
 
     # Add observational data.
     if obs_filename:
         obs_cube = iris.load_cube(obs_filename)
-        obs_cube = diagtools.bgc_units(obs_cube, metadata['short_name'])
-        obs_cube = obs_cube.collapsed('time', iris.analysis.MEAN)
+        obs_cube = diagtools.bgc_units(obs_cube, metadata["short_name"])
+        obs_cube = obs_cube.collapsed("time", iris.analysis.MEAN)
 
-        obs_key = obs_metadata['dataset']
-        qplt.plot(obs_cube, obs_cube.coord('depth'), c='black')
+        obs_key = obs_metadata["dataset"]
+        qplt.plot(obs_cube, obs_cube.coord("depth"), c="black")
 
-        plot_details[obs_key] = {'c': 'black', 'ls': '-', 'lw': 1,
-                                 'label': obs_key}
+        plot_details[obs_key] = {
+            "c": "black",
+            "ls": "-",
+            "lw": 1,
+            "label": obs_key,
+        }
 
     # Add title to plot
-    title = ' '.join([
-        metadata['dataset'],
-        metadata['long_name'],
-    ])
+    title = " ".join(
+        [
+            metadata["dataset"],
+            metadata["long_name"],
+        ]
+    )
     plt.title(title)
 
     # Add Legend outside right.
@@ -185,27 +199,27 @@ def make_profiles_plots(
 
     # Determine image filename:
     if multi_model:
-        path = diagtools.folder(
-            cfg['plot_dir']) + os.path.basename(filename).replace(
-                '.nc', '_profile' + image_extention)
+        path = diagtools.folder(cfg["plot_dir"]) + os.path.basename(
+            filename
+        ).replace(".nc", "_profile" + image_extention)
     else:
         path = diagtools.get_image_path(
             cfg,
             metadata,
-            suffix='profile' + image_extention,
+            suffix="profile" + image_extention,
         )
 
     # Saving files:
-    logger.info('Saving plots to %s', path)
+    logger.info("Saving plots to %s", path)
     plt.savefig(path)
     plt.close()
 
     provenance_record = diagtools.prepare_provenance_record(
         cfg,
-        caption=f'Profiles of {title}',
-        statistics=['mean'],
-        domain=['global'],
-        plot_type=['vert'],
+        caption=f"Profiles of {title}",
+        statistics=["mean"],
+        domain=["global"],
+        plot_type=["vert"],
         ancestors=[filename, obs_filename],
     )
 
@@ -226,46 +240,49 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
-    for index, metadata_filename in enumerate(cfg['input_files']):
-        logger.info('metadata filename:\t%s', metadata_filename)
+    for index, metadata_filename in enumerate(cfg["input_files"]):
+        logger.info("metadata filename:\t%s", metadata_filename)
 
         metadatas = diagtools.get_input_files(cfg, index=index)
 
-        obs_key = 'observational_dataset'
-        obs_filename = ''
+        obs_key = "observational_dataset"
+        obs_filename = ""
         obs_metadata = {}
 
         if obs_key in cfg:
-            obs_filename = diagtools.match_model_to_key(obs_key,
-                                                        cfg[obs_key],
-                                                        metadatas)
+            obs_filename = diagtools.match_model_to_key(
+                obs_key, cfg[obs_key], metadatas
+            )
             if obs_filename:
                 obs_metadata = metadatas[obs_filename]
             else:
-                obs_metadata = ''
+                obs_metadata = ""
         for filename in sorted(metadatas.keys()):
-
             if filename == obs_filename:
                 continue
 
-            if metadatas[filename]['frequency'] == 'fx':
+            if metadatas[filename]["frequency"] == "fx":
                 continue
 
-            logger.info('-----------------')
+            logger.info("-----------------")
             logger.info(
-                'model filenames:\t%s',
+                "model filenames:\t%s",
                 filename,
             )
 
             ######
             # Time series of individual model
-            make_profiles_plots(cfg, metadatas[filename], filename,
-                                obs_metadata=obs_metadata,
-                                obs_filename=obs_filename)
+            make_profiles_plots(
+                cfg,
+                metadatas[filename],
+                filename,
+                obs_metadata=obs_metadata,
+                obs_filename=obs_filename,
+            )
 
-    logger.info('Success')
+    logger.info("Success")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with run_diagnostic() as config:
         main(config)

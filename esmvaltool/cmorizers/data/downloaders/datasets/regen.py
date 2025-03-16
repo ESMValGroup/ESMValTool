@@ -8,8 +8,9 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 from esmvaltool.cmorizers.data.utilities import read_cmor_config
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -39,10 +40,13 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
-    base_path = ("http://dapds00.nci.org.au/thredds/fileServer/ks32/CLEX_Data/"
-                 "REGEN_AllStns/v1-2019/REGEN_AllStns_{version}_{year}.nc")
-    version = read_cmor_config(dataset)['attributes']['version']
+    base_path = (
+        "http://dapds00.nci.org.au/thredds/fileServer/ks32/CLEX_Data/"
+        "REGEN_AllStns/v1-2019/REGEN_AllStns_{version}_{year}.nc"
+    )
+    version = read_cmor_config(dataset)["attributes"]["version"]
     while loop_date <= end_date:
         downloader.download_folder(
-            base_path.format(year=loop_date.year, version=version), [])
+            base_path.format(year=loop_date.year, version=version), []
+        )
         loop_date += relativedelta.relativedelta(years=1)
