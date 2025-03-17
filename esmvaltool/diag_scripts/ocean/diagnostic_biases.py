@@ -274,8 +274,9 @@ class Data4Analyis:
             self.border1 = None
             self.border2 = None
             logger.info(
-                f"There were no statistics calculated for {self.name}"
-                "because only one cube was provided"
+                "There were no statistics calculated for %s"
+                "because only one cube was provided",
+                self.name,
             )
 
 
