@@ -9,12 +9,12 @@ attributes:
   source: ''
   reference: 'rss'
   comment: |
-    'Remote Sensing Systems. 
-     Monthly Mean Total Precipitable Water Data Set 
-     on a 1 degree grid made from Remote Sensing 
-     Systems Version-7 Microwave Radiometer Data, 
-     Date created: 20201110T185551Z 
-     [accessed on 2020-11-19]. Santa Rosa, CA, USA. 
+    'Remote Sensing Systems.
+     Monthly Mean Total Precipitable Water Data Set
+     on a 1 degree grid made from Remote Sensing
+     Systems Version-7 Microwave Radiometer Data,
+     Date created: 20201110T185551Z
+     [accessed on 2020-11-19]. Santa Rosa, CA, USA.
      Available at www.remss.com'
 
 # Variables to CMORize

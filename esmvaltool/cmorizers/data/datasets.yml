@@ -1263,14 +1263,14 @@ datasets:
     info: |
       Download the following files:
         REGEN_AllStns_{version}_[1950..2016].nc
-  
+
   RSS:
     tier: 2
     source:  ftp://ftp.remss.com/vapor/monthly_1deg/
     last_access: 2020-11-19
     info: |
        A registration is required for downloading the data,
-       but no licence agreement necessary. 
+       but no licence agreement necessary.
        Download vapor, here ncdf3 file is used.
 
   Scripps-CO2-KUM:
