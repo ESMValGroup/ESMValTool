@@ -1,23 +1,19 @@
 #!/usr/bin/env python
 """Diagnostic script to plot figure 3.12 of IPCC AR 6 chapter 3
 
-(based on Santer et al. (2007) and Santer et al. (2021)).
-
-##############################################################################
-ipcc_ar6/santer21jclimfig.py
-Author: Katja Weigel (IUP, Uni Bremen, Germany)
-EVal4CMIP ans 4C project
-##############################################################################
-
 Description
 -----------
-    Trends in CMIP5 and CMIP6 compared to observational and reanalysis data
-    based on methods used in Santer et al. (2007) and Santer et al. (2021).
-    https://www.pnas.org/doi/10.1073/pnas.0702872104
-    https://doi.org/10.1175/JCLI-D-20-0768.1
+Trends in CMIP5 and CMIP6 compared to observational and reanalysis data
+based on methods used in Santer et al. (2007) and Santer et al. (2021).
+https://www.pnas.org/doi/10.1073/pnas.0702872104
+https://doi.org/10.1175/JCLI-D-20-0768.1
 
-Configuration options
----------------------
+Author
+------
+Katja Weigel (IUP, Uni Bremen, and DLR, Germany)
+
+Configuration options in recipe
+-------------------------------
 sample_obs: optional, filter all data sets (netCDF file with 0 and 1 for
             used grid). The data sets must be interpolated to the same lat/lon
             grid as the filter.
