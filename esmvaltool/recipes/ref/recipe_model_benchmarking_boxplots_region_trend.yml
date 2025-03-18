@@ -46,7 +46,7 @@ preprocessors:
       crop: true
       decomposed: true
       ids:
-        Name: 
+        Name:
           - N.Europe
     area_statistics:
       operator: mean
@@ -56,7 +56,7 @@ preprocessors:
       coordinate: time
     convert_units:
       units: kg s-3 year-1
-  
+
   trend_psl:
     custom_order: true
     extract_shape:
@@ -64,7 +64,7 @@ preprocessors:
       crop: true
       decomposed: true
       ids:
-        Name: 
+        Name:
           - N.Europe
     area_statistics:
       operator: mean
@@ -82,7 +82,7 @@ preprocessors:
       crop: true
       decomposed: true
       ids:
-        Name: 
+        Name:
           - N.Europe
     mask_landsea:
       mask_out: sea
@@ -102,7 +102,7 @@ preprocessors:
       crop: true
       decomposed: true
       ids:
-        Name: 
+        Name:
           - N.Europe
     area_statistics:
       operator: mean
@@ -120,7 +120,7 @@ preprocessors:
       crop: true
       decomposed: true
       ids:
-        Name: 
+        Name:
           - N.Europe
     mask_below_threshold:
       threshold: 273.15
@@ -150,7 +150,7 @@ diagnostics:
         <<: *var_settings
         preprocessor: trend_pr
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, 
+          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3,
              tier: 2}
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3}
@@ -174,5 +174,4 @@ diagnostics:
           figsize: [4, 5]
           layout: constrained
         # Overwrites metric in title, necessary, if no distance metric is used
-        title_metric: 'Linear trend (2001-2014)' 
-
+        title_metric: 'Linear trend (2001-2014)'

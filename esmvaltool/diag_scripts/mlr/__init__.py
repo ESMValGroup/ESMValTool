@@ -26,31 +26,31 @@ from esmvaltool.diag_scripts.shared import (
 logger = logging.getLogger(os.path.basename(__file__))
 
 NECESSARY_KEYS = io.NECESSARY_KEYS + [
-    'tag',
-    'var_type',
+    "tag",
+    "var_type",
 ]
 VAR_TYPES = [
-    'feature',
-    'label',
-    'label_to_rescale',
-    'prediction_input',
-    'prediction_input_error',
-    'prediction_output',
-    'prediction_output_error',
-    'prediction_output_misc',
-    'prediction_reference',
-    'prediction_residual',
+    "feature",
+    "label",
+    "label_to_rescale",
+    "prediction_input",
+    "prediction_input_error",
+    "prediction_output",
+    "prediction_output_error",
+    "prediction_output_misc",
+    "prediction_reference",
+    "prediction_residual",
 ]
 WARNINGS_TO_IGNORE = [
     {
-        'message': ".* contains unknown cell method 'trend'",
-        'category': UnknownCellMethodWarning,
-        'module': 'iris',
+        "message": ".* contains unknown cell method 'trend'",
+        "category": UnknownCellMethodWarning,
+        "module": "iris",
     },
     {
-        'message': "Using DEFAULT_SPHERICAL_EARTH_RADIUS",
-        'category': UserWarning,
-        'module': 'iris',
+        "message": "Using DEFAULT_SPHERICAL_EARTH_RADIUS",
+        "category": UserWarning,
+        "module": "iris",
     },
 ]
 
@@ -64,12 +64,20 @@ def _check_coords(cube, coords, weights_type):
         except iris.exceptions.CoordinateNotFoundError:
             logger.error(
                 "Calculation of %s for cube %s failed, coordinate "
-                "'%s' not found", weights_type, cube_str, coord_name)
+                "'%s' not found",
+                weights_type,
+                cube_str,
+                coord_name,
+            )
             raise
         if not coord.has_bounds():
             logger.debug(
                 "Guessing bounds of coordinate '%s' of cube %s for "
-                "calculation of %s", coord_name, cube_str, weights_type)
+                "calculation of %s",
+                coord_name,
+                cube_str,
+                weights_type,
+            )
             coord.guess_bounds()
 
 
@@ -91,19 +99,27 @@ def _get_ne_land_mask_cube(n_lats=1000, n_lons=2000):
     """Get Natural Earth land mask."""
     ne_dir = os.path.join(
         os.path.dirname(os.path.realpath(esmvalcore.preprocessor.__file__)),
-        'ne_masks',
+        "ne_masks",
     )
-    ne_file = os.path.join(ne_dir, 'ne_10m_land.shp')
+    ne_file = os.path.join(ne_dir, "ne_10m_land.shp")
     reader = shapereader.Reader(ne_file)
     geometries = list(reader.geometries())
 
     # Setup grid
     lat_coord = iris.coords.DimCoord(
-        np.linspace(-90.0, 90.0, n_lats), var_name='lat',
-        standard_name='latitude', long_name='latitude', units='degrees')
+        np.linspace(-90.0, 90.0, n_lats),
+        var_name="lat",
+        standard_name="latitude",
+        long_name="latitude",
+        units="degrees",
+    )
     lon_coord = iris.coords.DimCoord(
-        np.linspace(-180.0, 180.0, n_lons), var_name='lon',
-        standard_name='longitude', long_name='longitude', units='degrees')
+        np.linspace(-180.0, 180.0, n_lons),
+        var_name="lon",
+        standard_name="longitude",
+        long_name="longitude",
+        units="degrees",
+    )
     (lats, lons) = np.meshgrid(lat_coord.points, lon_coord.points)
 
     # Setup mask (1: land, 0: sea)
@@ -113,11 +129,13 @@ def _get_ne_land_mask_cube(n_lats=1000, n_lons=2000):
     land_mask = np.swapaxes(np.where(mask, 1, 0), 0, 1)
 
     # Setup cube
-    cube = iris.cube.Cube(land_mask,
-                          var_name='land_mask',
-                          long_name='Land mask (1: land, 0: sea)',
-                          units='no_unit',
-                          dim_coords_and_dims=[(lat_coord, 0), (lon_coord, 1)])
+    cube = iris.cube.Cube(
+        land_mask,
+        var_name="land_mask",
+        long_name="Land mask (1: land, 0: sea)",
+        units="no_unit",
+        dim_coords_and_dims=[(lat_coord, 0), (lon_coord, 1)],
+    )
     return cube
 
 
@@ -136,15 +154,16 @@ def check_predict_kwargs(predict_kwargs):
         keyword arguments.
 
     """
-    return_var = predict_kwargs.get('return_var', False)
-    return_cov = predict_kwargs.get('return_cov', False)
+    return_var = predict_kwargs.get("return_var", False)
+    return_cov = predict_kwargs.get("return_cov", False)
     if return_var and return_cov:
         raise RuntimeError(
             "Cannot return variance (return_cov=True) and full covariance "
-            "matrix (return_cov=True) simultaneously")
+            "matrix (return_cov=True) simultaneously"
+        )
 
 
-def create_alias(dataset, attributes, delimiter='-'):
+def create_alias(dataset, attributes, delimiter="-"):
     """Create alias key of a dataset using a list of attributes.
 
     Parameters
@@ -170,17 +189,19 @@ def create_alias(dataset, attributes, delimiter='-'):
     alias = []
     if not attributes:
         raise ValueError(
-            "Expected at least one element for attributes, got empty list")
+            "Expected at least one element for attributes, got empty list"
+        )
     for attribute in attributes:
         if attribute not in dataset:
             raise AttributeError(
                 f"Dataset {dataset} does not contain attribute '{attribute}' "
-                f"for alias creation")
+                f"for alias creation"
+            )
         alias.append(dataset[attribute])
     return delimiter.join(alias)
 
 
-def datasets_have_mlr_attributes(datasets, log_level='debug', mode='full'):
+def datasets_have_mlr_attributes(datasets, log_level="debug", mode="full"):
     """Check (MLR) attributes of ``datasets``.
 
     Parameters
@@ -206,22 +227,29 @@ def datasets_have_mlr_attributes(datasets, log_level='debug', mode='full'):
 
     """
     output = True
-    accepted_modes = ('full', 'only_missing', 'only_var_type')
+    accepted_modes = ("full", "only_missing", "only_var_type")
     if mode not in accepted_modes:
         raise ValueError(
-            f"'mode' must be one of {accepted_modes}, got '{mode}'")
+            f"'mode' must be one of {accepted_modes}, got '{mode}'"
+        )
     for dataset in datasets:
-        if mode != 'only_var_type':
+        if mode != "only_var_type":
             for key in NECESSARY_KEYS:
                 if key not in dataset:
                     getattr(logger, log_level)(
                         "Dataset '%s' does not have necessary (MLR) attribute "
-                        "'%s'", dataset, key)
+                        "'%s'",
+                        dataset,
+                        key,
+                    )
                     output = False
-        if mode != 'only_missing' and dataset.get('var_type') not in VAR_TYPES:
+        if mode != "only_missing" and dataset.get("var_type") not in VAR_TYPES:
             getattr(logger, log_level)(
                 "Dataset '%s' has invalid var_type '%s', must be one of %s",
-                dataset, dataset.get('var_type'), VAR_TYPES)
+                dataset,
+                dataset.get("var_type"),
+                VAR_TYPES,
+            )
             output = False
     return output
 
@@ -259,17 +287,21 @@ def get_1d_cube(x_data, y_data, x_kwargs=None, y_kwargs=None):
     y_data = np.ma.array(y_data)
     if x_data.ndim != 1:
         raise ValueError(
-            f"Expected 1D array for 'x_data', got {x_data.ndim:d}D array")
+            f"Expected 1D array for 'x_data', got {x_data.ndim:d}D array"
+        )
     if y_data.ndim != 1:
         raise ValueError(
-            f"Expected 1D array for 'y_data', got {y_data.ndim:d}D array")
+            f"Expected 1D array for 'y_data', got {y_data.ndim:d}D array"
+        )
     if x_data.shape != y_data.shape:
         raise ValueError(
             f"Expected identical shapes for 'x_data' and 'y_data', got "
-            f"{x_data.shape} and {y_data.shape}, respectively")
+            f"{x_data.shape} and {y_data.shape}, respectively"
+        )
     aux_coord = iris.coords.AuxCoord(x_data, **x_kwargs)
-    cube = iris.cube.Cube(y_data, aux_coords_and_dims=[(aux_coord, 0)],
-                          **y_kwargs)
+    cube = iris.cube.Cube(
+        y_data, aux_coords_and_dims=[(aux_coord, 0)], **y_kwargs
+    )
     return cube
 
 
@@ -299,7 +331,8 @@ def get_absolute_time_units(units):
         units = Unit(units.symbol.split()[0])
     if not units.is_time():
         raise ValueError(
-            f"Cannot convert units '{units}' to reasonable time units")
+            f"Cannot convert units '{units}' to reasonable time units"
+        )
     return units
 
 
@@ -319,18 +352,23 @@ def get_alias(dataset):
     """
     alias = f"{dataset['project']} dataset {dataset['dataset']}"
     additional_info = []
-    for key in ('mip', 'exp', 'ensemble'):
+    for key in ("mip", "exp", "ensemble"):
         if key in dataset:
             additional_info.append(dataset[key])
     if additional_info:
         alias += f" ({', '.join(additional_info)})"
-    if 'start_year' in dataset and 'end_year' in dataset:
+    if "start_year" in dataset and "end_year" in dataset:
         alias += f" from {dataset['start_year']:d} to {dataset['end_year']:d}"
     return alias
 
 
-def get_all_weights(cube, area_weighted=True, time_weighted=True,
-                    landsea_fraction_weighted=None, normalize=False):
+def get_all_weights(
+    cube,
+    area_weighted=True,
+    time_weighted=True,
+    landsea_fraction_weighted=None,
+    normalize=False,
+):
     """Get all desired weights for a cube.
 
     Parameters
@@ -371,15 +409,18 @@ def get_all_weights(cube, area_weighted=True, time_weighted=True,
         dimensions.
 
     """
-    logger.debug("Calculating all weights of cube %s",
-                 cube.summary(shorten=True))
+    logger.debug(
+        "Calculating all weights of cube %s", cube.summary(shorten=True)
+    )
     weights = np.ones(cube.shape)
 
     # Horizontal weights
     horizontal_weights = get_horizontal_weights(
-        cube, area_weighted=area_weighted,
+        cube,
+        area_weighted=area_weighted,
         landsea_fraction_weighted=landsea_fraction_weighted,
-        normalize=normalize)
+        normalize=normalize,
+    )
     weights *= horizontal_weights
 
     # Time weights
@@ -418,14 +459,16 @@ def get_area_weights(cube, normalize=False):
 
     """
     logger.debug("Calculating area weights")
-    _check_coords(cube, ['latitude', 'longitude'], 'area weights')
-    area_weights = iris.analysis.cartography.area_weights(cube,
-                                                          normalize=normalize)
+    _check_coords(cube, ["latitude", "longitude"], "area weights")
+    area_weights = iris.analysis.cartography.area_weights(
+        cube, normalize=normalize
+    )
     return area_weights
 
 
-def get_horizontal_weights(cube, area_weighted=True,
-                           landsea_fraction_weighted=None, normalize=False):
+def get_horizontal_weights(
+    cube, area_weighted=True, landsea_fraction_weighted=None, normalize=False
+):
     """Get horizontal (latitude/longitude) weights of cube.
 
     Parameters
@@ -470,7 +513,8 @@ def get_horizontal_weights(cube, area_weighted=True,
         weights *= get_area_weights(cube, normalize=False)
     if landsea_fraction_weighted is not None:
         weights *= get_landsea_fraction_weights(
-            cube, landsea_fraction_weighted, normalize=False)
+            cube, landsea_fraction_weighted, normalize=False
+        )
 
     # No normalization
     if not normalize:
@@ -478,10 +522,10 @@ def get_horizontal_weights(cube, area_weighted=True,
 
     # Get horizontal dimensions
     horizontal_dims = []
-    if cube.coord_dims('latitude'):
-        horizontal_dims.append(cube.coord_dims('latitude')[0])
-    if cube.coord_dims('longitude'):
-        horizontal_dims.append(cube.coord_dims('longitude')[0])
+    if cube.coord_dims("latitude"):
+        horizontal_dims.append(cube.coord_dims("latitude")[0])
+    if cube.coord_dims("longitude"):
+        horizontal_dims.append(cube.coord_dims("longitude")[0])
 
     # Normalization
     horizontal_dims = tuple(horizontal_dims)
@@ -523,7 +567,7 @@ def get_input_data(cfg, pattern=None, check_mlr_attributes=True, ignore=None):
 
     """
     logger.debug("Extracting input files")
-    input_data = list(cfg['input_data'].values())
+    input_data = list(cfg["input_data"].values())
     input_data.extend(io.netcdf_to_metadata(cfg, pattern=pattern))
     input_data = deepcopy(input_data)
     if ignore is not None:
@@ -540,12 +584,13 @@ def get_input_data(cfg, pattern=None, check_mlr_attributes=True, ignore=None):
     if not valid_data:
         raise ValueError("No input data found")
     if check_mlr_attributes:
-        if not datasets_have_mlr_attributes(valid_data, log_level='error'):
-            raise ValueError("At least one input dataset does not have valid "
-                             "MLR attributes")
-    valid_data = sorted_metadata(valid_data, ['var_type', 'tag', 'dataset'])
+        if not datasets_have_mlr_attributes(valid_data, log_level="error"):
+            raise ValueError(
+                "At least one input dataset does not have valid MLR attributes"
+            )
+    valid_data = sorted_metadata(valid_data, ["var_type", "tag", "dataset"])
     logger.debug("Found files:")
-    logger.debug(pformat([d['filename'] for d in valid_data]))
+    logger.debug(pformat([d["filename"] for d in valid_data]))
     return valid_data
 
 
@@ -580,42 +625,49 @@ def get_landsea_fraction_weights(cube, area_type, normalize=False):
         ``latitude`` and ``longitude`` share dimensions.
 
     """
-    allowed_types = ('land', 'sea')
+    allowed_types = ("land", "sea")
     if area_type not in allowed_types:
         raise ValueError(
             f"Expected one of {allowed_types} for 'area_type' of land/sea "
-            f"fraction weighting, got '{area_type}'")
+            f"fraction weighting, got '{area_type}'"
+        )
     logger.debug("Calculating %s fraction weights", area_type)
-    _check_coords(cube, ['latitude', 'longitude'],
-                  f'{area_type} fraction weights')
-    lat_coord = cube.coord('latitude')
-    lon_coord = cube.coord('longitude')
+    _check_coords(
+        cube, ["latitude", "longitude"], f"{area_type} fraction weights"
+    )
+    lat_coord = cube.coord("latitude")
+    lon_coord = cube.coord("longitude")
     for coord in (lat_coord, lon_coord):
         if coord.ndim > 1:
             raise iris.exceptions.CoordinateMultiDimError(
                 f"Calculating {area_type} fraction weights for "
-                f"multidimensional coordinate '{coord.name}' is not supported")
+                f"multidimensional coordinate '{coord.name}' is not supported"
+            )
     if cube.coord_dims(lat_coord) != ():
         if cube.coord_dims(lat_coord) == cube.coord_dims(lon_coord):
             raise ValueError(
                 f"1D latitude and longitude coordinates share dimensions "
                 f"(this usually happens with unstructured grids) - "
                 f"calculating {area_type} fraction weights for latitude and "
-                "longitude that share dimensions is not possible")
+                "longitude that share dimensions is not possible"
+            )
 
     # Calculate land fractions on coordinate grid of cube
     ne_land_mask_cube = _get_ne_land_mask_cube()
-    land_fraction = np.empty((lat_coord.shape[0], lon_coord.shape[0]),
-                             dtype=np.float64)
+    land_fraction = np.empty(
+        (lat_coord.shape[0], lon_coord.shape[0]), dtype=np.float64
+    )
     for lat_idx in range(lat_coord.shape[0]):
         for lon_idx in range(lon_coord.shape[0]):
             lat_bounds = lat_coord.bounds[lat_idx]
             lon_bounds = lon_coord.bounds[lon_idx]
-            submask = ne_land_mask_cube.intersection(latitude=lat_bounds,
-                                                     longitude=lon_bounds)
-            land_fraction[lat_idx, lon_idx] = (submask.data.sum() /
-                                               submask.data.size)
-    if area_type == 'sea':
+            submask = ne_land_mask_cube.intersection(
+                latitude=lat_bounds, longitude=lon_bounds
+            )
+            land_fraction[lat_idx, lon_idx] = (
+                submask.data.sum() / submask.data.size
+            )
+    if area_type == "sea":
         fraction_weights = 1.0 - land_fraction
     else:
         fraction_weights = land_fraction
@@ -632,9 +684,9 @@ def get_landsea_fraction_weights(cube, area_type, normalize=False):
         coord_dims.insert(0, cube.coord_dims(lat_coord)[0])
     else:
         fraction_weights = np.squeeze(fraction_weights, axis=0)
-    fraction_weights = iris.util.broadcast_to_shape(fraction_weights,
-                                                    cube.shape,
-                                                    tuple(coord_dims))
+    fraction_weights = iris.util.broadcast_to_shape(
+        fraction_weights, cube.shape, tuple(coord_dims)
+    )
 
     return fraction_weights
 
@@ -691,26 +743,26 @@ def get_squared_error_cube(ref_cube, error_datasets):
     )
 
     # Adapt cube metadata
-    if 'error' in squared_error_cube.attributes.get('var_type', ''):
-        if not squared_error_cube.attributes.get('squared'):
-            squared_error_cube.var_name += '_squared'
-            squared_error_cube.long_name += ' (squared)'
+    if "error" in squared_error_cube.attributes.get("var_type", ""):
+        if not squared_error_cube.attributes.get("squared"):
+            squared_error_cube.var_name += "_squared"
+            squared_error_cube.long_name += " (squared)"
             squared_error_cube.units = units_power(squared_error_cube.units, 2)
     else:
-        if squared_error_cube.attributes.get('squared'):
-            squared_error_cube.var_name += '_error'
-            squared_error_cube.long_name += ' (error)'
+        if squared_error_cube.attributes.get("squared"):
+            squared_error_cube.var_name += "_error"
+            squared_error_cube.long_name += " (error)"
         else:
-            squared_error_cube.var_name += '_squared_error'
-            squared_error_cube.long_name += ' (squared error)'
+            squared_error_cube.var_name += "_squared_error"
+            squared_error_cube.long_name += " (squared error)"
             squared_error_cube.units = units_power(squared_error_cube.units, 2)
-    squared_error_cube.attributes['squared'] = 1
-    squared_error_cube.attributes['var_type'] = 'prediction_output_error'
+    squared_error_cube.attributes["squared"] = 1
+    squared_error_cube.attributes["var_type"] = "prediction_output_error"
 
     # Aggregate errors
     filenames = []
     for dataset in error_datasets:
-        path = dataset['filename']
+        path = dataset["filename"]
         cube = iris.load_cube(path)
         filenames.append(path)
 
@@ -718,15 +770,16 @@ def get_squared_error_cube(ref_cube, error_datasets):
         if cube.shape != ref_cube.shape:
             raise ValueError(
                 f"Expected shape {ref_cube.shape} for error cubes, got "
-                f"{cube.shape} for dataset '{path}'")
+                f"{cube.shape} for dataset '{path}'"
+            )
 
         # Add squared error
         new_data = cube.data
-        if not cube.attributes.get('squared'):
+        if not cube.attributes.get("squared"):
             new_data **= 2
         squared_error_cube.data += new_data
         logger.debug("Added '%s' to squared error datasets", path)
-    squared_error_cube.attributes['filename'] = '|'.join(filenames)
+    squared_error_cube.attributes["filename"] = "|".join(filenames)
     return squared_error_cube
 
 
@@ -752,8 +805,8 @@ def get_time_weights(cube, normalize=False):
 
     """
     logger.debug("Calculating time weights")
-    _check_coords(cube, ['time'], 'time weights')
-    coord = cube.coord('time')
+    _check_coords(cube, ["time"], "time weights")
+    coord = cube.coord("time")
     time_weights = coord.bounds[:, 1] - coord.bounds[:, 0]
     time_weights = time_weights.squeeze()
     if normalize:
@@ -761,15 +814,16 @@ def get_time_weights(cube, normalize=False):
     if time_weights.shape == ():
         time_weights = np.broadcast_to(time_weights, cube.shape)
     else:
-        time_weights = iris.util.broadcast_to_shape(time_weights, cube.shape,
-                                                    cube.coord_dims('time'))
+        time_weights = iris.util.broadcast_to_shape(
+            time_weights, cube.shape, cube.coord_dims("time")
+        )
     return time_weights
 
 
 def ignore_warnings():
     """Ignore warnings given by ``WARNINGS_TO_IGNORE``."""
     for warning_kwargs in WARNINGS_TO_IGNORE:
-        warning_kwargs.setdefault('action', 'ignore')
+        warning_kwargs.setdefault("action", "ignore")
         warnings.filterwarnings(**warning_kwargs)
 
 
@@ -782,29 +836,29 @@ def square_root_metadata(cube):
         Cube (will be modified in-place).
 
     """
-    if 'squared_' in cube.var_name:
-        cube.var_name = cube.var_name.replace('squared_', '')
-    elif '_squared' in cube.var_name:
-        cube.var_name = cube.var_name.replace('_squared', '')
+    if "squared_" in cube.var_name:
+        cube.var_name = cube.var_name.replace("squared_", "")
+    elif "_squared" in cube.var_name:
+        cube.var_name = cube.var_name.replace("_squared", "")
     else:
-        cube.var_name = 'root_' + cube.var_name
-    if 'squared ' in cube.long_name:
-        cube.long_name = cube.long_name.replace('squared ', '')
-    elif 'Squared ' in cube.long_name:
-        cube.long_name = cube.long_name.replace('Squared ', '')
-    elif ' squared' in cube.long_name:
-        cube.long_name = cube.long_name.replace(' squared', '')
-    elif ' Squared' in cube.long_name:
-        cube.long_name = cube.long_name.replace(' Squared', '')
-    elif ' (squared)' in cube.long_name:
-        cube.long_name = cube.long_name.replace(' (squared)', '')
-    elif ' (Squared)' in cube.long_name:
-        cube.long_name = cube.long_name.replace(' (Squared)', '')
+        cube.var_name = "root_" + cube.var_name
+    if "squared " in cube.long_name:
+        cube.long_name = cube.long_name.replace("squared ", "")
+    elif "Squared " in cube.long_name:
+        cube.long_name = cube.long_name.replace("Squared ", "")
+    elif " squared" in cube.long_name:
+        cube.long_name = cube.long_name.replace(" squared", "")
+    elif " Squared" in cube.long_name:
+        cube.long_name = cube.long_name.replace(" Squared", "")
+    elif " (squared)" in cube.long_name:
+        cube.long_name = cube.long_name.replace(" (squared)", "")
+    elif " (Squared)" in cube.long_name:
+        cube.long_name = cube.long_name.replace(" (Squared)", "")
     else:
-        cube.long_name = 'Root ' + cube.long_name
+        cube.long_name = "Root " + cube.long_name
     cube.units = cube.units.root(2)
-    if cube.attributes.get('squared'):
-        cube.attributes.pop('squared')
+    if cube.attributes.get("squared"):
+        cube.attributes.pop("squared")
 
 
 def units_power(units, power):
@@ -837,31 +891,37 @@ def units_power(units, power):
     if round(power) != power:
         raise TypeError(
             f"Expected integer-like power for units exponentiation, got "
-            f"{power}")
+            f"{power}"
+        )
     power = int(power)
     if any([units.is_no_unit(), units.is_unknown()]):
         raise ValueError(
-            f"Cannot raise units '{units.name}' to power {power:d}")
+            f"Cannot raise units '{units.name}' to power {power:d}"
+        )
     if units.origin is None:
         logger.warning(
             "Symbol-preserving exponentiation of units '%s' is not "
-            "supported, origin is not given", units)
+            "supported, origin is not given",
+            units,
+        )
         return units**power
     if units.origin.isdigit():
         return units**power
     if units.origin.split()[0][0].isdigit():
         logger.warning(
             "Symbol-preserving exponentiation of units '%s' is not "
-            "supported yet because of leading numbers", units)
+            "supported yet because of leading numbers",
+            units,
+        )
         return units**power
     new_units_list = []
     for split in units.origin.split():
-        for elem in split.split('.'):
+        for elem in split.split("."):
             if elem[-1].isdigit():
-                exp = [int(d) for d in re.findall(r'-?\d+', elem)][0]
-                val = ''.join(list(re.findall(r'[A-Za-z]', elem)))
-                new_units_list.append(f'{val}{exp * power}')
+                exp = [int(d) for d in re.findall(r"-?\d+", elem)][0]
+                val = "".join(list(re.findall(r"[A-Za-z]", elem)))
+                new_units_list.append(f"{val}{exp * power}")
             else:
-                new_units_list.append(f'{elem}{power}')
-    new_units = ' '.join(new_units_list)
+                new_units_list.append(f"{elem}{power}")
+    new_units = " ".join(new_units_list)
     return Unit(new_units)

@@ -43,8 +43,7 @@ diagnostics:
         preprocessor: timeseries_regular_reg
         timerange: '2001/2014'
     scripts:
-      plot: 
+      plot:
         script: monitor/monitor.py
         plots:
           annual_cycle: {}
-

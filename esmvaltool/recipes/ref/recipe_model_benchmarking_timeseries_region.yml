@@ -33,7 +33,7 @@ preprocessors:
       crop: true
       decomposed: true
       ids:
-        Name: 
+        Name:
           - N.Europe
     area_statistics:
       operator: mean
@@ -59,7 +59,7 @@ preprocessors:
       crop: true
       decomposed: true
       ids:
-        Name: 
+        Name:
           - N.Europe
     area_statistics:
       operator: mean
@@ -82,7 +82,7 @@ preprocessors:
       crop: true
       decomposed: true
       ids:
-        Name: 
+        Name:
           - N.Europe
     anomalies:
       period: month
@@ -118,7 +118,7 @@ preprocessors:
       crop: true
       decomposed: true
       ids:
-        Name: 
+        Name:
           - N.Europe
     anomalies:
       period: month
@@ -161,19 +161,19 @@ diagnostics:
           - {dataset: HadCRUT5, project: OBS, type: ground,
              version: 5.0.1.0-analysis, tier: 2,
              reference_for_metric: true}
-      pr: 
+      pr:
         <<: *var_default
         reference_dataset: GPCP-SG
         additional_datasets:
           - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
              reference_for_metric: true}
-      psl: 
+      psl:
         <<: *var_default
         reference_dataset: ERA5
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, reference_for_metric: true}
-      hus_200: 
+      hus_200:
         <<: *var_default
         short_name: hus
         reference_dataset: ERA5
@@ -181,7 +181,7 @@ diagnostics:
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, reference_for_metric: true}
-      ua_200: 
+      ua_200:
         <<: *var_default
         short_name: ua
         reference_dataset: ERA5
@@ -259,19 +259,19 @@ diagnostics:
         additional_datasets:
           - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis,
              tier: 2, reference_for_metric: true}
-      pr: 
+      pr:
         <<: *var_default_abs
         reference_dataset: GPCP-SG
         additional_datasets:
           - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
              reference_for_metric: true}
-      psl: 
+      psl:
         <<: *var_default_abs
         reference_dataset: ERA5
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, reference_for_metric: true}
-      hus_200: 
+      hus_200:
         <<: *var_default
         short_name: hus
         reference_dataset: ERA5
@@ -279,7 +279,7 @@ diagnostics:
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, reference_for_metric: true}
-      ua_200: 
+      ua_200:
         <<: *var_default
         short_name: ua
         reference_dataset: ERA5

@@ -31,31 +31,31 @@ preprocessors:
       period: month
     mask_fillvalues:
       threshold_fraction: 0.95
-  ECA: 
+  ECA:
     <<: *default
     extract_shape:
       shapefile: ar6
       method: contains
       ids: {Acronym: [ECA]}
-  ENA: 
+  ENA:
     <<: *default
     extract_shape:
       shapefile: ar6
       method: contains
       ids: {Acronym: [ENA]}
-  MED: 
+  MED:
     <<: *default
     extract_shape:
       shapefile: ar6
       method: contains
       ids: {Acronym: [MED]}
-  SAH: 
+  SAH:
     <<: *default
     extract_shape:
       shapefile: ar6
       method: contains
       ids: {Acronym: [SAH]}
-  WCE: 
+  WCE:
     <<: *default
     extract_shape:
       shapefile: ar6
@@ -77,31 +77,31 @@ preprocessors:
       period: month
     mask_fillvalues:
       threshold_fraction: 0.95
-  ECA_200: 
+  ECA_200:
     <<: *default_200
     extract_shape:
       shapefile: ar6
       method: contains
       ids: {Acronym: [ECA]}
-  ENA_200: 
+  ENA_200:
     <<: *default_200
     extract_shape:
       shapefile: ar6
       method: contains
       ids: {Acronym: [ENA]}
-  MED_200: 
+  MED_200:
     <<: *default_200
     extract_shape:
       shapefile: ar6
       method: contains
       ids: {Acronym: [MED]}
-  SAH_200: 
+  SAH_200:
     <<: *default_200
     extract_shape:
       shapefile: ar6
       method: contains
       ids: {Acronym: [SAH]}
-  WCE_200: 
+  WCE_200:
     <<: *default_200
     extract_shape:
       shapefile: ar6
@@ -133,7 +133,7 @@ diagnostics:
         ppregion: ECA
         additional_datasets:
           - {dataset: HadCRUT5, project: OBS, type: ground,
-             version: 5.0.1.0-analysis, tier: 2, 
+             version: 5.0.1.0-analysis, tier: 2,
              reference_for_metric: true}
       tas_ECA_2: &tas_2
         <<: *tas
@@ -177,7 +177,7 @@ diagnostics:
         short_name: tas
         ppregion: WCE
         preprocessor: WCE
-      
+
       pr_ECA: &pr
         <<: *var_default
         short_name: pr

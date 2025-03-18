@@ -19,7 +19,7 @@ according to the following default criteria:
   * 1. Monthly means must be generated from at least one AOD observation in that
     month.
 
-  * 2. Seasonal means for DJF, MAM, JJA and SON must be calculated from three 
+  * 2. Seasonal means for DJF, MAM, JJA and SON must be calculated from three
     monthly means, i.e. a monthly mean from December January and Feburary.
 
   * 3. For a given year to be valid, there must be a seasonal mean for each climate
@@ -28,8 +28,8 @@ according to the following default criteria:
   * 4. For a multiannual seasonal means there must be at least five seasonaal means
     over the time range of interest.
 
-NOTE: The code is designed to be flexible and the default criteria can be 
-changed according to the user's requirements (see the user settings below).  
+NOTE: The code is designed to be flexible and the default criteria can be
+changed according to the user's requirements (see the user settings below).
 
 The evaluation is visualised by plotting model output as 2D filled contours and
 overlaying AeroNET observations at model grid cells co-located with the AeroNET
@@ -101,7 +101,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-* Note: (1) obs4MIPs data can be used directly without any preprocessing; (2) 
+* Note: (1) obs4MIPs data can be used directly without any preprocessing; (2)
   see headers of reformat scripts for non-obs4MIPs data for download
   instructions.
 
