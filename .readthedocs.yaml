@@ -13,7 +13,7 @@ build:
     # DO NOT use mambaforge-*; that is currently sunsetted
     python: "miniconda-latest"
   jobs:
-    pre_create_environment:
+    post_create_environment:
       # install mamba2: essential since mamba2 is the only one that can solve the env
       - conda update --yes --quiet --name=base conda
       - conda install --yes --name=base -c conda-forge "mamba>2"
