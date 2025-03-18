@@ -13,10 +13,9 @@ build:
     # DO NOT use mambaforge-*; that is currently sunsetted
     python: "miniconda-latest"
   jobs:
-    post_create_environment:
+    pre_create_environment:
       # install mamba2: essential since mamba2 is the only one that can solve the env
-      - conda update --yes --quiet --name=base conda
-      - conda install --yes --name=base -c conda-forge "mamba>2"
+      - conda update --yes --quiet --name=base conda "libmamba>2"
     post_checkout:
       # The ESMValTool repository is shallow i.e., has a .git/shallow,
       # therefore complete the repository with a full history in order
