@@ -15,7 +15,7 @@ build:
   jobs:
     pre_create_environment:
       # install mamba2: essential since mamba2 is the only one that can solve the env
-      - conda update --yes --quiet --name=base conda "libmamba>2"
+      - conda install --yes --quiet --name=base conda "libmamba>2"
     post_checkout:
       # The ESMValTool repository is shallow i.e., has a .git/shallow,
       # therefore complete the repository with a full history in order
