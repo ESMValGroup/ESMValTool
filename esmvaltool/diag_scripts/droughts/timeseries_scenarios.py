@@ -1,4 +1,5 @@
 """Plot timeseries of historical period and different ssps for each variable.
+
 Observations will be shown as reference when given. Shaded area shows MM stddv.
 Works with combined or individual inputs for historical/ssp experiments.
 
@@ -19,11 +20,15 @@ subplots: bool, optional (default: False)
     Plot all time series as subplots in one figure with shared x-axis.
 legend: dict, optional (default: {})
     Names to rename the default legend labels. Keys are the original labels.
+    Set to None (null in yaml) to disable legend.
+ylabels: dict, optional (default: {})
+    Dictionary with short_names as keys and names to replace them as values.
 """
 
 import datetime as dt
 import logging
 import os
+import warnings
 from copy import deepcopy
 from pathlib import Path
 
@@ -34,10 +39,11 @@ from esmvalcore import preprocessor as pp
 from iris import plot as iplt
 from iris.analysis import MEAN, cartography
 from iris.coord_categorisation import add_year
+from iris.cube import Cube
 from matplotlib.axes import Axes
 
-from esmvaltool.diag_scripts.droughtindex import styles
-from esmvaltool.diag_scripts.droughtindex import utils as ut
+from esmvaltool.diag_scripts.droughts import styles
+from esmvaltool.diag_scripts.droughts import utils as ut
 from esmvaltool.diag_scripts.shared import (
     # ProvenanceLogger,
     get_plot_filename,
@@ -49,50 +55,44 @@ from esmvaltool.diag_scripts.shared import (
 # import nc_time_axis  # noqa  allow cftime axis to be plotted by mpl
 # nc_time_axis works but seems to show wrong days on axis when using cftime
 logger = logging.getLogger(Path(__file__).stem)
+warnings.filterwarnings(
+    "ignore", module="iris", message="Using DEFAULT_SPHERICAL_EARTH_RADIUS"
+)
+warnings.filterwarnings(
+    "ignore",
+    message="Degrees of freedom <= 0 for slice",
+    category=RuntimeWarning,
+)
+warnings.filterwarnings(
+    "ignore", module="iris", message="invalid value encountered in divide"
+)
 
 
-def convert_units(cube):
-    """Convert units of some variables for display"""
-    if cube.var_name in ["tas", "tasmax", "tasmin"]:
-        cube.convert_units("Celsius")
-    if cube.var_name == "pr":
-        logger.info("Converting pr units to mm/day")
-        cube.units = "mm s-1"
-        cube.convert_units("mm day-1")
-    if cube.var_name == "evspsblpot":
-        # cube.units = 'mm mon-1'
-        ut.monthly2daily(cube)
-        cube.long_name = "Potential Evapotranspiration"  # NOTE: not working?
-        cube.rename("Potential Evapotranspiration")
-
-
-def global_mean(cfg, cube):
+def global_mean(cfg: dict, cube: Cube) -> Cube:
     """Calculate global mean."""
     ut.guess_lat_lon_bounds(cube)
     if "regions" in cfg:
-        print("Extracting regions")
         cube = pp.extract_shape(
             cube,
             shapefile="ar6",
             ids={"Acronym": cfg["regions"]},
         )
     area_weights = cartography.area_weights(cube)
-    mean = cube.collapsed(
+    return cube.collapsed(
         ["latitude", "longitude"],
         MEAN,
         weights=area_weights,
     )
-    return mean
 
 
-def yearly_average(cube):
+def yearly_average(cube: Cube) -> Cube:
+    """Calculate yearly average."""
     add_year(cube, "time")
     return cube.aggregated_by("year", MEAN)
 
 
-def plot_experiment(cfg, mean, std_dev, experiment, ax):
+def plot_experiment(cfg, mean, std_dev, experiment, ax) -> None:
     time = mean.coord("time")
-    # times = time.units.num2date(time.points)
     exp_color = getattr(styles, experiment)
     iplt.fill_between(
         time,
@@ -111,7 +111,7 @@ def plot_experiment(cfg, mean, std_dev, experiment, ax):
     ax.set_ylabel(y_label)
 
 
-def plot_each_model(cubes, metas, cfg, experiment, smooth=False):
+def plot_each_model(cubes, metas, cfg, experiment, smooth=False) -> None:
     fig, ax = plt.subplots(figsize=cfg["figsize"], dpi=150)
     ax.grid(axis="y", color="0.95")
     time = cubes[0].coord("time")
@@ -123,7 +123,7 @@ def plot_each_model(cubes, metas, cfg, experiment, smooth=False):
     fig.savefig(get_plot_filename(basename, cfg), bbox_inches="tight")
 
 
-def plot_models(cfg, metas, ax, smooth=False):
+def plot_models(cfg, metas, ax, smooth=False) -> None:
     historical_plotted = False
     for experiment, models in group_metadata(metas, "exp").items():
         if experiment == "historical" and historical_plotted:
@@ -160,8 +160,8 @@ def plot_models(cfg, metas, ax, smooth=False):
         if recalc and cfg.get("save_mm", True):
             iris.save(mm["mean"], fname + "_mean.nc")
             iris.save(mm["std_dev"], fname + "_stddev.nc")
-        convert_units(mean)
-        convert_units(std_dev)
+        # convert_units(mean)
+        # convert_units(std_dev)
 
         if experiment.startswith("historical-"):
             experiment = experiment.split("-")[1]
@@ -188,24 +188,26 @@ def plot_models(cfg, metas, ax, smooth=False):
         plot_experiment(cfg, mean, std_dev, experiment, ax)
 
 
-def plot_obs(cfg, metas, ax, smooth=False):
+def plot_obs(cfg, metas, ax, smooth=False) -> None:
     for meta in metas:
         cube = iris.load_cube(meta["filename"])
         if smooth:
             cube = yearly_average(cube)
         mean = global_mean(cfg, cube)
-        convert_units(mean)
+        # convert_units(mean)
         time = mean.coord("time")
         iplt.plot(time, mean, linestyle="--", label=meta["dataset"], axes=ax)
 
 
-def process_variable(cfg, metas, short_name, fig=None, ax: Axes = None):
+def process_variable(
+    cfg, metas, short_name, fig=None, ax: Axes = None
+) -> None:
     """Process variable."""
     project = cfg.get("project", "CMIP6")
     model_metas = select_metadata(metas, project=project)
     obs_metas = [meta for meta in metas if meta["project"] != project]
     if not cfg.get("subplots", False):
-        fig, ax = plt.subplots(figsize=cfg.get("figsize", (9, 2)), dpi=300)
+        fig, ax = plt.subplots(figsize=cfg["figsize"], dpi=300)
     plot_models(cfg, model_metas, ax, smooth=cfg.get("smooth", False))
     plot_obs(cfg, obs_metas, ax, smooth=cfg.get("smooth", False))
     basename = f"timeseries_scenarios_{short_name}"
@@ -222,20 +224,19 @@ def process_variable(cfg, metas, short_name, fig=None, ax: Axes = None):
         linestyle="--",
         linewidth=0.5,
     )
-    # ax.set_frame_on(False)
     ax.set_xlim([dt.datetime(1950, 1, 1), dt.datetime(2100, 1, 1)])
     ax.xaxis.set_major_locator(mdates.YearLocator(10))
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
     for label in ax.get_xticklabels(which="major"):
-        label.set(rotation=40, horizontalalignment="right")
+        label.set(rotation=0, horizontalalignment="center")
     ax.xaxis.set_minor_locator(mdates.YearLocator())
-    if "plot_properties" in cfg.keys():
+    if "plot_properties" in cfg:
         ax.set(**cfg["plot_properties"])
     if not cfg.get("subplots", False):
         fig.savefig(get_plot_filename(basename, cfg), bbox_inches="tight")
 
 
-def main(cfg):
+def main(cfg) -> None:
     """Run diagnostic."""
     cfg = deepcopy(cfg)
     groups = group_metadata(cfg["input_data"].values(), "short_name")
@@ -254,7 +255,6 @@ def main(cfg):
     if cfg["subplots"]:
         basename = "timeseries_scenarios"
         for ax in axs:
-            # ax.set_xticklabels([])
             ax.tick_params(
                 axis="x",
                 which="both",
@@ -282,21 +282,28 @@ def main(cfg):
         axs[-1].spines["bottom"].set_visible(True)
         axs[0].spines["top"].set_visible(True)
         lines, labels = axs[-1].get_legend_handles_labels()
-        if cfg.get(
-            "legend",
-            cfg.get("subplots", False),
-        ):  # rename and reorder handles and labels
+        if cfg["legend"] is not None:
             leg_dict = dict(zip(labels, lines))
-            print(labels)
             labels = list(cfg["legend"].values())
             handles = [leg_dict[lab] for lab in cfg["legend"].keys()]
+            labels.append("Multi-model std")
+            rect = plt.Rectangle(
+                (0, 0),
+                1,
+                1,
+                fc="0.8",
+                alpha=0.2,
+                edgecolor="black",
+                linewidth=0.5,
+            )
+            handles.append(rect)
             axs[-1].legend(handles, labels)
         fig.subplots_adjust(hspace=0.02)
         fig.tight_layout()
         fig.savefig(get_plot_filename(basename, cfg), bbox_inches="tight")
 
 
-def set_defaults(cfg):
+def set_defaults(cfg) -> None:
     cfg.setdefault("plot_mmm", True)
     cfg.setdefault("smooth", True)
     cfg.setdefault("combined_split_years", 65)
@@ -304,7 +311,15 @@ def set_defaults(cfg):
     cfg.setdefault("figsize", (9, 2))
     cfg.setdefault("reuse_mm", False)
     cfg.setdefault("subplots", False)
-    cfg.setdefault("legend", {})
+    cfg.setdefault(
+        "legend",
+        {
+            "ssp126": "SSP1-2.6",
+            "ssp245": "SSP2-4.5",
+            "ssp585": "SSP5-8.5",
+            "historical": "Historical",
+        },
+    )
     cfg.setdefault("ylabels", {})
 
 
