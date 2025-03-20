@@ -561,65 +561,11 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
     # categorical_colors_rgb_0-255/cmip_cat.txt
     # CMIP5
     if trends["cmip5"]:
-        res_ar["artrend_c5"] = np.fromiter(
-            trends["cmip5"].values(), dtype=float
-        )
-        res_ar["weights_c5"] = np.fromiter(
-            trends["cmip5weights"].values(), dtype=float
-        )
-        res_ar["kde1_c5"] = stats.gaussian_kde(
-            res_ar["artrend_c5"],
-            weights=res_ar["weights_c5"],
-            bw_method="scott",
-        )
-        hbinx1, bins1, patches = axx.hist(
-            res_ar["artrend_c5"],
-            bins=res_ar["xhist"],
-            density=True,
-            weights=res_ar["weights_c5"],
-            edgecolor=(37 / 250.0, 81 / 255.0, 204 / 255.0, 1.0),
-            facecolor=(37 / 250.0, 81 / 255.0, 204 / 255.0, 0.2),
-        )
-        del bins1, patches
-        axx.plot(
-            res_ar["xval"],
-            res_ar["kde1_c5"](res_ar["xval"]),
-            color=(37 / 250.0, 81 / 255.0, 204 / 255.0, 1),
-            linewidth=3,
-            label="CMIP5",
-        )
-        maxh = np.max([maxh, np.max(hbinx1)])
+        maxh = _res_ar_hist("cmip5", trends, res_ar, maxh, axx)
 
     # CMIP6
     if trends["cmip6"]:
-        res_ar["artrend_c6"] = np.fromiter(
-            trends["cmip6"].values(), dtype=float
-        )
-        res_ar["weights_c6"] = np.fromiter(
-            trends["cmip6weights"].values(), dtype=float
-        )
-        res_ar["kde1_c6"] = stats.gaussian_kde(
-            res_ar["artrend_c6"],
-            weights=res_ar["weights_c6"],
-            bw_method="scott",
-        )
-        hbinx2, bins1, patches = axx.hist(
-            res_ar["artrend_c6"],
-            bins=res_ar["xhist"],
-            density=True,
-            weights=res_ar["weights_c6"],
-            edgecolor=(204 / 250.0, 35 / 255.0, 35 / 255.0, 1.0),
-            facecolor=(204 / 250.0, 35 / 255.0, 35 / 255.0, 0.2),
-        )
-        del bins1, patches
-        axx.plot(
-            res_ar["xval"],
-            res_ar["kde1_c6"](res_ar["xval"]),
-            color=(204 / 250.0, 35 / 255.0, 35 / 255.0, 1),
-            linewidth=3,
-            label="CMIP6",
-        )
-        maxh = np.max([maxh, np.max(hbinx2)])
+        maxh = _res_ar_hist("cmip6", trends, res_ar, maxh, axx)
 
     # Find the highest bin in the histograms for the y-axis limit
     axx_lim["maxh"] = maxh * (1.0 + 0.5 * axx_lim["factor"])
@@ -682,12 +628,56 @@ def _plot_settings(cfg, axx, period, axx_lim):
 
     var = " ".join(list(extract_variables(cfg).keys()))
     print_long_name = extract_variables(cfg)[var]["long_name"]
-    axx.set_title("Trends in" + print_long_name + add)
+    axx.set_title("Trends in " + print_long_name + add)
     axx.set_xlabel("Trend (%/decade)")
 
     axx.set_xlim(axx_lim["xmin"], axx_lim["xmax"])
 
     return add
+
+
+def _res_ar_hist(cmipstr, trends, res_ar, maxh, axx):
+    """Set and plot CMIP histograms."""
+    if cmipstr == "cmip6":
+        shortstr = "_c6"
+        eco = (204 / 250.0, 35 / 255.0, 35 / 255.0, 1.0)
+        fco = (204 / 250.0, 35 / 255.0, 35 / 255.0, 0.2)
+        cco = (204 / 250.0, 35 / 255.0, 35 / 255.0, 1)
+    elif cmipstr == "cmip5":
+        shortstr = "_c5"
+        eco = (37 / 250.0, 81 / 255.0, 204 / 255.0, 1.0)
+        fco = (37 / 250.0, 81 / 255.0, 204 / 255.0, 0.2)
+        cco = (37 / 250.0, 81 / 255.0, 204 / 255.0, 1)
+
+    res_ar["artrend" + shortstr] = np.fromiter(
+        trends[cmipstr].values(), dtype=float
+    )
+    res_ar["weights" + shortstr] = np.fromiter(
+        trends[cmipstr + "weights"].values(), dtype=float
+    )
+    res_ar["kde1" + shortstr] = stats.gaussian_kde(
+        res_ar["artrend" + shortstr],
+        weights=res_ar["weights" + shortstr],
+        bw_method="scott",
+    )
+    hbinx1, bins1, patches = axx.hist(
+        res_ar["artrend" + shortstr],
+        bins=res_ar["xhist"],
+        density=True,
+        weights=res_ar["weights" + shortstr],
+        edgecolor=eco,
+        facecolor=fco,
+    )
+    del bins1, patches
+    axx.plot(
+        res_ar["xval"],
+        res_ar["kde1" + shortstr](res_ar["xval"]),
+        color=cco,
+        linewidth=3,
+        label=cmipstr.upper,
+    )
+    maxh = np.max([maxh, np.max(hbinx1)])
+    return maxh
 
 
 def _set_extratrends_dict(cfg):
