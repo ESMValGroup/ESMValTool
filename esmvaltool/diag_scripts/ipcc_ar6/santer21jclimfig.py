@@ -164,7 +164,7 @@ def _get_hem_letter(lat):
     return shem
 
 
-def  _get_plotobscol(iii):
+def _get_plotobscol(iii):
     """Get color based on index."""
     if iii > 12:
         obscoli = float(iii) - 12.25
@@ -174,12 +174,12 @@ def  _get_plotobscol(iii):
         obscoli = float(iii) - 4.5
     else:
         obscoli = float(iii)
-    
+
     plotobscol = (
         1.0 - 0.25 * obscoli,
         0.25 * obscoli,
         0.5 + obscoli * 0.1,
-                )
+    )
     return plotobscol
 
 
@@ -370,7 +370,9 @@ def _plot_extratrends(cfg, extratrends, trends, period, axx_lim):
         )
     axx_lim["maxh"] = (1.0 + 0.5 * axx_lim["factor"]) * np.max(hbin)
     names["caption"] = _plot_obs(trends, axx, axx_lim)
-    names["caption"] = _plot_settings(cfg, axx, period, axx_lim) + names["caption"]
+    names["caption"] = (
+        _plot_settings(cfg, axx, period, axx_lim) + names["caption"]
+    )
     fig.tight_layout()
     fig.savefig(get_plot_filename("fig2", cfg), dpi=300)
     plt.close()
@@ -383,9 +385,8 @@ def _plot_extratrends(cfg, extratrends, trends, period, axx_lim):
         + names["caption"]
     )
 
-    names["provenance_record"]= get_provenance_record(
-        names["valid_datasets"], names["caption"],
-        ["trend", "other"], ["reg"]
+    names["provenance_record"] = get_provenance_record(
+        names["valid_datasets"], names["caption"], ["trend", "other"], ["reg"]
     )
 
     names["diagnostic_file"] = get_diagnostic_filename("fig2", cfg)
@@ -403,8 +404,9 @@ def _plot_extratrends(cfg, extratrends, trends, period, axx_lim):
         pformat(names["provenance_record"]),
     )
     with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(names["diagnostic_file"],
-                              names["provenance_record"])
+        provenance_logger.log(
+            names["diagnostic_file"], names["provenance_record"]
+        )
 
 
 def _plot_obs(trends, axx, axx_lim):
@@ -416,7 +418,6 @@ def _plot_obs(trends, axx, axx_lim):
     if trends["obs"]:
         obs_str = " Vertical lines show the trend for"
         for iii, obsname in enumerate(trends["obs"].keys()):
-
             if obsname == "RSS":
                 plotobscol = (
                     221 / 255.0,
