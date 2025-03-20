@@ -364,6 +364,13 @@ so you will not be able to run NCL, R, or Julia diagnostics with it.
     would like to keep.
     It is recommended that you create a new environment when updating ESMValTool.
 
+.. note::
+    There is also a pure-Python environment file ``esmvaltool_python.yml``
+    which is a softlink of the ``environment_osx.yml`` file; this one is used
+    by any build that needs only Python packages (ie no NCL, R etc), currently
+    this is used by our documentation builds, but it could be used by any
+    other process needing just the Python dependencies.
+
 Next, activate the environment by using the command:
 
 .. code-block:: bash
