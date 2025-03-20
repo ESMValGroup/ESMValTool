@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Diagnostic script to plot figure 3.12 of IPCC AR 6 chapter 3
+"""Diagnostic script to plot figure 3_12 of IPCC AR 6 chapter 3.
 
 Description
 -----------
@@ -555,6 +555,7 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
     res_ar["xhist"] = axx_lim["xhist"]
     fig, axx = plt.subplots(figsize=(8, 6))
     maxh = -1.0
+    names = {}
 
     # IPCC colors for CMIP5 and CMIP6 from
     # https://github.com/IPCC-WG1/colormaps/blob/master/
@@ -569,41 +570,45 @@ def _plot_trends(cfg, trends, valid_datasets, period, axx_lim):
 
     # Find the highest bin in the histograms for the y-axis limit
     axx_lim["maxh"] = maxh * (1.0 + 0.5 * axx_lim["factor"])
-    caption = _plot_settings(cfg, axx, period, axx_lim) + _plot_obs(
+    names["caption"] = _plot_settings(cfg, axx, period, axx_lim) + _plot_obs(
         trends, axx, axx_lim
     )
     fig.tight_layout()
     fig.savefig(get_plot_filename("fig1", cfg), dpi=300)
     plt.close()
 
-    var = " ".join(list(extract_variables(cfg).keys()))
-    print_long_name = extract_variables(cfg)[var]["long_name"]
-    caption = (
+    names["var"] = " ".join(list(extract_variables(cfg).keys()))
+    names["long_name"] = extract_variables(cfg)[names["var"]]["long_name"]
+    names["caption"] = (
         "Probability density function of the decadal trend in "
         + "the "
-        + print_long_name
-        + caption
+        + names["long_name"]
+        + names["caption"]
     )
 
-    provenance_record = get_provenance_record(
-        valid_datasets, caption, ["trend", "other"], ["reg"]
+    names["provenance_record"] = get_provenance_record(
+        valid_datasets, names["caption"], ["trend", "other"], ["reg"]
     )
 
-    diagnostic_file = get_diagnostic_filename("fig1", cfg)
+    names["diagnostic_file"] = get_diagnostic_filename("fig1", cfg)
 
-    logger.info("Saving analysis results to %s", diagnostic_file)
+    logger.info("Saving analysis results to %s", names["diagnostic_file"])
 
-    list_dict = _make_list_dict(res_ar, trends, var, print_long_name)
+    list_dict = _make_list_dict(
+        res_ar, trends, names["var"], names["long_name"]
+    )
 
-    iris.save(cube_to_save_vars(list_dict), target=diagnostic_file)
+    iris.save(cube_to_save_vars(list_dict), target=names["diagnostic_file"])
 
     logger.info(
         "Recording provenance of %s:\n%s",
-        diagnostic_file,
-        pformat(provenance_record),
+        names["diagnostic_file"],
+        pformat(names["provenance_record"]),
     )
     with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(diagnostic_file, provenance_record)
+        provenance_logger.log(
+            names["diagnostic_file"], names["provenance_record"]
+        )
 
 
 def _plot_settings(cfg, axx, period, axx_lim):
@@ -648,6 +653,11 @@ def _res_ar_hist(cmipstr, trends, res_ar, maxh, axx):
         eco = (37 / 250.0, 81 / 255.0, 204 / 255.0, 1.0)
         fco = (37 / 250.0, 81 / 255.0, 204 / 255.0, 0.2)
         cco = (37 / 250.0, 81 / 255.0, 204 / 255.0, 1)
+    else:
+        shortstr = ""
+        eco = (107 / 250.0, 81 / 255.0, 204 / 255.0, 1.0)
+        fco = (107 / 250.0, 81 / 255.0, 204 / 255.0, 0.2)
+        cco = (107 / 250.0, 81 / 255.0, 204 / 255.0, 1)
 
     res_ar["artrend" + shortstr] = np.fromiter(
         trends[cmipstr].values(), dtype=float
