@@ -249,7 +249,7 @@ jobs:
             . /opt/conda/etc/profile.d/conda.sh
             # Install
             mamba --version
-            # mamba install -c conda-forge "mamba>=2"  # maybe re-add if too slow
+            mamba install -c conda-forge "mamba>=2"
             mamba env create -n esmvaltool -f environment_python.yml
             conda activate esmvaltool
             pip install .[doc]
