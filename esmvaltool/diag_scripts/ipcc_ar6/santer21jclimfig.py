@@ -334,15 +334,15 @@ def _plot_extratrends(cfg, extratrends, trends, period, axx_lim):
     names["valid_datasets"] = []
 
     for xtrmdl in cfg["add_model_dist"]:
-        alias = list(extratrends[xtrmdl].keys())[0]
+        names["alias"] = list(extratrends[xtrmdl].keys())[0]
         names["valid_datasets"].append(
-            select_metadata(cfg["input_data"].values(), alias=alias)[0][
-                "filename"
-            ]
+            select_metadata(cfg["input_data"].values(), alias=names["alias"])[
+                0
+            ]["filename"]
         )
-        if alias in trends["cmip6"].keys():
+        if names["alias"] in trends["cmip6"].keys():
             style = plot.get_dataset_style(xtrmdl, style_file="cmip6")
-        elif alias in trends["cmip5"].keys():
+        elif names["alias"] in trends["cmip5"].keys():
             style = plot.get_dataset_style(xtrmdl, style_file="cmip5")
         else:
             style = {"facecolor": (0, 0, 1, 0.2), "color": (0, 0, 1, 1.0)}
@@ -353,14 +353,14 @@ def _plot_extratrends(cfg, extratrends, trends, period, axx_lim):
         res_ar["kde1"][xtrmdl] = stats.gaussian_kde(
             res_ar["artrend"][xtrmdl], bw_method="scott"
         )
-        hbin, bins1, patches = axx.hist(
+        (hbin,) = axx.hist(
             res_ar["artrend"][xtrmdl],
             bins=res_ar["xhist"],
             density=True,
             edgecolor=style["color"],
             facecolor=style["facecolor"],
         )
-        del bins1, patches
+        # del bins1, patches
         axx.plot(
             res_ar["xval"],
             res_ar["kde1"][xtrmdl](res_ar["xval"]),
