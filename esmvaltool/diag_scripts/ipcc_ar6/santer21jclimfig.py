@@ -164,6 +164,25 @@ def _get_hem_letter(lat):
     return shem
 
 
+def  _get_plotobscol(iii):
+    """Get color based on index."""
+    if iii > 12:
+        obscoli = float(iii) - 12.25
+    elif iii > 8:
+        obscoli = float(iii) - 8.75
+    elif iii > 4:
+        obscoli = float(iii) - 4.5
+    else:
+        obscoli = float(iii)
+    
+    plotobscol = (
+        1.0 - 0.25 * obscoli,
+        0.25 * obscoli,
+        0.5 + obscoli * 0.1,
+                )
+    return plotobscol
+
+
 def _get_valid_datasets(input_data):
     """Get valid datasets list and number for each model."""
     number_of_subdata = OrderedDict()
@@ -310,12 +329,13 @@ def _plot_extratrends(cfg, extratrends, trends, period, axx_lim):
     res_ar["xval"] = axx_lim["xval"]
     res_ar["xhist"] = axx_lim["xhist"]
     fig, axx = plt.subplots(figsize=(8, 6))
+    names = {}
 
-    valid_datasets = []
+    names["valid_datasets"] = []
 
     for xtrmdl in cfg["add_model_dist"]:
         alias = list(extratrends[xtrmdl].keys())[0]
-        valid_datasets.append(
+        names["valid_datasets"].append(
             select_metadata(cfg["input_data"].values(), alias=alias)[0][
                 "filename"
             ]
@@ -349,40 +369,42 @@ def _plot_extratrends(cfg, extratrends, trends, period, axx_lim):
             label=xtrmdl,
         )
     axx_lim["maxh"] = (1.0 + 0.5 * axx_lim["factor"]) * np.max(hbin)
-    caption = _plot_obs(trends, axx, axx_lim)
-    caption = _plot_settings(cfg, axx, period, axx_lim) + caption
+    names["caption"] = _plot_obs(trends, axx, axx_lim)
+    names["caption"] = _plot_settings(cfg, axx, period, axx_lim) + names["caption"]
     fig.tight_layout()
     fig.savefig(get_plot_filename("fig2", cfg), dpi=300)
     plt.close()
 
-    var = " ".join(list(extract_variables(cfg).keys()))
-    caption = (
+    names["var"] = " ".join(list(extract_variables(cfg).keys()))
+    names["caption"] = (
         "Probability density function of the decadal trend in "
         + "the "
-        + extract_variables(cfg)[var]["long_name"]
-        + caption
+        + extract_variables(cfg)[names["var"]]["long_name"]
+        + names["caption"]
     )
 
-    provenance_record = get_provenance_record(
-        valid_datasets, caption, ["trend", "other"], ["reg"]
+    names["provenance_record"]= get_provenance_record(
+        names["valid_datasets"], names["caption"],
+        ["trend", "other"], ["reg"]
     )
 
-    diagnostic_file = get_diagnostic_filename("fig2", cfg)
+    names["diagnostic_file"] = get_diagnostic_filename("fig2", cfg)
 
-    logger.info("Saving analysis results to %s", diagnostic_file)
+    logger.info("Saving analysis results to %s", names["diagnostic_file"])
 
     iris.save(
         cube_to_save_vars(_write_list_dict(cfg, trends, res_ar)),
-        target=diagnostic_file,
+        target=names["diagnostic_file"],
     )
 
     logger.info(
         "Recording provenance of %s:\n%s",
-        diagnostic_file,
-        pformat(provenance_record),
+        names["diagnostic_file"],
+        pformat(names["provenance_record"]),
     )
     with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(diagnostic_file, provenance_record)
+        provenance_logger.log(names["diagnostic_file"],
+                              names["provenance_record"])
 
 
 def _plot_obs(trends, axx, axx_lim):
@@ -394,14 +416,6 @@ def _plot_obs(trends, axx, axx_lim):
     if trends["obs"]:
         obs_str = " Vertical lines show the trend for"
         for iii, obsname in enumerate(trends["obs"].keys()):
-            if iii > 12:
-                obscoli = float(iii) - 12.25
-            elif iii > 8:
-                obscoli = float(iii) - 8.75
-            elif iii > 4:
-                obscoli = float(iii) - 4.5
-            else:
-                obscoli = float(iii)
 
             if obsname == "RSS":
                 plotobscol = (
@@ -422,11 +436,7 @@ def _plot_obs(trends, axx, axx_lim):
             elif obsname == "NCEP-NCAR-R1":
                 plotobscol = (1, 0.6, 0, 1)
             else:
-                plotobscol = (
-                    1.0 - 0.25 * obscoli,
-                    0.25 * obscoli,
-                    0.5 + obscoli * 0.1,
-                )
+                plotobscol = _get_plotobscol(iii)
 
             axx.vlines(
                 trends["obs"][obsname],
