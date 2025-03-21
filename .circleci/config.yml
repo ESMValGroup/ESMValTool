@@ -26,6 +26,7 @@ commands:
       - run:
           name: Log versions
           command: |
+            conda init
             conda env export --name base > ~/logs/base_environment.yml
             conda activate esmvaltool
             esmvaltool version
@@ -38,8 +39,8 @@ commands:
       - run:
           name: Run tests
           command: |
+            conda init
             conda activate esmvaltool
-            mamba --version
             pytest -n 4 --junitxml=test-reports/report.xml
             esmvaltool version
             esmvaltool -- --help
@@ -237,13 +238,13 @@ jobs:
           command: |
             mkdir ~/logs
             # Install
-            mamba --version
-            mamba env create -n esmvaltool -f environment_python.yml
-            conda activate esmvaltool
+            micromamba --version
+            micromamba env create -n esmvaltool -f environment_python.yml
+            micromamba activate esmvaltool
             pip install .[doc]
             # Log versions
             dpkg -l > ~/logs/versions.txt
-            conda env export > ~/logs/environment.yml
+            micromamba env export > ~/logs/environment.yml
             pip freeze > ~/logs/requirements.txt
             # Test building documentation
             MPLBACKEND=Agg sphinx-build -W doc/sphinx/source doc/spinx/build
