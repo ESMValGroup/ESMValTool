@@ -87,10 +87,10 @@ commands:
           command: |
             # Install
             mkdir ~/logs
-            mamba --version
-            mamba env create -n esmvaltool -f environment.yml
-            conda activate esmvaltool
-            mamba list >> ~/logs/conda.txt
+            micromamba --version
+            micromamba env create -n esmvaltool -f environment.yml
+            micromamba activate esmvaltool
+            micromamba list >> ~/logs/conda.txt
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> ~/logs/install.txt 2>&1
             esmvaltool install Julia > ~/logs/install_julia.txt 2>&1
             if [[ "<<parameters.flags>>" != *'--editable'* ]]
