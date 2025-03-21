@@ -91,7 +91,6 @@ commands:
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
             mamba --version
-            mamba install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
             mamba env create -n esmvaltool -f environment.yml
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
@@ -161,7 +160,7 @@ jobs:
   test_installation_from_source_test_mode:
     # Test installation from source
     docker:
-      - image: condaforge/miniforge3:latest
+      - image: mambaorg/micromamba:latest
     resource_class: large
     steps:
       - test_installation_from_source:
@@ -170,7 +169,7 @@ jobs:
   test_installation_from_source_develop_mode:
     # Test development installation
     docker:
-      - image: condaforge/miniforge3:latest
+      - image: mambaorg/micromamba:latest
     resource_class: large
     steps:
       - test_installation_from_source:
@@ -182,7 +181,7 @@ jobs:
     # purpose of this test to discover backward-incompatible changes early on in
     # the development cycle.
     docker:
-      - image: condaforge/miniforge3:latest
+      - image: mambaorg/micromamba:latest
     resource_class: large
     steps:
       - run:
@@ -205,7 +204,6 @@ jobs:
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
             mamba --version
-            mamba install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
             mamba env create -n esmvaltool -f environment.yml
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
@@ -239,7 +237,7 @@ jobs:
   build_documentation:
     # Test building documentation
     docker:
-      - image: condaforge/miniforge3:latest
+      - image: mambaorg/micromamba:latest
     resource_class: medium
     steps:
       - checkout
@@ -249,7 +247,6 @@ jobs:
             . /opt/conda/etc/profile.d/conda.sh
             # Install
             mamba --version
-            mamba install -c conda-forge "mamba>=2"
             mamba env create -n esmvaltool -f environment_python.yml
             conda activate esmvaltool
             pip install .[doc]
@@ -265,7 +262,7 @@ jobs:
   test_installation_from_conda:
     # Test conda package installation
     docker:
-      - image: condaforge/miniforge3:latest
+      - image: mambaorg/micromamba:latest
     resource_class: large
     steps:
       - run:
