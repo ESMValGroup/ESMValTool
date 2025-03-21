@@ -91,6 +91,7 @@ commands:
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
             mamba --version
+            conda update -n base -y conda
             conda install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
             mamba env create -n esmvaltool -f environment.yml
             conda activate esmvaltool
@@ -204,6 +205,8 @@ jobs:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
+            mamba --version
+            conda update -n base -y conda
             conda install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
             mamba env create -n esmvaltool -f environment.yml
             conda activate esmvaltool
@@ -247,6 +250,8 @@ jobs:
             mkdir /logs
             . /opt/conda/etc/profile.d/conda.sh
             # Install
+            mamba --version
+            conda update -n base -y conda
             conda install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
             mamba env create -n esmvaltool -f environment_python.yml
             conda activate esmvaltool
