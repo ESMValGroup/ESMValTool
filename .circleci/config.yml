@@ -27,12 +27,12 @@ commands:
           name: Log versions
           command: |
             . /opt/conda/etc/profile.d/conda.sh
-            conda env export --name base > /logs/base_environment.yml
+            conda env export --name base > ~/logs/base_environment.yml
             conda activate esmvaltool
             esmvaltool version
-            dpkg -l > /logs/versions.txt
-            conda env export > /logs/environment.yml
-            pip freeze > /logs/requirements.txt
+            dpkg -l > ~/logs/versions.txt
+            conda env export > ~/logs/environment.yml
+            pip freeze > ~/logs/requirements.txt
 
   test_and_report:
     steps:
@@ -50,7 +50,7 @@ commands:
       - store_test_results:
           path: test-reports/report.xml
       - store_artifacts:
-          path: /logs
+          path: ~/logs
       - run:
           name: Compress pytest artifacts
           command: tar -cvzf pytest.tar.gz -C /tmp/pytest-of-root/ .
@@ -89,13 +89,13 @@ commands:
           command: |
             # Install
             . /opt/conda/etc/profile.d/conda.sh
-            mkdir /logs
+            mkdir ~/logs
             mamba --version
             mamba env create -n esmvaltool -f environment.yml
             conda activate esmvaltool
-            mamba list >> /logs/conda.txt
-            pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
-            esmvaltool install Julia > /logs/install_julia.txt 2>&1
+            mamba list >> ~/logs/conda.txt
+            pip install << parameters.flags >> ".[<<parameters.extra>>]"> ~/logs/install.txt 2>&1
+            esmvaltool install Julia > ~/logs/install_julia.txt 2>&1
             if [[ "<<parameters.flags>>" != *'--editable'* ]]
             then
               rm -r esmvaltool
@@ -134,9 +134,9 @@ jobs:
             set -x
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            mkdir /logs
-            pip install .[test] > /logs/install.txt 2>&1
-            esmvaltool install Julia > /logs/install_julia.txt 2>&1
+            mkdir ~/logs
+            pip install .[test] > ~/logs/install.txt 2>&1
+            esmvaltool install Julia > ~/logs/install_julia.txt 2>&1
       - run:
           name: Check Python code style and mistakes
           command: |
@@ -202,13 +202,13 @@ jobs:
             # development version of ESMValTool and ESMValCore:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
             . /opt/conda/etc/profile.d/conda.sh
-            mkdir /logs
+            mkdir ~/logs
             mamba --version
             mamba env create -n esmvaltool -f environment.yml
             conda activate esmvaltool
-            mamba list >> /logs/conda.txt
+            mamba list >> ~/logs/conda.txt
             pip install --editable .[develop]
-            esmvaltool install Julia > /logs/install_julia.txt 2>&1
+            esmvaltool install Julia > ~/logs/install_julia.txt 2>&1
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
             pip install --editable $HOME/ESMValCore[develop]
       - log_versions
@@ -243,7 +243,7 @@ jobs:
       - checkout
       - run:
           command: |
-            mkdir /logs
+            mkdir ~/logs
             . /opt/conda/etc/profile.d/conda.sh
             # Install
             mamba --version
@@ -251,13 +251,13 @@ jobs:
             conda activate esmvaltool
             pip install .[doc]
             # Log versions
-            dpkg -l > /logs/versions.txt
-            conda env export > /logs/environment.yml
-            pip freeze > /logs/requirements.txt
+            dpkg -l > ~/logs/versions.txt
+            conda env export > ~/logs/environment.yml
+            pip freeze > ~/logs/requirements.txt
             # Test building documentation
             MPLBACKEND=Agg sphinx-build -W doc/sphinx/source doc/spinx/build
       - store_artifacts:
-          path: /logs
+          path: ~/logs
 
   test_installation_from_conda:
     # Test conda package installation
@@ -270,22 +270,22 @@ jobs:
             . /opt/conda/etc/profile.d/conda.sh
             set -x
             # Install prerequisites
-            mkdir /logs
+            mkdir ~/logs
             # Install ESMValTool in a new conda environment
-            mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.11' >> /logs/conda.txt 2>&1
+            mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.11' >> ~/logs/conda.txt 2>&1
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
             # install the Julia dependencies
-            esmvaltool install Julia > /logs/install_Julia.txt 2>&1
+            esmvaltool install Julia > ~/logs/install_Julia.txt 2>&1
             # Log versions
-            mamba env export > /logs/environment.yml
+            mamba env export > ~/logs/environment.yml
             # Test installation
             esmvaltool -- --help
             esmvaltool version
             ncl -V
             cdo --version
       - store_artifacts:
-          path: /logs
+          path: ~/logs
 
 workflows:
   commit:
