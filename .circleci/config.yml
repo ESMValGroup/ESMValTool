@@ -26,21 +26,22 @@ commands:
       - run:
           name: Log versions
           command: |
-            conda init
-            conda env export --name base > ~/logs/base_environment.yml
+            . /opt/conda/etc/profile.d/conda.sh
+            conda env export --name base > /logs/base_environment.yml
             conda activate esmvaltool
             esmvaltool version
-            dpkg -l > ~/logs/versions.txt
-            conda env export > ~/logs/environment.yml
-            pip freeze > ~/logs/requirements.txt
+            dpkg -l > /logs/versions.txt
+            conda env export > /logs/environment.yml
+            pip freeze > /logs/requirements.txt
 
   test_and_report:
     steps:
       - run:
           name: Run tests
           command: |
-            conda init
+            . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
+            mamba --version
             pytest -n 4 --junitxml=test-reports/report.xml
             esmvaltool version
             esmvaltool -- --help
@@ -49,7 +50,7 @@ commands:
       - store_test_results:
           path: test-reports/report.xml
       - store_artifacts:
-          path: ~/logs
+          path: /logs
       - run:
           name: Compress pytest artifacts
           command: tar -cvzf pytest.tar.gz -C /tmp/pytest-of-root/ .
@@ -87,14 +88,15 @@ commands:
           name: Install dependencies
           command: |
             # Install
-            mkdir ~/logs
-            micromamba --version
-            micromamba env create -n esmvaltool -f environment.yml
-            eval "$(micromamba shell hook --shell bash)"
-            micromamba activate esmvaltool
-            micromamba list >> ~/logs/conda.txt
-            pip install << parameters.flags >> ".[<<parameters.extra>>]"> ~/logs/install.txt 2>&1
-            esmvaltool install Julia > ~/logs/install_julia.txt 2>&1
+            . /opt/conda/etc/profile.d/conda.sh
+            mkdir /logs
+            mamba --version
+            conda install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
+            mamba env create -n esmvaltool -f environment.yml
+            conda activate esmvaltool
+            mamba list >> /logs/conda.txt
+            pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
+            esmvaltool install Julia > /logs/install_julia.txt 2>&1
             if [[ "<<parameters.flags>>" != *'--editable'* ]]
             then
               rm -r esmvaltool
@@ -103,7 +105,7 @@ commands:
       - run:
           name: Lint source code
           command: |
-            conda init
+            . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             pre-commit run --all
       - test_and_report
@@ -131,14 +133,15 @@ jobs:
           name: Install dependencies
           command: |
             set -x
-            conda init
+            . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            mkdir ~/logs
-            pip install .[test] > ~/logs/install.txt 2>&1
-            esmvaltool install Julia > ~/logs/install_julia.txt 2>&1
+            mkdir /logs
+            pip install .[test] > /logs/install.txt 2>&1
+            esmvaltool install Julia > /logs/install_julia.txt 2>&1
       - run:
           name: Check Python code style and mistakes
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             pre-commit run --all
       - run:
@@ -158,7 +161,7 @@ jobs:
   test_installation_from_source_test_mode:
     # Test installation from source
     docker:
-      - image: mambaorg/micromamba:latest
+      - image: condaforge/miniforge3:latest
     resource_class: large
     steps:
       - test_installation_from_source:
@@ -167,7 +170,7 @@ jobs:
   test_installation_from_source_develop_mode:
     # Test development installation
     docker:
-      - image: mambaorg/micromamba:latest
+      - image: condaforge/miniforge3:latest
     resource_class: large
     steps:
       - test_installation_from_source:
@@ -179,7 +182,7 @@ jobs:
     # purpose of this test to discover backward-incompatible changes early on in
     # the development cycle.
     docker:
-      - image: mambaorg/micromamba:latest
+      - image: condaforge/miniforge3:latest
     resource_class: large
     steps:
       - run:
@@ -199,14 +202,14 @@ jobs:
             # Install according to instructions on readthedocs with the
             # development version of ESMValTool and ESMValCore:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
-            mkdir ~/logs
-            micromamba --version
-            micromamba env create -n esmvaltool -f environment.yml
-            eval "$(micromamba shell hook --shell bash)"
-            micromamba activate esmvaltool
-            micromamba list >> ~/logs/conda.txt
+            . /opt/conda/etc/profile.d/conda.sh
+            mkdir /logs
+            conda install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
+            mamba env create -n esmvaltool -f environment.yml
+            conda activate esmvaltool
+            mamba list >> /logs/conda.txt
             pip install --editable .[develop]
-            esmvaltool install Julia > ~/logs/install_julia.txt 2>&1
+            esmvaltool install Julia > /logs/install_julia.txt 2>&1
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
             pip install --editable $HOME/ESMValCore[develop]
       - log_versions
@@ -214,7 +217,7 @@ jobs:
       - run:
           name: Run recipes
           command: |
-            conda init
+            . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             mkdir -p ~/climate_data
             esmvaltool config get_config_user
@@ -235,60 +238,59 @@ jobs:
   build_documentation:
     # Test building documentation
     docker:
-      - image: mambaorg/micromamba:latest
+      - image: condaforge/miniforge3:latest
     resource_class: medium
     steps:
       - checkout
       - run:
           command: |
-            mkdir ~/logs
+            mkdir /logs
+            . /opt/conda/etc/profile.d/conda.sh
             # Install
-            micromamba --version
-            micromamba env create -n esmvaltool -f environment_python.yml
-            eval "$(micromamba shell hook --shell bash)"
-            micromamba activate esmvaltool
+            conda install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
+            mamba env create -n esmvaltool -f environment_python.yml
+            conda activate esmvaltool
             pip install .[doc]
             # Log versions
-            dpkg -l > ~/logs/versions.txt
-            micromamba env export > ~/logs/environment.yml
-            pip freeze > ~/logs/requirements.txt
+            dpkg -l > /logs/versions.txt
+            conda env export > /logs/environment.yml
+            pip freeze > /logs/requirements.txt
             # Test building documentation
             MPLBACKEND=Agg sphinx-build -W doc/sphinx/source doc/spinx/build
       - store_artifacts:
-          path: ~/logs
+          path: /logs
 
   test_installation_from_conda:
     # Test conda package installation
     docker:
-      - image: mambaorg/micromamba:latest
+      - image: condaforge/miniforge3:latest
     resource_class: large
     steps:
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             # Install prerequisites
-            mkdir ~/logs
+            mkdir /logs
             # Install ESMValTool in a new conda environment
-            micromamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.11' >> ~/logs/conda.txt 2>&1
-            eval "$(micromamba shell hook --shell bash)"
+            mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.11' >> /logs/conda.txt 2>&1
             # Activate the environment
-            set +x; micromamba activate esmvaltool; set -x
+            set +x; conda activate esmvaltool; set -x
             # install the Julia dependencies
-            esmvaltool install Julia > ~/logs/install_Julia.txt 2>&1
+            esmvaltool install Julia > /logs/install_Julia.txt 2>&1
             # Log versions
-            mamba env export > ~/logs/environment.yml
+            mamba env export > /logs/environment.yml
             # Test installation
             esmvaltool -- --help
             esmvaltool version
             ncl -V
             cdo --version
       - store_artifacts:
-          path: ~/logs
+          path: /logs
 
 workflows:
   commit:
     jobs:
-      - build_documentation
       - run_tests
       - test_installation_from_source_test_mode
       - test_installation_from_source_develop_mode
