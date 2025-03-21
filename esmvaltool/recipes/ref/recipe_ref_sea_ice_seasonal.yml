@@ -19,7 +19,7 @@ datasets:
 
 preprocessors:
 
-  pp_nh_ext:
+  pp_nh_ext: &pp_nh_base
     extract_region:
       start_longitude: 0
       end_longitude: 360
@@ -30,7 +30,7 @@ preprocessors:
     area_statistics:
       operator: sum
 
-  pp_sh_ext:
+  pp_sh_ext: &pp_sh_base
     extract_region:
       start_longitude: 0
       end_longitude: 360
@@ -42,28 +42,12 @@ preprocessors:
       operator: sum
 
   pp_nh_area:
-    extract_region:
-      start_longitude: 0
-      end_longitude: 360
-      start_latitude: 30
-      end_latitude: 90
-    climate_statistics:
-      period: month
-    area_statistics:
-      operator: sum
+    <<: &pp_nh_base
     convert_units:
       units: 1e6 km2
 
   pp_sh_area:
-    extract_region:
-      start_longitude: 0
-      end_longitude: 360
-      start_latitude: -90
-      end_latitude: -30
-    climate_statistics:
-      period: month
-    area_statistics:
-      operator: sum
+    <<: &pp_sh_base
     convert_units:
       units: 1e6 km2
 
@@ -102,7 +86,7 @@ diagnostics:
         - {dataset: ESACCI-SEAICE, project: OBS6, tier: 2, type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-SH,
            supplementary_variables: [{short_name: areacello, mip: Ofx}]}
     scripts:
-      allplots:
+      allplots: &plot_base
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         group_variables_by: variable_group
@@ -163,29 +147,4 @@ diagnostics:
            supplementary_variables: [{short_name: areacello, mip: Ofx}]}
     scripts:
       allplots:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        group_variables_by: variable_group
-        facet_used_for_labels: dataset
-        plots:
-          annual_cycle:
-            annual_mean_kwargs: False
-            plot_kwargs:
-              'MPI-ESM1-2-LR':
-                color: red
-                label: '{dataset}'
-                linestyle: '-'
-                linewidth: 2
-                zorder: 4
-              ESACCI-SEAICE:
-                color: black
-                label: '{dataset}'
-                linestyle: '-'
-                linewidth: 2
-                zorder: 3
-              default:
-                color: lightgray
-                label: null
-                linestyle: '-'
-                linewidth: 1
-                zorder: 1
+        <<: plot_base
