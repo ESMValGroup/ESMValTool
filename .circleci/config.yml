@@ -90,6 +90,7 @@ commands:
             mkdir ~/logs
             micromamba --version
             micromamba env create -n esmvaltool -f environment.yml
+            eval "$(micromamba shell hook --shell bash)"
             micromamba activate esmvaltool
             micromamba list >> ~/logs/conda.txt
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> ~/logs/install.txt 2>&1
@@ -102,6 +103,7 @@ commands:
       - run:
           name: Lint source code
           command: |
+            conda init
             conda activate esmvaltool
             pre-commit run --all
       - test_and_report
@@ -129,6 +131,7 @@ jobs:
           name: Install dependencies
           command: |
             set -x
+            conda init
             conda activate esmvaltool
             mkdir ~/logs
             pip install .[test] > ~/logs/install.txt 2>&1
@@ -199,6 +202,7 @@ jobs:
             mkdir ~/logs
             micromamba --version
             micromamba env create -n esmvaltool -f environment.yml
+            eval "$(micromamba shell hook --shell bash)"
             micromamba activate esmvaltool
             micromamba list >> ~/logs/conda.txt
             pip install --editable .[develop]
@@ -210,6 +214,7 @@ jobs:
       - run:
           name: Run recipes
           command: |
+            conda init
             conda activate esmvaltool
             mkdir -p ~/climate_data
             esmvaltool config get_config_user
@@ -240,6 +245,7 @@ jobs:
             # Install
             micromamba --version
             micromamba env create -n esmvaltool -f environment_python.yml
+            eval "$(micromamba shell hook --shell bash)"
             micromamba activate esmvaltool
             pip install .[doc]
             # Log versions
@@ -263,9 +269,10 @@ jobs:
             # Install prerequisites
             mkdir ~/logs
             # Install ESMValTool in a new conda environment
-            mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.11' >> ~/logs/conda.txt 2>&1
+            micromamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.11' >> ~/logs/conda.txt 2>&1
+            eval "$(micromamba shell hook --shell bash)"
             # Activate the environment
-            set +x; conda activate esmvaltool; set -x
+            set +x; micromamba activate esmvaltool; set -x
             # install the Julia dependencies
             esmvaltool install Julia > ~/logs/install_Julia.txt 2>&1
             # Log versions
