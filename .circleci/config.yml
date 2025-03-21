@@ -196,10 +196,10 @@ jobs:
             # development version of ESMValTool and ESMValCore:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
             mkdir ~/logs
-            mamba --version
-            mamba env create -n esmvaltool -f environment.yml
-            conda activate esmvaltool
-            mamba list >> ~/logs/conda.txt
+            micromamba --version
+            micromamba env create -n esmvaltool -f environment.yml
+            micromamba activate esmvaltool
+            micromamba list >> ~/logs/conda.txt
             pip install --editable .[develop]
             esmvaltool install Julia > ~/logs/install_julia.txt 2>&1
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
