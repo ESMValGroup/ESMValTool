@@ -26,7 +26,6 @@ commands:
       - run:
           name: Log versions
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
             conda env export --name base > ~/logs/base_environment.yml
             conda activate esmvaltool
             esmvaltool version
@@ -39,7 +38,6 @@ commands:
       - run:
           name: Run tests
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             mamba --version
             pytest -n 4 --junitxml=test-reports/report.xml
@@ -88,7 +86,6 @@ commands:
           name: Install dependencies
           command: |
             # Install
-            . /opt/conda/etc/profile.d/conda.sh
             mkdir ~/logs
             mamba --version
             mamba env create -n esmvaltool -f environment.yml
@@ -104,7 +101,6 @@ commands:
       - run:
           name: Lint source code
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             pre-commit run --all
       - test_and_report
@@ -132,7 +128,6 @@ jobs:
           name: Install dependencies
           command: |
             set -x
-            . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             mkdir ~/logs
             pip install .[test] > ~/logs/install.txt 2>&1
@@ -140,7 +135,6 @@ jobs:
       - run:
           name: Check Python code style and mistakes
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             pre-commit run --all
       - run:
@@ -201,7 +195,6 @@ jobs:
             # Install according to instructions on readthedocs with the
             # development version of ESMValTool and ESMValCore:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
-            . /opt/conda/etc/profile.d/conda.sh
             mkdir ~/logs
             mamba --version
             mamba env create -n esmvaltool -f environment.yml
@@ -216,7 +209,6 @@ jobs:
       - run:
           name: Run recipes
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             mkdir -p ~/climate_data
             esmvaltool config get_config_user
@@ -244,7 +236,6 @@ jobs:
       - run:
           command: |
             mkdir ~/logs
-            . /opt/conda/etc/profile.d/conda.sh
             # Install
             mamba --version
             mamba env create -n esmvaltool -f environment_python.yml
@@ -267,7 +258,6 @@ jobs:
     steps:
       - run:
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
             set -x
             # Install prerequisites
             mkdir ~/logs
