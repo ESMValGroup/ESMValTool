@@ -23,8 +23,8 @@ Recipes are stored in recipes
   Calculate transient climate response to cumulative CO2 emissions (TCRE)
 * ref/recipe_ref_cre.yml:
   Maps and zonal means of longwave and shortwave cloud radiative effect
-* ref/recipe_ref_siextent_seasonal.yml:
-  Seasonal cycle of Arctic (NH) and Antarctic (SH) sea ice extent
+* ref/recipe_ref_sea_ice_seasonal.yml:
+  Seasonal cycle of Arctic (NH) and Antarctic (SH) sea ice area and extent
 
 
 Example plots:
