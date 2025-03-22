@@ -15,18 +15,21 @@ define: &season_predictor jja
 
 documentation:
   description: |
-    Example recipe that plots a map and timeseries of temperature.
+    Statistical seasonal forecast based on Maximum Covariance Analysis
 
-  title: Recipe that runs an example diagnostic written in Python.
+  title: Statistical seasonal forecast based on Maximum Covariance Analysis
+
 
   authors:
+    - rodriguez-fonseca_belen
+    - polo_irene
     - vegas-regidor_javier
 
   maintainer:
     - vegas-regidor_javier
 
   references:
-    - acknow_project
+    - duran-fonseca24
 
   projects:
     - proyecto_off
