@@ -1,9 +1,9 @@
 # ESMValTool
 ---
 documentation:
-  title: Seasonal cycle of NH sea ice area and extent
+  title: Seasonal cycle of NH sea ice area
   description: >
-    Example plot of the seasonal cycle of NH and SH sea ice area and extent (here: CMIP6 model MPI-ESM1-2-LR).
+    Example plot of the seasonal cycle of NH and SH sea ice area (here: CMIP6 model MPI-ESM1-2-LR).
   authors:
     - lauer_axel
   maintainer:
@@ -12,14 +12,10 @@ documentation:
 
 datasets:
   - {dataset: MPI-ESM1-2-LR, grid: gn, benchmark_dataset: true}
-###  - {dataset: MPI-ESM-LR, project: CMIP5, mip: OImon, ensemble: r1i1p1, timerange: '1995/2004'}
-###  - {dataset: GISS-E2-1-H, grid: gr} # CMIP6 sic data 
-###  - {dataset: GISS-E2-1-H, exp: piControl, grid: gn, timerange: '3180/3189'} # CMIP6 siconca data
-###  - {dataset: GISS-E2-H-CC, project: CMIP5, ensemble: r1i1p1, mip: OImon, timerange: '1995/2004'} # CMIP5 sic data
 
 preprocessors:
 
-  pp_nh_ext: &pp_nh_base
+  pp_nh:
     extract_region:
       start_longitude: 0
       end_longitude: 360
@@ -29,8 +25,10 @@ preprocessors:
       period: month
     area_statistics:
       operator: sum
+    convert_units:
+      units: 1e6 km2
 
-  pp_sh_ext: &pp_sh_base
+  pp_sh_ext:
     extract_region:
       start_longitude: 0
       end_longitude: 360
@@ -40,39 +38,33 @@ preprocessors:
       period: month
     area_statistics:
       operator: sum
-
-  pp_nh_area:
-    <<: &pp_nh_base
-    convert_units:
-      units: 1e6 km2
-
-  pp_sh_area:
-    <<: &pp_sh_base
     convert_units:
       units: 1e6 km2
 
 
 diagnostics:
 
-  siext_seas:
-    description: Create "classical" seasonal cycle plot including a reference dataset.
+  siarea_seas:
+    description: Create seasonal cycle plot including a reference dataset.
     variables:
-      siextent_nh:
-        short_name: siextent
+      siconc_nh:
+        short_name: siconc
         timerange: '1995/2014'
-        preprocessor: pp_nh_ext
+        preprocessor: pp_nh
         project: CMIP6
         mip: SImon
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
         derive: true
-        reference_dataset: ESACCI-SEAICE
+        reference_dataset: OSI-450-nh
         additional_datasets:
+        - {dataset: OSI-450-nh, project: OBS, type: reanaly, version: v3, mip: OImon, tier: 2,
+           supplementary_variables: [{short_name: areacello, mip: fx}]}
         - {dataset: ESACCI-SEAICE, project: OBS6, tier: 2, type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-NH,
            supplementary_variables: [{short_name: areacello, mip: Ofx}]}
-      siextent_sh:
-        short_name: siextent 
+      siconc_sh:
+        short_name: siconc 
         timerange: '1995/2014'
         preprocessor: pp_sh_ext
         project: CMIP6
@@ -81,12 +73,14 @@ diagnostics:
         ensemble: r1i1p1f1
         grid: gr
         derive: true
-        reference_dataset: ESACCI-SEAICE
+        reference_dataset: OSI-450-sh
         additional_datasets:
+        - {dataset: OSI-450-sh, project: OBS, type: reanaly, version: v3, mip: OImon, tier: 2,
+           supplementary_variables: [{short_name: areacello, mip: fx}]}
         - {dataset: ESACCI-SEAICE, project: OBS6, tier: 2, type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-SH,
            supplementary_variables: [{short_name: areacello, mip: Ofx}]}
     scripts:
-      allplots: &plot_base
+      allplots:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         group_variables_by: variable_group
@@ -107,44 +101,21 @@ diagnostics:
                 linestyle: '-'
                 linewidth: 2
                 zorder: 3
+              OSI-450-nh:
+                color: blue
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              OSI-450-sh:
+                color: blue
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
               default:
                 color: lightgray
                 label: null
                 linestyle: '-'
                 linewidth: 1
                 zorder: 1
-
-  siarea_seas:
-    description: Create "classical" seasonal cycle plot including a reference dataset.
-    variables:
-      siconc_nh:
-        short_name: siconc 
-        timerange: '1995/2014'
-        preprocessor: pp_nh_area
-        project: CMIP6
-        mip: SImon
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        derive: true
-        reference_dataset: ESACCI-SEAICE
-        additional_datasets:
-        - {dataset: ESACCI-SEAICE, project: OBS6, tier: 2, type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-NH,
-           supplementary_variables: [{short_name: areacello, mip: Ofx}]}
-      siconc_sh:
-        short_name: siconc 
-        timerange: '1995/2014'
-        preprocessor: pp_sh_area
-        project: CMIP6
-        mip: SImon
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        derive: true
-        reference_dataset: ESACCI-SEAICE
-        additional_datasets:
-        - {dataset: ESACCI-SEAICE, project: OBS6, tier: 2, type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-SH,
-           supplementary_variables: [{short_name: areacello, mip: Ofx}]}
-    scripts:
-      allplots:
-        <<: plot_base
