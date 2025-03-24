@@ -1,4 +1,5 @@
 """Script to download NOAA-ERSST-V5."""
+
 import logging
 from datetime import datetime
 
@@ -9,8 +10,9 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -41,10 +43,13 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         overwrite=overwrite,
     )
 
-    base_path = ("https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/netcdf/"
-                 "ersst.v5.{year}{month:02d}.nc")
+    base_path = (
+        "https://www1.ncdc.noaa.gov/pub/data/cmb/ersst/v5/netcdf/"
+        "ersst.v5.{year}{month:02d}.nc"
+    )
 
     while loop_date <= end_date:
         downloader.download_folder(
-            base_path.format(year=loop_date.year, month=loop_date.month), [])
+            base_path.format(year=loop_date.year, month=loop_date.month), []
+        )
         loop_date += relativedelta.relativedelta(months=1)
