@@ -25,7 +25,7 @@ Recipes are stored in recipes
   Maps and zonal means of longwave and shortwave cloud radiative effect
 * ref/recipe_ref_sea_ice_area_basic.yml:
   Seasonal cycle of Arctic (NH) and Antarctic (SH) sea ice area, time series
-  of Arctic September (NH) and Antarctic March (SH) sea ice area
+  of Arctic September (NH) and Antarctic February (SH) sea ice area
 
 
 Example plots:
