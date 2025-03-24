@@ -91,12 +91,9 @@ commands:
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
             mamba --version
-            conda install -y -c conda-forge "conda>25"
-            conda install -y -c conda-forge "mamba==2.0.5"  # mamba<2 can't solve env
-            mamba --version
+            mamba install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
             mamba env create -n esmvaltool -f environment.yml
             conda activate esmvaltool
-            mamba --version
             mamba list >> /logs/conda.txt
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
@@ -207,13 +204,9 @@ jobs:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            mamba --version
-            conda install -y -c conda-forge "conda>25"
-            conda install -y -c conda-forge "mamba==2.0.5"  # mamba<2 can't solve env
-            mamba --version
+            mamba install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
             mamba env create -n esmvaltool -f environment.yml
             conda activate esmvaltool
-            mamba --version
             mamba list >> /logs/conda.txt
             pip install --editable .[develop]
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
@@ -254,13 +247,8 @@ jobs:
             mkdir /logs
             . /opt/conda/etc/profile.d/conda.sh
             # Install
-            mamba --version
-            conda install -y -c conda-forge "conda>25"
-            conda install -y -c conda-forge "mamba==2.0.5"  # mamba<2 can't solve env
-            mamba --version
-            mamba env create -n esmvaltool -f environment_python.yml
+            mamba env create
             conda activate esmvaltool
-            mamba --version
             pip install .[doc]
             # Log versions
             dpkg -l > /logs/versions.txt
@@ -302,7 +290,6 @@ jobs:
 workflows:
   commit:
     jobs:
-      - build_documentation
       - run_tests
       - test_installation_from_source_test_mode
       - test_installation_from_source_develop_mode
