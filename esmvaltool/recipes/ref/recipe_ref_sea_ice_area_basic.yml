@@ -1,7 +1,7 @@
 # ESMValTool
 ---
 documentation:
-  title: Seasonal cycle of NH sea ice area
+  title: Seasonal cycle of NH/SH sea ice area
   description: >
     Example plot of the seasonal cycle of NH and SH sea ice area (here: CMIP6 model MPI-ESM1-2-LR).
   authors:
@@ -28,7 +28,20 @@ preprocessors:
     convert_units:
       units: 1e6 km2
 
-  pp_sh_ext:
+  pp_nh_sep:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 30
+      end_latitude: 90
+    extract_month:
+      month: 9
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: 1e6 km2
+
+  pp_sh:
     extract_region:
       start_longitude: 0
       end_longitude: 360
@@ -41,13 +54,26 @@ preprocessors:
     convert_units:
       units: 1e6 km2
 
+  pp_sh_mar:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -90
+      end_latitude: -30
+    extract_month:
+      month: 3
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: 1e6 km2
+
 
 diagnostics:
 
   siarea_seas:
-    description: Create seasonal cycle plot including a reference dataset.
+    description: Create seasonal cycle plot of sea ice area.
     variables:
-      siconc_nh:
+      sea_ice_area_nh: &var_basic
         short_name: siconc
         timerange: '1995/2014'
         preprocessor: pp_nh
@@ -56,29 +82,19 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
-        derive: true
         reference_dataset: OSI-450-nh
         additional_datasets:
         - {dataset: OSI-450-nh, project: OBS, type: reanaly, version: v3, mip: OImon, tier: 2,
            supplementary_variables: [{short_name: areacello, mip: fx}]}
-        - {dataset: ESACCI-SEAICE, project: OBS6, tier: 2, type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-NH,
-           supplementary_variables: [{short_name: areacello, mip: Ofx}]}
-      siconc_sh:
-        short_name: siconc 
-        timerange: '1995/2014'
-        preprocessor: pp_sh_ext
-        project: CMIP6
-        mip: SImon
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        derive: true
+#        - {dataset: ESACCI-SEAICE, project: OBS6, tier: 2, type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-SH,
+#           supplementary_variables: [{short_name: areacello, mip: Ofx}]}
+      sea_ice_area_sh:
+        <<: *var_basic
+        preprocessor: pp_sh
         reference_dataset: OSI-450-sh
         additional_datasets:
         - {dataset: OSI-450-sh, project: OBS, type: reanaly, version: v3, mip: OImon, tier: 2,
            supplementary_variables: [{short_name: areacello, mip: fx}]}
-        - {dataset: ESACCI-SEAICE, project: OBS6, tier: 2, type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-SH,
-           supplementary_variables: [{short_name: areacello, mip: Ofx}]}
     scripts:
       allplots:
         script: monitor/multi_datasets.py
@@ -86,8 +102,10 @@ diagnostics:
         group_variables_by: variable_group
         facet_used_for_labels: dataset
         plots:
-          annual_cycle:
+          annual_cycle: &plot_basic
             annual_mean_kwargs: False
+            pyplot_kwargs:
+              title: 'Sea ice area (million km2)'
             plot_kwargs:
               'MPI-ESM1-2-LR':
                 color: red
@@ -103,13 +121,13 @@ diagnostics:
                 zorder: 3
               OSI-450-nh:
                 color: blue
-                label: '{dataset}'
+                label: 'OSISAF/CCI'
                 linestyle: '-'
                 linewidth: 2
                 zorder: 3
               OSI-450-sh:
                 color: blue
-                label: '{dataset}'
+                label: 'OSISAF/CCI'
                 linestyle: '-'
                 linewidth: 2
                 zorder: 3
@@ -119,3 +137,32 @@ diagnostics:
                 linestyle: '-'
                 linewidth: 1
                 zorder: 1
+
+  siarea_min:
+    description: Create time series of September/March sea ice area.
+    variables:
+      sea_ice_area_nh_sep:
+        <<: *var_basic
+        timerange: '1979/2014'
+        preprocessor: pp_nh_sep
+        reference_dataset: OSI-450-nh
+        additional_datasets:
+        - {dataset: OSI-450-nh, project: OBS, type: reanaly, version: v3, mip: OImon, tier: 2,
+           supplementary_variables: [{short_name: areacello, mip: fx}], timerange: 1979/2020}
+      sea_ice_area_sh_mar:
+        <<: *var_basic
+        timerange: '1979/2014'
+        preprocessor: pp_sh_mar
+        reference_dataset: OSI-450-sh
+        additional_datasets:
+        - {dataset: OSI-450-sh, project: OBS, type: reanaly, version: v3, mip: OImon, tier: 2,
+           supplementary_variables: [{short_name: areacello, mip: fx}], timerange: 1979/2020}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: variable_group
+        facet_used_for_labels: dataset
+        plots:
+          timeseries:
+            <<: *plot_basic
