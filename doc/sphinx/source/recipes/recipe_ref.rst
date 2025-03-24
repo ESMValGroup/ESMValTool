@@ -51,7 +51,7 @@ Example plots:
    :align:   center
    :width:   8cm
 
-   Average seasonal cycle of the Arctic (NH) sea ice area from MPI-ESM1-2-LR 
+   Average seasonal cycle of the Arctic (NH) sea ice area from MPI-ESM1-2-LR
    (red line) compared with OSISAF/CCI (blue line). Created with recipe_ref_sea_ice_area_basic.yml.
 
 .. _fig_ref_4:
@@ -59,5 +59,5 @@ Example plots:
    :align:   center
    :width:   8cm
 
-   Time series of Arctic (NH) September (NH) sea ice area from MPI-ESM1-2-LR 
+   Time series of Arctic (NH) September (NH) sea ice area from MPI-ESM1-2-LR
    (red line) compared with OSISAF/CCI (blue line). Created with recipe_ref_sea_ice_area_basic.yml.
