@@ -3,7 +3,11 @@ import logging
 import os
 from pathlib import Path
 
+import cartopy.crs as ccrs
 import iris
+import iris.quickplot as qplt
+import matplotlib.colors as colors
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from esmvalcore.preprocessor import extract_time
@@ -19,15 +23,8 @@ from esmvaltool.diag_scripts.shared import (
 logger = logging.getLogger(Path(__file__).stem)
 
 
-def log_provenance(filename, ancestors, caption, cfg):
+def log_provenance(provenance, filename, cfg):
     """Create a provenance record for the output file."""
-    provenance = {
-        'caption': caption,
-        'domains': ['global'],
-        'authors': ['swaminathan_ranjini'],
-        'projects': ['ukesm'],
-        'ancestors': ancestors,
-    }
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance)
 
@@ -96,6 +93,8 @@ def main(cfg):
     window_size = cfg['window_size']
     gwls = cfg['gwls']
     pattern = cfg['pattern']
+    cmap_mean_str = cfg['quickplot']['cmap_mean']
+    cmap_stdev_str = cfg['quickplot']['cmap_stdev']
 
     gwl_filename = io.get_ancestor_file(cfg, pattern)
     logger.info('GWL exceedance years file is %s', gwl_filename)
@@ -126,6 +125,112 @@ def main(cfg):
 
                 calculate_gwl_mm_stats(project_data, gwl_subset_df,
                                        window_size, mean_file, stdev_file)
+                filename = sep.join([project, 'mm_mean', str(gwl)]) + '.png'
+                mean_plot_file = os.path.join(cfg['plot_dir'], filename)
+                filename = sep.join([project, 'mm_stdev', str(gwl)]) + '.png'
+                stdev_plot_file = os.path.join(cfg['plot_dir'], filename)
+
+                # plot mean and stdev if they exist
+                if os.path.isfile(mean_file):
+                    logger.info("Plotting mm mean file %s", mean_file)
+                    cube = iris.load_cube(mean_file)
+                    plt.axes(projection=ccrs.Robinson())
+
+                    if (cfg['quickplot']['title_var'] == 'Temperature'):
+                        cube.convert_units('Celsius')
+                        qplt.contourf(
+                            cube,
+                            norm=colors.CenteredNorm(),
+                            cmap=cmap_mean_str,
+                        )
+
+                    if (cfg['quickplot']['title_var'] == 'Precipitation'):
+                        cube = cube * 86400
+                        cube.units = 'mm/day'
+                        qplt.contourf(
+                            cube,
+                            cmap=cmap_mean_str,
+                        )
+
+                    plt.gca().coastlines()
+                    title_str = 'Multimodel mean of ' + cfg['quickplot'][
+                        'title_var'] + ' at ' + str(gwl) + r'$^\circ$ C'
+                    plt.title(title_str)
+
+                    plt.tight_layout()
+                    plt.savefig(mean_plot_file)
+                    plt.close()
+
+                    # write provenance for the NetCDF and png files
+                    ancestors_file = [gwl_filename]
+                    ancestors_file = ancestors_file + [
+                        d["filename"] for d in project_data
+                    ]
+                    provenance_dict = {
+                        'caption': title_str,
+                        'ancestors': ancestors_file,
+                        'authors': ['swaminathan_ranjini'],
+                        'references': ['swaminathan22jclim'],
+                        'projects': ['ukesm'],
+                        'domains': ['global'],
+                    }
+                    # write provenance record
+                    log_provenance(provenance_dict, mean_file, cfg)
+
+                    provenance_dict = {
+                        'caption': title_str,
+                        'ancestors': ancestors_file,
+                        'authors': ['swaminathan_ranjini'],
+                        'references': ['swaminathan22jclim'],
+                        'projects': ['ukesm'],
+                        'domains': ['global'],
+                        'plot_type': ['map']
+                    }
+                    # write provenance record
+                    log_provenance(provenance_dict, mean_plot_file, cfg)
+
+                if os.path.isfile(stdev_file):
+                    cube = iris.load_cube(stdev_file)
+                    plt.axes(projection=ccrs.Robinson())
+                    qplt.contourf(cube, cmap=cmap_stdev_str)
+                    plt.gca().coastlines()
+                    if (cfg['quickplot']['title_var'] == 'Temperature'):
+                        cube.units = 'Celsius'
+
+                    if (cfg['quickplot']['title_var'] == 'Precipitation'):
+                        cube = cube * 86400
+                        cube.units = 'mm/day'
+
+                    title_str = 'Multimodel standard deviation of ' + cfg[
+                        'quickplot']['title_var'] + ' at ' + str(
+                            gwl) + r'$^\circ$ C'
+                    plt.title(title_str)
+                    plt.tight_layout()
+                    plt.savefig(stdev_plot_file)
+                    plt.close()
+
+                    provenance_dict = {
+                        'caption': title_str,
+                        'ancestors': ancestors_file,
+                        'authors': ['swaminathan_ranjini'],
+                        'references': ['swaminathan22jclim'],
+                        'projects': ['ukesm'],
+                        'domains': ['global'],
+                    }
+                    # write provenance record
+                    log_provenance(provenance_dict, stdev_file, cfg)
+
+                    provenance_dict = {
+                        'caption': title_str,
+                        'ancestors': ancestors_file,
+                        'authors': ['swaminathan_ranjini'],
+                        'references': ['swaminathan22jclim'],
+                        'projects': ['ukesm'],
+                        'domains': ['global'],
+                        'plot_type': ['map']
+                    }
+                    # write provenance record
+                    log_provenance(provenance_dict, stdev_plot_file, cfg)
 
 
 if __name__ == '__main__':

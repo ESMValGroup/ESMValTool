@@ -16,15 +16,8 @@ from esmvaltool.diag_scripts.shared import (
 logger = logging.getLogger(Path(__file__).stem)
 
 
-def log_provenance(filename, ancestors, caption, cfg):
+def log_provenance(provenance, filename, cfg):
     """Create a provenance record for the output file."""
-    provenance = {
-        'caption': caption,
-        'domains': ['global'],
-        'authors': ['swaminathan_ranjini'],
-        'projects': ['ukesm'],
-        'ancestors': ancestors,
-    }
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance)
 
@@ -105,6 +98,17 @@ def main(cfg):
                                             window_size)
     gwl_file = os.path.join(cfg['work_dir'], 'GWL_exceedance_years.csv')
     gwl_df.to_csv(gwl_file, sep=',', index=False)
+
+    provenance_dict = {
+        'caption': 'CSV file of Global Warming level Exceedances',
+        'ancestors': [d["filename"] for d in input_data],
+        'authors': ['swaminathan_ranjini'],
+        'references': ['swaminathan22jclim'],
+        'projects': ['ukesm'],
+        'domains': ['global'],
+    }
+    # write provenance record
+    log_provenance(provenance_dict, gwl_file, cfg)
 
 
 if __name__ == '__main__':
