@@ -40,6 +40,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
           use-mamba: true
+          mamba-version: "2.0.5"  # https://github.com/conda-incubator/setup-miniconda/issues/392
       - run: mkdir -p develop_test_linux_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
         run: |
@@ -55,8 +56,8 @@ jobs:
           git clone https://github.com/ESMValGroup/ESMValCore.git
           cd ESMValCore
           pip install -e .[develop]
-      - name: Run flake8
-        run: flake8
+      - name: Check code quality
+        run: pre-commit run -a
       - name: Run tests
         run: pytest -n 2 -m "not installation" 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt
       - name: Upload artifacts

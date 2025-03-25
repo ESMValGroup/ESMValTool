@@ -1,4 +1,5 @@
 """Script to download JRA-55 from RDA."""
+
 import logging
 import os
 from datetime import datetime
@@ -10,8 +11,9 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -42,10 +44,12 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     if user is None:
         user = str(input("RDA user name? "))
         if user == "":
-            errmsg = ("A RDA account is required to download JRA-55 data."
-                      " Please visit https://rda.ucar.edu/login/register/"
-                      " to create an account at the Research Data Archive"
-                      " (RDA) if needed.")
+            errmsg = (
+                "A RDA account is required to download JRA-55 data."
+                " Please visit https://rda.ucar.edu/login/register/"
+                " to create an account at the Research Data Archive"
+                " (RDA) if needed."
+            )
             logger.error(errmsg)
             raise ValueError
 
@@ -59,8 +63,12 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         end_date = datetime(2022, 12, 31)
     loop_date = start_date
 
-    options = ["-O", "Authentication.log", "--save-cookies=auth.rda_ucar_edu",
-               f"--post-data=\"email={user}&passwd={passwd}&action=login\""]
+    options = [
+        "-O",
+        "Authentication.log",
+        "--save-cookies=auth.rda_ucar_edu",
+        f'--post-data="email={user}&passwd={passwd}&action=login"',
+    ]
 
     # login to Research Data Archive (RDA)
 
@@ -73,19 +81,21 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     # define variables to download
 
-    var = [["011_tmp", "anl_p125"],
-           ["011_tmp", "anl_surf125"],
-           ["039_vvel", "anl_p125"],
-           ["071_tcdc", "fcst_surf125"],
-           ["054_pwat", "fcst_column125"],
-           ["058_cice", "fcst_column125"],
-           ["160_csusf", "fcst_phy2m125"],
-           ["162_csulf", "fcst_phy2m125"],
-           ["211_uswrf", "fcst_phy2m125"],
-           ["212_ulwrf", "fcst_phy2m125"],
-           ["227_cw", "fcst_column125"],
-           ["228_clwc", "fcst_p125"],
-           ["229_ciwc", "fcst_p125"]]
+    var = [
+        ["011_tmp", "anl_p125"],
+        ["011_tmp", "anl_surf125"],
+        ["039_vvel", "anl_p125"],
+        ["071_tcdc", "fcst_surf125"],
+        ["054_pwat", "fcst_column125"],
+        ["058_cice", "fcst_column125"],
+        ["160_csusf", "fcst_phy2m125"],
+        ["162_csulf", "fcst_phy2m125"],
+        ["211_uswrf", "fcst_phy2m125"],
+        ["212_ulwrf", "fcst_phy2m125"],
+        ["227_cw", "fcst_column125"],
+        ["228_clwc", "fcst_p125"],
+        ["229_ciwc", "fcst_p125"],
+    ]
 
     # download data
 
@@ -97,11 +107,14 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
             channel = item[1]
             fname = f"{channel}.{varname}.{year}01_{year}12"
             # download file
-            downloader.download_file(url + f"/{channel}/{year}/" +
-                                     fname, download_options)
+            downloader.download_file(
+                url + f"/{channel}/{year}/" + fname, download_options
+            )
             # add file extension ".grb"
-            os.rename(downloader.local_folder + "/" + fname,
-                      downloader.local_folder + "/" + fname + ".grb")
+            os.rename(
+                downloader.local_folder + "/" + fname,
+                downloader.local_folder + "/" + fname + ".grb",
+            )
 
         loop_date += relativedelta.relativedelta(years=1)
 

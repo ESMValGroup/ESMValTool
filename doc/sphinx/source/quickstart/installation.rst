@@ -364,6 +364,13 @@ so you will not be able to run NCL, R, or Julia diagnostics with it.
     would like to keep.
     It is recommended that you create a new environment when updating ESMValTool.
 
+.. note::
+    There is also a pure-Python environment file ``esmvaltool_python.yml``
+    which is a softlink of the ``environment_osx.yml`` file; this one is used
+    by any build that needs only Python packages (i.e. no NCL and R), currently
+    this is used by our documentation builds, but it could be used by anyone
+    needing just the Python dependencies.
+
 Next, activate the environment by using the command:
 
 .. code-block:: bash
@@ -395,6 +402,16 @@ install the ESMValTool Julia dependencies:
 .. code-block:: bash
 
     esmvaltool install Julia
+
+If you are planning to do any coding, install the :ref:`esmvaltool:pre-commit`
+hooks by running:
+
+.. code-block:: bash
+
+    pre-commit install
+
+these will make sure that when you commit your changes, they will be formatted
+correctly.
 
 The next step is to check that the installation works properly.
 To do this, run the tool with:
@@ -492,6 +509,15 @@ If the command above shows a directory inside your conda environment instead,
 e.g. ``~/miniforge3/envs/esmvaltool/lib/python3.11/site-packages/esmvalcore``,
 you may need to manually remove that directory and run
 ``pip install --editable '.[develop]'`` again.
+
+Finally, also install the :ref:`esmvaltool:pre-commit` hooks by running:
+
+.. code-block:: bash
+
+    pre-commit install
+
+these will make sure that when you commit your changes, they will be formatted
+correctly.
 
 .. _install_on_hpc:
 

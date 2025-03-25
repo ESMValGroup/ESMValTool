@@ -14,10 +14,11 @@ Download and processing instructions
     Processing is done on GADI
 
 """
+
+import calendar
 import logging
 import os
 import re
-import calendar
 
 import iris
 
@@ -32,10 +33,8 @@ def _get_filepaths(in_dir, basename):
     return_files = []
     # Search sub folders of raw data directory
     for root, _dir, files in os.walk(in_dir, followlinks=True):
-
         for filename in files:
             if regex.match(filename):
-
                 return_files.append(os.path.join(root, filename))
 
     return return_files
@@ -44,18 +43,17 @@ def _get_filepaths(in_dir, basename):
 def fix_data_var(cube, var):
     """Convert units in cube for the variable."""
     # get month, year from cube
-    tcoord = cube.coord('time')
+    tcoord = cube.coord("time")
     tdate = tcoord.units.num2date(tcoord.points[0])
     no_ofdays = calendar.monthrange(tdate.year, tdate.month)[1]
 
-    if var == 'pr':
-
+    if var == "pr":
         cube = cube / (no_ofdays * 86400)  # days in month
-        cube.units = 'kg m-2 s-1'
+        cube.units = "kg m-2 s-1"
 
-    elif var in ['tas', 'tasmin', 'tasmax']:  # other variables in v1
+    elif var in ["tas", "tasmin", "tasmax"]:  # other variables in v1
         cube = cube + 273.15
-        cube.units = 'K'
+        cube.units = "K"
         utils.add_height2m(cube)
 
     else:
@@ -90,29 +88,26 @@ def _extract_variable(cmor_info, attrs, filepaths, out_dir):
         cubesave = utils.fix_coords(cubesave)
 
         logger.info("Saving file")
-        utils.save_variable(cubesave,
-                            var,
-                            out_dir,
-                            attrs,
-                            unlimited_dimensions=['time'])
+        utils.save_variable(
+            cubesave, var, out_dir, attrs, unlimited_dimensions=["time"]
+        )
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    glob_attrs = cfg['attributes']
-    cmor_table = cfg['cmor_table']
+    glob_attrs = cfg["attributes"]
+    cmor_table = cfg["cmor_table"]
 
-    ver = cfg['attributes']['version']
+    ver = cfg["attributes"]["version"]
     logger.info(cfg, cfg_user)
 
     # Run the cmorization, multiple variables
-    for (var, var_info) in cfg['variables'].items():
+    for var, var_info in cfg["variables"].items():
+        glob_attrs["mip"] = var_info["mip"]
 
-        glob_attrs['mip'] = var_info['mip']
-
-        raw_filename = cfg['filename'].format(version=ver,
-                                              raw=var_info['raw'],
-                                              freq=var_info['freq'])
+        raw_filename = cfg["filename"].format(
+            version=ver, raw=var_info["raw"], freq=var_info["freq"]
+        )
         filepaths = _get_filepaths(in_dir, raw_filename)
 
         if len(filepaths) == 0:
@@ -121,5 +116,5 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         else:
             logger.info("Found files, count %s", len(filepaths))
 
-            cmor_info = cmor_table.get_variable(var_info['mip'], var)
+            cmor_info = cmor_table.get_variable(var_info["mip"], var)
             _extract_variable(cmor_info, glob_attrs, filepaths, out_dir)
