@@ -27,7 +27,7 @@ build:
 # Declare the requirements required to build your docs
 conda:
   environment:
-    environment.yml
+    environment_python.yml
 
 # Build documentation in the doc directory with Sphinx
 sphinx:
