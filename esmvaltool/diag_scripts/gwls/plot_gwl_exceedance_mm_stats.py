@@ -21,7 +21,7 @@ from esmvaltool.diag_scripts.shared import (
     select_metadata,
 )
 
-sep = "_"
+SEP = "_"
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -109,7 +109,7 @@ def plot_mean_stats(cfg, project, mean_cube_file, gwl):
     """Plot the multimodel mean."""
     cmap_mean_str = cfg["quickplot"]["cmap_mean"]
     mean_level_params = cfg["quickplot"]["mean_level_params"]
-    filename = sep.join([project, "mm_mean", str(gwl)]) + ".png"
+    filename = SEP.join([project, "mm_mean", str(gwl)]) + ".png"
     mean_plot_file = os.path.join(cfg["plot_dir"], filename)
     cube = iris.load_cube(mean_cube_file)
     plt.axes(projection=ccrs.Robinson())
@@ -143,10 +143,10 @@ def plot_mean_stats(cfg, project, mean_cube_file, gwl):
 
 
 def plot_stdev_stats(cfg, project, stdev_cube_file, gwl):
-    """Plot multimodel stdev"""
+    """Plot multimodel stdev."""
     cmap_stdev_str = cfg["quickplot"]["cmap_stdev"]
     stdev_level_params = cfg["quickplot"]["stdev_level_params"]
-    filename = sep.join([project, "mm_stdev", str(gwl)]) + ".png"
+    filename = SEP.join([project, "mm_stdev", str(gwl)]) + ".png"
     stdev_plot_file = os.path.join(cfg["plot_dir"], filename)
 
     cube = iris.load_cube(stdev_cube_file)
@@ -190,9 +190,9 @@ def main(cfg):
                     "Calculating means and standard deviations for GWL: %s",
                     str(gwl),
                 )
-                filename = sep.join([project, "mm_mean", str(gwl)]) + ".nc"
+                filename = SEP.join([project, "mm_mean", str(gwl)]) + ".nc"
                 mean_file = os.path.join(cfg["work_dir"], filename)
-                filename = sep.join([project, "mm_stdev", str(gwl)]) + ".nc"
+                filename = SEP.join([project, "mm_stdev", str(gwl)]) + ".nc"
                 stdev_file = os.path.join(cfg["work_dir"], filename)
 
                 cubes = calculate_gwl_mm_cube(
@@ -221,7 +221,7 @@ def main(cfg):
                     log_provenance(provenance_dict, mean_file, cfg)
                     provenance_dict.update({"plot_type": ["map"]})
                     filename = (
-                        sep.join([project, "mm_mean", str(gwl)]) + ".png"
+                        SEP.join([project, "mm_mean", str(gwl)]) + ".png"
                     )
                     filename = os.path.join(cfg["plot_dir"], filename)
                     log_provenance(provenance_dict, filename, cfg)
@@ -241,7 +241,7 @@ def main(cfg):
                     provenance_dict.update({"plot_type": ["map"]})
 
                     filename = (
-                        sep.join([project, "mm_stdev", str(gwl)]) + ".png"
+                        SEP.join([project, "mm_stdev", str(gwl)]) + ".png"
                     )
                     filename = os.path.join(cfg["plot_dir"], filename)
                     log_provenance(provenance_dict, filename, cfg)
