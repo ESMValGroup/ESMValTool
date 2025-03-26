@@ -86,7 +86,7 @@ def calculate_gwl_exceedance_years(input_data_sorted, gwls, window_size):
 
 
 def main(cfg):
-    """Group input data and call functions to calculate GWL exceedances."""
+    """Execute GWL exceedances."""
     input_data = cfg["input_data"].values()
 
     # initialize pandas data frame to store GWL exceedance information

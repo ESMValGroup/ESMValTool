@@ -102,7 +102,7 @@ def calculate_gwl_mm_stats(
 
 
 def main(cfg):
-    """Group data by projects and plot GWL statistics."""
+    """Plot GWL statistics."""
     input_data = cfg["input_data"].values()
     window_size = cfg["window_size"]
     gwls = cfg["gwls"]
