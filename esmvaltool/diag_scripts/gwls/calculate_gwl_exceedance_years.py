@@ -24,7 +24,7 @@ def log_provenance(provenance, filename, cfg):
 
 
 def calculate_moving_average_centered(a, window_size):
-    """Calculate rolling means centred at a point"""
+    """Calculate rolling means centred at a point."""
     if window_size < 2:
         raise ValueError("Window size should be greater than 2")
 
@@ -34,7 +34,7 @@ def calculate_moving_average_centered(a, window_size):
 
 
 def calculate_gwl_exceedance_years(input_data_sorted, gwls, window_size):
-    """Calculate GWL exceedance years for models and ensemble members"""
+    """Calculate GWL exceedance years for models and ensemble members."""
     col_names = ["Project", "Exp", "Model", "Ens", "GWL", "Exceedance_Year"]
     gwl_df = pd.DataFrame(columns=col_names)
 
