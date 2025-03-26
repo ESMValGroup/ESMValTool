@@ -21,6 +21,8 @@ from esmvaltool.diag_scripts.shared import (
     select_metadata,
 )
 
+sep = "_"
+
 logger = logging.getLogger(Path(__file__).stem)
 
 
@@ -103,34 +105,85 @@ def calculate_mm_stats(cubes, mean_file, stdev_file):
         iris.save(mm_stdev_cube, stdev_file)
 
 
+def plot_mean_stats(cfg, project, mean_cube_file, gwl):
+    """Plot the multimodel mean."""
+    cmap_mean_str = cfg["quickplot"]["cmap_mean"]
+    mean_level_params = cfg["quickplot"]["mean_level_params"]
+    filename = sep.join([project, "mm_mean", str(gwl)]) + ".png"
+    mean_plot_file = os.path.join(cfg["plot_dir"], filename)
+    cube = iris.load_cube(mean_cube_file)
+    plt.axes(projection=ccrs.Robinson())
+    levels = np.arange(
+        float(mean_level_params[0]),
+        float(mean_level_params[1]),
+        float(mean_level_params[2]),
+    )
+    if cfg["quickplot"]["title_var"] == "Temperature":
+        qplt.contourf(
+            cube,
+            norm=colors.CenteredNorm(),
+            cmap=cmap_mean_str,
+            levels=levels,
+            extend="max",
+        )
+
+    if cfg["quickplot"]["title_var"] == "Precipitation":
+        qplt.contourf(
+            cube,
+            cmap=cmap_mean_str,
+            levels=levels,
+            extend="max",
+        )
+    plt.gca().coastlines()
+    title_str = f"Multimodel mean of {cfg['quickplot']['title_var']} at {gwl} $^\\circ$ C"
+    plt.title(title_str)
+    plt.tight_layout()
+    plt.savefig(mean_plot_file)
+    plt.close()
+
+
+def plot_stdev_stats(cfg, project, stdev_cube_file, gwl):
+    """Plot multimodel stdev"""
+    cmap_stdev_str = cfg["quickplot"]["cmap_stdev"]
+    stdev_level_params = cfg["quickplot"]["stdev_level_params"]
+    filename = sep.join([project, "mm_stdev", str(gwl)]) + ".png"
+    stdev_plot_file = os.path.join(cfg["plot_dir"], filename)
+
+    cube = iris.load_cube(stdev_cube_file)
+    plt.axes(projection=ccrs.Robinson())
+    levels = np.arange(
+        float(stdev_level_params[0]),
+        float(stdev_level_params[1]),
+        float(stdev_level_params[2]),
+    )
+    qplt.contourf(cube, cmap=cmap_stdev_str, levels=levels, extend="max")
+    title_str = f"Multimodel standard deviation of {cfg['quickplot']['title_var']} at {gwl} $^\\circ$ C"
+
+    plt.gca().coastlines()
+    plt.title(title_str)
+    plt.tight_layout()
+    plt.savefig(stdev_plot_file)
+    plt.close()
+
+
 def main(cfg):
     """Execute GWL statistics and plot."""
-    input_data = cfg["input_data"].values()
-    window_size = cfg["window_size"]
-    gwls = cfg["gwls"]
-    pattern = cfg["pattern"]
-    cmap_mean_str = cfg["quickplot"]["cmap_mean"]
-    cmap_stdev_str = cfg["quickplot"]["cmap_stdev"]
-    mean_level_params = cfg["quickplot"]["mean_level_params"]
-    stdev_level_params = cfg["quickplot"]["stdev_level_params"]
-
-    gwl_filename = io.get_ancestor_file(cfg, pattern)
+    gwl_filename = io.get_ancestor_file(cfg, cfg["pattern"])
     logger.info("GWL exceedance years file is %s", gwl_filename)
     gwl_df = pd.read_csv(gwl_filename)
-    sep = "_"
-
     projects = []
-    for data in input_data:
+    for data in cfg["input_data"].values():
         # select by by project
         if data["project"] not in projects:
             projects.append(data["project"])
 
     logger.info("List of Projects: %s", projects)
-
     for project in projects:
         # get all data sets for project across experiments
-        project_data = select_metadata(input_data, project=project)
-        for gwl in gwls:
+        project_data = select_metadata(
+            cfg["input_data"].values(), project=project
+        )
+        for gwl in cfg["gwls"]:
             gwl_subset_df = gwl_df[gwl_df["GWL"] == gwl]
             if gwl_subset_df.shape[0] > 0:
                 logger.info(
@@ -145,121 +198,38 @@ def main(cfg):
                 cubes = calculate_gwl_mm_cube(
                     project_data,
                     gwl_subset_df,
-                    window_size,
+                    cfg["window_size"],
                 )
                 calculate_mm_stats(cubes, mean_file, stdev_file)
-                filename = sep.join([project, "mm_mean", str(gwl)]) + ".png"
-                mean_plot_file = os.path.join(cfg["plot_dir"], filename)
-                filename = sep.join([project, "mm_stdev", str(gwl)]) + ".png"
-                stdev_plot_file = os.path.join(cfg["plot_dir"], filename)
 
-                # plot mean and stdev if they exist
+                ancestors_file = [gwl_filename]
+                ancestors_file = ancestors_file + [
+                    d["filename"] for d in project_data
+                ]
+
                 if os.path.isfile(mean_file):
-                    logger.info("Plotting mm mean file %s", mean_file)
-                    cube = iris.load_cube(mean_file)
-                    plt.axes(projection=ccrs.Robinson())
-                    levels = np.arange(
-                        float(mean_level_params[0]),
-                        float(mean_level_params[1]),
-                        float(mean_level_params[2]),
-                    )
-                    if cfg["quickplot"]["title_var"] == "Temperature":
-                        qplt.contourf(
-                            cube,
-                            norm=colors.CenteredNorm(),
-                            cmap=cmap_mean_str,
-                            levels=levels,
-                            extend="max",
-                        )
-
-                    if cfg["quickplot"]["title_var"] == "Precipitation":
-                        qplt.contourf(
-                            cube,
-                            cmap=cmap_mean_str,
-                            levels=levels,
-                            extend="max",
-                        )
-
-                    plt.gca().coastlines()
-                    title_str = (
-                        "Multimodel mean of "
-                        + cfg["quickplot"]["title_var"]
-                        + " at "
-                        + str(gwl)
-                        + r"$^\circ$ C"
-                    )
-                    plt.title(title_str)
-
-                    plt.tight_layout()
-                    plt.savefig(mean_plot_file)
-                    plt.close()
-
+                    plot_mean_stats(cfg, project, mean_file, gwl)
                     # write provenance for the NetCDF and png files
-                    ancestors_file = [gwl_filename]
-                    ancestors_file = ancestors_file + [
-                        d["filename"] for d in project_data
-                    ]
                     provenance_dict = {
-                        "caption": title_str,
+                        "caption": f"Multimodel mean of {cfg['quickplot']['title_var']} at {gwl} $^\\circ$ C",
                         "ancestors": ancestors_file,
                         "authors": ["swaminathan_ranjini"],
                         "references": ["swaminathan22jclim"],
                         "projects": ["ukesm"],
                         "domains": ["global"],
                     }
-                    # write provenance record
                     log_provenance(provenance_dict, mean_file, cfg)
-
-                    provenance_dict = {
-                        "caption": title_str,
-                        "ancestors": ancestors_file,
-                        "authors": ["swaminathan_ranjini"],
-                        "references": ["swaminathan22jclim"],
-                        "projects": ["ukesm"],
-                        "domains": ["global"],
-                        "plot_type": ["map"],
-                    }
-                    # write provenance record
-                    log_provenance(provenance_dict, mean_plot_file, cfg)
+                    provenance_dict.update({"plot_type": ["map"]})
+                    filename = (
+                        sep.join([project, "mm_mean", str(gwl)]) + ".png"
+                    )
+                    filename = os.path.join(cfg["plot_dir"], filename)
+                    log_provenance(provenance_dict, filename, cfg)
 
                 if os.path.isfile(stdev_file):
-                    cube = iris.load_cube(stdev_file)
-                    plt.axes(projection=ccrs.Robinson())
-                    plt.gca().coastlines()
-                    levels = np.arange(
-                        float(stdev_level_params[0]),
-                        float(stdev_level_params[1]),
-                        float(stdev_level_params[2]),
-                    )
-                    logger.info(levels)
-                    qplt.contourf(
-                        cube, cmap=cmap_stdev_str, levels=levels, extend="max"
-                    )
-                    title_str = (
-                        "Multimodel standard deviation of "
-                        + cfg["quickplot"]["title_var"]
-                        + " at "
-                        + str(gwl)
-                        + r"$^\circ$ C"
-                    )
-                    plt.title(title_str)
-                    plt.tight_layout()
-                    plt.savefig(stdev_plot_file)
-                    plt.close()
-
+                    plot_stdev_stats(cfg, project, stdev_file, gwl)
                     provenance_dict = {
-                        "caption": title_str,
-                        "ancestors": ancestors_file,
-                        "authors": ["swaminathan_ranjini"],
-                        "references": ["swaminathan22jclim"],
-                        "projects": ["ukesm"],
-                        "domains": ["global"],
-                    }
-                    # write provenance record
-                    log_provenance(provenance_dict, stdev_file, cfg)
-
-                    provenance_dict = {
-                        "caption": title_str,
+                        "caption": f"Multimodel standard deviation of {cfg['quickplot']['title_var']} at {gwl} $^\\circ$ C",
                         "ancestors": ancestors_file,
                         "authors": ["swaminathan_ranjini"],
                         "references": ["swaminathan22jclim"],
@@ -267,8 +237,14 @@ def main(cfg):
                         "domains": ["global"],
                         "plot_type": ["map"],
                     }
-                    # write provenance record
-                    log_provenance(provenance_dict, stdev_plot_file, cfg)
+                    log_provenance(provenance_dict, stdev_file, cfg)
+                    provenance_dict.update({"plot_type": ["map"]})
+
+                    filename = (
+                        sep.join([project, "mm_stdev", str(gwl)]) + ".png"
+                    )
+                    filename = os.path.join(cfg["plot_dir"], filename)
+                    log_provenance(provenance_dict, filename, cfg)
 
 
 if __name__ == "__main__":
