@@ -102,11 +102,11 @@ def calculate_mm_stats(cubes, mean_file, stdev_file):
         iris.save(mm_mean_cube, mean_file)
         iris.save(mm_stdev_cube, stdev_file)
 
-    return
+    return None
 
 
 def main(cfg):
-    """Execute function to calculate and plot GWL statistics."""
+    """Execute GWL statistics."""
     input_data = cfg["input_data"].values()
     window_size = cfg["window_size"]
     gwls = cfg["gwls"]
