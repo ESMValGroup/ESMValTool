@@ -25,7 +25,6 @@ def log_provenance(provenance, filename, cfg):
 
 def calculate_moving_average_centered(a, window_size):
     """Calculate rolling means centred at a point"""
-
     if window_size < 2:
         raise ValueError("Window size should be greater than 2")
 
@@ -36,7 +35,6 @@ def calculate_moving_average_centered(a, window_size):
 
 def calculate_gwl_exceedance_years(input_data_sorted, gwls, window_size):
     """Calculate GWL exceedance years for models and ensemble members"""
-
     col_names = ["Project", "Exp", "Model", "Ens", "GWL", "Exceedance_Year"]
     gwl_df = pd.DataFrame(columns=col_names)
 
@@ -46,9 +44,7 @@ def calculate_gwl_exceedance_years(input_data_sorted, gwls, window_size):
         dataset = data["dataset"]
         ensemble = data["ensemble"]
 
-        logger.info(
-            "Processing %s %s %s %s %s ", project, exp, dataset, ensemble
-        )
+        logger.info("Processing %s %s %s %s ", project, exp, dataset, ensemble)
         anomaly_ts_cube = iris.load_cube(data["filename"])
         years = anomaly_ts_cube.coord("year").points
         start_year = years[0]
@@ -90,6 +86,7 @@ def calculate_gwl_exceedance_years(input_data_sorted, gwls, window_size):
 
 
 def main(cfg):
+    """Main function to group data and call functions to calculate GWL exceedances."""
     input_data = cfg["input_data"].values()
 
     # initialize pandas data frame to store GWL exceedance information

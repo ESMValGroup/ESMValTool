@@ -7,11 +7,11 @@ from pathlib import Path
 import cartopy.crs as ccrs
 import iris
 import iris.quickplot as qplt
-import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from esmvalcore.preprocessor import extract_time
+from matplotlib import colors
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.shared import (
@@ -44,6 +44,13 @@ def calculate_gwl_mm_stats(
             exp = el["exp"]
             path = el["filename"]
             cube = iris.load_cube(path)
+            logger.info("Cube var name is %s", cube.var_name)
+            if cube.var_name == "tas":
+                cube.convert_units("Celsius")
+            if cube.var_name == "pr":
+                cube = cube * 86400
+                cube.units = "mm/day"
+
             ih.prepare_cube_for_merging(cube, path)
             # extract window period
             year_of_exceedance = gwl_subset_df[
@@ -72,8 +79,7 @@ def calculate_gwl_mm_stats(
     for coord in cubes[0].aux_coords:
         if coord.standard_name == "time":
             break
-        else:
-            index = index + 1
+        index = index + 1
     for c in cubes[1:]:
         c.remove_coord("time")
         c.add_aux_coord(cubes[0].aux_coords[index])
@@ -96,12 +102,15 @@ def calculate_gwl_mm_stats(
 
 
 def main(cfg):
+    """Main function to group data by projects and plot GWL statistics."""
     input_data = cfg["input_data"].values()
     window_size = cfg["window_size"]
     gwls = cfg["gwls"]
     pattern = cfg["pattern"]
     cmap_mean_str = cfg["quickplot"]["cmap_mean"]
     cmap_stdev_str = cfg["quickplot"]["cmap_stdev"]
+    mean_level_params = cfg["quickplot"]["mean_level_params"]
+    stdev_level_params = cfg["quickplot"]["stdev_level_params"]
 
     gwl_filename = io.get_ancestor_file(cfg, pattern)
     logger.info("GWL exceedance years file is %s", gwl_filename)
@@ -148,21 +157,26 @@ def main(cfg):
                     logger.info("Plotting mm mean file %s", mean_file)
                     cube = iris.load_cube(mean_file)
                     plt.axes(projection=ccrs.Robinson())
-
+                    levels = np.arange(
+                        float(mean_level_params[0]),
+                        float(mean_level_params[1]),
+                        float(mean_level_params[2]),
+                    )
                     if cfg["quickplot"]["title_var"] == "Temperature":
-                        cube.convert_units("Celsius")
                         qplt.contourf(
                             cube,
                             norm=colors.CenteredNorm(),
                             cmap=cmap_mean_str,
+                            levels=levels,
+                            extend="max",
                         )
 
                     if cfg["quickplot"]["title_var"] == "Precipitation":
-                        cube = cube * 86400
-                        cube.units = "mm/day"
                         qplt.contourf(
                             cube,
                             cmap=cmap_mean_str,
+                            levels=levels,
+                            extend="max",
                         )
 
                     plt.gca().coastlines()
@@ -210,15 +224,16 @@ def main(cfg):
                 if os.path.isfile(stdev_file):
                     cube = iris.load_cube(stdev_file)
                     plt.axes(projection=ccrs.Robinson())
-                    qplt.contourf(cube, cmap=cmap_stdev_str)
                     plt.gca().coastlines()
-                    if cfg["quickplot"]["title_var"] == "Temperature":
-                        cube.units = "Celsius"
-
-                    if cfg["quickplot"]["title_var"] == "Precipitation":
-                        cube = cube * 86400
-                        cube.units = "mm/day"
-
+                    levels = np.arange(
+                        float(stdev_level_params[0]),
+                        float(stdev_level_params[1]),
+                        float(stdev_level_params[2]),
+                    )
+                    logger.info(levels)
+                    qplt.contourf(
+                        cube, cmap=cmap_stdev_str, levels=levels, extend="max"
+                    )
                     title_str = (
                         "Multimodel standard deviation of "
                         + cfg["quickplot"]["title_var"]
