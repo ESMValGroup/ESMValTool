@@ -39,12 +39,13 @@ def calculate_gwl_exceedance_years(input_data_sorted, gwls, window_size):
     gwl_df = pd.DataFrame(columns=col_names)
 
     for data in input_data_sorted:
-        project = data["project"]
-        exp = data["exp"]
-        dataset = data["dataset"]
-        ensemble = data["ensemble"]
-
-        logger.info("Processing %s %s %s %s ", project, exp, dataset, ensemble)
+        logger.info(
+            "Processing %s %s %s %s ",
+            data["project"],
+            data["exp"],
+            data["dataset"],
+            data["ensemble"],
+        )
         anomaly_ts_cube = iris.load_cube(data["filename"])
         years = anomaly_ts_cube.coord("year").points
         start_year = years[0]
