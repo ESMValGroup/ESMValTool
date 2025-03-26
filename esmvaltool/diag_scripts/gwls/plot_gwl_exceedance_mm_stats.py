@@ -104,7 +104,7 @@ def calculate_mm_stats(cubes, mean_file, stdev_file):
 
 
 def main(cfg):
-    """Execute GWL statistics."""
+    """Execute GWL statistics and plot."""
     input_data = cfg["input_data"].values()
     window_size = cfg["window_size"]
     gwls = cfg["gwls"]
