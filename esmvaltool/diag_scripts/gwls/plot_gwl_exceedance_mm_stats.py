@@ -30,8 +30,10 @@ def log_provenance(provenance, filename, cfg):
         provenance_logger.log(filename, provenance)
 
 
-def calculate_gwl_mm_stats(
-    project_data, gwl_subset_df, window_size, mean_file, stdev_file
+def calculate_gwl_mm_cube(
+    project_data,
+    gwl_subset_df,
+    window_size,
 ):
     """Calculate multimodel stats around GWL exceedance years."""
     cubes = iris.cube.CubeList()
@@ -41,9 +43,7 @@ def calculate_gwl_mm_stats(
         # get every exp for which the data is available for
         all_exps_in_dataset = select_metadata(project_data, dataset=dataset)
         for el in all_exps_in_dataset:
-            exp = el["exp"]
-            path = el["filename"]
-            cube = iris.load_cube(path)
+            cube = iris.load_cube(el["filename"])
             logger.info("Cube var name is %s", cube.var_name)
             if cube.var_name == "tas":
                 cube.convert_units("Celsius")
@@ -51,11 +51,11 @@ def calculate_gwl_mm_stats(
                 cube = cube * 86400
                 cube.units = "mm/day"
 
-            ih.prepare_cube_for_merging(cube, path)
+            ih.prepare_cube_for_merging(cube, el["filename"])
             # extract window period
             year_of_exceedance = gwl_subset_df[
                 (gwl_subset_df["Model"] == dataset)
-                & (gwl_subset_df["Exp"] == exp)
+                & (gwl_subset_df["Exp"] == el["exp"])
             ]["Exceedance_Year"].values[0]
             if np.isnan(year_of_exceedance):
                 continue
@@ -64,7 +64,7 @@ def calculate_gwl_mm_stats(
             logger.info(
                 "Model: %s, Exp : %s start year: %s, endyear: %s",
                 dataset,
-                exp,
+                el["exp"],
                 str(start_year),
                 str(end_year),
             )
@@ -72,7 +72,11 @@ def calculate_gwl_mm_stats(
             cube = extract_time(cube, start_year, 1, 1, end_year, 12, 31)
             cube = cube.collapsed("time", iris.analysis.MEAN)
             cubes.append(cube)
+    return cubes
 
+
+def calculate_mm_stats(cubes, mean_file, stdev_file):
+    """Calculate mean and standard deviation from merged mm cubes."""
     # find index of time coord so this can be unified across data sets
     # before merging as the time data points are different across models/scenarios
     index = 0
@@ -102,7 +106,7 @@ def calculate_gwl_mm_stats(
 
 
 def main(cfg):
-    """Plot GWL statistics."""
+    """Execute function to calculate and plot GWL statistics."""
     input_data = cfg["input_data"].values()
     window_size = cfg["window_size"]
     gwls = cfg["gwls"]
@@ -140,13 +144,12 @@ def main(cfg):
                 filename = sep.join([project, "mm_stdev", str(gwl)]) + ".nc"
                 stdev_file = os.path.join(cfg["work_dir"], filename)
 
-                calculate_gwl_mm_stats(
+                cubes = calculate_gwl_mm_cube(
                     project_data,
                     gwl_subset_df,
                     window_size,
-                    mean_file,
-                    stdev_file,
                 )
+                calculate_mm_stats(cubes, mean_file, stdev_file)
                 filename = sep.join([project, "mm_mean", str(gwl)]) + ".png"
                 mean_plot_file = os.path.join(cfg["plot_dir"], filename)
                 filename = sep.join([project, "mm_stdev", str(gwl)]) + ".png"
