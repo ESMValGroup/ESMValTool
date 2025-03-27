@@ -28,7 +28,7 @@ dependencies:
   - fire
   - fsspec
   - gdal >=3.9.0
-  # - importlib_metadata <8  # https://github.com/ESMValGroup/ESMValTool/issues/3699 only for Python 3.10/11 and esmpy<8.6
+  - importlib_metadata <8  # https://github.com/ESMValGroup/ESMValTool/issues/3699 only for Python 3.10/11 and esmpy<8.6
   - ipython <9.0  # github.com/ESMValGroup/ESMValCore/issues/2680 ; remove ipython when solved
   - iris >=3.11
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
@@ -96,14 +96,14 @@ dependencies:
   - yamllint ==1.35.1
 
   # NCL and dependencies
-  # - ncl >=6.6.2
+  - ncl >=6.6.2
   - cdo
   - imagemagick
   - nco
 
   # R and dependencies
   - cdo
-  - r-base >=3.5,<4.3.0  # https://github.com/ESMValGroup/ESMValTool/pull/3924
+  - r-base >=3.5,  # <4.3.0  # https://github.com/ESMValGroup/ESMValTool/pull/3924
   - r-abind
   - r-akima
   - r-climdex.pcic
