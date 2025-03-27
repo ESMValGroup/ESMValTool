@@ -49,9 +49,9 @@ dependencies:
   - progressbar2
   - prov
   - psyplot >=1.5.0
-  - psy-maps >=1.5.0
-  - psy-reg >=1.5.0
-  - psy-simple >=1.5.0
+  # - psy-maps >=1.5.0
+  # - psy-reg >=1.5.0
+  # - psy-simple >=1.5.0
   - pyproj >=2.1
   - pys2index >=0.1.5  # only from conda-forge; https://github.com/ESMValGroup/ESMValTool/pull/3792
   - python >=3.10
