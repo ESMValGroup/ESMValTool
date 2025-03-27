@@ -31,7 +31,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: esmvaltool
-          environment-file: environment.yml
+          environment-file: environment_python.yml
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
           use-mamba: true
