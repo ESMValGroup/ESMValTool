@@ -1,0 +1,22 @@
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: CMSAF_LST
+  version: ""
+  tier: 2
+  modeling_realm: sat
+  project_id: OBS
+  source: 'www.cmsaf.eu'
+  reference: "cmsaf-lst"
+  comment: ""
+
+# Variables to cmorize (here use only filename prefix)
+### check this, might need new cmor entry???  Needs frequency: 1hr adding to CMOR_ts.py in ESMValCore???
+variables:
+  tsrpk:
+    mip: custom
+    raw: Land Surface Temperature (PMW)
+    file: LTPin
+    start_year: 2010
+    end_year: 2010
+
+# LTPin201003050100001231000101MA.nc
