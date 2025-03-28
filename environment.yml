@@ -17,7 +17,6 @@ dependencies:
   - cfgrib
   - cftime
   - cmocean
-  - curl <8.10  # https://github.com/ESMValGroup/ESMValTool/issues/3758
   - cython
   - dask !=2024.8.0  # https://github.com/dask/dask/issues/11296
   - distributed
@@ -50,12 +49,12 @@ dependencies:
   - progressbar2
   - prov
   - psyplot >=1.5.0
-  - psy-maps >=1.5.0
-  - psy-reg >=1.5.0
-  - psy-simple >=1.5.0
+  # - psy-maps >=1.5.0  # nay Py3.13 yet
+  # - psy-reg >=1.5.0  # nay Py3.13 yet
+  # - psy-simple >=1.5.0  # nay Py3.13 yet
   - pyproj >=2.1
-  - pys2index  # only from conda-forge
-  - python >=3.10,<3.13
+  - pys2index
+  - python >=3.10
   - python-cdo
   - python-dateutil
   - pyyaml
@@ -69,7 +68,7 @@ dependencies:
   - seawater
   - shapely >=2.0.2
   - xarray >=0.12.0
-  - xesmf >=0.7.1
+  - xesmf >=0.7.1  # nay Py3.13 yet via Numba
   - xgboost >1.6.1  # github.com/ESMValGroup/ESMValTool/issues/2779
   - xlsxwriter
   - zarr
@@ -97,14 +96,14 @@ dependencies:
   - yamllint ==1.35.1
 
   # NCL and dependencies
-  - ncl >=6.6.2
+  # - ncl >=6.6.2
   - cdo
   - imagemagick
   - nco
 
   # R and dependencies
   - cdo
-  - r-base >=3.5,<4.3.0  # https://github.com/ESMValGroup/ESMValTool/pull/3924
+  - r-base >=3.5  # ,<4.3.0  # https://github.com/ESMValGroup/ESMValTool/pull/3924
   - r-abind
   - r-akima
   - r-climdex.pcic
@@ -135,4 +134,4 @@ dependencies:
   - r-styler ==1.10.3
 
   # Julia (dependencies installed by separate script)
-  - julia
+  # - julia  # temp removal
