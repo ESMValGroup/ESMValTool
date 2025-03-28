@@ -23,6 +23,8 @@ Recipes are stored in recipes
   Calculate transient climate response to cumulative CO2 emissions (TCRE)
 * ref/recipe_ref_cre.yml:
   Maps and zonal means of longwave and shortwave cloud radiative effect
+* ref/recipe_ref_scatterplot.yml:
+  2D histograms with focus on clouds
 * ref/recipe_ref_sea_ice_area_basic.yml:
   Seasonal cycle of Arctic (NH) and Antarctic (SH) sea ice area, time series
   of Arctic September (NH) and Antarctic February (SH) sea ice area
@@ -46,7 +48,13 @@ Example plots:
    effect from CERES-EBAF Ed4.2 (solid black), ESACCI-CLOUD (dashed black),
    ISCCP-FH (dotted black) and the MPI-ESM1-2-LR model (blue).
 
-.. _fig_ref_3:
+.. figure::  /recipes/figures/ref/seaborn_jointplot.png
+   :align:   center
+
+   2D histogram of total cloud fraction (ESACCI-CLOUD) and shortwave cloud radiative
+   effect (CERES-EBAF) for the years 2001-2016 with 1D histograms attached.
+
+.. _fig_ref_4:
 .. figure::  /recipes/figures/ref/annual_cycle_sea_ice_area_nh_ambiguous_dataset_ambiguous_mip_historical_r1i1p1f1.png
    :align:   center
    :width:   8cm
@@ -54,7 +62,7 @@ Example plots:
    Average seasonal cycle of the Arctic (NH) sea ice area from MPI-ESM1-2-LR
    (red line) compared with OSISAF/CCI (blue line). Created with recipe_ref_sea_ice_area_basic.yml.
 
-.. _fig_ref_4:
+.. _fig_ref_5:
 .. figure::  /recipes/figures/ref/timeseries_sea_ice_area_nh_sep_ambiguous_dataset_ambiguous_mip_historical_r1i1p1f1.png
    :align:   center
    :width:   8cm
