@@ -1,0 +1,131 @@
+---
+documentation:
+  title: Diagnostic to calculate Global Warming Level exceedance years.
+
+  description: |
+    Recipe for calculating global warming level exceedances for individual model
+    and ensemble members.
+
+  authors:
+    - swaminathan_ranjini
+
+  maintainer:
+    - swaminathan_ranjini
+
+  references:
+    - swaminathan22jclim
+
+preprocessors:
+  calculate_anomalies:
+    custom_order: true
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      reference: &ref_period
+        start_year: 1850
+        start_month: 1
+        start_day: 1
+        end_year: 1900
+        end_month: 12
+        end_day: 31
+      standardize: false
+    extract_time:  # Future period
+      start_year: 2000
+      start_month: 1
+      start_day: 1
+      end_year: 2100
+      end_month: 12
+      end_day: 31
+
+  multi_model_gwl_stats:
+    custom_order: true
+    extract_time:  # Future period
+      start_year: 2000
+      start_month: 1
+      start_day: 1
+      end_year: 2100
+      end_month: 12
+      end_day: 31
+    annual_statistics:
+      operator: mean
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+GWL_PARAMS: &gwl_calc_params
+  window_size: 21
+  gwls: [1.5, 2.0, 3.0, 4.0, 5.0]
+
+GWL: &gwl_exceedance_script
+  <<: *gwl_calc_params
+  script: gwls/calculate_gwl_exceedance_years.py
+
+
+PLOT_STATS: &plot_gwl_mm_stats_script
+  <<: *gwl_calc_params
+  script: gwls/plot_gwl_exceedance_mm_stats.py
+  pattern: 'GWL_exceedance_years.csv'
+
+diagnostics:
+  calculate_gwl_exceedance_years:
+    description: Calculate Global Warming Level exceedance years from smoothed temperature anomalies.
+    variables:
+      tas_anomaly:
+        short_name: tas
+        mip: Amon
+        preprocessor: calculate_anomalies
+    scripts:
+      gwl_exceedance_calculation:
+        <<: *gwl_exceedance_script
+    additional_datasets: &gwl_datasets
+
+      - {dataset: BCC-CSM2-MR, project: CMIP6, exp: [historical, ssp126], grid: gn, ensemble: r1i1p1f1}
+      - {project: CMIP6, dataset: CanESM5, ensemble: r1i1p1f1, exp: [historical, ssp126], grid: gn}
+      - {dataset: CNRM-CM6-1, project: CMIP6, exp: [historical, ssp126], grid: gr, ensemble: r1i1p1f2}
+      - {dataset: FGOALS-f3-L, project: CMIP6, exp: [historical, ssp126], grid: gr, ensemble: r1i1p1f1}
+      - {dataset: MIROC6, project: CMIP6, exp: [historical, ssp126], grid: gn, ensemble: r1i1p1f1}
+      - {project: CMIP6, dataset: UKESM1-0-LL, ensemble: r1i1p1f2, exp: [historical, ssp126], grid: gn}
+
+
+  gwl_mean_plots_tas:
+    description: Plot multimodel mean and standard deviation for surface temperature at specific Global Warming Levels.
+    variables:
+      tas:
+        short_name: tas
+        mip: Amon
+        preprocessor: multi_model_gwl_stats
+    scripts:
+      plot_gwl_stats:
+        <<: *plot_gwl_mm_stats_script
+        ancestors: ['calculate_gwl_exceedance_years/gwl_exceedance_calculation', 'gwl_mean_plots_tas/tas']
+        quickplot:
+          plot_type: map
+          cmap_mean: RdBu_r
+          cmap_stdev: YlOrRd
+          title_var: 'Temperature'
+          mean_level_params: [-60.0, 55.0, 5.0]
+          stdev_level_params: [0.0, 11.0, 1.0]
+    additional_datasets: *gwl_datasets
+
+  gwl_mean_plots_pr:
+    description: Plot multimodel mean and standard deviation for precipitation at specific Global Warming Levels.
+    variables:
+      pr:
+        short_name: pr
+        mip: Amon
+        preprocessor: multi_model_gwl_stats
+    scripts:
+      plot_gwl_stats:
+        <<: *plot_gwl_mm_stats_script
+        ancestors: ['calculate_gwl_exceedance_years/gwl_exceedance_calculation', 'gwl_mean_plots_pr/pr']
+        quickplot:
+          plot_type: map
+          cmap_mean: YlGnBu
+          cmap_stdev: YlGnBu
+          title_var: 'Precipitation'
+          mean_level_params: [0.0, 18.0, 2.0]
+          stdev_level_params: [0.0, 11.0, 1.0]
+    additional_datasets: *gwl_datasets
