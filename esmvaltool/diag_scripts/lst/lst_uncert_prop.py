@@ -10,6 +10,7 @@ import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import numpy as np
+import datetime
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -186,11 +187,13 @@ def _diagnostic(config):
         eq_arithmetic_mean(loaded_data['ESACCI-LST'][f'ts_{time}']) 
 
         # Locally correlated Atmosphere
+        # This is given as the wrong equation in the ATBD!
+        #propagated_values[f'lst_unc_loc_atm_{time}'] = \
+        #eq_weighted_sqrt_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_atm_{time}'],
+        #                      n_use[f'{time}']) 
+        
         propagated_values[f'lst_unc_loc_atm_{time}'] = \
-        eq_weighted_sqrt_mean(loaded_data['ESACCI-LST'][f'lst_unc_loc_atm_{time}'],
-                              n_use[f'{time}']) 
-        
-        
+        two_step_calculation(loaded_data['ESACCI-LST'][f'lst_unc_loc_atm_{time}'])
         
         # no spatial propagation of the systamatic uncertainity
         # no generalisation has been made at this stage for the single value input
@@ -235,8 +238,41 @@ def _diagnostic(config):
     plot_lc(loaded_data)
     timeseries_plot(propagated_values)
     plot_with_cmip(propagated_values, loaded_data)
-   
+    timeseries_plot(propagated_values, zoom_in=True)
 # These are the propagation equations
+
+def two_step_calculation(cube):
+    
+    lat_len = len(cube.coord('latitude').points)
+    lon_len = len(cube.coord('longitude').points)
+    time_len = len(cube.coord('time').points)
+    
+    timeseries = []
+    
+    for time_index in range(time_len):
+        
+        grid_means = [] # this is for the 5*5 block means
+        # all cci lst v3 data is 0.01 resolution
+        # so use blocks of 5 to get 0.05 degree resolution
+        for i in range(0,lat_len,5):
+            for j in range(0,lon_len,5):
+                this_region = cube[time_index,i:i+5,j:j+5]
+    
+                value = np.sqrt((this_region**2).collapsed(['latitude','longitude'], iris.analysis.SUM).data)
+                grid_means.append(value / (25 - np.sum(this_region.data.mask))) # NO sqrt here now!
+        
+        overall_quadrature = (1/(np.sqrt(len(grid_means)))) * \
+            np.sqrt(np.sum(np.array(grid_means)**2))
+        timeseries.append(overall_quadrature)
+
+    results_cube = iris.cube.Cube(np.array(timeseries),
+                            dim_coords_and_dims = [(cube.coord('time'),0)],
+                            units = 'Kelvin',
+                            var_name = cube.var_name,
+                            long_name = cube.long_name,
+                            )
+    
+    return results_cube
 
 def eq_correlation_with_biome(cube_loc_sfc, lcc):
     """
@@ -259,8 +295,8 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
     for time_index in range(time_len):
         
         grid_means = [] # this is for the 5*5 block means
-        # all cci lst v3 data is 0.05 resolution
-        # so use blocks of 5 to get 0.01 degree resolution
+        # all cci lst v3 data is 0.01 resolution
+        # so use blocks of 5 to get 0.05 degree resolution
         for i in range(0,lat_len,5):
             for j in range(0,lon_len,5):
                 this_region = lcc[time_index,i:i+5,j:j+5]
@@ -287,36 +323,23 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
                 # old version:
                 # this_mean = (1/np.sqrt(len(uncert_by_biome))) * np.ma.mean(mean_list)
                 # new version:
-                print(uncert_by_biome)
-                print('aaaaa')
-                for item in uncert_by_biome:
-                    print(item)
-                    print(len(item))
-                    print(np.array(item))
-                    print(np.array(item)**2)
+  
+                # THIS  LOOP IS A NEW CHANGE - CHANGED ON 14/10/24 on call *******************
                 biome_quadrature = np.array([])
                 for item in uncert_by_biome:
                     biome_quadrature = np.append(biome_quadrature,
-                                                 (1/len(item)) * np.sqrt(np.array(item)**2)
+                                                 (1/len(item)) * \
+                                                     np.sqrt(np.sum(np.array(item)**2))
                                                 )              
-                print('BIOME QUAD *************************************')
-                print(biome_quadrature)
-                this_mean = (1/np.sqrt(len(biome_quadrature))) * np.sqrt(np.sum(biome_quadrature**2))
+
+                this_mean = (1/np.sqrt(len(biome_quadrature))) * \
+                    np.sqrt(np.sum(biome_quadrature**2))
                 grid_means.append(this_mean)
     
-        # final_values is the value to make a timeseries out of
-        # old version:
-        #this_times_mean = (1/np.sqrt(len(grid_means))) * np.mean(np.array(grid_means))
-        # new version:
-        print('8888888888888888888888888888888888888888888')
-        print(type(grid_means))
         grid_means = np.array(grid_means)
-        print(type(grid_means))
-        print(grid_means)
+
         this_times_mean = (1/np.sqrt(len(grid_means))) * np.sqrt(np.sum(grid_means**2))
-        print('***********************************************')
-        print(this_times_mean)
-        print('####################################')
+        
         final_values.append(this_times_mean)
     
     # need to make a cube to return
@@ -348,30 +371,55 @@ def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_use, n_fill):
     """
 
     # total number of pixed
-    n_total = n_fill + n_use
-
+    #n_total = n_fill + n_use
+    
+    n_lat = len(cube_unc_ran.coord('latitude').points)
+    n_lon = len(cube_unc_ran.coord('longitude').points)
+    max_points = n_lat*n_lon
+    print(f'{max_points=}')
+    n_use = np.array([max_points - np.sum(item) for item in cube_unc_ran.data.mask])
+    print(f'{n_use=}')
+    print(f'{cube_unc_ran[0].data=}')
     # the mean of the random uncertainty
-    unc_ran_mean = eq_weighted_sqrt_mean(cube_unc_ran, n_total)
+    #unc_ran_mean = eq_weighted_sqrt_mean(cube_unc_ran, n_total)
+    unc_ran_mean = iris.analysis.maths.exponentiate(cube_unc_ran, 2, in_place=False)
+    unc_ran_mean = unc_ran_mean.collapsed(['latitude','longitude'], iris.analysis.SUM)
+    iris.analysis.maths.exponentiate(unc_ran_mean, 0.5, in_place=True)
 
+    for i, _ in enumerate(n_use):
+        unc_ran_mean.data[i] *= 1/(np.sqrt(n_use[i])) # not sqrt ### DOUBLE CHECK
+    print('kkkkkkkkkkkkkkkkkkkkkkkkkkkkf')
+    print(unc_ran_mean.data)
+
+    
     # calculate the sampling error
     # variance of the lst * n_fill/n_total-1
     lst_variance = cube_ts.collapsed(['latitude', 'longitude'],
                                      iris.analysis.VARIANCE)
-    factor = n_fill/(n_total - 1)
+    factor = (max_points-n_use)/(max_points - 1)
+    print(np.sum(cube_ts.data.mask,axis=0))
+    print(f'{factor=}')
+    print(f'{lst_variance.data=}')
     unc_sampling = iris.analysis.maths.multiply(lst_variance,
                                                 factor)
+    print(f'{unc_sampling.data=}')
+    print('ppppppppppppppppppppppppppppppppppppp')
+    print(unc_ran_mean.units)
+    print(unc_sampling.units)
     
     # This is needed to allow cubes to be passed to the sum in quadrature function
     unc_sampling.units = 1
     unc_ran_mean.units = 1
-
+    print(unc_ran_mean.data)
+    print(unc_sampling.data)
     # apply the ATBD equation
     # note the square of random uncertainty is needed
     output = eq_sum_in_quadrature(iris.cube.CubeList([unc_ran_mean,
                                                       unc_sampling]))
     
-    output = unc_ran_mean.copy()
+    #output = unc_ran_mean.copy()
     output.units = 'K'
+    print(output.units)
     return output, unc_sampling
 
 
@@ -588,7 +636,7 @@ def plot_with_cmip(propagated_values, loaded_data):
     plt.savefig('cmip_both.png')
         
         
-def timeseries_plot(propagated_values):
+def timeseries_plot(propagated_values, zoom_in = False):
     """This is a very simple plot to just test the method
     """
 
@@ -658,6 +706,12 @@ def timeseries_plot(propagated_values):
         plt.grid(which='major', color='k', linestyle='solid')
         plt.grid(which='minor', color='k', linestyle='dotted', alpha=0.5)
         
+        if zoom_in:
+            ax2.set_ylim((0,1.5))
+            
+            ax1.set_xlim(datetime.datetime(2002,12,31),datetime.datetime(2004,1,1))
+            ax2.set_xlim(datetime.datetime(2002,12,31),datetime.datetime(2004,1,1))
+
         plt.xlabel('Date', fontsize=plot_params['labelsize'])
         plt.ylabel('Uncertainty (K)', fontsize=plot_params['labelsize'])
 
@@ -669,8 +723,10 @@ def timeseries_plot(propagated_values):
         ax2.tick_params(labelsize=plot_params['ticksize'])
  
         plt.tight_layout()
-        plt.savefig(f'timeseries_{time}.png')
-
+        if zoom_in:
+            plt.savefig(f'timeseries_{time}_zoom_in.png')
+        else:
+            plt.savefig(f'timeseries_{time}.png')
 if __name__ == '__main__':
     # always use run_diagnostic() to get the config (the preprocessor
     # nested dictionary holding all the needed information)

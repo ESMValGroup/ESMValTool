@@ -21,7 +21,7 @@ preprocessors:
   obs_preprocessor:
     extract_region:
       start_longitude: 2.6
-      end_longitude: 3.0 # 3.0
+      end_longitude:  3.0
       start_latitude: 46.05
       end_latitude: 47.45
 
