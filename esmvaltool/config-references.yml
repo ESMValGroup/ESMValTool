@@ -163,6 +163,11 @@ authors:
     name: Chen, Jack
     institute: NCAR, USA
     orcid:
+  chun_felicity:
+    name: Chun, Felicity
+    institute: ACCESS-NRI, Australia
+    orcid: https://orcid.org/0009-0007-0845-0953
+    github: flicj191
   cionni_irene:
     name: Cionni, Irene
     institute: ENEA, Italy
