@@ -365,11 +365,9 @@ def create_quadmap(exp_single_level, exp_minus_ctr_single_level,
         # Making the depth a string and 3pd
         formatted_depth = str(f"{int(depth):04d}")
         depth_title = str(f"{depth:.1f}")
-        fig.suptitle(
-            "Annual Mean:" + exp_single_level.long_name + " at " +
-            depth_title + "m",
-            fontsize=14,
-        )
+        fig.suptitle("Annual Mean:" + exp_single_level.long_name + " at " +
+                     depth_title + "m",
+                     fontsize=14)
 
     # Calling the plot_global_single_level plot with set parameters
     plot_global_single_level(ax1, exp_single_level, linspace1,
