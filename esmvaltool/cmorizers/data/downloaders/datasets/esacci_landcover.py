@@ -5,8 +5,9 @@ from datetime import datetime
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -37,16 +38,17 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
-    downloader.ftp_name = 'land_cover'
+    downloader.ftp_name = "land_cover"
     downloader.connect()
 
     # Set current working directory to the main directory with the files
-    downloader.set_cwd('/pft/v2.0.8/')
+    downloader.set_cwd("/pft/v2.0.8/")
 
     # Create a regex pattern to match any .nc files
-    year_range = '|'.join(str(year) for year in range(start_date.year,
-                                                      end_date.year + 1))
+    year_range = "|".join(
+        str(year) for year in range(start_date.year, end_date.year + 1)
+    )
     pattern = rf".*-(?:{year_range}).*\.nc$"
 
     # Download all .nc files in the directory
-    downloader.download_folder('.', filter_files=pattern)
+    downloader.download_folder(".", filter_files=pattern)

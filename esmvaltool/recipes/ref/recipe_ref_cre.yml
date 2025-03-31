@@ -65,7 +65,7 @@ diagnostics:
         plots:
           map:
             common_cbar: true
-            x_pos_stats_avg: -0.1 
+            x_pos_stats_avg: -0.1
             fontsize: 10
 
   plot_profiles:

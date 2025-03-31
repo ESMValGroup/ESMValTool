@@ -25,18 +25,20 @@ of Arctic-midlatitude teleconnections.
           egalytska@iup.physik.uni-bremen.de
   Project: USMILE
 """
+
 import logging
 from pathlib import Path
+
 import iris
 import numpy as np
 import seaborn as sns
-from matplotlib import pyplot as plt
 from esmvalcore.preprocessor import (
     anomalies,
     area_statistics,
     meridional_statistics,
     zonal_statistics,
 )
+from matplotlib import pyplot as plt
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.shared import (
@@ -45,7 +47,8 @@ from esmvaltool.diag_scripts.shared import (
     save_data,
 )
 from esmvaltool.diag_scripts.shared._base import (
-    get_plot_filename, )
+    get_plot_filename,
+)
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -56,13 +59,23 @@ ignored_variables = {"HadISST": ["heat_flux"]}
 # list of variables per dataset that will be processed
 proc_vars = {
     "ERA5": [
-        'PV', 'Arctic_temperature', 'Psl_Ural', 'Psl_Sib', 'Psl_Aleut',
-        'heat_flux'
+        "PV",
+        "Arctic_temperature",
+        "Psl_Ural",
+        "Psl_Sib",
+        "Psl_Aleut",
+        "heat_flux",
     ],
-    "HadISST": ['BK_sic', 'Ok_sic'],
+    "HadISST": ["BK_sic", "Ok_sic"],
     "all_other_datasets": [
-        'PV', 'Arctic_temperature', 'Psl_Ural', 'Psl_Sib', 'Psl_Aleut',
-        'heat_flux', 'BK_sic', 'Ok_sic'
+        "PV",
+        "Arctic_temperature",
+        "Psl_Ural",
+        "Psl_Sib",
+        "Psl_Aleut",
+        "heat_flux",
+        "BK_sic",
+        "Ok_sic",
     ],
 }
 
@@ -70,11 +83,11 @@ proc_vars = {
 def get_provenance_record(ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
-        'authors': ['galytska_evgenia'],
-        'ancestors': ancestor_files,
-        'projects': ['usmile'],
-        'references': [
-            'galytska23jgr',
+        "authors": ["galytska_evgenia"],
+        "ancestors": ancestor_files,
+        "projects": ["usmile"],
+        "references": [
+            "galytska23jgr",
         ],
     }
     return record
@@ -82,27 +95,27 @@ def get_provenance_record(ancestor_files):
 
 def calculate_polar_vortex(dict_item):
     """Calculate polar vortex."""
-    var = iris.load_cube(dict_item['filename'])
-    var = var.collapsed('air_pressure', iris.analysis.MEAN)
+    var = iris.load_cube(dict_item["filename"])
+    var = var.collapsed("air_pressure", iris.analysis.MEAN)
     # change the sign of polar vortex so the positive values
     # (negative geopotential height anomalies) stand for
     # the strong polar vortex, similarly to
     # Kretschmer et al., 2016 and Galytska et al., 2023
     var.data *= -1
-    var.var_name = 'PV'
+    var.var_name = "PV"
     return var
 
 
 def calculate_arctic_tas(dict_item):
     """Read Arctic temperature data."""
-    var = iris.load_cube(dict_item['filename'])
-    var.var_name = 'Arctic_temperature'
+    var = iris.load_cube(dict_item["filename"])
+    var.var_name = "Arctic_temperature"
     return var
 
 
 def calculate_slp(dict_item):
     """Get surface pressure."""
-    var = iris.load_cube(dict_item['filename'])
+    var = iris.load_cube(dict_item["filename"])
     # calculate hPa from Pa.
     var.data /= 100
     return var
@@ -110,23 +123,23 @@ def calculate_slp(dict_item):
 
 def finalize_bk_ice(dict_item):
     """Read sea ice data (Barents-Kara seas)."""
-    var = iris.load_cube(dict_item['filename'])
-    var.var_name = 'BK_sic'
+    var = iris.load_cube(dict_item["filename"])
+    var.var_name = "BK_sic"
     return var
 
 
 def finalize_ok_ice(dict_item):
     """Read sea ice data (Sea of Okhotsk)."""
-    var = iris.load_cube(dict_item['filename'])
-    var.var_name = 'Ok_sic'
+    var = iris.load_cube(dict_item["filename"])
+    var.var_name = "Ok_sic"
     return var
 
 
 def prepare_heat_flux(dict_item):
     """Prepare variables for the heat flux calculations."""
-    var = iris.load_cube(dict_item['filename'])
-    var_avg = area_statistics(var, operator='mean')
-    var_mermean = meridional_statistics(var, operator='mean')
+    var = iris.load_cube(dict_item["filename"])
+    var_avg = area_statistics(var, operator="mean")
+    var_mermean = meridional_statistics(var, operator="mean")
     deviation = var_mermean - var_avg
     return deviation
 
@@ -134,32 +147,32 @@ def prepare_heat_flux(dict_item):
 def calculate_heat_flux(list_va_ta):
     """Calculate eddy poleward heat flux."""
     heat_flux = list_va_ta[0] * list_va_ta[1]
-    hf_anom = anomalies(heat_flux, period='monthly')
-    hf_anom_zm = zonal_statistics(hf_anom, operator='mean')
-    hf_anom_zm.var_name = 'heat_flux'
+    hf_anom = anomalies(heat_flux, period="monthly")
+    hf_anom_zm = zonal_statistics(hf_anom, operator="mean")
+    hf_anom_zm.var_name = "heat_flux"
     return hf_anom_zm
 
 
 def variable_cases(var_name, var):
     """Match preprocessor name and corresponding calculations."""
-    if var_name == 'pv':
+    if var_name == "pv":
         out_var = calculate_polar_vortex(var)
-    elif var_name == 'pre_tas':
+    elif var_name == "pre_tas":
         out_var = calculate_arctic_tas(var)
-    elif var_name == 'pressure_ural':
+    elif var_name == "pressure_ural":
         out_var = calculate_slp(var)
-        out_var.var_name = 'Psl_Ural'
-    elif var_name == 'pressure_sib':
+        out_var.var_name = "Psl_Ural"
+    elif var_name == "pressure_sib":
         out_var = calculate_slp(var)
-        out_var.var_name = 'Psl_Sib'
-    elif var_name == 'pressure_aleut':
+        out_var.var_name = "Psl_Sib"
+    elif var_name == "pressure_aleut":
         out_var = calculate_slp(var)
-        out_var.var_name = 'Psl_Aleut'
-    elif var_name == 'bk_ice':
+        out_var.var_name = "Psl_Aleut"
+    elif var_name == "bk_ice":
         out_var = finalize_bk_ice(var)
-    elif var_name == 'ok_ice':
+    elif var_name == "ok_ice":
         out_var = finalize_ok_ice(var)
-    elif var_name == 'heat_flux':
+    elif var_name == "heat_flux":
         out_var = prepare_heat_flux(var)
     else:
         raise NotImplementedError(f"Variable '{var_name}' not yet supported.")
@@ -168,19 +181,22 @@ def variable_cases(var_name, var):
 
 def calculate_variables(dataset_dict):
     """Calculate all necessary variables."""
-    logger.debug("Variables are calculated for the following datasources:%s",
-                 dataset_dict.keys())
+    logger.debug(
+        "Variables are calculated for the following datasources:%s",
+        dataset_dict.keys(),
+    )
     processed_vars = {}
     for dataset, variables in dataset_dict.items():
         processed_vars[dataset] = {}
 
-        logger.debug("Calculating final variables %s for %s dataset",
-                     variables, dataset)
+        logger.debug(
+            "Calculating final variables %s for %s dataset", variables, dataset
+        )
 
         if dataset in ignored_variables:
             to_ignore_vars = ignored_variables.get(dataset, None)
             for var in variables:
-                var_name = var['preprocessor']
+                var_name = var["preprocessor"]
                 if var_name not in to_ignore_vars:
                     new_var = variable_cases(var_name, var)
                     new_var_name = new_var.var_name
@@ -188,7 +204,7 @@ def calculate_variables(dataset_dict):
         else:
             tmp_list = []
             for var in variables:
-                var_name = var['preprocessor']
+                var_name = var["preprocessor"]
                 if var_name == "heat_flux":
                     tmp_list.append(variable_cases(var_name, var))
                 else:
@@ -196,8 +212,10 @@ def calculate_variables(dataset_dict):
                     new_var_name = new_var.var_name
                     processed_vars[dataset][new_var_name] = new_var
             if len(tmp_list) != 2:
-                raise IndexError("The preprocessor heat flux requests two \
-                                  variables in the recipe: va and ta")
+                raise IndexError(
+                    "The preprocessor heat flux requests two \
+                                  variables in the recipe: va and ta"
+                )
             heat_flux = calculate_heat_flux(tmp_list)
             processed_vars[dataset][heat_flux.var_name] = heat_flux
 
@@ -206,7 +224,7 @@ def calculate_variables(dataset_dict):
 
 def plotting_support(cube, key, **kwargs):
     """Help for the pretty plot."""
-    if cube.coords('time', dim_coords=True):
+    if cube.coords("time", dim_coords=True):
         ih.unify_time_coord(cube)
     iris.quickplot.plot(cube, label=key, **kwargs)
     plt.legend(loc="center left", bbox_to_anchor=(1, 0.5))
@@ -218,7 +236,7 @@ def plotting_support(cube, key, **kwargs):
 def plot_timeseries(dictionary, var, cfg):
     """Timeseries plot."""
     fig = plt.figure(figsize=(10, 4))
-    sns.set_style('whitegrid')
+    sns.set_style("whitegrid")
     colors = plt.cm.viridis(np.linspace(0, 1, len(dictionary.keys())))
     baseplotname = f"Timeseries_{var}_anomalies"
     filename = get_plot_filename(baseplotname, cfg)
@@ -226,26 +244,29 @@ def plot_timeseries(dictionary, var, cfg):
         if var not in proc_vars["HadISST"]:
             if dataset == "HadISST":
                 continue
-            if dataset != 'ERA5':
-                plotting_support(dictionary[dataset][var],
-                                 dataset, color=colors[idx])
+            if dataset != "ERA5":
+                plotting_support(
+                    dictionary[dataset][var], dataset, color=colors[idx]
+                )
             else:
-                plotting_support(dictionary[dataset][var],
-                                 dataset,
-                                 color='k',
-                                 linewidth=2)
+                plotting_support(
+                    dictionary[dataset][var], dataset, color="k", linewidth=2
+                )
         else:
             if dataset == "ERA5":
                 continue
-            if dataset != 'HadISST':
-                plotting_support(dictionary[dataset][var],
-                                 dataset, color=colors[idx])
+            if dataset != "HadISST":
+                plotting_support(
+                    dictionary[dataset][var], dataset, color=colors[idx]
+                )
             else:
-                plotting_support(dictionary[dataset][var],
-                                 dataset,
-                                 color='blue',
-                                 linewidth=2)
-    fig.savefig(filename, bbox_inches='tight')
+                plotting_support(
+                    dictionary[dataset][var],
+                    dataset,
+                    color="blue",
+                    linewidth=2,
+                )
+    fig.savefig(filename, bbox_inches="tight")
 
 
 def assemble_cube_list(dataset, var, special_datasets):
@@ -275,10 +296,12 @@ def assemble_cube_list(dataset, var, special_datasets):
     """
     if dataset not in special_datasets:
         cube_list = iris.cube.CubeList(
-            [var[proc_var] for proc_var in proc_vars["all_other_datasets"]])
+            [var[proc_var] for proc_var in proc_vars["all_other_datasets"]]
+        )
     else:
         cube_list = iris.cube.CubeList(
-            [var[proc_var] for proc_var in proc_vars[dataset]])
+            [var[proc_var] for proc_var in proc_vars[dataset]]
+        )
 
     return cube_list
 
@@ -287,12 +310,12 @@ def main(cfg):
     """Calculate and save final variables into .nc files."""
     special_datasets = ["ERA5", "HadISST"]
 
-    my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
+    my_files_dict = group_metadata(cfg["input_data"].values(), "dataset")
     all_variables = calculate_variables(my_files_dict)
 
     # Check is timeseries should be plotted
-    if cfg['plot_timeseries']:
-        plot_timeseries(all_variables, cfg['variable_to_plot'], cfg)
+    if cfg["plot_timeseries"]:
+        plot_timeseries(all_variables, cfg["variable_to_plot"], cfg)
     for dataset in my_files_dict:
         logger.info("Processing final calculations in dataset %s", dataset)
         prov_record = get_provenance_record([dataset])
@@ -303,6 +326,6 @@ def main(cfg):
     logger.info("Done.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with run_diagnostic() as config:
         main(config)
