@@ -73,36 +73,48 @@ def main(config):
     # Call the load_data function
     experiment, control, observation = load_data(config)
 
-    # Call create_plotting_data
+    # Call the create_plotting_data function
     (exp, exp_minus_ctr, ctr_minus_obs,
      exp_minus_obs) = create_plotting_data(control, experiment, observation)
 
-    # If 'Sea Surface' set only 1 level to plot.
-    # Otherwise set array of depth levels to loop through.
+    # If true, set the lists to contain only one level
     if experiment.long_name in [
-            'Sea Surface Temperature', 'Sea Surface Salinity'
+            "Sea Surface Temperature", "Sea Surface Salinity"
     ]:
-        levels = [1]
+        exp_list = [exp]
+        exp_minus_ctr_list = [exp_minus_ctr]
+        ctr_minus_obs_list = [ctr_minus_obs]
+        exp_minus_obs_list = [exp_minus_obs]
     else:
-        # Levels are the chosen depths we wish to plot.
-        levels = [2, 50, 100, 300]
+        # Set the lists to contain slices of data over different depth levels
+        exp_list = exp.slices_over("depth")
+        exp_minus_ctr_list = exp_minus_ctr.slices_over("depth")
+        ctr_minus_obs_list = ctr_minus_obs.slices_over("depth")
+        exp_minus_obs_list = exp_minus_obs.slices_over("depth")
 
-    # Loop over levels to extract_single_level.
-    for level in levels:
-        exp_single_level = extract_global_single_level(exp, level)
-        exp_minus_ctr_single_level = extract_global_single_level(
-            exp_minus_ctr, level)
-        ctr_minus_obs_single_level = extract_global_single_level(
-            ctr_minus_obs, level)
-        exp_minus_obs_single_level = (extract_global_single_level(
-            exp_minus_obs, level))
+    # Combine the lists into a single list of tuples for easier iteration
+    cube_list = list(
+        zip(exp_list, exp_minus_ctr_list, ctr_minus_obs_list,
+            exp_minus_obs_list))
+
+    # Iterate through each depth level
+    for (
+            exp_single_level,
+            exp_minus_ctr_single_level,
+            ctr_minus_obs_single_level,
+            exp_minus_obs_single_level,
+    ) in cube_list:
 
         # Call create_quadmap, which contains plot_global_single_level
-        create_quadmap(exp_single_level, exp_minus_ctr_single_level,
-                       ctr_minus_obs_single_level, exp_minus_obs_single_level)
+        create_quadmap(
+            exp_single_level,
+            exp_minus_ctr_single_level,
+            ctr_minus_obs_single_level,
+            exp_minus_obs_single_level,
+        )
 
     # After successfully generating plots, function logs a success message.
-    logger.info('Success')
+    logger.info("Success")
 
 
 def load_data(config):
@@ -128,9 +140,9 @@ def load_data(config):
     # The datasets defined by:
     # exper_model, control_model, observational_datasets in the recipe
     # determine what is loaded in this function.
-    exp_label_from_recipe = 'exper_model'
-    ctl_label_from_recipe = 'control_model'
-    obs_label_from_recipe = 'observational_dataset'
+    exp_label_from_recipe = "exper_model"
+    ctl_label_from_recipe = "control_model"
+    obs_label_from_recipe = "observational_dataset"
 
     # Getting all input files from configuration.
     input_files = diagtools.get_input_files(config)
@@ -155,66 +167,13 @@ def load_data(config):
 
     # Fixing all units
     experiment = diagtools.bgc_units(experiment,
-                                     input_files[exp_filename]['short_name'])
+                                     input_files[exp_filename]["short_name"])
     control = diagtools.bgc_units(control,
-                                  input_files[ctl_filename]['short_name'])
+                                  input_files[ctl_filename]["short_name"])
     observation = diagtools.bgc_units(observation,
-                                      input_files[obs_filename]['short_name'])
+                                      input_files[obs_filename]["short_name"])
 
     return experiment, control, observation
-
-
-def fix_cube(cube_to_fix, cube_with_good_values):
-    """!!! ONLY REQUIRED WHEN WORKING WITH NEMO DATASETS !!! The latitude and
-    longitude coordinates of the cubes are adjusted to ensure the grids align
-    for performing operations later. Only required with working with NEMO
-    datasets due to different grids.
-
-    Parameters
-    ----------
-    cube_to_fix : iris cube
-        The cubes experiment and control with bad coord values.
-    cube_with_good_values : iris cube
-        The cube observation with the good coord values.
-    """
-    # This is necessary for subtracting one cube from another.
-    cube_to_fix.coord("latitude").points[:] = cube_with_good_values.coord(
-        "latitude").points
-    cube_to_fix.coord("longitude").points[:] = cube_with_good_values.coord(
-        "longitude").points
-
-
-def remove_extra_time_axis(cube):
-    """!!! ONLY REQUIRED WHEN WORKING WITH NEMO DATASETS !!! Remove the extra
-    time axis from the input provided by the cube parameter.
-
-    Parameters
-    ----------
-    cube : iris cube
-        Contains the climate data to be plotted. Including information like:
-        temperature values, latitude, longitude, and depth.
-    """
-    # Counting the number of time coordinates in the cube.
-    time_coords = [
-        coord for coord in cube.coords()
-        if iris.util.guess_coord_axis(coord) == 'T'
-    ]
-    # If the cube has multiple time coordinates with the same standard name,
-    # the function removes the auxiliary time coordinates.
-    time_axes_names = [coord.standard_name for coord in time_coords]
-
-    if len(time_coords) >= 2 and len(set(time_axes_names)) == 1:
-        for aux_coord in time_coords:
-            if not aux_coord.is_dim_coord():
-                cube.remove_coord(aux_coord)
-    else:
-        time_counter_coord = next(
-            (coord
-             for coord in cube.coords() if coord.var_name == 'time_counter'),
-            None)
-        # If the cube has a time_counter coordinate, the function removes it.
-        if time_counter_coord:
-            cube.remove_coord(time_counter_coord)
 
 
 def create_plotting_data(control, experiment, observation):
@@ -253,53 +212,22 @@ def create_plotting_data(control, experiment, observation):
     ctr_minus_obs.long_name = experiment.long_name
     exp_minus_obs.long_name = experiment.long_name
 
-    # Fixing exp_minus_ctr model_id for the plot title used later
-    exp_minus_ctr.attributes['model_id'] = (
-        f"{experiment.attributes['model_id']} minus "
-        f"{control.attributes['model_id']}")
+    # Fixing exp_minus_ctr source_id for the plot title used later
+    exp_minus_ctr.attributes["source_id"] = (
+        f"{experiment.attributes['source_id']} minus "
+        f"{control.attributes['source_id']}")
 
-    # Fixing ctr_minus_obs model_id for the plot title used later
-    ctr_minus_obs.attributes['model_id'] = (
-        f"{control.attributes['model_id']} minus "
-        f"{observation.attributes['source_id']}")
+    # Fixing ctr_minus_obs source_id for the plot title used later
+    ctr_minus_obs.attributes["source_id"] = (
+        f"{control.attributes['source_id']} minus "
+        f"{observation.attributes['short_name']}")
 
-    # Fixing exp_minus_obs model_id for the plot title used later
-    exp_minus_obs.attributes['model_id'] = (
-        f"{experiment.attributes['model_id']} minus "
-        f"{observation.attributes['source_id']}")
+    # Fixing exp_minus_obs source_id for the plot title used later
+    exp_minus_obs.attributes["source_id"] = (
+        f"{experiment.attributes['source_id']} minus "
+        f"{observation.attributes['short_name']}")
 
     return (exp, exp_minus_ctr, ctr_minus_obs, exp_minus_obs)
-
-
-def extract_global_single_level(cube, level):
-    """Extract a single level from the cube. Making all cubes 2D for plotting.
-
-    Parameters
-    ----------
-    cube : iris cube
-        The input data cube.
-    level : float
-        The depth level to extract.
-
-    Returns
-    -------
-    single_level: iris cube
-        The extracted single level cube.
-    """
-    # If cube.shape is already 2D make no change
-    if len(cube.shape) == 2:
-        single_level = cube
-    # If the cube.shape is (1, 1, 1207, 1442) or (1, 1207, 1442): squeeze.
-    elif len(cube.shape) > 2 and cube.shape[0] == 1 and (cube.shape[1] == 1 or
-                                                         len(cube.shape) == 3):
-        single_level = iris.util.squeeze(cube)
-    # 3D cube - Takes cubes with depth levels and extracts one (called in main)
-    else:
-        constraint = iris.Constraint(depth=level)
-        single_level = cube.extract(constraint)
-        single_level = iris.util.squeeze(single_level)
-
-    return single_level
 
 
 def plot_global_single_level(axis, cube, contour_levels, title):
@@ -320,12 +248,12 @@ def plot_global_single_level(axis, cube, contour_levels, title):
     title : str
         This is a string that will be used as the title of the subplot.
     """
-    # Setting the colour of axis 1 always to viridis.
-    if title == "HadGEM2-ES":
-        cmap = 'viridis'
+    # Setting the colour of axis1 always to viridis.
+    if title == "UKESM1-0-LL":
+        cmap = "viridis"
     # Setting the colour of all other plots to bwr.
     else:
-        cmap = 'bwr'
+        cmap = "bwr"
 
     # This step transforms the data so it can be displayed as 2D
     new_cube, extent = iris.analysis.cartography.project(cube,
@@ -347,17 +275,18 @@ def plot_global_single_level(axis, cube, contour_levels, title):
 
     # Checks if the contour plot was created successfully
     if contour_result is None:
-        raise ValueError(
-            "Failed to create contour plot. The plt object is None.")
+        raise ValueError("Failed to create contour plot. plt object is None.")
 
     # A color bar is added to the plot
-    colorbar = plt.colorbar(contour_result, orientation='horizontal')
+    colorbar = plt.colorbar(contour_result, orientation="horizontal")
+
     # Colour scale dependent on range of data.
     colorbar.set_ticks([
         contour_levels.min(),
-        (contour_levels.max() + contour_levels.min()) / 2.,
-        contour_levels.max()
+        (contour_levels.max() + contour_levels.min()) / 2.0,
+        contour_levels.max(),
     ])
+
     # Adding latitude & longitude axis on each plot.
     fontsize = 7
     ax = plt.gca()
@@ -366,8 +295,8 @@ def plot_global_single_level(axis, cube, contour_levels, title):
     gl.ylines = False
     gl.top_labels = False
     gl.right_labels = False
-    gl.xlabel_style = {'size': fontsize, 'color': 'gray'}
-    gl.ylabel_style = {'size': fontsize, 'color': 'gray'}
+    gl.xlabel_style = {"size": fontsize, "color": "gray"}
+    gl.ylabel_style = {"size": fontsize, "color": "gray"}
     gl.xformatter = LONGITUDE_FORMATTER
     gl.yformatter = LATITUDE_FORMATTER
 
@@ -381,8 +310,12 @@ def plot_global_single_level(axis, cube, contour_levels, title):
     iplt.show()
 
 
-def create_quadmap(exp_single_level, exp_minus_ctr_single_level,
-                   ctr_minus_obs_single_level, exp_minus_obs_single_level):
+def create_quadmap(
+    exp_single_level,
+    exp_minus_ctr_single_level,
+    ctr_minus_obs_single_level,
+    exp_minus_obs_single_level,
+):
     """Add all subplots to a main plot with positions of pre-set subplots.
 
     Parameters
@@ -403,12 +336,9 @@ def create_quadmap(exp_single_level, exp_minus_ctr_single_level,
     quadmap :
         Make the four pane model vs model vs obs comparison plot
     """
-    # Setting zrange1 that is used for axis1
-    zrange1 = diagtools.get_cube_range([exp_single_level])
-
     # Setting zrange dependent on the plot produced.
     if exp_single_level.long_name in [
-            'Sea Water Salinity', 'Sea Surface Salinity'
+            "Sea Water Salinity", "Sea Surface Salinity"
     ]:
         # zrange1 set for average salinity range
         # zrange2 set for salinity at -2,2 due to a smaller range of values.
@@ -418,7 +348,7 @@ def create_quadmap(exp_single_level, exp_minus_ctr_single_level,
         # zrange1 set for average temperature range
         # zrange2 for all other plots. Set for consistency
         zrange1 = [-2.0, 32]
-        zrange2 = [-8.86, 8.86]
+        zrange2 = [-5.0, 5.0]
 
     # Generates 12 evenly spaced values between zrange1[0] and zrange1[1]
     linspace1 = np.linspace(zrange1[0], zrange1[1], 12, endpoint=True)
@@ -430,27 +360,43 @@ def create_quadmap(exp_single_level, exp_minus_ctr_single_level,
 
     # Set the figure title for 'Sea Surface' plots
     if exp_single_level.long_name in [
-            'Sea Surface Temperature', 'Sea Surface Salinity'
+            "Sea Surface Temperature",
+            "Sea Surface Salinity",
     ]:
         fig.suptitle("Annual Mean:" + exp_single_level.long_name)
         formatted_depth = 0
     # Set the figure for depth plots to include the depth value.
     else:
         depth = exp_single_level.coords("depth")[0].points[0]
+        # Making the depth a string and 3pd
         formatted_depth = str(f"{depth:.3f}")
-        fig.suptitle("Annual Mean:" + exp_single_level.long_name + ' at ' +
-                     formatted_depth + 'm',
-                     fontsize=14)
+        fig.suptitle(
+            "Annual Mean:" + exp_single_level.long_name + " at " +
+            formatted_depth + "m",
+            fontsize=14,
+        )
 
     # Calling the plot_global_single_level plot with set parameters
     plot_global_single_level(ax1, exp_single_level, linspace1,
-                             exp_single_level.attributes['model_id'])
-    plot_global_single_level(ax2, exp_minus_ctr_single_level, linspace2,
-                             exp_minus_ctr_single_level.attributes['model_id'])
-    plot_global_single_level(ax3, ctr_minus_obs_single_level, linspace2,
-                             ctr_minus_obs_single_level.attributes['model_id'])
-    plot_global_single_level(ax4, exp_minus_obs_single_level, linspace2,
-                             exp_minus_obs_single_level.attributes['model_id'])
+                             exp_single_level.attributes["source_id"])
+    plot_global_single_level(
+        ax2,
+        exp_minus_ctr_single_level,
+        linspace2,
+        exp_minus_ctr_single_level.attributes["source_id"],
+    )
+    plot_global_single_level(
+        ax3,
+        ctr_minus_obs_single_level,
+        linspace2,
+        ctr_minus_obs_single_level.attributes["source_id"],
+    )
+    plot_global_single_level(
+        ax4,
+        exp_minus_obs_single_level,
+        linspace2,
+        exp_minus_obs_single_level.attributes["source_id"],
+    )
 
     # Prepare to save the figure
     fn_list = [exp_single_level.long_name, str(formatted_depth)]
@@ -458,10 +404,10 @@ def create_quadmap(exp_single_level, exp_minus_ctr_single_level,
     image_extention = diagtools.get_image_format(config)
 
     # Construct the file path for saving the plot
-    path = diagtools.folder(
-        config['plot_dir']) + '_'.join(fn_list) + str(formatted_depth)
-    path = path.replace(' ', '') + image_extention
-    logger.info('Saving plots to %s', path)
+    path = (diagtools.folder(config["plot_dir"]) + "_".join(fn_list) +
+            str(formatted_depth))
+    path = path.replace(" ", "") + image_extention
+    logger.info("Saving plots to %s", path)
 
     # Prepare provenance record for the plot
     provenance_record = diagtools.prepare_provenance_record(
@@ -469,18 +415,18 @@ def create_quadmap(exp_single_level, exp_minus_ctr_single_level,
         caption=f"Quadmap models comparison against observation level="
         f"{formatted_depth})",
         statistics=[
-            'mean',
-            'diff',
+            "mean",
+            "diff",
         ],
-        domain=['global'],
-        plot_type=['map'],
+        domain=["global"],
+        plot_type=["map"],
         ancestors=list(input_files.keys()),
     )
 
     # Save the figure and close
-    save_figure('_'.join(fn_list), provenance_record, config, fig, close=True)
+    save_figure("_".join(fn_list), provenance_record, config, fig, close=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with run_diagnostic() as config:
         main(config)
