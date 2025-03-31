@@ -54,9 +54,11 @@ from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic, save_figure
 
+
 # Create a logger object.
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+
 
 
 def main(config):
@@ -197,6 +199,7 @@ def create_plotting_data(control, experiment, observation):
     exp_minus_obs : iris cube
         Experimental model minus observational dataset.
     """
+
     # The data for models and the obs dataset is loaded into Iris cubes.
     # These cubes contain the climate data that will be plotted.
     exp = experiment
@@ -226,7 +229,6 @@ def create_plotting_data(control, experiment, observation):
 
     return (exp, exp_minus_ctr, ctr_minus_obs, exp_minus_obs)
 
-
 def plot_global_single_level(axis, cube, contour_levels, title):
     """Create each individual plot before being added to create_quadmap.
 
@@ -245,6 +247,7 @@ def plot_global_single_level(axis, cube, contour_levels, title):
     title : str
         This is a string that will be used as the title of the subplot.
     """
+
     # Setting the colour of axis1 always to viridis.
     if title == "UKESM1-0-LL":
         cmap = "viridis"
@@ -330,6 +333,7 @@ def create_quadmap(exp_single_level, exp_minus_ctr_single_level,
     quadmap :
         Make the four pane model vs model vs obs comparison plot
     """
+
     # Setting zrange dependent on the plot produced.
     if exp_single_level.long_name in [
             "Sea Water Salinity", "Sea Surface Salinity"

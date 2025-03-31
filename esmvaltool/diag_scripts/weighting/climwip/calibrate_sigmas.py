@@ -1,4 +1,5 @@
 """A collection of functions to calibrate the shape parameters (sigmas)."""
+
 import logging
 import os
 from typing import Union
@@ -28,16 +29,18 @@ from esmvaltool.diag_scripts.weighting.climwip.io_functions import (
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-SIGMA_RANGE = (.1, 2)  # allow this to be set by the recipe later
-PERCENTILES = [.1, .9]  # allow this to be set by the recipe later
+SIGMA_RANGE = (0.1, 2)  # allow this to be set by the recipe later
+PERCENTILES = [0.1, 0.9]  # allow this to be set by the recipe later
 
-confidence_test_values = {'baseline': {}}
+confidence_test_values = {"baseline": {}}
 
 
-def calculate_percentiles(target: 'xr.DataArray',
-                          weights_matrix: 'xr.DataArray',
-                          percentiles: list,
-                          weighted: bool = True) -> ('xr.DataArray', float):
+def calculate_percentiles(
+    target: "xr.DataArray",
+    weights_matrix: "xr.DataArray",
+    percentiles: list,
+    weighted: bool = True,
+) -> ("xr.DataArray", float):
     """Calculate (equally) weighted percentiles based on each perfect model.
 
     Parameters
@@ -75,11 +78,12 @@ def calculate_percentiles(target: 'xr.DataArray',
     inside_ratio: float
         Ratio of perfect models inside their respective percentile_spread.
     """
-    percentiles = xr.DataArray(percentiles, dims='percentile')
+    percentiles = xr.DataArray(percentiles, dims="percentile")
 
     # need to rename for the inside_count comparison
     target_perfect = target.rename(
-        {'model_ensemble': 'perfect_model_ensemble'})
+        {"model_ensemble": "perfect_model_ensemble"}
+    )
 
     if not weighted:  # replace with equal weight but keep nans
         weights_matrix = 0 * weights_matrix + 1
@@ -89,26 +93,33 @@ def calculate_percentiles(target: 'xr.DataArray',
         target,
         percentiles,
         weights_matrix,
-        input_core_dims=[['model_ensemble'], ['percentile'],
-                         ['model_ensemble']],
-        output_core_dims=[['percentile']],
+        input_core_dims=[
+            ["model_ensemble"],
+            ["percentile"],
+            ["model_ensemble"],
+        ],
+        output_core_dims=[["percentile"]],
         vectorize=True,
     )
 
     inside_count = np.logical_and(
         target_perfect >= percentiles_data.isel(percentile=0),
-        target_perfect <= percentiles_data.isel(percentile=1)).values
+        target_perfect <= percentiles_data.isel(percentile=1),
+    ).values
     inside_ratio = inside_count.sum() / len(inside_count)
 
-    percentiles_spread = (percentiles_data.isel(percentile=1) -
-                          percentiles_data.isel(percentile=0))
+    percentiles_spread = percentiles_data.isel(
+        percentile=1
+    ) - percentiles_data.isel(percentile=0)
 
     return percentiles_spread, inside_ratio
 
 
-def compute_cost_function(target: 'xr.DataArray',
-                          weights_matrix: 'xr.DataArray',
-                          performance_sigma: float) -> float:
+def compute_cost_function(
+    target: "xr.DataArray",
+    weights_matrix: "xr.DataArray",
+    performance_sigma: float,
+) -> float:
     """Optimize the performance sigma for confidence.
 
     Parameters
@@ -154,18 +165,21 @@ def compute_cost_function(target: 'xr.DataArray',
     inside_ratio_reference = percentiles[1] - percentiles[0]
 
     # calculate the equally weighted case once as baseline
-    if len(confidence_test_values['baseline']) == 0:
+    if len(confidence_test_values["baseline"]) == 0:
         percentiles_spread, inside_ratio = calculate_percentiles(
-            target, weights_matrix, percentiles, weighted=False)
-        confidence_test_values['baseline']['percentile_spread'] = (
-            percentiles_spread)
-        confidence_test_values['baseline']['inside_ratio'] = inside_ratio
+            target, weights_matrix, percentiles, weighted=False
+        )
+        confidence_test_values["baseline"]["percentile_spread"] = (
+            percentiles_spread
+        )
+        confidence_test_values["baseline"]["inside_ratio"] = inside_ratio
 
     percentiles_spread, inside_ratio = calculate_percentiles(
-        target, weights_matrix, percentiles)
+        target, weights_matrix, percentiles
+    )
     confidence_test_values[performance_sigma] = {
-        'percentile_spread': percentiles_spread,
-        'inside_ratio': inside_ratio
+        "percentile_spread": percentiles_spread,
+        "inside_ratio": inside_ratio,
     }
 
     difference = inside_ratio - inside_ratio_reference
@@ -175,11 +189,13 @@ def compute_cost_function(target: 'xr.DataArray',
     return performance_sigma
 
 
-def evaluate_target(performance_sigma: list,
-                    overall_performance: 'xr.DataArray',
-                    target: 'xr.DataArray',
-                    overall_independence: 'xr.DataArray',
-                    independence_sigma: float) -> float:
+def evaluate_target(
+    performance_sigma: list,
+    overall_performance: "xr.DataArray",
+    target: "xr.DataArray",
+    overall_independence: "xr.DataArray",
+    independence_sigma: float,
+) -> float:
     """Evaluate the weighting in the target period.
 
     Parameters
@@ -207,15 +223,19 @@ def evaluate_target(performance_sigma: list,
     performance_sigma = performance_sigma[0]
 
     # exclude perfect model in each row by setting it to nan
-    idx_diag = np.diag_indices(overall_performance['model_ensemble'].size)
+    idx_diag = np.diag_indices(overall_performance["model_ensemble"].size)
     overall_performance.values[idx_diag] = np.nan
 
-    weights_matrix = calculate_weights(overall_performance,
-                                       overall_independence, performance_sigma,
-                                       independence_sigma)
+    weights_matrix = calculate_weights(
+        overall_performance,
+        overall_independence,
+        performance_sigma,
+        independence_sigma,
+    )
 
-    cost_function_value = compute_cost_function(target, weights_matrix,
-                                                performance_sigma)
+    cost_function_value = compute_cost_function(
+        target, weights_matrix, performance_sigma
+    )
     return cost_function_value
 
 
@@ -224,149 +244,172 @@ def visualize_save_calibration(performance_sigma, cfg, success):
     percentiles = PERCENTILES
     inside_ratio_reference = percentiles[1] - percentiles[0]
 
-    baseline = confidence_test_values.pop('baseline')
+    baseline = confidence_test_values.pop("baseline")
     sigmas = sorted(confidence_test_values)
     inside_ratios = [
-        confidence_test_values[sigma]['inside_ratio'] for sigma in sigmas
+        confidence_test_values[sigma]["inside_ratio"] for sigma in sigmas
     ]
     confidence = xr.Dataset(
         data_vars={
-            'inside_ratio_reference': ((), inside_ratio_reference, {
-                'units': '1'
-            }),
-            'inside_ratio': ('sigma', inside_ratios, {
-                'units': '1'
-            }),
-            'sigma': ('sigma', sigmas, {
-                'units': '1'
-            }),
-        })
+            "inside_ratio_reference": (
+                (),
+                inside_ratio_reference,
+                {"units": "1"},
+            ),
+            "inside_ratio": ("sigma", inside_ratios, {"units": "1"}),
+            "sigma": ("sigma", sigmas, {"units": "1"}),
+        }
+    )
 
     figure, axes = plt.subplots(figsize=(12, 8))
-    axes.plot(sigmas,
-              inside_ratios,
-              color='k',
-              lw=2,
-              label='Perfect models inside the {:.0%} range'.format(
-                  inside_ratio_reference),
-              zorder=99)
-    axes.axhline(inside_ratio_reference,
-                 color='k',
-                 ls='--',
-                 label='Reference: {:.0%}'.format(inside_ratio_reference))
-    axes.axhline(baseline['inside_ratio'],
-                 color='k',
-                 ls=':',
-                 label='Unweighted baseline: {:.0%}'.format(
-                     baseline['inside_ratio']))
+    axes.plot(
+        sigmas,
+        inside_ratios,
+        color="k",
+        lw=2,
+        label=f"Perfect models inside the {inside_ratio_reference:.0%} range",
+        zorder=99,
+    )
+    axes.axhline(
+        inside_ratio_reference,
+        color="k",
+        ls="--",
+        label=f"Reference: {inside_ratio_reference:.0%}",
+    )
+    axes.axhline(
+        baseline["inside_ratio"],
+        color="k",
+        ls=":",
+        label="Unweighted baseline: {:.0%}".format(baseline["inside_ratio"]),
+    )
 
     if success:
-        axes.axvline(performance_sigma,
-                     color='k',
-                     ls='-.',
-                     label='Selected performance sigma: {:.2f}'.format(
-                         performance_sigma))
-        axes.set_title('Performance sigma calibration')
+        axes.axvline(
+            performance_sigma,
+            color="k",
+            ls="-.",
+            label=f"Selected performance sigma: {performance_sigma:.2f}",
+        )
+        axes.set_title("Performance sigma calibration")
     else:
         axes.axvline(
             performance_sigma,
-            color='gray',
-            ls='-.',
-            label='Best performance sigma: {:.2f} (set manually to use)'.
-            format(performance_sigma))
-        axes.set_title('Performance sigma calibration (FAILED)')
+            color="gray",
+            ls="-.",
+            label=f"Best performance sigma: {performance_sigma:.2f} (set manually to use)",
+        )
+        axes.set_title("Performance sigma calibration (FAILED)")
 
     # optional: sharpness
-    sharpness = xr.concat([
-        confidence_test_values[sigma]['percentile_spread'].expand_dims(
-            {'sigma': [sigma]}) for sigma in sigmas], dim='sigma')
-    sharpness /= baseline['percentile_spread']
-    axes.plot(sigmas,
-              sharpness.mean('perfect_model_ensemble'),
-              color='lightgray',
-              label='Spread relative to unweighted (mean & 80% range)')
-    axes.fill_between(sigmas,
-                      *sharpness.quantile((.1, .9), 'perfect_model_ensemble'),
-                      facecolor='lightgray',
-                      edgecolor='none',
-                      alpha=.3)
-    axes.axhline(1, color='lightgray', ls='--')
+    sharpness = xr.concat(
+        [
+            confidence_test_values[sigma]["percentile_spread"].expand_dims(
+                {"sigma": [sigma]}
+            )
+            for sigma in sigmas
+        ],
+        dim="sigma",
+    )
+    sharpness /= baseline["percentile_spread"]
+    axes.plot(
+        sigmas,
+        sharpness.mean("perfect_model_ensemble"),
+        color="lightgray",
+        label="Spread relative to unweighted (mean & 80% range)",
+    )
+    axes.fill_between(
+        sigmas,
+        *sharpness.quantile((0.1, 0.9), "perfect_model_ensemble"),
+        facecolor="lightgray",
+        edgecolor="none",
+        alpha=0.3,
+    )
+    axes.axhline(1, color="lightgray", ls="--")
 
-    sharpness.attrs['units'] = '1'
-    confidence['sharpness'] = sharpness
+    sharpness.attrs["units"] = "1"
+    confidence["sharpness"] = sharpness
 
     axes.set_xlim(SIGMA_RANGE)
     axes.set_ylim(0, 1.3)
-    axes.set_xlabel('sigma (1)')
-    axes.set_ylabel('Ratio (1)')
+    axes.set_xlabel("sigma (1)")
+    axes.set_ylabel("Ratio (1)")
 
     axes.legend()
 
-    filename_plot = get_plot_filename('performance_sigma_calibration', cfg)
-    figure.savefig(filename_plot, dpi=300, bbox_inches='tight')
+    filename_plot = get_plot_filename("performance_sigma_calibration", cfg)
+    figure.savefig(filename_plot, dpi=300, bbox_inches="tight")
     plt.close(figure)
 
-    filename_data = get_diagnostic_filename('performance_sigma_calibration',
-                                            cfg,
-                                            extension='nc')
+    filename_data = get_diagnostic_filename(
+        "performance_sigma_calibration", cfg, extension="nc"
+    )
     confidence.to_netcdf(filename_data)
 
 
-def calibrate_performance_sigma(performance_contributions: list,
-                                overall_independence: Union['xr.DataArray',
-                                                            None],
-                                independence_sigma: Union[float, None],
-                                cfg: dict) -> float:
+def calibrate_performance_sigma(
+    performance_contributions: list,
+    overall_independence: Union["xr.DataArray", None],
+    independence_sigma: Union[float, None],
+    cfg: dict,
+) -> float:
     """Calibrate the performance sigma using a perfect model approach."""
-    settings = cfg['calibrate_performance_sigma']
+    settings = cfg["calibrate_performance_sigma"]
     models, _ = read_metadata(cfg)
 
     performances_matrix = {}
     for variable_group in performance_contributions:
-
-        logger.info('Reading model data for %s', variable_group)
+        logger.info("Reading model data for %s", variable_group)
         if variable_group.endswith("_ANOM"):
             model_data, model_data_files = read_model_data_ancestor(
-                cfg, variable_group)
+                cfg, variable_group
+            )
         else:
             datasets_model = models[variable_group]
             model_data, _ = read_model_data(datasets_model)
 
-        logger.info('Calculating performance for %s', variable_group)
+        logger.info("Calculating performance for %s", variable_group)
         performance_matrix = calculate_model_distances(
-            model_data, 'perfect_model_ensemble')
+            model_data, "perfect_model_ensemble"
+        )
         logger.debug(performance_matrix.values)
         performances_matrix[variable_group] = performance_matrix
 
     performance_matrix = xr.Dataset(performances_matrix)
-    overall_performance = compute_overall_mean(performance_matrix,
-                                               performance_contributions)
+    overall_performance = compute_overall_mean(
+        performance_matrix, performance_contributions
+    )
 
-    target = models[settings['target']]
+    target = models[settings["target"]]
     target_data, _ = read_model_data(target)
 
-    if settings.get('target_ref') is not None:
-        target_ref = models[settings['target_ref']]
+    if settings.get("target_ref") is not None:
+        target_ref = models[settings["target_ref"]]
         target_ref_data, _ = read_model_data(target_ref)
         target_data -= target_ref_data
 
     target_data = area_weighted_mean(target_data)
 
-    if cfg['combine_ensemble_members']:
+    if cfg["combine_ensemble_members"]:
         overall_independence, _ = combine_ensemble_members(
             overall_independence,
-            ['model_ensemble', 'model_ensemble_reference'])
+            ["model_ensemble", "model_ensemble_reference"],
+        )
         overall_performance, _ = combine_ensemble_members(
-            overall_performance, ['model_ensemble', 'perfect_model_ensemble'])
+            overall_performance, ["model_ensemble", "perfect_model_ensemble"]
+        )
         target_data, _ = combine_ensemble_members(target_data)
 
     performance_sigma, fval, _, _ = brute(
         evaluate_target,
-        ranges=(SIGMA_RANGE, ),
+        ranges=(SIGMA_RANGE,),
         Ns=100,
         finish=None,
-        args=(overall_performance, target_data, overall_independence,
-              independence_sigma),
+        args=(
+            overall_performance,
+            target_data,
+            overall_independence,
+            independence_sigma,
+        ),
         full_output=True,
     )
 
@@ -374,10 +417,12 @@ def calibrate_performance_sigma(performance_contributions: list,
     visualize_save_calibration(performance_sigma, cfg, success=success)
 
     if success:
-        logmsg = f'Found optimal performance sigma value: {performance_sigma}'
+        logmsg = f"Found optimal performance sigma value: {performance_sigma}"
         logger.info(logmsg)
         return performance_sigma
 
-    errmsg = ('No confident sigma could be found! Bad choice of predictors or '
-              'target or too small sigma range?')
+    errmsg = (
+        "No confident sigma could be found! Bad choice of predictors or "
+        "target or too small sigma range?"
+    )
     raise ValueError(errmsg)

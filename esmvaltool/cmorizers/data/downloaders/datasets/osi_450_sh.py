@@ -7,8 +7,9 @@ from dateutil import relativedelta
 from esmvaltool.cmorizers.data.downloaders.ftp import FTPDownloader
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -29,10 +30,10 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     if start_date is None:
         start_date = datetime(1979, 1, 1)
     if end_date is None:
-        end_date = datetime(2015, 12, 1)
+        end_date = datetime(2020, 12, 1)
     downloader = FTPDownloader(
         config=config,
-        server='osisaf.met.no',
+        server="osisaf.met.no",
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
@@ -41,7 +42,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     loop_date = start_date
 
-    downloader.set_cwd("/reprocessed/ice/conc/v2p0")
+    downloader.set_cwd("/reprocessed/ice/conc/v3p0")
 
     while loop_date <= end_date:
         year = loop_date.year
@@ -49,6 +50,6 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         downloader.download_folder(
             folder,
             sub_folder=folder,
-            filter_files='.*_sh.*[.]nc',
+            filter_files=".*_sh.*[.]nc",
         )
         loop_date += relativedelta.relativedelta(months=1)
