@@ -106,12 +106,9 @@ def main(config):
     ) in cube_list:
 
         # Call create_quadmap, which contains plot_global_single_level
-        create_quadmap(
-            exp_single_level,
-            exp_minus_ctr_single_level,
-            ctr_minus_obs_single_level,
-            exp_minus_obs_single_level,
-        )
+        create_quadmap(exp_single_level, exp_minus_ctr_single_level,
+                       ctr_minus_obs_single_level, exp_minus_obs_single_level,
+                       config)
 
     # After successfully generating plots, function logs a success message.
     logger.info("Success")
@@ -256,10 +253,10 @@ def plot_global_single_level(axis, cube, contour_levels, title):
         cmap = "bwr"
 
     # This step transforms the data so it can be displayed as 2D
-    new_cube, extent = iris.analysis.cartography.project(cube,
-                                                         ccrs.PlateCarree(),
-                                                         nx=400,
-                                                         ny=200)
+    new_cube = iris.analysis.cartography.project(cube,
+                                                 ccrs.PlateCarree(),
+                                                 nx=400,
+                                                 ny=200)
 
     # Sets the current Axes instance to the specified axis
     plt.sca(axis)
@@ -289,16 +286,16 @@ def plot_global_single_level(axis, cube, contour_levels, title):
 
     # Adding latitude & longitude axis on each plot.
     fontsize = 7
-    ax = plt.gca()
-    gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True)
-    gl.xlines = False
-    gl.ylines = False
-    gl.top_labels = False
-    gl.right_labels = False
-    gl.xlabel_style = {"size": fontsize, "color": "gray"}
-    gl.ylabel_style = {"size": fontsize, "color": "gray"}
-    gl.xformatter = LONGITUDE_FORMATTER
-    gl.yformatter = LATITUDE_FORMATTER
+    axis = plt.gca()
+    grid_lines = axis.gridlines(crs=ccrs.PlateCarree(), draw_labels=True)
+    grid_lines.xlines = False
+    grid_lines.ylines = False
+    grid_lines.top_labels = False
+    grid_lines.right_labels = False
+    grid_lines.xlabel_style = {"size": fontsize, "color": "gray"}
+    grid_lines.ylabel_style = {"size": fontsize, "color": "gray"}
+    grid_lines.xformatter = LONGITUDE_FORMATTER
+    grid_lines.yformatter = LATITUDE_FORMATTER
 
     # Coastlines are added to the map to provide geographical context.
     plt.gca().coastlines()
@@ -310,12 +307,9 @@ def plot_global_single_level(axis, cube, contour_levels, title):
     iplt.show()
 
 
-def create_quadmap(
-    exp_single_level,
-    exp_minus_ctr_single_level,
-    ctr_minus_obs_single_level,
-    exp_minus_obs_single_level,
-):
+def create_quadmap(exp_single_level, exp_minus_ctr_single_level,
+                   ctr_minus_obs_single_level, exp_minus_obs_single_level,
+                   config):
     """Add all subplots to a main plot with positions of pre-set subplots.
 
     Parameters
@@ -429,5 +423,5 @@ def create_quadmap(
 
 
 if __name__ == "__main__":
-    with run_diagnostic() as config:
-        main(config)
+    with run_diagnostic() as CONFIG:
+        main(CONFIG)
