@@ -369,10 +369,11 @@ def create_quadmap(
     else:
         depth = exp_single_level.coords("depth")[0].points[0]
         # Making the depth a string and 3pd
-        formatted_depth = str(f"{depth:.3f}")
+        formatted_depth = str(f"{int(depth):04d}")
+        depth_title = str(f"{depth:.1f}")
         fig.suptitle(
             "Annual Mean:" + exp_single_level.long_name + " at " +
-            formatted_depth + "m",
+            depth_title + "m",
             fontsize=14,
         )
 
