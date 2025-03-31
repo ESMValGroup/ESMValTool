@@ -54,11 +54,9 @@ from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic, save_figure
 
-
 # Create a logger object.
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
-
 
 
 def main(config):
@@ -76,12 +74,14 @@ def main(config):
     experiment, control, observation = load_data(config)
 
     # Call the create_plotting_data function
-    (exp, exp_minus_ctr, ctr_minus_obs,
-     exp_minus_obs) = create_plotting_data(control, experiment, observation)
+    (exp, exp_minus_ctr, ctr_minus_obs, exp_minus_obs) = create_plotting_data(
+        control, experiment, observation
+    )
 
     # If true, set the lists to contain only one level
     if experiment.long_name in [
-            "Sea Surface Temperature", "Sea Surface Salinity"
+        "Sea Surface Temperature",
+        "Sea Surface Salinity",
     ]:
         exp_list = [exp]
         exp_minus_ctr_list = [exp_minus_ctr]
@@ -96,21 +96,29 @@ def main(config):
 
     # Combine the lists into a single list of tuples for easier iteration
     cube_list = list(
-        zip(exp_list, exp_minus_ctr_list, ctr_minus_obs_list,
-            exp_minus_obs_list))
+        zip(
+            exp_list,
+            exp_minus_ctr_list,
+            ctr_minus_obs_list,
+            exp_minus_obs_list,
+        )
+    )
 
     # Iterate through each depth level
     for (
+        exp_single_level,
+        exp_minus_ctr_single_level,
+        ctr_minus_obs_single_level,
+        exp_minus_obs_single_level,
+    ) in cube_list:
+        # Call create_quadmap, which contains plot_global_single_level
+        create_quadmap(
             exp_single_level,
             exp_minus_ctr_single_level,
             ctr_minus_obs_single_level,
             exp_minus_obs_single_level,
-    ) in cube_list:
-
-        # Call create_quadmap, which contains plot_global_single_level
-        create_quadmap(exp_single_level, exp_minus_ctr_single_level,
-                       ctr_minus_obs_single_level, exp_minus_obs_single_level,
-                       config)
+            config,
+        )
 
     # After successfully generating plots, function logs a success message.
     logger.info("Success")
@@ -147,17 +155,17 @@ def load_data(config):
     input_files = diagtools.get_input_files(config)
 
     # Get experiment input files from config
-    exp_filename = diagtools.match_model_to_key(exp_label_from_recipe,
-                                                config[exp_label_from_recipe],
-                                                input_files)
+    exp_filename = diagtools.match_model_to_key(
+        exp_label_from_recipe, config[exp_label_from_recipe], input_files
+    )
     # Get control input files from config
-    ctl_filename = diagtools.match_model_to_key(ctl_label_from_recipe,
-                                                config[ctl_label_from_recipe],
-                                                input_files)
+    ctl_filename = diagtools.match_model_to_key(
+        ctl_label_from_recipe, config[ctl_label_from_recipe], input_files
+    )
     # Get observation input files from config
-    obs_filename = diagtools.match_model_to_key(obs_label_from_recipe,
-                                                config[obs_label_from_recipe],
-                                                input_files)
+    obs_filename = diagtools.match_model_to_key(
+        obs_label_from_recipe, config[obs_label_from_recipe], input_files
+    )
 
     # Set variable names to filename cubes above.
     experiment = iris.load_cube(exp_filename)
@@ -165,12 +173,15 @@ def load_data(config):
     observation = iris.load_cube(obs_filename)
 
     # Fixing all units
-    experiment = diagtools.bgc_units(experiment,
-                                     input_files[exp_filename]["short_name"])
-    control = diagtools.bgc_units(control,
-                                  input_files[ctl_filename]["short_name"])
-    observation = diagtools.bgc_units(observation,
-                                      input_files[obs_filename]["short_name"])
+    experiment = diagtools.bgc_units(
+        experiment, input_files[exp_filename]["short_name"]
+    )
+    control = diagtools.bgc_units(
+        control, input_files[ctl_filename]["short_name"]
+    )
+    observation = diagtools.bgc_units(
+        observation, input_files[obs_filename]["short_name"]
+    )
 
     return experiment, control, observation
 
@@ -215,19 +226,23 @@ def create_plotting_data(control, experiment, observation):
     # Fixing exp_minus_ctr source_id for the plot title used later
     exp_minus_ctr.attributes["source_id"] = (
         f"{experiment.attributes['source_id']} minus "
-        f"{control.attributes['source_id']}")
+        f"{control.attributes['source_id']}"
+    )
 
     # Fixing ctr_minus_obs source_id for the plot title used later
     ctr_minus_obs.attributes["source_id"] = (
         f"{control.attributes['source_id']} minus "
-        f"{observation.attributes['short_name']}")
+        f"{observation.attributes['short_name']}"
+    )
 
     # Fixing exp_minus_obs source_id for the plot title used later
     exp_minus_obs.attributes["source_id"] = (
         f"{experiment.attributes['source_id']} minus "
-        f"{observation.attributes['short_name']}")
+        f"{observation.attributes['short_name']}"
+    )
 
     return (exp, exp_minus_ctr, ctr_minus_obs, exp_minus_obs)
+
 
 def plot_global_single_level(axis, cube, contour_levels, title):
     """Create each individual plot before being added to create_quadmap.
@@ -256,19 +271,20 @@ def plot_global_single_level(axis, cube, contour_levels, title):
         cmap = "bwr"
 
     # This step transforms the data so it can be displayed as 2D
-    new_cube = iris.analysis.cartography.project(cube,
-                                                 ccrs.PlateCarree(),
-                                                 nx=400,
-                                                 ny=200)
+    new_cube = iris.analysis.cartography.project(
+        cube, ccrs.PlateCarree(), nx=400, ny=200
+    )
 
     # Sets the current Axes instance to the specified axis
     plt.sca(axis)
 
     # Creates a filled contour plot of the projected data.
-    contour_result = iplt.contourf(new_cube,
-                                   levels=contour_levels,
-                                   linewidth=0,
-                                   cmap=plt.cm.get_cmap(cmap))
+    contour_result = iplt.contourf(
+        new_cube,
+        levels=contour_levels,
+        linewidth=0,
+        cmap=plt.cm.get_cmap(cmap),
+    )
 
     # Converts contour_levels to a numpy array.
     contour_levels = np.array(contour_levels)
@@ -281,11 +297,13 @@ def plot_global_single_level(axis, cube, contour_levels, title):
     colorbar = plt.colorbar(contour_result, orientation="horizontal")
 
     # Colour scale dependent on range of data.
-    colorbar.set_ticks([
-        contour_levels.min(),
-        (contour_levels.max() + contour_levels.min()) / 2.0,
-        contour_levels.max(),
-    ])
+    colorbar.set_ticks(
+        [
+            contour_levels.min(),
+            (contour_levels.max() + contour_levels.min()) / 2.0,
+            contour_levels.max(),
+        ]
+    )
 
     # Adding latitude & longitude axis on each plot.
     fontsize = 7
@@ -310,9 +328,13 @@ def plot_global_single_level(axis, cube, contour_levels, title):
     iplt.show()
 
 
-def create_quadmap(exp_single_level, exp_minus_ctr_single_level,
-                   ctr_minus_obs_single_level, exp_minus_obs_single_level,
-                   config):
+def create_quadmap(
+    exp_single_level,
+    exp_minus_ctr_single_level,
+    ctr_minus_obs_single_level,
+    exp_minus_obs_single_level,
+    config,
+):
     """Add all subplots to a main plot with positions of pre-set subplots.
 
     Parameters
@@ -336,7 +358,8 @@ def create_quadmap(exp_single_level, exp_minus_ctr_single_level,
 
     # Setting zrange dependent on the plot produced.
     if exp_single_level.long_name in [
-            "Sea Water Salinity", "Sea Surface Salinity"
+        "Sea Water Salinity",
+        "Sea Surface Salinity",
     ]:
         # zrange1 set for average salinity range
         # zrange2 set for salinity at -2,2 due to a smaller range of values.
@@ -358,8 +381,8 @@ def create_quadmap(exp_single_level, exp_minus_ctr_single_level,
 
     # Set the figure title for 'Sea Surface' plots
     if exp_single_level.long_name in [
-            "Sea Surface Temperature",
-            "Sea Surface Salinity",
+        "Sea Surface Temperature",
+        "Sea Surface Salinity",
     ]:
         fig.suptitle("Annual Mean:" + exp_single_level.long_name)
         formatted_depth = 0
@@ -369,13 +392,22 @@ def create_quadmap(exp_single_level, exp_minus_ctr_single_level,
         # Making the depth a string and 3pd
         formatted_depth = str(f"{int(depth):04d}")
         depth_title = str(f"{depth:.1f}")
-        fig.suptitle("Annual Mean:" + exp_single_level.long_name + " at " +
-                     depth_title + "m",
-                     fontsize=14)
+        fig.suptitle(
+            "Annual Mean:"
+            + exp_single_level.long_name
+            + " at "
+            + depth_title
+            + "m",
+            fontsize=14,
+        )
 
     # Calling the plot_global_single_level plot with set parameters
-    plot_global_single_level(ax1, exp_single_level, linspace1,
-                             exp_single_level.attributes["source_id"])
+    plot_global_single_level(
+        ax1,
+        exp_single_level,
+        linspace1,
+        exp_single_level.attributes["source_id"],
+    )
     plot_global_single_level(
         ax2,
         exp_minus_ctr_single_level,
@@ -401,8 +433,11 @@ def create_quadmap(exp_single_level, exp_minus_ctr_single_level,
     image_extention = diagtools.get_image_format(config)
 
     # Construct the file path for saving the plot
-    path = (diagtools.folder(config["plot_dir"]) + "_".join(fn_list) +
-            str(formatted_depth))
+    path = (
+        diagtools.folder(config["plot_dir"])
+        + "_".join(fn_list)
+        + str(formatted_depth)
+    )
     path = path.replace(" ", "") + image_extention
     logger.info("Saving plots to %s", path)
 
