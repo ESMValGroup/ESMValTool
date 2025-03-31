@@ -27,16 +27,12 @@ This tool is part of the ocean diagnostic tools package in the ESMValTool,
 and was based on the plots produced by the Ocean Assess/Marine Assess toolkit.
 
 Original script:
-Author: Lee de Mora (PML)
-        ledm@pml.ac.uk
+Author: Lee de Mora (PML): ledm@pml.ac.uk
 
 Refactored script: (Alphabetical order)
-Author: Sophie Hall (Met Office)
-        sophie.hall@metoffice.gov.uk
-Author: Emma Hogan (Met Office)
-        emma.hogan@metoffice.gov.uk
-Author: Dave Storkey (Met Office)
-        dave.storkey@metoffice.gov.uk
+Author: Sophie Hall (Met Office): sophie.hall@metoffice.gov.uk
+Author: Emma Hogan (Met Office): emma.hogan@metoffice.gov.uk
+Author: Dave Storkey (Met Office): dave.storkey@metoffice.gov.uk
 """
 
 import logging
