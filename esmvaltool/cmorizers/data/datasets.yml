@@ -1178,10 +1178,10 @@ datasets:
   OSI-450-nh:
     tier: 2
     source: http://osisaf.met.no/p/ice/
-    last_access: 2019-05-02
+    last_access: 2025-03-14
     info: |
       Download the desired years from the following ftp:
-        ftp://osisaf.met.no/reprocessed/ice/conc/v2p0
+        ftp://osisaf.met.no/reprocessed/ice/conc/v3p0
       Please, keep folder structure.
 
       If you want to use only the nh data download only the nh files,
@@ -1194,10 +1194,10 @@ datasets:
   OSI-450-sh:
     tier: 2
     source: http://osisaf.met.no/p/ice/
-    last_access: 2019-05-02
+    last_access: 2025-03-14
     info: |
       Download the desired years from the following ftp:
-        ftp://osisaf.met.no/reprocessed/ice/conc/v2p0
+        ftp://osisaf.met.no/reprocessed/ice/conc/v3p0
       Please, keep folder structure.
 
       If you want to use only the nh data download only the nh files,
