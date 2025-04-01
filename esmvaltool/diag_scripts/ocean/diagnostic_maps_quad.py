@@ -343,8 +343,7 @@ def create_quadmap(
     Returns
     -------
     quadmap :
-        Make the four pane model vs model vs obs comparison plot
-    """
+        Make the four pane model vs model vs obs comparison plot"""
     # Setting zrange dependent on the plot produced.
     if exp_single_level.long_name in [
         "Sea Water Salinity",
