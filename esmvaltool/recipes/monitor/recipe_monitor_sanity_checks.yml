@@ -64,6 +64,15 @@ diagnostics:
         plots:
           timeseries:
             annual_mean_kwargs: false
+            hlines:
+              - y: 62.0
+                color: orange
+              - y: 67.0
+                color: orange
+              - y: 58.0
+                color: red
+              - y: 68.0
+                color: red
             plot_kwargs:
               'global mean':
                 color: blue
@@ -109,6 +118,14 @@ diagnostics:
         plots:
           timeseries:
             annual_mean_kwargs: false
+              - y: 232.0
+                color: orange
+              - y: 240.0
+                color: orange
+              - y: 229.0
+                color: red
+              - y: 241.0
+                color: red
             plot_kwargs:
               'global mean':
                 color: blue
