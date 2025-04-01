@@ -1,22 +1,22 @@
-"""Diagnostic script to plot ENSO metrics lifecycle and seasonality."""
+"""diagnostic script to plot ENSO metrics
+
+"""
 
 import logging
 import os
 from pprint import pformat
 
-import cartopy.crs as ccrs
 import iris
-import iris.plot as iplt
 import matplotlib.pyplot as plt
 import numpy as np
-import shapely.vectorized as shp_vect
 from esmvalcore.preprocessor import (
-    anomalies,
     climate_statistics,
     extract_month,
     extract_season,
+    mask_above_threshold,
+    mask_below_threshold,
 )
-from shapely import box
+from scipy.stats import linregress, skew
 
 from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
@@ -26,80 +26,61 @@ from esmvaltool.diag_scripts.shared import (
     select_metadata,
 )
 
-# stdout
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def plot_level1(model_data, obs, metric_values, labels_ls):
-    """Plot ENSO metric data, input data is model and obs."""
+def plot_level1(input_data, metricval, y_label, title, dtls):
+
     figure = plt.figure(figsize=(10, 6), dpi=300)
-    modls = [d[0] for d in metric_values]
-    if labels_ls[1] in ['ENSO lifecycle']:
-        # model first :list
-        for datamod, name in zip(model_data[1], modls):
-            plt.plot(model_data[0], datamod, label=name)
-        plt.plot(*obs, label=f'ref: {labels_ls[2]}', linestyle='dashdot',
-                 linewidth=3, color='black')
+
+    if title in ['ENSO pattern', 'ENSO lifecycle']:
+        # model first
+        plt.plot(*input_data[0], label=dtls[0])
+        plt.plot(*input_data[1], label=f'ref: {dtls[1]}', color='black')
+        plt.text(0.5, 0.95, f"RMSE: {metricval:.2f}", fontsize=12,
+                 ha='center', transform=plt.gca().transAxes,
+                 bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
 
     else:
-        plt.scatter(0, obs, c=['black'], marker='D')
-        plt.scatter(np.ones(len(model_data), np.int8), model_data,
-                    c=model_data, cmap='tab10', marker='D')
-        plt.xlim(-0.5, 1.5)
+        plt.scatter(range(len(input_data)), input_data,
+                    c=['black', 'blue'], marker='D')
+        # obs first
+        plt.xlim(-0.5, 2)
         plt.xticks([])
-        logger.info("number of models:%s", len(model_data))
-
-        plt.text(0.75, 0.9, f'* ref: {labels_ls[2]}', color='black',
+        plt.text(0.75, 0.95, f'* {dtls[0]}', color='blue',
                  transform=plt.gca().transAxes)
+        plt.text(0.75, 0.9, f'* ref: {dtls[1]}', color='black',
+                 transform=plt.gca().transAxes)
+        plt.text(0.75, 0.8, f"metric(%): {metricval:.2f}", fontsize=12,
+                 transform=plt.gca().transAxes,
+                 bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
 
-    plt.title(labels_ls[1])  # metric name
+    plt.title(title)  # metric name
+    plt.legend()
     plt.grid(linestyle='--')
-    plt.ylabel(labels_ls[0])
+    plt.ylabel(y_label)
 
-    if labels_ls[1] == 'ENSO lifecycle':
-        plt.legend(loc='center left', bbox_to_anchor=(0.98, 0.5))
+    if title == 'ENSO pattern':
+        plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(format_lon))
+    elif title == 'ENSO lifecycle':
         plt.axhline(y=0, color='black', linewidth=2)
         xticks = np.arange(1, 73, 6) - 36  # Adjust for lead/lag months
         xtick_labels = ['Jan', 'Jul'] * (len(xticks) // 2)
         plt.xticks(xticks, xtick_labels)
         plt.yticks(np.arange(-2, 2.5, step=1))
-    plt.tight_layout()
-    return figure
 
-
-def plot_map1(input_data, rmse, title):
-    """Plot maps for teleconnections. input data is model and obs."""
-    figure = plt.figure(figsize=(20, 6), dpi=300)
-
-    proj = ccrs.PlateCarree(central_longitude=180)
-    figure.suptitle(title)
-    i = 121  # make subplot for all models?
-    # nrows ncols set number of models+1, /4 cols, ceil (*figsize)
-
-    for label, cube in input_data.items():
-
-        ax1 = plt.subplot(i, projection=proj)
-        ax1.coastlines()
-        cf1 = iplt.contourf(cube, levels=np.arange(-1, 1, 0.1), extend='both',
-                            cmap='RdBu_r')
-        ax1.set_title(label)
-        gl1 = ax1.gridlines(draw_labels=True, linestyle='--')
-        gl1.top_labels = False
-        gl1.right_labels = False
-        i += 1
-
-    plt.text(0.1, -0.3, f'RMSE: {rmse:.2f} ', fontsize=12, ha='left',
-             transform=plt.gca().transAxes,
-             bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
-    # Add a single colorbar at the bottom
-    cax = plt.axes([0.15, 0.08, 0.7, 0.05])
-    cbar = figure.colorbar(cf1, cax=cax, orientation='horizontal',
-                           extend='both', ticks=np.arange(-1, 1.5, 0.5))
-    cbar.set_label('regression (°C/°C)')
-    logger.info("%s, %s : metric:%f", title, [*input_data][0], rmse)
-    plt.tight_layout()
+    logger.info(f"{dtls[0]} : metric:{metricval}")
 
     return figure
+
+
+def lin_regress(cube_ssta, cube_nino34):
+    slope_ls = []
+    for lon_slice in cube_ssta.slices(['time']):
+        res = linregress(cube_nino34.data, lon_slice.data)
+        slope_ls.append(res[0])
+
+    return cube_ssta.coord('longitude').points, slope_ls
 
 
 def sst_regressed(n34_cube):
@@ -135,160 +116,158 @@ def sst_regressed(n34_cube):
     return coefs[0]
 
 
-def lin_regress_matrix(cube_a, cube_b):
-    """Calculate linear regression using matrix operations.
-
-    Array must not contain infs or NaNs.
-
-    Parameters
-    ----------
-    cube_a: iris.cube.Cube
-        The 2D input cube for which the regression is calculated.
-
-    cube_b: iris.cube.Cube
-        The cube used as the independent variable in the regression.
-
-    Returns
-    -------
-    iris.cube.Cube
-        A new cube containing the slope of the regression for each
-        spatial point.
-    """
-    # Get data as flattened arrays # Shape (time, spatial_points)
-    a_data = cube_a.data.reshape(cube_a.shape[0], -1)
-    b_data = cube_b.data.flatten()  # Shape (time,)
-    logger.info("cubes: %s, %s", cube_a.name, cube_b.name)
-    # Add intercept term by stacking a column of ones with cube_b
-    b_with_intercept = np.vstack([b_data, np.ones_like(b_data)]).T
-
-    # Solve the linear equations using least squares method
-    coefs, _, _, _ = np.linalg.lstsq(b_with_intercept, a_data, rcond=None)
-    logger.info("%s, %s", cube_a.coords(), cube_a.shape)
-    # Extract slopes from coefficients #coefs 1
-    slopes = coefs[0].reshape(cube_a.shape[1], cube_a.shape[2])
-
-    # Create a new Iris Cube for the regression results
-    coords = [cube_a.coord(name) for name in ['latitude', 'longitude']]
-    result_cube = iris.cube.Cube(slopes, long_name='regression ENSO SSTA',
-                                 dim_coords_and_dims=[(coords[0], 0),
-                                                      (coords[1], 1)])
-
-    return result_cube
-
-
 def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
-    """Compute the ENSO metric for the collected preprocessed data."""
-    fig = None
-    metric_values = []
-    model_plot = []
-    # input_pair: obs first
-    if metric == 'lifecycle':
-        obs = sst_regressed(input_pair[0][var_group[0]])
-        # model list, calc values
-        for dataset in input_pair[1]:
-            logger.info("%s, preprocessed cubes:%s, dataset:%s",
-                        metric, len(input_pair[1]), dataset)
 
-            model_datasets = {attr['variable_group']:
-                              iris.load_cube(attr['filename'])
-                              for attr in input_pair[1][dataset]}
-            model = sst_regressed(model_datasets[var_group[0]])
-            val = np.sqrt(np.mean((obs - model) ** 2))
-            metric_values.append((dataset, val))
-            model_plot.append(model)
+    # input_pair: obs first
+    if metric == '09pattern':
+        model_ssta = input_pair[1][var_group[1]]
+        model_nino34 = input_pair[1][var_group[0]]
+        reg_mod = lin_regress(model_ssta, model_nino34)
+        reg_obs = lin_regress(input_pair[0][var_group[1]],
+                              input_pair[0][var_group[0]])
+
+        val = np.sqrt(np.mean((np.array(reg_obs[1]) -
+                               np.array(reg_mod[1])) ** 2))
+
+        fig = plot_level1([reg_mod, reg_obs], val, 'reg(ENSO SSTA, SSTA)',
+                          'ENSO pattern', dt_ls)
+
+    elif metric == '10lifecycle':
+        model = sst_regressed(input_pair[1][var_group[0]])
+        obs = sst_regressed(input_pair[0][var_group[0]])
+        val = np.sqrt(np.mean((obs - model) ** 2))
+        months = np.arange(1, 73) - 36
+        # plot function #need xticks, labels as dict/ls
+        fig = plot_level1([(months, model), (months, obs)], val,
+                          'Degree C / C', 'ENSO lifecycle', dt_ls)
+
+    elif metric == '11amplitude':
+        data_values = [input_pair[1][var_group[0]].data.item(),
+                       input_pair[0][var_group[0]].data.item()]
+        val = compute(data_values[1], data_values[0])
+
+        fig = plot_level1(data_values, val, 'SSTA std (°C)',
+                          'ENSO amplitude', dt_ls)
+
+    elif metric == '12seasonality':
+        data_values = []
+        for ds in input_pair:  # obs 0, mod 1
+            preproc = {}
+            for seas in ['NDJ', 'MAM']:
+                cube = extract_season(ds[var_group[0]], seas)
+                cube = climate_statistics(cube, operator="std_dev",
+                                          period="full")
+                preproc[seas] = cube.data
+
+            data_values.append(preproc['NDJ']/preproc['MAM'])
+
+        val = compute(data_values[1], data_values[0])
+        fig = plot_level1(data_values, val, 'SSTA std (NDJ/MAM)(°C/°C)',
+                          'ENSO seasonality', dt_ls)
+
+    elif metric == '13asymmetry':
+        model_skew = skew(input_pair[1][var_group[0]].data, axis=0)
+        obs_skew = skew(input_pair[0][var_group[0]].data, axis=0)
+        data_values = [model_skew, obs_skew]
+
+        val = compute(data_values[1], data_values[0])
+        fig = plot_level1(data_values, val, 'SSTA skewness(°C)',
+                          'ENSO skewness', dt_ls)
+
+    elif metric == '14duration':
+        model = sst_regressed(input_pair[1][var_group[0]])
+        obs = sst_regressed(input_pair[0][var_group[0]])
 
         months = np.arange(1, 73) - 36
-        # plot function, xticks, labels as dict/ls
-        fig = plot_level1((months, model_plot), (months, obs), metric_values,
-                          ['Degree C / C', f'ENSO {metric}', dt_ls])
+        counts = []
+        # Calculate the number of months where slope > 0.25
+        within_range = (months >= -30) & (months <= 30)
+        for slopes in [model, obs]:
+            slope_above_025 = slopes[within_range] > 0.25
+            counts.append(np.sum(slope_above_025))
+        val = compute(counts[1], counts[0])
 
-    elif metric == 'seasonality':
-        obs = seasonality_calc(input_pair[0][var_group[0]])
-        for dataset in input_pair[1]:
-            logger.info("%s, preprocessed cubes:%s, dataset:%s",
-                        metric, len(input_pair[1]), dataset)
-
-            model_datasets = {attr['variable_group']:
-                              iris.load_cube(attr['filename'])
-                              for attr in input_pair[1][dataset]}
-            model = seasonality_calc(model_datasets[var_group[0]])
-
-            val = abs((model - obs) / obs) * 100
-            metric_values.append((dataset, val))
-            model_plot.append(model)
-        # to change: plot line for all models over year
-        # climate_statistics(cube, operator="std_dev", period="monthly")
-        fig = plot_level1(model_plot, obs, metric_values,
-                          ['SSTA std (NDJ/MAM)(°C/°C)',
-                           f'ENSO {metric}', dt_ls])
-
-    return metric_values, fig
-
-
-def compute_telecon_metrics(input_pair, var_group, metric):
-    """Compute teleconnections."""
-    title = '{} SST Teleconnection'
-    if metric == 'pr_telecon':
-        title = '{} PR Teleconnection'  # both seasons
-
-    val, fig = {}, {}
-    for seas in ['DJF', 'JJA']:
+        fig = plot_level1(counts, val, 'Duration (reg > 0.25) (months)',
+                          'ENSO duration', dt_ls)
+    elif metric == '15diversity':
         data_values = []
-        cubes = {}
-        for label, dataset in input_pair.items():  # obs 0, mod 1
-            preproc = {}
-            for variable in var_group:
-                cube = extract_season(dataset[variable].copy(), seas)
-                preproc[variable] = anomalies(cube, period="full")
+        for ds in input_pair:  # obs first
+            events = enso_events(ds[var_group[0]])
+            results_lon = diversity(ds[var_group[1]], events)
+            results_lon['enso'] = results_lon['nino'] + results_lon['nina']
+            logger.info(f"{dt_ls}, enso IQR: {iqr(results_lon['enso'])}")
+            data_values.append(iqr(results_lon['enso']))
 
-            regcube = lin_regress_matrix(preproc[var_group[1]],
-                                         preproc[var_group[0]])
-            regcube = mask_pacific(regcube)
-
-            data_values.append(regcube.data)
-            cubes[label] = regcube
-
-        val[seas] = np.sqrt(np.mean((data_values[0] - data_values[1]) ** 2))
-        fig[seas] = plot_map1(cubes, val[seas], title.format(seas))
+        val = compute(data_values[1], data_values[0])
+        fig = plot_level1(data_values, val, 'IQR of min/max SSTA(°long)',
+                          'ENSO diversity', dt_ls)
 
     return val, fig
 
 
-def seasonality_calc(dset_cube):
-    """Calculate seasonality for dataset."""
-    preproc = {}
-    for seas in ['NDJ', 'MAM']:
-        cube = extract_season(dset_cube, seas)
-        cube = climate_statistics(cube, operator="std_dev",
-                                  period="full")
-        preproc[seas] = cube.data
-
-    return preproc['NDJ'] / preproc['MAM']
+def mask_to_years(events):    # build time with mask
+    maskedtime = np.ma.masked_array(events.coord('time').points,
+                                    mask=events.data.mask)
+    # return years
+    return [events.coord('time').units.num2date(time).year
+            for time in maskedtime.compressed()]
 
 
-def mask_pacific(cube):
-    """Mask pacific region from cube."""
-    region = box(130., -15., 270., 15)  # to do: remove land
-    x_p, y_p = np.meshgrid(
-        cube.coord(axis="X").points,
-        cube.coord(axis="Y").points,
-    )
-
-    mask = shp_vect.contains(region, x_p, y_p)
-    cube.data.mask = mask
-    return cube
+def enso_events(cube):
+    a_events = mask_to_years(mask_above_threshold(cube.copy(), -0.75))
+    o_events = mask_to_years(mask_below_threshold(cube.copy(), 0.75))
+    return {'nina': a_events, 'nino': o_events}
 
 
-def get_prov_rec(caption, plot_type, ancestor_files):
+def diversity(ssta_cube, events_dict):
+
+    res_lon = {}
+    for enso, events in events_dict.items():
+        year_enso = iris.Constraint(time=lambda cell:
+                                    cell.point.year in events)
+        cube = ssta_cube.extract(year_enso)
+        if enso == 'nina':
+            cube = cube * -1
+        # iterate through cube, each time get max/min value and return lon
+        loc_ls = []
+        for yr_slice in cube.slices(['longitude']):
+            indx = np.argmax(yr_slice.data)
+            loc_ls.append(cube.coord('longitude').points[indx])
+
+        res_lon[enso] = loc_ls
+    return res_lon
+
+
+def iqr(data):
+    q3, q1 = np.percentile(data, [75, 25])
+    iqr = q3 - q1
+    return iqr
+
+
+def format_lon(x, pos):
+    if x > 180:
+        return f'{int(360 - x)}°W'
+    elif x == 180:
+        return f'{int(x)}°'
+    else:
+        return f'{int(x)}°E'
+
+
+def compute(obs, mod):
+    return abs((mod-obs)/obs)*100
+
+
+def get_provenance_record(caption, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
+
     record = {
         'caption': caption,
         'statistics': ['anomaly'],
         'domains': ['eq'],
-        'plot_types': [plot_type],
+        'plot_types': ['line'],
         'authors': [
             'chun_felicity',
-            # 'beucher_romain',
+            'beucher_romain',
             # 'sullivan_arnold',
         ],
         'references': [
@@ -301,17 +280,21 @@ def get_prov_rec(caption, plot_type, ancestor_files):
 
 def main(cfg):
     """Run ENSO metrics."""
+
     input_data = cfg['input_data'].values()
 
-    # iterate through each metric and get variable group preprocessed data
-    metrics = {'lifecycle': ['tos_lifdur1'],
-               'seasonality': ['tos_seas_asym'],
-               'pr_telecon': ['tos_enso', 'pr_global'],
-               'ts_telecon': ['tos_enso', 'tos_global']}
+    # iterate through each metric and get variable group, select_metadata
+    metrics = {'09pattern': ['tos_patdiv1', 'tos_pat2'],
+               '10lifecycle': ['tos_lifdur1'],  # 'tos_lifdurdiv2' for lev2
+               '11amplitude': ['tos_amp'],
+               '12seasonality': ['tos_seas_asym'],
+               '13asymmetry': ['tos_seas_asym'],
+               '14duration': ['tos_lifdur1'],  # ,'tos_lifdurdiv2'
+               '15diversity': ['tos_patdiv1', 'tos_lifdurdiv2']}
 
     # select twice with project to get obs, iterate through model selection
     for metric, var_preproc in metrics.items():
-        logger.info("Metric: %s, group: %s", metric, var_preproc)
+        logger.info("{},{}", metric, var_preproc)
         obs, models = [], []
         for var_prep in var_preproc:
             obs += select_metadata(input_data, variable_group=var_prep,
@@ -321,67 +304,42 @@ def main(cfg):
             models += select_metadata(input_data, variable_group=var_prep,
                                       project='CMIP6')
 
-        msg = f"{metric}: observation datasets {len(obs)},"
-        msg += f"models {pformat(models)}"
-        logger.info(msg)
-
+        dt_files = []
+        for ds in models:
+            dt_files.append(ds['filename'])
+        prov_record = get_provenance_record(f'ENSO metrics {metric}', dt_files)
         # obs datasets for each model
-        obs_datasets = {datas['variable_group']:
-                        iris.load_cube(datas['filename']) for datas in obs}
+        obs_datasets = {dataset['variable_group']:
+                        iris.load_cube(dataset['filename'])
+                        for dataset in obs}
 
         # group models by dataset
         model_ds = group_metadata(models, 'dataset', sort='project')
 
-        if metric.endswith('telecon'):
-            for dataset, ds_ls in model_ds.items():
-                logger.info("%s, preprocessed cubes:%d, dataset:%s",
-                            metric, len(model_ds), dataset)
-                dt_files = [ds['filename']
-                            for ds in obs] + [ds['filename']
-                                              for ds in ds_ls]
+        for dataset in model_ds:
+            logger.info("{}, preprocessed cubes:{}, dataset:{}",
+                        metric, len(model_ds), dataset)
 
-                model_datasets = {attributes['variable_group']:
-                                  iris.load_cube(attributes['filename'])
-                                  for attributes in ds_ls}
-                input_pair = {obs[0]['dataset']: obs_datasets,
-                              dataset: model_datasets}
+            model_datasets = {attr['variable_group']:
+                              iris.load_cube(attr['filename'])
+                              for attr in model_ds[dataset]}
+            input_pair = [obs_datasets, model_datasets]
+            logger.info(pformat(model_datasets))
 
-                values, fig = compute_telecon_metrics(input_pair,
-                                                      var_preproc, metric)
+            value, fig = compute_enso_metrics(input_pair,
+                                              [dataset, obs[0]['dataset']],
+                                              var_preproc, metric)
 
-                # save metric for each pair
-                for seas, val in values.items():
-                    metricfile = get_diagnostic_filename('matrix', cfg,
-                                                         extension='csv')
-                    with open(metricfile, 'a+', encoding='utf-8') as csvfile:
-                        csvfile.write(f"{dataset},{seas}_{metric},{val}\n")
+            if value:
+                metricfile = get_diagnostic_filename('matrix', cfg,
+                                                     extension='csv')
+                with open(metricfile, 'a+') as f:
+                    f.write(f"{dataset},{metric},{value}\n")
 
-                    prov_record = get_prov_rec(f'ENSO {seas} {metric}',
-                                               'map', dt_files)
-                    save_figure(f'{dataset}_{seas}_{metric}', prov_record, cfg,
-                                figure=fig[seas], dpi=300)
-
-        else:
-            in_pair = [obs_datasets, model_ds]
-
-            dt_files = [datas['filename'] for datas in obs]
-            for dset in models:
-                dt_files.append(dset['filename'])
-            prov_record = get_prov_rec(f'ENSO metrics {metric}',
-                                       'line', dt_files)
-
-            # process function for each metric
-            values, fig = compute_enso_metrics(in_pair, obs[0]['dataset'],
-                                               var_preproc, metric)
-            save_figure(metric, prov_record, cfg,
-                        figure=fig, dpi=300)
-
-            # save metric for each pair, check not none
-            metricfile = get_diagnostic_filename('matrix', cfg,
-                                                 extension='csv')
-            with open(metricfile, 'a+', encoding='utf-8') as csvfile:
-                for dataset, value in values:
-                    csvfile.write(f"{dataset},{metric},{value}\n")
+                save_figure(f'{dataset}_{metric}', prov_record,
+                            cfg, figure=fig, dpi=300)
+            # clear value,fig
+            value = None
 
 
 if __name__ == '__main__':

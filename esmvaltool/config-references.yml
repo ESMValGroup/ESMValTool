@@ -117,6 +117,11 @@ authors:
     name: Bellprat, Omar
     institute: BSC, Spain
     orcid: https://orcid.org/0000-0001-6434-1793
+  beucher_romain:
+    name: Beucher, Romain
+    institute: ACCESS-NRI, Australia
+    orcid: https://orcid.org/0000-0003-3891-5444
+    github: rbeucher
   berg_peter:
     name: Berg, Peter
     institute: SMHI, Sweden
