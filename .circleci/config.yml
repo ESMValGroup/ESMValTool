@@ -88,7 +88,6 @@ commands:
           name: Install dependencies
           command: |
             # Install
-            set -x
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
             mamba --version
@@ -98,6 +97,7 @@ commands:
             mamba list >> /logs/conda.txt
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
             curl -fsSL https://install.julialang.org | sh -s -- --yes
+            export julia=/root/.juliaup/bin/julia
             julia --version
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             if [[ "<<parameters.flags>>" != *'--editable'* ]]
