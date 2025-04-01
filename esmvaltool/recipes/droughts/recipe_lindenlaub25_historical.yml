@@ -45,8 +45,8 @@ CMIP6_DATA_LMON: &cmip6_data_lmon
   - {<<: *cmip_default, mip: Lmon, dataset: CNRM-CM6-1,        institute: CNRM-CERFACS,    ensemble: r1i1p1f2, grid: gr}   # pet works 3x3
   - {<<: *cmip_default, mip: Lmon, dataset: EC-Earth3-Veg-LR,  institute: EC-Earth-Consortium, grid: gr}
   - {<<: *cmip_default, mip: Lmon, dataset: FGOALS-g3,         institute: CAS              }   # latitude as auxilary (not monotonic)
-  - {<<: *cmip_default, mip: Lmon, dataset: FIO-ESM-2-0,       institute: FIO-QLNM         }
-  - {<<: *cmip_default, mip: Lmon, dataset: GFDL-ESM4 ,        institute: NOAA-GFDL,       grid: gr1}
+  # - {<<: *cmip_default, mip: Lmon, dataset: FIO-ESM-2-0,       institute: FIO-QLNM         }  # lat not monotonic cmorchecker
+  # - {<<: *cmip_default, mip: Lmon, dataset: GFDL-ESM4 ,        institute: NOAA-GFDL,       grid: gr1}  # sdepth1 does not exist cmorchecker
   - {<<: *cmip_default, mip: Lmon, dataset: GISS-E2-1-G,       institute: NASA-GISS,       ensemble: r1i1p1f2}
   - {<<: *cmip_default, mip: Lmon, dataset: IPSL-CM6A-LR,      institute: IPSL,            grid: gr}
   - {<<: *cmip_default, mip: Lmon, dataset: KACE-1-0-G,        institute: NIMS-KMA,        grid: gr}
@@ -61,7 +61,7 @@ CMIP6_DATA: &cmip6_data
   - {<<: *cmip_default, dataset: AWI-CM-1-1-MR}
   - {<<: *cmip_default, dataset: BCC-CSM2-MR,       institute: BCC}
   - {<<: *cmip_default, dataset: CanESM5,           institute: CCCma}
-  - {<<: *cmip_default, dataset: CAS-ESM2-0,        institute: CAS}
+  # - {<<: *cmip_default, dataset: CAS-ESM2-0,        institute: CAS}  why not in our list of models?
   - {<<: *cmip_default, dataset: CMCC-ESM2}   # retry other ds name
   - {<<: *cmip_default, dataset: CNRM-CM6-1,        ensemble: r1i1p1f2,             grid: gr}   # pet works 3x3
   - {<<: *cmip_default, dataset: EC-Earth3-Veg-LR,  institute: EC-Earth-Consortium, grid: gr}
@@ -75,9 +75,8 @@ CMIP6_DATA: &cmip6_data
   - {<<: *cmip_default, dataset: KACE-1-0-G,        grid: gr}
   - {<<: *cmip_default, dataset: MIROC6,            institute: MIROC,               grid: gn}  # works as single source
   - {<<: *cmip_default, dataset: MPI-ESM1-2-LR,     institute: MPI-M,               grid: gn}
-  - {<<: *cmip_default, dataset: MRI-ESM2-0,        institute: MRI}  # also calendar issues.. but works solo
-  - {<<: *cmip_default, dataset: UKESM1-0-LL,       ensemble: r1i1p1f2}  # pet works 3x3
-
+  - {<<: *cmip_default, dataset: MRI-ESM2-0,        institute: MRI}
+  - {<<: *cmip_default, dataset: UKESM1-0-LL,       ensemble: r1i1p1f2}
 
 ERA5: &era5
   dataset: ERA5
@@ -115,7 +114,7 @@ CDS: &cds
   split: REF2
   tier: 3
   version: COMBINED
-  start_year: 1979
+  start_year: 1980
   end_year: 2014
   reference_for_metric: true
 
@@ -168,7 +167,6 @@ diagnostics:
         additional_datasets: *cmip6_data
       tasmax: *pet_default
       sfcWind: *pet_default
-      # clt: *pet_default
       rsds: *pet_default
       ps: *pet_default
       pr:
@@ -205,7 +203,6 @@ diagnostics:
           - <<: *era5
       tasmax: *pet_default_obs
       sfcWind: *pet_default_obs
-      # clt: *pet_default_obs
       rsds: *pet_default_obs
       ps: *pet_default_obs
       pr:
@@ -214,7 +211,8 @@ diagnostics:
     scripts:
       pet_pm:
         script: droughts/pet.R
-        pet_type: "Penman"  # "Penman_clt"
+        pet_type: "Penman"
+        method: ICID
 
   validate_obs:
     variables:
@@ -222,7 +220,7 @@ diagnostics:
         additional_datasets:
         - <<: *era5
           mip: Lmon
-          start_year: 1979
+          start_year: 1980
           end_year: 2014
         - <<: *cds
           mip: Lmon
@@ -231,7 +229,6 @@ diagnostics:
         additional_datasets:
           - <<: *cru
       tasmax: *add_cru
-      # clt: *add_cru
       evspsblpot:
         preprocessor: perday
         additional_datasets:
@@ -243,6 +240,11 @@ diagnostics:
     scripts:
       diffmaps:
         script: droughts/diffmap.py
+        metrics: ["total", "diff"]
+        plot_models: True
+        save_models: True
+        plot_mmm: False
+        save_mmm: False
         ancestors:
             - pet_obs/pr
             - pet_obs/tasmin
@@ -260,28 +262,26 @@ diagnostics:
   validate_models: &validate_models
     # additional_datasets: *cmip6_data
     variables:
-      # tasmin: &var_default_historical
-      #   <<: *var_default
-      #   <<: *obs_period
-      #   exp: ["historical"]
-      #   additional_datasets: *cmip6_data
-      # tasmax:
-      #   <<: *var_default_historical
+      tasmin: &var_default_historical
+        <<: *var_default
+        <<: *obs_period
+        exp: ["historical"]
+        additional_datasets: *cmip6_data
+      tasmax: *var_default_historical
+      sfcWind: *var_default_historical
+      ps: *var_default_historical
+      rsds: *var_default_historical
       sm:
         <<: *var_default
         mip: Lmon
-        start_year: 1979
+        start_year: 1980
         end_year: 2014
         derive: true
         exp: ["historical"]
         additional_datasets: *cmip6_data_lmon
-      # sfcWind:
-      #   <<: *var_default_historical
-      # ps:
-      #   <<: *var_default_historical
-      # pr:
-      #   <<: *var_default_historical
-      #   preprocessor: perday
+      pr:
+        <<: *var_default_historical
+        preprocessor: perday
     scripts:
       diffmaps:
         script: droughts/diffmap.py
@@ -289,6 +289,7 @@ diagnostics:
         save_models: True
         plot_mmm: True
         save_mmm: True
+        metrics: ["total", "diff"]
         ancestors:
           - pet_historical/pr
           - pet_historical/tasmin
@@ -318,7 +319,8 @@ diagnostics:
           - validate_models/diffmaps
           - validate_obs/diffmaps
       perfmetric:
-        script: portrait_plot.py
+        # TODO: check if general portrait plot is possible to
+        script: droughts/portrait_plot.py
         distance_metric: rmse
         nan_color: null
         y_labels:

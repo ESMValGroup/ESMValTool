@@ -194,7 +194,7 @@ def fill_era5_gap(meta: dict, cube: Cube) -> None:
     if (
         meta["dataset"] == "ERA5"
         and meta["short_name"] == "evspsblpot"
-        and len(cube.data[0]) == 360
+        and len(cube.data[0]) == 360  # noqa: PLR2004
     ):
         cube.data[:, 359] = cube.data[:, 0]
 
@@ -287,7 +287,7 @@ def calculate_diff(cfg, meta, mm_data, output_meta, group) -> None:
             cube, cfg["start_year"], 1, 1, cfg["end_year"], 12, 31
         )
     dtime = cfg["comparison_period"] * 12
-    cubes = {}
+    cubes: dict[Cube] = {}
     cubes["total"] = cube.collapsed("time", MEAN)
     do_metrics = cfg.get("metrics", METRICS)
     norm = (
@@ -340,14 +340,10 @@ def calculate_mmm(cfg, meta, mm_data, output_meta, group) -> None:
         meta = meta.copy()  # don't modify meta in place:
         meta["diffmap_metric"] = metric
         basename = cfg["basename"].format(**meta)
-        drop = cfg.get("dropcoords", ["time", "height", "realization"])
-        # TODO: use pp mean and stdv instead of iris?
-        mmm, _ = ut.mmm(
-            mm_data[metric],
-            dropcoords=drop,
-            dropmethods=metric != "diff",
-            mdtol=cfg.get("mdtol", 0.3),
+        results = pp.multi_model_statistics(
+            mm_data[metric], "overlap", ["mean"], ignore_scalar_coords=True
         )
+        mmm = results["mean"]
         meta["title"] = f"Multi-model Mean ({cfg['titles'][metric]})"
         if cfg.get("plot_mmm", True):
             plot_kwargs = cfg.get("plot_kwargs", {}).copy()
@@ -366,8 +362,8 @@ def calculate_mmm(cfg, meta, mm_data, output_meta, group) -> None:
 
 def set_defaults(cfg: dict) -> None:
     """Update cfg with default values from diffmap.yml in place."""
-    config_fpath = os.path.realpath(__file__)[:-3] + ".yml"
-    with open(config_fpath, encoding="utf-8") as config_file:
+    config_fpath = Path(__file__).with_suffix(".yml")
+    with config_fpath.open() as config_file:
         defaults = yaml.safe_load(config_file)
     for key, val in defaults.items():
         cfg.setdefault(key, val)
@@ -409,7 +405,15 @@ def main(cfg) -> None:
         do_mmm = cfg.get("plot_mmm", True) or cfg.get("save_mmm", True)
         if do_mmm and len(g_metas) > 1:
             # copy meta from first dataset and add all ancestors
-            meta = ut.get_common_meta(g_metas)
+            keep_keys = [
+                "short_name",
+                "long_name",
+                "units",
+                "start_year",
+                "end_year",
+                "exp",
+            ]
+            meta = {k: g_metas[0][k] for k in keep_keys}
             meta["ancestors"] = [met["filename"] for met in g_metas]
             meta["dataset"] = "MMM"
             calculate_mmm(cfg, meta, mm_data, output, group)

@@ -9,9 +9,15 @@ X and Y axis, grouping parameter and slits for each rectangle can be
 configured in the recipe. All *_by parameters can be set to any metadata
 key. To split by 'reference' this key needs to be set as extra_facet in recipe.
 
+NOTE: this is not the original portrait_plot, but a modified version for drought
+diagnostics. Check if its possible to use the original portrait plot before
+adding this one to the ESMValTool.
+
+TODO: prov (if we wanna use this in public code)
+
 Author
 ------
-Lukas Ruhe (Universität Bremen, Germany)
+Lukas Lindenlaub (Universität Bremen, Germany)
 Diego Cammarano
 
 Configuration parameters through recipe:

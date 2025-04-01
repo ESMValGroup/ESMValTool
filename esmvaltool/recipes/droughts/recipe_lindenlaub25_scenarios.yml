@@ -21,8 +21,8 @@ documentation:
 
 GRID: &grid
   # target_grid: 0.25x0.25
-  target_grid: 3x3
-  # target_grid: 1x1  # might require a lot of memory (limit parallel tasks)
+  # target_grid: 1x1
+  target_grid: 1x1  # might require a lot of memory (limit parallel tasks)
 
 
 # longest period for CMIP6 only analysis
@@ -54,39 +54,39 @@ CMIP_DEFAULT: &cmip_default
 CMIP6_DATA_LMON: &cmip6_data_lmon  # no awi or inm
   - {<<: *cmip_default, mip: Lmon, dataset: ACCESS-CM2,        institute: CSIRO-ARCCSS     }
   - {<<: *cmip_default, mip: Lmon, dataset: BCC-CSM2-MR,       institute: BCC              }
-  # - {<<: *cmip_default, mip: Lmon, dataset: CanESM5,           institute: CCCma            }
-  # - {<<: *cmip_default, mip: Lmon, dataset: CMCC-ESM2,         institute: CMCC             }   # retry other ds name
-  # - {<<: *cmip_default, mip: Lmon, dataset: CNRM-CM6-1,        institute: CNRM-CERFACS,    ensemble: r1i1p1f2, grid: gr}   # pet works 3x3
-  # - {<<: *cmip_default, mip: Lmon, dataset: EC-Earth3-Veg-LR,  institute: EC-Earth-Consortium, grid: gr}
-  # - {<<: *cmip_default, mip: Lmon, dataset: FGOALS-g3,         institute: CAS              }   # latitude as auxilary (not monotonic)
-  # - {<<: *cmip_default, mip: Lmon, dataset: GISS-E2-1-G,       institute: NASA-GISS,       ensemble: r1i1p1f2}
-  # - {<<: *cmip_default, mip: Lmon, dataset: IPSL-CM6A-LR,      institute: IPSL,            grid: gr}
-  # - {<<: *cmip_default, mip: Lmon, dataset: KACE-1-0-G,        institute: NIMS-KMA,        grid: gr}
-  # - {<<: *cmip_default, mip: Lmon, dataset: MIROC6,            institute: MIROC,           grid: gn}  # works as single source
-  # - {<<: *cmip_default, mip: Lmon, dataset: MPI-ESM1-2-LR,     institute: MPI-M,           grid: gn}
-  # - {<<: *cmip_default, mip: Lmon, dataset: MRI-ESM2-0,        institute: MRI              }  # also calendar issues.. but works solo
-  # - {<<: *cmip_default, mip: Lmon, dataset: UKESM1-0-LL,       institute: MOHC,            ensemble: r1i1p1f2          }  # pet works 3x3
+  - {<<: *cmip_default, mip: Lmon, dataset: CanESM5,           institute: CCCma            }
+  - {<<: *cmip_default, mip: Lmon, dataset: CMCC-ESM2,         institute: CMCC             }   # retry other ds name
+  - {<<: *cmip_default, mip: Lmon, dataset: CNRM-CM6-1,        institute: CNRM-CERFACS,    ensemble: r1i1p1f2, grid: gr}   # pet works 3x3
+  - {<<: *cmip_default, mip: Lmon, dataset: EC-Earth3-Veg-LR,  institute: EC-Earth-Consortium, grid: gr}
+  - {<<: *cmip_default, mip: Lmon, dataset: FGOALS-g3,         institute: CAS              }   # latitude as auxilary (not monotonic)
+  - {<<: *cmip_default, mip: Lmon, dataset: GISS-E2-1-G,       institute: NASA-GISS,       ensemble: r1i1p1f2}
+  - {<<: *cmip_default, mip: Lmon, dataset: IPSL-CM6A-LR,      institute: IPSL,            grid: gr}
+  - {<<: *cmip_default, mip: Lmon, dataset: KACE-1-0-G,        institute: NIMS-KMA,        grid: gr}
+  - {<<: *cmip_default, mip: Lmon, dataset: MIROC6,            institute: MIROC,           grid: gn}  # works as single source
+  - {<<: *cmip_default, mip: Lmon, dataset: MPI-ESM1-2-LR,     institute: MPI-M,           grid: gn}
+  - {<<: *cmip_default, mip: Lmon, dataset: MRI-ESM2-0,        institute: MRI              }  # also calendar issues.. but works solo
+  - {<<: *cmip_default, mip: Lmon, dataset: UKESM1-0-LL,       institute: MOHC,            ensemble: r1i1p1f2          }  # pet works 3x3
 
 
 CMIP6_DATA: &cmip6_data
   - {<<: *cmip_default, dataset: ACCESS-CM2,        institute: CSIRO-ARCCSS     }
   - {<<: *cmip_default, dataset: AWI-CM-1-1-MR,     institute: AWI              }
   - {<<: *cmip_default, dataset: BCC-CSM2-MR,       institute: BCC              }
-  # - {<<: *cmip_default, dataset: CanESM5,           institute: CCCma            }
-  # - {<<: *cmip_default, dataset: CMCC-ESM2,         institute: CMCC             }   # retry other ds name
-  # - {<<: *cmip_default, dataset: CNRM-CM6-1,        institute: CNRM-CERFACS,    ensemble: r1i1p1f2, grid: gr}   # pet works 3x3
-  # - {<<: *cmip_default, dataset: EC-Earth3-Veg-LR,  institute: EC-Earth-Consortium, grid: gr}
-  # - {<<: *cmip_default, dataset: FGOALS-g3,         institute: CAS              }   # latitude as auxilary (not monotonic)
-  # - {<<: *cmip_default, dataset: FIO-ESM-2-0,       institute: FIO-QLNM         }
-  # - {<<: *cmip_default, dataset: GFDL-ESM4 ,        institute: NOAA-GFDL,       grid: gr1}
-  # - {<<: *cmip_default, dataset: GISS-E2-1-G,       institute: NASA-GISS,       ensemble: r1i1p1f2}
-  # - {<<: *cmip_default, dataset: INM-CM5-0,         institute: INM,             grid: gr1}  # no mrsos? works for pr/tas
-  # - {<<: *cmip_default, dataset: IPSL-CM6A-LR,      institute: IPSL,            grid: gr}
-  # - {<<: *cmip_default, dataset: KACE-1-0-G,        institute: NIMS-KMA,        grid: gr}
-  # - {<<: *cmip_default, dataset: MIROC6,            institute: MIROC,           grid: gn}  # works as single source
-  # - {<<: *cmip_default, dataset: MPI-ESM1-2-LR,     institute: MPI-M,           grid: gn}
-  # - {<<: *cmip_default, dataset: MRI-ESM2-0,        institute: MRI              }  # also calendar issues.. but works solo
-  # - {<<: *cmip_default, dataset: UKESM1-0-LL,       institute: MOHC,            ensemble: r1i1p1f2          }  # pet works 3x3
+  - {<<: *cmip_default, dataset: CanESM5,           institute: CCCma            }
+  - {<<: *cmip_default, dataset: CMCC-ESM2,         institute: CMCC             }   # retry other ds name
+  - {<<: *cmip_default, dataset: CNRM-CM6-1,        institute: CNRM-CERFACS,    ensemble: r1i1p1f2, grid: gr}   # pet works 3x3
+  - {<<: *cmip_default, dataset: EC-Earth3-Veg-LR,  institute: EC-Earth-Consortium, grid: gr}
+  - {<<: *cmip_default, dataset: FGOALS-g3,         institute: CAS              }   # latitude as auxilary (not monotonic)
+  - {<<: *cmip_default, dataset: FIO-ESM-2-0,       institute: FIO-QLNM         }
+  - {<<: *cmip_default, dataset: GFDL-ESM4 ,        institute: NOAA-GFDL,       grid: gr1}
+  - {<<: *cmip_default, dataset: GISS-E2-1-G,       institute: NASA-GISS,       ensemble: r1i1p1f2}
+  - {<<: *cmip_default, dataset: INM-CM5-0,         institute: INM,             grid: gr1}  # no mrsos? works for pr/tas
+  - {<<: *cmip_default, dataset: IPSL-CM6A-LR,      institute: IPSL,            grid: gr}
+  - {<<: *cmip_default, dataset: KACE-1-0-G,        institute: NIMS-KMA,        grid: gr}
+  - {<<: *cmip_default, dataset: MIROC6,            institute: MIROC,           grid: gn}  # works as single source
+  - {<<: *cmip_default, dataset: MPI-ESM1-2-LR,     institute: MPI-M,           grid: gn}
+  - {<<: *cmip_default, dataset: MRI-ESM2-0,        institute: MRI              }  # also calendar issues.. but works solo
+  - {<<: *cmip_default, dataset: UKESM1-0-LL,       institute: MOHC,            ensemble: r1i1p1f2          }  # pet works 3x3
 
 
 
@@ -349,7 +349,7 @@ diagnostics:
       #   ancestors: ["wb_ssp585/wb"]
   event_area:
     scripts:
-      ssps:
+      ssps: &event_area_global
         subplots: True
         figsize: [9, 1.3]
         yticks: [0, 0.2, 0.4, 0.6, 0.8, 1]
@@ -367,11 +367,14 @@ diagnostics:
         interval: 240
         latest_legend: true
         plot_models: False
-        index: spei
+        index: SPEI
         plot_kwargs:
           baseline: "zero"
         shapefile: ar6_regions/IPCC-WGI-reference-regions-v4.shp
         # regions: ['WCE']
+      ssps_harvest:
+        <<: *event_area_global
+        regions: []
   regions: &regions
     scripts:
       spei_ssp585:
@@ -445,10 +448,16 @@ diagnostics:
         plot_models: False
         strip_plots: True
         save_mm: True
-        reuse_mm: True
+        reuse_mm: False
+        subplots: True
         smooth: True
-        figsize: [9, 2]
-        y_labels:
+        figsize: [10.5, 1.5]
+        legend:
+          ssp126: "SSP1-2.6"
+          ssp245: "SSP2-4.5"
+          ssp585: "SSP5-8.5"
+          historical: "Historical"
+        ylabels:
           pr: $PR$ [mm/day]
           evspsblpot: $ET_0$ [mm/day]
           spei: $SPEI$

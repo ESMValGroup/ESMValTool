@@ -14,7 +14,7 @@ combined_split_years: int, optional (default: 65)
     is only plotted once.
 plot_properties: dict, optional
     Additional properties to set on the plot. Passed to ax.set().
-figsize: tuple, optional (default: (9, 2))
+figsize: tuple, optional (default: (10.5, 1.5))
 reuse_mm: bool, optional (default: False)
 subplots: bool, optional (default: False)
     Plot all time series as subplots in one figure with shared x-axis.
@@ -160,8 +160,6 @@ def plot_models(cfg, metas, ax, smooth=False) -> None:
         if recalc and cfg.get("save_mm", True):
             iris.save(mm["mean"], fname + "_mean.nc")
             iris.save(mm["std_dev"], fname + "_stddev.nc")
-        # convert_units(mean)
-        # convert_units(std_dev)
 
         if experiment.startswith("historical-"):
             experiment = experiment.split("-")[1]
@@ -194,7 +192,6 @@ def plot_obs(cfg, metas, ax, smooth=False) -> None:
         if smooth:
             cube = yearly_average(cube)
         mean = global_mean(cfg, cube)
-        # convert_units(mean)
         time = mean.coord("time")
         iplt.plot(time, mean, linestyle="--", label=meta["dataset"], axes=ax)
 

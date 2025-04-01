@@ -354,13 +354,13 @@ def daily_to_monthly(
     cube.units = units
 
 
-def _get_data_hlp(axis, data, ilat, ilon):
+def _get_data_hlp(axis, data, ilat, ilon) -> np.ndarray:
     """Get data_help dependend on axis."""
     if axis == 0:
         data_help = (data[:, ilat, ilon])[:, 0]
     elif axis == 1:
         data_help = (data[ilat, :, ilon])[:, 0]
-    elif axis == 2:
+    elif axis == 2:  # noqa: PLR2004
         data_help = data[ilat, ilon, :]
     else:
         data_help = None
@@ -701,7 +701,7 @@ def select_meta_from_combi(meta: list, combi: dict, groups: dict) -> tuple:
 def _compare_dicts(dict1, dict2, sort) -> bool:
     if dict1.kyes() != dict2.keys():
         return False
-    return all(_compare_values(dict1[key], dict2[key], sort) for key in dict1)
+    return all(_compare_values(dict1[key], dict2.get(key), sort) for key in dict1)
 
 
 def _compare_values(val1, val2, sort) -> bool:
@@ -733,7 +733,7 @@ def get_common_meta(metas: list, *, sort: bool = False) -> dict:
     """
     common = {}
     for key in metas[0]:
-        if all(_compare_values(metas[0][key], m[key], sort) for m in metas):
+        if all(_compare_values(metas[0][key], m.get(key), sort) for m in metas):
             common[key] = metas[0][key]
     return common
 

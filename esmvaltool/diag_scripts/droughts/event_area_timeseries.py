@@ -1,4 +1,3 @@
-#!/usr/bin/env  python
 """Calculate and plot relative area of drought events.
 
 Creates timeseries of the spatial extend of all drought events. Different types
@@ -61,11 +60,12 @@ import xarray as xr
 import yaml
 from esmvalcore import preprocessor as pp
 from iris.analysis.cartography import area_weights
+from iris.cube import Cube
 from matplotlib import gridspec
 from matplotlib.dates import DateFormatter, YearLocator  # MonthLocator
 from numpy import ma
 
-import esmvaltool.diag_scripts.droughtindex.utils as ut
+import esmvaltool.diag_scripts.droughts.utils as ut
 from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
     get_plot_filename,
@@ -76,7 +76,7 @@ from esmvaltool.diag_scripts.shared import (
 log = logging.getLogger(__file__)
 
 
-def load_and_prepare(cfg, fname):
+def load_and_prepare(cfg, fname) -> Cube:
     """Apply mask and guess lat/lon bounds."""
     cube = iris.load_cube(fname)
     ut.guess_lat_lon_bounds(cube)
@@ -88,7 +88,8 @@ def load_and_prepare(cfg, fname):
     return cube
 
 
-def get_intervals(cube, interval):
+def get_intervals(cube, interval) -> list:
+    """Generate a list of time intervals for plotting."""
     if interval > 0:
         months = len(cube.coord("time").points)
         steps = int(months / interval)
@@ -100,8 +101,8 @@ def get_intervals(cube, interval):
     return intervals
 
 
-def calc_ratio(cube, event, weights):
-    """Calculates a timeseries of area ratio for specific index range.
+def calc_ratio(cube, event, weights) -> np.ndarray:
+    """Calculate a timeseries of area ratio for specific index range.
 
     The fraction of area (or cells) with index values between min and max is
     calculated for each timestep. NaN values are ignored for each event.
@@ -110,7 +111,7 @@ def calc_ratio(cube, event, weights):
 
     Parameters
     ----------
-    cube : iris.cube
+    cube : iris.cube.Cube
         3D drought index, with area
     event : dict
         must contain floats or "nan" for keys: "min", "max"
@@ -129,29 +130,26 @@ def calc_ratio(cube, event, weights):
     return np.sum(event_areas, axis=(1, 2))  # collapse lat/lon
 
 
-def get_2d_mask(cube, mask_any=False, tile=False):
+def get_2d_mask(cube, mask_any=False, tile=False) -> np.ndarray:
     """Return a 2d (lat/lon) mask where any or all entries are masked.
 
     Parameters
     ----------
-    cube : iris.cube
+    cube : iris.cube.Cube
         3d cube with masked data
     mask_any: bool
         return true for any masked entrie along time dim, instead of all
     tile : bool
         return a 3d mask (matching cube) repeated along the time dim
     """
-    if mask_any:
-        mask2d = np.any(cube.data.mask, axis=0)
-    else:
-        mask2d = np.all(cube.data.mask, axis=0)
+    mask2d = np.any(cube.data.mask, axis=0) if mask_any else np.all(cube.data.mask, axis=0)
     if tile:
         mask2d = np.tile(mask2d, (cube.shape[0], 1, 1))
     return mask2d
 
 
-def plot_area_ratios(cfg, meta, cube):
-    """Plot area ratio of given event types for a cube of index values
+def plot_area_ratios(cfg, meta, cube) -> None:
+    """Plot area ratio of given event types for a cube of index values.
 
     The area weights are normalized on the masked cube data, resulting in the
     ratio between area with index values in a given range and the area of all
@@ -159,7 +157,7 @@ def plot_area_ratios(cfg, meta, cube):
 
     Parameters
     ----------
-    cube : iris.Cube
+    cube : iris.cube.Cube
         3D index values.
     interval : int
         number of months per figure. negative values disable the split.
@@ -197,40 +195,29 @@ def plot_area_ratios(cfg, meta, cube):
             plot(cfg, fname, i, y)
 
 
-def plot(cfg, i, y, fname=None, fig=None, ax=None, label=None, full=False):
+def plot(cfg, i, y, fname=None, fig=None, ax=None, label=None) -> None:
     """Plot area ratios for given interval and events.
+
     pass either fname to save single plots, or fig and ax to plot one axis into
     existing figure.
     """
-    log.debug("TIMES: %s", cfg["times"])
     if i is None:
         i = (0, len(cfg["times"]))
     t = cfg["times"][i[0] : i[1]]
-    # dt = t[1] - t[0]
-    if not fig:
+    if not fig or not ax:
         fig, ax = plt.subplots(figsize=cfg["figsize"], dpi=300)
     ax.xaxis.set_major_locator(YearLocator(5))
     ax.xaxis.set_major_formatter(DateFormatter("%Y"))
     ax.xaxis.set_minor_locator(YearLocator(1))
     ax.set_ylabel(label)
-    plot_kwargs = dict(step="mid", colors=cfg["colors"], labels=cfg["labels"])
+    plot_kwargs = {"step": "mid", "colors": cfg["colors"], "labels": cfg["labels"]}
     plot_kwargs.update(cfg.get("plot_kwargs", {}))
     ax.stackplot(t, y[:, i[0] : i[1]], **plot_kwargs)
     ax.set_ylim(*cfg["ylim"])
     ax.set(**cfg.get("axes_properties", {}))
     ax.tick_params(direction="in", which="both")
-    # ax.set_xlim(t[0]-dt.timedelta(days=20), t[-1])  # show first tick
     ax.set_xlim(t[0], t[-1])
     ax.set_xticklabels(ax.get_xticklabels(), rotation=00, ha="center")
-    print(t[0], t[-1])
-    # if cfg["interval"] > 0 and not full:
-    #     log.info("setting xlim for interval")
-    #     ax.set_xlim(t[0] - dt, t[-1])
-    #     if len(t) < cfg["interval"]:
-    #         ax.set_xlim(t[0], t[0] + cfg["interval"] * dt)
-    # else:
-    #     log.info("setting xlim for full period %s %s", t[0], t[-1])
-    #     ax.set_xlim(t[0], t[-1])
     if cfg.get("strip_plot", False):
         # standalone legend in seperate figure
         fig2, ax2 = plt.subplots(figsize=(5, 1), dpi=300)
@@ -253,7 +240,7 @@ def plot(cfg, i, y, fname=None, fig=None, ax=None, label=None, full=False):
         plt.close()
 
 
-def plot_mmm(cfg, region=None, fig=None, axs=None, label=None, meta=None):
+def plot_mmm(cfg, region=None, fig=None, axs=None, label=None, meta=None) -> None:
     """Plot multi model mean of area ratios for given interval and events."""
     if meta is None:
         meta = {}
@@ -267,16 +254,17 @@ def plot_mmm(cfg, region=None, fig=None, axs=None, label=None, meta=None):
             meta["interval"] = f"{i[0]}-{i[1]}"
             cfg["basename"].format(**meta)
             if cfg["subplots"]:
+                if axs is None:
+                    error_msg = "no axs for subplots"
+                    raise ValueError(error_msg)
                 plot(cfg, i, y, fig=fig, ax=axs[n], label=label)
-            # else:
-            #     fname = get_plot_filename(basename, cfg)
-            #     plot(cfg, i, y, fname=fname)
     if cfg.get("subplots_full", False):
         plot(cfg, i, y, fig=fig, ax=axs, label=label)
 
 
-def set_defaults(cfg):
-    """Update cfg with default values from diffmap.yml
+def set_defaults(cfg) -> None:
+    """Update cfg with default values from diffmap.yml.
+
     TODO: This could be a shared function reused in other diagnostics.
     """
     config_file = os.path.realpath(__file__)[:-3] + ".yml"
@@ -293,8 +281,9 @@ def set_defaults(cfg):
     cfg["fullperiod"].setdefault("skip", False)
 
 
-def set_timecoords(cfg):
+def set_timecoords(cfg) -> None:
     """Read time coordinate points from reference dataset and store it in cfg.
+
     This is required to ensure that all datasets have the same time axis.
     TODO: maybe new regrid_time with common calendar could replace this?
     """
@@ -310,7 +299,7 @@ def set_timecoords(cfg):
     print(cfg["times"])
 
 
-def plot_overview(cfg, data, group="unnamed"):
+def plot_overview(cfg, data, group="unnamed") -> None:
     """Prepare a figure with 1 histogrical and 3 future scenario intervals."""
     fig = plt.figure(**ut.sub_cfg(cfg, "overview", "fig_kwargs"), dpi=300)
     gs = gridspec.GridSpec(3, 2)
@@ -327,7 +316,10 @@ def plot_overview(cfg, data, group="unnamed"):
     twin.set_yticks(cfg.get("yticks", None))
     leg_ax = fig.add_subplot(gs[1:, 0])
     hist_plotted = False
-    for n, ((_exp), e_data) in enumerate(data.groupby(["exp"])):
+    # TODO: dont use reversed on "random" input order. make it explicit.
+    for n, ((_exp), e_data) in enumerate(reversed(list(data.groupby(["exp"])))):
+        print("EXP")
+        print(_exp)
         dat = e_data.squeeze()
         # pick first and last interval:
         if not hist_plotted:
@@ -381,7 +373,7 @@ def plot_overview(cfg, data, group="unnamed"):
     fig.savefig(get_plot_filename(f"overview_{cfg['index']}_MMM_{group}", cfg))
 
 
-def plot_full_periods(cfg, data):
+def plot_full_periods(cfg, data) -> None:
     """Prepare a figure with full time series for each scenario/region."""
     # setup figure with 1 row for legend and 1 for each scenario/region pair
     fig = plt.figure(**ut.sub_cfg(cfg, "fullperiod", "fig_kwargs"), dpi=300)
@@ -390,34 +382,23 @@ def plot_full_periods(cfg, data):
     leg_ax = fig.add_subplot(gs[0, 0])
     axs = []
     # loop through data slices and plot to axis
-    for n, ((exp, reg), dat) in enumerate(data.groupby(["exp", "region"])):
+    # TODO: allow for both regional and exp grouping?
+    # for n, ((exp, reg), dat) in enumerate(reversed(data.groupby(["exp", "region"]))):
+    for n, ((exp), dat) in enumerate(reversed(list(data.groupby(["exp"])))):
         ax = fig.add_subplot(gs[n + 1, 0])
         dat = dat.squeeze()
         y = dat["event_ratio"].data
         # hardcode full interval for this plot
         i = [0, None]
-        fname = get_plot_filename(f"event_area_{exp}_{reg}", cfg)
+        fname = get_plot_filename(f"event_area_{exp}", cfg)
         plot(cfg, i, y, fname=fname, fig=fig, ax=ax)
         axs.append(ax)
-        # if cfg.get("intervals", None) is None:
-        #     cfg["intervals"] = get_intervals(cube, cfg["interval"])
-        # if cfg.get("plot_models", True):
-        #     for i in cfg["intervals"]:
-        #         ftemp = f"{cube.name()}_{meta['dataset']}_{i[0]}-{i[1]}"
-        #         if "region" in meta:
-        #             ftemp += f"_{meta['region']}"
-        #         fname = get_plot_filename(ftemp, cfg)
-        #         plot(cfg, fname, i, y)
-    # for i, (exp, emetas) in enumerate(exp_metas.items()):
-    #     exp_axs = [scenario_axs[i]]
-    #     process_datasets(cfg, emetas, fig=fig, axs=exp_axs)
-
     for ax in axs:  # all plots
         ax.set_yticks(cfg.get("yticks", None))
-        ax.grid(True, which="both", linestyle="--", linewidth=0.5)
+        ax.grid(True, which="both", linestyle="--", linewidth=0.5)  # noqa: FBT003
         ax.tick_params(axis="x", which="both", top=True, bottom=True)
-        # ax.yaxis.tick_right()
         ax.tick_params(axis="y", which="both", left=True, right=True)
+        ax.set_ylabel(exp)
     for ax in axs[:-1]:  # disable xicks
         ax.set_xticklabels([])
     leg_ax.axis("off")
@@ -449,18 +430,18 @@ def plot_full_periods(cfg, data):
     fig.savefig(get_plot_filename(f"{cfg['index']}_MMM", cfg))
 
 
-def plot_each_interval(cfg, exp_metas):
+def plot_each_interval(cfg, exp_metas) -> None:
     """Create an individual figure for each interval and each scenario."""
     for _i, (_exp, emetas) in enumerate(exp_metas):
         process_datasets(cfg, emetas, fig=None, axs=None)
 
 
-def process_datasets(cfg, metas, fig=None, axs=None):
+def process_datasets(cfg, metas, fig=None, axs=None) -> None:
     """Load all models and call event area calculation for each."""
     last_meta = None
     for meta in metas:
         fname = meta["filename"]
-        if not meta["short_name"].lower() == cfg["index"]:
+        if meta["short_name"].lower() != cfg["index"]:
             log.info("Not matching index (skipped): %s", cfg["index"])
             continue
         cube = load_and_prepare(cfg, fname)
@@ -491,11 +472,9 @@ def process_datasets(cfg, metas, fig=None, axs=None):
     if cfg.get("plot_mmm", True):
         ylabel = cfg.get("ylabels", {}).get(meta["exp"], meta["exp"])
         if cfg.get("global", True) or cfg["combine_regions"]:
-            print("plotting mmm global/combined")
             plot_mmm(cfg, fig=fig, axs=axs, label=ylabel, meta=last_meta)
         else:
             for region in cfg.get("regions", [None]):
-                print("plotting mmm each region")
                 plot_mmm(
                     cfg,
                     region=region,
@@ -506,8 +485,11 @@ def process_datasets(cfg, metas, fig=None, axs=None):
                 )
 
 
-def extract_regions(cfg, cube):
-    """Extract regions and return a list of cubes."""
+def extract_regions(cfg, cube) -> dict:
+    """Extract regions and return a list of cubes.
+
+    TODO: use preproc instead
+    """
     extracted = {}
     params = {"shapefile": "ar6", "ids": {"Acronym": cfg["regions"]}}
     if cfg["regions"] and cfg["combine_regions"]:
@@ -523,7 +505,7 @@ def extract_regions(cfg, cube):
     return extracted
 
 
-def regional_weights(cfg, cube):
+def regional_weights(cfg, cube) -> np.ndarray:
     """Calculate area weights normalized to the total unmasked area."""
     # NOTE: area_weights does not apply cubes mask, normalize manually
     if cfg["weighted"]:
@@ -534,11 +516,10 @@ def regional_weights(cfg, cube):
     mask = get_2d_mask(cube, tile=True)
     weights = ma.masked_array(weights, mask=mask)
     unmasked_area = np.sum(weights) / cube.shape[0]
-    weights = weights / unmasked_area
-    return weights
+    return weights / unmasked_area
 
 
-def calculate_event_ratios(cfg, metas, output):
+def calculate_event_ratios(cfg, metas, output) -> tuple:
     """Load data and save calculated event ratio timelines."""
     # data: dataset x exp x region x event
     # data_mmm: exp x region x event
@@ -597,6 +578,7 @@ def load_event_ratios(cfg):
 
 def main(cfg):
     """Get common time coordinates, execute the diagnostic code.
+
     Loop over experiments, than datasets.
     """
     set_defaults(cfg)
