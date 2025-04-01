@@ -88,6 +88,7 @@ commands:
           name: Install dependencies
           command: |
             # Install
+            set -x
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
             mamba --version
