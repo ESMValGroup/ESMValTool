@@ -161,6 +161,11 @@ gridline_kwargs: dict, optional
     Optional keyword arguments for grid lines. By default, ``color: lightgrey,
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
     lines.
+hlines: list of dict, optional
+    Horizontal lines to show in plot. Each list element corresponds to one
+    line, and each list element should contain a dictionary with keywords
+    arguments passed to :meth:`matplotlib.axes.Axes.axhline`. Example: ``[{y:
+    0}, {y: 1, color: 'red'}].
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
@@ -194,6 +199,11 @@ gridline_kwargs: dict, optional
     Optional keyword arguments for grid lines. By default, ``color: lightgrey,
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
     lines.
+hlines: list of dict, optional
+    Horizontal lines to show in plot. Each list element corresponds to one
+    line, and each list element should contain a dictionary with keywords
+    arguments passed to :meth:`matplotlib.axes.Axes.axhline`. Example: ``[{y:
+    0}, {y: 1, color: 'red'}].
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
@@ -403,6 +413,11 @@ gridline_kwargs: dict, optional
     Optional keyword arguments for grid lines. By default, ``color: lightgrey,
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
     lines.
+hlines: list of dict, optional
+    Horizontal lines to show in plot. Each list element corresponds to one
+    line, and each list element should contain a dictionary with keywords
+    arguments passed to :meth:`matplotlib.axes.Axes.axhline`. Example: ``[{y:
+    0}, {y: 1, color: 'red'}].
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
@@ -440,6 +455,11 @@ gridline_kwargs: dict, optional
     Optional keyword arguments for grid lines. By default, ``color: lightgrey,
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
     lines.
+hlines: list of dict, optional
+    Horizontal lines to show in plot. Each list element corresponds to one
+    line, and each list element should contain a dictionary with keywords
+    arguments passed to :meth:`matplotlib.axes.Axes.axhline`. Example: ``[{y:
+    0}, {y: 1, color: 'red'}].
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
@@ -922,6 +942,7 @@ class MultiDatasets(MonitorBase):
             if plot_type == "timeseries":
                 self.plots[plot_type].setdefault("annual_mean_kwargs", {})
                 self.plots[plot_type].setdefault("gridline_kwargs", {})
+                self.plots[plot_type].setdefault("hlines", [])
                 self.plots[plot_type].setdefault("legend_kwargs", {})
                 self.plots[plot_type].setdefault("plot_kwargs", {})
                 self.plots[plot_type].setdefault("pyplot_kwargs", {})
@@ -930,6 +951,7 @@ class MultiDatasets(MonitorBase):
             elif plot_type == "benchmarking_timeseries":
                 self.plots[plot_type].setdefault("annual_mean_kwargs", {})
                 self.plots[plot_type].setdefault("gridline_kwargs", {})
+                self.plots[plot_type].setdefault("hlines", [])
                 self.plots[plot_type].setdefault("legend_kwargs", {})
                 self.plots[plot_type].setdefault("plot_kwargs", {})
                 self.plots[plot_type].setdefault("pyplot_kwargs", {})
@@ -937,24 +959,28 @@ class MultiDatasets(MonitorBase):
 
             elif plot_type == "annual_cycle":
                 self.plots[plot_type].setdefault("gridline_kwargs", {})
+                self.plots[plot_type].setdefault("hlines", [])
                 self.plots[plot_type].setdefault("legend_kwargs", {})
                 self.plots[plot_type].setdefault("plot_kwargs", {})
                 self.plots[plot_type].setdefault("pyplot_kwargs", {})
 
             elif plot_type == "benchmarking_annual_cycle":
                 self.plots[plot_type].setdefault("gridline_kwargs", {})
+                self.plots[plot_type].setdefault("hlines", [])
                 self.plots[plot_type].setdefault("legend_kwargs", {})
                 self.plots[plot_type].setdefault("plot_kwargs", {})
                 self.plots[plot_type].setdefault("pyplot_kwargs", {})
 
             elif plot_type == "diurnal_cycle":
                 self.plots[plot_type].setdefault("gridline_kwargs", {})
+                self.plots[plot_type].setdefault("hlines", [])
                 self.plots[plot_type].setdefault("legend_kwargs", {})
                 self.plots[plot_type].setdefault("plot_kwargs", {})
                 self.plots[plot_type].setdefault("pyplot_kwargs", {})
 
             elif plot_type == "benchmarking_diurnal_cycle":
                 self.plots[plot_type].setdefault("gridline_kwargs", {})
+                self.plots[plot_type].setdefault("hlines", [])
                 self.plots[plot_type].setdefault("legend_kwargs", {})
                 self.plots[plot_type].setdefault("plot_kwargs", {})
                 self.plots[plot_type].setdefault("pyplot_kwargs", {})
@@ -1073,6 +1099,7 @@ class MultiDatasets(MonitorBase):
             elif plot_type == "1d_profile":
                 self.plots[plot_type].setdefault("aspect_ratio", 1.5)
                 self.plots[plot_type].setdefault("gridline_kwargs", {})
+                self.plots[plot_type].setdefault("hlines", [])
                 self.plots[plot_type].setdefault("legend_kwargs", {})
                 self.plots[plot_type].setdefault("log_x", False)
                 self.plots[plot_type].setdefault("log_y", True)
@@ -1084,6 +1111,7 @@ class MultiDatasets(MonitorBase):
 
             elif plot_type == "variable_vs_lat":
                 self.plots[plot_type].setdefault("gridline_kwargs", {})
+                self.plots[plot_type].setdefault("hlines", [])
                 self.plots[plot_type].setdefault("legend_kwargs", {})
                 self.plots[plot_type].setdefault("plot_kwargs", {})
                 self.plots[plot_type].setdefault("pyplot_kwargs", {})
@@ -2841,6 +2869,10 @@ class MultiDatasets(MonitorBase):
                 plot_kwargs.update(annual_mean_kwargs)
                 iris.plot.plot(annual_mean_cube, **plot_kwargs)
 
+        # Plot horizontal lines
+        for hline_kwargs in self.plots[plot_type]["hlines"]:
+            axes.axhline(**hline_kwargs)
+
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
         axes.set_title(multi_dataset_facets["long_name"])
@@ -2953,6 +2985,10 @@ class MultiDatasets(MonitorBase):
             alpha=0.8,
         )
 
+        # Plot horizontal lines
+        for hline_kwargs in self.plots[plot_type]["hlines"]:
+            axes.axhline(**hline_kwargs)
+
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
         axes.set_title(multi_dataset_facets["long_name"])
@@ -3034,6 +3070,10 @@ class MultiDatasets(MonitorBase):
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs["axes"] = axes
             iris.plot.plot(cube, **plot_kwargs)
+
+        # Plot horizontal lines
+        for hline_kwargs in self.plots[plot_type]["hlines"]:
+            axes.axhline(**hline_kwargs)
 
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
@@ -3134,6 +3174,10 @@ class MultiDatasets(MonitorBase):
             alpha=0.8,
         )
 
+        # Plot horizontal lines
+        for hline_kwargs in self.plots[plot_type]["hlines"]:
+            axes.axhline(**hline_kwargs)
+
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
         axes.set_title(multi_dataset_facets["long_name"])
@@ -3212,6 +3256,10 @@ class MultiDatasets(MonitorBase):
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs["axes"] = axes
             iris.plot.plot(cube, **plot_kwargs)
+
+        # Plot horizontal lines
+        for hline_kwargs in self.plots[plot_type]["hlines"]:
+            axes.axhline(**hline_kwargs)
 
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
@@ -3312,6 +3360,10 @@ class MultiDatasets(MonitorBase):
             zorder=1,
             alpha=0.8,
         )
+
+        # Plot horizontal lines
+        for hline_kwargs in self.plots[plot_type]["hlines"]:
+            axes.axhline(**hline_kwargs)
 
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
@@ -3776,6 +3828,10 @@ class MultiDatasets(MonitorBase):
 
             iris.plot.plot(cube, **plot_kwargs)
 
+        # Plot horizontal lines
+        for hline_kwargs in self.plots[plot_type]["hlines"]:
+            axes.axhline(**hline_kwargs)
+
         # Default plot appearance
         axes.set_title(multi_dataset_facets["long_name"])
         axes.set_xlabel(
@@ -3875,6 +3931,10 @@ class MultiDatasets(MonitorBase):
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs["axes"] = axes
             iris.plot.plot(cube, **plot_kwargs)
+
+        # Plot horizontal lines
+        for hline_kwargs in self.plots[plot_type]["hlines"]:
+            axes.axhline(**hline_kwargs)
 
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
