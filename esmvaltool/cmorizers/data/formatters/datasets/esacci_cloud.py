@@ -110,7 +110,7 @@ def _extract_variable_daily(short_name, var, cfg, in_dir, out_dir, start_date,
         cubes_day = iris.cube.CubeList()
         
         #for month in range(start_date.month, end_date.month + 1):
-        for month in range(1, 2):
+        for month in range(1, 13):
             num_days = monthrange(year, month)[1]
             for iday in range(1, num_days + 1):
 
@@ -152,13 +152,10 @@ def _extract_variable_daily(short_name, var, cfg, in_dir, out_dir, start_date,
                                 #Fix metadata
                                 utils.fix_var_metadata(daily_cube, cmor_info)
 
-                                #if fill_cube is None:
-                                #    fill_cube = daily_cube
-
                                 # check for daylight
                                 daily_cube_day = daily_cube.copy()
                                 daily_cube_day.data = da.ma.masked_where(
-                                    daily_cube_ilum.core_data() == 1, daily_cube_day.core_data())
+                                    daily_cube_ilum.core_data() > 1, daily_cube_day.core_data())
 
                                 cubes.append(daily_cube)
                                 cubes_day.append(daily_cube_day)

@@ -22,31 +22,36 @@ variables:
   clt_day:
     short_name: clt
     mip: day
-    raw: [cmask_desc, cmask_asc]
+    #raw: [cmask_desc, cmask_asc]
+    raw: [cmask_asc]
     raw_units: '1'
     file: '-ESACCI-L3U_CLOUD-CLD_MASKTYPE-AVHRR_*-fv3.0.nc'
   clwvi_day:
     short_name: clwvi
     mip: CFday
-    raw: [cwp_desc, cwp_asc]
+    #raw: [cwp_desc, cwp_asc]
+    raw: [cwp_asc]
     raw_units: g/m2
     file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
   ctp_day:
     short_name: ctp
     mip: day
-    raw: [ctp_desc, ctp_asc]
+    #raw: [ctp_desc, ctp_asc]
+    raw: [ctp_asc]
     raw_units: hPa
     file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
   reff_day:
     short_name: reff
     mip: day
-    raw: [cer_desc, cer_asc]
+    #raw: [cer_desc, cer_asc]
+    raw: [cer_asc]
     raw_units: um
     file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
   cod_day:
     short_name: cod
     mip: day
-    raw: [cot_desc, cot_asc]
+    #raw: [cot_desc, cot_asc]
+    raw: [cot_asc]
     raw_units: 1
     file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
 
