@@ -35,10 +35,10 @@ Data
 ----
 
 Soil moisture is evaluated and discussed, but not required for PET and SPEI
-calculation. 
-``tasmin``, ``tasmax``, ``sfcWind``, ``ps``, ``rsds`` are used to approximate 
+calculation.
+``tasmin``, ``tasmax``, ``sfcWind``, ``ps``, ``rsds`` are used to approximate
 ``evspsblpot`` for ERA5 and 18 CMIP6 datasets.
-``SPEI`` is calculated from ``evspsblpot`` and ``pr``. 
+``SPEI`` is calculated from ``evspsblpot`` and ``pr``.
 
 
 TODO: ERA5 native on the fly or cmorizer?
@@ -68,7 +68,7 @@ python diag_scripts/droughts/download_era5_tasminmax.py
 For more options use the ``--help`` flag.
 
 The CMIP6 data can be downloaded automatically by the ESMValTool. Just ensure
-that ``esgf_download`` is set to ``True`` or ``when_missing`` in the 
+that ``esgf_download`` is set to ``True`` or ``when_missing`` in the
 user configuration.
 
 Figures
