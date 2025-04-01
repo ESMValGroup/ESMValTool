@@ -33,7 +33,7 @@ def plotmaps_level2(input_data):
     for dataset in input_data:
         # Load the data
         filep, sname, dtname = (dataset['filename'], dataset['short_name'],
-                      dataset['dataset'])
+                                dataset['dataset'])
 
         logger.info("dataset: %s - %s", dtname, dataset['long_name'])
 
@@ -97,8 +97,7 @@ def main(cfg):
     # for each select obs and iterate others, obs last
     for grp, var_attr in variable_groups.items():
         # create pairs
-        logger.info("%s : %d, %s", grp, len(var_attr),
-                                   pformat(var_attr))
+        logger.info("%s : %d, %s", grp, len(var_attr), pformat(var_attr))
         obs_data = var_attr[-1]
 
         for metadata in var_attr:

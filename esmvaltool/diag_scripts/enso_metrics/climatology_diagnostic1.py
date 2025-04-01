@@ -67,7 +67,7 @@ def plot_level1(input_data, cfg):
     plt.title(title)
     plt.legend()
     plt.grid(linestyle='--')
-    plt.ylabel(f"{sn.upper()} ({cube.units})")
+    plt.ylabel(f"{sname.upper()} ({cube.units})")
 
     plt.text(0.5, 0.95, f"RMSE: {rmse:.2f} {cube.units}", fontsize=12,
              ha='center', transform=plt.gca().transAxes,
@@ -132,8 +132,7 @@ def main(cfg):
     # for each select obs and iterate others, obs last
     for grp, var_attr in variable_groups.items():
 
-        logger.info("%s : %d, %s", grp, len(var_attr),
-                            pformat(var_attr))
+        logger.info("%s : %d, %s", grp, len(var_attr), pformat(var_attr))
         obs_data = var_attr[-1]
 
         for metadata in var_attr:
