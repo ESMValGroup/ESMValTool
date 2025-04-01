@@ -30,7 +30,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def plot_level1(input_data, metricval, y_label, title, dtls):
-
+    """Create plots for output data."""
     figure = plt.figure(figsize=(10, 6), dpi=300)
 
     if title in ['ENSO pattern', 'ENSO lifecycle']:
@@ -69,12 +69,13 @@ def plot_level1(input_data, metricval, y_label, title, dtls):
         plt.xticks(xticks, xtick_labels)
         plt.yticks(np.arange(-2, 2.5, step=1))
 
-    logger.info(f"{dtls[0]} : metric:{metricval}")
+    logger.info("%s : metric: %f", dtls[0], metricval)
 
     return figure
 
 
 def lin_regress(cube_ssta, cube_nino34):
+    """Linear regression for 1D output."""
     slope_ls = []
     for lon_slice in cube_ssta.slices(['time']):
         res = linregress(cube_nino34.data, lon_slice.data)
@@ -117,8 +118,10 @@ def sst_regressed(n34_cube):
 
 
 def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
-
+    """Compute values for each of the ENSO metrics."""
     # input_pair: obs first
+    data_values = []
+    fig, val = None, None
     if metric == '09pattern':
         model_ssta = input_pair[1][var_group[1]]
         model_nino34 = input_pair[1][var_group[0]]
@@ -150,11 +153,10 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
                           'ENSO amplitude', dt_ls)
 
     elif metric == '12seasonality':
-        data_values = []
-        for ds in input_pair:  # obs 0, mod 1
+        for datas in input_pair:  # obs 0, mod 1
             preproc = {}
             for seas in ['NDJ', 'MAM']:
-                cube = extract_season(ds[var_group[0]], seas)
+                cube = extract_season(datas[var_group[0]], seas)
                 cube = climate_statistics(cube, operator="std_dev",
                                           period="full")
                 preproc[seas] = cube.data
@@ -179,23 +181,20 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
         obs = sst_regressed(input_pair[0][var_group[0]])
 
         months = np.arange(1, 73) - 36
-        counts = []
         # Calculate the number of months where slope > 0.25
         within_range = (months >= -30) & (months <= 30)
         for slopes in [model, obs]:
             slope_above_025 = slopes[within_range] > 0.25
-            counts.append(np.sum(slope_above_025))
-        val = compute(counts[1], counts[0])
+            data_values.append(np.sum(slope_above_025))
+        val = compute(data_values[1], data_values[0])
 
-        fig = plot_level1(counts, val, 'Duration (reg > 0.25) (months)',
+        fig = plot_level1(data_values, val, 'Duration (reg > 0.25) (months)',
                           'ENSO duration', dt_ls)
     elif metric == '15diversity':
-        data_values = []
-        for ds in input_pair:  # obs first
-            events = enso_events(ds[var_group[0]])
-            results_lon = diversity(ds[var_group[1]], events)
+        for datas in input_pair:  # obs first
+            events = enso_events(datas[var_group[0]])
+            results_lon = diversity(datas[var_group[1]], events)
             results_lon['enso'] = results_lon['nino'] + results_lon['nina']
-            logger.info(f"{dt_ls}, enso IQR: {iqr(results_lon['enso'])}")
             data_values.append(iqr(results_lon['enso']))
 
         val = compute(data_values[1], data_values[0])
@@ -205,7 +204,8 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
     return val, fig
 
 
-def mask_to_years(events):    # build time with mask
+def mask_to_years(events):
+    """Get years from mask."""
     maskedtime = np.ma.masked_array(events.coord('time').points,
                                     mask=events.data.mask)
     # return years
@@ -214,13 +214,15 @@ def mask_to_years(events):    # build time with mask
 
 
 def enso_events(cube):
-    a_events = mask_to_years(mask_above_threshold(cube.copy(), -0.75))
-    o_events = mask_to_years(mask_below_threshold(cube.copy(), 0.75))
+    """Get event years from dataset."""
+    std = cube.data.std()
+    a_events = mask_to_years(mask_above_threshold(cube.copy(), -0.75 * std))
+    o_events = mask_to_years(mask_below_threshold(cube.copy(), 0.75 * std))
     return {'nina': a_events, 'nino': o_events}
 
 
 def diversity(ssta_cube, events_dict):
-
+    """Compute diversity from event years."""
     res_lon = {}
     for enso, events in events_dict.items():
         year_enso = iris.Constraint(time=lambda cell:
@@ -239,21 +241,24 @@ def diversity(ssta_cube, events_dict):
 
 
 def iqr(data):
-    q3, q1 = np.percentile(data, [75, 25])
-    iqr = q3 - q1
-    return iqr
+    """Compute interquartile range."""
+    qrt3, qrt1 = np.percentile(data, [75, 25])
+    iqrange = qrt3 - qrt1
+    return iqrange
 
 
-def format_lon(x, pos):
-    if x > 180:
-        return f'{int(360 - x)}°W'
-    elif x == 180:
-        return f'{int(x)}°'
+def format_lon(x_val):
+    """Format longitude in plot axis."""
+    if x_val > 180:
+        return f'{int(360 - x_val)}°W'
+    if x_val == 180:
+        return f'{int(x_val)}°'
     else:
-        return f'{int(x)}°E'
+        return f'{int(x_val)}°E'
 
 
 def compute(obs, mod):
+    """Compute percentage metric value."""
     return abs((mod-obs)/obs)*100
 
 
@@ -294,7 +299,7 @@ def main(cfg):
 
     # select twice with project to get obs, iterate through model selection
     for metric, var_preproc in metrics.items():
-        logger.info("{},{}", metric, var_preproc)
+        logger.info("%s,%s", metric, var_preproc)
         obs, models = [], []
         for var_prep in var_preproc:
             obs += select_metadata(input_data, variable_group=var_prep,
@@ -305,8 +310,8 @@ def main(cfg):
                                       project='CMIP6')
 
         dt_files = []
-        for ds in models:
-            dt_files.append(ds['filename'])
+        for model in models:
+            dt_files.append(model['filename'])
         prov_record = get_provenance_record(f'ENSO metrics {metric}', dt_files)
         # obs datasets for each model
         obs_datasets = {dataset['variable_group']:
@@ -317,7 +322,7 @@ def main(cfg):
         model_ds = group_metadata(models, 'dataset', sort='project')
 
         for dataset in model_ds:
-            logger.info("{}, preprocessed cubes:{}, dataset:{}",
+            logger.info("%s, preprocessed cubes:%d, dataset:%s",
                         metric, len(model_ds), dataset)
 
             model_datasets = {attr['variable_group']:
@@ -333,8 +338,8 @@ def main(cfg):
             if value:
                 metricfile = get_diagnostic_filename('matrix', cfg,
                                                      extension='csv')
-                with open(metricfile, 'a+') as f:
-                    f.write(f"{dataset},{metric},{value}\n")
+                with open(metricfile, 'a+',  encoding='utf-8') as fileo:
+                    fileo.write(f"{dataset},{metric},{value}\n")
 
                 save_figure(f'{dataset}_{metric}', prov_record,
                             cfg, figure=fig, dpi=300)

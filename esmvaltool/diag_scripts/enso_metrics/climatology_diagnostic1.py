@@ -1,4 +1,4 @@
-"""diagnostic script to plot ENSO metrics
+"""diagnostic script to plot basic climatology metrics
 
 """
 
@@ -27,21 +27,23 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def plot_level1(input_data, cfg):
-    # input data is 2 - model and obs
+    """Create plots for pair of input data."""
     plt.clf()
+    filename = []
+    obs_data, model_data = None
     figure = plt.figure(figsize=(10, 6), dpi=300)
     var_units = {'tos': 'degC', 'pr': 'mm/day', 'tauu': '1e-3 N/m2'}
 
     for dataset in input_data:
         # Load the data
-        fp, sn, dt, proj = (dataset['filename'], dataset['short_name'],
-                            dataset['dataset'], dataset['project'])
+        filep, sname = dataset['filename'], dataset['short_name']
+        dtname, proj = dataset['dataset'], dataset['project']
 
-        logger.info(f"dataset: {dt} - {dataset['long_name']}")
+        logger.info("dataset: %s - %s", dtname, dataset['long_name'])
 
-        cube = iris.load_cube(fp)
+        cube = iris.load_cube(filep)
         # convert units for different variables
-        cube = convert_units(cube, units=var_units[sn])
+        cube = convert_units(cube, units=var_units[sname])
 
         title = f"Mean {dataset['long_name']}"
         if len(cube.coords('month_number')) == 1:
@@ -50,17 +52,17 @@ def plot_level1(input_data, cfg):
             title = f"{dataset['long_name']} seasonal cycle"
 
         if proj == 'CMIP6':  # group by models/ for each model with obs
-            qplt.plot(cube, label=dt)
+            qplt.plot(cube, label=dtname)
             model_data = cube.data
-            filename = [dt, dataset['variable_group']]
+            filename = [dtname, dataset['variable_group']]
         else:
-            qplt.plot(cube, label=f'ref: {dt}', color='black')
+            qplt.plot(cube, label=f'ref: {dtname}', color='black')
             obs_data = cube.data
 
     rmse = np.sqrt(np.mean((obs_data - model_data) ** 2))
     metricfile = get_diagnostic_filename('matrix', cfg, extension='csv')
-    with open(metricfile, 'a+') as f:
-        f.write(f"{filename[0]},{filename[1]},{rmse}\n")
+    with open(metricfile, 'a+',  encoding='utf-8') as fileo:
+        fileo.write(f"{filename[0]},{filename[1]},{rmse}\n")
 
     plt.title(title)
     plt.legend()
@@ -80,7 +82,7 @@ def plot_level1(input_data, cfg):
 
 
 def sea_cycle_month_stdev(cube, preproc):
-
+    """Process standard deviation for seasonal cycle."""
     cube.coord('month_number').guess_bounds()
     cube = cube.collapsed('month_number', iris.analysis.STD_DEV)
     # ITCZ or zonal
@@ -92,22 +94,24 @@ def sea_cycle_month_stdev(cube, preproc):
     return cube
 
 
-def format_lat(x, pos):
-    if x < 0:
-        return f'{int(abs(x))}°S'
-    elif x > 0:
-        return f'{int(x)}°N'
+def format_lat(x_val, pos):
+    """Format latitude for plot axis."""
+    if x_val < 0:
+        return f'{int(abs(x_val))}°S'
+    if x_val > 0:
+        return f'{int(x_val)}°N'
     else:
         return '0°'
 
 
-def format_lon(x, pos):
-    if x > 180:
-        return f'{int(360 - x)}°W'
-    elif x == 180:
-        return f'{int(x)}°'
+def format_lon(val, pos):
+    """Format longitude for plot axis."""
+    if val > 180:
+        return f'{int(360 - val)}°W'
+    if val == 180:
+        return f'{int(val)}°'
     else:
-        return f'{int(x)}°E'
+        return f'{int(val)}°E'
 
 
 def main(cfg):
@@ -126,13 +130,13 @@ def main(cfg):
     variable_groups = group_metadata(input_data, 'variable_group',
                                      sort='project')
     # for each select obs and iterate others, obs last
-    for grp in variable_groups:
-        msg = "{} : {}, {}".format(grp, len(variable_groups[grp]),
-                                   pformat(variable_groups[grp]))
-        logger.info(msg)
-        obs_data = variable_groups[grp][-1]
+    for grp, var_attr in variable_groups.items():
 
-        for metadata in variable_groups[grp]:
+        logger.info("%s : %d, %s", grp, len(var_attr),
+                            pformat(var_attr))
+        obs_data = var_attr[-1]
+
+        for metadata in var_attr:
             logger.info('iterate though datasets\n %s', pformat(metadata))
             pairs = [obs_data]
             if metadata['project'] == 'CMIP6':

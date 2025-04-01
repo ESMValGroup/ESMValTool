@@ -1,4 +1,4 @@
-"""diagnostic script to plot map comparison of ENSO metrics
+"""Diagnostic script to plot map comparisons of background climatology
 
 """
 
@@ -23,7 +23,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def plotmaps_level2(input_data):
-    # input data is pairs - model and obs
+    """Create map plots for pair of input data."""
 
     var_units = {'tos': 'degC', 'pr': 'mm/day', 'tauu': '1e-3 N/m2'}
     fig = plt.figure(figsize=(18, 6))
@@ -32,27 +32,27 @@ def plotmaps_level2(input_data):
 
     for dataset in input_data:
         # Load the data
-        fp, sn, dt = (dataset['filename'], dataset['short_name'],
+        filep, sname, dtname = (dataset['filename'], dataset['short_name'],
                       dataset['dataset'])
 
-        logger.info(f"dataset: {dt} - {dataset['long_name']}")
+        logger.info("dataset: %s - %s", dtname, dataset['long_name'])
 
-        cube = iris.load_cube(fp)
+        cube = iris.load_cube(filep)
         # convert units for different variables
-        cube = convert_units(cube, units=var_units[sn])
-        diag_label = sn.upper()
+        cube = convert_units(cube, units=var_units[sname])
+        diag_label = sname.upper()
         if len(cube.coords('month_number')) == 1:
             cube = sea_cycle_stdev(cube)
-            diag_label = f'{sn.upper()} std'
+            diag_label = f'{sname.upper()} std'
 
-        cbar_label = diag_label + ' ' + var_units[sn]
+        cbar_label = diag_label + ' ' + var_units[sname]
         ax1 = plt.subplot(i, projection=proj)
         ax1.add_feature(cfeature.LAND, facecolor='gray')
         ax1.coastlines()
         cf1 = iplt.contourf(cube, cmap='coolwarm')
 
         ax1.set_extent([130, 290, -20, 20], crs=ccrs.PlateCarree())
-        ax1.set_title(dt)
+        ax1.set_title(dtname)
 
         # Add gridlines for latitude and longitude
         gl1 = ax1.gridlines(draw_labels=True, linestyle='--')
@@ -71,7 +71,7 @@ def plotmaps_level2(input_data):
 
 
 def sea_cycle_stdev(cube):
-
+    """Process seasonal cycle standard deviation."""
     cube.coord('month_number').guess_bounds()
     cube = cube.collapsed('month_number', iris.analysis.STD_DEV)
 
@@ -95,14 +95,13 @@ def main(cfg):
     variable_groups = group_metadata(input_data, 'variable_group',
                                      sort='project')
     # for each select obs and iterate others, obs last
-    for grp in variable_groups:
+    for grp, var_attr in variable_groups.items():
         # create pairs
-        msg = "{} : {}, {}".format(grp, len(variable_groups[grp]),
-                                   pformat(variable_groups[grp]))
-        logger.info(msg)
-        obs_data = variable_groups[grp][-1]
+        logger.info("%s : %d, %s", grp, len(var_attr),
+                                   pformat(var_attr))
+        obs_data = var_attr[-1]
 
-        for metadata in variable_groups[grp]:
+        for metadata in var_attr:
             logger.info('iterate though datasets\n %s', pformat(metadata))
             pairs = [obs_data]
             if metadata['project'] == 'CMIP6':
