@@ -165,7 +165,7 @@ hlines: list of dict, optional
     Horizontal lines to show in plot. Each list element corresponds to one
     line, and each list element should contain a dictionary with keywords
     arguments passed to :meth:`matplotlib.axes.Axes.axhline`. Example: ``[{y:
-    0}, {y: 1, color: 'red'}].
+    0}, {y: 1, color: 'red'}]``.
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
@@ -203,7 +203,7 @@ hlines: list of dict, optional
     Horizontal lines to show in plot. Each list element corresponds to one
     line, and each list element should contain a dictionary with keywords
     arguments passed to :meth:`matplotlib.axes.Axes.axhline`. Example: ``[{y:
-    0}, {y: 1, color: 'red'}].
+    0}, {y: 1, color: 'red'}]``.
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
@@ -417,7 +417,7 @@ hlines: list of dict, optional
     Horizontal lines to show in plot. Each list element corresponds to one
     line, and each list element should contain a dictionary with keywords
     arguments passed to :meth:`matplotlib.axes.Axes.axhline`. Example: ``[{y:
-    0}, {y: 1, color: 'red'}].
+    0}, {y: 1, color: 'red'}]``.
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
@@ -459,7 +459,7 @@ hlines: list of dict, optional
     Horizontal lines to show in plot. Each list element corresponds to one
     line, and each list element should contain a dictionary with keywords
     arguments passed to :meth:`matplotlib.axes.Axes.axhline`. Example: ``[{y:
-    0}, {y: 1, color: 'red'}].
+    0}, {y: 1, color: 'red'}]``.
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
