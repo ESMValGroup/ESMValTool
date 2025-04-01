@@ -21,6 +21,8 @@ timerange_for_models: &time_period
 preprocessors:
 
   globalmean:
+    annual_statistics:
+      operator: mean
     area_statistics:
       operator: mean
 
@@ -118,6 +120,7 @@ diagnostics:
         plots:
           timeseries:
             annual_mean_kwargs: false
+            hlines:
               - y: 232.0
                 color: orange
               - y: 240.0
@@ -133,13 +136,16 @@ diagnostics:
                 linestyle: '-'
                 linewidth: 2
                 label: '{dataset}'
+                zorder: 3
               'global min':
                 color: blue
                 label: null
                 linestyle: '--'
                 linewidth: 1
+                zorder: 3
               'global max':
                 color: blue
                 label: null
                 linestyle: '--'
                 linewidth: 1
+                zorder: 3
