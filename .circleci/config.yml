@@ -41,6 +41,7 @@ commands:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
+            export PATH=/root/.juliaup/bin:$PATH
             mamba --version
             pytest -n 4 --junitxml=test-reports/report.xml
             esmvaltool version
@@ -207,7 +208,6 @@ jobs:
             # Install according to instructions on readthedocs with the
             # development version of ESMValTool and ESMValCore:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
-            set -x
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
             mamba install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
@@ -216,6 +216,7 @@ jobs:
             mamba list >> /logs/conda.txt
             pip install --editable .[develop]
             curl -fsSL https://install.julialang.org | sh -s -- --yes
+            export PATH=/root/.juliaup/bin:$PATH
             julia --version
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
@@ -285,7 +286,7 @@ jobs:
             set +x; conda activate esmvaltool; set -x
             # install Julia from source
             curl -fsSL https://install.julialang.org | sh -s -- --yes
-            . /root/.bashrc
+            export PATH=/root/.juliaup/bin:$PATH
             julia --version
             # install the Julia dependencies
             esmvaltool install Julia > /logs/install_Julia.txt 2>&1
