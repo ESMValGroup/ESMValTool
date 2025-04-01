@@ -4,7 +4,7 @@ channels:
   # The release candidate channel should only be activated
   # during the rc phase right before the next release of the
   # ESMValCore.
-  - conda-forge/label/esmvalcore_rc
+  # - conda-forge/label/esmvalcore_rc
   - conda-forge
   - nodefaults
 
@@ -23,12 +23,13 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
-  - esmvalcore 2.12.*  # test RC1
+  - esmvalcore 2.12.*
   - fiona
   - fire
   - fsspec
   - gdal >=3.9.0
   - importlib_metadata <8  # https://github.com/ESMValGroup/ESMValTool/issues/3699 only for Python 3.10/11 and esmpy<8.6
+  - ipython <9.0  # github.com/ESMValGroup/ESMValCore/issues/2680 ; remove ipython when solved
   - iris >=3.11
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - jinja2
@@ -61,7 +62,7 @@ dependencies:
   - requests
   - ruamel.yaml
   - scikit-image
-  - scikit-learn >= 1.4.0  # github.com/ESMValGroup/ESMValTool/issues/3504
+  - scikit-learn >=1.4.0  # github.com/ESMValGroup/ESMValTool/issues/3504
   - scipy
   - seaborn
   - seawater
@@ -72,7 +73,7 @@ dependencies:
   - xlsxwriter
   - zarr
   # Python packages needed for unit testing
-  - flake8 >=6
+  - pre-commit
   - pytest >=3.9,!=6.0.0rc1,!=6.0.0
   - pytest-cov
   - pytest-env
@@ -89,13 +90,10 @@ dependencies:
   - codespell ==2.3.0
   - docformatter ==1.7.5
   - imagehash
-  - isort ==5.13.2
-  - pre-commit
   - prospector >=1.12  # earliest support for Python 3.12
   - pyroma
   # - vprof not on conda-forge
   - yamllint ==1.35.1
-  - yapf ==0.32.0
 
   # NCL and dependencies
   # - ncl >=6.6.2
@@ -105,7 +103,7 @@ dependencies:
 
   # R and dependencies
   - cdo
-  - r-base >=3.5,<4.3.0
+  - r-base >=3.5
   - r-abind
   - r-akima
   - r-climdex.pcic

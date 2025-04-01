@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Use simple multi-model mean for predictions.
 
 Description
@@ -71,40 +70,40 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def _add_dataset_attributes(cube, datasets, cfg):
     """Add dataset-related attributes to cube."""
-    dataset_names = sorted(list({d['dataset'] for d in datasets}))
-    projects = sorted(list({d['project'] for d in datasets}))
-    start_years = list({d['start_year'] for d in datasets})
-    end_years = list({d['end_year'] for d in datasets})
-    cube.attributes['dataset'] = '|'.join(dataset_names)
-    cube.attributes['description'] = 'MMM prediction'
-    cube.attributes['end_year'] = min(end_years)
-    cube.attributes['mlr_model_name'] = cfg['mlr_model_name']
-    cube.attributes['mlr_model_type'] = 'mmm'
-    cube.attributes['project'] = '|'.join(projects)
-    cube.attributes['start_year'] = min(start_years)
-    cube.attributes['var_type'] = 'prediction_output'
+    dataset_names = sorted(list({d["dataset"] for d in datasets}))
+    projects = sorted(list({d["project"] for d in datasets}))
+    start_years = list({d["start_year"] for d in datasets})
+    end_years = list({d["end_year"] for d in datasets})
+    cube.attributes["dataset"] = "|".join(dataset_names)
+    cube.attributes["description"] = "MMM prediction"
+    cube.attributes["end_year"] = min(end_years)
+    cube.attributes["mlr_model_name"] = cfg["mlr_model_name"]
+    cube.attributes["mlr_model_type"] = "mmm"
+    cube.attributes["project"] = "|".join(projects)
+    cube.attributes["start_year"] = min(start_years)
+    cube.attributes["var_type"] = "prediction_output"
 
 
 def _load_cube(cfg, dataset):
     """Load single :class:`iris.cube.Cube`."""
-    path = dataset['filename']
+    path = dataset["filename"]
     cube = iris.load_cube(path)
-    cube.data = cube.core_data().astype(cfg['dtype'], casting='same_kind')
+    cube.data = cube.core_data().astype(cfg["dtype"], casting="same_kind")
     convert_units(cfg, cube, dataset)
     return (cube, path)
 
 
 def add_general_attributes(cube, **kwargs):
     """Add general attributes to cube."""
-    for (key, val) in kwargs.items():
+    for key, val in kwargs.items():
         if val is not None:
             cube.attributes[key] = val
 
 
 def convert_units(cfg, cube, data):
     """Convert units if desired."""
-    cfg_settings = cfg.get('convert_units_to')
-    data_settings = data.get('convert_units_to')
+    cfg_settings = cfg.get("convert_units_to")
+    data_settings = data.get("convert_units_to")
     if cfg_settings or data_settings:
         units_to = cfg_settings
         if data_settings:
@@ -116,11 +115,13 @@ def convert_units(cfg, cube, data):
 def get_loo_error_cube(cfg, label_datasets):
     """Estimate prediction error using cross-validation."""
     loo = LeaveOneOut()
-    logger.info("Estimating prediction error using cross-validator %s",
-                str(loo.__class__))
+    logger.info(
+        "Estimating prediction error using cross-validator %s",
+        str(loo.__class__),
+    )
     label_datasets = np.array(label_datasets)
     errors = []
-    for (train_idx, test_idx) in loo.split(label_datasets):
+    for train_idx, test_idx in loo.split(label_datasets):
         ref_cube = get_mmm_cube(cfg, label_datasets[test_idx])
         mmm_cube = get_mmm_cube(cfg, label_datasets[train_idx])
 
@@ -130,7 +131,7 @@ def get_loo_error_cube(cfg, label_datasets):
 
         y_true = ref_cube.data.ravel()[~mask]
         y_pred = mmm_cube.data.ravel()[~mask]
-        weights = mlr.get_all_weights(ref_cube, **cfg['weighted_samples'])
+        weights = mlr.get_all_weights(ref_cube, **cfg["weighted_samples"])
         weights = weights.ravel()[~mask]
 
         # Calculate mean squared error
@@ -147,11 +148,11 @@ def get_loo_error_cube(cfg, label_datasets):
     error_cube.data = error_array.reshape(error_cube.shape)
 
     # Cube metadata
-    error_cube.attributes['error_type'] = 'loo'
-    error_cube.attributes['squared'] = 1
-    error_cube.attributes['var_type'] = 'prediction_output_error'
-    error_cube.var_name += '_squared_mmm_error_estim'
-    error_cube.long_name += ' (squared MMM error estimation using CV)'
+    error_cube.attributes["error_type"] = "loo"
+    error_cube.attributes["squared"] = 1
+    error_cube.attributes["var_type"] = "prediction_output_error"
+    error_cube.var_name += "_squared_mmm_error_estim"
+    error_cube.long_name += " (squared MMM error estimation using CV)"
     error_cube.units = mlr.units_power(error_cube.units, 2)
     return error_cube
 
@@ -160,34 +161,36 @@ def get_grouped_data(cfg, input_data=None):
     """Get input files."""
     if input_data is None:
         logger.debug("Loading input data from 'cfg' argument")
-        input_data = mlr.get_input_data(cfg,
-                                        pattern=cfg.get('pattern'),
-                                        ignore=cfg.get('ignore'))
+        input_data = mlr.get_input_data(
+            cfg, pattern=cfg.get("pattern"), ignore=cfg.get("ignore")
+        )
     else:
         logger.debug("Loading input data from 'input_data' argument")
-        if not mlr.datasets_have_mlr_attributes(input_data, log_level='error'):
-            raise ValueError("At least one input dataset does not have valid "
-                             "MLR attributes")
+        if not mlr.datasets_have_mlr_attributes(input_data, log_level="error"):
+            raise ValueError(
+                "At least one input dataset does not have valid MLR attributes"
+            )
     if not input_data:
         raise ValueError("No input data found")
-    paths = [d['filename'] for d in input_data]
+    paths = [d["filename"] for d in input_data]
     logger.debug("Found files")
     logger.debug(pformat(paths))
 
     # Extract necessary data
-    label_data = select_metadata(input_data, var_type='label')
+    label_data = select_metadata(input_data, var_type="label")
     if not label_data:
         raise ValueError("No data with var_type 'label' found")
     prediction_reference_data = select_metadata(
-        input_data, var_type='prediction_reference')
+        input_data, var_type="prediction_reference"
+    )
     extracted_data = label_data + prediction_reference_data
     logger.debug("Found 'label' data")
-    logger.debug(pformat([d['filename'] for d in label_data]))
+    logger.debug(pformat([d["filename"] for d in label_data]))
     logger.debug("Found 'prediction_reference' data")
-    logger.debug(pformat([d['filename'] for d in prediction_reference_data]))
+    logger.debug(pformat([d["filename"] for d in prediction_reference_data]))
 
     # Return grouped data
-    return group_metadata(extracted_data, 'tag')
+    return group_metadata(extracted_data, "tag")
 
 
 def get_mmm_cube(cfg, label_datasets):
@@ -202,28 +205,31 @@ def get_mmm_cube(cfg, label_datasets):
         paths.append(path)
     mmm_cube = cubes.merge_cube()
     if len(paths) > 1:
-        mmm_cube = mmm_cube.collapsed(['cube_label'], iris.analysis.MEAN)
+        mmm_cube = mmm_cube.collapsed(["cube_label"], iris.analysis.MEAN)
     for aux_coord in ref_cube.coords(dim_coords=False):
         mmm_cube.add_aux_coord(aux_coord, ref_cube.coord_dims(aux_coord))
-    mmm_cube.remove_coord('cube_label')
+    mmm_cube.remove_coord("cube_label")
     _add_dataset_attributes(mmm_cube, label_datasets, cfg)
     return mmm_cube
 
 
 def get_reference_dataset(datasets, tag):
     """Get ``prediction_reference`` dataset."""
-    ref_datasets = select_metadata(datasets, var_type='prediction_reference')
+    ref_datasets = select_metadata(datasets, var_type="prediction_reference")
     if not ref_datasets:
         logger.warning(
             "Calculating residuals for '%s' not possible, no "
-            "'prediction_reference' dataset given", tag)
+            "'prediction_reference' dataset given",
+            tag,
+        )
         return (None, None)
     if len(ref_datasets) > 1:
-        filenames = [d['filename'] for d in ref_datasets]
+        filenames = [d["filename"] for d in ref_datasets]
         raise ValueError(
             f"Expected at most one 'prediction_reference' dataset for "
-            f"'{tag}', got {len(ref_datasets):d}:\n{pformat(filenames)}")
-    return (ref_datasets[0], ref_datasets[0].get('prediction_name'))
+            f"'{tag}', got {len(ref_datasets):d}:\n{pformat(filenames)}"
+        )
+    return (ref_datasets[0], ref_datasets[0].get("prediction_name"))
 
 
 def get_residual_cube(mmm_cube, ref_cube):
@@ -232,14 +238,15 @@ def get_residual_cube(mmm_cube, ref_cube):
         raise ValueError(
             f"Expected identical shapes for 'label' and "
             f"'prediction_reference' datasets, got {mmm_cube.shape} and "
-            f"{ref_cube.shape}, respectively")
+            f"{ref_cube.shape}, respectively"
+        )
     res_cube = ref_cube.copy()
     res_cube.data -= mmm_cube.data
     res_cube.attributes = mmm_cube.attributes
-    res_cube.attributes['residuals'] = 'true minus predicted values'
-    res_cube.attributes['var_type'] = 'prediction_residual'
-    res_cube.var_name += '_residual'
-    res_cube.long_name += ' (residual)'
+    res_cube.attributes["residuals"] = "true minus predicted values"
+    res_cube.attributes["var_type"] = "prediction_residual"
+    res_cube.var_name += "_residual"
+    res_cube.long_name += " (residual)"
     return res_cube
 
 
@@ -248,24 +255,30 @@ def save_error(cfg, label_datasets, mmm_path, **cube_attrs):
     if len(label_datasets) < 2:
         logger.warning(
             "Estimating MMM prediction error not possible, at least 2 'label' "
-            "datasets are needed, only %i is given", len(label_datasets))
+            "datasets are needed, only %i is given",
+            len(label_datasets),
+        )
         return
-    error_type = cfg['mmm_error_type']
-    allowed_error_types = ['loo']
+    error_type = cfg["mmm_error_type"]
+    allowed_error_types = ["loo"]
     logger.info("Calculating error using error type '%s'", error_type)
-    if error_type == 'loo':
+    if error_type == "loo":
         err_cube = get_loo_error_cube(cfg, label_datasets)
     else:
         raise NotImplementedError(
             f"mmm_error_type '{error_type}' is currently not supported, "
-            f"supported types are {allowed_error_types}")
+            f"supported types are {allowed_error_types}"
+        )
     add_general_attributes(err_cube, **cube_attrs)
-    err_path = mmm_path.replace('_prediction', '_squared_prediction_error')
+    err_path = mmm_path.replace("_prediction", "_squared_prediction_error")
     io.iris_save(err_cube, err_path)
-    write_provenance(cfg, err_path,
-                     [d['filename'] for d in label_datasets],
-                     f"{err_cube.long_name} of MMM model "
-                     f"{cfg['mlr_model_name']} using error type {error_type}.")
+    write_provenance(
+        cfg,
+        err_path,
+        [d["filename"] for d in label_datasets],
+        f"{err_cube.long_name} of MMM model "
+        f"{cfg['mlr_model_name']} using error type {error_type}.",
+    )
 
 
 def save_residuals(cfg, mmm_cube, ref_dataset, label_datasets, **cube_attrs):
@@ -274,26 +287,29 @@ def save_residuals(cfg, mmm_cube, ref_dataset, label_datasets, **cube_attrs):
     (ref_cube, _) = _load_cube(cfg, ref_dataset)
     res_cube = get_residual_cube(mmm_cube, ref_cube)
     add_general_attributes(res_cube, **cube_attrs)
-    mmm_path = mmm_cube.attributes['filename']
-    res_path = mmm_path.replace('_prediction', '_prediction_residual')
+    mmm_path = mmm_cube.attributes["filename"]
+    res_path = mmm_path.replace("_prediction", "_prediction_residual")
     io.iris_save(res_cube, res_path)
-    ancestors = ([d['filename'] for d in label_datasets] +
-                 [ref_dataset['filename']])
-    caption = (f"Residuals of predicted {res_cube.long_name} of MMM model "
-               f"{cfg['mlr_model_name']}")
-    if 'prediction_name' in cube_attrs:
+    ancestors = [d["filename"] for d in label_datasets] + [
+        ref_dataset["filename"]
+    ]
+    caption = (
+        f"Residuals of predicted {res_cube.long_name} of MMM model "
+        f"{cfg['mlr_model_name']}"
+    )
+    if "prediction_name" in cube_attrs:
         caption += f" for prediction {cube_attrs['prediction_name']}"
-    caption += '.'
+    caption += "."
     write_provenance(cfg, res_path, ancestors, caption)
 
 
 def write_provenance(cfg, netcdf_path, ancestors, caption):
     """Write provenance information."""
     record = {
-        'ancestors': ancestors,
-        'authors': ['schlund_manuel'],
-        'caption': caption,
-        'references': ['schlund20jgr'],
+        "ancestors": ancestors,
+        "authors": ["schlund_manuel"],
+        "caption": caption,
+        "references": ["schlund20jgr"],
     }
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, record)
@@ -302,49 +318,65 @@ def write_provenance(cfg, netcdf_path, ancestors, caption):
 def main(cfg, input_data=None, description=None):
     """Run the diagnostic."""
     cfg = deepcopy(cfg)
-    cfg.setdefault('dtype', 'float64')
-    cfg.setdefault('mlr_model_name', 'MMM')
-    cfg.setdefault('weighted_samples',
-                   {'area_weighted': True, 'time_weighted': True})
+    cfg.setdefault("dtype", "float64")
+    cfg.setdefault("mlr_model_name", "MMM")
+    cfg.setdefault(
+        "weighted_samples", {"area_weighted": True, "time_weighted": True}
+    )
 
     # Get data
     grouped_data = get_grouped_data(cfg, input_data=input_data)
-    description = '' if description is None else f'_for_{description}'
+    description = "" if description is None else f"_for_{description}"
 
     # Loop over all tags
-    for (tag, datasets) in grouped_data.items():
+    for tag, datasets in grouped_data.items():
         logger.info("Processing label '%s'", tag)
 
         # Get label datasets and reference dataset if possible
-        label_datasets = select_metadata(datasets, var_type='label')
+        label_datasets = select_metadata(datasets, var_type="label")
         (ref_dataset, pred_name) = get_reference_dataset(datasets, tag)
         if pred_name is None:
-            pred_name = cfg.get('prediction_name')
+            pred_name = cfg.get("prediction_name")
 
         # Calculate multi-model mean
         logger.info("Calculating multi-model mean")
         mmm_cube = get_mmm_cube(cfg, label_datasets)
         add_general_attributes(mmm_cube, tag=tag, prediction_name=pred_name)
         mmm_path = get_diagnostic_filename(
-            f"mmm_{tag}_prediction{description}", cfg)
+            f"mmm_{tag}_prediction{description}", cfg
+        )
         io.iris_save(mmm_cube, mmm_path)
-        write_provenance(cfg, mmm_path,
-                         [d['filename'] for d in label_datasets],
-                         f"Predicted {mmm_cube.long_name} of MMM model "
-                         f"{cfg['mlr_model_name']}.")
+        write_provenance(
+            cfg,
+            mmm_path,
+            [d["filename"] for d in label_datasets],
+            f"Predicted {mmm_cube.long_name} of MMM model "
+            f"{cfg['mlr_model_name']}.",
+        )
 
         # Estimate prediction error using cross-validation
-        if 'mmm_error_type' in cfg:
-            save_error(cfg, label_datasets, mmm_path, tag=tag,
-                       prediction_name=pred_name)
+        if "mmm_error_type" in cfg:
+            save_error(
+                cfg,
+                label_datasets,
+                mmm_path,
+                tag=tag,
+                prediction_name=pred_name,
+            )
 
         # Calculate residuals
         if ref_dataset is not None:
-            save_residuals(cfg, mmm_cube, ref_dataset, label_datasets, tag=tag,
-                           prediction_name=pred_name)
+            save_residuals(
+                cfg,
+                mmm_cube,
+                ref_dataset,
+                label_datasets,
+                tag=tag,
+                prediction_name=pred_name,
+            )
 
 
 # Run main function when this script is called
-if __name__ == '__main__':
+if __name__ == "__main__":
     with run_diagnostic() as config:
         main(config)

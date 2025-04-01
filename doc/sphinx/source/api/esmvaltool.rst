@@ -30,3 +30,5 @@ Diagnostic Scripts
    esmvaltool.diag_scripts.psyplot_diag
    esmvaltool.diag_scripts.seaborn_diag
    esmvaltool.diag_scripts.portrait_plot
+   esmvaltool.diag_scripts.climate_metrics.tcre
+   esmvaltool.diag_scripts.climate_metrics.zec
