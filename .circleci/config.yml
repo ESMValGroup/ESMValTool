@@ -96,6 +96,7 @@ commands:
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
+            curl -fsSL https://install.julialang.org | sh -s -- --yes
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             if [[ "<<parameters.flags>>" != *'--editable'* ]]
             then
@@ -137,6 +138,7 @@ jobs:
             conda activate esmvaltool
             mkdir /logs
             pip install .[test] > /logs/install.txt 2>&1
+            curl -fsSL https://install.julialang.org | sh -s -- --yes
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
       - run:
           name: Check Python code style and mistakes
@@ -209,6 +211,7 @@ jobs:
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
             pip install --editable .[develop]
+            curl -fsSL https://install.julialang.org | sh -s -- --yes
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
             pip install --editable $HOME/ESMValCore[develop]
@@ -275,6 +278,8 @@ jobs:
             mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.11' >> /logs/conda.txt 2>&1
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
+            # install Julia from source
+            curl -fsSL https://install.julialang.org | sh -s -- --yes
             # install the Julia dependencies
             esmvaltool install Julia > /logs/install_Julia.txt 2>&1
             # Log versions
