@@ -56,8 +56,7 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
 def main(config):
-    """Loading the configuration file and running through the order of
-    operation.
+    """Loading the config file and running through the order of operation.
 
     Parameters
     ----------
@@ -122,6 +121,7 @@ def main(config):
 
 def load_data(config):
     """Loads in all necessary data to output experiment, control, observation.
+
     Fixing variable names, fixing units then passed into create_plotting_data()
 
     Parameters
@@ -206,7 +206,6 @@ def create_plotting_data(control, experiment, observation):
     exp_minus_obs : iris cube
         Experimental model minus observational dataset.
     """
-
     # The data for models and the obs dataset is loaded into Iris cubes.
     # These cubes contain the climate data that will be plotted.
     exp = experiment
@@ -258,7 +257,6 @@ def plot_global_single_level(axis, cube, contour_levels, title):
     title : str
         This is a string that will be used as the title of the subplot.
     """
-
     # Setting the colour of axis1 always to viridis.
     if title == "UKESM1-0-LL":
         cmap = "viridis"
@@ -351,7 +349,6 @@ def create_quadmap(
     quadmap :
         Make the four pane model vs model vs obs comparison plot
     """
-
     # Setting zrange dependent on the plot produced.
     if exp_single_level.long_name in [
         "Sea Water Salinity",
