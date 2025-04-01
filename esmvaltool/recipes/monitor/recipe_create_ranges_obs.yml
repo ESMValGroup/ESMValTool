@@ -1,0 +1,139 @@
+# ESMValTool
+---
+documentation:
+  title: Reasonable variable ranges for sanity checks (OBS)
+  description: >
+    Calculate reasonable variable ranges for sanity checks.
+  authors:
+    - lauer_axel
+  maintainer:
+    - lauer_axel
+
+
+preprocessors:
+
+  pp_min_pr:
+    custom_order: true
+#    monthly_statistics:
+#      operator: mean
+    area_statistics:
+      operator: mean
+    multi_model_statistics:
+      span: full
+      statistics:
+        - operator: min
+    convert_units:
+      units: mm day-1
+    climate_statistics:
+      operator: min
+
+  pp_max_pr:
+    custom_order: true
+#    monthly_statistics:
+#      operator: mean
+    area_statistics:
+      operator: mean
+    multi_model_statistics:
+      span: full
+      statistics:
+        - operator: max
+    convert_units:
+      units: mm day-1
+    climate_statistics:
+      operator: max
+
+  pp_min:
+    custom_order: true
+#    monthly_statistics:
+#      operator: mean
+    area_statistics:
+      operator: mean
+    multi_model_statistics:
+      span: full
+      statistics:
+        - operator: min
+    climate_statistics:
+      operator: min
+
+  pp_max:
+    custom_order: true
+#    monthly_statistics:
+#      operator: mean
+    area_statistics:
+      operator: mean
+    multi_model_statistics:
+      span: full
+      statistics:
+        - operator: max
+    climate_statistics:
+      operator: max
+
+
+diagnostics:
+
+#  clt:
+#    description: Calculate range of reasonable monthly values for precipitation from CMIP6 models.
+#    variables:
+#      clt_min:
+#        short_name: clt
+#        preprocessor: pp_min
+#        mip: Amon
+#      clt_max:
+#        short_name: clt
+#        preprocessor: pp_max
+#        mip: Amon
+#    additional_datasets:
+#      - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+#         version: AVHRR-AMPM-fv3.0, tier: 2,
+#         start_year: 1992, end_year: 2016}
+#      - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002-01,
+#         tier: 3, start_year: 1982, end_year: 2018}
+#      - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA,
+#         tier: 2, start_year: 1982, end_year: 2016}
+#      - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3,
+#         tier: 3, start_year: 2003, end_year: 2018}
+#      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+#         tier: 3, start_year: 1995, end_year: 2014}
+#    scripts: null
+
+  pr:
+    description: Calculate range of reasonable monthly values for precipitation from CMIP6 models.
+    variables:
+      pr_min:
+        short_name: pr
+        preprocessor: pp_min_pr
+        mip: Amon
+      pr_max:
+        short_name: pr
+        preprocessor: pp_max_pr
+        mip: Amon
+    additional_datasets:
+#    MERRA2
+#    GPCP-SG
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+         tier: 3, start_year: 1995, end_year: 2014}
+      
+    scripts: null
+
+#  rlut:
+#    description: Calculate range of reasonable monthly values for precipitation from CMIP6 models.
+#    variables:
+#      rlut_min:
+#        short_name: rlut
+#        preprocessor: pp_min
+#        mip: Amon
+#      rlut_max:
+#        short_name: rlut
+#        preprocessor: pp_max
+#        mip: Amon
+#    additional_datasets:
+#      - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+#         tier: 2, start_year: 2001, end_year: 2022}
+#      - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+#         version: AVHRR-AMPM-fv3.0, tier: 2,
+#         start_year: 1992, end_year: 2016}
+#      - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
+#         tier: 2, start_year: 1984, end_year: 2016}
+##      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+##         tier: 3, start_year: 1995, end_year: 2014}
+#    scripts: null
