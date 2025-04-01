@@ -88,6 +88,7 @@ commands:
           name: Install dependencies
           command: |
             # Install
+            set -x
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
             mamba --version
@@ -97,7 +98,6 @@ commands:
             mamba list >> /logs/conda.txt
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
             curl -fsSL https://install.julialang.org | sh -s -- --yes
-            . /root/.bashrc
             julia --version
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             if [[ "<<parameters.flags>>" != *'--editable'* ]]
@@ -141,7 +141,6 @@ jobs:
             mkdir /logs
             pip install .[test] > /logs/install.txt 2>&1
             curl -fsSL https://install.julialang.org | sh -s -- --yes
-            . /root/.bashrc
             julia --version
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
       - run:
@@ -208,6 +207,7 @@ jobs:
             # Install according to instructions on readthedocs with the
             # development version of ESMValTool and ESMValCore:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
+            set -x
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
             mamba install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
@@ -216,7 +216,6 @@ jobs:
             mamba list >> /logs/conda.txt
             pip install --editable .[develop]
             curl -fsSL https://install.julialang.org | sh -s -- --yes
-            . /root/.bashrc
             julia --version
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
