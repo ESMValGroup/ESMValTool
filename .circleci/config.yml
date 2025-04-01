@@ -97,7 +97,7 @@ commands:
             mamba list >> /logs/conda.txt
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
             curl -fsSL https://install.julialang.org | sh -s -- --yes
-            export julia=/root/.juliaup/bin/julia
+            export PATH=/root/.juliaup/bin/julia:$PATH
             julia --version
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             if [[ "<<parameters.flags>>" != *'--editable'* ]]
