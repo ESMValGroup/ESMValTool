@@ -6,6 +6,7 @@ documentation:
     Calculate basic sanity checks e.g. for monitoring new model runs.
   authors:
     - lauer_axel
+    - schulze_kirsten
   maintainer:
     - lauer_axel
 
