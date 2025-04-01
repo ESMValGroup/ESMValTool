@@ -56,7 +56,7 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
 def main(config):
-    """Loading the config file and running through the order of operation.
+    """Load the config file and running through the order of operation.
 
     Parameters
     ----------
@@ -122,8 +122,6 @@ def main(config):
 def load_data(config):
     """Loads in all necessary data to output experiment, control, observation.
 
-    Fixing variable names, fixing units then passed into create_plotting_data()
-
     Parameters
     ----------
     config : dictionary
@@ -183,8 +181,7 @@ def load_data(config):
 
 
 def create_plotting_data(control, experiment, observation):
-    """Calculate the difference between the control, experiment and observation
-    datasets to prepare data for plotting. Set as new variables.
+    """Calculate the diff between the ctr, exp & obs to prepare data for plots.
 
     Parameters
     ----------
@@ -330,7 +327,6 @@ def create_quadmap(
     config,
 ):
     """Add all subplots to a main plot with positions of pre-set subplots.
-
     Parameters
     ----------
     exp_single_level : iris cube
