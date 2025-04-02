@@ -54,7 +54,7 @@ preprocessors:
     area_statistics:
       operator: sum
     anomalies:
-      period: year
+      period: full
       reference:
         start_year: 1980
         start_month: 1
@@ -262,7 +262,7 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             pyplot_kwargs:
-              title: "Anomaly of global sum of air mass"
+              title: "Anomaly of global air mass"
             hlines:
               - y: 0.
                 color: black
@@ -295,7 +295,7 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             pyplot_kwargs:
-              title: "Global sum of moisture flux into the atmosphere"
+              title: "Anomaly of global moisture flux into the atmosphere"
             hlines:
               - y: 0.
                 color: black
