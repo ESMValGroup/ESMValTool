@@ -236,6 +236,13 @@ diagnostics:
             annual_mean_kwargs: false
             pyplot_kwargs:
               title: "Global sum of water vapour"
+            hlines:
+              - y: 14206879936806912.
+                color: red
+                linewidth: 2
+              - y: 10902071180001280.
+                color: red
+                linewidth: 2
             plot_kwargs:
               'global sum':
                 color: blue
