@@ -49,6 +49,7 @@ preprocessors:
     area_statistics:
       operator: mean
     multi_model_statistics:
+      ignore_scalar_coords: true
       span: full
       statistics:
         - operator: min
@@ -62,6 +63,7 @@ preprocessors:
     area_statistics:
       operator: mean
     multi_model_statistics:
+      ignore_scalar_coords: true
       span: full
       statistics:
         - operator: max
@@ -116,7 +118,7 @@ diagnostics:
 
 
 #  clt:
-#    description: Calculate range of reasonable monthly values for precipitation from CMIP6 models.
+#    description: Calculate range of reasonable monthly values for total cloud cover.
 #    variables:
 #      clt_min:
 #        short_name: clt
@@ -141,7 +143,7 @@ diagnostics:
 #    scripts: null
 
 #  pr:
-#    description: Calculate range of reasonable monthly values for precipitation from CMIP6 models.
+#    description: Calculate range of reasonable monthly values for precipitation.
 #    variables:
 #      pr_min:
 #        short_name: pr
@@ -161,7 +163,7 @@ diagnostics:
 #    scripts: null
 
 #  rlut:
-#    description: Calculate range of reasonable monthly values for precipitation from CMIP6 models.
+#    description: Calculate range of reasonable monthly values for TOA outgoing lw radiation.
 #    variables:
 #      rlut_min:
 #        short_name: rlut
@@ -182,3 +184,25 @@ diagnostics:
 ##      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
 ##         tier: 3, start_year: 1995, end_year: 2014}
 #    scripts: null
+
+  tas:
+    description: Calculate range of reasonable monthly values for 2-m temperature.
+    variables:
+      tas_min:
+        short_name: tas
+        preprocessor: pp_min
+        mip: Amon
+      tas_max:
+        short_name: tas
+        preprocessor: pp_max
+        mip: Amon
+    additional_datasets:
+#      - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis,
+#         tier: 2, start_year: 1979, end_year: 2021}
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+         start_year: 1980, end_year: 2021}
+      - {dataset: JRA-55, project: OBS6, type: reanaly, version: '1', tier: 2,
+         start_year: 1979, end_year: 2022}
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+         tier: 3, start_year: 1979, end_year: 2021}
+    scripts: null
