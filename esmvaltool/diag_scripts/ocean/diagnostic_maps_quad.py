@@ -120,7 +120,7 @@ def main(config):
 
 
 def load_data(config):
-    """Loads in all necessary data to output experiment, control, observation.
+    """Loads all necessary data to output experiment, control, observation.
 
     Parameters
     ----------
@@ -262,7 +262,8 @@ def plot_global_single_level(axis, cube, contour_levels, title):
         cmap = "bwr"
 
     # This step transforms the data so it can be displayed as 2D
-    new_cube = iris.analysis.cartography.project(
+
+    new_cube, extent = iris.analysis.cartography.project(
         cube, ccrs.PlateCarree(), nx=400, ny=200
     )
 
@@ -326,7 +327,7 @@ def create_quadmap(
     exp_minus_obs_single_level,
     config,
 ):
-    """Add all subplots to a main plot with positions of pre-set subplots.
+    """Add all subplots to a main plot, positions of subplots is pre-set.
     Parameters
     ----------
     exp_single_level : iris cube
