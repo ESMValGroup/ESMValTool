@@ -104,7 +104,7 @@ diagnostics:
         <<: *time_period
         short_name: pr
         legend_label: 'global mean'
-        preprocessor: globalmean
+        preprocessor: globalmean_pr
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
