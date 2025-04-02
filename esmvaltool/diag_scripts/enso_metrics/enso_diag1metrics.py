@@ -56,7 +56,6 @@ def plot_level1(input_data, metricval, y_label, title, dtls):
                  bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
 
     plt.title(title)  # metric name
-    
     plt.grid(linestyle='--')
     plt.ylabel(y_label)
 

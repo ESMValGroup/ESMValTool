@@ -101,7 +101,7 @@ def format_lat(x_val, pos):
         return f'{int(abs(x_val))}°S'
     if x_val > 0:
         return f'{int(x_val)}°N'
-    
+
     return '0°'
 
 
