@@ -46,10 +46,10 @@ preprocessors:
   global_sum:
     area_statistics:
       operator: sum
-  
+
   global_sum_air_anom:
     custom_order: true
-    convert_units: 
+    convert_units:
       units: kg m-2
     area_statistics:
       operator: sum
