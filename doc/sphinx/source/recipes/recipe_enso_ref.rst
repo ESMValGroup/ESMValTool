@@ -45,7 +45,6 @@ Observations and reformat scripts
 
 
 * HadISST
-* TropFLUX
 * GPCP-SG
 * ERA-Interim
 
@@ -57,6 +56,18 @@ References
 
 Example plots
 -------------
+.. _fig_tauu_bias:
+.. figure:: /recipes/figures/enso_metrics/ACCESS-CM2_eq_tauu_bias.png
+   :align: center
+
+   Bias in the zonal structure of zonal wind stress (Taux) in the equatorial Pacific (5°S-5°N averaged), showing mainly trade winds bias (usually a decreased circulation in the central Pacific and an increased circulation in the western Pacific)
+
+.. _fig_pr_mapbias:
+.. figure:: /recipes/figures/enso_metrics/ACCESS-CM2_pr_map_bias_level2.png
+   :align: center
+
+   Bias of time-mean precipitation (PR) in the equatorial Pacific, showing mainly the double intertropical convergence zone (ITCZ) bias. 
+   The left and right maps show respectively the reference and the model
 
 .. _fig_seasonality:
 .. figure:: /recipes/figures/enso_metrics/ACCESS-CM2_12seasonality.png

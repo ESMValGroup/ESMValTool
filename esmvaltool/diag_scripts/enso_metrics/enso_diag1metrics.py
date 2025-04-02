@@ -40,7 +40,7 @@ def plot_level1(input_data, metricval, y_label, title, dtls):
         plt.text(0.5, 0.95, f"RMSE: {metricval:.2f}", fontsize=12,
                  ha='center', transform=plt.gca().transAxes,
                  bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
-
+        plt.legend()
     else:
         plt.scatter(range(len(input_data)), input_data,
                     c=['black', 'blue'], marker='D')
@@ -56,7 +56,7 @@ def plot_level1(input_data, metricval, y_label, title, dtls):
                  bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
 
     plt.title(title)  # metric name
-    plt.legend()
+    
     plt.grid(linestyle='--')
     plt.ylabel(y_label)
 
@@ -247,14 +247,14 @@ def iqr(data):
     return iqrange
 
 
-def format_lon(x_val):
+def format_lon(x_val, _pos):
     """Format longitude in plot axis."""
     if x_val > 180:
         return f'{int(360 - x_val)}°W'
     if x_val == 180:
         return f'{int(x_val)}°'
-    else:
-        return f'{int(x_val)}°E'
+
+    return f'{int(x_val)}°E'
 
 
 def compute(obs, mod):

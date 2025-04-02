@@ -65,7 +65,7 @@ def plotmaps_level2(input_data):
     cax = plt.axes([0.15, 0.08, 0.7, 0.05])
     cbar = fig.colorbar(cf1, cax=cax, orientation='horizontal', extend='both')
     cbar.set_label(cbar_label)
-    plt.suptitle(diag_label)
+    # plt.suptitle(diag_label)
 
     return fig
 

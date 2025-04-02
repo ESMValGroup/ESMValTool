@@ -1,4 +1,4 @@
-"""diagnostic script to plot basic climatology metrics
+"""diagnostic script for basic climatology metrics
 
 """
 
@@ -30,7 +30,7 @@ def plot_level1(input_data, cfg):
     """Create plots for pair of input data."""
     plt.clf()
     filename = []
-    obs_data, model_data = None
+    obs_data, model_data = None, None
     figure = plt.figure(figsize=(10, 6), dpi=300)
     var_units = {'tos': 'degC', 'pr': 'mm/day', 'tauu': '1e-3 N/m2'}
 
@@ -46,9 +46,10 @@ def plot_level1(input_data, cfg):
         cube = convert_units(cube, units=var_units[sname])
 
         title = f"Mean {dataset['long_name']}"
+        ylabel = f"{sname.upper()} ({cube.units})"
         if len(cube.coords('month_number')) == 1:
             cube = sea_cycle_month_stdev(cube, dataset['preprocessor'])
-            # plot title
+            ylabel = f"{sname.upper()} std ({cube.units})"
             title = f"{dataset['long_name']} seasonal cycle"
 
         if proj == 'CMIP6':  # group by models/ for each model with obs
@@ -67,7 +68,7 @@ def plot_level1(input_data, cfg):
     plt.title(title)
     plt.legend()
     plt.grid(linestyle='--')
-    plt.ylabel(f"{sname.upper()} ({cube.units})")
+    plt.ylabel(ylabel)
 
     plt.text(0.5, 0.95, f"RMSE: {rmse:.2f} {cube.units}", fontsize=12,
              ha='center', transform=plt.gca().transAxes,
@@ -100,8 +101,8 @@ def format_lat(x_val, pos):
         return f'{int(abs(x_val))}°S'
     if x_val > 0:
         return f'{int(x_val)}°N'
-    else:
-        return '0°'
+    
+    return '0°'
 
 
 def format_lon(val, pos):
@@ -110,8 +111,8 @@ def format_lon(val, pos):
         return f'{int(360 - val)}°W'
     if val == 180:
         return f'{int(val)}°'
-    else:
-        return f'{int(val)}°E'
+
+    return f'{int(val)}°E'
 
 
 def main(cfg):
