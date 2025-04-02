@@ -12,7 +12,7 @@ documentation:
 
 # Note: The following models are just examples
 datasets:
-  - {dataset: MPI-ESM1-2-LR, grid: gn, mip: Amon, project: CMIP6, exp: historical, ensemble: r1i1p1f1}
+  - {dataset: MPI-ESM1-2-LR, grid: gn, mip: Amon, project: CMIP6, exp: historical, ensemble: r1i1p1f1, derive: true}
 
 timerange_for_models: &time_period
   timerange: '1980/2014'
@@ -67,10 +67,6 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 62.0
-                color: orange
-              - y: 67.0
-                color: orange
               - y: 58.0
                 color: red
               - y: 68.0
@@ -121,10 +117,6 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 232.0
-                color: orange
-              - y: 240.0
-                color: orange
               - y: 229.0
                 color: red
               - y: 241.0
@@ -149,3 +141,503 @@ diagnostics:
                 linestyle: '--'
                 linewidth: 1
                 zorder: 3
+
+  prw:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      prw_mean:
+        <<: *time_period
+        legend_label: 'global mean'
+        short_name: prw
+        preprocessor: globalmean
+      prw_min:
+        <<: *time_period
+        short_name: prw
+        legend_label: 'global min'
+        preprocessor: globalmin
+      prw_max:
+        <<: *time_period
+        short_name: prw
+        legend_label: 'global max'
+        preprocessor: globalmax
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            hlines:
+              - y: 30.0
+                color: red
+              - y: 20.0
+                color: red
+            plot_kwargs:
+              'global mean':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+              'global min':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+              'global max':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+
+  pr:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      pr_mean:
+        <<: *time_period
+        legend_label: 'global mean'
+        short_name: pr
+        preprocessor: globalmean
+      pr_min:
+        <<: *time_period
+        short_name: pr
+        legend_label: 'global min'
+        preprocessor: globalmin
+      pr_max:
+        <<: *time_period
+        short_name: pr
+        legend_label: 'global max'
+        preprocessor: globalmax
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            hlines:
+              - y: 0.0
+                color: red
+              - y: 0.0
+                color: red
+            plot_kwargs:
+              'global mean':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+              'global min':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+              'global max':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+
+  clivi:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      clivi_mean:
+        <<: *time_period
+        legend_label: 'global mean'
+        short_name: clivi
+        preprocessor: globalmean
+      clivi_min:
+        <<: *time_period
+        short_name: clivi
+        legend_label: 'global min'
+        preprocessor: globalmin
+      clivi_max:
+        <<: *time_period
+        short_name: clivi
+        legend_label: 'global max'
+        preprocessor: globalmax
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            hlines:
+              - y: 0.05
+                color: red
+              - y: 0.02
+                color: red
+            plot_kwargs:
+              'global mean':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+              'global min':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+              'global max':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+
+  asr:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      asr_mean:
+        <<: *time_period
+        legend_label: 'global mean'
+        short_name: asr
+        preprocessor: globalmean
+      asr_min:
+        <<: *time_period
+        short_name: asr
+        legend_label: 'global min'
+        preprocessor: globalmin
+      asr_max:
+        <<: *time_period
+        short_name: asr
+        legend_label: 'global max'
+        preprocessor: globalmax
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            hlines:
+              - y: 300.0
+                color: red
+              - y: 200.0
+                color: red
+            plot_kwargs:
+              'global mean':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+              'global min':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+              'global max':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+
+  rlds:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      rlds_mean:
+        <<: *time_period
+        legend_label: 'global mean'
+        short_name: rlds
+        preprocessor: globalmean
+      rlds_min:
+        <<: *time_period
+        short_name: rlds
+        legend_label: 'global min'
+        preprocessor: globalmin
+      rlds_max:
+        <<: *time_period
+        short_name: rlds
+        legend_label: 'global max'
+        preprocessor: globalmax
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            hlines:
+              - y: 400.0
+                color: red
+              - y: 300.0
+                color: red
+            plot_kwargs:
+              'global mean':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+              'global min':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+              'global max':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+
+  rsds:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      rsds_mean:
+        <<: *time_period
+        legend_label: 'global mean'
+        short_name: rsds
+        preprocessor: globalmean
+      rsds_min:
+        <<: *time_period
+        short_name: rsds
+        legend_label: 'global min'
+        preprocessor: globalmin
+      rsds_max:
+        <<: *time_period
+        short_name: rsds
+        legend_label: 'global max'
+        preprocessor: globalmax
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            hlines:
+              - y: 200.0
+                color: red
+              - y: 180.0
+                color: red
+            plot_kwargs:
+              'global mean':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+              'global min':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+              'global max':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+
+  rsut:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      rsut_mean:
+        <<: *time_period
+        legend_label: 'global mean'
+        short_name: rsut
+        preprocessor: globalmean
+      rsut_min:
+        <<: *time_period
+        short_name: rsut
+        legend_label: 'global min'
+        preprocessor: globalmin
+      rsut_max:
+        <<: *time_period
+        short_name: rsut
+        legend_label: 'global max'
+        preprocessor: globalmax
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            hlines:
+              - y: 110.0
+                color: red
+              - y: 80.0
+                color: red
+            plot_kwargs:
+              'global mean':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+              'global min':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+              'global max':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+
+  tas:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      tas_mean:
+        <<: *time_period
+        legend_label: 'global mean'
+        short_name: tas
+        preprocessor: globalmean
+      tas_min:
+        <<: *time_period
+        short_name: tas
+        legend_label: 'global min'
+        preprocessor: globalmin
+      tas_max:
+        <<: *time_period
+        short_name: tas
+        legend_label: 'global max'
+        preprocessor: globalmax
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            hlines:
+              - y: 300.0
+                color: red
+              - y: 270.0
+                color: red
+            plot_kwargs:
+              'global mean':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+              'global min':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+              'global max':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+
+  tauu:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      tauu_mean:
+        <<: *time_period
+        legend_label: 'global mean'
+        short_name: tauu
+        preprocessor: globalmean
+      tauu_min:
+        <<: *time_period
+        short_name: tauu
+        legend_label: 'global min'
+        preprocessor: globalmin
+      tauu_max:
+        <<: *time_period
+        short_name: tauu
+        legend_label: 'global max'
+        preprocessor: globalmax
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            hlines:
+              - y: 0.0
+                color: red
+              - y: 0.0
+                color: red
+            plot_kwargs:
+              'global mean':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+              'global min':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+              'global max':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+
+  tauv:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      tauv_mean:
+        <<: *time_period
+        legend_label: 'global mean'
+        short_name: tauv
+        preprocessor: globalmean
+      tauv_min:
+        <<: *time_period
+        short_name: tauv
+        legend_label: 'global min'
+        preprocessor: globalmin
+      tauv_max:
+        <<: *time_period
+        short_name: tauv
+        legend_label: 'global max'
+        preprocessor: globalmax
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            hlines:
+              - y: 0.02
+                color: red
+              - y: -0.02
+                color: red
+            plot_kwargs:
+              'global mean':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+              'global min':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+              'global max':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
