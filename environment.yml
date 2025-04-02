@@ -96,7 +96,11 @@ dependencies:
   - yamllint ==1.35.1
 
   # NCL and dependencies
-  - ncl >=6.6.2
+  # NCL makes the current environment insolvable
+  # a permanent solution needs be found, a solution that
+  # allows us to remove it from here
+  # - ncl >=6.6.2
+  # these should also go with NCL out
   - cdo
   - imagemagick
   - nco
