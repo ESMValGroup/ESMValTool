@@ -21,9 +21,17 @@ timerange_for_models: &time_period
 
 preprocessors:
 
-  globalmean:
-    annual_statistics:
+  globalmean_pr:
+#    annual_statistics:
+#      operator: mean
+    area_statistics:
       operator: mean
+    convert_units:
+      units: mm day-1
+
+  globalmean:
+#    annual_statistics:
+#      operator: mean
     area_statistics:
       operator: mean
 
@@ -89,13 +97,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 62.0
-                color: orange
-              - y: 67.0
-                color: orange
-              - y: 58.0
+              - y: 58.7
                 color: red
-              - y: 68.0
+              - y: 74.9
                 color: red
             plot_kwargs:
               'global mean':
@@ -114,6 +118,49 @@ diagnostics:
                 label: null
                 linestyle: '--'
                 linewidth: 1
+
+  pr:
+    description: time series of global min/max/mean including "reasonable" ranges
+    variables:
+      pr_mean:
+        <<: *time_period
+        short_name: pr
+        legend_label: 'global mean'
+        preprocessor: globalmean
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            hlines:
+              - y: 2.499
+                color: red
+              - y: 3.213
+                color: red
+            plot_kwargs:
+              'global mean':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+                zorder: 3
+              'global min':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+                zorder: 3
+              'global max':
+                color: blue
+                label: null
+                linestyle: '--'
+                linewidth: 1
+                zorder: 3
 
   rlut:
     description: time series of global min/max/mean including "reasonable" ranges
@@ -143,13 +190,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 232.0
-                color: orange
-              - y: 240.0
-                color: orange
-              - y: 229.0
+              - y: 226.4
                 color: red
-              - y: 241.0
+              - y: 245.0
                 color: red
             plot_kwargs:
               'global mean':
