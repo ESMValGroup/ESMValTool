@@ -101,10 +101,10 @@ diagnostics:
                       exp: historical, ensemble: r1i1p1f2}
         observational_dataset: {dataset: WOA, project: obs4MIPs}
 
-  sea_water_salinity:
+  sea_water_potential_temperature:
     description: Global surface quad plots so
     variables:
-      so:  # Salinity ocean water
+      thetao:  # Temperature Ocean
         preprocessor: prep_quad_map_depth
         mip: Omon
     additional_datasets:
@@ -119,10 +119,10 @@ diagnostics:
                       exp: historical, ensemble: r1i1p1f2}
         observational_dataset: {dataset: WOA, project: obs4MIPs}
 
-  sea_water_potential_temperature:
+  sea_water_salinity:
     description: Global surface quad plots so
     variables:
-      thetao:  # Temperature Ocean
+      so:  # Salinity ocean water
         preprocessor: prep_quad_map_depth
         mip: Omon
     additional_datasets:
