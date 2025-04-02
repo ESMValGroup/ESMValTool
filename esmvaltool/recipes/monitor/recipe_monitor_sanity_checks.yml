@@ -540,56 +540,5 @@ diagnostics:
                 linestyle: '--'
                 linewidth: 1
 
-  # sbl:
-  #   description: time series of global min/max/mean including "reasonable" ranges
-  #   variables:
-  #     sbl_mean:
-  #       <<: *time_period
-  #       short_name: sbl
-  #       legend_label: 'global mean'
-  #       preprocessor: globalmean
-  #     sbl_min:
-  #       <<: *time_period
-  #       short_name: sbl
-  #       legend_label: 'global min'
-  #       preprocessor: globalmin
-  #     sbl_max:
-  #       <<: *time_period
-  #       short_name: sbl
-  #       legend_label: 'global max'
-  #       preprocessor: globalmax
-  #   scripts:
-  #     timeseries:
-  #       script: monitor/multi_datasets.py
-  #       plot_folder: '{plot_dir}'
-  #       group_variables_by: short_name
-  #       facet_used_for_labels: legend_label
-  #       plots:
-  #         timeseries:
-  #           annual_mean_kwargs: false
-  #           plot_kwargs:
-  #             'global mean':
-  #               color: blue
-  #               label: null
-  #               linestyle: '-'
-  #               linewidth: 2
-  #               label: '{dataset}'
-  #             'global min':
-  #               color: blue
-  #               label: null
-  #               linestyle: '--'
-  #               linewidth: 1
-  #             'global max':
-  #               color: blue
-  #               label: null
-  #               linestyle: '--'
-  #               linewidth: 1
-
-
-
-
-
-
-
-
+ 
 
