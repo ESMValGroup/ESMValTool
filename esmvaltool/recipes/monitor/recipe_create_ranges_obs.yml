@@ -96,24 +96,25 @@ diagnostics:
 #         tier: 3, start_year: 1995, end_year: 2014}
 #    scripts: null
 
-  pr:
-    description: Calculate range of reasonable monthly values for precipitation from CMIP6 models.
-    variables:
-      pr_min:
-        short_name: pr
-        preprocessor: pp_min_pr
-        mip: Amon
-      pr_max:
-        short_name: pr
-        preprocessor: pp_max_pr
-        mip: Amon
-    additional_datasets:
-#    MERRA2
-#    GPCP-SG
-      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-         tier: 3, start_year: 1995, end_year: 2014}
-      
-    scripts: null
+#  pr:
+#    description: Calculate range of reasonable monthly values for precipitation from CMIP6 models.
+#    variables:
+#      pr_min:
+#        short_name: pr
+#        preprocessor: pp_min_pr
+#        mip: Amon
+#      pr_max:
+#        short_name: pr
+#        preprocessor: pp_max_pr
+#        mip: Amon
+#    additional_datasets:
+#      - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
+#         start_year: 1980, end_year: 2021}
+#      - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
+#         start_year: 1979, end_year: 2022}
+#      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+#         tier: 3, start_year: 1979, end_year: 2021}
+#    scripts: null
 
 #  rlut:
 #    description: Calculate range of reasonable monthly values for precipitation from CMIP6 models.
