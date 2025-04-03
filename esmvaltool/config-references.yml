@@ -607,6 +607,10 @@ authors:
     name: Williams, Keith
     institute: MetOffice, UK
     orcid:
+  planton_yann:
+    name: Planton, Yann
+    institute: Monash University
+    orcid: https://orcid.org/0000-0002-9664-8180
   # Viewers (not active developers)
   balaji_venkatramani:
     name: Balaji, Venkatramani
@@ -681,6 +685,10 @@ authors:
     name: Sellar, Alistair
     institute: MetOffice, UK
     orcid: 0000-0002-2955-7254
+  sullivan_arnold:
+    name: Sullivan, Arnold
+    institute: CSIRO, Australia
+    orcid: https://orcid.org/0000-0002-5712-6195
   wyser_klaus:
     name: Wyser, Klaus
     institute: SMHI, Sweden

@@ -2,16 +2,18 @@
 # 
 ---
 documentation:
-  description: ENSO CLIVAR metrics - basic ENSO characteristics
+  description: ENSO CLIVAR metrics - basic ENSO characteristics for use in REF
   title: Reproducing basic ENSO characteristics metrics by Yann Planton
   authors:
     - chun_felicity
     - beucher_romain
-    # - sullivan_arnold
+    - sullivan_arnold
+    - planton_yann
   maintainer:
     - chun_felicity
 
 datasets:
+  ## test run with subset of CMIP6 models ##
   - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
   - {dataset: ACCESS-CM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
   - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
@@ -19,29 +21,10 @@ datasets:
   - {dataset: CESM2-FV2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
   - {dataset: CESM2-WACCM-FV2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
   - {dataset: CESM2-WACCM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: CMCC-CM2-HR4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: CMCC-CM2-SR5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: CMCC-ESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: FGOALS-g3, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: FIO-ESM-2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: GISS-E2-1-H, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: MCM-UA-1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: MIROC6, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: MPI-ESM-1-2-HAM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: MPI-ESM1-2-HR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: MPI-ESM1-2-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: NorCPM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: NorESM2-LM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: NorESM2-MM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: SAM0-UNICON, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  # - {dataset: TaiESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
 
-  # observations obs4mips
-  # - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, mip: Omon}
-  - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
+  # observations
+  - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, mip: Omon}
+  # - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
   
 preprocessors:
   ssta_enso: &base_enso #pattern, lifecycle w/o month, duration, diversity
@@ -77,7 +60,7 @@ preprocessors:
 
   ssta_meridional: #diversity, lifecycle duration
     <<: *base_enso
-    extract_region: &eqp #lifecycle 160 280
+    extract_region: &eqp
       start_longitude: 150.
       end_longitude: 270.
       start_latitude: -5.
@@ -102,7 +85,7 @@ preprocessors:
       operator: std_dev
       period: full
 
-  enso_seas_asym: #boreal season in script, climate stddev
+  enso_seas_asym:
     custom_order: true
     extract_region: 
       <<: *nino34
