@@ -12,7 +12,7 @@ documentation:
 
 # Note: The following models are just examples
 datasets:
-  - {dataset: MPI-ESM1-2-LR, grid: gn, mip: Amon, project: CMIP6, exp: historical, ensemble: r1i1p1f1, derive: true}
+  - {dataset: MPI-ESM1-2-LR, grid: gn, mip: Amon, project: CMIP6, exp: historical, ensemble: r1i1p1f1}
 
 timerange_for_models: &time_period
   timerange: '1980/2014'
@@ -300,16 +300,19 @@ diagnostics:
         legend_label: 'global mean'
         short_name: asr
         preprocessor: globalmean
+        derive: true
       asr_min:
         <<: *time_period
         short_name: asr
         legend_label: 'global min'
         preprocessor: globalmin
+        derive: true
       asr_max:
         <<: *time_period
         short_name: asr
         legend_label: 'global max'
         preprocessor: globalmax
+        derive: true
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
@@ -350,16 +353,19 @@ diagnostics:
         legend_label: 'global mean'
         short_name: rlds
         preprocessor: globalmean
+        derive: true
       rlds_min:
         <<: *time_period
         short_name: rlds
         legend_label: 'global min'
         preprocessor: globalmin
+        derive: true
       rlds_max:
         <<: *time_period
         short_name: rlds
         legend_label: 'global max'
         preprocessor: globalmax
+        derive: true
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
@@ -400,16 +406,19 @@ diagnostics:
         legend_label: 'global mean'
         short_name: rsds
         preprocessor: globalmean
+        derive: true
       rsds_min:
         <<: *time_period
         short_name: rsds
         legend_label: 'global min'
         preprocessor: globalmin
+        derive: true
       rsds_max:
         <<: *time_period
         short_name: rsds
         legend_label: 'global max'
         preprocessor: globalmax
+        derive: true
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
@@ -450,16 +459,19 @@ diagnostics:
         legend_label: 'global mean'
         short_name: rsut
         preprocessor: globalmean
+        derive: true
       rsut_min:
         <<: *time_period
         short_name: rsut
         legend_label: 'global min'
         preprocessor: globalmin
+        derive: true
       rsut_max:
         <<: *time_period
         short_name: rsut
         legend_label: 'global max'
         preprocessor: globalmax
+        derive: true
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
@@ -500,16 +512,19 @@ diagnostics:
         legend_label: 'global mean'
         short_name: tas
         preprocessor: globalmean
+        derive: true
       tas_min:
         <<: *time_period
         short_name: tas
         legend_label: 'global min'
         preprocessor: globalmin
+        derive: true
       tas_max:
         <<: *time_period
         short_name: tas
         legend_label: 'global max'
         preprocessor: globalmax
+        derive: true
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
