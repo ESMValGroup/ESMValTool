@@ -13,7 +13,7 @@ documentation:
 
 # Note: The following models are just examples
 datasets:
-  - {dataset: MPI-ESM1-2-LR, grid: gn, mip: Amon, project: CMIP6, exp: historical, ensemble: r1i1p1f1, derive: true}
+  - {dataset: MPI-ESM1-2-LR, grid: gn, mip: Amon, project: CMIP6, exp: historical, ensemble: r1i1p1f1}
 
 timerange_for_models: &time_period
   timerange: '1980/2014'
@@ -149,16 +149,19 @@ diagnostics:
         short_name: rlut
         legend_label: 'global mean'
         preprocessor: globalmean
+        derive: true
       rlut_min:
         <<: *time_period
         short_name: rlut
         legend_label: 'global min'
         preprocessor: globalmin
+        derive: true
       rlut_max:
         <<: *time_period
         short_name: rlut
         legend_label: 'global max'
         preprocessor: globalmax
+        derive: true
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
@@ -252,16 +255,19 @@ diagnostics:
         short_name: lwcre
         legend_label: 'global mean'
         preprocessor: globalmean
+        derive: true
       lwcre_min:
         <<: *time_period
         short_name: lwcre
         legend_label: 'global min'
         preprocessor: globalmin
+        derive: true
       lwcre_max:
         <<: *time_period
         short_name: lwcre
         legend_label: 'global max'
         preprocessor: globalmax
+        derive: true
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
@@ -297,16 +303,19 @@ diagnostics:
         short_name: lwp
         legend_label: 'global mean'
         preprocessor: globalmean
+        derive: true
       lwp_min:
         <<: *time_period
         short_name: lwp
         legend_label: 'global min'
         preprocessor: globalmin
+        derive: true
       lwp_max:
         <<: *time_period
         short_name: lwp
         legend_label: 'global max'
         preprocessor: globalmax
+        derive: true
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
@@ -342,16 +351,19 @@ diagnostics:
         short_name: netcre
         legend_label: 'global mean'
         preprocessor: globalmean
+        derive: true
       netcre_min:
         <<: *time_period
         short_name: netcre
         legend_label: 'global min'
         preprocessor: globalmin
+        derive: true
       netcre_max:
         <<: *time_period
         short_name: netcre
         legend_label: 'global max'
         preprocessor: globalmax
+        derive: true
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
@@ -387,16 +399,19 @@ diagnostics:
         short_name: rtnt
         legend_label: 'global mean'
         preprocessor: globalmean
+        derive: true
       rtnt_min:
         <<: *time_period
         short_name: rtnt
         legend_label: 'global min'
         preprocessor: globalmin
+        derive: true
       rtnt_max:
         <<: *time_period
         short_name: rtnt
         legend_label: 'global max'
         preprocessor: globalmax
+        derive: true
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
@@ -432,16 +447,19 @@ diagnostics:
         short_name: swcre
         legend_label: 'global mean'
         preprocessor: globalmean
+        derive: true
       swcre_min:
         <<: *time_period
         short_name: swcre
         legend_label: 'global min'
         preprocessor: globalmin
+        derive: true
       swcre_max:
         <<: *time_period
         short_name: swcre
         legend_label: 'global max'
         preprocessor: globalmax
+        derive: true
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
@@ -575,51 +593,6 @@ diagnostics:
       hfss_max:
         <<: *time_period
         short_name: hfss
-        legend_label: 'global max'
-        preprocessor: globalmax
-    scripts:
-      timeseries:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        group_variables_by: short_name
-        facet_used_for_labels: legend_label
-        plots:
-          timeseries:
-            annual_mean_kwargs: false
-            plot_kwargs:
-              'global mean':
-                color: blue
-                label: null
-                linestyle: '-'
-                linewidth: 2
-                label: '{dataset}'
-              'global min':
-                color: blue
-                label: null
-                linestyle: '--'
-                linewidth: 1
-              'global max':
-                color: blue
-                label: null
-                linestyle: '--'
-                linewidth: 1
-
-  pr:
-    description: time series of global min/max/mean including "reasonable" ranges
-    variables:
-      pr_mean:
-        <<: *time_period
-        short_name: pr
-        legend_label: 'global mean'
-        preprocessor: globalmean
-      pr_min:
-        <<: *time_period
-        short_name: pr
-        legend_label: 'global min'
-        preprocessor: globalmin
-      pr_max:
-        <<: *time_period
-        short_name: pr
         legend_label: 'global max'
         preprocessor: globalmax
     scripts:
