@@ -105,6 +105,11 @@ diagnostics:
         short_name: pr
         legend_label: 'global mean'
         preprocessor: globalmean_pr
+      pr_max:
+        <<: *time_period
+        short_name: pr
+        legend_label: 'global max'
+        preprocessor: globalmax_pr
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
