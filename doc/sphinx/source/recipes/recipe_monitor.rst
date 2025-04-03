@@ -141,10 +141,10 @@ Any, but the variables' number of dimensions should match the ones expected by e
 ----------------------------
 Sanity checks
 
-The sanity_checks recipe is supposed to select a subset of variables (so far it deals only with 2D + time variables) to check whether the model is performing in reasonable way. The recipe plots the monthly mean of the selected variables as well as maximum and minimum, where the maximum and minimum are search along ach grid cell. 
-The monthly mean is plot in comparison with reasonable maximum and reasonable minimum (red lines) taken from observations and computed with recipe ###.yml. 
+The sanity_checks recipe is supposed to select a subset of variables (so far it deals only with 2D + time variables) to check whether the model is performing in reasonable way. The recipe plots the monthly mean of the selected variables as well as maximum and minimum, where the maximum and minimum are search along ach grid cell.
+The monthly mean is plot in comparison with reasonable maximum and reasonable minimum (red lines) taken from observations and computed with recipe ###.yml.
 
-Variables: list to be completed 
+Variables: list to be completed
 
 --------------
 Example plots
