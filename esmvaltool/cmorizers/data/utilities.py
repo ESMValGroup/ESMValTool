@@ -8,8 +8,10 @@ import os
 import re
 import shutil
 import uuid
-from collections.abc import Callable
+from abc import abstractmethod
+from collections.abc import Mapping
 from contextlib import contextmanager
+from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
@@ -323,15 +325,33 @@ def read_cmor_config(dataset):
     attributes = cfg["attributes"]
     if attributes.get("activity_id", "") == "obs4MIPs":
         # Fill in various attributes automatically.
+        timestamp = datetime.datetime.now(datetime.timezone.utc)
+        timestamp_format = "%Y-%m-%dT%H:%M:%SZ"
+        now_time = timestamp.strftime(timestamp_format)
         attributes["project_id"] = "obs4MIPs"
         attributes["tier"] = "1"
         attributes["source_id"] = dataset
+        source_id_info = load_obs4mips_source_id_info()[dataset]
+        for key in ["institution_id", "source_label"]:
+            attributes[key] = re.sub(
+                "[^a-zA-Z0-9]+", "-", source_id_info[key]
+            ).strip("-")
         cv = load_controlled_vocabulary("obs4MIPs")
         for key, value in cv["source_id"][dataset].items():
             attributes[key] = value
         attributes["institution"] = cv["institution_id"][
             attributes["institution_id"]
         ]
+        if "references" not in attributes:
+            attributes["references"] = attributes["doi"]
+        if "creation_date" not in attributes:
+            attributes["creation_date"] = now_time
+        attributes["data_specs_version"] = "2.5"
+        attributes["processing_code_location"] = (
+            _get_processing_code_location()
+        )
+        if "version" not in attributes:
+            attributes["version"] = timestamp.strftime("v%Y%m%d")
     elif "comment" not in attributes:
         attributes["comment"] = ""
 
@@ -343,12 +363,8 @@ def read_cmor_config(dataset):
 # See https://zenodo.org/records/11500474 for the obs4MIPs specification
 # See https://github.com/PCMDI/obs4MIPs-cmor-tables for the obs4MIPs CMOR tables
 
-DRS_ATTRIBUTE = "^[a-zA-Z0-9-]+$"
-FREE_FORM_ATTRIBUTE = ".*"
 
-
-@lru_cache
-def load_controlled_vocabulary(project: str) -> dict:
+def find_cmor_tables_path(project) -> Path:
     project_config = yaml.safe_load(
         CFG["config_developer_file"].read_text(encoding="utf-8")
     )[project]
@@ -359,7 +375,13 @@ def load_controlled_vocabulary(project: str) -> dict:
     tables_path = os.path.expandvars(os.path.expanduser(tables_path))
     if not os.path.exists(tables_path):
         tables_path = os.path.join(install_dir, "tables", tables_path)
-    cv_paths = list(Path(tables_path, "Tables").glob("*_CV.json"))
+    return Path(tables_path)
+
+
+@lru_cache
+def load_controlled_vocabulary(project: str) -> dict:
+    tables_path = find_cmor_tables_path(project)
+    cv_paths = list((tables_path / "Tables").glob("*_CV.json"))
     if not cv_paths:
         return {}
     cv_path = cv_paths[0]
@@ -367,160 +389,306 @@ def load_controlled_vocabulary(project: str) -> dict:
     return cv["CV"]
 
 
-def check_with_controlled_vocabulary(
-    project: str,
-    attribute: str,
-    value: str,
-    attributes: dict[str, str],
-) -> bool:
+@lru_cache
+def load_obs4mips_source_id_info() -> dict[str, dict]:
+    table_path = find_cmor_tables_path("obs4MIPs") / "obs4MIPs_source_id.json"
+    table = json.loads(table_path.read_text(encoding="utf-8"))
+    return table["source_id"]
+
+
+class ValidationError(Exception):
+    pass
+
+
+@dataclass
+class BaseAttributeValidator:
+    """Validator for global attributes."""
+
+    name: str
+    """The name of the attribute."""
+    required: bool
+    """Whether the attribute is required or not."""
+
+    def validate(self, attributes: Mapping[str, str]) -> None:
+        """Validate attributes."""
+        if self.name in attributes:
+            self.validate_values(attributes)
+        elif self.required:
+            msg = f"Required attribute '{self.name}' missing."
+            raise ValidationError(msg)
+
+    @abstractmethod
+    def validate_values(self, attributes: Mapping[str, str]) -> None:
+        """Validate attribute values."""
+
+
+@dataclass
+class CVAttributeValidator(BaseAttributeValidator):
+    values: set[str]
+
+    def validate_values(self, attributes: Mapping[str, str]) -> None:
+        value = attributes[self.name]
+        if value not in self.values:
+            msg = (
+                f"Encountered an invalid value '{value}' for attribute "
+                f"'{self.name}'. Choose from: {','.join(sorted(self.values))}"
+            )
+            raise ValidationError(msg)
+
+
+@dataclass
+class CVRelatedAttributeValidator(BaseAttributeValidator):
+    # source: CVAttributeValidator
+    source_name: str
+    values: dict[str, str]
+
+    def validate_values(self, attributes: Mapping[str, str]) -> None:
+        # self.source.validate(attributes)
+        source_value = attributes[self.source_name]
+        value = attributes[self.name]
+        if value != self.values[source_value]:
+            msg = (
+                f"Encountered an invalid value '{value}' for attribute "
+                f"{self.name}. It should be: {self.values[source_value]}"
+            )
+            raise ValidationError(msg)
+
+
+def load_cv_validators(project: str) -> list[BaseAttributeValidator]:
+    if project in ("OBS", "OBS6"):
+        # There is no controlled vocabulary for ESMValTool internal projects OBS6 and OBS.
+        return []
+
+    if project != "obs4MIPs":
+        msg = f"Reading the controlled vocabulary for project {project} is not (yet) supported."
+        raise NotImplementedError(msg)
+
     cv = load_controlled_vocabulary(project)
-    values = cv[attribute]
-    if attribute in values:
-        values = values[attribute]
-    return value in values
+    validators: list[BaseAttributeValidator] = []
+    required_attributes = {
+        v.name for v in GLOBAL_ATTRIBUTE_VALIDATORS[project] if v.required
+    }
+    ignore = {"required_global_attributes", "license"}
+    for key, values in cv.items():
+        if key in ignore:
+            continue
+        if key in cv[key]:
+            # Some entries are nested.
+            values = cv[key][key]
+        if isinstance(values, list | dict):
+            validators.append(
+                CVAttributeValidator(
+                    key,
+                    values=set(values),
+                    required=key in required_attributes,
+                )
+            )
 
-
-def check_institutution(
-    project: str,
-    attribute: str,
-    value: str,
-    attributes: dict[str, str],
-) -> bool:
-    cv = load_controlled_vocabulary(project)
-    institution_id = attributes["institution_id"]
-    return value == cv["institution_id"][institution_id]
-
-
-def create_source_checker(
-    source_attr: str,
-) -> Callable:
-    def checker(
-        project: str, attribute: str, value: str, attributes: dict[str, str]
-    ) -> bool:
-        cv = load_controlled_vocabulary(project)
-        source_id = attributes["source_id"]
-        return value == cv["source_id"][source_id][source_attr]
-
-    return checker
-
-
-def check_source_label(
-    project: str,
-    attribute: str,
-    value: str,
-    attributes: dict[str, str],
-) -> bool:
-    source_id = attributes["source_id"]
-    return source_id.startswith(f"{value}-")
-
-
-def check_variant_label(
-    project: str,
-    attribute: str,
-    value: str,
-    attributes: dict[str, str],
-) -> bool:
-    institution_id = attributes["institution_id"]
-    return (value == institution_id) or re.match(
-        f"^{institution_id}-[a-zA-Z0-9-]+$", value
+    validators.append(
+        CVRelatedAttributeValidator(
+            "institution",
+            required=True,
+            source_name="institution_id",
+            values=cv["institution_id"],
+        )
     )
 
+    # Create validators for attributes determined by the "source_id".
+    related_values: dict[str, dict[str, str]] = {}
+    for source_id, source_values in cv["source_id"].items():
+        for name, value in source_values.items():
+            if name not in related_values:
+                related_values[name] = {}
+            related_values[name][source_id] = value
+    for name, values in related_values.items():
+        validators.append(
+            CVRelatedAttributeValidator(
+                name,
+                required=True,
+                source_name="source_id",
+                values=values,
+            )
+        )
 
-def check_datetime(
-    project: str,
-    attribute: str,
-    value: str,
-    attributes: dict[str, str],
-) -> bool:
-    try:
-        datetime.datetime.fromisoformat(value)
-    except ValueError as exc:
-        logger.error("Invalid datetime format '%s'", exc)
-        return False
-    return True
+    # from rich.pretty import pprint
+
+    # pprint(validators)
+    return validators
 
 
-REQUIRED_GLOBAL_ATTRIBUTES = {
-    "obs4MIPs": {
-        "activity_id": "obs4MIPs",
-        "contact": FREE_FORM_ATTRIBUTE,
-        "creation_date": check_datetime,
-        "dataset_contributor": FREE_FORM_ATTRIBUTE,
-        "data_specs_version": FREE_FORM_ATTRIBUTE,  # TODO: automate, this should be the GH release of obs4MIPs CMOR tables
-        "frequency": check_with_controlled_vocabulary,
-        "grid": FREE_FORM_ATTRIBUTE,
-        "grid_label": check_with_controlled_vocabulary,
-        "institution": check_institutution,
-        "institution_id": check_with_controlled_vocabulary,
-        "license": FREE_FORM_ATTRIBUTE,
-        "nominal_resolution": check_with_controlled_vocabulary,
-        "processing_code_location": FREE_FORM_ATTRIBUTE,  # TODO: automate and add check
-        "product": check_with_controlled_vocabulary,
-        "realm": check_with_controlled_vocabulary,
-        "references": FREE_FORM_ATTRIBUTE,
-        "region": create_source_checker("region"),
-        "source": create_source_checker("source"),
-        "source_id": check_with_controlled_vocabulary,
-        "source_label": check_source_label,
-        "source_type": create_source_checker("source_type"),
-        "source_version_number": create_source_checker(
-            "source_version_number"
+@dataclass
+class DateTimeAttributeValidator(BaseAttributeValidator):
+    def validate_values(self, attributes: Mapping[str, str]) -> None:
+        value = attributes[self.name]
+        format = "%Y-%m-%dT%H:%M:%SZ"
+        try:
+            datetime.datetime.strptime(value, format)
+        except ValueError as exc:
+            msg = f"Invalid datetime encountered for attribute '{self.name}', message: {exc}"
+            raise ValidationError(msg) from None
+
+
+@dataclass
+class RegexAttributeValidator(BaseAttributeValidator):
+    pattern: str
+
+    def validate_values(self, attributes: Mapping[str, str]) -> None:
+        # if any(f"{{{a}}}" in self.pattern for a in attributes):
+        pattern = self.pattern.format(**attributes)
+        # else:
+        #     pattern = self.pattern
+        value = attributes[self.name]
+        if not re.match(pattern, value):
+            msg = (
+                f"Invalid attribute value '{value}' encountered for attribute "
+                f"'{self.name}'. It should match '{pattern}'"
+            )
+            raise ValidationError(msg)
+
+
+PATH_ATTRIBUTE = "^[a-zA-Z0-9-]+$"  # Used in file or directory names.
+PATH_ATTRIBUTE_WITH_SPACES = (
+    "^[a-zA-Z0-9- ]+$"  # Used in file or directory names after space removal.
+)
+DRS_ATTRIBUTE = "^[a-zA-Z0-9-_]+$"  # Data Reference Syntax (DRS) components.
+FREE_FORM_ATTRIBUTE = ".+"
+
+
+GLOBAL_ATTRIBUTE_VALIDATORS: dict[str, list[BaseAttributeValidator]] = {
+    "obs4MIPs": [
+        # Required attributes
+        RegexAttributeValidator(
+            "activity_id", required=True, pattern="^obs4MIPs$"
         ),
-        "tracking_id": FREE_FORM_ATTRIBUTE,  # TODO: improve check
-        "variable_id": DRS_ATTRIBUTE,
-        "variant_label": check_variant_label,
-    }
-}
-
-OPTIONAL_GLOBAL_ATTRIBUTES = {
-    "obs4MIPs": {
-        "comment": FREE_FORM_ATTRIBUTE,
-        "external_variables": check_with_controlled_vocabulary,
-        "history": FREE_FORM_ATTRIBUTE,
-        "source_data_notes": FREE_FORM_ATTRIBUTE,
+        RegexAttributeValidator(
+            "contact", required=True, pattern=FREE_FORM_ATTRIBUTE
+        ),
+        DateTimeAttributeValidator("creation_date", required=True),
+        RegexAttributeValidator(
+            "dataset_contributor", required=True, pattern=FREE_FORM_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "data_specs_version", required=True, pattern=r"^2\.5$"
+        ),
+        # "doi" is not a required attribute according to the obs4MIPs spec,
+        # but it is for CMIP7 data so we add it for consistency.
+        RegexAttributeValidator("doi", required=True, pattern=r"^10\.[0-9]+"),
+        RegexAttributeValidator(
+            "frequency", required=True, pattern=PATH_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "grid", required=True, pattern=FREE_FORM_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "grid_label", required=True, pattern=PATH_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "institution", required=True, pattern=FREE_FORM_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "institution_id", required=True, pattern=PATH_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "license", required=True, pattern=FREE_FORM_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "nominal_resolution",
+            required=True,
+            pattern=PATH_ATTRIBUTE_WITH_SPACES,
+        ),
+        RegexAttributeValidator(
+            "processing_code_location",
+            required=True,
+            pattern=FREE_FORM_ATTRIBUTE,
+        ),
+        RegexAttributeValidator(
+            "product", required=True, pattern=DRS_ATTRIBUTE
+        ),
+        RegexAttributeValidator("realm", required=True, pattern=DRS_ATTRIBUTE),
+        RegexAttributeValidator(
+            "references", required=True, pattern=FREE_FORM_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "region", required=True, pattern=DRS_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "source", required=True, pattern=FREE_FORM_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "source_id", required=True, pattern=PATH_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "source_id", required=True, pattern="^{source_label}-.+$"
+        ),
+        RegexAttributeValidator(
+            "source_label", required=True, pattern=DRS_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "source_type", required=True, pattern=FREE_FORM_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "source_version_number", required=True, pattern=FREE_FORM_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "tracking_id",
+            required=True,
+            pattern="^hdl:21.14102/[0-9a-f]{{8}}(-[0-9a-f]{{4}}){{3}}-[0-9a-f]{{12}}$",
+        ),
+        RegexAttributeValidator(
+            "variable_id", required=True, pattern=PATH_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "variant_label", required=True, pattern=PATH_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "variant_label", required=True, pattern="^{institution_id}(-.+)?$"
+        ),
+        # Optional attributes
+        RegexAttributeValidator(
+            "comment", required=False, pattern=FREE_FORM_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "external_variables", required=False, pattern=FREE_FORM_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "history", required=False, pattern=FREE_FORM_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "source_data_notes", required=False, pattern=FREE_FORM_ATTRIBUTE
+        ),
         # TODO: Maybe we can add the two attributes below based on info from
         # the automatic download.
-        "source_data_retrieval_date": check_datetime,
-        "source_data_url": FREE_FORM_ATTRIBUTE,
-        "title": FREE_FORM_ATTRIBUTE,
-        "variant_info": FREE_FORM_ATTRIBUTE,
-    }
+        DateTimeAttributeValidator(
+            "source_data_retrieval_date", required=False
+        ),
+        RegexAttributeValidator(
+            "source_data_url", required=False, pattern=FREE_FORM_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "title", required=False, pattern=FREE_FORM_ATTRIBUTE
+        ),
+        RegexAttributeValidator(
+            "variant_info", required=False, pattern=FREE_FORM_ATTRIBUTE
+        ),
+    ],
 }
 
 
-def check_global_attributes(project: str, attributes: dict[str, str]) -> bool:
-    """Check if the required attributes are available for the project."""
-    success = True
-    # Check that required attributes are present.
-    for attr in REQUIRED_GLOBAL_ATTRIBUTES.get(project, {}):
-        if attr not in attributes:
-            logger.error("Missing global attribute '%s'", attr)
-            success = False
-
-    # Check attribute values.
-    attr_definitions = REQUIRED_GLOBAL_ATTRIBUTES.get(
-        project, {}
-    ) | OPTIONAL_GLOBAL_ATTRIBUTES.get(project, {})
-
-    for attr, checker in attr_definitions.items():
-        if attr in attributes:
-            value = attributes[attr]
-            if not isinstance(checker, str):
-                result = checker(project, attr, value, attributes)
-            else:
-                result = re.match(checker, value)
-
-            if not result:
-                logger.error(
-                    "Invalid value '%s' for attribute '%s', expected a value "
-                    "matching '%s'",
-                    value,
-                    attr,
-                    checker,
-                )
-                success = False
-
-    return success
+def validate_global_attributes(
+    project: str, attributes: dict[str, str]
+) -> bool:
+    validators = GLOBAL_ATTRIBUTE_VALIDATORS.get(
+        project, []
+    ) + load_cv_validators(project)
+    messages = set()
+    for validator in validators:
+        try:
+            validator.validate(attributes)
+        except ValidationError as exc:
+            messages.add(str(exc))
+    if messages:
+        logger.error("%s", "\n".join(sorted(messages)))
+    return not (messages)
 
 
 def _get_attr_from_field_coord(ncfield, coord_name, attr):
@@ -543,13 +711,13 @@ def _load_callback(raw_cube, field, _):
                 coord.units = units
 
 
-def _check_formatting(filename: str, attributes: dict[str, str]) -> None:
+def _check_formatting(filename: Path, attributes: dict[str, str]) -> None:
     """Run final cmorization checks."""
     project = attributes["project_id"]
     logger.info("Checking compliance with '%s' project standards", project)
     cube = iris.load_cube(filename, callback=_load_callback)
 
-    attribute_success = check_global_attributes(
+    attribute_success = validate_global_attributes(
         project, cube.attributes.globals
     )
 
@@ -587,34 +755,57 @@ FILENAME_TEMPLATE = {
     "OBS": "{project_id}_{dataset_id}_{modeling_realm}_{version}_{mip}_{variable_id}",
 }
 
+DIRECTORY_TEMPLATE = {
+    "obs4MIPs": "{activity_id}/{institution_id}/{source_id}/{frequency}/{variable_id}/{nominal_resolution}/{version}",
+}
 
-def get_output_filename(attrs: dict[str, str], time_range: str | None) -> str:
+
+def get_output_filename(
+    outdir: str,
+    attrs: dict[str, str],
+    time_range: str | None,
+) -> Path:
     """Get the output filename."""
     project = attrs["project_id"]
+    if project in DIRECTORY_TEMPLATE:
+        dirname = DIRECTORY_TEMPLATE[project].format(
+            **{k: v.replace(" ", "") for k, v in attrs.items()}
+        )
+        # Ignore the TierX/dataset subdirectory set in the cmorizer.py script
+        # if the project defines its own directory structure.
+        out_path = Path(outdir).parent.parent / dirname
+    else:
+        out_path = Path(outdir)
     filename = FILENAME_TEMPLATE[project].format(**attrs)
     if time_range is not None:
         filename = f"{filename}_{time_range}"
     filename = f"{filename}.nc"
-    return filename
+    return out_path / filename
 
 
-def save_variable(cube, var, outdir, attrs, **kwargs):
+def save_variable(
+    cube: iris.cube.Cube,
+    var: str,
+    outdir: str,
+    attrs: dict[str, str],
+    **kwargs,
+) -> None:
     """Saver function.
 
     Saves iris cubes (data variables) in CMOR-standard named files.
 
     Parameters
     ----------
-    cube: iris.cube.Cube
+    cube:
         data cube to be saved.
 
-    var: str
+    var:
         Variable short_name e.g. ts or tas.
 
-    outdir: str
+    outdir:
         root directory where the file will be saved.
 
-    attrs: dict
+    attrs:
         dictionary holding cube metadata attributes like
         project_id, version etc.
 
@@ -656,14 +847,14 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
             )
             time_suffix = "-".join([date1, date2])
 
-    file_name = get_output_filename(attrs, time_suffix)
-    file_path = os.path.join(outdir, file_name)
+    file_path = get_output_filename(outdir, attrs, time_suffix)
     logger.info("Saving: %s", file_path)
+    file_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Save the cube.
     status = "lazy" if cube.has_lazy_data() else "realized"
     logger.info("Cube has %s data [lazy is preferred]", status)
-    iris.save(cube, file_path, fill_value=1e20, **kwargs)
+    iris.save(cube, file_path, fill_value=1e20, compute=False, **kwargs)
 
     # Check that the cube complies with the CMOR tables for the project.
     _check_formatting(file_path, attrs)
@@ -699,8 +890,9 @@ def extract_doi_value(tags):
 
 
 def _get_processing_code_location() -> str:
-    # TODO: make sure current working dir is not dirty and replace version
-    # by commit that is available online
+    # Ideas for improvement:
+    # - make sure current working dir is not dirty
+    # - replace version by commit that is available online
     version = ".".join(esmvaltool.__version__.split(".", 3)[:3])
     return f"https://github.com/ESMValGroup/ESMValTool/tree/{version}"
 
@@ -717,13 +909,20 @@ def set_global_atts(cube, attrs):
     # Necessary attributes
     if attrs["project_id"] == "obs4MIPs":
         glob_dict = {
-            "creation_date": now_time,
             "tracking_id": f"hdl:21.14102/{uuid.uuid4()}",
-            "processing_code_location": _get_processing_code_location(),
             "variable_id": cube.var_name,
         }
-        required_keys = set(REQUIRED_GLOBAL_ATTRIBUTES["obs4MIPs"])
-        for key in required_keys | set(OPTIONAL_GLOBAL_ATTRIBUTES["obs4MIPs"]):
+        required_keys = {
+            v.name
+            for v in GLOBAL_ATTRIBUTE_VALIDATORS["obs4MIPs"]
+            if v.required
+        }
+        optional_keys = {
+            v.name
+            for v in GLOBAL_ATTRIBUTE_VALIDATORS["obs4MIPs"]
+            if not v.required
+        }
+        for key in required_keys | optional_keys:
             if key in attrs:
                 glob_dict[key] = attrs[key]
         missing = required_keys - set(glob_dict)

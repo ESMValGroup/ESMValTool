@@ -21,9 +21,7 @@ from esmvalcore.config import CFG
 from esmvalcore.config._logging import configure_logging
 
 from esmvaltool import ESMValToolDeprecationWarning
-from esmvaltool.cmorizers.data.utilities import (
-    read_cmor_config,
-)
+from esmvaltool.cmorizers.data.utilities import read_cmor_config
 
 logger = logging.getLogger(__name__)
 datasets_file = os.path.join(os.path.dirname(__file__), "datasets.yml")
