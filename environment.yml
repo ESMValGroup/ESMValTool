@@ -17,7 +17,6 @@ dependencies:
   - cfgrib
   - cftime
   - cmocean
-  - curl <8.10  # https://github.com/ESMValGroup/ESMValTool/issues/3758
   - cython
   - dask !=2024.8.0  # https://github.com/dask/dask/issues/11296
   - distributed
@@ -97,7 +96,11 @@ dependencies:
   - yamllint ==1.35.1
 
   # NCL and dependencies
-  - ncl >=6.6.2
+  # NCL makes the current environment insolvable
+  # a permanent solution needs be found, a solution that
+  # allows us to remove it from here
+  # - ncl >=6.6.2
+  # these should also go with NCL out
   - cdo
   - imagemagick
   - nco
@@ -133,6 +136,3 @@ dependencies:
   - r-git2r  # dependency of lintr
   - r-lintr ==3.1.2
   - r-styler ==1.10.3
-
-  # Julia (dependencies installed by separate script)
-  - julia
