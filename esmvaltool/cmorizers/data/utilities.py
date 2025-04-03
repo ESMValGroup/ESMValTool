@@ -721,6 +721,13 @@ def _check_formatting(filename: Path, attributes: dict[str, str]) -> None:
         project, cube.attributes.globals
     )
 
+    if project in ("OBS", "OBS6"):
+        # Use the configured check_level for older CMORizers to avoid breaking
+        # them.
+        check_level = CFG["check_level"]
+    else:
+        # Use strict checks for obs4MIPs
+        check_level = CheckLevels.STRICT
     try:
         cmor_check(
             cube=cube,
@@ -728,7 +735,7 @@ def _check_formatting(filename: Path, attributes: dict[str, str]) -> None:
             mip=attributes["mip"],
             short_name=cube.var_name,
             frequency=cube.attributes.globals.get("frequency"),
-            check_level=CheckLevels.STRICT,
+            check_level=check_level,
         )
     except CMORCheckError as exc:
         logger.error("%s", exc)
@@ -784,7 +791,7 @@ def get_output_filename(
 
 
 def save_variable(
-    cube: iris.cube.Cube,
+    cube: Cube,
     var: str,
     outdir: str,
     attrs: dict[str, str],
