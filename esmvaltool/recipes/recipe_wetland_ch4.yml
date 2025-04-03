@@ -1,0 +1,128 @@
+# ESMValTool
+# recipe_wetland_ch4.yml
+---
+documentation:
+  title: Evaluation of wetland emissions of ch4
+  description: |
+    This recipe analyzes the wetland methane emissions in
+    in CMIP6 models
+
+  authors:
+    #- jarmo
+    - tommi_bergman
+
+datasets:
+  #- {dataset: CESM2,  project: CMIP6,    exp: historical,  ensemble: r1i1p1f1,  start_year: 2001, grid: gn, end_year: 2005}
+  - {dataset: UKESM1-0-LL,  project: CMIP6,   exp: historical,  ensemble: r11i1p1f2,  start_year: 2001, grid: gn, end_year: 2005}
+  - {dataset: NorESM2-MM,  project: CMIP6,   exp: historical,  ensemble: r1i1p1f1,  start_year: 2001, grid: gn, end_year: 2005}
+#  - {dataset: CESM2,  project: CMIP6,  mip: Emon,  exp: historical,  ensemble: r11i1p1f1,  start_year: 2001, grid: gn, end_year: 2005}
+#  - {dataset: UKESM1-0-LL,  project: CMIP6,  mip: Emon,  exp: historical,  ensemble: r11i1p1f2,  start_year: 2001, grid: gn, end_year: 2005}
+  #does not work: - {dataset: CESM2,  exp: historical,  ensemble: r11i1p1f1}
+
+
+preprocessors:
+  regrid_nyt:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    annual_statistics:
+      operator: mean
+
+  boreal_timeseries:
+    monthly_statistics:
+      operator: sum
+    area_statistics:
+      operator: sum
+    extract_region:
+      start_latitude: 50
+      end_latitude: 80
+      start_longitude: 0
+      end_longitude: 359
+
+  boreal_mean_timeseries:
+    monthly_statistics:
+      operator: mean
+    area_statistics:
+      operator: mean
+    extract_region:
+      start_latitude: 50
+      end_latitude: 80
+      start_longitude: 0
+      end_longitude: 359
+
+  boreal_select:
+    monthly_statistics:
+      operator: mean
+    meridional_statistics:
+        operator: mean
+    extract_region:
+      start_latitude: 50
+      end_latitude: 80
+      start_longitude: 0
+      end_longitude: 359
+
+diagnostics:
+  methane_diagnostic_map:
+    description: Polar map of multiyear mean of wetland ch4 emissions
+    variables:
+      wetlandCH4_map:
+        short_name: wetlandCH4
+        mip: Emon
+        preprocessor: regrid_nyt
+    scripts:
+      polar_map:
+        script: wetland_ch4/ch4_analysis.py
+        title: "Polar map diagnostic of wetlandCH4"
+        quickplot:
+          plot_type: polar
+          vmin: -1e-9
+          vmax: 10e-9
+          #,levels=np.linspace(-1e-9,10e-9,7))#
+
+  methane_diagnostic_timeseries:
+    description: Timeseries of wetland ch4 emissions
+    variables:
+      wetlandCH4_timeseries:
+        short_name: wetlandCH4
+        mip: Emon
+        preprocessor: boreal_timeseries
+    scripts:
+      timeseries:
+        script: wetland_ch4/ch4_analysis.py
+        title: "Timeseries diagnostic of wetlandCH4"
+        quickplot:
+          plot_type: times
+
+  methane_diagnostic_temperature:
+    description: Monthly wetland ch4 emissions depending on temperature
+    variables:
+      wetlandCH4_scatter:
+        short_name: wetlandCH4
+        mip: Emon
+        preprocessor: boreal_timeseries
+      tas:
+        short_name: tas
+        mip: Amon
+        preprocessor: boreal_mean_timeseries
+    scripts:
+      scatter:
+        script: wetland_ch4/ch4_analysis.py
+        title: "Scatterplot diagnostic of wetlandCH4 dependence on temperature"
+        quickplot:
+          plot_type: scatter
+
+
+
+  methane_diagnostic_seasonal:
+    description: Seasonal of wetland ch4 emissions
+    variables:
+      wetlandCH4_seasonal:
+        short_name: wetlandCH4
+        mip: Emon
+        preprocessor: boreal_select
+    scripts:
+      seasonal:
+        script: wetland_ch4/ch4_analysis.py
+        title: "Seasonal diagnostic of wetlandCH4"
+        quickplot:
+          plot_type: times
