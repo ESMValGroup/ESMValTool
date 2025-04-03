@@ -20,17 +20,9 @@ timerange_for_models: &time_period
 
 preprocessors:
 
-  globalmean_pr:
-#    annual_statistics:
-#      operator: mean
-    area_statistics:
-      operator: mean
-    convert_units:
-      units: mm day-1
-
   globalmean:
-#    annual_statistics:
-#      operator: mean
+    annual_statistics:
+      operator: mean
     area_statistics:
       operator: mean
 
@@ -75,9 +67,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 58.7
+              - y: 58.0
                 color: red
-              - y: 74.9
+              - y: 68.0
                 color: red
             plot_kwargs:
               'global mean':
@@ -96,49 +88,6 @@ diagnostics:
                 label: null
                 linestyle: '--'
                 linewidth: 1
-
-  pr:
-    description: time series of global min/max/mean including "reasonable" ranges
-    variables:
-      pr_mean:
-        <<: *time_period
-        short_name: pr
-        legend_label: 'global mean'
-        preprocessor: globalmean_pr
-    scripts:
-      timeseries:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        group_variables_by: short_name
-        facet_used_for_labels: legend_label
-        plots:
-          timeseries:
-            annual_mean_kwargs: false
-            hlines:
-              - y: 2.499
-                color: red
-              - y: 3.213
-                color: red
-            plot_kwargs:
-              'global mean':
-                color: blue
-                label: null
-                linestyle: '-'
-                linewidth: 2
-                label: '{dataset}'
-                zorder: 3
-              'global min':
-                color: blue
-                label: null
-                linestyle: '--'
-                linewidth: 1
-                zorder: 3
-              'global max':
-                color: blue
-                label: null
-                linestyle: '--'
-                linewidth: 1
-                zorder: 3
 
   rlut:
     description: time series of global min/max/mean including "reasonable" ranges
@@ -168,62 +117,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 226.4
+              - y: 229.0
                 color: red
-              - y: 245.0
-                color: red
-            plot_kwargs:
-              'global mean':
-                color: blue
-                label: null
-                linestyle: '-'
-                linewidth: 2
-                label: '{dataset}'
-                zorder: 3
-              'global min':
-                color: blue
-                label: null
-                linestyle: '--'
-                linewidth: 1
-                zorder: 3
-              'global max':
-                color: blue
-                label: null
-                linestyle: '--'
-                linewidth: 1
-                zorder: 3
-
-  tas:
-    description: time series of global min/max/mean including "reasonable" ranges
-    variables:
-      tas_mean:
-        <<: *time_period
-        short_name: tas
-        legend_label: 'global mean'
-        preprocessor: globalmean
-      tas_min:
-        <<: *time_period
-        short_name: tas
-        legend_label: 'global min'
-        preprocessor: globalmin
-      tas_max:
-        <<: *time_period
-        short_name: tas
-        legend_label: 'global max'
-        preprocessor: globalmax
-    scripts:
-      timeseries:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        group_variables_by: short_name
-        facet_used_for_labels: legend_label
-        plots:
-          timeseries:
-            annual_mean_kwargs: false
-            hlines:
-              - y: 284.99
-                color: red
-              - y: 289.92
+              - y: 241.0
                 color: red
             plot_kwargs:
               'global mean':
@@ -457,19 +353,16 @@ diagnostics:
         legend_label: 'global mean'
         short_name: rlds
         preprocessor: globalmean
-        derive: true
       rlds_min:
         <<: *time_period
         short_name: rlds
         legend_label: 'global min'
         preprocessor: globalmin
-        derive: true
       rlds_max:
         <<: *time_period
         short_name: rlds
         legend_label: 'global max'
         preprocessor: globalmax
-        derive: true
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
@@ -510,19 +403,16 @@ diagnostics:
         legend_label: 'global mean'
         short_name: rsds
         preprocessor: globalmean
-        derive: true
       rsds_min:
         <<: *time_period
         short_name: rsds
         legend_label: 'global min'
         preprocessor: globalmin
-        derive: true
       rsds_max:
         <<: *time_period
         short_name: rsds
         legend_label: 'global max'
         preprocessor: globalmax
-        derive: true
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
@@ -563,19 +453,16 @@ diagnostics:
         legend_label: 'global mean'
         short_name: rsut
         preprocessor: globalmean
-        derive: true
       rsut_min:
         <<: *time_period
         short_name: rsut
         legend_label: 'global min'
         preprocessor: globalmin
-        derive: true
       rsut_max:
         <<: *time_period
         short_name: rsut
         legend_label: 'global max'
         preprocessor: globalmax
-        derive: true
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
@@ -616,19 +503,16 @@ diagnostics:
         legend_label: 'global mean'
         short_name: tas
         preprocessor: globalmean
-        derive: true
       tas_min:
         <<: *time_period
         short_name: tas
         legend_label: 'global min'
         preprocessor: globalmin
-        derive: true
       tas_max:
         <<: *time_period
         short_name: tas
         legend_label: 'global max'
         preprocessor: globalmax
-        derive: true
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
