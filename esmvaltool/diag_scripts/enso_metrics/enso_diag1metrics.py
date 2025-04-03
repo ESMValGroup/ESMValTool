@@ -118,14 +118,14 @@ def sst_regressed(n34_cube):
 
 def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
     """Compute values for each of the ENSO metrics.
-    
+
     Parameters
     ----------
     input_pair: list of dictionaries [obs_datasets, model_datasets]
         dictionary key of each dataset is variable group
     dt_ls: list of dataset names for labels
     var_group: list referring to preprocessed group used for the metric
-        list length is 1, 
+        list length is 1,
         or 2 for pattern and diversity metrics for linear regrssion
     metric: name of metric to calculate
 
@@ -229,7 +229,7 @@ def mask_to_years(events):
 
 def enso_events(cube):
     """Get enso event years from dataset.
-    
+
     La Nina events are <-0.75 * standard deviation
     El Nino events are > 0.75 * standard deviation
     """
