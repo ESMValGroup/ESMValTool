@@ -315,7 +315,7 @@ def flip_dim_coord(cube, coord_name):
     cube.data = da.flip(cube.core_data(), axis=coord_idx)
 
 
-def read_cmor_config(dataset):
+def read_cmor_config(dataset: str) -> dict:
     """Read the associated dataset-specific config file."""
     reg_path = os.path.join(
         os.path.dirname(__file__), "cmor_config", dataset + ".yml"
@@ -336,10 +336,10 @@ def read_cmor_config(dataset):
             attributes[key] = re.sub(
                 "[^a-zA-Z0-9]+", "-", source_id_info[key]
             ).strip("-")
-        cv = load_controlled_vocabulary("obs4MIPs")
-        for key, value in cv["source_id"][dataset].items():
+        vocabulary = load_controlled_vocabulary("obs4MIPs")
+        for key, value in vocabulary["source_id"][dataset].items():
             attributes[key] = value
-        attributes["institution"] = cv["institution_id"][
+        attributes["institution"] = vocabulary["institution_id"][
             attributes["institution_id"]
         ]
         if "references" not in attributes:
@@ -364,7 +364,10 @@ def read_cmor_config(dataset):
 # See https://github.com/PCMDI/obs4MIPs-cmor-tables for the obs4MIPs CMOR tables
 
 
-def find_cmor_tables_path(project) -> Path:
+def find_cmor_tables_path(project: str) -> Path:
+    """Find the path to the CMOR tables."""
+    # Code copied from
+    # https://github.com/ESMValGroup/ESMValCore/blob/main/esmvalcore/cmor/table.py
     project_config = yaml.safe_load(
         CFG["config_developer_file"].read_text(encoding="utf-8")
     )[project]
@@ -380,24 +383,26 @@ def find_cmor_tables_path(project) -> Path:
 
 @lru_cache
 def load_controlled_vocabulary(project: str) -> dict:
+    """Load the controlled vocabulary."""
     tables_path = find_cmor_tables_path(project)
     cv_paths = list((tables_path / "Tables").glob("*_CV.json"))
     if not cv_paths:
         return {}
     cv_path = cv_paths[0]
-    cv = json.loads(cv_path.read_text(encoding="utf-8"))
-    return cv["CV"]
+    vocabulary = json.loads(cv_path.read_text(encoding="utf-8"))
+    return vocabulary["CV"]
 
 
 @lru_cache
 def load_obs4mips_source_id_info() -> dict[str, dict]:
+    """Load additional information from the obs4MIPs source_id table."""
     table_path = find_cmor_tables_path("obs4MIPs") / "obs4MIPs_source_id.json"
     table = json.loads(table_path.read_text(encoding="utf-8"))
     return table["source_id"]
 
 
-class ValidationError(Exception):
-    pass
+class AttributeValidationError(Exception):
+    """There was an error in a global NetCDF attribute."""
 
 
 @dataclass
@@ -415,7 +420,7 @@ class BaseAttributeValidator:
             self.validate_values(attributes)
         elif self.required:
             msg = f"Required attribute '{self.name}' missing."
-            raise ValidationError(msg)
+            raise AttributeValidationError(msg)
 
     @abstractmethod
     def validate_values(self, attributes: Mapping[str, str]) -> None:
@@ -424,26 +429,30 @@ class BaseAttributeValidator:
 
 @dataclass
 class CVAttributeValidator(BaseAttributeValidator):
+    """Validator for attributes defined by the controlled vocabulary."""
+
     values: set[str]
 
     def validate_values(self, attributes: Mapping[str, str]) -> None:
+        """Validate attribute values."""
         value = attributes[self.name]
         if value not in self.values:
             msg = (
                 f"Encountered an invalid value '{value}' for attribute "
                 f"'{self.name}'. Choose from: {','.join(sorted(self.values))}"
             )
-            raise ValidationError(msg)
+            raise AttributeValidationError(msg)
 
 
 @dataclass
 class CVRelatedAttributeValidator(BaseAttributeValidator):
-    # source: CVAttributeValidator
+    """Validator for attributes defined by the controlled vocabulary."""
+
     source_name: str
     values: dict[str, str]
 
     def validate_values(self, attributes: Mapping[str, str]) -> None:
-        # self.source.validate(attributes)
+        """Validate attribute values."""
         source_value = attributes[self.source_name]
         value = attributes[self.name]
         if value != self.values[source_value]:
@@ -451,10 +460,11 @@ class CVRelatedAttributeValidator(BaseAttributeValidator):
                 f"Encountered an invalid value '{value}' for attribute "
                 f"{self.name}. It should be: {self.values[source_value]}"
             )
-            raise ValidationError(msg)
+            raise AttributeValidationError(msg)
 
 
 def load_cv_validators(project: str) -> list[BaseAttributeValidator]:
+    """Load validators representing the controlled vocabulary."""
     if project in ("OBS", "OBS6"):
         # There is no controlled vocabulary for ESMValTool internal projects OBS6 and OBS.
         return []
@@ -463,39 +473,38 @@ def load_cv_validators(project: str) -> list[BaseAttributeValidator]:
         msg = f"Reading the controlled vocabulary for project {project} is not (yet) supported."
         raise NotImplementedError(msg)
 
-    cv = load_controlled_vocabulary(project)
+    vocabulary = load_controlled_vocabulary(project)
     validators: list[BaseAttributeValidator] = []
     required_attributes = {
         v.name for v in GLOBAL_ATTRIBUTE_VALIDATORS[project] if v.required
     }
     ignore = {"required_global_attributes", "license"}
-    for key, values in cv.items():
+    for key, values in vocabulary.items():
         if key in ignore:
             continue
-        if key in cv[key]:
+        if key in vocabulary[key]:
             # Some entries are nested.
-            values = cv[key][key]
-        if isinstance(values, list | dict):
-            validators.append(
-                CVAttributeValidator(
-                    key,
-                    values=set(values),
-                    required=key in required_attributes,
-                )
+            values = vocabulary[key][key]
+        validators.append(
+            CVAttributeValidator(
+                key,
+                values={values} if isinstance(values, str) else set(values),
+                required=key in required_attributes,
             )
+        )
 
     validators.append(
         CVRelatedAttributeValidator(
             "institution",
             required=True,
             source_name="institution_id",
-            values=cv["institution_id"],
+            values=vocabulary["institution_id"],
         )
     )
 
     # Create validators for attributes determined by the "source_id".
     related_values: dict[str, dict[str, str]] = {}
-    for source_id, source_values in cv["source_id"].items():
+    for source_id, source_values in vocabulary["source_id"].items():
         for name, value in source_values.items():
             if name not in related_values:
                 related_values[name] = {}
@@ -510,40 +519,40 @@ def load_cv_validators(project: str) -> list[BaseAttributeValidator]:
             )
         )
 
-    # from rich.pretty import pprint
-
-    # pprint(validators)
     return validators
 
 
 @dataclass
 class DateTimeAttributeValidator(BaseAttributeValidator):
+    """Validator for datetime attributes."""
+
     def validate_values(self, attributes: Mapping[str, str]) -> None:
+        """Validate attribute values."""
         value = attributes[self.name]
-        format = "%Y-%m-%dT%H:%M:%SZ"
+        datetime_format = "%Y-%m-%dT%H:%M:%SZ"  # Enforce ISO 8601 with UTC.
         try:
-            datetime.datetime.strptime(value, format)
+            datetime.datetime.strptime(value, datetime_format)
         except ValueError as exc:
             msg = f"Invalid datetime encountered for attribute '{self.name}', message: {exc}"
-            raise ValidationError(msg) from None
+            raise AttributeValidationError(msg) from None
 
 
 @dataclass
 class RegexAttributeValidator(BaseAttributeValidator):
+    """Validator for attributes based on regular expressions."""
+
     pattern: str
 
     def validate_values(self, attributes: Mapping[str, str]) -> None:
-        # if any(f"{{{a}}}" in self.pattern for a in attributes):
+        """Validate attribute values."""
         pattern = self.pattern.format(**attributes)
-        # else:
-        #     pattern = self.pattern
         value = attributes[self.name]
         if not re.match(pattern, value):
             msg = (
                 f"Invalid attribute value '{value}' encountered for attribute "
                 f"'{self.name}'. It should match '{pattern}'"
             )
-            raise ValidationError(msg)
+            raise AttributeValidationError(msg)
 
 
 PATH_ATTRIBUTE = "^[a-zA-Z0-9-]+$"  # Used in file or directory names.
@@ -558,32 +567,51 @@ GLOBAL_ATTRIBUTE_VALIDATORS: dict[str, list[BaseAttributeValidator]] = {
     "obs4MIPs": [
         # Required attributes
         RegexAttributeValidator(
-            "activity_id", required=True, pattern="^obs4MIPs$"
+            "activity_id",
+            required=True,
+            pattern="^obs4MIPs$",
         ),
         RegexAttributeValidator(
-            "contact", required=True, pattern=FREE_FORM_ATTRIBUTE
+            "contact",
+            required=True,
+            pattern=FREE_FORM_ATTRIBUTE,
         ),
-        DateTimeAttributeValidator("creation_date", required=True),
-        RegexAttributeValidator(
-            "dataset_contributor", required=True, pattern=FREE_FORM_ATTRIBUTE
+        DateTimeAttributeValidator(
+            "creation_date",
+            required=True,
         ),
         RegexAttributeValidator(
-            "data_specs_version", required=True, pattern=r"^2\.5$"
+            "dataset_contributor",
+            required=True,
+            pattern=FREE_FORM_ATTRIBUTE,
+        ),
+        RegexAttributeValidator(
+            "data_specs_version",
+            required=True,
+            pattern=r"^2\.5$",
         ),
         # "doi" is not a required attribute according to the obs4MIPs spec,
         # but it is for CMIP7 data so we add it for consistency.
         RegexAttributeValidator("doi", required=True, pattern=r"^10\.[0-9]+"),
         RegexAttributeValidator(
-            "frequency", required=True, pattern=PATH_ATTRIBUTE
+            "frequency",
+            required=True,
+            pattern=PATH_ATTRIBUTE,
         ),
         RegexAttributeValidator(
-            "grid", required=True, pattern=FREE_FORM_ATTRIBUTE
+            "grid",
+            required=True,
+            pattern=FREE_FORM_ATTRIBUTE,
         ),
         RegexAttributeValidator(
-            "grid_label", required=True, pattern=PATH_ATTRIBUTE
+            "grid_label",
+            required=True,
+            pattern=PATH_ATTRIBUTE,
         ),
         RegexAttributeValidator(
-            "institution", required=True, pattern=FREE_FORM_ATTRIBUTE
+            "institution",
+            required=True,
+            pattern=FREE_FORM_ATTRIBUTE,
         ),
         RegexAttributeValidator(
             "institution_id", required=True, pattern=PATH_ATTRIBUTE
@@ -606,28 +634,44 @@ GLOBAL_ATTRIBUTE_VALIDATORS: dict[str, list[BaseAttributeValidator]] = {
         ),
         RegexAttributeValidator("realm", required=True, pattern=DRS_ATTRIBUTE),
         RegexAttributeValidator(
-            "references", required=True, pattern=FREE_FORM_ATTRIBUTE
+            "references",
+            required=True,
+            pattern=FREE_FORM_ATTRIBUTE,
         ),
         RegexAttributeValidator(
-            "region", required=True, pattern=DRS_ATTRIBUTE
+            "region",
+            required=True,
+            pattern=DRS_ATTRIBUTE,
         ),
         RegexAttributeValidator(
-            "source", required=True, pattern=FREE_FORM_ATTRIBUTE
+            "source",
+            required=True,
+            pattern=FREE_FORM_ATTRIBUTE,
         ),
         RegexAttributeValidator(
-            "source_id", required=True, pattern=PATH_ATTRIBUTE
+            "source_id",
+            required=True,
+            pattern=PATH_ATTRIBUTE,
         ),
         RegexAttributeValidator(
-            "source_id", required=True, pattern="^{source_label}-.+$"
+            "source_id",
+            required=True,
+            pattern="^{source_label}-.+$",
         ),
         RegexAttributeValidator(
-            "source_label", required=True, pattern=DRS_ATTRIBUTE
+            "source_label",
+            required=True,
+            pattern=DRS_ATTRIBUTE,
         ),
         RegexAttributeValidator(
-            "source_type", required=True, pattern=FREE_FORM_ATTRIBUTE
+            "source_type",
+            required=True,
+            pattern=FREE_FORM_ATTRIBUTE,
         ),
         RegexAttributeValidator(
-            "source_version_number", required=True, pattern=FREE_FORM_ATTRIBUTE
+            "source_version_number",
+            required=True,
+            pattern=FREE_FORM_ATTRIBUTE,
         ),
         RegexAttributeValidator(
             "tracking_id",
@@ -635,48 +679,71 @@ GLOBAL_ATTRIBUTE_VALIDATORS: dict[str, list[BaseAttributeValidator]] = {
             pattern="^hdl:21.14102/[0-9a-f]{{8}}(-[0-9a-f]{{4}}){{3}}-[0-9a-f]{{12}}$",
         ),
         RegexAttributeValidator(
-            "variable_id", required=True, pattern=PATH_ATTRIBUTE
+            "variable_id",
+            required=True,
+            pattern=PATH_ATTRIBUTE,
         ),
         RegexAttributeValidator(
-            "variant_label", required=True, pattern=PATH_ATTRIBUTE
+            "variant_label",
+            required=True,
+            pattern=PATH_ATTRIBUTE,
         ),
         RegexAttributeValidator(
-            "variant_label", required=True, pattern="^{institution_id}(-.+)?$"
+            "variant_label",
+            required=True,
+            pattern="^{institution_id}(-.+)?$",
         ),
         # Optional attributes
         RegexAttributeValidator(
-            "comment", required=False, pattern=FREE_FORM_ATTRIBUTE
+            "comment",
+            required=False,
+            pattern=FREE_FORM_ATTRIBUTE,
         ),
         RegexAttributeValidator(
-            "external_variables", required=False, pattern=FREE_FORM_ATTRIBUTE
+            "external_variables",
+            required=False,
+            pattern=FREE_FORM_ATTRIBUTE,
         ),
         RegexAttributeValidator(
-            "history", required=False, pattern=FREE_FORM_ATTRIBUTE
+            "history",
+            required=False,
+            pattern=FREE_FORM_ATTRIBUTE,
         ),
         RegexAttributeValidator(
-            "source_data_notes", required=False, pattern=FREE_FORM_ATTRIBUTE
+            "source_data_notes",
+            required=False,
+            pattern=FREE_FORM_ATTRIBUTE,
         ),
         # TODO: Maybe we can add the two attributes below based on info from
         # the automatic download.
         DateTimeAttributeValidator(
-            "source_data_retrieval_date", required=False
+            "source_data_retrieval_date",
+            required=False,
         ),
         RegexAttributeValidator(
-            "source_data_url", required=False, pattern=FREE_FORM_ATTRIBUTE
+            "source_data_url",
+            required=False,
+            pattern=FREE_FORM_ATTRIBUTE,
         ),
         RegexAttributeValidator(
-            "title", required=False, pattern=FREE_FORM_ATTRIBUTE
+            "title",
+            required=False,
+            pattern=FREE_FORM_ATTRIBUTE,
         ),
         RegexAttributeValidator(
-            "variant_info", required=False, pattern=FREE_FORM_ATTRIBUTE
+            "variant_info",
+            required=False,
+            pattern=FREE_FORM_ATTRIBUTE,
         ),
     ],
 }
 
 
 def validate_global_attributes(
-    project: str, attributes: dict[str, str]
+    project: str,
+    attributes: dict[str, str],
 ) -> bool:
+    """Validate the global NetCDF attributes."""
     validators = GLOBAL_ATTRIBUTE_VALIDATORS.get(
         project, []
     ) + load_cv_validators(project)
@@ -684,11 +751,15 @@ def validate_global_attributes(
     for validator in validators:
         try:
             validator.validate(attributes)
-        except ValidationError as exc:
+        except AttributeValidationError as exc:
             messages.add(str(exc))
     if messages:
         logger.error("%s", "\n".join(sorted(messages)))
-    return not (messages)
+    return not messages
+
+
+# Code of the two functions below copied from
+# https://github.com/ESMValGroup/ESMValCore/blob/0a1292b0e3b181bb913242da7dc2798b50e7a892/esmvalcore/preprocessor/_io.py#L45-L66
 
 
 def _get_attr_from_field_coord(ncfield, coord_name, attr):
@@ -827,7 +898,6 @@ def save_variable(
         raise ValueError(msg)
 
     # Set global attributes.
-    attrs["variable_id"] = cube.var_name
     set_global_atts(cube, attrs)
 
     # Ensure correct dtypes.
@@ -854,6 +924,7 @@ def save_variable(
             )
             time_suffix = "-".join([date1, date2])
 
+    attrs["variable_id"] = cube.var_name
     file_path = get_output_filename(outdir, attrs, time_suffix)
     logger.info("Saving: %s", file_path)
     file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -897,14 +968,17 @@ def extract_doi_value(tags):
 
 
 def _get_processing_code_location() -> str:
+    """Get a link to code used to CMORize the data."""
     # Ideas for improvement:
-    # - make sure current working dir is not dirty
-    # - replace version by commit that is available online
-    version = ".".join(esmvaltool.__version__.split(".", 3)[:3])
-    return f"https://github.com/ESMValGroup/ESMValTool/tree/{version}"
+    # - make sure current code dir is not dirty
+    # - replace version by commit that is available online (though this
+    #   guarantees nothing as it may still get garbage collected if it
+    #   becomes disconnected from existing branches/tags).
+    code_version = ".".join(esmvaltool.__version__.split(".", 3)[:3])
+    return f"https://github.com/ESMValGroup/ESMValTool/tree/{code_version}"
 
 
-def set_global_atts(cube, attrs):
+def set_global_atts(cube: Cube, attrs: dict[str, str]) -> None:
     """Complete the cmorized file with global metadata."""
     logger.debug("Setting global metadata...")
     attrs = dict(attrs)
