@@ -139,8 +139,9 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
         model_ssta = input_pair[1][var_group[1]]
         model_nino34 = input_pair[1][var_group[0]]
         reg_mod = lin_regress(model_ssta, model_nino34)
-        reg_obs = lin_regress(input_pair[0][var_group[1]],
-                              input_pair[0][var_group[0]])
+        obs_ssta = input_pair[0][var_group[1]]
+        obs_nino34 = input_pair[0][var_group[0]]
+        reg_obs = lin_regress(obs_ssta, obs_nino34)
 
         val = np.sqrt(np.mean((np.array(reg_obs[1]) -
                                np.array(reg_mod[1])) ** 2))
