@@ -70,8 +70,52 @@ preprocessors:
     climate_statistics:
       operator: max
 
+  pp_min_sum:
+    custom_order: true
+    area_statistics:
+      operator: sum
+    multi_model_statistics:
+      span: full
+      statistics:
+        - operator: min
+    climate_statistics:
+      operator: min
+
+  pp_max_sum:
+    custom_order: true
+    area_statistics:
+      operator: sum
+    multi_model_statistics:
+      span: full
+      statistics:
+        - operator: max
+    climate_statistics:
+      operator: max
 
 diagnostics:
+
+  prw_global:
+    description: Calculate range of reasonable monthly values for global water vapour mass
+    variables:
+      prw_min:
+        short_name: prw
+        preprocessor: pp_min_sum
+        mip: Amon
+      prw_max:
+        short_name: prw
+        preprocessor: pp_max_sum
+        mip: Amon
+    additional_datasets:
+      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+          tier: 3, start_year: 1995, end_year: 2014}
+      - {dataset: JRA-55, project: OBS6, type: reanaly, version: 1,
+          tier: 2, start_year: 1958, end_year: 2022}
+      - {dataset: MERRA2, project: OBS6, type: reanaly, version: 5.12.4,
+          tier: 3, start_year: 1980, end_year: 2021}
+      - {dataset: ESACCI-WATERVAPOUR, project: OBS6, type: sat, version: CDR2-L3-COMBI-05deg-fv3.1,
+          tier: 3, start_year: 2002, end_year: 2017}
+    scripts: null
+
 
 #  clt:
 #    description: Calculate range of reasonable monthly values for total cloud cover.
