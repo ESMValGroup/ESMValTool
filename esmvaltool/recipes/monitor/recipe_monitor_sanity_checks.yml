@@ -721,7 +721,7 @@ diagnostics:
                 label: '{dataset}'
                 zorder: 3
 
-moisture_flux:
+  moisture_flux:
     description: time series of moisture flux into the atmosphere
     variables:
       qep:
