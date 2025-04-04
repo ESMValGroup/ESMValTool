@@ -37,9 +37,21 @@ preprocessors:
     area_statistics:
       operator: min
 
+  globalmin_pr:
+    area_statistics:
+      operator: min
+    convert_units:
+      units: mm day-1
+
   globalmax:
     area_statistics:
       operator: max
+
+  globalmax_pr:
+    area_statistics:
+      operator: max
+    convert_units:
+      units: mm day-1
 
   global_sum:
     area_statistics:
@@ -354,7 +366,7 @@ diagnostics:
             hlines:
               - y: 0  # placeholder
                 color: red
-              - y: 300  # placeholder
+              - y: 100  # placeholder
                 color: red
             plot_kwargs:
               'global mean':
@@ -535,17 +547,17 @@ diagnostics:
         <<: *time_period
         short_name: prc
         legend_label: 'global mean'
-        preprocessor: globalmean_pr
+        preprocessor: globalmean
       prc_min:
         <<: *time_period
         short_name: prc
         legend_label: 'global min'
-        preprocessor: globalmin_pr
+        preprocessor: globalmin
       prc_max:
         <<: *time_period
         short_name: prc
         legend_label: 'global max'
-        preprocessor: globalmax_pr
+        preprocessor: globalmax
     scripts:
       timeseries:
         script: monitor/multi_datasets.py
@@ -558,7 +570,7 @@ diagnostics:
             hlines:
               - y: 0  # placeholder
                 color: red
-              - y: 10  # placeholder
+              - y: 0  # placeholder
                 color: red
             plot_kwargs:
               'global mean':
@@ -762,9 +774,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: -2  # placeholder
+              - y: -20  # placeholder
                 color: red
-              - y: 2  # placeholder
+              - y: 20  # placeholder
                 color: red
             plot_kwargs:
               'global mean':
@@ -784,7 +796,7 @@ diagnostics:
                 linestyle: '--'
                 linewidth: 1
 
-   rsds:
+  rsds:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       rsds_mean:
@@ -917,7 +929,7 @@ diagnostics:
             hlines:
               - y: 0  # placeholder
                 color: red
-              - y: -250  # placeholder
+              - y: -100  # placeholder
                 color: red
             plot_kwargs:
               'global mean':
