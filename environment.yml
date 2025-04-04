@@ -96,10 +96,10 @@ dependencies:
   - yamllint ==1.35.1
 
   # NCL and dependencies
-  - ncl >=6.6.2
-  - cdo
-  - imagemagick
-  - nco
+  # - ncl >=6.6.2
+  # - cdo
+  # - imagemagick
+  # - nco
 
   # R and dependencies
   - cdo
