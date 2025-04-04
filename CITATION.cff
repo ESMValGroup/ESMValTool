@@ -349,6 +349,10 @@ authors:
     given-names: Katja
     orcid: "https://orcid.org/0000-0001-6133-7801"
   -
+    affiliation: "University of Bremen, Germany"
+    family-names: Schulze
+    given-names: Kirsten
+  -
     affiliation: "DLR, Germany"
     family-names: Sarauer
     given-names: Ellen
