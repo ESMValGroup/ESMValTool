@@ -5,6 +5,7 @@ documentation:
   description: >
     Calculate basic sanity checks e.g. for monitoring new model runs.
   authors:
+    - bock_lisa
     - lauer_axel
   maintainer:
     - lauer_axel
@@ -41,6 +42,27 @@ preprocessors:
   globalmax:
     area_statistics:
       operator: max
+
+  global_sum:
+    area_statistics:
+      operator: sum
+
+  global_sum_air_anom:
+    custom_order: true
+    convert_units:
+      units: kg m-2
+    area_statistics:
+      operator: sum
+    anomalies:
+      period: full
+      reference:
+        start_year: 1980
+        start_month: 1
+        start_day: 1
+        end_year: 1980
+        end_month: 12
+        end_day: 31
+
 
 
 diagnostics:
@@ -249,4 +271,107 @@ diagnostics:
                 label: null
                 linestyle: '--'
                 linewidth: 1
+                zorder: 3
+
+
+  # *** global sum ***
+
+  prw_mass:
+    description: time series of global water vapour mass
+    variables:
+      prw_sum:
+        <<: *time_period
+        short_name: prw
+        preprocessor: global_sum
+        legend_label: 'global sum'
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            pyplot_kwargs:
+              title: "Global sum of water vapour"
+            hlines:
+              - y: 14206879936806912.
+                color: red
+                linewidth: 2
+              - y: 10902071180001280.
+                color: red
+                linewidth: 2
+            plot_kwargs:
+              'global sum':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+                zorder: 3
+
+
+  air_mass:
+    description: time series of global air mass anomaly
+    variables:
+      ps:
+        <<: *time_period
+        preprocessor: global_sum_air_anom
+        legend_label: 'global sum'
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            pyplot_kwargs:
+              title: "Anomaly of global air mass"
+            hlines:
+              - y: 0.
+                color: black
+                linewidth: 2
+            plot_kwargs:
+              'global sum':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+                zorder: 3
+
+
+  moisture_flux:
+    description: time series of moisture flux into the atmosphere
+    variables:
+      qep:
+        <<: *time_period
+        derive: true
+        preprocessor: global_sum
+        legend_label: 'global sum'
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            pyplot_kwargs:
+              title: "Anomaly of global moisture flux into the atmosphere"
+            hlines:
+              - y: 0.
+                color: black
+                linewidth: 2
+            plot_kwargs:
+              'global sum':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
                 zorder: 3
