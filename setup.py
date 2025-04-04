@@ -60,7 +60,7 @@ REQUIREMENTS = {
         "psy-reg>=1.5.0",
         "psy-simple>=1.5.0",
         "pyproj>=2.1",
-        "pys2index",
+        # "pys2index",  # installs from PyPI and tries building, that fails
         "python-dateutil",
         "pyyaml",
         "rasterio>=1.3.10",
