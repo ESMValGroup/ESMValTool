@@ -22,8 +22,9 @@
 .. _ESMValTool Documentation: https://esmvaltool.org/
 .. _ESMValTool issue #3663: https://github.com/ESMValGroup/ESMValTool/issues/3663
 .. _ESMValTool PR #3664: https://github.com/ESMValGroup/ESMValTool/pull/3664
+.. _jasmin-recipes.jinja: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/recipe_test_workflow/site/jasmin-recipes.jinja
 .. _Jinja2: https://jinja.palletsprojects.com/en/stable/
 .. _new ESMValTool issue: https://github.com/ESMValGroup/ESMValTool/issues/new
 .. _Rose Documentation: https://metomi.github.io/rose/doc/html/index.html
-.. _metoffice-recipes.cylc: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/recipe_test_workflow/site/metoffice-recipes.cylc
+.. _metoffice-recipes.jinja: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/recipe_test_workflow/site/metoffice-recipes.jinja
 .. _Slurm sbatch --mem: https://slurm.schedmd.com/sbatch.html#OPT_mem
