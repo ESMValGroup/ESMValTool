@@ -43,6 +43,7 @@ commands:
             conda activate esmvaltool
             export PATH=/root/.juliaup/bin:$PATH
             mamba --version
+            mamba install -y -c conda-forge ncl
             pytest -n 4 --junitxml=test-reports/report.xml
             esmvaltool version
             esmvaltool -- --help
