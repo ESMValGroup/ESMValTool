@@ -284,8 +284,7 @@ gleckler_array <- function(path = land,
   m <- 1
   o <- 1
   lat_collect <- TRUE
-  print(idx_list)
-  print(model_list)
+
   for (i in seq_along(idx_list)) {
     for (m in seq_along(model_list)) {
       ## Read in model annual climatology
@@ -342,7 +341,6 @@ gleckler_array <- function(path = land,
     for (j in 1:dim(ensarr)[3]) {
       ## Read in reannalysis annual climatology
       for (o in seq_along(obs_list)) {
-
         tm_obs <- nc_open(Sys.glob(file.path(
           path, paste0(
             "tm_", idx_list[i],
