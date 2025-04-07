@@ -4,16 +4,15 @@
 # KEYS         VALUES
 # ----         ------
 # recipe_path  The path to the recipe. Recipe paths are specified relative to
-#              esmvaltool/recipes. For recipes in subdirectories, `--` stands
-#              for `/` since the latter is an illegal char.
+#              esmvaltool/recipes. For recipes in subdirectories, '--' stands
+#              for '/' since the latter is an illegal char.
 # actual       A note of the recipe's actual resource usage. From the
 #              successful run of the recipe on the compute server on JASMIN.
 # max_time     The maximum amount of time the recipe has to complete. Use the
-#              ISO8601 duration format (`Cylc ISO8601 Durations`_
-#              provides more information).
+#              Cylc ISO8601 duration format.
 # max_memory   The memory allocated to running the recipe. Default units are
 #              megabytes. Different units can be specified using the suffix
-#              [K|M|G|T] (`Slurm sbatch --mem`_ provides more information).
+#              [K|M|G|T].
 
 {% set FAST_RECIPES =
     [
@@ -68,7 +67,7 @@
     ]
 %}
 
-# `recipe_ensclus` should be in fast: is in medium temporarily to avoid empty variable.
+# 'recipe_ensclus' should be in fast: is in medium temporarily to avoid empty variable.
 {% set MEDIUM_RECIPES =
     [
         {
