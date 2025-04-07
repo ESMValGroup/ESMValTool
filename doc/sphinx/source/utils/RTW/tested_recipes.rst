@@ -11,7 +11,7 @@ files:
 
 * `metoffice-recipes.jinja`_
 * `dkrz-recipes.jinja`_
-* jasmin-recipes.jinja **(COMING SOON!)**
+* `jasmin-recipes.jinja`_
 
 .. hint::
    The :ref:`site/site-recipes.jinja <site_recipes_file>`.
