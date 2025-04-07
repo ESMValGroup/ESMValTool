@@ -160,21 +160,21 @@ def _diagnostic(config):
     n_fill = {}
     n_use = {}
     for time in ['day', 'night']:   
-        if isinstance(loaded_data['ESACCI-LST'][f'ts_{time}'].data.mask,
+        if isinstance(loaded_data['ESACCI-LST'][f'lst_unc_ran_{time}'].data.mask,
                       np.ndarray):
             # mask is an array so there are masked values
             # do counting
-            n_fill[time] = np.array([np.sum(loaded_data['ESACCI-LST'][f'ts_{time}'][date].data.mask) for date in range(len(loaded_data['ESACCI-LST']['ts_day'].coord('time').points))])
+            n_fill[time] = np.array([np.sum(loaded_data['ESACCI-LST'][f'lst_unc_ran_{time}'][date].data.mask) for date in range(len(loaded_data['ESACCI-LST'][f'lst_unc_ran_{time}'].coord('time').points))])
         
-        elif loaded_data['ESACCI-LST'][f'ts_{time}'].data.mask:
+        elif loaded_data['ESACCI-LST'][f'lst_unc_ran_{time}'].data.mask:
             # mask is single value of True so all masked values
             # make a array of m*n
-            n_fill[time] = np.array([lat_len*lon_len for i in loaded_data['ESACCI-LST'][f'ts_{time}'].coord('time').points])
+            n_fill[time] = np.array([lat_len*lon_len for i in loaded_data['ESACCI-LST'][f'lst_unc_ran_{time}'].coord('time').points])
             
         else:
             # mask is a single value of False so no masked values
             # make an array of zeros
-            n_fill[time] = np.zeros_like(loaded_data['ESACCI-LST'][f'ts_{time}'].coord('time').points)
+            n_fill[time] = np.zeros_like(loaded_data['ESACCI-LST'][f'lst_unc_ran_{time}'].coord('time').points)
     
     n_use['day'] = (lat_len * lon_len) - n_fill['day']
     n_use['night'] = (lat_len * lon_len) - n_fill['night']
@@ -235,6 +235,26 @@ def _diagnostic(config):
                                              'time')
 
     # Make the plots:
+    plt.figure()
+    plt.plot(n_fill['day'], c='k')
+    plt.plot(n_use['day'], c='b')
+    plt.savefig('test_nuse_day.png')
+    plt.close()
+    
+    plt.figure()
+    plt.plot(n_fill['night'], c='k')
+    plt.plot(n_use['night'], c='b')
+    plt.savefig('test_nuse_night.png')
+    plt.close()
+    
+    for time in ['day','night']:
+        plt.figure()
+        iplt.plot(propagated_values[f'lst_unc_ran_{time}'], c='r')
+        iplt.plot(propagated_values[f'lst_sampling_{time}'], c='g')
+        plt.savefig(f'test_random_{time}.png')
+        plt.close()
+              
+    
     plot_lc(loaded_data)
     timeseries_plot(propagated_values)
     plot_with_cmip(propagated_values, loaded_data)
@@ -258,11 +278,13 @@ def two_step_calculation(cube):
             for j in range(0,lon_len,5):
                 this_region = cube[time_index,i:i+5,j:j+5]
     
-                value = np.sqrt((this_region**2).collapsed(['latitude','longitude'], iris.analysis.SUM).data)
-                grid_means.append(value / (25 - np.sum(this_region.data.mask))) # NO sqrt here now!
+                value = np.sqrt((this_region**2).collapsed(['latitude','longitude'], iris.analysis.MEAN).data)
+                # SUM to MEAN CLAIRE'S MARCH email
+                # This line changes form CLAIRE's March email
+                grid_means.append(value)# / (25 - np.sum(this_region.data.mask))) # NO sqrt here now!
         
         overall_quadrature = (1/(np.sqrt(len(grid_means)))) * \
-            np.sqrt(np.sum(np.array(grid_means)**2))
+            np.sqrt(np.sum(np.array(grid_means)**2)/len(grid_means))
         timeseries.append(overall_quadrature)
 
     results_cube = iris.cube.Cube(np.array(timeseries),
@@ -327,19 +349,17 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
                 # THIS  LOOP IS A NEW CHANGE - CHANGED ON 14/10/24 on call *******************
                 biome_quadrature = np.array([])
                 for item in uncert_by_biome:
-                    biome_quadrature = np.append(biome_quadrature,
-                                                 (1/len(item)) * \
-                                                     np.sqrt(np.sum(np.array(item)**2))
+                    biome_quadrature = np.append(biome_quadrature, # 1/n moved CLAIRE'S email MARCH
+                                                 np.sqrt((1/len(item)) * np.sum(np.array(item)**2))
                                                 )              
-
-                this_mean = (1/np.sqrt(len(biome_quadrature))) * \
-                    np.sqrt(np.sum(biome_quadrature**2))
+                # UPDATE from CLAIRE'S email MARCH
+                this_mean = (1/np.sqrt(len(biome_quadrature))) * np.sqrt(np.sum(biome_quadrature**2)/len(biome_quadrature))
                 grid_means.append(this_mean)
     
         grid_means = np.array(grid_means)
 
-        this_times_mean = (1/np.sqrt(len(grid_means))) * np.sqrt(np.sum(grid_means**2))
-        
+        # change from CLAIRE'S email MARCH
+        this_times_mean = (1/np.sqrt(len(grid_means))) * np.sqrt(np.sum(grid_means**2)/len(grid_means))
         final_values.append(this_times_mean)
     
     # need to make a cube to return
@@ -377,17 +397,31 @@ def eq_propagate_random_with_sampling(cube_unc_ran, cube_ts, n_use, n_fill):
     n_lon = len(cube_unc_ran.coord('longitude').points)
     max_points = n_lat*n_lon
     print(f'{max_points=}')
-    n_use = np.array([max_points - np.sum(item) for item in cube_unc_ran.data.mask])
+    #n_use = np.array([max_points - np.sum(item) for item in cube_unc_ran.data.mask])
     print(f'{n_use=}')
     print(f'{cube_unc_ran[0].data=}')
+    
     # the mean of the random uncertainty
-    #unc_ran_mean = eq_weighted_sqrt_mean(cube_unc_ran, n_total)
-    unc_ran_mean = iris.analysis.maths.exponentiate(cube_unc_ran, 2, in_place=False)
-    unc_ran_mean = unc_ran_mean.collapsed(['latitude','longitude'], iris.analysis.SUM)
-    iris.analysis.maths.exponentiate(unc_ran_mean, 0.5, in_place=True)
+    
+    #unc_ran_mean = iris.analysis.maths.exponentiate(cube_unc_ran, 2, in_place=False)
+    #unc_ran_mean = unc_ran_mean.collapsed(['latitude','longitude'], iris.analysis.SUM)
+    ##iris.analysis.maths.exponentiate(unc_ran_mean, 0.5, in_place=True)
 
-    for i, _ in enumerate(n_use):
-        unc_ran_mean.data[i] *= 1/(np.sqrt(n_use[i])) # not sqrt ### DOUBLE CHECK
+    #for i, _ in enumerate(n_use):
+        #unc_ran_mean.data[i] *= 1/(np.sqrt(n_use[i]))
+        # CHANGE FROM CLAIRE'S MARCH email
+    #    unc_ran_mean.data[i] = (1/(np.sqrt(n_use[i]))) * np.sqrt(unc_ran_mean.data[i]/n_use[i])
+        
+        
+        
+        
+    # the mean of the random uncertainty
+    unc_ran_mean =(cube_unc_ran**2).collapsed(['latitude','longitude'], iris.analysis.SUM)
+    #iris.analysis.maths.exponentiate(unc_ran_mean, 0.5, in_place=True)
+    for i, item in enumerate(n_use):
+        unc_ran_mean.data[i] = np.sqrt(unc_ran_mean.data[i]/item) * (1/np.sqrt(item))
+        
+        #1/np.sqrt(item)* np.sqrt(unc_ran_mean.data[i])
     print('kkkkkkkkkkkkkkkkkkkkkkkkkkkkf')
     print(unc_ran_mean.data)
 
@@ -707,7 +741,7 @@ def timeseries_plot(propagated_values, zoom_in = False):
         plt.grid(which='minor', color='k', linestyle='dotted', alpha=0.5)
         
         if zoom_in:
-            ax2.set_ylim((0,1.5))
+            ax2.set_ylim((0,0.2))
             
             ax1.set_xlim(datetime.datetime(2002,12,31),datetime.datetime(2004,1,1))
             ax2.set_xlim(datetime.datetime(2002,12,31),datetime.datetime(2004,1,1))
