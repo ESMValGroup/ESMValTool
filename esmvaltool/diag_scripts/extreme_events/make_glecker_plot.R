@@ -284,27 +284,34 @@ gleckler_array <- function(path = land,
   m <- 1
   o <- 1
   lat_collect <- TRUE
-
+  print(idx_list)
+  print(model_list)
   for (i in seq_along(idx_list)) {
     for (m in seq_along(model_list)) {
       ## Read in model annual climatology
-
+      print(idx_list[i])
+      print(model_list[m])
+      print(Sys.glob(file.path(
+        path, paste0(
+          "tm_", idx_list[i],
+          "_", model_list[m],
+          "_*.nc"
+        )
+      )))
       tm_model <- nc_open(Sys.glob(file.path(
         path, paste0(
           "tm_", idx_list[i],
           "_", model_list[m],
-          "*.nc"
+          "_*.nc"
         )
       )))
       idxs <- unlist(strsplit(idx_list[i], split = "_"))[1]
       tm_model_idx <- ncvar_get(tm_model, idxs)
-
       # extract latitudes for area mean calculations
       if (lat_collect) {
         model_lat <- ncvar_get(tm_model, "lat")
         lat_collect <- FALSE
       }
-
       nc_close(tm_model)
       ensmodel_list[[m]] <- tm_model_idx
     }
@@ -314,7 +321,6 @@ gleckler_array <- function(path = land,
       ncol(tm_model_idx),
       length(ensmodel_list) + 2
     ))
-
     # Copy each matrix from the multimodel list to the array "ensarr".
     # Notice the "+2" on the 3rd dimension. This is so later the model
     # ensemble mean and median matrices can be added to the array.
@@ -330,7 +336,6 @@ gleckler_array <- function(path = land,
     ensmedian <- apply(ensarr, c(1, 2), function(x) {
       median(na.omit(x))
     })
-
     # Place the ensemble model mean and medians into the
     # first two matrices (3-dimention) of the array "ensarr"
     ensarr[, , 1] <- ensmean
@@ -341,6 +346,13 @@ gleckler_array <- function(path = land,
     for (j in 1:dim(ensarr)[3]) {
       ## Read in reannalysis annual climatology
       for (o in seq_along(obs_list)) {
+        print(Sys.glob(file.path(
+          path, paste0(
+            "tm_", idx_list[i],
+            "_", obs_list[o],
+            "*.nc"
+          )
+        )))    
         tm_obs <- nc_open(Sys.glob(file.path(
           path, paste0(
             "tm_", idx_list[i],
