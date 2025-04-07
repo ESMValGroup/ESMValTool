@@ -102,36 +102,36 @@ dependencies:
   # - nco
 
   # R and dependencies
-  - cdo
-  - r-base >=3.5
-  - r-abind
-  - r-akima
-  - r-climdex.pcic
-  - r-climprojdiags
-  - r-docopt
-  - r-dotcall64
-  - r-functional
-  - r-ggplot2
-  - r-gridextra
-  - r-logging
-  - r-mapproj
-  - r-maps
-  - r-multiapply
-  - r-ncdf4
-  - r-ncdf4.helpers
-  - r-pcict
-  - r-plyr
-  - r-rcolorbrewer
-  - r-rcpp
-  - r-s2dverification
-  - r-snow
-  - r-spei
-  - r-udunits2
-  - r-yaml
+  #- cdo
+  #- r-base >=3.5
+  #- r-abind
+  #- r-akima
+  #- r-climdex.pcic
+  #- r-climprojdiags
+  #- r-docopt
+  #- r-dotcall64
+  #- r-functional
+  #- r-ggplot2
+  #- r-gridextra
+  #- r-logging
+  #- r-mapproj
+  #- r-maps
+  #- r-multiapply
+  #- r-ncdf4
+  #- r-ncdf4.helpers
+  #- r-pcict
+  #- r-plyr
+  #- r-rcolorbrewer
+  #- r-rcpp
+  #- r-s2dverification
+  #- r-snow
+  #- r-spei
+  #- r-udunits2
+  #- r-yaml
   # R packages needed for development
-  - r-git2r  # dependency of lintr
-  - r-lintr ==3.1.2
-  - r-styler ==1.10.3
+  #- r-git2r  # dependency of lintr
+  #- r-lintr ==3.1.2
+  #- r-styler ==1.10.3
 
   # Julia (dependencies installed by separate script)
   # - julia  # temp removal
