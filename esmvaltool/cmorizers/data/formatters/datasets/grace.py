@@ -47,10 +47,9 @@ logger = logging.getLogger(__name__)
 
 
 def _make_monthly_data_contiguous(in_file, out_file, cfg):
+    original = xr.open_dataset(in_file)[cfg["variables"]["lweGrace"]["raw"]]
 
-    original = xr.open_dataset(in_file)[cfg['variables']['lweGrace']['raw']]
-
-    months_table_file = os.path.join(cfg['in_dir'], cfg['grace_table'])
+    months_table_file = os.path.join(cfg["in_dir"], cfg["grace_table"])
     # Read CSV file if available
     if os.path.isfile(months_table_file):
         grace_months_table = pd.read_csv(months_table_file)
@@ -60,12 +59,14 @@ def _make_monthly_data_contiguous(in_file, out_file, cfg):
     time_axis = []
     # read the first and last years and months from the csv table
     time_grace = [[], []]  # [start time], [end time]
-    time_grace[0].append(grace_months_table['YEAR'].iloc[0])
-    time_grace[1].append(grace_months_table['YEAR'].iloc[-1])
+    time_grace[0].append(grace_months_table["YEAR"].iloc[0])
+    time_grace[1].append(grace_months_table["YEAR"].iloc[-1])
     time_grace[0].append(
-        datetime.strptime(grace_months_table['MONTH'].iloc[0], '%b').month)
+        datetime.strptime(grace_months_table["MONTH"].iloc[0], "%b").month
+    )
     time_grace[1].append(
-        datetime.strptime(grace_months_table['MONTH'].iloc[-1], '%b').month)
+        datetime.strptime(grace_months_table["MONTH"].iloc[-1], "%b").month
+    )
     time_grace[0].append(15)
     time_grace[1].append(15)
     start_date = datetime(*time_grace[0])
@@ -75,59 +76,61 @@ def _make_monthly_data_contiguous(in_file, out_file, cfg):
         start_date += relativedelta.relativedelta(months=1)
 
     # Initialize data array with nan
-    data = np.ones((len(time_axis), ) + original.shape[1:])
+    data = np.ones((len(time_axis),) + original.shape[1:])
     data[:] = np.nan
 
     # Now fill the array with grace data
     for nmonth, recindex in enumerate(
-            grace_months_table['GRACE/GRACE-FO record index']):
+        grace_months_table["GRACE/GRACE-FO record index"]
+    ):
         if not np.isnan(recindex):
             data[nmonth, :, :] = original[int(recindex - 1), :, :].data
-    data_array = xr.DataArray(data,
-                              coords={
-                                  'time': time_axis,
-                                  'lat': original.lat,
-                                  'lon': original.lon
-                              },
-                              dims=['time', 'lat', 'lon'])
+    data_array = xr.DataArray(
+        data,
+        coords={"time": time_axis, "lat": original.lat, "lon": original.lon},
+        dims=["time", "lat", "lon"],
+    )
 
-    dataset = data_array.to_dataset(name=cfg['variables']['lweGrace']['raw'])
+    dataset = data_array.to_dataset(name=cfg["variables"]["lweGrace"]["raw"])
     dataset.to_netcdf(out_file)
 
 
 def _apply_gain_and_land_sea_mask(in_file, out_file, cfg):
-
-    gain_file = os.path.join(cfg['in_dir'], cfg['auxfiles']['scale_factor'])
-    lsm_file = os.path.join(cfg['in_dir'], cfg['auxfiles']['land_mask'])
+    gain_file = os.path.join(cfg["in_dir"], cfg["auxfiles"]["scale_factor"])
+    lsm_file = os.path.join(cfg["in_dir"], cfg["auxfiles"]["land_mask"])
 
     gain = xr.open_dataset(gain_file)
     lsm = xr.open_dataset(lsm_file)
     data = xr.open_dataset(in_file)
 
-    data = data['lwe_thickness']
-    gain = gain['scale_factor']
-    lsm = lsm['land_mask']
+    data = data["lwe_thickness"]
+    gain = gain["scale_factor"]
+    lsm = lsm["land_mask"]
     data = gain * data
-    data = data.transpose('time', 'lat', 'lon')
+    data = data.transpose("time", "lat", "lon")
     data = data.where(lsm)
 
     # Specify that unit is cm here (will be converted later)
-    data.attrs['units'] = 'cm'
-    data = data.to_dataset(name='lwe_thickness')
+    data.attrs["units"] = "cm"
+    data = data.to_dataset(name="lwe_thickness")
     data.to_netcdf(out_file)
 
 
 def _cmorize_dataset(in_file, var, cfg, out_dir):
-    logger.info("CMORizing variable '%s' from input file '%s'",
-                var['short_name'], in_file)
-    attributes = deepcopy(cfg['attributes'])
-    attributes['mip'] = var['mip']
+    logger.info(
+        "CMORizing variable '%s' from input file '%s'",
+        var["short_name"],
+        in_file,
+    )
+    attributes = deepcopy(cfg["attributes"])
+    attributes["mip"] = var["mip"]
 
-    cmor_table = cfg['cmor_table']
-    definition = cmor_table.get_variable(var['mip'], var['short_name'])
+    cmor_table = cfg["cmor_table"]
+    definition = cmor_table.get_variable(var["mip"], var["short_name"])
 
-    cube = iris.load_cube(str(in_file),
-                          constraint=NameConstraint(var_name=var['raw']))
+    cube = iris.load_cube(
+        str(in_file), constraint=NameConstraint(var_name=var["raw"])
+    )
 
     # Set correct names
     cube.var_name = definition.short_name
@@ -143,13 +146,13 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     utils.set_global_atts(cube, attributes)
 
     # Setting time right
-    cube = regrid_time(cube, 'mon')
+    cube = regrid_time(cube, "mon")
 
     # Set calendar to gregorian instead of proleptic gregorian
     # matplotlib does not correctly format years in proleptic gregorian
-    old_unit = cube.coord('time').units
-    new_unit = Unit(old_unit.origin, calendar='gregorian')
-    cube.coord('time').units = new_unit
+    old_unit = cube.coord("time").units
+    new_unit = Unit(old_unit.origin, calendar="gregorian")
+    cube.coord("time").units = new_unit
 
     logger.info("Saving CMORized cube for variable %s", cube.var_name)
     utils.save_variable(cube, cube.var_name, out_dir, attributes)
@@ -159,29 +162,32 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cfg['work_dir'] = cfg_user.work_dir
+    cfg["work_dir"] = cfg_user.work_dir
     # Pass on some parameters to cfg file
-    cfg['rawobsdir'] = cfg_user['rootpath']['RAWOBS'][0]
-    cfg['in_dir'] = in_dir
+    cfg["rawobsdir"] = cfg_user["rootpath"]["RAWOBS"][0]
+    cfg["in_dir"] = in_dir
     # If it doesn't exist, create it
-    if not os.path.isdir(cfg['work_dir']):
-        logger.info("Creating working directory for resampling: %s",
-                    cfg['work_dir'])
-        os.mkdir(cfg['work_dir'])
+    if not os.path.isdir(cfg["work_dir"]):
+        logger.info(
+            "Creating working directory for resampling: %s", cfg["work_dir"]
+        )
+        os.mkdir(cfg["work_dir"])
 
     # run the cmorization
-    for short_name, var in cfg['variables'].items():
-        var['short_name'] = short_name
+    for short_name, var in cfg["variables"].items():
+        var["short_name"] = short_name
         logger.info("Processing var %s", short_name)
-        in_file = os.path.join(in_dir, var['file'])
+        in_file = os.path.join(in_dir, var["file"])
         logger.info("Structure monthly data")
-        out_file = os.path.join(cfg['work_dir'],
-                                'grace_monthly_data_contiguous.nc')
+        out_file = os.path.join(
+            cfg["work_dir"], "grace_monthly_data_contiguous.nc"
+        )
         _make_monthly_data_contiguous(in_file, out_file, cfg)
         in_file = out_file
         out_file = os.path.join(
-            cfg['work_dir'],
-            'grace_monthly_data_contiguous_gain_lsm_applied.nc')
+            cfg["work_dir"],
+            "grace_monthly_data_contiguous_gain_lsm_applied.nc",
+        )
         _apply_gain_and_land_sea_mask(in_file, out_file, cfg)
         in_file = out_file
         logger.info("Start CMORization of file %s", in_file)
