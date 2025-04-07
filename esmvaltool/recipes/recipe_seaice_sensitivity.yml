@@ -1,0 +1,67 @@
+# ESMValTool
+# recipe_smpi.yml
+---
+documentation:
+  title: Seaice sentivity
+
+  description: |
+      Blah
+
+  authors:
+    - sellar_alistair
+
+  maintainer:
+    - sellar_alistair
+
+#  references:
+#    - rk2008bams
+
+
+datasets:
+    - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+
+
+preprocessors:
+
+    # Preprocessor needed for Arctic metric
+    nharea:
+        extract_month:
+            month: 9
+        extract_region:
+            start_longitude: 0
+            end_longitude: 360
+            start_latitude: 0
+            end_latitude: 90
+        area_statistics:
+            operator: sum
+        # Does esmvaltool enable area-weighted total of single hemisphere?
+        #
+
+    global_mean:
+        annual_statistics:
+            operator: mean
+        area_statistics:
+            operator: mean
+
+
+diagnostics:
+
+  arctic:
+    description: TODO
+    variables:
+      siconc:
+        preprocessor: nharea
+        mip: SImon
+        #start_year: 1979
+        #end_year: 1985
+            #TODO decide whether to perform time means in preprocessors or in
+            #diagnostic
+      tas:
+        preprocessor: global_mean
+        mip: Amon
+        start_year: 1979
+        end_year: 1985
+    scripts:
+        null
+
+# Take obs values from table in Notz et al, not compute from scratch
