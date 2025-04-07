@@ -10,7 +10,7 @@ The recipes tested with the |RTW| at each site are defined in the following
 files:
 
 * `metoffice-recipes.jinja`_
-* dkrz-recipes.jinja **(COMING SOON!)**
+* `dkrz-recipes.jinja`_
 * `jasmin-recipes.jinja`_
 
 .. hint::
