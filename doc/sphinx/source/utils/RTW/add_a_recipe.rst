@@ -101,7 +101,7 @@ Create the |KGOs|
       will look something like: ``recipe_python_20250101_090000``
 
    .. hint::
-      Find your site specific ``KGO_ROOT_PATH``
+      Find your site-specific ``KGO_ROOT_PATH``
       in the ``opt/rose-suite-<site>.conf`` file.
 
    .. note::
