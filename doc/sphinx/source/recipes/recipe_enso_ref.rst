@@ -6,7 +6,7 @@ ENSO CLIVAR metrics - reproducing background climatology and ENSO characteristic
 Overview
 --------
 
-Reproducing some ENSO metrics from the 
+Reproducing some ENSO metrics from the
 [CLIVAR package](https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/portrait_plot/enso_metric/enso_metrics_interactive_portrait_plots_v20231121.html)
 
 

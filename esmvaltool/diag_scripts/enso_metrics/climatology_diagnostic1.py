@@ -60,7 +60,7 @@ def plot_level1(input_data, cfg):
 
     rmse = np.sqrt(np.mean((obs_data - model_data) ** 2))
     metricfile = get_diagnostic_filename("matrix", cfg, extension="csv")
-    with open(metricfile, "a+",  encoding="utf-8") as fileo:
+    with open(metricfile, "a+", encoding="utf-8") as fileo:
         fileo.write(f"{filename[0]},{filename[1]},{rmse}\n")
 
     plt.title(title)
@@ -68,9 +68,15 @@ def plot_level1(input_data, cfg):
     plt.grid(linestyle="--")
     plt.ylabel(ylabel)
 
-    plt.text(0.5, 0.95, f"RMSE: {rmse:.2f} {cube.units}", fontsize=12,
-             ha="center", transform=plt.gca().transAxes,
-             bbox={"facecolor": "white", "alpha": 0.8, "edgecolor": "none"})
+    plt.text(
+        0.5,
+        0.95,
+        f"RMSE: {rmse:.2f} {cube.units}",
+        fontsize=12,
+        ha="center",
+        transform=plt.gca().transAxes,
+        bbox={"facecolor": "white", "alpha": 0.8, "edgecolor": "none"},
+    )
 
     if dataset["preprocessor"].startswith("ITCZ"):
         plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(format_lat))
@@ -127,11 +133,11 @@ def main(cfg):
     input_data = cfg["input_data"].values()
 
     # group by variables
-    variable_groups = group_metadata(input_data, "variable_group",
-                                     sort="project")
+    variable_groups = group_metadata(
+        input_data, "variable_group", sort="project"
+    )
     # for each select obs and iterate others, obs last
     for grp, var_attr in variable_groups.items():
-
         logger.info("%s : %d, %s", grp, len(var_attr), pformat(var_attr))
         obs_data = var_attr[-1]
 
@@ -142,11 +148,15 @@ def main(cfg):
                 pairs.append(metadata)
                 fig, filename = plot_level1(pairs, cfg)
 
-                save_figure("_".join(filename), provenance_record,
-                            cfg, figure=fig, dpi=300)
+                save_figure(
+                    "_".join(filename),
+                    provenance_record,
+                    cfg,
+                    figure=fig,
+                    dpi=300,
+                )
 
 
 if __name__ == "__main__":
-
     with run_diagnostic() as config:
         main(config)

@@ -27,9 +27,11 @@ def plotmaps_level2(input_data):
     proj = ccrs.Orthographic(central_longitude=210.0)
 
     for plt_pos, dataset in enumerate(input_data, start=121):
-
-        filep, sname, dtname = (dataset["filename"], dataset["short_name"],
-                                dataset["dataset"])
+        filep, sname, dtname = (
+            dataset["filename"],
+            dataset["short_name"],
+            dataset["dataset"],
+        )
 
         logger.info("dataset: %s - %s", dtname, dataset["long_name"])
 
@@ -85,8 +87,9 @@ def main(cfg):
     input_data = cfg["input_data"].values()
 
     # group by variables
-    variable_groups = group_metadata(input_data, "variable_group",
-                                     sort="project")
+    variable_groups = group_metadata(
+        input_data, "variable_group", sort="project"
+    )
     # for each select obs and iterate others, obs last
     for grp, var_attr in variable_groups.items():
         # create pairs
@@ -99,14 +102,18 @@ def main(cfg):
             if metadata["project"] == "CMIP6":
                 pairs.append(metadata)
                 fig = plotmaps_level2(pairs)
-                filename = "_".join([metadata["dataset"],
-                                     metadata["short_name"],
-                                     metadata["preprocessor"]])
-                save_figure(filename, provenance_record,
-                            cfg, figure=fig, dpi=300)
+                filename = "_".join(
+                    [
+                        metadata["dataset"],
+                        metadata["short_name"],
+                        metadata["preprocessor"],
+                    ]
+                )
+                save_figure(
+                    filename, provenance_record, cfg, figure=fig, dpi=300
+                )
 
 
 if __name__ == "__main__":
-
     with run_diagnostic() as config:
         main(config)
