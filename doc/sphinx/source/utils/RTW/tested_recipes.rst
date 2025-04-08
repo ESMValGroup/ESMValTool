@@ -14,5 +14,5 @@ files:
 * `jasmin-recipes.jinja`_
 
 .. hint::
-   The :ref:`site/site-recipes.jinja <site_recipes_file>`.
+   The :ref:`site/<site>/recipes.jinja <site_recipes_file>`.
    file provides more information.
