@@ -73,6 +73,10 @@ jobs:
         run: |
           ncl -V
           julia --version
+      - name: Update env with R dependencies
+        # this is not actively used by tests but it gives
+        # a good indication of the time it takes for updating with R deps
+        run: mamba update -n esmvaltool -f environment_r.yml
       - name: Check code quality
         run: pre-commit run -a
       - name: Run tests
