@@ -13,55 +13,92 @@ documentation:
   maintainer:
     - sellar_alistair
 
-#  references:
-#    - rk2008bams
-
-
 datasets:
-    - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
-
+  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
 
 preprocessors:
+  extract_ref_period:
+    &extract_ref_period
+    extract_time:
+      start_day: 1
+      start_month: 1
+      start_year: 1850
+      end_day: 31
+      end_month: 12
+      end_year: 1900
 
-    # Preprocessor needed for Arctic metric
-    nharea:
-        extract_month:
-            month: 9
-        extract_region:
-            start_longitude: 0
-            end_longitude: 360
-            start_latitude: 0
-            end_latitude: 90
-        area_statistics:
-            operator: sum
-        # Does esmvaltool enable area-weighted total of single hemisphere?
-        #
+  extract_test_period:
+    &extract_test_period
+    extract_time:
+      start_day: 1
+      start_month: 1
+      start_year: 1979
+      end_day: 31
+      end_month: 12
+      end_year: 2014
 
-    global_mean:
-        annual_statistics:
-            operator: mean
-        area_statistics:
-            operator: mean
+  nh_sept_total_area:
+    &nh_sept_total_area
+    extract_month:
+      month: 9
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 0
+      end_latitude: 90
+    area_statistics:
+      operator: sum
 
+  global_mean:
+    &global_mean
+    area_statistics:
+      operator: mean
+
+  all_time_mean:
+    &all_time_mean
+    climate_statistics:
+      operator: mean
+
+  pp_arctic_sea_ice_ref:
+    <<: *extract_ref_period
+    <<: *nh_sept_total_area
+    <<: *all_time_mean
+
+  pp_arctic_sea_ice_test:
+    <<: *extract_test_period
+    <<: *nh_sept_total_area
+    <<: *all_time_mean
+
+  pp_avg_global_temp_ref:
+    <<: *extract_ref_period
+    <<: *global_mean
+    <<: *all_time_mean
+
+  pp_avg_global_temp_test:
+    <<: *extract_test_period
+    <<: *global_mean
+    <<: *all_time_mean
 
 diagnostics:
-
   arctic:
-    description: TODO
+    description: blah
     variables:
-      siconc:
-        preprocessor: nharea
+      arctic_sea_ice_ref:
+        preprocessor: pp_arctic_sea_ice_ref
+        short_name: siconc
         mip: SImon
-        #start_year: 1979
-        #end_year: 1985
-            #TODO decide whether to perform time means in preprocessors or in
-            #diagnostic
-      tas:
-        preprocessor: global_mean
+      arctic_sea_ice_test:
+        preprocessor: pp_arctic_sea_ice_test
+        short_name: siconc
+        mip: SImon
+      avg_global_temp_ref:
+        preprocessor: pp_avg_global_temp_ref
+        short_name: tas
         mip: Amon
-        start_year: 1979
-        end_year: 1985
+      avg_global_temp_test:
+        preprocessor: pp_avg_global_temp_test
+        short_name: tas
+        mip: Amon
     scripts:
-        null
-
-# Take obs values from table in Notz et al, not compute from scratch
+      sea_ice_sensitivity_script:
+        script: seaice/seaice_sensitivity.py
