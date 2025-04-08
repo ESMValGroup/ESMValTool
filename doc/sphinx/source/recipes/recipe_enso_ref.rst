@@ -66,19 +66,19 @@ Example plots
 .. figure:: /recipes/figures/enso_metrics/ACCESS-CM2_pr_map_bias_level2.png
    :align: center
 
-   Bias of time-mean precipitation (PR) in the equatorial Pacific, showing mainly the double intertropical convergence zone (ITCZ) bias. 
+   Bias of time-mean precipitation (PR) in the equatorial Pacific, showing mainly the double intertropical convergence zone (ITCZ) bias.
    The left and right maps show respectively the reference and the model
 
 .. _fig_seasonality:
 .. figure:: /recipes/figures/enso_metrics/ACCESS-CM2_12seasonality.png
    :align: center
 
-   Ratio of winter over spring's standard deviation of sea surface temperature anomalies (SSTA) in the central equatorial Pacific (Niño3.4 averaged), showing the seasonal timing of SSTA. 
+   Ratio of winter over spring's standard deviation of sea surface temperature anomalies (SSTA) in the central equatorial Pacific (Niño3.4 averaged), showing the seasonal timing of SSTA.
    All models are on the same line.
 
 .. _fig_lifecycle:
 .. figure:: /recipes/figures/enso_metrics/ACCESS-CM2_10lifecycle.png
    :align: center
 
-   Temporal structure of sea surface temperature anomalies (SSTA) in the central equatorial Pacific (Niño3.4 averaged), showing the temporal evolution of SSTA associated with ENSO. 
+   Temporal structure of sea surface temperature anomalies (SSTA) in the central equatorial Pacific (Niño3.4 averaged), showing the temporal evolution of SSTA associated with ENSO.
    Observation is dashed black line.

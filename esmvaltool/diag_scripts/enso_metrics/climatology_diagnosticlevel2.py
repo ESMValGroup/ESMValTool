@@ -24,7 +24,6 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def plotmaps_level2(input_data):
     """Create map plots for pair of input data."""
-
     var_units = {"tos": "degC", "pr": "mm/day", "tauu": "1e-3 N/m2"}
     fig = plt.figure(figsize=(18, 6))
     proj = ccrs.Orthographic(central_longitude=210.0)
