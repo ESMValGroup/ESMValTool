@@ -17,16 +17,6 @@ datasets:
   - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
 
 preprocessors:
-  extract_ref_period:
-    &extract_ref_period
-    extract_time:
-      start_day: 1
-      start_month: 1
-      start_year: 1850
-      end_day: 31
-      end_month: 12
-      end_year: 1900
-
   extract_test_period:
     &extract_test_period
     extract_time:
@@ -54,49 +44,30 @@ preprocessors:
     area_statistics:
       operator: mean
 
-  all_time_mean:
-    &all_time_mean
-    climate_statistics:
+  annual_mean:
+    &annual_mean
+    annual_statistics:
       operator: mean
 
-  pp_arctic_sea_ice_ref:
-    <<: *extract_ref_period
-    <<: *nh_sept_total_area
-    <<: *all_time_mean
-
-  pp_arctic_sea_ice_test:
+  pp_arctic_sea_ice:
     <<: *extract_test_period
     <<: *nh_sept_total_area
-    <<: *all_time_mean
 
-  pp_avg_global_temp_ref:
-    <<: *extract_ref_period
-    <<: *global_mean
-    <<: *all_time_mean
-
-  pp_avg_global_temp_test:
+  pp_avg_ann_global_temp:
     <<: *extract_test_period
     <<: *global_mean
-    <<: *all_time_mean
+    <<: *annual_mean
 
 diagnostics:
   arctic:
     description: blah
     variables:
-      arctic_sea_ice_ref:
-        preprocessor: pp_arctic_sea_ice_ref
+      arctic_sea_ice:
+        preprocessor: pp_arctic_sea_ice
         short_name: siconc
         mip: SImon
-      arctic_sea_ice_test:
-        preprocessor: pp_arctic_sea_ice_test
-        short_name: siconc
-        mip: SImon
-      avg_global_temp_ref:
-        preprocessor: pp_avg_global_temp_ref
-        short_name: tas
-        mip: Amon
-      avg_global_temp_test:
-        preprocessor: pp_avg_global_temp_test
+      avg_ann_global_temp:
+        preprocessor: pp_avg_ann_global_temp
         short_name: tas
         mip: Amon
     scripts:
