@@ -1,4 +1,5 @@
 """Standard MO metrics plotter."""
+
 import logging
 import os
 import sys
@@ -29,39 +30,59 @@ def get_cfg():
 def main():
     """Call the plotting script via command line."""
     cfg = get_cfg()
-    logger.setLevel(cfg['log_level'].upper())
+    logger.setLevel(cfg["log_level"].upper())
 
-    control_model = cfg['control_model']
-    exp_model = cfg['exp_model']
+    control_model = cfg["control_model"]
+    exp_model = cfg["exp_model"]
 
-    vsloc = exp_model + '_vs_' + control_model
+    vsloc = exp_model + "_vs_" + control_model
     file_exp = os.path.join(
-        os.path.dirname(os.path.dirname(cfg['plot_dir'])), cfg['diag_tag'],
-        cfg['diag_name'], vsloc, cfg['area'], exp_model, 'metrics.csv')
+        os.path.dirname(os.path.dirname(cfg["plot_dir"])),
+        cfg["diag_tag"],
+        cfg["diag_name"],
+        vsloc,
+        cfg["area"],
+        exp_model,
+        "metrics.csv",
+    )
     file_ref = os.path.join(
-        os.path.dirname(os.path.dirname(cfg['plot_dir'])), cfg['diag_tag'],
-        cfg['diag_name'], vsloc, cfg['area'], control_model, 'metrics.csv')
+        os.path.dirname(os.path.dirname(cfg["plot_dir"])),
+        cfg["diag_tag"],
+        cfg["diag_name"],
+        vsloc,
+        cfg["area"],
+        control_model,
+        "metrics.csv",
+    )
 
-    plot_title = ' '.join([cfg['area'], control_model, 'vs', exp_model])
+    plot_title = " ".join([cfg["area"], control_model, "vs", exp_model])
     # Read (and record) metrics files
     # metrics = read_order_metrics(args.file_ord)
     ref = read_model_metrics(file_ref)
     tests = [read_model_metrics(file_exp)]
-    cfg['input_data'] = {'ref': {'filename': file_ref},
-                         'exp': {'filename': file_exp}}
+    cfg["input_data"] = {
+        "ref": {"filename": file_ref},
+        "exp": {"filename": file_exp},
+    }
     # var = read_model_metrics(args.file_var)
     obs, acc = None, None
-    if 'additional_metrics' in cfg:
+    if "additional_metrics" in cfg:
         # choose the obs file to get the metrics from
         file_obs = os.path.join(
-            os.path.dirname(os.path.dirname(cfg['plot_dir'])), cfg['diag_tag'],
-            cfg['diag_name'], vsloc, cfg['area'], cfg['error_metric'],
-            'metrics.csv')
+            os.path.dirname(os.path.dirname(cfg["plot_dir"])),
+            cfg["diag_tag"],
+            cfg["diag_name"],
+            vsloc,
+            cfg["area"],
+            cfg["error_metric"],
+            "metrics.csv",
+        )
         (obs, acc) = read_obs_metrics(file_obs)
 
     # Produce plot
     plot_nac(
-        control_model, [exp_model],
+        control_model,
+        [exp_model],
         ref,
         tests,
         metrics=None,
@@ -70,11 +91,14 @@ def main():
         acc=acc,
         extend_y=False,
         title=plot_title,
-        ofile=cfg['plot_name'],
-        config=cfg)
+        ofile=cfg["plot_name"],
+        config=cfg,
+    )
 
 
-if __name__ == '__main__':
-    logging.basicConfig(format="%(asctime)s [%(process)d] %(levelname)-8s "
-                        "%(name)s,%(lineno)s\t%(message)s")
+if __name__ == "__main__":
+    logging.basicConfig(
+        format="%(asctime)s [%(process)d] %(levelname)-8s "
+        "%(name)s,%(lineno)s\t%(message)s"
+    )
     main()

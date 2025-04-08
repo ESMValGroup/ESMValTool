@@ -290,6 +290,34 @@ diagnostics:
         additional_datasets:
           - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
              type: sat, version: L3, start_year: 2007, end_year: 2008}
+      toz:
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
+             type: sat, version: L3, start_year: 1995, end_year: 2023}
+      o3:
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
+             type: sat, version: L3, start_year: 1984, end_year: 2022}
+    scripts: null
+
+  ESACCI-SEAICE:
+    description: ESACCI-SEAICE check
+    variables:
+      areacello:
+        mip: Ofx
+      siconc_daily:
+        short_name: siconc
+        mip: SIday
+        frequency: day
+      siconc_monthly:
+        short_name: siconc
+        mip: SImon
+        frequency: mon
+    additional_datasets:
+      - {dataset: ESACCI-SEAICE, project: OBS6, tier: 2,
+         type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-SH, start_year: 1991, end_year: 2020}
+      - {dataset: ESACCI-SEAICE, project: OBS6, tier: 2,
+         type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-NH, start_year: 1991, end_year: 2020}
     scripts: null
 
   ESACCI-SEA-SURFACE-SALINITY:
@@ -327,12 +355,14 @@ diagnostics:
   ESACCI-SST:
     description: ESACCI-SST check
     variables:
-      ts:
-      tsStderr:
+      tos:
+        additional_datasets:
+          - {dataset: ESACCI-SST, project: OBS6, mip: Omon, tier: 2,
+             type: sat, version: 3.0-L4-analysis, timerange: '198001/202112'}
+      tosStderr:
     additional_datasets:
-      - {dataset: ESACCI-SST, project: OBS, mip: Amon, tier: 2,
-         type: sat, version: 2.2,
-         start_year: 1982, end_year: 2019}
+      - {dataset: ESACCI-SST, project: OBS6, mip: Oday, tier: 2,
+         type: sat, version: 3.0-L4-analysis, timerange: '202001/202112'}
     scripts: null
 
 
@@ -826,9 +856,9 @@ diagnostics:
         mip: fx
     additional_datasets:
       - {dataset: OSI-450-nh, project: OBS, tier: 2,
-         type: reanaly, version: v2, start_year: 1979, end_year: 2015}
+         type: reanaly, version: v3, start_year: 1979, end_year: 2020}
       - {dataset: OSI-450-sh, project: OBS, tier: 2,
-         type: reanaly, version: v2, start_year: 1979, end_year: 2015}
+         type: reanaly, version: v3, start_year: 1979, end_year: 2020}
     scripts: null
 
 
