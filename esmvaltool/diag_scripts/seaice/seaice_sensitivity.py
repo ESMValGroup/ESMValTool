@@ -12,7 +12,9 @@ from esmvaltool.diag_scripts.shared import (
     sorted_metadata,
 )
 from esmvaltool.diag_scripts.shared.plot import quickplot
-from numpy.polynomial.polynomial import polyfit  # TODO: is this OK?
+from scipy import stats
+import numpy as np
+import iris.coord_categorisation as cc  # we could avoid using this
 
 
 logger = logging.getLogger(Path(__file__).stem)
@@ -37,6 +39,23 @@ def extract_cube(data, variable_group):
     return cube
 
 
+# Stolen from Ed Blockley
+def calc_trend(times, timeseries, slope_only=True):
+    """
+    Calculate linear trend for a timeseries
+    Returns a numpy array containing the linear fit for that trend, which can
+    be subtracted from another run to de-trend it.
+    """
+    # Use SciPy stats to calculate the slope
+    slope, intercept, r, p, stderr = stats.linregress(times, timeseries)
+
+    # Return either the slope or the array [0, 1*slope, 2*slope, 3*slope, ...]
+    if slope_only:
+        return slope
+    else:
+        return slope * np.arange(len(times))
+
+
 def calculate_sensitivity(cfg):
     """
     Calculates a first order best fit gradient for change in sea ice area
@@ -46,18 +65,23 @@ def calculate_sensitivity(cfg):
     input_data = cfg['input_data'].values()
 
     # Load the preprocessed cubes
-    tas_cube = extract_cube(input_data, 'avg_ann_global_temp')
     si_cube = extract_cube(input_data, 'arctic_sea_ice')
+    tas_cube = extract_cube(input_data, 'avg_ann_global_temp')
 
-    # Use Numpy polyfit to calculate the gradient
-    x = tas_cube.data
-    y = si_cube.data
-    # c isn't used but it felt wrong to use _
-    c, m = polyfit(x, y, 1)
+    # Add years to si cube (tas already has years)
+    cc.add_year(si_cube, 'time', name='year')
+    # Check that the years match
+    assert (si_cube.coord('year').points == tas_cube.coord('year').points).all()
+    # Return the years for later use
+    years = tas_cube.coord('year').points
 
-    # Print the gradient to log for now
-    print('-' * 40)
-    print(f'{m:.2e} {si_cube.units} per {tas_cube.units}')
+    # Calculate trends and sensitivity, both via time as in Ed's code
+    si_trend = calc_trend(years, si_cube.data)
+    tas_trend = calc_trend(years, tas_cube.data)
+    sensitivity = si_trend / tas_trend
+
+    # Still printing rather than returning for now  TODO: return
+    print(f'{sensitivity:.5e} {si_cube.units} per {tas_cube.units}')
 
 
 def main(cfg):
