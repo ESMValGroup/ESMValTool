@@ -1,7 +1,7 @@
 #!jinja2
 {{ assert(SITE != "", "SITE must be set to something other than an empty string") }}
 
-{% set SITE_RECIPES_FILE = "site/" ~ SITE ~ "-recipes.jinja" %}
+{% set SITE_RECIPES_FILE = "site/" ~ SITE ~ "/recipes.jinja" %}
 {% set MISSING_FILE_MSG =
     "'" ~ SITE_RECIPES_FILE ~ "' is required for the RTW and was not "
     "found - the 'How to add a recipe to the RTW' documentation provides more "
@@ -50,8 +50,7 @@
         platform = localhost
         [[[environment]]]
             SITE = {{ SITE }}
-            ENV_FILE=rtw-env
-            ENV_FILE_SITE_PATH=${CYLC_WORKFLOW_RUN_DIR}/site/${SITE}-env
+            ENV_FILE_SITE_PATH=${CYLC_WORKFLOW_RUN_DIR}/site/${SITE}/env-file
             SHARE_BIN_DIR=${CYLC_WORKFLOW_SHARE_DIR}/bin
 
     [[get_esmval]]
@@ -132,4 +131,4 @@
             COMPARISON_OUTPUT_DIR=${OUTPUT_DIR}/${RECIPE_NAME}*
             KGO_DIR=${KGO_ROOT_PATH}/${RECIPE_NAME}*
 
-{% include "site/" ~ SITE ~ ".cylc" %}
+{% include "site/" ~ SITE ~ "/runtime.cylc" %}
