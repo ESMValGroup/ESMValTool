@@ -50,7 +50,7 @@ def plot_level1(input_data, cfg):
         if len(cube.coords("month_number")) == 1:
             cube = sea_cycle_month_stdev(cube, dataset["preprocessor"])
             ylabel = f"{sname.upper()} std ({cube.units})"
-            title = f"{dataset["long_name"]} seasonal cycle"
+            title = f"{dataset['long_name']} seasonal cycle"
 
         if proj == "CMIP6":  # group by models/ for each model with obs
             qplt.plot(cube, label=dtname)
