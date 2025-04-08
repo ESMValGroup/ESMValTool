@@ -98,7 +98,7 @@ def sst_regressed(n34_cube):
     n34_selected = []
     for enso_epoch in years_epochs:
         # Select the data for the current year and append it to n34_selected
-        year_enso = iris.Constraint(time=lambda cell: cell.point.year in
+        year_enso = iris.Constraint(time=lambda cell, enso_epoch=enso_epoch: cell.point.year in
                                     enso_epoch)
         cube_2 = n34_cube.extract(year_enso)
         n34_selected.append(cube_2.data.data)
@@ -175,7 +175,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
                                           period="full")
                 preproc[season] = cube.data
 
-            data_values.append(preproc["NDJ"]/preproc["MAM"])
+            data_values.append(preproc["NDJ"] / preproc["MAM"])
 
         val = compute(data_values[1], data_values[0])
         fig = plot_level1(data_values, val, "SSTA std (NDJ/MAM)(°C/°C)",
@@ -243,7 +243,7 @@ def diversity(ssta_cube, events_dict):
     """Compute diversity from event years."""
     res_lon = {}
     for enso, events in events_dict.items():
-        year_enso = iris.Constraint(time=lambda cell:
+        year_enso = iris.Constraint(time=lambda cell, events=events:
                                     cell.point.year in events)
         cube = ssta_cube.extract(year_enso)
         if enso == "nina":
@@ -277,12 +277,11 @@ def format_lon(x_val, _pos):
 
 def compute(obs, mod):
     """Compute percentage metric value."""
-    return abs((mod-obs)/obs)*100
+    return abs((mod-obs) / obs) * 100
 
 
 def get_provenance_record(caption, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
-
     record = {
         "caption": caption,
         "statistics": ["anomaly"],
@@ -303,7 +302,6 @@ def get_provenance_record(caption, ancestor_files):
 
 def main(cfg):
     """Run ENSO metrics."""
-
     input_data = cfg["input_data"].values()
 
     # iterate through each metric and get variable group, select_metadata
@@ -355,7 +353,7 @@ def main(cfg):
             if value:
                 metricfile = get_diagnostic_filename("matrix", cfg,
                                                      extension="csv")
-                with open(metricfile, "a+",  encoding="utf-8") as fileo:
+                with open(metricfile, "a+", encoding="utf-8") as fileo:
                     fileo.write(f"{dataset},{metric},{value}\n")
 
                 save_figure(f"{dataset}_{metric}", prov_record,
