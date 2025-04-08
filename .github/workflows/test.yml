@@ -73,14 +73,14 @@ jobs:
         run: |
           ncl -V
           julia --version
-      - name: Update env with R dependencies
-        # this is not actively used by tests but it gives
-        # a good indication of the time it takes for updating with R deps
-        run: mamba update -n esmvaltool -f environment_r.yml
       - name: Check code quality
         run: pre-commit run -a
       - name: Run tests
         run: pytest -n 2 -m "not installation" 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt
+      - name: Update env with R dependencies
+        # this is not actively used by tests but it gives
+        # a good indication of the time it takes for updating with R deps
+        run: mamba update -c conda-forge -n esmvaltool -f environment_r.yml
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
         uses: actions/upload-artifact@v4
