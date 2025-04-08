@@ -12,65 +12,52 @@ from esmvaltool.diag_scripts.shared import (
     sorted_metadata,
 )
 from esmvaltool.diag_scripts.shared.plot import quickplot
+from numpy.polynomial.polynomial import polyfit  # TODO: is this OK?
+
 
 logger = logging.getLogger(Path(__file__).stem)
 
 
-def extract_value(data, preprocessor):
+def extract_cube(data, variable_group):
     """
-    Selects records from data based on the preprocessor,
+    Selects records from data based on the variable_group,
     asserts that there is only one matching record,
-    then returns that record's value
+    then returns an iris cube for that record
     """
-    # TODO: assert that there is only one value in the cube
 
-    # loading any data that uses the preprocessor
-    selection = select_metadata(data, preprocessor=preprocessor)
+    # Load any data in the variable_group
+    selection = select_metadata(data, variable_group=variable_group)
 
-    # ensure there was only one file
-    assert len(selection) == 1, f'Too many matching files found for {preprocessor}'
+    # Ensure there is only one file in the list
+    assert len(selection) == 1, f'Too many matching files found for {variable_group}'
 
-    # loading the cube
+    # Load the cube, [0] is because selection returns a list
     cube = iris.load_cube(selection[0]['filename'])
 
-    # accessing the value
-    value = cube.data
-
-    return value
+    return cube
 
 
 def calculate_sensitivity(cfg):
     """
-    Calculates the siconc difference divided by the tas difference
+    Calculates a first order best fit gradient for change in sea ice area
+    over change in global mean temperature
     """
-    # TODO: build in a group by dataset step
-
+    # Get data from the configuration object
     input_data = cfg['input_data'].values()
 
-    # Sea ice for the reference period
-    si_ref_value = extract_value(input_data, 'pp_arctic_sea_ice_ref')
+    # Load the preprocessed cubes
+    tas_cube = extract_cube(input_data, 'avg_ann_global_temp')
+    si_cube = extract_cube(input_data, 'arctic_sea_ice')
 
-    # Sea ice for the test period
-    si_test_value = extract_value(input_data, 'pp_arctic_sea_ice_test')
+    # Use Numpy polyfit to calculate the gradient
+    x = tas_cube.data
+    y = si_cube.data
+    # c isn't used but it felt wrong to use _
+    c, m = polyfit(x, y, 1)
 
-    # Mean temperature for the reference period
-    tas_ref_value = extract_value(input_data, 'pp_avg_global_temp_ref')
-
-    # Mean temperature for the test period
-    tas_test_value = extract_value(input_data, 'pp_avg_global_temp_test')
-
-    # calculating temperature difference
-    tas_diff = tas_test_value - tas_ref_value
-
-    # calculating sea ice difference
-    si_diff = si_test_value - si_ref_value
-
-    # calculating the ratio
-    sensitivity = si_diff / tas_diff
-
-    # Printing the value for now instead of plotting
-    print(f'Loss per degree of warming: {sensitivity}')
-    print(f'written in standard index form: {sensitivity:.5e}')
+    # Print the gradient to log for now
+    print('-' * 40)
+    print(f'{m:.2e} {si_cube.units} per {tas_cube.units}')
 
 
 def main(cfg):
