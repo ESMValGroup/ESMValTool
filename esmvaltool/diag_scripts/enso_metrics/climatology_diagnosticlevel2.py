@@ -1,6 +1,4 @@
-"""Diagnostic script to plot map comparisons of background climatology
-
-"""
+"""Plot map comparisons of background climatology."""
 
 import logging
 import os

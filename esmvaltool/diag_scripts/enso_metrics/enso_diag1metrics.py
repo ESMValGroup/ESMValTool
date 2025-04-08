@@ -1,6 +1,4 @@
-"""diagnostic script to plot ENSO metrics
-
-"""
+"""Compute and plot ENSO characteristics metrics."""
 
 import logging
 import os
@@ -261,8 +259,8 @@ def diversity(ssta_cube, events_dict):
 def iqr(data):
     """Compute interquartile range."""
     qrt3, qrt1 = np.percentile(data, [75, 25])
-    iqrange = qrt3 - qrt1
-    return iqrange
+
+    return qrt3 - qrt1
 
 
 def format_lon(x_val, _pos):

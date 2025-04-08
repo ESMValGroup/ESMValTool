@@ -62,7 +62,7 @@ preprocessors:
     climate_statistics:
       operator: mean
       period: monthly
- 
+
   ITCZ_sea_cycle:
     <<: *base_cycle
     convert_units:

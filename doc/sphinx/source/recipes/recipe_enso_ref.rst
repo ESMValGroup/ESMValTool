@@ -24,11 +24,8 @@ Diagnostics are stored in esmvaltool/diag_scripts/enso_metrics/
 * **climatology_diagnostic1.py**: metrics for background climatology.
 * **climatology_diagnosticlevel2.py**: creating map plots for background climatology.
 
-
 User settings in recipe
 -----------------------
-
-
 
 Variables
 ---------
@@ -39,10 +36,8 @@ Variables
 * ts (Amon, monthly)
 * tauu (Amon, monthly)
 
-
 Observations and reformat scripts
 ---------------------------------
-
 
 * HadISST
 * GPCP-SG

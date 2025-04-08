@@ -1,6 +1,4 @@
-"""diagnostic script for basic climatology metrics
-
-"""
+"""Compute basic climatology metrics for ENSO."""
 
 import logging
 import os
@@ -72,7 +70,7 @@ def plot_level1(input_data, cfg):
 
     plt.text(0.5, 0.95, f"RMSE: {rmse:.2f} {cube.units}", fontsize=12,
              ha="center", transform=plt.gca().transAxes,
-             bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"))
+             bbox={"facecolor": "white", "alpha": 0.8, "edgecolor": "none"})
 
     if dataset["preprocessor"].startswith("ITCZ"):
         plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(format_lat))
@@ -95,7 +93,7 @@ def sea_cycle_month_stdev(cube, preproc):
     return cube
 
 
-def format_lat(x_val, pos):
+def format_lat(x_val, pos) -> str:
     """Format latitude for plot axis."""
     if x_val < 0:
         return f"{abs(x_val):.0f}°S"
@@ -105,7 +103,7 @@ def format_lat(x_val, pos):
     return "0°"
 
 
-def format_lon(val, pos):
+def format_lon(val, pos) -> str:
     """Format longitude for plot axis."""
     if val > 180:
         return f"{(360 - val):.0f}°W"
