@@ -44,9 +44,7 @@ commands:
             export PATH=/root/.juliaup/bin:$PATH
             mamba --version
             mamba install -y -c conda-forge "ncl>=6.6.2"
-            # this package may also be needed
-            # importlib_metadata <8  github.com/ESMValGroup/ESMValTool/issues/3699
-            # only for Python 3.10/11 and esmpy<8.6
+            mamba update -n esmvaltool -f environment_r.yml
             pytest -n 4 --junitxml=test-reports/report.xml
             esmvaltool version
             esmvaltool -- --help
