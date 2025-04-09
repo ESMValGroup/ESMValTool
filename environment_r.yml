@@ -1,9 +1,10 @@
 ---
-name: esmvaltool-r
+name: esmvaltool
 channels:
   - conda-forge
   - nodefaults
 
+dependencies:
   # R and dependencies
   - cdo
   - r-base >=3.5
