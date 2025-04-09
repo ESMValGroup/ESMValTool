@@ -37,6 +37,17 @@ logger = logging.getLogger(Path(__file__).stem)
 
 
 def get_provenance_record(ancestors):
+    """Get record of ancestors.
+
+    Parameters
+    ----------
+    ancestors : str, list, dict
+
+    Returns
+    -------
+    record : dict
+        Dictionary containing the ancestors.
+    """
     record = {
         'ancestors': ancestors
     }
@@ -75,6 +86,23 @@ def setup_basename_file(filename, var, table):
 
 
 def download_files_from_zenodo(zenodo_link, output_dir):
+    """Download files from a Zenodo archive.
+    Only the relevant files will be downloaded i.e.:
+        - trace.nc
+        - none-trace-params.txt
+        - scalers.csv
+    These files are relevant to run the diagnostic (ConFire model).
+
+    Parameters
+    ----------
+    zenodo_link : str
+        URL link to the Zenodo archive.
+    output_dir : str
+        Output directory where to store the downloaded files.
+
+    Returns
+    -------
+    """
     # Extract the record ID from the Zenodo link
     record_id = zenodo_link.split('/')[-1]
     try:
@@ -115,6 +143,22 @@ def download_files_from_zenodo(zenodo_link, output_dir):
 
 
 def get_parameter_directory(config):
+    """Get the path to the parameter directory.
+    The parameter directory can either consist of:
+        - an existing directory which must contain the necessary files
+        - a Zenodo URL link to an existing archive from which the necessary
+        files will be downloaded from.
+
+    Parameters
+    ----------
+    config : dict
+        ESMValTool configuration dictionary from the recipe.
+
+    Returns
+    -------
+    param_dir : str
+        Path to the directory containing the relevant files.
+    """
     param_dir = None
     # If confire_param is a local directory = return this directory
     if os.path.isdir(os.path.expanduser(config['confire_param'])):
@@ -145,10 +189,10 @@ def get_parameter_directory(config):
             raise ValueError(
                 f'{param_dir} should contain a scalers file named ' +
                 'scalers*.csv.'
-            )   
+            )
     # If confire_param is a Zenodo URL = download relevant files
     # Zenodo URL should follow the layout:
-    #   https://zenodo.org/records/{record_id}
+    # https://zenodo.org/records/{record_id}
     # where record_id is a number typically corresponding to
     # the attribute zenodo.{record_id} in the DOI.
     elif "https://zenodo.org/records/" in config['confire_param']:
@@ -160,12 +204,14 @@ def get_parameter_directory(config):
         os.makedirs(param_dir, exist_ok=True)
         download_files_from_zenodo(
             zenodo_link=config['confire_param'],
-            output_dir=param_dir)
+            output_dir=param_dir
+        )
     # Otherwise raise an error
     else:
         raise ValueError(
             'Recipe input confire_param should either be a directory or a ' +
-            f'Zenodo URL. However, parameter was set to {config['confire_param']}.'
+            'Zenodo URL. However, parameter is set to ' +
+            f'{config['confire_param']}.'
         )
     return param_dir
 
@@ -179,7 +225,7 @@ def compute_vpd(config, tas, hurs, provenance):
 
     The resulting cube is then saved in the work directory of the recipe
     alongside the other variables.
-    
+
     Parameters
     ----------
     config : dict
@@ -191,6 +237,11 @@ def compute_vpd(config, tas, hurs, provenance):
     provenance: dict
         Dictionary containing the attributes from tas/hurs and
         the corresponding files used in the computation.
+
+    Returns
+    ----------
+    filename: str
+        Filename containing the processed VPD output.
     """
     # Convert temperature to Celsius for the operation
     tas.convert_units('degrees_C')
@@ -198,7 +249,8 @@ def compute_vpd(config, tas, hurs, provenance):
     e_s = 0.6108 * np.exp(np.divide(
         17.2694 * tas.data, tas.data + 237.3
     ))
-    data = 1000. * np.multiply(1 - 0.01 * hurs.data, e_s)  # Convert kPa to Pa
+    # Convert kPa to Pa
+    data = 1000. * np.multiply(1 - 0.01 * hurs.data, e_s)
     data = np.maximum(data, 0.)
     # Transfer coordinates
     dim_coords = [
@@ -226,19 +278,18 @@ def compute_vpd(config, tas, hurs, provenance):
     logger.info(
         f'Saving vapor_pressure_deficit in {config['work_dir']}/{basename}'
     )
-    # save_data(basename, provenance, config, vpd)
     filename = get_diagnostic_filename(basename, config, extension='nc')
     iris.save(vpd, filename)
     return filename
 
 
 def main(config):
-    """Produce the diagnostics regarding the climate drivers of fire.
+    """Produce the diagnostics for the climate drivers of fire.
 
     Parameters
     ----------
     config : dict
-        The ESMValTool configuration.
+        ESMValTool configuration from the recipe.
     """
     input_data = config["input_data"]
     datasets = group_metadata(input_data.values(), "dataset")
@@ -278,7 +329,9 @@ def main(config):
 
         if 'vpd' in config['var_order']:
             # Compute Vapor Pressure Deficit (VPD)
-            logger.info(f'Processing vapor_pressure_deficit for {model_dataset}')
+            logger.info(
+                f'Processing vapor_pressure_deficit for {model_dataset}'
+            )
             tas = iris.load_cube(vars_file['tas']['filename'])
             hurs = iris.load_cube(vars_file['hurs']['filename'])
             provenance_record = get_provenance_record(
@@ -328,12 +381,12 @@ def main(config):
                     logger.debug(f"Error removing {f.split('/')[-1]}: {e}")
                     f_not_removed.append(f.split('/')[-1])
             logger.info(f'Files not removed: {f_not_removed}')
-        
+
         # Remove ConFire files after diagnostic run
         if config['remove_confire_files']:
             logger.info(
                 f'Removing files in {config['work_dir']}/ConFire_outputs'
-            )  
+            )
             f_not_removed = []
             for f in glob.glob(f'{config['work_dir']}/ConFire_outputs/*.nc'):
                 logger.info(f'Removing {f.split('/')[-1]}')
@@ -351,4 +404,4 @@ def main(config):
 if __name__ == '__main__':
 
     with run_diagnostic() as config:
-        main(config)                
+        main(config)
