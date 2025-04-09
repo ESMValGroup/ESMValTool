@@ -43,9 +43,9 @@ def select_key_or_default(
             out = numPCK.stack([i[0] for i in out])
         
     if type(out) is list:         
-        try:    
+        try:
             if stack:
-                out =  numPCK.stack(out)[:,0]
+                out = numPCK.stack(out)[:, 0]
         except:
             pass
        
@@ -55,7 +55,7 @@ def select_key_or_default(
 # /libs/iris_plus.py
 def sort_time(cube, field, filename):
     
-    cube.coord("time").bounds=None
+    cube.coord("time").bounds = None
     tcoord = cube.coord("time")
     tcoord.units = cf_units.Unit(tcoord.units.origin, calendar="gregorian")
     tcoord.convert_units("days since 1661-01-01 00:00:00")
@@ -185,7 +185,6 @@ def read_variable_from_namelist_with_overwite(file_name, **kwargs):
         merged.update(**kwargs)
         return merged
     
-    
     read_variables = read_variables_from_namelist(file_name)
     return merge_variables(read_variables)
 
@@ -275,7 +274,6 @@ def read_variable_from_netcdf(
             print("Check directory (''" + dir + "''), filename (''" + \
                 filename + "'') or file format")
             print("==============")
-            # set_trace()
     coord_names = [coord.name() for coord in dataset.coords()]
     if dataset is None:
         return None
@@ -327,7 +325,6 @@ def read_variable_from_netcdf(
         try:    
             dataset = dataset.data.flatten()
         except:
-            # set_trace()
             pass
             
         if time_series is not None:
@@ -339,7 +336,6 @@ def read_variable_from_netcdf(
                 dataset = np.append(
                     dataset, np.repeat(np.nan, time_series[1]-years[-1])
                 )
-            # if return_time_points: set_trace()
      
     if return_time_points:
         dataset = (dataset, time_points)
@@ -398,7 +394,7 @@ def read_all_data_from_netcdf(
     # Create a new categorical variable based on the threshold
     if y_threshold is not None:
         Y = np.where(Y >= y_threshold, 0, 1)
-        #count number of 0 and 1 
+        # count number of 0 and 1 
         counts = np.bincount(Y)
     
     n = len(Y)
@@ -435,7 +431,6 @@ def read_all_data_from_netcdf(
         try:
             scalers = np.array([np.min(X, axis=0), np.max(X, axis=0)])
         except:
-            # set_trace()
             pass
         squidge = (scalers[1,:]-scalers[0,:])/(X.shape[0])
         scalers[0,:] = scalers[0,:] - squidge
@@ -444,7 +439,6 @@ def read_all_data_from_netcdf(
         test = scalers[1,:] == scalers[0,:]
         scalers[0,test] = 0.0
         scalers[1,test] = 1.0
-    
 
     if frac_random_sample is None: 
         frac_random_sample = 1000
@@ -476,11 +470,6 @@ def read_all_data_from_netcdf(
             return Y, X, CA, cells_we_want
     
     return Y, X, cells_we_want
-    
-    # if CA_filename is not None:
-    #     return Y, X, CA
-    
-    # return Y, X 
 
 
 # /fire_models/ConFire.py
@@ -634,7 +623,7 @@ class ConFire(object):
         return full_df
 
 
-def diagnostic_run_ConFire(config):
+def diagnostic_run_ConFire(config, model_name, timerange):
     # --------------------------------------------------------
     # This script runs the ConFire model using pre-generated parameter files.
     # It calculates burnt area under different control conditions and saves
@@ -649,9 +638,10 @@ def diagnostic_run_ConFire(config):
     output_dir = work_dir + '/ConFire_outputs/'
 
     # Parameter files (traces, scalers, and other model parameters)
-    param_file_trace = glob.glob(confire_param + "trace*.nc")
-    param_file_none_trace = glob.glob(confire_param + "none_trace-params*.txt")
-    scale_file = glob.glob(confire_param + "scalers*.csv")
+    param_file_trace = glob.glob(confire_param + "trace*.nc")[0]
+    param_file_none_trace = glob.glob(
+        confire_param + "none_trace-params*.txt")[0]
+    scale_file = glob.glob(confire_param + "scalers*.csv")[0]
 
     # Number of samples to run from the trace file
     nsample_for_running = 100
@@ -722,50 +712,59 @@ def diagnostic_run_ConFire(config):
 
     # **Save Output Cubes**
     logger.info('Saving ConFire output cubes...')
-    filenames_out = ['model'] + \
-        ['control_' + str(i) for i in range(Nexp)] + \
-        ['control_stochastic']
+    filenames_out = ['burnt_area_model'] + \
+        ['burnt_area_control_' + str(i) for i in range(Nexp)] + \
+        ['burnt_area_control_stochastic']
     os.makedirs(output_dir, exist_ok=True)
 
     for i in range(len(out_cubes)):
         cubes = iris.cube.CubeList(out_cubes[i]).merge_cube()
-        iris.save(cubes, os.path.join(output_dir, filenames_out[i] + '.nc'))
+        iris.save(cubes, os.path.join(
+            output_dir, f'{model_name}_{filenames_out[i]}_{timerange}.nc'
+        ))
 
     # --------------------------------------------------------
     # **Visualization: Plot Resultant Maps**
     # --------------------------------------------------------
     # **Load and Plot Output Data**
     logger.info('Plotting model diagnostic outputs...')
-    fig, axes = plt.subplots(
-        nrows=4, ncols=2, figsize=(8, 10),
-        subplot_kw={'projection': ccrs.PlateCarree()})
-    axes = axes.flatten()   # Flatten to handle looping easily
-    plotN = 0
+    figures = []
     for i, filename in enumerate(filenames_out):
         filepath = os.path.join(output_dir, filename + ".nc")
+
+        fig, axes = plt.subplots(
+            nrows=1, ncols=2, figsize=(12, 8),
+            subplot_kw={'projection': ccrs.PlateCarree()})
+        axes = axes.flatten()
+        plotN = 0
         
         try:
             cube = iris.load_cube(filepath)   # Load saved NetCDF file
             annual_avg = cube.collapsed('time', iris.analysis.MEAN)
             for pc in [5, 95]:
-                pc_cube = cube.collapsed(
+                pc_cube = 100 * cube.collapsed(
                     'realization', iris.analysis.PERCENTILE, percent=pc)[0]
                 ax = axes[plotN]
-                img = iris.quickplot.pcolormesh(pc_cube, axes=ax)
+                img = iris.quickplot.pcolormesh(
+                    pc_cube, axes=ax, colorbar=False,
+                    vmin=0., vmax=100., cmap='Oranges')
                 ax.set_title(
                     filename.replace("_", " ").capitalize() + \
-                    '-' + str(pc) + '%'
+                    f' - {timerange}\n{model_name} - [{str(pc)}% percentile]'
                 )
                 ax.coastlines()
                 # Add colorbar
-                fig.colorbar(img, ax=ax, orientation='vertical',
-                    fraction=0.046, pad=0.04
+                fig.colorbar(
+                    img, ax=ax, orientation='vertical', extend='neither',
+                    label='Burnt area [%]',
+                    fraction=0.046, pad=0.04, shrink=0.3,
                 )
                 # Iterate plot number
                 plotN = plotN + 1
+            figures.append(fig)
         
         except Exception as e:
             logger.info(f"Skipping {filename} due to error: {e}")
             logger.debug(f"Skipping {filename} due to error: {e}")
 
-    return fig
+    return figures

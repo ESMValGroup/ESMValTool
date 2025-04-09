@@ -26,7 +26,7 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
     group_metadata,
     get_diagnostic_filename,
-    save_figure,
+    get_plot_filename,
 )
 
 from esmvaltool.diag_scripts.fire.diagnostic_run_ConFire import (
@@ -117,10 +117,13 @@ def download_files_from_zenodo(zenodo_link, output_dir):
 def get_parameter_directory(config):
     param_dir = None
     # If confire_param is a local directory = return this directory
-    if os.path.isdir(config['confire_param']):
+    if os.path.isdir(os.path.expanduser(config['confire_param'])):
+        param_dir = os.path.expanduser(config['confire_param'])
+        if param_dir[-1] != '/':
+            param_dir += '/'
         logger.info(
             'Using ConFire model parameter files from directory ' +
-            config['confire_param']
+            param_dir
         )
         # Check if the needed files are present in the directory
         # trace.nc file
@@ -142,9 +145,7 @@ def get_parameter_directory(config):
             raise ValueError(
                 f'{param_dir} should contain a scalers file named ' +
                 'scalers*.csv.'
-            )
-        # Return input directory
-        param_dir = config['confire_param']        
+            )   
     # If confire_param is a Zenodo URL = download relevant files
     # Zenodo URL should follow the layout:
     #   https://zenodo.org/records/{record_id}
@@ -164,7 +165,7 @@ def get_parameter_directory(config):
     else:
         raise ValueError(
             'Recipe input confire_param should either be a directory or a ' +
-            f'Zenodo URL. Parameter was set to {config['confire_param']}.'
+            f'Zenodo URL. However, parameter was set to {config['confire_param']}.'
         )
     return param_dir
 
@@ -197,7 +198,7 @@ def compute_vpd(config, tas, hurs, provenance):
     e_s = 0.6108 * np.exp(np.divide(
         17.2694 * tas.data, tas.data + 237.3
     ))
-    data = 10 * np.multiply(1 - 0.01 * hurs.data, e_s)  # Convert kPa to hPa
+    data = 1000. * np.multiply(1 - 0.01 * hurs.data, e_s)  # Convert kPa to Pa
     data = np.maximum(data, 0.)
     # Transfer coordinates
     dim_coords = [
@@ -217,7 +218,7 @@ def compute_vpd(config, tas, hurs, provenance):
         dim_coords_and_dims=dim_coords,
         long_name='vapor_pressure_deficit',
         var_name='vpd',
-        units='hPa'
+        units='Pa'
     )
     vpd.attributes['ancestors'] = provenance['ancestors']
     logger.debug(f'vapor_pressure_deficit iris cube {vpd}')
@@ -258,6 +259,7 @@ def main(config):
         # 'group' is a list of dictionaries containing metadata.
         logger.info('Processing data for %s', model_dataset)
         logger.info(group)
+        timerange = group[0]['timerange']
 
         vars_file = {}
         for i, attributes in enumerate(group):
@@ -274,19 +276,20 @@ def main(config):
                 ])
         logger.info(vars_file.keys())
 
-        # Compute Vapor Pressure Deficit (VPD)
-        logger.info(f'Processing vapor_pressure_deficit for {model_dataset}')
-        tas = iris.load_cube(vars_file['tas']['filename'])
-        hurs = iris.load_cube(vars_file['hurs']['filename'])
-        provenance_record = get_provenance_record(
-            [vars_file['tas']['filename'], vars_file['hurs']['filename']]
-        )
-        filename_vpd = compute_vpd(config, tas, hurs, provenance_record)
-        # Log vpd filename for ConFire model run
-        vars_file['vpd'] = {}
-        vars_file['vpd']['filename'] = filename_vpd
+        if 'vpd' in config['var_order']:
+            # Compute Vapor Pressure Deficit (VPD)
+            logger.info(f'Processing vapor_pressure_deficit for {model_dataset}')
+            tas = iris.load_cube(vars_file['tas']['filename'])
+            hurs = iris.load_cube(vars_file['hurs']['filename'])
+            provenance_record = get_provenance_record(
+                [vars_file['tas']['filename'], vars_file['hurs']['filename']]
+            )
+            filename_vpd = compute_vpd(config, tas, hurs, provenance_record)
+            # Log vpd filename for ConFire model run
+            vars_file['vpd'] = {}
+            vars_file['vpd']['filename'] = filename_vpd
 
-        # Run ConFire model evaluationuld be ordered follo
+        # Run ConFire model evaluation
         # Add the list of input filenames
         # WARNING = they should be ordered following the model run config
         config['files_input'] = [
@@ -296,22 +299,23 @@ def main(config):
             f'Input files used for diagnostic {config['files_input']}'
         )
         logger.info('Running diagnostic model ConFire.')
-        figure = diagnostic_run_ConFire(config)
-
-        # Save output figure
-        save_figure(
-            basename=f"ConFire_results_{plot_file_info}",
-            provenance=get_provenance_record(
-                [vars_file[v]['filename'] for v in config['var_order'] \
-                    if v != 'vpd']
-            ),
-            cfg=config,
-            figure=figure,
-            close=True
+        figures = diagnostic_run_ConFire(
+            config, model_name=model_dataset, timerange=timerange
         )
 
-        # Remove VPD files after diagnostic run = NOT WORKING?
-        # only the .nc file is visible, othert files created later?
+        # Save output figures
+        output_file = f"ConFire_results_{plot_file_info}"
+        filenames_out = [
+            'burnt_area_model',
+            'burnt_area_control_0',
+            'burnt_area_control_1',
+            'burnt_area_control_stochastic'
+        ]
+        for i, f in enumerate(filenames_out):
+            output_path = get_plot_filename(f'{output_file}_{f}', config)
+            figures[i].savefig(output_path, bbox_inches='tight', dpi=300)
+
+        # Remove VPD files after diagnostic run
         if config['remove_vpd_files']:
             logger.info(f'Removing VPD files in {config['work_dir']}')  
             f_not_removed = []
