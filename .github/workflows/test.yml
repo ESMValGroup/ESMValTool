@@ -47,7 +47,7 @@ jobs:
         run: conda list
       - name: Install ESMValTool
         run: pip install -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
-      - name: Examine conda environment
+      - name: Inspect environment
         run: conda list
       - name: Install Julia from source
         run: curl -fsSL https://install.julialang.org | sh -s -- --yes
@@ -81,6 +81,8 @@ jobs:
         # this is not actively used by tests but it gives
         # a good indication of the time it takes for updating with R deps
         run: mamba env update -n esmvaltool -f environment_r.yml
+      - name: Inspect environment
+        run: conda list
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
         uses: actions/upload-artifact@v4
