@@ -64,9 +64,6 @@ jobs:
       - name: Install NCL
         run: |
           mamba install -y -c conda-forge "ncl>=6.6.2"
-          # github.com/ESMValGroup/ESMValTool/issues/3699
-          # only for Python 3.10/11 and esmpy<8.6 that NCL currently brings in
-          mamba install -y -c conda-forge "importlib_metadata<8"
       - name: Inspect environment
         run: conda list
       - name: Check Julia and NCL
