@@ -143,7 +143,6 @@ jobs:
             conda activate esmvaltool
             mkdir /logs
             pip install .[test] > /logs/install.txt 2>&1
-            mamba install -c conda-forge curl
             curl -fsSL https://install.julialang.org | sh -s -- --yes
             julia --version
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
@@ -288,7 +287,6 @@ jobs:
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
             # install Julia from source
-            mamba install -c conda-forge curl
             curl -fsSL https://install.julialang.org | sh -s -- --yes
             export PATH=/root/.juliaup/bin:$PATH
             julia --version
