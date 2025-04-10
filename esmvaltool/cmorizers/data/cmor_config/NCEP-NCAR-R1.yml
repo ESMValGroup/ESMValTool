@@ -33,7 +33,7 @@ variables:
     short_name: va
     mip: day
     raw: vwnd
-    file: 'pressure\/vwnd\.[0-9]{4}\.nc' 
+    file: 'pressure\/vwnd\.[0-9]{4}\.nc'
 
 # monthly frequency
   clt_month:
@@ -105,22 +105,22 @@ variables:
     short_name: tas
     mip: Amon
     raw: air
-    file: 'surface\/air\.2m\.mon\.mean\.nc'  
+    file: 'surface\/air\.2m\.mon\.mean\.nc'
   tasmax_month:
     short_name: tasmax
     mip: Amon
     raw: tmax
-    file: 'surface\/tmax\.2m\.mon\.mean\.nc'  
+    file: 'surface\/tmax\.2m\.mon\.mean\.nc'
   tasmin_month:
     short_name: tasmin
     mip: Amon
     raw: tmin
-    file: 'surface\/tmin\.2m\.mon\.mean\.nc'  
+    file: 'surface\/tmin\.2m\.mon\.mean\.nc'
   ts_month:
     short_name: ts
     mip: Amon
     raw: air
-    file: 'surface\/air\.mon\.mean\.nc'    
+    file: 'surface\/air\.mon\.mean\.nc'
   ua_month:
     short_name: ua
     mip: Amon
