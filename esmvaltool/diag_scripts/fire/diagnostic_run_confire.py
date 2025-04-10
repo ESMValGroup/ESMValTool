@@ -130,7 +130,7 @@ def insert_data_into_cube(data, eg_cube, mask=None):
             or length equal to Trues in mask.
         eg_cube: iris cube
             The cube we want to insert data into.
-	    mask: Boolean array
+        mask: Boolean array
             Array of shape or length x where True, will inster data.
             Default of None which means True for all points in eg_cube.
     Returns:
@@ -184,12 +184,12 @@ def read_variables_from_namelist(file_name):
                 if callable(variable_value):
                     # If the variable is a function, save its name
                     variable_value_set = variable_value
-                elif variable_value.startswith('"') \
-                    and variable_value.endswith('"'):
+                elif (variable_value.startswith('"') and
+                      variable_value.endswith('"')):
                     # If the variable is a string, remove the quotes
                     variable_value_set = variable_value[1:-1]
-                elif variable_value.startswith('[') \
-                    and variable_value.endswith(']'):
+                elif (variable_value.startswith('[') and
+                      variable_value.endswith(']')):
                     # If the variable is a list, parse it
                     try:
                         variable_value_set = ast.literal_eval(variable_value)
@@ -274,8 +274,7 @@ def read_variable_from_netcdf(
         filename, *args, directory=None, subset_function=None, make_flat=False,
         units=None, subset_function_args=None, time_series=None,
         time_points=None, extent=None, return_time_points=False,
-        return_extent=False
-    ):
+        return_extent=False):
     """Read data from a netCDF file.
     Assumes that the variables in the netcdf file all have the name
     "variable". Assumes that values < -9E9, you dont want. This could
@@ -343,7 +342,7 @@ def read_variable_from_netcdf(
             def addtime(time_point):
                 time = iris.coords.DimCoord(
                     np.array([time_point]), standard_name='time',
-                    units = 'days since 1661-01-01 00:00:00'
+                    units='days since 1661-01-01 00:00:00'
                 )
                 dataset_cp = dataset.copy()
                 dataset_cp.add_aux_coord(time)
@@ -387,9 +386,9 @@ def read_variable_from_netcdf(
         except Exception as expt:
             logger.debug('read_variable_from_netcdf error %s', expt)
         if time_series is not None:
-            if not years[ 0] == time_series[0]:
+            if not years[0] == time_series[0]:
                 dataset = np.append(
-                    np.repeat(np.nan, years[ 0]-time_series[0]), dataset
+                    np.repeat(np.nan, years[0]-time_series[0]), dataset
                 )
             if not years[-1] == time_series[1]:
                 dataset = np.append(
@@ -409,8 +408,7 @@ def read_all_data_from_netcdf(
         y_filename, x_filename_list, *args, ca_filename=None,
         add_1s_columne=False, y_threshold=None, x_normalise01=False,
         scalers=None, check_mask=True, frac_random_sample=1.0,
-        min_data_points_for_sample=None, **kw
-    ):
+        min_data_points_for_sample=None, **kw):
     """Read data from netCDF files
 
     Arguments:
@@ -478,15 +476,13 @@ def read_all_data_from_netcdf(
     if check_mask:
         if ca_filename is not None:
             cells_we_want = np.array([
-                np.all(rw > -9e9) and np.all(rw < 9e9) \
-                    for rw in np.column_stack((x_var, y_var, ca_var))
-            ])
+                np.all(rw > -9e9) and np.all(rw < 9e9)
+                    for rw in np.column_stack((x_var, y_var, ca_var))])
             ca_var = ca_var[cells_we_want]
         else:
             cells_we_want = np.array([
-                np.all(rw > -9e9) and np.all(rw < 9e9) \
-                    for rw in np.column_stack((x_var, y_var))
-            ])
+                np.all(rw > -9e9) and np.all(rw < 9e9)
+                    for rw in np.column_stack((x_var, y_var))])
         y_var = y_var[cells_we_want]
         x_var = x_var[cells_we_want, :]
 
@@ -553,9 +549,9 @@ class ConFire():
         """
         self.inference = inference
         if self.inference:
-            self.numpck =  __import__('pytensor').tensor
+            self.numpck = __import__('pytensor').tensor
         else:
-            self.numpck =  __import__('numpy')
+            self.numpck = __import__('numpy')
 
         self.params = params
 
@@ -576,8 +572,7 @@ class ConFire():
         self.fmax = select_param_or_default('Fmax', None, stack=False)
 
     def burnt_area(
-            self, data, return_controls=False, return_limitations=False
-        ):
+            self, data, return_controls=False, return_limitations=False):
         """Compute burnt area.
 
         Arguments:
@@ -592,9 +587,9 @@ class ConFire():
         # finds controls
         def cal_control(cid=0):
             ids = self.controlid[cid]
-            betas =  self.betas[cid] * self.driver_direction[cid]
+            betas = self.betas[cid] * self.driver_direction[cid]
 
-            x_i = data[:,ids]
+            x_i = data[:, ids]
             if self.powers is not None:
                 x_i = self.numpck.power(x_i, self.powers[cid])
 
@@ -610,7 +605,7 @@ class ConFire():
 
         def sigmoid(data, factor):
             """Compute sigmoid.
-            
+
             Arguments:
                 y: numpck instance
                     Input data.
@@ -658,7 +653,7 @@ class ConFire():
         except Exception as expt:
             logger.debug('emc_weighted error %s', expt)
             emcw = emc.copy()
-            emcw.data  = 1.0 - self.numpck.exp(-wd_pg * precip.data)
+            emcw.data = 1.0 - self.numpck.exp(-wd_pg * precip.data)
             emcw.data = emcw.data + (1.0 - emcw.data) * emc.data
         return emcw
 
@@ -673,6 +668,7 @@ class ConFire():
                 Dataframe containing the parameters values in each experiment.
         """
         controlid = params[0]['controlID']
+
         def list_one_line_of_parmas(param):
             def select_param_or_default(*args, **kw):
                 return select_key_or_default(
@@ -687,7 +683,7 @@ class ConFire():
             fmax = select_param_or_default('fmax', 1.0, stack=False)
 
             directions = [
-                np.array(driver) * control for control, driver in \
+                np.array(driver) * control for control, driver in
                 zip(control_direction, driver_direction)
             ]
             betas = [
@@ -785,7 +781,7 @@ def get_parameters(config):
     params, params_names = select_post_param(param_file_trace)
     extra_params = read_variables_from_namelist(param_file_none_trace)
     control_direction = extra_params['control_Direction'].copy()
-    return output_dir, params, params_names, extra_params, driving_data,\
+    return output_dir, params, params_names, extra_params, driving_data, \
         lmask, eg_cube, control_direction
 
 
@@ -809,7 +805,7 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
     # It calculates burnt area under different control conditions and saves
     # results.
     # --------------------------------------------------------
-    output_dir, params, params_names, extra_params, driving_data, lmask,\
+    output_dir, params, params_names, extra_params, driving_data, lmask, \
         eg_cube, control_direction = get_parameters(config)
 
     # Number of samples to run from the trace file
@@ -905,7 +901,7 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
                     vmin=0., vmax=100., cmap='Oranges'
                 )
                 axes[plotn].set_title(
-                    filename.replace("_", " ").capitalize() + \
+                    filename.replace("_", " ").capitalize() +
                     f' - {timerange}\n{model_name} - [{str(pct)}% percentile]'
                 )
                 axes[plotn].coastlines()

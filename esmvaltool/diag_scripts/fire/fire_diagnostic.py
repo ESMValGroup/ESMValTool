@@ -57,12 +57,12 @@ def get_provenance_record(ancestors):
 def setup_basename_file(filename, var, table):
     """Generate the file basename for a newly computed variable using as
     template the filename of an ancestor variable.
-    
-    Example: If the ancestor filename is 
+
+    Example: If the ancestor filename is
     CMIP6_MPI-ESM1-2-LR_Amon_historical-ssp370_r1i1p1f1_pr_gn_2010-2020.nc
     then the returned basename will have the following structure
     CMIP6_MPI-ESM1-2-LR_{table}_historical-ssp370_r1i1p1f1_{var}_gn_2010-2020.
-    
+
     Parameters
     ----------
     filename : str
@@ -71,7 +71,7 @@ def setup_basename_file(filename, var, table):
         Short name of the variable.
     table : str
         Reference table for the variable (if it exists).
-    
+
     Returns
     -------
     basename : str
@@ -128,9 +128,9 @@ def download_files_from_zenodo(zenodo_link, output_dir):
     for file_info in record_metadata['files']:
         file_url = file_info['links']['self']
         file_name = file_info['key']
-        if any([
-            (f[0] in file_name) and
-            (f[1] == file_name.split('.')[-1]) for f in files_to_download]):
+        if any([(f[0] in file_name) and
+                (f[1] == file_name.split('.')[-1])
+                for f in files_to_download]):
             file_path = os.path.join(output_dir, file_name)
             file_response = requests.get(file_url)
             if file_response.status_code == 200:
@@ -370,7 +370,7 @@ def main(config):
 
         # Remove VPD files after diagnostic run
         if config['remove_vpd_files']:
-            logger.info(f'Removing VPD files in {config['work_dir']}')  
+            logger.info(f'Removing VPD files in {config['work_dir']}')
             f_not_removed = []
             for f in glob.glob(f'{config['work_dir']}/*vpd*.*'):
                 logger.info(f'Removing {f.split('/')[-1]}')
