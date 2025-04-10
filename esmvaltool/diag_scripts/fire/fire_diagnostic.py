@@ -29,7 +29,7 @@ from esmvaltool.diag_scripts.shared import (
     get_plot_filename,
 )
 
-from esmvaltool.diag_scripts.fire.diagnostic_run_ConFire import (
+from projects.ESMValTool.esmvaltool.diag_scripts.fire.diagnostic_run_confire import (
     diagnostic_run_confire
 )
 

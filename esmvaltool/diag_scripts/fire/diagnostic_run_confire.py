@@ -65,8 +65,8 @@ def select_key_or_default(
         try:
             if stack:
                 out = numpck.stack(out)[:, 0]
-        except Exception as e:
-            logger.debug(f'select_key_or_default error {e}')
+        except Exception as expt:
+            logger.debug('select_key_or_default error %s', expt)
 
     return out
 
@@ -93,22 +93,22 @@ def sort_time(cube):
 
     try:
         iris.coord_categorisation.add_year(cube, 'time')
-    except Exception as e:
-        logger.debug(f'sort_time error {e}')
+    except Exception as expt:
+        logger.debug('sort_time error %s', expt)
 
     try:
         try:
             cube.remove_coord("month")
-        except Exception as e:
-            logger.debug(f'sort_time error {e}')
+        except Exception as expt:
+            logger.debug('sort_time error %s', expt)
         iris.coord_categorisation.add_month_number(cube, 'time', name='month')
-    except Exception as e:
-        logger.debug(f'sort_time error {e}')
+    except Exception as expt:
+        logger.debug('sort_time error %s', expt)
 
     try:
         del cube.attributes["history"]
-    except Exception as e:
-        logger.debug(f'sort_time error {e}')
+    except Exception as expt:
+        logger.debug('sort_time error %s', expt)
 
     return cube
 
@@ -186,7 +186,9 @@ def read_variables_from_namelist(file_name):
                     # If the variable is a list, parse it
                     try:
                         variable_value_set = ast.literal_eval(variable_value)
-                    except Exception as e:
+                    except Exception as expt:
+                        logger.debug(
+                            'read_variables_from_namelist error %s', expt)
                         functions = variable_value.split(', ')
                         variable_value_set = [
                             define_function(fun) for fun in functions
@@ -228,8 +230,8 @@ def select_post_param(trace):
 
     try:
         trace = az.from_netcdf(trace, engine='netcdf4')
-    except Exception as e:
-        logger.debug(f'selct_post_params error {e}')
+    except Exception as expt:
+        logger.debug('select_post_params error %s', expt)
     params = trace.to_dict()['posterior']
     params_names = params.keys()
     params = [select_post_param_name(var) for var in params_names]
@@ -262,9 +264,9 @@ def construct_param_comb(i, params, params_names, extra_params):
 
 # /libs/read_variable_from_netcdf.py
 def read_variable_from_netcdf(
-        filename, dir=None, subset_function=None, make_flat=False, units=None,
+        filename, *args, directory=None, subset_function=None, make_flat=False, units=None,
         subset_function_args=None, time_series=None, time_points=None,
-        extent=None, return_time_points=False, return_extent=False, *args
+        extent=None, return_time_points=False, return_extent=False
     ):
     """Read data from a netCDF file.
     Assumes that the variables in the netcdf file all have the name
@@ -276,7 +278,7 @@ def read_variable_from_netcdf(
             a string with filename or two element python list
             containing the name of the file and the target variable name.
             If just the sting of "filename" assumes variable name is "variable"
-        dir: str
+        directory: str
             The directory the file is in. Path can be in "filename" and None
             means no additional directory path needed.
         subset_function: func or list of funcs
@@ -299,23 +301,25 @@ def read_variable_from_netcdf(
     logger.info(filename)
 
     if filename[0] == '~' or filename[0] == '/' or filename[0] == '.':
-        dir = ''
+        directory = ''
 
     try:
         if isinstance(filename, str):
-            dataset = iris.load_cube(dir + filename, callback=sort_time)
+            dataset = iris.load_cube(directory + filename, callback=sort_time)
         else:
             dataset = iris.load_cube(
-                dir + filename[0], filename[1], callback=sort_time
+                directory + filename[0], filename[1], callback=sort_time
             )
-    except Exception as e:
+    except Exception as expt:
         try:
-            dataset = iris.load_cube(dir + filename)
-        except Exception as e_:
-            logger.debug(f'read_variable_from_netcdf errors\n{e}\n{e_}')
+            dataset = iris.load_cube(directory + filename)
+        except Exception as expt_:
             logger.debug(
-                "Data cannot be openend." +
-                f"Check directory {dir}, filename {filename} or file format"
+                'read_variable_from_netcdf errors\n%s\n%s', expt, expt_)
+            logger.debug(
+                "Data cannot be opened." +
+                "Check directory %s, filename %s or file format",
+                directory, filename
             )
     coord_names = [coord.name() for coord in dataset.coords()]
 
@@ -352,11 +356,11 @@ def read_variable_from_netcdf(
             for func, args in zip(subset_function, subset_function_args):
                 try:
                     dataset = func(dataset, **args)
-                except Exception as e:
-                    logger.debug(f'read_variable_from_netcdf error {e}')
+                except Exception as expt:
+                    logger.debug('read_variable_from_netcdf error %s', expt)
                     logger.debug(
-                        "Warning! function: " + func.__name__ + \
-                        " not applied to file: " + dir + filename
+                        "Warning! function: %s not applied to file: %s",
+                        func.__name__, directory + filename
                     )
         else:
             dataset = subset_function(dataset, **subset_function_args)
@@ -372,8 +376,8 @@ def read_variable_from_netcdf(
             years = dataset.coord('year').points
         try:
             dataset = dataset.data.flatten()
-        except Exception as e:
-            logger.debug(f'read_variable_from_netcdf error {e}')
+        except Exception as expt:
+            logger.debug('read_variable_from_netcdf error %s', expt)
         if time_series is not None:
             if not years[ 0] == time_series[0]:
                 dataset = np.append(
@@ -394,9 +398,10 @@ def read_variable_from_netcdf(
 
 
 def read_all_data_from_netcdf(
-        y_filename, x_filename_list, ca_filename=None, add_1s_columne=False,
-        y_threshold=None, x_normalise01=False, scalers=None, check_mask=True,
-        frac_random_sample=1.0, min_data_points_for_sample=None, *args, **kw
+        y_filename, x_filename_list, *args, ca_filename=None,
+        add_1s_columne=False, y_threshold=None, x_normalise01=False,
+        scalers=None, check_mask=True, frac_random_sample=1.0,
+        min_data_points_for_sample=None, **kw
     ):
     """Read data from netCDF files
 
@@ -480,8 +485,8 @@ def read_all_data_from_netcdf(
     if x_normalise01 and scalers is None:
         try:
             scalers = np.array([np.min(x_var, axis=0), np.max(x_var, axis=0)])
-        except Exception as e:
-            logger.debug(f'read_all_data_from_netcdf error {e}')
+        except Exception as expt:
+            logger.debug('read_all_data_from_netcdf error %s', expt)
         squidge = (scalers[1, :] - scalers[0, :]) / (x_var.shape[0])
         scalers[0, :] = scalers[0, :] - squidge
         scalers[1, :] = scalers[1, :] + squidge
@@ -495,13 +500,12 @@ def read_all_data_from_netcdf(
     else:
         if min_data_points_for_sample is not None:
             min_data_frac = min_data_points_for_sample / len(y_var)
-            if min_data_frac > frac_random_sample:
-                frac_random_sample = min_data_frac
+            frac_random_sample = max(frac_random_sample, min_data_frac)
 
     if frac_random_sample < 1:
-        m = x_var.shape[0]
+        m_x = x_var.shape[0]
         selected_rows = np.random.choice(
-            m, size=int(m * frac_random_sample), replace=False
+            m_x, size=int(m_x * frac_random_sample), replace=False
         )
         y_var = y_var[selected_rows]
         x_var = x_var[selected_rows, :]
@@ -523,7 +527,12 @@ def read_all_data_from_netcdf(
 
 
 # /fire_models/ConFire.py
-class ConFire(object):
+class ConFire():
+    """Class for a ConFire model object.
+    This class contains all the necessary parameters to initialize a ConFire
+    model instance and functions to run the evaluation.
+    To initialize an object, you need to provide the parameters of the model.
+    """
     def __init__(self, params, inference=False):
         """
         Initalise parameters and calculates the key variables needed to
@@ -549,7 +558,7 @@ class ConFire(object):
 
         self.controlid = self.params['controlID']
         self.control_direction = self.params['control_Direction']
-        self.x0 = select_param_or_default('x0', [0])
+        self.x0_param = select_param_or_default('x0', [0])
         self.log_control = select_param_or_default(
             'log_control', [False] * len(self.control_direction)
         )
@@ -558,11 +567,11 @@ class ConFire(object):
         self.driver_direction = self.params['driver_Direction']
         self.fmax = select_param_or_default('Fmax', None, stack=False)
 
-    def burnt_area(self, x, return_controls=False, return_limitations=False):
+    def burnt_area(self, data, return_controls=False, return_limitations=False):
         """Compute burnt area.
 
         Arguments:
-            x: numpck instance
+            data: numpck instance
                 Input drivers.
             return_controls: bool
             return_limitation: bool
@@ -570,26 +579,26 @@ class ConFire(object):
             ba: numpck instance
                 Burnt area data.
         """
-        # finds controls        
+        # finds controls
         def cal_control(cid=0):
             ids = self.controlid[cid]
             betas =  self.betas[cid] * self.driver_direction[cid]
 
-            x_i = x[:,ids]
+            x_i = data[:,ids]
             if self.powers is not None:
                 x_i = self.numpck.power(x_i, self.powers[cid])
 
             out = self.numpck.sum(x_i * betas[None, ...], axis=-1)
             if self.log_control[cid]:
                 out = self.numpck.log(out)
-            out = out + self.x0[cid]
+            out = out + self.x0_param[cid]
             return out
 
         controls = [cal_control(i) for i in range(len(self.controlid))]
         if return_controls:
             return controls
 
-        def sigmoid(y, k):
+        def sigmoid(data, factor):
             """Compute sigmoid.
             
             Arguments:
@@ -600,9 +609,9 @@ class ConFire(object):
             Returns:
                 Applied sigmoid function value.
             """
-            if k == 0:
+            if factor == 0:
                 return None
-            return 1.0 / (1.0 + self.numpck.exp(-y * k))
+            return 1.0 / (1.0 + self.numpck.exp(-data * factor))
 
         limitations = [
             sigmoid(y, k) for y, k in zip(controls, self.control_direction)
@@ -613,11 +622,11 @@ class ConFire(object):
 
         limitations = [lim for lim in limitations if lim is not None]
 
-        ba =  self.numpck.prod(limitations, axis=0)
+        b_a = self.numpck.prod(limitations, axis=0)
         if self.fmax is not None:
-            sigmoid(self.fmax, 1.0) * ba
+            b_a = sigmoid(self.fmax, 1.0) * b_a
 
-        return ba
+        return b_a
 
     def emc_weighted(self, emc, precip, wd_pg):
         """Compute weighted Event Mean Concentration (EMC).
@@ -636,8 +645,8 @@ class ConFire(object):
         try:
             wet_days = 1.0 - self.numpck.exp(-wd_pg * precip)
             emcw = (1.0 - wet_days) * emc + wet_days
-        except Exception as e:
-            logger.debug(f'emc_weighted error {e}')
+        except Exception as expt:
+            logger.debug('emc_weighted error %s', expt)
             emcw = emc.copy()
             emcw.data  = 1.0 - self.numpck.exp(-wd_pg * precip.data)
             emcw.data = emcw.data + (1.0 - emcw.data) * emc.data
@@ -675,8 +684,8 @@ class ConFire(object):
                 direction * beta for direction, beta in zip(directions, betas)
             ]
 
-            def mish_mash(beta, power, x0):
-                return np.append(np.column_stack((beta, power)).ravel(), x0)
+            def mish_mash(beta, power, x_0):
+                return np.append(np.column_stack((beta, power)).ravel(), x_0)
             varps = [
                 mish_mash(beta, power, x0) for beta, power, x0 in zip(
                     betas, powers, x0s)
@@ -693,18 +702,18 @@ class ConFire(object):
         variable_name = ['']
 
         for ids, idn in zip(controlid, range(len(controlid))):
-            for id in ids:
+            for i_d in ids:
                 param.append('beta')
                 controln.append(str(idn))
-                variable_name.append(varnames[id])
+                variable_name.append(varnames[i_d])
                 param.append('power')
                 controln.append(str(idn))
-                variable_name.append(varnames[id])
+                variable_name.append(varnames[i_d])
             param.append('beta')
             controln.append(str(idn))
             variable_name.append('beta0')
 
-        header_df = pd.DataFrame([param, controln, variable_name])   
+        header_df = pd.DataFrame([param, controln, variable_name])
         index_labels = ["Parameter", "Control", "Variable"] + \
             list(map(str, range(1, params_sorted.shape[0] + 1)))
 
@@ -715,6 +724,59 @@ class ConFire(object):
 
         return full_df
 
+
+def get_parameters(config):
+    """Get parameters necessary for ConFire run.
+
+    Arguments:
+        config: dict
+            Dictionary from ESMValTool recipe.
+    Returns:
+        output_dir: str
+            Path to output directory.
+        params: list
+            List of parameters.
+        params_names: list
+            List of parameters names.
+        extra_params: dict
+            Dictionary of additional parameters to add to the output cubes.
+        driving_data: numpy.array or iris.cube
+            Object containing the concatenated drivers.
+        lmask: numpy.array
+            Land-sea mask.
+        eg_cube: iris.cube
+            Example of cube to be used to insert output data.
+        control_direction: list
+            List containing different experiment setups.
+    """
+    work_dir = config['work_dir']
+    confire_param = config['confire_param_dir']
+    # **Define Paths for Parameter Files  and for outputs**
+    output_dir = work_dir + '/ConFire_outputs/'
+    # Parameter files (traces, scalers, and other model parameters)
+    param_file_trace = glob.glob(confire_param + "trace*.nc")[0]
+    param_file_none_trace = glob.glob(
+        confire_param + "none_trace-params*.txt")[0]
+    scale_file = glob.glob(confire_param + "scalers*.csv")[0]
+    # **Load Variable Information and NetCDF Files**
+    # Replace these lines with user-specified NetCDF files, ensuring variable
+    # order is the same.
+    nc_files = config['files_input']
+    nc_dir = ''
+    # **Load Driving Data and Land Mask**
+    logger.info('Loading data for ConFire model...')
+    scalers = pd.read_csv(scale_file).values
+    _, driving_data, lmask, _ = read_all_data_from_netcdf(
+        nc_files[0], nc_files, scalers=scalers, dir=nc_dir)
+    # Load a sample cube (used for inserting data)
+    eg_cube = read_variable_from_netcdf(nc_files[0], directory=nc_dir)
+    # **Extract Model Parameters**
+    logger.info('Loading ConFire model parameters...')
+    params, params_names = select_post_param(param_file_trace)
+    extra_params = read_variables_from_namelist(param_file_none_trace)
+    control_direction = extra_params['control_Direction'].copy()
+    return output_dir, params, params_names, extra_params, driving_data,\
+        lmask, eg_cube, control_direction
 
 def diagnostic_run_confire(config, model_name='model', timerange='none'):
     """Run ConFire as a diagnostic.
@@ -736,49 +798,15 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
     # It calculates burnt area under different control conditions and saves
     # results.
     # --------------------------------------------------------
-
-    work_dir = config['work_dir']
-    diag_dir = config['diag_dir']
-    confire_param = config['confire_param_dir']
-
-    # **Define Paths for Parameter Files  and for outputs**
-    output_dir = work_dir + '/ConFire_outputs/'
-
-    # Parameter files (traces, scalers, and other model parameters)
-    param_file_trace = glob.glob(confire_param + "trace*.nc")[0]
-    param_file_none_trace = glob.glob(
-        confire_param + "none_trace-params*.txt")[0]
-    scale_file = glob.glob(confire_param + "scalers*.csv")[0]
-
+    output_dir, params, params_names, extra_params, driving_data, lmask,\
+        eg_cube, control_direction = get_parameters(config)
+    
     # Number of samples to run from the trace file
-    nsample_for_running = 100
-
-    # **Load Variable Information and NetCDF Files**
-    # Replace these lines with user-specified NetCDF files, ensuring variable
-    # order is the same.
-    nc_files = config['files_input']
-    nc_dir = ''
-
-    # **Load Driving Data and Land Mask**
-    logger.info('Loading data for ConFire model...')
-    scalers = pd.read_csv(scale_file).values
-    obs_data, driving_data, lmask, scalers = read_all_data_from_netcdf(
-        nc_files[0], nc_files, scalers=scalers, dir=nc_dir)
-
-    # Load a sample cube (used for inserting data)
-    eg_cube = read_variable_from_netcdf(nc_files[0], dir=nc_dir)
-
-    # **Extract Model Parameters**
-    logger.info('Loading ConFire model parameters...')
-    params, params_names = select_post_param(param_file_trace)
-    extra_params = read_variables_from_namelist(param_file_none_trace)
-    control_direction = extra_params['control_Direction'].copy()
+    nsample_for_running = 100   
     nexp = len(control_direction)
-
     # **Sample Iterations from Trace**
     nits = len(params[0])
     idx = range(0, nits, int(np.floor(nits / nsample_for_running)))
-
     # **Storage for Model Outputs (Including full model, physical &
     # stochastic controls)**
     out_cubes = [[] for _ in range(nexp + 2)]
@@ -804,27 +832,27 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
 
     # **Run ConFire Model with Different Control Scenarios**
     logger.info('Running ConFire model...')
-    for id, i in zip(idx, range(len(idx))):
+    for index, i in zip(idx, range(len(idx))):
         coord = iris.coords.DimCoord(i, "realization")
         param_in = construct_param_comb(
-            id, params, params_names, extra_params
+            index, params, params_names, extra_params
         )
 
         # **Run Full Model**
         out_cubes[0].append(run_model_into_cube(param_in, coord))
 
         # **Run Model with Individual Controls Turned On**
-        for cn in range(nexp):
+        for c in range(nexp):
             param_in['control_Direction'][:] = [0] * nexp
-            param_in['control_Direction'][cn] = control_direction[cn]
+            param_in['control_Direction'][c] = control_direction[c]
             param_in = construct_param_comb(
-                cn, params, params_names, extra_params
+                c, params, params_names, extra_params
             )
-            out_cubes[cn + 1].append(run_model_into_cube(param_in, coord))
+            out_cubes[c + 1].append(run_model_into_cube(param_in, coord))
 
         # **Run Model with All Controls Off (Stochastic Control)**
         param_in['control_Direction'][:] = [0] * nexp
-        out_cubes[cn+2].append(run_model_into_cube(param_in, coord))
+        out_cubes[c + 2].append(run_model_into_cube(param_in, coord))
 
     # **Save Output Cubes**
     logger.info('Saving ConFire output cubes...')
@@ -833,7 +861,7 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
         ['burnt_area_control_stochastic']
     os.makedirs(output_dir, exist_ok=True)
 
-    for i in range(len(out_cubes)):
+    for i, _ in enumerate(out_cubes):
         cubes = iris.cube.CubeList(out_cubes[i]).merge_cube()
         iris.save(cubes, os.path.join(
             output_dir, f'{model_name}_{filenames_out[i]}_{timerange}.nc'
@@ -855,31 +883,30 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
         try:
             # Load saved NetCDF file
             cube = iris.load_cube(filepath)
-            for pc in [5, 95]:
+            for pct in [5, 95]:
                 pc_cube = 100 * cube.collapsed(
-                    'realization', iris.analysis.PERCENTILE, percent=pc)[0]
-                ax = axes[plotn]
+                    'realization', iris.analysis.PERCENTILE, percent=pct)[0]
                 img = iris.quickplot.pcolormesh(
-                    pc_cube, axes=ax, colorbar=False,
+                    pc_cube, axes=axes[plotn], colorbar=False,
                     vmin=0., vmax=100., cmap='Oranges'
                 )
-                ax.set_title(
+                axes[plotn].set_title(
                     filename.replace("_", " ").capitalize() + \
-                    f' - {timerange}\n{model_name} - [{str(pc)}% percentile]'
+                    f' - {timerange}\n{model_name} - [{str(pct)}% percentile]'
                 )
-                ax.coastlines()
+                axes[plotn].coastlines()
                 # Add colorbar
                 fig.colorbar(
-                    img, ax=ax, orientation='vertical', extend='neither',
-                    label='Burnt area [%]',
+                    img, ax=axes[plotn], orientation='vertical',
+                    extend='neither', label='Burnt area [%]',
                     fraction=0.046, pad=0.04, shrink=0.3,
                 )
                 # Iterate plot number
                 plotn = plotn + 1
             figures.append(fig)
 
-        except Exception as e:
-            logger.info(f"Skipping {filename} due to error: {e}")
-            logger.debug(f"Skipping {filename} due to error: {e}")
+        except Exception as expt:
+            logger.info("Skipping %s due to error: %s", filename, expt)
+            logger.debug("Skipping %s due to error: %s", filename, expt)
 
     return figures
