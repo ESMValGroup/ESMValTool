@@ -86,6 +86,8 @@ def sort_time(cube, field, filename):
         cube: iris cube
             Cube with sorted and added time dimensions.
     """
+    logger.debug('Sorting time for variable %s in cube %s', field, filename)
+
     cube.coord("time").bounds = None
     tcoord = cube.coord("time")
     tcoord.units = cf_units.Unit(tcoord.units.origin, calendar="gregorian")
@@ -99,21 +101,21 @@ def sort_time(cube, field, filename):
     try:
         iris.coord_categorisation.add_year(cube, 'time')
     except Exception as expt:
-        logger.debug('sort_time error %s', expt)
+        logger.debug('sort_time could not add year %s', expt)
 
     try:
         try:
             cube.remove_coord("month")
         except Exception as expt:
-            logger.debug('sort_time error %s', expt)
+            logger.debug('sort_time could not remove month %s', expt)
         iris.coord_categorisation.add_month_number(cube, 'time', name='month')
     except Exception as expt:
-        logger.debug('sort_time error %s', expt)
+        logger.debug('sort_time could not add month number %s', expt)
 
     try:
         del cube.attributes["history"]
     except Exception as expt:
-        logger.debug('sort_time error %s', expt)
+        logger.debug('sort_time could not remove cube history %s', expt)
 
     return cube
 
@@ -269,9 +271,10 @@ def construct_param_comb(i, params, params_names, extra_params):
 
 # /libs/read_variable_from_netcdf.py
 def read_variable_from_netcdf(
-        filename, *args, directory=None, subset_function=None, make_flat=False, units=None,
-        subset_function_args=None, time_series=None, time_points=None,
-        extent=None, return_time_points=False, return_extent=False
+        filename, *args, directory=None, subset_function=None, make_flat=False,
+        units=None, subset_function_args=None, time_series=None,
+        time_points=None, extent=None, return_time_points=False,
+        return_extent=False
     ):
     """Read data from a netCDF file.
     Assumes that the variables in the netcdf file all have the name
@@ -572,7 +575,9 @@ class ConFire():
         self.driver_direction = self.params['driver_Direction']
         self.fmax = select_param_or_default('Fmax', None, stack=False)
 
-    def burnt_area(self, data, return_controls=False, return_limitations=False):
+    def burnt_area(
+            self, data, return_controls=False, return_limitations=False
+        ):
         """Compute burnt area.
 
         Arguments:
@@ -806,9 +811,9 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
     # --------------------------------------------------------
     output_dir, params, params_names, extra_params, driving_data, lmask,\
         eg_cube, control_direction = get_parameters(config)
-    
+
     # Number of samples to run from the trace file
-    nsample_for_running = 100   
+    nsample_for_running = 100
     nexp = len(control_direction)
     # **Sample Iterations from Trace**
     nits = len(params[0])
@@ -848,17 +853,17 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
         out_cubes[0].append(run_model_into_cube(param_in, coord))
 
         # **Run Model with Individual Controls Turned On**
-        for c in range(nexp):
+        for exp in range(nexp):
             param_in['control_Direction'][:] = [0] * nexp
-            param_in['control_Direction'][c] = control_direction[c]
+            param_in['control_Direction'][exp] = control_direction[exp]
             param_in = construct_param_comb(
-                c, params, params_names, extra_params
+                exp, params, params_names, extra_params
             )
-            out_cubes[c + 1].append(run_model_into_cube(param_in, coord))
+            out_cubes[exp + 1].append(run_model_into_cube(param_in, coord))
 
         # **Run Model with All Controls Off (Stochastic Control)**
         param_in['control_Direction'][:] = [0] * nexp
-        out_cubes[c + 2].append(run_model_into_cube(param_in, coord))
+        out_cubes[exp + 2].append(run_model_into_cube(param_in, coord))
 
     # **Save Output Cubes**
     logger.info('Saving ConFire output cubes...')
@@ -868,8 +873,8 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
     os.makedirs(output_dir, exist_ok=True)
     timerange = timerange.replace('/', '-')
 
-    for i, _ in enumerate(out_cubes):
-        cubes = iris.cube.CubeList(out_cubes[i]).merge_cube()
+    for i, o_c in enumerate(out_cubes):
+        cubes = iris.cube.CubeList(o_c).merge_cube()
         iris.save(cubes, os.path.join(
             output_dir, f'{model_name}_{filenames_out[i]}_{timerange}.nc'
         ))
