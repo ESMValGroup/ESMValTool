@@ -477,12 +477,12 @@ def read_all_data_from_netcdf(
         if ca_filename is not None:
             cells_we_want = np.array([
                 np.all(rw > -9e9) and np.all(rw < 9e9)
-                    for rw in np.column_stack((x_var, y_var, ca_var))])
+                for rw in np.column_stack((x_var, y_var, ca_var))])
             ca_var = ca_var[cells_we_want]
         else:
             cells_we_want = np.array([
                 np.all(rw > -9e9) and np.all(rw < 9e9)
-                    for rw in np.column_stack((x_var, y_var))])
+                for rw in np.column_stack((x_var, y_var))])
         y_var = y_var[cells_we_want]
         x_var = x_var[cells_we_want, :]
 
