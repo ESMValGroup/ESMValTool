@@ -117,13 +117,13 @@ diagnostics:
         preprocessor: eq_bias
         mip: Omon
         additional_datasets:
-          - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, mip: Omon}
+          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
       eq_tauu_bias:
         short_name: tauu
         preprocessor: eq_bias
         mip: Amon
         additional_datasets:
-          - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
       pr_double_seacycle:
         short_name: pr
         preprocessor: ITCZ_sea_cycle
@@ -141,13 +141,13 @@ diagnostics:
         preprocessor: eq_sea_cycle
         mip: Omon
         additional_datasets:
-          - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, mip: Omon}
+          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
       eq_tauu_seacycle:
         short_name: tauu
         preprocessor: eq_sea_cycle
         mip: Amon
         additional_datasets:
-          - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
     scripts:
       plot_script:
         script: enso_metrics/climatology_diagnostic1.py
@@ -172,13 +172,13 @@ diagnostics:
         preprocessor: map_bias_level2
         mip: Omon
         additional_datasets:
-          - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, mip: Omon}
+          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
       tauu_bias:
         short_name: tauu
         preprocessor: map_bias_level2
         mip: Amon
         additional_datasets:
-          - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
 
     scripts:
       plot_script:
