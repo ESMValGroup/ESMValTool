@@ -494,7 +494,7 @@ def read_all_data_from_netcdf(
         frac_random_sample = 1000
     else:
         if min_data_points_for_sample is not None:
-            min_data_frac = min_data_points_for_sample / len(y)
+            min_data_frac = min_data_points_for_sample / len(y_var)
             if min_data_frac > frac_random_sample:
                 frac_random_sample = min_data_frac
 
