@@ -13,16 +13,18 @@ The directory and filename are indicated above each function definition.
 
 """
 
-import arviz as az
+import os
+import logging
+import ast
+import glob
 import cartopy.crs as ccrs
 import cf_units
 import iris
-import logging
 import matplotlib.pyplot as plt
 import numpy as np
-import os
 import pandas as pd
-import glob
+import arviz as az
+
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -31,6 +33,23 @@ logger = logging.getLogger(os.path.basename(__file__))
 def select_key_or_default(
         dirc, key, default=None, stack=True,
         numpck=__import__('numpy')):
+    """Select specific key from dictionary.
+
+    Arguments:
+        dirc: dict
+            Input dictionary to select from.
+        key: str
+            Key to select in the dictionary.
+        default:
+            Default value to return if key not present.
+        stack: bool
+            Boolean flag if the extracted results should be stacked.
+        numpck: imported package
+            Package to use to stack the data if necessary.
+    Returns:
+        out: numpck instance
+            numpck instance from the extracted in the dictionary.
+    """
     dirc = dict(sorted(dirc.items()))
     out = [dirc[name] for name in dirc if key in name]
 
@@ -42,19 +61,26 @@ def select_key_or_default(
         if stack:
             out = numpck.stack([i[0] for i in out])
 
-    if type(out) is list:
+    if isinstance(out, list):
         try:
             if stack:
                 out = numpck.stack(out)[:, 0]
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug(f'select_key_or_default error {e}')
 
-    return(out)
+    return out
 
 
 # /libs/iris_plus.py
-def sort_time(cube, field, filename):
+def sort_time(cube):
+    """Sort time dimension in the iris cube.
 
+    Arguments:
+        cube: iris cube
+    Returns:
+        cube: iris cube
+            Cube with sorted and added time dimensions.
+    """
     cube.coord("time").bounds = None
     tcoord = cube.coord("time")
     tcoord.units = cf_units.Unit(tcoord.units.origin, calendar="gregorian")
@@ -67,47 +93,51 @@ def sort_time(cube, field, filename):
 
     try:
         iris.coord_categorisation.add_year(cube, 'time')
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug(f'sort_time error {e}')
 
     try:
         try:
             cube.remove_coord("month")
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug(f'sort_time error {e}')
         iris.coord_categorisation.add_month_number(cube, 'time', name='month')
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug(f'sort_time error {e}')
 
     try:
         del cube.attributes["history"]
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug(f'sort_time error {e}')
 
     return cube
 
 
-def insert_data_into_cube(x, eg_cube, mask=None):
-    """ insert data into cube.
+def insert_data_into_cube(data, eg_cube, mask=None):
+    """ Insert data into cube following mask.
+
     Arguments:
-    x -- np array of data that we want to insert into the cube.
-        Should have same shape of eg_cube, or same length as eg_cube
-        or length equal to Trues in mask.
-    eg_cube -- The cube we want to insert data into.
-	mask -- Boolean array of shape or length x.
-        Where True, will inster data.
-        Defaulk of None which means True for all points in eg_cube.
+        x: np.array
+            data that we want to insert into the cube.
+            Should have same shape of eg_cube, or same length as eg_cube
+            or length equal to Trues in mask.
+        eg_cube: iris cube
+            The cube we want to insert data into.
+	    mask: Boolean array
+            Array of shape or length x where True, will inster data.
+            Default of None which means True for all points in eg_cube.
     Returns:
-    eg_cube with data replaced by x
+        eg_cube: iris cube
+            cube with data replaced by x
     """
 
     pred_cube = eg_cube.copy()
     pred = pred_cube.data.copy().flatten()
 
     if mask is None:
-        pred[:] = x
+        pred[:] = data
     else:
-        pred[mask] = x
+        pred[mask] = data
 
     pred_cube.data = pred.reshape(pred_cube.data.shape)
     return pred_cube
@@ -117,10 +147,12 @@ def insert_data_into_cube(x, eg_cube, mask=None):
 def read_variables_from_namelist(file_name):
     """Read variables from a file and create them with their original names.
 
-    Inputs:
-        file_name (str): The name of the file containing the variables.
+    Arguments:
+        file_name: str
+            The name of the file containing the variables.
     Returns:
-        dict: A dictionary of variable names and their values.
+        dict: dict
+            A dictionary of variable names and their values.
     Example Usage:
         file_name = 'variables.txt'
         read_variables = read_variables_from_file(file_name)
@@ -134,9 +166,9 @@ def read_variables_from_namelist(file_name):
     variables = {}
 
     def define_function(fun):
-        return eval(fun.split('function ')[1].split(' at ')[0])
+        return ast.literal_eval(fun.split('function ')[1].split(' at ')[0])
 
-    with open(file_name, 'r') as file:
+    with open(file_name, 'r', encoding="utf-8") as file:
         for line in file:
             parts = line.strip().split("::")
             if len(parts) == 2:
@@ -153,8 +185,8 @@ def read_variables_from_namelist(file_name):
                     and variable_value.endswith(']'):
                     # If the variable is a list, parse it
                     try:
-                        variable_value_set = eval(variable_value)
-                    except Exception:
+                        variable_value_set = ast.literal_eval(variable_value)
+                    except Exception as e:
                         functions = variable_value.split(', ')
                         variable_value_set = [
                             define_function(fun) for fun in functions
@@ -162,13 +194,13 @@ def read_variables_from_namelist(file_name):
                 else:
                     try:
                         # Try to parse the variable as a dictionary
-                        variable_value_set = eval(variable_value)
+                        variable_value_set = ast.literal_eval(variable_value)
                     except (SyntaxError, NameError):
                         # If parsing fails, assume it's a non-string,
                         # or non-list variable
                         variable_value_set = variable_value
                 if variable_name in variables:
-                    if type(variables[variable_name]) is list:
+                    if isinstance(variables[variable_name], list):
                         variables[variable_name].append(variable_value_set)
                     else:
                         variables[variable_name] = [
@@ -176,17 +208,6 @@ def read_variables_from_namelist(file_name):
                 else:
                     variables[variable_name] = variable_value_set
     return variables
-
-
-def read_variable_from_namelist_with_overwite(file_name, **kwargs):
-
-    def merge_variables(dict1):
-        merged = dict1.copy()
-        merged.update(**kwargs)
-        return merged
-
-    read_variables = read_variables_from_namelist(file_name)
-    return merge_variables(read_variables)
 
 
 # /libes/pymc_extras.py
@@ -198,24 +219,39 @@ def select_post_param(trace):
     Returns:
         dict of paramater values with each item names after the parameter
     """
-
     def select_post_param_name(name):
         out = trace.posterior[name].values
-        a = out.shape[0]
-        b = out.shape[1]
-        new_shape = ((a * b), *out.shape[2:])
+        a_shape = out.shape[0]
+        b_shape = out.shape[1]
+        new_shape = ((a_shape * b_shape), * out.shape[2:])
         return np.reshape(out, new_shape)
+
     try:
         trace = az.from_netcdf(trace, engine='netcdf4')
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug(f'selct_post_params error {e}')
     params = trace.to_dict()['posterior']
     params_names = params.keys()
     params = [select_post_param_name(var) for var in params_names]
-    return params, [var for var in params_names]
+    return params, list(params_names)
 
 
 def construct_param_comb(i, params, params_names, extra_params):
+    """Construct a new dictionary containing parameters.
+
+    Arguments:
+        i: int
+            index for the parameter to add.
+        params: list
+            List of input parameters.
+        params_names: list
+            List of input parameters' names.
+        extra_params: dict
+            Dictionary of extra parameters to be added to the dictionary.
+    Returns:
+        param_in: dict
+            Dictionary of paramater values.
+    """
     param_in = [
         param[i] if param.ndim == 1 else param[i, :] for param in params
     ]
@@ -226,40 +262,45 @@ def construct_param_comb(i, params, params_names, extra_params):
 
 # /libs/read_variable_from_netcdf.py
 def read_variable_from_netcdf(
-        filename, dir='', subset_function=None,
-        make_flat=False, units=None,
-        subset_function_args=None,
-        time_series=None, time_points=None, extent=None,
-        return_time_points=False, return_extent=False,
-        *args, **kw):
-    """Read data from a netCDF file
+        filename, dir=None, subset_function=None, make_flat=False, units=None,
+        subset_function_args=None, time_series=None, time_points=None,
+        extent=None, return_time_points=False, return_extent=False, *args
+    ):
+    """Read data from a netCDF file.
     Assumes that the variables in the netcdf file all have the name
     "variable". Assumes that values < -9E9, you dont want. This could
     be different in some circumstances.
 
     Arguments:
-        filename -- a string with filename or two element python list
+        filename: str
+            a string with filename or two element python list
             containing the name of the file and the target variable name.
             If just the sting of "filename" assumes variable name is "variable"
-        dir -- directory file is in. Path can be in "filename" and None means
-            no additional directory path needed.
-        subset_function -- a function or list of functions to be applied to
-            each data set.
-        subset_function_args -- If subset_function is a function, dict
-            arguments for that function. If subset_function is a list,
-            a list or dict constaining arguments for those functions in turn.
-        make_flat -- should the output variable to flattened or remain cube
-        time_series -- list comtaining range of years. If making flat and
+        dir: str
+            The directory the file is in. Path can be in "filename" and None
+            means no additional directory path needed.
+        subset_function: func or list of funcs
+            a function or list of functions to be applied to each data set.
+        subset_function_args: dict or list of dicts
+            If subset_function is a function, dict arguments for that function.
+            If subset_function is a list, a list or dict constaining arguments
+            for those functions in turn.
+        make_flat: bool
+            Should the output variable to flattened or remain cube
+        time_series: list
+            List comtaining range of years. If making flat and
             returned a time series, checks if that time series contains year.
     Returns:
-        dataset - if make_flat, a numpy vector of the target variable, otherwise
-        returns iris cube.
+        dataset: iris cube
+            if make_flat, a numpy vector of the target variable, otherwise
+            returns iris cube.
     """
-
     logger.info("Opening:")
     logger.info(filename)
+
     if filename[0] == '~' or filename[0] == '/' or filename[0] == '.':
         dir = ''
+
     try:
         if isinstance(filename, str):
             dataset = iris.load_cube(dir + filename, callback=sort_time)
@@ -267,25 +308,27 @@ def read_variable_from_netcdf(
             dataset = iris.load_cube(
                 dir + filename[0], filename[1], callback=sort_time
             )
-    except Exception:
+    except Exception as e:
         try:
             dataset = iris.load_cube(dir + filename)
-        except Exception:
-            print("==============\nERROR!")
-            print("can't open data.")
-            print("Check directory (''" + dir + "''), filename (''" + \
-                filename + "'') or file format")
-            print("==============")
+        except Exception as e_:
+            logger.debug(f'read_variable_from_netcdf errors\n{e}\n{e_}')
+            logger.debug(
+                "Data cannot be openend." +
+                f"Check directory {dir}, filename {filename} or file format"
+            )
     coord_names = [coord.name() for coord in dataset.coords()]
+
     if dataset is None:
         return None
+
     if time_points is not None:
         if 'time' in coord_names:
             dataset = dataset.interpolate(
                 [('time', time_points)], iris.analysis.Linear()
             )
         else:
-            def addTime(time_point):
+            def addtime(time_point):
                 time = iris.coords.DimCoord(
                     np.array([time_point]), standard_name='time',
                     units = 'days since 1661-01-01 00:00:00'
@@ -293,27 +336,31 @@ def read_variable_from_netcdf(
                 dataset_cp = dataset.copy()
                 dataset_cp.add_aux_coord(time)
                 return dataset_cp
-
-            dataset_time = [addTime(time_point) for time_point in time_points]
+            dataset_time = [addtime(time_point) for time_point in time_points]
             dataset = iris.cube.CubeList(dataset_time).merge_cube()
-            dataset0 = dataset.copy()
+            # Unused? dataset0 = dataset.copy()
+
     if extent is not None:
         dataset = dataset.regrid(extent, iris.analysis.Linear())
-        dataset0 = dataset.copy()
+        # Unused? dataset0 = dataset.copy()
+
     if units is not None:
         dataset.units = units
+
     if subset_function is not None:
         if isinstance(subset_function, list):
-            for FUN, args in zip(subset_function, subset_function_args):
+            for func, args in zip(subset_function, subset_function_args):
                 try:
-                    dataset = FUN(dataset, **args)
-                except Exception:
-                    print(
-                        "Warning! function: " + FUN.__name__ + \
+                    dataset = func(dataset, **args)
+                except Exception as e:
+                    logger.debug(f'read_variable_from_netcdf error {e}')
+                    logger.debug(
+                        "Warning! function: " + func.__name__ + \
                         " not applied to file: " + dir + filename
                     )
         else:
             dataset = subset_function(dataset, **subset_function_args)
+
     if return_time_points:
         time_points = dataset.coord('time').points
 
@@ -323,12 +370,10 @@ def read_variable_from_netcdf(
     if make_flat:
         if time_series is not None:
             years = dataset.coord('year').points
-
         try:
             dataset = dataset.data.flatten()
-        except Exception:
-            pass
-
+        except Exception as e:
+            logger.debug(f'read_variable_from_netcdf error {e}')
         if time_series is not None:
             if not years[ 0] == time_series[0]:
                 dataset = np.append(
@@ -341,6 +386,7 @@ def read_variable_from_netcdf(
 
     if return_time_points:
         dataset = (dataset, time_points)
+
     if return_extent:
         dataset += (extent,)
 
@@ -351,41 +397,49 @@ def read_all_data_from_netcdf(
         y_filename, x_filename_list, ca_filename=None, add_1s_columne=False,
         y_threshold=None, x_normalise01=False, scalers=None, check_mask=True,
         frac_random_sample=1.0, min_data_points_for_sample=None, *args, **kw
-    ):                
+    ):
     """Read data from netCDF files
 
     Arguments:
-        y_filename -- a two element python list containing the name of the
-            file and the target variable name.
-        x_filename_list -- a python list of filename containing the feature
-            variables.
-        ca_filename -- a python list of filename containing the area of the
-            cover type.
-        y_threshold -- if converting y into boolean, the threshold we use to
-            split into 0's and 1's.
-        add_1s_columne -- useful for if using for regressions. Adds a variable
+        y_filename: list
+            a two element python list containing the name of the file and
+            the target variable name.
+        x_filename_list: list
+            a python list of filename containing the feature variables.
+        ca_filename: list
+            a python list of filename containing the area of the cover type.
+        y_threshold: float
+            if converting y into boolean, the threshold we use to split into
+            0's and 1's.
+        add_1s_columne: bool
+            useful for if using for regressions. Adds a variable
             of just 1's t rperesent y = SUM(a_i * x_i) + c
-        x_normalise01 -- Boolean. If True, then x's are normalised between 0
-            and 1.
-        scalers -- None or numpy array of shape 2 by n. columns of x.
+        x_normalise01: bool
+            If True, then x's are normalised between 0 and 1.
+        scalers: None or np.array
+            None or numpy array of shape 2 by n. columns of x.
             Defines what scalers (min and max) to apply to each x column.
             If None, doesn't apply anything.
-        check_mask -- Boolean. If True, simple checks if there are any large
+        check_mask: bool
+            If True, simple checks if there are any large
             negtaive numbers and makes them out. Assunes that values < -9E9,
             you dont want. This could be different in some circumstances.
-        frac_random_sample -- fraction of data to be returned
+        frac_random_sample: int
+            fraction of data to be returned
         see read_variable_from_netcdf comments for *arg and **kw.
     Returns:
-        y - a numpy array of the target variable
-        x - an n-D numpy array of the feature variables
+        y: np.array
+            a numpy array of the target variable.
+        x: np.array
+            an n-D numpy array of the feature variables.
     """
-    y, time_points, extent = read_variable_from_netcdf(
-        y_filename, make_flat=True, *args, 
+    y_var, time_points, extent = read_variable_from_netcdf(
+        y_filename, make_flat=True, *args,
         return_time_points=True, return_extent=True, **kw
     )
 
     if ca_filename is not None:
-        ca = read_variable_from_netcdf(
+        ca_var = read_variable_from_netcdf(
             ca_filename, make_flat=True,
             time_points=time_points, extent=extent,
             *args, **kw
@@ -393,14 +447,12 @@ def read_all_data_from_netcdf(
 
     # Create a new categorical variable based on the threshold
     if y_threshold is not None:
-        y = np.where(y >= y_threshold, 0, 1)
+        y_var = np.where(y_var >= y_threshold, 0, 1)
 
-    n = len(y)
-    m = len(x_filename_list)
-    x = np.zeros([n,m])
+    x_var = np.zeros([len(y_var), len(x_filename_list)])
 
     for i, filename in enumerate(x_filename_list):
-        x[:, i] = read_variable_from_netcdf(
+        x_var[:, i] = read_variable_from_netcdf(
             filename, make_flat=True,
             time_points=time_points, extent=extent,
             *args, **kw
@@ -408,29 +460,29 @@ def read_all_data_from_netcdf(
 
     if add_1s_columne:
         # add a column of ones to x
-        x = np.column_stack((x, np.ones(len(x))))
+        x_var = np.column_stack((x_var, np.ones(len(x_var))))
 
     if check_mask:
         if ca_filename is not None:
             cells_we_want = np.array([
                 np.all(rw > -9e9) and np.all(rw < 9e9) \
-                    for rw in np.column_stack((x, y, ca))
+                    for rw in np.column_stack((x_var, y_var, ca_var))
             ])
-            ca = ca[cells_we_want]
+            ca_var = ca_var[cells_we_want]
         else:
             cells_we_want = np.array([
                 np.all(rw > -9e9) and np.all(rw < 9e9) \
-                    for rw in np.column_stack((x,y))
+                    for rw in np.column_stack((x_var, y_var))
             ])
-        y = y[cells_we_want]
-        x = x[cells_we_want, :]
+        y_var = y_var[cells_we_want]
+        x_var = x_var[cells_we_want, :]
 
     if x_normalise01 and scalers is None:
         try:
-            scalers = np.array([np.min(x, axis=0), np.max(x, axis=0)])
-        except Exception:
-            pass
-        squidge = (scalers[1, :]-scalers[0, :])/(x.shape[0])
+            scalers = np.array([np.min(x_var, axis=0), np.max(x_var, axis=0)])
+        except Exception as e:
+            logger.debug(f'read_all_data_from_netcdf error {e}')
+        squidge = (scalers[1, :] - scalers[0, :]) / (x_var.shape[0])
         scalers[0, :] = scalers[0, :] - squidge
         scalers[1, :] = scalers[1, :] + squidge
 
@@ -447,27 +499,27 @@ def read_all_data_from_netcdf(
                 frac_random_sample = min_data_frac
 
     if frac_random_sample < 1:
-        m = x.shape[0]
+        m = x_var.shape[0]
         selected_rows = np.random.choice(
             m, size=int(m * frac_random_sample), replace=False
         )
-        y = y[selected_rows]
-        x = x[selected_rows, :]
+        y_var = y_var[selected_rows]
+        x_var = x_var[selected_rows, :]
         if ca_filename is not None:
-            ca = ca[selected_rows]
+            ca_var = ca_var[selected_rows]
 
     if scalers is not None:
-        x = (x - scalers[0, :]) / (scalers[1, :] - scalers[0, :])
+        x_var = (x_var - scalers[0, :]) / (scalers[1, :] - scalers[0, :])
         if check_mask:
             if ca_filename is not None:
-                return y, x, ca, cells_we_want, scalers
-        return y, x, cells_we_want, scalers
+                return y_var, x_var, ca_var, cells_we_want, scalers
+        return y_var, x_var, cells_we_want, scalers
 
     if check_mask or frac_random_sample:
         if ca_filename is not None:
-            return y, x, ca, cells_we_want
+            return y_var, x_var, ca_var, cells_we_want
 
-    return y, x, cells_we_want
+    return y_var, x_var, cells_we_want
 
 
 # /fire_models/ConFire.py
@@ -476,6 +528,11 @@ class ConFire(object):
         """
         Initalise parameters and calculates the key variables needed to
         calculate burnt area.
+
+        Arguments:
+            params: dict or list of dict
+            inference: bool
+                Flag indicating to run inference or not.
         """
         self.inference = inference
         if self.inference:
@@ -502,26 +559,47 @@ class ConFire(object):
         self.fmax = select_param_or_default('Fmax', None, stack=False)
 
     def burnt_area(self, x, return_controls=False, return_limitations=False):
+        """Compute burnt area.
+
+        Arguments:
+            x: numpck instance
+                Input drivers.
+            return_controls: bool
+            return_limitation: bool
+        Returns:
+            ba: numpck instance
+                Burnt area data.
+        """
         # finds controls        
         def cal_control(cid=0):
             ids = self.controlid[cid]
             betas =  self.betas[cid] * self.driver_direction[cid]
-            
+
             x_i = x[:,ids]
             if self.powers is not None:
                 x_i = self.numpck.power(x_i, self.powers[cid])
-            
+
             out = self.numpck.sum(x_i * betas[None, ...], axis=-1)
             if self.log_control[cid]:
                 out = self.numpck.log(out)
             out = out + self.x0[cid]
-            return(out)
+            return out
 
         controls = [cal_control(i) for i in range(len(self.controlid))]
         if return_controls:
             return controls
 
         def sigmoid(y, k):
+            """Compute sigmoid.
+            
+            Arguments:
+                y: numpck instance
+                    Input data.
+                k: float
+                    Exponential factor.
+            Returns:
+                Applied sigmoid function value.
+            """
             if k == 0:
                 return None
             return 1.0 / (1.0 + self.numpck.exp(-y * k))
@@ -542,16 +620,39 @@ class ConFire(object):
         return ba
 
     def emc_weighted(self, emc, precip, wd_pg):
+        """Compute weighted Event Mean Concentration (EMC).
+
+        Arguments:
+            emc: iris.cube
+                Cube containing the EMC.
+            precip: iris cube
+                Cube containing precipitation data.
+            wd_pg: iris cube
+                Cube containing wet days.
+        Returns:
+            emcw: iris cube
+                Weighted cube of EMC.
+        """
         try:
             wet_days = 1.0 - self.numpck.exp(-wd_pg * precip)
             emcw = (1.0 - wet_days) * emc + wet_days
-        except Exception:
+        except Exception as e:
+            logger.debug(f'emc_weighted error {e}')
             emcw = emc.copy()
             emcw.data  = 1.0 - self.numpck.exp(-wd_pg * precip.data)
             emcw.data = emcw.data + (1.0 - emcw.data) * emc.data
-        return(emcw)
+        return emcw
 
     def list_model_params(self, params, varnames=None):
+        """Summary model parameters.
+
+        Arguments:
+            params: list
+            varnames: list
+        Returns:
+            full_df: pd.DataFrame
+                Dataframe containing the parameters values in each experiment.
+        """
         controlid = params[0]['controlID']
         def list_one_line_of_parmas(param):
             def select_param_or_default(*args, **kw):
@@ -615,7 +716,21 @@ class ConFire(object):
         return full_df
 
 
-def diagnostic_run_ConFire(config, model_name, timerange):
+def diagnostic_run_confire(config, model_name='model', timerange='none'):
+    """Run ConFire as a diagnostic.
+    The outputs from the model run are saved and the plots are returned.
+
+    Arguments:
+        config: dict
+            Dictionary containing the ESMValTool recip configuration.
+        model_name: str
+            Model name to include in plots.
+        timerange: str
+            Time range of the input data to include in plots.
+    Returns:
+        figures: list
+            List of matplotlib figures produced for the burnt area results.
+    """
     # --------------------------------------------------------
     # This script runs the ConFire model using pre-generated parameter files.
     # It calculates burnt area under different control conditions and saves
@@ -670,8 +785,17 @@ def diagnostic_run_ConFire(config, model_name, timerange):
 
     def run_model_into_cube(param_in, coord):
         """
-        Runs the ConFire model with given parameters and inserts results into
-        an Iris cube.
+        Runs the ConFire model with given parameters.
+        Results are inserted into an iris cube.
+
+        Arguments:
+            param_in: dict
+                Dictionary of input parameters for the run.
+            coord: iris coord
+                Coordinate to add to the output cube.
+        Returns:
+            cube: iris cube
+                ConFire model output cube.
         """
         out = ConFire(param_in).burnt_area(driving_data)
         cube = insert_data_into_cube(out, eg_cube, lmask)

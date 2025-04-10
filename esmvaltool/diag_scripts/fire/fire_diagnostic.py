@@ -30,7 +30,7 @@ from esmvaltool.diag_scripts.shared import (
 )
 
 from esmvaltool.diag_scripts.fire.diagnostic_run_ConFire import (
-    diagnostic_run_ConFire
+    diagnostic_run_confire
 )
 
 logger = logging.getLogger(Path(__file__).stem)
@@ -352,7 +352,7 @@ def main(config):
             f'Input files used for diagnostic {config['files_input']}'
         )
         logger.info('Running diagnostic model ConFire.')
-        figures = diagnostic_run_ConFire(
+        figures = diagnostic_run_confire(
             config, model_name=model_dataset, timerange=timerange
         )
 
