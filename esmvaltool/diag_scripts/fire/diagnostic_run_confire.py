@@ -72,11 +72,16 @@ def select_key_or_default(
 
 
 # /libs/iris_plus.py
-def sort_time(cube):
+def sort_time(cube, field, filename):
     """Sort time dimension in the iris cube.
 
     Arguments:
         cube: iris cube
+            Input cube.
+        field: str
+            Variable name in cube.
+        filename: str
+            Filename of cube.
     Returns:
         cube: iris cube
             Cube with sorted and added time dimensions.
@@ -767,7 +772,7 @@ def get_parameters(config):
     logger.info('Loading data for ConFire model...')
     scalers = pd.read_csv(scale_file).values
     _, driving_data, lmask, _ = read_all_data_from_netcdf(
-        nc_files[0], nc_files, scalers=scalers, dir=nc_dir)
+        nc_files[0], nc_files, scalers=scalers, directory=nc_dir)
     # Load a sample cube (used for inserting data)
     eg_cube = read_variable_from_netcdf(nc_files[0], directory=nc_dir)
     # **Extract Model Parameters**
@@ -777,6 +782,7 @@ def get_parameters(config):
     control_direction = extra_params['control_Direction'].copy()
     return output_dir, params, params_names, extra_params, driving_data,\
         lmask, eg_cube, control_direction
+
 
 def diagnostic_run_confire(config, model_name='model', timerange='none'):
     """Run ConFire as a diagnostic.
@@ -860,6 +866,7 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
         ['burnt_area_control_' + str(i) for i in range(nexp)] + \
         ['burnt_area_control_stochastic']
     os.makedirs(output_dir, exist_ok=True)
+    timerange = timerange.replace('/', '-')
 
     for i, _ in enumerate(out_cubes):
         cubes = iris.cube.CubeList(out_cubes[i]).merge_cube()
@@ -874,7 +881,9 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
     logger.info('Plotting model diagnostic outputs...')
     figures = []
     for i, filename in enumerate(filenames_out):
-        filepath = os.path.join(output_dir, filename + ".nc")
+        filepath = os.path.join(
+            output_dir, f'{model_name}_{filename}_{timerange}.nc'
+        )
         fig, axes = plt.subplots(
             nrows=1, ncols=2, figsize=(12, 8),
             subplot_kw={'projection': ccrs.PlateCarree()})

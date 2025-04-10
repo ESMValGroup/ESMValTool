@@ -142,8 +142,3 @@ References
 Example plots
 -------------
 
-.. _fig_mynewdiag_1:
-.. figure::  /recipes/figures/<mynewdiagnostic>/awesome1.png
-   :align:   center
-
-   Add figure caption here.
