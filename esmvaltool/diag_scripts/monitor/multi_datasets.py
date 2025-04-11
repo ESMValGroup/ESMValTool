@@ -4563,18 +4563,21 @@ class MultiDatasets(MonitorBase):
                 self.create_hovmoeller_anncyc_vs_lat_or_lon_plot(datasets)
 
 
-def main():
+def main(cfg: dict) -> None:
     """Run diagnostic."""
-    with run_diagnostic() as config:
-        with warnings.catch_warnings():
-            warnings.filterwarnings(
-                "ignore",
-                message="Using DEFAULT_SPHERICAL_EARTH_RADIUS",
-                category=UserWarning,
-                module="iris",
-            )
-            MultiDatasets(config).compute()
+    from pprint import pprint
+
+    pprint(cfg)
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message="Using DEFAULT_SPHERICAL_EARTH_RADIUS",
+            category=UserWarning,
+            module="iris",
+        )
+        MultiDatasets(cfg).compute()
 
 
 if __name__ == "__main__":
-    main()
+    with run_diagnostic() as config:
+        main(config)

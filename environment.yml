@@ -74,6 +74,7 @@ dependencies:
   - xlsxwriter
   - zarr
   # Python packages needed for unit testing
+  - imagehash >=4.0
   - pre-commit
   - pytest >=3.9,!=6.0.0rc1,!=6.0.0
   - pytest-cov

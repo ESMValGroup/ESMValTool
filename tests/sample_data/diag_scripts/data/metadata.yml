@@ -1,0 +1,54 @@
+? tas_amon_1d_time_0.nc
+: activity: CMIP
+  alias: tas_amon_1d_time_0
+  dataset: tas_amon_1d_time_0
+  diagnostic: diag
+  end_year: 2000
+  ensemble: r1i1p1f1
+  exp: historical
+  filename: tas_amon_1d_time_0.nc
+  frequency: day
+  grid: gr
+  institute:
+  - inst
+  long_name: Near-Surface Air Temperature
+  mip: Amon
+  modeling_realm:
+  - atmos
+  preprocessor: preproc
+  project: CMIP6
+  recipe_dataset_index: 0
+  short_name: tas
+  standard_name: air_temperature
+  start_year: 2000
+  timerange: 20000101/20000301
+  units: K
+  variable_group: tas
+  version: v20250411
+? tas_amon_1d_time_1.nc
+: activity: CMIP
+  alias: tas_amon_1d_time_1
+  dataset: tas_amon_1d_time_1
+  diagnostic: diag
+  end_year: 2000
+  ensemble: r1i1p1f1
+  exp: historical
+  filename: tas_amon_1d_time_1.nc
+  frequency: day
+  grid: gr
+  institute:
+  - inst
+  long_name: Near-Surface Air Temperature
+  mip: Amon
+  modeling_realm:
+  - atmos
+  preprocessor: preproc
+  project: CMIP6
+  recipe_dataset_index: 0
+  short_name: tas
+  standard_name: air_temperature
+  start_year: 2000
+  timerange: 20000101/20000301
+  units: K
+  variable_group: tas
+  version: v20250411
