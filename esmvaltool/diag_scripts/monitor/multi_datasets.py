@@ -2631,9 +2631,8 @@ class MultiDatasets(MonitorBase):
             # Put time on desired axis
             if self.plots[plot_type]["time_on"] == "x-axis":
                 plot_kwargs["coords"] = list(dim_coords_dat)
-                x_label = "time"
+                x_label = "Month"
                 y_label = non_time_label
-                time_axis = axes.get_xaxis()
             else:
                 plot_kwargs["coords"] = list(reversed(dim_coords_dat))
                 x_label = non_time_label
