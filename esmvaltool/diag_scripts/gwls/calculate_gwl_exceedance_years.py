@@ -49,7 +49,7 @@ def calculate_gwl_exceedance_years(input_data_sorted, gwls, window_size):
         anomaly_ts_cube = iris.load_cube(data["filename"])
         years = anomaly_ts_cube.coord("year").points
         start_year = years[0]
-        end_year = years[len(years) - 1]
+        end_year = years[-1]
         logger.info(
             "Start and end years and averaging over  %s %s %s ",
             str(start_year),

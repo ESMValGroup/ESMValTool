@@ -49,7 +49,7 @@ def calculate_gwl_mm_cube(
             logger.info("Cube var name is %s", cube.var_name)
             if cube.var_name == "tas":
                 cube.convert_units("Celsius")
-            if cube.var_name == "pr":
+            elif cube.var_name == "pr":
                 cube = cube * 86400
                 cube.units = "mm/day"
 
@@ -90,7 +90,7 @@ def calculate_mm_stats(cubes, mean_file, stdev_file):
         c.remove_coord("time")
         c.add_aux_coord(cubes[0].aux_coords[index])
 
-    if len(cubes) == 0:
+    if not cubes:
         logger.info("No model instances exceed this GWL.")
     elif len(cubes) == 1:
         iris.save(cubes[0], mean_file)
