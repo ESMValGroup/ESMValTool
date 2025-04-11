@@ -1,0 +1,89 @@
+# ESMValTool
+# recipe_smpi.yml
+---
+documentation:
+  title: Seaice sentivity
+
+  description: |
+      Blah
+
+  authors:
+    - sellar_alistair
+
+  maintainer:
+    - sellar_alistair
+
+datasets:
+  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+
+preprocessors:
+  extract_test_period:
+    &extract_test_period
+    extract_time:
+      start_day: 1
+      start_month: 1
+      start_year: 1979
+      end_day: 31
+      end_month: 12
+      end_year: 2014
+
+  extract_sept:
+    &extract_sept
+    extract_month:
+      month: 9
+
+  nh_total_area:
+    &nh_total_area
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 0
+      end_latitude: 90
+    area_statistics:
+      operator: sum
+
+  global_mean:
+    &global_mean
+    area_statistics:
+      operator: mean
+
+  annual_mean:
+    &annual_mean
+    annual_statistics:
+      operator: mean
+
+  pp_arctic_sept_sea_ice:
+    <<: *extract_test_period
+    <<: *extract_sept
+    <<: *nh_total_area
+
+  pp_avg_ann_arctic_sea_ice:
+    <<: *extract_test_period
+    <<: *nh_total_area
+    <<: *global_mean
+    <<: *annual_mean
+
+  pp_avg_ann_global_temp:
+    <<: *extract_test_period
+    <<: *global_mean
+    <<: *annual_mean
+
+diagnostics:
+  arctic:
+    description: blah
+    variables:
+      arctic_sept_sea_ice:
+        preprocessor: pp_arctic_sept_sea_ice
+        short_name: siconc
+        mip: SImon
+      avg_ann_arctic_sea_ice:
+        preprocessor: pp_avg_ann_arctic_sea_ice
+        short_name: siconc
+        mip: SImon
+      avg_ann_global_temp:
+        preprocessor: pp_avg_ann_global_temp
+        short_name: tas
+        mip: Amon
+    scripts:
+      sea_ice_sensitivity_script:
+        script: seaice/seaice_sensitivity.py
