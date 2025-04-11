@@ -171,7 +171,6 @@ diagnostics:
         facet_used_for_labels: alias
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_LatTime_Map'
-        facet_used_for_labels: alias
         matplotlib_rc_params:
           xtick.labelsize: 6
           ytick.labelsize: 8
@@ -203,7 +202,6 @@ diagnostics:
         facet_used_for_labels: alias
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_LatTime_Map'
-        facet_used_for_labels: alias
         matplotlib_rc_params:
           xtick.labelsize: 6
           ytick.labelsize: 8
