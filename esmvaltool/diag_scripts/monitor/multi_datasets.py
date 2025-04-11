@@ -2657,10 +2657,6 @@ class MultiDatasets(MonitorBase):
             fig.suptitle(dataset["long_name"])
             axes.set_xlabel(x_label)
             axes.set_ylabel(y_label)
-            if self.plots[plot_type]["time_format"] is not None:
-                time_axis.set_major_formatter(
-                    mdates.DateFormatter(self.plots[plot_type]["time_format"])
-                )
             if self.plots[plot_type]["show_y_minor_ticks"]:
                 axes.get_yaxis().set_minor_locator(AutoMinorLocator())
             if self.plots[plot_type]["show_x_minor_ticks"]:
