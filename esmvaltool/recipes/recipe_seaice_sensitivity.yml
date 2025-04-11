@@ -27,10 +27,13 @@ preprocessors:
       end_month: 12
       end_year: 2014
 
-  nh_sept_total_area:
-    &nh_sept_total_area
+  extract_sept:
+    &extract_sept
     extract_month:
       month: 9
+
+  nh_total_area:
+    &nh_total_area
     extract_region:
       start_longitude: 0
       end_longitude: 360
@@ -49,9 +52,16 @@ preprocessors:
     annual_statistics:
       operator: mean
 
-  pp_arctic_sea_ice:
+  pp_arctic_sept_sea_ice:
     <<: *extract_test_period
-    <<: *nh_sept_total_area
+    <<: *extract_sept
+    <<: *nh_total_area
+
+  pp_avg_ann_arctic_sea_ice:
+    <<: *extract_test_period
+    <<: *nh_total_area
+    <<: *global_mean
+    <<: *annual_mean
 
   pp_avg_ann_global_temp:
     <<: *extract_test_period
@@ -62,8 +72,12 @@ diagnostics:
   arctic:
     description: blah
     variables:
-      arctic_sea_ice:
-        preprocessor: pp_arctic_sea_ice
+      arctic_sept_sea_ice:
+        preprocessor: pp_arctic_sept_sea_ice
+        short_name: siconc
+        mip: SImon
+      avg_ann_arctic_sea_ice:
+        preprocessor: pp_avg_ann_arctic_sea_ice
         short_name: siconc
         mip: SImon
       avg_ann_global_temp:
