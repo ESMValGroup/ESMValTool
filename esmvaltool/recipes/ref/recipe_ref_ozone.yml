@@ -153,14 +153,6 @@ diagnostics:
             plot_kwargs:
               OBS:
                 color: black
-              CMIP6_CNRM-ESM2-1:
-                color: cyan
-              CMIP6_CNRM-ESM2-1:
-                color: cornflowerblue
-              CMIP6_UKESM1-0-LL:
-                color: gold
-              CMIP6_UKESM1-0-LL:
-                color: darkorange
             pyplot_kwargs:
               title: Total Column Ozone, 60-90N, March
 
