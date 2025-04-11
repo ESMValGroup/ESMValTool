@@ -28,6 +28,11 @@ Recipes are stored in recipes
 * ref/recipe_ref_sea_ice_area_basic.yml:
   Seasonal cycle of Arctic (NH) and Antarctic (SH) sea ice area, time series
   of Arctic September (NH) and Antarctic February (SH) sea ice area
+* ref/recipe_ref_ozone.yml:
+  NH/SH polar cap (60 degrees to 90 degrees) March/September total column ozone
+  time series, zonal mean total column ozone vs. time map plot, zonal mean
+  total column ozone vs. annual cycle map plot, altitude vs. zonal mean
+  ozone profile climatology map plot
 
 
 Example plots:
@@ -69,3 +74,11 @@ Example plots:
 
    Time series of Arctic (NH) September (NH) sea ice area from MPI-ESM1-2-LR
    (red line) compared with OSISAF/CCI (blue line). Created with recipe_ref_sea_ice_area_basic.yml.
+
+.. _fig_ref_6:
+.. figure::  /recipes/figures/ref/zonal_mean_profile_o3_CNRM-ESM2-1_historical.png
+   :align:   center
+   :width:   8cm
+
+   Zonal mean vertically resolved ozone climatology from CNRM-ESM2-1 compared with ESACCI-OZONE
+   for the years 1990 to 2000. Created with recipe_ref_ozone.yml.
