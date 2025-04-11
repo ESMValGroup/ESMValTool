@@ -856,9 +856,9 @@ diagnostics:
         mip: fx
     additional_datasets:
       - {dataset: OSI-450-nh, project: OBS, tier: 2,
-         type: reanaly, version: v2, start_year: 1979, end_year: 2015}
+         type: reanaly, version: v3, start_year: 1979, end_year: 2020}
       - {dataset: OSI-450-sh, project: OBS, tier: 2,
-         type: reanaly, version: v2, start_year: 1979, end_year: 2015}
+         type: reanaly, version: v3, start_year: 1979, end_year: 2020}
     scripts: null
 
 
