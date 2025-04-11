@@ -49,7 +49,7 @@ def calculate_gwl_mm_cube(
             logger.info("Cube var name is %s", cube.var_name)
             if cube.var_name == "tas":
                 cube.convert_units("Celsius")
-            if cube.var_name == "pr":
+            elif cube.var_name == "pr":
                 cube = cube * 86400
                 cube.units = "mm/day"
 
