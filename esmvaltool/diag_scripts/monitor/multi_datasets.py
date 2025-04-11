@@ -2312,9 +2312,6 @@ class MultiDatasets(MonitorBase):
                 x_label = non_time_label
                 y_label = "time"
                 time_axis = axes_data.get_yaxis()
-            # plot_kwargs["coords"] = ["month_number", "latitude"]
-            # y_label = "latitude [°N]"
-            # x_label = "month"
             plot_data = plot_func(cube, **plot_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
             axes_data.set_ylabel(y_label)
