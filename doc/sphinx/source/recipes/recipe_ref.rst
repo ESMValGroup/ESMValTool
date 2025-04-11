@@ -29,7 +29,7 @@ Recipes are stored in recipes
   Seasonal cycle of Arctic (NH) and Antarctic (SH) sea ice area, time series
   of Arctic September (NH) and Antarctic February (SH) sea ice area
 * ref/recipe_ref_ozone.yml:
-  NH/SH polar cap (60 degrees to 90 degrees) March/September total column 
+  NH/SH polar cap (60 degrees to 90 degrees) March/September total column ozone
   time series, zonal mean total column ozone vs. time map plot, zonal mean
   total column ozone vs. annual cycle map plot, altitude vs. zonal mean
   ozone profile climatology map plot
