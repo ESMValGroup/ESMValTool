@@ -3,6 +3,8 @@ from pathlib import Path
 from pprint import pformat
 import iris
 import matplotlib.pyplot as plt
+from matplotlib.colors import Normalize
+import matplotlib.cm as cm
 from scipy import stats
 import numpy as np
 import iris.coord_categorisation as cc  # we could avoid using this
@@ -62,7 +64,7 @@ def list_datasets(data):
     return datasets
 
 
-def extract_cube(data, variable_group):
+def extract_cube(data, variable_group):  # TODO: should I tweak the sea ice cube here? Or in preprocessing?
     """
     Selects records from data based on the variable_group,
     asserts that there is only one matching record,
@@ -74,15 +76,20 @@ def extract_cube(data, variable_group):
     selection = select_metadata(data, variable_group=variable_group)
 
     # Ensure there is only one file in the list
-    assert len(selection) == 1, f'Too many matching files found for {variable_group}'
+    assert len(selection) == 1, f'None or too many matching files found for {variable_group}'
 
     # Load the cube, [0] is because selection returns a list
     cube = iris.load_cube(selection[0]['filename'])
 
+    # Tweak if it's a sea ice cube
+    if variable_group == 'arctic_sept_sea_ice':
+        cube.convert_units('1e6 km2')  # to match literature
+        cc.add_year(cube, 'time', name='year')  # because it wasn't preprocessed in years
+
     return cube
 
 
-def calculate_trend(independent, dependent):
+def calculate_slope(independent, dependent):
     """
     Use SciPy stats to calculate the least-squares regression
     """
@@ -95,7 +102,50 @@ def calculate_trend(independent, dependent):
     return slope
 
 
-def calculate_sensitivity(data):
+def calculate_rvalue(independent, dependent):
+    """
+    Use SciPy stats to calculate the Pearson correlation coefficient
+    """
+    logger.debug(f'Calculating rvalue between {dependent} and {independent}')
+
+    # Use SciPy stats to calculate the regression
+    slope, intercept, r, p, stderr = stats.linregress(independent, dependent)
+
+    # Return ony the rvalue
+    return r
+
+
+def calculate_annual_trends(data):
+    """
+    Calculates ...
+    """
+    logger.debug('calculating annual trends')
+
+    # Load the preprocessed cubes
+    ann_si_cube = extract_cube(data, 'avg_ann_arctic_sea_ice')
+    ann_tas_cube = extract_cube(data, 'avg_ann_global_temp')
+
+    # Check that the years match between the two cubes
+    assert (ann_si_cube.coord('year').points == ann_tas_cube.coord('year').points).all()
+    years = ann_si_cube.coord('year').points
+
+    # Calculate the trends over time
+    si_trend = calculate_slope(years, ann_si_cube.data)
+    tas_trend = calculate_slope(years, ann_tas_cube.data)
+
+    # Calculate the direct correlation coefficient
+    direct_r_val = calculate_rvalue(ann_tas_cube.data, ann_si_cube.data)
+
+    dictionary = {
+        'si_trend': si_trend,
+        'tas_trend': tas_trend,
+        'direct_r_val': direct_r_val
+    }
+
+    return dictionary
+
+
+def calculate_sept_sensitivity(data):
     """
     Calculates change in sea ice area per year
     divided by change in global mean temperature per year
@@ -103,21 +153,14 @@ def calculate_sensitivity(data):
     logger.debug('calculating sensitivity')
 
     # Load the preprocessed cubes
-    si_cube = extract_cube(data, 'arctic_sea_ice')
+    si_cube = extract_cube(data, 'arctic_sept_sea_ice')
     tas_cube = extract_cube(data, 'avg_ann_global_temp')
 
-    # Change the sea ice cube's units to match literature
-    si_cube.convert_units('1e6 km2')
-
-    # Add years to si cube (tas cube already has years)
-    cc.add_year(si_cube, 'time', name='year')
     # Check that the years match between the two cubes
     assert (si_cube.coord('year').points == tas_cube.coord('year').points).all()
-    # Name the years array for later use
-    years = tas_cube.coord('year').points
 
     # Calculate the sensitivity, NOT via time, so unlike Ed Blockley's code
-    sensitivity = calculate_trend(tas_cube.data, si_cube.data)
+    sensitivity = calculate_slope(tas_cube.data, si_cube.data)
 
     return sensitivity
 
@@ -126,8 +169,6 @@ def notz_style_plot_from_dict(dictionary, filename, cfg):
     """
     Saves a plot of sensitivities and observations to the given filename
     """
-    logger.debug(f'creating plot {filename}')
-
     # Read from Ed Blockley's dictionary
     obs_years = list(observations)[0]
     obs_mean = observations[obs_years]['mean']
@@ -140,8 +181,8 @@ def notz_style_plot_from_dict(dictionary, filename, cfg):
     ax.set_title(f'dSIA/dGMST {obs_years}')  # Ed's title
 
     # Iterate over the dictionary
-    for dataset, sensitivity in dictionary.items():
-        ax.plot(0.5, sensitivity, label=dataset, marker='_', markersize=20)
+    for dataset, inner_dict in dictionary.items():
+        ax.plot(0.5, inner_dict['direct_sept_sensitivity'], label=dataset, marker='_', markersize=20)
 
     # Add observations (style taken from Ed's code)
     ax.hlines(obs_mean, 0, 1, linestyle='--', color='black', linewidth=2)
@@ -152,11 +193,52 @@ def notz_style_plot_from_dict(dictionary, filename, cfg):
 
     # Tidy the figure
     ax.set_xticks([])
-    ax.set_ylabel('dSIA/dGMST [million km$^2$ K$^{-1}$]')
+    ax.set_ylabel('dSIA/dGMST (million km$^2$ K$^{-1}$)')
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
     # Save the figure (also closes it)
     # TODO: work out what provenance file is about. Not the dictionary!
+    provenance_record = get_provenance_record(dictionary, ancestor_files=[])
+    save_figure(filename, provenance_record, cfg, figure=fig, close=True)
+
+
+# TODO: the published plot uses a trend of K/decade, not per year, and also 1979-2018
+def roach_style_plot_from_dict(dictionary, filename, cfg):
+    """
+    Saves a plot of trend in SIA against trend in GMST to the given filename
+    """
+    # Set up the figure
+    fig, ax = plt.subplots(figsize=(10, 6), layout='constrained')
+    fig.suptitle('Trends in Annual Mean Temperature And Arctic Sea Ice')
+    ax.set_title('Title could go here')
+
+    # Set up for colouring the points
+    norm = Normalize(vmin=-1, vmax=1)
+    cmap = plt.get_cmap('PiYG_r')
+
+    # Set up the axes
+    ax.set_xlim(-0.02, 0.505)
+    ax.set_ylim(-1.1, 0.21)
+    ax.set_xticks([0.0, 0.1, 0.2, 0.3, 0.4, 0.5])
+    ax.set_yticks([-1.0, -0.8, -0.6, -0.4, -0.2, 0.0, 0.2])
+    ax.hlines(0, -0.02, 0.505, color='black', alpha=0.5)
+    ax.vlines(0, -1.1, 0.21, color='black', alpha=0.5)
+    ax.set_xlabel('Trend in GMST (K year$^{-1}$)')
+    ax.set_ylabel('Trend in SIA (million km$^2$ year$^{-1}$)')
+
+    # Iterate over the dictionary
+    for dataset, inner_dict in dictionary.items():
+        x = inner_dict['tas_trend']
+        y = inner_dict['siconc_trend']
+        r = inner_dict['direct_r_val']
+        plt.scatter(x, y, marker='o', s=100, c=[r], cmap=cmap, norm=norm)
+        plt.annotate(dataset, xy=(x, y), xytext=(x+0.02, y+0.02))
+
+    # Add a colour bar
+    plt.colorbar(label='r value')
+
+    # Save the figure (also closes it)
+    # TODO: provenance queries as above
     provenance_record = get_provenance_record(dictionary, ancestor_files=[])
     save_figure(filename, provenance_record, cfg, figure=fig, close=True)
 
@@ -167,7 +249,7 @@ def main(cfg):
     input_data = cfg['input_data'].values()
 
     # Initialize blank dictionary to send to plot later
-    sensitivity_dict = {}
+    trends_dict = {}
 
     # Get list of datasets from cfg
     logger.info('Listing datasets in the data')
@@ -180,16 +262,28 @@ def main(cfg):
         logger.info(f'Selecting data from {dataset}')
         selection = select_metadata(input_data, dataset=dataset)
 
-        # Calculate the sensitivity
-        logger.info(f'Calculating sensitivity for {dataset}')
-        sensitivity = calculate_sensitivity(selection)
+        # Add the dataset to the dictionary with a blank inner dictionary
+        trends_dict[dataset] = {}
 
-        # Add the sensitivity to the dictionary
-        sensitivity_dict[dataset] = sensitivity
+        # Calculations for the Notz-style plot
+        logger.info('Calculating data for Notz-style plot')
+        sensitivity = calculate_sept_sensitivity(selection)
+        # Add to dictionary
+        trends_dict[dataset]['direct_sept_sensitivity'] = sensitivity
+
+        # Calculations for the Roach-style plot
+        logger.info('Calculating data for Roach-style plot')
+        trends = calculate_annual_trends(input_data)
+        # Add to dictionary
+        trends_dict[dataset]['siconc_trend'] = trends['si_trend']
+        trends_dict[dataset]['tas_trend'] = trends['tas_trend']
+        trends_dict[dataset]['direct_r_val'] = trends['direct_r_val']
 
     # Plot the sensitivities (and save and close the plot)
     logger.info(f'Creating Notz-style plot')
-    notz_style_plot_from_dict(sensitivity_dict, 'Notz-style_sea_ice_sensitivity', cfg)
+    notz_style_plot_from_dict(trends_dict, 'Notz-style_sea_ice_sensitivity', cfg)
+    logger.info(f'Creating Roach-style plot')
+    roach_style_plot_from_dict(trends_dict, 'Roach-style_avg_annual_trends', cfg)
 
 
 if __name__ == "__main__":
