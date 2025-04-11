@@ -2514,12 +2514,12 @@ class MultiDatasets(MonitorBase):
             plot_kwargs["axes"] = axes_data
             if self.plots[plot_type]["time_on"] == "x-axis":
                 plot_kwargs["coords"] = list(dim_coords_dat)
-                x_label = "Month"
+                x_label = "month"
                 y_label = non_time_label
             else:
                 plot_kwargs["coords"] = list(reversed(dim_coords_dat))
                 x_label = non_time_label
-                y_label = "Month"
+                y_label = "month"
             plot_data = plot_func(cube, **plot_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
             axes_data.set_ylabel(y_label)
@@ -2631,12 +2631,12 @@ class MultiDatasets(MonitorBase):
             # Put time on desired axis
             if self.plots[plot_type]["time_on"] == "x-axis":
                 plot_kwargs["coords"] = list(dim_coords_dat)
-                x_label = "Month"
+                x_label = "month"
                 y_label = non_time_label
             else:
                 plot_kwargs["coords"] = list(reversed(dim_coords_dat))
                 x_label = non_time_label
-                y_label = "Month"
+                y_label = "month"
             plot_hovmoeller = plot_func(cube, **plot_kwargs)
 
             # Setup colorbar
@@ -3397,7 +3397,7 @@ class MultiDatasets(MonitorBase):
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
         axes.set_title(multi_dataset_facets["long_name"])
-        axes.set_xlabel("Month")
+        axes.set_xlabel("month")
         axes.set_ylabel(
             f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
             f"[{multi_dataset_facets['units']}]"
@@ -3500,7 +3500,7 @@ class MultiDatasets(MonitorBase):
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
         axes.set_title(multi_dataset_facets["long_name"])
-        axes.set_xlabel("Month")
+        axes.set_xlabel("month")
         axes.set_ylabel(
             f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
             f"[{multi_dataset_facets['units']}]"
