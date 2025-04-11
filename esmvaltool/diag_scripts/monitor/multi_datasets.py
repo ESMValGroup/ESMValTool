@@ -2636,8 +2636,7 @@ class MultiDatasets(MonitorBase):
             else:
                 plot_kwargs["coords"] = list(reversed(dim_coords_dat))
                 x_label = non_time_label
-                y_label = "time"
-                time_axis = axes.get_yaxis()
+                y_label = "Month"
             plot_hovmoeller = plot_func(cube, **plot_kwargs)
 
             # Setup colorbar
