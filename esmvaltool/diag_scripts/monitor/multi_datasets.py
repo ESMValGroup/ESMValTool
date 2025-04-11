@@ -83,7 +83,7 @@ Currently supported plot types (use the option ``plots`` to specify them):
       same temporal and horizontal grid (you can use the preprocessors
       :func:`esmvalcore.preprocessor.regrid_time` and
       :func:`esmvalcore.preprocessor.regrid` for this). Input data
-      needs to be 2D with dimensions `month`, `latitude`/`longitude`.
+      needs to be 2D with dimensions `month_number`, `latitude`/`longitude`.
     - Benchmarking plot annual cycles (``benchmarking_annual_cycle``):
       Same as plot type ``annual_cycle`` but including the range of metric
       results from an ensemble of models as shading.
