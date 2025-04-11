@@ -4530,8 +4530,6 @@ class MultiDatasets(MonitorBase):
                 "ancestors": ancestors,
                 "authors": [
                     "schlund_manuel",
-                    "kraft_jeremy",
-                    "lindenlaub_lukas",
                     "hassler_birgit",
                 ],
                 "caption": caption,
