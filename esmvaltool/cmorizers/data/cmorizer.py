@@ -18,6 +18,7 @@ import esmvalcore
 import yaml
 from esmvalcore._task import write_ncl_settings
 from esmvalcore.config import CFG
+from esmvalcore.config._dask import get_distributed_client
 from esmvalcore.config._logging import configure_logging
 
 from esmvaltool import ESMValToolDeprecationWarning
@@ -222,11 +223,12 @@ class _Formatter:
             )
         logger.info("Processing datasets %s", datasets)
 
-        # loop through tier/datasets to be cmorized
         failed_datasets = []
-        for dataset in datasets:
-            if not self.format_dataset(dataset, start, end, install):
-                failed_datasets.append(dataset)
+        with get_distributed_client():
+            # loop through tier/datasets to be cmorized
+            for dataset in datasets:
+                if not self.format_dataset(dataset, start, end, install):
+                    failed_datasets.append(dataset)
 
         if failed_datasets:
             raise RuntimeError(
