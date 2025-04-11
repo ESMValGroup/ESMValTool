@@ -2523,10 +2523,6 @@ class MultiDatasets(MonitorBase):
             plot_data = plot_func(cube, **plot_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
             axes_data.set_ylabel(y_label)
-            if self.plots[plot_type]["time_format"] is not None:
-                time_axis.set_major_formatter(
-                    mdates.DateFormatter(self.plots[plot_type]["time_format"])
-                )
             if self.plots[plot_type]["show_y_minor_ticks"]:
                 axes_data.get_yaxis().set_minor_locator(AutoMinorLocator())
             if self.plots[plot_type]["show_x_minor_ticks"]:
