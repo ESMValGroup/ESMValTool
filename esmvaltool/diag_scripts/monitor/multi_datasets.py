@@ -1293,7 +1293,6 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault("rasterize", True)
                 self.plots[plot_type].setdefault("show_y_minor_ticks", True)
                 self.plots[plot_type].setdefault("show_x_minor_ticks", True)
-                self.plots[plot_type].setdefault("time_format", None)
                 self.plots[plot_type].setdefault("time_on", "y-axis")
 
         # Check that facet_used_for_labels is present for every dataset
