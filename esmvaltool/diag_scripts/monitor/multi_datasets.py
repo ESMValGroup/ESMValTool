@@ -2513,10 +2513,9 @@ class MultiDatasets(MonitorBase):
             axes_data = fig.add_subplot(gridspec[0:2, 0:2])
             plot_kwargs["axes"] = axes_data
             if self.plots[plot_type]["time_on"] == "x-axis":
-                plot_kwargs["coords"] = ["month_number", "latitude"]
-                y_label = "latitude [°N]"
-                x_label = "month"
-                time_axis = axes_data.get_xaxis()
+                plot_kwargs["coords"] = list(dim_coords_dat)
+                x_label = "Month"
+                y_label = non_time_label
             else:
                 plot_kwargs["coords"] = list(reversed(dim_coords_dat))
                 x_label = non_time_label
