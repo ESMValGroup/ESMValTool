@@ -4565,9 +4565,6 @@ class MultiDatasets(MonitorBase):
 
 def main(cfg: dict) -> None:
     """Run diagnostic."""
-    from pprint import pprint
-
-    pprint(cfg)
     with warnings.catch_warnings():
         warnings.filterwarnings(
             "ignore",
