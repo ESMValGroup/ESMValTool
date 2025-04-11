@@ -80,5 +80,5 @@ Example plots:
    :align:   center
    :width:   8cm
 
-   Zonal mean vertically resolved ozone climatology from CNRM-ESM2-1 compared with ESACCI-OZONE 
+   Zonal mean vertically resolved ozone climatology from CNRM-ESM2-1 compared with ESACCI-OZONE
    for the years 1990 to 2000. Created with recipe_ref_ozone.yml.

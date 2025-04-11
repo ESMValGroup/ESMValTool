@@ -136,7 +136,7 @@ plots: dict, optional
     Plot types plotted by this diagnostic (see list above). Dictionary keys
     must be ``timeseries``, ``annual_cycle``, ``map``, ``zonal_mean_profile``,
     ``1d_profile``, ``variable_vs_lat``, ``hovmoeller_z_vs_time``,
-    ``hovmoeller_time_vs_lat_or_lon``, ``hovmoeller_anncyc_vs_lat_or_lon``. 
+    ``hovmoeller_time_vs_lat_or_lon``, ``hovmoeller_anncyc_vs_lat_or_lon``.
     Dictionary values are dictionaries used
     as options for the corresponding plot. The allowed options for the
     different plot types are given below.
@@ -666,7 +666,7 @@ time_on: str, optional (default: y-axis)
     lat/lon on x-axis.
 
 Configuration options for plot type ``hovmoeller_anncyc_vs_lat_or_lon``
----------------------------------------------------------------------
+-----------------------------------------------------------------------
 cbar_label: str, optional (default: '{short_name} [{units}]')
     Colorbar label. Can include facets in curly brackets which will be derived
     from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
@@ -2671,7 +2671,6 @@ class MultiDatasets(MonitorBase):
         plot_path = self.get_plot_path(plot_type, dataset)
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
         return (plot_path, {netcdf_path: cube})
-
 
     def _plot_benchmarking_map(
         self, plot_func, dataset, percentile_dataset, metric

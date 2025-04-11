@@ -3,7 +3,7 @@
 documentation:
   title: Model evaluation with focus on total column and stratospheric ozone.
   description: >
-    Plot climatologies, zonal means, and selected monthly means for total 
+    Plot climatologies, zonal means, and selected monthly means for total
     column ozone and stratospheric ozone for the REF.
   authors:
     - schlund_manuel
@@ -56,7 +56,7 @@ preprocessors:
       units: DU
 
   create_lat_month_map:
-    regrid: 
+    regrid:
       scheme: linear
       target_grid: 5x5
     climate_statistics:
@@ -172,7 +172,7 @@ diagnostics:
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_LatTime_Map'
         facet_used_for_labels: alias
-        matplotlib_rc_params: 
+        matplotlib_rc_params:
           xtick.labelsize: 6
           ytick.labelsize: 8
           axes.labelsize: 8
@@ -204,7 +204,7 @@ diagnostics:
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_LatTime_Map'
         facet_used_for_labels: alias
-        matplotlib_rc_params: 
+        matplotlib_rc_params:
           xtick.labelsize: 6
           ytick.labelsize: 8
           axes.labelsize: 8
