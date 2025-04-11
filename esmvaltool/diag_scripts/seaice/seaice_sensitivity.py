@@ -82,23 +82,17 @@ def extract_cube(data, variable_group):
     return cube
 
 
-# Stolen from Ed Blockley - do we ever need to return more than the slope?
-def calculate_trend(times, timeseries, slope_only=True):
+def calculate_trend(independent, dependent):
     """
-    Calculate linear trend for a timeseries
-    Returns a numpy array containing the linear fit for that trend, which can
-    be subtracted from another run to de-trend it.
+    Use SciPy stats to calculate the least-squares regression
     """
-    logger.debug(f'calculating trend for {timeseries}')
+    logger.debug(f'Calculating linear relationship between {dependent} and {independent}')
 
-    # Use SciPy stats to calculate the slope
-    slope, intercept, r, p, stderr = stats.linregress(times, timeseries)
+    # Use SciPy stats to calculate the regression
+    slope, intercept, r, p, stderr = stats.linregress(independent, dependent)
 
-    # Return either the slope or the array [0, 1*slope, 2*slope, 3*slope, ...]
-    if slope_only:
-        return slope
-    else:
-        return slope * np.arange(len(times))
+    # Return ony the slope
+    return slope
 
 
 def calculate_sensitivity(data):
@@ -112,7 +106,7 @@ def calculate_sensitivity(data):
     si_cube = extract_cube(data, 'arctic_sea_ice')
     tas_cube = extract_cube(data, 'avg_ann_global_temp')
 
-    # Changing the sea ice cube's units to match literature
+    # Change the sea ice cube's units to match literature
     si_cube.convert_units('1e6 km2')
 
     # Add years to si cube (tas cube already has years)
@@ -122,21 +116,19 @@ def calculate_sensitivity(data):
     # Name the years array for later use
     years = tas_cube.coord('year').points
 
-    # Calculate trends and sensitivity, both via time as in Ed Blockley's code
-    si_trend = calculate_trend(years, si_cube.data)
-    tas_trend = calculate_trend(years, tas_cube.data)
-    sensitivity = si_trend / tas_trend
+    # Calculate the sensitivity, NOT via time, so unlike Ed Blockley's code
+    sensitivity = calculate_trend(tas_cube.data, si_cube.data)
 
     return sensitivity
 
 
-def plot_from_dict(dictionary, filename, cfg):
+def notz_style_plot_from_dict(dictionary, filename, cfg):
     """
     Saves a plot of sensitivities and observations to the given filename
     """
     logger.debug(f'creating plot {filename}')
 
-    # Reading from Ed Blockley's dictionary
+    # Read from Ed Blockley's dictionary
     obs_years = list(observations)[0]
     obs_mean = observations[obs_years]['mean']
     obs_std_dev = observations[obs_years]['std_dev']
@@ -158,13 +150,13 @@ def plot_from_dict(dictionary, filename, cfg):
     ax.hlines(obs_mean + obs_plausible, 0, 1, linestyle=':', color='0.5', linewidth=1)
     ax.hlines(obs_mean - obs_plausible, 0, 1, linestyle=':', color='0.5', linewidth=1)
 
-    # Tidying the figure
+    # Tidy the figure
     ax.set_xticks([])
     ax.set_ylabel('dSIA/dGMST [million km$^2$ K$^{-1}$]')
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
     # Save the figure (also closes it)
-    # TODO: work out what provedence file is about. Not the dictionary!
+    # TODO: work out what provenance file is about. Not the dictionary!
     provenance_record = get_provenance_record(dictionary, ancestor_files=[])
     save_figure(filename, provenance_record, cfg, figure=fig, close=True)
 
@@ -196,8 +188,8 @@ def main(cfg):
         sensitivity_dict[dataset] = sensitivity
 
     # Plot the sensitivities (and save and close the plot)
-    logger.info(f'Creating plot')
-    plot_from_dict(sensitivity_dict, 'Sea_ice_sensitivity', cfg)
+    logger.info(f'Creating Notz-style plot')
+    notz_style_plot_from_dict(sensitivity_dict, 'Notz-style_sea_ice_sensitivity', cfg)
 
 
 if __name__ == "__main__":
