@@ -3,6 +3,7 @@
 import logging
 import os
 from pathlib import Path
+from pprint import pformat
 
 import cartopy.crs as ccrs
 import iris
@@ -86,6 +87,7 @@ def calculate_mm_stats(cubes, mean_file, stdev_file):
         if coord.standard_name == "time":
             break
         index = index + 1
+
     for c in cubes[1:]:
         c.remove_coord("time")
         c.add_aux_coord(cubes[0].aux_coords[index])
@@ -96,7 +98,12 @@ def calculate_mm_stats(cubes, mean_file, stdev_file):
         iris.save(cubes[0], mean_file)
         logger.info("No standard deviation calculated for a single instance.")
     else:
-        mm_cube = cubes.merge_cube()
+        try:
+            mm_cube = cubes.merge_cube()
+        except TypeError:
+            logger.debug(pformat(cubes))
+            raise
+
         mm_mean_cube = mm_cube.collapsed(["cube_label"], iris.analysis.MEAN)
         mm_stdev_cube = mm_cube.collapsed(
             ["cube_label"], iris.analysis.STD_DEV
