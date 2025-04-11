@@ -616,7 +616,10 @@ class ConFire():
             """
             if factor == 0:
                 return None
-            return 1.0 / (1.0 + self.numpck.exp(-data * factor))
+            if self.inference:
+                return self.numpck.math.sigmoid(-data * factor)
+            else:
+                return 1.0 / (1.0 + self.numpck.exp(-data * factor))
 
         limitations = [
             sigmoid(y, k) for y, k in zip(controls, self.control_direction)
