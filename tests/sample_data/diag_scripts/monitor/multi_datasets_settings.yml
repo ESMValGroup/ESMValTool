@@ -16,8 +16,6 @@
     style: white
   plots:
     timeseries:
-      annual_mean_kwargs:
-        linestyle: --
       hlines:
         - y: 280
           color: red
@@ -39,7 +37,6 @@
     orientation: landscape
   plots:
     timeseries:
-      annual_mean_kwargs: false
       gridline_kwargs: false
       plot_kwargs:
         tas_amon_1d_time_0:

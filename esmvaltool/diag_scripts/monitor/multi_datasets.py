@@ -162,11 +162,6 @@ seaborn_settings: dict, optional
 
 Configuration options for plot type ``timeseries``
 --------------------------------------------------
-annual_mean_kwargs: dict, optional
-    Optional keyword arguments for :func:`iris.plot.plot` for plotting annual
-    means. These keyword arguments update (and potentially overwrite) the
-    ``plot_kwargs`` for the annual mean plots. Use ``annual_mean_kwargs`` to
-    not show annual means.
 gridline_kwargs: dict, optional
     Optional keyword arguments for grid lines. By default, ``color: lightgrey,
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
@@ -919,7 +914,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from iris.analysis.cartography import area_weights
-from iris.coord_categorisation import add_year
 from iris.coords import AuxCoord
 from iris.exceptions import ConstraintMismatchError
 from matplotlib.colors import CenteredNorm
@@ -1029,7 +1023,6 @@ class MultiDatasets(MonitorBase):
 
             # Default options for the different plot types
             if plot_type == "timeseries":
-                self.plots[plot_type].setdefault("annual_mean_kwargs", {})
                 self.plots[plot_type].setdefault("gridline_kwargs", {})
                 self.plots[plot_type].setdefault("hlines", [])
                 self.plots[plot_type].setdefault("legend_kwargs", {})
@@ -1038,7 +1031,6 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault("time_format", None)
 
             elif plot_type == "benchmarking_timeseries":
-                self.plots[plot_type].setdefault("annual_mean_kwargs", {})
                 self.plots[plot_type].setdefault("gridline_kwargs", {})
                 self.plots[plot_type].setdefault("hlines", [])
                 self.plots[plot_type].setdefault("legend_kwargs", {})
@@ -3174,19 +3166,6 @@ class MultiDatasets(MonitorBase):
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs["axes"] = axes
             iris.plot.plot(cube, **plot_kwargs)
-
-            # Plot annual means if desired
-            annual_mean_kwargs = self.plots[plot_type]["annual_mean_kwargs"]
-            if annual_mean_kwargs is not False:
-                logger.debug("Plotting annual means")
-                if not cube.coords("year"):
-                    add_year(cube, "time")
-                annual_mean_cube = cube.aggregated_by(
-                    "year", iris.analysis.MEAN
-                )
-                plot_kwargs.pop("label", None)
-                plot_kwargs.update(annual_mean_kwargs)
-                iris.plot.plot(annual_mean_cube, **plot_kwargs)
 
         # Plot horizontal lines
         for hline_kwargs in self.plots[plot_type]["hlines"]:

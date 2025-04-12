@@ -120,7 +120,6 @@ diagnostics:
           orientation: landscape
         plots:
           timeseries:
-            annual_mean_kwargs: false
             plot_kwargs:
               OBS:
                 color: black
@@ -149,7 +148,6 @@ diagnostics:
           orientation: landscape
         plots:
           timeseries:
-            annual_mean_kwargs: false
             plot_kwargs:
               OBS:
                 color: black
