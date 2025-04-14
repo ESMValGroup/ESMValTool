@@ -2992,30 +2992,6 @@ class MultiDatasets(MonitorBase):
             return ref_datasets[0]
         return None
 
-    def _get_benchmarking_reference(self, datasets):
-        """Extract reference dataset for calculation of benchmarking metric."""
-        variable = datasets[0][self.cfg["group_variables_by"]]
-        ref_datasets = [
-            d for d in datasets if d.get("reference_for_metric", False)
-        ]
-
-        if len(ref_datasets) == 1:
-            return ref_datasets[0]
-
-        # try variable attribute "reference_dataset"
-        for dataset in datasets:
-            print(dataset.get("reference_dataset"))
-            print(dataset.get("dataset"))
-            if dataset.get("reference_dataset") == dataset.get("dataset"):
-                ref_datasets = dataset
-                break
-        if len(ref_datasets) != 1:
-            raise ValueError(
-                f"Expected exactly 1 reference dataset for variable "
-                f"'{variable}', got {len(ref_datasets)}"
-            )
-        return None
-
     def _get_benchmark_datasets(self, datasets):
         """Get dataset to be benchmarked."""
         variable = datasets[0][self.cfg["group_variables_by"]]
@@ -3895,8 +3871,6 @@ class MultiDatasets(MonitorBase):
         if not datasets:
             raise ValueError(f"No input data to plot '{plot_type}' given")
 
-        # Get reference dataset
-        ref_dataset = self._get_benchmarking_reference(datasets)
         # Get dataset to be benchmarked
         plot_datasets = self._get_benchmark_datasets(datasets)
         # Get percentiles from multi-model statistics
@@ -3926,7 +3900,6 @@ class MultiDatasets(MonitorBase):
                 f"Map plot of {dataset['long_name']} of dataset "
                 f"{dataset['alias']}."
             )
-            ancestors.append(ref_dataset["filename"])
 
             # Save plot
             plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
