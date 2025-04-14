@@ -1,0 +1,249 @@
+# ESMValTool
+---
+documentation:
+  title: Model evaluation with focus on total column and stratospheric ozone.
+  description: >
+    Plot climatologies, zonal means, and selected monthly means for total
+    column ozone and stratospheric ozone for the REF.
+  authors:
+    - schlund_manuel
+    - hassler_birgit
+  maintainer:
+    - hassler_birgit
+
+
+preprocessors:
+
+  create_time_series_SH:
+    annual_statistics:
+      operator: mean
+    area_statistics:
+      operator: mean
+    extract_region:
+      start_latitude: -90
+      end_latitude: -60
+      start_longitude: 0
+      end_longitude: 360
+    extract_month:
+      month: 10
+    convert_units:
+      units: DU
+
+  create_time_series_NH:
+    annual_statistics:
+      operator: mean
+    area_statistics:
+      operator: mean
+    extract_region:
+      start_latitude: 60
+      end_latitude: 90
+      start_longitude: 0
+      end_longitude: 360
+    extract_month:
+      month: 3
+    convert_units:
+      units: DU
+
+  create_lat_time_map:
+    regrid:
+      scheme: linear
+      target_grid: 5x5
+    regrid_time:
+      calendar: standard
+    zonal_statistics:
+      operator: mean
+    convert_units:
+      units: DU
+
+  create_lat_month_map:
+    regrid:
+      scheme: linear
+      target_grid: 5x5
+    climate_statistics:
+      operator: mean
+      period: month
+    zonal_statistics:
+      operator: mean
+    convert_units:
+      units: DU
+
+  create_zonal_mean_profile:
+    zonal_statistics:
+      operator: mean
+    regrid:
+      scheme: linear
+      target_grid: 5x5
+    extract_levels:
+      levels: [15000, 10000, 7000, 5000, 3000, 2000, 1000, 500, 100]
+      scheme: linear_extrapolate
+      coordinate: air_pressure
+    climate_statistics:
+      operator: mean
+      period: full
+    convert_units:
+      units: ppm
+
+
+
+# Note: the following model is just an example
+datasets:
+  - {project: CMIP6, dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2, exp: historical, alias: CNRM-ESM2-1}
+
+timerange_for_toz_monthly_data: &time_period_toz_monthly
+  timerange: '1950/2014'  # can be specified, this is just an example
+timerange_for_toz_zonal_mean: &time_period_toz_zonalmean
+  timerange: '1997/2014'  # is chosen to start with the start of the obs data
+timerange_for_ozone_profile: &time_period_o3_profile
+  timerange: '1990/2000'  # can be specified, this is just an example
+
+
+diagnostics:
+# Total column ozone plots
+  polar_cap_time_series_SH:
+    variables:
+      toz:
+        mip: AERmon
+        exp: historical
+        preprocessor: create_time_series_SH
+        <<: *time_period_toz_monthly
+    additional_datasets:
+      - {project: OBS6, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: AERmon, timerange: '1997/2022', alias: ESACCI-OZONE}
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_SH_Oct'
+        facet_used_for_labels: alias
+        savefig_kwargs:
+          dpi: 150
+          bbox_inches: tight
+          orientation: landscape
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            plot_kwargs:
+              OBS:
+                color: black
+            pyplot_kwargs:
+              title: Total Column Ozone, 60-90S, October
+
+  polar_cap_time_series_NH:
+    variables:
+      toz:
+        mip: AERmon
+        exp: historical
+        preprocessor: create_time_series_NH
+        facet_used_for_labels: alias
+        <<: *time_period_toz_monthly
+    additional_datasets:
+      - {project: OBS6, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: AERmon, timerange: '1997/2022', alias: ESACCI-OZONE}
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_NH_MAR'
+        facet_used_for_labels: alias
+        savefig_kwargs:
+          dpi: 150
+          bbox_inches: tight
+          orientation: landscape
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            plot_kwargs:
+              OBS:
+                color: black
+            pyplot_kwargs:
+              title: Total Column Ozone, 60-90N, March
+
+  lat_time_mapplot:
+    variables:
+      toz:
+        mip: AERmon
+        exp: historical
+        preprocessor: create_lat_time_map
+        <<: *time_period_toz_zonalmean
+        additional_datasets:
+          - {project: OBS6, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: AERmon, reference_for_monitor_diags: true, alias: ESACCI-OZONE}
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        facet_used_for_labels: alias
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_LatTime_Map'
+        matplotlib_rc_params:
+          xtick.labelsize: 6
+          ytick.labelsize: 8
+          axes.labelsize: 8
+          axes.titlesize: 8
+        savefig_kwargs:
+          dpi: 150
+          bbox_inches: tight
+          orientation: landscape
+        plots:
+          hovmoeller_time_vs_lat_or_lon:
+            common_cbar: true
+            show_x_minor_ticks: false
+            time_format: '%Y'
+            time_on: x-axis
+
+  lat_month_mapplot:
+    variables:
+      toz:
+        mip: AERmon
+        exp: historical
+        preprocessor: create_lat_month_map
+        <<: *time_period_toz_zonalmean
+        additional_datasets:
+          - {project: OBS6, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: AERmon, reference_for_monitor_diags: true, alias: ESACCI-OZONE}
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        facet_used_for_labels: alias
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_LatTime_Map'
+        matplotlib_rc_params:
+          xtick.labelsize: 6
+          ytick.labelsize: 8
+          axes.labelsize: 8
+          axes.titlesize: 8
+        savefig_kwargs:
+          dpi: 150
+          bbox_inches: tight
+          orientation: landscape
+        plots:
+          hovmoeller_anncyc_vs_lat_or_lon:
+            common_cbar: true
+            show_x_minor_ticks: false
+            time_on: x-axis
+
+# Ozone profile plot
+  zonal_mean_profiles:
+    variables:
+      o3:
+        mip: Amon
+        exp: historical
+        preprocessor: create_zonal_mean_profile
+        <<: *time_period_o3_profile
+        additional_datasets:
+          - {project: OBS6, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, reference_for_monitor_diags: true, mip: AERmon, alias: ESACCI-OZONE}
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{exp}'
+        facet_used_for_labels: alias
+        savefig_kwargs:
+          dpi: 150
+          bbox_inches: tight
+          orientation: landscape
+        plots:
+          zonal_mean_profile:
+            common_cbar: true
+            show_stats: false
+            fontsize: 9
+            pyplot_kwargs:
+              suptitle: '{long_name} (1990-2000 mean)'
+            plot_kwargs:
+              default:
+                cmap: YlOrRd
