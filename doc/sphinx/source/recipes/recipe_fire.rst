@@ -6,15 +6,18 @@ Climate drivers of fire
 Overview
 --------
 
-This diagnostic includes/will include:
-* burnt area
-* fire weather (TBD)
-* fuel continuity (TBD)
+This diagnostic includes:
+* burnt fraction
+* fire weather control
+* fuel load/continuity control
 
 The diagnostic relies on the processing of fire climate drivers through the
 ConFire model (dedicated branch from the GitHub repository available at
-https://github.com/douglask3/Bayesian_fire_models/tree/AR7_REF) and is inspired
-by `Jones et al. (2024)`.
+https://github.com/douglask3/Bayesian_fire_models/tree/AR7_REF) and is based on
+`Jones et al. (2024)`. The diagnostic computes the burnt fraction for each grid
+cell based on a number of drivers. Additionally, the respective controls due to
+fire weather and fuel load/continuity are computed. The stochastic control
+corresponds to the unmodelled processed influencing to fire occurrence.
 The ESMValTool diagnostic includes only the relevant part of the evaluation code
 (see https://github.com/douglask3/Bayesian_fire_models/blob/AR7_REF/fire_model/ConFire.py
 for now) as the model run is done offline beforehand. The corresponding result
@@ -40,6 +43,9 @@ Diagnostics are stored in esmvaltool/diag_scripts/fire/
 
 * fire_diagnostic.py: main diagnostic script calling a util function from diagnostic_run_ConFire.py.
 * diagnostic_run_ConFire.py: script containing utils functions to run the ConFire model.
+
+Additional files necessary for the COnFire model evaluation are stored in
+esmvaltool/diag_scripts/fire/parameter_files/ for now.
 
 
 User settings in recipe
