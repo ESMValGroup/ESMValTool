@@ -791,9 +791,6 @@ fontsize: int, optional (default: None)
     fontsize plus 2. Does not affect suptitles. If not given, use default
     matplotlib values. For a more fine-grained definition of fontsizes, use the
     option ``matplotlib_rc_params`` (see above).
-plot_func: str, optional (default: 'contourf')
-    Plot function used to plot the maps. Must be a function of :mod:`iris.plot`
-    that supports plotting of 2D cubes with coordinates latitude and longitude.
 plot_kwargs: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``.
     Dictionary keys are elements identified by ``facet_used_for_labels`` or
@@ -850,10 +847,6 @@ fontsize: int, optional (default: None)
     option ``matplotlib_rc_params`` (see above).
 log_y: bool, optional (default: True)
     Use logarithmic Y-axis.
-plot_func: str, optional (default: 'contourf')
-    Plot function used to plot the profiles. Must be a function of
-    :mod:`iris.plot` that supports plotting of 2D cubes with coordinates
-    latitude and altitude/air_pressure.
 plot_kwargs: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``.
     Dictionary keys are elements identified by ``facet_used_for_labels`` or
@@ -1116,7 +1109,6 @@ class MultiDatasets(MonitorBase):
                     "cbar_kwargs", {"orientation": "horizontal", "aspect": 30}
                 )
                 self.plots[plot_type].setdefault("fontsize", None)
-                self.plots[plot_type].setdefault("plot_func", "contourf")
                 self.plots[plot_type].setdefault("plot_kwargs", {})
                 if "projection" not in self.plots[plot_type]:
                     self.plots[plot_type].setdefault("projection", "Robinson")
@@ -1169,7 +1161,6 @@ class MultiDatasets(MonitorBase):
                 )
                 self.plots[plot_type].setdefault("fontsize", None)
                 self.plots[plot_type].setdefault("log_y", True)
-                self.plots[plot_type].setdefault("plot_func", "contourf")
                 self.plots[plot_type].setdefault("plot_kwargs", {})
                 self.plots[plot_type].setdefault("pyplot_kwargs", {})
                 self.plots[plot_type].setdefault("rasterize", True)
@@ -1505,24 +1496,8 @@ class MultiDatasets(MonitorBase):
         gridline_kwargs = self.plots[plot_type]["gridline_kwargs"]
         return deepcopy(gridline_kwargs)
 
-    def _get_map_projection(self):
-        """Get projection used for map plots."""
-        plot_type = "map"
-        projection = self.plots[plot_type]["projection"]
-        projection_kwargs = self.plots[plot_type]["projection_kwargs"]
-
-        # Check if desired projection is valid
-        if not hasattr(ccrs, projection):
-            raise AttributeError(
-                f"Got invalid projection '{projection}' for plotting "
-                f"{plot_type}, expected class of cartopy.crs"
-            )
-
-        return getattr(ccrs, projection)(**projection_kwargs)
-
-    def _get_benchmarking_projection(self):
-        """Get projection used for benchmarking map plots."""
-        plot_type = "benchmarking_map"
+    def _get_projection(self, plot_type):
+        """Get plot projection."""
         projection = self.plots[plot_type]["projection"]
         projection_kwargs = self.plots[plot_type]["projection_kwargs"]
 
@@ -1660,7 +1635,7 @@ class MultiDatasets(MonitorBase):
             )
 
             # Options used for all subplots
-            projection = self._get_map_projection()
+            projection = self._get_projection(plot_type)
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             gridline_kwargs = self._get_gridline_kwargs(plot_type)
             fontsize = (
@@ -1806,7 +1781,7 @@ class MultiDatasets(MonitorBase):
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg["figure_kwargs"])
-            axes = fig.add_subplot(projection=self._get_map_projection())
+            axes = fig.add_subplot(projection=self._get_projection(plot_type))
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs["axes"] = axes
             if plot_func is iris.plot.contourf:
@@ -2664,9 +2639,7 @@ class MultiDatasets(MonitorBase):
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
         return (plot_path, {netcdf_path: cube})
 
-    def _plot_benchmarking_map(
-        self, plot_func, dataset, percentile_dataset, metric
-    ):
+    def _plot_benchmarking_map(self, dataset, percentile_dataset, metric):
         """Plot benchmarking map plot."""
         plot_type = "benchmarking_map"
         logger.info(
@@ -2679,9 +2652,7 @@ class MultiDatasets(MonitorBase):
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg["figure_kwargs"])
-            axes = fig.add_subplot(
-                projection=self._get_benchmarking_projection()
-            )
+            axes = fig.add_subplot(projection=self._get_projection(plot_type))
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs["axes"] = axes
             plot_kwargs["extend"] = "both"
@@ -2697,25 +2668,21 @@ class MultiDatasets(MonitorBase):
                 "hatches": ["......"],
             }
 
-            if plot_func is iris.plot.contourf:
-                # see https://github.com/SciTools/cartopy/issues/2457
-                # and https://github.com/SciTools/cartopy/issues/2468
-                plot_kwargs["transform_first"] = True
-                hatching_plot_kwargs["transform_first"] = True
-                npx = da if cube.has_lazy_data() else np
-                cube_to_plot = cube.copy(
-                    npx.ma.filled(cube.core_data(), np.nan)
-                )
-                mask_cube_to_plot = mask_cube.copy(
-                    npx.ma.filled(mask_cube.core_data(), np.nan)
-                )
-            else:
-                cube_to_plot = cube
-                mask_cube_to_plot = mask_cube
+            # see https://github.com/SciTools/cartopy/issues/2457
+            # and https://github.com/SciTools/cartopy/issues/2468
+            plot_kwargs["transform_first"] = True
+            hatching_plot_kwargs["transform_first"] = True
+            npx = da if cube.has_lazy_data() else np
+            cube_to_plot = cube.copy(npx.ma.filled(cube.core_data(), np.nan))
+            mask_cube_to_plot = mask_cube.copy(
+                npx.ma.filled(mask_cube.core_data(), np.nan)
+            )
 
             # Plot
-            plot_map = plot_func(cube_to_plot, **plot_kwargs)
-            hatching = plot_func(mask_cube_to_plot, **hatching_plot_kwargs)
+            plot_map = iris.plot.contourf(cube_to_plot, **plot_kwargs)
+            hatching = iris.plot.contourf(
+                mask_cube_to_plot, **hatching_plot_kwargs
+            )
 
             # set color for stippling to 'black' (default = 'white')
             hatching.set_edgecolor("black")
@@ -2801,9 +2768,7 @@ class MultiDatasets(MonitorBase):
 
         return (plot_path, {netcdf_path: cubes[0]})
 
-    def _plot_benchmarking_zonal(
-        self, plot_func, dataset, percentile_dataset, metric
-    ):
+    def _plot_benchmarking_zonal(self, dataset, percentile_dataset, metric):
         """Plot benchmarking zonal mean profile."""
         plot_type = "benchmarking_zonal"
         logger.info(
@@ -2821,7 +2786,7 @@ class MultiDatasets(MonitorBase):
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs["axes"] = axes
             plot_kwargs["extend"] = "both"
-            plot_benchmarking_zonal = plot_func(cube, **plot_kwargs)
+            plot_benchmarking_zonal = iris.plot.contourf(cube, **plot_kwargs)
 
             # apply stippling (dots) to all grid cells that do not exceed
             # the upper percentile given by 'percentile_dataset[]'
@@ -2829,7 +2794,7 @@ class MultiDatasets(MonitorBase):
             mask_cube = self._get_benchmark_mask(
                 cube, percentile_dataset, metric
             )
-            hatching = plot_func(
+            hatching = iris.plot.contourf(
                 mask_cube,
                 colors="none",
                 levels=[0.5, 1.5],
@@ -3873,16 +3838,14 @@ class MultiDatasets(MonitorBase):
 
         # Get dataset to be benchmarked
         plot_datasets = self._get_benchmark_datasets(datasets)
+
         # Get percentiles from multi-model statistics
         percentile_dataset = self._get_benchmark_percentiles(datasets)
+
         # Get benchmarking metric
         metric = self._get_benchmark_metric(datasets)
 
-        # Get plot function
-        plot_func = self._get_plot_func(plot_type)
-
         # load data
-
         percentile_data = []
 
         for dataset_to_load in percentile_dataset:
@@ -3894,7 +3857,7 @@ class MultiDatasets(MonitorBase):
         for dataset in plot_datasets:
             ancestors = [dataset["filename"]]
             (plot_path, netcdf_paths) = self._plot_benchmarking_map(
-                plot_func, dataset, percentile_data, metric
+                dataset, percentile_data, metric
             )
             caption = (
                 f"Map plot of {dataset['long_name']} of dataset "
@@ -4015,21 +3978,18 @@ class MultiDatasets(MonitorBase):
 
         # Get dataset to be benchmarked
         plot_datasets = self._get_benchmark_datasets(datasets)
+
         # Get percentiles from multi-model statistics
         percentile_dataset = self._get_benchmark_percentiles(datasets)
+
         # Get benchmarking metric
         metric = self._get_benchmark_metric(datasets)
-
-        # Get plot function
-        plot_func = self._get_plot_func(plot_type)
 
         # Create a single plot for each dataset (incl. reference dataset if
         # given)
 
         # load data
-
         percentile_data = []
-
         for dataset_to_load in percentile_dataset:
             filename = dataset_to_load["filename"]
             logger.info("Loading %s", filename)
@@ -4038,7 +3998,7 @@ class MultiDatasets(MonitorBase):
 
         for dataset in plot_datasets:
             (plot_path, netcdf_paths) = self._plot_benchmarking_zonal(
-                plot_func, dataset, percentile_data, metric
+                dataset, percentile_data, metric
             )
             ancestors = [dataset["filename"]]
 
