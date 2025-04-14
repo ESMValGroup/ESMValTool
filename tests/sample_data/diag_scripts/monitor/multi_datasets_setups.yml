@@ -74,6 +74,32 @@
         pyplot_kwargs:
           xlabel: Hour of Day
 
+# benchmarking_map
+- input_data: [tas_amon_2d_lat_lon_0.nc, tas_amon_2d_lat_lon_1.nc, tas_amon_2d_lat_lon_2.nc]
+  expected_pngs: [benchmarking_map_tas_tas_amon_2d_lat_lon_0_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    figure_kwargs:
+      figsize: [5, 5]
+    group_variables_by: short_name
+    plots:
+      benchmarking_map:
+        cbar_label: T
+        cbar_kwargs:
+          ticks: [2, 5, 8]
+        fontsize: 8
+        gridline_kwargs:
+          color: green
+        plot_kwargs:
+          default:
+            cmap: YlOrRd
+        projection: PlateCarree
+        projection_kwargs:
+          central_longitude: 30.0
+        pyplot_kwargs:
+          suptitle: Map plot
+        rasterize: true
+
 # benchmarking_timeseries
 - input_data: [tas_amon_1d_time_0.nc, tas_amon_1d_time_1.nc, tas_amon_1d_time_2.nc]
   expected_pngs: [benchmarking_timeseries_tas_ambiguous_dataset_Amon.png]
@@ -131,6 +157,51 @@
             color: C0
           tas_amon_1d_hour_1:
             color: C3
+
+# map
+- input_data: [tas_amon_2d_lat_lon_2.nc]
+  expected_pngs: [map_tas_tas_amon_2d_lat_lon_2_Amon.png]
+  settings:
+    plots:
+      map:
+        plot_func: pcolormesh
+        plot_kwargs:
+          default:
+            vmin: -12
+            vmax: 1
+        show_stats: false
+- input_data: [tas_amon_2d_lat_lon_0.nc, tas_amon_2d_lat_lon_1.nc]
+  expected_pngs: [map_tas_tas_amon_2d_lat_lon_0_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    figure_kwargs:
+      figsize: [5, 5]
+    group_variables_by: short_name
+    plots:
+      map:
+        cbar_label: T
+        cbar_label_bias: dT
+        cbar_kwargs:
+          ticks: [2, 5, 8]
+        common_cbar: true
+        fontsize: 8
+        gridline_kwargs:
+          color: green
+        plot_func: contourf
+        plot_kwargs:
+          default:
+            cmap: YlOrRd
+        plot_kwargs_bias:
+          cmap: seismic
+          norm: centered
+        projection: PlateCarree
+        projection_kwargs:
+          central_longitude: 30.0
+        pyplot_kwargs:
+          suptitle: Map plot
+        x_pos_stats_avg: -0.2
+        x_pos_stats_bias: 1.2
+        rasterize: true
 
 # timeseries
 - input_data: [tas_amon_1d_time_0.nc]
