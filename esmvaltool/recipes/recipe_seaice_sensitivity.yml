@@ -60,7 +60,6 @@ preprocessors:
   pp_avg_ann_arctic_sea_ice:
     <<: *extract_test_period
     <<: *nh_total_area
-    <<: *global_mean
     <<: *annual_mean
 
   pp_avg_ann_global_temp:
