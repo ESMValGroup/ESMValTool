@@ -28,7 +28,7 @@ def test_diagnostic(
     expected_pngs: list[str],
 ) -> None:
     """Test diagnostic with various setups."""
-    tmp_path = Path.home() / "tmp" / "aaaaaaaaaaaaa"
+    # tmp_path = Path.home() / "tmp" / "aaaaaaaaaaaaa"
     cfg_settings = {**DEFAULT_SETTINGS, **settings}
     cfg = get_cfg(tmp_path, input_data, **cfg_settings)
 

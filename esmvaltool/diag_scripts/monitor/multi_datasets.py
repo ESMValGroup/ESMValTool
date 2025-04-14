@@ -3135,8 +3135,8 @@ class MultiDatasets(MonitorBase):
             return percentiles
 
         raise ValueError(
-            f"Expected at least '{numperc}' percentile datasets (created "
-            f"'with multi-model statistics preprocessor for variable "
+            f"Expected at least {numperc} percentile datasets (created "
+            f"with multi-model statistics preprocessor for variable "
             f"'{variable}'), got {len(percentiles):d}"
         )
 

@@ -29,11 +29,12 @@ def get_cfg(tmp_dir: Path, input_data: Iterable[str], **kwargs: str) -> dict:
 
     # Setup input data
     metadata: dict[str, dict] = {}
-    for filename in input_data:
+    for file_idx, filename in enumerate(input_data):
         filepath = str(SAMPLE_DATA_DIR / filename)
-        assert filename in METADATA
+        assert filename in METADATA, f"{filename} not in metadata.yml file"
         metadata[filepath] = METADATA[filename]
         metadata[filepath]["filename"] = filepath
+        metadata[filepath]["recipe_dataset_index"] = file_idx
     metadata_file = in_dir / "metadata.yml"
     with metadata_file.open("w", encoding="utf-8") as file:
         yaml.safe_dump(metadata, file)

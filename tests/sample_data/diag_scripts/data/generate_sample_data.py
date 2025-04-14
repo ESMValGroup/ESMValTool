@@ -50,9 +50,45 @@ def main() -> None:
         long_name="time",
         units="days since 2000-01-01",
     )
+    month_number_coord = DimCoord(
+        [1, 2, 4],
+        var_name="month_number",
+        long_name="month_number",
+        units="1",
+    )
+    hour_coord = DimCoord(
+        [1, 2, 4], var_name="hour", long_name="hour", units="1"
+    )
 
+    # 1D time
     save_cube("tas_amon_1d_time_0.nc", "tas", [time_coord], [2.0, 3.0, np.nan])
     save_cube("tas_amon_1d_time_1.nc", "tas", [time_coord], [1.0, -1.0, 2.0])
+    save_cube("tas_amon_1d_time_2.nc", "tas", [time_coord], [-1.0, -3.0, 1.5])
+
+    # 1D month_number
+    save_cube(
+        "tas_amon_1d_month_number_0.nc",
+        "tas",
+        [month_number_coord],
+        [2.0, 3.0, np.nan],
+    )
+    save_cube(
+        "tas_amon_1d_month_number_1.nc",
+        "tas",
+        [month_number_coord],
+        [1.0, -1.0, 2.0],
+    )
+    save_cube(
+        "tas_amon_1d_month_number_2.nc",
+        "tas",
+        [month_number_coord],
+        [-1.0, -3.0, 1.5],
+    )
+
+    # 1D hour
+    save_cube("tas_amon_1d_hour_0.nc", "tas", [hour_coord], [2.0, 3.0, np.nan])
+    save_cube("tas_amon_1d_hour_1.nc", "tas", [hour_coord], [1.0, -1.0, 2.0])
+    save_cube("tas_amon_1d_hour_2.nc", "tas", [hour_coord], [-1.0, -3.0, 1.5])
 
 
 if __name__ == "__main__":
