@@ -120,7 +120,7 @@ def main(config):
 
 
 def load_data(config):
-    """Loads all necessary data to output experiment, control, observation.
+    """Load all necessary data to output experiment, control, observation.
 
     Parameters
     ----------
@@ -328,6 +328,7 @@ def create_quadmap(
     config,
 ):
     """Add all subplots to a main plot, positions of subplots is pre-set.
+
     Parameters
     ----------
     exp_single_level : iris cube
