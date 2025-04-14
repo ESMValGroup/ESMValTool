@@ -28,7 +28,7 @@ def get_provenance_record(attributes, ancestor_files):
     # caption = attributes["caption"].format(**attributes)
 
     record = {
-        "caption": 'I CHANGED THIS TO A STRING caption',
+        "caption": 'I CHANGED THIS TO A STRING caption',  # TODO: remember edited
         "statistics": ["mean"],
         "domains": ["global"],
         "plot_types": ["zonal"],
@@ -81,10 +81,13 @@ def extract_cube(data, variable_group):  # TODO: should I tweak the sea ice cube
     # Load the cube, [0] is because selection returns a list
     cube = iris.load_cube(selection[0]['filename'])
 
-    # Tweak if it's a sea ice cube
-    if variable_group == 'arctic_sept_sea_ice':
+    # Amend units if it's a sea ice cube
+    if cube.var_name == 'siconc':
         cube.convert_units('1e6 km2')  # to match literature
-        cc.add_year(cube, 'time', name='year')  # because it wasn't preprocessed in years
+
+    # Add years if it hasn't been annually averaged
+    if 'year' not in [coord.name() for coord in cube.coords()]:
+        cc.add_year(cube, 'time', name='year')
 
     return cube
 
@@ -210,7 +213,7 @@ def roach_style_plot_from_dict(dictionary, filename, cfg):
     # Set up the figure
     fig, ax = plt.subplots(figsize=(10, 6), layout='constrained')
     fig.suptitle('Trends in Annual Mean Temperature And Arctic Sea Ice')
-    ax.set_title('Title could go here')
+    ax.set_title('Decades are scaled up from annual data')
 
     # Set up for colouring the points
     norm = Normalize(vmin=-1, vmax=1)
@@ -223,14 +226,14 @@ def roach_style_plot_from_dict(dictionary, filename, cfg):
     ax.set_yticks([-1.0, -0.8, -0.6, -0.4, -0.2, 0.0, 0.2])
     ax.hlines(0, -0.02, 0.505, color='black', alpha=0.5)
     ax.vlines(0, -1.1, 0.21, color='black', alpha=0.5)
-    ax.set_xlabel('Trend in GMST (K year$^{-1}$)')
-    ax.set_ylabel('Trend in SIA (million km$^2$ year$^{-1}$)')
+    ax.set_xlabel('Trend in GMST (K decade$^{-1}$)')
+    ax.set_ylabel('Trend in SIA (million km$^2$ decade$^{-1}$)')
 
     # Iterate over the dictionary
     for dataset, inner_dict in dictionary.items():
-        x = inner_dict['tas_trend']
-        y = inner_dict['siconc_trend']
-        r = inner_dict['direct_r_val']
+        x = 10 * inner_dict['tas_trend']  # x10 to approximate decades
+        y = 10 * inner_dict['siconc_trend']  # x10 to approximate decades
+        r = inner_dict['direct_r_val']**2 * np.sign(inner_dict['direct_r_val'])  # TODO: check this is right
         plt.scatter(x, y, marker='o', s=100, c=[r], cmap=cmap, norm=norm)
         plt.annotate(dataset, xy=(x, y), xytext=(x+0.02, y+0.02))
 
