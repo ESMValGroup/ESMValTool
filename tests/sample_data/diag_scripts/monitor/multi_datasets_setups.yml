@@ -1,0 +1,35 @@
+- input_data: [tas_amon_1d_time_0.nc]
+  expected_pngs: [timeseries_tas_tas_amon_1d_time_0_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    figure_kwargs:
+      figsize: [5, 5]
+    group_variables_by: short_name
+    matplotlib_rc_params:
+      ytick.color: red
+    seaborn_settings:
+      style: white
+    plots:
+      timeseries:
+        hlines:
+          - y: 0.5
+            color: red
+        legend_kwargs:
+          loc: center
+        plot_kwargs:
+          tas_amon_1d_time_0:
+            color: C1
+        pyplot_kwargs:
+          xlabel: Day in 2000
+        time_format: "%j"
+- input_data: [tas_amon_1d_time_0.nc, tas_amon_1d_time_1.nc]
+  expected_pngs: [timeseries_tas_ambiguous_dataset_Amon.png]
+  settings:
+    plots:
+      timeseries:
+        gridline_kwargs: false
+        plot_kwargs:
+          tas_amon_1d_time_0:
+            color: C0
+          tas_amon_1d_time_1:
+            color: C3

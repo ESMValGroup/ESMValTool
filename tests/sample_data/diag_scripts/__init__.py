@@ -54,8 +54,8 @@ def get_cfg(tmp_dir: Path, input_data: Iterable[str], **kwargs: str) -> dict:
     return cfg
 
 
-def load_settings(path: str | Path) -> list[tuple]:
-    """Load list of diagnostics settings to parameterize tests."""
+def load_test_setups(path: str | Path) -> list[tuple]:
+    """Load test setups (used as input to :func:`pytest.mark.parametrize`)."""
     path = Path(path)
 
     # Try relative path if absolute one does not exist
@@ -63,10 +63,10 @@ def load_settings(path: str | Path) -> list[tuple]:
         path = Path(__file__).resolve().parent / path
 
     with path.open("r", encoding="utf-8") as file:
-        settings = yaml.safe_load(file)
+        setups = yaml.safe_load(file)
 
     parametrize_input: list[tuple] = [
-        (s.pop("input_data"), s, s.pop("expected_pngs")) for s in settings
+        (s["input_data"], s["settings"], s["expected_pngs"]) for s in setups
     ]
 
     return parametrize_input
