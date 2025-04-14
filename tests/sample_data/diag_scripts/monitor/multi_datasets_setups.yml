@@ -23,7 +23,7 @@
           tas_amon_1d_month_number_0:
             color: C1
         pyplot_kwargs:
-          xlabel: Month Number
+          xlabel: X Label
 - input_data: [tas_amon_1d_month_number_0.nc, tas_amon_1d_month_number_1.nc]
   expected_pngs: [annual_cycle_tas_ambiguous_dataset_Amon.png]
   settings:
@@ -53,7 +53,7 @@
           tas_amon_1d_month_number_0:
             color: C1
         pyplot_kwargs:
-          xlabel: Month Number
+          xlabel: X Label
 
 # benchmarking_diurnal_cycle
 - input_data: [tas_amon_1d_hour_0.nc, tas_amon_1d_time_1.nc, tas_amon_1d_time_2.nc]
@@ -72,7 +72,7 @@
           tas_amon_1d_hour_0:
             color: C1
         pyplot_kwargs:
-          xlabel: Hour of Day
+          xlabel: X Label
 
 # benchmarking_map
 - input_data: [tas_amon_2d_lat_lon_0.nc, tas_amon_2d_lat_lon_1.nc, tas_amon_2d_lat_lon_2.nc]
@@ -84,7 +84,7 @@
     group_variables_by: short_name
     plots:
       benchmarking_map:
-        cbar_label: T
+        cbar_label: Var
         cbar_kwargs:
           ticks: [2, 5, 8]
         fontsize: 8
@@ -97,7 +97,7 @@
         projection_kwargs:
           central_longitude: 30.0
         pyplot_kwargs:
-          suptitle: Map plot
+          suptitle: Suptitle
         rasterize: true
 
 # benchmarking_timeseries
@@ -117,8 +117,36 @@
           tas_amon_1d_time_0:
             color: C1
         pyplot_kwargs:
-          xlabel: Day in 2000
+          xlabel: X Label
         time_format: "%j"
+
+# benchmarking_zonal
+- input_data: [tas_amon_2d_alt16_lat_0.nc, tas_amon_2d_alt16_lat_1.nc, tas_amon_2d_alt16_lat_2.nc]
+  expected_pngs: [benchmarking_zonal_tas_tas_amon_2d_alt16_lat_0_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    figure_kwargs:
+      figsize: [5, 5]
+    group_variables_by: short_name
+    plots:
+      benchmarking_zonal:
+        cbar_label: Var
+        cbar_kwargs:
+          ticks: [2, 5, 8]
+        fontsize: 8
+        log_y: false
+        plot_kwargs:
+          default:
+            cmap: YlOrRd
+        pyplot_kwargs:
+          suptitle: Suptitle
+        rasterize: true
+        show_y_minor_ticklabels: true
+- input_data: [tas_amon_2d_plev_lat_0.nc, tas_amon_2d_plev_lat_1.nc, tas_amon_2d_plev_lat_2.nc]
+  expected_pngs: [benchmarking_zonal_tas_tas_amon_2d_plev_lat_0_Amon.png]
+  settings:
+    plots:
+      benchmarking_zonal:
 
 # diurnal_cycle
 - input_data: [tas_amon_1d_hour_0.nc]
@@ -145,7 +173,7 @@
           tas_amon_1d_hour_0:
             color: C1
         pyplot_kwargs:
-          xlabel: Hour of Day
+          xlabel: X Label
 - input_data: [tas_amon_1d_hour_0.nc, tas_amon_1d_hour_1.nc]
   expected_pngs: [diurnal_cycle_tas_ambiguous_dataset_Amon.png]
   settings:
@@ -159,17 +187,6 @@
             color: C3
 
 # map
-- input_data: [tas_amon_2d_lat_lon_2.nc]
-  expected_pngs: [map_tas_tas_amon_2d_lat_lon_2_Amon.png]
-  settings:
-    plots:
-      map:
-        plot_func: pcolormesh
-        plot_kwargs:
-          default:
-            vmin: -12
-            vmax: 1
-        show_stats: false
 - input_data: [tas_amon_2d_lat_lon_0.nc, tas_amon_2d_lat_lon_1.nc]
   expected_pngs: [map_tas_tas_amon_2d_lat_lon_0_Amon.png]
   settings:
@@ -179,8 +196,8 @@
     group_variables_by: short_name
     plots:
       map:
-        cbar_label: T
-        cbar_label_bias: dT
+        cbar_label: Var
+        cbar_label_bias: dVar
         cbar_kwargs:
           ticks: [2, 5, 8]
         common_cbar: true
@@ -198,10 +215,21 @@
         projection_kwargs:
           central_longitude: 30.0
         pyplot_kwargs:
-          suptitle: Map plot
+          suptitle: Suptitle
+        rasterize: true
         x_pos_stats_avg: -0.2
         x_pos_stats_bias: 1.2
-        rasterize: true
+- input_data: [tas_amon_2d_lat_lon_2.nc]
+  expected_pngs: [map_tas_tas_amon_2d_lat_lon_2_Amon.png]
+  settings:
+    plots:
+      map:
+        plot_func: pcolormesh
+        plot_kwargs:
+          default:
+            vmin: -12
+            vmax: 1
+        show_stats: false
 
 # timeseries
 - input_data: [tas_amon_1d_time_0.nc]
@@ -228,7 +256,7 @@
           tas_amon_1d_time_0:
             color: C1
         pyplot_kwargs:
-          xlabel: Day in 2000
+          xlabel: X Label
         time_format: "%j"
 - input_data: [tas_amon_1d_time_0.nc, tas_amon_1d_time_1.nc]
   expected_pngs: [timeseries_tas_ambiguous_dataset_Amon.png]
@@ -241,3 +269,45 @@
             color: C0
           tas_amon_1d_time_1:
             color: C3
+
+# zonal_mean_profile
+- input_data: [tas_amon_2d_plev_lat_0.nc, tas_amon_2d_plev_lat_1.nc]
+  expected_pngs: [zonal_mean_profile_tas_tas_amon_2d_plev_lat_0_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    figure_kwargs:
+      figsize: [5, 5]
+    group_variables_by: short_name
+    plots:
+      zonal_mean_profile:
+        cbar_label: Var
+        cbar_label_bias: dVar
+        cbar_kwargs:
+          ticks: [2, 5, 8]
+        common_cbar: true
+        fontsize: 8
+        log_y: false
+        plot_func: contourf
+        plot_kwargs:
+          default:
+            cmap: YlOrRd
+        plot_kwargs_bias:
+          cmap: seismic
+          norm: centered
+        pyplot_kwargs:
+          suptitle: Suptitle
+        rasterize: true
+        show_y_minor_ticklabels: true
+        x_pos_stats_avg: -0.2
+        x_pos_stats_bias: 1.2
+- input_data: [tas_amon_2d_alt16_lat_0.nc]
+  expected_pngs: [zonal_mean_profile_tas_tas_amon_2d_alt16_lat_0_Amon.png]
+  settings:
+    plots:
+      zonal_mean_profile:
+        plot_func: pcolormesh
+        plot_kwargs:
+          default:
+            vmin: -1
+            vmax: 12
+        show_stats: false

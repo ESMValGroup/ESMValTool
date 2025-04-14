@@ -44,6 +44,15 @@ def save_cube(
 def main() -> None:
     """Generate sample data."""
     # Define coordinates
+    alt16_coord = DimCoord(
+        [2.0, 4.0, 6.0],
+        bounds=[[1.0, 3.0], [3.0, 5.0], [5.0, 7.0]],
+        var_name="alt16",
+        standard_name="altitude",
+        long_name="altitude",
+        units="m",
+        attributes={"positive": "up"},
+    )
     hour_coord = DimCoord(
         [1, 2, 4],
         var_name="hour",
@@ -71,6 +80,14 @@ def main() -> None:
         var_name="month_number",
         long_name="month_number",
         units="1",
+    )
+    plev_coord = DimCoord(
+        [1000.0, 500.0, 200.0],
+        var_name="plev",
+        standard_name="air_pressure",
+        long_name="pressure",
+        units="Pa",
+        attributes={"positive": "down"},
     )
     time_coord = DimCoord(
         [15.0, 46.0, 75.0],
@@ -111,6 +128,26 @@ def main() -> None:
     save_cube("tas_amon_1d_time_1.nc", "tas", [time_coord], [1.0, -1.0, 2.0])
     save_cube("tas_amon_1d_time_2.nc", "tas", [time_coord], [-1.0, -3.0, 1.5])
 
+    # 2D alt16/lat
+    save_cube(
+        "tas_amon_2d_alt16_lat_0.nc",
+        "tas",
+        [alt16_coord, lat_coord],
+        np.arange(9).reshape(3, 3),
+    )
+    save_cube(
+        "tas_amon_2d_alt16_lat_1.nc",
+        "tas",
+        [alt16_coord, lat_coord],
+        np.arange(9).reshape(3, 3) * 2 + 2,
+    )
+    save_cube(
+        "tas_amon_2d_alt16_lat_2.nc",
+        "tas",
+        [alt16_coord, lat_coord],
+        np.arange(9).reshape(3, 3) * -1,
+    )
+
     # 2D lat/lon
     save_cube(
         "tas_amon_2d_lat_lon_0.nc",
@@ -128,6 +165,26 @@ def main() -> None:
         "tas_amon_2d_lat_lon_2.nc",
         "tas",
         [lat_coord, lon_coord],
+        np.arange(9).reshape(3, 3) * -1,
+    )
+
+    # 2D plev/lat
+    save_cube(
+        "tas_amon_2d_plev_lat_0.nc",
+        "tas",
+        [plev_coord, lat_coord],
+        np.arange(9).reshape(3, 3),
+    )
+    save_cube(
+        "tas_amon_2d_plev_lat_1.nc",
+        "tas",
+        [plev_coord, lat_coord],
+        np.arange(9).reshape(3, 3) * 2 + 2,
+    )
+    save_cube(
+        "tas_amon_2d_plev_lat_2.nc",
+        "tas",
+        [plev_coord, lat_coord],
         np.arange(9).reshape(3, 3) * -1,
     )
 
