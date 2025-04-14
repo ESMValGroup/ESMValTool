@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import arviz as az
+import iris.quickplot
 
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -134,11 +135,17 @@ def insert_data_into_cube(data, eg_cube, mask=None):
             Array of shape or length x where True, will inster data.
             Default of None which means True for all points in eg_cube.
     Returns:
-        eg_cube: iris cube
+        pred_cube: iris cube
             cube with data replaced by x
     """
-
     pred_cube = eg_cube.copy()
+    # Only keep parent's attributes
+    attrs_parent = {
+        key: item
+        for key, item in eg_cube.attributes.items() if 'parent' == key[:6]
+    }
+    pred_cube.attributes = attrs_parent
+    # Copy data
     pred = pred_cube.data.copy().flatten()
 
     if mask is None:
@@ -618,8 +625,7 @@ class ConFire():
                 return None
             if self.inference:
                 return self.numpck.math.sigmoid(-data * factor)
-            else:
-                return 1.0 / (1.0 + self.numpck.exp(-data * factor))
+            return 1.0 / (1.0 + self.numpck.exp(-data * factor))
 
         limitations = [
             sigmoid(y, k) for y, k in zip(controls, self.control_direction)
@@ -788,6 +794,77 @@ def get_parameters(config):
         lmask, eg_cube, control_direction
 
 
+def setup_cube_output(cube, output):
+    """Setup the output cube.
+    Apply:
+        - replace variable name
+        - remove standard name
+        - replace long_name
+        - replace units
+        - apply scaling factor
+
+    Arguments:
+        cube: iris cube
+            Input cube to modify.
+        output: str
+            Output variable contained in the cube.
+    Returns:
+        cube: iris cube
+            Modified output cube.
+    """
+    # Default attributes to fill in
+    parameter_dict = {
+        'burnt_fraction': {
+            'units': '%',
+            'long_name': 'Burnt Fraction',
+            'factor': 100.,
+        },
+        'fire_weather_control': {
+            'units': '1',
+            'long_name': 'Fire Weather control',
+            'factor': 1.,
+        },
+        'fuel_load_continuity_control': {
+            'units': '1',
+            'long_name': 'Fuel Load/Continuity control',
+            'factor': 1.,
+        },
+        'stochastic_control': {
+            'units': '1',
+            'long_name': 'Stochastic control',
+            'factor': 1.,
+        }
+    }
+    if output == 'burnt_fraction':
+        cube.var_name = 'burnt_fraction'
+        cube.standard_name = None
+        cube.long_name = parameter_dict['burnt_fraction']['long_name']
+        cube.units = parameter_dict['burnt_fraction']['units']
+        cube.data *= parameter_dict['burnt_fraction']['factor']
+    elif output == 'fire_weather_control':
+        cube.var_name = 'fire_weather_control'
+        cube.standard_name = None
+        cube.long_name = parameter_dict['fire_weather_control']['long_name']
+        cube.units = parameter_dict['fire_weather_control']['units']
+        cube.data *= parameter_dict['fire_weather_control']['factor']
+    elif output == 'fuel_load_continuity_control':
+        cube.var_name = 'fuel_load_continuity_control'
+        cube.standard_name = None
+        cube.long_name = parameter_dict[
+            'fuel_load_continuity_control']['long_name']
+        cube.units = parameter_dict['fuel_load_continuity_control']['units']
+        cube.data *= parameter_dict['fuel_load_continuity_control']['factor']
+    elif output == 'stochastic_control':
+        cube.var_name = 'stochastic_control'
+        cube.standard_name = None
+        cube.long_name = parameter_dict['stochastic_control']['long_name']
+        cube.units = parameter_dict['stochastic_control']['units']
+        cube.data *= parameter_dict['stochastic_control']['factor']
+    else:
+        logger.debug('Output %s cannot be processed. Saving output as is.')
+    return cube
+
+
 def diagnostic_run_confire(config, model_name='model', timerange='none'):
     """Run ConFire as a diagnostic.
     The outputs from the model run are saved and the plots are returned.
@@ -865,17 +942,19 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
         out_cubes[exp + 2].append(run_model_into_cube(param_in, coord))
 
     # **Save Output Cubes**
+    # In the current configuration, outputs from the model runs are:
+    #   - burnt area (model)
+    #   - fire weather (control direction 0)
+    #   - fuel loads (control direction 1)
     logger.info('Saving ConFire output cubes...')
-    filenames_out = ['burnt_area_model'] + \
-        ['burnt_area_control_' + str(i) for i in range(nexp)] + \
-        ['burnt_area_control_stochastic']
     os.makedirs(output_dir, exist_ok=True)
     timerange = timerange.replace('/', '-')
-
     for i, o_c in enumerate(out_cubes):
         cubes = iris.cube.CubeList(o_c).merge_cube()
+        cubes = setup_cube_output(cubes, config['filenames_out'][i])
         iris.save(cubes, os.path.join(
-            output_dir, f'{model_name}_{filenames_out[i]}_{timerange}.nc'
+            output_dir,
+            f'{config['filenames_out'][i]}_{model_name}_{timerange}.nc'
         ))
 
     # --------------------------------------------------------
@@ -884,24 +963,44 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
     # **Load and Plot Output Data**
     logger.info('Plotting model diagnostic outputs...')
     figures = []
-    for i, filename in enumerate(filenames_out):
+    parameter_plot = {
+        'burnt_fraction': {
+            'vmin': 0.,
+            'vmax': 100.,
+        },
+        'fire_weather_control': {
+            'vmin': 0.,
+            'vmax': 1.,
+        },
+        'fuel_load_continuity_control': {
+            'vmin': 0.,
+            'vmax': 1.,
+        },
+        'stochastic_control': {
+            'vmin': 0.,
+            'vmax': 1.,
+        }
+    }
+    for i, filename in enumerate(config['filenames_out']):
         filepath = os.path.join(
             output_dir, f'{model_name}_{filename}_{timerange}.nc'
         )
         fig, axes = plt.subplots(
             nrows=1, ncols=2, figsize=(12, 8),
-            subplot_kw={'projection': ccrs.PlateCarree()})
+            subplot_kw={'projection': ccrs.Robinson()})
         axes = axes.flatten()
         plotn = 0
         try:
             # Load saved NetCDF file
             cube = iris.load_cube(filepath)
             for pct in [5, 95]:
-                pc_cube = 100 * cube.collapsed(
+                pc_cube = cube.collapsed(
                     'realization', iris.analysis.PERCENTILE, percent=pct)[0]
                 img = iris.quickplot.pcolormesh(
                     pc_cube, axes=axes[plotn], colorbar=False,
-                    vmin=0., vmax=100., cmap='Oranges'
+                    vmin=parameter_plot[filename]['vmin'],
+                    vmax=parameter_plot[filename]['vmax'],
+                    cmap='Oranges'
                 )
                 axes[plotn].set_title(
                     filename.replace("_", " ").capitalize() +
@@ -911,7 +1010,9 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
                 # Add colorbar
                 fig.colorbar(
                     img, ax=axes[plotn], orientation='vertical',
-                    extend='neither', label='Burnt area [%]',
+                    extend='neither',
+                    label=filename.replace("_", " ").capitalize() +
+                    f' [{cube.units}]',
                     fraction=0.046, pad=0.04, shrink=0.3,
                 )
                 # Iterate plot number

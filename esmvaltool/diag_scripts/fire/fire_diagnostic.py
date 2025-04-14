@@ -320,7 +320,6 @@ def main(config):
             if i == 0:
                 plot_file_info = '_'.join([
                     model_dataset,
-                    '_'.join(attributes["activity"]),
                     attributes["exp"],
                     str(attributes["start_year"]),
                     str(attributes["end_year"]),
@@ -351,21 +350,21 @@ def main(config):
         logger.info(
             f'Input files used for diagnostic {config['files_input']}'
         )
+        config['filenames_out'] = [
+            'burnt_fraction',
+            'fire_weather_control',
+            'fuel_load_continuity_control',
+            'stochastic_control'
+        ]
         logger.info('Running diagnostic model ConFire.')
         figures = diagnostic_run_confire(
             config, model_name=model_dataset, timerange=timerange
         )
 
         # Save output figures
-        output_file = f"ConFire_results_{plot_file_info}"
-        filenames_out = [
-            'burnt_area_model',
-            'burnt_area_control_0',
-            'burnt_area_control_1',
-            'burnt_area_control_stochastic'
-        ]
-        for i, f in enumerate(filenames_out):
-            output_path = get_plot_filename(f'{output_file}_{f}', config)
+        output_file = f"{plot_file_info}"
+        for i, f in enumerate(config['filenames_out']):
+            output_path = get_plot_filename(f'{f}_{output_file}', config)
             figures[i].savefig(output_path, bbox_inches='tight', dpi=300)
 
         # Remove VPD files after diagnostic run

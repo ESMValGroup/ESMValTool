@@ -100,9 +100,9 @@ Variables
 * treeFrac (land, monthly mean, longitude latitude time)
 * vegFrac (land, monthly mean, longitude latitude time)
 * cveg (land, monthly mean, longitude latitude time)
-* sfcWind (atmos, monthly mean, longitude latitude time)
-* lai (land, monthly mean, longitude latitude time)
-* mrsos (land, monthly mean, longitude latitude time)
+* sfcWind (atmos, monthly mean, longitude latitude time): not used for now
+* lai (land, monthly mean, longitude latitude time): not used for now
+* mrsos (land, monthly mean, longitude latitude time): not used for now
 * tas (atmos, monthly mean, longitude latitude time): used to compute vpd.
 * hurs (atmos, monthly mean, longitude latitude time): used to compue vpd.
 
