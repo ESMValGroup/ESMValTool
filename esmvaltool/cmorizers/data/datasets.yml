@@ -521,13 +521,44 @@ datasets:
 
   ESACCI-OZONE:
     tier: 2
-    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/ozone/data/
-    last_access: 2019-02-01
+    source: https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1
+    last_access: 2025-02-11
     info: |
       Download the data from:
-        total_columns/l3/merged/v0100/
-        limb_profiles/l3/merged/merged_monthly_zonal_mean/v0002
+            GTO-ECV total column (variable toz)
+            Select the following from the CDS:
+            https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+
+            Processing Level = "Level 3"
+            Variable = "Atm. mole content of ozone"
+            Vertical aggregation = "Total column"
+            Sensor = "MERGED-UV"
+            Year = select all (1995-2023)
+            Month = select all (1-12)
+            Version = "v2000"
+
+            SAGE-CCI-OMPS (variable o3)
+            Select the following options from the same link:
+            https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+
+            Processing Level = "Level 3"
+            Variable = "Mole concentration of ozone in air"
+            Vertical aggregation = " Vertical profiles from limb sensors"
+            Sensor = " CMZM (Monthly zonal mean merged concentration product from limb
+            sensors ACE, GOMOS, MIPAS, OMPS, OSIRIS, SAGE-2 and SCIAMACHY)"
+            Year = select all (1984-2022)
+            Month = select all (1-12)
+            Version = "v0008"
       Put all files under a single directory (no subdirectories with years).
+
+  ESACCI-SEAICE:
+    tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sea_ice/data/
+    last_access: 2024-11-07
+    info: |
+      Download the data from:
+        sea_ice_concentration/L4/ssmi_ssmis/12.5km/v3.0/*/
+      Put all files under a single directory (no subdirectories with years / months).
 
   ESACCI-SOILMOISTURE:
     tier: 2
@@ -551,11 +582,11 @@ datasets:
 
   ESACCI-SST:
     tier: 2
-    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sst/data/
-    last_access: 2019-02-01
+    source: dap.ceda.ac.uk/neodc/eocis/data/global_and_regional/sea_surface_temperature/
+    last_access: 2024-12-11
     info: |
       Download the data from:
-        lt/Analysis/L4/v01.1/
+        CDR_v3/Analysis/L4/v3.0.1/
       Put all files under a single directory (no subdirectories with years).
 
   ESACCI-WATERVAPOUR:
@@ -1147,10 +1178,10 @@ datasets:
   OSI-450-nh:
     tier: 2
     source: http://osisaf.met.no/p/ice/
-    last_access: 2019-05-02
+    last_access: 2025-03-14
     info: |
       Download the desired years from the following ftp:
-        ftp://osisaf.met.no/reprocessed/ice/conc/v2p0
+        ftp://osisaf.met.no/reprocessed/ice/conc/v3p0
       Please, keep folder structure.
 
       If you want to use only the nh data download only the nh files,
@@ -1163,10 +1194,10 @@ datasets:
   OSI-450-sh:
     tier: 2
     source: http://osisaf.met.no/p/ice/
-    last_access: 2019-05-02
+    last_access: 2025-03-14
     info: |
       Download the desired years from the following ftp:
-        ftp://osisaf.met.no/reprocessed/ice/conc/v2p0
+        ftp://osisaf.met.no/reprocessed/ice/conc/v3p0
       Please, keep folder structure.
 
       If you want to use only the nh data download only the nh files,
@@ -1254,7 +1285,7 @@ datasets:
     last_access: 2023-01-17
     info: |
       Download the file zmn2o_TCOM_plev_T2Dz_1991_2021.nc.
-  
+
   TROPFLUX:
     tier: 2
     source: "https://incois.gov.in/tropflux"

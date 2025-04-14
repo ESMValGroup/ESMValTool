@@ -141,7 +141,7 @@ User settings
    * ymax: maximum value on y-axis
    * colormap: alternative colormap, path to rgb file or ncl name
 
-.. _ch12_calc_IAV_for_stippandhatch.ncl: 
+.. _ch12_calc_IAV_for_stippandhatch.ncl:
 
 #. Script ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl:
 
