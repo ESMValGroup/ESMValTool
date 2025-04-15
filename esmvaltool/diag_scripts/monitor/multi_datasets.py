@@ -1591,6 +1591,9 @@ class MultiDatasets(MonitorBase):
         """Load and preprocess data."""
         input_data = list(self.cfg["input_data"].values())
 
+        if not input_data:
+            raise ValueError("No input data given")
+
         for dataset in input_data:
             filename = dataset["filename"]
             logger.info("Loading %s", filename)
@@ -3090,9 +3093,6 @@ class MultiDatasets(MonitorBase):
         if plot_type not in self.plots:
             return
 
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
-
         logger.info("Plotting %s", plot_type)
         fig = plt.figure(**self.cfg["figure_kwargs"])
         axes = fig.add_subplot()
@@ -3174,9 +3174,6 @@ class MultiDatasets(MonitorBase):
         plot_type = "benchmarking_timeseries"
         if plot_type not in self.plots:
             return
-
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
 
         logger.info("Plotting %s", plot_type)
 
@@ -3281,9 +3278,6 @@ class MultiDatasets(MonitorBase):
         if plot_type not in self.plots:
             return
 
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
-
         logger.info("Plotting %s", plot_type)
         fig = plt.figure(**self.cfg["figure_kwargs"])
         axes = fig.add_subplot()
@@ -3361,9 +3355,6 @@ class MultiDatasets(MonitorBase):
         plot_type = "benchmarking_annual_cycle"
         if plot_type not in self.plots:
             return
-
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
 
         logger.info("Plotting %s", plot_type)
 
@@ -3467,9 +3458,6 @@ class MultiDatasets(MonitorBase):
         if plot_type not in self.plots:
             return
 
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
-
         logger.info("Plotting %s", plot_type)
         fig = plt.figure(**self.cfg["figure_kwargs"])
         axes = fig.add_subplot()
@@ -3548,9 +3536,6 @@ class MultiDatasets(MonitorBase):
         plot_type = "benchmarking_diurnal_cycle"
         if plot_type not in self.plots:
             return
-
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
 
         logger.info("Plotting %s", plot_type)
 
@@ -3681,9 +3666,6 @@ class MultiDatasets(MonitorBase):
             datasets = self.grouped_input_data[var_key]
             logger.info("Processing variable %s", var_key)
 
-            if not datasets:
-                raise ValueError(f"No input data to plot '{plot_type}' given")
-
             # Get dataset to be benchmarked
             plot_datasets = self._get_benchmark_datasets(datasets)
             benchmark_dataset = plot_datasets[0]
@@ -3735,9 +3717,6 @@ class MultiDatasets(MonitorBase):
         plot_type = "map"
         if plot_type not in self.plots:
             return
-
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
 
         # Get reference dataset if possible
         ref_dataset = self._get_reference_dataset(datasets)
@@ -3813,9 +3792,6 @@ class MultiDatasets(MonitorBase):
         if plot_type not in self.plots:
             return
 
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
-
         # Get dataset to be benchmarked
         plot_datasets = self._get_benchmark_datasets(datasets)
 
@@ -3864,9 +3840,6 @@ class MultiDatasets(MonitorBase):
         plot_type = "zonal_mean_profile"
         if plot_type not in self.plots:
             return
-
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
 
         # Get reference dataset if possible
         ref_dataset = self._get_reference_dataset(datasets)
@@ -3946,9 +3919,6 @@ class MultiDatasets(MonitorBase):
         if plot_type not in self.plots:
             return
 
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
-
         # Get dataset to be benchmarked
         plot_datasets = self._get_benchmark_datasets(datasets)
 
@@ -3998,9 +3968,6 @@ class MultiDatasets(MonitorBase):
         plot_type = "1d_profile"
         if plot_type not in self.plots:
             return
-
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
 
         logger.info("Plotting %s", plot_type)
         fig = plt.figure(**self.cfg["figure_kwargs"])
@@ -4108,9 +4075,8 @@ class MultiDatasets(MonitorBase):
         plot_type = "variable_vs_lat"
         if plot_type not in self.plots:
             return
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
         logger.info("Plotting %s", plot_type)
+
         fig = plt.figure(**self.cfg["figure_kwargs"])
         axes = fig.add_subplot()
 
@@ -4186,9 +4152,6 @@ class MultiDatasets(MonitorBase):
         plot_type = "hovmoeller_z_vs_time"
         if plot_type not in self.plots:
             return
-
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
 
         # Get reference dataset if possible
         ref_dataset = self._get_reference_dataset(datasets)
@@ -4268,9 +4231,6 @@ class MultiDatasets(MonitorBase):
         if plot_type not in self.plots:
             return
 
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
-
         # Get reference dataset if possible
         ref_dataset = self._get_reference_dataset(datasets)
         if ref_dataset is None:
@@ -4345,9 +4305,6 @@ class MultiDatasets(MonitorBase):
         plot_type = "hovmoeller_anncyc_vs_lat_or_lon"
         if plot_type not in self.plots:
             return
-
-        if not datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
 
         # Get reference dataset if possible
         ref_dataset = self._get_reference_dataset(datasets)
