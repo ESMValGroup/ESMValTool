@@ -1875,6 +1875,7 @@ class MultiDatasets(MonitorBase):
                     FormatStrFormatter("%.1f")
                 )
             if self.plots[plot_type]["show_y_minor_ticklabels"]:
+                axes_data.get_yaxis().set_minor_locator(AutoMinorLocator())
                 axes_data.get_yaxis().set_minor_formatter(
                     FormatStrFormatter("%.1f")
                 )
@@ -2010,6 +2011,7 @@ class MultiDatasets(MonitorBase):
                     FormatStrFormatter("%.1f")
                 )
             if self.plots[plot_type]["show_y_minor_ticklabels"]:
+                axes.get_yaxis().set_minor_locator(AutoMinorLocator())
                 axes.get_yaxis().set_minor_formatter(
                     FormatStrFormatter("%.1f")
                 )
@@ -2075,6 +2077,7 @@ class MultiDatasets(MonitorBase):
                     FormatStrFormatter("%.1f")
                 )
             if self.plots[plot_type]["show_y_minor_ticklabels"]:
+                axes.get_yaxis().set_minor_locator(AutoMinorLocator())
                 axes.get_yaxis().set_minor_formatter(
                     FormatStrFormatter("%.1f")
                 )
@@ -2142,6 +2145,7 @@ class MultiDatasets(MonitorBase):
                     FormatStrFormatter("%.1f")
                 )
             if self.plots[plot_type]["show_y_minor_ticklabels"]:
+                axes_data.get_yaxis().set_minor_locator(AutoMinorLocator())
                 axes_data.get_yaxis().set_minor_formatter(
                     FormatStrFormatter("%.1f")
                 )
@@ -2832,6 +2836,7 @@ class MultiDatasets(MonitorBase):
                     FormatStrFormatter("%.1f")
                 )
             if self.plots[plot_type]["show_y_minor_ticklabels"]:
+                axes.get_yaxis().set_minor_locator(AutoMinorLocator())
                 axes.get_yaxis().set_minor_formatter(
                     FormatStrFormatter("%.1f")
                 )
@@ -4077,6 +4082,7 @@ class MultiDatasets(MonitorBase):
             axes.set_yscale("log")
             axes.get_yaxis().set_major_formatter(FormatStrFormatter("%.1f"))
         if self.plots[plot_type]["show_y_minor_ticklabels"]:
+            axes.get_yaxis().set_minor_locator(AutoMinorLocator())
             axes.get_yaxis().set_minor_formatter(FormatStrFormatter("%.1f"))
         else:
             axes.get_yaxis().set_minor_formatter(NullFormatter())
