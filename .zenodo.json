@@ -184,6 +184,10 @@
       "orcid": "0000-0001-5444-2945"
     },
     {
+      "affiliation": "Met Office, UK",
+      "name": "Hall, Sophie"
+    },
+    {
       "affiliation": "University of Canterbury, New Zealand",
       "name": "Hardacre, Catherine",
       "orcid": "0000-0001-9093-4656"
@@ -287,6 +291,11 @@
       "orcid": "0000-0003-4859-8585"
     },
     {
+      "affiliation": "ACCESS-NRI, Australia",
+      "name": "Proft, Max",
+      "orcid": "0009-0003-1611-9516"
+    },
+    {
       "affiliation": "University of Arizona, USA",
       "name": "Russell, Joellen"
     },
@@ -315,6 +324,10 @@
       "affiliation": "MPI-M, Germany",
       "name": "Stacke, Tobias",
       "orcid": "0000-0003-4637-5337"
+    },
+    {
+      "affiliation": "Met Office, UK",
+      "name": "Storkey, Dave"
     },
     {
       "affiliation": "URead, UK",
@@ -416,9 +429,9 @@
   "license": {
     "id": "Apache-2.0"
   },
-  "publication_date": "2024-07-04",
+  "publication_date": "2025-03-05",
   "title": "ESMValTool",
-  "version": "v2.11.0",
+  "version": "v2.12.0",
   "communities": [
       {
           "identifier": "is-enes3"
