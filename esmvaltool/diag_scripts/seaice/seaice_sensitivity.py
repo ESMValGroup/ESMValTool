@@ -140,8 +140,8 @@ def calculate_annual_trends(data):
     direct_r_val = calculate_rvalue(ann_tas_cube.data, ann_si_cube.data)
 
     dictionary = {
-        'si_trend': si_trend,
-        'tas_trend': tas_trend,
+        'si_ann_trend': si_trend,
+        'tas_ann_trend': tas_trend,
         'direct_r_val': direct_r_val
     }
 
@@ -277,8 +277,8 @@ def main(cfg):
         logger.info('Calculating data for Roach-style plot')
         trends = calculate_annual_trends(input_data)
         # Add to dictionary
-        trends_dict[dataset]['siconc_trend'] = trends['si_trend']
-        trends_dict[dataset]['tas_trend'] = trends['tas_trend']
+        trends_dict[dataset]['siconc_trend'] = trends['si_ann_trend']
+        trends_dict[dataset]['tas_trend'] = trends['tas_ann_trend']
         trends_dict[dataset]['direct_r_val'] = trends['direct_r_val']
 
     # Plot the sensitivities (and save and close the plot)
