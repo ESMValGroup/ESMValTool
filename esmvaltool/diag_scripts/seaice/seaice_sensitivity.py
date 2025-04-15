@@ -18,29 +18,23 @@ from esmvaltool.diag_scripts.shared import (
 logger = logging.getLogger(Path(__file__).stem)
 
 
-# This is stolen directly from the example in the diag_scripts
+# This is stolen from the example in AutoAssess _plot_mo_metrics.py
 # TODO: Work out what should be written here
-def get_provenance_record(attributes, ancestor_files):
-    """Create a provenance record describing the diagnostic data and plot."""
-    # Associated recipe uses contains a caption string with placeholders
-    # like {long_name} that are now populated from attributes dictionary.
-    # Note that for simple recipes, caption can be set here as a simple string
-    # caption = attributes["caption"].format(**attributes)
+def get_provenance_record(cfg):
+    """ Create a provenance record describing the diagnostic data and plot. """
+    filenames = [item['filename'] for item in config['input_data'].values()]
+
+    region = [item['diagnostic'] for item in config['input_data'].values()][0]
 
     record = {
-        "caption": 'I CHANGED THIS TO A STRING caption',  # TODO: remember edited
-        "statistics": ["mean"],
-        "domains": ["global"],
-        "plot_types": ["zonal"],
-        "authors": [
-            "andela_bouwe",
-            "righi_mattia",
+        'caption': f'Plots of {region.title()} sea ice sensitivity',
+        'plot_type': 'metrics',
+        'authors': [
+            'sellar_alistair',
         ],
-        "references": [
-            "acknow_project",
-        ],
-        "ancestors": ancestor_files,
+        'ancestors': filenames,
     }
+
     return record
 
 
@@ -216,8 +210,7 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
     # Save the figure (also closes it)
-    # TODO: work out what provenance file is about. Not the dictionary!
-    provenance_record = get_provenance_record(data_dictionary, ancestor_files=[])
+    provenance_record = get_provenance_record(cfg)
     save_figure(titles_dictionary['titles']['notz_plot_filename'], provenance_record, cfg, figure=fig, close=True)
 
 
@@ -256,8 +249,7 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     plt.colorbar(label='R2 value')
 
     # Save the figure (also closes it)
-    # TODO: provenance queries as above
-    provenance_record = get_provenance_record(data_dictionary, ancestor_files=[])
+    provenance_record = get_provenance_record(cfg)
     save_figure(titles_dictionary['titles']['roach_plot_filename'], provenance_record, cfg, figure=fig, close=True)
 
 
