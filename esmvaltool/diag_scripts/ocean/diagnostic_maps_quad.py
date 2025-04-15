@@ -48,7 +48,10 @@ import numpy as np
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-from esmvaltool.diag_scripts.shared import run_diagnostic, save_figure, save_data
+from esmvaltool.diag_scripts.shared import (
+    run_diagnostic, 
+    save_figure, 
+    save_data)
 
 # Create a logger object.
 logger = logging.getLogger(os.path.basename(__file__))
