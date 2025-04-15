@@ -3182,26 +3182,15 @@ class MultiDatasets(MonitorBase):
 
         # Get dataset to be benchmarked
         plot_datasets = self._get_benchmark_datasets(datasets)
+
         # Get percentiles from multi-model statistics
         percentile_dataset = self._get_benchmark_percentiles(datasets)
 
+        # Plot all datasets in one single figure
         fig = plt.figure(**self.cfg["figure_kwargs"])
         axes = fig.add_subplot()
-
-        # load data
-
-        percentile_data = []
-
-        for dataset_to_load in percentile_dataset:
-            filename = dataset_to_load["filename"]
-            logger.info("Loading %s", filename)
-            cube = iris.load_cube(filename)
-            percentile_data.append(cube)
-
-        # Plot all datasets in one single figure
         ancestors = []
         cubes = {}
-
         for dataset in plot_datasets:
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             iris.plot.plot(dataset["cube"], **plot_kwargs)
@@ -3832,19 +3821,12 @@ class MultiDatasets(MonitorBase):
 
         # Get percentiles from multi-model statistics
         percentile_dataset = self._get_benchmark_percentiles(datasets)
+        percentile_data = [d["cube"] for d in percentile_dataset]
 
         # Get benchmarking metric
         metric = self._get_benchmark_metric(datasets)
 
-        # load data
-        percentile_data = []
-
-        for dataset_to_load in percentile_dataset:
-            filename = dataset_to_load["filename"]
-            logger.info("Loading %s", filename)
-            cube = iris.load_cube(filename)
-            percentile_data.append(cube)
-
+        # Create a single plot for each dataset
         for dataset in plot_datasets:
             ancestors = [dataset["filename"]]
             (plot_path, netcdf_paths) = self._plot_benchmarking_map(
@@ -3972,21 +3954,12 @@ class MultiDatasets(MonitorBase):
 
         # Get percentiles from multi-model statistics
         percentile_dataset = self._get_benchmark_percentiles(datasets)
+        percentile_data = [d["cube"] for d in percentile_dataset]
 
         # Get benchmarking metric
         metric = self._get_benchmark_metric(datasets)
 
-        # Create a single plot for each dataset (incl. reference dataset if
-        # given)
-
-        # load data
-        percentile_data = []
-        for dataset_to_load in percentile_dataset:
-            filename = dataset_to_load["filename"]
-            logger.info("Loading %s", filename)
-            cube = iris.load_cube(filename)
-            percentile_data.append(cube)
-
+        # Create a single plot for each dataset
         for dataset in plot_datasets:
             (plot_path, netcdf_paths) = self._plot_benchmarking_zonal(
                 dataset, percentile_data, metric
