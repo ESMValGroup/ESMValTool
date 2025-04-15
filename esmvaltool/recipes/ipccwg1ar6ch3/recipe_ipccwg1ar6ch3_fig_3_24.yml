@@ -70,7 +70,7 @@ models_cmip5: &models_cmip5
   - {dataset: NorESM1-M, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   - {dataset: NorESM1-ME, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
   # observations/reference dataset
-  - {dataset: HadISST, project: OBS, field: T2Ms, mip: Omon, type: reanaly, version: 1, tier: 2}
+  - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2}
 
 models_cmip6: &models_cmip6
   - {dataset: ACCESS-ESM1-5 , project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f1, grid: gn}
@@ -117,7 +117,7 @@ models_cmip6: &models_cmip6
   - {dataset: SAM0-UNICON , project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f1, grid: gn}
   - {dataset: TaiESM1 , project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1f1, grid: gn}
   # observations/reference dataset
-  - {dataset: HadISST, project: OBS, field: T2Ms, mip: Omon, type: reanaly, version: 1, tier: 2}
+  - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2}
 
 models_highres: &models_highres
   - {dataset: CNRM-CM6-1-HR, project: CMIP6, mip: Omon, exp: hist-1950, ensemble: r1i1p1f2, grid: gn}
@@ -125,7 +125,7 @@ models_highres: &models_highres
   - {dataset: ECMWF-IFS-HR, project: CMIP6, mip: Omon, exp: hist-1950, ensemble: r1i1p1f1, grid: gn}
   - {dataset: HadGEM3-GC31-HH, project: CMIP6, mip: Omon, exp: hist-1950, ensemble: r1i1p1f1, grid: gn}
   # observations/reference dataset
-  - {dataset: HadISST, project: OBS, field: T2Ms, mip: Omon, type: reanaly, version: 1, tier: 2}
+  - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2}
 
 preprocessors:
   prep_zonal:
@@ -246,7 +246,7 @@ diagnostics:
         start_year: 1979
         end_year: 1999
         additional_datasets:
-         - {dataset: HadISST, project: OBS, field: T2Ms, mip: Omon, type: reanaly, version: 1, tier: 2}
+         - {dataset: HadISST, project: OBS, mip: Omon, type: reanaly, version: 1, tier: 2}
 
     scripts:
       panel_b:

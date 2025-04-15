@@ -224,8 +224,8 @@ class Data4Analyis:
                 "Only 'simple' and 'resolved' are supported."
             )
 
-        for n_cb in enumerate(self.data):
-            self.data[n_cb[0]].data.mask = self.data[n_cb[0]].data.mask | mask
+        for cube in self.data:
+            cube.data.mask |= mask
 
     def calculate_statistics(self, stats: dict, cfg: dict):
         """Calculate statistics which later will be plotted.
