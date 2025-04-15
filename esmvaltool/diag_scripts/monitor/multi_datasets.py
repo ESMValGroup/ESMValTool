@@ -751,15 +751,7 @@ fontsize: int, optional (default: None)
     matplotlib values. For a more fine-grained definition of fontsizes, use the
     option ``matplotlib_rc_params`` (see above).
 plot_kwargs: dict, optional
-    Optional keyword arguments for the plot function defined by ``plot_func``.
-    Dictionary keys are elements identified by ``facet_used_for_labels`` or
-    ``default``, e.g., ``CMIP6`` if ``facet_used_for_labels: project`` or
-    ``historical`` if ``facet_used_for_labels: exp``. Dictionary values are
-    dictionaries used as keyword arguments for the plot function defined by
-    ``plot_func``. String arguments can include facets in curly brackets which
-    will be derived from the corresponding dataset, e.g., ``{project}``,
-    ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
-    {vmin: 200, vmax: 250}``.
+    Optional keyword arguments for :func:`seaborn.boxplot`.
 pyplot_kwargs: dict, optional
     Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
@@ -908,6 +900,7 @@ import pandas as pd
 import seaborn as sns
 from iris.analysis.cartography import area_weights
 from iris.coords import AuxCoord
+from iris.cube import CubeList
 from iris.exceptions import ConstraintMismatchError
 from matplotlib.colors import CenteredNorm
 from matplotlib.gridspec import GridSpec
@@ -2732,7 +2725,9 @@ class MultiDatasets(MonitorBase):
 
         return (plot_path, {netcdf_path: cube})
 
-    def _plot_benchmarking_boxplot(self, df, cubes, variables, datasets):
+    def _plot_benchmarking_boxplot(
+        self, dframe, cubes_to_benchmark, variables, datasets
+    ):
         """Plot benchmarking boxplot."""
         plot_type = "benchmarking_boxplot"
         logger.info(
@@ -2743,22 +2738,24 @@ class MultiDatasets(MonitorBase):
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg["figure_kwargs"])
-            metric = cubes[0].long_name.partition("of")[0]
+            metric = cubes_to_benchmark[0].long_name.partition("of")[0]
             fig.suptitle(f"{metric}of {self._get_label(datasets[0])}")
 
             sns.set_style("darkgrid")
 
-            for i, var in enumerate(variables):
-                axes = plt.subplot(1, len(variables), i + 1)
-                plot_kwargs = self._get_plot_kwargs(plot_type, datasets[i])
-                plot_kwargs["axes"] = axes
+            for idx, var in enumerate(variables):
+                plot_kwargs = self._get_plot_kwargs(plot_type, datasets[idx])
 
-                plot_boxplot = sns.boxplot(data=df[df["Variable"] == var])
+                # Boxplots
+                plot_boxplot = sns.boxplot(
+                    data=dframe[dframe["Variable"] == var], **plot_kwargs
+                )
                 plot_boxplot.set(xticklabels=[])
 
+                # Plot data to benchmark
                 plt.scatter(
                     0,
-                    cubes[i].data,
+                    cubes_to_benchmark[idx].data,
                     marker="x",
                     s=200,
                     linewidths=2,
@@ -2767,11 +2764,11 @@ class MultiDatasets(MonitorBase):
                 )
 
                 plt.xlabel(var)
-                if cubes[i].units != 1:
-                    plt.ylabel(cubes[i].units)
+                if cubes_to_benchmark[idx].units != 1:
+                    plt.ylabel(cubes_to_benchmark[idx].units)
 
                 # Customize plot
-                self._process_pyplot_kwargs(plot_type, datasets[i])
+                self._process_pyplot_kwargs(plot_type, datasets[idx])
 
         # File paths
         datasets[0]["variable_group"] = datasets[0]["short_name"].partition(
@@ -2780,7 +2777,7 @@ class MultiDatasets(MonitorBase):
         plot_path = self.get_plot_path(plot_type, datasets[0])
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
 
-        return (plot_path, {netcdf_path: cubes[0]})
+        return (plot_path, {netcdf_path: cubes_to_benchmark[0]})
 
     def _plot_benchmarking_zonal(self, dataset, percentile_dataset, metric):
         """Plot benchmarking zonal mean profile."""
@@ -3681,9 +3678,11 @@ class MultiDatasets(MonitorBase):
         dframe = pd.DataFrame(columns=["Variable", "Dataset", "Value"])
         ifile = 0
 
-        cubes = iris.cube.CubeList()
+        cubes_to_benchmark = CubeList()
         benchmark_datasets = []
         variables = []
+
+        # Respect desired variable order
 
         for var_key, datasets in self.grouped_input_data.items():
             logger.info("Processing variable %s", var_key)
@@ -3713,17 +3712,18 @@ class MultiDatasets(MonitorBase):
 
             for dataset in benchmark_group:
                 dataset_name = dataset["dataset"]
-                cube = iris.load_cube(dataset["filename"])
+                cube = dataset["cube"]
+                self._check_cube_dimensions(cube, plot_type)
                 dframe.loc[ifile] = [var_key, dataset_name, cube.data]
                 ifile = ifile + 1
 
             dframe["Value"] = dframe["Value"].astype(str).astype(float)
 
-            cubes.append(benchmark_dataset["cube"])
+            cubes_to_benchmark.append(benchmark_dataset["cube"])
             benchmark_datasets.append(benchmark_dataset)
             variables.append(var_key)
 
-        # order of variables
+        # Order of variables
         if self.plots[plot_type]["var_order"]:
             var_order = self.plots[plot_type]["var_order"]
             if set(variables) == set(var_order):
@@ -3731,7 +3731,9 @@ class MultiDatasets(MonitorBase):
                     variables.index(var_order[i])
                     for i in range(len(variables))
                 ]
-                cubes = iris.cube.CubeList([cubes[i] for i in ind])
+                cubes_to_benchmark = CubeList(
+                    [cubes_to_benchmark[i] for i in ind]
+                )
                 benchmark_datasets = [benchmark_datasets[i] for i in ind]
                 variables = var_order
             else:
@@ -3741,7 +3743,7 @@ class MultiDatasets(MonitorBase):
                 )
 
         (plot_path, netcdf_paths) = self._plot_benchmarking_boxplot(
-            dframe, cubes, variables, benchmark_datasets
+            dframe, cubes_to_benchmark, variables, benchmark_datasets
         )
 
         # Save plot
