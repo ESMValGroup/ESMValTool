@@ -110,6 +110,11 @@ def main() -> None:
     save_cube("tas_amon_1d_hour_1.nc", "tas", [hour_coord], [1.0, -1.0, 2.0])
     save_cube("tas_amon_1d_hour_2.nc", "tas", [hour_coord], [-1.0, -3.0, 1.5])
 
+    # 1D lat
+    save_cube("tas_amon_1d_lat_0.nc", "tas", [lat_coord], [2.0, 3.0, 0.0])
+    save_cube("tas_amon_1d_lat_1.nc", "tas", [lat_coord], [1.0, -1.0, 2.0])
+    save_cube("tas_amon_1d_lat_2.nc", "tas", [lat_coord], [-1.0, -3.0, 1.5])
+
     # 1D month_number
     save_cube(
         "tas_amon_1d_month_number_0.nc",
@@ -197,6 +202,46 @@ def main() -> None:
         "tas_amon_2d_plev_lat_2.nc",
         "tas",
         [plev_coord, lat_coord],
+        np.arange(9).reshape(3, 3) * -1,
+    )
+
+    # 2D time/alt16
+    save_cube(
+        "tas_amon_2d_time_alt16_0.nc",
+        "tas",
+        [time_coord, alt16_coord],
+        np.arange(9).reshape(3, 3),
+    )
+    save_cube(
+        "tas_amon_2d_time_alt16_1.nc",
+        "tas",
+        [time_coord, alt16_coord],
+        np.arange(9).reshape(3, 3) * 2 + 2,
+    )
+    save_cube(
+        "tas_amon_2d_time_alt16_2.nc",
+        "tas",
+        [time_coord, alt16_coord],
+        np.arange(9).reshape(3, 3) * -1,
+    )
+
+    # 2D time/plev
+    save_cube(
+        "tas_amon_2d_time_plev_0.nc",
+        "tas",
+        [time_coord, plev_coord],
+        np.arange(9).reshape(3, 3),
+    )
+    save_cube(
+        "tas_amon_2d_time_plev_1.nc",
+        "tas",
+        [time_coord, plev_coord],
+        np.arange(9).reshape(3, 3) * 2 + 2,
+    )
+    save_cube(
+        "tas_amon_2d_time_plev_2.nc",
+        "tas",
+        [time_coord, plev_coord],
         np.arange(9).reshape(3, 3) * -1,
     )
 

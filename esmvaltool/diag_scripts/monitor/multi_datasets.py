@@ -564,6 +564,10 @@ show_stats: bool, optional (default: True)
     Show basic statistics on the plots.
 show_y_minor_ticklabels: bool, optional (default: False)
     Show tick labels for the minor ticks on the Y axis.
+time_format: str, optional (default: None)
+    :func:`~datetime.datetime.strftime` format string that is used to format
+    the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
+    use the default formatting imposed by the iris plotting function.
 x_pos_stats_avg: float, optional (default: 0.01)
     Text x-position of average (shown on the left) in Axes coordinates. Can be
     adjusted to avoid overlap with the figure. Only relevant if ``show_stats:
@@ -572,10 +576,6 @@ x_pos_stats_bias: float, optional (default: 0.7)
     Text x-position of bias statistics (shown on the right) in Axes
     coordinates. Can be adjusted to avoid overlap with the figure. Only
     relevant if ``show_stats: true``.
-time_format: str, optional (default: None)
-    :func:`~datetime.datetime.strftime` format string that is used to format
-    the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
-    use the default formatting imposed by the iris plotting function.
 
 Configuration options for plot type ``hovmoeller_time_vs_lat_or_lon``
 ---------------------------------------------------------------------
@@ -1361,10 +1361,20 @@ class MultiDatasets(MonitorBase):
         else:
             raise NotImplementedError(f"plot_type '{plot_type}' not supported")
 
-        # For zonal_mean_profile plots add scalar longitude coordinate
-        # (necessary for calculation of area weights). The exact values for the
-        # points/bounds of this coordinate do not matter since they don't
-        # change the weights.
+        # Add scalar latitude and longitude coordinates (necessary for
+        # calculation of area weights). The exact values for the points/bounds
+        # of these coordinates do not matter since they don't change the
+        # weights.
+        if not cube.coords("latitude"):
+            lon_coord = AuxCoord(
+                0.0,
+                bounds=[-90.0, 90.0],
+                var_name="lat",
+                standard_name="latitude",
+                long_name="latitude",
+                units="degrees_north",
+            )
+            cube.add_aux_coord(lon_coord, ())
         if not cube.coords("longitude"):
             lon_coord = AuxCoord(
                 180.0,

@@ -50,6 +50,18 @@
 : <<: *tas_Amon_CMIP5_historical_2
   alias: tas_amon_1d_hour_2
   dataset: tas_amon_1d_hour_2
+? tas_amon_1d_lat_0.nc
+: <<: *tas_Amon_CMIP5_historical_0
+  alias: tas_amon_1d_lat_0
+  dataset: tas_amon_1d_lat_0
+? tas_amon_1d_lat_1.nc
+: <<: *tas_Amon_CMIP5_historical_1
+  alias: tas_amon_1d_lat_1
+  dataset: tas_amon_1d_lat_1
+? tas_amon_1d_lat_2.nc
+: <<: *tas_Amon_CMIP5_historical_2
+  alias: tas_amon_1d_lat_2
+  dataset: tas_amon_1d_lat_2
 ? tas_amon_1d_month_number_0.nc
 : <<: *tas_Amon_CMIP5_historical_0
   alias: tas_amon_1d_month_number_0
@@ -122,3 +134,27 @@
 : <<: *tas_Amon_CMIP5_historical_2
   alias: tas_amon_2d_plev_lat_2
   dataset: tas_amon_2d_plev_lat_2
+? tas_amon_2d_time_alt16_0.nc
+: <<: *tas_Amon_CMIP5_historical_0
+  alias: tas_amon_2d_time_alt16_0
+  dataset: tas_amon_2d_time_alt16_0
+? tas_amon_2d_time_alt16_1.nc
+: <<: *tas_Amon_CMIP5_historical_1
+  alias: tas_amon_2d_time_alt16_1
+  dataset: tas_amon_2d_time_alt16_1
+? tas_amon_2d_time_alt16_2.nc
+: <<: *tas_Amon_CMIP5_historical_2
+  alias: tas_amon_2d_time_alt16_2
+  dataset: tas_amon_2d_time_alt16_2
+? tas_amon_2d_time_plev_0.nc
+: <<: *tas_Amon_CMIP5_historical_0
+  alias: tas_amon_2d_time_plev_0
+  dataset: tas_amon_2d_time_plev_0
+? tas_amon_2d_time_plev_1.nc
+: <<: *tas_Amon_CMIP5_historical_1
+  alias: tas_amon_2d_time_plev_1
+  dataset: tas_amon_2d_time_plev_1
+? tas_amon_2d_time_plev_2.nc
+: <<: *tas_Amon_CMIP5_historical_2
+  alias: tas_amon_2d_time_plev_2
+  dataset: tas_amon_2d_time_plev_2
