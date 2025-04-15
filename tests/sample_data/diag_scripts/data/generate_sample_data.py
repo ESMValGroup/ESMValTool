@@ -98,6 +98,13 @@ def main() -> None:
         units="days since 2000-01-01",
     )
 
+    # 1D alt16
+    save_cube("tas_amon_1d_alt16_0.nc", "tas", [alt16_coord], [2.0, 3.0, 0.0])
+    save_cube("tas_amon_1d_alt16_1.nc", "tas", [alt16_coord], [1.0, -1.0, 2.0])
+    save_cube(
+        "tas_amon_1d_alt16_2.nc", "tas", [alt16_coord], [-1.0, -3.0, 1.5]
+    )
+
     # 1D hour
     save_cube("tas_amon_1d_hour_0.nc", "tas", [hour_coord], [2.0, 3.0, 0.0])
     save_cube("tas_amon_1d_hour_1.nc", "tas", [hour_coord], [1.0, -1.0, 2.0])
@@ -122,6 +129,11 @@ def main() -> None:
         [month_number_coord],
         [-1.0, -3.0, 1.5],
     )
+
+    # 1D plev
+    save_cube("tas_amon_1d_plev_0.nc", "tas", [plev_coord], [2.0, 3.0, 0.0])
+    save_cube("tas_amon_1d_plev_1.nc", "tas", [plev_coord], [1.0, -1.0, 2.0])
+    save_cube("tas_amon_1d_plev_2.nc", "tas", [plev_coord], [-1.0, -3.0, 1.5])
 
     # 1D time
     save_cube("tas_amon_1d_time_0.nc", "tas", [time_coord], [2.0, 3.0, 0.0])
