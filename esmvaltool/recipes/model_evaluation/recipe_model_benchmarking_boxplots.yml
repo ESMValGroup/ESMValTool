@@ -299,8 +299,12 @@ diagnostics:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         group_variables_by: variable_group
+        seaborn_settings:
+          style: darkgrid
         plots:
           benchmarking_boxplot:
+            pyplot_kwargs:
+              suptitle: RMSE of MIROC6
             var_order: ['tas_land', 'sst', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
 
 
@@ -367,8 +371,12 @@ diagnostics:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         group_variables_by: variable_group
+        seaborn_settings:
+          style: darkgrid
         plots:
           benchmarking_boxplot:
+            pyplot_kwargs:
+              suptitle: Pearson's r of MIROC6
             var_order: ['tas_land', 'sst', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
 
 
@@ -435,6 +443,10 @@ diagnostics:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         group_variables_by: variable_group
+        seaborn_settings:
+          style: darkgrid
         plots:
           benchmarking_boxplot:
+            pyplot_kwargs:
+              suptitle: EMD of MIROC6
             var_order: ['tas_land', 'sst', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
