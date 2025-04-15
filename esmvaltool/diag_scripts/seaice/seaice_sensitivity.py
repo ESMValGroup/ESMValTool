@@ -44,17 +44,6 @@ def get_provenance_record(attributes, ancestor_files):
     return record
 
 
-# Ed Blockley's observations dictionary
-observations = {
-    '1979-2014': {
-        # dSIA/dT values in million sq km per Kelvin
-        'mean': -4.01,
-        'std_dev': 0.32,
-        'plausible': 1.28,
-    }
-}
-
-
 def list_datasets(data):
     """ Actually returns a set of datatsets, to avoid duplication. """
     logger.debug('listing datasets')
@@ -64,11 +53,11 @@ def list_datasets(data):
     return datasets
 
 
-def extract_cube(data, variable_group):  # TODO: should I tweak the sea ice cube here? Or in preprocessing?
+def extract_cube(data, variable_group):
     """
-    Selects records from data based on the variable_group,
-    asserts that there is only one matching record,
-    then returns an iris cube for that record
+    Select records from data based on the variable_group,
+    assert that there is only one matching record,
+    then return an iris cube for that record
     """
     logger.debug(f'extracting {variable_group} cube from {data}')
 
@@ -80,14 +69,6 @@ def extract_cube(data, variable_group):  # TODO: should I tweak the sea ice cube
 
     # Load the cube, [0] is because selection returns a list
     cube = iris.load_cube(selection[0]['filename'])
-
-    # Amend units if it's a sea ice cube
-    if cube.var_name == 'siconc':
-        cube.convert_units('1e6 km2')  # to match literature
-
-    # Add years if it hasn't been annually averaged
-    if 'year' not in [coord.name() for coord in cube.coords()]:
-        cc.add_year(cube, 'time', name='year')
 
     return cube
 
@@ -120,24 +101,21 @@ def calculate_rvalue(independent, dependent):
 
 def calculate_annual_trends(data):
     """
-    Calculates ...
+    Calculate ...
     """
     logger.debug('calculating annual trends')
 
     # Load the preprocessed cubes
-    ann_si_cube = extract_cube(data, 'avg_ann_arctic_sea_ice')
-    ann_tas_cube = extract_cube(data, 'avg_ann_global_temp')
-
-    # Check that the years match between the two cubes
-    assert (ann_si_cube.coord('year').points == ann_tas_cube.coord('year').points).all()
-    years = ann_si_cube.coord('year').points
+    si_cube = extract_cube(data, 'siconc')
+    tas_cube = extract_cube(data, 'tas')
 
     # Calculate the trends over time
-    si_trend = calculate_slope(years, ann_si_cube.data)
-    tas_trend = calculate_slope(years, ann_tas_cube.data)
+    years = tas_cube.coord('year').points
+    si_trend = calculate_slope(years, si_cube.data)
+    tas_trend = calculate_slope(years, tas_cube.data)
 
     # Calculate the direct correlation coefficient
-    direct_r_val = calculate_rvalue(ann_tas_cube.data, ann_si_cube.data)
+    direct_r_val = calculate_rvalue(tas_cube.data, si_cube.data)
 
     dictionary = {
         'si_ann_trend': si_trend,
@@ -148,19 +126,15 @@ def calculate_annual_trends(data):
     return dictionary
 
 
-def calculate_sept_sensitivity(data):
+def calculate_direct_sensitivity(data):
     """
-    Calculates change in sea ice area per year
-    divided by change in global mean temperature per year
+    Calculate slope of sea ice area over global mean temperature
     """
     logger.debug('calculating sensitivity')
 
     # Load the preprocessed cubes
-    si_cube = extract_cube(data, 'arctic_sept_sea_ice')
-    tas_cube = extract_cube(data, 'avg_ann_global_temp')
-
-    # Check that the years match between the two cubes
-    assert (si_cube.coord('year').points == tas_cube.coord('year').points).all()
+    si_cube = extract_cube(data, 'siconc')
+    tas_cube = extract_cube(data, 'tas')
 
     # Calculate the sensitivity, NOT via time, so unlike Ed Blockley's code
     sensitivity = calculate_slope(tas_cube.data, si_cube.data)
@@ -168,24 +142,67 @@ def calculate_sept_sensitivity(data):
     return sensitivity
 
 
-def notz_style_plot_from_dict(dictionary, filename, cfg):
+def create_titles_dict(data):
     """
-    Saves a plot of sensitivities and observations to the given filename
+    Create a dictionary of appropriate observations and titles
+    depending on whether the plot is for the Arctic or Antarctic
+    and assuming the recipe used September Arctic sea ice data
+    and annually mean averaged Antarctic sea ice data
     """
-    # Read from Ed Blockley's dictionary
-    obs_years = list(observations)[0]
-    obs_mean = observations[obs_years]['mean']
-    obs_std_dev = observations[obs_years]['std_dev']
-    obs_plausible = observations[obs_years]['plausible']
+    dictionary = {}
+
+    first_variable = next(iter(data))
+
+    if first_variable['diagnostic'] == 'arctic':
+        # Ed Blockley's dSIA/dT values in million sq km per Kelvin
+        dictionary['obs'] = {
+            '1979-2014': dict(mean=-4.01, std_dev=0.32, plausible=1.28)
+        }
+        # Setting titles for plots
+        dictionary['titles'] = {
+            'notz_fig_title': 'September Arctic Sea Ice Sensitivity',
+            'notz_ax_title': f'dSIA/dGMST obs from {next(iter(dictionary["obs"].keys()))}',
+            'notz_plot_filename': 'September Arctic sea ice sensitivity',
+            'roach_fig_title': 'Trends in Annual Mean Temperature And September Arctic Sea Ice',
+            'roach_plot_filename': 'September Arctic sea ice trends'
+        }
+
+    elif first_variable['diagnostic'] == 'antarctic':
+        # We don't have equivalent observations
+        dictionary['obs'] = {
+            'no years': dict(mean=0.0, std_dev=0.0, plausible=0.0)
+        }
+        # Setting titles for plots
+        dictionary['titles'] = {
+            'notz_fig_title': 'Annually Meaned Antarctic Sea Ice Sensitivity',
+            'notz_ax_title': 'dSIA/dGMST',
+            'notz_plot_filename': 'Annual Antarctic sea ice sensitivity',
+            'roach_fig_title': 'Trends in Annual Mean Temperature And Annual Antarctic Sea Ice',
+            'roach_plot_filename': 'Annual Antarctic sea ice trends'
+        }
+
+    return dictionary
+
+
+def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
+    """
+    Save a plot of sensitivities and observations
+    """
+    # Read from (Ed Blockley's) observations dictionary
+    obs_dict = titles_dictionary['obs']
+    obs_years = list(obs_dict)[0]
+    obs_mean = obs_dict[obs_years]['mean']
+    obs_std_dev = obs_dict[obs_years]['std_dev']
+    obs_plausible = obs_dict[obs_years]['plausible']
 
     # Set up the figure
     fig, ax = plt.subplots(figsize=(4, 6), layout='constrained')
-    fig.suptitle('September Arctic Sea Ice Sensitivity')
-    ax.set_title(f'dSIA/dGMST {obs_years}')  # Ed's title
+    fig.suptitle(titles_dictionary['titles']['notz_fig_title'])
+    ax.set_title(titles_dictionary['titles']['notz_ax_title'])  # Ed's title
 
     # Iterate over the dictionary
-    for dataset, inner_dict in dictionary.items():
-        ax.plot(0.5, inner_dict['direct_sept_sensitivity'], label=dataset, marker='_', markersize=20)
+    for dataset, inner_dict in data_dictionary.items():
+        ax.plot(0.5, inner_dict['direct_sensitivity'], label=dataset, marker='_', markersize=20)
 
     # Add observations (style taken from Ed's code)
     ax.hlines(obs_mean, 0, 1, linestyle='--', color='black', linewidth=2)
@@ -200,18 +217,17 @@ def notz_style_plot_from_dict(dictionary, filename, cfg):
 
     # Save the figure (also closes it)
     # TODO: work out what provenance file is about. Not the dictionary!
-    provenance_record = get_provenance_record(dictionary, ancestor_files=[])
-    save_figure(filename, provenance_record, cfg, figure=fig, close=True)
+    provenance_record = get_provenance_record(data_dictionary, ancestor_files=[])
+    save_figure(titles_dictionary['titles']['notz_plot_filename'], provenance_record, cfg, figure=fig, close=True)
 
 
-# TODO: the published plot uses a trend of K/decade, not per year, and also 1979-2018
-def roach_style_plot_from_dict(dictionary, filename, cfg):
+def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     """
-    Saves a plot of trend in SIA against trend in GMST to the given filename
+    Save a plot of trend in SIA against trend in GMST to the given filename
     """
     # Set up the figure
     fig, ax = plt.subplots(figsize=(10, 6), layout='constrained')
-    fig.suptitle('Trends in Annual Mean Temperature And Arctic Sea Ice')
+    fig.suptitle(titles_dictionary['titles']['roach_fig_title'])
     ax.set_title('Decades are scaled up from annual data')
 
     # Set up for colouring the points
@@ -229,20 +245,20 @@ def roach_style_plot_from_dict(dictionary, filename, cfg):
     ax.set_ylabel('Trend in SIA (million km$^2$ decade$^{-1}$)')
 
     # Iterate over the dictionary
-    for dataset, inner_dict in dictionary.items():
+    for dataset, inner_dict in data_dictionary.items():
         x = 10 * inner_dict['tas_trend']  # x10 to approximate decades
         y = 10 * inner_dict['siconc_trend']  # x10 to approximate decades
-        r = inner_dict['direct_r_val']**2 * np.sign(inner_dict['direct_r_val'])  # TODO: check this is right
+        r = inner_dict['direct_r_val'] ** 2 * np.sign(inner_dict['direct_r_val'])  # TODO: check this is right
         plt.scatter(x, y, marker='o', s=100, c=[r], cmap=cmap, norm=norm)
-        plt.annotate(dataset, xy=(x, y), xytext=(x+0.02, y+0.02))
+        plt.annotate(dataset, xy=(x, y), xytext=(x + 0.02, y + 0.02))
 
     # Add a colour bar
-    plt.colorbar(label='r value')
+    plt.colorbar(label='R2 value')
 
     # Save the figure (also closes it)
     # TODO: provenance queries as above
-    provenance_record = get_provenance_record(dictionary, ancestor_files=[])
-    save_figure(filename, provenance_record, cfg, figure=fig, close=True)
+    provenance_record = get_provenance_record(data_dictionary, ancestor_files=[])
+    save_figure(titles_dictionary['titles']['roach_plot_filename'], provenance_record, cfg, figure=fig, close=True)
 
 
 def main(cfg):
@@ -250,8 +266,11 @@ def main(cfg):
     logger.info('Getting data from the config')
     input_data = cfg['input_data'].values()
 
-    # Initialize blank dictionary to send to plot later
-    trends_dict = {}
+    # Titles and observations depend on the diagnostic being plotted
+    titles_and_obs_dict = create_titles_dict(input_data)
+
+    # Initialize blank data dictionary to send to plotting codes later
+    data_dict = {}
 
     # Get list of datasets from cfg
     logger.info('Listing datasets in the data')
@@ -265,27 +284,27 @@ def main(cfg):
         selection = select_metadata(input_data, dataset=dataset)
 
         # Add the dataset to the dictionary with a blank inner dictionary
-        trends_dict[dataset] = {}
+        data_dict[dataset] = {}
 
         # Calculations for the Notz-style plot
         logger.info('Calculating data for Notz-style plot')
-        sensitivity = calculate_sept_sensitivity(selection)
+        sensitivity = calculate_direct_sensitivity(selection)
         # Add to dictionary
-        trends_dict[dataset]['direct_sept_sensitivity'] = sensitivity
+        data_dict[dataset]['direct_sensitivity'] = sensitivity
 
         # Calculations for the Roach-style plot
         logger.info('Calculating data for Roach-style plot')
         trends = calculate_annual_trends(input_data)
         # Add to dictionary
-        trends_dict[dataset]['siconc_trend'] = trends['si_ann_trend']
-        trends_dict[dataset]['tas_trend'] = trends['tas_ann_trend']
-        trends_dict[dataset]['direct_r_val'] = trends['direct_r_val']
+        data_dict[dataset]['siconc_trend'] = trends['si_ann_trend']
+        data_dict[dataset]['tas_trend'] = trends['tas_ann_trend']
+        data_dict[dataset]['direct_r_val'] = trends['direct_r_val']
 
     # Plot the sensitivities (and save and close the plot)
     logger.info(f'Creating Notz-style plot')
-    notz_style_plot_from_dict(trends_dict, 'Notz-style_sea_ice_sensitivity', cfg)
+    notz_style_plot_from_dict(data_dict, titles_and_obs_dict, cfg)
     logger.info(f'Creating Roach-style plot')
-    roach_style_plot_from_dict(trends_dict, 'Roach-style_avg_annual_trends', cfg)
+    roach_style_plot_from_dict(data_dict, titles_and_obs_dict, cfg)
 
 
 if __name__ == "__main__":

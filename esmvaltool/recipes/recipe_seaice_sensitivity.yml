@@ -41,6 +41,20 @@ preprocessors:
       end_latitude: 90
     area_statistics:
       operator: sum
+    convert_units:
+      units: 1e6 km2
+
+  sh_total_area:
+    &sh_total_area
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -90
+      end_latitude: 0
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: 1e6 km2
 
   global_mean:
     &global_mean
@@ -57,9 +71,9 @@ preprocessors:
     <<: *extract_sept
     <<: *nh_total_area
 
-  pp_avg_ann_arctic_sea_ice:
+  pp_antarctic_avg_ann_sea_ice:
     <<: *extract_test_period
-    <<: *nh_total_area
+    <<: *sh_total_area  # TODO: should I swap this and the next?
     <<: *annual_mean
 
   pp_avg_ann_global_temp:
@@ -71,17 +85,24 @@ diagnostics:
   arctic:
     description: blah
     variables:
-      arctic_sept_sea_ice:
+      siconc:
         preprocessor: pp_arctic_sept_sea_ice
-        short_name: siconc
         mip: SImon
-      avg_ann_arctic_sea_ice:
-        preprocessor: pp_avg_ann_arctic_sea_ice
-        short_name: siconc
-        mip: SImon
-      avg_ann_global_temp:
+      tas:
         preprocessor: pp_avg_ann_global_temp
-        short_name: tas
+        mip: Amon
+    scripts:
+      sea_ice_sensitivity_script:
+        script: seaice/seaice_sensitivity.py
+
+  antarctic:
+    description: blah
+    variables:
+      siconc:
+        preprocessor: pp_antarctic_avg_ann_sea_ice
+        mip: SImon
+      tas:
+        preprocessor: pp_avg_ann_global_temp
         mip: Amon
     scripts:
       sea_ice_sensitivity_script:
