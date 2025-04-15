@@ -225,6 +225,46 @@ def main() -> None:
         np.arange(9).reshape(3, 3) * -1,
     )
 
+    # 2D time/lat
+    save_cube(
+        "tas_amon_2d_time_lat_0.nc",
+        "tas",
+        [time_coord, lat_coord],
+        np.arange(9).reshape(3, 3),
+    )
+    save_cube(
+        "tas_amon_2d_time_lat_1.nc",
+        "tas",
+        [time_coord, lat_coord],
+        np.arange(9).reshape(3, 3) * 2 + 2,
+    )
+    save_cube(
+        "tas_amon_2d_time_lat_2.nc",
+        "tas",
+        [time_coord, lat_coord],
+        np.arange(9).reshape(3, 3) * -1,
+    )
+
+    # 2D time/lon
+    save_cube(
+        "tas_amon_2d_time_lon_0.nc",
+        "tas",
+        [time_coord, lon_coord],
+        np.arange(9).reshape(3, 3),
+    )
+    save_cube(
+        "tas_amon_2d_time_lon_1.nc",
+        "tas",
+        [time_coord, lon_coord],
+        np.arange(9).reshape(3, 3) * 2 + 2,
+    )
+    save_cube(
+        "tas_amon_2d_time_lon_2.nc",
+        "tas",
+        [time_coord, lon_coord],
+        np.arange(9).reshape(3, 3) * -1,
+    )
+
     # 2D time/plev
     save_cube(
         "tas_amon_2d_time_plev_0.nc",

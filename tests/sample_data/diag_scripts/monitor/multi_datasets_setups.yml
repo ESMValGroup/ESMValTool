@@ -228,6 +228,65 @@
           tas_amon_1d_hour_1:
             color: C3
 
+# hovmoeller_time_vs_lat_or_lon
+- input_data: [tas_amon_2d_time_lat_0.nc, tas_amon_2d_time_lat_1.nc]
+  expected_pngs: [hovmoeller_time_vs_lat_or_lon_tas_tas_amon_2d_time_lat_0_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    figure_kwargs:
+      figsize: [5, 5]
+    group_variables_by: short_name
+    plots:
+      hovmoeller_time_vs_lat_or_lon:
+        cbar_label: Var
+        cbar_label_bias: dVar
+        cbar_kwargs:
+          ticks: [2, 5, 8]
+        cbar_kwargs_bias:
+          ticks: [-5, -2]
+        common_cbar: true
+        fontsize: 8
+        plot_func: contourf
+        plot_kwargs:
+          default:
+            cmap: YlOrRd
+        plot_kwargs_bias:
+          cmap: seismic
+          norm: centered
+        pyplot_kwargs:
+          suptitle: Suptitle
+        rasterize: true
+        show_x_minor_ticks: false
+        show_y_minor_ticks: false
+        time_format: "%j"
+        time_on: x-axis
+- input_data: [tas_amon_2d_time_lon_0.nc, tas_amon_2d_time_lon_1.nc]
+  expected_pngs: [hovmoeller_time_vs_lon_or_lon_tas_tas_amon_2d_time_lon_0_Amon.png]
+  settings:
+    plots:
+      hovmoeller_time_vs_lat_or_lon:
+- input_data: [tas_amon_2d_time_lat_2.nc]
+  expected_pngs: [hovmoeller_time_vs_lat_or_lat_tas_tas_amon_2d_time_lat_0_Amon.png]
+  settings:
+    plots:
+      hovmoeller_time_vs_lat_or_lon:
+        plot_func: pcolormesh
+        plot_kwargs:
+          default:
+            vmin: -1
+            vmax: 12
+- input_data: [tas_amon_2d_time_lon_2.nc]
+  expected_pngs: [hovmoeller_time_vs_lat_or_lon_tas_tas_amon_2d_time_lon_0_Amon.png]
+  settings:
+    plots:
+      hovmoeller_time_vs_lat_or_lon:
+        plot_func: pcolormesh
+        plot_kwargs:
+          default:
+            vmin: -1
+            vmax: 12
+        time_on: x-axis
+
 # hovmoeller_z_vs_time
 - input_data: [tas_amon_2d_time_plev_0.nc, tas_amon_2d_time_plev_1.nc]
   expected_pngs: [hovmoeller_z_vs_time_tas_tas_amon_2d_time_plev_0_Amon.png]
