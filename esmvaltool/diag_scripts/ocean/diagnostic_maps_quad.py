@@ -48,7 +48,7 @@ import numpy as np
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-from esmvaltool.diag_scripts.shared import run_diagnostic, save_figure
+from esmvaltool.diag_scripts.shared import run_diagnostic, save_figure, save_data
 
 # Create a logger object.
 logger = logging.getLogger(os.path.basename(__file__))
@@ -319,6 +319,44 @@ def plot_global_single_level(axis, cube, contour_levels, title):
     # Display the plots
     iplt.show()
 
+def save_cube(cube, field_name, config, ancestors):
+    """
+    Produces a provenance record and saves data for each cube.
+
+    Parameters
+    ----------
+    cube : iris cube
+        This is a data structure that contains the climate data to be plotted.
+        Including information like temperature values, latitude, longitude,
+        and depth.
+    field_name : str
+        A string that contains the cube name with the corresponding extracted 
+        depth level.
+    config : dictionary
+        configuration dictionary that contains all the necessary information
+        for the function to run. It includes details about the models,
+        observational datasets, file paths, and other settings.
+    ancestors : list
+        A list of keys from the input_files dictionary, representing the 
+        provenance of the data. This list helps track the origin and 
+        transformation history of the data used in the cube
+
+    """
+    # Prepare provenance record for the plot
+    provenance_record = diagtools.prepare_provenance_record(
+        config,
+        caption=field_name,
+        statistics=["mean","diff"],
+        domain=["global"],
+        plot_type=["map"],
+        ancestors=ancestors,
+    )
+    save_data(
+        field_name,
+        provenance_record,
+        config,
+        cube,
+    )
 
 def create_quadmap(
     exp_single_level,
@@ -418,9 +456,34 @@ def create_quadmap(
         exp_minus_obs_single_level.attributes["source_id"],
     )
 
+
+    input_files = diagtools.get_input_files(config)
+    ancestors=list(input_files.keys())
+    
+    # Calling save_cube for each cube.
+    save_cube(
+        exp_single_level, 
+        f"experiment_{formatted_depth}", 
+        config, 
+        ancestors)
+    save_cube(
+        exp_minus_ctr_single_level, 
+        f"experiment_minus_control_{formatted_depth}", 
+        config, 
+        ancestors)
+    save_cube(
+        ctr_minus_obs_single_level,
+        f"control_minus_observation_{formatted_depth}",
+        config,
+        ancestors)
+    save_cube(
+        exp_minus_obs_single_level, 
+        f"experiment_minus_observation_{formatted_depth}", 
+        config, 
+        ancestors)
+
     # Prepare to save the figure
     fn_list = [exp_single_level.long_name, str(formatted_depth)]
-    input_files = diagtools.get_input_files(config)
     image_extention = diagtools.get_image_format(config)
 
     # Construct the file path for saving the plot
@@ -437,14 +500,12 @@ def create_quadmap(
         config,
         caption=f"Quadmap models comparison against observation level="
         f"{formatted_depth})",
-        statistics=[
-            "mean",
-            "diff",
-        ],
+        statistics=["mean","diff"],
         domain=["global"],
         plot_type=["map"],
-        ancestors=list(input_files.keys()),
+        ancestors=ancestors,
     )
+    
 
     # Save the figure and close
     save_figure("_".join(fn_list), provenance_record, config, fig, close=True)
