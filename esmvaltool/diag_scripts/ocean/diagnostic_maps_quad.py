@@ -327,7 +327,8 @@ def create_quadmap(
     exp_minus_obs_single_level,
     config,
 ):
-    """Add all subplots to a main plot, positions of subplots is pre-set.
+    """
+    Add all subplots to a main plot, positions of subplots are pre-set.
 
     Parameters
     ----------
