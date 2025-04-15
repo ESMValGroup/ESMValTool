@@ -12,6 +12,12 @@ iris.FUTURE.save_split_attrs = True
 
 ROOT = Path(__file__).parent
 VAR_METADATA: dict[str, dict[str, str]] = {
+    "pr": {
+        "var_name": "pr",
+        "standard_name": "precipitation_flux",
+        "long_name": "Precipitation",
+        "units": "kg m-2 s-1",
+    },
     "tas": {
         "var_name": "tas",
         "standard_name": "air_temperature",
@@ -98,6 +104,14 @@ def main() -> None:
         units="days since 2000-01-01",
     )
 
+    # 0D
+    save_cube("pr_amon_0d_0.nc", "pr", [], 6.0)
+    save_cube("pr_amon_0d_1.nc", "pr", [], 10.0)
+    save_cube("pr_amon_0d_2.nc", "pr", [], 4.0)
+    save_cube("tas_amon_0d_0.nc", "tas", [], 3.0)
+    save_cube("tas_amon_0d_1.nc", "tas", [], 5.0)
+    save_cube("tas_amon_0d_2.nc", "tas", [], 2.0)
+
     # 1D alt16
     save_cube("tas_amon_1d_alt16_0.nc", "tas", [alt16_coord], [2.0, 3.0, 0.0])
     save_cube("tas_amon_1d_alt16_1.nc", "tas", [alt16_coord], [1.0, -1.0, 2.0])
@@ -182,6 +196,46 @@ def main() -> None:
         "tas_amon_2d_lat_lon_2.nc",
         "tas",
         [lat_coord, lon_coord],
+        np.arange(9).reshape(3, 3) * -1,
+    )
+
+    # 2D month_number/lat
+    save_cube(
+        "tas_amon_2d_month_number_lat_0.nc",
+        "tas",
+        [month_number_coord, lat_coord],
+        np.arange(9).reshape(3, 3),
+    )
+    save_cube(
+        "tas_amon_2d_month_number_lat_1.nc",
+        "tas",
+        [month_number_coord, lat_coord],
+        np.arange(9).reshape(3, 3) * 2 + 2,
+    )
+    save_cube(
+        "tas_amon_2d_month_number_lat_2.nc",
+        "tas",
+        [month_number_coord, lat_coord],
+        np.arange(9).reshape(3, 3) * -1,
+    )
+
+    # 2D month_number/lon
+    save_cube(
+        "tas_amon_2d_month_number_lon_0.nc",
+        "tas",
+        [month_number_coord, lon_coord],
+        np.arange(9).reshape(3, 3),
+    )
+    save_cube(
+        "tas_amon_2d_month_number_lon_1.nc",
+        "tas",
+        [month_number_coord, lon_coord],
+        np.arange(9).reshape(3, 3) * 2 + 2,
+    )
+    save_cube(
+        "tas_amon_2d_month_number_lon_2.nc",
+        "tas",
+        [month_number_coord, lon_coord],
         np.arange(9).reshape(3, 3) * -1,
     )
 

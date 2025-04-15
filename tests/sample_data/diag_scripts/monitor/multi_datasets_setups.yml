@@ -79,7 +79,11 @@
             color: C3
 
 # benchmarking_annual_cycle
-- input_data: [tas_amon_1d_month_number_0.nc, tas_amon_1d_time_1.nc, tas_amon_1d_time_2.nc]
+- input_data: [
+    tas_amon_1d_month_number_0.nc,
+    tas_amon_1d_time_1.nc,
+    tas_amon_1d_time_2.nc,
+  ]
   expected_pngs: [benchmarking_annual_cycle_tas_ambiguous_dataset_Amon.png]
   settings:
     plots:
@@ -97,8 +101,49 @@
         pyplot_kwargs:
           xlabel: X Label
 
+# benchmarking_boxplot
+- input_data: [
+    pr_amon_0d_0.nc,
+    pr_amon_0d_1.nc,
+    pr_amon_0d_2.nc,
+    tas_amon_0d_0.nc,
+    tas_amon_0d_1.nc,
+    tas_amon_0d_2.nc,
+  ]
+  expected_pngs: [benchmarking_boxplot_tas_pr_ambiguous_dataset_Amon.png]
+  settings:
+    plots:
+      benchmarking_boxplot:
+        fontsize: 8
+        plot_kwargs:
+          color: green
+        pyplot_kwargs:
+          xlabel: X Label
+        scatter_kwargs:
+          marker: o
+          s: 100
+          color: white
+          zorder: 4
+        var_order: [tas, pr]
+- input_data: [
+    pr_amon_0d_0.nc,
+    pr_amon_0d_1.nc,
+    pr_amon_0d_2.nc,
+    tas_amon_0d_0.nc,
+    tas_amon_0d_1.nc,
+    tas_amon_0d_2.nc,
+  ]
+  expected_pngs: [benchmarking_boxplot_pr_tas_ambiguous_dataset_Amon.png]
+  settings:
+    plots:
+      benchmarking_boxplot:
+
 # benchmarking_diurnal_cycle
-- input_data: [tas_amon_1d_hour_0.nc, tas_amon_1d_time_1.nc, tas_amon_1d_time_2.nc]
+- input_data: [
+    tas_amon_1d_hour_0.nc,
+    tas_amon_1d_time_1.nc,
+    tas_amon_1d_time_2.nc,
+  ]
   expected_pngs: [benchmarking_diurnal_cycle_tas_ambiguous_dataset_Amon.png]
   settings:
     plots:
@@ -117,7 +162,11 @@
           xlabel: X Label
 
 # benchmarking_map
-- input_data: [tas_amon_2d_lat_lon_0.nc, tas_amon_2d_lat_lon_1.nc, tas_amon_2d_lat_lon_2.nc]
+- input_data: [
+    tas_amon_2d_lat_lon_0.nc,
+    tas_amon_2d_lat_lon_1.nc,
+    tas_amon_2d_lat_lon_2.nc,
+  ]
   expected_pngs: [benchmarking_map_tas_tas_amon_2d_lat_lon_0_Amon.png]
   settings:
     facet_used_for_labels: alias
@@ -143,7 +192,11 @@
         rasterize: true
 
 # benchmarking_timeseries
-- input_data: [tas_amon_1d_time_0.nc, tas_amon_1d_time_1.nc, tas_amon_1d_time_2.nc]
+- input_data: [
+    tas_amon_1d_time_0.nc,
+    tas_amon_1d_time_1.nc,
+    tas_amon_1d_time_2.nc,
+  ]
   expected_pngs: [benchmarking_timeseries_tas_ambiguous_dataset_Amon.png]
   settings:
     plots:
@@ -163,7 +216,11 @@
         time_format: "%j"
 
 # benchmarking_zonal
-- input_data: [tas_amon_2d_alt16_lat_0.nc, tas_amon_2d_alt16_lat_1.nc, tas_amon_2d_alt16_lat_2.nc]
+- input_data: [
+    tas_amon_2d_alt16_lat_0.nc,
+    tas_amon_2d_alt16_lat_1.nc,
+    tas_amon_2d_alt16_lat_2.nc,
+  ]
   expected_pngs: [benchmarking_zonal_tas_tas_amon_2d_alt16_lat_0_Amon.png]
   settings:
     facet_used_for_labels: alias
@@ -184,7 +241,11 @@
           suptitle: Suptitle
         rasterize: true
         show_y_minor_ticklabels: true
-- input_data: [tas_amon_2d_plev_lat_0.nc, tas_amon_2d_plev_lat_1.nc, tas_amon_2d_plev_lat_2.nc]
+- input_data: [
+    tas_amon_2d_plev_lat_0.nc,
+    tas_amon_2d_plev_lat_1.nc,
+    tas_amon_2d_plev_lat_2.nc,
+  ]
   expected_pngs: [benchmarking_zonal_tas_tas_amon_2d_plev_lat_0_Amon.png]
   settings:
     plots:
@@ -228,6 +289,70 @@
           tas_amon_1d_hour_1:
             color: C3
 
+# hovmoeller_anncyc_vs_lat_or_lon
+- input_data: [
+    tas_amon_2d_month_number_lat_0.nc,
+    tas_amon_2d_month_number_lat_1.nc,
+  ]
+  expected_pngs: [hovmoeller_anncyc_vs_lat_or_lon_tas_tas_amon_2d_month_number_lat_0_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    figure_kwargs:
+      figsize: [5, 5]
+    group_variables_by: short_name
+    plots:
+      hovmoeller_anncyc_vs_lat_or_lon:
+        cbar_label: Var
+        cbar_label_bias: dVar
+        cbar_kwargs:
+          ticks: [2, 5, 8]
+        cbar_kwargs_bias:
+          ticks: [-5, -2]
+        common_cbar: true
+        fontsize: 8
+        plot_func: contourf
+        plot_kwargs:
+          default:
+            cmap: YlOrRd
+        plot_kwargs_bias:
+          cmap: seismic
+          norm: centered
+        pyplot_kwargs:
+          suptitle: Suptitle
+        rasterize: true
+        show_x_minor_ticks: false
+        show_y_minor_ticks: false
+        time_on: x-axis
+- input_data: [
+    tas_amon_2d_month_number_lon_0.nc,
+    tas_amon_2d_month_number_lon_1.nc,
+  ]
+  expected_pngs: [hovmoeller_anncyc_vs_lat_or_lon_tas_tas_amon_2d_month_number_lon_0_Amon.png]
+  settings:
+    plots:
+      hovmoeller_anncyc_vs_lat_or_lon:
+- input_data: [tas_amon_2d_month_number_lat_2.nc]
+  expected_pngs: [hovmoeller_anncyc_vs_lat_or_lon_tas_tas_amon_2d_month_number_lat_2_Amon.png]
+  settings:
+    plots:
+      hovmoeller_anncyc_vs_lat_or_lon:
+        plot_func: pcolormesh
+        plot_kwargs:
+          default:
+            vmin: -1
+            vmax: 12
+- input_data: [tas_amon_2d_month_number_lon_2.nc]
+  expected_pngs: [hovmoeller_anncyc_vs_lat_or_lon_tas_tas_amon_2d_month_number_lon_2_Amon.png]
+  settings:
+    plots:
+      hovmoeller_anncyc_vs_lat_or_lon:
+        plot_func: pcolormesh
+        plot_kwargs:
+          default:
+            vmin: -1
+            vmax: 12
+        time_on: x-axis
+
 # hovmoeller_time_vs_lat_or_lon
 - input_data: [tas_amon_2d_time_lat_0.nc, tas_amon_2d_time_lat_1.nc]
   expected_pngs: [hovmoeller_time_vs_lat_or_lon_tas_tas_amon_2d_time_lat_0_Amon.png]
@@ -261,12 +386,12 @@
         time_format: "%j"
         time_on: x-axis
 - input_data: [tas_amon_2d_time_lon_0.nc, tas_amon_2d_time_lon_1.nc]
-  expected_pngs: [hovmoeller_time_vs_lon_or_lon_tas_tas_amon_2d_time_lon_0_Amon.png]
+  expected_pngs: [hovmoeller_time_vs_lat_or_lon_tas_tas_amon_2d_time_lon_0_Amon.png]
   settings:
     plots:
       hovmoeller_time_vs_lat_or_lon:
 - input_data: [tas_amon_2d_time_lat_2.nc]
-  expected_pngs: [hovmoeller_time_vs_lat_or_lat_tas_tas_amon_2d_time_lat_0_Amon.png]
+  expected_pngs: [hovmoeller_time_vs_lat_or_lon_tas_tas_amon_2d_time_lat_2_Amon.png]
   settings:
     plots:
       hovmoeller_time_vs_lat_or_lon:
@@ -276,7 +401,7 @@
             vmin: -1
             vmax: 12
 - input_data: [tas_amon_2d_time_lon_2.nc]
-  expected_pngs: [hovmoeller_time_vs_lat_or_lon_tas_tas_amon_2d_time_lon_0_Amon.png]
+  expected_pngs: [hovmoeller_time_vs_lat_or_lon_tas_tas_amon_2d_time_lon_2_Amon.png]
   settings:
     plots:
       hovmoeller_time_vs_lat_or_lon:

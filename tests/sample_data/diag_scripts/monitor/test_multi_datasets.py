@@ -14,7 +14,7 @@ DEFAULT_SETTINGS = {
     "plot_folder": "{plot_dir}",
     "savefig_kwargs": {
         "bbox_inches": "tight",
-        "dpi": 50,
+        "dpi": 30,
         "orientation": "landscape",
     },
 }
@@ -28,7 +28,6 @@ def test_diagnostic(
     expected_pngs: list[str],
 ) -> None:
     """Test diagnostic with various setups."""
-    tmp_path = Path.home() / "tmp" / "aaaaaaaaaaaaa"
     cfg_settings = {**DEFAULT_SETTINGS, **settings}
     cfg = get_cfg(tmp_path, input_data, **cfg_settings)
 
