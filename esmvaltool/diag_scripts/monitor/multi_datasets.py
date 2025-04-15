@@ -43,14 +43,6 @@ Currently supported plot types (use the option ``plots`` to specify them):
       can use the preprocessors :func:`esmvalcore.preprocessor.regrid` and
       :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
       needs to be 2D with dimensions `latitude`, `altitude`/`air_pressure`.
-
-      .. warning::
-
-          The plot_type ``profile`` for zonal mean profiles has been deprecated
-          in ESMValTool version 2.9.0 and is scheduled for removal in version
-          2.11.0. Please use plot type ``zonal_mean_profile`` instead. This is
-          an exact replacement.
-
     - 1D profiles (plot type ``1d_profile``): for each variable separately, all
       datasets are plotted in one single figure. Input data needs to be 1D with
       single dimension `altitude` / `air_pressure`
@@ -966,21 +958,6 @@ class MultiDatasets(MonitorBase):
             self.cfg["group_variables_by"],
             sort=self.cfg["facet_used_for_labels"],
         )
-
-        if "profile" in self.plots:
-            logger.warning(
-                "The plot_type ``profile`` for zonal mean profiles"
-                " has been deprecated in ESMValTool version 2.9.0"
-                " and is scheduled for removal in version 2.11.0."
-                " Please use plot type ``zonal_mean_profile``"
-                " instead. This is an exact replacement."
-            )
-            if "zonal_mean_profile" in self.plots:
-                raise ValueError(
-                    "Both ``profile`` and ``zonal_mean_profile`` is used."
-                    " Please use ``zonal_mean_profile`` only."
-                )
-            self.plots["zonal_mean_profile"] = self.plots.pop("profile")
 
         # Check given plot types and set default settings for them
         self.supported_plot_types = [
