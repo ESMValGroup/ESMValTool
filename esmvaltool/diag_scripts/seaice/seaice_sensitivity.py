@@ -189,8 +189,7 @@ def notz_style_plot_from_dict(dictionary, filename, cfg):
 
     # Add observations (style taken from Ed's code)
     ax.hlines(obs_mean, 0, 1, linestyle='--', color='black', linewidth=2)
-    ax.hlines(obs_mean + obs_std_dev, 0, 1, linestyle=':', color='black', linewidth=1)
-    ax.hlines(obs_mean - obs_std_dev, 0, 1, linestyle=':', color='black', linewidth=1)
+    ax.fill_between([0, 1], obs_mean - obs_std_dev, obs_mean + obs_std_dev, facecolor='k', alpha=0.15)
     ax.hlines(obs_mean + obs_plausible, 0, 1, linestyle=':', color='0.5', linewidth=1)
     ax.hlines(obs_mean - obs_plausible, 0, 1, linestyle=':', color='0.5', linewidth=1)
 
