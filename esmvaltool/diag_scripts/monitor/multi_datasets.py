@@ -761,6 +761,10 @@ pyplot_kwargs: dict, optional
     from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
     ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
     '{short_name}'``, ``xlim: [0, 5]``.
+scatter_kwargs: dict, optional
+    Optional keyword arguments for :func:`matplotlib.pyplot.scatter` (used to
+    plot marks for benchmarking dataset). By default, uses ``{marker: x, s:
+    200, linewidths: 2, color: red, zorder: 3}``.
 var_order: list of str, optional
     Optional list of strings containing variable names to define the order of
     the variables plotted.
@@ -900,7 +904,6 @@ import pandas as pd
 import seaborn as sns
 from iris.analysis.cartography import area_weights
 from iris.coords import AuxCoord
-from iris.cube import CubeList
 from iris.exceptions import ConstraintMismatchError
 from matplotlib.colors import CenteredNorm
 from matplotlib.gridspec import GridSpec
@@ -1056,6 +1059,16 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].setdefault("fontsize", None)
                 self.plots[plot_type].setdefault("plot_kwargs", {})
                 self.plots[plot_type].setdefault("pyplot_kwargs", {})
+                self.plots[plot_type].setdefault(
+                    "scatter_kwargs",
+                    {
+                        "marker": "x",
+                        "s": 200,
+                        "linewidths": 2,
+                        "color": "red",
+                        "zorder": 3,
+                    },
+                )
                 self.plots[plot_type].setdefault("var_order", None)
 
             elif plot_type == "map":
@@ -2725,59 +2738,37 @@ class MultiDatasets(MonitorBase):
 
         return (plot_path, {netcdf_path: cube})
 
-    def _plot_benchmarking_boxplot(
-        self, dframe, cubes_to_benchmark, variables, datasets
-    ):
+    def _plot_benchmarking_boxplot(self, dframe, benchmark_datasets):
         """Plot benchmarking boxplot."""
         plot_type = "benchmarking_boxplot"
-        logger.info(
-            "Plotting benchmarking boxplot for '%s'",
-            self._get_label(datasets[0]),
-        )
+        logger.info("Plotting benchmarking boxplot")
+        plot_kwargs = self.plots[plot_type]["plot_kwargs"]
+        scatter_kwargs = self.plots[plot_type]["scatter_kwargs"]
 
         # Create plot with desired settings
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg["figure_kwargs"])
-            metric = cubes_to_benchmark[0].long_name.partition("of")[0]
-            fig.suptitle(f"{metric}of {self._get_label(datasets[0])}")
+            fig.suptitle("Benchmarking Boxplot")
 
-            sns.set_style("darkgrid")
-
-            for idx, var in enumerate(variables):
-                plot_kwargs = self._get_plot_kwargs(plot_type, datasets[idx])
+            for idx, var_key in enumerate(benchmark_datasets):
+                benchmark_dataset = benchmark_datasets[var_key]
+                cube_to_benchmark = benchmark_dataset["cube"]
+                plt.subplot(1, len(benchmark_datasets), idx + 1)
 
                 # Boxplots
                 plot_boxplot = sns.boxplot(
-                    data=dframe[dframe["Variable"] == var], **plot_kwargs
+                    data=dframe[dframe["Variable"] == var_key], **plot_kwargs
                 )
                 plot_boxplot.set(xticklabels=[])
 
                 # Plot data to benchmark
-                plt.scatter(
-                    0,
-                    cubes_to_benchmark[idx].data,
-                    marker="x",
-                    s=200,
-                    linewidths=2,
-                    color="red",
-                    zorder=3,
-                )
+                plt.scatter(0, cube_to_benchmark.data, **scatter_kwargs)
 
-                plt.xlabel(var)
-                if cubes_to_benchmark[idx].units != 1:
-                    plt.ylabel(cubes_to_benchmark[idx].units)
-
-                # Customize plot
-                self._process_pyplot_kwargs(plot_type, datasets[idx])
-
-        # File paths
-        datasets[0]["variable_group"] = datasets[0]["short_name"].partition(
-            "_"
-        )[0]
-        plot_path = self.get_plot_path(plot_type, datasets[0])
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-
-        return (plot_path, {netcdf_path: cubes_to_benchmark[0]})
+                # Plot appearance
+                plt.xlabel(var_key)
+                if cube_to_benchmark.units != 1:
+                    plt.ylabel(cube_to_benchmark.units)
+                self._process_pyplot_kwargs(plot_type, benchmark_dataset)
 
     def _plot_benchmarking_zonal(self, dataset, percentile_dataset, metric):
         """Plot benchmarking zonal mean profile."""
@@ -2883,7 +2874,7 @@ class MultiDatasets(MonitorBase):
         """Check that cube has correct dimensional variables."""
         expected_dimensions_dict = {
             "annual_cycle": (["month_number"],),
-            "benchmarking_boxplot": ([""],),
+            "benchmarking_boxplot": ([],),
             "diurnal_cycle": (["hour"],),
             "map": (["latitude", "longitude"],),
             "benchmarking_annual_cycle": (["month_number"],),
@@ -3675,16 +3666,30 @@ class MultiDatasets(MonitorBase):
         if plot_type not in self.plots:
             return
 
-        dframe = pd.DataFrame(columns=["Variable", "Dataset", "Value"])
-        ifile = 0
-
-        cubes_to_benchmark = CubeList()
-        benchmark_datasets = []
-        variables = []
+        logger.info("Plotting %s", plot_type)
 
         # Respect desired variable order
+        given_variables = list(self.grouped_input_data)
+        if var_order := self.plots[plot_type]["var_order"]:
+            if len(set(var_order)) != len(var_order):
+                raise ValueError(
+                    f"List of variables given by `var_order` ({var_order}) "
+                    f"contains duplicates",
+                )
+            if set(var_order) != set(given_variables):
+                raise ValueError(
+                    f"List of variables given by `var_order` ({var_order}) "
+                    f"does not agree with given variables ({given_variables})",
+                )
+        else:
+            var_order = given_variables
 
-        for var_key, datasets in self.grouped_input_data.items():
+        # Collect data
+        data_idx = 0
+        dframe = pd.DataFrame(columns=["Variable", "Dataset", "Value"])
+        benchmark_datasets: dict[str, dict] = {}
+        for var_key in var_order:
+            datasets = self.grouped_input_data[var_key]
             logger.info("Processing variable %s", var_key)
 
             if not datasets:
@@ -3694,78 +3699,47 @@ class MultiDatasets(MonitorBase):
             plot_datasets = self._get_benchmark_datasets(datasets)
             benchmark_dataset = plot_datasets[0]
 
-            logger.info(
-                "Plotting %s for dataset %s",
-                plot_type,
-                benchmark_dataset["dataset"],
-            )
-
-            # Get datasets for benchmarking
+            # Get datasets for boxplots
             benchmark_group = self._get_benchmark_group(datasets)
             logger.info(
-                "Benchmarking group of %i datasets.", len(benchmark_group)
+                "Benchmarking group of %i datasets", len(benchmark_group)
             )
 
-            ancestors = [benchmark_dataset["filename"]]
             for dataset in benchmark_group:
-                ancestors.append(dataset["filename"])
-
-            for dataset in benchmark_group:
-                dataset_name = dataset["dataset"]
                 cube = dataset["cube"]
                 self._check_cube_dimensions(cube, plot_type)
-                dframe.loc[ifile] = [var_key, dataset_name, cube.data]
-                ifile = ifile + 1
+                dframe.loc[data_idx] = [var_key, dataset["dataset"], cube.data]
+                data_idx = data_idx + 1
 
             dframe["Value"] = dframe["Value"].astype(str).astype(float)
+            benchmark_datasets[var_key] = benchmark_dataset
 
-            cubes_to_benchmark.append(benchmark_dataset["cube"])
-            benchmark_datasets.append(benchmark_dataset)
-            variables.append(var_key)
-
-        # Order of variables
-        if self.plots[plot_type]["var_order"]:
-            var_order = self.plots[plot_type]["var_order"]
-            if set(variables) == set(var_order):
-                ind = [
-                    variables.index(var_order[i])
-                    for i in range(len(variables))
-                ]
-                cubes_to_benchmark = CubeList(
-                    [cubes_to_benchmark[i] for i in ind]
-                )
-                benchmark_datasets = [benchmark_datasets[i] for i in ind]
-                variables = var_order
-            else:
-                raise ValueError(
-                    "List of ordered variables do not agree with"
-                    " processed variables"
-                )
-
-        (plot_path, netcdf_paths) = self._plot_benchmarking_boxplot(
-            dframe, cubes_to_benchmark, variables, benchmark_datasets
-        )
+        self._plot_benchmarking_boxplot(dframe, benchmark_datasets)
 
         # Save plot
+        all_vars = "_".join(benchmark_datasets)
+        all_datasets = [d for g in self.grouped_input_data.values() for d in g]
+        multi_dataset_facets = self._get_multi_dataset_facets(all_datasets)
+        multi_dataset_facets["variable_group"] = all_vars
+        multi_dataset_facets["short_name"] = all_vars
+        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
         plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
         logger.info("Wrote %s", plot_path)
         plt.close()
 
-        # Save netCDF file
-        for netcdf_path, cube in netcdf_paths.items():
-            io.iris_save(cube, netcdf_path)
-
-            # Provenance tracking
-            caption = "Boxplot."
-            provenance_record = {
-                "ancestors": ancestors,
-                "authors": ["bock_lisa", "schlund_manuel"],
-                "caption": caption,
-                "plot_types": ["box"],
-            }
-            with ProvenanceLogger(self.cfg) as provenance_logger:
-                provenance_logger.log(plot_path, provenance_record)
-                provenance_logger.log(netcdf_path, provenance_record)
+        # Provenance tracking
+        caption = "Boxplot"
+        ancestors = [
+            d["filename"] for g in self.grouped_input_data.values() for d in g
+        ]
+        provenance_record = {
+            "ancestors": ancestors,
+            "authors": ["bock_lisa", "schlund_manuel"],
+            "caption": caption,
+            "plot_types": ["box"],
+        }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
 
     def create_map_plot(self, datasets):
         """Create map plot."""
