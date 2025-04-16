@@ -316,19 +316,27 @@ def plot_bias_plot(data_list: list[Data4Analyis], cfg: dict):
             data.best_guess = data.best_guess.intersection(
                 longitude=(20.0, 380.0)
             )
-            data.border1 = data.border1.intersection(longitude=(20.0, 380.0))
-            data.border2 = data.border2.intersection(longitude=(20.0, 380.0))
             data.ref_cube = data.ref_cube.intersection(longitude=(20.0, 380.0))
+            # check if there are borders
+            if data.border1:
+                data.border1 = data.border1.intersection(
+                    longitude=(20.0, 380.0)
+                )
+                data.border2 = data.border2.intersection(
+                    longitude=(20.0, 380.0)
+                )
         data_col = eplot.get_dataset_style(data.name, cfg.get("color_style"))
         iris.plot.plot(data.best_guess, color=data_col["color"])
-        iris.plot.fill_between(
-            data.best_guess.dim_coords[0],
-            data.border1,
-            data.border2,
-            alpha=0.2,
-            linewidth=0,
-            color=data_col["color"],
-        )
+        # if there is more than one realization, there's border plotted
+        if data.border1:
+            iris.plot.fill_between(
+                data.best_guess.dim_coords[0],
+                data.border1,
+                data.border2,
+                alpha=0.2,
+                linewidth=0,
+                color=data_col["color"],
+            )
 
     if cfg.get("bias"):
         xlim = fig.axes[0].get_xlim()
