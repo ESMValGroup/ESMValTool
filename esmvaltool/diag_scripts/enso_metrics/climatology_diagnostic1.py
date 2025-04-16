@@ -36,7 +36,7 @@ def plot_level1(input_data, cfg):
         sname = dataset["short_name"]
 
         logger.info(
-            "dataset: %s - %s", dataset["dataset"], dataset["long_name"]
+            "dataset: %s - %s", dataset["dataset"], dataset["long_name"],
         )
         # Load the data
         cube = iris.load_cube(dataset["filename"])
@@ -64,7 +64,7 @@ def plot_level1(input_data, cfg):
     with open(metricfile, "a+", encoding="utf-8") as fileo:
         fileo.write(
             f"{input_data[1]["dataset"]},"
-            f"{input_data[1]["variable_group"]},{rmse}\n"
+            f"{input_data[1]["variable_group"]},{rmse}\n",
         )
 
     plt.title(title)
@@ -138,7 +138,7 @@ def main(cfg):
 
     # group by variables
     variable_groups = group_metadata(
-        input_data, "variable_group", sort="project"
+        input_data, "variable_group", sort="project",
     )
     # for each select obs and iterate others, obs last
     for grp, var_attr in variable_groups.items():

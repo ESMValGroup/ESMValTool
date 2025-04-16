@@ -30,7 +30,7 @@ def plotmaps_level2(input_data):
         sname = dataset["short_name"]
 
         logger.info(
-            "dataset: %s - %s", dataset["dataset"], dataset["long_name"]
+            "dataset: %s - %s", dataset["dataset"], dataset["long_name"],
         )
 
         cube = iris.load_cube(dataset["filename"])
@@ -86,7 +86,7 @@ def main(cfg):
 
     # group by variables
     variable_groups = group_metadata(
-        input_data, "variable_group", sort="project"
+        input_data, "variable_group", sort="project",
     )
     # for each select obs and iterate others, obs last
     for grp, var_attr in variable_groups.items():
@@ -105,10 +105,10 @@ def main(cfg):
                         metadata["dataset"],
                         metadata["short_name"],
                         metadata["preprocessor"],
-                    ]
+                    ],
                 )
                 save_figure(
-                    filename, provenance_record, cfg, figure=fig, dpi=300
+                    filename, provenance_record, cfg, figure=fig, dpi=300,
                 )
 
 
