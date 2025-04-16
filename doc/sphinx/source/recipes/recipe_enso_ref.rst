@@ -39,9 +39,8 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-* HadISST
 * GPCP-SG
-* ERA-Interim
+* TROPFLUX
 
 References
 ----------

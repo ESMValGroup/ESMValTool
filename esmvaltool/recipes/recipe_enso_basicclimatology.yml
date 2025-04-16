@@ -12,15 +12,9 @@ documentation:
     - chun_felicity
 
 datasets:
-  ## test run with subset of CMIP6 models ##
-  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  ## one CMIP6 model for REF ##
   - {dataset: ACCESS-CM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  - {dataset: CAS-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  - {dataset: CESM2-FV2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  - {dataset: CESM2-WACCM-FV2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-  - {dataset: CESM2-WACCM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+
 
 
 preprocessors:
@@ -123,7 +117,7 @@ diagnostics:
         preprocessor: eq_bias
         mip: Amon
         additional_datasets:
-          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
       pr_double_seacycle:
         short_name: pr
         preprocessor: ITCZ_sea_cycle
@@ -147,7 +141,7 @@ diagnostics:
         preprocessor: eq_sea_cycle
         mip: Amon
         additional_datasets:
-          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
     scripts:
       plot_script:
         script: enso_metrics/climatology_diagnostic1.py
@@ -178,7 +172,7 @@ diagnostics:
         preprocessor: map_bias_level2
         mip: Amon
         additional_datasets:
-          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
 
     scripts:
       plot_script:
