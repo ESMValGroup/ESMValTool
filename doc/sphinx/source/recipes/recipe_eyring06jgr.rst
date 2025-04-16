@@ -51,13 +51,13 @@ User settings in recipe
 
 
    *Optional settings for script*
-   
+
    * ``start_year``: int,  year when start the climatology calculation [1980] (default max among the models start year).
    * ``end_year``:int, year when end  the climatology calculation [1999] (default min among the models end year).
    * ``multimean``: bool, calculate multi-model mean, (i.e. False/True) (default False).
 
    *Required settings for variables*
-   
+
    * ``preprocessor``: regrid_interp_lev.
    * ``reference_dataset``: name of the reference model or observation for regridding and bias calculation (e.g. ERA-Interim").
    *  ``mip``:  Amon.

@@ -99,6 +99,8 @@ Future projections
    recipe_tebaldi21esd
    recipe_climate_change_hotspot
    recipe_bock24acp
+   recipe_zec
+   recipe_calculate_gwl_exceedance_stats
 
 IPCC
 ^^^^

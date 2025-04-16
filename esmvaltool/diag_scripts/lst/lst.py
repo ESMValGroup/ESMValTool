@@ -38,8 +38,8 @@ def _get_input_cubes(metadata):
     inputs = {}
     ancestors = {}
     for attributes in metadata:
-        short_name = attributes['short_name']
-        filename = attributes['filename']
+        short_name = attributes["short_name"]
+        filename = attributes["filename"]
         logger.info("Loading variable %s", short_name)
         cube = iris.load_cube(filename)
         cube.attributes.clear()
@@ -68,26 +68,29 @@ def _make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high, config):
     """
     fig, ax = plt.subplots(figsize=(20, 15))
 
-    ax.plot(lst_diff_data.data, color='black', linewidth=4)
-    ax.plot(lst_diff_data_low.data, '--', color='blue', linewidth=3)
-    ax.plot(lst_diff_data_high.data, '--', color='blue', linewidth=3)
-    ax.fill_between(range(len(lst_diff_data.data)),
-                    lst_diff_data_low.data,
-                    lst_diff_data_high.data,
-                    color='blue',
-                    alpha=0.25)
+    ax.plot(lst_diff_data.data, color="black", linewidth=4)
+    ax.plot(lst_diff_data_low.data, "--", color="blue", linewidth=3)
+    ax.plot(lst_diff_data_high.data, "--", color="blue", linewidth=3)
+    ax.fill_between(
+        range(len(lst_diff_data.data)),
+        lst_diff_data_low.data,
+        lst_diff_data_high.data,
+        color="blue",
+        alpha=0.25,
+    )
 
     # make X ticks
     x_tick_list = []
-    time_list = lst_diff_data.coord('time').units.num2date(
-        lst_diff_data.coord('time').points)
+    time_list = lst_diff_data.coord("time").units.num2date(
+        lst_diff_data.coord("time").points
+    )
     for item in time_list:
         if item.month == 1:
-            x_tick_list.append(item.strftime('%Y %b'))
+            x_tick_list.append(item.strftime("%Y %b"))
         elif item.month == 7:
-            x_tick_list.append(item.strftime('%b'))
+            x_tick_list.append(item.strftime("%b"))
         else:
-            x_tick_list.append('')
+            x_tick_list.append("")
 
     ax.set_xticks(range(len(lst_diff_data.data)))
     ax.set_xticklabels(x_tick_list, fontsize=18, rotation=45)
@@ -99,21 +102,21 @@ def _make_plots(lst_diff_data, lst_diff_data_low, lst_diff_data_high, config):
     ax.set_yticklabels(np.arange(y_lower, y_upper + 0.1, 2), fontsize=18)
     ax.set_ylim((y_lower - 0.1, y_upper + 0.1))
 
-    ax.set_xlabel('Date', fontsize=20)
-    ax.set_ylabel('Difference / K', fontsize=20)
+    ax.set_xlabel("Date", fontsize=20)
+    ax.set_ylabel("Difference / K", fontsize=20)
 
     ax.grid()
 
-    lons = lst_diff_data.coord('longitude').bounds
-    lats = lst_diff_data.coord('latitude').bounds
+    lons = lst_diff_data.coord("longitude").bounds
+    lats = lst_diff_data.coord("latitude").bounds
 
-    ax.set_title('Area: lon %s lat %s' % (lons[0], lats[0]), fontsize=22)
+    ax.set_title(f"Area: lon {lons[0]} lat {lats[0]}", fontsize=22)
 
-    fig.suptitle('ESACCI LST - CMIP6 Historical Ensemble Mean', fontsize=24)
+    fig.suptitle("ESACCI LST - CMIP6 Historical Ensemble Mean", fontsize=24)
 
-    plot_path = get_plot_filename('timeseries', config)
+    plot_path = get_plot_filename("timeseries", config)
     plt.savefig(plot_path)
-    plt.close('all')  # Is this needed?
+    plt.close("all")  # Is this needed?
 
 
 def _get_provenance_record(attributes, ancestor_files):
@@ -127,20 +130,22 @@ def _get_provenance_record(attributes, ancestor_files):
     Outputs:
     record = dictionary of provenance records.
     """
-    caption = "Timeseries of ESA CCI LST difference to mean of "\
-        + "model ensembles calculated over region bounded by latitude "\
-        + "{lat_south} to {lat_north}, longitude {lon_west} to {lon_east} "\
-        + "and for model/ensembles {ensembles}. "\
+    caption = (
+        "Timeseries of ESA CCI LST difference to mean of "
+        + "model ensembles calculated over region bounded by latitude "
+        + "{lat_south} to {lat_north}, longitude {lon_west} to {lon_east} "
+        + "and for model/ensembles {ensembles}. "
         + "Shown for years {start_year} to {end_year}.".format(**attributes)
+    )
 
     record = {
-        'caption': caption,
-        'statistics': ['mean', 'stddev'],
-        'domains': ['reg'],
-        'plot_types': ['times'],
-        'authors': ['king_robert'],
+        "caption": caption,
+        "statistics": ["mean", "stddev"],
+        "domains": ["reg"],
+        "plot_types": ["times"],
+        "authors": ["king_robert"],
         # 'references': [],
-        'ancestors': ancestor_files
+        "ancestors": ancestor_files,
     }
 
     return record
@@ -160,14 +165,14 @@ def _diagnostic(config):
     figures made by make_plots.
     """
     # this loading function is based on the hydrology diagnostic
-    input_metadata = config['input_data'].values()
+    input_metadata = config["input_data"].values()
 
     loaded_data = {}
     ancestor_list = []
-    for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
+    for dataset, metadata in group_metadata(input_metadata, "dataset").items():
         cubes, ancestors = _get_input_cubes(metadata)
         loaded_data[dataset] = cubes
-        ancestor_list.append(ancestors['ts'][0])
+        ancestor_list.append(ancestors["ts"][0])
 
     # loaded data is a nested dictionary
     # KEY1 model ESACCI-LST or something else
@@ -180,22 +185,27 @@ def _diagnostic(config):
 
     # CMIP data had 360 day calendar, CCI data has 365 day calendar
     # Assume the loaded data is all the same shape
-    loaded_data['MultiModelMean']['ts'].remove_coord('time')
-    loaded_data['MultiModelMean']['ts'].add_dim_coord(
-        loaded_data['ESACCI-LST']['ts'].coord('time'), 0)
-    loaded_data['MultiModelStd_Dev']['ts'].remove_coord('time')
-    loaded_data['MultiModelStd_Dev']['ts'].add_dim_coord(
-        loaded_data['ESACCI-LST']['ts'].coord('time'), 0)
+    loaded_data["MultiModelMean"]["ts"].remove_coord("time")
+    loaded_data["MultiModelMean"]["ts"].add_dim_coord(
+        loaded_data["ESACCI-LST"]["ts"].coord("time"), 0
+    )
+    loaded_data["MultiModelStd_Dev"]["ts"].remove_coord("time")
+    loaded_data["MultiModelStd_Dev"]["ts"].add_dim_coord(
+        loaded_data["ESACCI-LST"]["ts"].coord("time"), 0
+    )
 
     # Make a cube of the LST difference, and with +/- std of model variation
-    lst_diff_cube = loaded_data['ESACCI-LST']['ts'] - loaded_data[
-        'MultiModelMean']['ts']
-    lst_diff_cube_low = loaded_data['ESACCI-LST']['ts'] - (
-        loaded_data['MultiModelMean']['ts'] +
-        loaded_data['MultiModelStd_Dev']['ts'])
-    lst_diff_cube_high = loaded_data['ESACCI-LST']['ts'] - (
-        loaded_data['MultiModelMean']['ts'] -
-        loaded_data['MultiModelStd_Dev']['ts'])
+    lst_diff_cube = (
+        loaded_data["ESACCI-LST"]["ts"] - loaded_data["MultiModelMean"]["ts"]
+    )
+    lst_diff_cube_low = loaded_data["ESACCI-LST"]["ts"] - (
+        loaded_data["MultiModelMean"]["ts"]
+        + loaded_data["MultiModelStd_Dev"]["ts"]
+    )
+    lst_diff_cube_high = loaded_data["ESACCI-LST"]["ts"] - (
+        loaded_data["MultiModelMean"]["ts"]
+        - loaded_data["MultiModelStd_Dev"]["ts"]
+    )
 
     # Plotting
     _make_plots(lst_diff_cube, lst_diff_cube_low, lst_diff_cube_high, config)
@@ -203,29 +213,38 @@ def _diagnostic(config):
     # Provenance
     # Get this information form the data cubes
     data_attributes = {}
-    data_attributes['start_year'] = lst_diff_cube.coord('time').units.num2date(
-        lst_diff_cube.coord('time').points)[0].year
-    data_attributes['end_year'] = lst_diff_cube.coord('time').units.num2date(
-        lst_diff_cube.coord('time').points)[-1].year
-    data_attributes['lat_south'] = lst_diff_cube.coord('latitude').bounds[0][0]
-    data_attributes['lat_north'] = lst_diff_cube.coord('latitude').bounds[0][1]
-    data_attributes['lon_west'] = lst_diff_cube.coord('longitude').bounds[0][0]
-    data_attributes['lon_east'] = lst_diff_cube.coord('longitude').bounds[0][1]
-    data_attributes['ensembles'] = ''
+    data_attributes["start_year"] = (
+        lst_diff_cube.coord("time")
+        .units.num2date(lst_diff_cube.coord("time").points)[0]
+        .year
+    )
+    data_attributes["end_year"] = (
+        lst_diff_cube.coord("time")
+        .units.num2date(lst_diff_cube.coord("time").points)[-1]
+        .year
+    )
+    data_attributes["lat_south"] = lst_diff_cube.coord("latitude").bounds[0][0]
+    data_attributes["lat_north"] = lst_diff_cube.coord("latitude").bounds[0][1]
+    data_attributes["lon_west"] = lst_diff_cube.coord("longitude").bounds[0][0]
+    data_attributes["lon_east"] = lst_diff_cube.coord("longitude").bounds[0][1]
+    data_attributes["ensembles"] = ""
 
     for item in input_metadata:
-        if 'ESACCI' in item['alias'] or 'MultiModel' in item[
-                'alias'] or 'OBS' in item['alias']:
+        if (
+            "ESACCI" in item["alias"]
+            or "MultiModel" in item["alias"]
+            or "OBS" in item["alias"]
+        ):
             continue
-        data_attributes['ensembles'] += "%s " % item['alias']
+        data_attributes["ensembles"] += f"{item['alias']} "
 
     record = _get_provenance_record(data_attributes, ancestor_list)
-    plot_file = get_plot_filename('timeseries', config)
+    plot_file = get_plot_filename("timeseries", config)
     with ProvenanceLogger(config) as provenance_logger:
         provenance_logger.log(plot_file, record)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # always use run_diagnostic() to get the config (the preprocessor
     # nested dictionary holding all the needed information)
     with run_diagnostic() as config:
