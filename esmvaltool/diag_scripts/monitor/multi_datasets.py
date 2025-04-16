@@ -879,6 +879,8 @@ show_y_minor_ticklabels: bool, optional (default: False)
 
 """
 
+from __future__ import annotations
+
 import logging
 import warnings
 from copy import deepcopy
@@ -897,6 +899,7 @@ import pandas as pd
 import seaborn as sns
 from iris.analysis.cartography import area_weights
 from iris.coords import AuxCoord
+from iris.cube import Cube
 from iris.exceptions import ConstraintMismatchError
 from matplotlib.colors import CenteredNorm
 from matplotlib.gridspec import GridSpec
@@ -1322,10 +1325,8 @@ class MultiDatasets(MonitorBase):
             # For map plots, only set default projection options if no
             # projection is specified
             if plot_type in ("map", "benchmarking_map"):
-                if "projection" not in plot_options:
-                    self.plots[plot_type].setdefault(
-                        "projection_kwargs", {"central_longitude": 10}
-                    )
+                if "projection" in plot_options:
+                    self.plots[plot_type].setdefault("projection_kwargs", {})
 
             default_settings = self.plot_settings[plot_type][
                 "default_settings"
@@ -2923,7 +2924,7 @@ class MultiDatasets(MonitorBase):
             else:
                 getattr(plt, func)(arg)
 
-    def _check_cube_dimensions(self, cube, plot_type):
+    def _check_cube_dimensions(self, cube: Cube, plot_type: str) -> list[str]:
         """Check that cube has correct dimensional variables."""
         expected_dimensions = self.plot_settings[plot_type]["dimensions"]
         for dims in expected_dimensions:
@@ -3102,6 +3103,103 @@ class MultiDatasets(MonitorBase):
             f"'{variable}'), got {len(percentiles):d}"
         )
 
+    def create_1d_plot(
+        self,
+        plot_type: str,
+        datasets: list[dict],
+        provenance_caption: str,
+        axes_kwargs: dict[str, Any] | None = None,
+    ) -> None:
+        """Create 1D x vs. y plot (lines or markers)."""
+        fig = plt.figure(**self.cfg["figure_kwargs"])
+        axes = fig.add_subplot()
+
+        # Plot all datasets in one single figure
+        ancestors = []
+        cubes = {}
+        for dataset in datasets:
+            ancestors.append(dataset["filename"])
+            cube = dataset["cube"]
+            cubes[self._get_label(dataset)] = cube
+            dims = self._check_cube_dimensions(cube, plot_type)
+
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs["axes"] = axes
+            iris.plot.plot(cube, **plot_kwargs)
+
+        # Plot horizontal lines
+        for hline_kwargs in self.plots[plot_type]["hlines"]:
+            axes.axhline(**hline_kwargs)
+
+        # Default plot appearance
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+        axes.set_title(multi_dataset_facets["long_name"])
+
+        if axes_kwargs is None:
+            axes_kwargs = {}
+        for axes_func, axes_args in axes_kwargs.items():
+            getattr(axes, axes_func)(*axes_args)
+
+        # TODO!!!
+        # if self.plots[plot_type]["log_x"]:
+        #     axes.set_xscale("log")
+        #     x_major = LogLocator(base=10.0, numticks=12)
+        #     axes.get_xaxis().set_major_locator(x_major)
+        #     x_minor = LogLocator(
+        #         base=10.0, subs=np.arange(1.0, 10.0) * 0.1, numticks=12
+        #     )
+
+        #     axes.get_xaxis().set_minor_locator(x_minor)
+        #     axes.get_xaxis().set_minor_formatter(NullFormatter())
+        # if self.plots[plot_type]["log_y"]:
+        #     axes.set_yscale("log")
+        #     axes.get_yaxis().set_major_formatter(FormatStrFormatter("%.1f"))
+
+        # if self.plots[plot_type]["show_y_minor_ticklabels"]:
+        #     axes.get_yaxis().set_minor_locator(AutoMinorLocator())
+        #     axes.get_yaxis().set_minor_formatter(FormatStrFormatter("%.1f"))
+        # else:
+        #     axes.get_yaxis().set_minor_formatter(NullFormatter())
+
+        gridline_kwargs = self._get_gridline_kwargs(plot_type)
+        if gridline_kwargs is not False:
+            axes.grid(**gridline_kwargs)
+
+        # aspect_ratio = self.plots[plot_type]["aspect_ratio"]
+        # axes.set_box_aspect(aspect_ratio)
+
+        # Legend
+        legend_kwargs = self.plots[plot_type]["legend_kwargs"]
+        if legend_kwargs is not False:
+            axes.legend(**legend_kwargs)
+
+        # Customize plot appearance
+        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+
+        # Save plot
+        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
+        fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
+        logger.info("Wrote %s", plot_path)
+        plt.close()
+
+        # Save netCDF file
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+        var_attrs = {
+            n: datasets[0][n] for n in ("short_name", "long_name", "units")
+        }
+        io.save_1d_data(cubes, netcdf_path, dims[0], var_attrs)
+
+        # Provenance tracking
+        provenance_record = {
+            "ancestors": ancestors,
+            "caption": provenance_caption,
+            "long_names": [var_attrs["long_name"]],
+        }
+        provenance_record.update(self.plot_settings[plot_type]["provenance"])
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(netcdf_path, provenance_record)
+
     def create_1d_profile_plot(self, datasets):
         """Create 1D profile plot."""
         plot_type = "1d_profile"
@@ -3208,76 +3306,93 @@ class MultiDatasets(MonitorBase):
     def create_annual_cycle_plot(self, datasets):
         """Create annual cycle plot."""
         plot_type = "annual_cycle"
-
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot()
-
-        # Plot all datasets in one single figure
-        ancestors = []
-        cubes = {}
-        for dataset in datasets:
-            ancestors.append(dataset["filename"])
-            cube = dataset["cube"]
-            cubes[self._get_label(dataset)] = cube
-            self._check_cube_dimensions(cube, plot_type)
-
-            # Plot annual cycle
-            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-            plot_kwargs["axes"] = axes
-            iris.plot.plot(cube, **plot_kwargs)
-
-        # Plot horizontal lines
-        for hline_kwargs in self.plots[plot_type]["hlines"]:
-            axes.axhline(**hline_kwargs)
-
-        # Default plot appearance
-        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
-        axes.set_title(multi_dataset_facets["long_name"])
-        axes.set_xlabel("month")
-        axes.set_ylabel(
-            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
-            f"[{multi_dataset_facets['units']}]"
-        )
-        axes.set_xticks(range(1, 13), [str(m) for m in range(1, 13)])
-        gridline_kwargs = self._get_gridline_kwargs(plot_type)
-        if gridline_kwargs is not False:
-            axes.grid(**gridline_kwargs)
-
-        # Legend
-        legend_kwargs = self.plots[plot_type]["legend_kwargs"]
-        if legend_kwargs is not False:
-            axes.legend(**legend_kwargs)
-
-        # Customize plot appearance
-        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
-
-        # Save plot
-        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
-        fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
-        logger.info("Wrote %s", plot_path)
-        plt.close()
-
-        # Save netCDF file
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-        var_attrs = {
-            n: datasets[0][n] for n in ("short_name", "long_name", "units")
-        }
-        io.save_1d_data(cubes, netcdf_path, "month_number", var_attrs)
-
-        # Provenance tracking
         caption = (
-            f"Annual cycle of {multi_dataset_facets['long_name']} for "
-            f"various datasets."
+            f"Annual cycle of {datasets[0]['long_name']} for various datasets."
         )
-        provenance_record = {
-            "ancestors": ancestors,
-            "caption": caption,
-            "long_names": [var_attrs["long_name"]],
-        }
-        provenance_record.update(self.plot_settings[plot_type]["provenance"])
-        with ProvenanceLogger(self.cfg) as provenance_logger:
-            provenance_logger.log(plot_path, provenance_record)
-            provenance_logger.log(netcdf_path, provenance_record)
+        ylabel = (
+            f"{datasets[0][self.cfg['group_variables_by']]} "
+            f"[{datasets[0]['units']}]"
+        )
+        self.create_1d_plot(
+            plot_type,
+            datasets,
+            caption,
+            axes_kwargs={
+                "set_xlabel": ["month"],
+                "set_xticks": [range(1, 13), [str(m) for m in range(1, 13)]],
+                "set_ylabel": [ylabel],
+            },
+        )
+
+        # fig = plt.figure(**self.cfg["figure_kwargs"])
+        # axes = fig.add_subplot()
+
+        # # Plot all datasets in one single figure
+        # ancestors = []
+        # cubes = {}
+        # for dataset in datasets:
+        #     ancestors.append(dataset["filename"])
+        #     cube = dataset["cube"]
+        #     cubes[self._get_label(dataset)] = cube
+        #     self._check_cube_dimensions(cube, plot_type)
+
+        #     # Plot annual cycle
+        #     plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+        #     plot_kwargs["axes"] = axes
+        #     iris.plot.plot(cube, **plot_kwargs)
+
+        # # Plot horizontal lines
+        # for hline_kwargs in self.plots[plot_type]["hlines"]:
+        #     axes.axhline(**hline_kwargs)
+
+        # # Default plot appearance
+        # multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+        # axes.set_title(multi_dataset_facets["long_name"])
+        # axes.set_xlabel("month")
+        # axes.set_ylabel(
+        #     f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
+        #     f"[{multi_dataset_facets['units']}]"
+        # )
+        # axes.set_xticks(range(1, 13), [str(m) for m in range(1, 13)])
+        # gridline_kwargs = self._get_gridline_kwargs(plot_type)
+        # if gridline_kwargs is not False:
+        #     axes.grid(**gridline_kwargs)
+
+        # # Legend
+        # legend_kwargs = self.plots[plot_type]["legend_kwargs"]
+        # if legend_kwargs is not False:
+        #     axes.legend(**legend_kwargs)
+
+        # # Customize plot appearance
+        # self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+
+        # # Save plot
+        # plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
+        # fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
+        # logger.info("Wrote %s", plot_path)
+        # plt.close()
+
+        # # Save netCDF file
+        # netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+        # var_attrs = {
+        #     n: datasets[0][n] for n in ("short_name", "long_name", "units")
+        # }
+        # io.save_1d_data(cubes, netcdf_path, "month_number", var_attrs)
+
+        # # Provenance tracking
+        # caption = (
+        #     f"Annual cycle of {multi_dataset_facets['long_name']} for "
+        #     f"various datasets."
+        # )
+        # provenance_record = {
+        #     "ancestors": ancestors,
+        #     "caption": caption,
+        #     "long_names": [var_attrs["long_name"]],
+        # }
+        # provenance_record.update(self.plot_settings[plot_type]["provenance"])
+        # with ProvenanceLogger(self.cfg) as provenance_logger:
+        #     provenance_logger.log(plot_path, provenance_record)
+        #     provenance_logger.log(netcdf_path, provenance_record)
 
     def create_benchmarking_annual(self, datasets):
         """Create benchmarking annual cycle plot."""
