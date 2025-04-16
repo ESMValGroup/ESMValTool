@@ -47,7 +47,10 @@ def plot_level1(input_data, metricval, y_label, title, dtls):
         plt.legend()
     else:
         plt.scatter(
-            range(len(input_data)), input_data, c=["black", "blue"], marker="D",
+            range(len(input_data)),
+            input_data,
+            c=["black", "blue"],
+            marker="D",
         )
         # obs first
         plt.xlim(-0.5, 2)
@@ -200,7 +203,11 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
         val = compute(data_values[1], data_values[0])
 
         fig = plot_level1(
-            data_values, val, "SSTA std (°C)", "ENSO amplitude", dt_ls,
+            data_values,
+            val,
+            "SSTA std (°C)",
+            "ENSO amplitude",
+            dt_ls,
         )
 
     elif metric == "12seasonality":
@@ -209,7 +216,9 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             for season in ["NDJ", "MAM"]:
                 cube = extract_season(datas[var_group[0]], season)
                 cube = climate_statistics(
-                    cube, operator="std_dev", period="full",
+                    cube,
+                    operator="std_dev",
+                    period="full",
                 )
                 preproc[season] = cube.data
 
@@ -231,7 +240,11 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
 
         val = compute(data_values[1], data_values[0])
         fig = plot_level1(
-            data_values, val, "SSTA skewness(°C)", "ENSO skewness", dt_ls,
+            data_values,
+            val,
+            "SSTA skewness(°C)",
+            "ENSO skewness",
+            dt_ls,
         )
 
     elif metric == "14duration":
@@ -275,7 +288,8 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
 def mask_to_years(events):
     """Get years from mask."""
     maskedtime = np.ma.masked_array(
-        events.coord("time").points, mask=events.data.mask,
+        events.coord("time").points,
+        mask=events.data.mask,
     )
     # return years
     return [
@@ -379,17 +393,24 @@ def main(cfg):
         obs, models = [], []
         for var_prep in var_preproc:
             obs += select_metadata(
-                input_data, variable_group=var_prep, project="OBS",
+                input_data,
+                variable_group=var_prep,
+                project="OBS",
             )
             obs += select_metadata(
-                input_data, variable_group=var_prep, project="OBS6",
+                input_data,
+                variable_group=var_prep,
+                project="OBS6",
             )
             models += select_metadata(
-                input_data, variable_group=var_prep, project="CMIP6",
+                input_data,
+                variable_group=var_prep,
+                project="CMIP6",
             )
 
         prov_record = get_provenance_record(
-            f"ENSO metrics {metric}", [model["filename"] for model in models],
+            f"ENSO metrics {metric}",
+            [model["filename"] for model in models],
         )
         # obs datasets for each model
         obs_datasets = {
@@ -400,7 +421,9 @@ def main(cfg):
         # group models by dataset
 
         for dataset, attributes in group_metadata(
-            models, "dataset", sort="project",
+            models,
+            "dataset",
+            sort="project",
         ).items():
             logger.info(
                 "%s, preprocessed cubes:%d, dataset:%s",
@@ -416,12 +439,17 @@ def main(cfg):
             logger.info(pformat(model_datasets))
 
             value, fig = compute_enso_metrics(
-                input_pair, [dataset, obs[0]["dataset"]], var_preproc, metric,
+                input_pair,
+                [dataset, obs[0]["dataset"]],
+                var_preproc,
+                metric,
             )
 
             if value:
                 metricfile = get_diagnostic_filename(
-                    "matrix", cfg, extension="csv",
+                    "matrix",
+                    cfg,
+                    extension="csv",
                 )
                 with open(metricfile, "a+", encoding="utf-8") as fileo:
                     fileo.write(f"{dataset},{metric},{value}\n")

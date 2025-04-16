@@ -36,7 +36,9 @@ def plot_level1(input_data, cfg):
         sname = dataset["short_name"]
 
         logger.info(
-            "dataset: %s - %s", dataset["dataset"], dataset["long_name"],
+            "dataset: %s - %s",
+            dataset["dataset"],
+            dataset["long_name"],
         )
         # Load the data
         cube = iris.load_cube(dataset["filename"])
@@ -138,7 +140,9 @@ def main(cfg):
 
     # group by variables
     variable_groups = group_metadata(
-        input_data, "variable_group", sort="project",
+        input_data,
+        "variable_group",
+        sort="project",
     )
     # for each select obs and iterate others, obs last
     for grp, var_attr in variable_groups.items():
