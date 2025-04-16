@@ -426,7 +426,7 @@ def main(cfg):
             sort="project",
         ).items():
             logger.info(
-                "%s, preprocessed cubes:%d, dataset:%s",
+                "%s, dataset:%s",
                 metric,
                 dataset,
             )
