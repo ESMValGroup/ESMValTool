@@ -3,8 +3,6 @@
   expected_pngs: [1d_profile_tas_tas_amon_1d_plev_0_Amon.png]
   settings:
     facet_used_for_labels: alias
-    figure_kwargs:
-      figsize: [5, 5]
     group_variables_by: short_name
     matplotlib_rc_params:
       ytick.color: red
@@ -45,8 +43,6 @@
   expected_pngs: [annual_cycle_tas_tas_amon_1d_month_number_0_Amon.png]
   settings:
     facet_used_for_labels: alias
-    figure_kwargs:
-      figsize: [5, 5]
     group_variables_by: short_name
     matplotlib_rc_params:
       ytick.color: red
@@ -170,8 +166,6 @@
   expected_pngs: [benchmarking_map_tas_tas_amon_2d_lat_lon_0_Amon.png]
   settings:
     facet_used_for_labels: alias
-    figure_kwargs:
-      figsize: [5, 5]
     group_variables_by: short_name
     plots:
       benchmarking_map:
@@ -224,8 +218,6 @@
   expected_pngs: [benchmarking_zonal_tas_tas_amon_2d_alt16_lat_0_Amon.png]
   settings:
     facet_used_for_labels: alias
-    figure_kwargs:
-      figsize: [5, 5]
     group_variables_by: short_name
     plots:
       benchmarking_zonal:
@@ -256,8 +248,6 @@
   expected_pngs: [diurnal_cycle_tas_tas_amon_1d_hour_0_Amon.png]
   settings:
     facet_used_for_labels: alias
-    figure_kwargs:
-      figsize: [5, 5]
     group_variables_by: short_name
     matplotlib_rc_params:
       ytick.color: red
@@ -297,8 +287,6 @@
   expected_pngs: [hovmoeller_anncyc_vs_lat_or_lon_tas_tas_amon_2d_month_number_lat_0_Amon.png]
   settings:
     facet_used_for_labels: alias
-    figure_kwargs:
-      figsize: [5, 5]
     group_variables_by: short_name
     plots:
       hovmoeller_anncyc_vs_lat_or_lon:
@@ -358,8 +346,6 @@
   expected_pngs: [hovmoeller_time_vs_lat_or_lon_tas_tas_amon_2d_time_lat_0_Amon.png]
   settings:
     facet_used_for_labels: alias
-    figure_kwargs:
-      figsize: [5, 5]
     group_variables_by: short_name
     plots:
       hovmoeller_time_vs_lat_or_lon:
@@ -417,8 +403,6 @@
   expected_pngs: [hovmoeller_z_vs_time_tas_tas_amon_2d_time_plev_0_Amon.png]
   settings:
     facet_used_for_labels: alias
-    figure_kwargs:
-      figsize: [5, 5]
     group_variables_by: short_name
     plots:
       hovmoeller_z_vs_time:
@@ -462,8 +446,6 @@
   expected_pngs: [map_tas_tas_amon_2d_lat_lon_0_Amon.png]
   settings:
     facet_used_for_labels: alias
-    figure_kwargs:
-      figsize: [5, 5]
     group_variables_by: short_name
     plots:
       map:
@@ -509,8 +491,6 @@
   expected_pngs: [timeseries_tas_tas_amon_1d_time_0_Amon.png]
   settings:
     facet_used_for_labels: alias
-    figure_kwargs:
-      figsize: [5, 5]
     group_variables_by: short_name
     matplotlib_rc_params:
       ytick.color: red
@@ -548,8 +528,6 @@
   expected_pngs: [variable_vs_lat_tas_tas_amon_1d_lat_0_Amon.png]
   settings:
     facet_used_for_labels: alias
-    figure_kwargs:
-      figsize: [5, 5]
     group_variables_by: short_name
     matplotlib_rc_params:
       ytick.color: red
@@ -586,8 +564,6 @@
   expected_pngs: [zonal_mean_profile_tas_tas_amon_2d_plev_lat_0_Amon.png]
   settings:
     facet_used_for_labels: alias
-    figure_kwargs:
-      figsize: [5, 5]
     group_variables_by: short_name
     plots:
       zonal_mean_profile:

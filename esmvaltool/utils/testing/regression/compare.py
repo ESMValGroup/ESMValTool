@@ -261,9 +261,6 @@ def compare_png(reference_file: Path, current_file: Path) -> bool:
         cur = imagehash.phash(img, hash_size=hash_size)
 
     distance = ref - cur
-    assert distance < max_distance, (
-        f"distance: {distance}, max_distance: {max_distance}"
-    )
     return distance < max_distance
 
 
