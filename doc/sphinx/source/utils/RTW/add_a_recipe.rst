@@ -19,9 +19,10 @@ The recipe will then run at your site whenever the |RTW| is run.
 Preparation
 -----------
 
-#. Open a `new ESMValTool issue`_ on GitHub. Assign yourself to the issue and
-   add the ``Recipe Test Workflow (RTW)`` label. `ESMValTool issue #3663`_
-   provides an example.
+#. Open a `new ESMValTool issue`_ on GitHub.
+   Assign yourself to the issue
+   and add the ``Recipe Test Workflow (RTW)`` label.
+   `ESMValTool issue #3663`_ provides an example.
 
 #. Create a branch.
 
@@ -31,17 +32,17 @@ Preparation
    * on the compute server you use at your site
 
    .. hint::
-      Your compute server is defined in the
-      ``esmvaltool/utils/recipe_test_workflow/site/<site>.cylc`` file as
-      follows::
+      Your compute server is defined in the ``site/<site>/runtime.cylc`` file
+      as follows::
 
          [[COMPUTE]]
             platform = <your compute server>
 
-#. Obtain the actual duration and memory usage of the recipe. This can be found
-   either in the message printed to screen, or at the end of the
-   ``run/main_log.txt`` file in the recipe output directory. The relevant lines will
-   look something like::
+#. Obtain the actual duration and memory usage of the recipe.
+   This can be found either in the message printed to screen,
+   or at the end of the ``run/main_log.txt`` file
+   in the recipe output directory.
+   The relevant lines will look something like::
 
       YYYY-MM-DD HH:MM:SS:sss UTC [12345] INFO    Time for running the recipe was: 0:02:13.334742
       YYYY-MM-DD HH:MM:SS:sss UTC [12345] INFO    Maximum memory used (estimate): 2.4 GB
@@ -52,8 +53,8 @@ Adding the recipe
 -----------------
 
 #. Add the recipe in alphabetical order to either ``FAST_RECIPES`` or
-   ``MEDIUM_RECIPES`` in the ``<site>-recipes.jinja`` file. It should look
-   something like::
+   ``MEDIUM_RECIPES`` in the ``site/<site>/recipes.jinja`` file.
+   It should look something like::
 
       {
          'recipe_path': 'recipe_a_fast_recipe',
@@ -68,8 +69,7 @@ Adding the recipe
       than 10 mins.
 
    .. hint::
-      The :ref:`site/site-recipes.jinja <site_recipes_file>`.
-      file provides more information.
+      The :ref:`site_recipes_file` file provides more information.
 
    .. hint::
       Set the ``max_time`` to 10-20% more than the actual duration. For actual
@@ -96,12 +96,13 @@ Create the |KGOs|
       cp -r ${HOME}/cylc-run/recipe_test_workflow/runN/share/cycle/<cycle>/recipe_<recipe>_<date>_<time> <KGO_ROOT_PATH>
 
    .. hint::
-      ``<cycle>`` will look something like: ``20250101T0900Z``. The recipe output
-      directory will look something like: ``recipe_python_20250101_090000``
+      ``<cycle>`` will look something like: ``20250101T0900Z``.
+      The recipe output directory
+      will look something like: ``recipe_python_20250101_090000``
 
    .. hint::
-      Find your site specific ``KGO_ROOT_PATH`` in the ``rose-suite-<site>.conf`` file
-      in the ``esmvaltool/utils/recipe_test_workflow/opt/`` directory.
+      Find your site-specific ``KGO_ROOT_PATH``
+      in the ``opt/rose-suite-<site>.conf`` file.
 
    .. note::
       Cylc is typically configured such that
@@ -130,9 +131,10 @@ Request a review
 
 #. Commit and push your changes.
 
-#. Create a PR. Assign yourself to the PR, and add the
-   ``Recipe Test Workflow (RTW)`` label to the PR. Refer to
-   `ESMValTool PR #3664`_ for an example.
+#. Create a PR.
+   Assign yourself to the PR,
+   and add the ``Recipe Test Workflow (RTW)`` label to the PR.
+   `ESMValTool PR #3664`_ provides an example.
 
    .. note::
       Reviewers will automatically be assigned to your PR.
