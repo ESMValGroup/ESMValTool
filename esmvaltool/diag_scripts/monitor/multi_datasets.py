@@ -884,6 +884,7 @@ import warnings
 from copy import deepcopy
 from pathlib import Path
 from pprint import pformat
+from typing import Any
 
 import cartopy.crs as ccrs
 import dask.array as da
@@ -923,6 +924,283 @@ logger = logging.getLogger(Path(__file__).stem)
 class MultiDatasets(MonitorBase):
     """Diagnostic to plot multi-dataset plots."""
 
+    @property
+    def plot_settings(self) -> dict[str, dict[str, Any]]:
+        """Plot settings."""
+        return {
+            "1d_profile": {
+                "function": self.create_1d_profile_plot,
+                "dimensions": (["air_pressure"], ["altitude"]),
+                "type": "one_plot_per_variable",
+                "default_settings": {
+                    "aspect_ratio": 1.5,
+                    "gridline_kwargs": {},
+                    "hlines": [],
+                    "legend_kwargs": {},
+                    "log_x": False,
+                    "log_y": True,
+                    "plot_kwargs": {},
+                    "pyplot_kwargs": {},
+                    "show_y_minor_ticklabels": False,
+                },
+            },
+            "annual_cycle": {
+                "function": self.create_annual_cycle_plot,
+                "dimensions": (["month_number"],),
+                "type": "one_plot_per_variable",
+                "default_settings": {
+                    "gridline_kwargs": {},
+                    "hlines": [],
+                    "legend_kwargs": {},
+                    "plot_kwargs": {},
+                    "pyplot_kwargs": {},
+                },
+            },
+            "benchmarking_annual_cycle": {
+                "function": self.create_benchmarking_annual,
+                "dimensions": (["month_number"],),
+                "type": "one_plot_per_variable",
+                "default_settings": {
+                    "gridline_kwargs": {},
+                    "hlines": [],
+                    "legend_kwargs": {},
+                    "plot_kwargs": {},
+                    "pyplot_kwargs": {},
+                },
+            },
+            "benchmarking_boxplot": {
+                "function": self.create_benchmarking_boxplot,
+                "dimensions": ([],),
+                "type": "one_plot_total",
+                "default_settings": {
+                    "fontsize": None,
+                    "plot_kwargs": {},
+                    "pyplot_kwargs": {},
+                    "scatter_kwargs": {
+                        "marker": "x",
+                        "s": 200,
+                        "linewidths": 2,
+                        "color": "red",
+                        "zorder": 3,
+                    },
+                    "var_order": None,
+                },
+            },
+            "benchmarking_diurnal_cycle": {
+                "function": self.create_benchmarking_diurnal,
+                "dimensions": (["hour"],),
+                "type": "one_plot_per_variable",
+                "default_settings": {
+                    "gridline_kwargs": {},
+                    "hlines": [],
+                    "legend_kwargs": {},
+                    "plot_kwargs": {},
+                    "pyplot_kwargs": {},
+                },
+            },
+            "benchmarking_map": {
+                "function": self.create_benchmarking_map_plot,
+                "dimensions": (["latitude", "longitude"],),
+                "type": "one_plot_per_dataset",
+                "default_settings": {
+                    "cbar_label": "{short_name} [{units}]",
+                    "cbar_kwargs": {"orientation": "horizontal", "aspect": 30},
+                    "fontsize": None,
+                    "plot_kwargs": {},
+                    "pyplot_kwargs": {},
+                    "rasterize": True,
+                },
+            },
+            "benchmarking_timeseries": {
+                "function": self.create_benchmarking_timeseries,
+                "dimensions": (["time"],),
+                "type": "one_plot_per_variable",
+                "default_settings": {
+                    "gridline_kwargs": {},
+                    "hlines": [],
+                    "legend_kwargs": {},
+                    "plot_kwargs": {},
+                    "pyplot_kwargs": {},
+                    "time_format": None,
+                },
+            },
+            "benchmarking_zonal": {
+                "function": self.create_benchmarking_zonal_plot,
+                "dimensions": (
+                    ["latitude", "air_pressure"],
+                    ["latitude", "altitude"],
+                ),
+                "type": "one_plot_per_dataset",
+                "default_settings": {
+                    "cbar_label": "{short_name} [{units}]",
+                    "cbar_kwargs": {"orientation": "vertical"},
+                    "fontsize": None,
+                    "log_y": True,
+                    "plot_kwargs": {},
+                    "pyplot_kwargs": {},
+                    "rasterize": True,
+                    "show_y_minor_ticklabels": False,
+                },
+            },
+            "diurnal_cycle": {
+                "function": self.create_diurnal_cycle_plot,
+                "dimensions": (["hour"],),
+                "type": "one_plot_per_variable",
+                "default_settings": {
+                    "gridline_kwargs": {},
+                    "hlines": [],
+                    "legend_kwargs": {},
+                    "plot_kwargs": {},
+                    "pyplot_kwargs": {},
+                },
+            },
+            "hovmoeller_anncyc_vs_lat_or_lon": {
+                "function": self.create_hovmoeller_anncyc_vs_lat_or_lon_plot,
+                "dimensions": (
+                    ["month_number", "latitude"],
+                    ["month_number", "longitude"],
+                ),
+                "type": "one_plot_per_dataset",
+                "default_settings": {
+                    "cbar_label": "{short_name} [{units}]",
+                    "cbar_label_bias": "Δ{short_name} [{units}]",
+                    "cbar_kwargs": {"orientation": "vertical"},
+                    "cbar_kwargs_bias": {},
+                    "common_cbar": False,
+                    "fontsize": None,
+                    "plot_func": "contourf",
+                    "plot_kwargs": {},
+                    "plot_kwargs_bias": {},
+                    "pyplot_kwargs": {},
+                    "rasterize": True,
+                    "show_y_minor_ticks": True,
+                    "show_x_minor_ticks": True,
+                    "time_on": "y-axis",
+                },
+            },
+            "hovmoeller_time_vs_lat_or_lon": {
+                "function": self.create_hovmoeller_time_vs_lat_or_lon_plot,
+                "dimensions": (["time", "latitude"], ["time", "longitude"]),
+                "type": "one_plot_per_dataset",
+                "default_settings": {
+                    "cbar_label": "{short_name} [{units}]",
+                    "cbar_label_bias": "Δ{short_name} [{units}]",
+                    "cbar_kwargs": {"orientation": "vertical"},
+                    "cbar_kwargs_bias": {},
+                    "common_cbar": False,
+                    "fontsize": None,
+                    "plot_func": "contourf",
+                    "plot_kwargs": {},
+                    "plot_kwargs_bias": {},
+                    "pyplot_kwargs": {},
+                    "rasterize": True,
+                    "show_y_minor_ticks": True,
+                    "show_x_minor_ticks": True,
+                    "time_format": None,
+                    "time_on": "y-axis",
+                },
+            },
+            "hovmoeller_z_vs_time": {
+                "function": self.create_hovmoeller_z_vs_time_plot,
+                "dimensions": (["time", "air_pressure"], ["time", "altitude"]),
+                "type": "one_plot_per_dataset",
+                "default_settings": {
+                    "cbar_label": "{short_name} [{units}]",
+                    "cbar_label_bias": "Δ{short_name} [{units}]",
+                    "cbar_kwargs": {"orientation": "vertical"},
+                    "cbar_kwargs_bias": {},
+                    "common_cbar": False,
+                    "fontsize": None,
+                    "log_y": True,
+                    "plot_func": "contourf",
+                    "plot_kwargs": {},
+                    "plot_kwargs_bias": {},
+                    "pyplot_kwargs": {},
+                    "rasterize": True,
+                    "show_stats": True,
+                    "show_y_minor_ticklabels": False,
+                    "time_format": None,
+                    "x_pos_stats_avg": 0.01,
+                    "x_pos_stats_bias": 0.7,
+                },
+            },
+            "map": {
+                "function": self.create_map_plot,
+                "dimensions": (["latitude", "longitude"],),
+                "type": "one_plot_per_dataset",
+                "default_settings": {
+                    "cbar_label": "{short_name} [{units}]",
+                    "cbar_label_bias": "Δ{short_name} [{units}]",
+                    "cbar_kwargs": {"orientation": "horizontal", "aspect": 30},
+                    "cbar_kwargs_bias": {},
+                    "common_cbar": False,
+                    "fontsize": None,
+                    "gridline_kwargs": {},
+                    "plot_func": "contourf",
+                    "plot_kwargs": {},
+                    "plot_kwargs_bias": {"cmap": "bwr", "norm": "centered"},
+                    "projection": "Robinson",
+                    "projection_kwargs": {"central_longitude": 10},
+                    "pyplot_kwargs": {},
+                    "rasterize": True,
+                    "show_stats": True,
+                    "x_pos_stats_avg": 0.0,
+                    "x_pos_stats_bias": 0.92,
+                },
+            },
+            "timeseries": {
+                "function": self.create_timeseries_plot,
+                "dimensions": (["time"],),
+                "type": "one_plot_per_variable",
+                "default_settings": {
+                    "gridline_kwargs": {},
+                    "hlines": [],
+                    "legend_kwargs": {},
+                    "plot_kwargs": {},
+                    "pyplot_kwargs": {},
+                    "time_format": None,
+                },
+            },
+            "variable_vs_lat": {
+                "function": self.create_variable_vs_lat_plot,
+                "dimensions": (["latitude"],),
+                "type": "one_plot_per_variable",
+                "default_settings": {
+                    "gridline_kwargs": {},
+                    "hlines": [],
+                    "legend_kwargs": {},
+                    "plot_kwargs": {},
+                    "pyplot_kwargs": {},
+                },
+            },
+            "zonal_mean_profile": {
+                "function": self.create_zonal_mean_profile_plot,
+                "dimensions": (
+                    ["latitude", "air_pressure"],
+                    ["latitude", "altitude"],
+                ),
+                "type": "one_plot_per_dataset",
+                "default_settings": {
+                    "cbar_label": "{short_name} [{units}]",
+                    "cbar_label_bias": "Δ{short_name} [{units}]",
+                    "cbar_kwargs": {"orientation": "vertical"},
+                    "cbar_kwargs_bias": {},
+                    "common_cbar": False,
+                    "fontsize": None,
+                    "log_y": True,
+                    "plot_func": "contourf",
+                    "plot_kwargs": {},
+                    "plot_kwargs_bias": {},
+                    "pyplot_kwargs": {},
+                    "rasterize": True,
+                    "show_stats": True,
+                    "show_y_minor_ticklabels": False,
+                    "x_pos_stats_avg": 0.01,
+                    "x_pos_stats_bias": 0.7,
+                },
+            },
+        }
+
     def __init__(self, config):
         """Initialize class member."""
         super().__init__(config)
@@ -960,306 +1238,28 @@ class MultiDatasets(MonitorBase):
         )
 
         # Check given plot types and set default settings for them
-        self.supported_plot_types = [
-            "timeseries",
-            "annual_cycle",
-            "diurnal_cycle",
-            "map",
-            "zonal_mean_profile",
-            "1d_profile",
-            "variable_vs_lat",
-            "hovmoeller_z_vs_time",
-            "hovmoeller_time_vs_lat_or_lon",
-            "hovmoeller_anncyc_vs_lat_or_lon",
-            "benchmarking_annual_cycle",
-            "benchmarking_boxplot",
-            "benchmarking_diurnal_cycle",
-            "benchmarking_map",
-            "benchmarking_timeseries",
-            "benchmarking_zonal",
-        ]
         for plot_type, plot_options in self.plots.items():
-            if plot_type not in self.supported_plot_types:
+            if plot_type not in self.plot_settings:
                 raise ValueError(
                     f"Got unexpected plot type '{plot_type}' for option "
-                    f"'plots', expected one of {self.supported_plot_types}"
+                    f"'plots', expected one of {list(self.plot_settings)}"
                 )
             if plot_options is None:
                 self.plots[plot_type] = {}
 
-            # Default options for the different plot types
-            if plot_type == "timeseries":
-                self.plots[plot_type].setdefault("gridline_kwargs", {})
-                self.plots[plot_type].setdefault("hlines", [])
-                self.plots[plot_type].setdefault("legend_kwargs", {})
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-                self.plots[plot_type].setdefault("time_format", None)
-
-            elif plot_type == "benchmarking_timeseries":
-                self.plots[plot_type].setdefault("gridline_kwargs", {})
-                self.plots[plot_type].setdefault("hlines", [])
-                self.plots[plot_type].setdefault("legend_kwargs", {})
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-                self.plots[plot_type].setdefault("time_format", None)
-
-            elif plot_type == "annual_cycle":
-                self.plots[plot_type].setdefault("gridline_kwargs", {})
-                self.plots[plot_type].setdefault("hlines", [])
-                self.plots[plot_type].setdefault("legend_kwargs", {})
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-
-            elif plot_type == "benchmarking_annual_cycle":
-                self.plots[plot_type].setdefault("gridline_kwargs", {})
-                self.plots[plot_type].setdefault("hlines", [])
-                self.plots[plot_type].setdefault("legend_kwargs", {})
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-
-            elif plot_type == "diurnal_cycle":
-                self.plots[plot_type].setdefault("gridline_kwargs", {})
-                self.plots[plot_type].setdefault("hlines", [])
-                self.plots[plot_type].setdefault("legend_kwargs", {})
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-
-            elif plot_type == "benchmarking_diurnal_cycle":
-                self.plots[plot_type].setdefault("gridline_kwargs", {})
-                self.plots[plot_type].setdefault("hlines", [])
-                self.plots[plot_type].setdefault("legend_kwargs", {})
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-
-            elif plot_type == "benchmarking_boxplot":
-                self.plots[plot_type].setdefault("fontsize", None)
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-                self.plots[plot_type].setdefault(
-                    "scatter_kwargs",
-                    {
-                        "marker": "x",
-                        "s": 200,
-                        "linewidths": 2,
-                        "color": "red",
-                        "zorder": 3,
-                    },
-                )
-                self.plots[plot_type].setdefault("var_order", None)
-
-            elif plot_type == "map":
-                self.plots[plot_type].setdefault(
-                    "cbar_label", "{short_name} [{units}]"
-                )
-                self.plots[plot_type].setdefault(
-                    "cbar_label_bias", "Δ{short_name} [{units}]"
-                )
-                self.plots[plot_type].setdefault(
-                    "cbar_kwargs", {"orientation": "horizontal", "aspect": 30}
-                )
-                self.plots[plot_type].setdefault("cbar_kwargs_bias", {})
-                self.plots[plot_type].setdefault("common_cbar", False)
-                self.plots[plot_type].setdefault("fontsize", None)
-                self.plots[plot_type].setdefault("gridline_kwargs", {})
-                self.plots[plot_type].setdefault("plot_func", "contourf")
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("plot_kwargs_bias", {})
-                self.plots[plot_type]["plot_kwargs_bias"].setdefault(
-                    "cmap", "bwr"
-                )
-                self.plots[plot_type]["plot_kwargs_bias"].setdefault(
-                    "norm", "centered"
-                )
-                if "projection" not in self.plots[plot_type]:
-                    self.plots[plot_type].setdefault("projection", "Robinson")
+            # For map plots, only set default projection options if no
+            # projection is specified
+            if plot_type in ("map", "benchmarking_map"):
+                if "projection" not in plot_options:
                     self.plots[plot_type].setdefault(
                         "projection_kwargs", {"central_longitude": 10}
                     )
-                else:
-                    self.plots[plot_type].setdefault("projection_kwargs", {})
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-                self.plots[plot_type].setdefault("rasterize", True)
-                self.plots[plot_type].setdefault("show_stats", True)
-                self.plots[plot_type].setdefault("x_pos_stats_avg", 0.0)
-                self.plots[plot_type].setdefault("x_pos_stats_bias", 0.92)
 
-            elif plot_type == "benchmarking_map":
-                self.plots[plot_type].setdefault(
-                    "cbar_label", "{short_name} [{units}]"
-                )
-                self.plots[plot_type].setdefault(
-                    "cbar_kwargs", {"orientation": "horizontal", "aspect": 30}
-                )
-                self.plots[plot_type].setdefault("fontsize", None)
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                if "projection" not in self.plots[plot_type]:
-                    self.plots[plot_type].setdefault("projection", "Robinson")
-                    self.plots[plot_type].setdefault(
-                        "projection_kwargs", {"central_longitude": 10}
-                    )
-                else:
-                    self.plots[plot_type].setdefault("projection_kwargs", {})
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-                self.plots[plot_type].setdefault("rasterize", True)
-
-            elif plot_type == "zonal_mean_profile":
-                self.plots[plot_type].setdefault(
-                    "cbar_label", "{short_name} [{units}]"
-                )
-                self.plots[plot_type].setdefault(
-                    "cbar_label_bias", "Δ{short_name} [{units}]"
-                )
-                self.plots[plot_type].setdefault(
-                    "cbar_kwargs", {"orientation": "vertical"}
-                )
-                self.plots[plot_type].setdefault("cbar_kwargs_bias", {})
-                self.plots[plot_type].setdefault("common_cbar", False)
-                self.plots[plot_type].setdefault("fontsize", None)
-                self.plots[plot_type].setdefault("log_y", True)
-                self.plots[plot_type].setdefault("plot_func", "contourf")
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("plot_kwargs_bias", {})
-                self.plots[plot_type]["plot_kwargs_bias"].setdefault(
-                    "cmap", "bwr"
-                )
-                self.plots[plot_type]["plot_kwargs_bias"].setdefault(
-                    "norm", "centered"
-                )
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-                self.plots[plot_type].setdefault("rasterize", True)
-                self.plots[plot_type].setdefault("show_stats", True)
-                self.plots[plot_type].setdefault(
-                    "show_y_minor_ticklabels", False
-                )
-                self.plots[plot_type].setdefault("x_pos_stats_avg", 0.01)
-                self.plots[plot_type].setdefault("x_pos_stats_bias", 0.7)
-
-            elif plot_type == "benchmarking_zonal":
-                self.plots[plot_type].setdefault(
-                    "cbar_label", "{short_name} [{units}]"
-                )
-                self.plots[plot_type].setdefault(
-                    "cbar_kwargs", {"orientation": "vertical"}
-                )
-                self.plots[plot_type].setdefault("fontsize", None)
-                self.plots[plot_type].setdefault("log_y", True)
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-                self.plots[plot_type].setdefault("rasterize", True)
-                self.plots[plot_type].setdefault(
-                    "show_y_minor_ticklabels", False
-                )
-
-            elif plot_type == "1d_profile":
-                self.plots[plot_type].setdefault("aspect_ratio", 1.5)
-                self.plots[plot_type].setdefault("gridline_kwargs", {})
-                self.plots[plot_type].setdefault("hlines", [])
-                self.plots[plot_type].setdefault("legend_kwargs", {})
-                self.plots[plot_type].setdefault("log_x", False)
-                self.plots[plot_type].setdefault("log_y", True)
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-                self.plots[plot_type].setdefault(
-                    "show_y_minor_ticklabels", False
-                )
-
-            elif plot_type == "variable_vs_lat":
-                self.plots[plot_type].setdefault("gridline_kwargs", {})
-                self.plots[plot_type].setdefault("hlines", [])
-                self.plots[plot_type].setdefault("legend_kwargs", {})
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-
-            elif plot_type == "hovmoeller_z_vs_time":
-                self.plots[plot_type].setdefault(
-                    "cbar_label", "{short_name} [{units}]"
-                )
-                self.plots[plot_type].setdefault(
-                    "cbar_label_bias", "Δ{short_name} [{units}]"
-                )
-                self.plots[plot_type].setdefault(
-                    "cbar_kwargs", {"orientation": "vertical"}
-                )
-                self.plots[plot_type].setdefault("cbar_kwargs_bias", {})
-                self.plots[plot_type].setdefault("common_cbar", False)
-                self.plots[plot_type].setdefault("fontsize", None)
-                self.plots[plot_type].setdefault("log_y", True)
-                self.plots[plot_type].setdefault("plot_func", "contourf")
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("plot_kwargs_bias", {})
-                self.plots[plot_type]["plot_kwargs_bias"].setdefault(
-                    "cmap", "bwr"
-                )
-                self.plots[plot_type]["plot_kwargs_bias"].setdefault(
-                    "norm", "centered"
-                )
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-                self.plots[plot_type].setdefault("rasterize", True)
-                self.plots[plot_type].setdefault("show_stats", True)
-                self.plots[plot_type].setdefault(
-                    "show_y_minor_ticklabels", False
-                )
-                self.plots[plot_type].setdefault("time_format", None)
-                self.plots[plot_type].setdefault("x_pos_stats_avg", 0.01)
-                self.plots[plot_type].setdefault("x_pos_stats_bias", 0.7)
-
-            elif plot_type == "hovmoeller_time_vs_lat_or_lon":
-                self.plots[plot_type].setdefault(
-                    "cbar_label", "{short_name} [{units}]"
-                )
-                self.plots[plot_type].setdefault(
-                    "cbar_label_bias", "Δ{short_name} [{units}]"
-                )
-                self.plots[plot_type].setdefault(
-                    "cbar_kwargs", {"orientation": "vertical"}
-                )
-                self.plots[plot_type].setdefault("cbar_kwargs_bias", {})
-                self.plots[plot_type].setdefault("common_cbar", False)
-                self.plots[plot_type].setdefault("fontsize", None)
-                self.plots[plot_type].setdefault("plot_func", "contourf")
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("plot_kwargs_bias", {})
-                self.plots[plot_type]["plot_kwargs_bias"].setdefault(
-                    "cmap", "bwr"
-                )
-                self.plots[plot_type]["plot_kwargs_bias"].setdefault(
-                    "norm", "centered"
-                )
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-                self.plots[plot_type].setdefault("rasterize", True)
-                self.plots[plot_type].setdefault("show_y_minor_ticks", True)
-                self.plots[plot_type].setdefault("show_x_minor_ticks", True)
-                self.plots[plot_type].setdefault("time_format", None)
-                self.plots[plot_type].setdefault("time_on", "y-axis")
-
-            elif plot_type == "hovmoeller_anncyc_vs_lat_or_lon":
-                self.plots[plot_type].setdefault(
-                    "cbar_label", "{short_name} [{units}]"
-                )
-                self.plots[plot_type].setdefault(
-                    "cbar_label_bias", "Δ{short_name} [{units}]"
-                )
-                self.plots[plot_type].setdefault(
-                    "cbar_kwargs", {"orientation": "vertical"}
-                )
-                self.plots[plot_type].setdefault("cbar_kwargs_bias", {})
-                self.plots[plot_type].setdefault("common_cbar", False)
-                self.plots[plot_type].setdefault("fontsize", None)
-                self.plots[plot_type].setdefault("plot_func", "contourf")
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("plot_kwargs_bias", {})
-                self.plots[plot_type]["plot_kwargs_bias"].setdefault(
-                    "cmap", "bwr"
-                )
-                self.plots[plot_type]["plot_kwargs_bias"].setdefault(
-                    "norm", "centered"
-                )
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-                self.plots[plot_type].setdefault("rasterize", True)
-                self.plots[plot_type].setdefault("show_y_minor_ticks", True)
-                self.plots[plot_type].setdefault("show_x_minor_ticks", True)
-                self.plots[plot_type].setdefault("time_on", "y-axis")
+            default_settings = self.plot_settings[plot_type][
+                "default_settings"
+            ]
+            for key, val in default_settings.items():
+                self.plots[plot_type].setdefault(key, val)
 
         # Check that facet_used_for_labels is present for every dataset
         for dataset in self.input_data:
@@ -1530,6 +1530,8 @@ class MultiDatasets(MonitorBase):
         # For bias plots, overwrite the kwargs with bias-specific option
         if bias:
             bias_kwargs = self.plots[plot_type]["plot_kwargs_bias"]
+            bias_kwargs.setdefault("cmap", "bwr")
+            bias_kwargs.setdefault("norm", "centered")
             plot_kwargs.update(bias_kwargs)
 
         # Replace facets with dataset entries for string arguments
@@ -2849,45 +2851,9 @@ class MultiDatasets(MonitorBase):
             else:
                 getattr(plt, func)(arg)
 
-    @staticmethod
-    def _check_cube_dimensions(cube, plot_type):
+    def _check_cube_dimensions(self, cube, plot_type):
         """Check that cube has correct dimensional variables."""
-        expected_dimensions_dict = {
-            "annual_cycle": (["month_number"],),
-            "benchmarking_boxplot": ([],),
-            "diurnal_cycle": (["hour"],),
-            "map": (["latitude", "longitude"],),
-            "benchmarking_annual_cycle": (["month_number"],),
-            "benchmarking_diurnal_cycle": (["hour"],),
-            "benchmarking_map": (["latitude", "longitude"],),
-            "benchmarking_timeseries": (["time"],),
-            "benchmarking_zonal": (
-                ["latitude", "air_pressure"],
-                ["latitude", "altitude"],
-            ),
-            "zonal_mean_profile": (
-                ["latitude", "air_pressure"],
-                ["latitude", "altitude"],
-            ),
-            "timeseries": (["time"],),
-            "1d_profile": (["air_pressure"], ["altitude"]),
-            "variable_vs_lat": (["latitude"],),
-            "hovmoeller_z_vs_time": (
-                ["time", "air_pressure"],
-                ["time", "altitude"],
-            ),
-            "hovmoeller_time_vs_lat_or_lon": (
-                ["time", "latitude"],
-                ["time", "longitude"],
-            ),
-            "hovmoeller_anncyc_vs_lat_or_lon": (
-                ["month_number", "latitude"],
-                ["month_number", "longitude"],
-            ),
-        }
-        if plot_type not in expected_dimensions_dict:
-            raise NotImplementedError(f"plot_type '{plot_type}' not supported")
-        expected_dimensions = expected_dimensions_dict[plot_type]
+        expected_dimensions = self.plot_settings[plot_type]["dimensions"]
         for dims in expected_dimensions:
             cube_dims = [cube.coords(dim, dim_coords=True) for dim in dims]
             if all(cube_dims) and cube.ndim == len(dims):
@@ -3064,15 +3030,17 @@ class MultiDatasets(MonitorBase):
             f"'{variable}'), got {len(percentiles):d}"
         )
 
-    def create_timeseries_plot(self, datasets):
-        """Create time series plot."""
-        plot_type = "timeseries"
+    def create_1d_profile_plot(self, datasets):
+        """Create 1D profile plot."""
+        plot_type = "1d_profile"
         if plot_type not in self.plots:
             return
 
         logger.info("Plotting %s", plot_type)
         fig = plt.figure(**self.cfg["figure_kwargs"])
         axes = fig.add_subplot()
+
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
 
         # Plot all datasets in one single figure
         ancestors = []
@@ -3083,9 +3051,10 @@ class MultiDatasets(MonitorBase):
             cubes[self._get_label(dataset)] = cube
             self._check_cube_dimensions(cube, plot_type)
 
-            # Plot original time series
+            # Plot 1D profile
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs["axes"] = axes
+
             iris.plot.plot(cube, **plot_kwargs)
 
         # Plot horizontal lines
@@ -3093,123 +3062,42 @@ class MultiDatasets(MonitorBase):
             axes.axhline(**hline_kwargs)
 
         # Default plot appearance
-        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
         axes.set_title(multi_dataset_facets["long_name"])
-        axes.set_xlabel("time")
-        # apply time formatting
-        if self.plots[plot_type]["time_format"] is not None:
-            axes.get_xaxis().set_major_formatter(
-                mdates.DateFormatter(self.plots[plot_type]["time_format"])
-            )
-        axes.set_ylabel(
+        axes.set_xlabel(
             f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
             f"[{multi_dataset_facets['units']}]"
         )
-        gridline_kwargs = self._get_gridline_kwargs(plot_type)
-        if gridline_kwargs is not False:
-            axes.grid(**gridline_kwargs)
+        z_coord = cube.coord(axis="Z")
+        axes.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
 
-        # Legend
-        legend_kwargs = self.plots[plot_type]["legend_kwargs"]
-        if legend_kwargs is not False:
-            axes.legend(**legend_kwargs)
-
-        # Customize plot appearance
-        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
-
-        # Save plot
-        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
-        fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
-        logger.info("Wrote %s", plot_path)
-        plt.close()
-
-        # Save netCDF file
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-        var_attrs = {
-            n: datasets[0][n] for n in ("short_name", "long_name", "units")
-        }
-        io.save_1d_data(cubes, netcdf_path, "time", var_attrs)
-
-        # Provenance tracking
-        caption = (
-            f"Time series of {multi_dataset_facets['long_name']} for "
-            f"various datasets."
-        )
-        provenance_record = {
-            "ancestors": ancestors,
-            "authors": ["schlund_manuel"],
-            "caption": caption,
-            "plot_types": ["line"],
-            "long_names": [var_attrs["long_name"]],
-        }
-        with ProvenanceLogger(self.cfg) as provenance_logger:
-            provenance_logger.log(plot_path, provenance_record)
-            provenance_logger.log(netcdf_path, provenance_record)
-
-    def create_benchmarking_timeseries(self, datasets):
-        """Create time series benchmarking plot."""
-        plot_type = "benchmarking_timeseries"
-        if plot_type not in self.plots:
-            return
-
-        logger.info("Plotting %s", plot_type)
-
-        # Get dataset to be benchmarked
-        plot_datasets = self._get_benchmark_datasets(datasets)
-
-        # Get percentiles from multi-model statistics
-        percentile_dataset = self._get_benchmark_percentiles(datasets)
-
-        # Plot all datasets in one single figure
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot()
-        ancestors = []
-        cubes = {}
-        for dataset in plot_datasets:
-            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-            iris.plot.plot(dataset["cube"], **plot_kwargs)
-
-        yval2 = percentile_dataset[0]["cube"]
-        if len(percentile_dataset) > 1:
-            idx = len(percentile_dataset) - 1
-            yval1 = percentile_dataset[idx]["cube"]
+        # apply logarithmic axes
+        if self.plots[plot_type]["log_y"]:
+            axes.set_yscale("log")
+            axes.get_yaxis().set_major_formatter(FormatStrFormatter("%.1f"))
+        if self.plots[plot_type]["show_y_minor_ticklabels"]:
+            axes.get_yaxis().set_minor_locator(AutoMinorLocator())
+            axes.get_yaxis().set_minor_formatter(FormatStrFormatter("%.1f"))
         else:
-            yval1 = yval2.copy()
-            ymin, __ = axes.get_ylim()
-            yval1.data = np.full(len(yval1.data), ymin)
-
-        dataset = plot_datasets[0]
-        iris.plot.fill_between(
-            dataset["cube"].coord("time"),
-            yval1,
-            yval2,
-            facecolor="lightblue",
-            edgecolor="lightblue",
-            linewidth=3,
-            zorder=1,
-            alpha=0.8,
-        )
-
-        # Plot horizontal lines
-        for hline_kwargs in self.plots[plot_type]["hlines"]:
-            axes.axhline(**hline_kwargs)
-
-        # Default plot appearance
-        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
-        axes.set_title(multi_dataset_facets["long_name"])
-        axes.set_xlabel("time")
-        # apply time formatting
-        if self.plots[plot_type]["time_format"] is not None:
-            axes.get_xaxis().set_major_formatter(
-                mdates.DateFormatter(self.plots[plot_type]["time_format"])
+            axes.get_yaxis().set_minor_formatter(NullFormatter())
+        if self.plots[plot_type]["log_x"]:
+            axes.set_xscale("log")
+            # major and minor ticks
+            x_major = LogLocator(base=10.0, numticks=12)
+            axes.get_xaxis().set_major_locator(x_major)
+            x_minor = LogLocator(
+                base=10.0, subs=np.arange(1.0, 10.0) * 0.1, numticks=12
             )
-        axes.set_ylabel(
-            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
-            f"[{multi_dataset_facets['units']}]"
-        )
+
+            axes.get_xaxis().set_minor_locator(x_minor)
+            axes.get_xaxis().set_minor_formatter(NullFormatter())
+
+        # gridlines
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
         if gridline_kwargs is not False:
             axes.grid(**gridline_kwargs)
+        # nicer aspect ratio
+        aspect_ratio = self.plots[plot_type]["aspect_ratio"]
+        axes.set_box_aspect(aspect_ratio)
 
         # Legend
         legend_kwargs = self.plots[plot_type]["legend_kwargs"]
@@ -3230,17 +3118,17 @@ class MultiDatasets(MonitorBase):
         var_attrs = {
             n: datasets[0][n] for n in ("short_name", "long_name", "units")
         }
-        cubes[self._get_label(dataset)] = dataset["cube"]
-        io.save_1d_data(cubes, netcdf_path, "time", var_attrs)
+        io.save_1d_data(cubes, netcdf_path, z_coord.standard_name, var_attrs)
 
         # Provenance tracking
         caption = (
-            f"Time series of {multi_dataset_facets['long_name']} for "
-            f"various datasets."
+            "Vertical one-dimensional profile of "
+            f"{multi_dataset_facets['long_name']}"
+            " for various datasets."
         )
         provenance_record = {
             "ancestors": ancestors,
-            "authors": ["schlund_manuel"],
+            "authors": ["schlund_manuel", "winterstein_franziska"],
             "caption": caption,
             "plot_types": ["line"],
             "long_names": [var_attrs["long_name"]],
@@ -3429,84 +3317,83 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_diurnal_cycle_plot(self, datasets):
-        """Create diurnal cycle plot."""
-        plot_type = "diurnal_cycle"
+    def create_benchmarking_boxplot(self):
+        """Create boxplot."""
+        plot_type = "benchmarking_boxplot"
         if plot_type not in self.plots:
             return
 
         logger.info("Plotting %s", plot_type)
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot()
 
-        # Plot all datasets in one single figure
-        ancestors = []
-        cubes = {}
-        for dataset in datasets:
-            ancestors.append(dataset["filename"])
-            cube = dataset["cube"]
-            cubes[self._get_label(dataset)] = cube
-            self._check_cube_dimensions(cube, plot_type)
+        # Respect desired variable order
+        given_variables = list(self.grouped_input_data)
+        if var_order := self.plots[plot_type]["var_order"]:
+            if len(set(var_order)) != len(var_order):
+                raise ValueError(
+                    f"List of variables given by `var_order` ({var_order}) "
+                    f"contains duplicates",
+                )
+            if set(var_order) != set(given_variables):
+                raise ValueError(
+                    f"List of variables given by `var_order` ({var_order}) "
+                    f"does not agree with given variables ({given_variables})",
+                )
+        else:
+            var_order = given_variables
 
-            # Plot diurnal cycle
-            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-            plot_kwargs["axes"] = axes
-            iris.plot.plot(cube, **plot_kwargs)
+        # Collect data
+        data_idx = 0
+        dframe = pd.DataFrame(columns=["Variable", "Dataset", "Value"])
+        benchmark_datasets: dict[str, dict] = {}
+        for var_key in var_order:
+            datasets = self.grouped_input_data[var_key]
+            logger.info("Processing variable %s", var_key)
 
-        # Plot horizontal lines
-        for hline_kwargs in self.plots[plot_type]["hlines"]:
-            axes.axhline(**hline_kwargs)
+            # Get dataset to be benchmarked
+            plot_datasets = self._get_benchmark_datasets(datasets)
+            benchmark_dataset = plot_datasets[0]
 
-        # Default plot appearance
-        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
-        axes.set_title(multi_dataset_facets["long_name"])
-        axes.set_xlabel("Hour")
-        axes.set_ylabel(
-            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
-            f"[{multi_dataset_facets['units']}]"
-        )
-        axes.set_xticks(range(0, 24), minor=True)
-        axes.set_xticks(range(0, 24, 3), [str(m) for m in range(0, 24, 3)])
-        gridline_kwargs = self._get_gridline_kwargs(plot_type)
-        if gridline_kwargs is not False:
-            axes.grid(**gridline_kwargs)
+            # Get datasets for boxplots
+            benchmark_group = self._get_benchmark_group(datasets)
+            logger.info(
+                "Benchmarking group of %i datasets", len(benchmark_group)
+            )
 
-        # Legend
-        legend_kwargs = self.plots[plot_type]["legend_kwargs"]
-        if legend_kwargs is not False:
-            axes.legend(**legend_kwargs)
+            for dataset in benchmark_group:
+                cube = dataset["cube"]
+                self._check_cube_dimensions(cube, plot_type)
+                dframe.loc[data_idx] = [var_key, dataset["dataset"], cube.data]
+                data_idx = data_idx + 1
 
-        # Customize plot appearance
-        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+            dframe["Value"] = dframe["Value"].astype(str).astype(float)
+            benchmark_datasets[var_key] = benchmark_dataset
+
+        self._plot_benchmarking_boxplot(dframe, benchmark_datasets)
 
         # Save plot
+        all_vars = "_".join(benchmark_datasets)
+        all_datasets = [d for g in self.grouped_input_data.values() for d in g]
+        multi_dataset_facets = self._get_multi_dataset_facets(all_datasets)
+        multi_dataset_facets["variable_group"] = all_vars
+        multi_dataset_facets["short_name"] = all_vars
         plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
-        fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
+        plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
         logger.info("Wrote %s", plot_path)
         plt.close()
 
-        # Save netCDF file
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-        var_attrs = {
-            n: datasets[0][n] for n in ("short_name", "long_name", "units")
-        }
-        io.save_1d_data(cubes, netcdf_path, "hour", var_attrs)
-
         # Provenance tracking
-        caption = (
-            f"Diurnal cycle of {multi_dataset_facets['long_name']} for "
-            f"various datasets."
-        )
+        caption = "Boxplot"
+        ancestors = [
+            d["filename"] for g in self.grouped_input_data.values() for d in g
+        ]
         provenance_record = {
             "ancestors": ancestors,
-            "authors": ["schlund_manuel"],
+            "authors": ["bock_lisa", "schlund_manuel"],
             "caption": caption,
-            "plot_types": ["seas"],
-            "long_names": [var_attrs["long_name"]],
+            "plot_types": ["box"],
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
-            provenance_logger.log(netcdf_path, provenance_record)
 
     def create_benchmarking_diurnal(self, datasets):
         """Create benchmarking diurnal cycle plot."""
@@ -3611,83 +3498,513 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_benchmarking_boxplot(self):
-        """Create boxplot."""
-        plot_type = "benchmarking_boxplot"
+    def create_benchmarking_map_plot(self, datasets):
+        """Create benchmarking map plot."""
+        plot_type = "benchmarking_map"
+        if plot_type not in self.plots:
+            return
+
+        # Get dataset to be benchmarked
+        plot_datasets = self._get_benchmark_datasets(datasets)
+
+        # Get percentiles from multi-model statistics
+        percentile_dataset = self._get_benchmark_percentiles(datasets)
+        percentile_data = [d["cube"] for d in percentile_dataset]
+
+        # Get benchmarking metric
+        metric = self._get_benchmark_metric(datasets)
+
+        # Create a single plot for each dataset
+        for dataset in plot_datasets:
+            ancestors = [dataset["filename"]]
+            (plot_path, netcdf_paths) = self._plot_benchmarking_map(
+                dataset, percentile_data, metric
+            )
+            caption = (
+                f"Map plot of {dataset['long_name']} of dataset "
+                f"{dataset['alias']}."
+            )
+
+            # Save plot
+            plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
+            logger.info("Wrote %s", plot_path)
+            plt.close()
+
+            # Save netCDFs
+            for netcdf_path, cube in netcdf_paths.items():
+                io.iris_save(cube, netcdf_path)
+
+            # Provenance tracking
+            provenance_record = {
+                "ancestors": ancestors,
+                "authors": ["schlund_manuel"],
+                "caption": caption,
+                "plot_types": ["map"],
+                "long_names": [dataset["long_name"]],
+            }
+            with ProvenanceLogger(self.cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
+                for netcdf_path in netcdf_paths:
+                    provenance_logger.log(netcdf_path, provenance_record)
+
+    def create_benchmarking_timeseries(self, datasets):
+        """Create time series benchmarking plot."""
+        plot_type = "benchmarking_timeseries"
         if plot_type not in self.plots:
             return
 
         logger.info("Plotting %s", plot_type)
 
-        # Respect desired variable order
-        given_variables = list(self.grouped_input_data)
-        if var_order := self.plots[plot_type]["var_order"]:
-            if len(set(var_order)) != len(var_order):
-                raise ValueError(
-                    f"List of variables given by `var_order` ({var_order}) "
-                    f"contains duplicates",
-                )
-            if set(var_order) != set(given_variables):
-                raise ValueError(
-                    f"List of variables given by `var_order` ({var_order}) "
-                    f"does not agree with given variables ({given_variables})",
-                )
+        # Get dataset to be benchmarked
+        plot_datasets = self._get_benchmark_datasets(datasets)
+
+        # Get percentiles from multi-model statistics
+        percentile_dataset = self._get_benchmark_percentiles(datasets)
+
+        # Plot all datasets in one single figure
+        fig = plt.figure(**self.cfg["figure_kwargs"])
+        axes = fig.add_subplot()
+        ancestors = []
+        cubes = {}
+        for dataset in plot_datasets:
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            iris.plot.plot(dataset["cube"], **plot_kwargs)
+
+        yval2 = percentile_dataset[0]["cube"]
+        if len(percentile_dataset) > 1:
+            idx = len(percentile_dataset) - 1
+            yval1 = percentile_dataset[idx]["cube"]
         else:
-            var_order = given_variables
+            yval1 = yval2.copy()
+            ymin, __ = axes.get_ylim()
+            yval1.data = np.full(len(yval1.data), ymin)
 
-        # Collect data
-        data_idx = 0
-        dframe = pd.DataFrame(columns=["Variable", "Dataset", "Value"])
-        benchmark_datasets: dict[str, dict] = {}
-        for var_key in var_order:
-            datasets = self.grouped_input_data[var_key]
-            logger.info("Processing variable %s", var_key)
+        dataset = plot_datasets[0]
+        iris.plot.fill_between(
+            dataset["cube"].coord("time"),
+            yval1,
+            yval2,
+            facecolor="lightblue",
+            edgecolor="lightblue",
+            linewidth=3,
+            zorder=1,
+            alpha=0.8,
+        )
 
-            # Get dataset to be benchmarked
-            plot_datasets = self._get_benchmark_datasets(datasets)
-            benchmark_dataset = plot_datasets[0]
+        # Plot horizontal lines
+        for hline_kwargs in self.plots[plot_type]["hlines"]:
+            axes.axhline(**hline_kwargs)
 
-            # Get datasets for boxplots
-            benchmark_group = self._get_benchmark_group(datasets)
-            logger.info(
-                "Benchmarking group of %i datasets", len(benchmark_group)
+        # Default plot appearance
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+        axes.set_title(multi_dataset_facets["long_name"])
+        axes.set_xlabel("time")
+        # apply time formatting
+        if self.plots[plot_type]["time_format"] is not None:
+            axes.get_xaxis().set_major_formatter(
+                mdates.DateFormatter(self.plots[plot_type]["time_format"])
             )
+        axes.set_ylabel(
+            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
+            f"[{multi_dataset_facets['units']}]"
+        )
+        gridline_kwargs = self._get_gridline_kwargs(plot_type)
+        if gridline_kwargs is not False:
+            axes.grid(**gridline_kwargs)
 
-            for dataset in benchmark_group:
-                cube = dataset["cube"]
-                self._check_cube_dimensions(cube, plot_type)
-                dframe.loc[data_idx] = [var_key, dataset["dataset"], cube.data]
-                data_idx = data_idx + 1
+        # Legend
+        legend_kwargs = self.plots[plot_type]["legend_kwargs"]
+        if legend_kwargs is not False:
+            axes.legend(**legend_kwargs)
 
-            dframe["Value"] = dframe["Value"].astype(str).astype(float)
-            benchmark_datasets[var_key] = benchmark_dataset
-
-        self._plot_benchmarking_boxplot(dframe, benchmark_datasets)
+        # Customize plot appearance
+        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
 
         # Save plot
-        all_vars = "_".join(benchmark_datasets)
-        all_datasets = [d for g in self.grouped_input_data.values() for d in g]
-        multi_dataset_facets = self._get_multi_dataset_facets(all_datasets)
-        multi_dataset_facets["variable_group"] = all_vars
-        multi_dataset_facets["short_name"] = all_vars
         plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
-        plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
+        fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
         logger.info("Wrote %s", plot_path)
         plt.close()
 
+        # Save netCDF file
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+        var_attrs = {
+            n: datasets[0][n] for n in ("short_name", "long_name", "units")
+        }
+        cubes[self._get_label(dataset)] = dataset["cube"]
+        io.save_1d_data(cubes, netcdf_path, "time", var_attrs)
+
         # Provenance tracking
-        caption = "Boxplot"
-        ancestors = [
-            d["filename"] for g in self.grouped_input_data.values() for d in g
-        ]
+        caption = (
+            f"Time series of {multi_dataset_facets['long_name']} for "
+            f"various datasets."
+        )
         provenance_record = {
             "ancestors": ancestors,
-            "authors": ["bock_lisa", "schlund_manuel"],
+            "authors": ["schlund_manuel"],
             "caption": caption,
-            "plot_types": ["box"],
+            "plot_types": ["line"],
+            "long_names": [var_attrs["long_name"]],
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(netcdf_path, provenance_record)
+
+    def create_benchmarking_zonal_plot(self, datasets):
+        """Create benchmarking zonal mean profile plot."""
+        plot_type = "benchmarking_zonal"
+        if plot_type not in self.plots:
+            return
+
+        # Get dataset to be benchmarked
+        plot_datasets = self._get_benchmark_datasets(datasets)
+
+        # Get percentiles from multi-model statistics
+        percentile_dataset = self._get_benchmark_percentiles(datasets)
+        percentile_data = [d["cube"] for d in percentile_dataset]
+
+        # Get benchmarking metric
+        metric = self._get_benchmark_metric(datasets)
+
+        # Create a single plot for each dataset
+        for dataset in plot_datasets:
+            (plot_path, netcdf_paths) = self._plot_benchmarking_zonal(
+                dataset, percentile_data, metric
+            )
+            ancestors = [dataset["filename"]]
+
+            caption = (
+                f"Zonal mean profile of {dataset['long_name']} of dataset "
+                f"{dataset['alias']}."
+            )
+
+            # Save plot
+            plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
+            logger.info("Wrote %s", plot_path)
+            plt.close()
+
+            # Save netCDFs
+            for netcdf_path, cube in netcdf_paths.items():
+                io.iris_save(cube, netcdf_path)
+
+            # Provenance tracking
+            provenance_record = {
+                "ancestors": ancestors,
+                "authors": ["schlund_manuel"],
+                "caption": caption,
+                "plot_types": ["vert"],
+                "long_names": [dataset["long_name"]],
+            }
+            with ProvenanceLogger(self.cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
+                for netcdf_path in netcdf_paths:
+                    provenance_logger.log(netcdf_path, provenance_record)
+
+    def create_diurnal_cycle_plot(self, datasets):
+        """Create diurnal cycle plot."""
+        plot_type = "diurnal_cycle"
+        if plot_type not in self.plots:
+            return
+
+        logger.info("Plotting %s", plot_type)
+        fig = plt.figure(**self.cfg["figure_kwargs"])
+        axes = fig.add_subplot()
+
+        # Plot all datasets in one single figure
+        ancestors = []
+        cubes = {}
+        for dataset in datasets:
+            ancestors.append(dataset["filename"])
+            cube = dataset["cube"]
+            cubes[self._get_label(dataset)] = cube
+            self._check_cube_dimensions(cube, plot_type)
+
+            # Plot diurnal cycle
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs["axes"] = axes
+            iris.plot.plot(cube, **plot_kwargs)
+
+        # Plot horizontal lines
+        for hline_kwargs in self.plots[plot_type]["hlines"]:
+            axes.axhline(**hline_kwargs)
+
+        # Default plot appearance
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+        axes.set_title(multi_dataset_facets["long_name"])
+        axes.set_xlabel("Hour")
+        axes.set_ylabel(
+            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
+            f"[{multi_dataset_facets['units']}]"
+        )
+        axes.set_xticks(range(0, 24), minor=True)
+        axes.set_xticks(range(0, 24, 3), [str(m) for m in range(0, 24, 3)])
+        gridline_kwargs = self._get_gridline_kwargs(plot_type)
+        if gridline_kwargs is not False:
+            axes.grid(**gridline_kwargs)
+
+        # Legend
+        legend_kwargs = self.plots[plot_type]["legend_kwargs"]
+        if legend_kwargs is not False:
+            axes.legend(**legend_kwargs)
+
+        # Customize plot appearance
+        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+
+        # Save plot
+        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
+        fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
+        logger.info("Wrote %s", plot_path)
+        plt.close()
+
+        # Save netCDF file
+        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+        var_attrs = {
+            n: datasets[0][n] for n in ("short_name", "long_name", "units")
+        }
+        io.save_1d_data(cubes, netcdf_path, "hour", var_attrs)
+
+        # Provenance tracking
+        caption = (
+            f"Diurnal cycle of {multi_dataset_facets['long_name']} for "
+            f"various datasets."
+        )
+        provenance_record = {
+            "ancestors": ancestors,
+            "authors": ["schlund_manuel"],
+            "caption": caption,
+            "plot_types": ["seas"],
+            "long_names": [var_attrs["long_name"]],
+        }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(netcdf_path, provenance_record)
+
+    def create_hovmoeller_anncyc_vs_lat_or_lon_plot(self, datasets):
+        """Create the Hovmoeller plot with annual cycle vs latitude or longitude."""
+        plot_type = "hovmoeller_anncyc_vs_lat_or_lon"
+        if plot_type not in self.plots:
+            return
+
+        # Get reference dataset if possible
+        ref_dataset = self._get_reference_dataset(datasets)
+        if ref_dataset is None:
+            logger.info("Plotting %s without reference dataset", plot_type)
+        else:
+            logger.info(
+                "Plotting %s with reference dataset '%s'",
+                plot_type,
+                self._get_label(ref_dataset),
+            )
+
+        # Get plot function
+        plot_func = self._get_plot_func(plot_type)
+
+        # Create a single plot for each dataset (incl. reference dataset if
+        # given)
+        for dataset in datasets:
+            if dataset == ref_dataset:
+                continue
+            ancestors = [dataset["filename"]]
+            if ref_dataset is None:
+                (plot_path, netcdf_paths) = (
+                    self._plot_hovmoeller_anncyc_vs_lat_or_lon_without_ref(
+                        plot_func, dataset
+                    )
+                )
+                caption = (
+                    f"Hovmoeller plot of {dataset['long_name']} of dataset "
+                    f"{dataset['alias']}."
+                )
+            else:
+                (plot_path, netcdf_paths) = (
+                    self._plot_hovmoeller_anncyc_vs_lat_or_lon_with_ref(
+                        plot_func, dataset, ref_dataset
+                    )
+                )
+                caption = (
+                    f"Hovmoeller plot of {dataset['long_name']} of dataset "
+                    f"{dataset['alias']} including bias relative to "
+                    f"{ref_dataset['alias']}."
+                )
+                ancestors.append(ref_dataset["filename"])
+
+            # Save plot
+            plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
+            logger.info("Wrote %s", plot_path)
+            plt.close()
+
+            # Save netCDFs
+            for netcdf_path, cube in netcdf_paths.items():
+                io.iris_save(cube, netcdf_path)
+
+            # Provenance tracking
+            provenance_record = {
+                "ancestors": ancestors,
+                "authors": [
+                    "schlund_manuel",
+                    "hassler_birgit",
+                ],
+                "caption": caption,
+                "plot_types": ["zonal"],
+                "long_names": [dataset["long_name"]],
+            }
+            with ProvenanceLogger(self.cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
+                for netcdf_path in netcdf_paths:
+                    provenance_logger.log(netcdf_path, provenance_record)
+
+    def create_hovmoeller_time_vs_lat_or_lon_plot(self, datasets):
+        """Create the Hovmoeller plot with time vs latitude or longitude."""
+        plot_type = "hovmoeller_time_vs_lat_or_lon"
+        if plot_type not in self.plots:
+            return
+
+        # Get reference dataset if possible
+        ref_dataset = self._get_reference_dataset(datasets)
+        if ref_dataset is None:
+            logger.info("Plotting %s without reference dataset", plot_type)
+        else:
+            logger.info(
+                "Plotting %s with reference dataset '%s'",
+                plot_type,
+                self._get_label(ref_dataset),
+            )
+
+        # Get plot function
+        plot_func = self._get_plot_func(plot_type)
+
+        # Create a single plot for each dataset (incl. reference dataset if
+        # given)
+        for dataset in datasets:
+            if dataset == ref_dataset:
+                continue
+            ancestors = [dataset["filename"]]
+            if ref_dataset is None:
+                (plot_path, netcdf_paths) = (
+                    self._plot_hovmoeller_time_vs_lat_or_lon_without_ref(
+                        plot_func, dataset
+                    )
+                )
+                caption = (
+                    f"Hovmoeller plot of {dataset['long_name']} of dataset "
+                    f"{dataset['alias']}."
+                )
+            else:
+                (plot_path, netcdf_paths) = (
+                    self._plot_hovmoeller_time_vs_lat_or_lon_with_ref(
+                        plot_func, dataset, ref_dataset
+                    )
+                )
+                caption = (
+                    f"Hovmoeller plot of {dataset['long_name']} of dataset "
+                    f"{dataset['alias']} including bias relative to "
+                    f"{ref_dataset['alias']}."
+                )
+                ancestors.append(ref_dataset["filename"])
+
+            # Save plot
+            plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
+            logger.info("Wrote %s", plot_path)
+            plt.close()
+
+            # Save netCDFs
+            for netcdf_path, cube in netcdf_paths.items():
+                io.iris_save(cube, netcdf_path)
+
+            # Provenance tracking
+            provenance_record = {
+                "ancestors": ancestors,
+                "authors": [
+                    "schlund_manuel",
+                    "kraft_jeremy",
+                    "lindenlaub_lukas",
+                ],
+                "caption": caption,
+                "plot_types": ["zonal"],
+                "long_names": [dataset["long_name"]],
+            }
+            with ProvenanceLogger(self.cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
+                for netcdf_path in netcdf_paths:
+                    provenance_logger.log(netcdf_path, provenance_record)
+
+    def create_hovmoeller_z_vs_time_plot(self, datasets):
+        """Create Hovmoeller Z vs. time plot."""
+        plot_type = "hovmoeller_z_vs_time"
+        if plot_type not in self.plots:
+            return
+
+        # Get reference dataset if possible
+        ref_dataset = self._get_reference_dataset(datasets)
+        if ref_dataset is None:
+            logger.info("Plotting %s without reference dataset", plot_type)
+        else:
+            logger.info(
+                "Plotting %s with reference dataset '%s'",
+                plot_type,
+                self._get_label(ref_dataset),
+            )
+
+        # Get plot function
+        plot_func = self._get_plot_func(plot_type)
+
+        # Create a single plot for each dataset (incl. reference dataset if
+        # given)
+        for dataset in datasets:
+            if dataset == ref_dataset:
+                continue
+            ancestors = [dataset["filename"]]
+            if ref_dataset is None:
+                (plot_path, netcdf_paths) = (
+                    self._plot_hovmoeller_z_vs_time_without_ref(
+                        plot_func, dataset
+                    )
+                )
+                caption = (
+                    f"Hovmoeller Z vs. time plot of {dataset['long_name']} "
+                    f"of dataset {dataset['alias']}."
+                )
+            else:
+                (plot_path, netcdf_paths) = (
+                    self._plot_hovmoeller_z_vs_time_with_ref(
+                        plot_func, dataset, ref_dataset
+                    )
+                )
+                caption = (
+                    f"Hovmoeller Z vs. time plot of {dataset['long_name']} "
+                    f"of dataset {dataset['alias']} including bias relative "
+                    f"to {ref_dataset['alias']}."
+                )
+                ancestors.append(ref_dataset["filename"])
+
+            # If statistics are shown add a brief description to the caption
+            if self.plots[plot_type]["show_stats"]:
+                caption += (
+                    " The number in the top left corner corresponds to the "
+                    "spatiotemporal mean."
+                )
+
+            # Save plot
+            plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
+            logger.info("Wrote %s", plot_path)
+            plt.close()
+
+            # Save netCDFs
+            for netcdf_path, cube in netcdf_paths.items():
+                io.iris_save(cube, netcdf_path)
+
+            # Provenance tracking
+            provenance_record = {
+                "ancestors": ancestors,
+                "authors": ["kuehbacher_birgit", "heuer_helge"],
+                "caption": caption,
+                "plot_types": ["vert"],
+                "long_names": [dataset["long_name"]],
+            }
+            with ProvenanceLogger(self.cfg) as provenance_logger:
+                provenance_logger.log(plot_path, provenance_record)
+                for netcdf_path in netcdf_paths:
+                    provenance_logger.log(netcdf_path, provenance_record)
 
     def create_map_plot(self, datasets):
         """Create map plot."""
@@ -3763,194 +4080,15 @@ class MultiDatasets(MonitorBase):
                 for netcdf_path in netcdf_paths:
                     provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_benchmarking_map_plot(self, datasets):
-        """Create benchmarking map plot."""
-        plot_type = "benchmarking_map"
-        if plot_type not in self.plots:
-            return
-
-        # Get dataset to be benchmarked
-        plot_datasets = self._get_benchmark_datasets(datasets)
-
-        # Get percentiles from multi-model statistics
-        percentile_dataset = self._get_benchmark_percentiles(datasets)
-        percentile_data = [d["cube"] for d in percentile_dataset]
-
-        # Get benchmarking metric
-        metric = self._get_benchmark_metric(datasets)
-
-        # Create a single plot for each dataset
-        for dataset in plot_datasets:
-            ancestors = [dataset["filename"]]
-            (plot_path, netcdf_paths) = self._plot_benchmarking_map(
-                dataset, percentile_data, metric
-            )
-            caption = (
-                f"Map plot of {dataset['long_name']} of dataset "
-                f"{dataset['alias']}."
-            )
-
-            # Save plot
-            plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
-            logger.info("Wrote %s", plot_path)
-            plt.close()
-
-            # Save netCDFs
-            for netcdf_path, cube in netcdf_paths.items():
-                io.iris_save(cube, netcdf_path)
-
-            # Provenance tracking
-            provenance_record = {
-                "ancestors": ancestors,
-                "authors": ["schlund_manuel"],
-                "caption": caption,
-                "plot_types": ["map"],
-                "long_names": [dataset["long_name"]],
-            }
-            with ProvenanceLogger(self.cfg) as provenance_logger:
-                provenance_logger.log(plot_path, provenance_record)
-                for netcdf_path in netcdf_paths:
-                    provenance_logger.log(netcdf_path, provenance_record)
-
-    def create_zonal_mean_profile_plot(self, datasets):
-        """Create zonal mean profile plot."""
-        plot_type = "zonal_mean_profile"
-        if plot_type not in self.plots:
-            return
-
-        # Get reference dataset if possible
-        ref_dataset = self._get_reference_dataset(datasets)
-        if ref_dataset is None:
-            logger.info("Plotting %s without reference dataset", plot_type)
-        else:
-            logger.info(
-                "Plotting %s with reference dataset '%s'",
-                plot_type,
-                self._get_label(ref_dataset),
-            )
-
-        # Get plot function
-        plot_func = self._get_plot_func(plot_type)
-
-        # Create a single plot for each dataset (incl. reference dataset if
-        # given)
-        for dataset in datasets:
-            if dataset == ref_dataset:
-                continue
-            ancestors = [dataset["filename"]]
-            if ref_dataset is None:
-                (plot_path, netcdf_paths) = (
-                    self._plot_zonal_mean_profile_without_ref(
-                        plot_func, dataset
-                    )
-                )
-                caption = (
-                    f"Zonal mean profile of {dataset['long_name']} of dataset "
-                    f"{dataset['alias']}."
-                )
-            else:
-                (plot_path, netcdf_paths) = (
-                    self._plot_zonal_mean_profile_with_ref(
-                        plot_func, dataset, ref_dataset
-                    )
-                )
-                caption = (
-                    f"Zonal mean profile of {dataset['long_name']} of dataset "
-                    f"{dataset['alias']} including bias relative to "
-                    f"{ref_dataset['alias']}."
-                )
-                ancestors.append(ref_dataset["filename"])
-
-            # If statistics are shown add a brief description to the caption
-            if self.plots[plot_type]["show_stats"]:
-                caption += (
-                    " The number in the top left corner corresponds to the "
-                    "spatial mean (weighted by grid cell areas)."
-                )
-
-            # Save plot
-            plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
-            logger.info("Wrote %s", plot_path)
-            plt.close()
-
-            # Save netCDFs
-            for netcdf_path, cube in netcdf_paths.items():
-                io.iris_save(cube, netcdf_path)
-
-            # Provenance tracking
-            provenance_record = {
-                "ancestors": ancestors,
-                "authors": ["schlund_manuel"],
-                "caption": caption,
-                "plot_types": ["vert"],
-                "long_names": [dataset["long_name"]],
-            }
-            with ProvenanceLogger(self.cfg) as provenance_logger:
-                provenance_logger.log(plot_path, provenance_record)
-                for netcdf_path in netcdf_paths:
-                    provenance_logger.log(netcdf_path, provenance_record)
-
-    def create_benchmarking_zonal_plot(self, datasets):
-        """Create benchmarking zonal mean profile plot."""
-        plot_type = "benchmarking_zonal"
-        if plot_type not in self.plots:
-            return
-
-        # Get dataset to be benchmarked
-        plot_datasets = self._get_benchmark_datasets(datasets)
-
-        # Get percentiles from multi-model statistics
-        percentile_dataset = self._get_benchmark_percentiles(datasets)
-        percentile_data = [d["cube"] for d in percentile_dataset]
-
-        # Get benchmarking metric
-        metric = self._get_benchmark_metric(datasets)
-
-        # Create a single plot for each dataset
-        for dataset in plot_datasets:
-            (plot_path, netcdf_paths) = self._plot_benchmarking_zonal(
-                dataset, percentile_data, metric
-            )
-            ancestors = [dataset["filename"]]
-
-            caption = (
-                f"Zonal mean profile of {dataset['long_name']} of dataset "
-                f"{dataset['alias']}."
-            )
-
-            # Save plot
-            plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
-            logger.info("Wrote %s", plot_path)
-            plt.close()
-
-            # Save netCDFs
-            for netcdf_path, cube in netcdf_paths.items():
-                io.iris_save(cube, netcdf_path)
-
-            # Provenance tracking
-            provenance_record = {
-                "ancestors": ancestors,
-                "authors": ["schlund_manuel"],
-                "caption": caption,
-                "plot_types": ["vert"],
-                "long_names": [dataset["long_name"]],
-            }
-            with ProvenanceLogger(self.cfg) as provenance_logger:
-                provenance_logger.log(plot_path, provenance_record)
-                for netcdf_path in netcdf_paths:
-                    provenance_logger.log(netcdf_path, provenance_record)
-
-    def create_1d_profile_plot(self, datasets):
-        """Create 1D profile plot."""
-        plot_type = "1d_profile"
+    def create_timeseries_plot(self, datasets):
+        """Create time series plot."""
+        plot_type = "timeseries"
         if plot_type not in self.plots:
             return
 
         logger.info("Plotting %s", plot_type)
         fig = plt.figure(**self.cfg["figure_kwargs"])
         axes = fig.add_subplot()
-
-        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
 
         # Plot all datasets in one single figure
         ancestors = []
@@ -3961,10 +4099,9 @@ class MultiDatasets(MonitorBase):
             cubes[self._get_label(dataset)] = cube
             self._check_cube_dimensions(cube, plot_type)
 
-            # Plot 1D profile
+            # Plot original time series
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs["axes"] = axes
-
             iris.plot.plot(cube, **plot_kwargs)
 
         # Plot horizontal lines
@@ -3972,42 +4109,21 @@ class MultiDatasets(MonitorBase):
             axes.axhline(**hline_kwargs)
 
         # Default plot appearance
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
         axes.set_title(multi_dataset_facets["long_name"])
-        axes.set_xlabel(
+        axes.set_xlabel("time")
+        # apply time formatting
+        if self.plots[plot_type]["time_format"] is not None:
+            axes.get_xaxis().set_major_formatter(
+                mdates.DateFormatter(self.plots[plot_type]["time_format"])
+            )
+        axes.set_ylabel(
             f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
             f"[{multi_dataset_facets['units']}]"
         )
-        z_coord = cube.coord(axis="Z")
-        axes.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
-
-        # apply logarithmic axes
-        if self.plots[plot_type]["log_y"]:
-            axes.set_yscale("log")
-            axes.get_yaxis().set_major_formatter(FormatStrFormatter("%.1f"))
-        if self.plots[plot_type]["show_y_minor_ticklabels"]:
-            axes.get_yaxis().set_minor_locator(AutoMinorLocator())
-            axes.get_yaxis().set_minor_formatter(FormatStrFormatter("%.1f"))
-        else:
-            axes.get_yaxis().set_minor_formatter(NullFormatter())
-        if self.plots[plot_type]["log_x"]:
-            axes.set_xscale("log")
-            # major and minor ticks
-            x_major = LogLocator(base=10.0, numticks=12)
-            axes.get_xaxis().set_major_locator(x_major)
-            x_minor = LogLocator(
-                base=10.0, subs=np.arange(1.0, 10.0) * 0.1, numticks=12
-            )
-
-            axes.get_xaxis().set_minor_locator(x_minor)
-            axes.get_xaxis().set_minor_formatter(NullFormatter())
-
-        # gridlines
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
         if gridline_kwargs is not False:
             axes.grid(**gridline_kwargs)
-        # nicer aspect ratio
-        aspect_ratio = self.plots[plot_type]["aspect_ratio"]
-        axes.set_box_aspect(aspect_ratio)
 
         # Legend
         legend_kwargs = self.plots[plot_type]["legend_kwargs"]
@@ -4028,17 +4144,16 @@ class MultiDatasets(MonitorBase):
         var_attrs = {
             n: datasets[0][n] for n in ("short_name", "long_name", "units")
         }
-        io.save_1d_data(cubes, netcdf_path, z_coord.standard_name, var_attrs)
+        io.save_1d_data(cubes, netcdf_path, "time", var_attrs)
 
         # Provenance tracking
         caption = (
-            "Vertical one-dimensional profile of "
-            f"{multi_dataset_facets['long_name']}"
-            " for various datasets."
+            f"Time series of {multi_dataset_facets['long_name']} for "
+            f"various datasets."
         )
         provenance_record = {
             "ancestors": ancestors,
-            "authors": ["schlund_manuel", "winterstein_franziska"],
+            "authors": ["schlund_manuel"],
             "caption": caption,
             "plot_types": ["line"],
             "long_names": [var_attrs["long_name"]],
@@ -4124,9 +4239,9 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_hovmoeller_z_vs_time_plot(self, datasets):
-        """Create Hovmoeller Z vs. time plot."""
-        plot_type = "hovmoeller_z_vs_time"
+    def create_zonal_mean_profile_plot(self, datasets):
+        """Create zonal mean profile plot."""
+        plot_type = "zonal_mean_profile"
         if plot_type not in self.plots:
             return
 
@@ -4152,24 +4267,24 @@ class MultiDatasets(MonitorBase):
             ancestors = [dataset["filename"]]
             if ref_dataset is None:
                 (plot_path, netcdf_paths) = (
-                    self._plot_hovmoeller_z_vs_time_without_ref(
+                    self._plot_zonal_mean_profile_without_ref(
                         plot_func, dataset
                     )
                 )
                 caption = (
-                    f"Hovmoeller Z vs. time plot of {dataset['long_name']} "
-                    f"of dataset {dataset['alias']}."
+                    f"Zonal mean profile of {dataset['long_name']} of dataset "
+                    f"{dataset['alias']}."
                 )
             else:
                 (plot_path, netcdf_paths) = (
-                    self._plot_hovmoeller_z_vs_time_with_ref(
+                    self._plot_zonal_mean_profile_with_ref(
                         plot_func, dataset, ref_dataset
                     )
                 )
                 caption = (
-                    f"Hovmoeller Z vs. time plot of {dataset['long_name']} "
-                    f"of dataset {dataset['alias']} including bias relative "
-                    f"to {ref_dataset['alias']}."
+                    f"Zonal mean profile of {dataset['long_name']} of dataset "
+                    f"{dataset['alias']} including bias relative to "
+                    f"{ref_dataset['alias']}."
                 )
                 ancestors.append(ref_dataset["filename"])
 
@@ -4177,7 +4292,7 @@ class MultiDatasets(MonitorBase):
             if self.plots[plot_type]["show_stats"]:
                 caption += (
                     " The number in the top left corner corresponds to the "
-                    "spatiotemporal mean."
+                    "spatial mean (weighted by grid cell areas)."
                 )
 
             # Save plot
@@ -4192,7 +4307,7 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 "ancestors": ancestors,
-                "authors": ["kuehbacher_birgit", "heuer_helge"],
+                "authors": ["schlund_manuel"],
                 "caption": caption,
                 "plot_types": ["vert"],
                 "long_names": [dataset["long_name"]],
@@ -4202,176 +4317,24 @@ class MultiDatasets(MonitorBase):
                 for netcdf_path in netcdf_paths:
                     provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_hovmoeller_time_vs_lat_or_lon_plot(self, datasets):
-        """Create the Hovmoeller plot with time vs latitude or longitude."""
-        plot_type = "hovmoeller_time_vs_lat_or_lon"
-        if plot_type not in self.plots:
-            return
-
-        # Get reference dataset if possible
-        ref_dataset = self._get_reference_dataset(datasets)
-        if ref_dataset is None:
-            logger.info("Plotting %s without reference dataset", plot_type)
-        else:
-            logger.info(
-                "Plotting %s with reference dataset '%s'",
-                plot_type,
-                self._get_label(ref_dataset),
-            )
-
-        # Get plot function
-        plot_func = self._get_plot_func(plot_type)
-
-        # Create a single plot for each dataset (incl. reference dataset if
-        # given)
-        for dataset in datasets:
-            if dataset == ref_dataset:
-                continue
-            ancestors = [dataset["filename"]]
-            if ref_dataset is None:
-                (plot_path, netcdf_paths) = (
-                    self._plot_hovmoeller_time_vs_lat_or_lon_without_ref(
-                        plot_func, dataset
-                    )
-                )
-                caption = (
-                    f"Hovmoeller plot of {dataset['long_name']} of dataset "
-                    f"{dataset['alias']}."
-                )
-            else:
-                (plot_path, netcdf_paths) = (
-                    self._plot_hovmoeller_time_vs_lat_or_lon_with_ref(
-                        plot_func, dataset, ref_dataset
-                    )
-                )
-                caption = (
-                    f"Hovmoeller plot of {dataset['long_name']} of dataset "
-                    f"{dataset['alias']} including bias relative to "
-                    f"{ref_dataset['alias']}."
-                )
-                ancestors.append(ref_dataset["filename"])
-
-            # Save plot
-            plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
-            logger.info("Wrote %s", plot_path)
-            plt.close()
-
-            # Save netCDFs
-            for netcdf_path, cube in netcdf_paths.items():
-                io.iris_save(cube, netcdf_path)
-
-            # Provenance tracking
-            provenance_record = {
-                "ancestors": ancestors,
-                "authors": [
-                    "schlund_manuel",
-                    "kraft_jeremy",
-                    "lindenlaub_lukas",
-                ],
-                "caption": caption,
-                "plot_types": ["zonal"],
-                "long_names": [dataset["long_name"]],
-            }
-            with ProvenanceLogger(self.cfg) as provenance_logger:
-                provenance_logger.log(plot_path, provenance_record)
-                for netcdf_path in netcdf_paths:
-                    provenance_logger.log(netcdf_path, provenance_record)
-
-    def create_hovmoeller_anncyc_vs_lat_or_lon_plot(self, datasets):
-        """Create the Hovmoeller plot with annual cycle vs latitude or longitude."""
-        plot_type = "hovmoeller_anncyc_vs_lat_or_lon"
-        if plot_type not in self.plots:
-            return
-
-        # Get reference dataset if possible
-        ref_dataset = self._get_reference_dataset(datasets)
-        if ref_dataset is None:
-            logger.info("Plotting %s without reference dataset", plot_type)
-        else:
-            logger.info(
-                "Plotting %s with reference dataset '%s'",
-                plot_type,
-                self._get_label(ref_dataset),
-            )
-
-        # Get plot function
-        plot_func = self._get_plot_func(plot_type)
-
-        # Create a single plot for each dataset (incl. reference dataset if
-        # given)
-        for dataset in datasets:
-            if dataset == ref_dataset:
-                continue
-            ancestors = [dataset["filename"]]
-            if ref_dataset is None:
-                (plot_path, netcdf_paths) = (
-                    self._plot_hovmoeller_anncyc_vs_lat_or_lon_without_ref(
-                        plot_func, dataset
-                    )
-                )
-                caption = (
-                    f"Hovmoeller plot of {dataset['long_name']} of dataset "
-                    f"{dataset['alias']}."
-                )
-            else:
-                (plot_path, netcdf_paths) = (
-                    self._plot_hovmoeller_anncyc_vs_lat_or_lon_with_ref(
-                        plot_func, dataset, ref_dataset
-                    )
-                )
-                caption = (
-                    f"Hovmoeller plot of {dataset['long_name']} of dataset "
-                    f"{dataset['alias']} including bias relative to "
-                    f"{ref_dataset['alias']}."
-                )
-                ancestors.append(ref_dataset["filename"])
-
-            # Save plot
-            plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
-            logger.info("Wrote %s", plot_path)
-            plt.close()
-
-            # Save netCDFs
-            for netcdf_path, cube in netcdf_paths.items():
-                io.iris_save(cube, netcdf_path)
-
-            # Provenance tracking
-            provenance_record = {
-                "ancestors": ancestors,
-                "authors": [
-                    "schlund_manuel",
-                    "hassler_birgit",
-                ],
-                "caption": caption,
-                "plot_types": ["zonal"],
-                "long_names": [dataset["long_name"]],
-            }
-            with ProvenanceLogger(self.cfg) as provenance_logger:
-                provenance_logger.log(plot_path, provenance_record)
-                for netcdf_path in netcdf_paths:
-                    provenance_logger.log(netcdf_path, provenance_record)
-
     def compute(self):
         """Plot preprocessed data."""
-        with mpl.rc_context(self.cfg["matplotlib_rc_params"]):
-            self.create_benchmarking_boxplot()
-            for var_key, datasets in self.grouped_input_data.items():
-                logger.info("Processing variable %s", var_key)
-                self.create_timeseries_plot(datasets)
-                self.create_annual_cycle_plot(datasets)
-                self.create_benchmarking_annual(datasets)
-                self.create_benchmarking_diurnal(datasets)
-                self.create_benchmarking_map_plot(datasets)
-                self.create_benchmarking_timeseries(datasets)
-                self.create_benchmarking_zonal_plot(datasets)
-                self.create_diurnal_cycle_plot(datasets)
-                self.create_map_plot(datasets)
-                self.create_zonal_mean_profile_plot(datasets)
-                self.create_1d_profile_plot(datasets)
-                self.create_variable_vs_lat_plot(datasets)
-                self.create_hovmoeller_z_vs_time_plot(datasets)
-                self.create_hovmoeller_time_vs_lat_or_lon_plot(datasets)
-                self.create_hovmoeller_anncyc_vs_lat_or_lon_plot(datasets)
+        for plot_type in self.plots:
+            plot_settings = self.plot_settings[plot_type]
+            plot_function = plot_settings["function"]
+            logger.info("Plotting %s", plot_type)
+
+            # Plot types where only one plot in total is created
+            if plot_settings["type"] == "one_plot_total":
+                with mpl.rc_context(self.cfg["matplotlib_rc_params"]):
+                    plot_function()
+
+            # Plot types where one plot per dataset/variables is created
+            else:
+                for var_key, datasets in self.grouped_input_data.items():
+                    logger.info("Processing variable %s", var_key)
+                    with mpl.rc_context(self.cfg["matplotlib_rc_params"]):
+                        plot_function(datasets)
 
 
 def main(cfg: dict) -> None:
