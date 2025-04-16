@@ -13,11 +13,7 @@ DEFAULT_SETTINGS = {
     "figure_kwargs": {"figsize": [5, 5]},
     "plot_filename": "{plot_type}_{real_name}_{dataset}_{mip}",
     "plot_folder": "{plot_dir}",
-    "savefig_kwargs": {
-        "bbox_inches": "tight",
-        "dpi": 30,
-        "orientation": "landscape",
-    },
+    "savefig_kwargs": {"dpi": 30, "orientation": "landscape"},
 }
 
 
@@ -29,6 +25,7 @@ def test_diagnostic(
     expected_pngs: list[str],
 ) -> None:
     """Test diagnostic with various setups."""
+    # tmp_path = Path("/home/b/b309141/tmp/aaaaaaaaaaaaa")
     cfg_settings = {**DEFAULT_SETTINGS, **settings}
     cfg = get_cfg(tmp_path, input_data, **cfg_settings)
 
