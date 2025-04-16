@@ -110,16 +110,11 @@ def sst_regressed(n34_cube):
         n34_dec.coord("time").units.num2date(time).year
         for time in n34_dec.coord("time").points
     ]
-    event_years = n34_dec_years[3:-3]  # leadlagyr
     # Ensure that the selected years are not the last years
-    years_epochs = []
-    for year in event_years:
-        years_epochs.append(
-            [year - 2, year - 1, year, year + 1, year + 2, year + 3]
-        )
-
     n34_selected = []
-    for enso_epoch in years_epochs:
+    for year in n34_dec_years[3:-3]:
+        enso_epoch = [year - 2, year - 1, year, year + 1, year + 2, year + 3]
+    
         # Select the data for the current year and append it to n34_selected
         year_enso = iris.Constraint(
             time=lambda cell, enso_epoch=enso_epoch: cell.point.year
@@ -129,7 +124,7 @@ def sst_regressed(n34_cube):
         n34_selected.append(cube_2.data.data)
 
     event_constr = iris.Constraint(
-        time=lambda cell: cell.point.year in event_years
+        time=lambda cell: cell.point.year in n34_dec_years[3:-3]
     )
     n34_dec_ct = n34_dec.extract(event_constr)
 
@@ -149,11 +144,13 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
     ----------
     input_pair: list of dictionaries [obs_datasets, model_datasets]
         dictionary key of each dataset is variable group
-    dt_ls: list of dataset names for labels
+    dt_ls: list of dataset names 
+        for labels in plots
     var_group: list referring to preprocessed group used for the metric
         list length is 1,
         or 2 for pattern and diversity metrics for linear regrssion
     metric: name of metric to calculate
+        09pattern, 10lifecyle, ..etc
 
     Returns
     -------
@@ -391,9 +388,9 @@ def main(cfg):
                 input_data, variable_group=var_prep, project="CMIP6"
             )
 
-        dt_files = [model["filename"] for model in models]
-
-        prov_record = get_provenance_record(f"ENSO metrics {metric}", dt_files)
+        prov_record = get_provenance_record(f"ENSO metrics {metric}", 
+                                            [model["filename"] 
+                                             for model in models])
         # obs datasets for each model
         obs_datasets = {
             dataset["variable_group"]: iris.load_cube(dataset["filename"])
@@ -401,19 +398,18 @@ def main(cfg):
         }
 
         # group models by dataset
-        model_ds = group_metadata(models, "dataset", sort="project")
 
-        for dataset in model_ds:
+        for dataset, attributes in group_metadata(models, "dataset",
+                                                  sort="project").items():
             logger.info(
                 "%s, preprocessed cubes:%d, dataset:%s",
                 metric,
-                len(model_ds),
                 dataset,
             )
 
             model_datasets = {
                 attr["variable_group"]: iris.load_cube(attr["filename"])
-                for attr in model_ds[dataset]
+                for attr in attributes
             }
             input_pair = [obs_datasets, model_datasets]
             logger.info(pformat(model_datasets))

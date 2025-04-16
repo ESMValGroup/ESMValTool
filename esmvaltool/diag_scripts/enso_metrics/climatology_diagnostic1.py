@@ -33,13 +33,12 @@ def plot_level1(input_data, cfg):
     var_units = {"tos": "degC", "pr": "mm/day", "tauu": "1e-3 N/m2"}
 
     for dataset in input_data:
+        sname = dataset["short_name"]
+
+        logger.info("dataset: %s - %s", dataset["dataset"],
+                    dataset["long_name"])
         # Load the data
-        filep, sname = dataset["filename"], dataset["short_name"]
-        dtname, proj = dataset["dataset"], dataset["project"]
-
-        logger.info("dataset: %s - %s", dtname, dataset["long_name"])
-
-        cube = iris.load_cube(filep)
+        cube = iris.load_cube(dataset["filename"])
         # convert units for different variables
         cube = convert_units(cube, units=var_units[sname])
 
@@ -50,18 +49,18 @@ def plot_level1(input_data, cfg):
             ylabel = f"{sname.upper()} std ({cube.units})"
             title = f"{dataset['long_name']} seasonal cycle"
 
-        if proj == "CMIP6":  # group by models/ for each model with obs
-            qplt.plot(cube, label=dtname)
+        if dataset["project"] == "CMIP6":  # group by models/ for each model with obs
+            qplt.plot(cube, label=dataset["dataset"])
             model_data = cube.data
-            filename = [dtname, dataset["variable_group"]]
         else:
-            qplt.plot(cube, label=f"ref: {dtname}", color="black")
+            qplt.plot(cube, label=f"ref: {dataset["dataset"]}", color="black")
             obs_data = cube.data
 
     rmse = np.sqrt(np.mean((obs_data - model_data) ** 2))
     metricfile = get_diagnostic_filename("matrix", cfg, extension="csv")
     with open(metricfile, "a+", encoding="utf-8") as fileo:
-        fileo.write(f"{filename[0]},{filename[1]},{rmse}\n")
+        fileo.write(f"{input_data[1]["dataset"]},"
+                    f"{input_data[1]["variable_group"]},{rmse}\n")
 
     plt.title(title)
     plt.legend()
@@ -78,7 +77,7 @@ def plot_level1(input_data, cfg):
         bbox={"facecolor": "white", "alpha": 0.8, "edgecolor": "none"},
     )
 
-    if dataset["preprocessor"].startswith("ITCZ"):
+    if input_data[1]["preprocessor"].startswith("ITCZ"):
         plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(format_lat))
     else:
         plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(format_lon))
@@ -99,7 +98,7 @@ def sea_cycle_month_stdev(cube, preproc):
     return cube
 
 
-def format_lat(x_val, pos) -> str:
+def format_lat(x_val, _) -> str:
     """Format latitude for plot axis."""
     if x_val < 0:
         return f"{abs(x_val):.0f}°S"
@@ -109,7 +108,7 @@ def format_lat(x_val, pos) -> str:
     return "0°"
 
 
-def format_lon(val, pos) -> str:
+def format_lon(val, _) -> str:
     """Format longitude for plot axis."""
     if val > 180:
         return f"{(360 - val):.0f}°W"

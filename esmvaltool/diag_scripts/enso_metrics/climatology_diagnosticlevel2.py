@@ -27,15 +27,12 @@ def plotmaps_level2(input_data):
     proj = ccrs.Orthographic(central_longitude=210.0)
 
     for plt_pos, dataset in enumerate(input_data, start=121):
-        filep, sname, dtname = (
-            dataset["filename"],
-            dataset["short_name"],
-            dataset["dataset"],
-        )
+        sname = dataset["short_name"]
 
-        logger.info("dataset: %s - %s", dtname, dataset["long_name"])
+        logger.info("dataset: %s - %s", dataset["dataset"],
+                    dataset["long_name"])
 
-        cube = iris.load_cube(filep)
+        cube = iris.load_cube(dataset["filename"])
         # convert units for different variables
         cube = convert_units(cube, units=var_units[sname])
         diag_label = sname.upper()
@@ -50,7 +47,7 @@ def plotmaps_level2(input_data):
         cf1 = iplt.contourf(cube, cmap="coolwarm")
 
         ax1.set_extent([130, 290, -20, 20], crs=ccrs.PlateCarree())
-        ax1.set_title(dtname)
+        ax1.set_title(dataset["dataset"])
 
         # Add gridlines for latitude and longitude
         gl1 = ax1.gridlines(draw_labels=True, linestyle="--")
