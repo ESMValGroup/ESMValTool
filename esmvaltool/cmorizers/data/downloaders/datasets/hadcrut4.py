@@ -1,4 +1,5 @@
 """Script to download HadCRUT4 from its webpage."""
+
 import logging
 import os
 
@@ -7,8 +8,9 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -37,7 +39,9 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     downloader.download_file(
         "https://crudata.uea.ac.uk/cru/data/temperature/"
         "HadCRUT.4.6.0.0.median.nc",
-        wget_options=[])
+        wget_options=[],
+    )
     downloader.download_file(
         "https://crudata.uea.ac.uk/cru/data/temperature/absolute.nc",
-        wget_options=[])
+        wget_options=[],
+    )
