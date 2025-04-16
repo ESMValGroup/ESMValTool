@@ -14,7 +14,7 @@ but is much faster and has a lower memory footprint.
 """
 
 import logging
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any, Literal
 
@@ -36,7 +36,10 @@ from esmvaltool.diag_scripts.shared import (
 logger = logging.getLogger(Path(__file__).stem)
 
 
-def get_provenance_record(caption, ancestor_files):
+def get_provenance_record(
+    caption: str,
+    ancestor_files: Sequence[str],
+) -> dict[str, str | Sequence[str]]:
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         "caption": caption,
@@ -61,6 +64,7 @@ def _compute_histograms(
     tuple[np.ndarray, np.ndarray],
     tuple[np.ndarray, np.ndarray],
 ]:
+    """Compute the 2D and 1D histogram data."""
     array_x = cube_x.lazy_data().flatten()
     array_y = cube_y.lazy_data().flatten()
     # Could use preprocessor function to ensure same masks
@@ -76,6 +80,7 @@ def _compute_histograms(
     hist_x, edges_x = da.histogram(data_x, bins=bins, range=(min_x, max_x))
     hist_y, edges_y = da.histogram(data_y, bins=bins, range=(min_y, max_y))
     hist = da.histogram2d(data_x, data_y, bins=[edges_x, edges_y])[0]
+    # Scale the data according to seaborn.jointplot(stat="probability")
     scale = hist.sum()
     hist_x = hist_x.astype(float) / scale
     hist_y = hist_y.astype(float) / scale
@@ -97,6 +102,7 @@ def _plot_marginal(
     axis: Literal["x", "y"],
     **kwargs,
 ) -> None:
+    """Plot the 1D histograms."""
     method = ax.barh if axis == "y" else ax.bar
     inv = _inv_transform(ax, axis)
     centers = inv(0.5 * (edges[:-1] + edges[1:]))
@@ -120,6 +126,7 @@ def seaborn_histogram_jointplot(
     cbar: bool = True,
     cbar_kws: dict | None = None,
 ) -> None:
+    """Plot the histogram data like `seaborn.jointplot` would plot it."""
     if seaborn_settings is not None:
         seaborn.set_theme(**seaborn_settings)
 
@@ -186,6 +193,7 @@ def data_to_cubes(
     iris.cube.Cube,
     iris.cube.Cube,
 ]:
+    """Store the histogram data in iris cubes."""
     hist, (hist_x, edges_x), (hist_y, edges_y) = data
     hist_x_coord = iris.coords.DimCoord(
         var_name="bin_x",
@@ -217,8 +225,7 @@ def data_to_cubes(
 
 
 def main(cfg: dict[str, Any]) -> None:
-    """Compute the time average for each input dataset."""
-    # Get a description of the preprocessed data that we will use as input.
+    """Create a 2D histogram with 1D histograms in the margins."""
     input_data = cfg["input_data"].values()
 
     filename_x = select_metadata(input_data, short_name=cfg["x"])[0][
