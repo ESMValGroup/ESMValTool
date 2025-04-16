@@ -462,17 +462,16 @@ def create_quadmap(
 
     input_files = diagtools.get_input_files(config)
     ancestors=list(input_files.keys())
-    
     # Calling save_cube for each cube.
     save_cube(
-        exp_single_level, 
-        f"experiment_{formatted_depth}", 
-        config, 
+        exp_single_level,
+        f"experiment_{formatted_depth}",
+        config,
         ancestors)
     save_cube(
-        exp_minus_ctr_single_level, 
-        f"experiment_minus_control_{formatted_depth}", 
-        config, 
+        exp_minus_ctr_single_level,
+        f"experiment_minus_control_{formatted_depth}",
+        config,
         ancestors)
     save_cube(
         ctr_minus_obs_single_level,
@@ -480,9 +479,9 @@ def create_quadmap(
         config,
         ancestors)
     save_cube(
-        exp_minus_obs_single_level, 
-        f"experiment_minus_observation_{formatted_depth}", 
-        config, 
+        exp_minus_obs_single_level,
+        f"experiment_minus_observation_{formatted_depth}",
+        config,
         ancestors)
 
     # Prepare to save the figure
