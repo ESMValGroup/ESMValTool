@@ -65,7 +65,7 @@ def plot_level1(input_data, cfg):
     metricfile = get_diagnostic_filename("matrix", cfg, extension="csv")
     with open(metricfile, "a+", encoding="utf-8") as fileo:
         fileo.write(
-            f"{input_data[1]["dataset"]},"
+            f"{input_data[1]["dataset"]},",
             f"{input_data[1]["variable_group"]},{rmse}\n",
         )
 
