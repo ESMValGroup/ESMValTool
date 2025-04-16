@@ -58,15 +58,15 @@ def plot_level1(input_data, cfg):
             qplt.plot(cube, label=dataset["dataset"])
             model_data = cube.data
         else:
-            qplt.plot(cube, label=f"ref: {dataset["dataset"]}", color="black")
+            qplt.plot(cube, label=f"ref: {dataset['dataset']}", color="black")
             obs_data = cube.data
 
     rmse = np.sqrt(np.mean((obs_data - model_data) ** 2))
     metricfile = get_diagnostic_filename("matrix", cfg, extension="csv")
     with open(metricfile, "a+", encoding="utf-8") as fileo:
         fileo.write(
-            f"{input_data[1]["dataset"]},",
-            f"{input_data[1]["variable_group"]},{rmse}\n",
+            f"{input_data[1]['dataset']},",
+            f"{input_data[1]['variable_group']},{rmse}\n",
         )
 
     plt.title(title)
