@@ -14,7 +14,7 @@ DEFAULT_SETTINGS = {
     "plot_folder": "{plot_dir}",
     "savefig_kwargs": {
         "bbox_inches": "tight",
-        "dpi": 30,
+        "dpi": 300,
         "orientation": "landscape",
     },
 }
@@ -28,6 +28,7 @@ def test_diagnostic(
     expected_pngs: list[str],
 ) -> None:
     """Test diagnostic with various setups."""
+    # tmp_path = Path("/home/b/b309141/tmp/aaaaaaaaaaaaa")
     cfg_settings = {**DEFAULT_SETTINGS, **settings}
     cfg = get_cfg(tmp_path, input_data, **cfg_settings)
 
@@ -38,6 +39,9 @@ def test_diagnostic(
         expected_png = (
             Path(__file__).resolve().parent / "expected_output" / png
         )
+        print(actual_png)
+        print(expected_png)
+        assert 0
         assert actual_png.is_file()
         assert expected_png.is_file()
         assert compare_png(expected_png, actual_png)
