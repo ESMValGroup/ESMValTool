@@ -931,6 +931,10 @@ class MultiDatasets(MonitorBase):
             "1d_profile": {
                 "function": self.create_1d_profile_plot,
                 "dimensions": (["air_pressure"], ["altitude"]),
+                "provenance": {
+                    "authors": ["schlund_manuel", "winterstein_franziska"],
+                    "plot_types": ["line"],
+                },
                 "type": "one_plot_per_variable",
                 "default_settings": {
                     "aspect_ratio": 1.5,
@@ -947,6 +951,10 @@ class MultiDatasets(MonitorBase):
             "annual_cycle": {
                 "function": self.create_annual_cycle_plot,
                 "dimensions": (["month_number"],),
+                "provenance": {
+                    "authors": ["schlund_manuel"],
+                    "plot_types": ["seas"],
+                },
                 "type": "one_plot_per_variable",
                 "default_settings": {
                     "gridline_kwargs": {},
@@ -959,6 +967,10 @@ class MultiDatasets(MonitorBase):
             "benchmarking_annual_cycle": {
                 "function": self.create_benchmarking_annual,
                 "dimensions": (["month_number"],),
+                "provenance": {
+                    "authors": ["schlund_manuel", "lauer_axel"],
+                    "plot_types": ["seas"],
+                },
                 "type": "one_plot_per_variable",
                 "default_settings": {
                     "gridline_kwargs": {},
@@ -971,6 +983,10 @@ class MultiDatasets(MonitorBase):
             "benchmarking_boxplot": {
                 "function": self.create_benchmarking_boxplot,
                 "dimensions": ([],),
+                "provenance": {
+                    "authors": ["bock_lisa", "schlund_manuel"],
+                    "plot_types": ["box"],
+                },
                 "type": "one_plot_total",
                 "default_settings": {
                     "fontsize": None,
@@ -989,6 +1005,10 @@ class MultiDatasets(MonitorBase):
             "benchmarking_diurnal_cycle": {
                 "function": self.create_benchmarking_diurnal,
                 "dimensions": (["hour"],),
+                "provenance": {
+                    "authors": ["schlund_manuel", "lauer_axel"],
+                    "plot_types": ["seas"],
+                },
                 "type": "one_plot_per_variable",
                 "default_settings": {
                     "gridline_kwargs": {},
@@ -1001,6 +1021,10 @@ class MultiDatasets(MonitorBase):
             "benchmarking_map": {
                 "function": self.create_benchmarking_map_plot,
                 "dimensions": (["latitude", "longitude"],),
+                "provenance": {
+                    "authors": ["schlund_manuel", "lauer_axel"],
+                    "plot_types": ["map"],
+                },
                 "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
@@ -1014,6 +1038,10 @@ class MultiDatasets(MonitorBase):
             "benchmarking_timeseries": {
                 "function": self.create_benchmarking_timeseries,
                 "dimensions": (["time"],),
+                "provenance": {
+                    "authors": ["schlund_manuel", "lauer_axel"],
+                    "plot_types": ["line"],
+                },
                 "type": "one_plot_per_variable",
                 "default_settings": {
                     "gridline_kwargs": {},
@@ -1030,6 +1058,10 @@ class MultiDatasets(MonitorBase):
                     ["latitude", "air_pressure"],
                     ["latitude", "altitude"],
                 ),
+                "provenance": {
+                    "authors": ["schlund_manuel", "lauer_axel"],
+                    "plot_types": ["vert"],
+                },
                 "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
@@ -1045,6 +1077,10 @@ class MultiDatasets(MonitorBase):
             "diurnal_cycle": {
                 "function": self.create_diurnal_cycle_plot,
                 "dimensions": (["hour"],),
+                "provenance": {
+                    "authors": ["schlund_manuel", "lauer_axel"],
+                    "plot_types": ["seas"],
+                },
                 "type": "one_plot_per_variable",
                 "default_settings": {
                     "gridline_kwargs": {},
@@ -1060,6 +1096,10 @@ class MultiDatasets(MonitorBase):
                     ["month_number", "latitude"],
                     ["month_number", "longitude"],
                 ),
+                "provenance": {
+                    "authors": ["schlund_manuel", "hassler_birgit"],
+                    "plot_types": ["zonal"],
+                },
                 "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
@@ -1081,6 +1121,14 @@ class MultiDatasets(MonitorBase):
             "hovmoeller_time_vs_lat_or_lon": {
                 "function": self.create_hovmoeller_time_vs_lat_or_lon_plot,
                 "dimensions": (["time", "latitude"], ["time", "longitude"]),
+                "provenance": {
+                    "authors": [
+                        "schlund_manuel",
+                        "kraft_jeremy",
+                        "lindenlaub_lukas",
+                    ],
+                    "plot_types": ["zonal"],
+                },
                 "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
@@ -1103,6 +1151,14 @@ class MultiDatasets(MonitorBase):
             "hovmoeller_z_vs_time": {
                 "function": self.create_hovmoeller_z_vs_time_plot,
                 "dimensions": (["time", "air_pressure"], ["time", "altitude"]),
+                "provenance": {
+                    "authors": [
+                        "kuehbacher_birgit",
+                        "heuer_helge",
+                        "schlund_manuel",
+                    ],
+                    "plot_types": ["vert"],
+                },
                 "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
@@ -1127,6 +1183,10 @@ class MultiDatasets(MonitorBase):
             "map": {
                 "function": self.create_map_plot,
                 "dimensions": (["latitude", "longitude"],),
+                "provenance": {
+                    "authors": ["schlund_manuel"],
+                    "plot_types": ["map"],
+                },
                 "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
@@ -1151,6 +1211,10 @@ class MultiDatasets(MonitorBase):
             "timeseries": {
                 "function": self.create_timeseries_plot,
                 "dimensions": (["time"],),
+                "provenance": {
+                    "authors": ["schlund_manuel"],
+                    "plot_types": ["line"],
+                },
                 "type": "one_plot_per_variable",
                 "default_settings": {
                     "gridline_kwargs": {},
@@ -1164,6 +1228,10 @@ class MultiDatasets(MonitorBase):
             "variable_vs_lat": {
                 "function": self.create_variable_vs_lat_plot,
                 "dimensions": (["latitude"],),
+                "provenance": {
+                    "authors": ["sarauer_ellen", "schlund_manuel"],
+                    "plot_types": ["line"],
+                },
                 "type": "one_plot_per_variable",
                 "default_settings": {
                     "gridline_kwargs": {},
@@ -1179,6 +1247,10 @@ class MultiDatasets(MonitorBase):
                     ["latitude", "air_pressure"],
                     ["latitude", "altitude"],
                 ),
+                "provenance": {
+                    "authors": ["schlund_manuel"],
+                    "plot_types": ["vert"],
+                },
                 "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
@@ -3033,10 +3105,7 @@ class MultiDatasets(MonitorBase):
     def create_1d_profile_plot(self, datasets):
         """Create 1D profile plot."""
         plot_type = "1d_profile"
-        if plot_type not in self.plots:
-            return
 
-        logger.info("Plotting %s", plot_type)
         fig = plt.figure(**self.cfg["figure_kwargs"])
         axes = fig.add_subplot()
 
@@ -3128,11 +3197,10 @@ class MultiDatasets(MonitorBase):
         )
         provenance_record = {
             "ancestors": ancestors,
-            "authors": ["schlund_manuel", "winterstein_franziska"],
             "caption": caption,
-            "plot_types": ["line"],
             "long_names": [var_attrs["long_name"]],
         }
+        provenance_record.update(self.plot_settings[plot_type]["provenance"])
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
@@ -3140,10 +3208,7 @@ class MultiDatasets(MonitorBase):
     def create_annual_cycle_plot(self, datasets):
         """Create annual cycle plot."""
         plot_type = "annual_cycle"
-        if plot_type not in self.plots:
-            return
 
-        logger.info("Plotting %s", plot_type)
         fig = plt.figure(**self.cfg["figure_kwargs"])
         axes = fig.add_subplot()
 
@@ -3206,11 +3271,10 @@ class MultiDatasets(MonitorBase):
         )
         provenance_record = {
             "ancestors": ancestors,
-            "authors": ["schlund_manuel"],
             "caption": caption,
-            "plot_types": ["seas"],
             "long_names": [var_attrs["long_name"]],
         }
+        provenance_record.update(self.plot_settings[plot_type]["provenance"])
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
@@ -3218,10 +3282,6 @@ class MultiDatasets(MonitorBase):
     def create_benchmarking_annual(self, datasets):
         """Create benchmarking annual cycle plot."""
         plot_type = "benchmarking_annual_cycle"
-        if plot_type not in self.plots:
-            return
-
-        logger.info("Plotting %s", plot_type)
 
         # Get dataset to be benchmarked
         plot_datasets = self._get_benchmark_datasets(datasets)
@@ -3308,11 +3368,10 @@ class MultiDatasets(MonitorBase):
         )
         provenance_record = {
             "ancestors": ancestors,
-            "authors": ["schlund_manuel"],
             "caption": caption,
-            "plot_types": ["seas"],
             "long_names": [var_attrs["long_name"]],
         }
+        provenance_record.update(self.plot_settings[plot_type]["provenance"])
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
@@ -3320,10 +3379,6 @@ class MultiDatasets(MonitorBase):
     def create_benchmarking_boxplot(self):
         """Create boxplot."""
         plot_type = "benchmarking_boxplot"
-        if plot_type not in self.plots:
-            return
-
-        logger.info("Plotting %s", plot_type)
 
         # Respect desired variable order
         given_variables = list(self.grouped_input_data)
@@ -3388,20 +3443,15 @@ class MultiDatasets(MonitorBase):
         ]
         provenance_record = {
             "ancestors": ancestors,
-            "authors": ["bock_lisa", "schlund_manuel"],
             "caption": caption,
-            "plot_types": ["box"],
         }
+        provenance_record.update(self.plot_settings[plot_type]["provenance"])
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
 
     def create_benchmarking_diurnal(self, datasets):
         """Create benchmarking diurnal cycle plot."""
         plot_type = "benchmarking_diurnal_cycle"
-        if plot_type not in self.plots:
-            return
-
-        logger.info("Plotting %s", plot_type)
 
         # Get dataset to be benchmarked
         plot_datasets = self._get_benchmark_datasets(datasets)
@@ -3489,11 +3539,10 @@ class MultiDatasets(MonitorBase):
         )
         provenance_record = {
             "ancestors": ancestors,
-            "authors": ["schlund_manuel"],
             "caption": caption,
-            "plot_types": ["seas"],
             "long_names": [var_attrs["long_name"]],
         }
+        provenance_record.update(self.plot_settings[plot_type]["provenance"])
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
@@ -3501,8 +3550,6 @@ class MultiDatasets(MonitorBase):
     def create_benchmarking_map_plot(self, datasets):
         """Create benchmarking map plot."""
         plot_type = "benchmarking_map"
-        if plot_type not in self.plots:
-            return
 
         # Get dataset to be benchmarked
         plot_datasets = self._get_benchmark_datasets(datasets)
@@ -3537,11 +3584,12 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 "ancestors": ancestors,
-                "authors": ["schlund_manuel"],
                 "caption": caption,
-                "plot_types": ["map"],
                 "long_names": [dataset["long_name"]],
             }
+            provenance_record.update(
+                self.plot_settings[plot_type]["provenance"]
+            )
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(plot_path, provenance_record)
                 for netcdf_path in netcdf_paths:
@@ -3550,10 +3598,6 @@ class MultiDatasets(MonitorBase):
     def create_benchmarking_timeseries(self, datasets):
         """Create time series benchmarking plot."""
         plot_type = "benchmarking_timeseries"
-        if plot_type not in self.plots:
-            return
-
-        logger.info("Plotting %s", plot_type)
 
         # Get dataset to be benchmarked
         plot_datasets = self._get_benchmark_datasets(datasets)
@@ -3641,11 +3685,10 @@ class MultiDatasets(MonitorBase):
         )
         provenance_record = {
             "ancestors": ancestors,
-            "authors": ["schlund_manuel"],
             "caption": caption,
-            "plot_types": ["line"],
             "long_names": [var_attrs["long_name"]],
         }
+        provenance_record.update(self.plot_settings[plot_type]["provenance"])
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
@@ -3653,8 +3696,6 @@ class MultiDatasets(MonitorBase):
     def create_benchmarking_zonal_plot(self, datasets):
         """Create benchmarking zonal mean profile plot."""
         plot_type = "benchmarking_zonal"
-        if plot_type not in self.plots:
-            return
 
         # Get dataset to be benchmarked
         plot_datasets = self._get_benchmark_datasets(datasets)
@@ -3690,11 +3731,12 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 "ancestors": ancestors,
-                "authors": ["schlund_manuel"],
                 "caption": caption,
-                "plot_types": ["vert"],
                 "long_names": [dataset["long_name"]],
             }
+            provenance_record.update(
+                self.plot_settings[plot_type]["provenance"]
+            )
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(plot_path, provenance_record)
                 for netcdf_path in netcdf_paths:
@@ -3703,10 +3745,7 @@ class MultiDatasets(MonitorBase):
     def create_diurnal_cycle_plot(self, datasets):
         """Create diurnal cycle plot."""
         plot_type = "diurnal_cycle"
-        if plot_type not in self.plots:
-            return
 
-        logger.info("Plotting %s", plot_type)
         fig = plt.figure(**self.cfg["figure_kwargs"])
         axes = fig.add_subplot()
 
@@ -3770,11 +3809,10 @@ class MultiDatasets(MonitorBase):
         )
         provenance_record = {
             "ancestors": ancestors,
-            "authors": ["schlund_manuel"],
             "caption": caption,
-            "plot_types": ["seas"],
             "long_names": [var_attrs["long_name"]],
         }
+        provenance_record.update(self.plot_settings[plot_type]["provenance"])
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
@@ -3782,8 +3820,6 @@ class MultiDatasets(MonitorBase):
     def create_hovmoeller_anncyc_vs_lat_or_lon_plot(self, datasets):
         """Create the Hovmoeller plot with annual cycle vs latitude or longitude."""
         plot_type = "hovmoeller_anncyc_vs_lat_or_lon"
-        if plot_type not in self.plots:
-            return
 
         # Get reference dataset if possible
         ref_dataset = self._get_reference_dataset(datasets)
@@ -3840,14 +3876,12 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 "ancestors": ancestors,
-                "authors": [
-                    "schlund_manuel",
-                    "hassler_birgit",
-                ],
                 "caption": caption,
-                "plot_types": ["zonal"],
                 "long_names": [dataset["long_name"]],
             }
+            provenance_record.update(
+                self.plot_settings[plot_type]["provenance"]
+            )
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(plot_path, provenance_record)
                 for netcdf_path in netcdf_paths:
@@ -3856,8 +3890,6 @@ class MultiDatasets(MonitorBase):
     def create_hovmoeller_time_vs_lat_or_lon_plot(self, datasets):
         """Create the Hovmoeller plot with time vs latitude or longitude."""
         plot_type = "hovmoeller_time_vs_lat_or_lon"
-        if plot_type not in self.plots:
-            return
 
         # Get reference dataset if possible
         ref_dataset = self._get_reference_dataset(datasets)
@@ -3914,15 +3946,12 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 "ancestors": ancestors,
-                "authors": [
-                    "schlund_manuel",
-                    "kraft_jeremy",
-                    "lindenlaub_lukas",
-                ],
                 "caption": caption,
-                "plot_types": ["zonal"],
                 "long_names": [dataset["long_name"]],
             }
+            provenance_record.update(
+                self.plot_settings[plot_type]["provenance"]
+            )
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(plot_path, provenance_record)
                 for netcdf_path in netcdf_paths:
@@ -3931,8 +3960,6 @@ class MultiDatasets(MonitorBase):
     def create_hovmoeller_z_vs_time_plot(self, datasets):
         """Create Hovmoeller Z vs. time plot."""
         plot_type = "hovmoeller_z_vs_time"
-        if plot_type not in self.plots:
-            return
 
         # Get reference dataset if possible
         ref_dataset = self._get_reference_dataset(datasets)
@@ -3996,11 +4023,12 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 "ancestors": ancestors,
-                "authors": ["kuehbacher_birgit", "heuer_helge"],
                 "caption": caption,
-                "plot_types": ["vert"],
                 "long_names": [dataset["long_name"]],
             }
+            provenance_record.update(
+                self.plot_settings[plot_type]["provenance"]
+            )
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(plot_path, provenance_record)
                 for netcdf_path in netcdf_paths:
@@ -4009,8 +4037,6 @@ class MultiDatasets(MonitorBase):
     def create_map_plot(self, datasets):
         """Create map plot."""
         plot_type = "map"
-        if plot_type not in self.plots:
-            return
 
         # Get reference dataset if possible
         ref_dataset = self._get_reference_dataset(datasets)
@@ -4070,11 +4096,12 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 "ancestors": ancestors,
-                "authors": ["schlund_manuel"],
                 "caption": caption,
-                "plot_types": ["map"],
                 "long_names": [dataset["long_name"]],
             }
+            provenance_record.update(
+                self.plot_settings[plot_type]["provenance"]
+            )
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(plot_path, provenance_record)
                 for netcdf_path in netcdf_paths:
@@ -4083,8 +4110,6 @@ class MultiDatasets(MonitorBase):
     def create_timeseries_plot(self, datasets):
         """Create time series plot."""
         plot_type = "timeseries"
-        if plot_type not in self.plots:
-            return
 
         logger.info("Plotting %s", plot_type)
         fig = plt.figure(**self.cfg["figure_kwargs"])
@@ -4153,11 +4178,10 @@ class MultiDatasets(MonitorBase):
         )
         provenance_record = {
             "ancestors": ancestors,
-            "authors": ["schlund_manuel"],
             "caption": caption,
-            "plot_types": ["line"],
             "long_names": [var_attrs["long_name"]],
         }
+        provenance_record.update(self.plot_settings[plot_type]["provenance"])
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
@@ -4165,9 +4189,6 @@ class MultiDatasets(MonitorBase):
     def create_variable_vs_lat_plot(self, datasets):
         """Create Variable as a function of latitude."""
         plot_type = "variable_vs_lat"
-        if plot_type not in self.plots:
-            return
-        logger.info("Plotting %s", plot_type)
 
         fig = plt.figure(**self.cfg["figure_kwargs"])
         axes = fig.add_subplot()
@@ -4230,11 +4251,10 @@ class MultiDatasets(MonitorBase):
         )
         provenance_record = {
             "ancestors": ancestors,
-            "authors": ["sarauer_ellen"],
             "caption": caption,
-            "plot_types": ["line"],
             "long_names": [var_attrs["long_name"]],
         }
+        provenance_record.update(self.plot_settings[plot_type]["provenance"])
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
@@ -4242,8 +4262,6 @@ class MultiDatasets(MonitorBase):
     def create_zonal_mean_profile_plot(self, datasets):
         """Create zonal mean profile plot."""
         plot_type = "zonal_mean_profile"
-        if plot_type not in self.plots:
-            return
 
         # Get reference dataset if possible
         ref_dataset = self._get_reference_dataset(datasets)
@@ -4307,11 +4325,12 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 "ancestors": ancestors,
-                "authors": ["schlund_manuel"],
                 "caption": caption,
-                "plot_types": ["vert"],
                 "long_names": [dataset["long_name"]],
             }
+            provenance_record.update(
+                self.plot_settings[plot_type]["provenance"]
+            )
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(plot_path, provenance_record)
                 for netcdf_path in netcdf_paths:
