@@ -114,7 +114,7 @@ def sst_regressed(n34_cube):
     n34_selected = []
     for year in n34_dec_years[3:-3]:
         enso_epoch = [year - 2, year - 1, year, year + 1, year + 2, year + 3]
-    
+
         # Select the data for the current year and append it to n34_selected
         year_enso = iris.Constraint(
             time=lambda cell, enso_epoch=enso_epoch: cell.point.year
@@ -144,7 +144,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
     ----------
     input_pair: list of dictionaries [obs_datasets, model_datasets]
         dictionary key of each dataset is variable group
-    dt_ls: list of dataset names 
+    dt_ls: list of dataset names
         for labels in plots
     var_group: list referring to preprocessed group used for the metric
         list length is 1,
@@ -323,7 +323,7 @@ def iqr(data):
     return qrt3 - qrt1
 
 
-def format_lon(x_val, _pos):
+def format_lon(x_val, _):
     """Format longitude in plot axis."""
     if x_val > 180:
         return f"{(360 - x_val):.0f}°W"
@@ -388,9 +388,9 @@ def main(cfg):
                 input_data, variable_group=var_prep, project="CMIP6"
             )
 
-        prov_record = get_provenance_record(f"ENSO metrics {metric}", 
-                                            [model["filename"] 
-                                             for model in models])
+        prov_record = get_provenance_record(
+            f"ENSO metrics {metric}", [model["filename"] for model in models]
+        )
         # obs datasets for each model
         obs_datasets = {
             dataset["variable_group"]: iris.load_cube(dataset["filename"])
@@ -399,8 +399,9 @@ def main(cfg):
 
         # group models by dataset
 
-        for dataset, attributes in group_metadata(models, "dataset",
-                                                  sort="project").items():
+        for dataset, attributes in group_metadata(
+            models, "dataset", sort="project"
+        ).items():
             logger.info(
                 "%s, preprocessed cubes:%d, dataset:%s",
                 metric,

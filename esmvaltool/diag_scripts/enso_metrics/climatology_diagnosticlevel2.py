@@ -29,8 +29,9 @@ def plotmaps_level2(input_data):
     for plt_pos, dataset in enumerate(input_data, start=121):
         sname = dataset["short_name"]
 
-        logger.info("dataset: %s - %s", dataset["dataset"],
-                    dataset["long_name"])
+        logger.info(
+            "dataset: %s - %s", dataset["dataset"], dataset["long_name"]
+        )
 
         cube = iris.load_cube(dataset["filename"])
         # convert units for different variables

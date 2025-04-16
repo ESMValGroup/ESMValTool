@@ -35,8 +35,9 @@ def plot_level1(input_data, cfg):
     for dataset in input_data:
         sname = dataset["short_name"]
 
-        logger.info("dataset: %s - %s", dataset["dataset"],
-                    dataset["long_name"])
+        logger.info(
+            "dataset: %s - %s", dataset["dataset"], dataset["long_name"]
+        )
         # Load the data
         cube = iris.load_cube(dataset["filename"])
         # convert units for different variables
@@ -49,7 +50,9 @@ def plot_level1(input_data, cfg):
             ylabel = f"{sname.upper()} std ({cube.units})"
             title = f"{dataset['long_name']} seasonal cycle"
 
-        if dataset["project"] == "CMIP6":  # group by models/ for each model with obs
+        if (
+            dataset["project"] == "CMIP6"
+        ):  # group by models/ for each model with obs
             qplt.plot(cube, label=dataset["dataset"])
             model_data = cube.data
         else:
@@ -59,8 +62,10 @@ def plot_level1(input_data, cfg):
     rmse = np.sqrt(np.mean((obs_data - model_data) ** 2))
     metricfile = get_diagnostic_filename("matrix", cfg, extension="csv")
     with open(metricfile, "a+", encoding="utf-8") as fileo:
-        fileo.write(f"{input_data[1]["dataset"]},"
-                    f"{input_data[1]["variable_group"]},{rmse}\n")
+        fileo.write(
+            f"{input_data[1]["dataset"]},"
+            f"{input_data[1]["variable_group"]},{rmse}\n"
+        )
 
     plt.title(title)
     plt.legend()
