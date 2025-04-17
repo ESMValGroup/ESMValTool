@@ -143,7 +143,7 @@ def sst_regressed(n34_cube):
 def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
     """Compute values for each of the ENSO metrics.
 
-    Takes groupings of datasets required for each ENSO metric sorted 
+    Takes groupings of datasets required for each ENSO metric sorted
     and iterated through in the main function to compute the metric.
 
     Args:
