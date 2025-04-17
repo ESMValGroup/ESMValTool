@@ -5,11 +5,34 @@ from __future__ import annotations
 from collections.abc import Iterable
 from pathlib import Path
 
+import numpy as np
 import yaml
+from imagehash import hex_to_hash, phash
+from PIL import Image
 
 SAMPLE_DATA_DIR = Path(__file__).resolve().parent / "data"
 with (SAMPLE_DATA_DIR / "metadata.yml").open("r", encoding="utf-8") as file:
     METADATA = yaml.safe_load(file)
+
+IMAGEHASHES_PATH = Path(__file__).resolve().parent / "imagehashes.yml"
+with IMAGEHASHES_PATH.open("r", encoding="utf-8") as file:
+    IMAGEHASHES = yaml.safe_load(file)
+HASH_SIZE = 16
+MAX_PHASH_DISTANCE = 2
+
+
+def assert_phash(image_key: str, actual_phash: np.ndarray) -> None:
+    """Compare imagehashes."""
+    assert_msg = (
+        f"No expected output for image '{image_key}' in {IMAGEHASHES_PATH}"
+    )
+    assert image_key in IMAGEHASHES, assert_msg
+
+    expected_phash = hex_to_hash(IMAGEHASHES[image_key])
+    distance = expected_phash - actual_phash
+
+    assert_msg = f"Image '{image_key}' changed (Hamming distance: {distance})"
+    assert distance < MAX_PHASH_DISTANCE, assert_msg
 
 
 def get_cfg(tmp_dir: Path, input_data: Iterable[str], **kwargs: str) -> dict:
@@ -55,6 +78,12 @@ def get_cfg(tmp_dir: Path, input_data: Iterable[str], **kwargs: str) -> dict:
     return cfg
 
 
+def get_phash(image_path: Path) -> str:
+    """Get phash of image."""
+    with Image.open(image_path) as img:
+        return phash(img, hash_size=HASH_SIZE)
+
+
 def load_test_setups(path: str | Path) -> list[tuple]:
     """Load test setups (used as input to :func:`pytest.mark.parametrize`)."""
     path = Path(path)
@@ -71,3 +100,11 @@ def load_test_setups(path: str | Path) -> list[tuple]:
     ]
 
     return parametrize_input
+
+
+def write_imagehashes(
+    imagehashes: dict[str, str],
+    imagehashes_path: Path,
+) -> None:
+    with imagehashes_path.open("a", encoding="utf-8") as file:
+        yaml.safe_dump(imagehashes, file)
