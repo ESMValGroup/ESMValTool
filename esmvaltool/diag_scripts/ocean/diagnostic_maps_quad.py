@@ -362,6 +362,7 @@ def save_cube(cube, field_name, config, ancestors):
         cube,
     )
 
+
 def create_quadmap(
     exp_single_level,
     exp_minus_ctr_single_level,
@@ -501,7 +502,7 @@ def create_quadmap(
     provenance_record = diagtools.prepare_provenance_record(
         config,
         caption=f"Quadmap models comparison against observation level="
-        f"{formatted_depth})",
+        f"{formatted_depth})", 
         statistics=["mean","diff"],
         domain=["global"],
         plot_type=["map"],
