@@ -14,12 +14,6 @@ from tests.sample_data.diag_scripts import (
 )
 
 TEST_SETUPS = load_test_setups("monitor/multi_datasets_setups.yml")
-DEFAULT_SETTINGS = {
-    "figure_kwargs": {"figsize": [5, 5]},
-    "plot_filename": "{plot_type}_{real_name}_{dataset}_{mip}",
-    "plot_folder": "{plot_dir}",
-    "savefig_kwargs": {"dpi": 100, "orientation": "landscape"},
-}
 
 
 @pytest.mark.diagnostic_image_output
@@ -34,13 +28,17 @@ def test_diagnostic_image_output(
     """Test if diagnostic image output matches expected output."""
     save_imagehashes = pytestconfig.getoption("save_imagehashes")
 
-    cfg_settings = {**DEFAULT_SETTINGS, **settings}
-    cfg = get_cfg(tmp_path, input_data, **cfg_settings)
+    cfg = get_cfg(tmp_path, input_data, **settings)
 
-    # Explicitly set backend (otherwise, this might lead to different image
-    # sizes on different machines, leading to failing tests)
+    # Force some settings to avoid test fails on different machines
+    cfg["plot_filename"] = "{plot_type}_{real_name}_{dataset}_{mip}"
+    cfg["plot_folder"] = "{plot_dir}"
+    cfg.setdefault("figure_kwargs", {})
     cfg.setdefault("matplotlib_rc_params", {})
+    cfg.setdefault("savefig_kwargs", {})
+    cfg["figure_kwargs"]["figsize"] = [8.0, 6.0]
     cfg["matplotlib_rc_params"]["backend"] = "agg"
+    cfg["savefig_kwargs"]["dpi"] = 100
 
     main(cfg)
 
