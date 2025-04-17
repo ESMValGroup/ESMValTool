@@ -19,6 +19,8 @@ with IMAGEHASHES_PATH.open("r", encoding="utf-8") as file:
 HASH_SIZE = 16
 MAX_PHASH_DISTANCE = 2
 
+MATPLOTLIB_RC = Path(__file__).resolve().parent / "matplotlibrc"
+
 
 def assert_phash(image_key: str, image_path: Path) -> None:
     """Compare imagehashes."""
