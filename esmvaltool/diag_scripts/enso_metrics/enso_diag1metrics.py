@@ -143,21 +143,20 @@ def sst_regressed(n34_cube):
 def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
     """Compute values for each of the ENSO metrics.
 
-    Parameters
-    ----------
-    input_pair: list of dictionaries [obs_datasets, model_datasets]
-        dictionary key of each dataset is variable group
-    dt_ls: list of dataset names
-        for labels in plots
-    var_group: list referring to preprocessed group used for the metric
-        list length is 1,
-        or 2 for pattern and diversity metrics for linear regrssion
-    metric: name of metric to calculate
-        09pattern, 10lifecyle, ..etc
+    Takes groupings of datasets required for each ENSO metric sorted 
+    and iterated through in the main function to compute the metric.
 
-    Returns
-    -------
-    metric value, plot figure
+    Args:
+        input_pair: list of dictionaries [obs_datasets, model_datasets]
+            where dictionary key of dataset is variable group(preprocessor)
+        dt_ls: list of dataset names for labels in plots
+        var_group: list referring to preprocessed group used for the metric
+            list length is 1,
+            or 2 for pattern and diversity metrics for linear regrssion
+        metric: name of metric to calculate eg. 09pattern, 10lifecyle
+
+    Returns:
+        calculated metric value, plot figure
     """
     data_values = []
     fig, val = None, None
@@ -435,11 +434,10 @@ def main(cfg):
                 attr["variable_group"]: iris.load_cube(attr["filename"])
                 for attr in attributes
             }
-            input_pair = [obs_datasets, model_datasets]
             logger.info(pformat(model_datasets))
 
             value, fig = compute_enso_metrics(
-                input_pair,
+                [obs_datasets, model_datasets],
                 [dataset, obs[0]["dataset"]],
                 var_preproc,
                 metric,
