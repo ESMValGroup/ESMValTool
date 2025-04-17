@@ -27,7 +27,6 @@ logger = logging.getLogger(os.path.basename(__file__))
 def plot_level1(input_data, cfg):
     """Create plots for pair of input data."""
     plt.clf()
-    filename = []
     obs_data, model_data = None, None
     figure = plt.figure(figsize=(10, 6), dpi=300)
     var_units = {"tos": "degC", "pr": "mm/day", "tauu": "1e-3 N/m2"}
@@ -62,12 +61,10 @@ def plot_level1(input_data, cfg):
             obs_data = cube.data
 
     rmse = np.sqrt(np.mean((obs_data - model_data) ** 2))
+    filename = [input_data[1]['dataset'], input_data[1]['variable_group']]
     metricfile = get_diagnostic_filename("matrix", cfg, extension="csv")
     with open(metricfile, "a+", encoding="utf-8") as fileo:
-        fileo.write(
-            f"{input_data[1]['dataset']},",
-            f"{input_data[1]['variable_group']},{rmse}\n",
-        )
+        fileo.write(f"{filename[0]},{filename[1]},{rmse}\n")
 
     plt.title(title)
     plt.legend()

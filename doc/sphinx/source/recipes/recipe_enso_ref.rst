@@ -15,8 +15,8 @@ Available recipes and diagnostics
 
 Recipes are stored in esmvaltool/recipes/
 
-* recipe_enso_characteristics.yml
-* recipe_enso_basicclimatology.yml
+* ref/recipe_enso_characteristics.yml
+* ref/recipe_enso_basicclimatology.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/enso_metrics/
 
