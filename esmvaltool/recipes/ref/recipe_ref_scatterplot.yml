@@ -7,6 +7,7 @@ documentation:
   authors:
     - bock_lisa
     - lauer_axel
+    - andela_bouwe
   maintainer:
     - bock_lisa
 
@@ -95,29 +96,18 @@ diagnostics:
          alias: CESM2}
     scripts:
       plot: &plot_settings_jointplot_clt_swcre
-        script: seaborn_diag.py
-        seaborn_func: jointplot
-        seaborn_kwargs:
-          kind: hist
-          x: clt
-          y: swcre
-          bins: 20
+        script: seaborn_jointplot_histogram.py
+        x: clt
+        y: swcre
+        bins: 20
+        joint_kws:
           vmax: 0.015
-          stat: probability
           cmap: YlGnBu
-          cbar: true
-          cbar_kws:
-            extend: 'max'
-          marginal_kws:
-            color: darkturquoise
-            bins: 20
-            fill: true
-            stat: probability
-        add_aux_coords: true
-        plot_object_methods:
-          set_axis_labels:
-            xlabel: 'clt [%]'
-            ylabel: 'swcre [W m-2]'
+        cbar: true
+        cbar_kws:
+          extend: 'max'
+        marginal_kws:
+          color: darkturquoise
         seaborn_settings:
           style: ticks
           rc:
@@ -166,26 +156,11 @@ diagnostics:
     scripts:
       plot: &plot_settings_jointplot_clwvi_pr
         <<: *plot_settings_jointplot_clt_swcre
-        seaborn_kwargs:
-          kind: hist
-          x: clwvi
-          y: pr
-          bins: 20
+        x: clwvi
+        y: pr
+        joint_kws:
           vmax: 0.03
-          stat: probability
           cmap: YlGnBu
-          cbar: true
-          cbar_kws:
-            extend: 'max'
-          marginal_kws:
-            color: darkturquoise
-            bins: 20
-            fill: true
-            stat: probability
-        plot_object_methods:
-          set_axis_labels:
-            xlabel: 'clwvi [kg m-2]'
-            ylabel: 'pr [mm day-1]'
         suptitle: 'ESACCI-CLOUD / GPCP-SG'
         plot_filename: 'jointplot_clwvi_pr_ESACCI-CLOUD_GPCP-SG'
 
@@ -227,26 +202,11 @@ diagnostics:
     scripts:
       plot: &plot_settings_jointplot_clivi_lwcre
         <<: *plot_settings_jointplot_clt_swcre
-        seaborn_kwargs:
-          kind: hist
-          x: clivi
-          y: lwcre
-          bins: 20
+        x: clivi
+        y: lwcre
+        joint_kws:
           vmax: 0.03
-          stat: probability
           cmap: YlGnBu
-          cbar: true
-          cbar_kws:
-            extend: 'max'
-          marginal_kws:
-            color: darkturquoise
-            bins: 20
-            fill: true
-            stat: probability
-        plot_object_methods:
-          set_axis_labels:
-            xlabel: 'clivi [kg m-2]'
-            ylabel: 'lwcre [W m-2]'
         suptitle: 'ESACCI-CLOUD / CERES-EBAF'
         plot_filename: 'jointplot_clivi_lwcre_ESACCI-CLOUD_CERES-EBAF'
 
@@ -289,26 +249,11 @@ diagnostics:
     scripts:
       plot: &plot_settings_jointplot_cli_ta
         <<: *plot_settings_jointplot_clt_swcre
-        seaborn_kwargs:
-          kind: hist
-          x: cli
-          y: ta
-          bins: 20
+        x: cli
+        y: ta
+        joint_kws:
           vmax: 0.02
-          stat: probability
           cmap: YlGnBu
-          cbar: true
-          cbar_kws:
-            extend: 'max'
-          marginal_kws:
-            color: darkturquoise
-            bins: 20
-            fill: true
-            stat: probability
-        plot_object_methods:
-          set_axis_labels:
-            xlabel: 'cli [g kg]'
-            ylabel: 'ta [K]'
         suptitle: 'CALIPSO-ICECLOUD / ERA5'
         plot_filename: 'jointplot_cli_ta_CALIPSO-ICECLOUD_ERA5'
 
