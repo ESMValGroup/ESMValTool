@@ -508,10 +508,8 @@ def create_quadmap(
         ancestors=ancestors,
     )
     
-
     # Save the figure and close
     save_figure("_".join(fn_list), provenance_record, config, fig, close=True)
-
 
 if __name__ == "__main__":
     with run_diagnostic() as CONFIG:
