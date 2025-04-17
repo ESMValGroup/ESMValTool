@@ -49,8 +49,8 @@ from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import (
-    run_diagnostic, 
-    save_figure, 
+    run_diagnostic,
+    save_figure,
     save_data)
 
 # Create a logger object.
@@ -322,6 +322,7 @@ def plot_global_single_level(axis, cube, contour_levels, title):
     # Display the plots
     iplt.show()
 
+
 def save_cube(cube, field_name, config, ancestors):
     """
     Produces a provenance record and saves data for each cube.
@@ -333,15 +334,15 @@ def save_cube(cube, field_name, config, ancestors):
         Including information like temperature values, latitude, longitude,
         and depth.
     field_name : str
-        A string that contains the cube name with the corresponding extracted 
+        A string that contains the cube name with the corresponding extracted
         depth level.
     config : dictionary
         configuration dictionary that contains all the necessary information
         for the function to run. It includes details about the models,
         observational datasets, file paths, and other settings.
     ancestors : list
-        A list of keys from the input_files dictionary, representing the 
-        provenance of the data. This list helps track the origin and 
+        A list of keys from the input_files dictionary, representing the
+        provenance of the data. This list helps track the origin and
         transformation history of the data used in the cube
 
     """
@@ -349,7 +350,7 @@ def save_cube(cube, field_name, config, ancestors):
     provenance_record = diagtools.prepare_provenance_record(
         config,
         caption=field_name,
-        statistics=["mean","diff"],
+        statistics=["mean", "diff"],
         domain=["global"],
         plot_type=["map"],
         ancestors=ancestors,
@@ -459,9 +460,8 @@ def create_quadmap(
         exp_minus_obs_single_level.attributes["source_id"],
     )
 
-
     input_files = diagtools.get_input_files(config)
-    ancestors=list(input_files.keys())
+    ancestors = list(input_files.keys())
     # Calling save_cube for each cube.
     save_cube(
         exp_single_level,
@@ -507,7 +507,7 @@ def create_quadmap(
         plot_type=["map"],
         ancestors=ancestors,
     )
-    
+
     # Save the figure and close
     save_figure("_".join(fn_list), provenance_record, config, fig, close=True)
 
