@@ -26,6 +26,8 @@ def test_diagnostic_image_output(
     expected_pngs: list[str],
 ) -> None:
     """Test if diagnostic image output matches expected output."""
+    # tmp_path = Path.home() / "aaa"
+    # tmp_path.mkdir(exist_ok=True)
     save_imagehashes = pytestconfig.getoption("save_imagehashes")
 
     cfg = get_cfg(tmp_path, input_data, **settings)
@@ -44,19 +46,15 @@ def test_diagnostic_image_output(
 
     imagehashes: dict[str, str] = {}
     for png in expected_pngs:
+        image_key = f"monitor.multi_datasets.{png}"
         actual_png = tmp_path / "output" / "plots" / png
         assert actual_png.is_file()
-        image_key = (
-            f"tests.sample_data.diag_scripts.monitor."
-            f"test_diagnostic_image_output.{png}"
-        )
-        actual_phash = get_phash(actual_png)
 
         # Skip actual comparison if imagehashes are written
         if save_imagehashes is None:
-            assert_phash(image_key, actual_phash)
+            assert_phash(image_key, actual_png)
 
-        imagehashes[image_key] = str(actual_phash)
+        imagehashes[image_key] = str(get_phash(actual_png))
 
     # Save imagehashes if desired
     if save_imagehashes is not None:

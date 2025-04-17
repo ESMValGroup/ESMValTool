@@ -5,7 +5,6 @@ from __future__ import annotations
 from collections.abc import Iterable
 from pathlib import Path
 
-import numpy as np
 import yaml
 from imagehash import hex_to_hash, phash
 from PIL import Image
@@ -21,17 +20,21 @@ HASH_SIZE = 16
 MAX_PHASH_DISTANCE = 2
 
 
-def assert_phash(image_key: str, actual_phash: np.ndarray) -> None:
+def assert_phash(image_key: str, image_path: Path) -> None:
     """Compare imagehashes."""
     assert_msg = (
         f"No expected output for image '{image_key}' in {IMAGEHASHES_PATH}"
     )
     assert image_key in IMAGEHASHES, assert_msg
 
+    image_phash = get_phash(image_path)
     expected_phash = hex_to_hash(IMAGEHASHES[image_key])
-    distance = expected_phash - actual_phash
+    distance = expected_phash - image_phash
 
-    assert_msg = f"Image '{image_key}' changed (Hamming distance: {distance})"
+    assert_msg = (
+        f"Image '{image_key}' ({image_path}) changed (Hamming "
+        f"distance: {distance})"
+    )
     assert distance < MAX_PHASH_DISTANCE, assert_msg
 
 
@@ -78,7 +81,7 @@ def get_cfg(tmp_dir: Path, input_data: Iterable[str], **kwargs: str) -> dict:
     return cfg
 
 
-def get_phash(image_path: Path) -> str:
+def get_phash(image_path: Path):
     """Get phash of image."""
     with Image.open(image_path) as img:
         return phash(img, hash_size=HASH_SIZE)
