@@ -930,6 +930,21 @@ class MultiDatasets(MonitorBase):
     @property
     def plot_settings(self) -> dict[str, dict[str, Any]]:
         """Plot settings."""
+        plot_settings_1d = {
+            "aspect_ratio": None,
+            "gridline_kwargs": {},
+            "hlines": [],
+            "legend_kwargs": {},
+            "log_x": False,
+            "log_y": False,
+            "plot_kwargs": {},
+            "pyplot_kwargs": {},
+            "show_x_minor_ticklabels": False,
+            "show_x_minor_ticks": False,
+            "show_y_minor_ticklabels": False,
+            "show_y_minor_ticks": False,
+            "var_on": "y",
+        }
         return {
             "1d_profile": {
                 "function": self.create_1d_profile_plot,
@@ -940,15 +955,10 @@ class MultiDatasets(MonitorBase):
                 },
                 "type": "one_plot_per_variable",
                 "default_settings": {
+                    **plot_settings_1d,
                     "aspect_ratio": 1.5,
-                    "gridline_kwargs": {},
-                    "hlines": [],
-                    "legend_kwargs": {},
-                    "log_x": False,
                     "log_y": True,
-                    "plot_kwargs": {},
-                    "pyplot_kwargs": {},
-                    "show_y_minor_ticklabels": False,
+                    "var_on": "x",
                 },
             },
             "annual_cycle": {
@@ -959,13 +969,7 @@ class MultiDatasets(MonitorBase):
                     "plot_types": ["seas"],
                 },
                 "type": "one_plot_per_variable",
-                "default_settings": {
-                    "gridline_kwargs": {},
-                    "hlines": [],
-                    "legend_kwargs": {},
-                    "plot_kwargs": {},
-                    "pyplot_kwargs": {},
-                },
+                "default_settings": {**plot_settings_1d},
             },
             "benchmarking_annual_cycle": {
                 "function": self.create_benchmarking_annual,
@@ -3121,11 +3125,18 @@ class MultiDatasets(MonitorBase):
             ancestors.append(dataset["filename"])
             cube = dataset["cube"]
             cubes[self._get_label(dataset)] = cube
-            dims = self._check_cube_dimensions(cube, plot_type)
+            coord = cube.coord(
+                self._check_cube_dimensions(cube, plot_type)[0],
+                dim_coords=True,
+            )
 
+            # Actual plot
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs["axes"] = axes
-            iris.plot.plot(cube, **plot_kwargs)
+            if self.plots[plot_type]["var_on"] == "y":
+                iris.plot.plot(coord, cube, **plot_kwargs)
+            else:
+                iris.plot.plot(cube, coord, **plot_kwargs)
 
         # Plot horizontal lines
         for hline_kwargs in self.plots[plot_type]["hlines"]:
@@ -3135,38 +3146,46 @@ class MultiDatasets(MonitorBase):
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
         axes.set_title(multi_dataset_facets["long_name"])
 
+        if aspect_ratio := self.plots[plot_type]["aspect_ratio"] is not None:
+            axes.set_box_aspect(aspect_ratio)
+
         if axes_kwargs is None:
             axes_kwargs = {}
         for axes_func, axes_args in axes_kwargs.items():
             getattr(axes, axes_func)(*axes_args)
 
-        # TODO!!!
-        # if self.plots[plot_type]["log_x"]:
-        #     axes.set_xscale("log")
-        #     x_major = LogLocator(base=10.0, numticks=12)
-        #     axes.get_xaxis().set_major_locator(x_major)
-        #     x_minor = LogLocator(
-        #         base=10.0, subs=np.arange(1.0, 10.0) * 0.1, numticks=12
-        #     )
+        # Axes
+        if self.plots[plot_type]["log_x"]:
+            axes.set_xscale("log")
+            x_major = LogLocator(base=10.0, numticks=12)
+            axes.get_xaxis().set_major_locator(x_major)
+            x_minor = LogLocator(
+                base=10.0, subs=np.arange(1.0, 10.0) * 0.1, numticks=12
+            )
+            axes.get_xaxis().set_minor_locator(x_minor)
+            axes.get_xaxis().set_minor_formatter(NullFormatter())
+        if self.plots[plot_type]["log_y"]:
+            axes.set_yscale("log")
+            axes.get_yaxis().set_major_formatter(FormatStrFormatter("%.1f"))
+        if self.plots[plot_type]["show_x_minor_ticks"]:
+            axes.get_xaxis().set_minor_locator(AutoMinorLocator())
+        if self.plots[plot_type]["show_y_minor_ticks"]:
+            axes.get_yaxis().set_minor_locator(AutoMinorLocator())
+        if self.plots[plot_type]["show_x_minor_ticklabels"]:
+            axes.get_xaxis().set_minor_locator(AutoMinorLocator())
+            axes.get_xaxis().set_minor_formatter(FormatStrFormatter("%.1f"))
+        else:
+            axes.get_xaxis().set_minor_formatter(NullFormatter())
+        if self.plots[plot_type]["show_y_minor_ticklabels"]:
+            axes.get_yaxis().set_minor_locator(AutoMinorLocator())
+            axes.get_yaxis().set_minor_formatter(FormatStrFormatter("%.1f"))
+        else:
+            axes.get_yaxis().set_minor_formatter(NullFormatter())
 
-        #     axes.get_xaxis().set_minor_locator(x_minor)
-        #     axes.get_xaxis().set_minor_formatter(NullFormatter())
-        # if self.plots[plot_type]["log_y"]:
-        #     axes.set_yscale("log")
-        #     axes.get_yaxis().set_major_formatter(FormatStrFormatter("%.1f"))
-
-        # if self.plots[plot_type]["show_y_minor_ticklabels"]:
-        #     axes.get_yaxis().set_minor_locator(AutoMinorLocator())
-        #     axes.get_yaxis().set_minor_formatter(FormatStrFormatter("%.1f"))
-        # else:
-        #     axes.get_yaxis().set_minor_formatter(NullFormatter())
-
+        # Gridlines
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
         if gridline_kwargs is not False:
             axes.grid(**gridline_kwargs)
-
-        # aspect_ratio = self.plots[plot_type]["aspect_ratio"]
-        # axes.set_box_aspect(aspect_ratio)
 
         # Legend
         legend_kwargs = self.plots[plot_type]["legend_kwargs"]
@@ -3187,7 +3206,7 @@ class MultiDatasets(MonitorBase):
         var_attrs = {
             n: datasets[0][n] for n in ("short_name", "long_name", "units")
         }
-        io.save_1d_data(cubes, netcdf_path, dims[0], var_attrs)
+        io.save_1d_data(cubes, netcdf_path, coord.name(), var_attrs)
 
         # Provenance tracking
         provenance_record = {
