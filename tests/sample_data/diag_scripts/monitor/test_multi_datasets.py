@@ -26,8 +26,8 @@ def test_diagnostic_image_output(
     expected_pngs: list[str],
 ) -> None:
     """Test if diagnostic image output matches expected output."""
-    # tmp_path = Path.home() / "aaa"
-    # tmp_path.mkdir(exist_ok=True)
+    tmp_path = Path.home() / "aaa"
+    tmp_path.mkdir(exist_ok=True)
     save_imagehashes = pytestconfig.getoption("save_imagehashes")
 
     cfg = get_cfg(tmp_path, input_data, **settings)
@@ -40,6 +40,7 @@ def test_diagnostic_image_output(
     cfg.setdefault("savefig_kwargs", {})
     cfg["figure_kwargs"]["figsize"] = [8.0, 6.0]
     cfg["matplotlib_rc_params"]["backend"] = "agg"
+    cfg["matplotlib_rc_params"]["figure.constrained_layout.use"] = True
     cfg["savefig_kwargs"]["dpi"] = 100
 
     main(cfg)
@@ -50,7 +51,7 @@ def test_diagnostic_image_output(
         actual_png = tmp_path / "output" / "plots" / png
         assert actual_png.is_file()
 
-        # Skip actual comparison if imagehashes are written
+        # Skip actual comparison if imagehashes should be written
         if save_imagehashes is None:
             assert_phash(image_key, actual_png)
 
