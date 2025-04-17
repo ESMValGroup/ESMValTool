@@ -147,14 +147,14 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
     and iterated through in the main function to compute the metric.
 
     Args:
-        input_pair: list of dictionaries [obs_datasets, model_datasets]
+        input_pair: List of dictionaries [obs_datasets, model_datasets]
             where dictionary key of dataset is variable group(preprocessor).
-        dt_ls: list of dataset names
-            used for labels in plots.
-        var_group: list referring to preprocessed group used for the metric;
+        dt_ls: List of dataset names.
+            Used for labels in plots.
+        var_group: List referring to preprocessed group used for the metric;
             list length is 1,
             or 2 for pattern and diversity metrics for linear regrssion
-        metric: name of metric to calculate
+        metric: Name of metric to calculate.
             eg. 09pattern, 10lifecyle.
     """
     data_values = []
