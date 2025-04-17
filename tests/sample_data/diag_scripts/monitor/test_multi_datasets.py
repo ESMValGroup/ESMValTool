@@ -17,8 +17,10 @@ from tests.sample_data.diag_scripts import (
 
 TEST_SETUPS = load_test_setups("monitor/multi_datasets_setups.yml")
 DEFAULT_SETTINGS = {
+    "figure_kwargs": {},
     "plot_filename": "{plot_type}_{real_name}_{dataset}_{mip}",
     "plot_folder": "{plot_dir}",
+    "savefig_kwargs": {},
 }
 
 
@@ -32,8 +34,8 @@ def test_diagnostic_image_output(
     expected_pngs: list[str],
 ) -> None:
     """Test if diagnostic image output matches expected output."""
-    tmp_path = Path.home() / "aaa"
-    tmp_path.mkdir(exist_ok=True)
+    # tmp_path = Path.home() / "aaa"
+    # tmp_path.mkdir(exist_ok=True)
     save_imagehashes = pytestconfig.getoption("save_imagehashes")
 
     cfg_settings = {**DEFAULT_SETTINGS, **settings}
