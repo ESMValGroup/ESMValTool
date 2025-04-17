@@ -53,7 +53,7 @@ class OSICmorizer:
             file_pattern = (
                 f"{vals['raw']}_{self.hemisphere}_{vals['grid']}_*.nc"
             )
-            for year in os.listdir(self.in_dir):
+            for year in sorted(os.listdir(self.in_dir)):
                 try:
                     year = int(year)
                 except ValueError:
@@ -84,7 +84,9 @@ class OSICmorizer:
 
     def _extract_variable(self, var_infos, raw_info, year, mips):
         """Extract to all vars."""
-        cubes = iris.load(
+        # The cubes need to be concatenated, not merged, and trying to merge is
+        # very slow, therefore we use load_raw which does not try to merge.
+        cubes = iris.load_raw(
             raw_info["file"],
             iris.Constraint(
                 cube_func=lambda c: c.var_name == raw_info["name"]
