@@ -502,8 +502,8 @@ def create_quadmap(
     provenance_record = diagtools.prepare_provenance_record(
         config,
         caption=f"Quadmap models comparison against observation level="
-        f"{formatted_depth})", 
-        statistics=["mean","diff"],
+        f"{formatted_depth})",
+        statistics=["mean", "diff"],
         domain=["global"],
         plot_type=["map"],
         ancestors=ancestors,
