@@ -46,10 +46,7 @@ def list_datasets(data):
 
 
 def extract_cube(data, variable_group):
-    """
-    Select records from data based on the variable_group, assert that there is
-    only one matching record, then return an iris cube for that record.
-    """
+    """Return the variable group's single iris cube from the data."""
     logger.debug("extracting %s cube from %s", variable_group, data)
 
     # Load any data in the variable_group
