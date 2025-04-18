@@ -11,6 +11,7 @@ Author: Lee de Mora (PML)
 
 .. toctree::
 
+.. automodule:: esmvaltool.diag_scripts.ocean.diagnostic_biases
 .. automodule:: esmvaltool.diag_scripts.ocean.diagnostic_maps
 .. automodule:: esmvaltool.diag_scripts.ocean.diagnostic_maps_quad
 .. automodule:: esmvaltool.diag_scripts.ocean.diagnostic_model_vs_obs
