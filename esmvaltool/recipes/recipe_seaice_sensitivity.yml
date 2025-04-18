@@ -2,9 +2,9 @@
 # recipe_smpi.yml
 ---
 documentation:
-  title: Seaice sentivity
+  title: Seaice sensitivity
 
-  description: |
+  description: |  # TODO
       Blah
 
   authors:
@@ -73,8 +73,8 @@ preprocessors:
 
   pp_antarctic_avg_ann_sea_ice:
     <<: *extract_test_period
-    <<: *sh_total_area  # TODO: should I swap this and the next?
     <<: *annual_mean
+    <<: *sh_total_area
 
   pp_avg_ann_global_temp:
     <<: *extract_test_period
@@ -83,7 +83,7 @@ preprocessors:
 
 diagnostics:
   arctic:
-    description: blah
+    description: blah  # TODO
     variables:
       siconc:
         preprocessor: pp_arctic_sept_sea_ice
@@ -96,7 +96,7 @@ diagnostics:
         script: seaice/seaice_sensitivity.py
 
   antarctic:
-    description: blah
+    description: blah  # TODO
     variables:
       siconc:
         preprocessor: pp_antarctic_avg_ann_sea_ice

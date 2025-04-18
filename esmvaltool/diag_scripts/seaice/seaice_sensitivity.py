@@ -1,13 +1,11 @@
 import logging
 from pathlib import Path
-from pprint import pformat
 import iris
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 import matplotlib.cm as cm
 from scipy import stats
 import numpy as np
-import iris.coord_categorisation as cc  # we could avoid using this
 from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
     save_figure,
@@ -67,30 +65,21 @@ def extract_cube(data, variable_group):
     return cube
 
 
-def calculate_slope(independent, dependent):
+def calculate_regression(independent, dependent, slope_only):
     """
     Use SciPy stats to calculate the least-squares regression
     """
     logger.debug(f'Calculating linear relationship between {dependent} and {independent}')
 
     # Use SciPy stats to calculate the regression
-    slope, intercept, r, p, stderr = stats.linregress(independent, dependent)
+    # result = slope, intercept, rvalue, pvalue, stderr
+    result = stats.linregress(independent, dependent)
 
-    # Return ony the slope
-    return slope
-
-
-def calculate_rvalue(independent, dependent):
-    """
-    Use SciPy stats to calculate the Pearson correlation coefficient
-    """
-    logger.debug(f'Calculating rvalue between {dependent} and {independent}')
-
-    # Use SciPy stats to calculate the regression
-    slope, intercept, r, p, stderr = stats.linregress(independent, dependent)
-
-    # Return ony the rvalue
-    return r
+    # Return either the slope or everything
+    if slope_only:
+        return result.slope
+    else:
+        return result
 
 
 def calculate_annual_trends(data):
@@ -103,18 +92,19 @@ def calculate_annual_trends(data):
     si_cube = extract_cube(data, 'siconc')
     tas_cube = extract_cube(data, 'tas')
 
-    # Calculate the trends over time
+    # Calculate the individual trends over time
     years = tas_cube.coord('year').points
-    si_trend = calculate_slope(years, si_cube.data)
-    tas_trend = calculate_slope(years, tas_cube.data)
+    si_trend = calculate_regression(years, si_cube.data, slope_only=True)
+    tas_trend = calculate_regression(years, tas_cube.data, slope_only=True)
 
-    # Calculate the direct correlation coefficient
-    direct_r_val = calculate_rvalue(tas_cube.data, si_cube.data)
+    # Calculate the direct regression for r and p values
+    direct_regression = calculate_regression(tas_cube.data, si_cube.data, slope_only=False)
 
     dictionary = {
         'si_ann_trend': si_trend,
         'tas_ann_trend': tas_trend,
-        'direct_r_val': direct_r_val
+        'direct_r_val': direct_regression.rvalue,
+        'direct_p_val': direct_regression.pvalue
     }
 
     return dictionary
@@ -130,8 +120,8 @@ def calculate_direct_sensitivity(data):
     si_cube = extract_cube(data, 'siconc')
     tas_cube = extract_cube(data, 'tas')
 
-    # Calculate the sensitivity, NOT via time, so unlike Ed Blockley's code
-    sensitivity = calculate_slope(tas_cube.data, si_cube.data)
+    # Calculate the slope of the direct regression, NOT via time
+    sensitivity = calculate_regression(tas_cube.data, si_cube.data, slope_only=True)
 
     return sensitivity
 
@@ -162,7 +152,7 @@ def create_titles_dict(data):
         }
 
     elif first_variable['diagnostic'] == 'antarctic':
-        # We don't have equivalent observations
+        # We don't have equivalent observations  # TODO: there are observations on Roach 3e
         dictionary['obs'] = {
             'no years': dict(mean=0.0, std_dev=0.0, plausible=0.0)
         }
@@ -239,14 +229,28 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
 
     # Iterate over the dictionary
     for dataset, inner_dict in data_dictionary.items():
-        x = 10 * inner_dict['tas_trend']  # x10 to approximate decades
-        y = 10 * inner_dict['siconc_trend']  # x10 to approximate decades
-        r = inner_dict['direct_r_val'] ** 2 * np.sign(inner_dict['direct_r_val'])  # TODO: check this is right
-        plt.scatter(x, y, marker='o', s=100, c=[r], cmap=cmap, norm=norm)
+
+        # Determine the position of the point
+        x = 10 * inner_dict['tas_trend']  # for equivalence to decades
+        y = 10 * inner_dict['siconc_trend']  # for equivalence to decades
+
+        # Determine the colour of the point
+        r2 = inner_dict['direct_r_val'] ** 2 * np.sign(inner_dict['direct_r_val'])  # TODO: check this is right
+
+        # Decide if the point should be hatched
+        if inner_dict['direct_p_val'] > 0.05:  # TODO: also check this
+            h = 5 * '/'  # This is a hatch pattern
+        else:
+            h = None
+
+        # Plot the point
+        plt.scatter(x, y, marker='o', s=150, c=[r2], hatch=h, cmap=cmap, norm=norm)
+
+        # Label with the dataset
         plt.annotate(dataset, xy=(x, y), xytext=(x + 0.02, y + 0.02))
 
     # Add a colour bar
-    plt.colorbar(label='R2 value')
+    plt.colorbar(label='R^2 * sign(R)')
 
     # Save the figure (also closes it)
     provenance_record = get_provenance_record(cfg)
@@ -291,14 +295,15 @@ def main(cfg):
         data_dict[dataset]['siconc_trend'] = trends['si_ann_trend']
         data_dict[dataset]['tas_trend'] = trends['tas_ann_trend']
         data_dict[dataset]['direct_r_val'] = trends['direct_r_val']
+        data_dict[dataset]['direct_p_val'] = trends['direct_p_val']
 
-    # Plot the sensitivities (and save and close the plot)
+    # Plot the sensitivities (and save and close the plots)
     logger.info(f'Creating Notz-style plot')
     notz_style_plot_from_dict(data_dict, titles_and_obs_dict, cfg)
     logger.info(f'Creating Roach-style plot')
     roach_style_plot_from_dict(data_dict, titles_and_obs_dict, cfg)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     with run_diagnostic() as config:
         main(config)
