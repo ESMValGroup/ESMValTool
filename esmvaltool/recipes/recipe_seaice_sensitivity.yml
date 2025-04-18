@@ -1,0 +1,109 @@
+# ESMValTool
+# recipe_smpi.yml
+---
+documentation:
+  title: Seaice sensitivity
+
+  description: |  # TODO
+      Blah
+
+  authors:
+    - sellar_alistair
+
+  maintainer:
+    - sellar_alistair
+
+datasets:
+  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+
+preprocessors:
+  extract_test_period:
+    &extract_test_period
+    extract_time:
+      start_day: 1
+      start_month: 1
+      start_year: 1979
+      end_day: 31
+      end_month: 12
+      end_year: 2014
+
+  extract_sept:
+    &extract_sept
+    extract_month:
+      month: 9
+
+  nh_total_area:
+    &nh_total_area
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 0
+      end_latitude: 90
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: 1e6 km2
+
+  sh_total_area:
+    &sh_total_area
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -90
+      end_latitude: 0
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: 1e6 km2
+
+  global_mean:
+    &global_mean
+    area_statistics:
+      operator: mean
+
+  annual_mean:
+    &annual_mean
+    annual_statistics:
+      operator: mean
+
+  pp_arctic_sept_sea_ice:
+    <<: *extract_test_period
+    <<: *extract_sept
+    <<: *nh_total_area
+
+  pp_antarctic_avg_ann_sea_ice:
+    <<: *extract_test_period
+    <<: *annual_mean
+    <<: *sh_total_area
+
+  pp_avg_ann_global_temp:
+    <<: *extract_test_period
+    <<: *global_mean
+    <<: *annual_mean
+
+diagnostics:
+  arctic:
+    description: blah  # TODO
+    variables:
+      siconc:
+        preprocessor: pp_arctic_sept_sea_ice
+        mip: SImon
+      tas:
+        preprocessor: pp_avg_ann_global_temp
+        mip: Amon
+    scripts:
+      sea_ice_sensitivity_script:
+        script: seaice/seaice_sensitivity.py
+
+  antarctic:
+    description: blah  # TODO
+    variables:
+      siconc:
+        preprocessor: pp_antarctic_avg_ann_sea_ice
+        mip: SImon
+      tas:
+        preprocessor: pp_avg_ann_global_temp
+        mip: Amon
+    scripts:
+      sea_ice_sensitivity_script:
+        script: seaice/seaice_sensitivity.py
