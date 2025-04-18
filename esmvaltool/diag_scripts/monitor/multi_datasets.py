@@ -913,6 +913,7 @@ from matplotlib.ticker import (
 from sklearn.metrics import r2_score
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
+from esmvaltool import ESMValToolDeprecationWarning
 from esmvaltool.diag_scripts.monitor.monitor_base import MonitorBase
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -940,10 +941,12 @@ class MultiDatasets(MonitorBase):
             "log_y": False,
             "plot_kwargs": {},
             "pyplot_kwargs": {},
-            "show_x_minor_ticklabels": False,
             "show_x_minor_ticks": False,
-            "show_y_minor_ticklabels": False,
             "show_y_minor_ticks": False,
+            "x_major_formatter": None,
+            "x_minor_formatter": None,
+            "y_major_formatter": None,
+            "y_minor_formatter": None,
         }
 
         # Keys for each plot type:
@@ -963,6 +966,10 @@ class MultiDatasets(MonitorBase):
                 "dimensions": (["air_pressure"], ["altitude"]),
                 "provenance": {
                     "authors": ["schlund_manuel", "winterstein_franziska"],
+                    "caption": (
+                        "Vertical one-dimensional profile of {long_name} for "
+                        "various datasets."
+                    ),
                     "plot_types": ["line"],
                 },
                 "pyplot_kwargs": {},
@@ -998,6 +1005,9 @@ class MultiDatasets(MonitorBase):
                 "dimensions": (["month_number"],),
                 "provenance": {
                     "authors": ["schlund_manuel", "lauer_axel"],
+                    "caption": (
+                        "Annual cycle of {long_name} for various datasets."
+                    ),
                     "plot_types": ["seas"],
                 },
                 "pyplot_kwargs": {},
@@ -1015,6 +1025,7 @@ class MultiDatasets(MonitorBase):
                 "dimensions": ([],),
                 "provenance": {
                     "authors": ["bock_lisa", "schlund_manuel"],
+                    "caption": "Boxplot.",
                     "plot_types": ["box"],
                 },
                 "pyplot_kwargs": {},
@@ -1038,6 +1049,9 @@ class MultiDatasets(MonitorBase):
                 "dimensions": (["hour"],),
                 "provenance": {
                     "authors": ["schlund_manuel", "lauer_axel"],
+                    "caption": (
+                        "Diurnal cycle of {long_name} for various datasets."
+                    ),
                     "plot_types": ["seas"],
                 },
                 "pyplot_kwargs": {},
@@ -1055,6 +1069,7 @@ class MultiDatasets(MonitorBase):
                 "dimensions": (["latitude", "longitude"],),
                 "provenance": {
                     "authors": ["schlund_manuel", "lauer_axel"],
+                    "caption": "Map plot of {long_name} of dataset {alias}.",
                     "plot_types": ["map"],
                 },
                 "pyplot_kwargs": {},
@@ -1073,6 +1088,9 @@ class MultiDatasets(MonitorBase):
                 "dimensions": (["time"],),
                 "provenance": {
                     "authors": ["schlund_manuel", "lauer_axel"],
+                    "caption": (
+                        "Time series of {long_name} for various datasets."
+                    ),
                     "plot_types": ["line"],
                 },
                 "pyplot_kwargs": {},
@@ -1094,6 +1112,9 @@ class MultiDatasets(MonitorBase):
                 ),
                 "provenance": {
                     "authors": ["schlund_manuel", "lauer_axel"],
+                    "caption": (
+                        "Zonal mean profile of {long_name} of dataset {alias}."
+                    ),
                     "plot_types": ["vert"],
                 },
                 "pyplot_kwargs": {},
@@ -1114,6 +1135,9 @@ class MultiDatasets(MonitorBase):
                 "dimensions": (["hour"],),
                 "provenance": {
                     "authors": ["schlund_manuel", "lauer_axel"],
+                    "caption": (
+                        "Diurnal cycle of {long_name} for various datasets."
+                    ),
                     "plot_types": ["seas"],
                 },
                 "pyplot_kwargs": {},
@@ -1134,6 +1158,9 @@ class MultiDatasets(MonitorBase):
                 ),
                 "provenance": {
                     "authors": ["schlund_manuel", "hassler_birgit"],
+                    "caption": (
+                        "Hovmoeller plot of {long_name} of dataset {alias}."
+                    ),
                     "plot_types": ["zonal"],
                 },
                 "pyplot_kwargs": {},
@@ -1164,6 +1191,9 @@ class MultiDatasets(MonitorBase):
                         "kraft_jeremy",
                         "lindenlaub_lukas",
                     ],
+                    "caption": (
+                        "Hovmoeller plot of {long_name} of dataset {alias}."
+                    ),
                     "plot_types": ["zonal"],
                 },
                 "pyplot_kwargs": {},
@@ -1195,6 +1225,9 @@ class MultiDatasets(MonitorBase):
                         "heuer_helge",
                         "schlund_manuel",
                     ],
+                    "caption": (
+                        "Hovmoeller plot of {long_name} of dataset {alias}."
+                    ),
                     "plot_types": ["vert"],
                 },
                 "pyplot_kwargs": {},
@@ -1224,6 +1257,7 @@ class MultiDatasets(MonitorBase):
                 "dimensions": (["latitude", "longitude"],),
                 "provenance": {
                     "authors": ["schlund_manuel"],
+                    "caption": "Map plot of {long_name} of dataset {alias}.",
                     "plot_types": ["map"],
                 },
                 "pyplot_kwargs": {},
@@ -1253,6 +1287,9 @@ class MultiDatasets(MonitorBase):
                 "dimensions": (["time"],),
                 "provenance": {
                     "authors": ["schlund_manuel"],
+                    "caption": (
+                        "Time series of {long_name} for various datasets."
+                    ),
                     "plot_types": ["line"],
                 },
                 "pyplot_kwargs": {},
@@ -1271,6 +1308,9 @@ class MultiDatasets(MonitorBase):
                 "dimensions": (["latitude"],),
                 "provenance": {
                     "authors": ["sarauer_ellen", "schlund_manuel"],
+                    "caption": (
+                        "{long_name} vs. latitude for various datasets."
+                    ),
                     "plot_types": ["line"],
                 },
                 "pyplot_kwargs": {},
@@ -1291,6 +1331,9 @@ class MultiDatasets(MonitorBase):
                 ),
                 "provenance": {
                     "authors": ["schlund_manuel"],
+                    "caption": (
+                        "Zonal mean profile of {long_name} of dataset {alias}."
+                    ),
                     "plot_types": ["vert"],
                 },
                 "pyplot_kwargs": {},
@@ -3191,30 +3234,49 @@ class MultiDatasets(MonitorBase):
         # Axes styles
         if self.plots[plot_type]["log_x"]:
             axes.set_xscale("log")
-            x_major = LogLocator(base=10.0, numticks=12)
-            axes.get_xaxis().set_major_locator(x_major)
-            x_minor = LogLocator(
+            axes.get_xaxis().set_major_locator(
+                LogLocator(base=10.0, numticks=12)
+            )
+            x_minor_locator = LogLocator(
                 base=10.0, subs=np.arange(1.0, 10.0) * 0.1, numticks=12
             )
-            axes.get_xaxis().set_minor_locator(x_minor)
-            axes.get_xaxis().set_minor_formatter(NullFormatter())
+        else:
+            x_minor_locator = AutoMinorLocator()
+
         if self.plots[plot_type]["log_y"]:
             axes.set_yscale("log")
-            axes.get_yaxis().set_major_formatter(FormatStrFormatter("%.1f"))
+            axes.get_yaxis().set_major_locator(
+                LogLocator(base=10.0, numticks=12)
+            )
+            y_minor_locator = LogLocator(
+                base=10.0, subs=np.arange(1.0, 10.0) * 0.1, numticks=12
+            )
+        else:
+            y_minor_locator = AutoMinorLocator()
+
         if self.plots[plot_type]["show_x_minor_ticks"]:
-            axes.get_xaxis().set_minor_locator(AutoMinorLocator())
+            axes.get_xaxis().set_minor_locator(x_minor_locator)
         if self.plots[plot_type]["show_y_minor_ticks"]:
-            axes.get_yaxis().set_minor_locator(AutoMinorLocator())
-        if self.plots[plot_type]["show_x_minor_ticklabels"]:
-            axes.get_xaxis().set_minor_locator(AutoMinorLocator())
-            axes.get_xaxis().set_minor_formatter(FormatStrFormatter("%.1f"))
-        else:
-            axes.get_xaxis().set_minor_formatter(NullFormatter())
-        if self.plots[plot_type]["show_y_minor_ticklabels"]:
-            axes.get_yaxis().set_minor_locator(AutoMinorLocator())
-            axes.get_yaxis().set_minor_formatter(FormatStrFormatter("%.1f"))
-        else:
-            axes.get_yaxis().set_minor_formatter(NullFormatter())
+            axes.get_xaxis().set_minor_locator(y_minor_locator)
+
+        if self.plots[plot_type]["x_major_formatter"] is not None:
+            axes.get_xaxis().set_minor_formatter(
+                FormatStrFormatter(self.plots[plot_type]["x_major_formatter"])
+            )
+        if self.plots[plot_type]["x_minor_formatter"] is not None:
+            axes.get_xaxis().set_minor_locator(x_minor_locator)
+            axes.get_xaxis().set_minor_formatter(
+                FormatStrFormatter(self.plots[plot_type]["x_minor_formatter"])
+            )
+        if self.plots[plot_type]["y_major_formatter"] is not None:
+            axes.get_yaxis().set_minor_formatter(
+                FormatStrFormatter(self.plots[plot_type]["y_major_formatter"])
+            )
+        if self.plots[plot_type]["y_minor_formatter"] is not None:
+            axes.get_xaxis().set_minor_locator(y_minor_locator)
+            axes.get_yaxis().set_minor_formatter(
+                FormatStrFormatter(self.plots[plot_type]["y_minor_formatter"])
+            )
 
         # Gridlines
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
@@ -3347,14 +3409,8 @@ class MultiDatasets(MonitorBase):
         io.save_1d_data(cubes, netcdf_path, z_coord.standard_name, var_attrs)
 
         # Provenance tracking
-        caption = (
-            "Vertical one-dimensional profile of "
-            f"{multi_dataset_facets['long_name']}"
-            " for various datasets."
-        )
         provenance_record = {
             "ancestors": ancestors,
-            "caption": caption,
             "long_names": [var_attrs["long_name"]],
         }
         provenance_record.update(self.plot_settings[plot_type]["provenance"])
@@ -3445,13 +3501,8 @@ class MultiDatasets(MonitorBase):
         io.save_1d_data(cubes, netcdf_path, "month_number", var_attrs)
 
         # Provenance tracking
-        caption = (
-            f"Annual cycle of {multi_dataset_facets['long_name']} for "
-            f"various datasets."
-        )
         provenance_record = {
             "ancestors": ancestors,
-            "caption": caption,
             "long_names": [var_attrs["long_name"]],
         }
         provenance_record.update(self.plot_settings[plot_type]["provenance"])
@@ -3520,13 +3571,13 @@ class MultiDatasets(MonitorBase):
         plt.close()
 
         # Provenance tracking
-        caption = "Boxplot"
         ancestors = [
             d["filename"] for g in self.grouped_input_data.values() for d in g
         ]
+        long_names = sorted(list(group_metadata(all_datasets, "long_name")))
         provenance_record = {
             "ancestors": ancestors,
-            "caption": caption,
+            "long_names": long_names,
         }
         provenance_record.update(self.plot_settings[plot_type]["provenance"])
         with ProvenanceLogger(self.cfg) as provenance_logger:
@@ -3616,13 +3667,8 @@ class MultiDatasets(MonitorBase):
         io.save_1d_data(cubes, netcdf_path, "hour", var_attrs)
 
         # Provenance tracking
-        caption = (
-            f"Diurnal cycle of {multi_dataset_facets['long_name']} for "
-            f"various datasets."
-        )
         provenance_record = {
             "ancestors": ancestors,
-            "caption": caption,
             "long_names": [var_attrs["long_name"]],
         }
         provenance_record.update(self.plot_settings[plot_type]["provenance"])
@@ -3650,10 +3696,6 @@ class MultiDatasets(MonitorBase):
             (plot_path, netcdf_paths) = self._plot_benchmarking_map(
                 dataset, percentile_data, metric
             )
-            caption = (
-                f"Map plot of {dataset['long_name']} of dataset "
-                f"{dataset['alias']}."
-            )
 
             # Save plot
             plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
@@ -3667,7 +3709,6 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 "ancestors": ancestors,
-                "caption": caption,
                 "long_names": [dataset["long_name"]],
             }
             provenance_record.update(
@@ -3762,13 +3803,8 @@ class MultiDatasets(MonitorBase):
         io.save_1d_data(cubes, netcdf_path, "time", var_attrs)
 
         # Provenance tracking
-        caption = (
-            f"Time series of {multi_dataset_facets['long_name']} for "
-            f"various datasets."
-        )
         provenance_record = {
             "ancestors": ancestors,
-            "caption": caption,
             "long_names": [var_attrs["long_name"]],
         }
         provenance_record.update(self.plot_settings[plot_type]["provenance"])
@@ -3797,11 +3833,6 @@ class MultiDatasets(MonitorBase):
             )
             ancestors = [dataset["filename"]]
 
-            caption = (
-                f"Zonal mean profile of {dataset['long_name']} of dataset "
-                f"{dataset['alias']}."
-            )
-
             # Save plot
             plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
             logger.info("Wrote %s", plot_path)
@@ -3814,7 +3845,6 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 "ancestors": ancestors,
-                "caption": caption,
                 "long_names": [dataset["long_name"]],
             }
             provenance_record.update(
@@ -3886,13 +3916,8 @@ class MultiDatasets(MonitorBase):
         io.save_1d_data(cubes, netcdf_path, "hour", var_attrs)
 
         # Provenance tracking
-        caption = (
-            f"Diurnal cycle of {multi_dataset_facets['long_name']} for "
-            f"various datasets."
-        )
         provenance_record = {
             "ancestors": ancestors,
-            "caption": caption,
             "long_names": [var_attrs["long_name"]],
         }
         provenance_record.update(self.plot_settings[plot_type]["provenance"])
@@ -3930,20 +3955,11 @@ class MultiDatasets(MonitorBase):
                         plot_func, dataset
                     )
                 )
-                caption = (
-                    f"Hovmoeller plot of {dataset['long_name']} of dataset "
-                    f"{dataset['alias']}."
-                )
             else:
                 (plot_path, netcdf_paths) = (
                     self._plot_hovmoeller_anncyc_vs_lat_or_lon_with_ref(
                         plot_func, dataset, ref_dataset
                     )
-                )
-                caption = (
-                    f"Hovmoeller plot of {dataset['long_name']} of dataset "
-                    f"{dataset['alias']} including bias relative to "
-                    f"{ref_dataset['alias']}."
                 )
                 ancestors.append(ref_dataset["filename"])
 
@@ -3959,7 +3975,6 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 "ancestors": ancestors,
-                "caption": caption,
                 "long_names": [dataset["long_name"]],
             }
             provenance_record.update(
@@ -4000,20 +4015,11 @@ class MultiDatasets(MonitorBase):
                         plot_func, dataset
                     )
                 )
-                caption = (
-                    f"Hovmoeller plot of {dataset['long_name']} of dataset "
-                    f"{dataset['alias']}."
-                )
             else:
                 (plot_path, netcdf_paths) = (
                     self._plot_hovmoeller_time_vs_lat_or_lon_with_ref(
                         plot_func, dataset, ref_dataset
                     )
-                )
-                caption = (
-                    f"Hovmoeller plot of {dataset['long_name']} of dataset "
-                    f"{dataset['alias']} including bias relative to "
-                    f"{ref_dataset['alias']}."
                 )
                 ancestors.append(ref_dataset["filename"])
 
@@ -4029,7 +4035,6 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 "ancestors": ancestors,
-                "caption": caption,
                 "long_names": [dataset["long_name"]],
             }
             provenance_record.update(
@@ -4070,29 +4075,13 @@ class MultiDatasets(MonitorBase):
                         plot_func, dataset
                     )
                 )
-                caption = (
-                    f"Hovmoeller Z vs. time plot of {dataset['long_name']} "
-                    f"of dataset {dataset['alias']}."
-                )
             else:
                 (plot_path, netcdf_paths) = (
                     self._plot_hovmoeller_z_vs_time_with_ref(
                         plot_func, dataset, ref_dataset
                     )
                 )
-                caption = (
-                    f"Hovmoeller Z vs. time plot of {dataset['long_name']} "
-                    f"of dataset {dataset['alias']} including bias relative "
-                    f"to {ref_dataset['alias']}."
-                )
                 ancestors.append(ref_dataset["filename"])
-
-            # If statistics are shown add a brief description to the caption
-            if self.plots[plot_type]["show_stats"]:
-                caption += (
-                    " The number in the top left corner corresponds to the "
-                    "spatiotemporal mean."
-                )
 
             # Save plot
             plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
@@ -4106,7 +4095,6 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 "ancestors": ancestors,
-                "caption": caption,
                 "long_names": [dataset["long_name"]],
             }
             provenance_record.update(
@@ -4145,27 +4133,11 @@ class MultiDatasets(MonitorBase):
                 (plot_path, netcdf_paths) = self._plot_map_without_ref(
                     plot_func, dataset
                 )
-                caption = (
-                    f"Map plot of {dataset['long_name']} of dataset "
-                    f"{dataset['alias']}."
-                )
             else:
                 (plot_path, netcdf_paths) = self._plot_map_with_ref(
                     plot_func, dataset, ref_dataset
                 )
-                caption = (
-                    f"Map plot of {dataset['long_name']} of dataset "
-                    f"{dataset['alias']} including bias relative to "
-                    f"{ref_dataset['alias']}."
-                )
                 ancestors.append(ref_dataset["filename"])
-
-            # If statistics are shown add a brief description to the caption
-            if self.plots[plot_type]["show_stats"]:
-                caption += (
-                    " The number in the top left corner corresponds to the "
-                    "spatial mean (weighted by grid cell areas)."
-                )
 
             # Save plot
             plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
@@ -4179,7 +4151,6 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 "ancestors": ancestors,
-                "caption": caption,
                 "long_names": [dataset["long_name"]],
             }
             provenance_record.update(
@@ -4255,13 +4226,8 @@ class MultiDatasets(MonitorBase):
         io.save_1d_data(cubes, netcdf_path, "time", var_attrs)
 
         # Provenance tracking
-        caption = (
-            f"Time series of {multi_dataset_facets['long_name']} for "
-            f"various datasets."
-        )
         provenance_record = {
             "ancestors": ancestors,
-            "caption": caption,
             "long_names": [var_attrs["long_name"]],
         }
         provenance_record.update(self.plot_settings[plot_type]["provenance"])
@@ -4328,13 +4294,8 @@ class MultiDatasets(MonitorBase):
         io.save_1d_data(cubes, netcdf_path, "latitude", var_attrs)
 
         # Provenance tracking
-        caption = (
-            f"{multi_dataset_facets['long_name']} vs. latitude for "
-            f"various datasets."
-        )
         provenance_record = {
             "ancestors": ancestors,
-            "caption": caption,
             "long_names": [var_attrs["long_name"]],
         }
         provenance_record.update(self.plot_settings[plot_type]["provenance"])
@@ -4372,29 +4333,13 @@ class MultiDatasets(MonitorBase):
                         plot_func, dataset
                     )
                 )
-                caption = (
-                    f"Zonal mean profile of {dataset['long_name']} of dataset "
-                    f"{dataset['alias']}."
-                )
             else:
                 (plot_path, netcdf_paths) = (
                     self._plot_zonal_mean_profile_with_ref(
                         plot_func, dataset, ref_dataset
                     )
                 )
-                caption = (
-                    f"Zonal mean profile of {dataset['long_name']} of dataset "
-                    f"{dataset['alias']} including bias relative to "
-                    f"{ref_dataset['alias']}."
-                )
                 ancestors.append(ref_dataset["filename"])
-
-            # If statistics are shown add a brief description to the caption
-            if self.plots[plot_type]["show_stats"]:
-                caption += (
-                    " The number in the top left corner corresponds to the "
-                    "spatial mean (weighted by grid cell areas)."
-                )
 
             # Save plot
             plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
@@ -4408,7 +4353,6 @@ class MultiDatasets(MonitorBase):
             # Provenance tracking
             provenance_record = {
                 "ancestors": ancestors,
-                "caption": caption,
                 "long_names": [dataset["long_name"]],
             }
             provenance_record.update(
@@ -4419,12 +4363,34 @@ class MultiDatasets(MonitorBase):
                 for netcdf_path in netcdf_paths:
                     provenance_logger.log(netcdf_path, provenance_record)
 
-    def compute(self):
+    def compute(self) -> None:
         """Plot preprocessed data."""
         for plot_type in self.plots:
             plot_settings = self.plot_settings[plot_type]
             plot_function = plot_settings["function"]
             logger.info("Plotting %s", plot_type)
+
+            # Handle deprecations
+            if "show_y_minor_ticklabels" in self.plots[plot_type]:
+                msg = (
+                    f"The option `show_y_minor_ticklabels` for plot type "
+                    f"`{plot_type}` has been deprecated in ESMValTool version "
+                    f"2.13.0 and is scheduled for removal in version 2.15.0. "
+                    f"Please use the option `y_minor_formatter` instead."
+                )
+                warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
+                self.plots[plot_type].pop("show_y_minor_ticklabels")
+                self.plots[plot_type]["y_minor_formatter"] = "%.1f"
+            if "show_x_minor_ticklabels" in self.plots[plot_type]:
+                msg = (
+                    f"The option `show_x_minor_ticklabels` for plot type "
+                    f"`{plot_type}` has been deprecated in ESMValTool version "
+                    f"2.13.0 and is scheduled for removal in version 2.15.0. "
+                    f"Please use the option `x_minor_formatter` instead."
+                )
+                warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
+                self.plots[plot_type].pop("show_x_minor_ticklabels")
+                self.plots[plot_type]["x_minor_formatter"] = "%.1f"
 
             # Plot types where only one plot in total is created
             if plot_settings["type"] == "one_plot_total":
