@@ -72,7 +72,9 @@ def calculate_regression(independent, dependent, slope_only):
     Use SciPy stats to calculate the least-squares regression
     """
     logger.debug(
-        f"Calculating linear relationship between %s and %s", dependent, independent
+        "Calculating linear relationship between %s and %s",
+        dependent,
+        independent,
     )
 
     # Use SciPy stats to calculate the regression
@@ -148,11 +150,7 @@ def create_titles_dict(data):
     if first_variable["diagnostic"] == "arctic":
         # Ed Blockley's dSIA/dT values in million sq km per Kelvin
         dictionary["obs"] = {
-            "1979-2014": {
-                "mean": -4.01,
-                "std_dev": 0.32,
-                "plausible": 1.28
-            }
+            "1979-2014": {"mean": -4.01, "std_dev": 0.32, "plausible": 1.28}
         }
         # Setting titles for plots
         dictionary["titles"] = {
@@ -166,11 +164,7 @@ def create_titles_dict(data):
     elif first_variable["diagnostic"] == "antarctic":
         # We don't have equivalent observations  # TODO: there are observations on Roach 3e
         dictionary["obs"] = {
-            "no years": {
-                "mean": 0.0,
-                "std_dev": 0.0,
-                "plausible": 0.0
-            }
+            "no years": {"mean": 0.0, "std_dev": 0.0, "plausible": 0.0}
         }
         # Setting titles for plots
         dictionary["titles"] = {
@@ -325,7 +319,7 @@ def main(cfg):
     # Iterate over each dataset
     for dataset in datasets:
         # Select only data from that dataset
-        logger.info(f"Selecting data from %s", dataset)
+        logger.info("Selecting data from %s", dataset)
         selection = select_metadata(input_data, dataset=dataset)
 
         # Add the dataset to the dictionary with a blank inner dictionary
