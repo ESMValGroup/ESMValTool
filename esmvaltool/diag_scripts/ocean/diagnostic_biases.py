@@ -240,6 +240,8 @@ class Data4Analyis:
 
         """
         prov_dic = create_provenance("")
+        f_name = f"{self.name}_{self.data[0].var_name}_"
+        f_name = f_name + "bias_" if self.bias else f_name
         if len(self.data) > 1:
             bg_dic = eprep.multi_model_statistics(
                 self.data,
@@ -248,17 +250,14 @@ class Data4Analyis:
                 ignore_scalar_coords=True,
             )
             self.best_guess = bg_dic[list(bg_dic.keys())[0]]
-            f_name = f"{self.name}_{self.best_guess.var_name}_"
-            f_name = f_name + "bias_" if self.bias else f_name
-            save_data(
-                f_name + list(bg_dic.keys())[0], prov_dic, cfg, self.best_guess
-            )
+            bg_name = f_name + list(bg_dic.keys())[0]
             bord_dic = eprep.multi_model_statistics(
                 self.data,
                 span="full",
                 statistics=stats["borders"],
                 ignore_scalar_coords=True,
             )
+            # saving border data only if more than 1 cube provided
             self.border1 = bord_dic[list(bord_dic.keys())[0]]
             save_data(
                 f_name + list(bord_dic.keys())[0], prov_dic, cfg, self.border1
@@ -271,13 +270,16 @@ class Data4Analyis:
             # if just one dataset is in the group there is no need
             # to calculate the borders
             self.best_guess = self.data[0]
+            bg_name = f_name[:-1]
             self.border1 = None
             self.border2 = None
             logger.info(
                 "There were no statistics calculated for %s"
-                "because only one cube was provided",
+                " because only one cube was provided",
                 self.name,
             )
+        # saving the best guess data
+        save_data(bg_name, prov_dic, cfg, self.best_guess)
 
 
 def create_provenance(caption: str):
@@ -326,7 +328,9 @@ def plot_bias_plot(data_list: list[Data4Analyis], cfg: dict):
                     longitude=(20.0, 380.0)
                 )
         data_col = eplot.get_dataset_style(data.name, cfg.get("color_style"))
-        iris.plot.plot(data.best_guess, color=data_col["color"])
+        iris.plot.plot(
+            data.best_guess, color=data_col["color"], label=data.name
+        )
         # if there is more than one realization, there's border plotted
         if data.border1:
             iris.plot.fill_between(
@@ -348,6 +352,7 @@ def plot_bias_plot(data_list: list[Data4Analyis], cfg: dict):
         )
         iris.plot.plot(data_list[0].ref_cube, c=ref_col["color"])
 
+    plt.legend()
     plt.title(caption)
     plt.xlabel(data_list[0].best_guess.dim_coords[0].name())
     y_label = data_list[0].best_guess.var_name

@@ -32,3 +32,6 @@ xtick.major.width : 0.5
 ytick.major.width : 0.5
 xtick.minor.width : 0.4
 ytick.minor.width : 0.4
+
+# Legend
+legend.frameon : False
