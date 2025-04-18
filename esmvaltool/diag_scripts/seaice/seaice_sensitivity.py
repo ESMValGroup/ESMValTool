@@ -20,9 +20,9 @@ logger = logging.getLogger(Path(__file__).stem)
 # TODO: Work out what should be written here
 def get_provenance_record(cfg):
     """Create a provenance record describing the diagnostic data and plot."""
-    filenames = [item["filename"] for item in config["input_data"].values()]
+    filenames = [item["filename"] for item in cfg["input_data"].values()]
 
-    region = [item["diagnostic"] for item in config["input_data"].values()][0]
+    region = [item["diagnostic"] for item in cfg["input_data"].values()][0]
 
     record = {
         "caption": f"Plots of {region.title()} sea ice sensitivity",
@@ -51,7 +51,7 @@ def extract_cube(data, variable_group):
     assert that there is only one matching record,
     then return an iris cube for that record
     """
-    logger.debug(f"extracting {variable_group} cube from {data}")
+    logger.debug("extracting %s cube from %s", variable_group, data)
 
     # Load any data in the variable_group
     selection = select_metadata(data, variable_group=variable_group)
@@ -72,7 +72,7 @@ def calculate_regression(independent, dependent, slope_only):
     Use SciPy stats to calculate the least-squares regression
     """
     logger.debug(
-        f"Calculating linear relationship between {dependent} and {independent}"
+        f"Calculating linear relationship between %s and %s", dependent, independent
     )
 
     # Use SciPy stats to calculate the regression
@@ -148,7 +148,11 @@ def create_titles_dict(data):
     if first_variable["diagnostic"] == "arctic":
         # Ed Blockley's dSIA/dT values in million sq km per Kelvin
         dictionary["obs"] = {
-            "1979-2014": dict(mean=-4.01, std_dev=0.32, plausible=1.28)
+            "1979-2014": {
+                "mean": -4.01,
+                "std_dev": 0.32,
+                "plausible": 1.28
+            }
         }
         # Setting titles for plots
         dictionary["titles"] = {
@@ -162,7 +166,11 @@ def create_titles_dict(data):
     elif first_variable["diagnostic"] == "antarctic":
         # We don't have equivalent observations  # TODO: there are observations on Roach 3e
         dictionary["obs"] = {
-            "no years": dict(mean=0.0, std_dev=0.0, plausible=0.0)
+            "no years": {
+                "mean": 0.0,
+                "std_dev": 0.0,
+                "plausible": 0.0
+            }
         }
         # Setting titles for plots
         dictionary["titles"] = {
@@ -297,6 +305,9 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
 
 
 def main(cfg):
+    """
+    Create two plots per diagnostic from preprocessed data
+    """
     # Get the data from the cfg
     logger.info("Getting data from the config")
     input_data = cfg["input_data"].values()
@@ -314,7 +325,7 @@ def main(cfg):
     # Iterate over each dataset
     for dataset in datasets:
         # Select only data from that dataset
-        logger.info(f"Selecting data from {dataset}")
+        logger.info(f"Selecting data from %s", dataset)
         selection = select_metadata(input_data, dataset=dataset)
 
         # Add the dataset to the dictionary with a blank inner dictionary
