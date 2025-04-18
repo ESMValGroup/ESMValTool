@@ -884,6 +884,7 @@ from __future__ import annotations
 import logging
 import warnings
 from copy import deepcopy
+from functools import partial
 from pathlib import Path
 from pprint import pformat
 from typing import Any
@@ -943,9 +944,20 @@ class MultiDatasets(MonitorBase):
             "show_x_minor_ticks": False,
             "show_y_minor_ticklabels": False,
             "show_y_minor_ticks": False,
-            "var_on": "y",
         }
-        return {
+
+        # Keys for each plot type:
+        # - function: function used to create plot.
+        # - dimensions: expected dimensional coordinates for input data.
+        # - provenance: information for provenance tracking.
+        # - pyplot_kwargs: additional calls to pyplot functions; may be
+        #   overwritten by user-defined `pyplot_kwargs` given under
+        #   `default_settings`.
+        # - type: type of plot function; must be one of
+        #   `one_plot_per_variable`, `one_plot_per_dataset`, `one_plot_total`.
+        # - default_settings: allowed user-defined settings in recipe and their
+        #   default values.
+        plot_settings = {
             "1d_profile": {
                 "function": self.create_1d_profile_plot,
                 "dimensions": (["air_pressure"], ["altitude"]),
@@ -953,20 +965,30 @@ class MultiDatasets(MonitorBase):
                     "authors": ["schlund_manuel", "winterstein_franziska"],
                     "plot_types": ["line"],
                 },
+                "pyplot_kwargs": {},
                 "type": "one_plot_per_variable",
                 "default_settings": {
                     **plot_settings_1d,
                     "aspect_ratio": 1.5,
                     "log_y": True,
-                    "var_on": "x",
                 },
             },
             "annual_cycle": {
-                "function": self.create_annual_cycle_plot,
+                "function": partial(self.create_1d_plot, "annual_cycle"),
                 "dimensions": (["month_number"],),
                 "provenance": {
                     "authors": ["schlund_manuel"],
+                    "caption": (
+                        "Annual cycle of {long_name} for various datasets."
+                    ),
                     "plot_types": ["seas"],
+                },
+                "pyplot_kwargs": {
+                    "xlabel": "month",
+                    "xticks": {
+                        "ticks": range(1, 13),
+                        "labels": [str(m) for m in range(1, 13)],
+                    },
                 },
                 "type": "one_plot_per_variable",
                 "default_settings": {**plot_settings_1d},
@@ -978,6 +1000,7 @@ class MultiDatasets(MonitorBase):
                     "authors": ["schlund_manuel", "lauer_axel"],
                     "plot_types": ["seas"],
                 },
+                "pyplot_kwargs": {},
                 "type": "one_plot_per_variable",
                 "default_settings": {
                     "gridline_kwargs": {},
@@ -994,6 +1017,7 @@ class MultiDatasets(MonitorBase):
                     "authors": ["bock_lisa", "schlund_manuel"],
                     "plot_types": ["box"],
                 },
+                "pyplot_kwargs": {},
                 "type": "one_plot_total",
                 "default_settings": {
                     "fontsize": None,
@@ -1016,6 +1040,7 @@ class MultiDatasets(MonitorBase):
                     "authors": ["schlund_manuel", "lauer_axel"],
                     "plot_types": ["seas"],
                 },
+                "pyplot_kwargs": {},
                 "type": "one_plot_per_variable",
                 "default_settings": {
                     "gridline_kwargs": {},
@@ -1032,6 +1057,7 @@ class MultiDatasets(MonitorBase):
                     "authors": ["schlund_manuel", "lauer_axel"],
                     "plot_types": ["map"],
                 },
+                "pyplot_kwargs": {},
                 "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
@@ -1049,6 +1075,7 @@ class MultiDatasets(MonitorBase):
                     "authors": ["schlund_manuel", "lauer_axel"],
                     "plot_types": ["line"],
                 },
+                "pyplot_kwargs": {},
                 "type": "one_plot_per_variable",
                 "default_settings": {
                     "gridline_kwargs": {},
@@ -1069,6 +1096,7 @@ class MultiDatasets(MonitorBase):
                     "authors": ["schlund_manuel", "lauer_axel"],
                     "plot_types": ["vert"],
                 },
+                "pyplot_kwargs": {},
                 "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
@@ -1088,6 +1116,7 @@ class MultiDatasets(MonitorBase):
                     "authors": ["schlund_manuel", "lauer_axel"],
                     "plot_types": ["seas"],
                 },
+                "pyplot_kwargs": {},
                 "type": "one_plot_per_variable",
                 "default_settings": {
                     "gridline_kwargs": {},
@@ -1107,6 +1136,7 @@ class MultiDatasets(MonitorBase):
                     "authors": ["schlund_manuel", "hassler_birgit"],
                     "plot_types": ["zonal"],
                 },
+                "pyplot_kwargs": {},
                 "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
@@ -1136,6 +1166,7 @@ class MultiDatasets(MonitorBase):
                     ],
                     "plot_types": ["zonal"],
                 },
+                "pyplot_kwargs": {},
                 "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
@@ -1166,6 +1197,7 @@ class MultiDatasets(MonitorBase):
                     ],
                     "plot_types": ["vert"],
                 },
+                "pyplot_kwargs": {},
                 "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
@@ -1194,6 +1226,7 @@ class MultiDatasets(MonitorBase):
                     "authors": ["schlund_manuel"],
                     "plot_types": ["map"],
                 },
+                "pyplot_kwargs": {},
                 "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
@@ -1222,6 +1255,7 @@ class MultiDatasets(MonitorBase):
                     "authors": ["schlund_manuel"],
                     "plot_types": ["line"],
                 },
+                "pyplot_kwargs": {},
                 "type": "one_plot_per_variable",
                 "default_settings": {
                     "gridline_kwargs": {},
@@ -1239,6 +1273,7 @@ class MultiDatasets(MonitorBase):
                     "authors": ["sarauer_ellen", "schlund_manuel"],
                     "plot_types": ["line"],
                 },
+                "pyplot_kwargs": {},
                 "type": "one_plot_per_variable",
                 "default_settings": {
                     "gridline_kwargs": {},
@@ -1258,6 +1293,7 @@ class MultiDatasets(MonitorBase):
                     "authors": ["schlund_manuel"],
                     "plot_types": ["vert"],
                 },
+                "pyplot_kwargs": {},
                 "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
@@ -1279,6 +1315,8 @@ class MultiDatasets(MonitorBase):
                 },
             },
         }
+
+        return plot_settings
 
     def __init__(self, config):
         """Initialize class member."""
@@ -2913,7 +2951,12 @@ class MultiDatasets(MonitorBase):
 
     def _process_pyplot_kwargs(self, plot_type, dataset):
         """Process functions for :mod:`matplotlib.pyplot`."""
-        pyplot_kwargs = self.plots[plot_type]["pyplot_kwargs"]
+        pyplot_kwargs = {
+            **self.plot_settings[plot_type][
+                "pyplot_kwargs"
+            ],  # default options
+            **self.plots[plot_type]["pyplot_kwargs"],  # user options
+        }
         for func, arg in pyplot_kwargs.items():
             if isinstance(arg, str):
                 arg = self._fill_facet_placeholders(
@@ -3107,14 +3150,10 @@ class MultiDatasets(MonitorBase):
             f"'{variable}'), got {len(percentiles):d}"
         )
 
-    def create_1d_plot(
-        self,
-        plot_type: str,
-        datasets: list[dict],
-        provenance_caption: str,
-        axes_kwargs: dict[str, Any] | None = None,
-    ) -> None:
+    def create_1d_plot(self, plot_type: str, datasets: list[dict]) -> None:
         """Create 1D x vs. y plot (lines or markers)."""
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+
         fig = plt.figure(**self.cfg["figure_kwargs"])
         axes = fig.add_subplot()
 
@@ -3125,36 +3164,31 @@ class MultiDatasets(MonitorBase):
             ancestors.append(dataset["filename"])
             cube = dataset["cube"]
             cubes[self._get_label(dataset)] = cube
-            coord = cube.coord(
-                self._check_cube_dimensions(cube, plot_type)[0],
-                dim_coords=True,
-            )
+            coords = self._check_cube_dimensions(cube, plot_type)
+            coord = cube.coord(coords[0], dim_coords=True)
 
             # Actual plot
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
             plot_kwargs["axes"] = axes
-            if self.plots[plot_type]["var_on"] == "y":
-                iris.plot.plot(coord, cube, **plot_kwargs)
-            else:
-                iris.plot.plot(cube, coord, **plot_kwargs)
+            iris.plot.plot(cube, **plot_kwargs)
 
         # Plot horizontal lines
         for hline_kwargs in self.plots[plot_type]["hlines"]:
             axes.axhline(**hline_kwargs)
 
-        # Default plot appearance
-        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+        # Title and axis labels
         axes.set_title(multi_dataset_facets["long_name"])
+        axes.set_xlabel(f"{coord.name()} [{coord.units}]")
+        axes.set_ylabel(
+            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
+            f"[{multi_dataset_facets['units']}]"
+        )
 
+        # Aspect ratio
         if aspect_ratio := self.plots[plot_type]["aspect_ratio"] is not None:
             axes.set_box_aspect(aspect_ratio)
 
-        if axes_kwargs is None:
-            axes_kwargs = {}
-        for axes_func, axes_args in axes_kwargs.items():
-            getattr(axes, axes_func)(*axes_args)
-
-        # Axes
+        # Axes styles
         if self.plots[plot_type]["log_x"]:
             axes.set_xscale("log")
             x_major = LogLocator(base=10.0, numticks=12)
@@ -3192,7 +3226,7 @@ class MultiDatasets(MonitorBase):
         if legend_kwargs is not False:
             axes.legend(**legend_kwargs)
 
-        # Customize plot appearance
+        # Further customize plot appearance
         self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
 
         # Save plot
@@ -3211,10 +3245,16 @@ class MultiDatasets(MonitorBase):
         # Provenance tracking
         provenance_record = {
             "ancestors": ancestors,
-            "caption": provenance_caption,
             "long_names": [var_attrs["long_name"]],
         }
         provenance_record.update(self.plot_settings[plot_type]["provenance"])
+        for prov_key, prov_val in provenance_record.items():
+            if isinstance(prov_val, str):
+                provenance_record[prov_key] = self._fill_facet_placeholders(
+                    prov_val,
+                    multi_dataset_facets,
+                    f"provenance {prov_key} of {plot_type} '{prov_val}'",
+                )
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
@@ -3321,97 +3361,6 @@ class MultiDatasets(MonitorBase):
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
-
-    def create_annual_cycle_plot(self, datasets):
-        """Create annual cycle plot."""
-        plot_type = "annual_cycle"
-        caption = (
-            f"Annual cycle of {datasets[0]['long_name']} for various datasets."
-        )
-        ylabel = (
-            f"{datasets[0][self.cfg['group_variables_by']]} "
-            f"[{datasets[0]['units']}]"
-        )
-        self.create_1d_plot(
-            plot_type,
-            datasets,
-            caption,
-            axes_kwargs={
-                "set_xlabel": ["month"],
-                "set_xticks": [range(1, 13), [str(m) for m in range(1, 13)]],
-                "set_ylabel": [ylabel],
-            },
-        )
-
-        # fig = plt.figure(**self.cfg["figure_kwargs"])
-        # axes = fig.add_subplot()
-
-        # # Plot all datasets in one single figure
-        # ancestors = []
-        # cubes = {}
-        # for dataset in datasets:
-        #     ancestors.append(dataset["filename"])
-        #     cube = dataset["cube"]
-        #     cubes[self._get_label(dataset)] = cube
-        #     self._check_cube_dimensions(cube, plot_type)
-
-        #     # Plot annual cycle
-        #     plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-        #     plot_kwargs["axes"] = axes
-        #     iris.plot.plot(cube, **plot_kwargs)
-
-        # # Plot horizontal lines
-        # for hline_kwargs in self.plots[plot_type]["hlines"]:
-        #     axes.axhline(**hline_kwargs)
-
-        # # Default plot appearance
-        # multi_dataset_facets = self._get_multi_dataset_facets(datasets)
-        # axes.set_title(multi_dataset_facets["long_name"])
-        # axes.set_xlabel("month")
-        # axes.set_ylabel(
-        #     f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
-        #     f"[{multi_dataset_facets['units']}]"
-        # )
-        # axes.set_xticks(range(1, 13), [str(m) for m in range(1, 13)])
-        # gridline_kwargs = self._get_gridline_kwargs(plot_type)
-        # if gridline_kwargs is not False:
-        #     axes.grid(**gridline_kwargs)
-
-        # # Legend
-        # legend_kwargs = self.plots[plot_type]["legend_kwargs"]
-        # if legend_kwargs is not False:
-        #     axes.legend(**legend_kwargs)
-
-        # # Customize plot appearance
-        # self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
-
-        # # Save plot
-        # plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
-        # fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
-        # logger.info("Wrote %s", plot_path)
-        # plt.close()
-
-        # # Save netCDF file
-        # netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-        # var_attrs = {
-        #     n: datasets[0][n] for n in ("short_name", "long_name", "units")
-        # }
-        # io.save_1d_data(cubes, netcdf_path, "month_number", var_attrs)
-
-        # # Provenance tracking
-        # caption = (
-        #     f"Annual cycle of {multi_dataset_facets['long_name']} for "
-        #     f"various datasets."
-        # )
-        # provenance_record = {
-        #     "ancestors": ancestors,
-        #     "caption": caption,
-        #     "long_names": [var_attrs["long_name"]],
-        # }
-        # provenance_record.update(self.plot_settings[plot_type]["provenance"])
-        # with ProvenanceLogger(self.cfg) as provenance_logger:
-        #     provenance_logger.log(plot_path, provenance_record)
-        #     provenance_logger.log(netcdf_path, provenance_record)
 
     def create_benchmarking_annual(self, datasets):
         """Create benchmarking annual cycle plot."""

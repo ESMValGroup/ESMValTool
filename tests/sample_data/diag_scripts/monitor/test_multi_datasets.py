@@ -34,8 +34,6 @@ def test_diagnostic_image_output(
     expected_pngs: list[str],
 ) -> None:
     """Test if diagnostic image output matches expected output."""
-    # tmp_path = Path.home() / "aaa"
-    # tmp_path.mkdir(exist_ok=True)
     save_imagehashes = pytestconfig.getoption("save_imagehashes")
 
     cfg_settings = {**DEFAULT_SETTINGS, **settings}
