@@ -25,7 +25,8 @@ MATPLOTLIB_RC = Path(__file__).resolve().parent / "matplotlibrc"
 def assert_phash(image_key: str, image_path: Path) -> None:
     """Compare imagehashes."""
     assert_msg = (
-        f"No expected output for image '{image_key}' in {IMAGEHASHES_PATH}"
+        f"Image '{image_key}' ({image_path}): no expected output in "
+        f"{IMAGEHASHES_PATH}"
     )
     assert image_key in IMAGEHASHES, assert_msg
 
@@ -34,7 +35,7 @@ def assert_phash(image_key: str, image_path: Path) -> None:
     distance = expected_phash - image_phash
 
     assert_msg = (
-        f"Image '{image_key}' ({image_path}) changed (Hamming "
+        f"Image '{image_key}' ({image_path}): changed (Hamming "
         f"distance: {distance})"
     )
     assert distance < MAX_PHASH_DISTANCE, assert_msg

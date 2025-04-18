@@ -909,6 +909,7 @@ from matplotlib.ticker import (
     FormatStrFormatter,
     LogLocator,
     NullFormatter,
+    NullLocator,
 )
 from sklearn.metrics import r2_score
 
@@ -1127,7 +1128,7 @@ class MultiDatasets(MonitorBase):
                     "plot_kwargs": {},
                     "pyplot_kwargs": {},
                     "rasterize": True,
-                    "show_y_minor_ticklabels": False,
+                    "y_minor_formatter": None,
                 },
             },
             "diurnal_cycle": {
@@ -1246,10 +1247,10 @@ class MultiDatasets(MonitorBase):
                     "pyplot_kwargs": {},
                     "rasterize": True,
                     "show_stats": True,
-                    "show_y_minor_ticklabels": False,
                     "time_format": None,
                     "x_pos_stats_avg": 0.01,
                     "x_pos_stats_bias": 0.7,
+                    "y_minor_formatter": None,
                 },
             },
             "map": {
@@ -1352,9 +1353,9 @@ class MultiDatasets(MonitorBase):
                     "pyplot_kwargs": {},
                     "rasterize": True,
                     "show_stats": True,
-                    "show_y_minor_ticklabels": False,
                     "x_pos_stats_avg": 0.01,
                     "x_pos_stats_bias": 0.7,
+                    "y_minor_formatter": None,
                 },
             },
         }
@@ -1820,7 +1821,9 @@ class MultiDatasets(MonitorBase):
                 axes_data.gridlines(**gridline_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
             self._add_stats(plot_type, axes_data, dim_coords_dat, dataset)
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], dataset
+            )
 
             # Plot reference dataset (top right)
             # Note: make sure to use the same vmin and vmax than the top left
@@ -1848,7 +1851,9 @@ class MultiDatasets(MonitorBase):
                 axes_ref.gridlines(**gridline_kwargs)
             axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
             self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_dataset)
-            self._process_pyplot_kwargs(plot_type, ref_dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], ref_dataset
+            )
 
             # Add colorbar(s)
             self._add_colorbar(
@@ -1903,7 +1908,9 @@ class MultiDatasets(MonitorBase):
 
             # Customize plot
             fig.suptitle(dataset["long_name"])
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], dataset
+            )
 
             # Rasterization
             if self.plots[plot_type]["rasterize"]:
@@ -1975,7 +1982,9 @@ class MultiDatasets(MonitorBase):
             # Customize plot
             axes.set_title(self._get_label(dataset))
             fig.suptitle(dataset["long_name"])
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], dataset
+            )
 
             # Rasterization
             if self.plots[plot_type]["rasterize"]:
@@ -2030,15 +2039,19 @@ class MultiDatasets(MonitorBase):
                 axes_data.get_yaxis().set_major_formatter(
                     FormatStrFormatter("%.1f")
                 )
-            if self.plots[plot_type]["show_y_minor_ticklabels"]:
+            if self.plots[plot_type]["y_minor_formatter"] is not None:
                 axes_data.get_yaxis().set_minor_locator(AutoMinorLocator())
                 axes_data.get_yaxis().set_minor_formatter(
-                    FormatStrFormatter("%.1f")
+                    FormatStrFormatter(
+                        self.plots[plot_type]["y_minor_formatter"]
+                    )
                 )
             else:
                 axes_data.get_yaxis().set_minor_formatter(NullFormatter())
             self._add_stats(plot_type, axes_data, dim_coords_dat, dataset)
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], dataset
+            )
 
             # Plot reference dataset (top right)
             # Note: make sure to use the same vmin and vmax than the top left
@@ -2054,7 +2067,9 @@ class MultiDatasets(MonitorBase):
             axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
             plt.setp(axes_ref.get_yticklabels(), visible=False)
             self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_dataset)
-            self._process_pyplot_kwargs(plot_type, ref_dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], ref_dataset
+            )
 
             # Add colorbar(s)
             self._add_colorbar(
@@ -2098,7 +2113,9 @@ class MultiDatasets(MonitorBase):
 
             # Customize plot
             fig.suptitle(dataset["long_name"])
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], ref_dataset
+            )
 
             # Rasterization
             if self.plots[plot_type]["rasterize"]:
@@ -2166,14 +2183,18 @@ class MultiDatasets(MonitorBase):
                 axes.get_yaxis().set_major_formatter(
                     FormatStrFormatter("%.1f")
                 )
-            if self.plots[plot_type]["show_y_minor_ticklabels"]:
+            if self.plots[plot_type]["y_minor_formatter"] is not None:
                 axes.get_yaxis().set_minor_locator(AutoMinorLocator())
                 axes.get_yaxis().set_minor_formatter(
-                    FormatStrFormatter("%.1f")
+                    FormatStrFormatter(
+                        self.plots[plot_type]["y_minor_formatter"]
+                    )
                 )
             else:
                 axes.get_yaxis().set_minor_formatter(NullFormatter())
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], dataset
+            )
 
             # Rasterization
             if self.plots[plot_type]["rasterize"]:
@@ -2232,10 +2253,12 @@ class MultiDatasets(MonitorBase):
                 axes.get_yaxis().set_major_formatter(
                     FormatStrFormatter("%.1f")
                 )
-            if self.plots[plot_type]["show_y_minor_ticklabels"]:
+            if self.plots[plot_type]["y_minor_formatter"] is not None:
                 axes.get_yaxis().set_minor_locator(AutoMinorLocator())
                 axes.get_yaxis().set_minor_formatter(
-                    FormatStrFormatter("%.1f")
+                    FormatStrFormatter(
+                        self.plots[plot_type]["y_minor_formatter"]
+                    )
                 )
             else:
                 axes.get_yaxis().set_minor_formatter(NullFormatter())
@@ -2244,7 +2267,9 @@ class MultiDatasets(MonitorBase):
                     mdates.DateFormatter(self.plots[plot_type]["time_format"])
                 )
             axes.set_xlabel("time")
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], dataset
+            )
 
             # Rasterization
             if self.plots[plot_type]["rasterize"]:
@@ -2300,10 +2325,12 @@ class MultiDatasets(MonitorBase):
                 axes_data.get_yaxis().set_major_formatter(
                     FormatStrFormatter("%.1f")
                 )
-            if self.plots[plot_type]["show_y_minor_ticklabels"]:
+            if self.plots[plot_type]["y_minor_formatter"] is not None:
                 axes_data.get_yaxis().set_minor_locator(AutoMinorLocator())
                 axes_data.get_yaxis().set_minor_formatter(
-                    FormatStrFormatter("%.1f")
+                    FormatStrFormatter(
+                        self.plots[plot_type]["y_minor_formatter"]
+                    )
                 )
             else:
                 axes_data.get_yaxis().set_minor_formatter(NullFormatter())
@@ -2312,7 +2339,9 @@ class MultiDatasets(MonitorBase):
                     mdates.DateFormatter(self.plots[plot_type]["time_format"])
                 )
             self._add_stats(plot_type, axes_data, dim_coords_dat, dataset)
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], dataset
+            )
 
             # Plot reference dataset (top right)
             # Note: make sure to use the same vmin and vmax than the top left
@@ -2328,7 +2357,9 @@ class MultiDatasets(MonitorBase):
             axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
             plt.setp(axes_ref.get_yticklabels(), visible=False)
             self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_dataset)
-            self._process_pyplot_kwargs(plot_type, ref_dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], ref_dataset
+            )
 
             # Add colorbar(s)
             self._add_colorbar(
@@ -2372,7 +2403,9 @@ class MultiDatasets(MonitorBase):
 
             # Customize plot
             fig.suptitle(dataset["long_name"])
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], dataset
+            )
 
             # Rasterization
             if self.plots[plot_type]["rasterize"]:
@@ -2450,7 +2483,9 @@ class MultiDatasets(MonitorBase):
                 axes_data.get_yaxis().set_minor_locator(AutoMinorLocator())
             if self.plots[plot_type]["show_x_minor_ticks"]:
                 axes_data.get_xaxis().set_minor_locator(AutoMinorLocator())
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], dataset
+            )
 
             # Plot reference dataset (top right)
             # Note: make sure to use the same vmin and vmax than the top left
@@ -2465,7 +2500,9 @@ class MultiDatasets(MonitorBase):
             plot_ref = plot_func(ref_cube, **plot_kwargs)
             axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
             plt.setp(axes_ref.get_yticklabels(), visible=False)
-            self._process_pyplot_kwargs(plot_type, ref_dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], ref_dataset
+            )
 
             # Add colorbar(s)
             self._add_colorbar(
@@ -2507,7 +2544,9 @@ class MultiDatasets(MonitorBase):
 
             # Customize plot
             fig.suptitle(dataset["long_name"])
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], dataset
+            )
 
             # Rasterization
             if self.plots[plot_type]["rasterize"]:
@@ -2590,7 +2629,9 @@ class MultiDatasets(MonitorBase):
                 axes.get_yaxis().set_minor_locator(AutoMinorLocator())
             if self.plots[plot_type]["show_x_minor_ticks"]:
                 axes.get_xaxis().set_minor_locator(AutoMinorLocator())
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], dataset
+            )
 
             # Rasterization
             if self.plots[plot_type]["rasterize"]:
@@ -2654,7 +2695,9 @@ class MultiDatasets(MonitorBase):
                 axes_data.get_yaxis().set_minor_locator(AutoMinorLocator())
             if self.plots[plot_type]["show_x_minor_ticks"]:
                 axes_data.get_xaxis().set_minor_locator(AutoMinorLocator())
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], dataset
+            )
 
             # Plot reference dataset (top right)
             # Note: make sure to use the same vmin and vmax than the top left
@@ -2669,7 +2712,9 @@ class MultiDatasets(MonitorBase):
             plot_ref = plot_func(ref_cube, **plot_kwargs)
             axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
             plt.setp(axes_ref.get_yticklabels(), visible=False)
-            self._process_pyplot_kwargs(plot_type, ref_dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], ref_dataset
+            )
 
             # Add colorbar(s)
             self._add_colorbar(
@@ -2711,7 +2756,9 @@ class MultiDatasets(MonitorBase):
 
             # Customize plot
             fig.suptitle(dataset["long_name"])
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], dataset
+            )
 
             # Rasterization
             if self.plots[plot_type]["rasterize"]:
@@ -2788,7 +2835,9 @@ class MultiDatasets(MonitorBase):
                 axes.get_yaxis().set_minor_locator(AutoMinorLocator())
             if self.plots[plot_type]["show_x_minor_ticks"]:
                 axes.get_xaxis().set_minor_locator(AutoMinorLocator())
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], dataset
+            )
 
             # Rasterization
             if self.plots[plot_type]["rasterize"]:
@@ -2866,7 +2915,9 @@ class MultiDatasets(MonitorBase):
             # Customize plot
             axes.set_title(self._get_label(dataset))
             fig.suptitle(dataset["long_name"])
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], dataset
+            )
 
             # Rasterization
             if self.plots[plot_type]["rasterize"]:
@@ -2908,7 +2959,9 @@ class MultiDatasets(MonitorBase):
                 plt.xlabel(var_key)
                 if cube_to_benchmark.units != 1:
                     plt.ylabel(cube_to_benchmark.units)
-                self._process_pyplot_kwargs(plot_type, benchmark_dataset)
+                self._process_pyplot_kwargs(
+                    self.plots[plot_type]["pyplot_kwargs"], benchmark_dataset
+                )
 
     def _plot_benchmarking_zonal(self, dataset, percentile_dataset, metric):
         """Plot benchmarking zonal mean profile."""
@@ -2973,14 +3026,18 @@ class MultiDatasets(MonitorBase):
                 axes.get_yaxis().set_major_formatter(
                     FormatStrFormatter("%.1f")
                 )
-            if self.plots[plot_type]["show_y_minor_ticklabels"]:
+            if self.plots[plot_type]["y_minor_formatter"] is not None:
                 axes.get_yaxis().set_minor_locator(AutoMinorLocator())
                 axes.get_yaxis().set_minor_formatter(
-                    FormatStrFormatter("%.1f")
+                    FormatStrFormatter(
+                        self.plots[plot_type]["y_minor_formatter"]
+                    )
                 )
             else:
                 axes.get_yaxis().set_minor_formatter(NullFormatter())
-            self._process_pyplot_kwargs(plot_type, dataset)
+            self._process_pyplot_kwargs(
+                self.plots[plot_type]["pyplot_kwargs"], dataset
+            )
 
             # Rasterization
             if self.plots[plot_type]["rasterize"]:
@@ -2992,20 +3049,14 @@ class MultiDatasets(MonitorBase):
 
         return (plot_path, {netcdf_path: cube})
 
-    def _process_pyplot_kwargs(self, plot_type, dataset):
+    def _process_pyplot_kwargs(self, pyplot_kwargs, dataset):
         """Process functions for :mod:`matplotlib.pyplot`."""
-        pyplot_kwargs = {
-            **self.plot_settings[plot_type][
-                "pyplot_kwargs"
-            ],  # default options
-            **self.plots[plot_type]["pyplot_kwargs"],  # user options
-        }
         for func, arg in pyplot_kwargs.items():
             if isinstance(arg, str):
                 arg = self._fill_facet_placeholders(
                     arg,
                     dataset,
-                    f"pyplot_kwargs of {plot_type} '{func}: {arg}'",
+                    f"pyplot_kwargs '{func}: {arg}'",
                 )
             if arg is None:
                 getattr(plt, func)()
@@ -3227,9 +3278,15 @@ class MultiDatasets(MonitorBase):
             f"[{multi_dataset_facets['units']}]"
         )
 
+        # Default pyplot_kwargs
+        self._process_pyplot_kwargs(
+            self.plot_settings[plot_type]["pyplot_kwargs"],
+            multi_dataset_facets,
+        )
+
         # Aspect ratio
-        if aspect_ratio := self.plots[plot_type]["aspect_ratio"] is not None:
-            axes.set_box_aspect(aspect_ratio)
+        if self.plots[plot_type]["aspect_ratio"] is not None:
+            axes.set_box_aspect(self.plots[plot_type]["aspect_ratio"])
 
         # Axes styles
         if self.plots[plot_type]["log_x"]:
@@ -3256,8 +3313,12 @@ class MultiDatasets(MonitorBase):
 
         if self.plots[plot_type]["show_x_minor_ticks"]:
             axes.get_xaxis().set_minor_locator(x_minor_locator)
+        else:
+            axes.get_xaxis().set_minor_locator(NullLocator())
         if self.plots[plot_type]["show_y_minor_ticks"]:
-            axes.get_xaxis().set_minor_locator(y_minor_locator)
+            axes.get_yaxis().set_minor_locator(y_minor_locator)
+        else:
+            axes.get_yaxis().set_minor_locator(NullLocator())
 
         if self.plots[plot_type]["x_major_formatter"] is not None:
             axes.get_xaxis().set_minor_formatter(
@@ -3273,7 +3334,7 @@ class MultiDatasets(MonitorBase):
                 FormatStrFormatter(self.plots[plot_type]["y_major_formatter"])
             )
         if self.plots[plot_type]["y_minor_formatter"] is not None:
-            axes.get_xaxis().set_minor_locator(y_minor_locator)
+            axes.get_yaxis().set_minor_locator(y_minor_locator)
             axes.get_yaxis().set_minor_formatter(
                 FormatStrFormatter(self.plots[plot_type]["y_minor_formatter"])
             )
@@ -3289,7 +3350,9 @@ class MultiDatasets(MonitorBase):
             axes.legend(**legend_kwargs)
 
         # Further customize plot appearance
-        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+        self._process_pyplot_kwargs(
+            self.plots[plot_type]["pyplot_kwargs"], multi_dataset_facets
+        )
 
         # Save plot
         plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
@@ -3362,9 +3425,11 @@ class MultiDatasets(MonitorBase):
         if self.plots[plot_type]["log_y"]:
             axes.set_yscale("log")
             axes.get_yaxis().set_major_formatter(FormatStrFormatter("%.1f"))
-        if self.plots[plot_type]["show_y_minor_ticklabels"]:
+        if self.plots[plot_type]["y_minor_formatter"] is not None:
             axes.get_yaxis().set_minor_locator(AutoMinorLocator())
-            axes.get_yaxis().set_minor_formatter(FormatStrFormatter("%.1f"))
+            axes.get_yaxis().set_minor_formatter(
+                FormatStrFormatter(self.plots[plot_type]["y_minor_formatter"])
+            )
         else:
             axes.get_yaxis().set_minor_formatter(NullFormatter())
         if self.plots[plot_type]["log_x"]:
@@ -3393,7 +3458,9 @@ class MultiDatasets(MonitorBase):
             axes.legend(**legend_kwargs)
 
         # Customize plot appearance
-        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+        self._process_pyplot_kwargs(
+            self.plots[plot_type]["pyplot_kwargs"], multi_dataset_facets
+        )
 
         # Save plot
         plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
@@ -3483,7 +3550,9 @@ class MultiDatasets(MonitorBase):
             axes.legend(**legend_kwargs)
 
         # Customize plot appearance
-        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+        self._process_pyplot_kwargs(
+            self.plots[plot_type]["pyplot_kwargs"], multi_dataset_facets
+        )
 
         # Save plot
         plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
@@ -3649,7 +3718,9 @@ class MultiDatasets(MonitorBase):
             axes.legend(**legend_kwargs)
 
         # Customize plot appearance
-        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+        self._process_pyplot_kwargs(
+            self.plots[plot_type]["pyplot_kwargs"], multi_dataset_facets
+        )
 
         # Save plot
         plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
@@ -3786,7 +3857,9 @@ class MultiDatasets(MonitorBase):
             axes.legend(**legend_kwargs)
 
         # Customize plot appearance
-        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+        self._process_pyplot_kwargs(
+            self.plots[plot_type]["pyplot_kwargs"], multi_dataset_facets
+        )
 
         # Save plot
         plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
@@ -3900,7 +3973,9 @@ class MultiDatasets(MonitorBase):
             axes.legend(**legend_kwargs)
 
         # Customize plot appearance
-        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+        self._process_pyplot_kwargs(
+            self.plots[plot_type]["pyplot_kwargs"], multi_dataset_facets
+        )
 
         # Save plot
         plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
@@ -4210,7 +4285,9 @@ class MultiDatasets(MonitorBase):
             axes.legend(**legend_kwargs)
 
         # Customize plot appearance
-        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+        self._process_pyplot_kwargs(
+            self.plots[plot_type]["pyplot_kwargs"], multi_dataset_facets
+        )
 
         # Save plot
         plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
@@ -4278,7 +4355,9 @@ class MultiDatasets(MonitorBase):
             axes.legend(**legend_kwargs)
 
         # Customize plot appearance
-        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
+        self._process_pyplot_kwargs(
+            self.plots[plot_type]["pyplot_kwargs"], multi_dataset_facets
+        )
 
         # Save plot
         plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
@@ -4381,16 +4460,6 @@ class MultiDatasets(MonitorBase):
                 warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
                 self.plots[plot_type].pop("show_y_minor_ticklabels")
                 self.plots[plot_type]["y_minor_formatter"] = "%.1f"
-            if "show_x_minor_ticklabels" in self.plots[plot_type]:
-                msg = (
-                    f"The option `show_x_minor_ticklabels` for plot type "
-                    f"`{plot_type}` has been deprecated in ESMValTool version "
-                    f"2.13.0 and is scheduled for removal in version 2.15.0. "
-                    f"Please use the option `x_minor_formatter` instead."
-                )
-                warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
-                self.plots[plot_type].pop("show_x_minor_ticklabels")
-                self.plots[plot_type]["x_minor_formatter"] = "%.1f"
 
             # Plot types where only one plot in total is created
             if plot_settings["type"] == "one_plot_total":
