@@ -47,9 +47,8 @@ def list_datasets(data):
 
 def extract_cube(data, variable_group):
     """
-    Select records from data based on the variable_group,
-    assert that there is only one matching record,
-    then return an iris cube for that record
+    Select records from data based on the variable_group, assert that there is
+    only one matching record, then return an iris cube for that record.
     """
     logger.debug("extracting %s cube from %s", variable_group, data)
 
@@ -81,16 +80,18 @@ def calculate_regression(independent, dependent, slope_only):
     # result = slope, intercept, rvalue, pvalue, stderr
     result = stats.linregress(independent, dependent)
 
-    # Return either the slope or everything
+    # Return only the slope
     if slope_only:
         return result.slope
-    else:
-        return result
+
+    # Or else return everything
+    return result
 
 
 def calculate_annual_trends(data):
     """
-    Calculate ...
+    Calculate annual trends for surface air temperature (tas) and sea ice area (siconc),
+    and the r and p values from the regression of siconc as a function of tas
     """
     logger.debug("calculating annual trends")
 
