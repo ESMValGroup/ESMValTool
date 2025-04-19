@@ -80,12 +80,14 @@
 - input_data: [tas_amon_1d_month_number_2.nc]
   expected_pngs: [annual_cycle_tas_tas_amon_1d_month_number_2_Amon.png]
   settings:
+    matplotlib_rc_params:
+      xtick.labelsize: 4
     plots:
       annual_cycle:
-        x_major_formatter: "%.1f"
+        x_major_formatter: "%d"
         x_minor_formatter: "%.1f"
-        y_major_formatter: "%.1f"
-        y_minor_formatter: "%.1f"
+        y_major_formatter: "%.2f"
+        y_minor_formatter: "%.3f"
 - input_data: [tas_amon_1d_month_number_0.nc, tas_amon_1d_month_number_1.nc]
   expected_pngs: [annual_cycle_tas_ambiguous_dataset_Amon.png]
   settings:

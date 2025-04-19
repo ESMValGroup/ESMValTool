@@ -3321,7 +3321,7 @@ class MultiDatasets(MonitorBase):
             axes.get_yaxis().set_minor_locator(NullLocator())
 
         if self.plots[plot_type]["x_major_formatter"] is not None:
-            axes.get_xaxis().set_minor_formatter(
+            axes.get_xaxis().set_major_formatter(
                 FormatStrFormatter(self.plots[plot_type]["x_major_formatter"])
             )
         if self.plots[plot_type]["x_minor_formatter"] is not None:
@@ -3330,7 +3330,7 @@ class MultiDatasets(MonitorBase):
                 FormatStrFormatter(self.plots[plot_type]["x_minor_formatter"])
             )
         if self.plots[plot_type]["y_major_formatter"] is not None:
-            axes.get_yaxis().set_minor_formatter(
+            axes.get_yaxis().set_major_formatter(
                 FormatStrFormatter(self.plots[plot_type]["y_major_formatter"])
             )
         if self.plots[plot_type]["y_minor_formatter"] is not None:
