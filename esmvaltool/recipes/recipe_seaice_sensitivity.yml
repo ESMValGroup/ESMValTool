@@ -4,11 +4,19 @@
 documentation:
   title: Seaice sensitivity
 
-  description: |  # TODO
-      Blah
+  description: |
+    Recipe for quantifying the sensitivity of sea ice to global warming.
+    Siconc data is summed over each hemisphere and then compared to the
+    change in globally meaned, annually meaned surface air temperature.
+    In the northern hemisphere, September se ice data is used.
+    In the southern hemisphere, annual mean sea ice data is used.
+    Two plots are produced for each hemisphere, one showing the gradient
+    of the direct regression of sea ice area over temperature, and the
+    other showing the two separate trends over time.
 
   authors:
     - sellar_alistair
+    - parsons_naomi
 
   maintainer:
     - sellar_alistair
@@ -83,7 +91,7 @@ preprocessors:
 
 diagnostics:
   arctic:
-    description: blah  # TODO
+    description: Plots September sea ice above 0 latitude in millions of square kilometres
     variables:
       siconc:
         preprocessor: pp_arctic_sept_sea_ice
@@ -96,7 +104,7 @@ diagnostics:
         script: seaice/seaice_sensitivity.py
 
   antarctic:
-    description: blah  # TODO
+    description: Plots annual mean sea ice below 0 latitude in millions of square kilometres
     variables:
       siconc:
         preprocessor: pp_antarctic_avg_ann_sea_ice
