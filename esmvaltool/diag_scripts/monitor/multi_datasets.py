@@ -1103,7 +1103,10 @@ class MultiDatasets(MonitorBase):
                 },
             },
             "benchmarking_timeseries": {
-                "function": self.create_benchmarking_timeseries,
+                "function": partial(
+                    self.create_1d_benchmarking_plot,
+                    "benchmarking_timeseries",
+                ),
                 "dimensions": (["time"],),
                 "provenance": {
                     "authors": ["lauer_axel", "schlund_manuel"],
@@ -1112,16 +1115,11 @@ class MultiDatasets(MonitorBase):
                     ),
                     "plot_types": ["line"],
                 },
-                "pyplot_kwargs": {},
-                "type": "one_plot_per_variable",
-                "default_settings": {
-                    "gridline_kwargs": {},
-                    "hlines": [],
-                    "legend_kwargs": {},
-                    "plot_kwargs": {},
-                    "pyplot_kwargs": {},
-                    "time_format": None,
+                "pyplot_kwargs": {
+                    "xlabel": "time",
                 },
+                "type": "one_plot_per_variable",
+                "default_settings": {**default_settings_1d},
             },
             "benchmarking_zonal": {
                 "function": self.create_benchmarking_zonal_plot,
@@ -3594,101 +3592,6 @@ class MultiDatasets(MonitorBase):
                 provenance_logger.log(plot_path, provenance_record)
                 for netcdf_path in netcdf_paths:
                     provenance_logger.log(netcdf_path, provenance_record)
-
-    def create_benchmarking_timeseries(self, datasets):
-        """Create time series benchmarking plot."""
-        plot_type = "benchmarking_timeseries"
-
-        # Get dataset to be benchmarked
-        plot_datasets = self._get_benchmark_datasets(datasets)
-
-        # Get percentiles from multi-model statistics
-        percentile_dataset = self._get_benchmark_percentiles(datasets)
-
-        # Plot all datasets in one single figure
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot()
-        ancestors = []
-        cubes = {}
-        for dataset in plot_datasets:
-            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-            iris.plot.plot(dataset["cube"], **plot_kwargs)
-
-        yval2 = percentile_dataset[0]["cube"]
-        if len(percentile_dataset) > 1:
-            idx = len(percentile_dataset) - 1
-            yval1 = percentile_dataset[idx]["cube"]
-        else:
-            yval1 = yval2.copy()
-            ymin, __ = axes.get_ylim()
-            yval1.data = np.full(len(yval1.data), ymin)
-
-        dataset = plot_datasets[0]
-        iris.plot.fill_between(
-            dataset["cube"].coord("time"),
-            yval1,
-            yval2,
-            facecolor="lightblue",
-            edgecolor="lightblue",
-            linewidth=3,
-            zorder=1,
-            alpha=0.8,
-        )
-
-        # Plot horizontal lines
-        for hline_kwargs in self.plots[plot_type]["hlines"]:
-            axes.axhline(**hline_kwargs)
-
-        # Default plot appearance
-        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
-        axes.set_title(multi_dataset_facets["long_name"])
-        axes.set_xlabel("time")
-        # apply time formatting
-        if self.plots[plot_type]["time_format"] is not None:
-            axes.get_xaxis().set_major_formatter(
-                mdates.DateFormatter(self.plots[plot_type]["time_format"])
-            )
-        axes.set_ylabel(
-            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
-            f"[{multi_dataset_facets['units']}]"
-        )
-        gridline_kwargs = self._get_gridline_kwargs(plot_type)
-        if gridline_kwargs is not False:
-            axes.grid(**gridline_kwargs)
-
-        # Legend
-        legend_kwargs = self.plots[plot_type]["legend_kwargs"]
-        if legend_kwargs is not False:
-            axes.legend(**legend_kwargs)
-
-        # Customize plot appearance
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"], multi_dataset_facets
-        )
-
-        # Save plot
-        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
-        fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
-        logger.info("Wrote %s", plot_path)
-        plt.close()
-
-        # Save netCDF file
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-        var_attrs = {
-            n: datasets[0][n] for n in ("short_name", "long_name", "units")
-        }
-        cubes[self._get_label(dataset)] = dataset["cube"]
-        io.save_1d_data(cubes, netcdf_path, "time", var_attrs)
-
-        # Provenance tracking
-        provenance_record = {
-            "ancestors": ancestors,
-            "long_names": [var_attrs["long_name"]],
-        }
-        provenance_record.update(self.plot_settings[plot_type]["provenance"])
-        with ProvenanceLogger(self.cfg) as provenance_logger:
-            provenance_logger.log(plot_path, provenance_record)
-            provenance_logger.log(netcdf_path, provenance_record)
 
     def create_benchmarking_zonal_plot(self, datasets):
         """Create benchmarking zonal mean profile plot."""

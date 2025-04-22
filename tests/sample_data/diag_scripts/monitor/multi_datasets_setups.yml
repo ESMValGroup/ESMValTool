@@ -207,18 +207,6 @@
   settings:
     plots:
       benchmarking_timeseries:
-        gridline_kwargs:
-          color: blue
-        hlines:
-          - y: 0.5
-            color: red
-        legend_kwargs:
-          loc: center
-        plot_kwargs:
-          tas_amon_1d_time_0:
-            color: C1
-        pyplot_kwargs:
-          xlabel: X Label
         time_format: "%j"
 
 # benchmarking_zonal
