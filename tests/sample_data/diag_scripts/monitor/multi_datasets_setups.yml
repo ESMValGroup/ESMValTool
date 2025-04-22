@@ -470,38 +470,21 @@
 - input_data: [tas_amon_1d_time_0.nc]
   expected_pngs: [timeseries_tas_tas_amon_1d_time_0_Amon.png]
   settings:
-    facet_used_for_labels: alias
-    group_variables_by: short_name
-    matplotlib_rc_params:
-      ytick.color: red
-    seaborn_settings:
-      style: white
     plots:
       timeseries:
-        gridline_kwargs:
-          color: blue
-        hlines:
-          - y: 0.5
-            color: red
-        legend_kwargs:
-          loc: center
-        plot_kwargs:
-          tas_amon_1d_time_0:
-            color: C1
-        pyplot_kwargs:
-          xlabel: X Label
         time_format: "%j"
+- input_data: [tas_amon_1d_time_2.nc]
+  expected_pngs: [timeseries_tas_tas_amon_1d_time_2_Amon.png]
+  settings:
+    plots:
+      timeseries:
+        time_format: "%j"
+        transpose_axes: true
 - input_data: [tas_amon_1d_time_0.nc, tas_amon_1d_time_1.nc]
   expected_pngs: [timeseries_tas_ambiguous_dataset_Amon.png]
   settings:
     plots:
       timeseries:
-        gridline_kwargs: false
-        plot_kwargs:
-          tas_amon_1d_time_0:
-            color: C0
-          tas_amon_1d_time_1:
-            color: C3
 
 # variable_vs_lat
 - input_data: [tas_amon_1d_lat_0.nc]

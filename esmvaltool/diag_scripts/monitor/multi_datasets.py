@@ -944,6 +944,7 @@ class MultiDatasets(MonitorBase):
             "pyplot_kwargs": {},
             "show_x_minor_ticks": False,
             "show_y_minor_ticks": False,
+            "time_format": None,
             "transpose_axes": False,
             "x_major_formatter": None,
             "x_minor_formatter": None,
@@ -1286,7 +1287,7 @@ class MultiDatasets(MonitorBase):
                 },
             },
             "timeseries": {
-                "function": self.create_timeseries_plot,
+                "function": partial(self.create_1d_plot, "timeseries"),
                 "dimensions": (["time"],),
                 "provenance": {
                     "authors": ["schlund_manuel"],
@@ -1295,16 +1296,11 @@ class MultiDatasets(MonitorBase):
                     ),
                     "plot_types": ["line"],
                 },
-                "pyplot_kwargs": {},
-                "type": "one_plot_per_variable",
-                "default_settings": {
-                    "gridline_kwargs": {},
-                    "hlines": [],
-                    "legend_kwargs": {},
-                    "plot_kwargs": {},
-                    "pyplot_kwargs": {},
-                    "time_format": None,
+                "pyplot_kwargs": {
+                    "xlabel": "time",
                 },
+                "type": "one_plot_per_variable",
+                "default_settings": {**default_settings_1d},
             },
             "variable_vs_lat": {
                 "function": self.create_variable_vs_lat_plot,
@@ -3360,6 +3356,15 @@ class MultiDatasets(MonitorBase):
                 FormatStrFormatter(self.plots[plot_type]["y_minor_formatter"])
             )
 
+        if self.plots[plot_type]["time_format"] is not None:
+            if self.plots[plot_type]["transpose_axes"]:
+                time_axis = axes.get_yaxis()
+            else:
+                time_axis = axes.get_xaxis()
+            time_axis.set_major_formatter(
+                mdates.DateFormatter(self.plots[plot_type]["time_format"])
+            )
+
         # Gridlines
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
         if gridline_kwargs is not False:
@@ -4083,82 +4088,6 @@ class MultiDatasets(MonitorBase):
                 provenance_logger.log(plot_path, provenance_record)
                 for netcdf_path in netcdf_paths:
                     provenance_logger.log(netcdf_path, provenance_record)
-
-    def create_timeseries_plot(self, datasets):
-        """Create time series plot."""
-        plot_type = "timeseries"
-
-        logger.info("Plotting %s", plot_type)
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot()
-
-        # Plot all datasets in one single figure
-        ancestors = []
-        cubes = {}
-        for dataset in datasets:
-            ancestors.append(dataset["filename"])
-            cube = dataset["cube"]
-            cubes[self._get_label(dataset)] = cube
-            self._check_cube_dimensions(cube, plot_type)
-
-            # Plot original time series
-            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-            plot_kwargs["axes"] = axes
-            iris.plot.plot(cube, **plot_kwargs)
-
-        # Plot horizontal lines
-        for hline_kwargs in self.plots[plot_type]["hlines"]:
-            axes.axhline(**hline_kwargs)
-
-        # Default plot appearance
-        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
-        axes.set_title(multi_dataset_facets["long_name"])
-        axes.set_xlabel("time")
-        # apply time formatting
-        if self.plots[plot_type]["time_format"] is not None:
-            axes.get_xaxis().set_major_formatter(
-                mdates.DateFormatter(self.plots[plot_type]["time_format"])
-            )
-        axes.set_ylabel(
-            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
-            f"[{multi_dataset_facets['units']}]"
-        )
-        gridline_kwargs = self._get_gridline_kwargs(plot_type)
-        if gridline_kwargs is not False:
-            axes.grid(**gridline_kwargs)
-
-        # Legend
-        legend_kwargs = self.plots[plot_type]["legend_kwargs"]
-        if legend_kwargs is not False:
-            axes.legend(**legend_kwargs)
-
-        # Customize plot appearance
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"], multi_dataset_facets
-        )
-
-        # Save plot
-        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
-        fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
-        logger.info("Wrote %s", plot_path)
-        plt.close()
-
-        # Save netCDF file
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-        var_attrs = {
-            n: datasets[0][n] for n in ("short_name", "long_name", "units")
-        }
-        io.save_1d_data(cubes, netcdf_path, "time", var_attrs)
-
-        # Provenance tracking
-        provenance_record = {
-            "ancestors": ancestors,
-            "long_names": [var_attrs["long_name"]],
-        }
-        provenance_record.update(self.plot_settings[plot_type]["provenance"])
-        with ProvenanceLogger(self.cfg) as provenance_logger:
-            provenance_logger.log(plot_path, provenance_record)
-            provenance_logger.log(netcdf_path, provenance_record)
 
     def create_variable_vs_lat_plot(self, datasets):
         """Create Variable as a function of latitude."""
