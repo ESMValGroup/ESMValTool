@@ -26,9 +26,10 @@ def get_provenance_record(cfg):
 
     record = {
         "caption": f"Plots of {region.title()} sea ice sensitivity",
-        "plot_type": "metrics",
+        "plot_type": "other",
         "authors": [
             "sellar_alistair",
+            "parsons_naomi",
         ],
         "ancestors": filenames,
     }
