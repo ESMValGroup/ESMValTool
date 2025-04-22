@@ -47,7 +47,7 @@ def test_diagnostic_image_output(
     for png in expected_pngs:
         image_key = f"monitor.multi_datasets.{png}"
         actual_png = tmp_path / "output" / "plots" / png
-        assert actual_png.is_file()
+        assert actual_png.is_file(), f"{actual_png} does not exist"
 
         # Skip actual comparison if imagehashes should be written
         if save_imagehashes is None:

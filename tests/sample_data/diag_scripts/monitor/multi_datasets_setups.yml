@@ -83,8 +83,13 @@
   ]
   expected_pngs: [benchmarking_annual_cycle_tas_ambiguous_dataset_Amon.png]
   settings:
+    facet_used_for_labels: alias
+    group_variables_by: short_name
+    matplotlib_rc_params:
+      ytick.color: red
     plots:
       benchmarking_annual_cycle:
+        aspect_ratio: 0.5
         gridline_kwargs:
           color: blue
         hlines:
@@ -92,11 +97,29 @@
             color: red
         legend_kwargs:
           loc: center
+        log_x: true
         plot_kwargs:
           tas_amon_1d_month_number_0:
             color: C1
         pyplot_kwargs:
           xlabel: X Label
+          xlim: [1, 100]
+        show_x_minor_ticks: true
+        show_y_minor_ticks: true
+- input_data: [
+    emd_tas_amon_1d_month_number_0.nc,
+    emd_tas_amon_1d_month_number_1.nc,
+  ]
+  expected_pngs: [benchmarking_annual_cycle_emd_tas_ambiguous_dataset_Amon.png]
+  settings:
+    plots:
+      benchmarking_annual_cycle:
+        envelope_kwargs:
+          facecolor: red
+          alpha: 0.4
+        log_y: true
+        show_x_minor_ticks: true
+        show_y_minor_ticks: true
 
 # benchmarking_boxplot
 - input_data: [

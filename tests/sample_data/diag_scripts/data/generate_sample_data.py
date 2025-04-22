@@ -12,6 +12,12 @@ iris.FUTURE.save_split_attrs = True
 
 ROOT = Path(__file__).parent
 VAR_METADATA: dict[str, dict[str, str]] = {
+    "emd_tas": {
+        "var_name": "emd_tas",
+        "standard_name": None,
+        "long_name": "EMD of Near-Surface Air Temperature",
+        "units": "K",
+    },
     "pr": {
         "var_name": "pr",
         "standard_name": "precipitation_flux",
@@ -130,6 +136,24 @@ def main() -> None:
     save_cube("tas_amon_1d_lat_2.nc", "tas", [lat_coord], [-1.0, -3.0, 1.5])
 
     # 1D month_number
+    save_cube(
+        "emd_tas_amon_1d_month_number_0.nc",
+        "emd_tas",
+        [month_number_coord],
+        [2.0, 3.0, np.nan],
+    )
+    save_cube(
+        "emd_tas_amon_1d_month_number_1.nc",
+        "emd_tas",
+        [month_number_coord],
+        [2.5, 4.5, 4.0],
+    )
+    save_cube(
+        "emd_tas_amon_1d_month_number_2.nc",
+        "emd_tas",
+        [month_number_coord],
+        [2.0, 1.5, 2.5],
+    )
     save_cube(
         "tas_amon_1d_month_number_0.nc",
         "tas",

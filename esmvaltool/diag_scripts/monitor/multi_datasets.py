@@ -3119,7 +3119,7 @@ class MultiDatasets(MonitorBase):
                 multi_dataset_facets[key] = f"ambiguous_{key}"
         return multi_dataset_facets
 
-    def _get_reference_dataset(self, datasets):
+    def _get_reference_dataset(self, datasets: list[dict]) -> dict | None:
         """Extract reference dataset."""
         variable = datasets[0][self.cfg["group_variables_by"]]
         ref_datasets = [
@@ -3135,7 +3135,7 @@ class MultiDatasets(MonitorBase):
             return ref_datasets[0]
         return None
 
-    def _get_benchmark_datasets(self, datasets):
+    def _get_benchmark_datasets(self, datasets: list[dict]) -> list[dict]:
         """Get dataset to be benchmarked."""
         variable = datasets[0][self.cfg["group_variables_by"]]
         benchmark_datasets = [
@@ -3162,25 +3162,27 @@ class MultiDatasets(MonitorBase):
         ]
         return benchmark_datasets
 
-    def _get_benchmark_mask(self, cube, percentile_dataset, metric):
+    def _get_benchmark_mask(
+        self,
+        cube: Cube,
+        percentile_datasets: list[dict],
+        metric: str,
+    ) -> Cube:
         """Create mask for benchmarking cube depending on metric."""
         mask_cube = cube.copy()
 
-        idx0 = 0  # index largest percentile
-        idx1 = len(percentile_dataset) - 1  # index smallest percentile
-
         if metric == "bias":
             maxabs_perc = np.maximum(
-                np.abs(percentile_dataset[idx0].data),
-                np.abs(percentile_dataset[idx1].data),
+                np.abs(percentile_datasets[0].data),  # largets percentile
+                np.abs(percentile_datasets[-1].data),  # smallest percentile
             )
             mask = np.where(np.abs(cube.data) >= maxabs_perc, 0, 1)
         elif metric == "emd":
-            mask = np.where(cube.data >= percentile_dataset[idx0].data, 0, 1)
+            mask = np.where(cube.data >= percentile_datasets[0].data, 0, 1)
         elif metric == "pearsonr":
-            mask = np.where(cube.data <= percentile_dataset[idx0].data, 0, 1)
+            mask = np.where(cube.data <= percentile_datasets[0].data, 0, 1)
         elif metric == "rmse":
-            mask = np.where(cube.data >= percentile_dataset[idx0].data, 0, 1)
+            mask = np.where(cube.data >= percentile_datasets[0].data, 0, 1)
         else:
             raise ValueError(
                 f"Could not create benchmarking mask, unknown benchmarking "
@@ -3192,20 +3194,15 @@ class MultiDatasets(MonitorBase):
 
     def _get_benchmark_metric(self, datasets: list[dict]) -> str:
         """Get benchmarking metric."""
-        short_name = datasets[0].get("short_name", "")
-        if "rmse" in short_name:
-            metric = "rmse"
-        elif "pearsonr" in short_name:
-            metric = "pearsonr"
-        elif "emd" in short_name:
-            metric = "emd"
-        else:
-            metric = "bias"  # default
-            logger.info(
-                "Could not determine metric from short_name, "
-                "assuming benchmarking metric = %s",
-                metric,
-            )
+        for metric in ("emd", "pearsor", "rmse"):
+            if datasets[0]["short_name"].startswith(f"{metric}_"):
+                return metric
+        metric = "bias"
+        logger.info(
+            "Could not determine metric from short_name, assuming "
+            "benchmarking metric = %s",
+            metric,
+        )
         return metric
 
     def _get_benchmark_percentiles(self, datasets: list[dict]) -> list[dict]:
@@ -3455,7 +3452,12 @@ class MultiDatasets(MonitorBase):
             min_percentile_cube = percentile_datasets[-1]["cube"]
             self._check_cube_dimensions(min_percentile_cube, plot_type)
         else:
-            min_percentile_cube = max_percentile_cube.copy(ylims[0])
+            min_data = np.full(
+                max_percentile_cube.shape,
+                ylims[0],
+                dtype=max_percentile_cube.dtype,
+            )
+            min_percentile_cube = max_percentile_cube.copy(min_data)
         envelope_kwargs = dict(self.plots[plot_type]["envelope_kwargs"])
         envelope_kwargs["axes"] = axes
         iris.plot.fill_between(

@@ -1,3 +1,44 @@
+? emd_tas_amon_1d_month_number_0.nc
+: &emd_tas_Amon_CMIP5_historical_0
+  activity: CMIP
+  alias: emd_tas_amon_1d_month_number_0
+  benchmark_dataset: true
+  dataset: emd_tas_amon_1d_month_number_0
+  diagnostic: diag
+  end_year: 2000
+  ensemble: r1i1p1f1
+  exp: historical
+  frequency: mon
+  grid: gr
+  institute: [inst]
+  long_name: EMD of Near-Surface Air Temperature
+  mip: Amon
+  modeling_realm: [atmos]
+  preprocessor: preproc
+  project: CMIP6
+  short_name: emd_tas
+  standard_name: ""
+  start_year: 2000
+  timerange: 20000101/20000401
+  units: K
+  variable_group: emd_tas
+  version: v20250422
+? emd_tas_amon_1d_month_number_1.nc
+: &emd_tas_Amon_CMIP5_historical_1
+  <<: *emd_tas_Amon_CMIP5_historical_0
+  alias: emd_tas_amon_1d_month_number_1
+  benchmark_dataset: false
+  dataset: emd_tas_amon_1d_month_number_1
+  multi_model_statistics: MultiModelPercentile90
+  reference_for_monitor_diags: true
+? emd_tas_amon_1d_month_number_2.nc
+: &emd_tas_Amon_CMIP5_historical_2
+  <<: *emd_tas_Amon_CMIP5_historical_0
+  alias: emd_tas_amon_1d_month_number_2
+  benchmark_dataset: false
+  dataset: emd_tas_amon_1d_month_number_2
+  multi_model_statistics: MultiModelPercentile10
+
 ? pr_amon_0d_0.nc
 : &pr_Amon_CMIP5_historical_0
   activity: CMIP
