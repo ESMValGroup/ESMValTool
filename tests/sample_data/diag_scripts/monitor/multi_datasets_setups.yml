@@ -73,6 +73,7 @@
             color: C0
           tas_amon_1d_month_number_1:
             color: C3
+        transpose_axes: true
 
 # benchmarking_annual_cycle
 - input_data: [
