@@ -154,7 +154,8 @@ def data_to_cube(line_point, in_cube, metric):
             coord = in_cube.coord("longitude")
         else:
             coord = iris.coords.DimCoord(
-                in_cube, long_name="months 6 year ENSO epoch",
+                in_cube,
+                long_name="months 6 year ENSO epoch",
             )
         cube = iris.cube.Cube(
             line_point,
