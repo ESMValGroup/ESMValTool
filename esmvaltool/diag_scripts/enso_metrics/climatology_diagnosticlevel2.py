@@ -154,7 +154,7 @@ def main(cfg):
                     datafile = [
                         pairs[i]["dataset"],
                         pairs[i]["short_name"],
-                        pairs[i]["preprocessor"]
+                        pairs[i]["preprocessor"],
                         ]
                     save_data("_".join(datafile), data_prov, cfg, cube)
                 save_figure(
