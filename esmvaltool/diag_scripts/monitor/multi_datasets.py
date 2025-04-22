@@ -1061,7 +1061,10 @@ class MultiDatasets(MonitorBase):
                 },
             },
             "benchmarking_diurnal_cycle": {
-                "function": self.create_benchmarking_diurnal,
+                "function": partial(
+                    self.create_1d_benchmarking_plot,
+                    "benchmarking_diurnal_cycle",
+                ),
                 "dimensions": (["hour"],),
                 "provenance": {
                     "authors": ["lauer_axel", "schlund_manuel"],
@@ -1070,15 +1073,15 @@ class MultiDatasets(MonitorBase):
                     ),
                     "plot_types": ["seas"],
                 },
-                "pyplot_kwargs": {},
-                "type": "one_plot_per_variable",
-                "default_settings": {
-                    "gridline_kwargs": {},
-                    "hlines": [],
-                    "legend_kwargs": {},
-                    "plot_kwargs": {},
-                    "pyplot_kwargs": {},
+                "pyplot_kwargs": {
+                    "xlabel": "hour",
+                    "xticks": {
+                        "ticks": range(0, 24),
+                        "minor": True,
+                    },
                 },
+                "type": "one_plot_per_variable",
+                "default_settings": {**default_settings_1d},
             },
             "benchmarking_map": {
                 "function": self.create_benchmarking_map_plot,
@@ -3548,101 +3551,6 @@ class MultiDatasets(MonitorBase):
         provenance_record.update(self.plot_settings[plot_type]["provenance"])
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
-
-    def create_benchmarking_diurnal(self, datasets):
-        """Create benchmarking diurnal cycle plot."""
-        plot_type = "benchmarking_diurnal_cycle"
-
-        # Get dataset to be benchmarked
-        plot_datasets = self._get_benchmark_datasets(datasets)
-        # Get percentiles from multi-model statistics
-        percentile_dataset = self._get_benchmark_percentiles(datasets)
-
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot()
-
-        # Plot all datasets in one single figure
-        ancestors = []
-        cubes = {}
-
-        # Plot diurnal cycle(s)
-        for dataset in plot_datasets:
-            cube = dataset["cube"]
-            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-            plot_kwargs["axes"] = axes
-            iris.plot.plot(cube, **plot_kwargs)
-
-        yval2 = percentile_dataset[0]["cube"]
-        if len(percentile_dataset) > 1:
-            idx = len(percentile_dataset) - 1
-            yval1 = percentile_dataset[idx]["cube"]
-        else:
-            yval1 = yval2.copy()
-            ymin, __ = axes.get_ylim()
-            yval1.data = np.full(len(yval1.data), ymin)
-
-        iris.plot.fill_between(
-            cube.coord("hour"),
-            yval1,
-            yval2,
-            facecolor="lightblue",
-            linewidth=0,
-            zorder=1,
-            alpha=0.8,
-        )
-
-        # Plot horizontal lines
-        for hline_kwargs in self.plots[plot_type]["hlines"]:
-            axes.axhline(**hline_kwargs)
-
-        # Default plot appearance
-        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
-        axes.set_title(multi_dataset_facets["long_name"])
-        axes.set_xlabel("Hour")
-        axes.set_ylabel(
-            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
-            f"[{multi_dataset_facets['units']}]"
-        )
-        axes.set_xticks(range(0, 24), minor=True)
-        axes.set_xticks(range(0, 24, 3), [str(m) for m in range(0, 24, 3)])
-        gridline_kwargs = self._get_gridline_kwargs(plot_type)
-        if gridline_kwargs is not False:
-            axes.grid(**gridline_kwargs)
-
-        # Legend
-        legend_kwargs = self.plots[plot_type]["legend_kwargs"]
-        if legend_kwargs is not False:
-            axes.legend(**legend_kwargs)
-
-        # Customize plot appearance
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"], multi_dataset_facets
-        )
-
-        # Save plot
-        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
-        fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
-        logger.info("Wrote %s", plot_path)
-        plt.close()
-
-        # Save netCDF file
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-        var_attrs = {
-            n: datasets[0][n] for n in ("short_name", "long_name", "units")
-        }
-        dataset = plot_datasets[0]
-        cubes[self._get_label(dataset)] = dataset["cube"]
-        io.save_1d_data(cubes, netcdf_path, "hour", var_attrs)
-
-        # Provenance tracking
-        provenance_record = {
-            "ancestors": ancestors,
-            "long_names": [var_attrs["long_name"]],
-        }
-        provenance_record.update(self.plot_settings[plot_type]["provenance"])
-        with ProvenanceLogger(self.cfg) as provenance_logger:
-            provenance_logger.log(plot_path, provenance_record)
-            provenance_logger.log(netcdf_path, provenance_record)
 
     def create_benchmarking_map_plot(self, datasets):
         """Create benchmarking map plot."""

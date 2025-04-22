@@ -168,18 +168,6 @@
   settings:
     plots:
       benchmarking_diurnal_cycle:
-        gridline_kwargs:
-          color: blue
-        hlines:
-          - y: 0.5
-            color: red
-        legend_kwargs:
-          loc: center
-        plot_kwargs:
-          tas_amon_1d_hour_0:
-            color: C1
-        pyplot_kwargs:
-          xlabel: X Label
 
 # benchmarking_map
 - input_data: [
