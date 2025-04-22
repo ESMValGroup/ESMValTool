@@ -3,7 +3,7 @@
 import logging
 import os
 from pprint import pformat
-
+import numpy as np
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import iris
@@ -15,12 +15,13 @@ from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
     save_figure,
+    save_data,
 )
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def plotmaps_level2(input_data):
+def plotmaps_level2(input_data, prov, cfg, grp):
     """Create map plots for pair of input data."""
     var_units = {"tos": "degC", "pr": "mm/day", "tauu": "1e-3 N/m2"}
     fig = plt.figure(figsize=(18, 6))
@@ -43,11 +44,20 @@ def plotmaps_level2(input_data):
             cube = sea_cycle_stdev(cube)
             diag_label = f"{sname.upper()} std"
 
+        # save data
+        save_data(f"{dataset['dataset']}_{grp}",
+                  prov, cfg, cube)
+        
         cbar_label = f"{diag_label} {var_units[sname]}"
         ax1 = plt.subplot(plt_pos, projection=proj)
         ax1.add_feature(cfeature.LAND, facecolor="gray")
         ax1.coastlines()
-        cf1 = iplt.contourf(cube, cmap="coolwarm")
+        # set levels for tauu map
+        if grp == "tauu_bias":
+            cf1 = iplt.contourf(cube, cmap="coolwarm", extend="both",
+                                 levels = np.arange(-100,100,20))
+        else:
+            cf1 = iplt.contourf(cube, cmap="coolwarm", extend="both")
 
         ax1.set_extent([130, 290, -20, 20], crs=ccrs.PlateCarree())
         ax1.set_title(dataset["dataset"])
@@ -73,17 +83,41 @@ def sea_cycle_stdev(cube):
     return cube
 
 
-def main(cfg):
-    """Run basic climatology diagnostic level 2 for each input dataset."""
-    provenance_record = {
-        "caption": "ENSO metrics comparison maps",
+def provenance_record(var_grp, ancestor_files):
+    """Create a provenance record describing the diagnostic plot."""
+    caption = {
+        "pr_bias" : (
+            "Time-mean precipitation bias in the equatorial Pacific, " +
+            "primarily highlighting the double intertropical convergence " +
+            "zone (ITCZ) bias."
+        ),
+        "pr_seacycle": (
+            "Bias in the amplitude of the mean seasonal cycle of " +
+            "precipitation in the equatorial Pacific."
+        ),
+        "sst_bias": (
+            "Time-mean sea surface temperature bias in the " +
+            "equatorial Pacific."
+        ),
+        "tauu_bias": "Time-mean zonal wind stress bias in the " +
+        "equatorial Pacific.",
+    }
+    record = {
+        "caption": caption[var_grp],
         "authors": [
             "chun_felicity",
             "beucher_romain",
         ],
-        "references": [""],
-        "ancestors": list(cfg["input_data"].keys()),
+        "references": [
+            "planton2021",
+        ],
+        "ancestors": ancestor_files,
     }
+    return record
+
+
+def main(cfg):
+    """Run basic climatology diagnostic level 2 for each input dataset."""
     input_data = cfg["input_data"].values()
 
     # group by variables
@@ -97,13 +131,13 @@ def main(cfg):
         # create pairs
         logger.info("%s : %d, %s", grp, len(var_attr), pformat(var_attr))
         obs_data = var_attr[-1]
-
+        prov = provenance_record(grp, list(cfg["input_data"].keys()))
         for metadata in var_attr:
             logger.info("iterate though datasets\n %s", pformat(metadata))
             pairs = [obs_data]
             if metadata["project"] == "CMIP6":
                 pairs.append(metadata)
-                fig = plotmaps_level2(pairs)
+                fig = plotmaps_level2(pairs, cfg, prov, grp)
                 filename = "_".join(
                     [
                         metadata["dataset"],
@@ -113,7 +147,7 @@ def main(cfg):
                 )
                 save_figure(
                     filename,
-                    provenance_record,
+                    prov,
                     cfg,
                     figure=fig,
                     dpi=300,

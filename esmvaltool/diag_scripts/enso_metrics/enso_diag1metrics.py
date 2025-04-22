@@ -17,10 +17,12 @@ from esmvalcore.preprocessor import (
 from scipy.stats import linregress, skew
 
 from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
     get_diagnostic_filename,
     group_metadata,
     run_diagnostic,
     save_figure,
+    save_data,
     select_metadata,
 )
 
@@ -139,6 +141,24 @@ def sst_regressed(n34_cube):
 
     return coefs[0]
 
+def data_to_cube(line_point, in_cube, metric):
+    """Translate computed data to cube to save."""
+    if in_cube is None:
+        cube = iris.cube.Cube(line_point,
+                            long_name=metric,
+                            )
+    else:
+        if type(in_cube) == iris.cube.Cube:
+            coord = in_cube.coord('longitude')
+        else:
+            coord = iris.coords.DimCoord(in_cube,
+                                        long_name="months for 6 year ENSO epoch")
+        cube = iris.cube.Cube(line_point,
+                            long_name=metric,
+                            dim_coords_and_dims=[(coord, 0)],
+                            )
+    return cube
+
 
 def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
     """Compute values for each of the ENSO metrics.
@@ -158,6 +178,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             eg. 09pattern, 10lifecyle.
     """
     data_values = []
+    data_to_save = []
     fig, val = None, None
     if metric == "09pattern":
         model_ssta = input_pair[1][var_group[1]]
@@ -179,6 +200,9 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             dt_ls,
         )
 
+        data_to_save.append(data_to_cube(reg_mod[1], model_ssta, metric))
+        data_to_save.append(data_to_cube(reg_obs[1], obs_ssta, metric))
+
     elif metric == "10lifecycle":
         model = sst_regressed(input_pair[1][var_group[0]])
         obs = sst_regressed(input_pair[0][var_group[0]])
@@ -192,6 +216,9 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO lifecycle",
             dt_ls,
         )
+
+        data_to_save.append(data_to_cube(model, months, metric))
+        data_to_save.append(data_to_cube(obs, months, metric))
 
     elif metric == "11amplitude":
         data_values = [
@@ -221,6 +248,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
                 preproc[season] = cube.data
 
             data_values.append(preproc["NDJ"] / preproc["MAM"])
+            
 
         val = compute(data_values[1], data_values[0])
         fig = plot_level1(
@@ -230,6 +258,8 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO seasonality",
             dt_ls,
         )
+        data_to_save.append(data_to_cube(data_values[1], None, metric))
+        data_to_save.append(data_to_cube(data_values[0], None, metric))
 
     elif metric == "13asymmetry":
         model_skew = skew(input_pair[1][var_group[0]].data, axis=0)
@@ -244,6 +274,8 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO skewness",
             dt_ls,
         )
+        data_to_save.append(data_to_cube(model_skew, None, metric))
+        data_to_save.append(data_to_cube(obs_skew, None, metric))
 
     elif metric == "14duration":
         model = sst_regressed(input_pair[1][var_group[0]])
@@ -264,6 +296,8 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO duration",
             dt_ls,
         )
+        data_to_save.append(data_to_cube(data_values[0], None, metric))
+        data_to_save.append(data_to_cube(data_values[1], None, metric))
     elif metric == "15diversity":
         for datas in input_pair:  # obs 0, mod 1
             events = enso_events(datas[var_group[0]])
@@ -279,8 +313,10 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             "ENSO diversity",
             dt_ls,
         )
+        data_to_save.append(data_to_cube(data_values[1], None, metric))
+        data_to_save.append(data_to_cube(data_values[0], None, metric))
 
-    return val, fig
+    return val, fig, data_to_save
 
 
 def mask_to_years(events):
@@ -350,10 +386,47 @@ def compute(obs, mod):
     return abs((mod - obs) / obs) * 100
 
 
-def get_provenance_record(caption, ancestor_files):
+def get_provenance_record(metric, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
+    caption = {
+        "09pattern": (
+            "Zonal structure of sea surface temperature anomalies in the " +
+            "equatorial Pacific (averaged between 5°S and 5°N)."
+        ),
+        "10lifecycle": (
+            "Temporal evolution of sea surface temperature anomalies in " +
+            "the central equatorial Pacific (Niño 3.4 region average), " +
+            "illustrating the ENSO-associated variability."
+        ),
+        "11amplitude": (
+            "Standard deviation of sea surface temperature anomalies in " +
+            "the central equatorial Pacific (Niño 3.4 region average), " +
+            "representing the amplitude of variability."
+        ),
+        "12seasonality": (
+            "Ratio of winter to spring standard deviation of sea surface " +
+            "temperature anomalies in the central equatorial Pacific, " +
+            "illustrating the seasonal timing of SSTA."
+        ),
+        "13asymmetry": (
+            "Skewness of sea surface temperature anomalies in the central " +
+            "equatorial Pacific, illustrating the expected asymmetry where " +
+            "positive SSTA values should typically be larger than negative " +
+            "SSTA values (usually close to 0). "
+        ),
+        "14duration": (
+            "Duration of the ENSO life cycle where SSTA exceeds 0.25, " +
+            "illustrating the 'duration' of the SSTA event."
+        ),
+        "15diversity": (
+            "Width of the zonal location of maximum (minimum) SSTA during " +
+            "all El Niño (La Niña) events, illustrating the 'diversity' " +
+            "of ENSO events."
+        ),
+        "values": "List of metric values.",
+    }
     record = {
-        "caption": caption,
+        "caption": caption[metric],
         "statistics": ["anomaly"],
         "domains": ["eq"],
         "plot_types": ["line"],
@@ -363,7 +436,7 @@ def get_provenance_record(caption, ancestor_files):
             "sullivan_arnold",
         ],
         "references": [
-            "access-nri",
+            "planton2021",
         ],
         "ancestors": ancestor_files,
     }
@@ -384,6 +457,8 @@ def main(cfg):
         "14duration": ["tos_lifdur1"],
         "15diversity": ["tos_patdiv1", "tos_lifdurdiv2"],
     }
+
+    metricfile = get_diagnostic_filename("matrix", cfg, extension="csv")
 
     # select twice with project to get obs, iterate through model selection
     for metric, var_preproc in metrics.items():
@@ -407,8 +482,8 @@ def main(cfg):
             )
 
         prov_record = get_provenance_record(
-            f"ENSO metrics {metric}",
-            [model["filename"] for model in models],
+            metric,
+            list(cfg["input_data"].keys()),
         )
         # obs datasets for each model
         obs_datasets = {
@@ -434,20 +509,19 @@ def main(cfg):
                 for attr in attributes
             }
             logger.info(pformat(model_datasets))
-
-            value, fig = compute_enso_metrics(
+            data_labels = [dataset, obs[0]["dataset"]]
+            value, fig, data= compute_enso_metrics(
                 [obs_datasets, model_datasets],
-                [dataset, obs[0]["dataset"]],
+                data_labels,
                 var_preproc,
                 metric,
             )
+            # save data, returned cubes
+            for i, cube in enumerate(data):
+                save_data(f"{data_labels[i]}_{metric}", 
+                          prov_record, cfg, cube)
 
             if value:
-                metricfile = get_diagnostic_filename(
-                    "matrix",
-                    cfg,
-                    extension="csv",
-                )
                 with open(metricfile, "a+", encoding="utf-8") as fileo:
                     fileo.write(f"{dataset},{metric},{value}\n")
 
@@ -460,6 +534,11 @@ def main(cfg):
                 )
             # clear value,fig
             value = None
+
+    # write provenance for csv metrics
+    prov = get_provenance_record('values', list(cfg["input_data"].keys()))
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(metricfile, prov)
 
 
 if __name__ == "__main__":
