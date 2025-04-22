@@ -3,30 +3,31 @@
 import logging
 import os
 from pprint import pformat
-import numpy as np
+
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import iris
 import iris.plot as iplt
 import matplotlib.pyplot as plt
+import numpy as np
 from esmvalcore.preprocessor import convert_units
 
 from esmvaltool.diag_scripts.shared import (
     group_metadata,
     run_diagnostic,
-    save_figure,
     save_data,
+    save_figure,
 )
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def plotmaps_level2(input_data, prov, cfg, grp):
+def plotmaps_level2(input_data, grp):
     """Create map plots for pair of input data."""
     var_units = {"tos": "degC", "pr": "mm/day", "tauu": "1e-3 N/m2"}
     fig = plt.figure(figsize=(18, 6))
     proj = ccrs.Orthographic(central_longitude=210.0)
-
+    data_to_save = []
     for plt_pos, dataset in enumerate(input_data, start=121):
         sname = dataset["short_name"]
 
@@ -45,17 +46,20 @@ def plotmaps_level2(input_data, prov, cfg, grp):
             diag_label = f"{sname.upper()} std"
 
         # save data
-        save_data(f"{dataset['dataset']}_{grp}",
-                  prov, cfg, cube)
-        
+        data_to_save.append(cube)
+
         cbar_label = f"{diag_label} {var_units[sname]}"
         ax1 = plt.subplot(plt_pos, projection=proj)
         ax1.add_feature(cfeature.LAND, facecolor="gray")
         ax1.coastlines()
         # set levels for tauu map
         if grp == "tauu_bias":
-            cf1 = iplt.contourf(cube, cmap="coolwarm", extend="both",
-                                 levels = np.arange(-100,100,20))
+            cf1 = iplt.contourf(
+                cube,
+                cmap="coolwarm",
+                extend="both",
+                levels=np.arange(-100, 100, 20),
+            )
         else:
             cf1 = iplt.contourf(cube, cmap="coolwarm", extend="both")
 
@@ -72,7 +76,7 @@ def plotmaps_level2(input_data, prov, cfg, grp):
     cbar = fig.colorbar(cf1, cax=cax, orientation="horizontal", extend="both")
     cbar.set_label(cbar_label)
 
-    return fig
+    return fig, data_to_save
 
 
 def sea_cycle_stdev(cube):
@@ -86,21 +90,21 @@ def sea_cycle_stdev(cube):
 def provenance_record(var_grp, ancestor_files):
     """Create a provenance record describing the diagnostic plot."""
     caption = {
-        "pr_bias" : (
-            "Time-mean precipitation bias in the equatorial Pacific, " +
-            "primarily highlighting the double intertropical convergence " +
-            "zone (ITCZ) bias."
+        "pr_bias": (
+            "Time-mean precipitation bias in the equatorial Pacific, "
+            + "primarily highlighting the double intertropical convergence "
+            + "zone (ITCZ) bias."
         ),
         "pr_seacycle": (
-            "Bias in the amplitude of the mean seasonal cycle of " +
-            "precipitation in the equatorial Pacific."
+            "Bias in the amplitude of the mean seasonal cycle of "
+            + "precipitation in the equatorial Pacific."
         ),
         "sst_bias": (
-            "Time-mean sea surface temperature bias in the " +
-            "equatorial Pacific."
+            "Time-mean sea surface temperature bias in the "
+            + "equatorial Pacific."
         ),
-        "tauu_bias": "Time-mean zonal wind stress bias in the " +
-        "equatorial Pacific.",
+        "tauu_bias": "Time-mean zonal wind stress bias in the "
+        + "equatorial Pacific.",
     }
     record = {
         "caption": caption[var_grp],
@@ -137,7 +141,7 @@ def main(cfg):
             pairs = [obs_data]
             if metadata["project"] == "CMIP6":
                 pairs.append(metadata)
-                fig = plotmaps_level2(pairs, cfg, prov, grp)
+                fig, data_cubes = plotmaps_level2(pairs, grp)
                 filename = "_".join(
                     [
                         metadata["dataset"],
@@ -145,6 +149,9 @@ def main(cfg):
                         metadata["preprocessor"],
                     ],
                 )
+                for i, cube in enumerate(data_cubes):
+                    datafile = [pairs[i]["dataset"], pairs[i]["preprocessor"]]
+                    save_data("_".join(datafile), prov, cfg, cube)
                 save_figure(
                     filename,
                     prov,

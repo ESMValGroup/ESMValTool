@@ -19,8 +19,8 @@ from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
     group_metadata,
     run_diagnostic,
-    save_figure,
     save_data,
+    save_figure,
 )
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -63,8 +63,12 @@ def plot_level1(input_data, cfg, provenance):
             obs_data = cube.data
 
         # save data
-        save_data(f"{dataset['dataset']}_{dataset['variable_group']}",
-                  provenance, cfg, cube)
+        save_data(
+            f"{dataset['dataset']}_{dataset['variable_group']}",
+            provenance,
+            cfg,
+            cube,
+        )
 
     rmse = np.sqrt(np.mean((obs_data - model_data) ** 2))
     filename = [input_data[1]["dataset"], input_data[1]["variable_group"]]
@@ -131,53 +135,53 @@ def format_lon(val, _) -> str:
 def provenance_record(var_grp, ancestor_files):
     """Create a provenance record describing the diagnostic."""
     caption = {
-        "pr_double": ( 
-            "Meridional bias in the time-mean precipitation structure " +
-            "across the eastern Pacific (averaged between 150-90°W), " +
-            "primarily illustrating the double intertropical convergence " +
-            "zone (ITCZ) bias."
+        "pr_double": (
+            "Meridional bias in the time-mean precipitation structure "
+            + "across the eastern Pacific (averaged between 150-90°W), "
+            + "primarily illustrating the double intertropical convergence "
+            + "zone (ITCZ) bias."
         ),
-        "eq_pr_bias" : (
-            "Zonal bias in the time-mean precipitation structure across " +
-            "the equatorial Pacific (averaged between 5°S-5°N), " +
-            "illustrating the increased precipitation in the eastern " +
-            "Pacific and decreased precipitation in the western Pacific."
+        "eq_pr_bias": (
+            "Zonal bias in the time-mean precipitation structure across "
+            + "the equatorial Pacific (averaged between 5°S-5°N), "
+            + "illustrating the increased precipitation in the eastern "
+            + "Pacific and decreased precipitation in the western Pacific."
         ),
-        "eq_sst_bias" : (
-            "Zonal bias in the sea surface temperature structure across " +
-            "the equatorial Pacific (averaged between 5°S-5°N), primarily " +
-            "illustrating the cold tongue bias (typically warmer near " +
-            "South America and cooler further west)."
+        "eq_sst_bias": (
+            "Zonal bias in the sea surface temperature structure across "
+            + "the equatorial Pacific (averaged between 5°S-5°N), primarily "
+            + "illustrating the cold tongue bias (typically warmer near "
+            + "South America and cooler further west)."
         ),
-        "eq_tauu_bias" : (
-            "Zonal bias in the structure of zonal wind stress across " +
-            "the equatorial Pacific (averaged between 5°S-5°N), primarily " +
-            "highlighting the trade winds bias (typically weaker " +
-            "circulation in the central Pacific and stronger in the " +
-            "western Pacific)."
+        "eq_tauu_bias": (
+            "Zonal bias in the structure of zonal wind stress across "
+            + "the equatorial Pacific (averaged between 5°S-5°N), primarily "
+            + "highlighting the trade winds bias (typically weaker "
+            + "circulation in the central Pacific and stronger in the "
+            + "western Pacific)."
         ),
-        "pr_double_seacycle" : (
-            "Meridional bias in the amplitude of the mean seasonal " +
-            "precipitation cycle in the eastern Pacific " +
-            "(averaged between 150-90°W). "
+        "pr_double_seacycle": (
+            "Meridional bias in the amplitude of the mean seasonal "
+            + "precipitation cycle in the eastern Pacific "
+            + "(averaged between 150-90°W). "
         ),
-        "eq_pr_seacycle" : (
-            "Zonal bias in the amplitude of the mean seasonal cycle of " +
-            "precipitation in the equatorial Pacific " +
-            "(averaged between 5°S-5°N)."
+        "eq_pr_seacycle": (
+            "Zonal bias in the amplitude of the mean seasonal cycle of "
+            + "precipitation in the equatorial Pacific "
+            + "(averaged between 5°S-5°N)."
         ),
-        "eq_sst_seacycle" : (
-            "Zonal bias in the amplitude of the mean seasonal cycle of sea " +
-            "surface temperature in the equatorial Pacific " +
-            "(averaged between 5°S-5°N)."
+        "eq_sst_seacycle": (
+            "Zonal bias in the amplitude of the mean seasonal cycle of sea "
+            + "surface temperature in the equatorial Pacific "
+            + "(averaged between 5°S-5°N)."
         ),
-        "eq_tauu_seacycle" : (
-            "Zonal bias in the amplitude of the mean seasonal cycle of " +
-            "zonal wind stress in the equatorial Pacific " +
-            "(averaged between 5°S-5°N)."
+        "eq_tauu_seacycle": (
+            "Zonal bias in the amplitude of the mean seasonal cycle of "
+            + "zonal wind stress in the equatorial Pacific "
+            + "(averaged between 5°S-5°N)."
         ),
-        "values" : "List of metric values."
-        }
+        "values": "List of metric values.",
+    }
     record = {
         "caption": caption[var_grp],
         "authors": [
@@ -223,9 +227,10 @@ def main(cfg):
                 )
     # write provenance for csv metrics
     metricfile = get_diagnostic_filename("matrix", cfg, extension="csv")
-    prov = provenance_record('values', list(cfg["input_data"].keys()))
+    prov = provenance_record("values", list(cfg["input_data"].keys()))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(metricfile, prov)
+
 
 if __name__ == "__main__":
     with run_diagnostic() as config:

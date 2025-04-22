@@ -21,8 +21,8 @@ from esmvaltool.diag_scripts.shared import (
     get_diagnostic_filename,
     group_metadata,
     run_diagnostic,
-    save_figure,
     save_data,
+    save_figure,
     select_metadata,
 )
 
@@ -141,22 +141,26 @@ def sst_regressed(n34_cube):
 
     return coefs[0]
 
+
 def data_to_cube(line_point, in_cube, metric):
     """Translate computed data to cube to save."""
     if in_cube is None:
-        cube = iris.cube.Cube(line_point,
-                            long_name=metric,
-                            )
+        cube = iris.cube.Cube(
+            line_point,
+            long_name=metric,
+        )
     else:
-        if type(in_cube) == iris.cube.Cube:
-            coord = in_cube.coord('longitude')
+        if type(in_cube) is iris.cube.Cube:
+            coord = in_cube.coord("longitude")
         else:
-            coord = iris.coords.DimCoord(in_cube,
-                                        long_name="months for 6 year ENSO epoch")
-        cube = iris.cube.Cube(line_point,
-                            long_name=metric,
-                            dim_coords_and_dims=[(coord, 0)],
-                            )
+            coord = iris.coords.DimCoord(
+                in_cube, long_name="months 6 year ENSO epoch"
+            )
+        cube = iris.cube.Cube(
+            line_point,
+            long_name=metric,
+            dim_coords_and_dims=[(coord, 0)],
+        )
     return cube
 
 
@@ -248,7 +252,6 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
                 preproc[season] = cube.data
 
             data_values.append(preproc["NDJ"] / preproc["MAM"])
-            
 
         val = compute(data_values[1], data_values[0])
         fig = plot_level1(
@@ -390,38 +393,38 @@ def get_provenance_record(metric, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     caption = {
         "09pattern": (
-            "Zonal structure of sea surface temperature anomalies in the " +
-            "equatorial Pacific (averaged between 5°S and 5°N)."
+            "Zonal structure of sea surface temperature anomalies in the "
+            + "equatorial Pacific (averaged between 5°S and 5°N)."
         ),
         "10lifecycle": (
-            "Temporal evolution of sea surface temperature anomalies in " +
-            "the central equatorial Pacific (Niño 3.4 region average), " +
-            "illustrating the ENSO-associated variability."
+            "Temporal evolution of sea surface temperature anomalies in "
+            + "the central equatorial Pacific (Niño 3.4 region average), "
+            + "illustrating the ENSO-associated variability."
         ),
         "11amplitude": (
-            "Standard deviation of sea surface temperature anomalies in " +
-            "the central equatorial Pacific (Niño 3.4 region average), " +
-            "representing the amplitude of variability."
+            "Standard deviation of sea surface temperature anomalies in "
+            + "the central equatorial Pacific (Niño 3.4 region average), "
+            + "representing the amplitude of variability."
         ),
         "12seasonality": (
-            "Ratio of winter to spring standard deviation of sea surface " +
-            "temperature anomalies in the central equatorial Pacific, " +
-            "illustrating the seasonal timing of SSTA."
+            "Ratio of winter to spring standard deviation of sea surface "
+            + "temperature anomalies in the central equatorial Pacific, "
+            + "illustrating the seasonal timing of SSTA."
         ),
         "13asymmetry": (
-            "Skewness of sea surface temperature anomalies in the central " +
-            "equatorial Pacific, illustrating the expected asymmetry where " +
-            "positive SSTA values should typically be larger than negative " +
-            "SSTA values (usually close to 0). "
+            "Skewness of sea surface temperature anomalies in the central "
+            + "equatorial Pacific, illustrating the expected asymmetry where "
+            + "positive SSTA values should typically be larger than negative "
+            + "SSTA values (usually close to 0). "
         ),
         "14duration": (
-            "Duration of the ENSO life cycle where SSTA exceeds 0.25, " +
-            "illustrating the 'duration' of the SSTA event."
+            "Duration of the ENSO life cycle where SSTA exceeds 0.25, "
+            + "illustrating the 'duration' of the SSTA event."
         ),
         "15diversity": (
-            "Width of the zonal location of maximum (minimum) SSTA during " +
-            "all El Niño (La Niña) events, illustrating the 'diversity' " +
-            "of ENSO events."
+            "Width of the zonal location of maximum (minimum) SSTA during "
+            + "all El Niño (La Niña) events, illustrating the 'diversity' "
+            + "of ENSO events."
         ),
         "values": "List of metric values.",
     }
@@ -510,7 +513,7 @@ def main(cfg):
             }
             logger.info(pformat(model_datasets))
             data_labels = [dataset, obs[0]["dataset"]]
-            value, fig, data= compute_enso_metrics(
+            value, fig, data = compute_enso_metrics(
                 [obs_datasets, model_datasets],
                 data_labels,
                 var_preproc,
@@ -518,8 +521,7 @@ def main(cfg):
             )
             # save data, returned cubes
             for i, cube in enumerate(data):
-                save_data(f"{data_labels[i]}_{metric}", 
-                          prov_record, cfg, cube)
+                save_data(f"{data_labels[i]}_{metric}", prov_record, cfg, cube)
 
             if value:
                 with open(metricfile, "a+", encoding="utf-8") as fileo:
@@ -536,7 +538,7 @@ def main(cfg):
             value = None
 
     # write provenance for csv metrics
-    prov = get_provenance_record('values', list(cfg["input_data"].keys()))
+    prov = get_provenance_record("values", list(cfg["input_data"].keys()))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(metricfile, prov)
 
