@@ -902,7 +902,9 @@ from iris.analysis.cartography import area_weights
 from iris.coords import AuxCoord
 from iris.cube import Cube
 from iris.exceptions import ConstraintMismatchError
+from matplotlib.axes import Axes
 from matplotlib.colors import CenteredNorm
+from matplotlib.figure import Figure
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import (
     AutoMinorLocator,
@@ -923,6 +925,7 @@ from esmvaltool.diag_scripts.shared import (
     io,
     run_diagnostic,
 )
+from esmvaltool.diag_scripts.shared._base import sorted_metadata
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -935,6 +938,12 @@ class MultiDatasets(MonitorBase):
         """Plot settings."""
         default_settings_1d = {
             "aspect_ratio": None,
+            "envelope_kwargs": {
+                "alpha": 0.8,
+                "facecolor": "lightblue",
+                "linewidth": 0.0,
+                "zorder": 1.0,
+            },
             "gridline_kwargs": {},
             "hlines": [],
             "legend_kwargs": {},
@@ -1005,24 +1014,27 @@ class MultiDatasets(MonitorBase):
                 "default_settings": {**default_settings_1d},
             },
             "benchmarking_annual_cycle": {
-                "function": self.create_benchmarking_annual,
+                "function": partial(
+                    self.create_1d_benchmarking_plot,
+                    "benchmarking_annual_cycle",
+                ),
                 "dimensions": (["month_number"],),
                 "provenance": {
-                    "authors": ["schlund_manuel", "lauer_axel"],
+                    "authors": ["lauer_axel", "schlund_manuel"],
                     "caption": (
                         "Annual cycle of {long_name} for various datasets."
                     ),
                     "plot_types": ["seas"],
                 },
-                "pyplot_kwargs": {},
-                "type": "one_plot_per_variable",
-                "default_settings": {
-                    "gridline_kwargs": {},
-                    "hlines": [],
-                    "legend_kwargs": {},
-                    "plot_kwargs": {},
-                    "pyplot_kwargs": {},
+                "pyplot_kwargs": {
+                    "xlabel": "month",
+                    "xticks": {
+                        "ticks": range(1, 13),
+                        "labels": [str(m) for m in range(1, 13)],
+                    },
                 },
+                "type": "one_plot_per_variable",
+                "default_settings": {**default_settings_1d},
             },
             "benchmarking_boxplot": {
                 "function": self.create_benchmarking_boxplot,
@@ -1052,7 +1064,7 @@ class MultiDatasets(MonitorBase):
                 "function": self.create_benchmarking_diurnal,
                 "dimensions": (["hour"],),
                 "provenance": {
-                    "authors": ["schlund_manuel", "lauer_axel"],
+                    "authors": ["lauer_axel", "schlund_manuel"],
                     "caption": (
                         "Diurnal cycle of {long_name} for various datasets."
                     ),
@@ -1072,7 +1084,7 @@ class MultiDatasets(MonitorBase):
                 "function": self.create_benchmarking_map_plot,
                 "dimensions": (["latitude", "longitude"],),
                 "provenance": {
-                    "authors": ["schlund_manuel", "lauer_axel"],
+                    "authors": ["lauer_axel", "schlund_manuel"],
                     "caption": "Map plot of {long_name} of dataset {alias}.",
                     "plot_types": ["map"],
                 },
@@ -1091,7 +1103,7 @@ class MultiDatasets(MonitorBase):
                 "function": self.create_benchmarking_timeseries,
                 "dimensions": (["time"],),
                 "provenance": {
-                    "authors": ["schlund_manuel", "lauer_axel"],
+                    "authors": ["lauer_axel", "schlund_manuel"],
                     "caption": (
                         "Time series of {long_name} for various datasets."
                     ),
@@ -1115,7 +1127,7 @@ class MultiDatasets(MonitorBase):
                     ["latitude", "altitude"],
                 ),
                 "provenance": {
-                    "authors": ["schlund_manuel", "lauer_axel"],
+                    "authors": ["lauer_axel", "schlund_manuel"],
                     "caption": (
                         "Zonal mean profile of {long_name} of dataset {alias}."
                     ),
@@ -1138,7 +1150,7 @@ class MultiDatasets(MonitorBase):
                 "function": partial(self.create_1d_plot, "diurnal_cycle"),
                 "dimensions": (["hour"],),
                 "provenance": {
-                    "authors": ["schlund_manuel", "lauer_axel"],
+                    "authors": ["lauer_axel", "schlund_manuel"],
                     "caption": (
                         "Diurnal cycle of {long_name} for various datasets."
                     ),
@@ -1161,7 +1173,7 @@ class MultiDatasets(MonitorBase):
                     ["month_number", "longitude"],
                 ),
                 "provenance": {
-                    "authors": ["schlund_manuel", "hassler_birgit"],
+                    "authors": ["hassler_birgit", "schlund_manuel"],
                     "caption": (
                         "Hovmoeller plot of {long_name} of dataset {alias}."
                     ),
@@ -3046,7 +3058,7 @@ class MultiDatasets(MonitorBase):
     def _process_pyplot_kwargs(
         self,
         pyplot_kwargs: dict[str, Any],
-        dataset: dict,
+        facets: dict,
         transpose_axes: bool = False,
     ) -> None:
         """Process functions for :mod:`matplotlib.pyplot`."""
@@ -3058,7 +3070,7 @@ class MultiDatasets(MonitorBase):
             if isinstance(arg, str):
                 arg = self._fill_facet_placeholders(
                     arg,
-                    dataset,
+                    facets,
                     f"pyplot_kwargs '{func}: {arg}'",
                 )
             if arg is None:
@@ -3133,9 +3145,9 @@ class MultiDatasets(MonitorBase):
             return benchmark_datasets
 
         raise ValueError(
-            f"Expected at least 1 benchmark dataset (with "
-            f"'benchmark_dataset: true' for variable "
-            f"'{variable}'), got {len(benchmark_datasets):d}"
+            f"Expected at least 1 benchmark dataset (with 'benchmark_dataset: "
+            f"true' for variable '{variable}'), got "
+            f"{len(benchmark_datasets):d}"
         )
 
     def _get_benchmark_group(self, datasets):
@@ -3178,7 +3190,7 @@ class MultiDatasets(MonitorBase):
         mask_cube.data = mask
         return mask_cube
 
-    def _get_benchmark_metric(self, datasets):
+    def _get_benchmark_metric(self, datasets: list[dict]) -> str:
         """Get benchmarking metric."""
         short_name = datasets[0].get("short_name", "")
         if "rmse" in short_name:
@@ -3196,104 +3208,53 @@ class MultiDatasets(MonitorBase):
             )
         return metric
 
-    def _get_benchmark_percentiles(self, datasets):
+    def _get_benchmark_percentiles(self, datasets: list[dict]) -> list[dict]:
         """Get percentile datasets from multi-model statistics preprocessor."""
-        variable = datasets[0][self.cfg["group_variables_by"]]
-        percentiles = []
+        percentile_datasets = []
         for dataset in datasets:
-            statistics = dataset.get("multi_model_statistics")
-            if statistics:
-                if "Percentile" in statistics:
-                    percentiles.append(dataset)
-
-        # *** sort percentiles by size ***
-
-        # get percentiles as integers
-        iperc = []
-        for dataset in percentiles:
             stat = dataset.get("multi_model_statistics")
-            perc = stat.replace("MultiModelPercentile", "")
-            iperc.append(int(perc))
+            if stat is not None and "MultiModelPercentile" in stat:
+                dataset["_percentile_int"] = int(
+                    stat.replace("MultiModelPercentile", "")
+                )
+                percentile_datasets.append(dataset)
 
-        idx = list(range(len(percentiles)))
-        # sort list of percentile datasets by percentile with highest
-        # percentile first (descending order)
-        zipped_pairs = zip(iperc, idx)
-        zval = [x for _, x in sorted(zipped_pairs, reverse=True)]
-        perc_sorted = [percentiles[i] for i in zval]
-        percentiles = perc_sorted
+        # Sort percentiles in descending order (highest percentile first)
+        percentile_datasets = list(
+            reversed(sorted_metadata(percentile_datasets, "_percentile_int"))
+        )
 
-        # get number of percentiles expected depending on benchmarking metric
-
+        # Get number of percentiles expected depending on benchmarking metric
         metric = self._get_benchmark_metric(datasets)
-
-        if metric == "bias":
-            numperc = 2
-        elif metric == "rmse":
-            numperc = 1
-        elif metric == "pearsonr":
-            numperc = 1
-        elif metric == "emd":
-            numperc = 1
-        else:
+        n_percentiles: dict[str, int] = {
+            "bias": 2,
+            "rmse": 1,
+            "pearsonr": 1,
+            "emd": 1,
+        }
+        if metric not in n_percentiles:
             raise ValueError(f"Unknown benchmarking metric: '{metric}'.")
 
-        if len(percentiles) >= numperc:
-            return percentiles
+        if len(percentile_datasets) >= n_percentiles[metric]:
+            return percentile_datasets
 
+        variable = datasets[0][self.cfg["group_variables_by"]]
         raise ValueError(
-            f"Expected at least {numperc} percentile datasets (created "
-            f"with multi-model statistics preprocessor for variable "
-            f"'{variable}'), got {len(percentiles):d}"
+            f"Expected at least {n_percentiles[metric]} percentile datasets "
+            f"(created with multi-model statistics preprocessor for variable "
+            f"'{variable}'), got {len(percentile_datasets):d}"
         )
 
-    def create_1d_plot(self, plot_type: str, datasets: list[dict]) -> None:
-        """Create 1D x vs. y plot (lines or markers)."""
-        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
-
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot()
-
-        # Plot all datasets in one single figure
-        ancestors = []
-        cubes = {}
-        for dataset in datasets:
-            ancestors.append(dataset["filename"])
-            cube = dataset["cube"]
-            cubes[self._get_label(dataset)] = cube
-            coords = self._check_cube_dimensions(cube, plot_type)
-            coord = cube.coord(coords[0], dim_coords=True)
-
-            # Actual plot
-            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-            plot_kwargs["axes"] = axes
-            if self.plots[plot_type]["transpose_axes"]:
-                iris.plot.plot(cube, coord, **plot_kwargs)
-            else:
-                iris.plot.plot(coord, cube, **plot_kwargs)
-
-        # Plot horizontal lines
-        for hline_kwargs in self.plots[plot_type]["hlines"]:
-            axes.axhline(**hline_kwargs)
-
-        # Title and axis labels
-        axes.set_title(multi_dataset_facets["long_name"])
-        coord_label = f"{coord.name()} [{coord.units}]"
-        var_label = (
-            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
-            f"[{multi_dataset_facets['units']}]"
-        )
-        if self.plots[plot_type]["transpose_axes"]:
-            axes.set_xlabel(var_label)
-            axes.set_ylabel(coord_label)
-        else:
-            axes.set_xlabel(coord_label)
-            axes.set_ylabel(var_label)
-
-        # Default pyplot_kwargs
+    def _customize_plot(
+        self,
+        plot_type: str,
+        axes: Axes,
+        facets: dict,
+    ) -> Axes:
+        """Customize plot with user-defined settings."""
         self._process_pyplot_kwargs(
             self.plot_settings[plot_type]["pyplot_kwargs"],
-            multi_dataset_facets,
+            facets,
             transpose_axes=self.plots[plot_type]["transpose_axes"],
         )
 
@@ -3373,23 +3334,86 @@ class MultiDatasets(MonitorBase):
 
         # Further customize plot appearance
         self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"], multi_dataset_facets
+            self.plots[plot_type]["pyplot_kwargs"], facets
         )
 
-        # Save plot
+        return axes
+
+    def _plot_1d_data(
+        self,
+        plot_type: str,
+        datasets: list[dict],
+    ) -> tuple[Figure, Axes]:
+        """Plot 1D data."""
+        fig = plt.figure(**self.cfg["figure_kwargs"])
+        axes = fig.add_subplot()
+
+        # Plot all datasets in one single figure
+        coord_label = "unkown coordinate"
+        for dataset in datasets:
+            cube = dataset["cube"]
+            coords = self._check_cube_dimensions(cube, plot_type)
+            coord = cube.coord(coords[0], dim_coords=True)
+            coord_label = f"{coord.name()} [{coord.units}]"
+
+            # Actual plot
+            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs["axes"] = axes
+            if self.plots[plot_type]["transpose_axes"]:
+                iris.plot.plot(cube, coord, **plot_kwargs)
+            else:
+                iris.plot.plot(coord, cube, **plot_kwargs)
+
+        # Plot horizontal lines
+        for hline_kwargs in self.plots[plot_type]["hlines"]:
+            axes.axhline(**hline_kwargs)
+
+        # Title and axis labels
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+        axes.set_title(multi_dataset_facets["long_name"])
+        var_label = (
+            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
+            f"[{multi_dataset_facets['units']}]"
+        )
+        if self.plots[plot_type]["transpose_axes"]:
+            axes.set_xlabel(var_label)
+            axes.set_ylabel(coord_label)
+        else:
+            axes.set_xlabel(coord_label)
+            axes.set_ylabel(var_label)
+
+        # Customize plot with user-defined settings
+        self._customize_plot(plot_type, axes, multi_dataset_facets)
+
+        return (fig, axes)
+
+    def _save_1d_data(
+        self,
+        plot_type: str,
+        datasets: list[dict],
+        fig: Figure,
+    ) -> tuple[str, str]:
+        """Save 1D plot and netCDF files."""
+        # Save plot file
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
         plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
         fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
         logger.info("Wrote %s", plot_path)
         plt.close()
 
         # Save netCDF file
+        cubes: dict[str, Cube] = {
+            self._get_label(d): d["cube"] for d in datasets
+        }
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+        coord_name = datasets[0]["cube"].coord(dim_coords=True).name()
         var_attrs = {
             n: datasets[0][n] for n in ("short_name", "long_name", "units")
         }
-        io.save_1d_data(cubes, netcdf_path, coord.name(), var_attrs)
+        io.save_1d_data(cubes, netcdf_path, coord_name, var_attrs)
 
         # Provenance tracking
+        ancestors = [d["filename"] for d in datasets]
         provenance_record = {
             "ancestors": ancestors,
             "long_names": [var_attrs["long_name"]],
@@ -3406,99 +3430,49 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_benchmarking_annual(self, datasets):
-        """Create benchmarking annual cycle plot."""
-        plot_type = "benchmarking_annual_cycle"
+        return (plot_path, netcdf_path)
 
-        # Get dataset to be benchmarked
-        plot_datasets = self._get_benchmark_datasets(datasets)
-        # Get percentiles from multi-model statistics
-        percentile_dataset = self._get_benchmark_percentiles(datasets)
+    def create_1d_benchmarking_plot(
+        self,
+        plot_type: str,
+        datasets: list[dict],
+    ) -> None:
+        """Create 1D x vs. y benchmarking plot (lines or markers)."""
+        # Some options are not supported for benchmarking plots
+        self.plots[plot_type]["transpose_axes"] = False
 
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot()
+        # Plot benchmarking datasets
+        benchmark_datasets = self._get_benchmark_datasets(datasets)
+        (fig, axes) = self._plot_1d_data(plot_type, benchmark_datasets)
 
-        # Plot all datasets in one single figure
-        ancestors = []
-        cubes = {}
-
-        # Plot annual cycle(s)
-        for dataset in plot_datasets:
-            cube = dataset["cube"]
-            plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-            plot_kwargs["axes"] = axes
-            iris.plot.plot(cube, **plot_kwargs)
-
-        yval2 = percentile_dataset[0]["cube"]
-        if len(percentile_dataset) > 1:
-            idx = len(percentile_dataset) - 1
-            yval1 = percentile_dataset[idx]["cube"]
+        # Plot envelope using percentile datasets
+        percentile_datasets = self._get_benchmark_percentiles(datasets)
+        ylims = axes.get_ylim()
+        max_percentile_cube = percentile_datasets[0]["cube"]
+        coords = self._check_cube_dimensions(max_percentile_cube, plot_type)
+        coord = max_percentile_cube.coord(coords[0], dim_coords=True)
+        if len(percentile_datasets) > 1:
+            min_percentile_cube = percentile_datasets[-1]["cube"]
+            self._check_cube_dimensions(min_percentile_cube, plot_type)
         else:
-            yval1 = yval2.copy()
-            ymin, __ = axes.get_ylim()
-            yval1.data = np.full(len(yval1.data), ymin)
-
+            min_percentile_cube = max_percentile_cube.copy(ylims[0])
+        envelope_kwargs = dict(self.plots[plot_type]["envelope_kwargs"])
+        envelope_kwargs["axes"] = axes
         iris.plot.fill_between(
-            cube.coord("month_number"),
-            yval1,
-            yval2,
-            facecolor="lightblue",
-            linewidth=0,
-            zorder=1,
-            alpha=0.8,
+            coord, min_percentile_cube, max_percentile_cube, **envelope_kwargs
         )
 
-        # Plot horizontal lines
-        for hline_kwargs in self.plots[plot_type]["hlines"]:
-            axes.axhline(**hline_kwargs)
-
-        # Default plot appearance
+        # Customize plot with user-defined settings
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
-        axes.set_title(multi_dataset_facets["long_name"])
-        axes.set_xlabel("month")
-        axes.set_ylabel(
-            f"{multi_dataset_facets[self.cfg['group_variables_by']]} "
-            f"[{multi_dataset_facets['units']}]"
-        )
-        axes.set_xticks(range(1, 13), [str(m) for m in range(1, 13)])
-        gridline_kwargs = self._get_gridline_kwargs(plot_type)
-        if gridline_kwargs is not False:
-            axes.grid(**gridline_kwargs)
+        self._customize_plot(plot_type, axes, multi_dataset_facets)
 
-        # Legend
-        legend_kwargs = self.plots[plot_type]["legend_kwargs"]
-        if legend_kwargs is not False:
-            axes.legend(**legend_kwargs)
+        # Save data
+        self._save_1d_data(plot_type, datasets, fig)
 
-        # Customize plot appearance
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"], multi_dataset_facets
-        )
-
-        # Save plot
-        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
-        fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
-        logger.info("Wrote %s", plot_path)
-        plt.close()
-
-        # Save netCDF file
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-        var_attrs = {
-            n: datasets[0][n] for n in ("short_name", "long_name", "units")
-        }
-        dataset = plot_datasets[0]
-        cubes[self._get_label(dataset)] = dataset["cube"]
-        io.save_1d_data(cubes, netcdf_path, "month_number", var_attrs)
-
-        # Provenance tracking
-        provenance_record = {
-            "ancestors": ancestors,
-            "long_names": [var_attrs["long_name"]],
-        }
-        provenance_record.update(self.plot_settings[plot_type]["provenance"])
-        with ProvenanceLogger(self.cfg) as provenance_logger:
-            provenance_logger.log(plot_path, provenance_record)
-            provenance_logger.log(netcdf_path, provenance_record)
+    def create_1d_plot(self, plot_type: str, datasets: list[dict]) -> None:
+        """Create 1D x vs. y plot (lines or markers)."""
+        (fig, _) = self._plot_1d_data(plot_type, datasets)
+        self._save_1d_data(plot_type, datasets, fig)
 
     def create_benchmarking_boxplot(self):
         """Create boxplot."""
