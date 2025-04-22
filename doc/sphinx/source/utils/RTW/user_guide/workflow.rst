@@ -76,19 +76,19 @@ and ``opt`` directories within the |RTW|. The files required are:
 
 .. _site_recipes_file:
 
-``site/<site>-recipes.jinja``
+``site/<site>/recipes.jinja``
    Contains all the recipes run at the ``SITE``
 
 .. hint::
-   * The file uses the `Jinja2`_ templating language, which has a similar syntax
-     to Python
-   * Jinja2 gives |Cylc| many powerful features. Refer to `Cylc Jinja2`_ for
-     more information
+   * The file uses the `Jinja2`_ templating language,
+     which has a similar syntax to Python
+   * Jinja2 gives |Cylc| many powerful features;
+     `Cylc Jinja2`_ provides more information
 
-``site/<site>.cylc``
+``site/<site>/runtime.cylc``
   Contains task definitions specific to the ``SITE``, for example, ``COMPUTE``
 
-``site/<site>-env``
+``site/<site>/env-file``
   Contains details on how to set up the environment for ESMValTool at the
   ``SITE``
 
@@ -106,7 +106,8 @@ configuration file (``meta/rose-meta.conf``).
 Resources
 ~~~~~~~~~
 
-The resources used by the ``process`` jobs are defined in the
-``site/<site>.cylc`` file, allowing the jobs to be configured by ``SITE`` as
-well as by recipe. This ensures only the required resources are requested when
-running each of the ``process`` jobs.
+The resources used by the ``process`` jobs
+are defined in the ``site/<site>/recipes.jinja`` file,
+allowing the jobs to be configured by ``SITE`` as well as by recipe.
+This ensures only the required resources are requested
+when running each of the ``process`` jobs.
