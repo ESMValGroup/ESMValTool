@@ -150,8 +150,13 @@ def main(cfg):
                     ],
                 )
                 for i, cube in enumerate(data_cubes):
-                    datafile = [pairs[i]["dataset"], pairs[i]["preprocessor"]]
-                    save_data("_".join(datafile), prov, cfg, cube)
+                    data_prov = provenance_record(grp, pairs[i]["filename"])
+                    datafile = [
+                        pairs[i]["dataset"],
+                        pairs[i]["short_name"],
+                        pairs[i]["preprocessor"]
+                        ]
+                    save_data("_".join(datafile), data_prov, cfg, cube)
                 save_figure(
                     filename,
                     prov,

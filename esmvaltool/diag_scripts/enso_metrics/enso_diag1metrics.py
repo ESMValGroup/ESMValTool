@@ -150,7 +150,7 @@ def data_to_cube(line_point, in_cube, metric):
             long_name=metric,
         )
     else:
-        if type(in_cube) is iris.cube.Cube:
+        if isinstance(in_cube, iris.cube.Cube):
             coord = in_cube.coord("longitude")
         else:
             coord = iris.coords.DimCoord(
