@@ -892,6 +892,7 @@ from typing import Any
 
 import cartopy.crs as ccrs
 import dask.array as da
+import inspect
 import iris
 import matplotlib as mpl
 import matplotlib.dates as mdates
@@ -1460,12 +1461,14 @@ class MultiDatasets(MonitorBase):
         plot_2: Any | None = None,
         axes_2: Axes | None = None,
         dataset_2: dict | None = None,
+        *,
+        bias: bool = False,
     ) -> None:
         """Add colorbar(s) for plots."""
         fontsize = (
             self.plots[plot_type]["fontsize"] or mpl.rcParams["axes.labelsize"]
         )
-        cbar_kwargs = self._get_cbar_kwargs(plot_type)
+        cbar_kwargs = self._get_cbar_kwargs(plot_type, bias=bias)
 
         def add_colorbar(plot: Any, axes: Axes, label: str) -> None:
             """Add single colorbar."""
@@ -1474,7 +1477,7 @@ class MultiDatasets(MonitorBase):
             cbar.ax.tick_params(labelsize=fontsize)
 
         # Single colorbar
-        cbar_label_1 = self._get_cbar_label(plot_type, dataset_1)
+        cbar_label_1 = self._get_cbar_label(plot_type, dataset_1, bias=bias)
         if plot_2 is None:
             add_colorbar(plot_1, axes_1, cbar_label_1)
             return
@@ -1496,25 +1499,21 @@ class MultiDatasets(MonitorBase):
         self,
         plot_type: str,
         axes: Axes,
-        dim_coords: list[str],
-        dataset: dict,
-        ref_dataset: dict | None = None,
+        dataset_1: dict,
+        dataset_2: dict | None = None,
     ) -> None:
         """Add text to plot that describes basic statistics."""
-        if not self.plots[plot_type]["show_stats"]:
-            return
-
-        # Extract cube(s)
-        cube = dataset["cube"]
-        if ref_dataset is None:
-            ref_cube = None
-            label = self._get_label(dataset)
+        cube_1 = dataset_1["cube"]
+        if dataset_2 is None:
+            cube_2 = None
+            label = self._get_label(dataset_1)
         else:
-            ref_cube = ref_dataset["cube"]
+            cube_2 = dataset_2["cube"]
             label = (
-                f"{self._get_label(dataset)} vs. "
-                f"{self._get_label(ref_dataset)}"
+                f"{self._get_label(dataset_1)} vs. "
+                f"{self._get_label(dataset_2)}"
             )
+        coords = [c.name() for c in cube_1.coords(dim_coords=True)]
 
         # Different options for the different plots types
         fontsize = 6.0
@@ -1530,63 +1529,38 @@ class MultiDatasets(MonitorBase):
         else:
             raise NotImplementedError(f"plot_type '{plot_type}' not supported")
 
-        # Add scalar latitude and longitude coordinates (necessary for
-        # calculation of area weights). The exact values for the points/bounds
-        # of these coordinates do not matter since they don't change the
-        # weights.
-        if not cube.coords("latitude"):
-            lon_coord = AuxCoord(
-                0.0,
-                bounds=[-90.0, 90.0],
-                var_name="lat",
-                standard_name="latitude",
-                long_name="latitude",
-                units="degrees_north",
-            )
-            cube.add_aux_coord(lon_coord, ())
-        if not cube.coords("longitude"):
-            lon_coord = AuxCoord(
-                180.0,
-                bounds=[0.0, 360.0],
-                var_name="lon",
-                standard_name="longitude",
-                long_name="longitude",
-                units="degrees_east",
-            )
-            cube.add_aux_coord(lon_coord, ())
-
         # Mean
-        weights = area_weights(cube)
-        if ref_cube is None:
-            mean = cube.collapsed(
-                dim_coords,
+        weights = area_weights(cube_1)
+        if cube_2 is None:
+            mean = cube_1.collapsed(
+                coords,
                 iris.analysis.MEAN,
                 weights=weights,
             )
             logger.info(
                 "Area-weighted mean of %s for %s = %f%s",
-                dataset["short_name"],
+                dataset_1["short_name"],
                 label,
                 mean.data,
-                dataset["units"],
+                dataset_1["units"],
             )
         else:
-            mean = (cube - ref_cube).collapsed(
-                dim_coords,
+            mean = (cube_1 - cube_2).collapsed(
+                coords,
                 iris.analysis.MEAN,
                 weights=weights,
             )
             logger.info(
                 "Area-weighted bias of %s for %s = %f%s",
-                dataset["short_name"],
+                dataset_1["short_name"],
                 label,
                 mean.data,
-                dataset["units"],
+                dataset_1["units"],
             )
         if np.abs(mean.data) >= 0.1:
-            mean_val = f"{mean.data:.2f} {cube.units}"
+            mean_val = f"{mean.data:.2f} {cube_1.units}"
         else:
-            mean_val = f"{mean.data:.2e} {cube.units}"
+            mean_val = f"{mean.data:.2e} {cube_1.units}"
         axes.text(
             x_pos,
             y_pos,
@@ -1594,19 +1568,20 @@ class MultiDatasets(MonitorBase):
             fontsize=fontsize,
             transform=axes.transAxes,
         )
-        if ref_cube is None:
+
+        if cube_2 is None:
             return
 
         # Weighted RMSE
-        rmse = (cube - ref_cube).collapsed(
-            dim_coords,
+        rmse = (cube_1 - cube_2).collapsed(
+            coords,
             iris.analysis.RMS,
             weights=weights,
         )
         if np.abs(rmse.data) >= 0.1:
-            rmse_val = f"{rmse.data:.2f} {cube.units}"
+            rmse_val = f"{rmse.data:.2f} {cube_1.units}"
         else:
-            rmse_val = f"{rmse.data:.2e} {cube.units}"
+            rmse_val = f"{rmse.data:.2e} {cube_1.units}"
         axes.text(
             x_pos_bias,
             y_pos,
@@ -1616,17 +1591,17 @@ class MultiDatasets(MonitorBase):
         )
         logger.info(
             "Area-weighted RMSE of %s for %s = %f%s",
-            dataset["short_name"],
+            dataset_1["short_name"],
             label,
             rmse.data,
-            dataset["units"],
+            dataset_1["units"],
         )
 
         # Weighted R2
-        mask = np.ma.getmaskarray(cube.data).ravel()
-        mask |= np.ma.getmaskarray(ref_cube.data).ravel()
-        cube_data = cube.data.ravel()[~mask]
-        ref_cube_data = ref_cube.data.ravel()[~mask]
+        mask = np.ma.getmaskarray(cube_1.data).ravel()
+        mask |= np.ma.getmaskarray(cube_2.data).ravel()
+        cube_data = cube_1.data.ravel()[~mask]
+        ref_cube_data = cube_2.data.ravel()[~mask]
         weights = weights.ravel()[~mask]
         r2_val = r2_score(cube_data, ref_cube_data, sample_weight=weights)
         axes.text(
@@ -1638,10 +1613,280 @@ class MultiDatasets(MonitorBase):
         )
         logger.info(
             "Area-weighted R2 of %s for %s = %f",
-            dataset["short_name"],
+            dataset_1["short_name"],
             label,
             r2_val,
         )
+
+    def _check_cube_dimensions(self, cube: Cube, plot_type: str) -> list[str]:
+        """Check that cube has correct dimensional variables."""
+        expected_dimensions = self.plot_settings[plot_type]["dimensions"]
+        for dims in expected_dimensions:
+            cube_dims = [cube.coords(dim, dim_coords=True) for dim in dims]
+            if all(cube_dims) and cube.ndim == len(dims):
+                return dims
+        expected_dims_str = " or ".join(
+            [str(dims) for dims in expected_dimensions],
+        )
+        raise ValueError(
+            f"Expected cube that exactly has the dimensional coordinates "
+            f"{expected_dims_str}, got {cube.summary(shorten=True)}",
+        )
+
+    def _customize_plot(
+        self,
+        plot_type: str,
+        axes: Axes,
+        dataset: dict,
+    ) -> Axes:
+        """Customize plot with user-defined settings."""
+        self._process_pyplot_kwargs(
+            self.plot_settings[plot_type]["pyplot_kwargs"],
+            dataset,
+            transpose_axes=self.plots[plot_type]["transpose_axes"],
+        )
+
+        # Aspect ratio
+        if self.plots[plot_type]["aspect_ratio"] is not None:
+            axes.set_box_aspect(self.plots[plot_type]["aspect_ratio"])
+
+        # Axes styles
+        if self.plots[plot_type]["log_x"]:
+            axes.set_xscale("log")
+            axes.get_xaxis().set_major_locator(
+                LogLocator(base=10.0, numticks=12),
+            )
+            x_minor_locator = LogLocator(
+                base=10.0,
+                subs=np.arange(1.0, 10.0) * 0.1,
+                numticks=12,
+            )
+        else:
+            x_minor_locator = AutoMinorLocator()
+
+        if self.plots[plot_type]["log_y"]:
+            axes.set_yscale("log")
+            axes.get_yaxis().set_major_locator(
+                LogLocator(base=10.0, numticks=12),
+            )
+            y_minor_locator = LogLocator(
+                base=10.0,
+                subs=np.arange(1.0, 10.0) * 0.1,
+                numticks=12,
+            )
+        else:
+            y_minor_locator = AutoMinorLocator()
+
+        if self.plots[plot_type]["show_x_minor_ticks"]:
+            axes.get_xaxis().set_minor_locator(x_minor_locator)
+        else:
+            axes.get_xaxis().set_minor_locator(NullLocator())
+        if self.plots[plot_type]["show_y_minor_ticks"]:
+            axes.get_yaxis().set_minor_locator(y_minor_locator)
+        else:
+            axes.get_yaxis().set_minor_locator(NullLocator())
+
+        if self.plots[plot_type]["x_major_formatter"] is not None:
+            axes.get_xaxis().set_major_formatter(
+                FormatStrFormatter(self.plots[plot_type]["x_major_formatter"]),
+            )
+        if self.plots[plot_type]["x_minor_formatter"] is not None:
+            axes.get_xaxis().set_minor_locator(x_minor_locator)
+            axes.get_xaxis().set_minor_formatter(
+                FormatStrFormatter(self.plots[plot_type]["x_minor_formatter"]),
+            )
+        if self.plots[plot_type]["y_major_formatter"] is not None:
+            axes.get_yaxis().set_major_formatter(
+                FormatStrFormatter(self.plots[plot_type]["y_major_formatter"]),
+            )
+        if self.plots[plot_type]["y_minor_formatter"] is not None:
+            axes.get_yaxis().set_minor_locator(y_minor_locator)
+            axes.get_yaxis().set_minor_formatter(
+                FormatStrFormatter(self.plots[plot_type]["y_minor_formatter"]),
+            )
+
+        if self.plots[plot_type]["time_format"] is not None:
+            if self.plots[plot_type]["transpose_axes"]:
+                time_axis = axes.get_yaxis()
+            else:
+                time_axis = axes.get_xaxis()
+            time_axis.set_major_formatter(
+                mdates.DateFormatter(self.plots[plot_type]["time_format"]),
+            )
+
+        # Gridlines
+        gridline_kwargs = self._get_gridline_kwargs(plot_type)
+        if gridline_kwargs is not False:
+            axes.grid(**gridline_kwargs)
+
+        # Legend
+        legend_kwargs = self.plots[plot_type]["legend_kwargs"]
+        if legend_kwargs is not False:
+            axes.legend(**legend_kwargs)
+
+        # Rasterization
+        if self.plots[plot_type]["rasterize"]:
+            self._set_rasterized([axes])
+
+        # Further customize plot appearance
+        self._process_pyplot_kwargs(
+            self.plots[plot_type]["pyplot_kwargs"],
+            dataset,
+        )
+
+        return axes
+
+
+    @staticmethod
+    def _fill_facet_placeholders(string, dataset, description):
+        """Fill facet placeholders."""
+        try:
+            string = string.format(**dataset)
+        except KeyError as exc:
+            raise ValueError(
+                f"Not all necessary facets in {description} available for "
+                f"dataset\n{pformat(dataset)}",
+            ) from exc
+        return string
+
+    def _get_benchmark_datasets(self, datasets: list[dict]) -> list[dict]:
+        """Get dataset to be benchmarked."""
+        variable = datasets[0][self.cfg["group_variables_by"]]
+        benchmark_datasets = [
+            d for d in datasets if d.get("benchmark_dataset", False)
+        ]
+        if len(benchmark_datasets) >= 1:
+            return benchmark_datasets
+
+        raise ValueError(
+            f"Expected at least 1 benchmark dataset (with 'benchmark_dataset: "
+            f"true' for variable '{variable}'), got "
+            f"{len(benchmark_datasets):d}",
+        )
+
+    def _get_benchmark_group(self, datasets):
+        """Get datasets for benchmarking."""
+        benchmark_datasets = [
+            d
+            for d in datasets
+            if not (
+                d.get("benchmark_dataset", False)
+                or d.get("reference_for_metric", False)
+            )
+        ]
+        return benchmark_datasets
+
+    def _get_benchmark_mask(
+        self,
+        cube: Cube,
+        percentile_datasets: list[dict],
+        metric: str,
+    ) -> Cube:
+        """Create mask for benchmarking cube depending on metric."""
+        mask_cube = cube.copy()
+
+        if metric == "bias":
+            maxabs_perc = np.maximum(
+                np.abs(percentile_datasets[0].data),  # largets percentile
+                np.abs(percentile_datasets[-1].data),  # smallest percentile
+            )
+            mask = np.where(np.abs(cube.data) >= maxabs_perc, 0, 1)
+        elif metric == "emd":
+            mask = np.where(cube.data >= percentile_datasets[0].data, 0, 1)
+        elif metric == "pearsonr":
+            mask = np.where(cube.data <= percentile_datasets[0].data, 0, 1)
+        elif metric == "rmse":
+            mask = np.where(cube.data >= percentile_datasets[0].data, 0, 1)
+        else:
+            raise ValueError(
+                f"Could not create benchmarking mask, unknown benchmarking "
+                f"metric: '{metric}'",
+            )
+
+        mask_cube.data = mask
+        return mask_cube
+
+    def _get_benchmark_metric(self, datasets: list[dict]) -> str:
+        """Get benchmarking metric."""
+        for metric in ("emd", "pearsor", "rmse"):
+            if datasets[0]["short_name"].startswith(f"{metric}_"):
+                return metric
+        metric = "bias"
+        logger.info(
+            "Could not determine metric from short_name, assuming "
+            "benchmarking metric = %s",
+            metric,
+        )
+        return metric
+
+    def _get_benchmark_percentiles(self, datasets: list[dict]) -> list[dict]:
+        """Get percentile datasets from multi-model statistics preprocessor."""
+        percentile_datasets = []
+        for dataset in datasets:
+            stat = dataset.get("multi_model_statistics")
+            if stat is not None and "MultiModelPercentile" in stat:
+                dataset["_percentile_int"] = int(
+                    stat.replace("MultiModelPercentile", ""),
+                )
+                percentile_datasets.append(dataset)
+
+        # Sort percentiles in descending order (highest percentile first)
+        percentile_datasets = list(
+            reversed(sorted_metadata(percentile_datasets, "_percentile_int")),
+        )
+
+        # Get number of percentiles expected depending on benchmarking metric
+        metric = self._get_benchmark_metric(datasets)
+        n_percentiles: dict[str, int] = {
+            "bias": 2,
+            "rmse": 1,
+            "pearsonr": 1,
+            "emd": 1,
+        }
+        if metric not in n_percentiles:
+            raise ValueError(f"Unknown benchmarking metric: '{metric}'.")
+
+        if len(percentile_datasets) >= n_percentiles[metric]:
+            return percentile_datasets
+
+        variable = datasets[0][self.cfg["group_variables_by"]]
+        raise ValueError(
+            f"Expected at least {n_percentiles[metric]} percentile datasets "
+            f"(created with multi-model statistics preprocessor for variable "
+            f"'{variable}'), got {len(percentile_datasets):d}",
+        )
+
+    def _get_bias_dataset(self, dataset_1: dict, dataset_2: dict) -> dict:
+        """Get bias dataset (dataset_1 - dataset_2)."""
+        dataset_bias = deepcopy(dataset_1)
+        dataset_bias["cube"] = dataset_1["cube"] - dataset_2["cube"]
+        dataset_bias[self.cfg["facet_used_for_labels"]] = (
+            f"{self._get_label(dataset_1)} - {self._get_label(dataset_2)}"
+        )
+
+    def _get_cbar_kwargs(self, plot_type: str, *, bias: bool = False) -> dict:
+        """Get colorbar kwargs."""
+        cbar_kwargs = deepcopy(self.plots[plot_type]["cbar_kwargs"])
+        if bias:
+            cbar_kwargs.update(self.plots[plot_type]["cbar_kwargs_bias"])
+        return deepcopy(cbar_kwargs)
+
+    def _get_cbar_label(
+        self,
+        plot_type: str,
+        dataset: dict,
+        *,
+        bias: bool = False,
+    ) -> str:
+        """Get colorbar label."""
+        if bias:
+            cbar_label = self.plots[plot_type]["cbar_label_bias"]
+            descr = f"cbar_label_bias of {plot_type} '{cbar_label}'"
+        else:
+            cbar_label = self.plots[plot_type]["cbar_label"]
+            descr = f"cbar_label of {plot_type} '{cbar_label}'"
+        cbar_label = self._fill_facet_placeholders(cbar_label, dataset, descr)
+        return cbar_label
 
     def _get_custom_mpl_rc_params(self, plot_type: str) -> mpl.RcParams:
         """Get custom matplotlib rcParams."""
@@ -1658,37 +1903,37 @@ class MultiDatasets(MonitorBase):
             )
         return custom_rc_params
 
-    def _get_label(self, dataset: dict) -> str:
-        """Get label of dataset."""
-        return dataset[self.cfg["facet_used_for_labels"]]
-
-    def _get_cbar_kwargs(self, plot_type: str, bias: bool = False) -> dict:
-        """Get colorbar kwargs."""
-        cbar_kwargs = deepcopy(self.plots[plot_type]["cbar_kwargs"])
-        if bias:
-            cbar_kwargs.update(self.plots[plot_type]["cbar_kwargs_bias"])
-        return deepcopy(cbar_kwargs)
-
-    def _get_cbar_label(
-        self,
-        plot_type: str,
-        dataset: dict,
-        bias: bool = False,
-    ) -> str:
-        """Get colorbar label."""
-        if bias:
-            cbar_label = self.plots[plot_type]["cbar_label_bias"]
-            descr = f"cbar_label_bias of {plot_type} '{cbar_label}'"
-        else:
-            cbar_label = self.plots[plot_type]["cbar_label"]
-            descr = f"cbar_label of {plot_type} '{cbar_label}'"
-        cbar_label = self._fill_facet_placeholders(cbar_label, dataset, descr)
-        return cbar_label
-
     def _get_gridline_kwargs(self, plot_type: str) -> dict:
         """Get gridline kwargs."""
         gridline_kwargs = self.plots[plot_type]["gridline_kwargs"]
         return deepcopy(gridline_kwargs)
+
+    def _get_label(self, dataset: dict) -> str:
+        """Get label of dataset."""
+        return dataset[self.cfg["facet_used_for_labels"]]
+
+    @staticmethod
+    def _get_multi_dataset_facets(datasets):
+        """Derive common facets for multiple datasets."""
+        all_keys = {key for dataset in datasets for key in dataset}
+        multi_dataset_facets = {}
+        for key in all_keys:
+            if all(d.get(key) == datasets[0].get(key) for d in datasets):
+                multi_dataset_facets[key] = datasets[0].get(key)
+            else:
+                multi_dataset_facets[key] = f"ambiguous_{key}"
+        return multi_dataset_facets
+
+    def _get_netcdf_path(
+        self,
+        plot_path: Path | str,
+        suffix: str | None = None,
+    ) -> str:
+        """Get netCDF path."""
+        basename = Path(plot_path).stem
+        if suffix is not None:
+            basename += suffix
+        return get_diagnostic_filename(basename, self.cfg)
 
     def _get_projection(self, plot_type: str) -> Any:
         """Get plot projection."""
@@ -1723,6 +1968,7 @@ class MultiDatasets(MonitorBase):
         self,
         plot_type: str,
         dataset: dict,
+        *,
         bias: bool = False,
     ) -> dict:
         """Get keyword arguments for plot functions."""
@@ -1752,19 +1998,7 @@ class MultiDatasets(MonitorBase):
                 )
                 plot_kwargs[key] = val
 
-        # Default settings for different plot types
-        if plot_type in (
-            "timeseries",
-            "annual_cycle",
-            "benchmarking_annual_cycle",
-            "1d_profile",
-            "diurnal_cycle",
-            "benchmarking_diurnal_cycle",
-            "variable_vs_lat",
-            "benchmarking_timeseries",
-        ):
-            plot_kwargs.setdefault("label", label)
-
+        # Handle special plot kwargs
         if plot_kwargs.get("norm") == "centered":
             norm = CenteredNorm(
                 vcenter=plot_kwargs.pop("vcenter", 0.0),
@@ -1773,6 +2007,43 @@ class MultiDatasets(MonitorBase):
             plot_kwargs["norm"] = norm
 
         return deepcopy(plot_kwargs)
+
+    def _get_provenance_record(
+        self,
+        plot_type: str,
+        dataset: dict,
+        datasets: list[dict],
+    ) -> dict:
+        """Get provenancen record."""
+        provenance_record = {
+            "ancestors": list({d["filename"] for d in datasets}),
+            "long_names": list({d["long_name"] for d in datasets}),
+        }
+        provenance_record.update(self.plot_settings[plot_type]["provenance"])
+        for prov_key, prov_val in provenance_record.items():
+            if isinstance(prov_val, str):
+                provenance_record[prov_key] = self._fill_facet_placeholders(
+                    prov_val,
+                    dataset,
+                    f"provenance {prov_key} of {plot_type} '{prov_val}'",
+                )
+        return provenance_record
+
+    def _get_reference_dataset(self, datasets: list[dict]) -> dict | None:
+        """Extract reference dataset."""
+        variable = datasets[0][self.cfg["group_variables_by"]]
+        ref_datasets = [
+            d for d in datasets if d.get("reference_for_monitor_diags", False)
+        ]
+        if len(ref_datasets) > 1:
+            raise ValueError(
+                f"Expected at most 1 reference dataset (with "
+                f"'reference_for_monitor_diags: true' for variable "
+                f"'{variable}', got {len(ref_datasets):d}",
+            )
+        if ref_datasets:
+            return ref_datasets[0]
+        return None
 
     def _load_and_preprocess_data(self) -> list[dict]:
         """Load and preprocess data."""
@@ -1804,6 +2075,31 @@ class MultiDatasets(MonitorBase):
             # Fix time coordinate if present
             if cube.coords("time", dim_coords=True):
                 ih.unify_time_coord(cube)
+
+            # Add scalar latitude and longitude coordinates if these are not
+            # present (necessary for calculation of area weights). The exact
+            # values for the points/bounds of these coordinates do not matter
+            # since they don't change the weights.
+            if not cube.coords("latitude"):
+                lon_coord = AuxCoord(
+                    0.0,
+                    bounds=[-90.0, 90.0],
+                    var_name="lat",
+                    standard_name="latitude",
+                    long_name="latitude",
+                    units="degrees_north",
+                )
+                cube.add_aux_coord(lon_coord, ())
+            if not cube.coords("longitude"):
+                lon_coord = AuxCoord(
+                    180.0,
+                    bounds=[0.0, 360.0],
+                    var_name="lon",
+                    standard_name="longitude",
+                    long_name="longitude",
+                    units="degrees_east",
+                )
+                cube.add_aux_coord(lon_coord, ())
 
             # Fix Z-coordinate if present
             if cube.coords("air_pressure", dim_coords=True):
@@ -1866,7 +2162,7 @@ class MultiDatasets(MonitorBase):
         if gridline_kwargs is not False:
             axes_data.gridlines(**gridline_kwargs)
         axes_data.set_title(self._get_label(dataset), pad=3.0)
-        self._add_stats(plot_type, axes_data, dim_coords_dat, dataset)
+        self._add_stats(plot_type, axes_data, dataset)
         self._process_pyplot_kwargs(
             self.plots[plot_type]["pyplot_kwargs"],
             dataset,
@@ -1895,7 +2191,7 @@ class MultiDatasets(MonitorBase):
         if gridline_kwargs is not False:
             axes_ref.gridlines(**gridline_kwargs)
         axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
-        self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_dataset)
+        self._add_stats(plot_type, axes_ref, ref_dataset)
         self._process_pyplot_kwargs(
             self.plots[plot_type]["pyplot_kwargs"],
             ref_dataset,
@@ -1945,7 +2241,6 @@ class MultiDatasets(MonitorBase):
         self._add_stats(
             plot_type,
             axes_bias,
-            dim_coords_dat,
             dataset,
             ref_dataset,
         )
@@ -2007,7 +2302,7 @@ class MultiDatasets(MonitorBase):
             axes.gridlines(**gridline_kwargs)
 
         # Print statistics if desired
-        self._add_stats(plot_type, axes, dim_coords_dat, dataset)
+        self._add_stats(plot_type, axes, dataset)
 
         # Setup colorbar
         fontsize = (
@@ -2096,7 +2391,7 @@ class MultiDatasets(MonitorBase):
             )
         else:
             axes_data.get_yaxis().set_minor_formatter(NullFormatter())
-        self._add_stats(plot_type, axes_data, dim_coords_dat, dataset)
+        self._add_stats(plot_type, axes_data, dataset)
         self._process_pyplot_kwargs(
             self.plots[plot_type]["pyplot_kwargs"],
             dataset,
@@ -2117,7 +2412,7 @@ class MultiDatasets(MonitorBase):
         plot_ref = plot_func(ref_cube, **plot_kwargs)
         axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
         plt.setp(axes_ref.get_yticklabels(), visible=False)
-        self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_dataset)
+        self._add_stats(plot_type, axes_ref, ref_dataset)
         self._process_pyplot_kwargs(
             self.plots[plot_type]["pyplot_kwargs"],
             ref_dataset,
@@ -2160,7 +2455,6 @@ class MultiDatasets(MonitorBase):
         self._add_stats(
             plot_type,
             axes_bias,
-            dim_coords_dat,
             dataset,
             ref_dataset,
         )
@@ -2210,7 +2504,7 @@ class MultiDatasets(MonitorBase):
         plot_zonal_mean_profile = plot_func(cube, **plot_kwargs)
 
         # Print statistics if desired
-        self._add_stats(plot_type, axes, dim_coords_dat, dataset)
+        self._add_stats(plot_type, axes, dataset)
 
         # Setup colorbar
         fontsize = (
@@ -2279,7 +2573,7 @@ class MultiDatasets(MonitorBase):
         plot_hovmoeller = plot_func(cube, **plot_kwargs)
 
         # Print statistics if desired
-        self._add_stats(plot_type, axes, dim_coords_dat, dataset)
+        self._add_stats(plot_type, axes, dataset)
 
         # Setup colorbar
         fontsize = (
@@ -2390,7 +2684,7 @@ class MultiDatasets(MonitorBase):
             axes_data.get_xaxis().set_major_formatter(
                 mdates.DateFormatter(self.plots[plot_type]["time_format"]),
             )
-        self._add_stats(plot_type, axes_data, dim_coords_dat, dataset)
+        self._add_stats(plot_type, axes_data, dataset)
         self._process_pyplot_kwargs(
             self.plots[plot_type]["pyplot_kwargs"],
             dataset,
@@ -2411,7 +2705,7 @@ class MultiDatasets(MonitorBase):
         plot_ref = plot_func(ref_cube, **plot_kwargs)
         axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
         plt.setp(axes_ref.get_yticklabels(), visible=False)
-        self._add_stats(plot_type, axes_ref, dim_coords_ref, ref_dataset)
+        self._add_stats(plot_type, axes_ref, ref_dataset)
         self._process_pyplot_kwargs(
             self.plots[plot_type]["pyplot_kwargs"],
             ref_dataset,
@@ -2454,7 +2748,6 @@ class MultiDatasets(MonitorBase):
         self._add_stats(
             plot_type,
             axes_bias,
-            dim_coords_dat,
             dataset,
             ref_dataset,
         )
@@ -3134,6 +3427,7 @@ class MultiDatasets(MonitorBase):
         self,
         pyplot_kwargs: dict[str, Any],
         dataset: dict,
+        *,
         transpose_axes: bool = False,
     ) -> None:
         """Process functions for :mod:`matplotlib.pyplot`."""
@@ -3155,283 +3449,17 @@ class MultiDatasets(MonitorBase):
             else:
                 getattr(plt, func)(arg)
 
-    def _check_cube_dimensions(self, cube: Cube, plot_type: str) -> list[str]:
-        """Check that cube has correct dimensional variables."""
-        expected_dimensions = self.plot_settings[plot_type]["dimensions"]
-        for dims in expected_dimensions:
-            cube_dims = [cube.coords(dim, dim_coords=True) for dim in dims]
-            if all(cube_dims) and cube.ndim == len(dims):
-                return dims
-        expected_dims_str = " or ".join(
-            [str(dims) for dims in expected_dimensions],
-        )
-        raise ValueError(
-            f"Expected cube that exactly has the dimensional coordinates "
-            f"{expected_dims_str}, got {cube.summary(shorten=True)}",
-        )
-
-    @staticmethod
-    def _fill_facet_placeholders(string, dataset, description):
-        """Fill facet placeholders."""
-        try:
-            string = string.format(**dataset)
-        except KeyError as exc:
-            raise ValueError(
-                f"Not all necessary facets in {description} available for "
-                f"dataset\n{pformat(dataset)}",
-            ) from exc
-        return string
-
-    @staticmethod
-    def _get_multi_dataset_facets(datasets):
-        """Derive common facets for multiple datasets."""
-        all_keys = {key for dataset in datasets for key in dataset}
-        multi_dataset_facets = {}
-        for key in all_keys:
-            if all(d.get(key) == datasets[0].get(key) for d in datasets):
-                multi_dataset_facets[key] = datasets[0].get(key)
-            else:
-                multi_dataset_facets[key] = f"ambiguous_{key}"
-        return multi_dataset_facets
-
-    def _get_reference_dataset(self, datasets: list[dict]) -> dict | None:
-        """Extract reference dataset."""
-        variable = datasets[0][self.cfg["group_variables_by"]]
-        ref_datasets = [
-            d for d in datasets if d.get("reference_for_monitor_diags", False)
-        ]
-        if len(ref_datasets) > 1:
-            raise ValueError(
-                f"Expected at most 1 reference dataset (with "
-                f"'reference_for_monitor_diags: true' for variable "
-                f"'{variable}', got {len(ref_datasets):d}",
-            )
-        if ref_datasets:
-            return ref_datasets[0]
-        return None
-
-    def _get_benchmark_datasets(self, datasets: list[dict]) -> list[dict]:
-        """Get dataset to be benchmarked."""
-        variable = datasets[0][self.cfg["group_variables_by"]]
-        benchmark_datasets = [
-            d for d in datasets if d.get("benchmark_dataset", False)
-        ]
-        if len(benchmark_datasets) >= 1:
-            return benchmark_datasets
-
-        raise ValueError(
-            f"Expected at least 1 benchmark dataset (with 'benchmark_dataset: "
-            f"true' for variable '{variable}'), got "
-            f"{len(benchmark_datasets):d}",
-        )
-
-    def _get_benchmark_group(self, datasets):
-        """Get datasets for benchmarking."""
-        benchmark_datasets = [
-            d
-            for d in datasets
-            if not (
-                d.get("benchmark_dataset", False)
-                or d.get("reference_for_metric", False)
-            )
-        ]
-        return benchmark_datasets
-
-    def _get_benchmark_mask(
-        self,
-        cube: Cube,
-        percentile_datasets: list[dict],
-        metric: str,
-    ) -> Cube:
-        """Create mask for benchmarking cube depending on metric."""
-        mask_cube = cube.copy()
-
-        if metric == "bias":
-            maxabs_perc = np.maximum(
-                np.abs(percentile_datasets[0].data),  # largets percentile
-                np.abs(percentile_datasets[-1].data),  # smallest percentile
-            )
-            mask = np.where(np.abs(cube.data) >= maxabs_perc, 0, 1)
-        elif metric == "emd":
-            mask = np.where(cube.data >= percentile_datasets[0].data, 0, 1)
-        elif metric == "pearsonr":
-            mask = np.where(cube.data <= percentile_datasets[0].data, 0, 1)
-        elif metric == "rmse":
-            mask = np.where(cube.data >= percentile_datasets[0].data, 0, 1)
-        else:
-            raise ValueError(
-                f"Could not create benchmarking mask, unknown benchmarking "
-                f"metric: '{metric}'",
-            )
-
-        mask_cube.data = mask
-        return mask_cube
-
-    def _get_benchmark_metric(self, datasets: list[dict]) -> str:
-        """Get benchmarking metric."""
-        for metric in ("emd", "pearsor", "rmse"):
-            if datasets[0]["short_name"].startswith(f"{metric}_"):
-                return metric
-        metric = "bias"
-        logger.info(
-            "Could not determine metric from short_name, assuming "
-            "benchmarking metric = %s",
-            metric,
-        )
-        return metric
-
-    def _get_benchmark_percentiles(self, datasets: list[dict]) -> list[dict]:
-        """Get percentile datasets from multi-model statistics preprocessor."""
-        percentile_datasets = []
-        for dataset in datasets:
-            stat = dataset.get("multi_model_statistics")
-            if stat is not None and "MultiModelPercentile" in stat:
-                dataset["_percentile_int"] = int(
-                    stat.replace("MultiModelPercentile", ""),
-                )
-                percentile_datasets.append(dataset)
-
-        # Sort percentiles in descending order (highest percentile first)
-        percentile_datasets = list(
-            reversed(sorted_metadata(percentile_datasets, "_percentile_int")),
-        )
-
-        # Get number of percentiles expected depending on benchmarking metric
-        metric = self._get_benchmark_metric(datasets)
-        n_percentiles: dict[str, int] = {
-            "bias": 2,
-            "rmse": 1,
-            "pearsonr": 1,
-            "emd": 1,
-        }
-        if metric not in n_percentiles:
-            raise ValueError(f"Unknown benchmarking metric: '{metric}'.")
-
-        if len(percentile_datasets) >= n_percentiles[metric]:
-            return percentile_datasets
-
-        variable = datasets[0][self.cfg["group_variables_by"]]
-        raise ValueError(
-            f"Expected at least {n_percentiles[metric]} percentile datasets "
-            f"(created with multi-model statistics preprocessor for variable "
-            f"'{variable}'), got {len(percentile_datasets):d}",
-        )
-
-    def _customize_plot(
-        self,
-        plot_type: str,
-        axes: Axes,
-        dataset: dict,
-    ) -> Axes:
-        """Customize plot with user-defined settings."""
-        self._process_pyplot_kwargs(
-            self.plot_settings[plot_type]["pyplot_kwargs"],
-            dataset,
-            transpose_axes=self.plots[plot_type]["transpose_axes"],
-        )
-
-        # Aspect ratio
-        if self.plots[plot_type]["aspect_ratio"] is not None:
-            axes.set_box_aspect(self.plots[plot_type]["aspect_ratio"])
-
-        # Axes styles
-        if self.plots[plot_type]["log_x"]:
-            axes.set_xscale("log")
-            axes.get_xaxis().set_major_locator(
-                LogLocator(base=10.0, numticks=12),
-            )
-            x_minor_locator = LogLocator(
-                base=10.0,
-                subs=np.arange(1.0, 10.0) * 0.1,
-                numticks=12,
-            )
-        else:
-            x_minor_locator = AutoMinorLocator()
-
-        if self.plots[plot_type]["log_y"]:
-            axes.set_yscale("log")
-            axes.get_yaxis().set_major_locator(
-                LogLocator(base=10.0, numticks=12),
-            )
-            y_minor_locator = LogLocator(
-                base=10.0,
-                subs=np.arange(1.0, 10.0) * 0.1,
-                numticks=12,
-            )
-        else:
-            y_minor_locator = AutoMinorLocator()
-
-        if self.plots[plot_type]["show_x_minor_ticks"]:
-            axes.get_xaxis().set_minor_locator(x_minor_locator)
-        else:
-            axes.get_xaxis().set_minor_locator(NullLocator())
-        if self.plots[plot_type]["show_y_minor_ticks"]:
-            axes.get_yaxis().set_minor_locator(y_minor_locator)
-        else:
-            axes.get_yaxis().set_minor_locator(NullLocator())
-
-        if self.plots[plot_type]["x_major_formatter"] is not None:
-            axes.get_xaxis().set_major_formatter(
-                FormatStrFormatter(self.plots[plot_type]["x_major_formatter"]),
-            )
-        if self.plots[plot_type]["x_minor_formatter"] is not None:
-            axes.get_xaxis().set_minor_locator(x_minor_locator)
-            axes.get_xaxis().set_minor_formatter(
-                FormatStrFormatter(self.plots[plot_type]["x_minor_formatter"]),
-            )
-        if self.plots[plot_type]["y_major_formatter"] is not None:
-            axes.get_yaxis().set_major_formatter(
-                FormatStrFormatter(self.plots[plot_type]["y_major_formatter"]),
-            )
-        if self.plots[plot_type]["y_minor_formatter"] is not None:
-            axes.get_yaxis().set_minor_locator(y_minor_locator)
-            axes.get_yaxis().set_minor_formatter(
-                FormatStrFormatter(self.plots[plot_type]["y_minor_formatter"]),
-            )
-
-        if self.plots[plot_type]["time_format"] is not None:
-            if self.plots[plot_type]["transpose_axes"]:
-                time_axis = axes.get_yaxis()
-            else:
-                time_axis = axes.get_xaxis()
-            time_axis.set_major_formatter(
-                mdates.DateFormatter(self.plots[plot_type]["time_format"]),
-            )
-
-        # Gridlines
-        gridline_kwargs = self._get_gridline_kwargs(plot_type)
-        if gridline_kwargs is not False:
-            axes.grid(**gridline_kwargs)
-
-        # Legend
-        legend_kwargs = self.plots[plot_type]["legend_kwargs"]
-        if legend_kwargs is not False:
-            axes.legend(**legend_kwargs)
-
-        # Rasterization
-        if self.plots[plot_type]["rasterize"]:
-            self._set_rasterized([axes])
-
-        # Further customize plot appearance
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"],
-            dataset,
-        )
-
-        return axes
-
     def _plot_1d_data(
         self,
         plot_type: str,
         datasets: list[dict],
-    ) -> tuple[Figure, Axes]:
+        axes: Axes,
+    ) -> None:
         """Plot 1D data."""
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot()
-
         # Plot all datasets in one single figure
         coord_label = "unkown coordinate"
         for dataset in datasets:
+            label = self._get_label(dataset)
             cube = dataset["cube"]
             coords = self._check_cube_dimensions(cube, plot_type)
             coord = cube.coord(coords[0], dim_coords=True)
@@ -3439,6 +3467,7 @@ class MultiDatasets(MonitorBase):
 
             # Actual plot
             plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+            plot_kwargs.setdefault("label", label)
             plot_kwargs["axes"] = axes
             if self.plots[plot_type]["transpose_axes"]:
                 iris.plot.plot(cube, coord, **plot_kwargs)
@@ -3466,17 +3495,19 @@ class MultiDatasets(MonitorBase):
         # Customize plot with user-defined settings
         self._customize_plot(plot_type, axes, multi_dataset_facets)
 
-        return (fig, axes)
-
-    def _plot_2d_data_1_panel(
+    def _plot_2d_data(
         self,
         plot_type: str,
         dataset: dict,
         axes: Axes,
-        fig: Figure,
+        *,
+        bias: bool = False,
         **additional_plot_kwargs: Any,
-    ) -> tuple[Any, Axes]:
-        """Plot 2D data (single panel)."""
+    ) -> Any:
+        """Plot 2D data."""
+        fig = axes.get_figure()
+
+        # Get data to plot
         cube = dataset["cube"]
         coords = self._check_cube_dimensions(cube, plot_type)
         if self.plots[plot_type]["transpose_axes"]:
@@ -3488,13 +3519,10 @@ class MultiDatasets(MonitorBase):
 
         # Plot data
         plot_func = self._get_plot_func(plot_type)
-        plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
+        plot_kwargs = self._get_plot_kwargs(plot_type, dataset, bias=bias)
         plot_kwargs.update(additional_plot_kwargs)
         plot_kwargs["axes"] = axes
-        plot_result = plot_func(cube, **plot_kwargs)
-
-        # Add statistics to plot if desired
-        self._add_stats(plot_type, axes, coords, dataset)
+        plot_output = plot_func(x_coord, y_coord, cube, **plot_kwargs)
 
         # Title and axis labels
         fig.suptitle(dataset["long_name"])
@@ -3505,7 +3533,22 @@ class MultiDatasets(MonitorBase):
         # Customize plot with user-defined settings
         self._customize_plot(plot_type, axes, dataset)
 
-        return (plot_result, axes)
+        return plot_output
+
+    def _plot_2d_data_1_panel(
+        self,
+        plot_type: str,
+        dataset: dict,
+    ) -> Figure:
+        """Plot 2D data (single panel)."""
+        fig = plt.figure(**self.cfg["figure_kwargs"])
+        axes = fig.add_subplot()
+        plot_output = self._plot_2d_data(plot_type, dataset, axes)
+        self._add_colorbar(plot_type, plot_output, axes, dataset)
+        if self.plots[plot_type]["show_stats"]:
+            self._add_stats(plot_type, axes, dataset)
+        return fig
+
 
     def _plot_2d_data_3_panel(
         self,
@@ -3525,9 +3568,7 @@ class MultiDatasets(MonitorBase):
 
         # Plot top left panel
         axes_left = fig.add_subplot(gridspec[0:2, 0:2])
-        (plot_left, axes_left) = self._plot_2d_data_1_panel(
-            plot_type, dataset_left, axes_left, fig
-        )
+        plot_left = self._plot_2d_datal(plot_type, dataset_left, axes_left)
 
         # Plot top right panel
         # Note: make sure to use the same vmin and vmax than the top left plot
@@ -3541,75 +3582,41 @@ class MultiDatasets(MonitorBase):
         if self.plots[plot_type]["common_cbar"]:
             additional_plot_kwargs.setdefault("vmin", plot_left.get_clim()[0])
             additional_plot_kwargs.setdefault("vmax", plot_left.get_clim()[1])
-        (_, axes_right) = self._plot_2d_data_1_panel(
-            plot_type, dataset_right, axes_right, fig, **additional_plot_kwargs
+        plot_right = self._plot_2d_data(
+            plot_type, dataset_right, axes_right, **additional_plot_kwargs
         )
         plt.setp(axes_right.get_yticklabels(), visible=False)
 
-        # Add colorbar(s)
-        # self._add_colorbar(
-        #     plot_type,
-        #     plot_data,
-        #     plot_ref,
-        #     axes_left,
-        #     axes_right,
-        #     dataset_left,
-        #     dataset_right,
-        # )
+        # Colorbar(s) for top plots
+        self._add_colorbar(
+            plot_type,
+            plot_left,
+            axes_left,
+            dataset_left,
+            plot_right,
+            axes_right,
+            dataset_right,
+        )
 
-        # # Plot bias (bottom center)
-        # bias_cube = cube_left - cube_right
-        # axes_bias = fig.add_subplot(
-        #     gridspec[3:5, 1:3],
-        #     sharex=axes_left,
-        #     sharey=axes_left,
-        # )
-        # plot_kwargs_bias = self._get_plot_kwargs(plot_type, dataset_left, bias=True)
-        # plot_kwargs_bias["axes"] = axes_bias
-        # plot_bias = plot_func(bias_cube, **plot_kwargs_bias)
-        # axes_bias.set_title(
-        #     f"{self._get_label(dataset_left)} - {self._get_label(dataset_right)}",
-        #     pad=3.0,
-        # )
-        # axes_bias.set_xlabel("latitude [°N]")
-        # axes_bias.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
-        # cbar_kwargs_bias = self._get_cbar_kwargs(plot_type, bias=True)
-        # cbar_bias = fig.colorbar(plot_bias, ax=axes_bias, **cbar_kwargs_bias)
-        # cbar_bias.set_label(
-        #     self._get_cbar_label(plot_type, dataset_left, bias=True),
-        #     fontsize=fontsize,
-        # )
-        # cbar_bias.ax.tick_params(labelsize=fontsize)
-        # self._add_stats(
-        #     plot_type,
-        #     axes_bias,
-        #     coords_left,
-        #     dataset_left,
-        #     dataset_right,
-        # )
+        # Plot bottom panel (bias) including colorbar
+        axes_bottom = fig.add_subplot(
+            gridspec[3:5, 1:3],
+            sharex=axes_left,
+            sharey=axes_left,
+        )
+        dataset_bottom = self._get_bias_dataset(dataset_left, dataset_right)
+        plot_bottom = self._plot_2d_data(
+            plot_type, dataset_bottom, axes_bottom, bias=True
+        )
+        self._add_colorbar(plot_type, plot_bottom, axes_bottom, bias=True)
 
-        # # Customize plot
-        # fig.suptitle(dataset_left["long_name"])
-        # self._process_pyplot_kwargs(
-        #     self.plots[plot_type]["pyplot_kwargs"],
-        #     dataset_right,
-        # )
-
-        # # Rasterization
-        # if self.plots[plot_type]["rasterize"]:
-        #     self._set_rasterized([axes_left, axes_right, axes_bias])
-
-        # # File paths
-        # plot_path = self.get_plot_path(plot_type, dataset_left)
-        # netcdf_path = get_diagnostic_filename(
-        #     Path(plot_path).stem + "_{pos}",
-        #     self.cfg,
-        # )
-        # netcdf_paths = {
-        #     netcdf_path.format(pos="top_left"): cube_left,
-        #     netcdf_path.format(pos="top_right"): cube_right,
-        #     netcdf_path.format(pos="bottom"): bias_cube,
-        # }
+        # Show statistics if desired
+        if self.plots[plot_type]["show_stats"]:
+            self._add_stats(plot_type, axes_left, dataset_left)
+            self._add_stats(plot_type, axes_right, dataset_right)
+            self._add_stats(
+                plot_type, axes_bottom, dataset_left, dataset_right
+            )
 
         return fig
 
@@ -3618,20 +3625,18 @@ class MultiDatasets(MonitorBase):
         plot_type: str,
         datasets: list[dict],
         fig: Figure,
-    ) -> tuple[str, str]:
+    ) -> None:
         """Save 1D plot and netCDF files."""
-        # Save plot file
         multi_dataset_facets = self._get_multi_dataset_facets(datasets)
-        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
-        fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
-        logger.info("Wrote %s", plot_path)
-        plt.close()
+
+        # Save plot file
+        plot_path = self._save_plot(plot_type, multi_dataset_facets, fig)
 
         # Save netCDF file
         cubes: dict[str, Cube] = {
             self._get_label(d): d["cube"] for d in datasets
         }
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
+        netcdf_path = self._get_netcdf_path(plot_path)
         coord_name = datasets[0]["cube"].coord(dim_coords=True).name()
         var_attrs = {
             n: datasets[0][n] for n in ("short_name", "long_name", "units")
@@ -3639,24 +3644,48 @@ class MultiDatasets(MonitorBase):
         io.save_1d_data(cubes, netcdf_path, coord_name, var_attrs)
 
         # Provenance tracking
-        ancestors = [d["filename"] for d in datasets]
-        provenance_record = {
-            "ancestors": ancestors,
-            "long_names": [var_attrs["long_name"]],
-        }
-        provenance_record.update(self.plot_settings[plot_type]["provenance"])
-        for prov_key, prov_val in provenance_record.items():
-            if isinstance(prov_val, str):
-                provenance_record[prov_key] = self._fill_facet_placeholders(
-                    prov_val,
-                    multi_dataset_facets,
-                    f"provenance {prov_key} of {plot_type} '{prov_val}'",
-                )
+        provenance_record = self._get_provenance_record(
+            plot_type, multi_dataset_facets, datasets
+        )
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-        return (plot_path, netcdf_path)
+    def _save_data(
+        self,
+        plot_type: str,
+        datasets: list[dict | None],
+        fig: Figure,
+    ) -> None:
+        """Save plot and netCDF files."""
+        datasets = [d for d in datasets if d is not None]
+        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
+
+        # Setup provenance tracking
+        provenance_record = self._get_provenance_record(
+            plot_type, multi_dataset_facets, datasets
+        )
+
+        # Save single plot file
+        plot_path = self._save_plot(plot_type, multi_dataset_facets, fig)
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+
+        # Save one netCDF file per dataset
+        for (idx, dataset) in enumerate(datasets):
+            netcdf_path = self._get_netcdf_path(plot_path, suffix=f"_{idx}")
+            io.iris_save(dataset["cube"], netcdf_path)
+            provenance_record["ancestors"] = [dataset["filename"]]
+            with ProvenanceLogger(self.cfg) as provenance_logger:
+                provenance_logger.log(netcdf_path, provenance_record)
+
+    def _save_plot(self, plot_type: str, dataset: dict, fig: Figure) -> str:
+        """Save plot file."""
+        plot_path = self.get_plot_path(plot_type, dataset)
+        fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
+        logger.info("Wrote %s", plot_path)
+        plt.close()
+        return plot_path
 
     def create_1d_benchmarking_plot(
         self,
@@ -3664,12 +3693,15 @@ class MultiDatasets(MonitorBase):
         datasets: list[dict],
     ) -> None:
         """Create 1D x vs. y benchmarking plot (lines or markers)."""
+        fig = plt.figure(**self.cfg["figure_kwargs"])
+        axes = fig.add_subplot()
+
         # Some options are not supported for benchmarking plots
         self.plots[plot_type]["transpose_axes"] = False
 
         # Plot benchmarking datasets
         benchmark_datasets = self._get_benchmark_datasets(datasets)
-        (fig, axes) = self._plot_1d_data(plot_type, benchmark_datasets)
+        self._plot_1d_data(plot_type, benchmark_datasets, axes)
 
         # Plot envelope using percentile datasets
         percentile_datasets = self._get_benchmark_percentiles(datasets)
@@ -3705,8 +3737,25 @@ class MultiDatasets(MonitorBase):
 
     def create_1d_plot(self, plot_type: str, datasets: list[dict]) -> None:
         """Create 1D x vs. y plot (lines or markers)."""
-        (fig, _) = self._plot_1d_data(plot_type, datasets)
+        fig = plt.figure(**self.cfg["figure_kwargs"])
+        axes = fig.add_subplot()
+        self._plot_1d_data(plot_type, datasets, axes)
         self._save_1d_data(plot_type, datasets, fig)
+
+    def create_2d_plot(
+        self,
+        plot_type: str,
+        dataset: dict,
+        dataset_ref: dict | None,
+    ) -> None:
+        """Create 2D plot."""
+        if dataset_ref is None:
+            fig = self._plot_2d_data_1_panel(plot_type, dataset)
+            dataset_bias = None
+        else:
+            fig = self._plot_2d_data_3_panel(plot_type, dataset, dataset_ref)
+            dataset_bias = self._get_bias_dataset(dataset, dataset_ref)
+        self._save_data(plot_type, [dataset, dataset_ref, dataset_bias], fig)
 
     def create_benchmarking_boxplot(self):
         """Create boxplot."""
@@ -4203,12 +4252,17 @@ class MultiDatasets(MonitorBase):
                 self.plots[plot_type].pop("show_y_minor_ticklabels")
                 self.plots[plot_type]["y_minor_formatter"] = "%.1f"
 
+            # Inspect plot function to determine arguments
+            plot_parameters = inspect.signature(plot_function).parameters
+            print(plot_parameters)
+            assert 0
+
             # Plot types where only one plot in total is created
             if plot_settings["type"] == "one_plot_total":
                 with mpl.rc_context(mpl_rc_params):
                     plot_function()
 
-            # Plot types where one plot per dataset/variables is created
+            # Plot types where multiple plots might be created
             else:
                 for var_key, datasets in self.grouped_input_data.items():
                     logger.info("Processing variable %s", var_key)
