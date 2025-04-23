@@ -17,7 +17,6 @@ logger = logging.getLogger(Path(__file__).stem)
 
 
 # This is stolen from the example in AutoAssess _plot_mo_metrics.py
-# TODO: Work out what should be written here
 def get_provenance_record(cfg):
     """Create a provenance record describing the diagnostic data and plot."""
     filenames = [item["filename"] for item in cfg["input_data"].values()]
@@ -163,7 +162,7 @@ def create_titles_dict(data):
     elif first_variable["diagnostic"] == "antarctic":
         # We don't have equivalent observations  # TODO: there are observations on Roach 3e
         dictionary["obs"] = {
-            "no years": {"mean": 0.0, "std_dev": 0.0, "plausible": 0.0}
+            "no years": {"mean": None, "std_dev": None, "plausible": None}
         }
         # Setting titles for plots
         dictionary["titles"] = {
@@ -204,20 +203,21 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         )
 
     # Add observations (style taken from Ed's code)
-    ax.hlines(obs_mean, 0, 1, linestyle="--", color="black", linewidth=2)
-    ax.fill_between(
-        [0, 1],
-        obs_mean - obs_std_dev,
-        obs_mean + obs_std_dev,
-        facecolor="k",
-        alpha=0.15,
-    )
-    ax.hlines(
-        obs_mean + obs_plausible, 0, 1, linestyle=":", color="0.5", linewidth=1
-    )
-    ax.hlines(
-        obs_mean - obs_plausible, 0, 1, linestyle=":", color="0.5", linewidth=1
-    )
+    if obs_mean is not None:
+        ax.hlines(obs_mean, 0, 1, linestyle="--", color="black", linewidth=2)
+        ax.fill_between(
+            [0, 1],
+            obs_mean - obs_std_dev,
+            obs_mean + obs_std_dev,
+            facecolor="k",
+            alpha=0.15,
+        )
+        ax.hlines(
+            obs_mean + obs_plausible, 0, 1, linestyle=":", color="0.5", linewidth=1
+        )
+        ax.hlines(
+            obs_mean - obs_plausible, 0, 1, linestyle=":", color="0.5", linewidth=1
+        )
 
     # Tidy the figure
     ax.set_xticks([])
@@ -249,12 +249,8 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     cmap = plt.get_cmap("PiYG_r")
 
     # Set up the axes
-    ax.set_xlim(-0.02, 0.505)
-    ax.set_ylim(-1.1, 0.21)
-    ax.set_xticks([0.0, 0.1, 0.2, 0.3, 0.4, 0.5])
-    ax.set_yticks([-1.0, -0.8, -0.6, -0.4, -0.2, 0.0, 0.2])
-    ax.hlines(0, -0.02, 0.505, color="black", alpha=0.5)
-    ax.vlines(0, -1.1, 0.21, color="black", alpha=0.5)
+    ax.axhline(color="black", alpha=0.5)
+    ax.axvline(color="black", alpha=0.5)
     ax.set_xlabel("Trend in GMST (K decade$^{-1}$)")
     ax.set_ylabel("Trend in SIA (million km$^2$ decade$^{-1}$)")
 
