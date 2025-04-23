@@ -24,31 +24,20 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def plotmaps_level2(input_data, grp):
     """Create map plots for pair of input data."""
-    var_units = {"tos": "degC", "pr": "mm/day", "tauu": "1e-3 N/m2"}
     fig = plt.figure(figsize=(18, 6))
     proj = ccrs.Orthographic(central_longitude=210.0)
     data_to_save = []
     for plt_pos, dataset in enumerate(input_data, start=121):
-        sname = dataset["short_name"]
-
         logger.info(
             "dataset: %s - %s",
             dataset["dataset"],
             dataset["long_name"],
         )
-
-        cube = iris.load_cube(dataset["filename"])
-        # convert units for different variables
-        cube = convert_units(cube, units=var_units[sname])
-        diag_label = sname.upper()
-        if len(cube.coords("month_number")) == 1:
-            cube = sea_cycle_stdev(cube)
-            diag_label = f"{sname.upper()} std"
+        cube, cbar_label = load_seacycle_stdev(dataset)
 
         # save data
         data_to_save.append(cube)
 
-        cbar_label = f"{diag_label} {var_units[sname]}"
         ax1 = plt.subplot(plt_pos, projection=proj)
         ax1.add_feature(cfeature.LAND, facecolor="gray")
         ax1.coastlines()
@@ -79,12 +68,23 @@ def plotmaps_level2(input_data, grp):
     return fig, data_to_save
 
 
-def sea_cycle_stdev(cube):
-    """Process seasonal cycle standard deviation."""
-    cube.coord("month_number").guess_bounds()
-    cube = cube.collapsed("month_number", iris.analysis.STD_DEV)
+def load_seacycle_stdev(dataset):
+    """Load, seasonal cycle std dev if required."""
+    var_units = {"tos": "degC", "pr": "mm/day", "tauu": "1e-3 N/m2"}
+    sname = dataset["short_name"]
+    cube = iris.load_cube(dataset["filename"])
+    # convert units for different variables
+    cube = convert_units(cube, units=var_units[sname])
 
-    return cube
+    diag_label = sname.upper()
+    if len(cube.coords("month_number")) == 1:
+        cube.coord("month_number").guess_bounds()
+        cube = cube.collapsed("month_number", iris.analysis.STD_DEV)
+        diag_label = f"{sname.upper()} std"
+
+    cbar_label = f"{diag_label} {var_units[sname]}"
+
+    return cube, cbar_label
 
 
 def provenance_record(var_grp, ancestor_files):
@@ -120,6 +120,18 @@ def provenance_record(var_grp, ancestor_files):
     return record
 
 
+def save_plotdata(plotdata, group, pairs, cfg):
+    """Save both obs and model plotted data."""
+    for i, cube in enumerate(plotdata):
+        data_prov = provenance_record(group, pairs[i]["filename"])
+        datafile = [
+            pairs[i]["dataset"],
+            pairs[i]["short_name"],
+            pairs[i]["preprocessor"],
+        ]
+        save_data("_".join(datafile), data_prov, cfg, cube)
+
+
 def main(cfg):
     """Run basic climatology diagnostic level 2 for each input dataset."""
     input_data = cfg["input_data"].values()
@@ -132,16 +144,16 @@ def main(cfg):
     )
     # for each select obs and iterate others, obs last
     for grp, var_attr in variable_groups.items():
-        # create pairs
         logger.info("%s : %d, %s", grp, len(var_attr), pformat(var_attr))
-        obs_data = var_attr[-1]
+        # create pairs, add obs first to list
+        pairs = [var_attr[-1]]
         prov = provenance_record(grp, list(cfg["input_data"].keys()))
         for metadata in var_attr:
             logger.info("iterate though datasets\n %s", pformat(metadata))
-            pairs = [obs_data]
             if metadata["project"] == "CMIP6":
                 pairs.append(metadata)
                 fig, data_cubes = plotmaps_level2(pairs, grp)
+                save_plotdata(data_cubes, grp, pairs, cfg)
                 filename = "_".join(
                     [
                         metadata["dataset"],
@@ -149,14 +161,6 @@ def main(cfg):
                         metadata["preprocessor"],
                     ],
                 )
-                for i, cube in enumerate(data_cubes):
-                    data_prov = provenance_record(grp, pairs[i]["filename"])
-                    datafile = [
-                        pairs[i]["dataset"],
-                        pairs[i]["short_name"],
-                        pairs[i]["preprocessor"],
-                    ]
-                    save_data("_".join(datafile), data_prov, cfg, cube)
                 save_figure(
                     filename,
                     prov,

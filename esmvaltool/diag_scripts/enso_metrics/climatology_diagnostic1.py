@@ -31,37 +31,14 @@ def plot_level1(input_data, cfg, provenance):
     plt.clf()
     obs_data, model_data = None, None
     figure = plt.figure(figsize=(10, 6), dpi=300)
-    var_units = {"tos": "degC", "pr": "mm/day", "tauu": "1e-3 N/m2"}
 
     for dataset in input_data:
-        sname = dataset["short_name"]
-
         logger.info(
             "dataset: %s - %s",
             dataset["dataset"],
             dataset["long_name"],
         )
-        # Load the data
-        cube = iris.load_cube(dataset["filename"])
-        # convert units for different variables
-        cube = convert_units(cube, units=var_units[sname])
-
-        title = f"Mean {dataset['long_name']}"
-        ylabel = f"{sname.upper()} ({cube.units})"
-        if len(cube.coords("month_number")) == 1:
-            cube = sea_cycle_month_stdev(cube, dataset["preprocessor"])
-            ylabel = f"{sname.upper()} std ({cube.units})"
-            title = f"{dataset['long_name']} seasonal cycle"
-
-        if (
-            dataset["project"] == "CMIP6"
-        ):  # group by models/ for each model with obs
-            qplt.plot(cube, label=dataset["dataset"])
-            model_data = cube.data
-        else:
-            qplt.plot(cube, label=f"ref: {dataset['dataset']}", color="black")
-            obs_data = cube.data
-
+        cube, title, ylabel = load_process_seacycle(dataset)
         # save data
         save_data(
             f"{dataset['dataset']}_{dataset['variable_group']}",
@@ -70,11 +47,15 @@ def plot_level1(input_data, cfg, provenance):
             cube,
         )
 
+        if dataset["project"] == "CMIP6":
+            qplt.plot(cube, label=dataset["dataset"])
+            model_data = cube.data
+        else:
+            qplt.plot(cube, label=f"ref: {dataset['dataset']}", color="black")
+            obs_data = cube.data
+
     rmse = np.sqrt(np.mean((obs_data - model_data) ** 2))
     filename = [input_data[1]["dataset"], input_data[1]["variable_group"]]
-    metricfile = get_diagnostic_filename("matrix", cfg, extension="csv")
-    with open(metricfile, "a+", encoding="utf-8") as fileo:
-        fileo.write(f"{filename[0]},{filename[1]},{rmse}\n")
 
     plt.title(title)
     plt.legend()
@@ -96,20 +77,32 @@ def plot_level1(input_data, cfg, provenance):
     else:
         plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(format_lon))
 
-    return figure, filename
+    return figure, filename, rmse
 
 
-def sea_cycle_month_stdev(cube, preproc):
-    """Process standard deviation for seasonal cycle."""
-    cube.coord("month_number").guess_bounds()
-    cube = cube.collapsed("month_number", iris.analysis.STD_DEV)
-    # ITCZ or zonal
-    if preproc.startswith("ITCZ"):
-        cube = zonal_statistics(cube, "mean")
-    else:
-        cube = meridional_statistics(cube, "mean")
+def load_process_seacycle(dataset):
+    """Load, standard deviation for seasonal cycle if req."""
+    var_units = {"tos": "degC", "pr": "mm/day", "tauu": "1e-3 N/m2"}
+    sname = dataset["short_name"]
+    cube = iris.load_cube(dataset["filename"])
+    # convert units for different variables
+    cube = convert_units(cube, units=var_units[sname])
 
-    return cube
+    title = f"Mean {dataset['long_name']}"
+    ylabel = f"{sname.upper()} ({cube.units})"
+    if len(cube.coords("month_number")) == 1:
+        cube.coord("month_number").guess_bounds()
+        cube = cube.collapsed("month_number", iris.analysis.STD_DEV)
+        # ITCZ or zonal
+        if dataset["preprocessor"].startswith("ITCZ"):
+            cube = zonal_statistics(cube, "mean")
+        else:
+            cube = meridional_statistics(cube, "mean")
+
+        ylabel = f"{sname.upper()} std ({cube.units})"
+        title = f"{dataset['long_name']} seasonal cycle"
+
+    return cube, title, ylabel
 
 
 def format_lat(x_val, _) -> str:
@@ -209,14 +202,13 @@ def main(cfg):
     # for each select obs and iterate others, obs last
     for grp, var_attr in variable_groups.items():
         logger.info("%s : %d, %s", grp, len(var_attr), pformat(var_attr))
-        obs_data = var_attr[-1]
+        pairs = [var_attr[-1]]  # obs to list
         prov = provenance_record(grp, list(cfg["input_data"].keys()))
         for metadata in var_attr:
             logger.info("iterate though datasets\n %s", pformat(metadata))
-            pairs = [obs_data]
             if metadata["project"] == "CMIP6":
                 pairs.append(metadata)
-                fig, filename = plot_level1(pairs, cfg, prov)
+                fig, filename, rmse = plot_level1(pairs, cfg, prov)
 
                 save_figure(
                     "_".join(filename),
@@ -227,6 +219,8 @@ def main(cfg):
                 )
     # write provenance for csv metrics
     metricfile = get_diagnostic_filename("matrix", cfg, extension="csv")
+    with open(metricfile, "a+", encoding="utf-8") as fileo:
+        fileo.write(f"{filename[0]},{filename[1]},{rmse}\n")
     prov = provenance_record("values", list(cfg["input_data"].keys()))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(metricfile, prov)

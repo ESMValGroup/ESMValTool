@@ -2,7 +2,6 @@
 
 import logging
 import os
-from pprint import pformat
 
 import iris
 import matplotlib.pyplot as plt
@@ -390,6 +389,59 @@ def compute(obs, mod):
     return abs((mod - obs) / obs) * 100
 
 
+def group_obs_models(obs, models, metric, var_preproc, metricfile, cfg):
+    """Group obs to models for metric computation."""
+    prov_record = get_provenance_record(
+        metric,
+        list(cfg["input_data"].keys()),
+    )
+    # obs datasets for each model
+    obs_datasets = {
+        dataset["variable_group"]: iris.load_cube(dataset["filename"])
+        for dataset in obs
+    }
+    # group models by dataset
+    for dataset, attributes in group_metadata(
+        models,
+        "dataset",
+        sort="project",
+    ).items():
+        logger.info(
+            "%s, dataset:%s",
+            metric,
+            dataset,
+        )
+
+        model_datasets = {
+            attr["variable_group"]: iris.load_cube(attr["filename"])
+            for attr in attributes
+        }
+        data_labels = [dataset, obs[0]["dataset"]]
+        value, fig, data = compute_enso_metrics(
+            [obs_datasets, model_datasets],
+            data_labels,
+            var_preproc,
+            metric,
+        )
+        # save returned cubes
+        for i, cube in enumerate(data):
+            save_data(f"{data_labels[i]}_{metric}", prov_record, cfg, cube)
+
+        if value:
+            with open(metricfile, "a+", encoding="utf-8") as fileo:
+                fileo.write(f"{dataset},{metric},{value}\n")
+
+            save_figure(
+                f"{dataset}_{metric}",
+                prov_record,
+                cfg,
+                figure=fig,
+                dpi=300,
+            )
+        # clear value,fig
+        value = None
+
+
 def get_provenance_record(metric, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     caption = {
@@ -485,58 +537,7 @@ def main(cfg):
                 project="CMIP6",
             )
 
-        prov_record = get_provenance_record(
-            metric,
-            list(cfg["input_data"].keys()),
-        )
-        # obs datasets for each model
-        obs_datasets = {
-            dataset["variable_group"]: iris.load_cube(dataset["filename"])
-            for dataset in obs
-        }
-
-        # group models by dataset
-
-        for dataset, attributes in group_metadata(
-            models,
-            "dataset",
-            sort="project",
-        ).items():
-            logger.info(
-                "%s, dataset:%s",
-                metric,
-                dataset,
-            )
-
-            model_datasets = {
-                attr["variable_group"]: iris.load_cube(attr["filename"])
-                for attr in attributes
-            }
-            logger.info(pformat(model_datasets))
-            data_labels = [dataset, obs[0]["dataset"]]
-            value, fig, data = compute_enso_metrics(
-                [obs_datasets, model_datasets],
-                data_labels,
-                var_preproc,
-                metric,
-            )
-            # save data, returned cubes
-            for i, cube in enumerate(data):
-                save_data(f"{data_labels[i]}_{metric}", prov_record, cfg, cube)
-
-            if value:
-                with open(metricfile, "a+", encoding="utf-8") as fileo:
-                    fileo.write(f"{dataset},{metric},{value}\n")
-
-                save_figure(
-                    f"{dataset}_{metric}",
-                    prov_record,
-                    cfg,
-                    figure=fig,
-                    dpi=300,
-                )
-            # clear value,fig
-            value = None
+        group_obs_models(obs, models, metric, var_preproc, metricfile, cfg)
 
     # write provenance for csv metrics
     prov = get_provenance_record("values", list(cfg["input_data"].keys()))
