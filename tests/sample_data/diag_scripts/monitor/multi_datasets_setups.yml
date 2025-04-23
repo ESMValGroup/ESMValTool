@@ -34,6 +34,7 @@
           tas_amon_1d_month_number_0:
             color: C1
         pyplot_kwargs:
+          suptitle: Suptitle
           xlabel: X Label
           xlim: [1, 100]
         show_y_minor_ticklabels: true
@@ -102,6 +103,7 @@
           tas_amon_1d_month_number_0:
             color: C1
         pyplot_kwargs:
+          suptitle: Suptitle
           xlabel: X Label
           xlim: [1, 100]
         show_x_minor_ticks: true
