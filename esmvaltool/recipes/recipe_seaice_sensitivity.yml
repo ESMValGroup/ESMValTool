@@ -91,7 +91,7 @@ preprocessors:
 
 diagnostics:
   arctic:
-    description: Plots September sea ice above 0 latitude in millions of square kilometres
+    description: Plots September sea ice sensitivity above 0 latitude in millions of square kilometres
     variables:
       siconc:
         preprocessor: pp_arctic_sept_sea_ice
@@ -104,7 +104,7 @@ diagnostics:
         script: seaice/seaice_sensitivity.py
 
   antarctic:
-    description: Plots annual mean sea ice below 0 latitude in millions of square kilometres
+    description: Plots annual mean sea ice sensitivity below 0 latitude in millions of square kilometres
     variables:
       siconc:
         preprocessor: pp_antarctic_avg_ann_sea_ice
