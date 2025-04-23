@@ -16,14 +16,14 @@
 
 .. _CMIP Documentation: https://www.wcrp-climate.org/wgcm-cmip
 .. _Cylc Documentation: https://cylc.github.io/cylc-doc/stable/html/index.html
-.. _Cylc ISO8601 Durations: https://cylc.github.io/cylc-doc/stable/html/tutorial/scheduling/datetime-cycling.html#iso8601-durations
 .. _Cylc Jinja2: https://cylc.github.io/cylc-doc/stable/html/user-guide/writing-workflows/jinja2.html
 .. _Cylc Review: https://cylc.github.io/cylc-doc/7.9.3/html/tutorial.html#viewing-suite-logs-in-a-web-browser-cylc-review
+.. _dkrz-recipes.jinja: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/recipe_test_workflow/site/dkrz-recipes.jinja
 .. _ESMValTool Documentation: https://esmvaltool.org/
 .. _ESMValTool issue #3663: https://github.com/ESMValGroup/ESMValTool/issues/3663
 .. _ESMValTool PR #3664: https://github.com/ESMValGroup/ESMValTool/pull/3664
+.. _jasmin-recipes.jinja: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/recipe_test_workflow/site/jasmin-recipes.jinja
 .. _Jinja2: https://jinja.palletsprojects.com/en/stable/
 .. _new ESMValTool issue: https://github.com/ESMValGroup/ESMValTool/issues/new
 .. _Rose Documentation: https://metomi.github.io/rose/doc/html/index.html
-.. _metoffice-recipes.cylc: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/recipe_test_workflow/site/metoffice-recipes.cylc
-.. _Slurm sbatch --mem: https://slurm.schedmd.com/sbatch.html#OPT_mem
+.. _metoffice-recipes.jinja: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/recipe_test_workflow/site/metoffice-recipes.jinja
