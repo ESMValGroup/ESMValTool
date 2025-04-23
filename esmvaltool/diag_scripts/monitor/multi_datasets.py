@@ -881,6 +881,7 @@ show_y_minor_ticklabels: bool, optional (default: False)
 
 from __future__ import annotations
 
+import inspect
 import logging
 import warnings
 from collections.abc import Callable
@@ -892,7 +893,6 @@ from typing import Any
 
 import cartopy.crs as ccrs
 import dask.array as da
-import inspect
 import iris
 import matplotlib as mpl
 import matplotlib.dates as mdates
@@ -1735,7 +1735,6 @@ class MultiDatasets(MonitorBase):
         )
 
         return axes
-
 
     @staticmethod
     def _fill_facet_placeholders(string, dataset, description):
@@ -3549,7 +3548,6 @@ class MultiDatasets(MonitorBase):
             self._add_stats(plot_type, axes, dataset)
         return fig
 
-
     def _plot_2d_data_3_panel(
         self,
         plot_type: str,
@@ -3672,7 +3670,7 @@ class MultiDatasets(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
 
         # Save one netCDF file per dataset
-        for (idx, dataset) in enumerate(datasets):
+        for idx, dataset in enumerate(datasets):
             netcdf_path = self._get_netcdf_path(plot_path, suffix=f"_{idx}")
             io.iris_save(dataset["cube"], netcdf_path)
             provenance_record["ancestors"] = [dataset["filename"]]
