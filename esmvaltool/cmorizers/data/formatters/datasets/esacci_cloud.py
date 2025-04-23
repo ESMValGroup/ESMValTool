@@ -47,36 +47,17 @@ def _create_nan_cube(cube, year, month, day):
     # Read dataset time unit and calendar from file
     dataset_time_unit = str(nan_cube.coord('time').units)
     dataset_time_calender = nan_cube.coord('time').units.calendar
-    ## Convert datetime
-    #if is_daily:
-    #    hrs = 12
-    #else:
-    #    hrs = 0
-    newtime = datetime(year=year, month=month, day=day)
-    #newtime = datetime(year=year, month=month, day=day,
-    #                   hour=hrs, minute=0, second=0, microsecond=0)
+    newtime = datetime(year=year, month=month, day=day,
+                       hour=12, minute=0, second=0, microsecond=0)
     newtime_num = cf_units.date2num(newtime, dataset_time_unit,
                                     dataset_time_calender)
     nan_cube.coord('time').points = float(newtime_num)
-
-    ## remove existing time bounds and create new bounds
-    #coord = nan_cube.coord('time')
-    #if is_daily:
-    #    bnd1 = newtime + relativedelta.relativedelta(hours=-12)
-    #    bnd2 = bnd1 + relativedelta.relativedelta(days=1)
-    #else:
-    #    bnd1 = newtime + relativedelta.relativedelta(days=-day + 1)
-    #    bnd2 = bnd1 + relativedelta.relativedelta(months=1)
-    #coord.bounds = [cf_units.date2num(bnd1, dataset_time_unit,
-    #                                  dataset_time_calender),
-    #                cf_units.date2num(bnd2, dataset_time_unit,
-    #                                  dataset_time_calender)]
 
     return nan_cube
 
 
 def _check_for_missing_dates(year0, year1, cube, cubes):
-    """Check for date which are missing in the cube and fill with NaNs."""
+    """Check for dates which are missing in the cube and fill with NaNs."""
     loop_date = datetime(year0, 1, 1)
     while loop_date <= datetime(year1, 12, 1):
         if loop_date not in cube.coord('time').cells():
@@ -96,20 +77,19 @@ def _extract_variable_daily(short_name, var, cfg, in_dir, out_dir, start_date,
     """Extract daily variable."""
 
     fill_cube = None
-    glob_attrs = cfg['attributes']
+    #glob_attrs = cfg['attributes']
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
 
     if not start_date:
-        start_date = datetime(glob_attrs['start_year_daily'], 1, 1)
+        start_date = datetime(cfg['start_year_daily'], 1, 1)
     if not end_date:
-        end_date = datetime(glob_attrs['end_year_daily'], 12, 31)
+        end_date = datetime(cfg['end_year_daily'], 12, 31)
 
     for year in range(start_date.year, end_date.year + 1):
 
         cubes = iris.cube.CubeList()
         cubes_day = iris.cube.CubeList()
         
-        #for month in range(start_date.month, end_date.month + 1):
         for month in range(1, 13):
             num_days = monthrange(year, month)[1]
             for iday in range(1, num_days + 1):
@@ -157,30 +137,40 @@ def _extract_variable_daily(short_name, var, cfg, in_dir, out_dir, start_date,
                                 daily_cube_day.data = da.ma.masked_where(
                                     daily_cube_ilum.core_data() > 1, daily_cube_day.core_data())
 
-                                cubes.append(daily_cube)
+                                if short_name in ['clt', 'ctp']:
+                                    logger.info("Append cube with variable %s", short_name)
+                                    cubes.append(daily_cube)
+
+                                logger.info("Append daylight cube with variable %s", short_name)
                                 cubes_day.append(daily_cube_day)
                             
                         except Exception as e:
                             logger.error("Error processing file '%s': %s", ifile, e)
+                
                 else:
-
                     logger.info("Fill missing day %s in month %s and year %s",
                                 iday, month, year)
-                    daily_cube = _create_nan_cube(fill_cube, year, month, iday)
+                    if short_name in ['clt', 'ctp']:
+                        daily_cube = _create_nan_cube(fill_cube, year, month, iday)
+                        cubes.append(daily_cube)
                     daily_cube_day = _create_nan_cube(fill_cube, year, month, iday)
-                    cubes.append(daily_cube)
-                    cubes_day.aeppend(daily_cube_day)
+                    cubes_day.append(daily_cube_day)
 
-        cube = cubes.concatenate_cube()
+        if short_name in ['clt', 'ctp']: 
+            cube = cubes.concatenate_cube()
         cube_day = cubes_day.concatenate_cube()
 
         logger.info("Building daily means")
         # Calc daily
-        cube = daily_statistics(cube)
+        if short_name in ['clt', 'ctp']:
+            cube = daily_statistics(cube)
+            cube.coord('time').points = [int(tpoint)+0.5 for tpoint in cube.coord('time').points]
         cube_day = daily_statistics(cube_day)
+        cube_day.coord('time').points = [int(tpoint)+0.5 for tpoint in cube_day.coord('time').points]
 
         # regridding from 0.05x0.05 to 0.5x0.5
-        cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
+        if short_name in ['clt', 'ctp']:
+            cube = regrid(cube, target_grid='0.5x0.5', scheme='area_weighted')
         cube_day = regrid(cube_day, target_grid='0.5x0.5', scheme='area_weighted')
 
         # Fix units
@@ -189,33 +179,35 @@ def _extract_variable_daily(short_name, var, cfg, in_dir, out_dir, start_date,
             cube_day.data = 100 * cube_day.core_data()
         else:
             if 'raw_units' in var:
-                cube.units = var['raw_units']
+                if short_name == 'ctp':
+                    cube.units = var['raw_units']
                 cube_day.units = var['raw_units']
-            cube.convert_units(cmor_info.units)
+            if short_name == 'ctp':
+                cube.convert_units(cmor_info.units)
             cube_day.convert_units(cmor_info.units)
 
-        # Fix metadata and  update version information
-        attrs = copy.deepcopy(cfg['attributes'])
-        attrs['mip'] = var['mip']
-        utils.set_global_atts(cube, attrs)
-
-        logger.info(attrs)
-
-        # Save variable
-        utils.save_variable(cube,
-                            short_name,
-                            out_dir,
-                            attrs,
-                            unlimited_dimensions=['time'])
+        if short_name in ['clt', 'ctp']:
+            cube = utils.fix_coords(cube)
+            # Fix metadata and  update version information
+            attrs = copy.deepcopy(cfg['attributes'])
+            attrs['mip'] = var['mip']
+            utils.set_global_atts(cube, attrs)
+            # Save variable
+            utils.save_variable(cube,
+                                short_name,
+                                out_dir,
+                                attrs,
+                                unlimited_dimensions=['time'])
         
         # Fix metadata and  update version information
+        cube_day = utils.fix_coords(cube_day)
         attrs_day = copy.deepcopy(cfg['attributes'])
         attrs_day['mip'] = var['mip']
-        attrs_day['version'] += '-day'
+        attrs_day['version'] += '-daylight'
         utils.set_global_atts(cube_day, attrs_day)
-
-        logger.info(attrs_day)
-
+        logger.info(cube_day.coord('time').points)
+        logger.info(cube_day)
+        # Save variable
         utils.save_variable(cube_day,
                             short_name,
                             out_dir,
@@ -227,13 +219,13 @@ def _extract_variable_monthly(short_name, var, cfg, in_dir, out_dir,
                               start_date, end_date):
     """Extract monthly variable with improved handling for multiple cubes."""
 
-    glob_attrs = cfg['attributes']
+    #glob_attrs = cfg['attributes']
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
 
     if not start_date:
-        start_date = datetime(glob_attrs['start_year_monthly'], 1, 1)
+        start_date = datetime(cfg['start_year_monthly'], 1, 1)
     if not end_date:
-        end_date = datetime(glob_attrs['end_year_monthly'], 12, 31)
+        end_date = datetime(cfg['end_year_monthly'], 12, 31)
 
     cubes_am = iris.cube.CubeList()
     cubes_pm = iris.cube.CubeList()
