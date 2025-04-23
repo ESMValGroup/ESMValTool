@@ -134,15 +134,11 @@ axes.xmargin:   .05
 axes.ymargin:   .05
 axes.zmargin:   .05
 axes.autolimit_mode: data
-polaraxes.grid:    True
-axes3d.grid:       True
-axes3d.automargin: False
+polaraxes.grid: True
+axes3d.grid:    True
 axes3d.xaxis.panecolor:    (0.95, 0.95, 0.95, 0.5)
 axes3d.yaxis.panecolor:    (0.90, 0.90, 0.90, 0.5)
 axes3d.zaxis.panecolor:    (0.925, 0.925, 0.925, 0.5)
-axes3d.mouserotationstyle: arcball
-axes3d.trackballsize: 0.667
-axes3d.trackballborder: 0.2
 xaxis.labellocation: center
 yaxis.labellocation: center
 date.autoformatter.year:        %Y
@@ -245,8 +241,7 @@ figure.constrained_layout.w_pad:  0.04167
 figure.constrained_layout.hspace: 0.02
 figure.constrained_layout.wspace: 0.02
 image.aspect:          equal
-image.interpolation:   auto
-image.interpolation_stage: auto
+image.interpolation:   antialiased
 image.cmap:            viridis
 image.lut:             256
 image.origin:          upper
@@ -289,7 +284,6 @@ pdf.inheritcolor:   False
 svg.image_inline: True
 svg.fonttype: path
 svg.hashsalt: None
-svg.id: None
 pgf.rcfonts: True
 pgf.preamble:
 pgf.texsystem: xelatex
