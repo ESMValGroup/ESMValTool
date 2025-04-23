@@ -505,8 +505,11 @@
   settings:
     facet_used_for_labels: alias
     group_variables_by: short_name
+    matplotlib_rc_params:
+      ytick.color: red
     plots:
       zonal_mean_profile:
+        aspect_ratio: 1.5
         cbar_label: Var
         cbar_label_bias: dVar
         cbar_kwargs:
@@ -514,7 +517,10 @@
         cbar_kwargs_bias:
           ticks: [-5, -2]
         common_cbar: true
-        fontsize: 8
+        fontsize: 4
+        gridline_kwargs:
+          color: blue
+        log_x: true
         log_y: false
         plot_func: contourf
         plot_kwargs:
@@ -525,20 +531,70 @@
           norm: centered
         pyplot_kwargs:
           suptitle: Suptitle
+          xlabel: X Label
+          ylabel: Y Label
+          xlim: [0, 100]
         rasterize: true
-        show_y_minor_ticklabels: true
-        x_pos_stats_avg: -0.2
+        show_x_minor_ticks: true
+        show_y_minor_ticks: true
+        x_major_formatter: "%d"
+        x_minor_formatter: "%d"
+        x_pos_stats_avg: 0.1
         x_pos_stats_bias: 1.2
-- input_data: [tas_amon_2d_alt16_lat_0.nc]
+        y_major_formatter: "%.3f"
+        y_minor_formatter: "%.4f"
+- input_data: [tas_amon_2d_alt16_lat_0.nc, tas_amon_2d_alt16_lat_1.nc]
   expected_pngs: [zonal_mean_profile_tas_tas_amon_2d_alt16_lat_0_Amon.png]
+  settings:
+    plots:
+      zonal_mean_profile:
+- input_data: [tas_amon_2d_plev_lat_2.nc]
+  expected_pngs: [zonal_mean_profile_tas_tas_amon_2d_plev_lat_2_Amon.png]
+  settings:
+    facet_used_for_labels: alias
+    group_variables_by: short_name
+    matplotlib_rc_params:
+      ytick.color: red
+    plots:
+      zonal_mean_profile:
+        aspect_ratio: 1.5
+        cbar_label: Var
+        cbar_kwargs:
+          ticks: [10, 12, 14]
+        common_cbar: true
+        fontsize: 6
+        gridline_kwargs:
+          color: blue
+        log_x: true
+        log_y: false
+        plot_func: contourf
+        plot_kwargs:
+          default:
+            cmap: YlOrRd
+        pyplot_kwargs:
+          suptitle: Suptitle
+          xlabel: X Label
+          ylabel: Y Label
+          xlim: [0, 100]
+        rasterize: true
+        show_x_minor_ticks: true
+        show_y_minor_ticks: true
+        x_major_formatter: "%d"
+        x_minor_formatter: "%d"
+        x_pos_stats_avg: 0.1
+        y_major_formatter: "%.3f"
+        y_minor_formatter: "%.4f"
+- input_data: [tas_amon_2d_alt16_lat_2.nc]
+  expected_pngs: [zonal_mean_profile_tas_tas_amon_2d_alt16_lat_2_Amon.png]
   settings:
     plots:
       zonal_mean_profile:
         plot_func: pcolormesh
         plot_kwargs:
           default:
-            vmin: -1
-            vmax: 12
+            vmin: -21
+            vmax: -1
         show_stats: false
         show_y_minor_ticks: true
+        transpose_axes: true
         y_minor_formatter: ""
