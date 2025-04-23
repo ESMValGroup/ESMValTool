@@ -2,7 +2,7 @@
 ---
 start_year_monthly: 1982
 end_year_monthly: 2016
-start_year_daily: 2003  
+start_year_daily: 2003
 end_year_daily: 2007
 
 # Common global attributes for Cmorizer output
@@ -69,7 +69,7 @@ variables:
   #   mip: Amon
   #   raw: lwp_allsky
   #   raw_units: g/m2
-  #   file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'    
+  #   file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
   # clivi_mon:
   #   short_name: clivi
   #   mip: Amon
@@ -123,10 +123,10 @@ variables:
   #   mip: Amon
   #   raw: boa_swup
   #   raw_units: W m-2
-  #   file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'                         
+  #   file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
   # rsuscs_mon:
   #   short_name: rsuscs
   #   mip: Amon
   #   raw: boa_swup_clr
   #   raw_units: W m-2
-  #   file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc' 
+  #   file: '-ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
