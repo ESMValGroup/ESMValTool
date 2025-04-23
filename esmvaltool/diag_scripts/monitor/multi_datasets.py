@@ -971,8 +971,9 @@ class MultiDatasets(MonitorBase):
             "cbar_kwargs_bias": {},
             "common_cbar": False,
             "fontsize": None,
+            "gridline_kwargs": False,
             "log_x": False,
-            "log_y": True,
+            "log_y": False,
             "plot_func": "contourf",
             "plot_kwargs": {},
             "plot_kwargs_bias": {},
@@ -993,19 +994,17 @@ class MultiDatasets(MonitorBase):
 
         # Keys for each plot type:
         # - function: function used to create plot.
-        # - dimensions: expected dimensional coordinates for input data.
+        # - coords: expected dimensional coordinates for input data.
         # - provenance: information for provenance tracking.
         # - pyplot_kwargs: additional calls to pyplot functions. Will always be
         #   run, but may be overwritten by user-defined `pyplot_kwargs` given
         #   under `default_settings`.
-        # - type: type of plot function; must be one of
-        #   `one_plot_per_variable`, `one_plot_per_dataset`, `one_plot_total`.
         # - default_settings: allowed user-defined settings in recipe and their
         #   default values.
         plot_settings = {
             "1d_profile": {
                 "function": partial(self.create_1d_plot, "1d_profile"),
-                "dimensions": (["air_pressure"], ["altitude"]),
+                "coords": (["air_pressure"], ["altitude"]),
                 "provenance": {
                     "authors": ["schlund_manuel", "winterstein_franziska"],
                     "caption": (
@@ -1015,7 +1014,6 @@ class MultiDatasets(MonitorBase):
                     "plot_types": ["line"],
                 },
                 "pyplot_kwargs": {},
-                "type": "one_plot_per_variable",
                 "default_settings": {
                     **default_settings_1d,
                     "aspect_ratio": 1.5,
@@ -1025,7 +1023,7 @@ class MultiDatasets(MonitorBase):
             },
             "annual_cycle": {
                 "function": partial(self.create_1d_plot, "annual_cycle"),
-                "dimensions": (["month_number"],),
+                "coords": (["month_number"],),
                 "provenance": {
                     "authors": ["schlund_manuel"],
                     "caption": (
@@ -1040,7 +1038,6 @@ class MultiDatasets(MonitorBase):
                         "labels": [str(m) for m in range(1, 13)],
                     },
                 },
-                "type": "one_plot_per_variable",
                 "default_settings": {**default_settings_1d},
             },
             "benchmarking_annual_cycle": {
@@ -1048,7 +1045,7 @@ class MultiDatasets(MonitorBase):
                     self.create_1d_benchmarking_plot,
                     "benchmarking_annual_cycle",
                 ),
-                "dimensions": (["month_number"],),
+                "coords": (["month_number"],),
                 "provenance": {
                     "authors": ["lauer_axel", "schlund_manuel"],
                     "caption": (
@@ -1063,19 +1060,17 @@ class MultiDatasets(MonitorBase):
                         "labels": [str(m) for m in range(1, 13)],
                     },
                 },
-                "type": "one_plot_per_variable",
                 "default_settings": {**default_settings_1d},
             },
             "benchmarking_boxplot": {
                 "function": self.create_benchmarking_boxplot,
-                "dimensions": ([],),
+                "coords": ([],),
                 "provenance": {
                     "authors": ["bock_lisa", "schlund_manuel"],
                     "caption": "Boxplot.",
                     "plot_types": ["box"],
                 },
                 "pyplot_kwargs": {},
-                "type": "one_plot_total",
                 "default_settings": {
                     "fontsize": None,
                     "plot_kwargs": {},
@@ -1095,7 +1090,7 @@ class MultiDatasets(MonitorBase):
                     self.create_1d_benchmarking_plot,
                     "benchmarking_diurnal_cycle",
                 ),
-                "dimensions": (["hour"],),
+                "coords": (["hour"],),
                 "provenance": {
                     "authors": ["lauer_axel", "schlund_manuel"],
                     "caption": (
@@ -1110,19 +1105,17 @@ class MultiDatasets(MonitorBase):
                         "minor": True,
                     },
                 },
-                "type": "one_plot_per_variable",
                 "default_settings": {**default_settings_1d},
             },
             "benchmarking_map": {
                 "function": self.create_benchmarking_map_plot,
-                "dimensions": (["latitude", "longitude"],),
+                "coords": (["latitude", "longitude"],),
                 "provenance": {
                     "authors": ["lauer_axel", "schlund_manuel"],
                     "caption": "Map plot of {long_name} of dataset {alias}.",
                     "plot_types": ["map"],
                 },
                 "pyplot_kwargs": {},
-                "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
                     "cbar_kwargs": {"orientation": "horizontal", "aspect": 30},
@@ -1137,7 +1130,7 @@ class MultiDatasets(MonitorBase):
                     self.create_1d_benchmarking_plot,
                     "benchmarking_timeseries",
                 ),
-                "dimensions": (["time"],),
+                "coords": (["time"],),
                 "provenance": {
                     "authors": ["lauer_axel", "schlund_manuel"],
                     "caption": (
@@ -1148,12 +1141,11 @@ class MultiDatasets(MonitorBase):
                 "pyplot_kwargs": {
                     "xlabel": "time",
                 },
-                "type": "one_plot_per_variable",
                 "default_settings": {**default_settings_1d},
             },
             "benchmarking_zonal": {
                 "function": self.create_benchmarking_zonal_plot,
-                "dimensions": (
+                "coords": (
                     ["latitude", "air_pressure"],
                     ["latitude", "altitude"],
                 ),
@@ -1165,7 +1157,6 @@ class MultiDatasets(MonitorBase):
                     "plot_types": ["vert"],
                 },
                 "pyplot_kwargs": {},
-                "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
                     "cbar_kwargs": {"orientation": "vertical"},
@@ -1179,7 +1170,7 @@ class MultiDatasets(MonitorBase):
             },
             "diurnal_cycle": {
                 "function": partial(self.create_1d_plot, "diurnal_cycle"),
-                "dimensions": (["hour"],),
+                "coords": (["hour"],),
                 "provenance": {
                     "authors": ["lauer_axel", "schlund_manuel"],
                     "caption": (
@@ -1194,12 +1185,11 @@ class MultiDatasets(MonitorBase):
                         "minor": True,
                     },
                 },
-                "type": "one_plot_per_variable",
                 "default_settings": {**default_settings_1d},
             },
             "hovmoeller_anncyc_vs_lat_or_lon": {
                 "function": self.create_hovmoeller_anncyc_vs_lat_or_lon_plot,
-                "dimensions": (
+                "coords": (
                     ["month_number", "latitude"],
                     ["month_number", "longitude"],
                 ),
@@ -1211,7 +1201,6 @@ class MultiDatasets(MonitorBase):
                     "plot_types": ["zonal"],
                 },
                 "pyplot_kwargs": {},
-                "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
                     "cbar_label_bias": "Δ{short_name} [{units}]",
@@ -1231,7 +1220,7 @@ class MultiDatasets(MonitorBase):
             },
             "hovmoeller_time_vs_lat_or_lon": {
                 "function": self.create_hovmoeller_time_vs_lat_or_lon_plot,
-                "dimensions": (["time", "latitude"], ["time", "longitude"]),
+                "coords": (["time", "latitude"], ["time", "longitude"]),
                 "provenance": {
                     "authors": [
                         "schlund_manuel",
@@ -1244,7 +1233,6 @@ class MultiDatasets(MonitorBase):
                     "plot_types": ["zonal"],
                 },
                 "pyplot_kwargs": {},
-                "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
                     "cbar_label_bias": "Δ{short_name} [{units}]",
@@ -1265,7 +1253,7 @@ class MultiDatasets(MonitorBase):
             },
             "hovmoeller_z_vs_time": {
                 "function": self.create_hovmoeller_z_vs_time_plot,
-                "dimensions": (["time", "air_pressure"], ["time", "altitude"]),
+                "coords": (["time", "air_pressure"], ["time", "altitude"]),
                 "provenance": {
                     "authors": [
                         "kuehbacher_birgit",
@@ -1278,7 +1266,6 @@ class MultiDatasets(MonitorBase):
                     "plot_types": ["vert"],
                 },
                 "pyplot_kwargs": {},
-                "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
                     "cbar_label_bias": "Δ{short_name} [{units}]",
@@ -1301,14 +1288,13 @@ class MultiDatasets(MonitorBase):
             },
             "map": {
                 "function": self.create_map_plot,
-                "dimensions": (["latitude", "longitude"],),
+                "coords": (["latitude", "longitude"],),
                 "provenance": {
                     "authors": ["schlund_manuel"],
                     "caption": "Map plot of {long_name} of dataset {alias}.",
                     "plot_types": ["map"],
                 },
                 "pyplot_kwargs": {},
-                "type": "one_plot_per_dataset",
                 "default_settings": {
                     "cbar_label": "{short_name} [{units}]",
                     "cbar_label_bias": "Δ{short_name} [{units}]",
@@ -1331,7 +1317,7 @@ class MultiDatasets(MonitorBase):
             },
             "timeseries": {
                 "function": partial(self.create_1d_plot, "timeseries"),
-                "dimensions": (["time"],),
+                "coords": (["time"],),
                 "provenance": {
                     "authors": ["schlund_manuel"],
                     "caption": (
@@ -1342,12 +1328,11 @@ class MultiDatasets(MonitorBase):
                 "pyplot_kwargs": {
                     "xlabel": "time",
                 },
-                "type": "one_plot_per_variable",
                 "default_settings": {**default_settings_1d},
             },
             "variable_vs_lat": {
                 "function": partial(self.create_1d_plot, "variable_vs_lat"),
-                "dimensions": (["latitude"],),
+                "coords": (["latitude"],),
                 "provenance": {
                     "authors": ["sarauer_ellen", "schlund_manuel"],
                     "caption": (
@@ -1358,12 +1343,11 @@ class MultiDatasets(MonitorBase):
                 "pyplot_kwargs": {
                     "xlabel": "latitude [°N]",
                 },
-                "type": "one_plot_per_variable",
                 "default_settings": {**default_settings_1d},
             },
             "zonal_mean_profile": {
-                "function": self.create_zonal_mean_profile_plot,
-                "dimensions": (
+                "function": partial(self.create_2d_plot, "zonal_mean_profile"),
+                "coords": (
                     ["latitude", "air_pressure"],
                     ["latitude", "altitude"],
                 ),
@@ -1374,9 +1358,13 @@ class MultiDatasets(MonitorBase):
                     ),
                     "plot_types": ["vert"],
                 },
-                "pyplot_kwargs": {},
-                "type": "one_plot_per_dataset",
-                "default_settings": {**default_settings_2d},
+                "pyplot_kwargs": {
+                    "xlabel": "latitude [°N]",
+                },
+                "default_settings": {
+                    **default_settings_2d,
+                    "log_y": True,
+                },
             },
         }
 
@@ -1618,9 +1606,9 @@ class MultiDatasets(MonitorBase):
             r2_val,
         )
 
-    def _check_cube_dimensions(self, cube: Cube, plot_type: str) -> list[str]:
-        """Check that cube has correct dimensional variables."""
-        expected_dimensions = self.plot_settings[plot_type]["dimensions"]
+    def _check_cube_coords(self, cube: Cube, plot_type: str) -> list[str]:
+        """Check that cube has correct dimensional coordinates."""
+        expected_dimensions = self.plot_settings[plot_type]["coords"]
         for dims in expected_dimensions:
             cube_dims = [cube.coords(dim, dim_coords=True) for dim in dims]
             if all(cube_dims) and cube.ndim == len(dims):
@@ -1653,9 +1641,7 @@ class MultiDatasets(MonitorBase):
         # Axes styles
         if self.plots[plot_type]["log_x"]:
             axes.set_xscale("log")
-            axes.get_xaxis().set_major_locator(
-                LogLocator(base=10.0, numticks=12),
-            )
+            axes.get_xaxis().set_major_formatter(FormatStrFormatter("%.1f"))
             x_minor_locator = LogLocator(
                 base=10.0,
                 subs=np.arange(1.0, 10.0) * 0.1,
@@ -1666,9 +1652,7 @@ class MultiDatasets(MonitorBase):
 
         if self.plots[plot_type]["log_y"]:
             axes.set_yscale("log")
-            axes.get_yaxis().set_major_locator(
-                LogLocator(base=10.0, numticks=12),
-            )
+            axes.get_yaxis().set_major_formatter(FormatStrFormatter("%.1f"))
             y_minor_locator = LogLocator(
                 base=10.0,
                 subs=np.arange(1.0, 10.0) * 0.1,
@@ -1737,7 +1721,11 @@ class MultiDatasets(MonitorBase):
         return axes
 
     @staticmethod
-    def _fill_facet_placeholders(string, dataset, description):
+    def _fill_facet_placeholders(
+        string: str,
+        dataset: dict,
+        description: str,
+    ) -> str:
         """Fill facet placeholders."""
         try:
             string = string.format(**dataset)
@@ -1857,11 +1845,30 @@ class MultiDatasets(MonitorBase):
 
     def _get_bias_dataset(self, dataset_1: dict, dataset_2: dict) -> dict:
         """Get bias dataset (dataset_1 - dataset_2)."""
+        bias_cube = dataset_1["cube"] - dataset_2["cube"]
+        bias_cube.metadata = dataset_1["cube"].metadata
+        bias_cube.var_name = (
+            None
+            if bias_cube.var_name is None
+            else f"bias_{bias_cube.var_name}"
+        )
+        bias_cube.long_name = (
+            None
+            if bias_cube.long_name is None
+            else f"Bias in {bias_cube.long_name}"
+        )
+
         dataset_bias = deepcopy(dataset_1)
-        dataset_bias["cube"] = dataset_1["cube"] - dataset_2["cube"]
+        dataset_bias["cube"] = bias_cube
         dataset_bias[self.cfg["facet_used_for_labels"]] = (
             f"{self._get_label(dataset_1)} - {self._get_label(dataset_2)}"
         )
+        dataset_bias["ancestors"] = [
+            dataset_1["filename"],
+            dataset_2["filename"],
+        ]
+
+        return dataset_bias
 
     def _get_cbar_kwargs(self, plot_type: str, *, bias: bool = False) -> dict:
         """Get colorbar kwargs."""
@@ -2010,12 +2017,12 @@ class MultiDatasets(MonitorBase):
     def _get_provenance_record(
         self,
         plot_type: str,
-        dataset: dict,
+        representative_dataset: dict,
         datasets: list[dict],
     ) -> dict:
         """Get provenancen record."""
         provenance_record = {
-            "ancestors": list({d["filename"] for d in datasets}),
+            "ancestors": list({a for d in datasets for a in d["ancestors"]}),
             "long_names": list({d["long_name"] for d in datasets}),
         }
         provenance_record.update(self.plot_settings[plot_type]["provenance"])
@@ -2023,7 +2030,7 @@ class MultiDatasets(MonitorBase):
             if isinstance(prov_val, str):
                 provenance_record[prov_key] = self._fill_facet_placeholders(
                     prov_val,
-                    dataset,
+                    representative_dataset,
                     f"provenance {prov_key} of {plot_type} '{prov_val}'",
                 )
         return provenance_record
@@ -2111,6 +2118,9 @@ class MultiDatasets(MonitorBase):
 
             dataset["cube"] = cube
 
+            # Save ancestors
+            dataset["ancestors"] = [filename]
+
         return input_data
 
     def _plot_map_with_ref(self, plot_func, dataset, ref_dataset):
@@ -2125,8 +2135,6 @@ class MultiDatasets(MonitorBase):
         # Make sure that the data has the correct dimensions
         cube = dataset["cube"]
         ref_cube = ref_dataset["cube"]
-        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
-        dim_coords_ref = self._check_cube_dimensions(ref_cube, plot_type)
 
         # Create single figure with multiple axes
         fig = plt.figure(**self.cfg["figure_kwargs"])
@@ -2279,7 +2287,6 @@ class MultiDatasets(MonitorBase):
 
         # Make sure that the data has the correct dimensions
         cube = dataset["cube"]
-        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
 
         # Create plot with desired settings
         fig = plt.figure(**self.cfg["figure_kwargs"])
@@ -2336,221 +2343,6 @@ class MultiDatasets(MonitorBase):
 
         return (plot_path, {netcdf_path: cube})
 
-    def _plot_zonal_mean_profile_with_ref(
-        self,
-        plot_func,
-        dataset,
-        ref_dataset,
-    ):
-        """Plot zonal mean profile for single dataset with reference."""
-        plot_type = "zonal_mean_profile"
-        logger.info(
-            "Plotting zonal mean profile with reference dataset '%s' for '%s'",
-            self._get_label(ref_dataset),
-            self._get_label(dataset),
-        )
-
-        # Make sure that the data has the correct dimensions
-        cube = dataset["cube"]
-        ref_cube = ref_dataset["cube"]
-        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
-        dim_coords_ref = self._check_cube_dimensions(ref_cube, plot_type)
-
-        # Create single figure with multiple axes
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        gridspec = GridSpec(
-            5,
-            4,
-            figure=fig,
-            height_ratios=[1.0, 1.0, 0.4, 1.0, 1.0],
-        )
-
-        # Options used for all subplots
-        plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-        fontsize = (
-            self.plots[plot_type]["fontsize"] or mpl.rcParams["axes.labelsize"]
-        )
-
-        # Plot dataset (top left)
-        axes_data = fig.add_subplot(gridspec[0:2, 0:2])
-        plot_kwargs["axes"] = axes_data
-        plot_data = plot_func(cube, **plot_kwargs)
-        axes_data.set_title(self._get_label(dataset), pad=3.0)
-        z_coord = cube.coord(axis="Z")
-        axes_data.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
-        if self.plots[plot_type]["log_y"]:
-            axes_data.set_yscale("log")
-            axes_data.get_yaxis().set_major_formatter(
-                FormatStrFormatter("%.1f"),
-            )
-        if self.plots[plot_type]["y_minor_formatter"] is not None:
-            axes_data.get_yaxis().set_minor_locator(AutoMinorLocator())
-            axes_data.get_yaxis().set_minor_formatter(
-                FormatStrFormatter(self.plots[plot_type]["y_minor_formatter"]),
-            )
-        else:
-            axes_data.get_yaxis().set_minor_formatter(NullFormatter())
-        self._add_stats(plot_type, axes_data, dataset)
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"],
-            dataset,
-        )
-
-        # Plot reference dataset (top right)
-        # Note: make sure to use the same vmin and vmax than the top left
-        # plot if a common colorbar is desired
-        axes_ref = fig.add_subplot(
-            gridspec[0:2, 2:4],
-            sharex=axes_data,
-            sharey=axes_data,
-        )
-        plot_kwargs["axes"] = axes_ref
-        if self.plots[plot_type]["common_cbar"]:
-            plot_kwargs.setdefault("vmin", plot_data.get_clim()[0])
-            plot_kwargs.setdefault("vmax", plot_data.get_clim()[1])
-        plot_ref = plot_func(ref_cube, **plot_kwargs)
-        axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
-        plt.setp(axes_ref.get_yticklabels(), visible=False)
-        self._add_stats(plot_type, axes_ref, ref_dataset)
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"],
-            ref_dataset,
-        )
-
-        # Add colorbar(s)
-        self._add_colorbar(
-            plot_type,
-            plot_data,
-            axes_data,
-            dataset,
-            plot_ref,
-            axes_ref,
-            ref_dataset,
-        )
-
-        # Plot bias (bottom center)
-        bias_cube = cube - ref_cube
-        axes_bias = fig.add_subplot(
-            gridspec[3:5, 1:3],
-            sharex=axes_data,
-            sharey=axes_data,
-        )
-        plot_kwargs_bias = self._get_plot_kwargs(plot_type, dataset, bias=True)
-        plot_kwargs_bias["axes"] = axes_bias
-        plot_bias = plot_func(bias_cube, **plot_kwargs_bias)
-        axes_bias.set_title(
-            f"{self._get_label(dataset)} - {self._get_label(ref_dataset)}",
-            pad=3.0,
-        )
-        axes_bias.set_xlabel("latitude [°N]")
-        axes_bias.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
-        cbar_kwargs_bias = self._get_cbar_kwargs(plot_type, bias=True)
-        cbar_bias = fig.colorbar(plot_bias, ax=axes_bias, **cbar_kwargs_bias)
-        cbar_bias.set_label(
-            self._get_cbar_label(plot_type, dataset, bias=True),
-            fontsize=fontsize,
-        )
-        cbar_bias.ax.tick_params(labelsize=fontsize)
-        self._add_stats(
-            plot_type,
-            axes_bias,
-            dataset,
-            ref_dataset,
-        )
-
-        # Customize plot
-        fig.suptitle(dataset["long_name"])
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"],
-            ref_dataset,
-        )
-
-        # Rasterization
-        if self.plots[plot_type]["rasterize"]:
-            self._set_rasterized([axes_data, axes_ref, axes_bias])
-
-        # File paths
-        plot_path = self.get_plot_path(plot_type, dataset)
-        netcdf_path = get_diagnostic_filename(
-            Path(plot_path).stem + "_{pos}",
-            self.cfg,
-        )
-        netcdf_paths = {
-            netcdf_path.format(pos="top_left"): cube,
-            netcdf_path.format(pos="top_right"): ref_cube,
-            netcdf_path.format(pos="bottom"): bias_cube,
-        }
-
-        return (plot_path, netcdf_paths)
-
-    def _plot_zonal_mean_profile_without_ref(self, plot_func, dataset):
-        """Plot zonal mean profile for single dataset without reference."""
-        plot_type = "zonal_mean_profile"
-        logger.info(
-            "Plotting zonal mean profile without reference dataset for '%s'",
-            self._get_label(dataset),
-        )
-
-        # Make sure that the data has the correct dimensions
-        cube = dataset["cube"]
-        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
-
-        # Create plot with desired settings
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot()
-        plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-        plot_kwargs["axes"] = axes
-        plot_zonal_mean_profile = plot_func(cube, **plot_kwargs)
-
-        # Print statistics if desired
-        self._add_stats(plot_type, axes, dataset)
-
-        # Setup colorbar
-        fontsize = (
-            self.plots[plot_type]["fontsize"] or mpl.rcParams["axes.labelsize"]
-        )
-        colorbar = fig.colorbar(
-            plot_zonal_mean_profile,
-            ax=axes,
-            **self._get_cbar_kwargs(plot_type),
-        )
-        colorbar.set_label(
-            self._get_cbar_label(plot_type, dataset),
-            fontsize=fontsize,
-        )
-        colorbar.ax.tick_params(labelsize=fontsize)
-
-        # Customize plot
-        axes.set_title(self._get_label(dataset))
-        fig.suptitle(dataset["long_name"])
-        axes.set_xlabel("latitude [°N]")
-        z_coord = cube.coord(axis="Z")
-        axes.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
-        if self.plots[plot_type]["log_y"]:
-            axes.set_yscale("log")
-            axes.get_yaxis().set_major_formatter(FormatStrFormatter("%.1f"))
-        if self.plots[plot_type]["y_minor_formatter"] is not None:
-            axes.get_yaxis().set_minor_locator(AutoMinorLocator())
-            axes.get_yaxis().set_minor_formatter(
-                FormatStrFormatter(self.plots[plot_type]["y_minor_formatter"]),
-            )
-        else:
-            axes.get_yaxis().set_minor_formatter(NullFormatter())
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"],
-            dataset,
-        )
-
-        # Rasterization
-        if self.plots[plot_type]["rasterize"]:
-            self._set_rasterized([axes])
-
-        # File paths
-        plot_path = self.get_plot_path(plot_type, dataset)
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-
-        return (plot_path, {netcdf_path: cube})
-
     def _plot_hovmoeller_z_vs_time_without_ref(self, plot_func, dataset):
         """Plot Hovmoeller Z vs. time for single dataset without reference."""
         plot_type = "hovmoeller_z_vs_time"
@@ -2562,7 +2354,6 @@ class MultiDatasets(MonitorBase):
 
         # Make sure that the data has the correct dimensions
         cube = dataset["cube"]
-        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
 
         # Create plot with desired settings
         fig = plt.figure(**self.cfg["figure_kwargs"])
@@ -2642,8 +2433,6 @@ class MultiDatasets(MonitorBase):
         # Make sure that the data has the correct dimensions
         cube = dataset["cube"]
         ref_cube = ref_dataset["cube"]
-        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
-        dim_coords_ref = self._check_cube_dimensions(ref_cube, plot_type)
 
         # Create single figure with multiple axes
         fig = plt.figure(**self.cfg["figure_kwargs"])
@@ -2793,8 +2582,8 @@ class MultiDatasets(MonitorBase):
         # Make sure that the data has the correct dimensions
         cube = dataset["cube"]
         ref_cube = ref_dataset["cube"]
-        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
-        self._check_cube_dimensions(ref_cube, plot_type)
+        dim_coords_dat = self._check_cube_coords(cube, plot_type)
+        self._check_cube_coords(ref_cube, plot_type)
         if "latitude" in dim_coords_dat:
             non_time_label = "latitude [°N]"
         else:
@@ -2939,7 +2728,7 @@ class MultiDatasets(MonitorBase):
 
         # Make sure that the data has the correct dimensions
         cube = dataset["cube"]
-        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
+        dim_coords_dat = self._check_cube_coords(cube, plot_type)
         if "latitude" in dim_coords_dat:
             non_time_label = "latitude [°N]"
         else:
@@ -3023,8 +2812,8 @@ class MultiDatasets(MonitorBase):
         # Make sure that the data has the correct dimensions
         cube = dataset["cube"]
         ref_cube = ref_dataset["cube"]
-        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
-        self._check_cube_dimensions(ref_cube, plot_type)
+        dim_coords_dat = self._check_cube_coords(cube, plot_type)
+        self._check_cube_coords(ref_cube, plot_type)
         if "latitude" in dim_coords_dat:
             non_time_label = "latitude [°N]"
         else:
@@ -3163,7 +2952,7 @@ class MultiDatasets(MonitorBase):
 
         # Make sure that the data has the correct dimensions
         cube = dataset["cube"]
-        dim_coords_dat = self._check_cube_dimensions(cube, plot_type)
+        dim_coords_dat = self._check_cube_coords(cube, plot_type)
         if "latitude" in dim_coords_dat:
             non_time_label = "latitude [°N]"
         else:
@@ -3460,7 +3249,7 @@ class MultiDatasets(MonitorBase):
         for dataset in datasets:
             label = self._get_label(dataset)
             cube = dataset["cube"]
-            coords = self._check_cube_dimensions(cube, plot_type)
+            coords = self._check_cube_coords(cube, plot_type)
             coord = cube.coord(coords[0], dim_coords=True)
             coord_label = f"{coord.name()} [{coord.units}]"
 
@@ -3508,7 +3297,7 @@ class MultiDatasets(MonitorBase):
 
         # Get data to plot
         cube = dataset["cube"]
-        coords = self._check_cube_dimensions(cube, plot_type)
+        coords = self._check_cube_coords(cube, plot_type)
         if self.plots[plot_type]["transpose_axes"]:
             x_coord = cube.coord(coords[1], dim_coords=True)
             y_coord = cube.coord(coords[0], dim_coords=True)
@@ -3521,11 +3310,12 @@ class MultiDatasets(MonitorBase):
         plot_kwargs = self._get_plot_kwargs(plot_type, dataset, bias=bias)
         plot_kwargs.update(additional_plot_kwargs)
         plot_kwargs["axes"] = axes
-        plot_output = plot_func(x_coord, y_coord, cube, **plot_kwargs)
+        plot_kwargs["coords"] = [x_coord, y_coord]
+        plot_output = plot_func(cube, **plot_kwargs)
 
         # Title and axis labels
         fig.suptitle(dataset["long_name"])
-        axes.set_title(self._get_label(dataset), pad=3.0)
+        axes.set_title(self._get_label(dataset))
         axes.set_xlabel(f"{x_coord.name()} [{x_coord.units}]")
         axes.set_ylabel(f"{y_coord.name()} [{y_coord.units}]")
 
@@ -3566,7 +3356,7 @@ class MultiDatasets(MonitorBase):
 
         # Plot top left panel
         axes_left = fig.add_subplot(gridspec[0:2, 0:2])
-        plot_left = self._plot_2d_datal(plot_type, dataset_left, axes_left)
+        plot_left = self._plot_2d_data(plot_type, dataset_left, axes_left)
 
         # Plot top right panel
         # Note: make sure to use the same vmin and vmax than the top left plot
@@ -3581,9 +3371,11 @@ class MultiDatasets(MonitorBase):
             additional_plot_kwargs.setdefault("vmin", plot_left.get_clim()[0])
             additional_plot_kwargs.setdefault("vmax", plot_left.get_clim()[1])
         plot_right = self._plot_2d_data(
-            plot_type, dataset_right, axes_right, **additional_plot_kwargs
+            plot_type,
+            dataset_right,
+            axes_right,
+            **additional_plot_kwargs,
         )
-        plt.setp(axes_right.get_yticklabels(), visible=False)
 
         # Colorbar(s) for top plots
         self._add_colorbar(
@@ -3604,17 +3396,35 @@ class MultiDatasets(MonitorBase):
         )
         dataset_bottom = self._get_bias_dataset(dataset_left, dataset_right)
         plot_bottom = self._plot_2d_data(
-            plot_type, dataset_bottom, axes_bottom, bias=True
+            plot_type,
+            dataset_bottom,
+            axes_bottom,
+            bias=True,
         )
-        self._add_colorbar(plot_type, plot_bottom, axes_bottom, bias=True)
+        self._add_colorbar(
+            plot_type,
+            plot_bottom,
+            axes_bottom,
+            dataset_bottom,
+            bias=True,
+        )
 
         # Show statistics if desired
         if self.plots[plot_type]["show_stats"]:
             self._add_stats(plot_type, axes_left, dataset_left)
             self._add_stats(plot_type, axes_right, dataset_right)
             self._add_stats(
-                plot_type, axes_bottom, dataset_left, dataset_right
+                plot_type,
+                axes_bottom,
+                dataset_left,
+                dataset_right,
             )
+
+        # Hide superfluous axis labels
+        plt.setp(axes_right.get_yticklabels(which="both"), visible=False)
+        axes_left.set_xlabel("")
+        axes_right.set_xlabel("")
+        axes_right.set_ylabel("")
 
         return fig
 
@@ -3643,7 +3453,9 @@ class MultiDatasets(MonitorBase):
 
         # Provenance tracking
         provenance_record = self._get_provenance_record(
-            plot_type, multi_dataset_facets, datasets
+            plot_type,
+            multi_dataset_facets,
+            datasets,
         )
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
@@ -3652,32 +3464,36 @@ class MultiDatasets(MonitorBase):
     def _save_data(
         self,
         plot_type: str,
-        datasets: list[dict | None],
+        representative_dataset: dict,
+        datasets: dict[str, dict],
         fig: Figure,
     ) -> None:
         """Save plot and netCDF files."""
-        datasets = [d for d in datasets if d is not None]
-        multi_dataset_facets = self._get_multi_dataset_facets(datasets)
-
-        # Setup provenance tracking
-        provenance_record = self._get_provenance_record(
-            plot_type, multi_dataset_facets, datasets
-        )
-
         # Save single plot file
-        plot_path = self._save_plot(plot_type, multi_dataset_facets, fig)
+        plot_path = self._save_plot(plot_type, representative_dataset, fig)
+        provenance_record = self._get_provenance_record(
+            plot_type, representative_dataset, list(datasets.values())
+        )
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
 
         # Save one netCDF file per dataset
-        for idx, dataset in enumerate(datasets):
-            netcdf_path = self._get_netcdf_path(plot_path, suffix=f"_{idx}")
+        for label, dataset in datasets.items():
+            netcdf_path = self._get_netcdf_path(plot_path, suffix=label)
             io.iris_save(dataset["cube"], netcdf_path)
-            provenance_record["ancestors"] = [dataset["filename"]]
+            provenance_record = self._get_provenance_record(
+                plot_type, dataset, [dataset]
+            )
+            provenance_record["ancestors"] = dataset["ancestors"]
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(netcdf_path, provenance_record)
 
-    def _save_plot(self, plot_type: str, dataset: dict, fig: Figure) -> str:
+    def _save_plot(
+        self,
+        plot_type: str,
+        dataset: dict,
+        fig: Figure,
+    ) -> str:
         """Save plot file."""
         plot_path = self.get_plot_path(plot_type, dataset)
         fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
@@ -3705,11 +3521,11 @@ class MultiDatasets(MonitorBase):
         percentile_datasets = self._get_benchmark_percentiles(datasets)
         ylims = axes.get_ylim()
         max_percentile_cube = percentile_datasets[0]["cube"]
-        coords = self._check_cube_dimensions(max_percentile_cube, plot_type)
+        coords = self._check_cube_coords(max_percentile_cube, plot_type)
         coord = max_percentile_cube.coord(coords[0], dim_coords=True)
         if len(percentile_datasets) > 1:
             min_percentile_cube = percentile_datasets[-1]["cube"]
-            self._check_cube_dimensions(min_percentile_cube, plot_type)
+            self._check_cube_coords(min_percentile_cube, plot_type)
         else:
             min_data = np.full(
                 max_percentile_cube.shape,
@@ -3740,20 +3556,37 @@ class MultiDatasets(MonitorBase):
         self._plot_1d_data(plot_type, datasets, axes)
         self._save_1d_data(plot_type, datasets, fig)
 
-    def create_2d_plot(
-        self,
-        plot_type: str,
-        dataset: dict,
-        dataset_ref: dict | None,
-    ) -> None:
+    def create_2d_plot(self, plot_type: str, datasets: list[dict]) -> None:
         """Create 2D plot."""
-        if dataset_ref is None:
-            fig = self._plot_2d_data_1_panel(plot_type, dataset)
-            dataset_bias = None
-        else:
-            fig = self._plot_2d_data_3_panel(plot_type, dataset, dataset_ref)
-            dataset_bias = self._get_bias_dataset(dataset, dataset_ref)
-        self._save_data(plot_type, [dataset, dataset_ref, dataset_bias], fig)
+        dataset_ref = self._get_reference_dataset(datasets)
+        if dataset_ref is not None:
+            logger.info(
+                "Using reference dataset %s",
+                self._get_label(dataset_ref),
+            )
+
+        # Some options are not supported for 2D plots
+        self.plots[plot_type]["legend_kwargs"] = False
+
+        # Create one plot per (non-reference) dataset
+        for dataset in datasets:
+            if dataset == dataset_ref:
+                continue
+            if dataset_ref is None:
+                fig = self._plot_2d_data_1_panel(plot_type, dataset)
+                save_datasets = {"": dataset}
+            else:
+                fig = self._plot_2d_data_3_panel(
+                    plot_type,
+                    dataset,
+                    dataset_ref,
+                )
+                save_datasets = {
+                    "_top_left": dataset,
+                    "_top_right": dataset_ref,
+                    "_bottom": self._get_bias_dataset(dataset, dataset_ref),
+                }
+            self._save_data(plot_type, dataset, save_datasets, fig)
 
     def create_benchmarking_boxplot(self):
         """Create boxplot."""
@@ -3796,7 +3629,7 @@ class MultiDatasets(MonitorBase):
 
             for dataset in benchmark_group:
                 cube = dataset["cube"]
-                self._check_cube_dimensions(cube, plot_type)
+                self._check_cube_coords(cube, plot_type)
                 dframe.loc[data_idx] = [var_key, dataset["dataset"], cube.data]
                 data_idx = data_idx + 1
 
@@ -4167,69 +4000,6 @@ class MultiDatasets(MonitorBase):
                 for netcdf_path in netcdf_paths:
                     provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_zonal_mean_profile_plot(self, datasets):
-        """Create zonal mean profile plot."""
-        plot_type = "zonal_mean_profile"
-
-        # Get reference dataset if possible
-        ref_dataset = self._get_reference_dataset(datasets)
-        if ref_dataset is None:
-            logger.info("Plotting %s without reference dataset", plot_type)
-        else:
-            logger.info(
-                "Plotting %s with reference dataset '%s'",
-                plot_type,
-                self._get_label(ref_dataset),
-            )
-
-        # Get plot function
-        plot_func = self._get_plot_func(plot_type)
-
-        # Create a single plot for each dataset (incl. reference dataset if
-        # given)
-        for dataset in datasets:
-            if dataset == ref_dataset:
-                continue
-            ancestors = [dataset["filename"]]
-            if ref_dataset is None:
-                (plot_path, netcdf_paths) = (
-                    self._plot_zonal_mean_profile_without_ref(
-                        plot_func,
-                        dataset,
-                    )
-                )
-            else:
-                (plot_path, netcdf_paths) = (
-                    self._plot_zonal_mean_profile_with_ref(
-                        plot_func,
-                        dataset,
-                        ref_dataset,
-                    )
-                )
-                ancestors.append(ref_dataset["filename"])
-
-            # Save plot
-            plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
-            logger.info("Wrote %s", plot_path)
-            plt.close()
-
-            # Save netCDFs
-            for netcdf_path, cube in netcdf_paths.items():
-                io.iris_save(cube, netcdf_path)
-
-            # Provenance tracking
-            provenance_record = {
-                "ancestors": ancestors,
-                "long_names": [dataset["long_name"]],
-            }
-            provenance_record.update(
-                self.plot_settings[plot_type]["provenance"],
-            )
-            with ProvenanceLogger(self.cfg) as provenance_logger:
-                provenance_logger.log(plot_path, provenance_record)
-                for netcdf_path in netcdf_paths:
-                    provenance_logger.log(netcdf_path, provenance_record)
-
     def compute(self) -> None:
         """Plot preprocessed data."""
         for plot_type in self.plots:
@@ -4252,11 +4022,9 @@ class MultiDatasets(MonitorBase):
 
             # Inspect plot function to determine arguments
             plot_parameters = inspect.signature(plot_function).parameters
-            print(plot_parameters)
-            assert 0
 
             # Plot types where only one plot in total is created
-            if plot_settings["type"] == "one_plot_total":
+            if not plot_parameters:
                 with mpl.rc_context(mpl_rc_params):
                     plot_function()
 

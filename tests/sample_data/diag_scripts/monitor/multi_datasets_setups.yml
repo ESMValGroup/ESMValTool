@@ -540,3 +540,5 @@
             vmin: -1
             vmax: 12
         show_stats: false
+        show_y_minor_ticks: true
+        y_minor_formatter: ""
