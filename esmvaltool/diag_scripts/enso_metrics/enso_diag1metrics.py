@@ -412,35 +412,36 @@ def group_obs_models(obs, models, metric, var_preproc, cfg):
             metric,
             dataset,
         )
-
-        model_datasets = {
-            attr["variable_group"]: iris.load_cube(attr["filename"])
-            for attr in attributes
-        }
         data_labels = [dataset, obs[0]["dataset"]]
-        value, fig, data = compute_enso_metrics(
-            [obs_datasets, model_datasets],
+        output = compute_enso_metrics(
+            [
+                obs_datasets,
+                {
+                    attr["variable_group"]: iris.load_cube(attr["filename"])
+                    for attr in attributes
+                },
+            ],
             data_labels,
             var_preproc,
             metric,
         )
         # save returned cubes
-        for i, cube in enumerate(data):
+        for i, cube in enumerate(output[2]):
             save_data(f"{data_labels[i]}_{metric}", prov_record, cfg, cube)
 
-        if value:
+        if output[0]:
             with open(metricfile, "a+", encoding="utf-8") as fileo:
-                fileo.write(f"{dataset},{metric},{value}\n")
+                fileo.write(f"{dataset},{metric},{output[0]}\n")
 
             save_figure(
                 f"{dataset}_{metric}",
                 prov_record,
                 cfg,
-                figure=fig,
+                figure=output[1],
                 dpi=300,
             )
         # clear value,fig
-        value = None
+        output = None
 
 
 def get_provenance_record(metric, ancestor_files):
