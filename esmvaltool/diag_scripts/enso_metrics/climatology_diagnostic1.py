@@ -192,7 +192,7 @@ def provenance_record(var_grp, ancestor_files):
 def main(cfg):
     """Compute sea ice area for each input dataset."""
     input_data = cfg["input_data"].values()
-
+    metricfile = get_diagnostic_filename("matrix", cfg, extension="csv")
     # group by variables
     variable_groups = group_metadata(
         input_data,
@@ -217,10 +217,9 @@ def main(cfg):
                     figure=fig,
                     dpi=300,
                 )
+                with open(metricfile, "a+", encoding="utf-8") as fileo:
+                    fileo.write(f"{filename[0]},{filename[1]},{rmse}\n")
     # write provenance for csv metrics
-    metricfile = get_diagnostic_filename("matrix", cfg, extension="csv")
-    with open(metricfile, "a+", encoding="utf-8") as fileo:
-        fileo.write(f"{filename[0]},{filename[1]},{rmse}\n")
     prov = provenance_record("values", list(cfg["input_data"].keys()))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(metricfile, prov)

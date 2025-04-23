@@ -389,8 +389,9 @@ def compute(obs, mod):
     return abs((mod - obs) / obs) * 100
 
 
-def group_obs_models(obs, models, metric, var_preproc, metricfile, cfg):
+def group_obs_models(obs, models, metric, var_preproc, cfg):
     """Group obs to models for metric computation."""
+    metricfile = get_diagnostic_filename("matrix", cfg, extension="csv")
     prov_record = get_provenance_record(
         metric,
         list(cfg["input_data"].keys()),
@@ -514,8 +515,6 @@ def main(cfg):
         "15diversity": ["tos_patdiv1", "tos_lifdurdiv2"],
     }
 
-    metricfile = get_diagnostic_filename("matrix", cfg, extension="csv")
-
     # select twice with project to get obs, iterate through model selection
     for metric, var_preproc in metrics.items():
         logger.info("%s,%s", metric, var_preproc)
@@ -537,9 +536,10 @@ def main(cfg):
                 project="CMIP6",
             )
 
-        group_obs_models(obs, models, metric, var_preproc, metricfile, cfg)
+        group_obs_models(obs, models, metric, var_preproc, cfg)
 
     # write provenance for csv metrics
+    metricfile = get_diagnostic_filename("matrix", cfg, extension="csv")
     prov = get_provenance_record("values", list(cfg["input_data"].keys()))
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(metricfile, prov)
