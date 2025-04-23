@@ -1,9 +1,9 @@
-# ESMValTool
+# ESMValTool ENSO characteristics
 #
 ---
 documentation:
-  description: ENSO CLIVAR metrics - basic ENSO characteristics for use in REF
-  title: Reproducing basic ENSO characteristics metrics by Yann Planton
+  description: ENSO CLIVAR metrics by Yann Planton - basic ENSO characteristics for use in REF
+  title: Reproducing basic ENSO characteristics metrics
   authors:
     - chun_felicity
     - beucher_romain

@@ -2,8 +2,8 @@
 #
 ---
 documentation:
-  description: ENSO CLIVAR metrics, background climatology
-  title: Reproducing ENSO CLIVAR metrics by Yann Planton - background climatology
+  description: ENSO CLIVAR metrics by Yann Planton, background climatology for REF
+  title: Reproducing ENSO CLIVAR metrics - background climatology
   authors:
     - chun_felicity
     - beucher_romain
