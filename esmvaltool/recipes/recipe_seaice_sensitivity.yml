@@ -6,9 +6,9 @@ documentation:
 
   description: |
     Recipe for quantifying the sensitivity of sea ice to global warming.
-    Siconc data is summed over each hemisphere and then compared to the
+    Siconc data is summed for each hemisphere and then compared to the
     change in globally meaned, annually meaned surface air temperature.
-    In the northern hemisphere, September se ice data is used.
+    In the northern hemisphere, September sea ice data is used.
     In the southern hemisphere, annual mean sea ice data is used.
     Two plots are produced for each hemisphere, one showing the gradient
     of the direct regression of sea ice area over temperature, and the
