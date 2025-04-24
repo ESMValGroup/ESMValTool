@@ -25,10 +25,8 @@ Recipes are stored in `recipes/ref`
   Maps and zonal means of longwave and shortwave cloud radiative effect
 * recipe_model_benchmarking_timeseries_region.yml:
   Time series in comparison with refernce data for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_timeseries.yml <recipe_benchmarking>`
-* recipe_model_benchmarking_boxplots_region_trend.yml:
-  Benchmarking plot with the linear trend for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_boxplots.yml <recipe_benchmarking>`
-* recipe_monitor_anncyc_regions.yml:
-  Annual cycle for several regions as multi panel plot, based on :ref:`recipe_monitor.yml <recipe_monitor>`
+* recipe_model_benchmarking_annual_cycle_region.yml:
+  Annual cycle in comparison with refernce data for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_annual_cycle.yml <recipe_model_benchmarking_annual_cycle>`
 * recipe_portrait_regions.yml:
     Portrait plot for several regions and variables, based on :ref:`recipe_portrait_CMIP.yml <recipe_portrait>`
 * ref/recipe_ref_scatterplot.yml:
@@ -90,12 +88,3 @@ Example plots:
 
    Zonal mean vertically resolved ozone climatology from CNRM-ESM2-1 compared with ESACCI-OZONE
    for the years 1990 to 2000. Created with recipe_ref_ozone.yml.
-
-.. _fig_ref_7:
-.. figure::  /recipes/figures/ref/benchmarking_boxplot_tas_MIROC6_Amon_historical_r1i1p1f1.png
-   :align:   center
-
-   Comparing the linear trend for one models (MIROC6 as examlple) to observational data set
-   (tas_land: HadCRUT5 and ERA5; sst: HadISST and ERA5; pr: GPCP-SG and ERA5) for the period 2001 to 2014.
-   Each box indicates the range from the first quartile to the third quartile, the vertical lines show the median,
-   and the whiskers present the minimum and maximum values.

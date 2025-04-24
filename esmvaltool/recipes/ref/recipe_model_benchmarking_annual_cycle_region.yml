@@ -35,10 +35,10 @@ preprocessors:
       ids:
         Name:
           - N.Europe
-    area_statistics:
-      operator: mean
     climate_statistics:
       period: monthly
+    area_statistics:
+      operator: mean
 
   pp_abs_200:
     extract_levels:
@@ -55,10 +55,10 @@ preprocessors:
       ids:
         Name:
           - N.Europe
-    area_statistics:
-      operator: mean
     climate_statistics:
       period: monthly
+    area_statistics:
+      operator: mean
 
 
 diagnostics:
