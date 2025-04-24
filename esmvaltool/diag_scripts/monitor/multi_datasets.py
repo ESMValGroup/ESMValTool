@@ -977,6 +977,8 @@ class MultiDatasets(MonitorBase):
             "plot_func": "contourf",
             "plot_kwargs": {},
             "plot_kwargs_bias": {},
+            "projection": None,
+            "projection_kwargs": {},
             "pyplot_kwargs": {},
             "rasterize": True,
             "show_stats": True,
@@ -1287,8 +1289,8 @@ class MultiDatasets(MonitorBase):
                 },
             },
             "map": {
-                "function": self.create_map_plot,
-                "coords": (["latitude", "longitude"],),
+                "function": partial(self.create_2d_plot, "map"),
+                "coords": (["longitude", "latitude"],),
                 "provenance": {
                     "authors": ["schlund_manuel"],
                     "caption": "Map plot of {long_name} of dataset {alias}.",
@@ -1296,23 +1298,11 @@ class MultiDatasets(MonitorBase):
                 },
                 "pyplot_kwargs": {},
                 "default_settings": {
-                    "cbar_label": "{short_name} [{units}]",
-                    "cbar_label_bias": "Δ{short_name} [{units}]",
+                    **default_settings_2d,
                     "cbar_kwargs": {"orientation": "horizontal", "aspect": 30},
-                    "cbar_kwargs_bias": {},
-                    "common_cbar": False,
-                    "fontsize": None,
                     "gridline_kwargs": {},
-                    "plot_func": "contourf",
-                    "plot_kwargs": {},
-                    "plot_kwargs_bias": {"cmap": "bwr", "norm": "centered"},
                     "projection": "Robinson",
                     "projection_kwargs": {"central_longitude": 10},
-                    "pyplot_kwargs": {},
-                    "rasterize": True,
-                    "show_stats": True,
-                    "x_pos_stats_avg": 0.0,
-                    "x_pos_stats_bias": 0.92,
                 },
             },
             "timeseries": {
@@ -1414,13 +1404,12 @@ class MultiDatasets(MonitorBase):
                     f"'plots', expected one of {list(self.plot_settings)}",
                 )
             if plot_options is None:
-                self.plots[plot_type] = {}
+                plot_options = {}
+                self.plots[plot_type] = plot_options
 
-            # For map plots, only set default projection options if no
-            # projection is specified
-            if plot_type in ("map", "benchmarking_map"):
-                if "projection" in plot_options:
-                    self.plots[plot_type].setdefault("projection_kwargs", {})
+            # Only use default projection options if no projection is specified
+            if "projection" in plot_options:
+                self.plots[plot_type].setdefault("projection_kwargs", {})
 
             default_settings = self.plot_settings[plot_type][
                 "default_settings"
@@ -1701,7 +1690,10 @@ class MultiDatasets(MonitorBase):
         # Gridlines
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
         if gridline_kwargs is not False:
-            axes.grid(**gridline_kwargs)
+            if "map" in plot_type:
+                axes.gridlines(**gridline_kwargs)
+            else:
+                axes.grid(**gridline_kwargs)
 
         # Legend
         legend_kwargs = self.plots[plot_type]["legend_kwargs"]
@@ -2122,226 +2114,6 @@ class MultiDatasets(MonitorBase):
             dataset["ancestors"] = [filename]
 
         return input_data
-
-    def _plot_map_with_ref(self, plot_func, dataset, ref_dataset):
-        """Plot map plot for single dataset with a reference dataset."""
-        plot_type = "map"
-        logger.info(
-            "Plotting map with reference dataset '%s' for '%s'",
-            self._get_label(ref_dataset),
-            self._get_label(dataset),
-        )
-
-        # Make sure that the data has the correct dimensions
-        cube = dataset["cube"]
-        ref_cube = ref_dataset["cube"]
-
-        # Create single figure with multiple axes
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        gridspec = GridSpec(
-            5,
-            4,
-            figure=fig,
-            height_ratios=[1.0, 1.0, 0.4, 1.0, 1.0],
-        )
-
-        # Options used for all subplots
-        projection = self._get_projection(plot_type)
-        plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-        gridline_kwargs = self._get_gridline_kwargs(plot_type)
-        fontsize = (
-            self.plots[plot_type]["fontsize"] or mpl.rcParams["axes.labelsize"]
-        )
-
-        # Plot dataset (top left)
-        axes_data = fig.add_subplot(gridspec[0:2, 0:2], projection=projection)
-        plot_kwargs["axes"] = axes_data
-        if plot_func is iris.plot.contourf:
-            # see https://github.com/SciTools/cartopy/issues/2457
-            # and https://github.com/SciTools/cartopy/issues/2468
-            plot_kwargs["transform_first"] = True
-            npx = da if cube.has_lazy_data() else np
-            cube_to_plot = cube.copy(npx.ma.filled(cube.core_data(), np.nan))
-        else:
-            cube_to_plot = cube
-        plot_data = plot_func(cube_to_plot, **plot_kwargs)
-        axes_data.coastlines()
-        if gridline_kwargs is not False:
-            axes_data.gridlines(**gridline_kwargs)
-        axes_data.set_title(self._get_label(dataset), pad=3.0)
-        self._add_stats(plot_type, axes_data, dataset)
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"],
-            dataset,
-        )
-
-        # Plot reference dataset (top right)
-        # Note: make sure to use the same vmin and vmax than the top left
-        # plot if a common cpltolorbar is desired
-        axes_ref = fig.add_subplot(gridspec[0:2, 2:4], projection=projection)
-        plot_kwargs["axes"] = axes_ref
-        if self.plots[plot_type]["common_cbar"]:
-            plot_kwargs.setdefault("vmin", plot_data.get_clim()[0])
-            plot_kwargs.setdefault("vmax", plot_data.get_clim()[1])
-        if plot_func is iris.plot.contourf:
-            # see https://github.com/SciTools/cartopy/issues/2457
-            # and https://github.com/SciTools/cartopy/issues/2468
-            plot_kwargs["transform_first"] = True
-            npx = da if ref_cube.has_lazy_data() else np
-            ref_cube_to_plot = ref_cube.copy(
-                npx.ma.filled(ref_cube.core_data(), np.nan),
-            )
-        else:
-            ref_cube_to_plot = ref_cube
-        plot_ref = plot_func(ref_cube_to_plot, **plot_kwargs)
-        axes_ref.coastlines()
-        if gridline_kwargs is not False:
-            axes_ref.gridlines(**gridline_kwargs)
-        axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
-        self._add_stats(plot_type, axes_ref, ref_dataset)
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"],
-            ref_dataset,
-        )
-
-        # Add colorbar(s)
-        self._add_colorbar(
-            plot_type,
-            plot_data,
-            axes_data,
-            dataset,
-            plot_ref,
-            axes_ref,
-            ref_dataset,
-        )
-
-        # Plot bias (bottom center)
-        bias_cube = cube - ref_cube
-        axes_bias = fig.add_subplot(gridspec[3:5, 1:3], projection=projection)
-        plot_kwargs_bias = self._get_plot_kwargs(plot_type, dataset, bias=True)
-        plot_kwargs_bias["axes"] = axes_bias
-        if plot_func is iris.plot.contourf:
-            # see https://github.com/SciTools/cartopy/issues/2457
-            # and https://github.com/SciTools/cartopy/issues/2468
-            plot_kwargs_bias["transform_first"] = True
-            npx = da if bias_cube.has_lazy_data() else np
-            bias_cube_to_plot = bias_cube.copy(
-                npx.ma.filled(bias_cube.core_data(), np.nan),
-            )
-        else:
-            bias_cube_to_plot = bias_cube
-        plot_bias = plot_func(bias_cube_to_plot, **plot_kwargs_bias)
-        axes_bias.coastlines()
-        if gridline_kwargs is not False:
-            axes_bias.gridlines(**gridline_kwargs)
-        axes_bias.set_title(
-            f"{self._get_label(dataset)} - {self._get_label(ref_dataset)}",
-            pad=3.0,
-        )
-        cbar_kwargs_bias = self._get_cbar_kwargs(plot_type, bias=True)
-        cbar_bias = fig.colorbar(plot_bias, ax=axes_bias, **cbar_kwargs_bias)
-        cbar_bias.set_label(
-            self._get_cbar_label(plot_type, dataset, bias=True),
-            fontsize=fontsize,
-        )
-        cbar_bias.ax.tick_params(labelsize=fontsize)
-        self._add_stats(
-            plot_type,
-            axes_bias,
-            dataset,
-            ref_dataset,
-        )
-
-        # Customize plot
-        fig.suptitle(dataset["long_name"])
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"],
-            dataset,
-        )
-
-        # Rasterization
-        if self.plots[plot_type]["rasterize"]:
-            self._set_rasterized([axes_data, axes_ref, axes_bias])
-
-        # File paths
-        plot_path = self.get_plot_path(plot_type, dataset)
-        netcdf_path = get_diagnostic_filename(
-            Path(plot_path).stem + "_{pos}",
-            self.cfg,
-        )
-        netcdf_paths = {
-            netcdf_path.format(pos="top_left"): cube,
-            netcdf_path.format(pos="top_right"): ref_cube,
-            netcdf_path.format(pos="bottom"): bias_cube,
-        }
-
-        return (plot_path, netcdf_paths)
-
-    def _plot_map_without_ref(self, plot_func, dataset):
-        """Plot map plot for single dataset without a reference dataset."""
-        plot_type = "map"
-        logger.info(
-            "Plotting map without reference dataset for '%s'",
-            self._get_label(dataset),
-        )
-
-        # Make sure that the data has the correct dimensions
-        cube = dataset["cube"]
-
-        # Create plot with desired settings
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot(projection=self._get_projection(plot_type))
-        plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-        plot_kwargs["axes"] = axes
-        if plot_func is iris.plot.contourf:
-            # see https://github.com/SciTools/cartopy/issues/2457
-            # and https://github.com/SciTools/cartopy/issues/2468
-            plot_kwargs["transform_first"] = True
-            npx = da if cube.has_lazy_data() else np
-            cube_to_plot = cube.copy(npx.ma.filled(cube.core_data(), np.nan))
-        else:
-            cube_to_plot = cube
-        plot_map = plot_func(cube_to_plot, **plot_kwargs)
-        axes.coastlines()
-        gridline_kwargs = self._get_gridline_kwargs(plot_type)
-        if gridline_kwargs is not False:
-            axes.gridlines(**gridline_kwargs)
-
-        # Print statistics if desired
-        self._add_stats(plot_type, axes, dataset)
-
-        # Setup colorbar
-        fontsize = (
-            self.plots[plot_type]["fontsize"] or mpl.rcParams["axes.labelsize"]
-        )
-        colorbar = fig.colorbar(
-            plot_map,
-            ax=axes,
-            **self._get_cbar_kwargs(plot_type),
-        )
-        colorbar.set_label(
-            self._get_cbar_label(plot_type, dataset),
-            fontsize=fontsize,
-        )
-        colorbar.ax.tick_params(labelsize=fontsize)
-
-        # Customize plot
-        axes.set_title(self._get_label(dataset))
-        fig.suptitle(dataset["long_name"])
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"],
-            dataset,
-        )
-
-        # Rasterization
-        if self.plots[plot_type]["rasterize"]:
-            self._set_rasterized([axes])
-
-        # File paths
-        plot_path = self.get_plot_path(plot_type, dataset)
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-
-        return (plot_path, {netcdf_path: cube})
 
     def _plot_hovmoeller_z_vs_time_without_ref(self, plot_func, dataset):
         """Plot Hovmoeller Z vs. time for single dataset without reference."""
@@ -3305,13 +3077,31 @@ class MultiDatasets(MonitorBase):
             x_coord = cube.coord(coords[0], dim_coords=True)
             y_coord = cube.coord(coords[1], dim_coords=True)
 
-        # Plot data
+        # Prepare plotting
         plot_func = self._get_plot_func(plot_type)
         plot_kwargs = self._get_plot_kwargs(plot_type, dataset, bias=bias)
         plot_kwargs.update(additional_plot_kwargs)
         plot_kwargs["axes"] = axes
         plot_kwargs["coords"] = [x_coord, y_coord]
+        fix_cartopy_bug = all(
+            [
+                self.plots[plot_type]["projection"] is not None,
+                plot_func is iris.plot.contourf,
+            ]
+        )
+        if fix_cartopy_bug:
+            # See https://github.com/SciTools/cartopy/issues/2457 and
+            # https://github.com/SciTools/cartopy/issues/2468
+            plot_kwargs["transform_first"] = True
+            npx = da if cube.has_lazy_data() else np
+            cube = cube.copy(npx.ma.filled(cube.core_data(), np.nan))
+
+        # Plot data
         plot_output = plot_func(cube, **plot_kwargs)
+
+        # Show coastlines for map plots
+        if "map" in plot_type:
+            axes.coastlines()
 
         # Title and axis labels
         fig.suptitle(dataset["long_name"])
@@ -3331,11 +3121,18 @@ class MultiDatasets(MonitorBase):
     ) -> Figure:
         """Plot 2D data (single panel)."""
         fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot()
+
+        subplot_kwargs = {}
+        if self.plots[plot_type]["projection"] is not None:
+            subplot_kwargs["projection"] = self._get_projection(plot_type)
+        axes = fig.add_subplot(**subplot_kwargs)
+
         plot_output = self._plot_2d_data(plot_type, dataset, axes)
         self._add_colorbar(plot_type, plot_output, axes, dataset)
+
         if self.plots[plot_type]["show_stats"]:
             self._add_stats(plot_type, axes, dataset)
+
         return fig
 
     def _plot_2d_data_3_panel(
@@ -3353,9 +3150,12 @@ class MultiDatasets(MonitorBase):
             figure=fig,
             height_ratios=[1.0, 1.0, 0.4, 1.0, 1.0],
         )
+        subplot_kwargs = {}
+        if self.plots[plot_type]["projection"] is not None:
+            subplot_kwargs["projection"] = self._get_projection(plot_type)
 
         # Plot top left panel
-        axes_left = fig.add_subplot(gridspec[0:2, 0:2])
+        axes_left = fig.add_subplot(gridspec[0:2, 0:2], **subplot_kwargs)
         plot_left = self._plot_2d_data(plot_type, dataset_left, axes_left)
 
         # Plot top right panel
@@ -3365,6 +3165,7 @@ class MultiDatasets(MonitorBase):
             gridspec[0:2, 2:4],
             sharex=axes_left,
             sharey=axes_left,
+            **subplot_kwargs,
         )
         additional_plot_kwargs = {}
         if self.plots[plot_type]["common_cbar"]:
@@ -3393,6 +3194,7 @@ class MultiDatasets(MonitorBase):
             gridspec[3:5, 1:3],
             sharex=axes_left,
             sharey=axes_left,
+            **subplot_kwargs,
         )
         dataset_bottom = self._get_bias_dataset(dataset_left, dataset_right)
         plot_bottom = self._plot_2d_data(
@@ -3916,65 +3718,6 @@ class MultiDatasets(MonitorBase):
                         dataset,
                         ref_dataset,
                     )
-                )
-                ancestors.append(ref_dataset["filename"])
-
-            # Save plot
-            plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
-            logger.info("Wrote %s", plot_path)
-            plt.close()
-
-            # Save netCDFs
-            for netcdf_path, cube in netcdf_paths.items():
-                io.iris_save(cube, netcdf_path)
-
-            # Provenance tracking
-            provenance_record = {
-                "ancestors": ancestors,
-                "long_names": [dataset["long_name"]],
-            }
-            provenance_record.update(
-                self.plot_settings[plot_type]["provenance"],
-            )
-            with ProvenanceLogger(self.cfg) as provenance_logger:
-                provenance_logger.log(plot_path, provenance_record)
-                for netcdf_path in netcdf_paths:
-                    provenance_logger.log(netcdf_path, provenance_record)
-
-    def create_map_plot(self, datasets):
-        """Create map plot."""
-        plot_type = "map"
-
-        # Get reference dataset if possible
-        ref_dataset = self._get_reference_dataset(datasets)
-        if ref_dataset is None:
-            logger.info("Plotting %s without reference dataset", plot_type)
-        else:
-            logger.info(
-                "Plotting %s with reference dataset '%s'",
-                plot_type,
-                self._get_label(ref_dataset),
-            )
-
-        # Get plot function
-        plot_func = self._get_plot_func(plot_type)
-
-        # Create a single plot for each dataset (incl. reference dataset if
-        # given)
-        for dataset in datasets:
-            if dataset == ref_dataset:
-                continue
-            ancestors = [dataset["filename"]]
-            if ref_dataset is None:
-                (plot_path, netcdf_paths) = self._plot_map_without_ref(
-                    plot_func,
-                    dataset,
-                )
-            else:
-                (plot_path, netcdf_paths) = self._plot_map_with_ref(
-                    plot_func,
-                    dataset,
-                    ref_dataset,
                 )
                 ancestors.append(ref_dataset["filename"])
 

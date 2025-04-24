@@ -428,6 +428,8 @@
   settings:
     facet_used_for_labels: alias
     group_variables_by: short_name
+    matplotlib_rc_params:
+      ytick.color: red
     plots:
       map:
         cbar_label: Var
@@ -534,7 +536,7 @@
           xlabel: X Label
           ylabel: Y Label
           xlim: [0, 100]
-        rasterize: true
+        rasterize: false
         show_x_minor_ticks: true
         show_y_minor_ticks: true
         x_major_formatter: "%d"
@@ -576,7 +578,7 @@
           xlabel: X Label
           ylabel: Y Label
           xlim: [0, 100]
-        rasterize: true
+        rasterize: false
         show_x_minor_ticks: true
         show_y_minor_ticks: true
         x_major_formatter: "%d"
