@@ -140,7 +140,8 @@
         plot_kwargs:
           color: green
         pyplot_kwargs:
-          xlabel: X Label
+          suptitle: Suptitle
+          xlabel: X Label {short_name}
         scatter_kwargs:
           marker: o
           s: 100
