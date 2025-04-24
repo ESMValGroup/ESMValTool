@@ -1,0 +1,81 @@
+# This file contains the recipes that are run by the RTW at the Met Office.
+# The "How to add a recipe to the RTW" documentation provides more information.
+#
+# KEYS         VALUES
+# ----         ------
+# recipe_path  The path to the recipe. Recipe paths are specified relative to
+#              esmvaltool/recipes. For recipes in subdirectories, '--' stands
+#              for '/' since the latter is an illegal char.
+# actual       A note of the recipe's actual resource usage. From the
+#              successful run of the recipe on the compute server at the
+#              Met Office.
+# max_time     The maximum amount of time the recipe has to complete. Use the
+#              Cylc ISO8601 duration format.
+# max_memory   The memory allocated to running the recipe. Default units are
+#              megabytes. Different units can be specified using the suffix
+#              [K|M|G|T].
+
+{% set FAST_RECIPES =
+    [
+        {
+            "recipe_path": "examples--recipe_python",
+            "actual": "0m17s, 1.9 GB on 2025-01-08",
+            "max_time": "PT2M",
+            "max_memory": "3G",
+        },
+        {
+            "recipe_path": "recipe_albedolandcover",
+            "actual": "0m31s, 2.5 GB on 2024-04-08",
+            "max_time": "PT2M",
+            "max_memory": "3G",
+        },
+        {
+            "recipe_path": "recipe_autoassess_landsurface_soilmoisture",
+            "actual": "0m36s, 2.8 GB on 2024-03-29",
+            "max_time": "PT2M",
+            "max_memory": "3G",
+        },
+        {
+            "recipe_path": "recipe_consecdrydays",
+            "actual": "0m19s, 2.1 GB on 2025-01-08",
+            "max_time": "PT2M",
+            "max_memory": "3G",
+        },
+        {
+            "recipe_path": "recipe_heatwaves_coldwaves",
+            "actual": "1m21s, 1.4 GB on 2025-01-08",
+            "max_time": "PT2M",
+            "max_memory": "2G",
+        },
+        {
+            "recipe_path": "recipe_ocean_amoc",
+            "actual": "1m47s, 3.4 GB on 2024-06-17",
+            "max_time": "PT3M",
+            "max_memory": "4G",
+        },
+        {
+            "recipe_path": "recipe_ocean_multimap",
+            "actual": "6m52s, 2.5 GB on 2024-05-28",
+            "max_time": "PT8M",
+            "max_memory": "3G",
+        },
+        {
+            "recipe_path": "recipe_radiation_budget",
+            "actual": "0m29s, 2.1 GB on 2025-01-08",
+            "max_time": "PT2M",
+            "max_memory": "2G",
+        },
+    ]
+%}
+
+# 'recipe_ensclus' should be in fast: is in medium temporarily to avoid empty variable.
+{% set MEDIUM_RECIPES =
+    [
+        {
+            "recipe_path": "recipe_ensclus",
+            "actual": "2m10s, 2.4 GB on 2024-03-29",
+            "max_time": "PT4M",
+            "max_memory": "3G",
+        },
+    ]
+%}

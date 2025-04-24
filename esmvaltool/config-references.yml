@@ -24,6 +24,12 @@ authors:
     institute: DLR, Germany
     email: bjoern.broetz@dlr.de
     orcid:
+  cammarano_diego:
+    name: Cammarano, Diego
+    institute: DLR, Germany
+    email: diego.cammarano@dlr.de
+    github: diegokam
+    orcid:
   debeire_kevin:
     name: Debeire, Kevin
     institute: DLR, Germany
@@ -241,7 +247,7 @@ authors:
     name: Gillett, Nathan
     institute: CCCma, ECCC, Canada
     orcid: https://orcid.org/0000-0002-2957-0002
-    github: npgillett    
+    github: npgillett
   gonzalez-reviriego_nube:
     name: Gonzalez-Reviriego, Nube
     institute: BSC, Spain
@@ -804,6 +810,7 @@ projects:
   crescendo: EU H2020 project CRESCENDO
   dlrveu2: DLR project VEU2
   dlrveu: DLR project VEU
+  dlrmabak: DLR project MABAK
   embrace: EU FP7 project EMBRACE
   esm2025: EU H2020 project ESM2025 - Earth system models for the future
   esmval: DLR project ESMVal

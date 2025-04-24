@@ -1,0 +1,203 @@
+# ESMValTool
+---
+documentation:
+  title: Benchmarking of a single model.
+  description: >
+    Benchmarking: diurnal cycle.
+  authors:
+    - lauer_axel
+    - bock_lisa
+    - hassler_birgit
+    - lindenlaub_lukas
+    - schlund_manuel
+  maintainer:
+    - lauer_axel
+  references:
+    - lauer25gmd
+  projects:
+    - dlrmabak
+
+
+datasets:
+  - {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS}
+  - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO}
+  - {dataset: AWI-CM-1-1-MR, grid: gn}
+  - {dataset: AWI-ESM-1-1-LR, grid: gn}
+  - {dataset: BCC-CSM2-MR, grid: gn}
+  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
+  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
+  - {dataset: EC-Earth3-Veg}
+  - {dataset: FGOALS-g3, grid: gn}
+  - {dataset: GISS-E2-1-G, grid: gn}
+  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+  - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
+  - {dataset: IPSL-CM6A-LR}
+  - {dataset: KACE-1-0-G}
+  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+  - {dataset: MPI-ESM-1-2-HAM, grid: gn}
+  - {dataset: MPI-ESM1-2-HR, grid: gn}
+  - {dataset: MPI-ESM1-2-LR, grid: gn}
+  - {dataset: MRI-ESM2-0, grid: gn}
+  - {dataset: NESM3, grid: gn}
+  - {dataset: SAM0-UNICON, grid: gn}
+  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+  # Dataset to be benchmarked
+  - {dataset: MIROC6, grid: gn, benchmark_dataset: true, alias: MIROC6}
+
+
+preprocessors:
+
+  pp_diurn_Tropics:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    local_solar_time:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -30
+      end_latitude: 30
+    mask_landsea:
+      mask_out: land
+    resample_hours:
+      interval: 3
+      offset: 1
+      interpolate: linear
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      period: hourly
+    convert_units:
+      units: mm day-1
+    multi_model_statistics:
+      span: overlap
+      statistics:
+        - operator: percentile
+          percent: 10
+        - operator: percentile
+          percent: 90
+      exclude: [reference_dataset, MIROC6]
+
+  pp_diurn_Tropics_metric:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    local_solar_time:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -30
+      end_latitude: 30
+    mask_landsea:
+      mask_out: land
+    resample_hours:
+      interval: 3
+      offset: 1
+      interpolate: linear
+    climate_statistics:
+      period: hourly
+    convert_units:
+      units: mm day-1
+    distance_metric:
+      metric: rmse
+      coords: [longitude, latitude]
+    multi_model_statistics:
+      span: overlap
+      statistics:
+        - operator: percentile
+          percent: 10
+        - operator: percentile
+          percent: 90
+      exclude: [reference_dataset, MIROC6]
+
+
+diagnostics:
+
+  diurnal_cycle:
+    description: Classical diurnal cycle plot including reference dataset.
+    variables:
+      pr_tropics: &var_settings
+        project: CMIP6
+        timerange: 2000/2000
+        preprocessor: pp_diurn_Tropics
+        short_name: pr
+        exp: historical
+        mip: 3hr
+        ensemble: r1i1p1f1
+        grid: gr
+        reference_dataset: ERA5
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: 'v1', frequency: 1hr,
+             tier: 3, reference_for_metric: true, alias: ERA5}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        group_variables_by: variable_group
+        facet_used_for_labels: alias
+        plots:
+          diurnal_cycle:
+            annual_mean_kwargs: False
+            legend_kwargs:
+              loc: upper right
+            plot_kwargs:
+              'MIROC6':
+                color: red
+                label: '{alias}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 4
+              ERA5:
+                color: black
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              MultiModelPercentile10:
+                color: gray
+                label: '{dataset}'
+                linestyle: '--'
+                linewidth: 1
+                zorder: 2
+              MultiModelPercentile90:
+                color: gray
+                label: '{dataset}'
+                linestyle: '--'
+                linewidth: 1
+                zorder: 2
+              default:
+                color: lightgray
+                label: null
+                linestyle: '-'
+                linewidth: 1
+                zorder: 1
+
+  benchmarking_diurnal_cycle:
+    description: Create "benchmarking" diurnal cycle plot.
+    variables:
+      pr_tropics:
+        <<: *var_settings
+        preprocessor: pp_diurn_Tropics_metric
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{mip}'
+        group_variables_by: variable_group
+        facet_used_for_labels: alias
+        plots:
+          benchmarking_diurnal_cycle:
+            legend_kwargs:
+              loc: upper right
+            plot_kwargs:
+              'MIROC6':
+                color: red
+                label: '{alias}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 4
+            pyplot_kwargs:
+              title: '{short_name}'

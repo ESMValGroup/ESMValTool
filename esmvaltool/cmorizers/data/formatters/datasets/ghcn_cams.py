@@ -24,40 +24,38 @@ logger = logging.getLogger(__name__)
 
 def _extract_variable(short_name, var, cfg, filepath, out_dir):
     """Extract variable."""
-    raw_var = var.get('raw', short_name)
+    raw_var = var.get("raw", short_name)
     cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
 
     # Fix units
-    if 'raw_units' in var:
-        cube.units = var['raw_units']
-    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    if "raw_units" in var:
+        cube.units = var["raw_units"]
+    cmor_info = cfg["cmor_table"].get_variable(var["mip"], short_name)
     cube.convert_units(cmor_info.units)
     utils.convert_timeunits(cube, 1950)
 
     # Fix coordinates
     cube = utils.fix_coords(cube)
-    if 'height2m' in cmor_info.dimensions:
+    if "height2m" in cmor_info.dimensions:
         utils.add_height2m(cube)
 
     # Fix metadata
-    attrs = cfg['attributes']
-    attrs['mip'] = var['mip']
+    attrs = cfg["attributes"]
+    attrs["mip"] = var["mip"]
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
 
     # Save variable
-    utils.save_variable(cube,
-                        short_name,
-                        out_dir,
-                        attrs,
-                        unlimited_dimensions=['time'])
+    utils.save_variable(
+        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+    )
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    filepath = os.path.join(in_dir, cfg['filename'])
+    filepath = os.path.join(in_dir, cfg["filename"])
 
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
+    for short_name, var in cfg["variables"].items():
         logger.info("CMORizing variable '%s'", short_name)
         _extract_variable(short_name, var, cfg, filepath, out_dir)
