@@ -26,7 +26,7 @@ Recipes are stored in `recipes/ref`
 * recipe_model_benchmarking_timeseries_region.yml:
   Time series in comparison with refernce data for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_timeseries.yml <recipe_benchmarking>`
 * recipe_model_benchmarking_annual_cycle_region.yml:
-  Annual cycle in comparison with refernce data for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_annual_cycle.yml <recipe_model_benchmarking_annual_cycle>`
+  Annual cycle in comparison with refernce data for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_annual_cycle.yml <recipe_benchmarking>`
 * recipe_portrait_regions.yml:
     Portrait plot for several regions and variables, based on :ref:`recipe_portrait_CMIP.yml <recipe_portrait>`
 * ref/recipe_ref_scatterplot.yml:
@@ -88,3 +88,11 @@ Example plots:
 
    Zonal mean vertically resolved ozone climatology from CNRM-ESM2-1 compared with ESACCI-OZONE
    for the years 1990 to 2000. Created with recipe_ref_ozone.yml.
+
+.. _fig_ref_7:
+.. figure::  /recipes/figures/ref/timeseries_tas_ambiguous_dataset_Amon_historical_r1i1p1f1.png
+   :align:   center
+   :width:   8cm
+
+   Time series of near-surface air temperature anomalies from MIROC6 compared with HadCRUT5
+   for N.Europe for the years 1980 to 2014 (refernce period 1980 to 2009). Created with recipe_model_benchmarking_timeseries_region.yml.
