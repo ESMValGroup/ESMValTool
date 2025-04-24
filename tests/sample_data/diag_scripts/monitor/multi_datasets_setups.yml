@@ -384,44 +384,31 @@
 - input_data: [tas_amon_2d_time_plev_0.nc, tas_amon_2d_time_plev_1.nc]
   expected_pngs: [hovmoeller_z_vs_time_tas_tas_amon_2d_time_plev_0_Amon.png]
   settings:
-    facet_used_for_labels: alias
-    group_variables_by: short_name
     plots:
       hovmoeller_z_vs_time:
-        cbar_label: Var
-        cbar_label_bias: dVar
-        cbar_kwargs:
-          ticks: [2, 5, 8]
-        cbar_kwargs_bias:
-          ticks: [-5, -2]
         common_cbar: true
-        fontsize: 8
-        log_y: false
-        plot_func: contourf
-        plot_kwargs:
-          default:
-            cmap: YlOrRd
-        plot_kwargs_bias:
-          cmap: seismic
-          norm: centered
-        pyplot_kwargs:
-          suptitle: Suptitle
-        rasterize: true
-        show_y_minor_ticklabels: true
         time_format: "%j"
-        x_pos_stats_avg: -0.2
-        x_pos_stats_bias: 1.2
-- input_data: [tas_amon_2d_time_alt16_0.nc]
+- input_data: [tas_amon_2d_time_alt16_0.nc, tas_amon_2d_time_alt16_1.nc]
   expected_pngs: [hovmoeller_z_vs_time_tas_tas_amon_2d_time_alt16_0_Amon.png]
   settings:
     plots:
       hovmoeller_z_vs_time:
+        log_y: false
+        time_format: "%j"
+        transpose_axes: true
+- input_data: [tas_amon_2d_time_plev_2.nc]
+  expected_pngs: [hovmoeller_z_vs_time_tas_tas_amon_2d_time_plev_2_Amon.png]
+  settings:
+    plots:
+      hovmoeller_z_vs_time:
         plot_func: pcolormesh
-        plot_kwargs:
-          default:
-            vmin: -1
-            vmax: 12
-        show_stats: false
+- input_data: [tas_amon_2d_time_alt16_2.nc]
+  expected_pngs: [hovmoeller_z_vs_time_tas_tas_amon_2d_time_alt16_2_Amon.png]
+  settings:
+    plots:
+      hovmoeller_z_vs_time:
+        plot_func: pcolormesh
+        transpose_axes: true
 
 # map
 - input_data: [tas_amon_2d_lat_lon_0.nc, tas_amon_2d_lat_lon_1.nc]

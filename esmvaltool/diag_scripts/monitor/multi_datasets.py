@@ -1255,7 +1255,9 @@ class MultiDatasets(MonitorBase):
                 },
             },
             "hovmoeller_z_vs_time": {
-                "function": self.create_hovmoeller_z_vs_time_plot,
+                "function": partial(
+                    self.create_2d_plot, "hovmoeller_z_vs_time"
+                ),
                 "coords": (["time", "air_pressure"], ["time", "altitude"]),
                 "provenance": {
                     "authors": [
@@ -1268,25 +1270,12 @@ class MultiDatasets(MonitorBase):
                     ),
                     "plot_types": ["vert"],
                 },
-                "pyplot_kwargs": {},
+                "pyplot_kwargs": {
+                    "xlabel": "time",
+                },
                 "default_settings": {
-                    "cbar_label": "{short_name} [{units}]",
-                    "cbar_label_bias": "Δ{short_name} [{units}]",
-                    "cbar_kwargs": {"orientation": "vertical"},
-                    "cbar_kwargs_bias": {},
-                    "common_cbar": False,
-                    "fontsize": None,
+                    **default_settings_2d,
                     "log_y": True,
-                    "plot_func": "contourf",
-                    "plot_kwargs": {},
-                    "plot_kwargs_bias": {},
-                    "pyplot_kwargs": {},
-                    "rasterize": True,
-                    "show_stats": True,
-                    "time_format": None,
-                    "x_pos_stats_avg": 0.01,
-                    "x_pos_stats_bias": 0.7,
-                    "y_minor_formatter": None,
                 },
             },
             "map": {
@@ -2105,228 +2094,6 @@ class MultiDatasets(MonitorBase):
             dataset["ancestors"] = [filename]
 
         return input_data
-
-    def _plot_hovmoeller_z_vs_time_without_ref(self, plot_func, dataset):
-        """Plot Hovmoeller Z vs. time for single dataset without reference."""
-        plot_type = "hovmoeller_z_vs_time"
-        logger.info(
-            "Plotting Hovmoeller Z vs. time without reference dataset"
-            " for '%s'",
-            self._get_label(dataset),
-        )
-
-        # Make sure that the data has the correct dimensions
-        cube = dataset["cube"]
-
-        # Create plot with desired settings
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot()
-        plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-        plot_kwargs["axes"] = axes
-        plot_hovmoeller = plot_func(cube, **plot_kwargs)
-
-        # Print statistics if desired
-        self._add_stats(plot_type, axes, dataset)
-
-        # Setup colorbar
-        fontsize = (
-            self.plots[plot_type]["fontsize"] or mpl.rcParams["axes.labelsize"]
-        )
-        colorbar = fig.colorbar(
-            plot_hovmoeller,
-            ax=axes,
-            **self._get_cbar_kwargs(plot_type),
-        )
-        colorbar.set_label(
-            self._get_cbar_label(plot_type, dataset),
-            fontsize=fontsize,
-        )
-        colorbar.ax.tick_params(labelsize=fontsize)
-
-        # Customize plot
-        axes.set_title(self._get_label(dataset))
-        fig.suptitle(dataset["long_name"])
-        z_coord = cube.coord(axis="Z")
-        axes.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
-        if self.plots[plot_type]["log_y"]:
-            axes.set_yscale("log")
-            axes.get_yaxis().set_major_formatter(FormatStrFormatter("%.1f"))
-        if self.plots[plot_type]["y_minor_formatter"] is not None:
-            axes.get_yaxis().set_minor_locator(AutoMinorLocator())
-            axes.get_yaxis().set_minor_formatter(
-                FormatStrFormatter(self.plots[plot_type]["y_minor_formatter"]),
-            )
-        else:
-            axes.get_yaxis().set_minor_formatter(NullFormatter())
-        if self.plots[plot_type]["time_format"] is not None:
-            axes.get_xaxis().set_major_formatter(
-                mdates.DateFormatter(self.plots[plot_type]["time_format"]),
-            )
-        axes.set_xlabel("time")
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"],
-            dataset,
-        )
-
-        # Rasterization
-        if self.plots[plot_type]["rasterize"]:
-            self._set_rasterized([axes])
-
-        # File paths
-        plot_path = self.get_plot_path(plot_type, dataset)
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-
-        return (plot_path, {netcdf_path: cube})
-
-    def _plot_hovmoeller_z_vs_time_with_ref(
-        self,
-        plot_func,
-        dataset,
-        ref_dataset,
-    ):
-        """Plot Hovmoeller Z vs. time for single dataset with reference."""
-        plot_type = "hovmoeller_z_vs_time"
-        logger.info(
-            "Plotting Hovmoeller z vs. time with reference dataset"
-            " '%s' for '%s'",
-            self._get_label(ref_dataset),
-            self._get_label(dataset),
-        )
-
-        # Make sure that the data has the correct dimensions
-        cube = dataset["cube"]
-        ref_cube = ref_dataset["cube"]
-
-        # Create single figure with multiple axes
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        gridspec = GridSpec(
-            5,
-            4,
-            figure=fig,
-            height_ratios=[1.0, 1.0, 0.4, 1.0, 1.0],
-        )
-
-        # Options used for all subplots
-        plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-        fontsize = (
-            self.plots[plot_type]["fontsize"] or mpl.rcParams["axes.labelsize"]
-        )
-
-        # Plot dataset (top left)
-        axes_data = fig.add_subplot(gridspec[0:2, 0:2])
-        plot_kwargs["axes"] = axes_data
-        plot_data = plot_func(cube, **plot_kwargs)
-        axes_data.set_title(self._get_label(dataset), pad=3.0)
-        z_coord = cube.coord(axis="Z")
-        axes_data.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
-        if self.plots[plot_type]["log_y"]:
-            axes_data.set_yscale("log")
-            axes_data.get_yaxis().set_major_formatter(
-                FormatStrFormatter("%.1f"),
-            )
-        if self.plots[plot_type]["y_minor_formatter"] is not None:
-            axes_data.get_yaxis().set_minor_locator(AutoMinorLocator())
-            axes_data.get_yaxis().set_minor_formatter(
-                FormatStrFormatter(self.plots[plot_type]["y_minor_formatter"]),
-            )
-        else:
-            axes_data.get_yaxis().set_minor_formatter(NullFormatter())
-        if self.plots[plot_type]["time_format"] is not None:
-            axes_data.get_xaxis().set_major_formatter(
-                mdates.DateFormatter(self.plots[plot_type]["time_format"]),
-            )
-        self._add_stats(plot_type, axes_data, dataset)
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"],
-            dataset,
-        )
-
-        # Plot reference dataset (top right)
-        # Note: make sure to use the same vmin and vmax than the top left
-        # plot if a common colorbar is desired
-        axes_ref = fig.add_subplot(
-            gridspec[0:2, 2:4],
-            sharex=axes_data,
-            sharey=axes_data,
-        )
-        plot_kwargs["axes"] = axes_ref
-        if self.plots[plot_type]["common_cbar"]:
-            plot_kwargs.setdefault("vmin", plot_data.get_clim()[0])
-            plot_kwargs.setdefault("vmax", plot_data.get_clim()[1])
-        plot_ref = plot_func(ref_cube, **plot_kwargs)
-        axes_ref.set_title(self._get_label(ref_dataset), pad=3.0)
-        plt.setp(axes_ref.get_yticklabels(), visible=False)
-        self._add_stats(plot_type, axes_ref, ref_dataset)
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"],
-            ref_dataset,
-        )
-
-        # Add colorbar(s)
-        self._add_colorbar(
-            plot_type,
-            plot_data,
-            axes_data,
-            dataset,
-            plot_ref,
-            axes_ref,
-            ref_dataset,
-        )
-
-        # Plot bias (bottom center)
-        bias_cube = cube - ref_cube
-        axes_bias = fig.add_subplot(
-            gridspec[3:5, 1:3],
-            sharex=axes_data,
-            sharey=axes_data,
-        )
-        plot_kwargs_bias = self._get_plot_kwargs(plot_type, dataset, bias=True)
-        plot_kwargs_bias["axes"] = axes_bias
-        plot_bias = plot_func(bias_cube, **plot_kwargs_bias)
-        axes_bias.set_title(
-            f"{self._get_label(dataset)} - {self._get_label(ref_dataset)}",
-            pad=3.0,
-        )
-        axes_bias.set_xlabel("time")
-        axes_bias.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
-        cbar_kwargs_bias = self._get_cbar_kwargs(plot_type, bias=True)
-        cbar_bias = fig.colorbar(plot_bias, ax=axes_bias, **cbar_kwargs_bias)
-        cbar_bias.set_label(
-            self._get_cbar_label(plot_type, dataset, bias=True),
-            fontsize=fontsize,
-        )
-        cbar_bias.ax.tick_params(labelsize=fontsize)
-        self._add_stats(
-            plot_type,
-            axes_bias,
-            dataset,
-            ref_dataset,
-        )
-
-        # Customize plot
-        fig.suptitle(dataset["long_name"])
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"],
-            dataset,
-        )
-
-        # Rasterization
-        if self.plots[plot_type]["rasterize"]:
-            self._set_rasterized([axes_data, axes_ref, axes_bias])
-
-        # File paths
-        plot_path = self.get_plot_path(plot_type, dataset)
-        netcdf_path = get_diagnostic_filename(
-            Path(plot_path).stem + "_{pos}",
-            self.cfg,
-        )
-        netcdf_paths = {
-            netcdf_path.format(pos="top_left"): cube,
-            netcdf_path.format(pos="top_right"): ref_cube,
-            netcdf_path.format(pos="bottom"): bias_cube,
-        }
-
-        return (plot_path, netcdf_paths)
 
     def _plot_hovmoeller_time_vs_lat_or_lon_with_ref(
         self,
@@ -3679,69 +3446,6 @@ class MultiDatasets(MonitorBase):
             else:
                 (plot_path, netcdf_paths) = (
                     self._plot_hovmoeller_time_vs_lat_or_lon_with_ref(
-                        plot_func,
-                        dataset,
-                        ref_dataset,
-                    )
-                )
-                ancestors.append(ref_dataset["filename"])
-
-            # Save plot
-            plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
-            logger.info("Wrote %s", plot_path)
-            plt.close()
-
-            # Save netCDFs
-            for netcdf_path, cube in netcdf_paths.items():
-                io.iris_save(cube, netcdf_path)
-
-            # Provenance tracking
-            provenance_record = {
-                "ancestors": ancestors,
-                "long_names": [dataset["long_name"]],
-            }
-            provenance_record.update(
-                self.plot_settings[plot_type]["provenance"],
-            )
-            with ProvenanceLogger(self.cfg) as provenance_logger:
-                provenance_logger.log(plot_path, provenance_record)
-                for netcdf_path in netcdf_paths:
-                    provenance_logger.log(netcdf_path, provenance_record)
-
-    def create_hovmoeller_z_vs_time_plot(self, datasets):
-        """Create Hovmoeller Z vs. time plot."""
-        plot_type = "hovmoeller_z_vs_time"
-
-        # Get reference dataset if possible
-        ref_dataset = self._get_reference_dataset(datasets)
-        if ref_dataset is None:
-            logger.info("Plotting %s without reference dataset", plot_type)
-        else:
-            logger.info(
-                "Plotting %s with reference dataset '%s'",
-                plot_type,
-                self._get_label(ref_dataset),
-            )
-
-        # Get plot function
-        plot_func = self._get_plot_func(plot_type)
-
-        # Create a single plot for each dataset (incl. reference dataset if
-        # given)
-        for dataset in datasets:
-            if dataset == ref_dataset:
-                continue
-            ancestors = [dataset["filename"]]
-            if ref_dataset is None:
-                (plot_path, netcdf_paths) = (
-                    self._plot_hovmoeller_z_vs_time_without_ref(
-                        plot_func,
-                        dataset,
-                    )
-                )
-            else:
-                (plot_path, netcdf_paths) = (
-                    self._plot_hovmoeller_z_vs_time_with_ref(
                         plot_func,
                         dataset,
                         ref_dataset,
