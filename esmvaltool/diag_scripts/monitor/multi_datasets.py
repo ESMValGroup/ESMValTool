@@ -1222,7 +1222,9 @@ class MultiDatasets(MonitorBase):
                 },
             },
             "hovmoeller_time_vs_lat_or_lon": {
-                "function": self.create_hovmoeller_time_vs_lat_or_lon_plot,
+                "function": partial(
+                    self.create_2d_plot, "hovmoeller_time_vs_lat_or_lon"
+                ),
                 "coords": (["time", "latitude"], ["time", "longitude"]),
                 "provenance": {
                     "authors": [
@@ -1235,23 +1237,11 @@ class MultiDatasets(MonitorBase):
                     ),
                     "plot_types": ["zonal"],
                 },
-                "pyplot_kwargs": {},
+                "pyplot_kwargs": {
+                    "xlabel": "time",
+                },
                 "default_settings": {
-                    "cbar_label": "{short_name} [{units}]",
-                    "cbar_label_bias": "Δ{short_name} [{units}]",
-                    "cbar_kwargs": {"orientation": "vertical"},
-                    "cbar_kwargs_bias": {},
-                    "common_cbar": False,
-                    "fontsize": None,
-                    "plot_func": "contourf",
-                    "plot_kwargs": {},
-                    "plot_kwargs_bias": {},
-                    "pyplot_kwargs": {},
-                    "rasterize": True,
-                    "show_y_minor_ticks": True,
-                    "show_x_minor_ticks": True,
-                    "time_format": None,
-                    "time_on": "y-axis",
+                    **default_settings_2d,
                 },
             },
             "hovmoeller_z_vs_time": {
@@ -3494,6 +3484,16 @@ class MultiDatasets(MonitorBase):
                 warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
                 self.plots[plot_type].pop("show_y_minor_ticklabels")
                 self.plots[plot_type]["y_minor_formatter"] = "%.1f"
+            if "time_on" in self.plots[plot_type]:
+                msg = (
+                    f"The option `time_on` for plot type `{plot_type}` has "
+                    f"been deprecated in ESMValTool version 2.13.0 and is "
+                    f"scheduled for removal in version 2.15.0. Please use the "
+                    f"option `transpose_axes` instead."
+                )
+                warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
+                time_on = self.plots[plot_type].pop("time_on")
+                self.plots[plot_type]["transpose_axes"] = time_on == "y-axis"
 
             # Inspect plot function to determine arguments
             plot_parameters = inspect.signature(plot_function).parameters
