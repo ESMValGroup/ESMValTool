@@ -37,14 +37,6 @@ preprocessors:
           - N.Europe
     area_statistics:
       operator: mean
-    multi_model_statistics:
-      span: overlap
-      statistics:
-        - operator: percentile
-          percent: 10
-        - operator: percentile
-          percent: 90
-      exclude: [reference_dataset, MIROC6]
 
   pp_abs_200:
     extract_levels:
@@ -63,15 +55,6 @@ preprocessors:
           - N.Europe
     area_statistics:
       operator: mean
-    multi_model_statistics:
-      span: overlap
-      statistics:
-        - operator: percentile
-          percent: 10
-        - operator: percentile
-          percent: 90
-      exclude: [reference_dataset, MIROC6]
-
 
   pp:
     regrid:
@@ -87,23 +70,14 @@ preprocessors:
     anomalies:
       period: month
       reference:
-        start_year: 2001
+        start_year: 1980
         start_month: 1
         start_day: 1
-        end_year: 2010
+        end_year: 2009
         end_month: 12
         end_day: 31
     area_statistics:
       operator: mean
-    multi_model_statistics:
-      span: overlap
-      statistics:
-        - operator: percentile
-          percent: 10
-        - operator: percentile
-          percent: 90
-      exclude: [reference_dataset, MIROC6]
-
 
   pp_200:
     extract_levels:
@@ -123,23 +97,14 @@ preprocessors:
     anomalies:
       period: month
       reference:
-        start_year: 2001
+        start_year: 1980
         start_month: 1
         start_day: 1
-        end_year: 2010
+        end_year: 2009
         end_month: 12
         end_day: 31
     area_statistics:
       operator: mean
-    multi_model_statistics:
-      span: overlap
-      statistics:
-        - operator: percentile
-          percent: 10
-        - operator: percentile
-          percent: 90
-      exclude: [reference_dataset, MIROC6]
-
 
 
 diagnostics:
@@ -148,7 +113,7 @@ diagnostics:
     description: Plot "classical" time series of global mean anomalies including a reference dataset.
     variables:
       tas: &var_default
-        start_year: 2001
+        start_year: 1980
         end_year: 2014
         preprocessor: pp
         project: CMIP6
@@ -247,7 +212,7 @@ diagnostics:
     description: Plot "classical" time series of global mean including a reference dataset.
     variables:
       tas: &var_default_abs
-        start_year: 2001
+        start_year: 1980
         end_year: 2014
         preprocessor: pp_abs
         project: CMIP6
@@ -272,7 +237,7 @@ diagnostics:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, reference_for_metric: true}
       hus_200:
-        <<: *var_default
+        <<: *var_default_abs
         short_name: hus
         reference_dataset: ERA5
         preprocessor: pp_abs_200
@@ -280,7 +245,7 @@ diagnostics:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, reference_for_metric: true}
       ua_200:
-        <<: *var_default
+        <<: *var_default_abs
         short_name: ua
         reference_dataset: ERA5
         preprocessor: pp_abs_200
@@ -320,18 +285,6 @@ diagnostics:
                 linestyle: '-'
                 linewidth: 2
                 zorder: 3
-              MultiModelPercentile10:
-                color: gray
-                label: '{dataset}'
-                linestyle: '--'
-                linewidth: 1
-                zorder: 2
-              MultiModelPercentile90:
-                color: gray
-                label: '{dataset}'
-                linestyle: '--'
-                linewidth: 1
-                zorder: 2
               default:
                 color: lightgray
                 label: null

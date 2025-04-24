@@ -33,6 +33,14 @@ Recipes are stored in `recipes/ref`
     Portrait plot for several regions and variables, based on :ref:`recipe_portrait_CMIP.yml <recipe_portrait>`
 * ref/recipe_ref_scatterplot.yml:
   2D histograms with focus on clouds
+* ref/recipe_ref_sea_ice_area_basic.yml:
+  Seasonal cycle of Arctic (NH) and Antarctic (SH) sea ice area, time series
+  of Arctic September (NH) and Antarctic February (SH) sea ice area
+* ref/recipe_ref_ozone.yml:
+  NH/SH polar cap (60 degrees to 90 degrees) March/September total column ozone
+  time series, zonal mean total column ozone vs. time map plot, zonal mean
+  total column ozone vs. annual cycle map plot, altitude vs. zonal mean
+  ozone profile climatology map plot
 
 
 Example plots:
@@ -53,7 +61,6 @@ Example plots:
    effect from CERES-EBAF Ed4.2 (solid black), ESACCI-CLOUD (dashed black),
    ISCCP-FH (dotted black) and the MPI-ESM1-2-LR model (blue).
 
-.. _fig_ref_3:
 .. figure::  /recipes/figures/ref/seaborn_jointplot.png
    :align:   center
 
@@ -61,6 +68,30 @@ Example plots:
    effect (CERES-EBAF) for the years 2001-2016 with 1D histograms attached.
 
 .. _fig_ref_4:
+.. figure::  /recipes/figures/ref/annual_cycle_sea_ice_area_nh_ambiguous_dataset_ambiguous_mip_historical_r1i1p1f1.png
+   :align:   center
+   :width:   8cm
+
+   Average seasonal cycle of the Arctic (NH) sea ice area from MPI-ESM1-2-LR
+   (red line) compared with OSISAF/CCI (blue line). Created with recipe_ref_sea_ice_area_basic.yml.
+
+.. _fig_ref_5:
+.. figure::  /recipes/figures/ref/timeseries_sea_ice_area_nh_sep_ambiguous_dataset_ambiguous_mip_historical_r1i1p1f1.png
+   :align:   center
+   :width:   8cm
+
+   Time series of Arctic (NH) September (NH) sea ice area from MPI-ESM1-2-LR
+   (red line) compared with OSISAF/CCI (blue line). Created with recipe_ref_sea_ice_area_basic.yml.
+
+.. _fig_ref_6:
+.. figure::  /recipes/figures/ref/zonal_mean_profile_o3_CNRM-ESM2-1_historical.png
+   :align:   center
+   :width:   8cm
+
+   Zonal mean vertically resolved ozone climatology from CNRM-ESM2-1 compared with ESACCI-OZONE
+   for the years 1990 to 2000. Created with recipe_ref_ozone.yml.
+
+.. _fig_ref_7:
 .. figure::  /recipes/figures/ref/benchmarking_boxplot_tas_MIROC6_Amon_historical_r1i1p1f1.png
    :align:   center
 

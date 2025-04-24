@@ -104,7 +104,7 @@ dependencies:
 
   # R and dependencies
   - cdo
-  - r-base >=3.5,<4.3.0  # https://github.com/ESMValGroup/ESMValTool/pull/3924
+  - r-base >=3.5
   - r-abind
   - r-akima
   - r-climdex.pcic
