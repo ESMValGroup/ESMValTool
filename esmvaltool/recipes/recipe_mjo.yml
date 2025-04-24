@@ -25,39 +25,30 @@ documentation:
   projects:
     - ukesm
 
-
-#preprocessor:
-#  prep0:
-
 datasets:
   #- {dataset: bcc-csm1-1, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
   #- {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
   - {dataset: ACCESS1-3, 'institute': CSIRO-BOM, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
 
 preprocessors:
-    pp_precip:
-      extract_region:
-        start_longitude: 0.
-        end_longitude: 360.
-        start_latitude: -15.
-        end_latitude: 15.
-      convert_units:
-        units: mm day-1
-    pp_olr:
-      extract_region:
-        start_longitude: 0.
-        end_longitude: 360.
-        start_latitude: -15.
-        end_latitude: 15.
-    pp_levels_winds:
-      extract_region:
-        start_longitude: 0.
-        end_longitude: 360.
-        start_latitude: -15.
-        end_latitude: 15.
-      extract_levels:
-        levels: [85000., 20000.]
-        scheme: linear
+  extract_region:
+    &extract_region
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -15.
+      end_latitude: 15.
+
+  pp_precip:
+    <<: *extract_region
+    convert_units:
+      units: mm day-1
+
+  pp_levels_winds:
+    <<: *extract_region
+    extract_levels:
+      levels: [85000., 20000.]
+      scheme: linear
 
 diagnostics:
   eqw_spectra_pr:
@@ -67,6 +58,7 @@ diagnostics:
         mip: day
         preprocessor: pp_precip
     scripts:
+      &main
       main:
         script: mjo/mjo_diag.py
         reference_datasets: [ "ERA-Interim", "BNU-ESM", "ACCESS1-0", "ACCESS1-3" ]
@@ -82,10 +74,4 @@ diagnostics:
         mip: day
         preprocessor: pp_levels_winds
     scripts:
-      main:
-        script: mjo/mjo_diag.py
-        reference_datasets: [ "ERA-Interim", "BNU-ESM", "ACCESS1-0", "ACCESS1-3" ]
-        regrid_dataset: ERA-Interim
-        mip_name: CMIP
-        base_range: [ 1981, 2000 ]
-        analysis_range: [ 1981, 2000 ]
+      *main
