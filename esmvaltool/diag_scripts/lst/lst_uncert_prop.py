@@ -278,7 +278,8 @@ def two_step_calculation(cube):
             for j in range(0,lon_len,5):
                 this_region = cube[time_index,i:i+5,j:j+5]
     
-                value = np.sqrt((this_region).collapsed(['latitude','longitude'], iris.analysis.MEAN).data)
+                value = (this_region).collapsed(['latitude','longitude'], iris.analysis.MEAN).data
+                # sqet removed email 23-24 4 2025
                 # SUM to MEAN CLAIRE'S MARCH email, sum of squares to just sum from 18/4/25 email
                 # This line changes form CLAIRE's March email
                 grid_means.append(value)# / (25 - np.sum(this_region.data.mask))) # NO sqrt here now!
@@ -350,7 +351,7 @@ def eq_correlation_with_biome(cube_loc_sfc, lcc):
                 biome_quadrature = np.array([])
                 for item in uncert_by_biome:
                     biome_quadrature = np.append(biome_quadrature, # 1/n moved CLAIRE'S email MARCH
-                                                 np.sqrt((1/len(item)) * np.sum(np.array(item)))
+                                                 (1/len(item)) * np.sum(np.array(item)) # sqrt removed email  23 4 25
                                                  # not squares to sum, see 18 4 25 email from Claire
                                                 )              
                 # UPDATE from CLAIRE'S email MARCH
