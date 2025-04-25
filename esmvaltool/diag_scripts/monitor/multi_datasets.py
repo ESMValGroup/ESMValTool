@@ -1,107 +1,82 @@
 #!/usr/bin/env python
-"""Monitoring diagnostic to show multiple datasets in one plot.
+"""Monitoring diagnostic to visualize multiple datasets.
 
 Description
 -----------
-This diagnostic can be used to visualize multiple datasets in one plot.
+This diagnostic can be used to visualize multiple datasets in a single plot. A
+large variety of different plot types is supported.
 
-For some plot types, a reference dataset can be defined. For this, use the
-facet ``reference_for_monitor_diags: true`` in the definition of the dataset in
-the recipe. Note that at most one reference dataset per variable is supported.
+Currently supported plot types
+------------------------------
 
-Please note that all benchmarking plot types (i.e. all plot types starting with
-``benchmarking_``) require exactly one dataset (the dataset to be benchmarked)
-to have the facet ``benchmark_dataset: true`` in the dataset entry of the
-recipe. For benchmarking line plots (i.e. ``benchmarking_annual_cycle``,
-``benchmarking_diurnal_cycle``, ``benchmarking_timeseries``), it is recommended
-to specify a particular line color and line style in the ``scripts`` section of
-the recipe for the dataset to be benchmarked (``benchmark_dataset: true``) so
-that this dataset is easy to identify in the plot.
+Plot types can be specified with the :ref:`recipe option
+<diag_monitor_multi_datasets_recipe_options>` ``plots``. All plots can be
+customized with additional :ref:`plot-specific options
+<diag_monitor_multi_datasets_recipe_options>`.
 
-Currently supported plot types (use the option ``plots`` to specify them):
-    - Time series (plot type ``timeseries``): for each variable separately, all
-      datasets are plotted in one single figure. Input data needs to be 1D with
-      single dimension `time`.
-    - Annual cycle (plot type ``annual_cycle``): for each variable separately,
-      all datasets are plotted in one single figure. Input data needs to be 1D
-      with single dimension `month_number`.
-    - Diurnal cycle (plot type ``diurnal_cycle``): for each variable
-      separately, all datasets are plotted in one single figure. Input data
-      needs to be 1D with single dimension `hour`.
-    - Maps (plot type ``map``): for each variable and dataset, an individual
-      map is plotted. If a reference dataset is defined, also include this
-      dataset and a bias plot into the figure. Note that if a reference dataset
-      is defined, all input datasets need to be given on the same horizontal
-      grid (you can use the preprocessor :func:`esmvalcore.preprocessor.regrid`
-      for this). Input data needs to be 2D with dimensions `latitude`,
-      `longitude`.
-    - Zonal mean profiles (plot type ``zonal_mean_profile``):
-      for each variable and dataset, an individual profile is plotted. If a
-      reference dataset is defined, also include this dataset and a bias plot
-      into the figure. Note that if a reference dataset is defined, all input
-      datasets need to be given on the same horizontal and vertical grid (you
-      can use the preprocessors :func:`esmvalcore.preprocessor.regrid` and
-      :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
-      needs to be 2D with dimensions `latitude`, `altitude`/`air_pressure`.
-    - 1D profiles (plot type ``1d_profile``): for each variable separately, all
-      datasets are plotted in one single figure. Input data needs to be 1D with
-      single dimension `altitude` / `air_pressure`
-    - Variable vs. latitude plot (plot type ``variable_vs_lat``):
-      for each variable separately, all datasets are plotted in one
-      single figure. Input data needs to be 1D with single
-      dimension `latitude`.
-    - Hovmoeller Z vs. time (plot type ``hovmoeller_z_vs_time``): for each
-      variable and dataset, an individual figure is plotted. If a reference
-      dataset is defined, also include this dataset and a bias plot into the
-      figure. Note that if a reference dataset is defined, all input datasets
-      need to be given on the same temporal and vertical grid (you can use
-      the preprocessors :func:`esmvalcore.preprocessor.regrid_time` and
-      :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
-      needs to be 2D with dimensions `time`, `altitude`/`air_pressure`.
-    - Hovmoeller time vs. latitude or longitude (plot type
-      ``hovmoeller_time_vs_lat_or_lon``): for each variable and dataset, an
-      individual figure is plotted. If a reference dataset is defined, also
-      include this dataset and a bias plot into the figure. Note that if a
-      reference dataset is defined, all input datasets need to be given on the
-      same temporal and horizontal grid (you can use the preprocessors
-      :func:`esmvalcore.preprocessor.regrid_time` and
-      :func:`esmvalcore.preprocessor.regrid` for this). Input data
-      needs to be 2D with dimensions `time`, `latitude`/`longitude`.
-    - Hovmoeller annual cycle vs. latitude or longitude (plot type
-      ``hovmoeller_anncyc_vs_lat_or_lon``): for each variable and dataset, an
-      individual figure is plotted. If a reference dataset is defined, also
-      include this dataset and a bias plot into the figure. Note that if a
-      reference dataset is defined, all input datasets need to be given on the
-      same temporal and horizontal grid (you can use the preprocessors
-      :func:`esmvalcore.preprocessor.regrid_time` and
-      :func:`esmvalcore.preprocessor.regrid` for this). Input data
-      needs to be 2D with dimensions `month_number`, `latitude`/`longitude`.
-    - Benchmarking plot annual cycles (``benchmarking_annual_cycle``):
-      Same as plot type ``annual_cycle`` but including the range of metric
-      results from an ensemble of models as shading.
-    - Benchmarking box plots (``benchmarking_boxplot``):
-      Box plots showing the metric results for given variables from a given
-      model and the range from the first quartile to the third quartile, the
-      median, and minimum and maximum values (excluding the outliers) from
-      an ensemble of models for comparison.
-    - Benchmarking plot diurnal cycles (``benchmarking_diurnal_cycle``):
-      Same as plot type ``diurnal_cycle`` but including range of metric results
-      from an ensemble of models as shading.
-    - Benchmarking map plots (``benchmarking_map``):
-      Same as plot type ``map`` but with stippled areas masking grid cells
-      where the selected metric is smaller than the 90% percentile of
-      corresponding values from an ensemble of models used for comparison.
-    - Benchmarking plot time series (``benchmarking_timeseries``):
-      Same as plot type ``timeseries`` but including the range of metric
-      results from an ensemble of models as shading.
-    - Benchmarking plot zonal mean profiles (plot type ``benchmarking_zonal``):
-      Same as plot type ``zonal_mean_profile`` but with stippled areas masking
-      grid cells where the selected metric is smaller than the 90% percentile
-      of corresponding values from an ensemble of models used for comparison.
+- ``1d_profile`` (1D plot): plot 1D profile. Input data needs single dimension
+  `altitude` or `air_pressure`.
+- ``annual_cycle`` (1D plot): plot annual cycle. Input data needs single
+  dimension `month_number`.
+- ``benchmarking_annual_cycle`` (1D plot): benchmarking version of
+  ``annual_cycle``. Input data needs single dimension `month_number`.
+- ``benchmarking_boxplot`` (boxplot): plot boxplot. Input data needs to be
+  scalar.
+- ``benchmarking_diurnal_cycle`` (1D plot): benchmarking version of
+  ``diurnal_cycle``. Input data needs single dimension `hour`.
+- ``benchmarking_map`` (2D plot): benchmarking version of ``map``. Input data
+  needs dimensions `(longitude, latitude)`.
+- ``benchmarking_zonal`` (2D plot): benchmarking version of
+  ``zonal_mean_profile``. Input data needs dimensions `(latitude, altitude)` or
+  `latitude, air_pressure`.
+- ``benchmarking_timeseries`` (1D plot): benchmarking version of
+  ``timeseries``. Input data needs single dimension `time`.
+- ``diurnal_cycle`` (1D plot): plot diurnal cycle. Input data needs single
+  dimension `hour`.
+- ``hovmoeller_anncyc_vs_lat_or_lon`` (2D plot): plot Hovmoeller plot. Input
+  data needs dimensions `(month_number, latitude)` or `(month_number,
+  longitude)`.
+- ``hovmoeller_time_vs_lat_or_lon`` (2D plot): plot Hovmoeller plot. Input data
+  needs dimensions `(time, latitude)` or `(time, longitude)`.
+- ``hovmoeller_z_vs_time`` (2D plot): plot Hovmoeller plot. Input data needs
+  dimensions `(time, altitude)` or `(time, air_pressure)`.
+- ``map`` (2D plot): plot map plot. Input data needs dimensions `(longitude,
+  latitude)`.
+- ``timeseries`` (1D plot): plot time series. Input data needs single dimension
+  `time`.
+- ``variable_vs_lat`` (1D plot): plot variable vs. latitude. Input data needs
+  single dimension `latitude`.
+- ``zonal_mean_profile`` (2D plot): plot zonal mean profile. Input data needs
+  dimensions `(latitude, altitude)` or `latitude, air_pressure`.
+
+Each plot type belongs to one or more classes which define how the data is
+plotted:
+
+- Class *1D plot*: for each variable separately, all datasets are plotted in
+  one single figure. Input data needs to be 1D.
+- Class *2D plot*: for each variable and dataset, an individual figure is
+  plotted. Input data needs to be 2D. A single reference dataset can be defined
+  by setting the facet ``reference_for_monitor_diags: true`` in the dataset
+  definition in the recipe. In this case, three panels are plotted, incl. a
+  bias. Note that if a reference dataset is defined, all input datasets need to
+  be given on the same horizontal and vertical grid (you can use the
+  preprocessors :func:`esmvalcore.preprocessor.regrid` and
+  :func:`esmvalcore.preprocessor.extract_levels` for this).
+- Class *boxplot*: one figure for all datasets is plotted. Input data needs to
+  be 0D.
+
+In addition, for many plot types, a benchmarking version exists
+(``benchmarking_*``). These plots include envelopes (1D plots) or hatching (2D
+plots) to visualize data ranges (e.g., multi-model percentiles) in addition to
+the data itself. For these plots, at least one benchmarking dataset needs to be
+defined by setting the facet ``benchmark_dataset: true`` in the dataset
+definition in the recipe.
 
 Author
 ------
 Manuel Schlund (DLR, Germany)
+
+.. _diag_monitor_multi_datasets_recipe_options:
 
 Configuration options in recipe
 -------------------------------
@@ -151,6 +126,8 @@ savefig_kwargs: dict, optional
 seaborn_settings: dict, optional
     Options for :func:`seaborn.set_theme` (affects all plots). By default, uses
     ``style: ticks``.
+
+.. _diag_monitor_multi_datasets_plot_options:
 
 Configuration options for plot type ``timeseries``
 --------------------------------------------------
