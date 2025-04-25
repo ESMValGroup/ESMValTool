@@ -129,9 +129,8 @@ plots: dict, optional
     must be ``timeseries``, ``annual_cycle``, ``map``, ``zonal_mean_profile``,
     ``1d_profile``, ``variable_vs_lat``, ``hovmoeller_z_vs_time``,
     ``hovmoeller_time_vs_lat_or_lon``, ``hovmoeller_anncyc_vs_lat_or_lon``.
-    Dictionary values are dictionaries used
-    as options for the corresponding plot. The allowed options for the
-    different plot types are given below.
+    Dictionary values are dictionaries used as options for the corresponding
+    plot. The allowed options for the different plot types are given below.
 plot_filename: str, optional
     Filename pattern for the plots.
     Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
