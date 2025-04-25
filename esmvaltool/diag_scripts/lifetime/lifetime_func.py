@@ -321,7 +321,7 @@ def extract_region(dataset, region, case="reaction"):
         )
 
         tp_4d = broadcast_to_shape(
-            dataset["tropopause"].data,
+            dataset["tropopause"].core_data(),
             var.shape,
             tuple(
                 var.coord_dims(item)[0]
