@@ -237,8 +237,6 @@
           ylabel: Y Label
           xlim: [0, 100]
         rasterize: false
-        show_x_minor_ticks: true
-        show_y_minor_ticks: true
         transpose_axes: true
         x_major_formatter: "%d"
         x_minor_formatter: "%d"
@@ -483,8 +481,6 @@
           ylabel: Y Label
           xlim: [0, 100]
         rasterize: false
-        show_x_minor_ticks: true
-        show_y_minor_ticks: true
         x_major_formatter: "%d"
         x_minor_formatter: "%d"
         x_pos_stats_avg: 0.1
@@ -528,10 +524,8 @@
         show_x_minor_ticks: true
         show_y_minor_ticks: true
         x_major_formatter: "%d"
-        x_minor_formatter: "%d"
         x_pos_stats_avg: 0.1
         y_major_formatter: "%.3f"
-        y_minor_formatter: "%.4f"
 - input_data: [tas_amon_2d_alt16_lat_2.nc]
   expected_pngs: [zonal_mean_profile_tas_tas_amon_2d_alt16_lat_2_Amon.png]
   settings:

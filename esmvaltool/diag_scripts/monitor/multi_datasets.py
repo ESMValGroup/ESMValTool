@@ -129,8 +129,9 @@ plots: dict, optional
     must be ``timeseries``, ``annual_cycle``, ``map``, ``zonal_mean_profile``,
     ``1d_profile``, ``variable_vs_lat``, ``hovmoeller_z_vs_time``,
     ``hovmoeller_time_vs_lat_or_lon``, ``hovmoeller_anncyc_vs_lat_or_lon``.
-    Dictionary values are dictionaries used as options for the corresponding
-    plot. The allowed options for the different plot types are given below.
+    Dictionary values are dictionaries used
+    as options for the corresponding plot. The allowed options for the
+    different plot types are given below.
 plot_filename: str, optional
     Filename pattern for the plots.
     Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
@@ -953,8 +954,6 @@ class MultiDatasets(MonitorBase):
             "plot_kwargs": {},
             "pyplot_kwargs": {},
             "rasterize": False,
-            "show_x_minor_ticks": False,
-            "show_y_minor_ticks": False,
             "time_format": None,
             "transpose_axes": False,
             "x_major_formatter": None,
@@ -981,8 +980,6 @@ class MultiDatasets(MonitorBase):
             "pyplot_kwargs": {},
             "rasterize": True,
             "show_stats": True,
-            "show_x_minor_ticks": False,
-            "show_y_minor_ticks": False,
             "time_format": None,
             "transpose_axes": False,
             "x_major_formatter": None,
@@ -1622,15 +1619,6 @@ class MultiDatasets(MonitorBase):
         else:
             y_minor_locator = AutoMinorLocator()
 
-        if self.plots[plot_type]["show_x_minor_ticks"]:
-            axes.get_xaxis().set_minor_locator(x_minor_locator)
-        else:
-            axes.get_xaxis().set_minor_locator(NullLocator())
-        if self.plots[plot_type]["show_y_minor_ticks"]:
-            axes.get_yaxis().set_minor_locator(y_minor_locator)
-        else:
-            axes.get_yaxis().set_minor_locator(NullLocator())
-
         if self.plots[plot_type]["x_major_formatter"] is not None:
             axes.get_xaxis().set_major_formatter(
                 FormatStrFormatter(self.plots[plot_type]["x_major_formatter"]),
@@ -1640,6 +1628,9 @@ class MultiDatasets(MonitorBase):
             axes.get_xaxis().set_minor_formatter(
                 FormatStrFormatter(self.plots[plot_type]["x_minor_formatter"]),
             )
+        else:
+            axes.get_xaxis().set_minor_locator(NullLocator())
+
         if self.plots[plot_type]["y_major_formatter"] is not None:
             axes.get_yaxis().set_major_formatter(
                 FormatStrFormatter(self.plots[plot_type]["y_major_formatter"]),
@@ -1649,6 +1640,8 @@ class MultiDatasets(MonitorBase):
             axes.get_yaxis().set_minor_formatter(
                 FormatStrFormatter(self.plots[plot_type]["y_minor_formatter"]),
             )
+        else:
+            axes.get_yaxis().set_minor_locator(NullLocator())
 
         if self.plots[plot_type]["time_format"] is not None:
             if self.plots[plot_type]["transpose_axes"]:
@@ -2714,6 +2707,32 @@ class MultiDatasets(MonitorBase):
             logger.info("Plotting %s", plot_type)
 
             # Handle deprecations
+            if "show_x_minor_ticks" in self.plots[plot_type]:
+                msg = (
+                    f"The option `show_x_minor_ticks` for plot type "
+                    f"`{plot_type}` has been deprecated in ESMValTool version "
+                    f"2.13.0 and is scheduled for removal in version 2.15.0. "
+                    f"Please use the option `x_minor_formatter: null/''` (for "
+                    f"`show_x_minor_ticks: false/true`) instead."
+                )
+                warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
+                show_ticks = self.plots[plot_type].pop("show_x_minor_ticks")
+                self.plots[plot_type]["x_minor_formatter"] = (
+                    "" if show_ticks else None
+                )
+            if "show_y_minor_ticks" in self.plots[plot_type]:
+                msg = (
+                    f"The option `show_y_minor_ticks` for plot type "
+                    f"`{plot_type}` has been deprecated in ESMValTool version "
+                    f"2.13.0 and is scheduled for removal in version 2.15.0. "
+                    f"Please use the option `y_minor_formatter: null/''` (for "
+                    f"`show_y_minor_ticks: false/true`) instead."
+                )
+                warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
+                show_ticks = self.plots[plot_type].pop("show_y_minor_ticks")
+                self.plots[plot_type]["y_minor_formatter"] = (
+                    "" if show_ticks else None
+                )
             if "show_y_minor_ticklabels" in self.plots[plot_type]:
                 msg = (
                     f"The option `show_y_minor_ticklabels` for plot type "
