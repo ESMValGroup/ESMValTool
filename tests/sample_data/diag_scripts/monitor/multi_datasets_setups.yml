@@ -184,21 +184,14 @@
     group_variables_by: short_name
     plots:
       benchmarking_map:
-        cbar_label: Var
-        cbar_kwargs:
-          ticks: [2, 5, 8]
-        fontsize: 8
         gridline_kwargs:
-          color: green
-        plot_kwargs:
-          default:
-            cmap: YlOrRd
+          draw_labels: true
+          dms: true
+          x_inline: false
+          y_inline: false
         projection: PlateCarree
         projection_kwargs:
           central_longitude: 30.0
-        pyplot_kwargs:
-          suptitle: Suptitle
-        rasterize: true
 
 # benchmarking_timeseries
 - input_data: [

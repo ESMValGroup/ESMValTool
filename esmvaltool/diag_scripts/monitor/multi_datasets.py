@@ -1110,8 +1110,10 @@ class MultiDatasets(MonitorBase):
                 "default_settings": {**default_settings_1d},
             },
             "benchmarking_map": {
-                "function": self.create_benchmarking_map_plot,
-                "coords": (["latitude", "longitude"],),
+                "function": partial(
+                    self.create_2d_benchmarking_plot, "benchmarking_map"
+                ),
+                "coords": (["longitude", "latitude"],),
                 "provenance": {
                     "authors": ["lauer_axel", "schlund_manuel"],
                     "caption": "Map plot of {long_name} of dataset {alias}.",
@@ -1119,12 +1121,12 @@ class MultiDatasets(MonitorBase):
                 },
                 "pyplot_kwargs": {},
                 "default_settings": {
-                    "cbar_label": "{short_name} [{units}]",
+                    **default_settings_2d,
                     "cbar_kwargs": {"orientation": "horizontal", "aspect": 30},
-                    "fontsize": None,
-                    "plot_kwargs": {},
-                    "pyplot_kwargs": {},
-                    "rasterize": True,
+                    "gridline_kwargs": {},
+                    "plot_kwargs": {"default": {"extend": "both"}},
+                    "projection": "Robinson",
+                    "projection_kwargs": {"central_longitude": 10},
                 },
             },
             "benchmarking_timeseries": {
@@ -1331,7 +1333,7 @@ class MultiDatasets(MonitorBase):
 
         return plot_settings
 
-    def __init__(self, config):
+    def __init__(self, config: dict) -> None:
         """Initialize class member."""
         super().__init__(config)
 
@@ -1843,21 +1845,6 @@ class MultiDatasets(MonitorBase):
         cbar_label = self._fill_facet_placeholders(cbar_label, dataset, descr)
         return cbar_label
 
-    def _get_custom_mpl_rc_params(self, plot_type: str) -> mpl.RcParams:
-        """Get custom matplotlib rcParams."""
-        custom_rc_params = copy(self.cfg["matplotlib_rc_params"])
-        fontsize = self.plots[plot_type].get("fontsize")
-        if fontsize is not None:
-            custom_rc_params.update(
-                {
-                    "axes.titlesize": fontsize + 2.0,
-                    "axes.labelsize": fontsize,
-                    "xtick.labelsize": fontsize,
-                    "ytick.labelsize": fontsize,
-                },
-            )
-        return custom_rc_params
-
     def _get_coords_for_2d_plotting(
         self,
         plot_type: str,
@@ -1873,6 +1860,21 @@ class MultiDatasets(MonitorBase):
             y_coord = cube.coord(coords[1], dim_coords=True)
         return (x_coord, y_coord)
 
+    def _get_custom_mpl_rc_params(self, plot_type: str) -> mpl.RcParams:
+        """Get custom matplotlib rcParams."""
+        custom_rc_params = copy(self.cfg["matplotlib_rc_params"])
+        fontsize = self.plots[plot_type].get("fontsize")
+        if fontsize is not None:
+            custom_rc_params.update(
+                {
+                    "axes.titlesize": fontsize + 2.0,
+                    "axes.labelsize": fontsize,
+                    "xtick.labelsize": fontsize,
+                    "ytick.labelsize": fontsize,
+                },
+            )
+        return custom_rc_params
+
     def _get_gridline_kwargs(self, plot_type: str) -> dict:
         """Get gridline kwargs."""
         gridline_kwargs = self.plots[plot_type]["gridline_kwargs"]
@@ -1883,7 +1885,7 @@ class MultiDatasets(MonitorBase):
         return dataset[self.cfg["facet_used_for_labels"]]
 
     @staticmethod
-    def _get_multi_dataset_facets(datasets):
+    def _get_multi_dataset_facets(datasets: list[dict]) -> dict:
         """Derive common facets for multiple datasets."""
         all_keys = {key for dataset in datasets for key in dataset}
         multi_dataset_facets = {}
@@ -1904,20 +1906,6 @@ class MultiDatasets(MonitorBase):
         if suffix is not None:
             basename += suffix
         return get_diagnostic_filename(basename, self.cfg)
-
-    def _get_projection(self, plot_type: str) -> Any:
-        """Get plot projection."""
-        projection = self.plots[plot_type]["projection"]
-        projection_kwargs = self.plots[plot_type]["projection_kwargs"]
-
-        # Check if desired projection is valid
-        if not hasattr(ccrs, projection):
-            raise AttributeError(
-                f"Got invalid projection '{projection}' for plotting "
-                f"{plot_type}, expected class of cartopy.crs",
-            )
-
-        return getattr(ccrs, projection)(**projection_kwargs)
 
     def _get_plot_func(self, plot_type: str) -> Callable:
         """Get plot function."""
@@ -1977,6 +1965,20 @@ class MultiDatasets(MonitorBase):
             plot_kwargs["norm"] = norm
 
         return deepcopy(plot_kwargs)
+
+    def _get_projection(self, plot_type: str) -> Any:
+        """Get plot projection."""
+        projection = self.plots[plot_type]["projection"]
+        projection_kwargs = self.plots[plot_type]["projection_kwargs"]
+
+        # Check if desired projection is valid
+        if not hasattr(ccrs, projection):
+            raise AttributeError(
+                f"Got invalid projection '{projection}' for plotting "
+                f"{plot_type}, expected class of cartopy.crs",
+            )
+
+        return getattr(ccrs, projection)(**projection_kwargs)
 
     def _get_provenance_record(
         self,
@@ -2087,115 +2089,6 @@ class MultiDatasets(MonitorBase):
 
         return input_data
 
-    def _plot_benchmarking_map(self, dataset, percentile_dataset, metric):
-        """Plot benchmarking map plot."""
-        plot_type = "benchmarking_map"
-        logger.info(
-            "Plotting benchmarking map for '%s'",
-            self._get_label(dataset),
-        )
-
-        # Make sure that the data has the correct dimensions
-        cube = dataset["cube"]
-
-        # Create plot with desired settings
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot(projection=self._get_projection(plot_type))
-        plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-        plot_kwargs["axes"] = axes
-        plot_kwargs["extend"] = "both"
-
-        # apply stippling (dots) to all grid cells that do not exceed
-        # the upper percentile given by 'percentile_dataset[]'
-        mask_cube = self._get_benchmark_mask(dataset, percentile_dataset)
-        hatching_plot_kwargs = {
-            "colors": "none",
-            "levels": [0.5, 1.5],
-            "hatches": ["......"],
-        }
-
-        # see https://github.com/SciTools/cartopy/issues/2457
-        # and https://github.com/SciTools/cartopy/issues/2468
-        plot_kwargs["transform_first"] = True
-        hatching_plot_kwargs["transform_first"] = True
-        npx = da if cube.has_lazy_data() else np
-        cube_to_plot = cube.copy(npx.ma.filled(cube.core_data(), np.nan))
-        mask_cube_to_plot = mask_cube.copy(
-            npx.ma.filled(mask_cube.core_data(), np.nan),
-        )
-
-        # Plot
-        plot_map = iris.plot.contourf(cube_to_plot, **plot_kwargs)
-        hatching = iris.plot.contourf(
-            mask_cube_to_plot,
-            **hatching_plot_kwargs,
-        )
-
-        # set color for stippling to 'black' (default = 'white')
-        hatching.set_edgecolor("black")
-        hatching.set_linewidth(0.0)
-
-        axes.coastlines()
-
-        # Setup colorbar
-        fontsize = (
-            self.plots[plot_type]["fontsize"] or mpl.rcParams["axes.labelsize"]
-        )
-        colorbar = fig.colorbar(
-            plot_map,
-            ax=axes,
-            **self._get_cbar_kwargs(plot_type),
-        )
-        colorbar.set_label(
-            self._get_cbar_label(plot_type, dataset),
-            fontsize=fontsize,
-        )
-        colorbar.ax.tick_params(labelsize=fontsize)
-
-        # Customize plot
-        axes.set_title(self._get_label(dataset))
-        fig.suptitle(dataset["long_name"])
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"],
-            dataset,
-        )
-
-        # Rasterization
-        if self.plots[plot_type]["rasterize"]:
-            self._set_rasterized([axes])
-
-        # File paths
-        plot_path = self.get_plot_path(plot_type, dataset)
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-
-        return (plot_path, {netcdf_path: cube})
-
-    def _process_pyplot_kwargs(
-        self,
-        pyplot_kwargs: dict[str, Any],
-        dataset: dict,
-        *,
-        transpose_axes: bool = False,
-    ) -> None:
-        """Process functions for :mod:`matplotlib.pyplot`."""
-        for func, arg in pyplot_kwargs.items():
-            if transpose_axes and func.startswith("x"):
-                func = func.replace("x", "y", 1)
-            elif transpose_axes and func.startswith("y"):
-                func = func.replace("y", "x", 1)
-            if isinstance(arg, str):
-                arg = self._fill_facet_placeholders(
-                    arg,
-                    dataset,
-                    f"pyplot_kwargs '{func}: {arg}'",
-                )
-            if arg is None:
-                getattr(plt, func)()
-            elif isinstance(arg, dict):
-                getattr(plt, func)(**arg)
-            else:
-                getattr(plt, func)(arg)
-
     def _plot_1d_data(
         self,
         plot_type: str,
@@ -2242,6 +2135,30 @@ class MultiDatasets(MonitorBase):
         # Customize plot with user-defined settings
         self._customize_plot(plot_type, axes, multi_dataset_facets)
 
+    def _plot_2d(self, plot_type: str, cube: Cube, **plot_kwargs: Any) -> Any:
+        """Plot 2D data (plain plotting, no changes in plot appearance)."""
+        plot_func = self._get_plot_func(plot_type)
+
+        # Setup coordinates
+        coords = self._get_coords_for_2d_plotting(plot_type, cube)
+        plot_kwargs["coords"] = coords
+
+        # Fix Cartopy bug if necessary (see
+        # https://github.com/SciTools/cartopy/issues/2457 and
+        # https://github.com/SciTools/cartopy/issues/2468)
+        fix_cartopy_bug = all(
+            [
+                self.plots[plot_type]["projection"] is not None,
+                plot_func is iris.plot.contourf,
+            ]
+        )
+        if fix_cartopy_bug:
+            plot_kwargs["transform_first"] = True
+            npx = da if cube.has_lazy_data() else np
+            cube = cube.copy(npx.ma.filled(cube.core_data(), np.nan))
+
+        return plot_func(cube, **plot_kwargs)
+
     def _plot_2d_data(
         self,
         plot_type: str,
@@ -2258,31 +2175,12 @@ class MultiDatasets(MonitorBase):
         if "map" in plot_type:
             self.plots[plot_type]["aspect_ratio"] = None
 
-        # Get data to plot
+        # Plot data
         cube = dataset["cube"]
-        (x_coord, y_coord) = self._get_coords_for_2d_plotting(plot_type, cube)
-
-        # Prepare plotting
-        plot_func = self._get_plot_func(plot_type)
         plot_kwargs = self._get_plot_kwargs(plot_type, dataset, bias=bias)
         plot_kwargs.update(additional_plot_kwargs)
         plot_kwargs["axes"] = axes
-        plot_kwargs["coords"] = [x_coord, y_coord]
-        fix_cartopy_bug = all(
-            [
-                self.plots[plot_type]["projection"] is not None,
-                plot_func is iris.plot.contourf,
-            ]
-        )
-        if fix_cartopy_bug:
-            # See https://github.com/SciTools/cartopy/issues/2457 and
-            # https://github.com/SciTools/cartopy/issues/2468
-            plot_kwargs["transform_first"] = True
-            npx = da if cube.has_lazy_data() else np
-            cube = cube.copy(npx.ma.filled(cube.core_data(), np.nan))
-
-        # Plot data
-        plot_output = plot_func(cube, **plot_kwargs)
+        plot_output = self._plot_2d(plot_type, cube, **plot_kwargs)
 
         # Show coastlines for map plots
         if "map" in plot_type:
@@ -2291,6 +2189,7 @@ class MultiDatasets(MonitorBase):
         # Title and axis labels
         fig.suptitle(dataset["long_name"])
         axes.set_title(self._get_label(dataset))
+        (x_coord, y_coord) = self._get_coords_for_2d_plotting(plot_type, cube)
         axes.set_xlabel(f"{x_coord.name()} [{x_coord.units}]")
         axes.set_ylabel(f"{y_coord.name()} [{y_coord.units}]")
 
@@ -2456,6 +2355,32 @@ class MultiDatasets(MonitorBase):
                 benchmark_dataset,
             )
 
+    def _process_pyplot_kwargs(
+        self,
+        pyplot_kwargs: dict[str, Any],
+        dataset: dict,
+        *,
+        transpose_axes: bool = False,
+    ) -> None:
+        """Process functions for :mod:`matplotlib.pyplot`."""
+        for func, arg in pyplot_kwargs.items():
+            if transpose_axes and func.startswith("x"):
+                func = func.replace("x", "y", 1)
+            elif transpose_axes and func.startswith("y"):
+                func = func.replace("y", "x", 1)
+            if isinstance(arg, str):
+                arg = self._fill_facet_placeholders(
+                    arg,
+                    dataset,
+                    f"pyplot_kwargs '{func}: {arg}'",
+                )
+            if arg is None:
+                getattr(plt, func)()
+            elif isinstance(arg, dict):
+                getattr(plt, func)(**arg)
+            else:
+                getattr(plt, func)(arg)
+
     def _save_1d_data(
         self,
         plot_type: str,
@@ -2485,6 +2410,65 @@ class MultiDatasets(MonitorBase):
             multi_dataset_facets,
             datasets,
         )
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(netcdf_path, provenance_record)
+
+    def _save_boxplot_data(
+        self,
+        plot_type: str,
+        dframe: pd.DataFrame,
+        benchmark_datasets: dict[str, dict],
+    ) -> None:
+        """Save plot and netCDF files for boxplot."""
+        # Save plot
+        all_vars = "_".join(benchmark_datasets)
+        all_datasets = [d for g in self.grouped_input_data.values() for d in g]
+        multi_dataset_facets = self._get_multi_dataset_facets(all_datasets)
+        multi_dataset_facets["variable_group"] = all_vars
+        multi_dataset_facets["short_name"] = all_vars
+        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
+        plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
+        logger.info("Wrote %s", plot_path)
+        plt.close()
+
+        # Save netCDF file
+        dframe = dframe.drop("Benchmark Dataset", axis=1)
+        cubes_to_save = CubeList()
+        for var_key, dataset in benchmark_datasets.items():
+            df_single_var = dframe[dframe["Variable"] == var_key].drop(
+                "Variable", axis=1
+            )
+            cube = iris.pandas.as_cubes(
+                df_single_var, aux_coord_cols=["Dataset"]
+            )[0]
+            cube.var_name = var_key
+            cube.long_name = dataset["long_name"]
+            if dataset["standard_name"]:
+                cube.standard_name = dataset["standard_name"]
+                cube.units = dataset["units"]
+            cube.remove_coord("unknown")
+
+            # Avoid invalid dtype for dataset coordinate when saving netCDF
+            dataset_list = cube.coord("Dataset").points.astype(str)
+            cube.remove_coord("Dataset")
+            cube.add_aux_coord(AuxCoord(dataset_list, var_name="dataset"), 0)
+
+            cube.attributes["benchmark_dataset"] = self._get_label(dataset)
+            cubes_to_save.append(cube)
+        netcdf_path = self._get_netcdf_path(plot_path)
+        io.iris_save(cubes_to_save, netcdf_path)
+
+        # Provenance tracking
+        ancestors = [
+            d["filename"] for g in self.grouped_input_data.values() for d in g
+        ]
+        long_names = sorted(group_metadata(all_datasets, "long_name"))
+        provenance_record = {
+            "ancestors": ancestors,
+            "long_names": long_names,
+        }
+        provenance_record.update(self.plot_settings[plot_type]["provenance"])
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
@@ -2608,17 +2592,17 @@ class MultiDatasets(MonitorBase):
             hatching_cube = self._get_benchmark_mask(
                 dataset, percentile_datasets
             )
-            coords = self._get_coords_for_2d_plotting(plot_type, hatching_cube)
-            hatching = iris.plot.contourf(
-                hatching_cube,
-                axes=axes,
-                coords=coords,
-                colors="none",
-                levels=[0.5, 1.5],
-                hatches=["......"],
+            hatching_plot_kwargs = {
+                "axes": axes,
+                "colors": "none",
+                "hatches": ["......"],
+                "levels": [0.5, 1.5],
+            }
+            plot_hatching = self._plot_2d(
+                plot_type, hatching_cube, **hatching_plot_kwargs
             )
-            hatching.set_edgecolor("black")
-            hatching.set_linewidth(0.0)
+            plot_hatching.set_edgecolor("black")
+            plot_hatching.set_linewidth(0.0)
 
             # Save plot and netCDF files
             save_datasets: dict[str, dict] = {}
@@ -2720,100 +2704,7 @@ class MultiDatasets(MonitorBase):
         self._plot_benchmarking_boxplot(dframe, all_benchmark_datasets)
 
         # Save plot
-        all_vars = "_".join(all_benchmark_datasets)
-        all_datasets = [d for g in self.grouped_input_data.values() for d in g]
-        multi_dataset_facets = self._get_multi_dataset_facets(all_datasets)
-        multi_dataset_facets["variable_group"] = all_vars
-        multi_dataset_facets["short_name"] = all_vars
-        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
-        plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
-        logger.info("Wrote %s", plot_path)
-        plt.close()
-
-        # Save netCDF file
-        dframe = dframe.drop("Benchmark Dataset", axis=1)
-        cubes_to_save = CubeList()
-        for var_key, dataset in all_benchmark_datasets.items():
-            df_single_var = dframe[dframe["Variable"] == var_key].drop(
-                "Variable", axis=1
-            )
-            cube = iris.pandas.as_cubes(
-                df_single_var, aux_coord_cols=["Dataset"]
-            )[0]
-            cube.var_name = var_key
-            cube.long_name = dataset["long_name"]
-            if dataset["standard_name"]:
-                cube.standard_name = dataset["standard_name"]
-                cube.units = dataset["units"]
-            cube.remove_coord("unknown")
-
-            # Avoid invalid dtype for dataset coordinate when saving netCDF
-            dataset_list = cube.coord("Dataset").points.astype(str)
-            cube.remove_coord("Dataset")
-            cube.add_aux_coord(AuxCoord(dataset_list, var_name="dataset"), 0)
-
-            cube.attributes["benchmark_dataset"] = self._get_label(dataset)
-            cubes_to_save.append(cube)
-        netcdf_path = self._get_netcdf_path(plot_path)
-        io.iris_save(cubes_to_save, netcdf_path)
-
-        # Provenance tracking
-        ancestors = [
-            d["filename"] for g in self.grouped_input_data.values() for d in g
-        ]
-        long_names = sorted(group_metadata(all_datasets, "long_name"))
-        provenance_record = {
-            "ancestors": ancestors,
-            "long_names": long_names,
-        }
-        provenance_record.update(self.plot_settings[plot_type]["provenance"])
-        with ProvenanceLogger(self.cfg) as provenance_logger:
-            provenance_logger.log(plot_path, provenance_record)
-            provenance_logger.log(netcdf_path, provenance_record)
-
-    def create_benchmarking_map_plot(self, datasets):
-        """Create benchmarking map plot."""
-        plot_type = "benchmarking_map"
-
-        # Get dataset to be benchmarked
-        plot_datasets = self._get_benchmark_datasets(datasets)
-
-        # Get percentiles from multi-model statistics
-        percentile_dataset = self._get_benchmark_percentiles(datasets)
-
-        # Get benchmarking metric
-        metric = self._get_benchmark_metric(datasets[0])
-
-        # Create a single plot for each dataset
-        for dataset in plot_datasets:
-            ancestors = [dataset["filename"]]
-            (plot_path, netcdf_paths) = self._plot_benchmarking_map(
-                dataset,
-                percentile_dataset,
-                metric,
-            )
-
-            # Save plot
-            plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
-            logger.info("Wrote %s", plot_path)
-            plt.close()
-
-            # Save netCDFs
-            for netcdf_path, cube in netcdf_paths.items():
-                io.iris_save(cube, netcdf_path)
-
-            # Provenance tracking
-            provenance_record = {
-                "ancestors": ancestors,
-                "long_names": [dataset["long_name"]],
-            }
-            provenance_record.update(
-                self.plot_settings[plot_type]["provenance"],
-            )
-            with ProvenanceLogger(self.cfg) as provenance_logger:
-                provenance_logger.log(plot_path, provenance_record)
-                for netcdf_path in netcdf_paths:
-                    provenance_logger.log(netcdf_path, provenance_record)
+        self._save_boxplot_data(plot_type, dframe, all_benchmark_datasets)
 
     def compute(self) -> None:
         """Plot preprocessed data."""
