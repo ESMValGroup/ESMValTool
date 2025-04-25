@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Monitoring diagnostic to show multiple datasets in one plot (incl. biases).
+"""Monitoring diagnostic to show multiple datasets in one plot.
 
 Description
 -----------
@@ -12,7 +12,7 @@ the recipe. Note that at most one reference dataset per variable is supported.
 Please note that all benchmarking plot types (i.e. all plot types starting with
 ``benchmarking_``) require exactly one dataset (the dataset to be benchmarked)
 to have the facet ``benchmark_dataset: true`` in the dataset entry of the
-recipe.  For benchmarking line plots (i.e. ``benchmarking_annual_cycle``,
+recipe. For benchmarking line plots (i.e. ``benchmarking_annual_cycle``,
 ``benchmarking_diurnal_cycle``, ``benchmarking_timeseries``), it is recommended
 to specify a particular line color and line style in the ``scripts`` section of
 the recipe for the dataset to be benchmarked (``benchmark_dataset: true``) so
@@ -902,7 +902,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from iris.analysis.cartography import area_weights
-from iris.coords import AuxCoord
+from iris.coords import AuxCoord, Coord
 from iris.cube import Cube, CubeList
 from iris.exceptions import ConstraintMismatchError
 from matplotlib.axes import Axes
@@ -913,7 +913,6 @@ from matplotlib.ticker import (
     AutoMinorLocator,
     FormatStrFormatter,
     LogLocator,
-    NullFormatter,
     NullLocator,
 )
 from sklearn.metrics import r2_score
@@ -1147,7 +1146,9 @@ class MultiDatasets(MonitorBase):
                 "default_settings": {**default_settings_1d},
             },
             "benchmarking_zonal": {
-                "function": self.create_benchmarking_zonal_plot,
+                "function": partial(
+                    self.create_2d_benchmarking_plot, "benchmarking_zonal"
+                ),
                 "coords": (
                     ["latitude", "air_pressure"],
                     ["latitude", "altitude"],
@@ -1159,16 +1160,13 @@ class MultiDatasets(MonitorBase):
                     ),
                     "plot_types": ["vert"],
                 },
-                "pyplot_kwargs": {},
+                "pyplot_kwargs": {
+                    "xlabel": "latitude [°N]",
+                },
                 "default_settings": {
-                    "cbar_label": "{short_name} [{units}]",
-                    "cbar_kwargs": {"orientation": "vertical"},
-                    "fontsize": None,
+                    **default_settings_2d,
                     "log_y": True,
-                    "plot_kwargs": {},
-                    "pyplot_kwargs": {},
-                    "rasterize": True,
-                    "y_minor_formatter": None,
+                    "plot_kwargs": {"default": {"extend": "both"}},
                 },
             },
             "diurnal_cycle": {
@@ -1718,38 +1716,36 @@ class MultiDatasets(MonitorBase):
 
     def _get_benchmark_mask(
         self,
-        cube: Cube,
+        benchmark_dataset: dict,
         percentile_datasets: list[dict],
-        metric: str,
     ) -> Cube:
         """Create mask for benchmarking cube depending on metric."""
-        mask_cube = cube.copy()
+        metric = self._get_benchmark_metric(benchmark_dataset)
+        cube = benchmark_dataset["cube"]
+        percentile_cubes = [d["cube"] for d in percentile_datasets]
 
         if metric == "bias":
             maxabs_perc = np.maximum(
-                np.abs(percentile_datasets[0].data),  # largets percentile
-                np.abs(percentile_datasets[-1].data),  # smallest percentile
+                np.abs(percentile_cubes[0].data),  # largest percentile
+                np.abs(percentile_cubes[-1].data),  # smallest percentile
             )
             mask = np.where(np.abs(cube.data) >= maxabs_perc, 0, 1)
-        elif metric == "emd":
-            mask = np.where(cube.data >= percentile_datasets[0].data, 0, 1)
+        elif metric in ("emd", "rmse"):
+            mask = np.where(cube.data >= percentile_cubes[0].data, 0, 1)
         elif metric == "pearsonr":
-            mask = np.where(cube.data <= percentile_datasets[0].data, 0, 1)
-        elif metric == "rmse":
-            mask = np.where(cube.data >= percentile_datasets[0].data, 0, 1)
+            mask = np.where(cube.data <= percentile_cubes[0].data, 0, 1)
         else:
             raise ValueError(
                 f"Could not create benchmarking mask, unknown benchmarking "
                 f"metric: '{metric}'",
             )
 
-        mask_cube.data = mask
-        return mask_cube
+        return cube.copy(mask)
 
-    def _get_benchmark_metric(self, datasets: list[dict]) -> str:
+    def _get_benchmark_metric(self, dataset: dict) -> str:
         """Get benchmarking metric."""
         for metric in ("emd", "pearsor", "rmse"):
-            if datasets[0]["short_name"].startswith(f"{metric}_"):
+            if dataset["short_name"].startswith(f"{metric}_"):
                 return metric
         metric = "bias"
         logger.info(
@@ -1776,7 +1772,7 @@ class MultiDatasets(MonitorBase):
         )
 
         # Get number of percentiles expected depending on benchmarking metric
-        metric = self._get_benchmark_metric(datasets)
+        metric = self._get_benchmark_metric(datasets[0])
         n_percentiles: dict[str, int] = {
             "bias": 2,
             "rmse": 1,
@@ -1861,6 +1857,21 @@ class MultiDatasets(MonitorBase):
                 },
             )
         return custom_rc_params
+
+    def _get_coords_for_2d_plotting(
+        self,
+        plot_type: str,
+        cube: Cube,
+    ) -> tuple[Coord, Coord]:
+        """Get coordinates to plot 2D data."""
+        coords = self._check_cube_coords(cube, plot_type)
+        if self.plots[plot_type]["transpose_axes"]:
+            x_coord = cube.coord(coords[1], dim_coords=True)
+            y_coord = cube.coord(coords[0], dim_coords=True)
+        else:
+            x_coord = cube.coord(coords[0], dim_coords=True)
+            y_coord = cube.coord(coords[1], dim_coords=True)
+        return (x_coord, y_coord)
 
     def _get_gridline_kwargs(self, plot_type: str) -> dict:
         """Get gridline kwargs."""
@@ -2096,7 +2107,7 @@ class MultiDatasets(MonitorBase):
 
         # apply stippling (dots) to all grid cells that do not exceed
         # the upper percentile given by 'percentile_dataset[]'
-        mask_cube = self._get_benchmark_mask(cube, percentile_dataset, metric)
+        mask_cube = self._get_benchmark_mask(dataset, percentile_dataset)
         hatching_plot_kwargs = {
             "colors": "none",
             "levels": [0.5, 1.5],
@@ -2144,86 +2155,6 @@ class MultiDatasets(MonitorBase):
         # Customize plot
         axes.set_title(self._get_label(dataset))
         fig.suptitle(dataset["long_name"])
-        self._process_pyplot_kwargs(
-            self.plots[plot_type]["pyplot_kwargs"],
-            dataset,
-        )
-
-        # Rasterization
-        if self.plots[plot_type]["rasterize"]:
-            self._set_rasterized([axes])
-
-        # File paths
-        plot_path = self.get_plot_path(plot_type, dataset)
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-
-        return (plot_path, {netcdf_path: cube})
-
-    def _plot_benchmarking_zonal(self, dataset, percentile_dataset, metric):
-        """Plot benchmarking zonal mean profile."""
-        plot_type = "benchmarking_zonal"
-        logger.info(
-            "Plotting benchmarking zonal mean profile for '%s'",
-            self._get_label(dataset),
-        )
-
-        # Make sure that the data has the correct dimensions
-        cube = dataset["cube"]
-
-        # Create plot with desired settings
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot()
-        plot_kwargs = self._get_plot_kwargs(plot_type, dataset)
-        plot_kwargs["axes"] = axes
-        plot_kwargs["extend"] = "both"
-        plot_benchmarking_zonal = iris.plot.contourf(cube, **plot_kwargs)
-
-        # apply stippling (dots) to all grid cells that do not exceed
-        # the upper percentile given by 'percentile_dataset[]'
-
-        mask_cube = self._get_benchmark_mask(cube, percentile_dataset, metric)
-        hatching = iris.plot.contourf(
-            mask_cube,
-            colors="none",
-            levels=[0.5, 1.5],
-            hatches=["......"],
-        )
-
-        # set color for stippling to 'black' (default = 'white')
-        hatching.set_edgecolor("black")
-        hatching.set_linewidth(0.0)
-
-        # Setup colorbar
-        fontsize = (
-            self.plots[plot_type]["fontsize"] or mpl.rcParams["axes.labelsize"]
-        )
-        colorbar = fig.colorbar(
-            plot_benchmarking_zonal,
-            ax=axes,
-            **self._get_cbar_kwargs(plot_type),
-        )
-        colorbar.set_label(
-            self._get_cbar_label(plot_type, dataset),
-            fontsize=fontsize,
-        )
-        colorbar.ax.tick_params(labelsize=fontsize)
-
-        # Customize plot
-        axes.set_title(self._get_label(dataset))
-        fig.suptitle(dataset["long_name"])
-        axes.set_xlabel("latitude [°N]")
-        z_coord = cube.coord(axis="Z")
-        axes.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
-        if self.plots[plot_type]["log_y"]:
-            axes.set_yscale("log")
-            axes.get_yaxis().set_major_formatter(FormatStrFormatter("%.1f"))
-        if self.plots[plot_type]["y_minor_formatter"] is not None:
-            axes.get_yaxis().set_minor_locator(AutoMinorLocator())
-            axes.get_yaxis().set_minor_formatter(
-                FormatStrFormatter(self.plots[plot_type]["y_minor_formatter"]),
-            )
-        else:
-            axes.get_yaxis().set_minor_formatter(NullFormatter())
         self._process_pyplot_kwargs(
             self.plots[plot_type]["pyplot_kwargs"],
             dataset,
@@ -2323,15 +2254,13 @@ class MultiDatasets(MonitorBase):
         """Plot 2D data."""
         fig = axes.get_figure()
 
+        # Some options are not supported for map plots
+        if "map" in plot_type:
+            self.plots[plot_type]["aspect_ratio"] = None
+
         # Get data to plot
         cube = dataset["cube"]
-        coords = self._check_cube_coords(cube, plot_type)
-        if self.plots[plot_type]["transpose_axes"]:
-            x_coord = cube.coord(coords[1], dim_coords=True)
-            y_coord = cube.coord(coords[0], dim_coords=True)
-        else:
-            x_coord = cube.coord(coords[0], dim_coords=True)
-            y_coord = cube.coord(coords[1], dim_coords=True)
+        (x_coord, y_coord) = self._get_coords_for_2d_plotting(plot_type, cube)
 
         # Prepare plotting
         plot_func = self._get_plot_func(plot_type)
@@ -2374,22 +2303,23 @@ class MultiDatasets(MonitorBase):
         self,
         plot_type: str,
         dataset: dict,
-    ) -> Figure:
+    ) -> tuple[Figure, Axes]:
         """Plot 2D data (single panel)."""
         fig = plt.figure(**self.cfg["figure_kwargs"])
-
         subplot_kwargs = {}
         if self.plots[plot_type]["projection"] is not None:
             subplot_kwargs["projection"] = self._get_projection(plot_type)
         axes = fig.add_subplot(**subplot_kwargs)
 
+        # Plot data
         plot_output = self._plot_2d_data(plot_type, dataset, axes)
         self._add_colorbar(plot_type, plot_output, axes, dataset)
 
+        # Show statistics if desired
         if self.plots[plot_type]["show_stats"]:
             self._add_stats(plot_type, axes, dataset)
 
-        return fig
+        return fig, axes
 
     def _plot_2d_data_3_panel(
         self,
@@ -2654,6 +2584,52 @@ class MultiDatasets(MonitorBase):
         self._plot_1d_data(plot_type, datasets, axes)
         self._save_1d_data(plot_type, datasets, fig)
 
+    def create_2d_benchmarking_plot(
+        self,
+        plot_type: str,
+        datasets: list[dict],
+    ) -> None:
+        """Create 2D benchmarking plot."""
+        benchmark_datasets = self._get_benchmark_datasets(datasets)
+        percentile_datasets = self._get_benchmark_percentiles(datasets)
+
+        # Some options are not supported for benchmarking plots
+        self.plots[plot_type]["legend_kwargs"] = False
+        self.plots[plot_type]["show_stats"] = False
+        self.plots[plot_type]["plot_func"] = "contourf"
+
+        # Create one plot per benchmark dataset
+        for dataset in benchmark_datasets:
+            fig, axes = self._plot_2d_data_1_panel(plot_type, dataset)
+
+            # Apply hatching (dots) to all points which are not outside the
+            # percentile range (the defintion of "outside" depends on the
+            # metric)
+            hatching_cube = self._get_benchmark_mask(
+                dataset, percentile_datasets
+            )
+            coords = self._get_coords_for_2d_plotting(plot_type, hatching_cube)
+            hatching = iris.plot.contourf(
+                hatching_cube,
+                axes=axes,
+                coords=coords,
+                colors="none",
+                levels=[0.5, 1.5],
+                hatches=["......"],
+            )
+            hatching.set_edgecolor("black")
+            hatching.set_linewidth(0.0)
+
+            # Save plot and netCDF files
+            save_datasets: dict[str, dict] = {}
+            for save_dataset in [dataset, *percentile_datasets]:
+                if "_percentile_int" in save_dataset:
+                    save_key = f"p{save_dataset['_percentile_int']}"
+                else:
+                    save_key = ""
+                save_datasets[save_key] = save_dataset
+            self._save_data(plot_type, dataset, save_datasets, fig)
+
     def create_2d_plot(self, plot_type: str, datasets: list[dict]) -> None:
         """Create 2D plot."""
         dataset_ref = self._get_reference_dataset(datasets)
@@ -2671,7 +2647,7 @@ class MultiDatasets(MonitorBase):
             if dataset == dataset_ref:
                 continue
             if dataset_ref is None:
-                fig = self._plot_2d_data_1_panel(plot_type, dataset)
+                fig, _ = self._plot_2d_data_1_panel(plot_type, dataset)
                 save_datasets = {"": dataset}
             else:
                 fig = self._plot_2d_data_3_panel(
@@ -2770,9 +2746,12 @@ class MultiDatasets(MonitorBase):
                 cube.standard_name = dataset["standard_name"]
                 cube.units = dataset["units"]
             cube.remove_coord("unknown")
+
+            # Avoid invalid dtype for dataset coordinate when saving netCDF
             dataset_list = cube.coord("Dataset").points.astype(str)
             cube.remove_coord("Dataset")
             cube.add_aux_coord(AuxCoord(dataset_list, var_name="dataset"), 0)
+
             cube.attributes["benchmark_dataset"] = self._get_label(dataset)
             cubes_to_save.append(cube)
         netcdf_path = self._get_netcdf_path(plot_path)
@@ -2801,64 +2780,18 @@ class MultiDatasets(MonitorBase):
 
         # Get percentiles from multi-model statistics
         percentile_dataset = self._get_benchmark_percentiles(datasets)
-        percentile_data = [d["cube"] for d in percentile_dataset]
 
         # Get benchmarking metric
-        metric = self._get_benchmark_metric(datasets)
+        metric = self._get_benchmark_metric(datasets[0])
 
         # Create a single plot for each dataset
         for dataset in plot_datasets:
             ancestors = [dataset["filename"]]
             (plot_path, netcdf_paths) = self._plot_benchmarking_map(
                 dataset,
-                percentile_data,
+                percentile_dataset,
                 metric,
             )
-
-            # Save plot
-            plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
-            logger.info("Wrote %s", plot_path)
-            plt.close()
-
-            # Save netCDFs
-            for netcdf_path, cube in netcdf_paths.items():
-                io.iris_save(cube, netcdf_path)
-
-            # Provenance tracking
-            provenance_record = {
-                "ancestors": ancestors,
-                "long_names": [dataset["long_name"]],
-            }
-            provenance_record.update(
-                self.plot_settings[plot_type]["provenance"],
-            )
-            with ProvenanceLogger(self.cfg) as provenance_logger:
-                provenance_logger.log(plot_path, provenance_record)
-                for netcdf_path in netcdf_paths:
-                    provenance_logger.log(netcdf_path, provenance_record)
-
-    def create_benchmarking_zonal_plot(self, datasets):
-        """Create benchmarking zonal mean profile plot."""
-        plot_type = "benchmarking_zonal"
-
-        # Get dataset to be benchmarked
-        plot_datasets = self._get_benchmark_datasets(datasets)
-
-        # Get percentiles from multi-model statistics
-        percentile_dataset = self._get_benchmark_percentiles(datasets)
-        percentile_data = [d["cube"] for d in percentile_dataset]
-
-        # Get benchmarking metric
-        metric = self._get_benchmark_metric(datasets)
-
-        # Create a single plot for each dataset
-        for dataset in plot_datasets:
-            (plot_path, netcdf_paths) = self._plot_benchmarking_zonal(
-                dataset,
-                percentile_data,
-                metric,
-            )
-            ancestors = [dataset["filename"]]
 
             # Save plot
             plt.savefig(plot_path, **self.cfg["savefig_kwargs"])
