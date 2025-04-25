@@ -258,7 +258,6 @@ from pathlib import Path
 from pprint import pformat
 
 import iris
-import iris.common
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -299,7 +298,10 @@ def add_model_level(cube):
     n_levels = z_coord.shape[0]
     levels = np.array(range(n_levels, 0, -1), ndmin=1)
     level_coords = iris.coords.AuxCoord(
-        levels, bounds=None, standard_name="model_level_number", units="1"
+        levels,
+        bounds=None,
+        standard_name="model_level_number",
+        units="1",
     )
     cube.add_aux_coord(level_coords, cube.coord_dims(z_coord))
 
@@ -360,7 +362,7 @@ class CH4Lifetime(MonitorBase):
             if plot_type not in self.supported_plot_types:
                 raise ValueError(
                     f"Got unexpected plot type '{plot_type}' for option "
-                    f"'plots', expected one of {self.supported_plot_types}"
+                    f"'plots', expected one of {self.supported_plot_types}",
                 )
             if plot_options is None:
                 self.plots[plot_type] = {}
@@ -386,10 +388,12 @@ class CH4Lifetime(MonitorBase):
                     " [{units}]",
                 )
                 self.plots[plot_type].setdefault(
-                    "cbar_label_bias", "Δ{short_name} [{units}]"
+                    "cbar_label_bias",
+                    "Δ{short_name} [{units}]",
                 )
                 self.plots[plot_type].setdefault(
-                    "cbar_kwargs", {"orientation": "vertical"}
+                    "cbar_kwargs",
+                    {"orientation": "vertical"},
                 )
                 self.plots[plot_type].setdefault("cbar_kwargs_bias", {})
                 self.plots[plot_type].setdefault("common_cbar", False)
@@ -399,13 +403,15 @@ class CH4Lifetime(MonitorBase):
                 self.plots[plot_type].setdefault("plot_kwargs", {})
                 self.plots[plot_type].setdefault("plot_kwargs_bias", {})
                 self.plots[plot_type]["plot_kwargs_bias"].setdefault(
-                    "cmap", "bwr"
+                    "cmap",
+                    "bwr",
                 )
                 self.plots[plot_type].setdefault("pyplot_kwargs", {})
                 self.plots[plot_type].setdefault("rasterize", True)
                 self.plots[plot_type].setdefault("show_stats", True)
                 self.plots[plot_type].setdefault(
-                    "show_y_minor_ticklabels", False
+                    "show_y_minor_ticklabels",
+                    False,
                 )
                 self.plots[plot_type].setdefault("x_pos_stats_avg", 0.01)
                 self.plots[plot_type].setdefault("x_pos_stats_bias", 0.7)
@@ -419,7 +425,8 @@ class CH4Lifetime(MonitorBase):
                 self.plots[plot_type].setdefault("plot_kwargs", {})
                 self.plots[plot_type].setdefault("pyplot_kwargs", {})
                 self.plots[plot_type].setdefault(
-                    "show_y_minor_ticklabels", False
+                    "show_y_minor_ticklabels",
+                    False,
                 )
 
         # Check that facet_used_for_labels is present for every dataset
@@ -428,7 +435,7 @@ class CH4Lifetime(MonitorBase):
                 raise ValueError(
                     f"facet_used_for_labels "
                     f"'{self.cfg['facet_used_for_labels']}' not present for "
-                    f"the following dataset:\n{pformat(dataset)}"
+                    f"the following dataset:\n{pformat(dataset)}",
                 )
 
         # Load seaborn settings
@@ -456,7 +463,9 @@ class CH4Lifetime(MonitorBase):
             if "aspect" in cbar_kwargs:
                 cbar_kwargs["aspect"] += 20.0
             cbar = plt.colorbar(
-                plot_left, ax=[axes_left, axes_right], **cbar_kwargs
+                plot_left,
+                ax=[axes_left, axes_right],
+                **cbar_kwargs,
             )
             cbar.set_label(cbar_label_left, fontsize=fontsize)
             cbar.ax.tick_params(labelsize=fontsize)
@@ -514,10 +523,12 @@ class CH4Lifetime(MonitorBase):
         if not hasattr(iris.plot, plot_func):
             raise AttributeError(
                 f"Got invalid plot function '{plot_func}' for plotting "
-                f"{plot_type}, expected function of iris.plot"
+                f"{plot_type}, expected function of iris.plot",
             )
         logger.info(
-            "Creating %s plots using function '%s'", plot_type, plot_func
+            "Creating %s plots using function '%s'",
+            plot_type,
+            plot_func,
         )
         return getattr(iris.plot, plot_func)
 
@@ -585,7 +596,10 @@ class CH4Lifetime(MonitorBase):
             self._set_oxidant_defaults(oxidant)
 
             reaction = self._calculate_reaction(
-                oxidant, rho, variables["ta"], self._get_name("reactant")
+                oxidant,
+                rho,
+                variables["ta"],
+                self._get_name("reactant"),
             )
 
             # Set Z-coordinate
@@ -596,7 +610,8 @@ class CH4Lifetime(MonitorBase):
                 z_coord.convert_units("Pa")
                 use_z_coord = "air_pressure"
             elif reaction.coords(
-                "atmosphere_hybrid_sigma_pressure_coordinate", dim_coords=True
+                "atmosphere_hybrid_sigma_pressure_coordinate",
+                dim_coords=True,
             ):
                 self.z_coord = "atmosphere_hybrid_sigma_pressure_coordinate"
                 z_coord = reaction.coord(
@@ -608,19 +623,19 @@ class CH4Lifetime(MonitorBase):
             else:
                 raise NotImplementedError(
                     "Lifetime calculation is not implemented"
-                    " for the present type of vertical coordinate."
+                    " for the present type of vertical coordinate.",
                 )
 
             if not set(["TROP", "STRA"]).isdisjoint(
-                self.cfg["regions"]
+                self.cfg["regions"],
             ) and not set(["timeseries", "annual_cycle"]).isdisjoint(
-                self.plots
+                self.plots,
             ):
                 # calculate climatological tropopause pressure (tp_clim)
                 # but only if no tropopause is given by data
                 if "ptp" not in variables and "tp_i" not in variables:
                     tropopause = climatological_tropopause(
-                        variables["ta"][:, 0, :, :]
+                        variables["ta"][:, 0, :, :],
                     )
 
                 # If z_coord is defined as:
@@ -649,7 +664,8 @@ class CH4Lifetime(MonitorBase):
             weight = self._define_weight(variables)
 
             if reaction.coords(
-                "atmosphere_hybrid_sigma_pressure_coordinate", dim_coords=True
+                "atmosphere_hybrid_sigma_pressure_coordinate",
+                dim_coords=True,
             ):
                 add_model_level(weight)
                 add_model_level(reaction)
@@ -676,7 +692,7 @@ class CH4Lifetime(MonitorBase):
                     or "ER" not in self.cfg["oxidant"][name]
                 ):
                     raise KeyError(
-                        "No sufficient reaction coefficients are given"
+                        "No sufficient reaction coefficients are given",
                     )
                 self.cfg["oxidant"][name].setdefault("b", None)
 
@@ -730,7 +746,7 @@ class CH4Lifetime(MonitorBase):
         if not reaction.units == "s-1":
             raise ValueError(
                 "The units of the reaction rate is"
-                " not consistent. Check input variables."
+                " not consistent. Check input variables.",
             )
 
         return reaction
@@ -797,7 +813,10 @@ class CH4Lifetime(MonitorBase):
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
             fig = plt.figure(**self.cfg["figure_kwargs"])
             gridspec = GridSpec(
-                5, 4, figure=fig, height_ratios=[1.0, 1.0, 0.4, 1.0, 1.0]
+                5,
+                4,
+                figure=fig,
+                height_ratios=[1.0, 1.0, 0.4, 1.0, 1.0],
             )
 
             # Options used for all subplots
@@ -814,11 +833,11 @@ class CH4Lifetime(MonitorBase):
             if self.plots[plot_type]["log_y"]:
                 axes_data.set_yscale("log")
                 axes_data.get_yaxis().set_major_formatter(
-                    FormatStrFormatter("%.1f")
+                    FormatStrFormatter("%.1f"),
                 )
             if self.plots[plot_type]["show_y_minor_ticklabels"]:
                 axes_data.get_yaxis().set_minor_formatter(
-                    FormatStrFormatter("%.1f")
+                    FormatStrFormatter("%.1f"),
                 )
             else:
                 axes_data.get_yaxis().set_minor_formatter(NullFormatter())
@@ -827,7 +846,9 @@ class CH4Lifetime(MonitorBase):
             # Note: make sure to use the same vmin and vmax than the top left
             # plot if a common colorbar is desired
             axes_ref = fig.add_subplot(
-                gridspec[0:2, 2:4], sharex=axes_data, sharey=axes_data
+                gridspec[0:2, 2:4],
+                sharex=axes_data,
+                sharey=axes_data,
             )
             plot_kwargs["axes"] = axes_ref
             if self.plots[plot_type]["common_cbar"]:
@@ -851,10 +872,14 @@ class CH4Lifetime(MonitorBase):
             # Plot bias (bottom center)
             bias_cube = cube - ref_cube
             axes_bias = fig.add_subplot(
-                gridspec[3:5, 1:3], sharex=axes_data, sharey=axes_data
+                gridspec[3:5, 1:3],
+                sharex=axes_data,
+                sharey=axes_data,
             )
             plot_kwargs_bias = self._get_plot_kwargs(
-                plot_type, dataset, bias=True
+                plot_type,
+                dataset,
+                bias=True,
             )
             plot_kwargs_bias["axes"] = axes_bias
             plot_bias = plot_func(bias_cube, **plot_kwargs_bias)
@@ -866,7 +891,9 @@ class CH4Lifetime(MonitorBase):
             axes_bias.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
             cbar_kwargs_bias = self._get_cbar_kwargs(plot_type, bias=True)
             cbar_bias = fig.colorbar(
-                plot_bias, ax=axes_bias, **cbar_kwargs_bias
+                plot_bias,
+                ax=axes_bias,
+                **cbar_kwargs_bias,
             )
             cbar_bias.set_label(
                 self._get_cbar_label(plot_type, dataset, bias=True),
@@ -877,7 +904,7 @@ class CH4Lifetime(MonitorBase):
             # Customize plot
             fig.suptitle(
                 f"{dataset['long_name']} ({dataset['start_year']}-"
-                f"{dataset['end_year']})"
+                f"{dataset['end_year']})",
             )
             self._process_pyplot_kwargs(plot_type, dataset)
 
@@ -888,7 +915,8 @@ class CH4Lifetime(MonitorBase):
         # File paths
         plot_path = self.get_plot_path(plot_type, dataset)
         netcdf_path = get_diagnostic_filename(
-            Path(plot_path).stem + "_{pos}", self.cfg
+            Path(plot_path).stem + "_{pos}",
+            self.cfg,
         )
         netcdf_paths = {
             netcdf_path.format(pos="top_left"): cube,
@@ -899,7 +927,12 @@ class CH4Lifetime(MonitorBase):
         return (plot_path, netcdf_paths)
 
     def plot_zonalmean_without_ref(
-        self, plot_func, region, dataset, base_datasets, label
+        self,
+        plot_func,
+        region,
+        dataset,
+        base_datasets,
+        label,
     ):
         """Plot zonal mean profile for single dataset without reference."""
         plot_type = "zonalmean"
@@ -928,10 +961,13 @@ class CH4Lifetime(MonitorBase):
             # Setup colorbar
             fontsize = self.plots[plot_type]["fontsize"]
             colorbar = fig.colorbar(
-                plot_zonalmean, ax=axes, **self._get_cbar_kwargs(plot_type)
+                plot_zonalmean,
+                ax=axes,
+                **self._get_cbar_kwargs(plot_type),
             )
             colorbar.set_label(
-                self._get_cbar_label(plot_type, self.info), fontsize=fontsize
+                self._get_cbar_label(plot_type, self.info),
+                fontsize=fontsize,
             )
             colorbar.ax.tick_params(labelsize=fontsize)
 
@@ -939,7 +975,7 @@ class CH4Lifetime(MonitorBase):
             axes.set_title(label)
             fig.suptitle(
                 f"{self.info['long_name']} ({dataset['start_year']}-"
-                f"{dataset['end_year']})"
+                f"{dataset['end_year']})",
             )
             axes.set_xlabel("latitude [°N]")
             z_coord = cube.coord(name_or_coord="air_pressure")
@@ -947,11 +983,11 @@ class CH4Lifetime(MonitorBase):
             if self.plots[plot_type]["log_y"]:
                 axes.set_yscale("log")
                 axes.get_yaxis().set_major_formatter(
-                    FormatStrFormatter("%.1f")
+                    FormatStrFormatter("%.1f"),
                 )
             if self.plots[plot_type]["show_y_minor_ticklabels"]:
                 axes.get_yaxis().set_minor_formatter(
-                    FormatStrFormatter("%.1f")
+                    FormatStrFormatter("%.1f"),
                 )
             else:
                 axes.get_yaxis().set_minor_formatter(NullFormatter())
@@ -999,11 +1035,11 @@ class CH4Lifetime(MonitorBase):
             if all(cube_dims) and cube.ndim == len(dims):
                 return dims
         expected_dims_str = " or ".join(
-            [str(dims) for dims in expected_dimensions]
+            [str(dims) for dims in expected_dimensions],
         )
         raise ValueError(
             f"Expected cube that exactly has the dimensional coordinates "
-            f"{expected_dims_str}, got {cube.summary(shorten=True)}"
+            f"{expected_dims_str}, got {cube.summary(shorten=True)}",
         )
 
     @staticmethod
@@ -1014,7 +1050,7 @@ class CH4Lifetime(MonitorBase):
         except KeyError as exc:
             raise ValueError(
                 f"Not all necessary facets in {description} available for "
-                f"dataset\n{pformat(dataset)}"
+                f"dataset\n{pformat(dataset)}",
             ) from exc
         return string
 
@@ -1042,7 +1078,7 @@ class CH4Lifetime(MonitorBase):
             raise ValueError(
                 f"Expected at most 1 reference dataset (with "
                 f"'reference_for_monitor_diags: true' for variable "
-                f"'{short_name}', got {len(ref_datasets):d}"
+                f"'{short_name}', got {len(ref_datasets):d}",
             )
         if ref_datasets:
             return ref_datasets[0]
@@ -1087,7 +1123,9 @@ class CH4Lifetime(MonitorBase):
                     slice_dataset["tropopause"] = tp_slice
 
                     cube_slice = calculate_lifetime(
-                        slice_dataset, plot_type, region
+                        slice_dataset,
+                        plot_type,
+                        region,
                     )
                     # make it real to reduce memory demand later
                     cube_slice.data  # noqa: B018
@@ -1105,7 +1143,8 @@ class CH4Lifetime(MonitorBase):
 
             # Plot original time series
             plot_kwargs = self._get_plot_kwargs(
-                plot_type, base_datasets[label]
+                plot_type,
+                base_datasets[label],
             )
             plot_kwargs["axes"] = axes
 
@@ -1117,13 +1156,13 @@ class CH4Lifetime(MonitorBase):
 
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(
-            list(base_datasets.values())
+            list(base_datasets.values()),
         )
         axes.set_title(f"{self.info['long_name']} in region {region}")
         axes.set_xlabel("Time")
         axes.set_ylabel(
             f"{chr(964)}({self._get_name('reactant').upper()})"
-            f" [{self.info['units']}]"
+            f" [{self.info['units']}]",
         )
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
         if gridline_kwargs is not False:
@@ -1198,20 +1237,21 @@ class CH4Lifetime(MonitorBase):
 
             # Plot annual cycle
             plot_kwargs = self._get_plot_kwargs(
-                plot_type, base_datasets[label]
+                plot_type,
+                base_datasets[label],
             )
             plot_kwargs["axes"] = axes
             iris.plot.plot(cube, **plot_kwargs)
 
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(
-            list(base_datasets.values())
+            list(base_datasets.values()),
         )
         axes.set_title(f"{self.info['long_name']} in region {region}")
         axes.set_xlabel("Month")
         axes.set_ylabel(
             f"{chr(964)}({self._get_name('reactant').upper()})"
-            " [{self.info['units']}]"
+            " [{self.info['units']}]",
         )
         axes.set_xticks(range(1, 13), [str(m) for m in range(1, 13)])
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
@@ -1290,7 +1330,11 @@ class CH4Lifetime(MonitorBase):
             )
             if ref_dataset is None:
                 (plot_path, netcdf_paths) = self.plot_zonalmean_without_ref(
-                    plot_func, region, dataset, base_datasets[label], label
+                    plot_func,
+                    region,
+                    dataset,
+                    base_datasets[label],
+                    label,
                 )
                 caption = (
                     f"Zonal mean profile of {dataset['long_name']} of dataset "
@@ -1299,7 +1343,10 @@ class CH4Lifetime(MonitorBase):
                 )
             else:
                 (plot_path, netcdf_paths) = self.plot_zonalmean_with_ref(
-                    plot_func, region, dataset, ref_dataset
+                    plot_func,
+                    region,
+                    dataset,
+                    ref_dataset,
                 )
                 caption = (
                     f"Zonal mean profile of {dataset['long_name']} of dataset "
@@ -1369,7 +1416,8 @@ class CH4Lifetime(MonitorBase):
 
             # Plot 1D profile
             plot_kwargs = self._get_plot_kwargs(
-                plot_type, base_datasets[label]
+                plot_type,
+                base_datasets[label],
             )
             plot_kwargs["axes"] = axes
 
@@ -1377,12 +1425,12 @@ class CH4Lifetime(MonitorBase):
 
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(
-            list(base_datasets.values())
+            list(base_datasets.values()),
         )
         axes.set_title(f"{self.info['long_name']}")
         axes.set_xlabel(
             f"{chr(964)}({self._get_name('reactant').upper()})"
-            f" [{self.info['units']}]"
+            f" [{self.info['units']}]",
         )
         z_coord = cube.coord(axis="Z")
         axes.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
@@ -1401,7 +1449,9 @@ class CH4Lifetime(MonitorBase):
             x_major = LogLocator(base=10.0, numticks=12)
             axes.get_xaxis().set_major_locator(x_major)
             x_minor = LogLocator(
-                base=10.0, subs=np.arange(1.0, 10.0) * 0.1, numticks=12
+                base=10.0,
+                subs=np.arange(1.0, 10.0) * 0.1,
+                numticks=12,
             )
 
             axes.get_xaxis().set_minor_locator(x_minor)
