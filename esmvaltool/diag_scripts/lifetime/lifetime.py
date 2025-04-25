@@ -56,10 +56,10 @@ plot_folder: str, optional
     Path to the folder to store figures. Defaults to
     ``{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}``.  All
     tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
-    replaced with the corresponding tags).  ``{plot_dir}`` is replaced with the
+    replaced with the corresponding tags). ``{plot_dir}`` is replaced with the
     default ESMValTool plot directory (i.e.,
     ``output_dir/plots/diagnostic_name/script_name/``, see
-    :ref:`esmvalcore:user configuration file`).
+    :ref:`esmvalcore:outputdata`).
 savefig_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
     default, uses ``bbox_inches: tight, dpi: 300, orientation: landscape``.
@@ -69,15 +69,6 @@ seaborn_settings: dict, optional
 
 Configuration options for plot type ``timeseries``
 --------------------------------------------------
-annual_mean: str, optional
-    Optional switch to turn on annual means to be displayed  'only' or
-    additional 'both' to the original timeseries. If not set or set to 'False'
-    only the original timeseries is shown.
-annual_mean_kwargs: dict, optional
-    Optional keyword arguments for :func:`iris.plot.plot` for plotting annual
-    means. These keyword arguments update (and potentially overwrite) the
-    ``plot_kwargs`` for the annual mean plots. Use ``annual_mean_kwargs`` to
-    not show annual means.
 gridline_kwargs: dict, optional
     Optional keyword arguments for grid lines. By default, ``color: lightgrey,
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
@@ -272,13 +263,10 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from esmvalcore.cmor.fixes import add_model_level
-from iris.coord_categorisation import add_year
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import FormatStrFormatter, LogLocator, NullFormatter
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
-from esmvaltool.diag_scripts.lifetime.lifetime_base import LifetimeBase
 from esmvaltool.diag_scripts.lifetime.lifetime_func import (
     calculate_gridmassdry,
     calculate_lifetime,
@@ -287,6 +275,7 @@ from esmvaltool.diag_scripts.lifetime.lifetime_func import (
     climatological_tropopause,
     create_press,
 )
+from esmvaltool.diag_scripts.monitor.monitor_base import MonitorBase
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
     get_diagnostic_filename,
@@ -297,7 +286,25 @@ from esmvaltool.diag_scripts.shared import (
 logger = logging.getLogger(Path(__file__).stem)
 
 
-class CH4Lifetime(LifetimeBase):
+def add_model_level(cube):
+    """Add a simplified level coordinate.
+
+    Parameters
+    ----------
+    cube : iris.cube.Cube
+        Input cube.
+
+    """
+    z_coord = cube.coord(axis="z", dim_coords=True)
+    n_levels = z_coord.shape[0]
+    levels = np.array(range(n_levels, 0, -1), ndmin=1)
+    level_coords = iris.coords.AuxCoord(
+        levels, bounds=None, standard_name="model_level_number", units="1"
+    )
+    cube.add_aux_coord(level_coords, cube.coord_dims(z_coord))
+
+
+class CH4Lifetime(MonitorBase):
     """Diagnostic to plot ch4 lifetime."""
 
     def __init__(self, config):
@@ -360,8 +367,6 @@ class CH4Lifetime(LifetimeBase):
 
             # Default options for the differ N MMNMJHJ JMHTHent plot types
             if plot_type == "timeseries":
-                self.plots[plot_type].setdefault("annual_mean", False)
-                self.plots[plot_type].setdefault("annual_mean_kwargs", {})
                 self.plots[plot_type].setdefault("gridline_kwargs", {})
                 self.plots[plot_type].setdefault("legend_kwargs", {})
                 self.plots[plot_type].setdefault("plot_kwargs", {})
@@ -1110,26 +1115,7 @@ class CH4Lifetime(LifetimeBase):
                 mean = cube.collapsed("time", iris.analysis.MEAN).data
                 plot_kwargs["label"] = f"{plot_kwargs['label']} ({mean:.2f})"
 
-            # Plot annual means if desired
-            annual_mean = self.plots[plot_type]["annual_mean"]
-            if annual_mean in [False, "both"]:
-                iris.plot.plot(cube, **plot_kwargs)
-                plot_kwargs.pop("label", None)
-            elif annual_mean in ["both", "only"]:
-                logger.debug("Plotting annual means")
-                if not cube.coords("year"):
-                    add_year(cube, "time")
-                annual_mean_cube = cube.aggregated_by(
-                    "year", iris.analysis.MEAN
-                )
-
-                plot_kwargs.update(self.plots[plot_type]["annual_mean_kwargs"])
-                iris.plot.plot(annual_mean_cube, **plot_kwargs)
-            else:
-                raise ValueError(
-                    "Unknown option for annual_mean."
-                    "Choose False, 'both', or 'only'."
-                )
+            iris.plot.plot(cube, **plot_kwargs)
 
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(
@@ -1462,7 +1448,7 @@ class CH4Lifetime(LifetimeBase):
         )
         provenance_record = {
             "ancestors": ancestors,
-            "authors": ["schlund_manuel", "winterstein_franziska"],
+            "authors": ["winterstein_franziska", "schlund_manuel"],
             "caption": caption,
             "plot_types": ["line"],
             "long_names": [var_attrs["long_name"]],

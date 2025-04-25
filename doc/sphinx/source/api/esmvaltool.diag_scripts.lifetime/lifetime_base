@@ -1,6 +1,0 @@
-.. _api.esmvaltool.diag_scripts.lifetime.lifetime_base:
-
-Base class for calculating CH4 lifetime
-=======================================
-
-.. automodule:: esmvaltool.diag_scripts.lifetime.lifetime_base
