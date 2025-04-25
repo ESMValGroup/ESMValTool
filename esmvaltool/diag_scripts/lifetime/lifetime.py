@@ -774,8 +774,6 @@ class CH4Lifetime(MonitorBase):
             grmassdry = calculate_gridmassdry(press, hus, self.z_coord)
 
         var = variables[varname] * grmassdry * (m_var / self.cfg["m_air"])
-        # var = da.multiply(da.multiply(variables[varname], grmassdry),
-        #                   da.divide(m_var, self.cfg['m_air']))
 
         return var
 

@@ -154,13 +154,6 @@ def _number_density_dryair_by_press(temp, hus, press=None):
         logger.info("Pressure not given")
         press = create_press(temp)
 
-    # rho = N_A / 10.**6
-    # rho = rho * press / (R * temp)
-    # rho = rho * iris.analysis.maths.divide(1. - hus,
-    #                                        1. + hus *
-    #                                        (M_AIR
-    #                                         / M_H2O - 1.))
-
     rho = (
         N_A
         / 10.0**6
@@ -170,10 +163,9 @@ def _number_density_dryair_by_press(temp, hus, press=None):
         / (1.0 + hus * (M_AIR / M_H2O - 1.0))
     )
 
-    # correct metadata
+    # correct metadata [ 1 / cm^3 ]
     rho.var_name = "rho"
     rho.units = "cm-3"
-    # [ 1 / cm^3 ]
 
     return rho
 
