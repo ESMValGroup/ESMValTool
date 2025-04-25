@@ -537,6 +537,4 @@
             vmin: -21
             vmax: -1
         show_stats: false
-        show_y_minor_ticks: true
         transpose_axes: true
-        y_minor_formatter: ""

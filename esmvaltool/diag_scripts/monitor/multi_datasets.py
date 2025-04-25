@@ -1017,6 +1017,7 @@ class MultiDatasets(MonitorBase):
                     "aspect_ratio": 1.5,
                     "log_y": True,
                     "transpose_axes": True,
+                    "y_minor_formatter": "",
                 },
             },
             "annual_cycle": {
@@ -1165,6 +1166,7 @@ class MultiDatasets(MonitorBase):
                     **default_settings_2d,
                     "log_y": True,
                     "plot_kwargs": {"default": {"extend": "both"}},
+                    "y_minor_formatter": "",
                 },
             },
             "diurnal_cycle": {
@@ -1253,6 +1255,7 @@ class MultiDatasets(MonitorBase):
                 "default_settings": {
                     **default_settings_2d,
                     "log_y": True,
+                    "y_minor_formatter": "",
                 },
             },
             "map": {
@@ -1323,6 +1326,7 @@ class MultiDatasets(MonitorBase):
                 "default_settings": {
                     **default_settings_2d,
                     "log_y": True,
+                    "y_minor_formatter": "",
                 },
             },
         }
