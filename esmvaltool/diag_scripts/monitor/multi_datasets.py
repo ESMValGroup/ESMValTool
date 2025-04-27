@@ -1580,7 +1580,7 @@ class MultiDatasets(MonitorBase):
         # Axes styles
         if self.plots[plot_type]["log_x"]:
             axes.set_xscale("log")
-            axes.get_xaxis().set_major_formatter(FormatStrFormatter("%.1f"))
+            axes.xaxis.set_major_formatter(FormatStrFormatter("%.1f"))
             x_minor_locator = LogLocator(
                 base=10.0,
                 subs=np.arange(1.0, 10.0) * 0.1,
@@ -1591,7 +1591,7 @@ class MultiDatasets(MonitorBase):
 
         if self.plots[plot_type]["log_y"]:
             axes.set_yscale("log")
-            axes.get_yaxis().set_major_formatter(FormatStrFormatter("%.1f"))
+            axes.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
             y_minor_locator = LogLocator(
                 base=10.0,
                 subs=np.arange(1.0, 10.0) * 0.1,
@@ -1601,34 +1601,34 @@ class MultiDatasets(MonitorBase):
             y_minor_locator = AutoMinorLocator()
 
         if self.plots[plot_type]["x_major_formatter"] is not None:
-            axes.get_xaxis().set_major_formatter(
+            axes.xaxis.set_major_formatter(
                 FormatStrFormatter(self.plots[plot_type]["x_major_formatter"]),
             )
         if self.plots[plot_type]["x_minor_formatter"] is not None:
-            axes.get_xaxis().set_minor_locator(x_minor_locator)
-            axes.get_xaxis().set_minor_formatter(
+            axes.xaxis.set_minor_locator(x_minor_locator)
+            axes.xaxis.set_minor_formatter(
                 FormatStrFormatter(self.plots[plot_type]["x_minor_formatter"]),
             )
         else:
-            axes.get_xaxis().set_minor_locator(NullLocator())
+            axes.xaxis.set_minor_locator(NullLocator())
 
         if self.plots[plot_type]["y_major_formatter"] is not None:
-            axes.get_yaxis().set_major_formatter(
+            axes.yaxis.set_major_formatter(
                 FormatStrFormatter(self.plots[plot_type]["y_major_formatter"]),
             )
         if self.plots[plot_type]["y_minor_formatter"] is not None:
-            axes.get_yaxis().set_minor_locator(y_minor_locator)
-            axes.get_yaxis().set_minor_formatter(
+            axes.yaxis.set_minor_locator(y_minor_locator)
+            axes.yaxis.set_minor_formatter(
                 FormatStrFormatter(self.plots[plot_type]["y_minor_formatter"]),
             )
         else:
-            axes.get_yaxis().set_minor_locator(NullLocator())
+            axes.yaxis.set_minor_locator(NullLocator())
 
         if self.plots[plot_type]["time_format"] is not None:
             if self.plots[plot_type]["transpose_axes"]:
-                time_axis = axes.get_yaxis()
+                time_axis = axes.yaxis
             else:
-                time_axis = axes.get_xaxis()
+                time_axis = axes.xaxis
             time_axis.set_major_formatter(
                 mdates.DateFormatter(self.plots[plot_type]["time_format"]),
             )
