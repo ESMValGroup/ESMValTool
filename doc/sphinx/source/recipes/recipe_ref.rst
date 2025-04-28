@@ -23,12 +23,12 @@ Recipes are stored in `recipes/ref`
   Calculate transient climate response to cumulative CO2 emissions (TCRE)
 * recipe_ref_cre.yml:
   Maps and zonal means of longwave and shortwave cloud radiative effect
-* recipe_model_benchmarking_timeseries_region.yml:
+* ref/recipe_model_benchmarking_timeseries_region.yml:
   Time series in comparison with refernce data for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_timeseries.yml <recipe_benchmarking>`
-* recipe_model_benchmarking_annual_cycle_region.yml:
+* ref/recipe_model_benchmarking_annual_cycle_region.yml:
   Annual cycle in comparison with refernce data for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_annual_cycle.yml <recipe_benchmarking>`
-* recipe_portrait_regions.yml:
-    Portrait plot for several regions and variables, based on :ref:`recipe_portrait_CMIP.yml <recipe_portrait>`
+* ref/recipe_seaborn_trend_regions.yml:
+  Linear Trends for all IPCC regions compaerd with refernce data, based on :ref:`recipe_seaborn.yml <recipe_seaborn>`
 * ref/recipe_ref_scatterplot.yml:
   2D histograms with focus on clouds
 * ref/recipe_ref_sea_ice_area_basic.yml:
