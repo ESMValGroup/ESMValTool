@@ -19,6 +19,15 @@ datasets:
   # - {dataset: ACCESS-ESM1-5, institute: CSIRO}
   - {dataset: MPI-ESM1-2-HR}
 
+        # regions: ['GLOB',
+        #           'NWN', 'NEN', 'GIC', 'WNA', 'CNA', 'ENA', 'NCA', 'SCA', 'CAR', # North America
+        #           'NWS', 'NSA', 'NES', 'SAM', 'SWS', 'SES', 'SSA', # South America
+        #           'NEU', 'WCE', 'EEU', 'MED', # Europe + MED
+        #           'SAH', 'WAF', 'CAF', 'NEAF', 'SEAF', 'WSAF', 'ESAF', 'MDG', # Africa
+        #           'RAR', 'WSB', 'ESB', 'RFE', 'WCA', 'ECA', 'TIB', 'EAS', 'ARP', 'SAS', 'SEA', #Asia
+        #           'NAU', 'CAU', 'EAU', 'SAU', 'NZ', # Ausltralia + NZ
+        #           'WAN', 'EAN']  # Antarctic
+
 preprocessors:
   default: &default  # common preprocessor settings
     regrid:
@@ -31,12 +40,24 @@ preprocessors:
       period: month
     mask_fillvalues:
       threshold_fraction: 0.95
+  WCA:
+    <<: *default
+    extract_shape:
+      shapefile: ar6
+      method: contains
+      ids: {Acronym: [WCA]}
   ECA:
     <<: *default
     extract_shape:
       shapefile: ar6
       method: contains
       ids: {Acronym: [ECA]}
+  CNA:
+    <<: *default
+    extract_shape:
+      shapefile: ar6
+      method: contains
+      ids: {Acronym: [CNA]}
   ENA:
     <<: *default
     extract_shape:
@@ -83,6 +104,18 @@ preprocessors:
       shapefile: ar6
       method: contains
       ids: {Acronym: [ECA]}
+  WCA_200:
+    <<: *default_200
+    extract_shape:
+      shapefile: ar6
+      method: contains
+      ids: {Acronym: [WCA]}
+  CNA_200:
+    <<: *default_200
+    extract_shape:
+      shapefile: ar6
+      method: contains
+      ids: {Acronym: [CNA]}
   ENA_200:
     <<: *default_200
     extract_shape:
@@ -135,48 +168,68 @@ diagnostics:
           - {dataset: HadCRUT5, project: OBS, type: ground,
              version: 5.0.1.0-analysis, tier: 2,
              reference_for_metric: true}
+        tag: Asia
       tas_ECA_2: &tas_2
         <<: *tas
         split: Ref2
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, reference_for_metric: true}
+        tag: Asia
       tas_ENA:
         <<: *tas
         ppregion: ENA
         preprocessor: ENA
+        tag: North and Central America
       tas_ENA_2:
         <<: *tas_2
         ppregion: ENA
         preprocessor: ENA
+        tag: North and Central America
+      tas_CNA:
+        <<: *tas
+        ppregion: CNA
+        preprocessor: CNA
+        tag: North and Central America
+      tas_CNA_2:
+        <<: *tas_2
+        ppregion: CNA
+        preprocessor: CNA
+        tag: North and Central America
       tas_MED:
         <<: *tas
         short_name: tas
         ppregion: MED
         preprocessor: MED
+        tag: MED
       tas_MED_2:
         <<: *tas_2
         short_name: tas
         ppregion: MED
         preprocessor: MED
+        tag: MED
       tas_SAH:
         <<: *tas
         ppregion: SAH
         preprocessor: SAH
+        tag: Africa
       tas_SAH_2:
         <<: *tas_2
         ppregion: SAH
         preprocessor: SAH
+        tag: Africa
       tas_WCE:
         <<: *tas
         short_name: tas
         ppregion: WCE
         preprocessor: WCE
+        tag: Europe
       tas_WCE_2:
         <<: *tas_2
         short_name: tas
         ppregion: WCE
         preprocessor: WCE
+        tag: Europe
 
       pr_ECA: &pr
         <<: *var_default
@@ -188,44 +241,64 @@ diagnostics:
         additional_datasets:
           - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3,
              tier: 2, reference_for_metric: true}
+        tag: Asia
       pr_ECA_2: &pr_2
         <<: *pr
         split: Ref2
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, reference_for_metric: true}
+        tag: Asia
       pr_ENA:
         <<: *pr
         ppregion: ENA
         preprocessor: ENA
+        tag: North and Central America
       pr_ENA_2:
         <<: *pr_2
         ppregion: ENA
         preprocessor: ENA
+        tag: North and Central America
+      pr_CNA:
+        <<: *pr
+        ppregion: CNA
+        preprocessor: CNA
+        tag: North and Central America
+      pr_CNA_2:
+        <<: *pr_2
+        ppregion: CNA
+        preprocessor: CNA
+        tag: North and Central America
       pr_MED:
         <<: *pr
         ppregion: MED
         preprocessor: MED
+        tag: MED
       pr_MED_2:
         <<: *pr_2
         ppregion: MED
         preprocessor: MED
+        tag: MED
       pr_SAH:
         <<: *pr
         ppregion: SAH
         preprocessor: SAH
+        tag: Africa
       pr_SAH_2:
         <<: *pr_2
         ppregion: SAH
         preprocessor: SAH
+        tag: Africa
       pr_WCE:
         <<: *pr
         ppregion: WCE
         preprocessor: WCE
+        tag: Europe
       pr_WCE_2:
         <<: *pr_2
         ppregion: WCE
         preprocessor: WCE
+        tag: Europe
 
       psl_ECA: &psl
         <<: *var_default
@@ -236,22 +309,32 @@ diagnostics:
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, reference_for_metric: true}
+        tag: Asia
       psl_ENA:
         <<: *psl
         ppregion: ENA
         preprocessor: ENA
+        tag: North and Central America
+      psl_CNA:
+        <<: *psl
+        ppregion: CNA
+        preprocessor: CNA
+        tag: North and Central America
       psl_MED:
         <<: *psl
         ppregion: MED
         preprocessor: MED
+        tag: MED
       psl_SAH:
         <<: *psl
         ppregion: SAH
         preprocessor: SAH
+        tag: Africa
       psl_WCE:
         <<: *psl
         ppregion: WCE
         preprocessor: WCE
+        tag: Europe
 
       hus_ECA: &hus
         <<: *var_default
@@ -262,22 +345,32 @@ diagnostics:
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, reference_for_metric: true}
+        tag: Asia
       hus_ENA:
         <<: *hus
         ppregion: ENA
         preprocessor: ENA_200
+        tag: North and Central America
+      hus_CNA:
+        <<: *hus
+        ppregion: CNA
+        preprocessor: CNA_200
+        tag: North and Central America
       hus_MED:
         <<: *hus
         ppregion: MED
         preprocessor: MED_200
+        tag: MED
       hus_SAH:
         <<: *hus
         ppregion: SAH
         preprocessor: SAH_200
+        tag: Africa
       hus_WCE:
         <<: *hus
         ppregion: WCE
         preprocessor: WCE_200
+        tag: Europe
 
       ua_ECA: &ua
         <<: *var_default
@@ -288,29 +381,39 @@ diagnostics:
         additional_datasets:
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, reference_for_metric: true}
+        tag: Asia
       ua_ENA:
         <<: *ua
         ppregion: ENA
         preprocessor: ENA_200
+        tag: North and Central America
+      ua_CNA:
+        <<: *ua
+        ppregion: CNA
+        preprocessor: CNA_200
+        tag: North and Central America
       ua_MED:
         <<: *ua
         ppregion: MED
         preprocessor: MED_200
+        tag: MED
       ua_SAH:
         <<: *ua
         ppregion: SAH
         preprocessor: SAH_200
+        tag: Africa
       ua_WCE:
         <<: *ua
         ppregion: WCE
         preprocessor: WCE_200
+        tag: Europe
 
     scripts:
       portrait:
         script: portrait_plot.py
         x_by: ppregion  # extra_facet
         y_by: variable #short_name
-        group_by: project
+        group_by: tag
         normalize: "centered_median"
         # default_split: Ref1
         nan_color: null
