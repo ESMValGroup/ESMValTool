@@ -328,7 +328,7 @@ def main(cfg):
 
         # Calculations for the Roach-style plot
         logger.info("Calculating data for Roach-style plot")
-        trends = calculate_annual_trends(input_data)
+        trends = calculate_annual_trends(selection)
         # Add to dictionary
         data_dict[dataset]["siconc_trend"] = trends["si_ann_trend"]
         data_dict[dataset]["tas_trend"] = trends["tas_ann_trend"]
