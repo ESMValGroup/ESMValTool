@@ -21,47 +21,48 @@ documentation:
   maintainer:
     - sellar_alistair
 
+defaults: &defaults {ensemble: r1i1p1f1, exp: historical, grid: gn, project: CMIP6}
 datasets:
-  - {dataset: HADGEM3-GC31-LL, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
-  - {dataset: ACCESS-CM2, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: CSIRO-ARCCSS, project: CMIP6}
-  - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: CSIRO, project: CMIP6}
-  - {dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: AWI, project: CMIP6}
-  - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: BCC, project: CMIP6}
-  - {dataset: BCC-ESM1, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: BCC, project: CMIP6}
-  - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: CAMS, project: CMIP6}
-  - {dataset: CANESM5, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: CCCma, project: CMIP6}
-  - {dataset: CESM2, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: NCAR, project: CMIP6}
-  - {dataset: CESM2-WACCM, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: NCAR, project: CMIP6}
-  - {dataset: CESM2-WACCM-FV2, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: NCAR, project: CMIP6}
-  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: CNRM-CERFACS, project: CMIP6}
-  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: CNRM-CERFACS, project: CMIP6}
-  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: CNRM-CERFACS, project: CMIP6}
-  - {dataset: E3SM-1-0, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: E3SM-Project, project: CMIP6}
-  - {dataset: EC-EARTH3, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: EC-Earth-Consortium, project: CMIP6}
-  - {dataset: EC-EARTH3-VEG, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: EC-Earth-Consortium, project: CMIP6}
-  - {dataset: FGOALS-F3-L, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: CAS, project: CMIP6}
-  - {dataset: FIO-ESM-2-0, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: FIO-QLNM, project: CMIP6}
-  - {dataset: GFDL-CM4, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: NOAA-GFDL, project: CMIP6}
-  - {dataset: GFDL-ESM4, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: NOAA-GFDL, project: CMIP6}
-  - {dataset: GISS-E2-1-G, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: NASA-GISS, project: CMIP6}
-  - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: NASA-GISS, project: CMIP6}
-  - {dataset: GISS-E2-1-H, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: NASA-GISS, project: CMIP6}
-  - {dataset: HADGEM3-GC31-MM, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
-  - {dataset: INM-CM4-8, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: INM, project: CMIP6}
-  - {dataset: INM-CM5-0, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: INM, project: CMIP6}
-  - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: IPSL, project: CMIP6}
-  - {dataset: MIROC-ES2L, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MIROC, project: CMIP6}
-  - {dataset: MIROC6, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MIROC, project: CMIP6}
-  - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MPI-M, project: CMIP6}
-  - {dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MPI-M, project: CMIP6}
-  - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MPI-M, project: CMIP6}
-  - {dataset: MRI-ESM2-0, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MRI, project: CMIP6}
-  - {dataset: NESM3, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: NUIST, project: CMIP6}
-  - {dataset: NORCPM1, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: NCC, project: CMIP6}
-  - {dataset: NORESM2-LM, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: NCC, project: CMIP6}
-  - {dataset: NORESM2-MM, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: NCC, project: CMIP6}
-  - {dataset: SAM0-UNICON, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: SNU, project: CMIP6}
-  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {<<: *defaults, dataset: HadGEM3-GC31-LL, institute: MOHC, ensemble: r1i1p1f3}
+#  - {<<: *defaults, dataset: HadGEM3-GC31-MM, institute: MOHC, ensemble: r1i1p1f3}  # other error
+  - {<<: *defaults, dataset: UKESM1-0-LL, institute: MOHC, ensemble: r1i1p1f2}
+  - {<<: *defaults, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
+  - {<<: *defaults, dataset: ACCESS-ESM1-5, institute: CSIRO}
+#  - {<<: *defaults, dataset: AWI-CM-1-1-MR, institute: AWI}  # missing monthly siconc
+  - {<<: *defaults, dataset: BCC-CSM2-MR, institute: BCC}
+#  - {<<: *defaults, dataset: BCC-ESM1, institute: BCC}  # errors
+  - {<<: *defaults, dataset: CAMS-CSM1-0, institute: CAMS}
+  - {<<: *defaults, dataset: CanESM5, institute: CCCma}
+  - {<<: *defaults, dataset: CESM2, institute: NCAR}
+  - {<<: *defaults, dataset: CESM2-WACCM, institute: NCAR}
+  - {<<: *defaults, dataset: CESM2-WACCM-FV2, institute: NCAR}
+#  - {<<: *defaults, dataset: CNRM-CM6-1, institute: CNRM-CERFACS, ensemble: r1i1p1f2}  # missing
+#  - {<<: *defaults, dataset: CNRM-CM6-1-HR, institute: CNRM-CERFACS, ensemble: r1i1p1f2}  # missing
+#  - {<<: *defaults, dataset: CNRM-ESM2-1, institute: CNRM-CERFACS, ensemble: r1i1p1f2}  # missing
+#  - {<<: *defaults, dataset: E3SM-1-0, institute: E3SM-Project}  # missing
+#  - {<<: *defaults, dataset: EC-Earth3, institute: EC-Earth-Consortium}  # tas GR and siconc GN
+#  - {<<: *defaults, dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium}  # might have since fetched
+#  - {<<: *defaults, dataset: FGOALS-f3-L, institute: CAS}  # tas GR and siconc GN?
+  - {<<: *defaults, dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+#  - {<<: *defaults, dataset: GFDL-CM4, institute: NOAA-GFDL}  # tas GR1 and siconc GN
+#  - {<<: *defaults, dataset: GFDL-ESM4, institute: NOAA-GFDL}  # tas GR1 and siconc GN
+#  - {<<: *defaults, dataset: GISS-E2-1-G, institute: NASA-GISS}  # doesn't have siconc
+#  - {<<: *defaults, dataset: GISS-E2-1-G-CC, institute: NASA-GISS}  # can't find
+#  - {<<: *defaults, dataset: GISS-E2-1-H, institute: NASA-GISS}  # tas GN and siconc GR?
+#  - {<<: *defaults, dataset: INM-CM4-8, institute: INM}  # missing
+#  - {<<: *defaults, dataset: INM-CM5-0, institute: INM}  # missing
+#  - {<<: *defaults, dataset: IPSL-CM6A-LR, institute: IPSL}  # missing
+#  - {<<: *defaults, dataset: MIROC-ES2L, institute: MIROC, ensemble: r1i1p1f2}  # missing
+  - {<<: *defaults, dataset: MIROC6, institute: MIROC}
+  - {<<: *defaults, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+  - {<<: *defaults, dataset: MPI-ESM1-2-HR, institute: MPI-M}
+  - {<<: *defaults, dataset: MPI-ESM1-2-LR, institute: MPI-M}
+  - {<<: *defaults, dataset: MRI-ESM2-0, institute: MRI}
+#  - {<<: *defaults, dataset: NESM3, institute: NUIST}  # wget fails for areacello
+#  - {<<: *defaults, dataset: NorCPM1, institute: NCC}  # missing
+#  - {<<: *defaults, dataset: NorESM2-LM, institute: NCC}  # "errors in variable siconc"
+#  - {<<: *defaults, dataset: NorESM2-MM, institute: NCC}  # failed to concatenate to single cube
+#  - {<<: *defaults, dataset: SAM0-UNICON, institute: SNU}  # "errors in variable siconc"
 
 preprocessors:
   extract_test_period:
