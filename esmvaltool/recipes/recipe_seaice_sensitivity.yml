@@ -22,7 +22,46 @@ documentation:
     - sellar_alistair
 
 datasets:
-  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: HADGEM3-GC31-LL, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: ACCESS-CM2, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: ACCESS-ESM1-5, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: AWI-CM-1-1-MR, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: BCC-ESM1, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: CANESM5, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: CESM2, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: CESM2-WACCM, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: CESM2-WACCM-FV2, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: E3SM-1-0, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: EC-EARTH3, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: EC-EARTH3-VEG, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: FGOALS-F3-L, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: FIO-ESM-2-0, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: GFDL-CM4, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: GFDL-ESM4, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: GISS-E2-1-G, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: GISS-E2-1-H, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: HADGEM3-GC31-MM, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: INM-CM4-8, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: INM-CM5-0, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: MIROC-ES2L, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: MIROC6, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: MRI-ESM2-0, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: NESM3, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: NORCPM1, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: NORESM2-LM, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: NORESM2-MM, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: SAM0-UNICON, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
+  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f3, exp: historical, grid: gn, institute: MOHC, project: CMIP6}
 
 preprocessors:
   extract_test_period:
