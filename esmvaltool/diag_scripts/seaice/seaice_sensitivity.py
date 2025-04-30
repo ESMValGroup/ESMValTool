@@ -63,7 +63,7 @@ def extract_cube(data, variable_group):
     return cube
 
 
-def calculate_regression(independent, dependent, slope_only):
+def calculate_regression(independent, dependent):
     """
     Use SciPy stats to calculate the least-squares regression
     """
@@ -77,11 +77,7 @@ def calculate_regression(independent, dependent, slope_only):
     # result = slope, intercept, rvalue, pvalue, stderr
     result = stats.linregress(independent, dependent)
 
-    # Return only the slope
-    if slope_only:
-        return result.slope
-
-    # Or else return everything
+    # Return everything
     return result
 
 
@@ -98,17 +94,17 @@ def calculate_annual_trends(data):
 
     # Calculate the individual trends over time
     years = tas_cube.coord("year").points
-    si_trend = calculate_regression(years, si_cube.data, slope_only=True)
-    tas_trend = calculate_regression(years, tas_cube.data, slope_only=True)
+    si_trend = calculate_regression(years, si_cube.data)
+    tas_trend = calculate_regression(years, tas_cube.data)
 
     # Calculate the direct regression for r and p values
     direct_regression = calculate_regression(
-        tas_cube.data, si_cube.data, slope_only=False
+        tas_cube.data, si_cube.data
     )
 
     dictionary = {
-        "si_ann_trend": si_trend,
-        "tas_ann_trend": tas_trend,
+        "si_ann_trend": si_trend.slope,
+        "tas_ann_trend": tas_trend.slope,
         "direct_r_val": direct_regression.rvalue,
         "direct_p_val": direct_regression.pvalue,
     }
@@ -128,10 +124,10 @@ def calculate_direct_sensitivity(data):
 
     # Calculate the slope of the direct regression, NOT via time
     sensitivity = calculate_regression(
-        tas_cube.data, si_cube.data, slope_only=True
+        tas_cube.data, si_cube.data
     )
 
-    return sensitivity
+    return sensitivity.slope
 
 
 def create_titles_dict(data):
