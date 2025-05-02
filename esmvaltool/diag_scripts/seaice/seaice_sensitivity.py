@@ -83,8 +83,9 @@ def calculate_regression(independent, dependent):
 
 def calculate_annual_trends(data):
     """
-    Calculate annual trends for surface air temperature (tas) and sea ice area (siconc),
-    and the r and p values from the regression of siconc as a function of tas
+    Calculate annual trends for surface air temperature (tas) and sea ice area (siconc).
+
+    Also used for the r and p values from the regression of siconc as a function of tas.
     """
     logger.debug("calculating annual trends")
 
@@ -128,10 +129,11 @@ def calculate_direct_sensitivity(data):
 
 def create_titles_dict(data):
     """
-    Create a dictionary of appropriate observations and titles
-    depending on whether the plot is for the Arctic or Antarctic
-    and assuming the recipe used September Arctic sea ice data
-    and annually mean averaged Antarctic sea ice data
+    Create a dictionary of appropriate observations and titles.
+
+    Values depend on whether the plot is for the Arctic or Antarctic
+    and assume the recipe used September Arctic sea ice data or
+    annually mean averaged Antarctic sea ice data
     """
     dictionary = {}
 
