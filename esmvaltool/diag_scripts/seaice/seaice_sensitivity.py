@@ -1,3 +1,5 @@
+"""Diagnostic that shows the sensitivity of sea ice area to global warming."""
+
 import logging
 from pathlib import Path
 
