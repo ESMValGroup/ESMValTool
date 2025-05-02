@@ -64,7 +64,7 @@ def extract_cube(data, variable_group):
 
 
 def calculate_regression(independent, dependent):
-    """Use SciPy stats to calculate the least-squares regression"""
+    """Use SciPy stats to calculate the least-squares regression."""
     logger.debug(
         "Calculating linear relationship between %s and %s",
         dependent,
@@ -110,9 +110,7 @@ def calculate_annual_trends(data):
 
 
 def calculate_direct_sensitivity(data):
-    """
-    Calculate slope of sea ice area over global mean temperature
-    """
+    """Calculate slope of sea ice area over global mean temperature."""
     logger.debug("calculating sensitivity")
 
     # Load the preprocessed cubes
@@ -169,9 +167,7 @@ def create_titles_dict(data):
 
 
 def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
-    """
-    Save a plot of sensitivities and observations
-    """
+    """Save a plot of sensitivities and observations."""
     # Read from (Ed Blockley's) observations dictionary
     obs_dict = titles_dictionary["obs"]
     obs_years = list(obs_dict)[0]
@@ -238,9 +234,7 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
 
 
 def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
-    """
-    Save a plot of trend in SIA against trend in GMST to the given filename
-    """
+    """Save a plot of trend in SIA against trend in GMST to the given filename."""
     # Set up the figure
     fig, ax = plt.subplots(figsize=(10, 6), layout="constrained")
     fig.suptitle(titles_dictionary["titles"]["roach_fig_title"])
@@ -296,9 +290,7 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
 
 
 def main(cfg):
-    """
-    Create two plots per diagnostic from preprocessed data
-    """
+    """Create two plots per diagnostic from preprocessed data."""
     # Get the data from the cfg
     logger.info("Getting data from the config")
     input_data = cfg["input_data"].values()
