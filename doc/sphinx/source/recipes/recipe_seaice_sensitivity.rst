@@ -18,7 +18,7 @@ Recipe is in `recipes`
 
 * recipe_seaice_sensitivity.yml
 
-Diagnostic are stored in `diag_scripts/seaice/`
+Diagnostic is in `diag_scripts/seaice/`
 
 * :ref:`seaice_sensitivity.py
   <api.esmvaltool.diag_scripts.seaice.seaice_sensitivity>`:
@@ -31,20 +31,21 @@ Recipe settings
 Years to be evaluated are specified in the ``extract_test_period`` preprocessor. Arctic sea ice is evaluated using data from September, and Antarctic sea ice is evaluated using annually meaned data. This can be amended by changing the preprocessor for each variable (shown below).
 
 .. code-block:: yaml
-  pp_arctic_sept_sea_ice:
-    <<: *extract_test_period
-    <<: *extract_sept
-    <<: *nh_total_area
 
-  pp_antarctic_avg_ann_sea_ice:
-    <<: *extract_test_period
-    <<: *annual_mean
-    <<: *sh_total_area
+    pp_arctic_sept_sea_ice:
+      <<: *extract_test_period
+      <<: *extract_sept
+      <<: *nh_total_area
 
-  pp_avg_ann_global_temp:
-    <<: *extract_test_period
-    <<: *global_mean
-    <<: *annual_mean
+    pp_antarctic_avg_ann_sea_ice:
+      <<: *extract_test_period
+      <<: *annual_mean
+      <<: *sh_total_area
+
+    pp_avg_ann_global_temp:
+      <<: *extract_test_period
+      <<: *global_mean
+      <<: *annual_mean
 
 Datasets
 --------
@@ -60,7 +61,7 @@ Example plots
 -------------
 
 .. _fig_seaice_sensitivity_1:
-.. figure::  /recipes/figures/September_Arctic_sea_ice_sensitivity.png
+.. figure::  /recipes/figures/seaice/September_Arctic_sea_ice_sensitivity.png
    :align:   center
    :width:   10cm
 
@@ -72,7 +73,7 @@ Example plots
     * plausible: 1.28,
 
 .. _fig_seaice_sensitivity_2:
-.. figure::  /recipes/figures/Annual_Antarctic_sea_ice_trends.png
+.. figure::  /recipes/figures/seaice/Annual_Antarctic_sea_ice_trends.png
    :align:   center
    :width:   18cm
 
