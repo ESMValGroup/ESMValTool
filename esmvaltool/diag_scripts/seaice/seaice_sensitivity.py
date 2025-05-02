@@ -98,9 +98,7 @@ def calculate_annual_trends(data):
     tas_trend = calculate_regression(years, tas_cube.data)
 
     # Calculate the direct regression for r and p values
-    direct_regression = calculate_regression(
-        tas_cube.data, si_cube.data
-    )
+    direct_regression = calculate_regression(tas_cube.data, si_cube.data)
 
     dictionary = {
         "si_ann_trend": si_trend.slope,
@@ -123,9 +121,7 @@ def calculate_direct_sensitivity(data):
     tas_cube = extract_cube(data, "tas")
 
     # Calculate the slope of the direct regression, NOT via time
-    sensitivity = calculate_regression(
-        tas_cube.data, si_cube.data
-    )
+    sensitivity = calculate_regression(tas_cube.data, si_cube.data)
 
     return sensitivity.slope
 
@@ -209,10 +205,20 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
             alpha=0.15,
         )
         ax.hlines(
-            obs_mean + obs_plausible, 0, 1, linestyle=":", color="0.5", linewidth=1
+            obs_mean + obs_plausible,
+            0,
+            1,
+            linestyle=":",
+            color="0.5",
+            linewidth=1,
         )
         ax.hlines(
-            obs_mean - obs_plausible, 0, 1, linestyle=":", color="0.5", linewidth=1
+            obs_mean - obs_plausible,
+            0,
+            1,
+            linestyle=":",
+            color="0.5",
+            linewidth=1,
         )
 
     # Tidy the figure
