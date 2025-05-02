@@ -60,19 +60,19 @@ Example plots
 -------------
 
 .. _fig_seaice_sensitivity_1:
-.. figure::  /recipes/figures/benchmarking/September_Arctic_sea_ice_sensitivity.png
+.. figure::  /recipes/figures/September_Arctic_sea_ice_sensitivity.png
    :align:   center
    :width:   10cm
 
    Plot of northern hemisphere sea ice area loss (millions of square kilometres) in the month of September per degree Kelvin of average global warming.
 
-   The dashed back line shows the observational mean, the shaded area is within one standard deviation of the mean, and the dashed grey lines are within "plausibility" of the mean, with all values taken from Ed Blockley's code for the period 1979-2014 and defined as follows:
+   The dashed black line shows the observational mean, the shaded area is within one standard deviation of the mean, and the dashed grey lines are within "plausibility" of the mean, with all values taken from Ed Blockley's code for the period 1979-2014 and defined as follows:
     * mean:      -4.01,
     * std_dev':  0.32,
     * plausible: 1.28,
 
 .. _fig_seaice_sensitivity_2:
-.. figure::  /recipes/figures/benchmarking/Annual_Antarctic_sea_ice_trends.png
+.. figure::  /recipes/figures/Annual_Antarctic_sea_ice_trends.png
    :align:   center
    :width:   18cm
 
