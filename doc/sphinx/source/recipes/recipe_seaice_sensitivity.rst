@@ -20,8 +20,8 @@ Recipe is in `recipes`
 
 Diagnostic is in `diag_scripts/seaice/`
 
-* :ref:`seaice_sensitivity.py
-  Plotting the sensitivity of sea ice to mean global temperature.
+* seaice_sensitivity.py
+Plotting the sensitivity of sea ice to mean global temperature.
 
 
 Recipe settings
