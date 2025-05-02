@@ -64,9 +64,7 @@ def extract_cube(data, variable_group):
 
 
 def calculate_regression(independent, dependent):
-    """
-    Use SciPy stats to calculate the least-squares regression
-    """
+    """Use SciPy stats to calculate the least-squares regression"""
     logger.debug(
         "Calculating linear relationship between %s and %s",
         dependent,
