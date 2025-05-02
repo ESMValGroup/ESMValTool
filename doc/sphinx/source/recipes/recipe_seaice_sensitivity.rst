@@ -63,7 +63,7 @@ Example plots
 .. _fig_seaice_sensitivity_1:
 .. figure::  /recipes/figures/seaice/September_Arctic_sea_ice_sensitivity.png
    :align:   center
-   :width:   10cm
+   :width:   8cm
 
    Plot of northern hemisphere sea ice area loss (millions of square kilometres) in the month of September per degree Kelvin of average global warming.
 
@@ -79,4 +79,4 @@ Example plots
 
    Plot of the trend of annually averaged southern hemisphere sea ice area (millions of square kilometres) over time against the trend of annually and globally averaged air temperature near the surface (degrees Kelvin) over time.
 
-   The colour of each point is determined by the ``r value`` of the correlation between the two variables, and the hatching indicates a ``p value`` greater than 0.05, both as calculated using ``scipy.stats.linregress``.
+   The colour of each point is determined by the ``r value`` of the correlation between the two variables, and the hatching indicates a ``p value`` greater than ``0.05``, both calculated using ``scipy.stats.linregress``.
