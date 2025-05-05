@@ -2,7 +2,8 @@
 ---
 documentation:
   description:
-    Bo plot, linear trends for IPCC AR6 reference regions.
+    Box plot, linear trends for
+    the 46 IPCC AR6 reference regions for land (Iturbide et al., 2020).
     The diagnostic called in this recipe uses the seaborn.boxplot function.
     See seaborn manual for detailed information
     (https://seaborn.pydata.org/generated/seaborn.boxplot.html).
@@ -86,6 +87,75 @@ preprocessors:
     <<: *trend
     convert_units:
       units: m-1 kg s-2 yr-1
+
+
+  trend_ua200: &trend200
+    custom_order: true
+    extract_levels:
+      levels: 20000
+      scheme: linear
+      coordinate: air_pressure
+    extract_shape:
+      shapefile: ar6
+      decomposed: true
+      ids:
+        Acronym:
+          - 'NWN'
+          - 'NEN'
+          - 'GIC'
+          - 'WNA'
+          - 'CNA'
+          - 'ENA'
+          - 'NCA'
+          - 'SCA'
+          - 'CAR'
+          - 'NWS'
+          - 'NSA'
+          - 'NES'
+          - 'SAM'
+          - 'SWS'
+          - 'SES'
+          - 'SSA'
+          - 'NEU'
+          - 'WCE'
+          - 'EEU'
+          - 'MED'
+          - 'SAH'
+          - 'WAF'
+          - 'CAF'
+          - 'NEAF'
+          - 'SEAF'
+          - 'WSAF'
+          - 'ESAF'
+          - 'MDG'
+          - 'RAR'
+          - 'WSB'
+          - 'ESB'
+          - 'RFE'
+          - 'WCA'
+          - 'ECA'
+          - 'TIB'
+          - 'EAS'
+          - 'ARP'
+          - 'SAS'
+          - 'SEA'
+          - 'NAU'
+          - 'CAU'
+          - 'EAU'
+          - 'SAU'
+          - 'NZ'
+          - 'WAN'
+          - 'EAN'
+    area_statistics:
+      operator: mean
+    linear_trend:
+    convert_units:
+      units: m s-1 yr-1
+
+  trend_hus200:
+    <<: *trend200
+    convert_units:
+      units: year-1
 
 
 diagnostics:
@@ -180,3 +250,60 @@ diagnostics:
           rc:
             figure.figsize: [28, 6]
         suptitle: Trend in Sea Level Pressure
+
+  ua200_trends:
+    variables:
+      ua:
+        preprocessor: trend_ua200
+        mip: Amon
+        timerange: 1980/2009
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, reference_for_metric: true}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: barplot
+        seaborn_kwargs:
+          x: shape_id
+          y: ua
+          hue: dataset
+        add_aux_coords: true
+        facets_as_columns: [dataset]
+        plot_object_methods:
+          set_xlabel: region
+          set_ylabel: ua trend [m s-1 yr-1]
+        seaborn_settings:
+          style: ticks
+          rc:
+            figure.figsize: [28, 6]
+        suptitle: Trend in Zonal Wind at 200 hPa
+
+
+  hus200_trends:
+    variables:
+      hus:
+        preprocessor: trend_hus200
+        mip: Amon
+        timerange: 1980/2009
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, reference_for_metric: true}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: barplot
+        seaborn_kwargs:
+          x: shape_id
+          y: hus
+          hue: dataset
+        add_aux_coords: true
+        facets_as_columns: [dataset]
+        plot_object_methods:
+          set_xlabel: region
+          set_ylabel: hus trend [yr-1]
+        seaborn_settings:
+          style: ticks
+          rc:
+            figure.figsize: [28, 6]
+        suptitle: Trend in Specific Humidity at 200 hPa
