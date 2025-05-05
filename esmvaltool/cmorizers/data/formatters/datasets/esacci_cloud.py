@@ -85,7 +85,6 @@ def _extract_variable_daily(
     """Extract daily variable."""
 
     fill_cube = None
-    # glob_attrs = cfg['attributes']
     cmor_info = cfg["cmor_table"].get_variable(var["mip"], short_name)
 
     if not start_date:
@@ -181,11 +180,11 @@ def _extract_variable_daily(
                     )
                     if short_name in ["clt", "ctp"]:
                         daily_cube = _create_nan_cube(
-                            fill_cube, year, month, iday
+                            cubes_day[0], year, month, iday
                         )
                         cubes.append(daily_cube)
                     daily_cube_day = _create_nan_cube(
-                        fill_cube, year, month, iday
+                        cubes_day[0], year, month, iday
                     )
                     cubes_day.append(daily_cube_day)
 
@@ -259,7 +258,6 @@ def _extract_variable_monthly(
 ):
     """Extract monthly variable with improved handling for multiple cubes."""
 
-    # glob_attrs = cfg['attributes']
     cmor_info = cfg["cmor_table"].get_variable(var["mip"], short_name)
 
     if not start_date:
