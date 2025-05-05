@@ -1,0 +1,62 @@
+# This file contains the recipes that are run by the RTW on DKRZ.
+# The "How to add a recipe to the RTW" documentation provides more information.
+#
+# KEYS         VALUES
+# ----         ------
+# recipe_path  The path to the recipe. Recipe paths are specified relative to
+#              esmvaltool/recipes. For recipes in subdirectories, '--' stands
+#              for '/' since the latter is an illegal char.
+# actual       A note of the recipe's actual resource usage. From the
+#              successful run of the recipe on the compute server on DKRZ.
+# max_time     The maximum amount of time the recipe has to complete. Use the
+#              Cylc ISO8601 duration format.
+# max_memory   The memory allocated to running the recipe. Default units are
+#              megabytes. Different units can be specified using the suffix
+#              [K|M|G|T].
+
+{% set FAST_RECIPES =
+    [
+        {
+            "recipe_path": "examples--recipe_python",
+            "actual": "0m10s, 2.5 GB on 2025-04-07",
+            "max_time": "PT2M",
+            "max_memory": "15G",
+        },
+        {
+            "recipe_path": "recipe_albedolandcover",
+            "actual": "0m20s, 3.3 GB on 2025-04-07",
+            "max_time": "PT2M",
+            "max_memory": "15G",
+        },
+        {
+            "recipe_path": "recipe_autoassess_landsurface_soilmoisture",
+            "actual": "0m18s, 3.4 GB on 2025-04-07",
+            "max_time": "PT2M",
+            "max_memory": "15G",
+        },
+        {
+            "recipe_path": "recipe_consecdrydays",
+            "actual": "0m14s, 2.6 GB on 2025-04-07",
+            "max_time": "PT2M",
+            "max_memory": "15G",
+        },
+        {
+            "recipe_path": "recipe_heatwaves_coldwaves",
+            "actual": "0m40s, 1.9 GB on 2025-04-07",
+            "max_time": "PT3M",
+            "max_memory": "15G",
+        },
+    ]
+%}
+
+# 'recipe_ensclus' should be in fast: is in medium temporarily to avoid empty variable.
+{% set MEDIUM_RECIPES =
+    [
+        {
+            "recipe_path": "recipe_ensclus",
+            "actual": "1m17s, 2.7 GB on 2025-04-07",
+            "max_time": "PT2M",
+            "max_memory": "15G",
+        },
+    ]
+%}
