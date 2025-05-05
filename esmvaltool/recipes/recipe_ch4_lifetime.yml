@@ -1,0 +1,63 @@
+# ESMValTool
+# recipe_ch4_lifetime.yml
+---
+documentation:
+  title: CH4 lifetime.
+  description: Compute ch4 lifetime.
+  authors:
+    - winterstein_franziska
+  maintainer:
+    - winterstein_franziska
+  references:
+    - acknow_project
+
+
+datasets:
+  - {project: CMIP6, dataset: BCC-ESM1, exp: historical, ensemble: r1i1p1f1, timerange: 1990/2000, grid: gn}
+
+
+preprocessors:
+  annual_mean_plev19:
+    extract_levels:
+      levels: {cmor_table: CMIP6, coordinate: plev19}
+      scheme: linear
+      coordinate: air_pressure
+    annual_statistics:
+      operator: mean
+
+
+diagnostics:
+  lifetime:
+    scripts:
+      plot:
+        script: lifetime/lifetime.py
+        reactant: ch4
+        molarmass: 16.05
+        weight_type: mass CH4
+        units: years
+        oxidant:
+          oh:
+            A: 1.85e-20
+            ER: 987.0
+            b: 2.82
+        regions: [TROP]
+        facet_used_for_labels: alias
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{dataset}_{real_name}'
+        plots:
+          timeseries:
+            by_timestep: True
+            display_mean: true
+    variables:
+      ch4:
+        mip: Amon
+        preprocessor: annual_mean_plev19
+      oh:
+        mip: AERmon
+        preprocessor: annual_mean_plev19
+      ta:
+        mip: Amon
+        preprocessor: annual_mean_plev19
+      hus:
+        mip: Amon
+        preprocessor: annual_mean_plev19
