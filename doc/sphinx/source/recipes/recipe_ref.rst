@@ -26,7 +26,7 @@ Recipes are stored in `recipes/ref`
 * ref/recipe_model_benchmarking_timeseries_region.yml:
   Time series in comparison with refernce data for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_timeseries.yml <recipe_benchmarking>`
 * ref/recipe_model_benchmarking_annual_cycle_region.yml:
-  Annual cycle in comparison with refernce data for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_annual_cycle.yml <recipe_benchmarking>`
+  Annual cycle in comparison with reference data for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_annual_cycle.yml <recipe_benchmarking>`
 * ref/recipe_seaborn_trend_regions.yml:
   Linear Trends for all IPCC regions compaerd with refernce data, based on :ref:`recipe_seaborn.yml <recipes_seaborn_diag>`
 * ref/recipe_ref_scatterplot.yml:
