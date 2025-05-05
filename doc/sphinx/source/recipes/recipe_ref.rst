@@ -13,7 +13,7 @@ Here ESMValTool recipes are collected which will be used in the CMIP
 Available recipes
 -----------------
 
-Recipes are stored in `recipes/ref`
+Recipes are stored in `recipes/`
 
 * :ref:`recipe_ecs.yml <recipes_ecs>`:
   Calculate equilibrium climate sensitivity (ECS)
