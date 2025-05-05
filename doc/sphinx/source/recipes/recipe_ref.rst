@@ -24,7 +24,7 @@ Recipes are stored in `recipes/ref`
 * recipe_ref_cre.yml:
   Maps and zonal means of longwave and shortwave cloud radiative effect
 * ref/recipe_model_benchmarking_timeseries_region.yml:
-  Time series in comparison with refernce data for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_timeseries.yml <recipe_benchmarking>`
+  Time series in comparison with reference data for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_timeseries.yml <recipe_benchmarking>`
 * ref/recipe_model_benchmarking_annual_cycle_region.yml:
   Annual cycle in comparison with reference data for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_annual_cycle.yml <recipe_benchmarking>`
 * ref/recipe_seaborn_trend_regions.yml:
