@@ -21,7 +21,7 @@ Recipes are stored in `recipes/ref`
   Calculate transient climate response (TCR)
 * :ref:`recipe_tcre.yml <recipes_tcre>`:
   Calculate transient climate response to cumulative CO2 emissions (TCRE)
-* recipe_ref_cre.yml:
+* ref/recipe_ref_cre.yml:
   Maps and zonal means of longwave and shortwave cloud radiative effect
 * ref/recipe_model_benchmarking_timeseries_region.yml:
   Time series in comparison with reference data for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_timeseries.yml <recipe_benchmarking>`
