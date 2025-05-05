@@ -41,6 +41,13 @@ facet_used_for_labels: str, optional (default: 'dataset')
 figure_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.figure`. By
     default, uses ``constrained_layout: true``.
+m_air: float, optional (default: 28.970)
+    Molar mass of air in g/mol.
+molarmass: float
+    Molar mass of reactant in g/mol.
+oxidant: dict
+    Oxidant reaction rates for chemical species, e.g., {"oh": {"A": 1.85e-20,
+    "ER": 987.0, "b": 2.82}}.
 plots: dict, optional
     Plot types plotted by this diagnostic (see list above). Dictionary keys
     must be ``timeseries``, ``annual_cycle``, ``map``, ``zonalmean``
@@ -60,15 +67,30 @@ plot_folder: str, optional
     default ESMValTool plot directory (i.e.,
     ``output_dir/plots/diagnostic_name/script_name/``, see
     :ref:`esmvalcore:outputdata`).
+reactant: str
+    Name of reactant, e.g., "CH4".
+regions: list of str, optional (default: ["TROP"])
+    Regions considered for plots. Currently, only "TROP" (troposphere) and
+    "STRA" (stratosphere) are supported.
 savefig_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
     default, uses ``bbox_inches: tight, dpi: 300, orientation: landscape``.
 seaborn_settings: dict, optional
     Options for :func:`seaborn.set_theme` (affects all plots). By default, uses
     ``style: ticks``.
+units: str, optional (default: "years")
+    Target units of the lifetime.
+weight_type: str
+    Type of weighting. If "mass CH4", use CH4 mass as weights. Otherwise, use
+    equal weights.
 
 Configuration options for plot type ``timeseries``
 --------------------------------------------------
+by_timestep: bool, optional (default: False)
+    Calculate lifetime for each time step individually. Slower, but less
+    memory-intensive.
+display_mean: bool, optional (default: False)
+    Show mean over entire period in plot label.
 gridline_kwargs: dict, optional
     Optional keyword arguments for grid lines. By default, ``color: lightgrey,
     alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
@@ -332,6 +354,7 @@ class CH4Lifetime(MonitorBase):
             self.cfg["facet_used_for_labels"],
         )
         self.cfg.setdefault("regions", ["TROP"])
+        self.cfg.setdefault("units", "years")
 
         # set default molarmasses
         self.cfg.setdefault("m_air", 28.970)  # [g_air/mol_air]
@@ -369,6 +392,7 @@ class CH4Lifetime(MonitorBase):
 
             # Default options for the differ N MMNMJHJ JMHTHent plot types
             if plot_type == "timeseries":
+                self.plots[plot_type].setdefault("display_mean", False)
                 self.plots[plot_type].setdefault("gridline_kwargs", {})
                 self.plots[plot_type].setdefault("legend_kwargs", {})
                 self.plots[plot_type].setdefault("plot_kwargs", {})
@@ -626,9 +650,9 @@ class CH4Lifetime(MonitorBase):
                     " for the present type of vertical coordinate.",
                 )
 
-            if not set(["TROP", "STRA"]).isdisjoint(
+            if not {"TROP", "STRA"}.isdisjoint(
                 self.cfg["regions"],
-            ) and not set(["timeseries", "annual_cycle"]).isdisjoint(
+            ) and not {"timeseries", "annual_cycle"}.isdisjoint(
                 self.plots,
             ):
                 # calculate climatological tropopause pressure (tp_clim)
@@ -680,7 +704,7 @@ class CH4Lifetime(MonitorBase):
 
     def _set_oxidant_defaults(self, oxidant):
         """Set the defaults for the oxidant reaction rates."""
-        for name, _ in oxidant.items():
+        for name in oxidant:
             # set default reaction
             if name == "oh":
                 self.cfg["oxidant"][name].setdefault("A", 1.85e-20)
@@ -717,13 +741,10 @@ class CH4Lifetime(MonitorBase):
     def _get_name(self, case="reactant"):
         """Return variable name.
 
-        Return the name of the reactant or the oxidant
-        respecively.
+        Return the name of the reactant or the oxidant respectively.
         """
         if isinstance(self.cfg[case], dict):
-            name = []
-            for key in self.cfg[case].keys():
-                name.append(key)
+            name = list(self.cfg[case])
         else:
             name = self.cfg[case]
 
@@ -754,8 +775,8 @@ class CH4Lifetime(MonitorBase):
     def _define_weight(self, variables):
         """Define used weights in the lifetime calculation.
 
-        Currently only one weight type is implemented. Any other
-        options result in weights = 1. (no weighting)
+        Currently only one weight type is implemented. Any other options result
+        in weights = 1. (no weighting)
 
         weight type:
          mass CH4: mass of CH4 -> convert to kg per gridbox
@@ -792,6 +813,12 @@ class CH4Lifetime(MonitorBase):
         var = variables[varname] * grmassdry * (m_var / self.cfg["m_air"])
 
         return var
+
+    def get_plot_path(self, plot_type, dataset, region):
+        """Get plot path."""
+        plot_path = Path(super().get_plot_path(plot_type, dataset))
+        filename = f"{plot_path.stem}_{region}{plot_path.suffix}"
+        return plot_path.parent / filename
 
     def plot_zonalmean_with_ref(self, plot_func, region, dataset, ref_dataset):
         """Plot zonal mean profile for single dataset with reference."""
@@ -913,7 +940,7 @@ class CH4Lifetime(MonitorBase):
                 self._set_rasterized([axes_data, axes_ref, axes_bias])
 
         # File paths
-        plot_path = self.get_plot_path(plot_type, dataset)
+        plot_path = self.get_plot_path(plot_type, dataset, region)
         netcdf_path = get_diagnostic_filename(
             Path(plot_path).stem + "_{pos}",
             self.cfg,
@@ -998,7 +1025,7 @@ class CH4Lifetime(MonitorBase):
                 self._set_rasterized([axes])
 
         # File paths
-        plot_path = self.get_plot_path(plot_type, dataset)
+        plot_path = self.get_plot_path(plot_type, dataset, region)
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
 
         return (plot_path, {netcdf_path: cube})
@@ -1106,8 +1133,8 @@ class CH4Lifetime(MonitorBase):
                 variable["filename"] for variable in dataset["dataset_data"]
             )
 
-            # call by timestep will take longer,
-            # but it is less memory intensive
+            # Call by timestep will take longer, but it is less memory
+            # intensive
             if self.plots[plot_type]["by_timestep"]:
                 slice_dataset = {}
                 slice_dataset["z_coord"] = dataset["z_coord"]
@@ -1177,7 +1204,7 @@ class CH4Lifetime(MonitorBase):
         self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
 
         # Save plot
-        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
+        plot_path = self.get_plot_path(plot_type, multi_dataset_facets, region)
         fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
         logger.info("Wrote %s", plot_path)
         plt.close()
@@ -1267,7 +1294,7 @@ class CH4Lifetime(MonitorBase):
         self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
 
         # Save plot
-        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
+        plot_path = self.get_plot_path(plot_type, multi_dataset_facets, region)
         fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
         logger.info("Wrote %s", plot_path)
         plt.close()
@@ -1474,7 +1501,7 @@ class CH4Lifetime(MonitorBase):
         self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
 
         # Save plot
-        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
+        plot_path = self.get_plot_path(plot_type, multi_dataset_facets, region)
         fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
         logger.info("Wrote %s", plot_path)
         plt.close()
@@ -1518,9 +1545,8 @@ class CH4Lifetime(MonitorBase):
             logger.info("Plotting lifetime for region %s", region)
             self.create_timeseries_plot(region, input_data, base_datasets)
             self.create_annual_cycle_plot(region, input_data, base_datasets)
-
-        self.create_zonalmean_plot(region, input_data, base_datasets)
-        self.create_1d_profile_plot(region, input_data, base_datasets)
+            self.create_zonalmean_plot(region, input_data, base_datasets)
+            self.create_1d_profile_plot(region, input_data, base_datasets)
 
 
 def main():
