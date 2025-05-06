@@ -12,16 +12,13 @@ in the recipe. Note that at most one reference dataset is supported.
 Currently supported plot types (use the option ``plots`` to specify them):
     - Time series (plot type ``timeseries``): all datasets are plotted in one
       single figure.
-    - Annual cycle (plot type ``annual_cycle``): all datasets are plotted in
-      one single figure.
     - Zonal mean profiles (plot type ``zonalmean``):
       for each dataset, an individual profile is plotted. If a reference
       dataset    is defined, also include this dataset and a bias plot
       into the figure. Note that if a reference dataset is defined, all input
       datasets need to be given on the same horizontal and vertical grid (you
       can use the preprocessors :func:`esmvalcore.preprocessor.regrid` and
-      :func:`esmvalcore.preprocessor.extract_levels` for this). Input data
-      needs to be 2D with dimensions `latitude`, `height`/`air_pressure`.
+      :func:`esmvalcore.preprocessor.extract_levels` for this).
     - 1D profiles (plot type ``1d_profile``): all datasets are plotted in one
       single figure.
 
@@ -50,8 +47,7 @@ oxidant: dict
     "ER": 987.0, "b": 2.82}}.
 plots: dict, optional
     Plot types plotted by this diagnostic (see list above). Dictionary keys
-    must be ``timeseries``, ``annual_cycle``, ``map``, ``zonalmean``
-    or ``1d_profile``.
+    must be ``timeseries``, ``map``, ``zonalmean`` or ``1d_profile``.
     Dictionary values are dictionaries used as options for the corresponding
     plot. The allowed options for the different plot types are given below.
 plot_filename: str, optional
@@ -86,6 +82,15 @@ weight_type: str
 
 Configuration options for plot type ``timeseries``
 --------------------------------------------------
+annual_mean: str, optional (default: False)
+    Optional switch to turn on annual means to be displayed  'only' or
+    additional 'both' to the original timeseries. If not set or set to
+    ``False`` only the original timeseries is shown.
+annual_mean_kwargs: dict, optional
+    Optional keyword arguments for :func:`iris.plot.plot` for plotting annual
+    means. These keyword arguments update (and potentially overwrite) the
+    ``plot_kwargs`` for the annual mean plots. Use ``annual_mean_kwargs`` to
+    not show annual means.
 by_timestep: bool, optional (default: False)
     Calculate lifetime for each time step individually. Slower, but less
     memory-intensive.
@@ -117,36 +122,6 @@ pyplot_kwargs: dict, optional
     ``{project}`` that vary between the different datasets will be transformed
     to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
     of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
-
-Configuration options for plot type ``annual_cycle``
-----------------------------------------------------
-gridline_kwargs: dict, optional
-    Optional keyword arguments for grid lines. By default, ``color: lightgrey,
-    alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
-    lines.
-legend_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
-    ``legend_kwargs: false`` to not show legends.
-plot_kwargs: dict, optional
-    Optional keyword arguments for :func:`iris.plot.plot`. Dictionary keys are
-    elements identified by ``facet_used_for_labels`` or ``default``, e.g.,
-    ``CMIP6`` if ``facet_used_for_labels: project`` or ``historical`` if
-    ``facet_used_for_labels: exp``. Dictionary values are dictionaries used as
-    keyword arguments for :func:`iris.plot.plot`. String arguments can include
-    facets in curly brackets which will be derived from the corresponding
-    dataset, e.g., ``{project}``, ``{short_name}``, ``{exp}``. Examples:
-    ``default: {linestyle: '-', label: '{project}'}, CMIP6: {color: red,
-    linestyle: '--'}, OBS: {color: black}``.
-pyplot_kwargs: dict, optional
-    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
-    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    single argument for these functions. String arguments can include facets in
-    curly brackets which will be derived from the datasets plotted in the
-    corresponding plot, e.g., ``{short_name}``, ``{exp}``. Facets like
-    ``{project}`` that vary between the different datasets will be transformed
-    to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
-    of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
-
 
 Configuration options for plot type ``zonalmean``
 ----------------------------------------------------------
@@ -284,6 +259,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from iris.coord_categorisation import add_year
 from matplotlib.gridspec import GridSpec
 from matplotlib.ticker import FormatStrFormatter, LogLocator, NullFormatter
 
@@ -377,7 +353,6 @@ class CH4Lifetime(MonitorBase):
         # Check given plot types and set default settings for them
         self.supported_plot_types = [
             "timeseries",
-            "annual_cycle",
             "zonalmean",
             "1d_profile",
         ]
@@ -392,18 +367,14 @@ class CH4Lifetime(MonitorBase):
 
             # Default options for the differ N MMNMJHJ JMHTHent plot types
             if plot_type == "timeseries":
+                self.plots[plot_type].setdefault("annual_mean", False)
+                self.plots[plot_type].setdefault("annual_mean_kwargs", {})
                 self.plots[plot_type].setdefault("display_mean", False)
                 self.plots[plot_type].setdefault("gridline_kwargs", {})
                 self.plots[plot_type].setdefault("legend_kwargs", {})
                 self.plots[plot_type].setdefault("plot_kwargs", {})
                 self.plots[plot_type].setdefault("pyplot_kwargs", {})
                 self.plots[plot_type].setdefault("by_timestep", False)
-
-            if plot_type == "annual_cycle":
-                self.plots[plot_type].setdefault("gridline_kwargs", {})
-                self.plots[plot_type].setdefault("legend_kwargs", {})
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
 
             if plot_type == "zonalmean":
                 self.plots[plot_type].setdefault(
@@ -583,7 +554,7 @@ class CH4Lifetime(MonitorBase):
                 plot_kwargs[key] = val
 
         # Default settings for different plot types
-        if plot_type in ("timeseries", "annual_cycle", "1d_profile"):
+        if plot_type in ("timeseries", "1d_profile"):
             plot_kwargs.setdefault("label", label)
 
         return deepcopy(plot_kwargs)
@@ -652,9 +623,7 @@ class CH4Lifetime(MonitorBase):
 
             if not {"TROP", "STRA"}.isdisjoint(
                 self.cfg["regions"],
-            ) and not {"timeseries", "annual_cycle"}.isdisjoint(
-                self.plots,
-            ):
+            ) and not {"timeseries"}.isdisjoint(self.plots):
                 # calculate climatological tropopause pressure (tp_clim)
                 # but only if no tropopause is given by data
                 if "ptp" not in variables and "tp_i" not in variables:
@@ -1154,7 +1123,26 @@ class CH4Lifetime(MonitorBase):
                 mean = cube.collapsed("time", iris.analysis.MEAN).data
                 plot_kwargs["label"] = f"{plot_kwargs['label']} ({mean:.2f})"
 
-            iris.plot.plot(cube, **plot_kwargs)
+            # Plot annual means if desired
+            annual_mean = self.plots[plot_type]["annual_mean"]
+            if annual_mean in [False, "both"]:
+                iris.plot.plot(cube, **plot_kwargs)
+                plot_kwargs.pop("label", None)
+            if annual_mean in ["both", "only"]:
+                logger.info("Plotting annual means")
+                if not cube.coords("year"):
+                    add_year(cube, "time")
+                annual_mean_cube = cube.aggregated_by(
+                    "year", iris.analysis.MEAN
+                )
+
+                plot_kwargs.update(self.plots[plot_type]["annual_mean_kwargs"])
+                iris.plot.plot(annual_mean_cube, **plot_kwargs)
+            else:
+                raise ValueError(
+                    "Unknown option for annual_mean; choose between False, "
+                    "'both', or 'only'"
+                )
 
         # Default plot appearance
         multi_dataset_facets = self._get_multi_dataset_facets(
@@ -1203,94 +1191,6 @@ class CH4Lifetime(MonitorBase):
             "authors": ["schlund_manuel", "winterstein_franziska"],
             "caption": caption,
             "plot_types": ["line"],
-            "long_names": [var_attrs["long_name"]],
-        }
-        with ProvenanceLogger(self.cfg) as provenance_logger:
-            provenance_logger.log(plot_path, provenance_record)
-            provenance_logger.log(netcdf_path, provenance_record)
-
-    def create_annual_cycle_plot(self, region, input_data, base_datasets):
-        """Create annual cycle plot."""
-        plot_type = "annual_cycle"
-        if plot_type not in self.plots:
-            return
-
-        if not base_datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
-
-        logger.info("Plotting %s", plot_type)
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot()
-
-        # Plot all datasets in one single figure
-        ancestors = []
-        cubes = {}
-        for label, dataset in input_data.items():
-            ancestors.extend(
-                variable["filename"] for variable in dataset["dataset_data"]
-            )
-
-            cube = calculate_lifetime(dataset, plot_type, region)
-            # convert units
-            cube.convert_units(self.info["units"])
-
-            cubes[label] = cube
-
-            # Plot annual cycle
-            plot_kwargs = self._get_plot_kwargs(
-                plot_type,
-                base_datasets[label],
-            )
-            plot_kwargs["axes"] = axes
-            iris.plot.plot(cube, **plot_kwargs)
-
-        # Default plot appearance
-        multi_dataset_facets = self._get_multi_dataset_facets(
-            list(base_datasets.values()),
-        )
-        axes.set_title(f"{self.info['long_name']} in region {region}")
-        axes.set_xlabel("Month")
-        axes.set_ylabel(
-            f"{chr(964)}({self._get_name('reactant').upper()})"
-            " [{self.info['units']}]",
-        )
-        axes.set_xticks(range(1, 13), [str(m) for m in range(1, 13)])
-        gridline_kwargs = self._get_gridline_kwargs(plot_type)
-        if gridline_kwargs is not False:
-            axes.grid(**gridline_kwargs)
-
-        # Legend
-        legend_kwargs = self.plots[plot_type]["legend_kwargs"]
-        if legend_kwargs is not False:
-            axes.legend(**legend_kwargs)
-
-        # Customize plot appearance
-        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
-
-        # Save plot
-        plot_path = self.get_plot_path(plot_type, multi_dataset_facets, region)
-        fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
-        logger.info("Wrote %s", plot_path)
-        plt.close()
-
-        # Save netCDF file
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-        var_attrs = {
-            "short_name": self.info["short_name"],
-            "long_name": self.info["long_name"],
-            "units": self.info["units"],
-        }
-        io.save_1d_data(cubes, netcdf_path, "month_number", var_attrs)
-
-        # Provenance tracking
-        caption = (
-            f"Annual cycle of {self.info['long_name']} for various datasets."
-        )
-        provenance_record = {
-            "ancestors": ancestors,
-            "authors": ["schlund_manuel", "winterstein_franziska"],
-            "caption": caption,
-            "plot_types": ["seas"],
             "long_names": [var_attrs["long_name"]],
         }
         with ProvenanceLogger(self.cfg) as provenance_logger:
@@ -1517,7 +1417,6 @@ class CH4Lifetime(MonitorBase):
         for region in self.cfg["regions"]:
             logger.info("Plotting lifetime for region %s", region)
             self.create_timeseries_plot(region, input_data, base_datasets)
-            self.create_annual_cycle_plot(region, input_data, base_datasets)
             self.create_zonalmean_plot(region, input_data, base_datasets)
             self.create_1d_profile_plot(region, input_data, base_datasets)
 

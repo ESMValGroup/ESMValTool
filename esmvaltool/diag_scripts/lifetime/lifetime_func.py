@@ -284,7 +284,7 @@ def dpres_plevel_4d(plev, pmin, pmax, z_coord="air_pressure"):
 def calculate_lifetime(dataset, plot_type, region):
     """Calculate the lifetime for the given plot_type and region."""
     # extract region from weights and reaction
-    if plot_type in ["timeseries", "annual_cycle"]:
+    if plot_type == "timeseries":
         reaction = extract_region(dataset, region, case="reaction")
         weight = extract_region(dataset, region, case="weight")
     else:
@@ -372,7 +372,7 @@ def climatological_tropopause(cube):
 
 def sum_up_to_plot_dimensions(var, plot_type):
     """Return the cube summed over the appropriate dimensions."""
-    if plot_type in ["timeseries", "annual_cycle"]:
+    if plot_type == "timeseries":
         if var.coords("air_pressure", dim_coords=True):
             z_coord = var.coords("air_pressure", dim_coords=True)[0]
         elif var.coords("lev", dim_coords=True):
@@ -392,14 +392,10 @@ def sum_up_to_plot_dimensions(var, plot_type):
         cube = var.collapsed(["longitude"], iris.analysis.SUM)
     elif plot_type == "1d_profile":
         cube = var.collapsed(["longitude", "latitude"], iris.analysis.SUM)
-    elif plot_type == "annual_cycle":
-        # TODO!
-        # not use iris.analysis.SUM but some kind of mean
-        # cube = var.collapsed(['longitude', 'latitude', z_coord],
-        #                      iris.analysis.SUM)
+    else:
         raise NotImplementedError(
-            "The sum to plot dimensions for plot_type"
-            f" {plot_type} is currently not implemented"
+            f"The sum to plot dimensions for plot_type '{plot_type}' is "
+            f"currently not implemented"
         )
 
     return cube
