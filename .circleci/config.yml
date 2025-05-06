@@ -247,6 +247,7 @@ jobs:
             mkdir /logs
             . /opt/conda/etc/profile.d/conda.sh
             # Install
+            mamba install -c conda-forge "mamba>=2"  # mamba<2 can't solve env, even simple
             mamba env create -n esmvaltool -f environment_python.yml
             conda activate esmvaltool
             pip install .[doc]
@@ -290,6 +291,7 @@ jobs:
 workflows:
   commit:
     jobs:
+      - build_documentation
       - run_tests
       - test_installation_from_source_test_mode
       - test_installation_from_source_develop_mode
