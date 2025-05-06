@@ -83,11 +83,12 @@ Configuration options in recipe
 -------------------------------
 facet_used_for_labels: str, optional (default: 'dataset')
     Facet used to label different datasets in plot titles and legends. For
-    example, ``facet_used_for_labels: dataset`` will use dataset names in plot
-    titles and legends; ``facet_used_for_labels: exp`` will use experiments in
-    plot titles and legends. In addition, ``facet_used_for_labels`` is used to
-    select the correct ``plot_kwargs`` for the different datasets (see
-    configuration options for the different plot types below).
+    example, ``facet_used_for_labels: 'dataset'`` will use dataset names in
+    plot titles and legends; ``facet_used_for_labels: 'exp'`` will use
+    experiments in plot titles and legends. In addition,
+    ``facet_used_for_labels`` is used to select the correct ``plot_kwargs`` for
+    the different datasets (see configuration options for the different plot
+    types below).
 figure_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.figure`. By
     default, uses ``{constrained_layout: True}``.
@@ -107,15 +108,15 @@ plots: dict
     different plot types are given below.
 plot_filename: str, optional
     Filename pattern for the plots. By default, uses
-    ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.  All tags
-    (i.e., the entries in curly brackets, e.g., ``{dataset}``, are replaced
+    ``'{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}'``.  All tags
+    (i.e., the entries in curly brackets, e.g., ``'{dataset}'``, are replaced
     with the corresponding tags).
 plot_folder: str, optional
     Path to the folder to store figures. By default, uses
-    ``{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}``.  All
-    tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
-    replaced with the corresponding tags). ``{plot_dir}`` is replaced with the
-    default ESMValTool plot directory (i.e.,
+    ``'{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}'``.  All
+    tags (i.e., the entries in curly brackets, e.g., ``'{dataset}'``, are
+    replaced with the corresponding tags). ``'{plot_dir}'`` is replaced with
+    the default ESMValTool plot directory (i.e.,
     ``output_dir/plots/diagnostic_name/script_name/``, see
     :ref:`esmvalcore:outputdata`).
 savefig_kwargs: dict, optional
@@ -124,7 +125,7 @@ savefig_kwargs: dict, optional
     'landscape'}``.
 seaborn_settings: dict, optional
     Options for :func:`seaborn.set_theme` (affects all plots). By default, uses
-    ``style: ticks``.
+    ``{style: 'ticks'}``.
 
 .. _diag_monitor_multi_datasets_plot_options:
 
@@ -173,8 +174,7 @@ pyplot_kwargs: dict, optional
     '{short_name}'}``, ``{xlim: [0, 5]}``.
 rasterize: bool, optional (default: False)
     If ``True``, use rasterization_ for plots to produce smaller files.  This
-    is only relevant for vector graphics (e.g., ``output_file_type:
-    pdf,svg,ps``).
+    is only relevant for vector graphics (e.g., ``output_file_type: 'pdf'``).
 time_format: str, optional (default: None)
     :func:`~datetime.datetime.strftime` format string that is used to format
     the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
@@ -276,10 +276,9 @@ pyplot_kwargs: dict, optional
     from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
     ``{exp}``. Examples: ``{title: 'Awesome Plot of {long_name}'}``, ``{xlabel:
     '{short_name}'}``, ``{xlim: [0, 5]}``.
-rasterize: bool, optional (default: True)
+rasterize: bool, optional (default: False)
     If ``True``, use rasterization_ for plots to produce smaller files.  This
-    is only relevant for vector graphics (e.g., ``output_file_type:
-    pdf,svg,ps``).
+    is only relevant for vector graphics (e.g., ``output_file_type: 'pdf'``).
 show_stats: bool, optional (default: True)
     Show basic statistics on the plots.
 time_format: str, optional (default: None)
