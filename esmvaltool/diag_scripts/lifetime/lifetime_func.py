@@ -281,25 +281,22 @@ def dpres_plevel_4d(plev, pmin, pmax, z_coord="air_pressure"):
     return dplev
 
 
-def calculate_lifetime(dataset, plot_type, region):
+def calculate_lifetime(dataset, plot_type, region=None):
     """Calculate the lifetime for the given plot_type and region."""
-    # extract region from weights and reaction
-    if plot_type == "timeseries":
+    # Extract region from weights and reaction
+    if region is not None:
         reaction = extract_region(dataset, region, case="reaction")
         weight = extract_region(dataset, region, case="weight")
     else:
         reaction = dataset["reaction"]
         weight = dataset["weight"]
 
-    # calculate nominator and denominator
-    # and sum of nominator and denominator via plot_type dimensions
+    # Calculate nominator and denominator and sum of nominator and denominator
+    # via plot_type dimensions
     nominator = sum_up_to_plot_dimensions(weight, plot_type)
     denominator = sum_up_to_plot_dimensions(weight * reaction, plot_type)
 
-    # division
-    division = nominator / denominator
-
-    return division
+    return nominator / denominator
 
 
 def extract_region(dataset, region, case="reaction"):
@@ -309,37 +306,30 @@ def extract_region(dataset, region, case="reaction"):
     - TROP: troposphere (excl. tropopause)
     - STRA: stratosphere (incl. tropopause)
     """
-    var = dataset[case]
-    use_z_coord = dataset["use_z_coord"]
+    var = dataset[case].copy()
+    z_coord = dataset["use_z_coord"]
 
     # mask regions outside
-    if region in ["TROP", "STRA"]:
-        z_4d = broadcast_to_shape(
-            var.coord(use_z_coord).lazy_points(),
-            var.shape,
-            var.coord_dims(use_z_coord),
-        )
+    z_4d = broadcast_to_shape(
+        var.coord(z_coord).lazy_points(),
+        var.shape,
+        var.coord_dims(z_coord),
+    )
 
-        tp_4d = broadcast_to_shape(
-            dataset["tropopause"].core_data(),
-            var.shape,
-            tuple(
-                var.coord_dims(item)[0]
-                for item in var.dim_coords
-                if not item == dataset["z_coord"]
-            ),
-        )
+    tp_4d = broadcast_to_shape(
+        dataset["tropopause"].core_data(),
+        var.shape,
+        tuple(
+            var.coord_dims(item)[0]
+            for item in var.dim_coords
+            if item != dataset["z_coord"]
+        ),
+    )
 
-        if region == "TROP":
-            var.data = da.ma.masked_array(
-                var.core_data(),
-                mask=(z_4d <= tp_4d),
-            )
-        elif region == "STRA":
-            var.data = da.ma.masked_array(
-                var.core_data(),
-                mask=(z_4d > tp_4d),
-            )
+    if region == "TROP":
+        var.data = da.ma.masked_array(var.core_data(), mask=(z_4d <= tp_4d))
+    elif region == "STRA":
+        var.data = da.ma.masked_array(var.core_data(), mask=(z_4d > tp_4d))
     else:
         raise NotImplementedError(f"region '{region}' is not supported")
 
@@ -363,6 +353,7 @@ def climatological_tropopause(cube):
     tp_clim.data = broadcast_to_shape(
         tpp, cube.shape, cube.coord_dims("latitude")
     )
+    tp_clim.standard_name = "tropopause_air_pressure"
     tp_clim.var_name = "tp_clim"
     tp_clim.long_name = "climatological tropopause pressure"
     tp_clim.units = "Pa"

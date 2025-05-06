@@ -5,6 +5,9 @@ Description
 This diagnostic can be used to visualize lifetime of multiple datasets in
 one plot.
 
+Input data needs to be 4D (time,
+air_pressure/atmosphere_hybrid_sigma_pressure_coordinate, latitude, longitude).
+
 For some plot types, a reference dataset can be defined. For this, use the
 facet ``reference_for_lifetime_diags: true`` in the definition of the dataset
 in the recipe. Note that at most one reference dataset is supported.
@@ -14,10 +17,10 @@ Currently supported plot types (use the option ``plots`` to specify them):
       single figure.
     - Zonal mean profiles (plot type ``zonalmean``):
       for each dataset, an individual profile is plotted. If a reference
-      dataset    is defined, also include this dataset and a bias plot
-      into the figure. Note that if a reference dataset is defined, all input
-      datasets need to be given on the same horizontal and vertical grid (you
-      can use the preprocessors :func:`esmvalcore.preprocessor.regrid` and
+      dataset is defined, also include this dataset and a bias plot into the
+      figure. Note that if a reference dataset is defined, all input datasets
+      need to be given on the same horizontal and vertical grid (you can use
+      the preprocessors :func:`esmvalcore.preprocessor.regrid` and
       :func:`esmvalcore.preprocessor.extract_levels` for this).
     - 1D profiles (plot type ``1d_profile``): all datasets are plotted in one
       single figure.
@@ -66,7 +69,7 @@ plot_folder: str, optional
 reactant: str
     Name of reactant, e.g., "CH4".
 regions: list of str, optional (default: ["TROP"])
-    Regions considered for plots. Currently, only "TROP" (troposphere) and
+    Regions considered for line plots. Currently, only "TROP" (troposphere) and
     "STRA" (stratosphere) are supported.
 savefig_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
@@ -158,8 +161,7 @@ log_y: bool, optional (default: True)
     Use logarithmic Y-axis.
 plot_func: str, optional (default: 'contourf')
     Plot function used to plot the profiles. Must be a function of
-    :mod:`iris.plot` that supports plotting of 2D cubes with coordinates
-    latitude and height/air_pressure.
+    :mod:`iris.plot` that supports plotting of 2D data.
 plot_kwargs: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``.
     Dictionary keys are elements identified by ``facet_used_for_labels`` or
@@ -617,8 +619,8 @@ class CH4Lifetime(MonitorBase):
                 use_z_coord = "model_level_number"
             else:
                 raise NotImplementedError(
-                    "Lifetime calculation is not implemented"
-                    " for the present type of vertical coordinate.",
+                    "Lifetime calculation is not implemented for the present "
+                    "type of vertical coordinate"
                 )
 
             if not {"TROP", "STRA"}.isdisjoint(
@@ -783,13 +785,13 @@ class CH4Lifetime(MonitorBase):
 
         return var
 
-    def get_plot_path(self, plot_type, dataset, region):
+    def get_regional_plot_path(self, plot_type, dataset, region):
         """Get plot path."""
         plot_path = Path(super().get_plot_path(plot_type, dataset))
         filename = f"{plot_path.stem}_{region}{plot_path.suffix}"
         return plot_path.parent / filename
 
-    def plot_zonalmean_with_ref(self, plot_func, region, dataset, ref_dataset):
+    def plot_zonalmean_with_ref(self, plot_func, dataset, ref_dataset):
         """Plot zonal mean profile for single dataset with reference."""
         plot_type = "zonalmean"
         logger.info(
@@ -799,8 +801,8 @@ class CH4Lifetime(MonitorBase):
         )
 
         # Make sure that the data has the correct dimensions
-        cube = calculate_lifetime(dataset, plot_type, region)
-        ref_cube = calculate_lifetime(ref_dataset, plot_type, region)
+        cube = calculate_lifetime(dataset, plot_type)
+        ref_cube = calculate_lifetime(ref_dataset, plot_type)
 
         # convert units
         cube.convert_units(self.info["units"])
@@ -824,7 +826,7 @@ class CH4Lifetime(MonitorBase):
             plot_kwargs["axes"] = axes_data
             plot_data = plot_func(cube, **plot_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
-            z_coord = cube.coord(axis="Z")
+            z_coord = cube.coord(self.z_coord)
             axes_data.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
             if self.plots[plot_type]["log_y"]:
                 axes_data.set_yscale("log")
@@ -909,7 +911,7 @@ class CH4Lifetime(MonitorBase):
                 self._set_rasterized([axes_data, axes_ref, axes_bias])
 
         # File paths
-        plot_path = self.get_plot_path(plot_type, dataset, region)
+        plot_path = self.get_plot_path(plot_type, dataset)
         netcdf_path = get_diagnostic_filename(
             Path(plot_path).stem + "_{pos}",
             self.cfg,
@@ -925,7 +927,6 @@ class CH4Lifetime(MonitorBase):
     def plot_zonalmean_without_ref(
         self,
         plot_func,
-        region,
         dataset,
         base_datasets,
         label,
@@ -937,10 +938,9 @@ class CH4Lifetime(MonitorBase):
             label,
         )
 
-        # zonalmean lifetime is calculated for each time step
-        # (sum over longitude) and then a mean is calculated
-        cube = calculate_lifetime(dataset, plot_type, region)
-        # lifetime is averaged over time
+        # Zonal mean lifetime is calculated for each time step (sum over
+        # longitude) and then a mean is calculated
+        cube = calculate_lifetime(dataset, plot_type)
         cube = cube.collapsed(["time"], iris.analysis.MEAN)
 
         # convert units
@@ -974,7 +974,7 @@ class CH4Lifetime(MonitorBase):
                 f"{dataset['end_year']})",
             )
             axes.set_xlabel("latitude [°N]")
-            z_coord = cube.coord(name_or_coord="air_pressure")
+            z_coord = cube.coord(self.z_coord)
             axes.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
             if self.plots[plot_type]["log_y"]:
                 axes.set_yscale("log")
@@ -994,7 +994,7 @@ class CH4Lifetime(MonitorBase):
                 self._set_rasterized([axes])
 
         # File paths
-        plot_path = self.get_plot_path(plot_type, dataset, region)
+        plot_path = self.get_plot_path(plot_type, dataset)
         netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
 
         return (plot_path, {netcdf_path: cube})
@@ -1167,7 +1167,9 @@ class CH4Lifetime(MonitorBase):
         self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
 
         # Save plot
-        plot_path = self.get_plot_path(plot_type, multi_dataset_facets, region)
+        plot_path = self.get_regional_plot_path(
+            plot_type, multi_dataset_facets, region
+        )
         fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
         logger.info("Wrote %s", plot_path)
         plt.close()
@@ -1183,8 +1185,8 @@ class CH4Lifetime(MonitorBase):
 
         # Provenance tracking
         caption = (
-            f"Time series of {multi_dataset_facets['long_name']} for "
-            f"various datasets."
+            f"Time series of {multi_dataset_facets['long_name']} for various "
+            f"datasets for region {region}."
         )
         provenance_record = {
             "ancestors": ancestors,
@@ -1197,7 +1199,7 @@ class CH4Lifetime(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_zonalmean_plot(self, region, input_data, base_datasets):
+    def create_zonalmean_plot(self, input_data, base_datasets):
         """Create zonal mean profile plot."""
         plot_type = "zonalmean"
         if plot_type not in self.plots:
@@ -1232,7 +1234,6 @@ class CH4Lifetime(MonitorBase):
             if ref_dataset is None:
                 (plot_path, netcdf_paths) = self.plot_zonalmean_without_ref(
                     plot_func,
-                    region,
                     dataset,
                     base_datasets[label],
                     label,
@@ -1245,7 +1246,6 @@ class CH4Lifetime(MonitorBase):
             else:
                 (plot_path, netcdf_paths) = self.plot_zonalmean_with_ref(
                     plot_func,
-                    region,
                     dataset,
                     ref_dataset,
                 )
@@ -1287,7 +1287,7 @@ class CH4Lifetime(MonitorBase):
                 for netcdf_path in netcdf_paths:
                     provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_1d_profile_plot(self, region, input_data, base_datasets):
+    def create_1d_profile_plot(self, input_data, base_datasets):
         """Create 1D profile plot."""
         plot_type = "1d_profile"
         if plot_type not in self.plots:
@@ -1308,8 +1308,10 @@ class CH4Lifetime(MonitorBase):
                 variable["filename"] for variable in dataset["dataset_data"]
             )
 
-            cube = calculate_lifetime(dataset, plot_type, region)
-            # convert units
+            cube = calculate_lifetime(dataset, plot_type)
+            cube = cube.collapsed(["time"], iris.analysis.MEAN)
+
+            # Convert units
             cube.convert_units(self.info["units"])
 
             cubes[label] = cube
@@ -1332,7 +1334,7 @@ class CH4Lifetime(MonitorBase):
             f"{chr(964)}({self._get_name('reactant').upper()})"
             f" [{self.info['units']}]",
         )
-        z_coord = cube.coord(axis="Z")
+        z_coord = cube.coord(self.z_coord)
         axes.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
 
         # apply logarithmic axes
@@ -1374,7 +1376,7 @@ class CH4Lifetime(MonitorBase):
         self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
 
         # Save plot
-        plot_path = self.get_plot_path(plot_type, multi_dataset_facets, region)
+        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
         fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
         logger.info("Wrote %s", plot_path)
         plt.close()
@@ -1413,12 +1415,13 @@ class CH4Lifetime(MonitorBase):
             for label, dataset in input_data.items()
         }
 
-        # at the moment regions only apply to TROP and STRAT
+        # At the moment regions only apply to TROP and STRAT
         for region in self.cfg["regions"]:
             logger.info("Plotting lifetime for region %s", region)
             self.create_timeseries_plot(region, input_data, base_datasets)
-            self.create_zonalmean_plot(region, input_data, base_datasets)
-            self.create_1d_profile_plot(region, input_data, base_datasets)
+
+        self.create_zonalmean_plot(input_data, base_datasets)
+        self.create_1d_profile_plot(input_data, base_datasets)
 
 
 def main():
