@@ -319,6 +319,7 @@ diagnostics:
             fontsize: 10
             show_x_minor_ticks: false
             time_format: '%Y'
+            transpose_axes: true
 
   plot_diurnal_cycle:
     description: Example plot diurnal cycle including reference dataset.
