@@ -2180,7 +2180,7 @@ class MultiDatasets(MonitorBase):
                     f"`{plot_type}` has been deprecated in ESMValTool version "
                     f"2.13.0 and is scheduled for removal in version 2.15.0. "
                     f"Please use the option `x_minor_formatter: null/''` (for "
-                    f"`show_x_minor_ticks: False/True`) instead."
+                    f"`show_x_minor_ticks: false/true`) instead."
                 )
                 warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
                 show_ticks = self.plots[plot_type].pop("show_x_minor_ticks")
@@ -2193,7 +2193,7 @@ class MultiDatasets(MonitorBase):
                     f"`{plot_type}` has been deprecated in ESMValTool version "
                     f"2.13.0 and is scheduled for removal in version 2.15.0. "
                     f"Please use the option `y_minor_formatter: null/''` (for "
-                    f"`show_y_minor_ticks: False/True`) instead."
+                    f"`show_y_minor_ticks: false/true`) instead."
                 )
                 warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
                 show_ticks = self.plots[plot_type].pop("show_y_minor_ticks")
@@ -2205,7 +2205,8 @@ class MultiDatasets(MonitorBase):
                     f"The option `show_y_minor_ticklabels` for plot type "
                     f"`{plot_type}` has been deprecated in ESMValTool version "
                     f"2.13.0 and is scheduled for removal in version 2.15.0. "
-                    f"Please use the option `y_minor_formatter` instead."
+                    f"Please use the option `y_minor_formatter: '%.1f'` "
+                    f"instead."
                 )
                 warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
                 self.plots[plot_type].pop("show_y_minor_ticklabels")
@@ -2215,7 +2216,7 @@ class MultiDatasets(MonitorBase):
                     f"The option `time_on` for plot type `{plot_type}` has "
                     f"been deprecated in ESMValTool version 2.13.0 and is "
                     f"scheduled for removal in version 2.15.0. Please use the "
-                    f"option `transpose_axes` instead."
+                    f"option `transpose_axes: true/false` instead."
                 )
                 warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
                 time_on = self.plots[plot_type].pop("time_on")
