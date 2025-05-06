@@ -1045,30 +1045,6 @@ class CH4Lifetime(MonitorBase):
             else:
                 getattr(plt, func)(arg)
 
-    def _check_cube_dimensions(self, cube, plot_type):
-        """Check that cube has correct dimensional variables."""
-        expected_dimensions_dict = {
-            "annual_cycle": (["month_number"],),
-            "map": (["latitude", "longitude"],),
-            "zonalmean": (["latitude", self.z_coord],),
-            "timeseries": (["time"],),
-            "1d_profile": ([self.z_coord],),
-        }
-        if plot_type not in expected_dimensions_dict:
-            raise NotImplementedError(f"plot_type '{plot_type}' not supported")
-        expected_dimensions = expected_dimensions_dict[plot_type]
-        for dims in expected_dimensions:
-            cube_dims = [cube.coords(dim, dim_coords=True) for dim in dims]
-            if all(cube_dims) and cube.ndim == len(dims):
-                return dims
-        expected_dims_str = " or ".join(
-            [str(dims) for dims in expected_dimensions],
-        )
-        raise ValueError(
-            f"Expected cube that exactly has the dimensional coordinates "
-            f"{expected_dims_str}, got {cube.summary(shorten=True)}",
-        )
-
     @staticmethod
     def _fill_facet_placeholders(string, dataset, description):
         """Fill facet placeholders."""
@@ -1166,7 +1142,6 @@ class CH4Lifetime(MonitorBase):
             cube.convert_units(self.info["units"])
 
             cubes[label] = cube
-            self._check_cube_dimensions(cube, plot_type)
 
             # Plot original time series
             plot_kwargs = self._get_plot_kwargs(
@@ -1260,7 +1235,6 @@ class CH4Lifetime(MonitorBase):
             cube.convert_units(self.info["units"])
 
             cubes[label] = cube
-            self._check_cube_dimensions(cube, plot_type)
 
             # Plot annual cycle
             plot_kwargs = self._get_plot_kwargs(
@@ -1439,7 +1413,6 @@ class CH4Lifetime(MonitorBase):
             cube.convert_units(self.info["units"])
 
             cubes[label] = cube
-            self._check_cube_dimensions(cube, plot_type)
 
             # Plot 1D profile
             plot_kwargs = self._get_plot_kwargs(
