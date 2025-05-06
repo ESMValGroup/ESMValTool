@@ -56,7 +56,7 @@ plotted:
   one single figure. Input data needs to be 1D.
 - Class *2D plot*: for each variable and dataset, an individual figure is
   plotted. Input data needs to be 2D. A single reference dataset can be defined
-  by setting the facet ``reference_for_monitor_diags: true`` in the dataset
+  by setting the facet ``reference_for_monitor_diags: True`` in the dataset
   definition in the recipe. In this case, three panels are plotted, incl. a
   bias. Note that if a reference dataset is defined, all input datasets need to
   be given on the same horizontal and vertical grid (you can use the
@@ -69,8 +69,9 @@ In addition, for many plot types, a benchmarking version exists
 (``benchmarking_*``). These plots include envelopes (1D plots) or hatching (2D
 plots) to visualize data ranges (e.g., multi-model percentiles) in addition to
 the data itself. For these plots, at least one benchmarking dataset needs to be
-defined by setting the facet ``benchmark_dataset: true`` in the dataset
-definition in the recipe.
+defined by setting the facet ``benchmark_dataset: True`` in the dataset
+definition in the recipe. Reference datasets are not supported for 2D
+benchmarking diagnostics.
 
 Author
 ------
@@ -89,31 +90,28 @@ facet_used_for_labels: str, optional (default: 'dataset')
     configuration options for the different plot types below).
 figure_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.figure`. By
-    default, uses ``constrained_layout: true``.
+    default, uses ``{constrained_layout: True}``.
 group_variables_by: str, optional (default: 'short_name')
     Facet which is used to create variable groups. For each variable group, an
     individual plot is created.
-matplotlib_rc_params: dict, optional (default: {})
+matplotlib_rc_params: dict, optional
     Optional :class:`matplotlib.RcParams` used to customize matplotlib plots.
     Options given here will be passed to :func:`matplotlib.rc_context` and used
     for all plots produced with this diagnostic. Note: fontsizes specified here
     might be overwritten by the plot-type-specific option ``fontsize`` (see
     below).
-plots: dict, optional
+plots: dict
     Plot types plotted by this diagnostic (see list above). Dictionary keys
-    must be ``timeseries``, ``annual_cycle``, ``map``, ``zonal_mean_profile``,
-    ``1d_profile``, ``variable_vs_lat``, ``hovmoeller_z_vs_time``,
-    ``hovmoeller_time_vs_lat_or_lon``, ``hovmoeller_anncyc_vs_lat_or_lon``.
-    Dictionary values are dictionaries used
-    as options for the corresponding plot. The allowed options for the
+    must be elements of the list above.  Dictionary values are dictionaries
+    used as options for the corresponding plot. The allowed options for the
     different plot types are given below.
 plot_filename: str, optional
-    Filename pattern for the plots.
-    Defaults to ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.
-    All tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
-    replaced with the corresponding tags).
+    Filename pattern for the plots. By default, uses
+    ``{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}``.  All tags
+    (i.e., the entries in curly brackets, e.g., ``{dataset}``, are replaced
+    with the corresponding tags).
 plot_folder: str, optional
-    Path to the folder to store figures. Defaults to
+    Path to the folder to store figures. By default, uses
     ``{plot_dir}/../../{dataset}/{exp}/{modeling_realm}/{real_name}``.  All
     tags (i.e., the entries in curly brackets, e.g., ``{dataset}``, are
     replaced with the corresponding tags). ``{plot_dir}`` is replaced with the
@@ -122,18 +120,25 @@ plot_folder: str, optional
     :ref:`esmvalcore:outputdata`).
 savefig_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
-    default, uses ``bbox_inches: tight, dpi: 300, orientation: landscape``.
+    default, uses ``{bbox_inches: 'tight', dpi: 300, orientation:
+    'landscape'}``.
 seaborn_settings: dict, optional
     Options for :func:`seaborn.set_theme` (affects all plots). By default, uses
     ``style: ticks``.
 
 .. _diag_monitor_multi_datasets_plot_options:
 
-Configuration options for plot type ``timeseries``
---------------------------------------------------
+Configuration options for 1D plots
+----------------------------------
+aspect_ratio: float, optional (default: None)
+    Aspect ratio of the plot.
+envelope_kwargs: dict, optional
+    Optional keyword arguments for :func:`iris.plot.fill_between`. By default,
+    uses ``{alpha: 0.8, facecolor: 'lightblue', linewidth: 0.0, zorder: 1.0}``.
+    Only relevant for benchmarking plots.
 gridline_kwargs: dict, optional
-    Optional keyword arguments for grid lines. By default, ``color: lightgrey,
-    alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
+    Optional keyword arguments for grid lines. By default, uses ``{color:
+    'lightgrey', alpha: 0.5}``. Use ``gridline_kwargs: False`` to not show grid
     lines.
 hlines: list of dict, optional
     Horizontal lines to show in plot. Each list element corresponds to one
@@ -142,17 +147,21 @@ hlines: list of dict, optional
     0}, {y: 1, color: 'red'}]``.
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
-    ``legend_kwargs: false`` to not show legends.
+    ``legend_kwargs: False`` to not show legends.
+log_x: bool, optional (default: False)
+    Use logarithmic X-axis.
+log_y: bool, optional (default: False)
+    Use logarithmic Y-axis.
 plot_kwargs: dict, optional
     Optional keyword arguments for :func:`iris.plot.plot`. Dictionary keys are
-    elements identified by ``facet_used_for_labels`` or ``default``, e.g.,
-    ``CMIP6`` if ``facet_used_for_labels: project`` or ``historical`` if
-    ``facet_used_for_labels: exp``. Dictionary values are dictionaries used as
-    keyword arguments for :func:`iris.plot.plot`. String arguments can include
-    facets in curly brackets which will be derived from the corresponding
-    dataset, e.g., ``{project}``, ``{short_name}``, ``{exp}``. Examples:
-    ``default: {linestyle: '-', label: '{project}'}, CMIP6: {color: red,
-    linestyle: '--'}, OBS: {color: black}``.
+    elements identified by ``facet_used_for_labels`` or ``'default'``, e.g.,
+    ``'CMIP6'`` if ``facet_used_for_labels: 'project'`` or ``'historical'`` if
+    ``facet_used_for_labels: 'exp'``. Dictionary values are dictionaries used
+    as keyword arguments for :func:`iris.plot.plot`. String arguments can
+    include facets in curly brackets which will be derived from the
+    corresponding dataset, e.g., ``{project}``, ``{short_name}``, ``{exp}``.
+    Examples: ``{default: {linestyle: '-', label: '{project}'}, CMIP6: {color:
+    'red', linestyle: '--'}, OBS: {color: 'black'}}``.
 pyplot_kwargs: dict, optional
     Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
@@ -160,49 +169,35 @@ pyplot_kwargs: dict, optional
     interpreted as keyword arguments; otherwise a single argument is assumed).
     String arguments can include facets in curly brackets which will be derived
     from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
-    '{short_name}'``, ``xlim: [0, 5]``.
+    ``{exp}``. Examples: ``{title: 'Awesome Plot of {long_name}'}``, ``{xlabel:
+    '{short_name}'}``, ``{xlim: [0, 5]}``.
+rasterize: bool, optional (default: False)
+    If ``True``, use rasterization_ for plots to produce smaller files.  This
+    is only relevant for vector graphics (e.g., ``output_file_type:
+    pdf,svg,ps``).
 time_format: str, optional (default: None)
     :func:`~datetime.datetime.strftime` format string that is used to format
     the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
     use the default formatting imposed by the iris plotting function.
+transpose_axes: bool, optional (default: False)
+    Swap X- and Y-axis.
+x_major_formatter: str, optional (default: None)
+    Format string for :class:`matplotlib.ticker.FormatStrFormatter` used to
+    format major tick labels of X-axis.
+x_minor_formatter: str, optional (default: None)
+    Format string for :class:`matplotlib.ticker.FormatStrFormatter` used to
+    format minor tick labels of X-axis.
+y_major_formatter: str, optional (default: None)
+    Format string for :class:`matplotlib.ticker.FormatStrFormatter` used to
+    format major tick labels of Y-axis.
+y_minor_formatter: str, optional (default: None)
+    Format string for :class:`matplotlib.ticker.FormatStrFormatter` used to
+    format minor tick labels of Y-axis.
 
-Configuration options for plot type ``annual_cycle`` and ``diurnal_cycle``
---------------------------------------------------------------------------
-gridline_kwargs: dict, optional
-    Optional keyword arguments for grid lines. By default, ``color: lightgrey,
-    alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
-    lines.
-hlines: list of dict, optional
-    Horizontal lines to show in plot. Each list element corresponds to one
-    line, and each list element should contain a dictionary with keywords
-    arguments passed to :meth:`matplotlib.axes.Axes.axhline`. Example: ``[{y:
-    0}, {y: 1, color: 'red'}]``.
-legend_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
-    ``legend_kwargs: false`` to not show legends.
-plot_kwargs: dict, optional
-    Optional keyword arguments for :func:`iris.plot.plot`. Dictionary keys are
-    elements identified by ``facet_used_for_labels`` or ``default``, e.g.,
-    ``CMIP6`` if ``facet_used_for_labels: project`` or ``historical`` if
-    ``facet_used_for_labels: exp``. Dictionary values are dictionaries used as
-    keyword arguments for :func:`iris.plot.plot`. String arguments can include
-    facets in curly brackets which will be derived from the corresponding
-    dataset, e.g., ``{project}``, ``{short_name}``, ``{exp}``. Examples:
-    ``default: {linestyle: '-', label: '{project}'}, CMIP6: {color: red,
-    linestyle: '--'}, OBS: {color: black}``.
-pyplot_kwargs: dict, optional
-    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
-    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    argument(s) for these functions (if values are dictionaries, these are
-    interpreted as keyword arguments; otherwise a single argument is assumed).
-    String arguments can include facets in curly brackets which will be derived
-    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
-    '{short_name}'``, ``xlim: [0, 5]``.
-
-Configuration options for plot type ``map``
--------------------------------------------
+Configuration options for 2D plots
+----------------------------------
+aspect_ratio: float, optional (default: None)
+    Aspect ratio of the plot.
 cbar_label: str, optional (default: '{short_name} [{units}]')
     Colorbar label. Can include facets in curly brackets which will be derived
     from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
@@ -210,65 +205,68 @@ cbar_label: str, optional (default: '{short_name} [{units}]')
 cbar_label_bias: str, optional (default: 'Δ{short_name} [{units}]')
     Colorbar label for plotting biases. Can include facets in curly brackets
     which will be derived from the corresponding dataset, e.g., ``{project}``,
-    ``{short_name}``, ``{exp}``. This option has no effect if no reference
-    dataset is given.
+    ``{short_name}``, ``{exp}``. Only relevant for plots including reference
+    datasets.
 cbar_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.colorbar`. By
-    default, uses ``orientation: horizontal, aspect: 30``.
+    default, uses ``{orientation: 'vertical'}``.
 cbar_kwargs_bias: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.colorbar` for
     plotting biases. These keyword arguments update (and potentially overwrite)
-    the ``cbar_kwargs`` for the bias plot. This option has no effect if no
-    reference dataset is given.
+    the ``cbar_kwargs`` for the bias plot. Only relevant for plots including
+    reference datasets.
 common_cbar: bool, optional (default: False)
     Use a common colorbar for the top panels (i.e., plots of the dataset and
     the corresponding reference dataset) when using a reference dataset. If
     neither ``vmin`` and ``vmix`` nor ``levels`` is given in ``plot_kwargs``,
     the colorbar bounds are inferred from the dataset in the top left panel,
     which might lead to an inappropriate colorbar for the reference dataset
-    (top right panel). Thus, the use of the ``plot_kwargs`` ``vmin`` and
-    ``vmax`` or ``levels`` is highly recommend when using this ``common_cbar:
-    true``. This option has no effect if no reference dataset is given.
+    (top right panel). Thus, specify ``vmin`` and ``vmax`` or ``levels`` when
+    using ``common_cbar: True``. Only relevant for plots including reference
+    datasets.
 fontsize: int, optional (default: None)
     Fontsize used for ticks, labels and titles. For the latter, use the given
     fontsize plus 2. Does not affect suptitles. If not given, use default
     matplotlib values. For a more fine-grained definition of fontsizes, use the
     option ``matplotlib_rc_params`` (see above).
-gridline_kwargs: dict, optional
-    Optional keyword arguments for grid lines. By default, ``color: lightgrey,
-    alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
-    lines.
+gridline_kwargs: dict, optional (default: False)
+    Optional keyword arguments for grid lines. Use ``gridline_kwargs: False``
+    to not show grid lines.
+log_x: bool, optional (default: False)
+    Use logarithmic X-axis.
+log_y: bool, optional (default: False)
+    Use logarithmic Y-axis.
 plot_func: str, optional (default: 'contourf')
     Plot function used to plot the maps. Must be a function of :mod:`iris.plot`
-    that supports plotting of 2D cubes with coordinates latitude and longitude.
+    that supports plotting of 2D data.
 plot_kwargs: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``.
     Dictionary keys are elements identified by ``facet_used_for_labels`` or
-    ``default``, e.g., ``CMIP6`` if ``facet_used_for_labels: project`` or
-    ``historical`` if ``facet_used_for_labels: exp``. Dictionary values are
+    ``'default'``, e.g., ``'CMIP6'`` if ``facet_used_for_labels: 'project'`` or
+    ``'historical'`` if ``facet_used_for_labels: 'exp'``. Dictionary values are
     dictionaries used as keyword arguments for the plot function defined by
     ``plot_func``. String arguments can include facets in curly brackets which
     will be derived from the corresponding dataset, e.g., ``{project}``,
-    ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
-    {vmin: 200, vmax: 250}``. In addition to the normalization_ options
-    supported by the plot function, the option ``norm: centered`` can be
+    ``{short_name}``, ``{exp}``. Examples: ``{default: {levels: 2}, CMIP6:
+    {vmin: 200, vmax: 250}}``. In addition to the normalization_ options
+    supported by the plot function, the option ``{norm: 'centered'}`` can be
     specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
     be used instead of ``vmin`` or ``vmax`` (see
     :class:`~matplotlib.colors.CenteredNorm`).
 plot_kwargs_bias: dict, optional
     Optional keyword arguments for the plot function defined by ``plot_func``
     for plotting biases. These keyword arguments update (and potentially
-    overwrite) the ``plot_kwargs`` for the bias plot. This option has no effect
-    if no reference dataset is given. See option ``plot_kwargs`` for more
-    details. By default, uses ``cmap: bwr`` and ``norm: centered``.
-projection: str, optional (default: 'Robinson')
-    Projection used for the map plot. Needs to be a valid projection class of
+    overwrite) the ``plot_kwargs`` for the bias plot. By default, uses ``{cmap:
+    'bwr', norm: 'centered'}``. Only relevant for plots including reference
+    datasets.
+projection: str, optional (default: None)
+    Projection used for the plot. Needs to be a valid projection class of
     :mod:`cartopy.crs`. Keyword arguments can be specified using the option
-    ``projection_kwargs``.
+    ``projection_kwargs``. For map plots, ``'Robinson'`` is used as default.
 projection_kwargs: dict, optional
     Optional keyword arguments for the projection given by ``projection``. For
-    the default projection ``Robinson``, the default keyword arguments
-    ``central_longitude: 10`` are used.
+    map plots, the default keyword arguments ``{central_longitude: 10}`` are
+    used.
 pyplot_kwargs: dict, optional
     Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
     are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
@@ -276,444 +274,43 @@ pyplot_kwargs: dict, optional
     interpreted as keyword arguments; otherwise a single argument is assumed).
     String arguments can include facets in curly brackets which will be derived
     from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
-    '{short_name}'``, ``xlim: [0, 5]``.
+    ``{exp}``. Examples: ``{title: 'Awesome Plot of {long_name}'}``, ``{xlabel:
+    '{short_name}'}``, ``{xlim: [0, 5]}``.
 rasterize: bool, optional (default: True)
-    If ``True``, use rasterization_ for map plots to produce smaller files.
-    This is only relevant for vector graphics (e.g., ``output_file_type:
+    If ``True``, use rasterization_ for plots to produce smaller files.  This
+    is only relevant for vector graphics (e.g., ``output_file_type:
     pdf,svg,ps``).
 show_stats: bool, optional (default: True)
     Show basic statistics on the plots.
-x_pos_stats_avg: float, optional (default: 0.0)
-    Text x-position of average (shown on the left) in Axes coordinates. Can be
-    adjusted to avoid overlap with the figure. Only relevant if ``show_stats:
-    true``.
-x_pos_stats_bias: float, optional (default: 0.92)
-    Text x-position of bias statistics (shown on the right) in Axes
-    coordinates. Can be adjusted to avoid overlap with the figure. Only
-    relevant if ``show_stats: true``.
-
-Configuration options for plot type ``zonal_mean_profile``
-----------------------------------------------------------
-cbar_label: str, optional (default: '{short_name} [{units}]')
-    Colorbar label. Can include facets in curly brackets which will be derived
-    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``.
-cbar_label_bias: str, optional (default: 'Δ{short_name} [{units}]')
-    Colorbar label for plotting biases. Can include facets in curly brackets
-    which will be derived from the corresponding dataset, e.g., ``{project}``,
-    ``{short_name}``, ``{exp}``. This option has no effect if no reference
-    dataset is given.
-cbar_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar`. By
-    default, uses ``orientation: vertical``.
-cbar_kwargs_bias: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar` for
-    plotting biases. These keyword arguments update (and potentially overwrite)
-    the ``cbar_kwargs`` for the bias plot. This option has no effect if no
-    reference dataset is given.
-common_cbar: bool, optional (default: False)
-    Use a common colorbar for the top panels (i.e., plots of the dataset and
-    the corresponding reference dataset) when using a reference dataset. If
-    neither ``vmin`` and ``vmix`` nor ``levels`` is given in ``plot_kwargs``,
-    the colorbar bounds are inferred from the dataset in the top left panel,
-    which might lead to an inappropriate colorbar for the reference dataset
-    (top right panel). Thus, the use of the ``plot_kwargs`` ``vmin`` and
-    ``vmax`` or ``levels`` is highly recommend when using this ``common_cbar:
-    true``. This option has no effect if no reference dataset is given.
-fontsize: int, optional (default: None)
-    Fontsize used for ticks, labels and titles. For the latter, use the given
-    fontsize plus 2. Does not affect suptitles. If not given, use default
-    matplotlib values. For a more fine-grained definition of fontsizes, use the
-    option ``matplotlib_rc_params`` (see above).
-log_y: bool, optional (default: True)
-    Use logarithmic Y-axis.
-plot_func: str, optional (default: 'contourf')
-    Plot function used to plot the profiles. Must be a function of
-    :mod:`iris.plot` that supports plotting of 2D cubes with coordinates
-    latitude and altitude/air_pressure.
-plot_kwargs: dict, optional
-    Optional keyword arguments for the plot function defined by ``plot_func``.
-    Dictionary keys are elements identified by ``facet_used_for_labels`` or
-    ``default``, e.g., ``CMIP6`` if ``facet_used_for_labels: project`` or
-    ``historical`` if ``facet_used_for_labels: exp``. Dictionary values are
-    dictionaries used as keyword arguments for the plot function defined by
-    ``plot_func``. String arguments can include facets in curly brackets which
-    will be derived from the corresponding dataset, e.g., ``{project}``,
-    ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
-    {vmin: 200, vmax: 250}``. In addition to the normalization_ options
-    supported by the plot function, the option ``norm: centered`` can be
-    specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
-    be used instead of ``vmin`` or ``vmax`` (see
-    :class:`~matplotlib.colors.CenteredNorm`).
-plot_kwargs_bias: dict, optional
-    Optional keyword arguments for the plot function defined by ``plot_func``
-    for plotting biases. These keyword arguments update (and potentially
-    overwrite) the ``plot_kwargs`` for the bias plot. This option has no effect
-    if no reference dataset is given. See option ``plot_kwargs`` for more
-    details. By default, uses ``cmap: bwr`` and ``norm: centered``.
-pyplot_kwargs: dict, optional
-    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
-    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    argument(s) for these functions (if values are dictionaries, these are
-    interpreted as keyword arguments; otherwise a single argument is assumed).
-    String arguments can include facets in curly brackets which will be derived
-    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
-    '{short_name}'``, ``xlim: [0, 5]``.
-rasterize: bool, optional (default: True)
-    If ``True``, use rasterization_ for profile plots to produce smaller files.
-    This is only relevant for vector graphics (e.g., ``output_file_type:
-    pdf,svg,ps``).
-show_stats: bool, optional (default: True)
-    Show basic statistics on the plots.
-show_y_minor_ticklabels: bool, optional (default: False)
-    Show tick labels for the minor ticks on the Y axis.
-x_pos_stats_avg: float, optional (default: 0.01)
-    Text x-position of average (shown on the left) in Axes coordinates. Can be
-    adjusted to avoid overlap with the figure. Only relevant if ``show_stats:
-    true``.
-x_pos_stats_bias: float, optional (default: 0.7)
-    Text x-position of bias statistics (shown on the right) in Axes
-    coordinates. Can be adjusted to avoid overlap with the figure. Only
-    relevant if ``show_stats: true``.
-
-Configuration options for plot type ``1d_profile``
---------------------------------------------------
-aspect_ratio: float, optional (default: 1.5)
-    Aspect ratio of the plot. The default value results in a slender upright
-    plot.
-gridline_kwargs: dict, optional
-    Optional keyword arguments for grid lines. By default, ``color: lightgrey,
-    alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
-    lines.
-hlines: list of dict, optional
-    Horizontal lines to show in plot. Each list element corresponds to one
-    line, and each list element should contain a dictionary with keywords
-    arguments passed to :meth:`matplotlib.axes.Axes.axhline`. Example: ``[{y:
-    0}, {y: 1, color: 'red'}]``.
-legend_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
-    ``legend_kwargs: false`` to not show legends.
-log_x: bool, optional (default: False)
-    Use logarithmic X-axis. Note that for the logarithmic x axis tickmarks are
-    set so that minor tickmarks show up. Setting of individual tickmarks by
-    pyplot_kwargs is not recommended in this case.
-log_y: bool, optional (default: True)
-    Use logarithmic Y-axis.
-plot_kwargs: dict, optional
-    Optional keyword arguments for :func:`iris.plot.plot`. Dictionary keys are
-    elements identified by ``facet_used_for_labels`` or ``default``, e.g.,
-    ``CMIP6`` if ``facet_used_for_labels: project`` or ``historical`` if
-    ``facet_used_for_labels: exp``. Dictionary values are dictionaries used as
-    keyword arguments for :func:`iris.plot.plot`. String arguments can include
-    facets in curly brackets which will be derived from the corresponding
-    dataset, e.g., ``{project}``, ``{short_name}``, ``{exp}``. Examples:
-    ``default: {linestyle: '-', label: '{project}'}, CMIP6: {color: red,
-    linestyle: '--'}, OBS: {color: black}``.
-pyplot_kwargs: dict, optional
-    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
-    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    argument(s) for these functions (if values are dictionaries, these are
-    interpreted as keyword arguments; otherwise a single argument is assumed).
-    String arguments can include facets in curly brackets which will be derived
-    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
-    '{short_name}'``, ``xlim: [0, 5]``.
-show_y_minor_ticklabels: bool, optional (default: False)
-    Show tick labels for the minor ticks on the Y axis.
-
-Configuration options for plot type ``variable_vs_lat``
--------------------------------------------------------
-gridline_kwargs: dict, optional
-    Optional keyword arguments for grid lines. By default, ``color: lightgrey,
-    alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
-    lines.
-hlines: list of dict, optional
-    Horizontal lines to show in plot. Each list element corresponds to one
-    line, and each list element should contain a dictionary with keywords
-    arguments passed to :meth:`matplotlib.axes.Axes.axhline`. Example: ``[{y:
-    0}, {y: 1, color: 'red'}]``.
-legend_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
-    ``legend_kwargs: false`` to not show legends.
-plot_kwargs: dict, optional
-    Optional keyword arguments for :func:`iris.plot.plot`. Dictionary keys are
-    elements identified by ``facet_used_for_labels`` or ``default``, e.g.,
-    ``CMIP6`` if ``facet_used_for_labels: project`` or ``historical`` if
-    ``facet_used_for_labels: exp``. Dictionary values are dictionaries used as
-    keyword arguments for :func:`iris.plot.plot`. String arguments can include
-    facets in curly brackets which will be derived from the corresponding
-    dataset, e.g., ``{project}``, ``{short_name}``, ``{exp}``. Examples:
-    ``default: {linestyle: '-', label: '{project}'}, CMIP6: {color: red,
-    linestyle: '--'}, OBS: {color: black}``.
-pyplot_kwargs: dict, optional
-    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
-    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    argument(s) for these functions (if values are dictionaries, these are
-    interpreted as keyword arguments; otherwise a single argument is assumed).
-    String arguments can include facets in curly brackets which will be derived
-    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
-    '{short_name}'``, ``xlim: [0, 5]``.
-
-Configuration options for plot type ``hovmoeller_z_vs_time``
-------------------------------------------------------------
-cbar_label: str, optional (default: '{short_name} [{units}]')
-    Colorbar label. Can include facets in curly brackets which will be derived
-    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``.
-cbar_label_bias: str, optional (default: 'Δ{short_name} [{units}]')
-    Colorbar label for plotting biases. Can include facets in curly brackets
-    which will be derived from the corresponding dataset, e.g., ``{project}``,
-    ``{short_name}``, ``{exp}``. This option has no effect if no reference
-    dataset is given.
-cbar_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar`. By
-    default, uses ``orientation: vertical``.
-cbar_kwargs_bias: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar` for
-    plotting biases. These keyword arguments update (and potentially overwrite)
-    the ``cbar_kwargs`` for the bias plot. This option has no effect if no
-    reference dataset is given.
-common_cbar: bool, optional (default: False)
-    Use a common colorbar for the top panels (i.e., plots of the dataset and
-    the corresponding reference dataset) when using a reference dataset. If
-    neither ``vmin`` and ``vmix`` nor ``levels`` is given in ``plot_kwargs``,
-    the colorbar bounds are inferred from the dataset in the top left panel,
-    which might lead to an inappropriate colorbar for the reference dataset
-    (top right panel). Thus, the use of the ``plot_kwargs`` ``vmin`` and
-    ``vmax`` or ``levels`` is highly recommend when using this ``common_cbar:
-    true``. This option has no effect if no reference dataset is given.
-fontsize: int, optional (default: None)
-    Fontsize used for ticks, labels and titles. For the latter, use the given
-    fontsize plus 2. Does not affect suptitles. If not given, use default
-    matplotlib values. For a more fine-grained definition of fontsizes, use the
-    option ``matplotlib_rc_params`` (see above).
-log_y: bool, optional (default: True)
-    Use logarithmic Y-axis.
-plot_func: str, optional (default: 'contourf')
-    Plot function used to plot the profiles. Must be a function of
-    :mod:`iris.plot` that supports plotting of 2D cubes with coordinates
-    latitude and altitude/air_pressure.
-plot_kwargs: dict, optional
-    Optional keyword arguments for the plot function defined by ``plot_func``.
-    Dictionary keys are elements identified by ``facet_used_for_labels`` or
-    ``default``, e.g., ``CMIP6`` if ``facet_used_for_labels: project`` or
-    ``historical`` if ``facet_used_for_labels: exp``. Dictionary values are
-    dictionaries used as keyword arguments for the plot function defined by
-    ``plot_func``. String arguments can include facets in curly brackets which
-    will be derived from the corresponding dataset, e.g., ``{project}``,
-    ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
-    {vmin: 200, vmax: 250}``. In addition to the normalization_ options
-    supported by the plot function, the option ``norm: centered`` can be
-    specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
-    be used instead of ``vmin`` or ``vmax`` (see
-    :class:`~matplotlib.colors.CenteredNorm`).
-plot_kwargs_bias: dict, optional
-    Optional keyword arguments for the plot function defined by ``plot_func``
-    for plotting biases. These keyword arguments update (and potentially
-    overwrite) the ``plot_kwargs`` for the bias plot. This option has no effect
-    if no reference dataset is given. See option ``plot_kwargs`` for more
-    details. By default, uses ``cmap: bwr`` and ``norm: centered``.
-pyplot_kwargs: dict, optional
-    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
-    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    argument(s) for these functions (if values are dictionaries, these are
-    interpreted as keyword arguments; otherwise a single argument is assumed).
-    String arguments can include facets in curly brackets which will be derived
-    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
-    '{short_name}'``, ``xlim: [0, 5]``.
-rasterize: bool, optional (default: True)
-    If ``True``, use rasterization_ for profile plots to produce smaller files.
-    This is only relevant for vector graphics (e.g., ``output_file_type:
-    pdf,svg,ps``).
-show_stats: bool, optional (default: True)
-    Show basic statistics on the plots.
-show_y_minor_ticklabels: bool, optional (default: False)
-    Show tick labels for the minor ticks on the Y axis.
 time_format: str, optional (default: None)
     :func:`~datetime.datetime.strftime` format string that is used to format
     the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
     use the default formatting imposed by the iris plotting function.
+transpose_axes: bool, optional (default: False)
+    Swap X- and Y-axis.
+x_major_formatter: str, optional (default: None)
+    Format string for :class:`matplotlib.ticker.FormatStrFormatter` used to
+    format major tick labels of X-axis.
+x_minor_formatter: str, optional (default: None)
+    Format string for :class:`matplotlib.ticker.FormatStrFormatter` used to
+    format minor tick labels of X-axis.
 x_pos_stats_avg: float, optional (default: 0.01)
-    Text x-position of average (shown on the left) in Axes coordinates. Can be
+    Text X-position of average (shown on the left) in Axes coordinates. Can be
     adjusted to avoid overlap with the figure. Only relevant if ``show_stats:
-    true``.
+    True``.
 x_pos_stats_bias: float, optional (default: 0.7)
-    Text x-position of bias statistics (shown on the right) in Axes
+    Text X-position of bias statistics (shown on the right) in Axes
     coordinates. Can be adjusted to avoid overlap with the figure. Only
-    relevant if ``show_stats: true``.
+    relevant if ``show_stats: True``.
+y_major_formatter: str, optional (default: None)
+    Format string for :class:`matplotlib.ticker.FormatStrFormatter` used to
+    format major tick labels of Y-axis.
+y_minor_formatter: str, optional (default: None)
+    Format string for :class:`matplotlib.ticker.FormatStrFormatter` used to
+    format minor tick labels of Y-axis.
 
-Configuration options for plot type ``hovmoeller_time_vs_lat_or_lon``
----------------------------------------------------------------------
-cbar_label: str, optional (default: '{short_name} [{units}]')
-    Colorbar label. Can include facets in curly brackets which will be derived
-    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``.
-cbar_label_bias: str, optional (default: 'Δ{short_name} [{units}]')
-    Colorbar label for plotting biases. Can include facets in curly brackets
-    which will be derived from the corresponding dataset, e.g., ``{project}``,
-    ``{short_name}``, ``{exp}``. This option has no effect if no reference
-    dataset is given.
-cbar_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar`. By
-    default, uses ``orientation: vertical``.
-cbar_kwargs_bias: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar` for
-    plotting biases. These keyword arguments update (and potentially overwrite)
-    the ``cbar_kwargs`` for the bias plot. This option has no effect if no
-    reference dataset is given.
-common_cbar: bool, optional (default: False)
-    Use a common colorbar for the top panels (i.e., plots of the dataset and
-    the corresponding reference dataset) when using a reference dataset. If
-    neither ``vmin`` and ``vmix`` nor ``levels`` is given in ``plot_kwargs``,
-    the colorbar bounds are inferred from the dataset in the top left panel,
-    which might lead to an inappropriate colorbar for the reference dataset
-    (top right panel). Thus, the use of the ``plot_kwargs`` ``vmin`` and
-    ``vmax`` or ``levels`` is highly recommend when using this ``common_cbar:
-    true``. This option has no effect if no reference dataset is given.
-fontsize: int, optional (default: None)
-    Fontsize used for ticks, labels and titles. For the latter, use the given
-    fontsize plus 2. Does not affect suptitles. If not given, use default
-    matplotlib values. For a more fine-grained definition of fontsizes, use the
-    option ``matplotlib_rc_params`` (see above).
-plot_func: str, optional (default: 'contourf')
-    Plot function used to plot the profiles. Must be a function of
-    :mod:`iris.plot` that supports plotting of 2D cubes with coordinates
-    latitude and height/air_pressure.
-plot_kwargs: dict, optional
-    Optional keyword arguments for the plot function defined by ``plot_func``.
-    Dictionary keys are elements identified by ``facet_used_for_labels`` or
-    ``default``, e.g., ``CMIP6`` if ``facet_used_for_labels: project`` or
-    ``historical`` if ``facet_used_for_labels: exp``. Dictionary values are
-    dictionaries used as keyword arguments for the plot function defined by
-    ``plot_func``. String arguments can include facets in curly brackets which
-    will be derived from the corresponding dataset, e.g., ``{project}``,
-    ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
-    {vmin: 200, vmax: 250}``. In addition to the normalization_ options
-    supported by the plot function, the option ``norm: centered`` can be
-    specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
-    be used instead of ``vmin`` or ``vmax`` (see
-    :class:`~matplotlib.colors.CenteredNorm`).
-plot_kwargs_bias: dict, optional
-    Optional keyword arguments for the plot function defined by ``plot_func``
-    for plotting biases. These keyword arguments update (and potentially
-    overwrite) the ``plot_kwargs`` for the bias plot. This option has no effect
-    if no reference dataset is given. See option ``plot_kwargs`` for more
-    details. By default, uses ``cmap: bwr`` and ``norm: centered``.
-pyplot_kwargs: dict, optional
-    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
-    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    argument(s) for these functions (if values are dictionaries, these are
-    interpreted as keyword arguments; otherwise a single argument is assumed).
-    String arguments can include facets in curly brackets which will be derived
-    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
-    '{short_name}'``, ``xlim: [0, 5]``.
-rasterize: bool, optional (default: True)
-    If ``True``, use rasterization_ for profile plots to produce smaller files.
-    This is only relevant for vector graphics (e.g., ``output_file_type:
-    pdf,svg,ps``).
-show_x_minor_ticks: bool, optional (default: True)
-    Show minor ticks for latitude or longitude on the X axis.
-show_y_minor_ticks: bool, optional (default: True)
-    Show minor ticks for time on the Y axis.
-time_format: str, optional (default: None)
-    :func:`~datetime.datetime.strftime` format string that is used to format
-    the time axis using :class:`matplotlib.dates.DateFormatter`. If ``None``,
-    use the default formatting imposed by the iris plotting function.
-time_on: str, optional (default: y-axis)
-    Optional switch to change the orientation of the plot so that time is on
-    the x-axis ``time_on: x-axis``. Default orientation is time on y-axis and
-    lat/lon on x-axis.
-
-Configuration options for plot type ``hovmoeller_anncyc_vs_lat_or_lon``
------------------------------------------------------------------------
-cbar_label: str, optional (default: '{short_name} [{units}]')
-    Colorbar label. Can include facets in curly brackets which will be derived
-    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``.
-cbar_label_bias: str, optional (default: 'Δ{short_name} [{units}]')
-    Colorbar label for plotting biases. Can include facets in curly brackets
-    which will be derived from the corresponding dataset, e.g., ``{project}``,
-    ``{short_name}``, ``{exp}``. This option has no effect if no reference
-    dataset is given.
-cbar_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar`. By
-    default, uses ``orientation: vertical``.
-cbar_kwargs_bias: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar` for
-    plotting biases. These keyword arguments update (and potentially overwrite)
-    the ``cbar_kwargs`` for the bias plot. This option has no effect if no
-    reference dataset is given.
-common_cbar: bool, optional (default: False)
-    Use a common colorbar for the top panels (i.e., plots of the dataset and
-    the corresponding reference dataset) when using a reference dataset. If
-    neither ``vmin`` and ``vmix`` nor ``levels`` is given in ``plot_kwargs``,
-    the colorbar bounds are inferred from the dataset in the top left panel,
-    which might lead to an inappropriate colorbar for the reference dataset
-    (top right panel). Thus, the use of the ``plot_kwargs`` ``vmin`` and
-    ``vmax`` or ``levels`` is highly recommend when using this ``common_cbar:
-    true``. This option has no effect if no reference dataset is given.
-fontsize: int, optional (default: None)
-    Fontsize used for ticks, labels and titles. For the latter, use the given
-    fontsize plus 2. Does not affect suptitles. If not given, use default
-    matplotlib values. For a more fine-grained definition of fontsizes, use the
-    option ``matplotlib_rc_params`` (see above).
-plot_func: str, optional (default: 'contourf')
-    Plot function used to plot the profiles. Must be a function of
-    :mod:`iris.plot` that supports plotting of 2D cubes with coordinates
-    latitude and height/air_pressure.
-plot_kwargs: dict, optional
-    Optional keyword arguments for the plot function defined by ``plot_func``.
-    Dictionary keys are elements identified by ``facet_used_for_labels`` or
-    ``default``, e.g., ``CMIP6`` if ``facet_used_for_labels: project`` or
-    ``historical`` if ``facet_used_for_labels: exp``. Dictionary values are
-    dictionaries used as keyword arguments for the plot function defined by
-    ``plot_func``. String arguments can include facets in curly brackets which
-    will be derived from the corresponding dataset, e.g., ``{project}``,
-    ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
-    {vmin: 200, vmax: 250}``. In addition to the normalization_ options
-    supported by the plot function, the option ``norm: centered`` can be
-    specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
-    be used instead of ``vmin`` or ``vmax`` (see
-    :class:`~matplotlib.colors.CenteredNorm`).
-plot_kwargs_bias: dict, optional
-    Optional keyword arguments for the plot function defined by ``plot_func``
-    for plotting biases. These keyword arguments update (and potentially
-    overwrite) the ``plot_kwargs`` for the bias plot. This option has no effect
-    if no reference dataset is given. See option ``plot_kwargs`` for more
-    details. By default, uses ``cmap: bwr`` and ``norm: centered``.
-pyplot_kwargs: dict, optional
-    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
-    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    argument(s) for these functions (if values are dictionaries, these are
-    interpreted as keyword arguments; otherwise a single argument is assumed).
-    String arguments can include facets in curly brackets which will be derived
-    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
-    '{short_name}'``, ``xlim: [0, 5]``.
-rasterize: bool, optional (default: True)
-    If ``True``, use rasterization_ for profile plots to produce smaller files.
-    This is only relevant for vector graphics (e.g., ``output_file_type:
-    pdf,svg,ps``).
-show_y_minor_ticks: bool, optional (default: True)
-    Show minor ticks for time on the Y axis.
-show_x_minor_ticks: bool, optional (default: True)
-    Show minor ticks for latitude or longitude on the X axis.
-time_on: str, optional (default: y-axis)
-    Optional switch to change the orientation of the plot so that time is on
-    the x-axis ``time_on: x-axis``. Default orientation is time on y-axis and
-    lat/lon on x-axis.
-
-Configuration options for plot type ``benchmarking_annual_cycle``
------------------------------------------------------------------
-Same as for plot type ``annual_cycle``.
-
-Configuration options for plot type ``benchmarking_boxplot``
-------------------------------------------------------------
+Configuration options for boxplots
+----------------------------------
 fontsize: int, optional (default: None)
     Fontsize used for ticks, labels and titles. For the latter, use the given
     fontsize plus 2. Does not affect suptitles. If not given, use default
@@ -728,126 +325,15 @@ pyplot_kwargs: dict, optional
     interpreted as keyword arguments; otherwise a single argument is assumed).
     String arguments can include facets in curly brackets which will be derived
     from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
-    '{short_name}'``, ``xlim: [0, 5]``.
+    ``{exp}``. Examples: ``{title: 'Awesome Plot of {long_name}'}``, ``{xlabel:
+    '{short_name}'}``, ``{xlim: [0, 5]}``.
 scatter_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.scatter` (used to
-    plot marks for benchmarking dataset). By default, uses ``{marker: x, s:
-    200, linewidths: 2, color: red, zorder: 3}``.
-var_order: list of str, optional
-    Optional list of strings containing variable names to define the order of
-    the variables plotted.
-
-Configuration options for plot type ``benchmarking_diurnal_cycle``
-------------------------------------------------------------------
-Same as for plot type ``diurnal_cycle``.
-
-Configuration options for plot type ``benchmarking_map``
---------------------------------------------------------
-cbar_label: str, optional (default: '{short_name} [{units}]')
-    Colorbar label. Can include facets in curly brackets which will be derived
-    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``.
-cbar_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar`. By
-    default, uses ``orientation: horizontal, aspect: 30``.
-fontsize: int, optional (default: None)
-    Fontsize used for ticks, labels and titles. For the latter, use the given
-    fontsize plus 2. Does not affect suptitles. If not given, use default
-    matplotlib values. For a more fine-grained definition of fontsizes, use the
-    option ``matplotlib_rc_params`` (see above).
-plot_kwargs: dict, optional
-    Optional keyword arguments for the plot function defined by ``plot_func``.
-    Dictionary keys are elements identified by ``facet_used_for_labels`` or
-    ``default``, e.g., ``CMIP6`` if ``facet_used_for_labels: project`` or
-    ``historical`` if ``facet_used_for_labels: exp``. Dictionary values are
-    dictionaries used as keyword arguments for the plot function defined by
-    ``plot_func``. String arguments can include facets in curly brackets which
-    will be derived from the corresponding dataset, e.g., ``{project}``,
-    ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
-    {vmin: 200, vmax: 250}``. In addition to the normalization_ options
-    supported by the plot function, the option ``norm: centered`` can be
-    specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
-    be used instead of ``vmin`` or ``vmax`` (see
-    :class:`~matplotlib.colors.CenteredNorm`).
-projection: str, optional (default: 'Robinson')
-    Projection used for the map plot. Needs to be a valid projection class of
-    :mod:`cartopy.crs`. Keyword arguments can be specified using the option
-    ``projection_kwargs``.
-projection_kwargs: dict, optional
-    Optional keyword arguments for the projection given by ``projection``. For
-    the default projection ``Robinson``, the default keyword arguments
-    ``central_longitude: 10`` are used.
-pyplot_kwargs: dict, optional
-    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
-    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    argument(s) for these functions (if values are dictionaries, these are
-    interpreted as keyword arguments; otherwise a single argument is assumed).
-    String arguments can include facets in curly brackets which will be derived
-    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
-    '{short_name}'``, ``xlim: [0, 5]``.
-rasterize: bool, optional (default: True)
-    If ``True``, use rasterization_ for map plots to produce smaller files.
-    This is only relevant for vector graphics (e.g., ``output_file_type:
-    pdf,svg,ps``).
-
-Configuration options for plot type ``benchmarking_timeseries``
----------------------------------------------------------------
-Same as for plot type ``timeseries``.
-
-Configuration options for plot type ``benchmarking_zonal``
-----------------------------------------------------------
-cbar_label: str, optional (default: '{short_name} [{units}]')
-    Colorbar label. Can include facets in curly brackets which will be derived
-    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``.
-cbar_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.colorbar`. By
-    default, uses ``orientation: vertical``.
-fontsize: int, optional (default: None)
-    Fontsize used for ticks, labels and titles. For the latter, use the given
-    fontsize plus 2. Does not affect suptitles. If not given, use default
-    matplotlib values. For a more fine-grained definition of fontsizes, use the
-    option ``matplotlib_rc_params`` (see above).
-log_y: bool, optional (default: True)
-    Use logarithmic Y-axis.
-plot_kwargs: dict, optional
-    Optional keyword arguments for the plot function defined by ``plot_func``.
-    Dictionary keys are elements identified by ``facet_used_for_labels`` or
-    ``default``, e.g., ``CMIP6`` if ``facet_used_for_labels: project`` or
-    ``historical`` if ``facet_used_for_labels: exp``. Dictionary values are
-    dictionaries used as keyword arguments for the plot function defined by
-    ``plot_func``. String arguments can include facets in curly brackets which
-    will be derived from the corresponding dataset, e.g., ``{project}``,
-    ``{short_name}``, ``{exp}``. Examples: ``default: {levels: 2}, CMIP6:
-    {vmin: 200, vmax: 250}``. In addition to the normalization_ options
-    supported by the plot function, the option ``norm: centered`` can be
-    specified. In this case, the keywords ``vcenter`` and ``halfrange`` should
-    be used instead of ``vmin`` or ``vmax`` (see
-    :class:`~matplotlib.colors.CenteredNorm`).
-pyplot_kwargs: dict, optional
-    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
-    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    argument(s) for these functions (if values are dictionaries, these are
-    interpreted as keyword arguments; otherwise a single argument is assumed).
-    String arguments can include facets in curly brackets which will be derived
-    from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
-    ``{exp}``. Examples: ``title: 'Awesome Plot of {long_name}'``, ``xlabel:
-    '{short_name}'``, ``xlim: [0, 5]``.
-rasterize: bool, optional (default: True)
-    If ``True``, use rasterization_ for profile plots to produce smaller files.
-    This is only relevant for vector graphics (e.g., ``output_file_type:
-    pdf,svg,ps``).
-show_y_minor_ticklabels: bool, optional (default: False)
-    Show tick labels for the minor ticks on the Y axis.
-
-
-.. hint::
-
-   Extra arguments given to the recipe are ignored, so it is safe to use yaml
-   anchors to share the configuration of common arguments with other monitor
-   diagnostic script.
+    plot marks for benchmarking dataset). By default, uses ``{marker: 'x', s:
+    200, linewidths: 2, color: 'red', zorder: 3}``.
+var_order: list of str, optional (default: None)
+    Order in which variables are plotted. Must be elements identified via
+    ``group_variables_by``. If ``None``, use order in which data is given.
 
 .. _rasterization: https://matplotlib.org/stable/gallery/misc/
    rasterization_demo.html
@@ -1685,7 +1171,7 @@ class MultiDatasets(MonitorBase):
 
         raise ValueError(
             f"Expected at least 1 benchmark dataset (with 'benchmark_dataset: "
-            f"true' for variable '{variable}'), got "
+            f"True' for variable '{variable}'), got "
             f"{len(benchmark_datasets):d}",
         )
 
@@ -1983,7 +1469,7 @@ class MultiDatasets(MonitorBase):
         if len(ref_datasets) > 1:
             raise ValueError(
                 f"Expected at most 1 reference dataset (with "
-                f"'reference_for_monitor_diags: true' for variable "
+                f"'reference_for_monitor_diags: True' for variable "
                 f"'{variable}', got {len(ref_datasets):d}",
             )
         if ref_datasets:
@@ -2654,7 +2140,7 @@ class MultiDatasets(MonitorBase):
             if len(benchmark_datasets) > 1:
                 raise ValueError(
                     f"Plot {plot_type} only supports a single dataset with "
-                    f"'benchmark_dataset: true' for variable '{var_key}', got "
+                    f"'benchmark_dataset: True' for variable '{var_key}', got "
                     f"{len(benchmark_datasets):d}"
                 )
             benchmark_dataset = benchmark_datasets[0]
@@ -2694,7 +2180,7 @@ class MultiDatasets(MonitorBase):
                     f"`{plot_type}` has been deprecated in ESMValTool version "
                     f"2.13.0 and is scheduled for removal in version 2.15.0. "
                     f"Please use the option `x_minor_formatter: null/''` (for "
-                    f"`show_x_minor_ticks: false/true`) instead."
+                    f"`show_x_minor_ticks: False/True`) instead."
                 )
                 warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
                 show_ticks = self.plots[plot_type].pop("show_x_minor_ticks")
@@ -2707,7 +2193,7 @@ class MultiDatasets(MonitorBase):
                     f"`{plot_type}` has been deprecated in ESMValTool version "
                     f"2.13.0 and is scheduled for removal in version 2.15.0. "
                     f"Please use the option `y_minor_formatter: null/''` (for "
-                    f"`show_y_minor_ticks: false/true`) instead."
+                    f"`show_y_minor_ticks: False/True`) instead."
                 )
                 warnings.warn(msg, ESMValToolDeprecationWarning, stacklevel=2)
                 show_ticks = self.plots[plot_type].pop("show_y_minor_ticks")
