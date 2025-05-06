@@ -33,9 +33,23 @@ recipe is given for each diagnostic individually (see previous section).
 Example plots
 -------------
 
-.. _fig_climglobal:
-.. figure::  /recipes/figures/monitor/clim.png
+.. _fig_1:
+.. figure::  /recipes/figures/lifetime/timeseries_trop.png
    :align:   center
    :width:   14cm
 
-Global climatology of tas.
+Time series of CH4 lifetime in the troposphere.
+
+.. _fig_2:
+.. figure::  /recipes/figures/lifetime/1d_profile.png
+   :align:   center
+   :width:   14cm
+
+1D profile of CH4 lifetime.
+
+.. _fig_3:
+.. figure::  /recipes/figures/lifetime/zonal_mean_profile.png
+   :align:   center
+   :width:   14cm
+
+Zonal mean profile of CH4 lifetime.
