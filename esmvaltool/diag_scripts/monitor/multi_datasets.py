@@ -796,9 +796,9 @@ class MultiDatasets(MonitorBase):
 
         return plot_settings
 
-    def __init__(self, config: dict) -> None:
+    def __init__(self, cfg: dict) -> None:
         """Initialize class member."""
-        super().__init__(config)
+        super().__init__(cfg)
 
         # Get default settings
         self.cfg = deepcopy(self.cfg)
