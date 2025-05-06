@@ -374,8 +374,6 @@ def sum_up_to_plot_dimensions(var, plot_type):
             z_coord = var.coords(
                 "atmosphere_hybrid_sigma_pressure_coordinate", dim_coords=True
             )[0]
-
-    if plot_type == "timeseries":
         cube = var.collapsed(
             ["longitude", "latitude", z_coord], iris.analysis.SUM, weights=None
         )

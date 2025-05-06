@@ -381,12 +381,11 @@ class CH4Lifetime(MonitorBase):
             if plot_type == "zonalmean":
                 self.plots[plot_type].setdefault(
                     "cbar_label",
-                    f"{chr(964)}({self._get_name('reactant').upper()})"
-                    " [{units}]",
+                    f"τ({self._get_name('reactant').upper()}) [{{units}}]",
                 )
                 self.plots[plot_type].setdefault(
                     "cbar_label_bias",
-                    "Δ{short_name} [{units}]",
+                    f"Δτ({self._get_name('reactant').upper()}) [{{units}}]",
                 )
                 self.plots[plot_type].setdefault(
                     "cbar_kwargs",
@@ -584,7 +583,11 @@ class CH4Lifetime(MonitorBase):
                 if cube.coords("time", dim_coords=True):
                     ih.unify_time_coord(cube)
 
-                # cube for each variable
+                # Remove surface air pressure coordinate if necessary
+                if cube.coords("Surface Air Pressure"):
+                    cube.remove_coord("Surface Air Pressure")
+
+                # Cube for each variable
                 variables[variable["short_name"]] = cube
 
             rho = calculate_rho(variables)
@@ -800,12 +803,13 @@ class CH4Lifetime(MonitorBase):
             self._get_label(dataset),
         )
 
-        # Make sure that the data has the correct dimensions
         cube = calculate_lifetime(dataset, plot_type)
-        ref_cube = calculate_lifetime(ref_dataset, plot_type)
-
-        # convert units
+        cube = cube.collapsed(["time"], iris.analysis.MEAN)
         cube.convert_units(self.info["units"])
+
+        ref_cube = calculate_lifetime(ref_dataset, plot_type)
+        ref_cube = ref_cube.collapsed(["time"], iris.analysis.MEAN)
+        ref_cube.convert_units(self.info["units"])
 
         # Create single figure with multiple axes
         with mpl.rc_context(self._get_custom_mpl_rc_params(plot_type)):
@@ -824,6 +828,7 @@ class CH4Lifetime(MonitorBase):
             # Plot dataset (top left)
             axes_data = fig.add_subplot(gridspec[0:2, 0:2])
             plot_kwargs["axes"] = axes_data
+            plot_kwargs["coords"] = ("latitude", self.z_coord)
             plot_data = plot_func(cube, **plot_kwargs)
             axes_data.set_title(self._get_label(dataset), pad=3.0)
             z_coord = cube.coord(self.z_coord)
@@ -849,6 +854,7 @@ class CH4Lifetime(MonitorBase):
                 sharey=axes_data,
             )
             plot_kwargs["axes"] = axes_ref
+            plot_kwargs["coords"] = ("latitude", self.z_coord)
             if self.plots[plot_type]["common_cbar"]:
                 plot_kwargs.setdefault("vmin", plot_data.get_clim()[0])
                 plot_kwargs.setdefault("vmax", plot_data.get_clim()[1])
@@ -880,6 +886,7 @@ class CH4Lifetime(MonitorBase):
                 bias=True,
             )
             plot_kwargs_bias["axes"] = axes_bias
+            plot_kwargs["coords"] = ("latitude", self.z_coord)
             plot_bias = plot_func(bias_cube, **plot_kwargs_bias)
             axes_bias.set_title(
                 f"{self._get_label(dataset)} - {self._get_label(ref_dataset)}",
@@ -943,7 +950,7 @@ class CH4Lifetime(MonitorBase):
         cube = calculate_lifetime(dataset, plot_type)
         cube = cube.collapsed(["time"], iris.analysis.MEAN)
 
-        # convert units
+        # Convert units
         cube.convert_units(self.info["units"])
 
         # Create plot with desired settings
@@ -952,6 +959,7 @@ class CH4Lifetime(MonitorBase):
             axes = fig.add_subplot()
             plot_kwargs = self._get_plot_kwargs(plot_type, base_datasets)
             plot_kwargs["axes"] = axes
+            plot_kwargs["coords"] = ("latitude", self.z_coord)
             plot_zonalmean = plot_func(cube, **plot_kwargs)
 
             # Setup colorbar
@@ -1043,13 +1051,13 @@ class CH4Lifetime(MonitorBase):
         """Extract reference dataset."""
         ref_datasets = [
             d
-            for d in datasets
-            if datasets[d].get("reference_for_monitor_diags", False)
+            for d in datasets.values()
+            if d.get("reference_for_lifetime_diags", False)
         ]
         if len(ref_datasets) > 1:
             raise ValueError(
                 f"Expected at most 1 reference dataset (with "
-                f"'reference_for_monitor_diags: true' for variable "
+                f"'reference_for_lifetime_diags: true' for variable "
                 f"'{short_name}', got {len(ref_datasets):d}",
             )
         if ref_datasets:
@@ -1151,8 +1159,7 @@ class CH4Lifetime(MonitorBase):
         axes.set_title(f"{self.info['long_name']} in region {region}")
         axes.set_xlabel("Time")
         axes.set_ylabel(
-            f"{chr(964)}({self._get_name('reactant').upper()})"
-            f" [{self.info['units']}]",
+            f"τ({self._get_name('reactant').upper()}) [{self.info['units']}]",
         )
         gridline_kwargs = self._get_gridline_kwargs(plot_type)
         if gridline_kwargs is not False:
@@ -1186,7 +1193,7 @@ class CH4Lifetime(MonitorBase):
         # Provenance tracking
         caption = (
             f"Time series of {multi_dataset_facets['long_name']} for various "
-            f"datasets for region {region}."
+            f"datasets in region {region}."
         )
         provenance_record = {
             "ancestors": ancestors,
@@ -1331,8 +1338,7 @@ class CH4Lifetime(MonitorBase):
         )
         axes.set_title(f"{self.info['long_name']}")
         axes.set_xlabel(
-            f"{chr(964)}({self._get_name('reactant').upper()})"
-            f" [{self.info['units']}]",
+            f"τ({self._get_name('reactant').upper()}) [{self.info['units']}]",
         )
         z_coord = cube.coord(self.z_coord)
         axes.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
