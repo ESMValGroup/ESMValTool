@@ -3,9 +3,10 @@
 ---
 documentation:
   title: CH4 lifetime.
-  description: Compute ch4 lifetime.
+  description: Compute CH4 lifetime.
   authors:
     - winterstein_franziska
+    - schlund_manuel
   maintainer:
     - winterstein_franziska
   references:
@@ -13,23 +14,20 @@ documentation:
 
 
 datasets:
-  - {project: CMIP6, dataset: BCC-ESM1, exp: historical, ensemble: r1i1p1f1, timerange: 1990/2000, grid: gn}
+  - {project: CMIP6, dataset: BCC-ESM1, exp: historical, ensemble: r1i1p1f1, timerange: 2010/2014, grid: gn, title: BCC-ESM1 (2010-2014)}
 
 
 preprocessors:
-  annual_mean_plev19:
+  plev19:
     extract_levels:
       levels: {cmor_table: CMIP6, coordinate: plev19}
       scheme: linear
       coordinate: air_pressure
-    annual_statistics:
-      operator: mean
-
 
 diagnostics:
   lifetime:
     scripts:
-      plot:
+      plot_annual_means: &script_settings
         script: lifetime/lifetime.py
         reactant: ch4
         molarmass: 16.05
@@ -40,24 +38,45 @@ diagnostics:
             A: 1.85e-20
             ER: 987.0
             b: 2.82
-        regions: [TROP]
-        facet_used_for_labels: alias
+        regions: [TROP, STRA]
+        facet_used_for_labels: title
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{dataset}_{real_name}'
         plots:
           timeseries:
-            by_timestep: True
+            annual_mean: both
+            annual_mean_kwargs:
+              linestyle: --
             display_mean: true
+            plot_kwargs:
+              BCC-ESM1 (2010-2014):
+                color: C0
+      zonal_mean_profile:
+        <<: *script_settings
+        plots:
+          zonalmean:
+            plot_kwargs:
+              default:
+                extend: max
+                norm: log
+                levels: [1e0, 3e0, 1e1, 3e1, 1e2, 3e2, 1e3, 3e3, 1e4, 3e4, 1e5, 3e5, 1e6, 3e6, 1e7, 3e7, 1e8, 3e8]
+      plot_1d_profile:
+        <<: *script_settings
+        plots:
+          1d_profile:
+            plot_kwargs:
+              BCC-ESM1 (2010-2014):
+                color: C0
     variables:
       ch4:
         mip: Amon
-        preprocessor: annual_mean_plev19
+        preprocessor: plev19
       oh:
         mip: AERmon
-        preprocessor: annual_mean_plev19
+        preprocessor: plev19
       ta:
         mip: Amon
-        preprocessor: annual_mean_plev19
+        preprocessor: plev19
       hus:
         mip: Amon
-        preprocessor: annual_mean_plev19
+        preprocessor: plev19
