@@ -247,7 +247,6 @@ jobs:
             mkdir /logs
             . /opt/conda/etc/profile.d/conda.sh
             # Install
-            conda update -y conda
             conda env create -n esmvaltool -f environment_python.yml
             conda activate esmvaltool
             pip install .[doc]
