@@ -10,8 +10,12 @@ from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(config: dict,
+                     dataset: str,
+                     dataset_info: dict,
+                     start_date: datetime,
+                     end_date: datetime,
+                     overwrite: bool) -> None:
     """Download dataset.
 
     Parameters
@@ -30,9 +34,9 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         Overwrite already downloaded files
     """
     if start_date is None:
-        start_date = datetime(1997, 1, 1)
+        start_date = datetime(1997, 1, 1, tzinfo=datetime.timezone.utc)
     if end_date is None:
-        end_date = datetime(2019, 12, 31)
+        end_date = datetime(2019, 12, 31, tzinfo=datetime.timezone.utc)
 
     downloader = CCIDownloader(
         config=config,
@@ -43,20 +47,20 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     downloader.connect()
 
-    version = 'v03.0'
+    version = "v03.0"
 
-    ccivars = ['active_layer_thickness', 'ground_temperature',
-               'permafrost_extent']
+    ccivars = ["active_layer_thickness", "ground_temperature",
+               "permafrost_extent"]
 
     # download active layer thickness
     loop_date = start_date
     while loop_date <= end_date:
         for var in ccivars:
-            pathname = f'{var}/L4/area4/pp/{version}/'
-            fname = f'ESACCI-PERMAFROST-L4-*-{loop_date.year}-f{version}.nc'
+            pathname = f"{var}/L4/area4/pp/{version}/"
+            fname = f"ESACCI-PERMAFROST-L4-*-{loop_date.year}-f{version}.nc"
             if downloader.file_exists(fname, pathname):
                 downloader.download_files(fname, pathname)
             else:
-                logger.info('%d: no data for %s %s',
+                logger.info("%d: no data for %s %s",
                             loop_date.year, var, version)
         loop_date += relativedelta.relativedelta(years=1)

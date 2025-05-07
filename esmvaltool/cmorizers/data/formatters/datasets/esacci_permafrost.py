@@ -21,37 +21,36 @@ import glob
 import logging
 import os
 import os.path
-
 from copy import deepcopy
 from datetime import datetime
-from dateutil import relativedelta
-from netCDF4 import Dataset
-from cdo import Cdo
 
 import iris
 import numpy as np
+from cdo import Cdo
+from dateutil import relativedelta
 from esmvalcore.cmor.table import CMOR_TABLES
-from esmvaltool.cmorizers.data.utilities import (
-    save_variable, set_global_atts)
+from netCDF4 import Dataset
+
+from esmvaltool.cmorizers.data.utilities import save_variable, set_global_atts
 
 logger = logging.getLogger(__name__)
 
 
 def _fix_coordinates(cube, definition):
     """Fix coordinates."""
-    axis2def = {'T': 'time', 'X': 'longitude', 'Y': 'latitude', 'Z': 'sdepth'}
-    axes = ['T', 'X', 'Y', 'Z']
+    axis2def = {"T": "time", "X": "longitude", "Y": "latitude", "Z": "sdepth"}
+    axes = ["T", "X", "Y", "Z"]
 
     for axis in axes:
         coord_def = definition.coordinates.get(axis2def[axis])
         if coord_def:
             coord = cube.coord(axis=axis)
-            if axis == 'T':
-                coord.convert_units('days since 1850-1-1 00:00:00.0')
+            if axis == "T":
+                coord.convert_units("days since 1850-1-1 00:00:00.0")
             coord.standard_name = coord_def.standard_name
             coord.var_name = coord_def.out_name
             coord.long_name = coord_def.long_name
-            coord.points = coord.core_points().astype('float64')
+            coord.points = coord.core_points().astype("float64")
             if len(coord.points) > 1:
                 if coord.bounds is not None:
                     coord.bounds = None
@@ -107,7 +106,7 @@ def _regrid_infile(infile, outfile, weightsfile):
     # define dimensions of target grid (regular lat-lon grid)
     target_dimx = 720  # delta_lon = 0.5 deg
     target_dimy = 360  # delta_lat = 0.5 deg
-    target_grid = f'r{target_dimx}x{target_dimy}'
+    target_grid = f"r{target_dimx}x{target_dimy}"
 
     # check if suitable weights file already exists
     # (e.g. from previous call to _regrid_file)
@@ -118,8 +117,8 @@ def _regrid_infile(infile, outfile, weightsfile):
         weights = Dataset(weightsfile, "r")
         # make sure dimensions of source and target grids match
         # expected values
-        src = weights.variables['src_grid_dims']
-        dst = weights.variables['dst_grid_dims']
+        src = weights.variables["src_grid_dims"]
+        dst = weights.variables["dst_grid_dims"]
         if (xsize == src[0] and ysize == src[1] and
                 target_dimx == dst[0] and target_dimy == dst[1]):
             logger.info("Using matching weights file %s for regridding.",
@@ -142,7 +141,7 @@ def _regrid_infile(infile, outfile, weightsfile):
 
     # now regrid data to 0.5 deg x 0.5 deg
     cdo.remap(f"{target_grid},{weightsfile} -setgrid,{esagrid_file}",
-              input=infile, output=outfile, options='-f nc')
+              input=infile, output=outfile, options="-f nc")
 
     # delete temporary file
     os.remove(esagrid_file)
@@ -150,17 +149,17 @@ def _regrid_infile(infile, outfile, weightsfile):
 
 def _extract_variable(in_file, var, cfg, out_dir, year):
     logger.info("CMORizing variable '%s' from input file '%s'",
-                var['short_name'], in_file)
-    attributes = deepcopy(cfg['attributes'])
-    attributes['mip'] = var['mip']
-    attributes['raw'] = var['raw']
-    cmor_table = CMOR_TABLES[attributes['project_id']]
-    definition = cmor_table.get_variable(var['mip'], var['short_name'])
+                var["short_name"], in_file)
+    attributes = deepcopy(cfg["attributes"])
+    attributes["mip"] = var["mip"]
+    attributes["raw"] = var["raw"]
+    cmor_table = CMOR_TABLES[attributes["project_id"]]
+    definition = cmor_table.get_variable(var["mip"], var["short_name"])
 
-    if 'weights_dir' in var.keys():
-        weights_dir = var['weights_dir']
+    if "weights_dir" in var.keys():
+        weights_dir = var["weights_dir"]
     else:
-        weights_dir = '.'
+        weights_dir = "."
 
     # regrid input file using cdo
     # (using the preprocessor (ESMF) is too slow)
@@ -177,57 +176,57 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
         # (depth level can only be recognized by the variable names)
         # --> combine all depth levels into 1 cube
         for cube in cubes:
-            if cube.var_name == 'GST':
+            if cube.var_name == "GST":
                 sdepth = 0.0
-            elif cube.var_name == 'T1m':
+            elif cube.var_name == "T1m":
                 sdepth = 1.0
-            elif cube.var_name == 'T2m':
+            elif cube.var_name == "T2m":
                 sdepth = 2.0
-            elif cube.var_name == 'T5m':
+            elif cube.var_name == "T5m":
                 sdepth = 5.0
-            elif cube.var_name == 'T10m':
+            elif cube.var_name == "T10m":
                 sdepth = 10.0
             else:
                 sdepth = 999.0
                 logger.info("Could not determin depth. Check results.")
             cube.add_aux_coord(iris.coords.AuxCoord(sdepth,
-                               standard_name='depth',
-                               long_name='depth', units="m"))
+                               standard_name="depth",
+                               long_name="depth", units="m"))
             cube.var_name = "gst"
             cube.standard_name = "soil_temperature"  # "valid" standard name
-            cube.attributes.pop('actual_min')
-            cube.attributes.pop('actual_max')
+            cube.attributes.pop("actual_min")
+            cube.attributes.pop("actual_max")
         tmp_cube = cubes.merge_cube()
         # setting the attribute 'positive' is needed for Iris to recognize
         # this coordinate as 'Z' axis
-        tmp_cube.coord('depth').attributes['positive'] = "down"
+        tmp_cube.coord("depth").attributes["positive"] = "down"
         # swap coordinates 'depth' and 'time':
         #     (depth, time, lat, lon) --> (time, depth, lat, lon)
         flipped_data = np.swapaxes(tmp_cube.core_data(), 1, 0)
-        coord_spec = [(tmp_cube.coord('time'), 0),
-                      (tmp_cube.coord('depth'), 1),
-                      (tmp_cube.coord('latitude'), 2),
-                      (tmp_cube.coord('longitude'), 3)]
+        coord_spec = [(tmp_cube.coord("time"), 0),
+                      (tmp_cube.coord("depth"), 1),
+                      (tmp_cube.coord("latitude"), 2),
+                      (tmp_cube.coord("longitude"), 3)]
         cube = iris.cube.Cube(flipped_data, dim_coords_and_dims=coord_spec)
         cube.metadata = tmp_cube.metadata
         # change units string so unit conversion from deg C --> K will work
-        cube.units = 'celsius'
+        cube.units = "celsius"
         # convert units from degC to K
-        cube.convert_units('K')
+        cube.convert_units("K")
     else:
         cube = cubes[0]
 
     # --> drop attributes that differ among input files for different years
     # global attributes to remove
     drop_attrs = [
-        'source', 'date_created', 'history', 'tracking_id',
-        'id', 'time_coverage_start', 'time_coverage_end', 'platform',
-        'sensor', 'keywords'
+        "source", "date_created", "history", "tracking_id",
+        "id", "time_coverage_start", "time_coverage_end", "platform",
+        "sensor", "keywords",
     ]
     # variable attributes to remove
     drop_var_attrs = [
-        'flag_meanings', 'flag_values', 'grid_mapping', 'actual_range',
-        'ancillary_variables'
+        "flag_meanings", "flag_values", "grid_mapping", "actual_range",
+        "ancillary_variables",
     ]
     for attr in drop_attrs:
         if attr in cube.attributes.keys():
@@ -238,8 +237,8 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
 
     set_global_atts(cube, attributes)
 
-    cube.coord('time').points = cube.coord('time').core_points().astype(
-        'float64')
+    cube.coord("time").points = cube.coord("time").core_points().astype(
+        "float64")
 
     # Set correct names
     cube.var_name = definition.short_name
@@ -253,7 +252,7 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
     cube.units = definition.units
 
     # Fix data type
-    cube.data = cube.core_data().astype('float32')
+    cube.data = cube.core_data().astype("float32")
 
     # Fix coordinates
     cube = _fix_coordinates(cube, definition)
@@ -263,21 +262,21 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
     logger.debug("Setting time dimension to UNLIMITED while saving!")
     save_variable(cube, cube.var_name,
                   out_dir, attributes,
-                  unlimited_dimensions=['time'])
+                  unlimited_dimensions=["time"])
     os.remove(regridded_file)  # delete temporary file
     logger.info("Finished CMORizing %s", in_file)
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """CMORize ESACCI-PERMAFROST dataset."""
-    glob_attrs = cfg['attributes']
+    glob_attrs = cfg["attributes"]
 
     logger.info("Starting CMORization for tier%s OBS files: %s",
-                glob_attrs['tier'], glob_attrs['dataset_id'])
+                glob_attrs["tier"], glob_attrs["dataset_id"])
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
     logger.info("CMORizing ESACCI-PERMAFROST version %s",
-                glob_attrs['version'])
+                glob_attrs["version"])
 
     if start_date is None:
         start_date = datetime(1997, 1, 1)
@@ -286,11 +285,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
     loop_date = start_date
     while loop_date <= end_date:
-        for short_name, var in cfg['variables'].items():
-            if 'short_name' not in var:
-                var['short_name'] = short_name
+        for short_name, var in cfg["variables"].items():
+            if "short_name" not in var:
+                var["short_name"] = short_name
             filepattern = os.path.join(
-                in_dir, var['file'].format(year=loop_date.year)
+                in_dir, var["file"].format(year=loop_date.year),
                 )
             in_file = glob.glob(filepattern)[0]
             if not in_file:
