@@ -22,7 +22,6 @@ from datetime import datetime
 
 import cf_units
 import iris
-import numpy as np
 from dask import array as da
 from dateutil import relativedelta
 from esmvalcore.preprocessor import (
@@ -61,7 +60,7 @@ def _create_nan_cube(cube, year, month, day):
 
     return nan_cube
 
-    
+
 def _handle_missing_day(year, month, iday, short_name, cubes, cubes_day):
     """Fill missing day."""
     if short_name in ["clt", "ctp"]:
@@ -153,7 +152,9 @@ def _concatenate_and_save_daily_cubes(
     )
 
 
-def _concatenate_and_save_monthly_cubes(short_name, var, cubes, out_dir, attach, cfg, cmor_info):
+def _concatenate_and_save_monthly_cubes(
+    short_name, var, cubes, out_dir, attach, cfg, cmor_info
+):
     """Concatinate monthly files and save."""
     # After gathering all cubes for all years, concatenate them
     cube = cubes.concatenate_cube()
@@ -184,15 +185,19 @@ def _concatenate_and_save_monthly_cubes(short_name, var, cubes, out_dir, attach,
     utils.set_global_atts(cube, attrs)
 
     # Save the processed variable
-    utils.save_variable(cube, short_name, out_dir, attrs, unlimited_dimensions=["time"])
+    utils.save_variable(
+        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+    )
 
 
-def _process_daily_file(ifile, inum, short_name, var, cmor_info, cubes, cubes_day):
+def _process_daily_file(
+    ifile, inum, short_name, var, cmor_info, cubes, cubes_day
+):
     """Extract variable from daily file."""
     logger.info("CMORizing file %s", ifile)
     # Extract raw names from the variable dictionary
     raw_var = var.get("raw", short_name)
-    
+
     for ivar, raw_name in enumerate(raw_var):
         logger.info("Extracting raw variable %s", raw_name)
 
@@ -204,9 +209,7 @@ def _process_daily_file(ifile, inum, short_name, var, cmor_info, cubes, cubes_da
 
         # Load cube using a constraint based on the raw_name
         daily_cube = iris.load_cube(ifile, NameConstraint(var_name=raw_name))
-        daily_cube_ilum = iris.load_cube(
-            ifile, NameConstraint(var_name=illum)
-        )
+        daily_cube_ilum = iris.load_cube(ifile, NameConstraint(var_name=illum))
 
         # Set arbitrary time of day
         daily_cube.coord("time").points = (
@@ -233,7 +236,9 @@ def _process_daily_file(ifile, inum, short_name, var, cmor_info, cubes, cubes_da
         cubes_day.append(daily_cube_day)
 
 
-def _process_monthly_file(ifile, short_name, var, cmor_info, cubes_am, cubes_pm):
+def _process_monthly_file(
+    ifile, short_name, var, cmor_info, cubes_am, cubes_pm
+):
     """Extract variable from monthly file."""
     logger.info("CMORizing file %s for variable %s", ifile, short_name)
     # Extract raw names from the variable dictionary
@@ -261,9 +266,28 @@ def _process_monthly_file(ifile, short_name, var, cmor_info, cubes_am, cubes_pm)
     utils.fix_var_metadata(monthly_cube, cmor_info)
 
     # Add the cube to the list
-    if any(sat_am in ifile for sat_am in ("AVHRR_NOAA-12", "AVHRR_NOAA-15", "AVHRR_NOAA-17", "AVHRR_METOPA")):
+    if any(
+        sat_am in ifile
+        for sat_am in (
+            "AVHRR_NOAA-12",
+            "AVHRR_NOAA-15",
+            "AVHRR_NOAA-17",
+            "AVHRR_METOPA",
+        )
+    ):
         cubes_am.append(monthly_cube)
-    elif any(sat_pm in ifile for sat_pm in ("AVHRR_NOAA-7", "AVHRR_NOAA-9", "AVHRR_NOAA-11", "AVHRR_NOAA-14", "AVHRR_NOAA-16", "AVHRR_NOAA-18", "AVHRR_NOAA-19")):
+    elif any(
+        sat_pm in ifile
+        for sat_pm in (
+            "AVHRR_NOAA-7",
+            "AVHRR_NOAA-9",
+            "AVHRR_NOAA-11",
+            "AVHRR_NOAA-14",
+            "AVHRR_NOAA-16",
+            "AVHRR_NOAA-18",
+            "AVHRR_NOAA-19",
+        )
+    ):
         cubes_pm.append(monthly_cube)
     else:
         logger.error("The file %s is not assigned to AM or PM", ifile)
@@ -298,14 +322,22 @@ def _extract_variable_daily(
                     for inum, ifile in enumerate(filelist):
                         try:
                             _process_daily_file(
-                                ifile, inum, short_name, var, cmor_info, cubes, cubes_day
+                                ifile,
+                                inum,
+                                short_name,
+                                var,
+                                cmor_info,
+                                cubes,
+                                cubes_day,
                             )
                         except Exception as e:
                             logger.error(
                                 "Error processing file '%s': %s", ifile, e
                             )
                 else:
-                    _handle_missing_day(year, month, iday, short_name, cubes, cubes_day)
+                    _handle_missing_day(
+                        year, month, iday, short_name, cubes, cubes_day
+                    )
 
         _concatenate_and_save_daily_cubes(
             short_name, var, cubes, cubes_day, out_dir, cfg, cmor_info
@@ -342,26 +374,33 @@ def _extract_variable_monthly(
 
             for ifile in filelist:
                 try:
-                    _process_monthly_file(ifile, short_name, var, cmor_info, cubes_am, cubes_pm)
+                    _process_monthly_file(
+                        ifile, short_name, var, cmor_info, cubes_am, cubes_pm
+                    )
                 except Exception as e:
                     logger.error("Error processing file '%s': %s", ifile, e)
-    
+
     if cubes_am:
-        _concatenate_and_save_monthly_cubes(short_name, var, cubes_am, out_dir, "-AM", cfg, cmor_info)
+        _concatenate_and_save_monthly_cubes(
+            short_name, var, cubes_am, out_dir, "-AM", cfg, cmor_info
+        )
 
     if cubes_pm:
-        _concatenate_and_save_monthly_cubes(short_name, var, cubes_pm, out_dir, "-PM", cfg, cmor_info)
+        _concatenate_and_save_monthly_cubes(
+            short_name, var, cubes_pm, out_dir, "-PM", cfg, cmor_info
+        )
 
     if cubes_am and cubes_pm:
-        
         # change day value in cubes_pm for concatinating
         for cube in cubes_am:
-            time_coord = cube.coord('time')
+            time_coord = cube.coord("time")
             new_time_points = [tpoint + 1 for tpoint in time_coord.points]
             time_coord.points = new_time_points
 
         cubes_combined = cubes_am + cubes_pm
-        _concatenate_and_save_monthly_cubes(short_name, var, cubes_combined, out_dir, "-AMPM", cfg, cmor_info)
+        _concatenate_and_save_monthly_cubes(
+            short_name, var, cubes_combined, out_dir, "-AMPM", cfg, cmor_info
+        )
 
     if not (cubes_am or cubes_pm):
         logger.warning("No valid cubes processed")
