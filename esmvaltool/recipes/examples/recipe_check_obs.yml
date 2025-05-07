@@ -205,22 +205,52 @@ diagnostics:
   ESACCI-CLOUD:
     description: ESACCI-CLOUD check
     variables:
-      clivi:
+      clivi: &var_mon
+        mip: Amon
+        version: v3.0-AVHRR-AMPM
+        start_year: 1982
+        end_year: 2016
       clt:
+        <<: *var_mon
       cltStderr:
+        <<: *var_mon
       clwvi:
+        <<: *var_mon
       lwp:
+        <<: *var_mon
       rlut:
+        <<: *var_mon
       rlutcs:
+        <<: *var_mon
       rsut:
+        <<: *var_mon
       rsutcs:
+        <<: *var_mon
       rsdt:
+        <<: *var_mon
       rlus:
+        <<: *var_mon
       rsus:
+        <<: *var_mon
       rsuscs:
+        <<: *var_mon
+      clt_day: &var_day
+        short_name: clt
+        mip: day
+        version: v3.0-AVHRR
+        start_year: 2003
+        end_year: 2007
+      clwvi_day:
+        <<: *var_day
+        short_name: clwvi
+        mip: CFday
+        version: v3.0-AVHRR-daylight
+      cod_day:
+        <<: *var_day
+        short_name: cod
+        version: v3.0-AVHRR-daylight
     additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS6, mip: Amon, tier: 2,
-         type: sat, version: v3.0-AVHRR-AMPM, start_year: 1982, end_year: 2016}
+      - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat}
     scripts: null
 
 
