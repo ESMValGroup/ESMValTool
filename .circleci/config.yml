@@ -290,6 +290,7 @@ jobs:
 workflows:
   commit:
     jobs:
+      - build_documentation
       - run_tests
       - test_installation_from_source_test_mode
       - test_installation_from_source_develop_mode
