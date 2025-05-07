@@ -247,9 +247,8 @@ jobs:
             mkdir /logs
             . /opt/conda/etc/profile.d/conda.sh
             # Install
-            mamba --version
-            mamba install -c conda-forge "mamba>=2.1"  # mamba<2 can't solve env, even simple
-            mamba env create -n esmvaltool -f environment_python.yml
+            conda update -y conda
+            conda env create -n esmvaltool -f environment_python.yml
             conda activate esmvaltool
             pip install .[doc]
             # Log versions
