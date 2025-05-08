@@ -1,7 +1,10 @@
-"""Implement the surface concentration climatology metric
-   from ground-based NOAA GML flask observations of trace gases.
-   Some classes and functions largely adapted from the AOD-AERONET diagnostic
-   at /diag_scripts/aerosols/aod_aeronet_assess.py.
+"""Surface concentration of trace gases diagnostics.
+
+The diagnostics rely on comparing model data to ground-based NOAA GML surface
+observations of trace gases.
+
+Some classes and functions largely adapted from the AOD-AERONET diagnostic
+at /diag_scripts/aerosols/aod_aeronet_assess.py.
 """
 import logging
 
@@ -443,7 +446,7 @@ def trace_gas_timeserie_zonal(
 
     # Create figure layout for different plots
     figure = plt.figure(figsize=(26, 26))
-    widths = [1.0, 0.85, 1.0, 1.0]
+    widths = [1.0, 0.85, 1.0, 1.1]
     heights = [1.0, 1.0, 1.0, 1.0]
     gs = gridspec.GridSpec(
         4, 4, left = 0.05, right = 0.95,
@@ -517,8 +520,8 @@ def trace_gas_timeserie_zonal(
             valid_obs += v_obs
             valid_md += v_mod
             # Save values in dictionary for time series plot
-            trace_gas_at_station_y[str(y)] = np.array(v_mod)
-            trace_gas_at_model_y[str(y)] = np.array(v_obs)
+            trace_gas_at_model_y[str(y)] = np.array(v_mod)
+            trace_gas_at_station_y[str(y)] = np.array(v_obs)
         # Time series of monthly data and seasonal anomalies
         trace_gas_at_model = {
             "max": {
@@ -710,6 +713,10 @@ def trace_gas_timeserie_zonal(
         )
         plt.annotate(text, (0.05, 0.9), xycoords="axes fraction", fontsize=16)
         plt.title(latitude_titles[l], fontsize=28)
+        # Get legend handles for the first latitude band
+        if l == 0:
+            axes = plt.gcf().axes
+            handles_mean, labels_mean = axes[0].get_legend_handles_labels()
 
         # Plot central-left column = scatter plot of model-obs
         linreg = scipy.stats.linregress(valid_obs, valid_md)
@@ -847,22 +854,22 @@ def trace_gas_timeserie_zonal(
         plt.plot(
             years, seas_max_model, linestyle="solid", color=COLORS_MARKERS[0],
             marker=MARKERS[0], markersize=10, alpha=0.7,
-            label=f"{model_id} @stations: Max" if l == 0 else None,
+            label="" if l == 0 else None,
         )
         plt.plot(
             years, seas_max_obs,  linestyle="solid", color=COLORS_MARKERS[1],
             marker=MARKERS[1], markersize=10, alpha=0.7,
-            label="Observations: Max" if l == 0 else None,
+            label="" if l == 0 else None,
         )
         plt.plot(
             years, seas_min_model, linestyle="dashed", color=COLORS_MARKERS[0],
             marker=MARKERS[0], markersize=10, fillstyle="none",  alpha=0.7,
-            label=f"{model_id} @stations: Min" if l == 0 else None,
+            label="" if l == 0 else None,
         )
         plt.plot(
             years, seas_min_obs,  linestyle="dashed", color=COLORS_MARKERS[1],
             marker=MARKERS[1], markersize=10, fillstyle="none", alpha=0.7,
-            label="Observations: Min" if l == 0 else None,
+            label="" if l == 0 else None,
         )
         if include_global:
             plt.scatter(
@@ -886,9 +893,20 @@ def trace_gas_timeserie_zonal(
         plt.ylabel("Month", fontsize=20)
         plt.tick_params(axis="both", labelsize=16)
         plt.title(latitude_titles[l], fontsize=28)
+        # Get legend handles for the first latitude band
+        if l == 0:
+            axes = plt.gcf().axes
+            handles_minmax, labels_minmax = axes[3].get_legend_handles_labels()
+            labels_minmax[2] = f"{model_id} @stations: Max/Min"
+            labels_minmax[3] = "Observations: Max/Min"
 
-        figure.legend(loc="upper center", bbox_to_anchor=[0.5, 0.08],
-                    ncol=3, fontsize=20, borderaxespad=0.01)
+    figure.legend(handles_mean, labels_mean,
+                  loc="upper center", bbox_to_anchor=[0.37, 0.08],
+                  ncol=2, fontsize=20, borderaxespad=0.01, frameon=True)
+    figure.legend(handles_minmax, labels_minmax,
+                  loc="lower right", bbox_to_anchor=[0.95, 0.05],
+                  columnspacing=0.01, handletextpad=0.01,
+                  ncol=2, fontsize=20, borderaxespad=0.01, frameon=True)
 
     return figure
 
