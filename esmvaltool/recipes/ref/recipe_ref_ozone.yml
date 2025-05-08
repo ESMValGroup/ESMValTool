@@ -107,7 +107,7 @@ diagnostics:
         preprocessor: create_time_series_SH
         <<: *time_period_toz_monthly
     additional_datasets:
-      - {project: OBS6, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: AERmon, timerange: '1997/2022', alias: ESACCI-OZONE}
+      - {project: obs4MIPs, dataset: C3S-GTO-ECV-9-0, level: BE, version: gn, tier: 1, timerange: '1996/2021', alias: GTO-ECV, frequency: mon}
     scripts:
       plot:
         script: monitor/multi_datasets.py
@@ -136,7 +136,7 @@ diagnostics:
         facet_used_for_labels: alias
         <<: *time_period_toz_monthly
     additional_datasets:
-      - {project: OBS6, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: AERmon, timerange: '1997/2022', alias: ESACCI-OZONE}
+      - {project: obs4MIPs, dataset: C3S-GTO-ECV-9-0, level: BE, version: gn, tier: 1, timerange: '1996/2021', alias: GTO-ECV, frequency: mon}
     scripts:
       plot:
         script: monitor/multi_datasets.py
@@ -164,7 +164,7 @@ diagnostics:
         preprocessor: create_lat_time_map
         <<: *time_period_toz_zonalmean
         additional_datasets:
-          - {project: OBS6, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: AERmon, reference_for_monitor_diags: true, alias: ESACCI-OZONE}
+          - {project: obs4MIPs, dataset: C3S-GTO-ECV-9-0, level: BE, version: gn, tier: 1, alias: GTO-ECV, frequency: mon, reference_for_monitor_diags: true}
     scripts:
       plot:
         script: monitor/multi_datasets.py
@@ -195,7 +195,7 @@ diagnostics:
         preprocessor: create_lat_month_map
         <<: *time_period_toz_zonalmean
         additional_datasets:
-          - {project: OBS6, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: AERmon, reference_for_monitor_diags: true, alias: ESACCI-OZONE}
+          - {project: obs4MIPs, dataset: C3S-GTO-ECV-9-0, level: BE, version: gn, tier: 1, alias: GTO-ECV, frequency: mon, reference_for_monitor_diags: true}
     scripts:
       plot:
         script: monitor/multi_datasets.py
