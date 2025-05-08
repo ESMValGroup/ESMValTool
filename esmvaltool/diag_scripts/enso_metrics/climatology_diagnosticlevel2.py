@@ -123,7 +123,7 @@ def provenance_record(var_grp, ancestor_files):
 def save_plotdata(plotdata, group, pairs, cfg):
     """Save both obs and model plotted data."""
     for i, cube in enumerate(plotdata):
-        data_prov = provenance_record(group, pairs[i]["filename"])
+        data_prov = provenance_record(group, [pairs[i]["filename"]])
         datafile = [
             pairs[i]["dataset"],
             pairs[i]["short_name"],

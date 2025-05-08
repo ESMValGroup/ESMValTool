@@ -99,7 +99,7 @@ diagnostics:
         preprocessor: ITCZ_bias
         mip: Amon
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: "GPCP-V2.3", project: obs4MIPs, tier: 1, start_year: 1979, end_year: 2017}
       eq_pr_bias:
         short_name: pr
         preprocessor: eq_bias
@@ -111,7 +111,7 @@ diagnostics:
         preprocessor: eq_bias
         mip: Omon
         additional_datasets:
-          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
+          - {dataset: TROPFLUX, version: v1, project: OBS6, type: reanaly, tier: 2, start_year: 1979, end_year: 2018}
       eq_tauu_bias:
         short_name: tauu
         preprocessor: eq_bias

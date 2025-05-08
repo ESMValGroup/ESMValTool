@@ -17,8 +17,8 @@ datasets:
   - {dataset: ACCESS-CM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
 
   # observations - use one
-  # - {dataset: NOAA-ERSSTv5, project: OBS6, type: reanaly, tier: 2, mip: Omon}
-  - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
+  # - {dataset: NOAA-ERSSTv5, version: v5, project: OBS6, type: reanaly, tier: 2, mip: Omon}
+  - {dataset: TROPFLUX, version: v1, project: OBS6, type: reanaly, tier: 2, mip: Omon}
 
 preprocessors:
   ssta_enso: &base_enso  # pattern, lifecycle w/o month, duration, diversity
