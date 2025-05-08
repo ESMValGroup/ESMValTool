@@ -1518,6 +1518,16 @@ def main(config):
     datasets_preproc = {}
     datasets_seasonal = {}
 
+    # Default values for the parameters plots and only_multimodel:
+    #   - plots = "seas_maps", "timeserie_lat", "sensitivity_ampl_trend"
+    #   - only_multimodel = False
+    if "plots" not in config:
+        config["plots"] = [
+            "seas_maps", "timeserie_lat", "sensitivity_ampl_trend",
+        ]
+    if "only_multimodel" not in config:
+        config["only_multimodel"] = False
+
     # Only consider the multi-model mean
     if config["only_multimodel"]:
 
