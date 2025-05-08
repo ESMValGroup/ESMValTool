@@ -27,11 +27,15 @@
     initial cycle point = now
     [[graph]]
         R1 = """install_env_file => get_esmval => configure
-            configure => process<fast> => compare<fast>
-            configure => process<medium> => compare<medium>"""
+            configure => process<fast> => compare<fast>:finish
+            configure => process<medium> => compare<medium>:finish
+            compare<medium>:finish & compare<fast>:finish => generate_report
+            """
         T01 = """@wall_clock => get_esmval => configure
-            configure => process<fast> => compare<fast>
-            configure => process<medium> => compare<medium>"""
+            configure => process<fast> => compare<fast>:finish
+            configure => process<medium> => compare<medium>:finish
+            compare<medium>:finish & compare<fast>:finish => generate_report
+            """
 
 [runtime]
     [[root]]
@@ -130,5 +134,9 @@
             RECIPE_NAME = "${CYLC_TASK_PARAM_medium##*--}"
             COMPARISON_OUTPUT_DIR=${OUTPUT_DIR}/${RECIPE_NAME}*
             KGO_DIR=${KGO_ROOT_PATH}/${RECIPE_NAME}*
+
+    [[generate_report]]
+        [[[environment]]]
+            CYLC_DB_FILE_PATH=${CYLC_WORKFLOW_RUN_DIR}/log/db
 
 {% include "site/" ~ SITE ~ "/runtime.cylc" %}
