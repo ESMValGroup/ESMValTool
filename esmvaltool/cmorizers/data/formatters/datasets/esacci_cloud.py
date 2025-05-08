@@ -348,7 +348,6 @@ def _extract_variable_monthly(
     short_name, var, cfg, in_dir, out_dir, start_date, end_date
 ):
     """Extract monthly variable with improved handling for multiple cubes."""
-
     cmor_info = cfg["cmor_table"].get_variable(var["mip"], short_name)
 
     if not start_date:
