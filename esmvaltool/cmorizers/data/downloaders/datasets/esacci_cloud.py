@@ -1,10 +1,13 @@
-"""Script to download ESACCI-CLOUD."""
+"""Script to download daily and monthly ESACCI-CLOUD data."""
 
+import logging
 from datetime import datetime
 
 from dateutil import relativedelta
 
-from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
+from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
+
+logger = logging.getLogger(__name__)
 
 
 def download_dataset(
@@ -27,40 +30,126 @@ def download_dataset(
     overwrite : bool
         Overwrite already downloaded files
     """
+    defined_time = True
     if start_date is None:
         start_date = datetime(1982, 1, 1)
+        defined_time = False
     if end_date is None:
-        end_date = datetime(2016, 1, 1)
+        end_date = datetime(2016, 12, 31)
     loop_date = start_date
 
-    downloader = CCIDownloader(
+    downloader = WGetDownloader(
         config=config,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
-    downloader.connect()
-    end_of_file = "ESACCI-L3C_CLOUD-CLD_PRODUCTS-AVHRR_NOAA-12-fv3.0.nc"
-    filler_data = {
-        1994: [
-            f"AVHRR_NOAA_12/1994/199409-{end_of_file}",
-            f"AVHRR_NOAA_12/1994/199410-{end_of_file}",
-            f"AVHRR_NOAA_12/1994/199411-{end_of_file}",
-            f"AVHRR_NOAA_12/1994/199412-{end_of_file}",
-        ],
-        1995: [
-            f"AVHRR_NOAA_12/1995/199501-{end_of_file}",
-        ],
-    }
+
+    # Base paths for L3U (daily data) and L3C (monthly data)
+    base_path_l3u = (
+        "https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/"
+        "CLD_PRODUCTS/v3.0/L3U/"
+    )
+    base_path_l3c = (
+        "https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/"
+        "CLD_PRODUCTS/v3.0/L3C/"
+    )
+
+    wget_options = [
+        "-r",
+        "-e robots=off",  # Ignore robots.txt
+        "--no-parent",  # Don't ascend to the parent directory
+        '--reject="index.html"',  # Reject any HTML files
+    ]
 
     while loop_date <= end_date:
         year = loop_date.year
-        downloader.set_cwd("version3/L3C/AVHRR-PM/v3.0")
-        for folder in downloader.list_folders():
-            for year_folder in downloader.list_folders(folder):
-                if int(year_folder) == year:
-                    downloader.download_year(f"{folder}/{year_folder}")
-        downloader.set_cwd("version3/L3C/AVHRR-AM/v3.0")
-        for extra_file in filler_data.get(year, []):
-            downloader.download_file(extra_file)
-        loop_date += relativedelta.relativedelta(years=1)
+        month = loop_date.month
+        date = f"{year}{month:02}"
+
+        if int(date) in range(198201, 198502):
+            sat_am = ""
+            sat_pm = "AVHRR-PM/AVHRR_NOAA-7/"
+        elif int(date) in range(198502, 198811):
+            sat_am = ""
+            sat_pm = "AVHRR-PM/AVHRR_NOAA-9/"
+        elif int(date) in range(198811, 199109):
+            sat_am = ""
+            sat_pm = "AVHRR-PM/AVHRR_NOAA-11/"
+        elif int(date) in range(199109, 199409):
+            sat_am = "AVHRR-AM/AVHRR_NOAA-12/"
+            sat_pm = "AVHRR-PM/AVHRR_NOAA-11/"
+        elif int(date) in range(199409, 199502):
+            sat_am = "AVHRR-AM/AVHRR_NOAA-12/"
+            sat_pm = ""
+        elif int(date) in range(199502, 199901):
+            sat_am = "AVHRR-AM/AVHRR_NOAA-12/"
+            sat_pm = "AVHRR-PM/AVHRR_NOAA-14/"
+        elif int(date) in range(199901, 200104):
+            sat_am = "AVHRR-AM/AVHRR_NOAA-15/"
+            sat_pm = "AVHRR-PM/AVHRR_NOAA-14/"
+        elif int(date) in range(200104, 200211):
+            sat_am = "AVHRR-AM/AVHRR_NOAA-15/"
+            sat_pm = "AVHRR-PM/AVHRR_NOAA-16/"
+        elif int(date) in range(200211, 200509):
+            sat_am = "AVHRR-AM/AVHRR_NOAA-17/"
+            sat_pm = "AVHRR-PM/AVHRR_NOAA-16/"
+        elif int(date) in range(200509, 200707):
+            sat_am = "AVHRR-AM/AVHRR_NOAA-17/"
+            sat_pm = "AVHRR-PM/AVHRR_NOAA-18/"
+        elif int(date) in range(200707, 200906):
+            sat_am = "AVHRR-AM/AVHRR_METOPA/"
+            sat_pm = "AVHRR-PM/AVHRR_NOAA-18/"
+        elif int(date) in range(200906, 201701):
+            sat_am = "AVHRR-AM/AVHRR_METOPA/"
+            sat_pm = "AVHRR-PM/AVHRR_NOAA-19/"
+        else:
+            logger.error("Data for this date %s is not available", date)
+
+        # Download monthly data from L3C
+        for sat in (sat_am, sat_pm):
+            if sat != "":
+                # monthly data
+                logger.info("Downloading monthly data (L3C) for sat = %s", sat)
+                folder_l3c = base_path_l3c + sat + f"{year}/"
+                wget_options_l3c = wget_options.copy()
+                wget_options_l3c.append(f"--accept={date}*.nc")
+                logger.info(
+                    "Download folder for monthly data (L3C): %s", folder_l3c
+                )
+                try:
+                    downloader.download_file(folder_l3c, wget_options_l3c)
+                except Exception as e:
+                    logger.error(
+                        "Failed to download monthly data from %s: %s",
+                        folder_l3c,
+                        str(e),
+                    )
+
+                # daily data
+                if defined_time or (
+                    not defined_time and (year in range(2003, 2008))
+                ):
+                    logger.info(
+                        "Downloading daily data (L3U) for sat = %s", sat
+                    )
+                    folder_l3u = base_path_l3u + sat + f"{year}/{month:02}"
+                    wget_options_l3u = wget_options.copy()
+                    wget_options_l3u.append(
+                        f"--accept={date}*CLD_MASKTYPE*.nc,"
+                        f"{date}*CLD_PRODUCTS*.nc"
+                    )
+                    logger.info(
+                        "Download folder for daily data (L3U): %s", folder_l3u
+                    )
+                    try:
+                        downloader.download_file(folder_l3u, wget_options_l3u)
+                    except Exception as e:
+                        logger.error(
+                            "Failed to download daily data from %s: %s",
+                            folder_l3u,
+                            str(e),
+                        )
+
+        # Increment the loop_date by one month
+        loop_date += relativedelta.relativedelta(months=1)
