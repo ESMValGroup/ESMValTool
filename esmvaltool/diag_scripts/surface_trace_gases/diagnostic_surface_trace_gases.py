@@ -149,15 +149,13 @@ def plot_trace_gas_mod_obs(
     ax.set_title(plot_dict["Title"], size=24)
     colbar = fig.colorbar(cf_plot, orientation="horizontal", ax=ax)
     colbar.set_ticks(plot_dict["Levels"])
-    colbar.set_ticklabels(plot_dict["tick_labels"])
-    colbar.set_label(plot_dict["cb_label"])
+    colbar.set_ticklabels(plot_dict["tick_labels"], fontsize=14)
+    colbar.set_label(plot_dict["cb_label"], fontsize=14)
     ax.coastlines(color="#525252")
 
     # Statistics on plot
-    # plt.figtext(
     ax.text(
         0.5,
-        # 0.27,
         -0.1,
         (
             f"Global mean {plot_dict['Mean']:.1f} - @Stations mean: mod="
@@ -483,6 +481,10 @@ def trace_gas_timeserie_zonal(
         r"Latitudes 30$^\circ$S - 30$^\circ$N",
         r"Latitudes 90$^\circ$S - 30$^\circ$S",
     ]
+    handles_mean = None
+    labels_mean = None
+    handles_minmax = None
+    labels_minmax = None
 
     # Define latitude ranges to slice the model and obs cubes
     latitude_ranges = {
@@ -638,12 +640,12 @@ def trace_gas_timeserie_zonal(
         if include_global:
             mod_latitude = {
                 "mean": {
-                    "yearly": np.zeros(shape=(len(years))),
-                    "monthly": np.zeros(shape=(len(years) - 1)),
+                    "yearly": np.zeros(shape=len(years)),
+                    "monthly": np.zeros(shape=len(years) - 1),
                 },
                 "std": {
-                    "yearly": np.zeros(shape=(len(years))),
-                    "monthly": np.zeros(shape=(len(years) - 1)),
+                    "yearly": np.zeros(shape=len(years)),
+                    "monthly": np.zeros(shape=len(years) - 1),
                 },
             }
             weights_yearly = iris.analysis.cartography.area_weights(
@@ -769,9 +771,8 @@ def trace_gas_timeserie_zonal(
             fontsize=20,
         )
         plt.tick_params(axis="both", labelsize=16)
-        text = "No. of sites = {}".format(
-            obs.coord("Station index (arbitrary)").shape[0],
-        )
+        text = \
+            f"No. of sites = {obs.coord('Station index (arbitrary)').shape[0]}"
         plt.annotate(text, (0.05, 0.9), xycoords="axes fraction", fontsize=16)
         plt.title(latitude_titles[l_i], fontsize=28)
         # Get legend handles for the first latitude band
@@ -1136,8 +1137,8 @@ def trace_gas_seas_ampl_growth_rate(
     # Model and observations preprocessing
     # Prepare iris cubes for model data
     model_yearly = model_data.aggregated_by("year", iris.analysis.MEAN)
-    model_amplitude = model_data.aggregated_by("year", iris.analysis.MAX)
-    -model_data.aggregated_by("year", iris.analysis.MIN)
+    model_amplitude = (model_data.aggregated_by("year", iris.analysis.MAX)
+                       - model_data.aggregated_by("year", iris.analysis.MIN))
     model_growth = iris.cube.Cube(
         np.diff(model_yearly.data, axis=0),
         long_name=f"{trace_gas}_growth",
@@ -1156,8 +1157,8 @@ def trace_gas_seas_ampl_growth_rate(
     model_growth.attributes = model_data.attributes
     # And observations
     obs_yearly = obs_cube.aggregated_by("year", iris.analysis.MEAN)
-    obs_amplitude = obs_cube.aggregated_by("year", iris.analysis.MAX)
-    -obs_cube.aggregated_by("year", iris.analysis.MIN)
+    obs_amplitude = (obs_cube.aggregated_by("year", iris.analysis.MAX)
+                     - obs_cube.aggregated_by("year", iris.analysis.MIN))
     obs_growth = iris.cube.Cube(
         np.diff(obs_yearly.data, axis=0),
         long_name=f"{trace_gas}_growth",
@@ -1228,14 +1229,14 @@ def trace_gas_seas_ampl_growth_rate(
         if include_global:
             mod_latitude = {
                 "mean": {
-                    "amplitude": np.zeros(shape=(len(years))),
-                    "growth": np.zeros(shape=(len(years) - 1)),
-                    "sensitivity": np.zeros(shape=(len(years) - 1)),
+                    "amplitude": np.zeros(shape=len(years)),
+                    "growth": np.zeros(shape=len(years) - 1),
+                    "sensitivity": np.zeros(shape=len(years) - 1),
                 },
                 "std": {
-                    "amplitude": np.zeros(shape=(len(years))),
-                    "growth": np.zeros(shape=(len(years) - 1)),
-                    "sensitivity": np.zeros(shape=(len(years) - 1)),
+                    "amplitude": np.zeros(shape=len(years)),
+                    "growth": np.zeros(shape=len(years) - 1),
+                    "sensitivity": np.zeros(shape=len(years) - 1),
                 },
             }
             weights_amp = iris.analysis.cartography.area_weights(
@@ -1312,26 +1313,26 @@ def trace_gas_seas_ampl_growth_rate(
         noaa_gml_lons = obs_yearly_ls.coord("longitude").points.tolist()
         valid_obs = {
             "mean": {
-                "amplitude": np.zeros(shape=(len(years))),
-                "growth": np.zeros(shape=(len(years) - 1)),
-                "sensitivity": np.zeros(shape=(len(years) - 1)),
+                "amplitude": np.zeros(shape=len(years)),
+                "growth": np.zeros(shape=len(years) - 1),
+                "sensitivity": np.zeros(shape=len(years) - 1),
             },
             "std": {
-                "amplitude": np.zeros(shape=(len(years))),
-                "growth": np.zeros(shape=(len(years) - 1)),
-                "sensitivity": np.zeros(shape=(len(years) - 1)),
+                "amplitude": np.zeros(shape=len(years)),
+                "growth": np.zeros(shape=len(years) - 1),
+                "sensitivity": np.zeros(shape=len(years) - 1),
             },
         }
         valid_md = {
             "mean": {
-                "amplitude": np.zeros(shape=(len(years))),
-                "growth": np.zeros(shape=(len(years) - 1)),
-                "sensitivity": np.zeros(shape=(len(years) - 1)),
+                "amplitude": np.zeros(shape=len(years)),
+                "growth": np.zeros(shape=len(years) - 1),
+                "sensitivity": np.zeros(shape=len(years) - 1),
             },
             "std": {
-                "amplitude": np.zeros(shape=(len(years))),
-                "growth": np.zeros(shape=(len(years) - 1)),
-                "sensitivity": np.zeros(shape=(len(years) - 1)),
+                "amplitude": np.zeros(shape=len(years)),
+                "growth": np.zeros(shape=len(years) - 1),
+                "sensitivity": np.zeros(shape=len(years) - 1),
             },
         }
         for i, y in enumerate(years):
@@ -1648,9 +1649,11 @@ def preprocess_obs_dataset(obs_dataset, config):
 
     Parameters
     ----------
-    obs_dataset : ESMValTool dictionary. Holds meta data for the observational
+    obs_dataset : Dictionary
+        ESMValTool dictionary. Holds meta data for the observational
         trace gas dataset.
-    config : ESMValTool recipe configuration.
+    config : Dictionary
+        ESMValTool recipe configuration.
 
     Returns
     -------
@@ -1851,8 +1854,7 @@ def main(config):
             # Get activity, mip, exp, variable , time range
             attrs = datasets_preproc[model_dataset]["attributes"]
             plot_file_prefix = (
-                "Multi_model_mean"
-                + "_"
+                "Multi_model_mean_"
                 + attrs["activity"]
                 + "_"
                 + attrs["mip"]

@@ -58,14 +58,13 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
     icube : Iris cube
     pt_lat, pt_lon : Float or list/array of floats. Latitude and longitude
                      coordinates of desired points.
-    args:
-        height  : Float or list/array of floats. Altitude (above geoid) of
-                  point. Initialized to None.
-        level   : Integer . Model level or pseudo level or tile number.
-                  Initialized to None, meaning that all available levels in
-                  the cube are used.
-        nearest : Boolean. Specify whether to use 'nearest neighbour', instead
-                  of 'linear' method while extracting data. Default is False.
+    height  : Float or list/array of floats. Altitude (above geoid) of
+        point. Initialized to None.
+    level   : Integer . Model level or pseudo level or tile number.
+        Initialized to None, meaning that all available levels in
+        the cube are used.
+    nearest : Boolean. Specify whether to use 'nearest neighbour', instead
+        of 'linear' method while extracting data. Default is False.
 
     Returns
     -------
