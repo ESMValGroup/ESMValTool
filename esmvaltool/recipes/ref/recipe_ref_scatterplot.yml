@@ -1,0 +1,276 @@
+# ESMValTool
+---
+documentation:
+  title: Model evaluation with focus on clouds.
+  description: >
+    Plot 2D histograms using the Seaborn diagnostic in ESMValTool.
+  authors:
+    - bock_lisa
+    - lauer_axel
+    - andela_bouwe
+  maintainer:
+    - bock_lisa
+
+timerange_for_data: &time_period
+  timerange: '2007/2011'  # can be specified, this is just an example
+regridding: &regridding
+  regrid:
+    target_grid: 1x1
+    scheme:
+      reference: esmf_regrid.schemes:ESMFAreaWeighted
+levels_for_3d_vars: &extracting_levels
+  extract_levels:
+    levels: {cmor_table: CMIP6, coordinate: plev27}
+    coordinate: air_pressure
+    scheme: linear
+
+
+preprocessors:
+  common_grid_clt:
+    <<: *regridding
+    custom_order: true
+    mask_outside_range:
+      minimum: 1.
+      maximum: 100.
+  common_grid_clivi_clwvi:
+    custom_order: true
+    <<: *regridding
+    mask_outside_range:
+      minimum: 0.01
+      maximum: 0.2
+  common_grid_lwcre:
+    custom_order: true
+    <<: *regridding
+    mask_outside_range:
+      minimum: 1.
+      maximum: 100.
+  common_grid_swcre:
+    custom_order: true
+    <<: *regridding
+    mask_outside_range:
+      minimum: -200.
+      maximum: -1.
+  common_grid_pr:
+    custom_order: true
+    <<: *regridding
+    convert_units:
+      units: mm day-1
+    mask_outside_range:
+      minimum: 0.1
+      maximum: 4
+  common_grid_levels_ta:
+    custom_order: true
+    <<: *extracting_levels
+    <<: *regridding
+    mask_outside_range:
+      minimum: 200
+      maximum: 280
+  common_grid_levels_cli:
+    custom_order: true
+    <<: *extracting_levels
+    <<: *regridding
+    convert_units:
+      units: g kg-1
+    mask_outside_range:
+      minimum: 0.0001
+      maximum: 0.005
+
+
+diagnostics:
+  plot_joint_clt_swcre_model:
+    description: Scatterplot clt vs swcre.
+    variables:
+      clt: &var_clt
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1
+        preprocessor: common_grid_clt
+        <<: *time_period
+      swcre: &var_swcre
+        <<: *var_clt
+        preprocessor: common_grid_swcre
+        derive: true
+        force_derivation: false
+    additional_datasets:
+      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1,
+         alias: CESM2}
+    scripts:
+      plot: &plot_settings_jointplot_clt_swcre
+        script: seaborn_jointplot_histogram.py
+        x: clt
+        y: swcre
+        bins: 20
+        joint_kws:
+          vmax: 0.015
+          cmap: YlGnBu
+        cbar: true
+        cbar_kws:
+          extend: 'max'
+        marginal_kws:
+          color: darkturquoise
+        seaborn_settings:
+          style: ticks
+          rc:
+            axes.titlepad: 15.0
+        suptitle: 'CESM2'
+        plot_filename: 'jointplot_clt_swcre_CESM2'
+
+  plot_joint_clt_swcre_ref:
+    description: Scatterplot clt vs swcre.
+    variables:
+      clt:
+        <<: *var_clt
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD,
+             start_year: 2001, end_year: 2016}
+      swcre:
+        <<: *var_swcre
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat,
+             version: Ed4.2, tier: 2, alias: CERES-EBAF,
+             start_year: 2001, end_year: 2016}
+    scripts:
+      plot:
+        <<: *plot_settings_jointplot_clt_swcre
+        suptitle: 'ESACCI-CLOUD / CERES-EBAF'
+        plot_filename: 'jointplot_clt_swcre_ESACCI_CLOUD_CERES-EBAF'
+
+  plot_joint_clwvi_pr_ref:
+    description: Scatterplot clwvi vs pr.
+    variables:
+      clwvi:
+        <<: *var_clt
+        preprocessor: common_grid_clivi_clwvi
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD,
+             start_year: 1992, end_year: 2016}
+      pr:
+        <<: *var_clt
+        preprocessor: common_grid_pr
+        additional_datasets:
+          - {dataset: GPCP-SG, project: obs4MIPs, level: L3,
+             version: v2.3, tier: 1, alias: GPCP-SG,
+             start_year: 1992, end_year: 2016}
+    scripts:
+      plot: &plot_settings_jointplot_clwvi_pr
+        <<: *plot_settings_jointplot_clt_swcre
+        x: clwvi
+        y: pr
+        joint_kws:
+          vmax: 0.03
+          cmap: YlGnBu
+        suptitle: 'ESACCI-CLOUD / GPCP-SG'
+        plot_filename: 'jointplot_clwvi_pr_ESACCI-CLOUD_GPCP-SG'
+
+  plot_joint_clwvi_pr_model:
+    description: Scatterplot clwvi vs pr.
+    variables:
+      clwvi:
+        <<: *var_clt
+        preprocessor: common_grid_clivi_clwvi
+      pr:
+        <<: *var_clt
+        preprocessor: common_grid_pr
+    additional_datasets:
+      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1,
+         alias: CESM2}
+    scripts:
+      plot:
+        <<: *plot_settings_jointplot_clwvi_pr
+        suptitle: 'CESM2'
+        plot_filename: 'jointplot_clwvi_pr_CESM2'
+
+  plot_joint_clivi_lwcre_ref:
+    description: Scatterplot clt vs lwcre.
+    variables:
+      clivi:
+        <<: *var_clt
+        preprocessor: common_grid_clivi_clwvi
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
+             version: AVHRR-AMPM-fv3.0, tier: 2, alias: ESACCI-CLOUD,
+             start_year: 2001, end_year: 2016}
+      lwcre:
+        <<: *var_swcre
+        preprocessor: common_grid_lwcre
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat,
+             version: Ed4.2, tier: 2, alias: CERES-EBAF,
+             start_year: 2001, end_year: 2016}
+    scripts:
+      plot: &plot_settings_jointplot_clivi_lwcre
+        <<: *plot_settings_jointplot_clt_swcre
+        x: clivi
+        y: lwcre
+        joint_kws:
+          vmax: 0.03
+          cmap: YlGnBu
+        suptitle: 'ESACCI-CLOUD / CERES-EBAF'
+        plot_filename: 'jointplot_clivi_lwcre_ESACCI-CLOUD_CERES-EBAF'
+
+  plot_joint_clivi_lwcre_model:
+    description: Scatterplot clt vs lwcre.
+    variables:
+      clivi:
+        <<: *var_clt
+        preprocessor: common_grid_clivi_clwvi
+      lwcre:
+        <<: *var_swcre
+        preprocessor: common_grid_lwcre
+    additional_datasets:
+      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1,
+         alias: CESM2}
+    scripts:
+      plot:
+        <<: *plot_settings_jointplot_clivi_lwcre
+        suptitle: 'CESM2'
+        plot_filename: 'jointplot_clivi_lwcre_CESM2'
+
+
+  plot_joint_cli_ta_ref:
+    description: Scatterplot clt vs lwcre.
+    variables:
+      cli:
+        <<: *var_clt
+        preprocessor: common_grid_levels_cli
+        additional_datasets:
+          - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat,
+             version: 1-00, tier: 3, alias: CALIPSO-ICECLOUD,
+             start_year: 2007, end_year: 2015}
+      ta:
+        <<: *var_clt
+        preprocessor: common_grid_levels_ta
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly,
+             version: v1, tier: 3, alias: ERA5,
+             start_year: 2007, end_year: 2015}
+    scripts:
+      plot: &plot_settings_jointplot_cli_ta
+        <<: *plot_settings_jointplot_clt_swcre
+        x: cli
+        y: ta
+        joint_kws:
+          vmax: 0.02
+          cmap: YlGnBu
+        suptitle: 'CALIPSO-ICECLOUD / ERA5'
+        plot_filename: 'jointplot_cli_ta_CALIPSO-ICECLOUD_ERA5'
+
+  plot_joint_cli_ta_model:
+    description: Scatterplot clt vs lwcre.
+    variables:
+      cli:
+        <<: *var_clt
+        preprocessor: common_grid_levels_cli
+      ta:
+        <<: *var_clt
+        preprocessor: common_grid_levels_ta
+    additional_datasets:
+      - {dataset: CESM2, project: CMIP6, grid: gn, ensemble: r1i1p1f1,
+         alias: CESM2}
+    scripts:
+      plot:
+        <<: *plot_settings_jointplot_cli_ta
+        suptitle: 'CESM2'
+        plot_filename: 'jointplot_cli_ta_CESM2'

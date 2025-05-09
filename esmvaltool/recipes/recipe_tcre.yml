@@ -1,0 +1,95 @@
+# ESMValTool
+# recipe_tcre.yml
+---
+documentation:
+  title: >
+    Transient Climate Response to Cumulative CO2 Emissions (TCRE).
+  description: >
+    Calculate Transient Climate Response to Cumulative CO2 Emissions (TCRE).
+  authors:
+    - schlund_manuel
+  maintainer:
+    - schlund_manuel
+  references:
+    - sanderson24gmd  # https://doi.org/10.5194/egusphere-2024-3356
+  domains:
+    - global
+  realms:
+    - atmos
+  themes:
+    - carbon
+    - bgphys
+
+
+datasets_target_exp: &datasets_target_exp
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn, timerange: 1850/1914}
+
+# Note:
+# Time ranges in the control experiment are defined by the branch_time
+# attribute of the target (child) experiment
+datasets_control_exp: &datasets_control_exp
+  - {project: CMIP6, dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn, timerange: 1850/1914}
+
+
+preprocessors:
+  global_annual_mean_anomaly:
+    custom_order: true
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+
+  global_cumulative_sum:
+    custom_order: true
+    area_statistics:
+      operator: sum
+    annual_statistics:
+      operator: mean
+    cumulative_sum:
+      coord: time
+      weights: true
+    convert_units:
+      units: Pg
+
+
+diagnostics:
+  tcre:
+    variables:
+      tas_esm-1pctCO2:
+        short_name: tas
+        mip: Amon
+        exp: esm-1pctCO2
+        preprocessor: global_annual_mean_anomaly
+        additional_datasets: *datasets_target_exp
+      tas_esm-piControl:
+        short_name: tas
+        mip: Amon
+        exp: esm-piControl
+        preprocessor: global_annual_mean_anomaly
+        additional_datasets: *datasets_control_exp
+      fco2antt:
+        mip: Amon
+        exp: esm-1pctCO2
+        preprocessor: global_cumulative_sum
+        additional_datasets: *datasets_target_exp
+    scripts:
+      calculate_tcre:
+        script: climate_metrics/tcre.py
+        calc_tcre_period: [45, 65]
+        exp_target: esm-1pctCO2
+        pyplot_kwargs:
+          title: Transient Climate Response to Cumulative CO2 Emissions (TCRE)
+          xlabel: Cumulative CO$_2$ emissions [PgC]
+          ylabel: Global mean surface air temperature change [K]
+
+  barplot:
+    description: Create barplot of TCRE.
+    scripts:
+      barplot:
+        script: climate_metrics/create_barplot.py
+        ancestors: [tcre/calculate_tcre]
+        patterns: ['tcre.nc']
+        seaborn_settings:
+          style: ticks
+        value_labels: true
+        y_range: [0.0, 3.0]
