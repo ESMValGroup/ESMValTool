@@ -62,8 +62,7 @@ def obtain_reference(data_group: list):
 
     ref_fnames = group_metadata(data_group, "filename")
 
-    mins = list()
-    maxs = list()
+    maxs, mins = [], []
 
     for dataset_f in ref_fnames.keys():
         dataset_n = ref_fnames[dataset_f][0]["dataset"]
@@ -128,8 +127,7 @@ def plot_timeseries(
     for dataset in data_dic.keys():
         fig_ts, ax_ts = plt.subplots(nrows=1, ncols=1)
 
-        model_var_data = list()
-        weights = list()
+        model_var_data, weights = [], []
 
         for i in range(0, len(data_dic[dataset])):
             var_cb = data_dic[dataset][i]

@@ -232,6 +232,7 @@ def plot_stdevs(data_dic, reference_dic, cfg):
 
 
 def main(cfg):
+    """Initiates diagnostic"""
     input_data = cfg["input_data"]
 
     groups = group_metadata(input_data.values(), "variable_group", sort=True)
