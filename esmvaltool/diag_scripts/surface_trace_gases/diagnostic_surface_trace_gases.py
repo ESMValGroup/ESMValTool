@@ -75,24 +75,6 @@ def weighted_std_dev(cube, dim, weights=None):
         - cube.collapsed(dim, iris.analysis.MEAN, weights=weights)**2)**0.5
 
 
-def get_provenance_record(filenames):
-    """Return a provenance record describing the metric.
-
-    Parameters
-    ----------
-    filenames : List of strings
-        The filenames containing the data used to create the metric.
-
-    Returns
-    -------
-    dictionary
-        The provenance record describing the metric.
-    """
-    return {
-        "ancestors": filenames,
-    }
-
-
 def plot_trace_gas_mod_obs(
         fig, ax, md_data, obs_data, trace_gas_obs_cube, plot_dict
         ):
@@ -155,7 +137,7 @@ def plot_trace_gas_mod_obs(
             markeredgecolor="k",
             markeredgewidth=2,
             markersize=9,
-            transform=ccrs.Geodetic()
+            transform=ccrs.Geodetic(),
         )
 
     # Decorate the plot
@@ -466,7 +448,8 @@ def trace_gas_timeserie_zonal(
     obs_slices = {}
     for key, (lat_min, lat_max) in latitude_ranges.items():
         constraint = iris.Constraint(
-            latitude=lambda cell: lat_min <= cell < lat_max
+            latitude=lambda cell, lat_min=lat_min, lat_max=lat_max:
+            lat_min <= cell < lat_max,
         )
         model_slices[key] = model_data.extract(constraint)
         obs_slices[key] = obs_cube.extract(constraint)
@@ -655,7 +638,7 @@ def trace_gas_timeserie_zonal(
         obs_ts_std = np.array([
             np.std(trace_gas_at_station_y[str(y)]) for y in years
         ])
-        plot_ts = plt.subplot(gs[l_i, 0])
+        _ = plt.subplot(gs[l_i, 0])
         plt.fill_between(
             years,
             model_ts_mean - model_ts_std,
@@ -715,7 +698,7 @@ def trace_gas_timeserie_zonal(
 
         # Plot central-left column = scatter plot of model-obs
         linreg = scipy.stats.linregress(valid_obs, valid_md)
-        plot_scatter = plt.subplot(gs[l_i, 1])
+        _ = plt.subplot(gs[l_i, 1])
         min_axes = np.min(valid_obs + valid_md) - 2
         max_axes = np.max(valid_obs + valid_md) + 2
         plt.scatter(valid_obs, valid_md, color="black")
@@ -775,7 +758,7 @@ def trace_gas_timeserie_zonal(
         model_ts_std = model_seas_anom_std
         obs_ts_mean = obs_seas_anom_mean
         obs_ts_std = obs_seas_anom_std
-        plot_ts = plt.subplot(gs[l_i, 2])
+        _ = plt.subplot(gs[l_i, 2])
         plt.fill_between(
             np.arange(0, 12, 1),
             model_seas_anom_mean - model_seas_anom_std,
@@ -845,7 +828,7 @@ def trace_gas_timeserie_zonal(
         seas_min_model[seas_min_model < month_offset] += 12
         seas_max_obs[seas_max_obs < month_offset] += 12
         seas_min_obs[seas_min_obs < month_offset] += 12
-        plot_timing = plt.subplot(gs[l_i, 3])
+        _ = plt.subplot(gs[l_i, 3])
         plt.plot(
             years, seas_max_model, linestyle="solid", color=COLORS_MARKERS[0],
             marker=MARKERS[0], markersize=10, alpha=0.7,
@@ -1011,7 +994,9 @@ def trace_gas_seas_ampl_growth_rate(
     obs_slices = {}
     for key, (lat_min, lat_max) in latitude_ranges.items():
         constraint = iris.Constraint(
-            latitude=lambda cell: lat_min <= cell < lat_max)
+            latitude=lambda cell, lat_min=lat_min, lat_max=lat_max:
+            lat_min <= cell < lat_max,
+        )
         model_slices[key] = {}
         obs_slices[key] = {}
         # Yearly
@@ -1035,7 +1020,7 @@ def trace_gas_seas_ampl_growth_rate(
         hspace=0.35, wspace=0.25,
     )
     # Loop over latitude ranges
-    for l, lat_range in enumerate(latitude_ranges.keys()):
+    for l_i, lat_range in enumerate(latitude_ranges.keys()):
         # Select relevant latitude range
         obs_yearly_ls = obs_slices[lat_range]["yearly"]
         model_yearly_ls = model_slices[lat_range]["yearly"]
@@ -1067,7 +1052,7 @@ def trace_gas_seas_ampl_growth_rate(
             mod_latitude["std"]["amplitude"] = weighted_std_dev(
                 cube=model_amplitude_ls,
                 dim=["latitude", "longitude"],
-                weights=weights_amp
+                weights=weights_amp,
             ).data
             tmp_relative_growth = iris.cube.Cube(
                 100 * model_growth_ls.data / model_yearly_ls.data[1:, ...],
@@ -1209,12 +1194,12 @@ def trace_gas_seas_ampl_growth_rate(
                 valid_md["std"]["sensitivity"][i - 1] = np.std(v_mod_s)
         # Plots
         # Plot left column = amplitude time series
-        plot_amp = plt.subplot(gs[l, 0])
+        _ = plt.subplot(gs[l_i, 0])
         plt.plot(
             years, valid_md["mean"]["amplitude"],
             color=COLORS_MARKERS[0], linestyle="solid",
             marker=MARKERS[0], markersize=10,
-            label=f"{model_id} @stations: Mean +/- 1 std" if l == 0 else None,
+            label=f"{model_id} @stations: Mean +/- 1 std" if l_i == 0 else None,
         )
         plt.fill_between(
             years,
@@ -1226,7 +1211,7 @@ def trace_gas_seas_ampl_growth_rate(
             years, valid_obs["mean"]["amplitude"],
             color=COLORS_MARKERS[1], linestyle="solid",
             marker=MARKERS[1], markersize=10,
-            label="Observations: Mean +/- 1 std" if l == 0 else None,
+            label="Observations: Mean +/- 1 std" if l_i == 0 else None,
         )
         plt.fill_between(
             years,
@@ -1239,7 +1224,7 @@ def trace_gas_seas_ampl_growth_rate(
                 years, mod_latitude["mean"]["amplitude"],
                 color=COLORS_MARKERS[2], linestyle="solid",
                 marker=MARKERS[2], markersize=10,
-                label=f"{model_id}: Mean +/- 1 std" if l == 0 else None,
+                label=f"{model_id}: Mean +/- 1 std" if l_i == 0 else None,
             )
             plt.fill_between(
                 years,
@@ -1266,9 +1251,9 @@ def trace_gas_seas_ampl_growth_rate(
             obs_yearly_ls.coord("Station index (arbitrary)").shape[0],
         )
         plt.annotate(text, (0.05, 0.9), xycoords="axes fraction", fontsize=16)
-        plt.title(latitude_titles[l], fontsize=28)
+        plt.title(latitude_titles[l_i], fontsize=28)
         # Plot center column = relative growth
-        plot_grow = plt.subplot(gs[l, 1])
+        _ = plt.subplot(gs[l_i, 1])
         plt.plot(
             years[1:], valid_md["mean"]["growth"],
             color=COLORS_MARKERS[0], linestyle="solid",
@@ -1319,9 +1304,9 @@ def trace_gas_seas_ampl_growth_rate(
             obs_yearly_ls.coord("Station index (arbitrary)").shape[0],
         )
         plt.annotate(text, (0.05, 0.9), xycoords="axes fraction", fontsize=16)
-        plt.title(latitude_titles[l], fontsize=28)
+        plt.title(latitude_titles[l_i], fontsize=28)
         # Plot sensitivity between seasonal amplitude and growth
-        plot_sens = plt.subplot(gs[l, 2])
+        _ = plt.subplot(gs[l_i, 2])
         plt.plot(
             years[1:], valid_md["mean"]["sensitivity"],
             color=COLORS_MARKERS[0], linestyle="solid",
@@ -1373,7 +1358,7 @@ def trace_gas_seas_ampl_growth_rate(
             obs_yearly_ls.coord("Station index (arbitrary)").shape[0],
         )
         plt.annotate(text, (0.05, 0.9), xycoords="axes fraction", fontsize=16)
-        plt.title(latitude_titles[l], fontsize=28)
+        plt.title(latitude_titles[l_i], fontsize=28)
 
     figure.legend(loc="upper center", bbox_to_anchor=[0.5, 0.08],
                   ncol=3, fontsize=20, borderaxespad=0.01)
@@ -1479,10 +1464,9 @@ def preprocess_obs_dataset(obs_dataset, config):
             ),
         )
     valid_stations_indices = sorted(
-        list(set.intersection(*valid_station_indices_for_seasons))
-    )
+        list(set.intersection(*valid_station_indices_for_seasons)))
     valid_stations = obs_cube.coord(
-        "Station index (arbitrary)"
+        "Station index (arbitrary)",
     ).points[valid_stations_indices]
 
     # Only keep stations for which these conditions are met
@@ -1541,7 +1525,6 @@ def main(config):
         for attributes in group:
             logger.info(attributes["filename"])
             input_file = attributes["filename"]
-            provenance_record = get_provenance_record(input_file)
             cube = iris.load_cube(input_file)
 
             # Add bounds for lat and lon if not present
@@ -1659,7 +1642,6 @@ def main(config):
             for attributes in group:
                 logger.info(attributes["filename"])
                 input_file = attributes["filename"]
-                provenance_record = get_provenance_record(input_file)
                 cube = iris.load_cube(input_file)
 
                 # Add bounds for lat and lon if not present
