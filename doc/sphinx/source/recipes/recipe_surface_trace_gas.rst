@@ -17,29 +17,27 @@ Recipes are stored in esmvaltool/recipes/
 
 Diagnostics are stored in esmvaltool/diag_scripts/surface_trace_gases/
 
-    * diagnostic_surface_trace_gases.py : Plots the different surface trace gas
-     evaluations.
-    * utils_surface_trace_gases.py: Utility functions used for the surface
-     trace gas evaluation routines.
+    * diagnostic_surface_trace_gases.py : Plots the different surface trace gas evaluations.
+    * utils_surface_trace_gases.py: Utility functions used for the surface trace gas evaluation routines.
 
 This diagnostic allows to produce 3 different types of analysis, typically
 comparing station data and model data. In the case of zonal plots, the latitude
 ranges considered are 60N - 90N, 30N - 60N, 30S - 30N, 90S - 30S.
 
     * Seasonal maps of the trace gas surface concentration overlaid with
-     station data points. A complimentary scatter plot compares the surface
-     concentration at the station locations with the model data extracted at
-     these same locations for each season.
+      station data points. A complimentary scatter plot compares the surface
+      concentration at the station locations with the model data extracted at
+      these same locations for each season.
     * Zonal plots of surface concentration time series and seasonal cycle.
-     The left column includes monthly surface concentration time series.
-     The center-left column includes yearly surface concentration scatter plot.
-     The center-right column includes multi-annual monthly anomaly.
-     The right column includes yearly min/max months time series.
-     The plot is inspired from Figure 8 of Folberth et al. (2018).
+      The left column includes monthly surface concentration time series.
+      The center-left column includes yearly surface concentration scatter plot.
+      The center-right column includes multi-annual monthly anomaly.
+      The right column includes yearly min/max months time series.
+      The plot is inspired from Figure 8 of Folberth et al. (2018).
     * Zonal plots of surface concentration amplitude and growth.
-     The left column includes yearly concentration amplitude time series.
-     The center column includes yearly concentration growth time series.
-     The right column includes yearly sensitivity of amplitude/growth.
+      The left column includes yearly concentration amplitude time series.
+      The center column includes yearly concentration growth time series.
+      The right column includes yearly sensitivity of amplitude/growth.
 
 Each analysis can be turned on or off using the argument *plots* in the recipe.
 There is also the possibility for the two time series analysis plots to include
@@ -54,7 +52,7 @@ User settings in recipe
 #. Preprocessor
 
    * ``extract_surface_from_atm`` : Extract surface from the input 3D
-    atmospheric variable based on the surface pressure *ps*.
+     atmospheric variable based on the surface pressure *ps*.
 
 #. Script diagnostic_surface_trace_gases.py
 
@@ -101,13 +99,13 @@ The trace gas depends on the recipe used and can be one of the following:
 * *co2* (atmos, monthly mean, height longitude latitude time)
 * *n2o* (atmos, monthly mean, height longitude latitude time)
 * *ps* (atmos, monthly mean, longitude latitude time) as a supplementary
- variable for the `extract_surface_from_atm` preprocessor.
+  variable for the `extract_surface_from_atm` preprocessor.
 
 Observations and reformat scripts
 ---------------------------------
 
 * The NOAA GML Surface Flask data is downloaded from the NOAA GML website
- using the downloaders:
+  using the downloaders:
 
   .. code-block:: yaml
 
