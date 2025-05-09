@@ -68,17 +68,11 @@ def weighted_std_dev(cube, dim, weights=None):
     Collapsed weighted standard deviation cube over the dimension(s) dim.
     """
     if weights is None:
-        return (cube.collapsed(dim, iris.analysis.RMS)**2 -
-                cube.collapsed(dim, iris.analysis.MEAN)**2)**0.5
+        return (cube.collapsed(dim, iris.analysis.RMS)**2
+                - cube.collapsed(dim, iris.analysis.MEAN)**2)**0.5
     return (
-        cube.collapsed(
-            dim,
-            iris.analysis.RMS,
-            weights=weights)**2 -
-        cube.collapsed(
-            dim,
-            iris.analysis.MEAN,
-            weights=weights)**2)**0.5
+        cube.collapsed(dim, iris.analysis.RMS, weights=weights)**2
+        - cube.collapsed(dim, iris.analysis.MEAN, weights=weights)**2)**0.5
 
 
 def get_provenance_record(filenames):
@@ -101,7 +95,7 @@ def get_provenance_record(filenames):
 
 def plot_trace_gas_mod_obs(
         fig, ax, md_data, obs_data, trace_gas_obs_cube, plot_dict
-    ):
+        ):
     """Plot trace gas surface concentration.
 
     The function plots a contour for the model data overlaid
@@ -178,9 +172,9 @@ def plot_trace_gas_mod_obs(
         0.5,
         # 0.27,
         -0.1,
-        (f"Global mean {plot_dict["Mean"]:.1f} - @Stations mean: mod="
-         f"{plot_dict["Stn_mn_md"]:.1f} & obs={plot_dict["Stn_mn_obs"]:.1f}"
-         f" (RMSE={plot_dict["RMS"]:.1f})"),
+        (f"Global mean {plot_dict['Mean']:.1f} - @Stations mean: mod="
+         f"{plot_dict['Stn_mn_md']:.1f} & obs={plot_dict['Stn_mn_obs']:.1f}"
+         f" (RMSE={plot_dict['RMS']:.1f})"),
         ha="center",
         va="center",
         size=14,
@@ -272,10 +266,10 @@ def trace_gas_maps(
 
     # If all seasons are plotted on the same plot:
     fig_cf, ax_cf = plt.subplots(
-            nrows=2, ncols=2,
-            figsize=(22, 16), dpi=300,
-            subplot_kw={"projection": ccrs.Robinson()}
-        )
+        nrows=2, ncols=2,
+        figsize=(22, 16), dpi=300,
+        subplot_kw={"projection": ccrs.Robinson()},
+    )
 
     # Loop over seasons
     for s, season in enumerate(trace_gas_obs_cube.slices_over("clim_season")):
@@ -338,9 +332,10 @@ def trace_gas_maps(
 
         # Plot contours overlaid with obs for this run and season
         n_stn = str(len(valid_obs))
-        title = (f"\nSurface {trace_gas.upper()} concentration " + timerange +
-                 "\n" + model_id + ", " + clim_seas[model_sn] +
-                 ", N stations=" + n_stn)
+        title = (
+            f"\nSurface {trace_gas.upper()} concentration " + timerange
+            + "\n" + model_id + ", " + clim_seas[model_sn]
+            + ", N stations=" + n_stn)
 
         # Plot dictionary
         plot_dict = {
@@ -449,15 +444,15 @@ def trace_gas_timeserie_zonal(
     widths = [1.0, 0.85, 1.0, 1.1]
     heights = [1.0, 1.0, 1.0, 1.0]
     gs = gridspec.GridSpec(
-        4, 4, left = 0.05, right = 0.95,
+        4, 4, left=0.05, right=0.95,
         width_ratios=widths, height_ratios=heights,
         hspace=0.35, wspace=0.25,
     )
     latitude_titles = [
-        "Latitudes 60$^\circ$N - 90$^\circ$N",
-        "Latitudes 30$^\circ$N - 60$^\circ$N",
-        "Latitudes 30$^\circ$S - 30$^\circ$N",
-        "Latitudes 90$^\circ$S - 30$^\circ$S",
+        r"Latitudes 60$^\circ$N - 90$^\circ$N",
+        r"Latitudes 30$^\circ$N - 60$^\circ$N",
+        r"Latitudes 30$^\circ$S - 30$^\circ$N",
+        r"Latitudes 90$^\circ$S - 30$^\circ$S",
     ]
 
     # Define latitude ranges to slice the model and obs cubes
@@ -476,7 +471,7 @@ def trace_gas_timeserie_zonal(
         model_slices[key] = model_data.extract(constraint)
         obs_slices[key] = obs_cube.extract(constraint)
 
-    for l, lat_range in enumerate(latitude_ranges.keys()):
+    for l_i, lat_range in enumerate(latitude_ranges.keys()):
         # Select relevant latitude range
         obs = obs_slices[lat_range]
         mod = model_slices[lat_range]
@@ -604,7 +599,7 @@ def trace_gas_timeserie_zonal(
                 months_ts[i]] = np.array(v_obs)
         # Compute aggregated values for the entire latitude range
         if include_global:
-            mod_latitude ={
+            mod_latitude = {
                 "mean": {
                     "yearly": np.zeros(shape=(len(years))),
                     "monthly": np.zeros(shape=(len(years) - 1)),
@@ -660,7 +655,7 @@ def trace_gas_timeserie_zonal(
         obs_ts_std = np.array([
             np.std(trace_gas_at_station_y[str(y)]) for y in years
         ])
-        plot_ts = plt.subplot(gs[l, 0])
+        plot_ts = plt.subplot(gs[l_i, 0])
         plt.fill_between(
             years,
             model_ts_mean - model_ts_std,
@@ -683,24 +678,24 @@ def trace_gas_timeserie_zonal(
         plt.plot(
             years, model_ts_mean, linestyle="solid",
             color=COLORS_MARKERS[0], marker=MARKERS[0], markersize=10,
-            label=f"{model_id} @stations: Mean +/- 1 std" if l == 0 else None,
+            label=f"{model_id} @stations: Mean +/- 1 std" if l_i == 0 else None,
         )
         plt.plot(
-            years, obs_ts_mean,  linestyle="solid",
+            years, obs_ts_mean, linestyle="solid",
             color=COLORS_MARKERS[1], marker=MARKERS[1], markersize=10,
-            label="Observations: Mean +/- 1 std" if l == 0 else None,
+            label="Observations: Mean +/- 1 std" if l_i == 0 else None,
         )
         if include_global:
             plt.plot(
-                years, mod_latitude["mean"]["yearly"],  linestyle="solid",
+                years, mod_latitude["mean"]["yearly"], linestyle="solid",
                 color=COLORS_MARKERS[2], marker=MARKERS[2], markersize=10,
-                label="{model_id}: Mean +/- 1 std" if l == 0 else None,
+                label="{model_id}: Mean +/- 1 std" if l_i == 0 else None,
             )
         plt.xticks(
             np.arange(
                 years[0], years[-1] + 1,
                 1 if years[-1] - years[0] < 10 else 4,
-        ))
+            ))
         plt.xlabel("Year", fontsize=20)
         plt.ylabel(
             f"{trace_gas.upper()} annual mean "
@@ -712,22 +707,22 @@ def trace_gas_timeserie_zonal(
             obs.coord("Station index (arbitrary)").shape[0],
         )
         plt.annotate(text, (0.05, 0.9), xycoords="axes fraction", fontsize=16)
-        plt.title(latitude_titles[l], fontsize=28)
+        plt.title(latitude_titles[l_i], fontsize=28)
         # Get legend handles for the first latitude band
-        if l == 0:
+        if l_i == 0:
             axes = plt.gcf().axes
             handles_mean, labels_mean = axes[0].get_legend_handles_labels()
 
         # Plot central-left column = scatter plot of model-obs
         linreg = scipy.stats.linregress(valid_obs, valid_md)
-        plot_scatter = plt.subplot(gs[l, 1])
+        plot_scatter = plt.subplot(gs[l_i, 1])
         min_axes = np.min(valid_obs + valid_md) - 2
         max_axes = np.max(valid_obs + valid_md) + 2
         plt.scatter(valid_obs, valid_md, color="black")
         plt.axline([0, linreg.intercept], slope=linreg.slope,
                    linestyle="dashed", color="gray")
-        plt.plot(np.arange(min_axes-1, max_axes+1, 1),
-                 np.arange(min_axes-1, max_axes+1, 1), color="black")
+        plt.plot(np.arange(min_axes - 1, max_axes + 1, 1),
+                 np.arange(min_axes - 1, max_axes + 1, 1), color="black")
         plt.xlim([min_axes, max_axes])
         plt.ylim([min_axes, max_axes])
         plt.xlabel(
@@ -736,7 +731,7 @@ def trace_gas_timeserie_zonal(
             fontsize=20,
         )
         plt.ylabel(
-            model_id + f" {trace_gas.upper()} " +
+            f"{model_id} {trace_gas.upper()} "
             f"[{model_data.attributes['unit']}]",
             fontsize=20,
         )
@@ -744,7 +739,7 @@ def trace_gas_timeserie_zonal(
         plt.tick_params(axis="both", labelsize=16)
         text = f"$r^{2}$ = {linreg.rvalue**2:.2f}"
         plt.annotate(text, (0.05, 0.9), xycoords="axes fraction", fontsize=16)
-        plt.title(latitude_titles[l], fontsize=28)
+        plt.title(latitude_titles[l_i], fontsize=28)
 
         # Plot center-right column
         # multi-annual mean seasonal variation
@@ -758,21 +753,21 @@ def trace_gas_timeserie_zonal(
         model_seas_anom_std = np.array([
             np.std(
                 np.concatenate(
-                    [trace_gas_at_model_anom[str(y)][m] for y in years]
+                    [trace_gas_at_model_anom[str(y)][m] for y in years],
                 ),
             ) for m in months
         ])
         obs_seas_anom_mean = np.array([
             np.mean(
                 np.concatenate(
-                    [trace_gas_at_station_anom[str(y)][m] for y in years]
+                    [trace_gas_at_station_anom[str(y)][m] for y in years],
                 ),
             ) for m in months
         ])
         obs_seas_anom_std = np.array([
             np.std(
                 np.concatenate(
-                    [trace_gas_at_station_anom[str(y)][m] for y in years]
+                    [trace_gas_at_station_anom[str(y)][m] for y in years],
                 ),
             ) for m in months
         ])
@@ -780,7 +775,7 @@ def trace_gas_timeserie_zonal(
         model_ts_std = model_seas_anom_std
         obs_ts_mean = obs_seas_anom_mean
         obs_ts_std = obs_seas_anom_std
-        plot_ts = plt.subplot(gs[l, 2])
+        plot_ts = plt.subplot(gs[l_i, 2])
         plt.fill_between(
             np.arange(0, 12, 1),
             model_seas_anom_mean - model_seas_anom_std,
@@ -796,10 +791,10 @@ def trace_gas_timeserie_zonal(
         if include_global:
             plt.fill_between(
                 np.arange(0, 12, 1),
-                mod_latitude["mean"]["monthly"] - \
-                    mod_latitude["std"]["monthly"],
-                mod_latitude["mean"]["monthly"] + \
-                    mod_latitude["std"]["monthly"],
+                mod_latitude["mean"]["monthly"]
+                - mod_latitude["std"]["monthly"],
+                mod_latitude["mean"]["monthly"]
+                + mod_latitude["std"]["monthly"],
                 color=COLORS_MARKERS[2], alpha=0.1,
             )
         plt.plot(np.arange(0, 12, 1), model_seas_anom_mean,
@@ -810,8 +805,8 @@ def trace_gas_timeserie_zonal(
                  marker=MARKERS[1], markersize=10)
         if include_global:
             plt.plot(np.arange(0, 12, 1), mod_latitude["mean"]["monthly"],
-                    linestyle="solid", color=COLORS_MARKERS[2],
-                    marker=MARKERS[2], markersize=10)
+                     linestyle="solid", color=COLORS_MARKERS[2],
+                     marker=MARKERS[2], markersize=10)
         plt.xticks(np.arange(0, 12, 1), months)
         plt.xlabel("Month", fontsize=20)
         plt.ylabel(
@@ -820,7 +815,7 @@ def trace_gas_timeserie_zonal(
             fontsize=20,
         )
         plt.tick_params(axis="both", labelsize=16)
-        plt.title(latitude_titles[l], fontsize=28)
+        plt.title(latitude_titles[l_i], fontsize=28)
 
         # Plot right column
         # seasonal cycle timing
@@ -850,37 +845,37 @@ def trace_gas_timeserie_zonal(
         seas_min_model[seas_min_model < month_offset] += 12
         seas_max_obs[seas_max_obs < month_offset] += 12
         seas_min_obs[seas_min_obs < month_offset] += 12
-        plot_timing = plt.subplot(gs[l, 3])
+        plot_timing = plt.subplot(gs[l_i, 3])
         plt.plot(
             years, seas_max_model, linestyle="solid", color=COLORS_MARKERS[0],
             marker=MARKERS[0], markersize=10, alpha=0.7,
-            label="" if l == 0 else None,
+            label="" if l_i == 0 else None,
         )
         plt.plot(
-            years, seas_max_obs,  linestyle="solid", color=COLORS_MARKERS[1],
+            years, seas_max_obs, linestyle="solid", color=COLORS_MARKERS[1],
             marker=MARKERS[1], markersize=10, alpha=0.7,
-            label="" if l == 0 else None,
+            label="" if l_i == 0 else None,
         )
         plt.plot(
             years, seas_min_model, linestyle="dashed", color=COLORS_MARKERS[0],
-            marker=MARKERS[0], markersize=10, fillstyle="none",  alpha=0.7,
-            label="" if l == 0 else None,
+            marker=MARKERS[0], markersize=10, fillstyle="none", alpha=0.7,
+            label="" if l_i == 0 else None,
         )
         plt.plot(
-            years, seas_min_obs,  linestyle="dashed", color=COLORS_MARKERS[1],
+            years, seas_min_obs, linestyle="dashed", color=COLORS_MARKERS[1],
             marker=MARKERS[1], markersize=10, fillstyle="none", alpha=0.7,
-            label="" if l == 0 else None,
+            label="" if l_i == 0 else None,
         )
         if include_global:
             plt.scatter(
-                years, 1,  linestyle="solid", color=COLORS_MARKERS[2],
+                years, 1, linestyle="solid", color=COLORS_MARKERS[2],
                 marker=MARKERS[2], markersize=10,
-                label="{model_id}: Max" if l == 0 else None,
+                label="{model_id}: Max" if l_i == 0 else None,
             )
             plt.scatter(
-                years, 1,  linestyle="dashed", color=COLORS_MARKERS[2],
+                years, 1, linestyle="dashed", color=COLORS_MARKERS[2],
                 marker=MARKERS[2], markersize=10, fillstyle="none",
-                label="{model_id}: Min" if l == 0 else None,
+                label="{model_id}: Min" if l_i == 0 else None,
             )
         plt.xticks(
             np.arange(
@@ -892,9 +887,9 @@ def trace_gas_timeserie_zonal(
         plt.ylim([month_offset - 1, month_offset + 12])
         plt.ylabel("Month", fontsize=20)
         plt.tick_params(axis="both", labelsize=16)
-        plt.title(latitude_titles[l], fontsize=28)
+        plt.title(latitude_titles[l_i], fontsize=28)
         # Get legend handles for the first latitude band
-        if l == 0:
+        if l_i == 0:
             axes = plt.gcf().axes
             handles_minmax, labels_minmax = axes[3].get_legend_handles_labels()
             labels_minmax[2] = f"{model_id} @stations: Max/Min"
@@ -961,10 +956,10 @@ def trace_gas_seas_ampl_growth_rate(
 
     # Latitude ranges
     latitude_titles = [
-        "Latitudes 60$^\circ$N - 90$^\circ$N",
-        "Latitudes 30$^\circ$N - 60$^\circ$N",
-        "Latitudes 30$^\circ$S - 30$^\circ$N",
-        "Latitudes 90$^\circ$S - 30$^\circ$S",
+        r"Latitudes 60$^\circ$N - 90$^\circ$N",
+        r"Latitudes 30$^\circ$N - 60$^\circ$N",
+        r"Latitudes 30$^\circ$S - 30$^\circ$N",
+        r"Latitudes 90$^\circ$S - 30$^\circ$S",
     ]
     latitude_ranges = {
         "60N - 90N": (60, 90),
@@ -973,16 +968,11 @@ def trace_gas_seas_ampl_growth_rate(
         "90S - 30S": (-90, -30),
     }
 
-    ## Model and observations preprocessing ##
+    # Model and observations preprocessing
     # Prepare iris cubes for model data
-    model_yearly = model_data.aggregated_by(
-        "year", iris.analysis.MEAN
-    )
-    model_amplitude = model_data.aggregated_by(
-        "year", iris.analysis.MAX
-    ) - model_data.aggregated_by(
-            "year", iris.analysis.MIN
-    )
+    model_yearly = model_data.aggregated_by("year", iris.analysis.MEAN)
+    model_amplitude = model_data.aggregated_by("year", iris.analysis.MAX)
+    - model_data.aggregated_by("year", iris.analysis.MIN)
     model_growth = iris.cube.Cube(
         np.diff(model_yearly.data, axis=0),
         long_name=f"{trace_gas}_growth",
@@ -996,14 +986,9 @@ def trace_gas_seas_ampl_growth_rate(
     )
     model_growth.attributes = model_data.attributes
     # And observations
-    obs_yearly = obs_cube.aggregated_by(
-        "year", iris.analysis.MEAN,
-    )
-    obs_amplitude = obs_cube.aggregated_by(
-        "year", iris.analysis.MAX,
-    ) - obs_cube.aggregated_by(
-            "year", iris.analysis.MIN,
-    )
+    obs_yearly = obs_cube.aggregated_by("year", iris.analysis.MEAN)
+    obs_amplitude = obs_cube.aggregated_by("year", iris.analysis.MAX)
+    - obs_cube.aggregated_by("year", iris.analysis.MIN)
     obs_growth = iris.cube.Cube(
         np.diff(obs_yearly.data, axis=0),
         long_name=f"{trace_gas}_growth",
@@ -1015,11 +1000,8 @@ def trace_gas_seas_ampl_growth_rate(
         ],
     )
     obs_growth.attributes = obs_cube.attributes
-    for aux_coord_name in [
-        "altitude",
-        "latitude",
-        "longitude",
-        "platform_name"]:
+    for aux_coord_name in ["altitude", "latitude",
+                           "longitude", "platform_name"]:
         aux_coord = obs_cube.coord(aux_coord_name)
         if obs_cube.coord_dims(aux_coord):
             obs_growth.add_aux_coord(
@@ -1042,13 +1024,13 @@ def trace_gas_seas_ampl_growth_rate(
         model_slices[key]["growth"] = model_growth.extract(constraint)
         obs_slices[key]["growth"] = obs_growth.extract(constraint)
 
-    ## Plots per latitude range ##
+    # Plots per latitude range
     # Create figure layout for different plots
     figure = plt.figure(figsize=(26, 26))
     widths = [1.0, 1.0, 1.0]
     heights = [1.0, 1.0, 1.0, 1.0]
     gs = gridspec.GridSpec(
-        4, 3, left = 0.05, right = 0.95,
+        4, 3, left=0.05, right=0.95,
         width_ratios=widths, height_ratios=heights,
         hspace=0.35, wspace=0.25,
     )
@@ -1166,8 +1148,8 @@ def trace_gas_seas_ampl_growth_rate(
             obs_g = obs_growth_ls.extract(iris.Constraint(year=y))
             # Extract yearly
             extracted_yearly = extract_pt(
-                    model_yearly_ls.extract(iris.Constraint(year=y)),
-                    noaa_gml_lats, noaa_gml_lons, nearest=True,
+                model_yearly_ls.extract(iris.Constraint(year=y)),
+                noaa_gml_lats, noaa_gml_lons, nearest=True,
             )
             valid_indices_y = ~ (obs_y.data.mask | np.isnan(extracted_yearly))
             v_obs_y = obs_y.data[valid_indices_y].tolist()
@@ -1175,8 +1157,8 @@ def trace_gas_seas_ampl_growth_rate(
                        if (tg.item() is not None) and valid_indices_y[j]]
             # Extract amplitude
             extracted_amplitude = extract_pt(
-                    model_amplitude_ls.extract(iris.Constraint(year=y)),
-                    noaa_gml_lats, noaa_gml_lons, nearest=True,
+                model_amplitude_ls.extract(iris.Constraint(year=y)),
+                noaa_gml_lats, noaa_gml_lons, nearest=True,
             )
             valid_indices_a = ~ (
                 obs_a.data.mask | np.isnan(extracted_amplitude)
@@ -1192,8 +1174,8 @@ def trace_gas_seas_ampl_growth_rate(
             if i > 0:
                 # Growth
                 extracted_growth = extract_pt(
-                        model_growth_ls.extract(iris.Constraint(year=y)),
-                        noaa_gml_lats, noaa_gml_lons, nearest=True,
+                    model_growth_ls.extract(iris.Constraint(year=y)),
+                    noaa_gml_lats, noaa_gml_lons, nearest=True,
                 )
                 valid_indices_g = ~ (
                     obs_g.data.mask | np.isnan(extracted_growth)
@@ -1205,11 +1187,11 @@ def trace_gas_seas_ampl_growth_rate(
                 ]
                 # Relative growth
                 v_obs_g_relative = [
-                    100 * g / v_obs_y[j-1]
+                    100 * g / v_obs_y[j - 1]
                     for j, g in enumerate(v_obs_g)
                 ]
                 v_mod_g_relative = [
-                    100 * g / v_mod_y[j-1]
+                    100 * g / v_mod_y[j - 1]
                     for j, g in enumerate(v_mod_g)
                 ]
                 valid_obs["mean"]["growth"][i - 1] = np.mean(v_obs_g_relative)
@@ -1225,7 +1207,7 @@ def trace_gas_seas_ampl_growth_rate(
                 valid_obs["std"]["sensitivity"][i - 1] = np.std(v_obs_s)
                 valid_md["mean"]["sensitivity"][i - 1] = np.mean(v_mod_s)
                 valid_md["std"]["sensitivity"][i - 1] = np.std(v_mod_s)
-        ## Plots ##
+        # Plots
         # Plot left column = amplitude time series
         plot_amp = plt.subplot(gs[l, 0])
         plt.plot(
@@ -1257,14 +1239,14 @@ def trace_gas_seas_ampl_growth_rate(
                 years, mod_latitude["mean"]["amplitude"],
                 color=COLORS_MARKERS[2], linestyle="solid",
                 marker=MARKERS[2], markersize=10,
-                label=f"{model_id}: Mean +/- 1 std" if l == 0 else None
+                label=f"{model_id}: Mean +/- 1 std" if l == 0 else None,
             )
             plt.fill_between(
                 years,
-                mod_latitude["mean"]["amplitude"] - \
-                    mod_latitude["std"]["amplitude"],
-                mod_latitude["mean"]["amplitude"] + \
-                    mod_latitude["std"]["amplitude"],
+                mod_latitude["mean"]["amplitude"]
+                - mod_latitude["std"]["amplitude"],
+                mod_latitude["mean"]["amplitude"]
+                + mod_latitude["std"]["amplitude"],
                 color=COLORS_MARKERS[2], alpha=0.1,
             )
         plt.xlim([years[0] - 1, years[-1] + 1])
@@ -1329,7 +1311,7 @@ def trace_gas_seas_ampl_growth_rate(
         ))
         plt.xlabel("Year", fontsize=20)
         plt.ylabel(
-            f"{trace_gas.upper()} relative growth [$\%.yr^{-1}$]",
+            trace_gas.upper() + r" relative growth [$\%.yr^{-1}$]",
             fontsize=20,
         )
         plt.tick_params(axis="both", labelsize=16)
@@ -1370,10 +1352,10 @@ def trace_gas_seas_ampl_growth_rate(
             )
             plt.fill_between(
                 years[1:],
-                mod_latitude["mean"]["sensitivity"] - \
-                    mod_latitude["std"]["sensitivity"],
-                mod_latitude["mean"]["sensitivity"] + \
-                    mod_latitude["std"]["sensitivity"],
+                mod_latitude["mean"]["sensitivity"]
+                - mod_latitude["std"]["sensitivity"],
+                mod_latitude["mean"]["sensitivity"]
+                + mod_latitude["std"]["sensitivity"],
                 color=COLORS_MARKERS[2], alpha=0.1,
             )
         plt.xlim([years[0] - 1, years[-1] + 1])
