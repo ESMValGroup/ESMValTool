@@ -13,6 +13,7 @@
 import YAML
 import JSON
 using NetCDF
+using NCDatasets
 # Used to write output NetCDF file with original attributes
 using RainFARM
 using Statistics
@@ -55,9 +56,11 @@ function compute_diagnostic(metadata, varname, diag_base, parameter,
         println(diag_base, ": I am your Julia diagnostic")
 
         # Read the variable, lon and lat
-        var = ncread(infile, varname)
-        lon = ncread(infile, "lon")
-        lat = ncread(infile, "lat")
+        var = NCDataset(infile)[varname][:]
+        lon = NCDataset(infile)["lon"][:]
+        lat = NCDataset(infile)["lat"][:]
+        varr = ncread(infile, varname)
+        println("var old", varr)
 
         units = ncgetatt(infile, varname, "units")
 
@@ -74,7 +77,7 @@ function compute_diagnostic(metadata, varname, diag_base, parameter,
 
         # Use the RainFARM function write_netcdf2d to write variable to
         # output file copying original attributes from infile
-        write_netcdf2d(outfile, varm, lon, lat, varname, infile)
+        # write_netcdf2d(outfile, varm, lon, lat, varname, infile)
         provenance[outfile] = xprov
 
         # Plot the field
