@@ -129,25 +129,25 @@ Example plots
 -------------
 
 .. _fig_surface_trace_gas_1:
-.. figure::  /recipes/figures/surface_trace_gas/figure_1.png
+.. figure::  /recipes/figures/surface_trace_gas/CNRM-ESM2-1_CMIP_Amon_esm-hist_co2s_2004_2014_seas_map.png
    :align:   center
 
    Evaluation of seasonal surface concentration of CO2 from CNRM-ESM2-1 esm-hist member r1i1p1f3 against the NOAA GML climatology from ground-based observations. The multiannual seasonal mean is calculated for the model data for the period 2000-2014. The model output is overlaid with the observational climatology.
 
 .. _fig_surface_trace_gas_2:
-.. figure::  /recipes/figures/surface_trace_gas/figure_2.png
+.. figure::  /recipes/figures/surface_trace_gas/CNRM-ESM2-1_CMIP_Amon_esm-hist_co2s_2004_2014_scatter.png
    :align:   center
 
    Evaluation of seasonal surface concentration of CO2 from CNRM-ESM2-1 esm-hist member r1i1p1f3 against the NOAA GML climatology from ground-based observations. The multiannual seasonal mean is calculated for the model data for the period 2000-2014.
 
 .. _fig_surface_trace_gas_3:
-.. figure::  /recipes/figures/surface_trace_gas/figure_1.png
+.. figure::  /recipes/figures/surface_trace_gas/CNRM-ESM2-1_CMIP_Amon_esm-hist_co2s_2004_2014_timeseries_latitude.png
    :align:   center
 
    Evaluation of surface concentration time series (monthly, seasonal, annual) of CO2 from CNRM-ESM2-1 esm-hist member r1i1p1f3 against the NOAA GML climatology from ground-based observations. The multiannual seasonal mean is calculated for the model data for the period 2000-2014.
 
 .. _fig_surface_trace_gas_4:
-.. figure::  /recipes/figures/surface_trace_gas/figure_1.png
+.. figure::  /recipes/figures/surface_trace_gas/CNRM-ESM2-1_CMIP_Amon_esm-hist_co2s_2004_2014_seas_amplitude_trend.png
    :align:   center
 
    Evaluation of surface concentration time series (amplitude, growth, sensitivity) of CO2 from CNRM-ESM2-1 esm-hist member r1i1p1f3 against the NOAA GML climatology from ground-based observations. The multiannual seasonal mean is calculated for the model data for the period 2000-2014.
