@@ -7,8 +7,14 @@ Classes and functions largely adapted from the AOD-AERONET diagnostic
 at /diag_scripts/aerosols/aero_utils.py.
 """
 
+import logging
+from pathlib import Path
+
 import iris
+import iris.exceptions
 import numpy as np
+
+logger = logging.getLogger(Path.basename(__file__))
 
 
 class FlaskAnsError(Exception):
@@ -148,8 +154,8 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
             icube = icube.extract(
                 iris.Constraint(model_level_number=level))
 
-        except Exception:
-            print("Model level number not available. Use pseudo level.")
+        except iris.exceptions.ConstraintMismatchError:
+            logger.debug("Model level number not available. Use pseudo level.")
 
         else:
             icube = icube.extract(
@@ -185,4 +191,3 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
         data_out.append(tcube.data)
 
     return data_out
-
