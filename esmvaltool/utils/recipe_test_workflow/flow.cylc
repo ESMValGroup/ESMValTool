@@ -123,15 +123,15 @@
     [[compare<fast>]]
         inherit = COMPARE
         [[[environment]]]
-            RECIPE_NAME = "${CYLC_TASK_PARAM_fast##*--}"
-            COMPARISON_OUTPUT_DIR=${OUTPUT_DIR}/${RECIPE_NAME}*
-            KGO_DIR=${KGO_ROOT_PATH}/${RECIPE_NAME}*
+            RECIPE_NAME = "${CYLC_TASK_PARAM_fast##*--}_????????_??????"
+            COMPARISON_OUTPUT_DIR = ${OUTPUT_DIR}/${RECIPE_NAME}
+            KGO_DIR = ${KGO_ROOT_PATH}/${RECIPE_NAME}
 
     [[compare<medium>]]
         inherit = COMPARE
         [[[environment]]]
-            RECIPE_NAME = "${CYLC_TASK_PARAM_medium##*--}"
-            COMPARISON_OUTPUT_DIR=${OUTPUT_DIR}/${RECIPE_NAME}*
-            KGO_DIR=${KGO_ROOT_PATH}/${RECIPE_NAME}*
+            RECIPE_NAME = "${CYLC_TASK_PARAM_medium##*--}_????????_??????"
+            COMPARISON_OUTPUT_DIR = ${OUTPUT_DIR}/${RECIPE_NAME}
+            KGO_DIR = ${KGO_ROOT_PATH}/${RECIPE_NAME}
 
 {% include "site/" ~ SITE ~ "/runtime.cylc" %}
