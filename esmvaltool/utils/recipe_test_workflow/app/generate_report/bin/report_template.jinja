@@ -35,8 +35,20 @@
         {% for recipe, tasks in report_data.items() %}
         <tr>
             <td>{{ recipe }}</td>
-            <td style="{{ tasks['process_task']['style'] }};">{{ tasks['process_task']["status"] }}</td>
-            <td style="{{ tasks['compare_task']['style'] }};">{{ tasks['compare_task']["status"] }}</td>
+            <td style="{{
+                tasks["process_task"]["style"] if "process_task" in tasks 
+                else "black" 
+                }};">{{ 
+                tasks["process_task"]["status"] if "process_task" in tasks 
+                else "-" 
+                }}</td>
+            <td style="{{ 
+                tasks["compare_task"]["style"] if "compare_task" in tasks 
+                else "black" 
+                }};">{{ 
+                tasks["compare_task"]["status"] if "compare_task" in tasks 
+                else "-" 
+            }}</td>
         </tr>
         {% endfor %}    
     </table>

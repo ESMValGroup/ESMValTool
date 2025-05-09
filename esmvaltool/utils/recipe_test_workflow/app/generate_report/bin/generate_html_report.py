@@ -1,17 +1,17 @@
 #!/usr/bin/env python
-from collections import defaultdict
-from datetime import datetime
 import os
 import sqlite3
+from collections import defaultdict
+from datetime import datetime
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-
 
 CYLC_DB_FILE_PATH = os.environ.get("CYLC_DB_FILE_PATH")
 CYLC_TASK_CYCLE_POINT = os.environ.get("CYLC_TASK_CYCLE_POINT")
 CYLC_WORKFLOW_SHARE_DIR = os.environ.get("CYLC_WORKFLOW_SHARE_DIR")
 OUTPUT_FILE_PATH = os.path.join(
-    CYLC_WORKFLOW_SHARE_DIR, "recipe_test_workflow_status_report.html"
+    CYLC_WORKFLOW_SHARE_DIR,
+    "recipe_test_workflow_status_report.html",
 )
 
 SQL_QUERY_TASK_STATES = "SELECT name, status FROM task_states"
@@ -22,16 +22,16 @@ def main():
     Main function to generate the HTML report.
     """
     raw_db_data = fetch_report_data()
-    procesed_db_data = process_db_output(raw_db_data)
+    processed_db_data = process_db_output(raw_db_data)
     subheader = create_subheader()
     rendered_html = render_html_report(
         subheader=subheader,
-        report_data=procesed_db_data,
+        report_data=processed_db_data,
     )
     write_report_to_file(rendered_html)
 
 
-def fetch_report_data(db_file_path = CYLC_DB_FILE_PATH):
+def fetch_report_data(db_file_path=CYLC_DB_FILE_PATH):
     """
     Fetch report data from the Cylc SQLite database.
 
@@ -44,7 +44,7 @@ def fetch_report_data(db_file_path = CYLC_DB_FILE_PATH):
     -------
     list
         A list of tuples containing rows of data from the database.
-   """
+    """
     connection = sqlite3.connect(db_file_path)
     cursor = connection.cursor()
     cursor.execute(SQL_QUERY_TASK_STATES)
@@ -73,20 +73,22 @@ def process_db_output(report_data):
         }
     }
     ```
+
     Parameters
     ----------
     report_data : list
-        The report data fetched from the database. Each item is a tuple 
+        The report data fetched from the database. Each item is a tuple
         containing row data.
-    
+
     Returns
     -------
     dict
-        A dictionary with recipe names as keys and tasks/task data as values. 
+        A dictionary with recipe names as keys and tasks/task data as values.
     """
     styles = {
         "succeeded": "color: green",
         "failed": "color: red",
+        "running": "color: blue",
     }
 
     processed_db_data = defaultdict(dict)
@@ -95,13 +97,13 @@ def process_db_output(report_data):
             recipe_name = task_name.removeprefix("process_")
             processed_db_data[recipe_name]["process_task"] = {
                 "status": status,
-                "style": styles[status],
+                "style": styles.get(status, "color: black"),
             }
-        elif task_name.startswith("compare_"):            
+        elif task_name.startswith("compare_"):
             recipe_name = task_name.removeprefix("compare_")
             processed_db_data[recipe_name]["compare_task"] = {
                 "status": status,
-                "style": styles[status],
+                "style": styles.get(status, "color: black"),
             }
     return processed_db_data
 
@@ -125,17 +127,17 @@ def render_html_report(report_data, subheader):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     env = Environment(
         loader=FileSystemLoader(script_dir),
-        autoescape=select_autoescape()
+        autoescape=select_autoescape(),
     )
     template = env.get_template("report_template.jinja")
     rendered_html = template.render(
         subheader=subheader,
         report_data=report_data,
-    ) 
+    )
     return rendered_html
 
 
-def create_subheader(cylc_task_cycle_point = CYLC_TASK_CYCLE_POINT):
+def create_subheader(cylc_task_cycle_point=CYLC_TASK_CYCLE_POINT):
     """
     Create the subheader for the HTML report.
 
@@ -151,16 +153,14 @@ def create_subheader(cylc_task_cycle_point = CYLC_TASK_CYCLE_POINT):
     """
     parsed_datetime = datetime.strptime(CYLC_TASK_CYCLE_POINT, "%Y%m%dT%H%MZ")
     formated_datetime = parsed_datetime.strftime("%Y-%m-%d %H:%M")
-    subheader = (
-        f"Cycle start: {formated_datetime} UTC"
-    )
+    subheader = f"Cycle start: {formated_datetime} UTC"
     return subheader
 
 
-def write_report_to_file(rendered_html, output_file_path = OUTPUT_FILE_PATH):
+def write_report_to_file(rendered_html, output_file_path=OUTPUT_FILE_PATH):
     """
     Write the report data to an HTML file.
-    
+
     Parameters
     ----------
     rendered_html : str

@@ -25,16 +25,18 @@
 
 [scheduling]
     initial cycle point = now
+    [[xtriggers]]
+        clock_1 = wall_clock(offset=PT4M)
     [[graph]]
         R1 = """install_env_file => get_esmval => configure
-            configure => process<fast> => compare<fast>:finish
-            configure => process<medium> => compare<medium>:finish
-            compare<medium>:finish & compare<fast>:finish => generate_report
+            configure => process<fast> => compare<fast> 
+            configure => process<medium> => compare<medium>
+            @clock_1 => generate_report
             """
         T01 = """@wall_clock => get_esmval => configure
-            configure => process<fast> => compare<fast>:finish
-            configure => process<medium> => compare<medium>:finish
-            compare<medium>:finish & compare<fast>:finish => generate_report
+            configure => process<fast> => compare<fast>
+            configure => process<medium> => compare<medium>
+            @clock_1 => generate_report
             """
 
 [runtime]
