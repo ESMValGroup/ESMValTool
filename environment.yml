@@ -17,7 +17,7 @@ dependencies:
   - cfgrib
   - cftime
   - cmocean
-  - curl <8.10  # https://github.com/ESMValGroup/ESMValTool/issues/3758
+  - curl  # needed by Julia install from source
   - cython
   - dask !=2024.8.0  # https://github.com/dask/dask/issues/11296
   - distributed
@@ -29,7 +29,6 @@ dependencies:
   - fire
   - fsspec
   - gdal >=3.9.0
-  - importlib_metadata <8  # https://github.com/ESMValGroup/ESMValTool/issues/3699 only for Python 3.10/11 and esmpy<8.6
   - ipython <9.0  # github.com/ESMValGroup/ESMValCore/issues/2680 ; remove ipython when solved
   - iris >=3.11
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
@@ -55,7 +54,7 @@ dependencies:
   - psy-simple >=1.5.0
   - pyproj >=2.1
   - pys2index  # only from conda-forge
-  - python >=3.10,<3.13
+  - python >=3.10
   - python-cdo
   - python-dateutil
   - pyyaml
@@ -96,43 +95,6 @@ dependencies:
   # - vprof not on conda-forge
   - yamllint ==1.35.1
 
-  # NCL and dependencies
-  - ncl >=6.6.2
-  - cdo
+  # Dependencies needed by NCL diags
   - imagemagick
   - nco
-
-  # R and dependencies
-  - cdo
-  - r-base >=3.5
-  - r-abind
-  - r-akima
-  - r-climdex.pcic
-  - r-climprojdiags
-  - r-docopt
-  - r-dotcall64
-  - r-functional
-  - r-ggplot2
-  - r-gridextra
-  - r-logging
-  - r-mapproj
-  - r-maps
-  - r-multiapply
-  - r-ncdf4
-  - r-ncdf4.helpers
-  - r-pcict
-  - r-plyr
-  - r-rcolorbrewer
-  - r-rcpp
-  - r-s2dverification
-  - r-snow
-  - r-spei
-  - r-udunits2
-  - r-yaml
-  # R packages needed for development
-  - r-git2r  # dependency of lintr
-  - r-lintr ==3.1.2
-  - r-styler ==1.10.3
-
-  # Julia (dependencies installed by separate script)
-  - julia
