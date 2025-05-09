@@ -105,7 +105,7 @@ diagnostics:
         preprocessor: eq_bias
         mip: Amon
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: "GPCP-V2.3", project: obs4MIPs, tier: 1, start_year: 1979, end_year: 2017}
       eq_sst_bias:
         short_name: tos
         preprocessor: eq_bias
@@ -117,31 +117,31 @@ diagnostics:
         preprocessor: eq_bias
         mip: Amon
         additional_datasets:
-          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: TROPFLUX, version: v1, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
       pr_double_seacycle:
         short_name: pr
         preprocessor: ITCZ_sea_cycle
         mip: Amon
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: "GPCP-V2.3", project: obs4MIPs, tier: 1, start_year: 1979, end_year: 2017}
       eq_pr_seacycle:
         short_name: pr
         preprocessor: eq_sea_cycle
         mip: Amon
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: "GPCP-V2.3", project: obs4MIPs, tier: 1, start_year: 1979, end_year: 2017}
       eq_sst_seacycle:
         short_name: tos
         preprocessor: eq_sea_cycle
         mip: Omon
         additional_datasets:
-          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
+          - {dataset: TROPFLUX, version: v1, project: OBS6, type: reanaly, tier: 2, mip: Omon}
       eq_tauu_seacycle:
         short_name: tauu
         preprocessor: eq_sea_cycle
         mip: Amon
         additional_datasets:
-          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: TROPFLUX, version: v1, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
     scripts:
       plot_script:
         script: enso_metrics/climatology_diagnostic1.py
@@ -154,25 +154,25 @@ diagnostics:
         preprocessor: map_bias_level2
         mip: Amon
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: "GPCP-V2.3", project: obs4MIPs, tier: 1, start_year: 1979, end_year: 2017}
       pr_seacycle:
         short_name: pr
         preprocessor: map_sea_cyclel2
         mip: Amon
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: "GPCP-V2.3", project: obs4MIPs, tier: 1, start_year: 1979, end_year: 2017}
       sst_bias:
         short_name: tos
         preprocessor: map_bias_level2
         mip: Omon
         additional_datasets:
-          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
+          - {dataset: TROPFLUX, version: v1, project: OBS6, type: reanaly, tier: 2, mip: Omon}
       tauu_bias:
         short_name: tauu
         preprocessor: map_bias_level2
         mip: Amon
         additional_datasets:
-          - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: TROPFLUX, version: v1, project: OBS6, type: reanaly, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
 
     scripts:
       plot_script:
