@@ -21,21 +21,21 @@ ERA5:
   facecolor: '#cd5c5c'
   mark: 'o'
   thick: 1
-nat: 
+nat:
   avgstd: 1
   color: '#005000'
   dash: '-'
   facecolor: '#005000'
   mark: 'o'
   thick: 1
-factual: 
+factual:
   avgstd: 1
   color: '#c57a00'
   dash: '-'
   facecolor: '#c57a00'
   mark: 'o'
   thick: 1
-ssp245: 
+ssp245:
   avgstd: 1
   color: '#4677c0'
   dash: '-'
