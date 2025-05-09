@@ -38,21 +38,13 @@ def main():
 
 def get_config_values_from_task_env():
     """Get configuration values from environment for configure task."""
-    # Note that 'auxiliary_data_dir' and 'download_dir' are set to empty
-    # values and cannot currently be configured. 'auxiliary_data_dir' is
-    # used by some recipes to look for additional datasets, so may need
-    # to be configured in the future. 'download_dir' is used only when
-    # using the automatic download feature via ESMValTool, which is not
-    # the intention here, so should not be configurable.
-    #
-    # In addition, 'check_level' and 'extra_facets_dir' are added to the
-    # config object in ESMValTool after loading the user configuration
-    # file, but they need updating to avoid issues when writing the YAML
-    # file.
+    # 'check_level' and 'extra_facets_dir' are added to the config
+    # object in ESMValTool after loading the user configuration file,
+    # but they need updating to avoid issues when writing the YAML file.
     config_values_from_task_env = {
-        "auxiliary_data_dir": "",
+        "auxiliary_data_dir": os.environ["AUXILIARY_DATA_DIR"],
         "check_level": "DEFAULT",
-        "download_dir": "",
+        "download_dir": os.environ["DOWNLOAD_DIR"],
         "drs": {
             "ana4mips": os.environ["DRS_ANA4MIPS"],
             "CMIP3": os.environ["DRS_CMIP3"],
@@ -80,6 +72,7 @@ def get_config_values_from_task_env():
             "OBS6": os.environ["ROOTPATH_OBS6"],
             "RAWOBS": os.environ["ROOTPATH_RAWOBS"],
         },
+        "search_esgf": os.environ["SEARCH_ESGF"],
     }
     print(
         "The configuration values defined in the environment for the "
