@@ -51,43 +51,43 @@ User settings in recipe
 
 #. Preprocessor
 
-   * ``extract_surface_from_atm`` : Extract surface from the input 3D
-     atmospheric variable based on the surface pressure *ps*.
+  * ``extract_surface_from_atm`` : Extract surface from the input 3D
+    atmospheric variable based on the surface pressure *ps*.
 
 #. Script diagnostic_surface_trace_gases.py
 
-   *Required settings for script*
-   * trace_gas: The surface trace gas for which to run the evaluation.
-   * min_mon_per_seas: The minimum number of months used to calculate each
-     seasonal mean. This must be between 1 and 3. Recommended value is 3.
-   * min_seas_per_year: The minimum number of seasonal means in each year. This
-     must be between 1 and 4. Recommended value is 4.
-   * min_seas_per_clim: The minimum number of seasonal means used to calculate
-     the multiannual seasonal mean. This must be between 1 and the number of
-     years of available NOAA GML Surface Flask data.
+  *Required settings for script*
+  * trace_gas: The surface trace gas for which to run the evaluation.
+  * min_mon_per_seas: The minimum number of months used to calculate each
+    seasonal mean. This must be between 1 and 3. Recommended value is 3.
+  * min_seas_per_year: The minimum number of seasonal means in each year. This
+    must be between 1 and 4. Recommended value is 4.
+  * min_seas_per_clim: The minimum number of seasonal means used to calculate
+    the multiannual seasonal mean. This must be between 1 and the number of
+    years of available NOAA GML Surface Flask data.
 
-   *Optional settings for script*
+  *Optional settings for script*
 
-   * plots: List of the diagnostics to plot among *seas_maps*, *timeserie_lat*,
-     and sensitivi*ty_ampl_trend. Default is all of them.
-   * only_multimodel: Boolean flag to indicate if only the diagnostics
-     for the multimodel mean should be plotted. Default is *False*.
+  * plots: List of the diagnostics to plot among *seas_maps*, *timeserie_lat*,
+    and sensitivi*ty_ampl_trend. Default is all of them.
+  * only_multimodel: Boolean flag to indicate if only the diagnostics
+    for the multimodel mean should be plotted. Default is *False*.
 
-   *Required settings for variables*
+  *Required settings for variables*
 
-   * None
+  * None
 
-   *Optional settings for variables*
+  *Optional settings for variables*
 
-   * None
+  * None
 
-   *Required settings for preprocessor*
+  *Required settings for preprocessor*
 
-   * None
+  * None
 
-   *Optional settings for preprocessor*
+  *Optional settings for preprocessor*
 
-   * None
+  * None
 
 
 Variables
