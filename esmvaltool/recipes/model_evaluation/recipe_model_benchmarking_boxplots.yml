@@ -93,6 +93,8 @@ preprocessors:
     distance_metric:
       metric: weighted_rmse
       coords: [latitude, longitude]
+      keep_reference_dataset: false
+
 
   rmse_pr:
     custom_order: true
@@ -106,6 +108,7 @@ preprocessors:
     distance_metric:
       metric: weighted_rmse
       coords: [latitude, longitude]
+      keep_reference_dataset: false
 
   rmse_sst:
     custom_order: true
@@ -119,6 +122,7 @@ preprocessors:
     distance_metric:
       metric: weighted_rmse
       coords: [latitude, longitude]
+      keep_reference_dataset: false
 
   rmse_land:
     custom_order: true
@@ -132,6 +136,7 @@ preprocessors:
     distance_metric:
       metric: weighted_rmse
       coords: [latitude, longitude]
+      keep_reference_dataset: false
 
   pearsonr:
     custom_order: true
@@ -143,6 +148,7 @@ preprocessors:
     distance_metric:
       metric: weighted_pearsonr
       coords: [latitude, longitude]
+      keep_reference_dataset: false
 
   pearsonr_pr:
     custom_order: true
@@ -156,6 +162,7 @@ preprocessors:
     distance_metric:
       metric: weighted_pearsonr
       coords: [latitude, longitude]
+      keep_reference_dataset: false
 
   pearsonr_sst:
     custom_order: true
@@ -169,6 +176,7 @@ preprocessors:
     distance_metric:
       metric: weighted_pearsonr
       coords: [latitude, longitude]
+      keep_reference_dataset: false
 
   pearsonr_land:
     custom_order: true
@@ -182,6 +190,7 @@ preprocessors:
     distance_metric:
       metric: weighted_pearsonr
       coords: [latitude, longitude]
+      keep_reference_dataset: false
 
   emd:
     custom_order: true
@@ -193,6 +202,7 @@ preprocessors:
     distance_metric:
       metric: weighted_emd
       coords: [latitude, longitude]
+      keep_reference_dataset: false
 
   emd_pr:
     custom_order: true
@@ -206,6 +216,7 @@ preprocessors:
     distance_metric:
       metric: weighted_emd
       coords: [latitude, longitude]
+      keep_reference_dataset: false
 
   emd_sst:
     custom_order: true
@@ -219,6 +230,7 @@ preprocessors:
     distance_metric:
       metric: weighted_emd
       coords: [latitude, longitude]
+      keep_reference_dataset: false
 
   emd_land:
     custom_order: true
@@ -232,6 +244,7 @@ preprocessors:
     distance_metric:
       metric: weighted_emd
       coords: [latitude, longitude]
+      keep_reference_dataset: false
 
 
 diagnostics:
@@ -299,8 +312,12 @@ diagnostics:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         group_variables_by: variable_group
+        seaborn_settings:
+          style: darkgrid
         plots:
           benchmarking_boxplot:
+            pyplot_kwargs:
+              suptitle: RMSE of MIROC6
             var_order: ['tas_land', 'sst', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
 
 
@@ -367,8 +384,12 @@ diagnostics:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         group_variables_by: variable_group
+        seaborn_settings:
+          style: darkgrid
         plots:
           benchmarking_boxplot:
+            pyplot_kwargs:
+              suptitle: Pearson's r of MIROC6
             var_order: ['tas_land', 'sst', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']
 
 
@@ -435,6 +456,10 @@ diagnostics:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         group_variables_by: variable_group
+        seaborn_settings:
+          style: darkgrid
         plots:
           benchmarking_boxplot:
+            pyplot_kwargs:
+              suptitle: EMD of MIROC6
             var_order: ['tas_land', 'sst', 'pr', 'psl', 'rsut', 'rlut', 'swcre', 'lwcre']

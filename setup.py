@@ -82,6 +82,7 @@ REQUIREMENTS = {
     # Test dependencies (unit tests)
     # Execute `pip install .[test]` once and then use `pytest` to run tests
     "test": [
+        "imagehash>=4.0",
         "pre-commit",
         "pytest>=3.9,!=6.0.0rc1,!=6.0.0",
         "pytest-cov>=2.10.1",

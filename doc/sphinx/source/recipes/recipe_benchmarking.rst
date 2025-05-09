@@ -48,7 +48,6 @@ See :ref:`multi_datasets.py<api.esmvaltool.diag_scripts.monitor.multi_datasets>`
        facet_used_for_labels: alias
        plots:
          diurnal_cycle:
-           annual_mean_kwargs: false
            legend_kwargs:
              loc: upper right
            plot_kwargs:
