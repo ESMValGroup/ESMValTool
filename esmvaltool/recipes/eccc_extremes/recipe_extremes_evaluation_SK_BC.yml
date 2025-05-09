@@ -6,8 +6,8 @@ documentation:
   title: Extremes variability in the CMIP models
 
   description: This is an analysis to evaluate warm extremes (TXx) variability
-               in CMIP6 models used in event attribution. This recipe reproduces 
-               Figs. 6 and 8 from Malinina and Gillett (2024). 
+               in CMIP6 models used in event attribution. This recipe reproduces
+               Figs. 6 and 8 from Malinina and Gillett (2024).
 
   authors:
     - malinina_elizaveta
@@ -35,7 +35,7 @@ preprocessors:
       target_grid: 0.5x0.5
       lon_offset: 0.25
       lat_offset: 0.25
-      scheme: linear    
+      scheme: linear
     extract_shape:
       shapefile: british_columbia.shp
       method: contains
@@ -43,7 +43,7 @@ preprocessors:
     *prep_aa_var
 
   preproc_era_bc:
-    custom_order: True  
+    custom_order: True
     extract_shape:
       shapefile: british_columbia.shp
       method: contains
@@ -56,7 +56,7 @@ preprocessors:
       target_grid: 0.5x0.5
       lon_offset: 0.25
       lat_offset: 0.25
-      scheme: linear    
+      scheme: linear
     extract_shape:
       shapefile: saskatchewan.shp
       method: contains
@@ -64,7 +64,7 @@ preprocessors:
     *prep_aa_var
 
   preproc_era_sk:
-    custom_order: True  
+    custom_order: True
     extract_shape:
       shapefile: saskatchewan.shp
       method: contains
@@ -86,14 +86,14 @@ datasets_cmip: &datasets_cmip
   - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn}
   - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
   - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gr}
-  - { dataset: EC-Earth3, ensemble: r2i1p1f1, grid: gr } 
+  - { dataset: EC-Earth3, ensemble: r2i1p1f1, grid: gr }
   - { dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gr }
   - { dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gr }
-  - { dataset: EC-Earth3-Veg, ensemble: r6i1p1f1, grid: gr } 
-  - { dataset: GFDL-ESM4, institute: NOAA-GFDL, ensemble: r1i1p1f1, grid: gr1 } 
+  - { dataset: EC-Earth3-Veg, ensemble: r6i1p1f1, grid: gr }
+  - { dataset: GFDL-ESM4, institute: NOAA-GFDL, ensemble: r1i1p1f1, grid: gr1 }
   - { dataset: INM-CM5-0, ensemble: r1i1p1f1, grid: gr1 }
   - { dataset: INM-CM4-8, ensemble: r1i1p1f1, grid: gr1 }
-  - { dataset: IPSL-CM6A-LR, ensemble: "r(1:6)i1p1f1", grid: gr } 
+  - { dataset: IPSL-CM6A-LR, ensemble: "r(1:6)i1p1f1", grid: gr }
   - { dataset: IPSL-CM6A-LR, ensemble: "r(10:11)i1p1f1", grid: gr }
   - { dataset: IPSL-CM6A-LR, ensemble: r14i1p1f1, grid: gr }
   - { dataset: IPSL-CM6A-LR, ensemble: r22i1p1f1, grid: gr }
@@ -128,7 +128,7 @@ diagnostics:
         project: CMIP6
         preprocessor: preproc_model_bc
         additional_datasets: *datasets_cmip
-      reference: 
+      reference:
         short_name: tasmax
         timerange: '19400101/20223112'
         mip: day
@@ -164,7 +164,7 @@ diagnostics:
         project: CMIP6
         preprocessor: preproc_model_sk
         additional_datasets: *datasets_cmip
-      reference: 
+      reference:
         short_name: tasmax
         timerange: '19400101/20223112'
         mip: day
@@ -175,7 +175,6 @@ diagnostics:
         script: eccc_extremes/simple_timeseries.py
         mpl_style: malinina24
         color_style: malinina24
-        model_weighting: False
         units: C
         region: SK # needed for the figure title
         var_label: TXx # needed for axis name
@@ -186,6 +185,6 @@ diagnostics:
         color_style: malinina24
         model_weighting: True
         units: C
-        region: SK # needed for the figure title
+        region: SK # needed for the figure title (optional)
         var_label: TXx # needed for axis name
         figure_caption: 'Standard deviations of TXx anomalies in SK relative to 1940-1959' # optional
