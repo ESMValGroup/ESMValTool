@@ -25,13 +25,19 @@
 
 [scheduling]
     initial cycle point = now
+    [[xtriggers]]
+        clock_1 = wall_clock(offset=PT4M)
     [[graph]]
         R1 = """install_env_file => get_esmval => configure
-            configure => process<fast> => compare<fast>
-            configure => process<medium> => compare<medium>"""
+            configure => process<fast> => compare<fast> 
+            configure => process<medium> => compare<medium>
+            @clock_1 => generate_report
+            """
         T01 = """@wall_clock => get_esmval => configure
             configure => process<fast> => compare<fast>
-            configure => process<medium> => compare<medium>"""
+            configure => process<medium> => compare<medium>
+            @clock_1 => generate_report
+            """
 
 [runtime]
     [[root]]
@@ -130,5 +136,9 @@
             RECIPE_NAME = "${CYLC_TASK_PARAM_medium##*--}_????????_??????"
             COMPARISON_OUTPUT_DIR = ${OUTPUT_DIR}/${RECIPE_NAME}
             KGO_DIR = ${KGO_ROOT_PATH}/${RECIPE_NAME}
+
+    [[generate_report]]
+        [[[environment]]]
+            CYLC_DB_FILE_PATH=${CYLC_WORKFLOW_RUN_DIR}/log/db
 
 {% include "site/" ~ SITE ~ "/runtime.cylc" %}
