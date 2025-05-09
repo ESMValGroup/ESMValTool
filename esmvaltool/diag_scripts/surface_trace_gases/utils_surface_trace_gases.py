@@ -116,8 +116,11 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
         raise FlaskAnsError(m)
 
     # Check that the cube has a level coordinate if level has been requested.
-    if level is not None and not icube.coord(
-            "model_level_number") and not icube.coord("pseudo_level"):
+    if (
+        level is not None
+        and not icube.coord("model_level_number")
+        and not icube.coord("pseudo_level")
+    ):
         m = "Extract_pt:Level requested, but not found in cube."
         raise FlaskAnsError(m)
 
@@ -126,9 +129,9 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
     # processing if necessary.
     if height is not None:
         pt_hgt = []
-        pt_hgt.extend(height) if \
-            isinstance(height, list) else \
-            pt_hgt.append(height)
+        pt_hgt.extend(height) if isinstance(height, list) else pt_hgt.append(
+            height
+        )
 
         if len(pt_lat1) != len(pt_hgt):
             m = "Extract_pt:Mismatch in number of points for lat/long/height."
@@ -149,17 +152,14 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
 
     # If level specified, extract slice first
     if level is not None:
-
         try:
-            icube = icube.extract(
-                iris.Constraint(model_level_number=level))
+            icube = icube.extract(iris.Constraint(model_level_number=level))
 
         except iris.exceptions.ConstraintMismatchError:
             logger.debug("Model level number not available. Use pseudo level.")
 
         else:
-            icube = icube.extract(
-                iris.Constraint(pseudo_level=level))
+            icube = icube.extract(iris.Constraint(pseudo_level=level))
 
     # Extract values for specified points lat/lon
     # NOTE: Does not seem to handle multiple points if 3-D
@@ -167,8 +167,10 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
 
     # Set lat/lon coordinates for model grid cell interpolation
     for n_lat1 in np.arange(len(pt_lat1)):
-        latlon_coords = [("latitude", pt_lat1[n_lat1]),
-                         ("longitude", pt_lon1[n_lat1])]
+        latlon_coords = [
+            ("latitude", pt_lat1[n_lat1]),
+            ("longitude", pt_lon1[n_lat1]),
+        ]
 
         if nearest:
             tcube = icube.interpolate(latlon_coords, iris.analysis.Nearest())
@@ -177,7 +179,6 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
 
         # If height specified, interpolate to requested height
         if height is not None:
-
             # Set vertical coordinates for model grid cell interpolation
             point = max(pt_hgt[n_lat1], hgt_min)
             point = min(pt_hgt[n_lat1], hgt_max)

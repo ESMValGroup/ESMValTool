@@ -70,7 +70,7 @@ User settings in recipe
 
    *Optional settings for script*
 
-   * plots: List of the diagnostics to plot among *seas_maps*, *timeserie_lat*, 
+   * plots: List of the diagnostics to plot among *seas_maps*, *timeserie_lat*,
      and sensitivi*ty_ampl_trend. Default is all of them.
    * only_multimodel: Boolean flag to indicate if only the diagnostics
      for the multimodel mean should be plotted. Default is *False*.

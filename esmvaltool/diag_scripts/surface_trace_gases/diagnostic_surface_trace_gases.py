@@ -6,6 +6,7 @@ observations of trace gases.
 Some classes and functions largely adapted from the AOD-AERONET diagnostic
 at /diag_scripts/aerosols/aod_aeronet_assess.py.
 """
+
 import logging
 
 import cartopy.crs as ccrs
@@ -68,16 +69,19 @@ def weighted_std_dev(cube, dim, weights=None):
     Collapsed weighted standard deviation cube over the dimension(s) dim.
     """
     if weights is None:
-        return (cube.collapsed(dim, iris.analysis.RMS)**2
-                - cube.collapsed(dim, iris.analysis.MEAN)**2)**0.5
+        return (
+            cube.collapsed(dim, iris.analysis.RMS) ** 2
+            - cube.collapsed(dim, iris.analysis.MEAN) ** 2
+        ) ** 0.5
     return (
-        cube.collapsed(dim, iris.analysis.RMS, weights=weights)**2
-        - cube.collapsed(dim, iris.analysis.MEAN, weights=weights)**2)**0.5
+        cube.collapsed(dim, iris.analysis.RMS, weights=weights) ** 2
+        - cube.collapsed(dim, iris.analysis.MEAN, weights=weights) ** 2
+    ) ** 0.5
 
 
 def plot_trace_gas_mod_obs(
-        fig, ax, md_data, obs_data, trace_gas_obs_cube, plot_dict
-        ):
+    fig, ax, md_data, obs_data, trace_gas_obs_cube, plot_dict
+):
     """Plot trace gas surface concentration.
 
     The function plots a contour for the model data overlaid
@@ -102,18 +106,19 @@ def plot_trace_gas_mod_obs(
         Holds plotting settings.
     """
     # Plot model data
-    cf_plot = iplt.contourf(md_data,
-                            plot_dict["Levels"],
-                            colors=plot_dict["Colours"],
-                            extend="both",
-                            axes=ax,
-                            )
+    cf_plot = iplt.contourf(
+        md_data,
+        plot_dict["Levels"],
+        colors=plot_dict["Colours"],
+        extend="both",
+        axes=ax,
+    )
 
     # Latitude and longitude of stations.
     noaa_gml_lats = trace_gas_obs_cube.coord("latitude").points
     noaa_gml_lons = (
-        (trace_gas_obs_cube.coord("longitude").points + 180) % 360 - 180
-    )
+        trace_gas_obs_cube.coord("longitude").points + 180
+    ) % 360 - 180
 
     # Loop over stations
     for istn, stn_data in enumerate(obs_data):
@@ -154,9 +159,11 @@ def plot_trace_gas_mod_obs(
         0.5,
         # 0.27,
         -0.1,
-        (f"Global mean {plot_dict['Mean']:.1f} - @Stations mean: mod="
-         f"{plot_dict['Stn_mn_md']:.1f} & obs={plot_dict['Stn_mn_obs']:.1f}"
-         f" (RMSE={plot_dict['RMS']:.1f})"),
+        (
+            f"Global mean {plot_dict['Mean']:.1f} - @Stations mean: mod="
+            f"{plot_dict['Stn_mn_md']:.1f} & obs={plot_dict['Stn_mn_obs']:.1f}"
+            f" (RMSE={plot_dict['RMS']:.1f})"
+        ),
         ha="center",
         va="center",
         size=14,
@@ -165,8 +172,8 @@ def plot_trace_gas_mod_obs(
 
 
 def trace_gas_maps(
-        model_data, trace_gas_obs_cube, clim_seas, timerange, trace_gas
-    ):
+    model_data, trace_gas_obs_cube, clim_seas, timerange, trace_gas
+):
     """Plot model vs NOAA GML trace gas surface concentration.
 
     The function generates the plots and returns evaluation metrics.
@@ -205,7 +212,8 @@ def trace_gas_maps(
     noaa_gml_lats = trace_gas_obs_cube.coord("latitude").points.tolist()
     noaa_gml_lons = trace_gas_obs_cube.coord("longitude").points.tolist()
     trace_gas_at_noaa = extract_pt(
-        model_data, noaa_gml_lats, noaa_gml_lons, nearest=True)
+        model_data, noaa_gml_lats, noaa_gml_lons, nearest=True
+    )
 
     # Set up seasonal contour plots
     figures = []
@@ -220,16 +228,22 @@ def trace_gas_maps(
         ).data,
     )
     step = 5
-    clevs = list(np.arange(
-        center_cmap_mean - center_cmap_mean % 5 - 15,
-        center_cmap_mean - center_cmap_mean % 5 + 16,
-        step, dtype=int))
+    clevs = list(
+        np.arange(
+            center_cmap_mean - center_cmap_mean % 5 - 15,
+            center_cmap_mean - center_cmap_mean % 5 + 16,
+            step,
+            dtype=int,
+        )
+    )
     clabs = [str(lev) if (lev % 5 == 0) else "" for lev in clevs]
     cmapr = mpl.colormaps.get_cmap("Blues")
     cmap = colors.ListedColormap(cmapr(np.linspace(0, 1, len(clevs))))
     colours = cmap.colors
-    cb_label = (f"{trace_gas.upper()} surface concentration "
-                f"[{model_data.attributes['unit']}]")
+    cb_label = (
+        f"{trace_gas.upper()} surface concentration "
+        f"[{model_data.attributes['unit']}]"
+    )
 
     # Set up the figure for scatter plotting
     fig_scatter = plt.figure(figsize=(10, 10))
@@ -248,21 +262,27 @@ def trace_gas_maps(
 
     # If all seasons are plotted on the same plot:
     fig_cf, ax_cf = plt.subplots(
-        nrows=2, ncols=2,
-        figsize=(22, 16), dpi=300,
+        nrows=2,
+        ncols=2,
+        figsize=(22, 16),
+        dpi=300,
         subplot_kw={"projection": ccrs.Robinson()},
     )
 
     # Loop over seasons
     for s, season in enumerate(trace_gas_obs_cube.slices_over("clim_season")):
-
         # Match NOAA GML obs season with model season number
-        model_sn = [c.lower() for c in clim_seas
-                    ].index(season.coord("clim_season").points[0])
+        model_sn = [c.lower() for c in clim_seas].index(
+            season.coord("clim_season").points[0]
+        )
         model_season = model_data[model_sn]
 
-        logger.info("Analysing %s for %s: %s",
-                    trace_gas.upper(), model_id, clim_seas[model_sn])
+        logger.info(
+            "Analysing %s for %s: %s",
+            trace_gas.upper(),
+            model_id,
+            clim_seas[model_sn],
+        )
 
         # Generate statistics required - area-weighted mean
         grid_areas = iris.analysis.cartography.area_weights(model_season)
@@ -277,7 +297,7 @@ def trace_gas_maps(
         seas_md = np.array([x[model_sn] for x in trace_gas_at_noaa])
 
         # Match model data with valid obs data
-        valid_indices = ~ (seas_obs.mask | np.isnan(seas_md))
+        valid_indices = ~(seas_obs.mask | np.isnan(seas_md))
         valid_obs = seas_obs[valid_indices]
         valid_md = seas_md[valid_indices]
 
@@ -289,9 +309,12 @@ def trace_gas_maps(
         linreg = scipy.stats.linregress(valid_obs, valid_md)
 
         # Plot scatter of co-located model and obs data
-        ax_scatter.scatter(valid_obs, valid_md,
-                           color=col_scatter[model_sn],
-                           marker=mark_scatter[model_sn])
+        ax_scatter.scatter(
+            valid_obs,
+            valid_md,
+            color=col_scatter[model_sn],
+            marker=mark_scatter[model_sn],
+        )
         min_scatter = np.min(
             [min_scatter, np.nanmin(valid_obs), np.nanmin(valid_md)],
         )
@@ -310,14 +333,21 @@ def trace_gas_maps(
                 label=label,
                 markersize=15,
                 markerfacecolor=col_scatter[model_sn],
-            ))
+            )
+        )
 
         # Plot contours overlaid with obs for this run and season
         n_stn = str(len(valid_obs))
         title = (
-            f"\nSurface {trace_gas.upper()} concentration " + timerange
-            + "\n" + model_id + ", " + clim_seas[model_sn]
-            + ", N stations=" + n_stn)
+            f"\nSurface {trace_gas.upper()} concentration "
+            + timerange
+            + "\n"
+            + model_id
+            + ", "
+            + clim_seas[model_sn]
+            + ", N stations="
+            + n_stn
+        )
 
         # Plot dictionary
         plot_dict = {
@@ -334,7 +364,13 @@ def trace_gas_maps(
             "trace_gas": trace_gas.upper(),
         }
         plot_trace_gas_mod_obs(
-            fig_cf, ax_cf.flatten()[s], model_season, seas_obs, trace_gas_obs_cube, plot_dict)
+            fig_cf,
+            ax_cf.flatten()[s],
+            model_season,
+            seas_obs,
+            trace_gas_obs_cube,
+            plot_dict,
+        )
 
     figures = fig_cf
 
@@ -344,25 +380,28 @@ def trace_gas_maps(
         xticks=np.arange(
             min_scatter - min_scatter % 10,
             max_scatter + min_scatter % 10,
-            step=10),
+            step=10,
+        ),
         ylim=(min_scatter - 2, max_scatter + 2),
         yticks=np.arange(
             min_scatter - min_scatter % 10,
             max_scatter + min_scatter % 10,
-            step=10),
+            step=10,
+        ),
     )
     ax_scatter.set_xlabel(
         f"NOAA GML Flask {trace_gas.upper()} "
         f"[{model_data.attributes['unit']}]",
-        fontsize=fontsizedict["axis"])
+        fontsize=fontsizedict["axis"],
+    )
     ax_scatter.set_ylabel(
         f"{model_id} {trace_gas.upper()} [{model_data.attributes['unit']}]",
-        fontsize=fontsizedict["axis"])
+        fontsize=fontsizedict["axis"],
+    )
 
-    ax_scatter.tick_params(axis="both",
-                           which="major",
-                           labelsize=fontsizedict["ticklabel"],
-                           pad=10)
+    ax_scatter.tick_params(
+        axis="both", which="major", labelsize=fontsizedict["ticklabel"], pad=10
+    )
 
     ax_scatter.set_title(
         "Model vs observations @stations\n"
@@ -381,8 +420,11 @@ def trace_gas_maps(
 
 
 def trace_gas_timeserie_zonal(
-        model_data, obs_cube, trace_gas, include_global=False,
-    ):
+    model_data,
+    obs_cube,
+    trace_gas,
+    include_global=False,
+):
     """Plot time series of zonal mean trace gas concentration.
 
     It uses different latitude slices for model and observational data:
@@ -426,9 +468,14 @@ def trace_gas_timeserie_zonal(
     widths = [1.0, 0.85, 1.0, 1.1]
     heights = [1.0, 1.0, 1.0, 1.0]
     gs = gridspec.GridSpec(
-        4, 4, left=0.05, right=0.95,
-        width_ratios=widths, height_ratios=heights,
-        hspace=0.35, wspace=0.25,
+        4,
+        4,
+        left=0.05,
+        right=0.95,
+        width_ratios=widths,
+        height_ratios=heights,
+        hspace=0.35,
+        wspace=0.25,
     )
     latitude_titles = [
         r"Latitudes 60$^\circ$N - 90$^\circ$N",
@@ -448,8 +495,9 @@ def trace_gas_timeserie_zonal(
     obs_slices = {}
     for key, (lat_min, lat_max) in latitude_ranges.items():
         constraint = iris.Constraint(
-            latitude=lambda cell, lat_min=lat_min, lat_max=lat_max:
-            lat_min <= cell < lat_max,
+            latitude=lambda cell, lat_min=lat_min, lat_max=lat_max: lat_min
+            <= cell
+            < lat_max,
         )
         model_slices[key] = model_data.extract(constraint)
         obs_slices[key] = obs_cube.extract(constraint)
@@ -468,8 +516,20 @@ def trace_gas_timeserie_zonal(
             err = f"Year/month coordinates already present in {model_id}."
             logger.debug(err)
         years = list(set(mod.coord("year", dim_coords=False).points))
-        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        months = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+        ]
 
         # Co-locate model grid points with measurement sites
         noaa_gml_lats = obs.coord("latitude").points.tolist()
@@ -485,13 +545,16 @@ def trace_gas_timeserie_zonal(
             obs_y = obs_yearly.extract(iris.Constraint(year=y))
             extracted_gas = extract_pt(
                 model_yearly.extract(iris.Constraint(year=y)),
-                noaa_gml_lats, noaa_gml_lons, nearest=True,
+                noaa_gml_lats,
+                noaa_gml_lons,
+                nearest=True,
             )
             # Select only stations with valid data
-            valid_indices = ~ (obs_y.data.mask | np.isnan(extracted_gas))
+            valid_indices = ~(obs_y.data.mask | np.isnan(extracted_gas))
             v_obs = obs_y.data[valid_indices].tolist()
             v_mod = [
-                tg.item() for i, tg in enumerate(extracted_gas)
+                tg.item()
+                for i, tg in enumerate(extracted_gas)
                 if (tg.item() is not None) and valid_indices[i]
             ]
             # Save values in bulk lists for scatter plot
@@ -502,38 +565,18 @@ def trace_gas_timeserie_zonal(
             trace_gas_at_station_y[str(y)] = np.array(v_obs)
         # Time series of monthly data and seasonal anomalies
         trace_gas_at_model = {
-            "max": {
-                str(y): {
-                    m: [] for m in months
-                } for y in years
-            },
-            "min": {
-                str(y): {
-                    m: [] for m in months
-                } for y in years
-            },
+            "max": {str(y): {m: [] for m in months} for y in years},
+            "min": {str(y): {m: [] for m in months} for y in years},
         }
         trace_gas_at_station = {
-            "max": {
-                str(y): {
-                    m: [] for m in months
-                } for y in years
-            },
-            "min": {
-                str(y): {
-                    m: [] for m in months
-                } for y in years
-            },
+            "max": {str(y): {m: [] for m in months} for y in years},
+            "min": {str(y): {m: [] for m in months} for y in years},
         }
         trace_gas_at_model_anom = {
-            str(y): {
-                m: [] for m in months
-            } for y in years
+            str(y): {m: [] for m in months} for y in years
         }
         trace_gas_at_station_anom = {
-            str(y): {
-                m: [] for m in months
-            } for y in years
+            str(y): {m: [] for m in months} for y in years
         }
         months_ts = mod.coord("month", dim_coords=False).points
         years_ts = mod.coord("year", dim_coords=False).points
@@ -542,44 +585,55 @@ def trace_gas_timeserie_zonal(
             obs_ts = obs.extract(iris.Constraint(time=ts))
             extracted_gas = extract_pt(
                 mod.extract(iris.Constraint(time=ts)),
-                noaa_gml_lats, noaa_gml_lons, nearest=True,
-            )
-            valid_indices = ~ (obs_ts.data.mask | np.isnan(extracted_gas))
-            v_obs = obs_ts.data[valid_indices].tolist()
-            v_mod = [
-                tg.item() for i, tg in enumerate(extracted_gas)
-                if (tg.item() is not None) and valid_indices[i]
-            ]
-            trace_gas_at_model["max"][str(years_ts[i])][
-                months_ts[i]] = np.max(v_mod)
-            trace_gas_at_station["max"][str(years_ts[i])][
-                months_ts[i]] = np.max(v_obs)
-            trace_gas_at_model["min"][str(years_ts[i])][
-                months_ts[i]] = np.min(v_mod)
-            trace_gas_at_station["min"][str(years_ts[i])][
-                months_ts[i]] = np.min(v_obs)
-            # Monthly anomaly time series
-            obs_anomaly = obs.extract(iris.Constraint(time=ts)) - \
-                obs_yearly.extract(iris.Constraint(year=years_ts[i]))
-            mod_anomaly = mod.extract(iris.Constraint(time=ts)) - \
-                model_yearly.extract(iris.Constraint(year=years_ts[i]))
-            extracted_anom = extract_pt(
-                mod_anomaly,
-                noaa_gml_lats, noaa_gml_lons,
+                noaa_gml_lats,
+                noaa_gml_lons,
                 nearest=True,
             )
-            valid_indices = ~ (
-                obs_anomaly.data.mask | np.isnan(extracted_anom)
-            )
-            v_obs = obs_anomaly.data[valid_indices].tolist()
+            valid_indices = ~(obs_ts.data.mask | np.isnan(extracted_gas))
+            v_obs = obs_ts.data[valid_indices].tolist()
             v_mod = [
-                tg.item() for i, tg in enumerate(extracted_anom)
+                tg.item()
+                for i, tg in enumerate(extracted_gas)
                 if (tg.item() is not None) and valid_indices[i]
             ]
-            trace_gas_at_model_anom[str(years_ts[i])][
-                months_ts[i]] = np.array(v_mod)
-            trace_gas_at_station_anom[str(years_ts[i])][
-                months_ts[i]] = np.array(v_obs)
+            trace_gas_at_model["max"][str(years_ts[i])][months_ts[i]] = np.max(
+                v_mod
+            )
+            trace_gas_at_station["max"][str(years_ts[i])][months_ts[i]] = (
+                np.max(v_obs)
+            )
+            trace_gas_at_model["min"][str(years_ts[i])][months_ts[i]] = np.min(
+                v_mod
+            )
+            trace_gas_at_station["min"][str(years_ts[i])][months_ts[i]] = (
+                np.min(v_obs)
+            )
+            # Monthly anomaly time series
+            obs_anomaly = obs.extract(
+                iris.Constraint(time=ts)
+            ) - obs_yearly.extract(iris.Constraint(year=years_ts[i]))
+            mod_anomaly = mod.extract(
+                iris.Constraint(time=ts)
+            ) - model_yearly.extract(iris.Constraint(year=years_ts[i]))
+            extracted_anom = extract_pt(
+                mod_anomaly,
+                noaa_gml_lats,
+                noaa_gml_lons,
+                nearest=True,
+            )
+            valid_indices = ~(obs_anomaly.data.mask | np.isnan(extracted_anom))
+            v_obs = obs_anomaly.data[valid_indices].tolist()
+            v_mod = [
+                tg.item()
+                for i, tg in enumerate(extracted_anom)
+                if (tg.item() is not None) and valid_indices[i]
+            ]
+            trace_gas_at_model_anom[str(years_ts[i])][months_ts[i]] = np.array(
+                v_mod
+            )
+            trace_gas_at_station_anom[str(years_ts[i])][months_ts[i]] = (
+                np.array(v_obs)
+            )
         # Compute aggregated values for the entire latitude range
         if include_global:
             mod_latitude = {
@@ -607,78 +661,107 @@ def trace_gas_timeserie_zonal(
             ).data
             anomaly = mod.copy(data=np.full_like(mod.data, np.nan))
             for i, ts in enumerate(time.units.num2date(time.points)):
-                anomaly.data[i, ...] = \
-                    mod.extract(iris.Constraint(time=ts)).data - \
-                    model_yearly.extract(
-                        iris.Constraint(year=years_ts[i])).data
+                anomaly.data[i, ...] = (
+                    mod.extract(iris.Constraint(time=ts)).data
+                    - model_yearly.extract(
+                        iris.Constraint(year=years_ts[i])
+                    ).data
+                )
             anomaly = anomaly.aggregated_by("month", iris.analysis.MEAN)
             weights_anom = iris.analysis.cartography.area_weights(anomaly)
-            mod_latitude["mean"]["monthly"] = anomaly.collapsed(
-                ["latitude", "longitude"],
-                iris.analysis.MEAN,
-                weights=weights_anom,
-            ).aggregated_by("month", iris.analysis.MEAN).data
-            mod_latitude["std"]["monthly"] = anomaly.collapsed(
-                ["latitude", "longitude"],
-                iris.analysis.MEAN,
-                weights=weights_anom,
-            ).aggregated_by("month", iris.analysis.STD_DEV).data
+            mod_latitude["mean"]["monthly"] = (
+                anomaly.collapsed(
+                    ["latitude", "longitude"],
+                    iris.analysis.MEAN,
+                    weights=weights_anom,
+                )
+                .aggregated_by("month", iris.analysis.MEAN)
+                .data
+            )
+            mod_latitude["std"]["monthly"] = (
+                anomaly.collapsed(
+                    ["latitude", "longitude"],
+                    iris.analysis.MEAN,
+                    weights=weights_anom,
+                )
+                .aggregated_by("month", iris.analysis.STD_DEV)
+                .data
+            )
 
         # Plot left column
         # zonal-mean time series and corresponding +/- std range
-        model_ts_mean = np.array([
-            np.mean(trace_gas_at_model_y[str(y)]) for y in years
-        ])
-        model_ts_std = np.array([
-            np.std(trace_gas_at_model_y[str(y)]) for y in years
-        ])
-        obs_ts_mean = np.array([
-            np.mean(trace_gas_at_station_y[str(y)]) for y in years
-        ])
-        obs_ts_std = np.array([
-            np.std(trace_gas_at_station_y[str(y)]) for y in years
-        ])
+        model_ts_mean = np.array(
+            [np.mean(trace_gas_at_model_y[str(y)]) for y in years]
+        )
+        model_ts_std = np.array(
+            [np.std(trace_gas_at_model_y[str(y)]) for y in years]
+        )
+        obs_ts_mean = np.array(
+            [np.mean(trace_gas_at_station_y[str(y)]) for y in years]
+        )
+        obs_ts_std = np.array(
+            [np.std(trace_gas_at_station_y[str(y)]) for y in years]
+        )
         _ = plt.subplot(gs[l_i, 0])
         plt.fill_between(
             years,
             model_ts_mean - model_ts_std,
             model_ts_mean + model_ts_std,
-            color=COLORS_MARKERS[0], alpha=0.1,
+            color=COLORS_MARKERS[0],
+            alpha=0.1,
         )
         plt.fill_between(
             years,
             obs_ts_mean - obs_ts_std,
             obs_ts_mean + obs_ts_std,
-            color=COLORS_MARKERS[1], alpha=0.1,
+            color=COLORS_MARKERS[1],
+            alpha=0.1,
         )
         if include_global:
             plt.fill_between(
                 years,
                 mod_latitude["mean"]["yearly"] - mod_latitude["std"]["yearly"],
                 mod_latitude["mean"]["yearly"] + mod_latitude["std"]["yearly"],
-                color=COLORS_MARKERS[2], alpha=0.1,
+                color=COLORS_MARKERS[2],
+                alpha=0.1,
             )
         plt.plot(
-            years, model_ts_mean, linestyle="solid",
-            color=COLORS_MARKERS[0], marker=MARKERS[0], markersize=10,
-            label=f"{model_id} @stations: Mean +/- 1 std" if l_i == 0 else None,
+            years,
+            model_ts_mean,
+            linestyle="solid",
+            color=COLORS_MARKERS[0],
+            marker=MARKERS[0],
+            markersize=10,
+            label=f"{model_id} @stations: Mean +/- 1 std"
+            if l_i == 0
+            else None,
         )
         plt.plot(
-            years, obs_ts_mean, linestyle="solid",
-            color=COLORS_MARKERS[1], marker=MARKERS[1], markersize=10,
+            years,
+            obs_ts_mean,
+            linestyle="solid",
+            color=COLORS_MARKERS[1],
+            marker=MARKERS[1],
+            markersize=10,
             label="Observations: Mean +/- 1 std" if l_i == 0 else None,
         )
         if include_global:
             plt.plot(
-                years, mod_latitude["mean"]["yearly"], linestyle="solid",
-                color=COLORS_MARKERS[2], marker=MARKERS[2], markersize=10,
+                years,
+                mod_latitude["mean"]["yearly"],
+                linestyle="solid",
+                color=COLORS_MARKERS[2],
+                marker=MARKERS[2],
+                markersize=10,
                 label="{model_id}: Mean +/- 1 std" if l_i == 0 else None,
             )
         plt.xticks(
             np.arange(
-                years[0], years[-1] + 1,
+                years[0],
+                years[-1] + 1,
                 1 if years[-1] - years[0] < 10 else 4,
-            ))
+            )
+        )
         plt.xlabel("Year", fontsize=20)
         plt.ylabel(
             f"{trace_gas.upper()} annual mean "
@@ -702,15 +785,21 @@ def trace_gas_timeserie_zonal(
         min_axes = np.min(valid_obs + valid_md) - 2
         max_axes = np.max(valid_obs + valid_md) + 2
         plt.scatter(valid_obs, valid_md, color="black")
-        plt.axline([0, linreg.intercept], slope=linreg.slope,
-                   linestyle="dashed", color="gray")
-        plt.plot(np.arange(min_axes - 1, max_axes + 1, 1),
-                 np.arange(min_axes - 1, max_axes + 1, 1), color="black")
+        plt.axline(
+            [0, linreg.intercept],
+            slope=linreg.slope,
+            linestyle="dashed",
+            color="gray",
+        )
+        plt.plot(
+            np.arange(min_axes - 1, max_axes + 1, 1),
+            np.arange(min_axes - 1, max_axes + 1, 1),
+            color="black",
+        )
         plt.xlim([min_axes, max_axes])
         plt.ylim([min_axes, max_axes])
         plt.xlabel(
-            f"NOAA GML {trace_gas.upper()} "
-            f"[{model_data.attributes['unit']}]",
+            f"NOAA GML {trace_gas.upper()} [{model_data.attributes['unit']}]",
             fontsize=20,
         )
         plt.ylabel(
@@ -726,34 +815,46 @@ def trace_gas_timeserie_zonal(
 
         # Plot center-right column
         # multi-annual mean seasonal variation
-        model_seas_anom_mean = np.array([
-            np.mean(
-                np.concatenate(
-                    [trace_gas_at_model_anom[str(y)][m] for y in years],
-                ),
-            ) for m in months
-        ])
-        model_seas_anom_std = np.array([
-            np.std(
-                np.concatenate(
-                    [trace_gas_at_model_anom[str(y)][m] for y in years],
-                ),
-            ) for m in months
-        ])
-        obs_seas_anom_mean = np.array([
-            np.mean(
-                np.concatenate(
-                    [trace_gas_at_station_anom[str(y)][m] for y in years],
-                ),
-            ) for m in months
-        ])
-        obs_seas_anom_std = np.array([
-            np.std(
-                np.concatenate(
-                    [trace_gas_at_station_anom[str(y)][m] for y in years],
-                ),
-            ) for m in months
-        ])
+        model_seas_anom_mean = np.array(
+            [
+                np.mean(
+                    np.concatenate(
+                        [trace_gas_at_model_anom[str(y)][m] for y in years],
+                    ),
+                )
+                for m in months
+            ]
+        )
+        model_seas_anom_std = np.array(
+            [
+                np.std(
+                    np.concatenate(
+                        [trace_gas_at_model_anom[str(y)][m] for y in years],
+                    ),
+                )
+                for m in months
+            ]
+        )
+        obs_seas_anom_mean = np.array(
+            [
+                np.mean(
+                    np.concatenate(
+                        [trace_gas_at_station_anom[str(y)][m] for y in years],
+                    ),
+                )
+                for m in months
+            ]
+        )
+        obs_seas_anom_std = np.array(
+            [
+                np.std(
+                    np.concatenate(
+                        [trace_gas_at_station_anom[str(y)][m] for y in years],
+                    ),
+                )
+                for m in months
+            ]
+        )
         model_ts_mean = model_seas_anom_mean
         model_ts_std = model_seas_anom_std
         obs_ts_mean = obs_seas_anom_mean
@@ -763,13 +864,15 @@ def trace_gas_timeserie_zonal(
             np.arange(0, 12, 1),
             model_seas_anom_mean - model_seas_anom_std,
             model_seas_anom_mean + model_seas_anom_std,
-            color=COLORS_MARKERS[0], alpha=0.1,
+            color=COLORS_MARKERS[0],
+            alpha=0.1,
         )
         plt.fill_between(
             np.arange(0, 12, 1),
             obs_seas_anom_mean - obs_seas_anom_std,
             obs_seas_anom_mean + obs_seas_anom_std,
-            color=COLORS_MARKERS[1], alpha=0.1,
+            color=COLORS_MARKERS[1],
+            alpha=0.1,
         )
         if include_global:
             plt.fill_between(
@@ -778,18 +881,34 @@ def trace_gas_timeserie_zonal(
                 - mod_latitude["std"]["monthly"],
                 mod_latitude["mean"]["monthly"]
                 + mod_latitude["std"]["monthly"],
-                color=COLORS_MARKERS[2], alpha=0.1,
+                color=COLORS_MARKERS[2],
+                alpha=0.1,
             )
-        plt.plot(np.arange(0, 12, 1), model_seas_anom_mean,
-                 linestyle="solid", color=COLORS_MARKERS[0],
-                 marker=MARKERS[0], markersize=10)
-        plt.plot(np.arange(0, 12, 1), obs_seas_anom_mean,
-                 linestyle="solid", color=COLORS_MARKERS[1],
-                 marker=MARKERS[1], markersize=10)
+        plt.plot(
+            np.arange(0, 12, 1),
+            model_seas_anom_mean,
+            linestyle="solid",
+            color=COLORS_MARKERS[0],
+            marker=MARKERS[0],
+            markersize=10,
+        )
+        plt.plot(
+            np.arange(0, 12, 1),
+            obs_seas_anom_mean,
+            linestyle="solid",
+            color=COLORS_MARKERS[1],
+            marker=MARKERS[1],
+            markersize=10,
+        )
         if include_global:
-            plt.plot(np.arange(0, 12, 1), mod_latitude["mean"]["monthly"],
-                     linestyle="solid", color=COLORS_MARKERS[2],
-                     marker=MARKERS[2], markersize=10)
+            plt.plot(
+                np.arange(0, 12, 1),
+                mod_latitude["mean"]["monthly"],
+                linestyle="solid",
+                color=COLORS_MARKERS[2],
+                marker=MARKERS[2],
+                markersize=10,
+            )
         plt.xticks(np.arange(0, 12, 1), months)
         plt.xlabel("Month", fontsize=20)
         plt.ylabel(
@@ -802,26 +921,38 @@ def trace_gas_timeserie_zonal(
 
         # Plot right column
         # seasonal cycle timing
-        seas_max_model = np.array([
-            np.argmax([
-                trace_gas_at_model["max"][str(y)][m] for m in months
-            ]) for y in years
-        ])
-        seas_min_model = np.array([
-            np.argmin([
-                trace_gas_at_model["min"][str(y)][m] for m in months
-            ]) for y in years
-        ])
-        seas_max_obs = np.array([
-            np.argmax([
-                trace_gas_at_station["max"][str(y)][m] for m in months
-            ]) for y in years
-        ])
-        seas_min_obs = np.array([
-            np.argmin([
-                trace_gas_at_station["min"][str(y)][m] for m in months
-            ]) for y in years
-        ])
+        seas_max_model = np.array(
+            [
+                np.argmax(
+                    [trace_gas_at_model["max"][str(y)][m] for m in months]
+                )
+                for y in years
+            ]
+        )
+        seas_min_model = np.array(
+            [
+                np.argmin(
+                    [trace_gas_at_model["min"][str(y)][m] for m in months]
+                )
+                for y in years
+            ]
+        )
+        seas_max_obs = np.array(
+            [
+                np.argmax(
+                    [trace_gas_at_station["max"][str(y)][m] for m in months]
+                )
+                for y in years
+            ]
+        )
+        seas_min_obs = np.array(
+            [
+                np.argmin(
+                    [trace_gas_at_station["min"][str(y)][m] for m in months]
+                )
+                for y in years
+            ]
+        )
         month_offset = 4
         months = months[month_offset:] + months[:month_offset]
         seas_max_model[seas_max_model < month_offset] += 12
@@ -830,41 +961,74 @@ def trace_gas_timeserie_zonal(
         seas_min_obs[seas_min_obs < month_offset] += 12
         _ = plt.subplot(gs[l_i, 3])
         plt.plot(
-            years, seas_max_model, linestyle="solid", color=COLORS_MARKERS[0],
-            marker=MARKERS[0], markersize=10, alpha=0.7,
+            years,
+            seas_max_model,
+            linestyle="solid",
+            color=COLORS_MARKERS[0],
+            marker=MARKERS[0],
+            markersize=10,
+            alpha=0.7,
             label="" if l_i == 0 else None,
         )
         plt.plot(
-            years, seas_max_obs, linestyle="solid", color=COLORS_MARKERS[1],
-            marker=MARKERS[1], markersize=10, alpha=0.7,
+            years,
+            seas_max_obs,
+            linestyle="solid",
+            color=COLORS_MARKERS[1],
+            marker=MARKERS[1],
+            markersize=10,
+            alpha=0.7,
             label="" if l_i == 0 else None,
         )
         plt.plot(
-            years, seas_min_model, linestyle="dashed", color=COLORS_MARKERS[0],
-            marker=MARKERS[0], markersize=10, fillstyle="none", alpha=0.7,
+            years,
+            seas_min_model,
+            linestyle="dashed",
+            color=COLORS_MARKERS[0],
+            marker=MARKERS[0],
+            markersize=10,
+            fillstyle="none",
+            alpha=0.7,
             label="" if l_i == 0 else None,
         )
         plt.plot(
-            years, seas_min_obs, linestyle="dashed", color=COLORS_MARKERS[1],
-            marker=MARKERS[1], markersize=10, fillstyle="none", alpha=0.7,
+            years,
+            seas_min_obs,
+            linestyle="dashed",
+            color=COLORS_MARKERS[1],
+            marker=MARKERS[1],
+            markersize=10,
+            fillstyle="none",
+            alpha=0.7,
             label="" if l_i == 0 else None,
         )
         if include_global:
             plt.scatter(
-                years, 1, linestyle="solid", color=COLORS_MARKERS[2],
-                marker=MARKERS[2], markersize=10,
+                years,
+                1,
+                linestyle="solid",
+                color=COLORS_MARKERS[2],
+                marker=MARKERS[2],
+                markersize=10,
                 label="{model_id}: Max" if l_i == 0 else None,
             )
             plt.scatter(
-                years, 1, linestyle="dashed", color=COLORS_MARKERS[2],
-                marker=MARKERS[2], markersize=10, fillstyle="none",
+                years,
+                1,
+                linestyle="dashed",
+                color=COLORS_MARKERS[2],
+                marker=MARKERS[2],
+                markersize=10,
+                fillstyle="none",
                 label="{model_id}: Min" if l_i == 0 else None,
             )
         plt.xticks(
             np.arange(
-                years[0], years[-1] + 1,
+                years[0],
+                years[-1] + 1,
                 1 if years[-1] - years[0] < 10 else 4,
-        ))
+            )
+        )
         plt.xlabel("Year", fontsize=20)
         plt.yticks(np.arange(month_offset, month_offset + 12, 1), months)
         plt.ylim([month_offset - 1, month_offset + 12])
@@ -878,20 +1042,38 @@ def trace_gas_timeserie_zonal(
             labels_minmax[2] = f"{model_id} @stations: Max/Min"
             labels_minmax[3] = "Observations: Max/Min"
 
-    figure.legend(handles_mean, labels_mean,
-                  loc="upper center", bbox_to_anchor=[0.37, 0.08],
-                  ncol=2, fontsize=20, borderaxespad=0.01, frameon=True)
-    figure.legend(handles_minmax, labels_minmax,
-                  loc="lower right", bbox_to_anchor=[0.95, 0.05],
-                  columnspacing=0.01, handletextpad=0.01,
-                  ncol=2, fontsize=20, borderaxespad=0.01, frameon=True)
+    figure.legend(
+        handles_mean,
+        labels_mean,
+        loc="upper center",
+        bbox_to_anchor=[0.37, 0.08],
+        ncol=2,
+        fontsize=20,
+        borderaxespad=0.01,
+        frameon=True,
+    )
+    figure.legend(
+        handles_minmax,
+        labels_minmax,
+        loc="lower right",
+        bbox_to_anchor=[0.95, 0.05],
+        columnspacing=0.01,
+        handletextpad=0.01,
+        ncol=2,
+        fontsize=20,
+        borderaxespad=0.01,
+        frameon=True,
+    )
 
     return figure
 
 
 def trace_gas_seas_ampl_growth_rate(
-        model_data, obs_cube, trace_gas, include_global=False,
-    ):
+    model_data,
+    obs_cube,
+    trace_gas,
+    include_global=False,
+):
     """Plot amplitude, growth rate and sensitivity between the two quantities.
 
     It uses different latitude slices for model and observational data:
@@ -955,14 +1137,18 @@ def trace_gas_seas_ampl_growth_rate(
     # Prepare iris cubes for model data
     model_yearly = model_data.aggregated_by("year", iris.analysis.MEAN)
     model_amplitude = model_data.aggregated_by("year", iris.analysis.MAX)
-    - model_data.aggregated_by("year", iris.analysis.MIN)
+    -model_data.aggregated_by("year", iris.analysis.MIN)
     model_growth = iris.cube.Cube(
         np.diff(model_yearly.data, axis=0),
         long_name=f"{trace_gas}_growth",
         units=model_data.attributes["unit"],
         dim_coords_and_dims=[
-            (iris.coords.DimCoord.from_coord(
-                model_yearly.coord("year")[1:]), 0),
+            (
+                iris.coords.DimCoord.from_coord(
+                    model_yearly.coord("year")[1:]
+                ),
+                0,
+            ),
             (model_data.coord("latitude"), 1),
             (model_data.coord("longitude"), 2),
         ],
@@ -971,31 +1157,36 @@ def trace_gas_seas_ampl_growth_rate(
     # And observations
     obs_yearly = obs_cube.aggregated_by("year", iris.analysis.MEAN)
     obs_amplitude = obs_cube.aggregated_by("year", iris.analysis.MAX)
-    - obs_cube.aggregated_by("year", iris.analysis.MIN)
+    -obs_cube.aggregated_by("year", iris.analysis.MIN)
     obs_growth = iris.cube.Cube(
         np.diff(obs_yearly.data, axis=0),
         long_name=f"{trace_gas}_growth",
         units=model_data.attributes["unit"],
         dim_coords_and_dims=[
-            (iris.coords.DimCoord.from_coord(
-                obs_yearly.coord("year")[1:]), 0),
+            (iris.coords.DimCoord.from_coord(obs_yearly.coord("year")[1:]), 0),
             (obs_cube.coord("Station index (arbitrary)"), 1),
         ],
     )
     obs_growth.attributes = obs_cube.attributes
-    for aux_coord_name in ["altitude", "latitude",
-                           "longitude", "platform_name"]:
+    for aux_coord_name in [
+        "altitude",
+        "latitude",
+        "longitude",
+        "platform_name",
+    ]:
         aux_coord = obs_cube.coord(aux_coord_name)
         if obs_cube.coord_dims(aux_coord):
             obs_growth.add_aux_coord(
-                aux_coord.copy(), obs_cube.coord_dims(aux_coord))
+                aux_coord.copy(), obs_cube.coord_dims(aux_coord)
+            )
     # Preprocess latitude slices
     model_slices = {}
     obs_slices = {}
     for key, (lat_min, lat_max) in latitude_ranges.items():
         constraint = iris.Constraint(
-            latitude=lambda cell, lat_min=lat_min, lat_max=lat_max:
-            lat_min <= cell < lat_max,
+            latitude=lambda cell, lat_min=lat_min, lat_max=lat_max: lat_min
+            <= cell
+            < lat_max,
         )
         model_slices[key] = {}
         obs_slices[key] = {}
@@ -1015,9 +1206,14 @@ def trace_gas_seas_ampl_growth_rate(
     widths = [1.0, 1.0, 1.0]
     heights = [1.0, 1.0, 1.0, 1.0]
     gs = gridspec.GridSpec(
-        4, 3, left=0.05, right=0.95,
-        width_ratios=widths, height_ratios=heights,
-        hspace=0.35, wspace=0.25,
+        4,
+        3,
+        left=0.05,
+        right=0.95,
+        width_ratios=widths,
+        height_ratios=heights,
+        hspace=0.35,
+        wspace=0.25,
     )
     # Loop over latitude ranges
     for l_i, lat_range in enumerate(latitude_ranges.keys()):
@@ -1030,7 +1226,7 @@ def trace_gas_seas_ampl_growth_rate(
         model_growth_ls = model_slices[lat_range]["growth"]
         # Compute aggregated values for the entire latitude range
         if include_global:
-            mod_latitude ={
+            mod_latitude = {
                 "mean": {
                     "amplitude": np.zeros(shape=(len(years))),
                     "growth": np.zeros(shape=(len(years) - 1)),
@@ -1043,7 +1239,8 @@ def trace_gas_seas_ampl_growth_rate(
                 },
             }
             weights_amp = iris.analysis.cartography.area_weights(
-                model_amplitude_ls)
+                model_amplitude_ls
+            )
             mod_latitude["mean"]["amplitude"] = model_amplitude_ls.collapsed(
                 ["latitude", "longitude"],
                 iris.analysis.MEAN,
@@ -1059,14 +1256,19 @@ def trace_gas_seas_ampl_growth_rate(
                 long_name=f"{trace_gas}_relative_growth",
                 units="%/yr",
                 dim_coords_and_dims=[
-                    (iris.coords.DimCoord.from_coord(
-                        model_growth_ls.coord("year")), 0),
+                    (
+                        iris.coords.DimCoord.from_coord(
+                            model_growth_ls.coord("year")
+                        ),
+                        0,
+                    ),
                     (model_growth_ls.coord("latitude"), 1),
                     (model_growth_ls.coord("longitude"), 2),
                 ],
             )
             weights_growth = iris.analysis.cartography.area_weights(
-                tmp_relative_growth)
+                tmp_relative_growth
+            )
             mod_latitude["mean"]["growth"] = tmp_relative_growth.collapsed(
                 ["latitude", "longitude"],
                 iris.analysis.MEAN,
@@ -1082,14 +1284,19 @@ def trace_gas_seas_ampl_growth_rate(
                 long_name=f"{trace_gas}_sensitivity_ampl_grow",
                 units=f"{model_data.attributes['unit']}.yr",
                 dim_coords_and_dims=[
-                    (iris.coords.DimCoord.from_coord(
-                        model_growth_ls.coord("year")), 0),
+                    (
+                        iris.coords.DimCoord.from_coord(
+                            model_growth_ls.coord("year")
+                        ),
+                        0,
+                    ),
                     (model_growth_ls.coord("latitude"), 1),
                     (model_growth_ls.coord("longitude"), 2),
                 ],
             )
             weights_sensitivity = iris.analysis.cartography.area_weights(
-                tmp_sensitivity)
+                tmp_sensitivity
+            )
             mod_latitude["mean"]["growth"] = tmp_sensitivity.collapsed(
                 ["latitude", "longitude"],
                 iris.analysis.MEAN,
@@ -1134,23 +1341,33 @@ def trace_gas_seas_ampl_growth_rate(
             # Extract yearly
             extracted_yearly = extract_pt(
                 model_yearly_ls.extract(iris.Constraint(year=y)),
-                noaa_gml_lats, noaa_gml_lons, nearest=True,
+                noaa_gml_lats,
+                noaa_gml_lons,
+                nearest=True,
             )
-            valid_indices_y = ~ (obs_y.data.mask | np.isnan(extracted_yearly))
+            valid_indices_y = ~(obs_y.data.mask | np.isnan(extracted_yearly))
             v_obs_y = obs_y.data[valid_indices_y].tolist()
-            v_mod_y = [tg.item() for j, tg in enumerate(extracted_yearly)
-                       if (tg.item() is not None) and valid_indices_y[j]]
+            v_mod_y = [
+                tg.item()
+                for j, tg in enumerate(extracted_yearly)
+                if (tg.item() is not None) and valid_indices_y[j]
+            ]
             # Extract amplitude
             extracted_amplitude = extract_pt(
                 model_amplitude_ls.extract(iris.Constraint(year=y)),
-                noaa_gml_lats, noaa_gml_lons, nearest=True,
+                noaa_gml_lats,
+                noaa_gml_lons,
+                nearest=True,
             )
-            valid_indices_a = ~ (
+            valid_indices_a = ~(
                 obs_a.data.mask | np.isnan(extracted_amplitude)
             )
             v_obs_a = obs_a.data[valid_indices_a]
-            v_mod_a = [tg.item() for j, tg in enumerate(extracted_amplitude)
-                       if (tg.item() is not None) and valid_indices_a[j]]
+            v_mod_a = [
+                tg.item()
+                for j, tg in enumerate(extracted_amplitude)
+                if (tg.item() is not None) and valid_indices_a[j]
+            ]
             valid_obs["mean"]["amplitude"][i] = np.mean(v_obs_a)
             valid_obs["std"]["amplitude"][i] = np.std(v_obs_a)
             valid_md["mean"]["amplitude"][i] = np.mean(v_mod_a)
@@ -1160,24 +1377,25 @@ def trace_gas_seas_ampl_growth_rate(
                 # Growth
                 extracted_growth = extract_pt(
                     model_growth_ls.extract(iris.Constraint(year=y)),
-                    noaa_gml_lats, noaa_gml_lons, nearest=True,
+                    noaa_gml_lats,
+                    noaa_gml_lons,
+                    nearest=True,
                 )
-                valid_indices_g = ~ (
+                valid_indices_g = ~(
                     obs_g.data.mask | np.isnan(extracted_growth)
                 )
                 v_obs_g = obs_g.data[valid_indices_g]
                 v_mod_g = [
-                    tg.item() for j, tg in enumerate(extracted_growth)
+                    tg.item()
+                    for j, tg in enumerate(extracted_growth)
                     if (tg.item() is not None) and valid_indices_g[j]
                 ]
                 # Relative growth
                 v_obs_g_relative = [
-                    100 * g / v_obs_y[j - 1]
-                    for j, g in enumerate(v_obs_g)
+                    100 * g / v_obs_y[j - 1] for j, g in enumerate(v_obs_g)
                 ]
                 v_mod_g_relative = [
-                    100 * g / v_mod_y[j - 1]
-                    for j, g in enumerate(v_mod_g)
+                    100 * g / v_mod_y[j - 1] for j, g in enumerate(v_mod_g)
                 ]
                 valid_obs["mean"]["growth"][i - 1] = np.mean(v_obs_g_relative)
                 valid_obs["std"]["growth"][i - 1] = np.std(v_obs_g_relative)
@@ -1185,9 +1403,11 @@ def trace_gas_seas_ampl_growth_rate(
                 valid_md["std"]["growth"][i - 1] = np.std(v_mod_g_relative)
                 # Compute sensitivity between amplitude and growth
                 v_obs_s = [
-                    v_obs_a[j] / v_obs_g[j] for j in range(1, len(v_obs_g))]
+                    v_obs_a[j] / v_obs_g[j] for j in range(1, len(v_obs_g))
+                ]
                 v_mod_s = [
-                    v_mod_a[j] / v_mod_g[j] for j in range(1, len(v_mod_g))]
+                    v_mod_a[j] / v_mod_g[j] for j in range(1, len(v_mod_g))
+                ]
                 valid_obs["mean"]["sensitivity"][i - 1] = np.mean(v_obs_s)
                 valid_obs["std"]["sensitivity"][i - 1] = np.std(v_obs_s)
                 valid_md["mean"]["sensitivity"][i - 1] = np.mean(v_mod_s)
@@ -1196,34 +1416,47 @@ def trace_gas_seas_ampl_growth_rate(
         # Plot left column = amplitude time series
         _ = plt.subplot(gs[l_i, 0])
         plt.plot(
-            years, valid_md["mean"]["amplitude"],
-            color=COLORS_MARKERS[0], linestyle="solid",
-            marker=MARKERS[0], markersize=10,
-            label=f"{model_id} @stations: Mean +/- 1 std" if l_i == 0 else None,
+            years,
+            valid_md["mean"]["amplitude"],
+            color=COLORS_MARKERS[0],
+            linestyle="solid",
+            marker=MARKERS[0],
+            markersize=10,
+            label=f"{model_id} @stations: Mean +/- 1 std"
+            if l_i == 0
+            else None,
         )
         plt.fill_between(
             years,
             valid_md["mean"]["amplitude"] - valid_md["std"]["amplitude"],
             valid_md["mean"]["amplitude"] + valid_md["std"]["amplitude"],
-            color=COLORS_MARKERS[0], alpha=0.1,
+            color=COLORS_MARKERS[0],
+            alpha=0.1,
         )
         plt.plot(
-            years, valid_obs["mean"]["amplitude"],
-            color=COLORS_MARKERS[1], linestyle="solid",
-            marker=MARKERS[1], markersize=10,
+            years,
+            valid_obs["mean"]["amplitude"],
+            color=COLORS_MARKERS[1],
+            linestyle="solid",
+            marker=MARKERS[1],
+            markersize=10,
             label="Observations: Mean +/- 1 std" if l_i == 0 else None,
         )
         plt.fill_between(
             years,
             valid_obs["mean"]["amplitude"] - valid_obs["std"]["amplitude"],
             valid_obs["mean"]["amplitude"] + valid_obs["std"]["amplitude"],
-            color=COLORS_MARKERS[1], alpha=0.1,
+            color=COLORS_MARKERS[1],
+            alpha=0.1,
         )
         if include_global:
             plt.plot(
-                years, mod_latitude["mean"]["amplitude"],
-                color=COLORS_MARKERS[2], linestyle="solid",
-                marker=MARKERS[2], markersize=10,
+                years,
+                mod_latitude["mean"]["amplitude"],
+                color=COLORS_MARKERS[2],
+                linestyle="solid",
+                marker=MARKERS[2],
+                markersize=10,
                 label=f"{model_id}: Mean +/- 1 std" if l_i == 0 else None,
             )
             plt.fill_between(
@@ -1232,14 +1465,17 @@ def trace_gas_seas_ampl_growth_rate(
                 - mod_latitude["std"]["amplitude"],
                 mod_latitude["mean"]["amplitude"]
                 + mod_latitude["std"]["amplitude"],
-                color=COLORS_MARKERS[2], alpha=0.1,
+                color=COLORS_MARKERS[2],
+                alpha=0.1,
             )
         plt.xlim([years[0] - 1, years[-1] + 1])
         plt.xticks(
             np.arange(
-                years[0], years[-1] + 1,
+                years[0],
+                years[-1] + 1,
                 1 if years[-1] - years[0] < 10 else 4,
-        ))
+            )
+        )
         plt.xlabel("Year", fontsize=20)
         plt.ylabel(
             f"{trace_gas.upper()} seasonal amplitude "
@@ -1255,45 +1491,59 @@ def trace_gas_seas_ampl_growth_rate(
         # Plot center column = relative growth
         _ = plt.subplot(gs[l_i, 1])
         plt.plot(
-            years[1:], valid_md["mean"]["growth"],
-            color=COLORS_MARKERS[0], linestyle="solid",
-            marker=MARKERS[0], markersize=10,
+            years[1:],
+            valid_md["mean"]["growth"],
+            color=COLORS_MARKERS[0],
+            linestyle="solid",
+            marker=MARKERS[0],
+            markersize=10,
         )
         plt.fill_between(
             years[1:],
             valid_md["mean"]["growth"] - valid_md["std"]["growth"],
             valid_md["mean"]["growth"] + valid_md["std"]["growth"],
-            color=COLORS_MARKERS[0], alpha=0.1,
+            color=COLORS_MARKERS[0],
+            alpha=0.1,
         )
         plt.plot(
-            years[1:], valid_obs["mean"]["growth"],
-            color=COLORS_MARKERS[1], linestyle="solid",
-            marker=MARKERS[1], markersize=10,
+            years[1:],
+            valid_obs["mean"]["growth"],
+            color=COLORS_MARKERS[1],
+            linestyle="solid",
+            marker=MARKERS[1],
+            markersize=10,
         )
         plt.fill_between(
             years[1:],
             valid_obs["mean"]["growth"] - valid_obs["std"]["growth"],
             valid_obs["mean"]["growth"] + valid_obs["std"]["growth"],
-            color=COLORS_MARKERS[1], alpha=0.1,
+            color=COLORS_MARKERS[1],
+            alpha=0.1,
         )
         if include_global:
             plt.plot(
-                years[1:], mod_latitude["mean"]["growth"],
-                color=COLORS_MARKERS[2], linestyle="solid",
-                marker=MARKERS[2], markersize=10,
+                years[1:],
+                mod_latitude["mean"]["growth"],
+                color=COLORS_MARKERS[2],
+                linestyle="solid",
+                marker=MARKERS[2],
+                markersize=10,
             )
             plt.fill_between(
                 years[1:],
                 mod_latitude["mean"]["growth"] - mod_latitude["std"]["growth"],
                 mod_latitude["mean"]["growth"] + mod_latitude["std"]["growth"],
-                color=COLORS_MARKERS[2], alpha=0.1,
+                color=COLORS_MARKERS[2],
+                alpha=0.1,
             )
         plt.xlim([years[0] - 1, years[-1] + 1])
         plt.xticks(
             np.arange(
-                years[0], years[-1] + 1,
+                years[0],
+                years[-1] + 1,
                 1 if years[-1] - years[0] < 10 else 4,
-        ))
+            )
+        )
         plt.xlabel("Year", fontsize=20)
         plt.ylabel(
             trace_gas.upper() + r" relative growth [$\%.yr^{-1}$]",
@@ -1308,32 +1558,43 @@ def trace_gas_seas_ampl_growth_rate(
         # Plot sensitivity between seasonal amplitude and growth
         _ = plt.subplot(gs[l_i, 2])
         plt.plot(
-            years[1:], valid_md["mean"]["sensitivity"],
-            color=COLORS_MARKERS[0], linestyle="solid",
-            marker=MARKERS[0], markersize=10,
+            years[1:],
+            valid_md["mean"]["sensitivity"],
+            color=COLORS_MARKERS[0],
+            linestyle="solid",
+            marker=MARKERS[0],
+            markersize=10,
         )
         plt.fill_between(
             years[1:],
             valid_md["mean"]["sensitivity"] - valid_md["std"]["sensitivity"],
             valid_md["mean"]["sensitivity"] + valid_md["std"]["sensitivity"],
-            color=COLORS_MARKERS[0], alpha=0.1,
+            color=COLORS_MARKERS[0],
+            alpha=0.1,
         )
         plt.plot(
-            years[1:], valid_obs["mean"]["sensitivity"],
-            color=COLORS_MARKERS[1], linestyle="solid",
-            marker=MARKERS[1], markersize=10,
+            years[1:],
+            valid_obs["mean"]["sensitivity"],
+            color=COLORS_MARKERS[1],
+            linestyle="solid",
+            marker=MARKERS[1],
+            markersize=10,
         )
         plt.fill_between(
             years[1:],
             valid_obs["mean"]["sensitivity"] - valid_obs["std"]["sensitivity"],
             valid_obs["mean"]["sensitivity"] + valid_obs["std"]["sensitivity"],
-            color=COLORS_MARKERS[1], alpha=0.1,
+            color=COLORS_MARKERS[1],
+            alpha=0.1,
         )
         if include_global:
             plt.plot(
-                years[1:], mod_latitude["mean"]["sensitivity"],
-                color=COLORS_MARKERS[2], linestyle="solid",
-                marker=MARKERS[2], markersize=10,
+                years[1:],
+                mod_latitude["mean"]["sensitivity"],
+                color=COLORS_MARKERS[2],
+                linestyle="solid",
+                marker=MARKERS[2],
+                markersize=10,
             )
             plt.fill_between(
                 years[1:],
@@ -1341,18 +1602,21 @@ def trace_gas_seas_ampl_growth_rate(
                 - mod_latitude["std"]["sensitivity"],
                 mod_latitude["mean"]["sensitivity"]
                 + mod_latitude["std"]["sensitivity"],
-                color=COLORS_MARKERS[2], alpha=0.1,
+                color=COLORS_MARKERS[2],
+                alpha=0.1,
             )
         plt.xlim([years[0] - 1, years[-1] + 1])
         plt.xticks(
             np.arange(
-                years[0], years[-1] + 1,
+                years[0],
+                years[-1] + 1,
                 1 if years[-1] - years[0] < 10 else 4,
-        ))
+            )
+        )
         plt.xlabel("Year", fontsize=20)
         plt.ylabel(
-            f"{trace_gas.upper()} sensitivity\n(amplitude/growth)",
-            fontsize=20)
+            f"{trace_gas.upper()} sensitivity\n(amplitude/growth)", fontsize=20
+        )
         plt.tick_params(axis="both", labelsize=16)
         text = "No. of sites = {}".format(
             obs_yearly_ls.coord("Station index (arbitrary)").shape[0],
@@ -1360,8 +1624,13 @@ def trace_gas_seas_ampl_growth_rate(
         plt.annotate(text, (0.05, 0.9), xycoords="axes fraction", fontsize=16)
         plt.title(latitude_titles[l_i], fontsize=28)
 
-    figure.legend(loc="upper center", bbox_to_anchor=[0.5, 0.08],
-                  ncol=3, fontsize=20, borderaxespad=0.01)
+    figure.legend(
+        loc="upper center",
+        bbox_to_anchor=[0.5, 0.08],
+        ncol=3,
+        fontsize=20,
+        borderaxespad=0.01,
+    )
 
     return figure
 
@@ -1395,7 +1664,9 @@ def preprocess_obs_dataset(obs_dataset, config):
     iris.coord_categorisation.add_month(obs_cube, "time", name="month")
     iris.coord_categorisation.add_season(obs_cube, "time", name="clim_season")
     iris.coord_categorisation.add_season_year(
-        obs_cube, "time", name="season_year",
+        obs_cube,
+        "time",
+        name="season_year",
     )
 
     # Set up thresholds for generating the multi annual seasonal mean
@@ -1404,8 +1675,9 @@ def preprocess_obs_dataset(obs_dataset, config):
     min_seas_per_clim = config["min_seas_per_clim"]
 
     # Copy obs cube and mask all months with NaNs
-    masked_months_obs_cube = obs_cube.copy(data=ma.masked_where(
-        np.isnan(obs_cube.data), obs_cube.data))
+    masked_months_obs_cube = obs_cube.copy(
+        data=ma.masked_where(np.isnan(obs_cube.data), obs_cube.data)
+    )
 
     # Aggregate (mean) by season.
     # The number of unmasked months per season is counted,
@@ -1449,9 +1721,11 @@ def preprocess_obs_dataset(obs_dataset, config):
         function=lambda values: ~ma.getmask(values),
     )
 
-    counter = range(len(
-        multi_annual_seasonal_mean.coord("clim_season").points,
-    ))
+    counter = range(
+        len(
+            multi_annual_seasonal_mean.coord("clim_season").points,
+        )
+    )
     valid_station_indices_for_seasons = []
     for iseas in counter:
         multi_annual_seasonal_mean.data[iseas, :] = ma.masked_where(
@@ -1459,12 +1733,11 @@ def preprocess_obs_dataset(obs_dataset, config):
             multi_annual_seasonal_mean.data[iseas, :],
         )
         valid_station_indices_for_seasons.append(
-            set(
-                np.where(~multi_annual_seasonal_mean.data.mask[iseas, :])[0]
-            ),
+            set(np.where(~multi_annual_seasonal_mean.data.mask[iseas, :])[0]),
         )
     valid_stations_indices = sorted(
-        list(set.intersection(*valid_station_indices_for_seasons)))
+        list(set.intersection(*valid_station_indices_for_seasons))
+    )
     valid_stations = obs_cube.coord(
         "Station index (arbitrary)",
     ).points[valid_stations_indices]
@@ -1475,7 +1748,9 @@ def preprocess_obs_dataset(obs_dataset, config):
     obs_cube_valid = obs_cube.extract(
         iris.Constraint(
             coord_values={
-                "Station index (arbitrary)": lambda cell: mask[int(cell.point)],
+                "Station index (arbitrary)": lambda cell: mask[
+                    int(cell.point)
+                ],
             },
         ),
     )
@@ -1507,14 +1782,15 @@ def main(config):
     #   - only_multimodel = False
     if "plots" not in config:
         config["plots"] = [
-            "seas_maps", "timeserie_lat", "sensitivity_ampl_trend",
+            "seas_maps",
+            "timeserie_lat",
+            "sensitivity_ampl_trend",
         ]
     if "only_multimodel" not in config:
         config["only_multimodel"] = False
 
     # Only consider the multi-model mean
     if config["only_multimodel"]:
-
         model_dataset = "MultiModelMean"
         group = datasets[model_dataset]
         # "model_dataset" is the name of the model dataset.
@@ -1537,7 +1813,9 @@ def main(config):
 
             # Process multi-annual seasonal mean
             cube_seasonal = climate_statistics(
-                cube, operator="mean", period="season",
+                cube,
+                operator="mean",
+                period="season",
                 seasons=["DJF", "MAM", "JJA", "SON"],
             )
 
@@ -1554,23 +1832,39 @@ def main(config):
             # Set up for analysis and plotting
             seasons = ["DJF", "MAM", "JJA", "SON"]
             plot_file_prefix = (
-                model_dataset + "_" + attributes["activity"] +
-                "_" + attributes["mip"] + "_" +
-                attributes["exp"] + "_" +
-                attributes["short_name"] + "_" +
-                str(attributes["start_year"]) + "_" +
-                str(attributes["end_year"]) + "_"
+                model_dataset
+                + "_"
+                + attributes["activity"]
+                + "_"
+                + attributes["mip"]
+                + "_"
+                + attributes["exp"]
+                + "_"
+                + attributes["short_name"]
+                + "_"
+                + str(attributes["start_year"])
+                + "_"
+                + str(attributes["end_year"])
+                + "_"
             )
 
             # Get activity, mip, exp, variable , time range
             attrs = datasets_preproc[model_dataset]["attributes"]
             plot_file_prefix = (
-                "Multi_model_mean" + "_" + attrs["activity"] +
-                "_" + attrs["mip"] + "_" +
-                attrs["exp"] + "_" +
-                attrs["short_name"] + "_" +
-                str(attrs["start_year"]) + "_" +
-                str(attrs["end_year"]) + "_"
+                "Multi_model_mean"
+                + "_"
+                + attrs["activity"]
+                + "_"
+                + attrs["mip"]
+                + "_"
+                + attrs["exp"]
+                + "_"
+                + attrs["short_name"]
+                + "_"
+                + str(attrs["start_year"])
+                + "_"
+                + str(attrs["end_year"])
+                + "_"
             )
             # Compute multi-model averages
             multi_model = multi_model_statistics(
@@ -1615,7 +1909,9 @@ def main(config):
                 # Save time series plots per latitude range
                 output_file = plot_file_prefix + "timeseries_latitude"
                 output_path = get_plot_filename(output_file, config)
-                figure_timeserie_zonal.savefig(output_path, bbox_inches="tight")
+                figure_timeserie_zonal.savefig(
+                    output_path, bbox_inches="tight"
+                )
 
             if "sensitivity_ampl_trend" in config["plots"]:
                 # Analysis and plotting for sensitivity between
@@ -1628,11 +1924,12 @@ def main(config):
                 # Save sensitivity seasonal amplitude and trend plot
                 output_file = plot_file_prefix + "seas_amplitude_trend"
                 output_path = get_plot_filename(output_file, config)
-                figure_sens_ampl_trend.savefig(output_path, bbox_inches="tight")
+                figure_sens_ampl_trend.savefig(
+                    output_path, bbox_inches="tight"
+                )
 
     # or run for each seperate model + multi-model mean
     else:
-
         for model_dataset, group in datasets.items():
             # "model_dataset" is the name of the model dataset.
             # "group" is a list of dictionaries containing metadata.
@@ -1650,12 +1947,15 @@ def main(config):
                 # Put observations and model data on same scale for ppm/ppb
                 cube = TRACE_GASES_FACTOR[config["trace_gas"]] * cube
                 # Change units accordingly
-                cube.attributes["unit"] = \
-                    TRACE_GASES_UNITS[config["trace_gas"]]
+                cube.attributes["unit"] = TRACE_GASES_UNITS[
+                    config["trace_gas"]
+                ]
 
                 # Process multi-annual seasonal mean
                 cube_seasonal = climate_statistics(
-                    cube, operator="mean", period="season",
+                    cube,
+                    operator="mean",
+                    period="season",
                     seasons=["DJF", "MAM", "JJA", "SON"],
                 )
 
@@ -1672,12 +1972,20 @@ def main(config):
                 # Set up for analysis and plotting
                 seasons = ["DJF", "MAM", "JJA", "SON"]
                 plot_file_prefix = (
-                    model_dataset + "_" + attributes["activity"] +
-                    "_" + attributes["mip"] + "_" +
-                    attributes["exp"] + "_" +
-                    attributes["short_name"] + "_" +
-                    str(attributes["start_year"]) + "_" +
-                    str(attributes["end_year"]) + "_"
+                    model_dataset
+                    + "_"
+                    + attributes["activity"]
+                    + "_"
+                    + attributes["mip"]
+                    + "_"
+                    + attributes["exp"]
+                    + "_"
+                    + attributes["short_name"]
+                    + "_"
+                    + str(attributes["start_year"])
+                    + "_"
+                    + str(attributes["end_year"])
+                    + "_"
                 )
 
                 if "seas_maps" in config["plots"]:
@@ -1720,12 +2028,16 @@ def main(config):
                 # Save time series plots per latitude range
                 output_file = plot_file_prefix + "timeseries_latitude"
                 output_path = get_plot_filename(output_file, config)
-                figure_timeserie_zonal.savefig(output_path, bbox_inches="tight")
+                figure_timeserie_zonal.savefig(
+                    output_path, bbox_inches="tight"
+                )
             if "sensitivity_ampl_trend" in config["plots"]:
                 # Save sensitivity seasonal amplitude and trend plot
                 output_file = plot_file_prefix + "seas_amplitude_trend"
                 output_path = get_plot_filename(output_file, config)
-                figure_sens_ampl_trend.savefig(output_path, bbox_inches="tight")
+                figure_sens_ampl_trend.savefig(
+                    output_path, bbox_inches="tight"
+                )
 
 
 if __name__ == "__main__":
