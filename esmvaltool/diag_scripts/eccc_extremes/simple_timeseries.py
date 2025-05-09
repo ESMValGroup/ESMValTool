@@ -43,18 +43,18 @@ logger = logging.getLogger(os.path.basename(__file__))
 def obtain_reference(data_group: list):
     """This function cretes a dictionary with reference data.
 
-    Parameters:
-    -----------
-    data_group:
+    Parameters
+    ----------
+    data_group :
         list with metadata for reference group
 
-    Returns:
-    --------
-    reference_dic:
+    Returns
+    -------
+    reference_dic :
         dictionary with the reference data. Dataset name is a keyword.
-    ref_max:
+    ref_max :
         maximum value for all reference datasets
-    ref_min:
+    ref_min :
         minimum value for all reference datasets
     """
 
@@ -104,17 +104,17 @@ def plot_timeseries(
     """
     This function plots timeseries and the max/min values.
 
-    Parameters:
-    -----------
-    data_dic:
+    Parameters
+    ----------
+    data_dic :
         dictionary with the data to plot
-    reference_dic:
+    reference_dic :
         dictionary with the refrence data
-    cfg:
+    cfg :
         config dictionary, comes from ESMValCore
-    min_val:
+    min_val :
         minimum value for the xlims
-    max_val:
+    max_val :
         maximum value for the xlims
     """
 
@@ -218,7 +218,7 @@ def plot_timeseries(
 
 
 def main(cfg):
-    """Initiates diagnostic"""
+    """Initiates diagnostic."""
     input_data = cfg["input_data"]
 
     groups = group_metadata(input_data.values(), "variable_group", sort=True)

@@ -50,14 +50,14 @@ logger = logging.getLogger(os.path.basename(__file__))
 def obtain_reference(data_group: list):
     """This function cretes a dictionary with reference data.
 
-    Parameters:
-    -----------
-    data_group:
+    Parameters
+    ----------
+    data_group :
         list with metadata for reference group
 
-    Returns:
-    --------
-    reference_dic:
+    Returns
+    -------
+    reference_dic :
         dictionary with the reference data. Dataset name is a keyword
     """
 
@@ -94,16 +94,16 @@ def calculate_ensemble_stdev(
 ):
     """This function calculates standard deviation of multi model ensemble.
 
-    Parameters:
-    -----------
-    ens_cubelist:
+    Parameters
+    ----------
+    ens_cubelist :
         CubeList with the ensemble timeseries
-    weight_flag:
+    weight_flag :
         flag for weighting or not the data
 
-    Returns:
-    --------
-    ens_std: float
+    Returns
+    -------
+    ens_std : float
         standard deviation for the ensemble
     """
 
@@ -131,13 +131,13 @@ def calculate_ensemble_stdev(
 def plot_stdevs(data_dic, reference_dic, cfg):
     """This function plots timeseries and the max/min values.
 
-    Parameters:
-    -----------
-    data_dic:
+    Parameters
+    ----------
+    data_dic :
         dictionary with the data to plot
-    reference_dic:
+    reference_dic :
         dictionary with the reference data
-    cfg:
+    cfg :
         config dictionary, comes from ESMValCore
     """
 
