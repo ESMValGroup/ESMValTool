@@ -9,10 +9,17 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 CYLC_DB_FILE_PATH = os.environ.get("CYLC_DB_FILE_PATH")
 CYLC_TASK_CYCLE_POINT = os.environ.get("CYLC_TASK_CYCLE_POINT")
 CYLC_WORKFLOW_SHARE_DIR = os.environ.get("CYLC_WORKFLOW_SHARE_DIR")
-OUTPUT_FILE_PATH = os.path.join(
-    CYLC_WORKFLOW_SHARE_DIR,
-    "recipe_test_workflow_status_report.html",
-)
+
+
+# Tests should not rely on the CYLC_WORKFLOW_SHARE_DIR environment variable 
+# being set.
+if CYLC_WORKFLOW_SHARE_DIR:
+    OUTPUT_FILE_PATH = os.path.join(
+        CYLC_WORKFLOW_SHARE_DIR,
+        "recipe_test_workflow_status_report.html",
+    )
+else:
+    OUTPUT_FILE_PATH = None
 
 SQL_QUERY_TASK_STATES = "SELECT name, status FROM task_states"
 
@@ -23,6 +30,7 @@ def main():
     """
     raw_db_data = fetch_report_data()
     processed_db_data = process_db_output(raw_db_data)
+    remove_compare_tasks_for_failed_process_tasks(processed_db_data)
     subheader = create_subheader()
     rendered_html = render_html_report(
         subheader=subheader,
@@ -51,6 +59,28 @@ def fetch_report_data(db_file_path=CYLC_DB_FILE_PATH):
     fetched_data = cursor.fetchall()
     connection.close()
     return fetched_data
+
+
+def remove_compare_tasks_for_failed_process_tasks(processed_db_output):
+    """
+    Remove the compare task if the process task failed.
+
+    Currently the compare task succeeds if no recipe output is generated. To
+    avoid a confusing report output, remove compare tasks if the process task
+    failed. 
+
+    A missing compare task will be rendered as "-" by the jinja2 template.
+
+    Parameters
+    ----------
+    processed_db_output : defaultdict
+        A defaultdict dictionary with recipe names as keys and tasks/task data 
+        as values.
+    """
+    for tasks in processed_db_output.values():
+        if tasks.get("process_task", {}).get("status") == "failed":
+            if tasks.get("compare_task"):
+                del tasks["compare_task"]
 
 
 def process_db_output(report_data):
@@ -82,13 +112,12 @@ def process_db_output(report_data):
 
     Returns
     -------
-    dict
+    defaultdict
         A dictionary with recipe names as keys and tasks/task data as values.
     """
     styles = {
         "succeeded": "color: green",
         "failed": "color: red",
-        "running": "color: blue",
     }
 
     processed_db_data = defaultdict(dict)
