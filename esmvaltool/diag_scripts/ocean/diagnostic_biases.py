@@ -354,7 +354,9 @@ def plot_bias_plot(data_list: list[Data4Analyis], cfg: dict):
 
     plt.legend()
     plt.title(caption)
-    plt.xlabel(data_list[0].best_guess.dim_coords[0].name())
+    x_label = data_list[0].best_guess.dim_coords[0].name()
+    x_label += f", {data_list[0].best_guess.dim_coords[0].units}"
+    plt.xlabel(x_label)
     y_label = data_list[0].best_guess.var_name
     y_label = y_label + " bias" if cfg.get("bias") else y_label
     y_label = y_label + f", {data_list[0].best_guess.units.origin}"
