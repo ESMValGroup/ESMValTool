@@ -3,7 +3,7 @@
 import os
 
 
-class BaseDownloader():
+class BaseDownloader:
     """Base class for all downloaders.
 
     Parameters
@@ -17,9 +17,10 @@ class BaseDownloader():
     overwrite : bool
         Overwrite already downloaded files
     """
+
     def __init__(self, config, dataset, dataset_info, overwrite):
         self._config = config
-        self.tier = dataset_info['tier']
+        self.tier = dataset_info["tier"]
         self.dataset = dataset
         self.dataset_info = dataset_info
         self.overwrite = overwrite
@@ -33,8 +34,9 @@ class BaseDownloader():
         str
             Path to the download folder
         """
-        return os.path.join(self.rawobs_folder, f'Tier{self.tier}',
-                            self.dataset)
+        return os.path.join(
+            self.rawobs_folder, f"Tier{self.tier}", self.dataset
+        )
 
     @property
     def rawobs_folder(self):
@@ -45,4 +47,4 @@ class BaseDownloader():
         str
             Path to the RAWOBS folder
         """
-        return self._config['rootpath']['RAWOBS'][0]
+        return self._config["rootpath"]["RAWOBS"][0]
