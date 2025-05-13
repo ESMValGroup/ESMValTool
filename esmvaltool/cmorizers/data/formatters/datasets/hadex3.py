@@ -32,7 +32,6 @@ of the twentieth century: The HadEX2 dataset, J. Geophys. Res. Atmos., 118,
 import logging
 import os
 
-import cftime
 import iris
 from cf_units import Unit
 from iris import NameConstraint
