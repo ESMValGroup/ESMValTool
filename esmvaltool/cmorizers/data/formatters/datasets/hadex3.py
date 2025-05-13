@@ -101,15 +101,15 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             ),
         )
         if os.path.isfile(filepath):
-            logger.info(f"Found input file {filepath}")
+            logger.info("Found input file %s", filepath)
         else:
             raise ValueError(f"Couldn't find {filepath}")
-        logger.info(f"CMORizing variable {var_name} in {var_mip} table")
+        logger.info("CMORizing variable %s in %s table", var_name, var_mip)
         glob_attrs["mip"] = var_info["mip"]
         cmor_info = cmor_table.get_variable(var_info["mip"], var_name)
         _extract_variable(
             var, var_info, cmor_info, glob_attrs, filepath, out_dir
         )
         logger.info(
-            f"CMORization of {var_name} in {var_mip} table was successful"
+            "CMORization of %s in %s table was successful", var_name, var_mip
         )
