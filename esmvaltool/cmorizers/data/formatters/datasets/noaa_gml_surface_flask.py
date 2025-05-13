@@ -313,7 +313,7 @@ def cmorization(
 
     tar_file_system = TarFileSystem(f"{in_dir}/{raw_filename}")
     paths = tar_file_system.glob(
-        f"{cfg['trace_gas']}_surface-flask_ccgg_text/" +
+        f"{cfg['trace_gas']}_surface-flask_ccgg_text/"
         f"{cfg['trace_gas']}_*_month.txt")
 
     versions = np.unique(
