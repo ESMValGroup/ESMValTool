@@ -93,20 +93,25 @@ def assert_warns(warning_class, func, *args, **kw):
         warnings.simplefilter("always")
         # Trigger a warning.
         result = func(*args, **kw)
-        if hasattr(np, 'FutureWarning'):
+        if hasattr(np, "FutureWarning"):
             # Filter out numpy-specific warnings in numpy >= 1.9
-            warn = [e for e in warn
-                    if e.category is not np.VisibleDeprecationWarning]
+            warn = [
+                e
+                for e in warn
+                if e.category is not np.VisibleDeprecationWarning
+            ]
 
         # Verify some things
         if not len(warn) > 0:
-            raise AssertionError("No warning raised when calling %s"
-                                 % func.__name__)
+            raise AssertionError(
+                f"No warning raised when calling {func.__name__}"
+            )
 
         found = any(warning.category is warning_class for warning in warn)
         if not found:
-            raise AssertionError("%s did not give warning: %s( is %s)"
-                                 % (func.__name__, warning_class, warn))
+            raise AssertionError(
+                f"{func.__name__} did not give warning: {warning_class}( is {warn})"
+            )
     return result
 
 
@@ -139,32 +144,36 @@ def assert_warns_message(warning_class, message, func, *args, **kw):
     with warnings.catch_warnings(record=True) as warn:
         # Cause all warnings to always be triggered.
         warnings.simplefilter("always")
-        if hasattr(np, 'FutureWarning'):
+        if hasattr(np, "FutureWarning"):
             # Let's not catch the numpy internal DeprecationWarnings
-            warnings.simplefilter('ignore', np.VisibleDeprecationWarning)
+            warnings.simplefilter("ignore", np.VisibleDeprecationWarning)
         # Trigger a warning.
         result = func(*args, **kw)
         # Verify some things
         if not len(warn) > 0:
-            raise AssertionError("No warning raised when calling %s"
-                                 % func.__name__)
+            raise AssertionError(
+                f"No warning raised when calling {func.__name__}"
+            )
 
-        found = [issubclass(warning.category, warning_class) for warning in
-                 warn]
+        found = [
+            issubclass(warning.category, warning_class) for warning in warn
+        ]
         if not any(found):
-            raise AssertionError("No warning raised for %s with class "
-                                 "%s"
-                                 % (func.__name__, warning_class))
+            raise AssertionError(
+                f"No warning raised for {func.__name__} with class "
+                f"{warning_class}"
+            )
 
         message_found = False
         # Checks the message of all warnings belong to warning_class
         for index in [i for i, x in enumerate(found) if x]:
             # substring will match, the entire message with typo won't
             msg = warn[index].message  # For Python 3 compatibility
-            msg = str(msg.args[0] if hasattr(msg, 'args') else msg)
+            msg = str(msg.args[0] if hasattr(msg, "args") else msg)
             if callable(message):  # add support for certain tests
                 check_in_message = message
             else:
+
                 def check_in_message(msg):
                     return message in msg
 
@@ -173,9 +182,10 @@ def assert_warns_message(warning_class, message, func, *args, **kw):
                 break
 
         if not message_found:
-            raise AssertionError("Did not receive the message you expected "
-                                 "('%s') for <%s>, got: '%s'"
-                                 % (message, func.__name__, msg))
+            raise AssertionError(
+                "Did not receive the message you expected "
+                f"('{message}') for <{func.__name__}>, got: '{msg}'"
+            )
 
     return result
 
@@ -209,9 +219,10 @@ def assert_raise_message(exceptions, message, function, *args, **kwargs):
     except exceptions as exc:
         error_message = str(exc)
         if message not in error_message:
-            raise AssertionError("Error message does not include the expected "
-                                 "string: %r. Observed error message: %r" %
-                                 (message, error_message))
+            raise AssertionError(
+                "Error message does not include the expected "
+                f"string: {message!r}. Observed error message: {error_message!r}"
+            ) from exc
     else:
         # concatenate exception names
         if isinstance(exceptions, tuple):
@@ -219,12 +230,12 @@ def assert_raise_message(exceptions, message, function, *args, **kwargs):
         else:
             names = exceptions.__name__
 
-        raise AssertionError("%s not raised by %s" %
-                             (names, function.__name__))
+        raise AssertionError(f"{names} not raised by {function.__name__}")
 
 
-def assert_allclose_dense_sparse(x_arr, y_arr, rtol=1e-07, atol=1e-9,
-                                 err_msg=''):
+def assert_allclose_dense_sparse(
+    x_arr, y_arr, rtol=1e-07, atol=1e-9, err_msg=""
+):
     """Assert allclose for sparse and dense data.
 
     Both x_arr and y_arr need to be either sparse or dense, they
@@ -257,39 +268,42 @@ def assert_allclose_dense_sparse(x_arr, y_arr, rtol=1e-07, atol=1e-9,
         y_arr.sum_duplicates()
         assert_array_equal(x_arr.indices, y_arr.indices, err_msg=err_msg)
         assert_array_equal(x_arr.indptr, y_arr.indptr, err_msg=err_msg)
-        assert_allclose(x_arr.data, y_arr.data, rtol=rtol, atol=atol,
-                        err_msg=err_msg)
+        assert_allclose(
+            x_arr.data, y_arr.data, rtol=rtol, atol=atol, err_msg=err_msg
+        )
     elif not sp.sparse.issparse(x_arr) and not sp.sparse.issparse(y_arr):
         # both dense
         assert_allclose(x_arr, y_arr, rtol=rtol, atol=atol, err_msg=err_msg)
     else:
-        raise ValueError("Can only compare two sparse matrices, not a sparse "
-                         "matrix and an array.")
+        raise ValueError(
+            "Can only compare two sparse matrices, not a sparse "
+            "matrix and an array."
+        )
 
 
 def _convert_container(container, constructor_name, columns_name=None):
     """Convert container."""
-    if constructor_name == 'list':
+    if constructor_name == "list":
         return list(container)
-    if constructor_name == 'tuple':
+    if constructor_name == "tuple":
         return tuple(container)
-    if constructor_name == 'array':
+    if constructor_name == "array":
         return np.asarray(container)
-    if constructor_name == 'sparse':
+    if constructor_name == "sparse":
         return sp.sparse.csr_matrix(container)
-    if constructor_name == 'dataframe':
-        pandas = pytest.importorskip('pandas')
+    if constructor_name == "dataframe":
+        pandas = pytest.importorskip("pandas")
         return pandas.DataFrame(container, columns=columns_name)
-    if constructor_name == 'series':
-        pandas = pytest.importorskip('pandas')
+    if constructor_name == "series":
+        pandas = pytest.importorskip("pandas")
         return pandas.Series(container)
-    if constructor_name == 'index':
-        pandas = pytest.importorskip('pandas')
+    if constructor_name == "index":
+        pandas = pytest.importorskip("pandas")
         return pandas.Index(container)
-    if constructor_name == 'slice':
+    if constructor_name == "slice":
         return slice(container[0], container[1])
-    if constructor_name == 'sparse_csr':
+    if constructor_name == "sparse_csr":
         return sp.sparse.csr_matrix(container)
-    if constructor_name == 'sparse_csc':
+    if constructor_name == "sparse_csc":
         return sp.sparse.csc_matrix(container)
     raise TypeError(f"Constructor name '{constructor_name}' not supported")

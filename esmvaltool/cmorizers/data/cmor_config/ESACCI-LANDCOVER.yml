@@ -29,4 +29,3 @@ variables:
   treeFrac:
     mip: Lmon
     frequency: yr
-

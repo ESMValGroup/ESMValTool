@@ -118,7 +118,7 @@ Tiers
 All observational datasets are grouped into in three tiers:
 
 * **Tier 1**: obs4mips and ana4mips datasets. These datasets are publicly and freely available without any license restrictions. These datasets do not need any reformatting and can be used as is with ESMValTool.
-* **Tier 2** other freely available datasets that are not obs4mips. There are no license restrictions. These datasets need to be reformatted to be used with ESMValTool ('CMORization', see above). 
+* **Tier 2** other freely available datasets that are not obs4mips. There are no license restrictions. These datasets need to be reformatted to be used with ESMValTool ('CMORization', see above).
 * **Tier 3** restricted datasets. Datasets which require registration to be downloaded or that can only be obtained upon request from the respective authors. License restrictions do not allow us to redistribute Tier 3 datasets. The data have to be obtained and reformatted by the user ('CMORization', see above).
 
 [!NOTE]
@@ -331,13 +331,15 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-OC                    | chl (Omon)                                                                                           |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ESACCI-OZONE                 | toz, tozStderr, tro3prof, tro3profStderr (Amon)                                                      |   2  | NCL             |
+| ESACCI-OZONE                 | toz, o3 (AERmon)                                                                                     |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| ESACCI-SEAICE                | siconc (SIday, SImon)                                                                                |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-SEA-SURFACE-SALINITY  | sos (Omon)                                                                                           |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-SOILMOISTURE          | sm (Eday, Lmon), smStderr (Eday)                                                                     |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ESACCI-SST                   | ts, tsStderr (Amon)                                                                                  |   2  | NCL             |
+| ESACCI-SST                   | tos (Omon, Oday), tosStderr (Oday)                                                                   |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-WATERVAPOUR           | prw (Amon)                                                                                           |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -407,7 +409,7 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MLS-AURA* [#t3]_             | hur, hurStderr (day)                                                                                 |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| MOBO-DIC_MPIM                | dissic (Omon)                                                                                        |   2  | Python          |
+| MOBO-DIC-MPIM                | dissic (Omon)                                                                                        |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | MOBO-DIC2004-2019            | dissic (Omon)                                                                                        |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
@@ -468,6 +470,10 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | TCOM-CH4                     | ch4 (Amon [#note3]_)                                                                                 |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | TCOM-N2O                     | n2o (Amon [#note3]_)                                                                                 |   2  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| TROPFLUX                     | ts, rlut, rsds, tauu, tauv, hfds (Amon)                                                              |   2  | Python          |
+|                              | tos (Omon)                                                                                           |      |                 |
+|                              | hfls (Lmon, Amon)                                                                                    |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | UWisc* [#t3]_                | clwvi, lwpStderr (Amon)                                                                              |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
