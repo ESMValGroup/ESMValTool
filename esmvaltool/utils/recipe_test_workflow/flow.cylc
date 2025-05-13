@@ -26,12 +26,18 @@
 [scheduling]
     initial cycle point = now
     [[graph]]
-        R1 = """install_env_file => get_esmval => configure
+        R1 = """
+            install_env_file => get_esmval => configure
             configure => process<fast> => compare<fast>
-            configure => process<medium> => compare<medium>"""
-        T01 = """@wall_clock => get_esmval => configure
+            configure => process<medium> => compare<medium>
+            compare<fast> & compare<medium> => housekeeping
+        """
+        T01 = """
+            @wall_clock => get_esmval => configure
             configure => process<fast> => compare<fast>
-            configure => process<medium> => compare<medium>"""
+            configure => process<medium> => compare<medium>
+            compare<fast> & compare<medium> => housekeeping
+        """
 
 [runtime]
     [[root]]
@@ -130,5 +136,8 @@
             RECIPE_NAME = "${CYLC_TASK_PARAM_medium##*--}_????????_??????"
             COMPARISON_OUTPUT_DIR = ${OUTPUT_DIR}/${RECIPE_NAME}
             KGO_DIR = ${KGO_ROOT_PATH}/${RECIPE_NAME}
+
+    [[housekeeping]]
+        platform = localhost
 
 {% include "site/" ~ SITE ~ "/runtime.cylc" %}
