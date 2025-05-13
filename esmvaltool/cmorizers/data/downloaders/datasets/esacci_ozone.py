@@ -26,7 +26,7 @@ def download_dataset(
 
     if dataset == "ESACCI-OZONE":
         requests = {
-            "toz": {
+            "toz_gto_ecv": {
                 "processing_level": "level_3",
                 "variable": "atmosphere_mole_content_of_ozone",
                 "vertical_aggregation": "total_column",
@@ -35,7 +35,7 @@ def download_dataset(
                 "month": [f"{m:02d}" for m in range(1, 13)],
                 "version": ["v2000"],
             },
-            "o3": {
+            "o3_sage_omps": {
                 "processing_level": "level_3",
                 "variable": "mole_concentration_of_ozone_in_air",
                 "vertical_aggregation": "vertical_profiles_from_limb_sensors",
@@ -43,6 +43,15 @@ def download_dataset(
                 "year": [str(y) for y in range(1984, 2023)],
                 "month": [f"{m:02d}" for m in range(1, 13)],
                 "version": ["v0008"],
+            },
+            "o3_sage_megridop": {
+                "processing_level": "level_3",
+                "variable": "mole_concentration_of_ozone_in_air",
+                "vertical_aggregation": "vertical_profiles_from_limb_sensors",
+                "sensor": ["cllg"],
+                "year": [str(y) for y in range(2001, 2025)],
+                "month": [f"{m:02d}" for m in range(1, 13)],
+                "version": ["v0005"],
             },
         }
 

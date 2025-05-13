@@ -35,6 +35,15 @@ Download and processing instructions
     Month = select all (1-12)
     Version = "v0008"
 
+    MEGRIDOP (variable o3)
+    Processing Level = "Level 3"
+    Variable = "At, model content of ozone"
+    Vertical aggregation = "Vertical profiles from limb sensors"
+    Sensor = "CLLG"
+    Year = select all (2001-2024)
+    Month = select all (1-12)
+    Version = "v0005"
+
     Put all files under a single directory (no subdirectories with years).
     in ${RAWOBS}/Tier2/ESACCI-OZONE
 
@@ -123,7 +132,7 @@ def _extract_variable(short_name, var, cfg, filename, year, month):
     cube = iris.util.new_axis(cube, time_coord)
 
     # Add longitude coordinate to cube only for o3.
-    if short_name == "o3":
+    if var["var_name"] == "o3_sage_omps":
         lon_coord = iris.coords.DimCoord(
             [180.0],
             bounds=[[0.0, 360.0]],
@@ -136,6 +145,8 @@ def _extract_variable(short_name, var, cfg, filename, year, month):
         cube = iris.util.new_axis(cube, lon_coord)
         cube.transpose([1, 3, 2, 0])
         NativeDatasetFix.fix_alt16_metadata(cube)
+    if var["var_name"] == "o3_megridop":
+        NativeDatasetFix.fix_alt16_metadata(cube)
     fix_var_metadata(cube, cmor_info)
     cube = fix_coords(cube)
     set_global_atts(cube, cfg["attributes"])
@@ -145,17 +156,26 @@ def _extract_variable(short_name, var, cfg, filename, year, month):
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization process with dataset-specific time ranges."""
     glob_attrs = cfg["attributes"]
+    if "version" in glob_attrs:
+        glob_version = glob_attrs["version"]
+    else:
+        glob_version = ""
 
     for var_name, var in cfg["variables"].items():
         # Define dataset-specific time ranges
-        if var_name == "toz":  # GTO-ECV
+        if var_name == "toz_gto_ecv":  # GTO-ECV
             dataset_start = datetime(1995, 7, 1)
             dataset_end = datetime(2023, 4, 30)
-        elif var_name == "o3":  # SAGE-CCI-OMPS
+        elif var_name == "o3_sage_omps":  # SAGE-CCI-OMPS
             dataset_start = datetime(1984, 10, 1)
             dataset_end = datetime(2022, 12, 31)
+        elif var_name == "o3_megridop":  # MEGRIDOP
+            dataset_start = datetime(2001, 11, 1)
+            dataset_end = datetime(2023, 12, 31)
         else:
             raise ValueError(f"Unknown dataset for variable {var_name}")
+
+        var["var_name"] = var_name
 
         # Adjust start and end dates if not provided
         start_date_x = start_date or dataset_start
@@ -167,6 +187,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
         all_data_cubes = []
         glob_attrs["mip"] = var["mip"]
+        if "version" in var:
+            glob_attrs["version"] = var["version"]
+        else:
+            glob_attrs["version"] = glob_version
+        output_var = var["output"]
         for year in range(start_date_x.year, end_date_x.year + 1):
             for month in range(1, 13):
                 # Skip months outside the dataset range
@@ -187,11 +212,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
                 logger.info(
                     "CMORizing variable '%s' from file '%s'",
-                    var_name,
+                    output_var,
                     filename,
                 )
                 cube = _extract_variable(
-                    var_name, var, cfg, filename, year, month
+                    output_var, var, cfg, filename, year, month
                 )
                 all_data_cubes.append(cube)
 
@@ -204,7 +229,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         final_cube = concatenate(all_data_cubes)
         save_variable(
             final_cube,
-            var_name,
+            output_var,
             out_dir,
             glob_attrs,
             unlimited_dimensions=["time"],
