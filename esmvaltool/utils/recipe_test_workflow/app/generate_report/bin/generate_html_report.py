@@ -6,6 +6,7 @@ from datetime import datetime
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+
 CYLC_DB_FILE_PATH = os.environ.get("CYLC_DB_FILE_PATH")
 CYLC_TASK_CYCLE_POINT = os.environ.get("CYLC_TASK_CYCLE_POINT")
 CYLC_WORKFLOW_SHARE_DIR = os.environ.get("CYLC_WORKFLOW_SHARE_DIR")
@@ -24,11 +25,16 @@ else:
 SQL_QUERY_TASK_STATES = "SELECT name, status FROM task_states"
 
 
-def main():
+def main(db_file_path=CYLC_DB_FILE_PATH):
     """
     Main function to generate the HTML report.
+
+    Parameters
+    ----------
+    db_file_path : str, default CYLC_DB_FILE_PATH
+        The path to the SQLite database file.
     """
-    raw_db_data = fetch_report_data()
+    raw_db_data = fetch_report_data(db_file_path)
     processed_db_data = process_db_output(raw_db_data)
     remove_compare_tasks_for_failed_process_tasks(processed_db_data)
     subheader = create_subheader()
@@ -39,13 +45,13 @@ def main():
     write_report_to_file(rendered_html)
 
 
-def fetch_report_data(db_file_path=CYLC_DB_FILE_PATH):
+def fetch_report_data(db_file_path):
     """
     Fetch report data from the Cylc SQLite database.
 
     Parameters
     ----------
-    db_file_path : str, default CYLC_DB_FILE_PATH
+    db_file_path : str
         The path to the SQLite database file.
 
     Returns
@@ -67,9 +73,8 @@ def remove_compare_tasks_for_failed_process_tasks(processed_db_output):
 
     Currently the compare task succeeds if no recipe output is generated. To
     avoid a confusing report output, remove compare tasks if the process task
-    failed. 
-
-    A missing compare task will be rendered as "-" by the jinja2 template.
+    failed. A missing process or compare task is rendered as "-" in the jinja2 
+    template.
 
     Parameters
     ----------
@@ -137,6 +142,26 @@ def process_db_output(report_data):
     return processed_db_data
 
 
+def create_subheader(cylc_task_cycle_point=CYLC_TASK_CYCLE_POINT):
+    """
+    Create the subheader for the HTML report.
+
+    Parameters
+    ----------
+    cylc_task_cycle_point : str, default CYLC_TASK_CYCLE_POINT
+        The cycle point of the task as str in ISO8601 format.
+
+    Returns
+    -------
+    str
+        The formatted subheader string.
+    """
+    parsed_datetime = datetime.strptime(cylc_task_cycle_point, "%Y%m%dT%H%MZ")
+    formated_datetime = parsed_datetime.strftime("%Y-%m-%d %H:%M")
+    subheader = f"Cycle start: {formated_datetime} UTC"
+    return subheader
+
+
 def render_html_report(report_data, subheader):
     """
     Render the HTML report using Jinja2.
@@ -164,26 +189,6 @@ def render_html_report(report_data, subheader):
         report_data=report_data,
     )
     return rendered_html
-
-
-def create_subheader(cylc_task_cycle_point=CYLC_TASK_CYCLE_POINT):
-    """
-    Create the subheader for the HTML report.
-
-    Parameters
-    ----------
-    cylc_task_cycle_point : str, default CYLC_TASK_CYCLE_POINT
-        The cycle point of the task as str in ISO8601 format.
-
-    Returns
-    -------
-    str
-        The formatted subheader string.
-    """
-    parsed_datetime = datetime.strptime(CYLC_TASK_CYCLE_POINT, "%Y%m%dT%H%MZ")
-    formated_datetime = parsed_datetime.strftime("%Y-%m-%d %H:%M")
-    subheader = f"Cycle start: {formated_datetime} UTC"
-    return subheader
 
 
 def write_report_to_file(rendered_html, output_file_path=OUTPUT_FILE_PATH):
