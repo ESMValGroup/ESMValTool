@@ -205,6 +205,8 @@ Formatting issues are considered trivial and need to be addressed by running
 ``pre-commit run -a``.
 Note that the automatic code quality checks by prospector are really helpful to
 improve the quality of your code, but they are not flawless.
+For example, writing a new cmorizer *requires* you to define a new function
+that takes more than 5 arguments, which Codacy considers a code style issue.
 If you suspect prospector or Codacy may be wrong, please ask the
 `@ESMValGroup/tech-reviewers`_ by commenting on your pull request.
 
