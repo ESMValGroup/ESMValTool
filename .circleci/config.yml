@@ -247,7 +247,7 @@ jobs:
             mkdir /logs
             . /opt/conda/etc/profile.d/conda.sh
             # Install
-            mamba env create -n esmvaltool -f environment_python.yml
+            conda env create -n esmvaltool -f environment_python.yml
             conda activate esmvaltool
             pip install .[doc]
             # Log versions
