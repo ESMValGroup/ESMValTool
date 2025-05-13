@@ -1,4 +1,4 @@
-.. _recipe_surface_trace_gases:
+.. _recipe_surface_trace_gas:
 
 Surface trace gases
 ===================
@@ -58,13 +58,9 @@ User settings in recipe
 
   *Required settings for script*
   * trace_gas: The surface trace gas for which to run the evaluation.
-  * min_mon_per_seas: The minimum number of months used to calculate each
-    seasonal mean. This must be between 1 and 3. Recommended value is 3.
-  * min_seas_per_year: The minimum number of seasonal means in each year. This
-    must be between 1 and 4. Recommended value is 4.
-  * min_seas_per_clim: The minimum number of seasonal means used to calculate
-    the multiannual seasonal mean. This must be between 1 and the number of
-    years of available NOAA GML Surface Flask data.
+  * min_mon_per_seas: The minimum number of months used to calculate each seasonal mean. This must be between 1 and 3. Recommended value is 3.
+  * min_seas_per_year: The minimum number of seasonal means in each year. This must be between 1 and 4. Recommended value is 4.
+  * min_seas_per_clim: The minimum number of seasonal means used to calculate the multiannual seasonal mean. This must be between 1 and the number of years of available NOAA GML Surface Flask data.
 
   *Optional settings for script*
 

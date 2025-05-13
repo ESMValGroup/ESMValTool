@@ -67,10 +67,7 @@ Atmosphere
    recipe_validation
    recipe_radiation_budget
    recipe_aod_aeronet_assess
-   recipe_surface_trace_gases
-   recipe_surface_trace_gas_ch4
-   recipe_surface_trace_gas_co2
-   recipe_surface_trace_gas_n2o
+   recipe_surface_trace_gas
 
 Climate metrics
 ^^^^^^^^^^^^^^^
