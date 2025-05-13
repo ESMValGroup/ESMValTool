@@ -201,7 +201,7 @@ A pull request should preferably not introduce any new prospector issues.
 However, we understand that there is a limit to how much time can be spent on
 polishing code, so up to 10 new (non-trivial) issues is still an acceptable
 amount.
-Formatting issues are considered trivial and need to be addressed by running
+Formatting issues are considered trivial to resolve and need to be addressed by running
 ``pre-commit run -a``.
 Note that the automatic code quality checks by prospector are really helpful to
 improve the quality of your code, but they are not flawless.
