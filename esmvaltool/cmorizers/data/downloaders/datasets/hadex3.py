@@ -1,4 +1,5 @@
 """Script to download HadEX3 from its webpage."""
+
 import logging
 import os
 
@@ -8,8 +9,9 @@ from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -39,10 +41,14 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     web_source = "https://www.metoffice.gov.uk/hadobs/hadex3/data/"
 
     file_list = [
-        "HadEX3_TXx_MON.nc.gz", "HadEX3_TXx_ANN.nc.gz", "HadEX3_TNn_MON.nc.gz",
-        "HadEX3_TNn_ANN.nc.gz", "HadEX3_Rx1day_MON.nc.gz",
-        "HadEX3_Rx1day_ANN.nc.gz", "HadEX3_Rx5day_MON.nc.gz",
-        "HadEX3_Rx5day_ANN.nc.gz"
+        "HadEX3_TXx_MON.nc.gz",
+        "HadEX3_TXx_ANN.nc.gz",
+        "HadEX3_TNn_MON.nc.gz",
+        "HadEX3_TNn_ANN.nc.gz",
+        "HadEX3_Rx1day_MON.nc.gz",
+        "HadEX3_Rx1day_ANN.nc.gz",
+        "HadEX3_Rx5day_MON.nc.gz",
+        "HadEX3_Rx5day_ANN.nc.gz",
     ]
 
     for file in file_list:
