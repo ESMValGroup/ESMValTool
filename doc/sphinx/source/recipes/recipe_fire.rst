@@ -1,7 +1,7 @@
 .. _recipes_fire:
 
 Climate drivers of fire
-=====
+=======================
 
 Overview
 --------
@@ -25,7 +25,7 @@ files are made available through a Zenodo archive (will be published with DOI
 10.5281/zenodo.14917244) which can be retrieved inside the diagnostic.
 The other option is to provide a local directory which contains the necessary model files.
 
-The ConFire model relies on a variety of observational datasets:
+The ConFire model relies on a variety of observational datasets (see references):
 * Global Fire Emissions Database version 5
 * MODIS MOD44B
 * ESA CCI Biomass
@@ -148,3 +148,23 @@ References
 Example plots
 -------------
 
+.. _fig_ref_fire_burnt_area:
+.. figure::  /recipes/figures/ref/burnt_fraction_MPI-ESM1-2-LR_historical_2013_2014.png
+   :align:   center
+   
+   Burnt area fraction for the MPI-ESM1-2-LR model (CMIP-historical experiment)
+   for the time period 2013-2014 as computed with the ConFire model `Jones et al. (2024)`.
+
+.. _fig_ref_fire_fire_weather_control:
+.. figure::  /recipes/figures/ref/fire_weather_control_MPI-ESM1-2-LR_historical_2013_2014.png
+   :align:   center
+   
+   Fire weather control for the MPI-ESM1-2-LR model (CMIP-historical experiment)
+   for the time period 2013-2014 as computed with the ConFire model `Jones et al. (2024)`.
+
+.. _fig_ref_fire_fuel_load_continuity_control:
+.. figure::  /recipes/figures/ref/fuel_load_continuity_MPI-ESM1-2-LR_historical_2013_2014.png
+   :align:   center
+   
+   Fuel load continuity control for the MPI-ESM1-2-LR model (CMIP-historical experiment)
+   for the time period 2013-2014 as computed with the ConFire model `Jones et al. (2024)`.
