@@ -30,7 +30,6 @@
             install_env_file => get_esmval => configure
             configure => process<fast> => compare<fast>
             configure => process<medium> => compare<medium>
-            compare<fast> & compare<medium> => housekeeping
         """
         T01 = """
             @wall_clock => get_esmval => configure
