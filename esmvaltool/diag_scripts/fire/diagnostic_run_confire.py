@@ -946,6 +946,7 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
     #   - burnt area (model)
     #   - fire weather (control direction 0)
     #   - fuel loads (control direction 1)
+    #   - stochastic control
     logger.info('Saving ConFire output cubes...')
     os.makedirs(output_dir, exist_ok=True)
     timerange = timerange.replace('/', '-')
@@ -983,7 +984,7 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
     }
     for i, filename in enumerate(config['filenames_out']):
         filepath = os.path.join(
-            output_dir, f'{model_name}_{filename}_{timerange}.nc'
+            output_dir, f'{filename}_{model_name}_{timerange}.nc'
         )
         fig, axes = plt.subplots(
             nrows=1, ncols=2, figsize=(12, 8),
