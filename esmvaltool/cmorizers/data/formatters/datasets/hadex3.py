@@ -47,18 +47,10 @@ def _fix_time_coord(cube):
     time_coord = cube.coord("time")
     time_coord.guess_bounds()
     new_unit = Unit("days since 1850-01-01 00:00:00", calendar="gregorian")
-    new_time_points = cftime.num2pydate(
-        time_coord.points, time_coord.units.origin, time_coord.units.calendar
-    )
-    time_points = cftime.date2num(
-        new_time_points, new_unit.origin, calendar=new_unit.calendar
-    )
-    new_time_bounds = cftime.num2pydate(
-        time_coord.bounds, time_coord.units.origin, time_coord.units.calendar
-    )
-    time_bounds = cftime.date2num(
-        new_time_bounds, new_unit.origin, calendar=new_unit.calendar
-    )
+    new_time_points = time_coord.units.num2date(time_coord.points)
+    time_points = new_unit.date2num(new_time_points)
+    new_time_bounds = time_coord.units.num2date(time_coord.bounds)
+    time_bounds = new_unit.date2num(new_time_bounds)
 
     cube.coord("time").points = time_points
     cube.coord("time").bounds = time_bounds
