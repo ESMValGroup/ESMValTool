@@ -11,6 +11,7 @@
 .. |KGOs| replace:: :term:`KGOs`
 .. |KGO| replace:: :term:`KGOs`
 .. |Rose| replace:: :term:`Rose`
+.. |rose_prune| replace:: ``rose_prune``
 
 .. Links
 
