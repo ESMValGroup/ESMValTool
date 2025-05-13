@@ -20,24 +20,24 @@ attributes:
 # Variables to cmorize
 variables:
   #daily data
-  clt_day:
-    short_name: clt
-    mip: day
-    raw: [cmask_desc, cmask_asc]
-    raw_units: '1'
-    file: '-ESACCI-L3U_CLOUD-CLD_MASKTYPE-AVHRR_*-fv3.0.nc'
-  clwvi_day:
-    short_name: clwvi
-    mip: CFday
-    raw: [cwp_desc, cwp_asc]
-    raw_units: g/m2
-    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
-  cod_day:
-    short_name: cod
-    mip: day
-    raw: [cot_desc, cot_asc]
-    raw_units: 1
-    file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
+  # clt_day:
+  #   short_name: clt
+  #   mip: day
+  #   raw: [cmask_desc, cmask_asc]
+  #   raw_units: '1'
+  #   file: '-ESACCI-L3U_CLOUD-CLD_MASKTYPE-AVHRR_*-fv3.0.nc'
+  # clwvi_day:
+  #   short_name: clwvi
+  #   mip: CFday
+  #   raw: [cwp_desc, cwp_asc]
+  #   raw_units: g/m2
+  #   file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
+  # cod_day:
+  #   short_name: cod
+  #   mip: day
+  #   raw: [cot_desc, cot_asc]
+  #   raw_units: 1
+  #   file: '-ESACCI-L3U_CLOUD-CLD_PRODUCTS-AVHRR_*-fv3.0.nc'
 
   # monthly data
   clt_mon:
