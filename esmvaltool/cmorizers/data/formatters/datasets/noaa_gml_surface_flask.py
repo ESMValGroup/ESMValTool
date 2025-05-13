@@ -16,13 +16,10 @@ Download and processing instructions
     https://gml.noaa.gov/aftp/data/trace_gases/n2o/flask/surface/n2o_surface-flask_ccgg_text.tar.gz
 """
 
-import os
 import logging
-
+import os
 from datetime import datetime
 from typing import NamedTuple
-from pys2index import S2PointIndex
-from fsspec.implementations.tar import TarFileSystem
 
 import cf_units
 import dask.array as da
@@ -32,14 +29,16 @@ import iris.cube
 import numpy as np
 import pandas as pd
 import requests
+from fsspec.implementations.tar import TarFileSystem
+from pys2index import S2PointIndex
 
 from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 
-FLASK_COLUMNS = ['site', 'year', 'month', 'value']
-DTYPE_FLASK_COLUMNS = {'site': str, 'year': int, 'month': int, 'value': float}
-TRACE_GAS_UNITS = {'ch4s': '1e-09', 'co2s': '1e-06', 'n2os': '1e-09'}
+FLASK_COLUMNS = ["site", "year", "month", "value"]
+DTYPE_FLASK_COLUMNS = {"site": str, "year": int, "month": int, "value": float}
+TRACE_GAS_UNITS = {"ch4s": "1e-09", "co2s": "1e-06", "n2os": "1e-09"}
 
 
 class FlaskStation(NamedTuple):
@@ -79,13 +78,13 @@ def get_station_dict():
     try:
         req = requests.get(url, timeout=30)
     except requests.exceptions.Timeout:
-        logger.debug('Request timed out for URL %s', url)
+        logger.debug("Request timed out for URL %s", url)
         req = None
     if req is not None:
         stat_list = pd.read_html(req.content)
         stats = stat_list[-1]
         # Remove asterisk from station names (flags inactive stations)
-        stats['Code'] = stats['Code'].str.replace('*', '')
+        stats["Code"] = stats["Code"].str.replace("*", "")
         stats.set_index("Code", drop=False, inplace=True)
         station_dict = stats.to_dict(orient="index")
     return station_dict
@@ -95,45 +94,46 @@ def load_file(filesystem, filepath, station_dict):
     """Load NOAA GML surface flask station data from the text file."""
     # Determine how many lines to skip in the header
     skiprows = 0
-    with filesystem.open(filepath, mode='rt') as file:
+    with filesystem.open(filepath, mode="rt") as file:
         for line in file:
             if line.startswith("#"):
                 skiprows = skiprows + 1
     # Read file as CSV
-    with filesystem.open(filepath, mode='rt') as file:
+    with filesystem.open(filepath, mode="rt") as file:
         data_frame = pd.read_csv(
             file,
-            delimiter=r'[\s]{1,20}',
+            delimiter=r"[\s]{1,20}",
             skiprows=skiprows,
             header=None,
             names=FLASK_COLUMNS,
             dtype=DTYPE_FLASK_COLUMNS,
-            engine='python'
+            engine="python",
         )
     # Fetch data from station dictionary if available:
     # code, full_name, country, latitude, longitude, elevation, timezone
-    site_code = filepath.split('/')[-1].split('_')[1].upper()
-    site_name = 'N/A'
-    site_country = 'N/A'
+    site_code = filepath.split("/")[-1].split("_")[1].upper()
+    site_name = "N/A"
+    site_country = "N/A"
     site_latitude = np.nan
     site_longitude = np.nan
     site_elevation = np.nan
-    site_utc2lst = 'N/A'
+    site_utc2lst = "N/A"
     if isinstance(station_dict, dict):
         if site_code in station_dict.keys():
-            site_name = station_dict[site_code]['Name']
-            site_country = station_dict[site_code]['Country']
-            site_latitude = station_dict[site_code]['Latitude']
-            site_longitude = station_dict[site_code]['Longitude']
-            site_elevation = station_dict[site_code]['Elevation (meters)']
-            site_utc2lst = station_dict[site_code]['Time from GMT']
+            site_name = station_dict[site_code]["Name"]
+            site_country = station_dict[site_code]["Country"]
+            site_latitude = station_dict[site_code]["Latitude"]
+            site_longitude = station_dict[site_code]["Longitude"]
+            site_elevation = station_dict[site_code]["Elevation (meters)"]
+            site_utc2lst = station_dict[site_code]["Time from GMT"]
     # Check if site location is available otherwise return None
     station = None
-    if np.any(~ np.isnan([site_latitude, site_longitude])):
+    if np.any(~np.isnan([site_latitude, site_longitude])):
         # Datetime index
         data_frame.index = pd.to_datetime(
-            data_frame['year'].astype(str)
-            + '-' + data_frame['month'].astype(str)
+            data_frame["year"].astype(str)
+            + "-"
+            + data_frame["month"].astype(str)
         )
         # Create FlaskCO2Station object
         station = FlaskStation(
@@ -144,7 +144,7 @@ def load_file(filesystem, filepath, station_dict):
             site_longitude,
             site_elevation,
             site_utc2lst,
-            data_frame
+            data_frame,
         )
     return station
 
@@ -204,20 +204,25 @@ def assemble_cube(stations, idx, var_attrs):
             "Station data frames has different sets of column names."
         )
 
-    trace_gas = da.stack(
-        [df["value"].values for df in data_frames],
-        axis=-1
-    )[..., idx]
+    trace_gas = da.stack([df["value"].values for df in data_frames], axis=-1)[
+        ..., idx
+    ]
 
     times = date_index.to_pydatetime()
     time_points = np.array(
-        [datetime(year=t.year, month=t.month, day=15) for t in times])
+        [datetime(year=t.year, month=t.month, day=15) for t in times]
+    )
     time_bounds_lower = times
-    time_bounds_upper = np.array([
-        datetime(year=t.year + (t.month == 12),
-                 month=t.month + 1 - (t.month == 12) * 12,
-                 day=1) for t in times
-    ])
+    time_bounds_upper = np.array(
+        [
+            datetime(
+                year=t.year + (t.month == 12),
+                month=t.month + 1 - (t.month == 12) * 12,
+                day=1,
+            )
+            for t in times
+        ]
+    )
     time_bounds = np.stack([time_bounds_lower, time_bounds_upper], axis=-1)
     time_units = cf_units.Unit("days since 1850-01-01", calendar="standard")
     time_coord = iris.coords.DimCoord(
@@ -264,11 +269,12 @@ def assemble_cube(stations, idx, var_attrs):
     )
     cube = iris.cube.Cube(
         data=da.ma.masked_array(
-            trace_gas, da.isnan(trace_gas), fill_value=-999.999),
-        standard_name=(var_attrs['standard_name']),
-        long_name=var_attrs['long_name'],
-        var_name=var_attrs['raw_name'],
-        units=TRACE_GAS_UNITS[var_attrs['raw_name']],
+            trace_gas, da.isnan(trace_gas), fill_value=-999.999
+        ),
+        standard_name=(var_attrs["standard_name"]),
+        long_name=var_attrs["long_name"],
+        var_name=var_attrs["raw_name"],
+        units=TRACE_GAS_UNITS[var_attrs["raw_name"]],
         dim_coords_and_dims=[
             (time_coord, 0),
             (index_coord, 1),
@@ -278,7 +284,7 @@ def assemble_cube(stations, idx, var_attrs):
             (longitude_coord, 1),
             (elevation_coord, 1),
             (code_coord, 1),
-        ]
+        ],
     )
     return cube
 
@@ -287,17 +293,12 @@ def build_cube(filesystem, paths, var_attrs):
     """Build station data cube."""
     stations_dict = get_station_dict()
     individual_stations = [
-        load_file(
-            filesystem, file_path, stations_dict
-        ) for file_path in paths
+        load_file(filesystem, file_path, stations_dict) for file_path in paths
     ]
-    individual_stations = [
-        s for s in individual_stations if s is not None
-    ]
+    individual_stations = [s for s in individual_stations if s is not None]
     stations = merge_stations(individual_stations)
     latlon_points = np.stack(
-        [stations.site_latitude, stations.site_longitude],
-        axis=-1
+        [stations.site_latitude, stations.site_longitude], axis=-1
     )
     index = S2PointIndex(latlon_points)
     cell_ids = index.get_cell_ids()
@@ -306,37 +307,39 @@ def build_cube(filesystem, paths, var_attrs):
     return cube
 
 
-def cmorization(
-        in_dir, out_dir, cfg, cfg_user, start_date, end_date):
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    raw_filename = cfg['filename']
+    raw_filename = cfg["filename"]
 
     tar_file_system = TarFileSystem(f"{in_dir}/{raw_filename}")
     paths = tar_file_system.glob(
         f"{cfg['trace_gas']}_surface-flask_ccgg_text/"
-        f"{cfg['trace_gas']}_*_month.txt")
+        f"{cfg['trace_gas']}_*_month.txt"
+    )
 
     versions = np.unique(
-        np.array([os.path.basename(p).split("_")[-3] for p in paths],
-                 dtype=str))
+        np.array(
+            [os.path.basename(p).split("_")[-3] for p in paths], dtype=str
+        )
+    )
     if len(versions) != 1:
         raise ValueError(
             "All station datasets in tar file must have same version."
         )
     version = versions[0]
 
-    var_attrs = cfg['variables'][f"{cfg['trace_gas']}s"]
+    var_attrs = cfg["variables"][f"{cfg['trace_gas']}s"]
     cube = build_cube(tar_file_system, paths, var_attrs)
 
-    attrs = cfg['attributes'].copy()
-    attrs['version'] = version
-    attrs['source'] = attrs['source']
+    attrs = cfg["attributes"].copy()
+    attrs["version"] = version
+    attrs["source"] = attrs["source"]
 
     # Run the cmorization
-    for (short_name, var) in cfg['variables'].items():
+    for short_name, var in cfg["variables"].items():
         logger.info("CMORizing variable '%s'", short_name)
 
-        attrs['mip'] = var['mip']
+        attrs["mip"] = var["mip"]
 
         # Fix metadata
         utils.set_global_atts(cube, attrs)
@@ -347,5 +350,5 @@ def cmorization(
             short_name,
             out_dir,
             attrs,
-            unlimited_dimensions=['time'],
+            unlimited_dimensions=["time"],
         )
