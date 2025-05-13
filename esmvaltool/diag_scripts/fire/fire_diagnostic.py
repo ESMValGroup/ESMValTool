@@ -344,6 +344,9 @@ def main(config):
         # Run ConFire model evaluation
         # Add the list of input filenames
         # WARNING = they should be ordered following the model run config
+        config['provenance'] = get_provenance_record(
+            [vars_file[v]['filename'] for v in config["var_order"]]
+        )
         config['files_input'] = [
             [vars_file[v]['filename'], v] for v in config['var_order']
         ]

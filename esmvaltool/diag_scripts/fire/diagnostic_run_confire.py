@@ -794,8 +794,9 @@ def get_parameters(config):
         lmask, eg_cube, control_direction
 
 
-def setup_cube_output(cube, output):
+def setup_cube_output(cube, output, provenance):
     """Setup the output cube.
+
     Apply:
         - replace variable name
         - remove standard name
@@ -808,6 +809,8 @@ def setup_cube_output(cube, output):
             Input cube to modify.
         output: str
             Output variable contained in the cube.
+        provenance: dict
+            Dictionary w/ provenance record.
     Returns:
         cube: iris cube
             Modified output cube.
@@ -862,6 +865,7 @@ def setup_cube_output(cube, output):
         cube.data *= parameter_dict['stochastic_control']['factor']
     else:
         logger.debug('Output %s cannot be processed. Saving output as is.')
+    cube.attributes['ancestors'] = provenance['ancestors']
     return cube
 
 
@@ -952,7 +956,8 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
     timerange = timerange.replace('/', '-')
     for i, o_c in enumerate(out_cubes):
         cubes = iris.cube.CubeList(o_c).merge_cube()
-        cubes = setup_cube_output(cubes, config['filenames_out'][i])
+        cubes = setup_cube_output(
+            cubes, config['filenames_out'][i], config["provenance"])
         iris.save(cubes, os.path.join(
             output_dir,
             f'{config['filenames_out'][i]}_{model_name}_{timerange}.nc'
