@@ -154,6 +154,6 @@
     [[generate_report]]
         [[[environment]]]
             CYLC_DB_PATH = ${CYLC_WORKFLOW_RUN_DIR}/log/db
-            REPORT_PATH = ${ROSE_DATAC}/recipe_test_workflow_status_report.html
+            REPORT_PATH = ${ROSE_DATAC}/status_report.html
 
 {% include "site/" ~ SITE ~ "/runtime.cylc" %}
