@@ -20,7 +20,7 @@ preprocessors:
     area_statistics:
       operator: mean
     extract_region:
-      start_latitude: -90
+      start_latitude: -85
       end_latitude: -60
       start_longitude: 0
       end_longitude: 360
@@ -29,6 +29,7 @@ preprocessors:
     convert_units:
       units: DU
 
+
   create_time_series_NH:
     annual_statistics:
       operator: mean
@@ -36,13 +37,14 @@ preprocessors:
       operator: mean
     extract_region:
       start_latitude: 60
-      end_latitude: 90
+      end_latitude: 85
       start_longitude: 0
       end_longitude: 360
     extract_month:
       month: 3
     convert_units:
       units: DU
+
 
   create_lat_time_map:
     regrid:
@@ -125,7 +127,7 @@ diagnostics:
               OBS:
                 color: black
             pyplot_kwargs:
-              title: Total Column Ozone, 60-90S, October
+              title: Total Column Ozone, 60-85S, October
 
   polar_cap_time_series_NH:
     variables:
@@ -154,7 +156,7 @@ diagnostics:
               OBS:
                 color: black
             pyplot_kwargs:
-              title: Total Column Ozone, 60-90N, March
+              title: Total Column Ozone, 60-85N, March
 
   lat_time_mapplot:
     variables:
