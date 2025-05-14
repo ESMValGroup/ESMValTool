@@ -90,7 +90,9 @@ commands:
             # Install
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            mamba env create
+            mamba --version
+            mamba install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
+            mamba env create -n esmvaltool -f environment.yml
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
@@ -105,7 +107,7 @@ commands:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            flake8 -j 4
+            pre-commit run --all
       - test_and_report
       - save_cache:
           key: install-<< parameters.extra >>-{{ .Branch }}-{{ checksum "cache_key.txt" }}
@@ -141,7 +143,7 @@ jobs:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            flake8 -j 4
+            pre-commit run --all
       - run:
           name: Remove source code to test the installed software
           command: rm -r esmvaltool
@@ -202,7 +204,8 @@ jobs:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            mamba env create
+            mamba install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
+            mamba env create -n esmvaltool -f environment.yml
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
             pip install --editable .[develop]
@@ -244,7 +247,7 @@ jobs:
             mkdir /logs
             . /opt/conda/etc/profile.d/conda.sh
             # Install
-            mamba env create
+            conda env create -n esmvaltool -f environment_python.yml
             conda activate esmvaltool
             pip install .[doc]
             # Log versions

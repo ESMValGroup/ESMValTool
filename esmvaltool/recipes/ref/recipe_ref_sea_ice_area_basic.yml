@@ -1,0 +1,154 @@
+# ESMValTool
+---
+documentation:
+  title: Seasonal cycle of NH/SH sea ice area
+  description: >
+    Plots of the seasonal cycle and time series of NH and SH sea ice area.
+  authors:
+    - lauer_axel
+  maintainer:
+    - lauer_axel
+
+
+datasets:
+  - {dataset: MPI-ESM1-2-LR, grid: gn, benchmark_dataset: true}  # example model
+
+preprocessors:
+
+  pp_nh:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 30
+      end_latitude: 90
+    climate_statistics:
+      period: month
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: 1e6 km2
+
+  pp_nh_sep:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 30
+      end_latitude: 90
+    extract_month:
+      month: 9
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: 1e6 km2
+
+  pp_sh:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -90
+      end_latitude: -30
+    climate_statistics:
+      period: month
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: 1e6 km2
+
+  pp_sh_feb:
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -90
+      end_latitude: -30
+    extract_month:
+      month: 2
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: 1e6 km2
+
+
+diagnostics:
+
+  siarea_seas:
+    description: Create seasonal cycle plot of sea ice area.
+    variables:
+      sea_ice_area_nh: &var_basic
+        short_name: siconc
+        timerange: '1995/2014'
+        preprocessor: pp_nh
+        project: CMIP6
+        mip: SImon
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        reference_dataset: OSI-450-nh
+        additional_datasets:
+        - {dataset: OSI-450-nh, project: OBS, type: reanaly, version: v3, mip: OImon, tier: 2,
+           supplementary_variables: [{short_name: areacello, mip: fx}]}
+      sea_ice_area_sh:
+        <<: *var_basic
+        preprocessor: pp_sh
+        reference_dataset: OSI-450-sh
+        additional_datasets:
+        - {dataset: OSI-450-sh, project: OBS, type: reanaly, version: v3, mip: OImon, tier: 2,
+           supplementary_variables: [{short_name: areacello, mip: fx}]}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: variable_group
+        facet_used_for_labels: dataset
+        plots:
+          annual_cycle: &plot_basic
+            annual_mean_kwargs: False
+            pyplot_kwargs:
+              title: 'Sea ice area (million km2)'
+            plot_kwargs:
+              OSI-450-nh:
+                color: blue
+                label: 'OSISAF/CCI'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              OSI-450-sh:
+                color: blue
+                label: 'OSISAF/CCI'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              default:
+                color: red
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 4
+
+  siarea_min:
+    description: Create time series of September/February sea ice area.
+    variables:
+      sea_ice_area_nh_sep:
+        <<: *var_basic
+        timerange: '1979/2014'
+        preprocessor: pp_nh_sep
+        reference_dataset: OSI-450-nh
+        additional_datasets:
+        - {dataset: OSI-450-nh, project: OBS, type: reanaly, version: v3, mip: OImon, tier: 2,
+           supplementary_variables: [{short_name: areacello, mip: fx}], timerange: 1979/2020}
+      sea_ice_area_sh_feb:
+        <<: *var_basic
+        timerange: '1979/2014'
+        preprocessor: pp_sh_feb
+        reference_dataset: OSI-450-sh
+        additional_datasets:
+        - {dataset: OSI-450-sh, project: OBS, type: reanaly, version: v3, mip: OImon, tier: 2,
+           supplementary_variables: [{short_name: areacello, mip: fx}], timerange: 1979/2020}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: variable_group
+        facet_used_for_labels: dataset
+        plots:
+          timeseries:
+            <<: *plot_basic

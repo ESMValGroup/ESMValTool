@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Generate the required user configuration file for ESMValTool."""
+
 import os
 import pprint
 
@@ -27,29 +28,23 @@ def main():
 
     # Write the updated configuration values to the file defined by
     # 'user_config_path'.
-    print(f"Writing the user configuration file to '{user_config_path}' with "
-          "values: ")
+    print(
+        f"Writing the user configuration file to '{user_config_path}' with "
+        "values: "
+    )
     pprint.PrettyPrinter().pprint(config_values)
     write_yaml(user_config_path, config_values)
 
 
 def get_config_values_from_task_env():
     """Get configuration values from environment for configure task."""
-    # Note that 'auxiliary_data_dir' and 'download_dir' are set to empty
-    # values and cannot currently be configured. 'auxiliary_data_dir' is
-    # used by some recipes to look for additional datasets, so may need
-    # to be configured in the future. 'download_dir' is used only when
-    # using the automatic download feature via ESMValTool, which is not
-    # the intention here, so should not be configurable.
-    #
-    # In addition, 'check_level' and 'extra_facets_dir' are added to the
-    # config object in ESMValTool after loading the user configuration
-    # file, but they need updating to avoid issues when writing the YAML
-    # file.
+    # 'check_level' and 'extra_facets_dir' are added to the config
+    # object in ESMValTool after loading the user configuration file,
+    # but they need updating to avoid issues when writing the YAML file.
     config_values_from_task_env = {
-        "auxiliary_data_dir": "",
+        "auxiliary_data_dir": os.environ["AUXILIARY_DATA_DIR"],
         "check_level": "DEFAULT",
-        "download_dir": "",
+        "download_dir": os.environ["DOWNLOAD_DIR"],
         "drs": {
             "ana4mips": os.environ["DRS_ANA4MIPS"],
             "CMIP3": os.environ["DRS_CMIP3"],
@@ -77,9 +72,12 @@ def get_config_values_from_task_env():
             "OBS6": os.environ["ROOTPATH_OBS6"],
             "RAWOBS": os.environ["ROOTPATH_RAWOBS"],
         },
+        "search_esgf": os.environ["SEARCH_ESGF"],
     }
-    print("The configuration values defined in the environment for the "
-          "'configure' task: ")
+    print(
+        "The configuration values defined in the environment for the "
+        "'configure' task: "
+    )
     pprint.PrettyPrinter().pprint(config_values_from_task_env)
     return config_values_from_task_env
 
@@ -110,18 +108,22 @@ def validate_user_config_file(user_config_file_content):
             validation_function = _validators[user_config_key]
         except KeyError as err:
             errors.append(
-                f'Key Error for {user_config_key.upper()}. May not be a valid '
-                f'ESMValTool user configuration key\nERROR: {err}\n')
+                f"Key Error for {user_config_key.upper()}. May not be a valid "
+                f"ESMValTool user configuration key\nERROR: {err}\n"
+            )
         else:
             try:
-                print(f'Validating {user_config_key.upper()} with value '
-                      f'"{usr_config_value}" using function '
-                      f'{validation_function.__name__.upper()}.')
+                print(
+                    f"Validating {user_config_key.upper()} with value "
+                    f'"{usr_config_value}" using function '
+                    f"{validation_function.__name__.upper()}."
+                )
                 validation_function(usr_config_value)
             except ValidationError as err:
                 errors.append(
-                    f'Validation error for {user_config_key.upper()} with '
-                    f'value "{usr_config_value}"\nERROR: {err}\n')
+                    f"Validation error for {user_config_key.upper()} with "
+                    f'value "{usr_config_value}"\nERROR: {err}\n'
+                )
     if len(errors) > 1:
         raise ValidationError("\n".join(errors))
     print("All validation checks passed.")
