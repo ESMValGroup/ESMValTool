@@ -7,25 +7,16 @@ from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 
-CYLC_DB_FILE_PATH = os.environ.get("CYLC_DB_FILE_PATH")
+CYLC_DB_PATH = os.environ.get("CYLC_DB_PATH")
 CYLC_TASK_CYCLE_POINT = os.environ.get("CYLC_TASK_CYCLE_POINT")
 CYLC_WORKFLOW_SHARE_DIR = os.environ.get("CYLC_WORKFLOW_SHARE_DIR")
+REPORT_PATH = os.environ.get("REPORT_PATH")
 
-
-# Tests should not rely on the CYLC_WORKFLOW_SHARE_DIR environment variable 
-# being set.
-if CYLC_WORKFLOW_SHARE_DIR:
-    OUTPUT_FILE_PATH = os.path.join(
-        CYLC_WORKFLOW_SHARE_DIR,
-        "recipe_test_workflow_status_report.html",
-    )
-else:
-    OUTPUT_FILE_PATH = None
 
 SQL_QUERY_TASK_STATES = "SELECT name, status FROM task_states"
 
 
-def main(db_file_path=CYLC_DB_FILE_PATH):
+def main(db_file_path=CYLC_DB_PATH):
     """
     Main function to generate the HTML report.
 
@@ -169,7 +160,7 @@ def render_html_report(report_data, subheader):
     return rendered_html
 
 
-def write_report_to_file(rendered_html, output_file_path=OUTPUT_FILE_PATH):
+def write_report_to_file(rendered_html, output_file_path=REPORT_PATH):
     """
     Write the report data to an HTML file.
 
@@ -182,6 +173,7 @@ def write_report_to_file(rendered_html, output_file_path=OUTPUT_FILE_PATH):
     """
     with open(output_file_path, "w") as file:
         file.write(rendered_html)
+    print(f"HTML report written to: {output_file_path}")
 
 
 if __name__ == "__main__":
