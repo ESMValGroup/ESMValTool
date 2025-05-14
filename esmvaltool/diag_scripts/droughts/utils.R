@@ -278,7 +278,6 @@ list_default <- function(list, key, default) {
     print("key not existing")
     print(key)
     list[[key]] <- default
-    # print(list)
   }
   return(list)
 }
