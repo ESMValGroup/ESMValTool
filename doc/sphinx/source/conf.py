@@ -175,6 +175,7 @@ html_theme_options = {
         "image_dark": "figures/ESMValTool-logo-2-dark.png",
     },
     "navbar_center": ["cross_proj_navbar"],
+    "search_bar_text": "Search TOOL docs... (Also try search in ESMValCORE docs)",
 }
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
