@@ -192,8 +192,11 @@ reformatted data set, ``cfg`` to the dataset-specific configuration file,
 dictionary), ``start_date`` to the start
 of the period to format, and ``end_date`` to the end of the period to format.
 If not needed, the last three arguments can be ignored using underscores.
-The return value of this function is ignored. All
-the work, i.e. loading of the raw files, processing them and saving the final
+The return value of this function is ignored.
+Note that this function will trigger a Codacy style issue because it has more
+than 5 arguments; you can ignore that issue in line with the :ref:`code_quality` guidance.
+
+All the work, i.e. loading of the raw files, processing them and saving the final
 output, has to be performed inside its body. To simplify this process, ESMValTool
 provides a set of predefined utilities.py_, which can be imported into your CMORizer
 by
