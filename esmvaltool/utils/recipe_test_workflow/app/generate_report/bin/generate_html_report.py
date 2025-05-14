@@ -36,7 +36,6 @@ def main(db_file_path=CYLC_DB_FILE_PATH):
     """
     raw_db_data = fetch_report_data(db_file_path)
     processed_db_data = process_db_output(raw_db_data)
-    remove_compare_tasks_for_failed_process_tasks(processed_db_data)
     subheader = create_subheader()
     rendered_html = render_html_report(
         subheader=subheader,
@@ -65,27 +64,6 @@ def fetch_report_data(db_file_path):
     fetched_data = cursor.fetchall()
     connection.close()
     return fetched_data
-
-
-def remove_compare_tasks_for_failed_process_tasks(processed_db_output):
-    """
-    Remove the compare task if the process task failed.
-
-    Currently the compare task succeeds if no recipe output is generated. To
-    avoid a confusing report output, remove compare tasks if the process task
-    failed. A missing process or compare task is rendered as "-" in the jinja2 
-    template.
-
-    Parameters
-    ----------
-    processed_db_output : defaultdict
-        A defaultdict dictionary with recipe names as keys and tasks/task data 
-        as values.
-    """
-    for tasks in processed_db_output.values():
-        if tasks.get("process_task", {}).get("status") == "failed":
-            if tasks.get("compare_task"):
-                del tasks["compare_task"]
 
 
 def process_db_output(report_data):

@@ -62,46 +62,6 @@ def test_fetch_report_data(mock_cylc_db):
     assert actual == expected
 
 
-def test_remove_compare_tasks_for_failed_process_tasks():
-    mock_processed_output = {
-        "recipe_1": {
-            "process_task": {"status": "failed", "style": "color: red"},
-            "compare_task": {"status": "succeeded", "style": "color: green"}
-        },
-        "recipe_2": {
-            "process_task": {"status": "succeeded", "style": "color: green"},
-            "compare_task": {"status": "succeeded", "style": "color: green"}
-        },
-        "recipe_3": {
-            "process_task": {"status": "succeeded", "style": "color: green"},
-            "compare_task": {"status": "failed", "style": "color: red"}
-        },
-        "recipe_4": {
-            "process_task": {"status": "failed", "style": "color: red"},
-            "compare_task": {"status": "succeeded", "style": "color: green"}
-        },
-    }
-    expected = {
-        "recipe_1": {
-            "process_task": {"status": "failed", "style": "color: red"},
-        },
-        "recipe_2": {
-            "process_task": {"status": "succeeded", "style": "color: green"},
-            "compare_task": {"status": "succeeded", "style": "color: green"}
-        },
-        "recipe_3": {
-            "process_task": {"status": "succeeded", "style": "color: green"},
-            "compare_task": {"status": "failed", "style": "color: red"}
-        },
-        "recipe_4": {
-            "process_task": {"status": "failed", "style": "color: red"},
-        },
-    }
-    # Function works inplace.
-    remove_compare_tasks_for_failed_process_tasks(mock_processed_output)
-    assert mock_processed_output == expected
-
-
 @pytest.mark.parametrize(
     "mock_db_output, expected_dict",
     [
