@@ -1041,7 +1041,7 @@ class MultiDatasets(MonitorBase):
             [str(dims) for dims in expected_dimensions],
         )
         raise ValueError(
-            f"Expected cube that exactly has the dimensional coordinates "
+            f"Expected cube with dimensional coordinates "
             f"{expected_dims_str}, got {cube.summary(shorten=True)}",
         )
 
