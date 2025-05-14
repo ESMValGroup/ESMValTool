@@ -218,7 +218,7 @@ cbar_kwargs_bias: dict, optional
 common_cbar: bool, optional (default: False)
     Use a common colorbar for the top panels (i.e., plots of the dataset and
     the corresponding reference dataset) when using a reference dataset. If
-    neither ``vmin`` and ``vmix`` nor ``levels`` is given in ``plot_kwargs``,
+    neither ``vmin`` and ``vmax`` nor ``levels`` is given in ``plot_kwargs``,
     the colorbar bounds are inferred from the dataset in the top left panel,
     which might lead to an inappropriate colorbar for the reference dataset
     (top right panel). Thus, specify ``vmin`` and ``vmax`` or ``levels`` when
