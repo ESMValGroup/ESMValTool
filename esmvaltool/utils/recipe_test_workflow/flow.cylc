@@ -26,16 +26,32 @@
 [scheduling]
     initial cycle point = now
     [[graph]]
-        R1 = """install_env_file => get_esmval => configure
-            configure => process<fast>:finish => compare<fast>:finish
-            configure => process<medium>:finish => compare<medium>:finish
-            compare<fast>:finish & compare<medium>:finish => generate_report
-            """
-        T01 = """@wall_clock => get_esmval => configure
-            configure => process<fast>:finish => compare<fast>:finish
-            configure => process<medium>:finish => compare<medium>:finish
-            compare<fast>:finish & compare<medium>:finish => generate_report
-            """
+        R1 = """
+            install_env_file => get_esmval => configure
+            configure => process<fast>? => compare<fast>?
+            configure => process<medium>? => compare<medium>?
+
+            # Run the 'generate_report' task regardless of the status
+            # of the process and compare tasks.
+            process<fast>:fail? |
+            process<fast>:succeed? & compare<fast>:finish &
+            process<medium>:fail? |
+            process<medium>:succeed? & compare<medium>:finish =>
+            generate_report
+        """
+        T01 = """
+            @wall_clock => get_esmval => configure
+            configure => process<fast>? => compare<fast>?
+            configure => process<medium>? => compare<medium>?
+
+            # Run the 'generate_report' task regardless of the status
+            # of the process and compare tasks.
+            process<fast>:fail? |
+            process<fast>:succeed? & compare<fast>:finish &
+            process<medium>:fail? |
+            process<medium>:succeed? & compare<medium>:finish =>
+            generate_report
+        """
 
 [runtime]
     [[root]]
@@ -85,14 +101,18 @@
             ROOTPATH_OBS4MIPS = {{ ROOTPATH_OBS4MIPS }}
             ROOTPATH_RAWOBS = {{ ROOTPATH_RAWOBS }}
 
+    [[PROCESS]]
+        inherit = None, COMPUTE
+        [[[environment]]]
+            ROSE_TASK_APP = process
+
     # Bash variable substitution below replaces `--` with `/` to obtain path to
     # recipe.
 {% for RECIPE in FAST_RECIPES %}
     [[process<fast={{ RECIPE["recipe_path"] }}>]]
-        inherit = None, COMPUTE
+        inherit = PROCESS
         execution time limit = {{ RECIPE["max_time"] }}
         [[[environment]]]
-            ROSE_TASK_APP = process
             RECIPE_PATH = "${CYLC_TASK_PARAM_fast//--//}.yml"
         [[[directives]]]
             --mem = {{ RECIPE["max_memory"] }}
@@ -100,10 +120,9 @@
 
 {% for RECIPE in MEDIUM_RECIPES %}
     [[process<medium={{ RECIPE["recipe_path"] }}>]]
-        inherit = None, COMPUTE
+        inherit = PROCESS
         execution time limit = {{ RECIPE["max_time"] }}
         [[[environment]]]
-            ROSE_TASK_APP = process
             RECIPE_PATH = "${CYLC_TASK_PARAM_medium//--//}.yml"
         [[[directives]]]
             --mem = {{ RECIPE["max_memory"] }}
