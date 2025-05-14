@@ -100,6 +100,7 @@ Future projections
    recipe_climate_change_hotspot
    recipe_bock24acp
    recipe_zec
+   recipe_calculate_gwl_exceedance_stats
 
 IPCC
 ^^^^
@@ -133,6 +134,7 @@ Ocean
    recipe_cvdp
    recipe_combined_indices
    recipe_esacci_oc
+   recipe_enso_ref
    recipe_oceans
    recipe_sea_surface_salinity
    recipe_russell18jgr
