@@ -18,7 +18,7 @@ It is calculated on monthly mean precipitation, and is therefore not accounting
 for the intensity of precipitation and the runoff process.
 Because SPI does not account for evaporation from the ground, it lacks one
 component of the water fluxes at the surface and is therefore not compatible
-with the concept of hydrological drought.
+with the concept of hydrological droughts.
 
 A hydrological drought occurs when low water supply becomes evident, especially
 in streams, reservoirs, and groundwater levels, usually after extended periods
