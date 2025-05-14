@@ -187,12 +187,6 @@ diagnostics:
                 linestyle: '-'
                 linewidth: 2
                 zorder: 3
-              default:
-                color: lightgray
-                label: null
-                linestyle: '-'
-                linewidth: 1
-                zorder: 1
             pyplot_kwargs:
               title: '{long_name} Anomalies N.Europe'
 
@@ -273,11 +267,5 @@ diagnostics:
                 linestyle: '-'
                 linewidth: 2
                 zorder: 3
-              default:
-                color: lightgray
-                label: null
-                linestyle: '-'
-                linewidth: 1
-                zorder: 1
             pyplot_kwargs:
               title: '{long_name} N.Europe'
