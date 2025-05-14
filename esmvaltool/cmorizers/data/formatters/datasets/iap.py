@@ -124,6 +124,8 @@ def process_data(cube, reference_year):
     longitude_coord = cube.coord("longitude")
     depth_coord = cube.coord("standard depth")
     depth_coord.rename("depth")
+    depth_coord.var_name = "lev"
+    depth_coord.attributes['positive'] = "down"
 
     # Create and return the new cube
     return iris.cube.Cube(
