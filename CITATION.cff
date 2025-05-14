@@ -270,6 +270,11 @@ authors:
     family-names: Lucarini
     given-names: Valerio
   -
+    affiliation: "ECCC, Canada"
+    family-names: Malinina
+    given-names: Elizaveta
+    orcid: "https://orcid.org/0000-0002-4102-2877"
+  -
     affiliation: "UCLouvain, Belgium"
     family-names: Massonnet
     given-names: François
