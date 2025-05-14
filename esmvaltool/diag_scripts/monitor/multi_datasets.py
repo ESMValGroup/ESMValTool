@@ -26,11 +26,11 @@ customized with additional :ref:`plot-specific options
   ``diurnal_cycle``. Input data needs single dimension `hour`.
 - ``benchmarking_map`` (2D plot): benchmarking version of ``map``. Input data
   needs dimensions `(longitude, latitude)`.
+- ``benchmarking_timeseries`` (1D plot): benchmarking version of
+  ``timeseries``. Input data needs single dimension `time`.
 - ``benchmarking_zonal`` (2D plot): benchmarking version of
   ``zonal_mean_profile``. Input data needs dimensions `(latitude, altitude)` or
   `latitude, air_pressure`.
-- ``benchmarking_timeseries`` (1D plot): benchmarking version of
-  ``timeseries``. Input data needs single dimension `time`.
 - ``diurnal_cycle`` (1D plot): plot diurnal cycle. Input data needs single
   dimension `hour`.
 - ``hovmoeller_anncyc_vs_lat_or_lon`` (2D plot): plot Hovmoeller plot. Input
