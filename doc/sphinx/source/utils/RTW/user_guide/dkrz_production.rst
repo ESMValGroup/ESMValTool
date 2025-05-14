@@ -1,0 +1,25 @@
+.. _dkrz_production:
+
+Running the |RTW| on DKRZ "in production"
+=========================================
+
+.. include:: ../common.txt
+
+"Production" is used to mean an intention to run the |RTW|
+on a continual, live basis 
+to ensure recipe issues are captured when they occur. 
+
+In practice,
+the production option generates a web page
+with test results at:
+https://esmvaltool.dkrz.de/shared/esmvaltool/rtw/status_report.html
+
+* add the following line to your ``~/.bashrc`` file
+  to ensure the Cylc and Rose executables can be found::
+
+    export PATH=/work/bd0854/metomi/bin:$PATH
+
+* run the RTW on DKRZ::
+
+    cd ESMValTool/esmvaltool/utils/recipe_test_workflow
+    cylc vip -O dkrz -O production 
