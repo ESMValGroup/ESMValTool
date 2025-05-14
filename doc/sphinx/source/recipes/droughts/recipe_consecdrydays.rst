@@ -32,7 +32,7 @@ Diagnostics are stored in diag_scripts/droughts/
 User settings in recipe
 -----------------------
 
-Script diag_cdd.py
+Script cdd.py
 ~~~~~~~~~~~~~~~~~~
 
 plim: float
