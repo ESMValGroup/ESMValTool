@@ -24,6 +24,6 @@ additional note and link to the last release in which the recipe was still fully
 The documentation of the retired recipe in the user and developer guide is moved into the category "legacy recipes" to distinguish
 between currently available and functional recipes and such legacy recipes.
 
-Special care needs to be taken when retiring diagnostic scripts to avoid unintentionally affecting other recipes or diagnostics. 
+Special care needs to be taken when retiring diagnostic scripts to avoid unintentionally affecting other recipes or diagnostics.
 
 .. _`@ESMValGroup/technical-lead-development-team`: https://github.com/orgs/ESMValGroup/teams/technical-lead-development-team
