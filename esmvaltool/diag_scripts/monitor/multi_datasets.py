@@ -1444,7 +1444,7 @@ class MultiDatasets(MonitorBase):
         representative_dataset: dict,
         datasets: list[dict],
     ) -> dict:
-        """Get provenancen record."""
+        """Get provenance record."""
         provenance_record = {
             "ancestors": list({a for d in datasets for a in d["ancestors"]}),
             "long_names": list({d["long_name"] for d in datasets}),
