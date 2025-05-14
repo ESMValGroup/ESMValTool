@@ -10,7 +10,6 @@ from bin.generate_html_report import (
     process_db_output, 
     fetch_report_data,
     render_html_report,
-    remove_compare_tasks_for_failed_process_tasks,
     SQL_QUERY_TASK_STATES
 )
 
@@ -45,10 +44,6 @@ def test_mock_cylc_db_and_sql_query(mock_cylc_db):
         ("compare_recipe_2", "failed")
     ]
     assert actual.fetchall() == expected
-
-
-def test_main(mock_cylc_db):
-    pass
 
 
 def test_fetch_report_data(mock_cylc_db):
