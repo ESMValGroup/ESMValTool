@@ -115,7 +115,7 @@ diagnostics:
           annual_cycle:
             annual_mean_kwargs: False
             plot_kwargs:
-              MIROC6:
+              default:
                 color: red
                 label: '{dataset}'
                 linestyle: '-'

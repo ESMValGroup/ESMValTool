@@ -28,7 +28,7 @@ Recipes are stored in `recipes/`
 * ref/recipe_model_benchmarking_annual_cycle_region.yml:
   Annual cycle in comparison with reference data for a region defined through a shape file, based on :ref:`recipe_model_benchmarking_annual_cycle.yml <recipe_benchmarking>`
 * ref/recipe_seaborn_trend_regions.yml:
-  Linear Trends for all IPCC regions compared with reference data, based on :ref:`recipe_seaborn.yml <recipes_seaborn_diag>`
+  Linear Trends for all IPCC land regions compared with reference data, based on :ref:`recipe_seaborn.yml <recipes_seaborn_diag>`
 * ref/recipe_ref_scatterplot.yml:
   2D histograms with focus on clouds
 * ref/recipe_ref_sea_ice_area_basic.yml:
@@ -95,4 +95,4 @@ Example plots:
    :width:   8cm
 
    Time series of near-surface air temperature anomalies from MIROC6 compared with HadCRUT5
-   for N.Europe for the years 1980 to 2014 (refernce period 1980 to 2009). Created with recipe_model_benchmarking_timeseries_region.yml.
+   for N.Europe for the years 1980 to 2014 (reference period 1980 to 2009). Created with recipe_model_benchmarking_timeseries_region.yml.

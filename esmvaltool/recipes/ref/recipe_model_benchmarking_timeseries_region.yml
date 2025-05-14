@@ -163,7 +163,7 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: False
             plot_kwargs:
-              MIROC6:
+              default:
                 color: red
                 label: '{dataset}'
                 linestyle: '-'
@@ -187,18 +187,6 @@ diagnostics:
                 linestyle: '-'
                 linewidth: 2
                 zorder: 3
-              MultiModelPercentile10:
-                color: gray
-                label: '{dataset}'
-                linestyle: '--'
-                linewidth: 1
-                zorder: 2
-              MultiModelPercentile90:
-                color: gray
-                label: '{dataset}'
-                linestyle: '--'
-                linewidth: 1
-                zorder: 2
               default:
                 color: lightgray
                 label: null
@@ -261,7 +249,7 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: False
             plot_kwargs:
-              MIROC6:
+              default:
                 color: red
                 label: '{dataset}'
                 linestyle: '-'
