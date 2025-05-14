@@ -12,7 +12,7 @@ Currently supported plot types
 Plot types can be specified with the :ref:`recipe option
 <diag_monitor_multi_datasets_recipe_options>` ``plots``. All plots can be
 customized with additional :ref:`plot-specific options
-<diag_monitor_multi_datasets_recipe_options>`.
+<diag_monitor_multi_datasets_plot_options>`.
 
 - ``1d_profile`` (1D plot): plot 1D profile. Input data needs single dimension
   `altitude` or `air_pressure`.
