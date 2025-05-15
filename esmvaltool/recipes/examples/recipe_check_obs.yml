@@ -23,7 +23,7 @@ diagnostics:
     variables:
       pr:
     additional_datasets:
-      - {project: OBS6, dataset: AGCD, mip: Amon, tier: 2, 
+      - {project: OBS6, dataset: AGCD, mip: Amon, tier: 2,
         type: ground, version: v2-0-1}
     scripts: null
 
@@ -54,7 +54,7 @@ diagnostics:
         mip: Lmon
       fgco2:
         mip: Omon
-    additional_datasets: 
+    additional_datasets:
       - {dataset: CarboScope, project: OBS6, tier: 2, type: reanaly,
          version: v2020, start_year: 1957, end_year: 2019}
       - {dataset: CarboScope, project: OBS6, tier: 2, type: reanaly,
@@ -90,16 +90,16 @@ diagnostics:
       tas:  # check older versions
         mip: Amon
         additional_datasets:
-        - {dataset: CRU, project: OBS, tier: 2, type: reanaly, 
+        - {dataset: CRU, project: OBS, tier: 2, type: reanaly,
           version: TS4.02, start_year: 1901, end_year: 2017}
-        - {dataset: CRU, project: OBS6, tier: 2, type: reanaly, 
+        - {dataset: CRU, project: OBS6, tier: 2, type: reanaly,
           version: TS4.07, start_year: 1901, end_year: 2021}
       pr:  # check older versions
         mip: Amon
         additional_datasets:
-        - {dataset: CRU, project: OBS, tier: 2, type: reanaly, 
-           version: TS4.02, start_year: 1901, end_year: 2017}
-        - {dataset: CRU, project: OBS6, tier: 2, type: reanaly, 
+        - {dataset: CRU, project: OBS, tier: 2, type: reanaly,
+        version: TS4.02, start_year: 1901, end_year: 2017}
+        - {dataset: CRU, project: OBS6, tier: 2, type: reanaly,
           version: TS4.07, start_year: 1901, end_year: 2021}
       tasmin:
         mip: Amon
@@ -112,7 +112,7 @@ diagnostics:
     additional_datasets:  # newest version for all variables
       - {dataset: CRU, project: OBS6, tier: 2,
          type: reanaly, version: TS4.07, start_year: 1901, end_year: 2022}
-      
+
 
     scripts: null
 
@@ -123,27 +123,27 @@ diagnostics:
       tasa:
     additional_datasets:
       - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
-         type: reanaly, version: had4_krig_v1, start_year: 1979,
+         type: reanaly, version: had4-krig-v1, start_year: 1979,
          end_year: 2013}
       - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
-         type: reanaly, version: had4_uah_v1, start_year: 1979, end_year: 2013}
+         type: reanaly, version: had4-uah-v1, start_year: 1979, end_year: 2013}
       - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
-         type: reanaly, version: had4_short_krig_v2, start_year: 1979,
+         type: reanaly, version: had4-short-krig-v2, start_year: 1979,
          end_year: 2019, end_month: 11}
       - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
-         type: reanaly, version: had4_short_uah_v2, start_year: 1979,
+         type: reanaly, version: had4-short-uah-v2, start_year: 1979,
          end_year: 2017, end_month: 7}
       - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
-         type: reanaly, version: ghcn_short_krig_v2, start_year: 1979,
+         type: reanaly, version: ghcn-short-krig-v2, start_year: 1979,
          end_year: 2019, end_month: 8}
       - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
-         type: reanaly, version: ghcn_short_uah_v2, start_year: 1979,
+         type: reanaly, version: ghcn-short-uah-v2, start_year: 1979,
          end_year: 2017, end_month: 7}
       - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
-         type: reanaly, version: had4sst4_krig_v2, start_year: 1850,
+         type: reanaly, version: had4sst4-krig-v2, start_year: 1850,
          end_year: 2018}
       - {dataset: CowtanWay, project: OBS, mip: Amon, tier: 2,
-         type: reanaly, version: had4_krig_v2, start_year: 1850,
+         type: reanaly, version: had4-krig-v2, start_year: 1850,
          end_year: 2019, end_month: 11}
     scripts: null
 
@@ -303,6 +303,34 @@ diagnostics:
         additional_datasets:
           - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
              type: sat, version: L3, start_year: 2007, end_year: 2008}
+      toz:
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
+             type: sat, version: L3, start_year: 1995, end_year: 2023}
+      o3:
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
+             type: sat, version: L3, start_year: 1984, end_year: 2022}
+    scripts: null
+
+  ESACCI-SEAICE:
+    description: ESACCI-SEAICE check
+    variables:
+      areacello:
+        mip: Ofx
+      siconc_daily:
+        short_name: siconc
+        mip: SIday
+        frequency: day
+      siconc_monthly:
+        short_name: siconc
+        mip: SImon
+        frequency: mon
+    additional_datasets:
+      - {dataset: ESACCI-SEAICE, project: OBS6, tier: 2,
+         type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-SH, start_year: 1991, end_year: 2020}
+      - {dataset: ESACCI-SEAICE, project: OBS6, tier: 2,
+         type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-NH, start_year: 1991, end_year: 2020}
     scripts: null
 
   ESACCI-SEA-SURFACE-SALINITY:
@@ -340,12 +368,14 @@ diagnostics:
   ESACCI-SST:
     description: ESACCI-SST check
     variables:
-      ts:
-      tsStderr:
+      tos:
+        additional_datasets:
+          - {dataset: ESACCI-SST, project: OBS6, mip: Omon, tier: 2,
+             type: sat, version: 3.0-L4-analysis, timerange: '198001/202112'}
+      tosStderr:
     additional_datasets:
-      - {dataset: ESACCI-SST, project: OBS, mip: Amon, tier: 2,
-         type: sat, version: 2.2,
-         start_year: 1982, end_year: 2019}
+      - {dataset: ESACCI-SST, project: OBS6, mip: Oday, tier: 2,
+         type: sat, version: 3.0-L4-analysis, timerange: '202001/202112'}
     scripts: null
 
 
@@ -460,21 +490,21 @@ diagnostics:
       pr:
     additional_datasets:
       - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
-         type: reanaly, version: v2018_025, start_year: 1891, end_year: 2016}
+         type: reanaly, version: v2018-025, start_year: 1891, end_year: 2016}
       - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
-         type: reanaly, version: v2018_05, start_year: 1891, end_year: 2016}
+         type: reanaly, version: v2018-05, start_year: 1891, end_year: 2016}
       - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
-         type: reanaly, version: v2018_10, start_year: 1891, end_year: 2016}
+         type: reanaly, version: v2018-10, start_year: 1891, end_year: 2016}
       - {dataset: GPCC, project: OBS, mip: Amon, tier: 2,
-         type: reanaly, version: v2018_25, start_year: 1891, end_year: 2016}
+         type: reanaly, version: v2018-25, start_year: 1891, end_year: 2016}
       - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
-         version: v2018_025-numgauge1, start_year: 1891, end_year: 2016}
+         version: v2018-025-numgauge1, start_year: 1891, end_year: 2016}
       - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
-         version: v2018_05-numgauge1, start_year: 1891, end_year: 2016}
+         version: v2018-05-numgauge1, start_year: 1891, end_year: 2016}
       - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
-         version: v2018_10-numgauge1, start_year: 1891, end_year: 2016}
+         version: v2018-10-numgauge1, start_year: 1891, end_year: 2016}
       - {dataset: GPCC, project: OBS, mip: Amon, tier: 2, type: reanaly,
-         version: v2018_25-numgauge1, start_year: 1891, end_year: 2016}
+         version: v2018-25-numgauge1, start_year: 1891, end_year: 2016}
     scripts: null
 
   GPCP-SG:
@@ -519,6 +549,21 @@ diagnostics:
          type: ground, version: 5.0.1.0-analysis, start_year: 1850, end_year: 2021}
       - {dataset: HadCRUT5, project: OBS, mip: Amon, tier: 2,
          type: ground, version: 5.0.1.0-noninfilled, start_year: 1850, end_year: 2021}
+    scripts: null
+
+
+  HadEX3:
+    description: HadEX3 check
+    variables:
+      txx:
+      tnn:
+      rx1day:
+      rx5day:
+    additional_datasets:
+      - {dataset: HadEX3, project: OBS6, mip: yr, tier: 2,
+         type: ground, version: v3.0.4, start_year: 1901, end_year: 2018}
+      - {dataset: HadEX3, project: OBS6, mip: Amon, tier: 2,
+         type: ground, version: v3.0.4, start_year: 1901, end_year: 2018}
     scripts: null
 
 
@@ -592,7 +637,7 @@ diagnostics:
       wap:
     additional_datasets:
       - {dataset: JRA-55, project: OBS6, mip: Amon, tier: 2,
-         type: reanaly, version: 1, start_year: 1958, end_year: 2022} 
+         type: reanaly, version: 1, start_year: 1958, end_year: 2022}
     scripts: null
 
   Kadow2020:
@@ -627,12 +672,12 @@ diagnostics:
     scripts: null
 
 
-  MOBO-DIC_MPIM:
-    description: MOBO-DIC_MPIM check
+  MOBO-DIC-MPIM:
+    description: MOBO-DIC-MPIM check
     variables:
       dissic:
     additional_datasets:
-      - {dataset: MOBO-DIC_MPIM, project: OBS6, mip: Omon, tier: 2,
+      - {dataset: MOBO-DIC-MPIM, project: OBS6, mip: Omon, tier: 2,
          type: clim, version: '1.1', start_year: 2011, end_year: 2011}
     scripts: null
 
@@ -839,9 +884,9 @@ diagnostics:
         mip: fx
     additional_datasets:
       - {dataset: OSI-450-nh, project: OBS, tier: 2,
-         type: reanaly, version: v2, start_year: 1979, end_year: 2015}
+         type: reanaly, version: v3, start_year: 1979, end_year: 2020}
       - {dataset: OSI-450-sh, project: OBS, tier: 2,
-         type: reanaly, version: v2, start_year: 1979, end_year: 2015}
+         type: reanaly, version: v3, start_year: 1979, end_year: 2020}
     scripts: null
 
 
@@ -1219,7 +1264,7 @@ diagnostics:
         mip: Amon
     additional_datasets:
       - {dataset: CLARA-AVHRR, project: OBS, tier: 3,
-         type: sat, version: V002_01, start_year: 1982, end_year: 2018}
+         type: sat, version: V002-01, start_year: 1982, end_year: 2018}
     scripts: null
 
 
@@ -1741,7 +1786,7 @@ diagnostics:
       lai:
     additional_datasets:
       - {dataset: LAI3g, project: OBS, mip: Lmon, tier: 3,
-         type: reanaly, version: 1_regridded, start_year: 1981, end_year: 2018}
+         type: reanaly, version: 1-regridded, start_year: 1981, end_year: 2018}
     scripts: null
 
 
@@ -2035,6 +2080,30 @@ diagnostics:
     additional_datasets:
       - {dataset: NSIDC-G02202-sh, project: OBS6, tier: 3,
         type: reanaly, version: 4, start_year: 1979, end_year: 2022}
+    scripts: null
+
+  TROPFLUX:
+    description: TROPFLUX
+    variables:
+      ts:
+        mip: Amon
+      tos:
+        mip: Omon
+      hfls:
+        mip: Lmon
+      hfls:
+        mip: Amon
+      rlut:
+        mip: Amon
+      tauu:
+        mip: Amon
+      tauv:
+        mip: Amon
+      rsds:
+        mip: Amon
+    additional_datasets:
+      - {dataset: TROPFLUX, project: OBS6, tier: 2,
+        type: reanaly, version: v1, start_year: 1979, end_year: 2018}
     scripts: null
 
   UWisc:
