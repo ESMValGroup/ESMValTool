@@ -58,7 +58,7 @@ def test_fetch_report_data(mock_cylc_db):
 
 
 @pytest.mark.parametrize(
-    "mock_db_output, expected_dict",
+    "mock_db_output, expected",
     [
         (
             [("process_recipe_1", "succeeded")],
@@ -94,11 +94,17 @@ def test_fetch_report_data(mock_cylc_db):
                     },
                 }
             }
-        )
+        ),
+        (
+            [("process_examples--recipe_python", "succeeded")],
+            {"examples/recipe_python": {"process_task": {
+                "status": "succeeded", "style": "color: green"
+                }
+            }}
+        ),
     ]
 )
-def test_process_db_output(mock_db_output, expected_dict):
-    expected = defaultdict(dict, expected_dict)
+def test_process_db_output(mock_db_output, expected):
     actual = process_db_output(mock_db_output)
     assert actual == expected
 
