@@ -57,7 +57,7 @@ except AttributeError as e:
 except (TypeError, ValueError) as e:
     # Handle specific errors if these might occur
     logger.warning("TypeError or ValueError: %s", e)
-except BaseException as e:
+except Exception as e:
     # Fallback for rare or unknown issues, but avoid catching Exception
     logger.warning("An unexpected error occurred: %s", e)
 
@@ -86,8 +86,7 @@ def collect_files(in_dir, cfg, start_date, end_date):
 
 
 def process_data(cube):
-    """Process raw data. Convert to Kelvin and add time dimension.
-    Concatenate the cubes and return the new cube.
+    """Process raw data: concatenate the cubes and return the new cube.
     """
     # Add time dimension
     temperature_data = np.expand_dims(cube.data, axis=0)
