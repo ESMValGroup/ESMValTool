@@ -78,72 +78,19 @@ def _check_for_missing_dates(year0, year1, cube, cubes):
     time_coord = cube.coord("time").cells()
     loop_date = datetime(year0, 1, 1)
     while loop_date <= datetime(year1, 12, 1):
-        if not any(point.year == loop_date.year for point in time_coord) and not any(point.month == loop_date.month for point in time_coord):
-        #if loop_date not in cube.coord("time").cells():
-        #else:
+        if not any([cell.point.year == loop_date.year and cell.point.month == loop_date.month] for cell in time_coord):
             logger.debug(
                 "No data available for %d/%d", loop_date.month, loop_date.year
             )
             nan_cube = _create_nan_cube(
                 cube[0, ...], loop_date.year, loop_date.month, loop_date.day
             )
-            logger.debug(nan_cube)
-            logger.debug(cube)
-            #cubes.append(nan_cube)
-            new_cube = iris.cube.CubeList([cube, nan_cube]).concatenate_cube()
+            cubes.append(nan_cube)
         loop_date += relativedelta.relativedelta(months=1)
-        
-        # time_coord = cube.coord("time").cells()
-        # time_points = time_coord.points
-        # # Check if any point falls within the target month
-        # #if np.any([point.month == target_month for point in time_points]):
-        # if np.any([point.year == loop_date.year for point in time_coord]) and np.any([point.month == loop_date.month for point in time_coord]):
-        #     print(f"The time coordinate contains month {target_month}")
-        # else:
-        #     print(f"The time coordinate does not contain month {target_month}")
     
     cube = cubes.concatenate_cube()
 
-    # # First, create a complete time series of months covering the desired range
-    # start_date = cube.coord('time').units.num2date(cube.coord('time').points[0])
-    # end_date = cube.coord('time').units.num2date(cube.coord('time').points[-1])
-    # #complete_dates = pd.date_range(start=start_date, end=end_date, freq='MS')
-    # #year0 = cube.coord("time").cell(0).point.year
-    # #year1 = cube.coord("time").cell(-1).point.year
-
-    # monthly_time_points = []
-
-    # # Start from the start_date and keep adding one month until we reach the end_date
-    # current_date = start_date
-    # while current_date <= end_date:
-    #     monthly_time_points.append(current_date)
-    #     if current_date.month == 12:
-    #         next_date = DatetimeGregorian(current_date.year + 1, 1, 1)
-    #     else:
-    #         next_date = DatetimeGregorian(current_date.year, current_date.month + 1, 1)
-    #     current_date = next_date
-
-    # logger.debug(monthly_time_points)
-    # # Convert the complete time series to a NumPy array of datetime objects
-    # #complete_dates_array = complete_dates.to_pydatetime()
-
-    # # Create a new time coordinate with the complete series of months
-    # #new_time_coord = iris.coords.DimCoord(iris.util.date2num(complete_dates_array, cube.coord('time').units), standard_name='time', units=cube.coord('time').units)
-    # new_time_coord = iris.coords.DimCoord(monthly_time_points, standard_name='time', units=cube.coord('time').units)
-
-    # # Initialize a new cube with the complete time series and NaN values
-    # new_cube_data = np.full((len(monthly_time_points),) + cube.shape[1:], np.nan)
-    # new_cube = iris.cube.Cube(new_cube_data, standard_name=cube.standard_name, units=cube.units)
-    # new_cube.add_dim_coord(new_time_coord, 0)
-
-    # # Now, fill the new cube with data from the original cube where available
-    # for i, date in enumerate(complete_dates_array):
-    #     date_num = iris.util.date2num(date, cube.coord('time').units)
-    #     if date_num in cube.coord('time').points:
-    #         idx = np.where(cube.coord('time').points == date_num)[0][0]
-    #         new_cube.data[i, ...] = cube[idx, ...].data
-
-    return new_cube
+    return cube
 
 
 def _concatenate_and_save_daily_cubes(
@@ -217,7 +164,7 @@ def _concatenate_and_save_monthly_cubes(
     # After gathering all cubes for all years, concatenate them
     cube = cubes.concatenate_cube()
 
-        # Check for missing months
+    # Check for missing months
     year0 = cube.coord("time").cell(0).point.year
     year1 = cube.coord("time").cell(-1).point.year
     logger.debug(year0, year1)
