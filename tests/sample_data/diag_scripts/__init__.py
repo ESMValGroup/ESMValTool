@@ -9,6 +9,8 @@ import yaml
 from imagehash import hex_to_hash, phash
 from PIL import Image
 
+MATPLOTLIB_RC = Path(__file__).resolve().parent / "matplotlibrc"
+
 SAMPLE_DATA_DIR = Path(__file__).resolve().parent / "data"
 with (SAMPLE_DATA_DIR / "metadata.yml").open("r", encoding="utf-8") as file:
     METADATA = yaml.safe_load(file)
@@ -16,10 +18,15 @@ with (SAMPLE_DATA_DIR / "metadata.yml").open("r", encoding="utf-8") as file:
 IMAGEHASHES_PATH = Path(__file__).resolve().parent / "imagehashes.yml"
 with IMAGEHASHES_PATH.open("r", encoding="utf-8") as file:
     IMAGEHASHES = yaml.safe_load(file)
-HASH_SIZE = 16
-MAX_PHASH_DISTANCE = 2
 
-MATPLOTLIB_RC = Path(__file__).resolve().parent / "matplotlibrc"
+# Default perceptual hash size. This seems to be a good size for the 100 DPI
+# images produced here. The same value is used by Iris.
+HASH_SIZE = 16
+
+# Default maximum perceptual hash hamming distance. This seems to be a
+# reasonable compromise between accuracy and flexibility for the 100 DPI images
+# produces here. The same value is used by Iris.
+MAX_PHASH_DISTANCE = 2
 
 
 def assert_phash(image_key: str, image_path: Path) -> None:
