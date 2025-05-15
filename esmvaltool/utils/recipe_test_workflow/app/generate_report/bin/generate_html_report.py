@@ -91,7 +91,8 @@ def process_db_task(task_name, status):
     recipe_name = task_name_parts[1].replace("--", "/")
     style = styles.get(status, "color: black")
     task_data = (
-        recipe_name, {processed_task_name: {"status": status, "style": style}}
+        recipe_name,
+        {processed_task_name: {"status": status, "style": style}},
     )
     return task_data
 

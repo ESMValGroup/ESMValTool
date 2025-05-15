@@ -40,7 +40,7 @@ def test_mock_cylc_db_and_sql_query(mock_cylc_db):
         ("process_recipe_1", "succeeded"),
         ("compare_recipe_1", "succeeded"),
         ("process_recipe_2", "succeeded"),
-        ("compare_recipe_2", "failed")
+        ("compare_recipe_2", "failed"),
     ]
     assert actual.fetchall() == expected
 
@@ -51,7 +51,7 @@ def test_fetch_report_data(mock_cylc_db):
         ("process_recipe_1", "succeeded"),
         ("compare_recipe_1", "succeeded"),
         ("process_recipe_2", "succeeded"),
-        ("compare_recipe_2", "failed")
+        ("compare_recipe_2", "failed"),
     ]
     assert actual == expected
 
@@ -61,47 +61,65 @@ def test_fetch_report_data(mock_cylc_db):
     [
         (
             [("process_recipe_1", "succeeded")],
-            {"recipe_1": {"process_task": {
-                "status": "succeeded", "style": "color: green"
+            {
+                "recipe_1": {
+                    "process_task": {
+                        "status": "succeeded",
+                        "style": "color: green",
+                    }
                 }
-            }}
+            },
         ),
         (
             [("compare_recipe_1", "failed")],
-            {"recipe_1": {"compare_task": {
-                "status": "failed", "style": "color: red"
+            {
+                "recipe_1": {
+                    "compare_task": {"status": "failed", "style": "color: red"}
                 }
-            }}
+            },
         ),
         (
             [
                 ("process_recipe_1", "succeeded"),
-                ("compare_recipe_1", "failed")
+                ("compare_recipe_1", "failed"),
             ],
-            {"recipe_1": {"process_task": {
-                    "status": "succeeded", "style": "color: green"
+            {
+                "recipe_1": {
+                    "process_task": {
+                        "status": "succeeded",
+                        "style": "color: green",
                     },
-                "compare_task": {"status": "failed", "style": "color: red"}
+                    "compare_task": {
+                        "status": "failed",
+                        "style": "color: red",
+                    },
                 }
-            }
+            },
         ),
-        ([("other_task", "succeeded")],{}),
+        ([("other_task", "succeeded")], {}),
         (
             [("process_recipe_1", "running")],
-            {"recipe_1": {"process_task": {
-                    "status": "running", "style": "color: black"
+            {
+                "recipe_1": {
+                    "process_task": {
+                        "status": "running",
+                        "style": "color: black",
                     },
                 }
-            }
+            },
         ),
         (
             [("process_examples--recipe_python", "succeeded")],
-            {"examples/recipe_python": {"process_task": {
-                "status": "succeeded", "style": "color: green"
+            {
+                "examples/recipe_python": {
+                    "process_task": {
+                        "status": "succeeded",
+                        "style": "color: green",
+                    }
                 }
-            }}
+            },
         ),
-    ]
+    ],
 )
 def test_process_db_output(mock_db_output, expected):
     actual = process_db_output(mock_db_output)
@@ -134,11 +152,11 @@ def test_render_html_report():
         },
         "recipe_2": {
             "process_task": {"status": "succeeded", "style": "color: green"},
-            "compare_task": {"status": "succeeded", "style": "color: green"}
+            "compare_task": {"status": "succeeded", "style": "color: green"},
         },
         "recipe_3": {
             "process_task": {"status": "succeeded", "style": "color: green"},
-            "compare_task": {"status": "failed", "style": "color: red"}
+            "compare_task": {"status": "failed", "style": "color: red"},
         },
     }
     actual = render_html_report(mock_report_data, mock_subheader)
