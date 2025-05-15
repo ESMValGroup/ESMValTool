@@ -38,7 +38,6 @@ from datetime import datetime
 from dateutil import relativedelta
 
 import iris
-import cf_units
 import numpy as np
 
 from esmvaltool.cmorizers.data.utilities import (
