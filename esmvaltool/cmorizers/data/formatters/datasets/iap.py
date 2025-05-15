@@ -90,7 +90,7 @@ def process_data(cube, reference_year):
     """ Process raw data. Add time dimension.
         Concatenate the cubes and return the new cube.
     """
-    # Convert temperature from Celsius to Kelvin and add time dimension
+    # Add time dimension
     temperature_data = np.expand_dims(cube.data, axis=0)
     temperature_data = np.moveaxis(
         temperature_data, (0, 1, 2, 3), (0, 2, 3, 1)
