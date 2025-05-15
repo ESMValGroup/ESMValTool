@@ -1,7 +1,7 @@
 .. _dkrz_production:
 
 Running the |RTW| on DKRZ in "production mode"
-=========================================
+==============================================
 
 .. include:: ../common.txt
 
@@ -13,6 +13,8 @@ In practice,
 the production option generates a web page
 with test results at:
 https://esmvaltool.dkrz.de/shared/esmvaltool/rtw/status_report.html
+
+To run the |RTW| in production mode:
 
 * add the following line to your ``~/.bashrc`` file
   to ensure the Cylc and Rose executables can be found::
