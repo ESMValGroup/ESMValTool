@@ -156,21 +156,6 @@ diagnostics:
     scripts: null
 
 
-#  ESACCI-AEROSOL:
-#    description: ESACCI-AEROSOL check
-#    variables:
-#      abs550aer:
-#      od550aer:
-#      od550aerStderr:
-#      od550lt1aer:
-#      od870aer:
-#      od870aerStderr:
-#    additional_datasets:
-#      - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
-#         type: sat, version: SU-v4.3, start_year: 1997, end_year: 2011}
-#    scripts: null
-
-
   ESACCI-AEROSOL-MOTHLY:
     description: ESACCI-AEROSOL monthly data check
     variables:
