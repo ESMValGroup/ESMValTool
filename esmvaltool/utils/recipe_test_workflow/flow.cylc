@@ -33,7 +33,7 @@
 
             # Run the 'generate_report' task regardless of the status
             # of the process and compare tasks.
-            process<fast>:fail? | compare<fast>:finish &
+            process<fast>:fail? | compare<fast>:finish => generate_report
             process<medium>:fail? | compare<medium>:finish => generate_report
         """
         T01 = """
@@ -43,7 +43,7 @@
 
             # Run the 'generate_report' task regardless of the status
             # of the process and compare tasks.
-            process<fast>:fail? | compare<fast>:finish &
+            process<fast>:fail? | compare<fast>:finish => generate_report
             process<medium>:fail? | compare<medium>:finish => generate_report
         """
 
