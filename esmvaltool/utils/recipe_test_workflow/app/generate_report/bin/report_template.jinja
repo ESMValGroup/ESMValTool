@@ -9,16 +9,16 @@
             border-collapse: collapse;
             width: 100%;
         }
-        
+
         #recipes td, #recipes th {
             border: 1px solid #ddd;
             padding: 8px;
         }
-        
+
         #recipes tr:nth-child(even){background-color: #f2f2f2;}
-        
+
         #recipes tr:hover {background-color: #ddd;}
-        
+
         #recipes th {
             padding-top: 12px;
             padding-bottom: 12px;
@@ -40,18 +40,18 @@
             <tr>
                 <td>{{ recipe }}</td>
                 <td style="{{
-                    tasks["process_task"]["style"] if "process_task" in tasks 
-                    else "black" 
-                    }};">{{ 
-                    tasks["process_task"]["status"] if "process_task" in tasks 
-                    else "-" 
+                    tasks["process_task"]["style"] if "process_task" in tasks
+                    else "black"
+                    }};">{{
+                    tasks["process_task"]["status"] if "process_task" in tasks
+                    else "-"
                     }}</td>
-                <td style="{{ 
-                    tasks["compare_task"]["style"] if "compare_task" in tasks 
-                    else "black" 
-                    }};">{{ 
-                    tasks["compare_task"]["status"] if "compare_task" in tasks 
-                    else "-" 
+                <td style="{{
+                    tasks["compare_task"]["style"] if "compare_task" in tasks
+                    else "black"
+                    }};">{{
+                    tasks["compare_task"]["status"] if "compare_task" in tasks
+                    else "-"
                 }}</td>
             </tr>
             {% endfor %}

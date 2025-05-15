@@ -1,16 +1,16 @@
-from collections import defaultdict
-from pathlib import Path
 import sqlite3
 import tempfile
+from collections import defaultdict
+from pathlib import Path
 
 import pytest
 
 from bin.generate_html_report import (
+    SQL_QUERY_TASK_STATES,
     create_subheader,
-    process_db_output, 
     fetch_report_data,
+    process_db_output,
     render_html_report,
-    SQL_QUERY_TASK_STATES
 )
 
 
@@ -61,14 +61,14 @@ def test_fetch_report_data(mock_cylc_db):
     "mock_db_output, expected_dict",
     [
         (
-            [("process_recipe_1", "succeeded")], 
+            [("process_recipe_1", "succeeded")],
             {"recipe_1": {"process_task": {
                 "status": "succeeded", "style": "color: green"
                 }
             }}
         ),
         (
-            [("compare_recipe_1", "failed")], 
+            [("compare_recipe_1", "failed")],
             {"recipe_1": {"compare_task": {
                 "status": "failed", "style": "color: red"
                 }
@@ -76,9 +76,9 @@ def test_fetch_report_data(mock_cylc_db):
         ),
         (
             [
-                ("process_recipe_1", "succeeded"), 
+                ("process_recipe_1", "succeeded"),
                 ("compare_recipe_1", "failed")
-            ], 
+            ],
             {"recipe_1": {"process_task": {
                     "status": "succeeded", "style": "color: green"
                     },
@@ -88,7 +88,7 @@ def test_fetch_report_data(mock_cylc_db):
         ),
         ([("other_task", "succeeded")],{}),
         (
-            [("process_recipe_1", "running")], 
+            [("process_recipe_1", "running")],
             {"recipe_1": {"process_task": {
                     "status": "running", "style": "color: black"
                     },
