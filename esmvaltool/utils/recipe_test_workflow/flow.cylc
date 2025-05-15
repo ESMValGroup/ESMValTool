@@ -33,7 +33,7 @@
 
             # Run the 'generate_report' task regardless of the status
             # of the process and compare tasks.
-            process<fast>:fail? | compare<fast>:finish &
+            process<fast>:fail? | compare<fast>:finish => generate_report
             process<medium>:fail? | compare<medium>:finish => generate_report
         """
         T01 = """
@@ -43,7 +43,7 @@
 
             # Run the 'generate_report' task regardless of the status
             # of the process and compare tasks.
-            process<fast>:fail? | compare<fast>:finish &
+            process<fast>:fail? | compare<fast>:finish => generate_report
             process<medium>:fail? | compare<medium>:finish => generate_report
         """
 
@@ -53,7 +53,7 @@
         env-script = "eval $(rose task-env)"
         [[[environment]]]
             ENV_NAME = {{ ENV_NAME }}
-            USER_CONFIG_DIR = ${ROSE_DATAC}
+            USER_CONFIG_DIR = ${ROSE_DATAC}/config_dir
             USER_CONFIG_PATH = ${USER_CONFIG_DIR}/config-user.yml
             OUTPUT_DIR = ${ROSE_DATAC}
             ESMVALCORE_DIR = ""
