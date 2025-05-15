@@ -569,6 +569,21 @@ diagnostics:
     scripts: null
 
 
+  HadEX3:
+    description: HadEX3 check
+    variables:
+      txx:
+      tnn:
+      rx1day:
+      rx5day:
+    additional_datasets:
+      - {dataset: HadEX3, project: OBS6, mip: yr, tier: 2,
+         type: ground, version: v3.0.4, start_year: 1901, end_year: 2018}
+      - {dataset: HadEX3, project: OBS6, mip: Amon, tier: 2,
+         type: ground, version: v3.0.4, start_year: 1901, end_year: 2018}
+    scripts: null
+
+
   HadISST:
     description: HadISST check
     variables:
