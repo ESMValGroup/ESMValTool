@@ -131,7 +131,7 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
         cube.add_dim_coord(time_coord, 0)
 
         for attr in drop_attrs:
-            if attr in cube.attributes.keys():
+            if attr in cube.attributes:
                 cube.attributes.pop(attr)
 
         new_list.append(cube)
