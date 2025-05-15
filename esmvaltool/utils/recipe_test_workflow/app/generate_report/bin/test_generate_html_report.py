@@ -1,6 +1,5 @@
 import sqlite3
 import tempfile
-from collections import defaultdict
 from pathlib import Path
 
 import pytest
