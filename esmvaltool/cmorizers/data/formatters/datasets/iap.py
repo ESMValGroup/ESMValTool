@@ -88,7 +88,7 @@ def collect_files(in_dir, cfg, start_date, end_date):
 
 def process_data(cube):
     "Process raw data: concatenate the cubes and return the new cube."
-    
+
     # Add time dimension
     temperature_data = np.expand_dims(cube.data, axis=0)
     temperature_data = np.moveaxis(
