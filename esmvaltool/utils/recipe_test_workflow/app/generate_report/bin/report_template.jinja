@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Recipe Test Workflow</title>
+        <link rel="icon" href="https://esmvaltool.org/favicon.ico">
     </head>
     <style>
         #recipes {
@@ -41,14 +42,14 @@
                 <td>{{ recipe }}</td>
                 <td style="{{
                     tasks["process_task"]["style"] if "process_task" in tasks
-                    else "black"
+                    else "color: black"
                     }};">{{
                     tasks["process_task"]["status"] if "process_task" in tasks
                     else "-"
                     }}</td>
                 <td style="{{
                     tasks["compare_task"]["style"] if "compare_task" in tasks
-                    else "black"
+                    else "color: black"
                     }};">{{
                     tasks["compare_task"]["status"] if "compare_task" in tasks
                     else "-"
