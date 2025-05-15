@@ -6,8 +6,8 @@ Running the |RTW| on DKRZ "in production"
 .. include:: ../common.txt
 
 "Production" is used to mean an intention to run the |RTW|
-on a continual, live basis 
-to ensure recipe issues are captured when they occur. 
+on a continual, live basis
+to ensure recipe issues are captured when they occur.
 
 In practice,
 the production option generates a web page
@@ -19,7 +19,8 @@ https://esmvaltool.dkrz.de/shared/esmvaltool/rtw/status_report.html
 
     export PATH=/work/bd0854/metomi/bin:$PATH
 
-* run the RTW on DKRZ::
+* run the RTW on DKRZ,
+  installing the RTW into a ``recipe_test_workflow_production`` directory::
 
     cd ESMValTool/esmvaltool/utils/recipe_test_workflow
-    cylc vip -O dkrz -O production 
+    cylc vip -O dkrz -O production -n recipe_test_workflow_production
