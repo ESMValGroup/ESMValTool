@@ -102,7 +102,7 @@ Example plots:
    for the time period 2013-2014 as computed with the ConFire model `Jones et al. (2024)`.
 
 .. _fig_ref_9:
-.. figure::  /recipes/figures/ref/fuel_load_continuity_MPI-ESM1-2-LR_historical_2013_2014.png
+.. figure::  /recipes/figures/ref/fuel_load_continuity_control_MPI-ESM1-2-LR_historical_2013_2014.png
    :align:   center
 
    Fuel load continuity control for the MPI-ESM1-2-LR model (CMIP-historical experiment)

@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 
     import pytensor
 
-logger = logging.getLogger(Path.name(__file__))
+logger = logging.getLogger(Path(__file__).stem)
 
 
 # /libs/select_key_or_default.py
@@ -878,11 +878,11 @@ def _get_parameters(config: dict) -> tuple:
     # **Define Paths for Parameter Files  and for outputs**
     output_dir = work_dir + "/ConFire_outputs/"
     # Parameter files (traces, scalers, and other model parameters)
-    param_file_trace = Path.glob(confire_param + "trace*.nc")[0]
-    param_file_none_trace = Path.glob(
-        confire_param + "none_trace-params*.txt",
-    )[0]
-    scale_file = Path.glob(confire_param + "scalers*.csv")[0]
+    param_file_trace = Path(confire_param).glob("trace*.nc")[0]
+    param_file_none_trace = Path(confire_param).glob("none_trace-params*.txt")[
+        0
+    ]
+    scale_file = Path(confire_param).glob("scalers*.csv")[0]
     # **Load Variable Information and NetCDF Files**
     # Replace these lines with user-specified NetCDF files, ensuring variable
     # order is the same.

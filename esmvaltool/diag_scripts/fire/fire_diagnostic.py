@@ -14,6 +14,8 @@ authors:
 
 """
 
+from __future__ import annotations
+
 import glob
 import logging
 import os
@@ -38,8 +40,14 @@ logger = logging.getLogger(Path(__file__).stem)
 
 
 def get_provenance_record(
-    cfg, ancestors, model_name, project, experiment, timerange, var=None
-):
+    cfg: dict,
+    ancestors: list,
+    model_name: str,
+    project: str,
+    experiment: str,
+    timerange: str,
+    var: str | None = None,
+) -> dict:
     """Create a provenance record describing the diagnostic data and plot.
 
     Parameters
@@ -82,7 +90,7 @@ def get_provenance_record(
         + spec
         + "as computed with the ConFire model (Jones et al., 2024).",
     }
-    record = {
+    return {
         "caption": captions[var] if var is not None else "",
         "model": model_name,
         "project": project,
@@ -91,12 +99,16 @@ def get_provenance_record(
         "authors": ["lenhardt_julien", "Kelley_douglas"],
         "ancestors": ancestors,
     }
-    return record
 
 
-def setup_basename_file(filename, var, table):
-    """Generate the file basename for a newly computed variable using as
-    template the filename of an ancestor variable.
+def setup_basename_file(
+    filename: str,
+    var: str,
+    table: str,
+) -> str:
+    """Generate the file basename for a newly computed variable.
+
+    the filename of an ancestor variable is used as template.
 
     Example: If the ancestor filename is
     CMIP6_MPI-ESM1-2-LR_Amon_historical-ssp370_r1i1p1f1_pr_gn_2010-2020.nc
@@ -125,8 +137,12 @@ def setup_basename_file(filename, var, table):
     return "_".join(file)
 
 
-def download_files_from_zenodo(zenodo_link, output_dir):
+def download_files_from_zenodo(
+    zenodo_link: str,
+    output_dir: str,
+) -> None:
     """Download files from a Zenodo archive.
+
     Only the relevant files will be downloaded i.e.:
         - trace.nc
         - none-trace-params.txt
@@ -139,9 +155,6 @@ def download_files_from_zenodo(zenodo_link, output_dir):
         URL link to the Zenodo archive.
     output_dir : str
         Output directory where to store the downloaded files.
-
-    Returns
-    -------
     """
     # Extract the record ID from the Zenodo link
     record_id = zenodo_link.split("/")[-1]
@@ -190,8 +203,9 @@ def download_files_from_zenodo(zenodo_link, output_dir):
                 )
 
 
-def get_parameter_directory(config):
+def get_parameter_directory(config: dict) -> dict:
     """Get the path to the parameter directory.
+
     The parameter directory can either consist of:
         - an existing directory which must contain the necessary files
         - a Zenodo URL link to an existing archive from which the necessary
@@ -262,9 +276,12 @@ def get_parameter_directory(config):
     return param_dir
 
 
-def compute_vpd(config, tas, hurs, provenance):
-    """Compute the Vapor Pressure Deficit (VPD) using tas and hurs following
-    equations 4 and 5 in:
+def compute_vpd(
+    config: dict, tas: iris.cube.Cube, hurs: iris.cube.Cube, provenance: dict
+) -> str:
+    """Compute the Vapor Pressure Deficit (VPD).
+
+    This function uses tas and hurs following equations 4 and 5 in:
     Bjarke, N., Barsugli, J. & Livneh, B. Ensemble of CMIP6 derived reference
     and potential evapotranspiration with radiative and advective components.
     Sci Data 10, 417 (2023). https://doi.org/10.1038/s41597-023-02290-0
@@ -285,7 +302,7 @@ def compute_vpd(config, tas, hurs, provenance):
         the corresponding files used in the computation.
 
     Returns
-    ----------
+    -------
     filename: str
         Filename containing the processed VPD output.
     """
@@ -329,7 +346,7 @@ def compute_vpd(config, tas, hurs, provenance):
     return filename
 
 
-def main(config):
+def main(config: dict) -> None:
     """Produce the diagnostics for the climate drivers of fire.
 
     Parameters
@@ -360,11 +377,11 @@ def main(config):
     config["confire_param_dir"] = get_parameter_directory(config)
 
     # Removing or not the computed vapor pressure deficit files
-    # default = False
+    # default is False
     if "remove_vpd_files" not in config:
         config["remove_vpd_files"] = False
     # Removing or not the files produced during the ConFire model evaluation
-    # default = False
+    # default is False
     if "remove_confire_files" not in config:
         config["remove_confire_files"] = False
 
