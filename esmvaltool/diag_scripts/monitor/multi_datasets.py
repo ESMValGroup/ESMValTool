@@ -419,6 +419,7 @@ class MultiDatasets(MonitorBase):
         """Plot settings."""
         default_settings_1d = {
             "aspect_ratio": None,
+            "caption": None,
             "envelope_kwargs": {
                 "alpha": 0.8,
                 "facecolor": "lightblue",
@@ -442,6 +443,7 @@ class MultiDatasets(MonitorBase):
         }
         default_settings_2d = {
             "aspect_ratio": None,
+            "caption": None,
             "cbar_label": "{short_name} [{units}]",
             "cbar_label_bias": "Δ{short_name} [{units}]",
             "cbar_kwargs": {"orientation": "vertical"},
@@ -550,6 +552,7 @@ class MultiDatasets(MonitorBase):
                 },
                 "pyplot_kwargs": {},
                 "default_settings": {
+                    "caption": None,
                     "fontsize": None,
                     "plot_kwargs": {},
                     "pyplot_kwargs": {},
@@ -1471,6 +1474,8 @@ class MultiDatasets(MonitorBase):
             "long_names": list({d["long_name"] for d in datasets}),
         }
         provenance_record.update(self.plot_settings[plot_type]["provenance"])
+        if self.plots[plot_type]["caption"] is not None:
+            provenance_record["caption"] = self.plots[plot_type]["caption"]
         for prov_key, prov_val in provenance_record.items():
             if isinstance(prov_val, str):
                 provenance_record[prov_key] = self._fill_facet_placeholders(
