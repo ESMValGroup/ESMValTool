@@ -86,6 +86,7 @@ commands:
           key: install-<< parameters.extra >>-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
           name: Install dependencies
+          no_output_timeout: 30m
           command: |
             # Install
             . /opt/conda/etc/profile.d/conda.sh
@@ -197,6 +198,7 @@ jobs:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
           name: Install
+          no_output_timeout: 30m
           command: |
             # Install according to instructions on readthedocs with the
             # development version of ESMValTool and ESMValCore:
