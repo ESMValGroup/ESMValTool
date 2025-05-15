@@ -61,6 +61,7 @@ except BaseException as e:
     # Fallback for rare or unknown issues, but avoid catching Exception
     logger.warning("An unexpected error occurred: %s", e)
 
+
 def collect_files(in_dir, cfg, start_date, end_date):
     """Create list of files path to be processed."""
     file_list = []
@@ -91,7 +92,9 @@ def process_data(cube):
     # Add time dimension
     temperature_data = np.expand_dims(cube.data, axis=0)
     temperature_data = np.moveaxis(
-        temperature_data, (0, 1, 2, 3), (0, 2, 3, 1),
+        temperature_data,
+        (0, 1, 2, 3),
+        (0, 2, 3, 1),
     )  # Reorder axes
 
     # Create time coordinate
@@ -113,8 +116,14 @@ def process_data(cube):
     )
 
     # Remove old date attributes
-    for key in ["StartDay", "StartMonth", "StartYear",
-                "EndDay", "EndMonth", "EndYear"]:
+    for key in [
+        "StartDay",
+        "StartMonth",
+        "StartYear",
+        "EndDay",
+        "EndMonth",
+        "EndYear",
+    ]:
         del cube.attributes[key]
 
     # Get existing coordinates and rename 'standard depth' to 'depth'
@@ -161,13 +170,17 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
     # derive ocean surface
     if "srf_var" in raw_info:
         var_info = cmor_table.get_variable(
-            raw_info["mip"], raw_info["srf_var"])
+            raw_info["mip"], raw_info["srf_var"]
+        )
         logger.info("Extract surface OBS for %s", raw_info["srf_var"])
         level_constraint = iris.Constraint(cube.var_name, depth=1)
         cube_os = cube.extract(level_constraint)
         fix_var_metadata(cube_os, var_info)
         save_variable(
-            cube_os, raw_info["srf_var"], out_dir, attrs,
+            cube_os,
+            raw_info["srf_var"],
+            out_dir,
+            attrs,
             unlimited_dimensions=["time"],
         )
 
