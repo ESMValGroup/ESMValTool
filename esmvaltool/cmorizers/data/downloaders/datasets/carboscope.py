@@ -1,4 +1,5 @@
 """Script to download Scripps-CO2-KUM."""
+
 import logging
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
@@ -6,8 +7,9 @@ from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -33,5 +35,7 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     )
 
     downloader.download_file(
-        "https://www.bgc-jena.mpg.de/CarboScope/s/"
-        "INVERSION/OUTPUT/sEXTocNEET_v2020_daily.nc.gz", [])
+        "https://www.bgc-jena.mpg.de/CarboScope/s/INVERSION/OUTPUT/"
+        "nbetEXToc_v2024E/nbetEXToc_v2024E.flux.nc",
+        [],
+    )

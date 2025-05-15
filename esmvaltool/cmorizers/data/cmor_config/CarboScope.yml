@@ -1,28 +1,16 @@
 ---
 # Filename (will be extended by variable name)
-filename: 'sEXTocNEET_v2020_daily.nc.gz'
-# filename: 'nbetEXToc_v2024E.flux.nc'
+filename: 'nbetEXToc_v2024E.flux.nc'
 
-# Common global attributes for Cmorizer output
 attributes:
   dataset_id: CarboScope
-  version: 'v2020'
+  version: 'v2024E'
   tier: 2
   modeling_realm: reanaly
   project_id: OBS6
-  source: 'https://www.bgc-jena.mpg.de/CarboScope/s/INVERSION/OUTPUT/sEXTocNEET_v2020_daily.nc.gz'
-  reference: 'carboscope2020'
+  source: 'https://www.bgc-jena.mpg.de/CarboScope/?file=nbetEXToc_v2024E.flux.nc'
+  reference: 'carboscope2024'
   comment: ''
-
-# attributes:
-#   dataset_id: CarboScope
-#   version: 'v2024E'
-#   tier: 2
-#   modeling_realm: reanaly
-#   project_id: OBS6
-#   source: 'https://www.bgc-jena.mpg.de/CarboScope/?file=nbetEXToc_v2024E.flux.nc'
-#   reference: 'carboscope2024'
-#   comment: ''
 
 # Variables to cmorize
 variables:
