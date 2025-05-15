@@ -203,6 +203,11 @@ diagnostics:
         script: monitor/multi_datasets.py
         plots:
           map:
+            caption: |
+              Map plot of Near-Surface Air Temperature of dataset {dataset}
+              including bias relative to MPI-ESM1-2-LR. The number in the top
+              left corner corresponds to the spatial mean (weighted by grid
+              cell areas).
             common_cbar: true
             fontsize: 10
             plot_kwargs_bias:
