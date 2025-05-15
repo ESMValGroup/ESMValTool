@@ -22,8 +22,6 @@ from datetime import datetime
 
 import cf_units
 import iris
-import numpy as np
-import pandas as pd
 from dask import array as da
 from dateutil import relativedelta
 from esmvalcore.preprocessor import (
@@ -32,7 +30,6 @@ from esmvalcore.preprocessor import (
     regrid,
 )
 from iris import NameConstraint
-from cftime import DatetimeGregorian
 
 from esmvaltool.cmorizers.data import utilities as utils
 
@@ -78,7 +75,13 @@ def _check_for_missing_dates(year0, year1, cube, cubes):
     time_coord = cube.coord("time").cells()
     loop_date = datetime(year0, 1, 1)
     while loop_date <= datetime(year1, 12, 1):
-        if not any([cell.point.year == loop_date.year and cell.point.month == loop_date.month] for cell in time_coord):
+        if not any(
+            [
+                cell.point.year == loop_date.year
+                and cell.point.month == loop_date.month
+            ]
+            for cell in time_coord
+        ):
             logger.debug(
                 "No data available for %d/%d", loop_date.month, loop_date.year
             )
@@ -87,7 +90,7 @@ def _check_for_missing_dates(year0, year1, cube, cubes):
             )
             cubes.append(nan_cube)
         loop_date += relativedelta.relativedelta(months=1)
-    
+
     cube = cubes.concatenate_cube()
 
     return cube
