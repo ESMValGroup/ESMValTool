@@ -25,8 +25,10 @@ def main():
     # Write the updated configuration values to the file defined by
     # 'user_config_path'.
     user_config_path = os.environ["USER_CONFIG_PATH"]
-    print(f"Writing the user configuration file to '{user_config_path}' with "
-          "values: ")
+    print(
+        f"Writing the user configuration file to '{user_config_path}' with "
+        "values: "
+    )
     pprint.PrettyPrinter().pprint(config_values)
     write_yaml(user_config_path, config_values)
 
