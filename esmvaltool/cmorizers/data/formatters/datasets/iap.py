@@ -3,7 +3,6 @@
 # pylint: disable=too-many-function-args
 # pylint: disable=R0917
 # pylint: disable=E1121
-# flake8: noqa
 """ESMValTool CMORizer for IAP data.
 
 Tier
@@ -33,12 +32,12 @@ Download and processing instructions
 import logging
 import os
 import warnings
-from warnings import catch_warnings
 from datetime import datetime
-from dateutil import relativedelta
+from warnings import catch_warnings
 
 import iris
 import numpy as np
+from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.utilities import (
     fix_coords,
@@ -63,7 +62,7 @@ except BaseException as e:
     logger.warning("An unexpected error occurred: %s", e)
 
 def collect_files(in_dir, cfg, start_date, end_date):
-    """ Create list of files path to be processed."""
+    """Create list of files path to be processed."""
     file_list = []
 
     if start_date is None:
@@ -86,13 +85,13 @@ def collect_files(in_dir, cfg, start_date, end_date):
 
 
 def process_data(cube):
-    """ Process raw data. Convert to Kelvin and add time dimension.
-        Concatenate the cubes and return the new cube.
+    """Process raw data. Convert to Kelvin and add time dimension.
+    Concatenate the cubes and return the new cube.
     """
     # Add time dimension
     temperature_data = np.expand_dims(cube.data, axis=0)
     temperature_data = np.moveaxis(
-        temperature_data, (0, 1, 2, 3), (0, 2, 3, 1)
+        temperature_data, (0, 1, 2, 3), (0, 2, 3, 1),
     )  # Reorder axes
 
     # Create time coordinate
@@ -124,7 +123,7 @@ def process_data(cube):
     depth_coord = cube.coord("standard depth")
     depth_coord.rename("depth")
     depth_coord.var_name = "lev"
-    depth_coord.attributes['positive'] = "down"
+    depth_coord.attributes["positive"] = "down"
 
     # Create and return the new cube
     return iris.cube.Cube(
@@ -149,7 +148,7 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
         warnings.simplefilter("ignore")  # Ignore all warnings
         cubes = iris.load(in_files, rawvar)
         cubes = iris.cube.CubeList(
-            [process_data(cube) for cube in cubes]
+            [process_data(cube) for cube in cubes],
         )
 
     iris.util.equalise_attributes(cubes)
@@ -169,7 +168,7 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
         fix_var_metadata(cube_os, var_info)
         save_variable(
             cube_os, raw_info["srf_var"], out_dir, attrs,
-            unlimited_dimensions=["time"]
+            unlimited_dimensions=["time"],
         )
 
 
@@ -187,7 +186,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             {
                 "var": var,
                 "reference_year": cfg["custom"]["reference_year"],
-            }
+            },
         )
         glob_attrs["mip"] = vals["mip"]
         extract_variable(in_files, out_dir, glob_attrs, raw_info, cmor_table)
