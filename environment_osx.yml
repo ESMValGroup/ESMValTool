@@ -23,12 +23,13 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
-  - esmvalcore 2.11.*
+  - esmvalcore 2.12.*
   - fiona
   - fire
   - fsspec
   - gdal >=3.9.0
   - importlib_metadata <8  # https://github.com/ESMValGroup/ESMValTool/issues/3699 only for Python 3.10/11 and esmpy<8.6
+  - ipython <9.0  # github.com/ESMValGroup/ESMValCore/issues/2680 ; remove ipython when solved
   - iris >=3.11
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - jinja2
@@ -43,7 +44,7 @@ dependencies:
   - numpy !=1.24.3  # severe masking bug
   - openpyxl
   - packaging
-  - pandas==2.1.4  # unpin when ESMValCore released with https://github.com/ESMValGroup/ESMValCore/pull/2529
+  - pandas
   - pip !=21.3
   - progressbar2
   - prov
@@ -61,7 +62,7 @@ dependencies:
   - requests
   - ruamel.yaml
   - scikit-image
-  - scikit-learn >= 1.4.0  # github.com/ESMValGroup/ESMValTool/issues/3504
+  - scikit-learn >=1.4.0  # github.com/ESMValGroup/ESMValTool/issues/3504
   - scipy
   - seaborn
   - seawater
@@ -72,7 +73,7 @@ dependencies:
   - xlsxwriter
   - zarr
   # Python packages needed for unit testing
-  - flake8 >=6
+  - pre-commit
   - pytest >=3.9,!=6.0.0rc1,!=6.0.0
   - pytest-cov
   - pytest-env
@@ -89,10 +90,7 @@ dependencies:
   - codespell ==2.3.0
   - docformatter ==1.7.5
   - imagehash
-  - isort ==5.13.2
-  - pre-commit
   - prospector >=1.12  # earliest support for Python 3.12
   - pyroma
   # - vprof not on conda-forge
   - yamllint ==1.35.1
-  - yapf ==0.32.0

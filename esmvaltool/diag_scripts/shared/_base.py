@@ -1,4 +1,5 @@
 """Convenience functions for running a diagnostic script."""
+
 import argparse
 import contextlib
 import glob
@@ -35,12 +36,12 @@ def get_plot_filename(basename, cfg):
         A valid path for saving a diagnostic plot.
     """
     return os.path.join(
-        cfg['plot_dir'],
+        cfg["plot_dir"],
         f"{basename}.{cfg['output_file_type']}",
     )
 
 
-def get_diagnostic_filename(basename, cfg, extension='nc'):
+def get_diagnostic_filename(basename, cfg, extension="nc"):
     """Get a valid path for saving a diagnostic data file.
 
     Parameters
@@ -58,7 +59,7 @@ def get_diagnostic_filename(basename, cfg, extension='nc'):
         A valid path for saving a diagnostic data file.
     """
     return os.path.join(
-        cfg['work_dir'],
+        cfg["work_dir"],
         f"{basename}.{extension}",
     )
 
@@ -86,15 +87,15 @@ def save_figure(basename, provenance, cfg, figure=None, close=True, **kwargs):
     ProvenanceLogger: For an example provenance record that can be used
         with this function.
     """
-    if cfg.get('output_file_type') is None:
-        extensions = ('png', 'pdf')
-    elif isinstance(cfg['output_file_type'], str):
-        extensions = (cfg['output_file_type'], )
+    if cfg.get("output_file_type") is None:
+        extensions = ("png", "pdf")
+    elif isinstance(cfg["output_file_type"], str):
+        extensions = (cfg["output_file_type"],)
     else:
-        extensions = cfg['output_file_type']
+        extensions = cfg["output_file_type"]
 
     for ext in extensions:
-        filename = Path(cfg['plot_dir']) / ext / f"{basename}.{ext}"
+        filename = Path(cfg["plot_dir"]) / ext / f"{basename}.{ext}"
         filename.parent.mkdir(exist_ok=True)
         logger.info("Plotting analysis results to %s", filename)
         fig = plt if figure is None else figure
@@ -127,9 +128,10 @@ def save_data(basename, provenance, cfg, cube, **kwargs):
     ProvenanceLogger: For an example provenance record that can be used
         with this function.
     """
-    if 'target' in kwargs:
+    if "target" in kwargs:
         raise ValueError(
-            "Please use the `basename` argument to specify the output file")
+            "Please use the `basename` argument to specify the output file"
+        )
 
     filename = get_diagnostic_filename(basename, cfg)
     logger.info("Saving analysis results to %s", filename)
@@ -175,13 +177,14 @@ class ProvenanceLogger:
 
     def __init__(self, cfg):
         """Create a provenance logger."""
-        self._log_file = os.path.join(cfg['run_dir'],
-                                      'diagnostic_provenance.yml')
+        self._log_file = os.path.join(
+            cfg["run_dir"], "diagnostic_provenance.yml"
+        )
 
         if not os.path.exists(self._log_file):
             self.table = {}
         else:
-            with open(self._log_file, 'r', encoding='utf-8') as file:
+            with open(self._log_file, encoding="utf-8") as file:
                 self.table = yaml.safe_load(file)
 
     def log(self, filename, record):
@@ -222,7 +225,7 @@ class ProvenanceLogger:
         dirname = os.path.dirname(self._log_file)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
-        with open(self._log_file, 'w', encoding='utf-8') as file:
+        with open(self._log_file, "w", encoding="utf-8") as file:
             yaml.safe_dump(self.table, file)
 
     def __enter__(self):
@@ -253,8 +256,10 @@ def select_metadata(metadata, **attributes):
     """
     selection = []
     for attribs in metadata:
-        if all(a in attribs and v in (attribs[a], '*')
-               for a, v in attributes.items()):
+        if all(
+            a in attribs and v in (attribs[a], "*")
+            for a, v in attributes.items()
+        ):
             selection.append(attribs)
     return selection
 
@@ -311,7 +316,7 @@ def sorted_metadata(metadata, sort):
 
     def normalized_variable_key(attributes):
         """Define a key to sort the list of attributes by."""
-        return tuple(str(attributes.get(k, '')).lower() for k in sort)
+        return tuple(str(attributes.get(k, "")).lower() for k in sort)
 
     return sorted(metadata, key=normalized_variable_key)
 
@@ -339,7 +344,7 @@ def sorted_group_metadata(metadata_groups, sort):
 
     def normalized_group_key(key):
         """Define a key to sort by."""
-        return '' if key is None else str(key).lower()
+        return "" if key is None else str(key).lower()
 
     groups = {}
     for key in sorted(metadata_groups, key=normalized_group_key):
@@ -369,17 +374,17 @@ def extract_variables(cfg, as_iris=False):
         (key).
     """
     keys_to_extract = [
-        'short_name',
-        'standard_name',
-        'long_name',
-        'units',
+        "short_name",
+        "standard_name",
+        "long_name",
+        "units",
     ]
 
     # Extract variables
-    input_data = cfg['input_data'].values()
-    variable_data = group_metadata(input_data, 'short_name')
+    input_data = cfg["input_data"].values()
+    variable_data = group_metadata(input_data, "short_name")
     variables = {}
-    for (short_name, data) in variable_data.items():
+    for short_name, data in variable_data.items():
         data = data[0]
         variables[short_name] = {}
         info = variables[short_name]
@@ -389,9 +394,9 @@ def extract_variables(cfg, as_iris=False):
 
         # Replace short_name by var_name if desired
         if as_iris:
-            info['var_name'] = info.pop('short_name')
-            if info['standard_name'] == '':
-                info['standard_name'] = None
+            info["var_name"] = info.pop("short_name")
+            if info["standard_name"] == "":
+                info["standard_name"] = None
 
     return variables
 
@@ -411,8 +416,8 @@ def variables_available(cfg, short_names):
     bool
         `True` if all variables available, `False` if not.
     """
-    input_data = cfg['input_data'].values()
-    available_short_names = list(group_metadata(input_data, 'short_name'))
+    input_data = cfg["input_data"].values()
+    available_short_names = list(group_metadata(input_data, "short_name"))
     for var in short_names:
         if var not in available_short_names:
             return False
@@ -423,7 +428,7 @@ def get_cfg(filename=None):
     """Read diagnostic script configuration from settings.yml."""
     if filename is None:
         filename = sys.argv[1]
-    with open(filename, encoding='utf-8') as file:
+    with open(filename, encoding="utf-8") as file:
         cfg = yaml.safe_load(file)
     return cfg
 
@@ -431,16 +436,17 @@ def get_cfg(filename=None):
 def _get_input_data_files(cfg):
     """Get a dictionary containing all data input files."""
     metadata_files = []
-    for filename in cfg['input_files']:
+    for filename in cfg["input_files"]:
         if os.path.isdir(filename):
             metadata_files.extend(
-                glob.glob(os.path.join(filename, '*metadata.yml')))
-        elif os.path.basename(filename) == 'metadata.yml':
+                glob.glob(os.path.join(filename, "*metadata.yml"))
+            )
+        elif os.path.basename(filename) == "metadata.yml":
             metadata_files.append(filename)
 
     input_files = {}
     for filename in metadata_files:
-        with open(filename, encoding='utf-8') as file:
+        with open(filename, encoding="utf-8") as file:
             metadata = yaml.safe_load(file)
             input_files.update(metadata)
 
@@ -477,35 +483,41 @@ def run_diagnostic():
     """
     # Implemented as context manager so we can support clean up actions later
     parser = argparse.ArgumentParser(description="Diagnostic script")
-    parser.add_argument('filename', help="Path to settings.yml")
+    parser.add_argument("filename", help="Path to settings.yml")
     parser.add_argument(
-        '-f',
-        '--force',
-        help=("Force emptying the output directories "
-              "(useful when re-running the script)"),
-        action='store_true',
+        "-f",
+        "--force",
+        help=(
+            "Force emptying the output directories "
+            "(useful when re-running the script)"
+        ),
+        action="store_true",
     )
     parser.add_argument(
-        '-i',
-        '--ignore-existing',
-        help=("Force running the script, even if output files exist "
-              "(useful when re-running the script, use at your own risk)."),
-        action='store_true',
+        "-i",
+        "--ignore-existing",
+        help=(
+            "Force running the script, even if output files exist "
+            "(useful when re-running the script, use at your own risk)."
+        ),
+        action="store_true",
     )
     parser.add_argument(
-        '-n',
-        '--no-distributed',
-        help=("Do not use the Dask distributed 'scheduler_address' from the "
-              "configuration file "
-              "(useful when re-running the script and the scheduler is no "
-              "longer available)."),
-        action='store_true',
+        "-n",
+        "--no-distributed",
+        help=(
+            "Do not use the Dask distributed 'scheduler_address' from the "
+            "configuration file "
+            "(useful when re-running the script and the scheduler is no "
+            "longer available)."
+        ),
+        action="store_true",
     )
     parser.add_argument(
-        '-l',
-        '--log-level',
+        "-l",
+        "--log-level",
         help=("Set the log-level"),
-        choices=['debug', 'info', 'warning', 'error'],
+        choices=["debug", "info", "warning", "error"],
     )
     args = parser.parse_args()
 
@@ -513,36 +525,45 @@ def run_diagnostic():
 
     # Set up logging
     if args.log_level:
-        cfg['log_level'] = args.log_level
+        cfg["log_level"] = args.log_level
 
-    logging.basicConfig(format="%(asctime)s [%(process)d] %(levelname)-8s "
-                        "%(name)s,%(lineno)s\t%(message)s")
+    logging.basicConfig(
+        format="%(asctime)s [%(process)d] %(levelname)-8s "
+        "%(name)s,%(lineno)s\t%(message)s"
+    )
     logging.Formatter.converter = time.gmtime
     logging.captureWarnings(True)
-    logging.getLogger().setLevel(cfg['log_level'].upper())
+    logging.getLogger().setLevel(cfg["log_level"].upper())
 
     # Read input metadata
-    cfg['input_data'] = _get_input_data_files(cfg)
+    cfg["input_data"] = _get_input_data_files(cfg)
 
-    logger.info("Starting diagnostic script %s with configuration:\n%s",
-                cfg['script'], yaml.safe_dump(cfg))
+    logger.info(
+        "Starting diagnostic script %s with configuration:\n%s",
+        cfg["script"],
+        yaml.safe_dump(cfg),
+    )
 
     # Clean run_dir and output directories from previous runs
     default_files = {
-        'diagnostic_provenance.yml',
-        'log.txt',
-        'profile.bin',
-        'resource_usage.txt',
-        'settings.yml',
+        "diagnostic_provenance.yml",
+        "log.txt",
+        "profile.bin",
+        "resource_usage.txt",
+        "settings.yml",
     }
 
-    output_directories = (cfg['work_dir'], cfg['plot_dir'])
+    output_directories = (cfg["work_dir"], cfg["plot_dir"])
     old_content = [
-        p for p in output_directories
+        p
+        for p in output_directories
         if Path(p).exists() and any(Path(p).iterdir())
     ]
-    old_content.extend(p for p in glob.glob(f"{cfg['run_dir']}{os.sep}*")
-                       if not os.path.basename(p) in default_files)
+    old_content.extend(
+        p
+        for p in glob.glob(f"{cfg['run_dir']}{os.sep}*")
+        if os.path.basename(p) not in default_files
+    )
 
     if old_content:
         if args.force:
@@ -556,9 +577,10 @@ def run_diagnostic():
             raise FileExistsError(
                 "Script will abort to prevent accidentally overwriting "
                 "your data in the following output files or directories:"
-                "\n%s\n Use -f or --force to force emptying the output "
+                "\n{}\n Use -f or --force to force emptying the output "
                 "directories or use -i or --ignore-existing to ignore "
-                "existing output directories." % '\n'.join(old_content))
+                "existing output directories.".format("\n".join(old_content))
+            )
 
     # Create output directories
     for output_directory in output_directories:
@@ -566,22 +588,24 @@ def run_diagnostic():
             logger.info("Creating %s", output_directory)
             os.makedirs(output_directory)
 
-    provenance_file = os.path.join(cfg['run_dir'], 'diagnostic_provenance.yml')
+    provenance_file = os.path.join(cfg["run_dir"], "diagnostic_provenance.yml")
     if os.path.exists(provenance_file):
         logger.info("Removing %s from previous run.", provenance_file)
         os.remove(provenance_file)
 
-    use_distributed = not (args.no_distributed
-                           or cfg.get('no_distributed', False))
-    if use_distributed and 'scheduler_address' in cfg:
+    use_distributed = not (
+        args.no_distributed or cfg.get("no_distributed", False)
+    )
+    if use_distributed and "scheduler_address" in cfg:
         try:
-            client = distributed.Client(cfg['scheduler_address'])
+            client = distributed.Client(cfg["scheduler_address"])
         except OSError as exc:
             raise OSError(
                 "Unable to connect to the Dask distributed scheduler at "
                 f"{cfg['scheduler_address']}. If the scheduler is no longer "
                 "available, try re-running the diagnostic script with the "
-                "--no-distributed flag.", ) from exc
+                "--no-distributed flag.",
+            ) from exc
     else:
         client = contextlib.nullcontext()
 

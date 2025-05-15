@@ -63,7 +63,7 @@ datasets:
   - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
      start_year: 1980, end_year: 2005}
   - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical,
-     ensemble: r1i1p1, start_year: 1960, end_year: 2005}  
+     ensemble: r1i1p1, start_year: 1960, end_year: 2005}
   - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
      start_year: 1980, end_year: 2005}
   - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
@@ -84,13 +84,13 @@ preprocessors:
       target_grid: reference_dataset
       scheme: linear
     zonal_statistics:
-      operator: mean      
-  
+      operator: mean
+
   regrid_interp_lev_zonal_o3:
     <<: *regrid_and_zonal_preproc
     convert_units:
-      units: ppmv    
-  
+      units: ppmv
+
   # zonal mean
   zonal: &zonal_preproc
     regrid:
@@ -104,8 +104,8 @@ preprocessors:
   zonal_o3_du:
     <<: *zonal_preproc
     convert_units:
-      units: DU    
-    
+      units: DU
+
 
 diagnostics:
 
@@ -127,39 +127,39 @@ diagnostics:
         reference_dataset: ERA-Interim
         mip: Amon
     additional_datasets:
-      - {dataset: ACCESS1-0, project: CMIP5, exp: historical, 
+      - {dataset: ACCESS1-0, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-      - {dataset: ACCESS1-3, project: CMIP5, exp: historical, 
+      - {dataset: ACCESS1-3, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-      - {dataset: CESM1-BGC, project: CMIP5, exp: historical, 
+      - {dataset: CESM1-BGC, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-      - {dataset: CESM1-CAM5, project: CMIP5, exp: historical, 
+      - {dataset: CESM1-CAM5, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-      - {dataset: CMCC-CESM, project: CMIP5, exp: historical, 
+      - {dataset: CMCC-CESM, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-      - {dataset: CMCC-CM, project: CMIP5, exp: historical, 
+      - {dataset: CMCC-CM, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-      - {dataset: CMCC-CMS, project: CMIP5, exp: historical, 
+      - {dataset: CMCC-CMS, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-      - {dataset: GISS-E2-H-CC, project: CMIP5, exp: historical, 
+      - {dataset: GISS-E2-H-CC, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-      - {dataset: GISS-E2-H, project: CMIP5, exp: historical, 
+      - {dataset: GISS-E2-H, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-      - {dataset: GISS-E2-R-CC, project: CMIP5, exp: historical, 
+      - {dataset: GISS-E2-R-CC, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-      - {dataset: GISS-E2-R, project: CMIP5, exp: historical, 
+      - {dataset: GISS-E2-R, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-      - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, 
+      - {dataset: HadGEM2-CC, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-      - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, 
+      - {dataset: HadGEM2-ES, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-      - {dataset: inmcm4, project: CMIP5, exp: historical, 
+      - {dataset: inmcm4, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-      - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, 
+      - {dataset: MRI-CGCM3, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-      - {dataset: NorESM1-M, project: CMIP5, exp: historical, 
+      - {dataset: NorESM1-M, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-      - {dataset: NorESM1-ME, project: CMIP5, exp: historical, 
+      - {dataset: NorESM1-ME, project: CMIP5, exp: historical,
          ensemble: r1i1p1, start_year: 1980, end_year: 2005}
       - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
          start_year: 1980, end_year: 1999, tier: 3}
@@ -271,7 +271,7 @@ diagnostics:
         YMax: [5., 5.]
         # Climatology time period
         start_year: 1991
-        end_year: 2002  
+        end_year: 2002
         # Calculate multimodel mean?
         multimean: True
 
@@ -306,7 +306,7 @@ diagnostics:
         styleset: CMIP5
         # Minimum latitude for region selection
         latmin: [60., -90., -90.]
-        # Maximum latitude for region selection        
+        # Maximum latitude for region selection
         latmax: [90., -60., 90.]
         # Time average
         season: ['FMA', 'SON', 'ANN']

@@ -4,7 +4,7 @@
         [[[environment]]]
             # Warning: fragile assumption of location of esmvaltool code,
             # issue #3437 contains more details.
-            ESMVALTOOL_DIR = /opt/conda/envs/esmvaltool/lib/python3.11/site-packages
+            ESMVALTOOL_DIR = /opt/conda/envs/esmvaltool/lib/python3.12/site-packages
 
     # COMPUTE provides defaults for computation-heavy tasks.
     # Specific tasks below override some defaults, e.g. time & memory.
@@ -25,21 +25,5 @@
     [[configure]]
         inherit = None, COMPUTE
         execution time limit = PT2M
-        [[[directives]]]
-            --mem = 2G
-
-    # Resources for recipes that need more than the default. Both time and
-    # memory should be specified, in case the default changes.
-    # Variable (fast, medium) must be consistent with flow.cylc.
-    # Comment indicates example recorded usage on JASMIN.
-    [[process<fast=recipe_autoassess_landsurface_soilmoisture>]]
-        # Actual: 1m35s, 2.1 GB on 2024-03-29.
-        execution time limit = PT3M
-        [[[directives]]]
-            --mem = 3G
-
-    [[process<medium=recipe_ensclus>]]
-        # Actual: 4m23s, 1.5 GB on 2024-03-29.
-        execution time limit = PT6M
         [[[directives]]]
             --mem = 2G
