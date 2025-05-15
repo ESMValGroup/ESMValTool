@@ -805,9 +805,9 @@ diagnostics:
   NOAA-GML-SURFACE-FLASK-N2O:
     description: NOAA Global Monitoring Lab Surface flask N2O data check
     variables:
-      n2o:
+      n2os:
     additional_datasets:
-      - {dataset: NOAA-GML-SURFACE-FLASK-N2O, project: OBS6, mip: Amon, type: atmos, version: 1.0, tier: 2,
+      - {dataset: NOAA-GML-SURFACE-FLASK-N2O, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
          start_year: 1997, end_year: 2023}
     scripts: null
 
