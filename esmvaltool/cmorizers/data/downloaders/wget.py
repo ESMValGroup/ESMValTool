@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 class WGetDownloader(BaseDownloader):
     """Data downloader based on wget."""
+
     def download_folder(self, server_path, wget_options):
         """Download folder.
 
@@ -23,14 +24,20 @@ class WGetDownloader(BaseDownloader):
         """
         if self.overwrite:
             raise ValueError(
-                'Overwrite does not work with downloading directories through '
-                'wget. Please, remove the unwanted data manually')
-        command = ['wget'] + wget_options + self.overwrite_options + [
-            f'--directory-prefix={self.local_folder}',
-            '--recursive',
-            '--no-directories',
-            f'{server_path}',
-        ]
+                "Overwrite does not work with downloading directories through "
+                "wget. Please, remove the unwanted data manually"
+            )
+        command = (
+            ["wget"]
+            + wget_options
+            + self.overwrite_options
+            + [
+                f"--directory-prefix={self.local_folder}",
+                "--recursive",
+                "--no-directories",
+                f"{server_path}",
+            ]
+        )
         logger.debug(command)
         subprocess.check_output(command)
 
@@ -44,13 +51,18 @@ class WGetDownloader(BaseDownloader):
         wget_options: list(str)
             Extra options for wget
         """
-        command = ['wget'] + wget_options + self.overwrite_options + [
-            f'--directory-prefix={self.local_folder}',
-            '--no-directories',
-            server_path,
-        ]
+        command = (
+            ["wget"]
+            + wget_options
+            + self.overwrite_options
+            + [
+                f"--directory-prefix={self.local_folder}",
+                "--no-directories",
+                server_path,
+            ]
+        )
         if self.overwrite:
-            command.append(f'-O {os.path.basename(server_path)}')
+            command.append(f"-O {os.path.basename(server_path)}")
         logger.debug(command)
         subprocess.check_output(command)
 
@@ -64,7 +76,7 @@ class WGetDownloader(BaseDownloader):
         wget_options: list(str)
             Extra options for wget
         """
-        command = ['wget'] + wget_options + [server_path]
+        command = ["wget"] + wget_options + [server_path]
         logger.debug(command)
         subprocess.check_output(command)
 
@@ -73,13 +85,14 @@ class WGetDownloader(BaseDownloader):
         """Get overwrite options as configured in downloader."""
         if not self.overwrite:
             return [
-                '--no-clobber',
+                "--no-clobber",
             ]
         return []
 
 
 class NASADownloader(WGetDownloader):
     """Downloader for the NASA repository."""
+
     def __init__(self, config, dataset, dataset_info, overwrite):
         super().__init__(config, dataset, dataset_info, overwrite)
 
@@ -103,8 +116,11 @@ class NASADownloader(WGetDownloader):
         """
         if wget_options is None:
             wget_options = []
-        wget_options = self._wget_common_options + [
-            "-np", "--accept=nc,nc4,hdf"] + wget_options
+        wget_options = (
+            self._wget_common_options
+            + ["-np", "--accept=nc,nc4,hdf"]
+            + wget_options
+        )
         super().download_folder(server_path, wget_options)
 
     def download_file(self, server_path, wget_options=None):
@@ -119,5 +135,6 @@ class NASADownloader(WGetDownloader):
         """
         if wget_options is None:
             wget_options = []
-        super().download_file(server_path,
-                              self._wget_common_options + wget_options)
+        super().download_file(
+            server_path, self._wget_common_options + wget_options
+        )

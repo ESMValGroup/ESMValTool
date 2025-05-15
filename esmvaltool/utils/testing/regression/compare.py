@@ -1,4 +1,5 @@
 """Compare recipe runs to previous runs."""
+
 from __future__ import annotations
 
 import argparse
@@ -8,9 +9,9 @@ import fnmatch
 import os
 import re
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 from textwrap import indent
-from typing import Iterator, Optional
 
 import numpy as np
 import xarray as xr
@@ -22,24 +23,24 @@ except ImportError:
     print("Please `pip install imagehash`")
 
 IGNORE_FILES: tuple[str, ...] = (
-    '*_citation.bibtex',
-    '*_data_citation_info.txt',
-    '*_info.ncl',
-    '*_provenance.xml',
-    'metadata.yml',
+    "*_citation.bibtex",
+    "*_data_citation_info.txt",
+    "*_info.ncl",
+    "*_provenance.xml",
+    "metadata.yml",
 )
 """Files to ignore when comparing results."""
 
 IGNORE_GLOBAL_ATTRIBUTES: tuple[str, ...] = (
     # see https://github.com/ESMValGroup/ESMValCore/issues/1657
-    'auxiliary_data_dir',
-    'creation_date',
-    'filename',
-    'history',
-    'provenance',
-    'software',
+    "auxiliary_data_dir",
+    "creation_date",
+    "filename",
+    "history",
+    "provenance",
+    "software",
     # see https://github.com/ESMValGroup/ESMValCore/issues/1657
-    'version',
+    "version",
 )
 """Global NetCDF attributes to ignore when comparing."""
 
@@ -48,29 +49,29 @@ IGNORE_VARIABLE_ATTRIBUTES: tuple[str, ...] = IGNORE_GLOBAL_ATTRIBUTES
 
 IGNORE_VARIABLES: tuple[str, ...] = (
     # see https://github.com/ESMValGroup/ESMValTool/issues/2714
-    'temp_list',  # used by perfmetrics diagnostics to save absolute paths
+    "temp_list",  # used by perfmetrics diagnostics to save absolute paths
 )
 """Variables in NetCDF files to ignore when comparing."""
 
 COMPARE_SUBDIRS: tuple[str, ...] = (
-    'plots',
-    'preproc',
-    'work',
+    "plots",
+    "preproc",
+    "work",
 )
 """Directories of subdirectories to compare."""
 
-RECIPE_DIR_DATETIME_PATTERN: str = r'[0-9]{8}_[0-9]{6}'
+RECIPE_DIR_DATETIME_PATTERN: str = r"[0-9]{8}_[0-9]{6}"
 """Regex pattern for datetime in recipe output directory."""
 
 RECIPE_DIR_PATTERN: str = (
-    r'recipe_(?P<recipe_name>[^\s]*?)_' + RECIPE_DIR_DATETIME_PATTERN
+    r"recipe_(?P<recipe_name>[^\s]*?)_" + RECIPE_DIR_DATETIME_PATTERN
 )
 """Regex pattern for recipe output directories."""
 
 
 def as_txt(msg: list[str]) -> str:
     """Convert lines of text to indented text."""
-    return indent('\n'.join(msg), "  ")
+    return indent("\n".join(msg), "  ")
 
 
 def diff_attrs(ref: dict, cur: dict) -> str:
@@ -80,8 +81,10 @@ def diff_attrs(ref: dict, cur: dict) -> str:
         if key not in cur:
             msg.append(f"missing attribute '{key}'")
         elif not np.array_equal(ref[key], cur[key]):
-            msg.append(f"value of attribute '{key}' is different: "
-                       f"expected '{ref[key]}' but found '{cur[key]}'")
+            msg.append(
+                f"value of attribute '{key}' is different: "
+                f"expected '{ref[key]}' but found '{cur[key]}'"
+            )
     for key in cur:
         if key not in ref:
             msg.append(f"extra attribute '{key}' with value '{cur[key]}'")
@@ -98,7 +101,8 @@ def diff_array(ref: np.ndarray, cur: np.ndarray) -> str:
     if cur.shape != ref.shape:
         msg.append("data has different shape")
     elif np.issubdtype(ref.dtype, np.inexact) and np.issubdtype(
-            cur.dtype, np.inexact):
+        cur.dtype, np.inexact
+    ):
         if not np.array_equal(ref, cur, equal_nan=True):
             if np.allclose(ref, cur, equal_nan=True):
                 msg.append("data is almost but not quite the same")
@@ -137,9 +141,11 @@ def diff_dataset(ref: xr.Dataset, cur: xr.Dataset) -> str:
             for coord in ref[var].coords:
                 if coord not in cur.coords:
                     msg.append(f"missing coordinate '{coord}'")
-                elif diff := diff_dataarray(ref[var].coords[coord],
-                                            cur[var].coords[coord],
-                                            'coordinate'):
+                elif diff := diff_dataarray(
+                    ref[var].coords[coord],
+                    cur[var].coords[coord],
+                    "coordinate",
+                ):
                     msg.append(diff)
             for coord in cur[var].coords:
                 if coord not in ref.coords:
@@ -149,16 +155,16 @@ def diff_dataset(ref: xr.Dataset, cur: xr.Dataset) -> str:
         if var not in ref:
             msg.append(f"extra variable '{var}'")
 
-    return '\n'.join(msg)
+    return "\n".join(msg)
 
 
-def adapt_attributes(attributes: dict, ignore_attributes: tuple[str, ...],
-                     recipe_name: str) -> dict:
+def adapt_attributes(
+    attributes: dict, ignore_attributes: tuple[str, ...], recipe_name: str
+) -> dict:
     """Remove ignored attributes and make absolute paths relative."""
     new_attrs = {}
 
-    for (attr, attr_val) in attributes.items():
-
+    for attr, attr_val in attributes.items():
         # Ignore attributes
         if attr in ignore_attributes:
             continue
@@ -183,15 +189,16 @@ def load_nc(filename: Path) -> xr.Dataset:
     recipe_name = get_recipe_name_from_file(filename)
 
     # Remove ignored variables
-    dataset = dataset.drop_vars(IGNORE_VARIABLES, errors='ignore')
+    dataset = dataset.drop_vars(IGNORE_VARIABLES, errors="ignore")
 
     # Remove ignored attributes and modify attributes that contain paths
-    dataset.attrs = adapt_attributes(dataset.attrs, IGNORE_GLOBAL_ATTRIBUTES,
-                                     recipe_name)
+    dataset.attrs = adapt_attributes(
+        dataset.attrs, IGNORE_GLOBAL_ATTRIBUTES, recipe_name
+    )
     for var in dataset:
-        dataset[var].attrs = adapt_attributes(dataset[var].attrs,
-                                              IGNORE_VARIABLE_ATTRIBUTES,
-                                              recipe_name)
+        dataset[var].attrs = adapt_attributes(
+            dataset[var].attrs, IGNORE_VARIABLE_ATTRIBUTES, recipe_name
+        )
 
     return dataset
 
@@ -211,9 +218,9 @@ def debug_nc(reference_file: Path, current_file: Path) -> str:
 
 def debug_txt(reference_file: Path, current_file: Path) -> str:
     """Find out the differences between two text files."""
-    with reference_file.open('rt') as file:
+    with reference_file.open("rt") as file:
         ref = file.readlines()
-    with current_file.open('rt') as file:
+    with current_file.open("rt") as file:
         cur = file.readlines()
 
     msg = difflib.unified_diff(
@@ -281,8 +288,9 @@ def files_equal(reference_file: Path, current_file: Path) -> bool:
     return same
 
 
-def compare_files(reference_dir: Path, current_dir: Path, files: list[Path],
-                  verbose: bool) -> list[str]:
+def compare_files(
+    reference_dir: Path, current_dir: Path, files: list[Path], verbose: bool
+) -> list[str]:
     """Compare files from the reference dir to the current dir."""
     different = []
     for file in files:
@@ -297,15 +305,16 @@ def compare_files(reference_dir: Path, current_dir: Path, files: list[Path],
     return different
 
 
-def compare(reference_dir: Optional[Path], current_dir: Path,
-            verbose: bool) -> bool:
+def compare(
+    reference_dir: Path | None, current_dir: Path, verbose: bool
+) -> bool:
     """Compare a recipe run to a reference run.
 
     Returns True if the runs were identical, False otherwise.
     """
     recipe_name = get_recipe_name_from_dir(current_dir)
     print("")
-    print(f"recipe_{recipe_name}.yml: ", end='')
+    print(f"recipe_{recipe_name}.yml: ", end="")
     if reference_dir is None:
         print("no reference run found, unable to check")
         return False
@@ -324,10 +333,10 @@ def compare(reference_dir: Optional[Path], current_dir: Path,
         result.extend(f"  - {f}" for f in extra_files)
 
     if differing_files := compare_files(
-            reference_dir,
-            current_dir,
-            sorted(reference_files & current_files),
-            verbose,
+        reference_dir,
+        current_dir,
+        sorted(reference_files & current_files),
+        verbose,
     ):
         result.append("Differing files:")
         result.extend(indent(f"- {f}", "  ") for f in differing_files)
@@ -346,7 +355,7 @@ def compare(reference_dir: Optional[Path], current_dir: Path,
 def get_recipe_name_from_dir(recipe_dir: Path) -> str:
     """Extract recipe name from output dir."""
     recipe_match = re.search(RECIPE_DIR_PATTERN, recipe_dir.stem)
-    return recipe_match['recipe_name']
+    return recipe_match["recipe_name"]
 
 
 def get_recipe_name_from_file(filename: Path) -> str:
@@ -355,14 +364,14 @@ def get_recipe_name_from_file(filename: Path) -> str:
     for parent in list(filename.parents)[::1]:
         recipe_match = re.search(RECIPE_DIR_PATTERN, str(parent))
         if recipe_match is not None:
-            return recipe_match['recipe_name']
+            return recipe_match["recipe_name"]
     raise ValueError(f"Failed to extract recipe name from file {filename}")
 
 
-def get_recipe_dir_from_str(str_in: str, recipe_name: str) -> Optional[Path]:
+def get_recipe_dir_from_str(str_in: str, recipe_name: str) -> Path | None:
     """Try to extract recipe directory from arbitrary string."""
     recipe_dir_pattern = (
-        rf'recipe_{recipe_name}_' + RECIPE_DIR_DATETIME_PATTERN
+        rf"recipe_{recipe_name}_" + RECIPE_DIR_DATETIME_PATTERN
     )
     recipe_dir_match = re.search(recipe_dir_pattern, str_in)
 
@@ -399,7 +408,7 @@ def find_files(recipe_dir: Path) -> set[Path]:
     return result
 
 
-def find_successful_runs(dirname: Path, recipe_name: str = '*') -> list[Path]:
+def find_successful_runs(dirname: Path, recipe_name: str = "*") -> list[Path]:
     """Find recipe runs in `dirname`.
 
     `dirname` can either be a recipe run or a directory containing
@@ -407,18 +416,20 @@ def find_successful_runs(dirname: Path, recipe_name: str = '*') -> list[Path]:
     """
     runs = []
     for recipe_file in sorted(
-            list(dirname.glob(f"run/recipe_{recipe_name}.yml")) +
-            list(dirname.glob(f"*/run/recipe_{recipe_name}.yml"))):
+        list(dirname.glob(f"run/recipe_{recipe_name}.yml"))
+        + list(dirname.glob(f"*/run/recipe_{recipe_name}.yml"))
+    ):
         recipe_dir = recipe_file.parent.parent
-        log = recipe_dir / 'run' / 'main_log.txt'
-        success = log.read_text().endswith('Run was successful\n')
+        log = recipe_dir / "run" / "main_log.txt"
+        success = log.read_text().endswith("Run was successful\n")
         if success:
             runs.append(recipe_dir)
     return sorted(set(runs))
 
 
-def find_recipes(reference: Path,
-                 current: list[Path]) -> Iterator[tuple[Path, Optional[Path]]]:
+def find_recipes(
+    reference: Path, current: list[Path]
+) -> Iterator[tuple[Path, Path | None]]:
     """Yield tuples of current and reference directories."""
     for current_dir in current:
         for recipe_dir in find_successful_runs(current_dir):
@@ -439,35 +450,41 @@ def main() -> int:
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        'reference',
-        default='.',
+        "reference",
+        default=".",
         type=Path,
-        help='Directory containing results obtained with reference version.',
+        help="Directory containing results obtained with reference version.",
     )
     parser.add_argument(
-        'current',
-        default='.',
-        nargs='+',
+        "current",
+        default=".",
+        nargs="+",
         type=Path,
-        help=("List of recipe results or directories containing such "
-              "results, obtained with current version."),
+        help=(
+            "List of recipe results or directories containing such "
+            "results, obtained with current version."
+        ),
     )
     parser.add_argument(
-        '-v',
-        '--verbose',
+        "-v",
+        "--verbose",
         action="store_true",
         help="Display more information on differences.",
     )
 
     args = parser.parse_args()
 
-    print("Comparing recipe run(s) in:\n{}".format('\n'.join(
-        str(f) for f in args.current)))
+    print(
+        "Comparing recipe run(s) in:\n{}".format(
+            "\n".join(str(f) for f in args.current)
+        )
+    )
     print(f"to reference in {args.reference}")
     fail = []
     success = []
-    for current_dir, reference_dir in find_recipes(args.reference,
-                                                   args.current):
+    for current_dir, reference_dir in find_recipes(
+        args.reference, args.current
+    ):
         same = compare(reference_dir, current_dir, verbose=args.verbose)
         recipe = f"recipe_{get_recipe_name_from_dir(current_dir)}.yml"
         if same:
@@ -478,26 +495,34 @@ def main() -> int:
     # Print summary of results to screen
     summary = ["", "Summary", "======="]
     if success:
-        summary.extend([
-            "", "The following recipe runs were identical to previous runs:",
-            *success
-        ])
+        summary.extend(
+            [
+                "",
+                "The following recipe runs were identical to previous runs:",
+                *success,
+            ]
+        )
     if fail:
-        summary.extend([
-            "", "The following recipe runs need to be inspected by a human:",
-            *fail
-        ])
+        summary.extend(
+            [
+                "",
+                "The following recipe runs need to be inspected by a human:",
+                *fail,
+            ]
+        )
     print("\n".join(summary))
     print("")
 
     if fail:
-        print(f"Action required: {len(fail)} out of {len(success) + len(fail)}"
-              " recipe runs need to be inspected by a human.")
+        print(
+            f"Action required: {len(fail)} out of {len(success) + len(fail)}"
+            " recipe runs need to be inspected by a human."
+        )
     else:
         print(f"All {len(success)} recipe runs were identical.")
 
     return int(bool(fail))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

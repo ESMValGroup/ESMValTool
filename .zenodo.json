@@ -265,6 +265,11 @@
       "name": "Lucarini, Valerio"
     },
     {
+      "affiliation": "ECCC, Canada",
+      "name": "Malinina, Elizaveta",
+      "orcid": "0000-0002-4102-2877"
+    },
+    {
       "affiliation": "UCLouvain, Belgium",
       "name": "Massonnet, François"
     },
@@ -285,6 +290,11 @@
       "affiliation": "NCAR, USA",
       "name": "Phillips, Adam",
       "orcid": "0000-0003-4859-8585"
+    },
+    {
+      "affiliation": "ACCESS-NRI, Australia",
+      "name": "Proft, Max",
+      "orcid": "0009-0003-1611-9516"
     },
     {
       "affiliation": "University of Arizona, USA",
@@ -410,47 +420,52 @@
       "affiliation": "Met Office, UK",
       "name": "Munday, Gregory",
       "orcid": "0000-0003-4750-9923"
+    },
+    {
+      "affiliation": "ACCESS-NRI, Australia",
+      "name": "Chun, Felicity",
+      "orcid": "0009-0007-0845-0953"
     }
   ],
   "description": "ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP.",
   "license": {
     "id": "Apache-2.0"
   },
-  "publication_date": "2024-07-04",
+  "publication_date": "2025-03-05",
   "title": "ESMValTool",
-  "version": "v2.11.0",
-  "communities": [ 
-      { 
-          "identifier": "is-enes3" 
-      }, 
-      { 
-          "identifier": "dlr_de" 
-      }, 
-      { 
-          "identifier": "ecfunded" 
-      }, 
-      { 
-          "identifier": "nlesc" 
-      } 
-  ], 
-  "grants": [ 
-      { 
-          "id": "10.13039/501100000780::282672" 
-      }, 
-      { 
-          "id": "10.13039/501100000780::641727" 
-      }, 
-      { 
-          "id": "10.13039/501100000780::641816" 
-      }, 
-      { 
-          "id": "10.13039/501100000780::727862" 
-      }, 
-      { 
-          "id": "10.13039/501100000780::776613" 
-      }, 
-      { 
-          "id": "10.13039/501100000780::824084" 
-      } 
-  ] 
+  "version": "v2.12.0",
+  "communities": [
+    {
+        "identifier": "is-enes3"
+    },
+    {
+        "identifier": "dlr_de"
+    },
+    {
+        "identifier": "ecfunded"
+    },
+    {
+        "identifier": "nlesc"
+    }
+],
+"grants": [
+    {
+        "id": "10.13039/501100000780::282672"
+    },
+    {
+        "id": "10.13039/501100000780::641727"
+    },
+    {
+        "id": "10.13039/501100000780::641816"
+    },
+    {
+        "id": "10.13039/501100000780::727862"
+    },
+    {
+        "id": "10.13039/501100000780::776613"
+    },
+    {
+        "id": "10.13039/501100000780::824084"
+    }
+]
 }

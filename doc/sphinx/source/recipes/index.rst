@@ -12,8 +12,8 @@ ESMValTool for all available recipes can be accessed `here
 
 .. _general_purpose_diags:
 
-General-purpose diagnostics
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+General-purpose recipes
+^^^^^^^^^^^^^^^^^^^^^^^
 
 Recipes that use highly customizable diagnostics which are designed to plot a
 large variety of input data.
@@ -21,6 +21,7 @@ large variety of input data.
 .. toctree::
    :maxdepth: 1
 
+   recipe_benchmarking
    recipe_model_evaluation
    recipe_monitor
    recipe_portrait
@@ -82,7 +83,6 @@ Future projections
 
    recipe_climwip
    recipe_li17natcc
-   recipe_schlund20jgr
    recipe_meehl20sciadv
    recipe_emergent_constraints
    recipe_wenzel14jgr
@@ -94,9 +94,12 @@ Future projections
    recipe_wenzel16jclim
    recipe_wenzel16nat
    recipe_tcr
+   recipe_tcre
    recipe_tebaldi21esd
    recipe_climate_change_hotspot
    recipe_bock24acp
+   recipe_zec
+   recipe_calculate_gwl_exceedance_stats
 
 IPCC
 ^^^^
@@ -131,6 +134,7 @@ Ocean
    recipe_cvdp
    recipe_combined_indices
    recipe_esacci_oc
+   recipe_enso_ref
    recipe_oceans
    recipe_sea_surface_salinity
    recipe_russell18jgr
@@ -155,6 +159,20 @@ Other
    recipe_shapeselect
    recipes_testing
    recipe_toymodel
+
+Legacy recipes
+^^^^^^^^^^^^^^
+
+Recipes that have been retired and are included for
+documentation purposes only. Typically, these recipes
+require a legacy version of ESMValTool to run.
+
+
+.. toctree::
+   :maxdepth: 1
+
+   recipe_schlund20jgr
+
 
 Broken recipe list
 ^^^^^^^^^^^^^^^^^^
