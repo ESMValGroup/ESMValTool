@@ -1,6 +1,6 @@
 .. _dkrz_production:
 
-Running the |RTW| on DKRZ "in production"
+Running the |RTW| on DKRZ in "production mode"
 =========================================
 
 .. include:: ../common.txt

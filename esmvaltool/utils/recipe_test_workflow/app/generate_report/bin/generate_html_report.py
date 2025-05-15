@@ -149,7 +149,7 @@ def create_subheader(cylc_task_cycle_point=CYLC_TASK_CYCLE_POINT):
     Parameters
     ----------
     cylc_task_cycle_point : str, default CYLC_TASK_CYCLE_POINT
-        The cycle point of the task as str in ISO8601 format.
+        The cycle point of the task as a string in ISO8601 format.
 
     Returns
     -------
