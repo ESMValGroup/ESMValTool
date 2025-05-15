@@ -798,7 +798,7 @@ diagnostics:
     variables:
       co2s:
     additional_datasets:
-      - {dataset: NOAA-GML-SURFACE-FLASK-CO2, project: OBS6, mip: Amon, type: atmos, version: 1.0, tier: 2,
+      - {dataset: NOAA-GML-SURFACE-FLASK-CO2, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
          start_year: 1968, end_year: 2023}
     scripts: null
 
