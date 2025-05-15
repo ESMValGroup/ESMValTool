@@ -103,6 +103,18 @@ def test_process_db_output(mock_db_output, expected_dict):
     assert actual == expected
 
 
+def test_process_db_output_sorting():
+    mock_db_output = [
+        ("process_c-ecipe", "succeeded"),
+        ("compare_a-ecipe", "failed"),
+        ("process_a-ecipe", "succeeded"),
+        ("process_b-ecipe", "failed"),
+        ("comapre_a-ecipe", "running"),
+    ]
+    actual = process_db_output(mock_db_output)
+    assert list(actual.keys()) == ["a-ecipe", "b-ecipe", "c-ecipe"]
+
+
 def test_create_subheader():
     mock_cylc_task_cycle_point = "20250101T0001Z"
     actual = create_subheader(mock_cylc_task_cycle_point)

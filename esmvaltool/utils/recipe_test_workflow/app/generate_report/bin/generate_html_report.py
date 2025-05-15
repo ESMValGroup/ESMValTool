@@ -94,10 +94,10 @@ def process_db_task(task_name, status):
 
 def process_db_output(report_data):
     """
-    Process the database output.
+    Process the database output into a dictionary sorted by recipe name.
 
     Group target tasks by recipe. Filter out other tasks. Remove task prefix
-    and add style information. E.g.
+    and add style information. Sort by recipe name. E.g.
     ```
     {
         "recipe_name": {
@@ -134,7 +134,8 @@ def process_db_output(report_data):
                 processed_db_data[recipe] = task_data
             else:
                 processed_db_data[recipe].update(task_data)
-    return processed_db_data
+    sorted_processed_db_data = dict(sorted(processed_db_data.items()))
+    return sorted_processed_db_data
 
 
 def create_subheader(cylc_task_cycle_point=CYLC_TASK_CYCLE_POINT):
