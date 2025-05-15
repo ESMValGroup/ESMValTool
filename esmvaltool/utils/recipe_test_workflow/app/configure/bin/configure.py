@@ -97,8 +97,8 @@ def validate_user_config_file(user_config_file_content):
         If any of the called validation functions raise a ValidationError.
     """
     errors = [
-        "There were validation errors in your user configuration file. See "
-        "details below.\n"
+        "There were validation errors in your user configuration file. "
+        "Details are provided below.\n"
     ]
     for user_config_key, usr_config_value in user_config_file_content.items():
         try:

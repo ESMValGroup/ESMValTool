@@ -29,7 +29,7 @@ safe_load(){
 
 # Must be run before importing numpy,
 # https://docs.dask.org/en/stable/array-best-practices.html#avoid-oversubscribing-threads
-# provides more details.
+# provides more information.
 export OMP_NUM_THREADS=1
 export OPENBLAS_NUM_THREADS=1
 export MKL_NUM_THREADS=1
