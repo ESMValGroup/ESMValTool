@@ -522,7 +522,7 @@ datasets:
   ESACCI-OZONE:
     tier: 2
     source: https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1
-    last_access: 2025-02-11
+    last_access: 2025-05-15
     info: |
       Download the data from:
             GTO-ECV total column (variable toz)
@@ -543,12 +543,25 @@ datasets:
 
             Processing Level = "Level 3"
             Variable = "Mole concentration of ozone in air"
-            Vertical aggregation = " Vertical profiles from limb sensors"
+            Vertical aggregation = "Vertical profiles from limb sensors"
             Sensor = " CMZM (Monthly zonal mean merged concentration product from limb
             sensors ACE, GOMOS, MIPAS, OMPS, OSIRIS, SAGE-2 and SCIAMACHY)"
             Year = select all (1984-2022)
             Month = select all (1-12)
             Version = "v0008"
+
+            MEGRIDOP (variable o3)
+            Select the following options from the same link:
+            https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+
+            Processing Level = "Level 3"
+            Variable = "Mole concentration of ozone in air"
+            Vertical aggregation = "Vertical profiles from limb sensors"
+            Sensor = "CLLG (Latitude-longitude gridded merged concentration product from limb sensors GOMOS, MIPAS, OSIRIS and SCIAMACHY)"
+            Year = select all (2001-2024)
+            Month = select all (1-12)
+            Version = "v0005"
+
       Put all files under a single directory (no subdirectories with years).
 
   ESACCI-SEAICE:
