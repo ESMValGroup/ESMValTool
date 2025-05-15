@@ -1,4 +1,4 @@
-.. _recipes_fire:
+.. _recipe_ref_fire:
 
 Climate drivers of fire
 =======================
@@ -31,13 +31,17 @@ The ConFire model relies on a variety of observational datasets (see references)
 * ESA CCI Biomass
 * ISIMIP3a GSWP3-W5E5 dataset
 
+Note: If custom ConFire run files are to be used for the diagnostic,
+they need to be present inside the auxiliary directory defined in the
+user configuration file `config_user.yml`.
+
 
 Available recipes and diagnostics
 ---------------------------------
 
 Recipes are stored in esmvaltool/recipes/
 
-* recipe_fire.yml
+* recipe_ref_fire.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/fire/
 
@@ -55,17 +59,22 @@ User settings in recipe
 
    *Required settings for script*
 
-   * confire_param: path to the directory containing the required files to run
-      the ConFire model or Zenodo URL to retrieve files from a Zenodo archive.
    * var_order: list of climate drivers in the order corresponding to the one
       specified in the corresponding file from the confire_param directory.
 
    *Optional settings for script*
 
+   * confire_param: path to the directory containing the required files to run
+      the ConFire model or Zenodo URL to retrieve files from a Zenodo archive.
+      If custom files are used, the corresponding directory needs to be present
+      inside the auxiliary data directory defined inside the user configuration.
+      This defaults to the files present in the diagnostic directory otherwise.
    * remove_vpd_files: Removing or not the computed vapor pressure deficit files.
       It will only apply if the vapor pressure deficit is part of var_order.
+      This defaulta to False.
    * remove_confire_files: Removing or not the files produced during the ConFire
       model evaluation.
+      This defaulta to False.
 
    *Required settings for variables*
 
@@ -151,20 +160,20 @@ Example plots
 .. _fig_ref_fire_burnt_area:
 .. figure::  /recipes/figures/ref/burnt_fraction_MPI-ESM1-2-LR_historical_2013_2014.png
    :align:   center
-   
+
    Burnt area fraction for the MPI-ESM1-2-LR model (CMIP-historical experiment)
    for the time period 2013-2014 as computed with the ConFire model `Jones et al. (2024)`.
 
 .. _fig_ref_fire_fire_weather_control:
 .. figure::  /recipes/figures/ref/fire_weather_control_MPI-ESM1-2-LR_historical_2013_2014.png
    :align:   center
-   
+
    Fire weather control for the MPI-ESM1-2-LR model (CMIP-historical experiment)
    for the time period 2013-2014 as computed with the ConFire model `Jones et al. (2024)`.
 
 .. _fig_ref_fire_fuel_load_continuity_control:
 .. figure::  /recipes/figures/ref/fuel_load_continuity_MPI-ESM1-2-LR_historical_2013_2014.png
    :align:   center
-   
+
    Fuel load continuity control for the MPI-ESM1-2-LR model (CMIP-historical experiment)
    for the time period 2013-2014 as computed with the ConFire model `Jones et al. (2024)`.

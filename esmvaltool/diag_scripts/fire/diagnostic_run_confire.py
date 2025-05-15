@@ -13,27 +13,39 @@ The directory and filename are indicated above each function definition.
 
 """
 
-import os
-import logging
+from __future__ import annotations
+
 import ast
-import glob
+import logging
+from pathlib import Path
+from typing import TYPE_CHECKING, Callable
+
+import arviz as az
 import cartopy.crs as ccrs
 import cf_units
 import iris
+import iris.coords
+import iris.quickplot
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import arviz as az
-import iris.quickplot
 
+if TYPE_CHECKING:
+    from types import ModuleType
 
-logger = logging.getLogger(os.path.basename(__file__))
+    import pytensor
+
+logger = logging.getLogger(Path.name(__file__))
 
 
 # /libs/select_key_or_default.py
-def select_key_or_default(
-        dirc, key, default=None, stack=True,
-        numpck=__import__('numpy')):
+def _select_key_or_default(
+    dirc: dict,
+    key: str,
+    default: None | list | int = None,
+    stack: bool = True,
+    numpck: None | ModuleType = None,
+) -> ModuleType:
     """Select specific key from dictionary.
 
     Arguments:
@@ -47,10 +59,13 @@ def select_key_or_default(
             Boolean flag if the extracted results should be stacked.
         numpck: imported package
             Package to use to stack the data if necessary.
-    Returns:
+
+    Return:
         out: numpck instance
             numpck instance from the extracted in the dictionary.
     """
+    if numpck is None:
+        numpck = __import__("numpy")
     dirc = dict(sorted(dirc.items()))
     out = [dirc[name] for name in dirc if key in name]
 
@@ -58,22 +73,23 @@ def select_key_or_default(
         out = default
     elif len(out) == 1:
         out = out[0]
-    else:
-        if stack:
-            out = numpck.stack([i[0] for i in out])
+    elif stack:
+        out = numpck.stack([i[0] for i in out])
 
     if isinstance(out, list):
         try:
             if stack:
                 out = numpck.stack(out)[:, 0]
         except Exception as expt:
-            logger.debug('select_key_or_default error %s', expt)
+            logger.debug("select_key_or_default error %s", expt)
 
     return out
 
 
 # /libs/iris_plus.py
-def sort_time(cube, field, filename):
+def _sort_time(
+    cube: iris.cube.Cube, field: str, filename: str
+) -> iris.cube.Cube:
     """Sort time dimension in the iris cube.
 
     Arguments:
@@ -83,11 +99,11 @@ def sort_time(cube, field, filename):
             Variable name in cube.
         filename: str
             Filename of cube.
-    Returns:
+    Return:
         cube: iris cube
             Cube with sorted and added time dimensions.
     """
-    logger.debug('Sorting time for variable %s in cube %s', field, filename)
+    logger.debug("Sorting time for variable %s in cube %s", field, filename)
 
     cube.coord("time").bounds = None
     tcoord = cube.coord("time")
@@ -100,32 +116,34 @@ def sort_time(cube, field, filename):
     cube.add_dim_coord(tcoord, 0)
 
     try:
-        iris.coord_categorisation.add_year(cube, 'time')
+        iris.coord_categorisation.add_year(cube, "time")
     except Exception as expt:
-        logger.debug('sort_time could not add year %s', expt)
+        logger.debug("_sort_time could not add year %s", expt)
 
     try:
         try:
             cube.remove_coord("month")
         except Exception as expt:
-            logger.debug('sort_time could not remove month %s', expt)
-        iris.coord_categorisation.add_month_number(cube, 'time', name='month')
+            logger.debug("_sort_time could not remove month %s", expt)
+        iris.coord_categorisation.add_month_number(cube, "time", name="month")
     except Exception as expt:
-        logger.debug('sort_time could not add month number %s', expt)
+        logger.debug("_sort_time could not add month number %s", expt)
 
     try:
         del cube.attributes["history"]
     except Exception as expt:
-        logger.debug('sort_time could not remove cube history %s', expt)
+        logger.debug("_sort_time could not remove cube history %s", expt)
 
     return cube
 
 
-def insert_data_into_cube(data, eg_cube, mask=None):
-    """ Insert data into cube following mask.
+def _insert_data_into_cube(
+    data: np.array, eg_cube: iris.cube.Cube, mask: np.array | None = None
+) -> iris.cube.Cube:
+    """Insert data into cube following mask.
 
     Arguments:
-        x: np.array
+        data: np.array
             data that we want to insert into the cube.
             Should have same shape of eg_cube, or same length as eg_cube
             or length equal to Trues in mask.
@@ -134,7 +152,7 @@ def insert_data_into_cube(data, eg_cube, mask=None):
         mask: Boolean array
             Array of shape or length x where True, will inster data.
             Default of None which means True for all points in eg_cube.
-    Returns:
+    Return:
         pred_cube: iris cube
             cube with data replaced by x
     """
@@ -142,7 +160,8 @@ def insert_data_into_cube(data, eg_cube, mask=None):
     # Only keep parent's attributes
     attrs_parent = {
         key: item
-        for key, item in eg_cube.attributes.items() if 'parent' == key[:6]
+        for key, item in eg_cube.attributes.items()
+        if key[:6] == "parent"
     }
     pred_cube.attributes = attrs_parent
     # Copy data
@@ -158,13 +177,13 @@ def insert_data_into_cube(data, eg_cube, mask=None):
 
 
 # /libs/namelist_functions.py
-def read_variables_from_namelist(file_name):
+def _read_variables_from_namelist(file_name: str) -> dict:
     """Read variables from a file and create them with their original names.
 
     Arguments:
         file_name: str
             The name of the file containing the variables.
-    Returns:
+    Return:
         dict: dict
             A dictionary of variable names and their values.
     Example Usage:
@@ -179,10 +198,10 @@ def read_variables_from_namelist(file_name):
     """
     variables = {}
 
-    def define_function(fun):
-        return ast.literal_eval(fun.split('function ')[1].split(' at ')[0])
+    def _define_function(fun: str):
+        return ast.literal_eval(fun.split("function ")[1].split(" at ")[0])
 
-    with open(file_name, 'r', encoding="utf-8") as file:
+    with Path.open(file_name, encoding="utf-8") as file:
         for line in file:
             parts = line.strip().split("::")
             if len(parts) == 2:
@@ -191,21 +210,24 @@ def read_variables_from_namelist(file_name):
                 if callable(variable_value):
                     # If the variable is a function, save its name
                     variable_value_set = variable_value
-                elif (variable_value.startswith('"') and
-                      variable_value.endswith('"')):
+                elif variable_value.startswith(
+                    '"'
+                ) and variable_value.endswith('"'):
                     # If the variable is a string, remove the quotes
                     variable_value_set = variable_value[1:-1]
-                elif (variable_value.startswith('[') and
-                      variable_value.endswith(']')):
+                elif variable_value.startswith(
+                    "["
+                ) and variable_value.endswith("]"):
                     # If the variable is a list, parse it
                     try:
                         variable_value_set = ast.literal_eval(variable_value)
                     except Exception as expt:
                         logger.debug(
-                            'read_variables_from_namelist error %s', expt)
-                        functions = variable_value.split(', ')
+                            "_read_variables_from_namelist error %s", expt
+                        )
+                        functions = variable_value.split(", ")
                         variable_value_set = [
-                            define_function(fun) for fun in functions
+                            _define_function(fun) for fun in functions
                         ]
                 else:
                     try:
@@ -220,39 +242,44 @@ def read_variables_from_namelist(file_name):
                         variables[variable_name].append(variable_value_set)
                     else:
                         variables[variable_name] = [
-                            variables[variable_name], variable_value_set]
+                            variables[variable_name],
+                            variable_value_set,
+                        ]
                 else:
                     variables[variable_name] = variable_value_set
     return variables
 
 
 # /libes/pymc_extras.py
-def select_post_param(trace):
-    """Selects paramaeters from a pymc nc trace file.
+def _select_post_param(trace: str) -> dict:
+    """Select parameters from a pymc nc trace file.
 
     Arguments:
         trace -- pymc netcdf trace file as filename or already opened
-    Returns:
+    Return:
         dict of paramater values with each item names after the parameter
     """
-    def select_post_param_name(name):
-        out = trace.posterior[name].values
+
+    def _select_post_param_name(name: str) -> np.array:
+        out = trace.posterior[name].to_numpy()
         a_shape = out.shape[0]
         b_shape = out.shape[1]
-        new_shape = ((a_shape * b_shape), * out.shape[2:])
+        new_shape = ((a_shape * b_shape), *out.shape[2:])
         return np.reshape(out, new_shape)
 
     try:
-        trace = az.from_netcdf(trace, engine='netcdf4')
+        trace = az.from_netcdf(trace, engine="netcdf4")
     except Exception as expt:
-        logger.debug('select_post_params error %s', expt)
-    params = trace.to_dict()['posterior']
+        logger.debug("_select_post_param error %s", expt)
+    params = trace.to_dict()["posterior"]
     params_names = params.keys()
-    params = [select_post_param_name(var) for var in params_names]
+    params = [_select_post_param_name(var) for var in params_names]
     return params, list(params_names)
 
 
-def construct_param_comb(i, params, params_names, extra_params):
+def _construct_param_comb(
+    i: int, params: list, params_names: list, extra_params: dict
+) -> dict:
     """Construct a new dictionary containing parameters.
 
     Arguments:
@@ -264,7 +291,7 @@ def construct_param_comb(i, params, params_names, extra_params):
             List of input parameters' names.
         extra_params: dict
             Dictionary of extra parameters to be added to the dictionary.
-    Returns:
+    Return:
         param_in: dict
             Dictionary of paramater values.
     """
@@ -277,12 +304,22 @@ def construct_param_comb(i, params, params_names, extra_params):
 
 
 # /libs/read_variable_from_netcdf.py
-def read_variable_from_netcdf(
-        filename, *args, directory=None, subset_function=None, make_flat=False,
-        units=None, subset_function_args=None, time_series=None,
-        time_points=None, extent=None, return_time_points=False,
-        return_extent=False):
+def _read_variable_from_netcdf(
+    filename: str,
+    directory: str | None = None,
+    subset_function: Callable | list[Callable] | None = None,
+    make_flat: bool = False,
+    units: str | None = None,
+    subset_function_args: dict | list[dict] | None = None,
+    time_series: list | None = None,
+    time_points: np.array | float | None = None,
+    extent: np.array | list | None = None,
+    return_time_points: bool = False,
+    return_extent: bool = False,
+    *args: tuple,
+) -> iris.cube.Cube:
     """Read data from a netCDF file.
+
     Assumes that the variables in the netcdf file all have the name
     "variable". Assumes that values < -9E9, you dont want. This could
     be different in some circumstances.
@@ -306,7 +343,7 @@ def read_variable_from_netcdf(
         time_series: list
             List comtaining range of years. If making flat and
             returned a time series, checks if that time series contains year.
-    Returns:
+    Return:
         dataset: iris cube
             if make_flat, a numpy vector of the target variable, otherwise
             returns iris cube.
@@ -314,26 +351,30 @@ def read_variable_from_netcdf(
     logger.info("Opening:")
     logger.info(filename)
 
-    if filename[0] == '~' or filename[0] == '/' or filename[0] == '.':
-        directory = ''
+    if filename[0] == "~" or filename[0] == "/" or filename[0] == ".":
+        directory = ""
 
     try:
         if isinstance(filename, str):
-            dataset = iris.load_cube(directory + filename, callback=sort_time)
+            dataset = iris.load_cube(directory + filename, callback=_sort_time)
         else:
             dataset = iris.load_cube(
-                directory + filename[0], filename[1], callback=sort_time
+                directory + filename[0],
+                filename[1],
+                callback=_sort_time,
             )
     except Exception as expt:
         try:
             dataset = iris.load_cube(directory + filename)
         except Exception as expt_:
             logger.debug(
-                'read_variable_from_netcdf errors\n%s\n%s', expt, expt_)
+                "_read_variable_from_netcdf errors\n%s\n%s", expt, expt_
+            )
             logger.debug(
-                "Data cannot be opened." +
+                "Data cannot be opened."
                 "Check directory %s, filename %s or file format",
-                directory, filename
+                directory,
+                filename,
             )
     coord_names = [coord.name() for coord in dataset.coords()]
 
@@ -341,65 +382,68 @@ def read_variable_from_netcdf(
         return None
 
     if time_points is not None:
-        if 'time' in coord_names:
+        if "time" in coord_names:
             dataset = dataset.interpolate(
-                [('time', time_points)], iris.analysis.Linear()
+                [("time", time_points)],
+                iris.analysis.Linear(),
             )
         else:
-            def addtime(time_point):
+
+            def _addtime(time_point: int) -> iris.cube.Cube:
                 time = iris.coords.DimCoord(
-                    np.array([time_point]), standard_name='time',
-                    units='days since 1661-01-01 00:00:00'
+                    np.array([time_point]),
+                    standard_name="time",
+                    units="days since 1661-01-01 00:00:00",
                 )
                 dataset_cp = dataset.copy()
                 dataset_cp.add_aux_coord(time)
                 return dataset_cp
-            dataset_time = [addtime(time_point) for time_point in time_points]
+
+            dataset_time = [_addtime(time_point) for time_point in time_points]
             dataset = iris.cube.CubeList(dataset_time).merge_cube()
-            # Unused? dataset0 = dataset.copy()
 
     if extent is not None:
         dataset = dataset.regrid(extent, iris.analysis.Linear())
-        # Unused? dataset0 = dataset.copy()
 
     if units is not None:
         dataset.units = units
 
     if subset_function is not None:
         if isinstance(subset_function, list):
-            for func, args in zip(subset_function, subset_function_args):
+            for func, _args in zip(subset_function, subset_function_args):
                 try:
-                    dataset = func(dataset, **args)
+                    dataset = func(dataset, **_args)
                 except Exception as expt:
-                    logger.debug('read_variable_from_netcdf error %s', expt)
+                    logger.debug("_read_variable_from_netcdf error %s", expt)
                     logger.debug(
                         "Warning! function: %s not applied to file: %s",
-                        func.__name__, directory + filename
+                        func.__name__,
+                        directory + filename,
                     )
         else:
             dataset = subset_function(dataset, **subset_function_args)
 
     if return_time_points:
-        time_points = dataset.coord('time').points
+        time_points = dataset.coord("time").points
 
     if return_extent:
         extent = dataset[0]
 
     if make_flat:
         if time_series is not None:
-            years = dataset.coord('year').points
+            years = dataset.coord("year").points
         try:
             dataset = dataset.data.flatten()
         except Exception as expt:
-            logger.debug('read_variable_from_netcdf error %s', expt)
+            logger.debug("_read_variable_from_netcdf error %s", expt)
         if time_series is not None:
-            if not years[0] == time_series[0]:
+            if years[0] != time_series[0]:
                 dataset = np.append(
-                    np.repeat(np.nan, years[0]-time_series[0]), dataset
+                    np.repeat(np.nan, years[0] - time_series[0]), dataset
                 )
-            if not years[-1] == time_series[1]:
+            if years[-1] != time_series[1]:
                 dataset = np.append(
-                    dataset, np.repeat(np.nan, time_series[1]-years[-1])
+                    dataset, np.repeat(np.nan, time_series[1] - years[-1])
                 )
 
     if return_time_points:
@@ -411,12 +455,21 @@ def read_variable_from_netcdf(
     return dataset
 
 
-def read_all_data_from_netcdf(
-        y_filename, x_filename_list, *args, ca_filename=None,
-        add_1s_columne=False, y_threshold=None, x_normalise01=False,
-        scalers=None, check_mask=True, frac_random_sample=1.0,
-        min_data_points_for_sample=None, **kw):
-    """Read data from netCDF files
+def _read_all_data_from_netcdf(
+    y_filename: list,
+    x_filename_list: list,
+    ca_filename: list | None = None,
+    add_1s_columne: bool = False,
+    y_threshold: float | None = None,
+    x_normalise01: bool = False,
+    scalers: np.array | None = None,
+    check_mask: bool = True,
+    frac_random_sample: float = 1.0,
+    min_data_points_for_sample: int | None = None,
+    *args: tuple,
+    **kw: dict,
+) -> tuple[np.array]:
+    """Read data from netCDF files.
 
     Arguments:
         y_filename: list
@@ -444,23 +497,30 @@ def read_all_data_from_netcdf(
             you dont want. This could be different in some circumstances.
         frac_random_sample: int
             fraction of data to be returned
-        see read_variable_from_netcdf comments for *arg and **kw.
-    Returns:
+        see _read_variable_from_netcdf comments for *arg and **kw.
+    Return:
         y: np.array
             a numpy array of the target variable.
         x: np.array
             an n-D numpy array of the feature variables.
     """
-    y_var, time_points, extent = read_variable_from_netcdf(
-        y_filename, make_flat=True, *args,
-        return_time_points=True, return_extent=True, **kw
+    y_var, time_points, extent = _read_variable_from_netcdf(
+        *args,
+        y_filename,
+        make_flat=True,
+        return_time_points=True,
+        return_extent=True,
+        **kw,
     )
 
     if ca_filename is not None:
-        ca_var = read_variable_from_netcdf(
-            ca_filename, make_flat=True,
-            time_points=time_points, extent=extent,
-            *args, **kw
+        ca_var = _read_variable_from_netcdf(
+            *args,
+            ca_filename,
+            make_flat=True,
+            time_points=time_points,
+            extent=extent,
+            **kw,
         )
 
     # Create a new categorical variable based on the threshold
@@ -470,10 +530,13 @@ def read_all_data_from_netcdf(
     x_var = np.zeros([len(y_var), len(x_filename_list)])
 
     for i, filename in enumerate(x_filename_list):
-        x_var[:, i] = read_variable_from_netcdf(
-            filename, make_flat=True,
-            time_points=time_points, extent=extent,
-            *args, **kw
+        x_var[:, i] = _read_variable_from_netcdf(
+            *args,
+            filename,
+            make_flat=True,
+            time_points=time_points,
+            extent=extent,
+            **kw,
         )
 
     if add_1s_columne:
@@ -482,14 +545,20 @@ def read_all_data_from_netcdf(
 
     if check_mask:
         if ca_filename is not None:
-            cells_we_want = np.array([
-                np.all(rw > -9e9) and np.all(rw < 9e9)
-                for rw in np.column_stack((x_var, y_var, ca_var))])
+            cells_we_want = np.array(
+                [
+                    np.all(rw > -9e9) and np.all(rw < 9e9)
+                    for rw in np.column_stack((x_var, y_var, ca_var))
+                ],
+            )
             ca_var = ca_var[cells_we_want]
         else:
-            cells_we_want = np.array([
-                np.all(rw > -9e9) and np.all(rw < 9e9)
-                for rw in np.column_stack((x_var, y_var))])
+            cells_we_want = np.array(
+                [
+                    np.all(rw > -9e9) and np.all(rw < 9e9)
+                    for rw in np.column_stack((x_var, y_var))
+                ],
+            )
         y_var = y_var[cells_we_want]
         x_var = x_var[cells_we_want, :]
 
@@ -497,7 +566,7 @@ def read_all_data_from_netcdf(
         try:
             scalers = np.array([np.min(x_var, axis=0), np.max(x_var, axis=0)])
         except Exception as expt:
-            logger.debug('read_all_data_from_netcdf error %s', expt)
+            logger.debug("_read_all_data_from_netcdf error %s", expt)
         squidge = (scalers[1, :] - scalers[0, :]) / (x_var.shape[0])
         scalers[0, :] = scalers[0, :] - squidge
         scalers[1, :] = scalers[1, :] + squidge
@@ -508,10 +577,9 @@ def read_all_data_from_netcdf(
 
     if frac_random_sample is None:
         frac_random_sample = 1000
-    else:
-        if min_data_points_for_sample is not None:
-            min_data_frac = min_data_points_for_sample / len(y_var)
-            frac_random_sample = max(frac_random_sample, min_data_frac)
+    elif min_data_points_for_sample is not None:
+        min_data_frac = min_data_points_for_sample / len(y_var)
+        frac_random_sample = max(frac_random_sample, min_data_frac)
 
     if frac_random_sample < 1:
         m_x = x_var.shape[0]
@@ -525,29 +593,28 @@ def read_all_data_from_netcdf(
 
     if scalers is not None:
         x_var = (x_var - scalers[0, :]) / (scalers[1, :] - scalers[0, :])
-        if check_mask:
-            if ca_filename is not None:
-                return y_var, x_var, ca_var, cells_we_want, scalers
+        if check_mask and ca_filename is not None:
+            return y_var, x_var, ca_var, cells_we_want, scalers
         return y_var, x_var, cells_we_want, scalers
 
-    if check_mask or frac_random_sample:
-        if ca_filename is not None:
-            return y_var, x_var, ca_var, cells_we_want
+    if (check_mask or frac_random_sample) and ca_filename is not None:
+        return y_var, x_var, ca_var, cells_we_want
 
     return y_var, x_var, cells_we_want
 
 
 # /fire_models/ConFire.py
-class ConFire():
+class ConFire:
     """Class for a ConFire model object.
+
     This class contains all the necessary parameters to initialize a ConFire
     model instance and functions to run the evaluation.
     To initialize an object, you need to provide the parameters of the model.
     """
-    def __init__(self, params, inference=False):
+
+    def __init__(self, params: dict | list, inference: bool = False) -> None:
         """
-        Initalise parameters and calculates the key variables needed to
-        calculate burnt area.
+        Initalise parameters and calculates the key variables.
 
         Arguments:
             params: dict or list of dict
@@ -556,30 +623,50 @@ class ConFire():
         """
         self.inference = inference
         if self.inference:
-            self.numpck = __import__('pytensor').tensor
+            self.numpck = __import__("pytensor").tensor
         else:
-            self.numpck = __import__('numpy')
+            self.numpck = __import__("numpy")
 
         self.params = params
 
-        def select_param_or_default(*args, **kw):
-            return select_key_or_default(
-                self.params, numpck=self.numpck, *args, **kw
+        def _select_param_or_default(*args: tuple, **kw: dict) -> ModuleType:
+            return _select_key_or_default(
+                *args,
+                dirc=self.params,
+                numpck=self.numpck,
+                **kw,
             )
 
-        self.controlid = self.params['controlID']
-        self.control_direction = self.params['control_Direction']
-        self.x0_param = select_param_or_default('x0', [0])
-        self.log_control = select_param_or_default(
-            'log_control', [False] * len(self.control_direction)
+        self.controlid = self.params["controlID"]
+        self.control_direction = self.params["control_Direction"]
+        self.x0_param = _select_param_or_default(key="x0", default=[0])
+        self.log_control = _select_param_or_default(
+            key="log_control",
+            default=[False] * len(self.control_direction),
         )
-        self.betas = select_param_or_default('betas', [[0]], stack=False)
-        self.powers = select_param_or_default('powers', None, stack=False)
-        self.driver_direction = self.params['driver_Direction']
-        self.fmax = select_param_or_default('Fmax', None, stack=False)
+        self.betas = _select_param_or_default(
+            key="betas",
+            default=[[0]],
+            stack=False,
+        )
+        self.powers = _select_param_or_default(
+            key="powers",
+            default=None,
+            stack=False,
+        )
+        self.driver_direction = self.params["driver_Direction"]
+        self.fmax = _select_param_or_default(
+            key="Fmax",
+            default=None,
+            stack=False,
+        )
 
     def burnt_area(
-            self, data, return_controls=False, return_limitations=False):
+        self,
+        data: np.array | pytensor.tensor,
+        return_controls: bool = False,
+        return_limitations: bool = False,
+    ) -> np.array | pytensor.tensor:
         """Compute burnt area.
 
         Arguments:
@@ -591,8 +678,9 @@ class ConFire():
             ba: numpck instance
                 Burnt area data.
         """
+
         # finds controls
-        def cal_control(cid=0):
+        def _cal_control(cid: int = 0) -> np.array | pytensor.tensor:
             ids = self.controlid[cid]
             betas = self.betas[cid] * self.driver_direction[cid]
 
@@ -603,22 +691,24 @@ class ConFire():
             out = self.numpck.sum(x_i * betas[None, ...], axis=-1)
             if self.log_control[cid]:
                 out = self.numpck.log(out)
-            out = out + self.x0_param[cid]
-            return out
+            return out + self.x0_param[cid]
 
-        controls = [cal_control(i) for i in range(len(self.controlid))]
+        controls = [_cal_control(i) for i in range(len(self.controlid))]
         if return_controls:
             return controls
 
-        def sigmoid(data, factor):
+        def _sigmoid(
+            data: np.array | pytensor.tensor,
+            factor: float,
+        ) -> np.array | pytensor.tensor:
             """Compute sigmoid.
 
             Arguments:
-                y: numpck instance
+                data: numpck instance
                     Input data.
-                k: float
+                factor: float
                     Exponential factor.
-            Returns:
+            Return:
                 Applied sigmoid function value.
             """
             if factor == 0:
@@ -628,7 +718,7 @@ class ConFire():
             return 1.0 / (1.0 + self.numpck.exp(-data * factor))
 
         limitations = [
-            sigmoid(y, k) for y, k in zip(controls, self.control_direction)
+            _sigmoid(y, k) for y, k in zip(controls, self.control_direction)
         ]
 
         if return_limitations:
@@ -638,11 +728,16 @@ class ConFire():
 
         b_a = self.numpck.prod(limitations, axis=0)
         if self.fmax is not None:
-            b_a = sigmoid(self.fmax, 1.0) * b_a
+            b_a = _sigmoid(self.fmax, 1.0) * b_a
 
         return b_a
 
-    def emc_weighted(self, emc, precip, wd_pg):
+    def _emc_weighted(
+        self,
+        emc: iris.cube.Cube,
+        precip: iris.cube.Cube,
+        wd_pg: iris.cube.Cube,
+    ) -> iris.cube.Cube:
         """Compute weighted Event Mean Concentration (EMC).
 
         Arguments:
@@ -652,7 +747,7 @@ class ConFire():
                 Cube containing precipitation data.
             wd_pg: iris cube
                 Cube containing wet days.
-        Returns:
+        Return:
             emcw: iris cube
                 Weighted cube of EMC.
         """
@@ -660,13 +755,17 @@ class ConFire():
             wet_days = 1.0 - self.numpck.exp(-wd_pg * precip)
             emcw = (1.0 - wet_days) * emc + wet_days
         except Exception as expt:
-            logger.debug('emc_weighted error %s', expt)
+            logger.debug("emc_weighted error %s", expt)
             emcw = emc.copy()
             emcw.data = 1.0 - self.numpck.exp(-wd_pg * precip.data)
             emcw.data = emcw.data + (1.0 - emcw.data) * emc.data
         return emcw
 
-    def list_model_params(self, params, varnames=None):
+    def _list_model_params(
+        self,
+        params: list,
+        varnames: list | None = None,
+    ) -> pd.DataFrame:
         """Summary model parameters.
 
         Arguments:
@@ -676,61 +775,71 @@ class ConFire():
             full_df: pd.DataFrame
                 Dataframe containing the parameters values in each experiment.
         """
-        controlid = params[0]['controlID']
+        controlid = params[0]["controlID"]
 
-        def list_one_line_of_parmas(param):
-            def select_param_or_default(*args, **kw):
-                return select_key_or_default(
-                    param, numpck=__import__('numpy'), *args, **kw
+        def _list_one_line_of_parmas(param: list) -> np.array:
+            def _select_param_or_default(
+                *args: tuple, **kw: dict
+            ) -> ModuleType:
+                return _select_key_or_default(
+                    *args,
+                    param,
+                    numpck=__import__("numpy"),
+                    **kw,
                 )
 
-            control_direction = param['control_Direction']
-            x0s = select_param_or_default('x0', [0])
-            betas = select_param_or_default('betas', [[0]], stack=False)
-            powers = select_param_or_default('powers', None, stack=False)
-            driver_direction = param['driver_Direction']
-            fmax = select_param_or_default('fmax', 1.0, stack=False)
+            control_direction = param["control_Direction"]
+            x0s = _select_param_or_default("x0", [0])
+            betas = _select_param_or_default("betas", [[0]], stack=False)
+            powers = _select_param_or_default("powers", None, stack=False)
+            driver_direction = param["driver_Direction"]
+            fmax = _select_param_or_default("fmax", 1.0, stack=False)
 
             directions = [
-                np.array(driver) * control for control, driver in
-                zip(control_direction, driver_direction)
+                np.array(driver) * control
+                for control, driver in zip(control_direction, driver_direction)
             ]
             betas = [
                 direction * beta for direction, beta in zip(directions, betas)
             ]
 
-            def mish_mash(beta, power, x_0):
+            def _mish_mash(beta: list, power: list, x_0: int) -> np.array:
                 return np.append(np.column_stack((beta, power)).ravel(), x_0)
+
             varps = [
-                mish_mash(beta, power, x0) for beta, power, x0 in zip(
-                    betas, powers, x0s)
+                _mish_mash(beta, power, x0)
+                for beta, power, x0 in zip(betas, powers, x0s)
             ]
 
             return np.append(fmax, np.concatenate(varps))
 
-        params_sorted = np.array([
-            list_one_line_of_parmas(param) for param in params
-        ])
+        params_sorted: np.array = np.array(
+            [_list_one_line_of_parmas(param) for param in params],
+        )
 
-        param = ['fmax']
-        controln = ['']
-        variable_name = ['']
+        param: list[str] = ["fmax"]
+        controln: list[str] = [""]
+        variable_name: list[str] = [""]
 
         for ids, idn in zip(controlid, range(len(controlid))):
             for i_d in ids:
-                param.append('beta')
+                param.append("beta")
                 controln.append(str(idn))
                 variable_name.append(varnames[i_d])
-                param.append('power')
+                param.append("power")
                 controln.append(str(idn))
                 variable_name.append(varnames[i_d])
-            param.append('beta')
+            param.append("beta")
             controln.append(str(idn))
-            variable_name.append('beta0')
+            variable_name.append("beta0")
 
         header_df = pd.DataFrame([param, controln, variable_name])
-        index_labels = ["Parameter", "Control", "Variable"] + \
-            list(map(str, range(1, params_sorted.shape[0] + 1)))
+        index_labels = [
+            "Parameter",
+            "Control",
+            "Variable",
+            *list(map(str, range(1, params_sorted.shape[0] + 1))),
+        ]
 
         data_df = pd.DataFrame(params_sorted)
         full_df = pd.concat([header_df, data_df], ignore_index=True)
@@ -740,13 +849,13 @@ class ConFire():
         return full_df
 
 
-def get_parameters(config):
+def _get_parameters(config: dict) -> tuple:
     """Get parameters necessary for ConFire run.
 
     Arguments:
         config: dict
             Dictionary from ESMValTool recipe.
-    Returns:
+    Return:
         output_dir: str
             Path to output directory.
         params: list
@@ -764,38 +873,55 @@ def get_parameters(config):
         control_direction: list
             List containing different experiment setups.
     """
-    work_dir = config['work_dir']
-    confire_param = config['confire_param_dir']
+    work_dir = config["work_dir"]
+    confire_param = config["confire_param_dir"]
     # **Define Paths for Parameter Files  and for outputs**
-    output_dir = work_dir + '/ConFire_outputs/'
+    output_dir = work_dir + "/ConFire_outputs/"
     # Parameter files (traces, scalers, and other model parameters)
-    param_file_trace = glob.glob(confire_param + "trace*.nc")[0]
-    param_file_none_trace = glob.glob(
-        confire_param + "none_trace-params*.txt")[0]
-    scale_file = glob.glob(confire_param + "scalers*.csv")[0]
+    param_file_trace = Path.glob(confire_param + "trace*.nc")[0]
+    param_file_none_trace = Path.glob(
+        confire_param + "none_trace-params*.txt",
+    )[0]
+    scale_file = Path.glob(confire_param + "scalers*.csv")[0]
     # **Load Variable Information and NetCDF Files**
     # Replace these lines with user-specified NetCDF files, ensuring variable
     # order is the same.
-    nc_files = config['files_input']
-    nc_dir = ''
+    nc_files = config["files_input"]
+    nc_dir = ""
     # **Load Driving Data and Land Mask**
-    logger.info('Loading data for ConFire model...')
-    scalers = pd.read_csv(scale_file).values
-    _, driving_data, lmask, _ = read_all_data_from_netcdf(
-        nc_files[0], nc_files, scalers=scalers, directory=nc_dir)
+    logger.info("Loading data for ConFire model...")
+    scalers = pd.read_csv(scale_file).to_numpy()
+    _, driving_data, lmask, _ = _read_all_data_from_netcdf(
+        nc_files[0],
+        nc_files,
+        scalers=scalers,
+        directory=nc_dir,
+    )
     # Load a sample cube (used for inserting data)
-    eg_cube = read_variable_from_netcdf(nc_files[0], directory=nc_dir)
+    eg_cube = _read_variable_from_netcdf(nc_files[0], directory=nc_dir)
     # **Extract Model Parameters**
-    logger.info('Loading ConFire model parameters...')
-    params, params_names = select_post_param(param_file_trace)
-    extra_params = read_variables_from_namelist(param_file_none_trace)
-    control_direction = extra_params['control_Direction'].copy()
-    return output_dir, params, params_names, extra_params, driving_data, \
-        lmask, eg_cube, control_direction
+    logger.info("Loading ConFire model parameters...")
+    params, params_names = _select_post_param(param_file_trace)
+    extra_params = _read_variables_from_namelist(param_file_none_trace)
+    control_direction = extra_params["control_Direction"].copy()
+    return (
+        output_dir,
+        params,
+        params_names,
+        extra_params,
+        driving_data,
+        lmask,
+        eg_cube,
+        control_direction,
+    )
 
 
-def setup_cube_output(cube, output, provenance):
-    """Setup the output cube.
+def _setup_cube_output(
+    cube: iris.cube.Cube,
+    output: str,
+    provenance: dict,
+) -> iris.cube.Cube:
+    """Set up the output cube.
 
     Apply:
         - replace variable name
@@ -811,66 +937,70 @@ def setup_cube_output(cube, output, provenance):
             Output variable contained in the cube.
         provenance: dict
             Dictionary w/ provenance record.
-    Returns:
+    Return:
         cube: iris cube
             Modified output cube.
     """
     # Default attributes to fill in
     parameter_dict = {
-        'burnt_fraction': {
-            'units': '%',
-            'long_name': 'Burnt Fraction',
-            'factor': 100.,
+        "burnt_fraction": {
+            "units": "%",
+            "long_name": "Burnt Fraction",
+            "factor": 100.0,
         },
-        'fire_weather_control': {
-            'units': '1',
-            'long_name': 'Fire Weather control',
-            'factor': 1.,
+        "fire_weather_control": {
+            "units": "1",
+            "long_name": "Fire Weather control",
+            "factor": 1.0,
         },
-        'fuel_load_continuity_control': {
-            'units': '1',
-            'long_name': 'Fuel Load/Continuity control',
-            'factor': 1.,
+        "fuel_load_continuity_control": {
+            "units": "1",
+            "long_name": "Fuel Load/Continuity control",
+            "factor": 1.0,
         },
-        'stochastic_control': {
-            'units': '1',
-            'long_name': 'Stochastic control',
-            'factor': 1.,
-        }
+        "stochastic_control": {
+            "units": "1",
+            "long_name": "Stochastic control",
+            "factor": 1.0,
+        },
     }
-    if output == 'burnt_fraction':
-        cube.var_name = 'burnt_fraction'
+    if output == "burnt_fraction":
+        cube.var_name = "burnt_fraction"
         cube.standard_name = None
-        cube.long_name = parameter_dict['burnt_fraction']['long_name']
-        cube.units = parameter_dict['burnt_fraction']['units']
-        cube.data *= parameter_dict['burnt_fraction']['factor']
-    elif output == 'fire_weather_control':
-        cube.var_name = 'fire_weather_control'
+        cube.long_name = parameter_dict["burnt_fraction"]["long_name"]
+        cube.units = parameter_dict["burnt_fraction"]["units"]
+        cube.data *= parameter_dict["burnt_fraction"]["factor"]
+    elif output == "fire_weather_control":
+        cube.var_name = "fire_weather_control"
         cube.standard_name = None
-        cube.long_name = parameter_dict['fire_weather_control']['long_name']
-        cube.units = parameter_dict['fire_weather_control']['units']
-        cube.data *= parameter_dict['fire_weather_control']['factor']
-    elif output == 'fuel_load_continuity_control':
-        cube.var_name = 'fuel_load_continuity_control'
+        cube.long_name = parameter_dict["fire_weather_control"]["long_name"]
+        cube.units = parameter_dict["fire_weather_control"]["units"]
+        cube.data *= parameter_dict["fire_weather_control"]["factor"]
+    elif output == "fuel_load_continuity_control":
+        cube.var_name = "fuel_load_continuity_control"
         cube.standard_name = None
-        cube.long_name = parameter_dict[
-            'fuel_load_continuity_control']['long_name']
-        cube.units = parameter_dict['fuel_load_continuity_control']['units']
-        cube.data *= parameter_dict['fuel_load_continuity_control']['factor']
-    elif output == 'stochastic_control':
-        cube.var_name = 'stochastic_control'
+        cube.long_name = parameter_dict["fuel_load_continuity_control"][
+            "long_name"
+        ]
+        cube.units = parameter_dict["fuel_load_continuity_control"]["units"]
+        cube.data *= parameter_dict["fuel_load_continuity_control"]["factor"]
+    elif output == "stochastic_control":
+        cube.var_name = "stochastic_control"
         cube.standard_name = None
-        cube.long_name = parameter_dict['stochastic_control']['long_name']
-        cube.units = parameter_dict['stochastic_control']['units']
-        cube.data *= parameter_dict['stochastic_control']['factor']
+        cube.long_name = parameter_dict["stochastic_control"]["long_name"]
+        cube.units = parameter_dict["stochastic_control"]["units"]
+        cube.data *= parameter_dict["stochastic_control"]["factor"]
     else:
-        logger.debug('Output %s cannot be processed. Saving output as is.')
-    cube.attributes['ancestors'] = provenance['ancestors']
+        logger.debug("Output %s cannot be processed. Saving output as is.")
+    cube.attributes["ancestors"] = provenance["ancestors"]
     return cube
 
 
-def diagnostic_run_confire(config, model_name='model', timerange='none'):
+def diagnostic_run_confire(
+    config: dict, model_name: str = "model", timerange: str = "none"
+) -> list:
     """Run ConFire as a diagnostic.
+
     The outputs from the model run are saved and the plots are returned.
 
     Arguments:
@@ -880,7 +1010,7 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
             Model name to include in plots.
         timerange: str
             Time range of the input data to include in plots.
-    Returns:
+    Return:
         figures: list
             List of matplotlib figures produced for the burnt area results.
     """
@@ -889,8 +1019,16 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
     # It calculates burnt area under different control conditions and saves
     # results.
     # --------------------------------------------------------
-    output_dir, params, params_names, extra_params, driving_data, lmask, \
-        eg_cube, control_direction = get_parameters(config)
+    (
+        output_dir,
+        params,
+        params_names,
+        extra_params,
+        driving_data,
+        lmask,
+        eg_cube,
+        control_direction,
+    ) = _get_parameters(config)
 
     # Number of samples to run from the trace file
     nsample_for_running = 100
@@ -902,9 +1040,13 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
     # stochastic controls)**
     out_cubes = [[] for _ in range(nexp + 2)]
 
-    def run_model_into_cube(param_in, coord):
+    def _run_model_into_cube(
+        param_in: dict,
+        coord: iris.coords.Coord,
+    ) -> iris.cube.Cube:
         """
-        Runs the ConFire model with given parameters.
+        Run the ConFire model with given parameters.
+
         Results are inserted into an iris cube.
 
         Arguments:
@@ -912,38 +1054,44 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
                 Dictionary of input parameters for the run.
             coord: iris coord
                 Coordinate to add to the output cube.
-        Returns:
+        Return:
             cube: iris cube
                 ConFire model output cube.
         """
         out = ConFire(param_in).burnt_area(driving_data)
-        cube = insert_data_into_cube(out, eg_cube, lmask)
+        cube = _insert_data_into_cube(out, eg_cube, lmask)
         cube.add_aux_coord(coord)
         return cube
 
     # **Run ConFire Model with Different Control Scenarios**
-    logger.info('Running ConFire model...')
+    logger.info("Running ConFire model...")
     for index, i in zip(idx, range(len(idx))):
         coord = iris.coords.DimCoord(i, "realization")
-        param_in = construct_param_comb(
-            index, params, params_names, extra_params
+        param_in = _construct_param_comb(
+            index,
+            params,
+            params_names,
+            extra_params,
         )
 
         # **Run Full Model**
-        out_cubes[0].append(run_model_into_cube(param_in, coord))
+        out_cubes[0].append(_run_model_into_cube(param_in, coord))
 
         # **Run Model with Individual Controls Turned On**
         for exp in range(nexp):
-            param_in['control_Direction'][:] = [0] * nexp
-            param_in['control_Direction'][exp] = control_direction[exp]
-            param_in = construct_param_comb(
-                exp, params, params_names, extra_params
+            param_in["control_Direction"][:] = [0] * nexp
+            param_in["control_Direction"][exp] = control_direction[exp]
+            param_in = _construct_param_comb(
+                exp,
+                params,
+                params_names,
+                extra_params,
             )
-            out_cubes[exp + 1].append(run_model_into_cube(param_in, coord))
+            out_cubes[exp + 1].append(_run_model_into_cube(param_in, coord))
 
         # **Run Model with All Controls Off (Stochastic Control)**
-        param_in['control_Direction'][:] = [0] * nexp
-        out_cubes[exp + 2].append(run_model_into_cube(param_in, coord))
+        param_in["control_Direction"][:] = [0] * nexp
+        out_cubes[exp + 2].append(_run_model_into_cube(param_in, coord))
 
     # **Save Output Cubes**
     # In the current configuration, outputs from the model runs are:
@@ -951,49 +1099,56 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
     #   - fire weather (control direction 0)
     #   - fuel loads (control direction 1)
     #   - stochastic control
-    logger.info('Saving ConFire output cubes...')
-    os.makedirs(output_dir, exist_ok=True)
-    timerange = timerange.replace('/', '-')
+    logger.info("Saving ConFire output cubes...")
+    Path.makedir(output_dir, parents=True)
+    timerange = timerange.replace("/", "-")
     for i, o_c in enumerate(out_cubes):
         cubes = iris.cube.CubeList(o_c).merge_cube()
-        cubes = setup_cube_output(
-            cubes, config['filenames_out'][i], config["provenance"])
-        iris.save(cubes, os.path.join(
-            output_dir,
-            f'{config['filenames_out'][i]}_{model_name}_{timerange}.nc'
-        ))
+        cubes = _setup_cube_output(
+            cubes, config["filenames_out"][i], config["files_input"]
+        )
+        iris.save(
+            cubes,
+            Path(
+                output_dir
+                + f"{config['filenames_out'][i]}_{model_name}_{timerange}.nc"
+            ),
+        )
 
     # --------------------------------------------------------
     # **Visualization: Plot Resultant Maps**
     # --------------------------------------------------------
     # **Load and Plot Output Data**
-    logger.info('Plotting model diagnostic outputs...')
+    logger.info("Plotting model diagnostic outputs...")
     figures = []
     parameter_plot = {
-        'burnt_fraction': {
-            'vmin': 0.,
-            'vmax': 100.,
+        "burnt_fraction": {
+            "vmin": 0.0,
+            "vmax": 100.0,
         },
-        'fire_weather_control': {
-            'vmin': 0.,
-            'vmax': 1.,
+        "fire_weather_control": {
+            "vmin": 0.0,
+            "vmax": 1.0,
         },
-        'fuel_load_continuity_control': {
-            'vmin': 0.,
-            'vmax': 1.,
+        "fuel_load_continuity_control": {
+            "vmin": 0.0,
+            "vmax": 1.0,
         },
-        'stochastic_control': {
-            'vmin': 0.,
-            'vmax': 1.,
-        }
+        "stochastic_control": {
+            "vmin": 0.0,
+            "vmax": 1.0,
+        },
     }
-    for i, filename in enumerate(config['filenames_out']):
-        filepath = os.path.join(
-            output_dir, f'{filename}_{model_name}_{timerange}.nc'
+    for filename in config["filenames_out"]:
+        filepath = Path(
+            output_dir + f"{filename}_{model_name}_{timerange}.nc",
         )
         fig, axes = plt.subplots(
-            nrows=1, ncols=2, figsize=(12, 8),
-            subplot_kw={'projection': ccrs.Robinson()})
+            nrows=1,
+            ncols=2,
+            figsize=(12, 8),
+            subplot_kw={"projection": ccrs.Robinson()},
+        )
         axes = axes.flatten()
         plotn = 0
         try:
@@ -1001,25 +1156,33 @@ def diagnostic_run_confire(config, model_name='model', timerange='none'):
             cube = iris.load_cube(filepath)
             for pct in [5, 95]:
                 pc_cube = cube.collapsed(
-                    'realization', iris.analysis.PERCENTILE, percent=pct)[0]
+                    "realization", iris.analysis.PERCENTILE, percent=pct
+                )[0]
                 img = iris.quickplot.pcolormesh(
-                    pc_cube, axes=axes[plotn], colorbar=False,
-                    vmin=parameter_plot[filename]['vmin'],
-                    vmax=parameter_plot[filename]['vmax'],
-                    cmap='Oranges'
+                    pc_cube,
+                    axes=axes[plotn],
+                    colorbar=False,
+                    vmin=parameter_plot[filename]["vmin"],
+                    vmax=parameter_plot[filename]["vmax"],
+                    cmap="Oranges",
                 )
                 axes[plotn].set_title(
-                    filename.replace("_", " ").capitalize() +
-                    f' - {timerange}\n{model_name} - [{str(pct)}% percentile]'
+                    filename.replace("_", " ").capitalize()
+                    + f" - {timerange}\n{model_name}"
+                    + f" - [{pct!s}% percentile]",
                 )
                 axes[plotn].coastlines()
                 # Add colorbar
                 fig.colorbar(
-                    img, ax=axes[plotn], orientation='vertical',
-                    extend='neither',
-                    label=filename.replace("_", " ").capitalize() +
-                    f' [{cube.units}]',
-                    fraction=0.046, pad=0.04, shrink=0.3,
+                    img,
+                    ax=axes[plotn],
+                    orientation="vertical",
+                    extend="neither",
+                    label=filename.replace("_", " ").capitalize()
+                    + f" [{cube.units}]",
+                    fraction=0.046,
+                    pad=0.04,
+                    shrink=0.3,
                 )
                 # Iterate plot number
                 plotn = plotn + 1

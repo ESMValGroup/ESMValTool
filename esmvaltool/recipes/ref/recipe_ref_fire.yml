@@ -56,18 +56,18 @@ diagnostics:
       cVeg:
         mip: Lmon
         preprocessor: preproc
-      # Wind speed near surface
-      sfcWind:
-        mip: Amon
-        preprocessor: preproc
-      # Leaf area index
-      lai:
-        mip: Lmon
-        preprocessor: preproc
-      # Soil moisture (surface layer)
-      mrsos:
-        mip: Lmon
-        preprocessor: preproc
+      # # Wind speed near surface
+      # sfcWind:
+      #   mip: Amon
+      #   preprocessor: preproc
+      # # Leaf area index
+      # lai:
+      #   mip: Lmon
+      #   preprocessor: preproc
+      # # Soil moisture (surface layer)
+      # mrsos:
+      #   mip: Lmon
+      #   preprocessor: preproc
       # To compute the vapor pressure deficit (vpd)
       # Surface temperature
       tas:
@@ -81,13 +81,5 @@ diagnostics:
     scripts:
       fire_evaluation:
         script: fire/fire_diagnostic.py
-        # Path or Zenodo URL to the ConFire model parameter files
-        # Zenodo archive is not yet published 'https://zenodo.org/records/14917245'
-        # Files are added as part of ESMValTool directly for now
-        confire_param: '~/projects/ESMValTool/esmvaltool/diag_scripts/fire/parameter_files/'
         # IMPORTANT = the order of the variables should fit the configuration files of the ConFire model run
         var_order: ['pr', 'tasmax', 'treeFrac', 'vegFrac', 'vpd', 'cVeg']
-        # Removing or not the computed vapor pressure deficit files
-        remove_vpd_files: False
-        # Removing or not the files produced during the ConFire model evaluation
-        remove_confire_files: False
