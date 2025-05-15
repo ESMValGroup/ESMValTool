@@ -133,6 +133,11 @@ Configuration options for 1D plots
 ----------------------------------
 aspect_ratio: float, optional (default: None)
     Aspect ratio of the plot.
+caption: str, optional
+    Figure caption used for provenance tracking. Can include facets in curly
+    brackets which will be derived from the corresponding dataset, e.g.,
+    ``{project}``, ``{short_name}``, ``{exp}``. By default, uses a very basic
+    caption.
 envelope_kwargs: dict, optional
     Optional keyword arguments for :func:`iris.plot.fill_between`. By default,
     uses ``{alpha: 0.8, facecolor: 'lightblue', linewidth: 0.0, zorder: 1.0}``.
@@ -198,6 +203,11 @@ Configuration options for 2D plots
 ----------------------------------
 aspect_ratio: float, optional (default: None)
     Aspect ratio of the plot.
+caption: str, optional
+    Figure caption used for provenance tracking. Can include facets in curly
+    brackets which will be derived from the corresponding dataset, e.g.,
+    ``{project}``, ``{short_name}``, ``{exp}``. By default, uses a very basic
+    caption.
 cbar_label: str, optional (default: '{short_name} [{units}]')
     Colorbar label. Can include facets in curly brackets which will be derived
     from the corresponding dataset, e.g., ``{project}``, ``{short_name}``,
@@ -310,6 +320,11 @@ y_minor_formatter: str, optional (default: None)
 
 Configuration options for boxplots
 ----------------------------------
+caption: str, optional
+    Figure caption used for provenance tracking. Can include facets in curly
+    brackets which will be derived from the corresponding dataset, e.g.,
+    ``{project}``, ``{short_name}``, ``{exp}``. By default, uses a very basic
+    caption.
 fontsize: int, optional (default: None)
     Fontsize used for ticks, labels and titles. For the latter, use the given
     fontsize plus 2. Does not affect suptitles. If not given, use default
@@ -346,7 +361,7 @@ from __future__ import annotations
 import inspect
 import logging
 import warnings
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from copy import copy, deepcopy
 from functools import partial
 from pathlib import Path
@@ -356,7 +371,9 @@ from typing import Any
 import cartopy.crs as ccrs
 import dask.array as da
 import iris
+import iris.analysis
 import iris.pandas
+import iris.plot
 import matplotlib as mpl
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
@@ -882,7 +899,11 @@ class MultiDatasets(MonitorBase):
         )
         cbar_kwargs = self._get_cbar_kwargs(plot_type, bias=bias)
 
-        def add_colorbar(plot: Any, axes: Axes, label: str) -> None:
+        def add_colorbar(
+            plot: Any,
+            axes: Axes | Iterable[Axes],
+            label: str,
+        ) -> None:
             """Add single colorbar."""
             cbar = plt.colorbar(plot, ax=axes, **cbar_kwargs)
             cbar.set_label(label, fontsize=fontsize)
@@ -890,7 +911,7 @@ class MultiDatasets(MonitorBase):
 
         # Single colorbar
         cbar_label_1 = self._get_cbar_label(plot_type, dataset_1, bias=bias)
-        if plot_2 is None:
+        if plot_2 is None or axes_2 is None or dataset_2 is None:
             add_colorbar(plot_1, axes_1, cbar_label_1)
             return
 
@@ -1068,7 +1089,7 @@ class MultiDatasets(MonitorBase):
             axes.xaxis.set_major_formatter(FormatStrFormatter("%.1f"))
             x_minor_locator = LogLocator(
                 base=10.0,
-                subs=np.arange(1.0, 10.0) * 0.1,
+                subs=np.arange(1.0, 10.0) * 0.1,  # type: ignore
                 numticks=12,
             )
         else:
@@ -1445,7 +1466,7 @@ class MultiDatasets(MonitorBase):
         datasets: list[dict],
     ) -> dict:
         """Get provenance record."""
-        provenance_record = {
+        provenance_record: dict[str, str | Iterable[str]] = {
             "ancestors": list({a for d in datasets for a in d["ancestors"]}),
             "long_names": list({d["long_name"] for d in datasets}),
         }
@@ -1487,13 +1508,13 @@ class MultiDatasets(MonitorBase):
             logger.info("Loading %s", filename)
             cubes = iris.load(filename)
             if len(cubes) == 1:
-                cube = cubes[0]
+                cube: Cube = cubes[0]  # type: ignore
             else:
                 var_name = dataset["short_name"]
                 try:
                     cube = cubes.extract_cube(
                         iris.NameConstraint(var_name=var_name),
-                    )
+                    )  # type: ignore
                 except ConstraintMismatchError as exc:
                     var_names = [c.var_name for c in cubes]
                     raise ValueError(
@@ -1613,7 +1634,7 @@ class MultiDatasets(MonitorBase):
         if fix_cartopy_bug:
             plot_kwargs["transform_first"] = True
             npx = da if cube.has_lazy_data() else np
-            cube = cube.copy(npx.ma.filled(cube.core_data(), np.nan))
+            cube = cube.copy(npx.ma.filled(cube.core_data(), np.nan))  # type: ignore
 
         return plot_func(cube, **plot_kwargs)
 
@@ -1627,7 +1648,7 @@ class MultiDatasets(MonitorBase):
         **additional_plot_kwargs: Any,
     ) -> Any:
         """Plot 2D data."""
-        fig = axes.get_figure()
+        fig: Figure = axes.get_figure()  # type: ignore
 
         # Some options are not supported for map plots
         if "map" in plot_type:
@@ -1642,14 +1663,14 @@ class MultiDatasets(MonitorBase):
 
         # Show coastlines for map plots
         if "map" in plot_type:
-            axes.coastlines()
+            axes.coastlines()  # type: ignore
 
         # Title and axis labels
         fig.suptitle(dataset["long_name"])
         axes.set_title(self._get_label(dataset))
         (x_coord, y_coord) = self._get_coords_for_2d_plotting(plot_type, cube)
-        axes.set_xlabel(f"{x_coord.name()} [{x_coord.units}]")
-        axes.set_ylabel(f"{y_coord.name()} [{y_coord.units}]")
+        axes.set_xlabel(f"{x_coord.name()} [{x_coord.units}]")  # type: ignore
+        axes.set_ylabel(f"{y_coord.name()} [{y_coord.units}]")  # type: ignore
 
         # Customize plot with user-defined settings
         self._customize_plot(plot_type, axes, dataset)
@@ -1897,9 +1918,9 @@ class MultiDatasets(MonitorBase):
             df_single_var = dframe[dframe["Variable"] == var_key].drop(
                 "Variable", axis=1
             )
-            cube = iris.pandas.as_cubes(
+            cube: Cube = iris.pandas.as_cubes(
                 df_single_var, aux_coord_cols=["Dataset"]
-            )[0]
+            )[0]  # type: ignore
             cube.var_name = var_key
             cube.long_name = dataset["long_name"]
             if dataset["standard_name"]:
