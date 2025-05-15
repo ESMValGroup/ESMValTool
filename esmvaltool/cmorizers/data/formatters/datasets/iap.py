@@ -87,7 +87,7 @@ def collect_files(in_dir, cfg, start_date, end_date):
 
 
 def process_data(cube, reference_year):
-    """ Process raw data. Convert to Kelvin and add time dimension.
+    """ Process raw data. Add time dimension.
         Concatenate the cubes and return the new cube.
     """
     # Convert temperature from Celsius to Kelvin and add time dimension
