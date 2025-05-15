@@ -787,7 +787,7 @@ diagnostics:
   NOAA-GML-SURFACE-FLASK-CH4:
     description: NOAA Global Monitoring Lab Surface flask CH4 data check
     variables:
-      ch4:
+      ch4s:
     additional_datasets:
       - {dataset: NOAA-GML-SURFACE-FLASK-CH4, project: OBS6, mip: Amon, type: atmos, version: 1.0, tier: 2,
          start_year: 1983, end_year: 2023}
