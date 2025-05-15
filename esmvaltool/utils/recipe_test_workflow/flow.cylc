@@ -39,7 +39,7 @@
         env-script = "eval $(rose task-env)"
         [[[environment]]]
             ENV_NAME = {{ ENV_NAME }}
-            USER_CONFIG_DIR = ${ROSE_DATAC}
+            USER_CONFIG_DIR = ${ROSE_DATAC}/config_dir
             USER_CONFIG_PATH = ${USER_CONFIG_DIR}/config-user.yml
             OUTPUT_DIR = ${ROSE_DATAC}
             ESMVALCORE_DIR = ""
@@ -60,6 +60,8 @@
     [[configure]]
         [[[environment]]]
             ROSE_TASK_APP = configure
+            AUXILIARY_DATA_DIR = {{ AUXILIARY_DATA_DIR }}
+            DOWNLOAD_DIR = {{ DOWNLOAD_DIR }}
             DRS_CMIP3 = {{ DRS_CMIP3 }}
             DRS_CMIP5 = {{ DRS_CMIP5 }}
             DRS_CMIP6 = {{ DRS_CMIP6 }}
@@ -80,6 +82,7 @@
             ROOTPATH_NATIVE6 = {{ ROOTPATH_NATIVE6 }}
             ROOTPATH_OBS4MIPS = {{ ROOTPATH_OBS4MIPS }}
             ROOTPATH_RAWOBS = {{ ROOTPATH_RAWOBS }}
+            SEARCH_ESGF = {{ SEARCH_ESGF }}
 
     # Bash variable substitution below replaces `--` with `/` to obtain path to
     # recipe.
@@ -120,15 +123,15 @@
     [[compare<fast>]]
         inherit = COMPARE
         [[[environment]]]
-            RECIPE_NAME = "${CYLC_TASK_PARAM_fast##*--}"
-            COMPARISON_OUTPUT_DIR=${OUTPUT_DIR}/${RECIPE_NAME}*
-            KGO_DIR=${KGO_ROOT_PATH}/${RECIPE_NAME}*
+            RECIPE_NAME = "${CYLC_TASK_PARAM_fast##*--}_????????_??????"
+            COMPARISON_OUTPUT_DIR = ${OUTPUT_DIR}/${RECIPE_NAME}
+            KGO_DIR = ${KGO_ROOT_PATH}/${RECIPE_NAME}
 
     [[compare<medium>]]
         inherit = COMPARE
         [[[environment]]]
-            RECIPE_NAME = "${CYLC_TASK_PARAM_medium##*--}"
-            COMPARISON_OUTPUT_DIR=${OUTPUT_DIR}/${RECIPE_NAME}*
-            KGO_DIR=${KGO_ROOT_PATH}/${RECIPE_NAME}*
+            RECIPE_NAME = "${CYLC_TASK_PARAM_medium##*--}_????????_??????"
+            COMPARISON_OUTPUT_DIR = ${OUTPUT_DIR}/${RECIPE_NAME}
+            KGO_DIR = ${KGO_ROOT_PATH}/${RECIPE_NAME}
 
 {% include "site/" ~ SITE ~ "/runtime.cylc" %}
