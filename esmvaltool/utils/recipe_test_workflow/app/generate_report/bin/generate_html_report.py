@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import os
 import sqlite3
-from collections import defaultdict
 from datetime import datetime
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -56,12 +55,49 @@ def fetch_report_data(db_file_path):
     return fetched_data
 
 
+def process_db_task(task_name, status):
+    """
+    Process db output data for a single task.
+
+    Create a dictionary in the format:
+    ```
+    "process_task": {
+        "status": "succeeded",
+        "style": "color: green"
+    },
+    ```
+
+    Parameters
+    ----------
+    task_name: str
+        The name of the cylc task.
+    status: str
+        The task status.
+
+    Returns
+    -------
+    tuple[str, dict]
+        A tuple containing the name of the recipe as a string and the task data
+        as a dictionary.
+    """
+    styles = {
+        "succeeded": "color: green",
+        "failed": "color: red",
+    }
+    task_name_parts = task_name.split("_", 1)
+    recipe_name = task_name_parts[1]
+    task_name = task_name_parts[0] + "_task"
+    style = styles.get(status, "color: black")
+    task_data = (recipe_name, {task_name: {"status": status, "style": style}})
+    return task_data
+
+
 def process_db_output(report_data):
     """
     Process the database output.
 
-    Group process and compare tasks by recipe. Filter out other tasks. Remove
-    task prefix and add style information. E.g.
+    Group target tasks by recipe. Filter out other tasks. Remove task prefix
+    and add style information. E.g.
     ```
     {
         "recipe_name": {
@@ -85,28 +121,19 @@ def process_db_output(report_data):
 
     Returns
     -------
-    defaultdict
+    dict
         A dictionary with recipe names as keys and tasks/task data as values.
     """
-    styles = {
-        "succeeded": "color: green",
-        "failed": "color: red",
-    }
-
-    processed_db_data = defaultdict(dict)
+    processed_db_data = {}
+    # A tuple is required for the `startswith` func.
+    tasks_to_include_in_report = ("process", "compare")
     for task_name, status in report_data:
-        if task_name.startswith("process_"):
-            recipe_name = task_name.removeprefix("process_")
-            processed_db_data[recipe_name]["process_task"] = {
-                "status": status,
-                "style": styles.get(status, "color: black"),
-            }
-        elif task_name.startswith("compare_"):
-            recipe_name = task_name.removeprefix("compare_")
-            processed_db_data[recipe_name]["compare_task"] = {
-                "status": status,
-                "style": styles.get(status, "color: black"),
-            }
+        if task_name.startswith(tasks_to_include_in_report):
+            recipe, task_data = process_db_task(task_name, status)
+            if not processed_db_data.get(recipe):
+                processed_db_data[recipe] = task_data
+            else:
+                processed_db_data[recipe].update(task_data)
     return processed_db_data
 
 
