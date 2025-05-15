@@ -86,7 +86,7 @@ def collect_files(in_dir, cfg, start_date, end_date):
     return file_list
 
 
-def process_data(cube, reference_year):
+def process_data(cube):
     """ Process raw data. Convert to Kelvin and add time dimension.
         Concatenate the cubes and return the new cube.
     """
@@ -149,9 +149,8 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
     with catch_warnings():
         warnings.simplefilter("ignore")  # Ignore all warnings
         cubes = iris.load(in_files, rawvar)
-        reference_year = raw_info["reference_year"]
         cubes = iris.cube.CubeList(
-            [process_data(cube, reference_year) for cube in cubes]
+            [process_data(cube) for cube in cubes]
         )
 
     iris.util.equalise_attributes(cubes)
