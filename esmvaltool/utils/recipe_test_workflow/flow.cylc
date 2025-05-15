@@ -153,7 +153,9 @@
 
     [[generate_report]]
         [[[environment]]]
-            ROSE_APP_OPT_CONF_KEYS = {{ SITE }}
+            # By default opt configurations must exist. Paretheses make the opt
+            # file optional, which is required as only a DKRZ opt file exists. 
+            ROSE_APP_OPT_CONF_KEYS = ({{ SITE }})
             CYLC_DB_PATH = ${CYLC_WORKFLOW_RUN_DIR}/log/db
             PRODUCTION = {{ PRODUCTION }}
             REPORT_PATH = ${ROSE_DATAC}/status_report.html
