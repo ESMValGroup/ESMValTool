@@ -24,7 +24,6 @@ Diagnostic Scripts
    :maxdepth: 1
 
    esmvaltool.diag_scripts.emergent_constraints
-   esmvaltool.diag_scripts.mlr
    esmvaltool.diag_scripts.monitor
    esmvaltool.diag_scripts.ocean
    esmvaltool.diag_scripts.psyplot_diag

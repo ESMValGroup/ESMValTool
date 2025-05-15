@@ -101,7 +101,6 @@ diagnostics:
         facet_used_for_labels: dataset
         plots:
           annual_cycle: &plot_basic
-            annual_mean_kwargs: False
             pyplot_kwargs:
               title: 'Sea ice area (million km2)'
             plot_kwargs:
