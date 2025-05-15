@@ -140,7 +140,6 @@ diagnostics:
         facet_used_for_labels: alias
         plots:
           diurnal_cycle:
-            annual_mean_kwargs: False
             legend_kwargs:
               loc: upper right
             plot_kwargs:
