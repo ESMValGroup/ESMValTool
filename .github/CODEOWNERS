@@ -1,2 +1,3 @@
 esmvaltool/cmorizers @ESMValGroup/obs-maintainers
 .github/workflows @valeriupredoi
+esmvaltool/utils/recipe_test_workflow/ @alistairsellar @ehogan

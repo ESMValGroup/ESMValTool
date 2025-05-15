@@ -220,7 +220,6 @@ diagnostics:
         script: monitor/multi_datasets.py
         plots:
           timeseries:
-            annual_mean_kwargs: false
             plot_kwargs:
               MPI-ESM1-2-HR:
                 color: C0
@@ -250,7 +249,6 @@ diagnostics:
         script: monitor/multi_datasets.py
         plots:
           timeseries:
-            annual_mean_kwargs: false
             plot_kwargs:
               MPI-ESM1-2-HR:
                 color: C0
