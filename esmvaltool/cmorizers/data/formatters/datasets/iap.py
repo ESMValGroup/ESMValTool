@@ -58,7 +58,7 @@ except (TypeError, ValueError) as e:
     # Handle specific errors if these might occur
     logger.warning("TypeError or ValueError: %s", e)
 # Catch-all for any unforeseen runtime error — this is the outermost guard
-except Exception as e: # noqa: BLE001
+except Exception as e:  # noqa: BLE001
     # Fallback for rare or unknown issues, but avoid catching Exception
     logger.warning("An unexpected error occurred: %s", e)
 
