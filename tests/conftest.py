@@ -12,7 +12,7 @@ def pytest_addoption(parser):
 
 def pytest_runtest_setup(item):
     """Only run diagnostic tests that produce images on Linux machines."""
-    if item.get_closest_marker("diagnostic_image_output"):
+    if item.get_closest_marker("diagnostic_image_output") is not None:
         platform = sys.platform
         if platform != "linux":
             pytest.skip(
