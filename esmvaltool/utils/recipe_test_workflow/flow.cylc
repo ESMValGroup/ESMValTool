@@ -57,7 +57,6 @@
             USER_CONFIG_DIR = ${ROSE_DATAC}/config_dir
             USER_CONFIG_PATH = ${USER_CONFIG_DIR}/config-user.yml
             OUTPUT_DIR = ${ROSE_DATAC}
-            ESMVAL_DIR = ""
             ESMVALCORE_DIR = ""
             ESMVALTOOL_DIR = ""
             PYTHONPATH_PREPEND = ""
