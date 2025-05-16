@@ -320,6 +320,10 @@ authors:
     name: Kalverla, Peter
     institute: NLeSC, Netherlands
     orcid: https://orcid.org/0000-0002-5025-7862
+  kelley_douglas:
+    name: Kelley, Douglas
+    institute: UKCEH, UK
+    orcid: https://orcid.org/0000-0003-1413-4969
   kindermann_stephan:
     name: Kindermann, Stephan
     institute: DKRZ, Germany
@@ -354,6 +358,10 @@ authors:
     name: Lembo, Valerio
     institute: CEN, University of Hamburg, Germany
     orcid: https://orcid.org/0000-0001-6085-5914
+  lenhardt_julien:
+    name: Lenhardt, Julien
+    institute: SMHI, Sweden
+    orcid: https://orcid.org/0000-0002-9949-3989
   levine_richard:
     name: Levine, Richard
     institute: MetOffice, UK
