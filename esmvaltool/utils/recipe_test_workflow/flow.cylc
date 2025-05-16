@@ -45,6 +45,7 @@
             # of the process and compare tasks.
             process<fast>:fail? | compare<fast>:finish => generate_report
             process<medium>:fail? | compare<medium>:finish => generate_report
+            generate_report => housekeeping
         """
 
 [runtime]
@@ -160,5 +161,8 @@
             CYLC_DB_PATH = ${CYLC_WORKFLOW_RUN_DIR}/log/db
             PRODUCTION = {{ PRODUCTION }}
             REPORT_PATH = ${ROSE_DATAC}/status_report.html
+
+    [[housekeeping]]
+        platform = localhost
 
 {% include "site/" ~ SITE ~ "/runtime.cylc" %}
