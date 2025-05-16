@@ -27,6 +27,7 @@ import requests
 
 from esmvaltool.diag_scripts.fire.diagnostic_run_confire import (
     diagnostic_run_confire,
+    get_provenance_record,
 )
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
@@ -37,68 +38,6 @@ from esmvaltool.diag_scripts.shared import (
 )
 
 logger = logging.getLogger(Path(__file__).stem)
-
-
-def get_provenance_record(
-    cfg: dict,
-    ancestors: list,
-    model_name: str,
-    project: str,
-    experiment: str,
-    timerange: str,
-    var: str | None = None,
-) -> dict:
-    """Create a provenance record describing the diagnostic data and plot.
-
-    Parameters
-    ----------
-    cfg : dict
-        Recipe configuration dictionary.
-    ancestors : str, list, dict
-        List of ancestor files.
-    project : str
-        Project facet.
-    model_name : str
-        Model facet.
-    experiment : str
-        Experiment facet.
-    timerange : str
-        Timerange facet as start_year/end_year.
-    var : str, default to None
-        Variable of the plot.
-
-    Returns
-    -------
-    record : dict
-        Dictionary containing the ancestors.
-    """
-    spec = (
-        f"for the {model_name} ({project}-{experiment}) "
-        f"for the time period {timerange} "
-    )
-    captions = {
-        "burnt_fraction": "Burnt area fraction "
-        + spec
-        + "as computed with the ConFire model (Jones et al., 2024).",
-        "fire_weather_control": "Fire weather control "
-        + spec
-        + "as computed with the ConFire model (Jones et al., 2024).",
-        "fuel_load_continuity_control": "Fuel load continuity control "
-        + spec
-        + "as computed with the ConFire model (Jones et al., 2024).",
-        "stochastic_control": "Stochastic control "
-        + spec
-        + "as computed with the ConFire model (Jones et al., 2024).",
-    }
-    return {
-        "caption": captions[var] if var is not None else "",
-        "model": model_name,
-        "project": project,
-        "experiment": experiment,
-        "timerange": timerange,
-        "authors": ["lenhardt_julien", "Kelley_douglas"],
-        "ancestors": ancestors,
-    }
 
 
 def setup_basename_file(
@@ -161,15 +100,16 @@ def download_files_from_zenodo(
     try:
         int(record_id)
     except ValueError as err:
-        raise ValueError(
-            f"Extracted Zenodo id '{record_id}' is not a valid integer."
-        ) from err
+        msg = f"Extracted Zenodo id '{record_id}' is not a valid integer."
+        raise ValueError(msg) from err
     api_url = f"https://zenodo.org/api/records/{record_id}"
+    status_request_success = 200
 
     # Fetch the record metadata
-    response = requests.get(api_url)
-    if response.status_code != 200:
-        raise ValueError("Failed to fetch Zenodo record metadata.")
+    response = requests.get(api_url, timeout=1)
+    if response.status_code != status_request_success:
+        msg = "Failed to fetch Zenodo record metadata."
+        raise ValueError(msg)
 
     record_metadata = response.json()
 
@@ -186,21 +126,18 @@ def download_files_from_zenodo(
         file_url = file_info["links"]["self"]
         file_name = file_info["key"]
         if any(
-            [
-                (f[0] in file_name) and (f[1] == file_name.split(".")[-1])
-                for f in files_to_download
-            ]
+            (f[0] in file_name) and (f[1] == file_name.split(".")[-1])
+            for f in files_to_download
         ):
-            file_path = os.path.join(output_dir, file_name)
-            file_response = requests.get(file_url)
-            if file_response.status_code == 200:
-                with open(file_path, "wb") as file:
+            file_path = Path(output_dir) / file_name
+            file_response = requests.get(file_url, timeout=1)
+            if file_response.status_code == status_request_success:
+                with Path.open(file_path, "wb") as file:
                     file.write(file_response.content)
-                logger.info(f"Downloaded {file_name} to {output_dir}.")
+                logger.info("Downloaded %s to %s.", file_name, output_dir)
             else:
-                raise ValueError(
-                    f"Failed to download {file_name} to {output_dir}."
-                )
+                msg = f"Failed to download {file_name} to {output_dir}."
+                raise ValueError(msg)
 
 
 def get_parameter_directory(config: dict) -> dict:
@@ -223,61 +160,67 @@ def get_parameter_directory(config: dict) -> dict:
     """
     param_dir = None
     # If confire_param is a directory = return this directory
-    if os.path.isdir(config["confire_param"]):
+    if Path.is_dir(config["confire_param"]):
         param_dir = str(config["confire_param"])
         if param_dir[-1] != "/":
             param_dir += "/"
-        logger.info(
-            f"Using ConFire model parameter files from directory {param_dir}"
-        )
+        msg = f"Using ConFire model parameter files from directory {param_dir}"
+        logger.info(msg)
         # Check if the needed files are present in the directory
         # trace.nc file
-        file_trace = glob.glob(param_dir + "trace*.nc")
+        file_trace = list(Path(param_dir).glob("trace*.nc"))
         if not file_trace:
-            raise ValueError(
-                f"{param_dir} should contain a trace file named trace*.nc."
-            )
+            msg = f"{param_dir} should contain a trace file named trace*.nc."
+            raise ValueError(msg)
         # none_trace-params.txt file
-        file_none_trace = glob.glob(param_dir + "none_trace-params*.txt")
+        file_none_trace = list(Path(param_dir).glob("none_trace-params*.txt"))
         if not file_none_trace:
-            raise ValueError(
+            msg = (
                 f"{param_dir} should contain a trace parameter file named "
-                + "none_trace-params*.txt."
+                "none_trace-params*.txt."
             )
+            raise ValueError(msg)
         # scalers.csv file
-        scale_file = glob.glob(param_dir + "scalers*.csv")
+        scale_file = list(Path(param_dir).glob("scalers*.csv"))
         if not scale_file:
-            raise ValueError(
+            msg = (
                 f"{param_dir} should contain a scalers file named "
-                + "scalers*.csv."
+                "scalers*.csv."
             )
+            raise ValueError(msg)
     # If confire_param is a Zenodo URL = download relevant files
     # Zenodo URL should follow the layout:
     # https://zenodo.org/records/{record_id}
     # where record_id is a number typically corresponding to
     # the attribute zenodo.{record_id} in the DOI.
     elif "https://zenodo.org/records/" in config["confire_param"]:
-        logger.info(
+        msg = (
             "Retrieving ConFire model parameter files from "
             + config["confire_param"]
         )
+        logger.info(msg)
         param_dir = config["work_dir"] + "/ConFire_parameter_files/"
-        os.makedirs(param_dir, exist_ok=True)
+        Path.mkdir(param_dir, parents=True, exist_ok=True)
         download_files_from_zenodo(
-            zenodo_link=config["confire_param"], output_dir=param_dir
+            zenodo_link=config["confire_param"],
+            output_dir=param_dir,
         )
     # Otherwise raise an error
     else:
-        raise ValueError(
+        msg = (
             "Recipe input confire_param should either be a directory or a "
-            + "Zenodo URL. However, parameter is set to "
-            + f"{config['confire_param']}."
+            "Zenodo URL. However, parameter is set to "
+            f"{config['confire_param']}."
         )
+        raise ValueError(msg)
     return param_dir
 
 
 def compute_vpd(
-    config: dict, tas: iris.cube.Cube, hurs: iris.cube.Cube, provenance: dict
+    config: dict,
+    tas: iris.cube.Cube,
+    hurs: iris.cube.Cube,
+    provenance: dict,
 ) -> str:
     """Compute the Vapor Pressure Deficit (VPD).
 
@@ -322,9 +265,9 @@ def compute_vpd(
     # Apply guess_bounds to each coordinate if it doesn't have bounds
     for idx, (coord, _) in enumerate(dim_coords):
         if not coord.has_bounds():
-            coord = coord.copy()
-            coord.guess_bounds()
-            dim_coords[idx] = (coord, idx)
+            coord_cp = coord.copy()
+            coord_cp.guess_bounds()
+            dim_coords[idx] = (coord_cp, idx)
     # Create cube and save it
     vpd = iris.cube.Cube(
         data,
@@ -334,11 +277,11 @@ def compute_vpd(
         units="Pa",
     )
     vpd.attributes["ancestors"] = provenance["ancestors"]
-    logger.debug(f"vapor_pressure_deficit iris cube {vpd}")
+    debug_vpd = f"vapor_pressure_deficit iris cube {vpd}"
+    logger.debug(debug_vpd)
     basename = setup_basename_file(provenance["ancestors"][0], "vpd", "Amon")
-    logger.info(
-        f"Saving vapor_pressure_deficit in {config['work_dir']}/{basename}"
-    )
+    msg = f"Saving vapor_pressure_deficit in {config['work_dir']}/{basename}"
+    logger.info(msg)
     filename = get_diagnostic_filename(basename, config, extension="nc")
     iris.save(vpd, filename)
     with ProvenanceLogger(config) as provenance_logger:
@@ -359,8 +302,7 @@ def main(config: dict) -> None:
     logger.info(config)
 
     # Add diagnostic directory to the config
-    diag_dir = os.path.abspath(os.path.dirname(__file__))
-    logger.info(f"Diagnostic directory {diag_dir}")
+    diag_dir = Path(__file__).parent
     config["diag_dir"] = diag_dir
 
     # ConFire model parameter files
@@ -369,11 +311,11 @@ def main(config: dict) -> None:
     # - defaults to the path to files from ESMValTool
     if "confire_param" in config:
         if "zenodo" not in config["confire_param"]:
-            config["param_confire"] = os.path.join(
-                config["auxiliary_data_dir"], config["confire_param"]
+            config["param_confire"] = (
+                Path(config["auxiliary_data_dir"]) / config["confire_param"]
             )
     else:
-        config["confire_param"] = Path(__file__).parent / "parameter_files/"
+        config["confire_param"] = diag_dir / "parameter_files/"
     config["confire_param_dir"] = get_parameter_directory(config)
 
     # Removing or not the computed vapor pressure deficit files
@@ -391,6 +333,8 @@ def main(config: dict) -> None:
         logger.info("Processing data for %s", model_dataset)
         logger.info(group)
         timerange = group[0]["timerange"]
+        project = list({gr["project"] for gr in group})
+        experiment = list({gr["exp"] for gr in group})
 
         vars_file = {}
         for i, attributes in enumerate(group):
@@ -419,12 +363,15 @@ def main(config: dict) -> None:
                 config,
                 [vars_file["tas"]["filename"], vars_file["hurs"]["filename"]],
                 model_dataset,
-                group[0]["project"],
-                group[0]["exp"],
+                project,
+                experiment,
                 timerange,
             )
             filename_vpd = compute_vpd(
-                config, tas, hurs, provenance_record_vpd
+                config,
+                tas,
+                hurs,
+                provenance_record_vpd,
             )
             # Log vpd filename for ConFire model run
             vars_file["vpd"] = {}
@@ -445,7 +392,11 @@ def main(config: dict) -> None:
         ]
         logger.info("Running diagnostic model ConFire.")
         figures = diagnostic_run_confire(
-            config, model_name=model_dataset, timerange=timerange
+            config,
+            model_name=model_dataset,
+            timerange=timerange,
+            project=project,
+            experiment=experiment,
         )
 
         # Save output figures
@@ -454,7 +405,10 @@ def main(config: dict) -> None:
             provenance = get_provenance_record(
                 var=f,
                 cfg=config,
-                ancestors=config["files_input"],
+                ancestors=[
+                    config["files_input"][i][0]
+                    for i in range(len(config["files_input"]))
+                ],
                 model_name=model_dataset,
                 project=group[0]["project"],
                 experiment=group[0]["exp"],

@@ -30,12 +30,76 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
+
 if TYPE_CHECKING:
     from types import ModuleType
 
     import pytensor
 
 logger = logging.getLogger(Path(__file__).stem)
+
+
+def get_provenance_record(
+    cfg: dict,
+    ancestors: str | list,
+    model_name: str,
+    project: str | list,
+    experiment: str | list,
+    timerange: str,
+    var: str | None = None,
+) -> dict:
+    """Create a provenance record describing the diagnostic data and plot.
+
+    Parameters
+    ----------
+    cfg : dict
+        Recipe configuration dictionary.
+    ancestors : str, list, dict
+        List of ancestor files.
+    project : str
+        Project facet.
+    model_name : str
+        Model facet.
+    experiment : str
+        Experiment facet.
+    timerange : str
+        Timerange facet as start_year/end_year.
+    var : str, default to None
+        Variable of the plot.
+
+    Returns
+    -------
+    record : dict
+        Dictionary containing the ancestors.
+    """
+    spec = (
+        f"for the {model_name} ({project}-{experiment}) "
+        f"for the time period {timerange} "
+    )
+    captions = {
+        "burnt_fraction": "Burnt area fraction "
+        + spec
+        + "as computed with the ConFire model (Jones et al., 2024).",
+        "fire_weather_control": "Fire weather control "
+        + spec
+        + "as computed with the ConFire model (Jones et al., 2024).",
+        "fuel_load_continuity_control": "Fuel load continuity control "
+        + spec
+        + "as computed with the ConFire model (Jones et al., 2024).",
+        "stochastic_control": "Stochastic control "
+        + spec
+        + "as computed with the ConFire model (Jones et al., 2024).",
+    }
+    return {
+        "caption": captions[var] if var is not None else "",
+        "model": model_name,
+        "project": project,
+        "experiment": experiment,
+        "timerange": timerange,
+        "authors": ["lenhardt_julien", "kelley_douglas"],
+        "ancestors": ancestors,
+    }
 
 
 # /libs/select_key_or_default.py
@@ -878,11 +942,11 @@ def _get_parameters(config: dict) -> tuple:
     # **Define Paths for Parameter Files  and for outputs**
     output_dir = work_dir + "/ConFire_outputs/"
     # Parameter files (traces, scalers, and other model parameters)
-    param_file_trace = Path(confire_param).glob("trace*.nc")[0]
-    param_file_none_trace = Path(confire_param).glob("none_trace-params*.txt")[
-        0
-    ]
-    scale_file = Path(confire_param).glob("scalers*.csv")[0]
+    param_file_trace = list(Path(confire_param).glob("trace*.nc"))[0]
+    param_file_none_trace = list(
+        Path(confire_param).glob("none_trace-params*.txt")
+    )[0]
+    scale_file = list(Path(confire_param).glob("scalers*.csv"))[0]
     # **Load Variable Information and NetCDF Files**
     # Replace these lines with user-specified NetCDF files, ensuring variable
     # order is the same.
@@ -997,7 +1061,11 @@ def _setup_cube_output(
 
 
 def diagnostic_run_confire(
-    config: dict, model_name: str = "model", timerange: str = "none"
+    config: dict,
+    model_name: str = "model",
+    timerange: str = "none",
+    project: str | list[str] = "project",
+    experiment: str | list[str] = "exp",
 ) -> list:
     """Run ConFire as a diagnostic.
 
@@ -1010,6 +1078,10 @@ def diagnostic_run_confire(
             Model name to include in plots.
         timerange: str
             Time range of the input data to include in plots.
+        project: str or list of str
+            Project of the model data.
+        experiment: str or list of str
+            Experiment of the model data.
     Return:
         figures: list
             List of matplotlib figures produced for the burnt area results.
@@ -1100,20 +1172,34 @@ def diagnostic_run_confire(
     #   - fuel loads (control direction 1)
     #   - stochastic control
     logger.info("Saving ConFire output cubes...")
-    Path.makedir(output_dir, parents=True)
+    Path.mkdir(output_dir, parents=True, exist_ok=True)
     timerange = timerange.replace("/", "-")
     for i, o_c in enumerate(out_cubes):
+        filename = (
+            Path(output_dir)
+            / f"{config['filenames_out'][i]}_{model_name}_{timerange}.nc"
+        )
+        provenance = get_provenance_record(
+            cfg=config,
+            ancestors=[
+                config["files_input"][i][0]
+                for i in range(len(config["files_input"]))
+            ],
+            model_name=model_name,
+            project=project,
+            experiment=experiment,
+            timerange=timerange,
+            var=config["filenames_out"][i],
+        )
         cubes = iris.cube.CubeList(o_c).merge_cube()
         cubes = _setup_cube_output(
-            cubes, config["filenames_out"][i], config["files_input"]
-        )
-        iris.save(
             cubes,
-            Path(
-                output_dir
-                + f"{config['filenames_out'][i]}_{model_name}_{timerange}.nc"
-            ),
+            config["filenames_out"][i],
+            provenance,
         )
+        iris.save(cubes, filename)
+        with ProvenanceLogger(config) as provenance_logger:
+            provenance_logger.log(filename, provenance)
 
     # --------------------------------------------------------
     # **Visualization: Plot Resultant Maps**
@@ -1140,9 +1226,7 @@ def diagnostic_run_confire(
         },
     }
     for filename in config["filenames_out"]:
-        filepath = Path(
-            output_dir + f"{filename}_{model_name}_{timerange}.nc",
-        )
+        filepath = Path(output_dir) / f"{filename}_{model_name}_{timerange}.nc"
         fig, axes = plt.subplots(
             nrows=1,
             ncols=2,
