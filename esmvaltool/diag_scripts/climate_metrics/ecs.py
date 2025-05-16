@@ -32,8 +32,9 @@ read_external_file : str, optional
     relative to this diagnostic script or as absolute path.
 savefig_kwargs : dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
-seaborn_settings : dict, optional
-    Options for :func:`seaborn.set_theme` (affects all plots).
+seaborn_settings: dict, optional
+    Options for :func:`seaborn.set_theme` (affects all plots). By default, uses
+    ``style: ticks``.
 sep_year : int, optional (default: 20)
     Year to separate regressions of complex Gregory plot. Only effective if
     ``complex_gregory_plot`` is ``True``.
@@ -243,7 +244,10 @@ def _plot_complex_gregroy_plot(cfg, axes, tas_cube, rtnt_cube, reg_all):
         marker="o",
         s=8,
         alpha=0.7,
-        label=f"first {sep:d} years: ECS = {ecs_first:.2f} K",
+        label=(
+            f"first {sep:d} years: ECS = {ecs_first:.2f} K "
+            f"($R^2$ = {reg_first.rvalue**2:.2f})"
+        ),
     )
     axes.scatter(
         tas_cube.data[sep:],
@@ -252,8 +256,10 @@ def _plot_complex_gregroy_plot(cfg, axes, tas_cube, rtnt_cube, reg_all):
         marker="o",
         s=8,
         alpha=0.7,
-        label=f"last {tas_cube.shape[0] - sep:d} years: ECS = "
-        f"{ecs_last:.2f} K",
+        label=(
+            f"last {tas_cube.shape[0] - sep:d} years: ECS = {ecs_last:.2f} K "
+            f"($R^2$ = {reg_last.rvalue**2:.2f})"
+        ),
     )
     axes.plot(x_reg, y_reg_first, color=COLORS[0], linestyle="-", alpha=0.6)
     axes.plot(x_reg, y_reg_last, color=COLORS[1], linestyle="-", alpha=0.6)
@@ -399,11 +405,16 @@ def read_external_file(cfg):
     return (ecs, feedback_parameter, filepath)
 
 
-def plot_gregory_plot(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
+def plot_gregory_plot(cfg, dataset_name, tas_data, rtnt_data, reg_stats):
     """Plot linear regression used to calculate ECS."""
+    tas_cube = tas_data["cube"]
+    rtnt_cube = rtnt_data["cube"]
+    dataset_id = dataset_name
+    if "ensemble" in tas_data:
+        dataset_id += f" (ensemble member {tas_data['ensemble']})"
+
     (_, axes) = plt.subplots()
     ecs = -reg_stats.intercept / (2 * reg_stats.slope)
-    project = tas_cube.attributes["project"]
 
     # Regression line
     x_reg = np.linspace(cfg["x_lim"][0] - 1.0, cfg["x_lim"][1] + 1.0, 2)
@@ -413,6 +424,23 @@ def plot_gregory_plot(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
     if cfg.get("complex_gregory_plot"):
         legend = _plot_complex_gregroy_plot(
             cfg, axes, tas_cube, rtnt_cube, reg_stats
+        )
+        sep = cfg["sep_year"]
+        caption = (
+            f"Global annual mean top of the atmosphere (TOA) net radiation "
+            f"flux anomaly N vs. global annual mean near-surface air "
+            f"temperature anomaly ΔT for the first {sep:d} years (blue "
+            f"circles) and last {tas_cube.shape[0] - sep:d} years (orange "
+            f"circles) of the abrupt 4x CO2 experiment for model "
+            f"{dataset_id}. Anomalies are calculated relative to a "
+            f"pre-industrial control simulation of the same model. The solid "
+            f"lines correspond to ordinary linear regressions between N "
+            f"and ΔT for the different years (the black lines corresponds to "
+            f"all years). In the legend, R2 corresponds to the coefficient "
+            f"of determination of the linear regressions. The equilibrium "
+            f"climate sensitivity (ECS) is estimated as the x-intercept of "
+            f"the linear regressions (interception of the solid and dashed "
+            f"lines) divided by 2."
         )
     else:
         axes.scatter(
@@ -431,10 +459,23 @@ def plot_gregory_plot(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
             rf"R$^2$ = {reg_stats.rvalue**2:.2f}, ECS = {ecs:.2f} K",
             transform=axes.transAxes,
         )
+        caption = (
+            f"Global annual mean top of the atmosphere (TOA) net radiation "
+            f"flux anomaly N vs. global annual mean near-surface air "
+            f"temperature anomaly ΔT for {tas_cube.shape[0]} years (blue "
+            f"circles) of the abrupt 4x CO2 experiment for model {dataset_id}. "
+            f"Anomalies are calculated relative to a pre-industrial control "
+            f"simulation of the same model. The solid black line corresponds "
+            f"to an ordinary linear regression between N and ΔT. On the top "
+            f"left, R2 corresponds to the coefficient of determination of "
+            f"the linear regression. The equilibrium climate sensitivity "
+            f"(ECS) is estimated as the x-intercept of the linear regression "
+            f"(interception of the solid and dashed black lines) divided by 2."
+        )
     axes.axhline(0.0, color="gray", linestyle=":")
 
     # Plot appearance
-    axes.set_title(f"Gregory regression for {dataset_name} ({project})")
+    axes.set_title(f"Gregory regression for {dataset_id}", pad=15.0)
     axes.set_xlabel("ΔT [K]")
     axes.set_ylabel(r"N [W m$^{-2}$]")
     axes.set_xlim(cfg["x_lim"])
@@ -455,17 +496,8 @@ def plot_gregory_plot(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
     )
 
     # Provenance
-    provenance_record = get_provenance_record(
-        f"Scatterplot between TOA radiance and global mean surface "
-        f"temperature anomaly for 150 years of the abrupt 4x CO2 experiment "
-        f"including linear regression to calculate ECS for {dataset_name} "
-        f"({project})."
-    )
-    provenance_record.update(
-        {
-            "plot_types": ["scatter"],
-        }
-    )
+    provenance_record = get_provenance_record(caption)
+    provenance_record["plot_types"] = ["scatter"]
 
     return (netcdf_path, plot_path, provenance_record)
 
@@ -540,7 +572,7 @@ def write_data(cfg, ecs_data, feedback_parameter_data, ancestor_files):
 def main(cfg):
     """Run the diagnostic."""
     cfg = set_default_cfg(cfg)
-    sns.set_theme(**cfg.get("seaborn_settings", {}))
+    sns.set_theme(**cfg.get("seaborn_settings", {"style": "ticks"}))
 
     # Read external file if desired
     if cfg.get("read_external_file"):
@@ -574,7 +606,11 @@ def main(cfg):
 
         # Plot Gregory plots
         (path, plot_path, provenance_record) = plot_gregory_plot(
-            cfg, dataset_name, tas_cube, rtnt_cube, reg
+            cfg,
+            dataset_name,
+            tas_data[dataset_name][0],
+            rtnt_data[dataset_name][0],
+            reg,
         )
 
         # Provenance
