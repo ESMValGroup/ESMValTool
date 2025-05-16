@@ -1,0 +1,157 @@
+# ESMValTool
+# recipe_smpi.yml
+---
+documentation:
+  title: Seaice sensitivity
+
+  description: |
+    Recipe for quantifying the sensitivity of sea ice to global warming.
+    Siconc data is summed for each hemisphere and then compared to the
+    change in globally meaned, annually meaned surface air temperature.
+    In the northern hemisphere, September sea ice data is used.
+    In the southern hemisphere, annual mean sea ice data is used.
+    Two plots are produced for each hemisphere, one showing the gradient
+    of the direct regression of sea ice area over temperature, and the
+    other showing the two separate trends over time.
+
+  authors:
+    - sellar_alistair
+    - parsons_naomi
+
+  maintainer:
+    - sellar_alistair
+
+defaults: &defaults {ensemble: r1i1p1f1, exp: historical, grid: gn, project: CMIP6}
+datasets:
+  - {<<: *defaults, dataset: HadGEM3-GC31-LL, institute: MOHC, ensemble: r1i1p1f3}
+#  - {<<: *defaults, dataset: HadGEM3-GC31-MM, institute: MOHC, ensemble: r1i1p1f3}  # other error
+  - {<<: *defaults, dataset: UKESM1-0-LL, institute: MOHC, ensemble: r1i1p1f2}
+  - {<<: *defaults, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
+  - {<<: *defaults, dataset: ACCESS-ESM1-5, institute: CSIRO}
+#  - {<<: *defaults, dataset: AWI-CM-1-1-MR, institute: AWI}  # missing monthly siconc
+  - {<<: *defaults, dataset: BCC-CSM2-MR, institute: BCC}
+#  - {<<: *defaults, dataset: BCC-ESM1, institute: BCC}  # errors
+  - {<<: *defaults, dataset: CAMS-CSM1-0, institute: CAMS}
+  - {<<: *defaults, dataset: CanESM5, institute: CCCma}
+  - {<<: *defaults, dataset: CESM2, institute: NCAR}
+  - {<<: *defaults, dataset: CESM2-WACCM, institute: NCAR}
+  - {<<: *defaults, dataset: CESM2-WACCM-FV2, institute: NCAR}
+#  - {<<: *defaults, dataset: CNRM-CM6-1, institute: CNRM-CERFACS, ensemble: r1i1p1f2}  # missing
+#  - {<<: *defaults, dataset: CNRM-CM6-1-HR, institute: CNRM-CERFACS, ensemble: r1i1p1f2}  # missing
+#  - {<<: *defaults, dataset: CNRM-ESM2-1, institute: CNRM-CERFACS, ensemble: r1i1p1f2}  # missing
+#  - {<<: *defaults, dataset: E3SM-1-0, institute: E3SM-Project}  # missing
+#  - {<<: *defaults, dataset: EC-Earth3, institute: EC-Earth-Consortium}  # tas GR and siconc GN
+#  - {<<: *defaults, dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium}  # might have since fetched
+#  - {<<: *defaults, dataset: FGOALS-f3-L, institute: CAS}  # tas GR and siconc GN?
+  - {<<: *defaults, dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+#  - {<<: *defaults, dataset: GFDL-CM4, institute: NOAA-GFDL}  # tas GR1 and siconc GN
+#  - {<<: *defaults, dataset: GFDL-ESM4, institute: NOAA-GFDL}  # tas GR1 and siconc GN
+#  - {<<: *defaults, dataset: GISS-E2-1-G, institute: NASA-GISS}  # doesn't have siconc
+#  - {<<: *defaults, dataset: GISS-E2-1-G-CC, institute: NASA-GISS}  # can't find
+#  - {<<: *defaults, dataset: GISS-E2-1-H, institute: NASA-GISS}  # tas GN and siconc GR?
+#  - {<<: *defaults, dataset: INM-CM4-8, institute: INM}  # missing
+#  - {<<: *defaults, dataset: INM-CM5-0, institute: INM}  # missing
+#  - {<<: *defaults, dataset: IPSL-CM6A-LR, institute: IPSL}  # missing
+#  - {<<: *defaults, dataset: MIROC-ES2L, institute: MIROC, ensemble: r1i1p1f2}  # missing
+  - {<<: *defaults, dataset: MIROC6, institute: MIROC}
+  - {<<: *defaults, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+  - {<<: *defaults, dataset: MPI-ESM1-2-HR, institute: MPI-M}
+  - {<<: *defaults, dataset: MPI-ESM1-2-LR, institute: MPI-M}
+  - {<<: *defaults, dataset: MRI-ESM2-0, institute: MRI}
+#  - {<<: *defaults, dataset: NESM3, institute: NUIST}  # wget fails for areacello
+#  - {<<: *defaults, dataset: NorCPM1, institute: NCC}  # missing
+#  - {<<: *defaults, dataset: NorESM2-LM, institute: NCC}  # "errors in variable siconc"
+#  - {<<: *defaults, dataset: NorESM2-MM, institute: NCC}  # failed to concatenate to single cube
+#  - {<<: *defaults, dataset: SAM0-UNICON, institute: SNU}  # "errors in variable siconc"
+
+preprocessors:
+  extract_test_period:
+    &extract_test_period
+    extract_time:
+      start_day: 1
+      start_month: 1
+      start_year: 1979
+      end_day: 31
+      end_month: 12
+      end_year: 2014
+
+  extract_sept:
+    &extract_sept
+    extract_month:
+      month: 9
+
+  nh_total_area:
+    &nh_total_area
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 0
+      end_latitude: 90
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: 1e6 km2
+
+  sh_total_area:
+    &sh_total_area
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -90
+      end_latitude: 0
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: 1e6 km2
+
+  global_mean:
+    &global_mean
+    area_statistics:
+      operator: mean
+
+  annual_mean:
+    &annual_mean
+    annual_statistics:
+      operator: mean
+
+  pp_arctic_sept_sea_ice:
+    <<: *extract_test_period
+    <<: *extract_sept
+    <<: *nh_total_area
+
+  pp_antarctic_avg_ann_sea_ice:
+    <<: *extract_test_period
+    <<: *annual_mean
+    <<: *sh_total_area
+
+  pp_avg_ann_global_temp:
+    <<: *extract_test_period
+    <<: *global_mean
+    <<: *annual_mean
+
+diagnostics:
+  arctic:
+    description: Plots September sea ice sensitivity above 0 latitude in millions of square kilometres
+    variables:
+      siconc:
+        preprocessor: pp_arctic_sept_sea_ice
+        mip: SImon
+      tas:
+        preprocessor: pp_avg_ann_global_temp
+        mip: Amon
+    scripts:
+      sea_ice_sensitivity_script:
+        script: seaice/seaice_sensitivity.py
+
+  antarctic:
+    description: Plots annual mean sea ice sensitivity below 0 latitude in millions of square kilometres
+    variables:
+      siconc:
+        preprocessor: pp_antarctic_avg_ann_sea_ice
+        mip: SImon
+      tas:
+        preprocessor: pp_avg_ann_global_temp
+        mip: Amon
+    scripts:
+      sea_ice_sensitivity_script:
+        script: seaice/seaice_sensitivity.py
