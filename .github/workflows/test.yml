@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - skip_imagehash_tests_on_osx
   schedule:
     - cron: '0 0 * * *'
 
