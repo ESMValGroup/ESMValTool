@@ -2,9 +2,8 @@
 [runtime]
     [[root]]
         [[[environment]]]
-            ESMVAL_DIR = ${CYLC_WORKFLOW_RUN_DIR}/share/lib/python
-            ESMVALCORE_DIR = ${ESMVAL_DIR}/ESMValCore
-            ESMVALTOOL_DIR = ${ESMVAL_DIR}/ESMValTool
+            ESMVALCORE_DIR = ${CYLC_WORKFLOW_RUN_DIR}/share/lib/python/ESMValCore
+            ESMVALTOOL_DIR = ${CYLC_WORKFLOW_RUN_DIR}/share/lib/python/ESMValTool
             PYTHONPATH_PREPEND = ${ESMVALCORE_DIR}:${ESMVALTOOL_DIR}
 
     # COMPUTE provides defaults for computation-heavy tasks.
