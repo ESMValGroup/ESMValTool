@@ -35,7 +35,6 @@
             # of the process and compare tasks.
             process<fast>:fail? | compare<fast>:finish => generate_report
             process<medium>:fail? | compare<medium>:finish => generate_report
-            generate_report => housekeeping
         """
         T01 = """
             @wall_clock => get_esmval => configure
