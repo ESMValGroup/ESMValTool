@@ -2,41 +2,11 @@
 #' @importFrom stats cycle end frequency start ts optim
 #' @importFrom zoo as.yearmon rollapply
 
-# This file is based on code from diag_save_spei_all.R, but only contains the
-# parts to calculate PET. The idea of calculating PET in a seperate diagnostic
-# is to be more flexible in the choice of PET calculation methods. It saves
-# the calculated PET with correct units and metadata to be used as an ancestor
-# for diag_spei.R or diag_spei.py, but also allows to use pet as a variable from
-# a preprocessed dataset in the same way.
-#
-# Some functions that are used by diag_spei.R too are moved to a shared utils.R
-#
-# NOTE: Masking is done for each dataset instead of using the mask from the
-# reference dataset everytime.
-#
-# NOTE: renamed variables to use shortnames/named lists instead of var1,
-# tmp1, tmp2, tmp3.. which differ for pet_types
-#
-# NOTE: added pet_type Penman, which use best available data and let SPEI
-# library approximate everything else
-#
-# NOTE: Loop over datasets and use params and meta dicts whenever possible to
-# save some loops, switches and many extra variables.
-#
-# NOTE: add latitude and longitude as valid dim coords in addition to lat/lon
-#
-# NOTE: added weigel_katja, lindenlaub_lukas to authors
-#
-# NOTE: Provenance is written for each output file within the loop over datasets
-# instead of afterwards (was it a bug?)
-#
-# NOTE: Precipitation is removed from input data for hargreaves method, since it
-# cause failures within SPEI functions. Hargreaves.R line 494 wrong shapes
-#
-# NOTE: Remove pr as reference, since pr is not mandatory input for all methods.
-#
-# NOTE: all PET methods pass data as t() and do therefore not account for leap
-# years.
+# This file is used to calculate potential evapotranspiration (PET) based on
+# the SPEI.R package. It can be used as ancestor for the SPEI calculation.
+# Documentation can be found at:
+# https://docs.esmvaltool.org/en/latest/recipes/recipe_droughts.html
+# https://cran.r-project.org/web/packages/SPEI/SPEI.pdf
 #
 # Authors: [Peter Berg, Katja Weigel, Lukas Lindenlaub]
 
@@ -208,7 +178,7 @@ for (dataset in names(grouped_meta)){
     short_name="evspsblpot",
     long_name="Potential Evapotranspiration",
     units="mm day-1")
-  input_meta <- select_var(metas, "tasmin")  # TODO: create duplicate()?
+  input_meta <- select_var(metas, "tasmin")
   input_meta$filename <- filename
   input_meta$short_name <- "evspsblpot"
   input_meta$long_name <- "Potential Evapotranspiration"
