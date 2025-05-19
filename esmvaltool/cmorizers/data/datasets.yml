@@ -777,6 +777,17 @@ datasets:
         climatology
             [Source]/absolute_v5.nc
 
+  HadEX3:
+    tier: 2
+    source: https://www.metoffice.gov.uk/hadobs/hadex3/download_etccdi.html
+    last_access: 2025-02-05
+    info: |
+      Use automatic download, it will download and unzip all required files:
+      "HadEX3_TXx_MON.nc.gz", "HadEX3_TXx_ANN.nc.gz",
+      "HadEX3_TNn_MON.nc.gz", "HadEX3_TNn_ANN.nc.gz",
+      "HadEX3_Rx1day_MON.nc.gz", "HadEX3_Rx1day_ANN.nc.gz",
+      "HadEX3_Rx5day_MON.nc.gz" and "HadEX3_Rx5day_ANN.nc.gz".
+
   HadISST:
     tier: 2
     source: http://www.metoffice.gov.uk/hadobs/hadisst/data/download.html
@@ -808,6 +819,22 @@ datasets:
       Download the following file:
         HWSD_SOIL_CLM_RES.nc4
       A registration is required
+
+  IAP:
+    tier: 2
+    source: http://www.ocean.iap.ac.cn/pages/dataService/dataService.html
+    last_access: 2025-01-20
+    info: |
+      Download the following files:
+      Temperature_IAPv4.2_gridded_data_1940_1949.zip
+      Temperature_IAPv4.2_gridded_data_1950_1959.zip
+      Temperature_IAPv4.2_gridded_data_1960_1969.zip
+      Temperature_IAPv4.2_gridded_data_1970_1979.zip
+      Temperature_IAPv4.2_gridded_data_1980_1989.zip
+      Temperature_IAPv4.2_gridded_data_1990_1999.zip
+      Temperature_IAPv4.2_gridded_data_2000_2009.zip
+      Temperature_IAPv4.2_gridded_data_2010_2019.zip
+      Temperature_IAPv4.2_gridded_data_2020_2023.zip
 
   ISCCP-FH:
     tier: 2
@@ -1178,10 +1205,10 @@ datasets:
   OSI-450-nh:
     tier: 2
     source: http://osisaf.met.no/p/ice/
-    last_access: 2019-05-02
+    last_access: 2025-03-14
     info: |
       Download the desired years from the following ftp:
-        ftp://osisaf.met.no/reprocessed/ice/conc/v2p0
+        ftp://osisaf.met.no/reprocessed/ice/conc/v3p0
       Please, keep folder structure.
 
       If you want to use only the nh data download only the nh files,
@@ -1194,10 +1221,10 @@ datasets:
   OSI-450-sh:
     tier: 2
     source: http://osisaf.met.no/p/ice/
-    last_access: 2019-05-02
+    last_access: 2025-03-14
     info: |
       Download the desired years from the following ftp:
-        ftp://osisaf.met.no/reprocessed/ice/conc/v2p0
+        ftp://osisaf.met.no/reprocessed/ice/conc/v3p0
       Please, keep folder structure.
 
       If you want to use only the nh data download only the nh files,
