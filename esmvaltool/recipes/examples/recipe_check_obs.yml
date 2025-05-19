@@ -590,6 +590,16 @@ diagnostics:
          type: sat, version: 1, start_year: 1991, end_year: 2002}
     scripts: null
 
+  IAP:
+    description: IAP check
+    variables:
+      thetao:
+      tos:
+    additional_datasets:
+      - {dataset: IAP, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: "v4.2", start_year: 1990, end_year: 1991}
+    scripts: null
+
   ISCCP-FH:
     description: ISCCP-FH check
     variables:

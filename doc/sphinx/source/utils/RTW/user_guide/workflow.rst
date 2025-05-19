@@ -65,6 +65,17 @@ The |RTW| performs the following steps:
      Runs each cycle for every recipe defined in the |RTW| after ``process``
      has completed
 
+``housekeeping``
+  :Description:
+     Removes the logs and data (including recipe outputs)
+     from two days or more before the current cycle
+  :Runs on:
+     Localhost
+  :Executes:
+     The |rose_prune|_ application
+  :Details:
+     Runs at the end of each cycle (except the first cycle)
+
 Design considerations
 ---------------------
 
