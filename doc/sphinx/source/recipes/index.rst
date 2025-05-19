@@ -169,6 +169,7 @@ require a legacy version of ESMValTool to run.
    :maxdepth: 1
 
    recipe_schlund20jgr
+   recipe_spei
 
 
 Broken recipe list

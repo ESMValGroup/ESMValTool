@@ -205,6 +205,13 @@ References
 Example plots
 -------------
 
+
+.. note::
+
+   To recreate figure 3 and 4 from `Weigel et al. (2021)`_ an older version of ESMValTool is
+   required: :ref:`recipes_legacy_spei`.
+
+
 .. _fig_spei_fig1:
 .. figure:: /recipes/figures/droughts/spi_example.png
    :align: center
@@ -220,3 +227,5 @@ Example plots
 
    Example plot of SPEI averaged over the year 2005. The reference period for
    index calibration is 2000-2005.
+
+.. _`Weigel et al. (2021)`: https://doi.org/10.5194/gmd-14-3159-2021
