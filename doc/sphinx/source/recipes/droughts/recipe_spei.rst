@@ -49,7 +49,7 @@ pet.R
 
 The potential evapotranspiration (PET) is a measure of the evaporative demand
 of the atmosphere. It represents the amount of water that would evaporate from
-a reference surface, i.e. an fully watered grass land. ``pet.R`` is able to
+a reference surface, i.e. fully watered grass land. ``pet.R`` is able to
 calculate PET based on a method of the users choosing (``pet_type``) using the
 `SPEI.R`_ library. The approximations require different input variables.
 To control which variables are available to which diagnostic script in a more
