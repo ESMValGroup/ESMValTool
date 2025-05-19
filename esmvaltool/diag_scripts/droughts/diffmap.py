@@ -139,7 +139,7 @@ def plot_colorbar(
         labelpad=fontsize,
     )
     plotfile = plotfile.removesuffix(".png")
-    fig.savefig(plotfile + "_cb.png")  # , bbox_inches="tight")
+    fig.savefig(plotfile + "_cb.png")
 
 
 def fill_era5_gap(meta: dict, cube: Cube) -> None:
