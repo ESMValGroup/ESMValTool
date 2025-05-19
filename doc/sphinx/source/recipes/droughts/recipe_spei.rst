@@ -24,7 +24,7 @@ A hydrological drought occurs when low water supply becomes evident, especially
 in streams, reservoirs, and groundwater levels, usually after extended periods
 of meteorological drought.
 
-GCMs normally do not simulate hydrological processes in sufficient detail to
+ESMs normally do not simulate hydrological processes in sufficient detail to
 give deeper insights into hydrological drought processes.
 Neither do they properly describe agricultural droughts, when crops become
 affected by the hydrological drought.
