@@ -33,7 +33,7 @@ evapotranspiration, and thereby estimate the surface retention of water.
 The standardized precipitation-evapotranspiration index
 (SPEI; Vicente-Serrano et al., 2010) has been developed to also account for
 temperature effects on the surface water fluxes.
-To consider evapotranspiration and plant water stress Potential
+To consider evapotranspiration and plant water stress, Potential
 Evapotranspiration (PET) is calculated based on atmospheric variables.
 Different methods to derive PET are described below.
 
@@ -48,13 +48,13 @@ SPEI using ``diag_scripts/droughts/pet.R`` and ``diag_scripts/droughts/spei.R``.
 pet.R
 -----
 
-The Potential Evapo-Transpiration (PET) is a measure of the evaporative demand
-of the atmosphere. It represents the amount of water, that would evaporate from
-a reference surface, i.e. an fully watered alfalfa field. ``pet.R`` is able to
-calculate PET based on a method of users choice (``pet_type``) using the
+The potential evapotranspiration (PET) is a measure of the evaporative demand
+of the atmosphere. It represents the amount of water that would evaporate from
+a reference surface, i.e. an fully watered grass land. ``pet.R`` is able to
+calculate PET based on a method of the users choosing (``pet_type``) using the
 `SPEI.R package <https://doi.org/10.32614/CRAN.package.SPEI>`_. The
-approximations require different input variables. To controll which variables
-are available to which diagnostic script in a more complex recipe they can be
+approximations require different input variables. To control which variables
+are available to which diagnostic script in a more complex recipe, they can be
 set explicitly as ancestors.
 
 - Thornthwaite: tas
@@ -65,13 +65,13 @@ The Thornthwaite equation (Thornthwaite, 1948) is the simplest one based solely
 on temperature. Hargreaves (1994) provides an equation based on daily minimum
 (tasmin) and maximum temperature (tasmax) and external radiation (rsdt).
 If precipitation data (pr) is provided and `use_pr: TRUE` it will be used as a
-proxy for irradation to correct PET following Droogers and Allen (2002).
-The Penman-Monteith formular additionally considers surface windspeed (sfcWind),
+proxy for irradiation to correct PET following Droogers and Allen (2002).
+The Penman-Monteith formula additionally considers surface windspeed (sfcWind),
 pressure (ps), and relative humidity (hurs). Some of these variables can be
 approximated if not available (for example by providing clt instead of rsds).
 There are further modifications to the Penman-Monteith equation, that can be
 selected using the ``method`` key for ``pet_type: Penman``. Details about
-the different method can be found in the SPEI.R package documentation
+the different methods can be found in the SPEI.R package documentation
 Beguería and Vicente-Serrano (2011).
 
 
@@ -85,18 +85,20 @@ pet_type: str
 
 use_pr: boolean, optional
     Use precipitation as proxy for irradation to correct PET. Only used for
-    `pet_type: Hargreaves`.
-    By default FALSE.
+    ``pet_type: Hargreaves``.
+    By default ``FALSE``.
 
 method: str, optional
-    Method used for PET calculation. Only used for `pet_type: Penman`.
-    Options are: ICID, FAO, ASCE.
-    By default: ICID
+    Method used for PET calculation. Only used for ``pet_type: Penman``.
+    Options are: ``"ICID"`` (Allen et al., 1994),
+    ``"FAO"`` (Allen et al., 1998),
+    ``"ASCE"`` (Walter et al. 2002).
+    By default: ``"ICID"``.
 
 crop: str, optional
-    Crop type for PET calculation. Only used for `pet_type: Penman`.
-    Options are: short, tall.
-    By default: tall
+    Crop type for PET calculation. Only used for ``pet_type: Penman``.
+    Options are: ``"short"``, ``"tall"``.
+    By default: ``"tall"``.
 
 
 spei.R
@@ -126,7 +128,7 @@ smooth_month: int
 
 write_coeffs: boolean, optional
     Save fitting coefficients.
-    By default FALSE.
+    By default ``FALSE``.
 
 write_wb: boolean, optional
     Write water balance to netcdf file.
@@ -134,12 +136,12 @@ write_wb: boolean, optional
 
 short_name_pet: string, optional
     Short name of the variable to use as PET.
-    By default "evspsblpot"
+    By default ``"evspsblpot"``.
 
 distributionn: string, optional
     Type of distribution used for SPEI calibration.
     Possible options are: "Gamma", "log-Logistic", "Pearson III".
-    By default "log-Logistic".
+    By default ``"log-Logistic"``.
 
 refstart_year: int, optional
     First year of the reference period.
@@ -147,15 +149,15 @@ refstart_year: int, optional
 
 refstart_month: int, optional
     First month of reference period.
-    By default 1.
+    By default ``1``.
 
 refend_year: int, optional
     Last year of the reference period.
-    By default last year of time series.
+    By default ``null`` (last year of time series).
 
 refend_month: integer, optional
     Last month of reference period.
-    By default 12.
+    By default ``12``.
 
 
 References
@@ -166,7 +168,7 @@ References
 
 * Beguería, S., & Vicente-Serrano, S. M. (2011). SPEI: Calculation of the Standardized Precipitation-Evapotranspiration Index (p. 1.8.1) [Dataset]. https://doi.org/10.32614/CRAN.package.SPEI
 
-* Thornthwaite, C. W., (1948). An approach toward a rational classification of climate. Geogr. Rev., 38, 55-94. https://doi. org/10.1097/00010694-194807000-00007
+* Thornthwaite, C. W., (1948). An approach toward a rational classification of climate. Geogr. Rev., 38, 55-94. https://doi.org/10.1097/00010694-194807000-00007
 
 * Hargreaves G.H., (1994). Defining and using reference evapotranspiration. Journal of Irrigation and Drainage Engineering 120: 1132-1139.
 
