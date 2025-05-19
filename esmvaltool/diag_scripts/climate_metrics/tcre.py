@@ -20,6 +20,8 @@ calc_tcre_period: list of int, optional (default: [90, 110])
     the input data are annual means, the values here correspond to the years
     (measured from simulation start) over which the temperature change is
     averaged (by default from years 90 to 110).
+caption: str, optional
+    Figure caption used for provenance tracking.
 exp_control: str, optional (default: 'esm-piControl')
     Name of the control experiment.
 exp_target: str, optional (default: 'esm-flat10')
@@ -149,6 +151,7 @@ def _get_default_cfg(cfg: dict) -> dict:
     cfg = deepcopy(cfg)
 
     cfg.setdefault("calc_tcre_period", [90, 110])
+    cfg.setdefault("caption", None)
     cfg.setdefault("exp_control", "esm-piControl")
     cfg.setdefault("exp_target", "esm-flat10")
     cfg.setdefault("figure_kwargs", {"constrained_layout": True})
@@ -394,6 +397,8 @@ def main(cfg: dict) -> None:
         "realms": ["atmos"],
         "themes": ["carbon", "bgphys"],
     }
+    if cfg["caption"] is not None:
+        provenance_record["caption"] = cfg["caption"]
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(plot_path, provenance_record)
 
