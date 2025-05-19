@@ -12,7 +12,7 @@ seasonal characteristics, i.e. a drought should not be defined with an absolute
 threshold, but as an anomalous condition.
 
 Meteorological droughts are often described using the
-Standardized Precipitation Index (SPI; McKee et al, 1993), which in a
+Standardized Precipitation Index (SPI; `McKee et al., 1993`_), which in a
 standardized way describes local precipitation anomalies.
 It is calculated on monthly mean precipitation, and is therefore not accounting
 for the intensity of precipitation and the runoff process.
@@ -31,15 +31,14 @@ affected by the hydrological drought.
 However, hydrological drought can be estimated by accounting for
 evapotranspiration, and thereby estimate the surface retention of water.
 The standardized precipitation-evapotranspiration index
-(SPEI; Vicente-Serrano et al., 2010) has been developed to also account for
+(SPEI; `Vicente-Serrano et al., 2010`_) has been developed to also account for
 temperature effects on the surface water fluxes.
-To consider evapotranspiration and plant water stress, Potential
-Evapotranspiration (PET) is calculated based on atmospheric variables.
+To consider evapotranspiration and plant water stress, potential
+evapotranspiration (PET) is calculated based on atmospheric variables.
 Different methods to derive PET are described below.
 
 
-This page documents a set of R diagnostics based on the
-`SPEI.R library <https://CRAN.R-project.org/package=SPEI>`_.
+This page documents a set of R diagnostics based on the `SPEI.R`_ library.
 ``recipes/roughts/recipe_spei.yml`` is an example how to calculate and plot
 SPEI using ``diag_scripts/droughts/pet.R`` and ``diag_scripts/droughts/spei.R``.
 
@@ -52,27 +51,26 @@ The potential evapotranspiration (PET) is a measure of the evaporative demand
 of the atmosphere. It represents the amount of water that would evaporate from
 a reference surface, i.e. an fully watered grass land. ``pet.R`` is able to
 calculate PET based on a method of the users choosing (``pet_type``) using the
-`SPEI.R package <https://doi.org/10.32614/CRAN.package.SPEI>`_. The
-approximations require different input variables. To control which variables
-are available to which diagnostic script in a more complex recipe, they can be
-set explicitly as ancestors.
+`SPEI.R`_ library. The approximations require different input variables.
+To control which variables are available to which diagnostic script in a more
+complex recipe, they can be set explicitly as ancestors.
 
 - Thornthwaite: tas
 - Hargreaves: tasmin, tasmax, (rsdt, pr)
 - Penman: tasmin, tasmax, sfcWind, ps, rsds, (rsdt, clt, hurs)
 
-The Thornthwaite equation (Thornthwaite, 1948) is the simplest one based solely
+The Thornthwaite equation (`Thornthwaite, 1948`_) is the simplest one based solely
 on temperature. Hargreaves (1994) provides an equation based on daily minimum
 (tasmin) and maximum temperature (tasmax) and external radiation (rsdt).
-If precipitation data (pr) is provided and `use_pr: TRUE` it will be used as a
-proxy for irradiation to correct PET following Droogers and Allen (2002).
+If precipitation data (pr) is provided and ``use_pr: TRUE`` it will be used as a
+proxy for irradiation to correct PET following `Droogers and Allen (2002)`_.
 The Penman-Monteith formula additionally considers surface windspeed (sfcWind),
 pressure (ps), and relative humidity (hurs). Some of these variables can be
 approximated if not available (for example by providing clt instead of rsds).
 There are further modifications to the Penman-Monteith equation, that can be
 selected using the ``method`` key for ``pet_type: Penman``. Details about
-the different methods can be found in the SPEI.R package documentation
-Beguería and Vicente-Serrano (2011).
+the different methods can be found in the `SPEI.R`_ package documentation
+(Beguería and Vicente-Serrano, 2011).
 
 
 User settings
@@ -90,9 +88,9 @@ use_pr: boolean, optional
 
 method: str, optional
     Method used for PET calculation. Only used for ``pet_type: Penman``.
-    Options are: ``"ICID"`` (Allen et al., 1994),
-    ``"FAO"`` (Allen et al., 1998),
-    ``"ASCE"`` (Walter et al. 2002).
+    Options are: ``"ICID"`` (`Allen et al., 1994`_),
+    ``"FAO"`` (`Allen et al., 1998`_),
+    ``"ASCE"`` (`Walter et al. 2002`_).
     By default: ``"ICID"``.
 
 crop: str, optional
@@ -132,7 +130,7 @@ write_coeffs: boolean, optional
 
 write_wb: boolean, optional
     Write water balance to netcdf file.
-    By default FALSE.
+    By default ``FALSE``.
 
 short_name_pet: string, optional
     Short name of the variable to use as PET.
@@ -145,7 +143,7 @@ distributionn: string, optional
 
 refstart_year: int, optional
     First year of the reference period.
-    By default first year of time series
+    By default ``null`` (first year of time series).
 
 refstart_month: int, optional
     First month of reference period.
@@ -162,20 +160,47 @@ refend_month: integer, optional
 
 References
 ----------
-* McKee, T. B., Doesken, N. J., & Kleist, J. (1993). The relationship of drought frequency and duration to time scales. In Proceedings of the 8th Conference on Applied Climatology (Vol. 17, No. 22, pp. 179-183). Boston, MA: American Meteorological Society.
 
-* Vicente-Serrano, S. M., Beguería, S., & López-Moreno, J. I. (2010). A multiscalar drought index sensitive to global warming: the standardized precipitation evapotranspiration index. Journal of climate, 23(7), 1696-1718.
+- Allen, R. G., Pereira, L. S., Raes, D., and Smith, M.: Crop Evapotranspiration
+  Guidelines for Computing Crop Water Requirements, no. 56 in FAO Irrigation and
+  Drainage Paper, Food and Agriculture Organization of the United Nations,
+  Rome, 1998.
+- Allen, Richard. G., Smith, M., Perrier, A. and P., Luis S., & others. (1994).
+  An update for thedefinition of reference evapotranspiration. ICID Bulletin,
+  43(2), 1-34.
+- Beguería, S., & Vicente-Serrano, S. M. (2011). SPEI: Calculation of the
+  Standardized Precipitation-Evapotranspiration Index (p. 1.8.1) [Dataset].
+  https://doi.org/10.32614/CRAN.package.SPEI
+- Droogers P., Allen R. G., (2002). Estimating reference evapotranspiration
+  under inaccurate data conditions. Irrigation and Drainage Systems 16: 33-45.
+- Hargreaves G.H., (1994). Defining and using reference evapotranspiration.
+  Journal of Irrigation and Drainage Engineering 120: 1132-1139.
+- McKee, T. B., Doesken, N. J., & Kleist, J. (1993). The relationship of drought
+  frequency and duration to time scales. In Proceedings of the 8th Conference on
+  Applied Climatology (Vol. 17, No. 22, pp. 179-183). Boston, MA: American
+  Meteorological Society.
+- Monteith, J.L., 1965. Evaporation and Environment. 19th Symposia of the
+  Society for Experimental Biology, University Press, Cambridge, 19:205-234.
+- Thornthwaite, C. W., (1948). An approach toward a rational classification of
+  climate. Geogr. Rev., 38, 55-94.
+  https://doi.org/10.1097/00010694-194807000-00007
+- Vicente-Serrano, S. M., Beguería, S., & López-Moreno, J. I. (2010). A
+  multiscalar drought index sensitive to global warming: the standardized
+  precipitation evapotranspiration index. Journal of climate, 23(7), 1696-1718.
+- Walter I.A. and 14 co-authors, 2002. The ASCE standardized reference
+  evapotranspiration equation. Rep. Task Com. on Standardized Reference
+  Evapotranspiration July 9, 2002, EWRI-Am. Soc. Civil Engr., Reston, VA, 57 pp.
 
-* Beguería, S., & Vicente-Serrano, S. M. (2011). SPEI: Calculation of the Standardized Precipitation-Evapotranspiration Index (p. 1.8.1) [Dataset]. https://doi.org/10.32614/CRAN.package.SPEI
 
-* Thornthwaite, C. W., (1948). An approach toward a rational classification of climate. Geogr. Rev., 38, 55-94. https://doi.org/10.1097/00010694-194807000-00007
-
-* Hargreaves G.H., (1994). Defining and using reference evapotranspiration. Journal of Irrigation and Drainage Engineering 120: 1132-1139.
-
-* Droogers P., Allen R. G., (2002). Estimating reference evapotranspiration under inaccurate data conditions. Irrigation and Drainage Systems 16: 33-45.
-
-* Monteith, J.L., 1965. Evaporation and Environment. 19th Symposia of the Society for Experimental Biology, University Press, Cambridge, 19:205-234.
-
+.. _`Thornthwaite, 1948`: https://doi.org/10.1097/00010694-194807000-00007
+.. _`Allen et al., 1994`: https://www.researchgate.net/publication/237049120_An_Update_for_the_Definition_of_Reference_Evapotranspiration
+.. _`Allen et al., 1998`: https://appgeodb.nancy.inrae.fr/biljou/pdf/Allen_FAO1998.pdf
+.. _`Beguería and Vicente-Serrano (2011)`: https://doi.org/10.32614/CRAN.package.SPEI
+.. _`Droogers and Allen (2002)`: https://www.researchgate.net/publication/226830392_Estimating_Reference_Evapotranspiration_Under_Inaccurate_Data_Conditions
+.. _`McKee et al., 1993`: https://climate.colostate.edu/pdfs/relationshipofdroughtfrequency.pdf
+.. _`Vicente-Serrano et al., 2010`: https://doi.org/10.1175/2009JCLI2909.1
+.. _`Walter et al. 2002`: https://ascelibrary.org/doi/book/10.1061/9780784408056
+.. _`SPEI.R`: https://CRAN.R-project.org/package=SPEI
 
 Example plots
 -------------
