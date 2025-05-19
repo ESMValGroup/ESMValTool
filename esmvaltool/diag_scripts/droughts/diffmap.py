@@ -326,11 +326,10 @@ def calculate_diff(cfg, meta, mm_data, output_meta, group) -> None:
             plt.close()
             utils.log_provenance(cfg, plotfile, prov)
         if cfg.get("save_models", True):
-            work_file = str(Path(cfg["work_dir"]) / f"{basename}.nc")
-            iris.save(cube, work_file)
-            meta["filename"] = work_file
-            output_meta[work_file] = meta.copy()
-            utils.log_provenance(cfg, work_file, prov)
+            meta["filename"] = str(Path(cfg["work_dir"]) / f"{basename}.nc")
+            iris.save(cube, meta["filename"])
+            output_meta[meta["filename"]] = meta.copy()
+            utils.log_provenance(cfg, meta["filename"], prov)
 
 
 def calculate_mmm(cfg, meta, mm_data, output_meta, group) -> None:
