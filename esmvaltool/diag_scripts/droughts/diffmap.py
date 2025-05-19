@@ -8,7 +8,7 @@ disabled using `plot_mmm: False`. To plot only mmm and skip maps for individual
 datasets use `plot_models: False`.
 The diagnostic is applied to each variable by default, but for single variables
 another meta key can be chosen for grouping like `group_by: project` to treat
-observations and models seperatly.
+observations and models separately.
 The produced maps can be clipped to non polar landmasses (220, 170, -55, 90)
 with `clip_land: True`.
 
@@ -24,11 +24,11 @@ clip_land: bool, optional (default: False)
     Clips map plots to non polar land area (220, 170, -55, 90).
 comparison_period: int, optional (default: 10)
     Number of years to compare (first and last N years). Must be less or equal
-    half of the total time period.
-filters: dict, or list, optional
+    to half of the total time period.
+filters: dict or list, optional
     Filter for metadata keys to select datasets. Only datasets with matching
-    values will be processed. This can be usefull, if ancestors or preprocessed
-    data is abailable, that should not be processed by the diagnostic.
+    values will be processed. This can be useful, if ancestors or preprocessed
+    data is available, that should not be processed by the diagnostic.
     If a list of dicts is given, all datasets matching any of the filters will
     be considered.
     By default None.
@@ -41,7 +41,8 @@ metrics: list, optional
     By default ["first", "last", "diff", "total", "percent"]
 mdtol: float, optional (default: 0.5)
     Tolerance for missing data in multi-model mean calculation. 0 means no
-    missing data is allowed. For 1 mean is calculated if any data is available.
+    missing data is allowed. At 1 the mean is calculated if any data is
+    available.
 plot_kwargs: dict, optional
     Kwargs passed to diag_scripts.shared.plot.global_contourf function.
     The "cbar_label" parameter is formatted with meta keys. So placeholders
@@ -72,7 +73,6 @@ titles: dict, optional
 
 from __future__ import annotations
 
-import contextlib
 import logging
 import os
 from collections import defaultdict
@@ -88,10 +88,14 @@ from esmvalcore import preprocessor as pp
 from iris.analysis import MEAN
 from iris.cube import Cube
 
-import esmvaltool.diag_scripts.droughts.utils as ut
-import esmvaltool.diag_scripts.shared as e
-
-# from esmvaltool.diag_scripts.droughts import colors
+from esmvaltool.diag_scripts.droughts import utils
+from esmvaltool.diag_scripts.shared import (
+    get_plot_filename,
+    group_metadata,
+    run_diagnostic,
+    select_metadata,
+)
+from esmvaltool.diag_scripts.shared.plot import global_contourf
 
 log = logging.getLogger(__file__)
 
@@ -156,7 +160,7 @@ def plot(
     kwargs: dict | None = None,
 ) -> None:
     """Plot map using diag_scripts.shared module."""
-    plotfile = e.get_plot_filename(basename, cfg)
+    plotfile = get_plot_filename(basename, cfg)
     plot_kwargs = cfg.get("plot_kwargs", {}).copy()
     if kwargs is not None:
         plot_kwargs.update(kwargs)
@@ -174,7 +178,7 @@ def plot(
             cube.coord(coord.name()).guess_bounds()
     fill_era5_gap(meta, cube)
     add_cyclic_point(cube.data, cube.coord("longitude").points)
-    mapplot = e.plot.global_contourf(cube, **plot_kwargs)
+    mapplot = global_contourf(cube, **plot_kwargs)
     if cfg.get("clip_land", False):
         plt.gca().set_extent((220, 170, -55, 90))  # type: ignore[attr-defined]
     plt.title(meta.get("title", basename))
@@ -217,15 +221,13 @@ def apply_plot_kwargs_overwrite(
 def calculate_diff(cfg, meta, mm_data, output_meta, group) -> None:
     """Absolute difference between first and last years of a cube.
 
-    Calculates the absolut and relative difference between the first and last
-    period of a cube. Write data to mm and optionally plot each dataset.
+    Calculates the absolute and relative difference between the first and last
+    period of a cube. Add data to the multi model collection ``mm_data`` and
+    optionally plot each dataset.
     """
     cube = iris.load_cube(meta["filename"])
     if meta["short_name"] in cfg.get("convert_units", {}):
         pp.convert_units(cube, cfg["convert_units"][meta["short_name"]])
-    with contextlib.suppress(Exception):
-        # TODO: maybe fix this within cmorizer
-        cube.remove_coord("Number of stations")  # dropped by unit conversions
     if "start_year" in cfg or "end_year" in cfg:
         log.info("selecting time period")
         cube = pp.extract_time(
@@ -283,7 +285,7 @@ def calculate_mmm(cfg, meta, mm_data, output_meta, group) -> None:
         meta["dataset"] = "MMM"
         meta["diffmap_metric"] = metric
         basename = cfg["basename"].format(**meta)
-        mmm, _ = ut.mmm(
+        mmm, _ = utils.mmm(
             mm_data[metric],
             dropcoords=drop,
             dropmethods=metric != "diff",
@@ -323,8 +325,8 @@ def filter_metas(metas: list, filters: dict | list) -> list:
         filters = [filters]
     filtered = {}
     for selection in filters:
-        for meta in e.select_metadata(metas, **selection):
-            filtered[meta["filename"]] = meta  # unique
+        for meta in select_metadata(metas, **selection):
+            filtered[meta["filename"]] = meta
     return list(filtered.values())
 
 
@@ -334,13 +336,13 @@ def main(cfg) -> None:
     metas = cfg["input_data"].values()
     if cfg.get("filters") is not None:
         metas = filter_metas(metas, cfg["filters"])
-    groups = e.group_metadata(metas, cfg["group_by"])
+    groups = group_metadata(metas, cfg["group_by"])
     output = {}
     for group, g_metas in groups.items():
         mm_data = defaultdict(list)
         for meta in g_metas:
             if "end_year" not in meta:
-                meta.update(ut.get_time_range(meta["filename"]))
+                meta.update(utils.get_time_range(meta["filename"]))
             # adjust norm for selected time period
             meta["end_year"] = cfg.get("end_year", meta["end_year"])
             meta["start_year"] = cfg.get("start_year", meta["start_year"])
@@ -348,9 +350,9 @@ def main(cfg) -> None:
         do_mmm = cfg.get("plot_mmm", True) or cfg.get("save_mmm", True)
         if do_mmm and len(g_metas) > 1:
             calculate_mmm(cfg, g_metas[0], mm_data, output, group)
-    ut.save_metadata(cfg, output)
+    utils.save_metadata(cfg, output)
 
 
 if __name__ == "__main__":
-    with e.run_diagnostic() as config:
+    with run_diagnostic() as config:
         main(config)

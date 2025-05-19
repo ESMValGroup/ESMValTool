@@ -2,8 +2,8 @@
 
 Description
 -----------
-This diagnostic applies drought charactristics based on Martin (2018)
-to data produced by spei.R. This characteristics and differences to
+This diagnostic applies drought characteristics based on Martin (2018)
+to data produced by spei.R. These characteristics and differences to
 a reference dataset or between different time periods are plotted for each
 dataset and multi-model mean. The calculated frequency, duration and severity
 of drought events are saved to netcdf files for further use.
@@ -11,7 +11,7 @@ It expects multiple datasets for a particular index as input. The reference
 dataset can be specified with ``reference_dataset`` and is not part of the
 multi-model mean.
 
-.. note:: Previouis Version:
+.. note:: Previous Version:
    With ESMValTool v2.12 and previous, multiple collect_drought_*.py
    diagnostics and a collect_drought_func.py diagnostic existed in the
    `droughtindex` folders. Those have been archived and replaced by this
@@ -21,18 +21,18 @@ Configuration options
 ---------------------
 indexname: str
     The indexname is used to generate filenames, plot titles and captions.
-    Should be ``SPI`` or ``SPEI``
+    Should be ``SPI`` or ``SPEI``.
 reference_dataset: str
     Dataset name to use for comparison (excluded from MMM). With
     ``compare_intervals=True`` this option has no effect.
 threshold: float, optional (default: -2.0)
     Threshold for an event to be considered as drought.
 compare_intervals: bool, false
-    If true, begin and end of the time periods are compared instead of
-    models and reference. The lengths of begin and end period is given by
+    If true, start and end of the time periods are compared instead of
+    models and reference. The lengths of start and end period is given by
     ``comparison_period``.
 comparison_period: int
-    Number of years from begin and end of the full period to be compared.
+    Number of years from start and end of the full period to be compared.
     Should be < (end_year - start_year)/2.
     If ``compare_intervals=False`` this option has no effect.
 plot_models: bool, false
@@ -56,7 +56,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from iris.analysis import Aggregator
 
-import esmvaltool.diag_scripts.shared as e
 from esmvaltool.diag_scripts.droughts.utils import (
     count_spells,
     create_cube_from_data,
@@ -65,12 +64,13 @@ from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
     get_diagnostic_filename,
     get_plot_filename,
+    run_diagnostic,
 )
 
 log = logging.getLogger(Path(__file__).name)
 
 
-def get_provenance_record(
+def _get_provenance_record(
     ancestor_files,
     caption,
     domains,
@@ -138,7 +138,7 @@ def _provenance_map_spei(cfg, name_dict, spei, dataset_name):
     else:
         set_refs = ["martin18grl"]
 
-    provenance_record = get_provenance_record(
+    provenance_record = _get_provenance_record(
         [name_dict["input_filenames"]],
         caption,
         ["global"],
@@ -188,7 +188,7 @@ def _provenance_map_spei_multi(cfg, data_dict, spei, input_filenames):
     else:
         set_refs = ["martin18grl"]
 
-    provenance_record = get_provenance_record(
+    provenance_record = _get_provenance_record(
         input_filenames,
         caption,
         ["global"],
@@ -708,5 +708,5 @@ def main(cfg) -> None:
 
 
 if __name__ == "__main__":
-    with e.run_diagnostic() as config:
+    with run_diagnostic() as config:
         main(config)
