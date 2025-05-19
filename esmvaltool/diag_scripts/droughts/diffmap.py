@@ -180,7 +180,7 @@ def plot(
     add_cyclic_point(cube.data, cube.coord("longitude").points)
     mapplot = global_contourf(cube, **plot_kwargs)
     if cfg.get("clip_land", False):
-        plt.gca().set_extent((220, 170, -55, 90))  # type: ignore[attr-defined]
+        plt.gca().set_extent((220, 170, -55, 90))
     plt.title(meta.get("title", basename))
     if cfg.get("strip_plots", False):
         plt.gca().set_title(None)
