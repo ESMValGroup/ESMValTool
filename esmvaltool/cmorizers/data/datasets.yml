@@ -828,6 +828,22 @@ datasets:
         HWSD_SOIL_CLM_RES.nc4
       A registration is required
 
+  IAP:
+    tier: 2
+    source: http://www.ocean.iap.ac.cn/pages/dataService/dataService.html
+    last_access: 2025-01-20
+    info: |
+      Download the following files:
+      Temperature_IAPv4.2_gridded_data_1940_1949.zip
+      Temperature_IAPv4.2_gridded_data_1950_1959.zip
+      Temperature_IAPv4.2_gridded_data_1960_1969.zip
+      Temperature_IAPv4.2_gridded_data_1970_1979.zip
+      Temperature_IAPv4.2_gridded_data_1980_1989.zip
+      Temperature_IAPv4.2_gridded_data_1990_1999.zip
+      Temperature_IAPv4.2_gridded_data_2000_2009.zip
+      Temperature_IAPv4.2_gridded_data_2010_2019.zip
+      Temperature_IAPv4.2_gridded_data_2020_2023.zip
+
   ISCCP-FH:
     tier: 2
     source: https://isccp.giss.nasa.gov/pub/flux-fh/tar-nc4_MPF/
