@@ -217,7 +217,7 @@ environment is activated and then execute
 
 .. code-block:: bash
 
-    mamba install julia
+    curl -fsSL https://install.julialang.org | sh -s -- --yes
     esmvaltool install Julia
 .. _install_on_macosx:
 
