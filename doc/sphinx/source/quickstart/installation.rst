@@ -397,10 +397,11 @@ the source code will immediately be available in the installed version of the
 tool.
 
 If you would like to run Julia diagnostic scripts, you will need to
-install the ESMValTool Julia dependencies:
+install Julia and the ESMValTool Julia dependencies:
 
 .. code-block:: bash
 
+    curl -fsSL https://install.julialang.org | sh -s -- --yes
     esmvaltool install Julia
 
 If you are planning to do any coding, install the :ref:`esmvaltool:pre-commit`
@@ -664,10 +665,11 @@ ESMValTool and any remaining Python dependencies with the command:
     pip install esmvaltool
 
 If you would like to run Julia diagnostic scripts, you will also need to
-install the Julia dependencies:
+install Julia and the ESMValTool Julia dependencies:
 
 .. code-block:: bash
 
+    curl -fsSL https://install.julialang.org | sh -s -- --yes
     esmvaltool install Julia
 
 .. _installation_from_the_conda_lock_file:
