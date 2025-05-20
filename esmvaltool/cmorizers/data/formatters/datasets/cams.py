@@ -95,7 +95,7 @@ def _calculate_flux(cube, filename, area_type):
 
 
 def fix_units(cube):
-    """Fixes units from invalid units through import."""
+    """Fix units from invalid units through import."""
     set_units(cube, "kg m-2 month-1")
     cube.convert_units("kg m-2 s-1")
     del cube.attributes["invalid_units"]
@@ -128,6 +128,21 @@ def extract_variable(short_name, var, filename):
     return cube
 
 
+def _fix_depth(cube, short_name, var, cfg):
+    """Fix metadata of cube."""
+    cmor_info = cfg["cmor_table"].get_variable(var["mip"], short_name)
+    if "depth0m" in cmor_info.dimensions:
+        depth_coord = iris.coords.AuxCoord(
+            0.0,
+            var_name="depth",
+            standard_name="depth",
+            long_name="depth",
+            units=Unit("m"),
+            attributes={"positive": "down"},
+        )
+        cube.add_aux_coord(depth_coord, ())
+
+
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize data."""
     months = ["0" + str(mo) for mo in range(1, 10)] + ["10", "11", "12"]
@@ -154,6 +169,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
         cube.var_name = short_name
         fix_coords(cube)
+        _fix_depth(cube, short_name, var, cfg)
         fix_var_metadata(cube, var_info)
         attrs = cfg["attributes"]
         attrs["mip"] = var["mip"]
