@@ -42,10 +42,11 @@ class CDSDownloader(BaseDownloader):
         dataset_info,
         overwrite,
         extra_name="",
+        cds_url="https://cds.climate.copernicus.eu/api",
     ):
         super().__init__(config, dataset, dataset_info, overwrite)
         try:
-            self._client = cdsapi.Client()
+            self._client = cdsapi.Client(url=cds_url)
         except Exception as ex:
             if str(ex).endswith(".cdsapirc"):
                 logger.error(
@@ -94,6 +95,48 @@ class CDSDownloader(BaseDownloader):
         if file_pattern is None:
             file_pattern = f"{self._product_name}"
         file_path = f"{file_pattern}_{date_str}.{file_format}"
+        self.download_request(file_path, request_dict)
+
+    def download_year(
+        self, year, day=None, file_pattern=None, file_format="zip"
+    ):
+        """Download a specific year from the CDS.
+
+        Parameters
+        ----------
+        year : int
+            Year to download
+        file_pattern : str, optional
+            Filename pattern, by default None
+        file_format : str, optional
+            File format, by default tar
+        """
+        request_dict = self._request_dict.copy()
+        request_dict["year"] = f"{year}"
+        request_dict["month"] = [
+            "01",
+            "02",
+            "03",
+            "04",
+            "05",
+            "06",
+            "07",
+            "08",
+            "09",
+            "10",
+            "11",
+            "12",
+        ]
+        if day:
+            if isinstance(day, Iterable):
+                request_dict["day"] = day
+            else:
+                request_dict["day"] = f"{day:02d}"
+
+        os.makedirs(self.local_folder, exist_ok=True)
+        if file_pattern is None:
+            file_pattern = f"{self._product_name}"
+        file_path = f"{file_pattern}_{year}.{file_format}"
         self.download_request(file_path, request_dict)
 
     def download_request(self, filename, request=None):

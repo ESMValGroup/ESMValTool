@@ -1,14 +1,13 @@
 ---
 # Common global attributes for Cmorizer output
 
-
 # Input
-filename: 'cams73_v20r2_co2_flux_surface_mm_{year}{month}.nc'
+filename: 'cams73_v23r1_co2_flux_surface_mm_{year}{month}.nc'
 start_year: 1979
-end_year: 2020
+end_year: 2023
 attributes:
   dataset_id: CAMS
-  version: 'v20r2' #'v20r1'
+  version: 'v23r1'
   tier: 3
   modeling_realm: reanaly
   project_id: OBS6

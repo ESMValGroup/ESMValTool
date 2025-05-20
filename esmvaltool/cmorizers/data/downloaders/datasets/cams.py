@@ -1,15 +1,12 @@
-"""Script to download CAMS data from the Climate Data Store."""
-
-import datetime
-
-from dateutil import relativedelta
+"""Script to download CAMS greenhouse gas data from the Climate Data Store."""
 
 from esmvaltool.cmorizers.data.downloaders.cds import CDSDownloader
 from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -27,30 +24,24 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
     overwrite : bool
         Overwrite already downloaded files
     """
-    if start_date is None:
-        start_date = datetime.datetime(1979, 1, 1)
-    if end_date is None:
-        end_date = datetime.datetime(2020, 12, 1)
-        #end_date = datetime.datetime(2022, 12, 1)
 
     downloader = CDSDownloader(
-        product_name='cams-global-greenhouse-gas-inversion',
+        product_name="cams-global-greenhouse-gas-inversion",
         request_dictionary={
-            'variable': 'carbon_dioxide',
-            'quantity': 'surface_flux',
-            'input_observations': 'surface',
-            'time_aggregation': 'monthly_mean',
-            'version': 'v20r2' #v22r2
+            "variable": "carbon_dioxide",
+            "quantity": "surface_flux",
+            "input_observations": "surface",
+            "time_aggregation": "monthly_mean",
+            "version": "v23r1",
         },
         config=config,
         dataset=dataset,
         dataset_info=dataset_info,
         overwrite=overwrite,
+        cds_url="https://ads.atmosphere.copernicus.eu/api",
     )
 
-    loop_date = start_date
-    while loop_date <= end_date:
-        downloader.download(loop_date.year, loop_date.month, file_format='zip')
-        loop_date += relativedelta.relativedelta(months=1)
+    for year in range(1979, 2024, 1):
+        downloader.download_year(year)
 
     unpack_files_in_folder(downloader.local_folder)

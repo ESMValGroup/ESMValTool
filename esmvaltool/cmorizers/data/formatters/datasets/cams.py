@@ -18,22 +18,22 @@ Download and processing instructions
 import logging
 import os
 import warnings
-
 from datetime import datetime
+
 import dask.array as da
 import iris
-
-import numpy as np
-
 from cf_units import Unit
-#from esmvalcore.preprocessor import concatenate
-#from esmvalcore.cmor.check import _get_time_bounds
-from esmvaltool.cmorizers.data.utilities import (convert_timeunits, fix_coords,
-                                                fix_var_metadata,
-                                                save_variable, set_global_atts,
-                                                set_units)
+
+from esmvaltool.cmorizers.data.utilities import (
+    fix_coords,
+    fix_var_metadata,
+    save_variable,
+    set_global_atts,
+    set_units,
+)
 
 logger = logging.getLogger(__name__)
+
 
 def _get_time_coord(year, month):
     """Get time coordinate."""
@@ -46,16 +46,17 @@ def _get_time_coord(year, month):
         month_bound_up = month + 1
         year_bound_up = year
     bound_up = datetime(year=year_bound_up, month=month_bound_up, day=1)
-    time_units = Unit('days since 1950-01-01 00:00:00', calendar='standard')
+    time_units = Unit("days since 1950-01-01 00:00:00", calendar="standard")
     time_coord = iris.coords.DimCoord(
         time_units.date2num(point),
         bounds=time_units.date2num([bound_low, bound_up]),
-        var_name='time',
-        standard_name='time',
-        long_name='time',
+        var_name="time",
+        standard_name="time",
+        long_name="time",
         units=time_units,
     )
     return time_coord
+
 
 def add_timeunits(cube, filename):
     """Add timestamp to cube"""
@@ -70,60 +71,59 @@ def _calculate_flux(cube, filename, area_type):
     # Get land/sea area fraction
     with warnings.catch_warnings():
         warnings.filterwarnings(
-            'ignore',
+            "ignore",
             message="Ignoring netCDF variable '.*?' invalid units '.*?'",
             category=UserWarning,
-            module='iris',
+            module="iris",
         )
-        lsf_cube = iris.load_cube(filename, 'lsf')
+        lsf_cube = iris.load_cube(filename, "lsf")
     lsf = lsf_cube.core_data()
 
     # Mask
-    if area_type == 'land':
-        mask = (lsf == 0.0)
-    elif area_type == 'ocean':
-        mask = (lsf > 0)
+    if area_type == "land":
+        mask = lsf == 0.0
+    elif area_type == "ocean":
+        mask = lsf > 0
     cube.data = da.ma.masked_array(cube.core_data(), mask=mask)
 
     # Calculate flux (sign change since input data and CMOR use different
     # conventions)
     cube.data = -cube.core_data()
 
-    cube.attributes['positive'] = 'down'
+    cube.attributes["positive"] = "down"
 
     return cube
 
+
 def fix_units(cube):
     """Fixes units from invalid units through import"""
-    set_units(cube, 'kg m-2 month-1')
-    cube.convert_units('kg m-2 s-1')
-    del (cube.attributes['invalid_units'])
+    set_units(cube, "kg m-2 month-1")
+    cube.convert_units("kg m-2 s-1")
+    del cube.attributes["invalid_units"]
+
 
 def extract_variable(short_name, var, filename):
     """Extract variable."""
     with warnings.catch_warnings():
         warnings.filterwarnings(
-            'ignore',
+            "ignore",
             message="Ignoring netCDF variable '.*?' invalid units '.*?'",
             category=UserWarning,
-            module='iris',
+            module="iris",
         )
-        cube = iris.load_cube(filename,
-                              var['varname'])
-    #cubes = iris.load(filename, var['varname'])
-    #cube = cubes[0]
-    if short_name == 'sftof':
-        cube.data = 100. * (1. - cube.core_data())
-        cube.units = '%'
-    elif short_name == 'sftlf':
-        cube.data = 100. * cube.core_data()
-        cube.units = '%'
-    elif short_name == 'nbp':
-        _calculate_flux(cube, filename, 'land')
+        cube = iris.load_cube(filename, var["varname"])
+    if short_name == "sftof":
+        cube.data = 100.0 * (1.0 - cube.core_data())
+        cube.units = "%"
+    elif short_name == "sftlf":
+        cube.data = 100.0 * cube.core_data()
+        cube.units = "%"
+    elif short_name == "nbp":
+        _calculate_flux(cube, filename, "land")
         add_timeunits(cube, filename)
         fix_units(cube)
-    elif short_name == 'fgco2':
-        _calculate_flux(cube, filename, 'ocean')
+    elif short_name == "fgco2":
+        _calculate_flux(cube, filename, "ocean")
         add_timeunits(cube, filename)
         fix_units(cube)
     return cube
@@ -132,34 +132,34 @@ def extract_variable(short_name, var, filename):
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize data."""
     months = ["0" + str(mo) for mo in range(1, 10)] + ["10", "11", "12"]
-    fpattern = os.path.join(in_dir, cfg['filename'])
+    fpattern = os.path.join(in_dir, cfg["filename"])
 
     # run the cmorization
-    for (short_name, var) in cfg['variables'].items():
-        var_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    for short_name, var in cfg["variables"].items():
+        var_info = cfg["cmor_table"].get_variable(var["mip"], short_name)
         var_cubes = iris.cube.CubeList()
         logger.info("CMORizing var %s from file type %s", short_name, fpattern)
         # fx files are time invariant
-        if short_name in ['areacella', 'areacello', 'sftlf', 'sftof']:
-            filename = fpattern.format(year=cfg['start_year'], month='01')
+        if short_name in ["areacella", "areacello", "sftlf", "sftof"]:
+            filename = fpattern.format(year=cfg["start_year"], month="01")
             cube = extract_variable(short_name, var, filename)
         else:
-            for year in range(cfg['start_year'], cfg['end_year'] + 1):
+            for year in range(cfg["start_year"], cfg["end_year"] + 1):
                 for month in months:
                     filename = fpattern.format(year=year, month=month)
-                    var_cubes.append(extract_variable(short_name, var, filename))
+                    var_cubes.append(
+                        extract_variable(short_name, var, filename)
+                    )
 
             cube = var_cubes.merge_cube()
 
         cube.var_name = short_name
         fix_coords(cube)
         fix_var_metadata(cube, var_info)
-        attrs = cfg['attributes']
-        attrs['mip'] = var['mip']
+        attrs = cfg["attributes"]
+        attrs["mip"] = var["mip"]
         set_global_atts(cube, attrs)
 
-        save_variable(cube,
-                      short_name,
-                      out_dir,
-                      attrs,
-                      unlimited_dimensions=['time'])
+        save_variable(
+            cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        )
