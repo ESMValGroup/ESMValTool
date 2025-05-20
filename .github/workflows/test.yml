@@ -61,9 +61,6 @@ jobs:
           echo "Python minor version changed after Julia install"
           python -V
           exit 1
-      - name: Install NCL
-        run: |
-          mamba install -y -c conda-forge "ncl>=6.6.2"
       - name: Inspect environment
         run: conda list
       - name: Check Julia and NCL
@@ -74,12 +71,6 @@ jobs:
         run: pre-commit run -a
       - name: Run tests
         run: pytest -n 2 -m "not installation" 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt
-      - name: Update env with R dependencies
-        # this is not actively used by tests but it gives
-        # a good indication of the time it takes for updating with R deps
-        run: mamba env update -n esmvaltool -f environment_r.yml
-      - name: Inspect environment
-        run: conda list
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
         uses: actions/upload-artifact@v4
