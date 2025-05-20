@@ -286,8 +286,10 @@ def _get_plot_kwargs(all_plot_kwargs: dict, group: str) -> dict:
 def _load_and_preprocess_data(cfg: dict) -> list[dict]:
     """Load and preprocess data."""
     input_data = list(cfg["input_data"].values())
+    changed_input_data = []
 
     for dataset in input_data:
+        dataset = dict(dataset)
         filename = dataset["filename"]
         logger.info("Loading %s", filename)
         cubes = iris.load(filename)
@@ -326,8 +328,9 @@ def _load_and_preprocess_data(cfg: dict) -> list[dict]:
         ih.unify_time_coord(cube)
 
         dataset["cube"] = cube
+        changed_input_data.append(dataset)
 
-    return input_data
+    return changed_input_data
 
 
 def _plot(
