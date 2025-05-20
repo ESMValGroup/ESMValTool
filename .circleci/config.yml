@@ -42,9 +42,6 @@ commands:
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             export PATH=/root/.juliaup/bin:$PATH
-            mamba --version
-            mamba install -y -c conda-forge "ncl>=6.6.2"
-            mamba env update -y -n esmvaltool -f environment_r.yml
             pytest -n 4 --junitxml=test-reports/report.xml
             esmvaltool version
             esmvaltool -- --help
