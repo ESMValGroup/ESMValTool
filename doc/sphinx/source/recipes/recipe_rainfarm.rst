@@ -1,8 +1,13 @@
 .. _recipes_rainfarm:
 
-RainFARM stochastic downscaling
+Legacy recipe: RainFARM stochastic downscaling
 ===============================
 
+.. note::
+
+   This recipe has been retired and moved to the folder "archive". This recipe is only included
+   for documentation purposes and not maintained any more. The last known ESMValTool version
+   supporting this recipe is version 2.11.0.
 
 Overview
 --------

@@ -27,11 +27,6 @@ More details can be found in the :ref:`broken recipe policy
      - v2.11.0
      - Failed to run preprocessor function ``fix_metadata`` on the data: Unable to convert units
      - `#3694 <https://github.com/ESMValGroup/ESMValTool/issues/3694>`_
-   * - :ref:`recipe_rainfarm.yml <recipes_rainfarm>`
-     - ``rainfarm``
-     - v2.12.0
-     - Diagnostic failure
-     - `#3935 <https://github.com/ESMValGroup/ESMValTool/issues/3935>`_
    * - :ref:`recipe_russell18jgr.yml <nml_oceanmetrics>`
      - ``Figure_4``
      - v2.11.0
