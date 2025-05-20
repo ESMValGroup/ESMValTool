@@ -26,12 +26,27 @@
 [scheduling]
     initial cycle point = now
     [[graph]]
-        R1 = """install_env_file => get_esmval => configure
-            configure => process<fast> => compare<fast>
-            configure => process<medium> => compare<medium>"""
-        T01 = """@wall_clock => get_esmval => configure
-            configure => process<fast> => compare<fast>
-            configure => process<medium> => compare<medium>"""
+        R1 = """
+            install_env_file => get_esmval => configure
+            configure => process<fast>? => compare<fast>?
+            configure => process<medium>? => compare<medium>?
+
+            # Run the 'generate_report' task regardless of the status
+            # of the process and compare tasks.
+            process<fast>:fail? | compare<fast>:finish => generate_report
+            process<medium>:fail? | compare<medium>:finish => generate_report
+        """
+        T01 = """
+            @wall_clock => get_esmval => configure
+            configure => process<fast>? => compare<fast>?
+            configure => process<medium>? => compare<medium>?
+
+            # Run the 'generate_report' task regardless of the status
+            # of the process and compare tasks.
+            process<fast>:fail? | compare<fast>:finish => generate_report
+            process<medium>:fail? | compare<medium>:finish => generate_report
+            generate_report => housekeeping
+        """
 
 [runtime]
     [[root]]
@@ -84,14 +99,18 @@
             ROOTPATH_RAWOBS = {{ ROOTPATH_RAWOBS }}
             SEARCH_ESGF = {{ SEARCH_ESGF }}
 
+    [[PROCESS]]
+        inherit = None, COMPUTE
+        [[[environment]]]
+            ROSE_TASK_APP = process
+
     # Bash variable substitution below replaces `--` with `/` to obtain path to
     # recipe.
 {% for RECIPE in FAST_RECIPES %}
     [[process<fast={{ RECIPE["recipe_path"] }}>]]
-        inherit = None, COMPUTE
+        inherit = PROCESS
         execution time limit = {{ RECIPE["max_time"] }}
         [[[environment]]]
-            ROSE_TASK_APP = process
             RECIPE_PATH = "${CYLC_TASK_PARAM_fast//--//}.yml"
         [[[directives]]]
             --mem = {{ RECIPE["max_memory"] }}
@@ -99,10 +118,9 @@
 
 {% for RECIPE in MEDIUM_RECIPES %}
     [[process<medium={{ RECIPE["recipe_path"] }}>]]
-        inherit = None, COMPUTE
+        inherit = PROCESS
         execution time limit = {{ RECIPE["max_time"] }}
         [[[environment]]]
-            ROSE_TASK_APP = process
             RECIPE_PATH = "${CYLC_TASK_PARAM_medium//--//}.yml"
         [[[directives]]]
             --mem = {{ RECIPE["max_memory"] }}
@@ -133,5 +151,17 @@
             RECIPE_NAME = "${CYLC_TASK_PARAM_medium##*--}_????????_??????"
             COMPARISON_OUTPUT_DIR = ${OUTPUT_DIR}/${RECIPE_NAME}
             KGO_DIR = ${KGO_ROOT_PATH}/${RECIPE_NAME}
+
+    [[generate_report]]
+        [[[environment]]]
+            # By default opt configurations must exist. Paretheses make the opt
+            # file optional, which is required as only a DKRZ opt file exists.
+            ROSE_APP_OPT_CONF_KEYS = ({{ SITE }})
+            CYLC_DB_PATH = ${CYLC_WORKFLOW_RUN_DIR}/log/db
+            PRODUCTION = {{ PRODUCTION }}
+            REPORT_PATH = ${ROSE_DATAC}/status_report.html
+
+    [[housekeeping]]
+        platform = localhost
 
 {% include "site/" ~ SITE ~ "/runtime.cylc" %}
