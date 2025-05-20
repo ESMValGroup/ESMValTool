@@ -97,9 +97,7 @@ class CDSDownloader(BaseDownloader):
         file_path = f"{file_pattern}_{date_str}.{file_format}"
         self.download_request(file_path, request_dict)
 
-    def download_year(
-        self, year, day=None, file_pattern=None, file_format="zip"
-    ):
+    def download_year(self, year, file_pattern=None, file_format="zip"):
         """Download a specific year from the CDS.
 
         Parameters
@@ -127,11 +125,6 @@ class CDSDownloader(BaseDownloader):
             "11",
             "12",
         ]
-        if day:
-            if isinstance(day, Iterable):
-                request_dict["day"] = day
-            else:
-                request_dict["day"] = f"{day:02d}"
 
         os.makedirs(self.local_folder, exist_ok=True)
         if file_pattern is None:

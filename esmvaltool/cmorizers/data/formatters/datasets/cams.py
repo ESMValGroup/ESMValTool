@@ -59,7 +59,7 @@ def _get_time_coord(year, month):
 
 
 def add_timeunits(cube, filename):
-    """Add timestamp to cube"""
+    """Add timestamp to cube."""
     tmp = str.split(filename, "_")
     time_coord = _get_time_coord(int(tmp[-1][:4]), int(tmp[-1][4:6]))
     cube.add_aux_coord(time_coord)
@@ -67,7 +67,6 @@ def add_timeunits(cube, filename):
 
 def _calculate_flux(cube, filename, area_type):
     """Calculate flux (dividing by land/sea area) and mask land/sea."""
-
     # Get land/sea area fraction
     with warnings.catch_warnings():
         warnings.filterwarnings(
@@ -96,7 +95,7 @@ def _calculate_flux(cube, filename, area_type):
 
 
 def fix_units(cube):
-    """Fixes units from invalid units through import"""
+    """Fixes units from invalid units through import."""
     set_units(cube, "kg m-2 month-1")
     cube.convert_units("kg m-2 s-1")
     del cube.attributes["invalid_units"]
