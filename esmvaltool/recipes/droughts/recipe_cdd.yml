@@ -3,34 +3,29 @@
 ---
 documentation:
   title: Consecutive dry days
-
   description: |
-    Recipe to calculate consecutive dry days
-
+    Example recipe to calculate consecutive dry days
   authors:
     - berg_peter
-
   projects:
     - c3s-magic
-
   maintainer:
-    - unmaintained
-
+    - lindenlaub_lukas
   references:
     - acknow_project
 
 datasets:
-  - {dataset: bcc-csm1-1-m, project: CMIP5, mip: day, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2002}
+  - {dataset: bcc-csm1-1-m, project: CMIP5, mip: day, exp: historical,
+    ensemble: r1i1p1, start_year: 2001, end_year: 2002}
 
 diagnostics:
-
   dry_days:
     description: Calculating number of dry days.
     variables:
       pr:
     scripts:
       consecutive_dry_days:
-        script: droughtindex/diag_cdd.py
+        script: droughts/cdd.py
         dryindex: 'cdd'
         plim: 1
         frlim: 5

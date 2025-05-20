@@ -19,34 +19,37 @@ user defined number of days.
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in recipes/
+Recipes are stored in recipes/droughts/
 
-    * recipe_consecdrydays.yml
+* recipe_cdd.yml
 
-Diagnostics are stored in diag_scripts/droughtindex/
+Diagnostics are stored in diag_scripts/droughts/
 
-    * diag_cdd.py: calculates the longest period of consecutive dry days, and
-      the frequency of dry day periods longer than a user defined length
+* cdd.py: calculates the longest period of consecutive dry days, and
+  the frequency of dry day periods longer than a user defined length
 
 
 User settings in recipe
 -----------------------
 
-#. Script diag_cdd.py
+Script cdd.py
+~~~~~~~~~~~~~~~~~~
 
-   *Required settings (script)*
+plim: float
+    limit for a day to be considered dry [mm/day]
 
-   * plim: limit for a day to be considered dry [mm/day]
+frlim: int
+    the shortest number of consecutive dry days for entering statistic on
+    frequency of dry periods.
 
-   * frlim: the shortest number of consecutive dry days for entering statistic on frequency of dry periods.
+Under ``plot``:
 
-   *Optional settings (script)*
+cmap: str, optional
+    the name of a colormap. cmocean colormaps are also supported.
 
-   Under ``plot``:
-
-   * cmap: the name of a colormap. cmocean colormaps are also supported.
-
-   * other keyword arguments to :func:`esmvaltool.diag_scripts.shared.plot.global_pcolormesh` can also be supplied.
+other keyword arguments to
+:func:`esmvaltool.diag_scripts.shared.plot.global_pcolormesh` can also be
+supplied.
 
 Variables
 ---------
