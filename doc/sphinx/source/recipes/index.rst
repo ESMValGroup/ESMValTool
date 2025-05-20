@@ -39,9 +39,9 @@ Atmosphere
    recipe_clouds
    recipe_cmug_h2o
    recipe_crem
-   recipe_consecdrydays
    recipe_deangelis15nat
    recipe_diurnal_temperature_index
+   recipe_droughts
    recipe_eady_growth_rate
    recipe_extreme_events
    recipe_extreme_index
@@ -56,8 +56,6 @@ Atmosphere
    recipe_mpqb_xch4
    recipe_quantilebias
    recipe_bock20jgr
-   recipe_spei
-   recipe_martin18grl
    recipe_autoassess_stratosphere
    recipe_autoassess_landsurface_permafrost
    recipe_autoassess_landsurface_surfrad
@@ -171,6 +169,7 @@ require a legacy version of ESMValTool to run.
    :maxdepth: 1
 
    recipe_schlund20jgr
+   recipe_spei
 
 
 Broken recipe list
