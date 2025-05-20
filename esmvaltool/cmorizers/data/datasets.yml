@@ -118,15 +118,6 @@ datasets:
       Then, select carbon dioxide, surface flux, surface air sample, monthly mean,
       as well as the version and years you require to download.
 
-  CAMS-EAC4:
-    tier: 3
-    source: https://ads.atmosphere.copernicus.eu/datasets/cams-global-reanalysis-eac4-monthly?tab=overview
-    last_access: 2024-09-30
-    info: |
-      Requires ECMWF account for the Atmosphere Data Store.
-      Select your variables, as well as all pressure levels and download either
-        directly or using an API script.
-
   CDS-SATELLITE-ALBEDO:
     tier: 3
     source: https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-albedo?tab=form
