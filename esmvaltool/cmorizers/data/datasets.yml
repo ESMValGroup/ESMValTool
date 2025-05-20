@@ -551,6 +551,17 @@ datasets:
             Version = "v0008"
       Put all files under a single directory (no subdirectories with years).
 
+  ESACCI-PERMAFROST:
+    tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/permafrost/data
+    last_access: 2024-02-27
+    info: |
+      Download the data from:
+        active_layer_thickness/L4/area4/pp/v03.0
+        ground_temperature/L4/area4/pp/v03.0
+        permafrost_extent/L4/area4/pp/v03.0
+      Put all files in a single directory.
+
   ESACCI-SEAICE:
     tier: 2
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sea_ice/data/
