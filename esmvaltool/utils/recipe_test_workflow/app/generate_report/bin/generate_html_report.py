@@ -275,7 +275,7 @@ def fetch_git_commits(package_path, sha=None):
                 "message": split_fields[3],
             }
         )
-        add_report_message_to_git_commits(processed_commit_info)
+    add_report_message_to_git_commits(processed_commit_info)
     return processed_commit_info
 
 
