@@ -52,7 +52,7 @@ REPORT_PATH = os.environ.get("REPORT_PATH")
 CONTAINER_DIR = os.environ.get("CONTAINER_DIR")
 CONTAINER_FILE = "esmvaltool.sif"
 CONTAINER_PATH = os.environ.get("CONTAINER_PATH")
-ENV_FILE = os.environ.get("ENV_FILE_SITE_PATH")
+ENV_FILE = os.environ.get("ENV_FILE")
 
 SQL_QUERY_TASK_STATES = "SELECT name, status FROM task_states"
 
