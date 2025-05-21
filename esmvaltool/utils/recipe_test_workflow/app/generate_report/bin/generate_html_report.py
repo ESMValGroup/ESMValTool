@@ -108,7 +108,11 @@ def main(db_file_path=CYLC_DB_PATH):
 
     raw_db_data = fetch_report_data(db_file_path)
     processed_db_data = process_db_output(raw_db_data)
-    current_package_versions = ""
+
+    print("Fetching package versions")
+    current_package_versions = fetch_package_versions_from_container()
+    print("Package versions fetched")
+
     subheader = create_subheader()
     rendered_html = render_html_report(
         subheader=subheader,
