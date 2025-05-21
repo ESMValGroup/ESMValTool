@@ -292,7 +292,6 @@ def _load_and_preprocess_data(cfg: dict) -> list[dict]:
     input_data = deepcopy(list(cfg["input_data"].values()))
 
     for dataset in input_data:
-        dataset = dict(dataset)
         filename = dataset["filename"]
         logger.info("Loading %s", filename)
         cubes = iris.load(filename)
