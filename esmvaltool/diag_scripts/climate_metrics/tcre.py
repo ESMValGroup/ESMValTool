@@ -285,7 +285,11 @@ def _get_plot_kwargs(all_plot_kwargs: dict, group: str) -> dict:
 
 def _load_and_preprocess_data(cfg: dict) -> list[dict]:
     """Load and preprocess data."""
-    input_data = list(cfg["input_data"].values())
+    # this is needed due
+    # to an unknown bug created by importing distributed (>2025.2)
+    # and requests-cache; we are unsure what the bug really is;
+    # see https://github.com/ESMValGroup/ESMValTool/pull/4044
+    input_data = deepcopy(list(cfg["input_data"].values()))
 
     for dataset in input_data:
         filename = dataset["filename"]
