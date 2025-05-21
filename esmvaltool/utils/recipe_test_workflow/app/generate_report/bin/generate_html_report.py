@@ -36,18 +36,22 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 # ]
 
 
-# UNCOMMENT FOR REAL
+# UNCOMMENT FOR MET OFFICE / DKRZ
 CYLC_DB_PATH = os.environ.get("CYLC_DB_PATH")
 CYLC_TASK_CYCLE_POINT = os.environ.get("CYLC_TASK_CYCLE_POINT")
 CYLC_TASK_PREVIOUS_CYCLE = os.environ.get("ROSE_DATACP1D")
 REPORT_PATH = os.environ.get("REPORT_PATH")
 
-ESMVAL_CORE_CURRENT = os.environ.get("ESMVALCORE_DIR")
-ESMVAL_TOOL_CURRENT = os.environ.get("ESMVALTOOL_DIR")
+# UNCOMMENT FOR MET OFFICE
+# ESMVAL_CORE_CURRENT = os.environ.get("ESMVALCORE_DIR")
+# ESMVAL_TOOL_CURRENT = os.environ.get("ESMVALTOOL_DIR")
+# ESMVAL_CORE_PREVIOUS = Path(CYLC_TASK_PREVIOUS_CYCLE) / "ESMValCore"
+# ESMVAL_TOOL_PREVIOUS = Path(CYLC_TASK_PREVIOUS_CYCLE) / "ESMValTool"
 
-ESMVAL_CORE_PREVIOUS = Path(CYLC_TASK_PREVIOUS_CYCLE) / "ESMValCore"
-ESMVAL_TOOL_PREVIOUS = Path(CYLC_TASK_PREVIOUS_CYCLE) / "ESMValTool"
-
+# UNCOMMENT FOR DKRZ
+CONTAINER_DIR = os.environ.get("CONTAINER_DIR")
+CONTAINER_FILE = "esmvaltool.sif"
+CONTAINER_PATH = os.environ.get("CONTAINER_PATH")
 
 SQL_QUERY_TASK_STATES = "SELECT name, status FROM task_states"
 
@@ -61,7 +65,6 @@ def main(db_file_path=CYLC_DB_PATH):
     db_file_path : str, default CYLC_DB_FILE_PATH
         The path to the SQLite database file.
     """
-
     # UNCOMMENT FOR LOCAL
     # raw_db_data = cached_raw_db_data
     # processed_db_data = process_db_output(raw_db_data)
@@ -76,35 +79,42 @@ def main(db_file_path=CYLC_DB_PATH):
     #     local_esmvaltool, esmval_tool_previous_commit_sha
     # )
 
-    # UNCOMMENT FOR REAL
+    # UNCOMMENT FOR MET OFFICE
+    # raw_db_data = fetch_report_data(db_file_path)
+    # processed_db_data = process_db_output(raw_db_data)
+
+    # esmval_core_previous_commit_sha = None
+    # if ESMVAL_CORE_PREVIOUS.exists():
+    #     esmval_core_previous_commit_sha = (
+    #         fetch_git_commits(ESMVAL_CORE_PREVIOUS)['sha']
+    #     )
+
+    # esmval_tool_previous_commit_sha = None
+    # if ESMVAL_TOOL_PREVIOUS.exists():
+    #     esmval_tool_previous_commit_sha = (
+    #         fetch_git_commits(ESMVAL_TOOL_PREVIOUS)['sha']
+    #     )
+
+    # esmval_core_all_commits = fetch_git_commits(
+    #     ESMVAL_CORE_CURRENT, esmval_core_previous_commit_sha
+    # )
+    # esmval_tool_all_commits = fetch_git_commits(
+    #     ESMVAL_TOOL_CURRENT, esmval_tool_previous_commit_sha
+    # )
+
+    print("Container dir: ", CONTAINER_DIR)
+    print("Container path: ", CONTAINER_PATH)
+    print("Previous cylce point: ", CYLC_TASK_PREVIOUS_CYCLE)
+
     raw_db_data = fetch_report_data(db_file_path)
     processed_db_data = process_db_output(raw_db_data)
-
-    esmval_core_previous_commit_sha = None
-    if ESMVAL_CORE_PREVIOUS.exists():
-        esmval_core_previous_commit_sha = (
-            fetch_git_commits(ESMVAL_CORE_PREVIOUS)['sha']
-        )
-
-    esmval_tool_previous_commit_sha = None
-    if ESMVAL_TOOL_PREVIOUS.exists():
-        esmval_tool_previous_commit_sha = (
-            fetch_git_commits(ESMVAL_TOOL_PREVIOUS)['sha']
-        )
-
-    esmval_core_all_commits = fetch_git_commits(
-        ESMVAL_CORE_CURRENT, esmval_core_previous_commit_sha
-    )
-    esmval_tool_all_commits = fetch_git_commits(
-        ESMVAL_TOOL_CURRENT, esmval_tool_previous_commit_sha
-    )
-
+    current_package_versions = ""
     subheader = create_subheader()
     rendered_html = render_html_report(
         subheader=subheader,
         report_data=processed_db_data,
-        esmval_core_commits=esmval_core_all_commits,
-        esmval_tool_commits=esmval_tool_all_commits,
+        # esmval_core_commits=esmval_core_all_commits,
+        # esmval_tool_commits=esmval_tool_all_commits,
     )
     write_report_to_file(rendered_html)
 
@@ -219,6 +229,20 @@ def process_db_output(report_data):
     return sorted_processed_db_data
 
 
+def fetch_package_versions_from_container(path_to_container):
+    command = [path_to_container, "esmvaltool", "version"]
+    print(command)
+    raw_version_info = subprocess.run(
+        command,
+        capture_output=True,
+        check=True,
+        text=True
+    )
+    print(command.stdout)
+    print(command.stderr)
+    return command.stdout
+
+
 def add_report_message_to_git_commits(git_commits_info):
     """
     Add report messages to a git commit information dictionary.
@@ -228,9 +252,9 @@ def add_report_message_to_git_commits(git_commits_info):
     list[dict]
         A list of git commits.
     """
-    git_commits_info[0]['report_flag'] = "Version tested >>>"
+    git_commits_info[0]['report_flag'] = "Version tested this cycle >>>"
     if len(git_commits_info) > 1:
-        git_commits_info[-1]['report_flag'] = "Version last tested >>>"
+        git_commits_info[-1]['report_flag'] = "Version tested last cycle >>>"
 
 
 def fetch_git_commits(package_path, sha=None):
