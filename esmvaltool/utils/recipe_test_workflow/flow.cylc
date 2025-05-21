@@ -160,6 +160,7 @@
             CYLC_DB_PATH = ${CYLC_WORKFLOW_RUN_DIR}/log/db
             PRODUCTION = {{ PRODUCTION }}
             REPORT_PATH = ${ROSE_DATAC}/status_report.html
+            SITE = {{ SITE }}
             ENV_FILE_SITE_PATH=${CYLC_WORKFLOW_RUN_DIR}/site/${SITE}/env-file
 
     [[housekeeping]]
