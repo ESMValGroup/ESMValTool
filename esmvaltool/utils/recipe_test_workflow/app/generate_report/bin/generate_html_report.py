@@ -2,13 +2,51 @@
 import os
 import sqlite3
 from datetime import datetime
+from pathlib import Path
+import subprocess
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+# UNCOMMENT FOR LOCAL
+# CYLC_DB_PATH = "hello"
+# CYLC_TASK_CYCLE_POINT = "20250516T1053Z"
+# REPORT_PATH="/home/users/christopher.billows/Code/ESMValTool/esmvaltool/utils/recipe_test_workflow/app/generate_report/bin/report.html"
+# cached_raw_db_data = [
+#     ('get_esmval', 'waiting'),
+#     ('install_env_file','succeeded'),
+#     ('get_esmval','succeeded'),
+#     ('configure','succeeded'),
+#     ('compare_recipe_radiation_budget','succeeded'),
+#     ('process_recipe_radiation_budget','succeeded'),
+#     ('process_recipe_albedolandcover','succeeded'),
+#     ('process_recipe_ocean_amoc','succeeded'),
+#     ('process_recipe_autoassess_landsurface_soilmoisture','succeeded'),
+#     ('process_recipe_heatwaves_coldwaves','succeeded'),
+#     ('process_recipe_ocean_multimap','succeeded'),
+#     ('process_recipe_ensclus','succeeded'),
+#     ('process_recipe_consecdrydays','succeeded'),
+#     ('compare_recipe_albedolandcover','succeeded'),
+#     ('compare_recipe_consecdrydays','succeeded'),
+#     ('generate_report','running'),
+#     ('compare_recipe_autoassess_landsurface_soilmoisture','succeeded'),
+#     ('compare_recipe_heatwaves_coldwaves','succeeded'),
+#     ('compare_recipe_ensclus','succeeded'),
+#     ('compare_recipe_ocean_multimap','succeeded'),
+#     ('compare_recipe_ocean_amoc','succeeded')
+# ]
+
+
+# UNCOMMENT FOR REAL
 CYLC_DB_PATH = os.environ.get("CYLC_DB_PATH")
 CYLC_TASK_CYCLE_POINT = os.environ.get("CYLC_TASK_CYCLE_POINT")
-CYLC_WORKFLOW_SHARE_DIR = os.environ.get("CYLC_WORKFLOW_SHARE_DIR")
+CYLC_TASK_PREVIOUS_CYCLE = os.environ.get("ROSE_DATACP1D")
 REPORT_PATH = os.environ.get("REPORT_PATH")
+
+ESMVAL_CORE_CURRENT = os.environ.get("ESMVALCORE_DIR")
+ESMVAL_TOOL_CURRENT = os.environ.get("ESMVALTOOL_DIR")
+
+ESMVAL_CORE_PREVIOUS = Path(CYLC_TASK_PREVIOUS_CYCLE) / "ESMValCore"
+ESMVAL_TOOL_PREVIOUS = Path(CYLC_TASK_PREVIOUS_CYCLE) / "ESMValTool"
 
 
 SQL_QUERY_TASK_STATES = "SELECT name, status FROM task_states"
@@ -23,12 +61,50 @@ def main(db_file_path=CYLC_DB_PATH):
     db_file_path : str, default CYLC_DB_FILE_PATH
         The path to the SQLite database file.
     """
+
+    # UNCOMMENT FOR LOCAL
+    # raw_db_data = cached_raw_db_data
+    # processed_db_data = process_db_output(raw_db_data)
+    # local_esmvaltool = Path("/home/users/christopher.billows/Code/ESMValTool/")
+    # local_esmvalcore = Path("/home/users/christopher.billows/Code/ESMValCore/")
+    # esmval_core_previous_commit_sha = "170a93893"
+    # esmval_tool_previous_commit_sha = "4515a2b92"
+    # esmval_core_all_commits = fetch_git_commits(
+    #     local_esmvalcore, esmval_core_previous_commit_sha
+    # )
+    # esmval_tool_all_commits = fetch_git_commits(
+    #     local_esmvaltool, esmval_tool_previous_commit_sha
+    # )
+
+    # UNCOMMENT FOR REAL
     raw_db_data = fetch_report_data(db_file_path)
     processed_db_data = process_db_output(raw_db_data)
+
+    esmval_core_previous_commit_sha = None
+    if ESMVAL_CORE_PREVIOUS.exists():
+        esmval_core_previous_commit_sha = (
+            fetch_git_commits(ESMVAL_CORE_PREVIOUS)['sha']
+        )
+
+    esmval_tool_previous_commit_sha = None
+    if ESMVAL_TOOL_PREVIOUS.exists():
+        esmval_tool_previous_commit_sha = (
+            fetch_git_commits(ESMVAL_TOOL_PREVIOUS)['sha']
+        )
+
+    esmval_core_all_commits = fetch_git_commits(
+        ESMVAL_CORE_CURRENT, esmval_core_previous_commit_sha
+    )
+    esmval_tool_all_commits = fetch_git_commits(
+        ESMVAL_TOOL_CURRENT, esmval_tool_previous_commit_sha
+    )
+
     subheader = create_subheader()
     rendered_html = render_html_report(
         subheader=subheader,
         report_data=processed_db_data,
+        esmval_core_commits=esmval_core_all_commits,
+        esmval_tool_commits=esmval_tool_all_commits,
     )
     write_report_to_file(rendered_html)
 
@@ -143,6 +219,66 @@ def process_db_output(report_data):
     return sorted_processed_db_data
 
 
+def add_report_message_to_git_commits(git_commits_info):
+    """
+    Add report messages to a git commit information dictionary.
+
+    Parameters
+    ----------
+    list[dict]
+        A list of git commits.
+    """
+    git_commits_info[0]['report_flag'] = "Version tested >>>"
+    if len(git_commits_info) > 1:
+        git_commits_info[-1]['report_flag'] = "Version last tested >>>"
+
+
+def fetch_git_commits(package_path, sha=None):
+    """
+    Fetch git commit information for an installed package.
+
+    Parameters
+    ----------
+    package_path : str
+        Path to a package's git repo.
+    sha: str | None
+        Optional. The sha of a previously tested commit. If provided, commits
+        from HEAD back to the passed sha (inclusive) will be retrieved.
+
+    Returns
+    -------
+    list[dict]
+        A list of dicts where each dict represents one commit. If ``sha`` is
+        passed, multiple commits/dicts may be returned.
+    """
+    command = [
+        "git", "log", "-1", "--date=iso-strict", "--pretty=%cd^_^%h^_^%an^_^%s"
+        ]
+
+    if sha:
+        command[2] = f"{sha}^..HEAD"
+
+    raw_commit_info = subprocess.run(
+        command, cwd=package_path, capture_output=True, check=True, text=True
+    )
+
+    processed_commit_info = []
+    raw_commits = raw_commit_info.stdout.splitlines()
+    for commit in raw_commits:
+        split_fields = commit.split("^_^")
+        processed_commit_info.append(
+            {
+                "report_flag": "",
+                "date": split_fields[0],
+                "sha": split_fields[1],
+                "author": split_fields[2],
+                "message": split_fields[3],
+            }
+        )
+        add_report_message_to_git_commits(processed_commit_info)
+    return processed_commit_info
+
+
 def create_subheader(cylc_task_cycle_point=CYLC_TASK_CYCLE_POINT):
     """
     Create the subheader for the HTML report.
@@ -163,7 +299,9 @@ def create_subheader(cylc_task_cycle_point=CYLC_TASK_CYCLE_POINT):
     return subheader
 
 
-def render_html_report(report_data, subheader):
+def render_html_report(
+        report_data, subheader, esmval_core_commits, esmval_tool_commits,
+    ):
     """
     Render the HTML report using Jinja2.
 
@@ -173,6 +311,10 @@ def render_html_report(report_data, subheader):
         The report data to be rendered in the HTML template.
     subheader : str
         The subheader for the HTML report.
+    esmval_core_commits : dict
+        The ESMValCore commits information.
+    esmval_tool_commits : dict
+        The ESMValTool commits information.
 
     Returns
     -------
@@ -188,6 +330,8 @@ def render_html_report(report_data, subheader):
     rendered_html = template.render(
         subheader=subheader,
         report_data=report_data,
+        esmval_core_commits=esmval_core_commits,
+        esmval_tool_commits=esmval_tool_commits,
     )
     return rendered_html
 

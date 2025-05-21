@@ -28,10 +28,67 @@
             color: white;
         }
     </style>
+
     <body>
+        <h1>Recipe Test Workflow - Last Run Status</h1>
+        <h2>{{ subheader }}</h2>
+
+        {% if esmval_core_commits %}
         <table id="recipes">
-            <h1>Recipe Test Workflow - Last Run Status</h1>
-            <h2>{{ subheader }}</h2>
+            <caption><h2>ESMValCore Commits</h2></caption>
+                <tr>
+                    <th></th>
+                    <th>Time</th>
+                    <th>SHA</th>
+                    <th>Author</th>
+                    <th>Commit message</th>
+                </tr>
+                {% for commit in esmval_core_commits %}
+                <tr>
+                    {% if commit['report_flag'] %}
+                    <td align="right" style="color: hotpink; font-weight: bold;">{{ commit['report_flag'] }}</td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+                    <td>{{ commit['date'] }}</td>
+                    <td><a href="https://github.com/ESMValGroup/ESMValCore/commit/{{ commit['sha'] }}">{{ commit['sha'] }}</a></td>
+                    <td>{{ commit['author'] }} </td>
+                    <td>{{ commit['message']}} </td>
+                </tr>
+                {% endfor %}
+        </table>
+        {% endif %}
+
+        {% if esmval_tool_commits %}
+        <table id="recipes">
+            <caption><h2>ESMValTool Commits</h2></caption>
+            <tr>
+                <th></th>
+                <th>Time</th>
+                <th>SHA</th>
+                <th>Author</th>
+                <th>Commit message</th>
+            </tr>
+            {% for commit in esmval_tool_commits %}
+                    <tr>
+                        {% if commit['report_flag'] %}
+                        <td align="right" style="color: hotpink; font-weight: bold;">{{ commit['report_flag'] }}</td>
+                        {% else %}
+                        <td></td>
+                        {% endif %}
+                        <td>{{ commit['date'] }}</td>
+                        <td><a href="https://github.com/ESMValGroup/ESMValTool/commit/{{ commit['sha'] }}">{{ commit['sha'] }}</a></td>
+                        <td>{{ commit['author'] }} </td>
+                        <td>{{ commit['message']}} </td>
+                    </tr>
+            {% endfor %}
+        </table>
+
+        <br>
+        {% endif %}
+
+        <table id="recipes">
+            <caption><h2>Test Results</h2></caption>
             <tr>
                 <th>Recipe</th>
                 <th>Recipe Run</th>
