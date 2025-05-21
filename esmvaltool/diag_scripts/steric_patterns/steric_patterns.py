@@ -20,6 +20,7 @@ import iris.coord_categorisation
 import iris.cube
 import matplotlib.pyplot as plt
 import numpy as np
+from esmvalcore.preprocessor import area_statistics
 from sklearn.linear_model import LinearRegression
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -70,8 +71,8 @@ def calculate_drift(cube: iris.cube.Cube) -> float:
 
 
 def detrend_zostoga(
-    zostoga: iris.cube.Cube, drift_coef: float,
-    plot_path: Path) -> iris.cube.Cube:
+        zostoga: iris.cube.Cube, drift_coef: float,
+        plot_path: Path) -> iris.cube.Cube:
     """Detrend the zostoga cube.
 
     Parameters
@@ -111,7 +112,7 @@ def detrend_zostoga(
 
 
 def dyn_steric_regression(
-    zostoga: iris.cube.Cube, zos: iris.cube.Cube) -> tuple[np.array]:
+        zostoga: iris.cube.Cube, zos: iris.cube.Cube) -> tuple[np.array]:
     """Calculate the zostoga/zos regression.
 
     Parameters
@@ -135,7 +136,7 @@ def dyn_steric_regression(
     end_yr = 2100
 
     # Calculate regression coefficients for period 2005-2100
-    idx = ((yrs >= start_yr) & (yrs <= end_yr))
+    idx = (yrs >= start_yr) & (yrs <= end_yr)
 
     zostoga.data = zostoga.data - zostoga.data[0:10].mean()
     zos.data = zos.data - zos.data[0:10].mean()
@@ -201,6 +202,30 @@ def evaluate_patterns(
     -------
     None
     """
+    # Scale patterns for each scenario
+    mse_list = []
+    for i, (z, s) in enumerate(zip(zostoga, slopes)):
+        z.data = z.data - z.data[0:10].mean()
+        zos[i].data = zos[i].data - zos[i].data[0:10].mean()
+
+        pattern_scaled = z.data[:, np.newaxis, np.newaxis] * s[np.newaxis, :, :]
+        mse = np.nanmean((zos[i].data - pattern_scaled) ** 2, axis=0)
+        mse_list.append(mse)
+
+    # Plot the mse for each scenario
+    fig = plt.figure(figsize=(10, 6), layout="constrained")
+    ax = fig.add_subplot(111)
+
+    time = np.arange(2015, 2015 + mse_list[0].shape[0])
+    ax.plot(time, mse_list[0], label="SSP245", color="navy")
+    ax.plot(time, mse_list[1], label="SSP370", color="orange")
+    ax.plot(time, mse_list[2], label="SSP585", color="darkorchid")
+
+    ax.set_xlabel("Year")
+    ax.set_ylabel("Mean Squared Error (m)")
+
+    ax.legend(loc="upper left", frameon=False)
+    fig.savefig(Path(plot_path) / f"mse_{model}.png", dpi=300)
 
 
 def extract_data_from_cfg(model: str, cfg: dict) -> tuple[list]:
@@ -256,7 +281,6 @@ def extract_data_from_cfg(model: str, cfg: dict) -> tuple[list]:
             input_file = dataset["filename"]
             zos_585 = sf.load_cube(input_file)
 
-
     zostoga = [zostoga_picontrol, zostoga_245, zostoga_370, zostoga_585]
     zos = [zos_245, zos_370, zos_585]
     return zostoga, zos
@@ -297,7 +321,7 @@ def patterns(model: str, cfg: dict) -> None:
         save_data(s, m, work_path, model, scenarios[i])
 
     # Test the patterns
-    evaluate_patterns(slopes, masks, plot_path, model, scenarios)
+    evaluate_patterns(zostoga_list[1:], zos_list, slopes, plot_path, model)
 
 
 def main(cfg: dict) -> None:

@@ -66,7 +66,7 @@ def make_model_dirs(cfg: dict, model: str) -> tuple[Path, Path]:
     return model_work_dir, model_plot_dir
 
 
-def parallelise(function: callable, processes: int | None=None) -> callable:
+def parallelise(function: callable, processes: int | None = None) -> callable:
     """Parallelise any function, by George Ford, Met Office.
 
     Parameters
