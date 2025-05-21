@@ -178,19 +178,27 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     obs_plausible = obs_dict[obs_years]["plausible"]
 
     # Set up the figure
-    fig, ax = plt.subplots(figsize=(4, 6), layout="constrained")
+    fig, ax = plt.subplots(figsize=(3.5, 6), layout="constrained")
     fig.suptitle(titles_dictionary["titles"]["notz_fig_title"])
     ax.set_title(titles_dictionary["titles"]["notz_ax_title"])  # Ed's title
 
     # Iterate over the dictionary
     for dataset, inner_dict in data_dictionary.items():
         ax.plot(
-            0.5,
+            0.25,
             inner_dict["direct_sensitivity"],
-            label=dataset,
+            color="blue",
             marker="_",
             markersize=20,
         )
+
+        # Label with the dataset if specified
+        if inner_dict["label"] == "to_label":
+            plt.annotate(
+                dataset,
+                xy=(0.25, inner_dict["direct_sensitivity"]),
+                xytext=(0.35, inner_dict["direct_sensitivity"] - 0.05),
+            )
 
     # Add observations (style taken from Ed's code)
     if obs_mean is not None:
@@ -222,7 +230,6 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     # Tidy the figure
     ax.set_xticks([])
     ax.set_ylabel("dSIA/dGMST (million km$^2$ K$^{-1}$)")
-    plt.legend(loc="center left", bbox_to_anchor=(1, 0.5))
 
     # Save the figure (also closes it)
     provenance_record = get_provenance_record(cfg)
@@ -274,8 +281,9 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
             x, y, marker="o", s=150, c=[r2], hatch=h, cmap=cmap, norm=norm
         )
 
-        # Label with the dataset
-        plt.annotate(dataset, xy=(x, y), xytext=(x + 0.02, y + 0.02))
+        # Label with the dataset if specified
+        if inner_dict["label"] == "to_label":
+            plt.annotate(dataset, xy=(x, y), xytext=(x + 0.01, y - 0.005))
 
     # Add a colour bar
     plt.colorbar(label="R^2 * sign(R)")
@@ -315,6 +323,12 @@ def main(cfg):
 
         # Add the dataset to the dictionary with a blank inner dictionary
         data_dict[dataset] = {}
+
+        # Add an entry to determine labelling in plots
+        if "label_dataset" in selection[0]:
+            data_dict[dataset]["label"] = "to_label"
+        else:
+            data_dict[dataset]["label"] = "unlabelled"
 
         # Calculations for the Notz-style plot
         logger.info("Calculating data for Notz-style plot")
