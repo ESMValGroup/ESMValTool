@@ -23,9 +23,9 @@ documentation:
 
 defaults: &defaults {ensemble: r1i1p1f1, exp: historical, grid: gn, project: CMIP6}
 datasets:
-  - {<<: *defaults, dataset: HadGEM3-GC31-LL, institute: MOHC, ensemble: r1i1p1f3}
+  - {<<: *defaults, dataset: HadGEM3-GC31-LL, institute: MOHC, ensemble: r1i1p1f3, to_label: True}
 #  - {<<: *defaults, dataset: HadGEM3-GC31-MM, institute: MOHC, ensemble: r1i1p1f3}  # other error
-  - {<<: *defaults, dataset: UKESM1-0-LL, institute: MOHC, ensemble: r1i1p1f2}
+  - {<<: *defaults, dataset: UKESM1-0-LL, institute: MOHC, ensemble: r1i1p1f2, to_label: True}
   - {<<: *defaults, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
   - {<<: *defaults, dataset: ACCESS-ESM1-5, institute: CSIRO}
 #  - {<<: *defaults, dataset: AWI-CM-1-1-MR, institute: AWI}  # missing monthly siconc
