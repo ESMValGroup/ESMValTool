@@ -163,6 +163,7 @@ def _sort_time(
             Variable name in cube.
         filename: str
             Filename of cube.
+
     Return:
         cube: iris cube
             Cube with sorted and added time dimensions.
@@ -216,6 +217,7 @@ def _insert_data_into_cube(
         mask: Boolean array
             Array of shape or length x where True, will inster data.
             Default of None which means True for all points in eg_cube.
+
     Return:
         pred_cube: iris cube
             cube with data replaced by x
@@ -247,9 +249,11 @@ def _read_variables_from_namelist(file_name: str) -> dict:
     Arguments:
         file_name: str
             The name of the file containing the variables.
+
     Return:
         dict: dict
             A dictionary of variable names and their values.
+
     Example Usage:
         file_name = 'variables.txt'
         read_variables = read_variables_from_file(file_name)
@@ -320,6 +324,7 @@ def _select_post_param(trace: str) -> dict:
 
     Arguments:
         trace -- pymc netcdf trace file as filename or already opened
+
     Return:
         dict of paramater values with each item names after the parameter
     """
@@ -355,6 +360,7 @@ def _construct_param_comb(
             List of input parameters' names.
         extra_params: dict
             Dictionary of extra parameters to be added to the dictionary.
+
     Return:
         param_in: dict
             Dictionary of paramater values.
@@ -407,6 +413,7 @@ def _read_variable_from_netcdf(
         time_series: list
             List comtaining range of years. If making flat and
             returned a time series, checks if that time series contains year.
+
     Return:
         dataset: iris cube
             if make_flat, a numpy vector of the target variable, otherwise
@@ -562,6 +569,7 @@ def _read_all_data_from_netcdf(
         frac_random_sample: int
             fraction of data to be returned
         see _read_variable_from_netcdf comments for *arg and **kw.
+
     Return:
         y: np.array
             a numpy array of the target variable.
@@ -659,12 +667,12 @@ def _read_all_data_from_netcdf(
         x_var = (x_var - scalers[0, :]) / (scalers[1, :] - scalers[0, :])
         if check_mask and ca_filename is not None:
             return y_var, x_var, ca_var, cells_we_want, scalers
-        return y_var, x_var, cells_we_want, scalers
+        return y_var, x_var, cells_we_want, scalers, None
 
     if (check_mask or frac_random_sample) and ca_filename is not None:
-        return y_var, x_var, ca_var, cells_we_want
+        return y_var, x_var, cells_we_want, None, ca_var
 
-    return y_var, x_var, cells_we_want
+    return y_var, x_var, cells_we_want, None, None
 
 
 # /fire_models/ConFire.py
@@ -738,7 +746,8 @@ class ConFire:
                 Input drivers.
             return_controls: bool
             return_limitation: bool
-        Returns:
+
+        Return:
             ba: numpck instance
                 Burnt area data.
         """
@@ -772,6 +781,7 @@ class ConFire:
                     Input data.
                 factor: float
                     Exponential factor.
+
             Return:
                 Applied sigmoid function value.
             """
@@ -811,6 +821,7 @@ class ConFire:
                 Cube containing precipitation data.
             wd_pg: iris cube
                 Cube containing wet days.
+
         Return:
             emcw: iris cube
                 Weighted cube of EMC.
@@ -835,7 +846,8 @@ class ConFire:
         Arguments:
             params: list
             varnames: list
-        Returns:
+
+        Return:
             full_df: pd.DataFrame
                 Dataframe containing the parameters values in each experiment.
         """
@@ -843,7 +855,8 @@ class ConFire:
 
         def _list_one_line_of_parmas(param: list) -> np.array:
             def _select_param_or_default(
-                *args: tuple, **kw: dict
+                *args: tuple,
+                **kw: dict,
             ) -> ModuleType:
                 return _select_key_or_default(
                     *args,
@@ -919,6 +932,7 @@ def _get_parameters(config: dict) -> tuple:
     Arguments:
         config: dict
             Dictionary from ESMValTool recipe.
+
     Return:
         output_dir: str
             Path to output directory.
@@ -955,7 +969,7 @@ def _get_parameters(config: dict) -> tuple:
     # **Load Driving Data and Land Mask**
     logger.info("Loading data for ConFire model...")
     scalers = pd.read_csv(scale_file).to_numpy()
-    _, driving_data, lmask, _ = _read_all_data_from_netcdf(
+    _, driving_data, lmask, _, _ = _read_all_data_from_netcdf(
         nc_files[0],
         nc_files,
         scalers=scalers,
@@ -1001,6 +1015,7 @@ def _setup_cube_output(
             Output variable contained in the cube.
         provenance: dict
             Dictionary w/ provenance record.
+
     Return:
         cube: iris cube
             Modified output cube.
@@ -1082,6 +1097,7 @@ def diagnostic_run_confire(
             Project of the model data.
         experiment: str or list of str
             Experiment of the model data.
+
     Return:
         figures: list
             List of matplotlib figures produced for the burnt area results.
@@ -1126,6 +1142,7 @@ def diagnostic_run_confire(
                 Dictionary of input parameters for the run.
             coord: iris coord
                 Coordinate to add to the output cube.
+
         Return:
             cube: iris cube
                 ConFire model output cube.
