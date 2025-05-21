@@ -111,7 +111,7 @@ def main(db_file_path=CYLC_DB_PATH):
     processed_db_data = process_db_output(raw_db_data)
 
     print("Fetching package versions")
-    current_package_versions = fetch_package_versions_from_container(CONTAINER_PATH)
+    current_package_versions = fetch_package_versions_from_container()
     print("Package versions fetched")
 
     subheader = create_subheader()
@@ -234,8 +234,8 @@ def process_db_output(report_data):
     return sorted_processed_db_data
 
 
-def fetch_package_versions_from_container(path_to_container):
-    command = [ENV_FILE, path_to_container, "esmvaltool", "version"]
+def fetch_package_versions_from_container():
+    command = [ENV_FILE, "esmvaltool", "version"]
     print(command)
     raw_version_info = subprocess.run(
         command,
