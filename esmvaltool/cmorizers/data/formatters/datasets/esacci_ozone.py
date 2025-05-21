@@ -47,9 +47,19 @@ Download and processing instructions
     Put all files under a single directory (no subdirectories with years).
     in ${RAWOBS}/Tier2/ESACCI-OZONE
 
+    ---------------------------------------------------------------------------
+
+    IASI (variable o3)
+    Download from BIRA WebDAV server: https://webdav.aeronomie.be
+    Path: /guest/o3_cci/webdata/Nadir_Profiles/L3/IASI_MG_FORLI/
+    Username: o3_cci_public
+    No password (leave empty)
+    Download each year (yyyy) into separate folders named "IASI_yyyy"
 """
 
+import glob
 import logging
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -73,13 +83,19 @@ def _convert_units(cubes, short_name, var):
     """Perform variable-specific calculations."""
     cube = cubes.extract_cube(var["raw"])
     if short_name == "o3":  # Ozone mole fraction
-        gas_constant = 8.31446261815324  # Ideal gas constant (J mol-1 K-1)
-        t_cube = cubes.extract_cube("air_temperature")
-        p_cube = cubes.extract_cube("air_pressure")
-        p_cube.convert_units("Pa")
-        air_mol_concentration = p_cube / (gas_constant * t_cube)  # mol m-3
-        cube = cube / air_mol_concentration
-        cube.units = "mol mol-1"
+        if var["var_name"] == "o3_iasi":  # IASI merged profiles
+            air_mol_concentration = cubes.extract_cube(
+                "air_partial_column_profile")
+            cube = cube / air_mol_concentration
+            cube.units = "mol mol-1"
+        else: # SAGE-CCI-OMPS or MEGRIDOP profiles
+            gas_constant = 8.31446261815324  # Ideal gas constant (J mol-1 K-1)
+            t_cube = cubes.extract_cube("air_temperature")
+            p_cube = cubes.extract_cube("air_pressure")
+            p_cube.convert_units("Pa")
+            air_mol_concentration = p_cube / (gas_constant * t_cube)  # mol m-3
+            cube = cube / air_mol_concentration
+            cube.units = "mol mol-1"
 
     elif short_name == "toz":  # Total ozone column (m)
         # Convert from mol m-2 to m
@@ -96,42 +112,54 @@ def _convert_units(cubes, short_name, var):
     return cube
 
 
-def _extract_variable(short_name, var, cfg, filename, year, month):
+def _extract_variable(in_files, var, cfg, out_dir, year, month):
     """Extract variable, add time coordinate, and scalar longitude."""
+    short_name = var["output"]
     mip = var["mip"]
     cmor_info = cfg["cmor_table"].get_variable(mip, short_name)
 
-    cubes = iris.load(filename)
+    # add time coordinate(s)
+    # try to extract day from filename(s)
+    new_list = iris.cube.CubeList()
+    for fname in in_files:
+        print(fname)
+        cubes = iris.load(fname)
+        i = fname.find(f"{year}{month:02}")
+        strday = fname[i+6:i+8]
+        try:
+            day = int(strday)
+        except ValueError:
+            day = 15
 
+        time_units = Unit("days since 1950-01-01")
+        time_points = time_units.date2num(datetime(year, month, day))
+
+        # Add time coordinate to cube.
+        time_coord = iris.coords.DimCoord(
+            time_points,
+            var_name="time",
+            standard_name="time",
+            long_name="time",
+            units=time_units,
+        )
+        for cube in cubes:
+            cube.add_aux_coord(time_coord, ())
+            cube = iris.util.new_axis(cube, time_coord)
+            new_list.append(cube)
+
+    print(new_list)
+    cubes = new_list.concatenate()
+    print(cubes)
     cube = _convert_units(cubes, short_name, var)
+    print("-------------------")
+    print(cube)
+    exit()
 
     logger.info("Checking CMOR info for %s: %s", short_name, cmor_info)
     if cmor_info is None:
         raise ValueError(f"CMOR info for {short_name} in MIP {mip} not found!")
 
-    day = 15  # Mid-month
-    time_units = Unit("days since 1950-01-01")
-    time_points = time_units.date2num(datetime(year, month, day))
-    logger.info(
-        "Filename: '%s', Extracted Year:'%d', Month: '%d'",
-        filename,
-        year,
-        month,
-    )
-
-    # Add time coordinate to cube.
-    time_coord = iris.coords.DimCoord(
-        time_points,
-        var_name="time",
-        standard_name="time",
-        long_name="time",
-        units=time_units,
-    )
-    time_coord.guess_bounds(monthly=True)
-    cube.add_aux_coord(time_coord, ())
-    cube = iris.util.new_axis(cube, time_coord)
-
-    # Add longitude coordinate to cube only for o3.
+    # Add longitude coordinate to cube only for o3_sage_omps.
     if var["var_name"] == "o3_sage_omps":
         lon_coord = iris.coords.DimCoord(
             [180.0],
@@ -145,8 +173,43 @@ def _extract_variable(short_name, var, cfg, filename, year, month):
         cube = iris.util.new_axis(cube, lon_coord)
         cube.transpose([1, 3, 2, 0])
         NativeDatasetFix.fix_alt16_metadata(cube)
-    if var["var_name"] == "o3_megridop":
+    elif var["var_name"] == "o3_megridop":
         NativeDatasetFix.fix_alt16_metadata(cube)
+    # add latitude, longitude and nlev coordiantes to cube for o3_iasi
+    elif var["var_name"] == "o3_iasi":
+        # longitude
+        lon_cube = cubes.extract_cube("longitude")
+        lon_coord = iris.coords.DimCoord(
+            lon_cube.core_data()[0,:],
+            var_name="lon",
+            standard_name="longitude",
+            long_name="longitude",
+            units="degrees_east",
+        )
+        cube.add_aux_coord(lon_coord, 2)
+        iris.util.promote_aux_coord_to_dim_coord(cube, "longitude")
+        # latitude
+        lat_cube = cubes.extract_cube("latitude")
+        lat_coord = iris.coords.DimCoord(
+            lat_cube.core_data()[0,:],
+            var_name="lat",
+            standard_name="latitude",
+            long_name="latitude",
+            units="degrees_north",
+        )
+        cube.add_aux_coord(lat_coord, 3)
+        iris.util.promote_aux_coord_to_dim_coord(cube, "latitude")
+        # level
+        lev_coord = iris.coords.DimCoord(
+            range(1, 42),
+            var_name="nlev",
+            standard_name="model_level_number",
+            long_name="number of level",
+            units="1",
+        )
+        cube.add_aux_coord(lev_coord, 1)
+        iris.util.promote_aux_coord_to_dim_coord(cube, "model_level_number")
+
     fix_var_metadata(cube, cmor_info)
     cube = fix_coords(cube)
     set_global_atts(cube, cfg["attributes"])
@@ -172,6 +235,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         elif var_name == "o3_megridop":  # MEGRIDOP
             dataset_start = datetime(2001, 11, 1)
             dataset_end = datetime(2023, 12, 31)
+        elif var_name == "o3_iasi":  # IASI
+            dataset_start = datetime(2008, 1, 1)
+            dataset_end = datetime(2008, 12, 31)  #(2023, 12, 31)
         else:
             raise ValueError(f"Unknown dataset for variable {var_name}")
 
@@ -193,6 +259,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             glob_attrs["version"] = glob_version
         output_var = var["output"]
         for year in range(start_date_x.year, end_date_x.year + 1):
+            if var_name == "o3_iasi":
+                subfolder = f"IASI_{year}"
+            else:
+                subfolder = ""
             for month in range(1, 13):
                 # Skip months outside the dataset range
                 current_date = datetime(year, month, 1)
@@ -200,23 +270,23 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     continue
 
                 date_str = f"{year}{month:02}"  # YYYYMM format
-                filename = Path(in_dir) / f"{date_str}-{var['filename']}"
-                if not filename.is_file():
-                    logger.warning(
-                        "No file found for %s in %s-%02d",
-                        var_name,
-                        year,
-                        month,
-                    )
+                monstr = f"{month:02}"
+                
+                filepattern = os.path.join(
+                    in_dir, subfolder, var['filename'].format(year=year, month=monstr)
+                )
+                in_files = glob.glob(filepattern)
+                if not in_files:
+                    logger.info('%d: no data not found for '
+                                'variable %s in %s-%02d', output_var, year, month)
                     continue
+                else:
+                    cube = _extract_variable(in_files, var, cfg, out_dir, year, month)
 
                 logger.info(
-                    "CMORizing variable '%s' from file '%s'",
+                    "CMORizing variable '%s' from file(s) '%s'",
                     output_var,
-                    filename,
-                )
-                cube = _extract_variable(
-                    output_var, var, cfg, filename, year, month
+                    in_files,
                 )
                 all_data_cubes.append(cube)
 

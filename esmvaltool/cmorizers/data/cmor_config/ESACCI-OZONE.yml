@@ -10,21 +10,29 @@ attributes:
   comment: ""
 
 variables:
-  toz_gto_ecv:
-    version: L3-GTO-ECV
-    mip: AERmon
-    output: toz
-    raw: total_ozone_column
-    filename: C3S-L3_OZONE-O3_PRODUCTS-MERGED_UV-MERGED-ALG-MONTHLY-v2000.nc #The filename needs also "YYYYMM-" as prefix added during the cmorization
-  o3_sage_omps:
-    version: L3-SAGE-OMPS
+  # Note: Do not change variable names, these are used to handle the different
+  # datasets in the formatting script esacci_ozone.py.
+#  toz_gto_ecv:
+#    version: L3-GTO-ECV
+#    mip: AERmon
+#    output: toz
+#    raw: total_ozone_column
+#    filename: {year}{month}-C3S-L3_OZONE-O3_PRODUCTS-MERGED_UV-MERGED-ALG-MONTHLY-v2000.nc
+#  o3_sage_omps:
+#    version: L3-SAGE-OMPS
+#    mip: AERmon
+#    output: o3
+#    raw: merged_ozone_concentration
+#    filename: {year}{month}-C3S-L3_OZONE-O3_PRODUCTS-CONC_MZM-MERGED-ALG-MONTHLY-v0008.nc
+#  o3_megridop:
+#    version: L3-MEGRIDOP
+#    mip: AERmon
+#    output: o3
+#    raw: merged_ozone_concentration
+#    filename: {year}{month}-C3S-L3_OZONE-O3_PRODUCTS-CONC_LLG-MERGED-ALG-MONTHLY-v0005.nc
+  o3_iasi:
+    version: L3-IASI
     mip: AERmon
     output: o3
-    raw: merged_ozone_concentration
-    filename: C3S-L3_OZONE-O3_PRODUCTS-CONC_MZM-MERGED-ALG-MONTHLY-v0008.nc #The filename needs also "YYYYMM-" as prefix added during the cmorization
-  o3_megridop:
-    version: L3-MEGRIDOP
-    mip: AERmon
-    output: o3
-    raw: merged_ozone_concentration
-    filename: C3S-L3_OZONE-O3_PRODUCTS-CONC_LLG-MERGED-ALG-MONTHLY-v0005.nc #The filename needs also "YYYYMM-" as prefix added during the cmorization
+    raw: O3_partial_column_profile
+    filename: IASI_FORLI_O3_MERGED_{year}{month}*_V1.0.nc

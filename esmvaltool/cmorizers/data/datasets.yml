@@ -528,6 +528,7 @@ datasets:
             GTO-ECV total column (variable toz)
             Select the following from the CDS:
             https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+            Put all files under a single directory (no subdirectories with years).
 
             Processing Level = "Level 3"
             Variable = "Atm. mole content of ozone"
@@ -540,6 +541,7 @@ datasets:
             SAGE-CCI-OMPS (variable o3)
             Select the following options from the same link:
             https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+            Put all files under a single directory (no subdirectories with years).
 
             Processing Level = "Level 3"
             Variable = "Mole concentration of ozone in air"
@@ -553,6 +555,7 @@ datasets:
             MEGRIDOP (variable o3)
             Select the following options from the same link:
             https://cds.climate.copernicus.eu/datasets/satellite-ozone-v1?tab=download
+            Put all files under a single directory (no subdirectories with years).
 
             Processing Level = "Level 3"
             Variable = "Mole concentration of ozone in air"
@@ -562,7 +565,12 @@ datasets:
             Month = select all (1-12)
             Version = "v0005"
 
-      Put all files under a single directory (no subdirectories with years).
+            IASI (variable o3)
+            Download from BIRA WebDAV server: https://webdav.aeronomie.be
+            Path: /guest/o3_cci/webdata/Nadir_Profiles/L3/IASI_MG_FORLI/
+            Username: o3_cci_public
+            No password (leave empty)
+            Download each year (yyyy) into separate folders named "IASI_yyyy"
 
   ESACCI-SEAICE:
     tier: 2
