@@ -110,7 +110,7 @@ def main(db_file_path=CYLC_DB_PATH):
     processed_db_data = process_db_output(raw_db_data)
 
     print("Fetching package versions")
-    current_package_versions = fetch_package_versions_from_container()
+    current_package_versions = fetch_package_versions_from_container(CONTAINER_PATH)
     print("Package versions fetched")
 
     subheader = create_subheader()
