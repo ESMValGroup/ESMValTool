@@ -285,8 +285,11 @@ def _get_plot_kwargs(all_plot_kwargs: dict, group: str) -> dict:
 
 def _load_and_preprocess_data(cfg: dict) -> list[dict]:
     """Load and preprocess data."""
-    input_data = list(cfg["input_data"].values())
-    changed_input_data = []
+    # this (and copy of dataset dict below) is needed due
+    # to an unknown bug created by importing distributed (>2025.2)
+    # and requests-cache; we are unsure what the bug really is;
+    # see https://github.com/ESMValGroup/ESMValTool/pull/4044
+    input_data = deepcopy(list(cfg["input_data"].values()))
 
     for dataset in input_data:
         dataset = dict(dataset)
@@ -328,9 +331,8 @@ def _load_and_preprocess_data(cfg: dict) -> list[dict]:
         ih.unify_time_coord(cube)
 
         dataset["cube"] = cube
-        changed_input_data.append(dataset)
 
-    return changed_input_data
+    return input_data
 
 
 def _plot(
