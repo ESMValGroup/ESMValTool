@@ -50,9 +50,12 @@ REPORT_PATH = os.environ.get("REPORT_PATH")
 
 # UNCOMMENT FOR DKRZ
 CONTAINER_DIR = os.environ.get("CONTAINER_DIR")
-CONTAINER_FILE = "esmvaltool.sif"
+CONTAINER = "esmvaltool.sif"
 CONTAINER_PATH = os.environ.get("CONTAINER_PATH")
+
+SHARE_BIN = os.environ.get("SHARE_BIN")
 ENV_FILE = os.environ.get("ENV_FILE")
+SING_ENV_FILE = os.environ.get("SING_ENV_FILE")
 
 SQL_QUERY_TASK_STATES = "SELECT name, status FROM task_states"
 
@@ -105,7 +108,16 @@ def main(db_file_path=CYLC_DB_PATH):
 
     print("Container dir: ", CONTAINER_DIR)
     print("Container path: ", CONTAINER_PATH)
-    print("Previous cylce point: ", CYLC_TASK_PREVIOUS_CYCLE)
+    print("Previous cycle point: ", CYLC_TASK_PREVIOUS_CYCLE)
+    print("Share bin: ", SHARE_BIN)
+    print("Env file: ", ENV_FILE)
+    print("Singularity env: ", SING_ENV_FILE)
+
+    print("Share bin exists?: ", Path(SHARE_BIN).exists())
+    print("Env file exists?: ", Path(ENV_FILE).exists())
+    print("Sing env exists?", Path(SING_ENV_FILE).exists())
+
+    print("Env file content", Path(ENV_FILE).read_text())
 
     raw_db_data = fetch_report_data(db_file_path)
     processed_db_data = process_db_output(raw_db_data)
@@ -235,17 +247,19 @@ def process_db_output(report_data):
 
 
 def fetch_package_versions_from_container():
-    command = [ENV_FILE, "esmvaltool", "version"]
-    print(command)
+    print("Cwd", CONTAINER_DIR)
+    command = [SING_ENV_FILE, "singularity", "run", "esmvaltool.sif", "version"]
+    print("Command: ", command)
     raw_version_info = subprocess.run(
         command,
+        cwd=CONTAINER_DIR,
         capture_output=True,
         check=True,
         text=True
     )
-    print(command.stdout)
-    print(command.stderr)
-    return command.stdout
+    print(raw_version_info.stdout)
+    print(raw_version_info.stderr)
+    return raw_version_info.stdout
 
 
 def add_report_message_to_git_commits(git_commits_info):

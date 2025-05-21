@@ -160,7 +160,9 @@
             CYLC_DB_PATH = ${CYLC_WORKFLOW_RUN_DIR}/log/db
             PRODUCTION = {{ PRODUCTION }}
             REPORT_PATH = ${ROSE_DATAC}/status_report.html
-            ENV_FILE = ${CYLC_WORKFLOW_SHARE_DIR}/bin/env-file
+            SHARE_BIN = ${CYLC_WORKFLOW_SHARE_DIR}/bin
+            ENV_FILE = ${SHARE_BIN}/env-file
+            SING_ENV_FILE = ${SHARE_BIN}/singularity-env-file
 
     [[housekeeping]]
         platform = localhost
