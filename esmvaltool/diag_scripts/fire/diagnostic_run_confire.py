@@ -1240,7 +1240,9 @@ def diagnostic_run_confire(
             cube = iris.load_cube(filepath)
             for pct in [5, 95]:
                 pc_cube = cube.collapsed(
-                    "realization", iris.analysis.PERCENTILE, percent=pct
+                    "realization",
+                    iris.analysis.PERCENTILE,
+                    percent=pct,
                 )[0]
                 img = iris.quickplot.pcolormesh(
                     pc_cube,
@@ -1251,9 +1253,11 @@ def diagnostic_run_confire(
                     cmap="Oranges",
                 )
                 axes[plotn].set_title(
-                    filename.replace("_", " ").capitalize()
-                    + f" - {timerange}\n{model_name}"
-                    + f" - [{pct!s}% percentile]",
+                    (
+                        filename.replace("_", " ").capitalize()
+                        + f" - [{pct!s}% percentile]\n"
+                        + f"{model_name} ({project}-{experiment})"
+                    ),
                 )
                 axes[plotn].coastlines()
                 # Add colorbar
