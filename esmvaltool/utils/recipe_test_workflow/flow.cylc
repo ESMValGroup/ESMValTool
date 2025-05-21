@@ -51,7 +51,7 @@
 [runtime]
     [[root]]
         script = rose task-run
-        env-script = "eval $(rose task-env)"
+        env-script = "eval $(rose task-env --cycle-offset=P1D)"
         [[[environment]]]
             ENV_NAME = {{ ENV_NAME }}
             USER_CONFIG_DIR = ${ROSE_DATAC}/config_dir
