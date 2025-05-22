@@ -56,7 +56,6 @@ REQUIREMENTS = {
         "pandas",
         "progressbar2",
         "pyproj>=2.1",
-        # "pys2index",  # installs from PyPI and tries building, that fails
         "python-dateutil",
         "pyyaml",
         "rasterio>=1.3.10",
@@ -220,6 +219,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Atmospheric Science",
         "Topic :: Scientific/Engineering :: GIS",
