@@ -247,8 +247,6 @@ setup(
     entry_points={
         "console_scripts": [
             "nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main",
-            "test_recipe = "
-            "esmvaltool.utils.testing.recipe_settings.install_expand_run:main",
         ],
         "esmvaltool_commands": [
             "colortables = "

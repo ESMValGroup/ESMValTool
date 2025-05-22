@@ -11,6 +11,7 @@
 .. |KGOs| replace:: :term:`KGOs`
 .. |KGO| replace:: :term:`KGOs`
 .. |Rose| replace:: :term:`Rose`
+.. |rose_prune| replace:: ``rose_prune``
 
 .. Links
 
@@ -24,6 +25,7 @@
 .. _ESMValTool PR #3664: https://github.com/ESMValGroup/ESMValTool/pull/3664
 .. _jasmin-recipes.jinja: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/recipe_test_workflow/site/jasmin-recipes.jinja
 .. _Jinja2: https://jinja.palletsprojects.com/en/stable/
+.. _metoffice-recipes.jinja: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/recipe_test_workflow/site/metoffice-recipes.jinja
 .. _new ESMValTool issue: https://github.com/ESMValGroup/ESMValTool/issues/new
 .. _Rose Documentation: https://metomi.github.io/rose/doc/html/index.html
-.. _metoffice-recipes.jinja: https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/utils/recipe_test_workflow/site/metoffice-recipes.jinja
+.. _rose_prune: https://metomi.github.io/rose/doc/html/api/built-in/rose_prune.html
