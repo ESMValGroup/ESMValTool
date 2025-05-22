@@ -4,13 +4,16 @@ from pathlib import Path
 
 import pytest
 
-from bin.generate_html_report import (
+from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.generate_html_report import (
     SQL_QUERY_TASK_STATES,
     create_subheader,
     fetch_report_data,
     process_db_output,
     render_html_report,
 )
+
+def test_if_running():
+    assert 1 == 2
 
 
 @pytest.fixture()
