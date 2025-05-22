@@ -16,9 +16,7 @@ authors:
 
 from __future__ import annotations
 
-import glob
 import logging
-import os
 from pathlib import Path
 
 import iris
@@ -140,7 +138,7 @@ def download_files_from_zenodo(
                 raise ValueError(msg)
 
 
-def get_parameter_directory(config: dict) -> dict:
+def get_parameter_directory(cfg: dict) -> dict:
     """Get the path to the parameter directory.
 
     The parameter directory can either consist of:
@@ -150,7 +148,7 @@ def get_parameter_directory(config: dict) -> dict:
 
     Parameters
     ----------
-    config : dict
+    cfg : dict
         ESMValTool configuration dictionary from the recipe.
 
     Returns
@@ -160,8 +158,8 @@ def get_parameter_directory(config: dict) -> dict:
     """
     param_dir = None
     # If confire_param is a directory = return this directory
-    if Path.is_dir(config["confire_param"]):
-        param_dir = str(config["confire_param"])
+    if Path.is_dir(cfg["confire_param"]):
+        param_dir = str(cfg["confire_param"])
         if param_dir[-1] != "/":
             param_dir += "/"
         msg = f"Using ConFire model parameter files from directory {param_dir}"
@@ -193,16 +191,16 @@ def get_parameter_directory(config: dict) -> dict:
     # https://zenodo.org/records/{record_id}
     # where record_id is a number typically corresponding to
     # the attribute zenodo.{record_id} in the DOI.
-    elif "https://zenodo.org/records/" in config["confire_param"]:
+    elif "https://zenodo.org/records/" in cfg["confire_param"]:
         msg = (
             "Retrieving ConFire model parameter files from "
-            + config["confire_param"]
+            + cfg["confire_param"]
         )
         logger.info(msg)
-        param_dir = config["work_dir"] + "/ConFire_parameter_files/"
+        param_dir = cfg["work_dir"] + "/ConFire_parameter_files/"
         Path.mkdir(param_dir, parents=True, exist_ok=True)
         download_files_from_zenodo(
-            zenodo_link=config["confire_param"],
+            zenodo_link=cfg["confire_param"],
             output_dir=param_dir,
         )
     # Otherwise raise an error
@@ -210,14 +208,14 @@ def get_parameter_directory(config: dict) -> dict:
         msg = (
             "Recipe input confire_param should either be a directory or a "
             "Zenodo URL. However, parameter is set to "
-            f"{config['confire_param']}."
+            f"{cfg['confire_param']}."
         )
         raise ValueError(msg)
     return param_dir
 
 
 def compute_vpd(
-    config: dict,
+    cfg: dict,
     tas: iris.cube.Cube,
     hurs: iris.cube.Cube,
     provenance: dict,
@@ -234,7 +232,7 @@ def compute_vpd(
 
     Parameters
     ----------
-    config : dict
+    cfg : dict
         The ESMValTool configuration.
     tas : iris.cube.Cube
         The cube containing the surface temperature.
@@ -280,11 +278,11 @@ def compute_vpd(
     debug_vpd = f"vapor_pressure_deficit iris cube {vpd}"
     logger.debug(debug_vpd)
     basename = setup_basename_file(provenance["ancestors"][0], "vpd", "Amon")
-    msg = f"Saving vapor_pressure_deficit in {config['work_dir']}/{basename}"
+    msg = f"Saving vapor_pressure_deficit in {cfg['work_dir']}/{basename}"
     logger.info(msg)
-    filename = get_diagnostic_filename(basename, config, extension="nc")
+    filename = get_diagnostic_filename(basename, cfg, extension="nc")
     iris.save(vpd, filename)
-    with ProvenanceLogger(config) as provenance_logger:
+    with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance)
     return filename
 
@@ -335,10 +333,11 @@ def main(config: dict) -> None:
         timerange = group[0]["timerange"]
         project = list({gr["project"] for gr in group})
         experiment = list({gr["exp"] for gr in group})
+        plot_file_info = None
 
         vars_file = {}
         for i, attributes in enumerate(group):
-            logger.info(f"Variable {attributes['short_name']}")
+            logger.info("Variable %s", attributes["short_name"])
             vars_file[attributes["short_name"]] = attributes
             # Save model information for output plot name
             if i == 0:
@@ -348,14 +347,15 @@ def main(config: dict) -> None:
                         attributes["exp"],
                         str(attributes["start_year"]),
                         str(attributes["end_year"]),
-                    ]
+                    ],
                 )
         logger.info(vars_file.keys())
 
         if "vpd" in config["var_order"]:
             # Compute Vapor Pressure Deficit (VPD)
             logger.info(
-                f"Processing vapor_pressure_deficit for {model_dataset}"
+                "Processing vapor_pressure_deficit for %s",
+                model_dataset,
             )
             tas = iris.load_cube(vars_file["tas"]["filename"])
             hurs = iris.load_cube(vars_file["hurs"]["filename"])
@@ -383,7 +383,9 @@ def main(config: dict) -> None:
         config["files_input"] = [
             [vars_file[v]["filename"], v] for v in config["var_order"]
         ]
-        logger.info(f"Input files used for diagnostic {config['files_input']}")
+        logger.info(
+            "Input files used for diagnostic %s", config["files_input"]
+        )
         config["filenames_out"] = [
             "burnt_fraction",
             "fire_weather_control",
@@ -421,35 +423,38 @@ def main(config: dict) -> None:
 
         # Remove or not VPD files after diagnostic run
         if config["remove_vpd_files"]:
-            logger.info(f"Removing VPD files in {config['work_dir']}")
+            logger.info("Removing VPD files in %s", config["work_dir"])
             f_not_removed = []
-            for f in glob.glob(f"{config['work_dir']}/*vpd*.*"):
-                logger.info(f"Removing {f.split('/')[-1]}")
+            for f in list(Path(f"{config['work_dir']}/").glob("*vpd*.*")):
+                logger.info("Removing %s", f.split("/")[-1])
                 try:
-                    os.remove(f)
-                    logger.info(f"Removed {f.split('/')[-1]}")
+                    Path(f).unlink()
+                    logger.info("Removed %s", f.split("/")[-1])
                 except OSError as e:
-                    logger.debug(f"Error removing {f.split('/')[-1]}: {e}")
+                    logger.debug("Error removing %s: %s", f.split("/")[-1], e)
                     f_not_removed.append(f.split("/")[-1])
-            logger.info(f"Files not removed: {f_not_removed}")
+            logger.info("Files not removed: %s", f_not_removed)
 
         # Remove or not ConFire files after diagnostic run
         if config["remove_confire_files"]:
             logger.info(
-                f"Removing files in {config['work_dir']}/ConFire_outputs"
+                "Removing files in %s/ConFire_outputs",
+                config["work_dir"],
             )
             f_not_removed = []
-            for f in glob.glob(f"{config['work_dir']}/ConFire_outputs/*.nc"):
-                logger.info(f"Removing {f.split('/')[-1]}")
+            for f in list(
+                Path(f"{config['work_dir']}/ConFire_outputs/").glob("*.nc")
+            ):
+                logger.info("Removing %s", f.split("/")[-1])
                 try:
-                    os.remove(f)
-                    logger.info(f"Removed {f.split('/')[-1]}")
+                    Path(f).unlink()
+                    logger.info("Removed %s", f.split("/")[-1])
                 except OSError as e:
-                    logger.debug(f"Error removing {f.split('/')[-1]}: {e}")
+                    logger.debug("Error removing %s: %s", f.split("/")[-1], e)
                     f_not_removed.append(f.split("/")[-1])
-            logger.info(f"Files not removed: {f_not_removed}")
+            logger.info("Files not removed: %s", f_not_removed)
             if len(f_not_removed) == 0:
-                os.rmdir(f"{config['work_dir']}/ConFire_outputs")
+                Path.rmdir(f"{config['work_dir']}/ConFire_outputs")
 
 
 if __name__ == "__main__":

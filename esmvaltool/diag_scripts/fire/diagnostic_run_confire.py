@@ -41,7 +41,6 @@ logger = logging.getLogger(Path(__file__).stem)
 
 
 def get_provenance_record(
-    cfg: dict,
     ancestors: str | list,
     model_name: str,
     project: str | list,
@@ -53,8 +52,6 @@ def get_provenance_record(
 
     Parameters
     ----------
-    cfg : dict
-        Recipe configuration dictionary.
     ancestors : str, list, dict
         List of ancestor files.
     project : str
@@ -386,7 +383,6 @@ def _read_variable_from_netcdf(
     extent: np.array | list | None = None,
     return_time_points: bool = False,
     return_extent: bool = False,
-    *args: tuple,
 ) -> iris.cube.Cube:
     """Read data from a netCDF file.
 
@@ -527,6 +523,7 @@ def _read_variable_from_netcdf(
 
 
 def _read_all_data_from_netcdf(
+    *args: tuple,
     y_filename: list,
     x_filename_list: list,
     ca_filename: list | None = None,
@@ -537,7 +534,6 @@ def _read_all_data_from_netcdf(
     check_mask: bool = True,
     frac_random_sample: float = 1.0,
     min_data_points_for_sample: int | None = None,
-    *args: tuple,
     **kw: dict,
 ) -> tuple[np.array]:
     """Read data from netCDF files.
@@ -806,7 +802,7 @@ class ConFire:
 
         return b_a
 
-    def _emc_weighted(
+    def emc_weighted(
         self,
         emc: iris.cube.Cube,
         precip: iris.cube.Cube,
@@ -836,7 +832,7 @@ class ConFire:
             emcw.data = emcw.data + (1.0 - emcw.data) * emc.data
         return emcw
 
-    def _list_model_params(
+    def list_model_params(
         self,
         params: list,
         varnames: list | None = None,
