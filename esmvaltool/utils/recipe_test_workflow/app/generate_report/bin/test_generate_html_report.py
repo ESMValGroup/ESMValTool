@@ -12,9 +12,6 @@ from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.generate_html
     render_html_report,
 )
 
-def test_if_running():
-    assert 1 == 2
-
 
 @pytest.fixture()
 def mock_cylc_db():
