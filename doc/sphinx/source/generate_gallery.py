@@ -2,6 +2,7 @@
 """Create gallery with all available recipes."""
 
 import os
+from pathlib import Path
 
 RECIPE_DIR = "recipes"
 OUT_PATH = os.path.abspath("gallery.rst")
@@ -31,10 +32,14 @@ CELL_WIDTH = 50
 
 def _get_figure_index(file_content):
     """Get index of figure in text."""
+    offset = 0
+    if ".. gallery=True" in file_content:
+        offset = file_content.index(".. gallery=True") + 15
+        file_content = file_content[offset:]
     if FIGURE_STR in file_content:
-        return file_content.index(FIGURE_STR) + len(FIGURE_STR)
+        return offset + file_content.index(FIGURE_STR) + len(FIGURE_STR)
     if IMAGE_STR in file_content:
-        return file_content.index(IMAGE_STR) + len(IMAGE_STR)
+        return offset + file_content.index(IMAGE_STR) + len(IMAGE_STR)
     raise ValueError("File does not contain image")
 
 
@@ -79,6 +84,17 @@ def _get_next_row(filenames, file_contents):
     return (row, refs)
 
 
+def _find_recipes(root_dir, exclude_dirs):
+    return [
+        path.relative_to(root_dir)
+        for path in Path(root_dir).rglob("recipe_*.rst")
+        if not any(
+            path.parents[0].name.startswith(exclude)
+            for exclude in exclude_dirs
+        )
+    ]
+
+
 def main():
     """Generate gallery for recipe plots."""
     print(f"Generating gallery at {OUT_PATH}")
@@ -87,11 +103,8 @@ def main():
     refs = ""
     filenames = []
     file_contents = []
-    for filename in sorted(os.listdir(RECIPE_DIR)):
-        if not filename.startswith("recipe_"):
-            continue
-        if not filename.endswith(".rst"):
-            continue
+    fnames = _find_recipes(RECIPE_DIR, ["legacy", "figures"])
+    for filename in sorted(fnames):
         with open(os.path.join(RECIPE_DIR, filename)) as in_file:
             recipe_file = in_file.read()
         if FIGURE_STR not in recipe_file and IMAGE_STR not in recipe_file:
