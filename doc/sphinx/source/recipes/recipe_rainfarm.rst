@@ -13,7 +13,7 @@ Legacy recipe: RainFARM stochastic downscaling
 
    Rainfarm is also published as an R package: https://github.com/jhardenberg/rainfarmr
    However, we don't know if it is up to date and provides the same features.
-   Similar implementations in Python are also available in the pysteps library at 
+   Similar implementations in Python are also available in the pysteps library at
    https://github.com/pySTEPS/pysteps/blob/master/examples/rainfarm_downscale.py
 
 Overview
