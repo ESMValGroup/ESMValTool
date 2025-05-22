@@ -228,6 +228,7 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         )
 
     # Tidy the figure
+    ax.set_xlim(0, 1)
     ax.set_xticks([])
     ax.set_ylabel("dSIA/dGMST (million km$^2$ K$^{-1}$)")
 
@@ -327,8 +328,10 @@ def main(cfg):
         # Add an entry to determine labelling in plots
         if "label_dataset" in selection[0]:
             data_dict[dataset]["label"] = "to_label"
+            logger.info("Dataset %s will be labelled", dataset)
         else:
             data_dict[dataset]["label"] = "unlabelled"
+            logger.info("Not labelling dataset %s in plots", dataset)
 
         # Calculations for the Notz-style plot
         logger.info("Calculating data for Notz-style plot")
