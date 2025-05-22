@@ -1,7 +1,7 @@
 .. _recipes_rainfarm:
 
 Legacy recipe: RainFARM stochastic downscaling
-===============================
+==============================================
 
 .. note::
 
