@@ -290,18 +290,6 @@ To compare all results from the current version to the previous version, use e.g
 To get more information on how a result is different, run the tool with the
 ``--verbose`` flag.
 
-Testing recipe settings
-=======================
-
-A tool for generating recipes with various diagnostic settings, to test of those work.
-Install ESMValTool in development mode (``pip install -e '.[develop]'``) to make it available.
-To use it, run
-
-.. code-block:: bash
-
-    test_recipe --help
-
-
 .. _draft_release_notes.py:
 
 draft_release_notes.py
