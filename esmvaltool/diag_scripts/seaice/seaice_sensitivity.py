@@ -55,9 +55,10 @@ def extract_cube(data, variable_group):
     selection = select_metadata(data, variable_group=variable_group)
 
     # Ensure there is only one file in the list
-    assert len(selection) == 1, (
-        f"None or too many matching files found for {variable_group}"
-    )
+    if len(selection) != 1:
+        raise ValueError(
+            f"None or too many matching files found for {variable_group}"
+        )
 
     # Load the cube, [0] is because selection returns a list
     cube = iris.load_cube(selection[0]["filename"])
@@ -144,8 +145,8 @@ def create_titles_dict(data):
         }
         # Setting titles for plots
         dictionary["titles"] = {
-            "notz_fig_title": "September Arctic Sea Ice Sensitivity",
-            "notz_ax_title": f"dSIA/dGMST obs from {next(iter(dictionary['obs'].keys()))}",
+            "notz_fig_title": "September Arctic sea-ice area sensitivity to global mean surface temperature",
+            "notz_ax_title": f"Annual regression over {next(iter(dictionary['obs'].keys()))}",
             "notz_plot_filename": "September Arctic sea ice sensitivity",
             "roach_fig_title": "Trends in Annual Mean Temperature And September Arctic Sea Ice",
             "roach_plot_filename": "September Arctic sea ice trends",
@@ -248,7 +249,6 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     # Set up the figure
     fig, ax = plt.subplots(figsize=(10, 6), layout="constrained")
     fig.suptitle(titles_dictionary["titles"]["roach_fig_title"])
-    ax.set_title("Decades are scaled up from annual data")
 
     # Set up for colouring the points
     norm = Normalize(vmin=-1, vmax=1)
