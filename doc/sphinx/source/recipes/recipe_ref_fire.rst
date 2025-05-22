@@ -48,7 +48,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/fire/
 * fire_diagnostic.py: main diagnostic script calling a util function from diagnostic_run_ConFire.py.
 * diagnostic_run_ConFire.py: script containing utils functions to run the ConFire model.
 
-Additional files necessary for the COnFire model evaluation are stored in
+Additional files necessary for the ConFire model evaluation are stored in
 esmvaltool/diag_scripts/fire/parameter_files/ for now.
 
 
@@ -97,6 +97,8 @@ User settings in recipe
 
    * model_name: string containing the input data model for legending the plots.
    * timerange: string containing the time range of the input data for legending the plots.
+   * project: string or list containing the input data project(s).
+   * experiment: string or list containing the input data experiment(s).
 
    *Required settings for variables*
 
@@ -115,9 +117,6 @@ Variables
 * treeFrac (land, monthly mean, longitude latitude time)
 * vegFrac (land, monthly mean, longitude latitude time)
 * cveg (land, monthly mean, longitude latitude time)
-* sfcWind (atmos, monthly mean, longitude latitude time): not used for now
-* lai (land, monthly mean, longitude latitude time): not used for now
-* mrsos (land, monthly mean, longitude latitude time): not used for now
 * tas (atmos, monthly mean, longitude latitude time): used to compute vpd.
 * hurs (atmos, monthly mean, longitude latitude time): used to compue vpd.
 

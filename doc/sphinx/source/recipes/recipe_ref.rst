@@ -15,10 +15,6 @@ Available recipes
 
 Recipes are stored in recipes
 
-* recipe_ref_cre.yml:
-    Maps and zonal means of longwave and shortwave cloud radiative effect
-* recipe_ref_fire.yml
-    Maps of burnt area fraction, fire weather control, and fuel load continuity control.
 * :ref:`recipe_ecs.yml <recipes_ecs>`:
   Calculate equilibrium climate sensitivity (ECS)
 * :ref:`recipe_tcr.yml <recipes_tcr>`:
@@ -37,6 +33,8 @@ Recipes are stored in recipes
   time series, zonal mean total column ozone vs. time map plot, zonal mean
   total column ozone vs. annual cycle map plot, altitude vs. zonal mean
   ozone profile climatology map plot
+* :ref:`recipe_ref_fire.yml <recipe_ref_fire>`
+   Maps of burnt area fraction, fire weather control, and fuel load continuity control.
 
 
 Example plots:

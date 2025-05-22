@@ -56,18 +56,6 @@ diagnostics:
       cVeg:
         mip: Lmon
         preprocessor: preproc
-      # # Wind speed near surface
-      # sfcWind:
-      #   mip: Amon
-      #   preprocessor: preproc
-      # # Leaf area index
-      # lai:
-      #   mip: Lmon
-      #   preprocessor: preproc
-      # # Soil moisture (surface layer)
-      # mrsos:
-      #   mip: Lmon
-      #   preprocessor: preproc
       # To compute the vapor pressure deficit (vpd)
       # Surface temperature
       tas:
