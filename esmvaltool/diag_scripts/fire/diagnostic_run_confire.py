@@ -966,8 +966,8 @@ def _get_parameters(config: dict) -> tuple:
     logger.info("Loading data for ConFire model...")
     scalers = pd.read_csv(scale_file).to_numpy()
     _, driving_data, lmask, _, _ = _read_all_data_from_netcdf(
-        nc_files[0],
-        nc_files,
+        y_filename=nc_files[0],
+        x_filename_list=nc_files,
         scalers=scalers,
         directory=nc_dir,
     )
@@ -1193,7 +1193,6 @@ def diagnostic_run_confire(
             / f"{config['filenames_out'][i]}_{model_name}_{timerange}.nc"
         )
         provenance = get_provenance_record(
-            cfg=config,
             ancestors=[
                 config["files_input"][i][0]
                 for i in range(len(config["files_input"]))
@@ -1269,7 +1268,9 @@ def diagnostic_run_confire(
                     (
                         filename.replace("_", " ").capitalize()
                         + f" - [{pct!s}% percentile]\n"
-                        + f"{model_name} ({project}-{experiment})"
+                        + f"{model_name} "
+                        + f"({'/'.join(project)} - "
+                        + f"{'/'.join(experiment)})"
                     ),
                 )
                 axes[plotn].coastlines()

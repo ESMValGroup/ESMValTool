@@ -360,12 +360,14 @@ def main(config: dict) -> None:
             tas = iris.load_cube(vars_file["tas"]["filename"])
             hurs = iris.load_cube(vars_file["hurs"]["filename"])
             provenance_record_vpd = get_provenance_record(
-                config,
-                [vars_file["tas"]["filename"], vars_file["hurs"]["filename"]],
-                model_dataset,
-                project,
-                experiment,
-                timerange,
+                ancestors=[
+                    vars_file["tas"]["filename"],
+                    vars_file["hurs"]["filename"],
+                ],
+                model_name=model_dataset,
+                project=project,
+                experiment=experiment,
+                timerange=timerange,
             )
             filename_vpd = compute_vpd(
                 config,
@@ -384,7 +386,8 @@ def main(config: dict) -> None:
             [vars_file[v]["filename"], v] for v in config["var_order"]
         ]
         logger.info(
-            "Input files used for diagnostic %s", config["files_input"]
+            "Input files used for diagnostic %s",
+            config["files_input"],
         )
         config["filenames_out"] = [
             "burnt_fraction",
@@ -405,8 +408,6 @@ def main(config: dict) -> None:
         output_file = f"{plot_file_info}"
         for i, f in enumerate(config["filenames_out"]):
             provenance = get_provenance_record(
-                var=f,
-                cfg=config,
                 ancestors=[
                     config["files_input"][i][0]
                     for i in range(len(config["files_input"]))
@@ -415,6 +416,7 @@ def main(config: dict) -> None:
                 project=group[0]["project"],
                 experiment=group[0]["exp"],
                 timerange=timerange,
+                var=f,
             )
             output_path = get_plot_filename(f"{f}_{output_file}", config)
             figures[i].savefig(output_path, bbox_inches="tight", dpi=300)
@@ -443,7 +445,7 @@ def main(config: dict) -> None:
             )
             f_not_removed = []
             for f in list(
-                Path(f"{config['work_dir']}/ConFire_outputs/").glob("*.nc")
+                Path(f"{config['work_dir']}/ConFire_outputs/").glob("*.nc"),
             ):
                 logger.info("Removing %s", f.split("/")[-1])
                 try:
