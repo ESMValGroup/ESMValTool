@@ -111,7 +111,7 @@ def _select_key_or_default(
 ) -> ModuleType:
     """Select specific key from dictionary.
 
-    Arguments:
+    Parameters
     ----------
         dirc: dict
             Input dictionary to select from.
@@ -124,7 +124,7 @@ def _select_key_or_default(
         numpck: imported package
             Package to use to stack the data if necessary.
 
-    Return:
+    Returns
     -------
         out: numpck instance
             numpck instance from the extracted in the dictionary.
@@ -157,7 +157,7 @@ def _sort_time(
 ) -> iris.cube.Cube:
     """Sort time dimension in the iris cube.
 
-    Arguments:
+    Parameters
     ----------
         cube: iris cube
             Input cube.
@@ -166,7 +166,7 @@ def _sort_time(
         filename: str
             Filename of cube.
 
-    Return:
+    Returns
     -------
         cube: iris cube
             Cube with sorted and added time dimensions.
@@ -210,7 +210,7 @@ def _insert_data_into_cube(
 ) -> iris.cube.Cube:
     """Insert data into cube following mask.
 
-    Arguments:
+    Parameters
     ----------
         data: np.array
             data that we want to insert into the cube.
@@ -222,7 +222,7 @@ def _insert_data_into_cube(
             Array of shape or length x where True, will inster data.
             Default of None which means True for all points in eg_cube.
 
-    Return:
+    Returns
     -------
         pred_cube: iris cube
             cube with data replaced by x
@@ -251,12 +251,12 @@ def _insert_data_into_cube(
 def _read_variables_from_namelist(file_name: str) -> dict:
     """Read variables from a file and create them with their original names.
 
-    Arguments:
+    Parameters
     ----------
         file_name: str
             The name of the file containing the variables.
 
-    Return:
+    Returns
     -------
         dict: dict
             A dictionary of variable names and their values.
@@ -337,11 +337,11 @@ def _read_variables_from_namelist(file_name: str) -> dict:
 def _select_post_param(trace: str) -> dict:
     """Select parameters from a pymc nc trace file.
 
-    Arguments:
+    Parameters
     ----------
         trace: pymc netcdf trace file as filename or already opened
 
-    Return:
+    Returns
     -------
         dict of paramater values with each item names after the parameter
     """
@@ -368,7 +368,7 @@ def _construct_param_comb(
 ) -> dict:
     """Construct a new dictionary containing parameters.
 
-    Arguments:
+    Parameters
     ----------
         i: int
             index for the parameter to add.
@@ -379,7 +379,7 @@ def _construct_param_comb(
         extra_params: dict
             Dictionary of extra parameters to be added to the dictionary.
 
-    Return:
+    Returns
     -------
         param_in: dict
             Dictionary of paramater values.
@@ -413,7 +413,7 @@ def _read_variable_from_netcdf(
     "variable". Assumes that values < -9E9, you dont want. This could
     be different in some circumstances.
 
-    Arguments:
+    Parameters
     ----------
         filename: str
             a string with filename or two element python list
@@ -434,7 +434,7 @@ def _read_variable_from_netcdf(
             List comtaining range of years. If making flat and
             returned a time series, checks if that time series contains year.
 
-    Return:
+    Returns
     -------
         dataset: iris cube
             if make_flat, a numpy vector of the target variable, otherwise
@@ -567,7 +567,7 @@ def _read_all_data_from_netcdf(
 ) -> tuple[np.array]:
     """Read data from netCDF files.
 
-    Arguments:
+    Parameters
     ----------
         y_filename: list
             a two element python list containing the name of the file and
@@ -596,7 +596,7 @@ def _read_all_data_from_netcdf(
             fraction of data to be returned
         see _read_variable_from_netcdf comments for *arg and **kw.
 
-    Return:
+    Returns
     -------
         y: np.array
             a numpy array of the target variable.
@@ -722,7 +722,7 @@ class ConFire:
         """
         Initalise parameters and calculates the key variables.
 
-        Arguments:
+        Parameters
         ----------
             params: dict or list of dict
             inference: bool
@@ -777,14 +777,14 @@ class ConFire:
     ) -> np.array | pytensor.tensor:
         """Compute burnt area.
 
-        Arguments:
+        Parameters
         ----------
             data: numpck instance
                 Input drivers.
             return_controls: bool
             return_limitation: bool
 
-        Return:
+        Returns
         -------
             ba: numpck instance
                 Burnt area data.
@@ -814,14 +814,14 @@ class ConFire:
         ) -> np.array | pytensor.tensor:
             """Compute sigmoid.
 
-            Arguments:
+            Parameters
             ----------
                 data: numpck instance
                     Input data.
                 factor: float
                     Exponential factor.
 
-            Return:
+            Returns
             -------
                 Applied sigmoid function value.
             """
@@ -854,7 +854,7 @@ class ConFire:
     ) -> iris.cube.Cube:
         """Compute weighted Event Mean Concentration (EMC).
 
-        Arguments:
+        Parameters
         ----------
             emc: iris.cube
                 Cube containing the EMC.
@@ -863,7 +863,7 @@ class ConFire:
             wd_pg: iris cube
                 Cube containing wet days.
 
-        Return:
+        Returns
         -------
             emcw: iris cube
                 Weighted cube of EMC.
@@ -885,12 +885,12 @@ class ConFire:
     ) -> pd.DataFrame:
         """Summary model parameters.
 
-        Arguments:
+        Parameters
         ----------
             params: list
             varnames: list
 
-        Return:
+        Returns
         -------
             full_df: pd.DataFrame
                 Dataframe containing the parameters values in each experiment.
@@ -973,12 +973,12 @@ class ConFire:
 def _get_parameters(config: dict) -> tuple:
     """Get parameters necessary for ConFire run.
 
-    Arguments:
+    Parameters
     ----------
         config: dict
             Dictionary from ESMValTool recipe.
 
-    Return:
+    Returns
     -------
         output_dir: str
             Path to output directory.
@@ -1054,7 +1054,7 @@ def _setup_cube_output(
         - replace units
         - apply scaling factor
 
-    Arguments:
+    Parameters
     ----------
         cube: iris cube
             Input cube to modify.
@@ -1063,7 +1063,7 @@ def _setup_cube_output(
         provenance: dict
             Dictionary w/ provenance record.
 
-    Return:
+    Returns
     -------
         cube: iris cube
             Modified output cube.
@@ -1134,7 +1134,7 @@ def diagnostic_run_confire(
 
     The outputs from the model run are saved and the plots are returned.
 
-    Arguments:
+    Parameters
     ----------
         config: dict
             Dictionary containing the ESMValTool recip configuration.
@@ -1147,7 +1147,7 @@ def diagnostic_run_confire(
         experiment: str or list of str
             Experiment of the model data.
 
-    Return:
+    Returns
     -------
         figures: list
             List of matplotlib figures produced for the burnt area results.
@@ -1187,14 +1187,14 @@ def diagnostic_run_confire(
 
         Results are inserted into an iris cube.
 
-        Arguments:
+        Parameters
         ----------
             param_in: dict
                 Dictionary of input parameters for the run.
             coord: iris coord
                 Coordinate to add to the output cube.
 
-        Return:
+        Returns
         -------
             cube: iris cube
                 ConFire model output cube.
