@@ -40,10 +40,6 @@ groupby_facet: str, optional (default: 'dataset')
 legend_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
     ``legend_kwargs: false`` to not show legends.
-matplotlib_rc_params: dict, optional
-    Optional :class:`matplotlib.RcParams` used to customize matplotlib plots.
-    Options given here will be passed to :func:`matplotlib.rc_context` and used
-    for all plots produced with this diagnostic.
 plot_kwargs: dict, optional
     Optional keyword arguments for :func:`iris.plot.plot`. Dictionary keys are
     elements identified by ``groupby_facet`` or ``default``, e.g.,
@@ -79,7 +75,6 @@ from pathlib import Path
 
 import iris
 import iris.plot
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -163,7 +158,6 @@ def _get_default_cfg(cfg: dict) -> dict:
     cfg.setdefault("gridline_kwargs", {})
     cfg.setdefault("groupby_facet", "dataset")
     cfg.setdefault("legend_kwargs", {})
-    cfg.setdefault("matplotlib_rc_params", {})
     cfg.setdefault("plot_kwargs", {})
     cfg.setdefault("pyplot_kwargs", {})
     cfg.setdefault(
@@ -394,8 +388,7 @@ def main(cfg: dict) -> None:
     grouped_anomaly_data = _get_grouped_anomaly_data(cfg, input_data)
 
     # Plot data
-    with mpl.rc_context(cfg["matplotlib_rc_params"]):
-        plot_path = _plot(cfg, grouped_anomaly_data)
+    plot_path = _plot(cfg, grouped_anomaly_data)
     provenance_record = {
         "authors": ["schlund_manuel"],
         "ancestors": [d["filename"] for d in input_data],
