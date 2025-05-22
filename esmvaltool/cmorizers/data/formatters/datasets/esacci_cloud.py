@@ -15,6 +15,7 @@ Download and processing instructions
 
 import copy
 import glob
+import numpy as np
 import logging
 import os
 from calendar import monthrange
@@ -73,8 +74,13 @@ def _handle_missing_day(year, month, iday, short_name, cubes, cubes_day):
 def _check_for_missing_dates(year0, year1, cube, cubes):
     """Check for dates which are missing in the cube and fill with NaNs."""
     time_coord = cube.coord("time").cells()
+    time_points_array = cube.coord('time').units.num2date(cube.coord('time').points)
+    logger.debug(time_points_array)
+    dataset_time_unit = str(cube.coord("time").units)
+    dataset_time_calender = cube.coord("time").units.calendar
     loop_date = datetime(year0, 1, 1)
     while loop_date <= datetime(year1, 12, 1):
+        print(loop_date.year, loop_date.month)
         if not any(
             [
                 cell.point.year == loop_date.year
@@ -85,12 +91,15 @@ def _check_for_missing_dates(year0, year1, cube, cubes):
             logger.debug(
                 "No data available for %d/%d", loop_date.month, loop_date.year
             )
-            nan_cube = _create_nan_cube(
-                cube[0, ...], loop_date.year, loop_date.month, loop_date.day
-            )
+            nan_cube = cubes[0].copy(np.ma.masked_invalid(np.full(cubes[0].shape, np.nan, dtype=cubes[0].dtype)))
+            #nan_cube = cube.copy(np.ma.masked_invalid(np.full(cube.shape, np.nan, dtype=cube.dtype)))[[0], ...]
+            nan_cube.coord("time").points = nan_cube.coord("time").units.date2num(loop_date) #loop_date, dataset_time_unit, dataset_time_calender)
+            nan_cube.coord("time").bounds = None
             cubes.append(nan_cube)
         loop_date += relativedelta.relativedelta(months=1)
 
+    for c in cubes:
+        print(c.coord("time"))
     cube = cubes.concatenate_cube()
 
     return cube
@@ -167,11 +176,11 @@ def _concatenate_and_save_monthly_cubes(
     # After gathering all cubes for all years, concatenate them
     cube = cubes.concatenate_cube()
 
-    # Check for missing months
-    year0 = cube.coord("time").cell(0).point.year
-    year1 = cube.coord("time").cell(-1).point.year
-    logger.debug(year0, year1)
-    cube = _check_for_missing_dates(year0, year1, cube, cubes)
+    # # Check for missing months
+    # year0 = cube.coord("time").cell(0).point.year
+    # year1 = cube.coord("time").cell(-1).point.year
+    # logger.debug(year0, year1)
+    # cube = _check_for_missing_dates(year0, year1, cube, cubes)
 
     if attach == "-AMPM":
         cube = monthly_statistics(cube)
