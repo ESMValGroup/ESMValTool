@@ -25,6 +25,7 @@ import cartopy.crs as ccrs
 import cf_units
 import iris
 import iris.coords
+import iris.exceptions
 import iris.quickplot
 import matplotlib.pyplot as plt
 import numpy as np
@@ -104,12 +105,14 @@ def _select_key_or_default(
     dirc: dict,
     key: str,
     default: None | list | int = None,
-    stack: bool = True,
     numpck: None | ModuleType = None,
+    *,
+    stack: bool = True,
 ) -> ModuleType:
     """Select specific key from dictionary.
 
     Arguments:
+    ----------
         dirc: dict
             Input dictionary to select from.
         key: str
@@ -122,6 +125,7 @@ def _select_key_or_default(
             Package to use to stack the data if necessary.
 
     Return:
+    -------
         out: numpck instance
             numpck instance from the extracted in the dictionary.
     """
@@ -141,7 +145,7 @@ def _select_key_or_default(
         try:
             if stack:
                 out = numpck.stack(out)[:, 0]
-        except Exception as expt:
+        except ValueError as expt:
             logger.debug("select_key_or_default error %s", expt)
 
     return out
@@ -154,6 +158,7 @@ def _sort_time(
     """Sort time dimension in the iris cube.
 
     Arguments:
+    ----------
         cube: iris cube
             Input cube.
         field: str
@@ -162,6 +167,7 @@ def _sort_time(
             Filename of cube.
 
     Return:
+    -------
         cube: iris cube
             Cube with sorted and added time dimensions.
     """
@@ -179,21 +185,21 @@ def _sort_time(
 
     try:
         iris.coord_categorisation.add_year(cube, "time")
-    except Exception as expt:
+    except ValueError as expt:
         logger.debug("_sort_time could not add year %s", expt)
 
     try:
         try:
             cube.remove_coord("month")
-        except Exception as expt:
+        except ValueError as expt:
             logger.debug("_sort_time could not remove month %s", expt)
         iris.coord_categorisation.add_month_number(cube, "time", name="month")
-    except Exception as expt:
+    except ValueError as expt:
         logger.debug("_sort_time could not add month number %s", expt)
 
     try:
         del cube.attributes["history"]
-    except Exception as expt:
+    except ValueError as expt:
         logger.debug("_sort_time could not remove cube history %s", expt)
 
     return cube
@@ -205,6 +211,7 @@ def _insert_data_into_cube(
     """Insert data into cube following mask.
 
     Arguments:
+    ----------
         data: np.array
             data that we want to insert into the cube.
             Should have same shape of eg_cube, or same length as eg_cube
@@ -216,6 +223,7 @@ def _insert_data_into_cube(
             Default of None which means True for all points in eg_cube.
 
     Return:
+    -------
         pred_cube: iris cube
             cube with data replaced by x
     """
@@ -244,14 +252,17 @@ def _read_variables_from_namelist(file_name: str) -> dict:
     """Read variables from a file and create them with their original names.
 
     Arguments:
+    ----------
         file_name: str
             The name of the file containing the variables.
 
     Return:
+    -------
         dict: dict
             A dictionary of variable names and their values.
 
     Example Usage:
+    --------------
         file_name = 'variables.txt'
         read_variables = read_variables_from_file(file_name)
         # Create variables with their original names and assign the values
@@ -276,19 +287,26 @@ def _read_variables_from_namelist(file_name: str) -> dict:
                     # If the variable is a function, save its name
                     variable_value_set = variable_value
                 elif variable_value.startswith(
-                    '"'
+                    '"',
                 ) and variable_value.endswith('"'):
                     # If the variable is a string, remove the quotes
                     variable_value_set = variable_value[1:-1]
                 elif variable_value.startswith(
-                    "["
+                    "[",
                 ) and variable_value.endswith("]"):
                     # If the variable is a list, parse it
                     try:
                         variable_value_set = ast.literal_eval(variable_value)
-                    except Exception as expt:
+                    except (
+                        ValueError,
+                        TypeError,
+                        SyntaxError,
+                        MemoryError,
+                        RecursionError,
+                    ) as expt:
                         logger.debug(
-                            "_read_variables_from_namelist error %s", expt
+                            "_read_variables_from_namelist error %s",
+                            expt,
                         )
                         functions = variable_value.split(", ")
                         variable_value_set = [
@@ -320,9 +338,11 @@ def _select_post_param(trace: str) -> dict:
     """Select parameters from a pymc nc trace file.
 
     Arguments:
-        trace -- pymc netcdf trace file as filename or already opened
+    ----------
+        trace: pymc netcdf trace file as filename or already opened
 
     Return:
+    -------
         dict of paramater values with each item names after the parameter
     """
 
@@ -335,7 +355,7 @@ def _select_post_param(trace: str) -> dict:
 
     try:
         trace = az.from_netcdf(trace, engine="netcdf4")
-    except Exception as expt:
+    except (ValueError, OSError) as expt:
         logger.debug("_select_post_param error %s", expt)
     params = trace.to_dict()["posterior"]
     params_names = params.keys()
@@ -349,6 +369,7 @@ def _construct_param_comb(
     """Construct a new dictionary containing parameters.
 
     Arguments:
+    ----------
         i: int
             index for the parameter to add.
         params: list
@@ -359,6 +380,7 @@ def _construct_param_comb(
             Dictionary of extra parameters to be added to the dictionary.
 
     Return:
+    -------
         param_in: dict
             Dictionary of paramater values.
     """
@@ -375,12 +397,13 @@ def _read_variable_from_netcdf(
     filename: str,
     directory: str | None = None,
     subset_function: Callable | list[Callable] | None = None,
-    make_flat: bool = False,
     units: str | None = None,
     subset_function_args: dict | list[dict] | None = None,
     time_series: list | None = None,
     time_points: np.array | float | None = None,
     extent: np.array | list | None = None,
+    *,
+    make_flat: bool = False,
     return_time_points: bool = False,
     return_extent: bool = False,
 ) -> iris.cube.Cube:
@@ -391,6 +414,7 @@ def _read_variable_from_netcdf(
     be different in some circumstances.
 
     Arguments:
+    ----------
         filename: str
             a string with filename or two element python list
             containing the name of the file and the target variable name.
@@ -411,6 +435,7 @@ def _read_variable_from_netcdf(
             returned a time series, checks if that time series contains year.
 
     Return:
+    -------
         dataset: iris cube
             if make_flat, a numpy vector of the target variable, otherwise
             returns iris cube.
@@ -430,12 +455,14 @@ def _read_variable_from_netcdf(
                 filename[1],
                 callback=_sort_time,
             )
-    except Exception as expt:
+    except (ValueError, iris.exceptions.MergeError) as expt:
         try:
             dataset = iris.load_cube(directory + filename)
-        except Exception as expt_:
+        except (ValueError, iris.exceptions.MergeError) as expt_:
             logger.debug(
-                "_read_variable_from_netcdf errors\n%s\n%s", expt, expt_
+                "_read_variable_from_netcdf errors\n%s\n%s",
+                expt,
+                expt_,
             )
             logger.debug(
                 "Data cannot be opened."
@@ -480,7 +507,7 @@ def _read_variable_from_netcdf(
             for func, _args in zip(subset_function, subset_function_args):
                 try:
                     dataset = func(dataset, **_args)
-                except Exception as expt:
+                except ValueError as expt:
                     logger.debug("_read_variable_from_netcdf error %s", expt)
                     logger.debug(
                         "Warning! function: %s not applied to file: %s",
@@ -501,16 +528,18 @@ def _read_variable_from_netcdf(
             years = dataset.coord("year").points
         try:
             dataset = dataset.data.flatten()
-        except Exception as expt:
+        except ValueError as expt:
             logger.debug("_read_variable_from_netcdf error %s", expt)
         if time_series is not None:
             if years[0] != time_series[0]:
                 dataset = np.append(
-                    np.repeat(np.nan, years[0] - time_series[0]), dataset
+                    np.repeat(np.nan, years[0] - time_series[0]),
+                    dataset,
                 )
             if years[-1] != time_series[1]:
                 dataset = np.append(
-                    dataset, np.repeat(np.nan, time_series[1] - years[-1])
+                    dataset,
+                    np.repeat(np.nan, time_series[1] - years[-1]),
                 )
 
     if return_time_points:
@@ -523,22 +552,23 @@ def _read_variable_from_netcdf(
 
 
 def _read_all_data_from_netcdf(
-    *args: tuple,
-    y_filename: list,
+    y_filename: str | list,
     x_filename_list: list,
     ca_filename: list | None = None,
-    add_1s_columne: bool = False,
     y_threshold: float | None = None,
-    x_normalise01: bool = False,
     scalers: np.array | None = None,
-    check_mask: bool = True,
     frac_random_sample: float = 1.0,
     min_data_points_for_sample: int | None = None,
+    *args: tuple,
+    add_1s_columne: bool = False,
+    x_normalise01: bool = False,
+    check_mask: bool = True,
     **kw: dict,
 ) -> tuple[np.array]:
     """Read data from netCDF files.
 
     Arguments:
+    ----------
         y_filename: list
             a two element python list containing the name of the file and
             the target variable name.
@@ -567,6 +597,7 @@ def _read_all_data_from_netcdf(
         see _read_variable_from_netcdf comments for *arg and **kw.
 
     Return:
+    -------
         y: np.array
             a numpy array of the target variable.
         x: np.array
@@ -633,7 +664,7 @@ def _read_all_data_from_netcdf(
     if x_normalise01 and scalers is None:
         try:
             scalers = np.array([np.min(x_var, axis=0), np.max(x_var, axis=0)])
-        except Exception as expt:
+        except ValueError as expt:
             logger.debug("_read_all_data_from_netcdf error %s", expt)
         squidge = (scalers[1, :] - scalers[0, :]) / (x_var.shape[0])
         scalers[0, :] = scalers[0, :] - squidge
@@ -652,7 +683,9 @@ def _read_all_data_from_netcdf(
     if frac_random_sample < 1:
         m_x = x_var.shape[0]
         selected_rows = np.random.choice(
-            m_x, size=int(m_x * frac_random_sample), replace=False
+            m_x,
+            size=int(m_x * frac_random_sample),
+            replace=False,
         )
         y_var = y_var[selected_rows]
         x_var = x_var[selected_rows, :]
@@ -680,11 +713,17 @@ class ConFire:
     To initialize an object, you need to provide the parameters of the model.
     """
 
-    def __init__(self, params: dict | list, inference: bool = False) -> None:
+    def __init__(
+        self,
+        params: dict | list,
+        *,
+        inference: bool = False,
+    ) -> None:
         """
         Initalise parameters and calculates the key variables.
 
         Arguments:
+        ----------
             params: dict or list of dict
             inference: bool
                 Flag indicating to run inference or not.
@@ -732,18 +771,21 @@ class ConFire:
     def burnt_area(
         self,
         data: np.array | pytensor.tensor,
+        *,
         return_controls: bool = False,
         return_limitations: bool = False,
     ) -> np.array | pytensor.tensor:
         """Compute burnt area.
 
         Arguments:
+        ----------
             data: numpck instance
                 Input drivers.
             return_controls: bool
             return_limitation: bool
 
         Return:
+        -------
             ba: numpck instance
                 Burnt area data.
         """
@@ -773,12 +815,14 @@ class ConFire:
             """Compute sigmoid.
 
             Arguments:
+            ----------
                 data: numpck instance
                     Input data.
                 factor: float
                     Exponential factor.
 
             Return:
+            -------
                 Applied sigmoid function value.
             """
             if factor == 0:
@@ -811,6 +855,7 @@ class ConFire:
         """Compute weighted Event Mean Concentration (EMC).
 
         Arguments:
+        ----------
             emc: iris.cube
                 Cube containing the EMC.
             precip: iris cube
@@ -819,13 +864,14 @@ class ConFire:
                 Cube containing wet days.
 
         Return:
+        -------
             emcw: iris cube
                 Weighted cube of EMC.
         """
         try:
             wet_days = 1.0 - self.numpck.exp(-wd_pg * precip)
             emcw = (1.0 - wet_days) * emc + wet_days
-        except Exception as expt:
+        except ValueError as expt:
             logger.debug("emc_weighted error %s", expt)
             emcw = emc.copy()
             emcw.data = 1.0 - self.numpck.exp(-wd_pg * precip.data)
@@ -840,10 +886,12 @@ class ConFire:
         """Summary model parameters.
 
         Arguments:
+        ----------
             params: list
             varnames: list
 
         Return:
+        -------
             full_df: pd.DataFrame
                 Dataframe containing the parameters values in each experiment.
         """
@@ -926,10 +974,12 @@ def _get_parameters(config: dict) -> tuple:
     """Get parameters necessary for ConFire run.
 
     Arguments:
+    ----------
         config: dict
             Dictionary from ESMValTool recipe.
 
     Return:
+    -------
         output_dir: str
             Path to output directory.
         params: list
@@ -1005,6 +1055,7 @@ def _setup_cube_output(
         - apply scaling factor
 
     Arguments:
+    ----------
         cube: iris cube
             Input cube to modify.
         output: str
@@ -1013,6 +1064,7 @@ def _setup_cube_output(
             Dictionary w/ provenance record.
 
     Return:
+    -------
         cube: iris cube
             Modified output cube.
     """
@@ -1083,6 +1135,7 @@ def diagnostic_run_confire(
     The outputs from the model run are saved and the plots are returned.
 
     Arguments:
+    ----------
         config: dict
             Dictionary containing the ESMValTool recip configuration.
         model_name: str
@@ -1095,6 +1148,7 @@ def diagnostic_run_confire(
             Experiment of the model data.
 
     Return:
+    -------
         figures: list
             List of matplotlib figures produced for the burnt area results.
     """
@@ -1134,12 +1188,14 @@ def diagnostic_run_confire(
         Results are inserted into an iris cube.
 
         Arguments:
+        ----------
             param_in: dict
                 Dictionary of input parameters for the run.
             coord: iris coord
                 Coordinate to add to the output cube.
 
         Return:
+        -------
             cube: iris cube
                 ConFire model output cube.
         """
@@ -1290,7 +1346,7 @@ def diagnostic_run_confire(
                 plotn = plotn + 1
             figures.append(fig)
 
-        except Exception as expt:
+        except ValueError as expt:
             logger.info("Skipping %s due to error: %s", filename, expt)
             logger.debug("Skipping %s due to error: %s", filename, expt)
 

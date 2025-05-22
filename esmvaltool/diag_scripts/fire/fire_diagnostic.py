@@ -130,7 +130,11 @@ def download_files_from_zenodo(
             file_path = Path(output_dir) / file_name
             file_response = requests.get(file_url, timeout=1)
             if file_response.status_code == status_request_success:
-                with Path.open(file_path, "wb") as file:
+                with Path.open(
+                    file_path,
+                    mode="wb",
+                    encoding=file_response.encoding,
+                ) as file:
                     file.write(file_response.content)
                 logger.info("Downloaded %s to %s.", file_name, output_dir)
             else:
@@ -287,43 +291,43 @@ def compute_vpd(
     return filename
 
 
-def main(config: dict) -> None:
+def main(cfg: dict) -> None:
     """Produce the diagnostics for the climate drivers of fire.
 
     Parameters
     ----------
-    config : dict
+    cfg : dict
         ESMValTool configuration from the recipe.
     """
-    input_data = config["input_data"]
+    input_data = cfg["input_data"]
     datasets = group_metadata(input_data.values(), "dataset")
-    logger.info(config)
+    logger.info(cfg)
 
     # Add diagnostic directory to the config
     diag_dir = Path(__file__).parent
-    config["diag_dir"] = diag_dir
+    cfg["diag_dir"] = diag_dir
 
     # ConFire model parameter files
     # - user-defined path to files
     # - download files from a Zenodo archive
     # - defaults to the path to files from ESMValTool
-    if "confire_param" in config:
-        if "zenodo" not in config["confire_param"]:
-            config["param_confire"] = (
-                Path(config["auxiliary_data_dir"]) / config["confire_param"]
+    if "confire_param" in cfg:
+        if "zenodo" not in cfg["confire_param"]:
+            cfg["param_confire"] = (
+                Path(cfg["auxiliary_data_dir"]) / cfg["confire_param"]
             )
     else:
-        config["confire_param"] = diag_dir / "parameter_files/"
-    config["confire_param_dir"] = get_parameter_directory(config)
+        cfg["confire_param"] = diag_dir / "parameter_files/"
+    cfg["confire_param_dir"] = get_parameter_directory(cfg)
 
     # Removing or not the computed vapor pressure deficit files
     # default is False
-    if "remove_vpd_files" not in config:
-        config["remove_vpd_files"] = False
+    if "remove_vpd_files" not in cfg:
+        cfg["remove_vpd_files"] = False
     # Removing or not the files produced during the ConFire model evaluation
     # default is False
-    if "remove_confire_files" not in config:
-        config["remove_confire_files"] = False
+    if "remove_confire_files" not in cfg:
+        cfg["remove_confire_files"] = False
 
     for model_dataset, group in datasets.items():
         # 'model_dataset' is the name of the model dataset.
@@ -351,7 +355,7 @@ def main(config: dict) -> None:
                 )
         logger.info(vars_file.keys())
 
-        if "vpd" in config["var_order"]:
+        if "vpd" in cfg["var_order"]:
             # Compute Vapor Pressure Deficit (VPD)
             logger.info(
                 "Processing vapor_pressure_deficit for %s",
@@ -370,7 +374,7 @@ def main(config: dict) -> None:
                 timerange=timerange,
             )
             filename_vpd = compute_vpd(
-                config,
+                cfg,
                 tas,
                 hurs,
                 provenance_record_vpd,
@@ -382,14 +386,14 @@ def main(config: dict) -> None:
         # Run ConFire model evaluation
         # Add the list of input filenames
         # WARNING = they should be ordered following the model run config
-        config["files_input"] = [
-            [vars_file[v]["filename"], v] for v in config["var_order"]
+        cfg["files_input"] = [
+            [vars_file[v]["filename"], v] for v in cfg["var_order"]
         ]
         logger.info(
             "Input files used for diagnostic %s",
-            config["files_input"],
+            cfg["files_input"],
         )
-        config["filenames_out"] = [
+        cfg["filenames_out"] = [
             "burnt_fraction",
             "fire_weather_control",
             "fuel_load_continuity_control",
@@ -397,7 +401,7 @@ def main(config: dict) -> None:
         ]
         logger.info("Running diagnostic model ConFire.")
         figures = diagnostic_run_confire(
-            config,
+            cfg,
             model_name=model_dataset,
             timerange=timerange,
             project=project,
@@ -406,11 +410,11 @@ def main(config: dict) -> None:
 
         # Save output figures
         output_file = f"{plot_file_info}"
-        for i, f in enumerate(config["filenames_out"]):
+        for i, f in enumerate(cfg["filenames_out"]):
             provenance = get_provenance_record(
                 ancestors=[
-                    config["files_input"][i][0]
-                    for i in range(len(config["files_input"]))
+                    cfg["files_input"][i][0]
+                    for i in range(len(cfg["files_input"]))
                 ],
                 model_name=model_dataset,
                 project=group[0]["project"],
@@ -418,16 +422,16 @@ def main(config: dict) -> None:
                 timerange=timerange,
                 var=f,
             )
-            output_path = get_plot_filename(f"{f}_{output_file}", config)
+            output_path = get_plot_filename(f"{f}_{output_file}", cfg)
             figures[i].savefig(output_path, bbox_inches="tight", dpi=300)
-            with ProvenanceLogger(config) as provenance_logger:
+            with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(output_path, provenance)
 
         # Remove or not VPD files after diagnostic run
-        if config["remove_vpd_files"]:
-            logger.info("Removing VPD files in %s", config["work_dir"])
+        if cfg["remove_vpd_files"]:
+            logger.info("Removing VPD files in %s", cfg["work_dir"])
             f_not_removed = []
-            for f in list(Path(f"{config['work_dir']}/").glob("*vpd*.*")):
+            for f in list(Path(f"{cfg['work_dir']}/").glob("*vpd*.*")):
                 logger.info("Removing %s", f.split("/")[-1])
                 try:
                     Path(f).unlink()
@@ -438,14 +442,14 @@ def main(config: dict) -> None:
             logger.info("Files not removed: %s", f_not_removed)
 
         # Remove or not ConFire files after diagnostic run
-        if config["remove_confire_files"]:
+        if cfg["remove_confire_files"]:
             logger.info(
                 "Removing files in %s/ConFire_outputs",
-                config["work_dir"],
+                cfg["work_dir"],
             )
             f_not_removed = []
             for f in list(
-                Path(f"{config['work_dir']}/ConFire_outputs/").glob("*.nc"),
+                Path(f"{cfg['work_dir']}/ConFire_outputs/").glob("*.nc"),
             ):
                 logger.info("Removing %s", f.split("/")[-1])
                 try:
@@ -456,7 +460,7 @@ def main(config: dict) -> None:
                     f_not_removed.append(f.split("/")[-1])
             logger.info("Files not removed: %s", f_not_removed)
             if len(f_not_removed) == 0:
-                Path.rmdir(f"{config['work_dir']}/ConFire_outputs")
+                Path.rmdir(f"{cfg['work_dir']}/ConFire_outputs")
 
 
 if __name__ == "__main__":
