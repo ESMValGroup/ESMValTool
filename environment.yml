@@ -28,7 +28,7 @@ dependencies:
   - fire
   - fsspec
   - gdal >=3.9.0
-  - importlib_metadata <8  # https://github.com/ESMValGroup/ESMValTool/issues/3699 only for Python 3.10/11 and esmpy<8.6
+  - importlib_metadata <8  # https://github.com/ESMValGroup/ESMValTool/issues/3699 only for Python 3.11 and esmpy<8.6
   - ipython <9.0  # github.com/ESMValGroup/ESMValCore/issues/2680 ; remove ipython when solved
   - iris >=3.11
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
@@ -53,8 +53,13 @@ dependencies:
   # - psy-reg >=1.5.0  # nay Py3.13 yet
   # - psy-simple >=1.5.0  # nay Py3.13 yet
   - pyproj >=2.1
+<<<<<<< HEAD
   - pys2index
   - python >=3.10
+=======
+  - pys2index  # only from conda-forge
+  - python >=3.11,<3.13
+>>>>>>> main
   - python-cdo
   - python-dateutil
   - pyyaml
@@ -102,6 +107,7 @@ dependencies:
   # - nco
 
   # R and dependencies
+<<<<<<< HEAD
   #- cdo
   #- r-base >=3.5
   #- r-abind
@@ -128,6 +134,34 @@ dependencies:
   #- r-spei
   #- r-udunits2
   #- r-yaml
+=======
+  - cdo
+  - r-base >=3.5
+  - r-abind
+  - r-akima
+  - r-climdex.pcic
+  - r-climprojdiags
+  - r-docopt
+  - r-dotcall64
+  - r-functional
+  - r-ggplot2
+  - r-gridextra
+  - r-logging
+  - r-mapproj
+  - r-maps
+  - r-multiapply
+  - r-ncdf4
+  - r-ncdf4.helpers
+  - r-pcict
+  - r-plyr
+  - r-rcolorbrewer
+  - r-rcpp
+  - r-s2dverification
+  - r-snow
+  - r-spei
+  - r-udunits2
+  - r-yaml
+>>>>>>> main
   # R packages needed for development
   #- r-git2r  # dependency of lintr
   #- r-lintr ==3.1.2

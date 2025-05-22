@@ -222,7 +222,6 @@ setup(
         "Natural Language :: English",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Topic :: Scientific/Engineering",
@@ -247,8 +246,6 @@ setup(
     entry_points={
         "console_scripts": [
             "nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main",
-            "test_recipe = "
-            "esmvaltool.utils.testing.recipe_settings.install_expand_run:main",
         ],
         "esmvaltool_commands": [
             "colortables = "

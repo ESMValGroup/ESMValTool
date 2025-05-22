@@ -86,13 +86,13 @@ commands:
           key: install-<< parameters.extra >>-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
           name: Install dependencies
+          no_output_timeout: 30m
           command: |
             # Install
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
             mamba --version
-            mamba install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
-            mamba env create -n esmvaltool -f environment.yml
+            conda env create -n esmvaltool -f environment.yml --verbose
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
@@ -198,14 +198,14 @@ jobs:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
           name: Install
+          no_output_timeout: 30m
           command: |
             # Install according to instructions on readthedocs with the
             # development version of ESMValTool and ESMValCore:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            mamba install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
-            mamba env create -n esmvaltool -f environment.yml
+            conda env create -n esmvaltool -f environment.yml --verbose
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
             pip install --editable .[develop]
@@ -247,7 +247,7 @@ jobs:
             mkdir /logs
             . /opt/conda/etc/profile.d/conda.sh
             # Install
-            mamba env create
+            conda env create -n esmvaltool -f environment_python.yml
             conda activate esmvaltool
             pip install .[doc]
             # Log versions
