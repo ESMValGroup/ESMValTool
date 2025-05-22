@@ -47,12 +47,12 @@ jobs:
         run: conda list
       - name: Install ESMValTool
         run: pip install -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
-      - name: Examine conda environment
+      - name: Inspect environment
         run: conda list
-      # skip for now, we are removing curl and pin so this will fail
-      # with Julia 1.10.4
-      # - name: Install Julia dependencies
-      #   run: esmvaltool install Julia
+      - name: Install Julia from source
+        run: curl -fsSL https://install.julialang.org | sh -s -- --yes
+      - name: Install Julia dependencies
+        run: esmvaltool install Julia
       - name: Export Python minor version
         run: echo "pver1=$(python -V)" >> $GITHUB_ENV
       - name: Exit if Python minor version changed
@@ -63,6 +63,10 @@ jobs:
           exit 1
       - name: Inspect environment
         run: conda list
+      - name: Check Julia and NCL
+        run: |
+          ncl -V
+          julia --version
       - name: Check code quality
         run: pre-commit run -a
       - name: Run tests
