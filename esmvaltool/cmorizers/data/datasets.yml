@@ -1178,14 +1178,6 @@ datasets:
       Download the following archive:
       co2_surface-flask_ccgg_text.tar.gz
 
-  NOAA-GML-SURFACE-FLASK-N2O:
-    tier: 2
-    source: https://gml.noaa.gov/aftp/data/trace_gases/n2o/flask/surface/
-    last_access: 2024-07-30
-    info: |
-      Download the following archive:
-      n2o_surface-flask_ccgg_text.tar.gz
-
   NOAAGlobalTemp:
     tier: 2
     source: https://www.ncei.noaa.gov/data/noaa-global-surface-temperature/v5/access/
