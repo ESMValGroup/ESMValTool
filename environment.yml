@@ -17,6 +17,7 @@ dependencies:
   - cfgrib
   - cftime
   - cmocean
+  - curl <8.10  # https://github.com/ESMValGroup/ESMValTool/issues/3758
   - cython
   - dask !=2024.8.0  # https://github.com/dask/dask/issues/11296
   - distributed
@@ -41,7 +42,7 @@ dependencies:
   - nc-time-axis
   - netCDF4
   - numba
-  - numpy >=2
+  - numpy !=1.24.3  # severe masking bug
   - openpyxl
   - packaging
   - pandas
@@ -49,17 +50,12 @@ dependencies:
   - progressbar2
   - prov
   - psyplot >=1.5.0
-  # - psy-maps >=1.5.0  # nay Py3.13 yet
-  # - psy-reg >=1.5.0  # nay Py3.13 yet
-  # - psy-simple >=1.5.0  # nay Py3.13 yet
+  - psy-maps >=1.5.0
+  - psy-reg >=1.5.0
+  - psy-simple >=1.5.0
   - pyproj >=2.1
-<<<<<<< HEAD
-  - pys2index
-  - python >=3.10
-=======
   - pys2index  # only from conda-forge
-  - python >=3.11,<3.13
->>>>>>> main
+  - python >=3.11,<3.14
   - python-cdo
   - python-dateutil
   - pyyaml
@@ -73,13 +69,13 @@ dependencies:
   - seawater
   - shapely >=2.0.2
   - xarray >=0.12.0
-  - xesmf >=0.7.1  # nay Py3.13 yet via Numba
+  - xesmf >=0.7.1
   - xgboost >1.6.1  # github.com/ESMValGroup/ESMValTool/issues/2779
   - xlsxwriter
   - zarr
   # Python packages needed for unit testing
   - pre-commit
-  - pytest
+  - pytest >=3.9,!=6.0.0rc1,!=6.0.0
   - pytest-cov
   - pytest-env
   - pytest-html !=2.1.0
@@ -101,40 +97,12 @@ dependencies:
   - yamllint ==1.35.1
 
   # NCL and dependencies
-  # - ncl >=6.6.2
-  # - cdo
-  # - imagemagick
-  # - nco
+  - ncl >=6.6.2
+  - cdo
+  - imagemagick
+  - nco
 
   # R and dependencies
-<<<<<<< HEAD
-  #- cdo
-  #- r-base >=3.5
-  #- r-abind
-  #- r-akima
-  #- r-climdex.pcic
-  #- r-climprojdiags
-  #- r-docopt
-  #- r-dotcall64
-  #- r-functional
-  #- r-ggplot2
-  #- r-gridextra
-  #- r-logging
-  #- r-mapproj
-  #- r-maps
-  #- r-multiapply
-  #- r-ncdf4
-  #- r-ncdf4.helpers
-  #- r-pcict
-  #- r-plyr
-  #- r-rcolorbrewer
-  #- r-rcpp
-  #- r-s2dverification
-  #- r-snow
-  #- r-spei
-  #- r-udunits2
-  #- r-yaml
-=======
   - cdo
   - r-base >=3.5
   - r-abind
@@ -161,11 +129,10 @@ dependencies:
   - r-spei
   - r-udunits2
   - r-yaml
->>>>>>> main
   # R packages needed for development
-  #- r-git2r  # dependency of lintr
-  #- r-lintr ==3.1.2
-  #- r-styler ==1.10.3
+  - r-git2r  # dependency of lintr
+  - r-lintr ==3.1.2
+  - r-styler ==1.10.3
 
   # Julia (dependencies installed by separate script)
-  # - julia  # temp removal
+  - julia
