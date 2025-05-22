@@ -82,7 +82,7 @@ diagnostics:
             CO2 increase per year experiment for model MPI-ESM1-2-LR (ensemble
             member r1i1p1f1). The transient climate response to cumulative CO2
             Emissions (TCRE) is defined as the 20-year average ΔT centered at
-            the time where cumulative CO2 emissions E reach 1000 Pg.
+            the time where cumulative CO2 emissions E reach 1000 PgC.
         exp_target: esm-1pctCO2
         legend_kwargs: false
         pyplot_kwargs:
