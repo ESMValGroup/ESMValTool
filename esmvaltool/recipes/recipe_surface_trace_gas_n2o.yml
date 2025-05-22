@@ -42,9 +42,9 @@ diagnostics:
           additional_datasets:
             - {dataset: NOAA-GML-SURFACE-FLASK-N2O, project: OBS6, mip: Amon, tier: 2, type: atmos, version: 1}
 
-        n2os_season:
+        n2os_model:
           mip: Amon
-          short_name: n2o
+          short_name: n2os
           start_year: 2000
           end_year: 2014
           preprocessor: ma_surface

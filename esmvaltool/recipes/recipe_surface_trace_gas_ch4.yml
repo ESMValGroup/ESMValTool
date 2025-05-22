@@ -42,9 +42,9 @@ diagnostics:
           additional_datasets:
             - {dataset: NOAA-GML-SURFACE-FLASK-CH4, project: OBS6, mip: Amon, tier: 2, type: atmos, version: 1}
 
-        ch4s_season:
+        ch4s_model:
           mip: Amon
-          short_name: ch4
+          short_name: ch4s
           start_year: 2000
           end_year: 2014
           preprocessor: ma_surface

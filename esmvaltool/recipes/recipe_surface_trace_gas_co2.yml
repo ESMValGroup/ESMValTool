@@ -42,9 +42,9 @@ diagnostics:
           additional_datasets:
             - {dataset: NOAA-GML-SURFACE-FLASK-CO2, project: OBS6, mip: Amon, tier: 2, type: atmos, version: 1}
 
-        co2s_season:
+        co2s_model:
           mip: Amon
-          short_name: co2
+          short_name: co2s
           start_year: 2000
           end_year: 2014
           preprocessor: ma_surface
