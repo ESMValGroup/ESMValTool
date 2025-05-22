@@ -809,6 +809,15 @@ diagnostics:
          type: reanaly, version: v3b, start_year: 1854, end_year: 2019}
     scripts: null
 
+  NOAA-GML-SURFACE-FLASK-N2O:
+    description: NOAA Global Monitoring Lab Surface flask N2O data check
+    variables:
+      n2os:
+    additional_datasets:
+      - {dataset: NOAA-GML-SURFACE-FLASK-N2O, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
+         start_year: 1997, end_year: 2023}
+    scripts: null
+
   NOAA-MBL-CH4:
     description: NOAA marine boundary layer CH4 check
     variables:

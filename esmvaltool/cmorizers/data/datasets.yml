@@ -1178,6 +1178,14 @@ datasets:
       Download the following file:
       https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv
 
+  NOAA-GML-SURFACE-FLASK-N2O:
+    tier: 2
+    source: https://gml.noaa.gov/aftp/data/trace_gases/n2o/flask/surface/
+    last_access: 2024-07-30
+    info: |
+      Download the following archive:
+      n2o_surface-flask_ccgg_text.tar.gz
+
   NSIDC-0116-sh:
     tier: 3
     source: https://nsidc.org/data/NSIDC-0116
