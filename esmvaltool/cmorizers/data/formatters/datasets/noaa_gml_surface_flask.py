@@ -13,7 +13,6 @@ Download and processing instructions
     Download one of the following file:
     https://gml.noaa.gov/aftp/data/trace_gases/ch4/flask/surface/ch4_surface-flask_ccgg_text.tar.gz
     https://gml.noaa.gov/aftp/data/trace_gases/co2/flask/surface/co2_surface-flask_ccgg_text.tar.gz
-    https://gml.noaa.gov/aftp/data/trace_gases/n2o/flask/surface/n2o_surface-flask_ccgg_text.tar.gz
 """
 
 import logging
@@ -38,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 FLASK_COLUMNS = ["site", "year", "month", "value"]
 DTYPE_FLASK_COLUMNS = {"site": str, "year": int, "month": int, "value": float}
-TRACE_GAS_UNITS = {"ch4s": "1e-09", "co2s": "1e-06", "n2os": "1e-09"}
+TRACE_GAS_UNITS = {"ch4s": "1e-09", "co2s": "1e-06"}
 
 
 class FlaskStation(NamedTuple):
