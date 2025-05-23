@@ -20,7 +20,7 @@ preprocessors:
     area_statistics:
       operator: mean
     extract_region:
-      start_latitude: -90
+      start_latitude: -85
       end_latitude: -60
       start_longitude: 0
       end_longitude: 360
@@ -29,6 +29,7 @@ preprocessors:
     convert_units:
       units: DU
 
+
   create_time_series_NH:
     annual_statistics:
       operator: mean
@@ -36,13 +37,14 @@ preprocessors:
       operator: mean
     extract_region:
       start_latitude: 60
-      end_latitude: 90
+      end_latitude: 85
       start_longitude: 0
       end_longitude: 360
     extract_month:
       month: 3
     convert_units:
       units: DU
+
 
   create_lat_time_map:
     regrid:
@@ -107,7 +109,7 @@ diagnostics:
         preprocessor: create_time_series_SH
         <<: *time_period_toz_monthly
     additional_datasets:
-      - {project: OBS6, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: AERmon, timerange: '1997/2022', alias: ESACCI-OZONE}
+      - {project: obs4MIPs, dataset: C3S-GTO-ECV-9-0, tier: 1, timerange: '1996/2021', alias: GTO-ECV, frequency: mon}
     scripts:
       plot:
         script: monitor/multi_datasets.py
@@ -120,12 +122,11 @@ diagnostics:
           orientation: landscape
         plots:
           timeseries:
-            annual_mean_kwargs: false
             plot_kwargs:
               OBS:
                 color: black
             pyplot_kwargs:
-              title: Total Column Ozone, 60-90S, October
+              title: Total Column Ozone, 60-85S, October
 
   polar_cap_time_series_NH:
     variables:
@@ -136,7 +137,7 @@ diagnostics:
         facet_used_for_labels: alias
         <<: *time_period_toz_monthly
     additional_datasets:
-      - {project: OBS6, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: AERmon, timerange: '1997/2022', alias: ESACCI-OZONE}
+      - {project: obs4MIPs, dataset: C3S-GTO-ECV-9-0, tier: 1, timerange: '1996/2021', alias: GTO-ECV, frequency: mon}
     scripts:
       plot:
         script: monitor/multi_datasets.py
@@ -149,12 +150,11 @@ diagnostics:
           orientation: landscape
         plots:
           timeseries:
-            annual_mean_kwargs: false
             plot_kwargs:
               OBS:
                 color: black
             pyplot_kwargs:
-              title: Total Column Ozone, 60-90N, March
+              title: Total Column Ozone, 60-85N, March
 
   lat_time_mapplot:
     variables:
@@ -164,7 +164,7 @@ diagnostics:
         preprocessor: create_lat_time_map
         <<: *time_period_toz_zonalmean
         additional_datasets:
-          - {project: OBS6, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: AERmon, reference_for_monitor_diags: true, alias: ESACCI-OZONE}
+          - {project: obs4MIPs, dataset: C3S-GTO-ECV-9-0, tier: 1, alias: GTO-ECV, frequency: mon, reference_for_monitor_diags: true}
     scripts:
       plot:
         script: monitor/multi_datasets.py
@@ -195,7 +195,7 @@ diagnostics:
         preprocessor: create_lat_month_map
         <<: *time_period_toz_zonalmean
         additional_datasets:
-          - {project: OBS6, dataset: ESACCI-OZONE, type: sat, version: L3, tier: 2, mip: AERmon, reference_for_monitor_diags: true, alias: ESACCI-OZONE}
+          - {project: obs4MIPs, dataset: C3S-GTO-ECV-9-0, tier: 1, alias: GTO-ECV, frequency: mon, reference_for_monitor_diags: true}
     scripts:
       plot:
         script: monitor/multi_datasets.py

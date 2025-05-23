@@ -539,6 +539,21 @@ diagnostics:
     scripts: null
 
 
+  HadEX3:
+    description: HadEX3 check
+    variables:
+      txx:
+      tnn:
+      rx1day:
+      rx5day:
+    additional_datasets:
+      - {dataset: HadEX3, project: OBS6, mip: yr, tier: 2,
+         type: ground, version: v3.0.4, start_year: 1901, end_year: 2018}
+      - {dataset: HadEX3, project: OBS6, mip: Amon, tier: 2,
+         type: ground, version: v3.0.4, start_year: 1901, end_year: 2018}
+    scripts: null
+
+
   HadISST:
     description: HadISST check
     variables:
@@ -562,6 +577,16 @@ diagnostics:
     additional_datasets:
       - {dataset: HALOE, project: OBS, mip: Amon, tier: 2,
          type: sat, version: 1, start_year: 1991, end_year: 2002}
+    scripts: null
+
+  IAP:
+    description: IAP check
+    variables:
+      thetao:
+      tos:
+    additional_datasets:
+      - {dataset: IAP, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: "v4.2", start_year: 1990, end_year: 1991}
     scripts: null
 
   ISCCP-FH:
@@ -782,6 +807,24 @@ diagnostics:
     additional_datasets:
       - {dataset: NOAA-ERSSTv3b, project: OBS6, mip: Omon, tier: 2,
          type: reanaly, version: v3b, start_year: 1854, end_year: 2019}
+    scripts: null
+
+  NOAA-GML-SURFACE-FLASK-CH4:
+    description: NOAA Global Monitoring Lab Surface flask CH4 data check
+    variables:
+      ch4s:
+    additional_datasets:
+      - {dataset: NOAA-GML-SURFACE-FLASK-CH4, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
+         start_year: 1983, end_year: 2023}
+    scripts: null
+
+  NOAA-GML-SURFACE-FLASK-CO2:
+    description: NOAA Global Monitoring Lab Surface flask CO2 data check
+    variables:
+      co2s:
+    additional_datasets:
+      - {dataset: NOAA-GML-SURFACE-FLASK-CO2, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
+         start_year: 1968, end_year: 2023}
     scripts: null
 
   NOAA-MBL-CH4:
