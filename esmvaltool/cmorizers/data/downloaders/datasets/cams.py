@@ -45,7 +45,7 @@ def download_dataset(
         cds_url="https://ads.atmosphere.copernicus.eu/api",
     )
 
-    for year in range(start_date, end_date + 1, 1):
+    for year in range(start_date.year, end_date.year + 1, 1):
         downloader.download_year(year)
 
     unpack_files_in_folder(downloader.local_folder)
