@@ -108,8 +108,8 @@ def detrend_zostoga(
     ax.legend(loc="upper left", frameon=False)
 
     fig.savefig(
-        Path(plot_path) /
-        f'detrended_{zostoga.attributes["source_id"]}.png', dpi=150)
+        Path(plot_path)
+        / f'detrended_{zostoga.attributes["source_id"]}.png', dpi=150)
     return zostoga_detrended
 
 
@@ -124,6 +124,10 @@ def dyn_steric_regression(
         zostoga cube
     zos: iris.cube.Cube
         zos cube
+    plot_path: Path
+        path to save plots to
+    scenario: str
+        scenario name
 
     Returns
     -------
@@ -143,27 +147,27 @@ def dyn_steric_regression(
     zostoga = zostoga[idx]
     zos = zos[idx]
 
-    zostoga_data = zostoga.data - np.mean(zostoga.data[0:10])
-    zos_data = zos.data - np.mean(zos.data[0:10], axis=0)
+    zostoga.data = zostoga.data - np.mean(zostoga.data[0:10])
+    zos.data = zos.data - np.mean(zos.data[0:10], axis=0)
 
     # Calculate the slope and intercepts of linear fits of the
     # global and local sea level projections
     regr = LinearRegression()
     regr.fit(
-        zostoga_data.reshape(-1, 1),
-        zos_data.reshape(zos_data.shape[0], -1))
+        zostoga.data.reshape(-1, 1),
+        zos.data.reshape(zos.data.shape[0], -1))
     slopes = regr.coef_.reshape(180, 360)
 
     # Deal with dodgy land mask, which won't really matter in the end anyway
     if zos.attributes["source_id"] == "GISS-E2-1-H":
-        mask = np.full(zos_data.shape, np.nan)
+        mask = np.full(zos.data.shape, np.nan)
     else:
         mask = zos.data.mask[0]
 
-    fig = evaluate_regression(zostoga_data, zos_data, slopes)
+    fig = evaluate_regression(zostoga.data, zos.data, slopes)
     fig.savefig(
-        Path(plot_path) /
-        f"regression_{zostoga.attributes['source_id']}_{scenario}.png",
+        Path(plot_path)
+        / f"regression_{zostoga.attributes['source_id']}_{scenario}.png",
         dpi=150)
 
     return slopes, mask
@@ -188,8 +192,8 @@ def save_data(
     None
     """
     np.save(
-        Path(work_path) /
-        f"zos_regression_{scenario}_{model}.npy", slopes)
+        Path(work_path)
+        / f"zos_regression_{scenario}_{model}.npy", slopes)
     np.save(Path(work_path) / f"zos_mask_{scenario}_{model}.npy", mask)
 
 
@@ -250,48 +254,24 @@ def evaluate_regression(
     return fig
 
 
-def evaluate_patterns(
-        zostoga: list, zos: list, slopes: list,
-        plot_path: Path, model: str) -> None:
-    """Evaluate the patterns.
+def plot_evals(
+        diff_list: list, zos: list, mse_list: list) -> plt.figure:
+    """Plot the evaluation of the thermosteric patterns.
 
     Parameters
     ----------
-    zostoga: list
-        list of zostoga scenarios
+    diff_list: list
+        list of difference maps
     zos: list
         list of zos scenarios
-    slopes: list
-        list of slopes
-    plot_path: Path
-        path to save plots to
-    model: str
-        model name
+    mse_list: list
+        list of mean squared errors
 
     Returns
     -------
-    None
+    fig: plt.figure
+        figure of the evaluation
     """
-    # Scale patterns for each scenario
-    mse_list = []
-    diff_list = []
-    for i, (z, s) in enumerate(zip(zostoga, slopes)):
-        z.data = z.data - np.mean(z.data[0:10])
-        zos[i].data = zos[i].data - np.mean(zos[i].data[0:10], axis=0)
-
-        p_scaled = z.data[:, np.newaxis, np.newaxis] * s[np.newaxis, :, :]
-
-        # Diff maps for end of century (20 yr mean)
-        end_idx = (86 * 12) - 1
-        start_idx = end_idx - (20 * 12)
-        diff_list.append(
-            np.mean(zos[i][start_idx:end_idx].data, axis=0) -
-            np.mean(p_scaled[start_idx:end_idx], axis=0))
-
-        # Calculate mean squared error
-        mse = np.nanmean((zos[i].data - p_scaled) ** 2, axis=(1, 2))
-        mse_list.append(mse)
-
     # Plot the mse for each scenario
     fig = plt.figure(figsize=(10, 6), layout="constrained")
     ax = fig.add_subplot(231, projection=ccrs.PlateCarree())
@@ -332,13 +312,57 @@ def evaluate_patterns(
     ax = fig.add_subplot(2, 3, (4, 6))
 
     time = np.linspace(2015, 2100, 1032)
-    ax.plot(time, mse_list[0][:(86*12)], label="SSP245", color="navy")
-    ax.plot(time, mse_list[1][:(86*12)], label="SSP370", color="orange")
-    ax.plot(time, mse_list[2][:(86*12)], label="SSP585", color="darkorchid")
+    ax.plot(time, mse_list[0][:(86 * 12)], label="SSP245", color="navy")
+    ax.plot(time, mse_list[1][:(86 * 12)], label="SSP370", color="orange")
+    ax.plot(time, mse_list[2][:(86 * 12)], label="SSP585", color="darkorchid")
     ax.set_xlabel("Year")
     ax.set_ylabel("Global mean squared error (m)")
     ax.legend(loc="upper left", frameon=False)
 
+
+def evaluate_patterns(
+        zostoga: list, zos: list, slopes: list,
+        plot_path: Path, model: str) -> None:
+    """Evaluate the patterns.
+
+    Parameters
+    ----------
+    zostoga: list
+        list of zostoga scenarios
+    zos: list
+        list of zos scenarios
+    slopes: list
+        list of slopes
+    plot_path: Path
+        path to save plots to
+    model: str
+        model name
+
+    Returns
+    -------
+    None
+    """
+    # Scale patterns for each scenario
+    mse_list = []
+    diff_list = []
+    for i, (z, s) in enumerate(zip(zostoga, slopes)):
+        z.data = z.data - np.mean(z.data[0:10])
+        zos[i].data = zos[i].data - np.mean(zos[i].data[0:10], axis=0)
+
+        p_scaled = z.data[:, np.newaxis, np.newaxis] * s[np.newaxis, :, :]
+
+        # Diff maps for end of century (20 yr mean)
+        end_idx = (86 * 12) - 1
+        start_idx = end_idx - (20 * 12)
+        diff_list.append(
+            np.mean(zos[i][start_idx:end_idx].data, axis=0)
+            - np.mean(p_scaled[start_idx:end_idx], axis=0))
+
+        # Calculate mean squared error
+        mse = np.nanmean((zos[i].data - p_scaled) ** 2, axis=(1, 2))
+        mse_list.append(mse)
+
+    fig = plot_evals(diff_list, zos, mse_list)
     fig.savefig(Path(plot_path) / f"mse_{model}.png", dpi=150)
 
 
@@ -423,7 +447,7 @@ def patterns(model: str, cfg: dict) -> None:
     # Detrend the scenario zostogas
     zostoga_detrended = [
         detrend_zostoga(z, zostoga_drift, plot_path)
-        for z in zostoga_list[1:]] # [1:] to skip PiControl
+        for z in zostoga_list[1:]] #[1:] to skip PiControl
 
     # Calculate regression between zostoga and zos
     scenarios = ["ssp245", "ssp370", "ssp585"]
