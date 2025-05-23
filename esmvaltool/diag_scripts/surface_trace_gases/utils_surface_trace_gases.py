@@ -14,7 +14,7 @@ import iris
 import iris.exceptions
 import numpy as np
 
-logger = logging.getLogger(Path.basename(__file__))
+logger = logging.getLogger(Path(__file__).stem)
 
 
 class FlaskAnsError(Exception):

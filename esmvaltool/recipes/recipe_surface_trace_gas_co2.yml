@@ -44,7 +44,7 @@ diagnostics:
 
         co2s_model:
           mip: Amon
-          short_name: co2s
+          short_name: co2
           start_year: 2000
           end_year: 2014
           preprocessor: ma_surface

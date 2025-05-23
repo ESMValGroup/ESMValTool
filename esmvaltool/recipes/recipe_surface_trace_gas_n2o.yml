@@ -44,7 +44,7 @@ diagnostics:
 
         n2os_model:
           mip: Amon
-          short_name: n2os
+          short_name: n2o
           start_year: 2000
           end_year: 2014
           preprocessor: ma_surface

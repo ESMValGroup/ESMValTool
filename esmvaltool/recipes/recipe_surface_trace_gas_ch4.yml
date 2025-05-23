@@ -44,7 +44,7 @@ diagnostics:
 
         ch4s_model:
           mip: Amon
-          short_name: ch4s
+          short_name: ch4
           start_year: 2000
           end_year: 2014
           preprocessor: ma_surface
