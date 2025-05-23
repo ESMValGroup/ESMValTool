@@ -1,5 +1,7 @@
 """Script to download CAMS greenhouse gas data from the Climate Data Store."""
 
+import datetime as dt
+
 from esmvaltool.cmorizers.data.downloaders.cds import CDSDownloader
 from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
