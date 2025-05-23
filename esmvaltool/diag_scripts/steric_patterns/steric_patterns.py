@@ -402,39 +402,35 @@ def extract_data_from_cfg(model: str, cfg: dict) -> tuple[list]:
             input_file = dataset["filename"]
             zostoga_picontrol = sf.load_cube(input_file)
 
-        elif ((dataset["dataset"] == model)
+        if ((dataset["dataset"] == model)
                 and (dataset["variable_group"] == "zostoga_245")):
             input_file = dataset["filename"]
             zostoga_245 = sf.load_cube(input_file)
 
-        elif ((dataset["dataset"] == model)
+        if ((dataset["dataset"] == model)
                 and (dataset["variable_group"] == "zostoga_370")):
             input_file = dataset["filename"]
             zostoga_370 = sf.load_cube(input_file)
 
-        elif ((dataset["dataset"] == model)
+        if ((dataset["dataset"] == model)
                 and (dataset["variable_group"] == "zostoga_585")):
             input_file = dataset["filename"]
             zostoga_585 = sf.load_cube(input_file)
 
-        elif ((dataset["dataset"] == model)
+        if ((dataset["dataset"] == model)
                 and (dataset["variable_group"] == "zos_245")):
             input_file = dataset["filename"]
             zos_245 = sf.load_cube(input_file)
 
-        elif ((dataset["dataset"] == model)
+        if ((dataset["dataset"] == model)
                 and (dataset["variable_group"] == "zos_370")):
             input_file = dataset["filename"]
             zos_370 = sf.load_cube(input_file)
 
-        elif ((dataset["dataset"] == model)
+        if ((dataset["dataset"] == model)
                 and (dataset["variable_group"] == "zos_585")):
             input_file = dataset["filename"]
             zos_585 = sf.load_cube(input_file)
-
-        else:
-            msg = f"Data missing for model {model} in cfg"
-            raise ValueError(msg)
 
     zostoga = [zostoga_picontrol, zostoga_245, zostoga_370, zostoga_585]
     zos = [zos_245, zos_370, zos_585]
