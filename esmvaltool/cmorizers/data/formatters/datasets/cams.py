@@ -145,7 +145,7 @@ def _fix_depth(cube, short_name, var, cfg):
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize data."""
-months = [f"{mo:02d}" for mo in range(1, 13)]
+    months = [f"{mo:02d}" for mo in range(1, 13)]
     fpattern = os.path.join(in_dir, cfg["filename"])
 
     # run the cmorization
