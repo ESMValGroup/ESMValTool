@@ -186,6 +186,10 @@ def save_data(
         model mask
     work_path: Path
         path to save data to
+    model: str
+        model name
+    scenario: str
+        scenario name
 
     Returns
     -------
@@ -318,6 +322,7 @@ def plot_evals(
     ax.set_xlabel("Year")
     ax.set_ylabel("Global mean squared error (m)")
     ax.legend(loc="upper left", frameon=False)
+    return fig
 
 
 def evaluate_patterns(
@@ -385,39 +390,43 @@ def extract_data_from_cfg(model: str, cfg: dict) -> tuple[list]:
     """
     for dataset in cfg["input_data"].values():
         if ((dataset["dataset"] == model) and
-            (dataset["variable_group"] == "zostoga_piControl")):
+                (dataset["variable_group"] == "zostoga_piControl")):
             input_file = dataset["filename"]
             zostoga_picontrol = sf.load_cube(input_file)
 
-        if ((dataset["dataset"] == model) and
-            (dataset["variable_group"] == "zostoga_245")):
+        elif ((dataset["dataset"] == model) and
+                (dataset["variable_group"] == "zostoga_245")):
             input_file = dataset["filename"]
             zostoga_245 = sf.load_cube(input_file)
 
-        if ((dataset["dataset"] == model) and
-            (dataset["variable_group"] == "zostoga_370")):
+        elif ((dataset["dataset"] == model) and
+                (dataset["variable_group"] == "zostoga_370")):
             input_file = dataset["filename"]
             zostoga_370 = sf.load_cube(input_file)
 
-        if ((dataset["dataset"] == model) and
-            (dataset["variable_group"] == "zostoga_585")):
+        elif ((dataset["dataset"] == model) and
+                (dataset["variable_group"] == "zostoga_585")):
             input_file = dataset["filename"]
             zostoga_585 = sf.load_cube(input_file)
 
-        if ((dataset["dataset"] == model) and
-            (dataset["variable_group"] == "zos_245")):
+        elif ((dataset["dataset"] == model) and
+                (dataset["variable_group"] == "zos_245")):
             input_file = dataset["filename"]
             zos_245 = sf.load_cube(input_file)
 
-        if ((dataset["dataset"] == model) and
-            (dataset["variable_group"] == "zos_370")):
+        elif ((dataset["dataset"] == model) and
+                (dataset["variable_group"] == "zos_370")):
             input_file = dataset["filename"]
             zos_370 = sf.load_cube(input_file)
 
-        if ((dataset["dataset"] == model) and
-            (dataset["variable_group"] == "zos_585")):
+        elif ((dataset["dataset"] == model) and
+                (dataset["variable_group"] == "zos_585")):
             input_file = dataset["filename"]
             zos_585 = sf.load_cube(input_file)
+
+        else:
+            msg = f"Data missing for model {model} in cfg"
+            raise ValueError(msg)
 
     zostoga = [zostoga_picontrol, zostoga_245, zostoga_370, zostoga_585]
     zos = [zos_245, zos_370, zos_585]
@@ -447,7 +456,7 @@ def patterns(model: str, cfg: dict) -> None:
     # Detrend the scenario zostogas
     zostoga_detrended = [
         detrend_zostoga(z, zostoga_drift, plot_path)
-        for z in zostoga_list[1:]] #[1:] to skip PiControl
+        for z in zostoga_list[1:]]  # [1:] to skip PiControl
 
     # Calculate regression between zostoga and zos
     scenarios = ["ssp245", "ssp370", "ssp585"]
