@@ -1,0 +1,25 @@
+---
+# Filename
+filename: 'ch4_surface-flask_ccgg_text.tar.gz'
+
+# Trace gas
+trace_gas: ch4
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: NOAA-GML-SURFACE-FLASK-CH4
+  version: '1.0'
+  tier: 2
+  modeling_realm: atmos
+  project_id: OBS6
+  source: 'https://gml.noaa.gov/aftp/data/trace_gases/ch4/flask/surface/ch4_surface-flask_ccgg_text.tar.gz'
+  reference: 'noaa-gml-surface-flask-ch4'
+
+# Variables to cmorize
+variables:
+  ch4s:
+    mip: Amon
+    raw_name: ch4s
+    raw_units: 'mol mol-1'
+    standard_name: mole_fraction_of_methane_in_air
+    long_name: 'Mole Fraction of CH4'
