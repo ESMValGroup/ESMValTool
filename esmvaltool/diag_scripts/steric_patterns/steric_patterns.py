@@ -277,7 +277,7 @@ def plot_evals(
         figure of the evaluation
     """
     # Plot the mse for each scenario
-    fig = plt.figure(figsize=(10, 6), layout="constrained")
+    fig = plt.figure(figsize=(12, 5), layout="constrained")
     ax = fig.add_subplot(231, projection=ccrs.PlateCarree())
     vmin = -0.5
     vmax = 0.5

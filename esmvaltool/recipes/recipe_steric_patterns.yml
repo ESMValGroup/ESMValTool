@@ -45,12 +45,12 @@ CMIP6_zostoga: &cmip6_zostoga
   - {dataset: CanESM5,          ensemble: r1i1p1f1, grid: gn}
   - {dataset: CanESM5-CanOE,    ensemble: r1i1p2f1, grid: gn}
   - {dataset: CanESM5-1,        ensemble: r1i1p1f1, grid: gn, institute: CCCma}
-  - {dataset: CMCC-CM2-SR5,     ensemble: r1i1p1f1, grid: gn} 
+  - {dataset: CMCC-CM2-SR5,     ensemble: r1i1p1f1, grid: gn}
   - {dataset: CNRM-CM6-1,       ensemble: r1i1p1f2, grid: gn}
   - {dataset: CNRM-CM6-1-HR,    ensemble: r1i1p1f2, grid: gn}
   - {dataset: CNRM-ESM2-1,      ensemble: r1i1p1f2, grid: gn}
   - {dataset: EC-Earth3,        ensemble: r1i1p1f1, grid: gn}
-  # - {dataset: EC-Earth3-CC,     ensemble: r1i1p1f1, grid: gn} 
+  # - {dataset: EC-Earth3-CC,     ensemble: r1i1p1f1, grid: gn}
   # - {dataset: EC-Earth3-Veg,    ensemble: r1i1p1f1, grid: gn}
   # - {dataset: GFDL-CM4,         ensemble: r1i1p1f1, grid: gr}
   # - {dataset: GFDL-ESM4,        ensemble: r1i1p1f1, grid: gr}
@@ -66,7 +66,7 @@ CMIP6_zostoga: &cmip6_zostoga
   - {dataset: MPI-ESM1-2-HR,    ensemble: r1i1p1f1, grid: gn}
   - {dataset: MPI-ESM1-2-LR,    ensemble: r1i1p1f1, grid: gn}
   - {dataset: MRI-ESM2-0,       ensemble: r1i1p1f1, grid: gm}
-  - {dataset: NorESM2-LM,       ensemble: r1i1p1f1, grid: gm} 
+  - {dataset: NorESM2-LM,       ensemble: r1i1p1f1, grid: gm}
   - {dataset: NorESM2-MM,       ensemble: r1i1p1f1, grid: gm}
   - {dataset: UKESM1-0-LL,      ensemble: r1i1p1f2, grid: gm}
 
@@ -77,12 +77,12 @@ CMIP6_zos: &cmip6_zos
   - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn}
   - {dataset: CanESM5-CanOE,   ensemble: r1i1p2f1, grid: gn}
   - {dataset: CanESM5-1,       ensemble: r1i1p1f1, grid: gn, institute: CCCma}
-  - {dataset: CMCC-CM2-SR5,    ensemble: r1i1p1f1, grid: gn} 
+  - {dataset: CMCC-CM2-SR5,    ensemble: r1i1p1f1, grid: gn}
   - {dataset: CNRM-CM6-1,      ensemble: r1i1p1f2, grid: gn}
   - {dataset: CNRM-CM6-1-HR,   ensemble: r1i1p1f2, grid: gn}
   - {dataset: CNRM-ESM2-1,     ensemble: r1i1p1f2, grid: gn}
   - {dataset: EC-Earth3,       ensemble: r1i1p1f1, grid: gn}
-  # - {dataset: EC-Earth3-CC,    ensemble: r1i1p1f1, grid: gn} 
+  # - {dataset: EC-Earth3-CC,    ensemble: r1i1p1f1, grid: gn}
   # - {dataset: EC-Earth3-Veg,   ensemble: r1i1p1f1, grid: gn}
   # - {dataset: GFDL-CM4,        ensemble: r1i1p1f1, grid: gr}
   # - {dataset: GFDL-ESM4,       ensemble: r1i1p1f1, grid: gr}
@@ -98,7 +98,7 @@ CMIP6_zos: &cmip6_zos
   - {dataset: MPI-ESM1-2-HR,   ensemble: r1i1p1f1, grid: gn}
   - {dataset: MPI-ESM1-2-LR,   ensemble: r1i1p1f1, grid: gn}
   - {dataset: MRI-ESM2-0,      ensemble: r1i1p1f1, grid: gr}
-  - {dataset: NorESM2-LM,      ensemble: r1i1p1f1, grid: gn} 
+  - {dataset: NorESM2-LM,      ensemble: r1i1p1f1, grid: gn}
   - {dataset: NorESM2-MM,      ensemble: r1i1p1f1, grid: gn}
   - {dataset: UKESM1-0-LL,     ensemble: r1i1p1f2, grid: gn}
 
