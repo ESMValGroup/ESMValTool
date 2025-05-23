@@ -25,7 +25,7 @@ def download_dataset(
         Overwrite already downloaded files
     """
     if start_date is None:
-        start_date = 1979
+        start_date = dt.datetime(year=1979, month=1, day=1)
     if end_date is None:
         end_date = 2023
 
