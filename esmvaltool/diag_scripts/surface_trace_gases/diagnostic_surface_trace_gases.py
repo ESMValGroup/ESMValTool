@@ -8,6 +8,7 @@ at /diag_scripts/aerosols/aod_aeronet_assess.py.
 """
 
 import logging
+from pathlib import Path
 
 import cartopy.crs as ccrs
 import iris
@@ -21,7 +22,6 @@ import scipy
 from esmvalcore.preprocessor._multimodel import multi_model_statistics
 from esmvalcore.preprocessor._time import climate_statistics
 from matplotlib import colors, gridspec
-from matplotlib.path import Path
 from numpy import ma
 
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
