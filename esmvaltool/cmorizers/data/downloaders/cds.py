@@ -111,20 +111,7 @@ class CDSDownloader(BaseDownloader):
         """
         request_dict = self._request_dict.copy()
         request_dict["year"] = f"{year}"
-        request_dict["month"] = [
-            "01",
-            "02",
-            "03",
-            "04",
-            "05",
-            "06",
-            "07",
-            "08",
-            "09",
-            "10",
-            "11",
-            "12",
-        ]
+request_dict["month"] = [f"{m:02d}" for m in range(1, 13)]
 
         os.makedirs(self.local_folder, exist_ok=True)
         if file_pattern is None:
