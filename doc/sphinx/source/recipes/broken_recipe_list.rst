@@ -27,6 +27,11 @@ More details can be found in the :ref:`broken recipe policy
      - v2.11.0
      - Failed to run preprocessor function ``fix_metadata`` on the data: Unable to convert units
      - `#3694 <https://github.com/ESMValGroup/ESMValTool/issues/3694>`_
+   * - :ref:`recipe_psyplot.yml <recipe_psyplot>`
+     - ``psyplot``
+     - v2.12.0
+     - Dropping ``psy-`` dependencies
+     - `#4062 <https://github.com/ESMValGroup/ESMValTool/issues/4062>`_
    * - :ref:`recipe_russell18jgr.yml <nml_oceanmetrics>`
      - ``Figure_4``
      - v2.11.0
