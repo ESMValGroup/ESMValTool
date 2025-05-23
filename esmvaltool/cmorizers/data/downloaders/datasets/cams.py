@@ -27,7 +27,7 @@ def download_dataset(
     if start_date is None:
         start_date = dt.datetime(year=1979, month=1, day=1)
     if end_date is None:
-        end_date = 2023
+        end_date = dt.datetime(year=2023, month=12, day=31)
 
     downloader = CDSDownloader(
         product_name="cams-global-greenhouse-gas-inversion",
