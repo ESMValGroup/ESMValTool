@@ -36,7 +36,6 @@ datasets:
       from at least 1970 to the present. Rainfall grids are generated from 1900 to the present. The underpinning spatial
       models have been developed at the Fenner School of Environment and Society of the Australian National University.
 
-
   APHRO-MA:
     tier: 3
     source: "http://aphrodite.st.hirosaki-u.ac.jp/download/"
