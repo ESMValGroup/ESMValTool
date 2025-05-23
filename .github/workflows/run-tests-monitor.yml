@@ -3,15 +3,14 @@ name: Monitor Tests
 on:
   push:
     branches:
-      # - main
-      - 4055_monitor_test_workflow_failure_rtw
+      - main
   # run the test only if the PR is to main
   # turn it on if required
   # pull_request:
   #   branches:
   #   - main
-  # schedule:
-  #   - cron: '0 0 * * *'  # nightly
+  schedule:
+    - cron: '0 0 * * *'  # nightly
 
 # Required shell entrypoint to have properly configured bash shell
 defaults:
