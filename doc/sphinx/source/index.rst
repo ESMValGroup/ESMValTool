@@ -48,7 +48,7 @@ How to contribute
 -----------------
 Refer to ESMValTool :ref:`contributing to the community<community>` for a guide on contributing recipes and diagnostics.
 
-Refer to ESMValCore :ref:`Contributing <contributing>`  for information on contributing code.
+Refer to ESMValCore contributing for information on contributing code.
 
 Get in touch!
 -------------
