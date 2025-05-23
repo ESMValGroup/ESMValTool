@@ -24,9 +24,9 @@ Recipes are stored in recipes/
 
    * recipe_psyplot.yml
 
-Diagnostics are stored in diag_scripts/
+Diagnostics are stored in archive/legacy_diag_scripts
 
-   * :ref:`psyplot_diag.py <api.esmvaltool.diag_scripts.psyplot_diag>`
+   * psyplot_diag.py
 
 
 Variables
