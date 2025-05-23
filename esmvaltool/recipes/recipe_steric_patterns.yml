@@ -12,6 +12,8 @@ documentation:
     - munday_gregory
 
   references:
+    - palmer2020
+    - perks2023
 
 preprocessors:
   regular_grid:
