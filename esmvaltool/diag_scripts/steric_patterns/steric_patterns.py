@@ -388,39 +388,47 @@ def extract_data_from_cfg(model: str, cfg: dict) -> tuple[list]:
     zos: list
         list of zos scenarios
     """
+    # Satisfying CI linting
+    zostoga_picontrol = None
+    zostoga_245 = None
+    zostoga_370 = None
+    zostoga_585 = None
+    zos_245 = None
+    zos_370 = None
+    zos_585 = None
     for dataset in cfg["input_data"].values():
-        if ((dataset["dataset"] == model) and
-                (dataset["variable_group"] == "zostoga_piControl")):
+        if ((dataset["dataset"] == model)
+            and (dataset["variable_group"] == "zostoga_piControl")):
             input_file = dataset["filename"]
             zostoga_picontrol = sf.load_cube(input_file)
 
-        elif ((dataset["dataset"] == model) and
-                (dataset["variable_group"] == "zostoga_245")):
+        elif ((dataset["dataset"] == model)
+            and (dataset["variable_group"] == "zostoga_245")):
             input_file = dataset["filename"]
             zostoga_245 = sf.load_cube(input_file)
 
-        elif ((dataset["dataset"] == model) and
-                (dataset["variable_group"] == "zostoga_370")):
+        elif ((dataset["dataset"] == model)
+            and (dataset["variable_group"] == "zostoga_370")):
             input_file = dataset["filename"]
             zostoga_370 = sf.load_cube(input_file)
 
-        elif ((dataset["dataset"] == model) and
-                (dataset["variable_group"] == "zostoga_585")):
+        elif ((dataset["dataset"] == model)
+            and (dataset["variable_group"] == "zostoga_585")):
             input_file = dataset["filename"]
             zostoga_585 = sf.load_cube(input_file)
 
-        elif ((dataset["dataset"] == model) and
-                (dataset["variable_group"] == "zos_245")):
+        elif ((dataset["dataset"] == model)
+            and (dataset["variable_group"] == "zos_245")):
             input_file = dataset["filename"]
             zos_245 = sf.load_cube(input_file)
 
-        elif ((dataset["dataset"] == model) and
-                (dataset["variable_group"] == "zos_370")):
+        elif ((dataset["dataset"] == model)
+            and (dataset["variable_group"] == "zos_370")):
             input_file = dataset["filename"]
             zos_370 = sf.load_cube(input_file)
 
-        elif ((dataset["dataset"] == model) and
-                (dataset["variable_group"] == "zos_585")):
+        elif ((dataset["dataset"] == model)
+            and (dataset["variable_group"] == "zos_585")):
             input_file = dataset["filename"]
             zos_585 = sf.load_cube(input_file)
 
@@ -462,14 +470,14 @@ def patterns(model: str, cfg: dict) -> None:
     scenarios = ["ssp245", "ssp370", "ssp585"]
     slopes = []
     masks = []
-    for i, (z_dtr, zos) in enumerate(zip(zostoga_detrended, zos_list)):
+    for i, (x, y) in enumerate(zip(zostoga_detrended, zos_list)):
         slopes_arr, masks_arr = dyn_steric_regression(
-            z_dtr, zos, plot_path, scenarios[i])
+            x, y, plot_path, scenarios[i])
         slopes.append(slopes_arr)
         masks.append(masks_arr)
 
-    for i, (s, m) in enumerate(zip(slopes, masks)):
-        save_data(s, m, work_path, model, scenarios[i])
+    for i, (x, y) in enumerate(zip(slopes, masks)):
+        save_data(x, y, work_path, model, scenarios[i])
 
     # Test the patterns
     evaluate_patterns(zostoga_list[1:], zos_list, slopes, plot_path, model)
