@@ -33,8 +33,8 @@ CELL_WIDTH = 50
 def _get_figure_index(file_content):
     """Get index of figure in text."""
     offset = 0
-    if ".. gallery=True" in file_content:
-        offset = file_content.index(".. gallery=True") + 15
+    if "gallery=True" in file_content:
+        offset = file_content.index("gallery=True") + 12
         file_content = file_content[offset:]
     if FIGURE_STR in file_content:
         return offset + file_content.index(FIGURE_STR) + len(FIGURE_STR)
