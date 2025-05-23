@@ -31,7 +31,7 @@ from esmvaltool.diag_scripts.surface_trace_gases.utils_surface_trace_gases impor
     extract_pt,
 )
 
-logger = logging.getLogger(Path.basename(__file__))
+logger = logging.getLogger(Path(__file__).stem)
 fontsizedict = {"title": 25, "axis": 20, "legend": 18, "ticklabel": 18}
 TRACE_GASES_FACTOR = {
     "ch4": 1e9,
@@ -771,8 +771,9 @@ def trace_gas_timeserie_zonal(
             fontsize=20,
         )
         plt.tick_params(axis="both", labelsize=16)
-        text = \
+        text = (
             f"No. of sites = {obs.coord('Station index (arbitrary)').shape[0]}"
+        )
         plt.annotate(text, (0.05, 0.9), xycoords="axes fraction", fontsize=16)
         plt.title(latitude_titles[l_i], fontsize=28)
         # Get legend handles for the first latitude band
@@ -1137,8 +1138,9 @@ def trace_gas_seas_ampl_growth_rate(
     # Model and observations preprocessing
     # Prepare iris cubes for model data
     model_yearly = model_data.aggregated_by("year", iris.analysis.MEAN)
-    model_amplitude = (model_data.aggregated_by("year", iris.analysis.MAX)
-                       - model_data.aggregated_by("year", iris.analysis.MIN))
+    model_amplitude = model_data.aggregated_by(
+        "year", iris.analysis.MAX
+    ) - model_data.aggregated_by("year", iris.analysis.MIN)
     model_growth = iris.cube.Cube(
         np.diff(model_yearly.data, axis=0),
         long_name=f"{trace_gas}_growth",
@@ -1157,8 +1159,9 @@ def trace_gas_seas_ampl_growth_rate(
     model_growth.attributes = model_data.attributes
     # And observations
     obs_yearly = obs_cube.aggregated_by("year", iris.analysis.MEAN)
-    obs_amplitude = (obs_cube.aggregated_by("year", iris.analysis.MAX)
-                     - obs_cube.aggregated_by("year", iris.analysis.MIN))
+    obs_amplitude = obs_cube.aggregated_by(
+        "year", iris.analysis.MAX
+    ) - obs_cube.aggregated_by("year", iris.analysis.MIN)
     obs_growth = iris.cube.Cube(
         np.diff(obs_yearly.data, axis=0),
         long_name=f"{trace_gas}_growth",
