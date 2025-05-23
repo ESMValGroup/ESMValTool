@@ -1171,6 +1171,22 @@ datasets:
         ersst.v5.yyyymm.nc
         for years 1854 onwards
 
+  NOAA-GML-SURFACE-FLASK-CH4:
+    tier: 2
+    source: https://gml.noaa.gov/aftp/data/trace_gases/ch4/flask/surface/
+    last_access: 2024-07-30
+    info: |
+      Download the following archive:
+      ch4_surface-flask_ccgg_text.tar.gz
+
+  NOAA-GML-SURFACE-FLASK-CO2:
+    tier: 2
+    source: https://gml.noaa.gov/aftp/data/trace_gases/co2/flask/surface/
+    last_access: 2024-07-30
+    info: |
+      Download the following archive:
+      co2_surface-flask_ccgg_text.tar.gz
+
   NOAAGlobalTemp:
     tier: 2
     source: https://www.ncei.noaa.gov/data/noaa-global-surface-temperature/v5/access/

@@ -149,7 +149,6 @@ Other
    recipe_galytska23jgr
    recipe_multimodel_products
    recipe_pv_capacity_factor
-   recipe_rainfarm
    recipe_seaice
    recipe_seaice_drift
    recipe_seaice_feedback
@@ -168,6 +167,7 @@ require a legacy version of ESMValTool to run.
 .. toctree::
    :maxdepth: 1
 
+   recipe_rainfarm
    recipe_schlund20jgr
    recipe_spei
 
