@@ -441,6 +441,31 @@ def extract_data_from_cfg(model: str, cfg: dict) -> tuple[list]:
     return zostoga, zos
 
 
+def prepare_zostoga(
+        zostoga_list: iris.cube.Cube, plot_path: Path) -> list:
+    """Prepare the zostoga cube for regression.
+
+    Parameters
+    ----------
+    zostoga_list: list
+        list of raw zostoga cubes
+    plot_path: Path
+        path to plot folder
+
+    Returns
+    -------
+    zostoga_list: list
+        list of zostoga cubes
+    """
+    # Calculate drift from PiControl zostoga
+    zostoga_drift = calculate_drift(zostoga_list[0])
+
+    # Detrend the scenario zostogas
+    return [
+        detrend_zostoga(z, zostoga_drift, plot_path)
+        for z in zostoga_list[1:]]  # [1:] to skip PiControl
+
+
 def patterns(model: str, cfg: dict) -> None:
     """Run pattern calculations.
 
@@ -458,18 +483,13 @@ def patterns(model: str, cfg: dict) -> None:
     work_path, plot_path = sf.make_model_dirs(cfg, model)
     zostoga_list, zos_list = extract_data_from_cfg(model, cfg)
 
-    # Calculate drift from PiControl zostoga
-    zostoga_drift = calculate_drift(zostoga_list[0])
-
-    # Detrend the scenario zostogas
-    zostoga_detrended = [
-        detrend_zostoga(z, zostoga_drift, plot_path)
-        for z in zostoga_list[1:]]  # [1:] to skip PiControl
+    # Prepare zostoga for regression
+    zostoga_list = prepare_zostoga(zostoga_list, plot_path)
 
     # Calculate regression between zostoga and zos
     scenarios = ["ssp245", "ssp370", "ssp585"]
     slopes, masks = [], []
-    for i, (z_dtr, zos) in enumerate(zip(zostoga_detrended, zos_list)):
+    for i, (z_dtr, zos) in enumerate(zip(zostoga_list, zos_list)):
         slopes_arr, masks_arr = dyn_steric_regression(
             z_dtr, zos, plot_path, scenarios[i])
         save_data(slopes_arr, masks_arr, work_path, model, scenarios[i])
@@ -477,7 +497,7 @@ def patterns(model: str, cfg: dict) -> None:
         masks.append(masks_arr)
 
     # Test the patterns
-    evaluate_patterns(zostoga_list[1:], zos_list, slopes, plot_path, model)
+    evaluate_patterns(zostoga_list, zos_list, slopes, plot_path, model)
 
 
 def main(cfg: dict) -> None:
