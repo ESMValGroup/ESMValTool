@@ -113,7 +113,7 @@ datasets:
     source: https://ads.atmosphere.copernicus.eu/datasets/cams-global-greenhouse-gas-inversion?tab=overview
     last_access: 2024-10-28
     info: |
-      You will need to make an account with the CDS data store to download the data.
+      You will need to make an account with the ADS data store and accept their licenses to download the data.
       Then, select carbon dioxide, surface flux, surface air sample, monthly mean,
       as well as the version and years you require to download.
 
