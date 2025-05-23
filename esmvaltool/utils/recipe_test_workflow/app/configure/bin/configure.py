@@ -22,12 +22,9 @@ def main():
     # Validate the user config file content.
     validate_user_config_file(config_values)
 
-    # Update the configuration from OS environment.
-    user_config_path = os.environ["USER_CONFIG_PATH"]
-    config_values["config_file"] = user_config_path
-
     # Write the updated configuration values to the file defined by
     # 'user_config_path'.
+    user_config_path = os.environ["USER_CONFIG_PATH"]
     print(
         f"Writing the user configuration file to '{user_config_path}' with "
         "values: "
@@ -100,8 +97,8 @@ def validate_user_config_file(user_config_file_content):
         If any of the called validation functions raise a ValidationError.
     """
     errors = [
-        "There were validation errors in your user configuration file. See "
-        "details below.\n"
+        "There were validation errors in your user configuration file. "
+        "Details are provided below.\n"
     ]
     for user_config_key, usr_config_value in user_config_file_content.items():
         try:
