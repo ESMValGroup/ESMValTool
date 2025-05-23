@@ -25,7 +25,6 @@ large variety of input data.
    recipe_model_evaluation
    recipe_monitor
    recipe_portrait
-   recipe_psyplot
    recipe_seaborn
    recipe_ref
 
@@ -167,6 +166,7 @@ require a legacy version of ESMValTool to run.
 .. toctree::
    :maxdepth: 1
 
+   recipe_psyplot
    recipe_rainfarm
    recipe_schlund20jgr
    recipe_spei

@@ -55,10 +55,6 @@ REQUIREMENTS = {
         "packaging",
         "pandas",
         "progressbar2",
-        "psyplot>=1.5.0",  # psy*<1.5.0 are not py312 compat
-        "psy-maps>=1.5.0",
-        "psy-reg>=1.5.0",
-        "psy-simple>=1.5.0",
         "pyproj>=2.1",
         "pys2index",
         "python-dateutil",

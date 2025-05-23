@@ -27,7 +27,6 @@ Diagnostic Scripts
    esmvaltool.diag_scripts.emergent_constraints
    esmvaltool.diag_scripts.monitor
    esmvaltool.diag_scripts.ocean
-   esmvaltool.diag_scripts.psyplot_diag
    esmvaltool.diag_scripts.seaborn_diag
    esmvaltool.diag_scripts.portrait_plot
    esmvaltool.diag_scripts.climate_metrics.tcre
