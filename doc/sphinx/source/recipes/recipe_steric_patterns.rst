@@ -10,7 +10,7 @@ The recipe recipe_steric_patterns calculates thermosteric sea-level change
 patterns from CMIP6 model datasets.
 
 .. note::
-  The regrid setting in the recipe is set to a (180, 360) grid to put 
+  The regrid setting in the recipe is set to a (180, 360) grid to put
   all models on the same grid.
 
 
@@ -77,12 +77,12 @@ None
 References
 ----------
 
-* Palmer, M. D., Gregory, J. M., Bagge, M., Calvert, D., Hagedoorn, J. M., 
-  & Howard, T., et al. (2020). Exploring the drivers of global and local 
-  sea-level change over the 21st century and beyond. Earth's Future, 8, 
+* Palmer, M. D., Gregory, J. M., Bagge, M., Calvert, D., Hagedoorn, J. M.,
+  & Howard, T., et al. (2020). Exploring the drivers of global and local
+  sea-level change over the 21st century and beyond. Earth's Future, 8,
   e2019EF001413. https://doi.org/10.1029/2019EF001413
 
-* Perks, R., & Weeks, J. (2023). MetOffice/ProFSea-tool: v1.0.0 (v1.0.0). 
+* Perks, R., & Weeks, J. (2023). MetOffice/ProFSea-tool: v1.0.0 (v1.0.0).
   Zenodo. https://doi.org/10.5281/zenodo.10255468
 
 
@@ -102,7 +102,7 @@ Example plots
    :align:   center
    :width: 80%
 
-   Example of the regressions between the global thermal expansion and 
+   Example of the regressions between the global thermal expansion and
    local dynamic sea-level height for three random grid-cells.
 
 .. _fig_steric_patterns_3:
@@ -110,5 +110,5 @@ Example plots
    :align:   center
    :width: 80%
 
-   Example predictions from the UKESM1-0-LL model patterns for each SSP, 
+   Example predictions from the UKESM1-0-LL model patterns for each SSP,
    as well as a timeseries of globally-averaged mean-squared error.
