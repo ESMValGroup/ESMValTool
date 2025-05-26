@@ -82,7 +82,7 @@ diagnostics:
         <<: *var_default_abs
         reference_dataset: GPCP-SG
         additional_datasets:
-          - {dataset: GPCP-SG, project: OBS, type: atmos, version: 2.3, tier: 2,
+          - {dataset: GPCP-SG, project: obs4MIPs, type: atmos, version: 2.3, tier: 1,
              reference_for_metric: true'}
       psl:
         <<: *var_default_abs
