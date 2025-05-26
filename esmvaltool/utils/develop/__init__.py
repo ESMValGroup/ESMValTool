@@ -21,7 +21,7 @@ class DevelopCommand:
         current_dir : str
             Results directory from run to be tested
         verbose : bool
-            Produce verbose output
+            Display more information on differences
         """
         same = compare.compare(Path(reference_dir), Path(current_dir), verbose)
 
