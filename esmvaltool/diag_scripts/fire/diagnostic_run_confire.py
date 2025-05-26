@@ -106,7 +106,6 @@ def _select_key_or_default(
     key: str,
     default: None | list | int = None,
     numpck: None | ModuleType = None,
-    *,
     stack: bool = True,
 ) -> ModuleType:
     """Select specific key from dictionary.
@@ -145,7 +144,7 @@ def _select_key_or_default(
         try:
             if stack:
                 out = numpck.stack(out)[:, 0]
-        except ValueError as expt:
+        except (ValueError, IndexError) as expt:
             logger.debug("select_key_or_default error %s", expt)
 
     return out
@@ -185,21 +184,21 @@ def _sort_time(
 
     try:
         iris.coord_categorisation.add_year(cube, "time")
-    except ValueError as expt:
+    except (ValueError, iris.exceptions.CannotAddError) as expt:
         logger.debug("_sort_time could not add year %s", expt)
 
     try:
         try:
             cube.remove_coord("month")
-        except ValueError as expt:
+        except (ValueError, iris.exceptions.CoordinateNotFoundError) as expt:
             logger.debug("_sort_time could not remove month %s", expt)
         iris.coord_categorisation.add_month_number(cube, "time", name="month")
-    except ValueError as expt:
+    except (ValueError, iris.exceptions.CannotAddError) as expt:
         logger.debug("_sort_time could not add month number %s", expt)
 
     try:
         del cube.attributes["history"]
-    except ValueError as expt:
+    except (ValueError, iris.exceptions.IrisError) as expt:
         logger.debug("_sort_time could not remove cube history %s", expt)
 
     return cube
@@ -1323,10 +1322,11 @@ def diagnostic_run_confire(
                 axes[plotn].set_title(
                     (
                         filename.replace("_", " ").capitalize()
-                        + f" - [{pct!s}% percentile]\n"
+                        + f" [{pct!s}th percentile]\n"
                         + f"{model_name} "
                         + f"({'/'.join(project)} - "
-                        + f"{'/'.join(experiment)})"
+                        + f"{'/'.join(experiment)}, "
+                        + f"{timerange})"
                     ),
                 )
                 axes[plotn].coastlines()
