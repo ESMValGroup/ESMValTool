@@ -1,7 +1,16 @@
-.. _recipes_spei:
+.. _recipes_legacy_spei:
 
-Standardized Precipitation-Evapotranspiration Index (SPEI)
-==========================================================
+Legacy Recipe: Standardized Precipitation-Evapotranspiration Index (SPEI)
+=========================================================================
+
+.. note::
+
+   This recipe has been retired and moved to the folder "archive". This recipe is only included
+   for documentation purposes and not maintained any more. The last known ESMValTool version
+   supporting this recipe is version 2.12.0.
+   Most of its functionality is available in more general diagnostics under "droughts".
+   See :ref:`recipes_spei` for a similar recipe based on the updated diagnostics.
+
 
 Overview
 --------
