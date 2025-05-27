@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 """Create gallery with all available recipes."""
 
-import os
 import html
+import os
 from pathlib import Path
-from docutils.core import publish_doctree
+
 from docutils import nodes
-
-
+from docutils.core import publish_doctree
 
 RECIPE_DIR = "recipes"
 OUT_PATH = os.path.abspath("gallery.rst")
@@ -25,18 +24,15 @@ MAX_CAPTION_LENGTH = 300
 
 START_GALLERY = (
     ".. raw:: html\n\n"
-    '    <div class="gallery" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 300px)); gap: 1em;">\n\n'
+    '    <div class="gallery" style="display: grid; '
+    "grid-template-columns: repeat(auto-fit, minmax(200px, 300px)); "
+    'gap: 1em;">\n\n'
 )
 
-END_GALLERY = (
-    '\n.. raw:: html\n\n'
-    '    </div>\n\n'
-)
+END_GALLERY = "\n.. raw:: html\n\n    </div>\n\n"
 
 FIGURE_HTML = (
-    '.. figure:: {uri}\n'
-    '    :width: 90%\n\n'
-    '    :ref:`{caption} <{link}>`\n\n'
+    ".. figure:: {uri}\n    :width: 90%\n\n    :ref:`{caption} <{link}>`\n\n"
 )
 
 
@@ -63,10 +59,14 @@ def _is_excluded_from_gallery(node):
 
 def _get_figures_from_file(fname):
     """Get marked, no or first figure from documentation page."""
-    with (Path(RECIPE_DIR)/fname).open() as f:
+    with (Path(RECIPE_DIR) / fname).open() as f:
         content = f.read()
     tree = publish_doctree(content)
-    link = content.split("\n")[0].split(" ")[1][1:-1]  # get link from first line
+    try:
+        link = content.split("\n")[0].split(" ")[1][1:-1]
+    except IndexError:
+        print(f"No label found in first line of {fname}. Skipping")
+        return []
     if _is_excluded_from_gallery(tree):  # ignore files with no-gallery marker
         return []
     figures = tree.traverse(nodes.figure)
