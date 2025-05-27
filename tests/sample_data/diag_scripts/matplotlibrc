@@ -1,0 +1,315 @@
+backend: Agg
+webagg.port: 8988
+webagg.address: 127.0.0.1
+webagg.port_retries: 50
+webagg.open_in_browser: True
+backend_fallback: True
+interactive: False
+figure.hooks:
+toolbar:     toolbar2
+timezone:    UTC
+lines.linewidth: 1.5
+lines.linestyle: -
+lines.color:     C0
+lines.marker:          None
+lines.markerfacecolor: auto
+lines.markeredgecolor: auto
+lines.markeredgewidth: 1.0
+lines.markersize:      6
+lines.dash_joinstyle:  round
+lines.dash_capstyle:   butt
+lines.solid_joinstyle: round
+lines.solid_capstyle:  projecting
+lines.antialiased: True
+lines.dashed_pattern: 3.7, 1.6
+lines.dashdot_pattern: 6.4, 1.6, 1, 1.6
+lines.dotted_pattern: 1, 1.65
+lines.scale_dashes: True
+markers.fillstyle: full
+pcolor.shading: auto
+pcolormesh.snap: True
+patch.linewidth:       1.0
+patch.facecolor:       C0
+patch.edgecolor:       black
+patch.force_edgecolor: False
+patch.antialiased:     True
+hatch.color:     black
+hatch.linewidth: 1.0
+boxplot.notch:       False
+boxplot.vertical:    True
+boxplot.whiskers:    1.5
+boxplot.bootstrap:   None
+boxplot.patchartist: False
+boxplot.showmeans:   False
+boxplot.showcaps:    True
+boxplot.showbox:     True
+boxplot.showfliers:  True
+boxplot.meanline:    False
+boxplot.flierprops.color:           black
+boxplot.flierprops.marker:          o
+boxplot.flierprops.markerfacecolor: none
+boxplot.flierprops.markeredgecolor: black
+boxplot.flierprops.markeredgewidth: 1.0
+boxplot.flierprops.markersize:      6
+boxplot.flierprops.linestyle:       none
+boxplot.flierprops.linewidth:       1.0
+boxplot.boxprops.color:     black
+boxplot.boxprops.linewidth: 1.0
+boxplot.boxprops.linestyle: -
+boxplot.whiskerprops.color:     black
+boxplot.whiskerprops.linewidth: 1.0
+boxplot.whiskerprops.linestyle: -
+boxplot.capprops.color:     black
+boxplot.capprops.linewidth: 1.0
+boxplot.capprops.linestyle: -
+boxplot.medianprops.color:     C1
+boxplot.medianprops.linewidth: 1.0
+boxplot.medianprops.linestyle: -
+boxplot.meanprops.color:           C2
+boxplot.meanprops.marker:          ^
+boxplot.meanprops.markerfacecolor: C2
+boxplot.meanprops.markeredgecolor: C2
+boxplot.meanprops.markersize:       6
+boxplot.meanprops.linestyle:       --
+boxplot.meanprops.linewidth:       1.0
+font.family:  sans-serif
+font.style:   normal
+font.variant: normal
+font.weight:  normal
+font.stretch: normal
+font.size:    10.0
+font.serif:      DejaVu Serif, Bitstream Vera Serif, Computer Modern Roman, New Century Schoolbook, Century Schoolbook L, Utopia, ITC Bookman, Bookman, Nimbus Roman No9 L, Times New Roman, Times, Palatino, Charter, serif
+font.sans-serif: DejaVu Sans, Bitstream Vera Sans, Computer Modern Sans Serif, Lucida Grande, Verdana, Geneva, Lucid, Arial, Helvetica, Avant Garde, sans-serif
+font.cursive:    Apple Chancery, Textile, Zapf Chancery, Sand, Script MT, Felipa, Comic Neue, Comic Sans MS, cursive
+font.fantasy:    Chicago, Charcoal, Impact, Western, xkcd script, fantasy
+font.monospace:  DejaVu Sans Mono, Bitstream Vera Sans Mono, Computer Modern Typewriter, Andale Mono, Nimbus Mono L, Courier New, Courier, Fixed, Terminal, monospace
+text.color: black
+text.hinting: force_autohint
+text.hinting_factor: 8
+text.kerning_factor: 0
+text.antialiased: True
+text.parse_math: True
+text.usetex: False
+text.latex.preamble:
+mathtext.fontset: dejavusans
+mathtext.bf:  sans:bold
+mathtext.bfit: sans:italic:bold
+mathtext.cal: cursive
+mathtext.it:  sans:italic
+mathtext.rm:  sans
+mathtext.sf:  sans
+mathtext.tt:  monospace
+mathtext.fallback: cm
+mathtext.default: it
+axes.facecolor:     white
+axes.edgecolor:     black
+axes.linewidth:     0.8
+axes.grid:          False
+axes.grid.axis:     both
+axes.grid.which:    major
+axes.titlelocation: center
+axes.titlesize:     large
+axes.titleweight:   normal
+axes.titlecolor:    auto
+axes.titley:        None
+axes.titlepad:      6.0
+axes.labelsize:     medium
+axes.labelpad:      4.0
+axes.labelweight:   normal
+axes.labelcolor:    black
+axes.axisbelow:     line
+axes.formatter.limits: -5, 6
+axes.formatter.use_locale: False
+axes.formatter.use_mathtext: False
+axes.formatter.min_exponent: 0
+axes.formatter.useoffset: True
+axes.formatter.offset_threshold: 4
+axes.spines.left:   True
+axes.spines.bottom: True
+axes.spines.top:    True
+axes.spines.right:  True
+axes.unicode_minus: True
+axes.prop_cycle: cycler('color', ['1f77b4', 'ff7f0e', '2ca02c', 'd62728', '9467bd', '8c564b', 'e377c2', '7f7f7f', 'bcbd22', '17becf'])
+axes.xmargin:   .05
+axes.ymargin:   .05
+axes.zmargin:   .05
+axes.autolimit_mode: data
+polaraxes.grid: True
+axes3d.grid:    True
+axes3d.xaxis.panecolor:    (0.95, 0.95, 0.95, 0.5)
+axes3d.yaxis.panecolor:    (0.90, 0.90, 0.90, 0.5)
+axes3d.zaxis.panecolor:    (0.925, 0.925, 0.925, 0.5)
+xaxis.labellocation: center
+yaxis.labellocation: center
+date.autoformatter.year:        %Y
+date.autoformatter.month:       %Y-%m
+date.autoformatter.day:         %Y-%m-%d
+date.autoformatter.hour:        %m-%d %H
+date.autoformatter.minute:      %d %H:%M
+date.autoformatter.second:      %H:%M:%S
+date.autoformatter.microsecond: %M:%S.%f
+date.epoch: 1970-01-01T00:00:00
+date.converter:                  auto
+date.interval_multiples:         True
+xtick.top:           False
+xtick.bottom:        True
+xtick.labeltop:      False
+xtick.labelbottom:   True
+xtick.major.size:    3.5
+xtick.minor.size:    2
+xtick.major.width:   0.8
+xtick.minor.width:   0.6
+xtick.major.pad:     3.5
+xtick.minor.pad:     3.4
+xtick.color:         black
+xtick.labelcolor:    inherit
+xtick.labelsize:     medium
+xtick.direction:     out
+xtick.minor.visible: False
+xtick.major.top:     True
+xtick.major.bottom:  True
+xtick.minor.top:     True
+xtick.minor.bottom:  True
+xtick.minor.ndivs:   auto
+xtick.alignment:     center
+ytick.left:          True
+ytick.right:         False
+ytick.labelleft:     True
+ytick.labelright:    False
+ytick.major.size:    3.5
+ytick.minor.size:    2
+ytick.major.width:   0.8
+ytick.minor.width:   0.6
+ytick.major.pad:     3.5
+ytick.minor.pad:     3.4
+ytick.color:         black
+ytick.labelcolor:    inherit
+ytick.labelsize:     medium
+ytick.direction:     out
+ytick.minor.visible: False
+ytick.major.left:    True
+ytick.major.right:   True
+ytick.minor.left:    True
+ytick.minor.right:   True
+ytick.minor.ndivs:   auto
+ytick.alignment:     center_baseline
+grid.color:     "#b0b0b0"
+grid.linestyle: -
+grid.linewidth: 0.8
+grid.alpha:     1.0
+legend.loc:           best
+legend.frameon:       True
+legend.framealpha:    0.8
+legend.facecolor:     inherit
+legend.edgecolor:     0.8
+legend.fancybox:      True
+legend.shadow:        False
+legend.numpoints:     1
+legend.scatterpoints: 1
+legend.markerscale:   1.0
+legend.fontsize:      medium
+legend.labelcolor:    None
+legend.title_fontsize: None
+legend.borderpad:     0.4
+legend.labelspacing:  0.5
+legend.handlelength:  2.0
+legend.handleheight:  0.7
+legend.handletextpad: 0.8
+legend.borderaxespad: 0.5
+legend.columnspacing: 2.0
+figure.titlesize:   large
+figure.titleweight: normal
+figure.labelsize:   large
+figure.labelweight: normal
+figure.figsize:     6.4, 4.8
+figure.dpi:         100
+figure.facecolor:   white
+figure.edgecolor:   white
+figure.frameon:     True
+figure.max_open_warning: 20
+figure.raise_window : True
+figure.subplot.left:   0.125
+figure.subplot.right:  0.9
+figure.subplot.bottom: 0.11
+figure.subplot.top:    0.88
+figure.subplot.wspace: 0.2
+figure.subplot.hspace: 0.2
+figure.autolayout: False
+figure.constrained_layout.use: False
+figure.constrained_layout.h_pad:  0.04167
+figure.constrained_layout.w_pad:  0.04167
+figure.constrained_layout.hspace: 0.02
+figure.constrained_layout.wspace: 0.02
+image.aspect:          equal
+image.interpolation:   antialiased
+image.cmap:            viridis
+image.lut:             256
+image.origin:          upper
+image.resample:        True
+image.composite_image: True
+contour.negative_linestyle: dashed
+contour.corner_mask:        True
+contour.linewidth:          None
+contour.algorithm:          mpl2014
+errorbar.capsize: 0
+hist.bins: 10
+scatter.marker: o
+scatter.edgecolors: face
+agg.path.chunksize: 0
+path.simplify: True
+path.simplify_threshold: 0.111111111111
+path.snap: True
+path.sketch: None
+path.effects:
+savefig.dpi:       figure
+savefig.facecolor: auto
+savefig.edgecolor: auto
+savefig.format:    png
+savefig.bbox:      standard
+savefig.pad_inches:  0.1
+savefig.directory:   ~
+savefig.transparent: False
+savefig.orientation: portrait
+macosx.window_mode : system
+tk.window_focus:   False
+ps.papersize:      letter
+ps.useafm:         False
+ps.usedistiller:   False
+ps.distiller.res:  6000
+ps.fonttype:       3
+pdf.compression:    6
+pdf.fonttype:       3
+pdf.use14corefonts: False
+pdf.inheritcolor:   False
+svg.image_inline: True
+svg.fonttype: path
+svg.hashsalt: None
+pgf.rcfonts: True
+pgf.preamble:
+pgf.texsystem: xelatex
+docstring.hardcopy: False
+keymap.fullscreen: f, ctrl+f
+keymap.home: h, r, home
+keymap.back: left, c, backspace, MouseButton.BACK
+keymap.forward: right, v, MouseButton.FORWARD
+keymap.pan: p
+keymap.zoom: o
+keymap.save: s, ctrl+s
+keymap.help: f1
+keymap.quit: ctrl+w, cmd+w, q
+keymap.quit_all:
+keymap.grid: g
+keymap.grid_minor: G
+keymap.yscale: l
+keymap.xscale: k, L
+keymap.copy: ctrl+c, cmd+c
+animation.html: none
+animation.writer:  ffmpeg
+animation.codec:   h264
+animation.bitrate: -1
+animation.frame_format: png
+animation.ffmpeg_path:  ffmpeg
+animation.ffmpeg_args:
+animation.convert_path: convert
+animation.convert_args: -layers, OptimizePlus
+animation.embed_limit:  20.0

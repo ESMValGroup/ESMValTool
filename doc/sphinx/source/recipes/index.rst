@@ -12,8 +12,8 @@ ESMValTool for all available recipes can be accessed `here
 
 .. _general_purpose_diags:
 
-General-purpose diagnostics
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+General-purpose recipes
+^^^^^^^^^^^^^^^^^^^^^^^
 
 Recipes that use highly customizable diagnostics which are designed to plot a
 large variety of input data.
@@ -25,7 +25,6 @@ large variety of input data.
    recipe_model_evaluation
    recipe_monitor
    recipe_portrait
-   recipe_psyplot
    recipe_seaborn
    recipe_ref
 
@@ -39,9 +38,9 @@ Atmosphere
    recipe_clouds
    recipe_cmug_h2o
    recipe_crem
-   recipe_consecdrydays
    recipe_deangelis15nat
    recipe_diurnal_temperature_index
+   recipe_droughts
    recipe_eady_growth_rate
    recipe_extreme_events
    recipe_extreme_index
@@ -56,8 +55,6 @@ Atmosphere
    recipe_mpqb_xch4
    recipe_quantilebias
    recipe_bock20jgr
-   recipe_spei
-   recipe_martin18grl
    recipe_autoassess_stratosphere
    recipe_autoassess_landsurface_permafrost
    recipe_autoassess_landsurface_surfrad
@@ -83,7 +80,6 @@ Future projections
 
    recipe_climwip
    recipe_li17natcc
-   recipe_schlund20jgr
    recipe_meehl20sciadv
    recipe_emergent_constraints
    recipe_wenzel14jgr
@@ -152,13 +148,29 @@ Other
    recipe_galytska23jgr
    recipe_multimodel_products
    recipe_pv_capacity_factor
-   recipe_rainfarm
    recipe_seaice
    recipe_seaice_drift
    recipe_seaice_feedback
    recipe_shapeselect
    recipes_testing
    recipe_toymodel
+
+Legacy recipes
+^^^^^^^^^^^^^^
+
+Recipes that have been retired and are included for
+documentation purposes only. Typically, these recipes
+require a legacy version of ESMValTool to run.
+
+
+.. toctree::
+   :maxdepth: 1
+
+   recipe_psyplot
+   recipe_rainfarm
+   recipe_schlund20jgr
+   recipe_spei
+
 
 Broken recipe list
 ^^^^^^^^^^^^^^^^^^

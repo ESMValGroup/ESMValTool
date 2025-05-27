@@ -55,10 +55,6 @@ REQUIREMENTS = {
         "packaging",
         "pandas",
         "progressbar2",
-        "psyplot>=1.5.0",  # psy*<1.5.0 are not py312 compat
-        "psy-maps>=1.5.0",
-        "psy-reg>=1.5.0",
-        "psy-simple>=1.5.0",
         "pyproj>=2.1",
         "pys2index",
         "python-dateutil",
@@ -222,9 +218,9 @@ setup(
         "Natural Language :: English",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Atmospheric Science",
         "Topic :: Scientific/Engineering :: GIS",
@@ -247,8 +243,6 @@ setup(
     entry_points={
         "console_scripts": [
             "nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main",
-            "test_recipe = "
-            "esmvaltool.utils.testing.recipe_settings.install_expand_run:main",
         ],
         "esmvaltool_commands": [
             "colortables = "
