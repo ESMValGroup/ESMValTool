@@ -49,7 +49,7 @@ dependencies:
   - prov
   - pyproj >=2.1
   - pys2index  # only from conda-forge
-  - python >=3.11,<3.13
+  - python >=3.11,<3.14
   - python-cdo
   - python-dateutil
   - pyyaml
