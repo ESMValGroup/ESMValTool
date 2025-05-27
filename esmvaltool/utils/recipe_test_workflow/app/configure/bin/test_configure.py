@@ -1,7 +1,9 @@
 import pytest
 from esmvalcore.config._config_validators import ValidationError
 
-from bin.configure import validate_user_config_file
+from esmvaltool.utils.recipe_test_workflow.app.configure.bin.configure import (
+    validate_user_config_file,
+)
 
 
 def test_validate_user_config_file():
