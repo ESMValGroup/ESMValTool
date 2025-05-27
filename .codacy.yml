@@ -24,4 +24,5 @@ exclude_paths: [
     'esmvaltool/cmor/tables/**',
     'tests/**',
     'esmvaltool/utils/recipe_test_workflow/app/configure/bin/test_configure.py',
+    'esmvaltool/utils/recipe_test_workflow/app/generate_report/bin/test_generate_html_report.py',
 ]
