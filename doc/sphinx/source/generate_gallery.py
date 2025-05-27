@@ -2,7 +2,12 @@
 """Create gallery with all available recipes."""
 
 import os
+import html
 from pathlib import Path
+from docutils.core import publish_doctree
+from docutils import nodes
+
+
 
 RECIPE_DIR = "recipes"
 OUT_PATH = os.path.abspath("gallery.rst")
@@ -16,72 +21,78 @@ HEADER = (
     "<https://esmvaltool.dkrz.de/shared/esmvaltool/stable_release/>`_."
     "\n\n"
 )
-WIDTH = ":width: 90%"
-FIGURE_STR = ".. figure::"
-IMAGE_STR = " image:: "
-TABLE_SEP = (
-    "+---------------------------------------------------"
-    "+---------------------------------------------------+\n"
+MAX_CAPTION_LENGTH = 300
+
+START_GALLERY = (
+    ".. raw:: html\n\n"
+    '    <div class="gallery" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 300px)); gap: 1em;">\n\n'
 )
-EMPTY_TABLE = (
-    "|                                                   "
-    "|                                                   |\n"
+
+END_GALLERY = (
+    '\n.. raw:: html\n\n'
+    '    </div>\n\n'
 )
-CELL_WIDTH = 50
+
+FIGURE_HTML = (
+    '.. figure:: {uri}\n'
+    '    :width: 90%\n\n'
+    '    :ref:`{caption} <{link}>`\n\n'
+)
 
 
-def _get_figure_index(file_content):
-    """Get index of figure in text."""
-    offset = 0
-    if "gallery=True" in file_content:
-        offset = file_content.index("gallery=True") + 12
-        file_content = file_content[offset:]
-    if FIGURE_STR in file_content:
-        return offset + file_content.index(FIGURE_STR) + len(FIGURE_STR)
-    if IMAGE_STR in file_content:
-        return offset + file_content.index(IMAGE_STR) + len(IMAGE_STR)
-    raise ValueError("File does not contain image")
+def _has_gallery_marker(node):
+    """Wether the node is preceeded by a ``.. gallery`` comment."""
+    siblings = list(node.parent)
+    idx = siblings.index(node)
+    if idx <= 0:
+        return False
+    prev_node = siblings[idx - 1]
+    if not isinstance(prev_node, nodes.comment):
+        return False
+    return prev_node.astext().lower().strip().startswith("gallery")
 
 
-def _get_next_row(filenames, file_contents):
-    """Get next row."""
-    figure_idx = [_get_figure_index(content) for content in file_contents]
-    figure_paths = [
-        file_contents[idx][fig_idx:].split("\n")[0].strip()
-        for (idx, fig_idx) in enumerate(figure_idx)
-    ]
-    subst = [f"|{os.path.splitext(filename)[0]}|" for filename in filenames]
-    link = [file_contents[0].split()[1][1:-1]]
-    if figure_paths[1] == "":
-        subst[1] = ""
-        link.append("")
-    else:
-        link.append(file_contents[1].split()[1][1:-1])
+def _is_excluded_from_gallery(node):
+    """Wether the node has a no-gallery marker."""
+    comments = node.traverse(nodes.comment)
+    for comment in comments:
+        if comment.astext().lower().strip() == "no-gallery":
+            return True
+    return False
 
-    # Build table
-    row = ""
-    refs = ""
-    row += TABLE_SEP
-    row += f"| {subst[0].ljust(CELL_WIDTH)}| {subst[1].ljust(CELL_WIDTH)}|\n"
-    row += EMPTY_TABLE
-    left_col = "[#]_".ljust(CELL_WIDTH)
-    if figure_paths[1] == "":
-        right_col = "".ljust(CELL_WIDTH)
-    else:
-        right_col = "[#]_".ljust(CELL_WIDTH)
-    row += f"| {left_col}| {right_col}|\n"
 
-    # Build refs
-    for idx, path in enumerate(figure_paths):
-        if path == "":
-            continue
-        refs += f".. {subst[idx]} image:: {path}\n"
-        refs += f"   {WIDTH}\n"
-        refs += "\n"
-        refs += f".. [#] :ref:`{link[idx]}`\n"
-        refs += "\n"
+def _get_figures_from_file(fname):
+    """Get marked, no or first figure from documentation page."""
+    with (Path(RECIPE_DIR)/fname).open() as f:
+        content = f.read()
+    tree = publish_doctree(content)
+    link = content.split("\n")[0].split(" ")[1][1:-1]  # get link from first line
+    if _is_excluded_from_gallery(tree):  # ignore files with no-gallery marker
+        return []
+    figures = tree.traverse(nodes.figure)
+    for fig in figures:
+        fig["link"] = link  # add doc page link to figure
+    marked_figures = [f for f in figures if _has_gallery_marker(f)]
+    if len(marked_figures) > 0:  # consider all figures with gallery marker
+        return marked_figures
+    if len(figures) > 0:  # select first figure if nothing is marked
+        return [figures[0]]
+    return []
 
-    return (row, refs)
+
+def _get_data_from_figure(figure):
+    image = figure.traverse(nodes.image)[0]
+    try:
+        caption = figure.traverse(nodes.caption)[0].astext().strip()
+    except IndexError:
+        caption = "No caption available"
+    if len(caption) > MAX_CAPTION_LENGTH:
+        caption = caption[:MAX_CAPTION_LENGTH] + "..."
+    return {
+        "uri": html.escape(image["uri"]),
+        "caption": html.escape(caption.replace("\n", " ")),
+        "link": html.escape(figure["link"]),
+    }
 
 
 def _find_recipes(root_dir, exclude_dirs):
@@ -95,56 +106,28 @@ def _find_recipes(root_dir, exclude_dirs):
     ]
 
 
+def _generate_rst_file(fname, data):
+    """Generate rst file from data."""
+    output = ""
+    output += HEADER
+    output += START_GALLERY
+    for figure_data in data:
+        output += FIGURE_HTML.format(**figure_data)
+    output += END_GALLERY
+    with open(fname, "w") as f:
+        f.write(output)
+    print(f"Wrote {fname}")
+
+
 def main():
     """Generate gallery for recipe plots."""
     print(f"Generating gallery at {OUT_PATH}")
-    left_col = True
-    table = ""
-    refs = ""
-    filenames = []
-    file_contents = []
+    figures = []
     fnames = _find_recipes(RECIPE_DIR, ["legacy", "figures"])
     for filename in sorted(fnames):
-        with open(os.path.join(RECIPE_DIR, filename)) as in_file:
-            recipe_file = in_file.read()
-        if FIGURE_STR not in recipe_file and IMAGE_STR not in recipe_file:
-            print(f"INFO: {filename} does not contain an image, skipping")
-            continue
-        if not recipe_file.startswith(".."):
-            print(
-                f"INFO: {filename} does not contain reference at top, skipping"
-            )
-            continue
-
-        # Get next row
-        if left_col:
-            left_col = False
-            filenames = [filename]
-            file_contents = [recipe_file]
-            continue
-        else:
-            left_col = True
-            filenames.append(filename)
-            file_contents.append(recipe_file)
-            new_row = _get_next_row(filenames, file_contents)
-            table += new_row[0]
-            refs += new_row[1]
-
-    # Last row
-    if len(filenames) == 1:
-        filenames.append("")
-        file_contents.append(f"{FIGURE_STR}\n")
-        new_row = _get_next_row(filenames, file_contents)
-        table += new_row[0]
-        refs += new_row[1]
-    table += TABLE_SEP
-    table += "\n"
-
-    # Write file
-    whole_file = HEADER + table + refs
-    with open(OUT_PATH, "w") as out_file:
-        print(whole_file, file=out_file)
-    print(f"Wrote {OUT_PATH}")
+        figures.extend(_get_figures_from_file(filename))
+    data = [_get_data_from_figure(f) for f in figures]
+    _generate_rst_file(OUT_PATH, data)
 
 
 if __name__ == "__main__":
