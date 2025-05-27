@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import os
 import sqlite3
+import subprocess
 from datetime import datetime
 from pathlib import Path
-import subprocess
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -35,27 +35,25 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 #     ('compare_recipe_ocean_amoc','succeeded')
 # ]
 
-
-# UNCOMMENT FOR MET OFFICE / DKRZ
+# Load environment variables required at all sites.
 CYLC_DB_PATH = os.environ.get("CYLC_DB_PATH")
 CYLC_TASK_CYCLE_POINT = os.environ.get("CYLC_TASK_CYCLE_POINT")
 CYLC_TASK_PREVIOUS_CYCLE = os.environ.get("ROSE_DATACP1D")
 REPORT_PATH = os.environ.get("REPORT_PATH")
+SITE = os.environ.get("SITE")
 
-# UNCOMMENT FOR MET OFFICE
-# ESMVAL_CORE_CURRENT = os.environ.get("ESMVALCORE_DIR")
-# ESMVAL_TOOL_CURRENT = os.environ.get("ESMVALTOOL_DIR")
-# ESMVAL_CORE_PREVIOUS = Path(CYLC_TASK_PREVIOUS_CYCLE) / "ESMValCore"
-# ESMVAL_TOOL_PREVIOUS = Path(CYLC_TASK_PREVIOUS_CYCLE) / "ESMValTool"
+if SITE == "metoffice":
+    # Load Met Office specific environment variables.
+    ESMVAL_CORE_CURRENT = os.environ.get("ESMVALCORE_DIR")
+    ESMVAL_TOOL_CURRENT = os.environ.get("ESMVALTOOL_DIR")
+    ESMVAL_CORE_PREVIOUS = Path(CYLC_TASK_PREVIOUS_CYCLE) / "ESMValCore"
+    ESMVAL_TOOL_PREVIOUS = Path(CYLC_TASK_PREVIOUS_CYCLE) / "ESMValTool"
+    ESMVAL_VERSIONS = os.environ.get("ESMVAL_VERSIONS")
 
-# UNCOMMENT FOR DKRZ
-CONTAINER_DIR = os.environ.get("CONTAINER_DIR")
-CONTAINER = "esmvaltool.sif"
-CONTAINER_PATH = os.environ.get("CONTAINER_PATH")
-
-SHARE_BIN = os.environ.get("SHARE_BIN")
-ENV_FILE = os.environ.get("ENV_FILE")
-SING_ENV_FILE = os.environ.get("SING_ENV_FILE")
+elif SITE == "dkrz":
+    # Load DKRZ specific environment variables.
+    ESMVAL_VERSIONS_CURRENT = os.environ.get("ESMVAL_VERSIONS_CURRENT")
+    ESMVAL_VERSIONS_PREVIOUS = os.environ.get("ESMVAL_VERSIONS_PREVIOUS")
 
 SQL_QUERY_TASK_STATES = "SELECT name, status FROM task_states"
 
@@ -72,67 +70,63 @@ def main(db_file_path=CYLC_DB_PATH):
     # UNCOMMENT FOR LOCAL
     # raw_db_data = cached_raw_db_data
     # processed_db_data = process_db_output(raw_db_data)
-    # local_esmvaltool = Path("/home/users/christopher.billows/Code/ESMValTool/")
-    # local_esmvalcore = Path("/home/users/christopher.billows/Code/ESMValCore/")
+    # ESMVAL_TOOL_CURRENT = Path("/home/users/christopher.billows/Code/ESMValTool/")
+    # ESMVAL_CORE_CURRENT = Path("/home/users/christopher.billows/Code/ESMValCore/")
     # esmval_core_previous_commit_sha = "170a93893"
     # esmval_tool_previous_commit_sha = "4515a2b92"
-    # esmval_core_all_commits = fetch_git_commits(
-    #     local_esmvalcore, esmval_core_previous_commit_sha
-    # )
-    # esmval_tool_all_commits = fetch_git_commits(
-    #     local_esmvaltool, esmval_tool_previous_commit_sha
-    # )
-
-    # UNCOMMENT FOR MET OFFICE
-    # raw_db_data = fetch_report_data(db_file_path)
-    # processed_db_data = process_db_output(raw_db_data)
-
-    # esmval_core_previous_commit_sha = None
-    # if ESMVAL_CORE_PREVIOUS.exists():
-    #     esmval_core_previous_commit_sha = (
-    #         fetch_git_commits(ESMVAL_CORE_PREVIOUS)['sha']
-    #     )
-
-    # esmval_tool_previous_commit_sha = None
-    # if ESMVAL_TOOL_PREVIOUS.exists():
-    #     esmval_tool_previous_commit_sha = (
-    #         fetch_git_commits(ESMVAL_TOOL_PREVIOUS)['sha']
-    #     )
-
     # esmval_core_all_commits = fetch_git_commits(
     #     ESMVAL_CORE_CURRENT, esmval_core_previous_commit_sha
     # )
     # esmval_tool_all_commits = fetch_git_commits(
     #     ESMVAL_TOOL_CURRENT, esmval_tool_previous_commit_sha
     # )
-
-    print("Container dir: ", CONTAINER_DIR)
-    print("Container path: ", CONTAINER_PATH)
-    print("Previous cycle point: ", CYLC_TASK_PREVIOUS_CYCLE)
-    print("Share bin: ", SHARE_BIN)
-    print("Env file: ", ENV_FILE)
-    print("Singularity env: ", SING_ENV_FILE)
-
-    print("Share bin exists?: ", Path(SHARE_BIN).exists())
-    print("Env file exists?: ", Path(ENV_FILE).exists())
-    print("Sing env exists?", Path(SING_ENV_FILE).exists())
-
-    print("Env file content", Path(ENV_FILE).read_text())
+    # SITE="metoffice"
+    # ESMVAL_CORE_PREVIOUS = Path("nope")
+    # ESMVAL_TOOL_PREVIOUS = ESMVAL_TOOL_CURRENT
 
     raw_db_data = fetch_report_data(db_file_path)
     processed_db_data = process_db_output(raw_db_data)
 
-    print("Fetching package versions")
-    current_package_versions = fetch_package_versions_from_container()
-    print("Package versions fetched")
+    if SITE == "metoffice":
+        if ESMVAL_CORE_PREVIOUS.exists():
+            esmval_core_previous_commit_sha = fetch_git_commits(
+                ESMVAL_CORE_PREVIOUS
+            )[0]["sha"]
+        else:
+            esmval_core_previous_commit_sha = None
 
-    subheader = create_subheader()
-    rendered_html = render_html_report(
-        subheader=subheader,
-        report_data=processed_db_data,
-        # esmval_core_commits=esmval_core_all_commits,
-        # esmval_tool_commits=esmval_tool_all_commits,
-    )
+        if ESMVAL_TOOL_PREVIOUS.exists():
+            esmval_tool_previous_commit_sha = fetch_git_commits(
+                ESMVAL_TOOL_PREVIOUS
+            )[0]["sha"]
+        else:
+            esmval_core_previous_commit_sha = None
+
+        esmval_core_all_commits = fetch_git_commits(
+            ESMVAL_CORE_CURRENT, esmval_core_previous_commit_sha
+        )
+        esmval_tool_all_commits = fetch_git_commits(
+            ESMVAL_TOOL_CURRENT, esmval_tool_previous_commit_sha
+        )
+
+        subheader = create_subheader()
+        rendered_html = render_html_report(
+            subheader=subheader,
+            report_data=processed_db_data,
+            esmval_core_commits=esmval_core_all_commits,
+            esmval_tool_commits=esmval_tool_all_commits,
+        )
+
+    elif SITE == "dkrz":
+        print("Current versons in Python", ESMVAL_VERSIONS_CURRENT)
+
+    else:
+        subheader = create_subheader()
+        rendered_html = render_html_report(
+            subheader=subheader,
+            report_data=processed_db_data,
+        )
+
     write_report_to_file(rendered_html)
 
 
@@ -246,22 +240,6 @@ def process_db_output(report_data):
     return sorted_processed_db_data
 
 
-def fetch_package_versions_from_container():
-    print("Cwd", CONTAINER_DIR)
-    command = [SING_ENV_FILE, "singularity", "run", "esmvaltool.sif", "version"]
-    print("Command: ", command)
-    raw_version_info = subprocess.run(
-        command,
-        cwd=CONTAINER_DIR,
-        capture_output=True,
-        check=True,
-        text=True
-    )
-    print(raw_version_info.stdout)
-    print(raw_version_info.stderr)
-    return raw_version_info.stdout
-
-
 def add_report_message_to_git_commits(git_commits_info):
     """
     Add report messages to a git commit information dictionary.
@@ -271,9 +249,9 @@ def add_report_message_to_git_commits(git_commits_info):
     list[dict]
         A list of git commits.
     """
-    git_commits_info[0]['report_flag'] = "Version tested this cycle >>>"
+    git_commits_info[0]["report_flag"] = "Version tested this cycle >>>"
     if len(git_commits_info) > 1:
-        git_commits_info[-1]['report_flag'] = "Version tested last cycle >>>"
+        git_commits_info[-1]["report_flag"] = "Version tested last cycle >>>"
 
 
 def fetch_git_commits(package_path, sha=None):
@@ -295,8 +273,12 @@ def fetch_git_commits(package_path, sha=None):
         passed, multiple commits/dicts may be returned.
     """
     command = [
-        "git", "log", "-1", "--date=iso-strict", "--pretty=%cd^_^%h^_^%an^_^%s"
-        ]
+        "git",
+        "log",
+        "-1",
+        "--date=iso-strict",
+        "--pretty=%cd^_^%h^_^%an^_^%s",
+    ]
 
     if sha:
         command[2] = f"{sha}^..HEAD"
@@ -343,8 +325,11 @@ def create_subheader(cylc_task_cycle_point=CYLC_TASK_CYCLE_POINT):
 
 
 def render_html_report(
-        report_data, subheader, esmval_core_commits, esmval_tool_commits,
-    ):
+    report_data,
+    subheader,
+    esmval_core_commits,
+    esmval_tool_commits,
+):
     """
     Render the HTML report using Jinja2.
 
