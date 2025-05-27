@@ -56,6 +56,7 @@ REQUIREMENTS = {
         "pandas",
         "progressbar2",
         "pyproj>=2.1",
+        "pys2index",
         "python-dateutil",
         "pyyaml",
         "rasterio>=1.3.10",
