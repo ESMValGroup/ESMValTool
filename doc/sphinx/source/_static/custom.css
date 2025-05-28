@@ -1,0 +1,31 @@
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 250px));
+    gap: 1em;
+}
+
+.gallery figure:hover {
+    background-color: var(--pst-color-surface);
+}
+
+.gallery figure img {
+    max-height: 300px;
+    object-fit: cover;
+    overflow: hidden;
+}
+
+.gallery figure figcaption {
+    color: var(--pst-color-text-muted);
+    line-height: 1.2;
+    text-decoration: none;
+}
+
+.gallery figure figcaption a {
+    text-decoration: none;
+    color: var(--pst-color-text);
+}
+
+.gallery figure figcaption a:hover {
+    text-decoration: underline;
+    color: var(--pst-color-link-hover);
+}
