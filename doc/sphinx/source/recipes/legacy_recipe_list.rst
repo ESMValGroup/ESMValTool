@@ -10,6 +10,7 @@ require a legacy version of ESMValTool to run.
 .. toctree::
    :maxdepth: 1
 
+   legacy/recipe_psyplot
    legacy/recipe_rainfarm
    legacy/recipe_schlund20jgr
    legacy/recipe_spei
