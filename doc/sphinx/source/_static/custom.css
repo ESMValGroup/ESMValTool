@@ -1,7 +1,13 @@
 .gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 250px));
+    grid-template-columns: repeat(3, minmax(200px, 1fr));
     gap: 1em;
+}
+
+@media (max-width: 600px) {
+    .gallery {
+        grid-template-columns: repeat(1, minmax(200px, 1fr));
+    }
 }
 
 .gallery figure:hover {
@@ -9,7 +15,7 @@
 }
 
 .gallery figure img {
-    max-height: 300px;
+    max-height: 250px;
     object-fit: cover;
     overflow: hidden;
 }
