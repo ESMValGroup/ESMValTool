@@ -56,7 +56,7 @@ def _get_figures_from_file(fname):
     """Get marked, no or first figure from documentation page."""
     with (Path(RECIPE_DIR) / fname).open() as f:
         content = f.read()
-    tree = publish_doctree(content)
+    tree = publish_doctree(content, settings_overrides={"report_level": 5})
     try:
         link = content.split("\n")[0].split(" ")[1][1:-1]
     except IndexError:
