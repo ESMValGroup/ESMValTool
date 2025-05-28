@@ -7,34 +7,6 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-# UNCOMMENT FOR LOCAL
-# CYLC_DB_PATH = "hello"
-# CYLC_TASK_CYCLE_POINT = "20250516T1053Z"
-# REPORT_PATH="/home/users/christopher.billows/Code/ESMValTool/esmvaltool/utils/recipe_test_workflow/app/generate_report/bin/report.html"
-# cached_raw_db_data = [
-#     ('get_esmval', 'waiting'),
-#     ('install_env_file','succeeded'),
-#     ('get_esmval','succeeded'),
-#     ('configure','succeeded'),
-#     ('compare_recipe_radiation_budget','succeeded'),
-#     ('process_recipe_radiation_budget','succeeded'),
-#     ('process_recipe_albedolandcover','succeeded'),
-#     ('process_recipe_ocean_amoc','succeeded'),
-#     ('process_recipe_autoassess_landsurface_soilmoisture','succeeded'),
-#     ('process_recipe_heatwaves_coldwaves','succeeded'),
-#     ('process_recipe_ocean_multimap','succeeded'),
-#     ('process_recipe_ensclus','succeeded'),
-#     ('process_recipe_consecdrydays','succeeded'),
-#     ('compare_recipe_albedolandcover','succeeded'),
-#     ('compare_recipe_consecdrydays','succeeded'),
-#     ('generate_report','running'),
-#     ('compare_recipe_autoassess_landsurface_soilmoisture','succeeded'),
-#     ('compare_recipe_heatwaves_coldwaves','succeeded'),
-#     ('compare_recipe_ensclus','succeeded'),
-#     ('compare_recipe_ocean_multimap','succeeded'),
-#     ('compare_recipe_ocean_amoc','succeeded')
-# ]
-
 # Load environment variables required at all sites.
 CYLC_DB_PATH = os.environ.get("CYLC_DB_PATH")
 CYLC_TASK_CYCLE_POINT = os.environ.get("CYLC_TASK_CYCLE_POINT")
@@ -67,23 +39,6 @@ def main(db_file_path=CYLC_DB_PATH):
     db_file_path : str, default CYLC_DB_FILE_PATH
         The path to the SQLite database file.
     """
-    # UNCOMMENT FOR LOCAL
-    # raw_db_data = cached_raw_db_data
-    # processed_db_data = process_db_output(raw_db_data)
-    # ESMVAL_TOOL_CURRENT = Path("/home/users/christopher.billows/Code/ESMValTool/")
-    # ESMVAL_CORE_CURRENT = Path("/home/users/christopher.billows/Code/ESMValCore/")
-    # esmval_core_previous_commit_sha = "170a93893"
-    # esmval_tool_previous_commit_sha = "4515a2b92"
-    # esmval_core_all_commits = fetch_git_commits(
-    #     ESMVAL_CORE_CURRENT, esmval_core_previous_commit_sha
-    # )
-    # esmval_tool_all_commits = fetch_git_commits(
-    #     ESMVAL_TOOL_CURRENT, esmval_tool_previous_commit_sha
-    # )
-    # SITE="metoffice"
-    # ESMVAL_CORE_PREVIOUS = Path("nope")
-    # ESMVAL_TOOL_PREVIOUS = ESMVAL_TOOL_CURRENT
-
     raw_db_data = fetch_report_data(db_file_path)
     processed_db_data = process_db_output(raw_db_data)
 
