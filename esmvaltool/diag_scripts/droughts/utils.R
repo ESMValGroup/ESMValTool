@@ -8,18 +8,10 @@
 #   time -> start_year, start_month, end_year, end_month
 #   lat -> fails > 90
 #   tas/min/max -> kelvin to celsius
-#   pr -> to mm month-1  TODO: same for PET when output is fixed
+#   pr -> to mm month-1
 #   sfcWind -> U10 to U2
 #   psl -> hPa to kPa
 #   rsdt/rsds -> Wm-2 to MJm-2d-1
-#
-# TODO: The PET produced by R diag seems to be in the "correct" unit for SPEI,
-# but does not match the units of pr and evspsbl(pot), which are loaded from
-# native data. PET should be converted before saved to nc files and
-# converted back at loading time.
-#
-# TODO: same files are opened multiple times. Does keeping the file open
-# improve performance?
 #
 # NOTE: `fillfloat` and `fillvalue` are variables that are used both for the
 # same purpose but can have different values? fillvalue is read from reference
@@ -272,13 +264,10 @@ leap_year <- function(year) {
 }
 
 list_default <- function(list, key, default) {
-  # TODO: use `key %in% names` instead of is.null? would allow explicit NULL
-  # list[[key]] <- if(is.null(list[[key]])) default else list[[key]]
   if (!key %in% names(list)) {
     print("key not existing")
     print(key)
     list[[key]] <- default
-    # print(list)
   }
   return(list)
 }
@@ -355,11 +344,6 @@ write_nc_file_like <- function(
   allatt <- ncatt_get(ncid_in, meta$short_name)
   var_data <- ncvar_def(short_name, units, list(xdim, ydim, tdim), fillfloat)
   idw <- nc_create(new_meta$filename, var_data, force_v4=TRUE)
-  # convert units back to kg/m2/s before writing file
-  # if (short_name == "evspsblpot") {
-  #   # NOTE: fillfloat will be converted too.
-  #   data <- convert_to_cf(idw, data)
-  # }
   data[is.infinite(data)] <- fillfloat
   data[is.na(data)] <- fillfloat
   ncvar_put(idw, short_name, data)

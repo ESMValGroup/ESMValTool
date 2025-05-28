@@ -1,4 +1,4 @@
-"""Constants that might be usefull by any drought diagnostic."""
+"""Constants that might be useful by any drought diagnostic."""
 
 from iris.coords import AuxCoord
 
@@ -13,7 +13,7 @@ OBS_FNAME = "{project}_{dataset}_{type}_{version}_{mip}_{short_name}_"
 "{start_year}-{end_year}"
 
 CONTINENTAL_REGIONS = {
-    "Global": ["GLO"],  # global
+    "Global": ["GLO"],
     "North America": ["GIC", "NWN", "NEN", "WNA", "CNA", "ENA"],
     "Central America": ["NCA", "SCA", "CAR"],
     "Southern America": ["NWS", "NSA", "NES", "SAM", "SWS", "SES", "SSA"],
@@ -30,14 +30,17 @@ HEX_POSITIONS = {
     "WCE": [13, 1], "EEU": [15, 1], "WSB": [17, 1], "ESB": [19, 1],
     "RFE": [21, 1], "NCA": [2, 2], "MED": [14, 2], "WCA": [16, 2],
     "ECA": [18, 2], "TIB": [20, 2], "EAS": [22, 2], "SCA": [3, 3],
-    # "CAR": [5, 3],
     "SAH": [13, 3], "ARP": [15, 3], "SAS": [19, 3], "SEA": [23, 3],
-    # "PAC": [27.5, 3.3],
     "NWS": [6, 4], "NSA": [8, 4], "WAF": [12, 4], "CAF": [14, 4],
     "NEAF": [16, 4], "NAU": [24.5, 4.3], "SAM": [7, 5], "NES": [9, 5],
     "WSAF": [13, 5], "SEAF": [15, 5], "MDG": [17.5, 5.3],
     "CAU": [23.5, 5.3], "EAU": [25.5, 5.3], "SWS": [6, 6], "SES": [8, 6],
     "ESAF": [14, 6], "SAU": [24.5, 6.3], "NZ": [27, 6.5], "SSA": [7, 7],
+}
+
+MAINLY_SEA_HEX_POSITIONS = {
+    "PAC": [27.5, 3.3],  # Pacific
+    "CAR": [5, 3],  # Caribbean
 }
 
 INDEX_META = {

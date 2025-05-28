@@ -7,7 +7,7 @@
 
 
 group_by: short_name
-comparison_period: 10
+comparison_period: 15
 plot_kwargs:
   cmap: RdYlBu
   extend: both

@@ -24,7 +24,7 @@ preprocessors:
       target_grid: 2x2
       scheme: linear
     convert_units:
-      units: mm/day
+      units: mm day-1
 
 diagnostics:
   diagnostic1:
@@ -147,7 +147,7 @@ diagnostics:
         start_year: 1950
         end_year: 2100
         # comparison_period should be < (end_year - start_year)/2
-        comparison_period: 50
+        comparison_period: 51
         compare_intervals: True
         indexname: "SPI"
         # Threshold under which an event is defined as drought.

@@ -12,7 +12,7 @@ These characteristics are frequency, average duration, SPI index and severity
 index of drought events.
 
 .. _`Martin (2018)`: https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2018GL079807
-.. _`Mckee et al. (1993)`: https://www.nature.com/articles/nclimate3387
+.. _`Mckee et al. (1993)`: https://climate.colostate.edu/pdfs/relationshipofdroughtfrequency.pdf
 
 
 Available recipes and diagnostics
@@ -35,7 +35,7 @@ User settings in recipe
 
 The recipe calculates SPI for two different time periods. The first part
 compares CMIP5 models with the CRU observational dataset. The second part
-compares the last 50 years of the 21st century with the historical period
+compares the last 51 years of the 21st century with the historical period
 (1950-2000) for the RCP8.5 scenario.
 
 The recipe can be run with different CMIP5 and CMIP6 models and one
@@ -64,9 +64,12 @@ Observations and reformat scripts
 References
 ----------
 
-* Martin, E.R. (2018). Future Projections of Global Pluvial and Drought Event Characteristics. Geophysical Research Letters, 45, 11913-11920.
-
-* McKee, T. B., Doesken, N. J., & Kleist, J. (1993). The relationship of drought frequency and duration to time scales. In Proceedings of the 8th Conference on Applied Climatology (Vol. 17, No. 22, pp. 179-183). Boston, MA: American Meteorological Society.
+- Martin, E.R. (2018). Future Projections of Global Pluvial and Drought Event
+  Characteristics. Geophysical Research Letters, 45, 11913-11920.
+- McKee, T. B., Doesken, N. J., & Kleist, J. (1993). The relationship of drought
+  frequency and duration to time scales. In Proceedings of the 8th Conference on
+  Applied Climatology (Vol. 17, No. 22, pp. 179-183). Boston, MA: American
+  Meteorological Society.
 
 Example plots
 -------------
@@ -76,11 +79,14 @@ Example plots
    :align: center
    :width: 80%
 
-   Global map of the percentage difference between multi-model mean of 15 CMIP models and the CRU data for the number of drought events [%] based on SPI.
+   Global map of the percentage difference between multi-model mean of 15 CMIP
+   models and the CRU data for the number of drought events [%] based on SPI.
 
 .. _martin18grl_fig2:
 .. figure:: /recipes/figures/droughtindex/martin18grl_fig2.png
    :align: center
    :width: 80%
 
-   Global map of the percentage difference between multi-model mean for RCP8.5 scenarios (2050-2100) runs and historical data (1950-2000) for 15 CMIP models for the number of drought events [%] based on SPI.
+   Global map of the percentage difference between multi-model mean for RCP8.5
+   scenarios (2050-2100) runs and historical data (1950-2000) for 15 CMIP models
+   for the number of drought events [%] based on SPI.

@@ -586,7 +586,7 @@ def mmm(
         merged = cube_list.merge_cube()
     except iris.exceptions.MergeError as err:
         iris.util.describe_diff(cube_list[0], cube_list[1])
-        raise err
+        raise iris.exceptions.MergeError from err
     if mdtol > 0:
         log.info("performing MMM with tolerance: %s", mdtol)
     mean = merged.collapsed("dataset", iris.analysis.MEAN, mdtol=mdtol)
@@ -701,7 +701,9 @@ def select_meta_from_combi(meta: list, combi: dict, groups: dict) -> tuple:
 def _compare_dicts(dict1, dict2, sort) -> bool:
     if dict1.kyes() != dict2.keys():
         return False
-    return all(_compare_values(dict1[key], dict2.get(key), sort) for key in dict1)
+    return all(
+        _compare_values(dict1[key], dict2.get(key), sort) for key in dict1
+    )
 
 
 def _compare_values(val1, val2, sort) -> bool:
@@ -733,7 +735,9 @@ def get_common_meta(metas: list, *, sort: bool = False) -> dict:
     """
     common = {}
     for key in metas[0]:
-        if all(_compare_values(metas[0][key], m.get(key), sort) for m in metas):
+        if all(
+            _compare_values(metas[0][key], m.get(key), sort) for m in metas
+        ):
             common[key] = metas[0][key]
     return common
 
@@ -971,6 +975,6 @@ def font_color(background: str | tuple | float) -> str:
     background : str, tuple, or float
         color as string (grayscale value, name, hex) or tuple (rgb, rgba)
     """
-    if sum(mpl.colors.to_rgb(background)) > 1.5:
+    if sum(mpl.colors.to_rgb(background)) > 1.5:  # noqa: PLR2004
         return "black"
     return "white"

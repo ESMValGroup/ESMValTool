@@ -8,7 +8,7 @@ Installation
    ESMValTool now uses `mamba` instead of `conda` for the recommended installation.
    For more information about the change, have a look at :ref:`Move to Mamba<move-to-mamba>`.
 
-ESMValTool supports Python 3.10 and later and requires Linux or MacOS.
+ESMValTool supports Python 3.11 and later and requires Linux or MacOS.
 Successful usage on Windows has been reported by following the Linux
 installation instructions with
 `WSL <https://learn.microsoft.com/en-us/windows/wsl/install>`__.
@@ -217,7 +217,7 @@ environment is activated and then execute
 
 .. code-block:: bash
 
-    mamba install julia
+    curl -fsSL https://install.julialang.org | sh -s -- --yes
     esmvaltool install Julia
 .. _install_on_macosx:
 
@@ -364,6 +364,13 @@ so you will not be able to run NCL, R, or Julia diagnostics with it.
     would like to keep.
     It is recommended that you create a new environment when updating ESMValTool.
 
+.. note::
+    There is also a pure-Python environment file ``esmvaltool_python.yml``
+    which is a softlink of the ``environment_osx.yml`` file; this one is used
+    by any build that needs only Python packages (i.e. no NCL and R), currently
+    this is used by our documentation builds, but it could be used by anyone
+    needing just the Python dependencies.
+
 Next, activate the environment by using the command:
 
 .. code-block:: bash
@@ -390,10 +397,11 @@ the source code will immediately be available in the installed version of the
 tool.
 
 If you would like to run Julia diagnostic scripts, you will need to
-install the ESMValTool Julia dependencies:
+install Julia and the ESMValTool Julia dependencies:
 
 .. code-block:: bash
 
+    curl -fsSL https://install.julialang.org | sh -s -- --yes
     esmvaltool install Julia
 
 If you are planning to do any coding, install the :ref:`esmvaltool:pre-commit`
@@ -657,10 +665,11 @@ ESMValTool and any remaining Python dependencies with the command:
     pip install esmvaltool
 
 If you would like to run Julia diagnostic scripts, you will also need to
-install the Julia dependencies:
+install Julia and the ESMValTool Julia dependencies:
 
 .. code-block:: bash
 
+    curl -fsSL https://install.julialang.org | sh -s -- --yes
     esmvaltool install Julia
 
 .. _installation_from_the_conda_lock_file:
