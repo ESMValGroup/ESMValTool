@@ -88,7 +88,7 @@ References
 Example plots
 -------------
 
-.. _fig_combinedindices1:
+.. _fig_extremeindex1:
 .. figure::  /recipes/figures/recipe_extreme_index/t90p_IPSL-CM5A-LR_rcp85_2020_2040.png
    :align:   center
    :width:   14cm
