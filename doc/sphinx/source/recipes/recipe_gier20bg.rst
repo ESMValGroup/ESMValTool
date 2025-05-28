@@ -171,6 +171,8 @@ Example plots
    Mean fractional coverage of monthly satellite data.
 
 .. _fig_gier20bg_2:
+..
+  gallery
 .. figure::  /recipes/figures/gier20bg/fig02.png
    :align:   center
    :width: 80%
@@ -193,9 +195,9 @@ Example plots
    Barplot of the growth rate, averaged over all years, with standard deviation
    of interannual variability.
 
-..
-  gallery=True
 .. _fig_gier20bg_5:
+..
+  gallery
 .. figure::  /recipes/figures/gier20bg/fig05.png
    :align:   center
    :width: 80%
