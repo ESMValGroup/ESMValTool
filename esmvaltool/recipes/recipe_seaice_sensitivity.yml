@@ -1,8 +1,7 @@
 # ESMValTool
-# recipe_smpi.yml
 ---
 documentation:
-  title: Seaice sensitivity
+  title: Sea ice sensitivity
 
   description: |
     Recipe for quantifying the sensitivity of sea ice to global warming.

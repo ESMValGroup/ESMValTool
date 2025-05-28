@@ -30,19 +30,24 @@ Years to be evaluated are specified in the ``extract_test_period`` preprocessor.
 .. code-block:: yaml
 
     pp_arctic_sept_sea_ice:
-      <<: *extract_test_period
-      <<: *extract_sept
-      <<: *nh_total_area
-
-    pp_antarctic_avg_ann_sea_ice:
-      <<: *extract_test_period
-      <<: *annual_mean
-      <<: *sh_total_area
-
-    pp_avg_ann_global_temp:
-      <<: *extract_test_period
-      <<: *global_mean
-      <<: *annual_mean
+      extract_time:
+        start_day: 1
+        start_month: 1
+        start_year: 1979
+        end_day: 31
+        end_month: 12
+        end_year: 2014
+      extract_month:
+        month: 9
+      extract_region:
+        start_longitude: 0
+        end_longitude: 360
+        start_latitude: 0
+        end_latitude: 90
+      area_statistics:
+        operator: sum
+      convert_units:
+        units: 1e6 km2
 
 Datasets
 --------
@@ -75,6 +80,6 @@ Example plots
    :align:   center
    :width:   18cm
 
-   Plot of the trend of annually averaged southern hemisphere sea ice area (millions of square kilometres) over time against the trend of annually and globally averaged air temperature near the surface (degrees Kelvin) over time.
+   Plot of the trend of annually averaged southern hemisphere sea ice area (millions of square kilometres) over time against the trend of annually and globally averaged air temperature near the surface (degrees Kelvin) over time. The values plotted are 10 times the annual trend, which was calculated using :func:`scipy.stats.linregress`, for consistency with the decadal values used in the published plot.
 
    The colour of each point is determined by the Pearson correlation coefficient between the two variables, and the hatching indicates a ``p_value`` greater than 0.05, both calculated using :func:`scipy.stats.linregress`.

@@ -180,8 +180,8 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
 
     # Set up the figure
     fig, ax = plt.subplots(figsize=(3.5, 6), layout="constrained")
-    fig.suptitle(titles_dictionary["titles"]["notz_fig_title"])
-    ax.set_title(titles_dictionary["titles"]["notz_ax_title"])  # Ed's title
+    fig.suptitle(titles_dictionary["titles"]["notz_fig_title"], wrap=True)
+    ax.set_title(titles_dictionary["titles"]["notz_ax_title"], wrap=True)
 
     # Iterate over the dictionary
     for dataset, inner_dict in data_dictionary.items():
@@ -231,7 +231,7 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     # Tidy the figure
     ax.set_xlim(0, 1)
     ax.set_xticks([])
-    ax.set_ylabel("dSIA/dGMST (million km$^2$ K$^{-1}$)")
+    ax.set_ylabel("dSIA/dGMST ($million \ km^2 \ K^{-1}$)")
 
     # Save the figure (also closes it)
     provenance_record = get_provenance_record(cfg)
@@ -248,7 +248,7 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     """Save a plot of trend in SIA against trend in GMST to the given filename."""
     # Set up the figure
     fig, ax = plt.subplots(figsize=(10, 6), layout="constrained")
-    fig.suptitle(titles_dictionary["titles"]["roach_fig_title"])
+    fig.suptitle(titles_dictionary["titles"]["roach_fig_title"], wrap=True)
 
     # Set up for colouring the points
     norm = Normalize(vmin=-1, vmax=1)
@@ -257,8 +257,8 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     # Set up the axes
     ax.axhline(color="black", alpha=0.5)
     ax.axvline(color="black", alpha=0.5)
-    ax.set_xlabel("Trend in GMST (K decade$^{-1}$)")
-    ax.set_ylabel("Trend in SIA (million km$^2$ decade$^{-1}$)")
+    ax.set_xlabel("Trend in GMST ($K \ decade^{-1}$)")
+    ax.set_ylabel("Trend in SIA ($million \ km^2 \ decade^{-1}$)")
 
     # Iterate over the dictionary
     for dataset, inner_dict in data_dictionary.items():
@@ -287,7 +287,7 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
             plt.annotate(dataset, xy=(x, y), xytext=(x + 0.01, y - 0.005))
 
     # Add a colour bar
-    plt.colorbar(label="R^2 * sign(R)")
+    plt.colorbar(label="$R^2 \cdot sign(R)$")
 
     # Save the figure (also closes it)
     provenance_record = get_provenance_record(cfg)
