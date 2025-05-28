@@ -49,12 +49,11 @@ def fetch_report_data(db_file_path, target_cycle_point=CYLC_TASK_CYCLE_POINT):
         cylc database.
     """
     sql_query_task_states_target_cycle = (
-        "SELECT name, status FROM task_states WHERE cycle = "
-        f"'{target_cycle_point}'"
+        "SELECT name, status FROM task_states WHERE cycle = ?"
     )
     connection = sqlite3.connect(db_file_path)
     cursor = connection.cursor()
-    cursor.execute(sql_query_task_states_target_cycle)
+    cursor.execute(sql_query_task_states_target_cycle, (target_cycle_point,))
     fetched_data = cursor.fetchall()
     connection.close()
     return fetched_data
