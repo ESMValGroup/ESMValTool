@@ -142,7 +142,9 @@ Example plots
 .. figure:: /recipes/figures/thermodyn_diagtool/meridional_transp.png
    :align:   left
    :width:   14cm
+   Meridional transports.
 
 .. figure:: /recipes/figures/thermodyn_diagtool/CanESM2_wmb_transp.png
    :align:   right
    :width:   14cm
+   Water mass transports.
