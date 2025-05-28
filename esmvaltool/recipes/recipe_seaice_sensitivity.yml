@@ -14,11 +14,12 @@ documentation:
     other showing the two separate trends over time.
 
   authors:
-    - sellar_alistair
     - parsons_naomi
+    - sellar_alistair
+    - blockly_ed
 
   maintainer:
-    - sellar_alistair
+    - parsons_naomi
 
 defaults: &defaults {ensemble: r1i1p1f1, exp: historical, grid: gn, project: CMIP6}
 datasets:

@@ -90,6 +90,11 @@ authors:
     family-names: Billows
     given-names: Chris
   -
+    affiliation: "Met Office, UK"
+    family-names: Blockley
+    given-names: Ed
+    orcid: "https://orcid.org/0000-0002-0489-4238"
+  -
     affiliation: "DLR, Germany"
     family-names: Bock
     given-names: Lisa
