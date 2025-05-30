@@ -3,7 +3,7 @@
 import sys
 from pathlib import Path
 
-from . import compare
+from esmvaltool.utils.develop.compare import compare
 
 
 class DevelopCommand:
