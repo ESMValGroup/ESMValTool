@@ -22,9 +22,7 @@ from datetime import datetime
 
 import cf_units
 import iris
-import numpy as np
 from dask import array as da
-from dateutil import relativedelta
 from esmvalcore.preprocessor import (
     daily_statistics,
     monthly_statistics,
