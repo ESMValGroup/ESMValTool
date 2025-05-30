@@ -25,7 +25,6 @@ large variety of input data.
    recipe_model_evaluation
    recipe_monitor
    recipe_portrait
-   recipe_psyplot
    recipe_seaborn
    recipe_ref
 
@@ -39,9 +38,9 @@ Atmosphere
    recipe_clouds
    recipe_cmug_h2o
    recipe_crem
-   recipe_consecdrydays
    recipe_deangelis15nat
    recipe_diurnal_temperature_index
+   recipe_droughts
    recipe_eady_growth_rate
    recipe_extreme_events
    recipe_extreme_index
@@ -56,8 +55,6 @@ Atmosphere
    recipe_mpqb_xch4
    recipe_quantilebias
    recipe_bock20jgr
-   recipe_spei
-   recipe_martin18grl
    recipe_autoassess_stratosphere
    recipe_autoassess_landsurface_permafrost
    recipe_autoassess_landsurface_surfrad
@@ -151,7 +148,6 @@ Other
    recipe_galytska23jgr
    recipe_multimodel_products
    recipe_pv_capacity_factor
-   recipe_rainfarm
    recipe_seaice
    recipe_seaice_drift
    recipe_seaice_feedback
@@ -170,7 +166,10 @@ require a legacy version of ESMValTool to run.
 .. toctree::
    :maxdepth: 1
 
+   recipe_psyplot
+   recipe_rainfarm
    recipe_schlund20jgr
+   recipe_spei
 
 
 Broken recipe list
