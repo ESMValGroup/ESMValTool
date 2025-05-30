@@ -2,19 +2,37 @@
 import os
 import sqlite3
 from datetime import datetime
+from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from bin.commits_via_git import get_commits_from_git
+from bin.sha_via_singularity import get_shas_from_singularity
+
+# Load environment variables required at all sites.
 CYLC_DB_PATH = os.environ.get("CYLC_DB_PATH")
 CYLC_TASK_CYCLE_POINT = os.environ.get("CYLC_TASK_CYCLE_POINT")
-CYLC_WORKFLOW_SHARE_DIR = os.environ.get("CYLC_WORKFLOW_SHARE_DIR")
+CYLC_TASK_CYCLE_YESTERDAY = os.environ.get("ROSE_DATACP1D")
 REPORT_PATH = os.environ.get("REPORT_PATH")
+SITE = os.environ.get("SITE")
 
+if SITE == "dkrz":
+    ESMVAL_VERSIONS_TODAY = os.environ.get("ESMVAL_VERSIONS_CURRENT")
+    ESMVAL_VERSIONS_YESTERDAY = os.environ.get("ESMVAL_VERSIONS_PREVIOUS")
+
+elif SITE == "metoffice":
+    REPOS = {
+        "core_today": os.environ.get("ESMVALCORE_DIR"),
+        "tool_today": Path(CYLC_TASK_CYCLE_YESTERDAY) / "ESMValCore",
+        "core_yesterday": os.environ.get("ESMVALTOOL_DIR"),
+        "tool_yesterday": Path(CYLC_TASK_CYCLE_YESTERDAY) / "ESMValTool",
+    }
+    print("Repos", REPOS)
 
 SQL_QUERY_TASK_STATES = "SELECT name, status FROM task_states"
 
 
-def main(db_file_path=CYLC_DB_PATH):
+def main(db_file_path=CYLC_DB_PATH, site=SITE):
     """
     Main function to generate the HTML report.
 
@@ -26,9 +44,35 @@ def main(db_file_path=CYLC_DB_PATH):
     raw_db_data = fetch_report_data(db_file_path)
     processed_db_data = process_db_output(raw_db_data)
     subheader = create_subheader()
+
+    try:
+        if site == "dkrz":
+            # A single commit SHA for each package is expected.
+            commit_info = get_shas_from_singularity(
+                ESMVAL_VERSIONS_TODAY, ESMVAL_VERSIONS_YESTERDAY
+            )
+        elif site == "metoffice":
+            # At least a single commit for each package is expected. There may
+            # be multiple commits per package, and info for each commit has
+            # multiple fields.
+            commit_info = get_commits_from_git(REPOS)
+            print("commit_info_messages", commit_info)
+            add_report_message_to_git_commits(commit_info)
+            print("commit_info_messages", commit_info)
+        else:
+            # No commit information for either package.
+            commit_info = None
+    # Catch as likely indicate a minor issue e.g. unexpected data content at
+    # some point in the pipeline.
+    except (ValueError, KeyError) as err:
+        "Report generating without commit data. Error while fetching "
+        f"commit data: {err}"
+        commit_info = None
+
     rendered_html = render_html_report(
         subheader=subheader,
         report_data=processed_db_data,
+        commit_info=commit_info,
     )
     write_report_to_file(rendered_html)
 
@@ -163,7 +207,25 @@ def create_subheader(cylc_task_cycle_point=CYLC_TASK_CYCLE_POINT):
     return subheader
 
 
-def render_html_report(report_data, subheader):
+def add_report_message_to_git_commits(git_commits_info):
+    """
+    Add report messages to a git commit information dictionary.
+
+    Parameters
+    ----------
+    list[dict]
+        A list of git commits.
+    """
+    git_commits_info[0]["report_flag"] = "Version tested this cycle >>>"
+    if len(git_commits_info) > 1:
+        git_commits_info[-1]["report_flag"] = "Version tested last cycle >>>"
+
+
+def render_html_report(
+    report_data,
+    subheader,
+    commit_info,
+):
     """
     Render the HTML report using Jinja2.
 
@@ -173,6 +235,7 @@ def render_html_report(report_data, subheader):
         The report data to be rendered in the HTML template.
     subheader : str
         The subheader for the HTML report.
+    package_info : dict
 
     Returns
     -------
@@ -188,6 +251,8 @@ def render_html_report(report_data, subheader):
     rendered_html = template.render(
         subheader=subheader,
         report_data=report_data,
+        esmval_core_commits=commit_info["ESMValCore"]["commits"],
+        esmval_tool_commits=commit_info["ESMValTool"]["commits"],
     )
     return rendered_html
 
