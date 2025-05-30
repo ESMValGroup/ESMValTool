@@ -20,7 +20,7 @@ def mock_db_with_passed_values(row_data):
 
     Parameters
     ----------
-    task_state_rows : list[tuple]
+    row_data : list[tuple]
         The mock task state data in the form [('recipe', 'status', 'cycle')]
 
     Yields
