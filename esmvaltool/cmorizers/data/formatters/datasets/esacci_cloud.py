@@ -15,7 +15,6 @@ Download and processing instructions
 
 import copy
 import glob
-import numpy as np
 import logging
 import os
 from calendar import monthrange
@@ -23,6 +22,7 @@ from datetime import datetime
 
 import cf_units
 import iris
+import numpy as np
 from dask import array as da
 from dateutil import relativedelta
 from esmvalcore.preprocessor import (
@@ -69,40 +69,6 @@ def _handle_missing_day(year, month, iday, short_name, cubes, cubes_day):
         cubes.append(daily_cube)
     daily_cube_day = _create_nan_cube(cubes_day[0], year, month, iday)
     cubes_day.append(daily_cube_day)
-
-
-def _check_for_missing_dates(year0, year1, cube, cubes):
-    """Check for dates which are missing in the cube and fill with NaNs."""
-    time_coord = cube.coord("time").cells()
-    time_points_array = cube.coord('time').units.num2date(cube.coord('time').points)
-    logger.debug(time_points_array)
-    dataset_time_unit = str(cube.coord("time").units)
-    dataset_time_calender = cube.coord("time").units.calendar
-    loop_date = datetime(year0, 1, 1)
-    while loop_date <= datetime(year1, 12, 1):
-        print(loop_date.year, loop_date.month)
-        if not any(
-            [
-                cell.point.year == loop_date.year
-                and cell.point.month == loop_date.month
-            ]
-            for cell in time_coord
-        ):
-            logger.debug(
-                "No data available for %d/%d", loop_date.month, loop_date.year
-            )
-            nan_cube = cubes[0].copy(np.ma.masked_invalid(np.full(cubes[0].shape, np.nan, dtype=cubes[0].dtype)))
-            #nan_cube = cube.copy(np.ma.masked_invalid(np.full(cube.shape, np.nan, dtype=cube.dtype)))[[0], ...]
-            nan_cube.coord("time").points = nan_cube.coord("time").units.date2num(loop_date) #loop_date, dataset_time_unit, dataset_time_calender)
-            nan_cube.coord("time").bounds = None
-            cubes.append(nan_cube)
-        loop_date += relativedelta.relativedelta(months=1)
-
-    for c in cubes:
-        print(c.coord("time"))
-    cube = cubes.concatenate_cube()
-
-    return cube
 
 
 def _concatenate_and_save_daily_cubes(
