@@ -46,6 +46,7 @@ commands:
             pytest -n 4 --junitxml=test-reports/report.xml
             esmvaltool version
             esmvaltool -- --help
+            esmvaltool develop compare -- --help
             ncl -V
             cdo --version
       - store_test_results:
