@@ -5,19 +5,18 @@ import logging
 import os
 import shutil
 import zipfile
-from pathlib import Path
-
 from datetime import datetime
-from dateutil import relativedelta
+from pathlib import Path
 
 import cdsapi
 import webdav.client as wc
+from dateutil import relativedelta
 
 logger = logging.getLogger(__name__)
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    config, dataset, dataset_info, start_date, end_date, overwrite,
 ):
     """Download ESACCI-OZONE dataset using CDS API.
 
@@ -28,7 +27,6 @@ def download_dataset(
     - All the files will be saved in ${RAWOBS}/Tier2/ESACCI-OZONE.
     """
     if dataset == "ESACCI-OZONE":
-
         raw_obs_dir = Path(config["rootpath"]["RAWOBS"][0])
         output_folder = raw_obs_dir / f"Tier{dataset_info['tier']}" / dataset
         output_folder.mkdir(parents=True, exist_ok=True)
@@ -74,12 +72,12 @@ def download_dataset(
 
             if file_path.exists() and not overwrite:
                 logger.info(
-                    "File %s already exists. Skipping download.", file_path
+                    "File %s already exists. Skipping download.", file_path,
                 )
                 continue
 
             client.retrieve(
-                "satellite-ozone-v1", request, file_path.as_posix()
+                "satellite-ozone-v1", request, file_path.as_posix(),
             )
 
             # Handle both .gz and .zip files
@@ -106,9 +104,9 @@ def download_dataset(
             end_date = datetime(2023, 12, 31)
 
         options = {
-            'webdav_hostname': 'https://webdav.aeronomie.be',
-             'webdav_login': 'o3_cci_public',
-             'webdav_password': '',
+            "webdav_hostname": "https://webdav.aeronomie.be",
+            "webdav_login": "o3_cci_public",
+            "webdav_password": "",
         }
 
         client = wc.Client(options)
@@ -127,13 +125,15 @@ def download_dataset(
             remotepath = f"{basepath}/{year}"
             files = client.list(remotepath)
             info = client.info(remotepath + "/" + files[0])
-            numfiles = len(files) 
+            numfiles = len(files)
             # calculate approx. download volume in Gbytes
             size = int(info["size"]) * numfiles // 1073741824
             del files
 
-            loginfo = (f"downloading {numfiles} files for year {year}"
-                       F" (approx. {size} Gbytes)") 
+            loginfo = (
+                f"downloading {numfiles} files for year {year}"
+                f" (approx. {size} Gbytes)"
+            )
             logger.info(loginfo)
 
             # synchronize local (output) directory and WebDAV server directory
