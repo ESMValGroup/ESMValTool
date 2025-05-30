@@ -71,9 +71,9 @@ Example plots
 
    The dashed black line shows the observational mean, the shaded area is within one standard deviation of the mean, and the dashed grey lines are within "plausibility" of the mean, with all values taken from Ed Blockley's code for the period 1979-2014 and defined as follows:
 
-     mean:      -4.01,
-     std_dev:  0.32,
-     plausible: 1.28,
+     mean:     -4.01 $million km^2 \ K^{-1}$,
+     std_dev:   0.32 $million km^2 \ K^{-1}$,
+     plausible: 1.28 $million km^2 \ K^{-1}$,
 
 .. _fig_seaice_sensitivity_2:
 .. figure::  /recipes/figures/seaice/Annual_Antarctic_sea_ice_trends.png
