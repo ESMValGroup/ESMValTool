@@ -131,6 +131,8 @@
         [[[environment]]]
             ROSE_TASK_APP = compare
             KGO_ROOT_PATH = {{ KGO_ROOT_PATH }}
+            # This script will be replaced by a compare command when avaialble.
+            # Issue #3437 refers
             COMPARE_SCRIPT=${ESMVALTOOL_DIR}/esmvaltool/utils/develop/compare.py
 
     # Bash variable manipulation `##*--` below strips leading path from recipe
