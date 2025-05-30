@@ -126,7 +126,41 @@ def calculate_direct_sensitivity(data):
     return sensitivity.slope
 
 
-def create_titles_dict(data):
+def write_obs_from_cfg(cfg):
+    """Write the observations from the recipe to a dictionary."""
+    # Initialize the dictionary to hold observations
+    obs_dict = {}
+
+    # Add the observation period to the dictionary
+    obs_dict["obs_period"] = cfg["observations"]["observation period"]
+
+    # Add a blank dictionary for the Notz-style plot
+    obs_dict["notz_style"] = {}
+
+    # Add the observations values to the dictionary
+    notz_values = cfg["observations"]["sea ice sensitivity (Notz-style plot)"]
+    obs_dict["notz_style"]["mean"] = notz_values["mean"]
+    obs_dict["notz_style"]["std_dev"] = notz_values["standard deviation"]
+    obs_dict["notz_style"]["plausible"] = notz_values["plausible range"]
+
+    # Add a blank dictionary for the Roach-style plot
+    obs_dict["roach_style"] = {}
+
+    # Add each observation point to the dictionary
+    roach_values = cfg["observations"]["annual trends (Roach-style plot)"]
+    for point in roach_values.keys():
+        obs_dict["roach_style"][point] = {}
+
+        # Add the individual values for the observation point
+        obs_dict["roach_style"][point]["tas_trend"] = roach_values[point]["GMST trend"]
+        obs_dict["roach_style"][point]["siconc_trend"] = roach_values[point]["SIA trend"]
+        obs_dict["roach_style"][point]["r_value"] = roach_values[point]["Pearson CC of SIA over GMST"]
+        obs_dict["roach_style"][point]["p_value"] = roach_values[point]["significance of SIA over GMST"]
+
+    return obs_dict
+
+
+def create_titles_dict(data, cfg):
     """
     Create a dictionary of appropriate observations and titles.
 
@@ -139,25 +173,15 @@ def create_titles_dict(data):
     first_variable = next(iter(data))
 
     if first_variable["diagnostic"] == "arctic":
-        # Ed Blockley's dSIA/dT values in million sq km per Kelvin
-        dictionary["obs"] = {
-            "1979-2014": {"mean": -4.01, "std_dev": 0.32, "plausible": 1.28}
-        }
-        # Setting titles for plots
         dictionary["titles"] = {
             "notz_fig_title": "September Arctic sea-ice area sensitivity to global mean surface temperature",
-            "notz_ax_title": f"Annual regression over {next(iter(dictionary['obs'].keys()))}",
+            "notz_ax_title": "dSIA/dGMST",
             "notz_plot_filename": "September Arctic sea ice sensitivity",
             "roach_fig_title": "Trends in Annual Mean Temperature And September Arctic Sea Ice",
             "roach_plot_filename": "September Arctic sea ice trends",
         }
 
     elif first_variable["diagnostic"] == "antarctic":
-        # We don't have equivalent observations  # TODO: there are observations on Roach 3e
-        dictionary["obs"] = {
-            "no years": {"mean": None, "std_dev": None, "plausible": None}
-        }
-        # Setting titles for plots
         dictionary["titles"] = {
             "notz_fig_title": "Annually Meaned Antarctic Sea Ice Sensitivity",
             "notz_ax_title": "dSIA/dGMST",
@@ -166,22 +190,24 @@ def create_titles_dict(data):
             "roach_plot_filename": "Annual Antarctic sea ice trends",
         }
 
+    dictionary["obs"] = write_obs_from_cfg(cfg)
+
     return dictionary
 
 
 def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     """Save a plot of sensitivities and observations."""
-    # Read from (Ed Blockley's) observations dictionary
-    obs_dict = titles_dictionary["obs"]
-    obs_years = list(obs_dict)[0]
-    obs_mean = obs_dict[obs_years]["mean"]
-    obs_std_dev = obs_dict[obs_years]["std_dev"]
-    obs_plausible = obs_dict[obs_years]["plausible"]
+    # Read from observations dictionary
+    obs_years = titles_dictionary["obs"]["obs_period"]
+    obs_dict = titles_dictionary["obs"]["notz_style"]
+    obs_mean = obs_dict["mean"]
+    obs_std_dev = obs_dict["std_dev"]
+    obs_plausible = obs_dict["plausible"]
 
     # Set up the figure
     fig, ax = plt.subplots(figsize=(3.5, 6), layout="constrained")
     fig.suptitle(titles_dictionary["titles"]["notz_fig_title"], wrap=True)
-    ax.set_title(titles_dictionary["titles"]["notz_ax_title"], wrap=True)
+    ax.set_title(titles_dictionary["titles"]["notz_ax_title"], wrap=True, fontsize=10)
 
     # Iterate over the dictionary
     for dataset, inner_dict in data_dictionary.items():
@@ -201,8 +227,8 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
                 xytext=(0.35, inner_dict["direct_sensitivity"] - 0.05),
             )
 
-    # Add observations (style taken from Ed's code)
-    if obs_mean is not None:
+    # Add observations only if obs_mean is a number
+    if isinstance(obs_mean, (int, float)):
         ax.hlines(obs_mean, 0, 1, linestyle="--", color="black", linewidth=2)
         ax.fill_between(
             [0, 1],
@@ -267,27 +293,53 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         y = 10 * inner_dict["siconc_trend"]  # for equivalence to decades
 
         # Determine the colour of the point
-        r2 = inner_dict["direct_r_val"] ** 2 * np.sign(
-            inner_dict["direct_r_val"]
-        )  # TODO: check this is right
+        r_corr = inner_dict["direct_r_val"]
 
         # Decide if the point should be hatched
-        if inner_dict["direct_p_val"] > 0.05:  # TODO: also check this
+        if inner_dict["direct_p_val"] >= 0.05:
             h = 5 * "/"  # This is a hatch pattern
         else:
             h = None
 
         # Plot the point
         plt.scatter(
-            x, y, marker="o", s=150, c=[r2], hatch=h, cmap=cmap, norm=norm
+            x, y, marker="o", s=150, c=[r_corr], hatch=h, cmap=cmap, norm=norm
         )
 
         # Label with the dataset if specified
         if inner_dict["label"] == "to_label":
             plt.annotate(dataset, xy=(x, y), xytext=(x + 0.01, y - 0.005))
 
+    # Read from observations dictionary
+    obs_years = titles_dictionary["obs"]["obs_period"]
+    obs_dict = titles_dictionary["obs"]["roach_style"]
+
+    # Add the observations
+    for point in obs_dict.keys():
+        # Get the values for the point
+        x = obs_dict[point]["tas_trend"]
+        y = obs_dict[point]["siconc_trend"]
+        r_corr = obs_dict[point]["r_value"]
+        p_val = obs_dict[point]["p_value"]
+
+        # Provide a default colour for the point
+        if r_corr is None:
+            r_corr = 0
+
+        # Decide if the point should be hatched
+        if p_val is not None and p_val >= 0.05:
+            h = 5 * "/"  # This is a hatch pattern
+        else:
+            h = None
+
+        # Plot the point only if both values are provided
+        if x is not None and y is not None:
+            plt.scatter(
+                x, y, marker="s", s=150, c=[r_corr], hatch=h, cmap=cmap, norm=norm, zorder=0, edgecolors="black"
+            )
+
     # Add a colour bar
-    plt.colorbar(label="$R^2 \cdot sign(R)$")
+    plt.colorbar(label="Pearson correlation coefficient")
 
     # Save the figure (also closes it)
     provenance_record = get_provenance_record(cfg)
@@ -307,7 +359,9 @@ def main(cfg):
     input_data = cfg["input_data"].values()
 
     # Titles and observations depend on the diagnostic being plotted
-    titles_and_obs_dict = create_titles_dict(input_data)
+    logger.info("Creating titles and observations dictionary")
+    titles_and_obs_dict = create_titles_dict(input_data, cfg)
+    logger.debug("Titles and observations dictionary: %s", titles_and_obs_dict)
 
     # Initialize blank data dictionary to send to plotting codes later
     data_dict = {}
@@ -319,7 +373,7 @@ def main(cfg):
     # Iterate over each dataset
     for dataset in datasets:
         # Select only data from that dataset
-        logger.info("Selecting data from %s", dataset)
+        logger.debug("Selecting data from %s", dataset)
         selection = select_metadata(input_data, dataset=dataset)
 
         # Add the dataset to the dictionary with a blank inner dictionary
