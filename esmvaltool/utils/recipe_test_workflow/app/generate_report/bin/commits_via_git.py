@@ -51,6 +51,8 @@ def get_commits_from_git(repos):
     else:
         commit_info = get_all_commits_for_today_and_yesterday(repos)
 
+    add_report_messages_to_commits(commit_info)
+
     return commit_info
 
 
@@ -141,7 +143,7 @@ def query_git_log(package_path, sha=None):
         split_fields = commit.split("^_^")
         processed_commit_info.append(
             {
-                "report_flag": "",
+                "report_flag": "",  # Needed for jinja2 template.
                 "date": split_fields[0],
                 "sha": split_fields[1],
                 "author": split_fields[2],
@@ -149,3 +151,22 @@ def query_git_log(package_path, sha=None):
             }
         )
     return processed_commit_info
+
+
+def add_report_messages_to_commits(commit_info):
+    """
+    Add report messages to a git commit information dictionary.
+
+    Add a report flag
+
+    Parameters
+    ----------
+    commit_info : tuple[list[dict], list[dict]
+        A tuple containg two list of package commits.
+    """
+    for package_commits in commit_info:
+        package_commits[0]["report_flag"] = "Version tested this cycle >>>"
+        if len(package_commits) > 1:
+            package_commits[-1]["report_flag"] = (
+                "Version tested last cycle >>>"
+            )

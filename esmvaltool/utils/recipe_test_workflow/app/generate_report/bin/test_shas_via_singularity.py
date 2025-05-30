@@ -1,6 +1,9 @@
 import pytest
 
-from bin.sha_via_singularity import extract_scm_shas, get_shas_from_singularity
+from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.shas_via_singularity import (
+    extract_scm_shas,
+    get_shas_from_singularity,
+)
 
 
 @pytest.fixture()

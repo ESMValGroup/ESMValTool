@@ -6,8 +6,20 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from bin.commits_via_git import get_commits_from_git
-from bin.sha_via_singularity import get_shas_from_singularity
+try:
+    from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.commits_via_git import (
+        get_commits_from_git,
+    )
+except ImportError:
+    from commits_via_git import get_commits_from_git
+
+try:
+    from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.shas_via_singularity import (
+        get_shas_from_singularity,
+    )
+except ImportError:
+    from shas_via_singularity import get_shas_from_singularity
+
 
 # Load environment variables required at all sites.
 CYLC_DB_PATH = os.environ.get("CYLC_DB_PATH")
@@ -23,11 +35,10 @@ if SITE == "dkrz":
 elif SITE == "metoffice":
     REPOS = {
         "core_today": os.environ.get("ESMVALCORE_DIR"),
-        "tool_today": Path(CYLC_TASK_CYCLE_YESTERDAY) / "ESMValCore",
-        "core_yesterday": os.environ.get("ESMVALTOOL_DIR"),
+        "tool_today": os.environ.get("ESMVALTOOL_DIR"),
+        "core_yesterday": Path(CYLC_TASK_CYCLE_YESTERDAY) / "ESMValCore",
         "tool_yesterday": Path(CYLC_TASK_CYCLE_YESTERDAY) / "ESMValTool",
     }
-    print("Repos", REPOS)
 
 SQL_QUERY_TASK_STATES = "SELECT name, status FROM task_states"
 
@@ -56,9 +67,6 @@ def main(db_file_path=CYLC_DB_PATH, site=SITE):
             # be multiple commits per package, and info for each commit has
             # multiple fields.
             commit_info = get_commits_from_git(REPOS)
-            print("commit_info_messages", commit_info)
-            add_report_message_to_git_commits(commit_info)
-            print("commit_info_messages", commit_info)
         else:
             # No commit information for either package.
             commit_info = None
@@ -207,20 +215,6 @@ def create_subheader(cylc_task_cycle_point=CYLC_TASK_CYCLE_POINT):
     return subheader
 
 
-def add_report_message_to_git_commits(git_commits_info):
-    """
-    Add report messages to a git commit information dictionary.
-
-    Parameters
-    ----------
-    list[dict]
-        A list of git commits.
-    """
-    git_commits_info[0]["report_flag"] = "Version tested this cycle >>>"
-    if len(git_commits_info) > 1:
-        git_commits_info[-1]["report_flag"] = "Version tested last cycle >>>"
-
-
 def render_html_report(
     report_data,
     subheader,
@@ -251,8 +245,8 @@ def render_html_report(
     rendered_html = template.render(
         subheader=subheader,
         report_data=report_data,
-        esmval_core_commits=commit_info["ESMValCore"]["commits"],
-        esmval_tool_commits=commit_info["ESMValTool"]["commits"],
+        esmval_core_commits=commit_info[0],
+        esmval_tool_commits=commit_info[1],
     )
     return rendered_html
 
