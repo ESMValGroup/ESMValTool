@@ -4,6 +4,12 @@ Functions to fetch commit information from local git repositories.
 
 import subprocess
 from pathlib import Path
+from typing import NamedTuple
+
+
+class CommitInfo(NamedTuple):
+    core: list[dict]
+    tool: list[dict]
 
 
 def get_commits_from_git(repos):
@@ -31,19 +37,21 @@ def get_commits_from_git(repos):
         ``(ESMValCore, ESMValTool)``. Each commit dict has the following fields
         ``date, sha, author, message``.
     """
-    repo_validity = {key: is_git_repo(path) for key, path in repos.items()}
+    repo_validity = {
+        pkg_day: is_git_repo(path) for pkg_day, path in repos.items()
+    }
 
     if not any(repo_validity.values()):
         raise ValueError("No valid git repos passed")
 
     elif not (repo_validity["core_today"] or repo_validity["tool_today"]):
-        raise ValueError("Today's git commits unavailable.")
+        raise ValueError("Today's commit info is unavailable.")
 
     elif not (
         repo_validity["core_yesterday"] and repo_validity["tool_yesterday"]
     ):
-        print("Only today's git info is available.")
-        commit_info = (
+        print("Only today's commit info is available.")
+        commit_info = CommitInfo(
             query_git_log(repos["core_today"]),
             query_git_log(repos["tool_today"]),
         )
@@ -100,7 +108,7 @@ def get_all_commits_for_today_and_yesterday(valid_repos):
     tool_yesterday_sha = query_git_log(valid_repos["tool_yesterday"][0]["sha"])
     tool_commits = query_git_log(valid_repos["tool_today"], tool_yesterday_sha)
 
-    return (core_commits, tool_commits)
+    return CommitInfo(core_commits, tool_commits)
 
 
 def query_git_log(package_path, sha=None):
