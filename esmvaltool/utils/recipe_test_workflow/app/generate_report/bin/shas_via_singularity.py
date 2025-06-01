@@ -2,6 +2,8 @@
 Functions to fetch git SHA information from singularity containers.
 """
 
+from collections import defaultdict
+
 
 def get_shas_from_singularity(dev_version_today, dev_version_yesterday):
     """
@@ -15,45 +17,60 @@ def get_shas_from_singularity(dev_version_today, dev_version_yesterday):
 
     Parameters
     ----------
-    dev_version_today : str|None
+    dev_version_today : str | None
         SCM version string for today's package versions.
-    dev_version_yesterday : str|None
+    dev_version_yesterday : str | None
         SCM version string for yesterday's package versions.
+
+    Returns
+    -------
+    sha: dict[str, dict[str, str]]
+        A dictionary where keys are the package and the values are a dict of days and
+        short SHAs. E.g. ``{"ESMValCore": {'today': abcd123}...}``.
+    """
+    shas = defaultdict(dict)
+    for package, day_shas in extract_scm_shas(
+        dev_version_today, "today"
+    ).items():
+        shas[package].update(day_shas)
+    for package, day_shas in extract_scm_shas(
+        dev_version_yesterday, "yesterday"
+    ).items():
+        shas[package].update(day_shas)
+    validate_shas(shas, dev_version_today, dev_version_yesterday)
+    return shas
+
+
+def validate_shas(shas, dev_version_today, dev_version_yesterday):
+    """
+    Validate extracted SHA combinations.
+
+    These error checks should not be considered exhaustive.
 
     Raises
     ------
     ValueError
-        If SCM versions do not contain consistent SHAs.
-
-    Returns
-    -------
-    tuple[list[dict], list[dict]]
-
-
+        If SCM versions do not contain consistent SHAs. Errors can be propagated up
+        to generate the HTML report without unreliable SHA data.
     """
-    shas = {
-        **extract_scm_shas(dev_version_today, "today"),
-        **extract_scm_shas(dev_version_yesterday, "yesterday"),
-    }
-    if not any(shas.values()):
+    if not shas["ESMValCore"] and not shas["ESMValTool"]:
         raise ValueError(
             f"No SHAs found: dev_version_today={dev_version_today}"
             f"dev_version_yesterday={dev_version_yesterday}"
         )
 
-    elif not (shas["core_today"] or shas["tool_today"]):
+    elif not shas["ESMValCore"].get("today") or not shas["ESMValTool"].get(
+        "today"
+    ):
         raise ValueError(
             f"Today's SHAs not found. dev_version_today={dev_version_today}"
         )
 
-    elif not (shas["core_yesterday"] and shas["tool_yesterday"]):
-        print("Only today's git info is available.")
-        # commit_info = ()  # construct tuple
-    else:
-        # commit_info = ()  # construct tuple
-        pass
-    # TODO: Complete. Should return commit_info once finalise data structure.
-    return shas
+    elif not (
+        shas["ESMValCore"].get("yesterday")
+        and shas["ESMValTool"].get("yesterday")
+    ):
+        print("Only today's SHAs are available.")
 
 
 def extract_scm_shas(dev_versions, day):
@@ -64,9 +81,8 @@ def extract_scm_shas(dev_versions, day):
     ----------
     dev_versions : str | None
         The SCM version string for combined packages, split by a newline.
-
     day: str
-        The day the version represents. E.g `today` or `yesterday`.
+        The day the versions were tested on. E.g ``today`` or ``yesterday``.
 
     Notes
     -----
@@ -76,22 +92,22 @@ def extract_scm_shas(dev_versions, day):
 
     Returns
     -------
-    sha: dict[str, str | None]
-        A dictionary where keys are "<package>_<day>" and the values are the
-        short SHAs, or None if no valid short SHA was found. E.g.
-        ``{"core_today": abcd123, "tool_today": None}``
+    sha: dict[str, dict[str, str]] | dict[str, dict[None]]
+        A dictionary where keys are the package and the values are a dict of days and
+        short SHAs. E.g. ``{"ESMValCore": {'today': abcd123}...}`` or None if no SHAs
+        were found.
     """
     shas = {
-        f"core_{day}": None,
-        f"tool_{day}": None,
+        "ESMValCore": {},
+        "ESMValTool": {},
     }
 
     if isinstance(dev_versions, str):
         for line in dev_versions.strip().splitlines():
             sha = line.split("+g")[1].split(".")[0]
             if line.startswith("ESMValCore:"):
-                shas[f"core_{day}"] = sha
+                shas["ESMValCore"][day] = sha
             elif line.startswith("ESMValTool:"):
-                shas[f"tool_{day}"] = sha
+                shas["ESMValTool"][day] = sha
 
     return shas

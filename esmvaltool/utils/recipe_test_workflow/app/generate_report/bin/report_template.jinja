@@ -33,6 +33,33 @@
         <h1>Recipe Test Workflow - Last Run Status</h1>
         <h2>{{ subheader }}</h2>
 
+        {% if commit_shas %}
+        <table id="recipes">
+        <caption><h3>Commit SHAs</h3></caption>
+            <tr>
+                <th></th>
+                <th>Tested Today</th>
+                {% if shas['ESMValCore'].get('yesterday') and shas['ESMValTool'].get('yesterday') %}
+                    <th>Tested Yesterday</th>
+                {% endif %}
+            </tr>
+            {% for package, days in shas.items() %}
+            <tr>
+                <td>{{ package }}</td>
+                <td>
+                    <a href="https://github.com/ESMValGroup/{{ package }}/commit/{{ days['today'] }}">{{ days['today'] }}</a>
+                </td>
+                {% if days.get('yesterday') %}
+                <td>
+                    <a href="https://github.com/ESMValGroup/{{ package }}/commit/{{ days['yesterday'] }}">{{ days['yesterday'] }}</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+
+
         {% if esmval_core_commits %}
         <table id="recipes">
             <caption><h2>ESMValCore Commits</h2></caption>
@@ -97,20 +124,8 @@
             {% for recipe, tasks in report_data.items() %}
             <tr>
                 <td>{{ recipe }}</td>
-                <td style="{{
-                    tasks["process_task"]["style"] if "process_task" in tasks
-                    else "color: black"
-                    }};">{{
-                    tasks["process_task"]["status"] if "process_task" in tasks
-                    else "-"
-                    }}</td>
-                <td style="{{
-                    tasks["compare_task"]["style"] if "compare_task" in tasks
-                    else "color: black"
-                    }};">{{
-                    tasks["compare_task"]["status"] if "compare_task" in tasks
-                    else "-"
-                }}</td>
+                <td style="{{ tasks.get('process_task', {}).get('style', 'color: black') }}">{{ tasks.get('process_task', {}).get('status', '-') }}</td>
+                <td style="{{ tasks.get('compare_task', {}).get('style', 'color: black') }}">{{ tasks.get('compare_task', {}).get('status', '-') }}</td>
             </tr>
             {% endfor %}
         </table>

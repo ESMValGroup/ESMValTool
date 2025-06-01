@@ -8,6 +8,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 try:
     from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.commits_via_git import (
+        CommitInfo,
         get_commits_from_git,
     )
 except ImportError:
@@ -28,11 +29,16 @@ CYLC_TASK_CYCLE_YESTERDAY = os.environ.get("ROSE_DATACP1D")
 REPORT_PATH = os.environ.get("REPORT_PATH")
 SITE = os.environ.get("SITE")
 
+ESMVAL_VERSIONS_TODAY = None
+ESMVAL_VERSIONS_YESTERDAY = None
+REPOS = None
+
 if SITE == "dkrz":
     ESMVAL_VERSIONS_TODAY = os.environ.get("ESMVAL_VERSIONS_CURRENT")
     ESMVAL_VERSIONS_YESTERDAY = os.environ.get("ESMVAL_VERSIONS_PREVIOUS")
 
-elif SITE == "metoffice":
+
+if SITE == "metoffice":
     REPOS = {
         "core_today": os.environ.get("ESMVALCORE_DIR"),
         "tool_today": os.environ.get("ESMVALTOOL_DIR"),
@@ -43,7 +49,15 @@ elif SITE == "metoffice":
 SQL_QUERY_TASK_STATES = "SELECT name, status FROM task_states"
 
 
-def main(db_file_path=CYLC_DB_PATH, site=SITE):
+def main(
+    db_file_path=CYLC_DB_PATH,
+    site=SITE,
+    report_path=REPORT_PATH,
+    cylc_task_cycle_point=CYLC_TASK_CYCLE_POINT,
+    esmval_versions_today=ESMVAL_VERSIONS_TODAY,
+    esmval_versions_yesterday=ESMVAL_VERSIONS_YESTERDAY,
+    repos=REPOS,
+):
     """
     Main function to generate the HTML report.
 
@@ -51,38 +65,52 @@ def main(db_file_path=CYLC_DB_PATH, site=SITE):
     ----------
     db_file_path : str, default CYLC_DB_FILE_PATH
         The path to the SQLite database file.
+    site : str
+
+    report_path :
+
+    cylc_task_cycle_point :
+
+    esmval_versions_today :
+
+    esmval_versions_yesterday :
+
+    repos :
+
     """
+    commit_info = None
+    sha_info = None
+
     raw_db_data = fetch_report_data(db_file_path)
     processed_db_data = process_db_output(raw_db_data)
-    subheader = create_subheader()
+    subheader = create_subheader(cylc_task_cycle_point)
 
+    # Commits/SHAs will only be included for these sites. The report will run
+    # at other sites without commit/SHA information.
     try:
         if site == "dkrz":
-            # A single commit SHA for each package is expected.
-            commit_info = get_shas_from_singularity(
-                ESMVAL_VERSIONS_TODAY, ESMVAL_VERSIONS_YESTERDAY
+            sha_info = get_shas_from_singularity(
+                esmval_versions_today, esmval_versions_yesterday
             )
         elif site == "metoffice":
-            # At least a single commit for each package is expected. There may
-            # be multiple commits per package, and info for each commit has
-            # multiple fields.
-            commit_info = get_commits_from_git(REPOS)
-        else:
-            # No commit information for either package.
-            commit_info = None
-    # Catch as likely indicate a minor issue e.g. unexpected data content at
-    # some point in the pipeline.
-    except (ValueError, KeyError) as err:
-        "Report generating without commit data. Error while fetching "
-        f"commit data: {err}"
-        commit_info = None
+            commit_info = get_commits_from_git(repos)
+    # Catch the following errors as they are either propagated with specified
+    # errors or otherwise likely to indicate a minor issue e.g. unexpected
+    # data content at some point in the pipeline. The report should
+    # still be output with just the recipe test results.
+    except (ValueError, KeyError, IndexError) as err:
+        print(
+            "Report generating without commit data. Error while fetching commit data: "
+            f"{err}"
+        )
 
     rendered_html = render_html_report(
         subheader=subheader,
         report_data=processed_db_data,
         commit_info=commit_info,
+        commit_shas=sha_info,
     )
-    write_report_to_file(rendered_html)
+    write_report_to_file(rendered_html, report_path)
 
 
 def fetch_report_data(db_file_path):
@@ -195,7 +223,7 @@ def process_db_output(report_data):
     return sorted_processed_db_data
 
 
-def create_subheader(cylc_task_cycle_point=CYLC_TASK_CYCLE_POINT):
+def create_subheader(cylc_task_cycle_point):
     """
     Create the subheader for the HTML report.
 
@@ -210,15 +238,16 @@ def create_subheader(cylc_task_cycle_point=CYLC_TASK_CYCLE_POINT):
         The formatted subheader string.
     """
     parsed_datetime = datetime.strptime(cylc_task_cycle_point, "%Y%m%dT%H%MZ")
-    formated_datetime = parsed_datetime.strftime("%Y-%m-%d %H:%M")
-    subheader = f"Cycle start: {formated_datetime} UTC"
+    formatted_datetime = parsed_datetime.strftime("%Y-%m-%d %H:%M")
+    subheader = f"Cycle start: {formatted_datetime} UTC"
     return subheader
 
 
 def render_html_report(
     report_data,
     subheader,
-    commit_info,
+    commit_info=None,
+    commit_shas=None,
 ):
     """
     Render the HTML report using Jinja2.
@@ -229,13 +258,17 @@ def render_html_report(
         The report data to be rendered in the HTML template.
     subheader : str
         The subheader for the HTML report.
-    package_info : dict
+    commit_info : CommitInfo | None
+
+    commit_shas : dict | None
+
 
     Returns
     -------
     str
         The rendered HTML content.
     """
+    commit_info = commit_info or CommitInfo([], [])
     script_dir = os.path.dirname(os.path.abspath(__file__))
     env = Environment(
         loader=FileSystemLoader(script_dir),
@@ -245,13 +278,14 @@ def render_html_report(
     rendered_html = template.render(
         subheader=subheader,
         report_data=report_data,
-        esmval_core_commits=commit_info[0],
-        esmval_tool_commits=commit_info[1],
+        esmval_core_commits=commit_info.core,
+        esmval_tool_commits=commit_info.tool,
+        commit_shas=commit_shas,
     )
     return rendered_html
 
 
-def write_report_to_file(rendered_html, output_file_path=REPORT_PATH):
+def write_report_to_file(rendered_html, output_file_path):
     """
     Write the report data to an HTML file.
 
