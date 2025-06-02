@@ -15,7 +15,7 @@
 }
 
 .gallery figure img {
-    max-height: 250px;
+    max-height: 220px;
     object-fit: cover;
     overflow: hidden;
 }
@@ -34,4 +34,8 @@
 .gallery figure figcaption a:hover {
     text-decoration: underline;
     color: var(--pst-color-link-hover);
+}
+
+.gallery figure span.caption-number {
+    display: none;
 }
