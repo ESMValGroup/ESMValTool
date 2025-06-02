@@ -72,7 +72,9 @@ preprocessors:
     extract_levels: false
     regrid:
       target_grid: 2.5x2.5
-      scheme: linear_extrapolate
+      scheme:
+        reference: iris.analysis:Linear
+        extrapolation_mode: extrapolate
 
 
 diagnostics:
