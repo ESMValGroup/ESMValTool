@@ -461,7 +461,7 @@ the following files:
 
 - ``environment.yml``
   contains dependencies that cannot be installed from
-  `PyPI <https://pypi.org/>`__/`Julia package registry <https://github.com/JuliaRegistries/General>`__
+  `PyPI <https://pypi.org/>`__
 - ``environment_osx.yml``
   contains development dependencies for MacOSX. Should be the same as ``environment.yml``,
   but currently without multi language support.
