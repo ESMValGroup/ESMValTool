@@ -106,7 +106,7 @@ def main(
         subheader=subheader,
         report_data=processed_db_data,
         commit_info=commit_info,
-        commit_shas=sha_info,
+        sha_info=sha_info,
     )
     write_report_to_file(rendered_html, report_path)
 
@@ -248,12 +248,7 @@ def create_subheader(cylc_task_cycle_point):
     return subheader
 
 
-def render_html_report(
-    report_data,
-    subheader,
-    commit_info=None,
-    commit_shas=None,
-):
+def render_html_report(report_data, subheader, commit_info, sha_info):
     """
     Render the HTML report using Jinja2.
 
@@ -265,7 +260,7 @@ def render_html_report(
         The subheader for the HTML report.
     commit_info : CommitInfo | None
 
-    commit_shas : dict | None
+    sha_info : dict | None
 
 
     Returns
@@ -285,7 +280,7 @@ def render_html_report(
         report_data=report_data,
         esmval_core_commits=commit_info.core,
         esmval_tool_commits=commit_info.tool,
-        commit_shas=commit_shas,
+        sha_info=sha_info,
     )
     return rendered_html
 

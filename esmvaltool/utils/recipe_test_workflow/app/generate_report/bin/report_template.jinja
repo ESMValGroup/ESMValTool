@@ -33,17 +33,17 @@
         <h1>Recipe Test Workflow - Last Run Status</h1>
         <h2>{{ subheader }}</h2>
 
-        {% if commit_shas %}
+        {% if sha_info %}
         <table id="recipes">
         <caption><h3>Commit SHAs</h3></caption>
             <tr>
                 <th></th>
                 <th>Tested Today</th>
-                {% if shas['ESMValCore'].get('yesterday') and shas['ESMValTool'].get('yesterday') %}
+                {% if sha_info['ESMValCore'].get('yesterday') and sha_info['ESMValTool'].get('yesterday') %}
                     <th>Tested Yesterday</th>
                 {% endif %}
             </tr>
-            {% for package, days in shas.items() %}
+            {% for package, days in sha_info.items() %}
             <tr>
                 <td>{{ package }}</td>
                 <td>
@@ -110,9 +110,9 @@
                     </tr>
             {% endfor %}
         </table>
+        {% endif %}
 
         <br>
-        {% endif %}
 
         <table id="recipes">
             <caption><h2>Test Results</h2></caption>
