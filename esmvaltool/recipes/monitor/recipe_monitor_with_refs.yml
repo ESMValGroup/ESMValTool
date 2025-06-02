@@ -17,16 +17,16 @@ documentation:
     - schlund_manuel
 
 
-datasets:
-  # Note: plot_label currently only used by diagnostic plot_multiple_annual_cycles
-  - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'MPI-ESM1-2-HR historical'}
-  - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'Reference (MPI-ESM1-2-LR historical)', reference_for_monitor_diags: true}
-
-
 preprocessors:
 
-  timeseries_regular:
+  timeseries_monthly_mean:
     area_statistics:
+      operator: mean
+
+  timeseries_annual_mean:
+    area_statistics:
+      operator: mean
+    annual_statistics:
       operator: mean
 
   annual_cycle_nh:
@@ -121,24 +121,44 @@ diagnostics:
   plot_multiple_timeseries:
     description: Plot time series including reference datasets.
     variables:
-      tas:
+      tas_monthly_mean:
+        short_name: tas
         mip: Amon
-        preprocessor: timeseries_regular
+        preprocessor: timeseries_monthly_mean
         timerange: '2000/2014'
+        additional_datasets:
+          - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn, alias: MPI-ESM1-2-HR}
+          - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, alias: MPI-ESM1-2-LR}
+      tas_annual_mean:
+        short_name: tas
+        mip: Amon
+        preprocessor: timeseries_annual_mean
+        timerange: '2000/2014'
+        additional_datasets:
+          - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn, alias: MPI-ESM1-2-HR-annual-mean}
+          - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, alias: MPI-ESM1-2-LR-annual-mean}
     scripts:
       plot: &plot_multi_dataset_default
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        group_variables_by: short_name
+        facet_used_for_labels: alias
         plots:
           timeseries:
-            annual_mean_kwargs:
-              linestyle: '--'
             plot_kwargs:
               MPI-ESM1-2-HR:  # = dataset since 'facet_used_for_labels' is 'dataset' by default
                 color: C0
               MPI-ESM1-2-LR:
                 color: black
+              MPI-ESM1-2-HR-annual-mean:
+                color: C0
+                linestyle: '--'
+                label: null
+              MPI-ESM1-2-LR-annual-mean:
+                color: black
+                linestyle: '--'
+                label: null
 
   plot_multiple_annual_cycles:
     description: Plot annual cycles including reference datasets.
@@ -147,6 +167,9 @@ diagnostics:
         mip: Amon
         preprocessor: annual_cycle_nh
         timerange: '2000/2014'
+    additional_datasets:
+      - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'MPI-ESM1-2-HR historical'}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, plot_label: 'Reference (MPI-ESM1-2-LR historical)'}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
@@ -171,12 +194,20 @@ diagnostics:
         mip: Amon
         preprocessor: full_climatology
         timerange: '2000/2014'
+    additional_datasets:
+      - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, reference_for_monitor_diags: true}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
         script: monitor/multi_datasets.py
         plots:
           map:
+            caption: |
+              Map plot of Near-Surface Air Temperature of dataset {dataset}
+              including bias relative to MPI-ESM1-2-LR. The number in the top
+              left corner corresponds to the spatial mean (weighted by grid
+              cell areas).
             common_cbar: true
             fontsize: 10
             plot_kwargs_bias:
@@ -189,6 +220,9 @@ diagnostics:
         mip: Amon
         preprocessor: zonal_mean
         timerange: '2000/2014'
+    additional_datasets:
+      - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, reference_for_monitor_diags: true}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
@@ -208,6 +242,9 @@ diagnostics:
         mip: Amon
         preprocessor: extract_1d_profile
         timerange: '2000/2014'
+    additional_datasets:
+      - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
@@ -227,6 +264,9 @@ diagnostics:
         preprocessor: var_vs_lat
         mip: Amon
         timerange: '20000101/20030101'
+    additional_datasets:
+      - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
@@ -241,6 +281,9 @@ diagnostics:
         preprocessor: global_mean_extract_levels
         mip: Amon
         timerange: '2000/2005'
+    additional_datasets:
+      - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, reference_for_monitor_diags: true}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
@@ -268,6 +311,9 @@ diagnostics:
         mip: Amon
         preprocessor: zonal_mean_2d
         timerange: '2000/2005'
+    additional_datasets:
+      - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn, reference_for_monitor_diags: true}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
@@ -278,6 +324,7 @@ diagnostics:
             fontsize: 10
             show_x_minor_ticks: false
             time_format: '%Y'
+            transpose_axes: true
 
   plot_diurnal_cycle:
     description: Example plot diurnal cycle including reference dataset.
@@ -287,6 +334,9 @@ diagnostics:
         short_name: clt
         mip: 3hr
         timerange: '20060101/20060201'
+    additional_datasets:
+      - {project: CMIP6, dataset: MPI-ESM1-2-HR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
     scripts:
       allplots:
         script: monitor/multi_datasets.py

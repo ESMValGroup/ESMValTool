@@ -35,6 +35,8 @@ following figures from `Eyring et al. (2021)`_ can currently be reproduced:
 
     * Figure 3.19: Speed-Up Of Zonal Mean Wind
 
+    * Figure 3.24: Biases In Zonal Mean And Equatorial Sea Surface Temperature
+
     * Figure 3.42: Relative Model Performance
 
     * Figure 3.43: Correlation Pattern
@@ -60,6 +62,7 @@ Recipes are stored in esmvaltool/recipes/ipccwg1ar6ch3/
     * recipe_ipccwg1ar6ch3_atmosphere.yml
     * recipe_ipccwg1ar6ch3_fig_3_9.yml
     * recipe_ipccwg1ar6ch3_fig_3_19.yml
+    * recipe_ipccwg1ar6ch3_fig_3_24.yml
     * recipe_ipccwg1ar6ch3_fig_3_42_a.yml
     * recipe_ipccwg1ar6ch3_fig_3_42_b.yml
     * recipe_ipccwg1ar6ch3_fig_3_43.yml
@@ -96,6 +99,9 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     Fig. 3.19:
 
     * ipcc_ar6/zonal_westerly_winds.ncl
+
+    Fig. 3.24:
+    * ocean/diagnostic_biases.py
 
     Fig. 3.42:
 
@@ -305,6 +311,37 @@ User settings in recipe
    * model_spread: if True, model spread is shaded
    * plot_median: if True, median is plotted
    * project_order: give order of projects
+
+#. Script ocean/diagnostic_biases.py
+
+   *Required settings for variables*
+
+   * reference_dataset: name of reference observation
+
+   *Required settings for script*
+
+   * data_statistics: a dictionary with the statistics to be calculated
+     for each variable group. Should contain keywords 'best_guess' and
+     'borders'. 'borders' should be a list with two statistics. The statistics
+     values are the same as 'operator' as in the preprocessors.
+
+   *Optional settings for script*
+
+   * bias: boolean flag, indicating, if bias should be calculated.
+     If none provided, absolute values will be used.
+   * mask: a dictionary with the mask information. The accepted
+     keywords are 'flag' (required), 'type' (required) and 'group' (optional).
+     'flag' is a boolean flag if the mask should be used.
+     'type' accepts two values: 'simple' and 'resolved'.
+     If 'simple' option is used, the data will be masked to the existing
+     mask from the reference dataset. If 'resolved' is used, the values
+     along the dimension of the data will be masked using the data from
+     the variable group 'group'.
+   * mpl_style: name of the matplotlib style file. If none provided, the
+     default style will be used.
+   * caption: figure caption. If none, an empty string will be used.
+   * color_style: a name of the color_style to be used. If none provided,
+     the default style file will be used.
 
 
 Variables
@@ -524,6 +561,22 @@ Example plots
    negative (easterly) long-term mean zonal wind. Only one ensemble member per
    model is included. Figure is modified from Eyring et al. (2013), their
    Figure 12.
+
+.. figure::  /recipes/figures/ipccwg1ar6ch3/sst_bias.png
+   :align:   center
+
+   Figure 3.24: Biases in zonal mean and equatorial sea surface
+   temperature (SST) in CMIP5 and CMIP6 models. CMIP6 (red), CMIP5 (blue)
+   and HighResMIP (green) multi-model mean (a) zonally averaged SST bias;
+   (b) equatorial SST bias; and (c) equatorial SST compared to observed
+   mean SST (black line) for 1979–1999. The inter-model 5th and 95th
+   percentiles are depicted by the respective shaded range.
+   Model climatologies are derived from the 1979–1999 mean of the historical
+   simulations, using one simulation per model. The Hadley Centre Sea Ice and
+   Sea Surface Temperature version 1 (HadISST) observational climatology for
+   1979–1999 is used as the reference for the error calculation in (a) and (b);
+   and for observations in (c). (The panels were obtained individually and
+   combined together.)
 
 .. figure::  /recipes/figures/ipccwg1ar6ch3/fig_3_42_a.png
    :align:   center

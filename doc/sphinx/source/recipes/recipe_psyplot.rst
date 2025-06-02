@@ -1,7 +1,13 @@
 .. _recipes_psyplot_diag:
 
-Psyplot Diagnostics
-===================
+Legacy recipe: Psyplot Diagnostics
+==================================
+
+.. note::
+
+   This recipe has been retired and moved to the folder "archive". This recipe is only included
+   for documentation purposes and not maintained any more. The last known ESMValTool version
+   supporting this recipe is version 2.12.0.
 
 Overview
 --------
@@ -18,9 +24,9 @@ Recipes are stored in recipes/
 
    * recipe_psyplot.yml
 
-Diagnostics are stored in diag_scripts/
+Diagnostics are stored in archive/legacy_diag_scripts
 
-   * :ref:`psyplot_diag.py <api.esmvaltool.diag_scripts.psyplot_diag>`
+   * psyplot_diag.py
 
 
 Variables

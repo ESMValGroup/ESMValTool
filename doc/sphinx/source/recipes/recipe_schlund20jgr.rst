@@ -1,7 +1,14 @@
 .. _recipes_schlund20jgr:
 
-Constraining uncertainty in projected gross primary production (GPP) with machine learning
-==========================================================================================
+Legacy recipe: Constraining uncertainty in projected gross primary production (GPP) with machine learning
+=========================================================================================================
+
+.. note::
+
+   This recipe has been retired and moved to the folder "archive". This recipe is only included
+   for documentation purposes and not maintained any more. The last known ESMValTool version
+   supporting this recipe is version 2.12.0.
+
 
 .. warning::
 
@@ -25,29 +32,24 @@ constrain uncertainties in projected gross primary production (GPP) in the RCP
 .. _`Schlund et al., JGR: Biogeosciences (2020)`: https://doi.org/10.1029/2019JG005619
 
 
-Available recipes and diagnostics
----------------------------------
+Recipes and diagnostics
+-----------------------
 
-Recipes are stored in recipes/
+Recipes are stored in archive/legacy_recipes/
 
-   * schlund20jgr/recipe_schlund20jgr_gpp_abs_rcp85.yml
-   * schlund20jgr/recipe_schlund20jgr_gpp_change_1pct.yml
-   * schlund20jgr/recipe_schlund20jgr_gpp_change_rcp85.yml
+* schlund20jgr/recipe_schlund20jgr_gpp_abs_rcp85.yml
+* schlund20jgr/recipe_schlund20jgr_gpp_change_1pct.yml
+* schlund20jgr/recipe_schlund20jgr_gpp_change_rcp85.yml
 
-Diagnostics are stored in diag_scripts/
+Diagnostics are stored in archive/legacy_diag_scripts/
 
-   * :ref:`mlr/evaluate_residuals.py<api.esmvaltool.diag_scripts.mlr.evaluate_residuals>`
-   * :ref:`mlr/main.py<api.esmvaltool.diag_scripts.mlr.main>`
-   * :ref:`mlr/mmm.py<api.esmvaltool.diag_scripts.mlr.mmm>`
-   * :ref:`mlr/plot.py<api.esmvaltool.diag_scripts.mlr.plot>`
-   * :ref:`mlr/postprocess.py<api.esmvaltool.diag_scripts.mlr.postprocess>`
-   * :ref:`mlr/preprocess.py<api.esmvaltool.diag_scripts.mlr.preprocess>`
-   * :ref:`mlr/rescale_with_emergent_constraint.py<api.esmvaltool.diag_scripts.mlr.rescale_with_emergent_constraint>`
-
-General information (including an example and more details) on machine learning
-regression (MLR) diagnostics is given
-:ref:`here<api.esmvaltool.diag_scripts.mlr.models>`. The API documentation is
-available :ref:`here<api.esmvaltool.diag_scripts.mlr>`.
+* mlr/evaluate_residuals.py
+* mlr/main.py
+* mlr/mmm.py
+* mlr/plot.py
+* mlr/postprocess.py
+* mlr/preprocess.py
+* mlr/rescale_with_emergent_constraint.py
 
 
 Variables

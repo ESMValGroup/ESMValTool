@@ -20,6 +20,9 @@ calc_tcre_period: list of int, optional (default: [90, 110])
     the input data are annual means, the values here correspond to the years
     (measured from simulation start) over which the temperature change is
     averaged (by default from years 90 to 110).
+caption: str, optional
+    Figure caption used for provenance tracking. By default, uses "Surface air
+    temperature anomaly versus cumulative CO2 emissions for multiple datasets."
 exp_control: str, optional (default: 'esm-piControl')
     Name of the control experiment.
 exp_target: str, optional (default: 'esm-flat10')
@@ -149,6 +152,11 @@ def _get_default_cfg(cfg: dict) -> dict:
     cfg = deepcopy(cfg)
 
     cfg.setdefault("calc_tcre_period", [90, 110])
+    cfg.setdefault(
+        "caption",
+        "Surface air temperature anomaly versus cumulative CO2 emissions for "
+        "multiple datasets.",
+    )
     cfg.setdefault("exp_control", "esm-piControl")
     cfg.setdefault("exp_target", "esm-flat10")
     cfg.setdefault("figure_kwargs", {"constrained_layout": True})
@@ -285,7 +293,11 @@ def _get_plot_kwargs(all_plot_kwargs: dict, group: str) -> dict:
 
 def _load_and_preprocess_data(cfg: dict) -> list[dict]:
     """Load and preprocess data."""
-    input_data = list(cfg["input_data"].values())
+    # this is needed due
+    # to an unknown bug created by importing distributed (>2025.2)
+    # and requests-cache; we are unsure what the bug really is;
+    # see https://github.com/ESMValGroup/ESMValTool/pull/4044
+    input_data = deepcopy(list(cfg["input_data"].values()))
 
     for dataset in input_data:
         filename = dataset["filename"]
@@ -374,6 +386,7 @@ def _process_pyplot_kwargs(**pyplot_kwargs) -> None:
 
 def main(cfg: dict) -> None:
     """Run diagnostic."""
+    cfg = _get_default_cfg(cfg)
     sns.set_theme(**cfg["seaborn_settings"])
 
     # Load and group data
@@ -381,19 +394,17 @@ def main(cfg: dict) -> None:
     grouped_anomaly_data = _get_grouped_anomaly_data(cfg, input_data)
 
     # Plot data
-    plot_path = _plot(cfg, grouped_anomaly_data)
+    with mpl.rc_context(cfg["matplotlib_rc_params"]):
+        plot_path = _plot(cfg, grouped_anomaly_data)
     provenance_record = {
         "authors": ["schlund_manuel"],
         "ancestors": [d["filename"] for d in input_data],
-        "caption": (
-            "Surface air temperature anomaly versus cumulative CO2 emissions "
-            "for multiple datasets."
-        ),
         "plot_types": ["line"],
         "references": ["sanderson24gmd"],
         "realms": ["atmos"],
         "themes": ["carbon", "bgphys"],
     }
+    provenance_record["caption"] = cfg["caption"]
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(plot_path, provenance_record)
 
@@ -416,6 +427,4 @@ def main(cfg: dict) -> None:
 
 if __name__ == "__main__":
     with run_diagnostic() as config:
-        config = _get_default_cfg(config)
-        with mpl.rc_context(config["matplotlib_rc_params"]):
-            main(config)
+        main(config)

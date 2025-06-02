@@ -190,7 +190,7 @@ diagnostics:
       plot:
         <<: *plot_multi_dataset_default
         plots:
-          profile:
+          zonal_mean_profile:
             common_cbar: true
 
   plot_cli_profiles:
@@ -206,7 +206,7 @@ diagnostics:
       plot:
         <<: *plot_multi_dataset_default
         plots:
-          profile:
+          zonal_mean_profile:
             common_cbar: true
 
   plot_cl_profiles:
@@ -222,5 +222,5 @@ diagnostics:
       plot:
         <<: *plot_multi_dataset_default
         plots:
-          profile:
+          zonal_mean_profile:
             common_cbar: true

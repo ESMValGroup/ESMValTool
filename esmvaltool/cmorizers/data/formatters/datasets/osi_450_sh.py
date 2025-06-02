@@ -7,7 +7,7 @@ Source
    http://osisaf.met.no/p/ice/
 
 Last access
-   20190502
+   20250314
 
 Download and processing instructions
     Download the desired years from the following ftp:

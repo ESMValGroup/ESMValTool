@@ -131,7 +131,6 @@ diagnostics:
         facet_used_for_labels: alias
         plots:
           annual_cycle:
-            annual_mean_kwargs: False
             plot_kwargs:
               'MIROC6':
                 color: red

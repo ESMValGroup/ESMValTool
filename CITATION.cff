@@ -270,6 +270,11 @@ authors:
     family-names: Lucarini
     given-names: Valerio
   -
+    affiliation: "ECCC, Canada"
+    family-names: Malinina
+    given-names: Elizaveta
+    orcid: "https://orcid.org/0000-0002-4102-2877"
+  -
     affiliation: "UCLouvain, Belgium"
     family-names: Massonnet
     given-names: François
@@ -421,6 +426,11 @@ authors:
     family-names: Munday
     given-names: Gregory
     orcid: "https://orcid.org/0000-0003-4750-9923"
+  -
+    affiliation: "ACCESS-NRI, Australia"
+    family-names: Chun
+    given-names: Felicity
+    orcid: "https://orcid.org/0009-0007-0845-0953"
 
 cff-version: 1.2.0
 date-released: 2025-03-05

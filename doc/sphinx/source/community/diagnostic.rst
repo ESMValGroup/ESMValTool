@@ -24,20 +24,23 @@ The easiest way to do this is probably to copy the example recipe and diagnostic
 script and adjust those to your needs.
 
 If you have no preferred programming language yet, Python 3 is highly recommended, because it is most well supported.
-However, NCL, R, and Julia scripts are also supported.
+However, NCL, R, (and Julia) scripts are also supported.
+
+.. note::
+
+    ESMValTool stopped supporting Julia as a main dependency, so if you'd like to
+    write and test a Julia diagnostic, you will have to install Julia from source.
 
 Good example recipes for the different languages are:
 
 -  python: `esmvaltool/recipes/examples/recipe_python.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_python.yml>`_
 -  R: `esmvaltool/recipes/examples/recipe_r.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_r.yml>`_
--  julia: `esmvaltool/recipes/examples/recipe_julia.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_julia.yml>`_
 -  ncl: `esmvaltool/recipes/examples/recipe_ncl.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_ncl.yml>`_
 
 Good example diagnostics are:
 
 -  python: `esmvaltool/diag_scripts/examples/diagnostic.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.py>`_
 -  R: `esmvaltool/diag_scripts/examples/diagnostic.R <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.R>`_
--  julia: `esmvaltool/diag_scripts/examples/diagnostic.jl <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.jl>`_
 -  ncl: `esmvaltool/diag_scripts/examples/diagnostic.ncl <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.ncl>`_
 
 For an explanation of the recipe format, you might want to read about the
@@ -371,10 +374,6 @@ For example:
   )
 
   provenance_records[output_file] = provenance_record
-
-Have a look at the example Julia diagnostic in
-`esmvaltool/diag_scripts/examples/diagnostic.jl <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.jl>`_
-for a complete example.
 
 Recording provenance in an R diagnostic script
 ----------------------------------------------

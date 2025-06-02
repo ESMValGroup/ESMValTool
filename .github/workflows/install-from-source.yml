@@ -20,7 +20,7 @@ jobs:
     if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.11", "3.12", "3.13"]
       fail-fast: false
     name: Linux Python ${{ matrix.python-version }}
     steps:
@@ -61,7 +61,7 @@ jobs:
 #    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
 #    strategy:
 #      matrix:
-#        python-version: ["3.10", "3.11"]
+#        python-version: ["3.11"]
 #      fail-fast: false
 #    name: OSX Python ${{ matrix.python-version }}
 #    steps:

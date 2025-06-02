@@ -164,14 +164,14 @@ dimtime <- ncdim_def(name = "Time", units = "years",
                      vals = period, longname = "Time")
 dimmodel <- ncdim_def(name = "Models", units = "names",
                       vals = seq(1, length(model_names), 1),
-                      longname = paste(model_names, scenario))
+                      longname = paste(model_names, collapse=", "))
 defdata <- ncvar_def(name = "data", units = units,
                      dim = list(time = dimtime, model = dimmodel),
                      longname = paste("Index for region", region,
                                       "Variable", var0))
 filencdf <- paste0(work_dir, "/", var0, "_", timestamp, "_", months, "_",
                    paste(model_names, collapse = ""),
-                   starting, ending, "_", ".nc")
+                   starting, ending, ".nc")
 file <- nc_create(filencdf, list(defdata))
 ncvar_put(file, defdata, data_frame)
 nc_close(file)
@@ -186,6 +186,7 @@ xprov <- list(ancestors = fullpath_filenames,
               realms = list("atmos"),
               themes = list("phys"))
 provenance[[filencdf]] <- xprov
+provenance[[filepng]] <- xprov
 
 # Write provenance to file
 write_yaml(provenance, provenance_file)

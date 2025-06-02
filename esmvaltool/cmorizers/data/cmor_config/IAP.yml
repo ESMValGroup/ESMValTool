@@ -1,0 +1,23 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: IAP
+  version: 'v4.2'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: 'http://www.ocean.iap.ac.cn/'
+  reference: 'iap'
+  comment: ''
+
+# Variables to cmorize (here use only filename prefix)
+variables:
+  thetao:
+    mip: Omon
+    name: temperature
+    raw_var: temp
+    srf_var: tos
+
+custom:
+  create_areacello: false
+  reference_year: 2000

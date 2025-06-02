@@ -57,6 +57,8 @@ groupby_facet: str, optional (default: 'alias')
 legend_title: str, optional (default: None)
     Title for legend. If ``None``, Seaborn will determine the legend title (if
     possible).
+plot_filename: str, optional
+    Filename for the final plot. By default, uses 'seaborn_(`seaborn_func`)'.
 plot_object_methods: dict, optional
     Execute methods of the object returned by the plotting function
     (`seaborn_func`). This object will either be a
@@ -94,7 +96,6 @@ suptitle: str or None, optional (default: None)
     Suptitle for the plot (see :func:`matplotlib.pyplot.suptitle`). If
     ``None``, do not create a suptitle. If the plot shows only a single panel,
     use `plot_object_methods` with ``{'set': {'title': 'TITLE'}}`` instead.
-
 """
 
 from __future__ import annotations
@@ -148,6 +149,7 @@ def _create_plot(
         plot_func_str,
         _get_str_from_kwargs(plot_kwargs),
     )
+
     plot_obj = plot_func(data=data_frame, **plot_kwargs)
 
     # Adjust plot appearance
@@ -174,9 +176,31 @@ def _create_plot(
         plt.suptitle(cfg["suptitle"], y=1.05)
     if cfg["legend_title"] is not None:
         _set_legend_title(plot_obj, cfg["legend_title"])
+    if plot_func_str == "jointplot" and plot_kwargs["cbar"]:
+        # Reposition colorbar so it is to the right of marginals plot
+        plt.subplots_adjust(left=0.1, right=0.8, top=0.9, bottom=0.1)
+        # get the current positions of the joint ax and the ax for
+        # the marginal x
+        pos_joint_ax = plot_obj.ax_joint.get_position()
+        pos_marg_x_ax = plot_obj.ax_marg_x.get_position()
+        # reposition the joint ax so it has the same width as the
+        # marginal x ax
+        plot_obj.ax_joint.set_position(
+            [
+                pos_joint_ax.x0,
+                pos_joint_ax.y0,
+                pos_marg_x_ax.width,
+                pos_joint_ax.height,
+            ]
+        )
+        # reposition the colorbar using new x positions and y
+        # positions of the joint ax
+        plot_obj.fig.axes[-1].set_position(
+            [0.83, pos_joint_ax.y0, 0.07, pos_joint_ax.height]
+        )
 
     # Save plot
-    plot_path = get_plot_filename(f"seaborn_{plot_func_str}", cfg)
+    plot_path = get_plot_filename(cfg["plot_filename"], cfg)
     plt.savefig(plot_path, **cfg["savefig_kwargs"])
     logger.info("Wrote %s", plot_path)
     plt.close()
@@ -228,7 +252,6 @@ def _get_dataframe(cfg: dict) -> pd.DataFrame:
     Note
     ----
     Data is stored in long form, see also :func:`iris.pandas.as_data_frame`.
-
     """
     logger.info(
         "Grouping datasets by '%s' to create main data frame (data frames "
@@ -274,9 +297,8 @@ def _get_df_for_group(
 ) -> pd.DataFrame:
     """Extract :class:`pandas.DataFrame` for a single group of datasets.
 
-    This merges (i.e., combines along axis 1 = columns) all data frames of
-    individual datasets of a group.
-
+    This merges (i.e., combines along axis 1 = columns) all data frames
+    of individual datasets of a group.
     """
     df_group = pd.DataFrame()
     facets_as_columns: dict[str, str] = {}
@@ -375,6 +397,7 @@ def _get_default_cfg(cfg: dict) -> dict:
     cfg.setdefault("groupby_facet", "alias")
     cfg.setdefault("legend_title", None)
     cfg.setdefault("plot_object_methods", {})
+    cfg.setdefault("plot_filename", f"seaborn_{cfg.get('seaborn_func', '')}")
     cfg.setdefault("reset_index", False)
     cfg.setdefault(
         "savefig_kwargs",
@@ -446,6 +469,15 @@ def _set_legend_title(plot_obj, legend_title: str) -> None:
         legend = plot_obj.get_legend()
     elif hasattr(plot_obj, "legend"):  # FacetGrid, PairGrid
         legend = plot_obj.legend
+    elif isinstance(plot_obj, sns.axisgrid.JointGrid):  # JointGrid
+        # Manually create a legend if needed in JointGrid
+        handles, labels = plot_obj.ax_joint.get_legend_handles_labels()
+        if handles and labels:
+            legend = plot_obj.ax_joint.legend(
+                handles=handles, labels=labels, title=legend_title
+            )
+        else:
+            legend = None
     else:
         raise ValueError(
             f"Cannot set legend title, `{type(plot_obj).__name__}` does not "

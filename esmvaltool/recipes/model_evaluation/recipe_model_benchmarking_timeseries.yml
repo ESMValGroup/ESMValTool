@@ -143,7 +143,6 @@ diagnostics:
         group_variables_by: variable_group
         plots:
           timeseries:
-            annual_mean_kwargs: False
             plot_kwargs:
               MIROC6:
                 color: red
@@ -197,8 +196,6 @@ diagnostics:
         group_variables_by: variable_group
         plots:
           benchmarking_timeseries:
-            plot_kwargs:
-            annual_mean_kwargs: False
             plot_kwargs:
               MIROC6:
                 color: red

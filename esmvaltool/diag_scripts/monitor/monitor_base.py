@@ -3,12 +3,14 @@
 import logging
 import os
 import re
+from typing import Optional
 
 import cartopy
 import matplotlib.pyplot as plt
 import yaml
 from iris.analysis import MEAN
 from mapgenerator.plotting.timeseries import PlotSeries
+from matplotlib.axes import Axes
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger, names
 
@@ -349,7 +351,7 @@ class MonitorBase:
         return file_name
 
     @staticmethod
-    def _set_rasterized(axes=None):
+    def _set_rasterized(axes: Optional[Axes | list[Axes]] = None) -> None:
         """Rasterize all artists and collection of axes if desired."""
         if axes is None:
             axes = plt.gca()

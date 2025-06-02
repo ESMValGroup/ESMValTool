@@ -28,7 +28,6 @@ dependencies:
   - fire
   - fsspec
   - gdal >=3.9.0
-  - importlib_metadata <8  # https://github.com/ESMValGroup/ESMValTool/issues/3699 only for Python 3.10/11 and esmpy<8.6
   - ipython <9.0  # github.com/ESMValGroup/ESMValCore/issues/2680 ; remove ipython when solved
   - iris >=3.11
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
@@ -48,13 +47,9 @@ dependencies:
   - pip !=21.3
   - progressbar2
   - prov
-  - psyplot >=1.5.0
-  - psy-maps >=1.5.0
-  - psy-reg >=1.5.0
-  - psy-simple >=1.5.0
   - pyproj >=2.1
   - pys2index >=0.1.5  # only from conda-forge; https://github.com/ESMValGroup/ESMValTool/pull/3792
-  - python >=3.10,<3.13
+  - python >=3.11,<3.14
   - python-cdo
   - python-dateutil
   - pyyaml

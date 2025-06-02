@@ -30,7 +30,7 @@ def download_dataset(
     if start_date is None:
         start_date = datetime(1979, 1, 1)
     if end_date is None:
-        end_date = datetime(2015, 12, 1)
+        end_date = datetime(2020, 12, 1)
     downloader = FTPDownloader(
         config=config,
         server="osisaf.met.no",
@@ -42,7 +42,7 @@ def download_dataset(
 
     loop_date = start_date
 
-    downloader.set_cwd("/reprocessed/ice/conc/v2p0")
+    downloader.set_cwd("/reprocessed/ice/conc/v3p0")
 
     while loop_date <= end_date:
         year = loop_date.year

@@ -1,0 +1,67 @@
+###############################################################################
+# PYTHON STYLE FILE
+# sst_bias.yml
+###############################################################################
+# This file defines plot attributes for certain dataset groups.
+#
+# Template:
+#
+# DATASET:
+#   avgstd: 0
+#   color: '#ffffff'
+#   dash: --
+#   facecolor: none
+#   mark: x
+#   thick: 1
+#
+# DATASET:   group name (same as given in the main recipe)
+# avgstd:    0 = takes part in the calculation of mean and stddev
+#            1 = does not take part in the calculation of mean and stddev
+#            (usually 0 for models, 1 for observations/reanalysis)
+# color:     hex RGB or RGBA string (e.g. #0f0fa1), see
+#            http://www.ncl.ucar.edu/Applications/Scripts/rgb.txt
+#            https://www.ncl.ucar.edu/Document/glossary.shtml#RGB
+#            https://www.ncl.ucar.edu/Document/glossary.shtml#RGBA
+# dash:      matplotlib dash pattern (linestyle)
+# facecolor: Color of the filling (none = no filling)
+# mark:      marker string for markers (used in matplotlib), see
+#            https://matplotlib.org/api/markers_api.html
+#            https://www.ncl.ucar.edu/Document/Graphics/Images/markers.png
+# thick:     line thickness
+###############################################################################
+
+cmip5:
+  avgstd: 0
+  color: '#2652cd'
+  dash: '-'
+  facecolor: '#2652cd'
+  mark: ^
+  thick: 1
+cmip6:
+  avgstd: 0
+  color: '#cd2424'
+  dash: '-'
+  facecolor: '#cd2424'
+  mark: s
+  thick: 1
+highresmip:
+  avgstd: 1
+  color: '#1f9583'
+  dash: '-'
+  facecolor: '#1f9583'
+  mark: v
+  thick: 1
+HadISST:
+  avgstd: 1
+  color: '#000000'
+  dash: '-'
+  facecolor: '#000000'
+  mark: o
+  thick: 1
+default:
+  avgstd: 0
+  color: '#765d54'
+  dash: '-'
+  facecolor: '#765d54'
+  mark: o
+  thick: 1

@@ -28,20 +28,12 @@ jobs:
         with:
           auto-update-conda: true
           activate-environment: esmvaltool-fromlock
-          python-version: "3.12"
+          python-version: "3.13"
           miniforge-version: "latest"
           use-mamba: true
       - name: Show conda config
         run: |
           conda update -n base -c conda-forge conda
-          conda --version
-          # setup-miniconda@v3 installs an old conda and mamba
-          # forcing a modern mamba updates both mamba and conda
-          # unpin mamba after conda-lock=3 release
-          # see github.com/ESMValGroup/ESMValTool/issues/3782
-          conda install -c conda-forge "mamba>=1.4.8,<2"
-          conda config --show-sources
-          conda config --show
           conda --version
           mamba --version
       - name: Python info
