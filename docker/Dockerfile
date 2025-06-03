@@ -10,7 +10,6 @@ RUN mamba update -y conda mamba pip && mamba env create --name esmvaltool --file
 SHELL ["conda", "run", "--name", "esmvaltool", "/bin/bash", "-c"]
 
 COPY . .
-RUN curl -fsSL https://install.julialang.org | sh -s -- --yes
-RUN pip install --no-cache . && esmvaltool install Julia
+RUN pip install --no-cache .
 
 ENTRYPOINT ["conda", "run", "--name", "esmvaltool", "esmvaltool"]
