@@ -37,7 +37,7 @@ preprocessors:
       end_latitude: 50
     regrid:
       target_grid: 1x1  # in degrees, can also be the name of one of the datasets to use the grid from that dataset
-      scheme: area_weighted  # can be linear, nearest, area_weighted, unstructured_nearest
+      scheme: area_weighted  # can be linear, nearest, area_weighted
 diagnostics:
   rainfarm:
     description: RainFARM stochastic downscaling of precipitation fields
