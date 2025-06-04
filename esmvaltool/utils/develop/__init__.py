@@ -23,6 +23,6 @@ class DevelopCommand:
         verbose : bool
             Display more information on differences
         """
-        same = compare.compare(Path(reference_dir), Path(current_dir), verbose)
+        same = compare(Path(reference_dir), Path(current_dir), verbose)
 
         sys.exit(int(not same))
