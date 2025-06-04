@@ -251,7 +251,7 @@ ignore-words-list = "emac,hist,oce,pres,vas,runn"
 [tool.pylint.main]
 jobs = 1  # Running more than one job in parallel crashes prospector.
 ignore-paths = [
-    "doc/conf.py",  # Sphinx configuration file
+    "doc/sphinx/source/conf.py",  # Sphinx configuration file
 ]
 [tool.pylint.basic]
 good-names = [
@@ -271,4 +271,4 @@ disable = [
 
 [tool.pydocstyle]
 convention = "numpy"
-ignore = "E203","E501","W503"
+ignore = "E203,E501,W503"
