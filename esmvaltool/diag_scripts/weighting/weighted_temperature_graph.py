@@ -114,7 +114,7 @@ def visualize_and_save_temperatures(
 
     # Fix duplicate labels
     handles, labels = plt.gca().get_legend_handles_labels()
-    by_label = dict(zip(labels, handles))  # dict removes dupes
+    by_label = dict(zip(labels, handles, strict=False))  # dict removes dupes
     axes.legend(by_label.values(), by_label.keys())
 
     start_year = cfg["settings"]["start_year"]

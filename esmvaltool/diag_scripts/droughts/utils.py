@@ -692,7 +692,7 @@ def select_meta_from_combi(meta: list, combi: dict, groups: dict) -> tuple:
         A tuple containing the selected metadata and the configuration
         dictionary.
     """
-    this_cfg = dict(zip(groups.keys(), combi))
+    this_cfg = dict(zip(groups.keys(), combi, strict=False))
     filter_cfg = clean_meta(this_cfg)  # remove non meta keys
     this_meta = select_metadata(meta, **filter_cfg)[0]
     return this_meta, this_cfg

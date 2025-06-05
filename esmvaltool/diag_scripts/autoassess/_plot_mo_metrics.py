@@ -652,7 +652,7 @@ def plot_nac(
 
     # Plot metric data
     n_tests = []
-    for test, marker in zip(tests, MARKERS):
+    for test, marker in zip(tests, MARKERS, strict=False):
         # Normalise test by ref
         n_test = normalise(test, ref, strict=True)
 
