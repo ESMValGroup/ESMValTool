@@ -128,6 +128,8 @@ AND highlighting the selected steering parameters and resampling periods:
 .. figure::  /recipes/figures/kcs/global_matching.png
    :align:   center
 
+   CMIP spread in global temperature change, highlighting selected steering parameters and resampling periods
+
 The diagnostic ``local_resampling`` produces a number of output files:
 
 * ``season_means_<scenario>.nc``: intermediate results, containing the season means for each segment of the original target model ensemble.
@@ -158,3 +160,5 @@ The diagnostic ``local_resampling`` produces a number of output files:
 .. _fig_kcs_local_validation:
 .. figure::  /recipes/figures/kcs/local_validation_2085.png
    :align:   center
+
+   Validation figure, reproducing figures 5 and 6 from Lenderink et al. (2014)

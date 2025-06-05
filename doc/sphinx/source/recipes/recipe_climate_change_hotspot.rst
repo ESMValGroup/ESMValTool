@@ -190,11 +190,17 @@ Example plots
 .. figure:: /recipes/figures/cos22esd/tas_45.png
    :align:  center
 
+   Mediterranean region temperature change differences against the mean global temperature
+   change. The changes for the periods 2041–2060 (first and third
+   row) and 2081–2100 (second and fourth row) are evaluated against 1986–2005 mean. The differences are shown for the CMIP5 (left)
+   and CMIP6 (right) DJF, JJA and annual mean projections (columns) under the high emission scenario RCP8.5 and SSP5-8.5 respectively. N
+   indicates the number of models included in the ensemble mean.
+
 .. figure:: /recipes/figures/cos22esd/pr_45.png
    :align:  center
 
-   Mediterranean region temperature (upper rows) and precipitation (lower rows) change differences against the mean global temperature
-   change and the mean 30–45º  N latitudinal belt precipitation change respectively. The changes for the periods 2041–2060 (first and third
+   Mediterranean region precipitation change differences against the mean 30–45º  N latitudinal belt precipitation change respectively.
+   The changes for the periods 2041–2060 (first and third
    row) and 2081–2100 (second and fourth row) are evaluated against 1986–2005 mean. The differences are shown for the CMIP5 (left)
    and CMIP6 (right) DJF, JJA and annual mean projections (columns) under the high emission scenario RCP8.5 and SSP5-8.5 respectively. N
    indicates the number of models included in the ensemble mean.
