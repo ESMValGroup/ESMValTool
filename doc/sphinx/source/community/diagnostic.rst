@@ -110,7 +110,7 @@ good on the documentation webpage, but not so high that the files become large.
 
 By default, the first example image will be used for the automatically
 generated gallery. To select a specific image for the gallery, you can use the
-syntax
+following syntax for an arbitrary amount of images:
 
 .. code-block:: rst
 
