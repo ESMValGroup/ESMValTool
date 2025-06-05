@@ -7,8 +7,9 @@ from dateutil import relativedelta
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -39,11 +40,11 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
-    downloader.ftp_name = 'ocean_colour'
+    downloader.ftp_name = "ocean_colour"
     downloader.connect()
 
-    downloader.set_cwd('v5.0-release/geographic/netcdf/chlor_a/monthly/v5.0/')
+    downloader.set_cwd("v5.0-release/geographic/netcdf/chlor_a/monthly/v5.0/")
     while loop_date <= end_date:
         year = loop_date.year
-        downloader.download_year(f'{year}')
+        downloader.download_year(f"{year}")
         loop_date += relativedelta.relativedelta(years=1)

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Calculate Transient Climate Response to Cumulative CO2 Emissions (TCRE).
 
 Description
@@ -21,6 +20,9 @@ calc_tcre_period: list of int, optional (default: [90, 110])
     the input data are annual means, the values here correspond to the years
     (measured from simulation start) over which the temperature change is
     averaged (by default from years 90 to 110).
+caption: str, optional
+    Figure caption used for provenance tracking. By default, uses "Surface air
+    temperature anomaly versus cumulative CO2 emissions for multiple datasets."
 exp_control: str, optional (default: 'esm-piControl')
     Name of the control experiment.
 exp_target: str, optional (default: 'esm-flat10')
@@ -69,6 +71,7 @@ var_temperature: str, optional (default: 'tas')
     the name of the variable given in the recipe.
 
 """
+
 import logging
 from collections.abc import Sequence
 from copy import deepcopy
@@ -119,7 +122,7 @@ def _calculate_tcre(
         temperature = cube_t[idx_start:idx_end].data.mean()
         tcre_cube = Cube(
             np.array(temperature / emissions, dtype=cube_t.dtype),
-            units=cube_t.units / cube_e.units
+            units=cube_t.units / cube_e.units,
         )
         tcre_cube.convert_units(target_units)
         tcre[group] = tcre_cube.data
@@ -148,21 +151,29 @@ def _get_default_cfg(cfg: dict) -> dict:
     """Get default options for configuration dictionary."""
     cfg = deepcopy(cfg)
 
-    cfg.setdefault('calc_tcre_period', [90, 110])
-    cfg.setdefault('exp_control', 'esm-piControl')
-    cfg.setdefault('exp_target', 'esm-flat10')
-    cfg.setdefault('figure_kwargs', {'constrained_layout': True})
-    cfg.setdefault('gridline_kwargs', {})
-    cfg.setdefault('groupby_facet', 'dataset')
-    cfg.setdefault('legend_kwargs', {})
-    cfg.setdefault('matplotlib_rc_params', {})
-    cfg.setdefault('plot_kwargs', {})
-    cfg.setdefault('pyplot_kwargs', {})
-    cfg.setdefault('savefig_kwargs', {
-        'bbox_inches': 'tight',
-        'dpi': 300,
-        'orientation': 'landscape',
-    })
+    cfg.setdefault("calc_tcre_period", [90, 110])
+    cfg.setdefault(
+        "caption",
+        "Surface air temperature anomaly versus cumulative CO2 emissions for "
+        "multiple datasets.",
+    )
+    cfg.setdefault("exp_control", "esm-piControl")
+    cfg.setdefault("exp_target", "esm-flat10")
+    cfg.setdefault("figure_kwargs", {"constrained_layout": True})
+    cfg.setdefault("gridline_kwargs", {})
+    cfg.setdefault("groupby_facet", "dataset")
+    cfg.setdefault("legend_kwargs", {})
+    cfg.setdefault("matplotlib_rc_params", {})
+    cfg.setdefault("plot_kwargs", {})
+    cfg.setdefault("pyplot_kwargs", {})
+    cfg.setdefault(
+        "savefig_kwargs",
+        {
+            "bbox_inches": "tight",
+            "dpi": 300,
+            "orientation": "landscape",
+        },
+    )
     cfg.setdefault("seaborn_settings", {"style": "ticks"})
     cfg.setdefault("var_emissions", "cumulative_fco2antt")
     cfg.setdefault("var_temperature", "tas")
@@ -273,7 +284,7 @@ def _get_plot_kwargs(all_plot_kwargs: dict, group: str) -> dict:
 
     # First get default kwargs, then overwrite them with group-specific
     # ones
-    plot_kwargs = all_plot_kwargs.get('default', {})
+    plot_kwargs = all_plot_kwargs.get("default", {})
     plot_kwargs.update(all_plot_kwargs.get(group, {}))
     plot_kwargs.setdefault("label", group)
 
@@ -282,20 +293,24 @@ def _get_plot_kwargs(all_plot_kwargs: dict, group: str) -> dict:
 
 def _load_and_preprocess_data(cfg: dict) -> list[dict]:
     """Load and preprocess data."""
-    input_data = list(cfg['input_data'].values())
+    # this is needed due
+    # to an unknown bug created by importing distributed (>2025.2)
+    # and requests-cache; we are unsure what the bug really is;
+    # see https://github.com/ESMValGroup/ESMValTool/pull/4044
+    input_data = deepcopy(list(cfg["input_data"].values()))
 
     for dataset in input_data:
-        filename = dataset['filename']
+        filename = dataset["filename"]
         logger.info("Loading %s", filename)
         cubes = iris.load(filename)
         if len(cubes) == 1:
             cube = cubes[0]
         else:
-            var_name = dataset['short_name']
+            var_name = dataset["short_name"]
             try:
-                cube = cubes.extract_cube(iris.NameConstraint(
-                    var_name=var_name
-                ))
+                cube = cubes.extract_cube(
+                    iris.NameConstraint(var_name=var_name)
+                )
             except ConstraintMismatchError as exc:
                 var_names = [c.var_name for c in cubes]
                 raise ValueError(
@@ -322,7 +337,7 @@ def _load_and_preprocess_data(cfg: dict) -> list[dict]:
 
         ih.unify_time_coord(cube)
 
-        dataset['cube'] = cube
+        dataset["cube"] = cube
 
     return input_data
 
@@ -352,7 +367,7 @@ def _plot(
 
     # Save plot
     plot_path = get_plot_filename("tcre", cfg)
-    fig.savefig(plot_path, **cfg['savefig_kwargs'])
+    fig.savefig(plot_path, **cfg["savefig_kwargs"])
     logger.info("Wrote %s", plot_path)
 
     return plot_path
@@ -360,7 +375,7 @@ def _plot(
 
 def _process_pyplot_kwargs(**pyplot_kwargs) -> None:
     """Process functions for :mod:`matplotlib.pyplot`."""
-    for (func, arg) in pyplot_kwargs.items():
+    for func, arg in pyplot_kwargs.items():
         if arg is None:
             getattr(plt, func)()
         elif isinstance(arg, dict):
@@ -371,26 +386,25 @@ def _process_pyplot_kwargs(**pyplot_kwargs) -> None:
 
 def main(cfg: dict) -> None:
     """Run diagnostic."""
-    sns.set_theme(**cfg['seaborn_settings'])
+    cfg = _get_default_cfg(cfg)
+    sns.set_theme(**cfg["seaborn_settings"])
 
     # Load and group data
     input_data = _load_and_preprocess_data(cfg)
     grouped_anomaly_data = _get_grouped_anomaly_data(cfg, input_data)
 
     # Plot data
-    plot_path = _plot(cfg, grouped_anomaly_data)
+    with mpl.rc_context(cfg["matplotlib_rc_params"]):
+        plot_path = _plot(cfg, grouped_anomaly_data)
     provenance_record = {
         "authors": ["schlund_manuel"],
         "ancestors": [d["filename"] for d in input_data],
-        "caption": (
-            "Surface air temperature anomaly versus cumulative CO2 emissions "
-            "for multiple datasets."
-        ),
         "plot_types": ["line"],
         "references": ["sanderson24gmd"],
         "realms": ["atmos"],
         "themes": ["carbon", "bgphys"],
     }
+    provenance_record["caption"] = cfg["caption"]
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(plot_path, provenance_record)
 
@@ -411,8 +425,6 @@ def main(cfg: dict) -> None:
         provenance_logger.log(netcdf_path, provenance_record)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with run_diagnostic() as config:
-        config = _get_default_cfg(config)
-        with mpl.rc_context(config['matplotlib_rc_params']):
-            main(config)
+        main(config)

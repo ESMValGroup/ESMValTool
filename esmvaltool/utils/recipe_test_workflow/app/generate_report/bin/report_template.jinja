@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Recipe Test Workflow</title>
+        <link rel="icon" href="https://esmvaltool.org/favicon.ico">
+    </head>
+    <style>
+        #recipes {
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        #recipes td, #recipes th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        #recipes tr:nth-child(even){background-color: #f2f2f2;}
+
+        #recipes tr:hover {background-color: #ddd;}
+
+        #recipes th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: hsl(200, 50%, 50%);
+            color: white;
+        }
+    </style>
+    <body>
+        <table id="recipes">
+            <h1>Recipe Test Workflow - Last Run Status</h1>
+            <h2>{{ subheader }}</h2>
+            <tr>
+                <th>Recipe</th>
+                <th>Recipe Run</th>
+                <th>Compare KGOs</th>
+            </tr>
+            {% for recipe, tasks in report_data.items() %}
+            <tr>
+                <td>{{ recipe }}</td>
+                <td style="{{
+                    tasks["process_task"]["style"] if "process_task" in tasks
+                    else "color: black"
+                    }};">{{
+                    tasks["process_task"]["status"] if "process_task" in tasks
+                    else "-"
+                    }}</td>
+                <td style="{{
+                    tasks["compare_task"]["style"] if "compare_task" in tasks
+                    else "color: black"
+                    }};">{{
+                    tasks["compare_task"]["status"] if "compare_task" in tasks
+                    else "-"
+                }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+    <footer>
+        <div style="text-align: center;">
+            <a
+                href="https://www.dkrz.de/en/about-en/contact/impressum"
+                target="_blank"
+            >Imprint</a> and
+            <a
+                href="https://www.dkrz.de/en/about-en/contact/en-datenschutzhinweise"
+                target="_blank"
+            >Privacy Policy</a>
+        </div>
+    </footer>
+</html>
