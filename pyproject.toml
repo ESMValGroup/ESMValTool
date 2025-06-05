@@ -194,6 +194,7 @@ line-length = 79
 
 [tool.ruff.lint]
 select = ["ALL"]
+skip = "archive"
 ignore = [
     # Ignore until someone has time to fix this:
     "ANN",      # Adding type hints
