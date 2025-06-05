@@ -143,6 +143,7 @@ jobs:
             mkdir /logs
             pip install .[test] > /logs/install.txt 2>&1
             curl -fsSL https://install.julialang.org | sh -s -- --yes
+            export PATH=/root/.juliaup/bin:$PATH
             julia --version
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
       - run:
