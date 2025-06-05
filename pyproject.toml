@@ -161,7 +161,6 @@ addopts = [
     "--cov-report=xml:test-reports/coverage.xml",
     "--cov-report=html:test-reports/coverage_html",
     "--html=test-reports/report.html",
-    "--numprocesses auto",
 ]
 log_cli_level = "INFO"
 env = {MPLBACKEND = "Agg"}
@@ -189,65 +188,66 @@ exclude_lines = [
 [tool.codespell]
 ignore-words-list = "emac,hist,oce,pres,vas,runn"
 
-# brought from ESMValCore; commented out for now;
-# we will implement at least a subest of these in the future
-# [tool.ruff]
-# line-length = 79
-# [tool.ruff.lint]
-# select = ["ALL"]
-# ignore = [
-#     # Ignore until someone has time to fix this:
-#     "ANN",      # Adding type hints
-#     "ARG",      # Unused argument
-#     "DTZ",      # add tzinfo to datetimes
-#     "ERA001",   # Found commented-out code
-#     "FBT",      # avoid boolean positional arguments
-#     "N818",     # Exception name should be named with an Error suffix
-#     "PERF",     # Use comprehensions
-#     "PGH003",   # Use specific rule codes when ignoring type issues
-#     "PLC0206",  # Extracting value from dictionary without calling `.items()`
-#     "PLR2004",  # Don't use magic values
-#     "PLW2901",  # Don't overwrite a loop variable
-#     "PT009",    # Use a regular `assert` instead of unittest-style `assertListEqual`
-#     "PT011",    # pytest.raises without match argument
-#     "PT027",    # Use `pytest.raises` instead of unittest-style `assertRaises`
-#     "PTH",      # Use pathlib everywhere
-#     "RUF022",   # `__all__` definitions that are not ordered according to an "isort-style" sort.
-#     "SIM102",   # Use a single `if` statement instead of nested `if` statements
-#     "SIM117",   # Use a single `with` statement with multiple contexts instead of nested `with` statements
-#     "T201",     # `print` statements.
-#     "TD003",    # Missing issue link on the line following this TODO
-#     "TRY400",   # Uses of `logging.error` instead of `logging.exception` when logging an exception
-#     # Really ignore:
-#     "D105",     # Disable missing docstring in magic method as these are well defined.
-#     "E501",     # Disable line-too-long as this is taken care of by the formatter.
-#     "FIX002",   # TODOs can be useful when something cannot be done immediately.
-#     "S603",     # Uncheckable
-#     "TD002",    # Missing author in TODO: can be seen from git history
-#     "TRY003",   # Fixing this would require many exceptions
-# ]
-# [tool.ruff.lint.per-file-ignores]
-# "tests/**.py" = [
-#     "S101",     # Use of assert in tests code is required.
-#     "T20",      # Printing things can help with debugging tests.
-#     "SLF001",   # Testing private members is ok
-#     "PLR2004",  # Magic values in tests are fine.
-#     # Docstrings in tests are only needed if the code is not self-explanatory.
-#     "D100",     # Missing docstring in public module
-#     "D101",     # Missing docstring in public class
-#     "D102",     # Missing docstring in public method
-#     "D103",     # Missing docstring in public function
-#     "D104",     # Missing docstring in public package
-# ]
-# "doc/gensidebar.py" = [
-#     "INP001",   # File is part of an implicit namespace package
-# ]
-# [tool.ruff.lint.isort]
-# known-first-party = ["esmvaltool"]
-# [tool.ruff.lint.pydocstyle]
-# convention = "numpy"
-# [tool.ruff.lint.pylint]
-# max-args = 7
+# brought from ESMValCore; add more rules as they are needed;
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    # Ignore until someone has time to fix this:
+    "ANN",      # Adding type hints
+    "ARG",      # Unused argument
+    "DTZ",      # add tzinfo to datetimes
+    "ERA001",   # Found commented-out code
+    "FBT",      # avoid boolean positional arguments
+    "N818",     # Exception name should be named with an Error suffix
+    "PERF",     # Use comprehensions
+    "PGH003",   # Use specific rule codes when ignoring type issues
+    "PLC0206",  # Extracting value from dictionary without calling `.items()`
+    "PLR2004",  # Don't use magic values
+    "PLW2901",  # Don't overwrite a loop variable
+    "PT009",    # Use a regular `assert` instead of unittest-style `assertListEqual`
+    "PT011",    # pytest.raises without match argument
+    "PT027",    # Use `pytest.raises` instead of unittest-style `assertRaises`
+    "PTH",      # Use pathlib everywhere
+    "RUF022",   # `__all__` definitions that are not ordered according to an "isort-style" sort.
+    "SIM102",   # Use a single `if` statement instead of nested `if` statements
+    "SIM117",   # Use a single `with` statement with multiple contexts instead of nested `with` statements
+    "T201",     # `print` statements.
+    "TD003",    # Missing issue link on the line following this TODO
+    "TRY400",   # Uses of `logging.error` instead of `logging.exception` when logging an exception
+    # Really ignore:
+    "D105",     # Disable missing docstring in magic method as these are well defined.
+    "E501",     # Disable line-too-long as this is taken care of by the formatter.
+    "FIX002",   # TODOs can be useful when something cannot be done immediately.
+    "S603",     # Uncheckable
+    "TD002",    # Missing author in TODO: can be seen from git history
+    "TRY003",   # Fixing this would require many exceptions
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**.py" = [
+    "S101",     # Use of assert in tests code is required.
+    "T20",      # Printing things can help with debugging tests.
+    "SLF001",   # Testing private members is ok
+    "PLR2004",  # Magic values in tests are fine.
+    # Docstrings in tests are only needed if the code is not self-explanatory.
+    "D100",     # Missing docstring in public module
+    "D101",     # Missing docstring in public class
+    "D102",     # Missing docstring in public method
+    "D103",     # Missing docstring in public function
+    "D104",     # Missing docstring in public package
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["esmvaltool"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.pylint]
+max-args = 7
 
 # Configure linters that are run by Prospector
 # TODO: remove once we have enabled all ruff rules for the tools provided by
@@ -258,14 +258,17 @@ jobs = 1  # Running more than one job in parallel crashes prospector.
 ignore-paths = [
     "doc/sphinx/source/conf.py",  # Sphinx configuration file
 ]
+
 [tool.pylint.basic]
 good-names = [
     "_",            # Used by convention for unused variables
     "i", "j", "k",  # Used by convention for indices
     "logger",       # Our preferred name for the logger
 ]
+
 [tool.pylint.format]
 max-line-length = 79
+
 [tool.pylint."messages control"]
 disable = [
     "import-error",      # Needed because Codacy does not install dependencies
