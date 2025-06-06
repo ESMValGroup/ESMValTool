@@ -96,7 +96,7 @@ def calculate_anomaly(
     Parameters
     ----------
     data :
-        a numpy array for whihc anomalies to be calculated
+        a numpy array for which anomalies to be calculated
     input_data :
         an ESMValTool metadata dictionary with all the available data
     file_meta :
@@ -112,7 +112,9 @@ def calculate_anomaly(
     Raises
     ------
     NotImplementedError
-        if the anomly type is not 'anomaly' or 'ratio'
+        if the anomly type is not 'anomaly','standardized_anomaly' or 'ratio'
+    ValueError
+        if the standard deviation cannot be calculated from the anomaly file
     """
 
     anomaly_type = "anomaly" if anomaly_type is None else anomaly_type
@@ -123,21 +125,34 @@ def calculate_anomaly(
         ensemble=file_meta["ensemble"],
         variable_group="anomaly",
     )[0]["filename"]
-    ano_data = xr.open_dataset(ano_file)[file_meta["short_name"]].data
+    ano_xr_da = xr.open_dataset(ano_file)[file_meta["short_name"]]
+    if "time" in ano_xr_da.dims:
+        base_mean = ano_xr_da.mean(dim="time").data
+        base_std = ano_xr_da.std(dim="time").data
+    else:
+        base_mean = ano_xr_da.data
+        base_std = None
     if anomaly_type == "anomaly":
-        anomaly = data - ano_data
+        anomaly = data - base_mean
+    elif anomaly_type == "standardized_anomaly":
+        if base_std:
+            anomaly = (data - base_mean) / base_std
+        else:
+            raise ValueError(
+                "Standard deviation for the base period"
+                " could not be calculated from the anomaly file."
+            )
     elif anomaly_type == "ratio":
-        anomaly = data / ano_data
+        anomaly = data / base_mean
     else:
         raise NotImplementedError(
             f"The anomaly type {anomaly_type} isn't "
-            f"impleneted. Possible entries: 'anomaly' "
-            "and 'ratio'."
+            f"impleneted. Possible entries: 'anomaly', "
+            "'standardized_anomaly' and 'ratio'."
         )
     logger.info(
-        f"The anomaly of {anomaly_type} for "
-        + file_meta["dataset"]
-        + " has been calculated"
+        f"The anomaly of {anomaly_type} for {file_meta['dataset']} "
+        "has been calculated"
     )
 
     return anomaly
@@ -211,16 +226,9 @@ def bootstrap_gev(
     # number of iterations for bootstrap
     pool_iter_n = np.max([reals_dtsts.max() * 100, 1000])
 
-    # the number of the datasets to be included in the pool
-    # in case the dataset number is less than 3, using 3 as
-    # the minimum ensemble number of to draw conclusions on
-    # 3 most likely to be used in the case of only one model
-    n_dataset = np.max([len(unique_dtsts), 3])
+    n_all_reals, n_years = data.shape
 
-    n_years = data.shape[1]
-    n_all_reals = data.shape[0]
-
-    pool_size = int(np.around(n_dataset * n_years / yblock))
+    pool_size = int(np.around(n_all_reals * n_years / yblock))
 
     # defining the seed for the random sequence
     rng = np.random.default_rng(seed)
@@ -232,7 +240,7 @@ def bootstrap_gev(
         sample_datasets = list()
         mod_idxs = rng.integers(0, high=n_all_reals, size=pool_size)
         for mod_idx in mod_idxs:
-            y_idx = rng.integers(0, high=n_years - yblock)
+            y_idx = rng.integers(0, high=n_years - yblock + 1)
             sample_data.append(data[mod_idx, y_idx : y_idx + yblock])
             sample_datasets.append(datasets[mod_idx])
         sample_data = np.asarray(sample_data)

@@ -180,10 +180,11 @@ def calculate_anomaly(
     Raises
     ------
     ValueError
-        if the base period file for the data doesn't exist or
-        if the short names don't match
+        if the base period file for the data doesn't exist,
+        the short names don't match or if the standard deviation
+        cannot be calculated from the base period data
     NotImplementedError
-        if the anomly type is not 'anomaly' or 'ratio'
+        if the anomaly type is not 'anomaly', 'standardized_anomaly' or 'ratio'
     """
     base_period = anomaly_dic.get("period")
     base_year_start = base_period[0]
@@ -216,14 +217,26 @@ def calculate_anomaly(
             base_data = xr.open_dataset(base_path)[base_short_name]
 
     if "time" in base_data.dims:
-        base_data = base_data.mean(dim="time")
+        base_mean = base_data.mean(dim="time")
+        base_std = base_data.std(dim="time")
+    else:
+        base_mean = base_data
+        base_std = None
 
     ano_type = anomaly_dic.get("type")
 
     if ano_type == "anomaly":
-        anomaly_data = data - base_data
+        anomaly_data = data - base_mean
     elif ano_type == "ratio":
-        anomaly_data = data / base_data
+        anomaly_data = data / base_mean
+    elif ano_type == "standardized_anomaly":
+        if base_std:
+            anomaly_data = (data - base_mean) / base_std
+        else:
+            raise ValueError(
+                "Standard deviation for the base period"
+                " could not be calculated from the anomaly file."
+            )
     else:
         raise NotImplementedError(
             f"The anomaly type {ano_type} isn't "
