@@ -22,6 +22,7 @@ REQUIREMENTS = {
     # Use with pip install . to install from source
     "install": [
         "aiohttp",
+        "arviz",
         "cartopy",
         "cdo",
         "cdsapi",
