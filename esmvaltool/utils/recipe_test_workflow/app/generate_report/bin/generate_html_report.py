@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import sqlite3
+import traceback
 from datetime import datetime
 from pathlib import Path
 
@@ -12,7 +13,7 @@ try:
         get_commits_from_git,
     )
 except ImportError:
-    from commits_via_git import get_commits_from_git
+    from commits_via_git import CommitInfo, get_commits_from_git
 
 try:
     from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.shas_via_singularity import (
@@ -96,11 +97,12 @@ def main(
     # errors or otherwise likely to indicate a minor issue e.g. unexpected
     # data content at some point in the pipeline. The report should
     # still be output with just the recipe test results.
-    except (ValueError, KeyError, IndexError) as err:
+    except (ValueError, KeyError, IndexError):
         print(
-            "Report generating without commit data. Error while fetching commit data: "
-            f"{err}"
+            "Report generating without commit data. Error while fetching "
+            "commit data. See std.err log for details."
         )
+        traceback.print_exc()
 
     rendered_html = render_html_report(
         subheader=subheader,
