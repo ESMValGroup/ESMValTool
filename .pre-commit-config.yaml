@@ -3,7 +3,6 @@
 ---
 exclude: |
   (?x)
-  ^archive|
   ^doc/sphinx/source/conf.py|
   ^esmvaltool/diag_scripts/extreme_events/climdex.pcic.ncdf/|
   ^esmvaltool/diag_scripts/cvdp/|
@@ -20,17 +19,17 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
-  # - repo: https://github.com/astral-sh/ruff-pre-commit
-  #   rev: "v0.9.3"
-  #   hooks:
-  #     - id: ruff
-  #       args:
-  #         - "--fix"
-  #         # Do not use the configuration file but configure here so we can
-  #         # enable more rules that are not mandatory in the configuration file.
-  #         - "--select=B,E,F,I,ISC001,UP,W"  # TODO: select D
-  #         - "--ignore=E501"
-  #     - id: ruff-format
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: "v0.9.3"
+    hooks:
+      - id: ruff
+        args:
+          - "--fix"
+          # Do not use the configuration file but configure here so we can
+          # enable more rules that are not mandatory in the configuration file.
+          - "--select=B,E,F,I,ISC001,UP,W"  # TODO: select D
+          - "--ignore=E501"
+      - id: ruff-format
   # - repo: https://github.com/adrienverge/yamllint
   #   rev: 'v1.35.1'
   #   hooks:
