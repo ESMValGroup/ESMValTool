@@ -89,7 +89,7 @@ dependencies = [
 description = "A community tool for pre-processing data from Earth system models in CMIP and running analysis scripts"
 license = {text = "Apache License, Version 2.0"}
 name = "ESMValTool"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 
 [project.optional-dependencies]
 # Execute `pip install .[test]` once and then use `pytest` to run tests
