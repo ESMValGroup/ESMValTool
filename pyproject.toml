@@ -189,13 +189,19 @@ exclude_lines = [
 ignore-words-list = "emac,hist,oce,pres,vas,runn"
 
 [tool.ruff]
+fix = true
 line-length = 79
+show-fixes = true
 
 [tool.ruff.lint]
 select = ["ALL"]
 # syntax from github.com/astral-sh/ruff/issues/10878
 exclude = ["archive/*"]
 ignore = [
+    # TODO: when replacing `prospector` with `ruff`, ignore rules that are
+    # overly technical or conflict with other rules.
+    "E501",     # Disable line-too-long as this is taken care of by the formatter.
+    "D105",     # Disable Missing docstring in magic method as these are well defined.
     # from ESMValTool: Ignore until someone has time to fix this:
     "B011",     # Do not `assert False` (`python -O` removes these calls), raise `AssertionError()`
     "UP038",    # Use `X | Y` in `isinstance` call instead of `(X, Y)`
@@ -232,6 +238,7 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**.py" = [
+    "B011",     # `assert False` is valid test code.
     "S101",     # Use of assert in tests code is required.
     "T20",      # Printing things can help with debugging tests.
     "SLF001",   # Testing private members is ok
@@ -242,6 +249,15 @@ ignore = [
     "D102",     # Missing docstring in public method
     "D103",     # Missing docstring in public function
     "D104",     # Missing docstring in public package
+]
+"test_*.py" = [
+    "B011",  # `assert False` is valid test code.
+    # Docstrings in tests are only needed if the code is not self-explanatory.
+    "D100",  # Missing docstring in public module
+    "D101",  # Missing docstring in public class
+    "D102",  # Missing docstring in public method
+    "D103",  # Missing docstring in public function
+    "D104",  # Missing docstring in public package
 ]
 
 [tool.ruff.lint.isort]
@@ -279,4 +295,3 @@ disable = [
 
 [tool.pydocstyle]
 convention = "numpy"
-ignore = "E203,E501,W503"
