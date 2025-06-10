@@ -12,14 +12,11 @@ try:
         CommitInfo,
         get_commits_from_git,
     )
-except ImportError:
-    from commits_via_git import CommitInfo, get_commits_from_git
-
-try:
     from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.shas_via_singularity import (
         get_shas_from_singularity,
     )
 except ImportError:
+    from commits_via_git import CommitInfo, get_commits_from_git
     from shas_via_singularity import get_shas_from_singularity
 
 
