@@ -120,8 +120,8 @@ develop = [
     "yamllint",
 ]
 
-[project.scripts]
-esmvaltool = "esmvalcore._main:run"
+#[project.scripts]
+#esmvaltool = "esmvalcore._main:run"
 
 [project.entry-points."console_scripts"]
 nclcodestyle = "esmvaltool.utils.nclcodestyle.nclcodestyle:_main"
