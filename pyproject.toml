@@ -218,4 +218,6 @@ disable = [
 
 [tool.pydocstyle]
 convention = "numpy"
+
+[tool.pycodestyle]
 ignore = "E203,E501,W503"
