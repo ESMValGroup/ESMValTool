@@ -1372,3 +1372,10 @@ datasets:
         silicate/netcdf/all/1.00/woa18_all_i00_01.nc
       (To get WOA13, replace filenames prefix woa18 with woa13 and source with
       https://www.ncei.noaa.gov/data/oceans/woa/WOA13/DATAv2)
+
+  Yang2020:
+    tier: 2
+    source: |
+      https://doi.org/10.26008/1912/bco-dmo.810032.1
+    last_access: 2025-06-10
+    info: Use automatic download feature to get the data

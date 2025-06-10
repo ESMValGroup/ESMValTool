@@ -3,6 +3,7 @@
 import logging
 import os
 import subprocess
+from pathlib import Path
 
 from .downloader import BaseDownloader
 
@@ -41,7 +42,7 @@ class WGetDownloader(BaseDownloader):
         logger.debug(command)
         subprocess.check_output(command)
 
-    def download_file(self, server_path, wget_options):
+    def download_file(self, server_path, wget_options, output_filename=None):
         """Download file.
 
         Parameters
@@ -50,19 +51,29 @@ class WGetDownloader(BaseDownloader):
             Path to remote file
         wget_options: list(str)
             Extra options for wget
+        output_filename: str, optional
+            Name of the downloaded file. If not given, use the one given by
+            ``server_path``.
+
         """
+        output_options = []
+        if output_filename is None and not self.overwrite:
+            output_options.append(f"--directory-prefix={self.local_folder}")
+        else:
+            output_options.append("-O")
+            if output_filename is None:
+                output_filename = os.path.basename(server_path)
+            output_dir = Path(self.local_folder)
+            output_dir.mkdir(parents=True, exist_ok=True)
+            output_options.append(str(output_dir / output_filename))
+
         command = (
             ["wget"]
             + wget_options
             + self.overwrite_options
-            + [
-                f"--directory-prefix={self.local_folder}",
-                "--no-directories",
-                server_path,
-            ]
+            + output_options
+            + ["--no-directories", server_path]
         )
-        if self.overwrite:
-            command.append(f"-O {os.path.basename(server_path)}")
         logger.debug(command)
         subprocess.check_output(command)
 
@@ -84,9 +95,7 @@ class WGetDownloader(BaseDownloader):
     def overwrite_options(self):
         """Get overwrite options as configured in downloader."""
         if not self.overwrite:
-            return [
-                "--no-clobber",
-            ]
+            return ["--no-clobber"]
         return []
 
 
