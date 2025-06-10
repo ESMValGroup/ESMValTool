@@ -110,6 +110,7 @@ doc = [
     "pydata_sphinx_theme",
 ]
 develop = [
+    "esmvaltool[test,doc]",
     "codespell",
     "docformatter",
     "imagehash",
@@ -118,9 +119,6 @@ develop = [
     "vprof",
     "yamllint",
 ]
-
-[project.scripts]
-esmvaltool = "esmvalcore._main:run"
 
 [project.entry-points."console_scripts"]
 nclcodestyle = "esmvaltool.utils.nclcodestyle.nclcodestyle:_main"
@@ -169,6 +167,7 @@ log_level = "WARNING"
 minversion = "6"
 markers = [
     "installation: Test requires installation of dependencies",
+    "diagnostic_image_output: test produces images that will be compared with imagehash",
 ]
 testpaths = ["tests"]
 xfail_strict = true
@@ -189,7 +188,6 @@ exclude_lines = [
 [tool.codespell]
 ignore-words-list = "emac,hist,oce,pres,vas,runn"
 
-# brought from ESMValCore; add more rules as they are needed;
 [tool.ruff]
 line-length = 79
 
@@ -254,10 +252,6 @@ convention = "numpy"
 
 [tool.ruff.lint.pylint]
 max-args = 7
-
-# Configure linters that are run by Prospector
-# TODO: remove once we have enabled all ruff rules for the tools provided by
-# Prospector, see https://github.com/ESMValGroup/ESMValTool/issues/2528.
 
 [tool.pylint.main]
 jobs = 1  # Running more than one job in parallel crashes prospector.
