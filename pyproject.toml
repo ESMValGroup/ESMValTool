@@ -110,6 +110,7 @@ doc = [
     "pydata_sphinx_theme",
 ]
 develop = [
+    "esmvaltool[test,doc]",
     "codespell",
     "docformatter",
     "imagehash",
