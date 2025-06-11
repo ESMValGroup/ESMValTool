@@ -52,20 +52,7 @@ def _fix_climatological_time(cube):
 
 
 def _fix_var_metadata(var_info, cmor_info, cube):
-    """Fix variable metadata.
-
-    Note
-    ----
-    The original units of 'dissic' are mumol/kg. To convert to the CMOR units
-    mol/m3, we assume a constant sea water density of 1032 kg/m3, which is
-    approximately the sea water density for T=4°C, salinity=35PSU, and p=100bar
-    according to the UNESCO formula (UNESCO, 1981, Tenth report of the joint
-    panel on oceanographic tables and standards, UNESCO Technical Papers in
-    Marine Science, see
-    https://www.wkcgroup.com/tools-room/seawater-density-calculator/ and
-    https://link.springer.com/content/pdf/bbm:978-3-319-18908-6/1.pdf).
-
-    """
+    """Fix variable metadata."""
     if "raw_units" in var_info:
         cube.units = var_info["raw_units"]
     if (
