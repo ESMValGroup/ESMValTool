@@ -1,13 +1,23 @@
-"""
-Functions to fetch commit information from local git repositories.
-"""
+"Functions to fetch commit information from local git repositories."
 
 import subprocess
+from dataclasses import dataclass
 from pathlib import Path
-from typing import NamedTuple
 
 
-class CommitInfo(NamedTuple):
+@dataclass
+class CommitInfo:
+    """
+    A dataclass to hold commit information for ESMValCore and ESMValTool.
+
+    Attributes
+    ----------
+    core : list[dict]
+        A list of dictionaries containing commit information for ESMValCore.
+    tool : list[dict]
+        A list of dictionaries containing commit information for ESMValTool.
+    """
+
     core: list[dict]
     tool: list[dict]
 
@@ -19,36 +29,36 @@ def get_commits_from_git(repos):
     Parameters
     ----------
     repos : dict[str, str | None]
-        A dictionary where keys are in the form ``repo_day`` and values are
-        the path to the repo, or None.  E.g. ``{"core_today": "path/to/repo",
-        "core_yesterday": None}``
+        A dictionary where keys are in the form ``<package>_<day>`` and values
+        are the path to the repo, or None. E.g.
+        ``{"core_today": "path/to/repo", "core_yesterday": None}``
 
     Raises
     ------
     ValueError
-        If repos does not contain enough valid git directories to fetch
-        useable commit data.
+        If repos does not contain any valid git directories, or does not
+        contain valid git directories for today.
 
     Returns
     -------
-    tuple[list[dict], list[dict]]
-        A tuple of two lists of dictionaries. Each dictionary include
-        information on a commit or a range of commits for
-        ``(ESMValCore, ESMValTool)``. Each commit dict has the following fields
-        ``date, sha, author, message``.
+    CommitInfo
+        A CommitInfo dataclass containing two lists of dictionaries, one for
+        each of ESMValCore and ESMValTool. Each commit dict has the following
+        fields ``date, sha, author, message``.
     """
     repo_validity = {
         pkg_day: is_git_repo(path) for pkg_day, path in repos.items()
     }
 
     if not any(repo_validity.values()):
-        raise ValueError("No valid git repos passed")
+        raise ValueError("No valid git repos found.")
 
-    elif not (repo_validity["core_today"] or repo_validity["tool_today"]):
+    if not (repo_validity["core_today"] or repo_validity["tool_today"]):
         raise ValueError("Today's commit info is unavailable.")
 
-    elif not (
-        repo_validity["core_yesterday"] and repo_validity["tool_yesterday"]
+    if not (
+        repo_validity.get("core_yesterday")
+        or repo_validity.get("tool_yesterday")
     ):
         print("Only today's commit info is available.")
         commit_info = CommitInfo(
@@ -70,7 +80,7 @@ def is_git_repo(path):
 
     Parameters
     ----------
-    path : str|None
+    path : str | None
         Path to a git repo, or None.
 
     Returns
@@ -86,9 +96,10 @@ def is_git_repo(path):
 
 def get_all_commits_for_today_and_yesterday(valid_repos):
     """
-    Fetch information on a range of commits.
+    Fetch ``git log`` information for a range of commits.
 
-    Fetches a range of commits
+    Expects a valid git repo for both ESMValCore and ESMValTool for today
+    and yesterday.
 
     Parameters
     ----------
@@ -97,18 +108,20 @@ def get_all_commits_for_today_and_yesterday(valid_repos):
 
     Returns
     -------
-    tuple[list[dict], list[dict]]
-        A tuple with two lists of dictionaries that include a range of commit
-        information for ``(ESMValCore, ESMValTool)``.
-
+    CommitInfo
+        A CommitInfo dataclass containing two lists of dictionaries, one for
+        each of ESMValCore and ESMValTool.
     """
-    core_yesterday_sha = query_git_log(valid_repos["core_yesterday"][0]["sha"])
-    core_commits = query_git_log(valid_repos["core_today"], core_yesterday_sha)
-
-    tool_yesterday_sha = query_git_log(valid_repos["tool_yesterday"][0]["sha"])
-    tool_commits = query_git_log(valid_repos["tool_today"], tool_yesterday_sha)
-
-    return CommitInfo(core_commits, tool_commits)
+    commit_info = CommitInfo([], [])
+    for package in ["core", "tool"]:
+        yesterdays_sha = query_git_log(valid_repos[f"{package}_yesterday"])[0][
+            "sha"
+        ]
+        commit_range = query_git_log(
+            valid_repos[f"{package}_today"], yesterdays_sha
+        )
+        setattr(commit_info, package, commit_range)
+    return commit_info
 
 
 def query_git_log(package_path, sha=None):
@@ -128,8 +141,8 @@ def query_git_log(package_path, sha=None):
     list[dict]
         A list of dicts where each dict represents one commit. Each commit has
         the following fields ``date, sha, author, message``. If ``sha`` is
-        not passed, one commit is returned. If ``sha`` is passed, a minimum of
-        two commits is returned.
+        not passed, one commit is returned. If ``sha`` is passed, multiple
+        commits may be returned.
     """
     command = [
         "git",
@@ -163,16 +176,14 @@ def query_git_log(package_path, sha=None):
 
 def add_report_messages_to_commits(commit_info):
     """
-    Add report messages to a git commit information dictionary.
-
-    Add a report flag
+    Add report messages to a CommitInfo dataclass.
 
     Parameters
     ----------
-    commit_info : tuple[list[dict], list[dict]
-        A tuple containg two list of package commits.
+    commit_info : CommitInfo
+        A CommitInfo dataclass containing two lists of package commits.
     """
-    for package_commits in commit_info:
+    for package_commits in [commit_info.core, commit_info.tool]:
         package_commits[0]["report_flag"] = "Version tested this cycle >>>"
         if len(package_commits) > 1:
             package_commits[-1]["report_flag"] = (

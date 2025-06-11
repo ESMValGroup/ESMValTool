@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+"Generate a HTML summary report from a Cylc SQLite database."
+
 import os
 import sqlite3
 import traceback
@@ -7,6 +9,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+# Import from the ESMValTool package for testing.
 try:
     from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.commits_via_git import (
         CommitInfo,
@@ -15,6 +18,7 @@ try:
     from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.shas_via_singularity import (
         get_shas_from_singularity,
     )
+# Import locally for running in Cylc.
 except ImportError:
     from commits_via_git import CommitInfo, get_commits_from_git
     from shas_via_singularity import get_shas_from_singularity
@@ -23,7 +27,7 @@ except ImportError:
 # Load environment variables required at all sites.
 CYLC_DB_PATH = os.environ.get("CYLC_DB_PATH")
 CYLC_TASK_CYCLE_POINT = os.environ.get("CYLC_TASK_CYCLE_POINT")
-CYLC_TASK_CYCLE_YESTERDAY = os.environ.get("ROSE_DATACP1D")
+CYLC_TASK_CYCLE_YESTERDAY = os.environ.get("CYLC_TASK_CYCLE_YESTERDAY")
 REPORT_PATH = os.environ.get("REPORT_PATH")
 SITE = os.environ.get("SITE")
 
@@ -40,9 +44,11 @@ if SITE == "metoffice":
     REPOS = {
         "core_today": os.environ.get("ESMVALCORE_DIR"),
         "tool_today": os.environ.get("ESMVALTOOL_DIR"),
-        "core_yesterday": Path(CYLC_TASK_CYCLE_YESTERDAY) / "ESMValCore",
-        "tool_yesterday": Path(CYLC_TASK_CYCLE_YESTERDAY) / "ESMValTool",
     }
+    if CYLC_TASK_CYCLE_YESTERDAY:
+        path_to_yesterdays_cycle = Path(CYLC_TASK_CYCLE_YESTERDAY)
+        REPOS["core_yesterday"] = path_to_yesterdays_cycle / "ESMValCore"
+        REPOS["tool_yesterday"] = path_to_yesterdays_cycle / "ESMValTool"
 
 
 def main(
@@ -62,22 +68,24 @@ def main(
     db_file_path : str, default CYLC_DB_FILE_PATH
         The path to the SQLite database file.
     site : str
-
-    report_path :
-
-    cylc_task_cycle_point :
-
-    esmval_versions_today :
-
-    esmval_versions_yesterday :
-
-    repos :
-
+        The site the Recipe Test Workflow is being run at.
+    report_path : str
+        The path to output the HTML report.
+    cylc_task_cycle_point : str
+        The cycle point of the task as a string in ISO8601 format.
+    esmval_versions_today : str | None
+        The path to today's singularity container, if the site uses a
+        singularity container, or None.
+    esmval_versions_yesterday : str | None
+        The path to yesterday's singularity container, if the site uses a
+        singularity container and it exists, or None.
+    repos : dict[str, str] | None
+        A dictionary of git repos if the site uses git repos, or None.
     """
-    commit_info = None
     sha_info = None
+    commit_info = None
 
-    raw_db_data = fetch_report_data(db_file_path)
+    raw_db_data = fetch_report_data(db_file_path, cylc_task_cycle_point)
     processed_db_data = process_db_output(raw_db_data)
     subheader = create_subheader(cylc_task_cycle_point)
 
@@ -90,14 +98,13 @@ def main(
             )
         elif site == "metoffice":
             commit_info = get_commits_from_git(repos)
-    # Catch the following errors as they are either propagated with specified
-    # errors or otherwise likely to indicate a minor issue e.g. unexpected
-    # data content at some point in the pipeline. The report should
-    # still be output with just the recipe test results.
+    # Catch the following errors so the report generates without commit/SHA
+    # information. These errors are either propagated on purpose or
+    # indicate a probable minor issue.
     except (ValueError, KeyError, IndexError):
         print(
-            "Report generating without commit data. Error while fetching "
-            "commit data. See std.err log for details."
+            "Report generating with results only. Error while fetching commit "
+            "data. See std.err log for details."
         )
         traceback.print_exc()
 
@@ -110,7 +117,7 @@ def main(
     write_report_to_file(rendered_html, report_path)
 
 
-def fetch_report_data(db_file_path, target_cycle_point=CYLC_TASK_CYCLE_POINT):
+def fetch_report_data(db_file_path, target_cycle_point):
     """
     Fetch report data for a single cycle from the Cylc SQLite database.
 
@@ -118,9 +125,8 @@ def fetch_report_data(db_file_path, target_cycle_point=CYLC_TASK_CYCLE_POINT):
     ----------
     db_file_path : str
         The path to the SQLite database file.
-    target_cycle_point : str, default CYLC_TASK_CYCLE_POINT
-        The cycle point to collect data for. Defaults to the current cylc
-        cycle.
+    target_cycle_point : str
+        The cycle point to collect data for.
 
     Returns
     -------
@@ -258,9 +264,11 @@ def render_html_report(report_data, subheader, commit_info, sha_info):
     subheader : str
         The subheader for the HTML report.
     commit_info : CommitInfo | None
-
+        The commit information for ESMValCore and ESMValTool, if the site uses
+        git repos, or None.
     sha_info : dict | None
-
+        The SHA information for ESMValCore and ESMValTool, if the site uses
+        singularity containers, or None.
 
     Returns
     -------
@@ -292,7 +300,7 @@ def write_report_to_file(rendered_html, output_file_path):
     ----------
     rendered_html : str
         The rendered HTML content.
-    output_file_path : str, default OUTPUT_FILE_PATH
+    output_file_path : str
         The path to the output HTML file.
     """
     with open(output_file_path, "w") as file:
