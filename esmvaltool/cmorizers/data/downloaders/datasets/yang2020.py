@@ -1,4 +1,4 @@
-"""Script to download Yang2020."""
+"""Download Yang2020 data."""
 
 import logging
 

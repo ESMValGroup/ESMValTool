@@ -1,0 +1,27 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: Yang2020
+  version: "1"
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: https://doi.org/10.26008/1912/bco-dmo.810032.1
+  reference: yang2020
+  comment: >-
+    Time bounds of the climatology are set to 1971-2018 since measurements that
+    serve as input for this data product have been conducted between 1971 and
+    2018. This has been recommended by a co-author of the original publication
+    (https://doi.org/10.1073/pnas.1921914117) via e-mail, but is NOT explicitly
+    stated in the publication. Thus, the period given here needs to be treated
+    with care.
+
+
+# Variables to CMORize
+variables:
+  n2oflux:
+    filename: n2oFlux-Yang2020.nc
+    mip: Amon
+    raw_name: n2oFlux_EnsMean_g-pm2-pyr
+    raw_units: g m-2 yr-1
+    molar_mass: 44.013  # [g/mol]
