@@ -1,4 +1,4 @@
-"Functions to fetch git SHA information from singularity containers."
+"""Functions to fetch git SHA information from singularity containers."""
 
 import re
 

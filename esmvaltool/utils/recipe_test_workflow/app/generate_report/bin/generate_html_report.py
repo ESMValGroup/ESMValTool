@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"Generate a HTML summary report from a Cylc SQLite database."
+"""Generate a HTML summary report from a Cylc SQLite database."""
 
 import os
 import sqlite3

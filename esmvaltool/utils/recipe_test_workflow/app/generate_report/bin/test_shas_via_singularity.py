@@ -8,7 +8,7 @@ from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.shas_via_sing
 
 def mock_scm_version_output():
     """
-    Valid mock SCM version string.
+    Return a valid mock SCM version string.
 
     A function is used to allow safe in-test mutation and to allow the result
     to be passed as parametrized test values.

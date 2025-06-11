@@ -1,4 +1,4 @@
-"Functions to fetch commit information from local git repositories."
+"""Functions to fetch commit information from local git repositories."""
 
 import subprocess
 from dataclasses import dataclass
