@@ -91,7 +91,8 @@ def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
     cube = _fix_var_metadata(var_info, cmor_info, cube)
 
     # Fix coordinates
-    _fix_climatological_time(cube)
+    if "time" in cmor_info.coordinates:
+        _fix_climatological_time(cube)
     cube = utils.fix_coords(cube, overwrite_time_bounds=False)
 
     # Fix global metadata
@@ -120,5 +121,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         filepath = Path(in_dir) / var_info["filename"]
         logger.info("CMORizing variable '%s' from file %s", var, filepath)
         glob_attrs["mip"] = var_info["mip"]
+        if "comment" in var_info:
+            glob_attrs["comment"] = var_info["comment"]
         cmor_info = cmor_table.get_variable(var_info["mip"], var)
         _extract_variable(var_info, cmor_info, glob_attrs, filepath, out_dir)

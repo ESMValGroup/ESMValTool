@@ -1047,9 +1047,12 @@ diagnostics:
   Yang2020:
     description: Yang2020 check
     variables:
+      areacella:
+        mip: fx
       n2oflux:
+        mip: Amon
     additional_datasets:
-      - {project: OBS6, dataset: Yang2020, mip: Amon, tier: 2, type: reanaly, version: '1'}
+      - {project: OBS6, dataset: Yang2020, tier: 2, type: reanaly, version: '1'}
     scripts: null
 
 
