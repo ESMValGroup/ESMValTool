@@ -468,7 +468,7 @@ the following files:
 - ``esmvaltool/install/Julia/Project.toml``
   contains Julia dependencies that can be installed from the default Julia
   package registry
-- ``setup.py``
+- ``pyproject.toml``
   contains all Python dependencies, regardless of their installation source
 
 Note that packages may have a different name on
