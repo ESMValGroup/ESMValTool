@@ -67,7 +67,7 @@ diagnostics:
       obs_data:
         short_name: sfcWind
         start_year: 1940
-        end_year: 2022
+        end_year: 2023
         project: OBS6
         mip: E1hr
         preprocessor: preproc_wxx
@@ -76,7 +76,7 @@ diagnostics:
         short_name: tas
         project: OBS6
         start_year: 1940
-        end_year: 2022
+        end_year: 2023
         mip: Amon
         preprocessor: preproc_era_gsat
         additional_datasets: *dataset_era
@@ -150,6 +150,7 @@ diagnostics:
         var_label: wind_speed # needed for axis name
         units: '' # optional parameter for the labelling
         bootstrap_seed: 501 # seed to start sequence for bootstrap (optional)
+        figure_title: 'Wind speed anomalies in Atlantic Canada relative to 1950-1979 from HighResMIP models'
       models_wght:
         script: eccc_extremes/model_analysis_event_attribution.py
         ancestors: [observations/observations, factual, nat, anomaly]
@@ -169,3 +170,4 @@ diagnostics:
         var_label: wind_speed # needed for axis name
         units: '' # optional parameter for the labelling
         bootstrap_seed: 501 # seed to start sequence for bootstrap (optional)
+        figure_title: 'Wind speed anomalies in Atlantic Canada relative to 1950-1979 from HighResMIP models'

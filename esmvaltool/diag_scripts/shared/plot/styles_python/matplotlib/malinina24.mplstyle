@@ -17,6 +17,7 @@ lines.linewidth : 1
 lines.markersize : 6
 
 # Axis
+axes.titleweight: bold
 axes.spines.top : False
 axes.spines.right : False
 axes.linewidth: 0.5
@@ -26,3 +27,12 @@ xtick.major.width : 0.5
 ytick.major.width : 0.5
 xtick.minor.width : 0.4
 ytick.minor.width : 0.4
+
+# Legend
+legend.frameon : False
+legend.fancybox : False
+
+# Figure
+figure.dpi : 200
+figure.titleweight : bold
+figure.autolayout: True

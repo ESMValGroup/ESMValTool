@@ -68,10 +68,10 @@ def select_bins(min_val: float | int, max_val: float | int):
     if max_val - min_val < 5:
         bins = np.arange(min_val, max_val + 0.1, 0.1).round(1)
         x_fine = np.arange(min_val, max_val + 0.01, 0.01).round(2)
-    elif 5 <= max_val - min_val < 10:
-        bins = np.arange(min_val, max_val + 0.1, 0.5).round(1)
-        x_fine = np.arange(min_val, max_val + 0.01, 0.05).round(2)
-    elif 10 <= max_val - min_val < 30:
+    elif 5 <= max_val - min_val < 15:
+        bins = np.arange(min_val, max_val + 0.1, 0.2).round(1)
+        x_fine = np.arange(min_val, max_val + 0.01, 0.01).round(2)
+    elif 15 <= max_val - min_val < 30:
         bins = np.arange(min_val, max_val + 0.1, 1).round()
         x_fine = np.arange(min_val, max_val + 0.01, 0.1).round(1)
     elif 30 <= max_val - min_val < 50:
@@ -218,7 +218,7 @@ def calculate_anomaly(
 
     if "time" in base_data.dims:
         base_mean = base_data.mean(dim="time")
-        base_std = base_data.std(dim="time")
+        base_std = base_data.std(dim="time", ddof=1)
     else:
         base_mean = base_data
         base_std = None
@@ -361,12 +361,12 @@ class StationaryRP:
             initial=initial,
         )
 
-        try:
+        if stat_gev.get("mle")[0]:
             self.rp = float(np.exp(stat_gev["logReturnPeriod"][0]))
             self.shape = float(-1 * stat_gev["mle"][2])
             self.loc = float(stat_gev["mle"][0])
             self.scale = float(stat_gev["mle"][1])
-        except:
+        else:
             self.rp = float(np.nan)
             self.shape = float(np.nan)
             self.loc = float(np.nan)
@@ -391,24 +391,24 @@ class StationaryRP:
             existing x_gev attribute
         """
         if x_gev is None:
-            try:
+            if hasattr(self, "x_gev"):
                 # checking if x_gev exists
                 x_gev = self.x_gev
-            except:
+            else:
                 raise ValueError(
                     "There is no existing attribute x_gev, x "
                     "values for PDF calculations should be "
                     "provided"
                 )
         else:
-            try:
+            if hasattr(self, "x_gev"):
                 x_gev = self.x_gev
                 logger.warning(
                     "The class already contains x_gev parameter, "
                     "will use existing class attribute as x_gev for "
                     f"{metric} calculations"
                 )
-            except:
+            else:
                 self.x_gev = x_gev
 
         return
@@ -520,13 +520,13 @@ class NonStationaryRP:
         stat_gev = cex.fit_gev(
             data, covariate, locationFun=1, returnValue=event, getParams=True
         )
-        try:
+        if stat_gev.get("mle")[0]:
             self.rp = float(np.exp(stat_gev["logReturnPeriod"][idx]))
             self.shape = float(-1 * stat_gev["mle"][3])
             self.loc_a = float(stat_gev["mle"][0])
             self.loc_b = float(stat_gev["mle"][1])
             self.scale = float(stat_gev["mle"][2])
-        except:
+        else:
             self.rp = float(np.nan)
             self.loc_a = float(np.nan)
             self.loc_b = float(np.nan)
@@ -607,7 +607,7 @@ def obtain_confidence_intervals(
         )
 
     rng = np.random.default_rng(seed)
-    for i in range(1000):
+    for _i in range(1000):
         fit_idx = rng.integers(low=0, high=high, size=high)
         fit_idx = np.asarray(
             [np.arange(i, i + yblock) for i in fit_idx]
@@ -626,7 +626,7 @@ def obtain_confidence_intervals(
             loc = TmpNonStat.loc_a * covariate_value + TmpNonStat.loc_b
         try:
             rp = np.around(1 / gev.sf(event, shape, loc=loc, scale=scale), 1)
-        except:
+        except ZeroDivisionError:
             rp = np.nan
         rps.append(rp)
 

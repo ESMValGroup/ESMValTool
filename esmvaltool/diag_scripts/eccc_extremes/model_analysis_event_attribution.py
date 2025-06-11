@@ -128,7 +128,7 @@ def calculate_anomaly(
     ano_xr_da = xr.open_dataset(ano_file)[file_meta["short_name"]]
     if "time" in ano_xr_da.dims:
         base_mean = ano_xr_da.mean(dim="time").data
-        base_std = ano_xr_da.std(dim="time").data
+        base_std = ano_xr_da.std(dim="time", ddof=1).data
     else:
         base_mean = ano_xr_da.data
         base_std = None
@@ -235,7 +235,7 @@ def bootstrap_gev(
 
     bootstrap_samples = list()
 
-    for i in range(pool_iter_n):
+    for _i in range(pool_iter_n):
         sample_data = list()
         sample_datasets = list()
         mod_idxs = rng.integers(0, high=n_all_reals, size=pool_size)
@@ -536,70 +536,6 @@ class Climate:
         return out_dic
 
 
-def calculate_risk_ratios(
-    clim_list: list[Climate], ci_percs: list[float | int]
-):
-    """
-    Calculate risk ratios from the list of climates
-
-    Parameters
-    ----------
-    clim_list :
-        list with Climate information
-    ci_dic :
-        list with the percentiles
-
-    Returns
-    -------
-    risk_ratio_dic : dict
-        dictionary with risk ratios
-
-    Raises
-    ------
-    ValueError
-        if the amount of climates is insuffiecient to calculate risk
-        ratios (the number of climates is less than two)
-    """
-
-    if len(clim_list) < 2:
-        raise ValueError(
-            "The amount of climates in insufficient to calculate "
-            "a risk ratio. Required number of climates is 2, but "
-            f"only {len(clim_list)} were provided."
-        )
-
-    # sorting the climates from earliest to latest
-    clim_indices = np.argsort([c.start_year for c in clim_list])
-
-    risk_ratio_dic = {}
-
-    # starting with the second, because the oldest is always the reference
-    for clim_idx in clim_indices[1:]:
-        current_idx = np.where(clim_indices == clim_idx)[0][0]
-        for dev_clim_idx in range(current_idx):
-            old_clim_idx = clim_indices[dev_clim_idx]
-            key = f"{clim_list[clim_idx].name}/{clim_list[old_clim_idx].name}"
-            risk_ratio_dic[key] = {
-                "best_guess": float(
-                    clim_list[old_clim_idx].BestGuessGEV.rp
-                    / clim_list[clim_idx].BestGuessGEV.rp
-                )
-            }
-            bootstrap_rrs = list()
-            # the number of bootstrap samples is the same in each climate
-            for i in range(len(clim_list[clim_idx].bootstrap)):
-                bootstrap_rrs.append(
-                    clim_list[old_clim_idx].bootstrap[i].rp
-                    / clim_list[clim_idx].bootstrap[i].rp
-                )
-
-            risk_ratio_dic[key]["CI"] = get_percentiles_dic(
-                bootstrap_rrs, ci_percs, 2
-            )
-
-    return risk_ratio_dic
-
-
 class Climates:
     """
     Class with climates information for a dataset
@@ -676,9 +612,70 @@ class Climates:
             Clim.calculate_intensities(
                 x_fine, ObsInfo.event_rp, cfg["CI_quantiles"]
             )
-        self.risk_ratios = calculate_risk_ratios(
-            self.climates, cfg["CI_quantiles"]
-        )
+        self.calculate_risk_ratios(cfg["CI_quantiles"])
+
+    def calculate_risk_ratios(self, ci_percs: list[float | int]):
+        """
+        Calculate risk ratios from the list of climates
+
+        Parameters
+        ----------
+        ci_dic :
+            list with the percentiles
+
+        Returns
+        -------
+        risk_ratio_dic : dict
+            dictionary with risk ratios
+
+        Raises
+        ------
+        ValueError
+            if the amount of climates is insuffiecient to calculate risk
+            ratios (the number of climates is less than two)
+        """
+
+        clim_list = self.climates
+
+        if len(clim_list) < 2:
+            raise ValueError(
+                "The amount of climates in insufficient to calculate "
+                "a risk ratio. Required number of climates is 2, but "
+                f"only {len(clim_list)} were provided."
+            )
+
+        # sorting the climates from earliest to latest
+        clim_indices = np.argsort([c.start_year for c in clim_list])
+
+        risk_ratio_dic = {}
+
+        # starting with the second, because the oldest is always the reference
+        for clim_idx in clim_indices[1:]:
+            current_idx = np.where(clim_indices == clim_idx)[0][0]
+            for dev_clim_idx in range(current_idx):
+                old_clim_idx = clim_indices[dev_clim_idx]
+                key = f"{clim_list[clim_idx].name}/{clim_list[old_clim_idx].name}"
+                risk_ratio_dic[key] = {
+                    "best_guess": float(
+                        clim_list[old_clim_idx].BestGuessGEV.rp
+                        / clim_list[clim_idx].BestGuessGEV.rp
+                    )
+                }
+                bootstrap_rrs = list()
+                # the number of bootstrap samples is the same in each climate
+                for i in range(len(clim_list[clim_idx].bootstrap)):
+                    bootstrap_rrs.append(
+                        clim_list[old_clim_idx].bootstrap[i].rp
+                        / clim_list[clim_idx].bootstrap[i].rp
+                    )
+
+                risk_ratio_dic[key]["CI"] = get_percentiles_dic(
+                    bootstrap_rrs, ci_percs, 2
+                )
+
+        self.risk_ratios = risk_ratio_dic
+
+        return
 
     def plot_attribution_plot(
         self, cfg: dict, ObsInfo: ObsData, prov_dic: dict
@@ -715,6 +712,16 @@ class Climates:
             else self.climates[0].short_name
         )
         units = cfg["units"] if cfg.get("units") else self.climates[0].units
+
+        if cfg.get("anomaly_type") == "standardized_anomaly":
+            ax_label = f"standardized {label.replace('_', ' ')} anomaly"
+        elif cfg.get("anomaly_type"):
+            ax_label = (
+                f"{label.replace('_', ' ')} {cfg['anomaly_type']}, {units}"
+            )
+        else:
+            ax_label = f"{label.replace('_', ' ')}, {units}"
+
         bins, x_fine = select_bins(self.min_value, self.max_value)
 
         fig = plt.figure(constrained_layout=False)
@@ -881,9 +888,9 @@ class Climates:
         # technical aspects of the plot, limits, captions etc.
         ax_qq.plot(x_fine, x_fine, c="tab:grey", zorder=1)
         # legends
-        ax_hist.legend(loc=2, fancybox=False, frameon=False)
-        ax_qq.legend(loc=2, fancybox=False, frameon=False, handletextpad=0.01)
-        ax_rps.legend(loc=2, fancybox=False, frameon=False)
+        ax_hist.legend()
+        ax_qq.legend(loc=2, handletextpad=0.01)
+        ax_rps.legend(loc=2)
         # grids
         ax_qq.grid(color="silver", axis="both", alpha=0.5)
         ax_rps.grid(color="silver", axis="both", alpha=0.5)
@@ -898,15 +905,19 @@ class Climates:
         # captions and titles
         ax_hist.set_title("(a) Probability density function")
         ax_hist.set_ylabel("Number density")
-        ax_hist.set_xlabel(f"{label}, {units}")
+        ax_hist.set_xlabel(ax_label)
         ax_qq.set_title("(b) Quality assessment")
         ax_qq.set_ylabel("Data quantile")
         ax_qq.set_xlabel("GEV quantile")
         ax_rps.set_title("(c) Return period")
         ax_rps.set_ylabel("years")
-        ax_rps.set_xlabel(f"{label}, {units}")
+        ax_rps.set_xlabel(ax_label)
 
-        fig.suptitle(f"{label} in {reg}")
+        if cfg.get("figure_title"):
+            fig_title = cfg["figure_title"]
+        else:
+            fig_title = f"{label.replace('_', ' ')} in {reg}"
+        fig.suptitle(fig_title)
 
         fig.set_dpi(250)
 
