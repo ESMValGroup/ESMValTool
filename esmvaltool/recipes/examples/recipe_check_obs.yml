@@ -1049,6 +1049,8 @@ diagnostics:
     variables:
       areacella:
         mip: fx
+      dpn2o:
+        mip: Amon
       n2oflux:
         mip: Amon
     additional_datasets:
