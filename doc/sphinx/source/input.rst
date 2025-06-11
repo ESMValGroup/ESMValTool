@@ -484,6 +484,9 @@ A list of the datasets for which a CMORizers is available is provided in the fol
 | WOA                          | thetao, so, tos, sos (Omon)                                                                          |   2  | Python          |
 |                              | no3, o2, po4, si (Oyr)                                                                               |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| Yang2020                     | dpn2o, no2flux (Amon)                                                                                |   2  | Python          |
+|                              | areacella (fx)                                                                                       |      |                 |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 
 .. [#t3] We obtained permission from the dataset provider to share this dataset
          among ESMValTool users on HPC systems.
