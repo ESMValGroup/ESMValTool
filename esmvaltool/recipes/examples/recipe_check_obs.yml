@@ -1050,9 +1050,9 @@ diagnostics:
       areacella:
         mip: fx
       dpn2o:
-        mip: Amon
+        mip: Omon
       n2oflux:
-        mip: Amon
+        mip: Omon
     additional_datasets:
       - {project: OBS6, dataset: Yang2020, tier: 2, type: reanaly, version: '1'}
     scripts: null
