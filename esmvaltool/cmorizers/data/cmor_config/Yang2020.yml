@@ -18,7 +18,7 @@ variables:
     raw_name: cellArea_m2
   dpn2o:
     filename: dn2o-mapped-Yang2020.nc
-    mip: Amon
+    mip: Omon
     raw_name: dn2o_EnsMean_natm
     comment: >-
       Time bounds of the climatology are set to 1971-2018 since measurements
@@ -29,7 +29,7 @@ variables:
       here needs to be treated with care.
   n2oflux:
     filename: n2oFlux-Yang2020.nc
-    mip: Amon
+    mip: Omon
     raw_name: n2oFlux_EnsMean_g-pm2-pyr
     raw_units: g m-2 yr-1
     molar_mass: 44.013  # [g/mol]
