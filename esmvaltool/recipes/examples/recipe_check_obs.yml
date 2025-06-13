@@ -1054,7 +1054,7 @@ diagnostics:
       n2oflux:
         mip: Omon
     additional_datasets:
-      - {project: OBS6, dataset: Yang2020, tier: 2, type: reanaly, version: '1'}
+      - {project: OBS6, dataset: Yang2020, tier: 2, type: reanaly, version: 1}
     scripts: null
 
 
