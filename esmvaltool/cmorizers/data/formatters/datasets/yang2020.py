@@ -22,11 +22,11 @@ def _fix_climatological_time(cube):
     # Time bounds of the climatology are set to 1971-2018 since measurements
     # that serve as input for this data product have been conducted between
     # 1971 and 2018 (note that the wind products from ERA5 and CCMP, which are
-    # also used as input, are only available from 1988-2017 though). This has
-    # been recommended by a co-author of the original publication
-    # (https://doi.org/10.1073/pnas.1921914117) via email, but is NOT
-    # explicitly stated in the original publication. Thus, the period given here
-    # needs to be treated with care.
+    # necessary to derive the N2O flux, are only available from 1988-2017
+    # though). This has been recommended by a co-author of the original
+    # publication (https://doi.org/10.1073/pnas.1921914117) via email, but is
+    # NOT explicitly stated in the original publication. Thus, the period given
+    # here needs to be treated with care.
     time_points = TIME_UNITS.date2num(
         [datetime(1994, m, 15) for m in range(1, 13)]
     )
