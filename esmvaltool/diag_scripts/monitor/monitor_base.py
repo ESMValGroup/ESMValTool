@@ -3,7 +3,6 @@
 import logging
 import os
 import re
-from typing import Optional
 
 import cartopy
 import matplotlib.pyplot as plt
@@ -351,7 +350,7 @@ class MonitorBase:
         return file_name
 
     @staticmethod
-    def _set_rasterized(axes: Optional[Axes | list[Axes]] = None) -> None:
+    def _set_rasterized(axes: Axes | list[Axes] | None = None) -> None:
         """Rasterize all artists and collection of axes if desired."""
         if axes is None:
             axes = plt.gca()
