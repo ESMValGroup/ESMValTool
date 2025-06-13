@@ -1379,3 +1379,6 @@ datasets:
       https://doi.org/10.26008/1912/bco-dmo.810032.1
     last_access: 2025-06-10
     info: Use automatic download feature to get the data
+        Download the following files:
+            dn2o-mapped-Yang2020.nc
+            n2oFlux-Yang2020.nc
