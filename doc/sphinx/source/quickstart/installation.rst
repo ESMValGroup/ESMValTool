@@ -536,6 +536,7 @@ estate, so there is no need to install ESMValTool if you are just running recipe
    A Jupyter kernel based on the latest module is available from `DKRZ-JupyterHub <https://jupyterhub.dkrz.de/hub/home>`__.
  - Met Office: `esmvaltool` is available on the Linux estate after login and module loading via `module load`;
    see the ESMValTool Community of Practice SharePoint site for more details.
+ - NSC-Tetralith and Freja: `esmvaltool` is available after login and module loading via `module load esmvaltool`.
 
 The ESMValTool Tutorial provides a `quickstart guide <https://tutorial.esmvaltool.org/01-quickstart/index.html>`__
 that is particularly suited for new users that have an access to pre-installed version of ESMValTool.
