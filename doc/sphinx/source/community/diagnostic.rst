@@ -108,6 +108,26 @@ A resolution of 150 `dpi <https://en.wikipedia.org/wiki/Dots_per_inch>`_ is
 recommended for these image files, as this is high enough for the images to look
 good on the documentation webpage, but not so high that the files become large.
 
+By default, the first example image will be used for the automatically
+generated gallery. To select a specific image for the gallery, you can use the
+following syntax for an arbitrary amount of images:
+
+.. code-block:: rst
+
+  .. _fig_name:
+  ..
+    gallery
+  .. figure:: /recipes/figure/recipe_name/figure-name.png
+
+To not have any figure appear in the gallery, you can include a
+
+.. code-block:: rst
+
+  ..
+    no-gallery
+
+anywhere in your recipe documentation file.
+
 In the recipe
 -------------
 Fill in the ``documentation`` section of the recipe as described in
