@@ -79,7 +79,7 @@ diagnostics:
       - {dataset: WOA, project: obs4MIPs, level: L3,
          start_year: 2000, end_year: 2000, tier: 2}
     scripts:
-      Global_Ocean_map:  #&Global_Ocean_map
+      Global_Ocean_map:  &Global_Ocean_map
         script: ocean/diagnostic_maps_quad.py
         control_model: {dataset: HadGEM3-GC31-LL, project: CMIP6, mip: Omon,
                         exp: historical, ensemble: r1i1p1f3}
@@ -97,13 +97,8 @@ diagnostics:
       - {dataset: WOA, project: obs4MIPs, level: L3,
          start_year: 2000, end_year: 2000, tier: 2}
     scripts:
-      Global_Ocean_map:  #&Global_Ocean_map
-        script: ocean/diagnostic_maps_quad.py
-        control_model: {dataset: HadGEM3-GC31-LL, project: CMIP6, mip: Omon,
-                        exp: historical, ensemble: r1i1p1f3}
-        exper_model: {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon,
-                      exp: historical, ensemble: r1i1p1f2}
-        observational_dataset: {dataset: WOA, project: obs4MIPs}
+      Global_Ocean_map:  *Global_Ocean_map
+
 
   sea_water_potential_temperature:
     description: Global surface quad plots so
@@ -115,13 +110,8 @@ diagnostics:
       - {dataset: WOA, project: obs4MIPs, level: L3,
          start_year: 2000, end_year: 2000, tier: 2}
     scripts:
-      Global_Ocean_map:  #&Global_Ocean_map
-        script: ocean/diagnostic_maps_quad.py
-        control_model: {dataset: HadGEM3-GC31-LL, project: CMIP6, mip: Omon,
-                        exp: historical, ensemble: r1i1p1f3}
-        exper_model: {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon,
-                      exp: historical, ensemble: r1i1p1f2}
-        observational_dataset: {dataset: WOA, project: obs4MIPs}
+      Global_Ocean_map: *Global_Ocean_map
+
 
   sea_water_salinity:
     description: Global surface quad plots so
@@ -133,10 +123,5 @@ diagnostics:
       - {dataset: WOA, project: obs4MIPs, level: L3,
          start_year: 2000, end_year: 2000, tier: 2}
     scripts:
-      Global_Ocean_map:  #&Global_Ocean_map
-        script: ocean/diagnostic_maps_quad.py
-        control_model: {dataset: HadGEM3-GC31-LL, project: CMIP6, mip: Omon,
-                        exp: historical, ensemble: r1i1p1f3}
-        exper_model: {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon,
-                      exp: historical, ensemble: r1i1p1f2}
-        observational_dataset: {dataset: WOA, project: obs4MIPs}
+      Global_Ocean_map:  *Global_Ocean_map
+
