@@ -209,11 +209,11 @@ Plots produced are:
 The figures produced by this recipe compare a HadGEM3 model, UKESM1 model
 and a WOA observational dataset:
 
-.. centered:: |pic_quad_plot|
-.. |pic_quad_plot| image:: /recipes/figures/ocean/ocean_quad_plot1.png
-.. |pic_quad_plot| image:: /recipes/figures/ocean/ocean_quad_plot2.png
-.. |pic_quad_plot| image:: /recipes/figures/ocean/ocean_quad_plot3.png
-.. |pic_quad_plot| image:: /recipes/figures/ocean/ocean_quad_plot4.png
+.. centered:: |pic_ocean_quad_1| |pic_ocean_quad_2| |pic_ocean_quad_3| |pic_ocean_quad_4|
+.. |pic_ocean_quad_1| image:: /recipes/figures/ocean/ocean_quad_plot1.png
+.. |pic_ocean_quad_2| image:: /recipes/figures/ocean/ocean_quad_plot2.png
+.. |pic_ocean_quad_3| image:: /recipes/figures/ocean/ocean_quad_plot3.png
+.. |pic_ocean_quad_4| image:: /recipes/figures/ocean/ocean_quad_plot4.png
 
 These kind of figures can be very useful when developing a model, as they
 allow model developers to quickly see the impact of any recent changes
