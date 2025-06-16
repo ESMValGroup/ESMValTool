@@ -275,7 +275,6 @@ def plot_global_single_level(axis, cube, contour_levels, title):
 
     # Converts contour_levels to a numpy array.
     contour_levels = np.array(contour_levels)
-
     # Creates a filled contour plot of the projected data.
     contour_result = iplt.contourf(
         new_cube,
@@ -283,7 +282,6 @@ def plot_global_single_level(axis, cube, contour_levels, title):
         linewidth=0,
         cmap=plt.cm.get_cmap(cmap),
     )
-
     # Checks if the contour plot was created successfully
     if contour_result is None:
         raise ValueError("Failed to create contour plot. plt object is None.")
