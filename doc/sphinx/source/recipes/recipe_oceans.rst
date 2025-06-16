@@ -200,7 +200,7 @@ model2 minus obs    model1 minus obs
 These figures are also known as Model vs Model vs Obs plots.
 
 The figures produced by this recipe are intended to replicate Marine Assess plots.
-Plots produced are: 
+Plots produced are:
   * Sea Surface Temperature
   * Sea Surface Salinity
   * Sea Water Temperature (at various depths)

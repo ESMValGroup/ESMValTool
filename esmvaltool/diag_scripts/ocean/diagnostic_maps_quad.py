@@ -50,8 +50,9 @@ from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
+    save_data,
     save_figure,
-    save_data)
+)
 
 # Create a logger object.
 logger = logging.getLogger(os.path.basename(__file__))
@@ -428,10 +429,9 @@ def create_quadmap(
         formatted_depth = str(f"{int(depth):04d}")
         depth_title = str(f"{depth:.1f}")
         fig.suptitle(
-        f"Annual Mean: {exp_single_level.long_name} at {depth_title}m",
-        fontsize=14,
+            f"Annual Mean: {exp_single_level.long_name} at {depth_title}m",
+            fontsize=14,
         )
-
 
     # Calling the plot_global_single_level plot with set parameters
     plot_global_single_level(
@@ -463,25 +463,26 @@ def create_quadmap(
     ancestors = list(input_files.keys())
     # Calling save_cube for each cube.
     save_cube(
-        exp_single_level,
-        f"experiment_{formatted_depth}",
-        config,
-        ancestors)
+        exp_single_level, f"experiment_{formatted_depth}", config, ancestors
+    )
     save_cube(
         exp_minus_ctr_single_level,
         f"experiment_minus_control_{formatted_depth}",
         config,
-        ancestors)
+        ancestors,
+    )
     save_cube(
         ctr_minus_obs_single_level,
         f"control_minus_observation_{formatted_depth}",
         config,
-        ancestors)
+        ancestors,
+    )
     save_cube(
         exp_minus_obs_single_level,
         f"experiment_minus_observation_{formatted_depth}",
         config,
-        ancestors)
+        ancestors,
+    )
 
     # Prepare to save the figure
     fn_list = [exp_single_level.long_name, str(formatted_depth)]
@@ -509,6 +510,7 @@ def create_quadmap(
 
     # Save the figure and close
     save_figure("_".join(fn_list), provenance_record, config, fig, close=True)
+
 
 if __name__ == "__main__":
     with run_diagnostic() as CONFIG:

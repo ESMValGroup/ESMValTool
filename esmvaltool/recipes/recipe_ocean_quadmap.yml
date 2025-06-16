@@ -124,4 +124,3 @@ diagnostics:
          start_year: 2000, end_year: 2000, tier: 2}
     scripts:
       Global_Ocean_map:  *Global_Ocean_map
-
