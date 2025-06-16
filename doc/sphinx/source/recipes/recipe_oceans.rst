@@ -202,10 +202,10 @@ These figures are also known as Model vs Model vs Obs plots.
 The figures produced by this recipe are intended to replicate Marine Assess plots.
 Plots produced are:
 
-  * Sea Surface Temperature
-  * Sea Surface Salinity
-  * Sea Water Temperature (at various depths)
-  * Sea Water Salinity (at various depths)
+* Sea Surface Temperature
+* Sea Surface Salinity
+* Sea Water Temperature (at various depths)
+* Sea Water Salinity (at various depths)
 
 The figures produced by this recipe compare a HadGEM3 model, UKESM1 model
 and a WOA observational dataset:
