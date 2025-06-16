@@ -266,13 +266,16 @@ def plot_global_single_level(axis, cube, contour_levels, title):
 
     # This step transforms the data so it can be displayed as 2D
 
-    new_cube, extent = iris.analysis.cartography.project(
+    new_cube, _ = iris.analysis.cartography.project(
         cube, ccrs.PlateCarree(), nx=400, ny=200
     )
 
     # Sets the current Axes instance to the specified axis
     plt.sca(axis)
 
+    # Converts contour_levels to a numpy array.
+    contour_levels = np.array(contour_levels)
+    
     # Creates a filled contour plot of the projected data.
     contour_result = iplt.contourf(
         new_cube,
@@ -280,10 +283,6 @@ def plot_global_single_level(axis, cube, contour_levels, title):
         linewidth=0,
         cmap=plt.cm.get_cmap(cmap),
     )
-
-    # Converts contour_levels to a numpy array.
-    contour_levels = np.array(contour_levels)
-
     # Checks if the contour plot was created successfully
     if contour_result is None:
         raise ValueError("Failed to create contour plot. plt object is None.")
@@ -389,7 +388,8 @@ def create_quadmap(
     Returns
     -------
     quadmap :
-        Make the four pane model vs model vs obs comparison plot"""
+        Make the four pane model vs model vs obs comparison plot
+    """
     # Setting zrange dependent on the plot produced.
     if exp_single_level.long_name in [
         "Sea Water Salinity",
