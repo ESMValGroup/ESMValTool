@@ -12,7 +12,6 @@ RUN    mamba update -y conda mamba pip \
 SHELL ["conda", "run", "--name", "esmvaltool", "/bin/bash", "-c"]
 
 COPY . .
-RUN pip install --no-cache git+https://github.com/ESMValGroup/ESMValCore.git#egg=ESMValCore . \
-    && esmvaltool install Julia
+RUN pip install --no-cache git+https://github.com/ESMValGroup/ESMValCore.git#egg=ESMValCore .
 
 ENTRYPOINT ["conda", "run", "--name", "esmvaltool", "esmvaltool"]
