@@ -489,9 +489,11 @@ def create_quadmap(
     image_extention = diagtools.get_image_format(config)
 
     # Construct the file path for saving the plot
-    path = f"{
-        diagtools.folder(config['plot_dir'])}{
-            '_'.join(fn_list)}{formatted_depth}"
+    path = (
+        f"{diagtools.folder(config['plot_dir'])}"
+        f"{'_'.join(fn_list)}"
+        f"{formatted_depth}"
+    )
     path = f"{path.replace(' ', '')}{image_extention}"
     logger.info("Saving plots to %s", path)
 
