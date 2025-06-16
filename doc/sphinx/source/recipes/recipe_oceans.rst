@@ -446,7 +446,7 @@ and an example of an appropriate diagnostic section of the recipe would be:
           - {dataset: WOA, project: obs4MIPs, level: L3,
              start_year: 2000, end_year: 2000, tier: 2}
         scripts:
-          Global_Ocean_map:  #&Global_Ocean_map
+          Global_Ocean_map:  &Global_Ocean_map
             script: ocean/diagnostic_maps_quad.py
             control_model: {dataset: HadGEM3-GC31-LL, project: CMIP6, mip: Omon,
                             exp: historical, ensemble: r1i1p1f3}
