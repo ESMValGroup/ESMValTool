@@ -266,12 +266,15 @@ def plot_global_single_level(axis, cube, contour_levels, title):
 
     # This step transforms the data so it can be displayed as 2D
 
-    new_cube, extent = iris.analysis.cartography.project(
+    new_cube, _ = iris.analysis.cartography.project(
         cube, ccrs.PlateCarree(), nx=400, ny=200
     )
 
     # Sets the current Axes instance to the specified axis
     plt.sca(axis)
+
+    # Converts contour_levels to a numpy array.
+    contour_levels = np.array(contour_levels)
 
     # Creates a filled contour plot of the projected data.
     contour_result = iplt.contourf(
@@ -280,9 +283,6 @@ def plot_global_single_level(axis, cube, contour_levels, title):
         linewidth=0,
         cmap=plt.cm.get_cmap(cmap),
     )
-
-    # Converts contour_levels to a numpy array.
-    contour_levels = np.array(contour_levels)
 
     # Checks if the contour plot was created successfully
     if contour_result is None:
@@ -383,13 +383,16 @@ def create_quadmap(
         Extracted single level of ctr_minus_obs cube.
     exp_minus_obs_single_level : iris cube
         Extracted single level of exp_minus_obs cube.
-    level : str
-        Set depth that we wish to plot.
+    config : dictionary
+        configuration dictionary that contains all the necessary information
+        for the function to run. It includes details about the models,
+        observational datasets, file paths, and other settings.
 
     Returns
     -------
     quadmap :
-        Make the four pane model vs model vs obs comparison plot"""
+        Make the four pane model vs model vs obs comparison plot
+    """
     # Setting zrange dependent on the plot produced.
     if exp_single_level.long_name in [
         "Sea Water Salinity",
@@ -418,7 +421,7 @@ def create_quadmap(
         "Sea Surface Temperature",
         "Sea Surface Salinity",
     ]:
-        fig.suptitle("Annual Mean:" + exp_single_level.long_name)
+        fig.suptitle(f"Annual Mean: {exp_single_level.long_name}")
         formatted_depth = 0
     # Set the figure for depth plots to include the depth value.
     else:
@@ -427,13 +430,10 @@ def create_quadmap(
         formatted_depth = str(f"{int(depth):04d}")
         depth_title = str(f"{depth:.1f}")
         fig.suptitle(
-            "Annual Mean:"
-            + exp_single_level.long_name
-            + " at "
-            + depth_title
-            + "m",
-            fontsize=14,
+        f"Annual Mean: {exp_single_level.long_name} at {depth_title}m",
+        fontsize=14,
         )
+
 
     # Calling the plot_global_single_level plot with set parameters
     plot_global_single_level(
