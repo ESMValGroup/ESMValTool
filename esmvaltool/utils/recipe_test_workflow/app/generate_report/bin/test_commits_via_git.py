@@ -1,4 +1,4 @@
-from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.commits_via_git import (
+from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.shas_via_git import (
     add_report_messages_to_commits,
 )
 

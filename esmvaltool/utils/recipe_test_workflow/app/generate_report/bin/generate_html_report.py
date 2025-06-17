@@ -8,19 +8,24 @@ from datetime import datetime
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+from requests.exceptions import HTTPError
 
 # Import from the ESMValTool package for testing.
 try:
-    from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.commits_via_git import (
+    from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.fetch_commit_info import (
+        fetch_commit_details_from_github_api,
+    )
+    from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.shas_via_git import (
         CommitInfo,
-        get_commits_from_git,
+        get_shas_from_git,
     )
     from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.shas_via_singularity import (
         get_shas_from_singularity,
     )
 # Import locally for running in Cylc.
 except ImportError:
-    from commits_via_git import CommitInfo, get_commits_from_git
+    from fetch_commit_info import fetch_commit_details_from_github_api
+    from shas_via_git import get_shas_from_git
     from shas_via_singularity import get_shas_from_singularity
 
 
@@ -42,13 +47,13 @@ if SITE == "dkrz":
 
 if SITE == "metoffice":
     REPOS = {
-        "core_today": os.environ.get("ESMVALCORE_DIR"),
-        "tool_today": os.environ.get("ESMVALTOOL_DIR"),
+        "ESMValCore_today": os.environ.get("ESMVALCORE_DIR"),
+        "ESMValTool_today": os.environ.get("ESMVALTOOL_DIR"),
     }
     if CYLC_TASK_CYCLE_YESTERDAY:
         path_to_yesterdays_cycle = Path(CYLC_TASK_CYCLE_YESTERDAY)
-        REPOS["core_yesterday"] = path_to_yesterdays_cycle / "ESMValCore"
-        REPOS["tool_yesterday"] = path_to_yesterdays_cycle / "ESMValTool"
+        REPOS["ESMValCore_yesterday"] = path_to_yesterdays_cycle / "ESMValCore"
+        REPOS["ESMValTool_yesterday"] = path_to_yesterdays_cycle / "ESMValTool"
 
 
 def main(
@@ -82,13 +87,7 @@ def main(
     repos : dict[str, str] | None
         A dictionary of git repos if the site uses git repos, or None.
     """
-    sha_info = None
     commit_info = None
-
-    raw_db_data = fetch_report_data(db_file_path, cylc_task_cycle_point)
-    processed_db_data = process_db_output(raw_db_data)
-    subheader = create_subheader(cylc_task_cycle_point)
-
     # Commits/SHAs will only be included for these sites. The report will run
     # at other sites without commit/SHA information.
     try:
@@ -97,24 +96,48 @@ def main(
                 esmval_versions_today, esmval_versions_yesterday
             )
         elif site == "metoffice":
-            commit_info = get_commits_from_git(repos)
+            sha_info = get_shas_from_git(repos)
     # Catch the following errors so the report generates without commit/SHA
     # information. These errors are either propagated on purpose or
     # indicate a probable minor issue.
-    except (ValueError, KeyError, IndexError):
+    except (ValueError, KeyError, IndexError, HTTPError):
         print(
             "Report generating with results only. Error while fetching commit "
             "data. See std.err log for details."
         )
         traceback.print_exc()
+    if sha_info:
+        commit_info = fetch_commit_details_from_github_api(sha_info)
+        print(commit_info)
 
-    rendered_html = render_html_report(
-        subheader=subheader,
-        report_data=processed_db_data,
-        commit_info=commit_info,
-        sha_info=sha_info,
-    )
-    write_report_to_file(rendered_html, report_path)
+    # raw_db_data = fetch_report_data(db_file_path, cylc_task_cycle_point)
+    # processed_db_data = process_db_output(raw_db_data)
+    # subheader = create_subheader(cylc_task_cycle_point)
+
+    # rendered_html = render_html_report(
+    #     subheader=subheader,
+    #     report_data=processed_db_data,
+    #     commit_info=commit_info,
+    # )
+
+    # write_report_to_file(rendered_html, report_path)
+
+
+def add_report_messages_to_commits(commit_info):
+    """
+    Add report messages to a CommitInfo dataclass.
+
+    Parameters
+    ----------
+    commit_info : CommitInfo
+        A CommitInfo dataclass containing two lists of package commits.
+    """
+    for package_commits in [commit_info.core, commit_info.tool]:
+        package_commits[0]["report_flag"] = "Version tested this cycle >>>"
+        if len(package_commits) > 1:
+            package_commits[-1]["report_flag"] = (
+                "Version tested last cycle >>>"
+            )
 
 
 def fetch_report_data(db_file_path, target_cycle_point):
@@ -231,6 +254,41 @@ def process_db_output(report_data):
                 processed_db_data[recipe].update(task_data)
     sorted_processed_db_data = dict(sorted(processed_db_data.items()))
     return sorted_processed_db_data
+
+
+def copy_debug_log_to_vm(failed_task):
+    """ """
+    # TODO: Current work is in python-playground/lumberjack.py
+    pass
+
+
+def add_debug_log_for_failed_tasks(processed_db_data):
+    """
+    {
+        "recipe_1": {
+            "process_task": {
+                "status": "succeeded",
+                "style": "color: green",
+                "debug_log": "path/to/debug.log",
+            },
+            "compare_task": {
+                "status": "failed",
+                "style": "color: red",
+                "debug_log": "path/to/debug.log",
+            },
+        }
+    },
+    """
+
+    for recipe, tasks in processed_db_data.items():
+        for task_name, task_data in tasks.items():
+            if task_data["status"] == "failed":
+                # Assuming the debug log path is constructed from the recipe name
+                # and task name. Adjust as necessary.
+                debug_log_path = (
+                    f"/path/to/debug/logs/{recipe}/{task_name}.log"
+                )
+                task_data["debug_log"] = debug_log_path
 
 
 def create_subheader(cylc_task_cycle_point):
