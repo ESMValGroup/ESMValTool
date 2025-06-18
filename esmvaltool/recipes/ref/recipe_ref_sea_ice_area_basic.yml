@@ -101,7 +101,7 @@ diagnostics:
         facet_used_for_labels: dataset
         plots:
           annual_cycle: &plot_basic
-            annual_mean_kwargs: False
+            caption: '20-year average seasonal cycle of the sea ice area in million km2 from [dataset] compared with OSI-450.'
             pyplot_kwargs:
               title: 'Sea ice area (million km2)'
             plot_kwargs:
@@ -152,3 +152,4 @@ diagnostics:
         plots:
           timeseries:
             <<: *plot_basic
+            caption: 'Time series of NH September/SH February sea ice area in million km2 from [dataset] compared with OSI-450.'
