@@ -273,9 +273,7 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
             f"Mean (dashed), standard deviation (shaded) and plausible values from {obs_years}."
         )
     else:
-        caption = (
-            "Sensitivity of sea ice area to annual mean global warming."
-        )
+        caption = "Sensitivity of sea ice area to annual mean global warming."
 
     # Save the figure (also closes it)
     save_figure(
@@ -374,9 +372,7 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
             f"Observations from {obs_years} are plotted as squares."
         )
     else:
-        caption = (
-            "Decadal trends of sea ice area and global mean temperature."
-        )
+        caption = "Decadal trends of sea ice area and global mean temperature."
 
     # Save the figure (also closes it)
     save_figure(
