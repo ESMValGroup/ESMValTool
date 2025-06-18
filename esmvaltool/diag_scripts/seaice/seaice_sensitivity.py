@@ -268,18 +268,19 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
 
     # Create caption based on whether observation mean is presnt
     if isinstance(obs_mean, (int, float)):
-        extra = f" Mean (dashed), standard deviation (shaded) and plausible values from {obs_years}."
+        caption = (
+            f"Sensitivity of sea ice area to annual mean global warming."
+            f"Mean (dashed), standard deviation (shaded) and plausible values from {obs_years}."
+        )
     else:
-        extra = ""
-    caption = (
-        f"Sensitivity of sea ice area to annual mean global warming.{extra}"
-    )
-    provenance_record = get_provenance_record(cfg, caption)
+        caption = (
+            f"Sensitivity of sea ice area to annual mean global warming."
+        )
 
     # Save the figure (also closes it)
     save_figure(
         titles_dictionary["titles"]["notz_plot_filename"],
-        provenance_record,
+        get_provenance_record(cfg, caption),
         cfg,
         figure=fig,
         close=True,
@@ -338,17 +339,17 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         r_corr = obs_dict[point]["r_value"]
         p_val = obs_dict[point]["p_value"]
 
-        # Provide a default colour for the point
+        # Provide a default colour for the point if Pearson coefficient is missing
         if r_corr is None:
             r_corr = 0
 
-        # Decide if the point should be hatched
+        # Provide a pattern for the point if the p-value is present and sufficiently large
         if p_val is not None and p_val >= 0.05:
             h = 5 * "/"  # This is a hatch pattern
         else:
             h = None
 
-        # Plot the point only if both values are provided
+        # Plot the point only if both x and y values are provided
         if x is not None and y is not None:
             plt.scatter(
                 x,
@@ -368,18 +369,19 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
 
     # Create caption based on whether observational temp trend is present
     if obs_dict["first point"]["tas_trend"] is not None:
-        extra = f" Observations from {obs_years} are plotted as squares."
+        caption = (
+            "Decadal trends of sea ice area and global mean temperature."
+            f"Observations from {obs_years} are plotted as squares."
+        )
     else:
-        extra = ""
-    caption = (
-        f"Decadal trends of sea ice area and global mean temperature.{extra}"
-    )
-    provenance_record = get_provenance_record(cfg, caption)
+        caption = (
+            "Decadal trends of sea ice area and global mean temperature."
+        )
 
     # Save the figure (also closes it)
     save_figure(
         titles_dictionary["titles"]["roach_plot_filename"],
-        provenance_record,
+        get_provenance_record(cfg, caption),
         cfg,
         figure=fig,
         close=True,
