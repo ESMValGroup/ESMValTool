@@ -269,12 +269,12 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     # Create caption based on whether observation mean is presnt
     if isinstance(obs_mean, (int, float)):
         caption = (
-            f"Sensitivity of sea ice area to annual mean global warming."
+            "Sensitivity of sea ice area to annual mean global warming."
             f"Mean (dashed), standard deviation (shaded) and plausible values from {obs_years}."
         )
     else:
         caption = (
-            f"Sensitivity of sea ice area to annual mean global warming."
+            "Sensitivity of sea ice area to annual mean global warming."
         )
 
     # Save the figure (also closes it)
