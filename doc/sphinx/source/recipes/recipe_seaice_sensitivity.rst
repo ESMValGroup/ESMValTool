@@ -70,8 +70,9 @@ Example plots
 
    Plot of sensitivity of northern hemisphere sea ice area loss (millions of square kilometres) in the month of September to the annual mean global temperature change (K).
 
-   The dashed black line shows the observational mean, the shaded area is within one standard deviation of the mean, and the dotted grey lines denote "plausibility".
-The recipe includes values taken from Ed Blockley's code for the period 1979-2014 and defined as follows:
+   The dashed black line shows the observational mean, the shaded area denotes one one standard deviation of observational uncertainty, as calculated by Notz et al (2020).
+   The dotted grey lines reflect Notz et al estimate of a plausible range incorporating both internal variability and observational uncertainty.
+   These values are configurable in the recipe, with the default values taken from Notz et al (2020):
 
      mean:     -4.01 $million km^2 \ K^{-1}$,
      std_dev:   0.32 $million km^2 \ K^{-1}$,
