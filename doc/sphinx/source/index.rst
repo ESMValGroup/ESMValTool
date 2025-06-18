@@ -54,12 +54,7 @@ Get in touch!
 -------------
 Contact information is available :ref:`here <Support-and-Contact>`.
 
-.. toctree::
-   :hidden:
-
-    Introduction <introduction>
-    ESMValTool Functionalities <functionalities>
-    Getting started <quickstart/index>
+.. include:: _sidebar.rst.inc
 
 Indices and tables
 ==================
