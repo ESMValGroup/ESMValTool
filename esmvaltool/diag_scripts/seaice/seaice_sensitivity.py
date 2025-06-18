@@ -5,7 +5,6 @@ from pathlib import Path
 
 import iris
 import matplotlib.pyplot as plt
-import numpy as np
 from matplotlib.colors import Normalize
 from scipy import stats
 
@@ -152,10 +151,18 @@ def write_obs_from_cfg(cfg):
         obs_dict["roach_style"][point] = {}
 
         # Add the individual values for the observation point
-        obs_dict["roach_style"][point]["tas_trend"] = roach_values[point]["GMST trend"]
-        obs_dict["roach_style"][point]["siconc_trend"] = roach_values[point]["SIA trend"]
-        obs_dict["roach_style"][point]["r_value"] = roach_values[point]["Pearson CC of SIA over GMST"]
-        obs_dict["roach_style"][point]["p_value"] = roach_values[point]["significance of SIA over GMST"]
+        obs_dict["roach_style"][point]["tas_trend"] = roach_values[point][
+            "GMST trend"
+        ]
+        obs_dict["roach_style"][point]["siconc_trend"] = roach_values[point][
+            "SIA trend"
+        ]
+        obs_dict["roach_style"][point]["r_value"] = roach_values[point][
+            "Pearson CC of SIA over GMST"
+        ]
+        obs_dict["roach_style"][point]["p_value"] = roach_values[point][
+            "significance of SIA over GMST"
+        ]
 
     return obs_dict
 
@@ -207,7 +214,9 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     # Set up the figure
     fig, ax = plt.subplots(figsize=(3.5, 6), layout="constrained")
     fig.suptitle(titles_dictionary["titles"]["notz_fig_title"], wrap=True)
-    ax.set_title(titles_dictionary["titles"]["notz_ax_title"], wrap=True, fontsize=10)
+    ax.set_title(
+        titles_dictionary["titles"]["notz_ax_title"], wrap=True, fontsize=10
+    )
 
     # Iterate over the dictionary
     for dataset, inner_dict in data_dictionary.items():
@@ -257,14 +266,16 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     # Tidy the figure
     ax.set_xlim(0, 1)
     ax.set_xticks([])
-    ax.set_ylabel("dSIA/dGMST ($million \ km^2 \ K^{-1}$)")
+    ax.set_ylabel(r"dSIA/dGMST ($million \ km^2 \ K^{-1}$)")
 
     # Create caption based on whether observation mean is presnt
     if isinstance(obs_mean, (int, float)):
         extra = f" Mean (dashed), standard deviation (shaded) and plausible values from {obs_years}."
     else:
         extra = ""
-    caption = f"Sensitivity of sea ice area to annual mean global warming.{extra}"
+    caption = (
+        f"Sensitivity of sea ice area to annual mean global warming.{extra}"
+    )
     provenance_record = get_provenance_record(cfg, caption)
 
     # Save the figure (also closes it)
@@ -290,8 +301,8 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     # Set up the axes
     ax.axhline(color="black", alpha=0.5)
     ax.axvline(color="black", alpha=0.5)
-    ax.set_xlabel("Trend in GMST ($K \ decade^{-1}$)")
-    ax.set_ylabel("Trend in SIA ($million \ km^2 \ decade^{-1}$)")
+    ax.set_xlabel(r"Trend in GMST ($K \ decade^{-1}$)")
+    ax.set_ylabel(r"Trend in SIA ($million \ km^2 \ decade^{-1}$)")
 
     # Iterate over the dictionary
     for dataset, inner_dict in data_dictionary.items():
@@ -342,7 +353,16 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         # Plot the point only if both values are provided
         if x is not None and y is not None:
             plt.scatter(
-                x, y, marker="s", s=150, c=[r_corr], hatch=h, cmap=cmap, norm=norm, zorder=0, edgecolors="black"
+                x,
+                y,
+                marker="s",
+                s=150,
+                c=[r_corr],
+                hatch=h,
+                cmap=cmap,
+                norm=norm,
+                zorder=0,
+                edgecolors="black",
             )
 
     # Add a colour bar
@@ -353,7 +373,9 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         extra = f" Observations from {obs_years} are plotted as squares."
     else:
         extra = ""
-    caption = f"Decadal trends of sea ice area and global mean temperature.{extra}"
+    caption = (
+        f"Decadal trends of sea ice area and global mean temperature.{extra}"
+    )
     provenance_record = get_provenance_record(cfg, caption)
 
     # Save the figure (also closes it)
