@@ -118,7 +118,7 @@ diagnostics:
     scripts:
       sea_ice_sensitivity_script:
         script: seaice/seaice_sensitivity.py
-        observations:  # todo: check Notz-style
+        observations:
           observation period: 1979-2014
           sea ice sensitivity (Notz-style plot):
             mean: -4.01
@@ -126,20 +126,20 @@ diagnostics:
             plausible range: 1.28
           annual trends (Roach-style plot):
             first point:
-              GMST trend: &gmst_trend 0.18
-              SIA trend: -0.53
-              Pearson CC of SIA over GMST: 0.1  # todo: made up
-              significance of SIA over GMST: 0.05  # todo: also made up
+              GMST trend:
+              SIA trend:
+              Pearson CC of SIA over GMST:
+              significance of SIA over GMST:
             second point:
-              GMST trend: *gmst_trend
-              SIA trend: -0.49
-              Pearson CC of SIA over GMST: 0.15  # todo: made up
-              significance of SIA over GMST: 0.02  # todo: also made up
+              GMST trend:
+              SIA trend:
+              Pearson CC of SIA over GMST:
+              significance of SIA over GMST:
             third point:
-              GMST trend: *gmst_trend
-              SIA trend: -0.45
-              Pearson CC of SIA over GMST: 0  # todo: made up
-              significance of SIA over GMST: 0.07  # todo: also made up
+              GMST trend:
+              SIA trend:
+              Pearson CC of SIA over GMST:
+              significance of SIA over GMST:
 
 
   antarctic:
@@ -154,25 +154,25 @@ diagnostics:
     scripts:
       sea_ice_sensitivity_script:
         script: seaice/seaice_sensitivity.py
-        observations:  # todo: all of this is temporary and needs to be calculated
-          observation period: 1979-2014
+        observations:
+          observation period:
           sea ice sensitivity (Notz-style plot):
             mean:
             standard deviation:
             plausible range:
           annual trends (Roach-style plot):
             first point:
-              GMST trend: *gmst_trend
-              SIA trend: 0.10
-              Pearson CC of SIA over GMST: 0.1  # todo: made up
-              significance of SIA over GMST: 0.05  # todo: also made up
+              GMST trend:
+              SIA trend:
+              Pearson CC of SIA over GMST:
+              significance of SIA over GMST:
             second point:
-              GMST trend: *gmst_trend
-              SIA trend: 0.09
-              Pearson CC of SIA over GMST: 0.15  # todo: made up
-              significance of SIA over GMST: 0.02  # todo: also made up
+              GMST trend:
+              SIA trend:
+              Pearson CC of SIA over GMST:
+              significance of SIA over GMST:
             third point:
-              GMST trend: *gmst_trend
-              SIA trend: 0.14
-              Pearson CC of SIA over GMST: 0  # todo: made up
-              significance of SIA over GMST: 0.07  # todo: also made up
+              GMST trend:
+              SIA trend:
+              Pearson CC of SIA over GMST:
+              significance of SIA over GMST:

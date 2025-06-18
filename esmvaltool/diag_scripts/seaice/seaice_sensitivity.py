@@ -19,14 +19,14 @@ logger = logging.getLogger(Path(__file__).stem)
 
 
 # This is stolen from the example in AutoAssess _plot_mo_metrics.py
-def get_provenance_record(cfg):
+def get_provenance_record(cfg, caption):
     """Create a provenance record describing the diagnostic data and plot."""
     filenames = [item["filename"] for item in cfg["input_data"].values()]
 
     region = [item["diagnostic"] for item in cfg["input_data"].values()][0]
 
     record = {
-        "caption": f"Plots of {region.title()} sea ice sensitivity",
+        "caption": caption,
         "plot_type": "other",
         "authors": [
             "sellar_alistair",
@@ -259,8 +259,15 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     ax.set_xticks([])
     ax.set_ylabel("dSIA/dGMST ($million \ km^2 \ K^{-1}$)")
 
+    # Create caption based on whether observation mean is presnt
+    if isinstance(obs_mean, (int, float)):
+        extra = f" Mean (dashed), standard deviation (shaded) and plausible values from {obs_years}."
+    else:
+        extra = ""
+    caption = f"Sensitivity of sea ice area to annual mean global warming.{extra}"
+    provenance_record = get_provenance_record(cfg, caption)
+
     # Save the figure (also closes it)
-    provenance_record = get_provenance_record(cfg)
     save_figure(
         titles_dictionary["titles"]["notz_plot_filename"],
         provenance_record,
@@ -341,8 +348,15 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     # Add a colour bar
     plt.colorbar(label="Pearson correlation coefficient")
 
+    # Create caption based on whether observational temp trend is present
+    if obs_dict["first point"]["tas_trend"] is not None:
+        extra = f" Observations from {obs_years} are plotted as squares."
+    else:
+        extra = ""
+    caption = f"Decadal trends of sea ice area and global mean temperature.{extra}"
+    provenance_record = get_provenance_record(cfg, caption)
+
     # Save the figure (also closes it)
-    provenance_record = get_provenance_record(cfg)
     save_figure(
         titles_dictionary["titles"]["roach_plot_filename"],
         provenance_record,
