@@ -22,8 +22,6 @@ def get_provenance_record(cfg, caption):
     """Create a provenance record describing the diagnostic data and plot."""
     filenames = [item["filename"] for item in cfg["input_data"].values()]
 
-    region = [item["diagnostic"] for item in cfg["input_data"].values()][0]
-
     record = {
         "caption": caption,
         "plot_type": "other",
