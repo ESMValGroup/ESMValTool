@@ -53,6 +53,7 @@ Datasets
 --------
 
 The recipe tries to use as many datasets as possible from the list in Table S3 of https://agupubs.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1029%2F2019GL086749&file=grl60504-sup-0002-Table_SI-S01.pdf
+Only one ensemble member is used for each model.
 
 References
 ----------
@@ -67,9 +68,10 @@ Example plots
    :align:   center
    :width:   8cm
 
-   Plot of sensitivity of northern hemisphere sea ice area loss (millions of square kilometres) in the month of September to the annual mean global warming (K).
+   Plot of sensitivity of northern hemisphere sea ice area loss (millions of square kilometres) in the month of September to the annual mean global temperature change (K).
 
-   The dashed black line shows the observational mean, the shaded area is within one standard deviation of the mean, and the dashed grey lines are within "plausibility" of the mean, with all values taken from Ed Blockley's code for the period 1979-2014 and defined as follows:
+   The dashed black line shows the observational mean, the shaded area is within one standard deviation of the mean, and the dotted grey lines denote "plausibility".
+The recipe includes values taken from Ed Blockley's code for the period 1979-2014 and defined as follows:
 
      mean:     -4.01 $million km^2 \ K^{-1}$,
      std_dev:   0.32 $million km^2 \ K^{-1}$,
