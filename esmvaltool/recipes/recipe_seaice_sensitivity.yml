@@ -24,45 +24,21 @@ documentation:
 defaults: &defaults {ensemble: r1i1p1f1, exp: historical, grid: gn, project: CMIP6}
 datasets:
   - {<<: *defaults, dataset: HadGEM3-GC31-LL, institute: MOHC, ensemble: r1i1p1f3, label_dataset: True}
-#  - {<<: *defaults, dataset: HadGEM3-GC31-MM, institute: MOHC, ensemble: r1i1p1f3, label_dataset: True}  # other error
   - {<<: *defaults, dataset: UKESM1-0-LL, institute: MOHC, ensemble: r1i1p1f2, label_dataset: True}
   - {<<: *defaults, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
   - {<<: *defaults, dataset: ACCESS-ESM1-5, institute: CSIRO}
-#  - {<<: *defaults, dataset: AWI-CM-1-1-MR, institute: AWI}  # missing monthly siconc
   - {<<: *defaults, dataset: BCC-CSM2-MR, institute: BCC}
-#  - {<<: *defaults, dataset: BCC-ESM1, institute: BCC}  # errors
   - {<<: *defaults, dataset: CAMS-CSM1-0, institute: CAMS}
   - {<<: *defaults, dataset: CanESM5, institute: CCCma}
   - {<<: *defaults, dataset: CESM2, institute: NCAR}
   - {<<: *defaults, dataset: CESM2-WACCM, institute: NCAR}
   - {<<: *defaults, dataset: CESM2-WACCM-FV2, institute: NCAR}
-#  - {<<: *defaults, dataset: CNRM-CM6-1, institute: CNRM-CERFACS, ensemble: r1i1p1f2}  # missing
-#  - {<<: *defaults, dataset: CNRM-CM6-1-HR, institute: CNRM-CERFACS, ensemble: r1i1p1f2}  # missing
-#  - {<<: *defaults, dataset: CNRM-ESM2-1, institute: CNRM-CERFACS, ensemble: r1i1p1f2}  # missing
-#  - {<<: *defaults, dataset: E3SM-1-0, institute: E3SM-Project}  # missing
-#  - {<<: *defaults, dataset: EC-Earth3, institute: EC-Earth-Consortium}  # tas GR and siconc GN
-#  - {<<: *defaults, dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium}  # might have since fetched
-#  - {<<: *defaults, dataset: FGOALS-f3-L, institute: CAS}  # tas GR and siconc GN?
   - {<<: *defaults, dataset: FIO-ESM-2-0, institute: FIO-QLNM}
-#  - {<<: *defaults, dataset: GFDL-CM4, institute: NOAA-GFDL}  # tas GR1 and siconc GN
-#  - {<<: *defaults, dataset: GFDL-ESM4, institute: NOAA-GFDL}  # tas GR1 and siconc GN
-#  - {<<: *defaults, dataset: GISS-E2-1-G, institute: NASA-GISS}  # doesn't have siconc
-#  - {<<: *defaults, dataset: GISS-E2-1-G-CC, institute: NASA-GISS}  # can't find
-#  - {<<: *defaults, dataset: GISS-E2-1-H, institute: NASA-GISS}  # tas GN and siconc GR?
-#  - {<<: *defaults, dataset: INM-CM4-8, institute: INM}  # missing
-#  - {<<: *defaults, dataset: INM-CM5-0, institute: INM}  # missing
-#  - {<<: *defaults, dataset: IPSL-CM6A-LR, institute: IPSL}  # missing
-#  - {<<: *defaults, dataset: MIROC-ES2L, institute: MIROC, ensemble: r1i1p1f2}  # missing
   - {<<: *defaults, dataset: MIROC6, institute: MIROC}
   - {<<: *defaults, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
   - {<<: *defaults, dataset: MPI-ESM1-2-HR, institute: MPI-M}
   - {<<: *defaults, dataset: MPI-ESM1-2-LR, institute: MPI-M}
   - {<<: *defaults, dataset: MRI-ESM2-0, institute: MRI}
-#  - {<<: *defaults, dataset: NESM3, institute: NUIST}  # wget fails for areacello
-#  - {<<: *defaults, dataset: NorCPM1, institute: NCC}  # missing
-#  - {<<: *defaults, dataset: NorESM2-LM, institute: NCC}  # "errors in variable siconc"
-#  - {<<: *defaults, dataset: NorESM2-MM, institute: NCC}  # failed to concatenate to single cube
-#  - {<<: *defaults, dataset: SAM0-UNICON, institute: SNU}  # "errors in variable siconc"
 
 preprocessors:
   extract_test_period:
