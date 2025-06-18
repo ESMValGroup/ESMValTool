@@ -1,3 +1,11 @@
+"""
+Tests for getting commit git SHAS from singularity containers.
+
+NOTE: The imports used mean these tests can only be run from within ESMValTool.
+Ensure your ESMValTool working copy is installed in your environment before
+running these tests.
+"""
+
 import pytest
 
 from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.shas_via_singularity import (
@@ -48,6 +56,7 @@ def mock_scm_version_output():
 def test_get_shas_from_singularity_and_validate_for_valid_shas(
     mock_day_version_today, mock_day_version_yesterday, expected
 ):
+    """Test getting SHAs from singularity and validating them."""
     actual = get_shas_from_singularity(
         mock_day_version_today, mock_day_version_yesterday
     )
@@ -71,6 +80,7 @@ def test_get_shas_from_singularity_and_validate_for_valid_shas(
     ],
 )
 def test_validate_all_shas_for_invalid_shas(shas, expected_message):
+    """Test validation of SHAs for missing or invalid values."""
     with pytest.raises(ValueError, match=expected_message):
         # The unprocessed scm version strings are passed to the function purely
         # for error logging. Here 'None' is used.

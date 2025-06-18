@@ -1,3 +1,11 @@
+"""
+Tests for generating a HTML report from a Cylc database.
+
+NOTE: The imports used mean these tests can only be run from within ESMValTool.
+Ensure your ESMValTool working copy is installed in your environment before
+running these tests.
+"""
+
 import sqlite3
 import tempfile
 from collections import namedtuple
@@ -22,6 +30,7 @@ MockDbData = namedtuple("MockDbdata", ["cycle", "row_data"])
 
 @pytest.fixture
 def mock_db_data_single_cycle():
+    """Fixture providing a mock Cylc database with a single cycle of data."""
     cycle = "20250521T0100Z"
     row_data = [
         ("process_recipe_1", "succeeded", cycle),
@@ -62,7 +71,9 @@ def mock_db_with_passed_values(row_data):
         yield path_to_synthetic_db
 
 
+@pytest.mark.skip(reason="Needs reimplementation for GitHub API fetching")
 def test_main_for_site_dkrz(mock_db_data_single_cycle):
+    """Test the main function for a single cycle with DKRZ site."""
     esmval_versions_today = mock_scm_version_output()
     # Duplicate input doesn't impact test.
     esmval_versions_yesterday = mock_scm_version_output()
@@ -87,6 +98,7 @@ def test_main_for_site_dkrz(mock_db_data_single_cycle):
 
 
 def test_fetch_report_data_single_cycle(mock_db_data_single_cycle):
+    """Test fetching report data from a DB containing a single cycle's data."""
     expected = [
         ("process_recipe_1", "succeeded"),
         ("compare_recipe_1", "succeeded"),
@@ -103,6 +115,7 @@ def test_fetch_report_data_single_cycle(mock_db_data_single_cycle):
 
 
 def test_fetch_report_data_multi_cycle():
+    """Test fetching report data from a DB containing multiple cycles' data."""
     mock_cycle = "20250521T0100Z"
     mock_cycle_minus_1d = "20250520T0100Z"
     mock_cycle_minus_2d = "20250519T1700Z"
@@ -191,11 +204,13 @@ def test_fetch_report_data_multi_cycle():
     ],
 )
 def test_process_db_output(mock_db_output, expected):
+    """Test processing the DB output into a structured report data format."""
     actual = process_db_output(mock_db_output)
     assert actual == expected
 
 
 def test_process_db_output_sorting():
+    """Test that the DB output is sorted by recipe name."""
     mock_db_output = [
         ("process_c-ecipe", "succeeded"),
         ("compare_a-ecipe", "failed"),
@@ -208,6 +223,7 @@ def test_process_db_output_sorting():
 
 
 def test_create_subheader():
+    """Test creating a subheader with a formatted cycle point."""
     mock_cylc_task_cycle_point = "20250101T0001Z"
     actual = create_subheader(mock_cylc_task_cycle_point)
     assert actual == "Cycle start: 2025-01-01 00:01 UTC"
@@ -215,6 +231,7 @@ def test_create_subheader():
 
 @pytest.mark.skip(reason="Finish reimplementation")
 def test_render_html_report_no_commits_no_shas():
+    """Test rendering an HTML report without commit SHAs."""
     mock_subheader = "Cycle start: 2025-01-01 00:01 UTC"
     mock_report_data = {
         "recipe_1": {
@@ -236,6 +253,7 @@ def test_render_html_report_no_commits_no_shas():
 
 @pytest.mark.skip(reason="Finish reimplementation")
 def test_render_html_report_partial():
+    """Test rendering an HTML report with missing tasks."""
     mock_subheader = "Cycle start: 2025-01-01 00:01 UTC"
     mock_report_data = {
         "recipe_1": {

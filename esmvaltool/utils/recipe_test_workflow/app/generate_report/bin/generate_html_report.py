@@ -16,7 +16,6 @@ try:
         fetch_commit_details_from_github_api,
     )
     from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.shas_via_git import (
-        CommitInfo,
         get_shas_from_git,
     )
     from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.shas_via_singularity import (
@@ -311,7 +310,7 @@ def create_subheader(cylc_task_cycle_point):
     return subheader
 
 
-def render_html_report(report_data, subheader, commit_info, sha_info):
+def render_html_report(report_data, subheader, commit_info):
     """
     Render the HTML report using Jinja2.
 
@@ -321,19 +320,14 @@ def render_html_report(report_data, subheader, commit_info, sha_info):
         The report data to be rendered in the HTML template.
     subheader : str
         The subheader for the HTML report.
-    commit_info : CommitInfo | None
-        The commit information for ESMValCore and ESMValTool, if the site uses
-        git repos, or None.
-    sha_info : dict | None
-        The SHA information for ESMValCore and ESMValTool, if the site uses
-        singularity containers, or None.
+    commit_info : dict
+        The commit information for ESMValCore and ESMValTool.
 
     Returns
     -------
     str
         The rendered HTML content.
     """
-    commit_info = commit_info or CommitInfo([], [])
     script_dir = os.path.dirname(os.path.abspath(__file__))
     env = Environment(
         loader=FileSystemLoader(script_dir),
@@ -343,9 +337,8 @@ def render_html_report(report_data, subheader, commit_info, sha_info):
     rendered_html = template.render(
         subheader=subheader,
         report_data=report_data,
-        esmval_core_commits=commit_info.core,
-        esmval_tool_commits=commit_info.tool,
-        sha_info=sha_info,
+        esmval_core_commits=commit_info.get("ESMValCore", []),
+        esmval_tool_commits=commit_info.get("ESMValTool", []),
     )
     return rendered_html
 

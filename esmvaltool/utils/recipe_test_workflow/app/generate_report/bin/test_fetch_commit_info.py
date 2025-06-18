@@ -1,3 +1,11 @@
+"""
+Tests for fetching detailled commit information from the GitHub API.
+
+NOTE: The imports used mean these tests can only be run from within ESMValTool.
+Ensure your ESMValTool working copy is installed in your environment before
+running these tests.
+"""
+
 from unittest.mock import Mock, call, patch
 
 import pytest
@@ -30,6 +38,7 @@ from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.fetch_commit_
 def test_fetch_commit_details_from_github_api_single_commits(
     mock_fetch_single, mock_shas_by_package_and_day
 ):
+    """Test correct function is called for fetching single commits."""
     mock_fetch_single.return_value = {"mock_response": "data"}
     mock_headers = "headers"
 
@@ -55,6 +64,7 @@ def test_fetch_commit_details_from_github_api_single_commits(
 def test_fetch_commit_details_from_github_api_range_of_commits(
     mock_fetch_range,
 ):
+    """Test correct function is called for fetching a range of commits."""
     mock_fetch_range.return_value = [{"mock_response": "data"}]
     mock_headers = "headers"
     mock_shas_by_package_and_day = {
@@ -94,6 +104,7 @@ def test_fetch_commit_details_from_github_api_range_of_commits(
     "esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.fetch_commit_info.requests.get"
 )
 def test_fetch_single_commit(mock_get):
+    """Test fetching a single commit from the GitHub API."""
     mock_response = Mock()
     mock_response.json.return_value = {"mock_response": "data"}
     mock_get.return_value = mock_response
@@ -112,6 +123,7 @@ def test_fetch_single_commit(mock_get):
     "esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.fetch_commit_info.requests.get"
 )
 def test_fetch_range_of_commits_results_on_first_page(mock_get):
+    """Test fetching a range of commits with results on the first page."""
     mock_response_json_return_value = [
         {"sha": "tested_today"},
         {"sha": "intermediate_commit_1"},
@@ -147,6 +159,7 @@ def test_fetch_range_of_commits_results_on_first_page(mock_get):
     "esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.fetch_commit_info.requests.get"
 )
 def test_fetch_range_of_commits_results_on_later_page(mock_get):
+    """Test fetching a range of commits with results on later pages."""
     mock_response_json_return_value = (
         [{"sha": "tested_today"}]
         + [{"sha": f"intermediate_commit_{i}"} for i in range(1, 26)]
@@ -189,6 +202,7 @@ def test_fetch_range_of_commits_results_on_later_page(mock_get):
 
 @pytest.mark.parametrize("num_of_commits_under_test", ["single", "range"])
 def test_process_commit_info(num_of_commits_under_test):
+    """Test processing commit information into a simplified format."""
     # Abbreviateded response for a real commit from ESMValTool.
     mock_raw_commit = {
         "sha": "662e792984d6577ae52e6931e794386ce508960c",
