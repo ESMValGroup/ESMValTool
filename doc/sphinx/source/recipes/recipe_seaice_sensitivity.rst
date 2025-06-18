@@ -74,9 +74,11 @@ Example plots
    The dotted grey lines reflect Notz et al estimate of a plausible range incorporating both internal variability and observational uncertainty.
    These values are configurable in the recipe, with the default values taken from Notz et al (2020):
 
-     mean:     -4.01 $million km^2 \ K^{-1}$,
-     std_dev:   0.32 $million km^2 \ K^{-1}$,
-     plausible: 1.28 $million km^2 \ K^{-1}$,
+=========  =====================
+mean       -4.01 million km2 K-1
+std_dev    0.32 million km2 K-1
+plausible  1.28 million km2 K-1
+=========  =====================
 
 .. _fig_seaice_sensitivity_2:
 .. figure::  /recipes/figures/seaice/Annual_Antarctic_sea_ice_trends.png
