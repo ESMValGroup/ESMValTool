@@ -4,7 +4,12 @@
     gap: 1em;
 }
 
-@media (max-width: 300px) {
+@media (max-width: 620px) {
+    .gallery {
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+    }
+}
+@media (max-width: 420px) {
     .gallery {
         grid-template-columns: repeat(1, minmax(180px, 1fr));
     }
