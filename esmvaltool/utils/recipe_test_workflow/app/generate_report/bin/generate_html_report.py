@@ -8,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from requests.exceptions import HTTPError
+from requests.exceptions import ConnectionError, HTTPError, Timeout
 
 # Import from the ESMValTool package for testing.
 try:
@@ -99,44 +99,63 @@ def main(
     # Catch the following errors so the report generates without commit/SHA
     # information. These errors are either propagated on purpose or
     # indicate a probable minor issue.
-    except (ValueError, KeyError, IndexError, HTTPError):
+    except (
+        ValueError,
+        KeyError,
+        IndexError,
+        HTTPError,
+        Timeout,
+        ConnectionError,
+    ):
         print(
             "Report generating with results only. Error while fetching commit "
             "data. See std.err log for details."
         )
         traceback.print_exc()
+
     if sha_info:
         commit_info = fetch_commit_details_from_github_api(sha_info)
-        print(commit_info)
+        add_report_messages_to_commits(commit_info)
 
-    # raw_db_data = fetch_report_data(db_file_path, cylc_task_cycle_point)
-    # processed_db_data = process_db_output(raw_db_data)
-    # subheader = create_subheader(cylc_task_cycle_point)
+    raw_db_data = fetch_report_data(db_file_path, cylc_task_cycle_point)
+    processed_db_data = process_db_output(raw_db_data)
+    subheader = create_subheader(cylc_task_cycle_point)
 
-    # rendered_html = render_html_report(
-    #     subheader=subheader,
-    #     report_data=processed_db_data,
-    #     commit_info=commit_info,
-    # )
+    rendered_html = render_html_report(
+        subheader=subheader,
+        report_data=processed_db_data,
+        commit_info=commit_info,
+    )
 
-    # write_report_to_file(rendered_html, report_path)
+    write_report_to_file(rendered_html, report_path)
 
 
 def add_report_messages_to_commits(commit_info):
     """
-    Add report messages to a CommitInfo dataclass.
+    Add report messages to a commit info dictionary in-place.
 
     Parameters
     ----------
-    commit_info : CommitInfo
-        A CommitInfo dataclass containing two lists of package commits.
+    commit_info : dict[str, list[dict]]
+        A dictionary where keys are package names and values are lists of
+        commit details. E.g.
+        {
+            "ESMValCore": [
+                {"sha": "abcd123", "message": "Fix bug", ...},
+                {"sha": "efgh456", "message": "Add feature", ...}
+            ],
+            "ESMValTool": [
+                {"sha": "ijkl789", "message": "Update docs", ...}
+            ]
+        }
     """
-    for package_commits in [commit_info.core, commit_info.tool]:
-        package_commits[0]["report_flag"] = "Version tested this cycle >>>"
-        if len(package_commits) > 1:
-            package_commits[-1]["report_flag"] = (
-                "Version tested last cycle >>>"
-            )
+    if commit_info:
+        for package_commits in commit_info.values():
+            package_commits[0]["report_flag"] = "Commit tested this cycle >>>"
+            if len(package_commits) > 1:
+                package_commits[-1]["report_flag"] = (
+                    "Commit tested last cycle >>>"
+                )
 
 
 def fetch_report_data(db_file_path, target_cycle_point):

@@ -33,22 +33,28 @@ from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.fetch_commit_
     ids=["todays_shas_only", "todays_shas_same_as_yesterdays"],
 )
 @patch(
+    "esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.fetch_commit_info.process_commit_info"
+)
+@patch(
     "esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.fetch_commit_info.fetch_single_commit"
 )
 def test_fetch_commit_details_from_github_api_single_commits(
-    mock_fetch_single, mock_shas_by_package_and_day
+    mock_fetch_single, mock_process_commit_info, mock_shas_by_package_and_day
 ):
     """Test correct function is called for fetching single commits."""
-    mock_fetch_single.return_value = {"mock_response": "data"}
+    mock_fetch_single.return_value = {"mock_raw_commit": "raw_data"}
     mock_headers = "headers"
+    mock_process_commit_info.return_value = [
+        {"mock_processed_commit": "processed_data"}
+    ]
 
     actual = fetch_commit_details_from_github_api(
         mock_shas_by_package_and_day, mock_headers
     )
 
     assert actual == {
-        "ESMValCore": [{"mock_response": "data"}],
-        "ESMValTool": [{"mock_response": "data"}],
+        "ESMValCore": [{"mock_processed_commit": "processed_data"}],
+        "ESMValTool": [{"mock_processed_commit": "processed_data"}],
     }
 
     assert mock_fetch_single.call_count == 2
@@ -57,12 +63,21 @@ def test_fetch_commit_details_from_github_api_single_commits(
         call("ESMValTool", "ESMValGroup", mock_headers, "ijkl789"),
     ]
 
+    assert mock_process_commit_info.call_count == 2
+    assert mock_process_commit_info.call_args_list == [
+        call({"mock_raw_commit": "raw_data"}),
+        call({"mock_raw_commit": "raw_data"}),
+    ]
 
+
+@patch(
+    "esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.fetch_commit_info.process_commit_info"
+)
 @patch(
     "esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.fetch_commit_info.fetch_range_of_commits"
 )
 def test_fetch_commit_details_from_github_api_range_of_commits(
-    mock_fetch_range,
+    mock_fetch_range, mock_process_commit_info
 ):
     """Test correct function is called for fetching a range of commits."""
     mock_fetch_range.return_value = [{"mock_response": "data"}]
@@ -71,14 +86,17 @@ def test_fetch_commit_details_from_github_api_range_of_commits(
         "ESMValCore": {"today": "abcd123", "yesterday": "efgh456"},
         "ESMValTool": {"today": "ijkl789", "yesterday": "mnop012"},
     }
+    mock_process_commit_info.return_value = [
+        {"mock_processed_commit": "processed_data"}
+    ]
 
     actual = fetch_commit_details_from_github_api(
         mock_shas_by_package_and_day, mock_headers
     )
 
     assert actual == {
-        "ESMValCore": [{"mock_response": "data"}],
-        "ESMValTool": [{"mock_response": "data"}],
+        "ESMValCore": [{"mock_processed_commit": "processed_data"}],
+        "ESMValTool": [{"mock_processed_commit": "processed_data"}],
     }
 
     assert mock_fetch_range.call_count == 2
@@ -107,6 +125,7 @@ def test_fetch_single_commit(mock_get):
     """Test fetching a single commit from the GitHub API."""
     mock_response = Mock()
     mock_response.json.return_value = {"mock_response": "data"}
+    mock_response.status_code = 200
     mock_get.return_value = mock_response
 
     actual = fetch_single_commit(
@@ -116,6 +135,8 @@ def test_fetch_single_commit(mock_get):
     mock_get.assert_called_once_with(
         "https://api.github.com/repos/mock_owner/mock_repo/commits/mock_sha",
         headers="mock_headers",
+        params=None,
+        timeout=10,
     )
 
 
@@ -133,6 +154,7 @@ def test_fetch_range_of_commits_results_on_first_page(mock_get):
     ]
     mock_response = Mock()
     mock_response.json.return_value = mock_response_json_return_value
+    mock_response.status_code = 200
     mock_get.return_value = mock_response
 
     mock_params = {
@@ -149,9 +171,10 @@ def test_fetch_range_of_commits_results_on_first_page(mock_get):
     )
     assert actual == mock_response_json_return_value[:-1]
     mock_get.assert_called_once_with(
-        "https://api.github.com/repos/mock_owner/mock_repo/commits/",
+        "https://api.github.com/repos/mock_owner/mock_repo/commits",
         headers="mock_headers",
         params=mock_params,
+        timeout=10,
     )
 
 
@@ -173,6 +196,7 @@ def test_fetch_range_of_commits_results_on_later_page(mock_get):
         mock_response_json_return_value[10:20],  # Second page
         mock_response_json_return_value[20:30],  # Third page
     ]
+    mock_response.status_code = 200
     mock_get.return_value = mock_response
 
     actual = fetch_range_of_commits(
@@ -193,9 +217,9 @@ def test_fetch_range_of_commits_results_on_later_page(mock_get):
     #     "page": 3,
     # }
     # expected_calls = [
-    #     call(expected_url, headers="mock_headers", params=expected_params),
-    #     call(expected_url, headers="mock_headers", params=expected_params),
-    #     call(expected_url, headers="mock_headers", params=expected_params),
+    #     call(expected_url, headers="mock_headers", params=expected_params, timeout=10),
+    #     call(expected_url, headers="mock_headers", params=expected_params, timeout=10),
+    #     call(expected_url, headers="mock_headers", params=expected_params, timeout=10),
     # ]
     # mock_get.assert_has_calls(expected_calls)
 

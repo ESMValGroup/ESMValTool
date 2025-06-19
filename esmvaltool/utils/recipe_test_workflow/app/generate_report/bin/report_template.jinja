@@ -33,51 +33,27 @@
 
             .table-full-width {
                 width: 100%;
+                border-collapse: collapse;
             }
 
-            .table-half-width {
-                width: 50%;
-            }
+            .report-msg-column {width: 225px;}
+            .time-column {width: 75px;}
+            .sha-column {width: 50px;}
+            .author-column {width: 200px;}
+
         </style>
     </head>
     <body>
         <h1>Recipe Test Workflow - Last Run Status</h1>
         <h2>{{ subheader }}</h2>
-
-        {% if sha_info %}
-        <table class="table-shared table-half-width">
-            <caption><h3>Commit SHAs</h3></caption>
-            <tr>
-                <th></th>
-                <th>Tested Today</th>
-                {%- if sha_info['ESMValCore'].get('yesterday') and sha_info['ESMValTool'].get('yesterday') -%}
-                <th>Tested Yesterday</th>
-                {%- endif -%}
-            </tr>
-            {%- for package, days in sha_info.items() -%}
-            <tr>
-                <td>{{ package }}</td>
-                <td>
-                    <a href="https://github.com/ESMValGroup/{{ package }}/commit/{{ days['today'] }}">{{ days['today'] }}</a>
-                </td>
-                {%- if days.get('yesterday') -%}
-                <td>
-                    <a href="https://github.com/ESMValGroup/{{ package }}/commit/{{ days['yesterday'] }}">{{ days['yesterday'] }}</a>
-                </td>
-                {%- endif -%}
-            </tr>
-            {%- endfor -%}
-        </table>
-        {% endif %}
-
         {% if esmval_core_commits %}
-        <table class="table-shared table-half-width">
-            <caption><h2>ESMValCore Commits</h2></caption>
+        <table class="table-shared table-full-width">
+            <caption><h2>ESMValCore</h2></caption>
                 <tr>
-                    <th></th>
-                    <th>Time</th>
-                    <th>SHA</th>
-                    <th>Author</th>
+                    <th class="report-msg-column"></th>
+                    <th class="time-column">Time</th>
+                    <th class="sha-column">SHA</th>
+                    <th class="author-column">Author</th>
                     <th>Commit message</th>
                 </tr>
                 {%- for commit in esmval_core_commits -%}
@@ -89,26 +65,30 @@
                     {%- endif -%}
                     <td>{{ commit['date'] }}</td>
                     <td>
-                        <a href="https://github.com/ESMValGroup/ESMValCore/commit/{{ commit['sha'] }}">{{ commit['sha'] }}</a>
+                        <a href="{{ commit['url'] }}">{{ commit['sha'] }}</a>
                     </td>
-                    <td>{{ commit['author'] }} </td>
+                    <td style="padding: 10px;">
+                        <img src="{{ commit['author_avatar']}}"
+                             alt="Author Avatar"
+                             style="border-radius: 50%; width: 30px; height:30px; vertical-align: middle; margin-right: 8px;">
+                        <span style="vertical-align: middle;">{{ commit['author'] }}</span>
+                    </td>
                     <td>{{ commit['message']}} </td>
                 </tr>
                 {%- endfor -%}
         </table>
         {% endif %}
-
         {% if esmval_tool_commits %}
-        <table class="table-shared table-half-width">
-            <caption><h2>ESMValTool Commits</h2></caption>
-            <tr>
-                <th></th>
-                <th>Time</th>
-                <th>SHA</th>
-                <th>Author</th>
-                <th>Commit message</th>
-            </tr>
-            {%- for commit in esmval_tool_commits -%}
+        <table class="table-shared table-full-width">
+            <caption><h2>ESMValTool</h2></caption>
+                <tr>
+                    <th class="report-msg-column"></th>
+                    <th class="time-column">Time</th>
+                    <th class="sha-column">SHA</th>
+                    <th class="author-column">Author</th>
+                    <th>Commit message</th>
+                </tr>
+                {%- for commit in esmval_tool_commits -%}
                 <tr>
                     {%- if commit['report_flag'] -%}
                     <td align="right" style="color: hotpink; font-weight: bold;">{{ commit['report_flag'] }}</td>
@@ -116,8 +96,15 @@
                     <td></td>
                     {%- endif -%}
                     <td>{{ commit['date'] }}</td>
-                    <td><a href="https://github.com/ESMValGroup/ESMValTool/commit/{{ commit['sha'] }}">{{ commit['sha'] }}</a></td>
-                    <td>{{ commit['author'] }} </td>
+                    <td>
+                        <a href="{{ commit['url'] }}">{{ commit['sha'] }}</a>
+                    </td>
+                    <td style="padding: 10px;">
+                        <img src="{{ commit['author_avatar']}}"
+                             alt="Author Avatar"
+                             style="border-radius: 50%; width: 30px; height:30px; vertical-align: middle; margin-right: 8px;">
+                        <span style="vertical-align: middle;">{{ commit['author'] }}</span>
+                    </td>
                     <td>{{ commit['message']}} </td>
                 </tr>
             {%- endfor -%}

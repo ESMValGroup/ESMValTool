@@ -1,12 +1,8 @@
-"""
-Fetches commit details from the GitHub API.
-"""
+"""Fetch commit details from the GitHub API."""
 
 import os
 
 import requests
-
-tested_today = "662e792984d6577ae52e6931e794386ce508960c"
 
 GITHUB_API_URL = "https://api.github.com"
 GITHUB_API_PERSONAL_ACCESS_TOKEN = os.environ.get(
@@ -42,16 +38,25 @@ def fetch_commit_details_from_github_api(
         commit details for each day. E.g.
         {"ESMValCore": [{"sha": "abcd123", ...}, ...], "ESMValTool": [...]}
     """
+    # Uncomment to test a range of commits during development.
+    # shas_by_package_and_day = {
+    #     "ESMValCore":
+    #         {
+    #             "today": "d1453c665a97ad3563f9bf112274e273b9e4182b",
+    #             "yesterday": "a116cc6a60a6ae8b628e0ffcbc894294cd26ee5f"},
+    #     "ESMValTool":
+    #         {
+    #             "today": "c6e6e42d708265e3db1d57ccaa48669ca22011ca",
+    #             "yesterday": "4515a2b9260ddef6b996a1d1b911e5d3d2029638"},
+    # }
     commit_details_by_package = {}
     for package, shas_by_day in shas_by_package_and_day.items():
         if shas_by_day.get("yesterday") is None or shas_by_day.get(
             "today"
         ) == shas_by_day.get("yesterday"):
-            raw_commit = fetch_single_commit(
+            raw_commits = fetch_single_commit(
                 package, "ESMValGroup", headers, shas_by_day["today"]
             )
-            # commit_info = process_commit_info(raw_commit)
-            commit_details_by_package[package] = [raw_commit]
         else:
             raw_commits = fetch_range_of_commits(
                 package,
@@ -60,9 +65,62 @@ def fetch_commit_details_from_github_api(
                 newer_sha=shas_by_day["today"],
                 older_sha=shas_by_day["yesterday"],
             )
-            commit_details_by_package[package] = raw_commits
-    # commit_info = process_commit_info(commit_info)
+        commit_info = process_commit_info(raw_commits)
+        commit_details_by_package[package] = commit_info
     return commit_details_by_package
+
+
+def make_api_call(url, headers=None, params=None):
+    """
+    Make a GET request to a given API url.
+
+    Parameters
+    ----------
+    url : str
+        The URL to make the request to.
+    headers : dict, optional
+        Headers to include in the request.
+    params : dict, optional
+        Query parameters to include in the request.
+
+    Raises
+    ------
+    HTTPError
+        If the request fails or returns with a status code other than 200.
+    TimeOutError
+        If the request times out.
+    ConnectionError
+        If there is a connection error.
+    TooManyRequestsError
+        If the API rate limit is exceeded.
+
+    Returns
+    -------
+    Response
+        The raw response from the API call.
+    """
+    try:
+        response = requests.get(
+            url, headers=headers, params=params, timeout=10
+        )
+        if response.status_code != 200:
+            raise requests.exceptions.HTTPError(
+                f"Unexpected status code for url={url} headers={headers} "
+                f"params={params} - {response.status_code}: {response.text}"
+            )
+    except requests.exceptions.HTTPError as http_err:
+        raise requests.exceptions.HTTPError(
+            f"HTTP error occurred: {http_err}"
+        ) from http_err
+    except requests.exceptions.Timeout as timeout_err:
+        raise requests.exceptions.Timeout(
+            f"Request timed out: {timeout_err}"
+        ) from timeout_err
+    except requests.exceptions.ConnectionError as conn_err:
+        raise requests.exceptions.ConnectionError(
+            f"Connection error occurred: {conn_err}"
+        ) from conn_err
+    return response
 
 
 def fetch_single_commit(repo, owner, headers, sha):
@@ -88,11 +146,10 @@ def fetch_single_commit(repo, owner, headers, sha):
     Returns
     -------
     dict
-        The raw commit data if found, otherwise None.
+        The raw commit data if found.
     """
     url = f"{GITHUB_API_URL}/repos/{owner}/{repo}/commits/{sha}"
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()  # Raise a HTTP error for bad responses
+    response = make_api_call(url, headers=headers)
     raw_commit = response.json()
     return raw_commit
 
@@ -105,13 +162,6 @@ def fetch_range_of_commits(repo, owner, headers, newer_sha, older_sha):
     the newer SHA to the older SHA. The function fetches batches of 10 commits
     to avoid hitting the API rate limits. NOTE: The GitHub API will raise a
     HTTPError if the newer SHA is not found.
-
-    Raises
-    ------
-    HTTPError
-        If the newer SHA is not found (or if the request fails etc.)
-    ValueError
-        If too many pages are fetched, indicating a potential infinite loop.
 
     Parameters:
     ----------
@@ -126,23 +176,34 @@ def fetch_range_of_commits(repo, owner, headers, newer_sha, older_sha):
     older_sha : str
         The SHA of the commit to stop fetching at.
 
+    Raises
+    ------
+    HTTPError
+        If the newer SHA is not found (or if the request fails etc.)
+    ValueError
+        If too many pages are fetched, indicating a potential infinite loop.
+
+    Returns
+    -------
+    list[dict]
+        A list of raw commit data for the range of commits from newer_sha to
+        older_sha, in chronological order.
     """
-    url = f"{GITHUB_API_URL}/repos/{owner}/{repo}/commits/"
+    url = f"{GITHUB_API_URL}/repos/{owner}/{repo}/commits"
     params = {
         "per_page": 10,
         "sha": newer_sha,
     }
-    range_raw_commits = []
     page = 1
+    range_raw_commits = []
 
     fetched_end_sha = False
+
     while not fetched_end_sha:
         params["page"] = page
-        response = requests.get(url, headers=headers, params=params)
-        response.raise_for_status()  # Raise a HTTP error for bad responses
+        response = make_api_call(url, headers=headers, params=params)
 
         page_raw_commits = response.json()
-
         for raw_commit in page_raw_commits:
             range_raw_commits.append(raw_commit)
             if raw_commit["sha"].startswith(older_sha):
@@ -155,6 +216,7 @@ def fetch_range_of_commits(repo, owner, headers, newer_sha, older_sha):
                 "Too many pages fetched, likely an infinite loop. Check the "
                 "newer and older SHAs."
             )
+
     return range_raw_commits
 
 
@@ -170,8 +232,8 @@ def process_commit_info(raw_commit_info):
 
     Returns
     -------
-    dict
-        Processed commit information with relevant details.
+    list[dict]
+        A list of dictionaries containing processed commit information.
     """
 
     if not isinstance(raw_commit_info, list):

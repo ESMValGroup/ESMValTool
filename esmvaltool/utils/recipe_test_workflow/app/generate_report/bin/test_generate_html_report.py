@@ -27,6 +27,9 @@ from esmvaltool.utils.recipe_test_workflow.app.generate_report.bin.test_shas_via
 
 MockDbData = namedtuple("MockDbdata", ["cycle", "row_data"])
 
+# TODO: Generate and add.
+real_commit_info_for_testing = ""
+
 
 @pytest.fixture
 def mock_db_data_single_cycle():
