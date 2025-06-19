@@ -134,10 +134,10 @@ diagnostics:
              reference_for_metric: true}
       psl:
         <<: *var_default
-        reference_dataset: ERA5
+        reference_dataset: ERA-5
         additional_datasets:
-          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, reference_for_metric: true}
+          - {dataset: ERA-5, project: obs4MIPs, type: atmos, version: PCMDI, tier: 1,
+             reference_for_metric: true'}
       hus_200:
         <<: *var_default
         short_name: hus
@@ -149,11 +149,11 @@ diagnostics:
       ua_200:
         <<: *var_default
         short_name: ua
-        reference_dataset: ERA5
+        reference_dataset: ERA-5
         preprocessor: pp_200
         additional_datasets:
-          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, reference_for_metric: true}
+          - {dataset: ERA-5, project: obs4MIPs, type: atmos, version: PCMDI, tier: 1,
+             reference_for_metric: true'}
     scripts:
       allplots:
         script: monitor/multi_datasets.py
@@ -176,6 +176,12 @@ diagnostics:
                 linewidth: 2
                 zorder: 3
               ERA5:
+                color: black
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              ERA-5:
                 color: black
                 label: '{dataset}'
                 linestyle: '-'
@@ -214,10 +220,10 @@ diagnostics:
              reference_for_metric: true}
       psl:
         <<: *var_default_abs
-        reference_dataset: ERA5
+        reference_dataset: ERA-5
         additional_datasets:
-          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, reference_for_metric: true}
+          - {dataset: ERA-5, project: obs4MIPs, type: atmos, version: PCMDI, tier: 1,
+             reference_for_metric: true'}
       hus_200:
         <<: *var_default_abs
         short_name: hus
@@ -229,11 +235,11 @@ diagnostics:
       ua_200:
         <<: *var_default_abs
         short_name: ua
-        reference_dataset: ERA5
+        reference_dataset: ERA-5
         preprocessor: pp_abs_200
         additional_datasets:
-          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-             tier: 3, reference_for_metric: true}
+          - {dataset: ERA-5, project: obs4MIPs, type: atmos, version: PCMDI, tier: 1,
+             reference_for_metric: true'}
     scripts:
       allplots:
         script: monitor/multi_datasets.py
@@ -256,6 +262,12 @@ diagnostics:
                 linewidth: 2
                 zorder: 3
               ERA5:
+                color: black
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              ERA-5:
                 color: black
                 label: '{dataset}'
                 linestyle: '-'
