@@ -376,7 +376,7 @@ for var_attr in VAR_ATTRS_IN:
     var_attr["short_name"] = var_attr.pop("var_name")
 ATTRS_IN[0]["standard_name"] = INVALID_STANDARD_NAME
 METADATA = [{**a, **VAR_ATTRS_IN[idx]} for (idx, a) in enumerate(ATTRS_IN)]
-TEST_METADATA_TO_NETDCF = zip(METADATA, CUBES_IN, OUTPUT)
+TEST_METADATA_TO_NETDCF = zip(METADATA, CUBES_IN, OUTPUT, strict=False)
 
 
 @pytest.mark.parametrize("metadata,cube,output", TEST_METADATA_TO_NETDCF)
@@ -426,7 +426,7 @@ ATTRS_NEW = [
         "answer": 42,
     },
 ]
-TEST_SAVE_1D_DATA = zip(VAR_ATTRS_NEW, ATTRS_NEW)
+TEST_SAVE_1D_DATA = zip(VAR_ATTRS_NEW, ATTRS_NEW, strict=False)
 
 
 @pytest.mark.parametrize("var_attrs,attrs", TEST_SAVE_1D_DATA)
@@ -562,7 +562,7 @@ AUX_COORDS = [
     None,
     iris.coords.AuxCoord([2, 3, 5], long_name="Primes!"),
 ]
-TEST_SAVE_SCALAR_DATA = zip(VAR_ATTRS_NEW, ATTRS_NEW, AUX_COORDS)
+TEST_SAVE_SCALAR_DATA = zip(VAR_ATTRS_NEW, ATTRS_NEW, AUX_COORDS, strict=False)
 
 
 @pytest.mark.parametrize("var_attrs,attrs,aux_coord", TEST_SAVE_SCALAR_DATA)
