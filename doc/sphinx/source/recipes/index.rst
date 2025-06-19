@@ -106,7 +106,6 @@ IPCC
    recipe_ipccwg1ar6ch3
    recipe_ipccwg1ar5ch9
    recipe_collins13ipcc
-   recipe_examples
 
 Land
 ^^^^
@@ -164,12 +163,9 @@ require a legacy version of ESMValTool to run.
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
-   recipe_psyplot
-   recipe_rainfarm
-   recipe_schlund20jgr
-   recipe_spei
+   legacy_recipe_list
 
 
 Broken recipe list
