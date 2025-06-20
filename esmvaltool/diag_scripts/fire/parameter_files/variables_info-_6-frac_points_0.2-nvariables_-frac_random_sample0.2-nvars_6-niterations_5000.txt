@@ -1,0 +1,13 @@
+y_filen:: 'burnt_area.nc'
+x_filen_list:: ['pr_mean.nc', 'tas_max.nc', 'Tree_cover_vcf.nc', 'Total_cover_vcf.nc', 'vpd_mean.nc', 'cveg.nc']
+CA_filen:: None
+dir:: 'data/data/driving_data/Global/isimp3a/obsclim/GSWP3-W5E5/period_2010_2012/masked/'
+filename_out:: '_6-frac_points_0.2'
+dir_outputs:: 'outputs/outputs//ConFire_AR7-simple-pr-totalCover-tas-cveg-treeMoist-vpd-widerPriors-mh-FmaxNone///'
+subset_function:: sub_year_months
+subset_function_args:: {'months_of_year': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]}
+out_file:: '_6-frac_points_0.2-nvariables_-frac_random_sample0.2-nvars_6-niterations_5000'
+data_file:: 'outputs/outputs//ConFire_AR7-simple-pr-totalCover-tas-cveg-treeMoist-vpd-widerPriors-mh-FmaxNone////data-_6-frac_points_0.2-nvariables_-frac_random_sample0.2-nvars_6-niterations_5000.nc'
+trace_file:: 'outputs/outputs//ConFire_AR7-simple-pr-totalCover-tas-cveg-treeMoist-vpd-widerPriors-mh-FmaxNone////trace-_6-frac_points_0.2-nvariables_-frac_random_sample0.2-nvars_6-niterations_5000.nc'
+other_params_file:: 'outputs/outputs//ConFire_AR7-simple-pr-totalCover-tas-cveg-treeMoist-vpd-widerPriors-mh-FmaxNone////none_trace-params-_6-frac_points_0.2-nvariables_-frac_random_sample0.2-nvars_6-niterations_5000.txt'
+scale_file:: 'outputs/outputs//ConFire_AR7-simple-pr-totalCover-tas-cveg-treeMoist-vpd-widerPriors-mh-FmaxNone////scalers-_6-frac_points_0.2-nvariables_-frac_random_sample0.2-nvars_6-niterations_5000.csv'
