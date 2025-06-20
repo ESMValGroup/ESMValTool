@@ -21,9 +21,8 @@ def get_shas_from_singularity(dev_versions_today, dev_versions_yesterday):
 
     Notes
     -----
-    The regex used expects short SHAs between "+g" and a new line in the SCM
-    version strings. A branch with uncommited changes would break this pattern
-    but that should not be possible from a container.
+    The regex used expects short SHAs between "+g" and a "." or new line in
+    the SCM version string.
 
     More on setuptools scm's versioning scheme here under "Default verisioning
     scheme:
@@ -48,7 +47,7 @@ def get_shas_from_singularity(dev_versions_today, dev_versions_yesterday):
         print("Only today's SHAs are available.")
 
     for day, package_versions in pkg_versions_by_day:
-        shas = re.findall(r"\+g(.*?)$", package_versions, re.MULTILINE)
+        shas = re.findall(r"\+g(.*?)(?:\.|$)", package_versions, re.MULTILINE)
         if len(shas) == 2:
             all_shas["ESMValCore"][day] = shas[0]
             all_shas["ESMValTool"][day] = shas[1]
