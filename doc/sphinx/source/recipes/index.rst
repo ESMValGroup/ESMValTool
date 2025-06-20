@@ -25,7 +25,6 @@ large variety of input data.
    recipe_model_evaluation
    recipe_monitor
    recipe_portrait
-   recipe_psyplot
    recipe_seaborn
    recipe_ref
 
@@ -107,7 +106,6 @@ IPCC
    recipe_ipccwg1ar6ch3
    recipe_ipccwg1ar5ch9
    recipe_collins13ipcc
-   recipe_examples
 
 Land
 ^^^^
@@ -150,7 +148,6 @@ Other
    recipe_galytska23jgr
    recipe_multimodel_products
    recipe_pv_capacity_factor
-   recipe_rainfarm
    recipe_seaice
    recipe_seaice_drift
    recipe_seaice_feedback
@@ -167,10 +164,9 @@ require a legacy version of ESMValTool to run.
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
-   recipe_schlund20jgr
-   recipe_spei
+   legacy_recipe_list
 
 
 Broken recipe list

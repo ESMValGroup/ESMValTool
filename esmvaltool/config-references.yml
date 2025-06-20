@@ -274,6 +274,10 @@ authors:
     name: Hagemann, Stefan
     institute: MPI-M, Germany
     orcid: https://orcid.org/0000-0001-5444-2945
+  hall_sophie:
+    name: Hall, Sophie
+    institute: MetOffice, UK
+    orcid:
   hansson_ulf:
     name: Hansson, Ulf
     institute: SMHI, Sweden
@@ -779,6 +783,10 @@ authors:
     name: Stevens, Mark
     institute: NCAR, US
     orcid:
+  storkey_dave:
+    name: Storkey, Dave
+    institute: MetOffice, UK
+    orcid: 0000-0001-8000-5335
   # Former viewers (not active viewers)
   adeniyi_kemisola:
     name: Adeniyi, Kemisola
