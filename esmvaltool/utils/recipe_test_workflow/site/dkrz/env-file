@@ -49,8 +49,10 @@ export SINGULARITYENV_APPEND_PATH="${WORKFLOW_RUN_BIN_DIR}:${WORKFLOW_SHARE_BIN_
 # If PYTHONPATH_PREPEND has been set, prepend it to PYTHONPATH to extend the
 # Python environment.
 if [[ ! -z ${PYTHONPATH_PREPEND:-} ]]; then
-    echo "[INFO] Prepending the following to PYTHONPATH: ${PYTHONPATH_PREPEND}"
     export PYTHONPATH=${PYTHONPATH_PREPEND}:${PYTHONPATH:-}
+    if [[ -z ${QUIET_MODE:-} ]]; then
+        echo "[INFO] Prepending the following to PYTHONPATH: ${PYTHONPATH_PREPEND}"
+    fi
 fi
 
 if [[ -z ${QUIET_MODE:-} ]]; then
@@ -59,4 +61,9 @@ fi
 
 singularity_command="singularity-env-file singularity -q exec ${CONTAINER_PATH} $@"
 command="/usr/bin/time -v -o ${CYLC_TASK_LOG_ROOT}.time ${singularity_command}"
-exec ${command}
+
+if [[ -n "${CAPTURE_OUTPUT:-}" ]]; then
+    ${command}
+else
+    exec ${command}
+fi
