@@ -55,6 +55,8 @@ Datasets
 The recipe tries to use as many datasets as possible from the list in Table S3 of https://agupubs.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1029%2F2019GL086749&file=grl60504-sup-0002-Table_SI-S01.pdf
 Only one ensemble member is used for each model.
 
+All, some or no datasets may be labelled in the plots, using ``label_dataset: True`` in the recipe settings.
+
 References
 ----------
 
