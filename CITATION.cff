@@ -90,6 +90,11 @@ authors:
     family-names: Billows
     given-names: Chris
   -
+    affiliation: "Met Office, UK"
+    family-names: Blockley
+    given-names: Ed
+    orcid: "https://orcid.org/0000-0002-0489-4238"
+  -
     affiliation: "DLR, Germany"
     family-names: Bock
     given-names: Lisa
@@ -287,6 +292,10 @@ authors:
     affiliation: "University of Arizona, USA"
     family-names: Amarjiit
     given-names: Pandde
+  -
+    affiliation: "Met Office, UK"
+    family-names: Parsons
+    given-names: Naomi
   -
     affiliation: "BSC, Spain"
     family-names: Pérez-Zanón
