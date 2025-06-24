@@ -28,21 +28,28 @@ JRA3Q:
   facecolor: '#45503B'
   mark: 'o'
   thick: 1
-nat: 
+nat:
   avgstd: 1
   color: '#005000'
   dash: '-'
   facecolor: '#005000'
   mark: 'o'
   thick: 1
-factual: 
+factual:
   avgstd: 1
   color: '#c57a00'
   dash: '-'
   facecolor: '#c57a00'
   mark: 'o'
   thick: 1
-ssp245: 
+ssp245:
+  avgstd: 1
+  color: '#4677c0'
+  dash: '-'
+  facecolor: '#4677c0'
+  mark: 'o'
+  thick: 1
+future2C:
   avgstd: 1
   color: '#4677c0'
   dash: '-'
