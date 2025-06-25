@@ -417,7 +417,7 @@ def _read_variable_from_netcdf(
         filename: str
             a string with filename or two element python list
             containing the name of the file and the target variable name.
-            If just the sting of "filename" assumes variable name is "variable"
+            If just the string of "filename" assumes variable name is "variable"
         directory: str
             The directory the file is in. Path can be in "filename" and None
             means no additional directory path needed.
@@ -447,16 +447,18 @@ def _read_variable_from_netcdf(
 
     try:
         if isinstance(filename, str):
-            dataset = iris.load_cube(directory + filename, callback=_sort_time)
+            dataset = iris.load_cube(
+                Path(directory) / filename, callback=_sort_time
+            )
         else:
             dataset = iris.load_cube(
-                directory + filename[0],
+                Path(directory) / filename[0],
                 filename[1],
                 callback=_sort_time,
             )
     except (ValueError, iris.exceptions.MergeError) as expt:
         try:
-            dataset = iris.load_cube(directory + filename)
+            dataset = iris.load_cube(Path(directory) / filename)
         except (ValueError, iris.exceptions.MergeError) as expt_:
             logger.debug(
                 "_read_variable_from_netcdf errors\n%s\n%s",
