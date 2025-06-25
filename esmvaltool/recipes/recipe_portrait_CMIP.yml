@@ -66,9 +66,7 @@ preprocessors:
         ESACCI-CLOUD,
         ESACCI-OZONE,
         ESACCI-SOILMOISTURE,
-        ESACCI-SST,
         GPCP-SG,
-        HadISST,
         NCEP-NCAR-R1,
         MODIS,
         NIWA-BS,
@@ -77,10 +75,6 @@ preprocessors:
     <<: *default
     mask_landsea:
       mask_out: sea
-  sea_only:
-    <<: *default
-    mask_landsea:
-      mask_out: land
   pp200:  # only add/overwrite var specific settings
     <<: *default
     extract_levels:
@@ -140,18 +134,6 @@ diagnostics:
         split: Ref2
         additional_datasets:
           - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, tier: 2, reference_for_metric: true}
-      ts: &ts
-        <<: *var_default
-        short_name: ts
-        variable: sst
-        preprocessor: sea_only
-        additional_datasets:
-          - {dataset: ESACCI-SST, project: OBS, type: sat, version: 2.2, tier: 2, reference_for_metric: true}
-      ts_2:
-        <<: *ts
-        split: Ref2
-        additional_datasets:
-          - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2, reference_for_metric: true}
       tas: &tas
         <<: *var_default
         short_name: tas
