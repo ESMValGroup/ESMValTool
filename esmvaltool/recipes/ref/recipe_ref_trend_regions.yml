@@ -259,7 +259,8 @@ diagnostics:
         mip: Amon
         timerange: 1980/2009
         additional_datasets:
-          - {dataset: ERA-5, project: obs4MIPs, type: atmos, version: PCMDI, tier: 1,
+          - {dataset: ERA-5, project: obs4MIPs, tier: 1,
+
              reference_for_metric: true'}
     scripts:
       plot:
