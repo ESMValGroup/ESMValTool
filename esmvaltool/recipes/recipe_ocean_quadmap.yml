@@ -10,9 +10,13 @@ documentation:
 
   authors:
     - demora_lee
+    - hall_sophie
+    - hogan_emma
+    - storkey_dave
 
   maintainer:
     - demora_lee
+    - storkey_dave
 
   references:
     - demora2018gmd
@@ -23,14 +27,16 @@ documentation:
 
 datasets:
   # working datasets
-  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003, }
-  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003, }
+  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f3, start_year: 2001, end_year: 2003, grid: gn}
+  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical,
+     ensemble: r1i1p1f2, start_year: 2001, end_year: 2003, grid: gn}
 
 
 preprocessors:
-  prep_quad_map: # For Global 2D fields
+  prep_quad_map:  # For Global 2D fields
     extract_time:
-      start_year: 2001
+      start_year: 2000
       start_month: 1
       start_day: 1
       end_year: 2003
@@ -39,25 +45,82 @@ preprocessors:
     climate_statistics:
       operator: mean
     regrid:
-      target_grid: 1x1
+      target_grid: WOA
+      scheme: linear
+  prep_quad_map_depth:  # For Global 2D fields
+    extract_time:
+      start_year: 2000
+      start_month: 1
+      start_day: 1
+      end_year: 2003
+      end_month: 12
+      end_day: 31
+    climate_statistics:
+      operator: mean
+    extract_levels:
+      levels: [100., 200., 300., 400., 500., 1000]
+      scheme: linear
+    regrid:
+      target_grid: WOA
       scheme: linear
 
 
 diagnostics:
-# --------------------------------------------------
-# Quad Maps diagnostics
-# -----------------------------------------------
-   diag_map_1:
-     description: Global surface quad plots
-     variables:
-       tos: # Temperature ocean surface
-         preprocessor: prep_quad_map
-         mip: Omon
-     additional_datasets:
-       - {dataset: ARC-SST-1-1,  project: obs4MIPs,  level: L3,  start_year: 2001,  end_year: 2003, tier: 1}
-     scripts:
-       Global_Ocean_map: &Global_Ocean_map
-         script: ocean/diagnostic_maps_quad.py
-         control_model: {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-         exper_model: {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1}
-         observational_dataset: {dataset: ARC-SST-1-1, project: obs4MIPs,}
+  # --------------------------------------------------
+  # Quad Maps diagnostics
+  # -----------------------------------------------
+  sea_surface_temperature:
+    description: Global surface quad plots tos
+    variables:
+      tos:  # Temperature ocean surface
+        preprocessor: prep_quad_map
+        mip: Omon
+    additional_datasets:
+      - {dataset: WOA, project: obs4MIPs, level: L3,
+         start_year: 2000, end_year: 2000, tier: 2}
+    scripts:
+      Global_Ocean_map:  &Global_Ocean_map
+        script: ocean/diagnostic_maps_quad.py
+        control_model: {dataset: HadGEM3-GC31-LL, project: CMIP6, mip: Omon,
+                        exp: historical, ensemble: r1i1p1f3}
+        exper_model: {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon,
+                      exp: historical, ensemble: r1i1p1f2}
+        observational_dataset: {dataset: WOA, project: obs4MIPs}
+
+  sea_surface_salinity:
+    description: Global surface quad plots sos
+    variables:
+      sos:  # Salinity ocean surface
+        preprocessor: prep_quad_map
+        mip: Omon
+    additional_datasets:
+      - {dataset: WOA, project: obs4MIPs, level: L3,
+         start_year: 2000, end_year: 2000, tier: 2}
+    scripts:
+      Global_Ocean_map:  *Global_Ocean_map
+
+
+  sea_water_potential_temperature:
+    description: Global surface quad plots so
+    variables:
+      thetao:  # Temperature Ocean
+        preprocessor: prep_quad_map_depth
+        mip: Omon
+    additional_datasets:
+      - {dataset: WOA, project: obs4MIPs, level: L3,
+         start_year: 2000, end_year: 2000, tier: 2}
+    scripts:
+      Global_Ocean_map: *Global_Ocean_map
+
+
+  sea_water_salinity:
+    description: Global surface quad plots so
+    variables:
+      so:  # Salinity ocean water
+        preprocessor: prep_quad_map_depth
+        mip: Omon
+    additional_datasets:
+      - {dataset: WOA, project: obs4MIPs, level: L3,
+         start_year: 2000, end_year: 2000, tier: 2}
+    scripts:
+      Global_Ocean_map:  *Global_Ocean_map
