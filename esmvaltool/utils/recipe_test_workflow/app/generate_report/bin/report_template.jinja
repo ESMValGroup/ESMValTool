@@ -48,7 +48,7 @@
         <h2>{{ subheader }}</h2>
         {% if esmval_core_commits %}
         <table class="table-shared table-full-width">
-            <caption><h2>ESMValCore</h2></caption>
+            <h3>ESMValCore:</h3>
                 <tr>
                     <th class="report-msg-column"></th>
                     <th class="time-column">Time</th>
@@ -80,7 +80,7 @@
         {% endif %}
         {% if esmval_tool_commits %}
         <table class="table-shared table-full-width">
-            <caption><h2>ESMValTool</h2></caption>
+            <h3>ESMValTool:</h3>
                 <tr>
                     <th class="report-msg-column"></th>
                     <th class="time-column">Time</th>
@@ -114,7 +114,8 @@
         <br>
 
         <table class="table-shared table-full-width">
-            <caption><h2>Test Results</h2></caption>
+            <h3>Test Results:</h3>
+            <p>For failed tasks, links to the debug log, stdout and stderr are added if they exist.</p>
             <tr>
                 <th>Recipe</th>
                 <th>Recipe Run</th>
@@ -123,8 +124,20 @@
             {%- for recipe, tasks in report_data.items() -%}
             <tr>
                 <td>{{ recipe }}</td>
-                <td style="{{ tasks.get('process_task', {}).get('style', 'color: black') }}">{{ tasks.get('process_task', {}).get('status', '-') }}</td>
-                <td style="{{ tasks.get('compare_task', {}).get('style', 'color: black') }}">{{ tasks.get('compare_task', {}).get('status', '-') }}</td>
+                {%- set process_task = tasks.get("process_task", {}) -%}
+                <td style="{{ process_task.get('style', 'color: black') }}">
+                    {{ process_task.get('status', '-') }}
+                    {% for display_name, path in process_task.get("debug_logs", {}).items() %}
+                        <a href="{{ path }}">({{ display_name }})</a>
+                    {% endfor %}
+                </td>
+                {%- set compare_task = tasks.get("compare_task", {}) -%}
+                <td style="{{ compare_task.get('style', 'color: black') }}">
+                    {{ compare_task.get('status', '-') }}
+                    {% for display_name, path in compare_task.get("debug_logs", {}).items() %}
+                        <a href="{{ path }}">({{ display_name }})</a>
+                    {% endfor %}
+                </td>
             </tr>
             {%- endfor -%}
         </table>

@@ -3,6 +3,7 @@
 
 import os
 import sqlite3
+import subprocess
 import traceback
 from datetime import datetime
 from pathlib import Path
@@ -30,10 +31,22 @@ except ImportError:
 
 # Load environment variables required at all sites.
 CYLC_DB_PATH = os.environ.get("CYLC_DB_PATH")
+CYLC_SHARE_DIR = os.environ.get("CYLC_WORKFLOW_SHARE_DIR")
 CYLC_TASK_CYCLE_POINT = os.environ.get("CYLC_TASK_CYCLE_POINT")
 CYLC_TASK_CYCLE_YESTERDAY = os.environ.get("CYLC_TASK_CYCLE_YESTERDAY")
+CYLC_WORKFLOW_RUN_DIR = os.environ.get("CYLC_WORKFLOW_RUN_DIR")
+OUTPUT_DIR = os.environ.get("OUTPUT_DIR")
+PRODUCTION = os.environ.get("PRODUCTION")
 REPORT_PATH = os.environ.get("REPORT_PATH")
 SITE = os.environ.get("SITE")
+# TODO: Move to main/DKRZ after development. PRODUCTION too?
+VM_PATH = os.environ.get("VM_PATH")
+
+# TODO: Remove after development.
+VM_PATH = Path(CYLC_WORKFLOW_RUN_DIR) / "mock_vm"
+MOCK_PRODUCTION = True
+if VM_PATH:
+    VM_DEBUG_LOG_DIR = Path(VM_PATH) / "debug_logs"
 
 ESMVAL_VERSIONS_TODAY = None
 ESMVAL_VERSIONS_YESTERDAY = None
@@ -87,6 +100,9 @@ def main(
         A dictionary of git repos if the site uses git repos, or None.
     """
     commit_info = None
+    raw_db_data = fetch_report_data(db_file_path, cylc_task_cycle_point)
+    processed_db_data = process_db_output(raw_db_data)
+
     # Commits/SHAs will only be included for these sites. The report will run
     # at other sites without commit/SHA information.
     try:
@@ -117,8 +133,10 @@ def main(
         commit_info = fetch_commit_details_from_github_api(sha_info)
         add_report_messages_to_commits(commit_info)
 
-    raw_db_data = fetch_report_data(db_file_path, cylc_task_cycle_point)
-    processed_db_data = process_db_output(raw_db_data)
+    # TODO: move to dkrz section after development.
+    if VM_DEBUG_LOG_DIR and MOCK_PRODUCTION:
+        debug_log_processor(processed_db_data)
+
     subheader = create_subheader(cylc_task_cycle_point)
 
     rendered_html = render_html_report(
@@ -274,39 +292,134 @@ def process_db_output(report_data):
     return sorted_processed_db_data
 
 
-def copy_debug_log_to_vm(failed_task):
-    """ """
-    # TODO: Current work is in python-playground/lumberjack.py
-    pass
-
-
-def add_debug_log_for_failed_tasks(processed_db_data):
+def copy_a_debug_log_to_vm(target_debug_log, recipe, task):
     """
-    {
-        "recipe_1": {
-            "process_task": {
-                "status": "succeeded",
-                "style": "color: green",
-                "debug_log": "path/to/debug.log",
-            },
-            "compare_task": {
-                "status": "failed",
-                "style": "color: red",
-                "debug_log": "path/to/debug.log",
-            },
-        }
-    },
-    """
+    Copy a debug log file to a VM directory ``debug_logs/<recipe>/<task>``.
 
-    for recipe, tasks in processed_db_data.items():
-        for task_name, task_data in tasks.items():
-            if task_data["status"] == "failed":
-                # Assuming the debug log path is constructed from the recipe name
-                # and task name. Adjust as necessary.
-                debug_log_path = (
-                    f"/path/to/debug/logs/{recipe}/{task_name}.log"
-                )
-                task_data["debug_log"] = debug_log_path
+    Parameters
+    ----------
+    target_debug_log : Path
+        The target log file. E.g. From the Cylc run directory.
+    recipe : str
+        The name of the recipe.
+    task : str
+        The name of the task e.g. "process_task", "compare_task".
+
+    Returns
+    -------
+    Path
+        The path to the debug log on the VM.
+    """
+    if not VM_DEBUG_LOG_DIR or not MOCK_PRODUCTION:
+        return None
+    file_name = target_debug_log.name
+    vm_debug_log_dir_for_recipe_task = VM_DEBUG_LOG_DIR / recipe / task
+
+    if not vm_debug_log_dir_for_recipe_task.exists():
+        vm_debug_log_dir_for_recipe_task.mkdir(parents=True, exist_ok=True)
+
+    command = f"rsync -a {target_debug_log} {vm_debug_log_dir_for_recipe_task}"
+    subprocess.run(command, shell=True)
+    return vm_debug_log_dir_for_recipe_task / file_name
+
+
+def esmvaltool_debug_log_processor(recipe):
+    """
+    Copy the ESMValTool ``main_log_debug.txt`` to the VM, if it exists.
+
+    Parameters
+    ----------
+    recipe: str
+        The recipe.
+
+    Returns
+    -------
+    Path | None
+        The path to the debug log file on the VM, or None.
+    """
+    if OUTPUT_DIR:
+        output_dir = Path(OUTPUT_DIR)
+        if output_dir.is_dir():
+            for path in output_dir.iterdir():
+                # Recipes in directories need to be split.
+                recipe_name = recipe.split("/")[-1]
+                if path.name.startswith(recipe_name):
+                    debug_file_path = path / "run" / "main_log_debug.txt"
+                    if debug_file_path.exists():
+                        vm_debug_file_path = copy_a_debug_log_to_vm(
+                            debug_file_path, recipe, "process_task"
+                        )
+                        return vm_debug_file_path
+    return None
+
+
+def cylc_debug_log_processor(recipe, task):
+    """
+    Copy the Cylc stderr and stdout log files to the VM, if they exist.
+
+    Parameters
+    ----------
+    recipe : str
+        The name of the recipe.
+    task : str
+        The name of the task e.g. "process_task", "compare_task".
+
+    Returns
+    -------
+    dict
+        Dict of debug logs. The key is the HTML display name (e.g. ``stderr``)
+        and the value is the path to the debug log on the VM. If no Cylc debug
+        logs exist, the returned dict will be empty.
+    """
+    # Recipes in directories need to be recombined.
+    recipe_name = recipe.replace("/", "--")
+    cylc_debug_logs = {}
+    task_prefix = task.split("_")[0]
+
+    for display_name, file in [("stderr", "job.err"), ("stdout", "job.out")]:
+        path_to_run_cylc_log = (
+            Path(CYLC_WORKFLOW_RUN_DIR)
+            / "log"
+            / "job"
+            / CYLC_TASK_CYCLE_POINT
+            / f"{task_prefix}_{recipe_name}"
+            / "01"
+            / file
+        )
+        if path_to_run_cylc_log.exists():
+            vm_debug_file_path = copy_a_debug_log_to_vm(
+                path_to_run_cylc_log, recipe, task
+            )
+            cylc_debug_logs[display_name] = vm_debug_file_path
+    return cylc_debug_logs
+
+
+def debug_log_processor(processed_db_data):
+    """
+    Copy debug logs to the VM and add the VM paths to the database task data.
+
+    Parameters
+    ----------
+    processed_db_data : dict
+        A dictionary with recipe names as keys and tasks/task data as values.
+        Debug logs are added to the dict as task data e.g.
+        ``{"<recipe>" : "<task>" {"status": ...  "debug_logs" { ...}}}``
+    """
+    for target_task in ("process_task", "compare_task"):
+        for recipe, task_data in processed_db_data.items():
+            target_task_data = task_data.get(target_task)
+            if target_task_data:  # TODO:
+                if target_task_data.get("status") is not None:  # == "failed":
+                    target_task_data["debug_logs"] = {}
+                    cylc_debug_log_paths = cylc_debug_log_processor(
+                        recipe, target_task
+                    )
+                    target_task_data["debug_logs"].update(cylc_debug_log_paths)
+                    # Only process tasks have ESMValTool debug logs.
+                    if target_task == "process_task":
+                        target_task_data["debug_logs"]["debug"] = (
+                            esmvaltool_debug_log_processor(recipe)
+                        )
 
 
 def create_subheader(cylc_task_cycle_point):
