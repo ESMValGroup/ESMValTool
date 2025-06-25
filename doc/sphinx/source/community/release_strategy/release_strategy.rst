@@ -688,3 +688,4 @@ Changelog
 .. _Emma Hogan: https://github.com/ehogan
 .. _Chris Billows: https://github.com/chrisbillowsMO
 .. _Ed Gillett: https://github.com/mo-gill
+.. _Julien Lenhardt: https://github.com/jlenh
