@@ -1116,16 +1116,20 @@ def diagnostic_run_confire(
     logger.info("Saving ConFire output cubes...")
     Path.mkdir(output_dir, parents=True, exist_ok=True)
     timerange = timerange.replace("/", "-")
+    ancestors = [
+        config["files_input"][i][0]
+        for i in range(len(config["files_input"]))
+        if config["files_input"][i][1] != "vpd"
+    ]
+    if "vpd" in config["var_order"]:
+        ancestors += config["provenance_record_vpd"]["ancestors"]
     for i, o_c in enumerate(out_cubes):
         filename = (
             Path(output_dir)
             / f"{config['filenames_out'][i]}_{model_name}_{timerange}.nc"
         )
         provenance = get_provenance_record(
-            ancestors=[
-                config["files_input"][i][0]
-                for i in range(len(config["files_input"]))
-            ],
+            ancestors=ancestors,
             model_name=model_name,
             project=project,
             experiment=experiment,

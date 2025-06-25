@@ -19,6 +19,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
+import dask.array as da
 import iris
 import numpy as np
 import requests
@@ -254,10 +255,12 @@ def compute_vpd(
     # Convert temperature to Celsius for the operation
     tas.convert_units("degrees_C")
     # Compute vpd
-    e_s = 0.6108 * np.exp(np.divide(17.2694 * tas.data, tas.data + 237.3))
+    e_s = 0.6108 * da.exp(
+        np.divide(17.2694 * tas.core_data(), tas.core_data() + 237.3)
+    )
     # Convert kPa to Pa
-    data = 1000.0 * np.multiply(1 - 0.01 * hurs.data, e_s)
-    data = np.maximum(data, 0.0)
+    data = 1000.0 * da.multiply(1 - 0.01 * hurs.core_data(), e_s)
+    data = da.maximum(data, 0.0)
     # Transfer coordinates
     dim_coords = [
         (coord, idx)
@@ -382,6 +385,7 @@ def main(cfg: dict) -> None:
             # Log vpd filename for ConFire model run
             vars_file["vpd"] = {}
             vars_file["vpd"]["filename"] = filename_vpd
+            cfg["provenance_record_vpd"] = provenance_record_vpd
 
         # Run ConFire model evaluation
         # Add the list of input filenames
@@ -410,12 +414,16 @@ def main(cfg: dict) -> None:
 
         # Save output figures
         output_file = f"{plot_file_info}"
+        ancestors = [
+            cfg["files_input"][i][0]
+            for i in range(len(cfg["files_input"]))
+            if cfg["files_input"][i][1] != "vpd"
+        ]
+        if "vpd" in cfg["var_order"]:
+            ancestors += provenance_record_vpd["ancestors"]
         for i, f in enumerate(cfg["filenames_out"]):
             provenance = get_provenance_record(
-                ancestors=[
-                    cfg["files_input"][i][0]
-                    for i in range(len(cfg["files_input"]))
-                ],
+                ancestors=ancestors,
                 model_name=model_dataset,
                 project=group[0]["project"],
                 experiment=group[0]["exp"],
