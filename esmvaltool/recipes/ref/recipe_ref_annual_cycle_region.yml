@@ -104,7 +104,7 @@ diagnostics:
         reference_dataset: ERA-5
         preprocessor: pp_abs_200
         additional_datasets:
-          - {dataset: ERA-5, project: obs4MIPs, type: atmos, version: PCMDI, tier: 1,
+          - {dataset: ERA-5, project: obs4MIPs, tier: 1,
              reference_for_metric: true'}
     scripts:
       allplots:
