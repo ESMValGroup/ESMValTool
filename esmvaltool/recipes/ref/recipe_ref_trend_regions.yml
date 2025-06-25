@@ -168,7 +168,7 @@ diagnostics:
         additional_datasets:
           - {dataset: HadCRUT5, project: OBS, type: ground,
              version: 5.0.1.0-analysis, tier: 2}
-          - {dataset: ERA-5, project: obs4MIPs, type: atmos, version: PCMDI, tier: 1,
+          - {dataset: ERA-5, project: obs4MIPs, tier: 1,
              reference_for_metric: true'}
     scripts:
       plot:
@@ -197,7 +197,7 @@ diagnostics:
         mip: Amon
         timerange: 1980/2009
         additional_datasets:
-          - {dataset: GPCP-SG, project: obs4MIPs, type: atmos, version: 2.3, tier: 1,
+          - {dataset: GPCP-SG, project: obs4MIPs, tier: 1,
              reference_for_metric: true}
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, reference_for_metric: true}
