@@ -425,7 +425,7 @@ def _read_variable_from_netcdf(
             a function or list of functions to be applied to each data set.
         subset_function_args: dict or list of dicts
             If subset_function is a function, dict arguments for that function.
-            If subset_function is a list, a list or dict constaining arguments
+            If subset_function is a list or dict containing arguments
             for those functions in turn.
         make_flat: bool
             Should the output variable to flattened or remain cube

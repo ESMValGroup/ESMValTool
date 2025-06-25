@@ -67,7 +67,7 @@ def setup_basename_file(
         Basename for the file in which the processed variable will be saved.
     """
     # Recover only the filename without path and type then split elements
-    file = filename.split("/")[-1].split(".")[0].split("_")
+    file = Path(filename).stem.split("_")
     # Fill in variable and table
     file[2] = table
     file[-3] = var
