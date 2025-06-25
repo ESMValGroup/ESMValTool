@@ -661,10 +661,7 @@ def _read_all_data_from_netcdf(
         x_var = x_var[cells_we_want, :]
 
     if x_normalise01 and scalers is None:
-        try:
-            scalers = np.array([np.min(x_var, axis=0), np.max(x_var, axis=0)])
-        except ValueError as expt:
-            logger.debug("_read_all_data_from_netcdf error %s", expt)
+        scalers = np.array([np.min(x_var), np.max(x_var)])
         squidge = (scalers[1, :] - scalers[0, :]) / (x_var.shape[0])
         scalers[0, :] = scalers[0, :] - squidge
         scalers[1, :] = scalers[1, :] + squidge
