@@ -2,6 +2,7 @@
 """Generate a HTML summary report from a Cylc SQLite database."""
 
 import os
+import shutil
 import sqlite3
 import subprocess
 import traceback
@@ -39,14 +40,16 @@ OUTPUT_DIR = os.environ.get("OUTPUT_DIR")
 PRODUCTION = os.environ.get("PRODUCTION")
 REPORT_PATH = os.environ.get("REPORT_PATH")
 SITE = os.environ.get("SITE")
-# TODO: Move to main/DKRZ after development. PRODUCTION too?
-VM_PATH = os.environ.get("VM_PATH")
 
-# TODO: Remove after development.
+# TODO: Remove/move to main/DKRZ after development. PRODUCTION too?
+VM_PATH = os.environ.get("VM_PATH")
 VM_PATH = Path(CYLC_WORKFLOW_RUN_DIR) / "mock_vm"
 MOCK_PRODUCTION = True
 if VM_PATH:
     VM_DEBUG_LOG_DIR = Path(VM_PATH) / "debug_logs"
+    if VM_DEBUG_LOG_DIR.exists():
+        shutil.rmtree(VM_DEBUG_LOG_DIR)
+    VM_DEBUG_LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 ESMVAL_VERSIONS_TODAY = None
 ESMVAL_VERSIONS_YESTERDAY = None
@@ -55,7 +58,6 @@ REPOS = None
 if SITE == "dkrz":
     ESMVAL_VERSIONS_TODAY = os.environ.get("ESMVAL_VERSIONS_CURRENT")
     ESMVAL_VERSIONS_YESTERDAY = os.environ.get("ESMVAL_VERSIONS_PREVIOUS")
-
 
 if SITE == "metoffice":
     REPOS = {
@@ -133,10 +135,11 @@ def main(
         commit_info = fetch_commit_details_from_github_api(sha_info)
         add_report_messages_to_commits(commit_info)
 
-    # TODO: move to dkrz section after development.
+    # TODO: move to dkrz section after development and use PRODUCTION.
     if VM_DEBUG_LOG_DIR and MOCK_PRODUCTION:
         debug_log_processor(processed_db_data)
 
+    reinstate_backslashes_to_recipe_names(processed_db_data)
     subheader = create_subheader(cylc_task_cycle_point)
 
     rendered_html = render_html_report(
@@ -237,7 +240,7 @@ def process_db_task(task_name, status):
     recipe_name = task_name_parts[1]
     processed_task_name = task_name_parts[0] + "_task"
     # Restore directories to a "/"
-    recipe_name = task_name_parts[1].replace("--", "/")
+    # recipe_name = task_name_parts[1].replace("--", "/")
     style = styles.get(status, "color: black")
     task_data = (
         recipe_name,
@@ -334,23 +337,26 @@ def esmvaltool_debug_log_processor(recipe):
 
     Returns
     -------
-    Path | None
-        The path to the debug log file on the VM, or None.
+    dict
+        A dict containing the path to the debug log file on the VM, or an empty
+        dict.
     """
     if OUTPUT_DIR:
         output_dir = Path(OUTPUT_DIR)
         if output_dir.is_dir():
+            # ESMValTool only uses the last part of a recipe name when creating
+            # it's directory. E.g. ``examples--recipe_python`` will be in
+            # ``recipe_python_<date>_<time>/run/``
+            recipe_name_without_dir = recipe.split("--")[-1]
             for path in output_dir.iterdir():
-                # Recipes in directories need to be split.
-                recipe_name = recipe.split("/")[-1]
-                if path.name.startswith(recipe_name):
+                if path.name.startswith(recipe_name_without_dir):
                     debug_file_path = path / "run" / "main_log_debug.txt"
                     if debug_file_path.exists():
                         vm_debug_file_path = copy_a_debug_log_to_vm(
                             debug_file_path, recipe, "process_task"
                         )
-                        return vm_debug_file_path
-    return None
+                        return {"debug": vm_debug_file_path}
+    return {}
 
 
 def cylc_debug_log_processor(recipe, task):
@@ -371,18 +377,15 @@ def cylc_debug_log_processor(recipe, task):
         and the value is the path to the debug log on the VM. If no Cylc debug
         logs exist, the returned dict will be empty.
     """
-    # Recipes in directories need to be recombined.
-    recipe_name = recipe.replace("/", "--")
     cylc_debug_logs = {}
     task_prefix = task.split("_")[0]
-
     for display_name, file in [("stderr", "job.err"), ("stdout", "job.out")]:
         path_to_run_cylc_log = (
             Path(CYLC_WORKFLOW_RUN_DIR)
             / "log"
             / "job"
             / CYLC_TASK_CYCLE_POINT
-            / f"{task_prefix}_{recipe_name}"
+            / f"{task_prefix}_{recipe}"
             / "01"
             / file
         )
@@ -408,8 +411,8 @@ def debug_log_processor(processed_db_data):
     for target_task in ("process_task", "compare_task"):
         for recipe, task_data in processed_db_data.items():
             target_task_data = task_data.get(target_task)
-            if target_task_data:  # TODO:
-                if target_task_data.get("status") is not None:  # == "failed":
+            if target_task_data:
+                if target_task_data.get("status") == "failed":
                     target_task_data["debug_logs"] = {}
                     cylc_debug_log_paths = cylc_debug_log_processor(
                         recipe, target_task
@@ -417,9 +420,35 @@ def debug_log_processor(processed_db_data):
                     target_task_data["debug_logs"].update(cylc_debug_log_paths)
                     # Only process tasks have ESMValTool debug logs.
                     if target_task == "process_task":
-                        target_task_data["debug_logs"]["debug"] = (
+                        esmvaltool_debug_log_path = (
                             esmvaltool_debug_log_processor(recipe)
                         )
+                        target_task_data["debug_logs"].update(
+                            esmvaltool_debug_log_path
+                        )
+
+
+def reinstate_backslashes_to_recipe_names(processed_db_data):
+    """
+    Reinstate backslashes in recipe names for display in the report.
+
+    Recipes nested in directories have backslashes converted to ``--`` for Cylc
+    compatibility. This function reverts to the backslash for display in the
+    report.
+
+    Parameters
+    ----------
+    processed_db_data : dict
+        A dictionary with recipe names as keys and tasks/task data as values.
+        Debug logs are added to the dict as task data e.g.
+        ``{"<recipe>" : "<task>" {"status": ...  "debug_logs" { ...}}}``
+    """
+    for recipe_name in processed_db_data.keys():
+        if "--" in recipe_name:
+            revised_recipe_name = recipe_name.replace("--", "/")
+            processed_db_data[revised_recipe_name] = processed_db_data.pop(
+                recipe_name
+            )
 
 
 def create_subheader(cylc_task_cycle_point):
