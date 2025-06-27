@@ -32,24 +32,12 @@ except ImportError:
 
 # Load environment variables required at all sites.
 CYLC_DB_PATH = os.environ.get("CYLC_DB_PATH")
-CYLC_SHARE_DIR = os.environ.get("CYLC_WORKFLOW_SHARE_DIR")
 CYLC_TASK_CYCLE_POINT = os.environ.get("CYLC_TASK_CYCLE_POINT")
 CYLC_TASK_CYCLE_YESTERDAY = os.environ.get("CYLC_TASK_CYCLE_YESTERDAY")
 CYLC_WORKFLOW_RUN_DIR = os.environ.get("CYLC_WORKFLOW_RUN_DIR")
 OUTPUT_DIR = os.environ.get("OUTPUT_DIR")
-PRODUCTION = os.environ.get("PRODUCTION")
 REPORT_PATH = os.environ.get("REPORT_PATH")
 SITE = os.environ.get("SITE")
-
-# TODO: Remove/move to main/DKRZ after development. PRODUCTION too?
-VM_PATH = os.environ.get("VM_PATH")
-VM_PATH = Path(CYLC_WORKFLOW_RUN_DIR) / "mock_vm"
-MOCK_PRODUCTION = True
-if VM_PATH:
-    VM_DEBUG_LOG_DIR = Path(VM_PATH) / "debug_logs"
-    if VM_DEBUG_LOG_DIR.exists():
-        shutil.rmtree(VM_DEBUG_LOG_DIR)
-    VM_DEBUG_LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 ESMVAL_VERSIONS_TODAY = None
 ESMVAL_VERSIONS_YESTERDAY = None
@@ -58,6 +46,13 @@ REPOS = None
 if SITE == "dkrz":
     ESMVAL_VERSIONS_TODAY = os.environ.get("ESMVAL_VERSIONS_CURRENT")
     ESMVAL_VERSIONS_YESTERDAY = os.environ.get("ESMVAL_VERSIONS_PREVIOUS")
+    PRODUCTION = os.environ.get("PRODUCTION")
+    VM_PATH = os.environ.get("VM_PATH")
+    if VM_PATH:
+        VM_DEBUG_LOG_DIR = Path(VM_PATH) / "debug_logs"
+        if VM_DEBUG_LOG_DIR.exists():
+            shutil.rmtree(VM_DEBUG_LOG_DIR)
+        VM_DEBUG_LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 if SITE == "metoffice":
     REPOS = {
@@ -112,10 +107,13 @@ def main(
             sha_info = get_shas_from_singularity(
                 esmval_versions_today, esmval_versions_yesterday
             )
+            # Debug logs will only be added to report at DKRZ.
+            if VM_DEBUG_LOG_DIR and PRODUCTION:
+                debug_log_processor(processed_db_data)
         elif site == "metoffice":
             sha_info = get_shas_from_git(repos)
-    # Catch the following errors so the report generates without commit/SHA
-    # information. These errors are either propagated on purpose or
+    # Catch the following errors so the report generates even if commit/SHA or
+    # debug processing errors. These errors are either propagated on purpose or
     # indicate a probable minor issue.
     except (
         ValueError,
@@ -127,7 +125,7 @@ def main(
     ):
         print(
             "Report generating with results only. Error while fetching commit "
-            "data. See std.err log for details."
+            "data and/or debug logs. See std.err log for details."
         )
         traceback.print_exc()
 
@@ -135,19 +133,12 @@ def main(
         commit_info = fetch_commit_details_from_github_api(sha_info)
         add_report_messages_to_commits(commit_info)
 
-    # TODO: move to dkrz section after development and use PRODUCTION.
-    if VM_DEBUG_LOG_DIR and MOCK_PRODUCTION:
-        debug_log_processor(processed_db_data)
-
-    reinstate_backslashes_to_recipe_names(processed_db_data)
     subheader = create_subheader(cylc_task_cycle_point)
-
     rendered_html = render_html_report(
         subheader=subheader,
         report_data=processed_db_data,
         commit_info=commit_info,
     )
-
     write_report_to_file(rendered_html, report_path)
 
 
@@ -211,14 +202,6 @@ def process_db_task(task_name, status):
     """
     Process db output data for a single task.
 
-    Create a dictionary in the format:
-    ```
-    "process_task": {
-        "status": "succeeded",
-        "style": "color: green"
-    },
-    ```
-
     Parameters
     ----------
     task_name: str
@@ -228,9 +211,9 @@ def process_db_task(task_name, status):
 
     Returns
     -------
-    tuple[str, dict]
-        A tuple containing the name of the recipe as a string and the task data
-        as a dictionary.
+    tuple[str, str, dict]
+        A tuple containing the name of the recipe, the display name of the
+        recipe and the task data as a dictionary.
     """
     styles = {
         "succeeded": "color: green",
@@ -239,11 +222,12 @@ def process_db_task(task_name, status):
     task_name_parts = task_name.split("_", 1)
     recipe_name = task_name_parts[1]
     processed_task_name = task_name_parts[0] + "_task"
-    # Restore directories to a "/"
-    # recipe_name = task_name_parts[1].replace("--", "/")
+    # Display recipes in directories with a "/"
+    recipe_display_name = task_name_parts[1].replace("--", "/")
     style = styles.get(status, "color: black")
     task_data = (
         recipe_name,
+        recipe_display_name,
         {processed_task_name: {"status": status, "style": style}},
     )
     return task_data
@@ -258,6 +242,7 @@ def process_db_output(report_data):
     ```
     {
         "recipe_name": {
+            "recipe_display_name": "recipe_name",
             "process_task": {
                 "status": "succeeded",
                 "style": "color: green"
@@ -279,16 +264,22 @@ def process_db_output(report_data):
     Returns
     -------
     dict
-        A dictionary with recipe names as keys and tasks/task data as values.
+        A dictionary with recipe names as keys and tasks/task data and other
+        metadata as values.
     """
     processed_db_data = {}
     # A tuple is required for the `startswith` func.
     tasks_to_include_in_report = ("process", "compare")
     for task_name, status in report_data:
         if task_name.startswith(tasks_to_include_in_report):
-            recipe, task_data = process_db_task(task_name, status)
+            recipe, recipe_display_name, task_data = process_db_task(
+                task_name, status
+            )
             if not processed_db_data.get(recipe):
                 processed_db_data[recipe] = task_data
+                processed_db_data[recipe]["recipe_display_name"] = (
+                    recipe_display_name
+                )
             else:
                 processed_db_data[recipe].update(task_data)
     sorted_processed_db_data = dict(sorted(processed_db_data.items()))
@@ -310,10 +301,10 @@ def copy_a_debug_log_to_vm(target_debug_log, recipe, task):
 
     Returns
     -------
-    Path
-        The path to the debug log on the VM.
+    Path | None
+        The path to the debug log on the VM or none.
     """
-    if not VM_DEBUG_LOG_DIR or not MOCK_PRODUCTION:
+    if not VM_DEBUG_LOG_DIR or not PRODUCTION:
         return None
     file_name = target_debug_log.name
     vm_debug_log_dir_for_recipe_task = VM_DEBUG_LOG_DIR / recipe / task
@@ -426,29 +417,6 @@ def debug_log_processor(processed_db_data):
                         target_task_data["debug_logs"].update(
                             esmvaltool_debug_log_path
                         )
-
-
-def reinstate_backslashes_to_recipe_names(processed_db_data):
-    """
-    Reinstate backslashes in recipe names for display in the report.
-
-    Recipes nested in directories have backslashes converted to ``--`` for Cylc
-    compatibility. This function reverts to the backslash for display in the
-    report.
-
-    Parameters
-    ----------
-    processed_db_data : dict
-        A dictionary with recipe names as keys and tasks/task data as values.
-        Debug logs are added to the dict as task data e.g.
-        ``{"<recipe>" : "<task>" {"status": ...  "debug_logs" { ...}}}``
-    """
-    for recipe_name in processed_db_data.keys():
-        if "--" in recipe_name:
-            revised_recipe_name = recipe_name.replace("--", "/")
-            processed_db_data[revised_recipe_name] = processed_db_data.pop(
-                recipe_name
-            )
 
 
 def create_subheader(cylc_task_cycle_point):

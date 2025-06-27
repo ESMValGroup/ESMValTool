@@ -38,17 +38,6 @@ def fetch_commit_details_from_github_api(
         commit details for each day. E.g.
         {"ESMValCore": [{"sha": "abcd123", ...}, ...], "ESMValTool": [...]}
     """
-    # Uncomment to test a range of commits during development.
-    # shas_by_package_and_day = {
-    #     "ESMValCore":
-    #         {
-    #             "today": "d1453c665a97ad3563f9bf112274e273b9e4182b",
-    #             "yesterday": "a116cc6a60a6ae8b628e0ffcbc894294cd26ee5f"},
-    #     "ESMValTool":
-    #         {
-    #             "today": "c6e6e42d708265e3db1d57ccaa48669ca22011ca",
-    #             "yesterday": "4515a2b9260ddef6b996a1d1b911e5d3d2029638"},
-    # }
     commit_details_by_package = {}
     for package, shas_by_day in shas_by_package_and_day.items():
         if shas_by_day.get("yesterday") is None or shas_by_day.get(

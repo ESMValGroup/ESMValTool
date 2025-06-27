@@ -209,20 +209,6 @@ def test_fetch_range_of_commits_results_on_later_page(mock_get):
     assert actual == mock_response_json_return_value[:27]
     assert mock_get.call_count == 3
 
-    # TODO: Can't figure out why not working.
-    # expected_url = "https://api.github.com/repos/mock_owner/mock_repo/commits/"
-    # expected_params = {
-    #     "per_page": 10,
-    #     "sha": "tested_today",
-    #     "page": 3,
-    # }
-    # expected_calls = [
-    #     call(expected_url, headers="mock_headers", params=expected_params, timeout=10),
-    #     call(expected_url, headers="mock_headers", params=expected_params, timeout=10),
-    #     call(expected_url, headers="mock_headers", params=expected_params, timeout=10),
-    # ]
-    # mock_get.assert_has_calls(expected_calls)
-
 
 @pytest.mark.parametrize("num_of_commits_under_test", ["single", "range"])
 def test_process_commit_info(num_of_commits_under_test):
