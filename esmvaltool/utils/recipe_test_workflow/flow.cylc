@@ -36,7 +36,7 @@
             process<fast>:fail? | compare<fast>:finish => generate_report
             process<medium>:fail? | compare<medium>:finish => generate_report
         """
-        PT10M = """
+        T01 = """
             @wall_clock => get_esmval => configure
             configure => process<fast>? => compare<fast>?
             configure => process<medium>? => compare<medium>?
@@ -51,7 +51,7 @@
 [runtime]
     [[root]]
         script = rose task-run
-        env-script = "eval $(rose task-env --cycle-offset=PT10M)"
+        env-script = "eval $(rose task-env --cycle-offset=P1D)"
         [[[environment]]]
             ENV_NAME = {{ ENV_NAME }}
             USER_CONFIG_DIR = ${ROSE_DATAC}/config_dir
