@@ -50,9 +50,6 @@ if SITE == "dkrz":
     VM_PATH = os.environ.get("VM_PATH")
     if VM_PATH:
         VM_DEBUG_LOG_DIR = Path(VM_PATH) / "debug_logs"
-        if VM_DEBUG_LOG_DIR.exists():
-            shutil.rmtree(VM_DEBUG_LOG_DIR)
-        VM_DEBUG_LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 if SITE == "metoffice":
     REPOS = {
@@ -108,7 +105,9 @@ def main(
                 esmval_versions_today, esmval_versions_yesterday
             )
             # Debug logs will only be added to report at DKRZ.
-            if VM_DEBUG_LOG_DIR and PRODUCTION:
+            if PRODUCTION and VM_DEBUG_LOG_DIR == "True":
+                if VM_DEBUG_LOG_DIR.exists():
+                    shutil.rmtree(VM_DEBUG_LOG_DIR)
                 debug_log_processor(processed_db_data)
         elif site == "metoffice":
             sha_info = get_shas_from_git(repos)
