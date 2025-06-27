@@ -65,6 +65,19 @@ The |RTW| performs the following steps:
      Runs each cycle for every recipe defined in the |RTW| after ``process``
      has completed
 
+``generate_report``
+   :Description
+      Generate a by recipe HTML summary of the ``process`` and ``compare``
+      jobs results.
+   :Runs on:
+      Localhost
+   :Executes:
+      The ``generate_html_report.py`` script from the |Rose| app, and other
+      helper scripts depending on ``SITE``.
+   :Details:
+      Runs for every cycle. The report is output to the |Cylc| share/cycle
+      directory.
+
 ``housekeeping``
   :Description:
      Removes the logs and data (including recipe outputs)
