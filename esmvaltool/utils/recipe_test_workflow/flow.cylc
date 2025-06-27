@@ -159,7 +159,7 @@
             ROSE_APP_OPT_CONF_KEYS = ({{ SITE }})
             CYLC_DB_PATH = ${CYLC_WORKFLOW_RUN_DIR}/log/db
             REPORT_PATH = ${ROSE_DATAC}/status_report.html
-            CYLC_TASK_CYCLE_YESTERDAY = ${ROSE_DATACPT10M}
+            CYLC_TASK_CYCLE_YESTERDAY = ${ROSE_DATACP1D}
             PRODUCTION = {{ PRODUCTION }}
 
     [[housekeeping]]
