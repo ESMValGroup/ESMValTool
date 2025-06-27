@@ -34,5 +34,6 @@ legend.fancybox : False
 
 # Figure
 figure.dpi : 200
+figure.titlesize: 13
 figure.titleweight : bold
 figure.autolayout: True

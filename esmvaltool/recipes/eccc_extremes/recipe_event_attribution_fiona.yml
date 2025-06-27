@@ -170,4 +170,4 @@ diagnostics:
         var_label: wind_speed # needed for axis name
         units: '' # optional parameter for the labelling
         bootstrap_seed: 501 # seed to start sequence for bootstrap (optional)
-        figure_title: 'Wind speed anomalies in Atlantic Canada relative to 1950-1979 from HighResMIP models'
+        figure_title: 'Standardized wind speed anomalies in Atlantic Canada relative to 1950-1979 from HighResMIP models'
