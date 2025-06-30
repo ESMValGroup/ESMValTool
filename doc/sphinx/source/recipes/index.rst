@@ -132,6 +132,7 @@ Ocean
    recipe_enso_ref
    recipe_oceans
    recipe_sea_surface_salinity
+   recipe_steric_patterns
    recipe_russell18jgr
 
 Other
