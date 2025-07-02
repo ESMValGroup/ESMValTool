@@ -29,7 +29,7 @@ repos:
           # Do not use the configuration file but configure here so we can
           # enable more rules that are not mandatory in the configuration file.
           - "--select=B,E,F,I,ISC001,UP,W"  # TODO: select D
-          - "--ignore=E501,B011,UP038"
+          - "--ignore=E501"
       - id: ruff-format
   # - repo: https://github.com/adrienverge/yamllint
   #   rev: 'v1.35.1'
