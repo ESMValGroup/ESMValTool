@@ -205,28 +205,6 @@ ignore = [
     # from ESMValTool: Ignore until someone has time to fix this:
     "B011",     # Do not `assert False` (`python -O` removes these calls), raise `AssertionError()`
     "UP038",    # Use `X | Y` in `isinstance` call instead of `(X, Y)`
-    # from ESMValCore: Ignore until someone has time to fix this:
-    "ANN",      # Adding type hints
-    "ARG",      # Unused argument
-    "DTZ",      # add tzinfo to datetimes
-    "ERA001",   # Found commented-out code
-    "FBT",      # avoid boolean positional arguments
-    "N818",     # Exception name should be named with an Error suffix
-    "PERF",     # Use comprehensions
-    "PGH003",   # Use specific rule codes when ignoring type issues
-    "PLC0206",  # Extracting value from dictionary without calling `.items()`
-    "PLR2004",  # Don't use magic values
-    "PLW2901",  # Don't overwrite a loop variable
-    "PT009",    # Use a regular `assert` instead of unittest-style `assertListEqual`
-    "PT011",    # pytest.raises without match argument
-    "PT027",    # Use `pytest.raises` instead of unittest-style `assertRaises`
-    "PTH",      # Use pathlib everywhere
-    "RUF022",   # `__all__` definitions that are not ordered according to an "isort-style" sort.
-    "SIM102",   # Use a single `if` statement instead of nested `if` statements
-    "SIM117",   # Use a single `with` statement with multiple contexts instead of nested `with` statements
-    "T201",     # `print` statements.
-    "TD003",    # Missing issue link on the line following this TODO
-    "TRY400",   # Uses of `logging.error` instead of `logging.exception` when logging an exception
     # Really ignore:
     "D105",     # Disable missing docstring in magic method as these are well defined.
     "E501",     # Disable line-too-long as this is taken care of by the formatter.
