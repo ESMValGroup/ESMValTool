@@ -76,7 +76,7 @@ diagnostics:
         preprocessor: prep_quad_map
         mip: Omon
     additional_datasets:
-      - {dataset: WOA, project: obs4MIPs, level: L3,
+      - {dataset: WOA, project: obs4MIPs,
          start_year: 2000, end_year: 2000, tier: 2}
     scripts:
       Global_Ocean_map:  &Global_Ocean_map
@@ -94,7 +94,7 @@ diagnostics:
         preprocessor: prep_quad_map
         mip: Omon
     additional_datasets:
-      - {dataset: WOA, project: obs4MIPs, level: L3,
+      - {dataset: WOA, project: obs4MIPs,
          start_year: 2000, end_year: 2000, tier: 2}
     scripts:
       Global_Ocean_map:  *Global_Ocean_map
@@ -107,7 +107,7 @@ diagnostics:
         preprocessor: prep_quad_map_depth
         mip: Omon
     additional_datasets:
-      - {dataset: WOA, project: obs4MIPs, level: L3,
+      - {dataset: WOA, project: obs4MIPs,
          start_year: 2000, end_year: 2000, tier: 2}
     scripts:
       Global_Ocean_map: *Global_Ocean_map
@@ -120,7 +120,7 @@ diagnostics:
         preprocessor: prep_quad_map_depth
         mip: Omon
     additional_datasets:
-      - {dataset: WOA, project: obs4MIPs, level: L3,
+      - {dataset: WOA, project: obs4MIPs,
          start_year: 2000, end_year: 2000, tier: 2}
     scripts:
       Global_Ocean_map:  *Global_Ocean_map
