@@ -76,7 +76,7 @@ diagnostics:
         preprocessor: prep_quad_map
         mip: Omon
     additional_datasets:
-      - {dataset: WOA, project: obs4MIPs,
+      - {dataset: WOA, project: OBS, type: clim,
          start_year: 2000, end_year: 2000, tier: 2}
     scripts:
       Global_Ocean_map:  &Global_Ocean_map
@@ -85,7 +85,7 @@ diagnostics:
                         exp: historical, ensemble: r1i1p1f3}
         exper_model: {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon,
                       exp: historical, ensemble: r1i1p1f2}
-        observational_dataset: {dataset: WOA, project: obs4MIPs}
+        observational_dataset: {dataset: WOA, project: OBS}
 
   sea_surface_salinity:
     description: Global surface quad plots sos
@@ -94,7 +94,7 @@ diagnostics:
         preprocessor: prep_quad_map
         mip: Omon
     additional_datasets:
-      - {dataset: WOA, project: obs4MIPs,
+      - {dataset: WOA, project: OBS, type: clim,
          start_year: 2000, end_year: 2000, tier: 2}
     scripts:
       Global_Ocean_map:  *Global_Ocean_map
@@ -107,7 +107,7 @@ diagnostics:
         preprocessor: prep_quad_map_depth
         mip: Omon
     additional_datasets:
-      - {dataset: WOA, project: obs4MIPs,
+      - {dataset: WOA, project: OBS, type: clim,
          start_year: 2000, end_year: 2000, tier: 2}
     scripts:
       Global_Ocean_map: *Global_Ocean_map
@@ -120,7 +120,7 @@ diagnostics:
         preprocessor: prep_quad_map_depth
         mip: Omon
     additional_datasets:
-      - {dataset: WOA, project: obs4MIPs,
+      - {dataset: WOA, project: OBS, type: clim,
          start_year: 2000, end_year: 2000, tier: 2}
     scripts:
       Global_Ocean_map:  *Global_Ocean_map
