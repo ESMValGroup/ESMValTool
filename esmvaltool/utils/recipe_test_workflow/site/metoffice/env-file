@@ -48,8 +48,10 @@ safe_load "${ENV_NAME}"
 # If PYTHONPATH_PREPEND has been set, prepend it to PYTHONPATH to extend the
 # Python environment.
 if [[ ! -z ${PYTHONPATH_PREPEND:-} ]]; then
-    echo "[INFO] Prepending the following to PYTHONPATH: ${PYTHONPATH_PREPEND}"
     export PYTHONPATH=${PYTHONPATH_PREPEND}:${PYTHONPATH:-}
+    if [[ -z ${QUIET_MODE:-} ]]; then
+        echo "[INFO] Prepending the following to PYTHONPATH: ${PYTHONPATH_PREPEND}"
+    fi
 fi
 
 if [[ -z ${QUIET_MODE:-} ]]; then
@@ -57,4 +59,9 @@ if [[ -z ${QUIET_MODE:-} ]]; then
 fi
 
 command="/usr/bin/time -v -o ${CYLC_TASK_LOG_ROOT}.time $@"
-exec ${command}
+
+if [[ -n "${CAPTURE_OUTPUT:-}" ]]; then
+    ${command}
+else
+    exec ${command}
+fi
