@@ -377,8 +377,6 @@ def sum_up_to_plot_dimensions(var, plot_type):
         cube = var.collapsed(
             ["longitude", "latitude", z_coord], iris.analysis.SUM, weights=None
         )
-    elif plot_type == "zonalmean":
-        cube = var.collapsed(["longitude"], iris.analysis.SUM)
     elif plot_type == "1d_profile":
         cube = var.collapsed(["longitude", "latitude"], iris.analysis.SUM)
     else:
