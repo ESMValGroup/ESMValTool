@@ -195,10 +195,7 @@ def _number_density_dryair_by_grid(grmassdry, grvol):
 
 
 def dpres_plevel(plev, pmin, pmax, z_coord="air_pressure"):
-    """
-    Call the appropriate pressure level calculation with
-    respect to the given coordinates.
-    """
+    """Calculate pressure levels."""
 
     cube_coords = [coord.name() for coord in plev.dim_coords]
 
@@ -208,8 +205,8 @@ def dpres_plevel(plev, pmin, pmax, z_coord="air_pressure"):
         dplev = dpres_plevel_4d(plev, pmin, pmax, z_coord)
     else:
         raise NotImplementedError(
-            "Pressurelevel calculation is not implemented"
-            " for the present coordinates."
+            "Pressure level calculation is not implemented for the present "
+            "coordinates"
         )
 
     return dplev
@@ -327,9 +324,9 @@ def extract_region(dataset, region, case="reaction"):
     )
 
     if region == "TROP":
-        var.data = da.ma.masked_array(var.core_data(), mask=(z_4d <= tp_4d))
+        var.data = da.ma.masked_array(var.core_data(), mask=z_4d <= tp_4d)
     elif region == "STRA":
-        var.data = da.ma.masked_array(var.core_data(), mask=(z_4d > tp_4d))
+        var.data = da.ma.masked_array(var.core_data(), mask=z_4d > tp_4d)
     else:
         raise NotImplementedError(f"region '{region}' is not supported")
 
@@ -374,6 +371,9 @@ def sum_up_to_plot_dimensions(var, plot_type):
             z_coord = var.coords(
                 "atmosphere_hybrid_sigma_pressure_coordinate", dim_coords=True
             )[0]
+        else:
+            msg = f"No valid Z-coord available for data\n{var}"
+            raise ValueError(msg)
         cube = var.collapsed(
             ["longitude", "latitude", z_coord], iris.analysis.SUM, weights=None
         )
