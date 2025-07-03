@@ -111,6 +111,7 @@ def _concatenate_and_save_daily_cubes(
         # Fix metadata and  update version information
         attrs = copy.deepcopy(cfg["attributes"])
         attrs["mip"] = var["mip"]
+        attrs_day["version"] += "-AMPM"
         utils.set_global_atts(cube, attrs)
         # Save variable
         utils.save_variable(
@@ -121,7 +122,7 @@ def _concatenate_and_save_daily_cubes(
     cube_day = utils.fix_coords(cube_day)
     attrs_day = copy.deepcopy(cfg["attributes"])
     attrs_day["mip"] = var["mip"]
-    attrs_day["version"] += "-daylight"
+    attrs_day["version"] += "-AMPM-daylight"
     utils.set_global_atts(cube_day, attrs_day)
     # Save variable
     utils.save_variable(
