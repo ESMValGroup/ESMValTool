@@ -6,6 +6,7 @@ from datetime import datetime
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
+from esmvaltool.cmorizers.data.utilities import read_cmor_config
 
 logger = logging.getLogger(__name__)
 
@@ -30,10 +31,9 @@ def download_dataset(
     overwrite : bool
         Overwrite already downloaded files
     """
-    defined_time = True
+
     if start_date is None:
         start_date = datetime(1982, 1, 1)
-        defined_time = False
     if end_date is None:
         end_date = datetime(2016, 12, 31)
     loop_date = start_date
@@ -44,6 +44,15 @@ def download_dataset(
         dataset_info=dataset_info,
         overwrite=overwrite,
     )
+
+    # check if daily data needs to be downloaded
+    cmor_config = read_cmor_config(dataset)
+    daily_data = cmor_config["daily_data"]
+    logger.info(
+        "If daily data needs to be downloaded change \"daily_data\" in the " \
+        "cmor_config file to \"True\" " \
+        "(esmvaltool/cmorizers/data/cmor_config/ESACCI-CLOUD.yml)"
+        )
 
     # Base paths for L3U (daily data) and L3C (monthly data)
     base_path_l3u = (
@@ -127,9 +136,7 @@ def download_dataset(
                     )
 
                 # daily data
-                if defined_time or (
-                    not defined_time and (year in range(2003, 2008))
-                ):
+                if daily_data:
                     logger.info(
                         "Downloading daily data (L3U) for sat = %s", sat
                     )
