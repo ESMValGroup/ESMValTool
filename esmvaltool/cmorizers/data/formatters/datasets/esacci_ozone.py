@@ -49,7 +49,7 @@ Download and processing instructions
 
     ---------------------------------------------------------------------------
 
-    IASI (variable o3)
+    IASI (variables o3, toz)
     Download from BIRA WebDAV server: https://webdav.aeronomie.be
     Path: /guest/o3_cci/webdata/Nadir_Profiles/L3/IASI_MG_FORLI/
     Username: o3_cci_public
@@ -72,6 +72,7 @@ from esmvalcore.cmor._fixes.native_datasets import NativeDatasetFix
 from esmvalcore.preprocessor import concatenate, monthly_statistics
 
 from ...utilities import (
+    fix_coords,
     fix_var_metadata,
     save_variable,
     set_global_atts,
@@ -80,8 +81,21 @@ from ...utilities import (
 logger = logging.getLogger(__name__)
 
 
-def _convert_units(cubes, short_name, var):
-    """Perform variable-specific calculations."""
+def _convert_units(cubes: iris.cube.CubeList,
+                   short_name: str, var: dict) -> iris.cube.Cube:
+    """Perform variable-specific conversion of units.
+
+    Parameters
+    ----------
+    cubes: cube list containing all data to convert units
+    short_name: short name of variable to be converted
+    var: dict contaning variable info
+
+    Returns
+    -------
+    cube: iris.cube.Cube
+        data cube with converted units.
+    """
     cube = cubes.extract_cube(var["raw"])
     if short_name == "o3":  # Ozone mole fraction
         if var["var_name"] == "o3_iasi":  # IASI merged profiles
@@ -99,7 +113,7 @@ def _convert_units(cubes, short_name, var):
             cube = cube / air_mol_concentration
             cube.units = "mol mol-1"
 
-    elif short_name == "toz":  # Total ozone column (m)
+    elif short_name == "toz":  # Total ozone column (m) (IASI or GTO-ECV)
         # Convert from mol m-2 to m
         # -------------------------
         # 1e-5 m (gas @ T = 273 K and p = 101325 Pa) ~ 2.69e20 molecules m-2
@@ -174,8 +188,44 @@ def _extract_variable(in_files, var, cfg, out_dir, year, month):
         cube = iris.util.new_axis(cube, lon_coord)
         cube.transpose([1, 3, 2, 0])
         NativeDatasetFix.fix_alt16_metadata(cube)
+        lat_coord = iris.coords.DimCoord(
+            cube.coord("latitude").points,
+            var_name="lat",
+            standard_name="latitude",
+            long_name="latitude",
+            units="degrees_north",
+        )
+        cube.remove_coord(cube.coord("latitude"))
+        cube.add_dim_coord(lat_coord, 2)
+        cube = fix_coords(cube)
     elif var["var_name"] == "o3_megridop":
+        # roll longitude: -180...180 --> 0...360
+        cube.coord("longitude").points = cube.coord("longitude").points + 180.0
+        nlon = len(cube.coord("longitude").points)
+        cube.data = da.roll(cube.core_data(), int(nlon / 2), axis=-1)
         NativeDatasetFix.fix_alt16_metadata(cube)
+        # reorder dimensions to [time, lev, lat, lon]
+        cube.transpose([0, 3, 2, 1])
+        # rename var_name of lat and lon coordinates
+        lon_coord = iris.coords.DimCoord(
+            cube.coord("longitude").points,
+            var_name="lon",
+            standard_name="longitude",
+            long_name="longitude",
+            units="degrees_east",
+        )
+        cube.remove_coord(cube.coord("longitude"))
+        cube.add_dim_coord(lon_coord, 3)
+        lat_coord = iris.coords.DimCoord(
+            cube.coord("latitude").points,
+            var_name="lat",
+            standard_name="latitude",
+            long_name="latitude",
+            units="degrees_north",
+        )
+        cube.remove_coord(cube.coord("latitude"))
+        cube.add_dim_coord(lat_coord, 2)
+        cube = fix_coords(cube)
     # add latitude, longitude and nlev coordiantes to cube for o3_iasi
     elif var["var_name"] == "o3_iasi":
         # add named coordinates
@@ -202,38 +252,21 @@ def _extract_variable(in_files, var, cfg, out_dir, year, month):
         cube.add_aux_coord(lat_coord, 3)
         iris.util.promote_aux_coord_to_dim_coord(cube, "latitude")
         # level
-        #        lev_coord = iris.coords.DimCoord(
-        #            np.arange(0, 1, 1/cube.shape[1]),
-        #            var_name="lev",
-        #            standard_name="atmosphere_hybrid_sigma_pressure_coordinate",
-        #            long_name="hybrid sigma pressure coordinate",
-        #            units="1",
-        #            attributes={'positive': 'down'},
-        #        )
         lev_coord = iris.coords.DimCoord(
             np.arange(1, 0, -1 / cube.shape[1]),
-            #            np.arange(cube.shape[1], 0, -1),
             var_name="lev",
             standard_name="atmosphere_hybrid_sigma_pressure_coordinate",
-            #            standard_name="",
-            #            long_name="number of level",
             long_name="hybrid sigma pressure coordinate",
             units="1",
             attributes={"positive": "up"},
         )
         cube.add_dim_coord(lev_coord, 1)
-        ###        cube.add_aux_coord(lev_coord, 1)
-        ###        iris.util.promote_aux_coord_to_dim_coord(cube, "atmosphere_hybrid_sigma_pressure_coordinate")
-        ###        cube.add_dim_coord(lev_coord, 1)
-        # reorder dimensions to [time, lev, lat, lon]
         cube.transpose([0, 1, 3, 2])
         # air pressure (aux coordinate)
         # calculate full levels from half levels
         ap_half = cubes.extract_cube("atmosphere_pressure_grid")
         ap_half.data = np.ma.masked_invalid(ap_half.data)
         ap_half = monthly_statistics(ap_half, operator="mean")
-        ###        ap_half.data = da.ma.masked_less(ap_half.core_data(), 1)
-        ###        ap_half = ap_half.collapsed('time', iris.analysis.MEAN)
         # reoder air pressure (aux coordinate) before adding to cube
         # (otherwise, data of aux coordiante remains in original order)
         ap_half.transpose([0, 1, 3, 2])
@@ -243,28 +276,77 @@ def _extract_variable(in_files, var, cfg, out_dir, year, month):
                 ap_half.core_data()[:, k, :, :]
                 + ap_half.core_data()[:, k + 1, :, :]
             )
-        #            da.ma.masked_invalid(ap_full.core_data())
-        #        ap_full = np.ma.masked_where(ap_full.data <= 1, ap_full.data, copy=False)
-        #        ap_full.fill_value = 1e20
         ap_means = ap_full.core_data().mean(axis=[2, 3], keepdims=True)
         ap_full.data = da.where(
             da.ma.getmaskarray(ap_full.core_data()),
             ap_means,
             ap_full.core_data(),
         )
-        #        ap_full.data = da.array(ap_full.core_data())
         ap_coord = iris.coords.AuxCoord(
             ap_full.core_data(),
             var_name="plev",
             standard_name="air_pressure",
             long_name="pressure",
             units="Pa",
-            #            attributes={'_FillValue': '1e20'},
         )
         cube.add_aux_coord(ap_coord, [0, 1, 2, 3])
+        # roll longitude: -180...180 --> 0...360
+        cube.coord("longitude").points = cube.coord("longitude").points + 180.0
+        nlon = len(cube.coord("longitude").points)
+        cube.data = da.roll(cube.core_data(), int(nlon / 2), axis=-1)
+    elif var["var_name"] == "toz_iasi":
+        # add named coordinates
+        # longitude
+        lon_cube = cubes.extract_cube("longitude")
+        lon_coord = iris.coords.DimCoord(
+            lon_cube.core_data()[0, :],
+            var_name="lon",
+            standard_name="longitude",
+            long_name="longitude",
+            units="degrees_east",
+        )
+        cube.add_aux_coord(lon_coord, 1)
+        iris.util.promote_aux_coord_to_dim_coord(cube, "longitude")
+        # latitude
+        lat_cube = cubes.extract_cube("latitude")
+        lat_coord = iris.coords.DimCoord(
+            lat_cube.core_data()[0, :],
+            var_name="lat",
+            standard_name="latitude",
+            long_name="latitude",
+            units="degrees_north",
+        )
+        cube.add_aux_coord(lat_coord, 2)
+        iris.util.promote_aux_coord_to_dim_coord(cube, "latitude")
+        # reorder dimensions to [time, lat, lon]
+        cube.transpose([0, 2, 1])
+        # roll longitude: -180...180 --> 0...360
+        cube.coord("longitude").points = cube.coord("longitude").points + 180.0
+        nlon = len(cube.coord("longitude").points)
+        cube.data = da.roll(cube.core_data(), int(nlon / 2), axis=-1)
+        cube = fix_coords(cube)
+    elif var["var_name"] == "toz_gto_ecv":
+        lon_coord = iris.coords.DimCoord(
+            cube.coord("longitude").points,
+            var_name="lon",
+            standard_name="longitude",
+            long_name="longitude",
+            units="degrees_east",
+        )
+        cube.remove_coord(cube.coord("longitude"))
+        cube.add_dim_coord(lon_coord, 2)
+        lat_coord = iris.coords.DimCoord(
+            cube.coord("latitude").points,
+            var_name="lat",
+            standard_name="latitude",
+            long_name="latitude",
+            units="degrees_north",
+        )
+        cube.remove_coord(cube.coord("latitude"))
+        cube.add_dim_coord(lat_coord, 1)
+        cube = fix_coords(cube)
 
     fix_var_metadata(cube, cmor_info)
-    ###    cube = fix_coords(cube)
     set_global_atts(cube, cfg["attributes"])
     return cube
 
@@ -278,7 +360,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         glob_version = ""
 
     for var_name, var in cfg["variables"].items():
-        # Define dataset-specific time ranges
+        # Define dataset-specific default time ranges
         if var_name == "toz_gto_ecv":  # GTO-ECV
             dataset_start = datetime(1995, 7, 1)
             dataset_end = datetime(2023, 4, 30)
@@ -288,11 +370,12 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         elif var_name == "o3_megridop":  # MEGRIDOP
             dataset_start = datetime(2001, 11, 1)
             dataset_end = datetime(2023, 12, 31)
-        elif var_name == "o3_iasi":  # IASI
+        elif var_name == "o3_iasi" or var_name == "toz_iasi":  # IASI
             dataset_start = datetime(2008, 1, 1)
-            dataset_end = datetime(2008, 12, 31)  # (2023, 12, 31)
+            dataset_end = datetime(2010, 12, 31)  # (2023, 12, 31)
         else:
-            raise ValueError(f"Unknown dataset for variable {var_name}")
+            errmsg = f"Unknown dataset for variable {var_name}"
+            raise ValueError(errmsg)
 
         var["var_name"] = var_name
 
@@ -312,7 +395,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             glob_attrs["version"] = glob_version
         output_var = var["output"]
         for year in range(start_date_x.year, end_date_x.year + 1):
-            if var_name == "o3_iasi":
+            if var_name == "o3_iasi" or var_name == "toz_iasi":
                 subfolder = f"IASI_{year}"
             else:
                 subfolder = ""
@@ -331,9 +414,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 )
                 in_files = glob.glob(filepattern)
                 if not in_files:
-                    logger.info(
-                        f"{var_name}: no data not found for {year}-{monstr}",
-                    )
+                    infomsg = f"{var_name}: no data not found for {year}-{monstr}"
+                    logger.info(infomsg)
                     continue
                 cube = _extract_variable(
                     in_files, var, cfg, out_dir, year, month,
@@ -343,10 +425,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 all_data_cubes.append(cube)
 
         if not all_data_cubes:
-            raise ValueError(
-                f"No valid data found for {var_name} within the selected time"
-                " range",
-            )
+            errmsg = (f"No valid data found for {var_name} within the selected"
+                      f" time range")
+            raise ValueError(errmsg)
 
         final_cube = concatenate(all_data_cubes)
         save_variable(

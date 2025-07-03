@@ -1,0 +1,52 @@
+# ESMValTool
+# recipe_check_obs.yml
+---
+documentation:
+  description: |
+    Test recipe for OBS, no proprocessor or diagnostics are applied,
+    just to check correct reading of the CMORized data.
+
+  title: Recipe to test run all obs cmorizers.
+
+  authors:
+    - righi_mattia
+
+  maintainer:
+    - predoi_valeriu
+
+diagnostics:
+
+  ### TIER 2 ##################################################################
+
+  ESACCI-OZONE:
+    description: ESACCI-OZONE check
+    variables:
+      toz:
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
+             type: sat, version: L3, start_year: 1997, end_year: 2010}
+          - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
+             type: sat, version: L3-GTO-ECV, start_year: 1995, end_year: 2023}
+          - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
+             type: sat, version: L3-IASI, start_year: 2008, end_year: 2010}
+      tozStderr:
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
+             type: sat, version: L3, start_year: 1997, end_year: 2010}
+      tro3prof:
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
+             type: sat, version: L3, start_year: 2007, end_year: 2008}
+      tro3profStderr:
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS, mip: Amon, tier: 2,
+             type: sat, version: L3, start_year: 2007, end_year: 2008}
+      o3:
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
+             type: sat, version: L3-SAGE-OMPS, start_year: 1984, end_year: 2022}
+          - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
+             type: sat, version: L3-MEGRIDOP, start_year: 2001, end_year: 2023}
+          - {dataset: ESACCI-OZONE, project: OBS6, mip: AERmon, tier: 2,
+             type: sat, version: L3-IASI, start_year: 2008, end_year: 2010}
+    scripts: null

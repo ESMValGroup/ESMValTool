@@ -36,3 +36,9 @@ variables:
     output: o3
     raw: O3_partial_column_profile
     filename: "IASI_FORLI_O3_MERGED_{year}{month}*_V1.0.nc"
+  toz_iasi:
+    version: L3-IASI
+    mip: AERmon
+    output: toz
+    raw: O3_total_column
+    filename: "IASI_FORLI_O3_MERGED_{year}{month}*_V1.0.nc"
