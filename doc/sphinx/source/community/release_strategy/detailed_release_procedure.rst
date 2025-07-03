@@ -193,7 +193,7 @@ The steps to running the compare tool on the VM are the following:
 
 .. code-block:: bash
 
-  nohup python ESMValTool/esmvaltool/utils/testing/regression/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt
+  nohup python ESMValTool/esmvaltool/utils/develop/compare.py --reference $reference_dir --current $current_dir > compare_v280_output.txt
 
 Copy the comparison txt file to the release issue.
 Some of the recipes will appear as having identical output to the one from previous release.
