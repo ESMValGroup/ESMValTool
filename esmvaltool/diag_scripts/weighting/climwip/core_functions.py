@@ -130,7 +130,7 @@ def compute_overall_mean(
 
 def combine_ensemble_members(
     dataset: Union["xr.DataArray", None],
-    dimensions: Union[str, list] = "model_ensemble",
+    dimensions: str | list = "model_ensemble",
 ) -> (Union["xr.DataArray", None], dict):
     """Combine ensemble members of the same model.
 
@@ -186,8 +186,8 @@ def combine_ensemble_members(
 def calculate_weights_data(
     performance: Union["np.array", None],
     independence: Union["np.array", None],
-    performance_sigma: Union[float, None],
-    independence_sigma: Union[float, None],
+    performance_sigma: float | None,
+    independence_sigma: float | None,
 ) -> "np.array":
     """Calculate normalized weights for each model N.
 
@@ -236,8 +236,8 @@ def calculate_weights_data(
 def calculate_weights(
     performance: Union["xr.DataArray", None],
     independence: Union["xr.DataArray", None],
-    performance_sigma: Union[float, None],
-    independence_sigma: Union[float, None],
+    performance_sigma: float | None,
+    independence_sigma: float | None,
 ) -> "xr.DataArray":
     """Xarray wrapper for calculate_weights_data."""
     performance_core_dims = [] if performance is None else ["model_ensemble"]
