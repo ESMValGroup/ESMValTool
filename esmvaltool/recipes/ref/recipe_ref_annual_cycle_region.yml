@@ -80,9 +80,9 @@ diagnostics:
              tier: 2, reference_for_metric: true'}
       pr:
         <<: *var_default_abs
-        reference_dataset: GPCP-SG
+        reference_dataset: GPCP-V2.3
         additional_datasets:
-          - {dataset: GPCP-SG, project: obs4MIPs, tier: 1,
+          - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1,
              reference_for_metric: true'}
       psl:
         <<: *var_default_abs
@@ -139,7 +139,7 @@ diagnostics:
                 linestyle: '-'
                 linewidth: 2
                 zorder: 3
-              GPCP-SG:
+              GPCP-V2.3:
                 color: black
                 label: '{dataset}'
                 linestyle: '-'

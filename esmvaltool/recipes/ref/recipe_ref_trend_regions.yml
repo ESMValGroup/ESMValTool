@@ -197,7 +197,7 @@ diagnostics:
         mip: Amon
         timerange: 1980/2009
         additional_datasets:
-          - {dataset: GPCP-SG, project: obs4MIPs, tier: 1,
+          - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1,
              reference_for_metric: true}
           - {dataset: ERA5, project: native6, type: reanaly, version: v1,
              tier: 3, reference_for_metric: true}
