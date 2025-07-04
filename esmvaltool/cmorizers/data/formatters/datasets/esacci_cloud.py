@@ -394,4 +394,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 short_name, var, cfg, in_dir, out_dir, start_date, end_date
             )
         else:
-            raise ValueError("Filename cannot be assigned to monthly or daily data.")
+            raise ValueError(
+                "Filename cannot be assigned to monthly or daily data."
+            )
