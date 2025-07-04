@@ -62,11 +62,10 @@ def _create_nan_cube(cube, year, month, day):
 
 def _handle_missing_day(year, month, iday, short_name, cubes, cubes_day):
     """Fill missing day."""
+    daily_cube = _create_nan_cube(cubes_day[0], year, month, iday)
     if short_name in ["clt", "ctp"]:
-        daily_cube = _create_nan_cube(cubes_day[0], year, month, iday)
         cubes.append(daily_cube)
-    daily_cube_day = _create_nan_cube(cubes_day[0], year, month, iday)
-    cubes_day.append(daily_cube_day)
+    cubes_day.append(daily_cube)
 
 
 def _concatenate_and_save_daily_cubes(
@@ -107,8 +106,9 @@ def _concatenate_and_save_daily_cubes(
         cube_day.convert_units(cmor_info.units)
 
     if short_name in ["clt", "ctp"]:
-        cube = utils.fix_coords(cube)
         # Fix metadata and  update version information
+        cube = utils.fix_coords(cube)
+        utils.fix_var_metadata(cube, cmor_info)
         attrs = copy.deepcopy(cfg["attributes"])
         attrs["mip"] = var["mip"]
         attrs_day["version"] += "-AMPM"
@@ -120,6 +120,7 @@ def _concatenate_and_save_daily_cubes(
 
     # Fix metadata and  update version information
     cube_day = utils.fix_coords(cube_day)
+    utils.fix_var_metadata(cube_day, cmor_info)
     attrs_day = copy.deepcopy(cfg["attributes"])
     attrs_day["mip"] = var["mip"]
     attrs_day["version"] += "-AMPM-daylight"
@@ -141,12 +142,6 @@ def _concatenate_and_save_monthly_cubes(
     # After gathering all cubes for all years, concatenate them
     cube = cubes.concatenate_cube()
 
-    # # Check for missing months
-    # year0 = cube.coord("time").cell(0).point.year
-    # year1 = cube.coord("time").cell(-1).point.year
-    # logger.debug(year0, year1)
-    # cube = _check_for_missing_dates(year0, year1, cube, cubes)
-
     if attach == "-AMPM":
         cube = monthly_statistics(cube)
 
@@ -162,6 +157,7 @@ def _concatenate_and_save_monthly_cubes(
         cube.convert_units(cmor_info.units)
 
     # Set global attributes and fix metadata
+    utils.fix_var_metadata(cube, cmor_info)
     attrs = copy.deepcopy(cfg["attributes"])
     attrs["mip"] = var["mip"]
     attrs["version"] += attach
@@ -194,7 +190,7 @@ def _process_daily_file(
         daily_cube = iris.load_cube(ifile, NameConstraint(var_name=raw_name))
         daily_cube_ilum = iris.load_cube(ifile, NameConstraint(var_name=illum))
 
-        # Set arbitrary time of day
+        # Set arbitrary time of day (in the end a daily mean is calculated)
         daily_cube.coord("time").points = (
             daily_cube.coord("time").points + (inum + 0.5 * ivar) * 0.1
         )
@@ -205,8 +201,8 @@ def _process_daily_file(
         daily_cube = utils.fix_coords(daily_cube)
         # Fix dtype
         utils.fix_dtype(daily_cube)
-        # Fix metadata
-        utils.fix_var_metadata(daily_cube, cmor_info)
+        ## Fix metadata
+        #utils.fix_var_metadata(daily_cube, cmor_info)
 
         # Check for daylight
         daily_cube_day = daily_cube.copy()
@@ -249,31 +245,34 @@ def _process_monthly_file(
     utils.fix_var_metadata(monthly_cube, cmor_info)
 
     # Add the cube to the list
-    if any(
-        sat_am in ifile
-        for sat_am in (
-            "AVHRR_NOAA-12",
-            "AVHRR_NOAA-15",
-            "AVHRR_NOAA-17",
-            "AVHRR_METOPA",
-        )
-    ):
-        cubes_am.append(monthly_cube)
-    elif any(
-        sat_pm in ifile
-        for sat_pm in (
-            "AVHRR_NOAA-7",
-            "AVHRR_NOAA-9",
-            "AVHRR_NOAA-11",
-            "AVHRR_NOAA-14",
-            "AVHRR_NOAA-16",
-            "AVHRR_NOAA-18",
-            "AVHRR_NOAA-19",
-        )
-    ):
-        cubes_pm.append(monthly_cube)
-    else:
-        logger.error("The file %s is not assigned to AM or PM", ifile)
+    try:
+        if any(
+            sat_am in ifile
+            for sat_am in (
+                "AVHRR_NOAA-12",
+                "AVHRR_NOAA-15",
+                "AVHRR_NOAA-17",
+                "AVHRR_METOPA",
+            )
+        ):
+            cubes_am.append(monthly_cube)
+        elif any(
+            sat_pm in ifile
+            for sat_pm in (
+                "AVHRR_NOAA-7",
+                "AVHRR_NOAA-9",
+                "AVHRR_NOAA-11",
+                "AVHRR_NOAA-14",
+                "AVHRR_NOAA-16",
+                "AVHRR_NOAA-18",
+                "AVHRR_NOAA-19",
+            )
+        ):
+            cubes_pm.append(monthly_cube)
+        else:
+            raise ValueError(f"The file {ifile} is not assigned to AM or PM")
+    except ValueError as e:
+        logger.error(e)
 
 
 def _extract_variable_daily(
@@ -297,7 +296,7 @@ def _extract_variable_daily(
                 filelist = glob.glob(
                     os.path.join(
                         in_dir,
-                        f"{year}{month:02}" + f"{iday:02}" + var["file"],
+                        f"{year}{month:02}{iday:02}{var['file']}",
                     )
                 )
 

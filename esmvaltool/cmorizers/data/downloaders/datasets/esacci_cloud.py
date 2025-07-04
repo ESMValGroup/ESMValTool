@@ -126,14 +126,7 @@ def download_dataset(
                 logger.info(
                     "Download folder for monthly data (L3C): %s", folder_l3c
                 )
-                try:
-                    downloader.download_file(folder_l3c, wget_options_l3c)
-                except Exception as e:
-                    logger.error(
-                        "Failed to download monthly data from %s: %s",
-                        folder_l3c,
-                        str(e),
-                    )
+                downloader.download_file(folder_l3c, wget_options_l3c)
 
                 # daily data
                 if daily_data:
@@ -149,14 +142,7 @@ def download_dataset(
                     logger.info(
                         "Download folder for daily data (L3U): %s", folder_l3u
                     )
-                    try:
-                        downloader.download_file(folder_l3u, wget_options_l3u)
-                    except Exception as e:
-                        logger.error(
-                            "Failed to download daily data from %s: %s",
-                            folder_l3u,
-                            str(e),
-                        )
+                    downloader.download_file(folder_l3u, wget_options_l3u)
 
         # Increment the loop_date by one month
         loop_date += relativedelta.relativedelta(months=1)
