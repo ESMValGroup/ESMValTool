@@ -111,7 +111,7 @@ def _concatenate_and_save_daily_cubes(
         utils.fix_var_metadata(cube, cmor_info)
         attrs = copy.deepcopy(cfg["attributes"])
         attrs["mip"] = var["mip"]
-        attrs_day["version"] += "-AMPM"
+        attrs["version"] += "-AMPM"
         utils.set_global_atts(cube, attrs)
         # Save variable
         utils.save_variable(
@@ -202,7 +202,7 @@ def _process_daily_file(
         # Fix dtype
         utils.fix_dtype(daily_cube)
         ## Fix metadata
-        #utils.fix_var_metadata(daily_cube, cmor_info)
+        # utils.fix_var_metadata(daily_cube, cmor_info)
 
         # Check for daylight
         daily_cube_day = daily_cube.copy()
@@ -302,20 +302,15 @@ def _extract_variable_daily(
 
                 if filelist:
                     for inum, ifile in enumerate(filelist):
-                        try:
-                            _process_daily_file(
-                                ifile,
-                                inum,
-                                short_name,
-                                var,
-                                cmor_info,
-                                cubes,
-                                cubes_day,
-                            )
-                        except Exception as e:
-                            logger.error(
-                                "Error processing file '%s': %s", ifile, e
-                            )
+                        _process_daily_file(
+                            ifile,
+                            inum,
+                            short_name,
+                            var,
+                            cmor_info,
+                            cubes,
+                            cubes_day,
+                        )
                 else:
                     _handle_missing_day(
                         year, month, iday, short_name, cubes, cubes_day
@@ -344,22 +339,18 @@ def _extract_variable_monthly(
         for month in range(1, 13):  # Loop through all months (1-12)
             # Construct the file list for the current month
             filelist = glob.glob(
-                os.path.join(in_dir, f"{year}{month:02}" + var["file"])
+                os.path.join(in_dir, f"{year}{month:02}{var['file']}")
             )
 
             if not filelist:
-                logger.warning(
+                raise ValueError(
                     "No monthly file found for %s-%02d", year, month
                 )
-                continue
 
             for ifile in filelist:
-                try:
-                    _process_monthly_file(
-                        ifile, short_name, var, cmor_info, cubes_am, cubes_pm
-                    )
-                except Exception as e:
-                    logger.error("Error processing file '%s': %s", ifile, e)
+                _process_monthly_file(
+                    ifile, short_name, var, cmor_info, cubes_am, cubes_pm
+                )
 
     if cubes_am:
         _concatenate_and_save_monthly_cubes(
@@ -384,7 +375,7 @@ def _extract_variable_monthly(
         )
 
     if not (cubes_am or cubes_pm):
-        logger.warning("No valid cubes processed")
+        raise ValueError("No valid cubes processed")
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
@@ -402,3 +393,5 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             _extract_variable_monthly(
                 short_name, var, cfg, in_dir, out_dir, start_date, end_date
             )
+        else:
+            raise ValueError("Filename cannot be assigned to monthly or daily data.")

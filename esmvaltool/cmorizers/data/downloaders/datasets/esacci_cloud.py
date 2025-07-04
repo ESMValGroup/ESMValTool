@@ -49,10 +49,10 @@ def download_dataset(
     cmor_config = read_cmor_config(dataset)
     daily_data = cmor_config["daily_data"]
     logger.info(
-        "If daily data needs to be downloaded change \"daily_data\" in the " \
-        "cmor_config file to \"True\" " \
+        'If daily data needs to be downloaded change "daily_data" in the '
+        'cmor_config file to "True" '
         "(esmvaltool/cmorizers/data/cmor_config/ESACCI-CLOUD.yml)"
-        )
+    )
 
     # Base paths for L3U (daily data) and L3C (monthly data)
     base_path_l3u = (
