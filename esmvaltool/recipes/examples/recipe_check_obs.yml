@@ -2130,3 +2130,12 @@ diagnostics:
       - {dataset: UWisc, project: OBS, mip: Amon, tier: 3,
          type: sat, version: v2, start_year: 1988, end_year: 2007}
     scripts: null
+
+  WAD2M:
+    description: WAD2M check
+    variables:
+      wetlandFrac:
+    additional_datasets:
+      - {dataset: WAD2M, project: OBS6, mip: Emon, tier: 2,
+        type: sat, version: "2.0", start_year: 2000, end_year: 2020}
+    scripts: null
