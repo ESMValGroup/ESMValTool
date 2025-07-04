@@ -1,0 +1,311 @@
+# ESMValTool
+---
+documentation:
+  description:
+    Box plot, linear trends for
+    the 46 IPCC AR6 reference regions for land (Iturbide et al., 2020).
+    The diagnostic called in this recipe uses the seaborn.boxplot function.
+    See seaborn manual for detailed information
+    (https://seaborn.pydata.org/generated/seaborn.boxplot.html).
+
+  authors:
+    - schlund_manuel
+    - weigel_katja
+  maintainer:
+    - weigel_katja
+  title: Linear trends.
+
+datasets:
+  - {dataset: MIROC6,      project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+
+preprocessors:
+  trend_tas: &trend
+    custom_order: true
+    extract_shape:
+      shapefile: ar6
+      decomposed: true
+      ids:
+        Acronym:
+          - 'NWN'
+          - 'NEN'
+          - 'GIC'
+          - 'WNA'
+          - 'CNA'
+          - 'ENA'
+          - 'NCA'
+          - 'SCA'
+          - 'CAR'
+          - 'NWS'
+          - 'NSA'
+          - 'NES'
+          - 'SAM'
+          - 'SWS'
+          - 'SES'
+          - 'SSA'
+          - 'NEU'
+          - 'WCE'
+          - 'EEU'
+          - 'MED'
+          - 'SAH'
+          - 'WAF'
+          - 'CAF'
+          - 'NEAF'
+          - 'SEAF'
+          - 'WSAF'
+          - 'ESAF'
+          - 'MDG'
+          - 'RAR'
+          - 'WSB'
+          - 'ESB'
+          - 'RFE'
+          - 'WCA'
+          - 'ECA'
+          - 'TIB'
+          - 'EAS'
+          - 'ARP'
+          - 'SAS'
+          - 'SEA'
+          - 'NAU'
+          - 'CAU'
+          - 'EAU'
+          - 'SAU'
+          - 'NZ'
+          - 'WAN'
+          - 'EAN'
+    area_statistics:
+      operator: mean
+    linear_trend:
+    convert_units:
+      units: K yr-1
+
+  trend_pr:
+    <<: *trend
+    convert_units:
+      units: mm kg m-3 day-1 yr-1
+
+  trend_psl:
+    <<: *trend
+    convert_units:
+      units: m-1 kg s-2 yr-1
+
+
+  trend_ua200: &trend200
+    custom_order: true
+    extract_levels:
+      levels: 20000
+      scheme: linear
+      coordinate: air_pressure
+    extract_shape:
+      shapefile: ar6
+      decomposed: true
+      ids:
+        Acronym:
+          - 'NWN'
+          - 'NEN'
+          - 'GIC'
+          - 'WNA'
+          - 'CNA'
+          - 'ENA'
+          - 'NCA'
+          - 'SCA'
+          - 'CAR'
+          - 'NWS'
+          - 'NSA'
+          - 'NES'
+          - 'SAM'
+          - 'SWS'
+          - 'SES'
+          - 'SSA'
+          - 'NEU'
+          - 'WCE'
+          - 'EEU'
+          - 'MED'
+          - 'SAH'
+          - 'WAF'
+          - 'CAF'
+          - 'NEAF'
+          - 'SEAF'
+          - 'WSAF'
+          - 'ESAF'
+          - 'MDG'
+          - 'RAR'
+          - 'WSB'
+          - 'ESB'
+          - 'RFE'
+          - 'WCA'
+          - 'ECA'
+          - 'TIB'
+          - 'EAS'
+          - 'ARP'
+          - 'SAS'
+          - 'SEA'
+          - 'NAU'
+          - 'CAU'
+          - 'EAU'
+          - 'SAU'
+          - 'NZ'
+          - 'WAN'
+          - 'EAN'
+    area_statistics:
+      operator: mean
+    linear_trend:
+    convert_units:
+      units: m s-1 yr-1
+
+  trend_hus200:
+    <<: *trend200
+    convert_units:
+      units: year-1
+
+
+diagnostics:
+  tas_trends:
+    variables:
+      tas:
+        preprocessor: trend_tas
+        mip: Amon
+        timerange: 1980/2009
+        additional_datasets:
+          - {dataset: HadCRUT5, project: OBS, type: ground,
+             version: 5.0.1.0-analysis, tier: 2}
+          - {dataset: ERA-5, project: obs4MIPs, tier: 1,
+             reference_for_metric: true'}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: barplot
+        seaborn_kwargs:
+          x: shape_id
+          y: tas
+          hue: dataset
+        add_aux_coords: true
+        facets_as_columns: [dataset]
+        legend_title: Data
+        plot_object_methods:
+          set_xlabel: region
+          set_ylabel: tas trend [K/yr]
+        seaborn_settings:
+          style: ticks
+          rc:
+            figure.figsize: [28, 6]
+        suptitle: Trend in Near-Surface Air Temperature
+
+  pr_trends:
+    variables:
+      pr:
+        preprocessor: trend_pr
+        mip: Amon
+        timerange: 1980/2009
+        additional_datasets:
+          - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1,
+             reference_for_metric: true}
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, reference_for_metric: true}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: barplot
+        seaborn_kwargs:
+          x: shape_id
+          y: pr
+          hue: dataset
+        add_aux_coords: true
+        facets_as_columns: [dataset]
+        legend_title: Data
+        plot_object_methods:
+          set_xlabel: region
+          set_ylabel: pr trend [mm kg m-3 day-1 yr-1]
+        seaborn_settings:
+          style: ticks
+          rc:
+            figure.figsize: [28, 6]
+        suptitle: Trend in Precipitation
+
+
+  psl_trends:
+    variables:
+      psl:
+        preprocessor: trend_psl
+        mip: Amon
+        timerange: 1980/2009
+        additional_datasets:
+          - {dataset: ERA-5, project: obs4MIPs, tier: 1,
+
+             reference_for_metric: true'}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: barplot
+        seaborn_kwargs:
+          x: shape_id
+          y: psl
+          hue: dataset
+        add_aux_coords: true
+        facets_as_columns: [dataset]
+        legend_title: Data
+        plot_object_methods:
+          set_xlabel: region
+          set_ylabel: psl trend [m-1 kg s-2 yr-1]
+        seaborn_settings:
+          style: ticks
+          rc:
+            figure.figsize: [28, 6]
+        suptitle: Trend in Sea Level Pressure
+
+  ua200_trends:
+    variables:
+      ua:
+        preprocessor: trend_ua200
+        mip: Amon
+        timerange: 1980/2009
+        additional_datasets:
+          - {dataset: ERA-5, project: obs4MIPs, tier: 1,
+
+             reference_for_metric: true'}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: barplot
+        seaborn_kwargs:
+          x: shape_id
+          y: ua
+          hue: dataset
+        add_aux_coords: true
+        facets_as_columns: [dataset]
+        plot_object_methods:
+          set_xlabel: region
+          set_ylabel: ua trend [m s-1 yr-1]
+        seaborn_settings:
+          style: ticks
+          rc:
+            figure.figsize: [28, 6]
+        suptitle: Trend in Zonal Wind at 200 hPa
+
+
+  hus200_trends:
+    variables:
+      hus:
+        preprocessor: trend_hus200
+        mip: Amon
+        timerange: 1980/2009
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, reference_for_metric: true}
+    scripts:
+      plot:
+        script: seaborn_diag.py
+        seaborn_func: barplot
+        seaborn_kwargs:
+          x: shape_id
+          y: hus
+          hue: dataset
+        add_aux_coords: true
+        facets_as_columns: [dataset]
+        plot_object_methods:
+          set_xlabel: region
+          set_ylabel: hus trend [yr-1]
+        seaborn_settings:
+          style: ticks
+          rc:
+            figure.figsize: [28, 6]
+        suptitle: Trend in Specific Humidity at 200 hPa
