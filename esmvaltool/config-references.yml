@@ -117,6 +117,11 @@ authors:
     name: Bellprat, Omar
     institute: BSC, Spain
     orcid: https://orcid.org/0000-0001-6434-1793
+  beucher_romain:
+    name: Beucher, Romain
+    institute: ACCESS-NRI, Australia
+    orcid: https://orcid.org/0000-0003-3891-5444
+    github: rbeucher
   berg_peter:
     name: Berg, Peter
     institute: SMHI, Sweden
@@ -163,6 +168,11 @@ authors:
     name: Chen, Jack
     institute: NCAR, USA
     orcid:
+  chun_felicity:
+    name: Chun, Felicity
+    institute: ACCESS-NRI, Australia
+    orcid: https://orcid.org/0009-0007-0845-0953
+    github: flicj191
   cionni_irene:
     name: Cionni, Irene
     institute: ENEA, Italy
@@ -264,6 +274,10 @@ authors:
     name: Hagemann, Stefan
     institute: MPI-M, Germany
     orcid: https://orcid.org/0000-0001-5444-2945
+  hall_sophie:
+    name: Hall, Sophie
+    institute: MetOffice, UK
+    orcid:
   hansson_ulf:
     name: Hansson, Ulf
     institute: SMHI, Sweden
@@ -344,6 +358,10 @@ authors:
     name: Lembo, Valerio
     institute: CEN, University of Hamburg, Germany
     orcid: https://orcid.org/0000-0001-6085-5914
+  lenhardt_julien:
+    name: Lenhardt, Julien
+    institute: SMHI, Sweden
+    orcid: https://orcid.org/0000-0002-9949-3989
   levine_richard:
     name: Levine, Richard
     institute: MetOffice, UK
@@ -597,6 +615,10 @@ authors:
     name: Williams, Keith
     institute: MetOffice, UK
     orcid:
+  planton_yann:
+    name: Planton, Yann
+    institute: Monash University
+    orcid: https://orcid.org/0000-0002-9664-8180
   # Viewers (not active developers)
   balaji_venkatramani:
     name: Balaji, Venkatramani
@@ -671,6 +693,10 @@ authors:
     name: Sellar, Alistair
     institute: MetOffice, UK
     orcid: 0000-0002-2955-7254
+  sullivan_arnold:
+    name: Sullivan, Arnold
+    institute: CSIRO, Australia
+    orcid: https://orcid.org/0000-0002-5712-6195
   wyser_klaus:
     name: Wyser, Klaus
     institute: SMHI, Sweden
@@ -753,6 +779,10 @@ authors:
     name: Stevens, Mark
     institute: NCAR, US
     orcid:
+  storkey_dave:
+    name: Storkey, Dave
+    institute: MetOffice, UK
+    orcid: 0000-0001-8000-5335
   # Former viewers (not active viewers)
   adeniyi_kemisola:
     name: Adeniyi, Kemisola

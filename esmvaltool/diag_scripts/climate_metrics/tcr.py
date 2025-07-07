@@ -25,7 +25,8 @@ read_external_file : str, optional
 savefig_kwargs : dict, optional
     Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings : dict, optional
-    Options for :func:`seaborn.set_theme` (affects all plots).
+    Options for :func:`seaborn.set_theme` (affects all plots). By default, uses
+    ``style: ticks``.
 
 """
 
@@ -130,6 +131,8 @@ def _get_anomaly_cubes(cfg):
         onepct_cube = iris.load_cube(dataset["filename"])
         pi_cube = iris.load_cube(pi_data[0]["filename"])
         anomaly_cube = _get_anomaly_cube(onepct_cube, pi_cube)
+        if "ensemble" in dataset:
+            anomaly_cube.attributes["ensemble"] = dataset["ensemble"]
         cubes[dataset_name] = anomaly_cube
         ancestors[dataset_name] = [dataset["filename"], pi_data[0]["filename"]]
 
@@ -178,15 +181,16 @@ def _plot(cfg, cube, dataset_name, tcr):
     """Create scatterplot of temperature anomaly vs. time."""
     if not cfg.get("plot", True):
         return (None, None, None)
-    logger.debug(
-        "Plotting temperature anomaly vs. time for '%s'", dataset_name
-    )
+    dataset_id = dataset_name
+    if "ensemble" in cube.attributes:
+        dataset_id += f" (ensemble member {cube.attributes['ensemble']})"
+    logger.debug("Plotting temperature anomaly vs. time for '%s'", dataset_id)
     (_, axes) = plt.subplots()
 
     # Plot data
     x_data = np.arange(cube.shape[0])
     y_data = cube.data
-    axes.scatter(x_data, y_data, color="b", marker="o")
+    axes.scatter(x_data, y_data, color="C0", marker="o", s=8, alpha=0.7)
 
     # Plot lines
     line_kwargs = {"color": "k", "linewidth": 1.0, "linestyle": "--"}
@@ -198,9 +202,9 @@ def _plot(cfg, cube, dataset_name, tcr):
     units_str = (
         cube.units.symbol if cube.units.origin is None else cube.units.origin
     )
-    axes.set_title(dataset_name)
+    axes.set_title(dataset_id, pad=15.0)
     axes.set_xlabel("Years after experiment start")
-    axes.set_ylabel(f"Temperature anomaly / {units_str}")
+    axes.set_ylabel(f"ΔT [{units_str}]")
     axes.set_ylim([x_data[0] - 1, x_data[-1] + 1])
     axes.set_ylim([-1.0, 7.0])
     axes.text(0.0, tcr + 0.1, f"TCR = {tcr:.1f} {units_str}")
@@ -217,18 +221,15 @@ def _plot(cfg, cube, dataset_name, tcr):
 
     # Provenance
     provenance_record = get_provenance_record(
-        f"Time series of the global mean surface air temperature anomaly "
-        f"(relative to the linear fit of the pre-industrial control run) of "
-        f"{dataset_name} for the 1% CO2 increase per year experiment. The "
-        f"horizontal dashed line indicates the transient climate response "
-        f"(TCR) defined as the 20 year average temperature anomaly centered "
-        f"at the time of CO2 doubling (vertical dashed lines)."
+        f"Time series of the global annual mean near-surface air temperature "
+        f"anomaly ΔT of the 1% CO2 increase per year experiment for model "
+        f"{dataset_id}. Anomalies are calculated relative to a pre-industrial "
+        f"control simulation of the same model. The horizontal dashed line "
+        f"indicates the transient climate response (TCR) defined as the "
+        f"20-year average ΔT centered at the time of CO2 doubling "
+        f"(vertical dashed lines)."
     )
-    provenance_record.update(
-        {
-            "plot_types": ["times"],
-        }
-    )
+    provenance_record["plot_types"] = ["times"]
 
     return (netcdf_path, plot_path, provenance_record)
 
@@ -366,7 +367,7 @@ def write_data(cfg, tcr, external_file=None):
 def main(cfg):
     """Run the diagnostic."""
     cfg = set_default_cfg(cfg)
-    sns.set_theme(**cfg.get("seaborn_settings", {}))
+    sns.set_theme(**cfg.get("seaborn_settings", {"style": "ticks"}))
 
     # Read external file if desired
     if cfg.get("read_external_file"):

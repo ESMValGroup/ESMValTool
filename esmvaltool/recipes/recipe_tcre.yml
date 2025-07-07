@@ -76,11 +76,19 @@ diagnostics:
       calculate_tcre:
         script: climate_metrics/tcre.py
         calc_tcre_period: [45, 65]
+        caption: |
+            Global annual mean near-surface air temperature anomaly ΔT vs.
+            global annual cumulative CO2 emissions E of the emission-driven 1%
+            CO2 increase per year experiment for model MPI-ESM1-2-LR (ensemble
+            member r1i1p1f1). The transient climate response to cumulative CO2
+            Emissions (TCRE) is defined as the 20-year average ΔT centered at
+            the time where cumulative CO2 emissions E reach 1000 PgC.
         exp_target: esm-1pctCO2
+        legend_kwargs: false
         pyplot_kwargs:
-          title: Transient Climate Response to Cumulative CO2 Emissions (TCRE)
-          xlabel: Cumulative CO$_2$ emissions [PgC]
-          ylabel: Global mean surface air temperature change [K]
+          title: MPI-ESM1-2-LR (ensemble member r1i1p1f1)
+          xlabel: E [PgC]
+          ylabel: ΔT [K]
 
   barplot:
     description: Create barplot of TCRE.
