@@ -34,7 +34,7 @@ Example plots
 -------------
 
 .. _fig_1:
-.. figure::  /recipes/figures/lifetime/timeseries_BCC-ESM1_ch4_TROP.png
+.. figure::  /recipes/figures/lifetime/timeseries_ambiguous_dataset_ch4_TROP.png
    :align:   center
    :width:   14cm
 
