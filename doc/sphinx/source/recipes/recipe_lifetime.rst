@@ -39,17 +39,3 @@ Example plots
    :width:   14cm
 
 Time series of CH4 lifetime in the troposphere.
-
-.. _fig_2:
-.. figure::  /recipes/figures/lifetime/1d_profile_BCC-ESM1_ch4.png
-   :align:   center
-   :width:   14cm
-
-1D profile of CH4 lifetime.
-
-.. _fig_3:
-.. figure::  /recipes/figures/lifetime/zonalmean_BCC-ESM1_ch4.png
-   :align:   center
-   :width:   14cm
-
-Zonal mean profile of CH4 lifetime.

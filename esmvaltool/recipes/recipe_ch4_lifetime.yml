@@ -15,7 +15,7 @@ documentation:
 
 datasets:
   - {project: CMIP6, dataset: BCC-ESM1, exp: historical, ensemble: r1i1p1f1, timerange: 2010/2014, grid: gn, title: BCC-ESM1 (2010-2014)}
-#  - {project: CMIP6, dataset: MRI-ESM2-0, exp: historical, ensemble: r1i1p1f1, timerange: 2010/2014, grid: gn, title: MRI-ESM2-0 (2010-2014)}
+  - {project: CMIP6, dataset: MRI-ESM2-0, exp: historical, ensemble: r1i1p1f1, timerange: 2010/2014, grid: gn, title: MRI-ESM2-0 (2010-2014)}
 
 
 preprocessors:
@@ -55,8 +55,8 @@ diagnostics:
             plot_kwargs:
               BCC-ESM1 (2010-2014):
                 color: C0
-#              MRI-ESM2-0 (2010-2014):
-#                color: C1
+              MRI-ESM2-0 (2010-2014):
+                color: C1
     variables:
       ch4:
         mip: Amon
