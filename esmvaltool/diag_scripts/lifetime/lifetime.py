@@ -15,8 +15,6 @@ in the recipe. Note that at most one reference dataset is supported.
 Currently supported plot types (use the option ``plots`` to specify them):
     - Time series (plot type ``timeseries``): all datasets are plotted in one
       single figure.
-    - 1D profiles (plot type ``1d_profile``): all datasets are plotted in one
-      single figure.
 
 Author
 ------
@@ -43,7 +41,7 @@ oxidant: dict
     "ER": 987.0, "b": 2.82}}.
 plots: dict, optional
     Plot types plotted by this diagnostic (see list above). Dictionary keys
-    must be ``timeseries``, ``1d_profile``.
+    must be ``timeseries``.
     Dictionary values are dictionaries used as options for the corresponding
     plot. The allowed options for the different plot types are given below.
 plot_filename: str, optional
@@ -119,46 +117,6 @@ pyplot_kwargs: dict, optional
     to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
     of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
 
-Configuration options for plot type ``1d_profile``
---------------------------------------------------
-aspect_ratio: float, optional (default: 1.5)
-    Aspect ratio of the plot. The default value results in a slender upright
-    plot.
-gridline_kwargs: dict, optional
-    Optional keyword arguments for grid lines. By default, ``color: lightgrey,
-    alpha: 0.5`` are used. Use ``gridline_kwargs: false`` to not show grid
-    lines.
-legend_kwargs: dict, optional
-    Optional keyword arguments for :func:`matplotlib.pyplot.legend`. Use
-    ``legend_kwargs: false`` to not show legends.
-log_x: bool, optional (default: False)
-    Use logarithmic X-axis. Note that for the logarithmic x axis tickmarks are
-    set so that minor tickmarks show up. Setting of individual tickmarks by
-    pyplot_kwargs is not recommended in this case.
-log_y: bool, optional (default: True)
-    Use logarithmic Y-axis.
-plot_kwargs: dict, optional
-    Optional keyword arguments for :func:`iris.plot.plot`. Dictionary keys are
-    elements identified by ``facet_used_for_labels`` or ``default``, e.g.,
-    ``CMIP6`` if ``facet_used_for_labels: project`` or ``historical`` if
-    ``facet_used_for_labels: exp``. Dictionary values are dictionaries used as
-    keyword arguments for :func:`iris.plot.plot`. String arguments can include
-    facets in curly brackets which will be derived from the corresponding
-    dataset, e.g., ``{project}``, ``{short_name}``, ``{exp}``. Examples:
-    ``default: {linestyle: '-', label: '{project}'}, CMIP6: {color: red,
-    linestyle: '--'}, OBS: {color: black}``.
-pyplot_kwargs: dict, optional
-    Optional calls to functions of :mod:`matplotlib.pyplot`. Dictionary keys
-    are functions of :mod:`matplotlib.pyplot`. Dictionary values are used as
-    single argument for these functions. String arguments can include facets in
-    curly brackets which will be derived from the datasets plotted in the
-    corresponding plot, e.g., ``{short_name}``, ``{exp}``. Facets like
-    ``{project}`` that vary between the different datasets will be transformed
-    to something like  ``ambiguous_project``. Examples: ``title: 'Awesome Plot
-    of {long_name}'``, ``xlabel: '{short_name}'``, ``xlim: [0, 5]``.
-show_y_minor_ticklabels: bool, optional (default: False)
-    Show tick labels for the minor ticks on the Y axis.
-
 .. hint::
 
    Extra arguments given to the recipe are ignored, so it is safe to use yaml
@@ -177,7 +135,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 from iris.coord_categorisation import add_year
-from matplotlib.ticker import FormatStrFormatter, LogLocator, NullFormatter
 
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.lifetime.lifetime_func import (
@@ -269,7 +226,6 @@ class CH4Lifetime(MonitorBase):
         # Check given plot types and set default settings for them
         self.supported_plot_types = [
             "timeseries",
-            "1d_profile",
         ]
         for plot_type, plot_options in self.plots.items():
             if plot_type not in self.supported_plot_types:
@@ -290,19 +246,6 @@ class CH4Lifetime(MonitorBase):
                 self.plots[plot_type].setdefault("plot_kwargs", {})
                 self.plots[plot_type].setdefault("pyplot_kwargs", {})
                 self.plots[plot_type].setdefault("by_timestep", False)
-
-            if plot_type == "1d_profile":
-                self.plots[plot_type].setdefault("aspect_ratio", 1.5)
-                self.plots[plot_type].setdefault("gridline_kwargs", {})
-                self.plots[plot_type].setdefault("legend_kwargs", {})
-                self.plots[plot_type].setdefault("log_x", False)
-                self.plots[plot_type].setdefault("log_y", True)
-                self.plots[plot_type].setdefault("plot_kwargs", {})
-                self.plots[plot_type].setdefault("pyplot_kwargs", {})
-                self.plots[plot_type].setdefault(
-                    "show_y_minor_ticklabels",
-                    False,
-                )
 
         # Check that facet_used_for_labels is present for every dataset
         for dataset in self.input_data:
@@ -434,7 +377,7 @@ class CH4Lifetime(MonitorBase):
                 plot_kwargs[key] = val
 
         # Default settings for different plot types
-        if plot_type in ("timeseries", "1d_profile"):
+        if plot_type == "timeseries":
             plot_kwargs.setdefault("label", label)
 
         return deepcopy(plot_kwargs)
@@ -872,125 +815,6 @@ class CH4Lifetime(MonitorBase):
             provenance_logger.log(plot_path, provenance_record)
             provenance_logger.log(netcdf_path, provenance_record)
 
-    def create_1d_profile_plot(self, input_data, base_datasets):
-        """Create 1D profile plot."""
-        plot_type = "1d_profile"
-        if plot_type not in self.plots:
-            return
-
-        if not base_datasets:
-            raise ValueError(f"No input data to plot '{plot_type}' given")
-
-        logger.info("Plotting %s", plot_type)
-        fig = plt.figure(**self.cfg["figure_kwargs"])
-        axes = fig.add_subplot()
-
-        # Plot all datasets in one single figure
-        ancestors = []
-        cubes = {}
-        for label, dataset in input_data.items():
-            ancestors.extend(
-                variable["filename"] for variable in dataset["dataset_data"]
-            )
-
-            cube = calculate_lifetime(dataset, plot_type)
-            cube = cube.collapsed(["time"], iris.analysis.MEAN)
-
-            # Convert units
-            cube.convert_units(self.info["units"])
-
-            cubes[label] = cube
-
-            # Plot 1D profile
-            plot_kwargs = self._get_plot_kwargs(
-                plot_type,
-                base_datasets[label],
-            )
-            plot_kwargs["axes"] = axes
-
-            iris.plot.plot(cube, **plot_kwargs)
-
-        # Default plot appearance
-        multi_dataset_facets = self._get_multi_dataset_facets(
-            list(base_datasets.values()),
-        )
-        axes.set_title(f"{self.info['long_name']}")
-        axes.set_xlabel(
-            f"τ({self._get_name('reactant').upper()}) [{self.info['units']}]",
-        )
-        z_coord = cube.coord(self.z_coord)
-        axes.set_ylabel(f"{z_coord.long_name} [{z_coord.units}]")
-
-        # apply logarithmic axes
-        if self.plots[plot_type]["log_y"]:
-            axes.set_yscale("log")
-            axes.get_yaxis().set_major_formatter(FormatStrFormatter("%.1f"))
-        if self.plots[plot_type]["show_y_minor_ticklabels"]:
-            axes.get_yaxis().set_minor_formatter(FormatStrFormatter("%.1f"))
-        else:
-            axes.get_yaxis().set_minor_formatter(NullFormatter())
-        if self.plots[plot_type]["log_x"]:
-            axes.set_xscale("log")
-            # major and minor ticks
-            x_major = LogLocator(base=10.0, numticks=12)
-            axes.get_xaxis().set_major_locator(x_major)
-            x_minor = LogLocator(
-                base=10.0,
-                subs=np.arange(1.0, 10.0) * 0.1,
-                numticks=12,
-            )
-
-            axes.get_xaxis().set_minor_locator(x_minor)
-            axes.get_xaxis().set_minor_formatter(NullFormatter())
-
-        # gridlines
-        gridline_kwargs = self._get_gridline_kwargs(plot_type)
-        if gridline_kwargs is not False:
-            axes.grid(**gridline_kwargs)
-        # nicer aspect ratio
-        aspect_ratio = self.plots[plot_type]["aspect_ratio"]
-        axes.set_box_aspect(aspect_ratio)
-
-        # Legend
-        legend_kwargs = self.plots[plot_type]["legend_kwargs"]
-        if legend_kwargs is not False:
-            axes.legend(**legend_kwargs)
-
-        # Customize plot appearance
-        self._process_pyplot_kwargs(plot_type, multi_dataset_facets)
-
-        # Save plot
-        plot_path = self.get_plot_path(plot_type, multi_dataset_facets)
-        fig.savefig(plot_path, **self.cfg["savefig_kwargs"])
-        logger.info("Wrote %s", plot_path)
-        plt.close()
-
-        # Save netCDF file
-        netcdf_path = get_diagnostic_filename(Path(plot_path).stem, self.cfg)
-        var_attrs = {
-            "short_name": self.info["short_name"],
-            "long_name": self.info["long_name"],
-            "units": self.info["units"],
-        }
-        io.save_1d_data(cubes, netcdf_path, z_coord.standard_name, var_attrs)
-
-        # Provenance tracking
-        caption = (
-            "Vertical one-dimensional profile of "
-            f"{self.info['long_name']}"
-            " for various datasets."
-        )
-        provenance_record = {
-            "ancestors": ancestors,
-            "authors": ["winterstein_franziska", "schlund_manuel"],
-            "caption": caption,
-            "plot_types": ["line"],
-            "long_names": [var_attrs["long_name"]],
-        }
-        with ProvenanceLogger(self.cfg) as provenance_logger:
-            provenance_logger.log(plot_path, provenance_record)
-            provenance_logger.log(netcdf_path, provenance_record)
-
     def compute(self):
         """Plot preprocessed data."""
         input_data = self.input_data_dataset
@@ -1003,8 +827,6 @@ class CH4Lifetime(MonitorBase):
         for region in self.cfg["regions"]:
             logger.info("Plotting lifetime for region %s", region)
             self.create_timeseries_plot(region, input_data, base_datasets)
-
-        self.create_1d_profile_plot(input_data, base_datasets)
 
 
 def main():

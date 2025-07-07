@@ -377,8 +377,6 @@ def sum_up_to_plot_dimensions(var, plot_type):
         cube = var.collapsed(
             ["longitude", "latitude", z_coord], iris.analysis.SUM, weights=None
         )
-    elif plot_type == "1d_profile":
-        cube = var.collapsed(["longitude", "latitude"], iris.analysis.SUM)
     else:
         raise NotImplementedError(
             f"The sum to plot dimensions for plot_type '{plot_type}' is "
