@@ -25,6 +25,7 @@ Diagnostic Scripts
 
    esmvaltool.diag_scripts.droughts
    esmvaltool.diag_scripts.emergent_constraints
+   esmvaltool.diag_scripts.lifetime
    esmvaltool.diag_scripts.monitor
    esmvaltool.diag_scripts.ocean
    esmvaltool.diag_scripts.seaborn_diag
