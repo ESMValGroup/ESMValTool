@@ -196,7 +196,6 @@ def _number_density_dryair_by_grid(grmassdry, grvol):
 
 def dpres_plevel(plev, pmin, pmax, z_coord="air_pressure"):
     """Calculate pressure levels."""
-
     cube_coords = [coord.name() for coord in plev.dim_coords]
 
     if [z_coord, "latitude", "longitude"] == cube_coords:
