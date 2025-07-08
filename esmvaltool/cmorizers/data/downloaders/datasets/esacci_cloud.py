@@ -114,7 +114,8 @@ def download_dataset(
             sat_am = "AVHRR-AM/AVHRR_METOPA/"
             sat_pm = "AVHRR-PM/AVHRR_NOAA-19/"
         else:
-            logger.error("Data for this date %s is not available", date)
+            msg = f"Data for this date {date} is not available"
+            raise ValueError(msg)
 
         # Download monthly data from L3C
         for sat in (sat_am, sat_pm):
