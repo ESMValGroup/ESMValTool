@@ -23,7 +23,7 @@ from pathlib import Path
 import iris
 import numpy as np
 from cf_units import Unit
-from iris.coords import CellMethod, DimCoord
+from iris.coords import AuxCoord, CellMethod, DimCoord
 from osgeo import gdal
 
 from esmvaltool.cmorizers.data import utilities as utils
@@ -42,7 +42,7 @@ def _create_time_coord():
     time_bounds = [datetime(1984, 1, 1), datetime(2020, 12, 31)]
     time_bounds = TIME_UNITS.date2num(time_bounds)
     # Add new time coordinate to cube
-    return DimCoord(
+    return AuxCoord(
         time_points,
         bounds=time_bounds,
         standard_name="time",
@@ -93,6 +93,18 @@ def _create_lat_lon_coords(n_lat, n_lon):
     return latitude, longitude
 
 
+def _create_typewetla_coord():
+    """Create wetland type coordinate."""
+    typewetla = AuxCoord(
+        "wetland",
+        var_name="typewetla",
+        standard_name="area_type",
+        long_name="Wetland",
+        units=Unit("no unit"),
+    )
+    return typewetla
+
+
 def _extract_variable(var, var_info, cmor_info, attrs, filedir, out_dir, cfg):
     """Extract variable."""
     logger.info("Loading input files...")
@@ -120,6 +132,9 @@ def _extract_variable(var, var_info, cmor_info, attrs, filedir, out_dir, cfg):
     # Latitude and longitude coordinates
     latitude_coord, longitude_coord = _create_lat_lon_coords(n_lat, n_lon)
 
+    # Type wetland coordinate
+    typewetla_coord = _create_typewetla_coord()
+
     # Cube data
     logger.info("Setting up the cube for variable %s", var)
     cube = iris.cube.Cube(
@@ -127,8 +142,9 @@ def _extract_variable(var, var_info, cmor_info, attrs, filedir, out_dir, cfg):
         standard_name=cmor_info.standard_name,
         units=cmor_info.units,
         dim_coords_and_dims=[(latitude_coord, 0), (longitude_coord, 1)],
-        aux_coords_and_dims=[(time_coord, ())],
     )
+    cube.add_aux_coord(time_coord, ())
+    cube.add_aux_coord(typewetla_coord, ())
 
     # Fix cell methods
     cube.add_cell_method(CellMethod("mean within years", coords=time_coord))
