@@ -201,7 +201,7 @@ def _process_daily_file(
         daily_cube = utils.fix_coords(daily_cube)
         # Fix dtype
         utils.fix_dtype(daily_cube)
-        ## Fix metadata
+        # Fix metadata
         utils.fix_var_metadata(daily_cube, cmor_info)
 
         # Check for daylight
