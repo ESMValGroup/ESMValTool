@@ -21,7 +21,9 @@ from datetime import datetime
 from pathlib import Path
 
 import iris
+from cf_units import Unit
 from iris import NameConstraint
+from iris.coords import AuxCoord
 
 from esmvaltool.cmorizers.data import utilities as utils
 from esmvaltool.diag_scripts.shared.iris_helpers import unify_time_coord
@@ -40,6 +42,16 @@ def _fix_coords(cube, cmor_info):
         old_dates = time_coord.units.num2date(time_coord.points)
         new_dates = [datetime(t.year, t.month, 15) for t in old_dates]
         time_coord.points = time_coord.units.date2num(new_dates)
+
+    # Add typewetla coordinate
+    typewetla_coord = AuxCoord(
+        "wetland",
+        var_name="typewetla",
+        standard_name="area_type",
+        long_name="Wetland",
+        units=Unit("no unit"),
+    )
+    cube.add_aux_coord(typewetla_coord, ())
 
     cube = utils.fix_coords(cube)
 
