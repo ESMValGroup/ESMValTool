@@ -32,8 +32,10 @@ def download_dataset(
         Overwrite already downloaded files
     """
 
+    start_date_day = False
     if start_date is None:
         start_date = datetime(1982, 1, 1)
+        start_date_day = datetime(2003, 1, 1)
     if end_date is None:
         end_date = datetime(2016, 12, 31)
     loop_date = start_date
@@ -77,40 +79,40 @@ def download_dataset(
         month = loop_date.month
         date = f"{year}{month:02}"
 
-        if int(date) in range(198201, 198502):
+        if datetime(1982, 1, 1) <= loop_date < datetime(1985, 2, 1):
             sat_am = ""
             sat_pm = "AVHRR-PM/AVHRR_NOAA-7/"
-        elif int(date) in range(198502, 198811):
+        elif datetime(1985, 2, 1) <= loop_date < datetime(1988, 11, 1):
             sat_am = ""
             sat_pm = "AVHRR-PM/AVHRR_NOAA-9/"
-        elif int(date) in range(198811, 199109):
+        elif datetime(1988, 11, 1) <= loop_date < datetime(1991, 9, 1):
             sat_am = ""
             sat_pm = "AVHRR-PM/AVHRR_NOAA-11/"
-        elif int(date) in range(199109, 199409):
+        elif datetime(1991, 9, 1) <= loop_date < datetime(1994, 9, 1):
             sat_am = "AVHRR-AM/AVHRR_NOAA-12/"
             sat_pm = "AVHRR-PM/AVHRR_NOAA-11/"
-        elif int(date) in range(199409, 199502):
+        elif datetime(1994, 9, 1) <= loop_date < datetime(1995, 2, 1):
             sat_am = "AVHRR-AM/AVHRR_NOAA-12/"
             sat_pm = ""
-        elif int(date) in range(199502, 199901):
+        elif datetime(1995, 2, 1) <= loop_date < datetime(1999, 1, 1):
             sat_am = "AVHRR-AM/AVHRR_NOAA-12/"
             sat_pm = "AVHRR-PM/AVHRR_NOAA-14/"
-        elif int(date) in range(199901, 200104):
+        elif datetime(1999, 1, 1) <= loop_date < datetime(2001, 4, 1):
             sat_am = "AVHRR-AM/AVHRR_NOAA-15/"
             sat_pm = "AVHRR-PM/AVHRR_NOAA-14/"
-        elif int(date) in range(200104, 200211):
+        elif datetime(2001, 4, 1) <= loop_date < datetime(2002, 11, 1):
             sat_am = "AVHRR-AM/AVHRR_NOAA-15/"
             sat_pm = "AVHRR-PM/AVHRR_NOAA-16/"
-        elif int(date) in range(200211, 200509):
+        elif datetime(2002, 11, 1) <= loop_date < datetime(2005, 9, 1):
             sat_am = "AVHRR-AM/AVHRR_NOAA-17/"
             sat_pm = "AVHRR-PM/AVHRR_NOAA-16/"
-        elif int(date) in range(200509, 200707):
+        elif datetime(2005, 9, 1) <= loop_date < datetime(2007, 7, 1):
             sat_am = "AVHRR-AM/AVHRR_NOAA-17/"
             sat_pm = "AVHRR-PM/AVHRR_NOAA-18/"
-        elif int(date) in range(200707, 200906):
+        elif datetime(2007, 7, 1) <= loop_date < datetime(2009, 6, 1):
             sat_am = "AVHRR-AM/AVHRR_METOPA/"
             sat_pm = "AVHRR-PM/AVHRR_NOAA-18/"
-        elif int(date) in range(200906, 201701):
+        elif datetime(2009, 6, 1) <= loop_date < datetime(2017, 1, 1):
             sat_am = "AVHRR-AM/AVHRR_METOPA/"
             sat_pm = "AVHRR-PM/AVHRR_NOAA-19/"
         else:
@@ -131,19 +133,20 @@ def download_dataset(
 
                 # daily data
                 if daily_data:
-                    logger.info(
-                        "Downloading daily data (L3U) for sat = %s", sat
-                    )
-                    folder_l3u = base_path_l3u + sat + f"{year}/{month:02}"
-                    wget_options_l3u = wget_options.copy()
-                    wget_options_l3u.append(
-                        f"--accept={date}*CLD_MASKTYPE*.nc,"
-                        f"{date}*CLD_PRODUCTS*.nc"
-                    )
-                    logger.info(
-                        "Download folder for daily data (L3U): %s", folder_l3u
-                    )
-                    downloader.download_file(folder_l3u, wget_options_l3u)
+                    if not start_date_day or (start_date_day and datetime(2003, 1, 1) <= loop_date <= datetime(2007, 2, 1)):
+                        logger.info(
+                            "Downloading daily data (L3U) for sat = %s", sat
+                        )
+                        folder_l3u = base_path_l3u + sat + f"{year}/{month:02}"
+                        wget_options_l3u = wget_options.copy()
+                        wget_options_l3u.append(
+                            f"--accept={date}*CLD_MASKTYPE*.nc,"
+                            f"{date}*CLD_PRODUCTS*.nc"
+                        )
+                        logger.info(
+                            "Download folder for daily data (L3U): %s", folder_l3u
+                        )
+                        downloader.download_file(folder_l3u, wget_options_l3u)
 
         # Increment the loop_date by one month
         loop_date += relativedelta.relativedelta(months=1)

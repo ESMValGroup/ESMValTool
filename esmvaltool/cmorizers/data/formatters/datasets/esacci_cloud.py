@@ -77,35 +77,21 @@ def _concatenate_and_save_daily_cubes(
     cube_day = cubes_day.concatenate_cube()
 
     # Calc daily
+    # All data points
     if short_name in ["clt", "ctp"]:
         cube = daily_statistics(cube)
         cube.coord("time").points = [
             int(tpoint) + 0.5 for tpoint in cube.coord("time").points
         ]
-    cube_day = daily_statistics(cube_day)
-    cube_day.coord("time").points = [
-        int(tpoint) + 0.5 for tpoint in cube_day.coord("time").points
-    ]
-
-    # Regridding from 0.05x0.05 to 0.5x0.5
-    if short_name in ["clt", "ctp"]:
+        # Regridding from 0.05x0.05 to 0.5x0.5
         cube = regrid(cube, target_grid="0.5x0.5", scheme="area_weighted")
-    cube_day = regrid(cube_day, target_grid="0.5x0.5", scheme="area_weighted")
-
-    # Fix units
-    if short_name == "clt":
-        cube.data = 100 * cube.core_data()
-        cube_day.data = 100 * cube_day.core_data()
-    else:
-        if "raw_units" in var:
-            if short_name == "ctp":
+        # Fix units
+        if short_name == "clt":
+            cube.data = 100 * cube.core_data()
+        else:
+            if "raw_units" in var:
                 cube.units = var["raw_units"]
-            cube_day.units = var["raw_units"]
-        if short_name == "ctp":
-            cube.convert_units(cmor_info.units)
-        cube_day.convert_units(cmor_info.units)
-
-    if short_name in ["clt", "ctp"]:
+                cube.convert_units(cmor_info.units)
         # Fix metadata and  update version information
         cube = utils.fix_coords(cube)
         utils.fix_var_metadata(cube, cmor_info)
@@ -117,7 +103,21 @@ def _concatenate_and_save_daily_cubes(
         utils.save_variable(
             cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
         )
-
+        
+    # Data points only when daylight
+    cube_day = daily_statistics(cube_day)
+    cube_day.coord("time").points = [
+        int(tpoint) + 0.5 for tpoint in cube_day.coord("time").points
+    ]
+    # Regridding from 0.05x0.05 to 0.5x0.5   
+    cube_day = regrid(cube_day, target_grid="0.5x0.5", scheme="area_weighted")
+    # Fix units
+    if short_name == "clt":
+        cube_day.data = 100 * cube_day.core_data()
+    else:
+        if "raw_units" in var:
+            cube_day.units = var["raw_units"]
+            cube_day.convert_units(cmor_info.units)
     # Fix metadata and  update version information
     cube_day = utils.fix_coords(cube_day)
     utils.fix_var_metadata(cube_day, cmor_info)
