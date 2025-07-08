@@ -118,13 +118,16 @@ def _extract_variable(var, var_info, cmor_info, attrs, filedir, out_dir, cfg):
     # Classes in [0=dry-land, 1,..., 33], fill_value(ocean) = 255
     dl = gdal.Open(Path(filedir) / cfg["main_class_file"])
     main_class = dl.ReadAsArray()
-    mask = (main_class == 255) | (main_class == 0)
+    mask = main_class == 255
 
     logger.info("Fixing data and creating coordinates...")
 
-    # Fix data = mask oceans + convert from [0-255] uint8 to [0%-100%] float16
+    # Fix data:
+    #   - mask oceans (fill_value = 255) + set value to 0
+    #   - flip latitude axis
+    array = np.where(array <= 100, array, 0)
     array = np.ma.array(array, mask=mask)
-    array = (array.astype(np.float16) / 255.0) * 100.0
+    array = np.flip(array, axis=0)
 
     # Time coordinate
     time_coord = _create_time_coord()
