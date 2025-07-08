@@ -272,7 +272,6 @@ def _process_monthly_file(
         raise ValueError(f"The file {ifile} is not assigned to AM or PM")
 
 
-
 def _extract_variable_daily(
     short_name, var, cfg, in_dir, out_dir, start_date, end_date
 ):
@@ -285,14 +284,11 @@ def _extract_variable_daily(
         end_date = datetime(cfg["end_year_daily"], 12, 31)
 
     for year in range(start_date.year, end_date.year + 1):
-    
         # check if data is available
-        filelist = glob.glob(
-            os.path.join(in_dir, f"{year}*{var['file']}")
-        )
+        filelist = glob.glob(os.path.join(in_dir, f"{year}*{var['file']}"))
         if not filelist:
             raise ValueError(f"No daily data available for year {year}")
-        
+
         cubes = iris.cube.CubeList()
         cubes_day = iris.cube.CubeList()
 
@@ -317,7 +313,9 @@ def _extract_variable_daily(
                             cubes_day,
                         )
                 else:
-                    logger.info(f"No data available for day {year}-{month:02}-{iday:02}")
+                    logger.info(
+                        f"No data available for day {year}-{month:02}-{iday:02}"
+                    )
                     _handle_missing_day(
                         year, month, iday, short_name, cubes, cubes_day
                     )
@@ -391,7 +389,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         short_name = var["short_name"]
         logger.info("CMORizing variable '%s'", var_name)
         if "L3U" in var["file"]:
-            if cfg['daily_data']:
+            if cfg["daily_data"]:
                 _extract_variable_daily(
                     short_name, var, cfg, in_dir, out_dir, start_date, end_date
                 )
