@@ -133,7 +133,9 @@ def _extract_variable(var, var_info, cmor_info, attrs, filedir, out_dir, cfg):
     # Fix cell methods
     cube.add_cell_method(CellMethod("mean within years", coords=time_coord))
     cube.add_cell_method(CellMethod("mean over years", coords=time_coord))
-cube = utils.fix_coords(cube)
+
+    # Fix coords
+    cube = utils.fix_coords(cube)
 
     # Fix var metadata
     utils.fix_var_metadata(cube, cmor_info)
