@@ -72,13 +72,10 @@ def _concatenate_and_save_daily_cubes(
     short_name, var, cubes, cubes_day, out_dir, cfg, cmor_info
 ):
     """Concatinate and save yearly cubes."""
-    if short_name in ["clt", "ctp"]:
-        cube = cubes.concatenate_cube()
-    cube_day = cubes_day.concatenate_cube()
-
     # Calc daily
     # All data points
     if short_name in ["clt", "ctp"]:
+        cube = cubes.concatenate_cube()
         cube = daily_statistics(cube)
         cube.coord("time").points = [
             int(tpoint) + 0.5 for tpoint in cube.coord("time").points
@@ -105,6 +102,7 @@ def _concatenate_and_save_daily_cubes(
         )
 
     # Data points only when daylight
+    cube_day = cubes_day.concatenate_cube()
     cube_day = daily_statistics(cube_day)
     cube_day.coord("time").points = [
         int(tpoint) + 0.5 for tpoint in cube_day.coord("time").points
