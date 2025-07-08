@@ -149,7 +149,7 @@ def main(cfg):
 
     settings = cfg["settings"]
     central_estimate_var = settings.get("central_estimate", 50)
-    if isinstance(central_estimate_var, (int, float)):
+    if isinstance(central_estimate_var, int | float):
         central_estimate = calculate_percentiles(
             model_data,
             np.array([central_estimate_var]),

@@ -100,6 +100,7 @@ def main(config):
             exp_minus_ctr_list,
             ctr_minus_obs_list,
             exp_minus_obs_list,
+            strict=False,
         )
     )
 

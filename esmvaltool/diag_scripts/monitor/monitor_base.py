@@ -58,7 +58,7 @@ def _replace_tag(paths, tag, replacewith):
     """Replace tag by replacewith in paths."""
     _, lower, upper = _get_caps_options(tag)
     result = []
-    if isinstance(replacewith, (list, tuple)):
+    if isinstance(replacewith, list | tuple):
         for item in replacewith:
             result.extend(_replace_tag(paths, tag, item))
     else:
