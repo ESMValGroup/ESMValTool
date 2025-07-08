@@ -10,7 +10,7 @@ attributes:
   modeling_realm: sat
   project_id: OBS6
   source: 'https://zenodo.org/record/5553187'
-  reference: 'wad2m_zhang2021essd'
+  reference: 'wad2m_zhang21essd'
 
 # Variables to cmorize
 variables:
