@@ -706,7 +706,7 @@ datasets:
     source: https://figshare.com/articles/dataset/Global_Lakes_and_Wetlands_Database_GLWD_version_2_0/28519994
     last_access: 2025-07-01
     info: |
-      Download the following file:
+      Use automatic download to download the following file:
         GLWD_v2_0_combined_classes_tif.zip
 
       The dataset is representative of the time period (1984 - 2020) and is thus
