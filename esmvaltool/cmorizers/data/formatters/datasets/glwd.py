@@ -78,12 +78,16 @@ def _create_lat_lon_coords(n_lat, n_lon):
         lat_points,
         bounds=lat_bounds,
         standard_name="latitude",
+        var_name="lat",
+        long_name="Longitude",
         units="degrees",
     )
     longitude = DimCoord(
         lon_points,
         bounds=lon_bounds,
         standard_name="longitude",
+        var_name="lon",
+        long_name="Longitude",
         units="degrees",
     )
     return latitude, longitude
@@ -129,6 +133,7 @@ def _extract_variable(var, var_info, cmor_info, attrs, filedir, out_dir, cfg):
     # Fix cell methods
     cube.add_cell_method(CellMethod("mean within years", coords=time_coord))
     cube.add_cell_method(CellMethod("mean over years", coords=time_coord))
+cube = utils.fix_coords(cube)
 
     # Fix var metadata
     utils.fix_var_metadata(cube, cmor_info)
