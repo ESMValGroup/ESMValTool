@@ -133,7 +133,12 @@ def download_dataset(
 
                 # daily data
                 if daily_data:
-                    if not start_date_day or (start_date_day and datetime(2003, 1, 1) <= loop_date <= datetime(2007, 2, 1)):
+                    if not start_date_day or (
+                        start_date_day
+                        and datetime(2003, 1, 1)
+                        <= loop_date
+                        <= datetime(2007, 2, 1)
+                    ):
                         logger.info(
                             "Downloading daily data (L3U) for sat = %s", sat
                         )
@@ -144,7 +149,8 @@ def download_dataset(
                             f"{date}*CLD_PRODUCTS*.nc"
                         )
                         logger.info(
-                            "Download folder for daily data (L3U): %s", folder_l3u
+                            "Download folder for daily data (L3U): %s",
+                            folder_l3u,
                         )
                         downloader.download_file(folder_l3u, wget_options_l3u)
 

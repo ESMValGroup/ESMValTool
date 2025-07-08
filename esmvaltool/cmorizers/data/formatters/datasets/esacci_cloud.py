@@ -103,13 +103,13 @@ def _concatenate_and_save_daily_cubes(
         utils.save_variable(
             cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
         )
-        
+
     # Data points only when daylight
     cube_day = daily_statistics(cube_day)
     cube_day.coord("time").points = [
         int(tpoint) + 0.5 for tpoint in cube_day.coord("time").points
     ]
-    # Regridding from 0.05x0.05 to 0.5x0.5   
+    # Regridding from 0.05x0.05 to 0.5x0.5
     cube_day = regrid(cube_day, target_grid="0.5x0.5", scheme="area_weighted")
     # Fix units
     if short_name == "clt":
