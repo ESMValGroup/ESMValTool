@@ -42,7 +42,7 @@ def _create_time_coord():
     time_bounds = [datetime(1984, 1, 1), datetime(2020, 12, 31)]
     time_bounds = TIME_UNITS.date2num(time_bounds)
     # Add new time coordinate to cube
-    return AuxCoord(
+    return DimCoord(
         time_points,
         bounds=time_bounds,
         standard_name="time",
@@ -145,6 +145,9 @@ def _extract_variable(var, var_info, cmor_info, attrs, filedir, out_dir, cfg):
     )
     cube.add_aux_coord(time_coord, ())
     cube.add_aux_coord(typewetla_coord, ())
+
+    # Add coordinate time axis of size 1
+    cube = iris.util.new_axis(cube, "time")
 
     # Fix cell methods
     cube.add_cell_method(CellMethod("mean within years", coords=time_coord))
