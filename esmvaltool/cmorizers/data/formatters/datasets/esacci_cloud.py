@@ -150,7 +150,7 @@ def _concatenate_and_save_monthly_cubes(
 
     # Fix units and handle any special cases like 'clt'
     if short_name == "clt":
-        cube.data = 100 * cube.core_data()  # Example conversion
+        cube.data = 100 * cube.core_data()
     else:
         if "raw_units" in var:
             cube.units = var["raw_units"]
@@ -202,7 +202,7 @@ def _process_daily_file(
         # Fix dtype
         utils.fix_dtype(daily_cube)
         ## Fix metadata
-        # utils.fix_var_metadata(daily_cube, cmor_info)
+        utils.fix_var_metadata(daily_cube, cmor_info)
 
         # Check for daylight
         daily_cube_day = daily_cube.copy()
@@ -245,34 +245,32 @@ def _process_monthly_file(
     utils.fix_var_metadata(monthly_cube, cmor_info)
 
     # Add the cube to the list
-    try:
-        if any(
-            sat_am in ifile
-            for sat_am in (
-                "AVHRR_NOAA-12",
-                "AVHRR_NOAA-15",
-                "AVHRR_NOAA-17",
-                "AVHRR_METOPA",
-            )
-        ):
-            cubes_am.append(monthly_cube)
-        elif any(
-            sat_pm in ifile
-            for sat_pm in (
-                "AVHRR_NOAA-7",
-                "AVHRR_NOAA-9",
-                "AVHRR_NOAA-11",
-                "AVHRR_NOAA-14",
-                "AVHRR_NOAA-16",
-                "AVHRR_NOAA-18",
-                "AVHRR_NOAA-19",
-            )
-        ):
-            cubes_pm.append(monthly_cube)
-        else:
-            raise ValueError(f"The file {ifile} is not assigned to AM or PM")
-    except ValueError as e:
-        logger.error(e)
+    if any(
+        sat_am in ifile
+        for sat_am in (
+            "AVHRR_NOAA-12",
+            "AVHRR_NOAA-15",
+            "AVHRR_NOAA-17",
+            "AVHRR_METOPA",
+        )
+    ):
+        cubes_am.append(monthly_cube)
+    elif any(
+        sat_pm in ifile
+        for sat_pm in (
+            "AVHRR_NOAA-7",
+            "AVHRR_NOAA-9",
+            "AVHRR_NOAA-11",
+            "AVHRR_NOAA-14",
+            "AVHRR_NOAA-16",
+            "AVHRR_NOAA-18",
+            "AVHRR_NOAA-19",
+        )
+    ):
+        cubes_pm.append(monthly_cube)
+    else:
+        raise ValueError(f"The file {ifile} is not assigned to AM or PM")
+
 
 
 def _extract_variable_daily(
@@ -287,6 +285,14 @@ def _extract_variable_daily(
         end_date = datetime(cfg["end_year_daily"], 12, 31)
 
     for year in range(start_date.year, end_date.year + 1):
+    
+        # check if data is available
+        filelist = glob.glob(
+            os.path.join(in_dir, f"{year}*{var['file']}")
+        )
+        if not filelist:
+            raise ValueError(f"No daily data available for year {year}")
+        
         cubes = iris.cube.CubeList()
         cubes_day = iris.cube.CubeList()
 
@@ -299,7 +305,6 @@ def _extract_variable_daily(
                         f"{year}{month:02}{iday:02}{var['file']}",
                     )
                 )
-
                 if filelist:
                     for inum, ifile in enumerate(filelist):
                         _process_daily_file(
@@ -312,6 +317,7 @@ def _extract_variable_daily(
                             cubes_day,
                         )
                 else:
+                    logger.info(f"No data available for day {year}-{month:02}-{iday:02}")
                     _handle_missing_day(
                         year, month, iday, short_name, cubes, cubes_day
                     )
@@ -344,7 +350,7 @@ def _extract_variable_monthly(
 
             if not filelist:
                 raise ValueError(
-                    "No monthly file found for %s-%02d", year, month
+                    f"No monthly file found for {year}-{month:02}"
                 )
 
             for ifile in filelist:
@@ -380,15 +386,21 @@ def _extract_variable_monthly(
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """CMORization function call."""
-
     # Run the cmorization
     for var_name, var in cfg["variables"].items():
         short_name = var["short_name"]
         logger.info("CMORizing variable '%s'", var_name)
         if "L3U" in var["file"]:
-            _extract_variable_daily(
-                short_name, var, cfg, in_dir, out_dir, start_date, end_date
-            )
+            if cfg['daily_data']:
+                _extract_variable_daily(
+                    short_name, var, cfg, in_dir, out_dir, start_date, end_date
+                )
+            else:
+                logger.info(
+                    'If daily data needs to be downloaded change "daily_data" in the '
+                    'cmor_config file to "True" '
+                    "(esmvaltool/cmorizers/data/cmor_config/ESACCI-CLOUD.yml)"
+                )
         elif "L3C" in var["file"]:
             _extract_variable_monthly(
                 short_name, var, cfg, in_dir, out_dir, start_date, end_date
