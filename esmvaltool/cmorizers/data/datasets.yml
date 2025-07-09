@@ -701,6 +701,17 @@ datasets:
     last_access: 2020-03-03
     info: "Use automatic download feature to get the data"
 
+  GLWD:
+    tier: 2
+    source: https://figshare.com/articles/dataset/Global_Lakes_and_Wetlands_Database_GLWD_version_2_0/28519994
+    last_access: 2025-07-01
+    info: |
+      Use automatic download to download the following file:
+        GLWD_v2_0_combined_classes_tif.zip
+
+      The dataset is representative of the time period (1984 - 2020) and is thus
+      marked with the timestamp of the year 2002.
+
   GPCC:
     tier: 2
     source: |
@@ -1344,6 +1355,14 @@ datasets:
     info: |
       Contact Ralf Bennartz (Earth and Environmental Sciences, Vanderbilt
       University, USA).
+
+  WAD2M:
+    tier: 2
+    source: https://doi.org/10.5281/zenodo.3998453
+    last_access: 2025-07-01
+    info: |
+      Use the automatic download to download the file:
+        WAD2M_wetlands_2000-2020_025deg_Ver2.0.nc
 
   WFDE5:
     tier: 2
