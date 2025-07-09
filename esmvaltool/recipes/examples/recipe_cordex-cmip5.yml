@@ -1,10 +1,15 @@
 documentation:
   title: |
-    bla
+    Example recipe that loads CORDEX-CMIP5 datasets.
+  description: |
+    This is an example recipe that loads CORDEX-CMIP5 datasets.
+    It computes the climatology for surface temperature (ts) and
+    plots the bias against the ESA CCI Land Surface Temperature dataset.
   authors:
     - loosveldt-tomas_saskia
-  description: |
-    bla
+    - andela_bouwe
+  maintainers:
+    - loosveldt-tomas_saskia
 
 preprocessors:
   ts_pp:
