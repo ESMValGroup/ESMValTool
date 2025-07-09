@@ -182,24 +182,11 @@ def _sort_time(
     cube.remove_coord("time")
     cube.add_dim_coord(tcoord, 0)
 
-    try:
+    if not cube.coords("year"):
         iris.coord_categorisation.add_year(cube, "time")
-    except (ValueError, iris.exceptions.CannotAddError) as expt:
-        logger.debug("_sort_time could not add year %s", expt)
 
-    try:
-        try:
-            cube.remove_coord("month")
-        except (ValueError, iris.exceptions.CoordinateNotFoundError) as expt:
-            logger.debug("_sort_time could not remove month %s", expt)
+    if not cube.coords("month"):
         iris.coord_categorisation.add_month_number(cube, "time", name="month")
-    except (ValueError, iris.exceptions.CannotAddError) as expt:
-        logger.debug("_sort_time could not add month number %s", expt)
-
-    try:
-        del cube.attributes["history"]
-    except (ValueError, iris.exceptions.IrisError) as expt:
-        logger.debug("_sort_time could not remove cube history %s", expt)
 
     return cube
 
@@ -235,14 +222,14 @@ def _insert_data_into_cube(
     }
     pred_cube.attributes = attrs_parent
     # Copy data
-    pred = pred_cube.data.copy().flatten()
+    pred = pred_cube.core_data().copy().flatten()
 
     if mask is None:
         pred[:] = data
     else:
         pred[mask] = data
 
-    pred_cube.data = pred.reshape(pred_cube.data.shape)
+    pred_cube.data = pred.reshape(pred_cube.core_data().shape)
     return pred_cube
 
 
@@ -445,32 +432,18 @@ def _read_variable_from_netcdf(
     if filename[0] == "~" or filename[0] == "/" or filename[0] == ".":
         directory = ""
 
-    try:
-        if isinstance(filename, str):
-            dataset = iris.load_cube(
-                Path(directory) / filename, callback=_sort_time
-            )
-        else:
-            dataset = iris.load_cube(
-                Path(directory) / filename[0],
-                filename[1],
-                callback=_sort_time,
-            )
-    except (ValueError, iris.exceptions.MergeError) as expt:
-        try:
-            dataset = iris.load_cube(Path(directory) / filename)
-        except (ValueError, iris.exceptions.MergeError) as expt_:
-            logger.debug(
-                "_read_variable_from_netcdf errors\n%s\n%s",
-                expt,
-                expt_,
-            )
-            logger.debug(
-                "Data cannot be opened."
-                "Check directory %s, filename %s or file format",
-                directory,
-                filename,
-            )
+    if isinstance(filename, str):
+        dataset = iris.load_raw(
+            Path(directory) / filename, callback=_sort_time
+        )
+    else:
+        dataset = iris.load_raw(
+            Path(directory) / filename[0],
+            filename[1],
+            callback=_sort_time,
+        )
+    dataset = dataset[0]
+
     coord_names = [coord.name() for coord in dataset.coords()]
 
     if dataset is None:
@@ -483,18 +456,17 @@ def _read_variable_from_netcdf(
                 iris.analysis.Linear(),
             )
         else:
-
-            def _addtime(time_point: int) -> iris.cube.Cube:
-                time = iris.coords.DimCoord(
+            time_coord_to_add = [
+                iris.coords.DimCoord(
                     np.array([time_point]),
                     standard_name="time",
                     units="days since 1661-01-01 00:00:00",
                 )
-                dataset_cp = dataset.copy()
-                dataset_cp.add_aux_coord(time)
-                return dataset_cp
-
-            dataset_time = [_addtime(time_point) for time_point in time_points]
+                for time_point in time_points
+            ]
+            dataset_time = [
+                dataset.add_aux_coord(t) for t in time_coord_to_add
+            ]
             dataset = iris.cube.CubeList(dataset_time).merge_cube()
 
     if extent is not None:
