@@ -257,6 +257,22 @@ def _read_variables_from_namelist(file_name: str) -> dict:
         # Now you have the variables with their original names and values
         print(variable1)  # Output: Hello
         print(variable2)  # Output: 42
+
+    Example input file:
+    -------------------
+        y_filen:: 'filename.nc'
+        x_filen_list:: ['file1.nc', 'file2.nc', 'file3.nc']
+        CA_filen:: None
+        dir:: 'path/to/driving/data/'
+        filename_out:: '_filename_file_output'
+        dir_outputs:: 'path/to/outputs/'
+        subset_function:: function_name
+        subset_function_args:: {'function_arg': [0, 1, 2]}
+        out_file:: '_output_file'
+        data_file:: 'path/to/data_file.nc'
+        trace_file:: 'path/to/trace_file.nc'
+        other_params_file:: 'path/to/param_file.txt'
+        scale_file:: 'path/to/scale_file.csv'
     """
     variables = {}
 
@@ -283,13 +299,7 @@ def _read_variables_from_namelist(file_name: str) -> dict:
                     # If the variable is a list, parse it
                     try:
                         variable_value_set = ast.literal_eval(variable_value)
-                    except (
-                        ValueError,
-                        TypeError,
-                        SyntaxError,
-                        MemoryError,
-                        RecursionError,
-                    ) as expt:
+                    except Exception as expt:
                         logger.debug(
                             "_read_variables_from_namelist error %s",
                             expt,
