@@ -201,11 +201,6 @@ ignore = [
     # TODO: when replacing `prospector` with `ruff`, ignore rules that are
     # overly technical or conflict with other rules.
     "E501",     # Disable line-too-long as this is taken care of by the formatter.
-    "D105",     # Disable Missing docstring in magic method as these are well defined.
-    # from ESMValTool: Ignore until someone has time to fix this:
-    "B011",     # Do not `assert False` (`python -O` removes these calls), raise `AssertionError()`
-    "UP038",    # Use `X | Y` in `isinstance` call instead of `(X, Y)`
-    # Really ignore:
     "D105",     # Disable missing docstring in magic method as these are well defined.
     "E501",     # Disable line-too-long as this is taken care of by the formatter.
     "FIX002",   # TODOs can be useful when something cannot be done immediately.
