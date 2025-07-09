@@ -12,7 +12,7 @@ documentation:
     - bock_lisa
 
 timerange_for_data: &time_period
-  timerange: '2007/2011'  # can be specified, this is just an example
+  timerange: '1996/2014'  # should end 2015 for CMIP7
 regridding: &regridding
   regrid:
     target_grid: 1x1
