@@ -91,7 +91,10 @@ def parse_contact(contact):
     names = match.group("names").replace("_", " ").split(" and ")
     emails = match.group("emails").split("_and_")
     mailboxes = ", ".join(
-        [f'"{name}" <{email}>' for name, email in zip(names, emails)]
+        [
+            f'"{name}" <{email}>'
+            for name, email in zip(names, emails, strict=True)
+        ]
     )
     return mailboxes
 
