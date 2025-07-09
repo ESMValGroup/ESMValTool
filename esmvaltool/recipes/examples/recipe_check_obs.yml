@@ -1746,6 +1746,16 @@ diagnostics:
     scripts: null
 
 
+  GLWD:
+    description: GLWD check
+    variables:
+      wetlandFrac:
+    additional_datasets:
+      - {dataset: GLWD, project: OBS6, mip: Emon, tier: 2,
+         type: land, version: '2.0', start_year: 2002, end_year: 2002}
+    scripts: null
+
+
   GRACE:
     description: GRACE check
     variables:
