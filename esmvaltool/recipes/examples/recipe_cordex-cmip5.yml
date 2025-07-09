@@ -8,7 +8,7 @@ documentation:
   authors:
     - loosveldt-tomas_saskia
     - andela_bouwe
-  maintainers:
+  maintainer:
     - loosveldt-tomas_saskia
 
 preprocessors:
