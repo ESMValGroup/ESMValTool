@@ -1345,6 +1345,14 @@ datasets:
       Contact Ralf Bennartz (Earth and Environmental Sciences, Vanderbilt
       University, USA).
 
+  WAD2M:
+    tier: 2
+    source: https://doi.org/10.5281/zenodo.3998453
+    last_access: 2025-07-01
+    info: |
+      Use the automatic download to download the file:
+        WAD2M_wetlands_2000-2020_025deg_Ver2.0.nc
+
   WFDE5:
     tier: 2
     source: https://doi.org/10.24381/cds.20d54e34
