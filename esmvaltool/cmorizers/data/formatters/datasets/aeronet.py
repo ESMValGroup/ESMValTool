@@ -93,7 +93,7 @@ def parse_contact(contact):
     mailboxes = ", ".join(
         [
             f'"{name}" <{email}>'
-            for name, email in zip(names, emails, strict=False)
+            for name, email in zip(names, emails, strict=True)
         ]
     )
     return mailboxes

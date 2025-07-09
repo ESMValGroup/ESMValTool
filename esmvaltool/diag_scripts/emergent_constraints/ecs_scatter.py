@@ -173,7 +173,7 @@ def _get_level_widths(cube, zg_cube, n_jobs=1):
         [
             delayed(_get_level_width)(b, lev, z)
             for (b, lev, z) in zip(
-                air_pressure_bounds, ref_lev, ref_zg, strict=False
+                air_pressure_bounds, ref_lev, ref_zg, strict=True
             )
         ]
     )

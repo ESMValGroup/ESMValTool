@@ -706,7 +706,7 @@ class CH4Lifetime(MonitorBase):
                     dataset["reaction"].slices_over("time"),
                     dataset["weight"].slices_over("time"),
                     dataset["tropopause"].slices_over("time"),
-                    strict=False,
+                    strict=True,
                 ):
                     slice_dataset["reaction"] = reaction_slice
                     slice_dataset["weight"] = weight_slice
