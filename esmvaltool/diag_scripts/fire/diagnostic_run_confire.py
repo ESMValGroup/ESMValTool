@@ -260,19 +260,20 @@ def _read_variables_from_namelist(file_name: str) -> dict:
 
     Example input file:
     -------------------
-        y_filen:: 'filename.nc'
-        x_filen_list:: ['file1.nc', 'file2.nc', 'file3.nc']
-        CA_filen:: None
-        dir:: 'path/to/driving/data/'
-        filename_out:: '_filename_file_output'
-        dir_outputs:: 'path/to/outputs/'
-        subset_function:: function_name
-        subset_function_args:: {'function_arg': [0, 1, 2]}
-        out_file:: '_output_file'
-        data_file:: 'path/to/data_file.nc'
-        trace_file:: 'path/to/trace_file.nc'
-        other_params_file:: 'path/to/param_file.txt'
-        scale_file:: 'path/to/scale_file.csv'
+        variables.txt:
+            y_filen:: 'filename.nc'
+            x_filen_list:: ['file1.nc', 'file2.nc', 'file3.nc']
+            CA_filen:: None
+            dir:: 'path/to/driving/data/'
+            filename_out:: '_filename_file_output'
+            dir_outputs:: 'path/to/outputs/'
+            subset_function:: function_name
+            subset_function_args:: {'function_arg': [0, 1, 2]}
+            out_file:: '_output_file'
+            data_file:: 'path/to/data_file.nc'
+            trace_file:: 'path/to/trace_file.nc'
+            other_params_file:: 'path/to/param_file.txt'
+            scale_file:: 'path/to/scale_file.csv'
     """
     variables = {}
 
