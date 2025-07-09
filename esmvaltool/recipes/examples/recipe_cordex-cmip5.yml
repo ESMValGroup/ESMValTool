@@ -1,0 +1,132 @@
+documentation:
+  title: |
+    bla
+  authors:
+    - loosveldt-tomas_saskia
+  description: |
+    bla
+
+preprocessors:
+  ts_pp:
+    custom_order: true
+    monthly_statistics:
+      operator: mean
+    climate_statistics:
+      period: full
+      operator: mean
+    mask_landsea:
+      mask_out: sea
+    regrid:
+      target_grid: RCA4
+      scheme: 'linear'
+    multi_model_statistics: # fails because of different data types in CCLM4-8-17
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
+         #
+
+datasets:
+  - {project: CORDEX, domain: EUR-11, dataset: CCLM4-8-17, driver: CCCma-CanESM2, ensemble: r1i1p1, institute: CLMcom, rcm_version: v1, mip: day} # missing sftlf
+  - {project: CORDEX, domain: EUR-11, dataset: CCLM4-8-17, driver: CNRM-CERFACS-CNRM-CM5, ensemble: r1i1p1, institute: CLMcom, rcm_version: v1, mip: day}
+  - {project: CORDEX, domain: EUR-11, dataset: ALADIN53, driver: CNRM-CERFACS-CNRM-CM5, ensemble: r1i1p1, institute: CNRM, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RACMO22E, driver: CNRM-CERFACS-CNRM-CM5, ensemble: r1i1p1, institute: KNMI, rcm_version: v2}
+  - {project: CORDEX, domain: EUR-11, dataset: RCA4, driver: CNRM-CERFACS-CNRM-CM5, ensemble: r1i1p1, institute: SMHI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: CCLM4-8-17, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: CLMcom, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RACMO22E, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: KNMI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RCA4, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: SMHI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RACMO22E, driver: ICHEC-EC-EARTH, ensemble: r1i1p1, institute: KNMI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: HIRHAM5, driver: ICHEC-EC-EARTH, ensemble: r3i1p1, institute: DMI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: HIRHAM5, driver: ICHEC-EC-EARTH, ensemble: r3i1p1, institute: DMI, rcm_version: v2}
+  - {project: CORDEX, domain: EUR-11, dataset: RACMO22E, driver: ICHEC-EC-EARTH, ensemble: r3i1p1, institute: KNMI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: REMO2015, driver: IPSL-IPSL-CM5A-LR, ensemble: r1i1p1, institute: GERICS, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RACMO22E, driver: IPSL-IPSL-CM5A-MR, ensemble: r1i1p1, institute: KNMI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RCA4, driver: IPSL-IPSL-CM5A-MR, ensemble: r1i1p1, institute: SMHI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: CCLM4-8-17, driver: MIROC-MIROC5, ensemble: r1i1p1, institute: CLMcom, rcm_version: v1} # missing sftlf
+  - {project: CORDEX, domain: EUR-11, dataset: CCLM4-8-17, driver: MOHC-HadGEM2-ES, ensemble: r1i1p1, institute: CLMcom, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RACMO22E, driver: MOHC-HadGEM2-ES, ensemble: r1i1p1, institute: KNMI, rcm_version: v2}
+  - {project: CORDEX, domain: EUR-11, dataset: RCA4, driver: MOHC-HadGEM2-ES, ensemble: r1i1p1, institute: SMHI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: CCLM4-8-17, driver: MPI-M-MPI-ESM-LR, ensemble: r1i1p1, institute: CLMcom, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RACMO22E, driver: MPI-M-MPI-ESM-LR, ensemble: r1i1p1, institute: KNMI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: REMO2009, driver: MPI-M-MPI-ESM-LR, ensemble: r1i1p1, institute: MPI-CSC, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RCA4, driver: MPI-M-MPI-ESM-LR, ensemble: r1i1p1, institute: SMHI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RCA4, driver: MPI-M-MPI-ESM-LR, ensemble: r1i1p1, institute: SMHI, rcm_version: v1a}
+  - {project: CORDEX, domain: EUR-11, dataset: REMO2009, driver: MPI-M-MPI-ESM-LR, ensemble: r2i1p1, institute: MPI-CSC, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: REMO2015, driver: MPI-M-MPI-ESM-LR, ensemble: r3i1p1, institute: GERICS, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: HIRHAM5, driver: NCC-NorESM1-M, ensemble: r1i1p1, institute: DMI, rcm_version: v2}
+  - {project: CORDEX, domain: EUR-11, dataset: RACMO22E, driver: NCC-NorESM1-M, ensemble: r1i1p1, institute: KNMI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: REMO2015, driver: NCC-NorESM1-M, ensemble: r1i1p1, institute: GERICS, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: REMO2015, driver: NOAA-GFDL-GFDL-ESM2G, ensemble: r1i1p1, institute: GERICS, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: COSMO-crCLIM-v1-1, driver: CNRM-CERFACS-CNRM-CM5, ensemble: r1i1p1, institute: CLMcom-ETH, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: COSMO-crCLIM-v1-1, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: CLMcom-ETH, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: COSMO-crCLIM-v1-1, driver: ICHEC-EC-EARTH, ensemble: r1i1p1, institute: CLMcom-ETH, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: COSMO-crCLIM-v1-1, driver: ICHEC-EC-EARTH, ensemble: r3i1p1, institute: CLMcom-ETH, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: COSMO-crCLIM-v1-1, driver: MOHC-HadGEM2-ES, ensemble: r1i1p1, institute: CLMcom-ETH, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: COSMO-crCLIM-v1-1, driver: MPI-M-MPI-ESM-LR, ensemble: r1i1p1, institute: CLMcom-ETH, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: COSMO-crCLIM-v1-1, driver: MPI-M-MPI-ESM-LR, ensemble: r2i1p1, institute: CLMcom-ETH, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: COSMO-crCLIM-v1-1, driver: MPI-M-MPI-ESM-LR, ensemble: r3i1p1, institute: CLMcom-ETH, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: COSMO-crCLIM-v1-1, driver: NCC-NorESM1-M, ensemble: r1i1p1, institute: CLMcom-ETH, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: ALADIN63, driver: CNRM-CERFACS-CNRM-CM5, ensemble: r1i1p1, institute: CNRM, rcm_version: v2}
+  - {project: CORDEX, domain: EUR-11, dataset: ALADIN63, driver: MOHC-HadGEM2-ES, ensemble: r1i1p1, institute: CNRM, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: ALADIN63, driver: MPI-M-MPI-ESM-LR, ensemble: r1i1p1, institute: CNRM, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: ALADIN63, driver: NCC-NorESM1-M, ensemble: r1i1p1, institute: CNRM, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: HIRHAM5, driver: CNRM-CERFACS-CNRM-CM5, ensemble: r1i1p1, institute: DMI, rcm_version: v2}
+  - {project: CORDEX, domain: EUR-11, dataset: HIRHAM5, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: DMI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: HIRHAM5, driver: ICHEC-EC-EARTH, ensemble: r1i1p1, institute: DMI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: HIRHAM5, driver: IPSL-IPSL-CM5A-MR, ensemble: r1i1p1, institute: DMI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: HIRHAM5, driver: MOHC-HadGEM2-ES, ensemble: r1i1p1, institute: DMI, rcm_version: v2}
+  - {project: CORDEX, domain: EUR-11, dataset: HIRHAM5, driver: MPI-M-MPI-ESM-LR, ensemble: r1i1p1, institute: DMI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: HIRHAM5, driver: NCC-NorESM1-M, ensemble: r1i1p1, institute: DMI, rcm_version: v3}
+  - {project: CORDEX, domain: EUR-11, dataset: REMO2015, driver: CNRM-CERFACS-CNRM-CM5, ensemble: r1i1p1, institute: GERICS, rcm_version: v2}
+  - {project: CORDEX, domain: EUR-11, dataset: REMO2015, driver: IPSL-IPSL-CM5A-MR, ensemble: r1i1p1, institute: GERICS, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RegCM4-6, driver: CNRM-CERFACS-CNRM-CM5, ensemble: r1i1p1, institute: ICTP, rcm_version: v2}
+  - {project: CORDEX, domain: EUR-11, dataset: RegCM4-6, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: ICTP, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RegCM4-6, driver: MOHC-HadGEM2-ES, ensemble: r1i1p1, institute: ICTP, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RegCM4-6, driver: MPI-M-MPI-ESM-LR, ensemble: r1i1p1, institute: ICTP, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RegCM4-6, driver: NCC-NorESM1-M, ensemble: r1i1p1, institute: ICTP, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: WRF381P, driver: CNRM-CERFACS-CNRM-CM5, ensemble: r1i1p1, institute: IPSL, rcm_version: v2}
+  - {project: CORDEX, domain: EUR-11, dataset: WRF381P, driver: IPSL-IPSL-CM5A-MR, ensemble: r1i1p1, institute: IPSL, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: WRF381P, driver: MOHC-HadGEM2-ES, ensemble: r1i1p1, institute: IPSL, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: WRF381P, driver: MPI-M-MPI-ESM-LR, ensemble: r1i1p1, institute: IPSL, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: WRF381P, driver: NCC-NorESM1-M, ensemble: r1i1p1, institute: IPSL, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: HadREM3-GA7-05, driver: CNRM-CERFACS-CNRM-CM5, ensemble: r1i1p1, institute: MOHC, rcm_version: v2}
+  - {project: CORDEX, domain: EUR-11, dataset: HadREM3-GA7-05, driver: ICHEC-EC-EARTH, ensemble: r12i1p1, institute: MOHC, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: HadREM3-GA7-05, driver: MOHC-HadGEM2-ES, ensemble: r1i1p1, institute: MOHC, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: HadREM3-GA7-05, driver: MPI-M-MPI-ESM-LR, ensemble: r1i1p1, institute: MOHC, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RCA4, driver: ICHEC-EC-EARTH, ensemble: r1i1p1, institute: SMHI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RCA4, driver: ICHEC-EC-EARTH, ensemble: r3i1p1, institute: SMHI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RCA4, driver: MPI-M-MPI-ESM-LR, ensemble: r2i1p1, institute: SMHI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RCA4, driver: MPI-M-MPI-ESM-LR, ensemble: r3i1p1, institute: SMHI, rcm_version: v1}
+  - {project: CORDEX, domain: EUR-11, dataset: RCA4, driver: NCC-NorESM1-M, ensemble: r1i1p1, institute: SMHI, rcm_version: v1}
+
+
+
+diagnostics:
+  bias:
+    variables:
+      ts:
+        short_name: ts
+        mip: day
+        exp: historical
+        timerange: 2000/2003
+        preprocessor: ts_pp
+        supplementary_variables:
+          - {short_name: sftlf, mip: fx, ensemble: '*', driver: '*'}
+        #
+        reference_dataset: ESACCI-LST
+        additional_datasets:
+          - {project: OBS, tier: 2 , dataset: ESACCI-LST, type: sat, version: '1.00', mip: Amon, reference_for_monitor_diags: true}
+    scripts:
+      plot: &plot_multi_dataset_default
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{alias}_{mip}'
+        facet_used_for_labels: 'alias'
+        script: monitor/multi_datasets.py
+        plots:
+          map:
+            common_cbar: true
+            fontsize: 10
+            show_stats: false
+            plot_kwargs_bias:
+              levels: [-10.0, -7.5, -5.0, -2.5, 0.0, 2.5, 5.0, 7.5, 10.0]
+              x_pos_stats_avg: 0.5
+              x_pos_stats_bias: 0.5
