@@ -6,7 +6,7 @@ Sea Ice Sensitivity
 Overview
 --------
 
-This recipe and diagnostic calculates the rate of sea ice area loss per degree of warming, as in plot 1d of `Notz et al.`_ and figure 3e of `Roach et al.`_.
+This recipe and diagnostic calculates the rate of sea ice area loss per degree of warming, as in plot 1d of `Notz et al.`_ and figure 3e of `Roach et al.`_. The figures used in the plots are output to csv files in the work directory.
 
 .. _`Notz et al.`: https://doi.org/10.1029/2019GL086749
 .. _`Roach et al.`: https://doi.org/10.1029/2019GL086729

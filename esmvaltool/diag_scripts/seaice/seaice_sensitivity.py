@@ -2,7 +2,6 @@
 
 import logging
 from pathlib import Path
-import csv
 import iris
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
