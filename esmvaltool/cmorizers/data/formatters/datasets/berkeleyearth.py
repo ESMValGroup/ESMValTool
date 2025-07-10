@@ -174,7 +174,7 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
     attrs = cfg["attributes"]
     attrs["mip"] = var["mip"]
     short_names = [short_name, var["short_anom"]]
-    for s_name, cube in zip(short_names, [cube_abs, cube_anom]):
+    for s_name, cube in zip(short_names, [cube_abs, cube_anom], strict=True):
         cmor_info = cfg["cmor_table"].get_variable(var["mip"], s_name)
 
         cube = utils.fix_coords(cube)
@@ -197,7 +197,7 @@ def _extr_var_n_calc_abs_tas(short_name, var, cfg, filepath, out_dir):
         " {climstart}-{climend}",
     }
 
-    for s_name, cube in zip(short_names, [cube_abs, cube_anom]):
+    for s_name, cube in zip(short_names, [cube_abs, cube_anom], strict=True):
         attrs["comment"] = comments[s_name]
         utils.set_global_atts(cube, attrs)
         utils.save_variable(
