@@ -1,0 +1,20 @@
+---
+# Filename
+filename: 'WAD2M_wetlands_2000-2020_025deg_Ver2.0.nc.zip'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: WAD2M
+  version: '2.0'
+  tier: 2
+  modeling_realm: sat
+  project_id: OBS6
+  source: 'https://zenodo.org/record/5553187'
+  reference: 'wad2m_zhang21essd'
+
+# Variables to cmorize
+variables:
+  wetlandFrac:
+    mip: Emon
+    raw_name: Fw
+    raw_units: 1

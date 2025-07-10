@@ -143,7 +143,7 @@ def make_plot(metadata, scenarios, cfg, provenance):
         _timeline(axes, i, scenario["period_bounds"])
 
     handles, labels = plt.gca().get_legend_handles_labels()
-    by_label = dict(zip(labels, handles))  # dict removes dupes
+    by_label = dict(zip(labels, handles, strict=True))  # dict removes dupes
     axes.legend(by_label.values(), by_label.keys())
     axes.set_xlabel("Year")
     axes.set_ylabel(r"Global mean $\Delta T$ (K) w.r.t. reference period")
