@@ -134,7 +134,7 @@ def flatten(list_of_lists):
     """
     flattened = []
     for item in list_of_lists:
-        if isinstance(item, Iterable) and not isinstance(item, (str, bytes)):
+        if isinstance(item, Iterable) and not isinstance(item, str | bytes):
             flattened.extend(item)
         else:
             flattened.append(item)

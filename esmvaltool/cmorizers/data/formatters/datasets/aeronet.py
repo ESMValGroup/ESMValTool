@@ -34,7 +34,7 @@ from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 
-AERONET_HEADER = "AERONET Version 3;"
+AERONET_HEADER = "AERONET Version 3"
 LEVEL_HEADER = "Version 3: AOD Level 2.0"
 LEVEL_DESCRIPTION = (
     "The following data are automatically cloud cleared and quality assured "
@@ -91,7 +91,10 @@ def parse_contact(contact):
     names = match.group("names").replace("_", " ").split(" and ")
     emails = match.group("emails").split("_and_")
     mailboxes = ", ".join(
-        [f'"{name}" <{email}>' for name, email in zip(names, emails)]
+        [
+            f'"{name}" <{email}>'
+            for name, email in zip(names, emails, strict=True)
+        ]
     )
     return mailboxes
 
