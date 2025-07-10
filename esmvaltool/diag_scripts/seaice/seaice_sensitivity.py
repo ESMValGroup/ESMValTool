@@ -2,11 +2,12 @@
 
 import logging
 from pathlib import Path
+
 import iris
 import matplotlib.pyplot as plt
+import pandas as pd
 from matplotlib.colors import Normalize
 from scipy import stats
-import pandas as pd
 
 from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
@@ -203,7 +204,7 @@ def create_titles_dict(data, cfg):
 def write_dictionary_to_csv(cfg, model_dict, filename):
     """Output the model dictionary to a csv file using Pandas."""
     csv_filepath = f"{cfg['work_dir']}/{filename}.csv"
-    pd.DataFrame.from_dict(model_dict, orient='index').to_csv(csv_filepath)
+    pd.DataFrame.from_dict(model_dict, orient="index").to_csv(csv_filepath)
 
 
 def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
@@ -441,7 +442,7 @@ def main(cfg):
         data_dict[dataset]["direct_p_val"] = trends["direct_p_val"]
 
     # Add the values to plot to a csv file
-    write_dictionary_to_csv(cfg, data_dict, 'plotted_values')
+    write_dictionary_to_csv(cfg, data_dict, "plotted_values")
     logger.info("Writing values to csv")
 
     # Plot the sensitivities (and save and close the plots)
