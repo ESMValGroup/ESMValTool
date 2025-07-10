@@ -242,7 +242,7 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
             )
 
     # Add observations only if obs_mean is a number
-    if isinstance(obs_mean, (int, float)):
+    if isinstance(obs_mean, int | float):
         ax.hlines(obs_mean, 0, 1, linestyle="--", color="black", linewidth=2)
         ax.fill_between(
             [0, 1],
@@ -274,7 +274,7 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     ax.set_ylabel(r"dSIA/dGMST ($million \ km^2 \ K^{-1}$)")
 
     # Create caption based on whether observation mean is presnt
-    if isinstance(obs_mean, (int, float)):
+    if isinstance(obs_mean, int | float):
         caption = (
             "Sensitivity of sea ice area to annual mean global warming."
             f"Mean (dashed), standard deviation (shaded) and plausible values from {obs_years}."
