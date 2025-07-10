@@ -224,7 +224,7 @@ def rename_variables(cube, has_orig_vars=True, new_extension=""):
         "Surface Downwelling Longwave Radiation",
     ]
     for orig_var, new_var, long_var in zip(
-        original_var_names, new_var_names, long_var_names
+        original_var_names, new_var_names, long_var_names, strict=True
     ):
         if has_orig_vars:
             if cube.var_name == orig_var:

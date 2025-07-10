@@ -3,7 +3,6 @@
 import logging
 import os
 import re
-from typing import Optional
 
 import cartopy
 import matplotlib.pyplot as plt
@@ -59,7 +58,7 @@ def _replace_tag(paths, tag, replacewith):
     """Replace tag by replacewith in paths."""
     _, lower, upper = _get_caps_options(tag)
     result = []
-    if isinstance(replacewith, (list, tuple)):
+    if isinstance(replacewith, list | tuple):
         for item in replacewith:
             result.extend(_replace_tag(paths, tag, item))
     else:
@@ -351,7 +350,7 @@ class MonitorBase:
         return file_name
 
     @staticmethod
-    def _set_rasterized(axes: Optional[Axes | list[Axes]] = None) -> None:
+    def _set_rasterized(axes: Axes | list[Axes] | None = None) -> None:
         """Rasterize all artists and collection of axes if desired."""
         if axes is None:
             axes = plt.gca()

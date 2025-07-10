@@ -79,12 +79,14 @@ def _var_pairs(cube_list, var_parts, oper):
         raise ValueError
     if oper == "-":
         selected = [
-            cube_1 - cube_2 for cube_1, cube_2 in zip(selected_1, selected_2)
+            cube_1 - cube_2
+            for cube_1, cube_2 in zip(selected_1, selected_2, strict=True)
         ]
         selected = iris.cube.CubeList(selected)
     elif oper == "+":
         selected = [
-            cube_1 + cube_2 for cube_1, cube_2 in zip(selected_1, selected_2)
+            cube_1 + cube_2
+            for cube_1, cube_2 in zip(selected_1, selected_2, strict=True)
         ]
         selected = iris.cube.CubeList(selected)
     else:

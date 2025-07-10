@@ -268,7 +268,7 @@ class CompareSalinity:
         idxs = sorted(
             [
                 time_pts.index(ii)
-                for ii, jj in zip(time_pts, converted_t)
+                for ii, jj in zip(time_pts, converted_t, strict=True)
                 if t_1 <= jj <= t_2
             ]
         )
@@ -296,7 +296,7 @@ class CompareSalinity:
             months = [p.month for p in coord.units.num2date(coord.points)]
             dates = [
                 datetime(year, month, 15, 0, 0, 0)
-                for year, month in zip(years, months)
+                for year, month in zip(years, months, strict=True)
             ]
 
             # Update the cubes' time coordinate
