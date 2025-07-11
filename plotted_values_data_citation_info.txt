@@ -1,0 +1,22 @@
+Follow the links below to find more information about CMIP6 data:
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.BCC.BCC-CSM2-MR.historical
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.CAMS.CAMS-CSM1-0.1pctCO2
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.CAMS.CAMS-CSM1-0.historical
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.CCCma.CanESM5.historical
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.CSIRO-ARCCSS.ACCESS-CM2.historical
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.CSIRO.ACCESS-ESM1-5.historical
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.FIO-QLNM.FIO-ESM-2-0.historical
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.HAMMOZ-Consortium.MPI-ESM-1-2-HAM.historical
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.MIROC.MIROC6.historical
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.MOHC.HadGEM3-GC31-LL.historical
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.MOHC.HadGEM3-GC31-LL.piControl
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.MOHC.UKESM1-0-LL.historical
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.MOHC.UKESM1-0-LL.piControl
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.MPI-M.MPI-ESM1-2-HR.historical
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.MPI-M.MPI-ESM1-2-LR.historical
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.MRI.MRI-ESM2-0.historical
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.NCAR.CESM2-WACCM-FV2.historical
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.NCAR.CESM2-WACCM.1pctCO2
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.NCAR.CESM2-WACCM.historical
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.CMIP.NCAR.CESM2.historical
+- https://cera-www.dkrz.de/WDCC/ui/cerasearch/cmip6?input=CMIP6.ScenarioMIP.BCC.BCC-CSM2-MR.ssp370

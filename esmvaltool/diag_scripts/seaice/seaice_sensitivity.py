@@ -10,6 +10,7 @@ from matplotlib.colors import Normalize
 from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
     run_diagnostic,
     save_figure,
     select_metadata,
@@ -150,12 +151,12 @@ def write_obs_from_cfg(cfg):
         obs_dict["roach_style"][point] = {}
 
         # Add the individual values for the observation point
-        obs_dict["roach_style"][point]["tas_trend"] = roach_values[point][
-            "GMST trend"
-        ]
-        obs_dict["roach_style"][point]["siconc_trend"] = roach_values[point][
-            "SIA trend"
-        ]
+        obs_dict["roach_style"][point]["annual_tas_trend"] = roach_values[
+            point
+        ]["GMST trend"]
+        obs_dict["roach_style"][point]["annual_siconc_trend"] = roach_values[
+            point
+        ]["SIA trend"]
         obs_dict["roach_style"][point]["r_value"] = roach_values[point][
             "Pearson CC of SIA over GMST"
         ]
@@ -203,8 +204,19 @@ def create_titles_dict(data, cfg):
 
 def write_dictionary_to_csv(cfg, model_dict, filename):
     """Output the model dictionary to a csv file using Pandas."""
+    # Read the work directory from the config and create the csv filepath
     csv_filepath = f"{cfg['work_dir']}/{filename}.csv"
+
+    # Write the data to a csv file (via a Pandas DataFrame)
     pd.DataFrame.from_dict(model_dict, orient="index").to_csv(csv_filepath)
+    logger.info("Wrote data to %s", csv_filepath)
+
+    # Create a provenance record for the csv file
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(
+            csv_filepath,
+            get_provenance_record(cfg, "Annual (not decadal) figures"),
+        )
 
 
 def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
@@ -227,7 +239,7 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     for dataset, inner_dict in data_dictionary.items():
         ax.plot(
             0.25,
-            inner_dict["direct_sensitivity"],
+            inner_dict["direct_sensitivity_(notz-style)"],
             color="blue",
             marker="_",
             markersize=20,
@@ -237,8 +249,11 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         if inner_dict["label"] == "to_label":
             plt.annotate(
                 dataset,
-                xy=(0.25, inner_dict["direct_sensitivity"]),
-                xytext=(0.35, inner_dict["direct_sensitivity"] - 0.05),
+                xy=(0.25, inner_dict["direct_sensitivity_(notz-style)"]),
+                xytext=(
+                    0.35,
+                    inner_dict["direct_sensitivity_(notz-style)"] - 0.05,
+                ),
             )
 
     # Add observations only if obs_mean is a number
@@ -311,8 +326,10 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     # Iterate over the dictionary
     for dataset, inner_dict in data_dictionary.items():
         # Determine the position of the point
-        x = 10 * inner_dict["tas_trend"]  # for equivalence to decades
-        y = 10 * inner_dict["siconc_trend"]  # for equivalence to decades
+        x = 10 * inner_dict["annual_tas_trend"]  # for equivalence to decades
+        y = (
+            10 * inner_dict["annual_siconc_trend"]
+        )  # for equivalence to decades
 
         # Determine the colour of the point
         r_corr = inner_dict["direct_r_val"]
@@ -339,8 +356,8 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     # Add the observations
     for point in obs_dict.keys():
         # Get the values for the point
-        x = obs_dict[point]["tas_trend"]
-        y = obs_dict[point]["siconc_trend"]
+        x = obs_dict[point]["annual_tas_trend"]
+        y = obs_dict[point]["annual_siconc_trend"]
         r_corr = obs_dict[point]["r_value"]
         p_val = obs_dict[point]["p_value"]
 
@@ -373,7 +390,7 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     plt.colorbar(label="Pearson correlation coefficient")
 
     # Create caption based on whether observational temp trend is present
-    if obs_dict["first point"]["tas_trend"] is not None:
+    if obs_dict["first point"]["annual_tas_trend"] is not None:
         caption = (
             "Decadal trends of sea ice area and global mean temperature."
             f"Observations from {obs_years} are plotted as squares."
@@ -430,20 +447,20 @@ def main(cfg):
         logger.info("Calculating data for Notz-style plot")
         sensitivity = calculate_direct_sensitivity(selection)
         # Add to dictionary
-        data_dict[dataset]["direct_sensitivity"] = sensitivity
+        data_dict[dataset]["direct_sensitivity_(notz-style)"] = sensitivity
 
         # Calculations for the Roach-style plot
         logger.info("Calculating data for Roach-style plot")
         trends = calculate_annual_trends(selection)
         # Add to dictionary
-        data_dict[dataset]["siconc_trend"] = trends["si_ann_trend"]
-        data_dict[dataset]["tas_trend"] = trends["tas_ann_trend"]
+        data_dict[dataset]["annual_siconc_trend"] = trends["si_ann_trend"]
+        data_dict[dataset]["annual_tas_trend"] = trends["tas_ann_trend"]
         data_dict[dataset]["direct_r_val"] = trends["direct_r_val"]
         data_dict[dataset]["direct_p_val"] = trends["direct_p_val"]
 
     # Add the values to plot to a csv file
-    write_dictionary_to_csv(cfg, data_dict, "plotted_values")
     logger.info("Writing values to csv")
+    write_dictionary_to_csv(cfg, data_dict, "plotted_values")
 
     # Plot the sensitivities (and save and close the plots)
     logger.info("Creating Notz-style plot")
