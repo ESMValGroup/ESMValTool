@@ -73,6 +73,7 @@ Contact information is available :ref:`here <Support-and-Contact>`.
     Contributing to the community <community/index>
     Utilities <utils/utils>
     Frequently Asked Questions <faq>
+    Support <Support-and-Contact>
     Changelog <changelog>
 
 Indices and tables
