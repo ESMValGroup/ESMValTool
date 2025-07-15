@@ -32,7 +32,7 @@ For more detailed information, see documentation navigation to the left. Please 
 
    .. figure:: figures/ESMValSchemaDiagram.png
       :alt: Brief topics for tool and core.
-      :figclass: align-center
+      :figclass: align-center, transparent
 
 
 Learning resources:
