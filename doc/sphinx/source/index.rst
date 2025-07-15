@@ -24,7 +24,8 @@ and
 Basic documentation schema
 --------------------------
 This gives a brief idea of topics in each of the packages to help find information. As ESMValTool encompasses ESMValCore there will be some overlap between them.
-For more detailed information, see documentation navigation to the left.
+For more detailed information, see documentation navigation to the left. Please also see 
+`ESMValCore documentation <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/index.html>`.
 
 .. container::
    :name: figarch
@@ -56,7 +57,23 @@ Get in touch!
 -------------
 Contact information is available :ref:`here <Support-and-Contact>`.
 
-.. include:: _sidebar.rst.inc
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :caption: ESMValTool
+
+    Introduction <introduction>
+    ESMValTool Functionalities <functionalities>
+    Gallery <gallery>
+    Getting started <quickstart/index>
+    Recipes <recipes/index>
+    Diagnostics API Reference <api/esmvaltool>
+    Obtaining input data <input>
+    Making a recipe or diagnostic <develop/index>
+    Contributing to the community <community/index>
+    Utilities <utils/utils>
+    Frequently Asked Questions <faq>
+    Changelog <changelog>
 
 Indices and tables
 ------------------

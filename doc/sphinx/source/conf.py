@@ -503,6 +503,6 @@ extlinks = {
 
 # -- Custom Document processing ----------------------------------------------
 
-import gensidebar
+# import gensidebar
 
-gensidebar.generate_sidebar(globals(), "esmvaltool")
+# gensidebar.generate_sidebar(globals(), "esmvaltool")

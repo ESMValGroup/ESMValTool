@@ -44,3 +44,7 @@
 .gallery figure span.caption-number {
     display: none;
 }
+
+figure.transparent img {
+    background-color: transparent;
+}
