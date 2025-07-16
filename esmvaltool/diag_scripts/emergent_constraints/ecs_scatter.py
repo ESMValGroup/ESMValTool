@@ -172,7 +172,9 @@ def _get_level_widths(cube, zg_cube, n_jobs=1):
     level_widths = parallel(
         [
             delayed(_get_level_width)(b, lev, z)
-            for (b, lev, z) in zip(air_pressure_bounds, ref_lev, ref_zg)
+            for (b, lev, z) in zip(
+                air_pressure_bounds, ref_lev, ref_zg, strict=True
+            )
         ]
     )
     level_widths = np.ma.masked_invalid(level_widths)

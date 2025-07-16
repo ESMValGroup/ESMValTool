@@ -363,7 +363,7 @@ def _load_cube(in_files, var):
         elif var.get("operator", "") == "sum":
             # Multiple variables case using sum operation
             cube = None
-            for raw_name, filename in zip(var["raw"], in_files):
+            for raw_name, filename in zip(var["raw"], in_files, strict=True):
                 in_cube = iris.load_cube(
                     filename,
                     constraint=NameConstraint(var_name=raw_name),

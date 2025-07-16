@@ -186,7 +186,7 @@ def shiftedcolormap(cmap, start=0, midpoint=0.5, stop=1.0, name="shiftedcmap"):
         ]
     )
 
-    for regi, shii in zip(reg_index, shift_index):
+    for regi, shii in zip(reg_index, shift_index, strict=True):
         red, gren, blue, alpha = cmap(regi)
 
         cdict["red"].append((shii, red, red))
