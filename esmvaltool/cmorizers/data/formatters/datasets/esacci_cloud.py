@@ -22,7 +22,9 @@ from datetime import datetime
 
 import cf_units
 import iris
+from dateutil import relativedelta
 from dask import array as da
+import numpy as np
 from esmvalcore.preprocessor import (
     daily_statistics,
     monthly_statistics,
@@ -66,6 +68,28 @@ def _handle_missing_day(year, month, iday, short_name, cubes, cubes_day):
     if short_name in ["clt", "ctp"]:
         cubes.append(daily_cube)
     cubes_day.append(daily_cube)
+
+
+def _check_for_missing_months(cube, cubes):
+    """Check for dates which are missing in the cube and fill with NaNs."""
+    time_coord = cube.coord("time").cells()
+    time_points_array = cube.coord('time').units.num2date(cube.coord('time').points)
+    loop_date = datetime(time_points_array[0].year, time_points_array[0].month, 1)
+    while loop_date <= datetime(time_points_array[-1].year, 12, 1):
+        if not any(
+            [time == loop_date for time in time_points_array]
+        ):
+            logger.debug(
+                "No data available for %d/%d", loop_date.month, loop_date.year
+            )
+            nan_cube = cubes[0].copy(np.ma.masked_invalid(np.full(cubes[0].shape, np.nan, dtype=cubes[0].dtype)))
+            nan_cube.coord("time").points = float(nan_cube.coord("time").units.date2num(loop_date))
+            nan_cube.coord("time").bounds = None
+            cubes.append(nan_cube)
+        loop_date += relativedelta.relativedelta(months=1)
+
+    cube = cubes.concatenate_cube()
+    return cube
 
 
 def _concatenate_and_save_daily_cubes(
@@ -140,6 +164,9 @@ def _concatenate_and_save_monthly_cubes(
     # After gathering all cubes for all years, concatenate them
     cube = cubes.concatenate_cube()
 
+    # Check for missing months
+    cube = _check_for_missing_months(cube, cubes)
+ 
     if attach == "-AMPM":
         cube = monthly_statistics(cube)
 
@@ -393,7 +420,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 )
             else:
                 logger.info(
-                    'If daily data needs to be downloaded change "daily_data" in the '
+                    'If daily data needs to be formatted change "daily_data" in the '
                     'cmor_config file to "True" '
                     "(esmvaltool/cmorizers/data/cmor_config/ESACCI-CLOUD.yml)"
                 )
