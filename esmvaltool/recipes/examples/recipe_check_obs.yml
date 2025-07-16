@@ -207,9 +207,12 @@ diagnostics:
     variables:
       clivi: &var_mon
         mip: Amon
-        version: v3.0-AVHRR-AMPM
         start_year: 1982
         end_year: 2016
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-AMPM}
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-AM, start_year: 1992}
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-PM}
       clt:
         <<: *var_mon
       cltStderr:
@@ -237,20 +240,19 @@ diagnostics:
       clt_day: &var_day
         short_name: clt
         mip: day
-        version: v3.0-AVHRR
         start_year: 2003
         end_year: 2007
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-AMPM}
       clwvi_day:
         <<: *var_day
         short_name: clwvi
         mip: CFday
-        version: v3.0-AVHRR-daylight
+        version: v3.0-AVHRR-AMPM-daylight
       cod_day:
         <<: *var_day
         short_name: cod
-        version: v3.0-AVHRR-daylight
-    additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat}
+        version: v3.0-AVHRR-AMPM-daylight
     scripts: null
 
 
