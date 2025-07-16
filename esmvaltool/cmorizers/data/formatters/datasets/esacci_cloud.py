@@ -22,9 +22,9 @@ from datetime import datetime
 
 import cf_units
 import iris
-from dateutil import relativedelta
-from dask import array as da
 import numpy as np
+from dask import array as da
+from dateutil import relativedelta
 from esmvalcore.preprocessor import (
     daily_statistics,
     monthly_statistics,
@@ -72,18 +72,25 @@ def _handle_missing_day(year, month, iday, short_name, cubes, cubes_day):
 
 def _check_for_missing_months(cube, cubes):
     """Check for dates which are missing in the cube and fill with NaNs."""
-    time_coord = cube.coord("time").cells()
-    time_points_array = cube.coord('time').units.num2date(cube.coord('time').points)
-    loop_date = datetime(time_points_array[0].year, time_points_array[0].month, 1)
+    time_points_array = cube.coord("time").units.num2date(
+        cube.coord("time").points
+    )
+    loop_date = datetime(
+        time_points_array[0].year, time_points_array[0].month, 1
+    )
     while loop_date <= datetime(time_points_array[-1].year, 12, 1):
-        if not any(
-            [time == loop_date for time in time_points_array]
-        ):
+        if not any([time == loop_date for time in time_points_array]):
             logger.debug(
                 "No data available for %d/%d", loop_date.month, loop_date.year
             )
-            nan_cube = cubes[0].copy(np.ma.masked_invalid(np.full(cubes[0].shape, np.nan, dtype=cubes[0].dtype)))
-            nan_cube.coord("time").points = float(nan_cube.coord("time").units.date2num(loop_date))
+            nan_cube = cubes[0].copy(
+                np.ma.masked_invalid(
+                    np.full(cubes[0].shape, np.nan, dtype=cubes[0].dtype)
+                )
+            )
+            nan_cube.coord("time").points = float(
+                nan_cube.coord("time").units.date2num(loop_date)
+            )
             nan_cube.coord("time").bounds = None
             cubes.append(nan_cube)
         loop_date += relativedelta.relativedelta(months=1)
@@ -166,7 +173,7 @@ def _concatenate_and_save_monthly_cubes(
 
     # Check for missing months
     cube = _check_for_missing_months(cube, cubes)
- 
+
     if attach == "-AMPM":
         cube = monthly_statistics(cube)
 
