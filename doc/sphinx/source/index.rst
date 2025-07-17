@@ -33,7 +33,8 @@ notebooks.
 
    .. figure:: figures/ESMValSchemaDiagram.png
       :alt: Brief topics for tool and core.
-      :figclass: align-center, transparent
+      :figclass: align-center
+      :class: dark-light
 
 
 Learning resources:
