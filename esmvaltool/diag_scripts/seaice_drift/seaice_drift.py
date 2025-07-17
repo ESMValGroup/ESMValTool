@@ -549,7 +549,7 @@ class SeaIceDrift:
 
     @staticmethod
     def _annotate_points(axes, xvalues, yvalues):
-        for i, j, k in zip(xvalues, yvalues, range(1, 12 + 1)):
+        for i, j, k in zip(xvalues, yvalues, range(1, 12 + 1), strict=True):
             axes.annotate(
                 k,
                 xy=(i, j),

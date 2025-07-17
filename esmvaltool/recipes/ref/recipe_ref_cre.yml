@@ -16,7 +16,7 @@ datasets:
   - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
 
 timerange_for_models: &time_period
-  timerange: '2005/2014'  # can be specified, this is just an example
+  timerange: '1996/2014' #should end 2015 for CMIP7
 
 
 preprocessors:
@@ -56,7 +56,8 @@ diagnostics:
         preprocessor: full_climatology
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2, reference_for_monitor_diags: true}
+      - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2,
+         start_year: 2000, end_year: 2023, reference_for_monitor_diags: true}
     scripts:
       plot: &plot_multi_dataset_default
         script: monitor/multi_datasets.py
@@ -82,9 +83,12 @@ diagnostics:
         preprocessor: zonal_mean
         derive: true
     additional_datasets:
-      - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2, reference_for_monitor_diags: true}
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
-      - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2}
+      - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2, tier: 2,
+         start_year: 2000, end_year: 2023, reference_for_monitor_diags: true}
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2,
+         start_year: 1996, end_year: 2016}
+      - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
+         start_year: 1996, end_year: 2016}
     scripts:
       plot:
         <<: *plot_multi_dataset_default
