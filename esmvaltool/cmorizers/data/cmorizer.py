@@ -77,7 +77,7 @@ class _Formatter:
                     f"existing directory"
                 )
             CFG.update_from_dirs([config_dir])
-        CFG.update(options)
+        CFG.nested_update(options)
         self.config = CFG.start_session(f"data_{command}")
 
         if not os.path.isdir(self.run_dir):

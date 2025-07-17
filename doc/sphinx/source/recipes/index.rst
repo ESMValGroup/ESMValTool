@@ -51,6 +51,7 @@ Atmosphere
    recipe_hyint
    recipe_iht_toa
    recipe_impact
+   recipe_lifetime
    recipe_modes_of_variability
    recipe_mpqb_xch4
    recipe_quantilebias
@@ -150,6 +151,7 @@ Other
    recipe_seaice
    recipe_seaice_drift
    recipe_seaice_feedback
+   recipe_seaice_sensitivity
    recipe_shapeselect
    recipes_testing
    recipe_toymodel

@@ -477,12 +477,12 @@ def make_plots(cfg, climates):
     for year in years:
         fig, subplots = plt.subplots(2, 2, figsize=(12, 8))
 
-        for row, variable in zip(subplots, ["pr", "tas"]):
+        for row, variable in zip(subplots, ["pr", "tas"], strict=True):
             cmip, prov = _cmip_envelope(
                 metadata, variable, year, cfg["control_period"]
             )
 
-            for axes, season in zip(row, ["DJF", "JJA"]):
+            for axes, season in zip(row, ["DJF", "JJA"], strict=True):
                 percentiles = cmip.percentile.values
                 xlocs = np.arange(len(percentiles))
 

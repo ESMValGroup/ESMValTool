@@ -38,7 +38,7 @@ def read_resource_usage_file(recipe_dir):
         usage[name] = []
 
     for line in lines[1:]:
-        for key, value in zip(usage, line.split("\t")):
+        for key, value in zip(usage, line.split("\t"), strict=True):
             if key != "Date and time (UTC)":
                 value = float(value)
             usage[key].append(value)
