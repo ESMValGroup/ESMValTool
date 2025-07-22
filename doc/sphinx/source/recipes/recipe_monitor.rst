@@ -151,7 +151,7 @@ datasets (observations, reanalyses) across all months and all reference datasets
 limits are shown as red lines. A good model simulations would be expected to not exceed these
 limits at any time. The minimum and maximum global averages across all months and all reference datasets is calculated with recipe_create_ranges_obs.yml
 
-.. note:: 
+.. note::
 
   The time frequency used in recipe_create_ranges_obs.yml (monthly, daily, etc. values) to
   calculate "reasonable" minimum and maximum values must match the time frequency used in

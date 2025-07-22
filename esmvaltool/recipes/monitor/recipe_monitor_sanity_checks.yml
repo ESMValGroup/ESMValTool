@@ -56,7 +56,7 @@ preprocessors:
   global_sum:
     area_statistics:
       operator: sum
-        
+
   global_sum_air_anom:
     custom_order: true
     convert_units:
@@ -79,7 +79,7 @@ diagnostics:
   # *******************
   # *** global sums ***
   # *******************
-                
+
   air_mass_anom:
     description: time series of global air mass anomaly
     variables:

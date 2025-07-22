@@ -110,7 +110,7 @@ preprocessors:
         - operator: max
     climate_statistics:
       operator: max
-      
+
   pp_min_sum_air_anom:
     custom_order: true
     convert_units:
@@ -176,8 +176,8 @@ diagnostics:
       - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
         tier: 2, start_year: 1984, end_year: 2016}
     scripts: null
-    
-    
+
+
   air_mass_anom:
     description: Calculate range of reasonable monthly values for global air mass anomaly
     variables:
@@ -662,7 +662,7 @@ diagnostics:
       - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1',
         tier: 3, start_year: 1979, end_year: 2018}
       - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, mip: Amon, tier: 2,
-        type: reanaly, version: v2, start_year: 1871, end_year: 2012}  
+        type: reanaly, version: v2, start_year: 1871, end_year: 2012}
     scripts: null
 
 
@@ -685,5 +685,5 @@ diagnostics:
       - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: '1',
         tier: 3, start_year: 1979, end_year: 2018}
       - {dataset: NOAA-CIRES-20CR-V2, project: OBS6, mip: Amon, tier: 2,
-        type: reanaly, version: v2, start_year: 1871, end_year: 2012}  
+        type: reanaly, version: v2, start_year: 1871, end_year: 2012}
     scripts: null
