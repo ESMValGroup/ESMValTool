@@ -56,7 +56,7 @@ preprocessors:
   global_sum:
     area_statistics:
       operator: sum
-
+        
   global_sum_air_anom:
     custom_order: true
     convert_units:
@@ -66,15 +66,126 @@ preprocessors:
     anomalies:
       period: full
       reference:
-        start_year: 1980
+        start_year: 1990
         start_month: 1
         start_day: 1
-        end_year: 1980
+        end_year: 1990
         end_month: 12
         end_day: 31
 
 
 diagnostics:
+
+  # *******************
+  # *** global sums ***
+  # *******************
+                
+  air_mass_anom:
+    description: time series of global air mass anomaly
+    variables:
+      ps:
+        <<: *time_period
+        preprocessor: global_sum_air_anom
+        legend_label: 'global sum'
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            pyplot_kwargs:
+              title: "Anomaly of global air mass"
+            hlines:
+              - y: 0.
+                color: black
+                linewidth: 2
+              # - y: 1.964827e+15
+              #   color: red
+              # - y: -2.291932e+15
+              #   color: red
+            plot_kwargs:
+              'global sum':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+                zorder: 3
+
+  moisture_flux:
+    description: time series of moisture flux into the atmosphere
+    variables:
+      qep:
+        <<: *time_period
+        derive: true
+        preprocessor: global_sum
+        legend_label: 'global sum'
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            pyplot_kwargs:
+              title: "Anomaly of global moisture flux into the atmosphere"
+            hlines:
+              - y: 0.
+                color: black
+                linewidth: 2
+              - y: 4.381299e+08
+                color: red
+              - y: -7.258987e+08
+                color: red
+            plot_kwargs:
+              'global sum':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+                zorder: 3
+
+  prw_mass:
+    description: time series of global water vapour mass
+    variables:
+      prw_sum:
+        <<: *time_period
+        short_name: prw
+        preprocessor: global_sum
+        legend_label: 'global sum'
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: short_name
+        facet_used_for_labels: legend_label
+        plots:
+          timeseries:
+            annual_mean_kwargs: false
+            pyplot_kwargs:
+              title: "Global sum of water vapour"
+            hlines:
+              - y: 1.420688e+16
+                color: red
+                linewidth: 2
+              - y: 1.128716e+16
+                color: red
+                linewidth: 2
+            plot_kwargs:
+              'global sum':
+                color: blue
+                label: null
+                linestyle: '-'
+                linewidth: 2
+                label: '{dataset}'
+                zorder: 3
+
 
   # ***************************
   # *** global min/max/mean ***
@@ -111,9 +222,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 300.0  # placeholder
+              - y: 215.4  # placeholder
                 color: red
-              - y: 200.0  # placeholder
+              - y: 248.7  # placeholder
                 color: red
             plot_kwargs:
               'global mean':
@@ -161,9 +272,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 0.05  # placeholder
+              - y: 0.092597
                 color: red
-              - y: 0.02  # placeholder
+              - y: 0.0290555
                 color: red
             plot_kwargs:
               'global mean':
@@ -261,9 +372,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 0  # placeholder
+              - y: 76.4
                 color: red
-              - y: 0  # placeholder
+              - y: -130.8
                 color: red
             plot_kwargs:
               'global mean':
@@ -311,9 +422,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 0  # placeholder
+              - y: 21.5
                 color: red
-              - y: 0  # placeholder
+              - y: 15.8
                 color: red
             plot_kwargs:
               'global mean':
@@ -364,9 +475,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 0  # placeholder
+              - y: 30.5
                 color: red
-              - y: 100  # placeholder
+              - y: 23.6
                 color: red
             plot_kwargs:
               'global mean':
@@ -417,9 +528,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 0  # placeholder
+              - y: 0.1569
                 color: red
-              - y: 0.5  # placeholder
+              - y: 0.0229
                 color: red
             plot_kwargs:
               'global mean':
@@ -470,9 +581,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 0  # placeholder
+              - y: -12.3
                 color: red
-              - y: -50  # placeholder
+              - y: -47.1
                 color: red
             plot_kwargs:
               'global mean':
@@ -515,9 +626,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 2.499
+              - y: 2.50
                 color: red
-              - y: 3.213
+              - y: 3.21
                 color: red
             plot_kwargs:
               'global mean':
@@ -568,9 +679,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 0  # placeholder
+              - y: 1.115665e-05
                 color: red
-              - y: 0  # placeholder
+              - y: 7.41801e-06
                 color: red
             plot_kwargs:
               'global mean':
@@ -618,9 +729,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 30.0  # placeholder
+              - y: 28.7
                 color: red
-              - y: 20.0  # placeholder
+              - y: 22.3
                 color: red
             plot_kwargs:
               'global mean':
@@ -668,9 +779,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 400.0  # placeholder
+              - y: 360.4
                 color: red
-              - y: 300.0  # placeholder
+              - y: 319.2
                 color: red
             plot_kwargs:
               'global mean':
@@ -718,9 +829,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 226.4
+              - y: 246.3
                 color: red
-              - y: 245.0
+              - y: 226.4
                 color: red
             plot_kwargs:
               'global mean':
@@ -774,9 +885,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: -20  # placeholder
+              - y: 13.4
                 color: red
-              - y: 20  # placeholder
+              - y: -22.7
                 color: red
             plot_kwargs:
               'global mean':
@@ -824,9 +935,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 200.0  # placeholder
+              - y: 231.8
                 color: red
-              - y: 180.0  # placeholder
+              - y: 166.3
                 color: red
             plot_kwargs:
               'global mean':
@@ -874,9 +985,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 110.0  # placeholder
+              - y: 128.8
                 color: red
-              - y: 80.0  # placeholder
+              - y: 91.1
                 color: red
             plot_kwargs:
               'global mean':
@@ -927,9 +1038,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 0  # placeholder
+              - y: -40.6
                 color: red
-              - y: -100  # placeholder
+              - y: -73.5
                 color: red
             plot_kwargs:
               'global mean':
@@ -977,9 +1088,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 284.99
+              - y: 293.7
                 color: red
-              - y: 289.92
+              - y: 283.9
                 color: red
             plot_kwargs:
               'global mean':
@@ -1030,9 +1141,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 0.0  # placeholder
+              - y: 0.0198
                 color: red
-              - y: 0.0  # placeholder
+              - y: -0.0528
                 color: red
             plot_kwargs:
               'global mean':
@@ -1080,9 +1191,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 0.02  # placeholder
+              - y: 0.0283
                 color: red
-              - y: -0.02  # placeholder
+              - y: -0.0144
                 color: red
             plot_kwargs:
               'global mean':
@@ -1101,105 +1212,3 @@ diagnostics:
                 label: null
                 linestyle: '--'
                 linewidth: 1
-
-  # *******************
-  # *** global sums ***
-  # *******************
-
-  air_mass:
-    description: time series of global air mass anomaly
-    variables:
-      ps:
-        <<: *time_period
-        preprocessor: global_sum_air_anom
-        legend_label: 'global sum'
-    scripts:
-      timeseries:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        group_variables_by: short_name
-        facet_used_for_labels: legend_label
-        plots:
-          timeseries:
-            annual_mean_kwargs: false
-            pyplot_kwargs:
-              title: "Anomaly of global air mass"
-            hlines:
-              - y: 0.
-                color: black
-                linewidth: 2
-            plot_kwargs:
-              'global sum':
-                color: blue
-                label: null
-                linestyle: '-'
-                linewidth: 2
-                label: '{dataset}'
-                zorder: 3
-
-  moisture_flux:
-    description: time series of moisture flux into the atmosphere
-    variables:
-      qep:
-        <<: *time_period
-        derive: true
-        preprocessor: global_sum
-        legend_label: 'global sum'
-    scripts:
-      timeseries:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        group_variables_by: short_name
-        facet_used_for_labels: legend_label
-        plots:
-          timeseries:
-            annual_mean_kwargs: false
-            pyplot_kwargs:
-              title: "Anomaly of global moisture flux into the atmosphere"
-            hlines:
-              - y: 0.
-                color: black
-                linewidth: 2
-            plot_kwargs:
-              'global sum':
-                color: blue
-                label: null
-                linestyle: '-'
-                linewidth: 2
-                label: '{dataset}'
-                zorder: 3
-
-  prw_mass:
-    description: time series of global water vapour mass
-    variables:
-      prw_sum:
-        <<: *time_period
-        short_name: prw
-        preprocessor: global_sum
-        legend_label: 'global sum'
-    scripts:
-      timeseries:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        group_variables_by: short_name
-        facet_used_for_labels: legend_label
-        plots:
-          timeseries:
-            annual_mean_kwargs: false
-            pyplot_kwargs:
-              title: "Global sum of water vapour"
-            hlines:
-              - y: 14206879936806912.
-                color: red
-                linewidth: 2
-              - y: 10902071180001280.
-                color: red
-                linewidth: 2
-            plot_kwargs:
-              'global sum':
-                color: blue
-                label: null
-                linestyle: '-'
-                linewidth: 2
-                label: '{dataset}'
-                zorder: 3
