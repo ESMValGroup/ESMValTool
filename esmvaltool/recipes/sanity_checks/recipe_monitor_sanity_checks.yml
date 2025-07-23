@@ -3,7 +3,7 @@
 documentation:
   title: Basic sanity checks.
   description: >
-    Calculate basic sanity checks e.g. for monitoring new model runs.
+    Calculate basic sanity checks on monthly output e.g. for monitoring new model runs.
   authors:
     - bock_lisa
     - castellani_giulia
