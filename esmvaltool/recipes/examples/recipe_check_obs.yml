@@ -268,7 +268,7 @@ diagnostics:
       pfr:
     additional_datasets:
       - {dataset: ESACCI-PERMAFROST, project: OBS6, mip: Lyr, tier: 2, type: sat, version: v3.0,
-         start_year: 1997, end_year: 2019}
+         frequency: yr, start_year: 1997, end_year: 2019}
     scripts: null
 
   ESACCI-OC:
