@@ -137,7 +137,6 @@ Variables
 
 Any, but the variables' number of dimensions should match the ones expected by each plot.
 
-
 Example plots
 -------------
 
