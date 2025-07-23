@@ -170,6 +170,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         if "short_name" not in var:
             var["short_name"] = short_name
         if not in_files:
-            logger.info("%d: no data not found for variable %s", short_name)
-        else:
-            _extract_variable(in_files, var, cfg, out_dir)
+            msg = f"no data not found for variable {short_name}"
+            raise ValueError(msg)
+        _extract_variable(in_files, var, cfg, out_dir)
