@@ -15,23 +15,19 @@ Download and processing instructions
     Put file in ${RAWOBS}/Tier2/ESACCI-BIOMASS
 """
 
+import datetime
 import glob
 import logging
 import os
-import datetime
+from copy import deepcopy
 
 import iris
 import numpy as np
-
-from copy import deepcopy
 from dask import array as da
-
 from esmvalcore.cmor.table import CMOR_TABLES
-from esmvalcore.preprocessor import extract_time 
+from esmvalcore.preprocessor import extract_time
 
 from esmvaltool.cmorizers.data.utilities import (
-    fix_coords,
-    fix_var_metadata,
     flip_dim_coord,
     save_variable,
     set_global_atts,
@@ -43,20 +39,20 @@ logger = logging.getLogger(__name__)
 
 
 def _extract_variable(in_files, var, cfg, out_dir):
-    logger.info("CMORizing variable '%s' from input files '%s'",
-                var['short_name'], ', '.join(in_files))
-    attributes = deepcopy(cfg['attributes'])
-    attributes['mip'] = var['mip']
-    attributes['raw'] = var['raw']
-    attributes['frequency'] = var['frequency']
-    cmor_table = CMOR_TABLES[attributes['project_id']]
-    definition = cmor_table.get_variable(var['mip'], var['short_name'])
+    logger.info(
+        "CMORizing variable '%s' from input files '%s'",
+        var["short_name"],
+        ", ".join(in_files),
+    )
+    attributes = deepcopy(cfg["attributes"])
+    attributes["mip"] = var["mip"]
+    attributes["raw"] = var["raw"]
+    attributes["frequency"] = var["frequency"]
+    cmor_table = CMOR_TABLES[attributes["project_id"]]
+    definition = cmor_table.get_variable(var["mip"], var["short_name"])
 
     # load all input files (1 year) into 1 cube
-    cube_list = iris.load(in_files, var['raw'])
-
-    time_unit = 'days since 1850-01-01 00:00:00'
-    time_calendar = 'standard'
+    cube_list = iris.load(in_files, var["raw"])
 
     drop_attrs = ["valid_max", "valid_min"]
 
@@ -81,8 +77,8 @@ def _extract_variable(in_files, var, cfg, out_dir):
         set_global_atts(cube, attributes)
 
         # roll longitude (-180...180 --> 0...360)
-        cube.coord('longitude').points = cube.coord('longitude').points + 180.
-        nlon = len(cube.coord('longitude').points)
+        cube.coord("longitude").points = cube.coord("longitude").points + 180.0
+        nlon = len(cube.coord("longitude").points)
         cube.data = da.roll(cube.core_data(), int(nlon / 2), axis=2)
 
         # remove rouding errors introduced by da.roll
@@ -108,18 +104,24 @@ def _extract_variable(in_files, var, cfg, out_dir):
             out_timecoord = outcube.coord("time")
             start_date = datetime.datetime(time.year, 1, 1)
             end_date = datetime.datetime(time.year + 1, 1, 1)
-            out_timecoord.bounds = np.array([
-                out_timecoord.units.date2num(start_date),
-                out_timecoord.units.date2num(end_date)])
+            out_timecoord.bounds = np.array(
+                [
+                    out_timecoord.units.date2num(start_date),
+                    out_timecoord.units.date2num(end_date),
+                ]
+            )
             # write output to file
             logger.debug("Saving cube\n%s", outcube)
             logger.debug("Setting time dimension to UNLIMITED while saving!")
-            version = attributes['version']
-            save_variable(outcube, var['short_name'],
-                          out_dir, attributes,
-                          unlimited_dimensions=['time'])
+            save_variable(
+                outcube,
+                var["short_name"],
+                out_dir,
+                attributes,
+                unlimited_dimensions=["time"],
+            )
 
-    logger.info("Finished CMORizing %s", ', '.join(in_files))
+    logger.info("Finished CMORizing %s", ", ".join(in_files))
 
 
 def _fix_coordinates(cube, definition):
@@ -136,7 +138,7 @@ def _fix_coordinates(cube, definition):
                 coord.points = coord.core_points().astype("float64")
                 if coord.bounds is not None:
                     coord.bounds = None
-                    
+
             if len(coord.points) > 1:
                 if coord.bounds is not None:
                     coord.bounds = None
@@ -152,19 +154,21 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize data."""
     glob_attrs = cfg["attributes"]
 
-    logger.info("Starting cmorization for tier%s OBS files: %s",
-                glob_attrs['tier'], glob_attrs['dataset_id'])
+    logger.info(
+        "Starting cmorization for tier%s OBS files: %s",
+        glob_attrs["tier"],
+        glob_attrs["dataset_id"],
+    )
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
-    logger.info('CMORizing ESACCI-BIOMASS version %s', glob_attrs['version'])
+    logger.info("CMORizing ESACCI-BIOMASS version %s", glob_attrs["version"])
 
-    for short_name, var in cfg['variables'].items():
-        filepattern = os.path.join(in_dir, var['filename'])
+    for short_name, var in cfg["variables"].items():
+        filepattern = os.path.join(in_dir, var["filename"])
         in_files = glob.glob(filepattern)
-        if 'short_name' not in var:
-            var['short_name'] = short_name
+        if "short_name" not in var:
+            var["short_name"] = short_name
         if not in_files:
-            logger.info('%d: no data not found for '
-                        'variable %s', short_name)
+            logger.info("%d: no data not found for variable %s", short_name)
         else:
             _extract_variable(in_files, var, cfg, out_dir)
