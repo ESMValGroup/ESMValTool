@@ -102,10 +102,6 @@ diagnostics:
               - y: 0.
                 color: black
                 linewidth: 2
-              # - y: 1.964827e+15
-              #   color: red
-              # - y: -2.291932e+15
-              #   color: red
             plot_kwargs:
               'global sum':
                 color: blue
@@ -222,9 +218,9 @@ diagnostics:
           timeseries:
             annual_mean_kwargs: false
             hlines:
-              - y: 215.4  # placeholder
+              - y: 215.4
                 color: red
-              - y: 248.7  # placeholder
+              - y: 248.7
                 color: red
             plot_kwargs:
               'global mean':
