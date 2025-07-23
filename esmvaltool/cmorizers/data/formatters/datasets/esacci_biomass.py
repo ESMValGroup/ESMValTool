@@ -34,7 +34,6 @@ from esmvaltool.cmorizers.data.utilities import (
 )
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
