@@ -1,12 +1,15 @@
 """Script to download ESACCI-BIOMASS agb data from the CEDA."""
 
-from datetime import datetime
-
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite,
+    config,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
