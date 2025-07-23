@@ -22,7 +22,7 @@ preprocessors:
     mask_landsea:
       mask_out: sea
     regrid:
-      target_grid: 1x1 #RCA4
+      target_grid: RCA4
       scheme: 'linear'
     multi_model_statistics: # fails because of different data types in CCLM4-8-17 and issue in regrid that removes coordinates prevents the merging of cubes
      span: overlap
