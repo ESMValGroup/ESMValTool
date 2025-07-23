@@ -25,6 +25,7 @@ large variety of input data.
    recipe_model_evaluation
    recipe_monitor
    recipe_portrait
+   recipe_sanity_checks
    recipe_seaborn
    recipe_ref
 

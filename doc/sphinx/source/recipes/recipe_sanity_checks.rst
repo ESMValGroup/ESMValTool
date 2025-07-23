@@ -1,7 +1,7 @@
 .. _recipe_santiy_checks:
 
 Sanity checks
-=======
+=============
 
 Overview
 --------
@@ -34,7 +34,7 @@ Recipes are stored in `recipes/sanity_checks`
   the sanity check recipe (recipe_monitor_sanity_checks.yml).
 
 Variables:
----------
+----------
 
 * ps (air mass)
 * qep (moisture flux)
