@@ -1,24 +1,27 @@
 """ESMValTool CMORizer for ESACCI-WATERVAPOUR data.
 
 Tier
-   Tier 3: currently still restricted because preliminary.
+   Tier 3: CDR2 requires registration at EUMETSAT CM SAF.
 
 Source
-   Marc Schröder, ftp.brockmann-consult.de
+   https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001
 
 Last access
-   20210329
+   20240221
 
 Download and processing instructions
-   FTP server: ftp.brockmann-consult.de, access currently restricted
-               data/tcwv/dataset3_1/CDR-*/...
+   CDR2 requires registration at EUMETSAT CM SAF, the information on how to
+        download the order will be emailed once the order is ready.
    All files need to be in one directory, not in yearly subdirectories.
 
 Modification history
+   20240221-malinina_elizaveta: Adjust for daily cmorization and updated
+                                filenames, remove CDR1 due to irrelevance.
    20210607-weigel_katja: Fix for monthly time bounds.
    20210408-weigel_katja: written.
 """
 
+import glob
 import logging
 import os
 
@@ -39,18 +42,19 @@ logger = logging.getLogger(__name__)
 
 def extract_variable(var_info, raw_info, attrs, year):
     """Extract to all vars."""
-    rawvar = raw_info['name']
+    rawvar = raw_info["name"]
     constraint = iris.NameConstraint(var_name=rawvar)
     try:
-        cube = iris.load_cube(raw_info['file'], constraint)
+        cube = iris.load_cube(raw_info["file"], constraint)
     except iris.exceptions.ConstraintMismatchError as constraint_error:
-        raise ValueError(f"No data available for variable {rawvar}"
-                         f"and year {year}") from constraint_error
+        raise ValueError(
+            f"No data available for variable {rawvar}and year {year}"
+        ) from constraint_error
 
     # Fix cube
     fix_var_metadata(cube, var_info)
     convert_timeunits(cube, year)
-    fix_coords(cube, overwrite_time_bounds=False)
+    cube = fix_coords(cube, overwrite_time_bounds=False)
     set_global_atts(cube, attrs)
     # Remove dysfunctional ancillary data without sandard name
     for ancillary_variable in cube.ancillary_variables():
@@ -60,32 +64,36 @@ def extract_variable(var_info, raw_info, attrs, year):
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize data."""
-    # cmor_table = cfg['cmor_table']
-    glob_attrs = cfg['attributes']
+    glob_attrs = cfg["attributes"]
 
     # run the cmorization
-    for var, vals in cfg['variables'].items():
-        var_info = cfg['cmor_table'].get_variable(vals['mip'], var)
-        glob_attrs['mip'] = vals['mip']
-        raw_info = {'name': vals['raw'], 'file': vals['file']}
-        inpfile = os.path.join(in_dir, cfg['filename'])
-        logger.info("CMORizing var %s from file type %s", var, inpfile)
-        # years = range(vals['start_year'], vals['end_year'] + 1)
-        months = ["0" + str(mo) for mo in range(1, 10)] + ["10", "11", "12"]
-        for year in range(vals['start_year'], vals['end_year'] + 1):
-            monthly_cubes = []
-            for month in months:
-                raw_info['file'] = inpfile.format(year=year, month=month)
-                logger.info("CMORizing var %s from file type %s", var,
-                            raw_info['file'])
-                monthly_cubes.append(
-                    extract_variable(var_info, raw_info, glob_attrs, year))
-            yearly_cube = concatenate(monthly_cubes)
+    for vals in cfg["variables"].values():
+        var = vals["short_name"]
+        var_info = cfg["cmor_table"].get_variable(vals["mip"], var)
+        glob_attrs["mip"] = vals["mip"]
+        raw_info = {"name": vals["raw"]}
+        inpfile_pattern = os.path.join(in_dir, vals["filename"])
+        logger.info("CMORizing var %s from file type %s", var, inpfile_pattern)
+        for year in range(vals["start_year"], vals["end_year"] + 1):
+            data_cubes = []
+            year_inpfile_pattern = inpfile_pattern.format(year=year)
+            inpfiles = sorted(glob.glob(year_inpfile_pattern))
+            for inpfile in inpfiles:
+                raw_info["file"] = inpfile
+                logger.info(
+                    "CMORizing var %s from file type %s", var, raw_info["file"]
+                )
+                data_cubes.append(
+                    extract_variable(var_info, raw_info, glob_attrs, year)
+                )
+            yearly_cube = concatenate(data_cubes)
             # Fix monthly time bounds
-            time = yearly_cube.coord('time')
-            time.bounds = get_time_bounds(time, 'mon')
-            save_variable(yearly_cube,
-                          var,
-                          out_dir,
-                          glob_attrs,
-                          unlimited_dimensions=['time'])
+            time = yearly_cube.coord("time")
+            time.bounds = get_time_bounds(time, vals["frequency"])
+            save_variable(
+                yearly_cube,
+                var,
+                out_dir,
+                glob_attrs,
+                unlimited_dimensions=["time"],
+            )

@@ -1,0 +1,67 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: TROPFLUX
+  project_id: OBS6
+  tier: 2
+  version: "v1"
+  modeling_realm: reanaly
+  source: 'https://incois.gov.in/tropflux/'
+  reference: 'tropflux'
+  comment: |
+    ''
+
+# Variables to CMORise
+variables:
+  # monthly frequency
+  ts_month:
+    short_name: ts
+    mip: Amon
+    raw: t2m
+    file: '/t2m_tropflux_1m_\d{4}\.nc$'
+
+  tos_month:
+    short_name: tos
+    mip: Omon
+    raw: sst
+    file: '/sst_tropflux_1m_\d{4}\.nc$'
+
+  hfls_month_Lmon:
+    short_name: hfls
+    mip: Lmon
+    raw: lhf
+    file: '/lhf_tropflux_1m_\d{4}\.nc$'
+
+  hfls_month_Amon:
+    short_name: hfls
+    mip: Amon
+    raw: lhf
+    file: '/lhf_tropflux_1m_\d{4}\.nc$'
+  hfds_month:
+    short_name: hfds
+    mip: Omon
+    raw: netflux
+    file: '/netflux_tropflux_1m_\d{4}\.nc$'
+
+  rlus_month:
+    short_name: rlus
+    mip: Amon
+    raw: lwr
+    file: '/lwr_tropflux_1m_\d{4}\.nc$'
+
+  tauv_month:
+    short_name: tauv
+    mip: Amon
+    raw: tauy
+    file: '/tauy_tropflux_1m_\d{4}\.nc$'
+  tauu_month:
+    short_name: tauu
+    mip: Amon
+    raw: taux
+    file: '/taux_tropflux_1m_\d{4}\.nc$'
+
+  rsds_month:
+    short_name: rsds
+    mip: Amon
+    raw: swr
+    file: '/swr_tropflux_1m_\d{4}\.nc$'
