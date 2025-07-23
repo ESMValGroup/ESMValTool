@@ -482,16 +482,6 @@ datasets:
         mip: fx
   - project: CORDEX
     domain: EUR-11
-    dataset: ALADIN63
-    driver: NCC-NorESM1-M
-    ensemble: r1i1p1
-    institute: CNRM
-    rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-  - project: CORDEX
-    domain: EUR-11
     dataset: HIRHAM5
     driver: CNRM-CERFACS-CNRM-CM5
     ensemble: r1i1p1
