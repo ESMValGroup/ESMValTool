@@ -69,32 +69,34 @@ def _regrid_infile(infile, outfile, weightsfile):
 
     # description of ESACCI-PERMAFROST v3.0 polar stereographic
     # grid for cdo
-    esagrid = (f'gridtype  = projection\n'
-               f'gridsize  = {totalsize}\n'
-               f'xsize     = {xsize}\n'
-               f'ysize     = {ysize}\n'
-               f'xname     = x\n'
-               f'xlongname = "x coordinate of projection"\n'
-               f'xunits    = "m"\n'
-               f'yname     = y\n'
-               f'ylongname = "y coordinate of projection"\n'
-               f'yunits    = "m"\n'
-               f'xfirst    = -6111475.22239475\n'
-               f'xinc      = 926.625433138333\n'
-               f'yfirst    = 4114895.09469662\n'
-               f'yinc      = -926.625433138333\n'
-               f'grid_mapping = polar_stereographic\n'
-               f'grid_mapping_name = polar_stereographic\n'
-               f'straight_vertical_longitude_from_pole = 0.\n'
-               f'false_easting = 0.\n'
-               f'false_northing = 0.\n'
-               f'latitude_of_projection_origin = 90.\n'
-               f'standard_parallel = 71.\n'
-               f'longitude_of_prime_meridian = 0.\n'
-               f'semi_major_axis = 6378137.\n'
-               f'inverse_flattening = 298.257223563\n'
-               f'proj_params = "+proj=stere +lat_0=90 +lat_ts=71 +lon_0=0'
-               f' +k=1" +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"\n')
+    esagrid = (
+        f"gridtype  = projection\n"
+        f"gridsize  = {totalsize}\n"
+        f"xsize     = {xsize}\n"
+        f"ysize     = {ysize}\n"
+        f"xname     = x\n"
+        f'xlongname = "x coordinate of projection"\n'
+        f'xunits    = "m"\n'
+        f"yname     = y\n"
+        f'ylongname = "y coordinate of projection"\n'
+        f'yunits    = "m"\n'
+        f"xfirst    = -6111475.22239475\n"
+        f"xinc      = 926.625433138333\n"
+        f"yfirst    = 4114895.09469662\n"
+        f"yinc      = -926.625433138333\n"
+        f"grid_mapping = polar_stereographic\n"
+        f"grid_mapping_name = polar_stereographic\n"
+        f"straight_vertical_longitude_from_pole = 0.\n"
+        f"false_easting = 0.\n"
+        f"false_northing = 0.\n"
+        f"latitude_of_projection_origin = 90.\n"
+        f"standard_parallel = 71.\n"
+        f"longitude_of_prime_meridian = 0.\n"
+        f"semi_major_axis = 6378137.\n"
+        f"inverse_flattening = 298.257223563\n"
+        f'proj_params = "+proj=stere +lat_0=90 +lat_ts=71 +lon_0=0'
+        f' +k=1" +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs"\n'
+    )
 
     esagrid_file = "./esacci_grid.txt"
 
@@ -119,37 +121,55 @@ def _regrid_infile(infile, outfile, weightsfile):
         # expected values
         src = weights.variables["src_grid_dims"]
         dst = weights.variables["dst_grid_dims"]
-        if (xsize == src[0] and ysize == src[1] and
-                target_dimx == dst[0] and target_dimy == dst[1]):
-            logger.info("Using matching weights file %s for regridding.",
-                        weightsfile)
+        if (
+            xsize == src[0]
+            and ysize == src[1]
+            and target_dimx == dst[0]
+            and target_dimy == dst[1]
+        ):
+            logger.info(
+                "Using matching weights file %s for regridding.", weightsfile
+            )
             weightsfile_ok = True
         weights.close()
 
     # if no suitable weights file, generate new weights for regridding
 
     if not weightsfile_ok:
-        logger.info("Generating regridding weights. This will take"
-                    " about 5-10 minutes (or more)...")
+        logger.info(
+            "Generating regridding weights. This will take"
+            " about 5-10 minutes (or more)..."
+        )
         # check if path for weight files exists, if not create folder
         path = os.path.split(weightsfile)[0]
         if not os.path.exists(path):
             os.makedirs(path)
         # generate weights
-        cdo.genbil(f"{target_grid} -setgrid,{esagrid_file}",
-                   input=infile, output=weightsfile, options="-f nc")
+        cdo.genbil(
+            f"{target_grid} -setgrid,{esagrid_file}",
+            input=infile,
+            output=weightsfile,
+            options="-f nc",
+        )
 
     # now regrid data to 0.5 deg x 0.5 deg
-    cdo.remap(f"{target_grid},{weightsfile} -setgrid,{esagrid_file}",
-              input=infile, output=outfile, options="-f nc")
+    cdo.remap(
+        f"{target_grid},{weightsfile} -setgrid,{esagrid_file}",
+        input=infile,
+        output=outfile,
+        options="-f nc",
+    )
 
     # delete temporary file
     os.remove(esagrid_file)
 
 
 def _extract_variable(in_file, var, cfg, out_dir, year):
-    logger.info("CMORizing variable '%s' from input file '%s'",
-                var["short_name"], in_file)
+    logger.info(
+        "CMORizing variable '%s' from input file '%s'",
+        var["short_name"],
+        in_file,
+    )
     attributes = deepcopy(cfg["attributes"])
     attributes["mip"] = var["mip"]
     attributes["raw"] = var["raw"]
@@ -189,9 +209,11 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
             else:
                 sdepth = 999.0
                 logger.info("Could not determin depth. Check results.")
-            cube.add_aux_coord(iris.coords.AuxCoord(sdepth,
-                               standard_name="depth",
-                               long_name="depth", units="m"))
+            cube.add_aux_coord(
+                iris.coords.AuxCoord(
+                    sdepth, standard_name="depth", long_name="depth", units="m"
+                )
+            )
             cube.var_name = "gst"
             cube.standard_name = "soil_temperature"  # "valid" standard name
             cube.attributes.pop("actual_min")
@@ -203,10 +225,12 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
         # swap coordinates 'depth' and 'time':
         #     (depth, time, lat, lon) --> (time, depth, lat, lon)
         flipped_data = np.swapaxes(tmp_cube.core_data(), 1, 0)
-        coord_spec = [(tmp_cube.coord("time"), 0),
-                      (tmp_cube.coord("depth"), 1),
-                      (tmp_cube.coord("latitude"), 2),
-                      (tmp_cube.coord("longitude"), 3)]
+        coord_spec = [
+            (tmp_cube.coord("time"), 0),
+            (tmp_cube.coord("depth"), 1),
+            (tmp_cube.coord("latitude"), 2),
+            (tmp_cube.coord("longitude"), 3),
+        ]
         cube = iris.cube.Cube(flipped_data, dim_coords_and_dims=coord_spec)
         cube.metadata = tmp_cube.metadata
         # change units string so unit conversion from deg C --> K will work
@@ -219,13 +243,23 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
     # --> drop attributes that differ among input files for different years
     # global attributes to remove
     drop_attrs = [
-        "source", "date_created", "history", "tracking_id",
-        "id", "time_coverage_start", "time_coverage_end", "platform",
-        "sensor", "keywords",
+        "source",
+        "date_created",
+        "history",
+        "tracking_id",
+        "id",
+        "time_coverage_start",
+        "time_coverage_end",
+        "platform",
+        "sensor",
+        "keywords",
     ]
     # variable attributes to remove
     drop_var_attrs = [
-        "flag_meanings", "flag_values", "grid_mapping", "actual_range",
+        "flag_meanings",
+        "flag_values",
+        "grid_mapping",
+        "actual_range",
         "ancillary_variables",
     ]
     for attr in drop_attrs:
@@ -237,8 +271,9 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
 
     set_global_atts(cube, attributes)
 
-    cube.coord("time").points = cube.coord("time").core_points().astype(
-        "float64")
+    cube.coord("time").points = (
+        cube.coord("time").core_points().astype("float64")
+    )
 
     # Set correct names
     cube.var_name = definition.short_name
@@ -260,9 +295,9 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
     # Save results
     logger.debug("Saving cube\n%s", cube)
     logger.debug("Setting time dimension to UNLIMITED while saving!")
-    save_variable(cube, cube.var_name,
-                  out_dir, attributes,
-                  unlimited_dimensions=["time"])
+    save_variable(
+        cube, cube.var_name, out_dir, attributes, unlimited_dimensions=["time"]
+    )
     os.remove(regridded_file)  # delete temporary file
     logger.info("Finished CMORizing %s", in_file)
 
@@ -271,12 +306,16 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """CMORize ESACCI-PERMAFROST dataset."""
     glob_attrs = cfg["attributes"]
 
-    logger.info("Starting CMORization for tier%s OBS files: %s",
-                glob_attrs["tier"], glob_attrs["dataset_id"])
+    logger.info(
+        "Starting CMORization for tier%s OBS files: %s",
+        glob_attrs["tier"],
+        glob_attrs["dataset_id"],
+    )
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
-    logger.info("CMORizing ESACCI-PERMAFROST version %s",
-                glob_attrs["version"])
+    logger.info(
+        "CMORizing ESACCI-PERMAFROST version %s", glob_attrs["version"]
+    )
 
     if start_date is None:
         start_date = datetime(1997, 1, 1)
@@ -289,12 +328,16 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             if "short_name" not in var:
                 var["short_name"] = short_name
             filepattern = os.path.join(
-                in_dir, var["file"].format(year=loop_date.year),
-                )
+                in_dir,
+                var["file"].format(year=loop_date.year),
+            )
             in_file = glob.glob(filepattern)[0]
             if not in_file:
-                logger.info("%d: no data not found for variable %s",
-                            loop_date.year, short_name)
+                logger.info(
+                    "%d: no data not found for variable %s",
+                    loop_date.year,
+                    short_name,
+                )
             else:
                 _extract_variable(in_file, var, cfg, out_dir, loop_date.year)
 

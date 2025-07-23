@@ -10,12 +10,14 @@ from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 logger = logging.getLogger(__name__)
 
 
-def download_dataset(config: dict,
-                     dataset: str,
-                     dataset_info: dict,
-                     start_date: datetime,
-                     end_date: datetime,
-                     overwrite: bool) -> None:
+def download_dataset(
+    config: dict,
+    dataset: str,
+    dataset_info: dict,
+    start_date: datetime,
+    end_date: datetime,
+    overwrite: bool,
+) -> None:
     """Download dataset.
 
     Parameters
@@ -49,8 +51,11 @@ def download_dataset(config: dict,
 
     version = "v03.0"
 
-    ccivars = ["active_layer_thickness", "ground_temperature",
-               "permafrost_extent"]
+    ccivars = [
+        "active_layer_thickness",
+        "ground_temperature",
+        "permafrost_extent",
+    ]
 
     # download active layer thickness
     loop_date = start_date
@@ -61,6 +66,7 @@ def download_dataset(config: dict,
             if downloader.file_exists(fname, pathname):
                 downloader.download_files(fname, pathname)
             else:
-                logger.info("%d: no data for %s %s",
-                            loop_date.year, var, version)
+                logger.info(
+                    "%d: no data for %s %s", loop_date.year, var, version
+                )
         loop_date += relativedelta.relativedelta(years=1)
