@@ -65,12 +65,12 @@ class Fluxogram:
 
     def update_all_storages(self, amounts):
         """Update the amount of all storages."""
-        for storage, amount in zip(self.storages, amounts):
+        for storage, amount in zip(self.storages, amounts, strict=True):
             storage.update_storage(amount)
 
     def update_all_fluxes(self, amounts):
         """Update the amount of all fluxes."""
-        for flux, amount in zip(self.fluxes, amounts):
+        for flux, amount in zip(self.fluxes, amounts, strict=True):
             flux.update_flux(amount)
 
     def update_everything(self, amounts_storages, amounts_fluxes):

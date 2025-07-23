@@ -409,7 +409,7 @@ def metric_colours(test, ref=None, var=None, obs=None, acc=None):
     return colours
 
 
-def normalise(test, ref, strict=False):
+def normalise(test, ref, strict=True):
     """
     Routine to normalise contents of test by contents of ref.
 
@@ -652,7 +652,7 @@ def plot_nac(
 
     # Plot metric data
     n_tests = []
-    for test, marker in zip(tests, MARKERS):
+    for test, marker in zip(tests, MARKERS, strict=True):
         # Normalise test by ref
         n_test = normalise(test, ref, strict=True)
 

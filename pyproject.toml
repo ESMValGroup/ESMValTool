@@ -1,31 +1,227 @@
 [build-system]
-requires = ["setuptools >= 40.6.0", "wheel", "setuptools_scm>=6.2"]
+requires = [
+    "setuptools >= 40.6.0",
+    "setuptools_scm>=6.2",
+]
 build-backend = "setuptools.build_meta"
+
+[project]
+authors = [
+    {name = "ESMValTool Development Team", email = "esmvaltool-dev@listserv.dfn.de"}
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Topic :: Scientific/Engineering :: Hydrology",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dynamic = [
+    "readme",
+    "version",
+]
+dependencies = [
+    "aiohttp",
+    "cartopy",
+    "cdo",
+    "cdsapi",
+    "cf-units",
+    "cfgrib",
+    "cftime",
+    "cmocean",
+    "dask!=2024.8.0",  # https://github.com/dask/dask/issues/11296
+    "distributed",
+    "ecmwf-api-client",
+    "eofs",
+    "ESMPy",  # not on PyPI
+    "esmvalcore",
+    "esmf-regrid>=0.10.0",  # iris-esmf-regrid #342
+    "fiona",
+    "fire",
+    "fsspec",
+    "GDAL",
+    "ipython<9.0",  # github.com/ESMValGroup/ESMValCore/issues/2680
+    "jinja2",
+    "joblib",
+    "lime",
+    "mapgenerator>=1.0.5",
+    "matplotlib",
+    "natsort",
+    "nc-time-axis",
+    "netCDF4",
+    "numba",
+    "numpy!=1.24.3",  # severe masking bug
+    "openpyxl",
+    "packaging",
+    "pandas",
+    "progressbar2",
+    "pyproj>=2.1",
+    "pys2index",
+    "python-dateutil",
+    "pyyaml",
+    "rasterio>=1.3.10",
+    "requests",
+    "ruamel.yaml",
+    "scikit-image",
+    "scikit-learn>=1.4.0",  # github.com/ESMValGroup/ESMValTool/issues/3504
+    "scipy",
+    "scitools-iris>=3.11",
+    "seaborn",
+    "seawater",
+    "shapely>=2",
+    "xarray>=0.12.0",
+    "xesmf>=0.7.1",
+    "xgboost>1.6.1",  # github.com/ESMValGroup/ESMValTool/issues/2779
+    "xlsxwriter",
+    "zarr",
+]
+description = "A community tool for pre-processing data from Earth system models in CMIP and running analysis scripts"
+license = {text = "Apache License, Version 2.0"}
+name = "ESMValTool"
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+# Execute `pip install .[test]` once and then use `pytest` to run tests
+test = [
+    "pre-commit",
+    "pytest>6.0.0",
+    "pytest-cov>=2.10.1",
+    "pytest-env",
+    "pytest-html!=2.1.0",
+    "pytest-metadata>=1.5.1",
+    "pytest-mock",
+    "pytest-xdist",
+]
+doc = [
+    "autodocsumm>=0.2.2",
+    "nbsphinx",
+    "sphinx>=6.1.3",
+    "pydata_sphinx_theme",
+]
+develop = [
+    "esmvaltool[test,doc]",
+    "codespell",
+    "docformatter",
+    "imagehash",
+    "pre-commit",
+    "prospector[with_pyroma]>=1.12",
+    "vprof",
+    "yamllint",
+]
+
+[project.entry-points."console_scripts"]
+nclcodestyle = "esmvaltool.utils.nclcodestyle.nclcodestyle:_main"
+
+[project.entry-points."esmvaltool_commands"]
+colortables = "esmvaltool.utils.color_tables.show_color_tables:ColorTables"
+install = "esmvaltool.install:Install"
+data = "esmvaltool.cmorizers.data.cmorizer:DataCommand"
+develop = "esmvaltool.utils.develop:DevelopCommand"
+
+[project.urls]
+Code = "https://github.com/ESMValGroup/ESMValTool"
+Community = "https://github.com/ESMValGroup/Community"
+Documentation = "https://docs.esmvaltool.org"
+Homepage = "https://esmvaltool.org"
+Issues = "https://github.com/ESMValGroup/ESMValTool/issues"
+
+[tool.setuptools]
+include-package-data = true
+license-files = ["LICENSE"]
+packages = ["esmvaltool"]
+zip-safe = false
+
+[tool.setuptools.dynamic]
+readme = {file = "README.md", content-type = "text/markdown"}
 
 [tool.setuptools_scm]
 version_scheme = "release-branch-semver"
+
+# Configure tests
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+    "--doctest-modules",
+    "--ignore=archive",
+    "--ignore=doc/sphinx/source/conf.py",
+    "--cov=esmvaltool",
+    "--cov-report=xml:test-reports/coverage.xml",
+    "--cov-report=html:test-reports/coverage_html",
+    "--html=test-reports/report.html",
+]
+log_cli_level = "INFO"
+env = {MPLBACKEND = "Agg"}
+log_level = "WARNING"
+minversion = "6"
+markers = [
+    "installation: Test requires installation of dependencies",
+    "diagnostic_image_output: test produces images that will be compared with imagehash",
+]
+testpaths = ["tests"]
+xfail_strict = true
+
+[tool.coverage.run]
+parallel = true
+source = ["esmvaltool"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+
+# Configure linters
+
+[tool.codespell]
+ignore-words-list = "emac,hist,oce,pres,vas,runn"
 
 [tool.ruff]
 fix = true
 line-length = 79
 show-fixes = true
+
 [tool.ruff.lint]
 select = ["ALL"]
+# syntax from github.com/astral-sh/ruff/issues/10878
+exclude = ["archive/*"]
 ignore = [
     # TODO: when replacing `prospector` with `ruff`, ignore rules that are
     # overly technical or conflict with other rules.
-    "E501",  # Disable line-too-long as this is taken care of by the formatter.
-    "D105",  # Disable Missing docstring in magic method as these are well defined.
+    "E501",     # Disable line-too-long as this is taken care of by the formatter.
+    "D105",     # Disable missing docstring in magic method as these are well defined.
+    "E501",     # Disable line-too-long as this is taken care of by the formatter.
+    "FIX002",   # TODOs can be useful when something cannot be done immediately.
+    "S603",     # Uncheckable
+    "TD002",    # Missing author in TODO: can be seen from git history
+    "TRY003",   # Fixing this would require many exceptions
 ]
+
 [tool.ruff.lint.per-file-ignores]
 "tests/**.py" = [
-    "B011",  # `assert False` is valid test code.
+    "B011",     # `assert False` is valid test code.
+    "S101",     # Use of assert in tests code is required.
+    "T20",      # Printing things can help with debugging tests.
+    "SLF001",   # Testing private members is ok
+    "PLR2004",  # Magic values in tests are fine.
     # Docstrings in tests are only needed if the code is not self-explanatory.
-    "D100",  # Missing docstring in public module
-    "D101",  # Missing docstring in public class
-    "D102",  # Missing docstring in public method
-    "D103",  # Missing docstring in public function
-    "D104",  # Missing docstring in public package
+    "D100",     # Missing docstring in public module
+    "D101",     # Missing docstring in public class
+    "D102",     # Missing docstring in public method
+    "D103",     # Missing docstring in public function
+    "D104",     # Missing docstring in public package
 ]
 "test_*.py" = [
     "B011",  # `assert False` is valid test code.
@@ -36,22 +232,32 @@ ignore = [
     "D103",  # Missing docstring in public function
     "D104",  # Missing docstring in public package
 ]
+
 [tool.ruff.lint.isort]
 known-first-party = ["esmvaltool"]
+
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
 
-# Configure linters that are run by Prospector
+[tool.ruff.lint.pylint]
+max-args = 7
+
 [tool.pylint.main]
 jobs = 1  # Running more than one job in parallel crashes prospector.
+ignore-paths = [
+    "doc/sphinx/source/conf.py",  # Sphinx configuration file
+]
+
 [tool.pylint.basic]
 good-names = [
     "_",            # Used by convention for unused variables
     "i", "j", "k",  # Used by convention for indices
     "logger",       # Our preferred name for the logger
 ]
+
 [tool.pylint.format]
 max-line-length = 79
+
 [tool.pylint."messages control"]
 disable = [
     "import-error",      # Needed because Codacy does not install dependencies

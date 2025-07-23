@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.11", "3.12", "3.13"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v4
@@ -34,7 +34,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
           use-mamba: true
-          mamba-version: "2.0.5"  # https://github.com/conda-incubator/setup-miniconda/issues/392
+          mamba-version: "2.0.8"  # https://github.com/conda-incubator/setup-miniconda/issues/392
       - run: mkdir -p test_linux_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
         run: |
@@ -46,8 +46,10 @@ jobs:
         run: conda list
       - name: Install ESMValTool
         run: pip install -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
-      - name: Examine conda environment
+      - name: Inspect environment
         run: conda list
+      - name: Install Julia from source
+        run: curl -fsSL https://install.julialang.org | sh -s -- --yes
       - name: Install Julia dependencies
         run: esmvaltool install Julia
       - name: Export Python minor version
@@ -60,6 +62,10 @@ jobs:
           exit 1
       - name: Inspect environment
         run: conda list
+      - name: Check Julia and NCL
+        run: |
+          ncl -V
+          julia --version
       - name: Check code quality
         run: pre-commit run -a
       - name: Run tests
@@ -76,7 +82,7 @@ jobs:
     if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.11", "3.12", "3.13"]
         architecture: ["x64"]  # need to force Intel, arm64 builds have issues
       fail-fast: false
     name: OSX Python ${{ matrix.python-version }}

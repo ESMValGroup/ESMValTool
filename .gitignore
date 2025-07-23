@@ -112,3 +112,6 @@ esmvaltool/install/Julia/Manifest.toml
 
 # Cylc suite
 esmvaltool/utils/testing/regression/.service/
+
+# Temporary imagehash files
+imagehashes_*.yml
