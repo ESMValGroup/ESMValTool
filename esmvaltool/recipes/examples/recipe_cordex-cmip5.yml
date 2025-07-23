@@ -22,7 +22,7 @@ preprocessors:
     mask_landsea:
       mask_out: sea
     regrid:
-      target_grid: RCA4
+      target_grid: 1x1 #RCA4
       scheme: 'linear'
     multi_model_statistics: # fails because of different data types in CCLM4-8-17 and issue in regrid that removes coordinates prevents the merging of cubes
      span: overlap
@@ -31,18 +31,6 @@ preprocessors:
          #
 
 datasets:
-  # - project: CORDEX
-  #   domain: EUR-11
-  #   dataset: CCLM4-8-17
-  #   driver: CCCma-CanESM2
-  #   ensemble: r1i1p1
-  #   institute: CLMcom
-  #   rcm_version: v1
-  #   mip: day
-  #   supplementary_variables:
-  #     - short_name: sftlf
-  #       mip: fx
-  #       ensemble: r0i0p0 # missing dataset?
   - project: CORDEX
     domain: EUR-11
     dataset: CCLM4-8-17
@@ -191,17 +179,6 @@ datasets:
       - short_name: sftlf
         mip: fx
         ensemble: r0i0p0
-  # - project: CORDEX
-  #   domain: EUR-11
-  #   dataset: CCLM4-8-17
-  #   driver: MIROC-MIROC5
-  #   ensemble: r1i1p1
-  #   institute: CLMcom
-  #   rcm_version: v1
-  #   supplementary_variables:
-  #     - short_name: sftlf
-  #       mip: fx
-  #       ensemble: r0i0p0 # Missing dataset?
   - project: CORDEX
     domain: EUR-11
     dataset: CCLM4-8-17
@@ -589,7 +566,7 @@ datasets:
     ensemble: r12i1p1
     institute: MOHC
     rcm_version: v1
-    supplementary_variables   :
+    supplementary_variables:
       - short_name: sftlf
         mip: fx
   - project: CORDEX
