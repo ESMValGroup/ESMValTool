@@ -24,7 +24,7 @@ Available recipes and diagnostics
 
 Recipes are stored in `recipes/sanity_checks`
 
-* recipe_monitor_sanity_checks.yml
+* recipe_sanity_checks.yml
 * recipe_create_ranges_obs.yml
 
 .. note::
