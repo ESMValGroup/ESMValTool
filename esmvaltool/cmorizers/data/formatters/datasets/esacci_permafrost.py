@@ -36,7 +36,7 @@ from esmvaltool.cmorizers.data.utilities import save_variable, set_global_atts
 logger = logging.getLogger(__name__)
 
 
-def _fix_coordinates(cube, definition):
+def _fix_coordinates(cube: iris.cube.Cube, definition):
     """Fix coordinates."""
     axis2def = {"T": "time", "X": "longitude", "Y": "latitude", "Z": "sdepth"}
     axes = ["T", "X", "Y", "Z"]
@@ -128,7 +128,8 @@ def _regrid_infile(infile, outfile, weightsfile):
             and target_dimy == dst[1]
         ):
             logger.info(
-                "Using matching weights file %s for regridding.", weightsfile
+                "Using matching weights file %s for regridding.",
+                weightsfile,
             )
             weightsfile_ok = True
         weights.close()
@@ -138,7 +139,7 @@ def _regrid_infile(infile, outfile, weightsfile):
     if not weightsfile_ok:
         logger.info(
             "Generating regridding weights. This will take"
-            " about 5-10 minutes (or more)..."
+            " about 5-10 minutes (or more)...",
         )
         # check if path for weight files exists, if not create folder
         path = os.path.split(weightsfile)[0]
@@ -211,8 +212,11 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
                 logger.info("Could not determin depth. Check results.")
             cube.add_aux_coord(
                 iris.coords.AuxCoord(
-                    sdepth, standard_name="depth", long_name="depth", units="m"
-                )
+                    sdepth,
+                    standard_name="depth",
+                    long_name="depth",
+                    units="m",
+                ),
             )
             cube.var_name = "gst"
             cube.standard_name = "soil_temperature"  # "valid" standard name
@@ -296,7 +300,11 @@ def _extract_variable(in_file, var, cfg, out_dir, year):
     logger.debug("Saving cube\n%s", cube)
     logger.debug("Setting time dimension to UNLIMITED while saving!")
     save_variable(
-        cube, cube.var_name, out_dir, attributes, unlimited_dimensions=["time"]
+        cube,
+        cube.var_name,
+        out_dir,
+        attributes,
+        unlimited_dimensions=["time"],
     )
     os.remove(regridded_file)  # delete temporary file
     logger.info("Finished CMORizing %s", in_file)
@@ -314,7 +322,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
     logger.info(
-        "CMORizing ESACCI-PERMAFROST version %s", glob_attrs["version"]
+        "CMORizing ESACCI-PERMAFROST version %s",
+        glob_attrs["version"],
     )
 
     if start_date is None:

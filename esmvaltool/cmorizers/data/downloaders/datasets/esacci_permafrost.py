@@ -67,6 +67,9 @@ def download_dataset(
                 downloader.download_files(fname, pathname)
             else:
                 logger.info(
-                    "%d: no data for %s %s", loop_date.year, var, version
+                    "%d: no data for %s %s",
+                    loop_date.year,
+                    var,
+                    version,
                 )
         loop_date += relativedelta.relativedelta(years=1)
