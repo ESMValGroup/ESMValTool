@@ -6,7 +6,7 @@ Sanity checks
 Overview
 --------
 
-The sanity check recipe (recipe_monitor_sanity_checks.yml) is intended to perform
+The sanity check recipe (``recipe_sanity_checks.yml``) is intended to perform
 some basic sanity checks for new simulations during model development. A subset of variables
 is selected to check whether the model is performing in reasonable way. The recipe plots global
 monthly means as well as maximum and minimum across all individual grid cells for each time step.
