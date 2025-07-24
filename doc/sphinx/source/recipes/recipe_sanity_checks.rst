@@ -6,7 +6,7 @@ Sanity checks
 Overview
 --------
 
-The sanity check recipe (recipe_monitor_sanity_checks.yml) is intended to perform
+The sanity check recipe (``recipe_sanity_checks.yml``) is intended to perform
 some basic sanity checks for new simulations during model development. A subset of variables
 is selected to check whether the model is performing in reasonable way. The recipe plots global
 monthly means as well as maximum and minimum across all individual grid cells for each time step.
@@ -17,21 +17,21 @@ The global monthly means can be compared to the minimum and maximum values found
 datasets (observations, reanalyses) across all months and all reference datasets. The "reasonable"
 limits are shown as red lines. A good model simulations would be expected to not exceed these
 limits at any time. The minimum and maximum global averages across all months and all reference
-datasets is calculated with recipe_create_ranges_obs.yml
+datasets is calculated with ``recipe_create_ranges_obs.yml``.
 
 Available recipes and diagnostics
 ---------------------------------
 
 Recipes are stored in `recipes/sanity_checks`
 
-* recipe_monitor_sanity_checks.yml
+* recipe_sanity_checks.yml
 * recipe_create_ranges_obs.yml
 
 .. note::
 
-  The time frequency used in recipe_create_ranges_obs.yml (monthly, daily, etc. values) to
+  The time frequency used in ``recipe_create_ranges_obs.yml`` (monthly, daily, etc. values) to
   calculate "reasonable" minimum and maximum values must match the time frequency used in
-  the sanity check recipe (recipe_monitor_sanity_checks.yml).
+  the sanity check recipe (``recipe_sanity_checks.yml``).
 
 Diagnostics are stored in `diag_scripts/monitor/`
 
@@ -78,4 +78,4 @@ Example plots
    (dashed lines) total cloud cover from MPI-ESM1-2-LR. The red horizontal lines
    show the monthly minimum and maximum global average across multiple reference
    dataset (here: ESACCI-CLOUD, CLARA-AVHRR, PATMOS-x, MODIS, ERA5) calculated
-   with recipe_create_ranges_obs.yml. Plot created with recipe_monitor_sanity_checks.yml.
+   with recipe_create_ranges_obs.yml. Plot created with recipe_sanity_checks.yml.
