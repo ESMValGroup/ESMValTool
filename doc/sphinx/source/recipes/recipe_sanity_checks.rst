@@ -31,7 +31,7 @@ Recipes are stored in `recipes/sanity_checks`
 
   The time frequency used in ``recipe_create_ranges_obs.yml`` (monthly, daily, etc. values) to
   calculate "reasonable" minimum and maximum values must match the time frequency used in
-  the sanity check recipe (recipe_monitor_sanity_checks.yml).
+  the sanity check recipe (``recipe_sanity_checks.yml``).
 
 Variables:
 ----------
