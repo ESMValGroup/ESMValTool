@@ -72,4 +72,4 @@ Example plots
    (dashed lines) total cloud cover from MPI-ESM1-2-LR. The red horizontal lines
    show the monthly minimum and maximum global average across multiple reference
    dataset (here: ESACCI-CLOUD, CLARA-AVHRR, PATMOS-x, MODIS, ERA5) calculated
-   with recipe_create_ranges_obs.yml. Plot created with recipe_monitor_sanity_checks.yml.
+   with recipe_create_ranges_obs.yml. Plot created with recipe_sanity_checks.yml.
