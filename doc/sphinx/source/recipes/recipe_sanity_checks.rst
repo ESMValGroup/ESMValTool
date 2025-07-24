@@ -33,6 +33,12 @@ Recipes are stored in `recipes/sanity_checks`
   calculate "reasonable" minimum and maximum values must match the time frequency used in
   the sanity check recipe (recipe_monitor_sanity_checks.yml).
 
+Diagnostics are stored in `diag_scripts/monitor/`
+
+* :ref:`multi_datasets.py
+  <api.esmvaltool.diag_scripts.monitor.multi_datasets>`:
+  Monitoring diagnostic to show multiple datasets in one plot (incl. biases).
+
 Variables:
 ----------
 
