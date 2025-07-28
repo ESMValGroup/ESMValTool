@@ -217,7 +217,7 @@ def _extract_variable(in_files, var, cfg, out_dir, year, month):
         # roll longitude: -180...180 --> 0...360
         cube.coord("longitude").points = cube.coord("longitude").points + 180.0
         nlon = len(cube.coord("longitude").points)
-        cube.data = da.roll(cube.core_data(), int(nlon / 2), axis=-1)
+        cube.data = da.roll(cube.core_data(), int(nlon / 2), axis=1)
         NativeDatasetFix.fix_alt16_metadata(cube)
         # reorder dimensions to [time, lev, lat, lon]
         cube.transpose([0, 3, 2, 1])
