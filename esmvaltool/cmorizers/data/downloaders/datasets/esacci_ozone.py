@@ -16,7 +16,12 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite,
+    config,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download ESACCI-OZONE dataset using CDS API.
 
@@ -33,13 +38,30 @@ def download_dataset(
 
         cds_url = "https://cds.climate.copernicus.eu/api"
 
+        if start_date is None:
+            gto_year1 = 1995
+            omps_year1 = 1984
+            megridop_year1 = 2001
+        else:
+            gto_year1 = start_date.year
+            omps_year1 = start_date.year
+            megridop_year1 = start_date.year
+        if end_date is None:
+            gto_year2 = 2024
+            omps_year2 = 2023
+            megridop_year2 = 2025
+        else:
+            gto_year2 = end_date.year
+            omps_year2 = end_date.year
+            megridop_year2 = end_date.year
+
         requests = {
             "toz_gto_ecv": {
                 "processing_level": "level_3",
                 "variable": "atmosphere_mole_content_of_ozone",
                 "vertical_aggregation": "total_column",
                 "sensor": ["merged_uv"],
-                "year": [str(y) for y in range(1995, 2024)],
+                "year": [str(y) for y in range(gto_year1, gto_year2)],
                 "month": [f"{m:02d}" for m in range(1, 13)],
                 "version": ["v2000"],
             },
@@ -48,7 +70,7 @@ def download_dataset(
                 "variable": "mole_concentration_of_ozone_in_air",
                 "vertical_aggregation": "vertical_profiles_from_limb_sensors",
                 "sensor": ["cmzm"],
-                "year": [str(y) for y in range(1984, 2023)],
+                "year": [str(y) for y in range(omps_year1, omps_year2)],
                 "month": [f"{m:02d}" for m in range(1, 13)],
                 "version": ["v0008"],
             },
@@ -57,42 +79,47 @@ def download_dataset(
                 "variable": "mole_concentration_of_ozone_in_air",
                 "vertical_aggregation": "vertical_profiles_from_limb_sensors",
                 "sensor": ["cllg"],
-                "year": [str(y) for y in range(2001, 2025)],
+                "year": [
+                    str(y) for y in range(megridop_year1, megridop_year2)
+                ],
                 "month": [f"{m:02d}" for m in range(1, 13)],
                 "version": ["v0005"],
             },
         }
 
-#        client = cdsapi.Client(cds_url)
-#
-#        for var_name, request in requests.items():
-#            logger.info("Downloading %s data to %s", var_name, output_folder)
-#
-#            file_path = output_folder / f"{var_name}.gz"
-#
-#            if file_path.exists() and not overwrite:
-#                logger.info(
-#                    "File %s already exists. Skipping download.", file_path,
-#                )
-#                continue
-#
-#            client.retrieve(
-#                "satellite-ozone-v1", request, file_path.as_posix(),
-#            )
-#
-#            # Handle both .gz and .zip files
-#            with open(file_path, "rb") as file:
-#                magic = file.read(2)
-#
-#            if magic == b"PK":  # ZIP file signature
-#                logger.info("Detected ZIP file: %s", file_path)
-#                with zipfile.ZipFile(file_path, "r") as zip_ref:
-#                    zip_ref.extractall(output_folder)
-#            else:
-#                logger.info("Detected GZIP file: %s", file_path)
-#                with gzip.open(file_path, "rb") as f_in:
-#                    with open(output_folder / file_path.stem, "wb") as f_out:
-#                        shutil.copyfileobj(f_in, f_out)
+        cds_client = cdsapi.Client(cds_url)
+
+        for var_name, request in requests.items():
+            logger.info("Downloading %s data to %s", var_name, output_folder)
+
+            file_path = output_folder / f"{var_name}.gz"
+
+            if file_path.exists() and not overwrite:
+                logger.info(
+                    "File %s already exists. Skipping download.",
+                    file_path,
+                )
+                continue
+
+            cds_client.retrieve(
+                "satellite-ozone-v1",
+                request,
+                file_path.as_posix(),
+            )
+
+            # Handle both .gz and .zip files
+            with open(file_path, "rb") as file:
+                magic = file.read(2)
+
+            if magic == b"PK":  # ZIP file signature
+                logger.info("Detected ZIP file: %s", file_path)
+                with zipfile.ZipFile(file_path, "r") as zip_ref:
+                    zip_ref.extractall(output_folder)
+            else:
+                logger.info("Detected GZIP file: %s", file_path)
+                with gzip.open(file_path, "rb") as f_in:
+                    with open(output_folder / file_path.stem, "wb") as f_out:
+                        shutil.copyfileobj(f_in, f_out)
 
         # download IASI data from BIRA WebDAV (IASI data not available on CDS)
         # all the files will be saved by year (yyyy) in
@@ -109,7 +136,7 @@ def download_dataset(
             "webdav_password": "",
         }
 
-        client = wc.Client(options)
+        wd_client = wc.Client(options)
 
         basepath = "/guest/o3_cci/webdata/Nadir_Profiles/L3/IASI_MG_FORLI/"
 
@@ -123,8 +150,8 @@ def download_dataset(
 
             # directory on WebDAV server to download
             remotepath = f"{basepath}/{year}"
-            files = client.list(remotepath)
-            info = client.info(remotepath + "/" + files[0])
+            files = wd_client.list(remotepath)
+            info = wd_client.info(remotepath + "/" + files[0])
             numfiles = len(files)
             # calculate approx. download volume in Gbytes
             size = int(info["size"]) * numfiles // 1073741824
@@ -137,7 +164,7 @@ def download_dataset(
             logger.info(loginfo)
 
             # synchronize local (output) directory and WebDAV server directory
-            client.pull(remote_directory=remotepath, local_directory=outdir)
+            wd_client.pull(remote_directory=remotepath, local_directory=outdir)
 
             loop_date += relativedelta.relativedelta(years=1)
 
