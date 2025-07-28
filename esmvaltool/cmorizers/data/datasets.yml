@@ -565,7 +565,7 @@ datasets:
             Month = select all (1-12)
             Version = "v0005"
 
-            IASI (variable o3)
+            IASI (variables o3, toz)
             Download from BIRA WebDAV server: https://webdav.aeronomie.be
             Path: /guest/o3_cci/webdata/Nadir_Profiles/L3/IASI_MG_FORLI/
             Username: o3_cci_public
