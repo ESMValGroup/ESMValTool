@@ -3,7 +3,7 @@ Model 1 vs Model 2 vs Observations diagnostics.
 ===============================================
 
 Diagnostic to produce an image showing four maps, based on a comparison of two
-differnt models results against an observational dataset. This process is
+different models results against an observational dataset. This process is
 often used to compare a new iteration of a model under development against
 a previous version of the same model. The four map plots are:
 
@@ -20,236 +20,499 @@ hard work, and that the cube received by this diagnostic (via the settings.yml
 and metadata.yml files) has no time component, a small number of depth layers,
 and a latitude and longitude coordinates.
 
-An approproate preprocessor for a 3D+time field would be::
-
-  preprocessors:
-    prep_map:
-      extract_levels:
-        levels:  [100., ]
-        scheme: linear_extrap
-      climate_statistics:
-        operator: mean
-
-This diagnostic also requires the ``exper_model``, ``exper_model`` and
-``observational_dataset`` keys in the recipe::
-
-  diagnostics:
-     diag_name:
-       ...
-       scripts:
-         Global_Ocean_map:
-           script: ocean/diagnostic_maps_quad.py
-           exper_model:  {Model 1 dataset details}
-           control_model: {Model 2 dataset details}
-           observational_dataset: {Observational dataset details}
+This diagnostic also requires the ``exper_model``, ``control_model`` and
+``observational_dataset`` keys in the recipe.
 
 This tool is part of the ocean diagnostic tools package in the ESMValTool,
 and was based on the plots produced by the Ocean Assess/Marine Assess toolkit.
 
-Author: Lee de Mora (PML)
-        ledm@pml.ac.uk
+Original script:
+Author: Lee de Mora (PML): ledm@pml.ac.uk
 
+Refactored script: (Alphabetical order)
+Author: Sophie Hall (Met Office): sophie.hall@metoffice.gov.uk
+Author: Emma Hogan (Met Office): emma.hogan@metoffice.gov.uk
+Author: Dave Storkey (Met Office): dave.storkey@metoffice.gov.uk
 """
 
 import logging
 import os
 import sys
 
+import cartopy.crs as ccrs
 import iris
-import iris.quickplot as qplt
+import iris.analysis.cartography
+import iris.plot as iplt
 import matplotlib.pyplot as plt
 import numpy as np
+from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
+from esmvaltool.diag_scripts.shared import (
+    run_diagnostic,
+    save_data,
+    save_figure,
+)
 
-# This part sends debug statements to stdout
+# Create a logger object.
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def add_map_subplot(subplot, cube, nspace, title="", cmap=""):
-    """
-    Add a map subplot to the current pyplot figure.
+def main(config):
+    """Load the config file and running through the order of operation.
 
     Parameters
     ----------
-    subplot: int
-        The matplotlib.pyplot subplot number. (ie 221)
-    cube: iris.cube.Cube
-        the iris cube to be plotted.
-    nspace: numpy.array
-        An array of the ticks of the colour part.
-    title: str
-        A string to set as the subplot title.
-    cmap: str
-        A string to describe the matplotlib colour map.
-
+    config : dictionary
+        configuration dictionary that contains all the necessary information
+        for the function to run. It includes details about the models,
+        observational datasets, file paths, and other settings.
     """
-    plt.subplot(subplot)
-    qplot = qplt.contourf(
-        cube, nspace, linewidth=0, cmap=plt.cm.get_cmap(cmap)
-    )
-    qplot.colorbar.set_ticks(
-        [nspace.min(), (nspace.max() + nspace.min()) / 2.0, nspace.max()]
+    # Call the load_data function
+    experiment, control, observation = load_data(config)
+
+    # Call the create_plotting_data function
+    (exp, exp_minus_ctr, ctr_minus_obs, exp_minus_obs) = create_plotting_data(
+        control, experiment, observation
     )
 
-    plt.gca().coastlines()
-    plt.title(title)
+    # If true, set the lists to contain only one level
+    if experiment.long_name in [
+        "Sea Surface Temperature",
+        "Sea Surface Salinity",
+    ]:
+        exp_list = [exp]
+        exp_minus_ctr_list = [exp_minus_ctr]
+        ctr_minus_obs_list = [ctr_minus_obs]
+        exp_minus_obs_list = [exp_minus_obs]
+    else:
+        # Set the lists to contain slices of data over different depth levels
+        exp_list = exp.slices_over("depth")
+        exp_minus_ctr_list = exp_minus_ctr.slices_over("depth")
+        ctr_minus_obs_list = ctr_minus_obs.slices_over("depth")
+        exp_minus_obs_list = exp_minus_obs.slices_over("depth")
 
+    # Combine the lists into a single list of tuples for easier iteration
+    cube_list = list(
+        zip(
+            exp_list,
+            exp_minus_ctr_list,
+            ctr_minus_obs_list,
+            exp_minus_obs_list,
+            strict=True,
+        )
+    )
 
-def multi_model_maps(
-    cfg,
-    input_files,
-):
-    """
-    Make the four pane model vs model vs obs comparison plot.
-
-    Parameters
-    ----------
-    cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
-    input_files: dict
-        the metadata dictionairy
-
-    """
-    filenames = {}
-    ctl_key = "control_model"
-    exp_key = "exper_model"
-    obs_key = "observational_dataset"
-    model_types = [ctl_key, exp_key, obs_key]
-    for model_type in model_types:
-        logger.debug(model_type, cfg[model_type])
-        filenames[model_type] = diagtools.match_model_to_key(
-            model_type, cfg[model_type], input_files
+    # Iterate through each depth level
+    for (
+        exp_single_level,
+        exp_minus_ctr_single_level,
+        ctr_minus_obs_single_level,
+        exp_minus_obs_single_level,
+    ) in cube_list:
+        # Call create_quadmap, which contains plot_global_single_level
+        create_quadmap(
+            exp_single_level,
+            exp_minus_ctr_single_level,
+            ctr_minus_obs_single_level,
+            exp_minus_obs_single_level,
+            config,
         )
 
-    # ####
-    # Load the data for each layer as a separate cube
-    layers = {}
-    cubes = {}
-    for model_type, input_file in filenames.items():
-        cube = iris.load_cube(input_file)
-        cube = diagtools.bgc_units(cube, input_files[input_file]["short_name"])
-
-        cubes[model_type] = diagtools.make_cube_layer_dict(cube)
-        for layer in cubes[model_type]:
-            layers[layer] = True
-
-    logger.debug("layers: %s", ", ".join(layers))
-    logger.debug("cubes: %s", ", ".join(cubes.keys()))
-
-    # ####
-    # load names:
-    exper = input_files[filenames[exp_key]]["dataset"]
-    control = input_files[filenames[ctl_key]]["dataset"]
-    obs = input_files[filenames[obs_key]]["dataset"]
-    long_name = cubes[exp_key][list(layers.keys())[0]].long_name
-
-    # Load image format extention
-    image_extention = diagtools.get_image_format(cfg)
-
-    # Make a plot for each layer
-    for layer in layers:
-        fig = plt.figure()
-        fig.set_size_inches(9, 6)
-
-        # Create the cubes
-        cube221 = cubes[exp_key][layer]
-        cube222 = cubes[exp_key][layer] - cubes[ctl_key][layer]
-        cube223 = cubes[ctl_key][layer] - cubes[obs_key][layer]
-        cube224 = cubes[exp_key][layer] - cubes[obs_key][layer]
-
-        # create the z axis for plots 2, 3, 4.
-        zrange1 = diagtools.get_cube_range(
-            [
-                cube221,
-            ]
-        )
-        zrange2 = diagtools.get_cube_range_diff([cube222, cube223, cube224])
-
-        linspace1 = np.linspace(zrange1[0], zrange1[1], 12, endpoint=True)
-        linspace2 = np.linspace(zrange2[0], zrange2[1], 12, endpoint=True)
-
-        # Add the sub plots to the figure.
-        add_map_subplot(221, cube221, linspace1, cmap="viridis", title=exper)
-        add_map_subplot(
-            222,
-            cube222,
-            linspace2,
-            cmap="bwr",
-            title=" ".join([exper, "minus", control]),
-        )
-        add_map_subplot(
-            223,
-            cube223,
-            linspace2,
-            cmap="bwr",
-            title=" ".join([control, "minus", obs]),
-        )
-        add_map_subplot(
-            224,
-            cube224,
-            linspace2,
-            cmap="bwr",
-            title=" ".join([exper, "minus", obs]),
-        )
-
-        # Add overall title
-        fig.suptitle(long_name, fontsize=14)
-
-        # Determine image filename:
-        fn_list = [long_name, exper, control, obs, str(layer)]
-        path = diagtools.folder(cfg["plot_dir"]) + "_".join(fn_list)
-        path = path.replace(" ", "") + image_extention
-
-        # Saving files:
-        logger.info("Saving plots to %s", path)
-        plt.savefig(path)
-        plt.close()
-
-        provenance_record = diagtools.prepare_provenance_record(
-            cfg,
-            caption=f"Quadmap models comparison against {obs}",
-            statistics=[
-                "mean",
-                "diff",
-            ],
-            domain=["global"],
-            plot_type=["map"],
-            ancestors=list(input_files.keys()),
-        )
-
-        with ProvenanceLogger(cfg) as provenance_logger:
-            provenance_logger.log(path, provenance_record)
-
-
-def main(cfg):
-    """
-    Load the config file, and send it to the plot maker.
-
-    Parameters
-    ----------
-    cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
-
-    """
-    for index, metadata_filename in enumerate(cfg["input_files"]):
-        logger.info(
-            "metadata filename:\t%s",
-            metadata_filename,
-        )
-        input_files = diagtools.get_input_files(cfg, index=index)
-        # #####
-        # Multi model time series
-        multi_model_maps(
-            cfg,
-            input_files,
-        )
-
+    # After successfully generating plots, function logs a success message.
     logger.info("Success")
 
 
+def load_data(config):
+    """Load all necessary data to output experiment, control, observation.
+
+    Parameters
+    ----------
+    config : dictionary
+        configuration dictionary that contains all the necessary information
+        for the function to run. It includes details about the
+        models, observational datasets, file paths, and other settings.
+
+    Returns
+    -------
+    experiment : iris cube
+        Data as defined as exper_model from the recipe.
+    control : iris cube
+        Data as defined as control_model from the recipe.
+    observation : iris cube
+        Data as defined as observational_dataset from the recipe.
+    """
+    # The datasets defined by:
+    # exper_model, control_model, observational_datasets in the recipe
+    # determine what is loaded in this function.
+    exp_label_from_recipe = "exper_model"
+    ctl_label_from_recipe = "control_model"
+    obs_label_from_recipe = "observational_dataset"
+
+    # Getting all input files from configuration.
+    input_files = diagtools.get_input_files(config)
+
+    # Get experiment input files from config
+    exp_filename = diagtools.match_model_to_key(
+        exp_label_from_recipe, config[exp_label_from_recipe], input_files
+    )
+    # Get control input files from config
+    ctl_filename = diagtools.match_model_to_key(
+        ctl_label_from_recipe, config[ctl_label_from_recipe], input_files
+    )
+    # Get observation input files from config
+    obs_filename = diagtools.match_model_to_key(
+        obs_label_from_recipe, config[obs_label_from_recipe], input_files
+    )
+
+    # Set variable names to filename cubes above.
+    experiment = iris.load_cube(exp_filename)
+    control = iris.load_cube(ctl_filename)
+    observation = iris.load_cube(obs_filename)
+
+    # Fixing all units
+    experiment = diagtools.bgc_units(
+        experiment, input_files[exp_filename]["short_name"]
+    )
+    control = diagtools.bgc_units(
+        control, input_files[ctl_filename]["short_name"]
+    )
+    observation = diagtools.bgc_units(
+        observation, input_files[obs_filename]["short_name"]
+    )
+
+    return experiment, control, observation
+
+
+def create_plotting_data(control, experiment, observation):
+    """Calculate the diff between the ctr, exp & obs to prepare data for plots.
+
+    Parameters
+    ----------
+    control : iris cube
+        Data as defined as control_model from the recipe.
+    experiment : iris cube
+        Data as defined as exper_model from the recipe.
+    observation : iris cube
+        Data as defined as observational_dataset from the recipe.
+
+    Returns
+    -------
+    exp : iris cube
+        Untouched experimental input.
+    exp_minus_ctr : iris cube
+        Experiment model minus control model.
+    ctr_minus_obs : iris cube
+        Control model minus observational dataset.
+    exp_minus_obs : iris cube
+        Experimental model minus observational dataset.
+    """
+    # The data for models and the obs dataset is loaded into Iris cubes.
+    # These cubes contain the climate data that will be plotted.
+    exp = experiment
+    exp_minus_ctr = experiment - control
+    ctr_minus_obs = control - observation
+    exp_minus_obs = experiment - observation
+
+    # Fixing the long_name of the cubes
+    exp_minus_ctr.long_name = experiment.long_name
+    ctr_minus_obs.long_name = experiment.long_name
+    exp_minus_obs.long_name = experiment.long_name
+
+    # Fixing exp_minus_ctr source_id for the plot title used later
+    exp_minus_ctr.attributes["source_id"] = (
+        f"{experiment.attributes['source_id']} minus "
+        f"{control.attributes['source_id']}"
+    )
+
+    # Fixing ctr_minus_obs source_id for the plot title used later
+    ctr_minus_obs.attributes["source_id"] = (
+        f"{control.attributes['source_id']} minus "
+        f"{observation.attributes['short_name']}"
+    )
+
+    # Fixing exp_minus_obs source_id for the plot title used later
+    exp_minus_obs.attributes["source_id"] = (
+        f"{experiment.attributes['source_id']} minus "
+        f"{observation.attributes['short_name']}"
+    )
+
+    return (exp, exp_minus_ctr, ctr_minus_obs, exp_minus_obs)
+
+
+def plot_global_single_level(axis, cube, contour_levels, title):
+    """Create each individual plot before being added to create_quadmap.
+
+    Parameters
+    ----------
+    axis: matplotlib 'ax'
+        Represents one (sub-)plot in a figure.
+        It contains the plotted data, axis ticks, labels, title, legend, etc.
+    cube : iris cube
+        This is a data structure that contains the climate data to be plotted.
+        Including information like temperature values, latitude, longitude,
+        and depth.
+    contour_levels : numpy.array
+        Used to set the ticks on the colour bar and used to define
+        levels for the contour plot.
+    title : str
+        This is a string that will be used as the title of the subplot.
+    """
+    # Setting the colour of axis1 always to viridis.
+    if title == "UKESM1-0-LL":
+        cmap = "viridis"
+    # Setting the colour of all other plots to bwr.
+    else:
+        cmap = "bwr"
+
+    # This step transforms the data so it can be displayed as 2D
+
+    new_cube, _ = iris.analysis.cartography.project(
+        cube, ccrs.PlateCarree(), nx=400, ny=200
+    )
+
+    # Sets the current Axes instance to the specified axis
+    plt.sca(axis)
+
+    # Converts contour_levels to a numpy array.
+    contour_levels = np.array(contour_levels)
+    # Creates a filled contour plot of the projected data.
+    contour_result = iplt.contourf(
+        new_cube,
+        levels=contour_levels,
+        linewidth=0,
+        cmap=plt.cm.get_cmap(cmap),
+    )
+    # Checks if the contour plot was created successfully
+    if contour_result is None:
+        raise ValueError("Failed to create contour plot. plt object is None.")
+
+    # A color bar is added to the plot
+    colorbar = plt.colorbar(contour_result, orientation="horizontal")
+
+    # Colour scale dependent on range of data.
+    colorbar.set_ticks(
+        [
+            contour_levels.min(),
+            (contour_levels.max() + contour_levels.min()) / 2.0,
+            contour_levels.max(),
+        ]
+    )
+
+    # Adding latitude & longitude axis on each plot.
+    fontsize = 7
+    axis = plt.gca()
+    grid_lines = axis.gridlines(crs=ccrs.PlateCarree(), draw_labels=True)
+    grid_lines.xlines = False
+    grid_lines.ylines = False
+    grid_lines.top_labels = False
+    grid_lines.right_labels = False
+    grid_lines.xlabel_style = {"size": fontsize, "color": "gray"}
+    grid_lines.ylabel_style = {"size": fontsize, "color": "gray"}
+    grid_lines.xformatter = LONGITUDE_FORMATTER
+    grid_lines.yformatter = LATITUDE_FORMATTER
+
+    # Coastlines are added to the map to provide geographical context.
+    plt.gca().coastlines()
+
+    # Sets the title of the plot
+    plt.title(title)
+
+    # Display the plots
+    iplt.show()
+
+
+def save_cube(cube, field_name, config, ancestors):
+    """
+    Produces a provenance record and saves data for each cube.
+
+    Parameters
+    ----------
+    cube : iris cube
+        This is a data structure that contains the climate data to be plotted.
+        Including information like temperature values, latitude, longitude,
+        and depth.
+    field_name : str
+        A string that contains the cube name with the corresponding extracted
+        depth level.
+    config : dictionary
+        configuration dictionary that contains all the necessary information
+        for the function to run. It includes details about the models,
+        observational datasets, file paths, and other settings.
+    ancestors : list
+        A list of keys from the input_files dictionary, representing the
+        provenance of the data. This list helps track the origin and
+        transformation history of the data used in the cube
+
+    """
+    # Prepare provenance record for the plot
+    provenance_record = diagtools.prepare_provenance_record(
+        config,
+        caption=field_name,
+        statistics=["mean", "diff"],
+        domain=["global"],
+        plot_type=["map"],
+        ancestors=ancestors,
+    )
+    save_data(
+        field_name,
+        provenance_record,
+        config,
+        cube,
+    )
+
+
+def create_quadmap(
+    exp_single_level,
+    exp_minus_ctr_single_level,
+    ctr_minus_obs_single_level,
+    exp_minus_obs_single_level,
+    config,
+):
+    """
+    Add all subplots to a main plot, positions of subplots are pre-set.
+
+    Parameters
+    ----------
+    exp_single_level : iris cube
+        Extracted single level of experiment cube.
+    exp_minus_ctr_single_level : iris cube
+        Extracted single level of exp_minus_ctr cube.
+    ctr_minus_obs_single_level : iris cube
+        Extracted single level of ctr_minus_obs cube.
+    exp_minus_obs_single_level : iris cube
+        Extracted single level of exp_minus_obs cube.
+    config : dictionary
+        configuration dictionary that contains all the necessary information
+        for the function to run. It includes details about the models,
+        observational datasets, file paths, and other settings.
+
+    Returns
+    -------
+    quadmap :
+        Make the four pane model vs model vs obs comparison plot
+    """
+    # Setting zrange dependent on the plot produced.
+    if exp_single_level.long_name in [
+        "Sea Water Salinity",
+        "Sea Surface Salinity",
+    ]:
+        # zrange1 set for average salinity range
+        # zrange2 set for salinity at -2,2 due to a smaller range of values.
+        zrange1 = [20.0, 40.0]
+        zrange2 = [-2.0, 2.0]
+    else:
+        # zrange1 set for average temperature range
+        # zrange2 for all other plots. Set for consistency
+        zrange1 = [-2.0, 32]
+        zrange2 = [-5.0, 5.0]
+
+    # Generates 12 evenly spaced values between zrange1[0] and zrange1[1]
+    linspace1 = np.linspace(zrange1[0], zrange1[1], 12, endpoint=True)
+    # Generates 12 evenly spaced values between zrange2[0] and zrange2[1]
+    linspace2 = np.linspace(zrange2[0], zrange2[1], 12, endpoint=True)
+
+    # Prepare image and figure with a 2x2 grid of subplots
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(9, 6))
+
+    # Set the figure title for 'Sea Surface' plots
+    if exp_single_level.long_name in [
+        "Sea Surface Temperature",
+        "Sea Surface Salinity",
+    ]:
+        fig.suptitle(f"Annual Mean: {exp_single_level.long_name}")
+        formatted_depth = 0
+    # Set the figure for depth plots to include the depth value.
+    else:
+        depth = exp_single_level.coords("depth")[0].points[0]
+        # Making the depth a string and 3pd
+        formatted_depth = str(f"{int(depth):04d}")
+        depth_title = str(f"{depth:.1f}")
+        fig.suptitle(
+            f"Annual Mean: {exp_single_level.long_name} at {depth_title}m",
+            fontsize=14,
+        )
+
+    # Calling the plot_global_single_level plot with set parameters
+    plot_global_single_level(
+        ax1,
+        exp_single_level,
+        linspace1,
+        exp_single_level.attributes["source_id"],
+    )
+    plot_global_single_level(
+        ax2,
+        exp_minus_ctr_single_level,
+        linspace2,
+        exp_minus_ctr_single_level.attributes["source_id"],
+    )
+    plot_global_single_level(
+        ax3,
+        ctr_minus_obs_single_level,
+        linspace2,
+        ctr_minus_obs_single_level.attributes["source_id"],
+    )
+    plot_global_single_level(
+        ax4,
+        exp_minus_obs_single_level,
+        linspace2,
+        exp_minus_obs_single_level.attributes["source_id"],
+    )
+
+    input_files = diagtools.get_input_files(config)
+    ancestors = list(input_files.keys())
+    # Calling save_cube for each cube.
+    save_cube(
+        exp_single_level, f"experiment_{formatted_depth}", config, ancestors
+    )
+    save_cube(
+        exp_minus_ctr_single_level,
+        f"experiment_minus_control_{formatted_depth}",
+        config,
+        ancestors,
+    )
+    save_cube(
+        ctr_minus_obs_single_level,
+        f"control_minus_observation_{formatted_depth}",
+        config,
+        ancestors,
+    )
+    save_cube(
+        exp_minus_obs_single_level,
+        f"experiment_minus_observation_{formatted_depth}",
+        config,
+        ancestors,
+    )
+
+    # Prepare to save the figure
+    fn_list = [exp_single_level.long_name, str(formatted_depth)]
+    image_extention = diagtools.get_image_format(config)
+
+    # Construct the file path for saving the plot
+    path = (
+        f"{diagtools.folder(config['plot_dir'])}"
+        f"{'_'.join(fn_list)}"
+        f"{formatted_depth}"
+    )
+    path = f"{path.replace(' ', '')}{image_extention}"
+    logger.info("Saving plots to %s", path)
+
+    # Prepare provenance record for the plot
+    provenance_record = diagtools.prepare_provenance_record(
+        config,
+        caption=f"Quadmap models comparison against observation level="
+        f"{formatted_depth})",
+        statistics=["mean", "diff"],
+        domain=["global"],
+        plot_type=["map"],
+        ancestors=ancestors,
+    )
+
+    # Save the figure and close
+    save_figure("_".join(fn_list), provenance_record, config, fig, close=True)
+
+
 if __name__ == "__main__":
-    with run_diagnostic() as config:
-        main(config)
+    with run_diagnostic() as CONFIG:
+        main(CONFIG)

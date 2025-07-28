@@ -7,3 +7,4 @@ User Guide
 
    quick_start
    workflow
+   dkrz_production

@@ -11,8 +11,9 @@
 #   COMMAND             The command to execute with options
 set -eu
 
-# Must be run before importing numpy, see
+# Must be run before importing numpy,
 # https://docs.dask.org/en/stable/array-best-practices.html#avoid-oversubscribing-threads
+# provides more information.
 export OMP_NUM_THREADS=1
 export OPENBLAS_NUM_THREADS=1
 export MKL_NUM_THREADS=1
@@ -21,6 +22,10 @@ export NUMEXPR_NUM_THREADS=1
 
 # Ensure '~/.local' isn't added to 'sys.path'.
 export PYTHONNOUSERSITE=True
+
+# Ignore 'ESMValCoreDeprecationWarning' warnings
+# related to the new user configuration file format.
+export PYTHONWARNINGS="ignore:Usage of the single configuration file::esmvalcore.config._config_object","ignore:The configuration option or command line argument::esmvalcore.config._config_validators"
 
 WORKFLOW_RUN_BIN_DIR="${CYLC_WORKFLOW_RUN_DIR}/bin"
 WORKFLOW_SHARE_BIN_DIR="${CYLC_WORKFLOW_SHARE_DIR}/cycle/bin"

@@ -41,10 +41,12 @@ commands:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            mamba --version
+            # Add existing Julia to PATH
+            export PATH=/root/.juliaup/bin:$PATH
             pytest -n 4 --junitxml=test-reports/report.xml
             esmvaltool version
             esmvaltool -- --help
+            esmvaltool develop compare -- --help
             ncl -V
             cdo --version
       - store_test_results:
@@ -86,16 +88,19 @@ commands:
           key: install-<< parameters.extra >>-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
           name: Install dependencies
+          no_output_timeout: 30m
           command: |
             # Install
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
             mamba --version
-            mamba install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
-            mamba env create -n esmvaltool -f environment.yml
+            conda env create -n esmvaltool -f environment.yml --verbose
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
+            curl -fsSL https://install.julialang.org | sh -s -- --yes
+            export PATH=/root/.juliaup/bin:$PATH
+            julia --version
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             if [[ "<<parameters.flags>>" != *'--editable'* ]]
             then
@@ -137,6 +142,9 @@ jobs:
             conda activate esmvaltool
             mkdir /logs
             pip install .[test] > /logs/install.txt 2>&1
+            curl -fsSL https://install.julialang.org | sh -s -- --yes
+            export PATH=/root/.juliaup/bin:$PATH
+            julia --version
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
       - run:
           name: Check Python code style and mistakes
@@ -198,17 +206,21 @@ jobs:
           key: test-upstream-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
           name: Install
+          no_output_timeout: 30m
           command: |
             # Install according to instructions on readthedocs with the
             # development version of ESMValTool and ESMValCore:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            mamba install -c conda-forge "mamba>=2"  # mamba<2 can't solve env
-            mamba env create -n esmvaltool -f environment.yml
+            conda env create -n esmvaltool -f environment.yml --verbose
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
             pip install --editable .[develop]
+            # Install Julia from source and add to PATH
+            curl -fsSL https://install.julialang.org | sh -s -- --yes
+            export PATH=/root/.juliaup/bin:$PATH
+            julia --version
             esmvaltool install Julia > /logs/install_julia.txt 2>&1
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
             pip install --editable $HOME/ESMValCore[develop]
@@ -275,6 +287,10 @@ jobs:
             mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.11' >> /logs/conda.txt 2>&1
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
+            # install Julia from source and add to PATH
+            curl -fsSL https://install.julialang.org | sh -s -- --yes
+            export PATH=/root/.juliaup/bin:$PATH
+            julia --version
             # install the Julia dependencies
             esmvaltool install Julia > /logs/install_Julia.txt 2>&1
             # Log versions
