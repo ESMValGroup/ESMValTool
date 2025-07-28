@@ -258,8 +258,8 @@ diagnostics:
     additional_datasets:
       - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
         tier: 2, start_year: 2001, end_year: 2022}
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-        version: AVHRR-AMPM-fv3.0, tier: 2,
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
         start_year: 1982, end_year: 2016}
       - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
         tier: 2, start_year: 1984, end_year: 2016}
@@ -278,8 +278,8 @@ diagnostics:
         preprocessor: pp_max
         mip: Amon
     additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-        version: AVHRR-AMPM-fv3.0, tier: 2,
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
         start_year: 1982, end_year: 2016}
       - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
          version: P1-R05-gridbox-average-noprecip,
@@ -302,8 +302,8 @@ diagnostics:
         preprocessor: pp_max
         mip: Amon
     additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-        version: AVHRR-AMPM-fv3.0, tier: 2,
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
         start_year: 1982, end_year: 2016}
       - {dataset: CLARA-AVHRR, project: OBS, type: sat, version: V002-01,
         tier: 3, start_year: 1982, end_year: 2018}
@@ -328,8 +328,6 @@ diagnostics:
         preprocessor: pp_max
         mip: Amon
     additional_datasets:
-      - {dataset: TROPFLUX, version: v1, project: OBS6, type: reanaly,
-        tier: 2, start_year: 1979, end_year: 2018}
       - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4',
         tier: 3, start_year: 1980, end_year: 2021}
     scripts: null
@@ -368,8 +366,8 @@ diagnostics:
     additional_datasets:
       - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1,
         tier: 2, start_year: 2001, end_year: 2021}
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-        version: AVHRR-AMPM-fv3.0, tier: 2,
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
         start_year: 1982, end_year: 2016}
       - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
         start_year: 1984, end_year: 2016}
@@ -390,8 +388,8 @@ diagnostics:
         preprocessor: pp_max
         mip: Amon
     additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-        version: AVHRR-AMPM-fv3.0, tier: 2,
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
         start_year: 1982, end_year: 2016}
       - {dataset: CLARA-AVHRR, project: OBS, type: sat,
         version: V002-01, tier: 3,
@@ -422,8 +420,8 @@ diagnostics:
     additional_datasets:
       - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1,
         tier: 2, start_year: 2001, end_year: 2021}
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-        version: AVHRR-AMPM-fv3.0, tier: 2,
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
         start_year: 1982, end_year: 2016}
       - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
         start_year: 1984, end_year: 2016}
@@ -524,8 +522,8 @@ diagnostics:
     additional_datasets:
       - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
         tier: 2, start_year: 2001, end_year: 2022}
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-        version: AVHRR-AMPM-fv3.0, tier: 2,
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
         start_year: 1982, end_year: 2016}
       - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
         tier: 2, start_year: 1984, end_year: 2016}
@@ -547,8 +545,8 @@ diagnostics:
         preprocessor: pp_max
         mip: Amon
     additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-        version: AVHRR-AMPM-fv3.0, tier: 2,
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
         start_year: 1982, end_year: 2016}
       - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
         tier: 2, start_year: 1984, end_year: 2016}
@@ -590,8 +588,8 @@ diagnostics:
     additional_datasets:
       - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
         tier: 2, start_year: 2001, end_year: 2022}
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-        version: AVHRR-AMPM-fv3.0, tier: 2,
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
         start_year: 1982, end_year: 2016}
       - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0,
         tier: 2, start_year: 1984, end_year: 2016}
@@ -614,8 +612,8 @@ diagnostics:
     additional_datasets:
       - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.1,
         tier: 2, start_year: 2001, end_year: 2021}
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat,
-        version: AVHRR-AMPM-fv3.0, tier: 2,
+      - {dataset: ESACCI-CLOUD, project: OBS6, type: sat,
+        version: v3.0-AVHRR-AMPM, tier: 2,
         start_year: 1982, end_year: 2016}
       - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
         start_year: 1984, end_year: 2016}

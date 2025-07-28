@@ -370,7 +370,7 @@ diagnostics:
             hlines:
               - y: 76.4
                 color: red
-              - y: -130.8
+              - y: 92.3
                 color: red
             plot_kwargs:
               'global mean':
