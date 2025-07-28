@@ -61,6 +61,7 @@ import glob
 import logging
 import os
 from datetime import datetime
+from dateutil import relativedelta
 
 import dask.array as da
 import iris
@@ -173,6 +174,20 @@ def _extract_variable(in_files, var, cfg, out_dir, year, month):
     cube.data = da.ma.fix_invalid(cube.core_data())
     # calculate monthly means (IASI)
     cube = monthly_statistics(cube, operator="mean")
+
+    # Add/set time bounds to
+    # (year-month-01 00:00, year-month+1-01 00:00)
+    timecoord = cube.coord("time")
+    for time in timecoord.units.num2date(timecoord.points):
+        start_date = datetime(time.year, time.month, 1)
+        end_date = start_date
+        end_date += relativedelta.relativedelta(months=1)
+        timecoord.bounds = np.array(
+            [
+                timecoord.units.date2num(start_date),
+                timecoord.units.date2num(end_date),
+            ]
+        )
 
     # Add longitude coordinate to cube only for o3_sage_omps.
     if var["var_name"] == "o3_sage_omps":
