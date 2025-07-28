@@ -61,7 +61,6 @@ import glob
 import logging
 import os
 from datetime import datetime
-from dateutil import relativedelta
 
 import dask.array as da
 import iris
@@ -69,6 +68,7 @@ import iris.experimental.stratify
 import iris.util
 import numpy as np
 from cf_units import Unit
+from dateutil import relativedelta
 from esmvalcore.cmor._fixes.native_datasets import NativeDatasetFix
 from esmvalcore.preprocessor import concatenate, monthly_statistics
 
@@ -82,8 +82,9 @@ from ...utilities import (
 logger = logging.getLogger(__name__)
 
 
-def _convert_units(cubes: iris.cube.CubeList,
-                   short_name: str, var: dict) -> iris.cube.Cube:
+def _convert_units(
+    cubes: iris.cube.CubeList, short_name: str, var: dict
+) -> iris.cube.Cube:
     """Perform variable-specific conversion of units.
 
     Parameters
@@ -387,7 +388,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             dataset_end = datetime(2023, 12, 31)
         elif var_name == "o3_iasi" or var_name == "toz_iasi":  # IASI
             dataset_start = datetime(2008, 1, 1)
-            dataset_end = datetime(2010, 12, 31)  # (2023, 12, 31)
+            dataset_end = datetime(2023, 12, 31)
         else:
             errmsg = f"Unknown dataset for variable {var_name}"
             raise ValueError(errmsg)
@@ -429,19 +430,28 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 )
                 in_files = glob.glob(filepattern)
                 if not in_files:
-                    infomsg = f"{var_name}: no data not found for {year}-{monstr}"
+                    infomsg = (
+                        f"{var_name}: no data not found for {year}-{monstr}"
+                    )
                     logger.info(infomsg)
                     continue
                 cube = _extract_variable(
-                    in_files, var, cfg, out_dir, year, month,
+                    in_files,
+                    var,
+                    cfg,
+                    out_dir,
+                    year,
+                    month,
                 )
 
                 logger.info("CMORizing variable '%s'", output_var)
                 all_data_cubes.append(cube)
 
         if not all_data_cubes:
-            errmsg = (f"No valid data found for {var_name} within the selected"
-                      f" time range")
+            errmsg = (
+                f"No valid data found for {var_name} within the selected"
+                f" time range"
+            )
             raise ValueError(errmsg)
 
         final_cube = concatenate(all_data_cubes)
