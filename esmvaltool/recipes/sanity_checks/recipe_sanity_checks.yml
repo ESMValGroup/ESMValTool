@@ -23,7 +23,6 @@ plot_script: &plot_script
   plot_folder: "{plot_dir}"
 
 timeseries_plot: &timeseries_plot
-  annual_mean_kwargs: false
   caption: "Timeseries of global mean {long_name} (solid line) and global min/max values (dashed lines). As red lines min and max values found in reference datasets (observations, reanalyses) across all months and all reference datasets are shown."
   plot_kwargs:
     'global mean':
