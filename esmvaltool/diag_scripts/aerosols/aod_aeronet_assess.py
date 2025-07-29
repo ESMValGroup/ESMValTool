@@ -309,7 +309,7 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
     return figures, fig_scatter
 
 
-def preprocess_aod_obs_dataset(obs_dataset):
+def preprocess_aod_obs_dataset(obs_dataset, thresholds):
     """Calculate a multiannual seasonal mean AOD climatology.
 
     Observational AOD timeseries data from AeroNET are used to generate a
@@ -333,10 +333,10 @@ def preprocess_aod_obs_dataset(obs_dataset):
     obs_cube = iris.load_cube(obs_dataset[0]["filename"])
 
     # Set up thresholds for generating the multi annual seasonal mean
-    min_days_per_mon = 1
-    min_mon_per_seas = 3
-    min_seas_per_year = 4
-    min_seas_per_clim = 5
+    min_days_per_mon = thresholds.get("min_days_per_mon")
+    min_mon_per_seas = thresholds.get("min_mon_per_seas")
+    min_seas_per_year = thresholds.get("min_seas_per_year")
+    min_seas_per_clim = thresholds.get("min_seas_per_clim")
 
     # Add the clim_season and season_year coordinates.
     iris.coord_categorisation.add_year(obs_cube, "time", name="year")
@@ -425,11 +425,17 @@ def main(config):
     datasets = group_metadata(input_data.values(), "dataset")
 
     # Default wavelength
-    wavel = "440"
+    wavel = config.get("wavel", "440")
+    thresholds = {
+        "min_days_per_mon": int(config.get("min_days_per_mon", 1)),
+        "min_mon_per_seas": int(config.get("min_mon_per_seas", 3)),
+        "min_seas_per_year": int(config.get("min_seas_per_year", 4)),
+        "min_seas_per_clim": int(config.get("min_seas_per_clim", 5)),
+    }
 
     # Produce climatology for observational dataset
     obs_dataset = datasets.pop(config["observational_dataset"])
-    obs_cube = preprocess_aod_obs_dataset(obs_dataset)
+    obs_cube = preprocess_aod_obs_dataset(obs_dataset, thresholds)
 
     for model_dataset, group in datasets.items():
         # 'model_dataset' is the name of the model dataset.
