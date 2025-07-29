@@ -31,7 +31,7 @@ class WKSpectra:
 
         if check_missing:
             # Checking for any missing data in the cube.
-            # If found interpolating long longitude to fill gaps.
+            # If found interpolating along longitude to fill gaps.
             if np.any(self.cube.data.mask):
                 self.cube = self.interpolate_along_axis(self.cube, 'longitude')
         print(self.cube)
@@ -111,7 +111,7 @@ class WKSpectra:
         try:
             dates
         except NameError:
-            print(dates + " WASN'T defined after all!")
+            print(dates + " WASN'T defined after all!")  # todo Effective but probs frowned upon
         else:
             year = np.zeros(len(dates), dtype=int)
             month = np.zeros(len(dates), dtype=int)

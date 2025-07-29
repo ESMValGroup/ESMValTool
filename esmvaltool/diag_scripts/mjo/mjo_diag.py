@@ -19,12 +19,12 @@ import spectra_compute
 logger = logging.getLogger(Path(__file__).stem)
 
 
-def get_provenance_record(attributes, ancestor_files):
+def get_provenance_record(attributes, ancestor_files):  # todo attributes is a dictionary including caption
     """Create a provenance record describing the diagnostic data and plot."""
     # Associated recipe uses contains a caption string with placeholders
     # like {long_name} that are now populated from attributes dictionary.
     # Note that for simple recipes, caption can be set here as a simple string
-    caption = attributes['caption'].format(**attributes)
+    caption = attributes['caption'].format(**attributes)  # todo Formatted as caption may include e.g. {dataset}
 
     record = {
         'caption': caption,
@@ -32,7 +32,7 @@ def get_provenance_record(attributes, ancestor_files):
         'domains': ['global'],
         'plot_types': ['zonal'],
         'authors': [
-            'andela_bouwe',
+            'andela_bouwe',  # todo Change and check the rest, esp references
             'righi_mattia',
         ],
         'references': [
@@ -43,13 +43,13 @@ def get_provenance_record(attributes, ancestor_files):
     return record
 
 
-def read_diagnostic(filename):
+def read_diagnostic(filename):  # todo Remove as not used?
     """Compute an example diagnostic."""
     logger.debug("Loading %s", filename)
     cube = iris.load_cube(filename)
 
     logger.debug("Running example computation")
-    cube = iris.util.squeeze(cube)
+    cube = iris.util.squeeze(cube)  # todo Collapses dimensions of size 1
     return cube
 
 
