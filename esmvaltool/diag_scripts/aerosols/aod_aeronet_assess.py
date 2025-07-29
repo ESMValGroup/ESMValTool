@@ -324,6 +324,11 @@ def preprocess_aod_obs_dataset(obs_dataset, thresholds):
     ----------
     obs_dataset : ESMValTool dictionary. Holds meta data for the observational
         AOD dataset.
+    thresholds : Minimum days,months, seasons and years threshold dictionary; with keys
+        - min_days_per_mon
+        - min_mon_per_seas
+        - min_seas_per_year
+        - min_seas_per_clim
 
     Returns
     -------
@@ -331,12 +336,6 @@ def preprocess_aod_obs_dataset(obs_dataset, thresholds):
          AOD climatology.
     """
     obs_cube = iris.load_cube(obs_dataset[0]["filename"])
-
-    # Set up thresholds for generating the multi annual seasonal mean
-    min_days_per_mon = thresholds.get("min_days_per_mon")
-    min_mon_per_seas = thresholds.get("min_mon_per_seas")
-    min_seas_per_year = thresholds.get("min_seas_per_year")
-    min_seas_per_clim = thresholds.get("min_seas_per_clim")
 
     # Add the clim_season and season_year coordinates.
     iris.coord_categorisation.add_year(obs_cube, "time", name="year")
@@ -352,7 +351,7 @@ def preprocess_aod_obs_dataset(obs_dataset, thresholds):
     num_days_var = obs_cube.ancillary_variable("Number of days")
     masked_months_obs_cube = obs_cube.copy(
         data=ma.masked_where(
-            num_days_var.data < min_days_per_mon, obs_cube.data
+            num_days_var.data < thresholds["min_days_per_mon"], obs_cube.data
         )
     )
 
@@ -370,7 +369,7 @@ def preprocess_aod_obs_dataset(obs_dataset, thresholds):
         function=lambda values: ~ma.getmask(values),
     )
     annual_seasonal_mean.data = ma.masked_where(
-        annual_seasonal_count.data < min_mon_per_seas,
+        annual_seasonal_count.data < thresholds["min_mon_per_seas"],
         annual_seasonal_mean.data,
     )
 
@@ -389,7 +388,7 @@ def preprocess_aod_obs_dataset(obs_dataset, thresholds):
         function=lambda values: ~ma.getmask(values),
     )
     multi_annual_seasonal_mean.data = ma.masked_where(
-        clim_season_agg_count.data < min_seas_per_clim,
+        clim_season_agg_count.data < thresholds["min_seas_per_clim"],
         multi_annual_seasonal_mean.data,
     )
     year_agg_count = multi_annual_seasonal_mean.aggregated_by(
@@ -403,7 +402,7 @@ def preprocess_aod_obs_dataset(obs_dataset, thresholds):
     )
     for iseas in counter:
         multi_annual_seasonal_mean.data[iseas, :] = ma.masked_where(
-            year_agg_count.data[0, :] < min_seas_per_year,
+            year_agg_count.data[0, :] < thresholds["min_seas_per_year"],
             multi_annual_seasonal_mean.data[iseas, :],
         )
 
