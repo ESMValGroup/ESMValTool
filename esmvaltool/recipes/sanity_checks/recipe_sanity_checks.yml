@@ -15,10 +15,7 @@ documentation:
 
 # Note: The following model is just an example
 datasets:
-  - {dataset: MPI-ESM1-2-LR, grid: gn, mip: Amon, project: CMIP6, exp: historical, ensemble: r1i1p1f1}
-
-timerange_for_models: &time_period
-  timerange: '1980/2014'
+  - {dataset: MPI-ESM1-2-LR, grid: gn, mip: Amon, project: CMIP6, exp: historical, ensemble: r1i1p1f1, timerange: '1980/2014'}
 
 
 preprocessors:
@@ -84,7 +81,6 @@ diagnostics:
     description: time series of global air mass anomaly
     variables:
       ps:
-        <<: *time_period
         preprocessor: global_sum_air_anom
         legend_label: 'global sum'
     scripts:
@@ -115,7 +111,6 @@ diagnostics:
     description: time series of moisture flux into the atmosphere
     variables:
       qep:
-        <<: *time_period
         derive: true
         preprocessor: global_sum
         legend_label: 'global sum'
@@ -151,7 +146,6 @@ diagnostics:
     description: time series of global water vapour mass
     variables:
       prw_sum:
-        <<: *time_period
         short_name: prw
         preprocessor: global_sum
         legend_label: 'global sum'
@@ -191,19 +185,16 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       asr_mean:
-        <<: *time_period
         legend_label: 'global mean'
         short_name: asr
         preprocessor: globalmean
         derive: true
       asr_min:
-        <<: *time_period
         short_name: asr
         legend_label: 'global min'
         preprocessor: globalmin
         derive: true
       asr_max:
-        <<: *time_period
         short_name: asr
         legend_label: 'global max'
         preprocessor: globalmax
@@ -244,17 +235,14 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       clivi_mean:
-        <<: *time_period
         legend_label: 'global mean'
         short_name: clivi
         preprocessor: globalmean
       clivi_min:
-        <<: *time_period
         short_name: clivi
         legend_label: 'global min'
         preprocessor: globalmin
       clivi_max:
-        <<: *time_period
         short_name: clivi
         legend_label: 'global max'
         preprocessor: globalmax
@@ -294,17 +282,14 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       clt_mean:
-        <<: *time_period
         legend_label: 'global mean'
         short_name: clt
         preprocessor: globalmean
       clt_min:
-        <<: *time_period
         short_name: clt
         legend_label: 'global min'
         preprocessor: globalmin
       clt_max:
-        <<: *time_period
         short_name: clt
         legend_label: 'global max'
         preprocessor: globalmax
@@ -344,17 +329,14 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       hfls_mean:
-        <<: *time_period
         short_name: hfls
         legend_label: 'global mean'
         preprocessor: globalmean
       hfls_min:
-        <<: *time_period
         short_name: hfls
         legend_label: 'global min'
         preprocessor: globalmin
       hfls_max:
-        <<: *time_period
         short_name: hfls
         legend_label: 'global max'
         preprocessor: globalmax
@@ -394,17 +376,14 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       hfss_mean:
-        <<: *time_period
         short_name: hfss
         legend_label: 'global mean'
         preprocessor: globalmean
       hfss_min:
-        <<: *time_period
         short_name: hfss
         legend_label: 'global min'
         preprocessor: globalmin
       hfss_max:
-        <<: *time_period
         short_name: hfss
         legend_label: 'global max'
         preprocessor: globalmax
@@ -444,19 +423,16 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       lwcre_mean:
-        <<: *time_period
         short_name: lwcre
         legend_label: 'global mean'
         preprocessor: globalmean
         derive: true
       lwcre_min:
-        <<: *time_period
         short_name: lwcre
         legend_label: 'global min'
         preprocessor: globalmin
         derive: true
       lwcre_max:
-        <<: *time_period
         short_name: lwcre
         legend_label: 'global max'
         preprocessor: globalmax
@@ -497,19 +473,16 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       lwp_mean:
-        <<: *time_period
         short_name: lwp
         legend_label: 'global mean'
         preprocessor: globalmean
         derive: true
       lwp_min:
-        <<: *time_period
         short_name: lwp
         legend_label: 'global min'
         preprocessor: globalmin
         derive: true
       lwp_max:
-        <<: *time_period
         short_name: lwp
         legend_label: 'global max'
         preprocessor: globalmax
@@ -550,19 +523,16 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       netcre_mean:
-        <<: *time_period
         short_name: netcre
         legend_label: 'global mean'
         preprocessor: globalmean
         derive: true
       netcre_min:
-        <<: *time_period
         short_name: netcre
         legend_label: 'global min'
         preprocessor: globalmin
         derive: true
       netcre_max:
-        <<: *time_period
         short_name: netcre
         legend_label: 'global max'
         preprocessor: globalmax
@@ -603,12 +573,10 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       pr_mean:
-        <<: *time_period
         short_name: pr
         legend_label: 'global mean'
         preprocessor: globalmean_pr
       pr_max:
-        <<: *time_period
         short_name: pr
         legend_label: 'global max'
         preprocessor: globalmax_pr
@@ -651,17 +619,14 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       prc_mean:
-        <<: *time_period
         short_name: prc
         legend_label: 'global mean'
         preprocessor: globalmean
       prc_min:
-        <<: *time_period
         short_name: prc
         legend_label: 'global min'
         preprocessor: globalmin
       prc_max:
-        <<: *time_period
         short_name: prc
         legend_label: 'global max'
         preprocessor: globalmax
@@ -701,17 +666,14 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       prw_mean:
-        <<: *time_period
         legend_label: 'global mean'
         short_name: prw
         preprocessor: globalmean
       prw_min:
-        <<: *time_period
         short_name: prw
         legend_label: 'global min'
         preprocessor: globalmin
       prw_max:
-        <<: *time_period
         short_name: prw
         legend_label: 'global max'
         preprocessor: globalmax
@@ -751,17 +713,14 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       rlds_mean:
-        <<: *time_period
         legend_label: 'global mean'
         short_name: rlds
         preprocessor: globalmean
       rlds_min:
-        <<: *time_period
         short_name: rlds
         legend_label: 'global min'
         preprocessor: globalmin
       rlds_max:
-        <<: *time_period
         short_name: rlds
         legend_label: 'global max'
         preprocessor: globalmax
@@ -801,17 +760,14 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       rlut_mean:
-        <<: *time_period
         short_name: rlut
         legend_label: 'global mean'
         preprocessor: globalmean
       rlut_min:
-        <<: *time_period
         short_name: rlut
         legend_label: 'global min'
         preprocessor: globalmin
       rlut_max:
-        <<: *time_period
         short_name: rlut
         legend_label: 'global max'
         preprocessor: globalmax
@@ -854,19 +810,16 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       rtnt_mean:
-        <<: *time_period
         short_name: rtnt
         legend_label: 'global mean'
         preprocessor: globalmean
         derive: true
       rtnt_min:
-        <<: *time_period
         short_name: rtnt
         legend_label: 'global min'
         preprocessor: globalmin
         derive: true
       rtnt_max:
-        <<: *time_period
         short_name: rtnt
         legend_label: 'global max'
         preprocessor: globalmax
@@ -907,17 +860,14 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       rsds_mean:
-        <<: *time_period
         legend_label: 'global mean'
         short_name: rsds
         preprocessor: globalmean
       rsds_min:
-        <<: *time_period
         short_name: rsds
         legend_label: 'global min'
         preprocessor: globalmin
       rsds_max:
-        <<: *time_period
         short_name: rsds
         legend_label: 'global max'
         preprocessor: globalmax
@@ -957,17 +907,14 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       rsut_mean:
-        <<: *time_period
         legend_label: 'global mean'
         short_name: rsut
         preprocessor: globalmean
       rsut_min:
-        <<: *time_period
         short_name: rsut
         legend_label: 'global min'
         preprocessor: globalmin
       rsut_max:
-        <<: *time_period
         short_name: rsut
         legend_label: 'global max'
         preprocessor: globalmax
@@ -1007,19 +954,16 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       swcre_mean:
-        <<: *time_period
         short_name: swcre
         legend_label: 'global mean'
         preprocessor: globalmean
         derive: true
       swcre_min:
-        <<: *time_period
         short_name: swcre
         legend_label: 'global min'
         preprocessor: globalmin
         derive: true
       swcre_max:
-        <<: *time_period
         short_name: swcre
         legend_label: 'global max'
         preprocessor: globalmax
@@ -1060,17 +1004,14 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       tas_mean:
-        <<: *time_period
         short_name: tas
         legend_label: 'global mean'
         preprocessor: globalmean
       tas_min:
-        <<: *time_period
         short_name: tas
         legend_label: 'global min'
         preprocessor: globalmin
       tas_max:
-        <<: *time_period
         short_name: tas
         legend_label: 'global max'
         preprocessor: globalmax
@@ -1113,17 +1054,14 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       tauu_mean:
-        <<: *time_period
         legend_label: 'global mean'
         short_name: tauu
         preprocessor: globalmean
       tauu_min:
-        <<: *time_period
         short_name: tauu
         legend_label: 'global min'
         preprocessor: globalmin
       tauu_max:
-        <<: *time_period
         short_name: tauu
         legend_label: 'global max'
         preprocessor: globalmax
@@ -1163,17 +1101,14 @@ diagnostics:
     description: time series of global min/max/mean including "reasonable" ranges
     variables:
       tauv_mean:
-        <<: *time_period
         legend_label: 'global mean'
         short_name: tauv
         preprocessor: globalmean
       tauv_min:
-        <<: *time_period
         short_name: tauv
         legend_label: 'global min'
         preprocessor: globalmin
       tauv_max:
-        <<: *time_period
         short_name: tauv
         legend_label: 'global max'
         preprocessor: globalmax
