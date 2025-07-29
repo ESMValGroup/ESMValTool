@@ -21,6 +21,7 @@ preprocessors:
       span: full
       statistics:
         - operator: min
+      keep_input_datasets: false
     convert_units:
       units: mm day-1
     climate_statistics:
@@ -34,6 +35,7 @@ preprocessors:
       span: full
       statistics:
         - operator: max
+      keep_input_datasets: false
     convert_units:
       units: mm day-1
     climate_statistics:
@@ -48,6 +50,7 @@ preprocessors:
       span: full
       statistics:
         - operator: min
+      keep_input_datasets: false
     climate_statistics:
       operator: min
 
@@ -60,6 +63,7 @@ preprocessors:
       span: full
       statistics:
         - operator: max
+      keep_input_datasets: false
     climate_statistics:
       operator: max
 
@@ -71,6 +75,7 @@ preprocessors:
       span: full
       statistics:
         - operator: min
+      keep_input_datasets: false
     climate_statistics:
       operator: min
 
@@ -82,6 +87,7 @@ preprocessors:
       span: full
       statistics:
         - operator: max
+      keep_input_datasets: false
     climate_statistics:
       operator: max
 
@@ -95,6 +101,7 @@ preprocessors:
       span: full
       statistics:
         - operator: min
+      keep_input_datasets: false
     climate_statistics:
       operator: min
 
@@ -108,6 +115,7 @@ preprocessors:
       span: full
       statistics:
         - operator: max
+      keep_input_datasets: false
     climate_statistics:
       operator: max
 
@@ -130,6 +138,7 @@ preprocessors:
       span: full
       statistics:
         - operator: min
+      keep_input_datasets: false
     climate_statistics:
       operator: min
 
@@ -152,6 +161,7 @@ preprocessors:
       span: full
       statistics:
         - operator: max
+      keep_input_datasets: false
     climate_statistics:
       operator: max
 
