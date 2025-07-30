@@ -39,7 +39,7 @@
 ;                       differences (in units of input variable)
 ;   region:             show only selected geographic region given as latmin,
 ;                       latmax, lonmin, lonmax
-;   timemean:           time averaging - "seasonal" = DJF, MAM, JJA, SON),
+;   timemean:           time averaging - "seasonalclim" = DJF, MAM, JJA, SON),
 ;                                        "annualclim" = annual mean
 ;   treat_var_as_error: treat variable as error when averaging (true, false)
 ;                       true:  avg = sqrt(mean(var*var))
@@ -569,9 +569,10 @@ begin
 
     ; specified in namelist
 
-    res@mpProjection       = projection
     if (projection .eq. "PolarStereographic") then
       res@gsnPolar= "NH"
+    else
+      res@mpProjection = projection
     end if
 
     ; set explicit contour levels
@@ -780,7 +781,7 @@ begin
     ; mandatory netcdf output
 
     data1@var = var0 + "_mean_" + names(imod)
-;;;    nc_outfile_mean = ncdf_write(data1, nc_filename_mean)
+    nc_outfile_mean = ncdf_write(data1, nc_filename_mean)
 
     ; =======================================================================
     ; Create difference plots (if requested)
