@@ -23,7 +23,11 @@ plot_script: &plot_script
   plot_folder: "{plot_dir}"
 
 timeseries_plot: &timeseries_plot
-  caption: "Timeseries of global mean {long_name} (solid line) and global min/max values (dashed lines). As red lines min and max values found in reference datasets (observations, reanalyses) across all months and all reference datasets are shown."
+  caption: >
+    Timeseries of global mean {long_name} (solid line) and global min/max values 
+    (dashed lines). As "reasonable" ranges for the global mean, red lines show 
+    min and max values found in reference datasets (observations, reanalyses) 
+    across all months and all reference datasets.
   plot_kwargs:
     'global mean':
       color: blue
@@ -164,7 +168,11 @@ diagnostics:
         <<: *plot_script
         plots:
           timeseries:
-            caption: "Timeseries of global moisture flux into the atmosphere (solid blue line). As red lines min and max global mean values found in reference datasets (observations, reanalyses) across all months and all reference datasets are shown."
+            caption: >
+              Timeseries of global moisture flux into the atmosphere (solid line) and 
+              global min/max values (dashed lines). As "reasonable" ranges for the global 
+              mean, red lines show min and max values found in reference datasets 
+              (observations, reanalyses) across all months and all reference datasets.
             pyplot_kwargs:
               title: "Anomaly of global moisture flux into the atmosphere"
             hlines:
@@ -197,7 +205,11 @@ diagnostics:
         <<: *plot_script
         plots:
           timeseries:
-            caption: "Timeseries of global water vapour mass (solid blue line). As red lines min and max global sum values found in reference datasets (observations, reanalyses) across all months and all reference datasets are shown."
+            caption: >
+              Timeseries of global water vapour mass (solid line) and 
+              global min/max values (dashed lines). As "reasonable" ranges for the global 
+              sum, red lines show min and max values found in reference datasets 
+              (observations, reanalyses) across all months and all reference datasets.
             pyplot_kwargs:
               title: "Global sum of water vapour"
             hlines:
