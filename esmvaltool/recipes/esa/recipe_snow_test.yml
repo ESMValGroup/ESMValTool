@@ -1,0 +1,119 @@
+# ESMValTool
+# recipe_prw_test.yml
+---
+documentation:
+  title: Test snow variables
+
+  description: |
+    Recipe test snow
+
+  authors:
+    - lauer_axel
+
+  maintainer:
+    - lauer_axel
+
+#datasets:
+#    - {dataset: ACCESS-CM2, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: TaiESM1, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: AWI-ESM-1-1-LR, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: BCC-ESM1, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: CAS-ESM2-0, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: FGOALS-f3-L, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: FGOALS-g3, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: CanESM5, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: CMCC-CM2-HR4, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: CMCC-CM2-SR5, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: CMCC-ESM2, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: ACCESS-ESM1-5, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: E3SM-1-0, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: E3SM-1-1-ECA, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: E3SM-1-1, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: EC-Earth3-AerChem, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: EC-Earth3-CC, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: EC-Earth3, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: EC-Earth3-Veg, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: EC-Earth3-Veg-LR, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: FIO-ESM-2-0, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: MPI-ESM-1-2-HAM, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: IPSL-CM5A2-INCA, grid: gr, ensemble: r1i1p1f1}
+###    - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r1i1p1f1}
+#    - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: ICON-ESM-LR, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: MPI-ESM1-2-HR, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: MPI-ESM1-2-LR, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: CESM2-FV2, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: CESM2-WACCM-FV2, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: CESM2-WACCM, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: NorCPM1, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: NorESM2-LM, grid: gn, ensemble: r1i1p1f1}
+###    - {dataset: NorESM2-MM, grid: gn, ensemble: r1i1p1f1}
+#    - {dataset: KACE-1-0-G, grid: gr, ensemble: r1i1p1f1}
+###    - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
+###    - {dataset: GFDL-ESM4, grid: gr1, ensemble: r1i1p1f1}
+#    - {dataset: SAM0-UNICON, grid: '*', ensemble: r1i1p1f1}
+
+
+preprocessors:
+  pp_snw:
+    regrid:
+      target_grid: 0.5x0.5
+      scheme: linear
+    monthly_statistics:
+      operator: mean
+
+
+diagnostics:
+#  snow:
+#    title: snow water equivalent
+#    description: test snow water equivalent
+#    variables:
+#      snw:
+#        mip: day
+#        start_year: 1982
+#        end_year: 2014
+#        project: CMIP6
+#        exp: historical
+#        preprocessor: pp_pfr
+#        additional_datasets:
+#          - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0, start_year: 1982, end_year: 2019}
+#    scripts:
+#      plot:
+#        script: monitor/multi_datasets.py
+#        plot_folder: '{plot_dir}'
+#        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+#        plots:
+#          timeseries:
+#            annual_mean_kwargs: False
+#            plot_kwargs:
+#              ACCESS-CM2:
+#                color: C0
+#              ESACCI-SNOW:
+#                color: black
+
+  snow2:
+    title: snow water equivalent 2
+    description: test snow water equivalent
+    variables:
+      snw:
+        mip: day
+        start_year: 2010
+        end_year: 2014
+        project: CMIP6
+        exp: historical
+        preprocessor: pp_snw
+        additional_datasets:
+          - {dataset: ESACCI-SNOW, project: OBS6, mip: day, tier: 2, type: sat, version: v2.0}
+    scripts:
+      plot:
+        script: clouds/clouds.ncl
+        projection: PolarStereographic
+        timemean: seasonalclim
+        showdiff: false
+        explicit_cn_levels: [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]
+        region: [30, 90, 0, 360]

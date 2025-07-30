@@ -88,8 +88,6 @@ preprocessors:
   pp_clt:
     area_statistics:
       operator: mean
-    annual_statistics:
-      operator: mean
 
   pp_greenland:
     extract_shape:
@@ -102,13 +100,7 @@ preprocessors:
       mask_out: sea
     area_statistics:
       operator: mean
-
-  pp_tos:
-#    daily_statistics:
-#      operator: mean
-    area_statistics:
-      operator: mean
-
+  
 
 diagnostics:
 
@@ -183,52 +175,69 @@ diagnostics:
 #                linewidth: 1
 #                zorder: 1
 
-#  timeseries3:
-#    description: Plot time series of global mean value.
-#    variables:
-##      clt_daily:
-##        timerange: '2000/2007'
-##        preprocessor: pp_clt
-##        mip: day
-##        exp: historical
-##        ensemble: r1i1p1f1
-##        grid: gr
-##        project: CMIP6
-##        short_name: clt
-##        additional_datasets:
-##          - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2}
-#      clt_monthly:
-#        timerange: '1982/2016'
+  timeseries3:
+    description: Plot time series of global mean value.
+    variables:
+#      clt_daily:
+#        timerange: '2000/2007'
 #        preprocessor: pp_clt
-#        mip: Amon
+#        mip: day
 #        exp: historical
 #        ensemble: r1i1p1f1
 #        grid: gr
 #        project: CMIP6
 #        short_name: clt
 #        additional_datasets:
-#          - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-AMPM-fv3.0, tier: 2}
-#    scripts:
-#      allplots:
-#        script: monitor/multi_datasets.py
-#        plot_folder: '{plot_dir}'
-#        group_variables_by: variable_group
-#        plots:
-#          timeseries:
-#            annual_mean_kwargs: False
-#            plot_kwargs:
-#              ESACCI-CLOUD:
-#                color: blue
-#                label: '{dataset}'
-#                linestyle: '-'
-#                linewidth: 2
-#                zorder: 2
-#              default:
-#                color: lightgray
-#                label: null
-#                linestyle: '-'
-#                linewidth: 1
-#                zorder: 1
+#          - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0, tier: 2}
+      clt_monthly:
+        start_year: 1982
+        end_year: 2016
+        preprocessor: pp_clt
+        mip: Amon
+        exp: historical
+        freq: mon
+        ensemble: r1i1p1f1
+        grid: gr
+        project: CMIP6
+        short_name: clt
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, start_year: 1992, project: OBS6, type: sat, version: v3.0-AVHRR-AM, tier: 2, alias: AVHRR-AM}
+#          - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0-AVHRR-PM, tier: 2, alias: AVHRR-PM}
+          - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0-AVHRR-AMPM, tier: 2, alias: AVHRR-AMPM}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: variable_group
+        facet_used_for_labels: alias
+        plots:
+          timeseries:
+            annual_mean_kwargs: False
+            plot_kwargs:
+              AVHRR-AM:
+                color: blue
+                label: '{alias}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 2
+              AVHRR-PM:
+                color: red
+                label: '{alias}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 2
+              AVHRR-AMPM:
+                color: black
+                label: '{alias}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 2
+              default:
+                color: lightgray
+                label: null
+                linestyle: '-'
+                linewidth: 1
+                zorder: 1
 
 #  timeseries4:
 #    description: Plot time series of global mean value.
@@ -325,90 +334,3 @@ diagnostics:
 #                linestyle: '-'
 #                linewidth: 1
 #                zorder: 1
-
-##  timeseries6:
-##    description: Plot time series of SST.
-##    variables:
-##      tos:
-##        timerange: '1981/1982'  # 2021
-##        preprocessor: pp_tos
-##        mip: Oday
-##        exp: historical
-##        ensemble: r1i1p1f1
-##        grid: gr
-##        project: CMIP6
-##    additional_datasets:
-##      - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 3}
-##    scripts:
-##      plot:
-##        script: seaborn_diag.py
-##        seaborn_func: relplot
-##        seaborn_kwargs:
-##          x: time
-##          y: tos
-##          col: year
-##          col_wrap: 2
-##          palette: plasma
-##          linewidth: 0.0
-##          marker: o
-##          s: 1
-##        add_aux_coords: true
-###        data_frame_ops:
-###          eval: air_pressure = air_pressure / 100.0
-##        dropna_kwargs:
-##          axis: 0
-##          how: any
-##        legend_title: Pressure [hPa]
-##        plot_object_methods:
-##          set:
-##            xlabel: 'Latitude [°]'
-##            ylabel: 'Temperatute [K]'
-##          set_titles: '{col_name}'
-##        seaborn_settings:
-##          style: ticks
-##          rc:
-##            axes.titlepad: 15.0
-##        suptitle: Simulated Temperature (1991-2014)
-
-  timeseries7:
-    description: Plot time series of global mean value.
-    variables:
-      prw:
-        start_year: 2003
-        end_year: 2017
-        preprocessor: pp_clt
-        mip: Amon
-        exp: historical
-        ensemble: r1i1p1f1
-        grid: gr
-        project: CMIP6
-        additional_datasets:
-#          - {dataset: ESACCI-WATERVAPOUR, project: OBS6, mip: Amon, tier: 3, type: sat, version: CDR2-L3-COMBI-05deg-fv3.1}
-          - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, start_year: 1980, end_year: 2021}
-    scripts:
-      allplots:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        group_variables_by: variable_group
-        plots:
-          timeseries:
-            annual_mean_kwargs: False
-            plot_kwargs:
-              ESACCI-WATERVAPOUR:
-                color: blue
-                label: '{dataset}'
-                linestyle: '-'
-                linewidth: 2
-                zorder: 2
-              ERA5:
-                color: red
-                label: '{dataset}'
-                linestyle: '-'
-                linewidth: 2
-                zorder: 2
-              default:
-                color: lightgray
-                label: null
-                linestyle: '-'
-                linewidth: 1
-                zorder: 1

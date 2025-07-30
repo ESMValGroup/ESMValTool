@@ -1,0 +1,276 @@
+# ESMValTool
+---
+documentation:
+  title: Benchmarking of a single model.
+  description: >
+    Benchmarking: time series.
+  authors:
+    - lauer_axel
+    - bock_lisa
+    - hassler_birgit
+    - lindenlaub_lukas
+    - schlund_manuel
+  maintainer:
+    - lauer_axel
+  references:
+    - lauer25gmd
+  projects:
+    - cmug
+
+
+datasets:
+#  - {dataset: ACCESS-CM2, grid: gn, institute: CSIRO-ARCCSS}
+#  - {dataset: ACCESS-ESM1-5, grid: gn, institute: CSIRO}
+#  - {dataset: AWI-CM-1-1-MR, grid: gn}
+#  - {dataset: AWI-ESM-1-1-LR, grid: gn}
+#  - {dataset: BCC-CSM2-MR, grid: gn}
+#  - {dataset: BCC-ESM1, grid: gn}
+#  - {dataset: CAMS-CSM1-0, grid: gn}
+#  - {dataset: CanESM5, grid: gn}
+#  - {dataset: CanESM5-CanOE, grid: gn, ensemble: r1i1p2f1}
+#  - {dataset: CESM2, grid: gn}
+#  - {dataset: CESM2-FV2, grid: gn, institute: NCAR}
+#  - {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
+#  - {dataset: CESM2-WACCM-FV2, grid: gn, institute: NCAR}
+#  - {dataset: CIESM}
+#  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
+#  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2}
+#  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
+#  - {dataset: E3SM-1-0}
+#  - {dataset: E3SM-1-1, institute: E3SM-Project}
+#  - {dataset: EC-Earth3-Veg}
+#  - {dataset: FGOALS-f3-L}
+#  - {dataset: FGOALS-g3, grid: gn}
+#  - {dataset: FIO-ESM-2-0, grid: gn}
+#  - {dataset: GFDL-ESM4, grid: gr1}
+#  - {dataset: GISS-E2-1-G, grid: gn}
+#  - {dataset: GISS-E2-1-H, grid: gn}
+#  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn}
+#  - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn}
+#  - {dataset: INM-CM4-8, grid: gr1}
+#  - {dataset: INM-CM5-0, grid: gr1}
+#  - {dataset: IPSL-CM6A-LR}
+#  - {dataset: KACE-1-0-G}
+#  - {dataset: MCM-UA-1-0, grid: gn}
+#  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+#  - {dataset: MPI-ESM-1-2-HAM, grid: gn}
+#  - {dataset: MPI-ESM1-2-HR, grid: gn}
+#  - {dataset: MPI-ESM1-2-LR, grid: gn}
+#  - {dataset: MRI-ESM2-0, grid: gn}
+#  - {dataset: NESM3, grid: gn}
+#  - {dataset: NorESM2-LM, grid: gn, institute: NCC}
+#  - {dataset: NorESM2-MM, grid: gn, institute: NCC}
+#  - {dataset: SAM0-UNICON, grid: gn}
+#  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+#  # Dataset to be benchmarked
+#  - {dataset: MIROC6, grid: gn, benchmark_dataset: true}
+
+  - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
+  - {dataset: ACCESS-ESM1-5, institute: CSIRO, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
+  - {dataset: BCC-CSM2-MR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+###  - {dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: CAMS-CSM1-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: CanESM5, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: CanESM5-CanOE, ensemble: r1i1p2f1, grid: gn, project: CMIP6}
+  - {dataset: CESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: CESM2-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: CESM2-WACCM, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: CESM2-WACCM-FV2, institute: NCAR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: CIESM, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
+  - {dataset: CMCC-CM2-HR4, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: CMCC-CM2-SR5, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: CMCC-ESM2, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
+  - {dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
+  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
+  - {dataset: E3SM-1-0, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+  - {dataset: E3SM-1-1, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+  - {dataset: E3SM-1-1-ECA, institute: E3SM-Project, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+  - {dataset: EC-Earth3, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: EC-Earth3-AerChem, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: EC-Earth3-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: EC-Earth3-Veg, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: EC-Earth3-Veg-LR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: FIO-ESM-2-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+  - {dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr, project: CMIP6}
+###  - {dataset: GISS-E2-1-G, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+###  - {dataset: GISS-E2-1-G-CC, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: GISS-E2-1-H, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: HadGEM3-GC31-LL, ensemble: r1i1p1f3, grid: gn, project: CMIP6}
+  - {dataset: HadGEM3-GC31-MM, ensemble: r1i1p1f3, grid: gn, project: CMIP6}
+  - {dataset: INM-CM4-8, grid: gr1, ensemble: r1i1p1f1, project: CMIP6}
+  - {dataset: INM-CM5-0, grid: gr1, ensemble: r1i1p1f1, project: CMIP6}
+  - {dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+###  - {dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, project: CMIP6}
+  - {dataset: MCM-UA-1-0, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
+  - {dataset: MIROC6, ensemble: r1i1p1f1, grid: gn, project: CMIP6, benchmark_dataset: true}
+  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
+  - {dataset: MPI-ESM-1-2-HAM, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: NESM3, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: NorCPM1, grid: gn, institute: NCC, ensemble: r10i1p1f1, project: CMIP6}
+  - {dataset: NorESM2-LM, grid: gn, institute: NCC, ensemble: r1i1p1f1, project: CMIP6}
+  - {dataset: NorESM2-MM, grid: gn, institute: NCC, ensemble: r1i1p1f1, project: CMIP6}
+  - {dataset: SAM0-UNICON, ensemble: r1i1p1f1, grid: gn, project: CMIP6}
+  - {dataset: TaiESM1, grid: gn, ensemble: r1i1p1f1, project: CMIP6}
+  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn, project: CMIP6}
+  # OBS
+###  - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+
+
+preprocessors:
+
+  pp_tos:
+    convert_units:
+      units: degC
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    anomalies:
+      period: month
+      reference:
+        start_year: 1980
+        start_month: 1
+        start_day: 1
+        end_year: 1999
+        end_month: 12
+        end_day: 31
+    area_statistics:
+      operator: mean
+    multi_model_statistics:
+      span: overlap
+      statistics:
+        - operator: percentile
+          percent: 10
+        - operator: percentile
+          percent: 90
+      exclude: [reference_dataset, MIROC6, HadISST]
+
+  pp_tos_metric:
+    custom_order: true
+    convert_units:
+      units: degC
+    regrid_time:
+      calendar: standard
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    anomalies:
+      period: month
+      reference:
+        start_year: 1980
+        start_month: 1
+        start_day: 1
+        end_year: 1999
+        end_month: 12
+        end_day: 31
+    distance_metric:
+      metric: rmse
+      coords: [longitude, latitude]
+    multi_model_statistics:
+      span: overlap
+      statistics:
+        - operator: percentile
+          percent: 10
+        - operator: percentile
+          percent: 90
+      exclude: [reference_dataset, MIROC6, HadISST]
+
+
+diagnostics:
+
+  timeseries:
+    description: Plot "classical" time series of global mean anomalies including a reference dataset.
+    variables:
+      tos:
+        timerange: '1980/2014'
+        preprocessor: pp_tos
+        project: CMIP6
+        mip: Omon
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        reference_dataset: ESACCI-SST
+        additional_datasets:
+          - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 2, reference_for_metric: true}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: variable_group
+        plots:
+          timeseries:
+            annual_mean_kwargs: False
+            plot_kwargs:
+              MIROC6:
+                color: red
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 4
+              HadCRUT5:
+                color: black
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              ESACCI-SST:
+                color: blue
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              MultiModelPercentile10:
+                color: gray
+                label: '{dataset}'
+                linestyle: '--'
+                linewidth: 1
+                zorder: 2
+              MultiModelPercentile90:
+                color: gray
+                label: '{dataset}'
+                linestyle: '--'
+                linewidth: 1
+                zorder: 2
+              default:
+                color: lightgray
+                label: null
+                linestyle: '-'
+                linewidth: 1
+                zorder: 1
+
+  benchmarking_timeseries:
+    description: Plot "benchmarking" time series of global mean anomalies.
+    variables:
+      tos:
+        timerange: '1980/2014'
+        preprocessor: pp_tos_metric
+        project: CMIP6
+        mip: Omon
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        reference_dataset: ESACCI-SST
+        additional_datasets:
+          - {dataset: ESACCI-SST, project: OBS6, type: sat, version: 3.0-L4-analysis, tier: 2, reference_for_metric: true}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: variable_group
+        plots:
+          benchmarking_timeseries:
+            plot_kwargs:
+            annual_mean_kwargs: False
+            plot_kwargs:
+              MIROC6:
+                color: red
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 1.5
+                zorder: 3
