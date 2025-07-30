@@ -29,7 +29,6 @@ preprocessors:
     convert_units:
       units: DU
 
-
   create_time_series_NH:
     annual_statistics:
       operator: mean
@@ -44,7 +43,6 @@ preprocessors:
       month: 3
     convert_units:
       units: DU
-
 
   create_lat_time_map:
     regrid:
@@ -114,52 +112,44 @@ preprocessors:
       units: ppm
 
 
-
 # Note: the following model is just an example
 #datasets:
 #  - {project: CMIP6, dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2, exp: historical, alias: CNRM-ESM2-1}
 
-timerange_for_toz_monthly_data: &time_period_toz_monthly
-  timerange: '1950/2014'  # can be specified, this is just an example
-timerange_for_toz_zonal_mean: &time_period_toz_zonalmean
-  timerange: '1997/2014'  # is chosen to start with the start of the obs data
-timerange_for_ozone_profile: &time_period_o3_profile
-  timerange: '1990/2000'  # can be specified, this is just an example
-
 
 diagnostics:
-#  mapplot:
-#    variables:
-#      toz:
-#        mip: AERmon
-#        exp: historical
-#        preprocessor: create_map
-#        timerange: '2008/2010'
-#        ensemble: r1i1p1f1
-#        additional_datasets:
-#          - {project: OBS6, dataset: ESACCI-OZONE, version: L3-GTO-ECV, type: sat, tier: 2, alias: GTO-ECV, frequency: mon}
-#          - {project: OBS6, dataset: ESACCI-OZONE, tier: 2, alias: IASI, version: L3-IASI, type: sat, frequency: mon, reference_for_monitor_diags: true}
-#    scripts:
-#      allplots:
-#        script: monitor/multi_datasets.py
-#        plot_folder: '{plot_dir}'
-#        facet_used_for_labels: alias
-#        plots:
-#          map:
-#            common_cbar: true
+  mapplot:
+    variables:
+      toz:
+        mip: AERmon
+        exp: historical
+        preprocessor: create_map
+        timerange: '2008/2022'
+        ensemble: r1i1p1f1
+        additional_datasets:
+          - {project: OBS6, dataset: ESACCI-OZONE, version: L3-GTO-ECV, type: sat, tier: 2, alias: GTO-ECV, frequency: mon}
+          - {project: OBS6, dataset: ESACCI-OZONE, tier: 2, alias: IASI, version: L3-IASI, type: sat, frequency: mon, reference_for_monitor_diags: true}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        facet_used_for_labels: alias
+        plots:
+          map:
+            common_cbar: true
 
   zonal_mean:
     description: Plot 2D zonal mean profiles including reference datasets.
     variables:
       o3:
-        timerange: '2008/2010'
+        timerange: '2008/2022'
         mip: AERmon
         exp: historical
         ensemble: r1i1p1f1
         preprocessor: zonal_mean
         additional_datasets:
           - {project: OBS6, dataset: ESACCI-OZONE, tier: 2, alias: IASI, version: L3-IASI, type: sat, frequency: mon}
-          - {project: CMIP6, dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2, exp: historical, alias: CNRM-ESM2-1, mip: Amon}
+#          - {project: CMIP6, dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2, exp: historical, alias: CNRM-ESM2-1, mip: Amon}
           - {project: OBS6, dataset: ESACCI-OZONE, tier: 2, alias: MEGRIDOP, version: L3-MEGRIDOP, type: sat, frequency: mon, reference_for_monitor_diags: true}
           - {project: OBS6, dataset: ESACCI-OZONE, tier: 2, alias: SAGE-OMPS, version: L3-SAGE-OMPS, type: sat, frequency: mon}
     scripts:
