@@ -8,7 +8,7 @@ Installation
    ESMValTool now uses `mamba` instead of `conda` for the recommended installation.
    For more information about the change, have a look at :ref:`Move to Mamba<move-to-mamba>`.
 
-ESMValTool supports Python 3.10 and later and requires Linux or MacOS.
+ESMValTool supports Python 3.11 and later and requires Linux or MacOS.
 Successful usage on Windows has been reported by following the Linux
 installation instructions with
 `WSL <https://learn.microsoft.com/en-us/windows/wsl/install>`__.
@@ -72,15 +72,15 @@ https://mamba.readthedocs.io/en/latest/installation.html.
     installation.
 
 First download the installation file for
-`Linux <https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh>`_
+`Linux <https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh>`_
 or
-`MacOSX <https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-MacOSX-x86_64.sh>`_.
+`MacOSX <https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-x86_64.sh>`_.
 After downloading the installation file from one of the links above, execute it
 by running (Linux example):
 
 .. code-block:: bash
 
-    bash Mambaforge-Linux-x86_64.sh
+    bash Miniforge3-Linux-x86_64.sh
 
 and follow the instructions on your screen.
 
@@ -99,7 +99,7 @@ later by running:
     source <prefix>/etc/profile.d/conda.sh
 
 where ``<prefix>`` is the installation location of mamba (e.g.
-``/home/$USER/mambaforge`` if you chose the default installation path).
+``/home/$USER/miniforge3`` if you chose the default installation path).
 
 If you use another shell than Bash, have a look at the available configurations
 in the ``<prefix>/etc/profile.d`` directory.
@@ -111,7 +111,7 @@ You can check that mamba installed correctly by running
     which mamba
 
 this should show the path to your mamba executable, e.g.
-``~/mambaforge/bin/mamba``.
+``~/miniforge3/bin/mamba``.
 
 It is recommended to update both mamba and conda after installing:
 
@@ -217,7 +217,7 @@ environment is activated and then execute
 
 .. code-block:: bash
 
-    mamba install julia
+    curl -fsSL https://install.julialang.org | sh -s -- --yes
     esmvaltool install Julia
 .. _install_on_macosx:
 
@@ -364,6 +364,13 @@ so you will not be able to run NCL, R, or Julia diagnostics with it.
     would like to keep.
     It is recommended that you create a new environment when updating ESMValTool.
 
+.. note::
+    There is also a pure-Python environment file ``esmvaltool_python.yml``
+    which is a softlink of the ``environment_osx.yml`` file; this one is used
+    by any build that needs only Python packages (i.e. no NCL and R), currently
+    this is used by our documentation builds, but it could be used by anyone
+    needing just the Python dependencies.
+
 Next, activate the environment by using the command:
 
 .. code-block:: bash
@@ -390,11 +397,22 @@ the source code will immediately be available in the installed version of the
 tool.
 
 If you would like to run Julia diagnostic scripts, you will need to
-install the ESMValTool Julia dependencies:
+install Julia and the ESMValTool Julia dependencies:
 
 .. code-block:: bash
 
+    curl -fsSL https://install.julialang.org | sh -s -- --yes
     esmvaltool install Julia
+
+If you are planning to do any coding, install the :ref:`esmvaltool:pre-commit`
+hooks by running:
+
+.. code-block:: bash
+
+    pre-commit install
+
+these will make sure that when you commit your changes, they will be formatted
+correctly.
 
 The next step is to check that the installation works properly.
 To do this, run the tool with:
@@ -489,9 +507,18 @@ To check that the installation was successful, run
 this should show the directory of the source code that you just downloaded.
 
 If the command above shows a directory inside your conda environment instead,
-e.g. ``~/mambaforge/envs/esmvaltool/lib/python3.11/site-packages/esmvalcore``,
+e.g. ``~/miniforge3/envs/esmvaltool/lib/python3.11/site-packages/esmvalcore``,
 you may need to manually remove that directory and run
 ``pip install --editable '.[develop]'`` again.
+
+Finally, also install the :ref:`esmvaltool:pre-commit` hooks by running:
+
+.. code-block:: bash
+
+    pre-commit install
+
+these will make sure that when you commit your changes, they will be formatted
+correctly.
 
 .. _install_on_hpc:
 
@@ -509,6 +536,7 @@ estate, so there is no need to install ESMValTool if you are just running recipe
    A Jupyter kernel based on the latest module is available from `DKRZ-JupyterHub <https://jupyterhub.dkrz.de/hub/home>`__.
  - Met Office: `esmvaltool` is available on the Linux estate after login and module loading via `module load`;
    see the ESMValTool Community of Practice SharePoint site for more details.
+ - NSC-Tetralith and Freja: `esmvaltool` is available after login and module loading via `module load esmvaltool`.
 
 The ESMValTool Tutorial provides a `quickstart guide <https://tutorial.esmvaltool.org/01-quickstart/index.html>`__
 that is particularly suited for new users that have an access to pre-installed version of ESMValTool.
@@ -638,10 +666,11 @@ ESMValTool and any remaining Python dependencies with the command:
     pip install esmvaltool
 
 If you would like to run Julia diagnostic scripts, you will also need to
-install the Julia dependencies:
+install Julia and the ESMValTool Julia dependencies:
 
 .. code-block:: bash
 
+    curl -fsSL https://install.julialang.org | sh -s -- --yes
     esmvaltool install Julia
 
 .. _installation_from_the_conda_lock_file:

@@ -24,20 +24,23 @@ The easiest way to do this is probably to copy the example recipe and diagnostic
 script and adjust those to your needs.
 
 If you have no preferred programming language yet, Python 3 is highly recommended, because it is most well supported.
-However, NCL, R, and Julia scripts are also supported.
+However, NCL, R, (and Julia) scripts are also supported.
+
+.. note::
+
+    ESMValTool stopped supporting Julia as a main dependency, so if you'd like to
+    write and test a Julia diagnostic, you will have to install Julia from source.
 
 Good example recipes for the different languages are:
 
 -  python: `esmvaltool/recipes/examples/recipe_python.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_python.yml>`_
 -  R: `esmvaltool/recipes/examples/recipe_r.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_r.yml>`_
--  julia: `esmvaltool/recipes/examples/recipe_julia.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_julia.yml>`_
 -  ncl: `esmvaltool/recipes/examples/recipe_ncl.yml <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_ncl.yml>`_
 
 Good example diagnostics are:
 
 -  python: `esmvaltool/diag_scripts/examples/diagnostic.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.py>`_
 -  R: `esmvaltool/diag_scripts/examples/diagnostic.R <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.R>`_
--  julia: `esmvaltool/diag_scripts/examples/diagnostic.jl <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.jl>`_
 -  ncl: `esmvaltool/diag_scripts/examples/diagnostic.ncl <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.ncl>`_
 
 For an explanation of the recipe format, you might want to read about the
@@ -64,7 +67,7 @@ If it is just a few simple scripts or packaging is not possible (i.e. for NCL) y
 and paste the source code into the ``esmvaltool/diag_scripts`` directory.
 
 If you have existing code in a compiled language like
-C, C++, or Fortran that you want to re-use, the recommended way to proceed is to add Python bindings and publish
+C, C++, or Fortran that you want to reuse, the recommended way to proceed is to add Python bindings and publish
 the package on PyPI so it can be installed as a Python dependency. You can then call the functions it provides
 using a Python diagnostic.
 
@@ -105,6 +108,26 @@ A resolution of 150 `dpi <https://en.wikipedia.org/wiki/Dots_per_inch>`_ is
 recommended for these image files, as this is high enough for the images to look
 good on the documentation webpage, but not so high that the files become large.
 
+By default, the first example image will be used for the automatically
+generated gallery. To select a specific image for the gallery, you can use the
+following syntax for an arbitrary amount of images:
+
+.. code-block:: rst
+
+  .. _fig_name:
+  ..
+    gallery
+  .. figure:: /recipes/figure/recipe_name/figure-name.png
+
+To not have any figure appear in the gallery, you can include a
+
+.. code-block:: rst
+
+  ..
+    no-gallery
+
+anywhere in your recipe documentation file.
+
 In the recipe
 -------------
 Fill in the ``documentation`` section of the recipe as described in
@@ -134,9 +157,8 @@ Diagnostic output
 Typically, diagnostic scripts create plots, but any other output such as e.g.
 text files or tables is also possible.
 Figures should be saved in the ``plot_dir``, either in both ``.pdf`` and
-``.png`` format (preferred), or
-respect the ``output_file_type`` specified in the
-:ref:`esmvalcore:user configuration file`.
+``.png`` format (preferred), or respect the :ref:`configuration option
+<esmvalcore:config_options>` ``output_file_type`` .
 Data should be saved in the ``work_dir``, preferably as a ``.nc``
 (`NetCDF <https://www.unidata.ucar.edu/software/netcdf/>`__) file, following the
 `CF-Conventions <https://cfconventions.org/>`__ as much as possible.
@@ -181,7 +203,7 @@ human inspection.
 In addition to provenance information, a caption is also added to the plots.
 
 Provenance information from the recipe is automatically recorded by ESMValCore, whereas
-diagnostic scripts must include code specifically to record provenance. See below for 
+diagnostic scripts must include code specifically to record provenance. See below for
 documentation of provenance attributes that can be included in a recipe.
 When contributing a diagnostic, please make sure it records the provenance,
 and that no warnings related to provenance are generated when running the recipe.
@@ -252,7 +274,7 @@ for example
   plot_types:
     errorbar: error bar plot
 
-To use these items, include them in the provenance record dictionary in the form 
+To use these items, include them in the provenance record dictionary in the form
 :code:`key: [value]`
 i.e. for the example above as
 :code:`'plot_types': ['errorbar']`.
@@ -275,8 +297,8 @@ Always use :func:`esmvaltool.diag_scripts.shared.run_diagnostic` at the end of y
     with run_diagnostic() as config:
         main(config)
 
-Create a ``provenance_record`` for each diagnostic file (i.e. image or data 
-file) that the diagnostic script outputs. The ``provenance_record`` is a 
+Create a ``provenance_record`` for each diagnostic file (i.e. image or data
+file) that the diagnostic script outputs. The ``provenance_record`` is a
 dictionary of provenance items, for example:
 
 .. code-block:: python
@@ -296,15 +318,15 @@ dictionary of provenance items, for example:
         'statistics': ['mean'],
       }
 
-To save a matplotlib figure, use the convenience function 
-:func:`esmvaltool.diag_scripts.shared.save_figure`. Similarly, to save Iris cubes use 
+To save a matplotlib figure, use the convenience function
+:func:`esmvaltool.diag_scripts.shared.save_figure`. Similarly, to save Iris cubes use
 :func:`esmvaltool.diag_scripts.shared.save_data`. Both of these functions take
 ``provenance_record`` as an argument and log the provenance accordingly.
 Have a look at the example Python diagnostic in
 `esmvaltool/diag_scripts/examples/diagnostic.py <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.py>`_
 for a complete example.
 
-For any other files created, you will need to make use of a 
+For any other files created, you will need to make use of a
 :class:`esmvaltool.diag_scripts.shared.ProvenanceLogger` to log provenance. Include the
 following code directly after the file is saved:
 
@@ -372,10 +394,6 @@ For example:
   )
 
   provenance_records[output_file] = provenance_record
-
-Have a look at the example Julia diagnostic in
-`esmvaltool/diag_scripts/examples/diagnostic.jl <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/diag_scripts/examples/diagnostic.jl>`_
-for a complete example.
 
 Recording provenance in an R diagnostic script
 ----------------------------------------------
@@ -489,7 +507,7 @@ This includes the following items:
 * In-code documentation (comments, docstrings)
 * Code quality (e.g. no hardcoded pathnames)
 * No Codacy errors reported
-* Re-use of existing functions whenever possible
+* Reuse of existing functions whenever possible
 * Provenance implemented
 
 Run recipe

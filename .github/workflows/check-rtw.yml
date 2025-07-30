@@ -1,0 +1,79 @@
+# This workflow performs various validation steps for Cylc and Rose.
+name: Check Recipe Test Workflow (RTW)
+
+# Controls when the action will run
+on:
+  # Triggers the workflow on push events
+  push:
+    paths:
+      - esmvaltool/utils/recipe_test_workflow/**
+
+  # Schedule this workflow to run at 04:00 every 10 days
+  schedule:
+    - cron: '0 4 */10 * *'
+
+# Common variables are defined here
+env:
+  RTW_ROOT_DIR: esmvaltool/utils/recipe_test_workflow
+
+# Required shell entrypoint to have properly configured bash shell
+defaults:
+  run:
+    shell: bash -l {0}
+
+# A workflow run is made up of one or more jobs that can run
+# sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "check-rtw"
+  check-rtw:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || github.repository == 'ESMValGroup/ESMValTool' # avoid scheduled GHAs in forks
+
+    # Steps represent a sequence of tasks that will be executed as part
+    # of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job
+      # can access it
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Cylc
+        uses: cylc/setup-cylc@v1
+        with:
+          cylc_rose: true
+
+      - name: Validate Cylc workflow
+        run: |
+          cd ${RTW_ROOT_DIR}
+          cylc validate . -O metoffice
+
+      - name: Run Cylc configuration linter
+        run: |
+          cd ${RTW_ROOT_DIR}
+          cylc lint
+
+      - name: Validate format of Rose configuration files
+        run: |
+          cd ${RTW_ROOT_DIR}
+          output="$(rose config-dump)"
+          msg="Run 'rose config-dump' to re-dump the Rose configuration files"
+          msg="${msg} in the common format, then commit the changes."
+          # The '-z' option returns true if 'output' is empty.
+          if [[ -z "${output}" ]]; then true; else echo "${msg}" && exit 1; fi
+
+      - name: Validate Rose configuration metadata
+        run: |
+          cd ${RTW_ROOT_DIR}
+          rose metadata-check -C meta/
+
+      - name: Run Rose configuration validation macros
+        run: |
+          cd ${RTW_ROOT_DIR}
+          rose macro -V
+
+      - name: Lint shell scripts
+        run: |
+          cd ${RTW_ROOT_DIR}
+          output=$(find . -name "*.sh" -exec shellcheck {} \;)
+          if [ "$output" ]; then echo "${output}" && exit 1; fi

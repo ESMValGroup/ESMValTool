@@ -17,9 +17,10 @@ defaults:
 jobs:
   linux:
     runs-on: "ubuntu-latest"
+    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     strategy:
       matrix:
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.11", "3.12", "3.13"]
       fail-fast: false
     name: Linux Python ${{ matrix.python-version }}
     steps:
@@ -32,8 +33,8 @@ jobs:
           environment-file: environment.yml
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
-          miniforge-variant: Mambaforge
           use-mamba: true
+          mamba-version: "2.0.5"  # https://github.com/conda-incubator/setup-miniconda/issues/392
       - run: mkdir -p source_install_linux_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
         run: |
@@ -57,9 +58,10 @@ jobs:
 #
 #  osx:
 #    runs-on: "macos-latest"
+#    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
 #    strategy:
 #      matrix:
-#        python-version: ["3.10", "3.11"]
+#        python-version: ["3.11"]
 #      fail-fast: false
 #    name: OSX Python ${{ matrix.python-version }}
 #    steps:
