@@ -113,7 +113,6 @@ diagnostics:
         group_variables_by: variable_group
         plots:
           annual_cycle:
-            annual_mean_kwargs: False
             plot_kwargs:
               default:
                 color: red
