@@ -135,7 +135,6 @@ diagnostics:
         <<: *plot_script
         plots:
           timeseries:
-            annual_mean_kwargs: false
             caption: "Timeseries of global air mass anomaly (solid blue line)."
             pyplot_kwargs:
               title: "Anomaly of global air mass"
@@ -165,7 +164,6 @@ diagnostics:
         <<: *plot_script
         plots:
           timeseries:
-            annual_mean_kwargs: false
             caption: "Timeseries of global moisture flux into the atmosphere (solid blue line). As red lines min and max global mean values found in reference datasets (observations, reanalyses) across all months and all reference datasets are shown."
             pyplot_kwargs:
               title: "Anomaly of global moisture flux into the atmosphere"
@@ -199,7 +197,6 @@ diagnostics:
         <<: *plot_script
         plots:
           timeseries:
-            annual_mean_kwargs: false
             caption: "Timeseries of global water vapour mass (solid blue line). As red lines min and max global sum values found in reference datasets (observations, reanalyses) across all months and all reference datasets are shown."
             pyplot_kwargs:
               title: "Global sum of water vapour"
