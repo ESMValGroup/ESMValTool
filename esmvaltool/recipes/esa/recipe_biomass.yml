@@ -1,0 +1,44 @@
+# ESMValTool
+---
+documentation:
+  title: Above-ground biomass maps.
+  description: >
+    Plot climatologies for above-ground biomass.
+  authors:
+    - lauer_axel
+  maintainer:
+    - lauer_axel
+
+preprocessors:
+  pp_map:
+#    regrid:
+#      target_grid: 0.5x0.5
+#      scheme: linear
+    climate_statistics:
+      operator: mean
+
+
+diagnostics:
+  mapplot:
+    variables:
+      agb:
+        mip: Lyr
+        exp: historical
+        timerange: '2022/2022'
+        ensemble: r1i1p1f1
+        preprocessor: pp_map
+        additional_datasets:
+          - {project: OBS6, dataset: ESACCI-BIOMASS, version: v6.0, type: sat, tier: 2,
+              alias: ESACCI-BIOMASS, frequency: yr}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        facet_used_for_labels: alias
+        plots:
+          map:
+            common_cbar: true
+            plot_kwargs:
+              default:
+                cmap: 'YlGn'
+                levels: [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
