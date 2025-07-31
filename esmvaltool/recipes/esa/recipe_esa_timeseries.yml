@@ -201,9 +201,12 @@ diagnostics:
         project: CMIP6
         short_name: clt
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, start_year: 1992, project: OBS6, type: sat, version: v3.0-AVHRR-AM, tier: 2, alias: AVHRR-AM}
-#          - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0-AVHRR-PM, tier: 2, alias: AVHRR-PM}
-          - {dataset: ESACCI-CLOUD, project: OBS6, type: sat, version: v3.0-AVHRR-AMPM, tier: 2, alias: AVHRR-AMPM}
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-AMPM,
+             alias: AVHRR-AMPM}
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-AM,
+             start_year: 1992, alias: AVHRR-AM}
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-PM,
+             alias: AVHRR-PM}
     scripts:
       allplots:
         script: monitor/multi_datasets.py
