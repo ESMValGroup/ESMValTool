@@ -77,24 +77,32 @@ diagnostics:
     variables:
       sea_ice_area_nh: &var_basic
         short_name: siconc
-        timerange: '1979/2020'
+        timerange: '1991/2020'
         preprocessor: pp_nh
         project: CMIP6
         mip: SImon
         exp: historical
         ensemble: r1i1p1f1
         grid: gr
-        reference_dataset: OSI-450-nh
+#        reference_dataset: OSI-450-nh
+        reference_dataset: ESACCI-SEAICE
         additional_datasets:
         - {dataset: OSI-450-nh, project: OBS, type: reanaly, version: v3, mip: OImon, tier: 2,
-            benchmark_dataset: true, supplementary_variables: [{short_name: areacello, mip: fx}]}
+            supplementary_variables: [{short_name: areacello, mip: fx}]}
+        - {dataset: ESACCI-SEAICE, project: OBS6, type: sat,
+            version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-NH, mip: SImon, tier: 2,
+            benchmark_dataset: true, supplementary_variables: [{short_name: areacello, mip: Ofx}]}
       sea_ice_area_sh:
         <<: *var_basic
         preprocessor: pp_sh
-        reference_dataset: OSI-450-sh
+#        reference_dataset: OSI-450-sh
+        reference_dataset: ESACCI-SEAICE
         additional_datasets:
         - {dataset: OSI-450-sh, project: OBS, type: reanaly, version: v3, mip: OImon, tier: 2,
-            benchmark_dataset: true, supplementary_variables: [{short_name: areacello, mip: fx}]}
+            supplementary_variables: [{short_name: areacello, mip: fx}]}
+        - {dataset: ESACCI-SEAICE, project: OBS6, type: sat,
+            version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-SH, mip: SImon, tier: 2,
+            benchmark_dataset: true, supplementary_variables: [{short_name: areacello, mip: Ofx}]}
     scripts:
       allplots:
         script: monitor/multi_datasets.py
@@ -107,6 +115,12 @@ diagnostics:
             pyplot_kwargs:
               title: 'Sea ice area (million km2)'
             plot_kwargs:
+              ESACCI-SEAICE:
+                color: blue
+                label: 'ESACCI-SEAICE'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
               OSI-450-nh:
                 color: blue
                 label: 'OSISAF/CCI'
@@ -133,18 +147,28 @@ diagnostics:
         <<: *var_basic
         timerange: '1979/2020'
         preprocessor: pp_nh_sep
-        reference_dataset: OSI-450-nh
+#        reference_dataset: OSI-450-nh
+        reference_dataset: ESACCI-SEAICE
         additional_datasets:
         - {dataset: OSI-450-nh, project: OBS, type: reanaly, version: v3, mip: OImon, tier: 2,
-            benchmark_dataset: true, supplementary_variables: [{short_name: areacello, mip: fx}], timerange: 1979/2020}
+            supplementary_variables: [{short_name: areacello, mip: fx}]}
+        - {dataset: ESACCI-SEAICE, project: OBS6, type: sat,
+            version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-NH, mip: SImon, tier: 2,
+            benchmark_dataset: true, supplementary_variables: [{short_name: areacello, mip: Ofx}],
+            timerange: 1991/2020}
       sea_ice_area_sh_feb:
         <<: *var_basic
         timerange: '1979/2020'
         preprocessor: pp_sh_feb
-        reference_dataset: OSI-450-sh
+#        reference_dataset: OSI-450-sh
+        reference_dataset: ESACCI-SEAICE
         additional_datasets:
         - {dataset: OSI-450-sh, project: OBS, type: reanaly, version: v3, mip: OImon, tier: 2,
-            benchmark_dataset: true, supplementary_variables: [{short_name: areacello, mip: fx}], timerange: 1979/2020}
+            supplementary_variables: [{short_name: areacello, mip: fx}]}
+        - {dataset: ESACCI-SEAICE, project: OBS6, type: sat,
+            version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-SH, mip: SImon, tier: 2,
+            benchmark_dataset: true, supplementary_variables: [{short_name: areacello, mip: Ofx}],
+            timerange: 1991/2020}
     scripts:
       allplots:
         script: monitor/multi_datasets.py
@@ -157,7 +181,7 @@ diagnostics:
             caption: 'Time series of NH September/SH February sea ice area in million km2 from [dataset] compared with OSI-450.'
 
   sic_mean_1980:
-    title: sea ice concentration 1980-1999
+    title: sea ice concentration 1980-1989
     description: test sea ice concentration
     variables:
       sic:
@@ -166,7 +190,7 @@ diagnostics:
         preprocessor: pp_map
         additional_datasets:
         - {dataset: OSI-450-nh, project: OBS, type: reanaly, version: v3, mip: OImon, tier: 2,
-            supplementary_variables: [{short_name: areacello, mip: fx}], timerange: 1980/1999}
+            supplementary_variables: [{short_name: areacello, mip: fx}], timerange: 1980/1989}
     scripts:
       plot:
         script: clouds/clouds.ncl
@@ -177,7 +201,7 @@ diagnostics:
         region: [50, 90, 0, 360]
 
   sic_mean_2000:
-    title: sea ice concentration 2000-2019
+    title: sea ice concentration 2010-2019
     description: test sea ice concentration
     variables:
       sic:
@@ -186,7 +210,11 @@ diagnostics:
         preprocessor: pp_map
         additional_datasets:
         - {dataset: OSI-450-nh, project: OBS, type: reanaly, version: v3, mip: OImon, tier: 2,
-            supplementary_variables: [{short_name: areacello, mip: fx}], timerange: 2000/2019}
+            supplementary_variables: [{short_name: areacello, mip: fx}], timerange: 2010/2019}
+        - {dataset: ESACCI-SEAICE, project: OBS6, type: sat,
+            version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-NH, mip: SImon, tier: 2,
+            benchmark_dataset: true, supplementary_variables: [{short_name: areacello, mip: Ofx}],
+            timerange: 2010/2019}
     scripts:
       plot:
         script: clouds/clouds.ncl
