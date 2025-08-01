@@ -24,8 +24,8 @@ and
 Basic documentation schema
 --------------------------
 This gives a brief idea of topics in each of the packages to help find information. As ESMValTool encompasses ESMValCore there will be some overlap between them.
-For more detailed information, see documentation navigation to the left. Please also see
-`ESMValCore documentation <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/index.html>`_. ESMValCore can be used without ESMValTool such as in Jupyter
+The documentation navigation to the left provides more detailed information about ESMValTool.
+`ESMValCore documentation <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/index.html>`_ is also available. ESMValCore can be used without ESMValTool such as in Jupyter
 notebooks.
 
 .. container::
