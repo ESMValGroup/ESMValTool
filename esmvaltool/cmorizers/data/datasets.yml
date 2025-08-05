@@ -4,7 +4,7 @@ datasets:
   AERONET:
     tier: 3
     source: "https://aeronet.gsfc.nasa.gov/"
-    last_access: 2024-04-06
+    last_access: 2025-07-26
     info: |
       Aerosol Optical Depth information from a worldwide network of stations.
 
@@ -701,6 +701,17 @@ datasets:
     last_access: 2020-03-03
     info: "Use automatic download feature to get the data"
 
+  GLWD:
+    tier: 2
+    source: https://figshare.com/articles/dataset/Global_Lakes_and_Wetlands_Database_GLWD_version_2_0/28519994
+    last_access: 2025-07-01
+    info: |
+      Use automatic download to download the following file:
+        GLWD_v2_0_combined_classes_tif.zip
+
+      The dataset is representative of the time period (1984 - 2020) and is thus
+      marked with the timestamp of the year 2002.
+
   GPCC:
     tier: 2
     source: |
@@ -777,6 +788,17 @@ datasets:
         climatology
             [Source]/absolute_v5.nc
 
+  HadEX3:
+    tier: 2
+    source: https://www.metoffice.gov.uk/hadobs/hadex3/download_etccdi.html
+    last_access: 2025-02-05
+    info: |
+      Use automatic download, it will download and unzip all required files:
+      "HadEX3_TXx_MON.nc.gz", "HadEX3_TXx_ANN.nc.gz",
+      "HadEX3_TNn_MON.nc.gz", "HadEX3_TNn_ANN.nc.gz",
+      "HadEX3_Rx1day_MON.nc.gz", "HadEX3_Rx1day_ANN.nc.gz",
+      "HadEX3_Rx5day_MON.nc.gz" and "HadEX3_Rx5day_ANN.nc.gz".
+
   HadISST:
     tier: 2
     source: http://www.metoffice.gov.uk/hadobs/hadisst/data/download.html
@@ -808,6 +830,22 @@ datasets:
       Download the following file:
         HWSD_SOIL_CLM_RES.nc4
       A registration is required
+
+  IAP:
+    tier: 2
+    source: http://www.ocean.iap.ac.cn/pages/dataService/dataService.html
+    last_access: 2025-01-20
+    info: |
+      Download the following files:
+      Temperature_IAPv4.2_gridded_data_1940_1949.zip
+      Temperature_IAPv4.2_gridded_data_1950_1959.zip
+      Temperature_IAPv4.2_gridded_data_1960_1969.zip
+      Temperature_IAPv4.2_gridded_data_1970_1979.zip
+      Temperature_IAPv4.2_gridded_data_1980_1989.zip
+      Temperature_IAPv4.2_gridded_data_1990_1999.zip
+      Temperature_IAPv4.2_gridded_data_2000_2009.zip
+      Temperature_IAPv4.2_gridded_data_2010_2019.zip
+      Temperature_IAPv4.2_gridded_data_2020_2023.zip
 
   ISCCP-FH:
     tier: 2
@@ -1135,6 +1173,22 @@ datasets:
         ersst.v5.yyyymm.nc
         for years 1854 onwards
 
+  NOAA-GML-SURFACE-FLASK-CH4:
+    tier: 2
+    source: https://gml.noaa.gov/aftp/data/trace_gases/ch4/flask/surface/
+    last_access: 2024-07-30
+    info: |
+      Download the following archive:
+      ch4_surface-flask_ccgg_text.tar.gz
+
+  NOAA-GML-SURFACE-FLASK-CO2:
+    tier: 2
+    source: https://gml.noaa.gov/aftp/data/trace_gases/co2/flask/surface/
+    last_access: 2024-07-30
+    info: |
+      Download the following archive:
+      co2_surface-flask_ccgg_text.tar.gz
+
   NOAAGlobalTemp:
     tier: 2
     source: https://www.ncei.noaa.gov/data/noaa-global-surface-temperature/v5/access/
@@ -1301,6 +1355,14 @@ datasets:
     info: |
       Contact Ralf Bennartz (Earth and Environmental Sciences, Vanderbilt
       University, USA).
+
+  WAD2M:
+    tier: 2
+    source: https://doi.org/10.5281/zenodo.3998453
+    last_access: 2025-07-01
+    info: |
+      Use the automatic download to download the file:
+        WAD2M_wetlands_2000-2020_025deg_Ver2.0.nc
 
   WFDE5:
     tier: 2

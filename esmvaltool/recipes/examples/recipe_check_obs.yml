@@ -205,22 +205,54 @@ diagnostics:
   ESACCI-CLOUD:
     description: ESACCI-CLOUD check
     variables:
-      clivi:
+      clivi: &var_mon
+        mip: Amon
+        start_year: 1982
+        end_year: 2016
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-AMPM}
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-AM, start_year: 1992}
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-PM}
       clt:
+        <<: *var_mon
       cltStderr:
+        <<: *var_mon
       clwvi:
+        <<: *var_mon
       lwp:
+        <<: *var_mon
       rlut:
+        <<: *var_mon
       rlutcs:
+        <<: *var_mon
       rsut:
+        <<: *var_mon
       rsutcs:
+        <<: *var_mon
       rsdt:
+        <<: *var_mon
       rlus:
+        <<: *var_mon
       rsus:
+        <<: *var_mon
       rsuscs:
-    additional_datasets:
-      - {dataset: ESACCI-CLOUD, project: OBS, mip: Amon, tier: 2,
-         type: sat, version: AVHRR-AMPM-fv3.0, start_year: 1982, end_year: 2016}
+        <<: *var_mon
+      clt_day: &var_day
+        short_name: clt
+        mip: day
+        start_year: 2003
+        end_year: 2007
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-AMPM}
+      clwvi_day:
+        <<: *var_day
+        short_name: clwvi
+        mip: CFday
+        version: v3.0-AVHRR-AMPM-daylight
+      cod_day:
+        <<: *var_day
+        short_name: cod
+        version: v3.0-AVHRR-AMPM-daylight
     scripts: null
 
 
@@ -539,6 +571,21 @@ diagnostics:
     scripts: null
 
 
+  HadEX3:
+    description: HadEX3 check
+    variables:
+      txx:
+      tnn:
+      rx1day:
+      rx5day:
+    additional_datasets:
+      - {dataset: HadEX3, project: OBS6, mip: yr, tier: 2,
+         type: ground, version: v3.0.4, start_year: 1901, end_year: 2018}
+      - {dataset: HadEX3, project: OBS6, mip: Amon, tier: 2,
+         type: ground, version: v3.0.4, start_year: 1901, end_year: 2018}
+    scripts: null
+
+
   HadISST:
     description: HadISST check
     variables:
@@ -562,6 +609,16 @@ diagnostics:
     additional_datasets:
       - {dataset: HALOE, project: OBS, mip: Amon, tier: 2,
          type: sat, version: 1, start_year: 1991, end_year: 2002}
+    scripts: null
+
+  IAP:
+    description: IAP check
+    variables:
+      thetao:
+      tos:
+    additional_datasets:
+      - {dataset: IAP, project: OBS6, mip: Omon, tier: 2,
+         type: reanaly, version: "v4.2", start_year: 1990, end_year: 1991}
     scripts: null
 
   ISCCP-FH:
@@ -782,6 +839,24 @@ diagnostics:
     additional_datasets:
       - {dataset: NOAA-ERSSTv3b, project: OBS6, mip: Omon, tier: 2,
          type: reanaly, version: v3b, start_year: 1854, end_year: 2019}
+    scripts: null
+
+  NOAA-GML-SURFACE-FLASK-CH4:
+    description: NOAA Global Monitoring Lab Surface flask CH4 data check
+    variables:
+      ch4s:
+    additional_datasets:
+      - {dataset: NOAA-GML-SURFACE-FLASK-CH4, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
+         start_year: 1983, end_year: 2023}
+    scripts: null
+
+  NOAA-GML-SURFACE-FLASK-CO2:
+    description: NOAA Global Monitoring Lab Surface flask CO2 data check
+    variables:
+      co2s:
+    additional_datasets:
+      - {dataset: NOAA-GML-SURFACE-FLASK-CO2, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
+         start_year: 1968, end_year: 2023}
     scripts: null
 
   NOAA-MBL-CH4:
@@ -1009,7 +1084,7 @@ diagnostics:
     variables:
       od440aer:
     additional_datasets:
-      - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20240406}
+      - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20250726}
     scripts: null
 
   ANUClimate:
@@ -1703,6 +1778,16 @@ diagnostics:
     scripts: null
 
 
+  GLWD:
+    description: GLWD check
+    variables:
+      wetlandFrac:
+    additional_datasets:
+      - {dataset: GLWD, project: OBS6, mip: Emon, tier: 2,
+         type: land, version: '2.0', start_year: 2002, end_year: 2002}
+    scripts: null
+
+
   GRACE:
     description: GRACE check
     variables:
@@ -2086,4 +2171,13 @@ diagnostics:
     additional_datasets:
       - {dataset: UWisc, project: OBS, mip: Amon, tier: 3,
          type: sat, version: v2, start_year: 1988, end_year: 2007}
+    scripts: null
+
+  WAD2M:
+    description: WAD2M check
+    variables:
+      wetlandFrac:
+    additional_datasets:
+      - {dataset: WAD2M, project: OBS6, mip: Emon, tier: 2,
+        type: sat, version: "2.0", start_year: 2000, end_year: 2020}
     scripts: null
