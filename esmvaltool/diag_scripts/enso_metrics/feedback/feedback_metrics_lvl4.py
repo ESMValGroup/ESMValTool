@@ -56,9 +56,13 @@ def feedback_nonlin_lvl4(sst_cube, tauu_cube):
     xbelow0 = tauu_aux.extract(below0)
     xabove0 = tauu_aux.extract(above0)
 
-    logger.info(f"{sst_cube.standard_name}, {tauu_cube.standard_name}")
+    logger.info("%s, %s", sst_cube.standard_name, tauu_cube.standard_name)
     logger.info(
-        f"ssta_neg: {ssta_neg.shape}, ssta_pos: {ssta_pos.shape}, xbelow0: {xbelow0.shape}, xabove0: {xabove0.shape}",
+        "%s: %s, %s: %s, %s: %s, %s: %s",
+        "ssta_neg", ssta_neg.shape,
+        "ssta_pos", ssta_pos.shape,
+        "xbelow0", xbelow0.shape,
+        "xabove0", xabove0.shape,
     )
 
     outreg_cube = annual_structure_reg(xbelow0, ssta_neg)

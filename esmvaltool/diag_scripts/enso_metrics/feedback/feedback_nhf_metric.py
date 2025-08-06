@@ -118,7 +118,7 @@ def plt_lvl2_subplot(ts_cube, tauu_cube, dataset_label, metric_varls):
 
 def linreg_1d(tauu, ts):  # cube or df
     """Perform linear regression on 1D data."""
-    logger.info(f"linreg_1d shapes {tauu.shape}, {ts.shape}")
+    logger.info("linreg_1d shapes %s, %s", tauu.shape, ts.shape)
     if isinstance(tauu, iris.cube.Cube):
         b_data = ts.data
         a_data = tauu.data

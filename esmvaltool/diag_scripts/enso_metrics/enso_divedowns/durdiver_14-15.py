@@ -1,4 +1,4 @@
-"""diagnostic script to plot ENSO metrics duration, diversity dive downs."""
+"""Diagnostic script to plot ENSO metrics duration, diversity dive downs."""
 
 import logging
 import os
@@ -93,6 +93,7 @@ def enso_composite(n34):
 
 def threshold_duration(line, value, enso):
     """Count duration for each dataset and enso composite."""
+    cnt_month = np.zeros_like(line, dtype=bool)
     if enso == "el nino":
         cnt_month = line > value
     elif enso == "la nina":

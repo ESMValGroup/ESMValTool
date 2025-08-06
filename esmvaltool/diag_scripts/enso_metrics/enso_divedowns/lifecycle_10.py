@@ -313,14 +313,14 @@ def compute_enso_metrics(input_pair, dt_ls, var_group):
 
 def mask_to_years(events):
     """Convert masked array to years."""
-    maskedTime = np.ma.masked_array(
+    maskedyime = np.ma.masked_array(
         events.coord("time").points,
         mask=events.data.mask,
     )
     # return years
     return [
         events.coord("time").units.num2date(time).year
-        for time in maskedTime.compressed()
+        for time in maskedtime.compressed()
     ]
 
 

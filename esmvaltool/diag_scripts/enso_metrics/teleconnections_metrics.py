@@ -78,7 +78,7 @@ def plot_level1(input_data, rmse, title):
     else:
         reg_unit = "mm/day"
     cbar.set_label(f"regression ({reg_unit}/°C)")
-    logger.info("%s, %s : metric:%f", title, label, rmse)
+    logger.info("%s : metric:%f", title, rmse)
     figure.subplots_adjust(bottom=0.125, top=0.98, left=0.05, right=0.95)
 
     return figure
@@ -90,10 +90,10 @@ def lin_regress_matrix(cubea, cubeb):
 
     Parameters
     ----------
-    cubeA: iris.cube.Cube
+    cubea: iris.cube.Cube
         The 2D input cube for which the regression is calculated.
 
-    cubeB: iris.cube.Cube
+    cubeb: iris.cube.Cube
         The cube used as the independent variable in the regression.
 
     Returns
@@ -320,7 +320,7 @@ def main(cfg):
     ]  # for multiple datasets do we need to iterate through?
 
     for metric, var_preproc in metrics.items():
-        logger.info(f"{metric},{var_preproc}")
+        logger.info("%s,%s", metric, var_preproc)
         obs, models = [], []
         for var_prep in var_preproc:
             obs += select_metadata(

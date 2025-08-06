@@ -1,4 +1,4 @@
-"""enso metrics amplitude, seasonality, skewness dive downs."""
+"""Script for enso metrics amplitude, seasonality, skewness dive downs."""
 
 import logging
 import os
@@ -280,7 +280,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
         )
         return fig2, fig3
 
-    elif metric == "12seasonality":
+    if metric == "12seasonality":
         fig2 = seasonality_level2(model_obs, dt_ls)
         fig3 = seasonality_level3(
             [input_pair[0][var_group[1]], input_pair[1][var_group[1]]],
@@ -315,7 +315,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
         )
         return fig2, fig3, fig4, fig5
 
-    elif metric == "13asymmetry":
+    if metric == "13asymmetry":
         asymls, asym_cubes = [], []
         region = {
             "start_longitude": 150.0,
@@ -385,7 +385,7 @@ def main(cfg):
 
     # select twice with project to get obs, iterate through model selection
     for metric, var_preproc in metrics.items():
-        logger.info(f"{metric},{var_preproc}")
+        logger.info("%s,%s", metric, var_preproc)
         obs, models = [], []
         for var_prep in var_preproc:
             obs += select_metadata(

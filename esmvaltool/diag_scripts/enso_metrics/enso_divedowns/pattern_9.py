@@ -82,7 +82,7 @@ def enso_regression(prep_datasets, i, label):
         )
         cube_2 = prep_datasets[0].extract(year_enso)
         cube = climate_statistics(cube_2, operator="mean")
-        if enso == "nina":  ## plot separate
+        if enso == "nina":  # plot separate
             i, cf = plot_ensofig(i, cube, f"La Nina {label}")
         else:
             i, cf = plot_ensofig(i, cube, f"El Nino {label}")

@@ -116,10 +116,10 @@ def feedback_nonlin(sst_cube, tauu_cube, level4=False):
         posreg_cube = annual_structure_reg(xabove0, ssta_pos)
         all_cube = annual_structure_reg(tauu_cube, sst_cube)
         return all_cube, outreg_cube, posreg_cube
-    else:
-        outreg_cube = lin_regress_matrix(xbelow0, ssta_neg)
-        posreg_cube = lin_regress_matrix(xabove0, ssta_pos)
-        return outreg_cube, posreg_cube
+
+    outreg_cube = lin_regress_matrix(xbelow0, ssta_neg)
+    posreg_cube = lin_regress_matrix(xabove0, ssta_pos)
+    return outreg_cube, posreg_cube, None
 
 
 def obs_extract_overlap(obs_1, obs_2):
@@ -186,7 +186,7 @@ def plot_level3(
     cb2 = lin_regress_matrix(obs1, obs2)
     qplt.plot(cb2, color="black", linestyle="--", label=ds_labels[0])
     # process model data split
-    neg, pos = feedback_nonlin(
+    neg, pos, _ = feedback_nonlin(
         model_ds[metric_varls[0]],
         model_ds[metric_varls[1]],
     )
@@ -197,7 +197,7 @@ def plot_level3(
     qplt.plot(neg, color="blue", linestyle="solid", label=f"{xvar.upper()}A<0")
     qplt.plot(pos, color="red", linestyle="solid", label=f"{xvar.upper()}A>0")
     # process obs data split
-    neg, pos = feedback_nonlin(obs2, obs1)
+    neg, pos, _ = feedback_nonlin(obs2, obs1)
     qplt.plot(neg, color="blue", linestyle="--")
     qplt.plot(pos, color="red", linestyle="--")
 

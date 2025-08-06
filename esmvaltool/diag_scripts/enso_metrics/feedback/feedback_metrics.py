@@ -306,7 +306,7 @@ def obs_extract_overlap(obs_1, obs_2):
     return obs1, obs2
 
 
-def format_longitude(x, pos):
+def format_longitude(x, _pos):
     """Format longitude values for plotting."""
     if x > 180:
         return f"{int(360 - x)}°W"
@@ -433,7 +433,7 @@ def main(cfg):
                 dataset,
             )
             dt_files = [ds["filename"] for ds in obs] + [
-                ds["filename"] for ds in model_ds[dataset]
+                ds["filename"] for ds in mod_ds
             ]
 
             obs_ds = {
