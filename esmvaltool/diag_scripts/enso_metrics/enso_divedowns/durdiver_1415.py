@@ -93,11 +93,10 @@ def enso_composite(n34):
 
 def threshold_duration(line, value, enso):
     """Count duration for each dataset and enso composite."""
-    cnt_month = np.zeros_like(line, dtype=bool)
+    cnt_month = line < -value  # "la nina"
     if enso == "el nino":
         cnt_month = line > value
-    elif enso == "la nina":
-        cnt_month = line < -value
+
     cnt = 0
     durations = []
 
@@ -216,7 +215,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
         obs = enso_composite(input_pair[0][var_group[0]])
 
         fig = duration_composite_plot([obs, mod], dt_ls)
-    elif metric == "15diversity":
+    else:  # metric == "15diversity":
         data_box = []
         for ds in input_pair:  # obs first
             events = enso_events_lc(ds[var_group[0]], metric)

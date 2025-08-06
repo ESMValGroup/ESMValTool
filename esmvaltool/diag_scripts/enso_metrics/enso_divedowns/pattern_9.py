@@ -257,7 +257,7 @@ def plot_lvl3_pattern(model_ds, obs_ds, labels):
     return fig
 
 
-def format_longitude(x, pos):
+def format_longitude(x, _pos):
     """Format longitude values for plotting."""
     if x > 180:
         return f"{int(360 - x)}°W"
@@ -267,31 +267,29 @@ def format_longitude(x, pos):
 
 
 def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
-    """Compute ENSO metrics and return figures."""
-    if metric == "09pattern":
-        # level 2, input_pair: obs first
-        model_ssta = input_pair[1][var_group[2]]
-        model_nino34 = input_pair[1][var_group[0]]
-        reg_mod = lin_regress_matrix(model_ssta, model_nino34)
-        reg_obs = lin_regress_matrix(
-            input_pair[0][var_group[2]],
-            input_pair[0][var_group[0]],
-        )
-        processed = dict(zip(dt_ls, [reg_mod, reg_obs], strict=False))
-        fig2 = plot_maps_pattern(processed)
+    """Compute metrics and return figures."""
+    model_ssta = input_pair[1][var_group[2]]  # input_pair: obs first
+    model_nino34 = input_pair[1][var_group[0]]
+    reg_mod = lin_regress_matrix(model_ssta, model_nino34)
+    reg_obs = lin_regress_matrix(
+        input_pair[0][var_group[2]],
+        input_pair[0][var_group[0]],
+    )
+    processed = dict(zip(dt_ls, [reg_mod, reg_obs], strict=False))
+    fig2 = plot_maps_pattern(processed)
 
-        fig3 = plot_lvl3_pattern(
-            [input_pair[1][var_group[1]], model_nino34],
-            [input_pair[0][var_group[1]], input_pair[0][var_group[0]]],
-            dt_ls,
-        )
-        fig4 = plot_maps_pattern4(
-            [model_ssta, model_nino34],
-            [input_pair[0][var_group[2]], input_pair[0][var_group[0]]],
-            dt_ls,
-        )
+    fig3 = plot_lvl3_pattern(
+        [input_pair[1][var_group[1]], model_nino34],
+        [input_pair[0][var_group[1]], input_pair[0][var_group[0]]],
+        dt_ls,
+    )
+    fig4 = plot_maps_pattern4(
+        [model_ssta, model_nino34],
+        [input_pair[0][var_group[2]], input_pair[0][var_group[0]]],
+        dt_ls,
+    )
 
-        return fig2, fig3, fig4
+    return fig2, fig3, fig4
 
 
 def get_provenance_record(caption, ancestor_files):
@@ -357,7 +355,7 @@ def main(cfg):
         # group models by dataset
         model_ds = group_metadata(models, "dataset", sort="project")
 
-        for dataset in model_ds:
+        for dataset, mod_ds in model_ds.items():
             logger.info(
                 "%s, preprocessed cubes:%d, dataset:%s",
                 metric,
@@ -369,7 +367,7 @@ def main(cfg):
                 attributes["variable_group"]: iris.load_cube(
                     attributes["filename"],
                 )
-                for attributes in model_ds[dataset]
+                for attributes in mod_ds
             }
             input_pair = [obs_datasets, model_datasets]
             logger.info(pformat(model_datasets))

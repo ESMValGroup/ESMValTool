@@ -350,7 +350,7 @@ def main(cfg):
             dataset["variable_group"]: iris.load_cube(dataset["filename"])
             for dataset in obs
         }
-        obsds_label = f'{obs[0]["dataset"]}_{obs[1]["dataset"]}'
+        obsds_label = f"{obs[0]['dataset']}_{obs[1]['dataset']}"
         # group models by dataset
         model_ds = group_metadata(models, "dataset", sort="project")
 

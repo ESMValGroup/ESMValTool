@@ -313,7 +313,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group):
 
 def mask_to_years(events):
     """Convert masked array to years."""
-    maskedyime = np.ma.masked_array(
+    maskedtime = np.ma.masked_array(
         events.coord("time").points,
         mask=events.data.mask,
     )
@@ -342,7 +342,7 @@ def enso_events_lc(cube):
     return events
 
 
-def format_longitude(x, pos):
+def format_longitude(x, _pos):
     """Format longitude values for plotting."""
     if x > 180:
         return f"{int(360 - x)}°W"

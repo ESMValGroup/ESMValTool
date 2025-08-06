@@ -1,4 +1,4 @@
-"""diagnostic script to plot ENSO sst nhf feedback metrics level 3 and 4."""
+"""Diagnostic script to plot ENSO sst nhf feedback metrics level 3 and 4."""
 
 import logging
 import os
@@ -98,7 +98,7 @@ def feedback_nonlin(sst_cube, tauu_cube, level4=False):
         sst_cube.units,
     )
     tauu_aux.add_aux_coord(sst_coord, 0)
-    logger.info(f"non linear shapes {sst_cube.shape}, {tauu_cube.shape}")
+    logger.info("non linear shapes %s, %s", sst_cube.shape, tauu_cube.shape)
     logger.info(tauu_aux.summary())
     below0 = iris.Constraint(
         coord_values={sst_cube.standard_name: lambda cell: cell < 0},
@@ -152,7 +152,7 @@ def obs_extract_overlap(obs_1, obs_2):
     return obs1, obs2
 
 
-def format_longitude(x, pos):
+def format_longitude(x, _pos):
     """Format longitude values for plotting."""
     if x > 180:
         return f"{int(360 - x)}°W"

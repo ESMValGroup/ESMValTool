@@ -59,10 +59,14 @@ def feedback_nonlin_lvl4(sst_cube, tauu_cube):
     logger.info("%s, %s", sst_cube.standard_name, tauu_cube.standard_name)
     logger.info(
         "%s: %s, %s: %s, %s: %s, %s: %s",
-        "ssta_neg", ssta_neg.shape,
-        "ssta_pos", ssta_pos.shape,
-        "xbelow0", xbelow0.shape,
-        "xabove0", xabove0.shape,
+        "ssta_neg",
+        ssta_neg.shape,
+        "ssta_pos",
+        ssta_pos.shape,
+        "xbelow0",
+        xbelow0.shape,
+        "xabove0",
+        xabove0.shape,
     )
 
     outreg_cube = annual_structure_reg(xbelow0, ssta_neg)
@@ -150,7 +154,7 @@ def obs_extract_overlap(obs_1, obs_2):
     return obs1, obs2
 
 
-def format_longitude(x, pos):
+def format_longitude(x, _pos):
     """Format longitude values for plotting."""
     if x > 180:
         return f"{int(360 - x)}°W"
