@@ -28,6 +28,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def annual_structure_reg(nhf_cube, ts_cube):
+    """Annual structure regression for net heat flux and temperature."""
     months_reg = []
     for i in range(1, 13):
         # extract for both cubes
@@ -53,6 +54,7 @@ def annual_structure_reg(nhf_cube, ts_cube):
 
 
 def lin_regress_matrix(cubea, cubebsst, level4=False):
+    """Perform linear regression between two Cubes."""
     a_data = cubea.data.reshape(
         cubea.shape[0], -1,
     )  # Shape (time, spatial_points)
@@ -65,7 +67,9 @@ def lin_regress_matrix(cubea, cubebsst, level4=False):
     b_with_intercept = np.vstack([b_data, np.ones_like(b_data)]).T
 
     logger.info(
-        f"least squares data shapes {b_with_intercept.shape}, {a_data.shape}",
+        "least squares data shapes %s, %s",
+        b_with_intercept.shape,
+        a_data.shape,
     )
     # Solve the linear equations using least squares method
     coefs, _, _, _ = np.linalg.lstsq(b_with_intercept, a_data, rcond=None)
@@ -83,6 +87,7 @@ def lin_regress_matrix(cubea, cubebsst, level4=False):
 
 
 def feedback_nonlin(sst_cube, tauu_cube, level4=False):
+    """Calculate non-linear feedback metrics."""
     tauu_aux = tauu_cube.copy()
     sst_coord = iris.coords.AuxCoord(
         sst_cube.data,
@@ -109,19 +114,11 @@ def feedback_nonlin(sst_cube, tauu_cube, level4=False):
         outreg_cube = annual_structure_reg(xbelow0, ssta_neg)
         posreg_cube = annual_structure_reg(xabove0, ssta_pos)
         all_cube = annual_structure_reg(tauu_cube, sst_cube)
+        return all_cube, outreg_cube, posreg_cube
     else:
-        ky, cnts = np.unique(ssta_pos.data.mask, return_counts=True)
-        msk_pos = dict(zip(ky.tolist(), cnts.tolist(), strict=False))
-        ky, cnts = np.unique(ssta_neg.data.mask, return_counts=True)
-        msk_neg = dict(zip(ky.tolist(), cnts.tolist(), strict=False))
-        all_cube = {"pos": msk_pos[False], "neg": msk_neg[False]}
-        logger.info(
-            f"pos: {msk_pos[False]} cube: {xabove0.shape}, neg: {msk_neg[False]} cube: {xbelow0.shape}",
-        )
         outreg_cube = lin_regress_matrix(xbelow0, ssta_neg)
         posreg_cube = lin_regress_matrix(xabove0, ssta_pos)
-
-    return all_cube, outreg_cube, posreg_cube
+        return outreg_cube, posreg_cube
 
 
 def obs_extract_overlap(obs_1, obs_2):
@@ -133,9 +130,12 @@ def obs_extract_overlap(obs_1, obs_2):
 
     start_overlap = max(start_1, start_2)
     end_overlap = min(end_1, end_2)
-    # convert to yymmdd? use extract time, num2date
     logger.info(
-        f"{obs_1.standard_name}, {obs_2.standard_name} obs time overlap: {start_overlap} to {end_overlap}",
+        "%s, %s obs time overlap: %s to %s",
+        obs_1.standard_name,
+        obs_2.standard_name,
+        start_overlap,
+        end_overlap,
     )
     obs1 = obs_1.extract(
         iris.Constraint(
@@ -152,6 +152,7 @@ def obs_extract_overlap(obs_1, obs_2):
 
 
 def format_longitude(x, pos):
+    """Format longitude values for plotting."""
     if x > 180:
         return f"{int(360 - x)}°W"
     if x == 180:
@@ -159,9 +160,7 @@ def format_longitude(x, pos):
     return f"{int(x)}°E"
 
 
-def plot_level3(
-    obs_ds, model_ds, metric_varls, ds_labels, title,
-):  # edit for nhf
+def plot_level3(obs_ds, model_ds, metric_varls, ds_labels, title,):
     """Plot level 3 diagnostics for ENSO feedback metrics."""
     figure = plt.figure(figsize=(10, 6), dpi=300)
     # plot whole regression
@@ -174,11 +173,11 @@ def plot_level3(
     obs1, obs2 = obs_extract_overlap(
         obs_ds[metric_varls[2]], obs_ds[metric_varls[0]],
     )
-    # obs_ds_label = f"{input_data['obs'][0]['dataset']}_{input_data['obs'][1]['dataset']}"
+
     cb2 = lin_regress_matrix(obs1, obs2)
     qplt.plot(cb2, color="black", linestyle="--", label=ds_labels[0])
     # process model data split
-    cnts, neg, pos = feedback_nonlin(
+    neg, pos = feedback_nonlin(
         model_ds[metric_varls[0]],
         model_ds[metric_varls[1]],
     )
@@ -189,7 +188,7 @@ def plot_level3(
     qplt.plot(neg, color="blue", linestyle="solid", label=f"{xvar.upper()}A<0")
     qplt.plot(pos, color="red", linestyle="solid", label=f"{xvar.upper()}A>0")
     # process obs data split
-    cnts, neg, pos = feedback_nonlin(obs2, obs1)
+    neg, pos = feedback_nonlin(obs2, obs1)
     qplt.plot(neg, color="blue", linestyle="--")
     qplt.plot(pos, color="red", linestyle="--")
 
@@ -246,7 +245,7 @@ def plot_level_4(obs_ds, model_ds, metric_varls, ds_labels):
                         loc="left",
                     )
 
-            ## contour plt data
+            # contour plt data
             cf1 = iplt.contourf(
                 cb,
                 coords=["longitude", "month_number"],
@@ -317,7 +316,7 @@ def main(cfg):
     """Run ENSO feedback metrics."""
     input_data = cfg["input_data"].values()
 
-    SST_NHF = ["sst_eqp", "nhf_eqp_mod", "nhf_eqp_obs"]
+    sst_nhf = ["sst_eqp", "nhf_eqp_mod", "nhf_eqp_obs"]
     metric = "sst_nhf"
     obs, models = [], []
 
@@ -348,10 +347,13 @@ def main(cfg):
     # dataset name
     for dataset, mod_ds in model_ds.items():
         logger.info(
-            f"{metric}, preprocessed cubes:{len(model_ds)}, dataset:{dataset}",
+            "%s, preprocessed cubes:%d, dataset:%s",
+            metric,
+            len(model_ds),
+            dataset,
         )
         dt_files = [ds["filename"] for ds in obs] + [
-            ds["filename"] for ds in model_ds[dataset]
+            ds["filename"] for ds in mod_ds
         ]
 
         model = {
@@ -378,7 +380,7 @@ def main(cfg):
             f"ENSO metrics {metric} feedback level 3",
             dt_files,
         )
-        fig = plot_level3(obs_ds, model, SST_NHF, ds_labels, title)
+        fig = plot_level3(obs_ds, model, sst_nhf, ds_labels, title)
         save_figure(
             f"{dataset}_{metric}_lvl3", prov_record, cfg, figure=fig, dpi=300,
         )
@@ -387,7 +389,7 @@ def main(cfg):
             f"ENSO metrics {metric} feedback level 4",
             dt_files,
         )
-        fig = plot_level_4(obs_ds, model, SST_NHF, ds_labels)
+        fig = plot_level_4(obs_ds, model, sst_nhf, ds_labels)
         save_figure(
             f"{dataset}_{metric}_lvl4",
             prov_record,

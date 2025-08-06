@@ -57,7 +57,7 @@ def plot_maps_pattern(processed_data):
     fig = plt.figure(figsize=(20, 7))
     i = 121
     for label, cube in processed_data.items():
-        j, cf1 = plot_ensofig(i, cube, label)
+        cf1 = plot_ensofig(i, cube, label)[1]
         i += 1
     # Add a single colorbar at the bottom
     cax = plt.axes([0.15, 0.08, 0.7, 0.05])
@@ -154,13 +154,13 @@ def lin_regress_matrix(cubea, cubeb):
 
 def mask_to_years(events):
     """Convert masked array of events to years."""
-    maskedTime = np.ma.masked_array(
+    maskedtime = np.ma.masked_array(
         events.coord("time").points, mask=events.data.mask,
     )
     # return years
     return [
         events.coord("time").units.num2date(time).year
-        for time in maskedTime.compressed()
+        for time in maskedtime.compressed()
     ]
 
 
@@ -179,7 +179,7 @@ def plot_enso_ssta(prep_datasets, line, label):
         cube_2 = prep_datasets[0].extract(year_enso)
         cube = climate_statistics(cube_2, operator="mean")
 
-        if enso == "nina":  ## plot separate
+        if enso == "nina":  # plot separate
             qplt.plot(
                 cube,
                 color="blue",
@@ -284,7 +284,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             dt_ls,
         )
 
-    return fig2, fig3, fig4
+        return fig2, fig3, fig4
 
 
 def get_provenance_record(caption, ancestor_files):
@@ -316,7 +316,7 @@ def main(cfg):
 
     # select twice with project to get obs, iterate through model selection
     for metric, var_preproc in metrics.items():
-        logger.info(f"{metric},{var_preproc}")
+        logger.info("%s,%s", metric, var_preproc)
         obs, models = [], []
         for var_prep in var_preproc:
             obs += select_metadata(
@@ -348,7 +348,8 @@ def main(cfg):
 
         for dataset in model_ds:
             logger.info(
-                f"{metric}, preprocessed cubes:{len(model_ds)}, dataset:{dataset}",
+                "%s, preprocessed cubes:%d, dataset:%s",
+                metric, len(model_ds), dataset,
             )
 
             model_datasets = {

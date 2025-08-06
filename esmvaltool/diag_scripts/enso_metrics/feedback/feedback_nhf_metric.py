@@ -80,7 +80,7 @@ def plt_lvl2_subplot(ts_cube, tauu_cube, dataset_label, metric_varls):
     """Level 2 subplots for ENSO feedback metrics."""
     df = pd.DataFrame({"tos": ts_cube.data, "tauu": tauu_cube.data})
     slopes = []
-    logger.info(f"{dataset_label}, shape: {df.shape}")
+    logger.info("%s, shape: %s", dataset_label, df.shape)
     var_set = {"sst": 5, "taux": 100, "nhf": 100, "ssh": 40}
     xvar = metric_varls[0].split("_")[0]
 
@@ -207,9 +207,12 @@ def obs_extract_overlap(obs_1, obs_2):
 
     start_overlap = max(start_1, start_2)
     end_overlap = min(end_1, end_2)
-    # convert to yymmdd? use extract time, num2date
     logger.info(
-        f"{obs_1.standard_name}, {obs_2.standard_name} obs time overlap: {start_overlap} to {end_overlap}",
+        "%s, %s obs time overlap: %s to %s",
+        obs_1.standard_name,
+        obs_2.standard_name,
+        start_overlap,
+        end_overlap,
     )
     obs1 = obs_1.extract(
         iris.Constraint(
@@ -258,7 +261,7 @@ def main(cfg):
     """Run ENSO NHF feedback metrics."""
     input_data = cfg["input_data"].values()
 
-    SST_NHF = ["sst_east", "nhf_east_mod", "nhf_east_obs"]
+    sst_nhf = ["sst_east", "nhf_east_mod", "nhf_east_obs"]
     metric = "sst_nhf"
     obs, models = [], []
 
@@ -279,7 +282,7 @@ def main(cfg):
             f"{metric}, preprocessed cubes:{len(model_ds)}, dataset:{dataset}",
         )
         dt_files = [ds["filename"] for ds in obs] + [
-            ds["filename"] for ds in model_ds[dataset]
+            ds["filename"] for ds in mod_ds
         ]
 
         obs_ds = {
@@ -295,10 +298,10 @@ def main(cfg):
         model["nhf_east_mod"] = -model["nhf_east_mod"]  # make negative
 
         title = "net heat flux feedback"
-        value, fig = plot_level1(obs_ds, model, title, SST_NHF)
+        value, fig = plot_level1(obs_ds, model, title, sst_nhf)
 
         metricfile = get_diagnostic_filename("matrix", cfg, extension="csv")
-        with open(metricfile, "a+") as f:
+        with open(metricfile, "a+", encoding="utf-8") as f:
             f.write(f"{dataset},{metric},{value}\n")
 
         prov_record = get_provenance_record(
@@ -312,7 +315,7 @@ def main(cfg):
             f"{obs[0]['dataset']}_{obs[1]['dataset']}",
             mod_ds[0]["dataset"],
         ]
-        fig = plot_level2(obs_ds, model, SST_NHF, ds_labels)
+        fig = plot_level2(obs_ds, model, sst_nhf, ds_labels)
         save_figure(
             f"{dataset}_{metric}_lvl2",
             prov_record,

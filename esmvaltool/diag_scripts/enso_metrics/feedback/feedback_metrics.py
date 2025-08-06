@@ -86,7 +86,7 @@ def plt_lvl2_subplot(ts_cube, tauu_cube, dataset_label, metric_varls):
     """Set up a subplot for each dataset for level 2 diagnostics."""
     df = pd.DataFrame({"tos": ts_cube.data, "tauu": tauu_cube.data})
     slopes = []
-    logger.info(f"{dataset_label}, shape: {df.shape}")
+    logger.info("%s, shape: %s", dataset_label, df.shape)
     var_set = {"sst": 5, "taux": 100, "ssh": 40}
     xvar = metric_varls[0].split("_")[0]
 
@@ -120,7 +120,7 @@ def plt_lvl2_subplot(ts_cube, tauu_cube, dataset_label, metric_varls):
 
 def linreg_1d(tauu, ts):
     """Perform linear regression on 1D data for cube or dataframe."""
-    logger.info(f"linreg_1d shapes {tauu.shape}, {ts.shape}")
+    logger.info("linreg_1d shapes %s, %s", tauu.shape, ts.shape)
     if isinstance(tauu, iris.cube.Cube):
         b_data = ts.data
         a_data = tauu.data
@@ -218,7 +218,9 @@ def lin_regress_matrix(cubea, cubebsst):
     b_with_intercept = np.vstack([b_data, np.ones_like(b_data)]).T
 
     logger.info(
-        f"least squares data shapes {b_with_intercept.shape}, {a_data.shape}",
+        "least squares data shapes %s, %s",
+        b_with_intercept.shape,
+        a_data.shape,
     )
     # Solve the linear equations using least squares method
     coefs, _, _, _ = np.linalg.lstsq(b_with_intercept, a_data, rcond=None)
@@ -244,7 +246,7 @@ def feedback_nonlin(sst_cube, tauu_cube):
         sst_cube.units,
     )
     tauu_aux.add_aux_coord(sst_coord, 0)
-    logger.info(f"non linear shapes {sst_cube.shape}, {tauu_cube.shape}")
+    logger.info("non linear shapes %s, %s", sst_cube.shape, tauu_cube.shape)
     logger.info(tauu_aux.summary())
     below0 = iris.Constraint(
         coord_values={sst_cube.standard_name: lambda cell: cell < 0},
@@ -257,18 +259,10 @@ def feedback_nonlin(sst_cube, tauu_cube):
     xbelow0 = tauu_aux.extract(below0)
     xabove0 = tauu_aux.extract(above0)
 
-    ky, cnts = np.unique(ssta_pos.data.mask, return_counts=True)
-    msk_pos = dict(zip(ky.tolist(), cnts.tolist(), strict=False))
-    ky, cnts = np.unique(ssta_neg.data.mask, return_counts=True)
-    msk_neg = dict(zip(ky.tolist(), cnts.tolist(), strict=False))
-    msk_dt = {"pos": msk_pos[False], "neg": msk_neg[False]}
-    logger.info(
-        f"pos: {msk_pos[False]} cube: {xabove0.shape}, neg: {msk_neg[False]} cube: {xbelow0.shape}",
-    )
     outreg_cube = lin_regress_matrix(xbelow0, ssta_neg)
     posreg_cube = lin_regress_matrix(xabove0, ssta_pos)
 
-    return outreg_cube, posreg_cube, msk_dt
+    return outreg_cube, posreg_cube
 
 
 def obs_extract_overlap(obs_1, obs_2):
@@ -282,7 +276,11 @@ def obs_extract_overlap(obs_1, obs_2):
     end_overlap = min(end_1, end_2)
     # convert to yymmdd? use extract time, num2date
     logger.info(
-        f"{obs_1.standard_name}, {obs_2.standard_name} obs time overlap: {start_overlap} to {end_overlap}",
+        "%s, %s obs time overlap: %s to %s",
+        obs_1.standard_name,
+        obs_2.standard_name,
+        start_overlap,
+        end_overlap,
     )
     obs1 = obs_1.extract(
         iris.Constraint(
@@ -299,6 +297,7 @@ def obs_extract_overlap(obs_1, obs_2):
 
 
 def format_longitude(x, pos):
+    """Format longitude values for plotting."""
     if x > 180:
         return f"{int(360 - x)}°W"
     if x == 180:
@@ -331,7 +330,7 @@ def plot_level3(obs_ds, model_ds, metric_varls, ds_labels, title):
     cb2 = lin_regress_matrix(obs1, obs2)
     qplt.plot(cb2, color="black", linestyle="--", label=ds_labels[0])
     # process model data split
-    neg, pos, cnts = feedback_nonlin(model_ds[metric_varls[0]], tau_modcube)
+    neg, pos = feedback_nonlin(model_ds[metric_varls[0]], tau_modcube)
 
     xvar = metric_varls[0].split("_")[0]  # ts, tauu, ssh
     yvar = metric_varls[2].split("_")[0]
@@ -339,7 +338,7 @@ def plot_level3(obs_ds, model_ds, metric_varls, ds_labels, title):
     qplt.plot(neg, color="blue", linestyle="solid", label=f"{xvar.upper()}A<0")
     qplt.plot(pos, color="red", linestyle="solid", label=f"{xvar.upper()}A>0")
     # process obs data split
-    neg, pos, cnts = feedback_nonlin(obs2, obs1)
+    neg, pos = feedback_nonlin(obs2, obs1)
     qplt.plot(neg, color="blue", linestyle="--")
     qplt.plot(pos, color="red", linestyle="--")
 
@@ -387,7 +386,7 @@ def main(cfg):
 
     # select twice with project to get obs, iterate through model selection
     for metric, var_preproc in metrics.items():  # if empty or try
-        logger.info(f"{metric},{var_preproc}")
+        logger.info("%s,%s", metric, var_preproc)
         obs, models = [], []
         for var_prep in var_preproc:  # enumerate 1 or 2 length? if 2 append,
             obs += select_metadata(
@@ -414,7 +413,10 @@ def main(cfg):
         # dataset name
         for dataset, mod_ds in model_ds.items():
             logger.info(
-                f"{metric}, preprocessed cubes:{len(model_ds)}, dataset:{dataset}",
+                "%s, preprocessed cubes:%d, dataset:%s",
+                metric,
+                len(model_ds),
+                dataset,
             )
             dt_files = [ds["filename"] for ds in obs] + [
                 ds["filename"] for ds in model_ds[dataset]
@@ -437,7 +439,7 @@ def main(cfg):
             metricfile = get_diagnostic_filename(
                 "matrix", cfg, extension="csv",
             )
-            with open(metricfile, "a+") as f:
+            with open(metricfile, "a+", encoding="utf-8") as f:
                 f.write(f"{dataset},{metric},{value}\n")
 
             prov_record = get_provenance_record(

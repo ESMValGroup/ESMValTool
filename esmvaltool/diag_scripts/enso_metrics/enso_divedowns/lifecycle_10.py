@@ -139,7 +139,7 @@ def plot_ssta(ax, area_coordlon, ssta, label, i=None):
     return c1
 
 
-def enso_composite_plot(model_n34, label, line):
+def enso_composite_plot(model_n34, line):
     """Plot the ENSO composite lifecycle lines."""
     n34_dec = extract_month(model_n34, 12)
     events = enso_events_lc(n34_dec)  # check years not in first/last 3
@@ -158,7 +158,6 @@ def enso_composite_plot(model_n34, label, line):
 
         # No regression, mean enso epoch
         mean = np.mean(np.array(cube_data), axis=0)
-        # label=f'{enso} {label}'
         plt.plot(months, mean, linestyle=line, color=colors[enso], lw=3)
 
 
@@ -235,8 +234,8 @@ def create_legend(dt_ls):
 def plot_l3_enso_lifecycle(model_ds, obs_ds, dt_ls):
     """Plot the ENSO lifecycle composite lines."""
     fig = plt.figure(figsize=(10, 6), dpi=300)
-    enso_composite_plot(model_ds, dt_ls[0], "solid")
-    enso_composite_plot(obs_ds, f"Ref {dt_ls[1]}", "dashdot")
+    enso_composite_plot(model_ds, "solid")
+    enso_composite_plot(obs_ds, "dashdot")
 
     plt.axhline(y=0, color="black", linewidth=2)
 
@@ -375,7 +374,7 @@ def main(cfg):
 
     # select twice with project to get obs, iterate through model selection
     for metric, var_preproc in metrics.items():
-        logger.info(f"{metric},{var_preproc}")
+        logger.info("%s,%s", metric, var_preproc)
         obs, models = [], []
         for var_prep in var_preproc:
             obs += select_metadata(
@@ -408,16 +407,17 @@ def main(cfg):
         # group models by dataset
         model_ds = group_metadata(models, "dataset", sort="project")
 
-        for dataset in model_ds:
+        for dataset, mod_ds in model_ds.items():
             logger.info(
-                f"{metric}, preprocessed cubes:{len(model_ds)}, dataset:{dataset}",
+                "%s, preprocessed cubes:%d, dataset:%s",
+                metric, len(model_ds), dataset,
             )
 
             model_datasets = {
                 attributes["variable_group"]: iris.load_cube(
                     attributes["filename"],
                 )
-                for attributes in model_ds[dataset]
+                for attributes in mod_ds
             }
             input_pair = [obs_datasets, model_datasets]
 

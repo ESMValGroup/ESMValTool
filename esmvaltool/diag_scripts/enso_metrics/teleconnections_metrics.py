@@ -1,4 +1,4 @@
-"""diagnostic script to plot ENSO teleconnections metrics"""
+"""diagnostic script to plot ENSO teleconnections metrics."""
 
 import logging
 import os
@@ -32,7 +32,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def plot_level1(input_data, rmse, title):
-    """Plot level 1, input data has model and obs"""
+    """Plot level 1, input data: (model and obs)."""
     figure = plt.figure(figsize=(20, 6), dpi=300)
 
     proj = ccrs.PlateCarree(central_longitude=180)
@@ -78,13 +78,13 @@ def plot_level1(input_data, rmse, title):
     else:
         reg_unit = "mm/day"
     cbar.set_label(f"regression ({reg_unit}/°C)")
-    logger.info(f"{title}, {label} : metric:{rmse}")
+    logger.info("%s, %s : metric:%f", title, label, rmse)
     figure.subplots_adjust(bottom=0.125, top=0.98, left=0.05, right=0.95)
 
     return figure
 
 
-def lin_regress_matrix(cubeA, cubeB):  # array must not contain infs or NaNs
+def lin_regress_matrix(cubea, cubeb):
     """
     Calculate the linear regression of cubeA on cubeB using matrix operations.
 
@@ -102,27 +102,27 @@ def lin_regress_matrix(cubeA, cubeB):  # array must not contain infs or NaNs
         A new cube containing the slope of the regression for each spatial point.
     """
     # Get data as flattened arrays
-    A_data = cubeA.data.reshape(
-        cubeA.shape[0], -1,
+    a_data = cubea.data.reshape(
+        cubea.shape[0], -1,
     )  # Shape (time, spatial_points)
-    B_data = cubeB.data.flatten()  # Shape (time,)
-    logger.info("cubes: %s, %s", cubeA.name, cubeB.name)
+    b_data = cubeb.data.flatten()  # Shape (time,)
+    logger.info("cubes: %s, %s", cubea.name, cubeb.name)
     # Add intercept term by stacking a column of ones with cubeB
-    B_with_intercept = np.vstack([B_data, np.ones_like(B_data)]).T
+    b_with_intercept = np.vstack([b_data, np.ones_like(b_data)]).T
 
     # Solve the linear equations using least squares method
-    coefs, _, _, _ = np.linalg.lstsq(B_with_intercept, A_data, rcond=None)
-    logger.info("%s, %s", cubeA.coords(), cubeA.shape)
+    coefs, _, _, _ = np.linalg.lstsq(b_with_intercept, a_data, rcond=None)
+    logger.info("%s, %s", cubea.coords(), cubea.shape)
     # Extract slopes from coefficients
-    slopes = coefs[0].reshape(cubeA.shape[1], cubeA.shape[2])
+    slopes = coefs[0].reshape(cubea.shape[1], cubea.shape[2])
 
     # Create a new Iris Cube for the regression results
     result_cube = iris.cube.Cube(
         slopes,
         long_name="regression ENSO SSTA",
         dim_coords_and_dims=[
-            (cubeA.coord("latitude"), 0),
-            (cubeA.coord("longitude"), 1),
+            (cubea.coord("latitude"), 0),
+            (cubea.coord("longitude"), 1),
         ],
     )
 
@@ -153,7 +153,7 @@ def compute_telecon_metrics(input_pair, var_group, mask_cube, metric):
     """Compute teleconnection for level 1 and level 2 diagnostics."""
     if metric == "pr_telecon":
         title = "{} PR Teleconnection"  # both seasons
-    elif metric == "ts_telecon":
+    else:  # "ts_telecon"
         title = "{} SST Teleconnection"
 
     val, fig, fig2 = {}, {}, {}
@@ -195,12 +195,12 @@ def compute_telecon_metrics(input_pair, var_group, mask_cube, metric):
 
 def mask_to_years(events):
     """Convert masked array to list of years."""
-    maskedTime = np.ma.masked_array(
+    maskedtime = np.ma.masked_array(
         events.coord("time").points, mask=events.data.mask,
     )
     return [
         events.coord("time").units.num2date(time).year
-        for time in maskedTime.compressed()
+        for time in maskedtime.compressed()
     ]
 
 
@@ -344,19 +344,20 @@ def main(cfg):
         model_ds = group_metadata(models, "dataset", sort="project")
 
         # dataset name in models
-        for dataset in model_ds:
+        for dataset, mod_ds in model_ds.items():
             logger.info(
-                f"{metric}, preprocessed cubes:{len(model_ds)}, dataset:{dataset}",
+                "%s, preprocessed cubes:%d, dataset:%s",
+                metric, len(mod_ds), dataset,
             )
             dt_files = [ds["filename"] for ds in obs] + [
-                ds["filename"] for ds in model_ds[dataset]
+                ds["filename"] for ds in mod_ds
             ]
 
             model_datasets = {
                 attributes["variable_group"]: iris.load_cube(
                     attributes["filename"],
                 )
-                for attributes in model_ds[dataset]
+                for attributes in mod_ds
             }
 
             input_pair = {obsds_label: obs_datasets, dataset: model_datasets}
@@ -374,7 +375,7 @@ def main(cfg):
                 metricfile = get_diagnostic_filename(
                     "matrix", cfg, extension="csv",
                 )
-                with open(metricfile, "a+") as f:
+                with open(metricfile, "a+", encoding="utf-8") as f:
                     f.write(f"{dataset},{seas}_{metric},{val}\n")
 
                 prov_record = get_provenance_record(

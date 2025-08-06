@@ -38,7 +38,11 @@ def feedback_nonlin_lvl4(sst_cube, tauu_cube):
     )
     tauu_aux.add_aux_coord(sst_coord, 0)
     logger.info(
-        f"{sst_cube.standard_name}, {sst_cube.long_name}, {sst_cube.var_name}, {sst_cube.units}",
+        "Add aux coord: %s, %s, %s, %s",
+        sst_cube.standard_name,
+        sst_cube.long_name,
+        sst_cube.var_name,
+        sst_cube.units,
     )
 
     below0 = iris.Constraint(
@@ -64,21 +68,23 @@ def feedback_nonlin_lvl4(sst_cube, tauu_cube):
     return all_cube, posreg_cube, outreg_cube
 
 
-def lin_regress_4(cubeA, cubeBsst):
+def lin_regress_4(cubea, cubebsst):
     """Perform linear regression of cubes."""
-    A_data = cubeA.data.reshape(
-        cubeA.shape[0], -1,
+    a_data = cubea.data.reshape(
+        cubea.shape[0], -1,
     )  # Shape (time, spatial_points)
-    if cubeA.shape[0] == cubeBsst.shape[0]:
-        B_data = cubeBsst.data.flatten()
+    if cubea.shape[0] == cubebsst.shape[0]:
+        b_data = cubebsst.data.flatten()
     else:
-        B_data = cubeBsst.data.compressed()  # compress masked
+        b_data = cubebsst.data.compressed()  # compress masked
 
-    B_with_intercept = np.vstack([B_data, np.ones_like(B_data)]).T
+    b_with_intercept = np.vstack([b_data, np.ones_like(b_data)]).T
     logger.info(
-        f"B_with_intercept shape: {B_with_intercept.shape}, A_data shape: {A_data.shape}",
+        "B_with_intercept shape: %s, A_data shape: %s",
+        b_with_intercept.shape,
+        a_data.shape,
     )
-    coefs, _, _, _ = np.linalg.lstsq(B_with_intercept, A_data, rcond=None)
+    coefs, _, _, _ = np.linalg.lstsq(b_with_intercept, a_data, rcond=None)
     return coefs[0]
 
 
@@ -89,7 +95,7 @@ def annual_structure_reg(nhf_cube, ts_cube):
         # extract for both cubes
         nhf = extract_month(nhf_cube, month=i)
         ts = extract_month(ts_cube, month=i)
-        logger.info(f"nhf: {nhf.shape}, ts: {ts.shape}, month: {i}")
+        logger.info("nhf: %s, ts: %s, month: %d", nhf.shape, ts.shape, i)
         coefs = lin_regress_4(nhf, ts)
         # collect array for months
         months_reg.append(coefs)
@@ -119,7 +125,11 @@ def obs_extract_overlap(obs_1, obs_2):
     start_overlap = max(start_1, start_2)
     end_overlap = min(end_1, end_2)
     logger.info(
-        f"{obs_1.standard_name}, {obs_2.standard_name} obs time overlap: {start_overlap} to {end_overlap}",
+        "%s, %s obs time overlap: %s to %s",
+        obs_1.standard_name,
+        obs_2.standard_name,
+        start_overlap,
+        end_overlap,
     )
     obs1 = obs_1.extract(
         iris.Constraint(
@@ -200,7 +210,7 @@ def plot_level_4(obs_ds, model_ds, metric_varls, ds_labels):
                         loc="left",
                     )
 
-            ## contour plt data
+            # contour plt data
             cf1 = iplt.contourf(
                 cb,
                 coords=["longitude", "month_number"],
@@ -240,7 +250,7 @@ def plot_level_4(obs_ds, model_ds, metric_varls, ds_labels):
     n = 1 if xvar == "taux" or yvar == "taux" else 0
     cbar.set_label(
         f"regression ({unitlabels[n]} {unitlabels[yvar]}/{unitlabels[xvar]})",
-    )  ##title (1e-3 cm/N/m2) (°C/cm)
+    )  # title (1e-3 cm/N/m2) (°C/cm)
 
     return figure
 
@@ -289,7 +299,7 @@ def main(cfg):
 
     # select twice with project to get obs, iterate through model selection
     for metric, var_preproc in metrics.items():
-        logger.info(f"{metric},{var_preproc}")
+        logger.info("%s,%s", metric, var_preproc)
         obs, models = [], []
         for var_prep in var_preproc:
             obs += select_metadata(
@@ -316,10 +326,13 @@ def main(cfg):
         # dataset name
         for dataset, mod_ds in model_ds.items():
             logger.info(
-                f"{metric}, preprocessed cubes:{len(model_ds)}, dataset:{dataset}",
+                "%s, preprocessed cubes:%d, dataset:%s",
+                metric,
+                len(model_ds),
+                dataset,
             )
             dt_files = [ds["filename"] for ds in obs] + [
-                ds["filename"] for ds in model_ds[dataset]
+                ds["filename"] for ds in mod_ds
             ]
             prov_record = get_provenance_record(
                 f"ENSO metrics {metric} feedback level 4",

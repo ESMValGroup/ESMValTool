@@ -26,13 +26,13 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def mask_to_years(events):
     """Build list of years with mask."""
-    maskedTime = np.ma.masked_array(
+    maskedtime = np.ma.masked_array(
         events.coord("time").points, mask=events.data.mask,
     )
     # return years
     return [
         events.coord("time").units.num2date(time).year
-        for time in maskedTime.compressed()
+        for time in maskedtime.compressed()
     ]
 
 
@@ -133,7 +133,7 @@ def colour_boxplots(bplt):
     """Colour boxplots for model and observations."""
     colour = ["black", "tab:blue"]
     for k in bplt.keys():  # colour separately
-        logger.info(f"{k}: {bplt[k]}")
+        logger.info("%s: %s", k, bplt[k])
         for j, line in enumerate(bplt[k]):
             if len(bplt[k]) > 2:  # caps,whiskers first 2
                 n = 0 if j < len(bplt[k]) / 2 else 1
@@ -225,7 +225,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
     return fig
 
 
-def format_longitude(x, pos):
+def format_longitude(x, _pos):
     """Format longitude values for plotting."""
     if x > 180:
         return f"{int(360 - x)}°W"
@@ -266,7 +266,7 @@ def main(cfg):
 
     # select twice with project to get obs, iterate through model selection
     for metric, var_preproc in metrics.items():
-        logger.info(f"{metric},{var_preproc}")
+        logger.info("%s,%s", metric, var_preproc)
         obs, models = [], []
         for var_prep in var_preproc:
             obs += select_metadata(
@@ -298,16 +298,17 @@ def main(cfg):
         # group models by dataset
         model_ds = group_metadata(models, "dataset", sort="project")
 
-        for dataset in model_ds:
+        for dataset, mod_ds in model_ds.items():
             logger.info(
-                f"{metric}, preprocessed cubes:{len(model_ds)}, dataset:{dataset}",
+                "%s, preprocessed cubes:%d, dataset:%s",
+                metric, len(mod_ds), dataset,
             )
 
             model_datasets = {
                 attributes["variable_group"]: iris.load_cube(
                     attributes["filename"],
                 )
-                for attributes in model_ds[dataset]
+                for attributes in mod_ds
             }
             input_pair = [obs_datasets, model_datasets]
 

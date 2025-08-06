@@ -35,9 +35,6 @@ def plotmaps_level3(input_data, itcz=False):
         "tauu": "RdBu_r",
     }
 
-    # Define tick positions and labels for the y-axis (months)
-    month_ticks = np.arange(1, 13, 4)
-    month_labels = ["Jan", "May", "Sep"]
     levels = {
         "pr": np.arange(0, 12, 1),
         "tos": np.arange(20, 31, 1),
@@ -61,7 +58,10 @@ def plotmaps_level3(input_data, itcz=False):
             cmap=colmap[dataset["short_name"]],
         )
         ax1.set_ylim(1, 12)
-        ax1.set_yticks(ticks=month_ticks, labels=month_labels)
+        ax1.set_yticks(
+            ticks=np.arange(1, 13, 4),
+            labels=["Jan", "May", "Sep"]
+        )
         ax1.set_title(dataset["dataset"])
         ax1.set_ylabel("months")
         if not itcz:
@@ -91,7 +91,7 @@ def load_seacycle_stat(dataset, itcz=False):
     cube = convert_units(cube, units=var_units[sname])
 
     diag_label = sname.upper()
-    if itcz:  ## both zonal and meridional for pr
+    if itcz:  # both zonal and meridional for pr
         nino3_latext_region = {
             "start_longitude": 210.0,
             "end_longitude": 270.0,
@@ -117,7 +117,8 @@ def load_seacycle_stat(dataset, itcz=False):
     return cube, cbar_label, x_label
 
 
-def format_longitude(x, pos):
+def format_longitude(x, _pos):
+    """Format longitude values for plotting."""
     if x > 180:
         return f"{int(360 - x)}°W"
     if x == 180:

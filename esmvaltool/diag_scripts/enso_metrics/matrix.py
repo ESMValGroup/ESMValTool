@@ -1,4 +1,4 @@
-"""diagnostic script to plot ENSO metrics matrix"""
+"""diagnostic script to plot ENSO metrics matrix."""
 
 import logging
 import os
@@ -14,6 +14,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def plot_matrix(diag_path):
+    """Plot matrix of ENSO normalised metrics."""
     metric_df = pd.read_csv(diag_path, header=None)
     # run normalisation on all these values
     # metric_df[2] = (metric_df[2]-metric_df[2].mean())/metric_df[2].std()

@@ -1,4 +1,4 @@
-"""ENSO metrics amplitude, seasonality, skewness dive downs."""
+"""enso metrics amplitude, seasonality, skewness dive downs."""
 
 import logging
 import os
@@ -253,7 +253,7 @@ def asym_level2(mod_obs_ls, dt_ls):
     return fig
 
 
-def format_longitude(x, pos):
+def format_longitude(x, _pos):
     """Format longitude values for plotting."""
     if x > 180:
         return f"{int(360 - x)}°W"
@@ -275,7 +275,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             valrange=[0, 2],
             cmap="Reds",
         )
-        figs = [fig2, fig3]
+        return fig2, fig3
 
     elif metric == "12seasonality":
         fig2 = seasonality_level2(model_obs, dt_ls)
@@ -310,7 +310,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             valrange=[0, 2],
             cmap="Reds",
         )
-        figs = [fig2, fig3, fig4, fig5]
+        return fig2, fig3, fig4, fig5
 
     elif metric == "13asymmetry":
         asymls, asym_cubes = [], []
@@ -337,9 +337,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
         fig3 = map_plots(
             asym_cubes, dt_ls, i=121, valrange=[-1.5, 1.5], cmap="RdBu_r",
         )
-        figs = [fig2, fig3]
-
-    return figs
+        return fig2, fig3
 
 
 def get_provenance_record(caption, ancestor_files):
@@ -411,16 +409,17 @@ def main(cfg):
         # group models by dataset
         model_ds = group_metadata(models, "dataset", sort="project")
 
-        for dataset in model_ds:
+        for dataset, mod_ds in model_ds.items():
             logger.info(
-                f"{metric}, preprocessed cubes:{len(model_ds)}, dataset:{dataset}",
+                "%s, preprocessed cubes:%d, dataset:%s",
+                metric, len(mod_ds), dataset,
             )
 
             model_datasets = {
                 attributes["variable_group"]: iris.load_cube(
                     attributes["filename"],
                 )
-                for attributes in model_ds[dataset]
+                for attributes in mod_ds
             }
             input_pair = [obs_datasets, model_datasets]
             logger.info(pformat(model_datasets))
