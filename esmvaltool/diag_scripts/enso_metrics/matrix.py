@@ -36,7 +36,10 @@ def plot_matrix(diag_path):
     plt.imshow(matrixdf, cmap="coolwarm")
     plt.colorbar()
     plt.xticks(
-        range(len(matrixdf.columns)), matrixdf.columns, rotation=45, ha="right",
+        range(len(matrixdf.columns)),
+        matrixdf.columns,
+        rotation=45,
+        ha="right",
     )
     plt.yticks(range(len(matrixdf.index)), matrixdf.index, wrap=True)
     plt.xticks(np.arange(matrixdf.shape[1] + 1) - 0.5, minor=True)
@@ -54,9 +57,7 @@ def main(cfg):
         "authors": [
             "chun_felicity",
         ],
-        "references": [
-            "access-nri"
-        ],
+        "references": ["access-nri"],
         "ancestors": cfg["diag_metrics"],
     }
     # input_data = cfg['input_data'].values()

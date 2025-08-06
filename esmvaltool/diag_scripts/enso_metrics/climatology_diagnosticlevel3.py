@@ -58,10 +58,7 @@ def plotmaps_level3(input_data, itcz=False):
             cmap=colmap[dataset["short_name"]],
         )
         ax1.set_ylim(1, 12)
-        ax1.set_yticks(
-            ticks=np.arange(1, 13, 4),
-            labels=["Jan", "May", "Sep"]
-        )
+        ax1.set_yticks(ticks=np.arange(1, 13, 4), labels=["Jan", "May", "Sep"])
         ax1.set_title(dataset["dataset"])
         ax1.set_ylabel("months")
         if not itcz:
@@ -200,7 +197,8 @@ def main(cfg):
                         ],
                     )
                     prov = provenance_record(
-                        grp, list(cfg["input_data"].keys()),
+                        grp,
+                        list(cfg["input_data"].keys()),
                     )
                     save_figure(
                         filename,
@@ -221,7 +219,8 @@ def main(cfg):
                             ],
                         )
                         prov = provenance_record(
-                            grp_itcz, list(cfg["input_data"].keys()),
+                            grp_itcz,
+                            list(cfg["input_data"].keys()),
                         )
                         save_figure(
                             filename,

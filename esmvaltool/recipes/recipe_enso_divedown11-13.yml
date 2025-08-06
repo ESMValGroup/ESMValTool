@@ -1,8 +1,7 @@
-# ESMValTool
-# 
+#
 ---
 documentation:
-  description: Reproducing basic ENSO amplitude, seasonality, skewness dive down metrics 
+  description: Reproducing basic ENSO amplitude, seasonality, skewness dive down metrics
   title: ENSO CLIVAR metrics - dive downs ENSO characteristics
   authors:
     - chun_felicity
@@ -20,16 +19,16 @@ datasets:
   # observations
   # - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, mip: Omon}
   - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
-  
+
 preprocessors:
-  ssta_enso: &base_enso #seas4 w meri
+  ssta_enso: &base_enso  # seas4 w meri
     custom_order: true
     convert_units:
       units: degC
     mask_landsea:
       mask_out: land
     regrid:
-      target_grid: 1x1 
+      target_grid: 1x1
       scheme: linear
     extract_region:
       start_longitude: 150.
@@ -52,7 +51,7 @@ preprocessors:
 
   enso_seas_2:
     <<: *base_enso
-    extract_region: 
+    extract_region:
       start_longitude: 190.
       end_longitude: 240.
       start_latitude: -5.
@@ -62,10 +61,10 @@ preprocessors:
     climate_statistics:
       operator: std_dev
       period: monthly
-  
+
   enso_seas_3:
     <<: *base_enso
-    extract_region: 
+    extract_region:
       start_longitude: 130.
       end_longitude: 280.
       start_latitude: -5.
@@ -75,7 +74,7 @@ preprocessors:
     climate_statistics:
       operator: std_dev
       period: monthly
-  
+
   enso_seas_4:
     <<: *base_enso
     meridional_statistics:
@@ -83,7 +82,7 @@ preprocessors:
 
   enso_asymmetry:
     <<: *base_enso
-    extract_region: # extract again for lvl2 (5 lats)
+    extract_region:  # extract again for lvl2 (5 lats)
       <<: *latext
       end_longitude: 290.
 
@@ -91,31 +90,28 @@ diagnostics:
   diagnostic_metrics:
     description: run preprocessors on variables for ENSO metrics
     variables:
-      tos_seas_area: #seasonality
+      tos_seas_area:  # seasonality
         short_name: tos
         mip: Omon
         preprocessor: enso_seas_2
-      tos_seas_meri: #seasonality
+      tos_seas_meri:  # seasonality
         short_name: tos
         mip: Omon
         preprocessor: enso_seas_3
-      tos_seas_split: #seasonality
+      tos_seas_split:  # seasonality
         short_name: tos
         mip: Omon
         preprocessor: enso_seas_4
 
-      tos_amp: #amplitude
+      tos_amp:  # amplitude
         short_name: tos
         mip: Omon
-        preprocessor: enso_amp3 # 2 use seas4 -tos_seas_split
-      tos_asym: #asymmetry
+        preprocessor: enso_amp3  # amp2 tos_seas_split
+      tos_asym:
         short_name: tos
         mip: Omon
         preprocessor: enso_asymmetry
 
-
     scripts:
       seas_asym_amp_script:
         script: enso_metrics/enso_divedowns/ampseasskew11-13.py
-
-

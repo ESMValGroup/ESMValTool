@@ -108,10 +108,13 @@ def seasonality_level4(mod_obs_cubes, dt_ls):
     for label, cube in dict(zip(dt_ls, mod_obs_cubes, strict=False)).items():
         for seas, col in {"NDJ": "red", "MAM": "blue"}.items():
             cube_plot = extract_season(
-                cube, seas,
+                cube,
+                seas,
             )  # get NDJ #{ NDJ, MAM, red, blue
             cube_plot = climate_statistics(
-                cube_plot, operator="std_dev", period="full",
+                cube_plot,
+                operator="std_dev",
+                period="full",
             )
             qplt.plot(
                 cube_plot,
@@ -335,7 +338,11 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
 
         fig2 = asym_level2(asymls, dt_ls)
         fig3 = map_plots(
-            asym_cubes, dt_ls, i=121, valrange=[-1.5, 1.5], cmap="RdBu_r",
+            asym_cubes,
+            dt_ls,
+            i=121,
+            valrange=[-1.5, 1.5],
+            cmap="RdBu_r",
         )
         return fig2, fig3
 
@@ -382,10 +389,14 @@ def main(cfg):
         obs, models = [], []
         for var_prep in var_preproc:
             obs += select_metadata(
-                input_data, variable_group=var_prep, project="OBS",
+                input_data,
+                variable_group=var_prep,
+                project="OBS",
             )
             obs += select_metadata(
-                input_data, variable_group=var_prep, project="OBS6",
+                input_data,
+                variable_group=var_prep,
+                project="OBS6",
             )
             models += select_metadata(
                 input_data,
@@ -412,7 +423,9 @@ def main(cfg):
         for dataset, mod_ds in model_ds.items():
             logger.info(
                 "%s, preprocessed cubes:%d, dataset:%s",
-                metric, len(mod_ds), dataset,
+                metric,
+                len(mod_ds),
+                dataset,
             )
 
             model_datasets = {

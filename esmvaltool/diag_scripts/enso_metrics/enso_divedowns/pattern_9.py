@@ -33,7 +33,8 @@ def plot_ensofig(i, cube, label):
     """Subplot map with the given cube and label."""
     ax1 = plt.subplot(i, projection=ccrs.Orthographic(central_longitude=210.0))
     ax1.add_feature(
-        cfeature.LAND, facecolor="gray",
+        cfeature.LAND,
+        facecolor="gray",
     )  # Add land feature with gray color
     ax1.coastlines()
     cf2 = iplt.contourf(
@@ -76,7 +77,9 @@ def enso_regression(prep_datasets, i, label):
     """Plot composite maps."""
     events = enso_events(prep_datasets[1])
     for enso, years in events.items():
-        year_enso = iris.Constraint(time=lambda cell: cell.point.year in years)
+        year_enso = iris.Constraint(
+            time=lambda cell, years=years: cell.point.year in years
+        )
         cube_2 = prep_datasets[0].extract(year_enso)
         cube = climate_statistics(cube_2, operator="mean")
         if enso == "nina":  ## plot separate
@@ -126,7 +129,8 @@ def lin_regress_matrix(cubea, cubeb):
     """
     # Get data as flattened arrays
     a_data = cubea.data.reshape(
-        cubea.shape[0], -1,
+        cubea.shape[0],
+        -1,
     )  # Shape (time, spatial_points)
     b_data = cubeb.data.flatten()  # Shape (time,)
 
@@ -155,7 +159,8 @@ def lin_regress_matrix(cubea, cubeb):
 def mask_to_years(events):
     """Convert masked array of events to years."""
     maskedtime = np.ma.masked_array(
-        events.coord("time").points, mask=events.data.mask,
+        events.coord("time").points,
+        mask=events.data.mask,
     )
     # return years
     return [
@@ -175,7 +180,9 @@ def plot_enso_ssta(prep_datasets, line, label):
     """Plot composite SSTA patterns."""
     events = enso_events(prep_datasets[1])
     for enso, years in events.items():
-        year_enso = iris.Constraint(time=lambda cell: cell.point.year in years)
+        year_enso = iris.Constraint(
+            time=lambda cell, years=years: cell.point.year in years
+        )
         cube_2 = prep_datasets[0].extract(year_enso)
         cube = climate_statistics(cube_2, operator="mean")
 
@@ -320,10 +327,14 @@ def main(cfg):
         obs, models = [], []
         for var_prep in var_preproc:
             obs += select_metadata(
-                input_data, variable_group=var_prep, project="OBS",
+                input_data,
+                variable_group=var_prep,
+                project="OBS",
             )
             obs += select_metadata(
-                input_data, variable_group=var_prep, project="OBS6",
+                input_data,
+                variable_group=var_prep,
+                project="OBS6",
             )
             models += select_metadata(
                 input_data,
@@ -349,7 +360,9 @@ def main(cfg):
         for dataset in model_ds:
             logger.info(
                 "%s, preprocessed cubes:%d, dataset:%s",
-                metric, len(model_ds), dataset,
+                metric,
+                len(model_ds),
+                dataset,
             )
 
             model_datasets = {

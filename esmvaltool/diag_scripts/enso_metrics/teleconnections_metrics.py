@@ -103,7 +103,8 @@ def lin_regress_matrix(cubea, cubeb):
     """
     # Get data as flattened arrays
     a_data = cubea.data.reshape(
-        cubea.shape[0], -1,
+        cubea.shape[0],
+        -1,
     )  # Shape (time, spatial_points)
     b_data = cubeb.data.flatten()  # Shape (time,)
     logger.info("cubes: %s, %s", cubea.name, cubeb.name)
@@ -172,7 +173,8 @@ def compute_telecon_metrics(input_pair, var_group, mask_cube, metric):
                 )
 
             regcube = lin_regress_matrix(
-                preproc[var_group[1]], preproc[var_group[0]],
+                preproc[var_group[1]],
+                preproc[var_group[0]],
             )
             reg_masked = mask_pacific(regcube, mask_cube)
 
@@ -196,7 +198,8 @@ def compute_telecon_metrics(input_pair, var_group, mask_cube, metric):
 def mask_to_years(events):
     """Convert masked array to list of years."""
     maskedtime = np.ma.masked_array(
-        events.coord("time").points, mask=events.data.mask,
+        events.coord("time").points,
+        mask=events.data.mask,
     )
     return [
         events.coord("time").units.num2date(time).year
@@ -217,7 +220,9 @@ def diagnostic_level_2(enso_cube, glb_cube, mask_cube):
     events = enso_events(enso_cube)  # get enso events
     cubes_dict = {}
     for enso, years in events.items():
-        year_enso = iris.Constraint(time=lambda cell: cell.point.year in years)
+        year_enso = iris.Constraint(
+            time=lambda cell, years=years: cell.point.year in years
+        )
         cube_2 = glb_cube.extract(year_enso)  # extract from glb cube
         cube_2 = climate_statistics(cube_2, operator="mean")
         cubes_dict[enso] = mask_pacific(cube_2, mask_cube)
@@ -284,8 +289,8 @@ def get_provenance_record(caption, ancestor_files):
         "plot_types": ["map"],
         "authors": [
             "chun_felicity",
-            'beucher_romain',
-            'sullivan_arnold',
+            "beucher_romain",
+            "sullivan_arnold",
         ],
         "references": [
             "access-nri",
@@ -306,7 +311,9 @@ def main(cfg):
     }
 
     mask_grp = select_metadata(
-        input_data, variable_group="enso_mask", project="CMIP6",
+        input_data,
+        variable_group="enso_mask",
+        project="CMIP6",
     )
     mask_var = [
         iris.load_cube(dataset["filename"]) for dataset in mask_grp
@@ -317,10 +324,14 @@ def main(cfg):
         obs, models = [], []
         for var_prep in var_preproc:
             obs += select_metadata(
-                input_data, variable_group=var_prep, project="OBS",
+                input_data,
+                variable_group=var_prep,
+                project="OBS",
             )
             obs += select_metadata(
-                input_data, variable_group=var_prep, project="OBS6",
+                input_data,
+                variable_group=var_prep,
+                project="OBS6",
             )
             models += select_metadata(
                 input_data,
@@ -347,7 +358,9 @@ def main(cfg):
         for dataset, mod_ds in model_ds.items():
             logger.info(
                 "%s, preprocessed cubes:%d, dataset:%s",
-                metric, len(mod_ds), dataset,
+                metric,
+                len(mod_ds),
+                dataset,
             )
             dt_files = [ds["filename"] for ds in obs] + [
                 ds["filename"] for ds in mod_ds
@@ -373,7 +386,9 @@ def main(cfg):
             # save metric for each pair
             for seas, val in values.items():
                 metricfile = get_diagnostic_filename(
-                    "matrix", cfg, extension="csv",
+                    "matrix",
+                    cfg,
+                    extension="csv",
                 )
                 with open(metricfile, "a+", encoding="utf-8") as f:
                     f.write(f"{dataset},{seas}_{metric},{val}\n")

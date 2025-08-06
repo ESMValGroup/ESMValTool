@@ -1,5 +1,4 @@
 # ESMValTool
-# 
 ---
 documentation:
   description: ENSO CLIVAR metrics - ENSO teleconnections
@@ -18,8 +17,8 @@ datasets:
 
   # observations
   # - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, mip: Omon}
-  
-  
+
+
 preprocessors:
   base_enso: &base_enso
     custom_order: true
@@ -27,19 +26,17 @@ preprocessors:
       units: degC
     anomalies:
       period: monthly
-    detrend: # tropflux nan/inf values
+    detrend:  # tropflux nan/inf values
       dimension: time
-      method: linear       
+      method: linear
     regrid:
-      target_grid: 1x1 
+      target_grid: 1x1
       scheme: linear
     extract_region: &nino34
       start_longitude: 190.
       end_longitude: 240.
       start_latitude: -5.
       end_latitude: 5.
-    # extract_season: # JJA and DJF in script
-    #   season: DJF
 
   enso_sst:
     <<: *base_enso
@@ -63,7 +60,7 @@ preprocessors:
       <<: *glb
 
   mask_sea:
-    extract_time: #one time step
+    extract_time:  # one time step
       start_year: 1979
       start_month: 1
       start_day: 1
@@ -71,7 +68,7 @@ preprocessors:
       end_month: 1
       end_day: 31
     regrid:
-      target_grid: 1x1 
+      target_grid: 1x1
       scheme: linear
     extract_region:
       <<: *glb
@@ -118,7 +115,7 @@ diagnostics:
         preprocessor: global_pr
         additional_datasets:
           - {dataset: GPCP-SG, project: OBS, type: atmos, tier: 2, mip: Amon, start_year: 1979, end_year: 2018}
-    
+
       ts_enso_events:
         short_name: ts
         mip: Amon
@@ -133,4 +130,3 @@ diagnostics:
     scripts:
       plot_script:
         script: enso_metrics/teleconnections_metrics.py
-

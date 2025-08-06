@@ -56,7 +56,8 @@ def annual_structure_reg(nhf_cube, ts_cube):
 def lin_regress_matrix(cubea, cubebsst, level4=False):
     """Perform linear regression between two Cubes."""
     a_data = cubea.data.reshape(
-        cubea.shape[0], -1,
+        cubea.shape[0],
+        -1,
     )  # Shape (time, spatial_points)
     if cubea.shape[0] == cubebsst.shape[0]:
         b_data = cubebsst.data.flatten()  # or all
@@ -160,18 +161,26 @@ def format_longitude(x, pos):
     return f"{int(x)}°E"
 
 
-def plot_level3(obs_ds, model_ds, metric_varls, ds_labels, title,):
+def plot_level3(
+    obs_ds,
+    model_ds,
+    metric_varls,
+    ds_labels,
+    title,
+):
     """Plot level 3 diagnostics for ENSO feedback metrics."""
     figure = plt.figure(figsize=(10, 6), dpi=300)
     # plot whole regression
     cb = lin_regress_matrix(
-        model_ds[metric_varls[1]], model_ds[metric_varls[0]],
+        model_ds[metric_varls[1]],
+        model_ds[metric_varls[0]],
     )
     qplt.plot(cb, color="black", linestyle="solid", label=ds_labels[1])
 
     # obs datasets can have different time range..
     obs1, obs2 = obs_extract_overlap(
-        obs_ds[metric_varls[2]], obs_ds[metric_varls[0]],
+        obs_ds[metric_varls[2]],
+        obs_ds[metric_varls[0]],
     )
 
     cb2 = lin_regress_matrix(obs1, obs2)
@@ -205,7 +214,8 @@ def plot_level3(obs_ds, model_ds, metric_varls, ds_labels, title,):
 def plot_level_4(obs_ds, model_ds, metric_varls, ds_labels):
     """Plot level 4 diagnostics for ENSO feedback metrics."""
     obs1, obs2 = obs_extract_overlap(
-        obs_ds[metric_varls[2]], obs_ds[metric_varls[0]],
+        obs_ds[metric_varls[2]],
+        obs_ds[metric_varls[0]],
     )
 
     xvar = metric_varls[0].split("_")[0]  # ts, tauu, ssh
@@ -382,7 +392,11 @@ def main(cfg):
         )
         fig = plot_level3(obs_ds, model, sst_nhf, ds_labels, title)
         save_figure(
-            f"{dataset}_{metric}_lvl3", prov_record, cfg, figure=fig, dpi=300,
+            f"{dataset}_{metric}_lvl3",
+            prov_record,
+            cfg,
+            figure=fig,
+            dpi=300,
         )
 
         prov_record = get_provenance_record(

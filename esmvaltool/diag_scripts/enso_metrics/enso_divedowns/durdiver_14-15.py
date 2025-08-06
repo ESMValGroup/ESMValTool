@@ -27,7 +27,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 def mask_to_years(events):
     """Build list of years with mask."""
     maskedtime = np.ma.masked_array(
-        events.coord("time").points, mask=events.data.mask,
+        events.coord("time").points,
+        mask=events.data.mask,
     )
     # return years
     return [
@@ -59,7 +60,8 @@ def enso_composite(n34):
     """Get ENSO composite for duration."""
     n34_dec = extract_month(n34, 12)
     events = enso_events_lc(
-        n34_dec, "14duration",
+        n34_dec,
+        "14duration",
     )  # check years not in first/last 3
 
     enso_res = {}
@@ -73,7 +75,8 @@ def enso_composite(n34):
         cube_data = {}
         for enso_epoch in years_of_interest:
             year_enso = iris.Constraint(
-                time=lambda cell: cell.point.year in enso_epoch,
+                time=lambda cell, enso_epoch=enso_epoch: cell.point.year
+                in enso_epoch,
             )
             cube_2 = n34.extract(year_enso)  # extract rolling 6
             yr = enso_epoch[2]
@@ -151,7 +154,9 @@ def diversity_plots3(div_data, dt_ls):
     fig, (ax1, ax2) = plt.subplots(2, 2, figsize=(16, 10), sharey=True)
     symbol = {"el nino": "max", "la nina": "min", "enso": "max/min"}
     for ninanino, ax in zip(
-        ["la nina", "el nino", "enso"], [ax1[0], ax1[1], ax2[0]], strict=False,
+        ["la nina", "el nino", "enso"],
+        [ax1[0], ax1[1], ax2[0]],
+        strict=False,
     ):
         bplt = ax.boxplot(
             [div_data[0][ninanino], div_data[1][ninanino]],
@@ -187,7 +192,7 @@ def diversity(ssta_cube, events_dict):
         events,
     ) in events_dict.items():  # each enso year, max/min SSTA, get longitude
         year_enso = iris.Constraint(
-            time=lambda cell: cell.point.year in events,
+            time=lambda cell, events=events: cell.point.year in events,
         )
         cube = ssta_cube.extract(year_enso)
         if enso == "nina":
@@ -270,10 +275,14 @@ def main(cfg):
         obs, models = [], []
         for var_prep in var_preproc:
             obs += select_metadata(
-                input_data, variable_group=var_prep, project="OBS",
+                input_data,
+                variable_group=var_prep,
+                project="OBS",
             )
             obs += select_metadata(
-                input_data, variable_group=var_prep, project="OBS6",
+                input_data,
+                variable_group=var_prep,
+                project="OBS6",
             )
             models += select_metadata(
                 input_data,
@@ -301,7 +310,9 @@ def main(cfg):
         for dataset, mod_ds in model_ds.items():
             logger.info(
                 "%s, preprocessed cubes:%d, dataset:%s",
-                metric, len(mod_ds), dataset,
+                metric,
+                len(mod_ds),
+                dataset,
             )
 
             model_datasets = {

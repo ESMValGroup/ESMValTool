@@ -1,5 +1,4 @@
 # ESMValTool
-# 
 ---
 documentation:
   description: Reproducing ENSO feedback metrics by Yann Planton
@@ -15,13 +14,10 @@ documentation:
 
 datasets:
   - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
-    # supplementary_variables: [{short_name: areacella, mip: fx},{short_name: sftlf, mip: fx}]} #separate Ofx for zos
-  # - {dataset: ACCESS-CM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014, #}
-  #   supplementary_variables: [{short_name: areacella, mip: fx},{short_name: sftlf, mip: fx}]} #Ofx and fx
-  
-  
+
+
 preprocessors:
-  base_east: &base #20sst, 21ssh
+  base_east: &base  # 20sst, 21ssh
     custom_order: true
     convert_units:
       units: degC
@@ -33,7 +29,7 @@ preprocessors:
       dimension: time
       method: linear
     regrid:
-      target_grid: 1x1 
+      target_grid: 1x1
       scheme: linear
     extract_region: &east
       start_longitude: 210.
@@ -42,8 +38,8 @@ preprocessors:
       end_latitude: 5.
     area_statistics:
       operator: mean
- 
-  west: # all levels
+
+  west:  # all levels
     <<: *base
     convert_units:
       units: 1e-3 N/m2
@@ -73,12 +69,8 @@ preprocessors:
       end_latitude: 5.
     meridional_statistics:
       operator: mean
-    # rolling_window_statistics: # error with using longitude
-    #   coordinate: longitude
-    #   window_length: 30
-    #   operator: mean
-  
-  ssh_eqp: #lvl3
+
+  ssh_eqp:  # lvl3
     <<: *eqp_lv3
     convert_units:
       units: cm
@@ -87,16 +79,16 @@ preprocessors:
     <<: *base
     convert_units:
       units: cm
-  
+
   ssh_eqp_area:
     <<: *base
     custom_order: false
     convert_units:
       units: cm
-    extract_region: #eqp
+    extract_region:  # eqp
       <<: *eqp
 
-  sst_eqp_merid: #lvl3
+  sst_eqp_merid:  # lvl3
     <<: *eqp_lv3
     convert_units:
       units: degC
@@ -129,7 +121,7 @@ diagnostics:
         mip: Amon
         preprocessor: west
         additional_datasets:
-          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, tier: 2, version: 2, start_year: 1979, end_year: 2017} 
+          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, tier: 2, version: 2, start_year: 1979, end_year: 2017}
 
       taux_eqp:
         short_name: tauu
@@ -137,7 +129,7 @@ diagnostics:
         preprocessor: taux_eqp
         additional_datasets:
           - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, tier: 2, version: 2, start_year: 1979, end_year: 2017}
-      
+
       ssh_east:
         short_name: zos
         mip: Omon
@@ -162,15 +154,3 @@ diagnostics:
         script: enso_metrics/feedback/feedback_metrics.py
       plot_level4_script:
         script: enso_metrics/feedback/feedback_metrics_lvl4.py
-
-  # diag_collect:
-  #   description: collect metrics
-  #   variables:
-  #     tos: #dummy variable to fill recipe requirements
-  #       mip: Omon
-  #   scripts:
-  #     matrix_collect:
-  #       script: enso_metrics/matrix.py
-  #       # above diagnostic name and script name
-  #       diag_metrics: diagnostic_metrics/plot_script #cfg['work_dir']
-

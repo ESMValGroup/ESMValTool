@@ -71,7 +71,8 @@ def feedback_nonlin_lvl4(sst_cube, tauu_cube):
 def lin_regress_4(cubea, cubebsst):
     """Perform linear regression of cubes."""
     a_data = cubea.data.reshape(
-        cubea.shape[0], -1,
+        cubea.shape[0],
+        -1,
     )  # Shape (time, spatial_points)
     if cubea.shape[0] == cubebsst.shape[0]:
         b_data = cubebsst.data.flatten()
@@ -303,10 +304,14 @@ def main(cfg):
         obs, models = [], []
         for var_prep in var_preproc:
             obs += select_metadata(
-                input_data, variable_group=var_prep, project="OBS",
+                input_data,
+                variable_group=var_prep,
+                project="OBS",
             )
             obs += select_metadata(
-                input_data, variable_group=var_prep, project="OBS6",
+                input_data,
+                variable_group=var_prep,
+                project="OBS6",
             )
             models += select_metadata(
                 input_data,

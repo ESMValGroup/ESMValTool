@@ -1,5 +1,4 @@
 # ESMValTool
-# 
 ---
 documentation:
   description: ENSO CLIVAR metrics, background climatology
@@ -69,7 +68,7 @@ preprocessors:
       units: mm/day
     zonal_statistics:
       operator: mean
-  
+
   eq_bias:
     <<: *base_bias
     extract_region: &eq_region
@@ -79,21 +78,21 @@ preprocessors:
       end_latitude: 5.
     meridional_statistics:
       operator: mean
-  
+
   base_cycle: &base_cycle
     <<: *base_bias
     climate_statistics:
       operator: mean
       period: monthly
-    
+
   ITCZ_sea_cycle:
     <<: *base_cycle
     convert_units:
       units: mm/day
-  
+
   eq_sea_cycle:
     <<: *base_cycle
-    extract_region: 
+    extract_region:
       <<: *eq_region
 
 diagnostics:
@@ -123,7 +122,7 @@ diagnostics:
         preprocessor: eq_bias
         mip: Amon
         additional_datasets:
-         - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3, mip: Amon, start_year: 1979, end_year: 2018}
       pr_double_seacycle:
         short_name: pr
         preprocessor: ITCZ_sea_cycle
@@ -147,7 +146,7 @@ diagnostics:
         preprocessor: eq_sea_cycle
         mip: Amon
         additional_datasets:
-         - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3, mip: Amon, start_year: 1979, end_year: 2018}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, tier: 3, mip: Amon, start_year: 1979, end_year: 2018}
     scripts:
       plot_script:
         script: enso_metrics/climatology_diagnostic1.py
@@ -155,11 +154,10 @@ diagnostics:
   diag_collect:
     description: collect metrics
     variables:
-      pr: #dummy variable to fill recipe req
+      pr:  # dummy variable to fill recipe req
         mip: Amon
     scripts:
       matrix_collect:
         script: enso_metrics/matrix.py
         # above diagnostic name and script name
-        diag_metrics: diagnostic_metrics/plot_script #cfg['work_dir']
-
+        diag_metrics: diagnostic_metrics/plot_script  # cfg['work_dir']

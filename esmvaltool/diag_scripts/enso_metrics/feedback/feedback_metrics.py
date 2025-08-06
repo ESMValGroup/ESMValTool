@@ -35,12 +35,14 @@ def plot_level1(obs_ds, model_ds, title, metric_varls):
 
     # linreg (tauu cube, tos cube) #['ts_east', 'tauu_west', 'tauu_eqp']
     mod_slope, intcpt = linreg_1d(
-        model_ds[metric_varls[1]], model_ds[metric_varls[0]],
+        model_ds[metric_varls[1]],
+        model_ds[metric_varls[0]],
     )
     plt.plot(xseq, intcpt + mod_slope * xseq)
     # time overlap
     obs1, obs2 = obs_extract_overlap(
-        obs_ds[metric_varls[1]], obs_ds[metric_varls[0]],
+        obs_ds[metric_varls[1]],
+        obs_ds[metric_varls[0]],
     )
     obs_slope, intcpt = linreg_1d(obs1, obs2)
     plt.plot(xseq, intcpt + obs_slope * xseq, color="black")
@@ -48,7 +50,9 @@ def plot_level1(obs_ds, model_ds, title, metric_varls):
     metric_val = abs((mod_slope - obs_slope) / obs_slope) * 100
 
     plt.scatter(
-        model_ds[metric_varls[0]].data, model_ds[metric_varls[1]].data, s=10,
+        model_ds[metric_varls[0]].data,
+        model_ds[metric_varls[1]].data,
+        s=10,
     )
     plt.scatter(obs2.data, obs1.data, s=20, c="black", marker="D")
 
@@ -75,7 +79,8 @@ def plot_level2(obs_ds, model_ds, metric_varls, ds_labels):
 
     plt.subplot(122)
     obs1, obs2 = obs_extract_overlap(
-        obs_ds[metric_varls[0]], obs_ds[metric_varls[1]],
+        obs_ds[metric_varls[0]],
+        obs_ds[metric_varls[1]],
     )
 
     plt_lvl2_subplot(obs1, obs2, ds_labels[0], metric_varls)
@@ -150,13 +155,17 @@ def plt_settings(slopes, lvl1, metric_varls):
     plt.xlim(var_set[xvar][0] * -1, var_set[xvar][0])
     plt.xticks(
         np.arange(
-            var_set[xvar][0] * -1, var_set[xvar][0] + 1, var_set[xvar][0] / 2,
+            var_set[xvar][0] * -1,
+            var_set[xvar][0] + 1,
+            var_set[xvar][0] / 2,
         ),
     )
     plt.ylim(var_set[yvar][0] * -1, var_set[yvar][0])
     plt.yticks(
         np.arange(
-            var_set[yvar][0] * -1, var_set[yvar][0] + 1, var_set[yvar][0] / 2,
+            var_set[yvar][0] * -1,
+            var_set[yvar][0] + 1,
+            var_set[yvar][0] / 2,
         ),
     )
     plt.grid(linestyle="--")
@@ -207,7 +216,8 @@ def plt_settings(slopes, lvl1, metric_varls):
 def lin_regress_matrix(cubea, cubebsst):
     """Perform linear regression on 2D data for Iris Cubes for level 3."""
     a_data = cubea.data.reshape(
-        cubea.shape[0], -1,
+        cubea.shape[0],
+        -1,
     )  # Shape (time, spatial_points)
     if cubea.shape[0] == cubebsst.shape[0]:
         b_data = cubebsst.data.flatten()  # or all
@@ -390,10 +400,14 @@ def main(cfg):
         obs, models = [], []
         for var_prep in var_preproc:  # enumerate 1 or 2 length? if 2 append,
             obs += select_metadata(
-                input_data, variable_group=var_prep, project="OBS",
+                input_data,
+                variable_group=var_prep,
+                project="OBS",
             )
             obs += select_metadata(
-                input_data, variable_group=var_prep, project="OBS6",
+                input_data,
+                variable_group=var_prep,
+                project="OBS6",
             )
             models += select_metadata(
                 input_data,
@@ -437,7 +451,9 @@ def main(cfg):
             value, fig = plot_level1(obs_ds, model, title, var_preproc)
 
             metricfile = get_diagnostic_filename(
-                "matrix", cfg, extension="csv",
+                "matrix",
+                cfg,
+                extension="csv",
             )
             with open(metricfile, "a+", encoding="utf-8") as f:
                 f.write(f"{dataset},{metric},{value}\n")
@@ -447,7 +463,11 @@ def main(cfg):
                 dt_files,
             )
             save_figure(
-                f"{dataset}_{metric}", prov_record, cfg, figure=fig, dpi=300,
+                f"{dataset}_{metric}",
+                prov_record,
+                cfg,
+                figure=fig,
+                dpi=300,
             )
 
             ds_labels = [

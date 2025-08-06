@@ -43,7 +43,8 @@ def sst_regressed_2d(event_years, n34_area, n34_dec):
     for yr in event_years:
         enso_epoch = [yr - 2, yr - 1, yr, yr + 1, yr + 2, yr + 3]
         year_enso = iris.Constraint(
-            time=lambda cell: cell.point.year in enso_epoch,
+            time=lambda cell, enso_epoch=enso_epoch: cell.point.year
+            in enso_epoch,
         )
 
         n34_area_selected.append(n34_area.extract(year_enso).data)
@@ -151,7 +152,8 @@ def enso_composite_plot(model_n34, line):
         for yr in years:
             enso_epoch = [yr - 2, yr - 1, yr, yr + 1, yr + 2, yr + 3]
             year_enso = iris.Constraint(
-                time=lambda cell: cell.point.year in enso_epoch,
+                time=lambda cell, enso_epoch=enso_epoch: cell.point.year
+                in enso_epoch,
             )
             cube_2 = model_n34.extract(year_enso)  # extract rolling 6yr
             cube_data.append(cube_2.data.data)
@@ -167,7 +169,8 @@ def sst_2d(event_years, n34_area):
     for yr in event_years:
         enso_epoch = [yr - 2, yr - 1, yr, yr + 1, yr + 2, yr + 3]
         year_enso = iris.Constraint(
-            time=lambda cell: cell.point.year in enso_epoch,
+            time=lambda cell, enso_epoch=enso_epoch: cell.point.year
+            in enso_epoch,
         )
         n34_area_selected.append(n34_area.extract(year_enso).data)
 
@@ -277,12 +280,16 @@ def compute_enso_metrics(input_pair, dt_ls, var_group):
     """Compute the ENSO lifecycle dive downs."""
     mod_dec, mod_years = dec_and_years(input_pair[1][var_group[0]])
     model_area = sst_regressed_2d(
-        mod_years, input_pair[1][var_group[1]], mod_dec,
+        mod_years,
+        input_pair[1][var_group[1]],
+        mod_dec,
     )
     # level 2, input_pair: obs first
     obs_dec, obs_years = dec_and_years(input_pair[0][var_group[0]])
     obs_area = sst_regressed_2d(
-        obs_years, input_pair[0][var_group[1]], obs_dec,
+        obs_years,
+        input_pair[0][var_group[1]],
+        obs_dec,
     )
 
     # plot function #need xticks, labels as dict/ls
@@ -307,7 +314,8 @@ def compute_enso_metrics(input_pair, dt_ls, var_group):
 def mask_to_years(events):
     """Convert masked array to years."""
     maskedTime = np.ma.masked_array(
-        events.coord("time").points, mask=events.data.mask,
+        events.coord("time").points,
+        mask=events.data.mask,
     )
     # return years
     return [
@@ -378,10 +386,14 @@ def main(cfg):
         obs, models = [], []
         for var_prep in var_preproc:
             obs += select_metadata(
-                input_data, variable_group=var_prep, project="OBS",
+                input_data,
+                variable_group=var_prep,
+                project="OBS",
             )
             obs += select_metadata(
-                input_data, variable_group=var_prep, project="OBS6",
+                input_data,
+                variable_group=var_prep,
+                project="OBS6",
             )
             models += select_metadata(
                 input_data,
@@ -410,7 +422,9 @@ def main(cfg):
         for dataset, mod_ds in model_ds.items():
             logger.info(
                 "%s, preprocessed cubes:%d, dataset:%s",
-                metric, len(model_ds), dataset,
+                metric,
+                len(model_ds),
+                dataset,
             )
 
             model_datasets = {
