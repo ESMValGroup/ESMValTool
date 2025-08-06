@@ -61,6 +61,7 @@ Variables
 * ts (Amon, monthly)
 * areacella (fx)
 * tauu (Amon, monthly)
+* zos (Omon, monthly)
 * hfns (hfls+hfss, Amon, monthly)
 
 Observations and reformat scripts
@@ -85,6 +86,18 @@ Example plots
    :align: center
 
    PR or SST anomalies on Earth (between 60°S-60°N), showing the location associated with ENSO.
+
+.. _fig_seasonality_level4:
+.. figure:: /recipes/figures/enso_metrics/ACCESS-ESM1-5_12seasonality_level_4.png
+   :align: center
+
+   Seasonality level 4 plot of boreal summer/winter SSTA standard deviation.
+
+.. _fig_feedback_level2:
+.. figure:: /recipes/figures/enso_metrics/ACCESS-ESM1-5_1_SSH_SST_lvl2.png
+   :align: center
+
+   Feedback level 2 plot of SSH and SST anomalies.
 
 .. _fig_metrics:
 .. figure:: /recipes/figures/enso_metrics/plot_matrix.png
