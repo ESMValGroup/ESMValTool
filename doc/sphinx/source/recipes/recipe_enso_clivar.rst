@@ -1,26 +1,45 @@
-.. _recipes_enso_metrics:
+.. _recipes_enso_diagnostics:
 
-ENSO CLIVAR metrics - reproducing ENSO characteristics lifecycle, seasonality and teleconnections
+ENSO CLIVAR metrics - reproducing ENSO characteristics, lifecycle, seasonality, teleconnections
 =================================================================================================
 
 Overview
 --------
 
-Reproducing some ENSO metrics from the 
+Reproducing ENSO metrics from the 
 [CLIVAR package](https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/portrait_plot/enso_metric/enso_metrics_interactive_portrait_plots_v20231121.html)
-specifically ones used for REF
+with dive down plots of ENSO diagnostics including characteristics, lifecycle, seasonality, feedbacks and teleconnections.
 
 Available recipes and diagnostics
 ---------------------------------
 
 Recipes are stored in esmvaltool/recipes/
 
-* recipe_enso_metrics.yml
+* recipe_enso_climatology1.yml
+* recipe_enso_climatology_level2-3.yml
+* recipe_enso_characteristics.yml
+* recipe_enso_divedown9-10_14-15.yml
+* recipe_enso_divedown11-13.yml
+* recipe_enso_feedback.yml
+* recipe_enso_feedbacknhf.yml
+* recipe_enso_teleconnection.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/enso_metrics/
 
-* **enso_diag1metrics.py**: metrics for basic ENSO characteristics
 * **matrix.py**: reads metrics in work_dir from csv file written out in climatology_diagnostic1, use for other groups of metrics
+* **climatology_diagnostic1.py**: computes basic climatology for level 1 metrics
+* **climatology_diagnosticlevel2.py**: creates basic climatology level 2 plots
+* **climatology_diagnosticlevel3.py**: creates basic climatology level 3 plots
+* **enso_diag1metrics.py**: computes basic ENSO characteristics metrics
+* **enso_divedowns/ampseasskew11-13.py**: dive down scripts for ENSO amplitude, seasonality and skewness
+* **enso_divedowns/durdiver_14-15.py**: dive down scripts for ENSO duration and diversity
+* **enso_divedowns/lifecycle_10.py**: dive down scripts for ENSO lifecycle
+* **enso_divedowns/pattern_9.py**: dive down scripts for ENSO pattern
+* **feedback/feedback_metrics_lvl4.py**: feedback level4 plots
+* **feedback/feedback_metrics.py**: feedback level3 plots
+* **feedback/feedback_nhf_lvl3_4.py**: feedback NHF level3-4 plots
+* **feedback/feedback_nhf_metric.py**: feedback NHF metrics
+* **teleconnections_metrics.py**: computes and plots teleconnections metrics
 
 
 User settings in recipe
@@ -40,11 +59,12 @@ Variables
 * areacello (Ofx)
 * pr (Amon, monthly)
 * ts (Amon, monthly)
-
+* areacella (fx)
+* tauu (Amon, monthly)
+* hfns (hfls+hfss, Amon, monthly)
 
 Observations and reformat scripts
 ---------------------------------
-
 
 * HadISST
 * TropFLUX
@@ -59,20 +79,6 @@ References
 
 Example plots
 -------------
-
-.. _fig_seasonality:
-.. figure:: /recipes/figures/enso_metrics/seasonality.png
-   :align: center
-
-   Ratio of winter over spring's standard deviation of sea surface temperature anomalies (SSTA) in the central equatorial Pacific (Niño3.4 averaged), showing the seasonal timing of SSTA. 
-   All models are on the same line.
-
-.. _fig_lifecycle:
-.. figure:: /recipes/figures/enso_metrics/lifecycle.png
-   :align: center
-
-   Temporal structure of sea surface temperature anomalies (SSTA) in the central equatorial Pacific (Niño3.4 averaged), showing the temporal evolution of SSTA associated with ENSO. 
-   Observation is dashed black line.
 
 .. _fig_teleconnections:
 .. figure:: /recipes/figures/enso_metrics/ACCESS-CM2_DJF_ts_telecon.png
