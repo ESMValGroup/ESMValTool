@@ -8,7 +8,6 @@ at /diag_scripts/aerosols/aod_aeronet_assess.py.
 """
 
 import logging
-import time as ttime
 from pathlib import Path
 
 import cartopy.crs as ccrs
