@@ -106,17 +106,27 @@ def get_provenance_record(
         Name of the observational dataset.
     var : str
         Name of the plot.
+
     Returns
     -------
     record : dict
         Dictionary containing the provenance record.
     """
     captions = {
-        "seas_maps_map": f"Seasonal maps of the {trace_gas.upper()} surface concentration from {model_name} overlaid with station data points.",
-        "seas_maps_scatter": f"Scatter plot that compares the {trace_gas.upper()} surface concentration at the station locations of {obs_name} with the model data from {model_name} extracted at these same locations for each season.",
-        "timeserie_lat": f"Plots of {trace_gas.upper()} surface concentration time series and seasonal cycle per latitude regions for {model_name} and {obs_name}.",
-        "sensitivity_ampl_growth": f"Plots of {trace_gas.upper()} surface concentration amplitude, growth, and corresponding sensitivity per latitude regions for {model_name} and {obs_name}.",
-        "taylor_diag": f"Taylor diagram of {trace_gas.upper()} surface concentration for the observations {obs_name} and models {model_name}.",
+        "seas_maps_map": f"Seasonal maps of the {trace_gas.upper()} surface concentration "
+        f"from {model_name} overlaid with station data points.",
+        "seas_maps_scatter": f"Scatter plot that compares the {trace_gas.upper()} surface "
+        f"concentration at the station locations of {obs_name} with the "
+        f"model data from {model_name} extracted at these same locations "
+        "for each season.",
+        "timeserie_lat": f"Plots of {trace_gas.upper()} surface concentration time series "
+        f"and seasonal cycle per latitude regions for {model_name} "
+        f"and {obs_name}.",
+        "sensitivity_ampl_growth": f"Plots of {trace_gas.upper()} surface concentration amplitude, "
+        "growth, and corresponding sensitivity per latitude regions for "
+        f"{model_name} and {obs_name}.",
+        "taylor_diag": f"Taylor diagram of {trace_gas.upper()} surface concentration for "
+        f"the observations {obs_name} and models {model_name}.",
     }
     plot_type = {
         "seas_maps_map": "map",
@@ -2367,10 +2377,10 @@ def main(config):
             + [obs_dataset[0]["filename"]],
             model_name=model_names,
             project=list(
-                set([att["project"] for gr in datasets.values() for att in gr])
+                {att["project"] for gr in datasets.values() for att in gr}
             ),
             experiment=list(
-                set([att["exp"] for gr in datasets.values() for att in gr])
+                {att["exp"] for gr in datasets.values() for att in gr}
             ),
             timerange=obs_dataset[0]["timerange"],
             trace_gas=config["trace_gas"],
