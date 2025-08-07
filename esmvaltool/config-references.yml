@@ -636,6 +636,10 @@ authors:
     name: Charlton-Perez, Andrew
     institute: Univ. of Reading, UK
     orcid:
+  chung_christine:
+    name: Chung, Christine
+    institute: Bureau of Meterology, Australia
+    orcid:
   corti_susanna:
     name: Corti, Susanna
     institute: ISAC-CNR, Torino, Italy
@@ -643,6 +647,10 @@ authors:
   dennis_john:
     name: Dennis, John
     institute: NCAR, USA
+    orcid:
+  gillet_zoe:
+    name: Gillet, Zoe
+    institute: Bureau of Meterology, Australia
     orcid:
   graf_phoebe:
     name: Graf, Phoebe
