@@ -8,6 +8,7 @@ at /diag_scripts/aerosols/aod_aeronet_assess.py.
 """
 
 import logging
+import time as ttime
 from pathlib import Path
 
 import cartopy.crs as ccrs
@@ -24,14 +25,12 @@ from esmvalcore.preprocessor._time import climate_statistics
 from matplotlib import colors, gridspec
 from numpy import ma
 
-import time as ttime
-
 from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger,
     group_metadata,
     run_diagnostic,
-    ProvenanceLogger
 )
-from esmvaltool.diag_scripts.shared._base import get_plot_filename, save_figure
+from esmvaltool.diag_scripts.shared._base import get_plot_filename
 from esmvaltool.diag_scripts.surface_trace_gases.utils_surface_trace_gases import (
     TRACE_GASES_UNITS,
     _aggregate_model_stats,
@@ -101,16 +100,11 @@ def get_provenance_record(
         Dictionary containing the provenance record.
     """
     captions = {
-        "seas_maps_map":
-            f"Seasonal maps of the {trace_gas.upper()} surface concentration from {model_name} overlaid with station data points.",
-        "seas_maps_scatter":
-            f"Scatter plot that compares the {trace_gas.upper()} surface concentration at the station locations of {obs_name} with the model data from {model_name} extracted at these same locations for each season.",
-        "timeserie_lat":
-            f"Plots of {trace_gas.upper()} surface concentration time series and seasonal cycle per latitude regions for {model_name} and {obs_name}.",
-        "sensitivity_ampl_growth":
-            f"Plots of {trace_gas.upper()} surface concentration amplitude, growth, and corresponding sensitivity per latitude regions for {model_name} and {obs_name}.",
-        "taylor_diag":
-            f"Taylor diagram of {trace_gas.upper()} surface concentration for the observations {obs_name} and models {model_name}.",
+        "seas_maps_map": f"Seasonal maps of the {trace_gas.upper()} surface concentration from {model_name} overlaid with station data points.",
+        "seas_maps_scatter": f"Scatter plot that compares the {trace_gas.upper()} surface concentration at the station locations of {obs_name} with the model data from {model_name} extracted at these same locations for each season.",
+        "timeserie_lat": f"Plots of {trace_gas.upper()} surface concentration time series and seasonal cycle per latitude regions for {model_name} and {obs_name}.",
+        "sensitivity_ampl_growth": f"Plots of {trace_gas.upper()} surface concentration amplitude, growth, and corresponding sensitivity per latitude regions for {model_name} and {obs_name}.",
+        "taylor_diag": f"Taylor diagram of {trace_gas.upper()} surface concentration for the observations {obs_name} and models {model_name}.",
     }
     plot_type = {
         "seas_maps_map": "map",
@@ -496,7 +490,6 @@ def trace_gas_timeserie_zonal(
         The center-right column contains the zonal seasonal anomaly.
         The right column contains the zonal max-min months.
     """
-    logger.info(f"{ttime.localtime(ttime.time())} enter timeserie_zonal plotting")
     # Create figure layout for different plots
     figure = plt.figure(figsize=(26, 26))
     widths = [1.0, 0.85, 1.0, 1.1]
@@ -547,7 +540,6 @@ def trace_gas_timeserie_zonal(
         "Dec",
     ]
 
-    logger.info(f"{ttime.localtime(ttime.time())} enter looping over latitude ranges")
     for l_i, lat_range in enumerate(latitude_ranges.keys()):
         # Get list of valid obs and model colocated values
         valid_obs = [
@@ -569,13 +561,13 @@ def trace_gas_timeserie_zonal(
             [
                 len(y)
                 for y in colocated_datasets["latitude_slices"][lat_range][
-                    "obs"]["yearly"]["valid"].values()
+                    "obs"
+                ]["yearly"]["valid"].values()
             ]
         )
 
         # Plot left column
         # zonal-mean time series and corresponding +/- std range
-        logger.info(f"{ttime.localtime(ttime.time())} enter left column plotting")
         model_ts_mean = np.array(
             [
                 np.mean(
@@ -660,7 +652,7 @@ def trace_gas_timeserie_zonal(
         plt.tick_params(axis="both", labelsize=16)
         ax = plt.gca()
         ax.xaxis.set_major_locator(mpl.ticker.MaxNLocator(integer=True))
-        text = (f"No. of sites = {n_stations}")
+        text = f"No. of sites = {n_stations}"
         plt.annotate(text, (0.05, 0.9), xycoords="axes fraction", fontsize=16)
         plt.title(latitude_titles[l_i], fontsize=28)
         # Get legend handles for the first latitude band
@@ -669,7 +661,6 @@ def trace_gas_timeserie_zonal(
             handles_mean, labels_mean = axes[0].get_legend_handles_labels()
 
         # Plot centre-left column = scatter plot of model-obs
-        logger.info(f"{ttime.localtime(ttime.time())} enter centre-left column plotting")
         linreg = scipy.stats.linregress(valid_obs, valid_md)
         _ = plt.subplot(gs[l_i, 1])
         min_axes = np.min(valid_obs + valid_md) - 2
@@ -705,7 +696,6 @@ def trace_gas_timeserie_zonal(
 
         # Plot centre-right column
         # multi-annual mean seasonal variation
-        logger.info(f"{ttime.localtime(ttime.time())} enter centre-right column plotting")
         model_seas_anom_mean = np.array(
             [
                 np.mean(
@@ -809,7 +799,6 @@ def trace_gas_timeserie_zonal(
 
         # Plot right column
         # seasonal cycle timing
-        logger.info(f"{ttime.localtime(ttime.time())} enter right column plotting")
         seas_max_model = np.array(
             [
                 np.argmax(
@@ -1034,7 +1023,8 @@ def trace_gas_seas_ampl_growth_rate(
             [
                 len(y)
                 for y in colocated_datasets["latitude_slices"][lat_range][
-                    "obs"]["amplitude"]["valid"].values()
+                    "obs"
+                ]["amplitude"]["valid"].values()
             ]
         )
 
@@ -1124,7 +1114,7 @@ def trace_gas_seas_ampl_growth_rate(
         plt.tick_params(axis="both", labelsize=16)
         ax = plt.gca()
         ax.xaxis.set_major_locator(mpl.ticker.MaxNLocator(integer=True))
-        text = "No. of sites = {}".format(n_stations)
+        text = f"No. of sites = {n_stations}"
         plt.annotate(text, (0.05, 0.9), xycoords="axes fraction", fontsize=16)
         plt.title(latitude_titles[l_i], fontsize=28)
 
@@ -1303,7 +1293,13 @@ def trace_gas_seas_ampl_growth_rate(
 
 
 def plot_taylor_diagram(
-    n_stations, std_ref, std_models, corrs, labels, rmse_contours=None, obs_label=None
+    n_stations,
+    std_ref,
+    std_models,
+    corrs,
+    labels,
+    rmse_contours=None,
+    obs_label=None,
 ):
     """Plot Taylor diagram for models and reference observation.
 
@@ -1398,7 +1394,7 @@ def plot_taylor_diagram(
     )
     fig.suptitle(
         f"Taylor Diagram of model vs. obs {obs_label} ($N=${n_stations})",
-        fontsize=15
+        fontsize=15,
     )
 
     # Add RMSE contours
@@ -1706,7 +1702,6 @@ def preprocess_colocated_datasets(
             - "seas_maps" for seasonal maps
             - "latitude_slices" for timeseries per latitude slice
     """
-    logger.info(f"{ttime.localtime(ttime.time())} enter preprocess_colocated_datasets")
     preproc_datasets = {}
 
     trace_gas = config["trace_gas"]
@@ -1735,7 +1730,6 @@ def preprocess_colocated_datasets(
     }
 
     # Load model data cubes for later iterations w/ quick fix
-    logger.info(f"{ttime.localtime(ttime.time())} enter _quick_fix_cube")
     cube_model_datasets = {}
     for model_dataset, group in mod_datasets.items():
         cube_model_datasets[model_dataset] = {
@@ -1792,7 +1786,6 @@ def preprocess_colocated_datasets(
 
         # Setup dictionary to save output for plots w/ the latitude time series
         # or the amplitude/sensitivity time series
-        logger.info(f"{ttime.localtime(ttime.time())} enter setup of dictionary")
         preproc_datasets["latitude_slices"] = {
             key: {model_dataset: {} for model_dataset in mod_datasets.keys()}
             for key in latitude_ranges.keys()
@@ -1846,7 +1839,10 @@ def preprocess_colocated_datasets(
                 constraint
             ).aggregated_by("year", iris.analysis.MIN)
             obs_slices[key]["growth"] = _setup_growth_cube(
-                obs_slices[key]["yearly"], config, obs_slices[key]["values"], "obs"
+                obs_slices[key]["yearly"],
+                config,
+                obs_slices[key]["values"],
+                "obs",
             )
             # Extract latitude slices for model data
             model_slices[key] = {
@@ -1891,13 +1887,11 @@ def preprocess_colocated_datasets(
                     )
 
         # Looping over model datasets for the colocation process
-        logger.info(f"{ttime.localtime(ttime.time())} enter loop over model datasets")
         for model_dataset, group in mod_datasets.items():
             for key in latitude_ranges.keys():
                 preproc_datasets["latitude_slices"][key][model_dataset] = {}
             # Looping over variables in dataset group
             for attr in group:
-                logger.info(f"{ttime.localtime(ttime.time())} enter attr {attr["alias"]}")
                 # Select time, cube, and time steps
                 time = cube_model_datasets[model_dataset][attr["alias"]][
                     "time"
@@ -1915,8 +1909,12 @@ def preprocess_colocated_datasets(
                     preproc_datasets["latitude_slices"][key][model_dataset][
                         attr["alias"]
                     ] = {
-                        "max": {str(y): {m: [] for m in months} for y in years},
-                        "min": {str(y): {m: [] for m in months} for y in years},
+                        "max": {
+                            str(y): {m: [] for m in months} for y in years
+                        },
+                        "min": {
+                            str(y): {m: [] for m in months} for y in years
+                        },
                         "yearly": {
                             "mean": {str(y): 0.0 for y in years},
                             "std": {str(y): 0.0 for y in years},
@@ -1943,12 +1941,10 @@ def preprocess_colocated_datasets(
                     }
 
                 # Looping over all time steps
-                logger.info(f"{ttime.localtime(ttime.time())} enter looping time steps")
                 for i, ts in enumerate(time.units.num2date(time.points)):
                     if "timeserie_lat" in plots_coloc:
                         # Looping over latitude slices
                         for key in latitude_ranges.keys():
-                            logger.info(f"{ttime.localtime(ttime.time())} enter latitude slice {key}")
                             # Obs values
                             obs_ts = obs_slices[key]["values"].extract(
                                 iris.Constraint(time=ts)
@@ -1967,7 +1963,6 @@ def preprocess_colocated_datasets(
                             )
 
                             # Extract monthly min, max
-                            logger.info(f"{ttime.localtime(ttime.time())} enter min/max colocate")
                             v_obs, v_mod, _ = _colocate_obs_model(
                                 obs_ts, mod_ts
                             )
@@ -1994,7 +1989,6 @@ def preprocess_colocated_datasets(
                             )
 
                             # Extract monthly anomaly
-                            logger.info(f"{ttime.localtime(ttime.time())} enter anomaly colocate")
                             obs_anomaly = obs_ts - obs_yearly
                             mod_anomaly = mod_ts - mod_yearly
                             v_obs, v_mod, _ = _colocate_obs_model(
@@ -2011,11 +2005,9 @@ def preprocess_colocated_datasets(
                             ][str(years_ts[i])][months_ts[i]] = np.array(v_obs)
 
                 # Looping over years
-                logger.info(f"{ttime.localtime(ttime.time())} enter looping over years")
                 for i, y in enumerate(years):
                     # Looping over latitude slices
                     for key in latitude_ranges.keys():
-                        logger.info(f"{ttime.localtime(ttime.time())} enter latitude slice {key}")
                         # Obs values
                         obs_y = obs_slices[key]["yearly"].extract(
                             iris.Constraint(year=y)
@@ -2027,15 +2019,12 @@ def preprocess_colocated_datasets(
                         mod_y = model_slices[key]["yearly"][model_dataset][
                             attr["alias"]
                         ].extract(iris.Constraint(year=y))
-                        mod_a = model_slices[key]["amplitude"][
-                            model_dataset
-                        ][attr["alias"]].extract(iris.Constraint(year=y))
+                        mod_a = model_slices[key]["amplitude"][model_dataset][
+                            attr["alias"]
+                        ].extract(iris.Constraint(year=y))
 
                         # Extract yearly
-                        logger.info(f"{ttime.localtime(ttime.time())} enter yearly colocate")
-                        v_obs_y, v_mod_y, _ = _colocate_obs_model(
-                            obs_y, mod_y
-                        )
+                        v_obs_y, v_mod_y, _ = _colocate_obs_model(obs_y, mod_y)
                         # Save outputs to dictionary
                         preproc_datasets["latitude_slices"][key]["obs"][
                             "yearly"
@@ -2048,9 +2037,9 @@ def preprocess_colocated_datasets(
                         ]["valid"][str(y)] = v_obs_y
                         preproc_datasets["latitude_slices"][key][
                             model_dataset
-                        ][attr["alias"]]["yearly"]["mean"][
-                            str(y)
-                        ] = np.mean(v_mod_y)
+                        ][attr["alias"]]["yearly"]["mean"][str(y)] = np.mean(
+                            v_mod_y
+                        )
                         preproc_datasets["latitude_slices"][key][
                             model_dataset
                         ][attr["alias"]]["yearly"]["std"][str(y)] = np.std(
@@ -2058,28 +2047,23 @@ def preprocess_colocated_datasets(
                         )
                         preproc_datasets["latitude_slices"][key][
                             model_dataset
-                        ][attr["alias"]]["yearly"]["valid"][
-                            str(y)
-                        ] = v_mod_y
+                        ][attr["alias"]]["yearly"]["valid"][str(y)] = v_mod_y
 
                         if "sensitivity_ampl_growth" in plots_coloc:
                             # Extract amplitude
-                            logger.info(f"{ttime.localtime(ttime.time())} enter amplitude colocate")
                             v_obs_a, v_mod_a, _ = _colocate_obs_model(
                                 obs_a, mod_a
                             )
                             # Save outputs to dictionary
-                            preproc_datasets["latitude_slices"][key][
-                                "obs"
-                            ]["amplitude"]["mean"][str(y)] = np.mean(
-                                v_obs_a
-                            )
-                            preproc_datasets["latitude_slices"][key][
-                                "obs"
-                            ]["amplitude"]["std"][str(y)] = np.std(v_obs_a)
-                            preproc_datasets["latitude_slices"][key][
-                                "obs"
-                            ]["amplitude"]["valid"][str(y)] = v_obs_a
+                            preproc_datasets["latitude_slices"][key]["obs"][
+                                "amplitude"
+                            ]["mean"][str(y)] = np.mean(v_obs_a)
+                            preproc_datasets["latitude_slices"][key]["obs"][
+                                "amplitude"
+                            ]["std"][str(y)] = np.std(v_obs_a)
+                            preproc_datasets["latitude_slices"][key]["obs"][
+                                "amplitude"
+                            ]["valid"][str(y)] = v_obs_a
                             preproc_datasets["latitude_slices"][key][
                                 model_dataset
                             ][attr["alias"]]["amplitude"]["mean"][
@@ -2098,7 +2082,6 @@ def preprocess_colocated_datasets(
 
                             # Extract growth & sensitivity = skip if first year as no data
                             if i > 0:
-                                logger.info(f"{ttime.localtime(ttime.time())} enter growth colocate")
                                 # Obs values
                                 obs_g = obs_slices[key]["growth"].extract(
                                     iris.Constraint(year=y)
@@ -2136,9 +2119,7 @@ def preprocess_colocated_datasets(
                                 )
                                 preproc_datasets["latitude_slices"][key][
                                     "obs"
-                                ]["growth"]["valid"][
-                                    str(y)
-                                ] = v_obs_g_relative
+                                ]["growth"]["valid"][str(y)] = v_obs_g_relative
                                 preproc_datasets["latitude_slices"][key][
                                     model_dataset
                                 ][attr["alias"]]["growth"]["mean"][
@@ -2240,7 +2221,6 @@ def main(config):
         logger.info("Plotting for dataset %s", model_dataset)
 
         for attributes in group:
-            logger.info(f"attributes {attributes}")
             # Set up for analysis and plotting
             plot_file_prefix = (
                 model_dataset
@@ -2275,7 +2255,7 @@ def main(config):
                 provenance = get_provenance_record(
                     ancestors=[
                         attributes["filename"],
-                        obs_dataset[0]["filename"]
+                        obs_dataset[0]["filename"],
                     ],
                     model_name=attributes["dataset"],
                     project=attributes["project"],
@@ -2286,7 +2266,7 @@ def main(config):
                     var="seas_maps_scatter",
                 )
                 with ProvenanceLogger(config) as provenance_logger:
-                   provenance_logger.log(output_path, provenance)
+                    provenance_logger.log(output_path, provenance)
 
                 output_file = plot_file_prefix + "seas_map"
                 output_path = get_plot_filename(output_file, config)
@@ -2294,7 +2274,7 @@ def main(config):
                 provenance = get_provenance_record(
                     ancestors=[
                         attributes["filename"],
-                        obs_dataset[0]["filename"]
+                        obs_dataset[0]["filename"],
                     ],
                     model_name=attributes["dataset"],
                     project=attributes["project"],
@@ -2305,7 +2285,7 @@ def main(config):
                     var="seas_maps_map",
                 )
                 with ProvenanceLogger(config) as provenance_logger:
-                   provenance_logger.log(output_path, provenance)
+                    provenance_logger.log(output_path, provenance)
 
             if "timeserie_lat" in config["plots"]:
                 logger.info(
@@ -2328,7 +2308,7 @@ def main(config):
                 provenance = get_provenance_record(
                     ancestors=[
                         attributes["filename"],
-                        obs_dataset[0]["filename"]
+                        obs_dataset[0]["filename"],
                     ],
                     model_name=attributes["dataset"],
                     project=attributes["project"],
@@ -2339,7 +2319,7 @@ def main(config):
                     var="timeserie_lat",
                 )
                 with ProvenanceLogger(config) as provenance_logger:
-                   provenance_logger.log(output_path, provenance)
+                    provenance_logger.log(output_path, provenance)
 
             if "sensitivity_ampl_growth" in config["plots"]:
                 logger.info(
@@ -2363,7 +2343,7 @@ def main(config):
                 provenance = get_provenance_record(
                     ancestors=[
                         attributes["filename"],
-                        obs_dataset[0]["filename"]
+                        obs_dataset[0]["filename"],
                     ],
                     model_name=attributes["dataset"],
                     project=attributes["project"],
@@ -2374,7 +2354,7 @@ def main(config):
                     var="sensitivity_ampl_growth",
                 )
                 with ProvenanceLogger(config) as provenance_logger:
-                   provenance_logger.log(output_path, provenance)
+                    provenance_logger.log(output_path, provenance)
 
     if "taylor_diag" in config["plots"]:
         logger.info("Producing Taylor diagram...")
@@ -2387,8 +2367,8 @@ def main(config):
         )
         # Save Taylor diagram plot
         model_names = [
-                att["dataset"] for gr in datasets.values() for att in gr
-            ]
+            att["dataset"] for gr in datasets.values() for att in gr
+        ]
         output_file = (
             "trace_gas_"
             + config["trace_gas"]
@@ -2405,14 +2385,15 @@ def main(config):
         provenance = get_provenance_record(
             ancestors=[
                 att["filename"] for gr in datasets.values() for att in gr
-            ] + [obs_dataset[0]["filename"]],
+            ]
+            + [obs_dataset[0]["filename"]],
             model_name=model_names,
-            project=set([
-                att["project"] for gr in datasets.values() for att in gr
-            ]),
+            project=set(
+                [att["project"] for gr in datasets.values() for att in gr]
+            ),
             experiment=set(
-                [att["exp"] for gr in datasets.values() for att in gr
-            ]),
+                [att["exp"] for gr in datasets.values() for att in gr]
+            ),
             timerange=obs_dataset[0]["timerange"],
             trace_gas=config["trace_gas"],
             obs_name=obs_dataset[0]["dataset"],

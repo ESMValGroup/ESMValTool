@@ -338,7 +338,11 @@ def _quick_fix_cube(input_file, trace_gas):
     iris.coord_categorisation.add_month(cube, "time")
     # Extract years
     years = sorted(set(cube.coord("year").points))
-    return {"cube": cube, "time": cube.coord("time", dim_coords=True), "years": years}
+    return {
+        "cube": cube,
+        "time": cube.coord("time", dim_coords=True),
+        "years": years,
+    }
 
 
 def _colocate_obs_model(obs, model, w_id=False):
