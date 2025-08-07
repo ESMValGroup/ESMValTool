@@ -22,9 +22,6 @@ preprocessors:
     regrid:
       target_grid: 2.5x2.5
       scheme: nearest
-    multi_model_statistics:
-      span: overlap
-      statistics: [mean]
 
 diagnostics:
 
@@ -40,7 +37,7 @@ diagnostics:
           start_year: 2000
           end_year: 2014
           additional_datasets:
-            - {dataset: NOAA-GML-SURFACE-FLASK-CH4, project: OBS6, mip: Amon, tier: 2, type: atmos, version: 1}
+            - {dataset: NOAA-GML-SURFACE-FLASK-CH4, project: OBS6, mip: Amon, tier: 2, type: atmos, version: 1, alias: NOAA-GML-SURFACE-FLASK-CH4}
 
         ch4s_model:
           mip: Amon
@@ -51,17 +48,14 @@ diagnostics:
           supplementary_variables:
             - short_name: ps
           additional_datasets:
-            - {dataset: CNRM-ESM2-1, project: CMIP6, mip: Amon, exp: esm-hist, ensemble: r1i1p1f3, grid: gr}
+            - {dataset: CNRM-ESM2-1, project: CMIP6, mip: Amon, exp: esm-hist, ensemble: r1i1p1f3, grid: gr, alias: CNRM-ESM2-1}
 
       scripts:
         ch4-surface-trace-gas:
           script: surface_trace_gases/diagnostic_surface_trace_gases.py
           observational_dataset: NOAA-GML-SURFACE-FLASK-CH4
           trace_gas: ch4
-          plots: ['seas_maps', 'timeserie_lat', 'sensitivity_ampl_trend']
-          only_multimodel: False
+          plots: ["seas_maps", "timeserie_lat", "sensitivity_ampl_growth", "taylor_diag"]
           min_mon_per_seas: 3
           min_seas_per_year: 4
           min_seas_per_clim: 5
-          quickplot:
-            plot_type: plot

@@ -4,7 +4,10 @@ This module contains utility functions commonly used by
 trace gas surface concentration assessment routines.
 
 Classes and functions largely adapted from the AOD-AERONET diagnostic
-at /diag_scripts/aerosols/aero_utils.py.
+at /diag_scripts/aerosols/aero_utils.py:
+- FlaskAnsError
+- _add_bounds
+- _extract_pt
 """
 
 import logging
@@ -16,12 +19,23 @@ import numpy as np
 
 logger = logging.getLogger(Path(__file__).stem)
 
+TRACE_GASES_FACTOR = {
+    "ch4": 1e9,
+    "co2": 1e6,
+    "n2o": 1e9,
+}
+TRACE_GASES_UNITS = {
+    "ch4": "ppb",
+    "co2": "ppm",
+    "n2o": "ppb",
+}
+
 
 class FlaskAnsError(Exception):
     """Exception class for errors raised in extract_pt module."""
 
 
-def add_bounds(cube):
+def _add_bounds(cube):
     """Add bounds to a cube's latitude and longitude coordinates.
 
     Parameters
@@ -41,7 +55,7 @@ def add_bounds(cube):
     return cube
 
 
-def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
+def _extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
     """Extract given location(s) (3-D) from a cube.
 
     Method
@@ -191,3 +205,281 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
         data_out.append(tcube.data)
 
     return data_out
+
+
+def _compute_taylor_statistics(ref, model):
+    """Compute statistics necessary for Taylor diagram.
+
+    Parameters
+    ----------
+    ref : numpy.array
+        Array containing the values of the observations.
+    model: numpy.array
+        Array containing the values of the model.
+
+    Returns
+    -------
+    std_model : float
+        Standard deviation of the model data.
+    corr_coeff: float
+        Correlation coefficient between obs and model data.
+    """
+    mask = ~np.isnan(ref) & ~np.isnan(model)
+    if np.sum(mask) < 3:
+        return np.nan, np.nan, np.nan
+    ref_clean = ref[mask]
+    model_clean = model[mask]
+    std_model = np.std(model_clean)
+    corr_coeff = np.corrcoef(ref_clean, model_clean)[0, 1]
+    return std_model, corr_coeff
+
+
+def _latitude_weights(latitudes):
+    """Compute weights based on latitude coordinates.
+
+    Parameters
+    ----------
+    latitudes : numpy.array
+        Array containing the latitude points for the observations.
+
+    Returns
+    -------
+    weights : numpy.array
+        Array containing the latitude weights for the observations.
+    """
+    weights = np.cos(np.radians(latitudes))
+    weights[np.isnan(weights)] = 0
+    return weights / np.nansum(weights)
+
+
+def _fisher_z_transform(corrs, weights):
+    """Compute Fisher transformation and weighting of correlation coefficients.
+
+    Parameters
+    ----------
+    corrs : numpy.array
+        Array containing the correlation coefficients for the stations.
+    weights : numpy.array
+        Array containing the latitude weights for the stations.
+
+    Returns
+    -------
+    corr_mean : float
+        Fisher-transformed and weighted mean correlation coefficient.
+    """
+    corrs = np.clip(corrs, -0.9999, 0.9999)
+    z_vals = np.arctanh(corrs)
+    mean_z = np.nansum(weights * z_vals)
+    return np.tanh(mean_z)
+
+
+def _aggregate_model_stats(obs, model, station_lats):
+    """Aggregate model statistics across stations.
+
+    Parameters
+    ----------
+    obs : numpy.array
+        Array containing the observation data at stations.
+    model : numpy.array
+        Array containing the model data at stations.
+    station_lats : numpy.array
+        Array containing the latitudes of the stations.
+
+    Returns
+    -------
+    std_model_mean : float
+        Mean weighted standard deviation of the model at stations.
+    corr_mean : float
+        Fisher-transformed and weighted mean correlation coefficient.
+    """
+    n_stations = obs.shape[0]
+    std_models = []
+    corrs = []
+    valid = []
+    for i in range(n_stations):
+        std_m, corr = _compute_taylor_statistics(obs[i, :], model[i, :])
+        std_models.append(std_m)
+        corrs.append(corr)
+        valid.append(~np.isnan(corr))
+    std_models = np.array(std_models)
+    corrs = np.array(corrs)
+    valid = np.array(valid)
+    # Filter latitudes and weights for valid stations only
+    weights = _latitude_weights(station_lats[valid])
+    std_model_mean = np.nansum(weights * std_models[valid])
+    corr_mean = _fisher_z_transform(corrs[valid], weights)
+    return std_model_mean, corr_mean
+
+
+def _quick_fix_cube(input_file, trace_gas):
+    """Simple fix of the model data cube (add bounds and unit conversion).
+
+    Parameters
+    ----------
+    input_file : str
+        String containing the model cube data filename.
+    trace_gas : str
+        Trace gas name.
+
+    Returns
+    -------
+    cube : iris.cube.Cube
+        Cube containing the model data after the small fixes.
+    """
+    cube = iris.load_cube(input_file)
+    # Add bounds for lat and lon if not present
+    cube = _add_bounds(cube)
+    # Put observations and model data on same scale for ppm/ppb
+    cube = TRACE_GASES_FACTOR[trace_gas] * cube
+    # Change units accordingly
+    cube.attributes["unit"] = TRACE_GASES_UNITS[trace_gas]
+    # Add month and year coordinates
+    iris.coord_categorisation.add_year(cube, "time")
+    iris.coord_categorisation.add_month(cube, "time")
+    # Extract years
+    years = sorted(set(cube.coord("year").points))
+    return {"cube": cube, "time": cube.coord("time", dim_coords=True), "years": years}
+
+
+def _colocate_obs_model(obs, model, w_id=False):
+    """Colocate model data at observations locations.
+
+    Parameters
+    ----------
+    obs : iris.cube.Cube
+        Cube containing the observation data.
+    model : iris.cube.Cube
+        Cube containing the model data.
+    w_id : bool
+        Flag to indicate if the station ids from the observation data should be
+        returned by the function.
+
+    Returns
+    -------
+    v_obs : list
+        List containing the observation data at the extracted locations.
+    v_mod : list
+        List containing the model data at the extracted locations.
+    v_id : list or None
+        List containing the station ids of the extracted locations.
+    """
+    # Latitude/longitude entries
+    lats = obs.coord("latitude").points.tolist()
+    lons = obs.coord("longitude").points.tolist()
+    # Colocate
+    colocated_cube = _extract_pt(
+        model,
+        lats,
+        lons,
+        nearest=True,
+    )
+    # Filter only valid points
+    valid_indices = ~(obs.data.mask | np.isnan(colocated_cube))
+    v_obs = obs.data[valid_indices].tolist()
+    v_mod = [
+        tg.item()
+        for i, tg in enumerate(colocated_cube)
+        if (tg.item() is not None) and valid_indices[i]
+    ]
+    # Extract station indices if w_id = True
+    if w_id:
+        v_id = (
+            obs.coord("Station index (arbitrary)", dim_coords=True)
+            .points[valid_indices]
+            .tolist()
+        )
+    else:
+        v_id = None
+    return v_obs, v_mod, v_id
+
+
+def _setup_growth_cube(cube_yearly, config, cube_og, type_cube):
+    """Setup yearly growth cube.
+
+    Parameters
+    ----------
+    cube_yearly : iris.cube.Cube
+        Cube containing yearly means.
+    config : dict
+        ESMValTool recipe configuration.
+    cube_og : iris.cube.Cube
+        Original cube before yearly mean processing.
+    type_cube : str
+        String to indicate if the input cubes are for model or obs data.
+
+    Returns
+    -------
+    cube: iris.cube.Cube
+        Cube containing the yearly absolute growth.
+    """
+    dim_coords = None
+    if type_cube == "obs":
+        dim_coords = [
+            (
+                iris.coords.DimCoord.from_coord(cube_yearly.coord("year")[1:]),
+                0,
+            ),
+            (cube_yearly.coord("Station index (arbitrary)"), 1),
+        ]
+    elif type_cube == "model":
+        dim_coords = [
+            (
+                iris.coords.DimCoord.from_coord(cube_yearly.coord("year")[1:]),
+                0,
+            ),
+            (cube_yearly.coord("latitude"), 1),
+            (cube_yearly.coord("longitude"), 2),
+        ]
+    # Create growth cube from yearly mean cube
+    cube = iris.cube.Cube(
+        np.diff(cube_yearly.data, axis=0),
+        long_name=f"{config['trace_gas']}_growth",
+        units=TRACE_GASES_UNITS[config["trace_gas"]],
+        dim_coords_and_dims=dim_coords,
+    )
+    # Fill in attributes from original cube
+    cube.attributes = cube_og.attributes
+    # Fill in auxiliary coordinates from original cube for obs
+    if type_cube == "obs":
+        station_index_og = cube_og.coord("Station index (arbitrary)").points
+        station_index_new = cube.coord("Station index (arbitrary)").points
+        index_map = np.where(np.isin(station_index_og, station_index_new))[0]
+        for aux_coord_name in [
+            "altitude",
+            "latitude",
+            "longitude",
+            "platform_name",
+        ]:
+            try:
+                aux_coord = cube_og.coord(aux_coord_name)
+                if cube_og.coord_dims(aux_coord):
+                    coord_dims = cube_og.coord_dims(aux_coord)
+                    if coord_dims == (1,):
+                        # Subset the aux coord points using the index map
+                        new_points = aux_coord.points[index_map]
+                        # If the coordinate has bounds
+                        if aux_coord.bounds is not None:
+                            new_bounds = aux_coord.bounds[index_map]
+                        else:
+                            new_bounds = None
+                        # Create a new AuxCoord and add it to cube
+                        new_aux = iris.coords.AuxCoord(
+                            new_points,
+                            standard_name=aux_coord.standard_name,
+                            long_name=aux_coord.long_name,
+                            var_name=aux_coord.var_name,
+                            units=aux_coord.units,
+                            bounds=new_bounds,
+                        )
+                        cube.add_aux_coord(
+                            new_aux,
+                            (cube.coord_dims("Station index (arbitrary)")[0],),
+                        )
+                    else:
+                        # For scalar coordinates or broadcasted ones, copy as is
+                        cube.add_aux_coord(aux_coord.copy(), ())
+            except iris.exceptions.CoordinateNotFoundError:
+                msg = f"Auxiliary coordinate {aux_coord_name} not found in obs_cube."
+                logger.debug(msg)
+                pass
+    return cube

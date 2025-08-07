@@ -38,13 +38,13 @@ ranges considered are 60N - 90N, 30N - 60N, 30S - 30N, 90S - 30S.
       The left column includes yearly concentration amplitude time series.
       The center column includes yearly concentration growth time series.
       The right column includes yearly sensitivity of amplitude/growth.
+    * Taylor diagram of trace gas surface concentration for the observations
+      and the different models from the recipe.
 
 Each analysis can be turned on or off using the argument *plots* in the recipe.
-There is also the possibility for the two time series analysis plots to include
-the zonal average of the model data and not just at the station locations using
-the argument *only_multimodel* in the recipe. Furthermore, one can change how
-the station data is pre-processed before plotting by filtering stations with
-a minimum amount of data for months, seasons, years.
+Furthermore, one can change how the station data is pre-processed before
+plotting by filtering stations with a minimum amount of data for months,
+seasons, and years.
 
 User settings in recipe
 -----------------------
@@ -65,9 +65,7 @@ User settings in recipe
   *Optional settings for script*
 
   * plots: List of the diagnostics to plot among *seas_maps*, *timeserie_lat*,
-    and sensitivi*ty_ampl_trend. Default is all of them.
-  * only_multimodel: Boolean flag to indicate if only the diagnostics
-    for the multimodel mean should be plotted. Default is *False*.
+    *sensitivity_ampl_trend* and *taylor_diag*. Default is all of them.
 
   *Required settings for variables*
 
@@ -125,25 +123,31 @@ Example plots
 -------------
 
 .. _fig_surface_trace_gas_1:
-.. figure::  /recipes/figures/surface_trace_gas/CNRM-ESM2-1_CMIP_Amon_esm-hist_co2s_2004_2014_seas_map.png
+.. figure::  /recipes/figures/surface_trace_gas/CNRM-ESM2-1_Amon_esm-hist_co2s_2000_2014_seas_map.png
    :align:   center
 
    Evaluation of seasonal surface concentration of CO2 from CNRM-ESM2-1 esm-hist member r1i1p1f3 against the NOAA GML climatology from ground-based observations. The multiannual seasonal mean is calculated for the model data for the period 2000-2014. The model output is overlaid with the observational climatology.
 
 .. _fig_surface_trace_gas_2:
-.. figure::  /recipes/figures/surface_trace_gas/CNRM-ESM2-1_CMIP_Amon_esm-hist_co2s_2004_2014_scatter.png
+.. figure::  /recipes/figures/surface_trace_gas/CNRM-ESM2-1_Amon_esm-hist_co2s_2000_2014_scatter.png
    :align:   center
 
    Evaluation of seasonal surface concentration of CO2 from CNRM-ESM2-1 esm-hist member r1i1p1f3 against the NOAA GML climatology from ground-based observations. The multiannual seasonal mean is calculated for the model data for the period 2000-2014.
 
 .. _fig_surface_trace_gas_3:
-.. figure::  /recipes/figures/surface_trace_gas/CNRM-ESM2-1_CMIP_Amon_esm-hist_co2s_2004_2014_timeseries_latitude.png
+.. figure::  /recipes/figures/surface_trace_gas/CNRM-ESM2-1_Amon_esm-hist_co2s_2000_2014_timeseries_latitude.png
    :align:   center
 
    Evaluation of surface concentration time series (monthly, seasonal, annual) of CO2 from CNRM-ESM2-1 esm-hist member r1i1p1f3 against the NOAA GML climatology from ground-based observations. The multiannual seasonal mean is calculated for the model data for the period 2000-2014.
 
 .. _fig_surface_trace_gas_4:
-.. figure::  /recipes/figures/surface_trace_gas/CNRM-ESM2-1_CMIP_Amon_esm-hist_co2s_2004_2014_seas_amplitude_trend.png
+.. figure::  /recipes/figures/surface_trace_gas/CNRM-ESM2-1_Amon_esm-hist_co2s_2000_2014_sensitivity_ampl_growth.png
    :align:   center
 
    Evaluation of surface concentration time series (amplitude, growth, sensitivity) of CO2 from CNRM-ESM2-1 esm-hist member r1i1p1f3 against the NOAA GML climatology from ground-based observations. The multiannual seasonal mean is calculated for the model data for the period 2000-2014.
+
+.. _fig_surface_trace_gas_5:
+.. figure::  /recipes/figures/surface_trace_gas/trace_gas_co2_CNRM-ESM2-1_2000_2014_taylor_diag.png
+   :align:   center
+
+   Taylor diagram of surface concentration of CO2 from CNRM-ESM2-1 esm-hist member r1i1p1f3 against the NOAA GML climatology from ground-based observations. The multiannual seasonal mean is calculated for the model data for the period 2000-2014.
