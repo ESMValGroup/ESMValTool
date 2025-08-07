@@ -87,6 +87,7 @@ def get_provenance_record(
     var: str,
 ) -> dict:
     """Create a provenance record describing the diagnostic data and plot.
+
     Parameters
     ----------
     ancestors : str, list, dict
@@ -538,7 +539,7 @@ def trace_gas_timeserie_zonal(
         "Dec",
     ]
 
-    for l_i, lat_range in enumerate(LATITUDE_RANGES.keys()):
+    for l_i, (lat_range, _) in enumerate(LATITUDE_RANGES.items()):
         # Get list of valid obs and model colocated values
         valid_obs = [
             v
@@ -1001,7 +1002,7 @@ def trace_gas_seas_ampl_growth_rate(
         wspace=0.25,
     )
     # Loop over latitude ranges
-    for l_i, lat_range in enumerate(LATITUDE_RANGES.keys()):
+    for l_i, (lat_range, _) in enumerate(LATITUDE_RANGES.items()):
         # Get number of stations
         n_stations = np.max(
             [
@@ -1385,15 +1386,15 @@ def plot_taylor_diagram(
     if rmse_contours:
         r_range = np.linspace(0, ax.get_rmax(), 100)
         theta_range = np.linspace(0, np.pi / 2, 100)
-        R, Theta = np.meshgrid(r_range, theta_range, indexing="ij")
+        r, theta = np.meshgrid(r_range, theta_range, indexing="ij")
         # Compute RMSE on the grid
         rmse_grid = np.sqrt(
-            std_ref**2 + R**2 - 2 * std_ref * R * np.cos(Theta)
+            std_ref**2 + r**2 - 2 * std_ref * r * np.cos(theta)
         )
         # Plot the RMSE contours
         contour = ax.contour(
-            Theta,
-            R,
+            theta,
+            r,
             rmse_grid,
             rmse_contours,
             cmap="copper_r",
@@ -1441,8 +1442,8 @@ def trace_gas_taylor_diag(datasets, obs, trace_gas, config):
     # Colocate datasets and observations
     colocated_datasets = {
         "obs": {
-            id: np.zeros(shape=len(time.points.tolist())) * np.nan
-            for id in ids
+            id_s: np.zeros(shape=len(time.points.tolist())) * np.nan
+            for id_s in ids
         },
     }
     # Flag for saving obs data only once
@@ -1459,8 +1460,8 @@ def trace_gas_taylor_diag(datasets, obs, trace_gas, config):
             mod_data = _quick_fix_cube(attr["filename"], trace_gas)
             # Set up dictionary for model data
             colocated_datasets[model_dataset][attr["alias"]] = {
-                id: np.zeros(shape=len(time.points.tolist())) * np.nan
-                for id in ids
+                id_s: np.zeros(shape=len(time.points.tolist())) * np.nan
+                for id_s in ids
             }
             # Looping over all time steps
             for t, ts in enumerate(time.units.num2date(time.points)):
@@ -1472,24 +1473,24 @@ def trace_gas_taylor_diag(datasets, obs, trace_gas, config):
                     w_id=True,
                 )
                 # Save outputs to dictionary
-                for i, id in enumerate(v_id):
-                    colocated_datasets[model_dataset][attr["alias"]][id][t] = (
-                        v_mod[i]
-                    )
+                for i, id_s in enumerate(v_id):
+                    colocated_datasets[model_dataset][attr["alias"]][id_s][
+                        t
+                    ] = v_mod[i]
                 if not saved_obs:
-                    for i, id in enumerate(v_id):
-                        colocated_datasets["obs"][id][t] = v_obs[i]
+                    for i, id_s in enumerate(v_id):
+                        colocated_datasets["obs"][id_s][t] = v_obs[i]
             saved_obs = True
     # Setup outputs as numpy arrays
-    obs_array = np.stack([colocated_datasets["obs"][id] for id in ids])
+    obs_array = np.stack([colocated_datasets["obs"][id_s] for id_s in ids])
     mod_array = []
     for model_dataset, group in datasets.items():
         for attr in group:
             mod_array.append(
                 np.stack(
                     [
-                        colocated_datasets[model_dataset][attr["alias"]][id]
-                        for id in ids
+                        colocated_datasets[model_dataset][attr["alias"]][id_s]
+                        for id_s in ids
                     ]
                 )
             )
@@ -1752,7 +1753,7 @@ def preprocess_colocated_datasets(
     #   - colocated timeseries/scatter per latitude slices
     #     ("timeserie_lat" or "sensitivity_ampl_growth")
     plots_coloc = [
-        p for p in config["plots"] if (p != "seas_maps" and p != "taylor_diag")
+        p for p in config["plots"] if p not in ("seas_maps", "taylor_diag")
     ]
     plots_coloc_check = ["timeserie_lat", "sensitivity_ampl_growth"]
     if any(map(lambda v: v in plots_coloc_check, plots_coloc)):
@@ -1765,9 +1766,9 @@ def preprocess_colocated_datasets(
         # or the amplitude/sensitivity time series
         preproc_datasets["latitude_slices"] = {
             key: {model_dataset: {} for model_dataset in mod_datasets.keys()}
-            for key in LATITUDE_RANGES.keys()
+            for key, _ in LATITUDE_RANGES.items()
         }
-        for key in LATITUDE_RANGES.keys():
+        for key, _ in LATITUDE_RANGES.items():
             preproc_datasets["latitude_slices"][key]["obs"] = {
                 "max": {str(y): {m: [] for m in months} for y in years_obs},
                 "min": {str(y): {m: [] for m in months} for y in years_obs},
@@ -1797,8 +1798,8 @@ def preprocess_colocated_datasets(
             }
         # Setup yearly mean, amplitude, and growth cubes for later
         # colocation w/ latitude slices
-        model_slices = {key: {} for key in LATITUDE_RANGES.keys()}
-        obs_slices = {key: {} for key in LATITUDE_RANGES.keys()}
+        model_slices = {key: {} for key, _ in LATITUDE_RANGES.items()}
+        obs_slices = {key: {} for key, _ in LATITUDE_RANGES.items()}
         for key, (lat_min, lat_max) in LATITUDE_RANGES.items():
             constraint = iris.Constraint(
                 latitude=lambda cell, lat_min=lat_min, lat_max=lat_max: lat_min
@@ -1865,7 +1866,7 @@ def preprocess_colocated_datasets(
 
         # Looping over model datasets for the colocation process
         for model_dataset, group in mod_datasets.items():
-            for key in LATITUDE_RANGES.keys():
+            for key, _ in LATITUDE_RANGES.items():
                 preproc_datasets["latitude_slices"][key][model_dataset] = {}
             # Looping over variables in dataset group
             for attr in group:
@@ -1882,7 +1883,7 @@ def preprocess_colocated_datasets(
                 # years = cube.coord("year", dim_coords=False).points.tolist()
                 months_ts = cube.coord("month", dim_coords=False).points
                 years_ts = cube.coord("year", dim_coords=False).points
-                for key in LATITUDE_RANGES.keys():
+                for key, _ in LATITUDE_RANGES.items():
                     preproc_datasets["latitude_slices"][key][model_dataset][
                         attr["alias"]
                     ] = {
@@ -1921,7 +1922,7 @@ def preprocess_colocated_datasets(
                 for i, ts in enumerate(time.units.num2date(time.points)):
                     if "timeserie_lat" in plots_coloc:
                         # Looping over latitude slices
-                        for key in LATITUDE_RANGES.keys():
+                        for key, _ in LATITUDE_RANGES.items():
                             # Obs values
                             obs_ts = obs_slices[key]["values"].extract(
                                 iris.Constraint(time=ts)
@@ -1984,7 +1985,7 @@ def preprocess_colocated_datasets(
                 # Looping over years
                 for i, y in enumerate(years):
                     # Looping over latitude slices
-                    for key in LATITUDE_RANGES.keys():
+                    for key, _ in LATITUDE_RANGES.items():
                         # Obs values
                         obs_y = obs_slices[key]["yearly"].extract(
                             iris.Constraint(year=y)
@@ -2365,11 +2366,11 @@ def main(config):
             ]
             + [obs_dataset[0]["filename"]],
             model_name=model_names,
-            project=set(
-                [att["project"] for gr in datasets.values() for att in gr]
+            project=list(
+                set([att["project"] for gr in datasets.values() for att in gr])
             ),
-            experiment=set(
-                [att["exp"] for gr in datasets.values() for att in gr]
+            experiment=list(
+                set([att["exp"] for gr in datasets.values() for att in gr])
             ),
             timerange=obs_dataset[0]["timerange"],
             trace_gas=config["trace_gas"],

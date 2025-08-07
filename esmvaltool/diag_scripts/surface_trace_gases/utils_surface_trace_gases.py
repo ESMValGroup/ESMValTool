@@ -69,15 +69,20 @@ def _extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
 
     Parameters
     ----------
-    icube : Iris cube
-    pt_lat, pt_lon : Float or list/array of floats. Latitude and longitude
-                     coordinates of desired points.
-    height  : Float or list/array of floats. Altitude (above geoid) of
-        point. Initialized to None.
-    level   : Integer . Model level or pseudo level or tile number.
+    icube : iris.cube.Cube
+        Input iris cube.
+    pt_lat : float, list/array of floats
+        Latitude coordinates of desired points.
+    pt_lon : float, list/array of floats
+        Longitude coordinates of desired points.
+    height : float, list/array of floats
+        Altitude (above geoid) of point. Initialized to None.
+    level : int
+        Model level or pseudo level or tile number.
         Initialized to None, meaning that all available levels in
         the cube are used.
-    nearest : Boolean. Specify whether to use 'nearest neighbour', instead
+    nearest : bool
+        Specify whether to use 'nearest neighbour', instead
         of 'linear' method while extracting data. Default is False.
 
     Returns
@@ -142,9 +147,10 @@ def _extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
     # processing if necessary.
     if height is not None:
         pt_hgt = []
-        pt_hgt.extend(height) if isinstance(height, list) else pt_hgt.append(
-            height
-        )
+        if isinstance(height, list):
+            pt_hgt.extend(height)
+        else:
+            pt_hgt.append(height)
 
         if len(pt_lat1) != len(pt_hgt):
             m = "Extract_pt:Mismatch in number of points for lat/long/height."
@@ -214,14 +220,14 @@ def _compute_taylor_statistics(ref, model):
     ----------
     ref : numpy.array
         Array containing the values of the observations.
-    model: numpy.array
+    model : numpy.array
         Array containing the values of the model.
 
     Returns
     -------
     std_model : float
         Standard deviation of the model data.
-    corr_coeff: float
+    corr_coeff : float
         Correlation coefficient between obs and model data.
     """
     mask = ~np.isnan(ref) & ~np.isnan(model)
@@ -312,7 +318,7 @@ def _aggregate_model_stats(obs, model, station_lats):
 
 
 def _quick_fix_cube(input_file, trace_gas):
-    """Simple fix of the model data cube (add bounds and unit conversion).
+    """Fix the model data cube (add bounds and unit conversion).
 
     Parameters
     ----------
@@ -398,7 +404,7 @@ def _colocate_obs_model(obs, model, w_id=False):
 
 
 def _setup_growth_cube(cube_yearly, config, cube_og, type_cube):
-    """Setup yearly growth cube.
+    """Set yearly growth cube.
 
     Parameters
     ----------
@@ -413,7 +419,7 @@ def _setup_growth_cube(cube_yearly, config, cube_og, type_cube):
 
     Returns
     -------
-    cube: iris.cube.Cube
+    cube : iris.cube.Cube
         Cube containing the yearly absolute growth.
     """
     dim_coords = None
@@ -485,5 +491,4 @@ def _setup_growth_cube(cube_yearly, config, cube_og, type_cube):
             except iris.exceptions.CoordinateNotFoundError:
                 msg = f"Auxiliary coordinate {aux_coord_name} not found in obs_cube."
                 logger.debug(msg)
-                pass
     return cube
