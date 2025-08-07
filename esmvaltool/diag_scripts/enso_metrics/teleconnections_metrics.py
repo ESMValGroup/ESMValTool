@@ -61,7 +61,8 @@ def plot_level1(input_data, rmse, title):
         fontsize=12,
         ha="left",
         transform=plt.gca().transAxes,
-        bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
+        backgroundcolor="white",
+        # bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
     )
     # Add a single colorbar at the bottom
     cax = plt.axes([0.15, 0.08, 0.7, 0.05])
@@ -262,7 +263,8 @@ def plot_level2(datads_dict, season):
                     fontsize=12,
                     ha="left",
                     transform=plt.gca().transAxes,
-                    bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
+                    backgroundcolor="white",
+                    # bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
                 )
 
             i += 1

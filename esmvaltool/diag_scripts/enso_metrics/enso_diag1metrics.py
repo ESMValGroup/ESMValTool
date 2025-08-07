@@ -44,7 +44,8 @@ def plot_level1(input_data, metricval, y_label, title, dtls):
             fontsize=12,
             ha="center",
             transform=plt.gca().transAxes,
-            bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
+            backgroundcolor="white",
+            # bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
         )
         plt.legend()
     else:
@@ -65,7 +66,8 @@ def plot_level1(input_data, metricval, y_label, title, dtls):
             f"metric(%): {metricval:.2f}",
             fontsize=12,
             transform=plt.gca().transAxes,
-            bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
+            backgroundcolor="white",
+            # bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
         )
 
     plt.title(title)  # metric name

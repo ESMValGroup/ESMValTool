@@ -114,4 +114,4 @@ diagnostics:
 
     scripts:
       seas_asym_amp_script:
-        script: enso_metrics/enso_divedowns/ampseasskew11-13.py
+        script: enso_metrics/enso_divedowns/ampseasskew_1113.py

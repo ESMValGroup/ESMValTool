@@ -135,4 +135,4 @@ diagnostics:
         script: enso_metrics/enso_divedowns/lifecycle_10.py
 
       durationdiversity_script:
-        script: enso_metrics/enso_divedowns/durdiver_14-15.py
+        script: enso_metrics/enso_divedowns/durdiver_1415.py

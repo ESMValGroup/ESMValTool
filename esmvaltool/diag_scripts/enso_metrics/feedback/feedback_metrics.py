@@ -198,7 +198,8 @@ def plt_settings(slopes, lvl1, metric_varls):
             fontsize=12,
             ha="right",
             transform=plt.gca().transAxes,
-            bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
+            backgroundcolor="white",
+            # bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
         )
 
     else:
@@ -209,7 +210,8 @@ def plt_settings(slopes, lvl1, metric_varls):
             fontsize=12,
             ha="left",
             transform=plt.gca().transAxes,
-            bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
+            backgroundcolor="white",
+            # bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
         )
 
 
