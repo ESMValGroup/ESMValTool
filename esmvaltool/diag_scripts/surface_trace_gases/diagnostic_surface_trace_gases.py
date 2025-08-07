@@ -62,6 +62,18 @@ PLOT_PARAM = {
 }
 COLORS_MARKERS = ["cornflowerblue", "royalblue", "lightsteelblue"]
 MARKERS = ["o", "^", "s"]
+LATITUDE_TITLES = [
+    r"Latitudes 60$^\circ$N - 90$^\circ$N",
+    r"Latitudes 30$^\circ$N - 60$^\circ$N",
+    r"Latitudes 30$^\circ$S - 30$^\circ$N",
+    r"Latitudes 90$^\circ$S - 30$^\circ$S",
+]
+LATITUDE_RANGES = {
+    "60N - 90N": (60, 90),
+    "30N - 60N": (30, 60),
+    "30S - 30N": (-30, 30),
+    "90S - 30S": (-90, -30),
+}
 
 
 def get_provenance_record(
@@ -503,24 +515,11 @@ def trace_gas_timeserie_zonal(
         hspace=0.35,
         wspace=0.25,
     )
-    latitude_titles = [
-        r"Latitudes 60$^\circ$N - 90$^\circ$N",
-        r"Latitudes 30$^\circ$N - 60$^\circ$N",
-        r"Latitudes 30$^\circ$S - 30$^\circ$N",
-        r"Latitudes 90$^\circ$S - 30$^\circ$S",
-    ]
+
     handles_mean = None
     labels_mean = None
     handles_minmax = None
     labels_minmax = None
-
-    # Define latitude ranges
-    latitude_ranges = {
-        "60N - 90N": (60, 90),
-        "30N - 60N": (30, 60),
-        "30S - 30N": (-30, 30),
-        "90S - 30S": (-90, -30),
-    }
 
     start_year, end_year = timerange.split("/")
     years = np.arange(int(start_year), int(end_year) + 1, 1)
@@ -539,7 +538,7 @@ def trace_gas_timeserie_zonal(
         "Dec",
     ]
 
-    for l_i, lat_range in enumerate(latitude_ranges.keys()):
+    for l_i, lat_range in enumerate(LATITUDE_RANGES.keys()):
         # Get list of valid obs and model colocated values
         valid_obs = [
             v
@@ -653,7 +652,7 @@ def trace_gas_timeserie_zonal(
         ax.xaxis.set_major_locator(mpl.ticker.MaxNLocator(integer=True))
         text = f"No. of sites = {n_stations}"
         plt.annotate(text, (0.05, 0.9), xycoords="axes fraction", fontsize=16)
-        plt.title(latitude_titles[l_i], fontsize=28)
+        plt.title(LATITUDE_TITLES[l_i], fontsize=28)
         # Get legend handles for the first latitude band
         if l_i == 0:
             axes = plt.gcf().axes
@@ -691,7 +690,7 @@ def trace_gas_timeserie_zonal(
         plt.tick_params(axis="both", labelsize=16)
         text = f"$r^{2}$ = {linreg.rvalue**2:.2f}"
         plt.annotate(text, (0.05, 0.9), xycoords="axes fraction", fontsize=16)
-        plt.title(latitude_titles[l_i], fontsize=28)
+        plt.title(LATITUDE_TITLES[l_i], fontsize=28)
 
         # Plot centre-right column
         # multi-annual mean seasonal variation
@@ -794,7 +793,7 @@ def trace_gas_timeserie_zonal(
             fontsize=20,
         )
         plt.tick_params(axis="both", labelsize=16)
-        plt.title(latitude_titles[l_i], fontsize=28)
+        plt.title(LATITUDE_TITLES[l_i], fontsize=28)
 
         # Plot right column
         # seasonal cycle timing
@@ -906,7 +905,7 @@ def trace_gas_timeserie_zonal(
         plt.tick_params(axis="both", labelsize=16)
         ax = plt.gca()
         ax.xaxis.set_major_locator(mpl.ticker.MaxNLocator(integer=True))
-        plt.title(latitude_titles[l_i], fontsize=28)
+        plt.title(LATITUDE_TITLES[l_i], fontsize=28)
         # Get legend handles for the first latitude band
         if l_i == 0:
             axes = plt.gcf().axes
@@ -983,20 +982,6 @@ def trace_gas_seas_ampl_growth_rate(
         The center column contains the zonal growth rate.
         The right column contains the zonal sensitivity amplitude/growth.
     """
-    # Latitude ranges
-    latitude_titles = [
-        r"Latitudes 60$^\circ$N - 90$^\circ$N",
-        r"Latitudes 30$^\circ$N - 60$^\circ$N",
-        r"Latitudes 30$^\circ$S - 30$^\circ$N",
-        r"Latitudes 90$^\circ$S - 30$^\circ$S",
-    ]
-    latitude_ranges = {
-        "60N - 90N": (60, 90),
-        "30N - 60N": (30, 60),
-        "30S - 30N": (-30, 30),
-        "90S - 30S": (-90, -30),
-    }
-
     start_year, end_year = timerange.split("/")
     years = np.arange(int(start_year), int(end_year) + 1, 1)
 
@@ -1016,7 +1001,7 @@ def trace_gas_seas_ampl_growth_rate(
         wspace=0.25,
     )
     # Loop over latitude ranges
-    for l_i, lat_range in enumerate(latitude_ranges.keys()):
+    for l_i, lat_range in enumerate(LATITUDE_RANGES.keys()):
         # Get number of stations
         n_stations = np.max(
             [
@@ -1115,7 +1100,7 @@ def trace_gas_seas_ampl_growth_rate(
         ax.xaxis.set_major_locator(mpl.ticker.MaxNLocator(integer=True))
         text = f"No. of sites = {n_stations}"
         plt.annotate(text, (0.05, 0.9), xycoords="axes fraction", fontsize=16)
-        plt.title(latitude_titles[l_i], fontsize=28)
+        plt.title(LATITUDE_TITLES[l_i], fontsize=28)
 
         # Plot center column = relative growth
         model_g_mean = np.array(
@@ -1197,7 +1182,7 @@ def trace_gas_seas_ampl_growth_rate(
         plt.tick_params(axis="both", labelsize=16)
         ax = plt.gca()
         ax.xaxis.set_major_locator(mpl.ticker.MaxNLocator(integer=True))
-        plt.title(latitude_titles[l_i], fontsize=28)
+        plt.title(LATITUDE_TITLES[l_i], fontsize=28)
 
         # Plot sensitivity between seasonal amplitude and growth
         model_s_mean = np.array(
@@ -1278,7 +1263,7 @@ def trace_gas_seas_ampl_growth_rate(
         plt.tick_params(axis="both", labelsize=16)
         ax = plt.gca()
         ax.xaxis.set_major_locator(mpl.ticker.MaxNLocator(integer=True))
-        plt.title(latitude_titles[l_i], fontsize=28)
+        plt.title(LATITUDE_TITLES[l_i], fontsize=28)
 
     figure.legend(
         loc="upper center",
@@ -1720,13 +1705,6 @@ def preprocess_colocated_datasets(
         "Nov",
         "Dec",
     ]
-    # Define latitude ranges to slice the model and obs cubes
-    latitude_ranges = {
-        "60N - 90N": (60, 90),
-        "30N - 60N": (30, 60),
-        "30S - 30N": (-30, 30),
-        "90S - 30S": (-90, -30),
-    }
 
     # Load model data cubes for later iterations w/ quick fix
     cube_model_datasets = {}
@@ -1787,9 +1765,9 @@ def preprocess_colocated_datasets(
         # or the amplitude/sensitivity time series
         preproc_datasets["latitude_slices"] = {
             key: {model_dataset: {} for model_dataset in mod_datasets.keys()}
-            for key in latitude_ranges.keys()
+            for key in LATITUDE_RANGES.keys()
         }
-        for key in latitude_ranges.keys():
+        for key in LATITUDE_RANGES.keys():
             preproc_datasets["latitude_slices"][key]["obs"] = {
                 "max": {str(y): {m: [] for m in months} for y in years_obs},
                 "min": {str(y): {m: [] for m in months} for y in years_obs},
@@ -1819,9 +1797,9 @@ def preprocess_colocated_datasets(
             }
         # Setup yearly mean, amplitude, and growth cubes for later
         # colocation w/ latitude slices
-        model_slices = {key: {} for key in latitude_ranges.keys()}
-        obs_slices = {key: {} for key in latitude_ranges.keys()}
-        for key, (lat_min, lat_max) in latitude_ranges.items():
+        model_slices = {key: {} for key in LATITUDE_RANGES.keys()}
+        obs_slices = {key: {} for key in LATITUDE_RANGES.keys()}
+        for key, (lat_min, lat_max) in LATITUDE_RANGES.items():
             constraint = iris.Constraint(
                 latitude=lambda cell, lat_min=lat_min, lat_max=lat_max: lat_min
                 <= cell
@@ -1887,7 +1865,7 @@ def preprocess_colocated_datasets(
 
         # Looping over model datasets for the colocation process
         for model_dataset, group in mod_datasets.items():
-            for key in latitude_ranges.keys():
+            for key in LATITUDE_RANGES.keys():
                 preproc_datasets["latitude_slices"][key][model_dataset] = {}
             # Looping over variables in dataset group
             for attr in group:
@@ -1904,7 +1882,7 @@ def preprocess_colocated_datasets(
                 # years = cube.coord("year", dim_coords=False).points.tolist()
                 months_ts = cube.coord("month", dim_coords=False).points
                 years_ts = cube.coord("year", dim_coords=False).points
-                for key in latitude_ranges.keys():
+                for key in LATITUDE_RANGES.keys():
                     preproc_datasets["latitude_slices"][key][model_dataset][
                         attr["alias"]
                     ] = {
@@ -1943,7 +1921,7 @@ def preprocess_colocated_datasets(
                 for i, ts in enumerate(time.units.num2date(time.points)):
                     if "timeserie_lat" in plots_coloc:
                         # Looping over latitude slices
-                        for key in latitude_ranges.keys():
+                        for key in LATITUDE_RANGES.keys():
                             # Obs values
                             obs_ts = obs_slices[key]["values"].extract(
                                 iris.Constraint(time=ts)
@@ -2006,7 +1984,7 @@ def preprocess_colocated_datasets(
                 # Looping over years
                 for i, y in enumerate(years):
                     # Looping over latitude slices
-                    for key in latitude_ranges.keys():
+                    for key in LATITUDE_RANGES.keys():
                         # Obs values
                         obs_y = obs_slices[key]["yearly"].extract(
                             iris.Constraint(year=y)
