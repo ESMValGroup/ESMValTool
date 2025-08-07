@@ -129,7 +129,7 @@ def plot_latlon_cubes(
             data_names.replace(f"{var}_", "").split("_vs_")[i]
             for i in range(2)
         ]
-        for cube, cube_name in zip(cubes, cube_names):
+        for cube, cube_name in zip(cubes, cube_names, strict=True):
             if not season:
                 plot_file_path = os.path.join(
                     cfg["plot_dir"],
@@ -360,7 +360,7 @@ def plot_ctrl_exper_seasons(ctrl_seasons, exper_seasons, cfg, plot_key):
     seasons = ["DJF", "MAM", "JJA", "SON"]
     if cfg["analysis_type"] == "lat_lon":
         for control_season, experiment_season, season in zip(
-            ctrl_seasons, exper_seasons, seasons
+            ctrl_seasons, exper_seasons, seasons, strict=True
         ):
             plot_latlon_cubes(
                 control_season,
@@ -372,13 +372,13 @@ def plot_ctrl_exper_seasons(ctrl_seasons, exper_seasons, cfg, plot_key):
             )
     elif cfg["analysis_type"] == "zonal_mean":
         for control_season, experiment_season, season in zip(
-            ctrl_seasons, exper_seasons, seasons
+            ctrl_seasons, exper_seasons, seasons, strict=True
         ):
             plot_info = [plot_key, "latitude", season]
             plot_zonal_cubes(control_season, experiment_season, cfg, plot_info)
     elif cfg["analysis_type"] == "meridional_mean":
         for control_season, experiment_season, season in zip(
-            ctrl_seasons, exper_seasons, seasons
+            ctrl_seasons, exper_seasons, seasons, strict=True
         ):
             plot_info = [plot_key, "longitude", season]
             plot_zonal_cubes(control_season, experiment_season, cfg, plot_info)
@@ -435,7 +435,7 @@ def main(cfg):
 
         # apply desired analysis on obs's
         if obs_list:
-            for obs_i, obsfile in zip(obs_list, obs):
+            for obs_i, obsfile in zip(obs_list, obs, strict=True):
                 obs_analyzed = coordinate_collapse(obs_i, cfg)
                 obs_name = obsfile["alias"]
                 plot_key = f"{short_name}_{control_dataset_name}_vs_{obs_name}"

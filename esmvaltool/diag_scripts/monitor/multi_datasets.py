@@ -1228,7 +1228,7 @@ class MultiDatasets(MonitorBase):
 
     def _get_benchmark_metric(self, dataset: dict) -> str:
         """Get benchmarking metric."""
-        for metric in ("emd", "pearsor", "rmse"):
+        for metric in ("emd", "pearsonr", "rmse"):
             if dataset["short_name"].startswith(f"{metric}_"):
                 return metric
         metric = "bias"
