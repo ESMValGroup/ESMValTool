@@ -17,8 +17,9 @@ from __future__ import annotations
 
 import ast
 import logging
+from collections.abc import Callable
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 import arviz as az
 import cartopy.crs as ccrs
@@ -384,7 +385,7 @@ def _construct_param_comb(
     param_in = [
         param[i] if param.ndim == 1 else param[i, :] for param in params
     ]
-    param_in = dict(zip(params_names, param_in))
+    param_in = dict(zip(params_names, param_in, strict=False))
     param_in.update(extra_params)
     return param_in
 
@@ -488,7 +489,9 @@ def _read_variable_from_netcdf(
 
     if subset_function is not None:
         if isinstance(subset_function, list):
-            for func, _args in zip(subset_function, subset_function_args):
+            for func, _args in zip(
+                subset_function, subset_function_args, strict=False
+            ):
                 try:
                     dataset = func(dataset, **_args)
                 except ValueError as expt:
@@ -813,7 +816,8 @@ class ConFire:
             return 1.0 / (1.0 + self.numpck.exp(-data * factor))
 
         limitations = [
-            _sigmoid(y, k) for y, k in zip(controls, self.control_direction)
+            _sigmoid(y, k)
+            for y, k in zip(controls, self.control_direction, strict=False)
         ]
 
         if return_limitations:
@@ -1064,7 +1068,7 @@ def diagnostic_run_confire(
 
     # **Run ConFire Model with Different Control Scenarios**
     logger.info("Running ConFire model...")
-    for index, i in zip(idx, range(len(idx))):
+    for index, i in zip(idx, range(len(idx)), strict=False):
         coord = iris.coords.DimCoord(i, "realization")
         param_in = _construct_param_comb(
             index,
