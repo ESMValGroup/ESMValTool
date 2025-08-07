@@ -1321,7 +1321,7 @@ def plot_taylor_diagram(
     theta = np.arccos(corrs)
 
     # Plot each model as a point in the diagram
-    for r, t, label in zip(std_models, theta, labels):
+    for r, t, label in zip(std_models, theta, labels, strict=True):
         p = ax.plot(t, r, "o", label=label, markersize=10)
         ax.annotate(
             label,
