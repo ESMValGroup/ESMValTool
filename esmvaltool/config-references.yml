@@ -628,6 +628,10 @@ authors:
     name: Balaji, Venkatramani
     institute: GFDL, USA
     orcid:
+  blockley_ed:
+    name: Blockley, Ed
+    institute: MetOffice, UK
+    orcid: 0000-0002-0489-4238
   bunzel_felix:
     name: Bunzel, Felix
     institute: MPI-M, Germany
@@ -684,6 +688,10 @@ authors:
   mickelson_sheri:
     name: Mickelson, Sheri
     institute: NCAR, USA
+    orcid:
+  parsons_naomi:
+    name: Parsons, Naomi
+    institute: MetOffice, UK
     orcid:
   oconnor_fiona:
     name: OConnor, Fiona
