@@ -451,6 +451,19 @@ datasets:
       Other years are not considered since they are not complete.
       Put all files in input_dir_path (no subdirectories with years).
 
+  ESACCI-BIOMASS:
+    tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/biomass/data/agb/maps/v6.0/netcdf
+    last_access: 2025-07-16
+    info: |
+        Download and processing instructions:
+        Use the following CLI to download all the files:
+        esmvaltool data download ESACCI-BIOMASS
+        The underlying downloader is located here:
+        /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_biomass.py
+        and it will download all the file regridded to 10 km available on CEDA (2007, 2010, 2015-2021)
+        under a single directory as follow: ${RAWOBS}/Tier2/ESACCI-BIOMASS
+
   ESACCI-CLOUD:
     tier: 2
     source: https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/CLD_PRODUCTS/v3.0/
