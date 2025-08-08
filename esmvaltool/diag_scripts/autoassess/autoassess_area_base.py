@@ -184,7 +184,9 @@ def _process_obs(cfg, obs_list, obs_loc):
         ]
         for obs in cfg["obs_models"]
     ]
-    for obs_file_group, obs_name in zip(group_files, cfg["obs_models"]):
+    for obs_file_group, obs_name in zip(
+        group_files, cfg["obs_models"], strict=True
+    ):
         cubes_list_obs = iris.load(obs_file_group)
         cubes_list_obs = _fix_cube(cubes_list_obs)
         obs_file_name = obs_name + "_cubeList.nc"

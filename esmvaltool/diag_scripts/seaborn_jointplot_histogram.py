@@ -256,7 +256,7 @@ def main(cfg: dict[str, Any]) -> None:
 
     # Save results
     basename = cfg["plot_filename"]
-    caption = f"Scatterplot {cfg['x']} vs {cfg['y']} ({cfg['suptitle']})"
+    caption = f"Scatterplot of {cube_x.long_name} ({cfg['x']}) vs {cube_y.long_name} ({cfg['y']}) ({cfg['suptitle']})"
     provenance = get_provenance_record(caption, [filename_x, filename_y])
     save_figure(basename, provenance, cfg, dpi=cfg.get("dpi", 300))
     cube_hist, cube_hist_x, cube_hist_y = data_to_cubes(data, cfg)

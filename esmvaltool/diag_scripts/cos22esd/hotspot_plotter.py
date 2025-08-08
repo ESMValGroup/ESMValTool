@@ -138,7 +138,7 @@ class HotspotPlot:
             for var in self.variables
         ]
         for ancestor_files, keys, variable in zip(
-            ancestor_files_var, sorted_keys, self.variables
+            ancestor_files_var, sorted_keys, self.variables, strict=True
         ):
             fig = plt.figure(
                 figsize=(14.4, 3.4), constrained_layout=True, dpi=300
@@ -312,7 +312,7 @@ class HotspotPlot:
                 for project in self.projects
             ]
             for regional_key, large_scale_key in zip(
-                regional_keys, large_scale_keys
+                regional_keys, large_scale_keys, strict=True
             ):
                 project, large_scale_signal_ts, regional_signal_ts = (
                     self._timeseries_scatter_plot_data(
@@ -731,7 +731,9 @@ class HotspotPlot:
             # path to cut out is exact though
             lons = self.region_to_square(region, "longitude")
             lats = self.region_to_square(region, "latitude")
-            path_ext = [[lon, lat] for lon, lat in zip(lons, lats)]
+            path_ext = [
+                [lon, lat] for lon, lat in zip(lons, lats, strict=True)
+            ]
             path_ext = mpath.Path(path_ext).interpolated(20)
         # South Hemisfere
         if region["start_latitude"] <= 0 and region["end_latitude"] <= 0:
