@@ -202,6 +202,26 @@ diagnostics:
     scripts: null
 
 
+  ESACCI-BIOMASS:
+    description: ESACCI-BIOMASS check
+    variables:
+      agb_2007:
+        start_year: 2007
+        end_year: 2007
+        short_name: agb
+      agb_2010:
+        start_year: 2010
+        end_year: 2010
+        short_name: agb
+      agb_2015-2022:
+        start_year: 2015
+        end_year: 2022
+        short_name: agb
+    additional_datasets:
+      - {dataset: ESACCI-BIOMASS, project: OBS6, mip: Lyr, tier: 2, type: sat, version: v6.0, frequency: yr}
+    scripts: null
+
+
   ESACCI-CLOUD:
     description: ESACCI-CLOUD check
     variables:
