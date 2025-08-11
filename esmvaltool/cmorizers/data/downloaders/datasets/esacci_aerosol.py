@@ -7,6 +7,7 @@ from datetime import datetime
 import cdsapi
 from dateutil import relativedelta
 
+from pathlib import Path
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 
 logger = logging.getLogger(__name__)
@@ -172,9 +173,10 @@ def download_dataset(
     cds_client = cdsapi.Client(cds_url)
 
     for var_name, request in requests.items():
-        logger.info("Downloading %s data to %s", var_name, output_folder)
+        outdir = output_folder / f"{var_name}/"
+        logger.info("Downloading %s data to %s", var_name, outdir)
 
-        file_path = output_folder / f"{var_name}.gz"
+        file_path = outdir / f"{var_name}.gz"
 
         if file_path.exists() and not overwrite:
             logger.info(
@@ -196,9 +198,9 @@ def download_dataset(
         if magic == b"PK":  # ZIP file signature
             logger.info("Detected ZIP file: %s", file_path)
             with zipfile.ZipFile(file_path, "r") as zip_ref:
-                zip_ref.extractall(output_folder)
+                zip_ref.extractall(outdir)
         else:
             logger.info("Detected GZIP file: %s", file_path)
             with gzip.open(file_path, "rb") as f_in:
-                with open(output_folder / file_path.stem, "wb") as f_out:
+                with open(outdir / file_path.stem, "wb") as f_out:
                     shutil.copyfileobj(f_in, f_out)

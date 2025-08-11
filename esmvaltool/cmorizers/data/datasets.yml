@@ -443,13 +443,32 @@ datasets:
   ESACCI-AEROSOL:
     tier: 2
     source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/
-    last_access: 2024-05-22
+    last_access: 2025-08-11
     info: |
       Download the data from:
-        ATSR2_SU/L3/v4.3/MONTHLY/ (1997-2002)
-        AATSR_SU/L3/v4.3/MONTHLY/ (2003-2011)
-      Other years are not considered since they are not complete.
-      Put all files in input_dir_path (no subdirectories with years).
+          AATSR/ATSR2
+            ATSR2_SU/L3/v4.3/DAILY/ (1997-2002)
+            AATSR_SU/L3/v4.3/DAILY/ (2003-2011)
+            ATSR2_SU/L3/v4.3/MONTHLY/ (1997-2002)
+            AATSR_SU/L3/v4.3/MONTHLY/ (2003-2011)
+            Other years are not considered since they are not complete.
+            Put all daily files under 'SU-v4.3-daily' (no subdirectories with years)
+            and all monthly files under 'SU-v4.3-monthly'.
+          SLSTR
+            Select the following from the CDS:
+            https://cds.climate.copernicus.eu/datasets/satellite-aerosol-properties?tab=download
+            Put all files under a single directory (no subdirectories with years).
+            Time aggregation: "Daily average" and "Monthly average"
+            Variable: "Aerosol optical depth" and "Fine-mode aerosol optical depth"
+            Sensor on satellite: "SLSTR on SENTINEL 3A" and "SLSTR on SENTINEL 3B"
+            Algorithm": "SWANSEA (Swansea University)"
+            Year: select all
+            Month: select all
+            Day: select all
+            Version: "SLSTR", "v1.12"
+            Put all files for each variable and time frequency in separate directories:
+            'aod_slstr_daily', 'aod_slstr_monthly', 'fine_aod_slstr_daily',
+            'fine_aod_slstr_monthly'.
 
   ESACCI-CLOUD:
     tier: 2
