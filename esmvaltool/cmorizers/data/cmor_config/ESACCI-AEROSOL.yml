@@ -2,7 +2,7 @@
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: ESACCI-AEROSOL
-  version: 'SU-v4.3'
+  version: 'SU'
   tier: 2
   modeling_realm: sat
   project_id: OBS
@@ -51,17 +51,17 @@ variables:
     file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
 # monthly means (SLSTR)
   slstr_od550aer_month:
-###    version: AATSR-SU-v4.3
+    version: SLSTR-SU-v1.12
     mip: aero
     short_name: od550aer
     raw: AOD550_mean
-###    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
   slstr_od550lt1aer_month:
-###    version: AATSR-SU-v4.3
+    version: SLSTR-SU-v1.12
     mip: aero
     short_name: od550lt1aer
     raw: FM_AOD550_mean
-###    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
 # daily data (AATSR)
   aatsr_od550aer_day:
     version: AATSR-SU-v4.3
@@ -101,14 +101,14 @@ variables:
     file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
 # daily data (SLSTR)
   slstr_od550aer_day:
-###    version: AATSR-SU-v4.3
+    version: SLSTR-SU-v1.12
     mip: aero
     short_name: od550aer
     raw: AOD550_mean
-###    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
+    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
   aatsr_od550lt1aer_day:
-###    version: AATSR-SU-v4.3
+    version: SLSTR-SU-v1.12
     mip: aero
     short_name: od550lt1aer
     raw: FM_AOD550_mean
-###    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
+    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'

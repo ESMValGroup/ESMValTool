@@ -65,47 +65,48 @@ def download_dataset(
     )
     downloader.connect()
 
-    version = 'v4.3'
+    name = 'AATSR' 
     algorithm = 'SU'
+    version = 'v4.3'
 
     # download monthly AATSR data
 
-    loop_date = start_date
-    while loop_date <= end_date:
-        if loop_date.year < 2003:
-            instrument = 'ATSR2'
-        else:
-            instrument = 'AATSR'
-        rel_base_dir = f'{instrument}_{algorithm}/L3/{version}/MONTHLY'
-        downloader.set_cwd(rel_base_dir)
-        if downloader.exists(f'{loop_date.year}'):
-            downloader.download_folder(f'{loop_date.year}',
-                                       f'{algorithm}-{version}-monthly')
-        else:
-            logger.info('%d: no data found', loop_date.year)
-        loop_date += relativedelta.relativedelta(years=1)
-
-    # download daily AATSR data
-
-    loop_date = start_date
-    while loop_date <= end_date:
-        if loop_date.year < 2003:
-            instrument = 'ATSR2'
-        else:
-            instrument = 'AATSR'
-        rel_base_dir = f'{instrument}_{algorithm}/L3/{version}/DAILY'
-        downloader.set_cwd(rel_base_dir)
-        if downloader.exists(f'{loop_date.year}'):
-            downloader.set_cwd(f'{rel_base_dir}/{loop_date.year}')
-            if downloader.exists(f"{loop_date.month:02}"):
-                downloader.download_folder(f'{loop_date.month:02}',
-                                           f'{algorithm}-{version}-daily')
-            else:
-                logger.info('%d/%d: no data found', loop_date.year,
-                            loop_date.month)
-        else:
-            logger.info('%d: no data found', loop_date.year)
-        loop_date += relativedelta.relativedelta(months=1)
+#    loop_date = start_date
+#    while loop_date <= end_date:
+#        if loop_date.year < 2003:
+#            instrument = 'ATSR2'
+#        else:
+#            instrument = 'AATSR'
+#        rel_base_dir = f'{instrument}_{algorithm}/L3/{version}/MONTHLY'
+#        downloader.set_cwd(rel_base_dir)
+#        if downloader.exists(f'{loop_date.year}'):
+#            downloader.download_folder(f'{loop_date.year}',
+#                                       f'{name}-{algorithm}-{version}-monthly')
+#        else:
+#            logger.info('%d: no data found', loop_date.year)
+#        loop_date += relativedelta.relativedelta(years=1)
+#
+#    # download daily AATSR data
+#
+#    loop_date = start_date
+#    while loop_date <= end_date:
+#        if loop_date.year < 2003:
+#            instrument = 'ATSR2'
+#        else:
+#            instrument = 'AATSR'
+#        rel_base_dir = f'{instrument}_{algorithm}/L3/{version}/DAILY'
+#        downloader.set_cwd(rel_base_dir)
+#        if downloader.exists(f'{loop_date.year}'):
+#            downloader.set_cwd(f'{rel_base_dir}/{loop_date.year}')
+#            if downloader.exists(f"{loop_date.month:02}"):
+#                downloader.download_folder(f'{loop_date.month:02}',
+#                                           f'{name}-{algorithm}-{version}-daily')
+#            else:
+#                logger.info('%d/%d: no data found', loop_date.year,
+#                            loop_date.month)
+#        else:
+#            logger.info('%d: no data found', loop_date.year)
+#        loop_date += relativedelta.relativedelta(months=1)
 
     # ================================================
     # Download SLSTR data from CDS (daily and monthly)
@@ -116,6 +117,10 @@ def download_dataset(
     output_folder.mkdir(parents=True, exist_ok=True)
 
     cds_url = "https://cds.climate.copernicus.eu/api"
+
+    name = 'SLSTR' 
+    algorithm = 'SU'
+    version = 'v1.12'
 
     requests = {
         "aod_slstr_daily": {
@@ -173,7 +178,11 @@ def download_dataset(
     cds_client = cdsapi.Client(cds_url)
 
     for var_name, request in requests.items():
-        outdir = output_folder / f"{var_name}/"
+        if 'day' in var_name:
+            outdir = output_folder / f'{name}-{algorithm}-{version}-daily/'
+        else:
+            outdir = output_folder / f'{name}-{algorithm}-{version}-monthly'
+
         logger.info("Downloading %s data to %s", var_name, outdir)
 
         file_path = outdir / f"{var_name}.gz"

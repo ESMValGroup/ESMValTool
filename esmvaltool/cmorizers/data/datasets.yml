@@ -452,8 +452,8 @@ datasets:
             ATSR2_SU/L3/v4.3/MONTHLY/ (1997-2002)
             AATSR_SU/L3/v4.3/MONTHLY/ (2003-2011)
             Other years are not considered since they are not complete.
-            Put all daily files under 'SU-v4.3-daily' (no subdirectories with years)
-            and all monthly files under 'SU-v4.3-monthly'.
+            Put all daily files under 'AATSR-SU-v4.3-daily' (no subdirectories with years)
+            and all monthly files under 'AATSR-SU-v4.3-monthly'.
           SLSTR
             Select the following from the CDS:
             https://cds.climate.copernicus.eu/datasets/satellite-aerosol-properties?tab=download
@@ -466,9 +466,8 @@ datasets:
             Month: select all
             Day: select all
             Version: "SLSTR", "v1.12"
-            Put all files for each variable and time frequency in separate directories:
-            'aod_slstr_daily', 'aod_slstr_monthly', 'fine_aod_slstr_daily',
-            'fine_aod_slstr_monthly'.
+            Put all daily files under 'SLSTR-SU-v1.12-daily' (no subdirectories with years)
+            and all monthly files under 'SLSTR-SU-v1.12-monthly'.
 
   ESACCI-CLOUD:
     tier: 2

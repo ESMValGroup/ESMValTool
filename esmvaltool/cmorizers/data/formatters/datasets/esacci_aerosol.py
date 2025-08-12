@@ -5,30 +5,54 @@ Tier
 
 Source
    CCI CEDA ftp: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/
-       ATSR2_SU/L3/v4.3/MONTHLY/ (1997-2002)
-       AATSR_SU/L3/v4.3/MONTHLY/ (2003-2011)
-       ATSR2_SU/L3/v4.3/DAILY/ (1997-2002)
-       AATSR_SU/L3/v4.3/DAILY/ (2003-2011)
-   Other years are not considered since they are not complete.
-
+     ATSR2_SU/L3/v4.3/MONTHLY/ (1997-2002)
+     AATSR_SU/L3/v4.3/MONTHLY/ (2003-2011)
+     ATSR2_SU/L3/v4.3/DAILY/ (1997-2002)
+     AATSR_SU/L3/v4.3/DAILY/ (2003-2011)
+     Other years are not considered since they are not complete.
+   Copernicus Climate Data Store (CDS):
+       https://cds.climate.copernicus.eu/datasets/satellite-aerosol-properties?tab=download
+       SLSTR (see downloading instructions below)
 
 Last access
-   20240522
+   20250811
 
 Download and processing instructions
-   Download the following files:
+   AATSR/ATSR2
+   -----------
+   Download the following files from CEDA:
        ftp: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/
            ATSR2_SU/L3/v4.3/MONTHLY/YYYY/*.nc
            AATSR_SU/L3/v4.3/MONTHLY/YYYY/*.nc
            ATSR2_SU/L3/v4.3/DAILY/YYYY/MM/*.nc
            AATSR_SU/L3/v4.3/DAILY/YYYY/MM/*.nc
-   and put all monthly files into one directory named {version}-monthly
-   all daily files into one directory named {version}-daily.
-   {version} is defined in cmorizers/data/cmor_config/ESACCI-AEROSOL.yml
-   (e.g. version: 'SU-v4.3')
+   and put all monthly files into one directory named '{version}-monthly'
+   all daily files into one directory named '{version}-daily'
+   (the version string has to match the definition in the config file
+   cmor_config/ESACCI-AEROSOL.yml, i.e. version = 'AATSR-SU-v4.3').
+
+   SLSTR
+   -----
+   Select the following from the CDS:
+     Time aggregation: "Daily average" and "Monthly average"
+     Variable: "Aerosol optical depth" and "Fine-mode aerosol optical depth"
+     Sensor on satellite: "SLSTR on SENTINEL 3A" and "SLSTR on SENTINEL 3B"
+     Algorithm": "SWANSEA (Swansea University)"
+     Year: select all
+     Month: select all
+     Day: select all
+     Version: "SLSTR", "v1.12"
+   and put all monthly files into one directory named '{version}-monthly'
+   all daily files into one directory named '{version}-daily'.
+   (the version string has to match the definition in the config file
+   cmor_config/ESACCI-AEROSOL.yml, i.e. version = 'SLSTR-SU-v1.12').
+
+   Alternatively, use the automatic downloader (recommended):
+     esmvaltool data download ESACCI-AEROSOL
+
 
 Modification history
-   20240522-lauer_axel: written.
+   20250811-lauer_axel: written.
 """
 
 import glob
@@ -239,6 +263,10 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorize ESACCI-AEROSOL dataset."""
     glob_attrs = cfg['attributes']
+    if "version" in glob_attrs:
+        glob_version = glob_attrs["version"]
+    else:
+        glob_version = ""
 
     logger.info("Starting cmorization for tier%s OBS files: %s",
                 glob_attrs['tier'], glob_attrs['dataset_id'])
@@ -246,37 +274,55 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     logger.info("Output will be written to: %s", out_dir)
     logger.info('CMORizing ESACCI-AEROSOL version %s', glob_attrs['version'])
 
-    if start_date is None:
-        start_date = datetime(1997, 1, 1)
-    if end_date is None:
-        end_date = datetime(2011, 12, 31)
+    for var_name, var in cfg['variables'].items():
+        # Define dataset-specific default time ranges
+        if var_name.find("aatsr") >= 0:
+            dataset_start = datetime(1997, 1, 1)
+            dataset_end = datetime(2011, 12, 31)
+        elif var_name.find("slstr") >= 0:
+            dataset_start = datetime(2017, 1, 1)
+            dataset_end = datetime(2023, 12, 31)
+        else:
+            errmsg = f"Unknown dataset for variable {var_name}"
+            raise ValueError(errmsg)
 
-    version = cfg['attributes']['version']
+        var["var_name"] = var_name
 
-    for short_name, var in cfg['variables'].items():
-        if 'short_name' not in var:
-            var['short_name'] = short_name
-        loop_date = start_date
-        if 'day' in short_name:
-            logger.info("Input data for %s is daily data", short_name)
+        glob_attrs["mip"] = var["mip"]
+        if "version" in var:
+            glob_attrs["version"] = var["version"]
+        else:
+            glob_attrs["version"] = glob_version
+
+        # Adjust start and end dates if not provided
+        start_date_x = start_date or dataset_start
+        end_date_x = end_date or dataset_end
+
+        # Ensure the requested date range falls within the dataset limits
+        start_date_x = max(start_date_x, dataset_start)
+        end_date_x = min(end_date_x, dataset_end)
+
+        loop_date = start_date_x
+        if 'day' in var_name:
+            logger.info("Input data for %s is daily data", var_name)
             daily = True
         else:
-            logger.info("Input data for %s is monthly data", short_name)
+            logger.info("Input data for %s is monthly data", var_name)
             daily = False
-        while loop_date <= end_date:
+        while loop_date <= end_date_x:
             if daily:
                 freqstr = 'daily'
             else:
                 freqstr = 'monthly'
             filepattern = os.path.join(
-                in_dir, f'{version}-{freqstr}',
+                in_dir, f'{glob_attrs["version"]}-{freqstr}',
                 var['file'].format(year=loop_date.year)
                 )
             in_files = glob.glob(filepattern)
             if not in_files:
                 logger.info('%d: no data not found for '
-                            'variable %s', loop_date.year, short_name)
-            else:
-                _extract_variable(in_files, var, cfg, out_dir, daily)
+                            'variable %s', loop_date.year, var_name)
+###            else:
+###                _extract_variable(in_files, var, cfg, out_dir, daily)
 
             loop_date += relativedelta.relativedelta(years=1)
