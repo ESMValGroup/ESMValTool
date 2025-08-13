@@ -1,5 +1,6 @@
-"""Script to download ESACCI-AEROSOL from CCI CEDA ftp (AATSR)
-and via Copernicus Climate Data Store (SLSTR)."""
+"""Script to download ESACCI-AEROSOL data
+
+from CCI CEDA ftp (AATSR) and via Copernicus Climate Data Store (SLSTR)."""
 
 import gzip
 import logging

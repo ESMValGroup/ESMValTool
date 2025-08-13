@@ -340,7 +340,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     loop_date.year,
                     var_name,
                 )
-            ###            else:
-            ###                _extract_variable(in_files, var, cfg, out_dir, daily)
+            else:
+                _extract_variable(in_files, var, cfg, out_dir, daily)
 
             loop_date += relativedelta.relativedelta(years=1)
