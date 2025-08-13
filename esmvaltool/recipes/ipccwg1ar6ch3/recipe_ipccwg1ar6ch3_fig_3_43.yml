@@ -260,7 +260,7 @@ diagnostics:
       - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
       - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
       - {<<: *cmip6, dataset: MCM-UA-1-0}
-      - {dataset: GPCP-V2.2, project: obs4mips, level: L3, tier: 1}
+      - {dataset: GPCP-V2.2, project: obs4MIPs, level: L3, tier: 1}
       - {dataset: GHCN, project: OBS, type: ground, version: 1, tier: 2}
 
 
@@ -333,7 +333,7 @@ diagnostics:
       - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
       - {<<: *cmip6, dataset: MCM-UA-1-0}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          tier: 1, start_year: 2001, end_year: 2015}
 
 
@@ -367,7 +367,7 @@ diagnostics:
       - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
       - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          tier: 1, start_year: 2001, end_year: 2015}
 
 
@@ -401,7 +401,7 @@ diagnostics:
       - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
       - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          tier: 1, start_year: 2001, end_year: 2015}
 
 
@@ -434,7 +434,7 @@ diagnostics:
       - {<<: *cmip6, dataset: GISS-E2-1-G-CC}
       - {<<: *cmip6, dataset: IPSL-CM5A2-INCA, grid: gr}
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+      - {dataset: CERES-EBAF, project: obs4MIPs, level: L3B,
          tier: 1, start_year: 2001, end_year: 2015}
 
 
@@ -502,7 +502,7 @@ diagnostics:
       - {<<: *cmip6, dataset: E3SM-1-1-ECA, institute: E3SM-Project, grid: gr}
       - {<<: *cmip6, dataset: KIOST-ESM, grid: gr1}
       - {<<: *cmip6, dataset: MCM-UA-1-0}
-      - {dataset: AIRS, project: obs4mips, level: L3,
+      - {dataset: AIRS, project: obs4MIPs, level: L3,
          version: RetStd-v5, tier: 1, start_year: 2003, end_year: 2010}
       - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3}
 
