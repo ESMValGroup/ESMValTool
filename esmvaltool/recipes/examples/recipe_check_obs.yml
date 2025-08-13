@@ -187,8 +187,62 @@ diagnostics:
     scripts: null
 
 
-  ESACCI-AEROSOL-MOTHLY:
-    description: ESACCI-AEROSOL monthly data check
+  ESACCI-AEROSOL:
+    description: ESACCI-AEROSOL AATSR/ATSR2 and SLSTR daily & monthly data check
+    variables:
+      abs550aer: &var_mon
+        frequency: mon
+        additional_datasets:
+          - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
+             type: sat, version: AATSR-SU-v4.3-MONTHLY, start_year: 1997, end_year: 2017}
+      od550aer:
+        <<: *var_mon
+        additional_datasets:
+          - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
+             type: sat, version: SLSTR-SU-v1.12-MONTHLY, start_year: 2011, end_year: 2023}
+      od550aerStderr:
+        <<: *var_mon
+      od550lt1aer:
+        <<: *var_mon
+        additional_datasets:
+          - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
+             type: sat, version: SLSTR-SU-v1.12-MONTHLY, start_year: 2011, end_year: 2023}
+      od870aer:
+        <<: *var_mon
+      od870aerStderr:
+        <<: *var_mon
+      abs550aer_day: &var_day
+        short_name: abs550aer 
+        frequency: day
+        additional_datasets:
+          - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
+             type: sat, version: AATSR-SU-v4.3-DAILY, start_year: 1997, end_year: 2017}
+      od550aer_day:
+        <<: *var_day
+        short_name: od550aer
+        additional_datasets:
+          - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
+             type: sat, version: SLSTR-SU-v1.12-DAILY, start_year: 2011, end_year: 2023}
+      od550aerStderr_day:
+        <<: *var_day
+        short_name: od550aerStderr
+      od550lt1aer_day:
+        <<: *var_day
+        short_name: od550lt1aer
+        additional_datasets:
+          - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
+             type: sat, version: SLSTR-SU-v1.12-MONTHLY, start_year: 2011, end_year: 2023}
+      od870aer_day:
+        <<: *var_day
+        short_name: od870aer
+      od870aerStderr_day:
+        <<: *var_day
+        short_name: od870aerStderr
+    scripts: null
+
+
+  ESACCI-AEROSOL-SLAATSR-MOTHLY:
+    description: ESACCI-AEROSOL AATSR/ATSR2 monthly data check
     variables:
       abs550aer:
       od550aer:
@@ -198,22 +252,7 @@ diagnostics:
       od870aerStderr:
     additional_datasets:
       - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
-         type: sat, version: SU-v4.3-MONTHLY, start_year: 1997, end_year: 2011}
-    scripts: null
-
-
-  ESACCI-AEROSOL-DAILY:
-    description: ESACCI-AEROSOL daily data check
-    variables:
-      abs550aer:
-      od550aer:
-      od550aerStderr:
-      od550lt1aer:
-      od870aer:
-      od870aerStderr:
-    additional_datasets:
-      - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2, frequency: day,
-         type: sat, version: SU-v4.3-DAILY, start_year: 1997, end_year: 2011}
+         type: sat, version: AATSR-SU-v4.3-MONTHLY, start_year: 1997, end_year: 2011}
     scripts: null
 
 
