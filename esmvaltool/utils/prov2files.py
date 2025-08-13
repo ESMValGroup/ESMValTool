@@ -1,4 +1,5 @@
 """Print out the input files used to generate a result."""
+
 import argparse
 
 from prov.model import ProvDerivation, ProvDocument
@@ -19,7 +20,7 @@ def prov2files(filename):
         and the second entry a list of files used to compute
         that result.
     """
-    provenance = ProvDocument.deserialize(filename, format='xml')
+    provenance = ProvDocument.deserialize(filename, format="xml")
 
     source_files = set()
     generated_files = set()
@@ -37,8 +38,10 @@ def prov2files(filename):
     if not len(result_files) == 1:
         # If this changes, need to rewrite this function so it
         # builds a provenance graph.
-        raise ValueError("Invalid provenance file encountered,"
-                         " ESMValTool provenance describes one result only.")
+        raise ValueError(
+            "Invalid provenance file encountered,"
+            " ESMValTool provenance describes one result only."
+        )
     return result_files.pop(), sorted(source_files)
 
 
@@ -46,24 +49,27 @@ def main():
     """Print out a list of files."""
     parser = argparse.ArgumentParser(
         description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     parser.add_argument(
-        'provenance_files',
-        nargs='+',
+        "provenance_files",
+        nargs="+",
         type=str,
-        help='Path to one or more files containing provenance.')
+        help="Path to one or more files containing provenance.",
+    )
     args = parser.parse_args()
 
     for filename in args.provenance_files:
-        if not filename.endswith('_provenance.xml'):
-            print("Skipping", filename,
-                  "does it contain ESMValTool provenance?")
+        if not filename.endswith("_provenance.xml"):
+            print(
+                "Skipping", filename, "does it contain ESMValTool provenance?"
+            )
             continue
         result, files = prov2files(filename)
         print(f"{result} was derived from:")
-        print('\n'.join(files))
-        print('')
+        print("\n".join(files))
+        print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

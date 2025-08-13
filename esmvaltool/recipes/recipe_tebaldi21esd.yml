@@ -1449,7 +1449,7 @@ diagnostics:
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6,
         short_name: tas, start_year: 2081}
       pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: pr,
-        start_year: 2081}        
+        start_year: 2081}
     scripts:
       calc_map_stddev_scaleT_pr:
         label: &id410 [2081-2100]
@@ -1517,7 +1517,7 @@ diagnostics:
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6,
         short_name: tas, start_year: 2081}
       pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP6, short_name: pr,
-        start_year: 2081}        
+        start_year: 2081}
     scripts:
       calc_map_stddev_scaleT_pr:
         label: &id416 [2081-2100 relative to 1995-2014]
@@ -1585,7 +1585,7 @@ diagnostics:
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5,
         short_name: tas, start_year: 2081}
       pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5, short_name: pr,
-        start_year: 2081}        
+        start_year: 2081}
     scripts:
       calc_map_diff_scaleT_pr:
         label: &id422 [2081-2100 relative to 1986-2005]
@@ -4288,7 +4288,7 @@ diagnostics:
         yaxis: Relative to 1995-2014 (~S~o~N~ C)
         ymax: 8
         ymin: -2
-    additional_datasets: *fig7_ts_datasets      
+    additional_datasets: *fig7_ts_datasets
 
   figA2c:
     description: Fig A2c, Time series of relative change in precipitation in multiple
@@ -5038,7 +5038,7 @@ diagnostics:
     - *id356
     - *id357
     - *id358
-    - *id359        
+    - *id359
 
   figA4j:
     description: FigA4j, Pattern precipitation changes (not scaled by global T) for
@@ -5153,7 +5153,7 @@ diagnostics:
     - *id393
     - *id394
     - *id395
-    - *id396        
+    - *id396
 
   figA4a:
     description: FigA4a, Pattern temperature changes (not scaled by global T) for SSP1-1.9
@@ -5240,7 +5240,7 @@ diagnostics:
     - *id250
     - *id251
     - *id252
-    - *id253        
+    - *id253
 
   figA4c:
     description: FigA4c, Pattern temperature changes (not scaled by global T) for SSP1-2.6
@@ -5352,7 +5352,7 @@ diagnostics:
     - *id288
     - *id289
     - *id404
-    - *id290        
+    - *id290
 
   figA4e:
     description: FigA4e, Pattern temperature changes (not scaled by global T) for SSP2-4.5
@@ -5463,7 +5463,7 @@ diagnostics:
     - *id324
     - *id325
     - *id326
-    - *id405        
+    - *id405
 
   figA4g:
     description: FigA4g, Pattern temperature changes (not scaled by global T) for SSP3-7.0
@@ -5570,7 +5570,7 @@ diagnostics:
     - *id356
     - *id357
     - *id358
-    - *id359        
+    - *id359
 
   figA4i:
     description: FigA4i, Pattern temperature changes (not scaled by global T) for SSP5-8.5
@@ -5682,7 +5682,7 @@ diagnostics:
     - *id394
     - *id395
     - *id406
-    - *id396        
+    - *id396
 
   figA5b:
     description: FigA5b, Pattern of PR standard deviation scaled by global T change
@@ -5889,7 +5889,7 @@ diagnostics:
     - *id593
     - *id594
     - *id595
-    - *id596        
+    - *id596
 
   figA5a:
     description: FigA5a, Pattern of TAS standard deviation scaled by global T
@@ -6091,7 +6091,7 @@ diagnostics:
     - *id593
     - *id594
     - *id595
-    - *id596        
+    - *id596
 
   figA5f:
     description: FigA5f, Pattern of PR standard deviation after averaging across models scale
@@ -6128,7 +6128,7 @@ diagnostics:
         short_name: tas, start_year: 2081}
       pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5, short_name: pr,
         start_year: 2081}
-    additional_datasets: *figA5_pr_datasets        
+    additional_datasets: *figA5_pr_datasets
 
   figA5e:
     description: Fig A5e, Pattern of TAS standard deviation after averaging across models scale
@@ -6159,7 +6159,7 @@ diagnostics:
     variables:
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5,
         short_name: tas, start_year: 2081}
-    additional_datasets: *figA5_tas_datasets        
+    additional_datasets: *figA5_tas_datasets
 
   figA5d:
     description: FigA5d, Intermodel standard deviation of PR pattern scaled by
@@ -6195,7 +6195,7 @@ diagnostics:
         short_name: tas, start_year: 2081}
       pr: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5, short_name: pr,
         start_year: 2081}
-    additional_datasets: *figA5_pr_datasets        
+    additional_datasets: *figA5_pr_datasets
 
   figA5c:
     description: FigA5c, Intermodel standard deviation of TAS pattern scaled by
@@ -6226,7 +6226,7 @@ diagnostics:
     variables:
       tas: {end_year: 2100, mip: Amon, preprocessor: preproc_map, project: CMIP5,
         short_name: tas, start_year: 2081}
-    additional_datasets: *figA5_tas_datasets       
+    additional_datasets: *figA5_tas_datasets
 
   table1:
     description: Table1, warming level crossing for given ssp scenarios and warming
