@@ -1,13 +1,16 @@
 """Script to download ESACCI-AEROSOL from CCI CEDA ftp (AATSR)
-   and via Copernicus Climate Data Store (SLSTR)."""
+and via Copernicus Climate Data Store (SLSTR)."""
 
+import gzip
 import logging
+import shutil
+import zipfile
 from datetime import datetime
+from pathlib import Path
 
 import cdsapi
 from dateutil import relativedelta
 
-from pathlib import Path
 from esmvaltool.cmorizers.data.downloaders.ftp import CCIDownloader
 
 logger = logging.getLogger(__name__)
@@ -65,48 +68,52 @@ def download_dataset(
     )
     downloader.connect()
 
-    name = 'AATSR' 
-    algorithm = 'SU'
-    version = 'v4.3'
+    name = "AATSR"
+    algorithm = "SU"
+    version = "v4.3"
 
     # download monthly AATSR data
 
-#    loop_date = start_date
-#    while loop_date <= end_date:
-#        if loop_date.year < 2003:
-#            instrument = 'ATSR2'
-#        else:
-#            instrument = 'AATSR'
-#        rel_base_dir = f'{instrument}_{algorithm}/L3/{version}/MONTHLY'
-#        downloader.set_cwd(rel_base_dir)
-#        if downloader.exists(f'{loop_date.year}'):
-#            downloader.download_folder(f'{loop_date.year}',
-#                                       f'{name}-{algorithm}-{version}-monthly')
-#        else:
-#            logger.info('%d: no data found', loop_date.year)
-#        loop_date += relativedelta.relativedelta(years=1)
-#
-#    # download daily AATSR data
-#
-#    loop_date = start_date
-#    while loop_date <= end_date:
-#        if loop_date.year < 2003:
-#            instrument = 'ATSR2'
-#        else:
-#            instrument = 'AATSR'
-#        rel_base_dir = f'{instrument}_{algorithm}/L3/{version}/DAILY'
-#        downloader.set_cwd(rel_base_dir)
-#        if downloader.exists(f'{loop_date.year}'):
-#            downloader.set_cwd(f'{rel_base_dir}/{loop_date.year}')
-#            if downloader.exists(f"{loop_date.month:02}"):
-#                downloader.download_folder(f'{loop_date.month:02}',
-#                                           f'{name}-{algorithm}-{version}-daily')
-#            else:
-#                logger.info('%d/%d: no data found', loop_date.year,
-#                            loop_date.month)
-#        else:
-#            logger.info('%d: no data found', loop_date.year)
-#        loop_date += relativedelta.relativedelta(months=1)
+    loop_date = start_date
+    while loop_date <= end_date:
+        if loop_date.year < 2003:
+            instrument = "ATSR2"
+        else:
+            instrument = "AATSR"
+        rel_base_dir = f"{instrument}_{algorithm}/L3/{version}/MONTHLY"
+        downloader.set_cwd(rel_base_dir)
+        if downloader.exists(f"{loop_date.year}"):
+            downloader.download_folder(
+                f"{loop_date.year}", f"{name}-{algorithm}-{version}-monthly"
+            )
+        else:
+            logger.info("%d: no data found", loop_date.year)
+        loop_date += relativedelta.relativedelta(years=1)
+
+    # download daily AATSR data
+
+    loop_date = start_date
+    while loop_date <= end_date:
+        if loop_date.year < 2003:
+            instrument = "ATSR2"
+        else:
+            instrument = "AATSR"
+        rel_base_dir = f"{instrument}_{algorithm}/L3/{version}/DAILY"
+        downloader.set_cwd(rel_base_dir)
+        if downloader.exists(f"{loop_date.year}"):
+            downloader.set_cwd(f"{rel_base_dir}/{loop_date.year}")
+            if downloader.exists(f"{loop_date.month:02}"):
+                downloader.download_folder(
+                    f"{loop_date.month:02}",
+                    f"{name}-{algorithm}-{version}-daily",
+                )
+            else:
+                logger.info(
+                    "%d/%d: no data found", loop_date.year, loop_date.month
+                )
+        else:
+            logger.info("%d: no data found", loop_date.year)
+        loop_date += relativedelta.relativedelta(months=1)
 
     # ================================================
     # Download SLSTR data from CDS (daily and monthly)
@@ -118,9 +125,9 @@ def download_dataset(
 
     cds_url = "https://cds.climate.copernicus.eu/api"
 
-    name = 'SLSTR' 
-    algorithm = 'SU'
-    version = 'v1.12'
+    name = "SLSTR"
+    algorithm = "SU"
+    version = "v1.12"
 
     requests = {
         "aod_slstr_daily": {
@@ -128,60 +135,60 @@ def download_dataset(
             "variable": "aerosol_optical_depth",
             "sensor_on_satellite": [
                 "slstr_on_sentinel_3a",
-                "slstr_on_sentinel_3b"
+                "slstr_on_sentinel_3b",
             ],
             "algorithm": ["swansea"],
             "year": [str(y) for y in range(slstr_year1, slstr_year2)],
             "month": [f"{m:02d}" for m in range(1, 13)],
             "day": [f"{m:02d}" for m in range(1, 32)],
-            "version": ["v1_12"]
+            "version": ["v1_12"],
         },
         "aod_slstr_monthly": {
             "time_aggregation": "monthly_average",
             "variable": "aerosol_optical_depth",
             "sensor_on_satellite": [
                 "slstr_on_sentinel_3a",
-                "slstr_on_sentinel_3b"
+                "slstr_on_sentinel_3b",
             ],
             "algorithm": ["swansea"],
             "year": [str(y) for y in range(slstr_year1, slstr_year2)],
             "month": [f"{m:02d}" for m in range(1, 13)],
-            "version": ["v1_12"]
+            "version": ["v1_12"],
         },
         "fine_aod_slstr_daily": {
             "time_aggregation": "daily_average",
             "variable": "fine_mode_aerosol_optical_depth",
             "sensor_on_satellite": [
                 "slstr_on_sentinel_3a",
-                "slstr_on_sentinel_3b"
+                "slstr_on_sentinel_3b",
             ],
             "algorithm": ["swansea"],
             "year": [str(y) for y in range(slstr_year1, slstr_year2)],
             "month": [f"{m:02d}" for m in range(1, 13)],
             "day": [f"{m:02d}" for m in range(1, 32)],
-            "version": ["v1_12"]
+            "version": ["v1_12"],
         },
         "fine_aod_slstr_monthly": {
             "time_aggregation": "monthly_average",
             "variable": "fine_mode_aerosol_optical_depth",
             "sensor_on_satellite": [
                 "slstr_on_sentinel_3a",
-                "slstr_on_sentinel_3b"
+                "slstr_on_sentinel_3b",
             ],
             "algorithm": ["swansea"],
             "year": [str(y) for y in range(slstr_year1, slstr_year2)],
             "month": [f"{m:02d}" for m in range(1, 13)],
-            "version": ["v1_12"]
+            "version": ["v1_12"],
         },
     }
 
     cds_client = cdsapi.Client(cds_url)
 
     for var_name, request in requests.items():
-        if 'day' in var_name:
-            outdir = output_folder / f'{name}-{algorithm}-{version}-daily/'
+        if "day" in var_name:
+            outdir = output_folder / f"{name}-{algorithm}-{version}-daily/"
         else:
-            outdir = output_folder / f'{name}-{algorithm}-{version}-monthly'
+            outdir = output_folder / f"{name}-{algorithm}-{version}-monthly"
 
         logger.info("Downloading %s data to %s", var_name, outdir)
 
