@@ -74,4 +74,4 @@ Example plots
    :align:   center
    :width:   14cm
 
-PV capacity factor calculated from IPSL-CM5-MR during the DJF season for 1980–2005.
+   PV capacity factor calculated from IPSL-CM5-MR during the DJF season for 1980–2005.

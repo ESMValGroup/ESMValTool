@@ -349,7 +349,7 @@ def visualize_save_calibration(performance_sigma, cfg, success):
 def calibrate_performance_sigma(
     performance_contributions: list,
     overall_independence: Union["xr.DataArray", None],
-    independence_sigma: Union[float, None],
+    independence_sigma: float | None,
     cfg: dict,
 ) -> float:
     """Calibrate the performance sigma using a perfect model approach."""

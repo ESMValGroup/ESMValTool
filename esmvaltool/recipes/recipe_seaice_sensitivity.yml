@@ -1,0 +1,178 @@
+# ESMValTool
+---
+documentation:
+  title: Sea ice sensitivity
+
+  description: |
+    Recipe for quantifying the sensitivity of sea ice to global warming.
+    Siconc data is summed for each hemisphere and then compared to the
+    change in globally meaned, annually meaned surface air temperature.
+    In the northern hemisphere, September sea ice data is used.
+    In the southern hemisphere, annual mean sea ice data is used.
+    Two plots are produced for each hemisphere, one showing the gradient
+    of the direct regression of sea ice area over temperature, and the
+    other showing the two separate trends over time.
+
+  authors:
+    - parsons_naomi
+    - sellar_alistair
+    - blockley_ed
+
+  maintainer:
+    - parsons_naomi
+
+defaults: &defaults {ensemble: r1i1p1f1, exp: historical, grid: gn, project: CMIP6}
+datasets:
+  - {<<: *defaults, dataset: HadGEM3-GC31-LL, institute: MOHC, ensemble: r1i1p1f3, label_dataset: True}
+  - {<<: *defaults, dataset: UKESM1-0-LL, institute: MOHC, ensemble: r1i1p1f2, label_dataset: True}
+  - {<<: *defaults, dataset: ACCESS-CM2, institute: CSIRO-ARCCSS}
+  - {<<: *defaults, dataset: ACCESS-ESM1-5, institute: CSIRO}
+  - {<<: *defaults, dataset: BCC-CSM2-MR, institute: BCC}
+  - {<<: *defaults, dataset: CAMS-CSM1-0, institute: CAMS}
+  - {<<: *defaults, dataset: CanESM5, institute: CCCma}
+  - {<<: *defaults, dataset: CESM2, institute: NCAR}
+  - {<<: *defaults, dataset: CESM2-WACCM, institute: NCAR}
+  - {<<: *defaults, dataset: CESM2-WACCM-FV2, institute: NCAR}
+  - {<<: *defaults, dataset: FIO-ESM-2-0, institute: FIO-QLNM}
+  - {<<: *defaults, dataset: MIROC6, institute: MIROC}
+  - {<<: *defaults, dataset: MPI-ESM-1-2-HAM, institute: HAMMOZ-Consortium}
+  - {<<: *defaults, dataset: MPI-ESM1-2-HR, institute: MPI-M}
+  - {<<: *defaults, dataset: MPI-ESM1-2-LR, institute: MPI-M}
+  - {<<: *defaults, dataset: MRI-ESM2-0, institute: MRI}
+
+preprocessors:
+  extract_test_period:
+    &extract_test_period
+    extract_time:
+      start_day: 1
+      start_month: 1
+      start_year: 1979
+      end_day: 31
+      end_month: 12
+      end_year: 2014
+
+  extract_sept:
+    &extract_sept
+    extract_month:
+      month: 9
+
+  nh_total_area:
+    &nh_total_area
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 0
+      end_latitude: 90
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: 1e6 km2
+
+  sh_total_area:
+    &sh_total_area
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -90
+      end_latitude: 0
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: 1e6 km2
+
+  global_mean:
+    &global_mean
+    area_statistics:
+      operator: mean
+
+  annual_mean:
+    &annual_mean
+    annual_statistics:
+      operator: mean
+
+  pp_arctic_sept_sea_ice:
+    <<: *extract_test_period
+    <<: *extract_sept
+    <<: *nh_total_area
+
+  pp_antarctic_avg_ann_sea_ice:
+    <<: *extract_test_period
+    <<: *annual_mean
+    <<: *sh_total_area
+
+  pp_avg_ann_global_temp:
+    <<: *extract_test_period
+    <<: *global_mean
+    <<: *annual_mean
+
+diagnostics:
+  arctic:
+    description: Plots September sea ice sensitivity above 0 latitude in millions of square kilometres
+    variables:
+      siconc:
+        preprocessor: pp_arctic_sept_sea_ice
+        mip: SImon
+      tas:
+        preprocessor: pp_avg_ann_global_temp
+        mip: Amon
+    scripts:
+      sea_ice_sensitivity_script:
+        script: seaice/seaice_sensitivity.py
+        observations:
+          observation period: 1979-2014
+          sea ice sensitivity (Notz-style plot):
+            mean: -4.01
+            standard deviation: 0.32
+            plausible range: 1.28
+          annual trends (Roach-style plot):
+            first point:
+              GMST trend:
+              SIA trend:
+              Pearson CC of SIA over GMST:
+              significance of SIA over GMST:
+            second point:
+              GMST trend:
+              SIA trend:
+              Pearson CC of SIA over GMST:
+              significance of SIA over GMST:
+            third point:
+              GMST trend:
+              SIA trend:
+              Pearson CC of SIA over GMST:
+              significance of SIA over GMST:
+
+
+  antarctic:
+    description: Plots annual mean sea ice sensitivity below 0 latitude in millions of square kilometres
+    variables:
+      siconc:
+        preprocessor: pp_antarctic_avg_ann_sea_ice
+        mip: SImon
+      tas:
+        preprocessor: pp_avg_ann_global_temp
+        mip: Amon
+    scripts:
+      sea_ice_sensitivity_script:
+        script: seaice/seaice_sensitivity.py
+        observations:
+          observation period:
+          sea ice sensitivity (Notz-style plot):
+            mean:
+            standard deviation:
+            plausible range:
+          annual trends (Roach-style plot):
+            first point:
+              GMST trend:
+              SIA trend:
+              Pearson CC of SIA over GMST:
+              significance of SIA over GMST:
+            second point:
+              GMST trend:
+              SIA trend:
+              Pearson CC of SIA over GMST:
+              significance of SIA over GMST:
+            third point:
+              GMST trend:
+              SIA trend:
+              Pearson CC of SIA over GMST:
+              significance of SIA over GMST:

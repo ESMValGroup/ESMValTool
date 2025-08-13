@@ -90,6 +90,11 @@ authors:
     family-names: Billows
     given-names: Chris
   -
+    affiliation: "Met Office, UK"
+    family-names: Blockley
+    given-names: Ed
+    orcid: "https://orcid.org/0000-0002-0489-4238"
+  -
     affiliation: "DLR, Germany"
     family-names: Bock
     given-names: Lisa
@@ -270,6 +275,11 @@ authors:
     family-names: Lucarini
     given-names: Valerio
   -
+    affiliation: "ECCC, Canada"
+    family-names: Malinina
+    given-names: Elizaveta
+    orcid: "https://orcid.org/0000-0002-4102-2877"
+  -
     affiliation: "UCLouvain, Belgium"
     family-names: Massonnet
     given-names: François
@@ -282,6 +292,10 @@ authors:
     affiliation: "University of Arizona, USA"
     family-names: Amarjiit
     given-names: Pandde
+  -
+    affiliation: "Met Office, UK"
+    family-names: Parsons
+    given-names: Naomi
   -
     affiliation: "BSC, Spain"
     family-names: Pérez-Zanón
@@ -421,6 +435,11 @@ authors:
     family-names: Munday
     given-names: Gregory
     orcid: "https://orcid.org/0000-0003-4750-9923"
+  -
+    affiliation: "ACCESS-NRI, Australia"
+    family-names: Chun
+    given-names: Felicity
+    orcid: "https://orcid.org/0009-0007-0845-0953"
 
 cff-version: 1.2.0
 date-released: 2025-03-05
