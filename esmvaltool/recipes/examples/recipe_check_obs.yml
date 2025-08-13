@@ -212,7 +212,7 @@ diagnostics:
       od870aerStderr:
         <<: *var_mon
       abs550aer_day: &var_day
-        short_name: abs550aer 
+        short_name: abs550aer
         frequency: day
         additional_datasets:
           - {dataset: ESACCI-AEROSOL, project: OBS, mip: aero, tier: 2,
