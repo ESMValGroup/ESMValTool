@@ -1,0 +1,89 @@
+# ESMValTool
+# recipe_forster23.yml
+---
+documentation:
+  title:
+    Using similar attrib as Gillett et al. (2023) but for Canada
+  description: |
+    Produces estimates of attributable warming for Canada.
+
+  authors:
+    - kirchmeier-young_megan
+    - cowtan_kevin
+    - gillett_nathan
+    - malinina_elizaveta
+
+  references:
+    - gillett20ncc
+
+
+preprocessors:
+
+  regrid_5_5:
+    custom_order: true
+    annual_statistics:
+      operator: max
+    regrid:
+      target_grid: 5x5
+      scheme: linear
+    extract_shape:
+      shapefile: canada.shp
+      method: contains
+      crop: True
+    anomalies:
+      period: full
+      reference:
+        start_year: 1961
+        start_month: 1
+        start_day: 1
+        end_year: 1990
+        end_month: 12
+        end_day: 31
+
+datasets_models: &datasets_models
+  - {dataset: CanESM5, ensemble: "r(1:25)i1p1f1", grid: gn, exp: [historical,ssp245]}
+  - {dataset: CanESM5, ensemble: "r(1:25)i1p2f1", grid: gn, exp: [historical,ssp245]}
+  - {dataset: CanESM5, ensemble: "r(1:10)i1p1f1", grid: gn, exp: [hist-nat,ssp245-nat]}
+  - {dataset: CanESM5, ensemble: "r(1:10)i1p1f1", grid: gn, exp: [hist-GHG,ssp245-GHG]}
+  - {dataset: CanESM5, ensemble: "r(1:10)i1p1f1", grid: gn, exp: [hist-aer,ssp245-aer]}
+  - {dataset: CanESM5, ensemble: "r(1:10)i1p1f1", grid: gn, exp: [hist-stratO3,ssp245-stratO3]}
+  - {dataset: MIROC6, ensemble: "r(1:50)i1p1f1", grid: gn, exp: [historical,ssp245]}
+  - {dataset: MIROC6, ensemble: "r(1:50)i1p1f1", grid: gn, exp: [hist-nat,ssp245-nat]}
+  - {dataset: MIROC6, ensemble: "r(1:50)i1p1f1", grid: gn, exp: [hist-GHG,ssp245-GHG]}
+  - {dataset: MIROC6, ensemble: "r(1:10)i1p1f1", grid: gn, exp: [hist-aer,ssp245-aer]}
+
+diagnostics:
+
+
+  # **********************************************************************
+  # Preprocess tas, tos, siconc data by regridding to HadCRUT4 grid.
+  # **********************************************************************
+
+  gillett20_figs:
+    description: Preprocess data needed for Gillett et al. (2021) update for Forster et al. (2023).
+    variables:
+      models:
+        short_name: tasmax
+        preprocessor: regrid_5_5   
+        mip: day
+        project: CMIP6
+        start_year: 1950
+        end_year: 2024
+        additional_datasets: *datasets_models
+
+
+    scripts:
+      fig1: 
+        script: attribute/damip_timeseries_txx.py
+        year_block: 1 
+        warming_base: [1950, 1979]
+        warming_years: [2015, 2024]
+
+      fig2_14-23: 
+        script: attribute/attrib_blended_txx.py
+        year_block: 5 
+        warming_base: [1950, 1979]
+        exp_flag: GHG
+        rcplot: true
+        simple_uncert: false
+        warming_years: [2015, 2024]

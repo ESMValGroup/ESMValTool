@@ -3,10 +3,11 @@
 import logging
 import os
 import csv
-import xarray as xr
 import iris
+import pickle
 from pprint import pformat
 from scipy.stats import t
+import esmvaltool.diag_scripts.shared.plot as eplot
 
 import numpy
 import esmvaltool.diag_scripts.attribute.detatt_mk as da
@@ -88,7 +89,7 @@ def main(cfg):
     years=list(numpy.arange(y_start+av_yr/2,y_end+1+av_yr/2,av_yr)) #Used for plotting.
     #Added 5 years here.
     nyear=y_end - y_start +1 #Number of years, hard-coded.
-    ldiag=int(nyear/av_yr) #length of diagnostic.
+    ldiag=int(numpy.ceil(nyear/av_yr)) #length of diagnostic.
    
     anom_max=500 #arbitrary max size for number of anomalies.
     mean_diag=numpy.zeros((ldiag,nexp,nmodel))
@@ -104,6 +105,10 @@ def main(cfg):
     ci90_beta_obs3=numpy.zeros((3))
     mean_gmst_comp_warming=numpy.zeros((ldiag,nexp,nmodel))
     ci90_gmst_comp_warming=numpy.zeros((ldiag,nexp,nmodel))
+
+    # Set matplotlib style
+    mpl_st_file = eplot.get_path_to_mpl_style('attribute')
+    plt.style.use(mpl_st_file)
 
     #Loop over models, then datasets, then ensemble members.
     for mm, dataset in enumerate(grouped_input_data):
@@ -199,15 +204,15 @@ def main(cfg):
         plt.plot([ee+1.2],att_out3['beta'][0],color=cols[0,:],marker='+')
 
       plt.subplot(121)
-      plt.plot([0,enssize+1],[1,1],color='black',linewidth=1,ls=':')
+      plt.plot([0,enssize+1],[1,1],color='black',linewidth=1,ls=':', zorder=100)
       plt.ylabel('Regression coefficients')#,size='x-small')
-      plt.plot([0,enssize+1],[0,0],color='black',linewidth=1,ls='--')
+      plt.plot([0,enssize+1],[0,0],color='black',linewidth=1,ls='--', zorder=100)
       plt.axis([0,enssize+1,-1,3])
       plt.text (-10,3.3,'a',fontsize =7,fontweight='bold', va='center', ha='center')
 
       plt.subplot(122)
-      plt.plot([0,enssize+1],[1,1],color='black',linewidth=1,ls=':')
-      plt.plot([0,enssize+1],[0,0],color='black',linewidth=1,ls='--')
+      plt.plot([0,enssize+1],[1,1],color='black',linewidth=1,ls=':', zorder=100)
+      plt.plot([0,enssize+1],[0,0],color='black',linewidth=1,ls='--', zorder=100)
       plt.axis([0,enssize+1,-1,3])
       plt.text (-10,3.3,'b',fontsize =7,fontweight='bold', va='center', ha='center')
       plt.savefig(plot_dir+'/reg_obsens_'+exp_flag+'.'+output_file_type)
@@ -221,9 +226,9 @@ def main(cfg):
         
     #Set up main figure.
     if rcplot:
-      plt.figure(0,figsize=[180*mm_conv,180*mm_conv]) 
+      fig = plt.figure(0,figsize=[180*mm_conv,180*mm_conv]) 
     else:
-      plt.figure(0,figsize=[180*mm_conv,120*mm_conv]) 
+      fig = plt.figure(0,figsize=[180*mm_conv,120*mm_conv]) 
 
     #Main attribution analysis.      
     att_out={}
@@ -478,17 +483,16 @@ def main(cfg):
 
     for ff in [topleft,topright]:
         plt.subplot(ff)
-        plt.plot([0,nmodel_attrib+2],[1,1],color='black',linewidth=1,ls=':')
+        plt.plot([0,nmodel_attrib+2],[1,1],color='black',linewidth=1,ls=':', zorder=100)
         if ff == topleft: plt.ylabel('Regression coefficients')#,size='x-small')
-        plt.plot([0,nmodel_attrib+2],[0,0],color='black',linewidth=1,ls='--')
+        plt.plot([0,nmodel_attrib+2],[0,0],color='black',linewidth=1,ls='--', zorder=100)
         if pool_int_var:
-            plt.axis([0,nmodel_attrib+2,-1,3])
-#          plt.xticks(list(range(1,nmodel_attrib+2)),[''])
+            plt.ylim(-0.5,3.5)
+            plt.xticks(list(range(1,nmodel_attrib+2)),['']*(nmodel_attrib+1))
         else:
-            plt.axis([0,nmodel_attrib+1,-1,3])
-#          plt.xticks(list(range(1,nmodel_attrib+1)),[''])
-        plt.legend(loc="upper left")
-        plt.text (-2.5,3.5,panel_labels[panel_counter],fontsize =7,fontweight='bold', va='center', ha='center')
+            plt.ylim(-0.5,3.5)
+            plt.xticks(list(range(1,nmodel_attrib+1)),['']*nmodel_attrib)
+        plt.legend(ncol=3)
         panel_counter=panel_counter+1
 
     if rcplot:
@@ -497,13 +501,12 @@ def main(cfg):
             plt.plot([0,nmodel_attrib+2],[0.05,0.05],color='black',linewidth=1,ls='--')
             plt.plot([0,nmodel_attrib+2],[0.95,0.95],color='black',linewidth=1,ls='--')
             if pool_int_var:
-              plt.axis([0,nmodel_attrib+2,0,1])
-#              plt.xticks(list(range(1,nmodel_attrib+2)),[''])
+                plt.ylim(0, 1)
+                plt.xticks(list(range(1,nmodel_attrib+2)),['']*(nmodel_attrib+1))
             else:
-              plt.axis([0,nmodel_attrib+1,0,1])
-#              plt.xticks(list(range(1,nmodel_attrib+1)),[''])
+                plt.ylim(0, 1)
+                plt.xticks(list(range(1,nmodel_attrib+1)),['']*nmodel_attrib)
             if ff == 323: plt.ylabel('RCT P-value')#,size='x-small')
-            plt.text (-2,1.075,panel_labels[panel_counter],fontsize =7,fontweight='bold', va='center', ha='center')
             panel_counter=panel_counter+1
 
     if simple_uncert: #Label lower panels a and b.
@@ -513,34 +516,32 @@ def main(cfg):
         plt.subplot(ff)
         plt.plot([0,nmodel_attrib+2],[obs_warming,obs_warming],color='black',linewidth=1,label='Had4 GSAT')
         if ff == bottomleft: 
-           plt.ylabel(f'Attributable change {warming_years[0]}-{warming_years[1]} vs {warming_base[0]}-{warming_base[1]} ($^\circ$C)')#,size='x-small') 
-        plt.plot([0,nmodel_attrib+2],[0,0],color='black',linewidth=1,ls='--')
+           plt.ylabel(f'Attributable change {warming_years[0]}-{warming_years[1]}\nvs {warming_base[0]}-{warming_base[1]} ($^\circ$C)')#,size='x-small') 
+        plt.plot([0,nmodel_attrib+2],[0,0],color='black',linewidth=1,ls='--', zorder=100)
         if pool_int_var:
-            plt.axis([0,nmodel_attrib+2,-2,3])
-            plt.xticks(list(range(1,nmodel_attrib+2)),model_names,rotation=30.,ha="right")
+            plt.ylim(-1,4)
+            plt.xticks(list(range(1,nmodel_attrib+2)),model_names,rotation=20.,ha="right")
         else:
-            plt.axis([0,nmodel_attrib+1,-2,3])
-            plt.xticks(list(range(1,nmodel_attrib+1)),model_names[0:nmodel_attrib],rotation=30.,ha="right")
+            plt.ylim(-1,4)
+            plt.xticks(list(range(1,nmodel_attrib+1)),model_names[0:nmodel_attrib],rotation=20.,ha="right")
 
-        plt.text (-2,3.3,panel_labels[panel_counter],fontsize =7,fontweight='bold', va='center', ha='center')
         panel_counter=panel_counter+1
 
+    for n,ax in enumerate(fig.axes):
+        text_box = ax.text(0.02, 0.96, f"({panel_labels[n]})", transform=ax.transAxes,
+                                                fontweight='bold')
+        text_box.set_bbox(dict(boxstyle='square,pad=0.001', facecolor='white', edgecolor='white'))
+        ax.set_xlim(0.5, nmodel_attrib+1.5)
 
-    pool_flag='' if pool_int_var else '_not_pooled'
-    uncert_flag='__simple_uncert' if simple_uncert else ''
-    plt.savefig(plot_dir+'/reg_attrib_'+exp_flag+'_'+pool_flag+uncert_flag+'.'+output_file_type)
-    plt.close()
+    fig.suptitle('Results of a detection and attribution analysis for CMIP6 \n mean air temperature in Canada')
+    fig.tight_layout()
+    fig.savefig(plot_dir+'/reg_attrib_warming.'+output_file_type)
+    fig.savefig(plot_dir+'/reg_attrib_warming.png')
+    plt.close(fig)
     plt.figure(2,figsize=[180*mm_conv,60*mm_conv]) 
     for aa in range(anom_index):
         plt.plot(years,anom[:,aa])
     plt.savefig(plot_dir+'/anom.pdf')
-    plt.close()
-    plt.figure(2,figsize=[180*mm_conv,60*mm_conv]) 
-#    for mm in range(3):
-    plt.plot(years,mean_diag[:,1,0],color='black')
-    plt.plot(years,mean_diag[:,1,1],color='green')
-    plt.plot(years,mean_diag[:,1,2],color='gray')
-    plt.savefig(plot_dir+'/mean_diag.pdf')
     plt.close()
 
     plt.figure(2,figsize=[180*mm_conv,60*mm_conv]) 
@@ -552,6 +553,13 @@ def main(cfg):
     plt.plot(years,had4_diag[:,None]-numpy.mean(had4_diag[0:10,None]),color='black')
     plt.savefig(plot_dir+'/fitted_model.pdf')
     plt.close()
+
+    # save dics to a pickle
+    with open(os.path.join(cfg['work_dir'], 'att_out.pkl'),'wb') as f:
+       pickle.dump(att_out, f)
+    # save 3w dic to a pickle
+    with open(os.path.join(cfg['work_dir'], 'att_out3.pkl'),'wb') as f:
+       pickle.dump(att_out3, f)
 
 #Calculate annual mean timeseries for gmst_comp attributable warming, ANT, NAT, GHG, OTH.
     

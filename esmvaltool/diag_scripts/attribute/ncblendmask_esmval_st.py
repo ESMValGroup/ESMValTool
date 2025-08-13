@@ -37,6 +37,13 @@ def ncblendmask_esmval(tas_file,obs_cb,dec_warming,obs_dec_warming,ann_warming,g
     # read tas.nc
     tas_cb = iris.load_cube(tas_file)
 
+    if tas_cb.shape != obs_cb.shape:
+      #  assuming the difference is in region and not time
+        tas_cb = eprep.extract_region(tas_cb, start_longitude=obs_cb.coord('longitude').points.min(), 
+                                      end_longitude=obs_cb.coord('longitude').points.max(), 
+                                      start_latitude=obs_cb.coord('latitude').points.min(), 
+                                      end_latitude=obs_cb.coord('latitude').points.max())      
+
     cvgmsk = obs_cb.data.mask
 
     masked_tas_cb = tas_cb 
@@ -67,10 +74,6 @@ def calc_diag(cube, year_block):
    
     area_av_cb = eprep.area_statistics(cube, 'mean')
     area_av_arr = area_av_cb.data
-    data_len = int(len(area_av_arr) / 12) # assuming the years are complete
-    if data_len % year_block > 0:
-        ext = np.ma.masked_all((data_len % year_block)*12)
-        area_av_arr = np.ma.concatenate((area_av_arr, ext))    
     reshaped_data = area_av_arr.reshape(-1, 12*year_block)
     block_arr = reshaped_data.mean(axis=1)
     diag = block_arr - block_arr.mean()

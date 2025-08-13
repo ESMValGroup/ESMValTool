@@ -1,17 +1,15 @@
 """Plots Figures 1, EDF Figures 1 and 7 in Gillett et al."""
 import logging
 import os
+import pickle
 from pprint import pformat
 import numpy
 import csv
 import iris
 import matplotlib
-from scipy import stats
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import esmvaltool.diag_scripts.attribute.ncblendmask_esmval_txx as ncbm
-import random
-import math
 
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic, select_metadata)
 
@@ -30,7 +28,7 @@ def main(cfg):
     warming_years = cfg.get('warming_years')
 
     sh_name = select_metadata(input_data, variable_group='models')[0]['short_name']
-    obs_file = os.path.join(cfg['auxiliary_data_dir'], f'{sh_name}_gridded.nc')
+    obs_file = os.path.join(cfg['auxiliary_data_dir'], f'{sh_name}_v4_noninfilled_gridded_1950.nc')
     # obs_file = select_metadata(input_data, variable_group='obs_mean')[0]['filename']
     # obs_cb = iris.load_cube(obs_file)
 
@@ -56,7 +54,7 @@ def main(cfg):
     labels=['Anthropogenic and natural forcings','Greenhouse gases','Aerosols','Natural forcings']
     nexp=len(experiments)-4 #Subtract three to account for repetition of hist-GHG, hist-nat, hist-aer.
     nyear=y_end - y_start +1 #Number of years, hard-coded.
-    ldiag=int(nyear/year_block) #length of diagnostic.
+    ldiag=int(numpy.ceil(nyear/year_block)) #length of diagnostic.
     years=numpy.arange(y_start,y_end+1,year_block) #Used for plotting.
     mean_diag=numpy.zeros((ldiag,nexp,nmodel))
     mean_gmst_comp_warming=numpy.zeros((ldiag,nexp,nmodel))
@@ -78,7 +76,7 @@ def main(cfg):
     font = {'size'   : 5}
     matplotlib.rc('font', **font)
     mm_conv=0.0394
-    mod_cols=numpy.array([[0,73,73],[255,255,109],[0,146,146],[255,109,182],[255,182,119],[146,0,0],[0,109,219],[182,109,255],[109,182,255],[182,219,255],[73,0,146],[146,73,0],[219,209,0],[36,255,36]])/256.    
+    mod_cols= ['#E56399', '#712F79', '#941B0C']   
     cols=numpy.array([[0,0,0],[196,121,0],[178,178,178],[0,52,102],[0,79,0],[200,0,0],[0,200,0],[0,0,200],[112,160,205]])/256.
     shade_cols=numpy.array([[128,128,128,128],[204,174,113,128],[191,191,191,128],[67,147,195,128],[223,237,195,128],[255,150,150,128],[150,255,150,128],[150,150,255,128],[91,174,178,128]])/256.
 
@@ -126,8 +124,8 @@ def main(cfg):
                 ens_obs_cblst='' #Set to empty string so that ensemble obs diagnostics are only calculated on the first iteration.
                 #Take anomalies relative to 1850-1900.
                 print ('exp_diags[:,ee]',exp_diags[:,ee])
-                exp_diags[:,ee]=exp_diags[:,ee]-numpy.mean(exp_diags[0:(warming_base[1]+1-y_start),ee]) 
-                obs_diag=obs_diag-numpy.mean(obs_diag[0:(warming_base[1]+1-y_start)])
+                # exp_diags[:,ee]=exp_diags[:,ee]-numpy.mean(exp_diags[0:(warming_base[1]+1-y_start),ee]) 
+                # obs_diag=obs_diag-numpy.mean(obs_diag[0:(warming_base[1]+1-y_start)])
                 exp_ann_warming[:,ee]=ann_warming[0]
                 exp_gmst_comp_warming[:,ee]=gmst_comp_warming[0]
                 #Plot first ensemble member of historical.
@@ -220,6 +218,17 @@ def main(cfg):
     plt.text (1825,2.25,'b',fontsize =7,fontweight='bold', va='center', ha='center')        
     plt.savefig(plot_dir+'/timeseries.'+output_file_type)
     plt.close()
+
+        # save data to pickle
+    with open(os.path.join(cfg['work_dir'],'range.pkl'), 'wb') as f:
+        pickle.dump(range_ann_warming, f)
+    # save data to pickle
+    with open(os.path.join(cfg['work_dir'],'ts.pkl'), 'wb') as f:
+        pickle.dump(mm_ann_warming, f)
+    # save data to pickle
+    with open(os.path.join(cfg['work_dir'],'obs.pkl'), 'wb') as f:
+        pickle.dump(obs_diag, f)
+
 
 #Plot Extended Data Fig 1 showing all DAMIP GMST timeseries.
     fig=    plt.figure(figsize=[88*mm_conv,176*mm_conv], dpi=200)

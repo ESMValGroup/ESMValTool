@@ -2,7 +2,6 @@
 """Plots Figure 2, and Extended Data Figures 2-6 and 8 in Gillett et al.."""
 import logging
 import os
-import pickle
 import csv
 import iris
 from pprint import pformat
@@ -13,7 +12,7 @@ import esmvaltool.diag_scripts.attribute.detatt_mk as da
 import matplotlib
 matplotlib.use('Agg') #Turn off interactive plots.
 import matplotlib.pyplot as plt
-import esmvaltool.diag_scripts.attribute.ncblendmask_esmval_txx as ncbm
+import esmvaltool.diag_scripts.attribute.ncblendmask_esmval_st as ncbm
 
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic, select_metadata)
 
@@ -52,7 +51,7 @@ def main(cfg):
     pool_int_var=True #Flag to pool internal variability estimates.
 
 
-    sh_name = select_metadata(input_data, variable_group='models')[0]['short_name']
+    sh_name = select_metadata(input_data, project='CMIP6')[0]['short_name']
     obs_file = os.path.join(cfg['auxiliary_data_dir'], f'{sh_name}_v4_noninfilled_gridded_1950.nc')
     # obs_file = select_metadata(input_data, variable_group='obs_mean')[0]['filename']
     obs_cb = iris.load_cube(obs_file)
@@ -553,14 +552,6 @@ def main(cfg):
     plt.plot(years,had4_diag[:,None]-numpy.mean(had4_diag[0:10,None]),color='black')
     plt.savefig(plot_dir+'/fitted_model.pdf')
     plt.close()
-
-    # save dics to a pickle
-    with open(os.path.join(cfg['work_dir'], 'att_out.pkl'),'wb') as f:
-       pickle.dump(att_out, f)
-    # save 3w dic to a pickle
-    with open(os.path.join(cfg['work_dir'], 'att_out3.pkl'),'wb') as f:
-       pickle.dump(att_out3, f)
-
 
 #Calculate annual mean timeseries for gmst_comp attributable warming, ANT, NAT, GHG, OTH.
     

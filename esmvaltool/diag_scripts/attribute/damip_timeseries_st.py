@@ -7,12 +7,9 @@ import numpy
 import csv
 import iris
 import matplotlib
-import esmvaltool.diag_scripts.shared.plot as eplot
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import esmvaltool.diag_scripts.attribute.ncblendmask_esmval as ncbm
-import random
-import math
+import esmvaltool.diag_scripts.attribute.ncblendmask_esmval_st as ncbm
 
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic, select_metadata)
 
@@ -30,27 +27,27 @@ def main(cfg):
     warming_base = cfg.get('warming_base')
     warming_years = cfg.get('warming_years')
 
-    obs_file = select_metadata(input_data, variable_group='obs_mean')[0]['filename']
+    sh_name = select_metadata(input_data, project='CMIP6')[0]['short_name']
+    obs_file = os.path.join(cfg['auxiliary_data_dir'], f'{sh_name}_v4_noninfilled_gridded_1950.nc')
+    # obs_file = select_metadata(input_data, variable_group='obs_mean')[0]['filename']
+    # obs_cb = iris.load_cube(obs_file)
+
     obs_cb = iris.load_cube(obs_file)
     y_start = obs_cb.coord('time').cell(0).point.year
     y_end = obs_cb.coord('time').cell(-1).point.year
 
-    hadlabel=select_metadata(input_data, variable_group='obs_mean')[0]['dataset']
+    hadlabel=f'{sh_name}_gridded' # change 
+    # hadlabel=select_metadata(input_data, variable_group='obs_mean')[0]['dataset'] 
 
-    ens_obs_files = [m['filename'] for m in select_metadata(input_data, variable_group='obs_ens')]
-    ens_obs_cblst = iris.load(ens_obs_files)
+    ens_obs_cblst = ''
 
     grouped_input_data = group_metadata(
         input_data, 'dataset', sort='ensemble')
-    grouped_input_data.pop(hadlabel)
     logger.info(
         "Group input data by model and sort by ensemble:"
         "\n%s", pformat(grouped_input_data))
-    type (grouped_input_data)
+    # grouped_input_data.pop(hadlabel) # to delete
     nmodel=len(grouped_input_data)
-
-    mpl_st_file = eplot.get_path_to_mpl_style('attribute')
-    plt.style.use(mpl_st_file)
 
 #Initialise variables.
     experiments=['historical-ssp245','hist-GHG','hist-aer','hist-nat','hist-stratO3','hist-GHG-ssp245-GHG','hist-aer-ssp245-aer','hist-nat-ssp245-nat','hist-stratO3-ssp245-stratO3']
@@ -81,8 +78,9 @@ def main(cfg):
     mm_conv=0.0394
     mod_cols= ['#E56399', '#712F79', '#941B0C']   
     cols=numpy.array([[0,0,0],[196,121,0],[178,178,178],[0,52,102],[0,79,0],[200,0,0],[0,200,0],[0,0,200],[112,160,205]])/256.
+    shade_cols=numpy.array([[128,128,128,128],[204,174,113,128],[191,191,191,128],[67,147,195,128],[223,237,195,128],[255,150,150,128],[150,255,150,128],[150,150,255,128],[91,174,178,128]])/256.
 
-    fig = plt.figure(figsize=[88*mm_conv,113*mm_conv], dpi=200)
+    plt.figure(figsize=[88*mm_conv,113*mm_conv], dpi=200)
     plt.subplot(211)
     
 #Loop over models, then experiments, then ensemble members.    
@@ -169,12 +167,13 @@ def main(cfg):
 
     
     plt.plot(years,obs_diag,color='black',linewidth=1,label=hadlabel)
-    plt.plot(years,numpy.mean(mean_diag[:,0,:],axis=1),color=cols[1],linewidth=1,label='Model mean GMST')
-    # print ('Mean GMST',numpy.mean(mean_diag[:,0,:],axis=1))
+    plt.plot(years,numpy.mean(mean_diag[:,0,:],axis=1),color=cols[1],linewidth=1,label='Model mean')
+    print ('Mean GMST',numpy.mean(mean_diag[:,0,:],axis=1))
     plt.plot([y_start,2025],[0,0],color='black',linewidth=0.5,ls='--',zorder=0)
-    plt.axis([y_start,2025,-2.5, 4])
-    plt.ylabel('Canada mean temperature anomaly ($^\circ$C)')
-    plt.legend(loc="upper left",fancybox=False, frameon=False,ncol=2)
+    plt.axis([y_start,2025,-4, 4])
+    plt.xlabel('Year')
+    plt.ylabel(f'Canada {sh_name} anomaly ($^\circ$C)')
+    plt.legend(loc="upper left",ncol=2, fancybox=False, frameon=False)
     for experiment in range(nexp):
         wts=numpy.zeros((nmodel,nensmax))
         for mm in range(nmodel):
@@ -200,37 +199,34 @@ def main(cfg):
                 cdf=numpy.cumsum(wts[sort_index])
                 range_ann_warming[yy,experiment,:]=[sort_warming[cdf>=0.05][0],sort_warming[cdf>=0.95][0]]
                 mm_ann_warming[yy,experiment]=numpy.sum(year_warming*wts)
+    plt.text (1825,2.25,'a',fontsize =7,fontweight='bold', va='center', ha='center')        
     plt.subplot(212)
     zzs=[3,1,0,2]
     for experiment in range(4):
         offset=0
         plt.fill_between(years,range_ann_warming[:,experiment,0]+offset,range_ann_warming[:,experiment,1]+offset,
-                         color=cols[experiment+1,:],zorder=zzs[experiment], alpha=0.2)
+                         color=shade_cols[experiment+1,:],zorder=zzs[experiment])
         plt.plot(years,mm_ann_warming[:,experiment]+offset,color=cols[experiment+1,:],linewidth=1,
                  label=labels[experiment],zorder=zzs[experiment]+4)
 
-    plt.axis([y_start,2025,-3, 5])
+    plt.plot(years,obs_diag,color='black',linewidth=1,label=hadlabel,zorder=8)
+    plt.axis([y_start,2025,-4, 4])
     plt.plot([y_start,2025],[0,0],color='black',linewidth=0.5,ls='--',zorder=0)
     plt.xlabel('Year')
-    plt.ylabel('Canada mean surface temperature anomaly ($^\circ$C)')
+    plt.ylabel(f'Canada {sh_name} anomaly ($^\circ$C)')
     plt.legend(loc="upper left", fancybox=False, frameon=False,ncol=2)
-    panel_labels = 'abcdefg'
-    for n,ax in enumerate(fig.axes):
-        ax.text(0.01, 0.975, panel_labels[n], transform=ax.transAxes,
-                                                fontweight='bold')
-    fig.suptitle('Timeseries of Canada mean temperature evolution in \n observations and CMIP6 simulations')
-    fig.tight_layout()
-    fig.savefig(plot_dir+'/timeseries.'+output_file_type)
-    plt.close(fig)
+    plt.text (1825,2.25,'b',fontsize =7,fontweight='bold', va='center', ha='center')        
+    plt.savefig(plot_dir+'/timeseries.'+output_file_type)
+    plt.close()
 
-    # save data to pickle
+        # save data to pickle
     with open(os.path.join(cfg['work_dir'],'range.pkl'), 'wb') as f:
         pickle.dump(range_ann_warming, f)
     # save data to pickle
     with open(os.path.join(cfg['work_dir'],'ts.pkl'), 'wb') as f:
         pickle.dump(mm_ann_warming, f)
     # save data to pickle
-    with open(os.path.join(cfg['work_dir'],'hadcrut.pkl'), 'wb') as f:
+    with open(os.path.join(cfg['work_dir'],'obs.pkl'), 'wb') as f:
         pickle.dump(obs_diag, f)
 
 
@@ -239,8 +235,7 @@ def main(cfg):
     ax1=fig.add_subplot(111)
     for experiment in range(nexp):
         offset=experiment*-1.5
-        plt.fill_between(years,range_ann_warming[:,experiment,0]+offset,range_ann_warming[:,experiment,1]+offset,
-                         color=cols[experiment+1,:], lw=0, alpha=0.2)
+        plt.fill_between(years,range_ann_warming[:,experiment,0]+offset,range_ann_warming[:,experiment,1]+offset,color=shade_cols[experiment+1,:])
         plt.plot([y_start,2025],[offset,offset],color='black',linewidth=0.5)
         plt.plot(years,mm_ann_warming[:,experiment]+offset,color=cols[experiment+1,:],linewidth=0.5,label=experiments[experiment])
         plt.text(1860,offset+0.4,experiments[experiment])
@@ -289,19 +284,7 @@ def main(cfg):
     plt.close()
 
 #Calculate uncertainty in GMST and GSAT warming in obs (as reported in Gillett et al.).
-    ensobs_dec_warming=numpy.sort(ensobs_dec_warming)
-    enssize=len(ensobs_dec_warming)
-    print ('Obs GMST warming: mean, 5, 95%',numpy.mean(ensobs_dec_warming),ensobs_dec_warming[math.floor((enssize-1)*0.05)],
-           ensobs_dec_warming[math.ceil((enssize-1)*0.95)])
-    nmc=10000
-    obs_gsat=numpy.zeros((nmc))
-    for mc_counter in range(nmc):
-      ens=random.randint(0,enssize-1)
-      mm=random.randint(0,nmodel-1)
-      ee=random.randint(0,ens_sizes[0,mm]-1)
-      obs_gsat[mc_counter]=ensobs_dec_warming[ens]*numpy.mean(all_ann_warming_gsat[(warming_years[0]-y_start):(warming_years[1] +1 -y_start),0,mm,ee],axis=0)/numpy.mean(all_ann_warming[warming_years[0]-y_start:warming_years[1] +1 -y_start,0,mm,ee],axis=0)
-    obs_gsat=numpy.sort(obs_gsat)
-    print ('Obs GSAT warming: mean, 5, 95%',numpy.mean(obs_gsat),obs_gsat[math.floor((nmc-1)*0.05)],obs_gsat[math.ceil((nmc-1)*0.95)])
+ 
 
     plt.figure(2,figsize=[180*mm_conv,60*mm_conv], dpi=200) 
     plt.plot(years,all_ann_warming[:,3,1,0],color='green')
