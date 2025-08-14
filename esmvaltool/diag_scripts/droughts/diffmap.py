@@ -74,7 +74,6 @@ titles: dict, optional
 from __future__ import annotations
 
 import logging
-import os
 from collections import defaultdict
 from pathlib import Path
 
@@ -210,7 +209,10 @@ def plot(
     basename: str,
     kwargs: dict | None = None,
 ) -> str:
-    """Plot map using diag_scripts.shared module."""
+    """Plot map using diag_scripts.shared module.
+
+    Returns the plot filename.
+    """
     plotfile = get_plot_filename(basename, cfg)
     plot_kwargs = cfg.get("plot_kwargs", {}).copy()
     if kwargs is not None:
@@ -231,7 +233,7 @@ def plot(
     add_cyclic_point(cube.data, cube.coord("longitude").points)
     mapplot = global_contourf(cube, **plot_kwargs)
     if cfg.get("clip_land", False):
-        plt.gca().set_extent((220, 170, -55, 90))
+        plt.gca().set_extent((220, 170, -55, 90))  # type: ignore[attr-defined]
     plt.title(meta.get("title", basename))
     if cfg.get("strip_plots", False):
         plt.gca().set_title(None)
@@ -285,15 +287,15 @@ def calculate_diff(cfg, meta, mm_data, output_meta, group) -> None:
         cube = pp.extract_time(
             cube, cfg["start_year"], 1, 1, cfg["end_year"], 12, 31
         )
-    dtime = cfg.get("comparison_period", 10) * 12
-    cubes = {}
+    dtime = cfg["comparison_period"] * 12
+    cubes: dict[Cube] = {}
     cubes["total"] = cube.collapsed("time", MEAN)
     do_metrics = cfg.get("metrics", METRICS)
     norm = (
         int(meta["end_year"])
         - int(meta["start_year"])
         + 1  # count full end year
-        - cfg.get("comparison_period", 10)  # decades center to center
+        - cfg["comparison_period"]  # decades center to center
     ) / 10
     cubes["first"] = cube[0:dtime].collapsed("time", MEAN)
     cubes["last"] = cube[-dtime:].collapsed("time", MEAN)
@@ -335,26 +337,22 @@ def calculate_diff(cfg, meta, mm_data, output_meta, group) -> None:
 def calculate_mmm(cfg, meta, mm_data, output_meta, group) -> None:
     """Calculate multi-model mean for a given metric."""
     for metric in cfg.get("metrics", METRICS):
-        drop = cfg.get("dropcoords", ["time", "height"])
         meta = meta.copy()  # don't modify meta in place:
-        meta["dataset"] = "MMM"
         meta["diffmap_metric"] = metric
         basename = cfg["basename"].format(**meta)
-        mmm, _ = utils.mmm(
-            mm_data[metric],
-            dropcoords=drop,
-            dropmethods=metric != "diff",
-            mdtol=cfg.get("mdtol", 0.3),
+        results = pp.multi_model_statistics(
+            mm_data[metric], "overlap", ["mean"], ignore_scalar_coords=True
         )
+        mmm = results["mean"]
         meta["title"] = f"Multi-model Mean ({cfg['titles'][metric]})"
         if cfg.get("plot_mmm", True):
             plot_kwargs = cfg.get("plot_kwargs", {}).copy()
             overwrites = cfg.get("plot_kwargs_overwrite", [])
             apply_plot_kwargs_overwrite(plot_kwargs, overwrites, metric, group)
-            plotfile = plot(cfg, meta, mmm, basename, kwargs=plot_kwargs)
+            plot_file = plot(cfg, meta, mmm, basename, kwargs=plot_kwargs)
             prov = _get_provenance(cfg, meta)
             prov["ancestors"] = meta["ancestors"]
-            utils.log_provenance(cfg, plotfile, prov)
+            utils.log_provenance(cfg, plot_file, prov)
         if cfg.get("save_mmm", True):
             work_file = str(Path(cfg["work_dir"]) / f"{basename}.nc")
             meta["filename"] = work_file
@@ -365,8 +363,8 @@ def calculate_mmm(cfg, meta, mm_data, output_meta, group) -> None:
 
 def set_defaults(cfg: dict) -> None:
     """Update cfg with default values from diffmap.yml in place."""
-    config_fpath = os.path.realpath(__file__)[:-3] + ".yml"
-    with open(config_fpath, encoding="utf-8") as config_file:
+    config_fpath = Path(__file__).with_suffix(".yml")
+    with config_fpath.open() as config_file:
         defaults = yaml.safe_load(config_file)
     for key, val in defaults.items():
         cfg.setdefault(key, val)
