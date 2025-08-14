@@ -485,18 +485,15 @@ def _save_nc_data(dframe: pd.DataFrame, cfg) -> None:
     cubes_to_aux = CubeList()
     cubes_to_coord = CubeList()
 
-    plot_func_str = cfg["seaborn_func"]
     skwargs = cfg["seaborn_kwargs"]
     strings_to_save = []
-    save_keys = ["x", "y", "hue", "col"]
     for key in skwargs:
-        if key in save_keys:
+        if key in ["x", "y", "hue", "col"]:
             strings_to_save.append(skwargs[key])
 
     for something in dframe:
         if something in strings_to_save:
             testcube = iris.pandas.as_cubes(dframe[something])[0]
-
             testcube.var_name = something
             testcube.remove_coord("unknown")
 
@@ -518,7 +515,7 @@ def _save_nc_data(dframe: pd.DataFrame, cfg) -> None:
                     cubes_to_save.append(testcube)
 
     for cube in cubes_to_save:
-        cube.attributes.globals["seaborn_func"] = plot_func_str
+        cube.attributes.globals["seaborn_func"] = cfg["seaborn_func"]
         cube.attributes.globals["seaborn_kwargs"] = _get_str_from_kwargs(
             skwargs
         )
