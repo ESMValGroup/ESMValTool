@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - main
+      - fix_pypa_version
 
 jobs:
   build-n-publish:
@@ -42,9 +43,9 @@ jobs:
           --out-dir dist/
           .
       # - name: Publish distribution to Test PyPI
-      #   uses: pypa/gh-action-pypi-publish@release/v1.12.4
+      #   uses: pypa/gh-action-pypi-publish@release/v1
       #   with:
       #     repository-url: https://test.pypi.org/legacy/
       - name: Publish distribution 📦 to PyPI
         if: startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@release/v1.12.4
+        uses: pypa/gh-action-pypi-publish@release/v1
