@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - main
+      - fix_pypa_version
 
 jobs:
   build-n-publish:
