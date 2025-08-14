@@ -108,14 +108,18 @@ from pprint import pformat
 import iris
 import iris.pandas
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
+from iris.cube import CubeList
 from matplotlib.colors import LogNorm, Normalize
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
+    get_diagnostic_filename,
     get_plot_filename,
     group_metadata,
+    io,
     run_diagnostic,
 )
 
@@ -198,6 +202,10 @@ def _create_plot(
         plot_obj.fig.axes[-1].set_position(
             [0.83, pos_joint_ax.y0, 0.07, pos_joint_ax.height]
         )
+
+    # Save plot data
+    if cfg["write_netcdf"]:
+        _save_nc_data(data_frame, cfg)
 
     # Save plot
     plot_path = get_plot_filename(cfg["plot_filename"], cfg)
@@ -399,6 +407,7 @@ def _get_default_cfg(cfg: dict) -> dict:
     cfg.setdefault("plot_object_methods", {})
     cfg.setdefault("plot_filename", f"seaborn_{cfg.get('seaborn_func', '')}")
     cfg.setdefault("reset_index", False)
+    cfg.setdefault("write_netcdf", False)
     cfg.setdefault(
         "savefig_kwargs",
         {
@@ -434,6 +443,13 @@ def _get_plot_func(cfg: dict) -> callable:
     return getattr(sns, cfg["seaborn_func"])
 
 
+def _is_strictly_monotonic(arr):
+    """Test if np.array is strictly monotonic."""
+    result = np.all(np.diff(arr) > 0) | np.all(np.diff(arr) < 0)
+
+    return result
+
+
 def _modify_dataframe(data_frame: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     """Modify data frame according to the option ``data_frame_ops``."""
     allowed_funcs = ("query", "eval")
@@ -461,6 +477,67 @@ def _modify_dataframe(data_frame: pd.DataFrame, cfg: dict) -> pd.DataFrame:
         data_frame = data_frame.dropna(**cfg["dropna_kwargs"])
         logger.debug("Main data frame after dropna \n%s", data_frame)
     return data_frame
+
+
+def _save_nc_data(dframe: pd.DataFrame, cfg) -> None:
+    """Save netCDF files for plot."""
+    cubes_to_save = CubeList()
+    cubes_to_aux = CubeList()
+    cubes_to_coord = CubeList()
+
+    plot_func_str = cfg["seaborn_func"]
+    skwargs = cfg["seaborn_kwargs"]
+    strings_to_save = []
+    save_keys = ["x", "y", "hue", "col"]
+    for key in skwargs:
+        if key in save_keys:
+            strings_to_save.append(skwargs[key])
+
+    for something in dframe:
+        if something in strings_to_save:
+            testcube = iris.pandas.as_cubes(dframe[something])[0]
+
+            testcube.var_name = something
+            testcube.remove_coord("unknown")
+
+            if something in ["shape_id", "dataset", "alias"]:
+                testcube.data = testcube.data.astype(str)
+                cubes_to_aux.append(testcube)
+            else:
+                if something in UNITS:
+                    testcube.units = UNITS[something]
+                if something in [
+                    "latitude",
+                    "longitude",
+                    "height",
+                    "plev",
+                    "time",
+                ] and _is_strictly_monotonic(testcube.data):
+                    cubes_to_coord.append(testcube)
+                else:
+                    cubes_to_save.append(testcube)
+
+    for cube in cubes_to_save:
+        cube.attributes.globals["seaborn_func"] = plot_func_str
+        cube.attributes.globals["seaborn_kwargs"] = _get_str_from_kwargs(
+            skwargs
+        )
+        for auxcube in cubes_to_aux:
+            aux_coord = iris.coords.AuxCoord(
+                auxcube.data, long_name=auxcube.long_name
+            )
+            # Add the auxiliary coordinate to the cube
+            cube.add_aux_coord(aux_coord, data_dims=0)
+        for dimcube in cubes_to_coord:
+            dim_coord = iris.coords.DimCoord(
+                dimcube.data, long_name=dimcube.long_name
+            )
+            # Add the auxiliary coordinate to the cube
+            cube.add_dim_coord(dim_coord, data_dims=0)
+
+    io.iris_save(
+        cubes_to_save, get_diagnostic_filename(cfg["plot_filename"], cfg)
+    )
 
 
 def _set_legend_title(plot_obj, legend_title: str) -> None:
