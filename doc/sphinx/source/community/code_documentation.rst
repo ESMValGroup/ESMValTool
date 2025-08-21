@@ -465,9 +465,6 @@ the following files:
 - ``environment_osx.yml``
   contains development dependencies for MacOSX. Should be the same as ``environment.yml``,
   but currently without multi language support.
-- ``esmvaltool/install/Julia/Project.toml``
-  contains Julia dependencies that can be installed from the default Julia
-  package registry
 - ``pyproject.toml``
   contains all Python dependencies, regardless of their installation source
 

@@ -626,7 +626,7 @@ built correctly by
 1. checking that the version tag is available on `Dockerhub`_ and the ``stable``
    tag has been updated,
 2. running some recipes with the ``stable`` tag Docker container, for example one
-   recipe for Python, NCL, R, and Julia,
+   recipe for Python, NCL, and R,
 3. running a recipe with a Singularity container built from the ``stable`` tag.
 
 If there is a problem with the automatically built container image, you can fix
