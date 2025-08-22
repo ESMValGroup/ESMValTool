@@ -631,6 +631,9 @@ class InsidePolygonFactory(AuxCoordFactory):
         """Return a dict mapping from constructor names to coordinates."""
         return {"lat": self.lat, "lon": self.lon}
 
+    def _calculate_array(self):
+        pass
+
     def _derive(self, lat, lon):
         def in_polygon(lat, lon):
             """Check if point is inside polygon."""
