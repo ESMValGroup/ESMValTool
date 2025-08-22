@@ -39,6 +39,8 @@ Recipes are stored in `recipes/`
   time series, zonal mean total column ozone vs. time map plot, zonal mean
   total column ozone vs. annual cycle map plot, altitude vs. zonal mean
   ozone profile climatology map plot
+* :ref:`ref/recipe_ref_fire.yml <recipe_ref_fire>`:
+   Maps of burnt area fraction, fire weather control, and fuel load continuity control.
 
 
 Example plots:
@@ -89,10 +91,30 @@ Example plots:
    Zonal mean vertically resolved ozone climatology from CNRM-ESM2-1 compared with ESACCI-OZONE
    for the years 1990 to 2000. Created with recipe_ref_ozone.yml.
 
-.. _fig_ref_7:
 .. figure::  /recipes/figures/ref/timeseries_tas_ambiguous_dataset_Amon_historical_r1i1p1f1.png
    :align:   center
    :width:   8cm
 
    Time series of near-surface air temperature anomalies from MIROC6 compared with HadCRUT5
    for N.Europe for the years 1980 to 2014 (reference period 1980 to 2009). Created with recipe_ref_timeseries_region.yml.
+
+.. _fig_ref_7:
+.. figure::  /recipes/figures/ref/burnt_fraction_MPI-ESM1-2-LR_historical_2013_2014.png
+   :align:   center
+
+   Burnt area fraction for the MPI-ESM1-2-LR model (CMIP-historical experiment)
+   for the time period 2013-2014 as computed with the ConFire model `Jones et al. (2024)`.
+
+.. _fig_ref_8:
+.. figure::  /recipes/figures/ref/fire_weather_control_MPI-ESM1-2-LR_historical_2013_2014.png
+   :align:   center
+
+   Fire weather control for the MPI-ESM1-2-LR model (CMIP-historical experiment)
+   for the time period 2013-2014 as computed with the ConFire model `Jones et al. (2024)`.
+
+.. _fig_ref_9:
+.. figure::  /recipes/figures/ref/fuel_load_continuity_control_MPI-ESM1-2-LR_historical_2013_2014.png
+   :align:   center
+
+   Fuel load continuity control for the MPI-ESM1-2-LR model (CMIP-historical experiment)
+   for the time period 2013-2014 as computed with the ConFire model `Jones et al. (2024)`.
