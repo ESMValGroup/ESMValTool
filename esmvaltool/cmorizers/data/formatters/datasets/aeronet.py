@@ -7,7 +7,7 @@ Source
     https://aeronet.gsfc.nasa.gov/
 
 Last access
-    20240406
+    20250726
 
 Download and processing instructions
     Download the following file:
@@ -89,7 +89,7 @@ def parse_contact(contact):
     if match is None:
         raise RuntimeError(f"Could not parse contact line {contact}")
     names = match.group("names").replace("_", " ").split(" and ")
-    emails = match.group("emails").split("_and_")
+    emails = re.split(r"_and_| and ", match.group("emails"))
     mailboxes = ", ".join(
         [
             f'"{name}" <{email}>'
@@ -273,7 +273,7 @@ def assemble_cube(stations, idx, wavelengths=None):
         points=wavelength_points,
         standard_name="radiation_wavelength",
         long_name="Wavelength",
-        var_name="wl",
+        var_name="wavelength",
         units="nm",
     )
     times = date_index.to_pydatetime()
