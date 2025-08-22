@@ -76,6 +76,14 @@ reset_index: bool, optional (default: False)
     indices. This avoids the deletion of coordinate information if different
     groups of datasets have different dimensions but increases the memory
     footprint of this diagnostic.
+write_netcdf: bool, optional (default: False)
+    Output netCDF file for plotted data. What is written into the file
+    is decided based on the pandas data frame and the
+    seaborn kwargs: "x", "y", "hue" and "col".
+    Because there is no direct way to write panda data frames into netCDF
+    and to make data CF complient, the data frame is converted to an iris
+    CubeList first. This is not possible for all data frames and often
+    reset_index: true is required. Therefore the default is set to False.
 savefig_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
     default, uses ``bbox_inches: tight, dpi: 300, orientation: landscape``.
@@ -497,22 +505,22 @@ def _save_nc_data(dframe: pd.DataFrame, cfg) -> None:
             testcube.var_name = something
             testcube.remove_coord("unknown")
 
+            if something in UNITS:
+                testcube.units = UNITS[something]
+
             if something in ["shape_id", "dataset", "alias"]:
                 testcube.data = testcube.data.astype(str)
                 cubes_to_aux.append(testcube)
+            elif something in [
+                "latitude",
+                "longitude",
+                "height",
+                "plev",
+                "time",
+            ] and _is_strictly_monotonic(testcube.data):
+                cubes_to_coord.append(testcube)
             else:
-                if something in UNITS:
-                    testcube.units = UNITS[something]
-                if something in [
-                    "latitude",
-                    "longitude",
-                    "height",
-                    "plev",
-                    "time",
-                ] and _is_strictly_monotonic(testcube.data):
-                    cubes_to_coord.append(testcube)
-                else:
-                    cubes_to_save.append(testcube)
+                cubes_to_save.append(testcube)
 
     for cube in cubes_to_save:
         cube.attributes.globals["seaborn_func"] = cfg["seaborn_func"]
