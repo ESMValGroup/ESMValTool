@@ -229,8 +229,16 @@ def _create_plot(
         "authors": ["schlund_manuel"],
         "caption": caption,
     }
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(plot_path, provenance_record)
+    if cfg["write_netcdf"]:
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(
+                get_diagnostic_filename(cfg["plot_filename"], cfg),
+                provenance_record,
+            )
+    else:
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
 
 
 def _get_grouped_data(cfg: dict) -> dict:
