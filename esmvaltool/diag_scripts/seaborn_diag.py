@@ -487,17 +487,39 @@ def _modify_dataframe(data_frame: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     return data_frame
 
 
+def _prepare_cube(cube, cubes_to_aux, cubes_to_coord, cfg):
+    """Prepare cube to save data as netCDF."""
+    cube.attributes.globals["seaborn_func"] = cfg["seaborn_func"]
+    cube.attributes.globals["seaborn_kwargs"] = _get_str_from_kwargs(
+        cfg["seaborn_kwargs"]
+    )
+    for auxcube in cubes_to_aux:
+        aux_coord = iris.coords.AuxCoord(
+            auxcube.data, long_name=auxcube.long_name
+        )
+        # Add the auxiliary coordinate to the cube
+        cube.add_aux_coord(aux_coord, data_dims=0)
+
+    for dimcube in cubes_to_coord:
+        dim_coord = iris.coords.DimCoord(
+            dimcube.data, long_name=dimcube.long_name
+        )
+        # Add the auxiliary coordinate to the cube
+        cube.add_dim_coord(dim_coord, data_dims=0)
+
+    return cube
+
+
 def _save_nc_data(dframe: pd.DataFrame, cfg) -> None:
     """Save netCDF files for plot."""
     cubes_to_save = CubeList()
     cubes_to_aux = CubeList()
     cubes_to_coord = CubeList()
 
-    skwargs = cfg["seaborn_kwargs"]
     strings_to_save = []
-    for key in skwargs:
+    for key in cfg["seaborn_kwargs"]:
         if key in ["x", "y", "hue", "col"]:
-            strings_to_save.append(skwargs[key])
+            strings_to_save.append(cfg["seaborn_kwargs"][key])
 
     for something in dframe:
         if something in strings_to_save:
@@ -523,22 +545,12 @@ def _save_nc_data(dframe: pd.DataFrame, cfg) -> None:
                 cubes_to_save.append(testcube)
 
     for cube in cubes_to_save:
-        cube.attributes.globals["seaborn_func"] = cfg["seaborn_func"]
-        cube.attributes.globals["seaborn_kwargs"] = _get_str_from_kwargs(
-            skwargs
+        cube = _prepare_cube(
+            cube,
+            cubes_to_aux,
+            cubes_to_coord,
+            cfg,
         )
-        for auxcube in cubes_to_aux:
-            aux_coord = iris.coords.AuxCoord(
-                auxcube.data, long_name=auxcube.long_name
-            )
-            # Add the auxiliary coordinate to the cube
-            cube.add_aux_coord(aux_coord, data_dims=0)
-        for dimcube in cubes_to_coord:
-            dim_coord = iris.coords.DimCoord(
-                dimcube.data, long_name=dimcube.long_name
-            )
-            # Add the auxiliary coordinate to the cube
-            cube.add_dim_coord(dim_coord, data_dims=0)
 
     io.iris_save(
         cubes_to_save, get_diagnostic_filename(cfg["plot_filename"], cfg)
