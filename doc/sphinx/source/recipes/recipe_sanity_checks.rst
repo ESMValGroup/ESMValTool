@@ -11,7 +11,7 @@ some basic sanity checks for new simulations during model development. A subset 
 is selected to check whether the model is performing in reasonable way. The recipe plots global
 monthly means as well as maximum and minimum across all individual grid cells for each time step.
 This can be used to check for example for negative mass concentrations occuring at any grid cell
-at any time (minimum is less than zero) or whether individual grid cells exceed physically reasonalble
+at any time (minimum is less than zero) or whether individual grid cells exceed physically reasonable
 values (e.g. total cloud fraction greater than 100%).
 The global monthly means can be compared to the minimum and maximum values found in reference
 datasets (observations, reanalyses) across all months and all reference datasets. The "reasonable"
