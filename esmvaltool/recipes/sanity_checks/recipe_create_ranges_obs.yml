@@ -58,6 +58,8 @@ preprocessors:
 
   pp_max:
     custom_order: true
+    align_metadata:
+      target_project: OBS6
     area_statistics:
       operator: mean
     multi_model_statistics:
