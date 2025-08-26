@@ -1,0 +1,3 @@
+[platforms]
+  [[slurm_local]]
+    job runner = slurm
