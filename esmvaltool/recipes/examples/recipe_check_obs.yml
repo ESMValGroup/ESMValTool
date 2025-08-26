@@ -847,7 +847,7 @@ diagnostics:
       ch4s:
     additional_datasets:
       - {dataset: NOAA-GML-SURFACE-FLASK-CH4, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
-         start_year: 1983, end_year: 2023}
+         start_year: 1983}
     scripts: null
 
   NOAA-GML-SURFACE-FLASK-CO2:
@@ -856,7 +856,7 @@ diagnostics:
       co2s:
     additional_datasets:
       - {dataset: NOAA-GML-SURFACE-FLASK-CO2, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
-         start_year: 1968, end_year: 2023}
+         start_year: 1968}
     scripts: null
 
   NOAA-MBL-CH4:
