@@ -242,8 +242,9 @@ diagnostics:
         mip: day
         start_year: 2003
         end_year: 2007
+        version: v3.0-AVHRR-AMPM
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-AMPM}
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat}
       clwvi_day:
         <<: *var_day
         short_name: clwvi
