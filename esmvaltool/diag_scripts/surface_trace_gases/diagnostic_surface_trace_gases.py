@@ -20,7 +20,7 @@ import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy
-from esmvalcore.preprocessor._time import climate_statistics
+from esmvalcore.preprocessor import climate_statistics
 from matplotlib import colors, gridspec
 from numpy import ma
 
