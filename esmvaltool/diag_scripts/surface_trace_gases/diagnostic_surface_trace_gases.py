@@ -26,10 +26,10 @@ from numpy import ma
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
+    get_plot_filename,
     group_metadata,
     run_diagnostic,
 )
-from esmvaltool.diag_scripts.shared._base import get_plot_filename
 from esmvaltool.diag_scripts.surface_trace_gases.utils_surface_trace_gases import (
     TRACE_GASES_UNITS,
     _aggregate_model_stats,
@@ -60,7 +60,7 @@ PLOT_PARAM = {
         "scatter_step": 50,
     },
 }
-COLORS_MARKERS = ["cornflowerblue", "royalblue", "lightsteelblue"]
+COLORS_MARKERS = ["cornflowerblue", "lightsteelblue", "royalblue"]
 MARKERS = ["o", "^", "s"]
 LATITUDE_TITLES = [
     r"Latitudes 60$^\circ$N - 90$^\circ$N",
@@ -1890,7 +1890,6 @@ def preprocess_colocated_datasets(
                 years = cube_model_datasets[model_dataset][attr["alias"]][
                     "years"
                 ]
-                # years = cube.coord("year", dim_coords=False).points.tolist()
                 months_ts = cube.coord("month", dim_coords=False).points
                 years_ts = cube.coord("year", dim_coords=False).points
                 for key, _ in LATITUDE_RANGES.items():
