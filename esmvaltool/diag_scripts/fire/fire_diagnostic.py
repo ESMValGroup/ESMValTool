@@ -400,7 +400,6 @@ def main(cfg: dict) -> None:
             "burnt_fraction",
             "fire_weather_control",
             "fuel_load_continuity_control",
-            "stochastic_control",
         ]
         logger.info("Running diagnostic model ConFire.")
         figures = diagnostic_run_confire(

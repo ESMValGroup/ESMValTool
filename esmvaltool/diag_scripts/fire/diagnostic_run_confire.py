@@ -16,6 +16,7 @@ The directory and filename are indicated above each function definition.
 from __future__ import annotations
 
 import ast
+import copy
 import logging
 from collections.abc import Callable
 from pathlib import Path
@@ -84,9 +85,6 @@ def get_provenance_record(
         + spec
         + "as computed with the ConFire model (Jones et al., 2024).",
         "fuel_load_continuity_control": "Fuel load continuity control "
-        + spec
-        + "as computed with the ConFire model (Jones et al., 2024).",
-        "stochastic_control": "Stochastic control "
         + spec
         + "as computed with the ConFire model (Jones et al., 2024).",
     }
@@ -379,15 +377,15 @@ def _construct_param_comb(
 
     Returns
     -------
-        param_in: dict
+        param_input: dict
             Dictionary of paramater values.
     """
-    param_in = [
+    param_input = [
         param[i] if param.ndim == 1 else param[i, :] for param in params
     ]
-    param_in = dict(zip(params_names, param_in, strict=False))
-    param_in.update(extra_params)
-    return param_in
+    param_input = dict(zip(params_names, param_input, strict=False))
+    param_input.update(extra_params)
+    return param_input
 
 
 # /libs/read_variable_from_netcdf.py
@@ -947,11 +945,6 @@ def _setup_cube_output(
             "long_name": "Fuel Load/Continuity control",
             "factor": 1.0,
         },
-        "stochastic_control": {
-            "units": "1",
-            "long_name": "Stochastic control",
-            "factor": 1.0,
-        },
     }
     if output == "burnt_fraction":
         cube.var_name = "burnt_fraction"
@@ -973,12 +966,6 @@ def _setup_cube_output(
         ]
         cube.units = parameter_dict["fuel_load_continuity_control"]["units"]
         cube.data *= parameter_dict["fuel_load_continuity_control"]["factor"]
-    elif output == "stochastic_control":
-        cube.var_name = "stochastic_control"
-        cube.standard_name = None
-        cube.long_name = parameter_dict["stochastic_control"]["long_name"]
-        cube.units = parameter_dict["stochastic_control"]["units"]
-        cube.data *= parameter_dict["stochastic_control"]["factor"]
     else:
         logger.debug("Output %s cannot be processed. Saving output as is.")
     cube.attributes["ancestors"] = provenance["ancestors"]
@@ -1036,9 +1023,8 @@ def diagnostic_run_confire(
     # **Sample Iterations from Trace**
     nits = len(params[0])
     idx = range(0, nits, int(np.floor(nits / nsample_for_running)))
-    # **Storage for Model Outputs (Including full model, physical &
-    # stochastic controls)**
-    out_cubes = [[] for _ in range(nexp + 2)]
+    # **Storage for Model Outputs (Including full model, physical controls)**
+    out_cubes = [[] for _ in range(nexp + 1)]
 
     def _run_model_into_cube(
         param_in: dict,
@@ -1070,38 +1056,28 @@ def diagnostic_run_confire(
     logger.info("Running ConFire model...")
     for index, i in zip(idx, range(len(idx)), strict=False):
         coord = iris.coords.DimCoord(i, "realization")
-        param_in = _construct_param_comb(
+        param_in_full = _construct_param_comb(
             index,
             params,
             params_names,
-            extra_params,
+            copy.deepcopy(extra_params),
         )
 
         # **Run Full Model**
-        out_cubes[0].append(_run_model_into_cube(param_in, coord))
+        out_cubes[0].append(_run_model_into_cube(param_in_full, coord))
 
         # **Run Model with Individual Controls Turned On**
         for exp in range(nexp):
-            param_in["control_Direction"][:] = [0] * nexp
-            param_in["control_Direction"][exp] = control_direction[exp]
-            param_in = _construct_param_comb(
-                exp,
-                params,
-                params_names,
-                extra_params,
-            )
-            out_cubes[exp + 1].append(_run_model_into_cube(param_in, coord))
-
-        # **Run Model with All Controls Off (Stochastic Control)**
-        param_in["control_Direction"][:] = [0] * nexp
-        out_cubes[exp + 2].append(_run_model_into_cube(param_in, coord))
+            param_exp = copy.deepcopy(param_in_full)
+            param_exp["control_Direction"][:] = [0] * nexp
+            param_exp["control_Direction"][exp] = control_direction[exp]
+            out_cubes[exp + 1].append(_run_model_into_cube(param_exp, coord))
 
     # **Save Output Cubes**
     # In the current configuration, outputs from the model runs are:
     #   - burnt area (model)
     #   - fire weather (control direction 0)
     #   - fuel loads (control direction 1)
-    #   - stochastic control
     logger.info("Saving ConFire output cubes...")
     Path.mkdir(output_dir, parents=True, exist_ok=True)
     timerange = timerange.replace("/", "-")
@@ -1154,10 +1130,6 @@ def diagnostic_run_confire(
             "vmin": 0.0,
             "vmax": 1.0,
         },
-        "stochastic_control": {
-            "vmin": 0.0,
-            "vmax": 1.0,
-        },
     }
     for filename in config["filenames_out"]:
         filepath = Path(output_dir) / f"{filename}_{model_name}_{timerange}.nc"
@@ -1174,10 +1146,13 @@ def diagnostic_run_confire(
             cube = iris.load_cube(filepath)
             for pct in [5, 95]:
                 pc_cube = cube.collapsed(
+                    "time",
+                    iris.analysis.MEAN,
+                ).collapsed(
                     "realization",
                     iris.analysis.PERCENTILE,
                     percent=pct,
-                )[0]
+                )
                 img = iris.quickplot.pcolormesh(
                     pc_cube,
                     axes=axes[plotn],
