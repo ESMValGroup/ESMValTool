@@ -70,12 +70,6 @@ SCRIPTS = [
             reason="ESMValTool R not supported on OSX",
         ),
     ),
-    pytest.param(
-        "diagnostic.jl",
-        marks=pytest.mark.skip(
-            reason="Julia is not installed by default.",
-        ),
-    ),
 ]
 
 

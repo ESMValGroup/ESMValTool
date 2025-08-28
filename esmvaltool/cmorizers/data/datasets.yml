@@ -4,7 +4,7 @@ datasets:
   AERONET:
     tier: 3
     source: "https://aeronet.gsfc.nasa.gov/"
-    last_access: 2024-04-06
+    last_access: 2025-07-26
     info: |
       Aerosol Optical Depth information from a worldwide network of stations.
 
