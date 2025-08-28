@@ -262,8 +262,9 @@ diagnostics:
         mip: day
         start_year: 2003
         end_year: 2007
+        version: v3.0-AVHRR-AMPM
         additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat, version: v3.0-AVHRR-AMPM}
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, type: sat}
       clwvi_day:
         <<: *var_day
         short_name: clwvi
@@ -867,7 +868,7 @@ diagnostics:
       ch4s:
     additional_datasets:
       - {dataset: NOAA-GML-SURFACE-FLASK-CH4, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
-         start_year: 1983, end_year: 2023}
+         start_year: 1983}
     scripts: null
 
   NOAA-GML-SURFACE-FLASK-CO2:
@@ -876,7 +877,7 @@ diagnostics:
       co2s:
     additional_datasets:
       - {dataset: NOAA-GML-SURFACE-FLASK-CO2, project: OBS6, mip: Amon, type: atmos, version: 1, tier: 2,
-         start_year: 1968, end_year: 2023}
+         start_year: 1968}
     scripts: null
 
   NOAA-MBL-CH4:
@@ -1104,7 +1105,7 @@ diagnostics:
     variables:
       od440aer:
     additional_datasets:
-      - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20240406}
+      - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20250726}
     scripts: null
 
   ANUClimate:
