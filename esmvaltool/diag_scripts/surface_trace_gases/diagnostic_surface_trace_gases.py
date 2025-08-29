@@ -31,6 +31,7 @@ from esmvaltool.diag_scripts.shared import (
     run_diagnostic,
 )
 from esmvaltool.diag_scripts.surface_trace_gases.utils_surface_trace_gases import (
+    TRACE_GASES_FACTOR,
     TRACE_GASES_UNITS,
     _aggregate_model_stats,
     _colocate_obs_model,
@@ -1572,6 +1573,13 @@ def preprocess_obs_dataset(obs_dataset, config):
     """
     obs_cube = iris.load_cube(obs_dataset[0]["filename"])
 
+    trace_gas = config["trace_gas"]
+
+    # Put observations and model data on same scale for ppm/ppb
+    obs_cube = TRACE_GASES_FACTOR[trace_gas] * obs_cube
+    # Change units accordingly
+    obs_cube.attributes["unit"] = TRACE_GASES_UNITS[trace_gas]
+
     # Add the clim_season and season_year coordinates.
     iris.coord_categorisation.add_year(obs_cube, "time", name="year")
     iris.coord_categorisation.add_month(obs_cube, "time", name="month")
@@ -1667,6 +1675,10 @@ def preprocess_obs_dataset(obs_dataset, config):
             },
         ),
     )
+
+    # Realize the observational data to avoid reading it from disk multiple times.
+    obs_cube.data  # noqa B018
+    multi_annual_seasonal_mean.data  # noqa B018
 
     return obs_cube, multi_annual_seasonal_mean
 

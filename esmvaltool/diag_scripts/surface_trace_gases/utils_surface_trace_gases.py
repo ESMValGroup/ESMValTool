@@ -344,6 +344,8 @@ def _quick_fix_cube(input_file, trace_gas):
     iris.coord_categorisation.add_month(cube, "time")
     # Extract years
     years = sorted(set(cube.coord("year").points))
+    # Realize the data to avoid reading it from disk multiple times.
+    cube.data  # noqa B018
     return {
         "cube": cube,
         "time": cube.coord("time", dim_coords=True),
