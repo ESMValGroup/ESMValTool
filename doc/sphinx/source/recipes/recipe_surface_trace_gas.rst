@@ -30,21 +30,22 @@ ranges considered are 60N - 90N, 30N - 60N, 30S - 30N, 90S - 30S.
       these same locations for each season.
     * Zonal plots of surface concentration time series and seasonal cycle.
       The left column includes monthly surface concentration time series.
-      The center-left column includes yearly surface concentration scatter plot.
-      The center-right column includes multi-annual monthly anomaly.
+      The center-left column includes yearly surface concentration scatter plots.
+      The center-right column includes multi-annual monthly anomalies.
       The right column includes yearly min/max months time series.
       The plot is inspired from Figure 8 of Folberth et al. (2018).
     * Zonal plots of surface concentration amplitude and growth.
       The left column includes yearly concentration amplitude time series.
       The center column includes yearly concentration growth time series.
-      The right column includes yearly sensitivity of amplitude/growth.
+      The right column includes yearly sensitivities of amplitude/growth.
     * Taylor diagram of trace gas surface concentration for the observations
       and the different models from the recipe.
 
 Each analysis can be turned on or off using the argument *plots* in the recipe.
 Furthermore, one can change how the station data is pre-processed before
 plotting by filtering stations with a minimum amount of data for months,
-seasons, and years.
+seasons, and years, using the *min_mon_per_seas*, *min_seas_per_year*, and
+*min_seas_per_clim* arguments in the recipe (see next section).
 
 User settings in recipe
 -----------------------

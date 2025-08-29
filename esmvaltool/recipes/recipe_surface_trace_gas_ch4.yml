@@ -15,6 +15,7 @@ documentation:
 
   projects:
     - esmval
+    - esm2025
 
 preprocessors:
   ma_surface:
