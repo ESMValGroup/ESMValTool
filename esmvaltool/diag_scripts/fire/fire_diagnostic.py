@@ -104,7 +104,7 @@ def download_files_from_zenodo(
     status_request_success = 200
 
     # Fetch the record metadata
-    response = requests.get(api_url, timeout=1)
+    response = requests.get(api_url, timeout=60)
     if response.status_code != status_request_success:
         msg = "Failed to fetch Zenodo record metadata."
         raise ValueError(msg)
@@ -128,13 +128,9 @@ def download_files_from_zenodo(
             for f in files_to_download
         ):
             file_path = Path(output_dir) / file_name
-            file_response = requests.get(file_url, timeout=10)
+            file_response = requests.get(file_url, timeout=60)
             if file_response.status_code == status_request_success:
-                with Path.open(
-                    file_path,
-                    mode="wb",
-                    encoding="utf-8",
-                ) as file:
+                with Path.open(file_path, mode="wb") as file:
                     file.write(file_response.content)
                 logger.info("Downloaded %s to %s.", file_name, output_dir)
             else:
