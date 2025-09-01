@@ -128,12 +128,11 @@ def download_files_from_zenodo(
             for f in files_to_download
         ):
             file_path = Path(output_dir) / file_name
-            file_response = requests.get(file_url, timeout=1)
+            file_response = requests.get(file_url, timeout=10)
             if file_response.status_code == status_request_success:
                 with Path.open(
                     file_path,
                     mode="wb",
-                    encoding=file_response.encoding,
                 ) as file:
                     file.write(file_response.content)
                 logger.info("Downloaded %s to %s.", file_name, output_dir)
@@ -162,7 +161,7 @@ def get_parameter_directory(cfg: dict) -> dict:
     """
     param_dir = None
     # If confire_param is a directory = return this directory
-    if Path.is_dir(cfg["confire_param"]):
+    if Path(cfg["confire_param"]).is_dir():
         param_dir = str(cfg["confire_param"])
         if param_dir[-1] != "/":
             param_dir += "/"

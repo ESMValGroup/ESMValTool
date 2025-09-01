@@ -69,5 +69,6 @@ diagnostics:
     scripts:
       fire_evaluation:
         script: fire/fire_diagnostic.py
+        confire_param: https://zenodo.org/records/14917245
         # IMPORTANT = the order of the variables should fit the configuration files of the ConFire model run
         var_order: ['pr', 'tasmax', 'treeFrac', 'vegFrac', 'vpd', 'cVeg']

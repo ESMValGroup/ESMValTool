@@ -32,6 +32,7 @@ import iris.quickplot
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.colors import ListedColormap
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
@@ -1131,6 +1132,16 @@ def diagnostic_run_confire(
             "vmax": 1.0,
         },
     }
+    # Colormap setup
+    oranges = plt.cm.get_cmap("Oranges", 256)
+    colors = np.vstack(
+        [
+            [1, 1, 1, 1],
+            oranges(np.linspace(0, 1, 256)),
+        ]
+    )
+    cmap = ListedColormap(colors)
+    # Plots
     for filename in config["filenames_out"]:
         filepath = Path(output_dir) / f"{filename}_{model_name}_{timerange}.nc"
         fig, axes = plt.subplots(
@@ -1159,7 +1170,7 @@ def diagnostic_run_confire(
                     colorbar=False,
                     vmin=parameter_plot[filename]["vmin"],
                     vmax=parameter_plot[filename]["vmax"],
-                    cmap="Oranges",
+                    cmap=cmap,
                 )
                 axes[plotn].set_title(
                     (
