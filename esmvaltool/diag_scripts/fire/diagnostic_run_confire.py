@@ -112,21 +112,21 @@ def _select_key_or_default(
 
     Parameters
     ----------
-        dirc: dict
-            Input dictionary to select from.
-        key: str
-            Key to select in the dictionary.
-        default:
-            Default value to return if key not present.
-        stack: bool
-            Boolean flag if the extracted results should be stacked.
-        numpck: imported package
-            Package to use to stack the data if necessary.
+    dirc: dict
+        Input dictionary to select from.
+    key: str
+        Key to select in the dictionary.
+    default:
+        Default value to return if key not present.
+    stack: bool
+        Boolean flag if the extracted results should be stacked.
+    numpck: imported package
+        Package to use to stack the data if necessary.
 
     Returns
     -------
-        out: numpck instance
-            numpck instance from the extracted in the dictionary.
+    out: numpck instance
+        numpck instance from the extracted in the dictionary.
     """
     if numpck is None:
         numpck = __import__("numpy")
@@ -158,17 +158,17 @@ def _sort_time(
 
     Parameters
     ----------
-        cube: iris cube
-            Input cube.
-        field: str
-            Variable name in cube.
-        filename: str
-            Filename of cube.
+    cube: iris cube
+        Input cube.
+    field: str
+        Variable name in cube.
+    filename: str
+        Filename of cube.
 
     Returns
     -------
-        cube: iris cube
-            Cube with sorted and added time dimensions.
+    cube: iris cube
+        Cube with sorted and added time dimensions.
     """
     logger.debug("Sorting time for variable %s in cube %s", field, filename)
 
@@ -198,20 +198,20 @@ def _insert_data_into_cube(
 
     Parameters
     ----------
-        data: np.array
-            data that we want to insert into the cube.
-            Should have same shape of eg_cube, or same length as eg_cube
-            or length equal to Trues in mask.
-        eg_cube: iris cube
-            The cube we want to insert data into.
-        mask: Boolean array
-            Array of shape or length x where True, will inster data.
-            Default of None which means True for all points in eg_cube.
+    data: np.array
+        data that we want to insert into the cube.
+        Should have same shape of eg_cube, or same length as eg_cube
+        or length equal to Trues in mask.
+    eg_cube: iris cube
+        The cube we want to insert data into.
+    mask: Boolean array
+        Array of shape or length x where True, will inster data.
+        Default of None which means True for all points in eg_cube.
 
     Returns
     -------
-        pred_cube: iris cube
-            cube with data replaced by x
+    pred_cube: iris cube
+        cube with data replaced by x
     """
     pred_cube = eg_cube.copy()
     # Only keep parent's attributes
@@ -239,41 +239,41 @@ def _read_variables_from_namelist(file_name: str) -> dict:
 
     Parameters
     ----------
-        file_name: str
-            The name of the file containing the variables.
+    file_name: str
+        The name of the file containing the variables.
 
     Returns
     -------
-        dict: dict
-            A dictionary of variable names and their values.
+    dict: dict
+        A dictionary of variable names and their values.
 
     Example Usage:
     --------------
-        file_name = 'variables.txt'
-        read_variables = read_variables_from_file(file_name)
-        # Create variables with their original names and assign the values
-        for variable_name, variable_value in read_variables.items():
-            exec(f"{variable_name} = {variable_value}")
-        # Now you have the variables with their original names and values
-        print(variable1)  # Output: Hello
-        print(variable2)  # Output: 42
+    file_name = 'variables.txt'
+    read_variables = read_variables_from_file(file_name)
+    # Create variables with their original names and assign the values
+    for variable_name, variable_value in read_variables.items():
+        exec(f"{variable_name} = {variable_value}")
+    # Now you have the variables with their original names and values
+    print(variable1)  # Output: Hello
+    print(variable2)  # Output: 42
 
     Example input file:
     -------------------
-        variables.txt:
-            y_filen:: 'filename.nc'
-            x_filen_list:: ['file1.nc', 'file2.nc', 'file3.nc']
-            CA_filen:: None
-            dir:: 'path/to/driving/data/'
-            filename_out:: '_filename_file_output'
-            dir_outputs:: 'path/to/outputs/'
-            subset_function:: function_name
-            subset_function_args:: {'function_arg': [0, 1, 2]}
-            out_file:: '_output_file'
-            data_file:: 'path/to/data_file.nc'
-            trace_file:: 'path/to/trace_file.nc'
-            other_params_file:: 'path/to/param_file.txt'
-            scale_file:: 'path/to/scale_file.csv'
+    variables.txt:
+        y_filen:: 'filename.nc'
+        x_filen_list:: ['file1.nc', 'file2.nc', 'file3.nc']
+        CA_filen:: None
+        dir:: 'path/to/driving/data/'
+        filename_out:: '_filename_file_output'
+        dir_outputs:: 'path/to/outputs/'
+        subset_function:: function_name
+        subset_function_args:: {'function_arg': [0, 1, 2]}
+        out_file:: '_output_file'
+        data_file:: 'path/to/data_file.nc'
+        trace_file:: 'path/to/trace_file.nc'
+        other_params_file:: 'path/to/param_file.txt'
+        scale_file:: 'path/to/scale_file.csv'
     """
     variables = {}
 
@@ -336,11 +336,12 @@ def _select_post_param(trace: str) -> dict:
 
     Parameters
     ----------
-        trace: pymc netcdf trace file as filename or already opened
+    trace: str
+        pymc netcdf trace file as filename or already opened
 
     Returns
     -------
-        dict of paramater values with each item names after the parameter
+    dict of paramater values with each item names after the parameter
     """
 
     def _select_post_param_name(name: str) -> np.array:
@@ -367,19 +368,19 @@ def _construct_param_comb(
 
     Parameters
     ----------
-        i: int
-            index for the parameter to add.
-        params: list
-            List of input parameters.
-        params_names: list
-            List of input parameters' names.
-        extra_params: dict
-            Dictionary of extra parameters to be added to the dictionary.
+    i: int
+        index for the parameter to add.
+    params: list
+        List of input parameters.
+    params_names: list
+        List of input parameters' names.
+    extra_params: dict
+        Dictionary of extra parameters to be added to the dictionary.
 
     Returns
     -------
-        param_input: dict
-            Dictionary of paramater values.
+    param_input: dict
+        Dictionary of paramater values.
     """
     param_input = [
         param[i] if param.ndim == 1 else param[i, :] for param in params
@@ -412,30 +413,30 @@ def _read_variable_from_netcdf(
 
     Parameters
     ----------
-        filename: str
-            a string with filename or two element python list
-            containing the name of the file and the target variable name.
-            If just the string of "filename" assumes variable name is "variable"
-        directory: str
-            The directory the file is in. Path can be in "filename" and None
-            means no additional directory path needed.
-        subset_function: func or list of funcs
-            a function or list of functions to be applied to each data set.
-        subset_function_args: dict or list of dicts
-            If subset_function is a function, dict arguments for that function.
-            If subset_function is a list or dict containing arguments
-            for those functions in turn.
-        make_flat: bool
-            Should the output variable to flattened or remain cube
-        time_series: list
-            List comtaining range of years. If making flat and
-            returned a time series, checks if that time series contains year.
+    filename: str
+        a string with filename or two element python list
+        containing the name of the file and the target variable name.
+        If just the string of "filename" assumes variable name is "variable"
+    directory: str
+        The directory the file is in. Path can be in "filename" and None
+        means no additional directory path needed.
+    subset_function: func or list of funcs
+        a function or list of functions to be applied to each data set.
+    subset_function_args: dict or list of dicts
+        If subset_function is a function, dict arguments for that function.
+        If subset_function is a list or dict containing arguments
+        for those functions in turn.
+    make_flat: bool
+        Should the output variable to flattened or remain cube
+    time_series: list
+        List comtaining range of years. If making flat and
+        returned a time series, checks if that time series contains year.
 
     Returns
     -------
-        dataset: iris cube
-            if make_flat, a numpy vector of the target variable, otherwise
-            returns iris cube.
+    dataset: iris cube
+        if make_flat, a numpy vector of the target variable, otherwise
+        returns iris cube.
     """
     logger.info("Opening:")
     logger.info(filename)
@@ -555,39 +556,39 @@ def _read_all_data_from_netcdf(
 
     Parameters
     ----------
-        y_filename: list
-            a two element python list containing the name of the file and
-            the target variable name.
-        x_filename_list: list
-            a python list of filename containing the feature variables.
-        ca_filename: list
-            a python list of filename containing the area of the cover type.
-        y_threshold: float
-            if converting y into boolean, the threshold we use to split into
-            0's and 1's.
-        add_1s_columne: bool
-            useful for if using for regressions. Adds a variable
-            of just 1's t rperesent y = SUM(a_i * x_i) + c
-        x_normalise01: bool
-            If True, then x's are normalised between 0 and 1.
-        scalers: None or np.array
-            None or numpy array of shape 2 by n. columns of x.
-            Defines what scalers (min and max) to apply to each x column.
-            If None, doesn't apply anything.
-        check_mask: bool
-            If True, simple checks if there are any large
-            negtaive numbers and makes them out. Assunes that values < -9E9,
-            you dont want. This could be different in some circumstances.
-        frac_random_sample: int
-            fraction of data to be returned
-        see _read_variable_from_netcdf comments for *arg and **kw.
+    y_filename: list
+        a two element python list containing the name of the file and
+        the target variable name.
+    x_filename_list: list
+        a python list of filename containing the feature variables.
+    ca_filename: list
+        a python list of filename containing the area of the cover type.
+    y_threshold: float
+        if converting y into boolean, the threshold we use to split into
+        0's and 1's.
+    add_1s_columne: bool
+        useful for if using for regressions. Adds a variable
+        of just 1's t rperesent y = SUM(a_i * x_i) + c
+    x_normalise01: bool
+        If True, then x's are normalised between 0 and 1.
+    scalers: None or np.array
+        None or numpy array of shape 2 by n. columns of x.
+        Defines what scalers (min and max) to apply to each x column.
+        If None, doesn't apply anything.
+    check_mask: bool
+        If True, simple checks if there are any large
+        negtaive numbers and makes them out. Assunes that values < -9E9,
+        you dont want. This could be different in some circumstances.
+    frac_random_sample: int
+        fraction of data to be returned
+    see _read_variable_from_netcdf comments for *arg and **kw.
 
     Returns
     -------
-        y: np.array
-            a numpy array of the target variable.
-        x: np.array
-            an n-D numpy array of the feature variables.
+    y: np.array
+        a numpy array of the target variable.
+    x: np.array
+        an n-D numpy array of the feature variables.
     """
     y_var, time_points, extent = _read_variable_from_netcdf(
         *args,
@@ -707,9 +708,9 @@ class ConFire:
 
         Parameters
         ----------
-            params: dict or list of dict
-            inference: bool
-                Flag indicating to run inference or not.
+        params: dict or list of dict
+        inference: bool
+            Flag indicating to run inference or not.
         """
         self.inference = inference
         if self.inference:
@@ -762,15 +763,15 @@ class ConFire:
 
         Parameters
         ----------
-            data: numpck instance
-                Input drivers.
-            return_controls: bool
-            return_limitation: bool
+        data: numpck instance
+            Input drivers.
+        return_controls: bool
+        return_limitation: bool
 
         Returns
         -------
-            ba: numpck instance
-                Burnt area data.
+        ba: numpck instance
+            Burnt area data.
         """
 
         # finds controls
@@ -799,14 +800,14 @@ class ConFire:
 
             Parameters
             ----------
-                data: numpck instance
-                    Input data.
-                factor: float
-                    Exponential factor.
+            data: numpck instance
+                Input data.
+            factor: float
+                Exponential factor.
 
             Returns
             -------
-                Applied sigmoid function value.
+            Applied sigmoid function value.
             """
             if factor == 0:
                 return None
@@ -836,27 +837,27 @@ def _get_parameters(config: dict) -> tuple:
 
     Parameters
     ----------
-        config: dict
-            Dictionary from ESMValTool recipe.
+    config: dict
+        Dictionary from ESMValTool recipe.
 
     Returns
     -------
-        output_dir: str
-            Path to output directory.
-        params: list
-            List of parameters.
-        params_names: list
-            List of parameters names.
-        extra_params: dict
-            Dictionary of additional parameters to add to the output cubes.
-        driving_data: numpy.array or iris.cube
-            Object containing the concatenated drivers.
-        lmask: numpy.array
-            Land-sea mask.
-        eg_cube: iris.cube
-            Example of cube to be used to insert output data.
-        control_direction: list
-            List containing different experiment setups.
+    output_dir: str
+        Path to output directory.
+    params: list
+        List of parameters.
+    params_names: list
+        List of parameters names.
+    extra_params: dict
+        Dictionary of additional parameters to add to the output cubes.
+    driving_data: numpy.array or iris.cube
+        Object containing the concatenated drivers.
+    lmask: numpy.array
+        Land-sea mask.
+    eg_cube: iris.cube
+        Example of cube to be used to insert output data.
+    control_direction: list
+        List containing different experiment setups.
     """
     work_dir = config["work_dir"]
     confire_param = config["confire_param_dir"]
@@ -917,17 +918,17 @@ def _setup_cube_output(
 
     Parameters
     ----------
-        cube: iris cube
-            Input cube to modify.
-        output: str
-            Output variable contained in the cube.
-        provenance: dict
-            Dictionary w/ provenance record.
+    cube: iris cube
+        Input cube to modify.
+    output: str
+        Output variable contained in the cube.
+    provenance: dict
+        Dictionary w/ provenance record.
 
     Returns
     -------
-        cube: iris cube
-            Modified output cube.
+    cube: iris cube
+        Modified output cube.
     """
     # Default attributes to fill in
     parameter_dict = {
@@ -986,21 +987,21 @@ def diagnostic_run_confire(
 
     Parameters
     ----------
-        config: dict
-            Dictionary containing the ESMValTool recip configuration.
-        model_name: str
-            Model name to include in plots.
-        timerange: str
-            Time range of the input data to include in plots.
-        project: str or list of str
-            Project of the model data.
-        experiment: str or list of str
-            Experiment of the model data.
+    config: dict
+        Dictionary containing the ESMValTool recip configuration.
+    model_name: str
+        Model name to include in plots.
+    timerange: str
+        Time range of the input data to include in plots.
+    project: str or list of str
+        Project of the model data.
+    experiment: str or list of str
+        Experiment of the model data.
 
     Returns
     -------
-        figures: list
-            List of matplotlib figures produced for the burnt area results.
+    figures: list
+        List of matplotlib figures produced for the burnt area results.
     """
     # --------------------------------------------------------
     # This script runs the ConFire model using pre-generated parameter files.
@@ -1038,15 +1039,15 @@ def diagnostic_run_confire(
 
         Parameters
         ----------
-            param_in: dict
-                Dictionary of input parameters for the run.
-            coord: iris coord
-                Coordinate to add to the output cube.
+        param_in: dict
+            Dictionary of input parameters for the run.
+        coord: iris coord
+            Coordinate to add to the output cube.
 
         Returns
         -------
-            cube: iris cube
-                ConFire model output cube.
+        cube: iris cube
+            ConFire model output cube.
         """
         out = ConFire(param_in).burnt_area(driving_data)
         cube = _insert_data_into_cube(out, eg_cube, lmask)
