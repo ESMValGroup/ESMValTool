@@ -228,7 +228,7 @@ def load_data(cfg, metas):
     data = xr.Dataset({"var": var_data}, coords=coords)
     # loop over each cell (coord combination) and load data if existing
     for coord_tuple in itertools.product(*coords.values()):
-        selection = dict(zip(coords.keys(), coord_tuple))
+        selection = dict(zip(coords.keys(), coord_tuple, strict=True))
         data["var"].loc[selection] = open_file(metas, **selection)
     if cfg["default_split"] is None:
         cfg["default_split"] = data.coords[cfg["split_by"]].values[0]

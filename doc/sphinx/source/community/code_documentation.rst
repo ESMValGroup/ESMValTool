@@ -461,14 +461,11 @@ the following files:
 
 - ``environment.yml``
   contains dependencies that cannot be installed from
-  `PyPI <https://pypi.org/>`__/`Julia package registry <https://github.com/JuliaRegistries/General>`__
+  `PyPI <https://pypi.org/>`__
 - ``environment_osx.yml``
   contains development dependencies for MacOSX. Should be the same as ``environment.yml``,
   but currently without multi language support.
-- ``esmvaltool/install/Julia/Project.toml``
-  contains Julia dependencies that can be installed from the default Julia
-  package registry
-- ``setup.py``
+- ``pyproject.toml``
   contains all Python dependencies, regardless of their installation source
 
 Note that packages may have a different name on

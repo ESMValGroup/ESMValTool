@@ -1,0 +1,148 @@
+# ESMValTool
+---
+documentation:
+  title: Benchmarking of a single model for a region through extract_shape.
+  description: >
+    Benchmarking: annual cycle.
+  authors:
+    - lauer_axel
+    - bock_lisa
+    - hassler_birgit
+    - lindenlaub_lukas
+    - schlund_manuel
+    - weigel_katja
+  maintainer:
+    - lauer_axel
+  references:
+    - lauer25gmd
+  projects:
+    - dlrmabak
+
+
+datasets:
+  # Dataset to be benchmarked
+  - {dataset: MIROC6, grid: gn, benchmark_dataset: true, plot_label: 'MIROC6'}
+
+preprocessors:
+  pp_abs:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_shape:
+      shapefile: ar6
+      crop: true
+      decomposed: true
+      ids:
+        Name:
+          - N.Europe
+    climate_statistics:
+      period: monthly
+    area_statistics:
+      operator: mean
+
+  pp_abs_200:
+    extract_levels:
+      levels: 20000
+      scheme: linear
+      coordinate: air_pressure
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_shape:
+      shapefile: ar6
+      crop: true
+      decomposed: true
+      ids:
+        Name:
+          - N.Europe
+    climate_statistics:
+      period: monthly
+    area_statistics:
+      operator: mean
+
+
+diagnostics:
+  anncyc:
+    description: Plot global mean mean annual cycle for the given period including a reference dataset.
+    variables:
+      tas: &var_default_abs
+        start_year: 1980
+        end_year: 2009
+        preprocessor: pp_abs
+        project: CMIP6
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        reference_dataset: HadCRUT5
+        additional_datasets:
+          - {dataset: HadCRUT5, project: OBS, type: ground, version: 5.0.1.0-analysis,
+             tier: 2, reference_for_metric: true'}
+      pr:
+        <<: *var_default_abs
+        reference_dataset: GPCP-V2.3
+        additional_datasets:
+          - {dataset: GPCP-V2.3, project: obs4MIPs, tier: 1,
+             reference_for_metric: true'}
+      psl:
+        <<: *var_default_abs
+        reference_dataset: ERA-5
+        additional_datasets:
+          - {dataset: ERA-5, project: obs4MIPs, tier: 1,
+             reference_for_metric: true'}
+      hus_200:
+        <<: *var_default_abs
+        short_name: hus
+        reference_dataset: ERA5
+        preprocessor: pp_abs_200
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, reference_for_metric: true'}
+      ua_200:
+        <<: *var_default_abs
+        short_name: ua
+        reference_dataset: ERA-5
+        preprocessor: pp_abs_200
+        additional_datasets:
+          - {dataset: ERA-5, project: obs4MIPs, tier: 1,
+             reference_for_metric: true'}
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: variable_group
+        plots:
+          annual_cycle:
+            plot_kwargs:
+              default:
+                color: red
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 4
+              HadCRUT5:
+                color: black
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              ERA5:
+                color: black
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              ERA-5:
+                color: black
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              GPCP-V2.3:
+                color: black
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+            pyplot_kwargs:
+              title: '{long_name} N.Europe'

@@ -362,12 +362,16 @@ def prep_scatplot(coeftype, diags, defs, identifier, pdf):
     marker = cycle(defs["markerlist"])
 
     if coeftype == "prbias":
-        for prbias, rocoef in zip(diags["prbias"], diags["rocoef"]):
+        for prbias, rocoef in zip(
+            diags["prbias"], diags["rocoef"], strict=True
+        ):
             axs.scatter(prbias, rocoef, marker=next(marker))
         axs.set_xlabel("Relative bias of precipitation [%]")
         tag = "_pr-vs-ro"
     elif coeftype == "etcoef":
-        for etcoef, rocoef in zip(diags["etcoef"], diags["rocoef"]):
+        for etcoef, rocoef in zip(
+            diags["etcoef"], diags["rocoef"], strict=True
+        ):
             axs.scatter(etcoef, rocoef, marker=next(marker))
         axs.set_xlabel("Bias of ET coefficient [%]")
         tag = "_et-vs-ro"

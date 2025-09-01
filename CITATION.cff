@@ -90,6 +90,11 @@ authors:
     family-names: Billows
     given-names: Chris
   -
+    affiliation: "Met Office, UK"
+    family-names: Blockley
+    given-names: Ed
+    orcid: "https://orcid.org/0000-0002-0489-4238"
+  -
     affiliation: "DLR, Germany"
     family-names: Bock
     given-names: Lisa
@@ -169,6 +174,10 @@ authors:
     affiliation: "University of Bremen, Germany"
     family-names: Gier
     given-names: Bettina
+  -
+    affiliation: "University of Bremen, Germany"
+    family-names: Castellani
+    given-names: Giulia
   -
     affiliation: "Met Office, UK"
     family-names: Gillett
@@ -288,6 +297,10 @@ authors:
     family-names: Amarjiit
     given-names: Pandde
   -
+    affiliation: "Met Office, UK"
+    family-names: Parsons
+    given-names: Naomi
+  -
     affiliation: "BSC, Spain"
     family-names: Pérez-Zanón
     given-names: Núria
@@ -349,6 +362,10 @@ authors:
     family-names: Weigel
     given-names: Katja
     orcid: "https://orcid.org/0000-0001-6133-7801"
+  -
+    affiliation: "University of Bremen, Germany"
+    family-names: Schulze
+    given-names: Kirsten
   -
     affiliation: "DLR, Germany"
     family-names: Sarauer
