@@ -57,13 +57,6 @@ end
 
 
 begin
-  ; Get environment variables
-  if (isatt(diag_script_info, "plot_type")) then
-    file_type = diag_script_info@plot_type
-  else
-    file_type = "pdf"
-  end if
-
   ; Output netcdf directory
   work_dir = config_user_info@work_dir
   system("mkdir -p " + work_dir)
@@ -108,9 +101,9 @@ begin
   ; *********** PLOTTING ************
   ; Create plot variables
   outfile = var0 + "_ts_line_" + syears(0) + "_" + eyears(nperiods - 1)
-  wks_type = file_type
+  wks_type = 0
   wks_type@wkPaperSize = "A4"
-  wks = gsn_open_wks(wks_type, plot_dir + outfile)
+  wks = get_wks(wks_type, DIAG_SCRIPT, outfile)
   if(isatt(diag_script_info, "colormap")) then
     colormap = RGBtoCmap(diag_script_info@colormap)
   else
@@ -229,18 +222,17 @@ begin
   draw(wks)
   frame(wks)
 
-  log_info(" Wrote " + plot_dir + "/" + outfile + "." + file_type)
+  log_info(" Wrote " + wks@fullname)
 
   ; collect meta-data
   nc_file = datapath
-  plot_file = plot_dir + "/" + outfile + "." + file_type
   statistics = ("stddev")
   domains = ("global")
   plot_types = ("times")
   authors = (/"debeire_kevin"/)
   references = (/"tebaldi21esd"/)
   infiles = metadata_att_as_array(info_items, "filename")
-  log_provenance(nc_file, plot_file, caption, statistics, domains, \
+  log_provenance(nc_file, wks@fullname, caption, statistics, domains, \
                  plot_types, authors, references, infiles)
 
   leave_msg(DIAG_SCRIPT, "")

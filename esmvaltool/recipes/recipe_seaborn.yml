@@ -2,14 +2,14 @@
 # recipe_seaborn.yml
 ---
 documentation:
-  title: >
-    Create arbitrary Seaborn plots.
+  title: Example recipe for the Seaborn diagnostic.
 
   description: >
     This recipe showcases the use of the Seaborn diagnostic that provides a
     high-level interface to Seaborn for ESMValTool recipes. For this, the input
     data is arranged into a single `pandas.DataFrame`, which is then used as
-    input for the Seaborn function defined by the option `seaborn_func`.
+    input for the Seaborn function defined by the option `seaborn_func`. With
+    the Seaborn diagnostic, arbitrary Seaborn plots can be created.
 
   authors:
     - schlund_manuel
@@ -72,6 +72,8 @@ diagnostics:
       plot:
         script: seaborn_diag.py
         seaborn_func: relplot
+        reset_index: true
+        write_netcdf: true
         seaborn_kwargs:
           x: latitude
           y: zonal_mean_ta
@@ -117,6 +119,8 @@ diagnostics:
       plot:
         script: seaborn_diag.py
         seaborn_func: displot
+        reset_index: true
+        write_netcdf: true
         seaborn_kwargs:
           kind: hist
           stat: density

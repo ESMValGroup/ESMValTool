@@ -49,6 +49,7 @@ diagnostics:
     scripts:
       annual_eady_growth_rate:
         script: primavera/eady_growth_rate/eady_growth_rate.py
+        no_distributed: true
         time_statistic: 'annual_mean'
 
 
@@ -63,6 +64,7 @@ diagnostics:
     scripts:
       summer_eady_growth_rate:
         script: primavera/eady_growth_rate/eady_growth_rate.py
+        no_distributed: true
         time_statistic: 'seasonal_mean'
 
   winter_egr:
@@ -76,5 +78,6 @@ diagnostics:
     scripts:
       winter_eady_growth_rate:
         script: primavera/eady_growth_rate/eady_growth_rate.py
+        no_distributed: true
         time_statistic: 'seasonal_mean'
         plot_levels: [70000]

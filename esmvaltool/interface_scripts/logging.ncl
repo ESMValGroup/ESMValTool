@@ -61,9 +61,9 @@ procedure log_debug(output_string[*]:string)
 ;    output_string: the text to be output as message on screen
 ;
 ; Description
-;    Write a debug message to the log file (only if log_level = debug in
-;    config-user.yml). If the input is an array, each element will be
-;    written on different lines.
+;    Write a debug message to the log file (only if log_level = debug in the
+;    configuration). If the input is an array, each element will be written on
+;    different lines.
 ;
 ; Caveats
 ;
@@ -371,7 +371,7 @@ begin
     original_entry = outstring
     do outfile_idx = 0, dimsizes(all_outfiles) - 1
       file_to_add := all_outfiles(outfile_idx)
-      if (.not. fileexists(outfile)) then
+      if (.not. fileexists(file_to_add)) then
         error_msg("f", scriptname, funcname, "outfile (path to figure) '" + \
                   file_to_add + "' does not exist (for PNGs, this " + \
                   "function also searches for 'FILE.000001.png', " + \

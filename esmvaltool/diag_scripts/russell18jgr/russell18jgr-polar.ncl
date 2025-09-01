@@ -77,7 +77,7 @@ end
 
 begin
 
-  plotpath = config_user_info@plot_dir + "/Russell_polar-contour_" + var0 + \
+  plotpath = config_user_info@plot_dir + "Russell_polar-contour_" + var0 + \
      "_" + sprinti("%0.4i", min(toint(start_years_data))) + "-" \
      + sprinti("%0.4i", max(toint(end_years_data)))
 
@@ -231,6 +231,13 @@ begin
 
     ncdf_outfile = ncdf_write(dataset, nc_filename)
     delete(dataset)
+  end do
+
+    ; Draw the panel
+    pres = True
+    pres@gsnPanelLabelBar = False
+    outfile = panelling(wks, plots, nvert, nhori, pres)
+
     log_provenance(ncdf_outfile, \
                    plotpath + "." + output_type(), \
                    "Russell et al 2018 polar plot " + var0, \
@@ -239,11 +246,5 @@ begin
                    "geo", \
                    "russell_joellen", \
                    "russell18jgr", \
-                   inputfile_paths(iii))
-  end do
-
-    ; Draw the panel
-    pres = True
-    pres@gsnPanelLabelBar = False
-    outfile = panelling(wks, plots, nvert, nhori, pres)
+                   inputfile_paths)
 end
