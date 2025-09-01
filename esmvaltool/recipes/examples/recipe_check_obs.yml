@@ -1077,6 +1077,19 @@ diagnostics:
          type: clim, version: 2013v2, start_year: 2000, end_year: 2000}
     scripts: null
 
+  Yang2020:
+    description: Yang2020 check
+    variables:
+      areacella:
+        mip: fx
+      dpn2o:
+        mip: Omon
+      n2oflux:
+        mip: Omon
+    additional_datasets:
+      - {project: OBS6, dataset: Yang2020, tier: 2, type: reanaly, version: 1}
+    scripts: null
+
 
   ### TIER 3 ##################################################################
 
