@@ -318,7 +318,7 @@ def main(cfg: dict) -> None:
                 Path(cfg["auxiliary_data_dir"]) / cfg["confire_param"]
             )
     else:
-        cfg["confire_param"] = diag_dir / "parameter_files/"
+        cfg["confire_param"] = "https://zenodo.org/records/14917245"
     cfg["confire_param_dir"] = get_parameter_directory(cfg)
 
     # Removing or not the computed vapor pressure deficit files

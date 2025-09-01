@@ -22,9 +22,11 @@ corresponds to the unmodelled processed influencing to fire occurrence.
 The ESMValTool diagnostic includes only the relevant part of the evaluation code
 (see https://github.com/douglask3/Bayesian_fire_models/blob/AR7_REF/fire_model/ConFire.py
 for now) as the model run is done offline beforehand. The corresponding result
-files are made available through a Zenodo archive (will be published with DOI
-10.5281/zenodo.14917244) which can be retrieved inside the diagnostic.
-The other option is to provide a local directory which contains the necessary model files.
+files are made available through a Zenodo archive which can be retrieved inside
+the diagnostic. The archive is published under the DOI 10.5281/zenodo.14917244,
+but a specific version of the files can be specified using the corresponding DOI,
+e.g. the default link to https://zenodo.org/records/14917245. The other option
+is to provide a local directory which contains the necessary model files.
 
 The ConFire model relies on a variety of observational datasets (see references):
 
@@ -50,9 +52,6 @@ Diagnostics are stored in esmvaltool/diag_scripts/fire/:
 * fire_diagnostic.py: main diagnostic script calling a util function from diagnostic_run_ConFire.py.
 * diagnostic_run_ConFire.py: script containing utils functions to run the ConFire model.
 
-Additional files necessary for the ConFire model evaluation are stored in
-esmvaltool/diag_scripts/fire/parameter_files/ for now.
-
 
 User settings in recipe
 -----------------------
@@ -70,7 +69,7 @@ User settings in recipe
      the ConFire model or Zenodo URL to retrieve files from a Zenodo archive.
      If custom files are used, the corresponding directory needs to be present
      inside the auxiliary data directory defined inside the user configuration.
-     This defaults to the files present in the diagnostic directory otherwise.
+     This defaults to the original Zenodo archive otherwise.
    * remove_vpd_files: Removing or not the computed vapor pressure deficit files.
      It will only apply if the vapor pressure deficit is part of var_order.
      This defaults to False.
