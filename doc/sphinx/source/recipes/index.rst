@@ -122,6 +122,7 @@ Land
    recipe_landcover
    recipe_anav13jclim
    recipe_runoff_et
+   recipe_ref_fire
 
 Ocean
 ^^^^^
