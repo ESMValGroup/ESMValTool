@@ -1,0 +1,218 @@
+# ESMValTool
+# recipe_bock24acp_fig3-4_maps.yml
+# Note: The variables LWP and IWP are commented out at the moment as a different
+#       standard name for this variables in CMIP5 and CMIP6 gives an error. Iris
+#       is working on a solution for this problem.
+---
+documentation:
+  title: Cloud properties regarding ECS (geographical maps).
+
+  description: |
+    Geographical maps of cloud properties,  models are grouped in
+    three groups regarding their ECS.
+
+  authors:
+    - bock_lisa
+
+  maintainer:
+    - bock_lisa
+
+  references:
+    - bock24acp
+
+  projects:
+    - cmug
+    - esm2025
+
+
+YEARS: &years_hist
+  start_year: 1985
+  end_year: 2004
+
+YEARS_scen: &years_scen
+  start_year: 2081
+  end_year: 2100
+
+
+DATASETS_ECS_HIGH: &datasets_ecs_high
+  # CMIP6
+  - {dataset: CanESM5, grid: gn}
+  - {dataset: CESM2, grid: gn, ensemble: r4i1p1f1}
+  - {dataset: CESM2-WACCM, grid: gn, institute: NCAR}
+  - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
+  - {dataset: CNRM-ESM2-1, ensemble: r1i1p1f2}
+  - {dataset: HadGEM3-GC31-LL, grid: gn, ensemble: r1i1p1f3}
+  - {dataset: HadGEM3-GC31-MM, grid: gn, ensemble: r1i1p1f3}
+  - {dataset: IPSL-CM6A-LR}
+  - {dataset: KACE-1-0-G}
+  - {dataset: NESM3, grid: gn}
+  - {dataset: TaiESM1, grid: gn}
+  - {dataset: UKESM1-0-LL, ensemble: r1i1p1f2, grid: gn}
+  # CMIP5
+  - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: HadGEM2-ES, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: IPSL-CM5A-MR, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: MIROC-ESM, ensemble: r1i1p1, project: CMIP5}
+
+DATASETS_ECS_MED: &datasets_ecs_med
+  # CMIP6
+  - {dataset: BCC-CSM2-MR, grid: gn}
+  - {dataset: CMCC-CM2-SR5, grid: gn}
+  - {dataset: CMCC-ESM2, grid: gn}
+  - {dataset: FGOALS-f3-L}
+  - {dataset: FGOALS-g3, grid: gn}
+  - {dataset: GISS-E2-1-H, grid: gn}
+  - {dataset: MPI-ESM1-2-HR, grid: gn}
+  - {dataset: MPI-ESM1-2-LR, grid: gn}
+  - {dataset: MRI-ESM2-0, grid: gn}
+  # CMIP5
+  - {dataset: ACCESS1-0, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: ACCESS1-3, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: BNU-ESM, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: CanESM2, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: CCSM4, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: FGOALS-g2, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: GFDL-CM3, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: MPI-ESM-LR, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: MPI-ESM-MR, ensemble: r1i1p1, project: CMIP5}
+
+DATASETS_ECS_LOW: &datasets_ecs_low
+  # CMIP6
+  - {dataset: CAMS-CSM1-0, grid: gn}
+  - {dataset: GISS-E2-1-G, grid: gn}
+  - {dataset: MIROC6, grid: gn}
+  - {dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn}
+  - {dataset: NorESM2-LM, grid: gn, institute: NCC}
+  - {dataset: NorESM2-MM, grid: gn, institute: NCC}
+  # CMIP5
+  - {dataset: bcc-csm1-1, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: bcc-csm1-1-m, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: GFDL-ESM2G, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: GFDL-ESM2M, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: GISS-E2-H, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: GISS-E2-R, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: inmcm4, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: MIROC5, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: MRI-CGCM3, ensemble: r1i1p1, project: CMIP5}
+  - {dataset: NorESM1-M, ensemble: r1i1p1, project: CMIP5}
+
+
+preprocessors:
+
+  lat_lon_mmm:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    multi_model_statistics:
+      span: full
+      statistics: [mean]
+    climate_statistics:
+      operator: mean
+
+  lat_lon:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    climate_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  # Figure 3abc
+  clt_lat_lon: &lat_lon_diag
+    description: comparison of geographical maps
+    variables:
+      ECS_high: &var_clt
+        short_name: clt
+        preprocessor: lat_lon_mmm
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        ensemble: r1i1p1f1
+        grid: gr
+        <<: *years_hist
+        additional_datasets: *datasets_ecs_high
+      ECS_med:
+        <<: *var_clt
+        additional_datasets: *datasets_ecs_med
+      ECS_low:
+        <<: *var_clt
+        additional_datasets: *datasets_ecs_low
+    scripts:
+      lat_lon:
+        script: clouds/clouds_ecs_groups_maps.py
+        group_by: variable_group
+        plot_each_model: false
+        reference: false
+
+
+  # Figure 3def
+        #  lwp_lat_lon:
+        #    <<: *lat_lon_diag
+        #    variables:
+        #      ECS_high:
+        #        <<: *var_clt
+        #        short_name: lwp
+        #        derive: true
+        #        additional_datasets: *datasets_ecs_high
+        #      ECS_med:
+        #        <<: *var_clt
+        #        short_name: lwp
+        #        derive: true
+        #        additional_datasets: *datasets_ecs_med
+        #      ECS_low:
+        #        <<: *var_clt
+        #        short_name: lwp
+        #        derive: true
+        #        additional_datasets: *datasets_ecs_low
+
+
+  # Figure 3ghi
+        #  iwp_lat_lon:
+        #    <<: *lat_lon_diag
+        #    variables:
+        #      ECS_high:
+        #        <<: *var_clt
+        #        short_name: clivi
+        #        additional_datasets: *datasets_ecs_high
+        #      ECS_med:
+        #        <<: *var_clt
+        #        short_name: clivi
+        #        additional_datasets: *datasets_ecs_med
+        #      ECS_low:
+        #        <<: *var_clt
+        #        short_name: clivi
+        #        additional_datasets: *datasets_ecs_low
+
+
+  # Figure 4
+  netcre_lat_lon: &lat_lon_cre
+    description: comparison of geographical maps
+    variables:
+      ECS_high: &var_cre
+        <<: *var_clt
+        short_name: netcre
+        derive: true
+        additional_datasets: *datasets_ecs_high
+      ECS_med:
+        <<: *var_cre
+        additional_datasets: *datasets_ecs_med
+      ECS_low:
+        <<: *var_cre
+        additional_datasets: *datasets_ecs_low
+      OBS:
+        <<: *var_cre
+        preprocessor: lat_lon
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: OBS, type: sat, version: Ed4.2,
+             tier: 2, start_year: 2001, end_year: 2022}
+    scripts:
+      lat_lon:
+        script: clouds/clouds_ecs_groups_maps.py
+        group_by: variable_group
+        plot_each_model: false
+        reference: true

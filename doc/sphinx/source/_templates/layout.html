@@ -1,0 +1,47 @@
+{% extends '!layout.html' %}
+
+{% block footer %}
+<head>
+   <script type="text/javascript">
+     function mail(user,domain,mailbody)
+        {
+                if (!domain) {
+                        domain="dlr.de";
+                }
+		if (!mailbody){
+			mailbody=""
+		}
+                url="mail"+"to:"+user+"@"+domain+"?body="+mailbody;
+                window.location.href=url;
+        }
+    </script>
+</head>
+
+<style>
+table, th, td {
+  padding: 5px;
+}
+table {
+  border-spacing: 5px;
+}
+</style>
+
+ <table>
+  <tr>
+    <th>Contact</th>
+    <th>Impressum</th>
+<!--    <th>Privacy</th>-->
+    <th>Terms of use</th>
+    <th>Acknowledgements</th>
+  </tr>
+  <tr>
+     <td><p style="font-size:95%;"><a href="javascript:mail('birgit.hassler','dlr.de')">Birgit Hassler (Project Co-PI)</a><br>
+        <a href="javascript:mail('axel.lauer','dlr.de')">Axel Lauer (Core Developer)</a><br></p></td>
+    <td><p style="font-size:95%;"><a href="https://esmvaltool.org/legal_notice/">Legal Notice</a></p></td>
+<!--    <td><p style="font-size:95%;"><a href="https://esmvaltool.org/privacy/">Privacy Notice</a></p></td>-->
+    <td><p style="font-size:95%;"><a href="https://esmvaltool.org/terms_of_use/">Terms of use</a></p></td>
+    <td><p style="font-size:95%;"><a href="https://esmvaltool.org/acknowledgements/">ESMValTool Funding</a></p></td>
+  </tr>
+</table>
+
+{% endblock %}

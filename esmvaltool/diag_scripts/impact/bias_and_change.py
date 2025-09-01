@@ -1,4 +1,5 @@
 """Calculate and plot bias and change for each model."""
+
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -24,17 +25,17 @@ logger = logging.getLogger(Path(__file__).stem)
 def log_provenance(filename, ancestors, caption, cfg):
     """Create a provenance record for the output file."""
     provenance = {
-        'caption': caption,
-        'domains': ['reg'],
-        'authors': ['kalverla_peter'],
-        'projects': ['isenes3'],
-        'ancestors': ancestors,
+        "caption": caption,
+        "domains": ["reg"],
+        "authors": ["kalverla_peter"],
+        "projects": ["isenes3"],
+        "ancestors": ancestors,
     }
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance)
 
 
-def make_standard_calendar(xrda: 'xr.DataArray'):
+def make_standard_calendar(xrda: "xr.DataArray"):
     """Make sure time coordinate uses the default calendar.
 
     Workaround for incompatible calendars 'standard' and 'no-leap'.
@@ -42,7 +43,7 @@ def make_standard_calendar(xrda: 'xr.DataArray'):
     """
     try:
         years = xrda.time.dt.year.values
-        xrda['time'] = [datetime(year, 7, 1) for year in years]
+        xrda["time"] = [datetime(year, 7, 1) for year in years]
     except TypeError:
         # Time dimension is 0-d array
         pass
@@ -62,12 +63,12 @@ def load_data(metadata: list):
     ancestors = []
 
     for infodict in metadata:
-        if infodict.get('ensemble') is not None:
+        if infodict.get("ensemble") is not None:
             alias = "{project}_{dataset}_{ensemble}".format(**infodict)
         else:
-            alias = infodict['alias']
-        input_file = infodict['filename']
-        short_name = infodict['short_name']
+            alias = infodict["alias"]
+        input_file = infodict["filename"]
+        short_name = infodict["short_name"]
 
         xrds = xr.open_dataset(input_file)
         xrda = xrds[short_name]
@@ -82,30 +83,31 @@ def load_data(metadata: list):
         ancestors.append(input_file)
 
     # Combine along a new dimension
-    data_array = xr.concat(data_arrays, dim='dataset')
-    data_array['dataset'] = identifiers
+    data_array = xr.concat(data_arrays, dim="dataset")
+    data_array["dataset"] = identifiers
 
     return data_array, ancestors
 
 
-def area_weighted_mean(data_array: 'xr.DataArray') -> 'xr.DataArray':
+def area_weighted_mean(data_array: "xr.DataArray") -> "xr.DataArray":
     """Calculate area mean weighted by the latitude."""
     weights_lat = np.cos(np.radians(data_array.lat))
-    means = data_array.weighted(weights_lat).mean(dim=['lat', 'lon', 'time'])
+    means = data_array.weighted(weights_lat).mean(dim=["lat", "lon", "time"])
 
     return means
 
 
-def calculate_bias(model_data: 'xr.DataArray',
-                   obs_data: 'xr.DataArray') -> 'xr.DataArray':
+def calculate_bias(
+    model_data: "xr.DataArray", obs_data: "xr.DataArray"
+) -> "xr.DataArray":
     """Calculate area weighted RMSD with respect to (mean of) observations."""
-    if len(obs_data['dataset']) > 1:
-        obs_data = obs_data.mean(dim='dataset')
+    if len(obs_data["dataset"]) > 1:
+        obs_data = obs_data.mean(dim="dataset")
     else:
         obs_data = obs_data.squeeze()
 
     diff = model_data - obs_data
-    bias = area_weighted_mean(diff**2)**0.5
+    bias = area_weighted_mean(diff**2) ** 0.5
 
     bias.attrs = model_data.attrs
     return bias
@@ -120,11 +122,11 @@ def plot_scatter(tidy_df, ancestors, cfg):
         hue="dataset",
         col="variable",
         facet_kws=dict(sharex=False, sharey=False),
-        kind='scatter',
+        kind="scatter",
     )
 
-    filename = get_plot_filename('bias_vs_change', cfg)
-    grid.fig.savefig(filename, bbox_inches='tight')
+    filename = get_plot_filename("bias_vs_change", cfg)
+    grid.fig.savefig(filename, bbox_inches="tight")
 
     caption = "Bias and change for each variable"
     log_provenance(filename, ancestors, caption, cfg)
@@ -136,8 +138,8 @@ def plot_table(dataframe, ancestors, cfg):
     pd.plotting.table(axes, dataframe.reset_index().round(2))
     axes.set_axis_off()
 
-    filename = get_plot_filename('table', cfg)
-    fig.savefig(filename, bbox_inches='tight')
+    filename = get_plot_filename("table", cfg)
+    fig.savefig(filename, bbox_inches="tight")
 
     caption = "Bias and change for each variable"
     log_provenance(filename, ancestors, caption, cfg)
@@ -149,30 +151,21 @@ def plot_htmltable(dataframe, ancestors, cfg):
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/style.html
     """
     styles = [
-        {
-            "selector": ".index_name",
-            "props": [("text-align", "right")]
-        },
-        {
-            "selector": ".row_heading",
-            "props": [("text-align", "right")]
-        },
-        {
-            "selector": "td",
-            "props": [("padding", "3px 25px")]
-        },
+        {"selector": ".index_name", "props": [("text-align", "right")]},
+        {"selector": ".row_heading", "props": [("text-align", "right")]},
+        {"selector": "td", "props": [("padding", "3px 25px")]},
     ]
 
-    styled_table = dataframe\
-        .unstack('variable')\
-        .style\
-        .set_table_styles(styles)\
-        .background_gradient(cmap='RdYlGn', low=0, high=1, axis=0)\
-        .format("{:.2e}", na_rep="-")\
+    styled_table = (
+        dataframe.unstack("variable")
+        .style.set_table_styles(styles)
+        .background_gradient(cmap="RdYlGn", low=0, high=1, axis=0)
+        .format("{:.2e}", na_rep="-")
         .to_html()
+    )
 
-    filename = get_diagnostic_filename('bias_vs_change', cfg, extension='html')
-    with open(filename, 'w') as htmloutput:
+    filename = get_diagnostic_filename("bias_vs_change", cfg, extension="html")
+    with open(filename, "w") as htmloutput:
         htmloutput.write(styled_table)
 
     caption = "Bias and change for each variable"
@@ -182,11 +175,11 @@ def plot_htmltable(dataframe, ancestors, cfg):
 def make_tidy(dataset):
     """Convert xarray data to tidy dataframe."""
     dataframe = dataset.rename(
-        tas='Temperature (K)',
-        pr='Precipitation (kg/m2/s)',
+        tas="Temperature (K)",
+        pr="Precipitation (kg/m2/s)",
     ).to_dataframe()
-    dataframe.columns.name = 'variable'
-    tidy_df = dataframe.stack('variable').unstack('metric')
+    dataframe.columns.name = "variable"
+    tidy_df = dataframe.stack("variable").unstack("metric")
 
     return tidy_df
 
@@ -194,20 +187,22 @@ def make_tidy(dataset):
 def save_csv(dataframe, ancestors, cfg):
     """Save output for use in Climate4Impact preview page."""
     # modify dataframe columns
-    dataframe = dataframe.unstack('variable')
-    dataframe.columns = ['tas_bias', 'pr_bias', 'tas_change', 'pr_change']
+    dataframe = dataframe.unstack("variable")
+    dataframe.columns = ["tas_bias", "pr_bias", "tas_change", "pr_change"]
     project_model_member = np.array(
-        [x.split('_') for x in dataframe.index.values])
+        [x.split("_") for x in dataframe.index.values]
+    )
 
     # metadata in separate columns
-    dataframe[['project', 'member',
-               'model']] = project_model_member[:, [0, -1, 1]]
+    dataframe[["project", "member", "model"]] = project_model_member[
+        :, [0, -1, 1]
+    ]
 
     # kg/m2/s to mm/day
-    dataframe[['pr_bias', 'pr_change']] *= 24 * 60 * 60
+    dataframe[["pr_bias", "pr_change"]] *= 24 * 60 * 60
 
     # save
-    filename = get_diagnostic_filename('recipe_output', cfg, extension='csv')
+    filename = get_diagnostic_filename("recipe_output", cfg, extension="csv")
     caption = "Bias and change for each variable"
     dataframe.to_csv(filename)
     log_provenance(filename, ancestors, caption, cfg)
@@ -215,42 +210,44 @@ def save_csv(dataframe, ancestors, cfg):
 
 def main(cfg):
     """Calculate, visualize and save the bias and change for each model."""
-    metadata = cfg['input_data'].values()
-    grouped_metadata = group_metadata(metadata, 'variable_group')
+    metadata = cfg["input_data"].values()
+    grouped_metadata = group_metadata(metadata, "variable_group")
 
     biases = {}
     changes = {}
     ancestors = []
     for group, metadata in grouped_metadata.items():
-
-        model_metadata = select_metadata(metadata, tag='model')
+        model_metadata = select_metadata(metadata, tag="model")
         model_data, model_ancestors = load_data(model_metadata)
         ancestors.extend(model_ancestors)
 
         variable = model_data.name
 
-        if group.endswith('bias'):
-            obs_metadata = select_metadata(metadata, tag='observations')
+        if group.endswith("bias"):
+            obs_metadata = select_metadata(metadata, tag="observations")
             obs_data, obs_ancestors = load_data(obs_metadata)
             ancestors.extend(obs_ancestors)
 
             bias = calculate_bias(model_data, obs_data)
             biases[variable] = bias
 
-        elif group.endswith('change'):
+        elif group.endswith("change"):
             changes[variable] = model_data
 
         else:
             logger.warning(
                 "Got input for variable group %s"
-                " but I don't know what to do with it.", group)
+                " but I don't know what to do with it.",
+                group,
+            )
 
     # Combine all variables
     bias = xr.Dataset(biases)
     change = xr.Dataset(changes)
-    combined = xr.concat([bias, change], dim='metric')
-    combined['metric'] = [
-        'Bias (RMSD of all gridpoints)', 'Mean change (Future - Reference)'
+    combined = xr.concat([bias, change], dim="metric")
+    combined["metric"] = [
+        "Bias (RMSD of all gridpoints)",
+        "Mean change (Future - Reference)",
     ]
 
     tidy_df = make_tidy(combined)
@@ -261,6 +258,6 @@ def main(cfg):
     return
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with run_diagnostic() as config:
         main(config)

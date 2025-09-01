@@ -1,34 +1,35 @@
 ---
 # Common global attributes for Cmorizer output
 
-
-# Input
-# CDR-2
-filename: 'ESACCI-WATERVAPOUR-L3S-TCWV-*-05deg-{year}{month}-fv3.1.nc'
-# CDR-1
-# filename: 'dataset3_1/CDR-1/monthlies/ESACCI-WATERVAPOUR-L3?-TCWV-*-05deg-{year}{month}-fv3.1.nc'
 attributes:
   dataset_id: ESACCI-WATERVAPOUR
-  # CDR-2
-  version: 'CDR2-L3S-05deg_fv3.1'
-  # CDR-1
-  # version: 'CDR1-L3-05deg_fv3.1'
+  version: CDR2-L3-COMBI-05deg-fv3.1
   tier: 3
   modeling_realm: sat
-  project_id: OBS
-  source: "ftp.brockmann-consult.de, access currently restricted"
+  project_id: OBS6
+  source: https://wui.cmsaf.eu/safira/action/viewDoiDetails?acronym=COMBI_V001
   reference: ["esacci-watervapour"]
-  comment: "Preliminary data."
+  comment: "This CMORizer is for the CDR2 version of dataset (global coverage).
+            Download is possible after registration and ordering of the data."
 
 # Variables to cmorize (here use only filename prefix)
 variables:
-  prw:
+# monthly frequency
+  prw_mon:
+    short_name: prw
     mip: Amon
     raw: tcwv
-    # Output automatially added: Amon_<var>_200910-200910.nc
-    # CDR-2
-    file: OBS_ESACCI-WATERVAPOUR-CDR2-L3S-TCWV-05deg
-    # CDR-1
-    # file: OBS_ESACCI-WATERVAPOUR-CDR1-L3-TCWV-05deg
-    start_year: 2003
+    frequency: mon
+    filename: HTWmm{year}*000000313WVCCI01GL.nc
+    start_year: 2002
+    end_year: 2017
+
+# daily frequency
+  prw_day:
+    short_name: prw
+    mip: Eday
+    raw: tcwv
+    frequency: day
+    filename: HTWdm{year}*000000313WVCCI01GL.nc
+    start_year: 2002
     end_year: 2017

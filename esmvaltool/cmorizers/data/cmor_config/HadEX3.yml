@@ -1,0 +1,65 @@
+---
+filename: 'HadEX3_{raw}_{raw_frequency}.nc'
+
+# Common global attributes for CMORizer output
+attributes:
+  dataset_id: HadEX3
+  version: v3.0.4
+  tier: 2
+  modeling_realm: ground
+  project_id: OBS6
+  source: https://www.metoffice.gov.uk/hadobs/hadex3/download.html
+  reference: 'hadex3'
+  comment: 'ETCCDI (Expert Team on Climate Change Detection and Indices)'
+
+# Variables to cmorize
+variables:
+  txx_yr:
+    short_name: txx
+    raw: TXx
+    raw_units: degrees_C
+    raw_frequency: ANN
+    mip: yr
+  txx_mon:
+    short_name: txx
+    raw: TXx
+    raw_units: degrees_C
+    raw_frequency: MON
+    mip: Amon
+  tnn_yr:
+    short_name: tnn
+    raw: TNn
+    raw_units: degrees_C
+    raw_frequency: ANN
+    mip: yr
+  tnn_mon:
+    short_name: tnn
+    raw: TNn
+    raw_units: degrees_C
+    raw_frequency: MON
+    frequency: mon
+    mip: Amon
+  rx1day_yr:
+    short_name: rx1day
+    raw: Rx1day
+    raw_units: mm
+    raw_frequency: ANN
+    mip: yr
+  rx1day_mon:
+    short_name: rx1day
+    raw: Rx1day
+    raw_units: mm
+    raw_frequency: MON
+    mip: Amon
+  rx5day_yr:
+    short_name: rx5day
+    raw: Rx5day
+    raw_units: mm
+    raw_frequency: ANN
+    mip: yr
+  rx5day_mon:
+    short_name: rx5day
+    raw: Rx5day
+    raw_units: mm
+    raw_frequency: MON
+    mip: Amon

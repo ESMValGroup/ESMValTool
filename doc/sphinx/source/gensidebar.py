@@ -10,9 +10,9 @@ import os
 def _write_if_changed(fname, contents):
     """Write/update file only if changed."""
     try:
-        with open(fname, "r") as stream:
+        with open(fname) as stream:
             old_contents = stream.read()
-    except IOError:
+    except OSError:
         old_contents = ""
 
     if old_contents != contents:
@@ -38,19 +38,19 @@ def generate_sidebar(conf, conf_api):
     def _endl():
         lines.append("")
 
-    def _write(project, desc, link, mapping=conf['intersphinx_mapping']):
+    def _write(project, desc, link, mapping=conf["intersphinx_mapping"]):
         if project != conf_api:
             if do_gen:
                 args = desc, mapping[project][0], link
-                lines.append("    %s <%s%s.html>" % args)
+                lines.append("    {} <{}{}.html>".format(*args))
         else:
             args = desc, link
-            lines.append("    %s <%s>" % args)
+            lines.append("    {} <{}>".format(*args))
 
     def _header(project, text):
         if project == conf_api or do_gen:
             lines.extend([".. toctree::", "   :maxdepth: 2"])
-            lines.extend(["   :caption: %s" % text, ""])
+            lines.extend([f"   :caption: {text}", ""])
 
     #
     # Specify the sidebar contents here
@@ -61,11 +61,11 @@ def generate_sidebar(conf, conf_api):
     _write("esmvaltool", "ESMValTool Functionalities", "functionalities")
     _write("esmvaltool", "Getting started", "quickstart/index")
     _write("esmvaltool", "Gallery", "gallery")
-    _write("esmvaltool", "Available recipes", "recipes/index")
+    _write("esmvaltool", "Recipes", "recipes/index")
     _write("esmvaltool", "Obtaining input data", "input")
     _write("esmvaltool", "Making a recipe or diagnostic", "develop/index")
     _write("esmvaltool", "Contributing to the community", "community/index")
-    _write("esmvaltool", "Utilities", "utils")
+    _write("esmvaltool", "Utilities", "utils/utils")
     _write("esmvaltool", "Diagnostics API Reference", "api/esmvaltool")
     _write("esmvaltool", "Frequently Asked Questions", "faq")
     _write("esmvaltool", "Changelog", "changelog")
