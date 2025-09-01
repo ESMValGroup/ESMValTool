@@ -581,7 +581,10 @@ def _read_all_data_from_netcdf(
         you dont want. This could be different in some circumstances.
     frac_random_sample: int
         fraction of data to be returned
-    see _read_variable_from_netcdf comments for *arg and **kw.
+    args: tuple
+        See _read_variable_from_netcdf comments.
+    kw: dict
+        See _read_variable_from_netcdf comments.
 
     Returns
     -------
@@ -703,8 +706,7 @@ class ConFire:
         *,
         inference: bool = False,
     ) -> None:
-        """
-        Initalise parameters and calculates the key variables.
+        """Initalise parameters and calculates the key variables.
 
         Parameters
         ----------

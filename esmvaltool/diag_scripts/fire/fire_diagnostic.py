@@ -133,6 +133,7 @@ def download_files_from_zenodo(
                 with Path.open(
                     file_path,
                     mode="wb",
+                    encoding="utf-8",
                 ) as file:
                     file.write(file_response.content)
                 logger.info("Downloaded %s to %s.", file_name, output_dir)
