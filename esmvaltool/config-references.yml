@@ -30,6 +30,12 @@ authors:
     email: diego.cammarano@dlr.de
     github: diegokam
     orcid:
+  castellani_giulia:
+    name: Castellani, Giulia
+    institute: University of Bremen
+    email: giulia.castellani@uni-bremen.de
+    github: giuliacast
+    orcid: https://orcid.org/0000-0001-6151-015X
   debeire_kevin:
     name: Debeire, Kevin
     institute: DLR, Germany
@@ -527,6 +533,11 @@ authors:
     institute: DLR, Germany
     orcid:
     github: ellensarauer
+  schulze_kirsten:
+    name: Schulze, Kirsten
+    institute: Uni Bremen, Germany
+    orcid:
+    github: kirsy05
   serva_federico:
     name: Serva, Federico
     institute: CNR, Italy
