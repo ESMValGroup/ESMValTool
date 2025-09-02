@@ -51,7 +51,7 @@
 [runtime]
     [[root]]
         script = rose task-run
-        env-script = "eval $(rose task-env)"
+        env-script = "eval $(rose task-env --cycle-offset=P1D)"
         [[[environment]]]
             ENV_NAME = {{ ENV_NAME }}
             USER_CONFIG_DIR = ${ROSE_DATAC}/config_dir
@@ -153,12 +153,14 @@
 
     [[generate_report]]
         [[[environment]]]
+            SITE = {{ SITE }}
             # By default opt configurations must exist. Paretheses make the opt
             # file optional, which is required as only a DKRZ opt file exists.
             ROSE_APP_OPT_CONF_KEYS = ({{ SITE }})
             CYLC_DB_PATH = ${CYLC_WORKFLOW_RUN_DIR}/log/db
-            PRODUCTION = {{ PRODUCTION }}
             REPORT_PATH = ${ROSE_DATAC}/status_report.html
+            CYLC_TASK_CYCLE_YESTERDAY = ${ROSE_DATACP1D}
+            PRODUCTION = {{ PRODUCTION }}
 
     [[housekeeping]]
         platform = localhost
