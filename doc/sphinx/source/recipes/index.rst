@@ -25,6 +25,7 @@ large variety of input data.
    recipe_model_evaluation
    recipe_monitor
    recipe_portrait
+   recipe_sanity_checks
    recipe_seaborn
    recipe_ref
 
@@ -65,6 +66,7 @@ Atmosphere
    recipe_validation
    recipe_radiation_budget
    recipe_aod_aeronet_assess
+   recipe_surface_trace_gas
 
 Climate metrics
 ^^^^^^^^^^^^^^^
@@ -120,6 +122,7 @@ Land
    recipe_landcover
    recipe_anav13jclim
    recipe_runoff_et
+   recipe_ref_fire
 
 Ocean
 ^^^^^

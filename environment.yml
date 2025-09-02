@@ -10,6 +10,7 @@ channels:
 
 dependencies:
   - aiohttp
+  - arviz
   - cartopy
   - cdo >=2.3.0
   - cdsapi
@@ -23,7 +24,7 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
-  - esmvalcore 2.13.0rc1
+  - esmvalcore 2.13.*
   - fiona
   - fire
   - fsspec
