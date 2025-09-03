@@ -48,8 +48,8 @@ def enso_events_lc(cube, metric):
     a_events = mask_to_years(mask_above_threshold(cube.copy(), -0.5 * cb_std))
     o_events = mask_to_years(mask_below_threshold(cube.copy(), 0.5 * cb_std))
     events = {"la nina": a_events, "el nino": o_events}
-    if metric == "14duration":
-        for key, yrls in events.items():  # if for lifecycle
+    if metric == "14duration":  # check years not in first/last 3
+        for key, yrls in events.items():
             events[key] = [yr for yr in yrls if yr not in leadlagyrs]
 
     return events
@@ -91,12 +91,23 @@ def enso_composite(n34):
 
 
 def threshold_duration(line, value, enso):
-    """Count duration for each dataset and enso composite."""
-cnt_month = line > value if enso == "el nino" else line < -value
+    """Count duration in months for each dataset and enso composite.
+
+    Creates a boolean list indicating the months above/below the threshold.
+    Then iterates through the list to count the maximum number of consecutive
+    months that meet the condition to give duration.
+
+    Args:
+    -----
+    line (np.ndarray) : ENSO lifecycle data line
+    value (float) : Threshold value
+    enso (str) : ENSO phase ("el nino" or "la nina")
+    """
+    cnt_month = line > value if enso == "el nino" else line < -value
 
     cnt = 0
     durations = []
-
+    # count number of consecutive true months
     for a in cnt_month:
         if a:
             cnt += 1
@@ -211,7 +222,7 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
         obs = enso_composite(input_pair[0][var_group[0]])
 
         fig = duration_composite_plot([obs, mod], dt_ls)
-    else:  # metric == "15diversity":
+    elif metric == "15diversity":
         data_box = []
         for ds in input_pair:  # obs first
             events = enso_events_lc(ds[var_group[0]], metric)
@@ -222,7 +233,8 @@ def compute_enso_metrics(input_pair, dt_ls, var_group, metric):
             data_box.append(results_lon)
 
         fig = diversity_plots3(data_box, dt_ls)
-
+    else:
+        fig = None
     return fig
 
 

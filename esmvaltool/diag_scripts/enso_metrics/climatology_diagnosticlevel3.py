@@ -26,7 +26,14 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def plotmaps_level3(input_data, itcz=False):
-    """Create month structure plots for pair of input data."""
+    """Create month structure plots for pair of input data.
+
+    Args:
+    -----
+    input_data (List) : List of input datasets to plot
+    itcz (bool) : Boolean flag to trigger longitude formatting
+
+    """
     fig = plt.figure(figsize=(14, 8))
     colmap = {
         "pr": "YlGn",
@@ -75,7 +82,14 @@ def plotmaps_level3(input_data, itcz=False):
 
 
 def load_seacycle_stat(dataset, itcz=False):
-    """Load, seasonal cycle std dev if required."""
+    """Load, seasonal cycle std dev if required.
+
+    Args:
+    -----
+    dataset (dict)) : Dictionary of dataset metadata from recipe
+    itcz (bool) : Boolean flag to trigger zonal statistics
+
+    """
     var_units = {
         "tos": "degC",
         "ts": "degC",
@@ -88,7 +102,7 @@ def load_seacycle_stat(dataset, itcz=False):
     cube = convert_units(cube, units=var_units[sname])
 
     diag_label = sname.upper()
-    if itcz:  # both zonal and meridional for pr
+    if itcz:
         nino3_latext_region = {
             "start_longitude": 210.0,
             "end_longitude": 270.0,

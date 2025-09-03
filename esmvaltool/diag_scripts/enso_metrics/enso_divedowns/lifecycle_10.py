@@ -53,7 +53,6 @@ def sst_regressed_2d(event_years, n34_area, n34_dec):
         time=lambda cell: cell.point.year in event_years,
     )
     n34_dec_ct = n34_dec.extract(event_constr)
-    # print(f'{len(event_years)} years, cube meri:{n34_area.shape}')
 
     # 2 area linear regression
     b_data = n34_dec_ct.data
@@ -61,7 +60,6 @@ def sst_regressed_2d(event_years, n34_area, n34_dec):
     a_arr = np.array(n34_area_selected)
     a_data = a_arr.reshape(a_arr.shape[0], -1)
 
-    # print(a_arr.shape, a_data.shape, b_data.shape)
     coefs_area, _, _, _ = np.linalg.lstsq(b_with_intercept, a_data, rcond=None)
     slope_area = coefs_area[0].reshape(a_arr.shape[1], a_arr.shape[2])
 
@@ -116,7 +114,7 @@ def plot_ssta(ax, area_coordlon, ssta, label, i=None):
     else:
         axpos = ax
     c1 = axpos.contourf(
-        area_coordlon,  # .points,
+        area_coordlon,
         range(1, 73),
         ssta,
         levels=np.linspace(-1.2, 1.2, 14),
@@ -231,7 +229,6 @@ def create_legend(dt_ls):
         ),
     ]
     plt.legend(handles=legend_elements)
-    # return legend_elements
 
 
 def plot_l3_enso_lifecycle(model_ds, obs_ds, dt_ls):

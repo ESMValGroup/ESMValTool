@@ -164,7 +164,7 @@ def compute_telecon_metrics(input_pair, var_group, mask_cube, metric):
         lvl2_dict, cubes = {}, {}
         for label, ds in input_pair.items():  # obs 0, mod 1
             preproc = {}
-            for variable in var_group[:2]:  # slice[:2] enso_cube var_group[2]
+            for variable in var_group[:2]:
                 cube = extract_season(ds[variable].copy(), seas)
                 preproc[variable] = seasonal_statistics(
                     cube,
@@ -181,7 +181,6 @@ def compute_telecon_metrics(input_pair, var_group, mask_cube, metric):
             data_values.append(reg_masked.data)
             cubes[label] = reg_masked
 
-            # plot level 2 - enso events, enso_cube = ds[var_group[2]]
             lvl2_dict[label] = diagnostic_level_2(
                 ds[var_group[2]],
                 preproc[var_group[1]],

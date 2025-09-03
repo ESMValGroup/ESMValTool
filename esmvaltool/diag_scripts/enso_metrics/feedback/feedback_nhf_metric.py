@@ -27,7 +27,6 @@ def plot_level1(obs_ds, model_ds, title, metric_varls):
     figure = plt.figure(figsize=(10, 8), dpi=300)
     xseq = np.linspace(var_set[xvar] * -1, var_set[xvar], num=100)
 
-    # SST_NHF = ['sst_east', 'nhf_east_mod', 'nhf_east_obs']
     mod_slope, intcpt = linreg_1d(
         model_ds[metric_varls[1]],
         model_ds[metric_varls[0]],

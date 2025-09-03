@@ -34,9 +34,6 @@ def plotmaps_level2(input_data, grp):
         )
         cube, cbar_label = load_seacycle_stdev(dataset)
 
-        # save data
-        # data_to_save.append(cube)
-
         ax1 = plt.subplot(plt_pos, projection=proj)
         ax1.add_feature(cfeature.LAND, facecolor="gray")
         ax1.coastlines()

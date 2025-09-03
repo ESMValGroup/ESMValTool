@@ -33,7 +33,8 @@ def plot_level1(obs_ds, model_ds, title, metric_varls):
     figure = plt.figure(figsize=(10, 8), dpi=300)
     xseq = np.linspace(var_set[xvar] * -1, var_set[xvar], num=100)
 
-    # linreg (tauu cube, tos cube) #['ts_east', 'tauu_west', 'tauu_eqp']
+    # order for linreg is (tauu cube, tos cube) 
+    # for metric_varls: ['ts_east', 'tauu_west', 'tauu_eqp']
     mod_slope, intcpt = linreg_1d(
         model_ds[metric_varls[1]],
         model_ds[metric_varls[0]],
@@ -100,7 +101,6 @@ def plt_lvl2_subplot(ts_cube, tauu_cube, dataset_label, metric_varls):
     slope, intcpt = linreg_1d(df["tauu"], df["tos"])  # df or cube
     plt.plot(xseq, intcpt + slope * xseq, c="black")  # colour for model blue
     slopes.append(slope)
-    # end for lvl 1?
 
     xseq = np.linspace(var_set[xvar] * -1, 0, num=50)
     slope, intcpt = linreg_1d(
@@ -139,7 +139,17 @@ def linreg_1d(tauu, ts):
 
 
 def plt_settings(slopes, lvl1, metric_varls):
-    """Set plot settings for ENSO feedback metrics."""
+    """Set plot settings for ENSO feedback metrics.
+    
+    Settings based on variable for limits and units.
+    Region added to label.
+
+    Args:
+    -----
+    slopes (list) : list of values to display on the plot
+    lvl1 (bool) : indicator for using the values
+    metric_varls (list) : list of variable_region strings
+    """
     var_set = {
         "sst": (5, "°C"),
         "taux": (100, "1e-3 N/m2"),
@@ -147,7 +157,6 @@ def plt_settings(slopes, lvl1, metric_varls):
         "east": "nino3",
         "west": "nino4",
     }
-    # variable, limit, units, region
     xvar = metric_varls[0].split("_")[0]  # ts, tauu, ssh
     yvar = metric_varls[1].split("_")[0]
     xregion = var_set[metric_varls[0].split("_")[1]]  # east, west, eqp
@@ -175,7 +184,6 @@ def plt_settings(slopes, lvl1, metric_varls):
     plt.xlabel(f"{xregion} {xvar.upper()}A ({var_set[xvar][1]})")
 
     if lvl1:
-        # for lvl1 #slopes is mod 0, obs 1, metric_val 2
         plt.text(
             0.05,
             0.95,
@@ -199,7 +207,6 @@ def plt_settings(slopes, lvl1, metric_varls):
             ha="right",
             transform=plt.gca().transAxes,
             backgroundcolor="white",
-            # bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
         )
 
     else:
@@ -211,7 +218,6 @@ def plt_settings(slopes, lvl1, metric_varls):
             ha="left",
             transform=plt.gca().transAxes,
             backgroundcolor="white",
-            # bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
         )
 
 
@@ -266,8 +272,8 @@ def feedback_nonlin(sst_cube, tauu_cube):
     above0 = iris.Constraint(
         coord_values={sst_cube.standard_name: lambda cell: cell > 0},
     )
-    ssta_neg = mask_above_threshold(sst_cube.copy(), 0)  # x<0
-    ssta_pos = mask_below_threshold(sst_cube.copy(), 0)  # x=>0
+    ssta_neg = mask_above_threshold(sst_cube.copy(), 0)
+    ssta_pos = mask_below_threshold(sst_cube.copy(), 0)
     xbelow0 = tauu_aux.extract(below0)
     xabove0 = tauu_aux.extract(above0)
 
@@ -338,7 +344,7 @@ def plot_level3(obs_ds, model_ds, metric_varls, ds_labels, title):
 
     # obs datasets can have different time range..
     obs1, obs2 = obs_extract_overlap(tau_obcube, obs_ds[metric_varls[0]])
-    # obs_ds_label = f"{input_data['obs'][0]['dataset']}_{input_data['obs'][1]['dataset']}"
+
     cb2 = lin_regress_matrix(obs1, obs2)
     qplt.plot(cb2, color="black", linestyle="--", label=ds_labels[0])
     # process model data split
@@ -393,14 +399,13 @@ def main(cfg):
         "SST_TAUX": ["sst_east", "taux_west", "taux_eqp"],
         "TAUX_SSH": ["taux_west", "ssh_east", "ssh_eqp"],
         "SSH_SST": ["ssh_east", "sst_east", "ssh_eqp_area", "sst_eqp"],
-        #    'SST_NHF': ['sst_east', 'hnf_east', 'taux_eqp'],
     }
 
     # select twice with project to get obs, iterate through model selection
-    for metric, var_preproc in metrics.items():  # if empty or try
+    for metric, var_preproc in metrics.items():
         logger.info("%s,%s", metric, var_preproc)
         obs, models = [], []
-        for var_prep in var_preproc:  # enumerate 1 or 2 length? if 2 append,
+        for var_prep in var_preproc:
             obs += select_metadata(
                 input_data,
                 variable_group=var_prep,
