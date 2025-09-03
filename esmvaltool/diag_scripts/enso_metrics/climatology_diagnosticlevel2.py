@@ -26,7 +26,6 @@ def plotmaps_level2(input_data, grp):
     """Create map plots for pair of input data."""
     fig = plt.figure(figsize=(18, 6))
     proj = ccrs.Orthographic(central_longitude=210.0)
-    # data_to_save = []
     for plt_pos, dataset in enumerate(input_data, start=121):
         logger.info(
             "dataset: %s - %s",
@@ -65,7 +64,7 @@ def plotmaps_level2(input_data, grp):
     cbar = fig.colorbar(cf1, cax=cax, orientation="horizontal", extend="both")
     cbar.set_label(cbar_label)
 
-    return fig  # , data_to_save
+    return fig 
 
 
 def load_seacycle_stdev(dataset):
@@ -161,7 +160,6 @@ def main(cfg):
             if metadata["project"] == "CMIP6":
                 pairs.append(metadata)
                 fig = plotmaps_level2(pairs, grp)
-                # save_plotdata(data_cubes, grp, pairs, cfg)
                 filename = "_".join(
                     [
                         metadata["dataset"],

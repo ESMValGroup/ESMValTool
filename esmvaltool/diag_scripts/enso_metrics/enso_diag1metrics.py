@@ -45,7 +45,6 @@ def plot_level1(input_data, metricval, y_label, title, dtls):
             ha="center",
             transform=plt.gca().transAxes,
             backgroundcolor="white",
-            # bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
         )
         plt.legend()
     else:
@@ -67,7 +66,6 @@ def plot_level1(input_data, metricval, y_label, title, dtls):
             fontsize=12,
             transform=plt.gca().transAxes,
             backgroundcolor="white",
-            # bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
         )
 
     plt.title(title)  # metric name
@@ -448,9 +446,6 @@ def group_obs_models(obs, models, metric, var_preproc, cfg):
             var_preproc,
             metric,
         )
-        # # save returned cubes
-        # for i, cube in enumerate(output[2]):
-        #     save_data(f"{data_labels[i]}_{metric}", prov_record, cfg, cube)
 
         if output[0]:
             with open(metricfile, "a+", encoding="utf-8") as fileo:

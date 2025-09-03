@@ -30,7 +30,6 @@ def mask_to_years(events):
         events.coord("time").points,
         mask=events.data.mask,
     )
-    # return years
     return [
         events.coord("time").units.num2date(time).year
         for time in maskedtime.compressed()
@@ -93,9 +92,7 @@ def enso_composite(n34):
 
 def threshold_duration(line, value, enso):
     """Count duration for each dataset and enso composite."""
-    cnt_month = line < -value  # "la nina"
-    if enso == "el nino":
-        cnt_month = line > value
+cnt_month = line > value if enso == "el nino" else line < -value
 
     cnt = 0
     durations = []
@@ -109,7 +106,6 @@ def threshold_duration(line, value, enso):
             cnt = 0
     if not durations:
         durations.append(cnt)  # if no events, append 0
-    # logger.info(durations)
     return max(durations)
 
 

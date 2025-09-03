@@ -303,7 +303,6 @@ def main(cfg):
         "SST_TAUX": ["sst_east", "taux_eqp"],
         "TAUX_SSH": ["taux_west", "ssh_eqp"],
         "SSH_SST": ["ssh_eqp_area", "sst_eqp"],
-        #    'SST_NHF': ['sst_east', 'hnf_east', 'taux_eqp'],
     }
 
     # select twice with project to get obs, iterate through model selection

@@ -60,7 +60,6 @@ def main(cfg):
         "references": ["access-nri"],
         "ancestors": cfg["diag_metrics"],
     }
-    # input_data = cfg['input_data'].values()
     metrics = cfg["diag_metrics"]
     diag_path = "/".join(cfg["work_dir"].split("/")[:-2])
     diag_path = "/".join([diag_path, metrics, "matrix.csv"])

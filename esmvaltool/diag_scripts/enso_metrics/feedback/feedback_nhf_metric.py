@@ -193,7 +193,6 @@ def plt_settings(slopes, lvl1, metric_varls):
             ha="right",
             transform=plt.gca().transAxes,
             backgroundcolor="white",
-            # bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
         )
 
     else:
@@ -205,7 +204,6 @@ def plt_settings(slopes, lvl1, metric_varls):
             ha="left",
             transform=plt.gca().transAxes,
             backgroundcolor="white",
-            # bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
         )
 
 
