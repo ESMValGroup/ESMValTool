@@ -159,7 +159,7 @@ def compute_telecon_metrics(input_pair, var_group, mask_cube, metric):
 
     val, fig, fig2 = {}, {}, {}
     seasons = {"DJF": "MAMJJASON", "JJA": "SONDJFMAM"}
-    for seas, rest in seasons.items():  
+    for seas, rest in seasons.items():
         data_values = []
         lvl2_dict, cubes = {}, {}
         for label, ds in input_pair.items():  # obs 0, mod 1

@@ -61,7 +61,7 @@ def plotmaps_level2(input_data, grp):
     cbar = fig.colorbar(cf1, cax=cax, orientation="horizontal", extend="both")
     cbar.set_label(cbar_label)
 
-    return fig 
+    return fig
 
 
 def load_seacycle_stdev(dataset):

@@ -33,7 +33,7 @@ def plot_level1(obs_ds, model_ds, title, metric_varls):
     figure = plt.figure(figsize=(10, 8), dpi=300)
     xseq = np.linspace(var_set[xvar] * -1, var_set[xvar], num=100)
 
-    # order for linreg is (tauu cube, tos cube) 
+    # order for linreg is (tauu cube, tos cube)
     # for metric_varls: ['ts_east', 'tauu_west', 'tauu_eqp']
     mod_slope, intcpt = linreg_1d(
         model_ds[metric_varls[1]],
@@ -140,7 +140,7 @@ def linreg_1d(tauu, ts):
 
 def plt_settings(slopes, lvl1, metric_varls):
     """Set plot settings for ENSO feedback metrics.
-    
+
     Settings based on variable for limits and units.
     Region added to label.
 
