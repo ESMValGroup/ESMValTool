@@ -62,7 +62,6 @@ def plot_level1(input_data, rmse, title):
         ha="left",
         transform=plt.gca().transAxes,
         backgroundcolor="white",
-        # bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
     )
     # Add a single colorbar at the bottom
     cax = plt.axes([0.15, 0.08, 0.7, 0.05])
@@ -160,7 +159,7 @@ def compute_telecon_metrics(input_pair, var_group, mask_cube, metric):
 
     val, fig, fig2 = {}, {}, {}
     seasons = {"DJF": "MAMJJASON", "JJA": "SONDJFMAM"}
-    for seas, rest in seasons.items():  # ['DJF','JJA']:
+    for seas, rest in seasons.items():  
         data_values = []
         lvl2_dict, cubes = {}, {}
         for label, ds in input_pair.items():  # obs 0, mod 1
@@ -264,7 +263,6 @@ def plot_level2(datads_dict, season):
                     ha="left",
                     transform=plt.gca().transAxes,
                     backgroundcolor="white",
-                    # bbox=dict(facecolor="white", alpha=0.8, edgecolor="none"),
                 )
 
             i += 1
