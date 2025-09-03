@@ -145,7 +145,7 @@ def plt_settings(slopes, lvl1, metric_varls):
     Region added to label.
 
     Args:
-    -----
+    ----
     slopes (list) : list of values to display on the plot
     lvl1 (bool) : indicator for using the values
     metric_varls (list) : list of variable_region strings

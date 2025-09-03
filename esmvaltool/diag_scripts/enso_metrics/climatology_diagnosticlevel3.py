@@ -29,7 +29,7 @@ def plotmaps_level3(input_data, itcz=False):
     """Create month structure plots for pair of input data.
 
     Args:
-    -----
+    ----
     input_data (List) : List of input datasets to plot
     itcz (bool) : Boolean flag to trigger longitude formatting
 
@@ -85,7 +85,7 @@ def load_seacycle_stat(dataset, itcz=False):
     """Load, seasonal cycle std dev if required.
 
     Args:
-    -----
+    ----
     dataset (dict)) : Dictionary of dataset metadata from recipe
     itcz (bool) : Boolean flag to trigger zonal statistics
 

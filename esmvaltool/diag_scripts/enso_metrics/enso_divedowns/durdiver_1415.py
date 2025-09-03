@@ -98,7 +98,7 @@ def threshold_duration(line, value, enso):
     months that meet the condition to give duration.
 
     Args:
-    -----
+    ----
     line (np.ndarray) : ENSO lifecycle data line
     value (float) : Threshold value
     enso (str) : ENSO phase ("el nino" or "la nina")
