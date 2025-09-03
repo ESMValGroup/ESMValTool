@@ -82,7 +82,7 @@ Example plots
 -------------
 
 .. _fig_teleconnections:
-.. figure:: /recipes/figures/enso_metrics/ACCESS-CM2_DJF_ts_telecon.png
+.. figure:: /recipes/figures/enso_metrics/ACCESS-ESM1-5_DJF_ts_telecon.png
    :align: center
 
    PR or SST anomalies on Earth (between 60°S-60°N), showing the location associated with ENSO.
