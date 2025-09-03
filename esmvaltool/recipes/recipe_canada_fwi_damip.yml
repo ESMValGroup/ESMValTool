@@ -23,63 +23,63 @@ datasets:
 # In case issues with memory occur, it is recommended to split the timeseries
 # in e.g. 20 year chunks. The issues occur currently at the stage of FWI calculation
 # NAT
-  - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, project: CMIP6, exp: hist-nat,
-      ensemble: r(1:3)i1p1f1, mip: day, start_year: 1950, end_year: 2020, grid: [gn,gr]}
-  - {dataset: ACCESS-ESM1-5, institute: CSIRO, project: CMIP6, exp: hist-nat,
-      ensemble: r(1:3)i1p1f1, mip: day, start_year: 1950, end_year: 2020, grid: [gn,gr]}
-  - {dataset: CanESM5, institue: CCCma, project: CMIP6, exp: hist-nat, 
-      ensemble: r(1:25)i1p1f1, mip: day, start_year: 1950, end_year: 2020, grid: [gn, gr]}
-  - {dataset: CanESM5, institue: CCCma, project: CMIP6, exp: hist-nat, 
-      ensemble: r(1:25)i1p2f1, mip: day, start_year: 1950, end_year: 2020, grid: [gn, gr]}    
-  - {dataset: CNRM-CM6-1, institute: CNRM-CERFACS, project: CMIP6, exp: hist-nat,
-      ensemble: r(1:3)i1p1f2, mip: day, start_year: 1950, end_year: 2020, grid: [gn,gr]}
-  - {dataset: HadGEM3-GC31-LL, institute: MOHC, project: CMIP6, exp: hist-nat,
-      ensemble: r(1:10)i1p1f3, mip: day, start_year: 1950, end_year: 2020, grid: gn}
-  - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6, exp: hist-nat,
-      ensemble: r(1:2)i1p1f1, mip: day, start_year: 1950, end_year: 2020, grid: gr} 
-  - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6, exp: hist-nat,
-      ensemble: r(4:7)i1p1f1, mip: day, start_year: 1950, end_year: 2020, grid: gr}
-  - {dataset: MIROC6, institute: MIROC, project: CMIP6, exp: hist-nat,
-      ensemble: r(1:50)i1p1f1, mip: day, start_year: 1950, end_year: 2020, grid: [gn,gr]}
-  - {dataset: MRI-ESM2-0, institute: MRI, project: CMIP6, exp: hist-nat,
-      ensemble: r(1:5)i1p1f1, mip: day, start_year: 1950, end_year: 2020, grid: gn}
-  - {dataset: NorESM2-LM, institute: NCC, project: CMIP6, exp: hist-nat,
-      ensemble: r(1:3)i1p1f1, mip: day, start_year: 1950, end_year: 2020, grid: gn}
+#   - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, project: CMIP6, exp: hist-nat,
+#       ensemble: r(1:3)i1p1f1, mip: day, start_year: 1950, end_year: 2020, grid: [gn,gr]}
+#   - {dataset: ACCESS-ESM1-5, institute: CSIRO, project: CMIP6, exp: hist-nat,
+#       ensemble: r(1:3)i1p1f1, mip: day, start_year: 1950, end_year: 2020, grid: [gn,gr]}
+#   - {dataset: CanESM5, institue: CCCma, project: CMIP6, exp: hist-nat, 
+#       ensemble: r(1:25)i1p1f1, mip: day, start_year: 1950, end_year: 2020, grid: [gn, gr]}
+#   - {dataset: CanESM5, institue: CCCma, project: CMIP6, exp: hist-nat, 
+#       ensemble: r(1:25)i1p2f1, mip: day, start_year: 1950, end_year: 2020, grid: [gn, gr]}    
+#   - {dataset: CNRM-CM6-1, institute: CNRM-CERFACS, project: CMIP6, exp: hist-nat,
+#       ensemble: r(1:3)i1p1f2, mip: day, start_year: 1950, end_year: 2020, grid: [gn,gr]}
+#   - {dataset: HadGEM3-GC31-LL, institute: MOHC, project: CMIP6, exp: hist-nat,
+#       ensemble: r(1:10)i1p1f3, mip: day, start_year: 1950, end_year: 2020, grid: gn}
+#   - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6, exp: hist-nat,
+#       ensemble: r(1:2)i1p1f1, mip: day, start_year: 1950, end_year: 2020, grid: gr} 
+#   - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6, exp: hist-nat,
+#       ensemble: r(4:7)i1p1f1, mip: day, start_year: 1950, end_year: 2020, grid: gr}
+#   - {dataset: MIROC6, institute: MIROC, project: CMIP6, exp: hist-nat,
+#       ensemble: r(1:50)i1p1f1, mip: day, start_year: 1950, end_year: 2020, grid: [gn,gr]}
+#   - {dataset: MRI-ESM2-0, institute: MRI, project: CMIP6, exp: hist-nat,
+#       ensemble: r(1:5)i1p1f1, mip: day, start_year: 1950, end_year: 2020, grid: gn}
+#   - {dataset: NorESM2-LM, institute: NCC, project: CMIP6, exp: hist-nat,
+#       ensemble: r(1:3)i1p1f1, mip: day, start_year: 1950, end_year: 2020, grid: gn}
 # ALL
   - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, project: CMIP6, exp: [historical, ssp245],
-      ensemble: r(1:10)i1p1f1, mip: day, start_year: 1950, end_year: 2030, grid: gn}
+      ensemble: r(1:10)i1p1f1, mip: day, start_year: 1850, end_year: 2090, grid: gn}
   - {dataset: ACCESS-ESM1-5, institute: CSIRO, project: CMIP6, exp: [historical, ssp245],
-      ensemble: 'r(1:19)i1p1f1', mip: day, start_year: 1950, end_year: 2030, grid: gn}
+      ensemble: 'r(1:19)i1p1f1', mip: day, start_year: 1850, end_year: 2090, grid: gn}
   - {dataset: ACCESS-ESM1-5, institute: CSIRO, project: CMIP6, exp: [historical, ssp245],
-      ensemble: 'r(21:40)i1p1f1', mip: day, start_year: 1950, end_year: 2030, grid: gn}
+      ensemble: 'r(21:40)i1p1f1', mip: day, start_year: 1850, end_year: 2090, grid: gn}
   - {dataset: CanESM5, institute: CCCma, project: CMIP6, exp: [historical, ssp245],
-      ensemble: 'r(1:25)i1p(1:2)f1', mip: day, start_year: 1950, end_year: 2030, grid: gn}
+      ensemble: 'r(1:25)i1p(1:2)f1', mip: day, start_year: 1850, end_year: 2090, grid: gn}
   - {dataset: EC-Earth3, institution: EC-Earth-Consortium, project: CMIP6, exp: [historical, ssp245],
-       ensemble: r1i1p1f1, mip: day, start_year: 1950, end_year: 2030, grid: gr} 
+       ensemble: r1i1p1f1, mip: day, start_year: 1850, end_year: 2090, grid: gr} 
   - {dataset: GFDL-ESM4, institute: NOAA-GFDL, project: CMIP6, exp: [historical, ssp245],
-      ensemble: 'r1i1p1f1', mip: day, start_year: 1950, end_year: 2030, grid: gr1}
+      ensemble: 'r1i1p1f1', mip: day, start_year: 1850, end_year: 2090, grid: gr1}
   - {dataset: HadGEM3-GC31-LL, institution: MOHC, project: CMIP6, exp: [historical, ssp245],
-      ensemble: r(1:5)i1p1f3, mip: day, start_year: 1950, end_year: 2030, grid: gn} 
+      ensemble: r(1:5)i1p1f3, mip: day, start_year: 1850, end_year: 2090, grid: gn} 
   - {dataset: INM-CM4-8, institute: INM, project: CMIP6, exp: [historical, ssp245], 
-      ensemble: 'r1i1p1f1', mip: day, start_year: 1950, end_year: 2030, grid: gr1}
+      ensemble: 'r1i1p1f1', mip: day, start_year: 1850, end_year: 2090, grid: gr1}
   - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6, exp: [historical, ssp245],
-      ensemble: r(1:6)i1p1f1, mip: day, start_year: 1950, end_year: 2030, grid: gr}
+      ensemble: r(1:6)i1p1f1, mip: day, start_year: 1850, end_year: 2090, grid: gr}
   - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6, exp: [historical, ssp245],
-      ensemble: r(10:11)i1p1f1, mip: day, start_year: 1950, end_year: 2030, grid: gr}
+      ensemble: r(10:11)i1p1f1, mip: day, start_year: 1850, end_year: 2090, grid: gr}
   - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6, exp: [historical, ssp245],
-      ensemble: r14i1p1f1, mip: day, start_year: 1950, end_year: 2030, grid: gr}
+      ensemble: r14i1p1f1, mip: day, start_year: 1850, end_year: 2090, grid: gr}
   - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6, exp: [historical, ssp245],
-      ensemble: r22i1p1f1, mip: day, start_year: 1950, end_year: 2030, grid: gr}
+      ensemble: r22i1p1f1, mip: day, start_year: 1850, end_year: 2090, grid: gr}
   - {dataset: IPSL-CM6A-LR, institute: IPSL, project: CMIP6, exp: [historical, ssp245],
-      ensemble: r25i1p1f1, mip: day, start_year: 1950, end_year: 2030, grid: gr}
+      ensemble: r25i1p1f1, mip: day, start_year: 1850, end_year: 2090, grid: gr}
   - {dataset: MIROC6, institute: MIROC, project: CMIP6, exp: [historical, ssp245],
-      ensemble: r(1:50)i1p1f1, mip: day, start_year: 1950, end_year: 2030, grid: gn}
+      ensemble: r(1:50)i1p1f1, mip: day, start_year: 1850, end_year: 2090, grid: gn}
   - {dataset: MPI-ESM1-2-LR, institute: MPI-M, project: CMIP6, exp: [historical, ssp245],
-      ensemble: r(1:2)i1p1f1, mip: day, start_year: 1950, end_year: 2030, grid: gn} 
+      ensemble: r(1:2)i1p1f1, mip: day, start_year: 1850, end_year: 2090, grid: gn} 
   - {dataset: NorESM2-MM, institute: NCC, project: CMIP6, exp: [historical, ssp245],
-      ensemble: r(1:2)i1p1f1, mip: day, start_year: 1950, end_year: 2030, grid: gn}
+      ensemble: r(1:2)i1p1f1, mip: day, start_year: 1850, end_year: 2090, grid: gn}
   - {dataset: TaiESM1, institute: AS-RCEC, project: CMIP6, exp: [historical, ssp245],
-      ensemble: r1i1p1f1, mip: day, start_year: 1950, end_year: 2030,grid: gn}  
+      ensemble: r1i1p1f1, mip: day, start_year: 1850, end_year: 2090,grid: gn}  
 
 
 

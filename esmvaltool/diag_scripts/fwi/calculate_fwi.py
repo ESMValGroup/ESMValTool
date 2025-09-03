@@ -26,16 +26,16 @@ def load_xr_da(metadata, var):
     return var_xr
 
 
-def hursmin_fun(hussmax_sat_xr, hussmin_sat_xr, hurs_xr):
+# def hursmin_fun(hussmax_sat_xr, hussmin_sat_xr, hurs_xr):
     
-    # calculating the mean saturation wv pressure 
-    hussday_sat_xr = (hussmin_sat_xr + hussmax_sat_xr)/2
-    # calculate mean wv pressure
-    huss_xr = hurs_xr/100 * hussday_sat_xr 
-    # assuming hursmin occurs during tasmax 
-    hursmin_xr = huss_xr/hussmax_sat_xr * 100
+#     # calculating the mean saturation wv pressure 
+#     hussday_sat_xr = (hussmin_sat_xr + hussmax_sat_xr)/2
+#     # calculate mean wv pressure
+#     huss_xr = hurs_xr/100 * hussday_sat_xr 
+#     # assuming hursmin occurs during tasmax 
+#     hursmin_xr = huss_xr/hussmax_sat_xr * 100
 
-    return hursmin_xr
+#     return hursmin_xr
 
 
 def huss_fun(hussmax_sat_xr, hussmin_sat_xr, hurs_xr):
