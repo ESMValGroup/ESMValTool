@@ -185,6 +185,7 @@ def compute_telecon_metrics(input_pair, var_group, mask_cube, metric):
                 ds[var_group[2]],
                 preproc[var_group[1]],
                 mask_cube,
+                seas,
             )
 
         fig2[seas] = plot_level2(lvl2_dict, seas)
@@ -214,11 +215,13 @@ def enso_events(cube):
     return {"La Nina": a_events, "El Nino": o_events}
 
 
-def diagnostic_level_2(enso_cube, glb_cube, mask_cube):
+def diagnostic_level_2(enso_cube, glb_cube, mask_cube, season):
     """Compute teleconnection ENSO composites for level 2 plots."""
     events = enso_events(enso_cube)  # get enso events
     cubes_dict = {}
     for enso, years in events.items():
+        # if season is DJF offset by 1
+        years = [y + 1 for y in years] if season == "DJF" else years
         year_enso = iris.Constraint(
             time=lambda cell, years=years: cell.point.year in years
         )
