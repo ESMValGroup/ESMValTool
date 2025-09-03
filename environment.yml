@@ -9,17 +9,16 @@ channels:
   - nodefaults
 
 dependencies:
-  - pip !=21.3
-  - python >=3.9
   - aiohttp
   - cartopy
-  - cdo >=1.9.7
+  - cdo >=2.3.0
   - cdsapi
   - cf-units
+  - cfgrib
   - cftime
   - cmocean
   - cython
-  - dask
+  - dask !=2024.8.0  # https://github.com/dask/dask/issues/11296
   - distributed
   - ecmwf-api-client
   - eofs
@@ -40,7 +39,9 @@ dependencies:
   - natsort
   - nc-time-axis
   - netCDF4
+  - numba
   - numpy !=1.24.3  # severe masking bug
+  - openpyxl
   - packaging
   - pandas
   - pip !=21.3
@@ -52,7 +53,7 @@ dependencies:
   - python-cdo
   - python-dateutil
   - pyyaml
-  - rasterio
+  - rasterio >=1.3.10
   - requests
   - ruamel.yaml
   - scikit-image
@@ -60,9 +61,8 @@ dependencies:
   - scipy
   - seaborn
   - seawater
-  - shapely
+  - shapely >=2.0.2
   - xarray >=0.12.0
-  - xclim # added by LM
   - xesmf >=0.7.1
   - xgboost >1.6.1  # github.com/ESMValGroup/ESMValTool/issues/2779
   - xlsxwriter
@@ -87,11 +87,13 @@ dependencies:
   - imagehash
   - prospector >=1.12  # earliest support for Python 3.12
   - pyroma
+  - rioxarray
   # - vprof not on conda-forge
   - yamllint ==1.35.1
+  - xclim # added by LM for FWI
 
   # NCL and dependencies
-  - ncl
+  - ncl >=6.6.2
   - cdo
   - imagemagick
   - nco
@@ -100,7 +102,7 @@ dependencies:
   - cdo
   - r-base >=3.5
   - r-abind
-  - r-akima <=0.6-2.3  # see https://github.com/ESMValGroup/ESMValTool/issues/2695
+  - r-akima
   - r-climdex.pcic
   - r-climprojdiags
   - r-docopt
@@ -108,7 +110,6 @@ dependencies:
   - r-functional
   - r-ggplot2
   - r-gridextra
-  - r-lintr
   - r-logging
   - r-mapproj
   - r-maps
@@ -122,7 +123,6 @@ dependencies:
   - r-s2dverification
   - r-snow
   - r-spei
-  - r-styler
   - r-udunits2
   - r-yaml
   # R packages needed for development
