@@ -450,7 +450,7 @@ numfig = True
 
 # Configuration for intersphinx
 intersphinx_mapping = {
-    'cartopy': ('https://scitools.org.uk/cartopy/docs/latest/', None),
+    'cartopy': ('https://cartopy.readthedocs.io/latest/', None),
     'cf_units': ('https://cf-units.readthedocs.io/en/latest/', None),
     'esmvalcore':
     (f'https://docs.esmvaltool.org/projects/esmvalcore/en/{rtd_version}/',

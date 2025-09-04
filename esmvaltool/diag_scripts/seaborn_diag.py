@@ -76,6 +76,14 @@ reset_index: bool, optional (default: False)
     indices. This avoids the deletion of coordinate information if different
     groups of datasets have different dimensions but increases the memory
     footprint of this diagnostic.
+write_netcdf: bool, optional (default: False)
+    Output netCDF file for plotted data. What is written into the file
+    is decided based on the pandas data frame and the
+    seaborn kwargs: "x", "y", "hue" and "col".
+    Because there is no direct way to write panda data frames into netCDF
+    and to make data CF complient, the data frame is converted to an iris
+    CubeList first. This is not possible for all data frames and often
+    reset_index: true is required. Therefore the default is set to False.
 savefig_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.savefig`. By
     default, uses ``bbox_inches: tight, dpi: 300, orientation: landscape``.
@@ -108,14 +116,18 @@ from pprint import pformat
 import iris
 import iris.pandas
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
+from iris.cube import CubeList
 from matplotlib.colors import LogNorm, Normalize
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
+    get_diagnostic_filename,
     get_plot_filename,
     group_metadata,
+    io,
     run_diagnostic,
 )
 
@@ -199,6 +211,10 @@ def _create_plot(
             [0.83, pos_joint_ax.y0, 0.07, pos_joint_ax.height]
         )
 
+    # Save plot data
+    if cfg["write_netcdf"]:
+        _save_nc_data(data_frame, cfg)
+
     # Save plot
     plot_path = get_plot_filename(cfg["plot_filename"], cfg)
     plt.savefig(plot_path, **cfg["savefig_kwargs"])
@@ -213,8 +229,16 @@ def _create_plot(
         "authors": ["schlund_manuel"],
         "caption": caption,
     }
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(plot_path, provenance_record)
+    if cfg["write_netcdf"]:
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
+            provenance_logger.log(
+                get_diagnostic_filename(cfg["plot_filename"], cfg),
+                provenance_record,
+            )
+    else:
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(plot_path, provenance_record)
 
 
 def _get_grouped_data(cfg: dict) -> dict:
@@ -399,6 +423,7 @@ def _get_default_cfg(cfg: dict) -> dict:
     cfg.setdefault("plot_object_methods", {})
     cfg.setdefault("plot_filename", f"seaborn_{cfg.get('seaborn_func', '')}")
     cfg.setdefault("reset_index", False)
+    cfg.setdefault("write_netcdf", False)
     cfg.setdefault(
         "savefig_kwargs",
         {
@@ -434,6 +459,13 @@ def _get_plot_func(cfg: dict) -> callable:
     return getattr(sns, cfg["seaborn_func"])
 
 
+def _is_strictly_monotonic(arr):
+    """Test if np.array is strictly monotonic."""
+    result = np.all(np.diff(arr) > 0) | np.all(np.diff(arr) < 0)
+
+    return result
+
+
 def _modify_dataframe(data_frame: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     """Modify data frame according to the option ``data_frame_ops``."""
     allowed_funcs = ("query", "eval")
@@ -461,6 +493,76 @@ def _modify_dataframe(data_frame: pd.DataFrame, cfg: dict) -> pd.DataFrame:
         data_frame = data_frame.dropna(**cfg["dropna_kwargs"])
         logger.debug("Main data frame after dropna \n%s", data_frame)
     return data_frame
+
+
+def _prepare_cube(cube, cubes_to_aux, cubes_to_coord, cfg):
+    """Prepare cube to save data as netCDF."""
+    cube.attributes.globals["seaborn_func"] = cfg["seaborn_func"]
+    cube.attributes.globals["seaborn_kwargs"] = _get_str_from_kwargs(
+        cfg["seaborn_kwargs"]
+    )
+    for auxcube in cubes_to_aux:
+        aux_coord = iris.coords.AuxCoord(
+            auxcube.data, long_name=auxcube.long_name
+        )
+        # Add the auxiliary coordinate to the cube
+        cube.add_aux_coord(aux_coord, data_dims=0)
+
+    for dimcube in cubes_to_coord:
+        dim_coord = iris.coords.DimCoord(
+            dimcube.data, long_name=dimcube.long_name
+        )
+        # Add the auxiliary coordinate to the cube
+        cube.add_dim_coord(dim_coord, data_dims=0)
+
+    return cube
+
+
+def _save_nc_data(dframe: pd.DataFrame, cfg) -> None:
+    """Save netCDF files for plot."""
+    cubes_to_save = CubeList()
+    cubes_to_aux = CubeList()
+    cubes_to_coord = CubeList()
+
+    strings_to_save = []
+    for key in cfg["seaborn_kwargs"]:
+        if key in ["x", "y", "hue", "col"]:
+            strings_to_save.append(cfg["seaborn_kwargs"][key])
+
+    for something in dframe:
+        if something in strings_to_save:
+            testcube = iris.pandas.as_cubes(dframe[something])[0]
+            testcube.var_name = something
+            testcube.remove_coord("unknown")
+
+            if something in UNITS:
+                testcube.units = UNITS[something]
+
+            if something in ["shape_id", "dataset", "alias"]:
+                testcube.data = testcube.data.astype(str)
+                cubes_to_aux.append(testcube)
+            elif something in [
+                "latitude",
+                "longitude",
+                "height",
+                "plev",
+                "time",
+            ] and _is_strictly_monotonic(testcube.data):
+                cubes_to_coord.append(testcube)
+            else:
+                cubes_to_save.append(testcube)
+
+    for cube in cubes_to_save:
+        cube = _prepare_cube(
+            cube,
+            cubes_to_aux,
+            cubes_to_coord,
+            cfg,
+        )
+
+    io.iris_save(
+        cubes_to_save, get_diagnostic_filename(cfg["plot_filename"], cfg)
+    )
 
 
 def _set_legend_title(plot_obj, legend_title: str) -> None:
