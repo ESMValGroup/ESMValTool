@@ -48,7 +48,6 @@ Documentation
 -  Remove mention of Julia in documentation ahead of discontinued support in v2.13 (:pull:`4156`) by :user:`jlenh`
 -  Update `cartopy` documentation link to fix documentation build fail (:pull:`4179`) by :user:`jlenh`
 -  Add debugging help (:pull:`2638`) by :user:`zklaus`
--  Update `cartopy` documentation link to fix documentation build fail (:pull:`4179`) by :user:`jlenh`
 
 Diagnostics
 ~~~~~~~~~~~
@@ -64,7 +63,6 @@ Diagnostics
 -  REF ozone recipe (:pull:`3988`) by :user:`hb326`
 -  Faster and lower memory version of recipe_ref_scatterplot.yml (:pull:`3992`) by :user:`bouweandela`
 -  Update GPCP and ERA5 obs4MIPs datasets in recipe_ref_scatterplot.yml (:pull:`4011`) by :user:`bouweandela`
--  Update RTW to use new user configuration (:pull:`4017`) by :user:`ehogan`
 -  Add option to specify caption in recipe for `monitor/multi_datasets.py` (:pull:`4028`) by :user:`schlunma`
 -  Optimize caption produced by `tcr.py` (:pull:`4042`) by :user:`schlunma`
 -  Optimize caption produced by `ecs.py` (:pull:`4040`) by :user:`schlunma`
@@ -100,9 +98,9 @@ Diagnostics
 -  Fix small matplotlib errors in `recipe_zmnam.yml` (:pull:`4177`) by :user:`jlenh`
 -  Fix `_fix_lons` function in `recipe_flato13ipcc_figure_914.yml` due to `numpy` error [#4034] (:pull:`4178`) by :user:`jlenh`
 -  Improve the handling of options in recipe_ref_fire.yml (:pull:`4184`) by :user:`bouweandela`
--  ACCESS-NRI ENSO diagnostics CLIVAR porting (:pull:`3905`) by :user:`flicj191`
 -  Fix small matplotlib errors in `recipe_zmnam.yml` (:pull:`4177`) by :user:`jlenh`
--  Fix `_fix_lons` function in `recipe_flato13ipcc_figure_914.yml` due to `numpy` error [#4034] (:pull:`4178`) by :user:`jlenh`
+-  Fix minor NCL errors for `recipe_russel18jgr.yml` (:pull:`4183`) by :user:`jlenh`
+-  Fix specification for WOA dataset in recipe_ocean_quadmap (:pull:`4176`) by :user:`TomasTorsvik`
 
 Observational and re-analysis dataset support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -154,6 +152,7 @@ Automatic testing
 -  RTW status report shows missing compare tasks as succeeded (:pull:`4064`) by :user:`chrisbillowsMO`
 -  Use compare command in recipe test workflow (:pull:`4087`) by :user:`alistairsellar`
 -  Separate `BRANCH` variable for recipe_test_workflow cloning Core and Tool (:pull:`4070`) by :user:`alistairsellar`
+-  Update RTW to use new user configuration (:pull:`4017`) by :user:`ehogan`
 
 Installation
 ~~~~~~~~~~~~
