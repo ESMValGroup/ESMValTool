@@ -96,7 +96,7 @@ commands:
             conda env create -n esmvaltool -f environment.yml --verbose
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
-            pip --no-deps install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
+            pip install --no-deps << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
             if [[ "<<parameters.flags>>" != *'--editable'* ]]
             then
               rm -r esmvaltool
@@ -136,7 +136,7 @@ jobs:
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             mkdir /logs
-            pip --no-deps install .[test] > /logs/install.txt 2>&1
+            pip install --no-deps .[test] > /logs/install.txt 2>&1
       - run:
           name: Check Python code style and mistakes
           command: |
