@@ -246,19 +246,17 @@ def zmnam_plot(
 
         mpl.rcParams["contour.negative_linestyle"] = "dashed"
 
-        for cmap in inv_map.collections:
-            cmap.set_visible(False)
+        inv_map.set_visible(False)
 
         # Add contour labels over white boxes
         kwargs = {"fontsize": 8, "fmt": "%1.0f"}
         if mpl.__version__.split(".") >= ["3", "3"]:
             kwargs["zorder"] = 30  # new in matplotlib version 3.3
-        plt.clabel(inv_map, **kwargs)
+        clabs = plt.clabel(inv_map, **kwargs)
         # work around https://github.com/SciTools/cartopy/issues/1554
         # in cartopy 0.18
-        clabs = inv_map.labelTextsList
         bbox_dict = dict(
-            boxstyle="square,pad=0", edgecolor="none", fc="white", zorder=25
+            boxstyle="square,pad=0", edgecolor="none", fc="none", zorder=25
         )
         clabs = [txt.set_bbox(bbox_dict) for txt in clabs]
 
