@@ -102,7 +102,8 @@ Automatic testing
 -  Run pre-commit on main (:pull:`4026`) by :user:`schlunma`
 -  Try set a longer no output time limit for Circle tests (:pull:`4035`) by :user:`valeriupredoi`
 -  Only run imagehash tests on Linux machines (:pull:`4039`) by :user:`schlunma`
--  Remove Julia from conda dependency environment (but keep tests for `esmvaltool install Julia`) and add docs how to install from source (:pull:`3921`) by :user:`valeriupredoi`
+-  Remove Julia from conda dependency environment (but keep tests for `esmvaltool install Julia`)
+   and add docs how to install from source (:pull:`3921`) by :user:`valeriupredoi`
 -  Do not run conda install package Github Action with Python 3.13 (yet) (:pull:`4071`) by :user:`valeriupredoi`
 -  Fix Cicle CI tests (prepend Julia to PATH for the containerized run tests) (:pull:`4086`) by :user:`valeriupredoi`
 -  Automatically open pull requests to update GitHub Actions (:pull:`4143`) by :user:`valeriupredoi`
@@ -112,7 +113,8 @@ Installation
 
 -  Drop support for Python 3.10 (:pull:`4027`) by :user:`schlunma`
 -  Support Python 3.13 (:pull:`3805`) by :user:`valeriupredoi`
--  Tackle Julia in DockerHub container builds: remove nstallation of packages (and remove dependencies in Project.jl bar :beer: YAML) (:pull:`4083`) by :user:`valeriupredoi`
+-  Tackle Julia in DockerHub container builds: remove nstallation of packages
+   (and remove dependencies in Project.jl bar :beer: YAML) (:pull:`4083`) by :user:`valeriupredoi`
 -  Use `pyproject.toml` and retire `setup.py` with NO Ruff configuration changes (:pull:`4088`) by :user:`valeriupredoi`
 -  Add extra Ruff rules and switch to `requires-python = ">=3.11"` in pyproject.toml (:pull:`4085`) by :user:`valeriupredoi`
 -  Update environment to use ESMValCore v2.13.0rc1 (:pull:`4169`) by :user:`bouweandela`
@@ -161,9 +163,6 @@ Improvements
 -  Regional historical changes for REF (:pull:`3926`) by :user:`katjaweigel`
 -  Correct typo in "pearsonr" (:pull:`4140`) by :user:`katjaweigel`
 -  Move dependabot configuration to correct path (:pull:`4145`) by :user:`bouweandela`
--  Bump peter-evans/create-pull-request from 3 to 7 (:pull:`4149`) by :user:`dependabot[bot]`
--  Bump actions/checkout from 4 to 5 (:pull:`4147`) by :user:`dependabot[bot]`
--  Bump actions/setup-python from 1 to 5 (:pull:`4148`) by :user:`dependabot[bot]`
 -  Use trusted publisher routine for PyPI and retire token-based type (:pull:`4150`) by :user:`valeriupredoi`
 -  Fix pypa Github Action version (:pull:`4151`) by :user:`valeriupredoi`
 -  Fix `recipe_williams09climdyn_CREM.yml` by replacing `np.NAN` with `np.nan` (:pull:`4160`) by :user:`jlenh`
