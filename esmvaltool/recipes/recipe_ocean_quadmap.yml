@@ -46,7 +46,8 @@ preprocessors:
       operator: mean
     regrid:
       target_grid: WOA
-      scheme: linear
+      scheme: nearest
+
   prep_quad_map_depth:  # For Global 2D fields
     extract_time:
       start_year: 2000
@@ -62,7 +63,7 @@ preprocessors:
       scheme: linear
     regrid:
       target_grid: WOA
-      scheme: linear
+      scheme: nearest
 
 
 diagnostics:
