@@ -305,10 +305,14 @@ def main(cfg):
         [att_warming,att_warming_range,dummy]=attrib_warming(att_out[dataset]['beta'][0],att_out[dataset]['betaCI'][0,:],
                                                              mean_dec_warming[0,mm]-mean_dec_warming[1,mm],
                                                              (ci90_dec_warming[0,mm]**2+ci90_dec_warming[1,mm]**2)**0.5)
+        att_out[dataset]['warm_all'] = att_warming
+        att_out[dataset]['warm_range_all'] = att_warming_range
         plt.plot([mm_attrib+0.9,mm_attrib+0.9],att_warming_range,color=colors[1,:],linewidth=2,label=ant)
         plt.plot(mm_attrib+0.9,att_warming,color=colors[1,:],marker='+')
         [att_warming,att_warming_range,dummy]=attrib_warming(att_out[dataset]['beta'][1],att_out[dataset]['betaCI'][1,:],
                                                              mean_dec_warming[1,mm],ci90_dec_warming[1,mm])
+        att_out[dataset]['warm_nat'] = att_warming
+        att_out[dataset]['warm_range_nat'] = att_warming_range
         plt.plot  ([mm_attrib+1.1,mm_attrib+1.1],att_warming_range,color=colors[4,:],linewidth=2,label=nat)
         plt.plot(mm_attrib+1.1,att_warming,color=colors[4,:],marker='+')
         if simple_uncert:
@@ -397,6 +401,8 @@ def main(cfg):
                                                            att_out[dataset]['betaCI'][0,:],
                                                            multim_mean_dec_warming[0]-multim_mean_dec_warming[1],
                                                            (multim_ci90_dec_warming[0]**2+multim_ci90_dec_warming[1]**2)**0.5,ci90_beta_obs2[0])
+      att_out[dataset]['warm_all'] = att_warming
+      att_out[dataset]['warm_range_all'] = att_warming_range
       print ('main',att_out[dataset]['beta'][0],att_out[dataset]['betaCI'][0,:],multim_mean_dec_warming[0]-multim_mean_dec_warming[1],
              (multim_ci90_dec_warming[0]**2+multim_ci90_dec_warming[1]**2)**0.5,ci90_beta_obs2[0])
       fitted_ant=att_out[dataset]['beta'][0]*numpy.mean((mean_diag[:,0,:]-mean_diag[:,1,:]),axis=1)
@@ -407,6 +413,8 @@ def main(cfg):
       [att_warming,att_warming_range,dummy]=attrib_warming(att_out[dataset]['beta'][1],
                                                            att_out[dataset]['betaCI'][1,:],multim_mean_dec_warming[1],
                                                            multim_ci90_dec_warming[1],ci90_beta_obs2[1])
+      att_out[dataset]['warm_nat'] = att_warming
+      att_out[dataset]['warm_range_nat'] = att_warming_range
       plt.plot  ([mm_attrib+1.1,mm_attrib+1.1],att_warming_range,color=colors[4,:],linewidth=2,label=nat)
       plt.plot(mm_attrib+1.1,att_warming,color=colors[4,:],marker='+')
       print ('NAT:',att_warming,att_warming_range)
