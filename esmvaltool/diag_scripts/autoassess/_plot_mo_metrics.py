@@ -37,6 +37,10 @@ FAKELINES = [
 ]
 
 
+class TestError(Exception):
+    """Error with the tests provided."""
+
+
 def merge_obs_acc(obs, acc):
     """
     Merge observation errors.
@@ -651,8 +655,14 @@ def plot_nac(
     plot_obs(ax, metrics, n_obs, color=OBS_GREY, zorder=2)
 
     # Plot metric data
+    # non-strict zip since MARKERS is deliberately longer than number of tests
+    if len(tests) > len(MARKERS):
+        raise TestError(
+            f"Number of tests, {len(tests)}, is larger than available "
+            f"plot MARKERS, {len(MARKERS)}."
+        )
     n_tests = []
-    for test, marker in zip(tests, MARKERS, strict=True):
+    for test, marker in zip(tests, MARKERS, strict=False):
         # Normalise test by ref
         n_test = normalise(test, ref, strict=True)
 
