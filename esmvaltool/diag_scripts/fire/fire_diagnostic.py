@@ -284,8 +284,9 @@ def compute_vpd(
     logger.info(msg)
     filename = get_diagnostic_filename(basename, cfg, extension="nc")
     iris.save(vpd, filename)
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(filename, provenance)
+    if not cfg["remove_vpd_files"]:
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(filename, provenance)
     return filename
 
 
@@ -433,14 +434,14 @@ def main(cfg: dict) -> None:
         if cfg["remove_vpd_files"]:
             logger.info("Removing VPD files in %s", cfg["work_dir"])
             f_not_removed = []
-            for f in list(Path(f"{cfg['work_dir']}/").glob("*vpd*.*")):
-                logger.info("Removing %s", f.split("/")[-1])
+            for f in Path(f"{cfg['work_dir']}/").glob("*vpd*.*"):
+                logger.info("Removing %s", f.name)
                 try:
                     Path(f).unlink()
-                    logger.info("Removed %s", f.split("/")[-1])
+                    logger.info("Removed %s", f.name)
                 except OSError as e:
-                    logger.debug("Error removing %s: %s", f.split("/")[-1], e)
-                    f_not_removed.append(f.split("/")[-1])
+                    logger.debug("Error removing %s: %s", f.name, e)
+                    f_not_removed.append(f.name)
             logger.info("Files not removed: %s", f_not_removed)
 
         # Remove or not ConFire files after diagnostic run
@@ -450,16 +451,14 @@ def main(cfg: dict) -> None:
                 cfg["work_dir"],
             )
             f_not_removed = []
-            for f in list(
-                Path(f"{cfg['work_dir']}/ConFire_outputs/").glob("*.nc"),
-            ):
-                logger.info("Removing %s", f.split("/")[-1])
+            for f in Path(f"{cfg['work_dir']}/ConFire_outputs/").glob("*.nc"):
+                logger.info("Removing %s", f.name)
                 try:
                     Path(f).unlink()
-                    logger.info("Removed %s", f.split("/")[-1])
+                    logger.info("Removed %s", f.name)
                 except OSError as e:
-                    logger.debug("Error removing %s: %s", f.split("/")[-1], e)
-                    f_not_removed.append(f.split("/")[-1])
+                    logger.debug("Error removing %s: %s", f.name, e)
+                    f_not_removed.append(f.name)
             logger.info("Files not removed: %s", f_not_removed)
             if len(f_not_removed) == 0:
                 Path.rmdir(f"{cfg['work_dir']}/ConFire_outputs")
