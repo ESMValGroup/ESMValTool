@@ -662,7 +662,7 @@ def plot_nac(
             f"plot MARKERS, {len(MARKERS)}."
         )
     n_tests = []
-    for test, marker in zip(tests, MARKERS, strict=False):
+    for test, marker in zip(tests, MARKERS[:len(tests)], strict=True):
         # Normalise test by ref
         n_test = normalise(test, ref, strict=True)
 
