@@ -655,7 +655,7 @@ def plot_nac(
     plot_obs(ax, metrics, n_obs, color=OBS_GREY, zorder=2)
 
     # Plot metric data
-    # non-strict zip since MARKERS is deliberately longer than number of tests
+    # Check enough MARKERS for number of tests
     if len(tests) > len(MARKERS):
         raise TestError(
             f"Number of tests, {len(tests)}, is larger than available "
