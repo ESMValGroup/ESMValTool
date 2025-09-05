@@ -409,7 +409,7 @@ def metric_colours(test, ref=None, var=None, obs=None, acc=None):
     return colours
 
 
-def normalise(test, ref, strict=True):
+def normalise(test, ref, strict=False):
     """
     Routine to normalise contents of test by contents of ref.
 
