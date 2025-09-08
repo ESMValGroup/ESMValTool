@@ -76,46 +76,46 @@ def download_dataset(
 
     # download monthly AATSR data
 
-    loop_date = start_date
-    while loop_date <= end_date:
-        if loop_date.year < 2003:
-            instrument = "ATSR2"
-        else:
-            instrument = "AATSR"
-        rel_base_dir = f"{instrument}_{algorithm}/L3/{version}/MONTHLY"
-        downloader.set_cwd(rel_base_dir)
-        if downloader.exists(f"{loop_date.year}"):
-            downloader.download_folder(
-                f"{loop_date.year}", f"{name}-{algorithm}-{version}-monthly"
-            )
-        else:
-            logger.info("%d: no data found", loop_date.year)
-        loop_date += relativedelta.relativedelta(years=1)
+#    loop_date = start_date
+#    while loop_date <= end_date:
+#        if loop_date.year < 2003:
+#            instrument = "ATSR2"
+#        else:
+#            instrument = "AATSR"
+#        rel_base_dir = f"{instrument}_{algorithm}/L3/{version}/MONTHLY"
+#        downloader.set_cwd(rel_base_dir)
+#        if downloader.exists(f"{loop_date.year}"):
+#            downloader.download_folder(
+#                f"{loop_date.year}", f"{name}-{algorithm}-{version}-monthly"
+#            )
+#        else:
+#            logger.info("%d: no data found", loop_date.year)
+#        loop_date += relativedelta.relativedelta(years=1)
 
     # download daily AATSR data
 
-    loop_date = start_date
-    while loop_date <= end_date:
-        if loop_date.year < 2003:
-            instrument = "ATSR2"
-        else:
-            instrument = "AATSR"
-        rel_base_dir = f"{instrument}_{algorithm}/L3/{version}/DAILY"
-        downloader.set_cwd(rel_base_dir)
-        if downloader.exists(f"{loop_date.year}"):
-            downloader.set_cwd(f"{rel_base_dir}/{loop_date.year}")
-            if downloader.exists(f"{loop_date.month:02}"):
-                downloader.download_folder(
-                    f"{loop_date.month:02}",
-                    f"{name}-{algorithm}-{version}-daily",
-                )
-            else:
-                logger.info(
-                    "%d/%d: no data found", loop_date.year, loop_date.month
-                )
-        else:
-            logger.info("%d: no data found", loop_date.year)
-        loop_date += relativedelta.relativedelta(months=1)
+#    loop_date = start_date
+#    while loop_date <= end_date:
+#        if loop_date.year < 2003:
+#            instrument = "ATSR2"
+#        else:
+#            instrument = "AATSR"
+#        rel_base_dir = f"{instrument}_{algorithm}/L3/{version}/DAILY"
+#        downloader.set_cwd(rel_base_dir)
+#        if downloader.exists(f"{loop_date.year}"):
+#            downloader.set_cwd(f"{rel_base_dir}/{loop_date.year}")
+#            if downloader.exists(f"{loop_date.month:02}"):
+#                downloader.download_folder(
+#                    f"{loop_date.month:02}",
+#                    f"{name}-{algorithm}-{version}-daily",
+#                )
+#            else:
+#                logger.info(
+#                    "%d/%d: no data found", loop_date.year, loop_date.month
+#                )
+#        else:
+#            logger.info("%d: no data found", loop_date.year)
+#        loop_date += relativedelta.relativedelta(months=1)
 
     # ================================================
     # Download SLSTR data from CDS (daily and monthly)
