@@ -2,13 +2,11 @@
 
 import logging
 import os
-
 from datetime import datetime
 
 from dateutil import relativedelta
 
 from esmvaltool.cmorizers.data.downloaders.wget import WGetDownloader
-
 
 logger = logging.getLogger(__name__)
 
@@ -50,26 +48,24 @@ def download_dataset(
 
     # download files
 
-    url = 'https://data.rda.ucar.edu/ds625.1'
+    url = "https://data.rda.ucar.edu/ds625.1"
     download_options = ["--no-check-certificate"]
 
     # define files to download
 
-    files = ['fcst_phy2m',
-             'fcst_phy3m',
-             'anl_chipsi',
-             'anl_p']
+    files = ["fcst_phy2m", "fcst_phy3m", "anl_chipsi", "anl_p"]
 
     # download data
 
     while loop_date <= end_date:
         year = loop_date.year
-        month = f'{loop_date.month:0>2}'
+        month = f"{loop_date.month:0>2}"
 
         for basename in files:
-            fname = f'{basename}.{year}{month}.nc'
+            fname = f"{basename}.{year}{month}.nc"
             # download file
-            downloader.download_file(url + '/' + basename + '/' + fname,
-                                     download_options)
+            downloader.download_file(
+                url + "/" + basename + "/" + fname, download_options
+            )
 
         loop_date += relativedelta.relativedelta(months=1)
