@@ -1,0 +1,156 @@
+# ESMValTool
+---
+documentation:
+  description: Reproducing ENSO feedback metrics by Yann Planton
+  title: ENSO CLIVAR metrics - ENSO feedback
+  authors:
+    - chun_felicity
+    - planton_yann
+    - beucher_romain
+    - sullivan_arnold
+    - gillet_zoe
+  maintainer:
+    - chun_felicity
+
+datasets:
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+
+
+preprocessors:
+  base_east: &base  # 20sst, 21ssh
+    custom_order: true
+    convert_units:
+      units: degC
+    mask_landsea:
+      mask_out: land
+    anomalies:
+      period: monthly
+    detrend:
+      dimension: time
+      method: linear
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region: &east
+      start_longitude: 210.
+      end_longitude: 270.
+      start_latitude: -5.
+      end_latitude: 5.
+    area_statistics:
+      operator: mean
+
+  west:  # all levels
+    <<: *base
+    convert_units:
+      units: 1e-3 N/m2
+    extract_region: &west
+      start_longitude: 160.
+      end_longitude: 210.
+      start_latitude: -5.
+      end_latitude: 5.
+
+  taux_eqp: &eqp_lv3
+    convert_units:
+      units: 1e-3 N/m2
+    mask_landsea:
+      mask_out: land
+    anomalies:
+      period: monthly
+    detrend:
+      dimension: time
+      method: linear
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region: &eqp
+      start_longitude: 150.
+      end_longitude: 270.
+      start_latitude: -5.
+      end_latitude: 5.
+    meridional_statistics:
+      operator: mean
+
+  ssh_eqp:  # lvl3
+    <<: *eqp_lv3
+    convert_units:
+      units: cm
+
+  ssh_east:
+    <<: *base
+    convert_units:
+      units: cm
+
+  ssh_eqp_area:
+    <<: *base
+    custom_order: false
+    convert_units:
+      units: cm
+    extract_region:  # eqp
+      <<: *eqp
+
+  sst_eqp_merid:  # lvl3
+    <<: *eqp_lv3
+    convert_units:
+      units: degC
+  hf_east:
+    <<: *base
+    convert_units:
+      units: W m-2
+
+diagnostics:
+  feedback_metrics:
+    description: run preprocessors on variables for ENSO metrics
+    variables:
+      sst_east:
+        short_name: ts
+        mip: Amon
+        # supplementary_variables: [{short_name: areacella, mip: fx},{short_name: sftlf, mip: fx}]
+        preprocessor: base_east
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, version: 1, start_year: 1979, end_year: 2017}
+
+      sst_eqp:
+        short_name: ts
+        mip: Amon
+        preprocessor: sst_eqp_merid
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, version: 1, start_year: 1979, end_year: 2017}
+
+      taux_west:
+        short_name: tauu
+        mip: Amon
+        preprocessor: west
+        additional_datasets:
+          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, tier: 2, version: 2, start_year: 1979, end_year: 2017}
+
+      taux_eqp:
+        short_name: tauu
+        mip: Amon
+        preprocessor: taux_eqp
+        additional_datasets:
+          - {dataset: NCEP-DOE-R2, project: OBS6, type: reanaly, tier: 2, version: 2, start_year: 1979, end_year: 2017}
+
+      ssh_east:
+        short_name: zos
+        mip: Omon
+        preprocessor: ssh_east
+        additional_datasets:
+          - {dataset: CMEMS, project: OBS6, type: sat, tier: 2, version: SEALEVEL-GLO-PHY-L4, start_year: 1993, end_year: 2018}
+      ssh_eqp:
+        short_name: zos
+        mip: Omon
+        preprocessor: ssh_eqp
+        additional_datasets:
+          - {dataset: CMEMS, project: OBS6, type: sat, tier: 2, version: SEALEVEL-GLO-PHY-L4, start_year: 1993, end_year: 2018}
+      ssh_eqp_area:
+        short_name: zos
+        mip: Omon
+        preprocessor: ssh_eqp_area
+        additional_datasets:
+          - {dataset: CMEMS, project: OBS6, type: sat, tier: 2, version: SEALEVEL-GLO-PHY-L4, start_year: 1993, end_year: 2018}
+
+    scripts:
+      plot_script:
+        script: enso_metrics/feedback/feedback_metrics.py
+      plot_level4_script:
+        script: enso_metrics/feedback/feedback_metrics_lvl4.py

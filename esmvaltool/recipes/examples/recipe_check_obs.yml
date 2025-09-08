@@ -1194,6 +1194,17 @@ diagnostics:
          mip: Amon, tier: 3, start_year: 2007, end_year: 2015}
     scripts: null
 
+  CAMS:
+    description: CAMS check
+    variables:
+      fgco2:
+        mip: Omon
+      nbp:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: CAMS, project: OBS6, tier: 3,
+         type: reanaly, version: v23r1, start_year: 1979, end_year: 2023}
+    scripts: null
 
   CDS-SATELLITE-ALBEDO:
     description: CDS-SATELLITE-ALBEDO check
