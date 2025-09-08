@@ -40,43 +40,15 @@ def download_dataset(
 
     os.makedirs(downloader.local_folder, exist_ok=True)
 
-    user = os.environ.get("rda-user")
-    if user is None:
-        user = str(input("RDA user name? "))
-        if user == "":
-            errmsg = (
-                "A RDA account is required to download JRA-55 data."
-                " Please visit https://rda.ucar.edu/login/register/"
-                " to create an account at the Research Data Archive"
-                " (RDA) if needed."
-            )
-            logger.error(errmsg)
-            raise ValueError
-
-    passwd = os.environ.get("rda-passwd")
-    if passwd is None:
-        passwd = str(input("RDA password? "))
-
     if start_date is None:
         start_date = datetime(1958, 1, 1)
     if end_date is None:
         end_date = datetime(2022, 12, 31)
     loop_date = start_date
 
-    options = [
-        "-O",
-        "Authentication.log",
-        "--save-cookies=auth.rda_ucar_edu",
-        f'--post-data="email={user}&passwd={passwd}&action=login"',
-    ]
-
-    # login to Research Data Archive (RDA)
-
-    downloader.login("https://rda.ucar.edu/cgi-bin/login", options)
-
     # download files
 
-    url = "https://data.rda.ucar.edu/ds628.1"
+    url = "https://tds.gdex.ucar.edu/thredds/catalog/files/g/d628001"
     download_options = ["--load-cookies=auth.rda_ucar_edu"]
 
     # define variables to download
