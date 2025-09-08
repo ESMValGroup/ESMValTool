@@ -894,17 +894,13 @@ datasets:
 
   JRA-25:
     tier: 2
-    source: https://esgf.nccs.nasa.gov/thredds/fileServer/CREATE-IP/reanalysis/JMA/JRA-25/JRA-25/
-    last_access: 2022-11-17
+    source: https://data.rda.ucar.edu/ds625.1
+    last_access: 2023-06-14
     info: |
       Download the following files:
-        mon/atmos/clt/clt_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/hus/hus_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/prw/prw_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rlut/rlut_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rlutcs/rlutcs_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rsut/rsut_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rsutcs/rsutcs_Amon_reanalysis_JRA-25_197901-201312.nc
+        fcst_phy2m/fcst_phy2m.yyyymm.nc
+        anl_chipsi/fcst_phy2m.yyyymm.nc
+        anl_p/anl_p.yyyymm.nc
 
   JRA-55:
     tier: 2
