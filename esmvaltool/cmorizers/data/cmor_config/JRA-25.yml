@@ -9,7 +9,7 @@ attributes:
   source: 'https://data.rda.ucar.edu/ds625.1'
   reference: 'jra_25'
   comment: |
-    '' 
+    ''
 
 # Variables to cmorize
 variables:

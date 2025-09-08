@@ -19,28 +19,21 @@ jobs:
   create-lock-file:
     name: Create conda lock file for latest Python
     runs-on: 'ubuntu-latest'
+    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           activate-environment: esmvaltool-fromlock
-          python-version: "3.12"
+          python-version: "3.13"
           miniforge-version: "latest"
           use-mamba: true
       - name: Show conda config
         run: |
           conda update -n base -c conda-forge conda
-          conda --version
-          # setup-miniconda@v3 installs an old conda and mamba
-          # forcing a modern mamba updates both mamba and conda
-          # unpin mamba after conda-lock=3 release
-          # see github.com/ESMValGroup/ESMValTool/issues/3782
-          conda install -c conda-forge "mamba>=1.4.8,<2"
-          conda config --show-sources
-          conda config --show
           conda --version
           mamba --version
       - name: Python info
@@ -73,14 +66,14 @@ jobs:
         run: esmvaltool --help
       - name: Check ESMValTool help
         run: esmvaltool version
-      - name: Run flake8
-        run: flake8
+      - name: Check code quality
+        run: pre-commit run -a
       - name: Run tests
         run: pytest -n 2 -m "not installation"
       # Automated PR
       # see https://github.com/marketplace/actions/create-pull-request
       - name: Create Automated PR if conda lock file has changed
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Updating Linux condalock file

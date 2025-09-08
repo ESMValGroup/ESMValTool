@@ -29,11 +29,11 @@ logger = logging.getLogger(__name__)
 
 def _fix_var_metadata(var_info, cmor_info, cube):
     """Fix variable metadata."""
-    if 'raw_units' in var_info:
-        cube.units = var_info['raw_units']
+    if "raw_units" in var_info:
+        cube.units = var_info["raw_units"]
 
-    if cube.units == 'mm/day':
-        cube.units = 'kg m-2 day-1'
+    if cube.units == "mm/day":
+        cube.units = "kg m-2 day-1"
 
     cube.convert_units(cmor_info.units)
 
@@ -48,29 +48,29 @@ def _fix_coords(cube, filepath):
     # Bounds
 
     # Time
-    time_bnds = iris.load_cube(filepath, NameConstraint(var_name='time_bnds'))
-    cube.coord('time').bounds = time_bnds.core_data()
+    time_bnds = iris.load_cube(filepath, NameConstraint(var_name="time_bnds"))
+    cube.coord("time").bounds = time_bnds.core_data()
     # Latitude
-    lat_bnds = iris.load_cube(filepath, NameConstraint(var_name='lat_bnds'))
-    cube.coord('latitude').bounds = lat_bnds.core_data()
+    lat_bnds = iris.load_cube(filepath, NameConstraint(var_name="lat_bnds"))
+    cube.coord("latitude").bounds = lat_bnds.core_data()
     # Longitude
-    lon_bnds = iris.load_cube(filepath, NameConstraint(var_name='lon_bnds'))
-    cube.coord('longitude').bounds = lon_bnds.core_data()
+    lon_bnds = iris.load_cube(filepath, NameConstraint(var_name="lon_bnds"))
+    cube.coord("longitude").bounds = lon_bnds.core_data()
 
 
 def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
     """Extract variable."""
     var = cmor_info.short_name
-    raw_var = var_info.get('raw_name', var)
+    raw_var = var_info.get("raw_name", var)
 
     # Load data
     with warnings.catch_warnings():
         warnings.filterwarnings(
-            action='ignore',
+            action="ignore",
             message="Skipping global attribute 'units': 'units' is not a "
-                    "permitted attribute",
+            "permitted attribute",
             category=UserWarning,
-            module='iris',
+            module="iris",
         )
         cube = iris.load_cube(filepath, NameConstraint(var_name=raw_var))
 
@@ -89,19 +89,19 @@ def _extract_variable(var_info, cmor_info, attrs, filepath, out_dir):
         var,
         out_dir,
         attrs,
-        unlimited_dimensions=['time'],
+        unlimited_dimensions=["time"],
     )
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cmor_table = cfg['cmor_table']
-    glob_attrs = cfg['attributes']
+    cmor_table = cfg["cmor_table"]
+    glob_attrs = cfg["attributes"]
 
     # Run the cmorization
-    for (var, var_info) in cfg['variables'].items():
-        filepath = Path(in_dir) / var_info['filename']
+    for var, var_info in cfg["variables"].items():
+        filepath = Path(in_dir) / var_info["filename"]
         logger.info("CMORizing variable '%s' from file %s", var, filepath)
-        glob_attrs['mip'] = var_info['mip']
-        cmor_info = cmor_table.get_variable(var_info['mip'], var)
+        glob_attrs["mip"] = var_info["mip"]
+        cmor_info = cmor_table.get_variable(var_info["mip"], var)
         _extract_variable(var_info, cmor_info, glob_attrs, filepath, out_dir)

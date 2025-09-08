@@ -265,42 +265,38 @@ files and difference hashing provided by
 `imagehash <https://pypi.org/project/ImageHash/>`_ to compare PNG images.
 All other file types are compared byte for byte.
 
-To use it, first install the package imagehash_:
+The package imagehash_ is included in the standard ESMValTool environment.
+However, if you are using an environment that does not include imagehash,
+install it as follows:
 
 .. code-block:: bash
 
    pip install imagehash
 
-Next, go to the location where ESMValTool is installed and run
+Next, run the ``esmvaltool develop compare`` command:
 
 .. code-block:: bash
 
-    python esmvaltool/utils/testing/regression/compare.py ~/reference_output/ ~/output/recipe_python_20220310_180417/
+    esmvaltool develop compare ~/reference_output/recipe_python_20220109_110112/ ~/output/recipe_python_20220310_180417/
 
-where the first argument is a reference run or a directory containing such
-runs and the second and following arguments are directories with runs to compare
-to the reference run(s).
+where the first argument is a directory containing the output
+from a reference run and the second argument is a directory
+containing output from a test run to compare against the reference.
+This command will exit with a return code of 0 if the run outputs :w
+are the same,
+or 1 if they are different.
 
-To compare all results from the current version to the previous version, use e.g.:
+To compare results from a set of multiple runs to a reference set,
+e.g. between the current version of the code to the previous version,
+there is a wrapper script that loops over multiple comparisons.
+To use this go to the location where ESMValTool is installed and run e.g.:
 
 .. code-block:: bash
 
     python esmvaltool/utils/testing/regression/compare.py /shared/esmvaltool/v2.4.0 /shared/esmvaltool/v2.5.0
 
-To get more information on how a result is different, run the tool with the
-``--verbose`` flag.
-
-Testing recipe settings
-=======================
-
-A tool for generating recipes with various diagnostic settings, to test of those work.
-Install ESMValTool in development mode (``pip install -e '.[develop]'``) to make it available.
-To use it, run
-
-.. code-block:: bash
-
-    test_recipe --help
-
+To get more information on how a result is different, use the
+``--verbose`` flag with either of the above commands.
 
 .. _draft_release_notes.py:
 

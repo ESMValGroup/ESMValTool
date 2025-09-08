@@ -4,9 +4,9 @@ on:
   # push:
   #   branches:
   #     - cron_esmvalbot_test
-  # scheduled once every 2 weeks
+  # scheduled twice a month (on the 1st and 16th)
   schedule:
-    - cron: '0 4 */14 * *'
+    - cron: '0 4 1,16 * *'
 
 # Required shell entrypoint to have properly configured bash shell
 defaults:
@@ -16,8 +16,9 @@ defaults:
 jobs:
   run-esmvalbot:
     runs-on: 'ubuntu-latest'
+    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Create empty commit on branch

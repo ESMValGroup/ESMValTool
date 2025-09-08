@@ -103,11 +103,9 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
         utils.add_height2m(cube)
 
     # Save variable
-    utils.save_variable(cube,
-                        short_name,
-                        out_dir,
-                        attrs,
-                        unlimited_dimensions=['time'])
+    utils.save_variable(
+        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+    )
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
