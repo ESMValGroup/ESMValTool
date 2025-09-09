@@ -101,6 +101,7 @@ Diagnostics
 -  Fix small matplotlib errors in `recipe_zmnam.yml` (:pull:`4177`) by :user:`jlenh`
 -  Fix minor NCL errors for `recipe_russel18jgr.yml` (:pull:`4183`) by :user:`jlenh`
 -  Fix specification for WOA dataset in recipe_ocean_quadmap (:pull:`4176`) by :user:`TomasTorsvik`
+-  Fix autoassess normalise error (:pull:`4187`) by :user:`alistairsellar`
 
 Observational and re-analysis dataset support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -123,6 +124,8 @@ Observational and re-analysis dataset support
 -  Update recipe_check_obs.yml to match the latest AERONET data (:pull:`4171`) by :user:`hb326`
 -  Update version facet for ESACCI-CLOUD in recipe_check_obs.yml (:pull:`4166`) by :user:`jlenh`
 -  Remove `end_year` facet for NOAA-GML datasets in `recipe_check_obs.yml` (:pull:`4167`) by :user:`jlenh`
+-  New version of JRA-25 CMORizer (:pull:`3470`) by :user:`axel-lauer`
+-  Add CAMS cmorizer (:pull:`3749`) by :user:`bettina-gier`
 
 Automatic testing
 ~~~~~~~~~~~~~~~~~
