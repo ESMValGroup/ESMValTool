@@ -448,11 +448,11 @@ authors:
     family-names: Chun
     given-names: Felicity
     orcid: "https://orcid.org/0009-0007-0845-0953"
-  - 
+  -
     affiliation: "Met Office, UK"
     family-names: Ellis
     given-names: Hannah
-  
+
 
 cff-version: 1.2.0
 date-released: 2025-03-05

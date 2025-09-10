@@ -162,7 +162,7 @@ diagnostics:
       so:
       sos:
     additional_datasets:
-      - {dataset: EN4, project: OBS6, mip: Omon, type: reanaly, 
+      - {dataset: EN4, project: OBS6, mip: Omon, type: reanaly,
          version: 4.2.2, tier: 2, start_year: 1900, end_year: 2024}
     scripts: null
 

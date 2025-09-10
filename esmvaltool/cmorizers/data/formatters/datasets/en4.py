@@ -8,7 +8,7 @@ Tier
 
 Source
     https://www.metoffice.gov.uk/hadobs/en4/download-en4-2-2.html
-    
+
 Last access
     2025-06-13
 
@@ -16,14 +16,15 @@ Info
     EN4: quality controlled subsurface ocean temperature and salinity objective analyses.
     Script tested using analyses with Gouretski and Reseghetti (2010) XBT corrections
     and Gouretski and Cheng (2020) MBT corrections applied.
-    
-Download instructions      
+
+Download instructions
     - Edit the text file for your chosen years, https://www.metoffice.gov.uk/hadobs/en4/EN.4.2.2.analyses.g10.download-list.txt
     - Save .txt file in directory for data to be downloaded to.
     - Run 'wget -i EN.4.2.2.profiles.g10.download-list.txt' in same directory.
     - Unzip files prior to running the cmorizer script.
 
 """
+
 import logging
 from pathlib import Path
 
@@ -32,6 +33,7 @@ import iris
 from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
+
 
 def load_and_prepare_cube(fullpath, var, var_info, glob_attrs, cmor_table):
     """
@@ -67,12 +69,13 @@ def load_and_prepare_cube(fullpath, var, var_info, glob_attrs, cmor_table):
     if cube.units == "K":
         cube.convert_units("degC")
 
-    cube.coord("depth").units = "m"   
+    cube.coord("depth").units = "m"
     cube = utils.fix_coords(cube)
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, glob_attrs)
 
     return cube
+
 
 def extract_surface_var(cube, cmor_info):
     """
@@ -99,6 +102,7 @@ def extract_surface_var(cube, cmor_info):
 
     return surface_cube
 
+
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """
     CMORization main function call.
@@ -109,16 +113,16 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
     for var, var_info in cfg["variables"].items():
         logger.info("Loading %s", fullpath)
-        
+
         srf_var = var_info["srf_var"]
         cmor_info_srf = cmor_table.get_variable(var_info["mip"], srf_var)
 
-        cube = load_and_prepare_cube(fullpath, var, var_info, glob_attrs, cmor_table)
+        cube = load_and_prepare_cube(
+            fullpath, var, var_info, glob_attrs, cmor_table
+        )
         surface_cube = extract_surface_var(cube, cmor_info_srf)
         logger.info("Saving for %s", var)
         utils.save_variable(cube, var, out_dir, glob_attrs)
 
         logger.info("Saving for %s", srf_var)
         utils.save_variable(surface_cube, srf_var, out_dir, glob_attrs)
-
-    
