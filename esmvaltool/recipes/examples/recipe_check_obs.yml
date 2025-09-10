@@ -3,7 +3,7 @@
 ---
 documentation:
   description: |
-    Test recipe for OBS, no proprocessor or diagnostics are applied,
+    Test recipe for OBS, no preprocessor or diagnostics are applied,
     just to check correct reading of the CMORized data.
 
   title: Recipe to test run all obs cmorizers.
@@ -154,6 +154,17 @@ diagnostics:
          type: clim, version: v2018, start_year: 2010, end_year: 2010}
     scripts: null
 
+  EN4:
+    description: EN4 check
+    variables:
+      thetao:
+      tos:
+      so:
+      sos:
+    additional_datasets:
+      - {dataset: EN4, project: OBS6, mip: Omon, type: reanaly, 
+         version: 4.2.2, tier: 2, start_year: 1900, end_year: 2024}
+    scripts: null
 
   E-OBS:
     description: E-OBS check

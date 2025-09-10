@@ -425,6 +425,10 @@
       "affiliation": "ACCESS-NRI, Australia",
       "name": "Chun, Felicity",
       "orcid": "0009-0007-0845-0953"
+    },
+    {
+      "affiliation": "Met Office, UK",
+      "name": "Ellis, Hannah"
     }
   ],
   "description": "ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP.",
@@ -448,7 +452,7 @@
         "identifier": "nlesc"
     }
 ],
-"grants": [
+  "grants": [
     {
         "id": "10.13039/501100000780::282672"
     },

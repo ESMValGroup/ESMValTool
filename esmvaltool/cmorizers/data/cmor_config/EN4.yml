@@ -7,7 +7,7 @@ filename: 'EN.4.2.2.f.analysis.g10.*.nc'
 attributes:
   dataset_id: EN4
   version: '4.2.2'
-  tier: 3
+  tier: 2
   modeling_realm: reanaly
   project_id: OBS6
   source: 'https://www.metoffice.gov.uk/hadobs/en4/download-en4-2-2.html'
