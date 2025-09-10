@@ -67,6 +67,11 @@
       "name": "Adeniyi, Kemisola"
     },
     {
+      "affiliation": "University of Bremen, Germany",
+      "name": "Castellani, Giulia",
+      "orcid": "0000-0001-6151-015X"
+    },
+    {
       "affiliation": "ISAC-CNR, Italy",
       "name": "Arnone, Enrico",
       "orcid": "0000-0001-6740-5051"
@@ -84,6 +89,11 @@
     {
       "affiliation": "Met Office, UK",
       "name": "Billows, Chris"
+    },
+    {
+      "affiliation": "Met Office, UK",
+      "name": "Blockley, Ed",
+      "orcid": "0000-0002-0489-4238"
     },
     {
       "affiliation": "DLR, Germany",
@@ -182,6 +192,10 @@
       "affiliation": "HZG, Germany",
       "name": "Hagemann, Stefan",
       "orcid": "0000-0001-5444-2945"
+    },
+    {
+      "affiliation": "Met Office, UK",
+      "name": "Hall, Sophie"
     },
     {
       "affiliation": "University of Canterbury, New Zealand",
@@ -283,6 +297,10 @@
       "name": "Amarjiit, Pandde"
     },
     {
+      "affiliation": "Met Office, UK",
+      "name": "Parsons, Naomi"
+    },
+    {
       "affiliation": "BSC, Spain",
       "name": "Pérez-Zanón, Núria"
     },
@@ -327,6 +345,11 @@
       "orcid": "0000-0003-4637-5337"
     },
     {
+      "affiliation": "Met Office, UK",
+      "name": "Storkey, Dave",
+      "orcid": "0000-0001-8000-5335"
+    },
+    {
       "affiliation": "URead, UK",
       "name": "Swaminathan, Ranjini",
       "orcid": "0000-0001-5853-2673"
@@ -347,6 +370,10 @@
     {
       "affiliation": "DLR, Germany",
       "name": "Sarauer, Ellen"
+    },
+    {
+      "affiliation": "University of Bremen, Germany",
+      "name": "Schulze, Kirsten"
     },
     {
       "affiliation": "University of Reading, UK",

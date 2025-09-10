@@ -30,6 +30,12 @@ authors:
     email: diego.cammarano@dlr.de
     github: diegokam
     orcid:
+  castellani_giulia:
+    name: Castellani, Giulia
+    institute: University of Bremen
+    email: giulia.castellani@uni-bremen.de
+    github: giuliacast
+    orcid: https://orcid.org/0000-0001-6151-015X
   debeire_kevin:
     name: Debeire, Kevin
     institute: DLR, Germany
@@ -274,6 +280,10 @@ authors:
     name: Hagemann, Stefan
     institute: MPI-M, Germany
     orcid: https://orcid.org/0000-0001-5444-2945
+  hall_sophie:
+    name: Hall, Sophie
+    institute: MetOffice, UK
+    orcid:
   hansson_ulf:
     name: Hansson, Ulf
     institute: SMHI, Sweden
@@ -320,6 +330,10 @@ authors:
     name: Kalverla, Peter
     institute: NLeSC, Netherlands
     orcid: https://orcid.org/0000-0002-5025-7862
+  kelley_douglas:
+    name: Kelley, Douglas
+    institute: UKCEH, UK
+    orcid: https://orcid.org/0000-0003-1413-4969
   kindermann_stephan:
     name: Kindermann, Stephan
     institute: DKRZ, Germany
@@ -523,6 +537,11 @@ authors:
     institute: DLR, Germany
     orcid:
     github: ellensarauer
+  schulze_kirsten:
+    name: Schulze, Kirsten
+    institute: Uni Bremen, Germany
+    orcid:
+    github: kirsy05
   serva_federico:
     name: Serva, Federico
     institute: CNR, Italy
@@ -620,6 +639,10 @@ authors:
     name: Balaji, Venkatramani
     institute: GFDL, USA
     orcid:
+  blockley_ed:
+    name: Blockley, Ed
+    institute: MetOffice, UK
+    orcid: 0000-0002-0489-4238
   bunzel_felix:
     name: Bunzel, Felix
     institute: MPI-M, Germany
@@ -628,6 +651,10 @@ authors:
     name: Charlton-Perez, Andrew
     institute: Univ. of Reading, UK
     orcid:
+  chung_christine:
+    name: Chung, Christine
+    institute: Bureau of Meterology, Australia
+    orcid:
   corti_susanna:
     name: Corti, Susanna
     institute: ISAC-CNR, Torino, Italy
@@ -635,6 +662,10 @@ authors:
   dennis_john:
     name: Dennis, John
     institute: NCAR, USA
+    orcid:
+  gillet_zoe:
+    name: Gillet, Zoe
+    institute: Bureau of Meterology, Australia
     orcid:
   graf_phoebe:
     name: Graf, Phoebe
@@ -676,6 +707,10 @@ authors:
   mickelson_sheri:
     name: Mickelson, Sheri
     institute: NCAR, USA
+    orcid:
+  parsons_naomi:
+    name: Parsons, Naomi
+    institute: MetOffice, UK
     orcid:
   oconnor_fiona:
     name: OConnor, Fiona
@@ -775,6 +810,10 @@ authors:
     name: Stevens, Mark
     institute: NCAR, US
     orcid:
+  storkey_dave:
+    name: Storkey, Dave
+    institute: MetOffice, UK
+    orcid: 0000-0001-8000-5335
   # Former viewers (not active viewers)
   adeniyi_kemisola:
     name: Adeniyi, Kemisola

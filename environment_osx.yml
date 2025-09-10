@@ -4,12 +4,13 @@ channels:
   # The release candidate channel should only be activated
   # during the rc phase right before the next release of the
   # ESMValCore.
-  # - conda-forge/label/esmvalcore_rc
+  - conda-forge/label/esmvalcore_rc
   - conda-forge
   - nodefaults
 
 dependencies:
   - aiohttp
+  - arviz
   - cartopy
   - cdo >=2.3.0
   - cdsapi
@@ -23,7 +24,7 @@ dependencies:
   - ecmwf-api-client
   - eofs
   - esmpy
-  - esmvalcore 2.12.*
+  - esmvalcore 2.13.*
   - fiona
   - fire
   - fsspec

@@ -25,6 +25,7 @@ large variety of input data.
    recipe_model_evaluation
    recipe_monitor
    recipe_portrait
+   recipe_sanity_checks
    recipe_seaborn
    recipe_ref
 
@@ -51,6 +52,7 @@ Atmosphere
    recipe_hyint
    recipe_iht_toa
    recipe_impact
+   recipe_lifetime
    recipe_modes_of_variability
    recipe_mpqb_xch4
    recipe_quantilebias
@@ -64,6 +66,7 @@ Atmosphere
    recipe_validation
    recipe_radiation_budget
    recipe_aod_aeronet_assess
+   recipe_surface_trace_gas
 
 Climate metrics
 ^^^^^^^^^^^^^^^
@@ -106,7 +109,6 @@ IPCC
    recipe_ipccwg1ar6ch3
    recipe_ipccwg1ar5ch9
    recipe_collins13ipcc
-   recipe_examples
 
 Land
 ^^^^
@@ -120,6 +122,7 @@ Land
    recipe_landcover
    recipe_anav13jclim
    recipe_runoff_et
+   recipe_ref_fire
 
 Ocean
 ^^^^^
@@ -131,6 +134,7 @@ Ocean
    recipe_combined_indices
    recipe_esacci_oc
    recipe_enso_ref
+   recipe_enso_clivar
    recipe_oceans
    recipe_sea_surface_salinity
    recipe_russell18jgr
@@ -151,6 +155,7 @@ Other
    recipe_seaice
    recipe_seaice_drift
    recipe_seaice_feedback
+   recipe_seaice_sensitivity
    recipe_shapeselect
    recipes_testing
    recipe_toymodel
@@ -164,12 +169,9 @@ require a legacy version of ESMValTool to run.
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
-   recipe_psyplot
-   recipe_rainfarm
-   recipe_schlund20jgr
-   recipe_spei
+   legacy_recipe_list
 
 
 Broken recipe list
