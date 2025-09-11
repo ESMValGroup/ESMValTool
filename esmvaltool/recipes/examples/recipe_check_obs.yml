@@ -654,13 +654,19 @@ diagnostics:
   JRA-25:
     description: JRA-25 check
     variables:
+      cl:
       clt:
+      clwvi:
       hus:
       prw:
       rlut:
       rlutcs:
       rsut:
       rsutcs:
+      ta:
+      tas:
+      tcw:
+      wap:
     additional_datasets:
       - {dataset: JRA-25, project: OBS6, mip: Amon, tier: 2,
          type: reanaly, version: 1, start_year: 1979, end_year: 2007}
@@ -1194,6 +1200,17 @@ diagnostics:
          mip: Amon, tier: 3, start_year: 2007, end_year: 2015}
     scripts: null
 
+  CAMS:
+    description: CAMS check
+    variables:
+      fgco2:
+        mip: Omon
+      nbp:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: CAMS, project: OBS6, tier: 3,
+         type: reanaly, version: v23r1, start_year: 1979, end_year: 2023}
+    scripts: null
 
   CDS-SATELLITE-ALBEDO:
     description: CDS-SATELLITE-ALBEDO check

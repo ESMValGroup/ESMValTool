@@ -1112,8 +1112,9 @@ def diagnostic_run_confire(
             provenance,
         )
         iris.save(cubes, filename)
-        with ProvenanceLogger(config) as provenance_logger:
-            provenance_logger.log(filename, provenance)
+        if not config["remove_confire_files"]:
+            with ProvenanceLogger(config) as provenance_logger:
+                provenance_logger.log(filename, provenance)
 
     # --------------------------------------------------------
     # **Visualization: Plot Resultant Maps**
