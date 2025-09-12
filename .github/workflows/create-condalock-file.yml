@@ -61,7 +61,7 @@ jobs:
           which python
           pip --version
       - name: Install ESMValTool
-        run: pip install -e .[develop]
+        run: pip install --no-deps -e .[develop]
       - name: Check ESMValTool version
         run: esmvaltool --help
       - name: Check ESMValTool help
