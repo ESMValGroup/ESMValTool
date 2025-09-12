@@ -41,6 +41,7 @@ commands:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
+            pip check
             pytest -n 4 --junitxml=test-reports/report.xml
             esmvaltool version
             esmvaltool -- --help
@@ -95,7 +96,7 @@ commands:
             conda env create -n esmvaltool -f environment.yml --verbose
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
-            pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
+            pip install --no-deps << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
             if [[ "<<parameters.flags>>" != *'--editable'* ]]
             then
               rm -r esmvaltool
@@ -135,7 +136,7 @@ jobs:
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
             mkdir /logs
-            pip install .[test] > /logs/install.txt 2>&1
+            pip install --no-deps .[test] > /logs/install.txt 2>&1
       - run:
           name: Check Python code style and mistakes
           command: |
@@ -206,9 +207,9 @@ jobs:
             conda env create -n esmvaltool -f environment.yml --verbose
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
-            pip install --editable .[develop]
+            pip install --no-deps --editable .[develop]
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
-            pip install --editable $HOME/ESMValCore[develop]
+            pip install --no-deps --editable $HOME/ESMValCore[develop]
       - log_versions
       - test_and_report
       - run:
@@ -246,7 +247,8 @@ jobs:
             # Install
             conda env create -n esmvaltool -f environment_python.yml
             conda activate esmvaltool
-            pip install .[doc]
+            pip install --no-deps .[doc]
+            pip check
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
