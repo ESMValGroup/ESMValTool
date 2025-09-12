@@ -515,8 +515,8 @@ diagnostics:
     additional_datasets:
       - {dataset: ISCCP-FH, project: OBS, type: sat, version: v0, tier: 2,
         start_year: 1984, end_year: 2016}
-      - {dataset: ERA5, project: native6, type: reanaly, version: v1,
-        tier: 3}
+      - {dataset: ERA5, project: native6, type: reanaly, version: 'v1',
+        tier: 3, start_year: 1995, end_year: 2014}
       - {dataset: MERRA2, project: OBS6, type: reanaly, version: '5.12.4', tier: 3,
         start_year: 1980, end_year: 2021}
     scripts: null
