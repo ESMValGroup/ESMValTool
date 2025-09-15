@@ -161,7 +161,7 @@ Installation
 ~~~~~~~~~~~~
 
 -  Remove Julia from conda dependency environment (but keep tests for `esmvaltool install Julia`)
-   and add docs how to install from source (:pull:`3921`) by :user:`valeriupredoi``
+   and add docs how to install from source (:pull:`3921`) by :user:`valeriupredoi`
 -  Unpin upper limit `r-base` (:pull:`3971`) by :user:`valeriupredoi`
 -  Drop support for Python 3.10 (:pull:`4027`) by :user:`schlunma`
 -  Support Python 3.13 (:pull:`3805`) by :user:`valeriupredoi`
