@@ -29,7 +29,7 @@ dependencies:
   - fire
   - fsspec
   - gdal >=3.9.0
-  - ipython <9.0  # github.com/ESMValGroup/ESMValCore/issues/2680 ; remove ipython when solved
+  - ipython
   - iris >=3.11
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - jinja2
