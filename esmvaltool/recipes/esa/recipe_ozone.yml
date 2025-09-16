@@ -64,7 +64,6 @@ preprocessors:
       period: month
     zonal_statistics:
       operator: mean
-      period: full
     convert_units:
       units: DU
 
@@ -149,7 +148,6 @@ diagnostics:
         preprocessor: zonal_mean
         additional_datasets:
           - {project: OBS6, dataset: ESACCI-OZONE, tier: 2, alias: IASI, version: L3-IASI, type: sat, frequency: mon}
-#          - {project: CMIP6, dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2, exp: historical, alias: CNRM-ESM2-1, mip: Amon}
           - {project: OBS6, dataset: ESACCI-OZONE, tier: 2, alias: MEGRIDOP, version: L3-MEGRIDOP, type: sat, frequency: mon, reference_for_monitor_diags: true}
           - {project: OBS6, dataset: ESACCI-OZONE, tier: 2, alias: SAGE-OMPS, version: L3-SAGE-OMPS, type: sat, frequency: mon}
     scripts:
@@ -161,3 +159,124 @@ diagnostics:
         plots:
           zonal_mean_profile:
             common_cbar: true
+
+# Total column ozone plots
+  polar_cap_time_series_SH:
+    variables:
+      toz:
+        mip: AERmon
+        exp: historical
+        preprocessor: create_time_series_SH
+        timerange: '2008/2022'
+    additional_datasets:
+          - {project: OBS6, dataset: ESACCI-OZONE, version: L3-GTO-ECV, type: sat, tier: 2, alias: GTO-ECV, frequency: mon}
+          - {project: OBS6, dataset: ESACCI-OZONE, tier: 2, alias: IASI, version: L3-IASI, type: sat, frequency: mon, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_SH_Oct'
+        facet_used_for_labels: alias
+        savefig_kwargs:
+          dpi: 150
+          bbox_inches: tight
+          orientation: landscape
+        plots:
+          timeseries:
+            plot_kwargs:
+              OBS:
+                color: black
+            pyplot_kwargs:
+              title: Total Column Ozone, 60-85S, October
+
+  polar_cap_time_series_NH:
+    variables:
+      toz:
+        mip: AERmon
+        exp: historical
+        preprocessor: create_time_series_NH
+        facet_used_for_labels: alias
+        timerange: '2008/2022'
+    additional_datasets:
+          - {project: OBS6, dataset: ESACCI-OZONE, version: L3-GTO-ECV, type: sat, tier: 2, alias: GTO-ECV, frequency: mon}
+          - {project: OBS6, dataset: ESACCI-OZONE, tier: 2, alias: IASI, version: L3-IASI, type: sat, frequency: mon, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_NH_MAR'
+        facet_used_for_labels: alias
+        savefig_kwargs:
+          dpi: 150
+          bbox_inches: tight
+          orientation: landscape
+        plots:
+          timeseries:
+            plot_kwargs:
+              OBS:
+                color: black
+            pyplot_kwargs:
+              title: Total Column Ozone, 60-85N, March
+
+  lat_time_mapplot:
+    variables:
+      toz:
+        mip: AERmon
+        exp: historical
+        preprocessor: create_lat_time_map
+        timerange: '2008/2022'
+        additional_datasets:
+          - {project: OBS6, dataset: ESACCI-OZONE, version: L3-GTO-ECV, type: sat, tier: 2, alias: GTO-ECV, frequency: mon}
+          - {project: OBS6, dataset: ESACCI-OZONE, tier: 2, alias: IASI, version: L3-IASI, type: sat, frequency: mon, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        facet_used_for_labels: alias
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_LatTime_Map'
+        matplotlib_rc_params:
+          xtick.labelsize: 6
+          ytick.labelsize: 8
+          axes.labelsize: 8
+          axes.titlesize: 8
+        savefig_kwargs:
+          dpi: 150
+          bbox_inches: tight
+          orientation: landscape
+        plots:
+          hovmoeller_time_vs_lat_or_lon:
+            common_cbar: true
+            show_x_minor_ticks: false
+            time_format: '%Y'
+            time_on: x-axis
+
+  lat_month_mapplot:
+    variables:
+      toz:
+        mip: AERmon
+        exp: historical
+        preprocessor: create_lat_month_map
+        timerange: '2008/2022'
+        additional_datasets:
+          - {project: OBS6, dataset: ESACCI-OZONE, version: L3-GTO-ECV, type: sat, tier: 2, alias: GTO-ECV, frequency: mon}
+          - {project: OBS6, dataset: ESACCI-OZONE, tier: 2, alias: IASI, version: L3-IASI, type: sat, frequency: mon, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        script: monitor/multi_datasets.py
+        facet_used_for_labels: alias
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_LatTime_Map'
+        matplotlib_rc_params:
+          xtick.labelsize: 6
+          ytick.labelsize: 8
+          axes.labelsize: 8
+          axes.titlesize: 8
+        savefig_kwargs:
+          dpi: 150
+          bbox_inches: tight
+          orientation: landscape
+        plots:
+          hovmoeller_anncyc_vs_lat_or_lon:
+            common_cbar: true
+            show_x_minor_ticks: false
+            time_on: x-axis
