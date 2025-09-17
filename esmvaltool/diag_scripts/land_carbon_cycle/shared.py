@@ -21,22 +21,11 @@ def _apply_common_mask(*args):
     ------
         an array with size of nargs x common size of all input arrays
     """
-    nargs = len(args)
-    for arg_ in range(nargs):
-        _dat = args[arg_]
-        vars()["dat_mask" + str(arg_)] = np.ones(np.shape(_dat))
-        vars()["dat_mask_inv" + str(arg_)] = np.ma.masked_invalid(_dat).mask
-        vars()["dat_mask" + str(arg_)][vars()["dat_mask_inv" + str(arg_)]] = 0
-    dat_mask = vars()["dat_mask0"]
-    for arg_ in range(nargs):
-        dat_mask = dat_mask * vars()["dat_mask" + str(arg_)]
-    mask_where = np.ma.getmask(np.ma.masked_less(dat_mask, 1.0))
-    odat = []
-    for arg_ in range(nargs):
-        _dat = args[arg_].astype(np.float64)
-        _dat[mask_where] = np.nan
-        odat = np.append(odat, np.ma.masked_invalid(_dat))
-    odat = odat.reshape(nargs, _dat.shape[0], _dat.shape[1])
+    odat = np.stack(args, axis=0)
+    odat = np.ma.masked_array(odat, dtype=np.float64)
+    odat = np.ma.masked_invalid(odat)
+    mask = np.ma.getmaskarray(odat).any(axis=0, keepdims=True)
+    odat = np.ma.masked_where(np.broadcast_to(mask, odat.shape), odat)
     return odat
 
 
