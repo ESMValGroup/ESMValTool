@@ -49,7 +49,7 @@ def download_dataset(
     # download files
 
     url = "https://tds.gdex.ucar.edu/thredds/catalog/files/g/d628001"
-    download_options = ["--load-cookies=auth.rda_ucar_edu"]
+    download_options = []
 
     # define variables to download
 
