@@ -355,7 +355,7 @@ diagnostics:
         end_year: 1999
         additional_datasets: *cmip3_tas
     additional_datasets:
-      - {dataset: ERA5, project: native6, mip: Amon, type: reanaly, version: v1,
+      - {dataset: ERA5, project: native6, frequency: mon, type: reanaly, version: v1,
          tier: 3}
     scripts:
       model_bias:
