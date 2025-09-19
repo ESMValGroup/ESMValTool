@@ -41,8 +41,6 @@ commands:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            # Add existing Julia to PATH
-            export PATH=/root/.juliaup/bin:$PATH
             pytest -n 4 --junitxml=test-reports/report.xml
             esmvaltool version
             esmvaltool -- --help
@@ -98,10 +96,6 @@ commands:
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
             pip install << parameters.flags >> ".[<<parameters.extra>>]"> /logs/install.txt 2>&1
-            curl -fsSL https://install.julialang.org | sh -s -- --yes
-            export PATH=/root/.juliaup/bin:$PATH
-            julia --version
-            esmvaltool install Julia > /logs/install_julia.txt 2>&1
             if [[ "<<parameters.flags>>" != *'--editable'* ]]
             then
               rm -r esmvaltool
@@ -142,10 +136,6 @@ jobs:
             conda activate esmvaltool
             mkdir /logs
             pip install .[test] > /logs/install.txt 2>&1
-            curl -fsSL https://install.julialang.org | sh -s -- --yes
-            export PATH=/root/.juliaup/bin:$PATH
-            julia --version
-            esmvaltool install Julia > /logs/install_julia.txt 2>&1
       - run:
           name: Check Python code style and mistakes
           command: |
@@ -217,11 +207,6 @@ jobs:
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
             pip install --editable .[develop]
-            # Install Julia from source and add to PATH
-            curl -fsSL https://install.julialang.org | sh -s -- --yes
-            export PATH=/root/.juliaup/bin:$PATH
-            julia --version
-            esmvaltool install Julia > /logs/install_julia.txt 2>&1
             git clone https://github.com/ESMValGroup/ESMValCore $HOME/ESMValCore
             pip install --editable $HOME/ESMValCore[develop]
       - log_versions
@@ -284,15 +269,9 @@ jobs:
             # Install prerequisites
             mkdir /logs
             # Install ESMValTool in a new conda environment
-            mamba create -y --name esmvaltool -c conda-forge esmvaltool julia 'python=3.11' >> /logs/conda.txt 2>&1
+            mamba create -y --name esmvaltool -c conda-forge esmvaltool 'python=3.11' >> /logs/conda.txt 2>&1
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
-            # install Julia from source and add to PATH
-            curl -fsSL https://install.julialang.org | sh -s -- --yes
-            export PATH=/root/.juliaup/bin:$PATH
-            julia --version
-            # install the Julia dependencies
-            esmvaltool install Julia > /logs/install_Julia.txt 2>&1
             # Log versions
             mamba env export > /logs/environment.yml
             # Test installation

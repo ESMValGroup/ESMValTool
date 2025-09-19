@@ -44,7 +44,7 @@ diagnostics:
         start_year: 1994
         end_year: 2014
         additional_datasets:
-          - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20240406}
+          - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20250726}
 
       od440aer_season:
         <<: *var_od440aer

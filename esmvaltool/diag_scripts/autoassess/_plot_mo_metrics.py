@@ -37,6 +37,10 @@ FAKELINES = [
 ]
 
 
+class TestError(Exception):
+    """Error with the tests provided."""
+
+
 def merge_obs_acc(obs, acc):
     """
     Merge observation errors.
@@ -409,17 +413,17 @@ def metric_colours(test, ref=None, var=None, obs=None, acc=None):
     return colours
 
 
-def normalise(test, ref, strict=True):
+def normalise(test, ref, same=False):
     """
     Routine to normalise contents of test by contents of ref.
 
     :param dict test: Dictionary of test metrics
     :param dict ref: Dictionary of reference metrics
-    :param bool strict: if True then test and ref must have same metrics
+    :param bool same: if True then test and ref must have same metrics
     :returns: Dictionary of normalised test metrics
     :rtype: dict.
     """
-    if strict:
+    if same:
         # Test to make sure reference metrics dictionary contains the same
         # metrics as test metrics dictionary
         assert sorted(test.keys()) == sorted(ref.keys()), (
@@ -651,10 +655,16 @@ def plot_nac(
     plot_obs(ax, metrics, n_obs, color=OBS_GREY, zorder=2)
 
     # Plot metric data
+    # Check enough MARKERS for number of tests
+    if len(tests) > len(MARKERS):
+        raise TestError(
+            f"Number of tests, {len(tests)}, is larger than available "
+            f"plot MARKERS, {len(MARKERS)}."
+        )
     n_tests = []
-    for test, marker in zip(tests, MARKERS, strict=True):
+    for test, marker in zip(tests, MARKERS[: len(tests)], strict=True):
         # Normalise test by ref
-        n_test = normalise(test, ref, strict=True)
+        n_test = normalise(test, ref, same=True)
 
         # Check for green/amber/red/grey
         colours = metric_colours(n_test, var=n_var, obs=n_obs, acc=n_acc)

@@ -24,7 +24,7 @@ jobs:
         python-version: ["3.11", "3.12", "3.13"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v3
@@ -45,27 +45,13 @@ jobs:
       - name: Inspect environment
         run: conda list
       - name: Install ESMValTool
-        run: pip install -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
+        run: pip install --no-deps -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Inspect environment
         run: conda list
-      - name: Install Julia from source
-        run: curl -fsSL https://install.julialang.org | sh -s -- --yes
-      - name: Install Julia dependencies
-        run: esmvaltool install Julia
-      - name: Export Python minor version
-        run: echo "pver1=$(python -V)" >> $GITHUB_ENV
-      - name: Exit if Python minor version changed
-        if: ${{ env.pver1 != env.pver0}}
-        run: |
-          echo "Python minor version changed after Julia install"
-          python -V
-          exit 1
       - name: Inspect environment
         run: conda list
-      - name: Check Julia and NCL
-        run: |
-          ncl -V
-          julia --version
+      - name: Check NCL
+        run: ncl -V
       - name: Check code quality
         run: pre-commit run -a
       - name: Run tests
@@ -87,7 +73,7 @@ jobs:
       fail-fast: false
     name: OSX Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v3
@@ -115,7 +101,7 @@ jobs:
       - name: Install git
         run: mamba install -c conda-forge git
       - name: Install ESMValTool
-        run: pip install -e .[develop] 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/install.txt
+        run: pip install --no-deps -e .[develop] 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Inspect environment
         run: conda list
       - name: Check code quality
