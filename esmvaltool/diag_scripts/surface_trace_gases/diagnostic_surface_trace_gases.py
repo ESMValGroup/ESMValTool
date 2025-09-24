@@ -1476,12 +1476,12 @@ def trace_gas_taylor_diag(datasets, obs, trace_gas, config):
                 for id_s in ids
             }
             # Looping over all time steps
-            for t, ts in enumerate(time.units.num2date(time.points)):
+            for t, _ts in enumerate(time.units.num2date(time.points)):
                 # Extract monthly
-                obs_ts = obs.extract(iris.Constraint(time=ts))
+                obs_ts = obs[t]
                 v_obs, v_mod, v_id = _colocate_obs_model(
                     obs_ts,
-                    mod_data["cube"].extract(iris.Constraint(time=ts)),
+                    mod_data["cube"][t],
                     w_id=True,
                 )
                 # Save outputs to dictionary
