@@ -20,6 +20,7 @@ import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy
+from cf_units import Unit
 from esmvalcore.preprocessor import climate_statistics
 from matplotlib import colors, gridspec
 from numpy import ma
@@ -1475,12 +1476,12 @@ def trace_gas_taylor_diag(datasets, obs, trace_gas, config):
                 for id_s in ids
             }
             # Looping over all time steps
-            for t, ts in enumerate(time.units.num2date(time.points)):
+            for t, _ts in enumerate(time.units.num2date(time.points)):
                 # Extract monthly
-                obs_ts = obs.extract(iris.Constraint(time=ts))
+                obs_ts = obs[t]
                 v_obs, v_mod, v_id = _colocate_obs_model(
                     obs_ts,
-                    mod_data["cube"].extract(iris.Constraint(time=ts)),
+                    mod_data["cube"][t],
                     w_id=True,
                 )
                 # Save outputs to dictionary
@@ -1575,10 +1576,13 @@ def preprocess_obs_dataset(obs_dataset, config):
 
     trace_gas = config["trace_gas"]
 
-    # Put observations and model data on same scale for ppm/ppb
-    obs_cube = TRACE_GASES_FACTOR[trace_gas] * obs_cube
-    # Change units accordingly
-    obs_cube.attributes["unit"] = TRACE_GASES_UNITS[trace_gas]
+    # If trace gas is N2O = units are [mol mol-1] according to the CMOR table.
+    # Applying the scale factor is necessary for ppb.
+    if trace_gas == "n2o":
+        obs_cube = TRACE_GASES_FACTOR[trace_gas] * obs_cube
+
+    # Change units to ppm/ppb
+    obs_cube.units = Unit(TRACE_GASES_UNITS[trace_gas])
 
     # Add the clim_season and season_year coordinates.
     iris.coord_categorisation.add_year(obs_cube, "time", name="year")
@@ -1940,21 +1944,19 @@ def preprocess_colocated_datasets(
                     }
 
                 # Looping over all time steps
-                for i, ts in enumerate(time.units.num2date(time.points)):
+                for i, _ts in enumerate(time.units.num2date(time.points)):
                     if "timeserie_lat" in plots_coloc:
                         # Looping over latitude slices
                         for key, _ in LATITUDE_RANGES.items():
                             # Obs values
-                            obs_ts = obs_slices[key]["values"].extract(
-                                iris.Constraint(time=ts)
-                            )
+                            obs_ts = obs_slices[key]["values"][i]
                             obs_yearly = obs_slices[key]["yearly"].extract(
                                 iris.Constraint(year=years_ts[i])
                             )
                             # Model values
                             mod_ts = model_slices[key]["values"][
                                 model_dataset
-                            ][attr["alias"]].extract(iris.Constraint(time=ts))
+                            ][attr["alias"]][i]
                             mod_yearly = model_slices[key]["yearly"][
                                 model_dataset
                             ][attr["alias"]].extract(
