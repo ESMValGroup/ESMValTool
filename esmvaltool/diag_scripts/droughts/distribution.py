@@ -96,10 +96,10 @@ from iris.time import PartialDateTime
 from matplotlib import cbook
 from scipy.stats import norm
 
-from esmvaltool.diag_scripts.droughtindex import (
+from esmvaltool.diag_scripts.droughts import (
     colors as ipcc_colors,
 )
-from esmvaltool.diag_scripts.droughtindex import (
+from esmvaltool.diag_scripts.droughts import (
     utils as ut,
 )
 from esmvaltool.diag_scripts.shared import (
@@ -285,6 +285,12 @@ def plot_histogram(cfg, splits, output, group, fit=True):
         zorder=3,
     )
     legend = plt.legend()
+    try:
+        legend_rename = ut.sub_cfg(cfg, "histogram", "legend")
+    except KeyError:
+        legend_rename = {}
+    for text in legend.get_texts():  # overwrite legend labels if provided
+        text.set_text(legend_rename.get(text.get_text(), text.get_text()))
     for patch in legend.get_patches():
         patch.set_alpha(1)
     plot_props = ut.sub_cfg(cfg, "histogram", "plot_properties")
@@ -299,7 +305,7 @@ def plot_histogram(cfg, splits, output, group, fit=True):
             "group": group,
         },
     )
-    filename = ut.get_plot_filename(cfg, cfg["basename"], meta, {"/": "_"})
+    filename = ut.get_plot_fname(cfg, cfg["basename"], meta, {"/": "_"})
     plt.savefig(filename)
     log.info("saved %s", filename)
 
@@ -323,7 +329,7 @@ def plot_histogram(cfg, splits, output, group, fit=True):
     # plt.legend(handles=handles, labels=labels + ["normal fit"])
     # ax.legend(handles, labels)
     meta["plot_type"] = "histogram_fit"
-    filename = ut.get_plot_filename(cfg, cfg["basename"], meta, {"/": "_"})
+    filename = ut.get_plot_fname(cfg, cfg["basename"], meta, {"/": "_"})
     log.info("saved %s", filename)
     plt.savefig(filename)
     plt.close()
@@ -438,7 +444,7 @@ def plot_regional_stats(cfg, splits, output, group):
     plt.tight_layout()
     plt.xlim(-1, len(regions))
     # save plot
-    fname = ut.get_plot_filename(cfg, f"regional_stats_{group}")
+    fname = ut.get_plot_fname(cfg, f"regional_stats_{group}")
     plt.savefig(fname)
     log.info("saved %s", fname)
 

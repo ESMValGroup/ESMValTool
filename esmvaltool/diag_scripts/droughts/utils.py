@@ -106,7 +106,7 @@ def get_plot_fname(
     for key, value in replace.items():
         basename = basename.replace(key, value)
     fpath = Path(cfg["plot_dir"]) / basename
-    return str(fpath.with_suffix(cfg["output_file_type"]))
+    return str(fpath.with_suffix("." + cfg["output_file_type"]))
 
 
 def add_ancestor_input(cfg: dict) -> None:
