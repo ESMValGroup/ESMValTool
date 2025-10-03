@@ -742,7 +742,11 @@ class MultiDatasets(MonitorBase):
             },
             "map": {
                 "function": partial(self.create_2d_plot, "map"),
-                "coords": (["longitude", "latitude"],),
+                "coords": (
+                    ["longitude", "latitude"],
+                    ["grid_longitude", "grid_latitude"],
+                    ["projection_x_coordinate", "projection_y_coordinate"],
+                ),
                 "provenance": {
                     "authors": ["schlund_manuel"],
                     "caption": "Map plot of {long_name} of dataset {alias}.",
