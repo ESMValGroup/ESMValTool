@@ -1508,6 +1508,7 @@ class MultiDatasets(MonitorBase):
         if not input_data:
             raise ValueError("No input data given")
 
+        datasets = []
         for dataset in input_data:
             filename = dataset["filename"]
             logger.info("Loading %s", filename)
@@ -1566,12 +1567,22 @@ class MultiDatasets(MonitorBase):
                 z_coord = cube.coord("altitude")
                 z_coord.attributes["positive"] = "up"
 
-            dataset["cube"] = cube
-
             # Save ancestors
             dataset["ancestors"] = [filename]
 
-        return input_data
+            if "slices_over" in self.cfg:
+                for subcube in cube.slices_over(self.cfg["slices_over"]):
+                    dataset_copy = deepcopy(dataset)
+                    dataset_copy["cube"] = subcube
+                    for slice_coord in self.cfg["slices_over"]:
+                        dataset_copy[slice_coord] = subcube.coord(
+                            slice_coord
+                        ).points[0]
+                    datasets.append(dataset_copy)
+            else:
+                dataset["cube"] = cube
+                datasets.append(dataset)
+        return datasets
 
     def _plot_1d_data(
         self,
