@@ -93,8 +93,14 @@ figure_kwargs: dict, optional
     Optional keyword arguments for :func:`matplotlib.pyplot.figure`. By
     default, uses ``{constrained_layout: True}``.
 group_variables_by: str, optional (default: 'short_name')
-    Facet which is used to create variable groups. For each variable group, an
-    individual plot is created.
+    Facet or coordinate which is used to create variable groups. For each
+    variable group, an individual plot is created.
+slices: bool, optional
+    If ``True``, use :func:`iris.cube.Cube.slices_over` to iterate over
+    the coordinate specified by ``group_variables_by``. This allows to create
+    one plot for each point along a dimension. For example, when used in
+    combination with the preprocessor function :func:`esmvalcore.preprocessor.extract_shape`
+    the `shape_id` coordinate can be used to create one plot for each shape.
 matplotlib_rc_params: dict, optional
     Optional :class:`matplotlib.RcParams` used to customize matplotlib plots.
     Options given here will be passed to :func:`matplotlib.rc_context` and used
@@ -824,6 +830,7 @@ class MultiDatasets(MonitorBase):
         self.cfg.setdefault("facet_used_for_labels", "dataset")
         self.cfg.setdefault("figure_kwargs", {"constrained_layout": True})
         self.cfg.setdefault("group_variables_by", "short_name")
+        self.cfg.setdefault("slices", False)
         self.cfg.setdefault("matplotlib_rc_params", {})
         self.cfg.setdefault(
             "savefig_kwargs",
@@ -1570,18 +1577,19 @@ class MultiDatasets(MonitorBase):
             # Save ancestors
             dataset["ancestors"] = [filename]
 
-            if "slices_over" in self.cfg:
-                for subcube in cube.slices_over(self.cfg["slices_over"]):
+            if self.cfg["slices"]:
+                slice_coord_name = self.cfg["group_variables_by"]
+                for subcube in cube.slices_over([slice_coord_name]):
                     dataset_copy = deepcopy(dataset)
                     dataset_copy["cube"] = subcube
-                    for slice_coord in self.cfg["slices_over"]:
-                        dataset_copy[slice_coord] = subcube.coord(
-                            slice_coord
-                        ).points[0]
+                    dataset_copy[slice_coord_name] = subcube.coord(
+                        slice_coord_name
+                    ).points[0]
                     datasets.append(dataset_copy)
             else:
-                dataset["cube"] = cube
-                datasets.append(dataset)
+                dataset_copy = deepcopy(dataset)
+                dataset_copy["cube"] = cube
+                datasets.append(dataset_copy)
         return datasets
 
     def _plot_1d_data(

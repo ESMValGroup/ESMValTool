@@ -178,7 +178,7 @@ diagnostics:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         group_variables_by: shape_id
-        slices_over: [shape_id]
+        slices: true
         plot_filename: "{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}_{shape_id}"
         plots:
           timeseries:
@@ -215,6 +215,7 @@ diagnostics:
                 zorder: 3
             pyplot_kwargs:
               title: '{long_name} Anomalies {shape_id}'
+              ylabel: '{short_name} [{units}]'
   precipitation_anomalies:
     description: Plot "classical" time series of global mean anomalies including a reference dataset.
     variables:
@@ -269,7 +270,7 @@ diagnostics:
         script: monitor/multi_datasets.py
         plot_folder: '{plot_dir}'
         group_variables_by: shape_id
-        slices_over: [shape_id]
+        slices: true
         plot_filename: "{plot_type}_{real_name}_{dataset}_{mip}_{exp}_{ensemble}_{shape_id}"
         plots:
           timeseries:
