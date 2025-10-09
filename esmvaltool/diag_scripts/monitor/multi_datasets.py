@@ -94,13 +94,11 @@ figure_kwargs: dict, optional
     default, uses ``{constrained_layout: True}``.
 group_variables_by: str, optional (default: 'short_name')
     Facet or coordinate which is used to create variable groups. For each
-    variable group, an individual plot is created.
-slices: bool, optional
-    If ``True``, use :func:`iris.cube.Cube.slices_over` to iterate over
-    the coordinate specified by ``group_variables_by``. This allows to create
-    one plot for each point along a dimension. For example, when used in
-    combination with the preprocessor function :func:`esmvalcore.preprocessor.extract_shape`
-    the `shape_id` coordinate can be used to create one plot for each shape.
+    variable group, an individual plot is created. Specifying a coordinate
+    allows to create one plot for each point along a dimension. For example,
+    when used in combination with the preprocessor function
+    :func:`esmvalcore.preprocessor.extract_shape` the `shape_id` coordinate
+    can be used to create one plot for each shape.
 matplotlib_rc_params: dict, optional
     Optional :class:`matplotlib.RcParams` used to customize matplotlib plots.
     Options given here will be passed to :func:`matplotlib.rc_context` and used
@@ -830,7 +828,6 @@ class MultiDatasets(MonitorBase):
         self.cfg.setdefault("facet_used_for_labels", "dataset")
         self.cfg.setdefault("figure_kwargs", {"constrained_layout": True})
         self.cfg.setdefault("group_variables_by", "short_name")
-        self.cfg.setdefault("slices", False)
         self.cfg.setdefault("matplotlib_rc_params", {})
         self.cfg.setdefault(
             "savefig_kwargs",
@@ -1515,6 +1512,9 @@ class MultiDatasets(MonitorBase):
         if not input_data:
             raise ValueError("No input data given")
 
+        slices = not any(
+            self.cfg["group_variables_by"] in ds for ds in input_data
+        )
         datasets = []
         for dataset in input_data:
             filename = dataset["filename"]
@@ -1577,7 +1577,7 @@ class MultiDatasets(MonitorBase):
             # Save ancestors
             dataset["ancestors"] = [filename]
 
-            if self.cfg["slices"]:
+            if slices:
                 slice_coord_name = self.cfg["group_variables_by"]
                 for subcube in cube.slices_over([slice_coord_name]):
                     dataset_copy = deepcopy(dataset)
