@@ -76,46 +76,46 @@ def download_dataset(
 
     # download monthly AATSR data
 
-#    loop_date = start_date
-#    while loop_date <= end_date:
-#        if loop_date.year < 2003:
-#            instrument = "ATSR2"
-#        else:
-#            instrument = "AATSR"
-#        rel_base_dir = f"{instrument}_{algorithm}/L3/{version}/MONTHLY"
-#        downloader.set_cwd(rel_base_dir)
-#        if downloader.exists(f"{loop_date.year}"):
-#            downloader.download_folder(
-#                f"{loop_date.year}", f"{name}-{algorithm}-{version}-monthly"
-#            )
-#        else:
-#            logger.info("%d: no data found", loop_date.year)
-#        loop_date += relativedelta.relativedelta(years=1)
+    loop_date = start_date
+    while loop_date <= end_date:
+        if loop_date.year < 2003:
+            instrument = "ATSR2"
+        else:
+            instrument = "AATSR"
+        rel_base_dir = f"{instrument}_{algorithm}/L3/{version}/MONTHLY"
+        downloader.set_cwd(rel_base_dir)
+        if downloader.exists(f"{loop_date.year}"):
+            downloader.download_folder(
+                f"{loop_date.year}", f"{name}-{algorithm}-{version}-monthly"
+            )
+        else:
+            logger.info("%d: no data found", loop_date.year)
+        loop_date += relativedelta.relativedelta(years=1)
 
     # download daily AATSR data
 
-#    loop_date = start_date
-#    while loop_date <= end_date:
-#        if loop_date.year < 2003:
-#            instrument = "ATSR2"
-#        else:
-#            instrument = "AATSR"
-#        rel_base_dir = f"{instrument}_{algorithm}/L3/{version}/DAILY"
-#        downloader.set_cwd(rel_base_dir)
-#        if downloader.exists(f"{loop_date.year}"):
-#            downloader.set_cwd(f"{rel_base_dir}/{loop_date.year}")
-#            if downloader.exists(f"{loop_date.month:02}"):
-#                downloader.download_folder(
-#                    f"{loop_date.month:02}",
-#                    f"{name}-{algorithm}-{version}-daily",
-#                )
-#            else:
-#                logger.info(
-#                    "%d/%d: no data found", loop_date.year, loop_date.month
-#                )
-#        else:
-#            logger.info("%d: no data found", loop_date.year)
-#        loop_date += relativedelta.relativedelta(months=1)
+    loop_date = start_date
+    while loop_date <= end_date:
+        if loop_date.year < 2003:
+            instrument = "ATSR2"
+        else:
+            instrument = "AATSR"
+        rel_base_dir = f"{instrument}_{algorithm}/L3/{version}/DAILY"
+        downloader.set_cwd(rel_base_dir)
+        if downloader.exists(f"{loop_date.year}"):
+            downloader.set_cwd(f"{rel_base_dir}/{loop_date.year}")
+            if downloader.exists(f"{loop_date.month:02}"):
+                downloader.download_folder(
+                    f"{loop_date.month:02}",
+                    f"{name}-{algorithm}-{version}-daily",
+                )
+            else:
+                logger.info(
+                    "%d/%d: no data found", loop_date.year, loop_date.month
+                )
+        else:
+            logger.info("%d: no data found", loop_date.year)
+        loop_date += relativedelta.relativedelta(months=1)
 
     # ================================================
     # Download SLSTR data from CDS (daily and monthly)
@@ -131,66 +131,56 @@ def download_dataset(
     algorithm = "SU"
     version = "v1.12"
 
-    requests = {
-        "aod_slstr_daily": {
-            "time_aggregation": "daily_average",
-            "variable": "aerosol_optical_depth",
-            "sensor_on_satellite": [
-                "slstr_on_sentinel_3a",
-                "slstr_on_sentinel_3b",
-            ],
-            "algorithm": ["swansea"],
-            "year": [str(y) for y in range(slstr_year1, slstr_year2)],
-            "month": [f"{m:02d}" for m in range(1, 13)],
-            "day": [f"{m:02d}" for m in range(1, 32)],
-            "version": ["v1_12"],
-        },
-        "aod_slstr_monthly": {
-            "time_aggregation": "monthly_average",
-            "variable": "aerosol_optical_depth",
-            "sensor_on_satellite": [
-                "slstr_on_sentinel_3a",
-                "slstr_on_sentinel_3b",
-            ],
-            "algorithm": ["swansea"],
-            "year": [str(y) for y in range(slstr_year1, slstr_year2)],
-            "month": [f"{m:02d}" for m in range(1, 13)],
-            "version": ["v1_12"],
-        },
-        "fine_aod_slstr_daily": {
-            "time_aggregation": "daily_average",
-            "variable": "fine_mode_aerosol_optical_depth",
-            "sensor_on_satellite": [
-                "slstr_on_sentinel_3a",
-                "slstr_on_sentinel_3b",
-            ],
-            "algorithm": ["swansea"],
-            "year": [str(y) for y in range(slstr_year1, slstr_year2)],
-            "month": [f"{m:02d}" for m in range(1, 13)],
-            "day": [f"{m:02d}" for m in range(1, 32)],
-            "version": ["v1_12"],
-        },
-        "fine_aod_slstr_monthly": {
-            "time_aggregation": "monthly_average",
-            "variable": "fine_mode_aerosol_optical_depth",
-            "sensor_on_satellite": [
-                "slstr_on_sentinel_3a",
-                "slstr_on_sentinel_3b",
-            ],
-            "algorithm": ["swansea"],
-            "year": [str(y) for y in range(slstr_year1, slstr_year2)],
-            "month": [f"{m:02d}" for m in range(1, 13)],
-            "version": ["v1_12"],
-        },
-    }
+    requests = {}
+
+    # The CDS requests have to be done for each month separately to avoid the
+    # error "cost limits exceeded - Your request is too large, please
+    # reduce your selection.".
+    # Note: AOD and fine mode AOD are both selected with
+    #       "variable": "aerosol_optical_depth", so no need to have two separate
+    #       requests for "aerosol_optical_depth" and
+    #       "fine_mode_aerosol_optical_depth"
+
+    for year in range(slstr_year1, slstr_year2):
+        for month in range(1, 13):
+            requests.update(
+                {
+                    "aod_slstr_daily_" + str(year) + f"{month:02d}": {
+                        "time_aggregation": "daily_average",
+                        "variable": "aerosol_optical_depth",
+                        "sensor_on_satellite": [
+                            "slstr_on_sentinel_3a",
+                            "slstr_on_sentinel_3b",
+                        ],
+                        "algorithm": ["swansea"],
+                        "year": str(year),
+                        "month": f"{month:02d}",
+                        "day": [f"{m:02d}" for m in range(1, 32)],
+                        "version": ["v1_12"],
+                    },
+                    "aod_slstr_monthly_" + str(year) + f"{month:02d}": {
+                        "time_aggregation": "monthly_average",
+                        "variable": "aerosol_optical_depth",
+                        "sensor_on_satellite": [
+                            "slstr_on_sentinel_3a",
+                            "slstr_on_sentinel_3b",
+                        ],
+                        "algorithm": ["swansea"],
+                        "year": str(year),
+                        "month": f"{month:02d}",
+                        "version": ["v1_12"],
+                    },
+                }
+            )
 
     cds_client = cdsapi.Client(cds_url)
 
     for var_name, request in requests.items():
-        if "day" in var_name:
+        if "daily" in var_name:
             outdir = output_folder / f"{name}-{algorithm}-{version}-daily/"
         else:
             outdir = output_folder / f"{name}-{algorithm}-{version}-monthly"
+        outdir.mkdir(parents=True, exist_ok=True)
 
         logger.info("Downloading %s data to %s", var_name, outdir)
 
@@ -203,22 +193,24 @@ def download_dataset(
             )
             continue
 
-        cds_client.retrieve(
-            "satellite-aerosol-properties",
-            request,
-            file_path.as_posix(),
-        )
+        try:
+            cds_client.retrieve(
+                "satellite-aerosol-properties",
+                request,
+                file_path.as_posix(),
+            )
+            # Handle both .gz and .zip files
+            with open(file_path, "rb") as file:
+                magic = file.read(2)
 
-        # Handle both .gz and .zip files
-        with open(file_path, "rb") as file:
-            magic = file.read(2)
-
-        if magic == b"PK":  # ZIP file signature
-            logger.info("Detected ZIP file: %s", file_path)
-            with zipfile.ZipFile(file_path, "r") as zip_ref:
-                zip_ref.extractall(outdir)
-        else:
-            logger.info("Detected GZIP file: %s", file_path)
-            with gzip.open(file_path, "rb") as f_in:
-                with open(outdir / file_path.stem, "wb") as f_out:
-                    shutil.copyfileobj(f_in, f_out)
+            if magic == b"PK":  # ZIP file signature
+                logger.info("Detected ZIP file: %s", file_path)
+                with zipfile.ZipFile(file_path, "r") as zip_ref:
+                    zip_ref.extractall(outdir)
+            else:
+                logger.info("Detected GZIP file: %s", file_path)
+                with gzip.open(file_path, "rb") as f_in:
+                    with open(outdir / file_path.stem, "wb") as f_out:
+                        shutil.copyfileobj(f_in, f_out)
+        except Exception as ex:
+            logger.info("%s: no data downloaded for %s", type(ex), var_name)

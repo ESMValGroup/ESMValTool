@@ -129,6 +129,7 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
     # load all input files (1 year) into 1 cube
     # --> drop attributes that differ among input files
     cube_list = iris.load(in_files, var["raw"])
+
     # (global) attributes to remove
     drop_attrs = [
         "tracking_id",
@@ -137,6 +138,8 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
         "time_coverage_end",
         "date_created",
         "inputfilelist",
+        "platform",
+        "source",
     ]
 
     time_unit = "days since 1850-01-01 00:00:00"
@@ -203,7 +206,9 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
                     full_list.append(new_list[idx])
                     break
             if not date_available:
-                logger.debug("No data available for %d", loop_date)
+                logger.debug(
+                    "No data available for %s", loop_date.strftime("%Y-%m-%d")
+                )
                 nan_cube = _create_nan_cube(
                     new_list[0], loop_date.year, loop_date.month, loop_date.day
                 )
@@ -211,7 +216,6 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
             loop_date += relativedelta.relativedelta(days=1)
     else:
         loop_date = datetime(year0, 1, 15)
-        print(loop_date)
         while loop_date <= datetime(year0, 12, 31):
             date_available = False
             for idx, cubetime in enumerate(time_list):
@@ -220,7 +224,9 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
                     full_list.append(new_list[idx])
                     break
             if not date_available:
-                logger.debug("No data available for %d", loop_date)
+                logger.debug(
+                    "No data available for %s", loop_date.strftime("%Y-%m")
+                )
                 nan_cube = _create_nan_cube(
                     new_list[0], loop_date.year, loop_date.month, loop_date.day
                 )

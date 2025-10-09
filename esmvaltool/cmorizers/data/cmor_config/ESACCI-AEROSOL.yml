@@ -55,13 +55,13 @@ variables:
     mip: aero
     short_name: od550aer
     raw: AOD550_mean
-    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+    file: '{year}??-C3S-L3_AEROSOL-AER_PRODUCTS-SLSTR-SENTINEL3?-SWANSEA-MONTHLY-v1.12.nc'
   slstr_od550lt1aer_month:
     version: SLSTR-SU-v1.12
     mip: aero
     short_name: od550lt1aer
     raw: FM_AOD550_mean
-    file: '{year}??-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_MONTHLY-v4.3.nc'
+    file: '{year}??-C3S-L3_AEROSOL-AER_PRODUCTS-SLSTR-SENTINEL3?-SWANSEA-MONTHLY-v1.12.nc'
 # daily data (AATSR)
   aatsr_od550aer_day:
     version: AATSR-SU-v4.3
@@ -105,10 +105,10 @@ variables:
     mip: aero
     short_name: od550aer
     raw: AOD550_mean
-    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
+    file: '{year}????-C3S-L3_AEROSOL-AER_PRODUCTS-SLSTR-SENTINEL3?-SWANSEA-DAILY-v1.12.nc'
   aatsr_od550lt1aer_day:
     version: SLSTR-SU-v1.12
     mip: aero
     short_name: od550lt1aer
     raw: FM_AOD550_mean
-    file: '{year}????-ESACCI-L3C_AEROSOL-AER_PRODUCTS-*-SU_DAILY-v4.3.nc'
+    file: '{year}????-C3S-L3_AEROSOL-AER_PRODUCTS-SLSTR-SENTINEL3?-SWANSEA-DAILY-v1.12.nc'
