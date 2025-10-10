@@ -22,7 +22,7 @@ regridding: &regridding
 levels_for_3d_vars: &extracting_levels
   extract_levels:
 #    levels: {cmor_table: CMIP6, coordinate: plev27}
-    levels: [100000., 97500., 95000., 92500., 90000., 87500., 85000., 82500., 80000., 77500., 75000., 70000., 65000., 60000., 55000., 50000., 45000., 40000., 35000., 30000.]
+    levels: [100000., 97500., 95000., 92500., 90000., 87500., 85000., 82500., 80000., 77500., 75000., 70000., 65000., 60000., 55000., 50000., 45000., 40000., 35000., 30000., 25000., 20000., 15000.]
     coordinate: air_pressure
     scheme: linear
 
@@ -73,6 +73,20 @@ preprocessors:
     mask_outside_range:
       minimum: 1
       maximum: 50
+  common_grid_hur:
+    custom_order: true
+    <<: *extracting_levels
+#    <<: *regridding
+    mask_outside_range:
+      minimum: 5.
+      maximum: 100.
+  common_grid_cl:
+    custom_order: true
+    <<: *extracting_levels
+#    <<: *regridding
+    mask_outside_range:
+      minimum: 5.
+      maximum: 100.
 
 
 diagnostics:
@@ -82,15 +96,16 @@ diagnostics:
       hur:
         mip: Amon
         exp: historical
-        preprocessor: common_grid_b300
+        preprocessor: common_grid_hur
         <<: *time_period
       cl:
         mip: Amon
         exp: historical
-        preprocessor: common_grid_b300
+        preprocessor: common_grid_cl
         <<: *time_period
     additional_datasets:
       - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, alias: ERA5}
+#      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
     scripts:
       plot:
         script: seaborn_jointplot_histogram.py
