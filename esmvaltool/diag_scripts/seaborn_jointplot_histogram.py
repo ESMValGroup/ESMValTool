@@ -63,6 +63,7 @@ def _compute_histograms(
     np.ndarray,
     tuple[np.ndarray, np.ndarray],
     tuple[np.ndarray, np.ndarray],
+    np.ndarray,
 ]:
     """Compute the 2D and 1D histogram data."""
     array_x = cube_x.lazy_data().flatten()
@@ -88,7 +89,12 @@ def _compute_histograms(
     hist = da.ma.masked_less_equal(hist, 0)
     hist, hist_x, hist_y = da.compute(hist, hist_x, hist_y)
 
-    return hist, (hist_x, edges_x), (hist_y, edges_y)
+    # calculate correlation using original data
+    data_x.compute_chunk_sizes()
+    data_y.compute_chunk_sizes()
+    correlation = da.corrcoef(data_x, data_y)[0, 1]
+
+    return hist, (hist_x, edges_x), (hist_y, edges_y), correlation.compute()
 
 
 def _inv_transform(ax: mpl.axes.Axes, axis: Literal["x", "y"]) -> Callable:
@@ -115,6 +121,7 @@ def seaborn_histogram_jointplot(
         np.ndarray,
         tuple[np.ndarray, np.ndarray],
         tuple[np.ndarray, np.ndarray],
+        np.ndarray,
     ],
     label_x: str,
     label_y: str,
@@ -135,7 +142,7 @@ def seaborn_histogram_jointplot(
     marginal_kws = {} if marginal_kws is None else marginal_kws
     cbar_kws = {} if cbar_kws is None else cbar_kws
 
-    hist, (hist_x, edges_x), (hist_y, edges_y) = data
+    hist, (hist_x, edges_x), (hist_y, edges_y), correlation = data
 
     x_width = np.diff(edges_x).mean()
     y_width = np.diff(edges_y).mean()
@@ -147,6 +154,7 @@ def seaborn_histogram_jointplot(
         xlabel=label_x,
         ylabel=label_y,
     )
+
     if suptitle is not None:
         grid.figure.suptitle(suptitle)
 
@@ -180,6 +188,16 @@ def seaborn_histogram_jointplot(
             (0.85, pos_joint_ax.y0, 0.07, pos_joint_ax.height)
         )
 
+    # print correlation coefficient at top left position
+    grid.ax_joint.text(
+        x=0.05,
+        y=0.95,
+        s=f"r = {correlation:.3f}",
+        fontsize=12,
+        color="black",
+        transform=grid.ax_joint.transAxes,
+    )
+
 
 def data_to_cubes(
     data: tuple[
@@ -194,7 +212,7 @@ def data_to_cubes(
     iris.cube.Cube,
 ]:
     """Store the histogram data in iris cubes."""
-    hist, (hist_x, edges_x), (hist_y, edges_y) = data
+    hist, (hist_x, edges_x), (hist_y, edges_y), correlation = data
     hist_x_coord = iris.coords.DimCoord(
         var_name="bin_x",
         points=0.5 * (edges_x[:-1] + edges_x[1:]),
@@ -236,6 +254,18 @@ def main(cfg: dict[str, Any]) -> None:
     ]
     cube_x = iris.load_cube(filename_x)
     cube_y = iris.load_cube(filename_y)
+
+    #    if "suptitle" not in cfg:
+    #        array_x = cube_x.lazy_data().flatten()
+    #        array_y = cube_y.lazy_data().flatten()
+    #        # Could use preprocessor function to ensure same masks
+    #        select = ~(da.ma.getmaskarray(array_x) | da.ma.getmaskarray(array_y))
+    #        data_x = da.compress(select, da.ma.getdata(array_x))
+    #        data_y = da.compress(select, da.ma.getdata(array_y))
+    #        data_x.compute_chunk_sizes()
+    #        data_y.compute_chunk_sizes()
+    #        r = da.corrcoef(data_x, data_y)
+    #        cfg["suptitle"] = f"r={r.compute()[0,1]:.3f}"
 
     # Compute the histograms
     data = _compute_histograms(cube_x, cube_y, cfg["bins"])
