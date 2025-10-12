@@ -1,13 +1,14 @@
 .. _recipes_steric_patterns:
 
-Calculate thermosteric sea-level patterns from CMIP6 models
+Calculate sterodynamic sea-level patterns from CMIP6 models
 ===========================================================
 
 Overview
 --------
 
-The recipe recipe_steric_patterns calculates thermosteric sea-level change
-patterns from CMIP6 model datasets.
+The recipe recipe_steric_patterns calculates sterodynamic sea-level change
+patterns from CMIP6 model datasets. Patterns are calculated for the SSP2-4.5,
+SSP3-7.0 and SSP5-8.5 scenarios.
 
 .. note::
   The regrid setting in the recipe is set to a (180, 360) grid to put
@@ -23,7 +24,7 @@ Recipes are stored in esmvaltool/recipes/
 
 Diagnostics are stored in esmvaltool/diag_scripts/steric_patterns/
 
-* steric_patterns.py: generates thermosteric patterns from input datasets
+* steric_patterns.py: generates sterodynamic patterns from input datasets
 * sub_funcs.py: set of sub functions to assist with the main script
 
 
