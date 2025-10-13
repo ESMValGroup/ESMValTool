@@ -242,7 +242,7 @@ def evaluate_regression(
     fig = plt.figure(figsize=(12, 6), layout="constrained")
 
     lat_idxs = [150, 26, 170]
-    lon_idxs = [110, 30, 340]
+    lon_idxs = [120, 30, 340]
     lats = zos_cube.coord("latitude").points[lat_idxs]
     lons = zos_cube.coord("longitude").points[lon_idxs]
     for index in range(3):

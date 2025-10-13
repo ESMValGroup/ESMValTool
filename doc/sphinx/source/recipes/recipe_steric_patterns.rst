@@ -120,8 +120,8 @@ Example plots
    :align:   center
    :width: 80%
 
-   Example predictions from the UKESM1-0-LL model patterns for each SSP,
-   as well as a timeseries of globally-averaged mean-squared error. Two polar
-   artifacts can be seen in each map panel, seemingly occuring due to 
-   ESMValTool's regridding functionality. This seems to occur more often on 
-   low-resolution models as opposed to high-res.
+   Example end-of-century predictions from the UKESM1-0-LL model patterns 
+   for each SSP, as well as a timeseries of globally-averaged mean-squared 
+   error. Two polar artifacts can be seen in each map panel, seemingly 
+   occuring due to ESMValTool's regridding functionality. This seems to occur 
+   more often on low-resolution models as opposed to high-res.
