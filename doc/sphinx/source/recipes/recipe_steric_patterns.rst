@@ -96,7 +96,8 @@ Example plots
    :width: 80%
 
    Detrended zostoga, correcting for model drift using the pre-industrial
-   (PiControl) experiment. This is done for each model.
+   (PiControl) experiment following Palmer et al. (2020). This is done for 
+   each model and scenario.
 
 .. _fig_steric_patterns_2:
 .. figure::  /recipes/figures/steric_patterns/regressions.png

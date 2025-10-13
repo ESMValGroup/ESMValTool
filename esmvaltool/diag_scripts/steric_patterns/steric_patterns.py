@@ -103,12 +103,20 @@ def detrend_zostoga(
 
     ax = fig.add_subplot(111)
     ax.scatter(
-        np.arange(len(zostoga.data)), zostoga.data, s=2,
-        alpha=0.8, color="navy", label="Original")
+        np.arange(len(zostoga.data)),
+        zostoga.data,
+        s=2,
+        alpha=0.8,
+        color="navy",
+        label="Scenario run (without drift correction)")
     ax.scatter(
-        np.arange(len(zostoga.data)), zostoga_detrended.data, s=2,
-        alpha=0.8, color="darkorchid", label="Detrended")
-    ax.set_xlabel("Time from PiControl start (yrs)")
+        np.arange(len(zostoga.data)),
+        zostoga_detrended.data,
+        s=2,
+        alpha=0.8,
+        color="darkorchid",
+        label="Scenario run (with drift correction)")
+    ax.set_xlabel("Scenario time (months)")
     ax.set_ylabel("Global thermal expansion (m)")
     ax.legend(loc="upper left", frameon=False)
 
