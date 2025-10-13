@@ -118,6 +118,7 @@ def detrend_zostoga(
     fig.savefig(
         Path(plot_path)
         / f'detrended_{zostoga.attributes["source_id"]}.png', dpi=150)
+    plt.close()
     return zostoga_detrended
 
 
@@ -177,7 +178,7 @@ def dyn_steric_regression(
         Path(plot_path)
         / f"regression_{zostoga.attributes['source_id']}_{scenario}.png",
         dpi=150)
-
+    plt.close()
     return slopes, mask
 
 
@@ -262,7 +263,6 @@ def evaluate_regression(
         ax.set_xlabel("Global thermal expansion (m)")
         ax.set_ylabel("Dynamic sea level (m)")
         ax.legend(loc="upper left", frameon=False)
-
     return fig
 
 
@@ -373,6 +373,7 @@ def evaluate_patterns(
 
     fig = plot_evals(diff_list, zos_list, mse_list)
     fig.savefig(Path(plot_path) / f"mse_{model}.png", dpi=150)
+    plt.close()
 
 
 def extract_data_from_cfg(model: str, cfg: dict) -> tuple[list]:
