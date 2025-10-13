@@ -23,13 +23,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
-from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger,
-    run_diagnostic,
-    save_figure,
-)
+from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
 from esmvaltool.diag_scripts.steric_patterns import sub_funcs as sf
-import iris.quickplot as qplt
 
 logger = logging.getLogger(Path(__file__).stem)
 
@@ -227,6 +222,8 @@ def evaluate_regression(
         dynamic sea-level change data
     slopes: np.array
         regression slopes
+    zos_cube: iris.cube.Cube
+        dynamic sea-level cube
 
     Returns
     -------
@@ -246,7 +243,7 @@ def evaluate_regression(
     lats = zos_cube.coord("latitude").points[lat_idxs]
     lons = zos_cube.coord("longitude").points[lon_idxs]
     for index in range(3):
-        ax = fig.add_subplot(1, 3, index+1)
+        ax = fig.add_subplot(1, 3, index + 1)
         ax.scatter(
             zostoga_data,
             zostoga_data + zos_data[:, lat_idxs[index], lon_idxs[index]],
@@ -258,8 +255,8 @@ def evaluate_regression(
         ax.text(
             0.62,
             0.95,
-            f"({float(lats[index]):.1f}$\degree$, "
-            f"{float(lons[index]):.1f}$\degree$)",
+            rf"({float(lats[index]):.1f}$\degree$, "
+            rf"{float(lons[index]):.1f}$\degree$)",
             transform=ax.transAxes)
         ax.set_ylim([-0.2, 0.8])
         ax.set_xlabel("Global thermal expansion (m)")
@@ -293,7 +290,7 @@ def plot_evals(
     vmax = 0.5
     titles = ["SSP2-4.5", "SSP3-7.0", "SSP5-8.5"]
     for index in range(3):
-        ax = fig.add_subplot(2, 3, index+1, projection=ccrs.PlateCarree())
+        ax = fig.add_subplot(2, 3, index + 1, projection=ccrs.PlateCarree())
         ax.pcolormesh(
             zos[index].coord("longitude").points,
             zos[index].coord("latitude").points,
@@ -346,11 +343,12 @@ def evaluate_patterns(
                                                 slopes,
                                                 strict=True)):
         zostoga.data = zostoga.data - np.mean(zostoga.data[0:10])
-        zos_list[index].data = (zos_list[index].data - 
-                                np.mean(zos_list[index].data[0:10], axis=0))
+        zos_list[index].data = (
+            zos_list[index].data
+            - np.mean(zos_list[index].data[0:10], axis=0))
 
-        p_scaled = (zostoga.data[:, np.newaxis, np.newaxis] *
-                    slope[np.newaxis, :, :])
+        p_scaled = (zostoga.data[:, np.newaxis, np.newaxis]
+                    * slope[np.newaxis, :, :])
 
         # Diff maps for end of century (20 yr mean)
         scenario_yrs = 86
@@ -359,15 +357,21 @@ def evaluate_patterns(
         start_idx = end_idx - (20 * months)
         diff_list.append(
             np.mean(
-                (zos_list[index][start_idx:end_idx].data +
-                zostoga.data[start_idx:end_idx, np.newaxis, np.newaxis]),
+                (
+                    zos_list[index][start_idx:end_idx].data
+                    + zostoga.data[start_idx:end_idx, np.newaxis, np.newaxis]
+                ),
                 axis=0)
             - np.mean(p_scaled[start_idx:end_idx], axis=0))
 
         # Calculate mean squared error
         mse = np.nanmean(
-            ((zos_list[index].data +
-            zostoga.data[:, np.newaxis, np.newaxis]) - p_scaled) ** 2,
+            (
+                (
+                    zos_list[index].data
+                    + zostoga.data[:, np.newaxis, np.newaxis]
+                ) - p_scaled
+            ) ** 2,
             axis=(1, 2))
         mse_list.append(mse)
 
@@ -395,7 +399,7 @@ def extract_data_from_cfg(model: str, cfg: dict) -> tuple[list]:
     zostoga_names = [
         "zostoga_piControl", "zostoga_245",
         "zostoga_370", "zostoga_585"]
-    zos_names = ["zos_245", "zos_370","zos_585"]
+    zos_names = ["zos_245", "zos_370", "zos_585"]
     zostoga_cubes = []
     zos_cubes = []
     for dataset in cfg["input_data"].values():
