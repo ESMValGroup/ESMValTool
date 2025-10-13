@@ -338,10 +338,8 @@ def evaluate_patterns(
     # Scale patterns for each scenario
     mse_list = []
     diff_list = []
-    for index, (zostoga, slope) in enumerate(zip(
-                                                zostoga_list,
-                                                slopes,
-                                                strict=True)):
+    for index, (zostoga, slope) in enumerate(
+            zip(zostoga_list, slopes, strict=True)):
         zostoga.data = zostoga.data - np.mean(zostoga.data[0:10])
         zos_list[index].data = (
             zos_list[index].data
@@ -351,10 +349,8 @@ def evaluate_patterns(
                     * slope[np.newaxis, :, :])
 
         # Diff maps for end of century (20 yr mean)
-        scenario_yrs = 86
-        months = 12
-        end_idx = (scenario_yrs * months) - 1
-        start_idx = end_idx - (20 * months)
+        end_idx = (86 * 12) - 1  # 86 years x 12 months
+        start_idx = end_idx - (20 * 12)  # 20 years x 12 months
         diff_list.append(
             np.mean(
                 (
