@@ -5,6 +5,7 @@ Author
 ------
 Gregory Munday (Met Office, UK)
 """
+
 from __future__ import annotations
 
 import logging
@@ -93,4 +94,5 @@ def parallelise(function: callable, processes: int | None = None) -> callable:
             pool.close()
             pool.join()
             return result
+
     return partial(easy_parallise, function)
