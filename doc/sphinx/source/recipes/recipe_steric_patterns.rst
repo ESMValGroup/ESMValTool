@@ -8,7 +8,11 @@ Overview
 
 The recipe recipe_steric_patterns calculates sterodynamic sea-level change
 patterns from CMIP6 model datasets. Patterns are calculated for the SSP2-4.5,
-SSP3-7.0 and SSP5-8.5 scenarios.
+SSP3-7.0 and SSP5-8.5 scenarios. 
+
+These patterns are useful because we can emulate spatially-resolved 
+sterodynamic sea-level rise from global thermal expansion at a fraction of the
+computational cost of running a fully-coupled Earth system model or ocean model.
 
 .. note::
   The regrid setting in the recipe is set to a (180, 360) grid to put
@@ -114,4 +118,7 @@ Example plots
    :width: 80%
 
    Example predictions from the UKESM1-0-LL model patterns for each SSP,
-   as well as a timeseries of globally-averaged mean-squared error.
+   as well as a timeseries of globally-averaged mean-squared error. Two polar
+   artifacts can be seen in each map panel, seemingly occuring due to 
+   ESMValTool's regridding functionality. This seems to occur more often on 
+   low-resolution models as opposed to high-res.
