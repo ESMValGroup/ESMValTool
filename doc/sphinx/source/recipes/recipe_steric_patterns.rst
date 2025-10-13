@@ -14,6 +14,9 @@ These patterns are useful because we can emulate spatially-resolved
 sterodynamic sea-level rise from global thermal expansion at a fraction of the
 computational cost of running a fully-coupled Earth system model or ocean model.
 
+The methods for this recipe are derived from those in Palmer et al. (2020) which 
+themselves are rooted in the IPCC AR5 report. 
+
 .. note::
   The regrid setting in the recipe is set to a (180, 360) grid to put
   all models on the same grid.
@@ -100,7 +103,7 @@ Example plots
    :width: 80%
 
    Detrended zostoga, correcting for model drift using the pre-industrial
-   (PiControl) experiment following Palmer et al. (2020). This is done for 
+   (PiControl) experiment following Palmer et al., (2020). This is done for 
    each model and scenario.
 
 .. _fig_steric_patterns_2:
