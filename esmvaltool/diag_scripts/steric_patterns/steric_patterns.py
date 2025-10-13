@@ -462,10 +462,8 @@ def patterns(model: str, cfg: dict) -> None:
     # Calculate regression between zostoga and zos
     scenarios = ["ssp245", "ssp370", "ssp585"]
     slopes, masks = [], []
-    for index, (z_dtr, zos) in enumerate(zip(
-                                            zostoga_list,
-                                            zos_list,
-                                            strict=True)):
+    for index, (z_dtr, zos) in enumerate(
+        zip(zostoga_list, zos_list, strict=True)):
         slopes_arr, masks_arr = dyn_steric_regression(
             z_dtr, zos, plot_path, scenarios[index])
         save_data(slopes_arr, masks_arr, work_path, model, scenarios[index])
