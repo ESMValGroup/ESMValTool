@@ -169,7 +169,7 @@ def dyn_steric_regression(
     else:
         mask = zos.data.mask[0]
 
-    fig = evaluate_regression(zostoga.data, zos.data, slopes)
+    fig = evaluate_regression(zostoga.data, zos.data, slopes, zos)
     fig.savefig(
         Path(plot_path)
         / f"regression_{zostoga.attributes['source_id']}_{scenario}.png",
@@ -208,7 +208,7 @@ def save_data(
 
 def evaluate_regression(
         zostoga_data: np.array, zos_data: np.array,
-        slopes: np.array) -> plt.figure:
+        slopes: np.array, zos_cube: iris.cube.Cube) -> plt.figure:
     """Evaluate the regression.
 
     Parameters
@@ -235,14 +235,24 @@ def evaluate_regression(
 
     lat_idxs = [150, 26, 170]
     lon_idxs = [110, 30, 340]
+    lats = zos_cube.coord("latitude").points[lat_idxs]
+    lons = zos_cube.coord("longitude").points[lon_idxs]
     for index in range(3):
         ax = fig.add_subplot(1, 3, index+1)
         ax.scatter(
-            zostoga_data, zostoga_data + zos_data[:, lat_idxs[index], lon_idxs[index]], s=2,
+            zostoga_data,
+            zostoga_data + zos_data[:, lat_idxs[index], lon_idxs[index]],
+            s=2,
             alpha=0.8, color="navy", label="Model")
         ax.plot(
             x_vals, slopes[lat_idxs[index], lon_idxs[index]] * x_vals,
             color="darkorchid", label="Regression")
+        ax.text(
+            0.62,
+            0.95,
+            f"({float(lats[index]):.1f}$\degree$, "
+            f"{float(lons[index]):.1f}$\degree$)",
+            transform=ax.transAxes)
         ax.set_ylim([-0.2, 0.8])
         ax.set_xlabel("Global thermal expansion (m)")
         ax.set_ylabel("Dynamic sea level (m)")
@@ -283,7 +293,8 @@ def plot_evals(
             vmin=vmin, vmax=vmax,
             cmap="RdBu_r")
         ax.set_title(titles[index])
-        cbar = plt.colorbar(ax.collections[0], ax=ax, orientation="horizontal")
+        cbar = plt.colorbar(
+            ax.collections[0], ax=ax, orientation="horizontal")
         cbar.set_label("Prediction - ESM (m)")
 
     ax = fig.add_subplot(2, 3, (4, 6))
@@ -322,11 +333,16 @@ def evaluate_patterns(
     # Scale patterns for each scenario
     mse_list = []
     diff_list = []
-    for index, (zostoga, slope) in enumerate(zip(zostoga_list, slopes, strict=True)):
+    for index, (zostoga, slope) in enumerate(zip(
+                                                zostoga_list,
+                                                slopes,
+                                                strict=True)):
         zostoga.data = zostoga.data - np.mean(zostoga.data[0:10])
-        zos_list[index].data = zos_list[index].data - np.mean(zos_list[index].data[0:10], axis=0)
+        zos_list[index].data = (zos_list[index].data - 
+                                np.mean(zos_list[index].data[0:10], axis=0))
 
-        p_scaled = zostoga.data[:, np.newaxis, np.newaxis] * slope[np.newaxis, :, :]
+        p_scaled = (zostoga.data[:, np.newaxis, np.newaxis] *
+                    slope[np.newaxis, :, :])
 
         # Diff maps for end of century (20 yr mean)
         scenario_yrs = 86
@@ -334,11 +350,17 @@ def evaluate_patterns(
         end_idx = (scenario_yrs * months) - 1
         start_idx = end_idx - (20 * months)
         diff_list.append(
-            np.mean(zos_list[index][start_idx:end_idx].data + zostoga.data[start_idx:end_idx, np.newaxis, np.newaxis], axis=0)
+            np.mean(
+                (zos_list[index][start_idx:end_idx].data +
+                zostoga.data[start_idx:end_idx, np.newaxis, np.newaxis]),
+                axis=0)
             - np.mean(p_scaled[start_idx:end_idx], axis=0))
 
         # Calculate mean squared error
-        mse = np.nanmean(((zos_list[index].data + zostoga.data[:, np.newaxis, np.newaxis]) - p_scaled) ** 2, axis=(1, 2))
+        mse = np.nanmean(
+            ((zos_list[index].data +
+            zostoga.data[:, np.newaxis, np.newaxis]) - p_scaled) ** 2,
+            axis=(1, 2))
         mse_list.append(mse)
 
     fig = plot_evals(diff_list, zos_list, mse_list)
@@ -362,7 +384,9 @@ def extract_data_from_cfg(model: str, cfg: dict) -> tuple[list]:
     zos: list
         list of zos scenarios
     """
-    zostoga_names = ["zostoga_piControl", "zostoga_245", "zostoga_370", "zostoga_585"]
+    zostoga_names = [
+        "zostoga_piControl", "zostoga_245",
+        "zostoga_370", "zostoga_585"]
     zos_names = ["zos_245", "zos_370","zos_585"]
     zostoga_cubes = []
     zos_cubes = []
@@ -429,7 +453,10 @@ def patterns(model: str, cfg: dict) -> None:
     # Calculate regression between zostoga and zos
     scenarios = ["ssp245", "ssp370", "ssp585"]
     slopes, masks = [], []
-    for index, (z_dtr, zos) in enumerate(zip(zostoga_list, zos_list, strict=True)):
+    for index, (z_dtr, zos) in enumerate(zip(
+                                            zostoga_list,
+                                            zos_list,
+                                            strict=True)):
         slopes_arr, masks_arr = dyn_steric_regression(
             z_dtr, zos, plot_path, scenarios[index])
         save_data(slopes_arr, masks_arr, work_path, model, scenarios[index])

@@ -103,8 +103,9 @@ Example plots
    :align:   center
    :width: 80%
 
-   Example of the regressions between the global thermal expansion and
-   local dynamic sea-level height for three random grid-cells.
+   Example of the regressions between the global thermal expansion (zostoga) and
+   local dynamic sea-level height (zos) for three random grid-cells. The coordinate
+   for each of the grid-cells is shown in the top-right corner of each panel.
 
 .. _fig_steric_patterns_3:
 .. figure::  /recipes/figures/steric_patterns/predictions.png
