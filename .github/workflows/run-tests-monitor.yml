@@ -27,7 +27,7 @@ jobs:
         python-version: ["3.11", "3.12", "3.13"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v3
@@ -46,13 +46,9 @@ jobs:
       - name: Inspect environment
         run: conda list
       - name: Install pytest-monitor
-        run: pip install pytest-monitor
+        run: pip install --no-deps pytest-monitor
       - name: Install ESMValTool
-        run: pip install -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
-      - name: Install Julia from source
-        run: curl -fsSL https://install.julialang.org | sh -s -- --yes
-      - name: Install Julia dependencies
-        run: esmvaltool install Julia
+        run: pip install --no-deps -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Run tests
         run: >
           pytest -n 2 -m "not installation" --db ../.pymon 2>&1
@@ -75,7 +71,7 @@ jobs:
       fail-fast: false
     name: OSX Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v3
@@ -99,10 +95,10 @@ jobs:
       - name: Install git
         run: mamba install -c conda-forge git
       - name: Install pytest-monitor
-        run: pip install pytest-monitor
+        run: pip install --no-deps pytest-monitor
       - name: Install ESMValTool
         run: >
-          pip install -e .[develop] 2>&1
+          pip install --no-deps -e .[develop] 2>&1
           | tee test_osx_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Run tests
         run: >

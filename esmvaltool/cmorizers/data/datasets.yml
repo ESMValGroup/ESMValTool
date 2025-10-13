@@ -4,7 +4,7 @@ datasets:
   AERONET:
     tier: 3
     source: "https://aeronet.gsfc.nasa.gov/"
-    last_access: 2024-04-06
+    last_access: 2025-07-26
     info: |
       Aerosol Optical Depth information from a worldwide network of stations.
 
@@ -18,7 +18,6 @@ datasets:
       across Australia for each observed data variable. This accounts for spatial and temporal gaps in observations.
       Where possible, the gridded analysis techniques provide useful estimates in data-sparse regions
       such as central Australia.
-
       Time coverage: Site-based data are used to provide gridded climate data at the monthly timescale for rainfall (1900+).
       Reference: Evans, A., Jones, D.A., Smalley, R., and Lellyett, S. 2020. An enhanced gridded rainfall analysis scheme
       for Australia. Bureau of Meteorology Research Report. No. 41.
@@ -33,7 +32,6 @@ datasets:
     last_access: 2023-11-21
     info: |
       Data from NCI project requiring an NCI account and access to GADI
-
       ANUClimate 2.0 consists of gridded daily and monthly climate variables across the terrestrial landmass of Australia
       from at least 1970 to the present. Rainfall grids are generated from 1900 to the present. The underpinning spatial
       models have been developed at the Fenner School of Environment and Society of the Australian National University.
@@ -109,6 +107,15 @@ datasets:
       5) Enter EarthData login and password (https://urs.earthdata.nasa.gov/)
       6) Follow download instructions in email from EarthData and put all
          files in the same directory
+
+  CAMS:
+    tier: 3
+    source: https://ads.atmosphere.copernicus.eu/datasets/cams-global-greenhouse-gas-inversion?tab=overview
+    last_access: 2024-10-28
+    info: |
+      You will need to make an account with the ADS data store and accept their licenses to download the data.
+      Then, select carbon dioxide, surface flux, surface air sample, monthly mean,
+      as well as the version and years you require to download.
 
   CDS-SATELLITE-ALBEDO:
     tier: 3
@@ -451,6 +458,19 @@ datasets:
       Other years are not considered since they are not complete.
       Put all files in input_dir_path (no subdirectories with years).
 
+  ESACCI-BIOMASS:
+    tier: 2
+    source: ftp://anon-ftp.ceda.ac.uk/neodc/esacci/biomass/data/agb/maps/v6.0/netcdf
+    last_access: 2025-07-16
+    info: |
+        Download and processing instructions:
+        Use the following CLI to download all the files:
+        esmvaltool data download ESACCI-BIOMASS
+        The underlying downloader is located here:
+        /ESMValTool/esmvaltool/cmorizers/data/downloaders/datasets/esacci_biomass.py
+        and it will download all the file regridded to 10 km available on CEDA (2007, 2010, 2015-2021)
+        under a single directory as follow: ${RAWOBS}/Tier2/ESACCI-BIOMASS
+
   ESACCI-CLOUD:
     tier: 2
     source: https://public.satproj.klima.dwd.de/data/ESA_Cloud_CCI/CLD_PRODUCTS/v3.0/
@@ -701,6 +721,17 @@ datasets:
     last_access: 2020-03-03
     info: "Use automatic download feature to get the data"
 
+  GLWD:
+    tier: 2
+    source: https://figshare.com/articles/dataset/Global_Lakes_and_Wetlands_Database_GLWD_version_2_0/28519994
+    last_access: 2025-07-01
+    info: |
+      Use automatic download to download the following file:
+        GLWD_v2_0_combined_classes_tif.zip
+
+      The dataset is representative of the time period (1984 - 2020) and is thus
+      marked with the timestamp of the year 2002.
+
   GPCC:
     tier: 2
     source: |
@@ -863,17 +894,13 @@ datasets:
 
   JRA-25:
     tier: 2
-    source: https://esgf.nccs.nasa.gov/thredds/fileServer/CREATE-IP/reanalysis/JMA/JRA-25/JRA-25/
-    last_access: 2022-11-17
+    source: https://data.rda.ucar.edu/ds625.1
+    last_access: 2023-06-14
     info: |
       Download the following files:
-        mon/atmos/clt/clt_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/hus/hus_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/prw/prw_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rlut/rlut_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rlutcs/rlutcs_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rsut/rsut_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rsutcs/rsutcs_Amon_reanalysis_JRA-25_197901-201312.nc
+        fcst_phy2m/fcst_phy2m.yyyymm.nc
+        anl_chipsi/fcst_phy2m.yyyymm.nc
+        anl_p/anl_p.yyyymm.nc
 
   JRA-55:
     tier: 2
@@ -955,7 +982,9 @@ datasets:
 
   MERRA2:
     tier: 3
-    source: https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/ https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
+    source: |
+      https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
+      https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
     last_access: 2022-09-13
     info: |
       Use automatic download. That will download monthly data but with
@@ -1194,6 +1223,14 @@ datasets:
       Download the following file:
       https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv
 
+  NOAA-GML-SURFACE-FLASK-N2O:
+    tier: 2
+    source: https://gml.noaa.gov/aftp/data/trace_gases/n2o/flask/surface/
+    last_access: 2024-07-30
+    info: |
+      Download the following archive:
+      n2o_surface-flask_ccgg_text.tar.gz
+
   NSIDC-0116-sh:
     tier: 3
     source: https://nsidc.org/data/NSIDC-0116
@@ -1345,6 +1382,14 @@ datasets:
       Contact Ralf Bennartz (Earth and Environmental Sciences, Vanderbilt
       University, USA).
 
+  WAD2M:
+    tier: 2
+    source: https://doi.org/10.5281/zenodo.3998453
+    last_access: 2025-07-01
+    info: |
+      Use the automatic download to download the file:
+        WAD2M_wetlands_2000-2020_025deg_Ver2.0.nc
+
   WFDE5:
     tier: 2
     source: https://doi.org/10.24381/cds.20d54e34
@@ -1372,3 +1417,14 @@ datasets:
         silicate/netcdf/all/1.00/woa18_all_i00_01.nc
       (To get WOA13, replace filenames prefix woa18 with woa13 and source with
       https://www.ncei.noaa.gov/data/oceans/woa/WOA13/DATAv2)
+
+  Yang2020:
+    tier: 2
+    source: |
+      https://doi.org/10.26008/1912/bco-dmo.810032.1
+    last_access: 2025-06-10
+    info: |
+      Use automatic download feature to get the data. This will download the
+      files:
+        dn2o-mapped-Yang2020.nc
+        n2oFlux-Yang2020.nc
