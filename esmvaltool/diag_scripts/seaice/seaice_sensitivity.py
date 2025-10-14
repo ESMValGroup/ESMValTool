@@ -10,14 +10,14 @@ import yaml
 from matplotlib.colors import Normalize
 from scipy import stats
 
-from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger,
-    run_diagnostic,
-    save_figure,
-    select_metadata,
-)
-
-logger = logging.getLogger(Path(__file__).stem)
+# from esmvaltool.diag_scripts.shared import (
+#     ProvenanceLogger,
+#     run_diagnostic,
+#     save_figure,
+#     select_metadata,
+# )
+#
+# logger = logging.getLogger(Path(__file__).stem)
 
 
 # This is stolen from the example in AutoAssess _plot_mo_metrics.py
@@ -44,14 +44,18 @@ def create_categorised_dataset_dict(data):
     # Initialise blank dictionary
     dict = {
         'models': {},
-        'observations': {},
+        'tasa_obs': {},
+        'siconc_obs': {},
     }
 
     # Iterate over the data
     for element in data:
         if 'observation' in element:
-            if element['observation']:
-                dict['observations'][element['dataset']] = {}
+            if element['observation']:  # In case user writes "false" or similar in recipe
+                if element['variable_group'] == 'tasa_obs':
+                    dict['tasa_obs'][element['dataset']] = {}
+                elif element['variable_group'] == 'si_obs':
+                    dict['siconc_obs'][element['dataset']] = {}
         else:
             dict['models'][element['dataset']] = {}
 
@@ -394,47 +398,99 @@ def main(cfg):
     # Get list of datasets from cfg
     logger.info("Listing datasets in the data")
     dataset_dict = create_categorised_dataset_dict(input_data)
-    data_dict = dataset_dict['models']
 
-
-    # Iterate over each dataset
-    for dataset in data_dict.keys():
+    # Iterate over each model dataset (has both tas and siconc)
+    logger.info("Calculating from model data")
+    model_dict = dataset_dict['models']
+    for dataset in model_dict.keys():
         # Select only data from that dataset
         logger.debug("Selecting data from %s", dataset)
         selection = select_metadata(input_data, dataset=dataset)
 
         # Add an entry to determine labelling in plots
         if "label_dataset" in selection[0]:
-            data_dict[dataset]["label"] = "to_label"
+            model_dict[dataset]["label"] = "to_label"
             logger.info("Dataset %s will be labelled", dataset)
         else:
-            data_dict[dataset]["label"] = "unlabelled"
+            model_dict[dataset]["label"] = "unlabelled"
             logger.info("Not labelling dataset %s in plots", dataset)
 
         # Calculations for the Notz-style plot
         logger.info("Calculating data for Notz-style plot")
         sensitivity = calculate_direct_sensitivity(selection)
         # Add to dictionary
-        data_dict[dataset]["direct_sensitivity_(notz-style)"] = sensitivity
+        model_dict[dataset]["direct_sensitivity_(notz-style)"] = sensitivity
 
         # Calculations for the Roach-style plot
         logger.info("Calculating data for Roach-style plot")
         trends = calculate_annual_trends(selection)
         # Add to dictionary
-        data_dict[dataset]["annual_siconc_trend"] = trends["si_ann_trend"]
-        data_dict[dataset]["annual_tas_trend"] = trends["tas_ann_trend"]
-        data_dict[dataset]["direct_r_val"] = trends["direct_r_val"]
-        data_dict[dataset]["direct_p_val"] = trends["direct_p_val"]
+        model_dict[dataset]["annual_siconc_trend"] = trends["si_ann_trend"]
+        model_dict[dataset]["annual_tas_trend"] = trends["tas_ann_trend"]
+        model_dict[dataset]["direct_r_val"] = trends["direct_r_val"]
+        model_dict[dataset]["direct_p_val"] = trends["direct_p_val"]
+
+    # Iterate over each observational dataset (has only one variable)
+
+    # tasa observations
+    logger.info("Calculating from tasa observational data")
+    tasa_dict = dataset_dict['tasa_obs']
+    for dataset in tasa_dict.keys():
+        # Select only data from that dataset
+        logger.debug("Selecting data from %s", dataset)
+        selection = select_metadata(input_data, dataset=dataset)
+
+        # Add an entry to determine labelling in plots
+        if "label_dataset" in selection[0]:
+            tasa_dict[dataset]["label"] = "to_label"
+            logger.info("Dataset %s will be labelled", dataset)
+        else:
+            tasa_dict[dataset]["label"] = "unlabelled"
+            logger.info("Not labelling dataset %s in plots", dataset)
+
+        # Calculations for the Roach-style plot
+        logger.info("Calculating data for Roach-style plot")
+        tasa_cube = extract_cube(input_data, "tasa")
+        years = tasa_cube.coord("year").points
+        tasa_trend = calculate_regression(years, tasa_cube.data)
+        # Add to dictionary
+        tasa_dict[dataset]["annual_tasa_trend"] = tasa_trend.slope
+
+    # siconc observations
+    logger.info("Calculating from siconc observational data")
+    siconc_dict = dataset_dict['siconc_obs']
+    for dataset in siconc_dict.keys():
+        # Select only data from that dataset
+        logger.debug("Selecting data from %s", dataset)
+        selection = select_metadata(input_data, dataset=dataset)
+
+        # Add an entry to determine labelling in plots
+        if "label_dataset" in selection[0]:
+            siconc_dict[dataset]["label"] = "to_label"
+            logger.info("Dataset %s will be labelled", dataset)
+        else:
+            siconc_dict[dataset]["label"] = "unlabelled"
+            logger.info("Not labelling dataset %s in plots", dataset)
+
+        # Calculations for the Roach-style plot
+        logger.info("Calculating data for Roach-style plot")
+        siconc_cube = extract_cube(input_data, "siconc")
+        years = siconc_cube.coord("year").points
+        siconc_trend = calculate_regression(years, siconc_cube.data)
+        # Add to dictionary
+        siconc_dict[dataset]["annual_siconc_trend"] = siconc_trend.slope
 
     # Add the values to plot to a csv file
     logger.info("Writing values to csv")
-    write_dictionary_to_csv(cfg, data_dict, "plotted_values")
+    write_dictionary_to_csv(cfg, dataset_dict, "plotted_values")
 
-    # Plot the sensitivities (and save and close the plots)
+    # Plot the sensitivities (Notz-style, involves model data only)
     logger.info("Creating Notz-style plot")
-    notz_style_plot_from_dict(data_dict, titles_and_obs_dict, cfg)
+    notz_style_plot_from_dict(model_dict, titles_and_obs_dict, cfg)
+
+    # Plot the trends (Roach-style, involves model and observational data )
     logger.info("Creating Roach-style plot")
-    roach_style_plot_from_dict(data_dict, titles_and_obs_dict, cfg)
+    roach_style_plot_from_dict(dataset_dict, titles_and_obs_dict, cfg)
 
 
 if __name__ == "__main__":
