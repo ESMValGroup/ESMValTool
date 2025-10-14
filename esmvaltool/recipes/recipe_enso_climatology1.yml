@@ -150,14 +150,3 @@ diagnostics:
     scripts:
       plot_script:
         script: enso_metrics/climatology_diagnostic1.py
-
-  diag_collect:
-    description: collect metrics
-    variables:
-      pr:  # dummy variable to fill recipe req
-        mip: Amon
-    scripts:
-      matrix_collect:
-        script: enso_metrics/matrix.py
-        # above diagnostic name and script name
-        diag_metrics: diagnostic_metrics/plot_script  # cfg['work_dir']
