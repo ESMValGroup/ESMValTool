@@ -49,7 +49,8 @@ def get_provenance_record() -> dict:
         "realms": ["ocean"],
         "authors": ["munday_gregory"],
         "plot_types": ["scatter", "map"],
-        "references": ["palmer2020", "perks2023"]}
+        "references": ["palmer2020", "perks2023"],
+    }
 
 
 def calculate_drift(cube: iris.cube.Cube) -> float:
@@ -71,8 +72,8 @@ def calculate_drift(cube: iris.cube.Cube) -> float:
 
 
 def detrend_zostoga(
-        zostoga: iris.cube.Cube, drift_coef: float,
-        plot_path: Path) -> iris.cube.Cube:
+    zostoga: iris.cube.Cube, drift_coef: float, plot_path: Path
+) -> iris.cube.Cube:
     """Detrend the zostoga cube.
 
     Parameters
@@ -103,28 +104,34 @@ def detrend_zostoga(
         s=2,
         alpha=0.8,
         color="navy",
-        label="Scenario run (without drift correction)")
+        label="Scenario run (without drift correction)",
+    )
     ax.scatter(
         np.arange(len(zostoga.data)),
         zostoga_detrended.data,
         s=2,
         alpha=0.8,
         color="darkorchid",
-        label="Scenario run (with drift correction)")
+        label="Scenario run (with drift correction)",
+    )
     ax.set_xlabel("Scenario time (months)")
     ax.set_ylabel("Global thermal expansion (m)")
     ax.legend(loc="upper left", frameon=False)
 
     fig.savefig(
-        Path(plot_path)
-        / f'detrended_{zostoga.attributes["source_id"]}.png', dpi=150)
+        Path(plot_path) / f"detrended_{zostoga.attributes['source_id']}.png",
+        dpi=150,
+    )
     plt.close()
     return zostoga_detrended
 
 
 def dyn_steric_regression(
-        zostoga: iris.cube.Cube, zos: iris.cube.Cube,
-        plot_path: Path, scenario: str) -> tuple[np.array]:
+    zostoga: iris.cube.Cube,
+    zos: iris.cube.Cube,
+    plot_path: Path,
+    scenario: str,
+) -> tuple[np.array]:
     """Calculate the zostoga/zos regression.
 
     Parameters
@@ -164,7 +171,8 @@ def dyn_steric_regression(
     regr = LinearRegression()
     regr.fit(
         zostoga.data.reshape(-1, 1),
-        zostoga.data.reshape(-1, 1) + zos.data.reshape(zos.data.shape[0], -1))
+        zostoga.data.reshape(-1, 1) + zos.data.reshape(zos.data.shape[0], -1),
+    )
     slopes = regr.coef_.reshape(180, 360)
 
     # Deal with dodgy land mask, which won't really matter in the end anyway
@@ -177,14 +185,19 @@ def dyn_steric_regression(
     fig.savefig(
         Path(plot_path)
         / f"regression_{zostoga.attributes['source_id']}_{scenario}.png",
-        dpi=150)
+        dpi=150,
+    )
     plt.close()
     return slopes, mask
 
 
 def save_data(
-        slopes: np.array, mask: np.array,
-        work_path: Path, model: str, scenario: str) -> None:
+    slopes: np.array,
+    mask: np.array,
+    work_path: Path,
+    model: str,
+    scenario: str,
+) -> None:
     """Save the zostoga/zos regression slopes and model mask.
 
     Parameters
@@ -204,15 +217,16 @@ def save_data(
     -------
     None
     """
-    np.save(
-        Path(work_path)
-        / f"zos_regression_{scenario}_{model}.npy", slopes)
+    np.save(Path(work_path) / f"zos_regression_{scenario}_{model}.npy", slopes)
     np.save(Path(work_path) / f"zos_mask_{scenario}_{model}.npy", mask)
 
 
 def evaluate_regression(
-        zostoga_data: np.array, zos_data: np.array,
-        slopes: np.array, zos_cube: iris.cube.Cube) -> plt.figure:
+    zostoga_data: np.array,
+    zos_data: np.array,
+    slopes: np.array,
+    zos_cube: iris.cube.Cube,
+) -> plt.figure:
     """Evaluate the regression.
 
     Parameters
@@ -232,9 +246,8 @@ def evaluate_regression(
         figure of the regression
     """
     x_vals = np.linspace(
-        zostoga_data.min(),
-        zostoga_data.max(),
-        len(zostoga_data))
+        zostoga_data.min(), zostoga_data.max(), len(zostoga_data)
+    )
 
     # Plot the regression at a few grid points
     fig = plt.figure(figsize=(12, 6), layout="constrained")
@@ -249,16 +262,23 @@ def evaluate_regression(
             zostoga_data,
             zostoga_data + zos_data[:, lat_idxs[index], lon_idxs[index]],
             s=2,
-            alpha=0.8, color="navy", label="Model")
+            alpha=0.8,
+            color="navy",
+            label="Model",
+        )
         ax.plot(
-            x_vals, slopes[lat_idxs[index], lon_idxs[index]] * x_vals,
-            color="darkorchid", label="Regression")
+            x_vals,
+            slopes[lat_idxs[index], lon_idxs[index]] * x_vals,
+            color="darkorchid",
+            label="Regression",
+        )
         ax.text(
             0.62,
             0.95,
             rf"({float(lats[index]):.1f}$\degree$, "
             rf"{float(lons[index]):.1f}$\degree$)",
-            transform=ax.transAxes)
+            transform=ax.transAxes,
+        )
         ax.set_ylim([-0.2, 0.8])
         ax.set_xlabel("Global thermal expansion (m)")
         ax.set_ylabel("Dynamic sea level (m)")
@@ -266,8 +286,7 @@ def evaluate_regression(
     return fig
 
 
-def plot_evals(
-        diff_list: list, zos: list, mse_list: list) -> plt.figure:
+def plot_evals(diff_list: list, zos: list, mse_list: list) -> plt.figure:
     """Plot the evaluation of the thermosteric patterns.
 
     Parameters
@@ -294,19 +313,21 @@ def plot_evals(
         ax.pcolormesh(
             zos[index].coord("longitude").points,
             zos[index].coord("latitude").points,
-            diff_list[index], transform=ccrs.PlateCarree(),
-            vmin=vmin, vmax=vmax,
-            cmap="RdBu_r")
+            diff_list[index],
+            transform=ccrs.PlateCarree(),
+            vmin=vmin,
+            vmax=vmax,
+            cmap="RdBu_r",
+        )
         ax.set_title(titles[index])
-        cbar = plt.colorbar(
-            ax.collections[0], ax=ax, orientation="horizontal")
+        cbar = plt.colorbar(ax.collections[0], ax=ax, orientation="horizontal")
         cbar.set_label("Prediction - ESM (m)")
 
     ax = fig.add_subplot(2, 3, (4, 6))
     time = np.linspace(2015, 2100, 1032)
-    ax.plot(time, mse_list[0][:(86 * 12)], label="SSP245", color="navy")
-    ax.plot(time, mse_list[1][:(86 * 12)], label="SSP370", color="orange")
-    ax.plot(time, mse_list[2][:(86 * 12)], label="SSP585", color="darkorchid")
+    ax.plot(time, mse_list[0][: (86 * 12)], label="SSP245", color="navy")
+    ax.plot(time, mse_list[1][: (86 * 12)], label="SSP370", color="orange")
+    ax.plot(time, mse_list[2][: (86 * 12)], label="SSP585", color="darkorchid")
     ax.set_xlabel("Year")
     ax.set_ylabel("Global mean squared error (m)")
     ax.legend(loc="upper left", frameon=False)
@@ -314,8 +335,12 @@ def plot_evals(
 
 
 def evaluate_patterns(
-        zostoga_list: list, zos_list: list, slopes: list,
-        plot_path: Path, model: str) -> None:
+    zostoga_list: list,
+    zos_list: list,
+    slopes: list,
+    plot_path: Path,
+    model: str,
+) -> None:
     """Evaluate the patterns.
 
     Parameters
@@ -339,14 +364,16 @@ def evaluate_patterns(
     mse_list = []
     diff_list = []
     for index, (zostoga, slope) in enumerate(
-            zip(zostoga_list, slopes, strict=True)):
+        zip(zostoga_list, slopes, strict=True)
+    ):
         zostoga.data = zostoga.data - np.mean(zostoga.data[0:10])
-        zos_list[index].data = (
-            zos_list[index].data
-            - np.mean(zos_list[index].data[0:10], axis=0))
+        zos_list[index].data = zos_list[index].data - np.mean(
+            zos_list[index].data[0:10], axis=0
+        )
 
-        p_scaled = (zostoga.data[:, np.newaxis, np.newaxis]
-                    * slope[np.newaxis, :, :])
+        p_scaled = (
+            zostoga.data[:, np.newaxis, np.newaxis] * slope[np.newaxis, :, :]
+        )
 
         # Diff maps for end of century (20 yr mean)
         end_idx = (86 * 12) - 1  # 86 years x 12 months
@@ -357,8 +384,10 @@ def evaluate_patterns(
                     zos_list[index][start_idx:end_idx].data
                     + zostoga.data[start_idx:end_idx, np.newaxis, np.newaxis]
                 ),
-                axis=0)
-            - np.mean(p_scaled[start_idx:end_idx], axis=0))
+                axis=0,
+            )
+            - np.mean(p_scaled[start_idx:end_idx], axis=0)
+        )
 
         # Calculate mean squared error
         mse = np.nanmean(
@@ -366,9 +395,12 @@ def evaluate_patterns(
                 (
                     zos_list[index].data
                     + zostoga.data[:, np.newaxis, np.newaxis]
-                ) - p_scaled
-            ) ** 2,
-            axis=(1, 2))
+                )
+                - p_scaled
+            )
+            ** 2,
+            axis=(1, 2),
+        )
         mse_list.append(mse)
 
     fig = plot_evals(diff_list, zos_list, mse_list)
@@ -394,8 +426,11 @@ def extract_data_from_cfg(model: str, cfg: dict) -> tuple[list]:
         list of zos scenarios
     """
     zostoga_names = [
-        "zostoga_piControl", "zostoga_245",
-        "zostoga_370", "zostoga_585"]
+        "zostoga_piControl",
+        "zostoga_245",
+        "zostoga_370",
+        "zostoga_585",
+    ]
     zos_names = ["zos_245", "zos_370", "zos_585"]
     zostoga_cubes = []
     zos_cubes = []
@@ -414,8 +449,7 @@ def extract_data_from_cfg(model: str, cfg: dict) -> tuple[list]:
     return zostoga_cubes, zos_cubes
 
 
-def prepare_zostoga(
-        zostoga_list: list, plot_path: Path) -> list:
+def prepare_zostoga(zostoga_list: list, plot_path: Path) -> list:
     """Prepare the zostoga cube for regression.
 
     Parameters
@@ -436,7 +470,8 @@ def prepare_zostoga(
     # Detrend the scenario zostogas
     return [
         detrend_zostoga(zostoga, zostoga_drift, plot_path)
-        for zostoga in zostoga_list[1:]]  # [1:] to skip PiControl
+        for zostoga in zostoga_list[1:]
+    ]  # [1:] to skip PiControl
 
 
 def patterns(model: str, cfg: dict) -> None:
@@ -466,7 +501,8 @@ def patterns(model: str, cfg: dict) -> None:
         zip(zostoga_list, zos_list, strict=True)
     ):
         slopes_arr, masks_arr = dyn_steric_regression(
-            z_dtr, zos, plot_path, scenarios[index])
+            z_dtr, zos, plot_path, scenarios[index]
+        )
         save_data(slopes_arr, masks_arr, work_path, model, scenarios[index])
         slopes.append(slopes_arr)
         masks.append(masks_arr)
