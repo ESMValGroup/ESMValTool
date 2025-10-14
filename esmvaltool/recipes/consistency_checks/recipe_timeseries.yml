@@ -1,9 +1,9 @@
 # ESMValTool
 ---
 documentation:
-  title: Time series of total water vapor mass
+  title: Time series of total air mass anomalies
   description: >
-    Time series of global average total water vapor mass.
+    Time series of global air mass anomalies.
   authors:
     - lauer_axel
   maintainer:
@@ -28,25 +28,16 @@ preprocessors:
     custom_order: true
     regrid:
       target_grid: 2x2
-      scheme: nearest  # some models do not work with ESMFAreaWeighted
+      scheme: nearest
     area_statistics:
       operator: sum
     annual_statistics:
       operator: mean
     anomalies:
       period: full
-#      reference:
-#        start_year: 1979
-#        start_month: 1
-#        start_day: 1
-#        end_year: 2020
-#        end_month: 12
-#        end_day: 31
 
   global_sum_anom:
     custom_order: true
-#    convert_units:
-#      units: kg m-2
     regrid:
       target_grid: 2x2
       scheme: nearest
@@ -57,13 +48,6 @@ preprocessors:
     anomalies:
       period: full
       relative: true
-#      reference:
-#        start_year: 1979
-#        start_month: 1
-#        start_day: 1
-#        end_year: 2014
-#        end_month: 12
-#        end_day: 31
 
 
 diagnostics:
@@ -109,45 +93,45 @@ diagnostics:
               title: 'Anomaly total air mass'
               ylabel: 'Air mass anomaly [%]'
 
-  global_watervapor:
-    description: Create time series of global total water vapor mass.
-    variables:
-      prw:
-        preprocessor: global_sum_anom
-        project: CMIP6
-        mip: Amon
-        exp: historical
-        ensemble: r1i1p1f1
-        reference_dataset: ERA5
-        supplementary_variables: *supplementary_variables
-    scripts:
-      allplots:
-        script: monitor/multi_datasets.py
-        plot_folder: '{plot_dir}'
-        group_variables_by: variable_group
-        facet_used_for_labels: dataset
-        plots:
-          timeseries:
-            caption: 'Time series of anomalies in global total water vapor mass'
-            plot_kwargs:
-              ICON-XPP:
-                color: red
-                label: '{dataset}'
-                linestyle: '-'
-                linewidth: 2
-                zorder: 3
-              ERA5:
-                color: blue
-                label: '{dataset}'
-                linestyle: '-'
-                linewidth: 2
-                zorder: 3
-              default:
-                color: black
-                label: '{dataset}'
-                linestyle: '-'
-                linewidth: 2
-                zorder: 4
-            pyplot_kwargs:
-              title: 'Anomalies in atmospheric water vapor'
-              ylabel: 'Water vapor mass anomaly [%]'
+#  global_watervapor:
+#    description: Create time series of global total water vapor mass.
+#    variables:
+#      prw:
+#        preprocessor: global_sum_anom
+#        project: CMIP6
+#        mip: Amon
+#        exp: historical
+#        ensemble: r1i1p1f1
+#        reference_dataset: ERA5
+#        supplementary_variables: *supplementary_variables
+#    scripts:
+#      allplots:
+#        script: monitor/multi_datasets.py
+#        plot_folder: '{plot_dir}'
+#        group_variables_by: variable_group
+#        facet_used_for_labels: dataset
+#        plots:
+#          timeseries:
+#            caption: 'Time series of anomalies in global total water vapor mass'
+#            plot_kwargs:
+#              ICON-XPP:
+#                color: red
+#                label: '{dataset}'
+#                linestyle: '-'
+#                linewidth: 2
+#                zorder: 3
+#              ERA5:
+#                color: blue
+#                label: '{dataset}'
+#                linestyle: '-'
+#                linewidth: 2
+#                zorder: 3
+#              default:
+#                color: black
+#                label: '{dataset}'
+#                linestyle: '-'
+#                linewidth: 2
+#                zorder: 4
+#            pyplot_kwargs:
+#              title: 'Anomalies in atmospheric water vapor'
+#              ylabel: 'Water vapor mass anomaly [%]'

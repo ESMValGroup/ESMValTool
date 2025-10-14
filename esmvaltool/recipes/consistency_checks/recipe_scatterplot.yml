@@ -1,30 +1,18 @@
 # ESMValTool
 ---
 documentation:
-  title: Model evaluation with focus on clouds.
+  title: Water vapor checks.
   description: >
-    Plot 2D histograms using the Seaborn diagnostic in ESMValTool.
+    Plot Water vapor consistency diagnostics.
   authors:
-    - bock_lisa
     - lauer_axel
-    - andela_bouwe
   maintainer:
-    - bock_lisa
+    - lauer_axel
 
-timerange_for_data: &time_period
-#  timerange: '1995/2014'
-  timerange: '2014/2014'
 regridding: &regridding
   regrid:
     target_grid: 2x2
-    scheme:
-      reference: esmf_regrid.schemes:ESMFAreaWeighted
-levels_for_3d_vars: &extracting_levels
-  extract_levels:
-#    levels: {cmor_table: CMIP6, coordinate: plev27}
-    levels: [100000., 97500., 95000., 92500., 90000., 87500., 85000., 82500., 80000., 77500., 75000., 70000., 65000., 60000., 55000., 50000., 45000., 40000., 35000., 30000., 25000., 20000., 15000.]
-    coordinate: air_pressure
-    scheme: linear
+    scheme: nearest
 
 
 datasets:
@@ -40,11 +28,6 @@ supplementary_variables: &supplementary_variables
 
 
 preprocessors:
-  common_grid_b300:
-#    custom_order: true
-    <<: *extracting_levels
-#    <<: *regridding
-
   common_grid_tas:
     <<: *regridding
     mask_outside_range:
@@ -59,28 +42,7 @@ preprocessors:
       operator: mean
     anomalies:
       period: full
-      reference:
-        start_year: 1979
-        start_month: 1
-        start_day: 1
-        end_year: 2020
-        end_month: 12
-        end_day: 31
 
-  common_grid_clt:
-#    <<: *regridding
-    custom_order: true
-    mask_outside_range:
-      minimum: 0
-      maximum: 100.
-  common_grid_pr:
-#    <<: *regridding
-    custom_order: true
-    convert_units:
-      units: mm day-1
-    mask_outside_range:
-      minimum: 0
-      maximum: 10.
   common_grid_prw:
     custom_order: true
     <<: *regridding
@@ -96,229 +58,14 @@ preprocessors:
     annual_statistics:
       operator: mean
     anomalies:
-#      standardize: true
       period: full
-      reference:
-        start_year: 1979
-        start_month: 1
-        start_day: 1
-        end_year: 2020
-        end_month: 12
-        end_day: 31
-
-  common_grid_ta:
-#    custom_order: true
-#    <<: *extracting_levels
-#    <<: *regridding
-    mask_outside_range:
-      minimum: 240.
-      maximum: 315.
-  common_grid_hus:
-    custom_order: true
-#    <<: *extracting_levels
-#    <<: *regridding
-    convert_units:
-      units: g kg-1
-    mask_outside_range:
-      minimum: 1
-      maximum: 50
-  common_grid_hur:
-    custom_order: true
-    <<: *extracting_levels
-#    <<: *regridding
-    mask_outside_range:
-      minimum: 5.
-      maximum: 100.
-  common_grid_cl:
-    custom_order: true
-    <<: *extracting_levels
-#    <<: *regridding
-    mask_outside_range:
-      minimum: 5.
-      maximum: 100.
+      relative: true
 
 
 diagnostics:
-#  joint_hur_cl:
-#    description: Scatterplot hur vs cl.
-#    variables:
-#      hur:
-#        mip: Amon
-#        exp: historical
-#        preprocessor: common_grid_hur
-#        <<: *time_period
-#      cl:
-#        mip: Amon
-#        exp: historical
-#        preprocessor: common_grid_cl
-#        <<: *time_period
-#    scripts:
-#      plot:
-#        script: seaborn_jointplot_histogram.py
-#        x: hur
-#        y: cl
-#        bins: 20
-#        joint_kws:
-#          vmax: 0.015
-#          cmap: YlGnBu
-#        cbar: true
-#        cbar_kws:
-#          extend: 'max'
-#        marginal_kws:
-#          color: darkturquoise
-#        seaborn_settings:
-#          style: ticks
-#          rc:
-#            axes.titlepad: 15.0
-#        suptitle: 'ERA5'
-#        plot_filename: 'jointplot_hur_cl_ERA5'
 
-#  plot_joint_ta_hus:
-#    description: Scatterplot ta vs hus.
-#    variables:
-#      ta:
-#        mip: Amon
-#        exp: historical
-#        preprocessor: common_grid_ta
-#        <<: *time_period
-#      hus:
-#        mip: Amon
-#        exp: historical
-#        preprocessor: common_grid_hus
-#        <<: *time_period
-#    additional_datasets:
-#      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, alias: ERA5}
-#    scripts:
-#      plot:
-#        script: seaborn_jointplot_histogram.py
-#        x: ta
-#        y: hus
-#        bins: 20
-#        joint_kws:
-#          vmax: 0.015
-#          cmap: YlGnBu
-#        cbar: true
-#        cbar_kws:
-#          extend: 'max'
-#        marginal_kws:
-#          color: darkturquoise
-#        seaborn_settings:
-#          style: ticks
-#          rc:
-#            axes.titlepad: 15.0
-#        suptitle: 'ERA5'
-#        plot_filename: 'jointplot_ta_hus_ERA5'
-
-#  plot_joint_pr_prw:
-#    description: Scatterplot pr vs prw.
-#    variables:
-#      pr:
-#        mip: Amon
-#        exp: historical
-#        preprocessor: common_grid_pr
-#        <<: *time_period
-#      prw:
-#        mip: Amon
-#        exp: historical
-#        preprocessor: common_grid_prw
-#        <<: *time_period
-#    additional_datasets:
-#      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, alias: ERA5}
-#    scripts:
-#      plot:
-#        script: seaborn_jointplot_histogram.py
-#        x: pr
-#        y: prw
-#        bins: 20
-#        joint_kws:
-#          vmax: 0.015
-#          cmap: YlGnBu
-#        cbar: true
-#        cbar_kws:
-#          extend: 'max'
-#        marginal_kws:
-#          color: darkturquoise
-#        seaborn_settings:
-#          style: ticks
-#          rc:
-#            axes.titlepad: 15.0
-#        suptitle: 'ERA5'
-#        plot_filename: 'jointplot_pr_prw_ERA5'
-
-#  plot_joint_clt_prw:
-#    description: Scatterplot clt vs prw.
-#    variables:
-#      clt:
-#        mip: Amon
-#        exp: historical
-#        preprocessor: common_grid_clt
-#        <<: *time_period
-#      prw:
-#        mip: Amon
-#        exp: historical
-#        preprocessor: common_grid_prw
-#        <<: *time_period
-#    additional_datasets:
-#      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, alias: ERA5}
-#    scripts:
-#      plot:
-#        script: seaborn_jointplot_histogram.py
-#        x: prw
-#        y: clt
-#        bins: 20
-#        joint_kws:
-#          vmax: 0.015
-#          cmap: YlGnBu
-#        cbar: true
-#        cbar_kws:
-#          extend: 'max'
-#        marginal_kws:
-#          color: darkturquoise
-#        seaborn_settings:
-#          style: ticks
-#          rc:
-#            axes.titlepad: 15.0
-#        suptitle: 'ERA5'
-#        plot_filename: 'jointplot_clt_prw_ERA5'
-
-#  plot_joint_pr_tas:
-#    description: Scatterplot tas vs pr.
-#    variables:
-#      pr:
-#        mip: Amon
-#        exp: historical
-#        preprocessor: common_grid_pr
-#        <<: *time_period
-#      tas:
-#        mip: Amon
-#        exp: historical
-#        preprocessor: common_grid_tas
-#        <<: *time_period
-#    additional_datasets:
-#      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, alias: ERA5}
-#    scripts:
-#      plot:
-#        script: seaborn_jointplot_histogram.py
-#        x: tas
-#        y: pr
-#        bins: 20
-#        joint_kws:
-#          vmax: 0.015
-#          cmap: YlGnBu
-#        cbar: true
-#        cbar_kws:
-#          extend: 'max'
-#        marginal_kws:
-#          color: darkturquoise
-#        seaborn_settings:
-#          style: ticks
-#          rc:
-#            axes.titlepad: 15.0
-#        suptitle: 'ERA5'
-#        plot_filename: 'jointplot_tas_pr_ERA5'
-
-  plot_joint_prw_tas:
-    description: Scatterplot tas vs prw.
+  plot_scatter_prw_tas:
+    description: Scatterplot anomalies tas vs anomalies prw.
     variables:
       prw:
         mip: Amon
@@ -330,56 +77,53 @@ diagnostics:
         exp: historical
         supplementary_variables: *supplementary_variables
         preprocessor: common_grid_tas_a
-#    scripts:
-#      plot:
-#        script: seaborn_jointplot_histogram.py
-#        x: tas
-#        y: prw
-#        bins: 20
-#        joint_kws:
-#          vmax: 0.015
-#          cmap: YlGnBu
-#        cbar: true
-#        cbar_kws:
-#          extend: 'max'
-#        marginal_kws:
-#          color: darkturquoise
-#        seaborn_settings:
-#          style: ticks
-#          rc:
-#            axes.titlepad: 15.0
-#        suptitle: 'ICON-XPP'
-#        plot_filename: 'jointplot_tas_prw_ICON-XPP'
     scripts:
       plot:
         script: seaborn_diag.py
-#        seaborn_func: scatterplot
         seaborn_func: regplot
         reset_index: true
         write_netcdf: true
         seaborn_kwargs:
           x: tas
           y: prw
-#            col: shape_id
-#            col_order: *regions_to_extract
-#            col_wrap: 3
-#          hue: alias
-#          facet_kws:
-#            sharey: false
-#        add_aux_coords: true
-#        dropna_kwargs:
-#          axis: 0
-#          how: any
-#        legend_title: Model
         plot_object_methods:
           set:
-            xlabel: 'Delta T [K]'
-#            xlim: [-2, 2]
-            ylabel: 'Delta Qv [kg/m2]'
-#            xlim: [-2e14, 2e14]
-#          set_titles: '{col_name}'
+            xlabel: 'Delta 2-m temperature [K]'
+            ylabel: 'Delta water vapor [%]'
         seaborn_settings:
           style: ticks
-#          rc:
-#            axes.titlepad: 15.0
-        suptitle: ICON-XPP
+        suptitle: 'Temperature - water vapor mass'
+
+  plot_joint_prw_tas:
+    description: Scatterplot tas vs prw.
+    variables:
+      prw:
+        mip: Amon
+        exp: historical
+        supplementary_variables: *supplementary_variables
+        preprocessor: common_grid_prw
+      tas:
+        mip: Amon
+        exp: historical
+        supplementary_variables: *supplementary_variables
+        preprocessor: common_grid_tas
+    scripts:
+      plot:
+        script: seaborn_jointplot_histogram.py
+        x: tas
+        y: prw
+        bins: 20
+        joint_kws:
+          vmax: 0.015
+          cmap: YlGnBu
+        cbar: true
+        cbar_kws:
+          extend: 'max'
+        marginal_kws:
+          color: darkturquoise
+        seaborn_settings:
+          style: ticks
+          rc:
+            axes.titlepad: 15.0
+        suptitle: '2-m temperature - water vapor mass'
+        plot_filename: 'jointplot_tas_prw'
