@@ -16,7 +16,7 @@ timerange_for_data: &time_period
   timerange: '2014/2014'
 regridding: &regridding
   regrid:
-    target_grid: 0.5x0.5
+    target_grid: 2x2
     scheme:
       reference: esmf_regrid.schemes:ESMFAreaWeighted
 levels_for_3d_vars: &extracting_levels
@@ -27,16 +27,46 @@ levels_for_3d_vars: &extracting_levels
     scheme: linear
 
 
+datasets:
+#  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, timerange: '1979/2020'}
+  - {dataset: ICON-XPP, exp: tvp1826_003, project: ICON, var_type: atm_2d_ml, timerange: '1979/2020'}
+
+
+supplementary_variables: &supplementary_variables
+  - {short_name: areacella, skip: true}
+  - {short_name: areacello, skip: true}
+  - {short_name: sftlf, skip: true}
+  - {short_name: sftof, skip: true}
+
+
 preprocessors:
   common_grid_b300:
 #    custom_order: true
     <<: *extracting_levels
 #    <<: *regridding
+
   common_grid_tas:
-#    <<: *regridding
+    <<: *regridding
     mask_outside_range:
       minimum: 240.
       maximum: 315.
+
+  common_grid_tas_a:
+    <<: *regridding
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      reference:
+        start_year: 1979
+        start_month: 1
+        start_day: 1
+        end_year: 2020
+        end_month: 12
+        end_day: 31
+
   common_grid_clt:
 #    <<: *regridding
     custom_order: true
@@ -53,10 +83,29 @@ preprocessors:
       maximum: 10.
   common_grid_prw:
     custom_order: true
-#    <<: *regridding
+    <<: *regridding
     mask_outside_range:
       minimum: 0
       maximum: 70
+
+  common_grid_prw_a:
+    custom_order: true
+    <<: *regridding
+    area_statistics:
+      operator: mean
+    annual_statistics:
+      operator: mean
+    anomalies:
+#      standardize: true
+      period: full
+      reference:
+        start_year: 1979
+        start_month: 1
+        start_day: 1
+        end_year: 2020
+        end_month: 12
+        end_day: 31
+
   common_grid_ta:
 #    custom_order: true
 #    <<: *extracting_levels
@@ -90,42 +139,39 @@ preprocessors:
 
 
 diagnostics:
-  joint_hur_cl:
-    description: Scatterplot hur vs cl.
-    variables:
-      hur:
-        mip: Amon
-        exp: historical
-        preprocessor: common_grid_hur
-        <<: *time_period
-      cl:
-        mip: Amon
-        exp: historical
-        preprocessor: common_grid_cl
-        <<: *time_period
-    additional_datasets:
-      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, alias: ERA5}
-#      - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
-    scripts:
-      plot:
-        script: seaborn_jointplot_histogram.py
-        x: hur
-        y: cl
-        bins: 20
-        joint_kws:
-          vmax: 0.015
-          cmap: YlGnBu
-        cbar: true
-        cbar_kws:
-          extend: 'max'
-        marginal_kws:
-          color: darkturquoise
-        seaborn_settings:
-          style: ticks
-          rc:
-            axes.titlepad: 15.0
-        suptitle: 'ERA5'
-        plot_filename: 'jointplot_hur_cl_ERA5'
+#  joint_hur_cl:
+#    description: Scatterplot hur vs cl.
+#    variables:
+#      hur:
+#        mip: Amon
+#        exp: historical
+#        preprocessor: common_grid_hur
+#        <<: *time_period
+#      cl:
+#        mip: Amon
+#        exp: historical
+#        preprocessor: common_grid_cl
+#        <<: *time_period
+#    scripts:
+#      plot:
+#        script: seaborn_jointplot_histogram.py
+#        x: hur
+#        y: cl
+#        bins: 20
+#        joint_kws:
+#          vmax: 0.015
+#          cmap: YlGnBu
+#        cbar: true
+#        cbar_kws:
+#          extend: 'max'
+#        marginal_kws:
+#          color: darkturquoise
+#        seaborn_settings:
+#          style: ticks
+#          rc:
+#            axes.titlepad: 15.0
+#        suptitle: 'ERA5'
+#        plot_filename: 'jointplot_hur_cl_ERA5'
 
 #  plot_joint_ta_hus:
 #    description: Scatterplot ta vs hus.
@@ -271,21 +317,19 @@ diagnostics:
 #        suptitle: 'ERA5'
 #        plot_filename: 'jointplot_tas_pr_ERA5'
 
-#  plot_joint_prw_tas:
-#    description: Scatterplot tas vs prw.
-#    variables:
-#      prw:
-#        mip: Amon
-#        exp: historical
-#        preprocessor: common_grid_prw
-#        <<: *time_period
-#      tas:
-#        mip: Amon
-#        exp: historical
-#        preprocessor: common_grid_tas
-#        <<: *time_period
-#    additional_datasets:
-#      - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, alias: ERA5}
+  plot_joint_prw_tas:
+    description: Scatterplot tas vs prw.
+    variables:
+      prw:
+        mip: Amon
+        exp: historical
+        supplementary_variables: *supplementary_variables
+        preprocessor: common_grid_prw_a
+      tas:
+        mip: Amon
+        exp: historical
+        supplementary_variables: *supplementary_variables
+        preprocessor: common_grid_tas_a
 #    scripts:
 #      plot:
 #        script: seaborn_jointplot_histogram.py
@@ -304,5 +348,38 @@ diagnostics:
 #          style: ticks
 #          rc:
 #            axes.titlepad: 15.0
-#        suptitle: 'ERA5'
-#        plot_filename: 'jointplot_tas_prw_ERA5'
+#        suptitle: 'ICON-XPP'
+#        plot_filename: 'jointplot_tas_prw_ICON-XPP'
+    scripts:
+      plot:
+        script: seaborn_diag.py
+#        seaborn_func: scatterplot
+        seaborn_func: regplot
+        reset_index: true
+        write_netcdf: true
+        seaborn_kwargs:
+          x: tas
+          y: prw
+#            col: shape_id
+#            col_order: *regions_to_extract
+#            col_wrap: 3
+#          hue: alias
+#          facet_kws:
+#            sharey: false
+#        add_aux_coords: true
+#        dropna_kwargs:
+#          axis: 0
+#          how: any
+#        legend_title: Model
+        plot_object_methods:
+          set:
+            xlabel: 'Delta T [K]'
+#            xlim: [-2, 2]
+            ylabel: 'Delta Qv [kg/m2]'
+#            xlim: [-2e14, 2e14]
+#          set_titles: '{col_name}'
+        seaborn_settings:
+          style: ticks
+#          rc:
+#            axes.titlepad: 15.0
+        suptitle: ICON-XPP
