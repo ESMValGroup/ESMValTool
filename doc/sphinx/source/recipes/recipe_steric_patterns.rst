@@ -8,14 +8,14 @@ Overview
 
 The recipe recipe_steric_patterns calculates sterodynamic sea-level change
 patterns from CMIP6 model datasets. Patterns are calculated for the SSP2-4.5,
-SSP3-7.0 and SSP5-8.5 scenarios. 
+SSP3-7.0 and SSP5-8.5 scenarios.
 
-These patterns are useful because we can emulate spatially-resolved 
+These patterns are useful because we can emulate spatially-resolved
 sterodynamic sea-level rise from global thermal expansion at a fraction of the
 computational cost of running a fully-coupled Earth system model or ocean model.
 
-The methods for this recipe are derived from those in Palmer et al. (2020) which 
-themselves are rooted in the IPCC AR5 report. 
+The methods for this recipe are derived from those in Palmer et al. (2020) which
+themselves are rooted in the IPCC AR5 report.
 
 .. note::
   The regrid setting in the recipe is set to a (180, 360) grid to put
@@ -103,7 +103,7 @@ Example plots
    :width: 80%
 
    Detrended zostoga, correcting for model drift using the pre-industrial
-   (PiControl) experiment following Palmer et al., (2020). This is done for 
+   (PiControl) experiment following Palmer et al., (2020). This is done for
    each model and scenario.
 
 .. _fig_steric_patterns_2:
@@ -120,8 +120,8 @@ Example plots
    :align:   center
    :width: 80%
 
-   Example end-of-century predictions from the UKESM1-0-LL model patterns 
-   for each SSP, as well as a timeseries of globally-averaged mean-squared 
-   error. Two polar artifacts can be seen in each map panel, seemingly 
-   occuring due to ESMValTool's regridding functionality. This seems to occur 
+   Example end-of-century predictions from the UKESM1-0-LL model patterns
+   for each SSP, as well as a timeseries of globally-averaged mean-squared
+   error. Two polar artifacts can be seen in each map panel, seemingly
+   occuring due to ESMValTool's regridding functionality. This seems to occur
    more often on low-resolution models as opposed to high-res.
