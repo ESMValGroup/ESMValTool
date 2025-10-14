@@ -1,0 +1,153 @@
+# ESMValTool
+---
+documentation:
+  title: Time series of total water vapor mass
+  description: >
+    Time series of global average total water vapor mass.
+  authors:
+    - lauer_axel
+  maintainer:
+    - lauer_axel
+
+
+datasets:
+  - {dataset: ERA5, project: native6, type: reanaly, version: v1, tier: 3, timerange: '1979/2014'}
+  - {dataset: ICON-XPP, exp: tvp1826_003, project: ICON, var_type: atm_2d_ml, timerange: '1950/2020'}
+
+
+supplementary_variables: &supplementary_variables
+  - {short_name: areacella, skip: true}
+  - {short_name: areacello, skip: true}
+  - {short_name: sftlf, skip: true}
+  - {short_name: sftof, skip: true}
+
+
+preprocessors:
+
+  pp_global:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: nearest  # some models do not work with ESMFAreaWeighted
+    area_statistics:
+      operator: sum
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+#      reference:
+#        start_year: 1979
+#        start_month: 1
+#        start_day: 1
+#        end_year: 2020
+#        end_month: 12
+#        end_day: 31
+
+  global_sum_anom:
+    custom_order: true
+#    convert_units:
+#      units: kg m-2
+    regrid:
+      target_grid: 2x2
+      scheme: nearest
+    area_statistics:
+      operator: sum
+    annual_statistics:
+      operator: mean
+    anomalies:
+      period: full
+      relative: true
+#      reference:
+#        start_year: 1979
+#        start_month: 1
+#        start_day: 1
+#        end_year: 2014
+#        end_month: 12
+#        end_day: 31
+
+
+diagnostics:
+
+  air_mass_anom:
+    description: time series of global air mass anomaly
+    variables:
+      ps:
+        preprocessor: global_sum_anom
+        project: CMIP6
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1f1
+        reference_dataset: ERA5
+        supplementary_variables: *supplementary_variables
+    scripts:
+      timeseries:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: variable_group
+        facet_used_for_labels: dataset
+        plots:
+          timeseries:
+            caption: "Timeseries of global air mass anomaly."
+            hlines:
+              - y: 0.
+                color: black
+                linewidth: 2
+            plot_kwargs:
+              ICON-XPP:
+                color: red
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              ERA5:
+                color: blue
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+            pyplot_kwargs:
+              title: 'Anomaly total air mass'
+              ylabel: 'Air mass anomaly [%]'
+
+  global_watervapor:
+    description: Create time series of global total water vapor mass.
+    variables:
+      prw:
+        preprocessor: global_sum_anom
+        project: CMIP6
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1f1
+        reference_dataset: ERA5
+        supplementary_variables: *supplementary_variables
+    scripts:
+      allplots:
+        script: monitor/multi_datasets.py
+        plot_folder: '{plot_dir}'
+        group_variables_by: variable_group
+        facet_used_for_labels: dataset
+        plots:
+          timeseries:
+            caption: 'Time series of anomalies in global total water vapor mass'
+            plot_kwargs:
+              ICON-XPP:
+                color: red
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              ERA5:
+                color: blue
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 3
+              default:
+                color: black
+                label: '{dataset}'
+                linestyle: '-'
+                linewidth: 2
+                zorder: 4
+            pyplot_kwargs:
+              title: 'Anomalies in atmospheric water vapor'
+              ylabel: 'Water vapor mass anomaly [%]'
