@@ -1,6 +1,8 @@
 """ESMValTool CMORizer for CMEMS - Sea Level Thematic Assembly Center.
 
-   This is the CMORizer script for Sea Surface Height Above Geoid
+   This is the CMORizer script for Sea Surface Height Above Geoid.
+   Copernicus Marine Environment Monitoring Service (CMEMS)
+   Product: SEALEVEL_GLO_PHY_L4_MY_008_047
 
 Tier
     Tier 2: open dataset.
@@ -12,7 +14,9 @@ Last access
     20250220
 
 Download and processing instructions
-    
+    Download daily files from:
+    https://data.marine.copernicus.eu/product/SEALEVEL_GLO_PHY_L4_MY_008_047/services
+
 
 """
 
@@ -56,6 +60,7 @@ def _extract_variable(cmor_info, attrs, file_ls, out_dir):
         # logger.info('Number of day files to concatenate: %d', len(filepaths))
         iris.util.equalise_attributes(cubels)
         iris.util.unify_time_units(cubels)
+        # if cmor.frequency is mon, check to save out
         cube_mon = cubels.concatenate_cube() #create mean for month
         cube_mon = iris.util.squeeze(cube_mon)
         cube_prepls.append(monthly_statistics(cube_mon, 'mean'))
