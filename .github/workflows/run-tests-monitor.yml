@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - fix_gha_monitor
   # run the test only if the PR is to main
   # turn it on if required
   # pull_request:
@@ -46,7 +47,7 @@ jobs:
       - name: Inspect environment
         run: conda list
       - name: Install pytest-monitor
-        run: pip install --no-deps pytest-monitor
+        run: pip install pytest-monitor
       - name: Install ESMValTool
         run: pip install --no-deps -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Run tests
@@ -95,7 +96,7 @@ jobs:
       - name: Install git
         run: mamba install -c conda-forge git
       - name: Install pytest-monitor
-        run: pip install --no-deps pytest-monitor
+        run: pip install pytest-monitor
       - name: Install ESMValTool
         run: >
           pip install --no-deps -e .[develop] 2>&1
