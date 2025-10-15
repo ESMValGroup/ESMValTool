@@ -255,18 +255,6 @@ def main(cfg: dict[str, Any]) -> None:
     cube_x = iris.load_cube(filename_x)
     cube_y = iris.load_cube(filename_y)
 
-    #    if "suptitle" not in cfg:
-    #        array_x = cube_x.lazy_data().flatten()
-    #        array_y = cube_y.lazy_data().flatten()
-    #        # Could use preprocessor function to ensure same masks
-    #        select = ~(da.ma.getmaskarray(array_x) | da.ma.getmaskarray(array_y))
-    #        data_x = da.compress(select, da.ma.getdata(array_x))
-    #        data_y = da.compress(select, da.ma.getdata(array_y))
-    #        data_x.compute_chunk_sizes()
-    #        data_y.compute_chunk_sizes()
-    #        r = da.corrcoef(data_x, data_y)
-    #        cfg["suptitle"] = f"r={r.compute()[0,1]:.3f}"
-
     # Compute the histograms
     data = _compute_histograms(cube_x, cube_y, cfg["bins"])
 
