@@ -142,7 +142,7 @@ diagnostics:
         mip: Amon
         derive: true
     additional_datasets:
-        # The original recipe uses the UWisc dataset that is not 
+        # The original recipe uses the UWisc dataset that is not
         # maintained anymore by the authors and has been supersided
         # by MAC-LWP (Elsaesser et al., 2017)
         # https://doi.org/10.1175/JCLI-D-16-0902.1

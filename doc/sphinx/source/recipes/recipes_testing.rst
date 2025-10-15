@@ -31,7 +31,7 @@ This is identical to the example Python recipe, with the only difference being
 the location extraction preprocessor, which is replaced here with ``extract_point``.
 The reason for this is that this recipe is used solely for CI tests,
 and the geolocator/Nominatim engine for location extraction should not be used
-in CI runs as per their usage policy. 
+in CI runs as per their usage policy.
 
 User settings in recipes
 ------------------------
