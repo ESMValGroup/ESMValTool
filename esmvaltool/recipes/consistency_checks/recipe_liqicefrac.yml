@@ -1,9 +1,9 @@
 # ESMValTool
 ---
 documentation:
-  title: Water vapor checks.
+  title: Cloud checks.
   description: >
-    Plot Water vapor consistency diagnostics.
+    Plot cloud liquid/ice fraction.
   authors:
     - lauer_axel
   maintainer:
