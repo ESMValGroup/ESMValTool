@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - fix_gha_monitor
   # run the test only if the PR is to main
   # turn it on if required
   # pull_request:
