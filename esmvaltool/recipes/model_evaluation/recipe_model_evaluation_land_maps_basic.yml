@@ -1,0 +1,137 @@
+# ESMValTool
+---
+documentation:
+  title: Basic Evaluation of Land Variables.
+  description: >
+    Show plots of several land variables that can be used for 
+    the evaluations of coupled simulations containing
+    land components ("sanity checks").
+  authors:
+    - hassler_birgit
+    - gier_bettina
+  maintainer:
+    - hassler_birgit
+
+
+# Note: The following models are just examples
+datasets:
+  - {project: ICON, dataset: ICON-XPP, exp: tvp1826_003, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}]}
+
+#{project: ICON, dataset: ICON-XPP, exp: mb_amip_r2b4_hybrid0_default_version_merged, supplementary_variables: [{short_name: areacella, skip: true}, {short_name: sftlf, skip: true}], ensemble: r1i1p1f1}
+
+
+# Note: for some observational datasets, we use preset time ranges due to
+# their limited temporal availability
+timerange_for_models: &time_period
+  timerange: '2000/2010'  # can be specified, this is just an example
+
+
+preprocessors:
+
+  full_climatology: &pp_full_climatology
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    mask_landsea:
+      mask_out: sea
+    climate_statistics:
+      period: full
+
+
+diagnostics:
+
+  # Climatologies - maps (full climatology)
+
+  plot_maps_with_references_lai:
+    description: Plot climatology maps including reference datasets for lai.
+    variables:
+      lai:
+        <<: *time_period
+        mip: Lmon
+        var_type: jsb_2d
+        preprocessor: full_climatology
+        additional_datasets:
+          - {project: OBS, dataset: LAI3g, type: reanaly, version: 1-regridded, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      plot: &plot_multi_dataset_default
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        script: monitor/multi_datasets.py
+        plots:
+          map:
+            common_cbar: true
+
+  plot_maps_with_references_ts:
+    description: Plot climatology maps including reference datasets for ts.
+    variables:
+      ts:
+        <<: *time_period
+        mip: Amon
+        var_type: atm_2d_ml
+        preprocessor: full_climatology
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          map:
+            common_cbar: true
+
+  plot_maps_with_references_evspsbl:
+    description: Plot climatology maps including reference datasets for evspsbl.
+    variables:
+      evspsbl:
+        <<: *time_period
+        mip: Amon
+        var_type: atm_2d_ml
+        preprocessor: full_climatology
+        additional_datasets:
+          - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, reference_for_monitor_diags: true}
+    scripts:
+      plot:
+        <<: *plot_multi_dataset_default
+        script: monitor/multi_datasets.py
+        plots:
+          map:
+            common_cbar: true
+
+
+  # plot_maps_with_references_gpp:
+    # description: Plot climatology maps including reference datasets for gpp.
+    # variables:
+      # gpp:
+        # <<: *time_period
+        # mip: Lmon
+        # preprocessor: full_climatology
+        # additional_datasets:
+          # - {project: OBS, dataset: FLUXCOM, type: reanaly, version: ANN-v1, tier: 3, reference_for_monitor_diags: true}
+    # scripts:
+     # plot:
+       # <<: *plot_multi_dataset_default
+        # script: monitor/multi_datasets.py
+        # plots:
+          # map:
+            # common_cbar: true
+
+
+  # plot_maps_with_references_npp:
+    # description: Plot climatology maps including reference datasets for npp.
+    # variables:
+      # npp:
+        # <<: *time_period
+        # mip: Lmon
+        # preprocessor: full_climatology
+        # additional_datasets:
+          # #- {project: OBS, dataset: GPCP-SG, type: atmos, version: 2.3, tier: 2, reference_for_monitor_diags: true}
+          # - {project: CMIP6, dataset: MPI-ESM1-2-LR, exp: historical, ensemble: r1i1p1f1, grid: gn}
+    # scripts:
+      # plot:
+        # <<: *plot_multi_dataset_default
+        # script: monitor/multi_datasets.py
+        # plots:
+          # map:
+            # common_cbar: true
