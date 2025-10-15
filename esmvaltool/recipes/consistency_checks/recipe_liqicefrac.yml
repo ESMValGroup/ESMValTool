@@ -1,0 +1,89 @@
+# ESMValTool
+---
+documentation:
+  title: Water vapor checks.
+  description: >
+    Plot Water vapor consistency diagnostics.
+  authors:
+    - lauer_axel
+  maintainer:
+    - lauer_axel
+
+regridding: &regridding
+  regrid:
+    target_grid: 2x2
+    scheme: nearest
+
+
+datasets:
+  # one year is enough data
+  - {dataset: ICON-XPP, exp: tvp1826_003, project: ICON, var_type: atm_3d_ml, timerange: 'P1Y/*'}
+
+
+supplementary_variables: &supplementary_variables
+  - {short_name: areacella, skip: true}
+  - {short_name: areacello, skip: true}
+  - {short_name: sftlf, skip: true}
+  - {short_name: sftof, skip: true}
+
+
+preprocessors:
+  pp_3d:
+    custom_order: true
+    extract_levels:
+#      levels: {cmor_table: CMIP6, coordinate: plev27}
+      levels: [100000., 97500., 95000., 92500., 90000., 87500., 85000., 82500., 80000., 77500., 75000., 70000., 65000., 60000., 55000., 50000., 45000., 40000., 35000., 30000., 25000., 20000., 15000.]
+      coordinate: air_pressure
+      scheme: linear
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+
+
+diagnostics:
+
+  iceliqfrac:
+    description: ice / liquid fraction vs. temperature
+    themes:
+      - phys
+      - clouds
+    realms:
+      - atmos
+    variables:
+      clw:
+        preprocessor: pp_3d
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        reference_dataset: CLOUDSAT-L2
+        additional_datasets:
+          - {dataset: CLOUDSAT-L2, project: OBS, type: sat,
+             version: P1-R05-gridbox-average-noprecip, tier: 3,
+             start_year: 2015, end_year: 2015}
+      cli:
+        preprocessor: pp_3d
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        reference_dataset: CALIPSO-ICECLOUD
+        additional_datasets:
+          - {dataset: CALIPSO-ICECLOUD, project: OBS, type: sat,
+             version: 1-00, mip: Amon, tier: 3,
+             start_year: 2015, end_year: 2015}
+      ta:
+        preprocessor: pp_3d
+        mip: Amon
+        project: CMIP6
+        exp: historical
+        reference_dataset: ERA5
+        additional_datasets:
+          - {dataset: ERA5, project: native6, type: reanaly, version: v1,
+             tier: 3, start_year: 2015, end_year: 2015}
+    scripts:
+      lifrac_scatter:
+        script: clouds/clouds_lifrac_scatter.ncl
+        min_mass: 1.0e-6
+        panel_labels: true
+        mm_mean_median: false
+        legend: true
+        panelling: false

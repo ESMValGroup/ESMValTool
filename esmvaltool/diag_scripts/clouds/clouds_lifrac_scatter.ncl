@@ -14,8 +14,10 @@
 ;   mm_mean_median:     calculate multi-model mean and meadian
 ;   nbins: number of equally spaced bins (ta (x-axis)), default = 20
 ;   panel_labels:       label individual panels (true, false)
+;   legend:             plot legend (true, false)
 ;   PanelTop:           manual override for "@gnsPanelTop" used by panel
 ;                       plot(s)
+;   panelling:          additional create panel plot (true, false)
 ;
 ; Required variable attributes (variable specific)
 ;   none
@@ -107,6 +109,8 @@ begin
   set_default_att(diag_script_info, "min_mass", 1.0e-15)
   set_default_att(diag_script_info, "mm_mean_median", True)
   set_default_att(diag_script_info, "nbins", 20)
+  set_default_att(diag_script_info, "legend", False)
+  set_default_att(diag_script_info, "panelling", True)
 
   if (diag_script_info@filename_add .ne. "") then
     filename_add = "_" + diag_script_info@filename_add
@@ -660,12 +664,13 @@ begin
     res@gsnDraw        = False  ; do not draw yet
     res@gsnFrame       = False  ; don't advance frame
 
-    res@xyMarkLineMode    = "Markers"
-    res@xyMarkers         = (/4, 16/)
+    res@xyMarkLineMode    = "MarkLines"
+    res@xyMarkers         = (/16, 16/)
     res@xyMonoMarkerColor = False
-    res@xyMarkerColors    = (/"black", "red"/)
+    res@xyMarkerColors    = (/"blue", "red"/)
     res@xyMarkerSizeF     = 0.01
     res@tmLabelAutoStride = True
+    res@xyDashPatterns    = (/0, 0, 0/)
 
     res@tiMainFontHeightF = 0.025
     res@tiYAxisFontHeightF = 0.025
@@ -718,30 +723,60 @@ begin
       overlay(plots_l(ii), plotmed_l)
     end if
 
+    ; draw legend if requested
+    if (diag_script_info@legend) then
+        lgres                    = True
+        lgres@vpWidthF           = 0.2                   ; width of legend (NDC)
+        lgres@vpHeightF          = 0.08                   ; height of legend (NDC)
+        lgres@lgAutoManage       = False                 ; Necessary to set font hgt
+        lgres@lgMonoLineColor    = True
+        lgMonoMarkerIndex        = False
+        lgMonoMarkerColor        = False
+        lgres@lgLineColors       = "black"
+        lgres@lgMonoItemType     = True                  ; more than one type
+        lgres@lgItemType         = res@xyMarkLineMode    ; line/marker
+        lgres@lgDashIndexes      = res@xyDashPatterns    ; dash indexes
+        lgres@lgMarkerIndexes    = res@xyMarkers         ; marker indexes
+        lgres@lgMarkerColors     = res@xyMarkerColors    ; marker colors
+        lgres@lgLabelFontHeightF = 0.12
+        lgres@lgLineLabelsOn     = False
+        lgres@lgMarkerSizeF      = 0.01
+
+        labels = (/names(ii), "observations"/)
+
+        gsn_legend_ndc(wks_i, 2, labels, 0.58, 0.78, lgres)
+        gsn_legend_ndc(wks_l, 2, labels, 0.58, 0.3, lgres)
+    end if
+
     draw(plots_i(ii))
     frame(wks_i)
     draw(plots_l(ii))
     frame(wks_l)
   end do
 
-  pres                      = True    ; needed to override
-                                      ; panelling defaults
-  pres@gsnPanelCenter                   = False
+  if (diag_script_info@panelling) then
+    pres                      = True    ; needed to override
+                                        ; panelling defaults
+    pres@gsnPanelCenter                   = False
 
-  idx0 = ind(.not.ismissing(plots_i))
-  n = dimsizes(idx0)
-  pres@gsnPanelFigureStrings = names(idx0)
-  pres@gsnPanelFigureStringsFontHeightF = min((/0.008, 0.008 * 6.0 \
-                                              / tofloat((dim_MOD + 1) / 2)/))
-  pres@lbLabelFontHeightF               = min((/0.01, 0.01 * 6.0 \
-                                              / tofloat((dim_MOD + 1) / 2)/))
+    idx0 = ind(.not.ismissing(plots_i))
+    n = dimsizes(idx0)
+    pres@gsnPanelFigureStrings = names(idx0)
+    pres@gsnPanelFigureStringsFontHeightF = min((/0.008, 0.008 * 6.0 \
+                                                / tofloat((dim_MOD + 1) / 2)/))
+    pres@lbLabelFontHeightF               = min((/0.01, 0.01 * 6.0 \
+                                                / tofloat((dim_MOD + 1) / 2)/))
 
-  outfile_i = panelling(wks_i, plots_i(idx0), (n + 3) / 4, 4, pres)
-  log_info("Wrote " + outfile_i)
+    outfile_i = panelling(wks_i, plots_i(idx0), (n + 3) / 4, 4, pres)
+    log_info("Wrote " + outfile_i)
 
-  outfile_l = panelling(wks_l, plots_l(idx0), (n + 3) / 4, 4, pres)
-  log_info("Wrote " + outfile_l)
-  delete(idx0)
+    outfile_l = panelling(wks_l, plots_l(idx0), (n + 3) / 4, 4, pres)
+    log_info("Wrote " + outfile_l)
+    delete(idx0)
+  else
+    outfile_i = wks_i@fullname
+    outfile_l = wks_l@fullname
+  end if
 
   ; ==========================================================================
 
