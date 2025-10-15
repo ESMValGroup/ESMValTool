@@ -638,7 +638,9 @@ begin
   ; ###########################################
 
   plots_i = new(dim_MOD + add_dim_MOD, graphic)
+  lines_i = new((/dim_MOD + add_dim_MOD, 2/), graphic)
   plots_l = new(dim_MOD + add_dim_MOD, graphic)
+  lines_l = new((/dim_MOD + add_dim_MOD, 2/), graphic)
   res = True
 
   wks_i = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_lifrac_scatter_" + \
@@ -686,6 +688,16 @@ begin
     plots_i(ii) = gsn_csm_xy(wks_i, resulti&bin, data_i, res)
     res@tiYAxisString = liqfrac_var + " (" + liqfrac_units + ")"
     plots_l(ii) = gsn_csm_xy(wks_l, resultl&bin, data_l, res)
+
+    lineres = True
+    lineres@gsLineColor = "gray"
+    lineres@gsLineThicknessF = 4.0
+    lineres@tfPolyDrawOrder = "PreDraw"
+
+    lines_i(ii, 0) = gsn_add_polyline(wks_i, plots_i(ii), (/237.15, 237.15/), (/100., 0./), lineres)
+    lines_i(ii, 1) = gsn_add_polyline(wks_i, plots_i(ii), (/273.15, 273.15/), (/100., 0./), lineres)
+    lines_l(ii, 0) = gsn_add_polyline(wks_l, plots_l(ii), (/237.15, 237.15/), (/100., 0./), lineres)
+    lines_l(ii, 1) = gsn_add_polyline(wks_l, plots_l(ii), (/273.15, 273.15/), (/100., 0./), lineres)
 
     if (ii .eq. index_my_mm) then
       res_std = True
