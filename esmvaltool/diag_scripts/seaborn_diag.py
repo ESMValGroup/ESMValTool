@@ -150,7 +150,6 @@ def _create_plot(
     logger.debug(
         "Using main data frame as input for plotting:\n%s", data_frame
     )
-
     # Plot
     plot_kwargs = cfg["seaborn_kwargs"]
     plot_func_str = cfg["seaborn_func"]
@@ -209,6 +208,27 @@ def _create_plot(
         # positions of the joint ax
         plot_obj.fig.axes[-1].set_position(
             [0.83, pos_joint_ax.y0, 0.07, pos_joint_ax.height]
+        )
+    if plot_func_str == "regplot" and (
+        "order" not in plot_kwargs or plot_kwargs["order"] == 1
+    ):
+        # Display slope and intercept in the plot
+        reg_y = plot_obj.get_lines()[0].get_ydata()
+        reg_x = plot_obj.get_lines()[0].get_xdata()
+
+        slope = (reg_y[-1] - reg_y[0]) / (reg_x[-1] - reg_x[0])
+        # intercept = reg_y[0] - slope * reg_x[0]
+
+        units = []
+        for dataset in cfg["input_data"].values():
+            units.append(dataset["units"])
+
+        #        plot_obj.text(0.05, 0.9, f'slope = {slope:.2f}, intercept = {intercept:.2f}', transform=plot_obj.transAxes)
+        plot_obj.text(
+            0.05,
+            0.9,
+            f"slope = {slope:.2f} {units[0]}/{units[1]}",
+            transform=plot_obj.transAxes,
         )
 
     # Save plot data
