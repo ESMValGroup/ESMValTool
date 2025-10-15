@@ -1,0 +1,29 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: JRA3Q
+  version: 'v1'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: CMOR6
+  source: 'https://rda.ucar.edu/datasets/ds628.1/'
+  reference: 'jra3Q'
+  comment: |
+    '' 
+
+# Variables to cmorize
+variables:
+
+  #tasmax:
+  #  raw_short_name: tmpmax2m-hgt-fc-gauss
+  #  mip: day
+  #  freq: 1hr
+  #  file: jra3q.minmax_surf.0_0_0.tmpmax2m-hgt-fc-gauss.????????00_????????23.nc
+    #file: jra3q.minmax_surf.0_0_0.tmpmax2m-hgt-fc-gauss.1985????00_1985????23.nc
+
+  tasmin:
+    raw_short_name: tmpmin2m-hgt-fc-gauss
+    mip: day
+    freq: 1hr
+    file: jra3q.minmax_surf.0_0_0.tmpmin2m-hgt-fc-gauss.????????00_????????23.nc
+    #file: jra3q.minmax_surf.0_0_0.tmpmin2m-hgt-fc-gauss.1985????00_1985????23.nc
