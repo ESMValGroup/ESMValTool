@@ -38,12 +38,12 @@ def _get_filepaths(in_dir, basename):
     return_ls = []
 
     for root, _dir, files in os.walk(in_dir, followlinks=True):
-        if len(files)>1:
-            return_files = [] #load and concat each list & process
+        if len(files) > 1:
+            return_files = []  # load and concat each list & process
             for filename in files:
                 if regex.match(filename):
                     return_files.append(os.path.join(root, filename))
-        
+
             return_ls.append(return_files)
 
     return return_ls
@@ -61,9 +61,9 @@ def _extract_variable(cmor_info, attrs, file_ls, out_dir):
         iris.util.equalise_attributes(cubels)
         iris.util.unify_time_units(cubels)
         # if cmor.frequency is mon, check to save out
-        cube_mon = cubels.concatenate_cube() #create mean for month
+        cube_mon = cubels.concatenate_cube()  # create mean for month
         cube_mon = iris.util.squeeze(cube_mon)
-        cube_prepls.append(monthly_statistics(cube_mon, 'mean'))
+        cube_prepls.append(monthly_statistics(cube_mon, "mean"))
 
     iris.util.equalise_attributes(cube_prepls)
     cube = cube_prepls.concatenate_cube()
@@ -71,30 +71,27 @@ def _extract_variable(cmor_info, attrs, file_ls, out_dir):
     cube = utils.fix_coords(cube)
 
     utils.set_global_atts(cube, attrs)
-    utils.save_variable(cube,
-                        var,
-                        out_dir,
-                        attrs,
-                        unlimited_dimensions=['time'])
+    utils.save_variable(
+        cube, var, out_dir, attrs, unlimited_dimensions=["time"]
+    )
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    glob_attrs = cfg['attributes']
-    cmor_table = cfg['cmor_table']
+    glob_attrs = cfg["attributes"]
+    cmor_table = cfg["cmor_table"]
 
-    file_ls = _get_filepaths(in_dir, cfg['filename'])
+    file_ls = _get_filepaths(in_dir, cfg["filename"])
 
     if len(file_ls) > 0:
         logger.info("Found %d input files in '%s'", len(file_ls), in_dir)
     else:
-        logger.info("No files found, basename: %s", cfg['filename'])
+        logger.info("No files found, basename: %s", cfg["filename"])
 
     # Run the cmorization
-    for (var, var_info) in cfg['variables'].items():
+    for var, var_info in cfg["variables"].items():
         logger.info("CMORizing variable '%s'", var)
-        glob_attrs['mip'] = var_info['mip']
-        cmor_info = cmor_table.get_variable(var_info['mip'], var)
+        glob_attrs["mip"] = var_info["mip"]
+        cmor_info = cmor_table.get_variable(var_info["mip"], var)
 
-        _extract_variable(cmor_info, glob_attrs,
-                          file_ls, out_dir)
+        _extract_variable(cmor_info, glob_attrs, file_ls, out_dir)
