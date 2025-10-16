@@ -39,6 +39,12 @@ preprocessors:
     climate_statistics:
       period: full
 
+  full_climatology_lai:
+    <<: *pp_full_climatology
+    mask_inside_range:
+      minimum: -1.e-6
+      maximum: 1.e-6
+
 
 diagnostics:
 
@@ -51,7 +57,7 @@ diagnostics:
         <<: *time_period
         mip: Lmon
         var_type: jsb_2d
-        preprocessor: full_climatology
+        preprocessor: full_climatology_lai
         additional_datasets:
           - {project: OBS, dataset: LAI3g, type: reanaly, version: 1-regridded, tier: 3, reference_for_monitor_diags: true}
     scripts:
