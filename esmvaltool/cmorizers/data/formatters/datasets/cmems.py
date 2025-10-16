@@ -25,8 +25,8 @@ import os
 import re
 
 import iris
-
 from esmvalcore.preprocessor import monthly_statistics
+
 from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
