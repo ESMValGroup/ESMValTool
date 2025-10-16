@@ -219,15 +219,26 @@ def _create_plot(
         slope = (reg_y[-1] - reg_y[0]) / (reg_x[-1] - reg_x[0])
         # intercept = reg_y[0] - slope * reg_x[0]
 
-        units = []
-        for dataset in cfg["input_data"].values():
-            units.append(dataset["units"])
+        xunits = ""
+        if "x" in plot_kwargs:
+            xvar = plot_kwargs["x"]
+            for dataset in cfg["input_data"].values():
+                if xvar in dataset["variable_group"]:
+                    xunits = dataset["units"]
+                    break
+        yunits = ""
+        if "y" in plot_kwargs:
+            yvar = plot_kwargs["y"]
+            for dataset in cfg["input_data"].values():
+                if yvar in dataset["variable_group"]:
+                    yunits = dataset["units"]
+                    break
 
         #        plot_obj.text(0.05, 0.9, f'slope = {slope:.2f}, intercept = {intercept:.2f}', transform=plot_obj.transAxes)
         plot_obj.text(
             0.05,
             0.9,
-            f"slope = {slope:.2f} {units[0]}/{units[1]}",
+            f"slope = {slope:.2f}{yunits}/{xunits}",
             transform=plot_obj.transAxes,
         )
 
