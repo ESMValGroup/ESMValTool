@@ -35,7 +35,7 @@ def _get_provenance_record(cfg, plot_file, caption, plot_types = ["map"], statis
         "statistics": statistics,
         "domains": ["reg"],
         "plot_types": plot_types,
-        "authors": ["debeire_kevin"],
+        "authors": ["predoi_valeriu"], #change later
         "references": [],
         "plot_file": plot_file,
         "ancestors": ancestor_files,
@@ -175,8 +175,8 @@ def plot_panel_metrics(metrics_all_methods, var_name, method_names, cfg):
     # Define metrics to plot based on variable
     if var_name in ["pr"]:
         metrics_to_plot = ["bias", "relbias", "crps", "corr", "varratio"]
-        vmins = [-1, -0.4, 0., 0.6, 0.5]
-        vmaxs = [1, 0.4, 0.5, 1., 1.5]
+        vmins = [-0.4, -0.4, 0., 0.6, 0.5]
+        vmaxs = [0.4, 0.4, 0.2, 1., 1.5]
         titles = ["Bias", "Relative Bias", "CRPS", "Correlation", "Variance Ratio"]
         cmaps = ["RdBu", "BrBG", "YlGnBu", "gist_ncar", "PiYG"]
     else:

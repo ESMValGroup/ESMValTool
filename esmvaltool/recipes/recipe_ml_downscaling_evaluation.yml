@@ -21,8 +21,16 @@ datasets:
   - {dataset: CORRDIFF, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
   - {dataset: UNet, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}      
 
-# preprocessors:
-
+preprocessors:
+  preproc_convert_huss:
+    convert_units:
+      units: g kg-1
+  preproc_convert_pr:
+    convert_units:
+      units: mm h-1
+  preproc_convert_ps:
+    convert_units:
+      units: hPa
 diagnostics:
   downscaling_evaluation:
     description: "ML-based downscaling vs HIGHRES-REF"
@@ -30,8 +38,11 @@ diagnostics:
       uas:
       vas:
       huss:
+        preprocessor: preproc_convert_huss
       ps:
+        preprocessor: preproc_convert_ps
       pr:
+        preprocessor: preproc_convert_pr
       tas:
     scripts:
       spatial_metrics:
