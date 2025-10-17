@@ -19,53 +19,6 @@ import spectra_compute
 logger = logging.getLogger(Path(__file__).stem)
 
 
-def get_provenance_record(attributes, ancestor_files):  # todo attributes is a dictionary including caption
-    """Create a provenance record describing the diagnostic data and plot."""
-    # Associated recipe uses contains a caption string with placeholders
-    # like {long_name} that are now populated from attributes dictionary.
-    # Note that for simple recipes, caption can be set here as a simple string
-    caption = attributes['caption'].format(**attributes)  # todo Formatted as caption may include e.g. {dataset}
-
-    record = {
-        'caption': caption,
-        'statistics': ['mean'],
-        'domains': ['global'],
-        'plot_types': ['zonal'],
-        'authors': [
-            'andela_bouwe',  # todo Change and check the rest, esp references
-            'righi_mattia',
-        ],
-        'references': [
-            'acknow_project',
-        ],
-        'ancestors': ancestor_files,
-    }
-    return record
-
-
-def read_diagnostic(filename):  # todo Remove as not used?
-    """Compute an example diagnostic."""
-    logger.debug("Loading %s", filename)
-    cube = iris.load_cube(filename)
-
-    logger.debug("Running example computation")
-    cube = iris.util.squeeze(cube)  # todo Collapses dimensions of size 1
-    return cube
-
-
-def plot_diagnostic(cube, basename, provenance_record, cfg):
-    """Create diagnostic data and plot it."""
-
-    # Save the data used for the plot
-    save_data(basename, provenance_record, cfg, cube)
-
-    if cfg.get('quickplot'):
-        # Create the plot
-        quickplot(cube, **cfg['quickplot'])
-        # And save the plot
-        save_figure(basename, provenance_record, cfg)
-
-
 def main(cfg):
     """Compute the time average for each input dataset."""
     # Get a description of the preprocessed data that we will use as input.
@@ -105,8 +58,8 @@ def main(cfg):
 
                     logger.info(attributes)
                     # Call Spectra calculations
-                    spectra_compute.WKSpectra(attributes).wkSpaceTime()
-                    spectra_compute.WKSpectra(attributes).SpectraSeason()
+                    spectra_compute.WKSpectra(cfg, attributes).wkSpaceTime()
+                    spectra_compute.WKSpectra(cfg, attributes).SpectraSeason()
 
             elif attributes['variable_group'] == 'pr':
                 attributes['cube'] = iris.load_cube(input_file)
@@ -114,8 +67,8 @@ def main(cfg):
 
                 logger.info(attributes)
                 # Call Spectra calculations
-                spectra_compute.WKSpectra(attributes).wkSpaceTime()
-                spectra_compute.WKSpectra(attributes).SpectraSeason()
+                spectra_compute.WKSpectra(cfg, attributes).wkSpaceTime()
+                spectra_compute.WKSpectra(cfg, attributes).SpectraSeason()
 
             elif attributes['variable_group'] == 'rlut': # Check rlut
                 attributes['cube'] = iris.load_cube(input_file)
@@ -123,20 +76,16 @@ def main(cfg):
 
                 logger.info(attributes)
                 # Call Spectra calculations
-                spectra_compute.WKSpectra(attributes).wkSpaceTime()
-                spectra_compute.WKSpectra(attributes).SpectraSeason()
+                spectra_compute.WKSpectra(cfg, attributes).wkSpaceTime()
+                spectra_compute.WKSpectra(cfg, attributes).SpectraSeason()
 
 
             if group_name != attributes['short_name']:
                 output_basename = group_name + '_' + output_basename
             if "caption" not in attributes:
                 attributes['caption'] = input_file
-            provenance_record = get_provenance_record(
-                attributes, ancestor_files=[input_file])
 
             print('output_basename', output_basename)
-            #var, outdir, runid, label
-            #plot_diagnostic(cube, output_basename, provenance_record, cfg)
 
 
 if __name__ == '__main__':

@@ -11,10 +11,12 @@ import cf_units as unit
 import numpy.ma as ma
 import scipy
 
+from esmvaltool.diag_scripts.shared import save_figure
 
 class WKSpectra:
 
-    def __init__(self, attributes, check_missing=True):
+    def __init__(self, cfg, attributes, check_missing=True):
+        self.cfg = cfg
         self.spd = 1
         self.nDayWin = 96  # Wheeler-Kiladis [WK] temporal window length (days)
         self.nDaySkip = -65  # Negative means overlap
@@ -551,11 +553,30 @@ class WKSpectra:
                 cm = mpl.colors.ListedColormap(C[::-1, :] / 256.)
         return cm
 
+    def get_provenance_record(self, caption):  # Credit to AutoAssess _plot_mo_metrics.py
+        """Create a provenance record describing the diagnostic data and plot."""
+        # Get the list of input filenames
+        filenames = [item["filename"] for item in self.cfg["input_data"].values()]
+
+        # Write the provenance dictionary using the provided caption
+        record = {
+            "caption": caption,
+            "statistics": ["mean"],
+            "domains": ["global"],
+            "plot_types": ["zonal"],
+            "authors": [
+                "xavier_prince",
+            ],
+            "ancestors": filenames,
+        }
+
+        return record
+
     def plot_anti_symmetric(self, spec, freq, wave, Apzwn, \
                             Afreq, levels=np.arange(0, 2, 0.2),
                             title='', figname='specAntiSym_test.ps'):
 
-        plt.clf()
+        plt.clf()  # Not sure this is still needed
         minfrq4plt = 0.
         maxfrq4plt = 0.8
         minwav4plt = -15
@@ -569,9 +590,11 @@ class WKSpectra:
 
         norm = colors.BoundaryNorm(levels, len(cmap.colors))
 
-        CS = plt.contourf(F, W, spec, levels=levels,
-                          cmap=cmap, norm=norm, extend='both')
-        bar = plt.colorbar(CS)
+        # Initialize the plot
+        fig, ax = plt.subplots()
+
+        CS = ax.contourf(F, W, spec, levels=levels, cmap=cmap, norm=norm, extend='both')
+        bar = fig.colorbar(CS, ax=ax)
 
         tick_locs = levels
         tick_labels = levels
@@ -580,37 +603,46 @@ class WKSpectra:
         bar.update_ticks()
 
         # set axes range
-        plt.xlim(minwav4plt, maxwav4plt)
-        plt.ylim(minfrq, maxfrq)
+        ax.set_xlim(minwav4plt, maxwav4plt)
+        ax.set_ylim(minfrq, maxfrq)
 
         # Lines
-        plt.plot([0, 0], [0, 0.5], 'k--', lw=0.5)
+        ax.plot([0, 0], [0, 0.5], 'k--', lw=0.5)
 
         # Line markers of periods
         frqs = [80, 30, 6, 3]
         for frq in frqs:
-            plt.plot([-15, 15], [1. / frq, 1. / frq], 'k--', lw=0.5)
-            plt.text(-14.7, 1. / frq, str(frq) + ' days', {'color': 'k'})
+            ax.plot([-15, 15], [1. / frq, 1. / frq], 'k--', lw=0.5)
+            ax.text(-14.7, 1. / frq, str(frq) + ' days', {'color': 'k'})
 
-        plt.title(title)  #
-        plt.xlabel('Westward     Zonal Wave Number     Eastward')
-        plt.ylabel('Frequency (CPD)')
+        ax.set_title(title)
+        ax.set_xlabel('Westward     Zonal Wave Number     Eastward')
+        ax.set_ylabel('Frequency (CPD)')
 
         # Symmetric waves
         # Equatorial Rossby
         for i in range(3):
             for j in range(3):
-                plt.plot(Apzwn[i, j, :], Afreq[i, j, :], 'k', lw=0.5)
+                ax.plot(Apzwn[i, j, :], Afreq[i, j, :], 'k', lw=0.5)
 
-        plt.text(-10., 0.15, "MRG", {'color': 'k', 'backgroundcolor': 'w'})
-        plt.text(-3., 0.58, "n=2 IG", {'color': 'k', 'backgroundcolor': 'w'})
-        plt.text(6., 0.4, "n=0 EIG", {'color': 'k', 'backgroundcolor': 'w'})
-        plt.text(-3., 0.475, "h=12", {'color': 'k', 'backgroundcolor': 'w'})
+        ax.text(-10., 0.15, "MRG", {'color': 'k', 'backgroundcolor': 'w'})
+        ax.text(-3., 0.58, "n=2 IG", {'color': 'k', 'backgroundcolor': 'w'})
+        ax.text(6., 0.4, "n=0 EIG", {'color': 'k', 'backgroundcolor': 'w'})
+        ax.text(-3., 0.475, "h=12", {'color': 'k', 'backgroundcolor': 'w'})
 
-        plt.savefig(figname)  # ,bbox_inches='tight')
+        # Add provenance information
+        caption = f"{figname}, [or other caption for antisymmetric]"  # TODO
+        provenance_dict = self.get_provenance_record(caption)
+
+        # Save the figure (also closes it)
+        save_figure(
+            figname,
+            provenance_dict,
+            self.cfg,
+            figure=fig,
+            close=True,
+        )
         print(f'Plotted {figname}')
-        # plt.show()
-        plt.close()
 
     def plot_symmetric(self, spec, freq, wave, Apzwn, \
                        Afreq, levels=np.arange(0, 5, 0.5),
@@ -628,9 +660,11 @@ class WKSpectra:
         cmap = self.get_colors()
         norm = colors.BoundaryNorm(levels, len(cmap.colors))
 
-        CS = plt.contourf(F, W, spec, levels=levels,
-                          cmap=cmap, norm=norm, extend='both')
-        bar = plt.colorbar(CS)
+        # Initialize the plot
+        fig, ax = plt.subplots()
+
+        CS = ax.contourf(F, W, spec, levels=levels, cmap=cmap, norm=norm, extend='both')
+        bar = fig.colorbar(CS, ax=ax)
 
         tick_locs = levels
         tick_labels = levels
@@ -639,37 +673,46 @@ class WKSpectra:
         bar.update_ticks()
 
         # set axes range
-        plt.xlim(minwav4plt, maxwav4plt)
-        plt.ylim(minfrq, maxfrq)
+        ax.set_xlim(minwav4plt, maxwav4plt)
+        ax.set_ylim(minfrq, maxfrq)
 
         # Lines
-        plt.plot([0, 0], [0, 0.5], 'k--', lw=0.5)
+        ax.plot([0, 0], [0, 0.5], 'k--', lw=0.5)
 
         # Line markers of periods
         frqs = [80, 30, 6, 3]
         for frq in frqs:
-            plt.plot([-15, 15], [1. / frq, 1. / frq], 'k--', lw=0.5)
-            plt.text(-14.7, 1. / frq, str(frq) + ' days', {'color': 'k'})
+            ax.plot([-15, 15], [1. / frq, 1. / frq], 'k--', lw=0.5)
+            ax.text(-14.7, 1. / frq, str(frq) + ' days', {'color': 'k'})
 
-        plt.title(title)  #
-        plt.xlabel('Westward     Zonal Wave Number     Eastward')
-        plt.ylabel('Frequency (CPD)')
+        ax.set_title(title)  #
+        ax.set_xlabel('Westward     Zonal Wave Number     Eastward')
+        ax.set_ylabel('Frequency (CPD)')
 
         # Symmetric waves
         # Equatorial Rossby
         for i in range(3, 6):
             for j in range(3):
-                plt.plot(Apzwn[i, j, :], Afreq[i, j, :], 'k', lw=0.5)
+                ax.plot(Apzwn[i, j, :], Afreq[i, j, :], 'k', lw=0.5)
 
-        plt.text(11.5, 0.4, "Kelvin", {'color': 'k', 'backgroundcolor': 'w'})
-        plt.text(-10.7, 0.07, "n=1 ER", {'color': 'k', 'backgroundcolor': 'w'})
-        plt.text(-3., 0.45, "n=1 IG", {'color': 'k', 'backgroundcolor': 'w'})
-        plt.text(-14., 0.46, "h=12", {'color': 'k', 'backgroundcolor': 'w'})
+        ax.text(11.5, 0.4, "Kelvin", {'color': 'k', 'backgroundcolor': 'w'})
+        ax.text(-10.7, 0.07, "n=1 ER", {'color': 'k', 'backgroundcolor': 'w'})
+        ax.text(-3., 0.45, "n=1 IG", {'color': 'k', 'backgroundcolor': 'w'})
+        ax.text(-14., 0.46, "h=12", {'color': 'k', 'backgroundcolor': 'w'})
 
-        plt.savefig(figname)  # ,bbox_inches='tight')
+        # Add provenance information
+        caption = f"{figname}, [or other caption for symmetric]"  # TODO
+        provenance_dict = self.get_provenance_record(caption)
+
+        # Save the figure (also closes it)
+        save_figure(
+            figname,
+            provenance_dict,
+            self.cfg,
+            figure=fig,
+            close=True,
+        )
         print(f'Plotted {figname}')
-        # plt.show()
-        plt.close()
 
     def wkSpaceTime(self):
         """Create Wheeler-Kiladis Space-Time  plots.
