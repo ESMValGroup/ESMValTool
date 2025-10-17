@@ -1,0 +1,58 @@
+# ESMValTool
+# recipe_ml_downscaling_evaluation.yml
+---
+documentation:
+  description: |
+    Evaluation of ML-based downscaling (UNet, CorrDiff, CorrDiff++, GenFocal, etc...)
+
+  authors:
+    - debeire_kevin
+
+  title: Evaluation of ML-based downscaling
+
+  maintainer:
+    - debeire_kevin
+
+datasets:
+  #NEXTGEMS reference (ground truth) passed as OBS6
+  - {dataset: HIGHRES-REF, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  #UNet and CORRDIFF downscaled fields (prediction) passed as OBS6
+  - {dataset: CORRDIFF, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  - {dataset: CORRDIFF, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  - {dataset: UNet, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}      
+
+# preprocessors:
+
+diagnostics:
+  downscaling_evaluation:
+    description: "ML-based downscaling vs HIGHRES-REF"
+    variables:
+      uas:
+      vas:
+      huss:
+      ps:
+      pr:
+      tas:
+    scripts:
+      spatial_metrics:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        title: "Spatial metrics"
+        ml_methods: ["UNet","CORRDIFF"]
+        reference: HIGHRES-REF
+        analysis_type: spatial_metrics
+        save_cubes: true  # save each plotted cube in work
+      energy_spectrum:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        title: "Energy spectra"
+        ml_methods: ["UNet","CORRDIFF"]
+        reference: HIGHRES-REF
+        analysis_type: energy_spectrum
+        spatial_scale: 6.3 #spatial resolution in km to calculate spatial energy spectrum
+        save_cubes: true  # save each plotted cube in work
+      log_density:
+        script: regional_downscaling/ml_downscaling_evaluation.py
+        title: "Probability Density Function"
+        ml_methods: ["UNet","CORRDIFF"]
+        reference: HIGHRES-REF
+        analysis_type: log_density
+        save_cubes: true  # save each plotted cube in work
