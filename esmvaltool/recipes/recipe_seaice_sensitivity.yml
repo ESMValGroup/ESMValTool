@@ -46,7 +46,7 @@ tasa_obs: &tasa_obs
   - { <<: *obs_defaults, dataset: HadCRUT5, type: ground, version: 5.0.1.0-analysis }
   - { <<: *obs_defaults, dataset: NOAAGlobalTemp, type: ground, version: v5.0.0, mip: Amon }
 
-arctic_si_obs: &arctic_si_obs
+arctic_siconc_obs: &arctic_siconc_obs
   - { <<: *obs_defaults, dataset: OSI-450-nh, type: reanaly, version: v3, mip: OImon, supplementary_variables: [{short_name: areacello, mip: fx}]}
 
 preprocessors:
@@ -128,11 +128,11 @@ diagnostics:
         mip: Amon
         additional_datasets:
           *model_datasets
-      si_obs:
+      siconc_obs:
         short_name: siconc
         preprocessor: pp_arctic_sept_sea_ice
         additional_datasets:
-          *arctic_si_obs
+          *arctic_siconc_obs
       tasa_obs:
         short_name: tasa
         preprocessor: pp_avg_ann_global_temp
@@ -163,11 +163,11 @@ diagnostics:
         mip: Amon
         additional_datasets:
           *model_datasets
-#      si_obs:
+#      siconc_obs:
 #        short_name: siconc
 #        preprocessor: pp_antarctic_avg_ann_sea_ice
 #        additional_datasets:
-#          *antarctic_si_obs
+#          *antarctic_siconc_obs
       tasa_obs:
         short_name: tasa
         preprocessor: pp_avg_ann_global_temp
