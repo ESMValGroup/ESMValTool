@@ -176,6 +176,8 @@ def _concatenate_and_save_monthly_cubes(
 
     if attach == "-AMPM":
         cube = monthly_statistics(cube)
+        cube.remove_coord("month_number")
+        cube.remove_coord("year")
 
     # Regrid the cube to the target grid (e.g., 0.5x0.5)
     cube = regrid(cube, target_grid="0.5x0.5", scheme="area_weighted")

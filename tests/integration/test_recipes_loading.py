@@ -142,7 +142,7 @@ def test_recipe_valid(recipe_file, session, mocker):
 
     # Mock interpreters installed
     def which(executable):
-        if executable in ("julia", "ncl", "python", "Rscript"):
+        if executable in ("ncl", "python", "Rscript"):
             path = "/path/to/" + executable
         else:
             path = None
