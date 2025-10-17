@@ -709,6 +709,10 @@ authors:
     name: Wyser, Klaus
     institute: SMHI, Sweden
     orcid:
+  xavier_prince:
+    name: Xavier, Prince
+    institute: MetOffice, UK
+    orcid: 0000-0002-1381-384X
   # Former developers
   braeu_melanie:
     name: Braeu, Melanie

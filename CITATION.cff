@@ -359,6 +359,11 @@ authors:
     given-names: Katja
     orcid: "https://orcid.org/0000-0001-6133-7801"
   -
+    affiliation: "Met Office, UK"
+    family-names: Xavier
+    given-names: Prince
+    orcid: "https://orcid.org/0000-0002-1381-384X"
+  -
     affiliation: "DLR, Germany"
     family-names: Sarauer
     given-names: Ellen
