@@ -15,21 +15,13 @@ logger = logging.getLogger(Path(__file__).stem)
 
 def main(cfg):
     """Compute the time average for each input dataset."""
-    # Get a description of the preprocessed data that we will use as input.
+    # Describe the preprocessed data that we will use as input
     input_data = cfg["input_data"].values()
-    logger.info("INPUT DATA", input_data)
+    logger.info("INPUT DATA:\n%s", input_data)
 
-    grouped_input_data = group_metadata(
-        input_data, "variable_group", sort="dataset"
-    )
-    logger.info(
-        "Example of how to group and sort input data by variable groups from "
-        "the recipe:\n%s",
-        pformat(grouped_input_data),
-    )
-
-    # Example of how to loop over variables/datasets in alphabetical order
+    # Loop over variables/datasets in alphabetical order
     groups = group_metadata(input_data, "variable_group", sort="dataset")
+    logger.info("GROUPS:\n%s", pformat(groups))
     for group_name in groups:
         logger.info("Processing variable %s", group_name)
         for attributes in groups[group_name]:
@@ -54,7 +46,7 @@ def main(cfg):
                     elif pressure_level == 20000.0:
                         attributes["varname"] = "x_wind_200hPa"
 
-                    logger.info(attributes)
+                    logger.info("Attributes:\n%s", attributes)
                     # Call Spectra calculations
                     spectra_compute.WKSpectra(cfg, attributes).wkSpaceTime()
                     spectra_compute.WKSpectra(cfg, attributes).SpectraSeason()
@@ -63,16 +55,16 @@ def main(cfg):
                 attributes["cube"] = iris.load_cube(input_file)
                 attributes["varname"] = "Precipitation"
 
-                logger.info(attributes)
+                logger.info("Attributes:\n%s", attributes)
                 # Call Spectra calculations
                 spectra_compute.WKSpectra(cfg, attributes).wkSpaceTime()
                 spectra_compute.WKSpectra(cfg, attributes).SpectraSeason()
 
-            elif attributes["variable_group"] == "rlut":  # Check rlut
+            elif attributes["variable_group"] == "rlut":  # Check rlut TODO
                 attributes["cube"] = iris.load_cube(input_file)
                 attributes["varname"] = "toa_outgoing_longwave_flux"
 
-                logger.info(attributes)
+                logger.info("Attributes:\n%s", attributes)
                 # Call Spectra calculations
                 spectra_compute.WKSpectra(cfg, attributes).wkSpaceTime()
                 spectra_compute.WKSpectra(cfg, attributes).SpectraSeason()
@@ -82,7 +74,7 @@ def main(cfg):
             if "caption" not in attributes:
                 attributes["caption"] = input_file
 
-            print("output_basename", output_basename)
+            logger.info("output_basename: %s", output_basename)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+import logging
 import math
 import os
 import sys
@@ -36,7 +37,7 @@ class WKSpectra:
             # If found interpolating along longitude to fill gaps.
             if np.any(self.cube.data.mask):
                 self.cube = self.interpolate_along_axis(self.cube, "longitude")
-        print(self.cube)
+        logging.info("self.cube: %s", self.cube)
 
     def interpolate_along_axis(self, cube, coord_name):
         """
@@ -123,9 +124,7 @@ class WKSpectra:
         try:
             dates
         except NameError:
-            print(
-                dates + " WASN'T defined after all!"
-            )  # todo Effective but probs frowned upon
+            logging.error("%s WASN'T defined after all!", dates)  # todo
         else:
             year = np.zeros(len(dates), dtype=int)
             month = np.zeros(len(dates), dtype=int)
@@ -135,9 +134,7 @@ class WKSpectra:
         return year, month, day
 
     def makecube_season_pow(self, var, wave, freq, name="spectra"):
-        # ===========================================================================
-        # Make a cube of seasonal power
-        # ===========================================================================
+        """Make a cube of seasonal power."""
         var_cube = iris.cube.Cube(var)
         var_cube.rename("spectra")
         # var_cube.long_name = long_name
@@ -150,15 +147,16 @@ class WKSpectra:
         return var_cube
 
     def remove_annual_cycle(self, var, nDayTot, fCrit, spd=1, rmvMeans=False):
-        # ===========================================================================
-        # Prewhiten the data: eg remove the annual cycle.
-        # Actually, this will remove all time periods less than
-        #   those corresponding to 'fCrit'.
-        # Note: The original fortran code provided by JET did not remove
-        #   the grid point means so .... rmvMeans=False
-        #       I assume that Matt Wheeler's code did that also.
-        # ===========================================================================
-        print(fCrit)
+        """
+        Prewhiten the data: eg remove the annual cycle.
+
+        Actually, this will remove all time periods less than
+          those corresponding to 'fCrit'.
+        Note: The original fortran code provided by JET did not remove
+          the grid point means so .... rmvMeans=False
+              I assume that Matt Wheeler's code did that also.
+        """
+        logging.info("fCrit: %s", fCrit)
         # Take a copy for metadata
         var_cut = var.copy()
 
@@ -183,16 +181,18 @@ class WKSpectra:
         return var_cut
 
     def decompose_sym_asym(self, var, axis=1):
-        # ===========================================================================
-        # This code decomposes the data in to symmetric and anti-symmetric components
-        # with respect to latitude axis. It is assumed that the latitude dimension is
-        # along axis = 1 as default.
-        #
-        # antisymmetric part is stored in one hemisphere [eg: Northern Hemisphere]
-        #          xOut( lat) = (x(lat)-x(-lat))/2
-        # symmetric part is stored in other hemisphere [eg: Southern Hemisphere]
-        #          xOut(-lat) = (x(lat)+x(-lat))/2
-        # ===========================================================================
+        """
+        Decompose the data into symmetric and anti-symmetric components.
+
+        This code decomposes the data in to symmetric and anti-symmetric components
+        with respect to latitude axis. It is assumed that the latitude dimension is
+        along axis = 1 as default.
+
+        antisymmetric part is stored in one hemisphere [eg: Northern Hemisphere]
+                 xOut( lat) = (x(lat)-x(-lat))/2
+        symmetric part is stored in other hemisphere [eg: Southern Hemisphere]
+                 xOut(-lat) = (x(lat)+x(-lat))/2
+        """
         varSA = var.copy()  # copy to store the output
         nlat = var.shape[axis]  # get the number of latitude points
 
@@ -203,7 +203,8 @@ class WKSpectra:
 
         if axis == 1:
             for nl in np.arange(0, N2):
-                print((nlat - 1 - nl), nl)
+                logging.debug("(nlat - 1 - nl): %s", (nlat - 1 - nl))
+                logging.debug("nl: %s", nl)
                 varSA.data[:, nl] = 0.5 * (
                     var.data[:, nlat - 1 - nl] + var.data[:, nl]
                 )
@@ -213,30 +214,30 @@ class WKSpectra:
 
             return varSA
         else:
-            print("Modify the code to accommodate other axes...")
-            print("Exiting...")
+            logging.info("Modify the code to accommodate other axes...")
+            logging.info("Exiting...")
             sys.exit(0)
 
     def taper(self, ts, alpha=0.1, iopt=0):
-        # ===========================================================================
-        #
-        # this function applies split-cosine-bell tapering to the series x.
-        # the series will be tapered to the mean of x.
-        # See:
-        #     Fourier Analysis of Time Series
-        #     Peter Bloomfield
-        #     Wiley-Interscience, 1976
-        #  This is used prior performing an fft on non-cyclic data
-        #  arguments:
-        #     ts   series to be tapered (tapering done in place)
-        #         **missing data not allowed**
-        #     alpha   the proportion of the time series to be tapered
-        #         [p=0.10 means 10 %]
-        #     iopt  iopt=0 taper to series mean
-        #     iopt  iopt=1 means *force* taper to 0.0
-        # ===========================================================================
+        """
+        Apply split-cosine-bell tapering to the series x.
+
+        The series will be tapered to the mean of x.
+        See:
+            Fourier Analysis of Time Series
+            Peter Bloomfield
+            Wiley-Interscience, 1976
+         This is used prior performing an fft on non-cyclic data
+         arguments:
+            ts   series to be tapered (tapering done in place)
+                **missing data not allowed**
+            alpha   the proportion of the time series to be tapered
+                [p=0.10 means 10 %]
+            iopt  iopt=0 taper to series mean
+            iopt  iopt=1 means *force* taper to 0.0
+        """
         if all(x == ts[0] for x in ts):
-            print("all values equal")
+            logging.info("all values equal")
             iopt = 1
         if iopt == 0:
             tsmean = np.mean(ts)
@@ -254,54 +255,54 @@ class WKSpectra:
         return tst
 
     def resolve_waves_hayashi(self, varfft, nDayWin, spd):
-        # ===========================================================================
-        #
-        #  Create array PEE(NL+1,NT+1) which contains the (real) power spectrum.
-        #  all the following assume indexing starting with 0
-        #  In this array, the negative wavenumbers will be from pn=0 to NL/2-1
-        #  The positive wavenumbers will be for pn=NL/2+1 to NL.
-        #  Negative frequencies will be from pt=0 to NT/2-1
-        #  Positive frequencies will be from pt=NT/2+1 to NT  .
-        #  Information about zonal mean will be for pn=NL/2  .
-        #  Information about time mean will be for pt=NT/2  .
-        #  Information about the Nyquist Frequency is at pt=0 and pt=NT
-        #
-        #  In PEE, define the
-        #  WESTWARD waves to be either +ve frequency
-        #           and -ve wavenumber or -ve freq and +ve wavenumber.
-        #  EASTWARD waves are either +ve freq and +ve wavenumber
-        #           OR -ve freq and -ve wavenumber.
-        #
-        #  Note that frequencies are returned from fftpack are ordered like so
-        #     input_time_pos [ 0    1   2    3     4      5    6   7  ]
-        #     ouput_fft_coef [mean 1/7 2/7  3/7 nyquist -3/7 -2/7 -1/7]
-        #                     mean,pos freq to nyq,neg freq hi to lo
-        #
-        #  Rearrange the coef array to give you power array of freq and wave number east/west
-        #  Note east/west wave number *NOT* eq to fft wavenumber see Hayashi '71
-        #  Hence, NCL's 'cfftf_frq_reorder' can *not* be used.
-        #
-        #  For ffts that return the coefficients as described above, here is the algorithm
-        #  coeff array varfft(2,n,t)   dimensioned (2,0:numlon-1,0:numtim-1)
-        #  new space/time pee(2,pn,pt) dimensioned (2,0:numlon  ,0:numtim  )
-        #
-        #  NOTE: one larger in both freq/space dims
-        #  the initial index of 2 is for the real (indx 0) and imag (indx 1) parts of the array
-        #
-        #
-        #       if  |  0 <= pn <= numlon/2-1    then    | numlon/2 <= n <= 1
-        #           |  0 <= pt < numtim/2-1             | numtim/2 <= t <= numtim-1
-        #
-        #       if  |  0         <= pn <= numlon/2-1    then    | numlon/2 <= n <= 1
-        #           |  numtime/2 <= pt <= numtim                | 0        <= t <= numtim/2
-        #
-        #       if  |  numlon/2  <= pn <= numlon    then    | 0  <= n <= numlon/2
-        #           |  0         <= pt <= numtim/2          | numtim/2 <= t <= 0
-        #
-        #       if  |  numlon/2   <= pn <= numlon    then    | 0        <= n <= numlon/2
-        #           |  numtim/2+1 <= pt <= numtim            | numtim-1 <= t <= numtim/2
-        #
-        # ===========================================================================
+        """
+        Create array PEE(NL+1,NT+1) which contains the (real) power spectrum.
+
+        All the following assume indexing starting with 0
+        In this array, the negative wavenumbers will be from pn=0 to NL/2-1
+        The positive wavenumbers will be for pn=NL/2+1 to NL.
+        Negative frequencies will be from pt=0 to NT/2-1
+        Positive frequencies will be from pt=NT/2+1 to NT  .
+        Information about zonal mean will be for pn=NL/2  .
+        Information about time mean will be for pt=NT/2  .
+        Information about the Nyquist Frequency is at pt=0 and pt=NT
+
+        In PEE, define the
+        WESTWARD waves to be either +ve frequency
+                 and -ve wavenumber or -ve freq and +ve wavenumber.
+        EASTWARD waves are either +ve freq and +ve wavenumber
+                 OR -ve freq and -ve wavenumber.
+
+        Note that frequencies are returned from fftpack are ordered like so
+           input_time_pos [ 0    1   2    3     4      5    6   7  ]
+           ouput_fft_coef [mean 1/7 2/7  3/7 nyquist -3/7 -2/7 -1/7]
+                           mean,pos freq to nyq,neg freq hi to lo
+
+        Rearrange the coef array to give you power array of freq and wave number east/west
+        Note east/west wave number *NOT* eq to fft wavenumber see Hayashi '71
+        Hence, NCL's 'cfftf_frq_reorder' can *not* be used.
+
+        For ffts that return the coefficients as described above, here is the algorithm
+        coeff array varfft(2,n,t)   dimensioned (2,0:numlon-1,0:numtim-1)
+        new space/time pee(2,pn,pt) dimensioned (2,0:numlon  ,0:numtim  )
+
+        NOTE: one larger in both freq/space dims
+        the initial index of 2 is for the real (indx 0) and imag (indx 1) parts of the array
+
+
+             if  |  0 <= pn <= numlon/2-1    then    | numlon/2 <= n <= 1
+                 |  0 <= pt < numtim/2-1             | numtim/2 <= t <= numtim-1
+
+             if  |  0         <= pn <= numlon/2-1    then    | numlon/2 <= n <= 1
+                 |  numtime/2 <= pt <= numtim                | 0        <= t <= numtim/2
+
+             if  |  numlon/2  <= pn <= numlon    then    | 0  <= n <= numlon/2
+                 |  0         <= pt <= numtim/2          | numtim/2 <= t <= 0
+
+             if  |  numlon/2   <= pn <= numlon    then    | 0        <= n <= numlon/2
+                 |  numtim/2+1 <= pt <= numtim            | numtim-1 <= t <= numtim/2
+
+        """
         N, mlon = varfft.shape
         pee = np.ones([N + 1, mlon + 1]) * -999.0  # initialize
         # -999 scaling is for testing
@@ -318,13 +319,13 @@ class WKSpectra:
         return pee
 
     def wk_smooth121(self, var):
-        # ===========================================================================
-        # Special 1-2-1 smoother
-        # Smooths vv by passing it through a 1-2-1 filter.
-        # The first and last points are given 3-1 (1st) or 1-3 (last)
-        # weightings (Note that this conserves the total sum).
-        # The routine also skips-over missing data (np.nan)
-        # ===========================================================================
+        """
+        Special 1-2-1 smoother that smooths vv by passing it through a 1-2-1 filter.
+
+        The first and last points are given 3-1 (1st) or 1-3 (last)
+        weightings (Note that this conserves the total sum).
+        The routine also skips-over missing data (np.nan)
+        """
         varf = var.copy()
         nt = len(var)
 
@@ -345,9 +346,7 @@ class WKSpectra:
         return varf
 
     def make_spec_cube(self, var, lat, wave, freq):
-        # ===========================================================================
-        # # Make a 3D cube of Latitude, wavenumber & frequency dimensions
-        # ===========================================================================
+        """Make a 3D cube of Latitude, wavenumber & frequency dimensions."""
         var_cube = iris.cube.Cube(var)
         var_cube.rename("spectra")
         lat_coord = iris.coords.DimCoord(lat, long_name="latitude")
@@ -362,9 +361,7 @@ class WKSpectra:
         return var_cube
 
     def make_cube(self, var, wave, freq):
-        # ===========================================================================
-        # # Make a 2D cube of wavenumber & frequency dimensions
-        # ===========================================================================
+        """Make a 2D cube of wavenumber & frequency dimensions."""
         var_cube = iris.cube.Cube(var)
         var_cube.rename("spectra")
         wave_coord = iris.coords.DimCoord(wave, long_name="wavenumber")
@@ -376,19 +373,17 @@ class WKSpectra:
         return var_cube
 
     def closest_index(self, array, value):
-        # ===========================================================================
-        # Find the closest index to a given value in an array
-        # ===========================================================================
+        """Find the closest index to a given value in an array."""
         return (np.abs(array - value)).argmin()
 
     def compute_background(self, peeAS, wave, freq, minwav4smth, maxwav4smth):
-        # ===========================================================================
-        # Derive the background spectrum (red noise) ************
-        # [1] Sum power over all latitude
-        # [2] Put fill value in mean
-        # [3] Apply smoothing to the spectrum. This smoothing DOES include wavenumber zero.
-        #
-        # ===========================================================================
+        """
+        Derive the background spectrum (red noise) ************
+
+        [1] Sum power over all latitude
+        [2] Put fill value in mean
+        [3] Apply smoothing to the spectrum. This smoothing DOES include wavenumber zero.
+        """
         psumb = np.sum(peeAS, axis=0)  # sum over all latitudes
         N, mlon = psumb.shape
         smthlen = maxwav4smth - minwav4smth + 1
@@ -714,7 +709,7 @@ class WKSpectra:
             figure=fig,
             close=True,
         )
-        print(f"Plotted {figname}")
+        logging.info("Plotted %s", figname)
 
     def plot_symmetric(
         self,
@@ -794,7 +789,7 @@ class WKSpectra:
             figure=fig,
             close=True,
         )
-        print(f"Plotted {figname}")
+        logging.info("Plotted %s", figname)
 
     def wkSpaceTime(self):
         """Create Wheeler-Kiladis Space-Time  plots.
@@ -839,7 +834,9 @@ class WKSpectra:
         )
 
         if lon_taper > 0.0 or lonR - lonL != 360.0:
-            print("Code does currently allow lon_taper>0 or (lonR-lonL)<360")
+            logging.error(
+                "Code does currently allow lon_taper>0 or (lonR-lonL)<360"
+            )
             sys.exit(0)
 
         nDayTot = ntim / self.spd  # of days (total) for input variable
@@ -853,10 +850,8 @@ class WKSpectra:
         N = nSampWin  # convenience [historical]
 
         if nDayTot < self.nDayWin:
-            print(
-                "nDayTot=" + nDayTot + " is less the nDayWin=" + self.nDayWin
-            )
-            print("        This is not allowed !!       ")
+            logging.error("nDayTot=%s is less the nDayWin=%s", nDayTot, self.nDayWin)
+            logging.error("This is not allowed !!")
             sys.exit(0)
         # -------------------------------------------------------------------
         #  Remove dominant signals
@@ -900,14 +895,14 @@ class WKSpectra:
             scipy.signal.detrend(self.cube.data, axis=0) + varmean.data
         )  # Mean added
 
-        print("nDayTot = " + str(nDayTot))
+        logging.info("nDayTot = %s", nDayTot)
 
         if nDayTot >= 365:  # remove dominant signals
             self.cube = self.remove_annual_cycle(
                 self.cube, nDayTot, fCrit, spd=1, rmvMeans=False
             )
         else:
-            print(
+            logging.error(
                 "Length of the variable is shorter than 365. Can not continue!"
             )
             sys.exit(1)
@@ -933,18 +928,17 @@ class WKSpectra:
         #  peeAS - symmetric and asymmetric power values in each latitude hemisphere.
         #          Add extra lon/time to match JET
         # -------------------------------------------------------------------
-        print("nSampWin = " + str(nSampWin))
+        logging.info("nSampWin = %s", nSampWin)
 
         for nl in range(nlat):
             nw = 0
-            print("Latitude: nl = " + str(nl))
+            logging.info("Latitude: nl = %s", nl)
             ntStrt = 0
             ntLast = nSampWin
             while ntLast < nDayTot:
                 if nl == 0:
-                    print(
-                        "nw = %s, ntStrt = %s, ntLast =%s "
-                        % (nw, ntStrt, ntLast)
+                    logging.debug(
+                        "nw = %s\nntStrt = %s\nntLast =%s", nw, ntStrt, ntLast
                     )
                 work = xAS[ntStrt:ntLast, nl].copy()
 
@@ -964,7 +958,7 @@ class WKSpectra:
                     work.data[:, lo] = self.taper(
                         work.data[:, lo], alpha=tim_taper, iopt=0
                     )
-                # print 'Passed Tapering test'
+                # logging.info('Passed Tapering test')
 
                 # Do actual FFT work
                 ft = work.copy()
@@ -981,7 +975,7 @@ class WKSpectra:
                 nw += 1
 
                 # else:
-                #    print('Missing data detected. Skipping to the next window...')
+                #    logging.info('Missing data detected. Skipping to the next window...')
 
                 ntStrt = (
                     ntLast + nSampSkip
@@ -1064,7 +1058,7 @@ class WKSpectra:
         #  [3] Apply smoothing to the spectrum. This smoothing DOES include
         #      wavenumber zero.
         # -----------------------------------------------------------------------------
-        # print("======> BACKGROUND <=====")
+        # logging.info("======> BACKGROUND <=====")
 
         psumb = self.compute_background(peeAS, wave, freq, indStrt, indLast)
         psumb_nolog = np.ma.masked_array(psumb)
@@ -1435,7 +1429,12 @@ class WKSpectra:
             iStrt = iSea[ny]  # start index for current season
             iLast = iSea[ny] + nDay  # last
             if iLast < ntim - 1:
-                print(ny, kSea, iStrt, iLast, yyyymmdd[iStrt], yyyymmdd[iLast])
+                logging.debug("ny: %s", ny)
+                logging.debug("kSea: %s", kSea)
+                logging.debug("iStrt: %s", iStrt)
+                logging.debug("iLast: %s", iLast)
+                logging.debug("yyyymmdd[iStrt]: %s", yyyymmdd[iStrt])
+                logging.debug("yyyymmdd[iLast]: %s", yyyymmdd[iLast])
                 xSeason = work[iStrt:iLast, :]
                 xAvg = np.average(xSeason)  # season average all time/lon
                 xSeason = xSeason - xAvg  # remove season time-lon mean
@@ -1528,11 +1527,11 @@ class WKSpectra:
             figure=fig,
             close=True,
         )
-        print(f"Plotted {figname}")
+        logging.info("Plotted %s", figname)
 
     def SpectraSeason(self):
         for season in ["winter", "summer"]:
-            print(season)
+            logging.info("Season: %s", season)
             # This is the NCL method of computing the spectra which uses anomalies
             pow_cube = self.mjo_wavenum_freq_season(season)
 
