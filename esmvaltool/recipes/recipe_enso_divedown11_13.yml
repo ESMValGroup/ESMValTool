@@ -1,0 +1,117 @@
+#
+---
+documentation:
+  description: Reproducing basic ENSO amplitude, seasonality, skewness dive down metrics
+  title: ENSO CLIVAR metrics - dive downs ENSO characteristics
+  authors:
+    - chun_felicity
+    - planton_yann
+    - beucher_romain
+    - sullivan_arnold
+    - chung_christine
+  maintainer:
+    - chun_felicity
+
+datasets:
+  - {dataset: ACCESS-ESM1-5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+  # - {dataset: ACCESS-CM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 2014}
+
+  # observations
+  # - {dataset: HadISST, project: OBS, type: reanaly, tier: 2, mip: Omon}
+  - {dataset: TROPFLUX, project: OBS6, type: reanaly, tier: 2, mip: Omon}
+
+preprocessors:
+  ssta_enso: &base_enso  # seas4 w meri
+    custom_order: true
+    convert_units:
+      units: degC
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_longitude: 150.
+      end_longitude: 280.
+      start_latitude: -5.
+      end_latitude: 5.
+    anomalies:
+      period: monthly
+
+  enso_amp3:
+    <<: *base_enso
+    extract_region: &latext
+      start_longitude: 120.
+      end_longitude: 280.
+      start_latitude: -15.
+      end_latitude: 15.
+    climate_statistics:
+      operator: std_dev
+      period: full
+
+  enso_seas_2:
+    <<: *base_enso
+    extract_region:
+      start_longitude: 190.
+      end_longitude: 240.
+      start_latitude: -5.
+      end_latitude: 5.
+    area_statistics:
+      operator: mean
+    climate_statistics:
+      operator: std_dev
+      period: monthly
+
+  enso_seas_3:
+    <<: *base_enso
+    extract_region:
+      start_longitude: 130.
+      end_longitude: 280.
+      start_latitude: -5.
+      end_latitude: 5.
+    meridional_statistics:
+      operator: mean
+    climate_statistics:
+      operator: std_dev
+      period: monthly
+
+  enso_seas_4:
+    <<: *base_enso
+    meridional_statistics:
+      operator: mean
+
+  enso_asymmetry:
+    <<: *base_enso
+    extract_region:  # extract again for lvl2 (5 lats)
+      <<: *latext
+      end_longitude: 290.
+
+diagnostics:
+  diagnostic_metrics:
+    description: run preprocessors on variables for ENSO metrics
+    variables:
+      tos_seas_area:  # seasonality
+        short_name: tos
+        mip: Omon
+        preprocessor: enso_seas_2
+      tos_seas_meri:  # seasonality
+        short_name: tos
+        mip: Omon
+        preprocessor: enso_seas_3
+      tos_seas_split:  # seasonality
+        short_name: tos
+        mip: Omon
+        preprocessor: enso_seas_4
+
+      tos_amp:  # amplitude
+        short_name: tos
+        mip: Omon
+        preprocessor: enso_amp3  # amp2 tos_seas_split
+      tos_asym:
+        short_name: tos
+        mip: Omon
+        preprocessor: enso_asymmetry
+
+    scripts:
+      seas_asym_amp_script:
+        script: enso_metrics/enso_divedowns/ampseasskew_1113.py

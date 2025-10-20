@@ -603,15 +603,15 @@ def crem_calc(pointers):
 
         mask = pctisccp_data.copy()
         if region == "tropics":
-            mask[:, (lats2 < -20) | (lats2 > 20), :] = np.NAN
+            mask[:, (lats2 < -20) | (lats2 > 20), :] = np.nan
         elif region == "extra-tropics":
-            mask[:, (lats2 >= -20) & (lats2 <= 20), :] = np.NAN
-            mask[(snc_data >= 0.1) | (sic_data >= 0.1)] = np.NAN
+            mask[:, (lats2 >= -20) & (lats2 <= 20), :] = np.nan
+            mask[(snc_data >= 0.1) | (sic_data >= 0.1)] = np.nan
         elif region == "snow-ice":
-            mask[:, (lats2 >= -20) & (lats2 <= 20), :] = np.NAN
-            mask[(snc_data < 0.1) & (sic_data < 0.1)] = np.NAN
+            mask[:, (lats2 >= -20) & (lats2 <= 20), :] = np.nan
+            mask[(snc_data < 0.1) & (sic_data < 0.1)] = np.nan
 
-        mask[cltisccp_data == 0.0] = np.NAN
+        mask[cltisccp_data == 0.0] = np.nan
 
         points = np.isfinite(mask)
         npoints = len(mask[points])  # Number of valid data points in region

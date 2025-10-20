@@ -78,7 +78,7 @@ DEGREE_SYMBOL = "\u00b0"
 
 def _fix_lons(lons):
     """Fix the given longitudes into the range ``[-180, 180]``."""
-    lons = np.array(lons, copy=False, ndmin=1)
+    lons = np.atleast_1d(lons)
     fixed_lons = ((lons + 180) % 360) - 180
     # Make the positive 180s positive again.
     fixed_lons[(fixed_lons == -180) & (lons > 0)] *= -1
