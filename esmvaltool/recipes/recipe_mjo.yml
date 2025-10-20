@@ -18,9 +18,9 @@ documentation:
 
   maintainer:
     - xavier_prince
-
-  references:
-    - wheeler_kiladis99
+#
+#  references:
+#    - wheeler_kiladis99
 
   projects:
     - ukesm
