@@ -51,8 +51,8 @@ GITHUB_REPO = {
 TIMEZONE = ZoneInfo("CET")
 
 PREVIOUS_RELEASE = {
-    "esmvalcore": datetime.datetime(2025, 2, 27, 0, tzinfo=TIMEZONE),
-    "esmvaltool": datetime.datetime(2025, 3, 5, 0, tzinfo=TIMEZONE),
+    "esmvalcore": datetime.datetime(2025, 10, 16, 0, tzinfo=TIMEZONE),
+    "esmvaltool": datetime.datetime(2025, 10, 20, 0, tzinfo=TIMEZONE),
 }
 
 LABELS = {
