@@ -18,16 +18,12 @@ documentation:
 
   maintainer:
     - xavier_prince
-#
-#  references:
-#    - wheeler_kiladis99
 
   projects:
     - ukesm
 
 datasets:
-  #- {dataset: bcc-csm1-1, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
-  #- {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
   - {dataset: ACCESS1-3, 'institute': CSIRO-BOM, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
 
 preprocessors:

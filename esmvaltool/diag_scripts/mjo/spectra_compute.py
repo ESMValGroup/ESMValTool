@@ -647,7 +647,7 @@ class WKSpectra:
     def plot_symmetric(self, spec, freq, wave, Apzwn, \
                        Afreq, levels=np.arange(0, 5, 0.5),
                        title='', figname='specSym_test.ps'):
-        plt.clf()
+        plt.clf()  # Again, maybe not needed
         minfrq4plt = 0.
         maxfrq4plt = 0.8
         minwav4plt = -15
@@ -1157,26 +1157,41 @@ class WKSpectra:
         izero = np.where(freq == 0)[0][0]
         pow_cube.data[:, izero] = np.min(pow_cube.data)  # 0th freq
 
-        CS = plt.contourf(W, F, pow_cube.data, levels=levels,
+        # Initialize the plot
+        fig, ax = plt.subplots()
+
+        CS = ax.contourf(W, F, pow_cube.data, levels=levels,
                           cmap='YlGnBu', extend="both")
-        plt.colorbar(CS)
+        fig.colorbar(CS, ax=ax)
 
         # set axes range
-        plt.ylim(0, NW)
-        plt.xlim(fMin, fMax)
+        ax.set_ylim(0, NW)
+        ax.set_xlim(fMin, fMax)
 
         # Line markers of periods
         frqs = [80, 30]
         for frq in frqs:
-            plt.plot([1. / frq, 1. / frq], [-0, 15], 'k--', lw=0.5)
-            plt.text(1. / frq, 5.5, str(frq) + 'd', {'color': 'k'})
+            ax.plot([1. / frq, 1. / frq], [-0, 15], 'k--', lw=0.5)
+            ax.text(1. / frq, 5.5, str(frq) + 'd', {'color': 'k'})
 
-        plt.plot([0, 0], [-0, 15], 'k:', lw=0.25)
-        plt.title(title)  #
-        plt.xlabel('Westward     Frequency     Eastward')
-        plt.ylabel('Zonal wavenumber')
-        plt.savefig(figname, bbox_inches='tight')
-        plt.close()
+        ax.plot([0, 0], [-0, 15], 'k:', lw=0.25)
+        ax.set_title(title)
+        ax.set_xlabel('Westward     Frequency     Eastward')
+        ax.set_ylabel('Zonal wavenumber')
+
+        # Add provenance information
+        caption = f"{figname}, [or other caption for wavenum freq season plot]"  # TODO
+        provenance_dict = self.get_provenance_record(caption)
+
+        # Save the figure (also closes it)
+        save_figure(
+            figname,
+            provenance_dict,
+            self.cfg,
+            figure=fig,
+            close=True,
+        )
+        print(f'Plotted {figname}')
 
     def SpectraSeason(self):
         for season in ['winter', 'summer']:
