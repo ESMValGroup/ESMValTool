@@ -1,41 +1,41 @@
 import math
+import os
+import sys
+
+import cf_units as unit
 import iris
-import numpy as np
-import os, sys
 import matplotlib as mpl
+import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-import matplotlib.colors as colors
-import scipy
-import cf_units as unit
-import numpy.ma as ma
+import numpy as np
 import scipy
 
 from esmvaltool.diag_scripts.shared import save_figure
 
-class WKSpectra:
 
+class WKSpectra:
     def __init__(self, cfg, attributes, check_missing=True):
         self.cfg = cfg
         self.spd = 1
         self.nDayWin = 96  # Wheeler-Kiladis [WK] temporal window length (days)
         self.nDaySkip = -65  # Negative means overlap
         self.latBound = 15
-        self.filename = attributes['filename']
+        self.filename = attributes["filename"]
         self.out_dir = os.path.dirname(self.filename)
-        self.runid = attributes['dataset']
-        self.label = f'{attributes["dataset"]}_{attributes["ensemble"]}'
-        self.plot_dir = attributes['plot_dir']
-        self.work_dir = attributes['work_dir']
+        self.runid = attributes["dataset"]
+        self.label = f"{attributes['dataset']}_{attributes['ensemble']}"
+        self.plot_dir = attributes["plot_dir"]
+        self.work_dir = attributes["work_dir"]
 
-        self.cube = attributes['cube']
-        self.varname = attributes['varname']
+        self.cube = attributes["cube"]
+        self.varname = attributes["varname"]
 
         if check_missing:
             # Checking for any missing data in the cube.
             # If found interpolating along longitude to fill gaps.
             if np.any(self.cube.data.mask):
-                self.cube = self.interpolate_along_axis(self.cube, 'longitude')
+                self.cube = self.interpolate_along_axis(self.cube, "longitude")
         print(self.cube)
 
     def interpolate_along_axis(self, cube, coord_name):
@@ -62,7 +62,7 @@ class WKSpectra:
 
         # Loop over all the axes except the one we're interpolating along
         # Create an iterator over the other dimensions
-        it = np.nditer(np.ones(np.delete(shape, axis)), flags=['multi_index'])
+        it = np.nditer(np.ones(np.delete(shape, axis)), flags=["multi_index"])
 
         while not it.finished:
             # Create slices to fix all dimensions except the one we're interpolating along
@@ -82,8 +82,12 @@ class WKSpectra:
                 # Interpolate only if there are enough valid points to perform interpolation
                 if valid_indices.size > 1:
                     # Perform interpolation along the axis
-                    interp_func = scipy.interpolate.interp1d(valid_indices, slice_data[valid], kind='linear',
-                                                             fill_value='extrapolate')
+                    interp_func = scipy.interpolate.interp1d(
+                        valid_indices,
+                        slice_data[valid],
+                        kind="linear",
+                        fill_value="extrapolate",
+                    )
 
                     # Fill the masked values with the interpolated values
                     interp_indices = np.arange(slice_data.shape[0])
@@ -95,7 +99,7 @@ class WKSpectra:
         return interpolated_cube
 
     def split_time(self, date):
-        '''Split date string into yyyy, mm, dd integers'''
+        """Split date string into yyyy, mm, dd integers"""
         d = str(date)
         year = int(d[0:4])
         month = int(d[5:7])
@@ -103,17 +107,25 @@ class WKSpectra:
         return year, month, day
 
     def get_dates(self, time):
-        '''splits the iris time coordinate into yyyy, mm, dd'''
-        if time.units.calendar == 'gregorian':
-            dates = unit.num2date(time.points, str(time.units), unit.CALENDAR_GREGORIAN)
-        if time.units.calendar == 'standard':
-            dates = unit.num2date(time.points, str(time.units), unit.CALENDAR_STANDARD)
+        """splits the iris time coordinate into yyyy, mm, dd"""
+        if time.units.calendar == "gregorian":
+            dates = unit.num2date(
+                time.points, str(time.units), unit.CALENDAR_GREGORIAN
+            )
+        if time.units.calendar == "standard":
+            dates = unit.num2date(
+                time.points, str(time.units), unit.CALENDAR_STANDARD
+            )
         else:
-            dates = unit.num2date(time.points, str(time.units), time.units.calendar)
+            dates = unit.num2date(
+                time.points, str(time.units), time.units.calendar
+            )
         try:
             dates
         except NameError:
-            print(dates + " WASN'T defined after all!")  # todo Effective but probs frowned upon
+            print(
+                dates + " WASN'T defined after all!"
+            )  # todo Effective but probs frowned upon
         else:
             year = np.zeros(len(dates), dtype=int)
             month = np.zeros(len(dates), dtype=int)
@@ -122,16 +134,16 @@ class WKSpectra:
                 year[i], month[i], day[i] = self.split_time(date)
         return year, month, day
 
-    def makecube_season_pow(self, var, wave, freq, name='spectra'):
+    def makecube_season_pow(self, var, wave, freq, name="spectra"):
         # ===========================================================================
         # Make a cube of seasonal power
         # ===========================================================================
         var_cube = iris.cube.Cube(var)
-        var_cube.rename('spectra')
+        var_cube.rename("spectra")
         # var_cube.long_name = long_name
-        wave_coord = iris.coords.DimCoord(wave, long_name='wavenumber')
+        wave_coord = iris.coords.DimCoord(wave, long_name="wavenumber")
         wave_coord.guess_bounds()
-        freq_coord = iris.coords.DimCoord(freq, long_name='frequency')
+        freq_coord = iris.coords.DimCoord(freq, long_name="frequency")
         freq_coord.guess_bounds()
         var_cube.add_dim_coord(wave_coord, 0)
         var_cube.add_dim_coord(freq_coord, 1)
@@ -151,7 +163,7 @@ class WKSpectra:
         var_cut = var.copy()
 
         # mean for later
-        varMean = var.collapsed('time', iris.analysis.MEAN)
+        varMean = var.collapsed("time", iris.analysis.MEAN)
 
         ntime, nlat, nlon = var.data.shape
 
@@ -162,7 +174,7 @@ class WKSpectra:
         x = freq.copy()
 
         # cutting frequencies
-        cf[np.abs(x) < fCrit] = 0.
+        cf[np.abs(x) < fCrit] = 0.0
 
         # inverse FFT
         var_cut.data = np.fft.ifft(cf, axis=0).astype(float)
@@ -192,13 +204,17 @@ class WKSpectra:
         if axis == 1:
             for nl in np.arange(0, N2):
                 print((nlat - 1 - nl), nl)
-                varSA.data[:, nl] = 0.5 * (var.data[:, nlat - 1 - nl] + var.data[:, nl])
-                varSA.data[:, nlat - 1 - nl] = 0.5 * (var.data[:, nlat - 1 - nl] - var.data[:, nl])
+                varSA.data[:, nl] = 0.5 * (
+                    var.data[:, nlat - 1 - nl] + var.data[:, nl]
+                )
+                varSA.data[:, nlat - 1 - nl] = 0.5 * (
+                    var.data[:, nlat - 1 - nl] - var.data[:, nl]
+                )
 
             return varSA
         else:
-            print('Modify the code to accommodate other axes...')
-            print('Exiting...')
+            print("Modify the code to accommodate other axes...")
+            print("Exiting...")
             sys.exit(0)
 
     def taper(self, ts, alpha=0.1, iopt=0):
@@ -220,12 +236,12 @@ class WKSpectra:
         #     iopt  iopt=1 means *force* taper to 0.0
         # ===========================================================================
         if all(x == ts[0] for x in ts):
-            print('all values equal')
+            print("all values equal")
             iopt = 1
         if iopt == 0:
             tsmean = np.mean(ts)
         else:
-            tsmean = 0.
+            tsmean = 0.0
         n = len(ts)
         m = max(1, int(alpha * n + 0.5) // 2)
         pim = np.pi / m
@@ -287,15 +303,17 @@ class WKSpectra:
         #
         # ===========================================================================
         N, mlon = varfft.shape
-        pee = np.ones([N + 1, mlon + 1]) * -999.  # initialize
+        pee = np.ones([N + 1, mlon + 1]) * -999.0  # initialize
         # -999 scaling is for testing
         # purpose
         # Create the real power spectrum pee = sqrt(real^2+imag^2)^2
         varfft = np.abs(varfft) ** 2
-        pee[:N // 2, :mlon // 2] = varfft[N // 2:N, mlon // 2:0:-1]
-        pee[N // 2:, :mlon // 2] = varfft[:N // 2 + 1, mlon // 2:0:-1]
-        pee[:N // 2 + 1, mlon // 2:] = varfft[N // 2::-1, :mlon // 2 + 1]
-        pee[N // 2 + 1:, mlon // 2:] = varfft[N - 1:N // 2 - 1:-1, :mlon // 2 + 1]
+        pee[: N // 2, : mlon // 2] = varfft[N // 2 : N, mlon // 2 : 0 : -1]
+        pee[N // 2 :, : mlon // 2] = varfft[: N // 2 + 1, mlon // 2 : 0 : -1]
+        pee[: N // 2 + 1, mlon // 2 :] = varfft[N // 2 :: -1, : mlon // 2 + 1]
+        pee[N // 2 + 1 :, mlon // 2 :] = varfft[
+            N - 1 : N // 2 - 1 : -1, : mlon // 2 + 1
+        ]
 
         return pee
 
@@ -321,7 +339,9 @@ class WKSpectra:
                 if not np.isnan(var[i - 1]):
                     varf[i] = (var[i - 1] + 3.0 * var[i]) / 4.0
             else:
-                varf[i] = (1.0 * var[i - 1] + 2.0 * var[i] + 1.0 * var[i + 1]) / 4.0
+                varf[i] = (
+                    1.0 * var[i - 1] + 2.0 * var[i] + 1.0 * var[i + 1]
+                ) / 4.0
         return varf
 
     def make_spec_cube(self, var, lat, wave, freq):
@@ -329,12 +349,12 @@ class WKSpectra:
         # # Make a 3D cube of Latitude, wavenumber & frequency dimensions
         # ===========================================================================
         var_cube = iris.cube.Cube(var)
-        var_cube.rename('spectra')
-        lat_coord = iris.coords.DimCoord(lat, long_name='latitude')
+        var_cube.rename("spectra")
+        lat_coord = iris.coords.DimCoord(lat, long_name="latitude")
         lat_coord.guess_bounds()
-        wave_coord = iris.coords.DimCoord(wave, long_name='wavenumber')
+        wave_coord = iris.coords.DimCoord(wave, long_name="wavenumber")
         wave_coord.guess_bounds()
-        freq_coord = iris.coords.DimCoord(freq, long_name='frequency')
+        freq_coord = iris.coords.DimCoord(freq, long_name="frequency")
         freq_coord.guess_bounds()
         var_cube.add_dim_coord(lat_coord, 0)
         var_cube.add_dim_coord(freq_coord, 1)
@@ -346,10 +366,10 @@ class WKSpectra:
         # # Make a 2D cube of wavenumber & frequency dimensions
         # ===========================================================================
         var_cube = iris.cube.Cube(var)
-        var_cube.rename('spectra')
-        wave_coord = iris.coords.DimCoord(wave, long_name='wavenumber')
+        var_cube.rename("spectra")
+        wave_coord = iris.coords.DimCoord(wave, long_name="wavenumber")
         wave_coord.guess_bounds()
-        freq_coord = iris.coords.DimCoord(freq, long_name='frequency')
+        freq_coord = iris.coords.DimCoord(freq, long_name="frequency")
         freq_coord.guess_bounds()
         var_cube.add_dim_coord(freq_coord, 0)
         var_cube.add_dim_coord(wave_coord, 1)
@@ -376,20 +396,32 @@ class WKSpectra:
         for tt in range(N // 2 + 1, N):
             if freq[tt] < 0.1:
                 for i in range(1, 6):
-                    psumb[tt, minwav4smth:maxwav4smth + 1] = \
-                        self.wk_smooth121(psumb[tt, minwav4smth:maxwav4smth + 1])
+                    psumb[tt, minwav4smth : maxwav4smth + 1] = (
+                        self.wk_smooth121(
+                            psumb[tt, minwav4smth : maxwav4smth + 1]
+                        )
+                    )
             if freq[tt] >= 0.1 and freq[tt] < 0.2:
                 for i in range(1, 11):
-                    psumb[tt, minwav4smth:maxwav4smth + 1] = \
-                        self.wk_smooth121(psumb[tt, minwav4smth:maxwav4smth + 1])
+                    psumb[tt, minwav4smth : maxwav4smth + 1] = (
+                        self.wk_smooth121(
+                            psumb[tt, minwav4smth : maxwav4smth + 1]
+                        )
+                    )
             if freq[tt] >= 0.2 and freq[tt] < 0.3:
                 for i in range(1, 21):
-                    psumb[tt, minwav4smth:maxwav4smth + 1] = \
-                        self.wk_smooth121(psumb[tt, minwav4smth:maxwav4smth + 1])
+                    psumb[tt, minwav4smth : maxwav4smth + 1] = (
+                        self.wk_smooth121(
+                            psumb[tt, minwav4smth : maxwav4smth + 1]
+                        )
+                    )
             if freq[tt] >= 0.3:
                 for i in range(1, 41):
-                    psumb[tt, minwav4smth:maxwav4smth + 1] = \
-                        self.wk_smooth121(psumb[tt, minwav4smth:maxwav4smth + 1])
+                    psumb[tt, minwav4smth : maxwav4smth + 1] = (
+                        self.wk_smooth121(
+                            psumb[tt, minwav4smth : maxwav4smth + 1]
+                        )
+                    )
 
         pt8cpd = min([self.closest_index(freq, 0.8), len(freq) - 1])
 
@@ -397,14 +429,15 @@ class WKSpectra:
         for nw in range(minwav4smth, maxwav4smth + 1):
             smthlen = pt8cpd - (N // 2 + 1) + 1
             for i in range(1, 11):
-                psumb[N // 2 + 1:pt8cpd + 1, nw] = \
-                    self.wk_smooth121(psumb[N // 2 + 1:pt8cpd + 1, nw])
+                psumb[N // 2 + 1 : pt8cpd + 1, nw] = self.wk_smooth121(
+                    psumb[N // 2 + 1 : pt8cpd + 1, nw]
+                )
         return psumb
 
     def generate_dispersion_curves(self):
         # Theoretical dispersion curves
         rlat = 0.0
-        Ahe = np.array([50., 25., 12.])
+        Ahe = np.array([50.0, 25.0, 12.0])
         nWaveType = 6
         nPlanetaryWave = 50
         nEquivDepth = Ahe.size
@@ -418,28 +451,36 @@ class WKSpectra:
         omega = 7.292e-05  # [1/s] earth's angular vel
         U = 0.0
         Un = 0.0  # since Un = U*T/L
-        ll = 2. * pi * re * math.cos(abs(rlat))
-        Beta = 2. * omega * math.cos(abs(rlat)) / re
+        ll = 2.0 * pi * re * math.cos(abs(rlat))
+        Beta = 2.0 * omega * math.cos(abs(rlat)) / re
         maxwn = nPlanetaryWave
 
-        Apzwn = np.zeros([nWaveType, nEquivDepth, nPlanetaryWave], dtype=np.double)
-        Afreq = np.zeros([nWaveType, nEquivDepth, nPlanetaryWave], dtype=np.double)
+        Apzwn = np.zeros(
+            [nWaveType, nEquivDepth, nPlanetaryWave], dtype=np.double
+        )
+        Afreq = np.zeros(
+            [nWaveType, nEquivDepth, nPlanetaryWave], dtype=np.double
+        )
 
         for ww in range(1, nWaveType + 1):  # wave type
             for ed in range(1, nEquivDepth + 1):  # equivalent depth
                 he = Ahe[ed - 1]
-                T = 1. / math.sqrt(Beta) * (g * he) ** (0.25)
+                T = 1.0 / math.sqrt(Beta) * (g * he) ** (0.25)
                 L = (g * he) ** (0.25) / math.sqrt(Beta)
 
-                for wn in range(1, nPlanetaryWave + 1):  # planetary wave number
-                    s = -20. * (wn - 1) * 2. / (nPlanetaryWave - 1) + 20.
-                    k = 2. * pi * s / ll
+                for wn in range(
+                    1, nPlanetaryWave + 1
+                ):  # planetary wave number
+                    s = -20.0 * (wn - 1) * 2.0 / (nPlanetaryWave - 1) + 20.0
+                    k = 2.0 * pi * s / ll
                     kn = k * L
 
                     # Anti-symmetric curves
                     if ww == 1:  # MRG wave
                         if k <= 0:
-                            delx = math.sqrt(1. + (4. * Beta) / (k ** 2 * math.sqrt(g * he)))
+                            delx = math.sqrt(
+                                1.0 + (4.0 * Beta) / (k**2 * math.sqrt(g * he))
+                            )
                             deif = k * math.sqrt(g * he) * (0.5 - 0.5 * delx)
                         if k == 0:
                             deif = math.sqrt(math.sqrt(g * he) * Beta)
@@ -452,44 +493,58 @@ class WKSpectra:
                         if k == 0:
                             deif = math.sqrt(math.sqrt(g * he) * Beta)
                         if k > 0:
-                            delx = math.sqrt(1. + (4.0 * Beta) / (k ** 2 * math.sqrt(g * he)))
+                            delx = math.sqrt(
+                                1.0 + (4.0 * Beta) / (k**2 * math.sqrt(g * he))
+                            )
                             deif = k * math.sqrt(g * he) * (0.5 + 0.5 * delx)
 
                     if ww == 3:  # n=2 IG wave
-                        n = 2.
-                        delx = (Beta * math.sqrt(g * he))
-                        deif = math.sqrt((2. * n + 1.) * delx + (g * he) * k ** 2)
+                        n = 2.0
+                        delx = Beta * math.sqrt(g * he)
+                        deif = math.sqrt(
+                            (2.0 * n + 1.0) * delx + (g * he) * k**2
+                        )
                         # do some corrections to the above calculated frequency.......
                         for i in range(1, 6):
-                            deif = math.sqrt((2. * n + 1.) * delx + (g * he) * k ** 2 + g * he * Beta * k / deif)
+                            deif = math.sqrt(
+                                (2.0 * n + 1.0) * delx
+                                + (g * he) * k**2
+                                + g * he * Beta * k / deif
+                            )
 
                     # symmetric curves
                     if ww == 4:  # n=1 ER wave
-                        n = 1.
+                        n = 1.0
                         if k < 0:
-                            delx = (Beta / math.sqrt(g * he)) * (2. * n + 1.)
-                            deif = -Beta * k / (k ** 2 + delx)
+                            delx = (Beta / math.sqrt(g * he)) * (2.0 * n + 1.0)
+                            deif = -Beta * k / (k**2 + delx)
                         else:
                             deif = fillval
                     if ww == 5:  # Kelvin wave
                         deif = k * math.sqrt(g * he)
                     if ww == 6:  # n=1 IG wave
-                        n = 1.
-                        delx = (Beta * math.sqrt(g * he))
-                        deif = math.sqrt((2. * n + 1.) * delx + (g * he) * k ** 2)
+                        n = 1.0
+                        delx = Beta * math.sqrt(g * he)
+                        deif = math.sqrt(
+                            (2.0 * n + 1.0) * delx + (g * he) * k**2
+                        )
                         # do some corrections to the above calculated frequency.......
                         for i in range(1, 6):
-                            deif = math.sqrt((2. * n + 1.) * delx + (g * he) * k ** 2 + g * he * Beta * k / deif)
+                            deif = math.sqrt(
+                                (2.0 * n + 1.0) * delx
+                                + (g * he) * k**2
+                                + g * he * Beta * k / deif
+                            )
 
                     eif = deif  # + k*U since  U=0.0
-                    P = 2. * pi / (eif * 24. * 60. * 60.)
+                    P = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
                     dps = deif / k
                     R = L
-                    Rdeg = (180. * R) / (pi * 6.37e6)
+                    Rdeg = (180.0 * R) / (pi * 6.37e6)
                     Apzwn[ww - 1, ed - 1, wn - 1] = s
                     if deif != fillval:
-                        P = 2. * pi / (eif * 24. * 60. * 60.)
-                        Afreq[ww - 1, ed - 1, wn - 1] = 1. / P
+                        P = 2.0 * pi / (eif * 24.0 * 60.0 * 60.0)
+                        Afreq[ww - 1, ed - 1, wn - 1] = 1.0 / P
                     else:
                         Afreq[ww - 1, ed - 1, wn - 1] = fillval
 
@@ -504,31 +559,35 @@ class WKSpectra:
         fr = scipy.interpolate.interp1d(x, C[:, 0])
         fg = scipy.interpolate.interp1d(x, C[:, 1])
         fb = scipy.interpolate.interp1d(x, C[:, 2])
-        C = np.array([fr(xnew).astype(int), fg(xnew).astype(int), fb(xnew).astype(int)]).T
+        C = np.array(
+            [fr(xnew).astype(int), fg(xnew).astype(int), fb(xnew).astype(int)]
+        ).T
         return C
 
     def get_colors(self, reverse=False):
         # Provided RGB values
-        rgb_values_str = ";R   G   B\n" \
-                         "130 32  240\n" \
-                         "0   0   150\n" \
-                         "0   0   205\n" \
-                         "65  105 225\n" \
-                         "30  144 255\n" \
-                         "0   191 255\n" \
-                         "160 210 255\n" \
-                         "210 245 255\n" \
-                         "255 255 200\n" \
-                         "255 225 50\n" \
-                         "255 170 0\n" \
-                         "255 110 0\n" \
-                         "255 0   0\n" \
-                         "200 0   0\n" \
-                         "160 35  35\n" \
-                         "255 105 180"
+        rgb_values_str = (
+            ";R   G   B\n"
+            "130 32  240\n"
+            "0   0   150\n"
+            "0   0   205\n"
+            "65  105 225\n"
+            "30  144 255\n"
+            "0   191 255\n"
+            "160 210 255\n"
+            "210 245 255\n"
+            "255 255 200\n"
+            "255 225 50\n"
+            "255 170 0\n"
+            "255 110 0\n"
+            "255 0   0\n"
+            "200 0   0\n"
+            "160 35  35\n"
+            "255 105 180"
+        )
 
         # Split the string into lines
-        lines = rgb_values_str.split('\n')
+        lines = rgb_values_str.split("\n")
 
         # Remove the header line
         lines.pop(0)
@@ -548,15 +607,19 @@ class WKSpectra:
 
         if len(C) < 256:
             C = self.spread_colorbar(C)
-            cm = mpl.colors.ListedColormap(C / 256.)
+            cm = mpl.colors.ListedColormap(C / 256.0)
             if reverse:
-                cm = mpl.colors.ListedColormap(C[::-1, :] / 256.)
+                cm = mpl.colors.ListedColormap(C[::-1, :] / 256.0)
         return cm
 
-    def get_provenance_record(self, caption):  # Credit to AutoAssess _plot_mo_metrics.py
+    def get_provenance_record(
+        self, caption
+    ):  # Credit to AutoAssess _plot_mo_metrics.py
         """Create a provenance record describing the diagnostic data and plot."""
         # Get the list of input filenames
-        filenames = [item["filename"] for item in self.cfg["input_data"].values()]
+        filenames = [
+            item["filename"] for item in self.cfg["input_data"].values()
+        ]
 
         # Write the provenance dictionary using the provided caption
         record = {
@@ -572,12 +635,19 @@ class WKSpectra:
 
         return record
 
-    def plot_anti_symmetric(self, spec, freq, wave, Apzwn, \
-                            Afreq, levels=np.arange(0, 2, 0.2),
-                            title='', figname='specAntiSym_test.ps'):
-
+    def plot_anti_symmetric(
+        self,
+        spec,
+        freq,
+        wave,
+        Apzwn,
+        Afreq,
+        levels=np.arange(0, 2, 0.2),
+        title="",
+        figname="specAntiSym_test.ps",
+    ):
         plt.clf()  # Not sure this is still needed
-        minfrq4plt = 0.
+        minfrq4plt = 0.0
         maxfrq4plt = 0.8
         minwav4plt = -15
         maxwav4plt = 15
@@ -593,7 +663,9 @@ class WKSpectra:
         # Initialize the plot
         fig, ax = plt.subplots()
 
-        CS = ax.contourf(F, W, spec, levels=levels, cmap=cmap, norm=norm, extend='both')
+        CS = ax.contourf(
+            F, W, spec, levels=levels, cmap=cmap, norm=norm, extend="both"
+        )
         bar = fig.colorbar(CS, ax=ax)
 
         tick_locs = levels
@@ -607,28 +679,28 @@ class WKSpectra:
         ax.set_ylim(minfrq, maxfrq)
 
         # Lines
-        ax.plot([0, 0], [0, 0.5], 'k--', lw=0.5)
+        ax.plot([0, 0], [0, 0.5], "k--", lw=0.5)
 
         # Line markers of periods
         frqs = [80, 30, 6, 3]
         for frq in frqs:
-            ax.plot([-15, 15], [1. / frq, 1. / frq], 'k--', lw=0.5)
-            ax.text(-14.7, 1. / frq, str(frq) + ' days', {'color': 'k'})
+            ax.plot([-15, 15], [1.0 / frq, 1.0 / frq], "k--", lw=0.5)
+            ax.text(-14.7, 1.0 / frq, str(frq) + " days", {"color": "k"})
 
         ax.set_title(title)
-        ax.set_xlabel('Westward     Zonal Wave Number     Eastward')
-        ax.set_ylabel('Frequency (CPD)')
+        ax.set_xlabel("Westward     Zonal Wave Number     Eastward")
+        ax.set_ylabel("Frequency (CPD)")
 
         # Symmetric waves
         # Equatorial Rossby
         for i in range(3):
             for j in range(3):
-                ax.plot(Apzwn[i, j, :], Afreq[i, j, :], 'k', lw=0.5)
+                ax.plot(Apzwn[i, j, :], Afreq[i, j, :], "k", lw=0.5)
 
-        ax.text(-10., 0.15, "MRG", {'color': 'k', 'backgroundcolor': 'w'})
-        ax.text(-3., 0.58, "n=2 IG", {'color': 'k', 'backgroundcolor': 'w'})
-        ax.text(6., 0.4, "n=0 EIG", {'color': 'k', 'backgroundcolor': 'w'})
-        ax.text(-3., 0.475, "h=12", {'color': 'k', 'backgroundcolor': 'w'})
+        ax.text(-10.0, 0.15, "MRG", {"color": "k", "backgroundcolor": "w"})
+        ax.text(-3.0, 0.58, "n=2 IG", {"color": "k", "backgroundcolor": "w"})
+        ax.text(6.0, 0.4, "n=0 EIG", {"color": "k", "backgroundcolor": "w"})
+        ax.text(-3.0, 0.475, "h=12", {"color": "k", "backgroundcolor": "w"})
 
         # Add provenance information
         caption = f"{figname}, [or other caption for antisymmetric]"  # TODO
@@ -642,13 +714,21 @@ class WKSpectra:
             figure=fig,
             close=True,
         )
-        print(f'Plotted {figname}')
+        print(f"Plotted {figname}")
 
-    def plot_symmetric(self, spec, freq, wave, Apzwn, \
-                       Afreq, levels=np.arange(0, 5, 0.5),
-                       title='', figname='specSym_test.ps'):
+    def plot_symmetric(
+        self,
+        spec,
+        freq,
+        wave,
+        Apzwn,
+        Afreq,
+        levels=np.arange(0, 5, 0.5),
+        title="",
+        figname="specSym_test.ps",
+    ):
         plt.clf()  # Again, maybe not needed
-        minfrq4plt = 0.
+        minfrq4plt = 0.0
         maxfrq4plt = 0.8
         minwav4plt = -15
         maxwav4plt = 15
@@ -663,7 +743,9 @@ class WKSpectra:
         # Initialize the plot
         fig, ax = plt.subplots()
 
-        CS = ax.contourf(F, W, spec, levels=levels, cmap=cmap, norm=norm, extend='both')
+        CS = ax.contourf(
+            F, W, spec, levels=levels, cmap=cmap, norm=norm, extend="both"
+        )
         bar = fig.colorbar(CS, ax=ax)
 
         tick_locs = levels
@@ -677,28 +759,28 @@ class WKSpectra:
         ax.set_ylim(minfrq, maxfrq)
 
         # Lines
-        ax.plot([0, 0], [0, 0.5], 'k--', lw=0.5)
+        ax.plot([0, 0], [0, 0.5], "k--", lw=0.5)
 
         # Line markers of periods
         frqs = [80, 30, 6, 3]
         for frq in frqs:
-            ax.plot([-15, 15], [1. / frq, 1. / frq], 'k--', lw=0.5)
-            ax.text(-14.7, 1. / frq, str(frq) + ' days', {'color': 'k'})
+            ax.plot([-15, 15], [1.0 / frq, 1.0 / frq], "k--", lw=0.5)
+            ax.text(-14.7, 1.0 / frq, str(frq) + " days", {"color": "k"})
 
         ax.set_title(title)  #
-        ax.set_xlabel('Westward     Zonal Wave Number     Eastward')
-        ax.set_ylabel('Frequency (CPD)')
+        ax.set_xlabel("Westward     Zonal Wave Number     Eastward")
+        ax.set_ylabel("Frequency (CPD)")
 
         # Symmetric waves
         # Equatorial Rossby
         for i in range(3, 6):
             for j in range(3):
-                ax.plot(Apzwn[i, j, :], Afreq[i, j, :], 'k', lw=0.5)
+                ax.plot(Apzwn[i, j, :], Afreq[i, j, :], "k", lw=0.5)
 
-        ax.text(11.5, 0.4, "Kelvin", {'color': 'k', 'backgroundcolor': 'w'})
-        ax.text(-10.7, 0.07, "n=1 ER", {'color': 'k', 'backgroundcolor': 'w'})
-        ax.text(-3., 0.45, "n=1 IG", {'color': 'k', 'backgroundcolor': 'w'})
-        ax.text(-14., 0.46, "h=12", {'color': 'k', 'backgroundcolor': 'w'})
+        ax.text(11.5, 0.4, "Kelvin", {"color": "k", "backgroundcolor": "w"})
+        ax.text(-10.7, 0.07, "n=1 ER", {"color": "k", "backgroundcolor": "w"})
+        ax.text(-3.0, 0.45, "n=1 IG", {"color": "k", "backgroundcolor": "w"})
+        ax.text(-14.0, 0.46, "h=12", {"color": "k", "backgroundcolor": "w"})
 
         # Add provenance information
         caption = f"{figname}, [or other caption for symmetric]"  # TODO
@@ -712,7 +794,7 @@ class WKSpectra:
             figure=fig,
             close=True,
         )
-        print(f'Plotted {figname}')
+        print(f"Plotted {figname}")
 
     def wkSpaceTime(self):
         """Create Wheeler-Kiladis Space-Time  plots.
@@ -749,25 +831,31 @@ class WKSpectra:
 
         lonL = 0  # -180
         lonR = 360  # 180
-        fCrit = 1. / self.nDayWin  # remove all contributions 'longer'
+        fCrit = 1.0 / self.nDayWin  # remove all contributions 'longer'
 
         tim_taper = 0.1  # time taper      [0.1   => 10%]
-        lon_taper = 0.0  # longitude taper [0.0 for globe  only global supported]
+        lon_taper = (
+            0.0  # longitude taper [0.0 for globe  only global supported]
+        )
 
-        if lon_taper > 0.0 or lonR - lonL != 360.:
-            print('Code does currently allow lon_taper>0 or (lonR-lonL)<360')
+        if lon_taper > 0.0 or lonR - lonL != 360.0:
+            print("Code does currently allow lon_taper>0 or (lonR-lonL)<360")
             sys.exit(0)
 
         nDayTot = ntim / self.spd  # of days (total) for input variable
         nSampTot = nDayTot * self.spd  # of samples (total)
         nSampWin = self.nDayWin * self.spd  # of samples per temporal window
-        nSampSkip = self.nDaySkip * self.spd  # of samples to skip between window segments
+        nSampSkip = (
+            self.nDaySkip * self.spd
+        )  # of samples to skip between window segments
         # neg means overlap
         nWindow = (nSampTot - nSampWin) / (nSampWin + nSampSkip) + 1
         N = nSampWin  # convenience [historical]
 
         if nDayTot < self.nDayWin:
-            print("nDayTot=" + nDayTot + " is less the nDayWin=" + self.nDayWin)
+            print(
+                "nDayTot=" + nDayTot + " is less the nDayWin=" + self.nDayWin
+            )
             print("        This is not allowed !!       ")
             sys.exit(0)
         # -------------------------------------------------------------------
@@ -780,7 +868,9 @@ class WKSpectra:
         # -------------------------------------------------------------------
 
         # subset the data for 15S-15N
-        constraint = iris.Constraint(latitude=lambda cell: latS <= cell <= latN)
+        constraint = iris.Constraint(
+            latitude=lambda cell: latS <= cell <= latN
+        )
         self.cube = self.cube.extract(constraint)
         ntim, nlat, mlon = self.cube.shape
 
@@ -789,26 +879,37 @@ class WKSpectra:
         # Wave numbers
         wave = np.arange(-mlon / 2, mlon / 2 + 1, 1)
         # Frequencies
-        freq = np.linspace(-1 * self.nDayWin * self.spd / 2,
-                           self.nDayWin * self.spd / 2,
-                           self.nDayWin * self.spd + 1) / self.nDayWin
+        freq = (
+            np.linspace(
+                -1 * self.nDayWin * self.spd / 2,
+                self.nDayWin * self.spd / 2,
+                self.nDayWin * self.spd + 1,
+            )
+            / self.nDayWin
+        )
 
         wave = wave.astype(float)
         freq = freq.astype(float)
-        lats = self.cube.coord('latitude').points
+        lats = self.cube.coord("latitude").points
 
         # Time mean (later to be added to the trend)
-        varmean = self.cube.collapsed('time', iris.analysis.MEAN)
+        varmean = self.cube.collapsed("time", iris.analysis.MEAN)
 
         # remove linear trend
-        self.cube.data = scipy.signal.detrend(self.cube.data, axis=0) + varmean.data  # Mean added
+        self.cube.data = (
+            scipy.signal.detrend(self.cube.data, axis=0) + varmean.data
+        )  # Mean added
 
-        print('nDayTot = ' + str(nDayTot))
+        print("nDayTot = " + str(nDayTot))
 
         if nDayTot >= 365:  # remove dominant signals
-            self.cube = self.remove_annual_cycle(self.cube, nDayTot, fCrit, spd=1, rmvMeans=False)
+            self.cube = self.remove_annual_cycle(
+                self.cube, nDayTot, fCrit, spd=1, rmvMeans=False
+            )
         else:
-            print('Length of the variable is shorter than 365. Can not continue!')
+            print(
+                "Length of the variable is shorter than 365. Can not continue!"
+            )
             sys.exit(1)
 
         # -------------------------------------------------------------------
@@ -832,16 +933,19 @@ class WKSpectra:
         #  peeAS - symmetric and asymmetric power values in each latitude hemisphere.
         #          Add extra lon/time to match JET
         # -------------------------------------------------------------------
-        print('nSampWin = ' + str(nSampWin))
+        print("nSampWin = " + str(nSampWin))
 
         for nl in range(nlat):
             nw = 0
-            print('Latitude: nl = ' + str(nl))
+            print("Latitude: nl = " + str(nl))
             ntStrt = 0
             ntLast = nSampWin
             while ntLast < nDayTot:
                 if nl == 0:
-                    print('nw = %s, ntStrt = %s, ntLast =%s ' % (nw, ntStrt, ntLast))
+                    print(
+                        "nw = %s, ntStrt = %s, ntLast =%s "
+                        % (nw, ntStrt, ntLast)
+                    )
                 work = xAS[ntStrt:ntLast, nl].copy()
 
                 # Check for missing data
@@ -849,13 +953,17 @@ class WKSpectra:
                 # if not len(masked_inds[0]) > 0:
 
                 # detrend the window
-                work.data = scipy.signal.detrend(xAS.data[ntStrt:ntLast, nl], axis=0)
+                work.data = scipy.signal.detrend(
+                    xAS.data[ntStrt:ntLast, nl], axis=0
+                )
 
                 # taper the window along time axis
                 # equivalent to NCL taper function described as
                 # split-cosine-bell tapering.
                 for lo in range(mlon):
-                    work.data[:, lo] = self.taper(work.data[:, lo], alpha=tim_taper, iopt=0)
+                    work.data[:, lo] = self.taper(
+                        work.data[:, lo], alpha=tim_taper, iopt=0
+                    )
                 # print 'Passed Tapering test'
 
                 # Do actual FFT work
@@ -863,7 +971,9 @@ class WKSpectra:
                 ft.data = np.fft.fft2(work.data) / mlon / nSampWin
 
                 # Shifting FFTs
-                pee = self.resolve_waves_hayashi(ft.data, self.nDayWin, self.spd)
+                pee = self.resolve_waves_hayashi(
+                    ft.data, self.nDayWin, self.spd
+                )
 
                 # Average
                 peeAS[nl, :, :] = peeAS[nl, :, :] + (pee / nWindow)
@@ -873,7 +983,9 @@ class WKSpectra:
                 # else:
                 #    print('Missing data detected. Skipping to the next window...')
 
-                ntStrt = ntLast + nSampSkip  # set index for next temporal window
+                ntStrt = (
+                    ntLast + nSampSkip
+                )  # set index for next temporal window
                 ntLast = ntStrt + nSampWin
 
         peeAS_cube = self.make_spec_cube(peeAS, lats, wave, freq)
@@ -888,11 +1000,13 @@ class WKSpectra:
         #  summed over latitude
         # -------------------------------------------------------------------
         if nlat % 2 == 0:
-            psumanti = np.sum(peeAS[nlat // 2:nlat], axis=0)  # // for integer result
-            psumsym = np.sum(peeAS[:nlat // 2], axis=0)
+            psumanti = np.sum(
+                peeAS[nlat // 2 : nlat], axis=0
+            )  # // for integer result
+            psumsym = np.sum(peeAS[: nlat // 2], axis=0)
         else:
-            psumanti = np.sum(peeAS[nlat // 2 + 1:nlat], axis=0)
-            psumsym = np.sum(peeAS[:nlat // 2 + 1], axis=0)
+            psumanti = np.sum(peeAS[nlat // 2 + 1 : nlat], axis=0)
+            psumsym = np.sum(peeAS[: nlat // 2 + 1], axis=0)
         # -------------------------------------------------------------------
         #  since summing over half the array (symmetric,asymmetric) the
         #  total variance is 2 x the half sum
@@ -902,7 +1016,7 @@ class WKSpectra:
         # -------------------------------------------------------------------
         # set the mean to missing to match original code
         # ------------------------------------------------------------------
-        zeroind = np.where(freq == 0.)[0][0]
+        zeroind = np.where(freq == 0.0)[0][0]
 
         psumanti[zeroind, :] = np.nan
         psumsym[zeroind, :] = np.nan
@@ -924,8 +1038,12 @@ class WKSpectra:
         indLast = np.where(maxwav4smth == wave)[0][0]
 
         for wv in np.arange(indStrt, indLast + 1):
-            psumanti[N // 2 + 1:N, wv] = self.wk_smooth121(psumanti[N // 2 + 1:N, wv])
-            psumsym[N // 2 + 1:N, wv] = self.wk_smooth121(psumsym[N // 2 + 1:N, wv])
+            psumanti[N // 2 + 1 : N, wv] = self.wk_smooth121(
+                psumanti[N // 2 + 1 : N, wv]
+            )
+            psumsym[N // 2 + 1 : N, wv] = self.wk_smooth121(
+                psumsym[N // 2 + 1 : N, wv]
+            )
         # -------------------------------------------------------------------
         #  Log10 scaling
         # -------------------------------------------------------------------
@@ -963,35 +1081,72 @@ class WKSpectra:
         #
         # Define contour levels for plots
         levels_dict = {
-            'toa_outgoing_longwave_flux': np.array([-1.3, -1.2, -1.1, -1, -0.8, -0.6, -0.4, -0.2,
-                                                    0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.1, 1.2, 1.3]),
-            'Precipitation': np.array([-0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6]),
-            'x_wind_850hPa': np.arange(-3.25, 0.5, 0.25),
-            'x_wind_200hPa': np.arange(-3.3, 1.2, 0.3)
+            "toa_outgoing_longwave_flux": np.array(
+                [
+                    -1.3,
+                    -1.2,
+                    -1.1,
+                    -1,
+                    -0.8,
+                    -0.6,
+                    -0.4,
+                    -0.2,
+                    0.0,
+                    0.2,
+                    0.4,
+                    0.6,
+                    0.8,
+                    1.0,
+                    1.1,
+                    1.2,
+                    1.3,
+                ]
+            ),
+            "Precipitation": np.array(
+                [-0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+            ),
+            "x_wind_850hPa": np.arange(-3.25, 0.5, 0.25),
+            "x_wind_200hPa": np.arange(-3.3, 1.2, 0.3),
         }
 
         # Anti-symmetric
-        title = f'{self.label}_{self.varname} \n  Anti-symmetric log(power) [15S-15N]'
-        forename = f'{self.runid}_{self.varname}_Raw_Spec_Asym'
+        title = f"{self.label}_{self.varname} \n  Anti-symmetric log(power) [15S-15N]"
+        forename = f"{self.runid}_{self.varname}_Raw_Spec_Asym"
         figname = os.path.join(self.plot_dir, f"{forename}.png")
-        self.plot_anti_symmetric(psumanti, freq, wave, Apzwn, Afreq,
-                                 levels=levels_dict[self.varname],
-                                 title=title, figname=figname)
+        self.plot_anti_symmetric(
+            psumanti,
+            freq,
+            wave,
+            Apzwn,
+            Afreq,
+            levels=levels_dict[self.varname],
+            title=title,
+            figname=figname,
+        )
         ncname = os.path.join(self.work_dir, f"{forename}.nc")
         iris.save(psumanti_cube, ncname)
 
         # Symmetric
-        title = f'{self.label}_{self.varname} \n Symmetric log(power) [15S-15N]'
+        title = (
+            f"{self.label}_{self.varname} \n Symmetric log(power) [15S-15N]"
+        )
         forename = f"{self.runid}_{self.varname}_Raw_Spec_Sym"
         figname = os.path.join(self.plot_dir, f"{forename}.png")
-        self.plot_symmetric(psumsym, freq, wave, Apzwn, Afreq,
-                            levels=levels_dict[self.varname],
-                            title=title, figname=figname)
+        self.plot_symmetric(
+            psumsym,
+            freq,
+            wave,
+            Apzwn,
+            Afreq,
+            levels=levels_dict[self.varname],
+            title=title,
+            figname=figname,
+        )
         ncname = os.path.join(self.work_dir, f"{forename}.nc")
         iris.save(psumsym_cube, ncname)
 
         # Background spectra
-        title = f'{self.label} {self.varname} \n Background power log(power) [15S-15N]'
+        title = f"{self.label} {self.varname} \n Background power log(power) [15S-15N]"
         forename = f"{self.runid}_{self.varname}_BG_Spec"
         figname = f"{forename}.png"
         ncname = os.path.join(self.work_dir, f"{forename}.nc")
@@ -1001,7 +1156,9 @@ class WKSpectra:
         #  Fig 3a, 3b:  psum_nolog/psumb_nolog  [ratio]
         # ***************************************************************
         psumanti_nolog = np.ma.masked_array(psumanti_nolog / psumb_nolog)
-        psumsym_nolog = np.ma.masked_array(psumsym_nolog / psumb_nolog)  # (wave,freq)
+        psumsym_nolog = np.ma.masked_array(
+            psumsym_nolog / psumb_nolog
+        )  # (wave,freq)
         # Make cubes
         psumanti_nolog_cube = self.make_cube(psumanti_nolog, wave, freq)
         psumsym_nolog_cube = self.make_cube(psumsym_nolog, wave, freq)
@@ -1009,44 +1166,210 @@ class WKSpectra:
         # Anti-symmetric
         # Define contour levels for plots
         levels_dict = {
-            'toa_outgoing_longwave_flux': np.array(
-                [0.2, .3, .4, .5, .6, .7, .8, .9, 1., 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8]),
-            'Precipitation': np.array(
-                [0.5, 0.6, 0.7, 0.8, 0.9, 1., 1.1, 1.15, 1.2, 1.25, 1.3, 1.35, 1.4, 1.45, 1.5, 1.6, 1.7]),
-            'x_wind_850hPa': np.array(
-                [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1., 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9]),
-            'x_wind_200hPa': np.array(
-                [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1., 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 2])
+            "toa_outgoing_longwave_flux": np.array(
+                [
+                    0.2,
+                    0.3,
+                    0.4,
+                    0.5,
+                    0.6,
+                    0.7,
+                    0.8,
+                    0.9,
+                    1.0,
+                    1.1,
+                    1.2,
+                    1.3,
+                    1.4,
+                    1.5,
+                    1.6,
+                    1.7,
+                    1.8,
+                ]
+            ),
+            "Precipitation": np.array(
+                [
+                    0.5,
+                    0.6,
+                    0.7,
+                    0.8,
+                    0.9,
+                    1.0,
+                    1.1,
+                    1.15,
+                    1.2,
+                    1.25,
+                    1.3,
+                    1.35,
+                    1.4,
+                    1.45,
+                    1.5,
+                    1.6,
+                    1.7,
+                ]
+            ),
+            "x_wind_850hPa": np.array(
+                [
+                    0.3,
+                    0.4,
+                    0.5,
+                    0.6,
+                    0.7,
+                    0.8,
+                    0.9,
+                    1.0,
+                    1.1,
+                    1.2,
+                    1.3,
+                    1.4,
+                    1.5,
+                    1.6,
+                    1.7,
+                    1.8,
+                    1.9,
+                ]
+            ),
+            "x_wind_200hPa": np.array(
+                [
+                    0.3,
+                    0.4,
+                    0.5,
+                    0.6,
+                    0.7,
+                    0.8,
+                    0.9,
+                    1.0,
+                    1.1,
+                    1.2,
+                    1.3,
+                    1.4,
+                    1.5,
+                    1.6,
+                    1.7,
+                    1.8,
+                    2,
+                ]
+            ),
         }
 
-        title = f'{self.label} {self.varname} \n Anti-symmetric/Background log(power) [15S-15N]'
+        title = f"{self.label} {self.varname} \n Anti-symmetric/Background log(power) [15S-15N]"
         forename = f"{self.runid}_{self.varname}_Ratio_Spec_Asym"
         figname = os.path.join(self.plot_dir, f"{forename}.png")
-        self.plot_anti_symmetric(psumanti_nolog, freq, wave, Apzwn, Afreq,
-                                 levels=levels_dict[self.varname],
-                                 title=title, figname=figname)
+        self.plot_anti_symmetric(
+            psumanti_nolog,
+            freq,
+            wave,
+            Apzwn,
+            Afreq,
+            levels=levels_dict[self.varname],
+            title=title,
+            figname=figname,
+        )
         ncname = os.path.join(self.work_dir, f"{forename}.nc")
         iris.save(psumanti_nolog_cube, ncname)
 
         # Symmetric
         # Define contour levels for plots
         levels_dict = {
-            'toa_outgoing_longwave_flux': np.array(
-                [0.2, .3, .4, .5, .6, .7, .8, .9, 1., 1.1, 1.2, 1.4, 1.7, 2., 2.4, 2.8, 3.2]),
-            'Precipitation': np.array(
-                [0.5, 0.6, 0.7, 0.8, 0.9, 1., 1.1, 1.15, 1.2, 1.25, 1.3, 1.35, 1.4, 1.45, 1.5, 1.6, 1.7]),
-            'x_wind_850hPa': np.array(
-                [0.2, 0.4, 0.6, 0.8, 1., 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 2, 2.2, 2.4, 2.6, 2.8]),
-            'x_wind_200hPa': np.array(
-                [0.2, 0.4, 0.6, 0.8, 1., 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 2, 2.2, 2.4, 2.6, 2.8])
+            "toa_outgoing_longwave_flux": np.array(
+                [
+                    0.2,
+                    0.3,
+                    0.4,
+                    0.5,
+                    0.6,
+                    0.7,
+                    0.8,
+                    0.9,
+                    1.0,
+                    1.1,
+                    1.2,
+                    1.4,
+                    1.7,
+                    2.0,
+                    2.4,
+                    2.8,
+                    3.2,
+                ]
+            ),
+            "Precipitation": np.array(
+                [
+                    0.5,
+                    0.6,
+                    0.7,
+                    0.8,
+                    0.9,
+                    1.0,
+                    1.1,
+                    1.15,
+                    1.2,
+                    1.25,
+                    1.3,
+                    1.35,
+                    1.4,
+                    1.45,
+                    1.5,
+                    1.6,
+                    1.7,
+                ]
+            ),
+            "x_wind_850hPa": np.array(
+                [
+                    0.2,
+                    0.4,
+                    0.6,
+                    0.8,
+                    1.0,
+                    1.2,
+                    1.3,
+                    1.4,
+                    1.5,
+                    1.6,
+                    1.7,
+                    1.8,
+                    2,
+                    2.2,
+                    2.4,
+                    2.6,
+                    2.8,
+                ]
+            ),
+            "x_wind_200hPa": np.array(
+                [
+                    0.2,
+                    0.4,
+                    0.6,
+                    0.8,
+                    1.0,
+                    1.2,
+                    1.3,
+                    1.4,
+                    1.5,
+                    1.6,
+                    1.7,
+                    1.8,
+                    2,
+                    2.2,
+                    2.4,
+                    2.6,
+                    2.8,
+                ]
+            ),
         }
 
-        title = f'{self.label} {self.varname} \n Symmetric/Background log(power) [15S-15N]'
+        title = f"{self.label} {self.varname} \n Symmetric/Background log(power) [15S-15N]"
         forename = f"{self.runid}_{self.varname}_Ratio_Spec_Sym"
         figname = os.path.join(self.plot_dir, f"{forename}.png")
-        self.plot_symmetric(psumsym_nolog, freq, wave, Apzwn, Afreq,
-                            levels=levels_dict[self.varname],
-                            title=title, figname=figname)
+        self.plot_symmetric(
+            psumsym_nolog,
+            freq,
+            wave,
+            Apzwn,
+            Afreq,
+            levels=levels_dict[self.varname],
+            title=title,
+            figname=figname,
+        )
         ncname = os.path.join(self.work_dir, f"{forename}.nc")
         iris.save(psumsym_nolog_cube, ncname)
 
@@ -1060,11 +1383,13 @@ class WKSpectra:
         #              summer starts May 1  [180 days]
         #              annual starts Jan 1  [365 days]
         latBound = 10
-        var = self.cube.intersection(latitude=(-latBound, latBound), longitude=(0, 360))
-        var = var.collapsed('latitude', iris.analysis.MEAN)
+        var = self.cube.intersection(
+            latitude=(-latBound, latBound), longitude=(0, 360)
+        )
+        var = var.collapsed("latitude", iris.analysis.MEAN)
 
         ntim, mlon = var.shape
-        time = var.coord('time')
+        time = var.coord("time")
         years, months, days = self.get_dates(time)
         mmdd = months * 100 + days
         yyyymmdd = years * 10000 + mmdd
@@ -1080,20 +1405,22 @@ class WKSpectra:
         iSea = [i for i in range(len(mmdd)) if mmdd[i] == mmddStrt]
         nYear = len(iSea)
 
-        '''
+        """
         # *****************************************************************
         #  For a specific season, calculate spectra via averaging
         #  over each seasonal segment.
         #  MJO Clivar says "no" to detrending/tapering.
         #  Hence, the following are just 'place holders'
         # *****************************************************************
-        '''
+        """
         # detrend overall series in time
         # Time mean (later to be added to the trend)
-        varmean = var.collapsed('time', iris.analysis.MEAN)
+        varmean = var.collapsed("time", iris.analysis.MEAN)
 
         # remove linear trend
-        var.data = scipy.signal.detrend(var.data, axis=0)  # + varmean.data # Mean added
+        var.data = scipy.signal.detrend(
+            var.data, axis=0
+        )  # + varmean.data # Mean added
 
         # Initialise
         power = np.zeros([mlon + 1, nDay + 1])  # initialize
@@ -1116,16 +1443,18 @@ class WKSpectra:
                 kSea = kSea + 1
 
                 for lo in range(mlon):
-                    xSeason[:, lo] = self.taper(xSeason[:, lo], \
-                                                alpha=0.1, \
-                                                iopt=0)
+                    xSeason[:, lo] = self.taper(
+                        xSeason[:, lo], alpha=0.1, iopt=0
+                    )
                 xVarTap = xVarTap + np.var(xSeason)  # variance after tapering
                 # do 2d fft
                 ft = xSeason.copy()
                 ft = np.fft.fft2(xSeason.T) / mlon / nDay
 
                 # Shifting FFTs
-                power = power + self.resolve_waves_hayashi(ft, nDay, spd=1)  # (wave,freq)
+                power = power + self.resolve_waves_hayashi(
+                    ft, nDay, spd=1
+                )  # (wave,freq)
 
         xVarSea = xVarSea / kSea  # pooled seasonal variance
         xVarTap = xVarTap / kSea  # pooled seasonal variance
@@ -1138,18 +1467,25 @@ class WKSpectra:
         pow_cube = self.makecube_season_pow(power, wave, freq)
         return pow_cube
 
-    def mjo_wavenum_freq_season_plot(self, pow_cube, levels=np.arange(0, 3, 0.2), \
-                                     title='', figname='wavenum_freq_season_plot.ps'):
+    def mjo_wavenum_freq_season_plot(
+        self,
+        pow_cube,
+        levels=np.arange(0, 3, 0.2),
+        title="",
+        figname="wavenum_freq_season_plot.ps",
+    ):
         NW = 6
         fMin = -0.05
         fMax = 0.05
 
-        constraint = iris.Constraint(frequency=lambda cell: fMin <= cell <= fMax, \
-                                     wavenumber=lambda cell: 0 <= cell <= NW)
+        constraint = iris.Constraint(
+            frequency=lambda cell: fMin <= cell <= fMax,
+            wavenumber=lambda cell: 0 <= cell <= NW,
+        )
         pow_cube = pow_cube.extract(constraint)
 
-        freq = pow_cube.coord('frequency').points
-        wave = pow_cube.coord('wavenumber').points
+        freq = pow_cube.coord("frequency").points
+        wave = pow_cube.coord("wavenumber").points
 
         W, F = np.meshgrid(freq, wave)
 
@@ -1160,8 +1496,9 @@ class WKSpectra:
         # Initialize the plot
         fig, ax = plt.subplots()
 
-        CS = ax.contourf(W, F, pow_cube.data, levels=levels,
-                          cmap='YlGnBu', extend="both")
+        CS = ax.contourf(
+            W, F, pow_cube.data, levels=levels, cmap="YlGnBu", extend="both"
+        )
         fig.colorbar(CS, ax=ax)
 
         # set axes range
@@ -1171,13 +1508,13 @@ class WKSpectra:
         # Line markers of periods
         frqs = [80, 30]
         for frq in frqs:
-            ax.plot([1. / frq, 1. / frq], [-0, 15], 'k--', lw=0.5)
-            ax.text(1. / frq, 5.5, str(frq) + 'd', {'color': 'k'})
+            ax.plot([1.0 / frq, 1.0 / frq], [-0, 15], "k--", lw=0.5)
+            ax.text(1.0 / frq, 5.5, str(frq) + "d", {"color": "k"})
 
-        ax.plot([0, 0], [-0, 15], 'k:', lw=0.25)
+        ax.plot([0, 0], [-0, 15], "k:", lw=0.25)
         ax.set_title(title)
-        ax.set_xlabel('Westward     Frequency     Eastward')
-        ax.set_ylabel('Zonal wavenumber')
+        ax.set_xlabel("Westward     Frequency     Eastward")
+        ax.set_ylabel("Zonal wavenumber")
 
         # Add provenance information
         caption = f"{figname}, [or other caption for wavenum freq season plot]"  # TODO
@@ -1191,26 +1528,33 @@ class WKSpectra:
             figure=fig,
             close=True,
         )
-        print(f'Plotted {figname}')
+        print(f"Plotted {figname}")
 
     def SpectraSeason(self):
-        for season in ['winter', 'summer']:
+        for season in ["winter", "summer"]:
             print(season)
             # This is the NCL method of computing the spectra which uses anomalies
             pow_cube = self.mjo_wavenum_freq_season(season)
 
-            forename = f'{self.runid}_{self.varname}_wavenum_freq_season_{season}'
-            ncname = os.path.join(self.work_dir, f'{forename}.nc')
+            forename = (
+                f"{self.runid}_{self.varname}_wavenum_freq_season_{season}"
+            )
+            ncname = os.path.join(self.work_dir, f"{forename}.nc")
             iris.save(pow_cube, ncname)
 
             # Define contour levels for plots
             levels_dict = {
-                'toa_outgoing_longwave_flux': np.arange(0.0, 2.4, 0.2),
-                'Precipitation': np.arange(0.0, 0.055, 0.005),
-                'x_wind_850hPa': np.arange(0.007, 0.07, 0.007),
-                'x_wind_200hPa': np.arange(0.05, 0.5, 0.05)}
+                "toa_outgoing_longwave_flux": np.arange(0.0, 2.4, 0.2),
+                "Precipitation": np.arange(0.0, 0.055, 0.005),
+                "x_wind_850hPa": np.arange(0.007, 0.07, 0.007),
+                "x_wind_200hPa": np.arange(0.05, 0.5, 0.05),
+            }
 
-            title = f'{self.label} \n {season}  daily {self.varname} [10S-10N]'
-            figname = os.path.join(self.plot_dir, f'{forename}.png')
-            self.mjo_wavenum_freq_season_plot(pow_cube, levels=levels_dict[self.varname], \
-                                              title=title, figname=figname)
+            title = f"{self.label} \n {season}  daily {self.varname} [10S-10N]"
+            figname = os.path.join(self.plot_dir, f"{forename}.png")
+            self.mjo_wavenum_freq_season_plot(
+                pow_cube,
+                levels=levels_dict[self.varname],
+                title=title,
+                figname=figname,
+            )
