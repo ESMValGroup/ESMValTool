@@ -35,12 +35,13 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 logger.info(year)
                 logger.info(month)
                 try:
-                    cubes = load_cubes(in_dir,
-                                       vals['file'],
-                                       year,
-                                       month,
-                                       vals['raw'],
-                                       )
+                    cubes = load_cubes(
+                        in_dir,
+                        vals['file'],
+                        year,
+                        month,
+                        vals['raw'],
+                    )
                 except:
                     logger.info(f'Problem: Month %s in %s' % (month, year))
                     continue
@@ -48,9 +49,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 #  make time coords
                 time_units = 'hours since 1970-01-01 00:00:00'
                 time_point = unit.date2num(datetime.datetime(year, month, 1),
-                                           time_units,
-                                           unit.CALENDAR_STANDARD
-                                           )
+                                           time_units, unit.CALENDAR_STANDARD)
 
                 time_coord = iris.coords.DimCoord(time_point,
                                                   standard_name='time',
@@ -60,8 +59,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                                   bounds=None,
                                                   attributes=None,
                                                   coord_system=None,
-                                                  circular=False
-                                                  )
+                                                  circular=False)
 
                 cubes.attributes = {}
                 cubes.attributes['var'] = var
@@ -123,16 +121,13 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
                 save_name = f'{out_dir}/OBS_ESACCI-LST_sat_3.00_Amon_' + \
                             f'{var_name}_{year}{month:02d}.nc'
-                iris.save(cubes,
-                          save_name
-                          )
+                iris.save(cubes, save_name)
 
 
 def load_cubes(in_dir, file, year, month, variable_list):
     """Load files into cubes based on variables wanted in variable_list."""
     logger.info(f'Loading {in_dir}/{file}{year}{month:02d}.nc')
     cube = iris.load_cube(f'{in_dir}/{file}{year}{month:02d}*.nc',
-                          variable_list
-                          )
+                          variable_list)
 
     return cube
