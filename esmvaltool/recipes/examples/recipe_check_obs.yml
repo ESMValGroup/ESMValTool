@@ -67,7 +67,17 @@ diagnostics:
       pr:
     additional_datasets:
       - {project: OBS6, dataset: CMAP, mip: Amon, tier: 2,
-        type: reanaly, version: v1}
+        type: sat, version: v1}
+    scripts: null
+
+
+  CMEMS:
+    description: CMEMS check
+    variables:
+      zos:
+    additional_datasets:
+      - {project: OBS6, dataset: CMEMS, mip: Omon, tier: 2,
+        type: reanaly, version: SEALEVEL-GLO-PHY-L4}
     scripts: null
 
 
