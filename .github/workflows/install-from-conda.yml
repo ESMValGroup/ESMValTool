@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - install_withPython313
   schedule:
     - cron: '0 4 * * *'
 
