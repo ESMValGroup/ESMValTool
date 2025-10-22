@@ -16,12 +16,26 @@ from esmvaltool.diag_scripts.shared import save_figure
 
 
 class WKSpectra:
-    def __init__(self, cfg, attributes, check_missing=True):
-        self.cfg = cfg
-        self.spd = 1
+    def __init__(self, cfg: dict, attributes: dict, check_missing: bool = True):
+        """
+        Initialize the WKSpectra object.
+
+        Parameters
+        ----------
+        cfg : dict
+            Configuration dictionary.
+        attributes : dict
+            Dictionary containing dataset attributes and cube.
+        check_missing : bool, optional
+            If True, interpolate missing data in the cube along longitude.
+        """
+        import os
+
+        self.cfg = cfg # Store the configuration dictionary
+        self.spd = 1 # samples per day (1 for daily data, 4 for 6-hourly data and so on)
         self.nDayWin = 96  # Wheeler-Kiladis [WK] temporal window length (days)
         self.nDaySkip = -65  # Negative means overlap
-        self.latBound = 15
+        self.latBound = 15   # Latitude bounds for MJO region (15S-15N)
         self.filename = attributes["filename"]
         self.out_dir = os.path.dirname(self.filename)
         self.runid = attributes["dataset"]
