@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - install_withPython313
   schedule:
     - cron: '0 4 * * *'
 
@@ -21,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12"]  # add "3.13" when pkg built
+        python-version: ["3.11", "3.12", "3.13"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
       - uses: conda-incubator/setup-miniconda@v3
