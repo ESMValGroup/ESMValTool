@@ -48,7 +48,7 @@ jobs:
       - name: Install pytest-monitor
         run: pip install pytest-monitor
       - name: Install ESMValTool
-        run: pip install -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
+        run: pip install --no-deps -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Run tests
         run: >
           pytest -n 2 -m "not installation" --db ../.pymon 2>&1
@@ -98,7 +98,7 @@ jobs:
         run: pip install pytest-monitor
       - name: Install ESMValTool
         run: >
-          pip install -e .[develop] 2>&1
+          pip install --no-deps -e .[develop] 2>&1
           | tee test_osx_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Run tests
         run: >

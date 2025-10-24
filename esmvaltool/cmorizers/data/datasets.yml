@@ -18,7 +18,6 @@ datasets:
       across Australia for each observed data variable. This accounts for spatial and temporal gaps in observations.
       Where possible, the gridded analysis techniques provide useful estimates in data-sparse regions
       such as central Australia.
-
       Time coverage: Site-based data are used to provide gridded climate data at the monthly timescale for rainfall (1900+).
       Reference: Evans, A., Jones, D.A., Smalley, R., and Lellyett, S. 2020. An enhanced gridded rainfall analysis scheme
       for Australia. Bureau of Meteorology Research Report. No. 41.
@@ -33,7 +32,6 @@ datasets:
     last_access: 2023-11-21
     info: |
       Data from NCI project requiring an NCI account and access to GADI
-
       ANUClimate 2.0 consists of gridded daily and monthly climate variables across the terrestrial landmass of Australia
       from at least 1970 to the present. Rainfall grids are generated from 1900 to the present. The underpinning spatial
       models have been developed at the Fenner School of Environment and Society of the Australian National University.
@@ -109,6 +107,15 @@ datasets:
       5) Enter EarthData login and password (https://urs.earthdata.nasa.gov/)
       6) Follow download instructions in email from EarthData and put all
          files in the same directory
+
+  CAMS:
+    tier: 3
+    source: https://ads.atmosphere.copernicus.eu/datasets/cams-global-greenhouse-gas-inversion?tab=overview
+    last_access: 2024-10-28
+    info: |
+      You will need to make an account with the ADS data store and accept their licenses to download the data.
+      Then, select carbon dioxide, surface flux, surface air sample, monthly mean,
+      as well as the version and years you require to download.
 
   CDS-SATELLITE-ALBEDO:
     tier: 3
@@ -887,17 +894,13 @@ datasets:
 
   JRA-25:
     tier: 2
-    source: https://esgf.nccs.nasa.gov/thredds/fileServer/CREATE-IP/reanalysis/JMA/JRA-25/JRA-25/
-    last_access: 2022-11-17
+    source: https://data.rda.ucar.edu/ds625.1
+    last_access: 2023-06-14
     info: |
       Download the following files:
-        mon/atmos/clt/clt_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/hus/hus_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/prw/prw_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rlut/rlut_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rlutcs/rlutcs_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rsut/rsut_Amon_reanalysis_JRA-25_197901-201312.nc
-        mon/atmos/rsutcs/rsutcs_Amon_reanalysis_JRA-25_197901-201312.nc
+        fcst_phy2m/fcst_phy2m.yyyymm.nc
+        anl_chipsi/fcst_phy2m.yyyymm.nc
+        anl_p/anl_p.yyyymm.nc
 
   JRA-55:
     tier: 2
@@ -979,7 +982,9 @@ datasets:
 
   MERRA2:
     tier: 3
-    source: https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/ https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
+    source: |
+      https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
+      https://goldsmr5.gesdisc.eosdis.nasa.gov/data/MERRA2_MONTHLY/
     last_access: 2022-09-13
     info: |
       Use automatic download. That will download monthly data but with
