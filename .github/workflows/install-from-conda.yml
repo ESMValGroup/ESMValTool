@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12"]  # add "3.13" when pkg built
+        python-version: ["3.11", "3.12", "3.13"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
       - uses: conda-incubator/setup-miniconda@v3
@@ -72,7 +72,7 @@ jobs:
 #      - run: which conda 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/conda_path.txt
 #      - run: python -V 2>&1 | tee conda_install_osx_artifacts_python_${{ matrix.python-version }}/python_version.txt
 #      # ncurses needs to be from conda-forge and not main channel
-#      # for now it's turned off since we're not testing R/Julia installs
+#      # for now it's turned off since we're not testing R installs
 #      # - run: conda uninstall -y ncurses
 #      # - run: conda list ncurses
 #      # - run: conda install -y conda-forge::ncurses

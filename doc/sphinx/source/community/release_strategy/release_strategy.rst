@@ -54,6 +54,26 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
++------------+-----------------------+------------------+
+|  Date      | Release manager       | Version          |
++============+=======================+==================+
+| 2026 Q1    | DLR                   | 2.14.0           |
++------------+-----------------------+------------------+
+| 2026 Q2    | ACCESS-NRI            | 2.15.0           |
++------------+-----------------------+------------------+
+| 2026 Q4    | Met Office            | 2.16.0           |
++------------+-----------------------+------------------+
+| 2027 Q1    | NLeSC                 | 2.17.0           |
++------------+-----------------------+------------------+
+| 2027 Q2    | NERC (NCAS)           | 2.18.0           |
++------------+-----------------------+------------------+
+| 2027 Q4    | BSC                   | 2.19.0           |
++------------+-----------------------+------------------+
+
+
+Past releases
+^^^^^^^^^^^^^
+
 - 2.13.0 (Release Manager: `Julien Lenhardt`_)
 
 +------------+------------+----------------------------------------+-------------------------------------+
@@ -61,15 +81,12 @@ Upcoming releases
 +============+============+========================================+=====================================+
 | 2025-08-18 |            | ESMValCore `Feature Freeze`_           |                                     |
 +------------+------------+----------------------------------------+-------------------------------------+
-| 2025-08-29 |            | ESMValCore Release 2.13.0              |                                     |
+| 2025-08-29 | 2025-10-16 | ESMValCore Release 2.13.0              | :ref:`esmvalcore:changelog-v2-13-0` |
 +------------+------------+----------------------------------------+-------------------------------------+
 | 2025-09-01 |            | ESMValTool `Feature Freeze`_           |                                     |
 +------------+------------+----------------------------------------+-------------------------------------+
-| 2025-09-12 |            | ESMValTool Release 2.13.0              |                                     |
+| 2025-09-12 | 2025-10-20 | ESMValTool Release 2.13.0              |      :ref:`changelog-v2-13-0`       |
 +------------+------------+----------------------------------------+-------------------------------------+
-
-Past releases
-^^^^^^^^^^^^^
 
 - 2.12.0 (Release Manager: `Saskia Loosveldt Tomas`_)
 
@@ -626,7 +643,7 @@ built correctly by
 1. checking that the version tag is available on `Dockerhub`_ and the ``stable``
    tag has been updated,
 2. running some recipes with the ``stable`` tag Docker container, for example one
-   recipe for Python, NCL, R, and Julia,
+   recipe for Python, NCL, and R,
 3. running a recipe with a Singularity container built from the ``stable`` tag.
 
 If there is a problem with the automatically built container image, you can fix
