@@ -20,7 +20,6 @@ from esmvaltool.diag_scripts.weathertyping.plot_utils import (
     plot_seasonal_occurrence,
 )
 from esmvaltool.diag_scripts.weathertyping.wt_utils import (
-    add_dict_entry,
     combine_wt_to_file,
     get_ancestors_era5_eobs,
     get_cfg_vars,
@@ -43,7 +42,8 @@ def run_automatic_slwt(cfg: dict):
 
     Args:
     ----
-        cfg (dict): Nested dictionary of metadata
+        cfg : dict
+            Nested dictionary of metadata
     """
     preproc_variables_dict, _, _, work_dir, plotting, _, predefined_slwt = (
         get_cfg_vars(cfg)
@@ -102,8 +102,8 @@ def run_automatic_slwt(cfg: dict):
             if plotting:
                 # plot means
                 for var_name, var_data in var_dict.items():
-                    add_dict_entry(data_info, "var", var_name)
-                    add_dict_entry(data_info, "preproc_path", var_data[1])
+                    data_info["var"] = var_name
+                    data_info["preproc_path"] = var_data[1]
 
                     plot_means(cfg, var_data[0], wt_cubes, data_info)
                 plot_seasonal_occurrence(cfg, wt_cubes, data_info)
@@ -112,14 +112,11 @@ def run_automatic_slwt(cfg: dict):
                 continue
             for ensemble_var in dataset_vars:
                 if ensemble_var.get("preprocessor") == "weathertype_preproc":
-                    add_dict_entry(
-                        data_info, "ensemble", ensemble_var.get("ensemble", "")
-                    )
-                    add_dict_entry(
-                        data_info, "driver", ensemble_var.get("driver", "")
-                    )
+                    data_info["ensemble"] = ensemble_var.get("ensemble", "")
+                    data_info["driver"] = ensemble_var.get("driver", "")
+
                     if data_info["driver"] != "":
-                        data_info["driver"] = "_" + {data_info["driver"]}
+                        data_info["driver"] = "_" + data_info["driver"]
 
                     wt_preproc = iris.load_cube(ensemble_var.get("filename"))
 
@@ -153,10 +150,8 @@ def run_automatic_slwt(cfg: dict):
                     # plot means
                     if plotting:
                         for var_name, var_data in var_dict.items():
-                            add_dict_entry(data_info, "var", var_name)
-                            add_dict_entry(
-                                data_info, "preproc_path", var_data[1]
-                            )
+                            data_info["var"] = var_name
+                            data_info["preproc_path"] = var_data[1]
 
                             plot_means(cfg, var_data[0], wt_cubes, data_info)
                         plot_seasonal_occurrence(cfg, wt_cubes, data_info)
@@ -168,7 +163,8 @@ def run_lwt(cfg: dict):
 
     Args:
     ----
-        cfg (dict): Nested dictionary of metadata
+        cfg : dict
+            Nested dictionary of metadata
 
     """
     preproc_variables_dict, _, _, work_dir, plotting, _, _ = get_cfg_vars(cfg)
@@ -217,8 +213,8 @@ def run_lwt(cfg: dict):
             if plotting:
                 # plot means
                 for var_name, var_data in var_dict.items():
-                    add_dict_entry(data_info, "var", var_name)
-                    add_dict_entry(data_info, "preproc_path", var_data[1])
+                    data_info["var"] = var_name
+                    data_info["preproc_path"] = var_data[1]
 
                     plot_means(
                         cfg, var_data[0], wt_cubes, data_info, only_lwt=True
@@ -229,12 +225,9 @@ def run_lwt(cfg: dict):
                 continue
             for ensemble_var in dataset_vars:
                 if ensemble_var.get("preprocessor") == "weathertype_preproc":
-                    add_dict_entry(
-                        data_info, "ensemble", ensemble_var.get("ensemble", "")
-                    )
-                    add_dict_entry(
-                        data_info, "driver", ensemble_var.get("driver", "")
-                    )
+                    data_info["ensemble"] = ensemble_var.get("ensemble", "")
+                    data_info["driver"] = ensemble_var.get("driver", "")
+
                     if data_info["driver"] != "":
                         data_info["driver"] = "_" + {data_info["driver"]}
 
@@ -269,10 +262,8 @@ def run_lwt(cfg: dict):
                     if plotting:
                         # plot means
                         for var_name, var_data in var_dict.items():
-                            add_dict_entry(data_info, "var", var_name)
-                            add_dict_entry(
-                                data_info, "preproc_path", var_data[1]
-                            )
+                            data_info["var"] = var_name
+                            data_info["preproc_path"] = var_data[1]
 
                             plot_means(
                                 cfg,
@@ -288,10 +279,12 @@ def run_my_diagnostic(cfg: dict):
     """Run the weathertyping diagnostic.
 
     Arguments:
-        cfg - nested dictionary of metadata
+        cfg : dict
+            nested dictionary of metadata
 
     Returns
-        string; runs the user diagnostic
+        string
+            runs the user diagnostic
 
     """
     # assemble the data dictionary keyed by dataset name

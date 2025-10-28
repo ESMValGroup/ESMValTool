@@ -37,11 +37,13 @@ def generate_grayscale_hex_values(x):
 
     Args:
     ----
-        x (int): number of weathertypes
+        x : int
+            number of weathertypes
 
     Returns
     -------
-        np.list: array with grayscale values as hex
+        np.list
+            array with grayscale values as hex
     """
     grayscale_values = np.linspace(0, 1, x)
     grayscale_hex = [
@@ -59,9 +61,12 @@ def plot_seasonal_occurrence(
 
     Args:
     ----
-        cfg (dict): Configuration dict from recipe
-        wt_cubes (iris.cube.Cube): Cube with weathertypes
-        data_info (dict): Dictionary with relevant info to dataset
+        cfg : dict
+            Configuration dictionary from recipe
+        wt_cubes : iris.cube.Cube
+            Cube with weathertypes
+        data_info : dict
+            Dictionary with relevant info to dataset
     """
     dataset_name = data_info.get("dataset")
     timerange = data_info.get("timerange")
@@ -166,11 +171,16 @@ def plot_maps(
 
     Args:
     ----
-        wt (np.array): WT for which statistic was calculated
-        cfg (dict): Configuration dicitonary from recipe
-        cube (iris.cube.Cube): Data to be plotted
-        data_info (dict): Dictionary with info to dataset
-        mode (str): Statistics that is used
+        wt : np.array
+            weathertype number
+        cfg : dict
+            Configuration dicitonary from recipe
+        cube : iris.cube.Cube
+            Data to be plotted
+        data_info : dict
+            Dictionary with info to dataset
+        mode : str
+            Statistics that is used
     """
     dataset = data_info.get("dataset")
     var_name = data_info.get("var")
@@ -280,11 +290,16 @@ def plot_corr_rmse_heatmaps(
 
     Args:
     ----
-        cfg (dict): cfg dict from recipe
-        pattern_correlation_matrix (np.array): pattern correlation matrix
-        rmse_matrix (np.array): rmse matrix
-        dataset (str): string of dataset
-        timerange (str): string of timerange
+        cfg : dict
+            Configuration dictionary from recipe
+        pattern_correlation_matrix : np.array
+            pattern correlation matrix
+        rmse_matrix : np.array
+            rmse matrix
+        dataset : str
+            string of dataset
+        timerange : str
+            string of timerange
     """
     output_path = f"{cfg.get('plot_dir')}/heatmaps"
 
@@ -359,12 +374,14 @@ def get_colormap(colormap_string: str) -> ListedColormap:
 
     Args:
     ----
-        colormap_string (str): String to get Colormaps for either
-                                psl, tas or precipitation.
+        colormap_string : str
+            String to get Colormaps for either
+            psl, tas or precipitation.
 
     Returns
     -------
-        ListedColormap: Choosen Colormap
+        ListedColormap
+            Choosen Colormap
     """
     misc_seq_2_disc = [
         (230 / 255, 240 / 255, 240 / 255),
