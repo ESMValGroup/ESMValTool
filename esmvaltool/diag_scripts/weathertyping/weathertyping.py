@@ -13,10 +13,10 @@ from esmvaltool.diag_scripts.weathertyping.calc_utils import (
     calc_lwt_model,
     calc_lwt_slwt_model,
     calc_slwt_obs,
+    plot_means,
     wt_algorithm,
 )
 from esmvaltool.diag_scripts.weathertyping.plot_utils import (
-    plot_means,
     plot_seasonal_occurrence,
 )
 from esmvaltool.diag_scripts.weathertyping.wt_utils import (
@@ -42,6 +42,7 @@ def run_automatic_slwt(cfg: dict):
     of the weathertypes.
 
     Args:
+    ----
         cfg (dict): Nested dictionary of metadata
     """
     preproc_variables_dict, _, _, work_dir, plotting, _, predefined_slwt = (
@@ -166,6 +167,7 @@ def run_lwt(cfg: dict):
     and seasonal occurrence of the weathertypes.
 
     Args:
+    ----
         cfg (dict): Nested dictionary of metadata
 
     """

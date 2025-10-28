@@ -47,6 +47,7 @@ def calc_slwt_obs(
         precipitation patterns over specified area.
 
     Args:
+    ----
         cfg (dict): Configuration dictionary from recipe
         lwt (np.array): Array of Lamb WT
         cube (iris.cube.Cube): preprocessor cube to keep time coordinate
@@ -56,6 +57,7 @@ def calc_slwt_obs(
         ancestors (list): list of ancestors
 
     Returns
+    -------
         np.array: _description_
     """
     logger.info("Calculating simplified Lamb Weathertypes for %s", dataset)
@@ -125,6 +127,7 @@ def calc_const():
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Returns
+    -------
         tuple: The four constants needed for WT calculation.
     """
     const1 = 1 / np.cos(45 * np.pi / 180)
@@ -144,9 +147,11 @@ def calc_westerly_flow(cube: iris.cube.Cube) -> np.array:
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
+    ----
         cube (iris.cube.Cube): Cube of psl data.
 
     Returns
+    -------
         np.array: westerly flow
     """
     return 1 / 2 * (cube.data[:, 1, 2] + cube.data[:, 1, 4]) - 1 / 2 * (
@@ -163,10 +168,12 @@ def calc_southerly_flow(cube: iris.cube.Cube, const1: float) -> np.array:
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
+    ----
         cube (iris.cube.Cube): Cube of psl data.
         const1 (float): const1
 
     Returns
+    -------
         np.array: southerly flow
     """
     return const1 * (
@@ -190,10 +197,12 @@ def calc_resultant_flow(
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
+    ----
         westerly_flow (np.array): westerly flow.
         southerly_flow (np.array): southerly flow
 
     Returns
+    -------
         np.array: resultant flow
     """
     return (southerly_flow**2 + westerly_flow**2) ** (1 / 2)
@@ -210,11 +219,13 @@ def calc_westerly_shear_velocity(
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
+    ----
         cube (iris.cube.Cube): cube of psl data
         const2 (float): const2
         const3 (float): const3
 
     Returns
+    -------
         np.array: westerly shear velocity
     """
     return const2 * (
@@ -237,10 +248,12 @@ def calc_southerly_shear_velocity(
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
+    ----
         cube (iris.cube.Cube): cube of psl data
         const4 (float): const4
 
     Returns
+    -------
         np.array: southerly shear velocity
     """
     return const4 * (
@@ -270,10 +283,12 @@ def calc_total_shear_velocity(
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
+    ----
         westerly_shear_velocity (np.array): westerly shear velocity
         southerly_shear_velocity (np.array): southerly shear velocity
 
     Returns
+    -------
         np.array: total shear velocity
     """
     return westerly_shear_velocity + southerly_shear_velocity
@@ -292,6 +307,7 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
         dataset (str): Name of dataset
 
     Returns
+    -------
         np.array: Array of Lamb WT for each day
     """
     # lats and lons corresponding to datapoints
@@ -530,6 +546,7 @@ def rmse(subarray1: np.array, subarray2: np.array) -> np.array:
         subarray2 (np.array): array2
 
     Returns
+    -------
         np.array: rsme array
     """
     return np.sqrt(np.mean((subarray1 - subarray2) ** 2))
@@ -558,6 +575,7 @@ def process_prcp_mean(
         dataset (str): Name of dataset
 
     Returns
+    -------
         list: Selected pairs of WT. This is passed to get_mapping_dict
     """
     logger.info("Calculating corr and rsme matrices for %s", dataset)

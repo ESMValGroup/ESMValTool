@@ -36,10 +36,12 @@ def generate_grayscale_hex_values(x):
     """Generate grayscale values for plotting seasonal occurrence.
 
     Args:
+    ----
         x (int): number of weathertypes
 
     Returns
-        np.list: array with grescale values as hex
+    -------
+        np.list: array with grayscale values as hex
     """
     grayscale_values = np.linspace(0, 1, x)
     grayscale_hex = [
@@ -56,6 +58,7 @@ def plot_seasonal_occurrence(
     """Plot relative monthly/seasonal occurrence of weathertypes.
 
     Args:
+    ----
         cfg (dict): Configuration dict from recipe
         wt_cubes (iris.cube.Cube): Cube with weathertypes
         data_info (dict): Dictionary with relevant info to dataset
@@ -162,6 +165,7 @@ def plot_maps(
     """Plot maps.
 
     Args:
+    ----
         wt (np.array): WT for which statistic was calculated
         cfg (dict): Configuration dicitonary from recipe
         cube (iris.cube.Cube): Data to be plotted
@@ -275,6 +279,7 @@ def plot_corr_rmse_heatmaps(
     """Plot heatmaps for correlation and rmse matrices.
 
     Args:
+    ----
         cfg (dict): cfg dict from recipe
         pattern_correlation_matrix (np.array): pattern correlation matrix
         rmse_matrix (np.array): rmse matrix
@@ -353,10 +358,12 @@ def get_colormap(colormap_string: str) -> ListedColormap:
     """Get colormaps based on string.
 
     Args:
+    ----
         colormap_string (str): String to get Colormaps for either
                                 psl, tas or precipitation.
 
     Returns
+    -------
         ListedColormap: Choosen Colormap
     """
     misc_seq_2_disc = [
