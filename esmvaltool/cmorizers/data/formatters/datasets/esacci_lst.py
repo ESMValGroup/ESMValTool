@@ -17,8 +17,7 @@ logger = logging.getLogger(__name__)
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cmor_table = cfg["cmor_table"]
-    glob_attrs = cfg["attributes"]
+    glob_attrs = cfg['attributes']
 
     # variable_list contains the variable list
     # variable_keys has the short 'code' as a key for the variables.
@@ -26,130 +25,109 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
     # vals has the info from the yml file
     # var is set up in the yml file
-    for var, vals in cfg["variables"].items():
-        # leave this loop in as might be useful in
-        # the future for getting other info
-        # like uncertainty information from the original files
-
-        glob_attrs["mip"] = vals["mip"]
-        cmor_info = cmor_table.get_variable(vals["mip"], var)
-        var_name = cmor_info.short_name
-
-        for key in vals.keys():
-            logger.info("%s %s", key, vals[key])
-
-        variable = vals["raw"]
-        # not currently used, but referenced for future
-        # platform = 'MODISA'
+    for var, vals in cfg['variables'].items():
+        glob_attrs['mip'] = vals['mip']
 
         # loop over years and months
         # get years from start_year and end_year
-        # note 2003 doesn't start until July so not included at this stage
-        for year in range(
-            glob_attrs["start_year"], glob_attrs["end_year"] + 1
-        ):
-            this_years_cubes = iris.cube.CubeList()
-            for month0 in range(12):  # Change this in final version
-                month = month0 + 1
+        for year in range(vals['start_year'], vals['end_year'] + 1):
+            for month in range(1, 13):
+                logger.info(year)
                 logger.info(month)
-                day_cube, night_cube = load_cubes(
-                    in_dir,
-                    vals["file_day"],
-                    vals["file_night"],
-                    year,
-                    month,
-                    variable,
-                )
+                try:
+                    cubes = load_cubes(
+                        in_dir,
+                        vals['file'],
+                        year,
+                        month,
+                        vals['raw'],
+                    )
+                except:
+                    logger.info(f'Problem: Month %s in %s' % (month, year))
+                    continue
 
-                monthly_cube = make_monthly_average(
-                    day_cube, night_cube, year, month
-                )
+                #  make time coords
+                time_units = 'hours since 1970-01-01 00:00:00'
+                time_point = unit.date2num(datetime.datetime(year, month, 1),
+                                           time_units, unit.CALENDAR_STANDARD)
 
-                # use CMORizer utils
-                monthly_cube = utils.fix_coords(monthly_cube)
+                time_coord = iris.coords.DimCoord(time_point,
+                                                  standard_name='time',
+                                                  long_name='time',
+                                                  var_name='time',
+                                                  units=time_units,
+                                                  bounds=None,
+                                                  attributes=None,
+                                                  coord_system=None,
+                                                  circular=False)
 
-                this_years_cubes.append(monthly_cube)
+                cubes.attributes = {}
+                cubes.attributes['var'] = var
 
-            # Use utils save
-            # This seems to save files all with the same name!
-            # Fixed by making yearly files
-            this_years_cubes = this_years_cubes.merge_cube()
-            this_years_cubes.long_name = "Surface Temperature"
-            this_years_cubes.standard_name = "surface_temperature"
+                try:
+                    cubes.remove_coord('time')
+                except:
+                    logger.info('Coord fix issue %s' % cubes.long_name)
 
-            # Fix variable metadata
-            utils.fix_var_metadata(this_years_cubes, cmor_info)
+                cubes.add_dim_coord(time_coord, 0)
 
-            # Fix global metadata
-            utils.set_global_atts(this_years_cubes, glob_attrs)
+                if cubes.long_name == 'land surface temperature':
+                    cubes.long_name = 'surface_temperature'
+                    cubes.standard_name = 'surface_temperature'
 
-            utils.save_variable(
-                this_years_cubes,
-                var_name,
-                out_dir,
-                glob_attrs,
-                unlimited_dimensions=["time"],
-            )
+                try:
+                    cubes = fix_coords(cubes)
+                except:
+                    logger.info('skip fixing')
+                    logger.info(cubes.long_name)
+
+                # this is needed for V1 data, V3 data is ok
+                try:
+                    cubes.coords()[2].standard_name = 'longitude'
+                except:
+                    # No change needed
+                    pass
+
+                var_name = cubes.attributes['var']
+
+                if cubes.var_name == 'lst':
+                    cubes.var_name = 'ts'
+
+                if 'Day' in var_name:
+                    cubes.long_name += ' Day'
+                    cubes.var_name += '_day'
+
+                if 'Night' in var_name:
+                    cubes.long_name += ' Night'
+                    cubes.var_name += '_night'
+
+                # Land cover class gives this error when
+                # loading in CMORised files
+                # OverflowError:
+                # Python int too large to convert to C long error
+                # This fixes it:
+                if 'land cover' in cubes.long_name:
+                    cubes.data.fill_value = 0
+
+                    # Get rid of anything outide 0-255
+                    cubes.data[np.where(cubes.data < 0)] = 0
+                    cubes.data[np.where(cubes.data > 255)] = 0
+
+                    cubes.data = cubes.data.filled()
+
+                    # This is the line the ultimately solves things.
+                    # Will leave the other checks above in because they
+                    cubes.data = cubes.data * 1.0
+
+                save_name = f'{out_dir}/OBS_ESACCI-LST_sat_3.00_Amon_' + \
+                            f'{var_name}_{year}{month:02d}.nc'
+                iris.save(cubes, save_name)
 
 
-def load_cubes(in_dir, file_day, file_night, year, month, variable):
-    """Variable description.
+def load_cubes(in_dir, file, year, month, variable_list):
+    """Load files into cubes based on variables wanted in variable_list."""
+    logger.info(f'Loading {in_dir}/{file}{year}{month:02d}.nc')
+    cube = iris.load_cube(f'{in_dir}/{file}{year}{month:02d}*.nc',
+                          variable_list)
 
-    variable = land surface temperature
-    platform = AQUA not used for now
-               but in place for future expansion to all ESC CCI LST platforms
-    """
-    path = f"{in_dir}/{file_day}{year}{month:02d}*.nc"
-    logger.info("Loading %s", path)
-    day_cube = iris.load_cube(path, variable)
-    path = f"{in_dir}/{file_night}{year}{month:02d}*.nc"
-    logger.info("Loading %s", path)
-    night_cube = iris.load_cube(path, variable)
-
-    return day_cube, night_cube
-
-
-def make_monthly_average(day_cube, night_cube, year, month):
-    """Make the average LST form the day time and night time files."""
-    day_cube.attributes.clear()
-    night_cube.attributes.clear()
-
-    co_time = night_cube.coord("time")
-    co_time.points = co_time.points + 100.0
-    # maybe the arbitrary difference should go on day cubes to
-    # take the timestamp to 12Z?
-    # not really an issue when using monthly files
-
-    result = iris.cube.CubeList([day_cube, night_cube]).concatenate_cube()
-
-    # This corrects the lonitude coord name issue
-    # This should be fixed in the next version of the CCI data
-    logger.info("Longitude coordinate correction being applied")
-    result.coords()[2].var_name = "longitude"
-    result.coords()[2].standard_name = "longitude"
-    result.coords()[2].long_name = "longitude"
-
-    monthly_cube = result.collapsed("time", iris.analysis.MEAN)
-
-    # fix time coordinate bounds
-    monthly_co_time = monthly_cube.coord("time")
-
-    time_point = (
-        datetime.datetime(year, month, 1, 0, 0)
-        - datetime.datetime(1981, 1, 1, 0, 0, 0)
-    ).total_seconds()
-    monthly_co_time.points = time_point
-
-    num_days = monthrange(year, month)[1]
-    monthly_co_time.bounds = [
-        time_point,
-        time_point + ((num_days - 1) * 24 * 3600),
-    ]
-    # should this be num_days or num_days-1 ### question for Valeriu or Axel
-    # or 23:59:59 ???
-
-    monthly_cube.attributes = {
-        "information": "Mean of Day and Night Aqua MODIS monthly LST"
-    }
-
-    return monthly_cube
+    return cube
