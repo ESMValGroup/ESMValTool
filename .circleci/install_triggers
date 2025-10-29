@@ -1,6 +1,5 @@
 ^\.circleci/
 ^environment\.yml$
-^esmvaltool/install/
 ^pyproject.toml$
 ^setup\.py$
 ^setup\.cfg$

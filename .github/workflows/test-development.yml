@@ -23,13 +23,14 @@ defaults:
 jobs:
   linux:
     runs-on: "ubuntu-latest"
+    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.11", "3.12", "3.13"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v3
@@ -38,30 +39,28 @@ jobs:
           environment-file: environment.yml
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
-          miniforge-variant: Mambaforge
           use-mamba: true
+          mamba-version: "2.0.5"  # https://github.com/conda-incubator/setup-miniconda/issues/392
       - run: mkdir -p develop_test_linux_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
         run: |
           mamba --version 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/conda_version.txt
           python -V 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/python_version.txt
       - name: Install ESMValTool
-        run: pip install -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
-      - name: Install Julia dependencies
-        run: esmvaltool install Julia
+        run: pip install --no-deps -e .[develop] 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Install development version of ESMValCore
         run: |
           cd ..
           git clone https://github.com/ESMValGroup/ESMValCore.git
           cd ESMValCore
-          pip install -e .[develop]
-      - name: Run flake8
-        run: flake8
+          pip install --no-deps -e .[develop]
+      - name: Check code quality
+        run: pre-commit run -a
       - name: Run tests
         run: pytest -n 2 -m "not installation" 2>&1 | tee develop_test_linux_artifacts_python_${{ matrix.python-version }}/test_report.txt
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Develop_Test_Linux_python_${{ matrix.python-version }}
           path: develop_test_linux_artifacts_python_${{ matrix.python-version }}

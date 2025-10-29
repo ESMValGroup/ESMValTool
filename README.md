@@ -6,11 +6,11 @@
 [![CircleCI](https://circleci.com/gh/ESMValGroup/ESMValTool/tree/main.svg?style=svg)](https://circleci.com/gh/ESMValGroup/ESMValTool/tree/main)
 [![Test in Full Development Mode](https://github.com/ESMValGroup/ESMValTool/actions/workflows/test-development.yml/badge.svg)](https://github.com/ESMValGroup/ESMValTool/actions/workflows/test-development.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/79bf6932c2e844eea15d0fb1ed7e415c)](https://app.codacy.com/gh/ESMValGroup/ESMValTool/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-[![Docker Build Status](https://img.shields.io/docker/cloud/build/esmvalgroup/esmvaltool.svg)](https://hub.docker.com/r/esmvalgroup/esmvaltool/)
+[![Docker Build Status](https://img.shields.io/docker/automated/esmvalgroup/esmvaltool)](https://hub.docker.com/r/esmvalgroup/esmvaltool/)
 [![Anaconda-Server Badge](https://img.shields.io/conda/vn/conda-forge/ESMValTool?color=blue&label=conda-forge&logo=conda-forge&logoColor=white)](https://anaconda.org/conda-forge/esmvaltool)
 ![stand with Ukraine](https://badgen.net/badge/stand%20with/UKRAINE/?color=0057B8&labelColor=FFD700)
 
-![esmvaltoollogo](https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/doc/sphinx/source/figures/ESMValTool-logo-2.png)
+![esmvaltoollogo](https://raw.githubusercontent.com/ESMValGroup/ESMValTool/main/doc/sphinx/source/figures/ESMValTool-logo-2-glow.png)
 
 - [**Documentation**](https://docs.esmvaltool.org/en/latest/)
 - [**ESMValTool Website**](https://www.esmvaltool.org/)
@@ -35,7 +35,7 @@ files that contain pointers to the requested data types, directives for the prep
 will be subject to, and directives for the actual diagnostics that will be run with the now preprocessed data.
 Data preprocessing is done via the [ESMValCore](https://docs.esmvaltool.org/projects/ESMValCore/en/latest/quickstart/index.html) package, a pure Python, highly-optimized scientific library, developed by the ESMValTool core developers,
 and that performs a number of common analysis tasks
-such as regridding, masking, levels extraction etc. [Diagnostics](https://docs.esmvaltool.org/en/latest/develop/diagnostic.html) are written in a variety of programming languages (Python, NCL, R, Julia) and are developed by the wider
+such as regridding, masking, levels extraction etc. [Diagnostics](https://docs.esmvaltool.org/en/latest/develop/diagnostic.html) are written in a variety of programming languages (Python, NCL, R) and are developed by the wider
 scientific community, and included after a scientific and technical review process.
 
 # Input data
