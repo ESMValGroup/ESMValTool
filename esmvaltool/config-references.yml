@@ -24,6 +24,18 @@ authors:
     institute: DLR, Germany
     email: bjoern.broetz@dlr.de
     orcid:
+  cammarano_diego:
+    name: Cammarano, Diego
+    institute: DLR, Germany
+    email: diego.cammarano@dlr.de
+    github: diegokam
+    orcid:
+  castellani_giulia:
+    name: Castellani, Giulia
+    institute: University of Bremen
+    email: giulia.castellani@uni-bremen.de
+    github: giuliacast
+    orcid: https://orcid.org/0000-0001-6151-015X
   debeire_kevin:
     name: Debeire, Kevin
     institute: DLR, Germany
@@ -111,6 +123,11 @@ authors:
     name: Bellprat, Omar
     institute: BSC, Spain
     orcid: https://orcid.org/0000-0001-6434-1793
+  beucher_romain:
+    name: Beucher, Romain
+    institute: ACCESS-NRI, Australia
+    orcid: https://orcid.org/0000-0003-3891-5444
+    github: rbeucher
   berg_peter:
     name: Berg, Peter
     institute: SMHI, Sweden
@@ -157,6 +174,11 @@ authors:
     name: Chen, Jack
     institute: NCAR, USA
     orcid:
+  chun_felicity:
+    name: Chun, Felicity
+    institute: ACCESS-NRI, Australia
+    orcid: https://orcid.org/0009-0007-0845-0953
+    github: flicj191
   cionni_irene:
     name: Cionni, Irene
     institute: ENEA, Italy
@@ -223,6 +245,11 @@ authors:
     name: Galytska, Evgenia
     institute: IUP, Bremen
     orcid: https://orcid.org/0000-0001-6575-1559
+  garcia_perdomo_karen:
+    name: Garcia Perdomo, Karen
+    institute: CCCma, ECCC, Canada
+    orcid: https://orcid.org/0009-0004-2333-3358
+    github: Karen-A-Garcia
   gettelman_andrew:
     name: Gettelman, Andrew
     institute: NCAR, USA
@@ -232,6 +259,11 @@ authors:
     institute: University of Bremen, Germany
     orcid: https://orcid.org/0000-0002-2928-8664
     github: bettina-gier
+  gillett_nathan:
+    name: Gillett, Nathan
+    institute: CCCma, ECCC, Canada
+    orcid: https://orcid.org/0000-0002-2957-0002
+    github: npgillett
   gonzalez-reviriego_nube:
     name: Gonzalez-Reviriego, Nube
     institute: BSC, Spain
@@ -248,10 +280,18 @@ authors:
     name: Hagemann, Stefan
     institute: MPI-M, Germany
     orcid: https://orcid.org/0000-0001-5444-2945
+  hall_sophie:
+    name: Hall, Sophie
+    institute: MetOffice, UK
+    orcid:
   hansson_ulf:
     name: Hansson, Ulf
     institute: SMHI, Sweden
     orcid:
+  hardacre_catherine:
+    name: Hardacre, Catherine
+    institute: University of Canterbury, New Zealand
+    orcid: https://orcid.org/0000-0001-9093-4656
   hassler_birgit:
     name: Hassler, Birgit
     institute: DLR, Germany
@@ -290,6 +330,10 @@ authors:
     name: Kalverla, Peter
     institute: NLeSC, Netherlands
     orcid: https://orcid.org/0000-0002-5025-7862
+  kelley_douglas:
+    name: Kelley, Douglas
+    institute: UKCEH, UK
+    orcid: https://orcid.org/0000-0003-1413-4969
   kindermann_stephan:
     name: Kindermann, Stephan
     institute: DKRZ, Germany
@@ -324,6 +368,10 @@ authors:
     name: Lembo, Valerio
     institute: CEN, University of Hamburg, Germany
     orcid: https://orcid.org/0000-0001-6085-5914
+  lenhardt_julien:
+    name: Lenhardt, Julien
+    institute: SMHI, Sweden
+    orcid: https://orcid.org/0000-0002-9949-3989
   levine_richard:
     name: Levine, Richard
     institute: MetOffice, UK
@@ -332,6 +380,11 @@ authors:
     name: Lillis, Jon
     institute: MetOffice, UK
     orcid:
+  lindenlaub_lukas:
+    name: Lindenlaub, Lukas
+    institute: University of Bremen, Germany
+    orcid: https://orcid.org/0000-0001-6349-9118
+    github: lukruh
   little_bill:
     name: Little, Bill
     institute: MetOffice, UK
@@ -360,7 +413,7 @@ authors:
     orcid:
   malinina_elizaveta:
     name: Malinina, Elizaveta
-    institute: CCCma, Canada
+    institute: CCCma, ECCC, Canada
     orcid: https://orcid.org/0000-0002-4102-2877
     github: malininae
   maloney_eric:
@@ -391,6 +444,11 @@ authors:
     name: Mello, Felipe
     institute: INPE, Brazil
     orcid: https://orcid.org/0000-0002-8832-2869
+  menelaou_konstantinos:
+    name: Menelaou, Konstantinos
+    institute: CCCma, ECCC, Canada
+    orcid: https://orcid.org/0000-0002-9676-7657
+    github: konmenelaou
   mohr_christianwilhelm:
     name: Mohr, Christian Wilhelm
     institute: Cicero, Norway
@@ -400,6 +458,11 @@ authors:
     institute: BSC, Spain
     orcid:
     github: emchamarro
+  munday_gregory:
+    name: Munday, Gregory
+    institute: MetOffice, UK
+    orcid: https://orcid.org/0000-0003-4750-9923
+    github: mo-gregmunday
   nikulin_grigory:
     name: Nikulin, Grigory
     institute: SMHI, Sweden
@@ -457,11 +520,6 @@ authors:
   rol_evert:
     name: Rol, Evert
     orcid: https://orcid.org/0000-0001-8357-4453
-  ruhe_lukas:
-    name: Ruhe, Lukas
-    institute: University of Bremen, Germany
-    orcid: https://orcid.org/0000-0001-6349-9118
-    github: lukruh
   russell_joellen:
     name: Russell, Joellen
     institute: Univ. of Arizona, USA
@@ -479,6 +537,11 @@ authors:
     institute: DLR, Germany
     orcid:
     github: ellensarauer
+  schulze_kirsten:
+    name: Schulze, Kirsten
+    institute: Uni Bremen, Germany
+    orcid:
+    github: kirsy05
   serva_federico:
     name: Serva, Federico
     institute: CNR, Italy
@@ -500,6 +563,11 @@ authors:
     name: Sterl, Andreas
     institute: KNMI, Netherlands
     orcid: https://orcid.org/0000-0003-3457-0434
+  stevens_robin:
+    name: Stevens, Robin
+    institute: CCCma, ECCC, Canada
+    orcid: https://orcid.org/0000-0002-8737-6988
+    github: Row-Bean
   swaminathan_ranjini:
     name: Swaminathan, Ranjini
     institute: University of Reading, UK
@@ -541,6 +609,11 @@ authors:
     institute: University of Bremen and DLR, Germany
     orcid: https://orcid.org/0000-0001-6133-7801
     github: katjaweigel
+  webb_kristi:
+    name: Webb, Kristi
+    institute: CCCma, ECCC, Canada
+    orcid: https://orcid.org/0000-0002-8610-0672
+    github: k-a-webb
   wenzel_sabrina:
     name: Wenzel, Sabrina
     institute: DLR, Germany
@@ -557,11 +630,19 @@ authors:
     name: Williams, Keith
     institute: MetOffice, UK
     orcid:
+  planton_yann:
+    name: Planton, Yann
+    institute: Monash University
+    orcid: https://orcid.org/0000-0002-9664-8180
   # Viewers (not active developers)
   balaji_venkatramani:
     name: Balaji, Venkatramani
     institute: GFDL, USA
     orcid:
+  blockley_ed:
+    name: Blockley, Ed
+    institute: MetOffice, UK
+    orcid: 0000-0002-0489-4238
   bunzel_felix:
     name: Bunzel, Felix
     institute: MPI-M, Germany
@@ -570,6 +651,10 @@ authors:
     name: Charlton-Perez, Andrew
     institute: Univ. of Reading, UK
     orcid:
+  chung_christine:
+    name: Chung, Christine
+    institute: Bureau of Meterology, Australia
+    orcid:
   corti_susanna:
     name: Corti, Susanna
     institute: ISAC-CNR, Torino, Italy
@@ -577,6 +662,10 @@ authors:
   dennis_john:
     name: Dennis, John
     institute: NCAR, USA
+    orcid:
+  gillet_zoe:
+    name: Gillet, Zoe
+    institute: Bureau of Meterology, Australia
     orcid:
   graf_phoebe:
     name: Graf, Phoebe
@@ -619,6 +708,10 @@ authors:
     name: Mickelson, Sheri
     institute: NCAR, USA
     orcid:
+  parsons_naomi:
+    name: Parsons, Naomi
+    institute: MetOffice, UK
+    orcid:
   oconnor_fiona:
     name: OConnor, Fiona
     institute: MetOffice, UK
@@ -631,6 +724,10 @@ authors:
     name: Sellar, Alistair
     institute: MetOffice, UK
     orcid: 0000-0002-2955-7254
+  sullivan_arnold:
+    name: Sullivan, Arnold
+    institute: CSIRO, Australia
+    orcid: https://orcid.org/0000-0002-5712-6195
   wyser_klaus:
     name: Wyser, Klaus
     institute: SMHI, Sweden
@@ -698,7 +795,7 @@ authors:
     orcid:
   reader_cathy:
     name: Reader, Cathy
-    institute:
+    institute: CCCma, ECCC, Canada
     orcid:
     github: mcreader97
   rumbold_heather:
@@ -713,6 +810,10 @@ authors:
     name: Stevens, Mark
     institute: NCAR, US
     orcid:
+  storkey_dave:
+    name: Storkey, Dave
+    institute: MetOffice, UK
+    orcid: 0000-0001-8000-5335
   # Former viewers (not active viewers)
   adeniyi_kemisola:
     name: Adeniyi, Kemisola
@@ -770,6 +871,7 @@ projects:
   crescendo: EU H2020 project CRESCENDO
   dlrveu2: DLR project VEU2
   dlrveu: DLR project VEU
+  dlrmabak: DLR project MABAK
   embrace: EU FP7 project EMBRACE
   esm2025: EU H2020 project ESM2025 - Earth system models for the future
   esmval: DLR project ESMVal

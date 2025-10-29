@@ -54,12 +54,67 @@ With the following release schedule, we strive to have three releases per year a
 Upcoming releases
 ^^^^^^^^^^^^^^^^^
 
-- 2.11.0 (Release Manager: TBD)
++------------+-----------------------+------------------+
+|  Date      | Release manager       | Version          |
++============+=======================+==================+
+| 2026 Q1    | DLR                   | 2.14.0           |
++------------+-----------------------+------------------+
+| 2026 Q2    | ACCESS-NRI            | 2.15.0           |
++------------+-----------------------+------------------+
+| 2026 Q4    | Met Office            | 2.16.0           |
++------------+-----------------------+------------------+
+| 2027 Q1    | NLeSC                 | 2.17.0           |
++------------+-----------------------+------------------+
+| 2027 Q2    | NERC (NCAS)           | 2.18.0           |
++------------+-----------------------+------------------+
+| 2027 Q4    | BSC                   | 2.19.0           |
++------------+-----------------------+------------------+
 
-Planned for February or March 2024
 
 Past releases
 ^^^^^^^^^^^^^
+
+- 2.13.0 (Release Manager: `Julien Lenhardt`_)
+
++------------+------------+----------------------------------------+-------------------------------------+
+|  Planned   |    Done    |            Event                       |             Changelog               |
++============+============+========================================+=====================================+
+| 2025-08-18 |            | ESMValCore `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2025-08-29 | 2025-10-16 | ESMValCore Release 2.13.0              | :ref:`esmvalcore:changelog-v2-13-0` |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2025-09-01 |            | ESMValTool `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2025-09-12 | 2025-10-20 | ESMValTool Release 2.13.0              |      :ref:`changelog-v2-13-0`       |
++------------+------------+----------------------------------------+-------------------------------------+
+
+- 2.12.0 (Release Manager: `Saskia Loosveldt Tomas`_)
+
++------------+------------+----------------------------------------+-------------------------------------+
+|  Planned   |    Done    |            Event                       |             Changelog               |
++============+============+========================================+=====================================+
+| 2025-01-13 |            | ESMValCore `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2025-01-20 | 2025-02-27 | :esmvalcore-release:`v2.12.0` released | :ref:`esmvalcore:changelog-v2-12-0` |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2025-01-27 |            | ESMValTool `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2025-02-03 | 2025-03-05 | :release:`v2.12.0` released            | :ref:`changelog-v2-12-0`            |
++------------+------------+----------------------------------------+-------------------------------------+
+
+- 2.11.0 (Release Manager: Met Office: `Emma Hogan`_, `Chris Billows`_, `Ed Gillett`_)
+
++------------+------------+----------------------------------------+-------------------------------------+
+|  Planned   |    Done    |            Event                       |             Changelog               |
++============+============+========================================+=====================================+
+| 2024-04-22 |            | ESMValCore `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2023-05-03 | 2024-07-03 | :esmvalcore-release:`v2.11.0` released | :ref:`esmvalcore:changelog-v2-11-0` |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2023-05-06 |            | ESMValTool `Feature Freeze`_           |                                     |
++------------+------------+----------------------------------------+-------------------------------------+
+| 2023-05-17 | 2024-07-04 | :release:`v2.11.0` released            | :ref:`changelog-v2-11-0`            |
++------------+------------+----------------------------------------+-------------------------------------+
 
 - 2.10.0 (Release Manager: `Klaus Zimmermann`_)
 
@@ -588,7 +643,7 @@ built correctly by
 1. checking that the version tag is available on `Dockerhub`_ and the ``stable``
    tag has been updated,
 2. running some recipes with the ``stable`` tag Docker container, for example one
-   recipe for Python, NCL, R, and Julia,
+   recipe for Python, NCL, and R,
 3. running a recipe with a Singularity container built from the ``stable`` tag.
 
 If there is a problem with the automatically built container image, you can fix
@@ -647,3 +702,7 @@ Changelog
 .. _Manuel Schlund: https://github.com/schlunma
 .. _Javier Vegas-Regidor: https://github.com/jvegasbsc
 .. _Klaus Zimmermann: https://github.com/zklaus
+.. _Emma Hogan: https://github.com/ehogan
+.. _Chris Billows: https://github.com/chrisbillowsMO
+.. _Ed Gillett: https://github.com/mo-gill
+.. _Julien Lenhardt: https://github.com/jlenh

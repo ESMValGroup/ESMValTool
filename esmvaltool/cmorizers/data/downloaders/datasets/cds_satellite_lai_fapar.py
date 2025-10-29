@@ -8,8 +8,9 @@ from esmvaltool.cmorizers.data.downloaders.cds import CDSDownloader
 from esmvaltool.cmorizers.data.utilities import unpack_files_in_folder
 
 
-def download_dataset(config, dataset, dataset_info, start_date, end_date,
-                     overwrite):
+def download_dataset(
+    config, dataset, dataset_info, start_date, end_date, overwrite
+):
     """Download dataset.
 
     Parameters
@@ -34,18 +35,18 @@ def download_dataset(config, dataset, dataset_info, start_date, end_date,
 
     loop_date = start_date
     downloader = CDSDownloader(
-        product_name='satellite-lai-fapar',
+        product_name="satellite-lai-fapar",
         request_dictionary={
-            'variable': [
-                'fapar',
-                'lai',
+            "variable": [
+                "fapar",
+                "lai",
             ],
-            'satellite': 'spot',
-            'sensor': 'vgt',
-            'horizontal_resolution': '1km',
-            'product_version': 'V1',
-            'nominal_day': '20',
-            'format': 'tgz',
+            "satellite": "spot",
+            "sensor": "vgt",
+            "horizontal_resolution": "1km",
+            "product_version": "V1",
+            "nominal_day": "20",
+            "format": "tgz",
         },
         config=config,
         dataset=dataset,

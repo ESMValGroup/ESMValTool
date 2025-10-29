@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    glob_attrs = cfg['attributes']
+    cmor_table = cfg["cmor_table"]
+    glob_attrs = cfg["attributes"]
 
     # variable_list contains the variable list
     # variable_keys has the short 'code' as a key for the variables.

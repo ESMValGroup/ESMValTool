@@ -88,7 +88,7 @@ begin
   TYPE = "sat"
 
   ; Version
-  VERSION = "V002_01"
+  VERSION = "V002-01"
 
   ; Global attributes
   SOURCE = "https://wui.cmsaf.eu/"

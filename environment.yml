@@ -10,24 +10,28 @@ channels:
 
 dependencies:
   - aiohttp
+  - arviz
   - cartopy
-  - cdo >=1.9.7
+  - cdo >=2.3.0
   - cdsapi
   - cf-units
+  - cfgrib
   - cftime
   - cmocean
   - cython
-  - dask
+  - dask !=2024.8.0  # https://github.com/dask/dask/issues/11296
   - distributed
   - ecmwf-api-client
   - eofs
   - esmpy
-  - esmvalcore 2.10.*
+  - esmvalcore 2.13.*
   - fiona
   - fire
-  - gdal
-  - iris >=3.6.1
-  - iris-esmf-regrid >=0.7.0
+  - fsspec
+  - gdal >=3.9.0
+  - ipython
+  - iris >=3.11
+  - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - jinja2
   - joblib
   - lime
@@ -44,31 +48,28 @@ dependencies:
   - pip !=21.3
   - progressbar2
   - prov
-  - psyplot
-  - psy-maps
-  - psy-reg
-  - psy-simple
   - pyproj >=2.1
-  - python >=3.9
+  - pys2index  # only from conda-forge
+  - python >=3.11,<3.14
   - python-cdo
   - python-dateutil
   - pyyaml
-  - rasterio
+  - rasterio >=1.3.10
   - requests
   - ruamel.yaml
   - scikit-image
-  - scikit-learn >= 1.4.0  # github.com/ESMValGroup/ESMValTool/issues/3504
+  - scikit-learn >=1.4.0  # github.com/ESMValGroup/ESMValTool/issues/3504
   - scipy
   - seaborn
   - seawater
-  - shapely >=2
+  - shapely >=2.0.2
   - xarray >=0.12.0
   - xesmf >=0.7.1
   - xgboost >1.6.1  # github.com/ESMValGroup/ESMValTool/issues/2779
   - xlsxwriter
   - zarr
   # Python packages needed for unit testing
-  - flake8
+  - pre-commit
   - pytest >=3.9,!=6.0.0rc1,!=6.0.0
   - pytest-cov
   - pytest-env
@@ -78,23 +79,20 @@ dependencies:
   - pytest-xdist
   # Python packages needed for building docs
   - autodocsumm >=0.2.2
-  - nbsphinx
+  - myst-nb
   - sphinx >=6.1.3
   - pydata-sphinx-theme
   # Python packages needed for development
-  - codespell
-  - docformatter
+  - codespell ==2.3.0
+  - docformatter ==1.7.5
   - imagehash
-  - isort
-  - pre-commit
-  - prospector
+  - prospector >=1.12  # earliest support for Python 3.12
   - pyroma
   # - vprof not on conda-forge
-  - yamllint
-  - yapf
+  - yamllint ==1.35.1
 
   # NCL and dependencies
-  - ncl
+  - ncl >=6.6.2
   - cdo
   - imagemagick
   - nco
@@ -103,7 +101,7 @@ dependencies:
   - cdo
   - r-base >=3.5
   - r-abind
-  - r-akima <=0.6-2.3  # see https://github.com/ESMValGroup/ESMValTool/issues/2695
+  - r-akima
   - r-climdex.pcic
   - r-climprojdiags
   - r-docopt
@@ -111,7 +109,6 @@ dependencies:
   - r-functional
   - r-ggplot2
   - r-gridextra
-  - r-lintr
   - r-logging
   - r-mapproj
   - r-maps
@@ -125,13 +122,9 @@ dependencies:
   - r-s2dverification
   - r-snow
   - r-spei
-  - r-styler
   - r-udunits2
   - r-yaml
   # R packages needed for development
   - r-git2r  # dependency of lintr
-  - r-lintr
-  - r-styler
-
-  # Julia (dependencies installed by separate script)
-  - julia
+  - r-lintr ==3.1.2
+  - r-styler ==1.10.3
