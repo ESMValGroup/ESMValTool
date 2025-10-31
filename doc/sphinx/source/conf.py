@@ -275,6 +275,7 @@ latex_elements = {
     # Additional stuff for the LaTeX preamble.
     'preamble':
     r'''
+   \maxdeadcycles=1000
    \makeatletter
    \renewcommand{\maketitle}{
      \newcommand{\MONTH}{%
