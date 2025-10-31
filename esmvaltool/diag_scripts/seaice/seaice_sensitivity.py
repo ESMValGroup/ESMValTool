@@ -6,6 +6,7 @@ from pathlib import Path
 import iris
 import matplotlib.pyplot as plt
 import pandas as pd
+import yaml
 from matplotlib.colors import Normalize
 from scipy import stats
 
@@ -37,13 +38,24 @@ def get_provenance_record(cfg, caption):
     return record
 
 
-def list_datasets(data):
-    """Actually returns a set of datatsets, to avoid duplication."""
-    logger.debug("listing datasets")
-    datasets = set()
+def create_categorised_dataset_dict(data):
+    """Create a dictionary of datasets categorised into models and observations."""
+    logger.debug("Creating categorised dataset dictionary from %s", data)
+    # Initialise blank dictionary
+    dict = {
+        'models': {},
+        'observations': {},
+    }
+
+    # Iterate over the data
     for element in data:
-        datasets.add(element["dataset"])
-    return datasets
+        if 'observation' in element:
+            if element['observation']:
+                dict['observations'][element['dataset']] = {}
+        else:
+            dict['models'][element['dataset']] = {}
+
+    return dict
 
 
 def extract_cube(data, variable_group):
@@ -142,28 +154,6 @@ def write_obs_from_cfg(cfg):
     obs_dict["notz_style"]["std_dev"] = notz_values["standard deviation"]
     obs_dict["notz_style"]["plausible"] = notz_values["plausible range"]
 
-    # Add a blank dictionary for the Roach-style plot
-    obs_dict["roach_style"] = {}
-
-    # Add each observation point to the dictionary
-    roach_values = cfg["observations"]["annual trends (Roach-style plot)"]
-    for point in roach_values.keys():
-        obs_dict["roach_style"][point] = {}
-
-        # Add the individual values for the observation point
-        obs_dict["roach_style"][point]["annual_tas_trend"] = roach_values[
-            point
-        ]["GMST trend"]
-        obs_dict["roach_style"][point]["annual_siconc_trend"] = roach_values[
-            point
-        ]["SIA trend"]
-        obs_dict["roach_style"][point]["r_value"] = roach_values[point][
-            "Pearson CC of SIA over GMST"
-        ]
-        obs_dict["roach_style"][point]["p_value"] = roach_values[point][
-            "significance of SIA over GMST"
-        ]
-
     return obs_dict
 
 
@@ -208,7 +198,7 @@ def write_dictionary_to_csv(cfg, model_dict, filename):
     csv_filepath = f"{cfg['work_dir']}/{filename}.csv"
 
     # Write the data to a csv file (via a Pandas DataFrame)
-    pd.DataFrame.from_dict(model_dict, orient="index").to_csv(csv_filepath)
+    pd.DataFrame.from_dict(model_dict, orient="index").to_csv(csv_filepath, index_label="Dataset")
     logger.info("Wrote data to %s", csv_filepath)
 
     # Create a provenance record for the csv file
@@ -349,54 +339,36 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         if inner_dict["label"] == "to_label":
             plt.annotate(dataset, xy=(x, y), xytext=(x + 0.01, y - 0.005))
 
-    # Read from observations dictionary
-    obs_years = titles_dictionary["obs"]["obs_period"]
-    obs_dict = titles_dictionary["obs"]["roach_style"]
-
-    # Add the observations
-    for point in obs_dict.keys():
-        # Get the values for the point
-        x = obs_dict[point]["annual_tas_trend"]
-        y = obs_dict[point]["annual_siconc_trend"]
-        r_corr = obs_dict[point]["r_value"]
-        p_val = obs_dict[point]["p_value"]
-
-        # Provide a default colour for the point if Pearson coefficient is missing
-        if r_corr is None:
-            r_corr = 0
-
-        # Provide a pattern for the point if the p-value is present and sufficiently large
-        if p_val is not None and p_val >= 0.05:
-            h = 5 * "/"  # This is a hatch pattern
-        else:
-            h = None
-
-        # Plot the point only if both x and y values are provided
-        if x is not None and y is not None:
-            plt.scatter(
-                x,
-                y,
-                marker="s",
-                s=150,
-                c=[r_corr],
-                hatch=h,
-                cmap=cmap,
-                norm=norm,
-                zorder=0,
-                edgecolors="black",
-            )
+        # # Provide a default colour for the point if Pearson coefficient is missing
+        # if r_corr is None:
+        #     r_corr = 0
+        #
+        # # Provide a pattern for the point if the p-value is present and sufficiently large
+        # if p_val is not None and p_val >= 0.05:
+        #     h = 5 * "/"  # This is a hatch pattern
+        # else:
+        #     h = None
+        #
+        # # Plot the point only if both x and y values are provided
+        # if x is not None and y is not None:
+        #     plt.scatter(
+        #         x,
+        #         y,
+        #         marker="s",
+        #         s=150,
+        #         c=[r_corr],
+        #         hatch=h,
+        #         cmap=cmap,
+        #         norm=norm,
+        #         zorder=0,
+        #         edgecolors="black",
+        #     )
 
     # Add a colour bar
     plt.colorbar(label="Pearson correlation coefficient")
 
-    # Create caption based on whether observational temp trend is present
-    if obs_dict["first point"]["annual_tas_trend"] is not None:
-        caption = (
-            "Decadal trends of sea ice area and global mean temperature."
-            f"Observations from {obs_years} are plotted as squares."
-        )
-    else:
-        caption = "Decadal trends of sea ice area and global mean temperature."
+    # Create caption
+    caption = "Decadal trends of sea ice area and global mean temperature."
 
     # Save the figure (also closes it)
     save_figure(
@@ -419,21 +391,17 @@ def main(cfg):
     titles_and_obs_dict = create_titles_dict(input_data, cfg)
     logger.debug("Titles and observations dictionary: %s", titles_and_obs_dict)
 
-    # Initialize blank data dictionary to send to plotting codes later
-    data_dict = {}
-
     # Get list of datasets from cfg
     logger.info("Listing datasets in the data")
-    datasets = list_datasets(input_data)
+    dataset_dict = create_categorised_dataset_dict(input_data)
+    data_dict = dataset_dict['models']
+
 
     # Iterate over each dataset
-    for dataset in datasets:
+    for dataset in data_dict.keys():
         # Select only data from that dataset
         logger.debug("Selecting data from %s", dataset)
         selection = select_metadata(input_data, dataset=dataset)
-
-        # Add the dataset to the dictionary with a blank inner dictionary
-        data_dict[dataset] = {}
 
         # Add an entry to determine labelling in plots
         if "label_dataset" in selection[0]:
