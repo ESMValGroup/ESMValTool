@@ -44,28 +44,18 @@ def calc_slwt_obs(
     ancestors: list,
     timerange: str,
 ) -> np.array:
-    """Calculate simplified weathertypes for observation datasets based on \
-        precipitation patterns over specified area.
+    """Calculate simplified weathertypes for observational data.
 
     Args:
-    ----
-        cfg : dict
-            Configuration dictionary from recipe
-        lwt : np.array
-            Array of Lamb WT
-        cube : iris.cube.Cube
-            Cube of psl data
-        dataset : str
-            Name of dataset
-        ancestors : list
-            List of ancestors
-        timerange : str
-            Time range for the calculation
+        cfg (dict): Configuration dictionary from recipe
+        lwt (np.array): Array of Lamb WT
+        cube (iris.cube.Cube): Cube of psl data
+        dataset (str): Name of dataset
+        ancestors (list): List of ancestors
+        timerange (str): Time range for the calculation
 
-    Returns
-    -------
-        np.array
-            Simplified Lamb Weathertypes
+    Returns:
+        np.array: Simplified Lamb Weathertypes
     """
     logger.info("Calculating simplified Lamb Weathertypes for %s", dataset)
 
@@ -131,10 +121,8 @@ def calc_const():
     scheme.
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
-    Returns
-    -------
-        tuple
-            The four constants needed for WT calculation.
+    Returns:
+        tuple: The four constants needed for WT calculation.
     """
     const1 = 1 / np.cos(45 * np.pi / 180)
     const2 = np.sin(45 * np.pi / 180) / np.sin(40 * np.pi / 180)
@@ -153,14 +141,10 @@ def calc_westerly_flow(cube: iris.cube.Cube) -> np.array:
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
-    ----
-        cube : iris.cube.Cube
-            Cube of psl data.
+        cube (iris.cube.Cube): Cube of psl data.
 
-    Returns
-    -------
-        np.array
-            westerly flow
+    Returns:
+        np.array: westerly flow
     """
     return 1 / 2 * (cube.data[:, 1, 2] + cube.data[:, 1, 4]) - 1 / 2 * (
         cube.data[:, 3, 2] + cube.data[:, 3, 4]
@@ -176,15 +160,11 @@ def calc_southerly_flow(cube: iris.cube.Cube, const1: float) -> np.array:
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
-    ----
-        cube : iris.cube.Cube
-            cube of psl data
-        const1 : float
-            const1
-    Returns
-    -------
-        np.array
-            southerly flow
+        cube (iris.cube.Cube): cube of psl data
+        const1 (float): const1
+
+    Returns:
+        np.array: southerly flow
     """
     return const1 * (
         1
@@ -208,15 +188,12 @@ def calc_resultant_flow(
 
     Args:
     ----
-        westerly_flow : np.array
-            westerly flow
-        southerly_flow : np.array
-            southerly flow
+        westerly_flow (np.array): westerly flow
+        southerly_flow (np.array): southerly flow
 
     Returns
     -------
-        np.array
-            resultant flow
+        np.array: resultant flow
     """
     return (southerly_flow**2 + westerly_flow**2) ** (1 / 2)
 
@@ -233,17 +210,13 @@ def calc_westerly_shear_velocity(
 
     Args:
     ----
-        cube : iris.cube.Cube
-            cube of psl data
-        const2 : float
-            const2
-        const3 : float
-            const3
+        cube (iris.cube.Cube): cube of psl data
+        const2 (float): const2
+        const3 (float): const3
 
     Returns
     -------
-        np.array
-            westerly shear velocity
+        np.array: westerly shear velocity
     """
     return const2 * (
         1 / 2 * (cube.data[:, 0, 2] + cube.data[:, 0, 4])
@@ -266,15 +239,12 @@ def calc_southerly_shear_velocity(
 
     Args:
     ----
-        cube : iris.cube.Cube
-            cube of psl data
-        const4 : float
-            const
+        cube (iris.cube.Cube): cube of psl data
+        const4 (float): const
 
     Returns
     -------
-        np.array
-            southerly shear velocity
+        np.array: southerly shear velocity
     """
     return const4 * (
         1
@@ -303,16 +273,11 @@ def calc_total_shear_velocity(
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
-    ----
-        westerly_shear_velocity : np.array
-            westerly shear velocity
-        southerly_shear_velocity : np.array
-            southerly shear velocity
+        westerly_shear_velocity (np.array): westerly shear velocity
+        southerly_shear_velocity (np.array): southerly shear velocity
 
     Returns
-    -------
-        np.array
-            total shear velocity
+        np.array:total shear velocity
     """
     return westerly_shear_velocity + southerly_shear_velocity
 
@@ -326,17 +291,13 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
-    ----
-        cube : iris.cube.Cube
-            Cube of psl data.
-        dataset : str
-            Name of dataset.
+        cube (iris.cube.Cube): Cube of psl data
+        dataset (str): Name of dataset
 
-    Returns
-    -------
-        np.array
-            Array of Lamb WT for each day
+    Returns:
+        np.array: Lamb weathertypes
     """
+
     # lats and lons corresponding to datapoints
     # 55, 5 -> 1
     # 55, 15 -> 2
@@ -466,18 +427,13 @@ def calc_lwt_slwt_model(
     data_info: dict,
     predefined_slwt: bool | dict,
 ):
-    """Calculate Lamb WT and simplified WT for model data.
+    """Calculate Lamb as well as simplified weathertypes for model.
 
     Args:
-    ----
-        cfg : dict
-            Configuration dictionary from recipe
-        cube : iris.cube.Cube
-            PSL field of dataset
-        data_info : dict
-            Dictionary with info to dataset
-        predefined_slwt : bool | dict
-            If False, automatic_slwt will be used.
+        cfg (dict): Configuration dictionary from recipe
+        cube (iris.cube.Cube): PSL field of dataset
+        data_info (dict): Dictionary with info to dataset
+        predefined_slwt (bool | dict): If False, automatic_slwt will be used.
             If dict, this mapping dict will be used.
             (see recipe option predefined_slwt)
     """
@@ -570,19 +526,7 @@ def calc_lwt_slwt_model(
 
 
 def rmse(subarray1: np.array, subarray2: np.array) -> np.array:
-    """Calculate rsme.
-
-    Args:
-        subarray1 : np.array
-            First subarray
-        subarray2 : np.array
-            Second subarray
-
-    Returns
-    -------
-        np.array
-            rsme array
-    """
+    """Calculate root mean square error between two arrays."""
     return np.sqrt(np.mean((subarray1 - subarray2) ** 2))
 
 
@@ -592,31 +536,16 @@ def process_prcp_mean(
     dataset: str,
     timerange: str,
 ) -> list:
-    """Process precipitation fields.
-
-    Specified area to get a list of selected pairs of weathertypes
-    with the highest correlation (higher than correlation_threshold)
-    and smallest RSME (smaller than rsme_threshold) for
-    further processing and simplifying the WT.
+    """Return which weathertypes can be grouped together for a certain precipitation pattern.
 
     Args:
-        cfg : dict
-            Configuration dictionary from recipe
-        data : np.array
-            Array of precipitation means for each WT
-        correlation_threshold : float
-            correlation threshold
-        rmse_threshold : float
-            rsme threshold
-        dataset : str
-            Name of dataset
-        timerange : str
-            Time range of dataset
+        cfg (dict): Configuration dictionary from recipe
+        data (np.array): Array of precipitation means for each WT
+        dataset (str): Name of dataset
+        timerange (str): Time range of dataset
 
-    Returns
-    -------
-        list
-            Selected pairs of WT. This is passed to get_mapping_dict
+    Returns:
+        list: Selected pairs of WT. This is passed to get_mapping_dict
     """
     logger.info("Calculating corr and rsme matrices for %s", dataset)
 
@@ -658,17 +587,13 @@ def calc_wt_means(
     wt_cubes: iris.cube.CubeList,
     data_info: dict,
 ):
-    """Calculate means of fields of each weathertype.
+    """Calculate means for psl, tas or pr for weathertypes.
 
     Args:
-        cfg : dict
-            Configuration dictionary from recipe
-        cube : iris.cube.Cube
-            Cube with variable data
-        wt_cubes : iris.cube.CubeList
-            List of cubes of lwt, slwt_ERA5 and slwt_EOBS
-        data_info : dict
-            Dictionary with info to dataset
+        cfg (dict): Configuration dictionary from recipe
+        cube (iris.cube.Cube): Cube with variable data
+        wt_cubes (iris.cube.CubeList): List of cubes of lwt, slwt_ERA5 and slwt_EOBS
+        data_info (dict): Dictionary with info to dataset
     """
     var_name = data_info.get("var")
     wt_string = data_info.get("wt_string")
@@ -681,20 +606,7 @@ def calc_wt_means(
         wt_string,
     )
 
-    if wt_string == "slwt_ERA5":
-        slwt_era5_cube = wt_cubes[1]
-        tcoord = slwt_era5_cube.coord("time")
-        wt_array = slwt_era5_cube.data[:]
-    elif wt_string == "slwt_EOBS":
-        slwt_eobs_cube = wt_cubes[2]
-        tcoord = slwt_eobs_cube.coord("time")
-        wt_array = slwt_eobs_cube.data[:]
-    elif wt_string == "lwt":
-        lwt_cube = wt_cubes[0]
-        tcoord = lwt_cube.coord("time")
-        wt_array = lwt_cube.data[:]
-    else:
-        raise NameError("wt_array does not exist in line 699.")
+    wt_array, tcoord = get_wt_array(wt_string, wt_cubes)
 
     for wt in range(1, len(np.unique(wt_array)) + 1):
         target_indices = np.where(wt_array == wt)
@@ -740,34 +652,19 @@ def calc_wt_means(
     )
 
 
-def calc_wt_anomalies(
-    cfg: dict,
-    cube: iris.cube.Cube,
-    wt_cubes: iris.cube.CubeList,
-    data_info: dict,
-):
-    """Calculate anomalies of fields of each weathertype.
+def get_wt_array(wt_string: str, wt_cubes: iris.cube.CubeList) -> np.array:
+    """Get weathertype array and time coordinate based on wt_string.
 
     Args:
-        cfg : dict
-            Configuration dictionary from recipe
-        cube : iris.cube.Cube
-            Cube with variable data
-        wt_cubes : iris.cube.CubeList
-            List of cubes of lwt, slwt_ERA5 and slwt_EOBS
-        data_info : dict
-            Dictionary with info to dataset
+        wt_string(str): string for weathertype selection
+        wt_cubes(iris.cube.CubeList): list of weathertype cubes
+
+    Raises:
+        NameError: if wt_array does not exist for the given wt_string
+
+    Returns:
+        (np.array, np.array): weathertype array and time coordinate
     """
-    var_name = data_info.get("var_name")
-    wt_string = data_info.get("wt_string")
-
-    logger.info(
-        "Calculating %s %s anomalies for %s",
-        data_info.get("dataset"),
-        var_name,
-        wt_string,
-    )
-
     if wt_string == "slwt_ERA5":
         slwt_era5_cube = wt_cubes[1]
         tcoord = slwt_era5_cube.coord("time")
@@ -781,7 +678,38 @@ def calc_wt_anomalies(
         tcoord = lwt_cube.coord("time")
         wt_array = lwt_cube.data[:]
     else:
-        raise NameError("wt_array does not exist in line 817.")
+        raise NameError(
+            "wt_array does not exist for calc_wt_means, calc_wt_anomalies or calc_wt_std."
+        )
+
+    return wt_array, tcoord
+
+
+def calc_wt_anomalies(
+    cfg: dict,
+    cube: iris.cube.Cube,
+    wt_cubes: iris.cube.CubeList,
+    data_info: dict,
+):
+    """Calculate anomalies for psl, tas and pr for weathertypes.
+
+    Args:
+        cfg (dict): Configuration dictionary from recipe
+        cube (iris.cube.Cube): Cube with variable data
+        wt_cubes (iris.cube.CubeList): List of cubes of lwt, slwt_ERA5 and slwt_EOBS
+        data_info (dict): Dictionary with info to dataset
+    """
+    var_name = data_info.get("var_name")
+    wt_string = data_info.get("wt_string")
+
+    logger.info(
+        "Calculating %s %s anomalies for %s",
+        data_info.get("dataset"),
+        var_name,
+        wt_string,
+    )
+
+    wt_array, tcoord = get_wt_array(wt_string, wt_cubes)
 
     for wt in range(1, len(np.unique(wt_array)) + 1):
         target_indices = np.where(wt_array == wt)
@@ -821,10 +749,8 @@ def calc_wt_anomalies(
         ["anomaly"],
     )
 
-    local_path = f"{cfg.get('plot_dir')}/anomaly"
-
     log_provenance(
-        f"{local_path}/{wt_string}_{wt}_{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
+        f"{cfg.get('plot_dir')}/anomaly/{wt_string}_{wt}_{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
         f"_{var_name}_anomaly__{data_info.get('timerange')}",
         cfg,
         provenance_record,
@@ -837,17 +763,13 @@ def calc_wt_std(
     wt_cubes: iris.cube.CubeList,
     data_info: dict,
 ):
-    """Calculate standard deviation of fields of each weathertype.
+    """Calculate standard deviation for psl, tas and pr for weathertypes.
 
     Args:
-        cfg : dict
-            Configuration dictionary from recipe
-        cube : iris.cube.Cube
-            Cube with variable data
-        wt_cubes : iris.cube.CubeList
-            List of cubes of lwt, slwt_ERA5 and slwt_EOBS
-        data_info : dict
-            Dictionary with info to dataset
+        cfg (dict): Configuration dictionary from recipe
+        cube (iris.cube.Cube): Cube with variable data
+        wt_cubes (iris.cube.CubeList): List of cubes of lwt, slwt_ERA5 and slwt_EOBS
+        data_info (dict): Dictionary with info to dataset
     """
     var_name = data_info.get("var_name")
     wt_string = data_info.get("wt_string")
@@ -859,20 +781,7 @@ def calc_wt_std(
         wt_string,
     )
 
-    if wt_string == "slwt_ERA5":
-        slwt_era5_cube = wt_cubes[1]
-        tcoord = slwt_era5_cube.coord("time")
-        wt_array = slwt_era5_cube.data[:]
-    elif wt_string == "slwt_EOBS":
-        slwt_eobs_cube = wt_cubes[2]
-        tcoord = slwt_eobs_cube.coord("time")
-        wt_array = slwt_eobs_cube.data[:]
-    elif wt_string == "lwt":
-        lwt_cube = wt_cubes[0]
-        tcoord = lwt_cube.coord("time")
-        wt_array = lwt_cube.data[:]
-    else:
-        raise NameError("wt_array does not exist in line 353.")
+    wt_array, tcoord = get_wt_array(wt_string, wt_cubes)
 
     for wt in range(1, len(np.unique(wt_array)) + 1):
         target_indices = np.where(wt_array == wt)
@@ -918,18 +827,12 @@ def calc_wt_std(
 
 
 def calc_lwt_model(cfg: dict, cube: iris.cube.Cube, data_info: dict):
-    """Calculate lwt for model data.
+    """Calculate Lamb weathertypes for models.
 
     Args:
-    ----
-        cfg : dict
-            Configuration dictionary from recipe
-        cube : iris.cube.Cube
-            Cube to keep time coordinate
-        dataset : str
-            Name of dataset
-        data_info : dict
-            Dictionary with info to dataset
+        cfg (dict): Configuration dictionary from recipe
+        cube (iris.cube.Cube): Cube with variable data
+        data_info (dict): Dictionary with info to dataset
     """
     driver = get_driver(data_info)
 
@@ -993,20 +896,15 @@ def plot_means(
     data_info: dict,
     only_lwt=False,
 ):
-    """Wrapper function to plot various means/std/anomalies.
+    """Wrapper function for plotting means, anomalies and standard deviations.
 
     Args:
-        cfg : dict
-            Configuration dictionary from recipe
-        preproc_var : np.array
-            Preprocessed variable cube
-        wt_cubes : iris.cube.Cube
-            List of cubes of lwt, slwt_ERA5 and slwt_EOBS
-        data_info : dict
-            Dictionary with info to dataset
-        only_lwt : bool
-            If True, only lwt means are calculated.
-            If False, lwt, slwt_ERA5 and slwt_EOBS means are calculated.
+        cfg (dict): Configuration dictionary from recipe
+        preproc_var (np.array): Preprocessed variable cube
+        wt_cubes (iris.cube.Cube): List of cubes of lwt, slwt_ERA5 and slwt_EOBS
+        data_info (dict): Dictionary with info to dataset
+        only_lwt (bool, optional): If True, only lwt means are calculated.
+            If False, lwt, slwt_ERA5 and slwt_EOBS means are calculated. Defaults to False.
     """
     if not only_lwt:
         data_info["wt_string"] = "lwt"

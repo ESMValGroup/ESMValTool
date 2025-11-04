@@ -34,17 +34,13 @@ warnings.filterwarnings("ignore", ".*Collapsing a non-contiguous coordinate*")
 
 
 def generate_grayscale_hex_values(x):
-    """Generate grayscale values for plotting seasonal occurrence.
+    """Generate grayscale values for plotting seasonal occurences.
 
     Args:
-    ----
-        x : int
-            number of weathertypes
+        x (list): Amount of weathertypes.
 
-    Returns
-    -------
-        np.list
-            array with grayscale values as hex
+    Returns:
+        list: List of grayscale hex values
     """
     grayscale_values = np.linspace(0, 1, x)
     grayscale_hex = [
@@ -58,16 +54,12 @@ def generate_grayscale_hex_values(x):
 def plot_seasonal_occurrence(
     cfg: dict, wt_cubes: iris.cube.Cube, data_info: dict
 ):
-    """Plot relative monthly/seasonal occurrence of weathertypes.
+    """Plot seasonal occurences of weathertypes.
 
     Args:
-    ----
-        cfg : dict
-            Configuration dictionary from recipe
-        wt_cubes : iris.cube.Cube
-            Cube with weathertypes
-        data_info : dict
-            Dictionary with relevant info to dataset
+        cfg (dict): Configuration dictionary from recipe
+        wt_cubes (iris.cube.Cube): List of cubes of lwt, slwt_ERA5 and slwt_EOBS
+        data_info (dict): Dictionary with info to dataset
     """
     driver = get_driver(data_info)
 
@@ -97,28 +89,23 @@ def plot_seasonal_occurrence(
     for cube in wt_cubes:
         month_dict = {}
         for month in range(1, 13):
-            month_constraint = iris.Constraint(
-                time=iris.time.PartialDateTime(month=month)
-            )
-            array = cube.extract(month_constraint).data
+            array = cube.extract(
+                iris.Constraint(time=iris.time.PartialDateTime(month=month))
+            ).data
             unique, counts = np.unique(array, return_counts=True)
-            count_dict = dict(zip(unique, counts / sum(counts), strict=False))
-            month_dict[month] = count_dict
+            month_dict[month] = dict(
+                zip(unique, counts / sum(counts), strict=False)
+            )
         relative_occurrences[cube.long_name] = month_dict
-
-    x = month_list
 
     for wt_string in relative_occurrences:
         wt_numbers = max(
             len(value)
             for value in relative_occurrences.get(wt_string).values()
         )
-        colors = generate_grayscale_hex_values(wt_numbers)
         wt_stack = np.zeros((wt_numbers, 12))
         for month, month_value in relative_occurrences.get(wt_string).items():
-            print(month_value)
             for wt in month_value.keys():
-                print(month_value.get(wt))
                 wt_stack[np.int8(wt - 1), month - 1] = month_value.get(wt)
 
         y = np.vstack(list(wt_stack))
@@ -131,7 +118,9 @@ def plot_seasonal_occurrence(
             {data_info.get('dataset')}, {data_info.get('timerange')}"
         )
 
-        ax_.stackplot(x, y, colors=colors)
+        ax_.stackplot(
+            month_list, y, colors=generate_grayscale_hex_values(wt_numbers)
+        )
 
         ax_.legend(
             loc="upper center",
@@ -165,23 +154,16 @@ def plot_seasonal_occurrence(
 def plot_maps(
     wt: np.array, cfg: dict, cube: iris.cube.Cube, data_info: dict, mode: str
 ):
-    """Plot maps.
+    """Function to plot maps of means, std and anomalies.
 
     Args:
-    ----
-        wt : np.array
-            weathertype number
-        cfg : dict
-            Configuration dicitonary from recipe
-        cube : iris.cube.Cube
-            Data to be plotted
-        data_info : dict
-            Dictionary with info to dataset
-        mode : str
-            Statistics that is used
+        wt (np.array): WT array
+        cfg (dict): Configuration dictionary from recipe
+        cube (iris.cube.Cube): Data to be plotted
+        data_info (dict): Dictionary with info to dataset
+        mode (str): Statistics that is used
     """
     var_name = data_info.get("var")
-    driver = get_driver(data_info)
 
     logger.info(
         "Plotting %s %s %s for %s %s",
@@ -191,11 +173,6 @@ def plot_maps(
         data_info.get("wt_string"),
         wt,
     )
-
-    local_path = f"{cfg.get('plot_dir')}/{mode}"
-
-    if not os.path.exists(f"{local_path}"):
-        os.makedirs(f"{local_path}")
 
     ax = plt.axes(projection=ccrs.PlateCarree())
 
@@ -265,12 +242,15 @@ def plot_maps(
     ax.coastlines()
     ax.add_feature(cfeature.BORDERS, linestyle=":")
 
+    if not os.path.exists(f"{cfg.get('plot_dir')}/{mode}"):
+        os.makedirs(f"{cfg.get('plot_dir')}/{mode}")
+
     plt.savefig(
-        f"{local_path}/{data_info.get('wt_string')}_{wt}{driver}_{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
+        f"{cfg.get('plot_dir')}/{mode}/{data_info.get('wt_string')}_{wt}{get_driver(data_info)}_{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
         f"_{var_name}_{mode}_{data_info.get('timerange')}.png"
     )
     plt.savefig(
-        f"{local_path}/{data_info.get('wt_string')}_{wt}{driver}_{data_info.get('dataset')}_{data_info.get('ensemble', '')}_"
+        f"{cfg.get('plot_dir')}/{mode}/{data_info.get('wt_string')}_{wt}{get_driver(data_info)}_{data_info.get('dataset')}_{data_info.get('ensemble', '')}_"
         f"{var_name}_{mode}_{data_info.get('timerange')}.pdf"
     )
     plt.close()
@@ -283,20 +263,14 @@ def plot_corr_rmse_heatmaps(
     dataset: str,
     timerange: str,
 ):
-    """Plot heatmaps for correlation and rmse matrices.
+    """Plot correlation and rmse heatmaps.
 
     Args:
-    ----
-        cfg : dict
-            Configuration dictionary from recipe
-        pattern_correlation_matrix : np.array
-            pattern correlation matrix
-        rmse_matrix : np.array
-            rmse matrix
-        dataset : str
-            string of dataset
-        timerange : str
-            string of timerange
+        cfg (dict): Configuration dictionary from recipe
+        pattern_correlation_matrix (np.array): Pattern correlation matrix
+        rmse_matrix (np.array): RMSE matrix
+        dataset (str): Name of dataset
+        timerange (str): Time range for the calculation
     """
     output_path = f"{cfg.get('plot_dir')}/heatmaps"
 
@@ -367,18 +341,13 @@ def plot_corr_rmse_heatmaps(
 
 
 def get_colormap(colormap_string: str) -> ListedColormap:
-    """Get colormaps based on string.
+    """Get colormaps for plottings
 
     Args:
-    ----
-        colormap_string : str
-            String to get Colormaps for either
-            psl, tas or precipitation.
+        colormap_string (str): string to identify colormap
 
-    Returns
-    -------
-        ListedColormap
-            Choosen Colormap
+    Returns:
+        ListedColormap: Colormap for the specified variable
     """
     misc_seq_2_disc = [
         (230 / 255, 240 / 255, 240 / 255),
