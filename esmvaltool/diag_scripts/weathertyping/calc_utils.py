@@ -681,71 +681,40 @@ def calc_wt_means(
         wt_string,
     )
 
-    num_slwt = 0
-    target_indices = []
-    lwt, slwt_eobs, slwt_era5 = [], [], []
-
     if wt_string == "slwt_ERA5":
         slwt_era5_cube = wt_cubes[1]
         tcoord = slwt_era5_cube.coord("time")
-        slwt_era5 = slwt_era5_cube.data[:]
-        num_slwt = len(np.unique(slwt_era5))
+        wt_array = slwt_era5_cube.data[:]
     elif wt_string == "slwt_EOBS":
         slwt_eobs_cube = wt_cubes[2]
         tcoord = slwt_eobs_cube.coord("time")
-        slwt_eobs = slwt_eobs_cube.data[:]
-        num_slwt = len(np.unique(slwt_eobs))
+        wt_array = slwt_eobs_cube.data[:]
     elif wt_string == "lwt":
         lwt_cube = wt_cubes[0]
         tcoord = lwt_cube.coord("time")
-        lwt = lwt_cube.data[:]
-
-    if "slwt" in wt_string:
-        for wt in range(1, num_slwt + 1):
-            if wt_string == "slwt_ERA5":
-                target_indices = np.where(slwt_era5 == wt)
-            elif wt_string == "slwt_EOBS":
-                target_indices = np.where(slwt_eobs == wt)
-            else:
-                logger.info("WT_STRING not supported!")
-            if len(target_indices[0]) < 1:
-                logger.info(
-                    "calc_wt_means - CAUTION: Skipped %s %s \
-                    for dataset %s!",
-                    wt_string,
-                    wt,
-                    data_info.get("dataset"),
-                )
-                continue
-            dates = [
-                tcoord.units.num2date(tcoord.points[i]) for i in target_indices
-            ]
-            extracted_cube = cube.extract(
-                iris.Constraint(time=lambda t, d=dates: t.point in d[0])
-            )
-            wt_cube_mean = extracted_cube.collapsed("time", iris.analysis.MEAN)
-            plot_maps(wt, cfg, wt_cube_mean, data_info, "mean")
-    elif wt_string == "lwt":
-        for wt in range(1, 28):
-            target_indices = np.where(lwt == wt)
-            if len(target_indices[0]) < 1:
-                logger.info(
-                    "calc_wt_means - CAUTION: Skipped lwt %s \
-                    for dataset %s!",
-                    wt,
-                    data_info.get("dataset"),
-                )
-                continue
-            dates = [
-                tcoord.units.num2date(tcoord.points[i]) for i in target_indices
-            ]
-            extracted_cube = cube.extract(
-                iris.Constraint(time=lambda t, d=dates: t.point in d[0])
-            )
-            wt_cube_mean = extracted_cube.collapsed("time", iris.analysis.MEAN)
-            plot_maps(wt, cfg, wt_cube_mean, data_info, "mean")
+        wt_array = lwt_cube.data[:]
     else:
-        logger.info("WT_STRING NOT SUPPORTED.")
+        raise NameError("wt_array does not exist in line 699.")
+
+    for wt in range(1, len(np.unique(wt_array)) + 1):
+        target_indices = np.where(wt_array == wt)
+        if len(target_indices[0]) < 1:
+            logger.info(
+                "calc_wt_means - CAUTION: Skipped %s %s \
+                for dataset %s!",
+                wt_string,
+                wt,
+                data_info.get("dataset"),
+            )
+            continue
+        dates = [
+            tcoord.units.num2date(tcoord.points[i]) for i in target_indices
+        ]
+        extracted_cube = cube.extract(
+            iris.Constraint(time=lambda t, d=dates: t.point in d[0])
+        )
+        wt_cube_mean = extracted_cube.collapsed("time", iris.analysis.MEAN)
+        plot_maps(wt, cfg, wt_cube_mean, data_info, "mean")
 
     ancestors = [
         f"{data_info.get('preproc_path')}",
@@ -799,90 +768,45 @@ def calc_wt_anomalies(
         wt_string,
     )
 
-    target_indices = []
-    lwt, slwt_eobs, slwt_era5 = [], [], []
-
     if wt_string == "slwt_ERA5":
         slwt_era5_cube = wt_cubes[1]
         tcoord = slwt_era5_cube.coord("time")
-        slwt_era5 = slwt_era5_cube.data[:]
+        wt_array = slwt_era5_cube.data[:]
     elif wt_string == "slwt_EOBS":
         slwt_eobs_cube = wt_cubes[2]
         tcoord = slwt_eobs_cube.coord("time")
-        slwt_eobs = slwt_eobs_cube.data[:]
+        wt_array = slwt_eobs_cube.data[:]
     elif wt_string == "lwt":
         lwt_cube = wt_cubes[0]
         tcoord = lwt_cube.coord("time")
-        lwt = lwt_cube.data[:]
-
-    num_slwt_era5 = len(np.unique(slwt_era5))
-    num_slwt_eobs = len(np.unique(slwt_eobs))
-
-    if num_slwt_eobs != num_slwt_era5:
-        logger.info(
-            "calc_wt_anomalies - CAUTION: unequal number of \
-                    slwt_era5 (%s) and slwt_eobs (%s)!",
-            num_slwt_era5,
-            num_slwt_eobs,
-        )
-
-    if "slwt" in wt_string:
-        for wt in range(1, max(num_slwt_era5, num_slwt_eobs)):
-            if wt_string == "slwt_ERA5":
-                target_indices = np.where(slwt_era5 == wt)
-            elif wt_string == "slwt_EOBS":
-                target_indices = np.where(slwt_eobs == wt)
-            else:
-                logger.info("WT_STRING not supported!")
-            if len(target_indices[0]) < 1:
-                logger.info(
-                    "calc_wt_anomalies - CAUTION: Skipped wt %s \
-                    for dataset %s!",
-                    wt,
-                    data_info.get("dataset"),
-                )
-                continue
-            dates = [
-                tcoord.units.num2date(tcoord.points[i]) for i in target_indices
-            ]
-            extracted_cube = cube.extract(
-                iris.Constraint(time=lambda t, d=dates: t.point in d[0])
-            )
-            wt_cube_mean = extracted_cube.collapsed("time", iris.analysis.MEAN)
-            plot_maps(
-                wt,
-                cfg,
-                cube.collapsed("time", iris.analysis.MEAN) - wt_cube_mean,
-                data_info,
-                "anomaly",
-            )
-    elif wt_string == "lwt":
-        for wt in range(1, 28):
-            target_indices = np.where(lwt == wt)
-            if len(target_indices[0]) < 1:
-                logger.info(
-                    "calc_wt_anomalies - CAUTION: Skipped wt %s \
-                    for dataset %s!",
-                    wt,
-                    data_info.get("dataset"),
-                )
-                continue
-            dates = [
-                tcoord.units.num2date(tcoord.points[i]) for i in target_indices
-            ]
-            extracted_cube = cube.extract(
-                iris.Constraint(time=lambda t, d=dates: t.point in d[0])
-            )
-            wt_cube_mean = extracted_cube.collapsed("time", iris.analysis.MEAN)
-            plot_maps(
-                wt,
-                cfg,
-                cube.collapsed("time", iris.analysis.MEAN) - wt_cube_mean,
-                data_info,
-                "anomaly",
-            )
+        wt_array = lwt_cube.data[:]
     else:
-        logger.info("WT_STRING NOT SUPPORTED.")
+        raise NameError("wt_array does not exist in line 817.")
+
+    for wt in range(1, len(np.unique(wt_array)) + 1):
+        target_indices = np.where(wt_array == wt)
+        if len(target_indices[0]) < 1:
+            logger.info(
+                "calc_wt_anomalies - CAUTION: Skipped wt %s \
+                for dataset %s!",
+                wt,
+                data_info.get("dataset"),
+            )
+            continue
+        dates = [
+            tcoord.units.num2date(tcoord.points[i]) for i in target_indices
+        ]
+        extracted_cube = cube.extract(
+            iris.Constraint(time=lambda t, d=dates: t.point in d[0])
+        )
+        wt_cube_mean = extracted_cube.collapsed("time", iris.analysis.MEAN)
+        plot_maps(
+            wt,
+            cfg,
+            cube.collapsed("time", iris.analysis.MEAN) - wt_cube_mean,
+            data_info,
+            "anomaly",
+        )
 
     ancestors = [
         f"{data_info.get('preproc_path')}",
@@ -935,82 +859,39 @@ def calc_wt_std(
         wt_string,
     )
 
-    target_indices = []
-    lwt, slwt_eobs, slwt_era5 = [], [], []
-
     if wt_string == "slwt_ERA5":
         slwt_era5_cube = wt_cubes[1]
         tcoord = slwt_era5_cube.coord("time")
-        slwt_era5 = slwt_era5_cube.data[:]
+        wt_array = slwt_era5_cube.data[:]
     elif wt_string == "slwt_EOBS":
         slwt_eobs_cube = wt_cubes[2]
         tcoord = slwt_eobs_cube.coord("time")
-        slwt_eobs = slwt_eobs_cube.data[:]
+        wt_array = slwt_eobs_cube.data[:]
     elif wt_string == "lwt":
         lwt_cube = wt_cubes[0]
         tcoord = lwt_cube.coord("time")
-        lwt = lwt_cube.data[:]
-
-    num_slwt_era5 = len(np.unique(slwt_era5))
-    num_slwt_eobs = len(np.unique(slwt_eobs))
-
-    if num_slwt_eobs != num_slwt_era5:
-        logger.info(
-            "calc_wt_std - CAUTION: unequal number of \
-                    slwt_era5 (%s) and slwt_eobs (%s)!",
-            num_slwt_era5,
-            num_slwt_eobs,
-        )
-
-    if "slwt" in wt_string:
-        for wt in range(1, max(num_slwt_era5, num_slwt_eobs)):
-            if wt_string == "slwt_ERA5":
-                target_indices = np.where(slwt_era5 == wt)
-            elif wt_string == "slwt_EOBS":
-                target_indices = np.where(slwt_eobs == wt)
-            else:
-                logger.info("WT_STRING not supported!")
-            if len(target_indices[0]) < 1:
-                logger.info(
-                    "calc_slwt_obs - CAUTION: Skipped wt %s \
-                    for dataset %s!",
-                    wt,
-                    data_info.get("dataset"),
-                )
-                continue
-            dates = [
-                tcoord.units.num2date(tcoord.points[i]) for i in target_indices
-            ]
-            extracted_cube = cube.extract(
-                iris.Constraint(time=lambda t, d=dates: t.point in d[0])
-            )
-            wt_cube_std = extracted_cube.collapsed(
-                "time", iris.analysis.STD_DEV
-            )
-            plot_maps(wt, cfg, wt_cube_std, data_info, "stddev")
-    elif wt_string == "lwt":
-        for wt in range(1, 28):
-            target_indices = np.where(lwt == wt)
-            if len(target_indices[0]) < 1:
-                logger.info(
-                    "calc_wt_std - CAUTION: Skipped wt %s \
-                    for dataset %s!",
-                    wt,
-                    data_info.get("dataset"),
-                )
-                continue
-            dates = [
-                tcoord.units.num2date(tcoord.points[i]) for i in target_indices
-            ]
-            extracted_cube = cube.extract(
-                iris.Constraint(time=lambda t, d=dates: t.point in d[0])
-            )
-            wt_cube_std = extracted_cube.collapsed(
-                "time", iris.analysis.STD_DEV
-            )
-            plot_maps(wt, cfg, wt_cube_std, data_info, "stddev")
+        wt_array = lwt_cube.data[:]
     else:
-        logger.info("WT_STRING NOT SUPPORTED.")
+        raise NameError("wt_array does not exist in line 353.")
+
+    for wt in range(1, len(np.unique(wt_array)) + 1):
+        target_indices = np.where(wt_array == wt)
+        if len(target_indices[0]) < 1:
+            logger.info(
+                "calc_slwt_obs - CAUTION: Skipped wt %s \
+                for dataset %s!",
+                wt,
+                data_info.get("dataset"),
+            )
+            continue
+        dates = [
+            tcoord.units.num2date(tcoord.points[i]) for i in target_indices
+        ]
+        extracted_cube = cube.extract(
+            iris.Constraint(time=lambda t, d=dates: t.point in d[0])
+        )
+        wt_cube_std = extracted_cube.collapsed("time", iris.analysis.STD_DEV)
+        plot_maps(wt, cfg, wt_cube_std, data_info, "stddev")
 
     ancestors = [
         f"{data_info.get('preproc_path')}",
