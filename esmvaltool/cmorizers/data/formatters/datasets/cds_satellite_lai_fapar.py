@@ -77,9 +77,6 @@ def load_dataset(in_dir, var, cfg, year, month):
     
     return lai_cube.concatenate_cube()
 
-
-
-
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     # run the cmorization
@@ -130,7 +127,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                         lai_cube, cfg["Parameters"]["custom"]["regrid_resolution"], "nearest"
                     )
 
-                print(lai_cube)
+                # This sets time bounds without needing extra loops and checks
+                lai_cube.coord('time').guess_bounds()
+                print(lai_cube.coord('time'))
 
                 
         # time bounds
