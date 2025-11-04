@@ -97,7 +97,7 @@ def _cmorize_dataset(cube, var, cfg):
     return cube
 
 
-def cmorization(cube, var):
+def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
     # run the cmorization
     # Pass on the workdir to the cfg dictionary
