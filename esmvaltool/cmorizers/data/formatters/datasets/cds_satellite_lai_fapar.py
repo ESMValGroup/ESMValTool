@@ -95,7 +95,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     # add loops for month and year
     # this is to liit amount of data in memory so the full 10 day
     # resolution can be CMORized
-        
+
+    logger.info(f"{cfg=}")
+    logger.info(f"{cfg['Parameters']['custom']['regrid_resolution']=}")
+    
     for short_name, var in cfg["variables"].items():
         var["short_name"] = short_name
         logger.info("Processing var %s", short_name)
@@ -117,8 +120,19 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 lai_cube = load_dataset(in_dir, var, cfg, year, month)
                 print(lai_cube)
 
+                # Regrdding
+                # uses nearest neighbour, skips if resolution = None
+                resolution = cfg["Parameters"]["custom"]["regrid_resolution"]
+                if resolution == "None":
+                    pass
+                else:
+                    lai_cube = regrid(
+                        lai_cube, cfg["Parameters"]["custom"]["regrid_resolution"], "nearest"
+                    )
 
-        # regrid
+                print(lai_cube)
+
+                
         # time bounds
         # cmorize
         
