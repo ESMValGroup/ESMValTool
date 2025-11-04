@@ -896,7 +896,7 @@ def plot_means(
     data_info: dict,
     only_lwt=False,
 ):
-    """Wrapper function for plotting means, anomalies and standard deviations.
+    """Function for plotting means, anomalies and standard deviations.
 
     Args:
         cfg (dict): Configuration dictionary from recipe

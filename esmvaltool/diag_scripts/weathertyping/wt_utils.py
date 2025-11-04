@@ -477,7 +477,7 @@ def map_lwt_to_slwt(lwt: np.array, mapping_dict: dict) -> np.array:
         lwt (np.array): lwt array
         mapping_dict (dict): Mapping dictionary in {lwt: slwt, ...} format
 
-    Returns:
+    Returns
         np.array: array of slwt
     """
     return np.array([np.int8(mapping_dict.get(value, 0)) for value in lwt])
@@ -489,7 +489,8 @@ def check_mapping_dict_format(mapping_dict: dict) -> dict:
     Args:
         mapping_dict (dict): mapping dict in any format
 
-    Returns:
+    Returns
+    --------
         dict: mapping dict in {lwt: slwt, ...} format
     """
     if isinstance(mapping_dict.get(list(mapping_dict.keys())[0]), list):
