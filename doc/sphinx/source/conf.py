@@ -180,6 +180,8 @@ html_theme_options = {
         "image_light": "figures/ESMValTool-logo-2.png",
         "image_dark": "figures/ESMValTool-logo-2-dark.png",
     },
+    "navbar_center": ["cross_proj_navbar"],
+    "search_bar_text": "Search ESMValTool docs... (Also try search in ESMValCore docs)",
 }
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
@@ -224,7 +226,9 @@ html_css_files = ["custom.css"]
 # html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-# html_sidebars = {}
+html_sidebars = {
+    "**": ["sidebar_nav_lv1", "sidebar-ethical-ads"]
+}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
@@ -271,6 +275,7 @@ latex_elements = {
     # Additional stuff for the LaTeX preamble.
     'preamble':
     r'''
+   \maxdeadcycles=1000
    \makeatletter
    \renewcommand{\maketitle}{
      \newcommand{\MONTH}{%
@@ -498,7 +503,3 @@ extlinks = {
 }
 
 # -- Custom Document processing ----------------------------------------------
-
-import gensidebar
-
-gensidebar.generate_sidebar(globals(), "esmvaltool")
