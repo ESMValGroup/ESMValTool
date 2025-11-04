@@ -68,11 +68,6 @@ def calc_slwt_obs(
     """
     logger.info("Calculating simplified Lamb Weathertypes for %s", dataset)
 
-    work_dir = cfg.get("work_dir")
-    correlation_threshold = cfg.get("correlation_threshold")
-    rmse_threshold = cfg.get("rmse_threshold")
-    tcoord = cube.coord("time")
-
     wt_data_prcp = []
     for wt_ in range(1, 28):
         target_indices = np.where(lwt == wt_)
@@ -85,7 +80,8 @@ def calc_slwt_obs(
             )
             continue
         dates = [
-            tcoord.units.num2date(tcoord.points[i]) for i in target_indices
+            cube.coord("time").units.num2date(cube.coord("time").points[i])
+            for i in target_indices
         ]
         if dataset == "E-OBS":
             extracted_cube = cube[target_indices]
@@ -98,27 +94,29 @@ def calc_slwt_obs(
     selected_pairs = process_prcp_mean(
         cfg,
         wt_data_prcp,
-        correlation_threshold,
-        rmse_threshold,
         dataset,
         timerange,
     )
 
     with open(
-        f"{work_dir}/wt_selected_pairs_{dataset}.json", "w", encoding="utf-8"
+        f"{cfg.get('work_dir')}/wt_selected_pairs_{dataset}.json",
+        "w",
+        encoding="utf-8",
     ) as file:
         json.dump(selected_pairs, file)
 
     mapping_dict = get_mapping_dict(selected_pairs)
 
-    write_mapping_dict(work_dir, dataset, mapping_dict)
+    write_mapping_dict(cfg.get("work_dir"), dataset, mapping_dict)
 
     provenance_record = get_provenance_record(
         "Lamb Weathertypes", ancestors, ["Lamb Weathertypes"], False, False
     )
 
     log_provenance(
-        f"{work_dir}/wt_selected_pairs_{dataset}", cfg, provenance_record
+        f"{cfg.get('work_dir')}/wt_selected_pairs_{dataset}",
+        cfg,
+        provenance_record,
     )
 
     return map_lwt_to_slwt(lwt, mapping_dict)
@@ -482,36 +480,37 @@ def calc_lwt_slwt_model(
             If dict, this mapping dict will be used.
             (see recipe option predefined_slwt)
     """
-    work_dir = cfg.get("work_dir")
-    dataset = data_info.get("dataset")
-    preproc_path = data_info.get("preproc_path")
-    output_file_path = data_info.get("output_file_path")
-    ensemble = data_info.get("ensemble", "")
-    timerange = data_info.get("timerange")
     driver = data_info.get("driver", "")
     if driver != "":
         driver = f"_{driver}"
 
-    if not os.path.exists(f"{work_dir}/{output_file_path}"):
-        os.makedirs(f"{work_dir}/{output_file_path}")
+    if not os.path.exists(
+        f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}"
+    ):
+        os.makedirs(
+            f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}"
+        )
 
-    lwt = wt_algorithm(cube, dataset)
+    lwt = wt_algorithm(cube, data_info.get("dataset"))
 
-    tcoord = cube.coord("time")
-    time_points = tcoord.units.num2date(tcoord.points)
+    time_points = cube.coord("time").units.num2date(cube.coord("time").points)
 
     logger.info(
-        "Calculating simplified Lamb Weathertypes for %s %s", dataset, ensemble
+        "Calculating simplified Lamb Weathertypes for %s %s",
+        data_info.get("dataset"),
+        data_info.get("ensemble", ""),
     )
 
     if not predefined_slwt:
         with open(
-            f"{work_dir}/wt_mapping_dict_ERA5.json", encoding="utf-8"
+            f"{cfg.get('work_dir')}/wt_mapping_dict_ERA5.json",
+            encoding="utf-8",
         ) as file:
             mapping_dict_era5_f = json.load(file)
 
         with open(
-            f"{work_dir}/wt_mapping_dict_E-OBS.json", encoding="utf-8"
+            f"{cfg.get('work_dir')}/wt_mapping_dict_E-OBS.json",
+            encoding="utf-8",
         ) as file:
             mapping_dict_eobs_f = json.load(file)
         mapping_dict_era5 = reverse_convert_dict(mapping_dict_era5_f)
@@ -521,8 +520,8 @@ def calc_lwt_slwt_model(
         slwt_eobs = map_lwt_to_slwt(lwt, mapping_dict_eobs)
     else:
         predefined_slwt = check_mapping_dict_format(predefined_slwt)
-        write_mapping_dict(work_dir, "ERA5", predefined_slwt)
-        write_mapping_dict(work_dir, "E-OBS", predefined_slwt)
+        write_mapping_dict(cfg.get("work_dir"), "ERA5", predefined_slwt)
+        write_mapping_dict(cfg.get("work_dir"), "E-OBS", predefined_slwt)
         slwt_era5 = map_lwt_to_slwt(lwt, predefined_slwt)
         slwt_eobs = map_lwt_to_slwt(lwt, predefined_slwt)
 
@@ -531,14 +530,14 @@ def calc_lwt_slwt_model(
     wt_cube.append(iris.cube.Cube(slwt_era5, long_name="slwt_era5"))
     wt_cube.append(iris.cube.Cube(slwt_eobs, long_name="slwt_eobs"))
 
-    wt_cube[0].add_dim_coord(tcoord, 0)
-    wt_cube[1].add_dim_coord(tcoord, 0)
-    wt_cube[2].add_dim_coord(tcoord, 0)
+    wt_cube[0].add_dim_coord(cube.coord("time"), 0)
+    wt_cube[1].add_dim_coord(cube.coord("time"), 0)
+    wt_cube[2].add_dim_coord(cube.coord("time"), 0)
 
     iris.save(
         wt_cube,
-        f"{work_dir}/{output_file_path}/{dataset}{driver}_"
-        f"{ensemble}_{timerange}.nc",
+        f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}/{data_info.get('dataset')}{driver}_"
+        f"{data_info.get('ensemble', '')}_{data_info.get('timerange')}.nc",
     )
 
     # write to csv file
@@ -550,22 +549,22 @@ def calc_lwt_slwt_model(
     }
     df = pd.DataFrame(data=d)
     df.to_csv(
-        f"{work_dir}/{output_file_path}/{dataset}{driver}_{ensemble}_"
-        f"{timerange}.csv",
+        f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}/{data_info.get('dataset')}{driver}_{data_info.get('ensemble', '')}_"
+        f"{data_info.get('timerange')}.csv",
         index=False,
     )
 
     ancestors = [
-        preproc_path,
-        f"{work_dir}/wt_mapping_dict_ERA5.json",
-        f"{work_dir}/wt_mapping_dict_E-OBS.json",
+        data_info.get("preproc_path"),
+        f"{cfg.get('work_dir')}/wt_mapping_dict_ERA5.json",
+        f"{cfg.get('work_dir')}/wt_mapping_dict_E-OBS.json",
     ]
     provenance_record = get_provenance_record(
         "Lamb Weathertypes", ancestors, ["Lamb Weathertypes"], False, False
     )
 
     log_provenance(
-        f"{work_dir}/{output_file_path}/{dataset}_{ensemble}",
+        f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}/{data_info.get('dataset')}_{data_info.get('ensemble', '')}",
         cfg,
         provenance_record,
     )
@@ -591,8 +590,6 @@ def rmse(subarray1: np.array, subarray2: np.array) -> np.array:
 def process_prcp_mean(
     cfg: dict,
     data: np.array,
-    correlation_threshold: float,
-    rmse_threshold: float,
     dataset: str,
     timerange: str,
 ) -> list:
@@ -633,10 +630,9 @@ def process_prcp_mean(
         for j in range(i + 1, n):
             rmse_matrix[i][j] = rmse(data[i], data[j])
             rmse_matrix[j][i] = rmse_matrix[i][j]
-            if (
-                pattern_correlation_matrix[i][j] >= correlation_threshold
-                and rmse_matrix[i][j] <= rmse_threshold
-            ):
+            if pattern_correlation_matrix[i][j] >= cfg.get(
+                "correlation_threshold"
+            ) and rmse_matrix[i][j] <= cfg.get("rmse_threshold"):
                 selected_pairs.append(
                     (
                         (i + 1, j + 1),
@@ -675,19 +671,18 @@ def calc_wt_means(
         data_info : dict
             Dictionary with info to dataset
     """
-    dataset = data_info.get("dataset")
     var_name = data_info.get("var")
     wt_string = data_info.get("wt_string")
-    preproc_path = data_info.get("preproc_path")
-    ensemble = data_info.get("ensemble")
-    timerange = data_info.get("timerange")
     driver = data_info.get("driver", "")
     if driver != "":
         driver = f"_{driver}"
 
-    logger.info("Calculating %s %s means for %s", dataset, var_name, wt_string)
-
-    work_dir = cfg.get("work_dir")
+    logger.info(
+        "Calculating %s %s means for %s",
+        data_info.get("dataset"),
+        var_name,
+        wt_string,
+    )
 
     num_slwt = 0
     target_indices = []
@@ -722,7 +717,7 @@ def calc_wt_means(
                     for dataset %s!",
                     wt_string,
                     wt,
-                    dataset,
+                    data_info.get("dataset"),
                 )
                 continue
             dates = [
@@ -741,7 +736,7 @@ def calc_wt_means(
                     "calc_wt_means - CAUTION: Skipped lwt %s \
                     for dataset %s!",
                     wt,
-                    dataset,
+                    data_info.get("dataset"),
                 )
                 continue
             dates = [
@@ -755,7 +750,10 @@ def calc_wt_means(
     else:
         logger.info("WT_STRING NOT SUPPORTED.")
 
-    ancestors = [f"{preproc_path}", f"{work_dir}/ERA5.nc"]
+    ancestors = [
+        f"{data_info.get('preproc_path')}",
+        f"{cfg.get('work_dir')}/ERA5.nc",
+    ]
     provenance_record = get_provenance_record(
         f"{var_name} means for \
                                               {wt_string}",
@@ -769,8 +767,8 @@ def calc_wt_means(
 
     log_provenance(
         f"{local_path}/{wt_string}_{wt}{driver}_"
-        f"{dataset}_{ensemble}"
-        f"_{var_name}_mean_{timerange}",
+        f"{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
+        f"_{var_name}_mean_{data_info.get('timerange')}",
         cfg,
         provenance_record,
     )
@@ -794,16 +792,14 @@ def calc_wt_anomalies(
         data_info : dict
             Dictionary with info to dataset
     """
-    work_dir = cfg.get("work_dir")
-    dataset = data_info.get("dataset")
     var_name = data_info.get("var_name")
     wt_string = data_info.get("wt_string")
-    preproc_path = data_info.get("preproc_path")
-    ensemble = data_info.get("ensemble")
-    timerange = data_info.get("timerange")
 
     logger.info(
-        "Calculating %s %s anomalies for %s", dataset, var_name, wt_string
+        "Calculating %s %s anomalies for %s",
+        data_info.get("dataset"),
+        var_name,
+        wt_string,
     )
 
     target_indices = []
@@ -846,7 +842,7 @@ def calc_wt_anomalies(
                     "calc_wt_anomalies - CAUTION: Skipped wt %s \
                     for dataset %s!",
                     wt,
-                    dataset,
+                    data_info.get("dataset"),
                 )
                 continue
             dates = [
@@ -871,7 +867,7 @@ def calc_wt_anomalies(
                     "calc_wt_anomalies - CAUTION: Skipped wt %s \
                     for dataset %s!",
                     wt,
-                    dataset,
+                    data_info.get("dataset"),
                 )
                 continue
             dates = [
@@ -891,7 +887,10 @@ def calc_wt_anomalies(
     else:
         logger.info("WT_STRING NOT SUPPORTED.")
 
-    ancestors = [f"{preproc_path}", f"{work_dir}/ERA5.nc"]
+    ancestors = [
+        f"{data_info.get('preproc_path')}",
+        f"{cfg.get('work_dir')}/ERA5.nc",
+    ]
     provenance_record = get_provenance_record(
         f"{var_name} anomaly for \
                                               {wt_string}",
@@ -904,8 +903,8 @@ def calc_wt_anomalies(
     local_path = f"{cfg.get('plot_dir')}/anomaly"
 
     log_provenance(
-        f"{local_path}/{wt_string}_{wt}_{dataset}_{ensemble}"
-        f"_{var_name}_anomaly__{timerange}",
+        f"{local_path}/{wt_string}_{wt}_{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
+        f"_{var_name}_anomaly__{data_info.get('timerange')}",
         cfg,
         provenance_record,
     )
@@ -929,17 +928,12 @@ def calc_wt_std(
         data_info : dict
             Dictionary with info to dataset
     """
-    work_dir = cfg.get("work_dir")
-    dataset = data_info.get("dataset")
     var_name = data_info.get("var_name")
     wt_string = data_info.get("wt_string")
-    preproc_path = data_info.get("preproc_path")
-    ensemble = data_info.get("ensemble")
-    timerange = data_info.get("timerange")
 
     logger.info(
         "Calculating %s %s standard deviation for %s",
-        dataset,
+        data_info.get("dataset"),
         var_name,
         wt_string,
     )
@@ -984,7 +978,7 @@ def calc_wt_std(
                     "calc_slwt_obs - CAUTION: Skipped wt %s \
                     for dataset %s!",
                     wt,
-                    dataset,
+                    data_info.get("dataset"),
                 )
                 continue
             dates = [
@@ -1005,7 +999,7 @@ def calc_wt_std(
                     "calc_wt_std - CAUTION: Skipped wt %s \
                     for dataset %s!",
                     wt,
-                    dataset,
+                    data_info.get("dataset"),
                 )
                 continue
             dates = [
@@ -1021,7 +1015,10 @@ def calc_wt_std(
     else:
         logger.info("WT_STRING NOT SUPPORTED.")
 
-    ancestors = [f"{preproc_path}", f"{work_dir}/ERA5.nc"]
+    ancestors = [
+        f"{data_info.get('preproc_path')}",
+        f"{cfg.get('work_dir')}/ERA5.nc",
+    ]
     provenance_record = get_provenance_record(
         f"{var_name} standard \
                                               deviation for \
@@ -1035,16 +1032,14 @@ def calc_wt_std(
     local_path = f"{cfg.get('plot_dir')}/stddev"
 
     log_provenance(
-        f"{local_path}/{wt_string}_{wt}_{dataset}_{ensemble}"
-        f"_{var_name}_stddev_{timerange}",
+        f"{local_path}/{wt_string}_{wt}_{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
+        f"_{var_name}_stddev_{data_info.get('timerange')}",
         cfg,
         provenance_record,
     )
 
 
-def calc_lwt_model(
-    cfg: dict, cube: iris.cube.Cube, dataset: str, data_info: dict
-):
+def calc_lwt_model(cfg: dict, cube: iris.cube.Cube, data_info: dict):
     """Calculate lwt for model data.
 
     Args:
@@ -1058,22 +1053,20 @@ def calc_lwt_model(
         data_info : dict
             Dictionary with info to dataset
     """
-    work_dir = cfg.get("work_dir")
-    dataset = data_info.get("dataset")
-    output_file_path = data_info.get("output_file_path")
-    ensemble = data_info.get("ensemble", "")
-    timerange = data_info.get("timerange")
     driver = data_info.get("driver", "")
     if driver != "":
         driver = f"_{driver}"
 
-    if not os.path.exists(f"{work_dir}/{output_file_path}"):
-        os.makedirs(f"{work_dir}/{output_file_path}")
+    if not os.path.exists(
+        f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}"
+    ):
+        os.makedirs(
+            f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}"
+        )
 
-    wt = wt_algorithm(cube, dataset)
+    wt = wt_algorithm(cube, data_info.get("dataset"))
 
-    tcoord = cube.coord("time")
-    time_points = tcoord.units.num2date(tcoord.points)
+    time_points = cube.coord("time").units.num2date(cube.coord("time").points)
 
     wt_cube = iris.cube.CubeList()
     wt_cube.append(iris.cube.Cube(wt, long_name="lwt"))
@@ -1081,37 +1074,37 @@ def calc_lwt_model(
     logger.info(
         "Writing Lamb Weathertype for %s \
                 to file %s.nc",
-        dataset,
-        dataset,
+        data_info.get("dataset"),
+        data_info.get("dataset"),
     )
 
-    wt_cube[0].add_dim_coord(tcoord, 0)
+    wt_cube[0].add_dim_coord(cube.coord("time"), 0)
 
     iris.save(
         wt_cube,
-        f"{work_dir}/{output_file_path}/{dataset}{driver}"
-        f"_{ensemble}_{timerange}.nc",
+        f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}/{data_info.get('dataset')}{driver}"
+        f"_{data_info.get('ensemble', '')}_{data_info.get('timerange')}.nc",
     )
 
     # write to csv file
     d = {"date": time_points[:], "lwt": np.int8(wt)}
     df = pd.DataFrame(data=d)
     df.to_csv(
-        f"{work_dir}/{output_file_path}/{dataset}{driver}_{ensemble}_"
-        f"{timerange}.csv",
+        f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}/{data_info.get('dataset')}{driver}_{data_info.get('ensemble', '')}_"
+        f"{data_info.get('timerange')}.csv",
         index=False,
     )
 
     ancestors = [
-        f"{work_dir}/wt_mapping_dict_ERA5.json",
-        f"{work_dir}/wt_mapping_dict_E-OBS.json",
+        f"{cfg.get('work_dir')}/wt_mapping_dict_ERA5.json",
+        f"{cfg.get('work_dir')}/wt_mapping_dict_E-OBS.json",
     ]
     provenance_record = get_provenance_record(
         "Lamb Weathertypes", ancestors, ["Lamb Weathertypes"], False, False
     )
 
     log_provenance(
-        f"{work_dir}/{output_file_path}/{dataset}_{ensemble}",
+        f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}/{data_info.get('dataset')}_{data_info.get('ensemble', '')}",
         cfg,
         provenance_record,
     )
