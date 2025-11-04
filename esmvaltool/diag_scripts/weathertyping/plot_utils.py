@@ -23,6 +23,7 @@ import seaborn as sns
 # local imports
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from matplotlib.colors import ListedColormap
+from wt_utils import get_driver
 
 iris.FUTURE.datum_support = True
 
@@ -68,10 +69,7 @@ def plot_seasonal_occurrence(
         data_info : dict
             Dictionary with relevant info to dataset
     """
-    dataset_name = data_info.get("dataset")
-    timerange = data_info.get("timerange")
-    ensemble = data_info.get("ensemble", "")
-    driver = data_info.get("driver", "")
+    driver = get_driver(data_info)
 
     output_path = f"{cfg['plot_dir']}/seasonal_occurrence"
 
@@ -130,7 +128,7 @@ def plot_seasonal_occurrence(
 
         ax_.set_title(
             f"Seasonal occurence of {wt_string}, \
-            {dataset_name}, {timerange}"
+            {data_info.get('dataset')}, {data_info.get('timerange')}"
         )
 
         ax_.stackplot(x, y, colors=colors)
@@ -154,12 +152,12 @@ def plot_seasonal_occurrence(
         ax_.set_ylabel("Cumulative Relative occurrence")
 
         plt.savefig(
-            f"{output_path}/{driver}{dataset_name}_{ensemble}_"
-            f"{wt_string}_rel_occurrence_{timerange}.png"
+            f"{output_path}/{driver}{data_info.get('dataset')}_{data_info.get('ensemble', '')}_"
+            f"{wt_string}_rel_occurrence_{data_info.get('timerange')}.png"
         )
         plt.savefig(
-            f"{output_path}/{driver}{dataset_name}_{ensemble}_"
-            f"{wt_string}_rel_occurrence_{timerange}.pdf"
+            f"{output_path}/{driver}{data_info.get('dataset')}_{data_info.get('ensemble', '')}_"
+            f"{wt_string}_rel_occurrence_{data_info.get('timerange')}.pdf"
         )
         plt.close()
 
@@ -182,17 +180,16 @@ def plot_maps(
         mode : str
             Statistics that is used
     """
-    dataset = data_info.get("dataset")
     var_name = data_info.get("var")
-    wt_string = data_info.get("wt_string")
-    ensemble = data_info.get("ensemble", "")
-    timerange = data_info.get("timerange")
-    driver = data_info.get("driver", "")
-    if driver != "":
-        driver = f"_{driver}"
+    driver = get_driver(data_info)
 
     logger.info(
-        "Plotting %s %s %s for %s %s", dataset, var_name, mode, wt_string, wt
+        "Plotting %s %s %s for %s %s",
+        data_info.get("dataset"),
+        data_info.get("var"),
+        mode,
+        data_info.get("wt_string"),
+        wt,
     )
 
     local_path = f"{cfg.get('plot_dir')}/{mode}"
@@ -202,11 +199,11 @@ def plot_maps(
 
     ax = plt.axes(projection=ccrs.PlateCarree())
 
-    if var_name == "psl":
+    if data_info.get("var") == "psl":
         psl_cmap = get_colormap("psl")
         plt.title(
-            f"{dataset} {ensemble}, {var_name} {mode}\n"
-            + f"{timerange}, wt: {wt}"
+            f"{data_info.get('dataset')} {data_info.get('ensemble', '')}, {data_info.get('var')} {mode}\n"
+            + f"{data_info.get('timerange')}, wt: {wt}"
         )
         unit = "[hPa]"
         im = iplt.contourf(cube / 100, cmap=psl_cmap)
@@ -215,17 +212,17 @@ def plot_maps(
         cb.set_label(label=f"{var_name} {mode} {unit}")
     elif var_name == "pr":
         prcp_cmap = get_colormap("prcp")
-        if dataset == "ERA5":
+        if data_info.get("dataset") == "ERA5":
             unit = "[m]"
             plt.title(
-                f"{dataset} {ensemble}, total {var_name} {mode}\n"
-                + f"{timerange}, wt: {wt}"
+                f"{data_info.get('dataset')} {data_info.get('ensemble', '')}, total {var_name} {mode}\n"
+                + f"{data_info.get('timerange')}, wt: {wt}"
             )
         else:
             unit = "[kg m-2 s-1]"
             plt.title(
-                f"{dataset} {ensemble}, {var_name} flux {mode}\n"
-                + f"{timerange}, wt: {wt}"
+                f"{data_info.get('dataset')} {data_info.get('ensemble', '')}, {var_name} flux {mode}\n"
+                + f"{data_info.get('timerange')}, wt: {wt}"
             )
         im = iplt.contourf(cube, cmap=prcp_cmap)
         cb = plt.colorbar(im)
@@ -235,8 +232,8 @@ def plot_maps(
         temp_cmap = get_colormap("temp")
         unit = "[K]"
         plt.title(
-            f"{dataset} {ensemble}, 1000 hPa {var_name} {mode}\n"
-            + f"{timerange}, wt: {wt}"
+            f"{data_info.get('dataset')} {data_info.get('ensemble', '')}, 1000 hPa {var_name} {mode}\n"
+            + f"{data_info.get('timerange')}, wt: {wt}"
         )
         im = iplt.contourf(cube, cmap=temp_cmap)
         cb = plt.colorbar(im)
@@ -269,12 +266,12 @@ def plot_maps(
     ax.add_feature(cfeature.BORDERS, linestyle=":")
 
     plt.savefig(
-        f"{local_path}/{wt_string}_{wt}{driver}_{dataset}_{ensemble}"
-        f"_{var_name}_{mode}_{timerange}.png"
+        f"{local_path}/{data_info.get('wt_string')}_{wt}{driver}_{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
+        f"_{var_name}_{mode}_{data_info.get('timerange')}.png"
     )
     plt.savefig(
-        f"{local_path}/{wt_string}_{wt}{driver}_{dataset}_{ensemble}_"
-        f"{var_name}_{mode}_{timerange}.pdf"
+        f"{local_path}/{data_info.get('wt_string')}_{wt}{driver}_{data_info.get('dataset')}_{data_info.get('ensemble', '')}_"
+        f"{var_name}_{mode}_{data_info.get('timerange')}.pdf"
     )
     plt.close()
 

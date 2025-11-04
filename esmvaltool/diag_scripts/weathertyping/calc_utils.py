@@ -18,6 +18,7 @@ import pandas as pd
 from plot_utils import plot_corr_rmse_heatmaps, plot_maps
 from wt_utils import (
     check_mapping_dict_format,
+    get_driver,
     get_mapping_dict,
     get_provenance_record,
     log_provenance,
@@ -480,9 +481,7 @@ def calc_lwt_slwt_model(
             If dict, this mapping dict will be used.
             (see recipe option predefined_slwt)
     """
-    driver = data_info.get("driver", "")
-    if driver != "":
-        driver = f"_{driver}"
+    driver = get_driver(data_info)
 
     if not os.path.exists(
         f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}"
@@ -673,9 +672,7 @@ def calc_wt_means(
     """
     var_name = data_info.get("var")
     wt_string = data_info.get("wt_string")
-    driver = data_info.get("driver", "")
-    if driver != "":
-        driver = f"_{driver}"
+    driver = get_driver(data_info)
 
     logger.info(
         "Calculating %s %s means for %s",
@@ -1053,9 +1050,7 @@ def calc_lwt_model(cfg: dict, cube: iris.cube.Cube, data_info: dict):
         data_info : dict
             Dictionary with info to dataset
     """
-    driver = data_info.get("driver", "")
-    if driver != "":
-        driver = f"_{driver}"
+    driver = get_driver(data_info)
 
     if not os.path.exists(
         f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}"

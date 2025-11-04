@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 # import internal esmvaltool modules here
-from esmvaltool.diag_scripts.shared import ProvenanceLogger, group_metadata
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 iris.FUTURE.datum_support = True
 
@@ -25,32 +25,23 @@ logger = logging.getLogger(os.path.basename(__file__))
 warnings.filterwarnings("ignore", ".*Collapsing a non-contiguous coordinate*")
 
 
-def get_cfg_vars(cfg: dict):
-    """Get list of vars from configuration dict.
+def get_driver(data_info: dict) -> str:
+    """Get driving model string.
 
     Args:
     ----
-        cfg : dict
-            Configuration dict from recipe.
+        data_info : dict
+            Data information dictionary.
 
     Returns
     -------
-        tuple
-            cfg vars
+        str
+            Driver string with leading underscore or empty string.
     """
-    preproc_variables_dict = group_metadata(
-        cfg.get("input_data").values(), "dataset"
-    )
-
-    return (
-        preproc_variables_dict,
-        cfg.get("correlation_threshold"),
-        cfg.get("rmse_threshold"),
-        cfg.get("work_dir"),
-        cfg.get("plotting", False),
-        cfg.get("automatic_slwt", True),
-        cfg.get("predefined_slwt", False),
-    )
+    driver = data_info.get("driver", "")
+    if driver != "":
+        driver = f"_{driver}"
+    return driver
 
 
 def load_wt_preprocessors(dataset: str, preproc_variables_dict: dict):
