@@ -54,7 +54,8 @@ def calc_slwt_obs(
         ancestors (list): List of ancestors
         timerange (str): Time range for the calculation
 
-    Returns:
+    Returns
+    -------
         np.array: Simplified Lamb Weathertypes
     """
     logger.info("Calculating simplified Lamb Weathertypes for %s", dataset)
@@ -121,7 +122,8 @@ def calc_const():
     scheme.
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
-    Returns:
+    Returns
+    -------
         tuple: The four constants needed for WT calculation.
     """
     const1 = 1 / np.cos(45 * np.pi / 180)
@@ -143,7 +145,8 @@ def calc_westerly_flow(cube: iris.cube.Cube) -> np.array:
     Args:
         cube (iris.cube.Cube): Cube of psl data.
 
-    Returns:
+    Returns
+    -------
         np.array: westerly flow
     """
     return 1 / 2 * (cube.data[:, 1, 2] + cube.data[:, 1, 4]) - 1 / 2 * (
@@ -163,7 +166,8 @@ def calc_southerly_flow(cube: iris.cube.Cube, const1: float) -> np.array:
         cube (iris.cube.Cube): cube of psl data
         const1 (float): const1
 
-    Returns:
+    Returns
+    -------
         np.array: southerly flow
     """
     return const1 * (
@@ -187,7 +191,6 @@ def calc_resultant_flow(
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
-    ----
         westerly_flow (np.array): westerly flow
         southerly_flow (np.array): southerly flow
 
@@ -209,7 +212,6 @@ def calc_westerly_shear_velocity(
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
-    ----
         cube (iris.cube.Cube): cube of psl data
         const2 (float): const2
         const3 (float): const3
@@ -238,7 +240,6 @@ def calc_southerly_shear_velocity(
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
-    ----
         cube (iris.cube.Cube): cube of psl data
         const4 (float): const
 
@@ -277,6 +278,7 @@ def calc_total_shear_velocity(
         southerly_shear_velocity (np.array): southerly shear velocity
 
     Returns
+    -------
         np.array:total shear velocity
     """
     return westerly_shear_velocity + southerly_shear_velocity
@@ -294,7 +296,8 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
         cube (iris.cube.Cube): Cube of psl data
         dataset (str): Name of dataset
 
-    Returns:
+    Returns
+    -------
         np.array: Lamb weathertypes
     """
 
@@ -430,6 +433,7 @@ def calc_lwt_slwt_model(
     """Calculate Lamb as well as simplified weathertypes for model.
 
     Args:
+    -------
         cfg (dict): Configuration dictionary from recipe
         cube (iris.cube.Cube): PSL field of dataset
         data_info (dict): Dictionary with info to dataset
@@ -544,7 +548,8 @@ def process_prcp_mean(
         dataset (str): Name of dataset
         timerange (str): Time range of dataset
 
-    Returns:
+    Returns
+    -------
         list: Selected pairs of WT. This is passed to get_mapping_dict
     """
     logger.info("Calculating corr and rsme matrices for %s", dataset)
@@ -590,6 +595,7 @@ def calc_wt_means(
     """Calculate means for psl, tas or pr for weathertypes.
 
     Args:
+    -------
         cfg (dict): Configuration dictionary from recipe
         cube (iris.cube.Cube): Cube with variable data
         wt_cubes (iris.cube.CubeList): List of cubes of lwt, slwt_ERA5 and slwt_EOBS
@@ -662,7 +668,8 @@ def get_wt_array(wt_string: str, wt_cubes: iris.cube.CubeList) -> np.array:
     Raises:
         NameError: if wt_array does not exist for the given wt_string
 
-    Returns:
+    Returns
+    -------
         (np.array, np.array): weathertype array and time coordinate
     """
     if wt_string == "slwt_ERA5":
@@ -694,6 +701,7 @@ def calc_wt_anomalies(
     """Calculate anomalies for psl, tas and pr for weathertypes.
 
     Args:
+    -------
         cfg (dict): Configuration dictionary from recipe
         cube (iris.cube.Cube): Cube with variable data
         wt_cubes (iris.cube.CubeList): List of cubes of lwt, slwt_ERA5 and slwt_EOBS
@@ -766,6 +774,7 @@ def calc_wt_std(
     """Calculate standard deviation for psl, tas and pr for weathertypes.
 
     Args:
+    -------
         cfg (dict): Configuration dictionary from recipe
         cube (iris.cube.Cube): Cube with variable data
         wt_cubes (iris.cube.CubeList): List of cubes of lwt, slwt_ERA5 and slwt_EOBS
@@ -830,6 +839,7 @@ def calc_lwt_model(cfg: dict, cube: iris.cube.Cube, data_info: dict):
     """Calculate Lamb weathertypes for models.
 
     Args:
+    -------
         cfg (dict): Configuration dictionary from recipe
         cube (iris.cube.Cube): Cube with variable data
         data_info (dict): Dictionary with info to dataset
@@ -899,6 +909,7 @@ def plot_means(
     """Function for plotting means, anomalies and standard deviations.
 
     Args:
+    -------
         cfg (dict): Configuration dictionary from recipe
         preproc_var (np.array): Preprocessed variable cube
         wt_cubes (iris.cube.Cube): List of cubes of lwt, slwt_ERA5 and slwt_EOBS

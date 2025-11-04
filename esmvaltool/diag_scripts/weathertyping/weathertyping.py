@@ -40,6 +40,7 @@ def process_models_automatic_slwt(
     """Process model data for calculating Lamb and simplified weathertypes.
 
     Args:
+    -------
         cfg (dict): Nested dictionary of metadata
         dataset_vars (list): List of variable dictionaries for a specific dataset
         data_info (dict): Dictionary holding dataset information.
@@ -100,6 +101,7 @@ def process_era5_automatic_slwt(
     """Process ERA5 data for calculating Lamb and simplified weathertypes.
 
     Args:
+    -------
         data_info (dict): Dictionary holding dataset information.
         preproc_variables_dict (dict): Dictionary holding preprocessed variables for all datasets.
         cfg (dict): Nested dictionary of metadata
@@ -171,6 +173,7 @@ def run_automatic_slwt(cfg: dict):
     of the weathertypes.
 
     Args:
+    -------
         cfg (dict): Nested dictionary of metadata
     """
     preproc_variables_dict = group_metadata(
@@ -195,6 +198,7 @@ def process_era5_lwt(preproc_variables_dict, cfg, dataset_vars, data_info):
     """Process ERA5 data for calculating Lamb weathertypes.
 
     Args:
+    -------
         preproc_variables_dict (dict): Dictionary holding preprocessed variables for all datasets.
         cfg (dict): Nested dictionary of metadata
         dataset_vars (list): List of variable dictionaries for a specific dataset
@@ -249,6 +253,7 @@ def process_models_lwt(cfg: dict, dataset_vars: list, data_info: dict):
     """Process model data for calculating Lamb weathertypes.
 
     Args:
+    -------
         cfg (dict): Nested dictionary of metadata
         dataset_vars (list): List of variable dictionaries for a specific dataset
         data_info (dict): Dictionary holding dataset information.
@@ -310,6 +315,7 @@ def run_lwt(cfg: dict):
     Plot seasonal occurrence of the weathertypes.
 
     Args:
+    -------
         cfg (dict): Nested dictionary of metadata
     """
     preproc_variables_dict = group_metadata(
@@ -335,6 +341,7 @@ def run_my_diagnostic(cfg: dict):
     """Run the weathertyping diagnostic.
 
     Args:
+    -------
         cfg (dict): Nested dictionary of metadata
     """
     automatic_slwt = cfg.get("automatic_slwt")
