@@ -63,6 +63,7 @@ def load_callback(cube, field, filename):
 
 def load_dataset(in_dir, var, cfg, year, month):
     """
+    Load the files from an individual month
     """
     filelist = glob.glob(os.path.join(in_dir, var["file"]))
     this_month_year_files = []
@@ -77,7 +78,26 @@ def load_dataset(in_dir, var, cfg, year, month):
     
     return lai_cube.concatenate_cube()
 
-def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
+def _cmorize_dataset(cube, var, cfg):
+
+    cmor_table = cfg["cmor_table"]
+    definition = cmor_table.get_variable(var["mip"], var["short_name"])
+    
+    # standard name
+    # long name
+    cube.var_name = definition.short_name
+    if definition.standard_name:
+        cube.standard_name = definition.standard_name
+
+    cube.long_name = definition.long_name
+
+    # units
+    cube.convert_units(definition.units)
+
+    return cube
+
+
+def cmorization(cube, var):
     """Cmorization func call."""
     # run the cmorization
     # Pass on the workdir to the cfg dictionary
@@ -88,10 +108,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             "Creating working directory for regridding: %s", cfg["work_dir"]
         )
         os.mkdir(cfg["work_dir"])
-
-    # add loops for month and year
-    # this is to liit amount of data in memory so the full 10 day
-    # resolution can be CMORized
 
     logger.info(f"{cfg=}")
     logger.info(f"{cfg['Parameters']['custom']['regrid_resolution']=}")
@@ -127,11 +143,15 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                         lai_cube, cfg["Parameters"]["custom"]["regrid_resolution"], "nearest"
                     )
 
+                # time bounds
                 # This sets time bounds without needing extra loops and checks
                 lai_cube.coord('time').guess_bounds()
                 print(lai_cube.coord('time'))
 
+                # cmorize
+                lai_cube = _cmorize_dataset(lai_cube, var, cfg)
+
+                print(lai_cube)
                 
-        # time bounds
-        # cmorize
-        
+                # save cube
+                
