@@ -57,7 +57,6 @@ def load_and_prepare_cube(fullpath, var, var_info, glob_attrs, cmor_table):
     iris.cube.Cube
         The prepared data cube.
     """
-
     glob_attrs["mip"] = var_info["mip"]
     raw_var = var_info["raw_var"]
     cmor_info = cmor_table.get_variable(var_info["mip"], var)
