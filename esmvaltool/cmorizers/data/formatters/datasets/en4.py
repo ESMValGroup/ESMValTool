@@ -103,9 +103,7 @@ def extract_surface_var(cube, cmor_info):
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
-    """
-    CMORization main function call.
-    """
+    """Cmorization main function call."""
     cmor_table = cfg["cmor_table"]
     glob_attrs = cfg["attributes"]
     fullpath = str(Path(in_dir) / cfg["filename"])
