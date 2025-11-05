@@ -154,6 +154,7 @@ diagnostics:
          type: clim, version: v2018, start_year: 2010, end_year: 2010}
     scripts: null
 
+
   E-OBS:
     description: E-OBS check
     variables:
@@ -175,6 +176,7 @@ diagnostics:
     # yamllint enable rule:octal-values
     scripts: null
 
+
   EN4:
     description: EN4 check
     variables:
@@ -184,6 +186,7 @@ diagnostics:
       - {dataset: EN4, project: OBS6, mip: Omon, type: reanaly,
          version: 4.2.2, tier: 2, start_year: 1900, end_year: 2024}
     scripts: null
+
 
   Eppley-VGPM-MODIS:
     description: Eppley-VGPM-MODIS check
