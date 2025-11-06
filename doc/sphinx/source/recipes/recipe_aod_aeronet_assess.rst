@@ -19,7 +19,7 @@ according to the following default criteria:
   * 1. Monthly means must be generated from at least one AOD observation in that
     month.
 
-  * 2. Seasonal means for DJF, MAM, JJA and SON must be calculated from three 
+  * 2. Seasonal means for DJF, MAM, JJA and SON must be calculated from three
     monthly means, i.e. a monthly mean from December January and Feburary.
 
   * 3. For a given year to be valid, there must be a seasonal mean for each climate
@@ -28,8 +28,8 @@ according to the following default criteria:
   * 4. For a multiannual seasonal means there must be at least five seasonaal means
     over the time range of interest.
 
-NOTE: The code is designed to be flexible and the default criteria can be 
-changed according to the user's requirements (see the user settings below).  
+NOTE: The code is designed to be flexible and the default criteria can be
+changed according to the user's requirements (see the user settings below).
 
 The evaluation is visualised by plotting model output as 2D filled contours and
 overlaying AeroNET observations at model grid cells co-located with the AeroNET
@@ -57,15 +57,15 @@ User settings in recipe
 
    *Required settings for script*
 
-   * wavel: The wavelength of interest for the evaluation, currently set up for 440nm
-   * min_days_per_mon: The minimum number of days used to calculate the AOD monthly mean
+   * wavel: The wavelength of interest for the evaluation. Defaults to 440nm.
+   * min_days_per_mon: The minimum number of days used to calculate the AOD monthly mean. Defaults to 1.
    * min_mon_per_seas: The minimum number of seasons used to calculate each
-     seasonal mean. This must be between 1 and 3.
+     seasonal mean. This must be between 1 and 3. Defaults to 3.
    * min_seas_per_year: The minimum number of seasonal means in each year. This
-     must be between 1 and 4.
+     must be between 1 and 4. Defaults to 4.
    * min_seas_per_clim: The minimum number of seasonal means used to calculate
      the multiannual seasonal mean. This must be btween 1 and the number of years
-     of available AeroNET data.
+     of available AeroNET data. Defaults to 5.
 
    *Optional settings for script*
 
@@ -96,12 +96,15 @@ Variables
 ---------
 
 * od440aer (atmos, monthly mean, longitude latitude time)
+* od550aer (atmos, monthly mean, longitude latitude time)
+* od870aer (atmos, monthly mean, longitude latitude time)
+
 
 
 Observations and reformat scripts
 ---------------------------------
 
-* Note: (1) obs4MIPs data can be used directly without any preprocessing; (2) 
+* Note: (1) obs4MIPs data can be used directly without any preprocessing; (2)
   see headers of reformat scripts for non-obs4MIPs data for download
   instructions.
 

@@ -59,11 +59,22 @@ The |RTW| performs the following steps:
   :Runs on:
      ``COMPUTE``, which depends on the ``SITE``
   :Executes:
-     The :ref:`compare.py <compare_recipe_runs>` script from |ESMValTool|
+     The ``esmvaltool develop compare`` command
      from the |Rose| app
   :Details:
      Runs each cycle for every recipe defined in the |RTW| after ``process``
      has completed
+
+``housekeeping``
+  :Description:
+     Removes the logs and data (including recipe outputs)
+     from two days or more before the current cycle
+  :Runs on:
+     Localhost
+  :Executes:
+     The |rose_prune|_ application
+  :Details:
+     Runs at the end of each cycle (except the first cycle)
 
 Design considerations
 ---------------------
@@ -74,10 +85,21 @@ Portability
 The |RTW| is portable; site-specific information can be found in the ``site``
 and ``opt`` directories within the |RTW|. The files required are:
 
-``site/<site>.cylc``
+.. _site_recipes_file:
+
+``site/<site>/recipes.jinja``
+   Contains all the recipes run at the ``SITE``
+
+.. hint::
+   * The file uses the `Jinja2`_ templating language,
+     which has a similar syntax to Python
+   * Jinja2 gives |Cylc| many powerful features;
+     `Cylc Jinja2`_ provides more information
+
+``site/<site>/runtime.cylc``
   Contains task definitions specific to the ``SITE``, for example, ``COMPUTE``
 
-``site/<site>-env``
+``site/<site>/env-file``
   Contains details on how to set up the environment for ESMValTool at the
   ``SITE``
 
@@ -95,7 +117,8 @@ configuration file (``meta/rose-meta.conf``).
 Resources
 ~~~~~~~~~
 
-The resources used by the ``process`` jobs are defined in the
-``site/<site>.cylc`` file, allowing the jobs to be configured by ``SITE`` as
-well as by recipe. This ensures only the required resources are requested when
-running each of the ``process`` jobs.
+The resources used by the ``process`` jobs
+are defined in the ``site/<site>/recipes.jinja`` file,
+allowing the jobs to be configured by ``SITE`` as well as by recipe.
+This ensures only the required resources are requested
+when running each of the ``process`` jobs.

@@ -28,13 +28,14 @@ defaults:
 jobs:
   linux:
     runs-on: "ubuntu-latest"
+    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.11", "3.12", "3.13"]
       fail-fast: false
     name: Linux Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v3
@@ -50,14 +51,14 @@ jobs:
       - run: conda create --name esmvaltool-fromlock --file conda-linux-64.lock
       - run: which python
       - run: pip --version
-      - run: pip install -e .[develop]
+      - run: pip install --no-deps -e .[develop]
       - run: esmvaltool --help
       - run: esmvaltool version 2>&1 | tee source_install_linux_artifacts_python_${{ matrix.python-version }}/version.txt
-      - run: flake8
+      - run: pre-commit run -a
       - run: pytest -n 2 -m "not installation"
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Source_Install_Linux_python_${{ matrix.python-version }}
           path: source_install_linux_artifacts_python_${{ matrix.python-version }}

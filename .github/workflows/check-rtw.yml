@@ -28,6 +28,7 @@ jobs:
   check-rtw:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || github.repository == 'ESMValGroup/ESMValTool' # avoid scheduled GHAs in forks
 
     # Steps represent a sequence of tasks that will be executed as part
     # of the job
@@ -35,7 +36,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job
       # can access it
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Cylc
         uses: cylc/setup-cylc@v1
