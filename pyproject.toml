@@ -194,10 +194,28 @@ line-length = 79
 show-fixes = true
 
 [tool.ruff.lint]
-select = ["ALL"]
+select = [
+    "B",
+    "C901",
+    "D",
+    "E",
+    "F",
+    "I",
+    "ISC001",
+    "UP",
+    "W",
+    "PL",
+]
 # syntax from github.com/astral-sh/ruff/issues/10878
 exclude = ["archive/*"]
 ignore = [
+    'D107',
+    'D203',
+    'D212',
+    'D213',
+    'D402',
+    'D413',
+    'D416',
     # TODO: when replacing `prospector` with `ruff`, ignore rules that are
     # overly technical or conflict with other rules.
     "E501",     # Disable line-too-long as this is taken care of by the formatter.
@@ -242,29 +260,8 @@ convention = "numpy"
 [tool.ruff.lint.pylint]
 max-args = 7
 
-[tool.pylint.main]
-jobs = 1  # Running more than one job in parallel crashes prospector.
-ignore-paths = [
-    "doc/sphinx/source/conf.py",  # Sphinx configuration file
-]
-
-[tool.pylint.basic]
-good-names = [
-    "_",            # Used by convention for unused variables
-    "i", "j", "k",  # Used by convention for indices
-    "logger",       # Our preferred name for the logger
-]
-
-[tool.pylint.format]
-max-line-length = 79
-
-[tool.pylint."messages control"]
-disable = [
-    "import-error",      # Needed because Codacy does not install dependencies
-    "file-ignored",      # Disable messages about disabling checks
-    "line-too-long",     # Disable line-too-long as this is taken care of by the formatter.
-    "locally-disabled",  # Disable messages about disabling checks
-]
+[tool.ruff.lint.mccabe]
+max-complexity = 15
 
 [tool.pydocstyle]
 convention = "numpy"
