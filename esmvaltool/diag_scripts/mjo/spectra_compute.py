@@ -1,7 +1,6 @@
 import logging
 import math
 import os
-import sys
 
 import cf_units as unit
 import iris
@@ -12,7 +11,7 @@ import matplotlib.ticker as ticker
 import numpy as np
 import scipy
 
-from esmvaltool.diag_scripts.shared import save_figure
+from esmvaltool.diag_scripts.shared import save_data, save_figure
 
 
 class WKSpectra:
@@ -214,9 +213,10 @@ class WKSpectra:
 
             return varSA
         else:
-            logging.info("Modify the code to accommodate other axes...")
-            logging.info("Exiting...")
-            sys.exit(0)
+            logging.error(
+                "Only axis == 1 is supported. Modify the code to accommodate other axes."
+            )
+            raise ValueError("decompose_sym_asym axis != 1")
 
     def taper(self, ts, alpha=0.1, iopt=0):
         """
@@ -835,9 +835,9 @@ class WKSpectra:
 
         if lon_taper > 0.0 or lonR - lonL != 360.0:
             logging.error(
-                "Code does currently allow lon_taper>0 or (lonR-lonL)<360"
+                "Code does currently allow lon_taper>0 or (lonR-lonL)<360."
             )
-            sys.exit(0)
+            raise ValueError("wkSpaceTime lon_taper>0 or (lonR-lonL)<360")
 
         nDayTot = ntim / self.spd  # of days (total) for input variable
         nSampTot = nDayTot * self.spd  # of samples (total)
@@ -850,9 +850,14 @@ class WKSpectra:
         N = nSampWin  # convenience [historical]
 
         if nDayTot < self.nDayWin:
-            logging.error("nDayTot=%s is less the nDayWin=%s", nDayTot, self.nDayWin)
-            logging.error("This is not allowed !!")
-            sys.exit(0)
+            logging.error(
+                "nDayTot=%s is not allowed to be less than nDayWin=%s",
+                nDayTot,
+                self.nDayWin,
+            )
+            raise ValueError(
+                f"nDayTot ({nDayTot}) is less than nDayWin ({self.nDayWin})"
+            )
         # -------------------------------------------------------------------
         #  Remove dominant signals
         # (a) Explicitly remove *long term* linear trend
@@ -905,7 +910,7 @@ class WKSpectra:
             logging.error(
                 "Length of the variable is shorter than 365. Can not continue!"
             )
-            sys.exit(1)
+            raise ValueError(f"nDayTot ({nDayTot}) is less than 365")
 
         # -------------------------------------------------------------------
         #  Decompose to Symmetric and Asymmetric parts
@@ -1117,8 +1122,13 @@ class WKSpectra:
             title=title,
             figname=figname,
         )
-        ncname = os.path.join(self.work_dir, f"{forename}.nc")
-        iris.save(psumanti_cube, ncname)
+
+        # Add provenance information
+        caption = f"{forename}, [or other caption for Anti-symmetric]"  # TODO
+        provenance_dict = self.get_provenance_record(caption)
+
+        # Save the cube
+        save_data(f"{forename}.nc", provenance_dict, self.cfg, psumanti_cube)
 
         # Symmetric
         title = (
@@ -1136,15 +1146,25 @@ class WKSpectra:
             title=title,
             figname=figname,
         )
-        ncname = os.path.join(self.work_dir, f"{forename}.nc")
-        iris.save(psumsym_cube, ncname)
+
+        # Add provenance information
+        caption = f"{forename}, [or other caption for Symmetric]"  # TODO
+        provenance_dict = self.get_provenance_record(caption)
+
+        # Save the cube
+        save_data(f"{forename}.nc", provenance_dict, self.cfg, psumsym_cube)
 
         # Background spectra
         title = f"{self.label} {self.varname} \n Background power log(power) [15S-15N]"
         forename = f"{self.runid}_{self.varname}_BG_Spec"
         figname = f"{forename}.png"
-        ncname = os.path.join(self.work_dir, f"{forename}.nc")
-        iris.save(psumb_cube, ncname)
+
+        # Add provenance information
+        caption = f"{forename}, [or other caption for Symmetric]"  # TODO
+        provenance_dict = self.get_provenance_record(caption)
+
+        # Save the cube
+        save_data(f"{forename}.nc", provenance_dict, self.cfg, psumb_cube)
 
         # *************************************************************
         #  Fig 3a, 3b:  psum_nolog/psumb_nolog  [ratio]
@@ -1259,8 +1279,15 @@ class WKSpectra:
             title=title,
             figname=figname,
         )
-        ncname = os.path.join(self.work_dir, f"{forename}.nc")
-        iris.save(psumanti_nolog_cube, ncname)
+
+        # Add provenance information
+        caption = f"{forename}, [or other caption for Anti-symmetric/Background log(power)]"  # TODO
+        provenance_dict = self.get_provenance_record(caption)
+
+        # Save the cube
+        save_data(
+            f"{forename}.nc", provenance_dict, self.cfg, psumanti_nolog_cube
+        )
 
         # Symmetric
         # Define contour levels for plots
@@ -1364,8 +1391,15 @@ class WKSpectra:
             title=title,
             figname=figname,
         )
-        ncname = os.path.join(self.work_dir, f"{forename}.nc")
-        iris.save(psumsym_nolog_cube, ncname)
+
+        # Add provenance information
+        caption = f"{forename}, [or other caption for Symmetric/Background log(power)]"  # TODO
+        provenance_dict = self.get_provenance_record(caption)
+
+        # Save the cube
+        save_data(
+            f"{forename}.nc", provenance_dict, self.cfg, psumsym_nolog_cube
+        )
 
     def mjo_wavenum_freq_season(self, seaName):
         #
@@ -1538,8 +1572,13 @@ class WKSpectra:
             forename = (
                 f"{self.runid}_{self.varname}_wavenum_freq_season_{season}"
             )
-            ncname = os.path.join(self.work_dir, f"{forename}.nc")
-            iris.save(pow_cube, ncname)
+
+            # Add provenance information
+            caption = f"{forename}, [or other caption]"  # TODO
+            provenance_dict = self.get_provenance_record(caption)
+
+            # Save the cube
+            save_data(f"{forename}.nc", provenance_dict, self.cfg, pow_cube)
 
             # Define contour levels for plots
             levels_dict = {
