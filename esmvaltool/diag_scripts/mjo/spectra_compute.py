@@ -698,7 +698,7 @@ class WKSpectra:
         ax.text(-3.0, 0.475, "h=12", {"color": "k", "backgroundcolor": "w"})
 
         # Add provenance information
-        caption = f"{figname}, [or other caption for antisymmetric]"  # TODO
+        caption = f"{figname}"
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the figure (also closes it)
@@ -778,7 +778,7 @@ class WKSpectra:
         ax.text(-14.0, 0.46, "h=12", {"color": "k", "backgroundcolor": "w"})
 
         # Add provenance information
-        caption = f"{figname}, [or other caption for symmetric]"  # TODO
+        caption = f"{figname}"
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the figure (also closes it)
@@ -1124,11 +1124,11 @@ class WKSpectra:
         )
 
         # Add provenance information
-        caption = f"{forename}, [or other caption for Anti-symmetric]"  # TODO
+        caption = f"{self.varname}_Raw_Spec_Asym"
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the cube
-        save_data(f"{forename}.nc", provenance_dict, self.cfg, psumanti_cube)
+        save_data(forename, provenance_dict, self.cfg, psumanti_cube)
 
         # Symmetric
         title = (
@@ -1148,11 +1148,11 @@ class WKSpectra:
         )
 
         # Add provenance information
-        caption = f"{forename}, [or other caption for Symmetric]"  # TODO
+        caption = f"{self.varname}_Raw_Spec_Sym"
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the cube
-        save_data(f"{forename}.nc", provenance_dict, self.cfg, psumsym_cube)
+        save_data(forename, provenance_dict, self.cfg, psumsym_cube)
 
         # Background spectra
         title = f"{self.label} {self.varname} \n Background power log(power) [15S-15N]"
@@ -1160,11 +1160,11 @@ class WKSpectra:
         figname = f"{forename}.png"
 
         # Add provenance information
-        caption = f"{forename}, [or other caption for Symmetric]"  # TODO
+        caption = f"{self.varname}_BG_Spec"
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the cube
-        save_data(f"{forename}.nc", provenance_dict, self.cfg, psumb_cube)
+        save_data(forename, provenance_dict, self.cfg, psumb_cube)
 
         # *************************************************************
         #  Fig 3a, 3b:  psum_nolog/psumb_nolog  [ratio]
@@ -1281,12 +1281,12 @@ class WKSpectra:
         )
 
         # Add provenance information
-        caption = f"{forename}, [or other caption for Anti-symmetric/Background log(power)]"  # TODO
+        caption = f"{self.varname}_Ratio_Spec_Asym"
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the cube
         save_data(
-            f"{forename}.nc", provenance_dict, self.cfg, psumanti_nolog_cube
+            forename, provenance_dict, self.cfg, psumanti_nolog_cube
         )
 
         # Symmetric
@@ -1393,12 +1393,12 @@ class WKSpectra:
         )
 
         # Add provenance information
-        caption = f"{forename}, [or other caption for Symmetric/Background log(power)]"  # TODO
+        caption = f"{self.varname}_Ratio_Spec_Sym"
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the cube
         save_data(
-            f"{forename}.nc", provenance_dict, self.cfg, psumsym_nolog_cube
+            forename, provenance_dict, self.cfg, psumsym_nolog_cube
         )
 
     def mjo_wavenum_freq_season(self, seaName):
@@ -1550,7 +1550,7 @@ class WKSpectra:
         ax.set_ylabel("Zonal wavenumber")
 
         # Add provenance information
-        caption = f"{figname}, [or other caption for wavenum freq season plot]"  # TODO
+        caption = f"{figname}"
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the figure (also closes it)
@@ -1574,11 +1574,11 @@ class WKSpectra:
             )
 
             # Add provenance information
-            caption = f"{forename}, [or other caption]"  # TODO
+            caption = f"{self.varname}_wavenum_freq_season_{season}"
             provenance_dict = self.get_provenance_record(caption)
 
             # Save the cube
-            save_data(f"{forename}.nc", provenance_dict, self.cfg, pow_cube)
+            save_data(forename, provenance_dict, self.cfg, pow_cube)
 
             # Define contour levels for plots
             levels_dict = {
