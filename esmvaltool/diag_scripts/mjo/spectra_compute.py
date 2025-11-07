@@ -698,7 +698,7 @@ class WKSpectra:
         ax.text(-3.0, 0.475, "h=12", {"color": "k", "backgroundcolor": "w"})
 
         # Add provenance information
-        caption = f"{figname}"
+        caption = os.path.basename(figname)
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the figure (also closes it)
@@ -778,7 +778,7 @@ class WKSpectra:
         ax.text(-14.0, 0.46, "h=12", {"color": "k", "backgroundcolor": "w"})
 
         # Add provenance information
-        caption = f"{figname}"
+        caption = os.path.basename(figname)
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the figure (also closes it)
@@ -1111,7 +1111,7 @@ class WKSpectra:
         # Anti-symmetric
         title = f"{self.label}_{self.varname} \n  Anti-symmetric log(power) [15S-15N]"
         forename = f"{self.runid}_{self.varname}_Raw_Spec_Asym"
-        figname = os.path.join(self.plot_dir, f"{forename}.png")
+        figname = os.path.join(self.plot_dir, f"{forename}")
         self.plot_anti_symmetric(
             psumanti,
             freq,
@@ -1135,7 +1135,7 @@ class WKSpectra:
             f"{self.label}_{self.varname} \n Symmetric log(power) [15S-15N]"
         )
         forename = f"{self.runid}_{self.varname}_Raw_Spec_Sym"
-        figname = os.path.join(self.plot_dir, f"{forename}.png")
+        figname = os.path.join(self.plot_dir, f"{forename}")
         self.plot_symmetric(
             psumsym,
             freq,
@@ -1157,7 +1157,7 @@ class WKSpectra:
         # Background spectra
         title = f"{self.label} {self.varname} \n Background power log(power) [15S-15N]"
         forename = f"{self.runid}_{self.varname}_BG_Spec"
-        figname = f"{forename}.png"
+        figname = f"{forename}"
 
         # Add provenance information
         caption = f"{self.varname}_BG_Spec"
@@ -1268,7 +1268,7 @@ class WKSpectra:
 
         title = f"{self.label} {self.varname} \n Anti-symmetric/Background log(power) [15S-15N]"
         forename = f"{self.runid}_{self.varname}_Ratio_Spec_Asym"
-        figname = os.path.join(self.plot_dir, f"{forename}.png")
+        figname = os.path.join(self.plot_dir, f"{forename}")
         self.plot_anti_symmetric(
             psumanti_nolog,
             freq,
@@ -1380,7 +1380,7 @@ class WKSpectra:
 
         title = f"{self.label} {self.varname} \n Symmetric/Background log(power) [15S-15N]"
         forename = f"{self.runid}_{self.varname}_Ratio_Spec_Sym"
-        figname = os.path.join(self.plot_dir, f"{forename}.png")
+        figname = os.path.join(self.plot_dir, f"{forename}")
         self.plot_symmetric(
             psumsym_nolog,
             freq,
@@ -1550,7 +1550,7 @@ class WKSpectra:
         ax.set_ylabel("Zonal wavenumber")
 
         # Add provenance information
-        caption = f"{figname}"
+        caption = os.path.basename(figname)
         provenance_dict = self.get_provenance_record(caption)
 
         # Save the figure (also closes it)
@@ -1589,7 +1589,7 @@ class WKSpectra:
             }
 
             title = f"{self.label} \n {season}  daily {self.varname} [10S-10N]"
-            figname = os.path.join(self.plot_dir, f"{forename}.png")
+            figname = os.path.join(self.plot_dir, f"{forename}")
             self.mjo_wavenum_freq_season_plot(
                 pow_cube,
                 levels=levels_dict[self.varname],
