@@ -50,8 +50,6 @@ diagnostics:
     additional_datasets:
       - {dataset: RSS, project: OBS6, type: reanaly, version: v07r01,
          tier: 2}
-      # - {dataset: RSS, project: OBS, type: reanaly_1, version: v07r01,
-      #   tier: 2}
       - {dataset: ERA5, project: native6, type: reanaly, version: 'v1',
          tier: 3, start_year: 1988, end_year: 2019}
       - {dataset: ACCESS-CM2, institute: CSIRO-ARCCSS, project: CMIP6,
