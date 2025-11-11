@@ -549,7 +549,7 @@ class SeaIceDrift:
 
     @staticmethod
     def _annotate_points(axes, xvalues, yvalues):
-        for i, j, k in zip(xvalues, yvalues, range(1, 12 + 1)):
+        for i, j, k in zip(xvalues, yvalues, range(1, 12 + 1), strict=True):
             axes.annotate(
                 k,
                 xy=(i, j),
@@ -630,6 +630,9 @@ class InsidePolygonFactory(AuxCoordFactory):
     def dependencies(self):
         """Return a dict mapping from constructor names to coordinates."""
         return {"lat": self.lat, "lon": self.lon}
+
+    def _calculate_array(self):
+        pass
 
     def _derive(self, lat, lon):
         def in_polygon(lat, lon):

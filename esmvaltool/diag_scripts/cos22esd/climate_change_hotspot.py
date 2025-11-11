@@ -86,6 +86,7 @@ class HotspotDiag:
             for key, cube in zip(
                 ["large_scale", "regional"],
                 [time_extr_large_scale_cube, time_extr_regional_cube],
+                strict=True,
             ):
                 rolling_mean_cube = self.compute_rolling_means(cube)
                 basename = f"rolling_mean_{key}_{season}"

@@ -7,11 +7,12 @@ documentation:
   authors:
     - bock_lisa
     - lauer_axel
+    - andela_bouwe
   maintainer:
     - bock_lisa
 
 timerange_for_data: &time_period
-  timerange: '2007/2011'  # can be specified, this is just an example
+  timerange: '1996/2014'  # should end 2015 for CMIP7
 regridding: &regridding
   regrid:
     target_grid: 1x1
@@ -82,7 +83,6 @@ diagnostics:
       clt: &var_clt
         mip: Amon
         exp: historical
-        ensemble: r1i1p1
         preprocessor: common_grid_clt
         <<: *time_period
       swcre: &var_swcre
@@ -95,29 +95,18 @@ diagnostics:
          alias: CESM2}
     scripts:
       plot: &plot_settings_jointplot_clt_swcre
-        script: seaborn_diag.py
-        seaborn_func: jointplot
-        seaborn_kwargs:
-          kind: hist
-          x: clt
-          y: swcre
-          bins: 20
+        script: seaborn_jointplot_histogram.py
+        x: clt
+        y: swcre
+        bins: 20
+        joint_kws:
           vmax: 0.015
-          stat: probability
           cmap: YlGnBu
-          cbar: true
-          cbar_kws:
-            extend: 'max'
-          marginal_kws:
-            color: darkturquoise
-            bins: 20
-            fill: true
-            stat: probability
-        add_aux_coords: true
-        plot_object_methods:
-          set_axis_labels:
-            xlabel: 'clt [%]'
-            ylabel: 'swcre [W m-2]'
+        cbar: true
+        cbar_kws:
+          extend: 'max'
+        marginal_kws:
+          color: darkturquoise
         seaborn_settings:
           style: ticks
           rc:
@@ -160,32 +149,16 @@ diagnostics:
         <<: *var_clt
         preprocessor: common_grid_pr
         additional_datasets:
-          - {dataset: GPCP-SG, project: obs4MIPs, level: L3,
-             version: v2.3, tier: 1, alias: GPCP-SG,
+          - {dataset: "GPCP-V2.3", project: obs4MIPs, tier: 1, alias: GPCP-SG,
              start_year: 1992, end_year: 2016}
     scripts:
       plot: &plot_settings_jointplot_clwvi_pr
         <<: *plot_settings_jointplot_clt_swcre
-        seaborn_kwargs:
-          kind: hist
-          x: clwvi
-          y: pr
-          bins: 20
+        x: clwvi
+        y: pr
+        joint_kws:
           vmax: 0.03
-          stat: probability
           cmap: YlGnBu
-          cbar: true
-          cbar_kws:
-            extend: 'max'
-          marginal_kws:
-            color: darkturquoise
-            bins: 20
-            fill: true
-            stat: probability
-        plot_object_methods:
-          set_axis_labels:
-            xlabel: 'clwvi [kg m-2]'
-            ylabel: 'pr [mm day-1]'
         suptitle: 'ESACCI-CLOUD / GPCP-SG'
         plot_filename: 'jointplot_clwvi_pr_ESACCI-CLOUD_GPCP-SG'
 
@@ -227,26 +200,11 @@ diagnostics:
     scripts:
       plot: &plot_settings_jointplot_clivi_lwcre
         <<: *plot_settings_jointplot_clt_swcre
-        seaborn_kwargs:
-          kind: hist
-          x: clivi
-          y: lwcre
-          bins: 20
+        x: clivi
+        y: lwcre
+        joint_kws:
           vmax: 0.03
-          stat: probability
           cmap: YlGnBu
-          cbar: true
-          cbar_kws:
-            extend: 'max'
-          marginal_kws:
-            color: darkturquoise
-            bins: 20
-            fill: true
-            stat: probability
-        plot_object_methods:
-          set_axis_labels:
-            xlabel: 'clivi [kg m-2]'
-            ylabel: 'lwcre [W m-2]'
         suptitle: 'ESACCI-CLOUD / CERES-EBAF'
         plot_filename: 'jointplot_clivi_lwcre_ESACCI-CLOUD_CERES-EBAF'
 
@@ -283,32 +241,16 @@ diagnostics:
         <<: *var_clt
         preprocessor: common_grid_levels_ta
         additional_datasets:
-          - {dataset: ERA5, project: native6, type: reanaly,
-             version: v1, tier: 3, alias: ERA5,
+          - {dataset: ERA-5, project: obs4MIPs, tier: 1, alias: ERA5,
              start_year: 2007, end_year: 2015}
     scripts:
       plot: &plot_settings_jointplot_cli_ta
         <<: *plot_settings_jointplot_clt_swcre
-        seaborn_kwargs:
-          kind: hist
-          x: cli
-          y: ta
-          bins: 20
+        x: cli
+        y: ta
+        joint_kws:
           vmax: 0.02
-          stat: probability
           cmap: YlGnBu
-          cbar: true
-          cbar_kws:
-            extend: 'max'
-          marginal_kws:
-            color: darkturquoise
-            bins: 20
-            fill: true
-            stat: probability
-        plot_object_methods:
-          set_axis_labels:
-            xlabel: 'cli [g kg]'
-            ylabel: 'ta [K]'
         suptitle: 'CALIPSO-ICECLOUD / ERA5'
         plot_filename: 'jointplot_cli_ta_CALIPSO-ICECLOUD_ERA5'
 

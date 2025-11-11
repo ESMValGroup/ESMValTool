@@ -8,7 +8,7 @@ Installation
    ESMValTool now uses `mamba` instead of `conda` for the recommended installation.
    For more information about the change, have a look at :ref:`Move to Mamba<move-to-mamba>`.
 
-ESMValTool supports Python 3.10 and later and requires Linux or MacOS.
+ESMValTool supports Python 3.11 and later and requires Linux or MacOS.
 Successful usage on Windows has been reported by following the Linux
 installation instructions with
 `WSL <https://learn.microsoft.com/en-us/windows/wsl/install>`__.
@@ -172,7 +172,7 @@ Installation of subpackages
 ---------------------------
 
 The diagnostics bundled in ESMValTool are scripts in four different programming
-languages: Python, NCL, R, and Julia.
+languages: Python, NCL, and R.
 
 There are three language specific packages available:
 
@@ -181,13 +181,11 @@ There are three language specific packages available:
 * ``esmvaltool-r``
 
 The main ``esmvaltool`` package contains all three subpackages listed above.
-For the Julia dependencies, there is no subpackage yet, but there are special
-:ref:`installation instructions <install_julia_dependencies>`.
 If you only need to run a recipe with diagnostics in some of these languages, it
 is possible to install only the dependencies needed to do just that.
 The diagnostic script(s) used in each recipe, are documented in :ref:`recipes`.
 The extension of the diagnostic script can be used to see in which language a
-diagnostic script is written (``.py`` for Python, ``.ncl`` for NCL, ``.R`` for R, and ``.jl`` for Julia diagnostics).
+diagnostic script is written (``.py`` for Python, ``.ncl`` for NCL, ``.R`` for R diagnostics).
 
 To install support for diagnostics written in Python and NCL into an existing
 environment, run
@@ -204,28 +202,13 @@ Note that the ESMValTool source code is contained in the ``esmvaltool-python``
 package, so this package will always be installed as a dependency if you install
 one or more of the packages for other languages.
 
-.. _install_julia_dependencies:
-
-Installation of Julia dependencies
-----------------------------------
-
-If you want to use the ESMValTool Julia functionality, you will also need to
-install Julia. If you are just getting started, we suggest that you
-come back to this step later when, and if you need it.
-To perform the Julia installation, make sure that your conda
-environment is activated and then execute
-
-.. code-block:: bash
-
-    mamba install julia
-    esmvaltool install Julia
 .. _install_on_macosx:
 
 ESMValTool installation on MacOS
 ---------------------------------
 
-The Python diagnostics of the ESMValTool are supported on MacOS, but Julia,
-NCL, and R are not.
+The Python diagnostics of the ESMValTool are supported on MacOS, but NCL,
+and R are not.
 If any of these are needed, deployment through a
 :ref:`Docker<install_with_docker>`
 container is advised.
@@ -354,7 +337,7 @@ or (when on MacOS)
 
 This will install all of the required development dependencies.
 Note that the MacOS environment file contains only Python dependencies,
-so you will not be able to run NCL, R, or Julia diagnostics with it.
+so you will not be able to run NCL, or R diagnostics with it.
 
 .. note::
     The environment is called ``esmvaltool`` in the example above, but it is
@@ -395,13 +378,6 @@ Using the ``--editable`` flag will cause the installer to create a symbolic link
 from the installation location to your source code, so any changes you make to
 the source code will immediately be available in the installed version of the
 tool.
-
-If you would like to run Julia diagnostic scripts, you will need to
-install the ESMValTool Julia dependencies:
-
-.. code-block:: bash
-
-    esmvaltool install Julia
 
 If you are planning to do any coding, install the :ref:`esmvaltool:pre-commit`
 hooks by running:
@@ -535,6 +511,7 @@ estate, so there is no need to install ESMValTool if you are just running recipe
    A Jupyter kernel based on the latest module is available from `DKRZ-JupyterHub <https://jupyterhub.dkrz.de/hub/home>`__.
  - Met Office: `esmvaltool` is available on the Linux estate after login and module loading via `module load`;
    see the ESMValTool Community of Practice SharePoint site for more details.
+ - NSC-Tetralith and Freja: `esmvaltool` is available after login and module loading via `module load esmvaltool`.
 
 The ESMValTool Tutorial provides a `quickstart guide <https://tutorial.esmvaltool.org/01-quickstart/index.html>`__
 that is particularly suited for new users that have an access to pre-installed version of ESMValTool.
@@ -662,13 +639,6 @@ ESMValTool and any remaining Python dependencies with the command:
 .. code-block:: bash
 
     pip install esmvaltool
-
-If you would like to run Julia diagnostic scripts, you will also need to
-install the Julia dependencies:
-
-.. code-block:: bash
-
-    esmvaltool install Julia
 
 .. _installation_from_the_conda_lock_file:
 
