@@ -116,19 +116,12 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         for year in range(cfg["attributes"]["start_year"],
                          cfg["attributes"]["end_year"]):
 
-            # while testing:
-            if year>2000: continue
-            
             for month in range(1,13):
 
-                # while testing:
-                if month > 2: continue
-                
                 logger.info(f"Working with year {year}, month {month}")
         
                 # Load orginal data in an indendent function
                 lai_cube = load_dataset(in_dir, var, cfg, year, month)
-                print(lai_cube)
 
                 # Regrdding
                 # uses nearest neighbour, skips if resolution = None
@@ -140,9 +133,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     lai_cube = regrid(
                         lai_cube, cfg["Parameters"]["custom"]["regrid_resolution"], "nearest"
                         )
-                print(lai_cube)
-                iris.save(lai_cube, '/data/scratch/rob.king/text.nc')
-                print(0/0)
+
                 # time bounds
                 # This sets time bounds without needing extra loops and checks
                 lai_cube.coord('time').guess_bounds()
@@ -156,4 +147,3 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 attributes = cfg["attributes"]
                 attributes["mip"] = var["mip"]
                 utils.save_variable(lai_cube, lai_cube.var_name, out_dir, attributes)
-                logger.info(f"SAVED")

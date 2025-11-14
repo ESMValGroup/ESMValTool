@@ -27,4 +27,4 @@ variables:
 
 Parameters:
   custom:
-    regrid_resolution: '0.25x0.25'
+    regrid_resolution: 'None'
