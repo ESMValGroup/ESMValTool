@@ -51,9 +51,6 @@ from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 
-
-
-
 def load_callback(cube, field, filename):
     """
     Callback fucntion for iris.load to remove all attributes from cube
@@ -68,12 +65,12 @@ def load_dataset(in_dir, var, cfg, year, month):
     filelist = glob.glob(os.path.join(in_dir, var["file"]))
     this_month_year_files = []
     for file in filelist:
-        if f"{year}{month:02d}" in file:
-            this_month_year_files.append(file)
+       if f"{year}{month:02d}" in file:
+           this_month_year_files.append(file)
                 
     lai_cube = iris.load(this_month_year_files,
-                         NameConstraint(var_name=var["raw"]),
-                         callback=load_callback,
+                        NameConstraint(var_name=var["raw"]),
+                        callback=load_callback,
             )
     
     return lai_cube.concatenate_cube()
@@ -117,7 +114,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         logger.info("Processing var %s", short_name)
 
         for year in range(cfg["attributes"]["start_year"],
-                          cfg["attributes"]["end_year"]):
+                         cfg["attributes"]["end_year"]):
 
             # while testing:
             if year>2000: continue
@@ -137,21 +134,26 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 # uses nearest neighbour, skips if resolution = None
                 resolution = cfg["Parameters"]["custom"]["regrid_resolution"]
                 if resolution == "None":
-                    pass
+                    logger.info("No regridding")
                 else:
+                    logger.info(f"Regridding {cfg["Parameters"]["custom"]["regrid_resolution"]}")
                     lai_cube = regrid(
                         lai_cube, cfg["Parameters"]["custom"]["regrid_resolution"], "nearest"
-                    )
-
+                        )
+                print(lai_cube)
+                iris.save(lai_cube, '/data/scratch/rob.king/text.nc')
+                print(0/0)
                 # time bounds
                 # This sets time bounds without needing extra loops and checks
                 lai_cube.coord('time').guess_bounds()
-                print(lai_cube.coord('time'))
 
                 # cmorize
                 lai_cube = _cmorize_dataset(lai_cube, var, cfg)
 
-                print(lai_cube)
-                
                 # save cube
-                
+                logger.info(f"Saving CMORized cube for variable {lai_cube.var_name}")
+                # these should all be the same
+                attributes = cfg["attributes"]
+                attributes["mip"] = var["mip"]
+                utils.save_variable(lai_cube, lai_cube.var_name, out_dir, attributes)
+                logger.info(f"SAVED")
