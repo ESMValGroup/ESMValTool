@@ -301,7 +301,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             dataset_end = datetime(2011, 12, 31)
         elif var_name.find("slstr") >= 0:
             dataset_start = datetime(2017, 1, 1)
-            dataset_end = datetime(2023, 12, 31)
+            dataset_end = datetime(2022, 12, 31)
         else:
             errmsg = f"Unknown dataset for variable {var_name}"
             raise ValueError(errmsg)

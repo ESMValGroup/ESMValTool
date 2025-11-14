@@ -106,7 +106,7 @@ variables:
     short_name: od550aer
     raw: AOD550_mean
     file: '{year}????-C3S-L3_AEROSOL-AER_PRODUCTS-SLSTR-SENTINEL3?-SWANSEA-DAILY-v1.12.nc'
-  aatsr_od550lt1aer_day:
+  slstr_od550lt1aer_day:
     version: SLSTR-SU-v1.12
     mip: aero
     short_name: od550lt1aer

@@ -1,6 +1,6 @@
-"""Script to download ESACCI-AEROSOL data
+"""Script to download ESACCI-AEROSOL data.
 
-from CCI CEDA ftp (AATSR) and via Copernicus Climate Data Store (SLSTR).
+From CCI CEDA ftp (AATSR) and via Copernicus Climate Data Store (SLSTR).
 """
 
 import gzip
@@ -46,7 +46,7 @@ def download_dataset(
         slstr_year1 = start_date.year
     if end_date is None:
         aatsr_year2 = 2011
-        slstr_year2 = 2023
+        slstr_year2 = 2022
     else:
         aatsr_year2 = end_date.year
         slstr_year2 = end_date.year
