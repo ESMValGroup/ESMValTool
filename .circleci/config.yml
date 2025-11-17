@@ -286,6 +286,7 @@ workflows:
   commit:
     jobs:
       - run_tests
+      - test_upstream_development
       - test_installation_from_source_test_mode
       - test_installation_from_source_develop_mode
   nightly:
