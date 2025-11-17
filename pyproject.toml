@@ -235,10 +235,10 @@ known-first-party = ["esmvaltool"]
 convention = "numpy"
 
 [tool.ruff.lint.pylint]
-max-args = 7
+max-args = 7  # Use a more relaxed value than the default.
 
 [tool.ruff.lint.mccabe]
-max-complexity = 15
+max-complexity = 15  # Use a more relaxed value than the default.
 
 [tool.pydocstyle]
 convention = "numpy"
