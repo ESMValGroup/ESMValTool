@@ -19,29 +19,31 @@ logger = logging.getLogger(__name__)
 
 # decimal hours
 # ECT taken from https://space.oscar.wmo.int/satellites
+# times with a comment are what is on the Oscar website (HHMM)
+# times without a comment are the 12 hour differences
 overpass_time = {'SSMI13': {
-                    'ASC': 0.0,
+                    'ASC': 17.85,
                     'DES': 5.85, # 0551
                     },
                 'SSMI17': {
-                    'ASC': 0.0,
+                    'ASC': 18.58,
                     'DES': 6.58, # 0635
                     },
                 'AMSR_E': {
-                    'ASC': 0.0,
+                    'ASC': 2.30,
                     'DES': 14.30, # 1418
                     },
                 'AMSR_2': {
-                    'ASC': 0.0,
+                    'ASC': 1.50,
                     'DES': 13.50, # 1330
                     },
                 'MODISA': {
                     'DAY': 14.30, # 1418
-                    'NIGHT': 0.0,
+                    'NIGHT': 2.30,
                     },
                 'MODIST': {
                     'DAY': 9.67, # 0940
-                    'NIGHT': 0.0,
+                    'NIGHT': 23.67,
                 }
             }
 
@@ -58,12 +60,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         glob_attrs['mip'] = vals['mip']
         cmor_table = cfg["cmor_table"]
 
-        # ESACCI-LST/ESACCI-LST-L3C-LST-SSMI13-0.125deg_1DAILY_DES-20040220000000-fv5.11.nc
         all_files = glob.glob(f"{in_dir}/{vals['file_base']}-{vals['platform']}-{vals['spatial_resolution']}_{vals['temporal_resolution']}_*-*-*{cfg['attributes']['version']}.nc")
           
         # loop over years then files
         for year in range(vals['start_year'], vals['end_year'] + 1):
-            logger.info(f"#################### {year}")  
             for file in all_files:
                 if f"-{year}" not in file:
                     continue
@@ -132,8 +132,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 except:
                     logger.info('Problem adding overpass time to time coord')
         
-                logger.info(f"{cube.coord('time').points=}")
-
 #  Leaving this here for when ESMValCore PR with new CMOR tables for uncertainity are avaible
 #                 # Land cover class gives this error when
 #                 # loading in CMORised files
@@ -171,7 +169,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 #     glob_attrs,
                 #     unlimited_dimensions=["time"],
                 #    )
-                    
 
                 # Alternative saving function
                 time_dt = cf_units.num2pydate(cube.coord('time').points[0],

@@ -29,9 +29,11 @@ variables:
     file_base: 'ESACCI-LST-L3C-LST'
     
     # These parameters build the file name
-    platform: 'SSMI13'
+    platform: 'AMSR_E'
     spatial_resolution: '0.125deg'
     temporal_resolution: '1DAILY'
+    # MW datasets need ASC and DES
+    # IR datasets need DAY and NIGHT
     day_or_asc: 'ASC'
     night_or_des: 'DES'
     
