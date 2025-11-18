@@ -7,7 +7,7 @@ attributes:
   modeling_realm: reanaly
   project_id: CMOR6
   source: 'https://rda.ucar.edu/datasets/ds628.1/'
-  reference: 'jra3Q'
+  reference: 'jra_3q'
   comment: |
     ''
 
