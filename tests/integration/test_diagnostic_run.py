@@ -1,6 +1,7 @@
 """Test diagnostic script runs."""
 
 import contextlib
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -14,6 +15,8 @@ from packaging import version
 
 
 def write_config_file(dirname):
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
     config_file = dirname / "config-user.yml"
     cfg = {
         "output_dir": str(dirname / "output_dir"),
@@ -104,12 +107,13 @@ def test_diagnostic_run_config_file(tmp_path, script_file):
         """)
     recipe_file.write_text(str(recipe))
 
-    config_file = write_config_file(tmp_path)
+    config_dir = tmp_path / "config"
+    config_file = write_config_file(config_dir)
     with arguments(
         "esmvaltool",
         "run",
-        "--config_file",
-        config_file,
+        "--config_dir",
+        str(config_dir),
         str(recipe_file),
     ):
         run()
