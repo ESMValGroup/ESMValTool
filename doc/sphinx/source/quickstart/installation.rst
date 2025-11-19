@@ -379,7 +379,7 @@ from the installation location to your source code, so any changes you make to
 the source code will immediately be available in the installed version of the
 tool.
 
-If you are planning to do any coding, install the :ref:`esmvaltool:pre-commit`
+If you are planning to do any coding, install the :ref:`pre-commit`
 hooks by running:
 
 .. code-block:: bash
@@ -486,7 +486,7 @@ e.g. ``~/miniforge3/envs/esmvaltool/lib/python3.11/site-packages/esmvalcore``,
 you may need to manually remove that directory and run
 ``pip install --editable '.[develop]'`` again.
 
-Finally, also install the :ref:`esmvaltool:pre-commit` hooks by running:
+Finally, also install the :ref:`pre-commit` hooks by running:
 
 .. code-block:: bash
 
