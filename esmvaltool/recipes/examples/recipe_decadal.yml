@@ -22,7 +22,7 @@ diagnostics:
   first_example:
     additional_datasets:
       - &dcpp {dataset: EC-Earth3, project: CMIP6, exp: dcppA-hindcast, ensemble: r1i1p1f1,
-               sub_experiment: 's(1980:2018)', timerange: '*'}
+               sub_experiment: 's(1980:2018)', timerange: '198011/201812'}
       - &obs {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3,
               timerange: '198011/201812'}
     variables:
@@ -36,7 +36,7 @@ diagnostics:
   second_example:
     additional_datasets:
       - {<<: *dcpp, sub_experiment: 's(1980:2007)'}
-      - {<<: *dcpp, sub_experiment: 's(2008:2018)', timerange: '*/201812'}
+      - {<<: *dcpp, sub_experiment: 's(2008:2018)', timerange: '198011/201812'}
       - {<<: *obs}
     variables:
       tas:
@@ -48,7 +48,7 @@ diagnostics:
         script: examples/decadal_example.py
   third_example:
     additional_datasets:
-      - {<<: *dcpp, timerange: '*/P1Y'}
+      - {<<: *dcpp, timerange: '1980/P1Y'}
       - {<<: *obs, timerange: '1980/2018'}
     variables:
       tas:
