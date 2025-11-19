@@ -547,18 +547,9 @@ A list of all currently supported native datasets is :ref:`provided here
 A detailed description of how to include new native datasets is given
 :ref:`here <esmvalcore:add_new_fix_native_datasets>`.
 
-To use this functionality, users need to provide a ``rootpath`` in the
-:ref:`configuration <config_option_rootpath>` for the ``native6`` project data
-and/or the dedicated project used for the native dataset, e.g., ``ICON``.
-Then, in the recipe, they can refer to those projects.
-For example:
+To use this functionality, users need to configure their
+`data sources <esmvalcore:config-data-sources>`_ to include the native datasets.
 
-.. code-block:: yaml
-
-    datasets:
-    - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, start_year: 1990, end_year: 1990}
-    - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1i1p1f1, mip: Amon, short_name: tas, start_year: 2000, end_year: 2014}
-
-For project ``native6``, more examples can be found in the diagnostics
+For project ``native6``, more examples of usage can be found in the diagnostics
 ``ERA5_native6`` in the recipe `examples/recipe_check_obs.yml
 <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_check_obs.yml>`_.
