@@ -516,17 +516,20 @@ datasets:
   ESACCI-LST:
     tier: 2
     source: On CEDA-JASMIN, /gws/nopw/j04/esacci_lst/public
-    last_access: 2022-01-26
+    last_access: 2025-11-20
     info: |
       For access to this JASMIN group workspace please register at:
         https://accounts.jasmin.ac.uk/services/group_workspaces/esacci_lst/
+      Older compatible versions are available from CEDA see:
+        https://data.ceda.ac.uk/neodc/esacci/land_surface_temperature/data
       Download and processing instructions:
         Put all files under a single directory (no subdirectories with years)
         in ${RAWOBS}/Tier2/ESACCI-LST
         BOTH DAY and NIGHT files are needed for each month
 
       Caveats
-        Currently set to work with only the MODIS AQUA L3 monthly data
+        Works with daily MW data from V5.11 SSMI and AMSR Products (mip = Eday)
+        Works with monthly IR data from V3 MODIS: MODISA (Aqua) and MODIST (Terra) (mip = Amon)
 
   ESACCI-OC:
     tier: 2
