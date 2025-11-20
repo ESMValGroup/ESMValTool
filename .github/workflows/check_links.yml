@@ -26,7 +26,7 @@ jobs:
           token: ${{ secrets.TOKEN_GITHUB }}
           fail: false
           args: >
-            ./doc/sphinx/*.rst
+            ./doc/sphinx/**/*.rst
             --verbose --max-concurrency 1 --no-progress
             --accept '100..=103,200..=399, 429'
             --exclude https://doi.org/
