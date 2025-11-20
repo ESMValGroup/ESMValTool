@@ -55,7 +55,7 @@ preprocessing modules, and the creation of your own analysis code, its main purp
 continuously growing set of diagnostics and metrics that it directly provides to
 the user. These metrics and diagnostics are provided as a set of preconfigured
 recipes that users can run or customize for their own analysis.
-The latest list of available recipes can be found :ref:`here <esmvaltool:recipes>`.
+The latest list of available recipes can be found :ref:`here <recipes>`.
 
 In order to make the management of these installed recipes easier, ESMValTool
 provides the ``recipes`` command group with utilities that help the users in
