@@ -11,7 +11,29 @@ v2.13.0
 Highlights
 ~~~~~~~~~~
 
-- TODO: add highlights
+Constellation of CMORizers and diagnostics updated/implemented as part of the
+`Rapid Evaluation Framework (REF) <https://wcrp-cmip.org/cmip7/rapid-evaluation-framework/>`__:
+
+- CMORizers:
+
+   - Update of the ESACCI-OZONE CMORizer
+   - ESACCI-SEAICE CMORizer
+   - Update of the OSI-450 (OSISAF/CCI) CMORizer
+
+- :ref:`Diagnostics <recipes_REF>`:
+
+   - Seasonal cycle and time series of Arctic/Antarctic sea ice area
+   - :ref:`Zero Emissions Commitment (ZEC) <recipes_zec>`
+   - Cloud radiative effects
+   - :ref:`Transient Climate Response to Emissions (TCRE) <recipes_tcre>`
+   - :ref:`ENSO metrics <recipes_enso_metrics>`
+   - 2D histograms and scatterplots for clouds
+   - Regional historical changes
+   - :ref:`Evaluation of climate variables at Global warming levels <recipes_recipe_calculate_gwl_exceedance_stats>`
+   - :ref:`Sea surface temperature bias (IPCC AR6 Ch3 Fig. 3.24) <recipes_ipccwg1ar6ch3>`
+   - :ref:`Climate drivers for fire <recipe_ref_fire>`
+   - :ref:`Rate of sea ice area loss per degree of warming <recipe_seaice_sensitivity>`
+   - Ozone metrics and climatology
 
 This release includes
 
