@@ -1,170 +1,182 @@
-"""ESMValTool CMORizer for ESACCI-LST data.
+"""ESMValTool CMORizer for ESACCI-LST.
 
-Tier
-   Tier 2: other freely-available dataset.
-
-Source
-   On CEDA-JASMIN
-   /gws/nopw/j04/esacci_lst/public
-   For access to this JASMIN group workspace please register at
-   https://accounts.jasmin.ac.uk/services/group_workspaces/esacci_lst/
-
-Download and processing instructions
-   Put all files under a single directory (no subdirectories with years)
-   in ${RAWOBS}/Tier2/ESACCI-LST
-   BOTH DAY and NIGHT files are needed for each month
-
-Currently set to work with only the MODIS AQUA L3 monthly data
-
-Modification history
-   20201015 Started by Robert King
-   20201029 Day/Night averaging added along with CMOR utils
+Modified from the CCI LST V3 CMORizer
+for V5.11 Microwave sensors
+Compatibility with V3 IR sensors kept
+Should be exapandable to any single sensor CCI LST product, daily or monthly
 """
 
 import datetime
 import logging
-from calendar import monthrange
-
+import glob
 import iris
+import cf_units
 
+from ...utilities import fix_coords
 from esmvaltool.cmorizers.data import utilities as utils
 
 logger = logging.getLogger(__name__)
 
+# decimal hours
+# ECT taken from https://space.oscar.wmo.int/satellites
+# times with a comment are what is on the Oscar website (HHMM)
+# times without a comment are the 12 hour differences
+overpass_time = {'SSMI13': {
+                    'ASC': 17.85,
+                    'DES': 5.85,  # 0551
+                    },
+                'SSMI17': {
+                    'ASC': 18.58,
+                    'DES': 6.58,  # 0635
+                    },
+                'AMSR_E': {
+                    'ASC': 2.30,
+                    'DES': 14.30,  # 1418
+                    },
+                'AMSR_2': {
+                    'ASC': 1.50,
+                    'DES': 13.50,  # 1330
+                    },
+                'MODISA': {
+                    'DAY': 14.30,  # 1418
+                    'NIGHT': 2.30,
+                    },
+                'MODIST': {
+                    'DAY': 9.67,  # 0940
+                    'NIGHT': 23.67,
+                }
+}
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
-    cmor_table = cfg["cmor_table"]
-    glob_attrs = cfg["attributes"]
-
-    # run the cmorization
+    glob_attrs = cfg['attributes']
 
     # vals has the info from the yml file
     # var is set up in the yml file
-    for var, vals in cfg["variables"].items():
-        # leave this loop in as might be useful in
-        # the future for getting other info
-        # like uncertainty information from the original files
+    for var, vals in cfg['variables'].items():
+        glob_attrs['mip'] = vals['mip']
+        cmor_table = cfg["cmor_table"]
 
-        glob_attrs["mip"] = vals["mip"]
-        cmor_info = cmor_table.get_variable(vals["mip"], var)
-        var_name = cmor_info.short_name
+        file_pattern = f"{in_dir}/{vals['file_base']}-{vals['platform']}-" + \
+            f"{vals['spatial_resolution']}_{vals['temporal_resolution']}" + \
+                f"_*-*-*{cfg['attributes']['version']}.nc"
+        all_files = glob.glob(file_pattern)
 
-        for key in vals.keys():
-            logger.info("%s %s", key, vals[key])
+        # loop over years then files
+        for year in range(vals['start_year'], vals['end_year'] + 1):
+            for file in all_files:
+                if f"-{year}" not in file:
+                    continue
 
-        variable = vals["raw"]
-        # not currently used, but referenced for future
-        # platform = 'MODISA'
+                logger.info(f"Loading {file}")
+                cube = iris.load_cube(file, vals['raw'])
+                
+                cube.attributes = {}
+                cube.attributes['var'] = var
 
-        # loop over years and months
-        # get years from start_year and end_year
-        # note 2003 doesn't start until July so not included at this stage
-        for year in range(
-            glob_attrs["start_year"], glob_attrs["end_year"] + 1
-        ):
-            this_years_cubes = iris.cube.CubeList()
-            for month0 in range(12):  # Change this in final version
-                month = month0 + 1
-                logger.info(month)
-                day_cube, night_cube = load_cubes(
-                    in_dir,
-                    vals["file_day"],
-                    vals["file_night"],
-                    year,
-                    month,
-                    variable,
-                )
+                cmor_info = cmor_table.get_variable(vals["mip"], var)
 
-                monthly_cube = make_monthly_average(
-                    day_cube, night_cube, year, month
-                )
+                # this is needed for V1 data, V3 data is ok
+                try:
+                    cube.coords()[2].standard_name = 'longitude'
+                    logger.info('V1 longitude issue fixed')
+                except IndexError:
+                    # No change needed
+                    logger.info('No V1 longitude issue')
 
-                # use CMORizer utils
-                monthly_cube = utils.fix_coords(monthly_cube)
+                # this gives time as hours since 19500101
+                cube = fix_coords(cube)
 
-                this_years_cubes.append(monthly_cube)
+                # this is need for when uncertainity variables added
+                if cube.long_name == 'land surface temperature':
+                    cube.long_name = 'surface_temperature'
+                    cube.standard_name = 'surface_temperature'
 
-            # Use utils save
-            # This seems to save files all with the same name!
-            # Fixed by making yearly files
-            this_years_cubes = this_years_cubes.merge_cube()
-            this_years_cubes.long_name = "Surface Temperature"
-            this_years_cubes.standard_name = "surface_temperature"
+                if cube.var_name == 'lst':
+                    cube.var_name = 'ts'
 
-            # Fix variable metadata
-            utils.fix_var_metadata(this_years_cubes, cmor_info)
+                orbit_time = ''
+                if 'DAY' in file:
+                    orbit_time = 'DAY'
+                if 'NIGHT' in file:
+                    orbit_time = 'NIGHT'
+                if 'ASC' in file:
+                    orbit_time = 'ASC'
+                if 'DES' in file:
+                    orbit_time = 'DES'
+                if orbit_time == '':
+                    # can't work out which overpass time to use
+                    # default to 0.0 for midnight
+                    time_of_overpass = 0.0
+                else:
+                    time_of_overpass = overpass_time[vals['platform']][orbit_time]
 
-            # Fix global metadata
-            utils.set_global_atts(this_years_cubes, glob_attrs)
+                # make a new time coordinate with new times
+                new_time_points = cube.coord('time').points + time_of_overpass
+                new_time_coord = iris.coords.DimCoord(new_time_points,
+                                                      standard_name='time',
+                                                      long_name='time',
+                                                      var_name='time',
+                                                      units=cube.coord('time').units,
+                                                      bounds=None,
+                                                      attributes=None,
+                                                      coord_system=None,
+                                                      circular=False
+                                                      )
 
-            utils.save_variable(
-                this_years_cubes,
-                var_name,
-                out_dir,
-                glob_attrs,
-                unlimited_dimensions=["time"],
-            )
+                try:
+                    cube.remove_coord('time')
+                    cube.add_dim_coord(new_time_coord, 0)
+                    logger.info('New time coord added')
+                except iris.exceptions.CoordinateNotFoundError:
+                    logger.info('Problem adding overpass time to time coord')
+
+#  Leaving this here for when ESMValCore PR with new CMOR tables for uncertainity are avaible
+#                 # Land cover class gives this error when
+#                 # loading in CMORised files
+#                 # OverflowError:
+#                 # Python int too large to convert to C long error
+#                 # This fixes it:
+#                 if 'land cover' in cubes.long_name:
+#                     cubes.data.fill_value = 0
+
+#                     # Get rid of anything outide 0-255
+#                     cubes.data[np.where(cubes.data < 0)] = 0
+#                     cubes.data[np.where(cubes.data > 255)] = 0
+
+#                     cubes.data = cubes.data.filled()
+
+#                     # This is the line the ultimately solves things.
+#                     # Will leave the other checks above in because they
+#                     cubes.data = cubes.data * 1.0
+
+                utils.fix_var_metadata(cube, cmor_info)
+
+                # Fix global metadata
+                glob_attrs['platform'] = vals['platform']
+                glob_attrs['orbit_direction'] = orbit_time
+
+                utils.set_global_atts(cube, glob_attrs)
+
+                # This util funtion will give all files in the same year the same name
+                # can not see a way to resolve this from the source code
+                # esmvaltool/cmorizers/data/utilities.py
+                # utils.save_variable(
+                #     cube,
+                #     var_name,
+                #     out_dir,
+                #     glob_attrs,
+                #     unlimited_dimensions=["time"],
+                #    )
+
+                # Alternative saving function
+                time_dt = cf_units.num2pydate(cube.coord('time').points[0],
+                                            str(cube.coord('time').units),
+                                            cube.coord('time').units.calendar
+                                            )
+                datestr = datetime.datetime.strftime(time_dt, '%Y%m%d%H%M00')
 
 
-def load_cubes(in_dir, file_day, file_night, year, month, variable):
-    """Variable description.
-
-    variable = land surface temperature
-    platform = AQUA not used for now
-               but in place for future expansion to all ESC CCI LST platforms
-    """
-    path = f"{in_dir}/{file_day}{year}{month:02d}*.nc"
-    logger.info("Loading %s", path)
-    day_cube = iris.load_cube(path, variable)
-    path = f"{in_dir}/{file_night}{year}{month:02d}*.nc"
-    logger.info("Loading %s", path)
-    night_cube = iris.load_cube(path, variable)
-
-    return day_cube, night_cube
-
-
-def make_monthly_average(day_cube, night_cube, year, month):
-    """Make the average LST form the day time and night time files."""
-    day_cube.attributes.clear()
-    night_cube.attributes.clear()
-
-    co_time = night_cube.coord("time")
-    co_time.points = co_time.points + 100.0
-    # maybe the arbitrary difference should go on day cubes to
-    # take the timestamp to 12Z?
-    # not really an issue when using monthly files
-
-    result = iris.cube.CubeList([day_cube, night_cube]).concatenate_cube()
-
-    # This corrects the lonitude coord name issue
-    # This should be fixed in the next version of the CCI data
-    logger.info("Longitude coordinate correction being applied")
-    result.coords()[2].var_name = "longitude"
-    result.coords()[2].standard_name = "longitude"
-    result.coords()[2].long_name = "longitude"
-
-    monthly_cube = result.collapsed("time", iris.analysis.MEAN)
-
-    # fix time coordinate bounds
-    monthly_co_time = monthly_cube.coord("time")
-
-    time_point = (
-        datetime.datetime(year, month, 1, 0, 0)
-        - datetime.datetime(1981, 1, 1, 0, 0, 0)
-    ).total_seconds()
-    monthly_co_time.points = time_point
-
-    num_days = monthrange(year, month)[1]
-    monthly_co_time.bounds = [
-        time_point,
-        time_point + ((num_days - 1) * 24 * 3600),
-    ]
-    # should this be num_days or num_days-1 ### question for Valeriu or Axel
-    # or 23:59:59 ???
-
-    monthly_cube.attributes = {
-        "information": "Mean of Day and Night Aqua MODIS monthly LST"
-    }
-
-    return monthly_cube
+                save_name = f"{out_dir}/OBS_ESACCI-LST_sat_{cfg['attributes']['version']}_{vals['mip']}_" + \
+                    f"{var}_{datestr}.nc"
+                iris.save(cube, save_name)
