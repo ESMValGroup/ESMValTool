@@ -75,7 +75,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 cube.attributes['var'] = var
 
                 cmor_info = cmor_table.get_variable(vals["mip"], var)
-                
+
                 # this is needed for V1 data, V3 data is ok
                 try:
                     cube.coords()[2].standard_name = 'longitude'
@@ -96,10 +96,14 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     cube.var_name = 'ts'
 
                 orbit_time = ''
-                if 'DAY' in file: orbit_time = 'DAY'
-                if 'NIGHT' in file: orbit_time = 'NIGHT'
-                if 'ASC' in file: orbit_time = 'ASC'
-                if 'DES' in file: orbit_time = 'DES'
+                if 'DAY' in file:
+                    orbit_time = 'DAY'
+                if 'NIGHT' in file:
+                        orbit_time = 'NIGHT'
+                if 'ASC' in file:
+                        orbit_time = 'ASC'
+                if 'DES' in file:
+                        orbit_time = 'DES'
                 if orbit_time == '':
                     # can't work out which overpass time to use
                     # default to 0.0 for midnight
