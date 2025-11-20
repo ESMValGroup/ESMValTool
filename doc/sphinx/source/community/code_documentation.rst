@@ -354,7 +354,7 @@ Successful checks have a green ✓ in front, a ❌ means the test job failed.
 
 Integration with the ESMValCore documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The `ESMValCore documentation <https://docs.esmvaltool.org/projects/esmvalcore>`_
+The `ESMValCore documentation <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/index.html>`_
 is hosted as a
 `subproject <https://docs.readthedocs.io/en/stable/subprojects.html>`_
 of the ESMValTool documentation on readthedocs.
