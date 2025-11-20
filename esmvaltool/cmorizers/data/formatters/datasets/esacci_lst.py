@@ -53,9 +53,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
     # vals has the info from the yml file
     # var is set up in the yml file
-    logger.info(f"{cfg=}")
-    logger.info(f"{glob_attrs=}")
-
     for var, vals in cfg['variables'].items():
         glob_attrs['mip'] = vals['mip']
         cmor_table = cfg["cmor_table"]
