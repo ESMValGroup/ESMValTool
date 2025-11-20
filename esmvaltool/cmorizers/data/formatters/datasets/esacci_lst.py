@@ -99,11 +99,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 if 'DAY' in file:
                     orbit_time = 'DAY'
                 if 'NIGHT' in file:
-                        orbit_time = 'NIGHT'
+                    orbit_time = 'NIGHT'
                 if 'ASC' in file:
-                        orbit_time = 'ASC'
+                    orbit_time = 'ASC'
                 if 'DES' in file:
-                        orbit_time = 'DES'
+                    orbit_time = 'DES'
                 if orbit_time == '':
                     # can't work out which overpass time to use
                     # default to 0.0 for midnight
