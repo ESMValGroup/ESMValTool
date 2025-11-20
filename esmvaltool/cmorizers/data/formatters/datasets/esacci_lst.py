@@ -8,9 +8,9 @@ Should be exapandable to any single sensor CCI LST product, daily or monthly
 
 import datetime
 import logging
+import glob
 import iris
 import cf_units
-import glob
 
 from ...utilities import fix_coords
 from esmvaltool.cmorizers.data import utilities as utils
@@ -23,29 +23,29 @@ logger = logging.getLogger(__name__)
 # times without a comment are the 12 hour differences
 overpass_time = {'SSMI13': {
                     'ASC': 17.85,
-                    'DES': 5.85, # 0551
+                    'DES': 5.85,  # 0551
                     },
                 'SSMI17': {
                     'ASC': 18.58,
-                    'DES': 6.58, # 0635
+                    'DES': 6.58,  # 0635
                     },
                 'AMSR_E': {
                     'ASC': 2.30,
-                    'DES': 14.30, # 1418
+                    'DES': 14.30,  # 1418
                     },
                 'AMSR_2': {
                     'ASC': 1.50,
-                    'DES': 13.50, # 1330
+                    'DES': 13.50,  # 1330
                     },
                 'MODISA': {
-                    'DAY': 14.30, # 1418
+                    'DAY': 14.30,  # 1418
                     'NIGHT': 2.30,
                     },
                 'MODIST': {
-                    'DAY': 9.67, # 0940
+                    'DAY': 9.67,  # 0940
                     'NIGHT': 23.67,
                 }
-            }
+}
 
 def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     """Cmorization func call."""
@@ -57,8 +57,11 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         glob_attrs['mip'] = vals['mip']
         cmor_table = cfg["cmor_table"]
 
-        all_files = glob.glob(f"{in_dir}/{vals['file_base']}-{vals['platform']}-{vals['spatial_resolution']}_{vals['temporal_resolution']}_*-*-*{cfg['attributes']['version']}.nc")
-          
+        file_pattern = f"{in_dir}/{vals['file_base']}-{vals['platform']}-" + \
+            f"{vals['spatial_resolution']}_{vals['temporal_resolution']}" + \
+                f"_*-*-*{cfg['attributes']['version']}.nc"
+        all_files = glob.glob(file_pattern)
+
         # loop over years then files
         for year in range(vals['start_year'], vals['end_year'] + 1):
             for file in all_files:
@@ -83,7 +86,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
                 # this gives time as hours since 19500101
                 cube = fix_coords(cube)
-                
+
                 # this is need for when uncertainity variables added
                 if cube.long_name == 'land surface temperature':
                     cube.long_name = 'surface_temperature'
@@ -107,7 +110,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     time_of_overpass = 0.0
                 else:
                     time_of_overpass = overpass_time[vals['platform']][orbit_time]
-                
+
                 # make a new time coordinate with new times
                 new_time_points = cube.coord('time').points + time_of_overpass
                 new_time_coord = iris.coords.DimCoord(new_time_points,
@@ -120,14 +123,14 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                                       coord_system=None,
                                                       circular=False
                                                       )
-                
+
                 try:
                     cube.remove_coord('time')
                     cube.add_dim_coord(new_time_coord, 0)
                     logger.info('New time coord added')
                 except iris.exceptions.CoordinateNotFoundError:
                     logger.info('Problem adding overpass time to time coord')
-        
+
 #  Leaving this here for when ESMValCore PR with new CMOR tables for uncertainity are avaible
 #                 # Land cover class gives this error when
 #                 # loading in CMORised files
@@ -171,9 +174,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                                             str(cube.coord('time').units),
                                             cube.coord('time').units.calendar
                                             )
-                datestr = datetime.datetime.strftime(time_dt,'%Y%m%d%H%M00')
+                datestr = datetime.datetime.strftime(time_dt, '%Y%m%d%H%M00')
 
-                
+
                 save_name = f"{out_dir}/OBS_ESACCI-LST_sat_{cfg['attributes']['version']}_{vals['mip']}_" + \
                     f"{var}_{datestr}.nc"
                 iris.save(cube, save_name)
