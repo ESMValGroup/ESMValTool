@@ -75,23 +75,18 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 cube.attributes['var'] = var
 
                 cmor_info = cmor_table.get_variable(vals["mip"], var)
-                var_name = cmor_info.short_name
-
+                
                 # this is needed for V1 data, V3 data is ok
                 try:
-                    cubes.coords()[2].standard_name = 'longitude'
+                    cube.coords()[2].standard_name = 'longitude'
                     logger.info('V1 longitude issue fixed')
-                except:
+                except IndexError:
                     # No change needed
                     logger.info('No V1 longitude issue')
 
                 # this gives time as hours since 19500101
-                try:
-                    cube = fix_coords(cube)
-                except:
-                    logger.info('skip fixing')
-                    logger.info(cube.long_name)
-
+                cube = fix_coords(cube)
+                
                 # this is need for when uncertainity variables added
                 if cube.long_name == 'land surface temperature':
                     cube.long_name = 'surface_temperature'
@@ -129,7 +124,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                     cube.remove_coord('time')
                     cube.add_dim_coord(new_time_coord, 0)
                     logger.info('New time coord added')
-                except:
+                except iris.exceptions.CoordinateNotFoundError:
                     logger.info('Problem adding overpass time to time coord')
         
 #  Leaving this here for when ESMValCore PR with new CMOR tables for uncertainity are avaible
