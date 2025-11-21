@@ -47,9 +47,6 @@ def create_category_dict(cfg):
         'cross-dataset-obs': {},
     }
 
-    # Initialize the models as a set to avoid duplication
-    models_set = set()
-
     # Read the data from the config object
     input_data = cfg["input_data"].values()
 
@@ -66,11 +63,17 @@ def create_category_dict(cfg):
 
         # Everything else should be a model
         else:
-            models_set.add(input['dataset'])
+            # Add the model dataset if not already present (appears twice, for tas and siconc)
+            if input['dataset'] not in category_dict['models']:
+                category_dict['models'][input['dataset']] = {}
 
-    # Add the models to the dictionary
-    for model in models_set:
-        category_dict['models'][model] = {}
+            # Add labelling info
+            if 'label_dataset' in input and input['label_dataset']:
+                category_dict['models'][input['dataset']]['label'] = 'to_label'
+                logger.info("Dataset %s will be labelled", input['dataset'])
+            else:
+                category_dict['models'][input['dataset']]['label'] = 'unlabelled'
+                logger.info("Not labelling dataset %s in plots", input['dataset'])
 
     return category_dict
 
