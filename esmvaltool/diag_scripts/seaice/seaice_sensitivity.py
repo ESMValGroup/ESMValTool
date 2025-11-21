@@ -119,17 +119,17 @@ def calculate_direct_stats(dataset, cfg):
     return direct_sensitivity
 
 
-# def calculate_cross_dataset_stats(tasa_dataset, siconc_dataset, cfg):
-#     """Calculate the sensitivity of siconc to tasa across (obs) datasets."""
-#     # Fetch the required cubes
-#     siconc_cube = fetch_cube(dataset, 'siconc', cfg)
-#     tas_cubea = fetch_cube(dataset, 'tas', cfg)
-#
-#     # Calculate direct regression (tas as independent)
-#     direct_sensitivity = linregress(tasa_cube.data, siconc_cube.data)
-#
-#     # direct_sensitivity = slope, intercept, rvalue, pvalue, stderr
-#     return direct_sensitivity
+def calculate_cross_dataset_stats(tasa_dataset, siconc_dataset, cfg):
+    """Calculate the sensitivity of siconc to tasa across (obs) datasets."""
+    # Fetch the required cubes
+    siconc_cube = fetch_cube(siconc_dataset, 'siconc', cfg)
+    tasa_cube = fetch_cube(tasa_dataset, 'tasa', cfg)
+
+    # Calculate direct regression (tasa as independent)
+    direct_sensitivity = linregress(tasa_cube.data, siconc_cube.data)
+
+    # direct_sensitivity = slope, intercept, rvalue, pvalue, stderr
+    return direct_sensitivity
 
 
 def write_values_to_dict(data_dict, cfg):
@@ -166,6 +166,19 @@ def write_values_to_dict(data_dict, cfg):
         siconc_cube = fetch_cube(obs_dataset, 'siconc', cfg)
         ann_siconc_trend = calculate_annual_trend(siconc_cube)
         data_dict['siconc_obs'][obs_dataset]['annual_siconc_trend'] = ann_siconc_trend
+
+    # Calculate cross-dataset statistics between tasa and siconc observations
+    for tasa_dataset in data_dict['tasa_obs'].keys():
+        for siconc_dataset in data_dict['siconc_obs'].keys():
+            # Calculate cross-dataset sensitivity of siconc to tasa
+            cross_sensitivity = calculate_cross_dataset_stats(tasa_dataset, siconc_dataset, cfg)
+            # Determine structure of dictionary to store values
+            key_name = f"{siconc_dataset}_to_{tasa_dataset}"
+            inner_dict = data_dict['cross-dataset-obs'][key_name]
+            # Store the values
+            inner_dict['direct_sensitivity'] = cross_sensitivity.slope
+            inner_dict['direct_r_value'] = cross_sensitivity.rvalue
+            inner_dict['direct_p_value'] = cross_sensitivity.pvalue
 
     return data_dict
 
@@ -204,6 +217,11 @@ def main(cfg):
     write_dictionary_to_csv(data_dict['models'], 'models_values', cfg)
     write_dictionary_to_csv(data_dict['tasa_obs'], 'tasa_obs_values', cfg)
     write_dictionary_to_csv(data_dict['siconc_obs'], 'siconc_obs_values', cfg)
+
+    # Write the cross-dataset obs dictionary to csv files
+    for pair in data_dict['cross-dataset-obs'].keys():
+        data_dict['cross-dataset-obs'][pair] = data_dict['cross-dataset-obs'][pair]
+        write_dictionary_to_csv(data_dict['cross-dataset-obs'][pair], f"{pair}", cfg)
 
     # TEMPORARY: Print the dictionary to the log for checking
     logger.debug("Final data dictionary:\n%s", data_dict)
