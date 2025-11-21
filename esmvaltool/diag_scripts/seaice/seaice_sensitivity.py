@@ -95,12 +95,12 @@ def calculate_annual_trend(cube):
     """Calculate the linear trend of a cube over time using scipy.stats.linregres."""
     # Depending on preprocessor, coord may be 'year' or 'time'
     if 'year' in cube.coords():
-        years = cube.coord("year").points
+        no_years = [i for i in range(len(cube.coord("years").points))]
     else:
-        years = cube.coord("time").points
+        no_years = [i for i in range(len(cube.coord("time").points))]
 
     # slope, intercept, rvalue, pvalue, stderr = linregress(independent, dependent)
-    trend = linregress(years, cube.data)
+    trend = linregress(no_years, cube.data)
 
     # Only the slope is needed in this code
     return trend.slope
@@ -119,17 +119,17 @@ def calculate_direct_stats(dataset, cfg):
     return direct_sensitivity
 
 
-def calculate_cross_dataset_stats(tasa_dataset, siconc_dataset, cfg):
-    """Calculate the sensitivity of siconc to tasa across (obs) datasets."""
-    # Fetch the required cubes
-    siconc_cube = fetch_cube(dataset, 'siconc', cfg)
-    tas_cubea = fetch_cube(dataset, 'tas', cfg)
-
-    # Calculate direct regression (tas as independent)
-    direct_sensitivity = linregress(tasa_cube.data, siconc_cube.data)
-
-    # direct_sensitivity = slope, intercept, rvalue, pvalue, stderr
-    return direct_sensitivity
+# def calculate_cross_dataset_stats(tasa_dataset, siconc_dataset, cfg):
+#     """Calculate the sensitivity of siconc to tasa across (obs) datasets."""
+#     # Fetch the required cubes
+#     siconc_cube = fetch_cube(dataset, 'siconc', cfg)
+#     tas_cubea = fetch_cube(dataset, 'tas', cfg)
+#
+#     # Calculate direct regression (tas as independent)
+#     direct_sensitivity = linregress(tasa_cube.data, siconc_cube.data)
+#
+#     # direct_sensitivity = slope, intercept, rvalue, pvalue, stderr
+#     return direct_sensitivity
 
 
 def write_values_to_dict(data_dict, cfg):
