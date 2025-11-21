@@ -12,6 +12,7 @@ from scipy.stats import linregress
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
     run_diagnostic,
+    save_figure,
 )
 
 logger = logging.getLogger(Path(__file__).stem)
@@ -37,6 +38,7 @@ def get_provenance_record(cfg, caption):
 
 def create_category_dict(cfg):
     """Create a structured dictionary for adding values to later on."""
+    logger.debug("Creating blank dictionary.")
     # Create blank dictionary of correct structure
     category_dict = {
         'models': {},
@@ -75,6 +77,8 @@ def create_category_dict(cfg):
 
 def fetch_cube(dataset, variable, cfg):
     """Fetch a data cube for a dataset and variable using info from the config."""
+    logger.debug("Fetching cube for dataset: %s, variable: %s", dataset, variable)
+
     # Read the data from the config object
     input_data = cfg["input_data"].values()
 
@@ -94,6 +98,8 @@ def fetch_cube(dataset, variable, cfg):
 
 def calculate_annual_trend(cube):
     """Calculate the linear trend of a cube over time using scipy.stats.linregres."""
+    logger.debug("Calculating annual trend for cube %s.", cube.name())
+
     # Depending on preprocessor, coord may be 'year' or 'time'
     if 'year' in cube.coords():
         no_years = [i for i in range(len(cube.coord("years").points))]
@@ -109,6 +115,8 @@ def calculate_annual_trend(cube):
 
 def calculate_direct_stats(dataset, cfg):
     """Calculate the direct sensitivity of siconc to tas for a given dataset."""
+    logger.debug("Calculating direct sensitivity for dataset %s.", dataset)
+
     # Fetch the required cubes
     siconc_cube = fetch_cube(dataset, 'siconc', cfg)
     tas_cube = fetch_cube(dataset, 'tas', cfg)
@@ -122,6 +130,8 @@ def calculate_direct_stats(dataset, cfg):
 
 def calculate_cross_dataset_stats(tasa_dataset, siconc_dataset, cfg):
     """Calculate the sensitivity of siconc to tasa across (obs) datasets."""
+    logger.debug("Calculating cross sensitivity for datasets %s, %s.", tasa_dataset, siconc_dataset)
+
     # Fetch the required cubes
     siconc_cube = fetch_cube(siconc_dataset, 'siconc', cfg)
     tasa_cube = fetch_cube(tasa_dataset, 'tasa', cfg)
@@ -135,6 +145,8 @@ def calculate_cross_dataset_stats(tasa_dataset, siconc_dataset, cfg):
 
 def write_values_to_dict(data_dict, cfg):
     """Calculate and write values to the structured dictionary."""
+    logger.debug("Writing values to dictionary.")
+
     # Calculate all the values for the models
     for model_dataset in data_dict['models'].keys():
         # Calculate annual tas trend
@@ -192,6 +204,8 @@ def write_dictionary_to_csv(sub_dict, filename, cfg):
     Only sections of the dictionary should be written at a time as otherwise
     the structure is too complex to easily convert to a DataFrame.
     """
+    logger.debug("Writing dictionary to csv file.")
+
     # Create the csv filepath using info from the config
     csv_filepath = f"{cfg['work_dir']}/{filename}.csv"
 
@@ -208,25 +222,172 @@ def write_dictionary_to_csv(sub_dict, filename, cfg):
         )
 
 
+def write_obs_from_cfg(cfg):
+    """Write the Notz-style observations from the recipe to a dictionary."""
+    logger.debug("Writing observations from config file.")
+
+    # Initialize the dictionary with observation period
+    obs_dict = {"obs_period": cfg["observations"]["observation period"]}
+
+    # Add the observations values to the dictionary
+    notz_values = cfg["observations"]["sea ice sensitivity (Notz-style plot)"]
+    obs_dict["mean"] = notz_values["mean"]
+    obs_dict["std_dev"] = notz_values["standard deviation"]
+    obs_dict["plausible"] = notz_values["plausible range"]
+
+    return obs_dict
+
+
+def create_titles_dict(cfg):
+    """
+    Create a dictionary of appropriate titles and hardcoded observations.
+    Values depend on whether the plot is for the Arctic or Antarctic
+    and assume the recipe used September Arctic sea ice data or
+    annually mean averaged Antarctic sea ice data
+    """
+    logger.debug("Creating titles dictionary.")
+    dictionary = {}
+
+    data = cfg["input_data"].values()
+    first_variable = next(iter(data))
+
+    if first_variable["diagnostic"] == "arctic":
+        dictionary["titles"] = {
+            "notz_fig_title": "September Arctic sea-ice area sensitivity to global mean surface temperature",
+            "notz_ax_title": "dSIA/dGMST",
+            "notz_plot_filename": "September Arctic sea ice sensitivity",
+            "roach_fig_title": "Trends in Annual Mean Temperature And September Arctic Sea Ice",
+            "roach_plot_filename": "September Arctic sea ice trends",
+        }
+
+    elif first_variable["diagnostic"] == "antarctic":
+        dictionary["titles"] = {
+            "notz_fig_title": "Annually Meaned Antarctic Sea Ice Sensitivity",
+            "notz_ax_title": "dSIA/dGMST",
+            "notz_plot_filename": "Annual Antarctic sea ice sensitivity",
+            "roach_fig_title": "Trends in Annual Mean Temperature And Annual Antarctic Sea Ice",
+            "roach_plot_filename": "Annual Antarctic sea ice trends",
+        }
+
+    dictionary["obs"] = write_obs_from_cfg(cfg)
+
+    return dictionary
+
+
+def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
+    """Save a plot of sensitivities and observations for model datasets."""
+    # Read from observations dictionary
+    obs_years = titles_dictionary["obs"]["obs_period"]
+    obs_dict = titles_dictionary["obs"]
+    obs_mean = obs_dict["mean"]
+    obs_std_dev = obs_dict["std_dev"]
+    obs_plausible = obs_dict["plausible"]
+
+    # Set up the figure
+    fig, ax = plt.subplots(figsize=(3.5, 6), layout="constrained")
+    fig.suptitle(titles_dictionary["titles"]["notz_fig_title"], wrap=True)
+    ax.set_title(
+        titles_dictionary["titles"]["notz_ax_title"], wrap=True, fontsize=10
+    )
+
+    # Iterate over the dictionary
+    for dataset, inner_dict in data_dictionary.items():
+        ax.plot(
+            0.25,
+            inner_dict["direct_sensitivity_(notz-style)"],
+            color="blue",
+            marker="_",
+            markersize=20,
+        )
+
+        # Label with the dataset if specified
+        if inner_dict["label"] == "to_label":
+            plt.annotate(
+                dataset,
+                xy=(0.25, inner_dict["direct_sensitivity_(notz-style)"]),
+                xytext=(
+                    0.35,
+                    inner_dict["direct_sensitivity_(notz-style)"] - 0.05,
+                ),
+            )
+
+    # Add observations only if obs_mean is a number
+    if isinstance(obs_mean, int | float):
+        ax.hlines(obs_mean, 0, 1, linestyle="--", color="black", linewidth=2)
+        ax.fill_between(
+            [0, 1],
+            obs_mean - obs_std_dev,
+            obs_mean + obs_std_dev,
+            facecolor="k",
+            alpha=0.15,
+        )
+        ax.hlines(
+            obs_mean + obs_plausible,
+            0,
+            1,
+            linestyle=":",
+            color="0.5",
+            linewidth=1,
+        )
+        ax.hlines(
+            obs_mean - obs_plausible,
+            0,
+            1,
+            linestyle=":",
+            color="0.5",
+            linewidth=1,
+        )
+
+    # Tidy the figure
+    ax.set_xlim(0, 1)
+    ax.set_xticks([])
+    ax.set_ylabel(r"dSIA/dGMST ($million \ km^2 \ K^{-1}$)")
+
+    # Create caption based on whether observation mean is presnt
+    if isinstance(obs_mean, int | float):
+        caption = (
+            "Sensitivity of sea ice area to annual mean global warming."
+            f"Mean (dashed), standard deviation (shaded) and plausible values from {obs_years}."
+        )
+    else:
+        caption = "Sensitivity of sea ice area to annual mean global warming."
+
+    # Save the figure (also closes it)
+    save_figure(
+        titles_dictionary["titles"]["notz_plot_filename"],
+        get_provenance_record(cfg, caption),
+        cfg,
+        figure=fig,
+        close=True,
+    )
+
+
 def main(cfg):
     # Create the structured dictionary
     data_dict = create_category_dict(cfg)
 
     # Calculate and write values to the dictionary
+    logger.info(f"Calculating and writing values to dictionary.")
     data_dict = write_values_to_dict(data_dict, cfg)
 
     # Write the model and obs dictionaries to csv files
+    logger.info(f"Writing dictionaries to csv files.")
     write_dictionary_to_csv(data_dict['models'], 'models_values', cfg)
     write_dictionary_to_csv(data_dict['tasa_obs'], 'tasa_obs_values', cfg)
     write_dictionary_to_csv(data_dict['siconc_obs'], 'siconc_obs_values', cfg)
 
-    # Write the cross-dataset obs dictionary to csv files
+    # Write the cross-dataset obs dictionary to csv files (separately for each pair)
     for pair in data_dict['cross-dataset-obs'].keys():
         data_dict['cross-dataset-obs'][pair] = data_dict['cross-dataset-obs'][pair]
         write_dictionary_to_csv(data_dict['cross-dataset-obs'][pair], f"{pair}", cfg)
 
-    # TEMPORARY: Print the dictionary to the log for checking
-    logger.debug("Final data dictionary:\n%s", data_dict)
+    # Titles and observations depend on the diagnostic being plotted
+    logger.info("Creating titles and observations dictionary")
+    titles_and_obs_dict = create_titles_dict(cfg)
+
+    # Plot the sensitivities (and save and close the plots)
+    logger.info("Creating Notz-style plot")
+    notz_style_plot_from_dict(data_dict, titles_and_obs_dict, cfg)
 
 
 if __name__ == "__main__":
