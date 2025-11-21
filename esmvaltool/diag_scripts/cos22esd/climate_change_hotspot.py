@@ -71,17 +71,22 @@ class HotspotDiag:
 
         for season in ["jja", "djf", "annual"]:
             time_extr_large_scale_cube = self.extract_annual_or_season(
-                large_scale_cube, season
+                large_scale_cube,
+                season,
             )
             time_extr_regional_cube = self.extract_annual_or_season(
-                regional_cube, season
+                regional_cube,
+                season,
             )
             time_subset_cubes = [
                 time_extr_large_scale_cube,
                 time_extr_regional_cube,
             ]
             self.compute_hotspot_fields(
-                time_subset_cubes, season, filename, input_data_dict
+                time_subset_cubes,
+                season,
+                filename,
+                input_data_dict,
             )
             for key, cube in zip(
                 ["large_scale", "regional"],
@@ -92,10 +97,16 @@ class HotspotDiag:
                 basename = f"rolling_mean_{key}_{season}"
                 region = self.regions[regional_cube.var_name][key]
                 provenance_record = self.get_rolling_mean_record(
-                    input_data_dict, season, region, filename
+                    input_data_dict,
+                    season,
+                    region,
+                    filename,
                 )
                 save_data(
-                    basename, provenance_record, self.cfg, rolling_mean_cube
+                    basename,
+                    provenance_record,
+                    self.cfg,
+                    rolling_mean_cube,
                 )
 
     def extract_regional(self, cube):
@@ -129,31 +140,46 @@ class HotspotDiag:
         the resulting cubes are saved inside self.experiment_dict.
         """
         regional_anomaly = anomalies(
-            cubes[1], "full", reference=self.anomaly_reference
+            cubes[1],
+            "full",
+            reference=self.anomaly_reference,
         )
         large_scale_anomaly = anomalies(
-            cubes[0], "full", reference=self.anomaly_reference
+            cubes[0],
+            "full",
+            reference=self.anomaly_reference,
         )
         if cubes[1].var_name == "pr":
             regional_anomaly = self.relative_change(regional_anomaly, cubes[1])
             large_scale_anomaly = self.relative_change(
-                large_scale_anomaly, cubes[0]
+                large_scale_anomaly,
+                cubes[0],
             )
         hotspot = regional_anomaly - area_statistics(
-            large_scale_anomaly, "mean"
+            large_scale_anomaly,
+            "mean",
         )
         hotspot.var_name = f"{regional_anomaly.var_name}_hotspot"
         for period in self.cfg["future_periods"]:
             start_year = int(period.split("-")[0])
             end_year = int(period.split("-")[-1])
             period_anomaly = extract_time(
-                hotspot, start_year, 1, 1, end_year, 12, 31
+                hotspot,
+                start_year,
+                1,
+                1,
+                end_year,
+                12,
+                31,
             )
             period_anomaly = climate_statistics(period_anomaly)
 
             basename = f"hotspot_{season}_{period}"
             provenance_record = self.get_hotspot_provenance_record(
-                input_data_dict, period, season, filename
+                input_data_dict,
+                period,
+                season,
+                filename,
             )
             save_data(basename, provenance_record, self.cfg, period_anomaly)
 
@@ -165,12 +191,16 @@ class HotspotDiag:
         """
         area_mean = area_statistics(cube, "mean")
         anomaly = anomalies(
-            area_mean, "full", reference=self.anomaly_reference
+            area_mean,
+            "full",
+            reference=self.anomaly_reference,
         )
         if cube.var_name == "pr":
             anomaly = self.relative_change(anomaly, area_mean)
         timeseries_cube = anomaly.rolling_window(
-            "time", iris.analysis.MEAN, 10
+            "time",
+            iris.analysis.MEAN,
+            10,
         )
         return timeseries_cube
 
@@ -190,7 +220,11 @@ class HotspotDiag:
         return anomaly * 100
 
     def get_hotspot_provenance_record(
-        self, attributes, period, season, ancestor_files
+        self,
+        attributes,
+        period,
+        season,
+        ancestor_files,
     ):
         """Create a provenance record.
 
@@ -220,7 +254,11 @@ class HotspotDiag:
         return record
 
     def get_rolling_mean_record(
-        self, attributes, season, region, ancestor_files
+        self,
+        attributes,
+        season,
+        region,
+        ancestor_files,
     ):
         """Create a provenance record.
 

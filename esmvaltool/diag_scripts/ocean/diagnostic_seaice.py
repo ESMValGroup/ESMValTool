@@ -220,14 +220,16 @@ def make_ts_plots(
             layer = str(layer)
 
             times, data = calculate_area_time_series(
-                cube_layer, plot_type, threshold
+                cube_layer,
+                plot_type,
+                threshold,
             )
 
             plt.plot(times, data)
 
             # Add title to plot
             title = " ".join(
-                [metadata["dataset"], pole, "hemisphere", season, plot_type]
+                [metadata["dataset"], pole, "hemisphere", season, plot_type],
             )
             if layer:
                 title = " ".join(
@@ -237,7 +239,7 @@ def make_ts_plots(
                         layer,
                         str(cube_layer.coords("depth")[0].units),
                         ")",
-                    ]
+                    ],
                 )
             plt.title(title)
 
@@ -254,14 +256,14 @@ def make_ts_plots(
                         pole,
                         plot_type,
                         str(layer_index),
-                    ]
+                    ],
                 )
                 + image_extention
             )
             suffix = suffix.replace(" ", "")
             if multi_model:
                 path = diagtools.folder(cfg["plot_dir"]) + os.path.basename(
-                    filename
+                    filename,
                 )
                 path = path.replace(".nc", suffix)
             else:
@@ -311,7 +313,7 @@ def make_polar_map(
         The string describing the matplotlib colourmap.
 
     Returns
-    ----------
+    -------
     matplotlib.pyplot.figure:
         The matplotlib figure where the map was drawn.
     matplotlib.pyplot.axes:
@@ -347,10 +349,14 @@ def make_polar_map(
         )
     except ConnectionRefusedError:
         logger.error(
-            "Cartopy was unable add coastlines due to  a connection error."
+            "Cartopy was unable add coastlines due to  a connection error.",
         )
     ax1.gridlines(
-        linewidth=0.5, color="black", zorder=20, alpha=0.5, linestyle="--"
+        linewidth=0.5,
+        color="black",
+        zorder=20,
+        alpha=0.5,
+        linestyle="--",
     )
     try:
         plt.gca().coastlines()
@@ -369,7 +375,7 @@ def get_pole(cube):
         Data Cube
 
     Returns
-    ----------
+    -------
     str:
         The hemisphere (North or South)
 
@@ -393,7 +399,7 @@ def get_time_string(cube):
         Data Cube
 
     Returns
-    ----------
+    -------
     str:
         The climatological season as a string
 
@@ -413,7 +419,7 @@ def get_year(cube):
         Data Cube
 
     Returns
-    ----------
+    -------
     str:
         The year as a string
 
@@ -432,7 +438,7 @@ def get_season(cube):
         Data Cube
 
     Returns
-    ----------
+    -------
     str:
         The climatological season as a string
 
@@ -506,13 +512,13 @@ def make_map_plots(
                         layer,
                         str(cube_layer.coords("depth")[0].units),
                         ")",
-                    ]
+                    ],
                 )
             plt.title(title)
 
             # Determine image filename:
             suffix = "_".join(
-                ["ortho_map", plot_type, time_str, str(layer_index)]
+                ["ortho_map", plot_type, time_str, str(layer_index)],
             )
             suffix = suffix.replace(" ", "") + image_extention
             if multi_model:
@@ -557,7 +563,7 @@ def agregate_by_season(cube):
         Data Cube
 
     Returns
-    ----------
+    -------
     iris.cube.Cube:
         Data Cube with the seasonal means
 
@@ -566,10 +572,13 @@ def agregate_by_season(cube):
         iris.coord_categorisation.add_season(cube, "time", name="clim_season")
     if not cube.coords("season_year"):
         iris.coord_categorisation.add_season_year(
-            cube, "time", name="season_year"
+            cube,
+            "time",
+            name="season_year",
         )
     return cube.aggregated_by(
-        ["clim_season", "season_year"], iris.analysis.MEAN
+        ["clim_season", "season_year"],
+        iris.analysis.MEAN,
     )
 
 
@@ -627,15 +636,21 @@ def make_map_extent_plots(
             ax1.set_extent([-180, 180, -90, -50], cartopy.crs.PlateCarree())
         try:
             ax1.add_feature(
-                cartopy.feature.LAND, zorder=10, facecolor=[0.8, 0.8, 0.8]
+                cartopy.feature.LAND,
+                zorder=10,
+                facecolor=[0.8, 0.8, 0.8],
             )
         except ConnectionRefusedError:
             logger.error(
-                "Cartopy was unable add coastlines due to  a connection error."
+                "Cartopy was unable add coastlines due to  a connection error.",
             )
 
         ax1.gridlines(
-            linewidth=0.5, color="black", zorder=20, alpha=0.5, linestyle="--"
+            linewidth=0.5,
+            color="black",
+            zorder=20,
+            alpha=0.5,
+            linestyle="--",
         )
 
         try:
@@ -684,7 +699,7 @@ def make_map_extent_plots(
                 ax1.get_position().y0,
                 ax1.get_position().width * (1.0 - 0.1 * ncols),
                 ax1.get_position().height,
-            ]
+            ],
         )
 
         fig.set_size_inches(7 + ncols * 1.2, 7)
@@ -713,7 +728,7 @@ def make_map_extent_plots(
         title = " ".join(
             [
                 metadata["dataset"],
-            ]
+            ],
         )
         if layer:
             title = " ".join(
@@ -723,7 +738,7 @@ def make_map_extent_plots(
                     layer,
                     str(cube_layer.coords("depth")[0].units),
                     ")",
-                ]
+                ],
             )
         plt.title(title)
 

@@ -200,7 +200,13 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
         # Extract and save variable file
         _extract_variable(
-            var, var_info, cmor_info, glob_attrs, filedir, out_dir, cfg
+            var,
+            var_info,
+            cmor_info,
+            glob_attrs,
+            filedir,
+            out_dir,
+            cfg,
         )
 
         # Remove extracted directory

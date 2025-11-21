@@ -71,24 +71,28 @@ def grouped_data(cfg):
     for exp in group_data:
         if exp in cfg["experiments"]["simulation"]:
             data_grouped["zecmip_data"] = select_metadata(
-                input_data, short_name="tas", exp=exp
+                input_data,
+                short_name="tas",
+                exp=exp,
             )
         elif exp in cfg["experiments"]["reference"]:
             data_grouped["base"] = select_metadata(
-                input_data, short_name="tas", exp=exp
+                input_data,
+                short_name="tas",
+                exp=exp,
             )
         else:
             raise ValueError(
                 f"{exp} is not a valid experiment for calculating ZEC, "
                 f"please check the configuration value of 'experiments'. "
-                f"Current accepted experiments are {cfg['experiments']}"
+                f"Current accepted experiments are {cfg['experiments']}",
             )
     if "zecmip_data" not in data_grouped or "base" not in data_grouped:
         raise ValueError(
             f"Data does not include experiments valid for ZEC computation, "
             f"please check the configuration value of 'experiments'. "
             f"Current accepted experiments are {cfg['experiments']}, "
-            f"received experiments are {list(group_data.keys())}"
+            f"received experiments are {list(group_data.keys())}",
         )
     return data_grouped
 
@@ -106,7 +110,9 @@ def calculate_zec(cfg):
         # Match correct anomaly base data, no ensemble key for means
         if "_r" in data["alias"]:
             match_base = select_metadata(
-                base, dataset=data["dataset"], ensemble=data["ensemble"]
+                base,
+                dataset=data["dataset"],
+                ensemble=data["ensemble"],
             )
         else:
             match_base = select_metadata(base, dataset=data["dataset"])

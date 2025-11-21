@@ -54,7 +54,11 @@ def _extract_variable(short_name, var, cfg, file_path, out_dir):
 
     # Save variable
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
     if "add_mon" in var.keys():
@@ -74,7 +78,11 @@ def _extract_variable(short_name, var, cfg, file_path, out_dir):
 
             # Save variable
             utils.save_variable(
-                cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+                cube,
+                short_name,
+                out_dir,
+                attrs,
+                unlimited_dimensions=["time"],
             )
 
 
