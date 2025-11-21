@@ -30,15 +30,15 @@ jobs:
             --max-concurrency 1 --no-progress
             --accept "200..=204, 403, 429"
             --insecure
-          # --exclude https://doi.org/
+            --exclude https://www.youtube.com/embed/
       
       - name: Set current date
         run: echo "REPORT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
-      # - name: Create Issue From File
-      #   if: steps.lychee.outputs.exit_code != 0
-      #   uses: peter-evans/create-issue-from-file@v5
-      #   with:
-      #     title: "🔗 Link Checker Report - ${{ env.REPORT_DATE }}"
-      #     content-filepath: ./lychee/out.md
-      #     labels: documentation, github_actions
+      - name: Create Issue From File
+        if: steps.lychee.outputs.exit_code != 0
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: "🔗 Link Checker Report - ${{ env.REPORT_DATE }}"
+          content-filepath: ./lychee/out.md
+          labels: documentation, github_actions
