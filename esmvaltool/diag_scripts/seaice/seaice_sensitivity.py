@@ -388,9 +388,9 @@ def main(cfg):
     logger.info("Creating titles and observations dictionary")
     titles_and_obs_dict = create_titles_dict(cfg)
 
-    # Plot the sensitivities (and save and close the plots)
+    # Plot the sensitivities, uses model data only (and obs from recipe)
     logger.info("Creating Notz-style plot")
-    notz_style_plot_from_dict(data_dict, titles_and_obs_dict, cfg)
+    notz_style_plot_from_dict(data_dict['models'], titles_and_obs_dict, cfg)
 
 
 if __name__ == "__main__":
