@@ -4,7 +4,6 @@ import contextlib
 import os
 import sys
 
-import esmvalcore
 import iris
 import iris.coord_systems
 import iris.coords
@@ -14,9 +13,7 @@ import numpy as np
 import pytest
 import yaml
 from cf_units import Unit
-from packaging import version
 
-from esmvaltool import ESMValToolDeprecationWarning
 from esmvaltool.cmorizers.data.cmorizer import DataCommand
 
 
