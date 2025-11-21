@@ -119,6 +119,19 @@ def calculate_direct_stats(dataset, cfg):
     return direct_sensitivity
 
 
+def calculate_cross_dataset_stats(tasa_dataset, siconc_dataset, cfg):
+    """Calculate the sensitivity of siconc to tasa across (obs) datasets."""
+    # Fetch the required cubes
+    siconc_cube = fetch_cube(dataset, 'siconc', cfg)
+    tas_cubea = fetch_cube(dataset, 'tas', cfg)
+
+    # Calculate direct regression (tas as independent)
+    direct_sensitivity = linregress(tasa_cube.data, siconc_cube.data)
+
+    # direct_sensitivity = slope, intercept, rvalue, pvalue, stderr
+    return direct_sensitivity
+
+
 def write_values_to_dict(data_dict, cfg):
     """Calculate and write values to the structured dictionary."""
     # Calculate all the values for the models
@@ -192,6 +205,8 @@ def main(cfg):
     write_dictionary_to_csv(data_dict['tasa_obs'], 'tasa_obs_values', cfg)
     write_dictionary_to_csv(data_dict['siconc_obs'], 'siconc_obs_values', cfg)
 
+    # TEMPORARY: Print the dictionary to the log for checking
+    logger.debug("Final data dictionary:\n%s", data_dict)
 
 if __name__ == "__main__":
     with run_diagnostic() as config:
