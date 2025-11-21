@@ -8,7 +8,12 @@ from esmvaltool.cmorizers.data.downloaders.wget import NASADownloader
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    config,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
@@ -45,7 +50,7 @@ def download_dataset(
         downloader.download_file(
             "https://daacdata.apps.nsidc.org/pub/DATASETS/"
             "nsidc0116_icemotion_vectors_v4/north/daily/"
-            f"icemotion_daily_nh_25km_{year}0101_{year}1231_v4.1.nc"
+            f"icemotion_daily_nh_25km_{year}0101_{year}1231_v4.1.nc",
         )
 
         loop_date += relativedelta.relativedelta(years=1)

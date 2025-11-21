@@ -74,7 +74,7 @@ class _Formatter:
             if not config_dir.is_dir():
                 raise NotADirectoryError(
                     f"Invalid --config_dir given: {config_dir} is not an "
-                    f"existing directory"
+                    f"existing directory",
                 )
             CFG.update_from_dirs([config_dir])
         CFG.nested_update(options)
@@ -85,7 +85,8 @@ class _Formatter:
 
         # configure logging
         log_files = configure_logging(
-            output_dir=self.run_dir, console_log_level=self.log_level
+            output_dir=self.run_dir,
+            console_log_level=self.log_level,
         )
         logger.info("Writing program log files to:\n%s", "\n".join(log_files))
 
@@ -175,7 +176,7 @@ class _Formatter:
         """
         if not self.has_downloader(dataset):
             raise ValueError(
-                f"Dataset {dataset} does not have an automatic downloader"
+                f"Dataset {dataset} does not have an automatic downloader",
             )
         dataset_module = self._dataset_to_module(dataset)
         logger.info("Downloading %s", dataset)
@@ -232,7 +233,7 @@ class _Formatter:
 
         if failed_datasets:
             raise RuntimeError(
-                f"Format failed for datasets {' '.join(failed_datasets)}"
+                f"Format failed for datasets {' '.join(failed_datasets)}",
             )
 
     @staticmethod
@@ -327,11 +328,20 @@ class _Formatter:
         if os.path.isfile(reformat_script_root + ".ncl"):
             reformat_script = reformat_script_root + ".ncl"
             success = self._run_ncl_script(
-                in_data_dir, out_data_dir, dataset, reformat_script, start, end
+                in_data_dir,
+                out_data_dir,
+                dataset,
+                reformat_script,
+                start,
+                end,
             )
         elif os.path.isfile(reformat_script_root + ".py"):
             success = self._run_pyt_script(
-                in_data_dir, out_data_dir, dataset, start, end
+                in_data_dir,
+                out_data_dir,
+                dataset,
+                start,
+                end,
             )
         else:
             logger.error("Could not find formatter for %s", dataset)
@@ -354,7 +364,9 @@ class _Formatter:
                 )
             else:
                 logger.info(
-                    "Installing dataset %s in folder %s", dataset, target_dir
+                    "Installing dataset %s in folder %s",
+                    dataset,
+                    target_dir,
                 )
                 shutil.move(out_data_dir, target_dir)
         return True
@@ -362,7 +374,7 @@ class _Formatter:
     def _get_dataset_tier(self, dataset):
         for tier in [2, 3]:
             if os.path.isdir(
-                os.path.join(self.rawobs, f"Tier{tier}", dataset)
+                os.path.join(self.rawobs, f"Tier{tier}", dataset),
             ):
                 return f"Tier{tier}"
         return None
@@ -405,31 +417,41 @@ class _Formatter:
     def _run_ncl_script(self, in_dir, out_dir, dataset, script, start, end):
         """Run the NCL cmorization mechanism."""
         logger.info(
-            "CMORizing dataset %s using NCL script %s", dataset, script
+            "CMORizing dataset %s using NCL script %s",
+            dataset,
+            script,
         )
         project = {}
         project[dataset] = {}
         project[dataset]["indir"] = in_dir
         project[dataset]["outdir"] = out_dir
         settings_file = self._write_ncl_settings(
-            project, dataset, self.run_dir, script, start, end
+            project,
+            dataset,
+            self.run_dir,
+            script,
+            start,
+            end,
         )
 
         # put settings in environment
         env = dict(os.environ)
         env["settings"] = settings_file
         env["esmvaltool_root"] = os.path.dirname(
-            os.path.dirname(os.path.dirname(os.path.dirname(script)))
+            os.path.dirname(os.path.dirname(os.path.dirname(script))),
         )
         env["cmor_tables"] = str(
-            Path(esmvalcore.cmor.__file__).parent / "tables"
+            Path(esmvalcore.cmor.__file__).parent / "tables",
         )
         logger.info("Using CMOR tables at %s", env["cmor_tables"])
         # call NCL
         ncl_call = ["ncl", script]
         logger.info("Executing cmd: %s", " ".join(ncl_call))
         with subprocess.Popen(
-            ncl_call, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env
+            ncl_call,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            env=env,
         ) as process:
             output, err = process.communicate()
         for oline in str(output.decode("utf-8")).split("\n"):
@@ -475,12 +497,13 @@ class DataCommand:
         print("-" * 71)
         for dataset, dataset_info in self._info["datasets"].items():
             date = datetime.datetime.strptime(
-                str(dataset_info["last_access"]), "%Y-%m-%d"
+                str(dataset_info["last_access"]),
+                "%Y-%m-%d",
             )
             print(
                 f"| {dataset:30} | {dataset_info['tier']:4} "
                 f"| {self._has_downloader(dataset):13} "
-                f"|  {date.strftime('%Y-%m-%d')} |"
+                f"|  {date.strftime('%Y-%m-%d')} |",
             )
         print("-" * 71)
 
@@ -498,7 +521,7 @@ class DataCommand:
         print(f"Tier: {dataset_info['tier']}")
         print(f"Source: {dataset_info['source']}")
         print(f"Automatic download: {self._has_downloader(dataset)}")
-        print("")
+        print()
         print(dataset_info["info"])
 
     def download(
@@ -549,7 +572,11 @@ class DataCommand:
         end = self._parse_date(end)
 
         self.formatter.start(
-            "download", datasets, config_file, config_dir, kwargs
+            "download",
+            datasets,
+            config_file,
+            config_dir,
+            kwargs,
         )
         self.formatter.download(start, end, overwrite)
 
@@ -601,7 +628,11 @@ class DataCommand:
         end = self._parse_date(end)
 
         self.formatter.start(
-            "formatting", datasets, config_file, config_dir, kwargs
+            "formatting",
+            datasets,
+            config_file,
+            config_dir,
+            kwargs,
         )
         self.formatter.format(start, end, install)
 
@@ -656,7 +687,11 @@ class DataCommand:
         end = self._parse_date(end)
 
         self.formatter.start(
-            "preparation", datasets, config_file, config_dir, kwargs
+            "preparation",
+            datasets,
+            config_file,
+            config_dir,
+            kwargs,
         )
         if self.formatter.download(start, end, overwrite):
             self.formatter.format(start, end, install)
@@ -678,6 +713,6 @@ class DataCommand:
             raise ValueError(
                 f"Unsupported date format for {date}. "
                 'Supported formats for "start" and "end" are: '
-                '"None", "YYYY", "YYYYMM", "YYYYMMDD"'
+                '"None", "YYYY", "YYYYMM", "YYYYMMDD"',
             )
         return datetime.datetime.strptime(date_string, format_string)

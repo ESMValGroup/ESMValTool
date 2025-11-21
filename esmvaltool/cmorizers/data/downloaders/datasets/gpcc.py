@@ -12,7 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    config,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
@@ -45,6 +50,7 @@ def download_dataset(
     )
     for version in cmor_config["attributes"]["version"].values():
         downloader.download_file(
-            raw_path.format(version=version), wget_options=[]
+            raw_path.format(version=version),
+            wget_options=[],
         )
     unpack_files_in_folder(downloader.local_folder)

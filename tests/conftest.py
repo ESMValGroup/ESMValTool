@@ -17,5 +17,5 @@ def pytest_runtest_setup(item):
         if platform != "linux":
             pytest.skip(
                 f"Diagnostic tests that produce images are not supported on "
-                f"platform {platform}"
+                f"platform {platform}",
             )

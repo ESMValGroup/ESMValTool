@@ -10,7 +10,6 @@ import cdo as cd
 
 def zmnam_preproc(ifile, hemisphere, tempdir=None):
     """Preprocessing of the input dataset files."""
-
     # Avoid using /tmp for larger files
     if tempdir is not None:
         cdo = cd.Cdo(tempdir=tempdir)
@@ -34,7 +33,7 @@ def zmnam_preproc(ifile, hemisphere, tempdir=None):
     # Detrend with memory-efficient method.
     full_da_nl_a, full_da_nl_b = cdo.trend(input=full_da_nl_nn)
     full_da_nl_detr = cdo.subtrend(
-        input=full_da_nl_nn + " " + full_da_nl_a + " " + full_da_nl_b
+        input=full_da_nl_nn + " " + full_da_nl_a + " " + full_da_nl_b,
     )
 
     # Compute anomalies from the daily/monthly means.
@@ -52,7 +51,6 @@ def zmnam_preproc(ifile, hemisphere, tempdir=None):
 
 def zmnam_preproc_clean(tempdir=None):
     """Clean up temporary files after processing"""
-
     if tempdir is not None:
         cdo = cd.Cdo(tempdir=tempdir)
     else:
@@ -60,5 +58,3 @@ def zmnam_preproc_clean(tempdir=None):
 
     # Delete files like cdoPy* in tmp directory
     cdo.cleanTempDir()
-
-    return None

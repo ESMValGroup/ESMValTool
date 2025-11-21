@@ -48,7 +48,7 @@ def extract_variable(var_info, raw_info, attrs, year):
         cube = iris.load_cube(raw_info["file"], constraint)
     except iris.exceptions.ConstraintMismatchError as constraint_error:
         raise ValueError(
-            f"No data available for variable {rawvar}and year {year}"
+            f"No data available for variable {rawvar}and year {year}",
         ) from constraint_error
 
     # Fix cube
@@ -81,10 +81,12 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             for inpfile in inpfiles:
                 raw_info["file"] = inpfile
                 logger.info(
-                    "CMORizing var %s from file type %s", var, raw_info["file"]
+                    "CMORizing var %s from file type %s",
+                    var,
+                    raw_info["file"],
                 )
                 data_cubes.append(
-                    extract_variable(var_info, raw_info, glob_attrs, year)
+                    extract_variable(var_info, raw_info, glob_attrs, year),
                 )
             yearly_cube = concatenate(data_cubes)
             # Fix monthly time bounds

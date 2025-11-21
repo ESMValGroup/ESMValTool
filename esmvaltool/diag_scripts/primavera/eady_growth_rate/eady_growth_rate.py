@@ -78,11 +78,16 @@ class EadyGrowthRate:
             eastward_wind = iris.load_cube(var["ua"][0]["filename"])
             if eastward_wind.shape is not geopotential.shape:
                 eastward_wind = regrid(
-                    eastward_wind, geopotential, scheme="linear"
+                    eastward_wind,
+                    geopotential,
+                    scheme="linear",
                 )
 
             egr = self.eady_growth_rate(
-                fcor, eastward_wind, geopotential, brunt
+                fcor,
+                eastward_wind,
+                geopotential,
+                brunt,
             )
 
             cube_egr = eastward_wind.copy(egr * 86400)
@@ -102,7 +107,7 @@ class EadyGrowthRate:
             else:
                 logger.info(
                     "Parameter time_statistic is not well set in the recipe."
-                    "Must be 'annual_mean' or 'seasonal_mean'"
+                    "Must be 'annual_mean' or 'seasonal_mean'",
                 )
                 sys.exit()
 
@@ -124,12 +129,16 @@ class EadyGrowthRate:
             Cube of potential temperature theta.
         """
         reference_pressure = iris.coords.AuxCoord(
-            self.ref_p, long_name="reference_pressure", units="hPa"
+            self.ref_p,
+            long_name="reference_pressure",
+            units="hPa",
         )
         reference_pressure.convert_units(plev.units)
         pressure = (reference_pressure.points / plev.points) ** (2 / 7)
         theta = temperature * iris.util.broadcast_to_shape(
-            pressure, temperature.shape, temperature.coord_dims("air_pressure")
+            pressure,
+            temperature.shape,
+            temperature.coord_dims("air_pressure"),
         )
         theta.long_name = "potential_air_temperature"
 
@@ -273,7 +282,7 @@ class EadyGrowthRate:
         except KeyError:
             logger.info(
                 "Parameter plot_levels is not set in the recipe."
-                "Plotting all pressure levels instead."
+                "Plotting all pressure levels instead.",
             )
             levels = egr.coord("air_pressure").points
         for level in levels:

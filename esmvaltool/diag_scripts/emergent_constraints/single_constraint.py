@@ -78,7 +78,7 @@ def check_training_data(training_data):
     if len(features.columns) != 1:
         raise ValueError(
             f"Expected exactly 1 'feature' variable, got "
-            f"{len(features.columns):d}"
+            f"{len(features.columns):d}",
         )
 
 
@@ -118,10 +118,18 @@ def main(cfg):
             training_data.corr(),
         )
     ec.plot_individual_scatterplots(
-        training_data, prediction_data, attributes, "training_data", cfg
+        training_data,
+        prediction_data,
+        attributes,
+        "training_data",
+        cfg,
     )
     ec.plot_merged_scatterplots(
-        training_data, prediction_data, attributes, "training_data", cfg
+        training_data,
+        prediction_data,
+        attributes,
+        "training_data",
+        cfg,
     )
 
     # Export CSV
@@ -132,7 +140,9 @@ def main(cfg):
     label = training_data.y.columns[0]
     units = attributes[label]["units"]
     constrained_target = ec.get_constraint_from_df(
-        training_data, prediction_data, cfg["confidence_level"]
+        training_data,
+        prediction_data,
+        cfg["confidence_level"],
     )
     logger.info(
         "Constraint on target variable '%s': [%.2f, %.2f] %s with best "

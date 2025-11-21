@@ -46,7 +46,9 @@ def land_surf_rad(run):
         dictionary of metrics names and values.
     """
     supermean_data_dir = os.path.join(
-        run["data_root"], run["runid"], run["_area"] + "_supermeans"
+        run["data_root"],
+        run["runid"],
+        run["_area"] + "_supermeans",
     )
 
     rad_seasons = ["ann", "djf", "mam", "jja", "son"]
@@ -94,16 +96,16 @@ def land_surf_rad(run):
             # Regrid both to land points and mask out where this is below
             # a threshold. Force the coordinate system on model.
             ebaf_fld.coord("latitude").coord_system = run_fld_rad.coord(
-                "latitude"
+                "latitude",
             ).coord_system
             ebaf_fld.coord("longitude").coord_system = run_fld_rad.coord(
-                "longitude"
+                "longitude",
             ).coord_system
             lnd.coord("latitude").coord_system = run_fld_rad.coord(
-                "latitude"
+                "latitude",
             ).coord_system
             lnd.coord("longitude").coord_system = run_fld_rad.coord(
-                "longitude"
+                "longitude",
             ).coord_system
 
             reg_run_fld = regrid(run_fld_rad, lnd, "linear")
@@ -111,10 +113,12 @@ def land_surf_rad(run):
 
             # apply the mask
             reg_run_fld.data = np.ma.masked_array(
-                reg_run_fld.data, mask=(lnd.data > 90.0)
+                reg_run_fld.data,
+                mask=(lnd.data > 90.0),
             )
             reg_ebaf_fld.data = np.ma.masked_array(
-                reg_ebaf_fld.data, mask=(lnd.data > 90.0)
+                reg_ebaf_fld.data,
+                mask=(lnd.data > 90.0),
             )
 
             # do a simple diff
@@ -125,13 +129,13 @@ def land_surf_rad(run):
 
     # record provenance
     plot_file = "Autoassess Surface Radiation metrics"
-    caption = f"{str(rad_fld)} MedAbsErr for {str(rad_seasons)}"
+    caption = f"{rad_fld!s} MedAbsErr for {rad_seasons!s}"
     provenance_record = get_provenance_record(caption, run)
     cfg = {}
     cfg["run_dir"] = run["out_dir"]
     # avoid rewriting provenance when running the plot diag
     if not os.path.isfile(
-        os.path.join(cfg["run_dir"], "diagnostic_provenance.yml")
+        os.path.join(cfg["run_dir"], "diagnostic_provenance.yml"),
     ):
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(plot_file, provenance_record)

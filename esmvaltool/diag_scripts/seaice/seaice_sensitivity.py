@@ -56,7 +56,7 @@ def extract_cube(data, variable_group):
     # Ensure there is only one file in the list
     if len(selection) != 1:
         raise ValueError(
-            f"None or too many matching files found for {variable_group}"
+            f"None or too many matching files found for {variable_group}",
         )
 
     # Load the cube, [0] is because selection returns a list
@@ -232,7 +232,9 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     fig, ax = plt.subplots(figsize=(3.5, 6), layout="constrained")
     fig.suptitle(titles_dictionary["titles"]["notz_fig_title"], wrap=True)
     ax.set_title(
-        titles_dictionary["titles"]["notz_ax_title"], wrap=True, fontsize=10
+        titles_dictionary["titles"]["notz_ax_title"],
+        wrap=True,
+        fontsize=10,
     )
 
     # Iterate over the dictionary
@@ -342,7 +344,14 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
 
         # Plot the point
         plt.scatter(
-            x, y, marker="o", s=150, c=[r_corr], hatch=h, cmap=cmap, norm=norm
+            x,
+            y,
+            marker="o",
+            s=150,
+            c=[r_corr],
+            hatch=h,
+            cmap=cmap,
+            norm=norm,
         )
 
         # Label with the dataset if specified

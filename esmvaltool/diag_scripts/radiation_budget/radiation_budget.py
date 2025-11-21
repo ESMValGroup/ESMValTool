@@ -175,7 +175,7 @@ def validate_variable_data(variable_data, name, unit):
     if variable["unit"] != unit:
         raise ValueError(
             f"Unit {unit} does not match the unit {variable['unit']} "
-            f"in {variable} for {name}."
+            f"in {variable} for {name}.",
         )
 
     return variable
@@ -214,7 +214,9 @@ def order_data(cubes, obs_names, obs_unit):
     ordered_model_data = []
     for obs_name in obs_names:
         validated_variable = validate_variable_data(
-            variable_data, obs_name, obs_unit
+            variable_data,
+            obs_name,
+            obs_unit,
         )
         ordered_model_data.append(validated_variable["data"])
 
@@ -462,7 +464,11 @@ def main(config):
         )
         provenance_record = get_provenance_record(filenames)
         save_figure(
-            model_dataset, provenance_record, config, figure, close=True
+            model_dataset,
+            provenance_record,
+            config,
+            figure,
+            close=True,
         )
 
 

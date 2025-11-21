@@ -70,7 +70,10 @@ def balances(cfg, wdir, plotpath, filena, name, model):
     for i_f in np.arange(nsub):
         transp = transport(zmean[i_f, :, :], timeser[i_f, :, 0], dims[1])
         transp_mean[i_f, :], list_peak = transports_preproc(
-            dims[1], ndims[3], lim[i_f], transp
+            dims[1],
+            ndims[3],
+            lim[i_f],
+            transp,
         )
         lat_maxm[i_f, :, :] = list_peak[0]
         tr_maxm[i_f, :, :] = list_peak[1]
@@ -195,10 +198,10 @@ def entropy(plotpath, filename, name, ext_name, model):
     elif ext_name == "Sensible Heat entropy production":
         rangec = [-0.01, 0.01]
         c_m = "YlOrBr"
-    elif ext_name == "Evaporation entropy production":
-        rangec = [0, 1]
-        c_m = "YlOrBr"
-    elif ext_name == "Rainfall entropy production":
+    elif (
+        ext_name == "Evaporation entropy production"
+        or ext_name == "Rainfall entropy production"
+    ):
         rangec = [0, 1]
         c_m = "YlOrBr"
     elif ext_name == "Snowfall entropy production":
@@ -262,7 +265,8 @@ def global_averages(nsub, filena, name):
             dataset = Dataset(filename)
             var[i, :, :, :] = dataset.variables[name[i]][:, :, :]
     var_r = np.reshape(
-        var, (nsub, int(np.shape(var)[1] / 12), 12, nlats, nlons)
+        var,
+        (nsub, int(np.shape(var)[1] / 12), 12, nlats, nlons),
     )
     vary = np.nanmean(var_r, axis=2)
     zmean = np.nanmean(vary, axis=3)
@@ -300,11 +304,10 @@ def hemean(hem, lat, inp):
             hmean = 2 * np.nansum(zmn[:, int(j_end / 2) : j_end], axis=1)
         else:
             hmean = 2 * np.nansum(zmn[:, int((j_end + 1) / 2) : j_end], axis=1)
+    elif j_end % 2 == 0:
+        hmean = 2 * np.nansum(zmn[:, 1 : int(j_end / 2)], axis=1)
     else:
-        if j_end % 2 == 0:
-            hmean = 2 * np.nansum(zmn[:, 1 : int(j_end / 2)], axis=1)
-        else:
-            hmean = 2 * np.nansum(zmn[:, 1 : int((j_end - 1) / 2)], axis=1)
+        hmean = 2 * np.nansum(zmn[:, 1 : int((j_end - 1) / 2)], axis=1)
     return hmean
 
 
@@ -326,7 +329,11 @@ def init_plotentr(model, pdir, flist):
     entropy(pdir, flist[3], "ssnow", "Snowfall entropy production", model)
     entropy(pdir, flist[4], "smelt", "Snowmelt entropy production", model)
     entropy(
-        pdir, flist[5], "spotp", "Potential energy entropy production", model
+        pdir,
+        flist[5],
+        "spotp",
+        "Potential energy entropy production",
+        model,
     )
 
 
@@ -492,7 +499,7 @@ def plot_ellipse(semimaj, semimin, phi, x_cent, y_cent, a_x):
     data = np.array([x_x, y_x])
     s_ax = np.array([[semimaj, 0], [0, semimin]])
     r_angle = np.array(
-        [[np.cos(phi), -np.sin(phi)], [np.sin(phi), np.cos(phi)]]
+        [[np.cos(phi), -np.sin(phi)], [np.sin(phi), np.cos(phi)]],
     )
     t_t = np.dot(r_angle, s_ax)
     data = np.dot(t_t, data)
@@ -724,7 +731,12 @@ def plot_mm_scatter_spec(axi, varlist, title, xlabel, ylabel):
     x_m, y_m = np.meshgrid(x_x, y_y)
     z_m = x_m + y_m
     c_p = plt.contour(
-        x_m, y_m, z_m, colors="black", linestyles="dashed", linewidths=1.0
+        x_m,
+        y_m,
+        z_m,
+        colors="black",
+        linestyles="dashed",
+        linewidths=1.0,
     )
     plt.clabel(c_p, inline=True, inline_spacing=-4, fontsize=8)
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
@@ -938,7 +950,8 @@ def transport(zmean, gmean, lat):
     transp = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
     for j_l in range(len(lat) - 1):
         cumb[:, j_l] = -2 * np.nansum(
-            latwgt(lat[j_l : len(lat)], zmn_ub[:, j_l : len(lat)]), axis=1
+            latwgt(lat[j_l : len(lat)], zmn_ub[:, j_l : len(lat)]),
+            axis=1,
         )
     r_earth = 6.371 * 10**6
     transp = 2 * p_i * cumb * r_earth * r_earth
@@ -1031,7 +1044,7 @@ def varatts(w_nc_var, varname):
                 "long_name": "Total merid. heat transport",
                 "units": "W",
                 "level_desc": "TOA",
-            }
+            },
         )
     elif varname == "atmos":
         w_nc_var.setncatts(
@@ -1039,7 +1052,7 @@ def varatts(w_nc_var, varname):
                 "long_name": "Atmos. merid. heat transport",
                 "units": "W",
                 "level_desc": "Vertically integrated",
-            }
+            },
         )
     elif varname == "ocean":
         w_nc_var.setncatts(
@@ -1047,7 +1060,7 @@ def varatts(w_nc_var, varname):
                 "long_name": "Ocean. merid. heat transport",
                 "units": "W",
                 "level_desc": "sfc",
-            }
+            },
         )
     elif varname == "wmb":
         w_nc_var.setncatts(
@@ -1055,7 +1068,7 @@ def varatts(w_nc_var, varname):
                 "long_name": "Merid. water mass transport",
                 "units": "Kg*s-1",
                 "level_desc": "sfc",
-            }
+            },
         )
     elif varname == "latent":
         w_nc_var.setncatts(
@@ -1063,7 +1076,7 @@ def varatts(w_nc_var, varname):
                 "long_name": "Merid. latent heat transport",
                 "units": "W",
                 "level_desc": "sfc",
-            }
+            },
         )
 
 

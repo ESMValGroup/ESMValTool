@@ -75,12 +75,12 @@ def main(cfg):
     if "abrupt-4xCO2" not in available_exp:
         if "abrupt4xCO2" not in available_exp:
             raise ValueError(
-                "The diagnostic needs an experiment with " + "4 times CO2."
+                "The diagnostic needs an experiment with " + "4 times CO2.",
             )
 
     if "piControl" not in available_exp:
         raise ValueError(
-            "The diagnostic needs a pre industrial control " + "experiment."
+            "The diagnostic needs a pre industrial control " + "experiment.",
         )
 
     ###########################################################################
@@ -102,7 +102,7 @@ def main(cfg):
     if len(meas_tub_rsnstcsnorm) > 1:
         raise ValueError(
             "This diagnostic expects one (or no) observational "
-            "dataset for rsnstcsnorm"
+            "dataset for rsnstcsnorm",
         )
 
     ###########################################################################
@@ -110,7 +110,9 @@ def main(cfg):
     ###########################################################################
 
     [grid_pw, reg_prw_obs] = set_grid_pw_reg_obs(
-        cubes, meas_tub_rsnstcsnorm, meas_tub_prw
+        cubes,
+        meas_tub_rsnstcsnorm,
+        meas_tub_prw,
     )
 
     data_model = substract_and_reg_deangelis(cfg, cubes, grid_pw, reg_prw_obs)
@@ -148,7 +150,8 @@ def set_grid_pw_reg_obs(cubes, meas_tub_rsnstcsnorm, meas_tub_prw):
                 data_rsnstcsnorm_obs,
             )
             reg_prw_obs[kmeas_tub_prw[0]] = stats.linregress(
-                grid_pw["x"], (grid_pw["yobs"])[kmeas_tub_prw[0]]
+                grid_pw["x"],
+                (grid_pw["yobs"])[kmeas_tub_prw[0]],
             )
     else:
         logger.info("No observations, only model data used")
@@ -165,8 +168,8 @@ def cube_to_save_matrix(var1, name):
                 var_name=name["var_name"],
                 long_name=name["long_name"],
                 units=name["units"],
-            )
-        ]
+            ),
+        ],
     )
 
     return cubes
@@ -184,8 +187,8 @@ def cube_to_save_vars(list_dict):
                         var_name=list_dict["name"][iii]["var_name"],
                         long_name=list_dict["name"][iii]["long_name"],
                         units=list_dict["name"][iii]["units"],
-                    )
-                ]
+                    ),
+                ],
             )
         else:
             cubes.append(
@@ -194,7 +197,7 @@ def cube_to_save_vars(list_dict):
                     var_name=list_dict["name"][iii]["var_name"],
                     long_name=list_dict["name"][iii]["long_name"],
                     units=list_dict["name"][iii]["units"],
-                )
+                ),
             )
 
     return cubes
@@ -209,8 +212,8 @@ def cube_to_save_scatter(var1, var2, names):
                 var_name=names["var_name1"],
                 long_name=names["long_name1"],
                 units=names["units1"],
-            )
-        ]
+            ),
+        ],
     )
     cubes.append(
         iris.cube.Cube(
@@ -218,14 +221,18 @@ def cube_to_save_scatter(var1, var2, names):
             var_name=names["var_name2"],
             long_name=names["long_name2"],
             units=names["units2"],
-        )
+        ),
     )
 
     return cubes
 
 
 def get_provenance_record(
-    ancestor_files, caption, statistics, domains, plot_type="other"
+    ancestor_files,
+    caption,
+    statistics,
+    domains,
+    plot_type="other",
 ):
     """Get Provenance record."""
     record = {
@@ -398,9 +405,9 @@ def plot_deangelis_fig3a(cfg, dataset_name, data, reg_prw, reg_obs):
 
     caption = (
         "Scatter plot and regression lines the between the "
-        + "netto short wave radiation for clear skye normalized by "
-        + "normalized by incoming solar flux (rsnstcsnorm) and the "
-        + "Water Vapor Path (prw) in the pre-industrial climate."
+        "netto short wave radiation for clear skye normalized by "
+        "normalized by incoming solar flux (rsnstcsnorm) and the "
+        "Water Vapor Path (prw) in the pre-industrial climate."
     )
 
     provenance_record = get_provenance_record(
@@ -424,9 +431,7 @@ def plot_deangelis_fig3a(cfg, dataset_name, data, reg_prw, reg_obs):
         },
         {
             "var_name": "rsnstdtsnorm",
-            "long_name": "Normalized Netto Short "
-            + "Wave Radiation fo"
-            + "clear syke",
+            "long_name": "Normalized Netto Short Wave Radiation foclear syke",
             "units": "percent",
         },
     ]
@@ -437,7 +442,7 @@ def plot_deangelis_fig3a(cfg, dataset_name, data, reg_prw, reg_obs):
                 "var_name": "prw_" + kobs,
                 "long_name": "Water Vapor Path " + "CERES-EBAF/" + kobs,
                 "units": "kg m-2",
-            }
+            },
         )
 
     iris.save(cube_to_save_vars(list_dict), target=diagnostic_file)
@@ -450,7 +455,8 @@ def plot_deangelis_fig3a(cfg, dataset_name, data, reg_prw, reg_obs):
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
         provenance_logger.log(
-            get_plot_filename("fig3a_" + dataset_name, cfg), provenance_record
+            get_plot_filename("fig3a_" + dataset_name, cfg),
+            provenance_record,
         )
 
 
@@ -496,7 +502,7 @@ def plot_deangelis_fig4(cfg, data_model, mdrsnstdts, prw):
 
     for iii, jjj in enumerate(np.argsort(mdrsnstdts[:, 1])):
         modelkey = list(data_model.keys())[jjj]
-        if modelkey not in model_dict.keys():
+        if modelkey not in model_dict:
             modelkey = "default"
         if (model_dict[modelkey])[0] not in ytickstrs_and_schemes["schemes"]:
             axx.fill(
@@ -540,19 +546,19 @@ def plot_deangelis_fig4(cfg, data_model, mdrsnstdts, prw):
 
     caption = (
         "The relationship between the ratio of the change of "
-        + "netto short wave radiation (rsnst) and the change of the "
-        + "Water Vapor Path (prw) and characteristics of the "
-        + "parameterization scheme for solar absorption by water vapour "
-        + "in a cloud-free atmosphere, with colours for each model "
-        + "referring to different types of parameterizations as described "
-        + "in the key (N refers to the number of exponential terms "
-        + "representing water vapour absorption). The width of horizontal "
-        + "shading for models and the vertical dashed lines for "
-        + "observations (Obs.) represent statistical uncertainties of "
-        + "the ratio, as the 95% confidence interval (CI) of the regression "
-        + "slope to the rsnst versus prw curve. For the observations "
-        + "the minimum of the lower bounds of all CIs to the maximum of "
-        + "the upper bounds of all CIs is shown."
+        "netto short wave radiation (rsnst) and the change of the "
+        "Water Vapor Path (prw) and characteristics of the "
+        "parameterization scheme for solar absorption by water vapour "
+        "in a cloud-free atmosphere, with colours for each model "
+        "referring to different types of parameterizations as described "
+        "in the key (N refers to the number of exponential terms "
+        "representing water vapour absorption). The width of horizontal "
+        "shading for models and the vertical dashed lines for "
+        "observations (Obs.) represent statistical uncertainties of "
+        "the ratio, as the 95% confidence interval (CI) of the regression "
+        "slope to the rsnst versus prw curve. For the observations "
+        "the minimum of the lower bounds of all CIs to the maximum of "
+        "the upper bounds of all CIs is shown."
     )
 
     provenance_record = get_provenance_record(
@@ -572,11 +578,11 @@ def plot_deangelis_fig4(cfg, data_model, mdrsnstdts, prw):
             {
                 "var_name": "mdrsnstdts",
                 "long_name": "Change of Netto"
-                + "Short Wave "
-                + "Radiation "
-                + "with Change "
-                + "of the "
-                + "Water Vapor Path",
+                "Short Wave "
+                "Radiation "
+                "with Change "
+                "of the "
+                "Water Vapor Path",
                 "units": "% kg-1 m2",
             },
         ),
@@ -591,7 +597,8 @@ def plot_deangelis_fig4(cfg, data_model, mdrsnstdts, prw):
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
         provenance_logger.log(
-            get_plot_filename("fig4", cfg), provenance_record
+            get_plot_filename("fig4", cfg),
+            provenance_record,
         )
 
 
@@ -694,18 +701,18 @@ def plot_deangelis_fig3b4(cfg, data_model, reg_prw_obs):
 
     caption = (
         "Scatter plot and regression line the between the ratio "
-        + "of the change of "
-        + "netto short wave radiation (rsnst) and the change of the "
-        + "Water Vapor Path (prw) against the ratio of the change of "
-        + "netto short wave radiation for clear skye (rsnstcs) and the "
-        + "the change of surface temperature (tas)."
-        + "The width of horizontal "
-        + "shading for models and the vertical dashed lines for "
-        + "observations (Obs.) represent statistical uncertainties of "
-        + "the ratio, as the 95% confidence interval (CI) of the regression "
-        + "slope to the rsnst versus prw curve. For the observations "
-        + "the minimum of the lower bounds of all CIs to the maximum of "
-        + "the upper bounds of all CIs is shown."
+        "of the change of "
+        "netto short wave radiation (rsnst) and the change of the "
+        "Water Vapor Path (prw) against the ratio of the change of "
+        "netto short wave radiation for clear skye (rsnstcs) and the "
+        "the change of surface temperature (tas)."
+        "The width of horizontal "
+        "shading for models and the vertical dashed lines for "
+        "observations (Obs.) represent statistical uncertainties of "
+        "the ratio, as the 95% confidence interval (CI) of the regression "
+        "slope to the rsnst versus prw curve. For the observations "
+        "the minimum of the lower bounds of all CIs to the maximum of "
+        "the upper bounds of all CIs is shown."
     )
 
     provenance_record = get_provenance_record(
@@ -725,11 +732,11 @@ def plot_deangelis_fig3b4(cfg, data_model, reg_prw_obs):
             {
                 "var_name": "mdrsnstdts",
                 "long_name": "Change of Netto"
-                + "Short Wave "
-                + "Radiation "
-                + "with Change "
-                + "of the "
-                + "Water Vapor Path",
+                "Short Wave "
+                "Radiation "
+                "with Change "
+                "of the "
+                "Water Vapor Path",
                 "units": "% kg-1 m2",
             },
         ),
@@ -744,7 +751,8 @@ def plot_deangelis_fig3b4(cfg, data_model, reg_prw_obs):
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, provenance_record)
         provenance_logger.log(
-            get_plot_filename("fig3b", cfg), provenance_record
+            get_plot_filename("fig3b", cfg),
+            provenance_record,
         )
 
     # Fig 4
@@ -758,7 +766,7 @@ def make_grid_prw(grid_pwx, data_prw_obs, data_rsnstcsnorm_obs):
     for jjj, bincenter in enumerate(grid_pwx):
         index_obs = np.where(
             (data_prw_obs >= bincenter - 1.0)
-            & (data_prw_obs < bincenter + 1.0)
+            & (data_prw_obs < bincenter + 1.0),
         )
         gridded_rsnstcsnorm_obs[jjj] = np.mean(data_rsnstcsnorm_obs[index_obs])
 
@@ -853,7 +861,9 @@ def substract_and_reg_deangelis(cfg, cubes, grid_pw, reg_prw_obs):
         )
 
         grid_pw["ypic"] = make_grid_prw(
-            grid_pw["x"], data_prw_pic, data_rsnstcsnorm_pic
+            grid_pw["x"],
+            data_prw_pic,
+            data_rsnstcsnorm_pic,
         )
 
         reg6 = stats.linregress(data_tas, data_rsnstcs)
