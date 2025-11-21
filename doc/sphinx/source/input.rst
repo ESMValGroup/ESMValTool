@@ -22,7 +22,7 @@ as used in the various
 .. note::
 
     CORDEX support is still
-   __.
+    work in progress.
     Contributions, in the form of
     :ref:`pull request reviews <reviewing>` or
     :ref:`pull requests <esmvalcore:contributing>`
