@@ -58,7 +58,7 @@ for your conda environments instead of
 much faster, see `move-to-mamba`_ for more information.
 
 For a minimal mamba installation (recommended) go to
-https://mamba.readthedocs.io/en/latest/installation.html.
+https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html.
 
 .. note::
     It is recommended that you always use the latest version of mamba, as

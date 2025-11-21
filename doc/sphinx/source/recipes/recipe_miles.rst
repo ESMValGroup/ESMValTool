@@ -8,7 +8,7 @@ Overview
 --------
 
 Atmospheric blocking is a recurrent mid-latitude weather pattern identified by a large-amplitude, quasi-stationary, long-lasting, high-pressure anomaly that ‘‘blocks’’ the westerly flow forcing the jet stream to split or meander
-`(Rex, 1950) <https://onlinelibrary.wiley.com/action/showCitFormats?doi=10.1111%2Fj.2153-3490.1950.tb00331.x>`_.
+`(Rex, 1950) <http://doi.org/10.3402/tellusa.v2i3.8546>`_.
 
 It is typically initiated by the breaking of a Rossby wave in a diffluence region at the exit of the storm track, where it amplifies the underlying stationary ridge `(Tibaldi and Molteni, 1990) <https://doi.org/10.1034/j.1600-0870.1990.t01-2-00003.x>`_.
 Blocking occurs more frequently in the Northern Hemisphere cold season, with larger frequencies observed over the Euro-Atlantic and North Pacific sectors. Its lifetime oscillates from a few days up to several weeks `(Davini et al., 2012)  <https://doi.org/10.1175/JCLI-D-12-00032.1)>`_ sometimes leading to winter cold spells or summer heat waves.
@@ -116,7 +116,7 @@ Observations and reformat scripts
 
 References
 ----------
-* REX, D. F. (1950), Blocking Action in the Middle Troposphere and its Effect upon Regional Climate. Tellus, 2: 196-211. doi: http://doi.org/10.1111/j.2153-3490.1950.tb00331.x
+* REX, D. F. (1950), Blocking Action in the Middle Troposphere and its Effect upon Regional Climate. Tellus, 2: 196-211. doi: http://doi.org/10.3402/tellusa.v2i3.8546
 * Davini, P., C. Cagnazzo, S. Gualdi, and A. Navarra (2012): Bidimensional Diagnostics, Variability, and Trends of Northern Hemisphere Blocking. J. Climate, 25, 6496–6509, doi: http://doi.org/10.1175/JCLI-D-12-00032.1.
 * Tibaldi S, Molteni F.: On the operational predictability of blocking. Tellus A 42(3): 343–365, doi: 10.1034/j.1600- 0870.1990.t01- 2- 00003.x, 1990. https://doi.org/10.1034/j.1600-0870.1990.t01-2-00003.x
 * Paolo Davini. (2018, April 30). MiLES - Mid Latitude Evaluation System (Version v0.51). Zenodo. http://doi.org/10.5281/zenodo.1237838
