@@ -209,25 +209,25 @@ def write_dictionary_to_csv(sub_dict, filename, cfg):
 
 
 def main(cfg):
-    print(cfg)
-    # # Create the structured dictionary
-    # data_dict = create_category_dict(cfg)
-    #
-    # # Calculate and write values to the dictionary
-    # data_dict = write_values_to_dict(data_dict, cfg)
-    #
-    # # Write the model and obs dictionaries to csv files
-    # write_dictionary_to_csv(data_dict['models'], 'models_values', cfg)
-    # write_dictionary_to_csv(data_dict['tasa_obs'], 'tasa_obs_values', cfg)
-    # write_dictionary_to_csv(data_dict['siconc_obs'], 'siconc_obs_values', cfg)
-    #
-    # # Write the cross-dataset obs dictionary to csv files
-    # for pair in data_dict['cross-dataset-obs'].keys():
-    #     data_dict['cross-dataset-obs'][pair] = data_dict['cross-dataset-obs'][pair]
-    #     write_dictionary_to_csv(data_dict['cross-dataset-obs'][pair], f"{pair}", cfg)
-    #
-    # # TEMPORARY: Print the dictionary to the log for checking
-    # logger.debug("Final data dictionary:\n%s", data_dict)
+    # Create the structured dictionary
+    data_dict = create_category_dict(cfg)
+
+    # Calculate and write values to the dictionary
+    data_dict = write_values_to_dict(data_dict, cfg)
+
+    # Write the model and obs dictionaries to csv files
+    write_dictionary_to_csv(data_dict['models'], 'models_values', cfg)
+    write_dictionary_to_csv(data_dict['tasa_obs'], 'tasa_obs_values', cfg)
+    write_dictionary_to_csv(data_dict['siconc_obs'], 'siconc_obs_values', cfg)
+
+    # Write the cross-dataset obs dictionary to csv files
+    for pair in data_dict['cross-dataset-obs'].keys():
+        data_dict['cross-dataset-obs'][pair] = data_dict['cross-dataset-obs'][pair]
+        write_dictionary_to_csv(data_dict['cross-dataset-obs'][pair], f"{pair}", cfg)
+
+    # TEMPORARY: Print the dictionary to the log for checking
+    logger.debug("Final data dictionary:\n%s", data_dict)
+
 
 if __name__ == "__main__":
     with run_diagnostic() as config:
