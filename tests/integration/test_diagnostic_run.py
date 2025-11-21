@@ -1,6 +1,7 @@
 """Test diagnostic script runs."""
 
 import contextlib
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -14,6 +15,8 @@ from packaging import version
 
 
 def write_config_file(dirname):
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
     config_file = dirname / "config-user.yml"
     cfg = {
         "output_dir": str(dirname / "output_dir"),
@@ -70,57 +73,8 @@ SCRIPTS = [
             reason="ESMValTool R not supported on OSX",
         ),
     ),
-]
 
 
-@pytest.mark.skipif(
-    version.parse(esmvalcore.__version__) >= version.parse("2.14.0"),
-    reason="ESMValCore >= v2.14.0",
-)
-@pytest.mark.installation
-@pytest.mark.parametrize("script_file", SCRIPTS)
-def test_diagnostic_run_config_file(tmp_path, script_file):
-    local_script_file = Path(__file__).parent / script_file
-
-    recipe_file = tmp_path / "recipe_test.yml"
-    script_file = tmp_path / script_file
-    result_file = tmp_path / "result.yml"
-
-    shutil.copy(local_script_file, script_file)
-
-    # Create recipe
-    recipe = dedent(f"""
-        documentation:
-          title: Test recipe
-          description: Recipe with no data.
-          authors: [andela_bouwe]
-
-        diagnostics:
-          diagnostic_name:
-            scripts:
-              script_name:
-                script: {script_file}
-                setting_name: {result_file}
-        """)
-    recipe_file.write_text(str(recipe))
-
-    config_file = write_config_file(tmp_path)
-    with arguments(
-        "esmvaltool",
-        "run",
-        "--config_file",
-        config_file,
-        str(recipe_file),
-    ):
-        run()
-
-    check(result_file)
-
-
-@pytest.mark.skipif(
-    version.parse(esmvalcore.__version__) < version.parse("2.12.0"),
-    reason="ESMValCore < v2.12.0",
-)
 @pytest.mark.installation
 @pytest.mark.parametrize("script_file", SCRIPTS)
 def test_diagnostic_run(tmp_path, script_file):
