@@ -20,21 +20,24 @@ jobs:
       - name: Link Checker
         id: lychee
         uses: lycheeverse/lychee-action@v2
-        
+
         with:
           #  This token is included to avoid github.com requests rate limiting
           token: ${{ secrets.TOKEN_GITHUB }}
           fail: false
           args: >
             ./doc/sphinx/**/*.rst
-            --verbose --max-concurrency 1 --no-progress
+            --verbose warn --max-concurrency 1 --no-progress
             --accept '100..=103,200..=399, 429'
             --exclude https://doi.org/
+      
+      - name: Set current date
+        run: echo "REPORT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
       - name: Create Issue From File
         if: steps.lychee.outputs.exit_code != 0
         uses: peter-evans/create-issue-from-file@v5
         with:
-          title: Link Checker Report
+          title: "Link Checker Report - ${{ env.REPORT_DATE }}"
           content-filepath: ./lychee/out.md
           labels: documentation, github_actions
