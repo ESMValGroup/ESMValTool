@@ -31,7 +31,7 @@ jobs:
             --accept "200..=204, 403, 429"
             --insecure
             --exclude https://www.youtube.com/embed/
-      
+
       - name: Set current date
         run: echo "REPORT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
