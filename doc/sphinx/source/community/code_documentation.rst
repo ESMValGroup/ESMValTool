@@ -275,7 +275,7 @@ There are two main ways of adding documentation:
 #. As written text in the directory
    `doc/sphinx/source <https://github.com/ESMValGroup/ESMValTool/tree/main/doc/sphinx/source>`__.
    When writing
-   `reStructuredText <https://www.sphinx-doc.org/en/main/usage/restructuredtext/basics.html>`_
+   `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_
    (``.rst``) files, please try to limit the line length to 80 characters and
    always start a sentence on a new line.
    This makes it easier to review changes to documentation on GitHub.
@@ -447,9 +447,9 @@ We follow the guidelines set out in `SPEC-0 <https://scientific-python.org/specs
 regarding the supported Python versions and dependencies.
 
 Before considering adding a new dependency, carefully check that the
-`license <https://the-turing-way.netlify.app/reproducible-research/licensing/licensing-software.html>`__
+`license <https://book.the-turing-way.org/reproducible-research/licensing/>`__
 of the dependency you want to add and any of its dependencies are
-`compatible <https://the-turing-way.netlify.app/reproducible-research/licensing/licensing-compatibility.html>`__
+`compatible <https://book.the-turing-way.org/reproducible-research/licensing/licensing-compatibility/>`__
 with the
 `Apache 2.0 <https://github.com/ESMValGroup/ESMValTool/blob/main/LICENSE/>`_
 license that applies to the ESMValTool.
