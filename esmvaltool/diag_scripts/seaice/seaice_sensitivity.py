@@ -294,7 +294,7 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     for dataset, inner_dict in data_dictionary.items():
         ax.plot(
             0.25,
-            inner_dict["direct_sensitivity_(notz-style)"],
+            inner_dict["direct_sensitivity"],
             color="blue",
             marker="_",
             markersize=20,
@@ -304,10 +304,10 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         if inner_dict["label"] == "to_label":
             plt.annotate(
                 dataset,
-                xy=(0.25, inner_dict["direct_sensitivity_(notz-style)"]),
+                xy=(0.25, inner_dict["direct_sensitivity"]),
                 xytext=(
                     0.35,
-                    inner_dict["direct_sensitivity_(notz-style)"] - 0.05,
+                    inner_dict["direct_sensitivity"] - 0.05,
                 ),
             )
 
