@@ -365,6 +365,64 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     )
 
 
+def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
+    """Save a plot of trend in SIA against trend in GMST to the given filename."""
+    # Set up the figure
+    fig, ax = plt.subplots(figsize=(10, 6), layout="constrained")
+    fig.suptitle(titles_dictionary["titles"]["roach_fig_title"], wrap=True)
+
+    # Set up for colouring the points
+    norm = Normalize(vmin=-1, vmax=1)
+    cmap = plt.get_cmap("PiYG_r")
+
+    # Set up the axes
+    ax.axhline(color="black", alpha=0.5)
+    ax.axvline(color="black", alpha=0.5)
+    ax.set_xlabel(r"Trend in GMST ($K \ decade^{-1}$)")
+    ax.set_ylabel(r"Trend in SIA ($million \ km^2 \ decade^{-1}$)")
+
+    # Iterate over the models sub-dictionary
+    for dataset, inner_dict in data_dictionary['models'].items():
+        # Determine the position of the point
+        x = 10 * inner_dict["annual_tas_trend"]  # for equivalence to decades
+        y = (
+            10 * inner_dict["annual_siconc_trend"]
+        )  # for equivalence to decades
+
+        # Determine the colour of the point
+        r_corr = inner_dict["direct_r_val"]
+
+        # Decide if the point should be hatched
+        if inner_dict["direct_p_val"] >= 0.05:
+            h = 5 * "/"  # This is a hatch pattern
+        else:
+            h = None
+
+        # Plot the point
+        plt.scatter(
+            x, y, marker="o", s=150, c=[r_corr], hatch=h, cmap=cmap, norm=norm
+        )
+
+        # Label with the dataset if specified
+        if inner_dict["label"] == "to_label":
+            plt.annotate(dataset, xy=(x, y), xytext=(x + 0.01, y - 0.005))
+
+        # TODO: Obs here
+
+        # Add a colour bar
+        plt.colorbar(label="Pearson correlation coefficient")
+
+        # Save the figure (also closes it)
+        caption = "Decadal trends of sea ice area and global mean temperature."
+        save_figure(
+            titles_dictionary["titles"]["roach_plot_filename"],
+            get_provenance_record(cfg, caption),
+            cfg,
+            figure=fig,
+            close=True,
+        )
+
+
 def main(cfg):
     # Create the structured dictionary
     data_dict = create_category_dict(cfg)
@@ -391,6 +449,8 @@ def main(cfg):
     # Plot the sensitivities, uses model data only (and obs from recipe)
     logger.info("Creating Notz-style plot")
     notz_style_plot_from_dict(data_dict['models'], titles_and_obs_dict, cfg)
+    logger.info("Creating Roach-style plot")
+    roach_style_plot_from_dict(data_dict, titles_and_obs_dict, cfg)
 
 
 if __name__ == "__main__":
