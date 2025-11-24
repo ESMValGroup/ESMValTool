@@ -435,17 +435,17 @@ def main(cfg):
     write_dictionary_to_csv(data_dict['tasa_obs'], 'tasa_obs_values', cfg)
     write_dictionary_to_csv(data_dict['siconc_obs'], 'siconc_obs_values', cfg)
 
+    # Write the cross-dataset obs dictionary to csv files (separately for each pair)
+    for pair in data_dict['cross-dataset-obs'].keys():
+        data_dict['cross-dataset-obs'][pair] = data_dict['cross-dataset-obs'][pair]
+        write_dictionary_to_csv(data_dict['cross-dataset-obs'][pair], f"{pair}", cfg)
+
     # Create a single provenance record for the csv files
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(
             f"{cfg['work_dir']}/figures_as_csv",
             get_provenance_record(cfg, "Annual (not decadal) figures"),
         )
-
-    # Write the cross-dataset obs dictionary to csv files (separately for each pair)
-    for pair in data_dict['cross-dataset-obs'].keys():
-        data_dict['cross-dataset-obs'][pair] = data_dict['cross-dataset-obs'][pair]
-        write_dictionary_to_csv(data_dict['cross-dataset-obs'][pair], f"{pair}", cfg)
 
     # Titles and observations depend on the diagnostic being plotted
     logger.info("Creating titles and observations dictionary")
