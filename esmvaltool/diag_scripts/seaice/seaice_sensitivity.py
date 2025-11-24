@@ -217,13 +217,6 @@ def write_dictionary_to_csv(sub_dict, filename, cfg):
     dataframe.to_csv(csv_filepath)
     logger.info("Wrote data to %s", csv_filepath)
 
-    # Create a provenance record for the csv file
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(
-            csv_filepath,
-            get_provenance_record(cfg, "Annual (not decadal) figures"),
-        )
-
 
 def write_obs_from_cfg(cfg):
     """Write the Notz-style observations from the recipe to a dictionary."""
@@ -356,9 +349,16 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         caption = "Sensitivity of sea ice area to annual mean global warming."
 
     # Save the figure (also closes it)
+    # save_figure(
+    #     titles_dictionary["titles"]["notz_plot_filename"],
+    #     get_provenance_record(cfg, caption),
+    #     cfg,
+    #     figure=fig,
+    #     close=True,
+    # )
     save_figure(
         titles_dictionary["titles"]["notz_plot_filename"],
-        get_provenance_record(cfg, caption),
+        {},
         cfg,
         figure=fig,
         close=True,
@@ -443,6 +443,13 @@ def main(cfg):
     write_dictionary_to_csv(data_dict['models'], 'models_values', cfg)
     write_dictionary_to_csv(data_dict['tasa_obs'], 'tasa_obs_values', cfg)
     write_dictionary_to_csv(data_dict['siconc_obs'], 'siconc_obs_values', cfg)
+
+    # Create a provenance record for the csv files
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(
+            f"{cfg['work_dir']}/figures_as_csv",
+            get_provenance_record(cfg, "Annual (not decadal) figures"),
+        )
 
     # Write the cross-dataset obs dictionary to csv files (separately for each pair)
     for pair in data_dict['cross-dataset-obs'].keys():
