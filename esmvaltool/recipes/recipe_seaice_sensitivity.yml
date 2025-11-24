@@ -42,8 +42,8 @@ model_datasets: &model_datasets
 
 obs_defaults: &obs_defaults { project: OBS, observation: True, tier: 2}
 tasa_obs: &tasa_obs
-  - { <<: *obs_defaults, dataset: GISTEMP, type: ground, version: v4 }  # Doesn't match Roach obs
-  - { <<: *obs_defaults, dataset: HadCRUT5, type: ground, version: 5.0.1.0-analysis }  # Doesn't match Roach obs
+#  - { <<: *obs_defaults, dataset: GISTEMP, type: ground, version: v4 }  # Doesn't match Roach obs
+#  - { <<: *obs_defaults, dataset: HadCRUT5, type: ground, version: 5.0.1.0-analysis }  # Doesn't match Roach obs
   - { <<: *obs_defaults, dataset: NOAAGlobalTemp, type: ground, version: v5.0.0, mip: Amon }
 
 arctic_siconc_obs: &arctic_siconc_obs
@@ -61,7 +61,7 @@ preprocessors:
       start_year: 1979
       end_day: 31
       end_month: 12
-      end_year: 2014
+      end_year: 2018  # Put this back to 2014 after the test
 
   extract_sept:
     &extract_sept
