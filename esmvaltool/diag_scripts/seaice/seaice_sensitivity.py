@@ -414,9 +414,16 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
 
         # Save the figure (also closes it)
         caption = "Decadal trends of sea ice area and global mean temperature."
+        # save_figure(
+        #     titles_dictionary["titles"]["roach_plot_filename"],
+        #     get_provenance_record(cfg, caption),
+        #     cfg,
+        #     figure=fig,
+        #     close=True,
+        # )
         save_figure(
             titles_dictionary["titles"]["roach_plot_filename"],
-            get_provenance_record(cfg, caption),
+            {},
             cfg,
             figure=fig,
             close=True,
