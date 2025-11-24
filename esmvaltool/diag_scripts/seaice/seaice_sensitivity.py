@@ -400,7 +400,32 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         if inner_dict["label"] == "to_label":
             plt.annotate(dataset, xy=(x, y), xytext=(x + 0.01, y - 0.005))
 
-        # TODO: Obs here
+    # Add the observations
+    siconc_dict = data_dictionary['siconc_obs']
+    tasa_dict = data_dictionary['tasa_obs']
+
+    # Iterate over the pairs in cross-dataset-obs
+    for pair, inner_dict in data_dictionary['cross-dataset-obs'].items():
+        # Retrieve the names of the datasets from the pair string
+        siconc_ds, tasa_ds = pair.split("_to_")
+
+        # Determine the position of the point, from other dictionaries
+        x = 10 * tasa_dict[tasa_ds]['annual_tas_trend']  # This was labelled as tas, not tasa
+        y = 10 * siconc_dict[siconc_ds]['annual_siconc_trend']
+
+        # Determine the colour of the point from the inner dictionary
+        r_corr = inner_dict["direct_r_value"]
+
+        # Decide if the point should be hatched
+        if inner_dict["direct_p_value"] >= 0.05:
+            h = 5 * "/"
+        else:
+            h = None
+
+        # Plot the point
+        plt.scatter(
+            x, y, marker="s", s=150, c=[r_corr], hatch=h, cmap=cmap, norm=norm, zorder=0, edgecolors="black",
+        )
 
     # Add a colour bar
     plt.colorbar(label="Pearson correlation coefficient")
