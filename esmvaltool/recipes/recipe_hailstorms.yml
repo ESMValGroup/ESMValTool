@@ -1,0 +1,36 @@
+# ESMValTool
+# recipe_hailstorms.yml
+---
+documentation:
+  title: Cliamte projections of extreme meteorological events such as hailstorms and lightning strokes
+  description: |
+    This recipe estimate the number of hail events and lightning strokes from the pdf of 200+ predictors
+    derived from pressure level data of only 5 variables: geopotential, temperature, specific humidity,
+    u-component of wind and v-component of wind. It also projects the number of hail events and lightning strokes
+    in CMIP models
+
+  authors:
+    - nicola_cortesi
+    - enrico_arnone
+
+  maintainer:
+    - nicola_cortesi
+
+
+datasets:
+  - {dataset: EC-EARTH, project: CMIP6, exp: historical, ensemble: r1i1p1, start_year: 2010, end_year: 2023}
+preprocessors:
+  preproc:
+    extract_levels: false
+diagnostics:
+  example:
+    description: Example diagnostic written in R
+    variables:
+      pr:
+        preprocessor: preproc
+        reference_dataset: "EC-EARTH"
+        mip: day
+    scripts:
+      main:
+        script: examples/diagnostic.R
+        parameter1: 1  # example parameter
