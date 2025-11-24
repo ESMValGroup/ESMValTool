@@ -435,7 +435,7 @@ def main(cfg):
     write_dictionary_to_csv(data_dict['tasa_obs'], 'tasa_obs_values', cfg)
     write_dictionary_to_csv(data_dict['siconc_obs'], 'siconc_obs_values', cfg)
 
-    # Create a provenance record for the csv files
+    # Create a single provenance record for the csv files
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(
             f"{cfg['work_dir']}/figures_as_csv",
