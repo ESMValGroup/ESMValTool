@@ -390,10 +390,10 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         )  # for equivalence to decades
 
         # Determine the colour of the point
-        r_corr = inner_dict["direct_r_val"]
+        r_corr = inner_dict["direct_r_value"]
 
         # Decide if the point should be hatched
-        if inner_dict["direct_p_val"] >= 0.05:
+        if inner_dict["direct_p_value"] >= 0.05:
             h = 5 * "/"  # This is a hatch pattern
         else:
             h = None
