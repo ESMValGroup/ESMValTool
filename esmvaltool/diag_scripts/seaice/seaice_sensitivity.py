@@ -392,18 +392,18 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
             h = None
 
         # Plot the point
-        ax.scatter(
+        plt.scatter(
             x, y, marker="o", s=150, c=[r_corr], hatch=h, cmap=cmap, norm=norm
         )
 
         # Label with the dataset if specified
         if inner_dict["label"] == "to_label":
-            ax.annotate(dataset, xy=(x, y), xytext=(x + 0.01, y - 0.005))
+            plt.annotate(dataset, xy=(x, y), xytext=(x + 0.01, y - 0.005))
 
         # TODO: Obs here
 
     # Add a colour bar
-    fig.colorbar(label="Pearson correlation coefficient")
+    plt.colorbar(label="Pearson correlation coefficient")
 
     # Save the figure (also closes it)
     caption = "Decadal trends of sea ice area and global mean temperature."
