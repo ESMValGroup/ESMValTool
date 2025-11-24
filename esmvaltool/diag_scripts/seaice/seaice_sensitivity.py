@@ -349,16 +349,9 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         caption = "Sensitivity of sea ice area to annual mean global warming."
 
     # Save the figure (also closes it)
-    # save_figure(
-    #     titles_dictionary["titles"]["notz_plot_filename"],
-    #     get_provenance_record(cfg, caption),
-    #     cfg,
-    #     figure=fig,
-    #     close=True,
-    # )
     save_figure(
         titles_dictionary["titles"]["notz_plot_filename"],
-        {},
+        get_provenance_record(cfg, caption),
         cfg,
         figure=fig,
         close=True,
@@ -421,13 +414,11 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         #     figure=fig,
         #     close=True,
         # )
-        save_figure(
-            titles_dictionary["titles"]["roach_plot_filename"],
-            {},
-            cfg,
-            figure=fig,
-            close=True,
+        # TODO: Temporary save to try to get around provenance error
+        fig.savefig(
+            f"{cfg['plot_dir']}/{titles_dictionary['titles']['roach_plot_filename']}.png"
         )
+        plt.close(fig)
 
 
 def main(cfg):
