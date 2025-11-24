@@ -9,9 +9,9 @@ Currently tested recipes
 The recipes tested with the |RTW| at each site are defined in the following
 files:
 
-* `metoffice/recipes.jinja`_
-* `dkrz/recipes.jinja`_
-* `jasmin/recipes.jinja`_
+* :ref:`site_metoffice_recipes.jinja`_
+* :ref:`site_dkrz_recipes.jinja`_
+* :ref:`site_jasmin_recipes.jinja`_
 
 .. hint::
    The :ref:`site_recipes_file` file provides more information.
