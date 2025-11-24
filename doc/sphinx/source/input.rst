@@ -80,8 +80,8 @@ See :ref:`esmvalcore:config-esgf` for a more in depth explanation and the
 available configuration options.
 
 Alternatively, you can use an external tool called
-`Synda <http://prodiguer.github.io/synda/index.html>`__
-to maintain your own collection of ESGF data.
+`esgpull <https://github.com/ESGF/esgf-download>`__
+to download and store files from ESGF.
 
 
 .. _inputdata_observations:
