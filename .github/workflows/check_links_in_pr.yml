@@ -1,0 +1,64 @@
+name: Link Checker for Pull requests
+on: 
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - link-checker
+jobs:
+  changedFiles:
+    runs-on: ubuntu-latest
+    outputs:
+      files: ${{ steps.changed-doc-files.outputs.all_changed_files }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Get changed doc files
+        id: changed-doc-files
+        uses: tj-actions/changed-files@v46
+        with:
+          # Avoid using single or double quotes for multiline patterns
+          files: |
+            doc/sphinx/**.rst
+          matrix: true
+      - name: Show changed doc files  
+        env:
+          DOC_CHANGED_FILES: ${{ steps.changed-doc-files.outputs.all_changed_files }}
+        run: |
+          for file in ${DOC_CHANGED_FILES}; do
+            echo "$file was changed"
+          done
+
+  linkChecker:
+    runs-on: ubuntu-latest
+    needs: changedFiles
+    if: ${{ needs.changedFiles.outputs.files != '' && toJSON(fromJSON(needs.changedFiles.outputs.files)) != '[]' }}
+    strategy:
+      matrix:
+        file: ${{ fromJSON(needs.changedFiles.outputs.files) }}
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+      - name: download Lychee
+        run: |
+          wget https://github.com/lycheeverse/lychee/releases/download/lychee-v0.18.1/lychee-x86_64-unknown-linux-gnu.tar.gz
+          tar xzf lychee-x86_64-unknown-linux-gnu.tar.gz
+      - name: Check all this file's additions for broken links
+        run: |
+          export base_sha=$(git rev-parse ${{ github.sha }}^)
+          git diff -U0 ${base_sha} ${{ github.event.pull_request.head.sha }} -- ${{ matrix.file }} | grep -v "+++" | grep "^+" | cut -c 2- | ./lychee -
+
+    #   - name: Link Checker
+    #     id: lychee
+    #     uses: lycheeverse/lychee-action@v2
+
+    #     with:
+    #       #  This token is included to avoid github.com requests rate limiting
+    #       token: ${{ secrets.TOKEN_GITHUB }}
+    #       fail: false
+    #       args: >
+    #         ${{ matrix.file }}
+    #         --max-concurrency 1 --no-progress
+    #         --accept "200..=204, 429"
