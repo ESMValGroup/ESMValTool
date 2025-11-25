@@ -1,5 +1,5 @@
 name: Link Checker for Pull requests
-on: 
+on:
   pull_request:
     branches:
       - main
@@ -31,23 +31,14 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 2
-    #   - name: download Lychee
-    #     run: |
-    #       wget https://github.com/lycheeverse/lychee/releases/download/lychee-v0.18.1/lychee-x86_64-unknown-linux-gnu.tar.gz
-    #       tar xzf lychee-x86_64-unknown-linux-gnu.tar.gz
-    #   - name: Check all this file's additions for broken links
-    #     run: |
-    #       export base_sha=$(git rev-parse ${{ github.sha }}^)
-    #       git diff -U0 ${base_sha} ${{ github.event.pull_request.head.sha }} -- ${{ matrix.file }} | grep -v "+++" | grep "^+" | cut -c 2- | ./lychee -
-
       - name: Link Checker for changed files
         id: lychee
         uses: lycheeverse/lychee-action@v2
-
         with:
           #  This token is included to avoid github.com requests rate limiting
           token: ${{ secrets.TOKEN_GITHUB }}
-          fail: false
+          # Fail check on broken links
+          fail: true
           args: >
             ${{ matrix.file }}
             --max-concurrency 1 --no-progress
