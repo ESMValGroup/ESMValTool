@@ -70,6 +70,7 @@ SCRIPTS = [
             reason="ESMValTool R not supported on OSX",
         ),
     ),
+]
 
 
 @pytest.mark.installation
