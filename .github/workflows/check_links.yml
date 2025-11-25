@@ -1,4 +1,4 @@
-name: Links
+name: Check Links for Documentation
 
 on:
   # push:
