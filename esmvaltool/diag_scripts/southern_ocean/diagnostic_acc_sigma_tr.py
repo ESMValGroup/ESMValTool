@@ -15,6 +15,11 @@ Please consult the documentation for help with esmvaltool's functionalities
 and best coding practices.
 """
 # place your module imports here:
+import gsw
+import xarray as xr
+import numpy as np
+
+import cmocean
 
 # operating system manipulations (e.g. path constructions)
 import os
@@ -27,7 +32,25 @@ from esmvalcore.preprocessor import area_statistics
 # import internal esmvaltool modules here
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 
+# my functions
+def _plot_transect():
 
+    pass
+
+def _compute_sigma():
+    pass
+
+def _extract_transect():
+
+    pass
+
+def main():
+    pass
+
+
+
+
+# example functions
 def _plot_time_series(cfg, cube, dataset):
     """
     Example of personal diagnostic plotting function.
