@@ -15,8 +15,6 @@ from packaging import version
 
 
 def write_config_file(dirname):
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
     config_file = dirname / "config-user.yml"
     cfg = {
         "output_dir": str(dirname / "output_dir"),
