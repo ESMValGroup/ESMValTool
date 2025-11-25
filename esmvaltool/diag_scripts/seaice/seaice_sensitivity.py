@@ -7,13 +7,12 @@ import iris
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.colors import Normalize
-from scipy import stats
+from scipy.stats import linregress
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger,
     run_diagnostic,
     save_figure,
-    select_metadata,
 )
 
 logger = logging.getLogger(Path(__file__).stem)
@@ -37,146 +36,236 @@ def get_provenance_record(cfg, caption):
     return record
 
 
-def list_datasets(data):
-    """Actually returns a set of datatsets, to avoid duplication."""
-    logger.debug("listing datasets")
-    datasets = set()
-    for element in data:
-        datasets.add(element["dataset"])
-    return datasets
+def create_category_dict(cfg):
+    """Create a structured dictionary for adding values to later on."""
+    logger.debug("Creating blank dictionary.")
+    # Create blank dictionary of correct structure
+    category_dict = {
+        "models": {},
+        "tasa_obs": {},
+        "siconc_obs": {},
+        "cross-dataset-obs": {},
+    }
+
+    # Read the data from the config object
+    input_data = cfg["input_data"].values()
+
+    # Iterate over the datasets to add to the dictionary
+    for input in input_data:
+        # Check for tasa observations
+        if input["variable_group"] == "tasa_obs":
+            category_dict["tasa_obs"][input["dataset"]] = {}
+
+        # Check for siconc observations
+        elif input["variable_group"] == "siconc_obs":
+            category_dict["siconc_obs"][input["dataset"]] = {}
+
+        # Everything else should be a model
+        else:
+            # Add the model dataset if not already present (appears twice, for tas and siconc)
+            if input["dataset"] not in category_dict["models"]:
+                category_dict["models"][input["dataset"]] = {}
+
+            # Add labelling info
+            if "label_dataset" in input and input["label_dataset"]:
+                category_dict["models"][input["dataset"]]["label"] = "to_label"
+                logger.info("Dataset %s will be labelled", input["dataset"])
+            else:
+                category_dict["models"][input["dataset"]]["label"] = (
+                    "unlabelled"
+                )
+                logger.info(
+                    "Not labelling dataset %s in plots", input["dataset"]
+                )
+
+    return category_dict
 
 
-def extract_cube(data, variable_group):
-    """Return the variable group's single iris cube from the data."""
-    logger.debug("extracting %s cube from %s", variable_group, data)
+def fetch_cube(dataset, variable, cfg):
+    """Fetch a data cube for a dataset and variable using info from the config."""
+    logger.debug(
+        "Fetching cube for dataset: %s, variable: %s", dataset, variable
+    )
 
-    # Load any data in the variable_group
-    selection = select_metadata(data, variable_group=variable_group)
+    # Read the data from the config object
+    input_data = cfg["input_data"].values()
 
-    # Ensure there is only one file in the list
-    if len(selection) != 1:
-        raise ValueError(
-            f"None or too many matching files found for {variable_group}"
-        )
+    # Find the correct filepath for the dataset
+    for input in input_data:
+        if input["dataset"] == dataset:
+            # Also check the variable matches as models have two entries
+            # Only matching the first three letters to avoid issues with sic vs siconc
+            if input["short_name"][:3] == variable[:3]:
+                filepath = input["filename"]
+                break
 
-    # Load the cube, [0] is because selection returns a list
-    cube = iris.load_cube(selection[0]["filename"])
-
+    # Load the cube using iris
+    cube = iris.load_cube(filepath, variable)
     return cube
 
 
-def calculate_regression(independent, dependent):
-    """Use SciPy stats to calculate the least-squares regression."""
+def calculate_annual_trend(cube):
+    """Calculate the linear trend of a cube over time using scipy.stats.linregres."""
+    logger.debug("Calculating annual trend for cube %s.", cube.name())
+
+    # Depending on preprocessor, coord may be 'year' or 'time'
+    if "year" in cube.coords():
+        no_years = [i for i in range(len(cube.coord("years").points))]
+    else:
+        no_years = [i for i in range(len(cube.coord("time").points))]
+
+    # slope, intercept, rvalue, pvalue, stderr = linregress(independent, dependent)
+    trend = linregress(no_years, cube.data)
+
+    # Only the slope is needed in this code
+    return trend.slope
+
+
+def calculate_direct_stats(dataset, cfg):
+    """Calculate the direct sensitivity of siconc to tas for a given dataset."""
+    logger.debug("Calculating direct sensitivity for dataset %s.", dataset)
+
+    # Fetch the required cubes
+    siconc_cube = fetch_cube(dataset, "siconc", cfg)
+    tas_cube = fetch_cube(dataset, "tas", cfg)
+
+    # Calculate direct regression (tas as independent)
+    direct_sensitivity = linregress(tas_cube.data, siconc_cube.data)
+
+    # direct_sensitivity = slope, intercept, rvalue, pvalue, stderr
+    return direct_sensitivity
+
+
+def calculate_cross_dataset_stats(tasa_dataset, siconc_dataset, cfg):
+    """Calculate the sensitivity of siconc to tasa across (obs) datasets."""
     logger.debug(
-        "Calculating linear relationship between %s and %s",
-        dependent,
-        independent,
+        "Calculating cross sensitivity for datasets %s, %s.",
+        tasa_dataset,
+        siconc_dataset,
     )
 
-    # Use SciPy stats to calculate the regression
-    # result = slope, intercept, rvalue, pvalue, stderr
-    result = stats.linregress(independent, dependent)
+    # Fetch the required cubes
+    siconc_cube = fetch_cube(siconc_dataset, "siconc", cfg)
+    tasa_cube = fetch_cube(tasa_dataset, "tasa", cfg)
 
-    # Return everything
-    return result
+    # Calculate direct regression (tasa as independent)
+    direct_sensitivity = linregress(tasa_cube.data, siconc_cube.data)
+
+    # direct_sensitivity = slope, intercept, rvalue, pvalue, stderr
+    return direct_sensitivity
 
 
-def calculate_annual_trends(data):
+def write_values_to_dict(data_dict, cfg):
+    """Calculate and write values to the structured dictionary."""
+    logger.debug("Writing values to dictionary.")
+
+    # Calculate all the values for the models
+    for model_dataset in data_dict["models"].keys():
+        # Calculate annual tas trend
+        tas_cube = fetch_cube(model_dataset, "tas", cfg)
+        ann_tas_trend = calculate_annual_trend(tas_cube)
+        data_dict["models"][model_dataset]["annual_tas_trend"] = ann_tas_trend
+
+        # Calculate annual siconc trend
+        siconc_cube = fetch_cube(model_dataset, "siconc", cfg)
+        ann_siconc_trend = calculate_annual_trend(siconc_cube)
+        data_dict["models"][model_dataset]["annual_siconc_trend"] = (
+            ann_siconc_trend
+        )
+
+        # Calculate direct sensitivity of siconc to tas
+        direct_sensitivity = calculate_direct_stats(model_dataset, cfg)
+        data_dict["models"][model_dataset]["direct_sensitivity"] = (
+            direct_sensitivity.slope
+        )
+        data_dict["models"][model_dataset]["direct_r_value"] = (
+            direct_sensitivity.rvalue
+        )
+        data_dict["models"][model_dataset]["direct_p_value"] = (
+            direct_sensitivity.pvalue
+        )
+
+    # Calculate just the tasa trend for the tasa observations
+    for obs_dataset in data_dict["tasa_obs"].keys():
+        # Calculate annual tas trend
+        tasa_cube = fetch_cube(obs_dataset, "tasa", cfg)
+        ann_tasa_trend = calculate_annual_trend(tasa_cube)
+        # Still labelling in final dictionary as tas for consistency with models
+        data_dict["tasa_obs"][obs_dataset]["annual_tas_trend"] = ann_tasa_trend
+
+    # Calculate just the siconc trend for the siconc observations
+    for obs_dataset in data_dict["siconc_obs"].keys():
+        # Calculate annual siconc trend
+        siconc_cube = fetch_cube(obs_dataset, "siconc", cfg)
+        ann_siconc_trend = calculate_annual_trend(siconc_cube)
+        data_dict["siconc_obs"][obs_dataset]["annual_siconc_trend"] = (
+            ann_siconc_trend
+        )
+
+    # Calculate cross-dataset statistics between tasa and siconc observations
+    for tasa_dataset in data_dict["tasa_obs"].keys():
+        for siconc_dataset in data_dict["siconc_obs"].keys():
+            # Calculate cross-dataset sensitivity of siconc to tasa
+            cross_sensitivity = calculate_cross_dataset_stats(
+                tasa_dataset, siconc_dataset, cfg
+            )
+            # Determine structure of dictionary to store values
+            key_name = f"{siconc_dataset}_to_{tasa_dataset}"
+            data_dict["cross-dataset-obs"][key_name] = {}
+            inner_dict = data_dict["cross-dataset-obs"][key_name]
+            # Store the values
+            inner_dict["direct_sensitivity"] = cross_sensitivity.slope
+            inner_dict["direct_r_value"] = cross_sensitivity.rvalue
+            inner_dict["direct_p_value"] = cross_sensitivity.pvalue
+
+    return data_dict
+
+
+def write_dictionary_to_csv(sub_dict, filename, cfg):
     """
-    Calculate annual trends for surface air temperature (tas) and sea ice area (siconc).
+    Output a section of data dictionary to a csv file using Pandas.
 
-    Also used for the r and p values from the regression of siconc as a function of tas.
+    Only sections of the dictionary should be written at a time as otherwise
+    the structure is too complex to easily convert to a DataFrame.
     """
-    logger.debug("calculating annual trends")
+    logger.debug("Writing dictionary to csv file.")
 
-    # Load the preprocessed cubes
-    si_cube = extract_cube(data, "siconc")
-    tas_cube = extract_cube(data, "tas")
+    # Create the csv filepath using info from the config
+    csv_filepath = f"{cfg['work_dir']}/{filename}.csv"
 
-    # Calculate the individual trends over time
-    years = tas_cube.coord("year").points
-    si_trend = calculate_regression(years, si_cube.data)
-    tas_trend = calculate_regression(years, tas_cube.data)
-
-    # Calculate the direct regression for r and p values
-    direct_regression = calculate_regression(tas_cube.data, si_cube.data)
-
-    dictionary = {
-        "si_ann_trend": si_trend.slope,
-        "tas_ann_trend": tas_trend.slope,
-        "direct_r_val": direct_regression.rvalue,
-        "direct_p_val": direct_regression.pvalue,
-    }
-
-    return dictionary
-
-
-def calculate_direct_sensitivity(data):
-    """Calculate slope of sea ice area over global mean temperature."""
-    logger.debug("calculating sensitivity")
-
-    # Load the preprocessed cubes
-    si_cube = extract_cube(data, "siconc")
-    tas_cube = extract_cube(data, "tas")
-
-    # Calculate the slope of the direct regression, NOT via time
-    sensitivity = calculate_regression(tas_cube.data, si_cube.data)
-
-    return sensitivity.slope
+    # Write the data to a csv file (via a Pandas DataFrame)
+    dataframe = pd.DataFrame.from_dict(sub_dict, orient="index")
+    dataframe.to_csv(csv_filepath)
+    logger.info("Wrote data to %s", csv_filepath)
 
 
 def write_obs_from_cfg(cfg):
-    """Write the observations from the recipe to a dictionary."""
-    # Initialize the dictionary to hold observations
-    obs_dict = {}
+    """Write the Notz-style observations from the recipe to a dictionary."""
+    logger.debug("Writing observations from config file.")
 
-    # Add the observation period to the dictionary
-    obs_dict["obs_period"] = cfg["observations"]["observation period"]
-
-    # Add a blank dictionary for the Notz-style plot
-    obs_dict["notz_style"] = {}
+    # Initialize the dictionary with observation period
+    obs_dict = {"obs_period": cfg["observations"]["observation period"]}
 
     # Add the observations values to the dictionary
     notz_values = cfg["observations"]["sea ice sensitivity (Notz-style plot)"]
-    obs_dict["notz_style"]["mean"] = notz_values["mean"]
-    obs_dict["notz_style"]["std_dev"] = notz_values["standard deviation"]
-    obs_dict["notz_style"]["plausible"] = notz_values["plausible range"]
-
-    # Add a blank dictionary for the Roach-style plot
-    obs_dict["roach_style"] = {}
-
-    # Add each observation point to the dictionary
-    roach_values = cfg["observations"]["annual trends (Roach-style plot)"]
-    for point in roach_values.keys():
-        obs_dict["roach_style"][point] = {}
-
-        # Add the individual values for the observation point
-        obs_dict["roach_style"][point]["annual_tas_trend"] = roach_values[
-            point
-        ]["GMST trend"]
-        obs_dict["roach_style"][point]["annual_siconc_trend"] = roach_values[
-            point
-        ]["SIA trend"]
-        obs_dict["roach_style"][point]["r_value"] = roach_values[point][
-            "Pearson CC of SIA over GMST"
-        ]
-        obs_dict["roach_style"][point]["p_value"] = roach_values[point][
-            "significance of SIA over GMST"
-        ]
+    obs_dict["mean"] = notz_values["mean"]
+    obs_dict["std_dev"] = notz_values["standard deviation"]
+    obs_dict["plausible"] = notz_values["plausible range"]
 
     return obs_dict
 
 
-def create_titles_dict(data, cfg):
+def create_titles_dict(cfg):
     """
-    Create a dictionary of appropriate observations and titles.
-
+    Create a dictionary of appropriate titles and hardcoded observations.
     Values depend on whether the plot is for the Arctic or Antarctic
     and assume the recipe used September Arctic sea ice data or
     annually mean averaged Antarctic sea ice data
     """
+    logger.debug("Creating titles dictionary.")
     dictionary = {}
 
+    data = cfg["input_data"].values()
     first_variable = next(iter(data))
 
     if first_variable["diagnostic"] == "arctic":
@@ -202,28 +291,11 @@ def create_titles_dict(data, cfg):
     return dictionary
 
 
-def write_dictionary_to_csv(cfg, model_dict, filename):
-    """Output the model dictionary to a csv file using Pandas."""
-    # Read the work directory from the config and create the csv filepath
-    csv_filepath = f"{cfg['work_dir']}/{filename}.csv"
-
-    # Write the data to a csv file (via a Pandas DataFrame)
-    pd.DataFrame.from_dict(model_dict, orient="index").to_csv(csv_filepath)
-    logger.info("Wrote data to %s", csv_filepath)
-
-    # Create a provenance record for the csv file
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(
-            csv_filepath,
-            get_provenance_record(cfg, "Annual (not decadal) figures"),
-        )
-
-
 def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
-    """Save a plot of sensitivities and observations."""
+    """Save a plot of sensitivities and observations for model datasets."""
     # Read from observations dictionary
     obs_years = titles_dictionary["obs"]["obs_period"]
-    obs_dict = titles_dictionary["obs"]["notz_style"]
+    obs_dict = titles_dictionary["obs"]
     obs_mean = obs_dict["mean"]
     obs_std_dev = obs_dict["std_dev"]
     obs_plausible = obs_dict["plausible"]
@@ -239,7 +311,7 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     for dataset, inner_dict in data_dictionary.items():
         ax.plot(
             0.25,
-            inner_dict["direct_sensitivity_(notz-style)"],
+            inner_dict["direct_sensitivity"],
             color="blue",
             marker="_",
             markersize=20,
@@ -249,10 +321,10 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         if inner_dict["label"] == "to_label":
             plt.annotate(
                 dataset,
-                xy=(0.25, inner_dict["direct_sensitivity_(notz-style)"]),
+                xy=(0.25, inner_dict["direct_sensitivity"]),
                 xytext=(
                     0.35,
-                    inner_dict["direct_sensitivity_(notz-style)"] - 0.05,
+                    inner_dict["direct_sensitivity"] - 0.05,
                 ),
             )
 
@@ -323,8 +395,8 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     ax.set_xlabel(r"Trend in GMST ($K \ decade^{-1}$)")
     ax.set_ylabel(r"Trend in SIA ($million \ km^2 \ decade^{-1}$)")
 
-    # Iterate over the dictionary
-    for dataset, inner_dict in data_dictionary.items():
+    # Iterate over the models sub-dictionary
+    for dataset, inner_dict in data_dictionary["models"].items():
         # Determine the position of the point
         x = 10 * inner_dict["annual_tas_trend"]  # for equivalence to decades
         y = (
@@ -332,10 +404,10 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         )  # for equivalence to decades
 
         # Determine the colour of the point
-        r_corr = inner_dict["direct_r_val"]
+        r_corr = inner_dict["direct_r_value"]
 
         # Decide if the point should be hatched
-        if inner_dict["direct_p_val"] >= 0.05:
+        if inner_dict["direct_p_value"] >= 0.05:
             h = 5 * "/"  # This is a hatch pattern
         else:
             h = None
@@ -349,56 +421,49 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
         if inner_dict["label"] == "to_label":
             plt.annotate(dataset, xy=(x, y), xytext=(x + 0.01, y - 0.005))
 
-    # Read from observations dictionary
-    obs_years = titles_dictionary["obs"]["obs_period"]
-    obs_dict = titles_dictionary["obs"]["roach_style"]
-
     # Add the observations
-    for point in obs_dict.keys():
-        # Get the values for the point
-        x = obs_dict[point]["annual_tas_trend"]
-        y = obs_dict[point]["annual_siconc_trend"]
-        r_corr = obs_dict[point]["r_value"]
-        p_val = obs_dict[point]["p_value"]
+    siconc_dict = data_dictionary["siconc_obs"]
+    tasa_dict = data_dictionary["tasa_obs"]
 
-        # Provide a default colour for the point if Pearson coefficient is missing
-        if r_corr is None:
-            r_corr = 0
+    # Iterate over the pairs in cross-dataset-obs
+    for pair, inner_dict in data_dictionary["cross-dataset-obs"].items():
+        # Retrieve the names of the datasets from the pair string
+        siconc_ds, tasa_ds = pair.split("_to_")
 
-        # Provide a pattern for the point if the p-value is present and sufficiently large
-        if p_val is not None and p_val >= 0.05:
-            h = 5 * "/"  # This is a hatch pattern
+        # Determine the position of the point, from other dictionaries
+        x = (
+            10 * tasa_dict[tasa_ds]["annual_tas_trend"]
+        )  # This was labelled as tas, not tasa
+        y = 10 * siconc_dict[siconc_ds]["annual_siconc_trend"]
+
+        # Determine the colour of the point from the inner dictionary
+        r_corr = inner_dict["direct_r_value"]
+
+        # Decide if the point should be hatched
+        if inner_dict["direct_p_value"] >= 0.05:
+            h = 5 * "/"
         else:
             h = None
 
-        # Plot the point only if both x and y values are provided
-        if x is not None and y is not None:
-            plt.scatter(
-                x,
-                y,
-                marker="s",
-                s=150,
-                c=[r_corr],
-                hatch=h,
-                cmap=cmap,
-                norm=norm,
-                zorder=0,
-                edgecolors="black",
-            )
+        # Plot the point
+        plt.scatter(
+            x,
+            y,
+            marker="s",
+            s=150,
+            c=[r_corr],
+            hatch=h,
+            cmap=cmap,
+            norm=norm,
+            zorder=0,
+            edgecolors="black",
+        )
 
     # Add a colour bar
     plt.colorbar(label="Pearson correlation coefficient")
 
-    # Create caption based on whether observational temp trend is present
-    if obs_dict["first point"]["annual_tas_trend"] is not None:
-        caption = (
-            "Decadal trends of sea ice area and global mean temperature."
-            f"Observations from {obs_years} are plotted as squares."
-        )
-    else:
-        caption = "Decadal trends of sea ice area and global mean temperature."
-
     # Save the figure (also closes it)
+    caption = "Decadal trends of sea ice area and global mean temperature."
     save_figure(
         titles_dictionary["titles"]["roach_plot_filename"],
         get_provenance_record(cfg, caption),
@@ -409,62 +474,42 @@ def roach_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
 
 
 def main(cfg):
-    """Create two plots per diagnostic from preprocessed data."""
-    # Get the data from the cfg
-    logger.info("Getting data from the config")
-    input_data = cfg["input_data"].values()
+    # Create the structured dictionary
+    data_dict = create_category_dict(cfg)
+
+    # Calculate and write values to the dictionary
+    logger.info("Calculating and writing values to dictionary.")
+    data_dict = write_values_to_dict(data_dict, cfg)
+
+    # Write the model and obs dictionaries to csv files
+    logger.info("Writing dictionaries to csv files.")
+    write_dictionary_to_csv(data_dict["models"], "models_values", cfg)
+    write_dictionary_to_csv(data_dict["tasa_obs"], "tasa_obs_values", cfg)
+    write_dictionary_to_csv(data_dict["siconc_obs"], "siconc_obs_values", cfg)
+
+    # Write the cross-dataset obs dictionary to csv files (separately for each pair)
+    for pair in data_dict["cross-dataset-obs"].keys():
+        data_dict["cross-dataset-obs"][pair] = data_dict["cross-dataset-obs"][
+            pair
+        ]
+        write_dictionary_to_csv(
+            data_dict["cross-dataset-obs"][pair], f"{pair}", cfg
+        )
+
+    # Create a single provenance record for the csv files
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(
+            f"{cfg['work_dir']}/figures_as_csv",
+            get_provenance_record(cfg, "Annual (not decadal) figures"),
+        )
 
     # Titles and observations depend on the diagnostic being plotted
     logger.info("Creating titles and observations dictionary")
-    titles_and_obs_dict = create_titles_dict(input_data, cfg)
-    logger.debug("Titles and observations dictionary: %s", titles_and_obs_dict)
+    titles_and_obs_dict = create_titles_dict(cfg)
 
-    # Initialize blank data dictionary to send to plotting codes later
-    data_dict = {}
-
-    # Get list of datasets from cfg
-    logger.info("Listing datasets in the data")
-    datasets = list_datasets(input_data)
-
-    # Iterate over each dataset
-    for dataset in datasets:
-        # Select only data from that dataset
-        logger.debug("Selecting data from %s", dataset)
-        selection = select_metadata(input_data, dataset=dataset)
-
-        # Add the dataset to the dictionary with a blank inner dictionary
-        data_dict[dataset] = {}
-
-        # Add an entry to determine labelling in plots
-        if "label_dataset" in selection[0]:
-            data_dict[dataset]["label"] = "to_label"
-            logger.info("Dataset %s will be labelled", dataset)
-        else:
-            data_dict[dataset]["label"] = "unlabelled"
-            logger.info("Not labelling dataset %s in plots", dataset)
-
-        # Calculations for the Notz-style plot
-        logger.info("Calculating data for Notz-style plot")
-        sensitivity = calculate_direct_sensitivity(selection)
-        # Add to dictionary
-        data_dict[dataset]["direct_sensitivity_(notz-style)"] = sensitivity
-
-        # Calculations for the Roach-style plot
-        logger.info("Calculating data for Roach-style plot")
-        trends = calculate_annual_trends(selection)
-        # Add to dictionary
-        data_dict[dataset]["annual_siconc_trend"] = trends["si_ann_trend"]
-        data_dict[dataset]["annual_tas_trend"] = trends["tas_ann_trend"]
-        data_dict[dataset]["direct_r_val"] = trends["direct_r_val"]
-        data_dict[dataset]["direct_p_val"] = trends["direct_p_val"]
-
-    # Add the values to plot to a csv file
-    logger.info("Writing values to csv")
-    write_dictionary_to_csv(cfg, data_dict, "plotted_values")
-
-    # Plot the sensitivities (and save and close the plots)
+    # Plot the sensitivities, uses model data only (and obs from recipe)
     logger.info("Creating Notz-style plot")
-    notz_style_plot_from_dict(data_dict, titles_and_obs_dict, cfg)
+    notz_style_plot_from_dict(data_dict["models"], titles_and_obs_dict, cfg)
     logger.info("Creating Roach-style plot")
     roach_style_plot_from_dict(data_dict, titles_and_obs_dict, cfg)
 
