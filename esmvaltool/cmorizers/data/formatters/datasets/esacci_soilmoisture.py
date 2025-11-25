@@ -57,6 +57,16 @@ def fix_coords(cube):
     cube: iris.cube.Cube
         data cube with fixed coordinates.
     """
+    # This makes fix_dim_coordnames work with GAPFILLED
+    try:
+        cube.coord('lat').standard_name = 'latitude'
+    except:
+        pass
+    try:
+        cube.coord('lon').standard_name = 'longitude'
+    except:
+        pass
+    
     # First fix any completely missing coord var names
     fix_dim_coordnames(cube)
 

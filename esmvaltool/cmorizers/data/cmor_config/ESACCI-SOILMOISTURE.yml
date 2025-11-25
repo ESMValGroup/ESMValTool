@@ -10,11 +10,20 @@ attributes:
   version: 'L3S-SSMV-COMBINED-v08.1'
   comment: ''
 variables:
+#   sm:
+#     mip: Eday
+#     raw: sm
+#     filename: ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc
+#   smStderr:
+#     mip: Eday
+#     raw: sm_uncertainty
+#    filename: ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc
+
   sm:
     mip: Eday
     raw: sm
-    filename: ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc
-  smStderr:
-    mip: Eday
-    raw: sm_uncertainty
-    filename: ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-{year}????000000-fv08.1.nc
+    filename: ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED_GAPFILLED-{year}????000000-fv09.1.nc
+  # smStderr:
+  #   mip: Eday
+  #   raw: sm_uncertainty
+  #   filename: ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED_GAPFILLED-{year}????000000-fv09.1.nc
