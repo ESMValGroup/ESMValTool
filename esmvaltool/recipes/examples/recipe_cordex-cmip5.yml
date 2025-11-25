@@ -611,28 +611,28 @@ datasets:
       - short_name: sftlf
         mip: fx
         ensemble: r0i0p0
-  - project: CORDEX
-    domain: EUR-11
-    dataset: RCA4
-    driver: MPI-M-MPI-ESM-LR
-    ensemble: r2i1p1
-    institute: SMHI
-    rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
-  - project: CORDEX
-    domain: EUR-11
-    dataset: RCA4
-    driver: MPI-M-MPI-ESM-LR
-    ensemble: r3i1p1
-    institute: SMHI
-    rcm_version: v1
-    supplementary_variables:
-      - short_name: sftlf
-        mip: fx
-        ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RCA4
+  #   driver: MPI-M-MPI-ESM-LR
+  #   ensemble: r2i1p1
+  #   institute: SMHI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RCA4
+  #   driver: MPI-M-MPI-ESM-LR
+  #   ensemble: r3i1p1
+  #   institute: SMHI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
   - project: CORDEX
     domain: EUR-11
     dataset: RCA4

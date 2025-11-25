@@ -1,0 +1,850 @@
+documentation:
+  title: |
+    Example recipe that computes performance metrics for CORDEX-CMIP5 models.
+  description: |
+    This is an example recipe that computes performance metrics for CORDEX-CMIP5 models.
+    The outcome of this recipe is used for deliverable DX.X of the project ESO4Clima.
+  authors:
+    - loosveldt-tomas_saskia
+    - andela_bouwe
+  maintainer:
+    - loosveldt-tomas_saskia
+
+preprocessors:
+  ts_pp:
+    custom_order: true
+    monthly_statistics:
+      operator: mean
+    climate_statistics:
+      period: full
+      operator: mean
+    mask_landsea:
+      mask_out: sea
+    regrid:
+      target_grid: RACMO22E
+      scheme: 'linear'
+    distance_metric:
+      metric: weighted_rmse
+    # multi_model_statistics: # fails because of different data types in CCLM4-8-17 and issue in regrid that removes coordinates prevents the merging of cubes
+    #  span: overlap
+    #  statistics: [mean]
+    #  exclude: [reference_dataset]
+         #
+
+datasets:
+###########################
+# FULL SET OF DATASETS - TO BE UNCOMENTED WHEN ALL DATASETS ARE FIXED
+###########################
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: CCLM4-8-17
+  #   driver: CNRM-CERFACS-CNRM-CM5
+  #   ensemble: r1i1p1
+  #   institute: CLMcom
+  #   rcm_version: v1
+  #   mip: day
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: ALADIN53
+  #   driver: CNRM-CERFACS-CNRM-CM5
+  #   ensemble: r1i1p1
+  #   institute: CNRM
+  #   rcm_version: v1 # non-monotonic coordinates, ts values seem wrong (in celsius when they should be kelvin) and sftlf has wrong values (should be %, is units). correct coordinates seem to be the ones in sftlf. false easting and false northing should be 0
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RACMO22E
+  #   driver: CNRM-CERFACS-CNRM-CM5
+  #   ensemble: r1i1p1
+  #   institute: KNMI
+  #   rcm_version: v2
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RCA4
+  #   driver: CNRM-CERFACS-CNRM-CM5
+  #   ensemble: r1i1p1
+  #   institute: SMHI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: CCLM4-8-17
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r12i1p1
+  #   institute: CLMcom
+  #   rcm_version: v1 #fails due to assuming in the fixes all variables have a time coordinate
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RACMO22E
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r12i1p1
+  #   institute: KNMI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RCA4
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r12i1p1
+  #   institute: SMHI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RACMO22E
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r1i1p1
+  #   institute: KNMI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: HIRHAM5
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r3i1p1
+  #   institute: DMI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r1i1p1
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: HIRHAM5
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r3i1p1
+  #   institute: DMI
+  #   rcm_version: v2
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RACMO22E
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r3i1p1
+  #   institute: KNMI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: REMO2015
+  #   driver: IPSL-IPSL-CM5A-LR
+  #   ensemble: r1i1p1
+  #   institute: GERICS
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RACMO22E
+  #   driver: IPSL-IPSL-CM5A-MR
+  #   ensemble: r1i1p1
+  #   institute: KNMI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RCA4
+  #   driver: IPSL-IPSL-CM5A-MR
+  #   ensemble: r1i1p1
+  #   institute: SMHI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: CCLM4-8-17
+  #   driver: MOHC-HadGEM2-ES
+  #   ensemble: r1i1p1
+  #   institute: CLMcom
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RACMO22E
+  #   driver: MOHC-HadGEM2-ES
+  #   ensemble: r1i1p1
+  #   institute: KNMI
+  #   rcm_version: v2
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RCA4
+  #   driver: MOHC-HadGEM2-ES
+  #   ensemble: r1i1p1
+  #   institute: SMHI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: CCLM4-8-17
+  #   driver: MPI-M-MPI-ESM-LR
+  #   ensemble: r1i1p1
+  #   institute: CLMcom
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RACMO22E
+  #   driver: MPI-M-MPI-ESM-LR
+  #   ensemble: r1i1p1
+  #   institute: KNMI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: REMO2009
+  #   driver: MPI-M-MPI-ESM-LR
+  #   ensemble: r1i1p1
+  #   institute: MPI-CSC
+  #   rcm_version: v1 # Differences between the original grid and the standardised grid are above 10e-4 degrees
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RCA4
+  #   driver: MPI-M-MPI-ESM-LR
+  #   ensemble: r1i1p1
+  #   institute: SMHI
+  #   rcm_version: v1a
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: REMO2009
+  #   driver: MPI-M-MPI-ESM-LR
+  #   ensemble: r2i1p1
+  #   institute: MPI-CSC
+  #   rcm_version: v1 # Differences between the original grid and the standardised grid are above 10e-4 degrees
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: REMO2015
+  #   driver: MPI-M-MPI-ESM-LR
+  #   ensemble: r3i1p1
+  #   institute: GERICS
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: HIRHAM5
+  #   driver: NCC-NorESM1-M
+  #   ensemble: r1i1p1
+  #   institute: DMI
+  #   rcm_version: v2
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RACMO22E
+  #   driver: NCC-NorESM1-M
+  #   ensemble: r1i1p1
+  #   institute: KNMI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: REMO2015
+  #   driver: NCC-NorESM1-M
+  #   ensemble: r1i1p1
+  #   institute: GERICS
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: REMO2015
+  #   driver: NOAA-GFDL-GFDL-ESM2G
+  #   ensemble: r1i1p1
+  #   institute: GERICS
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: COSMO-crCLIM-v1-1
+  #   driver: CNRM-CERFACS-CNRM-CM5
+  #   ensemble: r1i1p1
+  #   institute: CLMcom-ETH
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: COSMO-crCLIM-v1-1
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r12i1p1
+  #   institute: CLMcom-ETH
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: COSMO-crCLIM-v1-1
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r1i1p1
+  #   institute: CLMcom-ETH
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: COSMO-crCLIM-v1-1
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r3i1p1
+  #   institute: CLMcom-ETH
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: COSMO-crCLIM-v1-1
+  #   driver: MOHC-HadGEM2-ES
+  #   ensemble: r1i1p1
+  #   institute: CLMcom-ETH
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: COSMO-crCLIM-v1-1
+  #   driver: MPI-M-MPI-ESM-LR
+  #   ensemble: r1i1p1
+  #   institute: CLMcom-ETH
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: COSMO-crCLIM-v1-1
+  #   driver: MPI-M-MPI-ESM-LR
+  #   ensemble: r2i1p1
+  #   institute: CLMcom-ETH
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: COSMO-crCLIM-v1-1
+  #   driver: MPI-M-MPI-ESM-LR
+  #   ensemble: r3i1p1
+  #   institute: CLMcom-ETH
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: COSMO-crCLIM-v1-1
+  #   driver: NCC-NorESM1-M
+  #   ensemble: r1i1p1
+  #   institute: CLMcom-ETH
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: ALADIN63
+  #   driver: CNRM-CERFACS-CNRM-CM5
+  #   ensemble: r1i1p1
+  #   institute: CNRM
+  #   rcm_version: v2
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: ALADIN63
+  #   driver: MOHC-HadGEM2-ES
+  #   ensemble: r1i1p1
+  #   institute: CNRM
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: ALADIN63
+  #   driver: MPI-M-MPI-ESM-LR
+  #   ensemble: r1i1p1
+  #   institute: CNRM
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: ALADIN63
+  #   driver: NCC-NorESM1-M
+  #   ensemble: r1i1p1
+  #   institute: CNRM
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: HIRHAM5
+  #   driver: CNRM-CERFACS-CNRM-CM5
+  #   ensemble: r1i1p1
+  #   institute: DMI
+  #   rcm_version: v2
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: HIRHAM5
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r12i1p1
+  #   institute: DMI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: HIRHAM5
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r1i1p1
+  #   institute: DMI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: HIRHAM5
+  #   driver: IPSL-IPSL-CM5A-MR
+  #   ensemble: r1i1p1
+  #   institute: DMI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: HIRHAM5
+  #   driver: MOHC-HadGEM2-ES
+  #   ensemble: r1i1p1
+  #   institute: DMI
+  #   rcm_version: v2
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: HIRHAM5
+  #   driver: MPI-M-MPI-ESM-LR
+  #   ensemble: r1i1p1
+  #   institute: DMI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: HIRHAM5
+  #   driver: NCC-NorESM1-M
+  #   ensemble: r1i1p1
+  #   institute: DMI
+  #   rcm_version: v3
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: REMO2015
+  #   driver: CNRM-CERFACS-CNRM-CM5
+  #   ensemble: r1i1p1
+  #   institute: GERICS
+  #   rcm_version: v2
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: REMO2015
+  #   driver: IPSL-IPSL-CM5A-MR
+  #   ensemble: r1i1p1
+  #   institute: GERICS
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: HadREM3-GA7-05
+  #   driver: CNRM-CERFACS-CNRM-CM5
+  #   ensemble: r1i1p1
+  #   institute: MOHC
+  #   rcm_version: v2
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: HadREM3-GA7-05
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r12i1p1
+  #   institute: MOHC
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: HadREM3-GA7-05
+  #   driver: MOHC-HadGEM2-ES
+  #   ensemble: r1i1p1
+  #   institute: MOHC
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: HadREM3-GA7-05
+  #   driver: MPI-M-MPI-ESM-LR
+  #   ensemble: r1i1p1
+  #   institute: MOHC
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RCA4
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r1i1p1
+  #   institute: SMHI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RCA4
+  #   driver: ICHEC-EC-EARTH
+  #   ensemble: r3i1p1
+  #   institute: SMHI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+  # # - project: CORDEX
+  # #   domain: EUR-11
+  # #   dataset: RCA4
+  # #   driver: MPI-M-MPI-ESM-LR
+  # #   ensemble: r2i1p1
+  # #   institute: SMHI
+  # #   rcm_version: v1
+  # #   supplementary_variables:
+  # #     - short_name: sftlf
+  # #       mip: fx
+  # #       ensemble: r0i0p0
+  # # - project: CORDEX
+  # #   domain: EUR-11
+  # #   dataset: RCA4
+  # #   driver: MPI-M-MPI-ESM-LR
+  # #   ensemble: r3i1p1
+  # #   institute: SMHI
+  # #   rcm_version: v1
+  # #   supplementary_variables:
+  # #     - short_name: sftlf
+  # #       mip: fx
+  # #       ensemble: r0i0p0
+  # - project: CORDEX
+  #   domain: EUR-11
+  #   dataset: RCA4
+  #   driver: NCC-NorESM1-M
+  #   ensemble: r1i1p1
+  #   institute: SMHI
+  #   rcm_version: v1
+  #   supplementary_variables:
+  #     - short_name: sftlf
+  #       mip: fx
+  #       ensemble: r0i0p0
+
+############################################################################
+# SUBSET OF DATASETS TO OBTAIN A TEST PLOT - TO BE DELETED WHEN THE WHOLE RECIPE WORKS
+############################################################################
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RACMO22E
+    driver: CNRM-CERFACS-CNRM-CM5
+    ensemble: r1i1p1
+    institute: KNMI
+    rcm_version: v2
+    supplementary_variables:
+      - short_name: sftlf
+        mip: fx
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RACMO22E
+    driver: ICHEC-EC-EARTH
+    ensemble: r1i1p1
+    institute: KNMI
+    rcm_version: v1
+    supplementary_variables:
+      - short_name: sftlf
+        mip: fx
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RACMO22E
+    driver: ICHEC-EC-EARTH
+    ensemble: r3i1p1
+    institute: KNMI
+    rcm_version: v1
+    supplementary_variables:
+      - short_name: sftlf
+        mip: fx
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RACMO22E
+    driver: IPSL-IPSL-CM5A-MR
+    ensemble: r1i1p1
+    institute: KNMI
+    rcm_version: v1
+    supplementary_variables:
+      - short_name: sftlf
+        mip: fx
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RACMO22E
+    driver: MOHC-HadGEM2-ES
+    ensemble: r1i1p1
+    institute: KNMI
+    rcm_version: v2
+    supplementary_variables:
+      - short_name: sftlf
+        mip: fx
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RACMO22E
+    driver: MPI-M-MPI-ESM-LR
+    ensemble: r1i1p1
+    institute: KNMI
+    rcm_version: v1
+    supplementary_variables:
+      - short_name: sftlf
+        mip: fx
+  - project: CORDEX
+    domain: EUR-11
+    dataset: REMO2015
+    driver: MPI-M-MPI-ESM-LR
+    ensemble: r3i1p1
+    institute: GERICS
+    rcm_version: v1
+    supplementary_variables:
+      - short_name: sftlf
+        mip: fx
+        ensemble: r0i0p0
+  - project: CORDEX
+    domain: EUR-11
+    dataset: RACMO22E
+    driver: NCC-NorESM1-M
+    ensemble: r1i1p1
+    institute: KNMI
+    rcm_version: v1
+    supplementary_variables:
+      - short_name: sftlf
+        mip: fx
+  - project: CORDEX
+    domain: EUR-11
+    dataset: REMO2015
+    driver: NCC-NorESM1-M
+    ensemble: r1i1p1
+    institute: GERICS
+    rcm_version: v1
+    supplementary_variables:
+      - short_name: sftlf
+        mip: fx
+        ensemble: r0i0p0
+  - project: CORDEX
+    domain: EUR-11
+    dataset: ALADIN63
+    driver: CNRM-CERFACS-CNRM-CM5
+    ensemble: r1i1p1
+    institute: CNRM
+    rcm_version: v2
+    supplementary_variables:
+      - short_name: sftlf
+        mip: fx
+  - project: CORDEX
+    domain: EUR-11
+    dataset: ALADIN63
+    driver: MOHC-HadGEM2-ES
+    ensemble: r1i1p1
+    institute: CNRM
+    rcm_version: v1
+    supplementary_variables:
+      - short_name: sftlf
+        mip: fx
+  - project: CORDEX
+    domain: EUR-11
+    dataset: ALADIN63
+    driver: MPI-M-MPI-ESM-LR
+    ensemble: r1i1p1
+    institute: CNRM
+    rcm_version: v1
+    supplementary_variables:
+      - short_name: sftlf
+        mip: fx
+  - project: CORDEX
+    domain: EUR-11
+    dataset: ALADIN63
+    driver: NCC-NorESM1-M
+    ensemble: r1i1p1
+    institute: CNRM
+    rcm_version: v1
+    supplementary_variables:
+      - short_name: sftlf
+        mip: fx
+  - project: CORDEX
+    domain: EUR-11
+    dataset: REMO2015
+    driver: CNRM-CERFACS-CNRM-CM5
+    ensemble: r1i1p1
+    institute: GERICS
+    rcm_version: v2
+    supplementary_variables:
+      - short_name: sftlf
+        mip: fx
+        ensemble: r0i0p0
+  - project: CORDEX
+    domain: EUR-11
+    dataset: REMO2015
+    driver: IPSL-IPSL-CM5A-MR
+    ensemble: r1i1p1
+    institute: GERICS
+    rcm_version: v1
+    supplementary_variables:
+      - short_name: sftlf
+        mip: fx
+        ensemble: r0i0p0
+
+
+
+
+diagnostics:
+  bias:
+    variables:
+      ts: &ts
+        variable: ts
+        mip: day
+        exp: historical
+        timerange: 2003/2005
+        preprocessor: ts_pp
+        split: Ref1
+        reference_dataset: ESACCI-LST
+        additional_datasets:
+          - {project: OBS, tier: 2 , dataset: ESACCI-LST, type: sat, version: '1.00', mip: Amon, reference_for_metric: true}
+      ts_2:
+        <<: *ts
+        short_name: ts
+        split: Ref2
+        reference_dataset: NCEP-NCAR-R1
+        additional_datasets:
+        # ERA5 data on DKRZ was not available for this period, used an arbitrary reanalysis instead
+          - {project: OBS6, tier: 2 , dataset: NCEP-NCAR-R1, type: reanaly, version: 1, mip: Amon, reference_for_metric: true}
+
+      # TO DO: ADD MORE VARIABLES
+    scripts:
+      portrait:
+        script: portrait_plot.py
+        x_by: alias
+        y_by: variable  # extra_facet
+        group_by: project
+        normalize: "centered_median"
+        default_split: Ref1
+        nan_color: null
+        plot_kwargs:
+          vmin: -0.5
+          vmax: +0.5
+        cbar_kwargs:
+          label: Relative RMSE
+          extend: both
