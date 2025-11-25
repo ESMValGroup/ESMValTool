@@ -24,7 +24,7 @@ encountered this language before. The key information about this format is:
 More information can be found in the `yaml tutorial
 <https://learnxinyminutes.com/docs/yaml/>`_ and `yaml quick reference card
 <https://yaml.org/refcard.html>`_. ESMValTool uses the `yamllint
-<http://www.yamllint.com>`_ linter tool to check recipe syntax.
+<https://www.yamllint.com>`_ linter tool to check recipe syntax.
 
 
 .. _rerunning:
