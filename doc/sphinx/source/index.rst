@@ -16,9 +16,9 @@ commonly used pre-processing functions.
 
 To get a first impression of what ESMValTool and ESMValCore can do for you,
 have a look at our blog posts
-`Analysis-ready climate data with ESMValCore <https://blog.esciencecenter.nl/easy-ipcc-powered-by-esmvalcore-19a0b6366ea7>`_
+`Analysis-ready climate data with ESMValCore <https://blog.esciencecenter.nl/easy-ipcc-powered-by-esmvalcore-19a0b6366ea7?gi=6a9ddcb47a16>`_
 and
-`ESMValTool: Recipes for solid climate science <https://blog.esciencecenter.nl/esmvaltool-recipes-for-solid-climate-science-da5b33814f69>`_.
+`ESMValTool: Recipes for solid climate science <https://blog.esciencecenter.nl/esmvaltool-recipes-for-solid-climate-science-da5b33814f69?gi=7fcbce89c879>`_.
 
 
 Basic documentation schema
@@ -42,7 +42,7 @@ Learning resources:
 
 A tutorial is available on https://tutorial.esmvaltool.org.
 
-A series of video lectures has been created by `ACCESS-NRI <https://access-nri.org.au>`_.
+A series of video lectures has been created by `ACCESS-NRI <https://www.access-nri.org.au>`_.
 While these are tailored for ACCESS users, they are still very informative.
 
 .. raw:: html
