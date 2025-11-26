@@ -34,12 +34,26 @@ diagnostics:
     description: Plot climatology maps including reference datasets for od550aer.
     variables:
       od550aer:
-        timerange: '20200601/20200630'  # can be specified, this is just an example
+        timerange: '20200601/20200630'
         mip: aero
         preprocessor: full_climatology
         additional_datasets:
           - {dataset: ESACCI-AEROSOL, project: OBS, tier: 2, frequency: day,
              type: sat, version: SLSTR-SU-v1.12-DAILY, reference_for_monitor_diags: true}
+      prw:
+        timerange: '20200601/20200630'
+        mip: Eday
+        preprocessor: full_climatology
+        additional_datasets:
+          - {dataset: ESACCI-WATERVAPOUR, project: OBS6, tier: 3, frequency: day,
+             type: sat, version: CDR2-L3-COMBI-05deg-fv3.1, reference_for_monitor_diags: true}
+      clivi:
+        timerange: '20200601/20200630'
+        mip: Amon
+        preprocessor: full_climatology
+        additional_datasets:
+          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, frequency: mon,
+             type: sat, version: v3.0-AVHRR-AMPM, reference_for_monitor_diags: true}
     scripts:
       plot:
         plot_folder: '{plot_dir}'
