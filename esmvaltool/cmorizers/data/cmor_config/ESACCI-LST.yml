@@ -1,13 +1,11 @@
-# CMORIZE ESA CCI LST
-# Follwing CRU and ESACCI-OC as examples
-# Only looking at AQUA MONTHLY data but python has placeholders for different platforms
+# CMORIZE ESA CCI LST - V3
+# Only looking at AQUA MODIS MONTHLY
 ---
-
 
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: ESACCI-LST
-  version: '1.00'
+  version: '3.00'
   tier: 2
   project_id: OBS
   source: 'ESA CCI'
@@ -20,12 +18,130 @@ attributes:
 # Variables to cmorize
 # These go into the vals dictionary in the python script
 variables:
-  ts:
+  tsLCDay:
+    mip: Amon
+    raw: land cover class
+    raw_units:
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
+    start_year: 2003
+    end_year: 2018
+
+  tsLCNight:
+    mip: Amon
+    raw: land cover class
+    raw_units:
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
+    start_year: 2003
+    end_year: 2018
+
+  tsTotalDay:
+    mip: Amon
+    raw: land surface temperature total uncertainty
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
+    start_year: 2003
+    end_year: 2018
+
+  tsTotalNight:
+    mip: Amon
+    raw: land surface temperature total uncertainty
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
+    start_year: 2003
+    end_year: 2018
+
+  tsVarDay:
+    mip: Amon
+    raw: land surface temperature variance
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
+    start_year: 2003
+    end_year: 2018
+
+  tsVarNight:
+    mip: Amon
+    raw: land surface temperature variance
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
+    start_year: 2003
+    end_year: 2018
+
+  tsDay:
     mip: Amon
     raw: land surface temperature
     raw_units: kelvin
-    file_day: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_DAY-'
-    file_night: 'ESACCI-LST-L3C-LST-MODISA-0.05deg_1MONTHLY_NIGHT-'
-    # plan to make it possible to change MODISA here but only placeholders in the python there for now
-    # Period covered: 2003-2018
-    # 2003 Only has data from July onwards for Aqua MODIS
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
+    start_year: 2003
+    end_year: 2018
+
+  tsNight:
+    mip: Amon
+    raw: land surface temperature
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
+    start_year: 2003
+    end_year: 2018
+
+  tsLocalAtmErrDay:
+    mip: Amon
+    raw: uncertainty from locally correlated errors on atmospheric scales
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
+    start_year: 2003
+    end_year: 2018
+
+  tsLocalAtmErrNight:
+    mip: Amon
+    raw: uncertainty from locally correlated errors on atmospheric scales
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
+    start_year: 2003
+    end_year: 2018
+
+  tsLocalSfcErrDay:
+    mip: Amon
+    raw: uncertainty from locally correlated errors on surface scales
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
+    start_year: 2003
+    end_year: 2018
+
+  tsLocalSfcErrNight:
+    mip: Amon
+    raw: uncertainty from locally correlated errors on surface scales
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
+    start_year: 2003
+    end_year: 2018
+
+  tsLSSysErrDay:
+    mip: Amon
+    raw: uncertainty from large-scale systematic errors
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
+    start_year: 2003
+    end_year: 2018
+
+  tsLSSysErrNight:
+    mip: Amon
+    raw: uncertainty from large-scale systematic errors
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
+    start_year: 2003
+    end_year: 2018
+
+  tsUnCorErrDay:
+    mip: Amon
+    raw: uncertainty from uncorrelated errors
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_DAY-'
+    start_year: 2003
+    end_year: 2018
+
+  tsUnCorErrNight:
+    mip: Amon
+    raw: uncertainty from uncorrelated errors
+    raw_units: kelvin
+    file: 'ESACCI-LST-L3C-LST-MODISA-0.01deg_1MONTHLY_NIGHT-'
+    start_year: 2003
+    end_year: 2018
