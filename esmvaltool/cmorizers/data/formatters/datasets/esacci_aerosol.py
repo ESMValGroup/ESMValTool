@@ -73,22 +73,22 @@ from ...utilities import save_variable
 logger = logging.getLogger(__name__)
 
 
-def _create_nan_cube(cube, year, month, day):
+def _create_masked_cube(cube, year, month, day):
     """Create cube containing only nan from existing cube."""
-    nan_cube = cube.copy()
-    nan_cube.data = da.ma.masked_greater(cube.core_data(), -1e20)
+    masked_cube = cube.copy()
+    masked_cube.data = da.ma.masked_greater(cube.core_data(), -1e20)
 
     # Read dataset time unit and calendar from file
-    dataset_time_unit = str(nan_cube.coord("time").units)
-    dataset_time_calender = nan_cube.coord("time").units.calendar
+    dataset_time_unit = str(masked_cube.coord("time").units)
+    dataset_time_calender = masked_cube.coord("time").units.calendar
     # Convert datetime
     newtime = datetime(year=year, month=month, day=day)
     newtime = cf_units.date2num(
         newtime, dataset_time_unit, dataset_time_calender
     )
-    nan_cube.coord("time").points = float(newtime)
+    masked_cube.coord("time").points = float(newtime)
 
-    return nan_cube
+    return masked_cube
 
 
 def _fix_coordinates(cube, definition):
@@ -209,10 +209,10 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
                 logger.debug(
                     "No data available for %s", loop_date.strftime("%Y-%m-%d")
                 )
-                nan_cube = _create_nan_cube(
+                masked_cube = _create_masked_cube(
                     new_list[0], loop_date.year, loop_date.month, loop_date.day
                 )
-                full_list.append(nan_cube)
+                full_list.append(masked_cube)
             loop_date += relativedelta.relativedelta(days=1)
     else:
         loop_date = datetime(year0, 1, 15)
@@ -227,10 +227,10 @@ def _extract_variable(in_files, var, cfg, out_dir, is_daily):
                 logger.debug(
                     "No data available for %s", loop_date.strftime("%Y-%m")
                 )
-                nan_cube = _create_nan_cube(
+                masked_cube = _create_masked_cube(
                     new_list[0], loop_date.year, loop_date.month, loop_date.day
                 )
-                full_list.append(nan_cube)
+                full_list.append(masked_cube)
             loop_date += relativedelta.relativedelta(months=1)
 
     iris.util.unify_time_units(full_list)
