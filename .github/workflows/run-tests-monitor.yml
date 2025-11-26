@@ -27,7 +27,7 @@ jobs:
         python-version: ["3.11", "3.12", "3.13"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v3
@@ -46,7 +46,7 @@ jobs:
       - name: Inspect environment
         run: conda list
       - name: Install pytest-monitor
-        run: pip install --no-deps pytest-monitor
+        run: pip install pytest-monitor
       - name: Install ESMValTool
         run: pip install --no-deps -e .[develop] 2>&1 | tee test_linux_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Run tests
@@ -57,7 +57,7 @@ jobs:
         run: python tests/parse_pymon.py
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Test_Linux_python_${{ matrix.python-version }}
           path: test_linux_artifacts_python_${{ matrix.python-version }}
@@ -71,7 +71,7 @@ jobs:
       fail-fast: false
     name: OSX Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v3
@@ -95,7 +95,7 @@ jobs:
       - name: Install git
         run: mamba install -c conda-forge git
       - name: Install pytest-monitor
-        run: pip install --no-deps pytest-monitor
+        run: pip install pytest-monitor
       - name: Install ESMValTool
         run: >
           pip install --no-deps -e .[develop] 2>&1
@@ -108,7 +108,7 @@ jobs:
         run: python tests/parse_pymon.py
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Test_OSX_python_${{ matrix.python-version }}
           path: test_osx_artifacts_python_${{ matrix.python-version }}
