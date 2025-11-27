@@ -120,7 +120,7 @@ def get_attributes(cfg, single_psi_cube, input_data):
             "dataset": datasets,
             "project": projects,
             "reference_dataset": ref,
-        }
+        },
     )
     attrs.update(cfg.get("output_attributes", {}))
     return attrs
@@ -129,7 +129,8 @@ def get_attributes(cfg, single_psi_cube, input_data):
 def main(cfg):
     """Run the diagnostic."""
     input_data = select_metadata(
-        cfg["input_data"].values(), short_name="tas"
+        cfg["input_data"].values(),
+        short_name="tas",
     ) + select_metadata(cfg["input_data"].values(), short_name="tasa")
     input_data = sorted_metadata(input_data, ["short_name", "exp", "dataset"])
     if not input_data:

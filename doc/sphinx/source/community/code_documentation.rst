@@ -212,7 +212,7 @@ the reported issues, run:
 
 .. code-block:: bash
 
-   ruff check esmvaltool/diag_scripts/your_diagnostic/your_script.py
+   ruff check --fix esmvaltool/diag_scripts/your_diagnostic/your_script.py
 
 Each code quality check performed by ruff is called a ``rule`` and has a unique
 code, e.g. ``RET504``. For a detailed explanation of the purpose of these rules,
@@ -312,7 +312,7 @@ There are two main ways of adding documentation:
 #. As written text in the directory
    `doc/sphinx/source <https://github.com/ESMValGroup/ESMValTool/tree/main/doc/sphinx/source>`__.
    When writing
-   `reStructuredText <https://www.sphinx-doc.org/en/main/usage/restructuredtext/basics.html>`_
+   `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_
    (``.rst``) files, please try to limit the line length to 80 characters and
    always start a sentence on a new line.
    This makes it easier to review changes to documentation on GitHub.
@@ -391,7 +391,7 @@ Successful checks have a green ✓ in front, a ❌ means the test job failed.
 
 Integration with the ESMValCore documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The `ESMValCore documentation <https://docs.esmvaltool.org/projects/esmvalcore>`_
+The `ESMValCore documentation <https://docs.esmvaltool.org/projects/ESMValCore/en/latest/index.html>`_
 is hosted as a
 `subproject <https://docs.readthedocs.io/en/stable/subprojects.html>`_
 of the ESMValTool documentation on readthedocs.
@@ -484,9 +484,9 @@ We follow the guidelines set out in `SPEC-0 <https://scientific-python.org/specs
 regarding the supported Python versions and dependencies.
 
 Before considering adding a new dependency, carefully check that the
-`license <https://the-turing-way.netlify.app/reproducible-research/licensing/licensing-software.html>`__
+`license <https://book.the-turing-way.org/reproducible-research/licensing/>`__
 of the dependency you want to add and any of its dependencies are
-`compatible <https://the-turing-way.netlify.app/reproducible-research/licensing/licensing-compatibility.html>`__
+`compatible <https://book.the-turing-way.org/reproducible-research/licensing/licensing-compatibility/>`__
 with the
 `Apache 2.0 <https://github.com/ESMValGroup/ESMValTool/blob/main/LICENSE/>`_
 license that applies to the ESMValTool.

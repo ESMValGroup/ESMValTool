@@ -52,7 +52,7 @@ class CDSDownloader(BaseDownloader):
                 logger.error(
                     "Could not connect to the CDS due to issues with your "
                     '".cdsapirc" file. More info in '
-                    "https://cds.climate.copernicus.eu/api-how-to."
+                    "https://cds.climate.copernicus.eu/api-how-to.",
                 )
             raise
         self._product_name = product_name
@@ -60,7 +60,12 @@ class CDSDownloader(BaseDownloader):
         self.extra_name = extra_name
 
     def download(
-        self, year, month, day=None, file_pattern=None, file_format="tar"
+        self,
+        year,
+        month,
+        day=None,
+        file_pattern=None,
+        file_format="tar",
     ):
         """Download a specific month from the CDS.
 
@@ -139,7 +144,8 @@ class CDSDownloader(BaseDownloader):
                 os.remove(filename)
             else:
                 logger.info(
-                    "File %s already downloaded. Skipping...", filename
+                    "File %s already downloaded. Skipping...",
+                    filename,
                 )
                 return
         try:
