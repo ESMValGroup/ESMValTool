@@ -6,11 +6,9 @@ import sys
 from pathlib import Path
 from textwrap import dedent
 
-import esmvalcore
 import pytest
 import yaml
 from esmvalcore._main import run
-from packaging import version
 
 
 def write_config_file(dirname):
