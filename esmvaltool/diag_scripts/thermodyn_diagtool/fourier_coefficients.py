@@ -63,7 +63,7 @@ def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
                 (ta1_fx[:, i, :, :] - tas),
             )
             deltat[:, i - 1, :, :] = (1 * np.array(h_1.mask)) * np.array(
-                deltat[:, i - 1, :, :]
+                deltat[:, i - 1, :, :],
             )
             d_p = -(
                 (P_0 * G_0 / (GAM * GAS_CON)) * deltat[:, i - 1, :, :] / tas
@@ -71,7 +71,8 @@ def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
             p_s = np.where(ta1_fx[:, i - 1, :, :] != 0, p_s, lev[i - 1] + d_p)
             for k in np.arange(0, nlev - i - 1, 1):
                 h_3 = np.ma.masked_where(
-                    ta1_fx[:, i + k, :, :] != 0, ta1_fx[:, i + k, :, :]
+                    ta1_fx[:, i + k, :, :] != 0,
+                    ta1_fx[:, i + k, :, :],
                 )
                 if np.any(h_3.mask > 0):
                     deltat[:, i - 1, :, :] = np.where(
@@ -85,7 +86,9 @@ def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
                         / tas
                     )
                     p_s = np.where(
-                        ta1_fx[:, i + k, :, :] != 0, p_s, lev[i + k] + d_p
+                        ta1_fx[:, i + k, :, :] != 0,
+                        p_s,
+                        lev[i + k] + d_p,
                     )
     ta2_fx = np.array(t_a)
     mask = np.zeros([nlev, ntime, nlat, nlon])
@@ -157,13 +160,17 @@ def pr_output(dict_v, nc_f, fileo, file_desc, wave2):
             # Write the wave dimension
             var_nc_fid.createDimension("wave", len(wave2))
             var_nc_fid.createVariable(
-                "wave", nc_fid.variables["plev"].dtype, ("wave",)
+                "wave",
+                nc_fid.variables["plev"].dtype,
+                ("wave",),
             )
         var_nc_fid.variables["wave"][:] = wave2
         for key in dict_v:
             value = dict_v[key]
             var1_nc_var = var_nc_fid.createVariable(
-                key, "f8", ("time", "plev", "lat", "wave")
+                key,
+                "f8",
+                ("time", "plev", "lat", "wave"),
             )
             varatts(var1_nc_var, key)
             var_nc_fid.variables[key][:, :, :, :] = value
@@ -196,7 +203,9 @@ def pr_output_diag(var1, nc_f, fileo, name1):
             extr_lon(nc_fid, var_nc_fid)
             extr_plev(nc_fid, var_nc_fid)
         var1_nc_var = var_nc_fid.createVariable(
-            name1, "f8", ("time", "plev", "lat", "lon")
+            name1,
+            "f8",
+            ("time", "plev", "lat", "lon"),
         )
         varatts(var1_nc_var, name1)
         var_nc_fid.variables[name1][:, :, :, :] = var1
@@ -215,7 +224,9 @@ def extr_lat(nc_fid, var_nc_fid, latn):
     lats = nc_fid.variables["lat"][:]
     var_nc_fid.createDimension(latn, len(lats))
     var_nc_dim = var_nc_fid.createVariable(
-        latn, nc_fid.variables["lat"].dtype, (latn,)
+        latn,
+        nc_fid.variables["lat"].dtype,
+        (latn,),
     )
     for ncattr in nc_fid.variables["lat"].ncattrs():
         var_nc_dim.setncattr(ncattr, nc_fid.variables["lat"].getncattr(ncattr))
@@ -234,7 +245,9 @@ def extr_lon(nc_fid, var_nc_fid):
     lons = nc_fid.variables["lon"][:]
     var_nc_fid.createDimension("lon", len(lons))
     var_nc_dim = var_nc_fid.createVariable(
-        "lon", nc_fid.variables["lon"].dtype, ("lon",)
+        "lon",
+        nc_fid.variables["lon"].dtype,
+        ("lon",),
     )
     for ncattr in nc_fid.variables["lon"].ncattrs():
         var_nc_dim.setncattr(ncattr, nc_fid.variables["lon"].getncattr(ncattr))
@@ -253,11 +266,14 @@ def extr_plev(nc_fid, var_nc_fid):
     plev = nc_fid.variables["plev"][:]
     var_nc_fid.createDimension("plev", len(plev))
     var_nc_dim = var_nc_fid.createVariable(
-        "plev", nc_fid.variables["plev"].dtype, ("plev",)
+        "plev",
+        nc_fid.variables["plev"].dtype,
+        ("plev",),
     )
     for ncattr in nc_fid.variables["plev"].ncattrs():
         var_nc_dim.setncattr(
-            ncattr, nc_fid.variables["plev"].getncattr(ncattr)
+            ncattr,
+            nc_fid.variables["plev"].getncattr(ncattr),
         )
     var_nc_fid.variables["plev"][:] = plev
 
@@ -274,11 +290,14 @@ def extr_time(nc_fid, var_nc_fid):
     time = nc_fid.variables["time"][:]
     var_nc_fid.createDimension("time", len(time))
     var_nc_dim = var_nc_fid.createVariable(
-        "time", nc_fid.variables["time"].dtype, ("time",)
+        "time",
+        nc_fid.variables["time"].dtype,
+        ("time",),
     )
     for ncattr in nc_fid.variables["time"].ncattrs():
         var_nc_dim.setncattr(
-            ncattr, nc_fid.variables["time"].getncattr(ncattr)
+            ncattr,
+            nc_fid.variables["time"].getncattr(ncattr),
         )
     var_nc_fid.variables["time"][:] = time
 
@@ -297,7 +316,7 @@ def varatts(w_nc_var, varname):
                 "long_name": "Air temperature",
                 "units": "K",
                 "level_desc": "pressure levels",
-            }
+            },
         )
     elif varname == "ua":
         w_nc_var.setncatts(
@@ -305,7 +324,7 @@ def varatts(w_nc_var, varname):
                 "long_name": "Eastward wind",
                 "units": "m s-1",
                 "level_desc": "pressure levels",
-            }
+            },
         )
     elif varname == "va":
         w_nc_var.setncatts(
@@ -313,7 +332,7 @@ def varatts(w_nc_var, varname):
                 "long_name": "Northward wind",
                 "units": "m s-1",
                 "level_desc": "pressure levels",
-            }
+            },
         )
     elif varname == "wap":
         w_nc_var.setncatts(
@@ -321,5 +340,5 @@ def varatts(w_nc_var, varname):
                 "long_name": "Lagrangian tendency of air pressure",
                 "units": "Pa s-1",
                 "level_desc": "pressure levels",
-            }
+            },
         )

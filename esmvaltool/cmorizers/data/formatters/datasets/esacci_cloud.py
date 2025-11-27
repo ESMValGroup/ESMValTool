@@ -55,7 +55,9 @@ def _create_nan_cube(cube, year, month, day):
         microsecond=0,
     )
     newtime_num = cf_units.date2num(
-        newtime, dataset_time_unit, dataset_time_calender
+        newtime,
+        dataset_time_unit,
+        dataset_time_calender,
     )
     nan_cube.coord("time").points = float(newtime_num)
 
@@ -73,23 +75,27 @@ def _handle_missing_day(year, month, iday, short_name, cubes, cubes_day):
 def _check_for_missing_months(cube, cubes):
     """Check for dates which are missing in the cube and fill with NaNs."""
     time_points_array = cube.coord("time").units.num2date(
-        cube.coord("time").points
+        cube.coord("time").points,
     )
     loop_date = datetime(
-        time_points_array[0].year, time_points_array[0].month, 1
+        time_points_array[0].year,
+        time_points_array[0].month,
+        1,
     )
     while loop_date <= datetime(time_points_array[-1].year, 12, 1):
         if not any([time == loop_date for time in time_points_array]):
             logger.debug(
-                "No data available for %d/%d", loop_date.month, loop_date.year
+                "No data available for %d/%d",
+                loop_date.month,
+                loop_date.year,
             )
             nan_cube = cubes[0].copy(
                 np.ma.masked_invalid(
-                    np.full(cubes[0].shape, np.nan, dtype=cubes[0].dtype)
-                )
+                    np.full(cubes[0].shape, np.nan, dtype=cubes[0].dtype),
+                ),
             )
             nan_cube.coord("time").points = float(
-                nan_cube.coord("time").units.date2num(loop_date)
+                nan_cube.coord("time").units.date2num(loop_date),
             )
             nan_cube.coord("time").bounds = None
             cubes.append(nan_cube)
@@ -100,7 +106,13 @@ def _check_for_missing_months(cube, cubes):
 
 
 def _concatenate_and_save_daily_cubes(
-    short_name, var, cubes, cubes_day, out_dir, cfg, cmor_info
+    short_name,
+    var,
+    cubes,
+    cubes_day,
+    out_dir,
+    cfg,
+    cmor_info,
 ):
     """Concatinate and save yearly cubes."""
     # Calc daily
@@ -116,10 +128,9 @@ def _concatenate_and_save_daily_cubes(
         # Fix units
         if short_name == "clt":
             cube.data = 100 * cube.core_data()
-        else:
-            if "raw_units" in var:
-                cube.units = var["raw_units"]
-                cube.convert_units(cmor_info.units)
+        elif "raw_units" in var:
+            cube.units = var["raw_units"]
+            cube.convert_units(cmor_info.units)
         # Fix metadata and  update version information
         cube = utils.fix_coords(cube)
         utils.fix_var_metadata(cube, cmor_info)
@@ -129,7 +140,11 @@ def _concatenate_and_save_daily_cubes(
         utils.set_global_atts(cube, attrs)
         # Save variable
         utils.save_variable(
-            cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+            cube,
+            short_name,
+            out_dir,
+            attrs,
+            unlimited_dimensions=["time"],
         )
 
     # Data points only when daylight
@@ -143,10 +158,9 @@ def _concatenate_and_save_daily_cubes(
     # Fix units
     if short_name == "clt":
         cube_day.data = 100 * cube_day.core_data()
-    else:
-        if "raw_units" in var:
-            cube_day.units = var["raw_units"]
-            cube_day.convert_units(cmor_info.units)
+    elif "raw_units" in var:
+        cube_day.units = var["raw_units"]
+        cube_day.convert_units(cmor_info.units)
     # Fix metadata and  update version information
     cube_day = utils.fix_coords(cube_day)
     utils.fix_var_metadata(cube_day, cmor_info)
@@ -165,7 +179,13 @@ def _concatenate_and_save_daily_cubes(
 
 
 def _concatenate_and_save_monthly_cubes(
-    short_name, var, cubes, out_dir, attach, cfg, cmor_info
+    short_name,
+    var,
+    cubes,
+    out_dir,
+    attach,
+    cfg,
+    cmor_info,
 ):
     """Concatinate monthly files and save."""
     # After gathering all cubes for all years, concatenate them
@@ -199,12 +219,22 @@ def _concatenate_and_save_monthly_cubes(
 
     # Save the processed variable
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 
 def _process_daily_file(
-    ifile, inum, short_name, var, cmor_info, cubes, cubes_day
+    ifile,
+    inum,
+    short_name,
+    var,
+    cmor_info,
+    cubes,
+    cubes_day,
 ):
     """Extract variable from daily file."""
     logger.info("CMORizing file %s", ifile)
@@ -241,7 +271,8 @@ def _process_daily_file(
         # Check for daylight
         daily_cube_day = daily_cube.copy()
         daily_cube_day.data = da.ma.masked_where(
-            daily_cube_ilum.core_data() > 1, daily_cube_day.core_data()
+            daily_cube_ilum.core_data() > 1,
+            daily_cube_day.core_data(),
         )
 
         if short_name in ["clt", "ctp"]:
@@ -250,7 +281,12 @@ def _process_daily_file(
 
 
 def _process_monthly_file(
-    ifile, short_name, var, cmor_info, cubes_am, cubes_pm
+    ifile,
+    short_name,
+    var,
+    cmor_info,
+    cubes_am,
+    cubes_pm,
 ):
     """Extract variable from monthly file."""
     logger.info("CMORizing file %s for variable %s", ifile, short_name)
@@ -307,7 +343,13 @@ def _process_monthly_file(
 
 
 def _extract_variable_daily(
-    short_name, var, cfg, in_dir, out_dir, start_date, end_date
+    short_name,
+    var,
+    cfg,
+    in_dir,
+    out_dir,
+    start_date,
+    end_date,
 ):
     """Extract daily variable."""
     cmor_info = cfg["cmor_table"].get_variable(var["mip"], short_name)
@@ -333,7 +375,7 @@ def _extract_variable_daily(
                     os.path.join(
                         in_dir,
                         f"{year}{month:02}{iday:02}{var['file']}",
-                    )
+                    ),
                 )
                 if filelist:
                     for inum, ifile in enumerate(filelist):
@@ -348,19 +390,36 @@ def _extract_variable_daily(
                         )
                 else:
                     logger.info(
-                        f"No data available for day {year}-{month:02}-{iday:02}"
+                        f"No data available for day {year}-{month:02}-{iday:02}",
                     )
                     _handle_missing_day(
-                        year, month, iday, short_name, cubes, cubes_day
+                        year,
+                        month,
+                        iday,
+                        short_name,
+                        cubes,
+                        cubes_day,
                     )
 
         _concatenate_and_save_daily_cubes(
-            short_name, var, cubes, cubes_day, out_dir, cfg, cmor_info
+            short_name,
+            var,
+            cubes,
+            cubes_day,
+            out_dir,
+            cfg,
+            cmor_info,
         )
 
 
 def _extract_variable_monthly(
-    short_name, var, cfg, in_dir, out_dir, start_date, end_date
+    short_name,
+    var,
+    cfg,
+    in_dir,
+    out_dir,
+    start_date,
+    end_date,
 ):
     """Extract monthly variable with improved handling for multiple cubes."""
     cmor_info = cfg["cmor_table"].get_variable(var["mip"], short_name)
@@ -377,27 +436,44 @@ def _extract_variable_monthly(
         for month in range(1, 13):  # Loop through all months (1-12)
             # Construct the file list for the current month
             filelist = glob.glob(
-                os.path.join(in_dir, f"{year}{month:02}{var['file']}")
+                os.path.join(in_dir, f"{year}{month:02}{var['file']}"),
             )
 
             if not filelist:
                 raise ValueError(
-                    f"No monthly file found for {year}-{month:02}"
+                    f"No monthly file found for {year}-{month:02}",
                 )
 
             for ifile in filelist:
                 _process_monthly_file(
-                    ifile, short_name, var, cmor_info, cubes_am, cubes_pm
+                    ifile,
+                    short_name,
+                    var,
+                    cmor_info,
+                    cubes_am,
+                    cubes_pm,
                 )
 
     if cubes_am:
         _concatenate_and_save_monthly_cubes(
-            short_name, var, cubes_am, out_dir, "-AM", cfg, cmor_info
+            short_name,
+            var,
+            cubes_am,
+            out_dir,
+            "-AM",
+            cfg,
+            cmor_info,
         )
 
     if cubes_pm:
         _concatenate_and_save_monthly_cubes(
-            short_name, var, cubes_pm, out_dir, "-PM", cfg, cmor_info
+            short_name,
+            var,
+            cubes_pm,
+            out_dir,
+            "-PM",
+            cfg,
+            cmor_info,
         )
 
     if cubes_am and cubes_pm:
@@ -409,7 +485,13 @@ def _extract_variable_monthly(
 
         cubes_combined = cubes_am + cubes_pm
         _concatenate_and_save_monthly_cubes(
-            short_name, var, cubes_combined, out_dir, "-AMPM", cfg, cmor_info
+            short_name,
+            var,
+            cubes_combined,
+            out_dir,
+            "-AMPM",
+            cfg,
+            cmor_info,
         )
 
     if not (cubes_am or cubes_pm):
@@ -425,19 +507,31 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         if "L3U" in var["file"]:
             if cfg["daily_data"]:
                 _extract_variable_daily(
-                    short_name, var, cfg, in_dir, out_dir, start_date, end_date
+                    short_name,
+                    var,
+                    cfg,
+                    in_dir,
+                    out_dir,
+                    start_date,
+                    end_date,
                 )
             else:
                 logger.info(
                     'If daily data needs to be formatted change "daily_data" in the '
                     'cmor_config file to "True" '
-                    "(esmvaltool/cmorizers/data/cmor_config/ESACCI-CLOUD.yml)"
+                    "(esmvaltool/cmorizers/data/cmor_config/ESACCI-CLOUD.yml)",
                 )
         elif "L3C" in var["file"]:
             _extract_variable_monthly(
-                short_name, var, cfg, in_dir, out_dir, start_date, end_date
+                short_name,
+                var,
+                cfg,
+                in_dir,
+                out_dir,
+                start_date,
+                end_date,
             )
         else:
             raise ValueError(
-                "Filename cannot be assigned to monthly or daily data."
+                "Filename cannot be assigned to monthly or daily data.",
             )

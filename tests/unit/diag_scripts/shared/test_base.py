@@ -39,7 +39,7 @@ def test_provenance_logger(tmp_path):
         prov.log("output.nc", record)
 
     provenance = yaml.safe_load(
-        (tmp_path / "diagnostic_provenance.yml").read_bytes()
+        (tmp_path / "diagnostic_provenance.yml").read_bytes(),
     )
 
     assert provenance == {"output.nc": record}
@@ -55,7 +55,7 @@ def test_provenance_logger_twice(tmp_path):
         prov.log("output2.nc", record2)
 
     provenance = yaml.safe_load(
-        (tmp_path / "diagnostic_provenance.yml").read_bytes()
+        (tmp_path / "diagnostic_provenance.yml").read_bytes(),
     )
 
     assert provenance == {"output1.nc": record1, "output2.nc": record2}
@@ -214,7 +214,7 @@ def test_extract_variables(as_iris):
                 "standard_name": "",
                 "long_name": "Total Ozone Column",
             },
-        }
+        },
     }
 
     if as_iris:
@@ -265,7 +265,7 @@ def test_variables_available():
     cfg = {
         "input_data": {
             "file1.nc": {"short_name": "ta"},
-        }
+        },
     }
     assert shared.variables_available(cfg, ["ta"]) is True
     assert shared.variables_available(cfg, ["pr"]) is False
@@ -362,7 +362,7 @@ def test_run_diagnostic_configures_dask(
         shared._base.distributed.Client.assert_not_called()
     else:
         shared._base.distributed.Client.assert_called_once_with(
-            scheduler_address
+            scheduler_address,
         )
 
 
@@ -405,9 +405,8 @@ def test_rerun_diagnostic_raises(tmp_path, monkeypatch):
 
     monkeypatch.setattr(sys, "argv", ["", settings_file])
 
-    with pytest.raises(FileExistsError):
-        with shared.run_diagnostic():
-            pass
+    with pytest.raises(FileExistsError), shared.run_diagnostic():
+        pass
 
 
 @pytest.mark.parametrize("flag", ["-i", "--ignore", "-f", "--force"])

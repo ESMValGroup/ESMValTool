@@ -62,7 +62,11 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     with warnings.catch_warnings():
         filter_warnings()
         utils.save_variable(
-            cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+            cube,
+            short_name,
+            out_dir,
+            attrs,
+            unlimited_dimensions=["time"],
         )
 
 
