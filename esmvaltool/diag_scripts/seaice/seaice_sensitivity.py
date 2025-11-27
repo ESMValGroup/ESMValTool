@@ -364,7 +364,7 @@ def notz_style_plot_from_dict(data_dictionary, titles_dictionary, cfg):
     if isinstance(obs_mean, int | float):
         caption = (
             "Sensitivity of sea ice area to annual mean global warming."
-            f"Mean (dashed), standard deviation (shaded) and plausible values from {obs_years}."
+            f"\nMean (dashed), standard deviation (shaded) and plausible values from {obs_years}."
         )
     else:
         caption = "Sensitivity of sea ice area to annual mean global warming."
