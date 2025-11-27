@@ -2,14 +2,7 @@
 ---
 engines:
   coverage:
-    enabled: false
     exclude_paths: ["tests"]
-  metrics:
-    enabled: true
-  duplication:
-    enabled: true
-  ruff:
-    enabled: true
 
 exclude_paths:
   [

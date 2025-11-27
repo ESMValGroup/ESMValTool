@@ -188,7 +188,6 @@ exclude_lines = [
 ignore-words-list = "emac,hist,oce,pres,vas,runn"
 
 [tool.ruff]
-fix = true
 line-length = 79
 show-fixes = true
 
