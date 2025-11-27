@@ -27,9 +27,12 @@ preprocessors:
       metric: weighted_rmse
     # multi_model_statistics: # fails because of different data types in CCLM4-8-17 and issue in regrid that removes coordinates prevents the merging of cubes
     #  span: overlap
-    #  statistics: [mean]
+    #  statistics:
+    #    - operator: mean
+    #    - operator: percentile
+    #      percent: 50
+    #  groupby: ['project']
     #  exclude: [reference_dataset]
-         #
 
 datasets:
 ###########################
@@ -831,6 +834,7 @@ diagnostics:
         additional_datasets:
         # ERA5 data on DKRZ was not available for this period, used an arbitrary reanalysis instead
           - {project: OBS6, tier: 2 , dataset: NCEP-NCAR-R1, type: reanaly, version: 1, mip: Amon, reference_for_metric: true}
+
 
       # TO DO: ADD MORE VARIABLES
     scripts:

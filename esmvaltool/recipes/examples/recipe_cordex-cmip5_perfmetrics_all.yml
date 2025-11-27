@@ -1,0 +1,305 @@
+documentation:
+  title: |
+    Example recipe that computes performance metrics for CORDEX-CMIP5 models.
+  description: |
+    This is an example recipe that computes performance metrics for CORDEX-CMIP5 models.
+    The outcome of this recipe is used for deliverable DX.X of the project ESO4Clima.
+  authors:
+    - loosveldt-tomas_saskia
+    - andela_bouwe
+  maintainer:
+    - loosveldt-tomas_saskia
+
+preprocessors:
+  ts_pp:
+    custom_order: true
+    monthly_statistics:
+      operator: mean
+    climate_statistics:
+      period: full
+      operator: mean
+    mask_landsea:
+      mask_out: sea
+    regrid:
+      target_grid: HIRHAM5
+      scheme: 'linear'
+    distance_metric:
+      metric: weighted_rmse
+    # multi_model_statistics: # fails because of different data types in CCLM4-8-17 and issue in regrid that removes coordinates prevents the merging of cubes
+    #  span: overlap
+    #  statistics:
+    #    - operator: mean
+    #    - operator: percentile
+    #      percent: 50
+    #  groupby: ['project']
+    #  exclude: [reference_dataset]
+  pp:
+    custom_order: true
+    monthly_statistics:
+      operator: mean
+    climate_statistics:
+      period: full
+      operator: mean
+    regrid:
+      target_grid: HIRHAM5
+      scheme: 'linear'
+    distance_metric:
+      metric: weighted_rmse
+    # multi_model_statistics: # fails because of different data types in CCLM4-8-17 and issue in regrid that removes coordinates prevents the merging of cubes
+    #  span: overlap
+    #  statistics:
+    #    - operator: mean
+    #    - operator: percentile
+    #      percent: 50
+    #  groupby: ['project']
+    #  exclude: [reference_dataset]
+
+datasets:
+###########################
+# FULL SET OF DATASETS - TO BE UNCOMENTED WHEN ALL DATASETS ARE FIXED
+###########################
+datasets:
+- project: CORDEX
+  dataset: ALADIN63
+  domain: EUR-11
+  driver: CNRM-CERFACS-CNRM-CM5
+  ensemble: r1i1p1
+  institute: CNRM
+  rcm_version: v2
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+- project: CORDEX
+  dataset: ALADIN63
+  domain: EUR-11
+  driver: MOHC-HadGEM2-ES
+  ensemble: r1i1p1
+  institute: CNRM
+  rcm_version: v1
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+- project: CORDEX
+  dataset: HIRHAM5
+  domain: EUR-11
+  driver: CNRM-CERFACS-CNRM-CM5
+  ensemble: r1i1p1
+  institute: DMI
+  rcm_version: v2
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+- project: CORDEX
+  dataset: HIRHAM5
+  domain: EUR-11
+  driver: ICHEC-EC-EARTH
+  ensemble: r12i1p1
+  institute: DMI
+  rcm_version: v1
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+- project: CORDEX
+  dataset: HIRHAM5
+  domain: EUR-11
+  driver: ICHEC-EC-EARTH
+  ensemble: r1i1p1
+  institute: DMI
+  rcm_version: v1
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+- project: CORDEX
+  dataset: HIRHAM5
+  domain: EUR-11
+  driver: ICHEC-EC-EARTH
+  ensemble: r3i1p1
+  institute: DMI
+  rcm_version: v2
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+    #  ensemble: r1i1p1
+- project: CORDEX
+  dataset: HIRHAM5
+  domain: EUR-11
+  driver: IPSL-IPSL-CM5A-MR
+  ensemble: r1i1p1
+  institute: DMI
+  rcm_version: v1
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+- project: CORDEX
+  dataset: HIRHAM5
+  domain: EUR-11
+  driver: MOHC-HadGEM2-ES
+  ensemble: r1i1p1
+  institute: DMI
+  rcm_version: v2
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+- project: CORDEX
+  dataset: HIRHAM5
+  domain: EUR-11
+  driver: MPI-M-MPI-ESM-LR
+  ensemble: r1i1p1
+  institute: DMI
+  rcm_version: v1
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+- project: CORDEX
+  dataset: HIRHAM5
+  domain: EUR-11
+  driver: NCC-NorESM1-M
+  ensemble: r1i1p1
+  institute: DMI
+  rcm_version: v3
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+- project: CORDEX
+  dataset: HadREM3-GA7-05
+  domain: EUR-11
+  driver: CNRM-CERFACS-CNRM-CM5
+  ensemble: r1i1p1
+  institute: MOHC
+  rcm_version: v2
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+- project: CORDEX
+  dataset: HadREM3-GA7-05
+  domain: EUR-11
+  driver: ICHEC-EC-EARTH
+  ensemble: r12i1p1
+  institute: MOHC
+  rcm_version: v1
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+- project: CORDEX
+  dataset: HadREM3-GA7-05
+  domain: EUR-11
+  driver: MOHC-HadGEM2-ES
+  ensemble: r1i1p1
+  institute: MOHC
+  rcm_version: v1
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+- project: CORDEX
+  dataset: HadREM3-GA7-05
+  domain: EUR-11
+  driver: MPI-M-MPI-ESM-LR
+  ensemble: r1i1p1
+  institute: MOHC
+  rcm_version: v1
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+- project: CORDEX
+  dataset: HadREM3-GA7-05
+  domain: EUR-11
+  driver: NCC-NorESM1-M
+  ensemble: r1i1p1
+  institute: MOHC
+  rcm_version: v1
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+- project: CORDEX
+  dataset: REMO2015
+  domain: EUR-11
+  driver: CNRM-CERFACS-CNRM-CM5
+  ensemble: r1i1p1
+  institute: GERICS
+  rcm_version: v2
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+      ensemble: r0i0p0
+- project: CORDEX
+  dataset: REMO2015
+  domain: EUR-11
+  driver: IPSL-IPSL-CM5A-MR
+  ensemble: r1i1p1
+  institute: GERICS
+  rcm_version: v1
+  supplementary_variables:
+    - short_name: sftlf
+      mip: fx
+      ensemble: r0i0p0
+
+
+
+diagnostics:
+  bias:
+    variables:
+      ts: &ts
+        variable: ts
+        mip: day
+        exp: historical
+        timerange: 2003/2005
+        preprocessor: ts_pp
+        split: Ref1
+        reference_dataset: ESACCI-LST
+        additional_datasets:
+          - {project: OBS, tier: 2 , dataset: ESACCI-LST, type: sat, version: '1.00', mip: Amon, reference_for_metric: true}
+      ts_2:
+        <<: *ts
+        short_name: ts
+        split: Ref2
+        reference_dataset: NCEP-NCAR-R1
+        additional_datasets:
+        # ERA5 data on DKRZ was not available for this period, used an arbitrary reanalysis instead
+          - {project: OBS6, tier: 2 , dataset: NCEP-NCAR-R1, type: reanaly, version: 1, mip: Amon, reference_for_metric: true}
+      clt:
+        variable: clt
+        mip: day
+        exp: historical
+        timerange: 2003/2005
+        preprocessor: pp
+        split: Ref1
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {project: OBS6, tier: 2 , dataset: ESACCI-CLOUD, type: sat, version: v3.0-AVHRR-AMPM, mip: day, reference_for_metric: true}
+      sic:
+        variable: sic
+        mip: day
+        exp: historical
+        timerange: 2003/2005
+        preprocessor: pp
+        split: Ref1
+        reference_dataset: ESACCI-SEAICE
+        additional_datasets:
+          - {project: OBS6, tier: 2 , dataset: ESACCI-SEAICE, type: sat, version: L4-SICONC-RE-SSMI-12.5kmEASE2-fv3.0-NH, mip: SIday, reference_for_metric: true}
+      rsus:
+        variable: rsus
+        mip: day
+        exp: historical
+        timerange: 2003/2005
+        preprocessor: pp
+        split: Ref1
+        reference_dataset: ESACCI-CLOUD
+        additional_datasets:
+          - {project: OBS6, tier: 2 , dataset: ESACCI-CLOUD, type: sat, version: v3.0-AVHRR-AMPM, mip: Amon, reference_for_metric: true}
+
+
+    scripts:
+      portrait:
+        script: portrait_plot.py
+        x_by: alias
+        y_by: variable  # extra_facet
+        group_by: project
+        normalize: "centered_median"
+        default_split: Ref1
+        nan_color: null
+        plot_kwargs:
+          vmin: -0.5
+          vmax: +0.5
+        cbar_kwargs:
+          label: Relative RMSE
+          extend: both
