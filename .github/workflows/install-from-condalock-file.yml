@@ -11,6 +11,7 @@ on:
   push:
     branches:
       - main
+      - pip-no-deps
   #    - condalock-update
   # run the test only if the PR is to main
   # turn it on if required
