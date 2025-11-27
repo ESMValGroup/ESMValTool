@@ -212,7 +212,7 @@ the reported issues, run:
 
 .. code-block:: bash
 
-   ruff check esmvaltool/diag_scripts/your_diagnostic/your_script.py
+   ruff check --fix esmvaltool/diag_scripts/your_diagnostic/your_script.py
 
 Each code quality check performed by ruff is called a ``rule`` and has a unique
 code, e.g. ``RET504``. For a detailed explanation of the purpose of these rules,
