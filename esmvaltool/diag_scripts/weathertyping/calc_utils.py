@@ -571,7 +571,7 @@ def process_prcp_mean(
             rmse_matrix[i][j] = rmse(data[i], data[j])
             rmse_matrix[j][i] = rmse_matrix[i][j]
             if pattern_correlation_matrix[i][j] >= cfg.get(
-                "correlation_threshold"
+                "correlation_threshold",
             ) and rmse_matrix[i][j] <= cfg.get("rmse_threshold"):
                 selected_pairs.append(
                     (
@@ -583,11 +583,18 @@ def process_prcp_mean(
 
     # write matrices to csv
     write_corr_rmse_to_csv(
-        cfg, pattern_correlation_matrix, rmse_matrix, dataset
+        cfg,
+        pattern_correlation_matrix,
+        rmse_matrix,
+        dataset,
     )
     # plot heatmaps for matrices
     plot_corr_rmse_heatmaps(
-        cfg, pattern_correlation_matrix, rmse_matrix, dataset, timerange
+        cfg,
+        pattern_correlation_matrix,
+        rmse_matrix,
+        dataset,
+        timerange,
     )
 
     return selected_pairs
@@ -695,7 +702,7 @@ def get_wt_array(wt_string: str, wt_cubes: iris.cube.CubeList) -> np.array:
         wt_array = lwt_cube.data[:]
     else:
         raise NameError(
-            "wt_array does not exist for calc_wt_means, calc_wt_anomalies or calc_wt_std."
+            "wt_array does not exist for calc_wt_means, calc_wt_anomalies or calc_wt_std.",
         )
 
     return wt_array, tcoord

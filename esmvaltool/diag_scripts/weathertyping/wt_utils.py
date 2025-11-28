@@ -51,16 +51,16 @@ def load_wt_preprocessors(dataset: str, preproc_variables_dict: dict):
         tuple: Preprocessor cubes for weathertyping
     """
     wt_preproc = iris.load_cube(
-        preproc_variables_dict.get(dataset)[0].get("filename")
+        preproc_variables_dict.get(dataset)[0].get("filename"),
     )
     # try and except block to catch missing precipitation preprocessor
     # if it is not supplied, predefined_slwt has to be given by user
     try:
         wt_preproc_prcp = iris.load_cube(
-            preproc_variables_dict.get(dataset)[1].get("filename")
+            preproc_variables_dict.get(dataset)[1].get("filename"),
         )
         wt_preproc_prcp_eobs = iris.load_cube(
-            preproc_variables_dict.get("E-OBS")[0].get("filename")
+            preproc_variables_dict.get("E-OBS")[0].get("filename"),
         )
     except (IndexError, KeyError, TypeError):
         print("ERA5 precipitation preprocessor not found for automatic slwt.")
@@ -86,7 +86,7 @@ def get_ancestors_era5_eobs(dataset: str, preproc_variables_dict: dict):
     ]
     try:
         era5_ancestors.append(
-            preproc_variables_dict.get(dataset)[1].get("filename")
+            preproc_variables_dict.get(dataset)[1].get("filename"),
         )
         eobs_ancestors = [
             preproc_variables_dict.get(dataset)[0].get("filename"),
@@ -159,9 +159,6 @@ def get_preproc_lists_ensemble(preproc_vars: list):
 
     preproc = iris.load_cube(preproc_vars.get("filename"))
 
-    # preproc_list = [mean_preproc]
-    # preproc_path_list = [preproc_path_psl]
-
     return preproc, preproc_path
 
 
@@ -176,12 +173,12 @@ def get_looping_dict(preproc_vars: list):
         dict: Dictionary of preprocessor cubes and paths.
     """
     preproc, preproc_path = get_preproc_lists(preproc_vars)
-    dict_ = {
+
+    return {
         "psl": [preproc[0], preproc_path[0]],
         "pr": [preproc[1], preproc_path[1]],
         "tas": [preproc[2], preproc_path[2]],
     }
-    return dict_
 
 
 def load_wt_files(path: str, only_lwt=False):
@@ -293,7 +290,7 @@ def get_mapping_dict(selected_pairs: list) -> dict:
     mapping_array = []
 
     for elem in selected_pairs:
-        mapping_array.append(elem[0])
+        (mapping_array.append(elem[0]),)
 
     s = [set(i) for i in mapping_array if i]
 
@@ -322,7 +319,9 @@ def write_mapping_dict(work_dir: str, dataset: str, mapping_dict: dict):
     mapping_dict_reformat = convert_dict(mapping_dict)
 
     with open(
-        f"{work_dir}/wt_mapping_dict_{dataset}.json", "w", encoding="utf-8"
+        f"{work_dir}/wt_mapping_dict_{dataset}.json",
+        "w",
+        encoding="utf-8",
     ) as file:
         json.dump(mapping_dict_reformat, file)
 
@@ -388,19 +387,24 @@ def write_corr_rmse_to_csv(
     df_corr.index = range(1, len(df_corr) + 1)
     df_corr.columns = range(1, len(df_corr.columns) + 1)
     df_corr.to_csv(
-        f"{work_dir}/correlation_matrix_{dataset}.csv", index_label="Index"
+        f"{work_dir}/correlation_matrix_{dataset}.csv",
+        index_label="Index",
     )
 
     df_rmse = pd.DataFrame(rmse_matrix)
     df_rmse.index = range(1, len(df_rmse) + 1)
     df_rmse.columns = range(1, len(df_rmse.columns) + 1)
     df_rmse.to_csv(
-        f"{work_dir}/rmse_matrix_{dataset}.csv", index_label="Index"
+        f"{work_dir}/rmse_matrix_{dataset}.csv",
+        index_label="Index",
     )
 
 
 def run_predefined_slwt(
-    work_dir: str, dataset_name: str, lwt: np.array, predefined_slwt: dict
+    work_dir: str,
+    dataset_name: str,
+    lwt: np.array,
+    predefined_slwt: dict,
 ):
     """Run predefined slwt mapping.
 
@@ -426,7 +430,10 @@ def run_predefined_slwt(
 
 
 def combine_wt_to_file(
-    cfg: dict, wt_list: list, cube: iris.cube.Cube, file_name: str
+    cfg: dict,
+    wt_list: list,
+    cube: iris.cube.Cube,
+    file_name: str,
 ):
     """Combine lwt and slwt arrays to one file.
 
@@ -471,7 +478,10 @@ def combine_wt_to_file(
 
 
 def write_lwt_to_file(
-    cfg: dict, lwt: np.array, cube: iris.cube.Cube, file_name: str
+    cfg: dict,
+    lwt: np.array,
+    cube: iris.cube.Cube,
+    file_name: str,
 ):
     """Write only lwt to file.
 
@@ -528,8 +538,6 @@ def check_mapping_dict_format(mapping_dict: dict) -> dict:
         dict: mapping dict in {lwt: slwt, ...} format
     """
     if isinstance(mapping_dict.get(list(mapping_dict.keys())[0]), list):
-        dict_ = reverse_convert_dict(mapping_dict)
+        return reverse_convert_dict(mapping_dict)
     else:
-        dict_ = mapping_dict
-
-    return dict_
+        return mapping_dict

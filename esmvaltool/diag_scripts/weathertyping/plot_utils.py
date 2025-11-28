@@ -2,8 +2,8 @@
 
 # operating system manipulations (e.g. path constructions)
 import logging
-import os
 import warnings
+from pathlib import Path
 
 # plotting imports
 import cartopy.crs as ccrs
@@ -27,7 +27,7 @@ from wt_utils import get_driver
 
 iris.FUTURE.datum_support = True
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger(Path(__file__).name)
 
 # Ignoring a warning that is produced when selecting timesteps of a weathertype
 warnings.filterwarnings("ignore", ".*Collapsing a non-contiguous coordinate*")
@@ -45,12 +45,11 @@ def generate_grayscale_hex_values(x):
         list: List of grayscale hex values
     """
     grayscale_values = np.linspace(0, 1, x)
-    grayscale_hex = [
+
+    return [
         f"#{int(value * 255):02x}{int(value * 255):02x}{int(value * 255):02x}"
         for value in grayscale_values
     ]
-
-    return grayscale_hex
 
 
 def plot_seasonal_occurrence(
@@ -70,8 +69,8 @@ def plot_seasonal_occurrence(
 
     output_path = f"{cfg['plot_dir']}/seasonal_occurrence"
 
-    if not os.path.exists(f"{output_path}"):
-        os.makedirs(f"{output_path}")
+    if not Path.exists(f"{output_path}"):
+        Path.mkdir(f"{output_path}", parents=True, exist_ok=True)
 
     month_list = [
         "Jan",
@@ -95,7 +94,7 @@ def plot_seasonal_occurrence(
         month_dict = {}
         for month in range(1, 13):
             array = cube.extract(
-                iris.Constraint(time=iris.time.PartialDateTime(month=month))
+                iris.Constraint(time=iris.time.PartialDateTime(month=month)),
             ).data
             unique, counts = np.unique(array, return_counts=True)
             month_dict[month] = dict(
@@ -110,7 +109,7 @@ def plot_seasonal_occurrence(
         )
         wt_stack = np.zeros((wt_numbers, 12))
         for month, month_value in relative_occurrences.get(wt_string).items():
-            for wt in month_value.keys():
+            for wt in month_value:
                 wt_stack[np.int8(wt - 1), month - 1] = month_value.get(wt)
 
         y = np.vstack(list(wt_stack))
@@ -120,11 +119,13 @@ def plot_seasonal_occurrence(
 
         ax_.set_title(
             f"Seasonal occurence of {wt_string}, \
-            {data_info.get('dataset')}, {data_info.get('timerange')}"
+            {data_info.get('dataset')}, {data_info.get('timerange')}",
         )
 
         ax_.stackplot(
-            month_list, y, colors=generate_grayscale_hex_values(wt_numbers)
+            month_list,
+            y,
+            colors=generate_grayscale_hex_values(wt_numbers),
         )
 
         ax_.legend(
@@ -133,7 +134,7 @@ def plot_seasonal_occurrence(
             fancybox=True,
             shadow=True,
             ncol=9,
-            labels=tuple(f"WT {i + 1}" for i in range(0, wt_numbers)),
+            labels=tuple(f"WT {i + 1}" for i in range(wt_numbers)),
         )
 
         ax_.set(
@@ -157,7 +158,11 @@ def plot_seasonal_occurrence(
 
 
 def plot_maps(
-    wt: np.array, cfg: dict, cube: iris.cube.Cube, data_info: dict, mode: str
+    wt: np.array,
+    cfg: dict,
+    cube: iris.cube.Cube,
+    data_info: dict,
+    mode: str,
 ):
     """Plotting maps of means, std and anomalies.
 
@@ -186,7 +191,7 @@ def plot_maps(
         psl_cmap = get_colormap("psl")
         plt.title(
             f"{data_info.get('dataset')} {data_info.get('ensemble', '')}, {data_info.get('var')} {mode}\n"
-            + f"{data_info.get('timerange')}, wt: {wt}"
+            + f"{data_info.get('timerange')}, wt: {wt}",
         )
         unit = "[hPa]"
         im = iplt.contourf(cube / 100, cmap=psl_cmap)
@@ -199,13 +204,13 @@ def plot_maps(
             unit = "[m]"
             plt.title(
                 f"{data_info.get('dataset')} {data_info.get('ensemble', '')}, total {var_name} {mode}\n"
-                + f"{data_info.get('timerange')}, wt: {wt}"
+                + f"{data_info.get('timerange')}, wt: {wt}",
             )
         else:
             unit = "[kg m-2 s-1]"
             plt.title(
                 f"{data_info.get('dataset')} {data_info.get('ensemble', '')}, {var_name} flux {mode}\n"
-                + f"{data_info.get('timerange')}, wt: {wt}"
+                + f"{data_info.get('timerange')}, wt: {wt}",
             )
         im = iplt.contourf(cube, cmap=prcp_cmap)
         cb = plt.colorbar(im)
@@ -216,7 +221,7 @@ def plot_maps(
         unit = "[K]"
         plt.title(
             f"{data_info.get('dataset')} {data_info.get('ensemble', '')}, 1000 hPa {var_name} {mode}\n"
-            + f"{data_info.get('timerange')}, wt: {wt}"
+            + f"{data_info.get('timerange')}, wt: {wt}",
         )
         im = iplt.contourf(cube, cmap=temp_cmap)
         cb = plt.colorbar(im)
@@ -248,16 +253,18 @@ def plot_maps(
     ax.coastlines()
     ax.add_feature(cfeature.BORDERS, linestyle=":")
 
-    if not os.path.exists(f"{cfg.get('plot_dir')}/{mode}"):
-        os.makedirs(f"{cfg.get('plot_dir')}/{mode}")
+    if not Path(f"{cfg.get('plot_dir')}/{mode}").exists():
+        Path.mkdir(
+            f"{cfg.get('plot_dir')}/{mode}", parents=True, exist_ok=True
+        )
 
     plt.savefig(
         f"{cfg.get('plot_dir')}/{mode}/{data_info.get('wt_string')}_{wt}{get_driver(data_info)}_{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
-        f"_{var_name}_{mode}_{data_info.get('timerange')}.png"
+        f"_{var_name}_{mode}_{data_info.get('timerange')}.png",
     )
     plt.savefig(
         f"{cfg.get('plot_dir')}/{mode}/{data_info.get('wt_string')}_{wt}{get_driver(data_info)}_{data_info.get('dataset')}_{data_info.get('ensemble', '')}_"
-        f"{var_name}_{mode}_{data_info.get('timerange')}.pdf"
+        f"{var_name}_{mode}_{data_info.get('timerange')}.pdf",
     )
     plt.close()
 
@@ -281,8 +288,8 @@ def plot_corr_rmse_heatmaps(
     """
     output_path = f"{cfg.get('plot_dir')}/heatmaps"
 
-    if not os.path.exists(f"{output_path}"):
-        os.makedirs(f"{output_path}")
+    if not Path(f"{output_path}").exists():
+        Path.mkdir(f"{output_path}", parents=True, exist_ok=True)
 
     labels = np.arange(1, 28)
 
@@ -313,10 +320,10 @@ def plot_corr_rmse_heatmaps(
         ax.set_ylabel("lwt", fontsize=8)
         plt.tight_layout()
         plt.savefig(
-            f"{output_path}/correlation_matrix_{dataset}_{timerange}.png"
+            f"{output_path}/correlation_matrix_{dataset}_{timerange}.png",
         )
         plt.savefig(
-            f"{output_path}/correlation_matrix_{dataset}_{timerange}.pdf"
+            f"{output_path}/correlation_matrix_{dataset}_{timerange}.pdf",
         )
         plt.close()
 

@@ -35,7 +35,9 @@ from esmvaltool.diag_scripts.weathertyping.wt_utils import (
 
 
 def process_models_automatic_slwt(
-    cfg: dict, dataset_vars: list, data_info: dict
+    cfg: dict,
+    dataset_vars: list,
+    data_info: dict,
 ):
     """Process model data for calculating Lamb and simplified weathertypes.
 
@@ -56,7 +58,8 @@ def process_models_automatic_slwt(
             wt_preproc = iris.load_cube(ensemble_var.get("filename"))
 
             output_file_path, preproc_path = get_model_output_filepath(
-                data_info["dataset"], ensemble_var
+                data_info["dataset"],
+                ensemble_var,
             )
 
             data_info["output_file_path"] = output_file_path
@@ -64,7 +67,10 @@ def process_models_automatic_slwt(
 
             # calculate weathertypes
             calc_lwt_slwt_model(
-                cfg, wt_preproc, data_info, cfg.get("predefined_slwt")
+                cfg,
+                wt_preproc,
+                data_info,
+                cfg.get("predefined_slwt"),
             )
 
             # plot means
@@ -75,12 +81,12 @@ def process_models_automatic_slwt(
                     f"/{data_info['dataset']}"
                     f"{data_info['driver']}_"
                     f"{data_info['ensemble']}_"
-                    f"{data_info['timerange']}.nc"
+                    f"{data_info['timerange']}.nc",
                 )
 
                 var_dict = {
                     f"{ensemble_var.get('short_name')}": get_preproc_lists_ensemble(
-                        ensemble_var
+                        ensemble_var,
                     )
                 }
                 for var_name, var_data in var_dict.items():
@@ -107,14 +113,16 @@ def process_era5_automatic_slwt(
         dataset_vars (list): List of variable dictionaries for a specific dataset
     """
     wt_preproc, wt_preproc_prcp, wt_preproc_prcp_eobs = load_wt_preprocessors(
-        data_info["dataset"], preproc_variables_dict
+        data_info["dataset"],
+        preproc_variables_dict,
     )
 
     # calculate lwt
     lwt = wt_algorithm(wt_preproc, data_info["dataset"])
 
     era5_ancestors, eobs_ancestors = get_ancestors_era5_eobs(
-        data_info["dataset"], preproc_variables_dict
+        data_info["dataset"],
+        preproc_variables_dict,
     )
 
     # calculate simplified lwt based on precipitation
@@ -150,12 +158,12 @@ def process_era5_automatic_slwt(
 
     # load weathertype files as cubes
     wt_cubes = load_wt_files(
-        f"{cfg.get('work_dir')}/{data_info['dataset']}.nc"
+        f"{cfg.get('work_dir')}/{data_info['dataset']}.nc",
     )
 
     if cfg.get("plotting", False):
         var_dict = get_looping_dict(
-            dataset_vars
+            dataset_vars,
         )  # dataset_vars is list of variables for dataset dataset_name
         # plot means
         for var_name, var_data in var_dict.items():
@@ -172,11 +180,13 @@ def run_automatic_slwt(cfg: dict):
     of the weathertypes.
 
     Args:
-    -------
+    ----
         cfg (dict): Nested dictionary of metadata
     """
+
     preproc_variables_dict = group_metadata(
-        cfg.get("input_data").values(), "dataset"
+        cfg.get("input_data").values(),
+        "dataset",
     )
     for dataset_name, dataset_vars in preproc_variables_dict.items():
         data_info = {
@@ -185,7 +195,10 @@ def run_automatic_slwt(cfg: dict):
         }
         if dataset_name == "ERA5":
             process_era5_automatic_slwt(
-                data_info, preproc_variables_dict, cfg, dataset_vars
+                data_info,
+                preproc_variables_dict,
+                cfg,
+                dataset_vars,
             )
         else:
             if data_info["dataset"] == "E-OBS":
@@ -220,8 +233,8 @@ def process_era5_lwt(preproc_variables_dict, cfg, dataset_vars, data_info):
         "Lamb Weathertypes",
         ancestors,
         ["Lamb Weathertypes"],
-        False,
-        False,
+        plot_types=False,
+        statistics=False,
     )
 
     log_provenance(f"{cfg.get('work_dir')}/lwt_era5", cfg, provenance_record)
@@ -319,7 +332,8 @@ def run_lwt(cfg: dict):
         cfg (dict): Nested dictionary of metadata
     """
     preproc_variables_dict = group_metadata(
-        cfg.get("input_data").values(), "dataset"
+        cfg.get("input_data").values(),
+        "dataset",
     )
     for dataset_name, dataset_vars in preproc_variables_dict.items():
         data_info = {
@@ -329,7 +343,10 @@ def run_lwt(cfg: dict):
 
         if dataset_name == "ERA5":
             process_era5_lwt(
-                preproc_variables_dict, cfg, dataset_vars, data_info
+                preproc_variables_dict,
+                cfg,
+                dataset_vars,
+                data_info,
             )
         else:
             if data_info["dataset"] == "E-OBS":
