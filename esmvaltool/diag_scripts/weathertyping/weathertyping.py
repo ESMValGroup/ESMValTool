@@ -182,9 +182,7 @@ def run_automatic_slwt(cfg: dict):
     Args:
     ----
         cfg (dict): Nested dictionary of metadata
-
     """
-
     preproc_variables_dict = group_metadata(
         cfg.get("input_data").values(),
         "dataset",
@@ -218,14 +216,16 @@ def process_era5_lwt(preproc_variables_dict, cfg, dataset_vars, data_info):
         data_info (dict): Dictionary holding dataset information.
     """
     wt_preproc, _, _ = load_wt_preprocessors(
-        data_info["dataset"], preproc_variables_dict
+        data_info["dataset"],
+        preproc_variables_dict,
     )
 
     # calculate lwt
     lwt = wt_algorithm(wt_preproc, data_info["dataset"])
 
     era5_ancestors, eobs_ancestors = get_ancestors_era5_eobs(
-        data_info["dataset"], preproc_variables_dict
+        data_info["dataset"],
+        preproc_variables_dict,
     )
 
     ancestors = [era5_ancestors, eobs_ancestors]
@@ -251,7 +251,7 @@ def process_era5_lwt(preproc_variables_dict, cfg, dataset_vars, data_info):
 
     if cfg.get("plotting", False):
         var_dict = get_looping_dict(
-            dataset_vars
+            dataset_vars,
         )  # dataset_vars is list of variables for dataset dataset_name
         # plot means
         for var_name, var_data in var_dict.items():

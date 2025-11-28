@@ -70,7 +70,7 @@ def plot_seasonal_occurrence(
     output_path = f"{cfg['plot_dir']}/seasonal_occurrence"
 
     if not Path.exists(f"{output_path}"):
-        Path.mkdir(f"{output_path}", parents=True, exist_ok=True)
+        Path(f"{output_path}").mkdir(parents=True, exist_ok=True)
 
     month_list = [
         "Jan",
@@ -254,8 +254,7 @@ def plot_maps(
     ax.add_feature(cfeature.BORDERS, linestyle=":")
 
     if not Path(f"{cfg.get('plot_dir')}/{mode}").exists():
-        Path.mkdir(
-            f"{cfg.get('plot_dir')}/{mode}",
+        Path(f"{cfg.get('plot_dir')}/{mode}").mkdir(
             parents=True,
             exist_ok=True,
         )
@@ -291,7 +290,7 @@ def plot_corr_rmse_heatmaps(
     output_path = f"{cfg.get('plot_dir')}/heatmaps"
 
     if not Path(f"{output_path}").exists():
-        Path.mkdir(f"{output_path}", parents=True, exist_ok=True)
+        Path(f"{output_path}").mkdir(parents=True, exist_ok=True)
 
     labels = np.arange(1, 28)
 

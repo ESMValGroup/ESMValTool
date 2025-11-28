@@ -304,6 +304,7 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
     Int. J. Climatol., 13: 655-663. https://doi.org/10.1002/joc.3370130606
 
     Args:
+    ----
         cube (iris.cube.Cube): Cube of psl data
         dataset (str): Name of dataset
 
@@ -311,7 +312,6 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
     -------
         np.array: Lamb weathertypes
     """
-
     # lats and lons corresponding to datapoints
     # 55, 5 -> 1
     # 55, 15 -> 2
@@ -332,7 +332,6 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
 
     # lons: -5, 0, 5, 10, 15, 20, 25
     # lats: 35, 40, 45, 50, 55
-
     logger.info("Calculating Lamb Weathertypes for %s", dataset)
 
     const1, const2, const3, const4 = calc_const()
@@ -460,8 +459,9 @@ def calc_lwt_slwt_model(
     if not Path(
         f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}",
     ).exists():
-        Path.mkdir(
-            f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}",
+        Path(
+            f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}"
+        ).mkdir(
             parents=True,
             exist_ok=True,
         )
@@ -592,7 +592,7 @@ def process_prcp_mean(
                         (i + 1, j + 1),
                         pattern_correlation_matrix[i][j],
                         rmse_matrix[i][j],
-                    )
+                    ),
                 )
 
     # write matrices to csv
@@ -941,7 +941,7 @@ def plot_means(
     data_info: dict,
     only_lwt=False,
 ):
-    """Plotting means, anomalies and standard deviations.
+    """Plot means, anomalies and standard deviations.
 
     Args:
     ----
