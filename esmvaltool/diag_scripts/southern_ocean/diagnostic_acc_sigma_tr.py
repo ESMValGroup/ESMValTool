@@ -15,16 +15,17 @@ Please consult the documentation for help with esmvaltool's functionalities
 and best coding practices.
 """
 # place your module imports here:
-import gsw
+# import gsw
 import xarray as xr
 import numpy as np
 
-import cmocean
+# import cmocean
 
 import logging
 
 # operating system manipulations (e.g. path constructions)
 import os
+import sys
 
 # to manipulate iris cubes
 import iris
@@ -52,12 +53,16 @@ def _extract_transect():
 
 def main(cfg):
 
-    # assemble the data dictionary keyed by dataset name
-    input_data = cfg["input_data"].values()
-    my_files_dict = group_metadata(input_data, "dataset")
+    # # assemble the data dictionary keyed by dataset name
+    # input_data = cfg["input_data"].values()
+    # my_files_dict = group_metadata(input_data, "dataset")
 
-    # load xarray dataset
-    ds = xr.open_dataset(value[0]["filename"])
+    # logger.info('my_files_dict: %s', my_files_dict)
+
+    logger.info('we have lift off!')
+
+    # # load xarray dataset
+    # ds = xr.open_dataset(value[0]["filename"])
 
 
     pass
