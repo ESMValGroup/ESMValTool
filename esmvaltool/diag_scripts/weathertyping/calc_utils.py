@@ -3,8 +3,8 @@
 # operating system manipulations (e.g. path constructions)
 import json
 import logging
-import os
 import warnings
+from pathlib import Path
 
 # to manipulate iris cubes
 import iris
@@ -30,7 +30,7 @@ from wt_utils import (
 
 iris.FUTURE.datum_support = True
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger(Path(__file__).name)
 
 # Ignoring a warning that is produced when selecting timesteps of a weathertype
 warnings.filterwarnings("ignore", ".*Collapsing a non-contiguous coordinate*")
@@ -47,6 +47,7 @@ def calc_slwt_obs(
     """Calculate simplified weathertypes for observational data.
 
     Args:
+    ----
         cfg (dict): Configuration dictionary from recipe
         lwt (np.array): Array of Lamb WT
         cube (iris.cube.Cube): Cube of psl data
@@ -57,6 +58,7 @@ def calc_slwt_obs(
     Returns
     -------
         np.array: Simplified Lamb Weathertypes
+
     """
     logger.info("Calculating simplified Lamb Weathertypes for %s", dataset)
 
@@ -79,7 +81,7 @@ def calc_slwt_obs(
             extracted_cube = cube[target_indices]
         else:
             extracted_cube = cube.extract(
-                iris.Constraint(time=lambda t, d=dates: t.point in d[0])
+                iris.Constraint(time=lambda t, d=dates: t.point in d[0]),
             )
         wt_cube_mean = extracted_cube.collapsed("time", iris.analysis.MEAN)
         wt_data_prcp.append(wt_cube_mean.data.compressed())
@@ -185,7 +187,8 @@ def calc_southerly_flow(cube: iris.cube.Cube, const1: float) -> np.array:
 
 
 def calc_resultant_flow(
-    westerly_flow: np.array, southerly_flow: np.array
+    westerly_flow: np.array,
+    southerly_flow: np.array,
 ) -> np.array:
     """Calculate the resultant flow.
 
@@ -206,7 +209,9 @@ def calc_resultant_flow(
 
 
 def calc_westerly_shear_velocity(
-    cube: iris.cube.Cube, const2: float, const3: float
+    cube: iris.cube.Cube,
+    const2: float,
+    const3: float,
 ) -> np.array:
     """Calculate westerly shear velocity.
 
@@ -340,13 +345,16 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
     total_flow = calc_resultant_flow(westerly_flow, southerly_flow)
     # westerly shear vorticity
     westerly_shear_velocity = calc_westerly_shear_velocity(
-        cube, const2, const3
+        cube,
+        const2,
+        const3,
     )
     # southerly shear vorticity
     southerly_shear_velocity = calc_southerly_shear_velocity(cube, const4)
     # total shear vorticity
     total_shear_velocity = calc_total_shear_velocity(
-        westerly_shear_velocity, southerly_shear_velocity
+        westerly_shear_velocity,
+        southerly_shear_velocity,
     )
 
     weathertypes = np.zeros(len(total_shear_velocity))
@@ -379,14 +387,14 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
                 weathertypes[i] = 7
             elif 292.5 <= direction < 337.5:
                 weathertypes[i] = 8
-        # Lamb’s pure cyclonic and anticyclonic type
+        # Lamb pure cyclonic and anticyclonic type
         elif (2 * total_flow[i]) < abs(z_i):
             if z_i > 0:
                 weathertypes[i] = 9
 
             elif z_i < 0:
                 weathertypes[i] = 10
-        # Lambs’s synoptic/direction hybrid types
+        # Lamb synoptic/direction hybrid types
         elif total_flow[i] < abs(z_i) < (2 * total_flow[i]):
             if z_i > 0:
                 if direction >= 337.5 or direction < 22.5:
@@ -423,7 +431,7 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
                     weathertypes[i] = 25
                 elif 292.5 <= direction < 337.5:
                     weathertypes[i] = 26
-        # light indeterminate flow, corresponding to Lamb’s unclassified type U
+        # light indeterminate flow, corresponding to Lamb unclassified type U
         elif abs(z_i) < 6 and total_flow[i] < 6:
             weathertypes[i] = 27
 
@@ -449,11 +457,13 @@ def calc_lwt_slwt_model(
     """
     driver = get_driver(data_info)
 
-    if not os.path.exists(
-        f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}"
-    ):
-        os.makedirs(
-            f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}"
+    if not Path(
+        f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}",
+    ).exists():
+        Path.mkdir(
+            f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}",
+            parents=True,
+            exist_ok=True,
         )
 
     lwt = wt_algorithm(cube, data_info.get("dataset"))
@@ -525,7 +535,11 @@ def calc_lwt_slwt_model(
         f"{cfg.get('work_dir')}/wt_mapping_dict_E-OBS.json",
     ]
     provenance_record = get_provenance_record(
-        "Lamb Weathertypes", ancestors, ["Lamb Weathertypes"], False, False
+        "Lamb Weathertypes",
+        ancestors,
+        ["Lamb Weathertypes"],
+        plot_types=False,
+        statistics=False,
     )
 
     log_provenance(
@@ -643,7 +657,7 @@ def calc_wt_means(
             tcoord.units.num2date(tcoord.points[i]) for i in target_indices
         ]
         extracted_cube = cube.extract(
-            iris.Constraint(time=lambda t, d=dates: t.point in d[0])
+            iris.Constraint(time=lambda t, d=dates: t.point in d[0]),
         )
         wt_cube_mean = extracted_cube.collapsed("time", iris.analysis.MEAN)
         plot_maps(wt, cfg, wt_cube_mean, data_info, "mean")
@@ -701,8 +715,9 @@ def get_wt_array(wt_string: str, wt_cubes: iris.cube.CubeList) -> np.array:
         tcoord = lwt_cube.coord("time")
         wt_array = lwt_cube.data[:]
     else:
+        error_str = "wt_array does not exist for calc_wt_means, calc_wt_anomalies or calc_wt_std."
         raise NameError(
-            "wt_array does not exist for calc_wt_means, calc_wt_anomalies or calc_wt_std.",
+            error_str,
         )
 
     return wt_array, tcoord
@@ -749,7 +764,7 @@ def calc_wt_anomalies(
             tcoord.units.num2date(tcoord.points[i]) for i in target_indices
         ]
         extracted_cube = cube.extract(
-            iris.Constraint(time=lambda t, d=dates: t.point in d[0])
+            iris.Constraint(time=lambda t, d=dates: t.point in d[0]),
         )
         wt_cube_mean = extracted_cube.collapsed("time", iris.analysis.MEAN)
         plot_maps(
@@ -822,7 +837,7 @@ def calc_wt_std(
             tcoord.units.num2date(tcoord.points[i]) for i in target_indices
         ]
         extracted_cube = cube.extract(
-            iris.Constraint(time=lambda t, d=dates: t.point in d[0])
+            iris.Constraint(time=lambda t, d=dates: t.point in d[0]),
         )
         wt_cube_std = extracted_cube.collapsed("time", iris.analysis.STD_DEV)
         plot_maps(wt, cfg, wt_cube_std, data_info, "stddev")
@@ -862,12 +877,12 @@ def calc_lwt_model(cfg: dict, cube: iris.cube.Cube, data_info: dict):
     """
     driver = get_driver(data_info)
 
-    if not os.path.exists(
-        f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}"
-    ):
-        os.makedirs(
-            f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}"
-        )
+    if not Path(
+        f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}",
+    ).exists():
+        Path(
+            f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}",
+        ).mkdir(parents=True, exist_ok=True)
 
     wt = wt_algorithm(cube, data_info.get("dataset"))
 
@@ -905,7 +920,11 @@ def calc_lwt_model(cfg: dict, cube: iris.cube.Cube, data_info: dict):
         f"{cfg.get('work_dir')}/wt_mapping_dict_E-OBS.json",
     ]
     provenance_record = get_provenance_record(
-        "Lamb Weathertypes", ancestors, ["Lamb Weathertypes"], False, False
+        "Lamb Weathertypes",
+        ancestors,
+        ["Lamb Weathertypes"],
+        plot_types=False,
+        statistics=False,
     )
 
     log_provenance(

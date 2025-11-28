@@ -182,6 +182,7 @@ def run_automatic_slwt(cfg: dict):
     Args:
     ----
         cfg (dict): Nested dictionary of metadata
+
     """
 
     preproc_variables_dict = group_metadata(
