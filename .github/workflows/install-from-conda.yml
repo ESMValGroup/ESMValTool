@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - pip-no-deps
   schedule:
     - cron: '0 4 * * *'
 
