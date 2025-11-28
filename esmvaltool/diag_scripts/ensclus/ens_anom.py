@@ -17,7 +17,14 @@ from esmvaltool.diag_scripts.ensclus.sel_season_area import (
 
 
 def ens_anom(
-    filenames, dir_output, name_outputs, varname, numens, season, area, extreme
+    filenames,
+    dir_output,
+    name_outputs,
+    varname,
+    numens,
+    season,
+    area,
+    extreme,
 ):
     """Ensemble anomalies.
 
@@ -28,7 +35,7 @@ def ens_anom(
     anomaly maps.
     """
     print(
-        f"The name of the output files will be <variable>_{name_outputs}.txt"
+        f"The name of the output files will be <variable>_{name_outputs}.txt",
     )
     print(f"Number of ensemble members: {numens}")
 
@@ -56,14 +63,14 @@ def ens_anom(
     if varunits == "kg m-2 s-1":
         print(
             "\nPrecipitation rate units were converted from kg m-2 s-1 "
-            "to mm/day"
+            "to mm/day",
         )
 
     print(f"The variable is {varname} ({varunits})")
     print(f"Original var shape: (time x lat x lon)={var.shape}")
     print(
         f"var shape after selecting season {season} and area {area}: "
-        f"(time x lat x lon)={var_area.shape}"
+        f"(time x lat x lon)={var_area.shape}",
     )
 
     if extreme == "mean":
@@ -95,7 +102,8 @@ def ens_anom(
             for jla in range(var_ens[0].shape[1]):
                 for jlo in range(var_ens[0].shape[2]):
                     slope, _, _, _, _ = stats.linregress(
-                        range(var_ens[0].shape[0]), var_ens[i][:, jla, jlo]
+                        range(var_ens[0].shape[0]),
+                        var_ens[i][:, jla, jlo],
                     )
                     trendmap[jla, jlo] = slope
             trendmap_ens.append(trendmap.copy())
@@ -111,7 +119,12 @@ def ens_anom(
     # print(ofile)
     print(f"ens_anomalies shape: (numens x lat x lon)={ens_anomalies.shape}")
     save_n_2d_fields(
-        lat_area, lon_area, ens_anomalies, varsave, varunits, ofile
+        lat_area,
+        lon_area,
+        ens_anomalies,
+        varsave,
+        varunits,
+        ofile,
     )
     outfiles.append(ofile)
     # Compute and save the climatology
@@ -120,7 +133,12 @@ def ens_anom(
     varsave = "ens_climatologies"
     ofile = os.path.join(dir_output, f"ens_climatologies_{name_outputs}.nc")
     save_n_2d_fields(
-        lat_area, lon_area, ens_climatologies, varsave, varunits, ofile
+        lat_area,
+        lon_area,
+        ens_climatologies,
+        varsave,
+        varunits,
+        ofile,
     )
     outfiles.append(ofile)
     ens_extreme = varextreme_ens_np

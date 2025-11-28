@@ -116,7 +116,7 @@ class Data4Analyis:
         if not stats:
             raise ValueError(
                 "statistics dictionary should be provided in the recipe. "
-                "The keywords 'best_guess' and 'borders' should be provided."
+                "The keywords 'best_guess' and 'borders' should be provided.",
             )
         self.calculate_statistics(stats, cfg)
 
@@ -189,24 +189,24 @@ class Data4Analyis:
             mask = self.ref_cube.data.mask
         elif self.mask_type == "resolved":
             mask_files = list(
-                group_metadata(mask_meta, "filename", sort=True).keys()
+                group_metadata(mask_meta, "filename", sort=True).keys(),
             )
             if len(mask_files) > 1:
                 raise ValueError(
                     "More than one dataset for the resolved mask "
-                    "has been provided. Only one is supported."
+                    "has been provided. Only one is supported.",
                 )
             mask_cb = iris.load_cube(mask_files[0])
             data_coord = self.data[0].dim_coords
             if len(data_coord) > 1:
                 raise ValueError(
                     "The data cubes have more than one "
-                    "cordinates. Only flat cubes are supported."
+                    "cordinates. Only flat cubes are supported.",
                 )
             data_coord = data_coord[0]
             # determine the number of dimension over which the data is calculated
             dim = [c.name() for c in mask_cb.dim_coords].index(
-                data_coord.name()
+                data_coord.name(),
             )
             mask = []
             # if there is less than half of data over the dimension the cell
@@ -214,14 +214,14 @@ class Data4Analyis:
             for i in range(mask_cb.shape[dim]):
                 mask.append(
                     mask_cb.data[(slice(None),) * dim + (i,)].count()
-                    <= 0.5 * len(mask_cb.data[(slice(None),) * dim + (i,)])
+                    <= 0.5 * len(mask_cb.data[(slice(None),) * dim + (i,)]),
                 )
             # masking the reference cube
             self.ref_cube.data.mask = self.ref_cube.data.mask | mask
         else:
             raise ValueError(
                 f"Mask type {self.mask_type} is not supported. "
-                "Only 'simple' and 'resolved' are supported."
+                "Only 'simple' and 'resolved' are supported.",
             )
 
         for cube in self.data:
@@ -260,11 +260,17 @@ class Data4Analyis:
             # saving border data only if more than 1 cube provided
             self.border1 = bord_dic[list(bord_dic.keys())[0]]
             save_data(
-                f_name + list(bord_dic.keys())[0], prov_dic, cfg, self.border1
+                f_name + list(bord_dic.keys())[0],
+                prov_dic,
+                cfg,
+                self.border1,
             )
             self.border2 = bord_dic[list(bord_dic.keys())[1]]
             save_data(
-                f_name + list(bord_dic.keys())[1], prov_dic, cfg, self.border2
+                f_name + list(bord_dic.keys())[1],
+                prov_dic,
+                cfg,
+                self.border2,
             )
         else:
             # if just one dataset is in the group there is no need
@@ -316,20 +322,22 @@ def plot_bias_plot(data_list: list[Data4Analyis], cfg: dict):
         if data.best_guess.dim_coords[0].name() == "longitude":
             # to make the Pacific and Atlantic continuous
             data.best_guess = data.best_guess.intersection(
-                longitude=(20.0, 380.0)
+                longitude=(20.0, 380.0),
             )
             data.ref_cube = data.ref_cube.intersection(longitude=(20.0, 380.0))
             # check if there are borders
             if data.border1:
                 data.border1 = data.border1.intersection(
-                    longitude=(20.0, 380.0)
+                    longitude=(20.0, 380.0),
                 )
                 data.border2 = data.border2.intersection(
-                    longitude=(20.0, 380.0)
+                    longitude=(20.0, 380.0),
                 )
         data_col = eplot.get_dataset_style(data.name, cfg.get("color_style"))
         iris.plot.plot(
-            data.best_guess, color=data_col["color"], label=data.name
+            data.best_guess,
+            color=data_col["color"],
+            label=data.name,
         )
         # if there is more than one realization, there's border plotted
         if data.border1:
@@ -348,7 +356,8 @@ def plot_bias_plot(data_list: list[Data4Analyis], cfg: dict):
         plt.xlim(*xlim)  # to make the xlims the same as before
     else:
         ref_col = eplot.get_dataset_style(
-            data_list[0].reference, cfg.get("color_style")
+            data_list[0].reference,
+            cfg.get("color_style"),
         )
         iris.plot.plot(data_list[0].ref_cube, c=ref_col["color"])
 
