@@ -36,8 +36,6 @@ def get_driver(data_info: dict) -> str:
         str: Driver string with leading underscore or empty string.
     """
     driver = data_info.get("driver", "")
-    if driver != "":
-        driver = f"_{driver}"
     return driver
 
 
@@ -55,12 +53,19 @@ def load_wt_preprocessors(dataset: str, preproc_variables_dict: dict):
     wt_preproc = iris.load_cube(
         preproc_variables_dict.get(dataset)[0].get("filename")
     )
-    wt_preproc_prcp = iris.load_cube(
-        preproc_variables_dict.get(dataset)[1].get("filename")
-    )
-    wt_preproc_prcp_eobs = iris.load_cube(
-        preproc_variables_dict.get("E-OBS")[0].get("filename")
-    )
+    # try and except block to catch missing precipitation preprocessor
+    # if it is not supplied, predefined_slwt has to be given by user
+    try:
+        wt_preproc_prcp = iris.load_cube(
+            preproc_variables_dict.get(dataset)[1].get("filename")
+        )
+        wt_preproc_prcp_eobs = iris.load_cube(
+            preproc_variables_dict.get("E-OBS")[0].get("filename")
+        )
+    except (IndexError, KeyError, TypeError):
+        print("ERA5 precipitation preprocessor not found for automatic slwt.")
+        wt_preproc_prcp = None
+        wt_preproc_prcp_eobs = None
 
     return wt_preproc, wt_preproc_prcp, wt_preproc_prcp_eobs
 
@@ -78,12 +83,19 @@ def get_ancestors_era5_eobs(dataset: str, preproc_variables_dict: dict):
     """
     era5_ancestors = [
         preproc_variables_dict.get(dataset)[0].get("filename"),
-        preproc_variables_dict.get(dataset)[1].get("filename"),
     ]
-    eobs_ancestors = [
-        preproc_variables_dict.get(dataset)[0].get("filename"),
-        preproc_variables_dict.get("E-OBS")[0].get("filename"),
-    ]
+    try:
+        era5_ancestors.append(
+            preproc_variables_dict.get(dataset)[1].get("filename")
+        )
+        eobs_ancestors = [
+            preproc_variables_dict.get(dataset)[0].get("filename"),
+            preproc_variables_dict.get("E-OBS")[0].get("filename"),
+        ]
+    except (IndexError, KeyError, TypeError):
+        print("No ancestors for ERA5 and E-OBS precipitation preprocessor.")
+        eobs_ancestors = []
+
     return era5_ancestors, eobs_ancestors
 
 
@@ -235,7 +247,7 @@ def log_provenance(filename: str, cfg: dict, provenance_record: dict):
     """Log provenance.
 
     Args:
-    -------
+    ----
         filename (str): Filename of xml file
         cfg (dict): Configuration dictionary
         provenance_record (dict): Provenance record dictionary
@@ -303,7 +315,7 @@ def write_mapping_dict(work_dir: str, dataset: str, mapping_dict: dict):
     """Write mapping dictionary to file.
 
     Args:
-    -------
+    ----
         work_dir (str): Current working directory
         dataset (str): Dataset name
         mapping_dict (dict): Mapping dictionary in {lwt: slwt, ...} format
@@ -319,8 +331,8 @@ def write_mapping_dict(work_dir: str, dataset: str, mapping_dict: dict):
 def convert_dict(dict_: dict) -> dict:
     """Convert dictionary from {lwt: slwt, ...} format to {slwt: [lwt1, lwt2], ...}.
 
-
     Args:
+    ----
         dict_ (dict): Mapping dictionary to be converted
 
     Returns
@@ -363,7 +375,7 @@ def write_corr_rmse_to_csv(
     """Write correlation and rsme matrix to csv files.
 
     Args:
-    -------
+    ----
         cfg (dict): Configuration dictionary from recipe
         pattern_correlation_matrix (np.array): Correlation matrix
         rmse_matrix (np.array): RSME matrix
@@ -394,6 +406,7 @@ def run_predefined_slwt(
     """Run predefined slwt mapping.
 
     Args:
+    ----
         work_dir (str): Working directory to save mapping dict
         dataset_name (str): Name of dataset
         lwt (np.array): lwt array
@@ -419,7 +432,7 @@ def combine_wt_to_file(
     """Combine lwt and slwt arrays to one file.
 
     Args:
-    -------
+    ----
         cfg (dict): Configuration dictionary from recipe
         wt_list (list): List of weathertype arrays
         cube (iris.cube.Cube): Cube of data to keep time coordinate
@@ -464,7 +477,7 @@ def write_lwt_to_file(
     """Write only lwt to file.
 
     Args:
-    -------
+    ----
         cfg (dict): Configuration dictionary from recipe
         lwt (np.array): lwt array
         cube (iris.cube.Cube): Cube of data to keep time coordinate
@@ -493,11 +506,12 @@ def map_lwt_to_slwt(lwt: np.array, mapping_dict: dict) -> np.array:
     """Map lwt array to slwt array.
 
     Args:
+    ----
         lwt (np.array): lwt array
         mapping_dict (dict): Mapping dictionary in {lwt: slwt, ...} format
 
     Returns
-    --------
+    -------
         np.array: array of slwt
     """
     return np.array([np.int8(mapping_dict.get(value, 0)) for value in lwt])
@@ -507,10 +521,11 @@ def check_mapping_dict_format(mapping_dict: dict) -> dict:
     """Check format of mapping dict and return in {lwt: slwt, ...} format.
 
     Args:
+    ----
         mapping_dict (dict): mapping dict in any format
 
     Returns
-    --------
+    -------
         dict: mapping dict in {lwt: slwt, ...} format
     """
     if isinstance(mapping_dict.get(list(mapping_dict.keys())[0]), list):

@@ -430,7 +430,7 @@ def calc_lwt_slwt_model(
     data_info: dict,
     predefined_slwt: bool | dict,
 ):
-    """Calculate Lamb as well as simplified weathertypes for model.
+    """Calculate Lamb as well as simplified weathertypes for model and write them to file.
 
     Args:
     -------
@@ -543,6 +543,7 @@ def process_prcp_mean(
     """Return which weathertypes can be grouped together for a certain precipitation pattern.
 
     Args:
+    ----
         cfg (dict): Configuration dictionary from recipe
         data (np.array): Array of precipitation means for each WT
         dataset (str): Name of dataset
@@ -595,7 +596,7 @@ def calc_wt_means(
     """Calculate means for psl, tas or pr for weathertypes.
 
     Args:
-    -------
+    ----
         cfg (dict): Configuration dictionary from recipe
         cube (iris.cube.Cube): Cube with variable data
         wt_cubes (iris.cube.CubeList): List of cubes of lwt, slwt_ERA5 and slwt_EOBS
@@ -662,10 +663,12 @@ def get_wt_array(wt_string: str, wt_cubes: iris.cube.CubeList) -> np.array:
     """Get weathertype array and time coordinate based on wt_string.
 
     Args:
+    ----
         wt_string(str): string for weathertype selection
         wt_cubes(iris.cube.CubeList): list of weathertype cubes
 
-    Raises:
+    Raises
+    ------
         NameError: if wt_array does not exist for the given wt_string
 
     Returns
@@ -701,7 +704,7 @@ def calc_wt_anomalies(
     """Calculate anomalies for psl, tas and pr for weathertypes.
 
     Args:
-    -------
+    ----
         cfg (dict): Configuration dictionary from recipe
         cube (iris.cube.Cube): Cube with variable data
         wt_cubes (iris.cube.CubeList): List of cubes of lwt, slwt_ERA5 and slwt_EOBS
@@ -774,7 +777,7 @@ def calc_wt_std(
     """Calculate standard deviation for psl, tas and pr for weathertypes.
 
     Args:
-    -------
+    ----
         cfg (dict): Configuration dictionary from recipe
         cube (iris.cube.Cube): Cube with variable data
         wt_cubes (iris.cube.CubeList): List of cubes of lwt, slwt_ERA5 and slwt_EOBS
@@ -839,7 +842,7 @@ def calc_lwt_model(cfg: dict, cube: iris.cube.Cube, data_info: dict):
     """Calculate Lamb weathertypes for models.
 
     Args:
-    -------
+    ----
         cfg (dict): Configuration dictionary from recipe
         cube (iris.cube.Cube): Cube with variable data
         data_info (dict): Dictionary with info to dataset
@@ -906,10 +909,10 @@ def plot_means(
     data_info: dict,
     only_lwt=False,
 ):
-    """Function for plotting means, anomalies and standard deviations.
+    """Plotting means, anomalies and standard deviations.
 
     Args:
-    -------
+    ----
         cfg (dict): Configuration dictionary from recipe
         preproc_var (np.array): Preprocessed variable cube
         wt_cubes (iris.cube.Cube): List of cubes of lwt, slwt_ERA5 and slwt_EOBS

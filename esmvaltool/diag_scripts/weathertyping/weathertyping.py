@@ -40,7 +40,7 @@ def process_models_automatic_slwt(
     """Process model data for calculating Lamb and simplified weathertypes.
 
     Args:
-    -------
+    ----
         cfg (dict): Nested dictionary of metadata
         dataset_vars (list): List of variable dictionaries for a specific dataset
         data_info (dict): Dictionary holding dataset information.
@@ -67,23 +67,22 @@ def process_models_automatic_slwt(
                 cfg, wt_preproc, data_info, cfg.get("predefined_slwt")
             )
 
-            # load wt files
-            wt_cubes = load_wt_files(
-                f"{cfg.get('work_dir')}/{output_file_path}"
-                f"/{data_info['dataset']}"
-                f"{data_info['driver']}_"
-                f"{data_info['ensemble']}_"
-                f"{data_info['timerange']}.nc"
-            )
-
-            var_dict = {
-                f"{ensemble_var.get('short_name')}": get_preproc_lists_ensemble(
-                    ensemble_var
-                )
-            }
-
             # plot means
             if cfg.get("plotting", False):
+                # load wt files
+                wt_cubes = load_wt_files(
+                    f"{cfg.get('work_dir')}/{output_file_path}"
+                    f"/{data_info['dataset']}"
+                    f"{data_info['driver']}_"
+                    f"{data_info['ensemble']}_"
+                    f"{data_info['timerange']}.nc"
+                )
+
+                var_dict = {
+                    f"{ensemble_var.get('short_name')}": get_preproc_lists_ensemble(
+                        ensemble_var
+                    )
+                }
                 for var_name, var_data in var_dict.items():
                     data_info["var"] = var_name
                     data_info["preproc_path"] = var_data[1]
@@ -101,7 +100,7 @@ def process_era5_automatic_slwt(
     """Process ERA5 data for calculating Lamb and simplified weathertypes.
 
     Args:
-    -------
+    ----
         data_info (dict): Dictionary holding dataset information.
         preproc_variables_dict (dict): Dictionary holding preprocessed variables for all datasets.
         cfg (dict): Nested dictionary of metadata
@@ -154,10 +153,10 @@ def process_era5_automatic_slwt(
         f"{cfg.get('work_dir')}/{data_info['dataset']}.nc"
     )
 
-    var_dict = get_looping_dict(
-        dataset_vars
-    )  # dataset_vars is list of variables for dataset dataset_name
     if cfg.get("plotting", False):
+        var_dict = get_looping_dict(
+            dataset_vars
+        )  # dataset_vars is list of variables for dataset dataset_name
         # plot means
         for var_name, var_data in var_dict.items():
             data_info["var"] = var_name
@@ -235,11 +234,10 @@ def process_era5_lwt(preproc_variables_dict, cfg, dataset_vars, data_info):
         f"{cfg.get('work_dir')}/{data_info['dataset']}.nc", only_lwt=True
     )
 
-    var_dict = get_looping_dict(
-        dataset_vars
-    )  # dataset_vars is list of variables for dataset dataset_name
-
     if cfg.get("plotting", False):
+        var_dict = get_looping_dict(
+            dataset_vars
+        )  # dataset_vars is list of variables for dataset dataset_name
         # plot means
         for var_name, var_data in var_dict.items():
             data_info["var"] = var_name
@@ -347,6 +345,8 @@ def run_my_diagnostic(cfg: dict):
     automatic_slwt = cfg.get("automatic_slwt")
 
     # check if user wants to calculate simplified weathertypes automatically
+    # for that, automatic_slwt must be true
+    # additionally, if a predefined_slwt is given, those will be used
     if automatic_slwt:
         run_automatic_slwt(cfg)
     # if automatic_slwt is false, and predefined_slwt is false,
