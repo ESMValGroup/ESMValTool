@@ -169,7 +169,7 @@ def calc_qbo_index(qbo):
         logger.warning(
             "This means the model U(30hPa, around tropics) doesn't oscillate"
             "between positive and negative"
-            "with a period<12 months, QBO can't be computed, set to 0."
+            "with a period<12 months, QBO can't be computed, set to 0.",
         )
         (kup, kdown) = (0, 0)
     # Translate upwards and downwards indices into U wind values
@@ -374,7 +374,8 @@ def tpole_metrics(run, tcube, metrics):
     # Calculate area averages over polar regions at 50hPa
     nhpole = iris.Constraint(latitude=lambda la: la >= 60, air_pressure=5000.0)
     shpole = iris.Constraint(
-        latitude=lambda la: la <= -60, air_pressure=5000.0
+        latitude=lambda la: la <= -60,
+        air_pressure=5000.0,
     )
 
     tcube_cds = [cdt.standard_name for cdt in tcube.coords()]
@@ -560,7 +561,11 @@ def mainfunc(run):
 
     # Read zonal mean U (lbproc=192) and add month number to metadata
     ucube = load_run_ss(
-        run, "monthly", "eastward_wind", lbproc=192, **year_cons
+        run,
+        "monthly",
+        "eastward_wind",
+        lbproc=192,
+        **year_cons,
     )
     # Although input data is a zonal mean, iris does not recognise it as such
     # and just reads it as having a single longitudinal coordinate. This
@@ -579,7 +584,11 @@ def mainfunc(run):
 
     # Read zonal mean T (lbproc=192) and add clim month and season to metadata
     tcube = load_run_ss(
-        run, "monthly", "air_temperature", lbproc=192, **year_cons
+        run,
+        "monthly",
+        "air_temperature",
+        lbproc=192,
+        **year_cons,
     )  # m01s30i204
     # Although input data is a zonal mean, iris does not recognise it as such
     # and just reads it as having a single longitudinal coordinate. This
@@ -599,7 +608,11 @@ def mainfunc(run):
 
     # Read zonal mean q (lbproc=192) and add clim month and season to metadata
     qcube = load_run_ss(
-        run, "monthly", "specific_humidity", lbproc=192, **year_cons
+        run,
+        "monthly",
+        "specific_humidity",
+        lbproc=192,
+        **year_cons,
     )  # m01s30i205
     # Although input data is a zonal mean, iris does not recognise it as such
     # and just reads it as having a single longitudinal coordinate. This
@@ -763,13 +776,14 @@ def calc_merra(run):
     # Load data
     merrafile = os.path.join(run["clim_root"], "ERA-Interim_cubeList.nc")
     (t, q) = iris.load_cubes(
-        merrafile, ["air_temperature", "specific_humidity"]
+        merrafile,
+        ["air_temperature", "specific_humidity"],
     )
     # Strip out required times
     time = iris.Constraint(
         time=lambda cell: run["from_monthly"]
         <= cell.point
-        <= run["to_monthly"]
+        <= run["to_monthly"],
     )
     t = t.extract(time)
     q = q.extract(time)
@@ -824,13 +838,14 @@ def calc_erai(run):
     # Load data
     eraifile = os.path.join(run["clim_root"], "ERA-Interim_cubeList.nc")
     (t, q) = iris.load_cubes(
-        eraifile, ["air_temperature", "specific_humidity"]
+        eraifile,
+        ["air_temperature", "specific_humidity"],
     )
     # Strip out required times
     time = iris.Constraint(
         time=lambda cell: run["from_monthly"]
         <= cell.point
-        <= run["to_monthly"]
+        <= run["to_monthly"],
     )
     t = t.extract(time)
     q = q.extract(time)

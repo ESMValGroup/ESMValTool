@@ -45,7 +45,16 @@ def eof_computation(var, lat):
 
 
 def eof_plots(
-    neof, pcs_scal1, eofs_scal2, var, varunits, lat, lon, tit, numens, varfrac
+    neof,
+    pcs_scal1,
+    eofs_scal2,
+    var,
+    varunits,
+    lat,
+    lon,
+    tit,
+    numens,
+    varfrac,
 ):
     """Plot of the nth the EOFs and PCs.
 
@@ -63,7 +72,9 @@ def eof_plots(
     plt.plot(pcs_scal1[:, neof])
     plt.axhline(y=0, color="k", linestyle="--")
     tt_pc = "{}   PC{}: explained variance {}%\n".format(
-        tit, neof + 1, "%.2f" % (varfrac[neof] * 100)
+        tit,
+        neof + 1,
+        "%.2f" % (varfrac[neof] * 100),
     )
     plt.title(tt_pc, fontsize=34, fontweight="bold")
     plt.grid(True)
@@ -99,7 +110,9 @@ def eof_plots(
     cbar.set_label(varunits, rotation=0, fontsize=20)
     cbar.ax.tick_params(labelsize=20)
     tt_eof = "{}\nEOF{}: explained variance {}%\n".format(
-        tit, neof + 1, "%.2f" % (varfrac[neof] * 100)
+        tit,
+        neof + 1,
+        "%.2f" % (varfrac[neof] * 100),
     )
     plt.title(tt_eof, fontsize=34, fontweight="bold")
     plt.tight_layout()

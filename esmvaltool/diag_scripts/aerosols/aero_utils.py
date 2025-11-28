@@ -27,7 +27,6 @@ def add_bounds(cube):
     cube : Iris cube.
         Iris cube with bounds added to the latitude and longitude coordinates.
     """
-
     if not cube.coord("latitude").has_bounds():
         cube.coord("latitude").guess_bounds()
     if not cube.coord("longitude").has_bounds():
@@ -76,7 +75,6 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
         of latitude/longitude and height points are mismatched. OR if height
         is requested but the cube does not contain an altitude coordinate.
     """
-
     # Check that input data is a (single) cube
     if not isinstance(icube, iris.cube.Cube):
         raise AeroAnsError("Extract_pt:First argument must be a single cube")
@@ -85,7 +83,7 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
     # currently unsupported.
     if icube.coords()[0].name() == "time":
         raise AeroAnsError(
-            "Extract_pt:Cannot handle time dimension at present"
+            "Extract_pt:Cannot handle time dimension at present",
         )
 
     # Check that equal number of lat/lon pairs are passed in point coordinates.
@@ -128,19 +126,19 @@ def extract_pt(icube, pt_lat, pt_lon, height=None, level=None, nearest=False):
         #        else:
         #            pt_hgt.append(height)
         pt_hgt.extend(height) if isinstance(height, list) else pt_hgt.append(
-            height
+            height,
         )
 
         if len(pt_lat1) != len(pt_hgt):
             raise AeroAnsError(
-                "Extract_pt:Mismatch in number of points for lat/long/height"
+                "Extract_pt:Mismatch in number of points for lat/long/height",
             )
 
         # Check that heights have been merged with orography.
         if not icube.coords("altitude"):
             raise AeroAnsError(
                 'Extract_pt:Height requested but input data does not contain \
-                "Altitude" coordinate'
+                "Altitude" coordinate',
             )
 
         # Store the min and max altitudes from cube data so that user

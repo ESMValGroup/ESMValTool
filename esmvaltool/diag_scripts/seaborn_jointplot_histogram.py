@@ -73,7 +73,10 @@ def _compute_histograms(
     data_y = da.compress(select, da.ma.getdata(array_y))
 
     min_x, max_x, min_y, max_y = da.compute(
-        data_x.min(), data_x.max(), data_y.min(), data_y.max()
+        data_x.min(),
+        data_x.max(),
+        data_y.min(),
+        data_y.max(),
     )
 
     # Compute the data for the plots
@@ -156,7 +159,10 @@ def seaborn_histogram_jointplot(
     inv_edges_x = _inv_transform(grid.ax_joint, "x")(edges_x)
     inv_edges_y = _inv_transform(grid.ax_joint, "y")(edges_y)
     mesh = grid.ax_joint.pcolormesh(
-        inv_edges_x, inv_edges_y, hist.T, **joint_kws
+        inv_edges_x,
+        inv_edges_y,
+        hist.T,
+        **joint_kws,
     )
 
     if cbar:
@@ -173,11 +179,11 @@ def seaborn_histogram_jointplot(
                 pos_joint_ax.y0,
                 pos_marg_x_ax.width,
                 pos_joint_ax.height,
-            )
+            ),
         )
         # Reposition the colorbar using new x positions and y positions of the joint ax.
         grid.figure.axes[-1].set_position(
-            (0.85, pos_joint_ax.y0, 0.07, pos_joint_ax.height)
+            (0.85, pos_joint_ax.y0, 0.07, pos_joint_ax.height),
         )
 
 
@@ -263,11 +269,17 @@ def main(cfg: dict[str, Any]) -> None:
     save_data(f"{basename}_{cube_hist.var_name}", provenance, cfg, cube_hist)
     provenance_x = get_provenance_record(caption, [filename_x])
     save_data(
-        f"{basename}_{cube_hist_x.var_name}", provenance_x, cfg, cube_hist_x
+        f"{basename}_{cube_hist_x.var_name}",
+        provenance_x,
+        cfg,
+        cube_hist_x,
     )
     provenance_y = get_provenance_record(caption, [filename_y])
     save_data(
-        f"{basename}_{cube_hist_y.var_name}", provenance_y, cfg, cube_hist_y
+        f"{basename}_{cube_hist_y.var_name}",
+        provenance_y,
+        cfg,
+        cube_hist_y,
     )
 
 

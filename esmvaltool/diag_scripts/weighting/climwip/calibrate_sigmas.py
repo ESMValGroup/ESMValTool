@@ -82,7 +82,7 @@ def calculate_percentiles(
 
     # need to rename for the inside_count comparison
     target_perfect = target.rename(
-        {"model_ensemble": "perfect_model_ensemble"}
+        {"model_ensemble": "perfect_model_ensemble"},
     )
 
     if not weighted:  # replace with equal weight but keep nans
@@ -109,7 +109,7 @@ def calculate_percentiles(
     inside_ratio = inside_count.sum() / len(inside_count)
 
     percentiles_spread = percentiles_data.isel(
-        percentile=1
+        percentile=1,
     ) - percentiles_data.isel(percentile=0)
 
     return percentiles_spread, inside_ratio
@@ -167,7 +167,10 @@ def compute_cost_function(
     # calculate the equally weighted case once as baseline
     if len(confidence_test_values["baseline"]) == 0:
         percentiles_spread, inside_ratio = calculate_percentiles(
-            target, weights_matrix, percentiles, weighted=False
+            target,
+            weights_matrix,
+            percentiles,
+            weighted=False,
         )
         confidence_test_values["baseline"]["percentile_spread"] = (
             percentiles_spread
@@ -175,7 +178,9 @@ def compute_cost_function(
         confidence_test_values["baseline"]["inside_ratio"] = inside_ratio
 
     percentiles_spread, inside_ratio = calculate_percentiles(
-        target, weights_matrix, percentiles
+        target,
+        weights_matrix,
+        percentiles,
     )
     confidence_test_values[performance_sigma] = {
         "percentile_spread": percentiles_spread,
@@ -234,7 +239,9 @@ def evaluate_target(
     )
 
     cost_function_value = compute_cost_function(
-        target, weights_matrix, performance_sigma
+        target,
+        weights_matrix,
+        performance_sigma,
     )
     return cost_function_value
 
@@ -258,7 +265,7 @@ def visualize_save_calibration(performance_sigma, cfg, success):
             ),
             "inside_ratio": ("sigma", inside_ratios, {"units": "1"}),
             "sigma": ("sigma", sigmas, {"units": "1"}),
-        }
+        },
     )
 
     figure, axes = plt.subplots(figsize=(12, 8))
@@ -304,7 +311,7 @@ def visualize_save_calibration(performance_sigma, cfg, success):
     sharpness = xr.concat(
         [
             confidence_test_values[sigma]["percentile_spread"].expand_dims(
-                {"sigma": [sigma]}
+                {"sigma": [sigma]},
             )
             for sigma in sigmas
         ],
@@ -341,7 +348,9 @@ def visualize_save_calibration(performance_sigma, cfg, success):
     plt.close(figure)
 
     filename_data = get_diagnostic_filename(
-        "performance_sigma_calibration", cfg, extension="nc"
+        "performance_sigma_calibration",
+        cfg,
+        extension="nc",
     )
     confidence.to_netcdf(filename_data)
 
@@ -361,7 +370,8 @@ def calibrate_performance_sigma(
         logger.info("Reading model data for %s", variable_group)
         if variable_group.endswith("_ANOM"):
             model_data, model_data_files = read_model_data_ancestor(
-                cfg, variable_group
+                cfg,
+                variable_group,
             )
         else:
             datasets_model = models[variable_group]
@@ -369,14 +379,16 @@ def calibrate_performance_sigma(
 
         logger.info("Calculating performance for %s", variable_group)
         performance_matrix = calculate_model_distances(
-            model_data, "perfect_model_ensemble"
+            model_data,
+            "perfect_model_ensemble",
         )
         logger.debug(performance_matrix.values)
         performances_matrix[variable_group] = performance_matrix
 
     performance_matrix = xr.Dataset(performances_matrix)
     overall_performance = compute_overall_mean(
-        performance_matrix, performance_contributions
+        performance_matrix,
+        performance_contributions,
     )
 
     target = models[settings["target"]]
@@ -395,7 +407,8 @@ def calibrate_performance_sigma(
             ["model_ensemble", "model_ensemble_reference"],
         )
         overall_performance, _ = combine_ensemble_members(
-            overall_performance, ["model_ensemble", "perfect_model_ensemble"]
+            overall_performance,
+            ["model_ensemble", "perfect_model_ensemble"],
         )
         target_data, _ = combine_ensemble_members(target_data)
 

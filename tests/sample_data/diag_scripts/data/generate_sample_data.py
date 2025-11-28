@@ -122,7 +122,10 @@ def main() -> None:
     save_cube("tas_amon_1d_alt16_0.nc", "tas", [alt16_coord], [2.0, 3.0, 0.0])
     save_cube("tas_amon_1d_alt16_1.nc", "tas", [alt16_coord], [1.0, -1.0, 2.0])
     save_cube(
-        "tas_amon_1d_alt16_2.nc", "tas", [alt16_coord], [-1.0, -3.0, 1.5]
+        "tas_amon_1d_alt16_2.nc",
+        "tas",
+        [alt16_coord],
+        [-1.0, -3.0, 1.5],
     )
 
     # 1D hour

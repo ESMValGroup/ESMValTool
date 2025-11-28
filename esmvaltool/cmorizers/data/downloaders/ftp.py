@@ -140,7 +140,9 @@ class FTPDownloader(BaseDownloader):
         """
         os.makedirs(os.path.join(self.local_folder, sub_folder), exist_ok=True)
         local_path = os.path.join(
-            self.local_folder, sub_folder, os.path.basename(server_path)
+            self.local_folder,
+            sub_folder,
+            os.path.basename(server_path),
         )
         if not self.overwrite and os.path.isfile(local_path):
             logger.info("File %s already downloaded. Skipping...", server_path)
@@ -200,7 +202,11 @@ class CCIDownloader(FTPDownloader):
 
     def __init__(self, config, dataset, dataset_info, overwrite):
         super().__init__(
-            config, "anon-ftp.ceda.ac.uk", dataset, dataset_info, overwrite
+            config,
+            "anon-ftp.ceda.ac.uk",
+            dataset,
+            dataset_info,
+            overwrite,
         )
         self.ftp_name = self.dataset_name[7:]
 
