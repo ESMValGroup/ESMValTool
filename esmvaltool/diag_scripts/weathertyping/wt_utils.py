@@ -3,8 +3,8 @@
 # operating system manipulations (e.g. path constructions)
 import json
 import logging
-import os
 import warnings
+from pathlib import Path
 
 # to manipulate iris cubes
 import iris
@@ -19,7 +19,7 @@ from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 iris.FUTURE.datum_support = True
 
-logger = logging.getLogger(os.path.basename(__file__))
+logger = logging.getLogger(Path(__file__).name)
 
 # Ignoring a warning that is produced when selecting timesteps of a weathertype
 warnings.filterwarnings("ignore", ".*Collapsing a non-contiguous coordinate*")
@@ -306,9 +306,8 @@ def get_mapping_dict(selected_pairs: list) -> dict:
         return m_list
 
     merged_tuples = find_intersection(s)
-    mapping_dict = turn_list_to_mapping_dict(merged_tuples)
 
-    return mapping_dict
+    return turn_list_to_mapping_dict(merged_tuples)
 
 
 def write_mapping_dict(work_dir: str, dataset: str, mapping_dict: dict):

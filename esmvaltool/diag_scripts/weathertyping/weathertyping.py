@@ -231,7 +231,8 @@ def process_era5_lwt(preproc_variables_dict, cfg, dataset_vars, data_info):
 
     # load wt files
     wt_cubes = load_wt_files(
-        f"{cfg.get('work_dir')}/{data_info['dataset']}.nc", only_lwt=True
+        f"{cfg.get('work_dir')}/{data_info['dataset']}.nc",
+        only_lwt=True,
     )
 
     if cfg.get("plotting", False):
@@ -267,7 +268,8 @@ def process_models_lwt(cfg: dict, dataset_vars: list, data_info: dict):
             wt_preproc = iris.load_cube(dataset_vars[0].get("filename"))
 
             output_file_path, preproc_path = get_model_output_filepath(
-                data_info["dataset"], dataset_vars
+                data_info["dataset"],
+                dataset_vars,
             )
 
             data_info["output_file_path"] = output_file_path

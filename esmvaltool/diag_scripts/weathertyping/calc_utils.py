@@ -102,7 +102,11 @@ def calc_slwt_obs(
     write_mapping_dict(cfg.get("work_dir"), dataset, mapping_dict)
 
     provenance_record = get_provenance_record(
-        "Lamb Weathertypes", ancestors, ["Lamb Weathertypes"], False, False
+        "Lamb Weathertypes",
+        ancestors,
+        ["Lamb Weathertypes"],
+        plot_types=False,
+        statistics=False,
     )
 
     log_provenance(
@@ -230,7 +234,8 @@ def calc_westerly_shear_velocity(
 
 
 def calc_southerly_shear_velocity(
-    cube: iris.cube.Cube, const4: float
+    cube: iris.cube.Cube,
+    const4: float,
 ) -> np.array:
     """Calculate southerly shear velocity.
 
@@ -264,7 +269,8 @@ def calc_southerly_shear_velocity(
 
 
 def calc_total_shear_velocity(
-    westerly_shear_velocity: np.array, southerly_shear_velocity: np.array
+    westerly_shear_velocity: np.array,
+    southerly_shear_velocity: np.array,
 ) -> np.array:
     """Calculate total shear velocity.
 
@@ -357,7 +363,7 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
 
         # Lamb pure directional type
         if abs(z_i) < total_flow[i]:
-            if 337.5 <= direction or direction < 22.5:
+            if direction >= 337.5 or direction < 22.5:
                 weathertypes[i] = 1
             elif 22.5 <= direction < 67.5:
                 weathertypes[i] = 2
@@ -383,7 +389,7 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
         # Lambs’s synoptic/direction hybrid types
         elif total_flow[i] < abs(z_i) < (2 * total_flow[i]):
             if z_i > 0:
-                if 337.5 <= direction or direction < 22.5:
+                if direction >= 337.5 or direction < 22.5:
                     weathertypes[i] = 11
                 elif 22.5 <= direction < 67.5:
                     weathertypes[i] = 12
@@ -401,7 +407,7 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
                     weathertypes[i] = 18
 
             elif z_i < 0:
-                if 337.5 <= direction or direction < 22.5:
+                if direction >= 337.5 or direction < 22.5:
                     weathertypes[i] = 19
                 elif 22.5 <= direction < 67.5:
                     weathertypes[i] = 20

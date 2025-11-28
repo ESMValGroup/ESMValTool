@@ -54,7 +54,9 @@ def generate_grayscale_hex_values(x):
 
 
 def plot_seasonal_occurrence(
-    cfg: dict, wt_cubes: iris.cube.Cube, data_info: dict
+    cfg: dict,
+    wt_cubes: iris.cube.Cube,
+    data_info: dict,
 ):
     """Plot seasonal occurences of weathertypes.
 
@@ -97,7 +99,7 @@ def plot_seasonal_occurrence(
             ).data
             unique, counts = np.unique(array, return_counts=True)
             month_dict[month] = dict(
-                zip(unique, counts / sum(counts), strict=False)
+                zip(unique, counts / sum(counts), strict=False),
             )
         relative_occurrences[cube.long_name] = month_dict
 
@@ -145,11 +147,11 @@ def plot_seasonal_occurrence(
 
         plt.savefig(
             f"{output_path}/{driver}{data_info.get('dataset')}_{data_info.get('ensemble', '')}_"
-            f"{wt_string}_rel_occurrence_{data_info.get('timerange')}.png"
+            f"{wt_string}_rel_occurrence_{data_info.get('timerange')}.png",
         )
         plt.savefig(
             f"{output_path}/{driver}{data_info.get('dataset')}_{data_info.get('ensemble', '')}_"
-            f"{wt_string}_rel_occurrence_{data_info.get('timerange')}.pdf"
+            f"{wt_string}_rel_occurrence_{data_info.get('timerange')}.pdf",
         )
         plt.close()
 
