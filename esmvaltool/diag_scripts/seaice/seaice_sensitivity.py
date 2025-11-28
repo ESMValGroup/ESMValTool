@@ -105,7 +105,7 @@ def fetch_cube(dataset, variable, cfg):
 
 
 def calculate_annual_trend(cube):
-    """Calculate the linear trend of a cube over time using scipy.stats.linregres."""
+    """Calculate the linear trend of a cube over time using scipy.stats.linregress"""
     logger.debug("Calculating annual trend for cube %s.", cube.name())
 
     # Depending on preprocessor, coord may be 'year' or 'time'
