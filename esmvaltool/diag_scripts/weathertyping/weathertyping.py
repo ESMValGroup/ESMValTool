@@ -87,7 +87,7 @@ def process_models_automatic_slwt(
                 var_dict = {
                     f"{ensemble_var.get('short_name')}": get_preproc_lists_ensemble(
                         ensemble_var,
-                    )
+                    ),
                 }
                 for var_name, var_data in var_dict.items():
                     data_info["var"] = var_name

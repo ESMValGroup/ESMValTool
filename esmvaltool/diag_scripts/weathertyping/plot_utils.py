@@ -164,7 +164,7 @@ def plot_maps(
     data_info: dict,
     mode: str,
 ):
-    """Plotting maps of means, std and anomalies.
+    """Plot maps of means, std and anomalies.
 
     Args:
     ----
@@ -191,7 +191,7 @@ def plot_maps(
         psl_cmap = get_colormap("psl")
         plt.title(
             f"{data_info.get('dataset')} {data_info.get('ensemble', '')}, {data_info.get('var')} {mode}\n"
-            + f"{data_info.get('timerange')}, wt: {wt}",
+            f"{data_info.get('timerange')}, wt: {wt}",
         )
         unit = "[hPa]"
         im = iplt.contourf(cube / 100, cmap=psl_cmap)
@@ -204,13 +204,13 @@ def plot_maps(
             unit = "[m]"
             plt.title(
                 f"{data_info.get('dataset')} {data_info.get('ensemble', '')}, total {var_name} {mode}\n"
-                + f"{data_info.get('timerange')}, wt: {wt}",
+                f"{data_info.get('timerange')}, wt: {wt}",
             )
         else:
             unit = "[kg m-2 s-1]"
             plt.title(
                 f"{data_info.get('dataset')} {data_info.get('ensemble', '')}, {var_name} flux {mode}\n"
-                + f"{data_info.get('timerange')}, wt: {wt}",
+                f"{data_info.get('timerange')}, wt: {wt}",
             )
         im = iplt.contourf(cube, cmap=prcp_cmap)
         cb = plt.colorbar(im)
@@ -221,7 +221,7 @@ def plot_maps(
         unit = "[K]"
         plt.title(
             f"{data_info.get('dataset')} {data_info.get('ensemble', '')}, 1000 hPa {var_name} {mode}\n"
-            + f"{data_info.get('timerange')}, wt: {wt}",
+            f"{data_info.get('timerange')}, wt: {wt}",
         )
         im = iplt.contourf(cube, cmap=temp_cmap)
         cb = plt.colorbar(im)
@@ -255,7 +255,9 @@ def plot_maps(
 
     if not Path(f"{cfg.get('plot_dir')}/{mode}").exists():
         Path.mkdir(
-            f"{cfg.get('plot_dir')}/{mode}", parents=True, exist_ok=True
+            f"{cfg.get('plot_dir')}/{mode}",
+            parents=True,
+            exist_ok=True,
         )
 
     plt.savefig(

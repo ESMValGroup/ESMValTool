@@ -35,8 +35,7 @@ def get_driver(data_info: dict) -> str:
     -------
         str: Driver string with leading underscore or empty string.
     """
-    driver = data_info.get("driver", "")
-    return driver
+    return data_info.get("driver", "")
 
 
 def load_wt_preprocessors(dataset: str, preproc_variables_dict: dict):
@@ -539,5 +538,4 @@ def check_mapping_dict_format(mapping_dict: dict) -> dict:
     """
     if isinstance(mapping_dict.get(list(mapping_dict.keys())[0]), list):
         return reverse_convert_dict(mapping_dict)
-    else:
-        return mapping_dict
+    return mapping_dict
