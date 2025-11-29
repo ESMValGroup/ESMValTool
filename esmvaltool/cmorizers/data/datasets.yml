@@ -902,6 +902,16 @@ datasets:
         anl_chipsi/fcst_phy2m.yyyymm.nc
         anl_p/anl_p.yyyymm.nc
 
+  JRA-3Q:
+    tier: 2
+    source: https://gdex.ucar.edu/datasets/d640000/
+    last_access: 2025-10-14
+    info: |
+      For convenience, the direct download links have the following form, where DD refers to the last day of the month:
+      https://osdf-data.gdex.ucar.edu/ncar/gdex/d640000/minmax_surf/[YYYYMM]/jra3q.minmax_surf.0_0_0.tmpmax2m-hgt-fc-gauss.[YYYYMM]0100_[YYYYMMDD]23.nc
+      https://osdf-data.gdex.ucar.edu/ncar/gdex/d640000/minmax_surf/[YYYYMM]/jra3q.minmax_surf.0_0_0.tmpmin2m-hgt-fc-gauss.[YYYYMM]0100_[YYYYMMDD]23.nc
+
+
   JRA-55:
     tier: 2
     source: https://rda.ucar.edu/datasets/ds628.1/
