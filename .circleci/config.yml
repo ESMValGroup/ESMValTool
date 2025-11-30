@@ -218,10 +218,7 @@ jobs:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            mkdir -p ~/climate_data
-            esmvaltool config get_config_user
-            echo "search_esgf: when_missing" >> ~/.config/esmvaltool/config-user.yml
-            cat ~/.config/esmvaltool/config-user.yml
+            esmvaltool config copy data-intake-esgf.yml
             for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
               esmvaltool run "$recipe"
             done
@@ -232,7 +229,7 @@ jobs:
           paths:
             - /opt/conda/pkgs
             - /root/.cache/pip
-            - /root/climate_data
+            - /root/.esgf
 
   build_documentation:
     # Test building documentation
