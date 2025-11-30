@@ -5,7 +5,6 @@ orbs:
   coverage-reporter: codacy/coverage-reporter@13.13.0
 
 commands:
-
   check_changes:
     steps:
       - run:
@@ -76,7 +75,7 @@ commands:
       - run:
           name: Install git+ssh
           environment:
-            DEBIAN_FRONTEND: noninteractive  # needed to install tzdata
+            DEBIAN_FRONTEND: noninteractive # needed to install tzdata
           command: apt update && apt install -y git ssh
       - checkout
       - check_changes
@@ -153,9 +152,9 @@ jobs:
             - /root/.cache/pip
             - .pytest_cache
       - coverage-reporter/send_report:
-          coverage-reports: 'test-reports/coverage.xml'
+          coverage-reports: "test-reports/coverage.xml"
           project-token: $CODACY_PROJECT_TOKEN
-          skip: true  # skip if project-token is not defined (i.e. on a fork)
+          skip: true # skip if project-token is not defined (i.e. on a fork)
 
   test_installation_from_source_test_mode:
     # Test installation from source
@@ -187,7 +186,7 @@ jobs:
       - run:
           name: Install git and ssh
           environment:
-            DEBIAN_FRONTEND: noninteractive  # needed to install tzdata
+            DEBIAN_FRONTEND: noninteractive # needed to install tzdata
           command: apt update && apt install -y git ssh
       - checkout
       - run:
@@ -288,6 +287,7 @@ workflows:
   commit:
     jobs:
       - run_tests
+      - test_upstream_development
       - test_installation_from_source_test_mode
       - test_installation_from_source_develop_mode
   nightly:
