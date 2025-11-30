@@ -203,6 +203,8 @@ jobs:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
+            # Temporarily install intake-esgf here until it is an ESMValCore dependency in v2.14.
+            echo "  - intake-esgf" >> environment.yml
             conda env create -n esmvaltool -f environment.yml --verbose
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
