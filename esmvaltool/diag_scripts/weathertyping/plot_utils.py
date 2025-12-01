@@ -157,6 +157,40 @@ def plot_seasonal_occurrence(
         plt.close()
 
 
+def set_gridlines(ax: plt.Axes):
+    """Set gridlines for plotting maps.
+
+    Args:
+    ----
+        ax (plt.Axes): Axes object to draw gridlines on.
+
+    Returns
+    -------
+        gl (ax.gridlines): Gridlines object
+    """
+    gl = ax.gridlines(
+        crs=ccrs.PlateCarree(),
+        draw_labels=True,
+        linewidth=0.5,
+        color="gray",
+        alpha=0.5,
+        linestyle="--",
+    )
+    gl.left_labels = True
+    gl.bottom_labels = True
+    gl.top_labels = False
+    gl.right_labels = False
+    gl.xlines = True
+    gl.ylocator = mticker.FixedLocator(np.arange(20, 70, 5))
+    gl.xlocator = mticker.FixedLocator([-10, -5, 0, 5, 10, 15])
+    gl.xformatter = LONGITUDE_FORMATTER
+    gl.yformatter = LATITUDE_FORMATTER
+    gl.xlabel_style = {"size": 8, "color": "black"}
+    gl.ylabel_style = {"color": "black", "size": 8}
+
+    return gl
+
+
 def plot_maps(
     wt: np.array,
     cfg: dict,
@@ -228,25 +262,7 @@ def plot_maps(
         cb.ax.tick_params(labelsize=8)
         cb.set_label(label=f"{var_name} {mode} {unit}")
 
-    gl = ax.gridlines(
-        crs=ccrs.PlateCarree(),
-        draw_labels=True,
-        linewidth=0.5,
-        color="gray",
-        alpha=0.5,
-        linestyle="--",
-    )
-    gl.left_labels = True
-    gl.bottom_labels = True
-    gl.top_labels = False
-    gl.right_labels = False
-    gl.xlines = True
-    gl.ylocator = mticker.FixedLocator(np.arange(20, 70, 5))
-    gl.xlocator = mticker.FixedLocator([-10, -5, 0, 5, 10, 15])
-    gl.xformatter = LONGITUDE_FORMATTER
-    gl.yformatter = LATITUDE_FORMATTER
-    gl.xlabel_style = {"size": 8, "color": "black"}
-    gl.ylabel_style = {"color": "black", "size": 8}
+    set_gridlines(ax)
 
     ax.set_extent([-15, 20, 27.5, 62.5])
 
