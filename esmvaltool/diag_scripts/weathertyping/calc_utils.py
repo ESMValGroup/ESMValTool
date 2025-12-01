@@ -37,6 +37,7 @@ logger = logging.getLogger(Path(__file__).name)
 warnings.filterwarnings("ignore", ".*Collapsing a non-contiguous coordinate*")
 
 
+# defining constants for direction calculations
 DIR_0: Final = 0.0
 DIR_22_5: Final = 22.5
 DIR_67_5: Final = 67.5
@@ -46,6 +47,9 @@ DIR_202_5: Final = 202.5
 DIR_247_5: Final = 247.5
 DIR_292_5: Final = 292.5
 DIR_337_5: Final = 337.5
+
+# defining constant for flow limit
+FLOW_LIMIT: Final = 6
 
 
 def calc_slwt_obs(
@@ -304,7 +308,9 @@ def calc_total_shear_velocity(
 
 
 def lamp_pure_directional_type(
-    direction: float, weathertypes: np.array, i: int
+    direction: float,
+    weathertypes: np.array,
+    i: int,
 ) -> int:
     """Calculate Lamp pure directional weathertype.
 
@@ -335,7 +341,9 @@ def lamp_pure_directional_type(
 
 
 def lamp_synoptic_directional_type(
-    direction: float, weathertypes: np.array, i: int
+    direction: float,
+    weathertypes: np.array,
+    i: int,
 ):
     """Calculate Lamp synoptic/directional hybrid weathertype.
 
@@ -366,7 +374,9 @@ def lamp_synoptic_directional_type(
 
 
 def lamb_synoptic_directional_type_zlt0(
-    direction: float, weathertypes: np.array, i: int
+    direction: float,
+    weathertypes: np.array,
+    i: int,
 ):
     """Calculate Lamb synoptic/directional hybrid weathertype with z <0.
 
@@ -490,7 +500,7 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
                 # writes directly to weathertypes array
                 lamb_synoptic_directional_type_zlt0(direction, weathertypes, i)
         # light indeterminate flow, corresponding to Lamb unclassified type U
-        elif abs(z_i) < 6 and total_flow[i] < 6:
+        elif abs(z_i) < FLOW_LIMIT and total_flow[i] < FLOW_LIMIT:
             weathertypes[i] = 27
 
     return weathertypes

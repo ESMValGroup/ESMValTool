@@ -289,10 +289,7 @@ def get_mapping_dict(selected_pairs: list) -> dict:
     -------
         dict: Mapping dictionary
     """
-    mapping_array = []
-
-    for elem in selected_pairs:
-        mapping_array.append(elem[0])
+    mapping_array = [elem[0] for elem in selected_pairs]
 
     s = [set(i) for i in mapping_array if i]
 
