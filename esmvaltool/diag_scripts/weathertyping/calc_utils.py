@@ -5,6 +5,7 @@ import json
 import logging
 import warnings
 from pathlib import Path
+from typing import Final
 
 # to manipulate iris cubes
 import iris
@@ -34,6 +35,17 @@ logger = logging.getLogger(Path(__file__).name)
 
 # Ignoring a warning that is produced when selecting timesteps of a weathertype
 warnings.filterwarnings("ignore", ".*Collapsing a non-contiguous coordinate*")
+
+
+DIR_0: Final = 0.0
+DIR_22_5: Final = 22.5
+DIR_67_5: Final = 67.5
+DIR_112_5: Final = 112.5
+DIR_157_5: Final = 157.5
+DIR_202_5: Final = 202.5
+DIR_247_5: Final = 247.5
+DIR_292_5: Final = 292.5
+DIR_337_5: Final = 337.5
 
 
 def calc_slwt_obs(
@@ -304,21 +316,21 @@ def lamp_pure_directional_type(
     -------
         int: Lamb weathertype
     """
-    if direction >= 337.5 or direction < 22.5:
+    if direction >= DIR_337_5 or direction < DIR_22_5:
         weathertypes[i] = 1
-    if 22.5 <= direction < 67.5:
+    if DIR_22_5 <= direction < DIR_67_5:
         weathertypes[i] = 2
-    if 67.5 <= direction < 112.5:
+    if DIR_67_5 <= direction < DIR_112_5:
         weathertypes[i] = 3
-    if 112.5 <= direction < 157.5:
+    if DIR_112_5 <= direction < DIR_157_5:
         weathertypes[i] = 4
-    if 157.5 <= direction < 202.5:
+    if DIR_157_5 <= direction < DIR_202_5:
         weathertypes[i] = 5
-    if 202.5 <= direction < 247.5:
+    if DIR_202_5 <= direction < DIR_247_5:
         weathertypes[i] = 6
-    if 247.5 <= direction < 292.5:
+    if DIR_247_5 <= direction < DIR_292_5:
         weathertypes[i] = 7
-    if 292.5 <= direction < 337.5:
+    if DIR_292_5 <= direction < DIR_337_5:
         weathertypes[i] = 8
 
 
@@ -335,21 +347,21 @@ def lamp_synoptic_directional_type(
     -------
         int: Lamb weathertype
     """
-    if direction >= 337.5 or direction < 22.5:
+    if direction >= DIR_337_5 or direction < DIR_22_5:
         weathertypes[i] = 11
-    if 22.5 <= direction < 67.5:
+    if DIR_22_5 <= direction < DIR_67_5:
         weathertypes[i] = 12
-    if 67.5 <= direction < 112.5:
+    if DIR_67_5 <= direction < DIR_112_5:
         weathertypes[i] = 13
-    if 112.5 <= direction < 157.5:
+    if DIR_112_5 <= direction < DIR_157_5:
         weathertypes[i] = 14
-    if 157.5 <= direction < 202.5:
+    if DIR_157_5 <= direction < DIR_202_5:
         weathertypes[i] = 15
-    if 202.5 <= direction < 247.5:
+    if DIR_202_5 <= direction < DIR_247_5:
         weathertypes[i] = 16
-    if 247.5 <= direction < 292.5:
+    if DIR_247_5 <= direction < DIR_292_5:
         weathertypes[i] = 17
-    if 292.5 <= direction < 337.5:
+    if DIR_292_5 <= direction < DIR_337_5:
         weathertypes[i] = 18
 
 
@@ -366,21 +378,21 @@ def lamb_synoptic_directional_type_zlt0(
     -------
         int: Lamb weathertype
     """
-    if direction >= 337.5 or direction < 22.5:
+    if direction >= DIR_337_5 or direction < DIR_22_5:
         weathertypes[i] = 19
-    if 22.5 <= direction < 67.5:
+    if DIR_22_5 <= direction < DIR_67_5:
         weathertypes[i] = 20
-    if 67.5 <= direction < 112.5:
+    if DIR_67_5 <= direction < DIR_112_5:
         weathertypes[i] = 21
-    if 112.5 <= direction < 157.5:
+    if DIR_112_5 <= direction < DIR_157_5:
         weathertypes[i] = 22
-    if 157.5 <= direction < 202.5:
+    if DIR_157_5 <= direction < DIR_202_5:
         weathertypes[i] = 23
-    if 202.5 <= direction < 247.5:
+    if DIR_202_5 <= direction < DIR_247_5:
         weathertypes[i] = 24
-    if 247.5 <= direction < 292.5:
+    if DIR_247_5 <= direction < DIR_292_5:
         weathertypes[i] = 25
-    if 292.5 <= direction < 337.5:
+    if DIR_292_5 <= direction < DIR_337_5:
         weathertypes[i] = 26
 
 
@@ -454,7 +466,7 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
         if southerly_flow[i] >= 0:
             direction += 180  # deg
 
-        if direction < 0:
+        if direction < DIR_0:
             direction += 360  # deg
 
         # Lamb pure directional type
@@ -980,7 +992,7 @@ def plot_means(
     preproc_var: np.array,
     wt_cubes: iris.cube.Cube,
     data_info: dict,
-    only_lwt=False,
+    mode: str = "slwt",
 ):
     """Plot means, anomalies and standard deviations.
 
@@ -990,16 +1002,18 @@ def plot_means(
         preproc_var (np.array): Preprocessed variable cube
         wt_cubes (iris.cube.Cube): List of cubes of lwt, slwt_ERA5 and slwt_EOBS
         data_info (dict): Dictionary with info to dataset
-        only_lwt (bool, optional): If True, only lwt means are calculated.
-            If False, lwt, slwt_ERA5 and slwt_EOBS means are calculated. Defaults to False.
+        mode (str, optional): Mode of weathertype calculation, either "slwt" or "lwt". Defaults to "slwt".
     """
-    if not only_lwt:
+    if mode == "slwt":
         data_info["wt_string"] = "lwt"
         calc_wt_means(cfg, preproc_var, wt_cubes, data_info)
         data_info["wt_string"] = "slwt_ERA5"
         calc_wt_means(cfg, preproc_var, wt_cubes, data_info)
         data_info["wt_string"] = "slwt_EOBS"
         calc_wt_means(cfg, preproc_var, wt_cubes, data_info)
-    else:
+    elif mode == "lwt":
         data_info["wt_string"] = "lwt"
         calc_wt_means(cfg, preproc_var, wt_cubes, data_info)
+    else:
+        e = "mode must be either 'slwt' or 'lwt'"
+        raise ValueError(e)

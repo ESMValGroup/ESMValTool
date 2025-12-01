@@ -244,7 +244,7 @@ def process_era5_lwt(preproc_variables_dict, cfg, dataset_vars, data_info):
     # load wt files
     wt_cubes = load_wt_files(
         f"{cfg.get('work_dir')}/{data_info['dataset']}.nc",
-        mode="lamb",
+        mode="lwt",
     )
 
     if cfg.get("plotting", False):
@@ -256,7 +256,7 @@ def process_era5_lwt(preproc_variables_dict, cfg, dataset_vars, data_info):
             data_info["var"] = var_name
             data_info["preproc_path"] = var_data[1]
 
-            plot_means(cfg, var_data[0], wt_cubes, data_info, only_lwt=True)
+            plot_means(cfg, var_data[0], wt_cubes, data_info, "lwt")
         plot_seasonal_occurrence(cfg, wt_cubes, data_info)
 
 
@@ -297,7 +297,7 @@ def process_models_lwt(cfg: dict, dataset_vars: list, data_info: dict):
                 f"{data_info['driver']}"
                 f"_{data_info['ensemble']}_"
                 f"{data_info['timerange']}.nc",
-                mode="lamb",
+                mode="lwt",
             )
 
             var_dict = get_looping_dict(
@@ -315,7 +315,7 @@ def process_models_lwt(cfg: dict, dataset_vars: list, data_info: dict):
                         var_data[0],
                         wt_cubes,
                         data_info,
-                        only_lwt=True,
+                        "lwt",
                     )
                 plot_seasonal_occurrence(cfg, wt_cubes, data_info)
 

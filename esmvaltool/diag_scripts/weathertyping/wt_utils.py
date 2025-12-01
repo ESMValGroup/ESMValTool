@@ -180,27 +180,27 @@ def get_looping_dict(preproc_vars: list):
     }
 
 
-def load_wt_files(path: str, mode="simplified"):
+def load_wt_files(path: str, mode="slwt"):
     """Load wt files.
 
     Args:
         path (str): Path of wt file
-        mode (str, optional): Type of weathertype to load. Defaults to "simplified".
+        mode (str, optional): Type of weathertype to load. Defaults to "slwt".
 
     Returns
     -------
         list: List of weathertype cubes.
     """
-    if mode == "simplified":
+    if mode == "slwt":
         lwt_cube = iris.load_cube(path, "lwt")
         slwt_era5_cube = iris.load_cube(path, "slwt_era5")
         slwt_eobs_cube = iris.load_cube(path, "slwt_eobs")
         wt_cubes = [lwt_cube, slwt_era5_cube, slwt_eobs_cube]
-    elif mode == "lamb":
+    elif mode == "lwt":
         lwt_cube = iris.load_cube(path, "lwt")
         wt_cubes = [lwt_cube]
     else:
-        e = "Mode not recognized. Use 'simplified' or 'lamb'."
+        e = "Mode not recognized. Use 'slwt' or 'lwt'."
         raise ValueError(e)
 
     return wt_cubes
