@@ -41,7 +41,7 @@ dependencies:
   - nc-time-axis
   - netCDF4
   - numba
-  - numpy !=1.24.3  # severe masking bug
+  - numpy >=2
   - openpyxl
   - packaging
   - pandas
@@ -63,7 +63,6 @@ dependencies:
   - seaborn
   - seawater
   - shapely >=2.0.2
-  - tifffile >=2025.10.16  # not a direct dep; trying to see what pulls numpy<2
   - xarray >=0.12.0
   - xesmf >=0.7.1
   - xgboost >1.6.1  # github.com/ESMValGroup/ESMValTool/issues/2779
