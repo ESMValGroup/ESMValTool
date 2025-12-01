@@ -92,11 +92,9 @@ def calc_slwt_obs(
         timerange,
     )
 
-    with open(
+    with Path(
         f"{cfg.get('work_dir')}/wt_selected_pairs_{dataset}.json",
-        "w",
-        encoding="utf-8",
-    ) as file:
+    ).open("w", encoding="utf-8") as file:
         json.dump(selected_pairs, file)
 
     mapping_dict = get_mapping_dict(selected_pairs)
@@ -293,6 +291,99 @@ def calc_total_shear_velocity(
     return westerly_shear_velocity + southerly_shear_velocity
 
 
+def lamp_pure_directional_type(
+    direction: float, weathertypes: np.array, i: int
+) -> int:
+    """Calculate Lamp pure directional weathertype.
+
+    Args:
+    ----
+        direction (float): direction in degrees
+
+    Returns
+    -------
+        int: Lamb weathertype
+    """
+    if direction >= 337.5 or direction < 22.5:
+        weathertypes[i] = 1
+    if 22.5 <= direction < 67.5:
+        weathertypes[i] = 2
+    if 67.5 <= direction < 112.5:
+        weathertypes[i] = 3
+    if 112.5 <= direction < 157.5:
+        weathertypes[i] = 4
+    if 157.5 <= direction < 202.5:
+        weathertypes[i] = 5
+    if 202.5 <= direction < 247.5:
+        weathertypes[i] = 6
+    if 247.5 <= direction < 292.5:
+        weathertypes[i] = 7
+    if 292.5 <= direction < 337.5:
+        weathertypes[i] = 8
+
+
+def lamp_synoptic_directional_type(
+    direction: float, weathertypes: np.array, i: int
+):
+    """Calculate Lamp synoptic/directional hybrid weathertype.
+
+    Args:
+    ----
+        direction (float): direction in degrees
+
+    Returns
+    -------
+        int: Lamb weathertype
+    """
+    if direction >= 337.5 or direction < 22.5:
+        weathertypes[i] = 11
+    if 22.5 <= direction < 67.5:
+        weathertypes[i] = 12
+    if 67.5 <= direction < 112.5:
+        weathertypes[i] = 13
+    if 112.5 <= direction < 157.5:
+        weathertypes[i] = 14
+    if 157.5 <= direction < 202.5:
+        weathertypes[i] = 15
+    if 202.5 <= direction < 247.5:
+        weathertypes[i] = 16
+    if 247.5 <= direction < 292.5:
+        weathertypes[i] = 17
+    if 292.5 <= direction < 337.5:
+        weathertypes[i] = 18
+
+
+def lamb_synoptic_directional_type_zlt0(
+    direction: float, weathertypes: np.array, i: int
+):
+    """Calculate Lamb synoptic/directional hybrid weathertype with z <0.
+
+    Args:
+    ----
+        direction (float): direction in degrees
+
+    Returns
+    -------
+        int: Lamb weathertype
+    """
+    if direction >= 337.5 or direction < 22.5:
+        weathertypes[i] = 19
+    if 22.5 <= direction < 67.5:
+        weathertypes[i] = 20
+    if 67.5 <= direction < 112.5:
+        weathertypes[i] = 21
+    if 112.5 <= direction < 157.5:
+        weathertypes[i] = 22
+    if 157.5 <= direction < 202.5:
+        weathertypes[i] = 23
+    if 202.5 <= direction < 247.5:
+        weathertypes[i] = 24
+    if 247.5 <= direction < 292.5:
+        weathertypes[i] = 25
+    if 292.5 <= direction < 337.5:
+        weathertypes[i] = 26
+
+
 def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
     """Algorithm to calculate Lamb weathertypes.
 
@@ -368,22 +459,8 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
 
         # Lamb pure directional type
         if abs(z_i) < total_flow[i]:
-            if direction >= 337.5 or direction < 22.5:
-                weathertypes[i] = 1
-            elif 22.5 <= direction < 67.5:
-                weathertypes[i] = 2
-            elif 67.5 <= direction < 112.5:
-                weathertypes[i] = 3
-            elif 112.5 <= direction < 157.5:
-                weathertypes[i] = 4
-            elif 157.5 <= direction < 202.5:
-                weathertypes[i] = 5
-            elif 202.5 <= direction < 247.5:
-                weathertypes[i] = 6
-            elif 247.5 <= direction < 292.5:
-                weathertypes[i] = 7
-            elif 292.5 <= direction < 337.5:
-                weathertypes[i] = 8
+            # writes directly to weathertypes array
+            lamp_pure_directional_type(direction, weathertypes, i)
         # Lamb pure cyclonic and anticyclonic type
         elif (2 * total_flow[i]) < abs(z_i):
             if z_i > 0:
@@ -394,40 +471,12 @@ def wt_algorithm(cube: iris.cube.Cube, dataset: str) -> np.array:
         # Lamb synoptic/direction hybrid types
         elif total_flow[i] < abs(z_i) < (2 * total_flow[i]):
             if z_i > 0:
-                if direction >= 337.5 or direction < 22.5:
-                    weathertypes[i] = 11
-                elif 22.5 <= direction < 67.5:
-                    weathertypes[i] = 12
-                elif 67.5 <= direction < 112.5:
-                    weathertypes[i] = 13
-                elif 112.5 <= direction < 157.5:
-                    weathertypes[i] = 14
-                elif 157.5 <= direction < 202.5:
-                    weathertypes[i] = 15
-                elif 202.5 <= direction < 247.5:
-                    weathertypes[i] = 16
-                elif 247.5 <= direction < 292.5:
-                    weathertypes[i] = 17
-                elif 292.5 <= direction < 337.5:
-                    weathertypes[i] = 18
+                # writes directly to weathertypes array
+                lamp_synoptic_directional_type(direction, weathertypes, i)
 
             elif z_i < 0:
-                if direction >= 337.5 or direction < 22.5:
-                    weathertypes[i] = 19
-                elif 22.5 <= direction < 67.5:
-                    weathertypes[i] = 20
-                elif 67.5 <= direction < 112.5:
-                    weathertypes[i] = 21
-                elif 112.5 <= direction < 157.5:
-                    weathertypes[i] = 22
-                elif 157.5 <= direction < 202.5:
-                    weathertypes[i] = 23
-                elif 202.5 <= direction < 247.5:
-                    weathertypes[i] = 24
-                elif 247.5 <= direction < 292.5:
-                    weathertypes[i] = 25
-                elif 292.5 <= direction < 337.5:
-                    weathertypes[i] = 26
+                # writes directly to weathertypes array
+                lamb_synoptic_directional_type_zlt0(direction, weathertypes, i)
         # light indeterminate flow, corresponding to Lamb unclassified type U
         elif abs(z_i) < 6 and total_flow[i] < 6:
             weathertypes[i] = 27
@@ -475,16 +524,14 @@ def calc_lwt_slwt_model(
     )
 
     if not predefined_slwt:
-        with open(
+        with Path(
             f"{cfg.get('work_dir')}/wt_mapping_dict_ERA5.json",
-            encoding="utf-8",
-        ) as file:
+        ).open("r", encoding="utf-8") as file:
             mapping_dict_era5_f = json.load(file)
 
-        with open(
+        with Path(
             f"{cfg.get('work_dir')}/wt_mapping_dict_E-OBS.json",
-            encoding="utf-8",
-        ) as file:
+        ).open("r", encoding="utf-8") as file:
             mapping_dict_eobs_f = json.load(file)
         mapping_dict_era5 = reverse_convert_dict(mapping_dict_era5_f)
         mapping_dict_eobs = reverse_convert_dict(mapping_dict_eobs_f)

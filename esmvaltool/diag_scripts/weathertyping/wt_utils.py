@@ -322,8 +322,6 @@ def write_mapping_dict(work_dir: str, dataset: str, mapping_dict: dict):
 
     with Path(
         f"{work_dir}/wt_mapping_dict_{dataset}.json",
-        "w",
-        encoding="utf-8",
     ).open("w", encoding="utf-8") as file:
         json.dump(mapping_dict_reformat, file)
 
