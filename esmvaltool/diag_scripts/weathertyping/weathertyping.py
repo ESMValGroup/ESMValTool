@@ -175,8 +175,8 @@ def process_era5_automatic_slwt(
 
 
 def run_automatic_slwt(cfg: dict):
-    """Run the automated calculation for simplified weathertypes \
-    and write to file, and plot the means and seasonal occurrence \
+    """Run the automated calculation for simplified weathertypes
+    and write to file, and plot the means and seasonal occurrence
     of the weathertypes.
 
     Args:

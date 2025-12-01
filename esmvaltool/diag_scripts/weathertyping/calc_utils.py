@@ -439,7 +439,7 @@ def calc_lwt_slwt_model(
     cfg: dict,
     cube: iris.cube.Cube,
     data_info: dict,
-    predefined_slwt: dict = None,
+    predefined_slwt: dict | None = None,
 ):
     """Calculate Lamb as well as simplified weathertypes for model and write them to file.
 
@@ -458,7 +458,7 @@ def calc_lwt_slwt_model(
         f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}",
     ).exists():
         Path(
-            f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}"
+            f"{cfg.get('work_dir')}/{data_info.get('output_file_path')}",
         ).mkdir(
             parents=True,
             exist_ok=True,

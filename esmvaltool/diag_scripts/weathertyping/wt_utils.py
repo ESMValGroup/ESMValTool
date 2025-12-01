@@ -200,7 +200,8 @@ def load_wt_files(path: str, mode="simplified"):
         lwt_cube = iris.load_cube(path, "lwt")
         wt_cubes = [lwt_cube]
     else:
-        raise ValueError("Mode not recognized. Use 'simplified' or 'lamb'.")
+        e = "Mode not recognized. Use 'simplified' or 'lamb'."
+        raise ValueError(e)
 
     return wt_cubes
 
@@ -209,8 +210,8 @@ def get_provenance_record(
     caption: str,
     ancestors: list,
     long_names: list,
-    plot_types: list = None,
-    statistics: list = None,
+    plot_types: list | None = None,
+    statistics: list | None = None,
 ) -> dict:
     """Get provenance record.
 
@@ -218,8 +219,8 @@ def get_provenance_record(
         caption (str): Caption of plot
         ancestors (list): List of ancestor plots
         long_names (list): List of variable long names
-        plot_types (bool | list): Type of plot
-        statistics (bool | list): Types of statistics used
+        plot_types (list | None): Type of plot
+        statistics (list | None): Types of statistics used
 
     Returns
     -------
@@ -291,7 +292,7 @@ def get_mapping_dict(selected_pairs: list) -> dict:
     mapping_array = []
 
     for elem in selected_pairs:
-        (mapping_array.append(elem[0]),)
+        mapping_array.append(elem[0])
 
     s = [set(i) for i in mapping_array if i]
 
