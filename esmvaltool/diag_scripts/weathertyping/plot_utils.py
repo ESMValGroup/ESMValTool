@@ -191,6 +191,61 @@ def set_gridlines(ax: plt.Axes):
     return gl
 
 
+def prepare_plot_title(
+    data_info: dict, wt: int, var_name: str, mode: str
+) -> str:
+    """Return formatted plot title.
+
+    Args:
+    ----
+        data_info (dict): dict containing info on dataset
+        wt (int): weathertype
+        var_name (str): name of variable
+        mode (str): statistic used
+
+    Returns
+    -------
+        (str): title of plot
+    """
+    ensemble = data_info.get("ensemble", "")
+    timerange = data_info.get("timerange")
+    dataset = data_info.get("dataset")
+    if var_name == "pr" and dataset == "ERA5":
+        title = f"{dataset} {ensemble}, total {var_name} {mode}\n{timerange}, wt: {wt}"
+    elif var_name == "pr":
+        title = f"{dataset} {ensemble}, {var_name} flux {mode}\n{timerange}, wt: {wt}"
+    elif var_name == "tas":
+        title = f"{dataset} {ensemble}, 1000 hPa {var_name} {mode}\n{timerange}, wt: {wt}"
+    else:  # psl or others
+        title = (
+            f"{dataset} {ensemble}, {var_name} {mode}\n{timerange}, wt: {wt}"
+        )
+    return title
+
+
+def get_unit(var_name: str, dataset: str) -> str:
+    """Get unit of variables.
+
+    Args:
+    ----
+        var_name (str): name of variable
+        dataset (str): name of dataset
+
+    Returns
+    -------
+        (str): unit of variable
+    """
+    if var_name == "psl":
+        return "[hPa]"
+    if var_name == "pr" and dataset == "ERA5":
+        return "[m]"
+    if var_name == "pr":
+        return "[kg m-2 s-1]"
+    if var_name == "tas":
+        return "[K]"
+    return ""
+
+
 def plot_maps(
     wt: np.array,
     cfg: dict,
@@ -221,46 +276,16 @@ def plot_maps(
 
     ax = plt.axes(projection=ccrs.PlateCarree())
 
-    if data_info.get("var") == "psl":
-        psl_cmap = get_colormap("psl")
-        plt.title(
-            f"{data_info.get('dataset')} {data_info.get('ensemble', '')}, {data_info.get('var')} {mode}\n"
-            f"{data_info.get('timerange')}, wt: {wt}",
-        )
-        unit = "[hPa]"
-        im = iplt.contourf(cube / 100, cmap=psl_cmap)
-        cb = plt.colorbar(im)
-        cb.ax.tick_params(labelsize=8)
-        cb.set_label(label=f"{var_name} {mode} {unit}")
-    elif var_name == "pr":
-        prcp_cmap = get_colormap("prcp")
-        if data_info.get("dataset") == "ERA5":
-            unit = "[m]"
-            plt.title(
-                f"{data_info.get('dataset')} {data_info.get('ensemble', '')}, total {var_name} {mode}\n"
-                f"{data_info.get('timerange')}, wt: {wt}",
-            )
-        else:
-            unit = "[kg m-2 s-1]"
-            plt.title(
-                f"{data_info.get('dataset')} {data_info.get('ensemble', '')}, {var_name} flux {mode}\n"
-                f"{data_info.get('timerange')}, wt: {wt}",
-            )
-        im = iplt.contourf(cube, cmap=prcp_cmap)
-        cb = plt.colorbar(im)
-        cb.ax.tick_params(labelsize=8)
-        cb.set_label(label=f"{var_name} {mode} {unit}")
-    elif var_name == "tas":
-        temp_cmap = get_colormap("temp")
-        unit = "[K]"
-        plt.title(
-            f"{data_info.get('dataset')} {data_info.get('ensemble', '')}, 1000 hPa {var_name} {mode}\n"
-            f"{data_info.get('timerange')}, wt: {wt}",
-        )
-        im = iplt.contourf(cube, cmap=temp_cmap)
-        cb = plt.colorbar(im)
-        cb.ax.tick_params(labelsize=8)
-        cb.set_label(label=f"{var_name} {mode} {unit}")
+    cmap = get_colormap(var_name if var_name != "pr" else "prcp")
+
+    title = prepare_plot_title(data_info, wt, var_name, mode)
+    plt.title(title)
+    unit = get_unit(var_name, data_info.get("dataset"))
+
+    im = iplt.contourf(cube if var_name != "psl" else cube / 100, cmap=cmap)
+    cb = plt.colorbar(im)
+    cb.ax.tick_params(labelsize=8)
+    cb.set_label(label=f"{var_name} {mode} {unit}")
 
     set_gridlines(ax)
 
