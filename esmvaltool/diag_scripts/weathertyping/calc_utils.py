@@ -107,8 +107,6 @@ def calc_slwt_obs(
         "Lamb Weathertypes",
         ancestors,
         ["Lamb Weathertypes"],
-        plot_types=False,
-        statistics=False,
     )
 
     log_provenance(
@@ -441,7 +439,7 @@ def calc_lwt_slwt_model(
     cfg: dict,
     cube: iris.cube.Cube,
     data_info: dict,
-    predefined_slwt: bool | dict,
+    predefined_slwt: dict = None,
 ):
     """Calculate Lamb as well as simplified weathertypes for model and write them to file.
 
@@ -450,7 +448,7 @@ def calc_lwt_slwt_model(
         cfg (dict): Configuration dictionary from recipe
         cube (iris.cube.Cube): PSL field of dataset
         data_info (dict): Dictionary with info to dataset
-        predefined_slwt (bool | dict): If False, automatic_slwt will be used.
+        predefined_slwt (dict | None): If None, automatic_slwt will be used.
             If dict, this mapping dict will be used.
             (see recipe option predefined_slwt)
     """
@@ -538,8 +536,6 @@ def calc_lwt_slwt_model(
         "Lamb Weathertypes",
         ancestors,
         ["Lamb Weathertypes"],
-        plot_types=False,
-        statistics=False,
     )
 
     log_provenance(
@@ -923,8 +919,6 @@ def calc_lwt_model(cfg: dict, cube: iris.cube.Cube, data_info: dict):
         "Lamb Weathertypes",
         ancestors,
         ["Lamb Weathertypes"],
-        plot_types=False,
-        statistics=False,
     )
 
     log_provenance(

@@ -234,8 +234,6 @@ def process_era5_lwt(preproc_variables_dict, cfg, dataset_vars, data_info):
         "Lamb Weathertypes",
         ancestors,
         ["Lamb Weathertypes"],
-        plot_types=False,
-        statistics=False,
     )
 
     log_provenance(f"{cfg.get('work_dir')}/lwt_era5", cfg, provenance_record)
@@ -246,7 +244,7 @@ def process_era5_lwt(preproc_variables_dict, cfg, dataset_vars, data_info):
     # load wt files
     wt_cubes = load_wt_files(
         f"{cfg.get('work_dir')}/{data_info['dataset']}.nc",
-        only_lwt=True,
+        mode="lamb",
     )
 
     if cfg.get("plotting", False):
@@ -299,11 +297,11 @@ def process_models_lwt(cfg: dict, dataset_vars: list, data_info: dict):
                 f"{data_info['driver']}"
                 f"_{data_info['ensemble']}_"
                 f"{data_info['timerange']}.nc",
-                only_lwt=True,
+                mode="lamb",
             )
 
             var_dict = get_looping_dict(
-                dataset_vars
+                dataset_vars,
             )  # dataset_vars is list of variables for dataset_name
 
             if cfg.get("plotting", False):

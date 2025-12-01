@@ -180,25 +180,27 @@ def get_looping_dict(preproc_vars: list):
     }
 
 
-def load_wt_files(path: str, only_lwt=False):
+def load_wt_files(path: str, mode="simplified"):
     """Load wt files.
 
     Args:
         path (str): Path of wt file
-        only_lwt (bool, optional): If True, only Lamb weathertypes will be loaded. Defaults to False.
+        mode (str, optional): Type of weathertype to load. Defaults to "simplified".
 
     Returns
     -------
         list: List of weathertype cubes.
     """
-    if not only_lwt:
+    if mode == "simplified":
         lwt_cube = iris.load_cube(path, "lwt")
         slwt_era5_cube = iris.load_cube(path, "slwt_era5")
         slwt_eobs_cube = iris.load_cube(path, "slwt_eobs")
         wt_cubes = [lwt_cube, slwt_era5_cube, slwt_eobs_cube]
-    else:
+    elif mode == "lamb":
         lwt_cube = iris.load_cube(path, "lwt")
         wt_cubes = [lwt_cube]
+    else:
+        raise ValueError("Mode not recognized. Use 'simplified' or 'lamb'.")
 
     return wt_cubes
 
@@ -207,8 +209,8 @@ def get_provenance_record(
     caption: str,
     ancestors: list,
     long_names: list,
-    plot_types: bool | list,
-    statistics: bool | list,
+    plot_types: list = None,
+    statistics: list = None,
 ) -> dict:
     """Get provenance record.
 
@@ -232,9 +234,9 @@ def get_provenance_record(
         "long_names": long_names,
         "ancestors": ancestors,
     }
-    if plot_types is not False:
+    if plot_types:
         record["plot_types"] = plot_types
-    if statistics is not False:
+    if statistics:
         record["statistics"] = statistics
     return record
 
@@ -317,11 +319,11 @@ def write_mapping_dict(work_dir: str, dataset: str, mapping_dict: dict):
     """
     mapping_dict_reformat = convert_dict(mapping_dict)
 
-    with open(
+    with Path(
         f"{work_dir}/wt_mapping_dict_{dataset}.json",
         "w",
         encoding="utf-8",
-    ) as file:
+    ).open("w", encoding="utf-8") as file:
         json.dump(mapping_dict_reformat, file)
 
 
@@ -536,6 +538,6 @@ def check_mapping_dict_format(mapping_dict: dict) -> dict:
     -------
         dict: mapping dict in {lwt: slwt, ...} format
     """
-    if isinstance(mapping_dict.get(list(mapping_dict.keys())[0]), list):
+    if isinstance(mapping_dict[next(iter(mapping_dict))], list):
         return reverse_convert_dict(mapping_dict)
     return mapping_dict
