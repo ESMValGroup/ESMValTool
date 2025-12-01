@@ -220,12 +220,12 @@ jobs:
             conda activate esmvaltool
             python -c '
             from intake_esgf import conf
-            for index in conf["solr_indices"]:
-                conf["solr_indices"][index] = True
-            conf.save()'
+            conf["solr_indices"]["esgf.ceda.ac.uk"] = True
+            conf.save()
+            '
             esmvaltool config copy data-intake-esgf.yml
             for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
-              esmvaltool run "$recipe"
+              esmvaltool run --max-parallel-tasks=2 "$recipe"
             done
       - store_artifacts:
           path: /root/esmvaltool_output
