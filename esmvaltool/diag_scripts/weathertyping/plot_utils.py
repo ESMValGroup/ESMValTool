@@ -192,7 +192,10 @@ def set_gridlines(ax: plt.Axes):
 
 
 def prepare_plot_title(
-    data_info: dict, wt: int, var_name: str, mode: str
+    data_info: dict,
+    wt: int,
+    var_name: str,
+    mode: str,
 ) -> str:
     """Return formatted plot title.
 

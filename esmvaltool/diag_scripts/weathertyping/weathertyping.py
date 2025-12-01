@@ -319,10 +319,7 @@ def process_models_lwt(cfg: dict, dataset_vars: list, data_info: dict):
 
 
 def run_lwt(cfg: dict):
-    """Run calculation of weathertypes.
-    Write to file, and plot the means of psl, tas, and pr \
-    for each weathertype. \
-    Plot seasonal occurrence of the weathertypes.
+    """Run calculation of weathertypes. Write to file, and plot the means of psl, tas, and pr for each weathertype. Plot seasonal occurrence of the weathertypes.
 
     Args:
     -------
