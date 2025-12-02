@@ -19,7 +19,29 @@ attributes:
 # Variables to cmorize
 # These go into the vals dictionary in the python script
 variables:
-  ts:
+  # ts:
+  #   # mip: Eday for daily files, Amon for monthly
+  #   mip: Eday
+  #   raw: land surface temperature
+  #   raw_units: kelvin
+
+  #   # file_base for the start of the file, don't put the final - in the string
+  #   file_base: 'ESACCI-LST-L3C-LST'
+    
+  #   # These parameters build the file name
+  #   platform: 'AMSR_E'
+  #   spatial_resolution: '0.125deg'
+  #   temporal_resolution: '1DAILY'
+  #   # MW datasets need ASC and DES
+  #   # IR datasets need DAY and NIGHT
+  #   day_or_asc: 'ASC'
+  #   night_or_des: 'DES'
+    
+  #   start_year: 2004
+  #   end_year: 2004
+
+  # new variable format to match CCI Ozone approach
+  ts_ssmi13:
     # mip: Eday for daily files, Amon for monthly
     mip: Eday
     raw: land surface temperature
@@ -29,13 +51,17 @@ variables:
     file_base: 'ESACCI-LST-L3C-LST'
     
     # These parameters build the file name
-    platform: 'AMSR_E'
+    platform: 'SSMI13'
     spatial_resolution: '0.125deg'
     temporal_resolution: '1DAILY'
     # MW datasets need ASC and DES
     # IR datasets need DAY and NIGHT
-    day_or_asc: 'ASC'
-    night_or_des: 'DES'
-    
+    ir_or_mw: 'mw'
+
+    day_overpass: 0.0
+    night_overpass : 0.0
+    asc_overpass_time: 0.0
+    des_overpass_time: 0.0
+
     start_year: 2004
     end_year: 2004
