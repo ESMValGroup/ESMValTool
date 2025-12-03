@@ -5,7 +5,6 @@ orbs:
   coverage-reporter: codacy/coverage-reporter@13.13.0
 
 commands:
-
   check_changes:
     steps:
       - run:
@@ -271,7 +270,7 @@ jobs:
             # Install prerequisites
             mkdir /logs
             # Install ESMValTool in a new conda environment
-            mamba create -y --name esmvaltool -c conda-forge esmvaltool 'python=3.11' >> /logs/conda.txt 2>&1
+            mamba create -y --name esmvaltool -c conda-forge esmvaltool 'python=3.12' >> /logs/conda.txt 2>&1
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
             # Log versions
