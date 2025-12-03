@@ -218,12 +218,7 @@ jobs:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            python -c '
-            from intake_esgf import conf
-            conf["solr_indices"]["esgf.ceda.ac.uk"] = True
-            conf.save()
-            '
-            esmvaltool config copy data-intake-esgf.yml
+            esmvaltool config copy data-esmvalcore-esgf.yml
             for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
               esmvaltool run --max-parallel-tasks=2 "$recipe"
             done
@@ -234,7 +229,7 @@ jobs:
           paths:
             - /opt/conda/pkgs
             - /root/.cache/pip
-            - /root/.esgf
+            - /root/climate_data
 
   build_documentation:
     # Test building documentation
