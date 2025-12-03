@@ -66,7 +66,7 @@ jobs:
     runs-on: "macos-latest"
     strategy:
       matrix:
-        # there are issues with git and OSX for older Pythons
+        # there are issues with OSX env solving for older Pythons
         python-version: ["3.13"]  # ["3.11", "3.12", "3.13"]
         architecture: ["x64"]  # need to force Intel, arm64 builds have issues
       fail-fast: false
