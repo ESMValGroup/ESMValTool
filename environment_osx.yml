@@ -29,7 +29,6 @@ dependencies:
   - fire
   - fsspec
   - gdal >=3.9.0
-  #  - git
   - ipython
   - iris >=3.11
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
