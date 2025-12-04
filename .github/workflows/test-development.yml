@@ -12,7 +12,6 @@ on:
   push:
     branches:
       - main
-      - update-recipe-test
   schedule:
     - cron: '0 0 * * *'
 
