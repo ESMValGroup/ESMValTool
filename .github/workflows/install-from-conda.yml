@@ -7,7 +7,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 4 * * *'
+    - cron: "0 4 * * *"
 
 # Required shell entrypoint to have properly configured bash shell
 defaults:
@@ -17,11 +17,11 @@ defaults:
 jobs:
   linux:
     runs-on: "ubuntu-latest"
-    if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
+    if: github.repository == 'ESMValGroup/ESMValTool' # avoid GAs in forks
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.12", "3.13"]
     name: Linux Python ${{ matrix.python-version }}
     steps:
       - uses: conda-incubator/setup-miniconda@v3
