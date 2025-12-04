@@ -11,6 +11,7 @@ import logging
 import glob
 import iris
 import cf_units
+import calendar
 
 from ...utilities import fix_coords
 from esmvaltool.cmorizers.data import utilities as utils
@@ -79,76 +80,84 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         this_month = 1
         while current_date <= end_date:
 
-            datestr = datetime.datetime.strftime(current_date,
-                                                 "%Y%m%d")
+            month_cube_list = iris.cube.CubeList([])
+            # put all cubes in here then concat
+            for day in range(1, calendar.monthrange(current_date.year, current_date.month)[1]+1):
+                
+
+                datestr = datetime.datetime.strftime(current_date,
+                                                    "%Y%m%d")
+                
+                ##### ADD A MONTH LOOP to make a file per month ######
+
+                # ESACCI-LST-L3C-LST-SSMI17-0.125deg_1DAILY_DES-20171214000000-fv5.11.nc
+                file_pattern_1 = f"{in_dir}/{vals['file_base']}-{vals['platform']}-" + \
+                f"{vals['spatial_resolution']}_{vals['temporal_resolution']}" + \
+                    f"_{file1}-{datestr}000000-*{cfg['attributes']['version']}.nc"
             
-            ##### ADD A MONTH LOOP to make a file per month ######
+                file_pattern_2 = f"{in_dir}/{vals['file_base']}-{vals['platform']}-" + \
+                f"{vals['spatial_resolution']}_{vals['temporal_resolution']}" + \
+                    f"_{file2}-{datestr}000000-*{cfg['attributes']['version']}.nc"
+                
+                #all_files = glob.glob(file_pattern)
 
-            # ESACCI-LST-L3C-LST-SSMI17-0.125deg_1DAILY_DES-20171214000000-fv5.11.nc
-            file_pattern_1 = f"{in_dir}/{vals['file_base']}-{vals['platform']}-" + \
-            f"{vals['spatial_resolution']}_{vals['temporal_resolution']}" + \
-                f"_{file1}-{datestr}000000-*{cfg['attributes']['version']}.nc"
-        
-            file_pattern_2 = f"{in_dir}/{vals['file_base']}-{vals['platform']}-" + \
-            f"{vals['spatial_resolution']}_{vals['temporal_resolution']}" + \
-                f"_{file2}-{datestr}000000-*{cfg['attributes']['version']}.nc"
-            
-            #all_files = glob.glob(file_pattern)
-
-            all_cubes = iris.cube.CubeList([])
-            for filename in [file_pattern_1, file_pattern_2]:
-                logger.info(f"{filename}")
-                cube = iris.load_cube(filename,
-                                  vals['raw'],
-                                  callback = load_callback)
-                logger.info(f"{cube.coord('time')=}")
-                cube = fix_coords(cube)
-                logger.info(f"{cube.coord('time')=}")
-                logger.info(f"{cube.coord('time').points=}")
-
-
-                for KEY in overpass_time.keys():
-                    new_time = 0.0
-                    if KEY in filename:
-                        if 'ASC' in filename:
-                            new_time = cube.coord('time').points + overpass_time[KEY]['ASC']/24.
-                        if 'DES' in filename:
-                            new_time = cube.coord('time').points + overpass_time[KEY]['DES']/24.
-
-                        #new_time_points = cube.coord('time').points + new_time/24.
-                        new_time_coord = iris.coords.DimCoord(new_time,
-                                                            standard_name='time',
-                                                            long_name='time',
-                                                            var_name='time',
-                                                            units=cube.coord('time').units,
-                                                            bounds=None,
-                                                            attributes=None,
-                                                            coord_system=None,
-                                                            circular=False
-                                                            )                    
-
-                        try:
-                            cube.remove_coord('time')
-                            cube.add_dim_coord(new_time_coord, 0)
-                            logger.info('New time coord added')
-                        except iris.exceptions.CoordinateNotFoundError:
-                            logger.info('Problem adding overpass time to time coord')
-
-
+                all_cubes = iris.cube.CubeList([])
+                for filename in [file_pattern_1, file_pattern_2]:
+                    logger.info(f"{filename}")
+                    cube = iris.load_cube(filename,
+                                    vals['raw'],
+                                    callback = load_callback)
+                    logger.info(f"{cube.coord('time')=}")
+                    cube = fix_coords(cube)
+                    logger.info(f"{cube.coord('time')=}")
                     logger.info(f"{cube.coord('time').points=}")
 
 
-                all_cubes.append(cube)
+                    for KEY in overpass_time.keys():
+                        new_time = 0.0
+                        if KEY in filename:
+                            if 'ASC' in filename:
+                                new_time = cube.coord('time').points + overpass_time[KEY]['ASC']/24.
+                            if 'DES' in filename:
+                                new_time = cube.coord('time').points + overpass_time[KEY]['DES']/24.
 
-            logger.info('xxxx')
+                            #new_time_points = cube.coord('time').points + new_time/24.
+                            new_time_coord = iris.coords.DimCoord(new_time,
+                                                                standard_name='time',
+                                                                long_name='time',
+                                                                var_name='time',
+                                                                units=cube.coord('time').units,
+                                                                bounds=None,
+                                                                attributes=None,
+                                                                coord_system=None,
+                                                                circular=False
+                                                                )                    
 
-            for cube in all_cubes:
-                logger.info(f"{cube=}")
-                logger.info(f"{cube.coord('time')}")
-                logger.info(f"{cube.coord('time').points}")
+                            try:
+                                cube.remove_coord('time')
+                                cube.add_dim_coord(new_time_coord, 0)
+                                logger.info('New time coord added')
+                            except iris.exceptions.CoordinateNotFoundError:
+                                logger.info('Problem adding overpass time to time coord')
 
-            all_cubes =  all_cubes.concatenate_cube()
-            
+                            month_cube_list.append(cube)
+
+
+                    
+
+
+                    
+                
+                current_date = current_date + datetime.timedelta(days=1)
+
+            logger.info(f"{month_cube_list=}")
+            all_cubes =  month_cube_list.concatenate_cube()
+            logger.info(f"{all_cubes=}")
+
+
+        all_cubes =  all_cubes.concatenate_cube()
+        logger.info(f"{all_cubes=}")
+        print(0/0)
             # this is needed for V1 data, V3 data is ok
             # try:
             #     cube.coords()[2].standard_name = 'longitude'
@@ -158,15 +167,15 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             #     logger.info('No V1 longitude issue')
 
             # this gives time as hours since 19500101
-            all_cubes = fix_coords(all_cubes)
+        all_cubes = fix_coords(all_cubes)
 
-            # this is need for when uncertainity variables added
-            if all_cubes.long_name == 'land surface temperature':
-                all_cubes.long_name = 'surface_temperature'
-                all_cubes.standard_name = 'surface_temperature'
+        # this is need for when uncertainity variables added
+        if all_cubes.long_name == 'land surface temperature':
+            all_cubes.long_name = 'surface_temperature'
+            all_cubes.standard_name = 'surface_temperature'
 
-            if all_cubes.var_name == 'lst':
-                all_cubes.var_name = 'ts'
+        if all_cubes.var_name == 'lst':
+            all_cubes.var_name = 'ts'
 
               
 
