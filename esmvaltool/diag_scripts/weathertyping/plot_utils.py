@@ -23,7 +23,7 @@ import seaborn as sns
 # local imports
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from matplotlib.colors import ListedColormap
-from wt_utils import get_driver
+from wt_utils import get_driver, get_provenance_record, log_provenance
 
 iris.FUTURE.datum_support = True
 
@@ -69,8 +69,8 @@ def plot_seasonal_occurrence(
 
     output_path = f"{cfg['plot_dir']}/seasonal_occurrence"
 
-    if not Path.exists(f"{output_path}"):
-        Path(f"{output_path}").mkdir(parents=True, exist_ok=True)
+    if not Path(output_path).exists():
+        Path(output_path).mkdir(parents=True, exist_ok=True)
 
     month_list = [
         "Jan",
@@ -271,7 +271,7 @@ def plot_maps(
     logger.info(
         "Plotting %s %s %s for %s %s",
         data_info.get("dataset"),
-        data_info.get("var"),
+        var_name,
         mode,
         data_info.get("wt_string"),
         wt,
@@ -312,6 +312,29 @@ def plot_maps(
         f"{var_name}_{mode}_{data_info.get('timerange')}.pdf",
     )
     plt.close()
+
+    # log provenance
+    ancestors = [
+        f"{data_info.get('preproc_path')}",
+        f"{cfg.get('work_dir')}/ERA5.nc",
+    ]
+    provenance_record = get_provenance_record(
+        f"{var_name} {mode} for {data_info.get('wt_string')}",
+        ancestors,
+        [var_name],
+        ["map"],
+        [mode],
+    )
+
+    local_path = f"{cfg.get('plot_dir')}/{mode}"
+
+    log_provenance(
+        f"{local_path}/{data_info.get('wt_string')}_{wt}{get_driver(data_info)}_"
+        f"{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
+        f"_{var_name}_{mode}_{data_info.get('timerange')}.png",
+        cfg,
+        provenance_record,
+    )
 
 
 def plot_corr_rmse_heatmaps(

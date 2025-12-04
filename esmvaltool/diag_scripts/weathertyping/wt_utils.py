@@ -254,7 +254,9 @@ def log_provenance(filename: str, cfg: dict, provenance_record: dict):
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance_record)
 
-    logger.info("Output stored as %s", filename)
+    logger.info(
+        "Provenance added to %s", f"{cfg['run_dir']}/diagnostic_provenance.yml"
+    )
 
 
 def turn_list_to_mapping_dict(list_: list) -> dict:

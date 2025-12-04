@@ -732,8 +732,7 @@ def calc_wt_means(
         f"{cfg.get('work_dir')}/ERA5.nc",
     ]
     provenance_record = get_provenance_record(
-        f"{var_name} means for \
-                                              {wt_string}",
+        f"{var_name} means for {wt_string}",
         ancestors,
         [var_name],
         ["map"],
