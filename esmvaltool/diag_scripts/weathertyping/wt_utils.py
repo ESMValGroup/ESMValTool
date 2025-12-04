@@ -255,7 +255,8 @@ def log_provenance(filename: str, cfg: dict, provenance_record: dict):
         provenance_logger.log(filename, provenance_record)
 
     logger.info(
-        "Provenance added to %s", f"{cfg['run_dir']}/diagnostic_provenance.yml"
+        "Provenance added to %s",
+        f"{cfg['run_dir']}/diagnostic_provenance.yml",
     )
 
 
