@@ -61,7 +61,7 @@ dependencies = [
     "nc-time-axis",
     "netCDF4",
     "numba",
-    "numpy!=1.24.3",  # severe masking bug
+    "numpy>=2",
     "openpyxl",
     "packaging",
     "pandas",
