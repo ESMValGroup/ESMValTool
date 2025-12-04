@@ -12,7 +12,7 @@ Highlights
 ~~~~~~~~~~
 
 Constellation of CMORizers and diagnostics updated/implemented as part of the
-`Rapid Evaluation Framework (REF) <https://wcrp-cmip.org/cmip7/rapid-evaluation-framework/>`__:
+`Rapid Evaluation Framework (REF) <https://wcrp-cmip.org/cmip-phases/cmip7/rapid-evaluation-framework/>`__:
 
 - CMORizers:
 
