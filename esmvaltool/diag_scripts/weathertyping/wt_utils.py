@@ -29,6 +29,7 @@ def get_driver(data_info: dict) -> str:
     """Get driving model name and string for further use.
 
     Args:
+    ----
         data_info (dict): Data information dictionary.
 
     Returns
@@ -42,6 +43,7 @@ def load_wt_preprocessors(dataset: str, preproc_variables_dict: dict):
     """Load preprocessor cubes for calculating Lamb weathertypes.
 
     Args:
+    ----
         dataset (str): Name of dataset
         preproc_variables_dict (dict): Dictionary with info on preprocessor variables
 
@@ -73,6 +75,7 @@ def get_ancestors_era5_eobs(dataset: str, preproc_variables_dict: dict):
     """Get ancestors for observational data.
 
     Args:
+    ----
         dataset (str): Name of dataset
         preproc_variables_dict (dict): Dictionary with info on preprocessor variables
 
@@ -102,6 +105,7 @@ def get_model_output_filepath(dataset: str, data_info: list):
     """Get output filepaths for models.
 
     Args:
+    ----
         dataset (str): Name of dataset
         data_info (list): Model variables
 
@@ -124,6 +128,7 @@ def get_preproc_lists(preproc_vars: list):
     """Put preprocessors and paths into lists for further use.
 
     Args:
+    ----
         preproc_vars (list): List of preprocessor variables.
 
     Returns
@@ -148,6 +153,7 @@ def get_preproc_lists_ensemble(preproc_vars: list):
     """Put preprocessors and paths into lists for further use.
 
     Args:
+    ----
         preproc_vars (list): List of preprocessor variables.
 
     Returns
@@ -165,6 +171,7 @@ def get_looping_dict(preproc_vars: list):
     """Put variable preprocessors into dict for looping.
 
     Args:
+    ----
         preproc_vars (list): List of preprocessor variables.
 
     Returns
@@ -184,6 +191,7 @@ def load_wt_files(path: str, mode="slwt"):
     """Load wt files.
 
     Args:
+    ----
         path (str): Path of wt file
         mode (str, optional): Type of weathertype to load. Defaults to "slwt".
 
@@ -216,6 +224,7 @@ def get_provenance_record(
     """Get provenance record.
 
     Args:
+    ----
         caption (str): Caption of plot
         ancestors (list): List of ancestor plots
         long_names (list): List of variable long names
@@ -264,6 +273,7 @@ def turn_list_to_mapping_dict(list_: list) -> dict:
     """Turn list of combined WT to a dictionary for further use.
 
     Args:
+    ----
         list_ (list): List of combined WTs
 
     Returns
@@ -286,6 +296,7 @@ def get_mapping_dict(selected_pairs: list) -> dict:
     """Get mapping dictionary from list of selected pairs.
 
     Args:
+    ----
         selected_pairs (list): List of selected weathertype pairs
 
     Returns
