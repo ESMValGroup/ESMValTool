@@ -62,6 +62,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         glob_attrs['mip'] = vals['mip']
         cmor_table = cfg["cmor_table"]
 
+        variable_name = var.split('_')[0]
+
         logger.info(f"Starting CMORiser for {var}")
 
         start_date = datetime.datetime(vals['start_year'], 1, 1)
@@ -155,9 +157,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             logger.info(f"{all_cubes=}")
 
 
-        all_cubes =  all_cubes.concatenate_cube()
-        logger.info(f"{all_cubes=}")
-        print(0/0)
+        
+    
             # this is needed for V1 data, V3 data is ok
             # try:
             #     cube.coords()[2].standard_name = 'longitude'
@@ -166,37 +167,37 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             #     # No change needed
             #     logger.info('No V1 longitude issue')
 
-            # this gives time as hours since 19500101
-        all_cubes = fix_coords(all_cubes)
+                # this gives time as hours since 19500101
+            all_cubes = fix_coords(all_cubes)
 
-        # this is need for when uncertainity variables added
-        if all_cubes.long_name == 'land surface temperature':
-            all_cubes.long_name = 'surface_temperature'
-            all_cubes.standard_name = 'surface_temperature'
+            # this is need for when uncertainity variables added
+            if all_cubes.long_name == 'land surface temperature':
+                all_cubes.long_name = 'surface_temperature'
+                all_cubes.standard_name = 'surface_temperature'
 
-        if all_cubes.var_name == 'lst':
-            all_cubes.var_name = 'ts'
+            if all_cubes.var_name == 'lst':
+                all_cubes.var_name = 'ts'
 
               
 
-#  Leaving this here for when ESMValCore PR with new CMOR tables for uncertainity are avaible
-#                 # Land cover class gives this error when
-#                 # loading in CMORised files
-#                 # OverflowError:
-#                 # Python int too large to convert to C long error
-#                 # This fixes it:
-#                 if 'land cover' in cubes.long_name:
-#                     cubes.data.fill_value = 0
+            #  Leaving this here for when ESMValCore PR with new CMOR tables for uncertainity are avaible
+            #                 # Land cover class gives this error when
+            #                 # loading in CMORised files
+            #                 # OverflowError:
+            #                 # Python int too large to convert to C long error
+            #                 # This fixes it:
+            #                 if 'land cover' in cubes.long_name:
+            #                     cubes.data.fill_value = 0
 
-#                     # Get rid of anything outide 0-255
-#                     cubes.data[np.where(cubes.data < 0)] = 0
-#                     cubes.data[np.where(cubes.data > 255)] = 0
+            #                     # Get rid of anything outide 0-255
+            #                     cubes.data[np.where(cubes.data < 0)] = 0
+            #                     cubes.data[np.where(cubes.data > 255)] = 0
 
-#                     cubes.data = cubes.data.filled()
+            #                     cubes.data = cubes.data.filled()
 
-#                     # This is the line the ultimately solves things.
-#                     # Will leave the other checks above in because they
-#                     cubes.data = cubes.data * 1.0
+            #                     # This is the line the ultimately solves things.
+            #                     # Will leave the other checks above in because they
+            #                     cubes.data = cubes.data * 1.0
 
             cmor_info = cfg["cmor_table"].get_variable(vals["mip"], vals['raw'])
             #utils.fix_var_metadata(cube, cmor_info)
@@ -207,19 +208,19 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
             utils.set_global_atts(all_cubes, glob_attrs)
 
-                # This util funtion will give all files in the same year the same name
-                # can not see a way to resolve this from the source code
-                # esmvaltool/cmorizers/data/utilities.py
-                # utils.save_variable(
-                #     cube,
-                #     var_name,
-                #     out_dir,
-                #     glob_attrs,
-                #     unlimited_dimensions=["time"],
-                #    )
+            # This util funtion will give all files in the same year the same name
+            # can not see a way to resolve this from the source code
+            # esmvaltool/cmorizers/data/utilities.py
+            utils.save_variable(
+                all_cubes,
+                variable_name,
+                out_dir,
+                glob_attrs,
+                unlimited_dimensions=["time"],
+               )
 
             ######## work out how to get utils save to work with the multiple platforms
-            save_name = f"{out_dir}/OBS_ESACCI-LST_sat_{cfg['attributes']['version']}_{vals['mip']}_" + \
-                f"{var}_{datestr}.nc"
-            iris.save(all_cubes, save_name)
-            print(0/0)
+            # save_name = f"{out_dir}/OBS_ESACCI-LST_sat_{cfg['attributes']['version']}_{vals['mip']}_" + \
+            #     f"{var}_{datestr}.nc"
+            # iris.save(all_cubes, save_name)
+           
