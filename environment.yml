@@ -49,8 +49,8 @@ dependencies:
   - progressbar2
   - prov
   - pyproj >=2.1
-  - pys2index  # only from conda-forge
-  - python >=3.11,<3.14
+  - pys2index # only from conda-forge
+  - python >=3.12,<3.14
   - python-cdo
   - python-dateutil
   - pyyaml
