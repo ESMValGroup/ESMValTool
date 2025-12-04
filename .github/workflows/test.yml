@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - unrestrict_osx_architecture
   schedule:
     - cron: "0 0 * * *"
 
