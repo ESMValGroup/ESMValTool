@@ -34,7 +34,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
           use-mamba: true
-          mamba-version: "2.0.8"  # https://github.com/conda-incubator/setup-miniconda/issues/392
       - run: mkdir -p test_linux_artifacts_python_${{ matrix.python-version }}
       - name: Record versions
         run: |
@@ -69,7 +68,6 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.12", "3.13"]
-        architecture: ["x64"] # need to force Intel, arm64 builds have issues
       fail-fast: false
     name: OSX Python ${{ matrix.python-version }}
     steps:
@@ -84,7 +82,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           miniforge-version: "latest"
           use-mamba: true
-          mamba-version: "2.0.5"  # https://github.com/conda-incubator/setup-miniconda/issues/392
       # - name: Install libomp with homebrew
       #   run: brew install libomp
       - run: mkdir -p test_osx_artifacts_python_${{ matrix.python-version }}
@@ -98,8 +95,6 @@ jobs:
         run: |
           which git
           git --version
-      - name: Install git
-        run: mamba install -c conda-forge git
       - name: Install ESMValTool
         run: pip install --no-deps -e .[develop] 2>&1 | tee test_osx_artifacts_python_${{ matrix.python-version }}/install.txt
       - name: Inspect environment
