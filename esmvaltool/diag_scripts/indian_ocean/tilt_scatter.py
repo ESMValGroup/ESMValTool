@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from basic_functions import (get_provenance_record, 
                              load_data, 
                              compute_cube_diff, 
-                             iso_depth_3d,
+                             iso_depth,
                              get_prefix)
 
 from esmvaltool.diag_scripts.shared import (   # type: ignore
@@ -51,7 +51,7 @@ def get_iso_data(cfg, group_md, variable):
     file = info['filename']
     logger.debug(f"Selected dataset: {dataset}")
 
-    t20d_cube = iso_depth_3d(cube, 20)
+    t20d_cube = iso_depth(cube, 20)
 
     # Check for invalid values before masking
     has_nan = np.isnan(t20d_cube.data).any()
