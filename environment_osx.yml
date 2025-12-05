@@ -41,7 +41,7 @@ dependencies:
   - nc-time-axis
   - netCDF4
   - numba
-  - numpy >=2
+  - numpy !=1.24.3  # severe masking bug
   - openpyxl
   - packaging
   - pandas
