@@ -23,28 +23,33 @@ warnings.filterwarnings("ignore", ".*Collapsing a non-contiguous coordinate*")
 def get_driver(data_info: dict) -> str:
     """Get driving model name and string for further use.
 
-    Args:
-    ----
-        data_info (dict): Data information dictionary.
+    Parameters
+    ----------
+    data_info
+        Data information dictionary.
 
     Returns
     -------
-        str: Driver string with leading underscore or empty string.
+    str:
+        Driver string with leading underscore or empty string.
     """
     return data_info.get("driver", "")
 
 
-def load_wt_preprocessors(dataset: str, preproc_variables_dict: dict):
+def load_wt_preprocessors(dataset: str, preproc_variables_dict: dict) -> tuple:
     """Load preprocessor cubes for calculating Lamb weathertypes.
 
-    Args:
-    ----
-        dataset (str): Name of dataset
-        preproc_variables_dict (dict): Dictionary with info on preprocessor variables
+    Parameters
+    ----------
+    dataset
+        Name of dataset
+    preproc_variables_dict
+        Dictionary with info on preprocessor variables
 
     Returns
     -------
-        tuple: Preprocessor cubes for weathertyping
+    tuple
+        Preprocessor cubes for weathertyping
     """
     wt_preproc = iris.load_cube(
         preproc_variables_dict.get(dataset)[0].get("filename"),
@@ -66,17 +71,22 @@ def load_wt_preprocessors(dataset: str, preproc_variables_dict: dict):
     return wt_preproc, wt_preproc_prcp, wt_preproc_prcp_eobs
 
 
-def get_ancestors_era5_eobs(dataset: str, preproc_variables_dict: dict):
+def get_ancestors_era5_eobs(
+    dataset: str, preproc_variables_dict: dict
+) -> tuple:
     """Get ancestors for observational data.
 
-    Args:
-    ----
-        dataset (str): Name of dataset
-        preproc_variables_dict (dict): Dictionary with info on preprocessor variables
+    Parameters
+    ----------
+    dataset
+        Name of dataset
+    preproc_variables_dict
+        Dictionary with info on preprocessor variables
 
     Returns
     -------
-        tuple: Lists of ERA5 and E-OBS ancestors
+    tuple
+        Lists of ERA5 and E-OBS ancestors
     """
     era5_ancestors = [
         preproc_variables_dict.get(dataset)[0].get("filename"),
@@ -96,17 +106,20 @@ def get_ancestors_era5_eobs(dataset: str, preproc_variables_dict: dict):
     return era5_ancestors, eobs_ancestors
 
 
-def get_model_output_filepath(dataset: str, data_info: list):
+def get_model_output_filepath(dataset: str, data_info: list) -> tuple:
     """Get output filepaths for models.
 
-    Args:
-    ----
-        dataset (str): Name of dataset
-        data_info (list): Model variables
+    Parameters
+    ----------
+    dataset
+        Name of dataset
+    data_info
+        Model variables
 
     Returns
     -------
-        tuple: Output filepath and preprocessor path for future referencing.
+    tuple
+        Output filepath and preprocessor path for future referencing.
     """
     timerange = data_info.get("timerange").replace("/", "-")
     experiment = data_info.get("exp")
@@ -122,13 +135,15 @@ def get_model_output_filepath(dataset: str, data_info: list):
 def get_preproc_lists(preproc_vars: list):
     """Put preprocessors and paths into lists for further use.
 
-    Args:
-    ----
-        preproc_vars (list): List of preprocessor variables.
+    Parameters
+    ----------
+    preproc_vars
+        List of preprocessor variables.
 
     Returns
     -------
-        tuple: Preprocessor cubes and paths.
+    tuple
+        Preprocessor cubes and paths.
     """
     preproc_path_psl = preproc_vars[-3].get("filename")
     preproc_path_prcp = preproc_vars[-2].get("filename")
@@ -147,13 +162,15 @@ def get_preproc_lists(preproc_vars: list):
 def get_preproc_lists_ensemble(preproc_vars: list):
     """Put preprocessors and paths into lists for further use.
 
-    Args:
-    ----
-        preproc_vars (list): List of preprocessor variables.
+    Parameters
+    ----------
+    preproc_vars
+        List of preprocessor variables.
 
     Returns
     -------
-        tuple: Preprocessor cubes and paths.
+    tuple
+        Preprocessor cubes and paths.
     """
     preproc_path = preproc_vars.get("filename")
 
@@ -165,13 +182,15 @@ def get_preproc_lists_ensemble(preproc_vars: list):
 def get_looping_dict(preproc_vars: list):
     """Put variable preprocessors into dict for looping.
 
-    Args:
-    ----
-        preproc_vars (list): List of preprocessor variables.
+    Parameters
+    ----------
+    preproc_vars
+        List of preprocessor variables.
 
     Returns
     -------
-        dict: Dictionary of preprocessor cubes and paths.
+    dict
+        Dictionary of preprocessor cubes and paths.
     """
     preproc, preproc_path = get_preproc_lists(preproc_vars)
 
@@ -185,14 +204,17 @@ def get_looping_dict(preproc_vars: list):
 def load_wt_files(path: str, mode="slwt"):
     """Load wt files.
 
-    Args:
-    ----
-        path (str): Path of wt file
-        mode (str, optional): Type of weathertype to load. Defaults to "slwt".
+    Parameters
+    ----------
+    path
+        Path of wt file
+    mode
+        Type of weathertype to load. Defaults to "slwt".
 
     Returns
     -------
-        list: List of weathertype cubes.
+    list
+        List of weathertype cubes.
     """
     if mode == "slwt":
         lwt_cube = iris.load_cube(path, "lwt")
@@ -218,17 +240,23 @@ def get_provenance_record(
 ) -> dict:
     """Get provenance record.
 
-    Args:
-    ----
-        caption (str): Caption of plot
-        ancestors (list): List of ancestor plots
-        long_names (list): List of variable long names
-        plot_types (list | None): Type of plot
-        statistics (list | None): Types of statistics used
+    Parameters
+    ----------
+    caption
+        Caption of plot
+    ancestors
+        List of ancestor plots
+    long_names
+        List of variable long names
+    plot_types
+        Type of plot
+    statistics
+        Types of statistics used
 
     Returns
     -------
-        dict: Provenance record
+    dict
+        Provenance record
     """
     record = {
         "caption": caption,
@@ -249,11 +277,14 @@ def get_provenance_record(
 def log_provenance(filename: str, cfg: dict, provenance_record: dict):
     """Log provenance.
 
-    Args:
-    ----
-        filename (str): Filename of xml file
-        cfg (dict): Configuration dictionary
-        provenance_record (dict): Provenance record dictionary
+    Parameters
+    ----------
+    filename:
+        Filename of xml file
+    cfg
+        Configuration dictionary
+    provenance_record
+        Provenance record dictionary
     """
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(filename, provenance_record)
@@ -267,13 +298,15 @@ def log_provenance(filename: str, cfg: dict, provenance_record: dict):
 def turn_list_to_mapping_dict(list_: list) -> dict:
     """Turn list of combined WT to a dictionary for further use.
 
-    Args:
-    ----
-        list_ (list): List of combined WTs
+    Parameters
+    ----------
+    list_
+        List of combined WTs
 
     Returns
     -------
-        dict: Dictionary of combined WTs
+    dict
+        Dictionary of combined WTs
     """
     result_dict = {}
 
@@ -290,13 +323,15 @@ def turn_list_to_mapping_dict(list_: list) -> dict:
 def get_mapping_dict(selected_pairs: list) -> dict:
     """Get mapping dictionary from list of selected pairs.
 
-    Args:
-    ----
-        selected_pairs (list): List of selected weathertype pairs
+    Parameters
+    ----------
+    selected_pairs
+        List of selected weathertype pairs
 
     Returns
     -------
-        dict: Mapping dictionary
+    dict
+        Mapping dictionary
     """
     mapping_array = [elem[0] for elem in selected_pairs]
 
@@ -318,11 +353,14 @@ def get_mapping_dict(selected_pairs: list) -> dict:
 def write_mapping_dict(work_dir: str, dataset: str, mapping_dict: dict):
     """Write mapping dictionary to file.
 
-    Args:
-    ----
-        work_dir (str): Current working directory
-        dataset (str): Dataset name
-        mapping_dict (dict): Mapping dictionary in {lwt: slwt, ...} format
+    Parameters
+    ----------
+    work_dir
+        Current working directory
+    dataset
+        Dataset name
+    mapping_dict
+        Mapping dictionary in {lwt: slwt, ...} format
     """
     mapping_dict_reformat = convert_dict(mapping_dict)
 
@@ -335,13 +373,15 @@ def write_mapping_dict(work_dir: str, dataset: str, mapping_dict: dict):
 def convert_dict(dict_: dict) -> dict:
     """Convert dictionary from {lwt: slwt, ...} format to {slwt: [lwt1, lwt2], ...}.
 
-    Args:
-    ----
-        dict_ (dict): Mapping dictionary to be converted
+    Parameters
+    ----------
+    dict_
+        Mapping dictionary to be converted
 
     Returns
     -------
-        dict: Converted dictionary
+    dict
+        Converted dictionary
     """
     new_dict = {}
     for dataset, value in dict_.items():
@@ -351,20 +391,23 @@ def convert_dict(dict_: dict) -> dict:
     return new_dict
 
 
-def reverse_convert_dict(dict_: dict) -> dict:
+def reverse_convert_dict(originial_dict: dict) -> dict:
     """Convert mapping dictionary.
 
     From {slwt: [lwt1, lwt2], ...} format to {lwt: slwt, ...}.
 
-    Args:
-        original_dict (dict): Dict in the {slwt: [lwt1, lwt2], ...} format
+    Parameters
+    ----------
+    original_dict
+        Dict in the {slwt: [lwt1, lwt2], ...} format
 
     Returns
     -------
-        dict: Dict in the  format {lwt: slwt, ...}
+    dict
+        Dict in the  format {lwt: slwt, ...}
     """
     new_dict = {}
-    for key, value_list in dict_.items():
+    for key, value_list in originial_dict.items():
         for original_key in value_list:
             new_dict[original_key] = key
     return new_dict
@@ -378,12 +421,16 @@ def write_corr_rmse_to_csv(
 ):
     """Write correlation and rsme matrix to csv files.
 
-    Args:
-    ----
-        cfg (dict): Configuration dictionary from recipe
-        pattern_correlation_matrix (np.array): Correlation matrix
-        rmse_matrix (np.array): RSME matrix
-        dataset (str): Name of dataset
+    Parameters
+    ----------
+    cfg
+        Configuration dictionary from recipe
+    pattern_correlation_matrix
+        Correlation matrix
+    rmse_matrix
+        RSME matrix
+    dataset
+        Name of dataset
     """
     logger.info("Writing corr and rsme matrices for %s", dataset)
 
@@ -414,17 +461,22 @@ def run_predefined_slwt(
 ):
     """Run predefined slwt mapping.
 
-    Args:
-    ----
-        work_dir (str): Working directory to save mapping dict
-        dataset_name (str): Name of dataset
-        lwt (np.array): lwt array
-        predefined_slwt (dict): Mapping dictionary in {lwt: slwt, ...} format
-
+    Parameters
+    ----------
+    work_dir
+        Working directory to save mapping dict
+    dataset_name
+        Name of dataset
+    lwt
+        lwt array
+    predefined_slwt
+        Mapping dictionary in {lwt: slwt, ...} format
     Returns
     -------
-        np.array: slwt_era5 array
-        np.array: slwt_eobs array
+    np.array
+        slwt_era5 array
+    np.array
+        slwt_eobs array
     """
     predefined_slwt = check_mapping_dict_format(predefined_slwt)
     write_mapping_dict(work_dir, dataset_name, predefined_slwt)
@@ -443,12 +495,16 @@ def combine_wt_to_file(
 ):
     """Combine lwt and slwt arrays to one file.
 
-    Args:
-    ----
-        cfg (dict): Configuration dictionary from recipe
-        wt_list (list): List of weathertype arrays
-        cube (iris.cube.Cube): Cube of data to keep time coordinate
-        file_name (str): Name of output file
+    Parameters
+    ----------
+    cfg
+        Configuration dictionary from recipe
+    wt_list
+        List of weathertype arrays
+    cube
+        Cube of data to keep time coordinate
+    file_name
+        Name of output file
     """
     lwt = wt_list[0]
     slwt_era5 = wt_list[1]
@@ -491,12 +547,16 @@ def write_lwt_to_file(
 ):
     """Write only lwt to file.
 
-    Args:
-    ----
-        cfg (dict): Configuration dictionary from recipe
-        lwt (np.array): lwt array
-        cube (iris.cube.Cube): Cube of data to keep time coordinate
-        file_name (str): Name of output file
+    Parameters
+    ----------
+    cfg
+        Configuration dictionary from recipe
+    lwt
+        lwt array
+    cube
+        Cube of data to keep time coordinate
+    file_name
+        Name of output file
     """
     logger.info("Writing Lamb Weathertype to %s", file_name)
 
@@ -520,14 +580,17 @@ def write_lwt_to_file(
 def map_lwt_to_slwt(lwt: np.array, mapping_dict: dict) -> np.array:
     """Map lwt array to slwt array.
 
-    Args:
-    ----
-        lwt (np.array): lwt array
-        mapping_dict (dict): Mapping dictionary in {lwt: slwt, ...} format
+    Parameters
+    ----------
+    lwt
+        lwt array
+    mapping_dict
+        Mapping dictionary in {lwt: slwt, ...} format
 
     Returns
     -------
-        np.array: array of slwt
+    np.array
+        array of slwt
     """
     return np.array([np.int8(mapping_dict.get(value, 0)) for value in lwt])
 
@@ -535,13 +598,15 @@ def map_lwt_to_slwt(lwt: np.array, mapping_dict: dict) -> np.array:
 def check_mapping_dict_format(mapping_dict: dict) -> dict:
     """Check format of mapping dict and return in {lwt: slwt, ...} format.
 
-    Args:
-    ----
-        mapping_dict (dict): mapping dict in any format
+    Parameters
+    ----------
+    mapping_dict
+        mapping dict in any format
 
     Returns
     -------
-        dict: mapping dict in {lwt: slwt, ...} format
+    dict
+        mapping dict in {lwt: slwt, ...} format
     """
     if isinstance(mapping_dict[next(iter(mapping_dict))], list):
         return reverse_convert_dict(mapping_dict)

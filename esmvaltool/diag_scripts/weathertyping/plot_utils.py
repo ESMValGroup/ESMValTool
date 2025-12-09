@@ -28,13 +28,15 @@ warnings.filterwarnings("ignore", ".*Collapsing a non-contiguous coordinate*")
 def generate_grayscale_hex_values(x):
     """Generate grayscale values for plotting seasonal occurences.
 
-    Args:
-    ----
-        x (int): Amount of weathertypes.
+    Parameters
+    ----------
+    x
+        Amount of weathertypes.
 
     Returns
     -------
-        list: List of grayscale hex values
+    list
+        List of grayscale hex values
     """
     grayscale_values = np.linspace(0, 1, x)
 
@@ -51,11 +53,14 @@ def plot_seasonal_occurrence(
 ):
     """Plot seasonal occurences of weathertypes.
 
-    Args:
-    ----
-        cfg (dict): Configuration dictionary from recipe
-        wt_cubes (iris.cube.Cube): List of cubes of lwt, slwt_ERA5 and slwt_EOBS
-        data_info (dict): Dictionary with info to dataset
+    Parameters
+    ----------
+    cfg
+        Configuration dictionary from recipe
+    wt_cubes
+        List of cubes of lwt, slwt_ERA5 and slwt_EOBS
+    data_info
+        Dictionary with info to dataset
     """
     driver = get_driver(data_info)
 
@@ -152,13 +157,15 @@ def plot_seasonal_occurrence(
 def set_gridlines(ax: plt.Axes):
     """Set gridlines for plotting maps.
 
-    Args:
-    ----
-        ax (plt.Axes): Axes object to draw gridlines on.
+    Parameters
+    ----------
+    ax
+        Axes object to draw gridlines on.
 
     Returns
     -------
-        gl (ax.gridlines): Gridlines object
+    gl : (ax.gridlines)
+        Gridlines object
     """
     gl = ax.gridlines(
         crs=ccrs.PlateCarree(),
@@ -191,16 +198,20 @@ def prepare_plot_title(
 ) -> str:
     """Return formatted plot title.
 
-    Args:
-    ----
-        data_info (dict): dict containing info on dataset
-        wt (int): weathertype
-        var_name (str): name of variable
-        mode (str): statistic used
-
+    Parameters
+    ----------
+    data_info
+        dict containing info on dataset
+    wt
+        weathertype
+    var_name
+        name of variable
+    mode
+        statistic used
     Returns
     -------
-        (str): title of plot
+    str
+        title of plot
     """
     ensemble = data_info.get("ensemble", "")
     timerange = data_info.get("timerange")
@@ -221,14 +232,17 @@ def prepare_plot_title(
 def get_unit(var_name: str, dataset: str) -> str:
     """Get unit of variables.
 
-    Args:
-    ----
-        var_name (str): name of variable
-        dataset (str): name of dataset
+    Parameters
+    ----------
+    var_name
+        name of variable
+    dataset
+        name of dataset
 
     Returns
     -------
-        (str): unit of variable
+    str
+        unit of variable
     """
     if var_name == "psl":
         return "[hPa]"
@@ -250,13 +264,18 @@ def plot_maps(
 ):
     """Plot maps of means, std and anomalies.
 
-    Args:
-    ----
-        wt (np.array): WT array
-        cfg (dict): Configuration dictionary from recipe
-        cube (iris.cube.Cube): Data to be plotted
-        data_info (dict): Dictionary with info to dataset
-        mode (str): Statistics that is used
+    Parameters
+    ----------
+    wt
+        WT array
+    cfg
+        Configuration dictionary from recipe
+    cube
+        Data to be plotted
+    data_info
+        Dictionary with info to dataset
+    mode
+        Statistics that is used
     """
     var_name = data_info.get("var")
 
@@ -338,13 +357,18 @@ def plot_corr_rmse_heatmaps(
 ):
     """Plot correlation and rmse heatmaps.
 
-    Args:
-    ----
-        cfg (dict): Configuration dictionary from recipe
-        pattern_correlation_matrix (np.array): Pattern correlation matrix
-        rmse_matrix (np.array): RMSE matrix
-        dataset (str): Name of dataset
-        timerange (str): Time range for the calculation
+    Parameters
+    ----------
+    cf
+        gConfiguration dictionary from recipe
+    pattern_correlation_matrix
+        Pattern correlation matrix
+    rmse_matrix
+        RMSE matrix
+    dataset
+        Name of dataset
+    timerange
+        Time range for the calculation
     """
     output_path = f"{cfg.get('plot_dir')}/heatmaps"
 
@@ -417,12 +441,15 @@ def plot_corr_rmse_heatmaps(
 def get_colormap(colormap_string: str) -> ListedColormap:
     """Get colormaps for plottings.
 
-    Args:
-        colormap_string (str): string to identify colormap
+    Parameters
+    ----------
+    colormap_string
+        string to identify colormap
 
     Returns
     -------
-        ListedColormap: Colormap for the specified variable
+    ListedColormap
+        Colormap for the specified variable
     """
     misc_seq_2_disc = [
         (230 / 255, 240 / 255, 240 / 255),

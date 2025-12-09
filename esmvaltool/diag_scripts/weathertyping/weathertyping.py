@@ -42,11 +42,11 @@ def process_models_automatic_slwt(
 
     Parameters
     ----------
-    cfg:
-        Nested dictionary of metadata
-    dataset_vars:
-        List of variable dictionaries for a specific dataset
-    data_info:
+    cfg
+        Nested dictionary of metadata.
+    dataset_vars
+        List of variable dictionaries for a specific dataset.
+    data_info
         Dictionary holding dataset information.
     """
     for ensemble_var in dataset_vars:
@@ -109,14 +109,14 @@ def process_era5_automatic_slwt(
 
     Parameters
     ----------
-    data_info:
+    data_info
         Dictionary holding dataset information.
-    preproc_variables_dict:
+    preproc_variables_dict
         Dictionary holding preprocessed variables for all datasets.
-    cfg:
-        Nested dictionary of metadata
-    dataset_vars:
-        List of variable dictionaries for a specific dataset
+    cfg
+        Nested dictionary of metadata.
+    dataset_vars
+        List of variable dictionaries for a specific dataset.
     """
     wt_preproc, wt_preproc_prcp, wt_preproc_prcp_eobs = load_wt_preprocessors(
         data_info["dataset"],
@@ -185,7 +185,7 @@ def run_automatic_slwt(cfg: dict):
 
     Parameters
     ----------
-    cfg:
+    cfg
         Nested dictionary of metadata
     """
     preproc_variables_dict = group_metadata(
@@ -220,13 +220,13 @@ def process_era5_lwt(
 
     Parameters
     ----------
-    preproc_variables_dict:
+    preproc_variables_dict
         Dictionary holding preprocessed variables for all datasets.
-    cfg:
-        Nested dictionary of metadata
-    dataset_vars:
-        List of variable dictionaries for a specific dataset
-    data_info:
+    cfg
+        Nested dictionary of metadata.
+    dataset_vars
+        List of variable dictionaries for a specific dataset.
+    data_info
         Dictionary holding dataset information.
     """
     wt_preproc, _, _ = load_wt_preprocessors(
@@ -279,11 +279,11 @@ def process_models_lwt(cfg: dict, dataset_vars: list, data_info: dict):
 
     Parameters
     ----------
-    cfg:
-        Nested dictionary of metadata
-    dataset_vars:
-        List of variable dictionaries for a specific dataset
-    data_info:
+    cfg
+        Nested dictionary of metadata.
+    dataset_vars
+        List of variable dictionaries for a specific dataset.
+    data_info
         Dictionary holding dataset information.
     """
     for ensemble_var in dataset_vars:
@@ -342,8 +342,8 @@ def run_lwt(cfg: dict):
 
     Parameters
     ----------
-    cfg:
-        Nested dictionary of metadata
+    cfg
+        Nested dictionary of metadata.
     """
     preproc_variables_dict = group_metadata(
         cfg.get("input_data").values(),
@@ -373,7 +373,7 @@ def run_my_diagnostic(cfg: dict):
 
     Parameters
     ----------
-    cfg:
+    cfg
         Nested dictionary of metadata
     """
     automatic_slwt = cfg.get("automatic_slwt")
