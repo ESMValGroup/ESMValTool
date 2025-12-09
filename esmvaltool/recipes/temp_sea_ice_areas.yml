@@ -15,7 +15,7 @@ documentation:
 datasets:
   - {dataset: HadGEM3-GC31-LL, institute: MOHC, ensemble: r1i1p1f3, exp: historical, grid: gn, project: CMIP6}
   - {dataset: UKESM1-0-LL, institute: MOHC, ensemble: r1i1p1f2, exp: historical, grid: gn, project: CMIP6}
-  - {dataset: OSI-450-nh, type: reanaly, version: v3, mip: OImon, supplementary_variables: [{short_name: areacello, mip: fx}], project: OBS, tier: 2}
+#  - {dataset: OSI-450-nh, type: reanaly, version: v3, mip: OImon, supplementary_variables: [{short_name: areacello, mip: fx}], project: OBS, tier: 2}
 
 preprocessors:
   extract_test_period:
