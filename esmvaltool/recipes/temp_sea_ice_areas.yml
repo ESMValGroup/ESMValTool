@@ -1,0 +1,56 @@
+# ESMValTool
+---
+documentation:
+  title: Sea ice sensitivity
+
+  description: |
+    Not used - for testing simple recipe runs.
+
+  authors:
+    - parsons_naomi
+
+  maintainer:
+    - parsons_naomi
+
+datasets:
+  - {dataset: HadGEM3-GC31-LL, institute: MOHC, ensemble: r1i1p1f3, exp: historical, grid: gn, project: CMIP6}
+  - {dataset: UKESM1-0-LL, institute: MOHC, ensemble: r1i1p1f2, exp: historical, grid: gn, project: CMIP6}
+
+preprocessors:
+  extract_test_period:
+    &extract_test_period
+    extract_time:
+      start_day: 1
+      start_month: 1
+      start_year: 2008
+      end_day: 31
+      end_month: 12
+      end_year: 2014
+
+  nh_total_area:
+    &nh_total_area
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: 0
+      end_latitude: 90
+    area_statistics:
+      operator: sum
+    convert_units:
+      units: 1e6 km2
+
+  pp_arctic_sept_sea_ice:
+    <<: *extract_test_period
+    <<: *nh_total_area
+
+diagnostics:
+  arctic_sea_ice_area:
+    description: Northern Hemisphere sea ice area
+    variables:
+      siconc:
+        preprocessor: pp_arctic_sept_sea_ice
+        mip: SImon
+    scripts:
+      arctic_sea_ice_area_plot:
+        script: seaice/spiral_polar_plot.py
+        period: *extract_test_period
