@@ -21,7 +21,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: conda-incubator/setup-miniconda@v3

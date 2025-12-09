@@ -97,7 +97,7 @@ from source and store the data in the appropriate tier subdirectory of the
 folder ``RAWOBS`` automatically.
 There are many downloading scripts available in
 `/esmvaltool/cmorizers/data/downloaders/datasets/
-<https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/data/downloaders/datasets/>`_
+<https://github.com/ESMValGroup/ESMValTool/tree/main/esmvaltool/cmorizers/data/downloaders/datasets>`_
 where several data download mechanisms are provided:
 
 - A `wget` get based downloader for http(s) downloads, with a specific derivation for NASA datasets.

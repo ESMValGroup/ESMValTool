@@ -28,7 +28,7 @@ def _fix_climatological_time(cube):
     # NOT explicitly stated in the original publication. Thus, the period given
     # here needs to be treated with care.
     time_points = TIME_UNITS.date2num(
-        [datetime(1994, m, 15) for m in range(1, 13)]
+        [datetime(1994, m, 15) for m in range(1, 13)],
     )
     time_bounds = [
         [datetime(1971, m, 1), datetime(2018, m + 1, 1)] for m in range(1, 12)

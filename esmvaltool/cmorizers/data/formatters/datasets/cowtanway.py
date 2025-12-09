@@ -59,7 +59,11 @@ def _extract_variable(short_name, var, vkey, version, cfg, filepath, out_dir):
 
     # Save variable
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 
@@ -71,9 +75,17 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     for short_name, var in cfg["variables"].items():
         for vkey, version in cfg["attributes"]["version"].items():
             logger.info(
-                "CMORizing variable '%s' version '%s'", short_name, version
+                "CMORizing variable '%s' version '%s'",
+                short_name,
+                version,
             )
             filepath = raw_filepath.format(version=version)
             _extract_variable(
-                short_name, var, vkey, version, cfg, filepath, out_dir
+                short_name,
+                var,
+                vkey,
+                version,
+                cfg,
+                filepath,
+                out_dir,
             )

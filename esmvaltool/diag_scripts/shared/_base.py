@@ -130,7 +130,7 @@ def save_data(basename, provenance, cfg, cube, **kwargs):
     """
     if "target" in kwargs:
         raise ValueError(
-            "Please use the `basename` argument to specify the output file"
+            "Please use the `basename` argument to specify the output file",
         )
 
     filename = get_diagnostic_filename(basename, cfg)
@@ -178,7 +178,8 @@ class ProvenanceLogger:
     def __init__(self, cfg):
         """Create a provenance logger."""
         self._log_file = os.path.join(
-            cfg["run_dir"], "diagnostic_provenance.yml"
+            cfg["run_dir"],
+            "diagnostic_provenance.yml",
         )
 
         if not os.path.exists(self._log_file):
@@ -211,7 +212,7 @@ class ProvenanceLogger:
             See the provenance `documentation`_ for more information.
 
         .. _documentation: https://docs.esmvaltool.org/en/latest/community/diagnostic.html#recording-provenance
-        """  # noqa
+        """
         if isinstance(filename, Path):
             filename = str(filename)
         if filename in self.table:
@@ -439,7 +440,7 @@ def _get_input_data_files(cfg):
     for filename in cfg["input_files"]:
         if os.path.isdir(filename):
             metadata_files.extend(
-                glob.glob(os.path.join(filename, "*metadata.yml"))
+                glob.glob(os.path.join(filename, "*metadata.yml")),
             )
         elif os.path.basename(filename) == "metadata.yml":
             metadata_files.append(filename)
@@ -529,7 +530,7 @@ def run_diagnostic():
 
     logging.basicConfig(
         format="%(asctime)s [%(process)d] %(levelname)-8s "
-        "%(name)s,%(lineno)s\t%(message)s"
+        "%(name)s,%(lineno)s\t%(message)s",
     )
     logging.Formatter.converter = time.gmtime
     logging.captureWarnings(True)
@@ -579,7 +580,7 @@ def run_diagnostic():
                 "your data in the following output files or directories:"
                 "\n{}\n Use -f or --force to force emptying the output "
                 "directories or use -i or --ignore-existing to ignore "
-                "existing output directories.".format("\n".join(old_content))
+                "existing output directories.".format("\n".join(old_content)),
             )
 
     # Create output directories

@@ -110,7 +110,8 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
     cube.coord("time").climatological = False
     cube.coord("time").points = 6.5
     cube.coord("time").units = Unit(
-        "months since " + str(year) + "-01-01 00:00:00", calendar="gregorian"
+        "months since " + str(year) + "-01-01 00:00:00",
+        calendar="gregorian",
     )
 
     fix_var_metadata(cube, var_info)
@@ -122,7 +123,8 @@ def extract_variable(in_files, out_dir, attrs, raw_info, cmor_table):
     # derive ocean surface
     if "srf_var" in raw_info:
         var_info = cmor_table.get_variable(
-            raw_info["mip"], raw_info["srf_var"]
+            raw_info["mip"],
+            raw_info["srf_var"],
         )
         logger.info("Extract surface OBS for %s", raw_info["srf_var"])
         level_constraint = iris.Constraint(cube.var_name, depth=0)
@@ -151,7 +153,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             {
                 "var": var,
                 "reference_year": cfg["custom"]["reference_year"],
-            }
+            },
         )
         glob_attrs["mip"] = vals["mip"]
         extract_variable(in_files, out_dir, glob_attrs, raw_info, cmor_table)
