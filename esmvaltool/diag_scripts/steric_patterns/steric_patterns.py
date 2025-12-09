@@ -21,6 +21,7 @@ import iris.coord_categorisation
 import iris.cube
 import matplotlib.pyplot as plt
 import numpy as np
+from esmvalcore.preprocessor import area_statistics
 from sklearn.linear_model import LinearRegression
 
 from esmvaltool.diag_scripts.shared import ProvenanceLogger, run_diagnostic
@@ -158,6 +159,9 @@ def dyn_steric_regression(
 
     zostoga.data = zostoga.data - np.mean(zostoga.data[0:10])
     zos.data = zos.data - np.mean(zos.data[0:10], axis=0)
+
+    # Subtract global mean to ensure zero global mean for zos
+    zos = area_statistics(zos, "mean", normalize="subtract")
 
     # Calculate the slope and intercepts of linear fits of the
     # global and local sea level projections
