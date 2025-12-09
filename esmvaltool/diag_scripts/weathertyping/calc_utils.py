@@ -1,21 +1,15 @@
 """Utility functions for calculations."""
 
-# operating system manipulations (e.g. path constructions)
 import json
 import logging
 import warnings
 from pathlib import Path
 from typing import Final
 
-# to manipulate iris cubes
 import iris
 import iris.analysis.cartography
-
-# general imports
 import numpy as np
 import pandas as pd
-
-# local imports
 from plot_utils import plot_corr_rmse_heatmaps, plot_maps
 from wt_utils import (
     check_mapping_dict_format,

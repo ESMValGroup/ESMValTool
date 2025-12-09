@@ -1,20 +1,15 @@
 """Utility functions for weathertyping script."""
 
-# operating system manipulations (e.g. path constructions)
 import json
 import logging
 import warnings
 from pathlib import Path
 
-# to manipulate iris cubes
 import iris
 import iris.analysis.cartography
-
-# general imports
 import numpy as np
 import pandas as pd
 
-# import internal esmvaltool modules here
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 iris.FUTURE.datum_support = True

@@ -7,7 +7,6 @@ weathertypes based on precipitation patterns.
 
 import iris
 
-# import internal esmvaltool modules here
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.weathertyping.calc_utils import (
     calc_lwt_model,

@@ -1,26 +1,18 @@
 """Utility functions for plotting."""
 
-# operating system manipulations (e.g. path constructions)
 import logging
 import warnings
 from pathlib import Path
 
-# plotting imports
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
-
-# to manipulate iris cubes
 import iris
 import iris.analysis.cartography
 import iris.plot as iplt
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
-
-# general imports
 import numpy as np
 import seaborn as sns
-
-# local imports
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from matplotlib.colors import ListedColormap
 from wt_utils import get_driver, get_provenance_record, log_provenance
