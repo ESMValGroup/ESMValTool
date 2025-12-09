@@ -37,7 +37,7 @@ def main(cfg):
     for input in input_data:
         cube = iris.load_cube(input["filename"])
         # print(cube)
-        ax.plot(all_months, cube.data, alpha=0.5, label=input['alias'])
+        ax.plot(all_months, cube.data, alpha=0.5)
 
     # Tidy up the plot
     ax.set_xticks(months)
