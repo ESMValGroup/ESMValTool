@@ -42,7 +42,7 @@ def main(cfg):
     # Tidy up the plot
     ax.set_xticks(months)
     ax.set_xticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
-    ax.legend(bbox_to_anchor=(0.05, 0.05))
+    ax.legend(loc='lower left', bbox_to_anchor=(0, 0))
     ax.set_title(plot_title)
 
     # Save figure
