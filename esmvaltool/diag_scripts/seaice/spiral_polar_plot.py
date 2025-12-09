@@ -13,6 +13,7 @@ logger = logging.getLogger(Path(__file__).stem)
 
 
 def main(cfg):
+    """Create a polar spiral plot of Arctic sea ice area over time."""
     # Read the time period from the config
     start_year = cfg["period"]["extract_time"]["start_year"]
     end_year = cfg["period"]["extract_time"]["end_year"]
@@ -34,10 +35,10 @@ def main(cfg):
     ax.set_theta_direction(-1)
 
     # Plot the data
-    for input in input_data:
-        cube = iris.load_cube(input["filename"])
+    for dataset in input_data:
+        cube = iris.load_cube(dataset["filename"])
         # print(cube)
-        ax.plot(all_months, cube.data, alpha=0.5, label=input['alias'])
+        ax.plot(all_months, cube.data, alpha=0.5, label=dataset['alias'])
 
     # Tidy up the plot
     ax.set_xticks(months)
