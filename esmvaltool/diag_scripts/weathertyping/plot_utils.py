@@ -208,6 +208,7 @@ def prepare_plot_title(
         name of variable
     mode
         statistic used
+
     Returns
     -------
     str

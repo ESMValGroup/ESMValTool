@@ -72,7 +72,8 @@ def load_wt_preprocessors(dataset: str, preproc_variables_dict: dict) -> tuple:
 
 
 def get_ancestors_era5_eobs(
-    dataset: str, preproc_variables_dict: dict
+    dataset: str,
+    preproc_variables_dict: dict,
 ) -> tuple:
     """Get ancestors for observational data.
 
@@ -471,6 +472,7 @@ def run_predefined_slwt(
         lwt array
     predefined_slwt
         Mapping dictionary in {lwt: slwt, ...} format
+
     Returns
     -------
     np.array
