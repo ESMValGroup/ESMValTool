@@ -59,14 +59,14 @@ def fix_coords(cube):
     """
     # This makes fix_dim_coordnames work with GAPFILLED
     try:
-        cube.coord('lat').standard_name = 'latitude'
+        cube.coord("lat").standard_name = "latitude"
     except iris.exceptions.CoordinateNotFoundError:
         pass
     try:
-        cube.coord('lon').standard_name = 'longitude'
+        cube.coord("lon").standard_name = "longitude"
     except iris.exceptions.CoordinateNotFoundError:
         pass
-    
+
     # First fix any completely missing coord var names
     fix_dim_coordnames(cube)
 
@@ -107,7 +107,7 @@ def extract_variable(raw_info, is_gapfilled):
         sm_cube = iris.load_cube(
             raw_info["file"], iris.NameConstraint(var_name="sm")
         )
-        
+
         ancillary_var = sm_cube.ancillary_variable(
             "Volumetric Soil Moisture Uncertainty"
         )
@@ -116,7 +116,7 @@ def extract_variable(raw_info, is_gapfilled):
         cube = iris.load_cube(raw_info["file"], constraint)
 
     # Remove dysfunctional ancillary data without standard names
-    
+
     for ancillary_variable in cube.ancillary_variables():
         cube.remove_ancillary_variable(ancillary_variable)
 

@@ -6,7 +6,7 @@ attributes:
   institution: 'TU Wien (AUT); VanderSat B.V. (NL); Planet Labs (NL); CESBIO (FR), EODC Gmbh (AUT)'
   reference: 'esacci-soilmoisture'
   comment: ''
-  
+
   # COMBINED Attributes
   source: 'ftp://anon-ftp.ceda.ac.uk/neodc/esacci/soil_moisture/data/'
   title: 'ESA CCI Soil Moisture'
@@ -16,7 +16,7 @@ attributes:
   version 'L3S-SSMV-COMBINED_GAPFILLED-fv09.1'
   source: 'https://researchdata.tuwien.ac.at/records/s5j4q-rpd32'
   title: 'ESA CCI Soil Moisture'
-  
+
 variables:
 #   sm:
 #     mip: Eday
