@@ -60,11 +60,11 @@ def fix_coords(cube):
     # This makes fix_dim_coordnames work with GAPFILLED
     try:
         cube.coord('lat').standard_name = 'latitude'
-    except:
+    except iris.exceptions.CoordinateNotFoundError:
         pass
     try:
         cube.coord('lon').standard_name = 'longitude'
-    except:
+    except iris.exceptions.CoordinateNotFoundError:
         pass
     
     # First fix any completely missing coord var names
@@ -103,7 +103,7 @@ def extract_variable(raw_info, is_gapfilled):
     """
     rawvar = raw_info["name"]
     constraint = iris.Constraint(name=rawvar)
-    if rawvar == "sm_uncertainty" and is_gapfilled == False:
+    if rawvar == "sm_uncertainty" and not is_gapfilled:
         sm_cube = iris.load_cube(
             raw_info["file"], iris.NameConstraint(var_name="sm")
         )
@@ -146,7 +146,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         logger.info(
             "CMORizing var %s from file type %s", var_name, inpfile_pattern
         )
-        logger.info(f"{cfg=}")
 
         for year in range(start_date.year, end_date.year + 1):
             year_inpfile_pattern = inpfile_pattern.format(year=year)
