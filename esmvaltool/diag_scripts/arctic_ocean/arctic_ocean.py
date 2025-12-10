@@ -76,7 +76,7 @@ def run_hofm_data(cfg):
     """
     logger.info(
         "The `hofm_data` is True, going \
-                 to extract monthly values for `hofm_regions`"
+                 to extract monthly values for `hofm_regions`",
     )
 
     logger.info("`hofm_vars` are: %s", cfg["hofm_vars"])
@@ -87,11 +87,12 @@ def run_hofm_data(cfg):
         # preprocessed file as a value
         model_filenames = get_clim_model_filenames(cfg, hofm_var)
         model_filenames = OrderedDict(
-            sorted(model_filenames.items(), key=lambda t: t[0])
+            sorted(model_filenames.items(), key=lambda t: t[0]),
         )
         # loop over regions and models
         for mmodel, region in itertools.product(
-            model_filenames, cfg["hofm_regions"]
+            model_filenames,
+            cfg["hofm_regions"],
         ):
             # actual extraction of the data for specific model and region
             hofm_data(cfg, model_filenames, mmodel, hofm_var, region)
@@ -99,10 +100,9 @@ def run_hofm_data(cfg):
 
 def hofm_plot_params(cfg, hofm_var, var_number, observations):
     """Prepeare configuration for Hovmoeller plot."""
-
     model_filenames = get_clim_model_filenames(cfg, hofm_var)
     model_filenames = OrderedDict(
-        sorted(model_filenames.items(), key=lambda t: t[0])
+        sorted(model_filenames.items(), key=lambda t: t[0]),
     )
     # remove "model" that contain observations,
     # since there will be no monthly data
@@ -128,7 +128,8 @@ def hofm_plot_params(cfg, hofm_var, var_number, observations):
     plot_params["cmap"] = cmap
     plot_params["ncols"] = ncols
     plot_params["levels"] = np.round(
-        np.linspace(vmin, vmax, sstep), roundlimit
+        np.linspace(vmin, vmax, sstep),
+        roundlimit,
     )
     plot_params["observations"] = observations
 
@@ -177,7 +178,7 @@ def run_mean(cfg, observations):
             hofm_var,
         )
         model_filenames = OrderedDict(
-            sorted(model_filenames.items(), key=lambda t: t[0])
+            sorted(model_filenames.items(), key=lambda t: t[0]),
         )
         # loop over models
         for model in model_filenames:
@@ -192,10 +193,9 @@ def run_mean(cfg, observations):
 
 def plot_profile_params(cfg, hofm_var, observations):
     """Prepeare configuration for profile plot."""
-
     model_filenames = get_clim_model_filenames(cfg, hofm_var)
     model_filenames = OrderedDict(
-        sorted(model_filenames.items(), key=lambda t: t[0])
+        sorted(model_filenames.items(), key=lambda t: t[0]),
     )
 
     plot_params = {}
@@ -230,10 +230,9 @@ def run_profiles(cfg, observations):
 
 def plot2d_params(cfg, plot2d_var, var_number):
     """Prepeare configuration for plot2d."""
-
     model_filenames = get_clim_model_filenames(cfg, plot2d_var)
     model_filenames = OrderedDict(
-        sorted(model_filenames.items(), key=lambda t: t[0])
+        sorted(model_filenames.items(), key=lambda t: t[0]),
     )
     # set the color map
     if cfg["plot2d_cmap"]:
@@ -254,7 +253,8 @@ def plot2d_params(cfg, plot2d_var, var_number):
     plot_params["cmap"] = cmap
     plot_params["ncols"] = ncols
     plot_params["levels"] = np.round(
-        np.linspace(vmin, vmax, sstep), roundlimit
+        np.linspace(vmin, vmax, sstep),
+        roundlimit,
     )
     plot_params["dpi"] = 100
     plot_params["explicit_depths"] = None
@@ -283,10 +283,9 @@ def run_plot2d(cfg):
 
 def plot2d_bias_params(cfg, plot2d_bias_var, var_number, observations):
     """Prepeare configuration for plot2d bias."""
-
     model_filenames = get_clim_model_filenames(cfg, plot2d_bias_var)
     model_filenames = OrderedDict(
-        sorted(model_filenames.items(), key=lambda t: t[0])
+        sorted(model_filenames.items(), key=lambda t: t[0]),
     )
     # setup the color map
     if cfg["plot2d_bias_cmap"]:
@@ -307,7 +306,8 @@ def plot2d_bias_params(cfg, plot2d_bias_var, var_number, observations):
     plot_params["cmap"] = cmap
     plot_params["ncols"] = ncols
     plot_params["levels"] = np.round(
-        np.linspace(vmin, vmax, sstep), roundlimit
+        np.linspace(vmin, vmax, sstep),
+        roundlimit,
     )
     plot_params["dpi"] = 100
     plot_params["observations"] = observations
@@ -329,7 +329,10 @@ def run_plot2d_bias(cfg, observations):
     # loop over variables
     for var_number, plot2d_bias_var in enumerate(cfg["plot2d_bias_vars"]):
         plot_params = plot2d_bias_params(
-            cfg, plot2d_bias_var, var_number, observations
+            cfg,
+            plot2d_bias_var,
+            var_number,
+            observations,
         )
 
         # loop over depths
@@ -340,14 +343,14 @@ def run_plot2d_bias(cfg, observations):
 
 def transect_plot_params(cfg, trans_var, var_number):
     """Prepeare configuration for transect plot."""
-
     model_filenames = get_clim_model_filenames(cfg, trans_var)
     model_filenames = OrderedDict(
-        sorted(model_filenames.items(), key=lambda t: t[0])
+        sorted(model_filenames.items(), key=lambda t: t[0]),
     )
     # loop over regions
     for mmodel, region in itertools.product(
-        model_filenames, cfg["transects_regions"]
+        model_filenames,
+        cfg["transects_regions"],
     ):
         # ploting a transect
         transect_data(cfg, mmodel, trans_var, region)
@@ -370,7 +373,8 @@ def transect_plot_params(cfg, trans_var, var_number):
     plot_params["cmap"] = cmap
     plot_params["ncols"] = ncols
     plot_params["levels"] = np.round(
-        np.linspace(vmin, vmax, sstep), roundlimit
+        np.linspace(vmin, vmax, sstep),
+        roundlimit,
     )
     plot_params["dpi"] = 100
     plot_params["projection"] = ccrs.NorthPolarStereo()
@@ -416,10 +420,13 @@ def run_aw_core(cfg):
     """
     model_filenames = get_clim_model_filenames(cfg, "thetao")
     model_filenames = OrderedDict(
-        sorted(model_filenames.items(), key=lambda t: t[0])
+        sorted(model_filenames.items(), key=lambda t: t[0]),
     )
     aw_core_parameters = aw_core(
-        model_filenames, cfg["work_dir"], "EB", "thetao"
+        model_filenames,
+        cfg["work_dir"],
+        "EB",
+        "thetao",
     )
     plot_aw_core_stat(aw_core_parameters, cfg["plot_dir"])
     return aw_core_parameters
@@ -438,10 +445,13 @@ def run_aw_core_2d(cfg, aw_core_parameters):
     """
     model_filenames = get_clim_model_filenames(cfg, "thetao")
     model_filenames = OrderedDict(
-        sorted(model_filenames.items(), key=lambda t: t[0])
+        sorted(model_filenames.items(), key=lambda t: t[0]),
     )
     aw_core_parameters = aw_core(
-        model_filenames, cfg["work_dir"], "EB", "thetao"
+        model_filenames,
+        cfg["work_dir"],
+        "EB",
+        "thetao",
     )
     # this is now just using plot2d_original_grid with
     # additional `explicit_depths` parameter
@@ -462,11 +472,10 @@ def run_aw_core_2d(cfg, aw_core_parameters):
 
 def tsdiag_plot_parameters(cfg):
     """Prepeare configuration for TS plots."""
-
     # get the dictionary with model file names
     model_filenames = get_clim_model_filenames(cfg, "thetao")
     model_filenames = OrderedDict(
-        sorted(model_filenames.items(), key=lambda t: t[0])
+        sorted(model_filenames.items(), key=lambda t: t[0]),
     )
     # setting the number of columns for the plot
     if cfg["tsdiag_ncol"]:
@@ -494,7 +503,8 @@ def run_tsdiag(cfg, observations):
     plot_params = tsdiag_plot_parameters(cfg)
     # loop over models and regions
     for mmodel, region in itertools.product(
-        plot_params["model_filenames"], cfg["tsdiag_regions"]
+        plot_params["model_filenames"],
+        cfg["tsdiag_regions"],
     ):
         # this function will generate files with T and S points
         # selected from the region untill `tsdiag_depth` for

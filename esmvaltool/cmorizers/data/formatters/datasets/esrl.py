@@ -66,14 +66,16 @@ def _download_files(in_dir, cfg, stations):
         ftp_client.login()
         for station in files:
             filename_full = os.path.join(
-                files[station]["folder"], files[station]["name"]
+                files[station]["folder"],
+                files[station]["name"],
             )
             if filename_full in ftp_client.nlst(files[station]["folder"]):
                 logger.info("Downloading %s", files[station]["name"])
                 new_path = os.path.join(in_dir, files[station]["name"])
                 with open(new_path, mode="wb") as outfile:
                     ftp_client.retrbinary(
-                        f"RETR {filename_full}", outfile.write
+                        f"RETR {filename_full}",
+                        outfile.write,
                     )
                 input_files[station] = [new_path]
             else:
@@ -111,7 +113,7 @@ def _get_rows_and_fill_value(filepath):
         raise NotImplementedError(
             "Unexpected number of columns, "
             "only monthly data from in situ or flask "
-            "measurements currently supported"
+            "measurements currently supported",
         )
     return data_rows, fill_v
 
@@ -208,7 +210,11 @@ def _extract_variable(short_name, var, cfg, out_dir, station_dic):
 
     # Save variable
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 
@@ -275,7 +281,9 @@ def _get_filenames(stations, cfg, in_dir, all_stat):
     if len(download_files) > 0:
         if cfg["download"]:
             input_files_dl, rm_stat = _download_files(
-                in_dir, cfg, download_files
+                in_dir,
+                cfg,
+                download_files,
             )
             input_files.update(input_files_dl)
             if len(rm_stat) > 0:
@@ -286,14 +294,13 @@ def _get_filenames(stations, cfg, in_dir, all_stat):
                     stations = [x for x in stations if x not in rm_stat]
                 else:
                     raise ValueError(
-                        f"No data found for {rm_stat} on the ftp server. "
+                        f"No data found for {rm_stat} on the ftp server. ",
                     )
-        else:
-            if not all_stat:
-                raise ValueError(
-                    f"No local data found for stations {download_files}, "
-                    "consider turning on the download option."
-                )
+        elif not all_stat:
+            raise ValueError(
+                f"No local data found for stations {download_files}, "
+                "consider turning on the download option.",
+            )
     logger.debug("Found input files:\n%s", pformat(input_files))
     return input_files, stations
 
@@ -317,7 +324,10 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         false_keys = np.setdiff1d(stat_upper, list(station_dict.keys()))
         if len(false_keys) == 0:
             filepath, stations = _get_filenames(
-                stations, cfg, in_dir, all_stat
+                stations,
+                cfg,
+                in_dir,
+                all_stat,
             )
             for station in stations:
                 logger.info("Reading file '%s'", filepath[station][0])
@@ -343,5 +353,5 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 f"{false_keys}. "
                 "Please double-check your spelling in the "
                 "cmor config file. The following is a list of "
-                f"valid stations: {list(station_dict.keys())}."
+                f"valid stations: {list(station_dict.keys())}.",
             )

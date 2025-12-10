@@ -9,14 +9,14 @@ from esmvaltool.cmorizers.data.cmorizer import datasets_file
 
 yaml_folder = os.path.abspath(os.path.dirname(datasets_file))
 recipes_folder = os.path.abspath(
-    os.path.join(os.path.dirname(esmvaltool.__file__), "recipes")
+    os.path.join(os.path.dirname(esmvaltool.__file__), "recipes"),
 )
 
 
 def test_only_datasets_are_present():
     recipe = yamale.make_data(datasets_file)
     schema = yamale.make_schema(
-        os.path.join(yaml_folder, "datasets_schema.yml")
+        os.path.join(yaml_folder, "datasets_schema.yml"),
     )
     yamale.validate(schema, recipe)
 
@@ -26,7 +26,8 @@ def test_latest_version_format():
         cfg = yaml.safe_load(file)
     for dataset_info in cfg["datasets"].values():
         datetime.datetime.strptime(
-            str(dataset_info["last_access"]), "%Y-%m-%d"
+            str(dataset_info["last_access"]),
+            "%Y-%m-%d",
         )
 
 
