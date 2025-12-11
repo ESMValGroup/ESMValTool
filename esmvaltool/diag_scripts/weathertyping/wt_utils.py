@@ -64,7 +64,9 @@ def load_wt_preprocessors(dataset: str, preproc_variables_dict: dict) -> tuple:
             preproc_variables_dict.get("E-OBS")[0].get("filename"),
         )
     except (IndexError, KeyError, TypeError):
-        print("ERA5 precipitation preprocessor not found for automatic slwt.")
+        logger.info(
+            "ERA5 precipitation preprocessor not found for automatic slwt."
+        )
         wt_preproc_prcp = None
         wt_preproc_prcp_eobs = None
 
@@ -101,7 +103,9 @@ def get_ancestors_era5_eobs(
             preproc_variables_dict.get("E-OBS")[0].get("filename"),
         ]
     except (IndexError, KeyError, TypeError):
-        print("No ancestors for ERA5 and E-OBS precipitation preprocessor.")
+        logger.info(
+            "No ancestors for ERA5 and E-OBS precipitation preprocessor."
+        )
         eobs_ancestors = []
 
     return era5_ancestors, eobs_ancestors
@@ -315,8 +319,6 @@ def turn_list_to_mapping_dict(list_: list) -> dict:
         for elem in s:
             if elem not in result_dict:
                 result_dict[elem] = i + 1
-            else:
-                result_dict[elem].append(i)
 
     return result_dict
 
@@ -334,21 +336,37 @@ def get_mapping_dict(selected_pairs: list) -> dict:
     dict
         Mapping dictionary
     """
-    mapping_array = [elem[0] for elem in selected_pairs]
 
-    s = [set(i) for i in mapping_array if i]
+    # selected pairs is of form [(wt1, wt2), (wt3, wt4), ...]
+    sets_list = [set(i) for i in selected_pairs if i]
 
-    def find_intersection(m_list: list) -> list:
-        for i, v in enumerate(m_list):
-            for j, k in enumerate(m_list[i + 1 :], i + 1):
-                if v & k:
-                    s[i] = v.union(m_list.pop(j))
-                    return find_intersection(m_list)
-        return m_list
+    # 3 loops to check all sets against each other until no more merges happen
+    # merged_flag indicates if a merge happened in the last full pass -> we need to restart then
+    merged_flag = True
 
-    merged_tuples = find_intersection(s)
+    while merged_flag:
+        merged_flag = False
+        i = 0
 
-    return turn_list_to_mapping_dict(merged_tuples)
+        # check each set against each other
+        while i < len(sets_list):
+            set1 = sets_list[i]
+            j = i + 1
+
+            while j < len(sets_list):
+                set2 = sets_list[j]
+
+                if set1.isdisjoint(set2) is False:
+                    # this means there is an overlap -> merge sets
+                    set1.update(set2)
+                    sets_list.pop(j)
+                    merged_flag = True
+                else:
+                    j += 1
+
+            i += 1
+
+    return turn_list_to_mapping_dict(sets_list)
 
 
 def write_mapping_dict(work_dir: str, dataset: str, mapping_dict: dict):

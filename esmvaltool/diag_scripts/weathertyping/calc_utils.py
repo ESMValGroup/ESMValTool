@@ -6,6 +6,7 @@ import warnings
 from pathlib import Path
 from typing import Final
 
+import dask.array as da
 import iris
 import iris.analysis.cartography
 import numpy as np
@@ -80,8 +81,8 @@ def calc_slwt_obs(
 
     wt_data_prcp = []
     for wt_ in range(1, 28):
-        target_indices = np.where(lwt == wt_)
-        if len(target_indices[0]) < 1:
+        target_indices = da.where(lwt == wt_).compute()
+        if not target_indices[0]:
             logger.info(
                 "calc_slwt_obs - CAUTION: Skipped wt %s \
                 for dataset %s!",
@@ -100,7 +101,15 @@ def calc_slwt_obs(
                 iris.Constraint(time=lambda t, d=dates: t.point in d[0]),
             )
         wt_cube_mean = extracted_cube.collapsed("time", iris.analysis.MEAN)
-        wt_data_prcp.append(wt_cube_mean.data.compressed())
+
+        data = wt_cube_mean.data
+
+        if isinstance(data, np.ma.MaskedArray):
+            wt_data_prcp.append(data.compressed())
+        else:
+            # if not MaskedArray, flatten should be fine
+            wt_data_prcp.append(data.flatten())
+
     selected_pairs = process_prcp_mean(
         cfg,
         wt_data_prcp,
@@ -372,7 +381,7 @@ def lamp_synoptic_directional_type(
     weathertypes: np.array,
     i: int,
 ) -> int:
-    """Calculate Lamp synoptic/directional hybrid weathertype.
+    """Calculate Lamb synoptic/directional hybrid weathertype.
 
     Parameters
     ----------
@@ -696,11 +705,7 @@ def process_prcp_mean(
                 "correlation_threshold",
             ) and rmse_matrix[i][j] <= cfg.get("rmse_threshold"):
                 selected_pairs.append(
-                    (
-                        (i + 1, j + 1),
-                        pattern_correlation_matrix[i][j],
-                        rmse_matrix[i][j],
-                    ),
+                    ((i + 1, j + 1),),
                 )
 
     # write matrices to csv
@@ -755,7 +760,7 @@ def calc_wt_means(
     wt_array, tcoord = get_wt_array(wt_string, wt_cubes)
 
     for wt in range(1, len(np.unique(wt_array)) + 1):
-        target_indices = np.where(wt_array == wt)
+        target_indices = da.where(wt_array == wt).compute()
         if len(target_indices[0]) < 1:
             logger.info(
                 "calc_wt_means - CAUTION: Skipped %s %s \
@@ -835,7 +840,7 @@ def get_wt_array(wt_string: str, wt_cubes: iris.cube.CubeList) -> tuple:
             error_str,
         )
 
-    return wt_array, tcoord
+    return wt_array.core_data(), tcoord
 
 
 def calc_wt_anomalies(
@@ -870,8 +875,8 @@ def calc_wt_anomalies(
     wt_array, tcoord = get_wt_array(wt_string, wt_cubes)
 
     for wt in range(1, len(np.unique(wt_array)) + 1):
-        target_indices = np.where(wt_array == wt)
-        if len(target_indices[0]) < 1:
+        target_indices = da.where(wt_array == wt).compute()
+        if not target_indices[0]:
             logger.info(
                 "calc_wt_anomalies - CAUTION: Skipped wt %s \
                 for dataset %s!",
@@ -947,8 +952,8 @@ def calc_wt_std(
     wt_array, tcoord = get_wt_array(wt_string, wt_cubes)
 
     for wt in range(1, len(np.unique(wt_array)) + 1):
-        target_indices = np.where(wt_array == wt)
-        if len(target_indices[0]) < 1:
+        target_indices = da.where(wt_array == wt).compute()
+        if not target_indices[0]:
             logger.info(
                 "calc_slwt_obs - CAUTION: Skipped wt %s \
                 for dataset %s!",

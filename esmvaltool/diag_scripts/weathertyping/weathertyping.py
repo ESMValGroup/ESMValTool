@@ -368,7 +368,7 @@ def run_lwt(cfg: dict):
             process_models_lwt(cfg, dataset_vars, data_info)
 
 
-def run_my_diagnostic(cfg: dict):
+def run_weathertyping_diagnostic(cfg: dict):
     """Run the weathertyping diagnostic.
 
     Parameters
@@ -392,4 +392,4 @@ def run_my_diagnostic(cfg: dict):
 if __name__ == "__main__":
     with run_diagnostic() as config:
         # main function for running the diagnostic
-        run_my_diagnostic(config)
+        run_weathertyping_diagnostic(config)
