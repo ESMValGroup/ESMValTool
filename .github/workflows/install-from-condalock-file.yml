@@ -18,7 +18,7 @@ on:
   #  branches:
   #  - main
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
 
 # Required shell entrypoint to have properly configured bash shell
 defaults:
@@ -31,7 +31,7 @@ jobs:
     if: github.repository == 'ESMValGroup/ESMValTool'  # avoid GAs in forks
     strategy:
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.12", "3.13"]
       fail-fast: false
     name: Linux Python ${{ matrix.python-version }}
     steps:

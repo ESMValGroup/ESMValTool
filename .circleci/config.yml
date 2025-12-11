@@ -5,7 +5,6 @@ orbs:
   coverage-reporter: codacy/coverage-reporter@13.13.0
 
 commands:
-
   check_changes:
     steps:
       - run:
@@ -76,7 +75,7 @@ commands:
       - run:
           name: Install git+ssh
           environment:
-            DEBIAN_FRONTEND: noninteractive  # needed to install tzdata
+            DEBIAN_FRONTEND: noninteractive # needed to install tzdata
           command: apt update && apt install -y git ssh
       - checkout
       - check_changes
@@ -153,9 +152,9 @@ jobs:
             - /root/.cache/pip
             - .pytest_cache
       - coverage-reporter/send_report:
-          coverage-reports: 'test-reports/coverage.xml'
+          coverage-reports: "test-reports/coverage.xml"
           project-token: $CODACY_PROJECT_TOKEN
-          skip: true  # skip if project-token is not defined (i.e. on a fork)
+          skip: true # skip if project-token is not defined (i.e. on a fork)
 
   test_installation_from_source_test_mode:
     # Test installation from source
@@ -187,7 +186,7 @@ jobs:
       - run:
           name: Install git and ssh
           environment:
-            DEBIAN_FRONTEND: noninteractive  # needed to install tzdata
+            DEBIAN_FRONTEND: noninteractive # needed to install tzdata
           command: apt update && apt install -y git ssh
       - checkout
       - run:
@@ -204,6 +203,8 @@ jobs:
             # https://docs.esmvaltool.org/en/latest/quickstart/installation.html#install-from-source
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
+            # Temporarily install intake-esgf here until it is an ESMValCore dependency in v2.14.
+            echo "  - intake-esgf" >> environment.yml
             conda env create -n esmvaltool -f environment.yml --verbose
             conda activate esmvaltool
             mamba list >> /logs/conda.txt
@@ -217,12 +218,9 @@ jobs:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda activate esmvaltool
-            mkdir -p ~/climate_data
-            esmvaltool config get_config_user
-            echo "search_esgf: when_missing" >> ~/.config/esmvaltool/config-user.yml
-            cat ~/.config/esmvaltool/config-user.yml
+            esmvaltool config copy data-esmvalcore-esgf.yml
             for recipe in esmvaltool/recipes/testing/recipe_*.yml; do
-              esmvaltool run "$recipe"
+              esmvaltool run --max-parallel-tasks=2 "$recipe"
             done
       - store_artifacts:
           path: /root/esmvaltool_output
@@ -271,7 +269,7 @@ jobs:
             # Install prerequisites
             mkdir /logs
             # Install ESMValTool in a new conda environment
-            mamba create -y --name esmvaltool -c conda-forge esmvaltool 'python=3.11' >> /logs/conda.txt 2>&1
+            mamba create -y --name esmvaltool -c conda-forge esmvaltool 'python=3.12' >> /logs/conda.txt 2>&1
             # Activate the environment
             set +x; conda activate esmvaltool; set -x
             # Log versions
