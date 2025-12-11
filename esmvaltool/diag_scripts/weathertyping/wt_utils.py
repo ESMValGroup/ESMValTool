@@ -65,7 +65,7 @@ def load_wt_preprocessors(dataset: str, preproc_variables_dict: dict) -> tuple:
         )
     except (IndexError, KeyError, TypeError):
         logger.info(
-            "ERA5 precipitation preprocessor not found for automatic slwt."
+            "ERA5 precipitation preprocessor not found for automatic slwt.",
         )
         wt_preproc_prcp = None
         wt_preproc_prcp_eobs = None
@@ -104,7 +104,7 @@ def get_ancestors_era5_eobs(
         ]
     except (IndexError, KeyError, TypeError):
         logger.info(
-            "No ancestors for ERA5 and E-OBS precipitation preprocessor."
+            "No ancestors for ERA5 and E-OBS precipitation preprocessor.",
         )
         eobs_ancestors = []
 
@@ -336,7 +336,6 @@ def get_mapping_dict(selected_pairs: list) -> dict:
     dict
         Mapping dictionary
     """
-
     # selected pairs is of form [(wt1, wt2), (wt3, wt4), ...]
     sets_list = [set(i) for i in selected_pairs if i]
 
