@@ -30,7 +30,7 @@ dependencies:
   - fsspec
   - gdal >=3.9.0
   - ipython
-  - iris >=3.11
+  - iris >=3.11,<3.14.1
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - jinja2
   - joblib

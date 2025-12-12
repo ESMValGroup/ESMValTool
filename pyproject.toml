@@ -76,7 +76,7 @@ dependencies = [
     "scikit-image",
     "scikit-learn>=1.4.0",  # github.com/ESMValGroup/ESMValTool/issues/3504
     "scipy",
-    "scitools-iris>=3.11",
+    "scitools-iris>=3.11,<3.14.1",
     "seaborn",
     "seawater",
     "shapely>=2",
