@@ -115,7 +115,7 @@ def plot_seasonal_occurrence(
         _, ax_ = plt.subplots(figsize=(10, 10))
 
         ax_.set_title(
-            f"Seasonal occurence of {wt_string}, \
+            f"Seasonal occurrence of {wt_string}, \
             {data_info.get('dataset')}, {data_info.get('timerange')}",
         )
 
