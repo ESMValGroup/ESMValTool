@@ -70,6 +70,8 @@ Observations and reformat scripts
 (2) see headers of reformat scripts for non-obs4MIPs data for download
 instructions.*
 
+This recipe currently only works with the following reanalysis and observation datasets:
+
 * E-OBS: European Climate Assessment & Dataset gridded daily precipitation sum
 * ERA5: ECMWF reanalysis
 
