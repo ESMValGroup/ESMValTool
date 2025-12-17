@@ -51,7 +51,7 @@ def plot_seasonal_occurrence(
     wt_cubes: iris.cube.Cube,
     data_info: dict,
 ):
-    """Plot seasonal occurences of weathertypes.
+    """Plot seasonal occurrences of weathertypes.
 
     Parameters
     ----------
