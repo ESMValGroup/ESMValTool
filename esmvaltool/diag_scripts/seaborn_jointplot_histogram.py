@@ -141,6 +141,13 @@ def seaborn_histogram_jointplot(
     y_width = np.diff(edges_y).mean()
     xlim = (edges_x[0] - x_width, edges_x[-1] + x_width)
     ylim = (edges_y[0] - y_width, edges_y[-1] + y_width)
+    if joint_grid_kws:
+        if "xlim" in joint_grid_kws:
+            xlim = joint_grid_kws["xlim"]
+            del joint_grid_kws["xlim"]
+        if "ylim" in joint_grid_kws:
+            ylim = joint_grid_kws["ylim"]
+            del joint_grid_kws["ylim"]
 
     grid = seaborn.JointGrid(xlim=xlim, ylim=ylim, **joint_grid_kws)
     grid.set_axis_labels(

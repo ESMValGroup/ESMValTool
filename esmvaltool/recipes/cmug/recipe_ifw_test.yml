@@ -11,54 +11,228 @@ documentation:
 
 
 # Note: The following models are just examples
-datasets:
-  - {project: IFW, dataset: ifwf, fstep: '0', frequency: 12hr}
+#datasets:
+#  - {project: IFW, dataset: ifwf, fstep: '0', frequency: 12hr, alias: 'IFWf (step 0)', activity: 'CMUG', exp: 'step0'}
+#  - {dataset: UKESM1-0-LL, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f2, grid: gn}
+#  - {dataset: EC-Earth3-AerChem, project: CMIP6, mip: AERmon, exp: historical, ensemble: r1i1p1f1, grid: gn}
 
 
 preprocessors:
 
-  full_climatology:
-    climate_statistics:
-      period: full
+  monthly_climatology:
+    custom_order: true
+    daily_statistics:
     regrid:
-      target_grid: 2x2
+      target_grid: 1x1
       scheme:
         reference: esmf_regrid.schemes:ESMFAreaWeighted
+    mask_multimodel:
+    climate_statistics:
+      period: full
+
+  all_days:
+    custom_order: true
+    daily_statistics:
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    mask_multimodel:
+
+  ma_season_mean:
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: nearest
+    climate_statistics:
+      operator: mean
+      period: season
+      seasons: ['DJF', 'MAM', 'JJA', 'SON']
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+
+  aeronet_model:
+#    regrid:
+#      target_grid: 2.5x2.5
+#      scheme: nearest
+    climate_statistics:
+      operator: mean
+#      period: month
+      period: season
+#      seasons: ['DJF', 'MAM', 'JJA', 'SON']
+#      seasons: ['JJA']
 
 
 diagnostics:
 
-  # Climatologies - maps (full climatology)
-
-  plot_maps_with_references_od550aer:
-    description: Plot climatology maps including reference datasets for od550aer.
+  aeronet_map:
+    description: Visualise spatial multi-annual seasonal means AOD at 550nm.
     variables:
-      od550aer:
+      od440aer:
         timerange: '20200601/20200630'
-        mip: aero
-        preprocessor: full_climatology
         additional_datasets:
-          - {dataset: ESACCI-AEROSOL, project: OBS, tier: 2, frequency: day,
-             type: sat, version: SLSTR-SU-v1.12-DAILY, reference_for_monitor_diags: true}
-      prw:
+          - {dataset: AERONET, project: OBS6, mip: AERmon, tier: 3, type: atmos, version: 20250823}
+      od550aer_model:
+        short_name: od550aer
         timerange: '20200601/20200630'
-        mip: Eday
-        preprocessor: full_climatology
+        preprocessor: aeronet_model
         additional_datasets:
-          - {dataset: ESACCI-WATERVAPOUR, project: OBS6, tier: 3, frequency: day,
-             type: sat, version: CDR2-L3-COMBI-05deg-fv3.1, reference_for_monitor_diags: true}
-      clivi:
-        timerange: '20200601/20200630'
-        mip: Amon
-        preprocessor: full_climatology
-        additional_datasets:
-          - {dataset: ESACCI-CLOUD, project: OBS6, tier: 2, frequency: mon,
-             type: sat, version: v3.0-AVHRR-AMPM, reference_for_monitor_diags: true}
+          - {project: IFW, dataset: ifwf, fstep: '0', frequency: 12hr, alias: 'IFWf (step 0)', activity: 'CMUG', exp: 'step0', mip: aero}
     scripts:
-      plot:
-        plot_folder: '{plot_dir}'
-        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
-        script: monitor/multi_datasets.py
-        plots:
-          map:
-            common_cbar: true
+      aeronet:
+        script: aerosols/aod_aeronet_assess.py
+        observational_dataset: AERONET
+        min_days_per_mon: 1
+        min_mon_per_seas: 1
+        min_seas_per_year: 1
+        min_seas_per_clim: 1
+#        wavel: 550
+        quickplot:
+          plot_type: plot
+
+
+#  scatterplots:
+#    description: Scatterplots.
+#    variables:
+#      od550aer:
+#        timerange: '20200601/20200630'
+#        mip: aero
+#        preprocessor: all_days
+##        additional_datasets:
+##          - {dataset: ESACCI-AEROSOL, project: OBS, tier: 2, frequency: day,
+##             type: sat, version: SLSTR-SU-v1.12-DAILY, alias: 'ESACCI-AEROSOL'}
+#      lwp:
+#        timerange: '20200601/20200630'
+#        mip: CFday
+#        preprocessor: all_days
+##        additional_datasets:
+##          - {dataset: CLARA-AVHRR, project: OBS6, tier: 3, frequency: day,
+##             type: sat, version: A3-DAILY, reference_for_monitor_diags: true, alias: 'CLARA-A3'}
+#    scripts:
+#      plot:
+##        script: seaborn_diag.py
+##        seaborn_func: regplot
+##        reset_index: true
+##        write_netcdf: true
+##        seaborn_kwargs:
+##          x: lwp
+##          y: od550aer
+##        plot_object_methods:
+##          set:
+##            xlabel: 'liquid water path [kg m-2]'
+##            ylabel: 'AOD550 [1]'
+##        seaborn_settings:
+##          style: ticks
+##        suptitle: 'AOD550 vs LWP'
+#        script: seaborn_jointplot_histogram.py
+#        x: lwp
+#        y: od550aer
+#        bins: 50
+#        joint_kws:
+#          vmax: 0.015
+#          cmap: YlGnBu
+#        cbar: true
+#        cbar_kws:
+#          extend: 'max'
+#        marginal_kws:
+#          color: darkturquoise
+#        seaborn_settings:
+#          style: ticks
+#          rc:
+#            axes.titlepad: 15.0
+#        joint_grid_kws:
+#          xlim: [0, 0.3]
+#          ylim: [0, 1]
+#        suptitle: 'LWP vs AOD550'
+#        plot_filename: 'jointplot_lwp_od550aer'
+#
+#  maps:
+#    description: Plot monthly mean maps.
+#    variables:
+#      od550aer:
+#        timerange: '20200601/20200630'
+#        mip: aero
+#        preprocessor: monthly_climatology
+#        additional_datasets:
+#          - {dataset: ESACCI-AEROSOL, project: OBS, tier: 2, frequency: day,
+#             type: sat, version: SLSTR-SU-v1.12-DAILY, reference_for_monitor_diags: true,
+#             alias: 'ESACCI-AEROSOL'}
+#      prw:
+#        timerange: '20200601/20200630'
+##        mip: 3hr
+#        mip: Eday
+#        preprocessor: monthly_climatology
+#        additional_datasets:
+##          - {dataset: ESACCI-WATERVAPOUR, project: OBS6, tier: 3, frequency: day,
+##             type: sat, version: CDR2-L3-COMBI-05deg-fv3.1, reference_for_monitor_diags: true,
+##             alias: 'ESACCI-WATERVAPOUR'}
+#          - {dataset: ERA5, project: native6, tier: 3, frequency: 1hr,
+#             type: reanaly, version: 'v1', reference_for_monitor_diags: true, alias: 'ERA5'}
+#      clivi:
+#        timerange: '20200601/20200630'
+#        mip: CFday
+#        preprocessor: monthly_climatology
+#        additional_datasets:
+#          - {dataset: CLARA-AVHRR, project: OBS6, tier: 3, frequency: day,
+#             type: sat, version: A3-DAILY, reference_for_monitor_diags: true, alias: 'CLARA-A3'}
+#      lwp:
+#        timerange: '20200601/20200630'
+#        mip: CFday
+#        preprocessor: monthly_climatology
+#        additional_datasets:
+#          - {dataset: CLARA-AVHRR, project: OBS6, tier: 3, frequency: day,
+#             type: sat, version: A3-DAILY, reference_for_monitor_diags: true, alias: 'CLARA-A3'}
+#    scripts:
+#      plot:
+#        plot_folder: '{plot_dir}'
+#        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+#        script: monitor/multi_datasets.py
+#        plots:
+#          map:
+#            common_cbar: true
+#
+#  histograms:
+#    description: Plot PDFs from daily values.
+#    variables:
+#      od550aer:
+#        timerange: '20200601/20200630'
+#        mip: aero
+#        preprocessor: all_days
+#        additional_datasets:
+#          - {dataset: ESACCI-AEROSOL, project: OBS, tier: 2, frequency: day,
+#             type: sat, version: SLSTR-SU-v1.12-DAILY, alias: 'ESACCI-AEROSOL'}
+#    scripts:
+#      plot:
+#        script: seaborn_diag.py
+#        seaborn_func: displot
+#        reset_index: true
+#        write_netcdf: true
+#        seaborn_kwargs:
+#          kind: hist
+#          stat: density
+#          binwidth: 0.05
+#          x: od550aer
+#          hue: alias
+#          facet_kws:
+#            sharey: false
+##          col: shape_id
+##          col_order:
+##            - tropics
+##            - nh_midlat
+##            - sh_midlat
+##          col_wrap: 3
+#        add_aux_coords: true
+#        dropna_kwargs:
+#          axis: 0
+#          how: any
+#        legend_title: Dataset
+#        plot_object_methods:
+#          set:
+#            xlabel: 'AOD550 [1]'
+#            xlim: [0, 1]
+#          set_titles: '{col_name}'
+#        seaborn_settings:
+#          style: ticks
+#          rc:
+#            axes.titlepad: 15.0
+#        suptitle: 'PDF of AOD550'

@@ -150,6 +150,16 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
 
     # Add bounds for lat and lon if not present
     model_data = add_bounds(model_data)
+    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    print(model_data)
+    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    print(aeronet_obs_cube)
+    print("-------------------------------------------------")
+    for season in aeronet_obs_cube.slices_over("clim_season"):
+        print(season)
+        print("-------------------------------------------------")
+
+    #    exit()
 
     # Co-locate model grid points with measurement sites --func from aero_utils
     anet_aod_lats = aeronet_obs_cube.coord("latitude").points.tolist()
@@ -188,10 +198,16 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
     # Loop over seasons
     for season in aeronet_obs_cube.slices_over("clim_season"):
         # Match Aeronet obs season with model season number
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print(season.coord("clim_season").points[0])
         model_sn = [c.lower() for c in clim_seas].index(
             season.coord("clim_season").points[0]
         )
+        print(model_sn)
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         model_season = model_data[model_sn]
+        print(model_season)
+        print("-----------------------------------")
 
         logger.info(
             "Analysing AOD for %s: %s", {model_id}, {clim_seas[model_sn]}
@@ -209,8 +225,15 @@ def aod_analyse(model_data, aeronet_obs_cube, clim_seas, wavel):
         seas_anet_obs = season.data
         seas_anet_md = np.array([x[model_sn] for x in aod_at_anet])
 
+        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        print(seas_anet_md)
+        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+
         # Match model data with valid obs data
         valid_indices = ma.where(seas_anet_obs)
+        print(valid_indices)
+        print(season.data)
+        print("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
         valid_obs = seas_anet_obs[valid_indices]
         valid_md = seas_anet_md[valid_indices]
 
@@ -341,7 +364,9 @@ def preprocess_aod_obs_dataset(obs_dataset, thresholds):
     iris.coord_categorisation.add_year(obs_cube, "time", name="year")
 
     iris.coord_categorisation.add_season(obs_cube, "time", name="clim_season")
-
+    #    iris.coord_categorisation.add_month_number(
+    #        obs_cube, "time", name="month_number"
+    #    )
     iris.coord_categorisation.add_season_year(
         obs_cube, "time", name="season_year"
     )
@@ -451,7 +476,8 @@ def main(config):
             cube = iris.load_cube(input_file)
 
             # Set up for analysis and plotting
-            seasons = ["DJF", "MAM", "JJA", "SON"]
+            #            seasons = ["DJF", "MAM", "JJA", "SON"]
+            seasons = ["JJA"]
 
             plot_file_prefix = (
                 model_dataset
