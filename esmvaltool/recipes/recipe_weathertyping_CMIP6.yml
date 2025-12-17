@@ -62,7 +62,6 @@ datasets_psl_CMIP6: &datasets_psl_cmip6
   - {institute: NCC, dataset: NorCPM1, ensemble: r1i1p1f1, grid: gn, esgf_version: v20200724}
   - {institute: NCC, dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190815}
   - {institute: NCC, dataset: NorESM2-MM, ensemble: r1i1p1f1, grid: gn, esgf_version: v20191108}
-  # - {institute: NIMS-KMA, dataset: KACE-1-0-G, ensemble: r1i1p1f1, grid: gr, esgf_version: v20190911} #discontinous longitude coordinate warning
   - {institute: NOAA-GFDL, dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr1, esgf_version: v20180701}
   - {institute: NOAA-GFDL, dataset: GFDL-CM4, ensemble: r1i1p1f1, grid: gr2, esgf_version: v20180701}
   - {institute: NOAA-GFDL, dataset: GFDL-ESM4, ensemble: r1i1p1f1, grid: gr1, esgf_version: v20190726}
