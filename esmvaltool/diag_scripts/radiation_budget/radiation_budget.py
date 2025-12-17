@@ -294,6 +294,7 @@ def plot_data(
     model_dataset,
     model_data,
     model_period,
+    model_label,
     obs_names,
     obs_unit,
     stephens_data,
@@ -341,7 +342,7 @@ def plot_data(
     model_minus_ceres = np.array(model_data) - np.array(ceres_data)
 
     figure, axes = plt.subplots(figsize=(12, 8))
-    title = f"Radiation budget for {model_dataset}"
+    title = f"Radiation budget for {model_label}"
     y_label = f"Difference between model output and observations [{obs_unit}]"
     y_lim = (-20, 20)
     axes.set(title=title, ylabel=y_label, ylim=y_lim)
@@ -357,7 +358,7 @@ def plot_data(
         bar_width,
         alpha=opacity,
         color="cornflowerblue",
-        label=f"{model_dataset} ({model_period}) - Stephens et al. (2012)",
+        label=f"{model_label} ({model_period}) - Stephens et al. (2012)",
         yerr=stephens_error,
     )
     axes.bar(
@@ -367,7 +368,7 @@ def plot_data(
         alpha=opacity,
         color="orange",
         label=(
-            f"{model_dataset} ({model_period}) - {ceres_dataset} "
+            f"{model_label} ({model_period}) - {ceres_dataset} "
             f"({ceres_period})"
         ),
     )
@@ -377,7 +378,7 @@ def plot_data(
         bar_width,
         alpha=opacity,
         color="darkgrey",
-        label=f"{model_dataset} ({model_period}) - Demory et al. (2014)",
+        label=f"{model_label} ({model_period}) - Demory et al. (2014)",
     )
     axes.spines["bottom"].set_position(("data", 0))
     axes.spines["top"].set_position(("data", 0))
@@ -449,10 +450,12 @@ def main(config):
         all_model_data = derive_additional_variables(unordered_model_data)
         model_data = order_data(all_model_data, obs_names, obs_unit)
         model_period = f"{group[0]['start_year']} - {group[0]['end_year']}"
+        model_label = group[0]['alias']
         figure = plot_data(
             model_dataset,
             model_data,
             model_period,
+            model_label,
             obs_names,
             obs_unit,
             stephens_data,
