@@ -57,7 +57,7 @@ jobs:
         run: python tests/parse_pymon.py
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: Test_Linux_python_${{ matrix.python-version }}
           path: test_linux_artifacts_python_${{ matrix.python-version }}
@@ -109,7 +109,7 @@ jobs:
         run: python tests/parse_pymon.py
       - name: Upload artifacts
         if: ${{ always() }}  # upload artifacts even if fail
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: Test_OSX_python_${{ matrix.python-version }}
           path: test_osx_artifacts_python_${{ matrix.python-version }}
