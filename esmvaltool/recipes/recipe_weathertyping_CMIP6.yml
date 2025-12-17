@@ -48,7 +48,6 @@ datasets_psl_CMIP6: &datasets_psl_cmip6
   - {institute: KIOST, dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, esgf_version: v20210601}
   - {institute: MIROC, dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn, esgf_version: v20191129}
   - {institute: MIROC, dataset: MIROC6, ensemble: r1i1p1f1, grid: gn, esgf_version: v20191016}
-  # - {institute: MPI-M, dataset: ICON-ESM-LR, ensemble: r1i1p1f1, grid: gn, esgf_version: v20210215} #boundary values not 0 or 2
   - {institute: MPI-M, dataset: MPI-ESM1-2-HR, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190710}
   - {institute: MPI-M, dataset: MPI-ESM1-2-LR, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190710}
   - {institute: MRI, dataset: MRI-ESM2-0, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190603}
