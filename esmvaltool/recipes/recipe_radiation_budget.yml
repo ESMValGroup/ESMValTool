@@ -40,7 +40,7 @@ preprocessors:
 
 diagnostics:
   single_value_radiation_budget:
-    description: Radiation budget for HadGEM3 vs UKESM1.
+    description: Radiation budget.
     variables:
       rss:
         mip: Emon
@@ -92,7 +92,7 @@ diagnostics:
         script: radiation_budget/radiation_budget.py
 
   seasonal_radiation_budget:
-    description: Seasonal radiation budget for HadGEM3 vs UKESM1.
+    description: Seasonal radiation budget.
     variables:
       rss:
         mip: Emon
