@@ -450,7 +450,7 @@ def main(config):
         all_model_data = derive_additional_variables(unordered_model_data)
         model_data = order_data(all_model_data, obs_names, obs_unit)
         model_period = f"{group[0]['start_year']} - {group[0]['end_year']}"
-        model_label = group[0]['alias']
+        model_label = group[0]["alias"]
         figure = plot_data(
             model_dataset,
             model_data,
