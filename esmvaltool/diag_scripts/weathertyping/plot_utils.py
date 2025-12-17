@@ -26,7 +26,7 @@ warnings.filterwarnings("ignore", ".*Collapsing a non-contiguous coordinate*")
 
 
 def generate_grayscale_hex_values(x):
-    """Generate grayscale values for plotting seasonal occurences.
+    """Generate grayscale values for plotting seasonal occurrences.
 
     Parameters
     ----------
