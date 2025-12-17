@@ -437,7 +437,7 @@ def write_corr_rmse_to_csv(
     rmse_matrix: np.array,
     dataset: str,
 ):
-    """Write correlation and rsme matrix to csv files.
+    """Write correlation and rmse matrix to csv files.
 
     Parameters
     ----------
