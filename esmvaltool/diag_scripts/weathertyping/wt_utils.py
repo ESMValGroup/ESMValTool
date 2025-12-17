@@ -446,7 +446,7 @@ def write_corr_rmse_to_csv(
     pattern_correlation_matrix
         Correlation matrix
     rmse_matrix
-        RSME matrix
+        RMSE matrix
     dataset
         Name of dataset
     """
