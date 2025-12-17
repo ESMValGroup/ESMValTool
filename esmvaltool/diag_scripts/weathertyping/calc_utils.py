@@ -758,10 +758,11 @@ def calc_wt_means(
     )
 
     wt_array, tcoord = get_wt_array(wt_string, wt_cubes)
+    counts = da.bincount(wt_array.flatten().astype(int)).compute()
 
-    for wt in range(1, len(np.unique(wt_array)) + 1):
-        target_indices = da.where(wt_array == wt).compute()
-        if len(target_indices[0]) < 1:
+    for wt in range(1, len(counts)):
+        target_indices = da.where(wt_array == wt)[0].compute()
+        if len(target_indices) < 1:
             logger.info(
                 "calc_wt_means - CAUTION: Skipped %s %s \
                 for dataset %s!",
@@ -774,7 +775,7 @@ def calc_wt_means(
             tcoord.units.num2date(tcoord.points[i]) for i in target_indices
         ]
         extracted_cube = cube.extract(
-            iris.Constraint(time=lambda t, d=dates: t.point in d[0]),
+            iris.Constraint(time=lambda t, d=dates: t.point in d),
         )
         wt_cube_mean = extracted_cube.collapsed("time", iris.analysis.MEAN)
         plot_maps(wt, cfg, wt_cube_mean, data_info, "mean")
@@ -825,22 +826,22 @@ def get_wt_array(wt_string: str, wt_cubes: iris.cube.CubeList) -> tuple:
     if wt_string == "slwt_ERA5":
         slwt_era5_cube = wt_cubes[1]
         tcoord = slwt_era5_cube.coord("time")
-        wt_array = slwt_era5_cube.data[:]
+        wt_array = slwt_era5_cube.core_data()[:]
     elif wt_string == "slwt_EOBS":
         slwt_eobs_cube = wt_cubes[2]
         tcoord = slwt_eobs_cube.coord("time")
-        wt_array = slwt_eobs_cube.data[:]
+        wt_array = slwt_eobs_cube.core_data()[:]
     elif wt_string == "lwt":
         lwt_cube = wt_cubes[0]
         tcoord = lwt_cube.coord("time")
-        wt_array = lwt_cube.data[:]
+        wt_array = lwt_cube.core_data()[:]
     else:
         error_str = "wt_array does not exist for calc_wt_means, calc_wt_anomalies or calc_wt_std."
         raise NameError(
             error_str,
         )
 
-    return wt_array.core_data(), tcoord
+    return wt_array, tcoord
 
 
 def calc_wt_anomalies(
