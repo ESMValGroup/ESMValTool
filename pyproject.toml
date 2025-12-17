@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools >= 40.6.0",
-    "setuptools_scm>=6.2",
+    "setuptools>=80",
+    "setuptools_scm>=8",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -14,7 +14,6 @@ classifiers = [
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: Apache Software License",
     "Natural Language :: English",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3",
@@ -87,7 +86,8 @@ dependencies = [
     "zarr",
 ]
 description = "A community tool for pre-processing data from Earth system models in CMIP and running analysis scripts"
-license = {text = "Apache License, Version 2.0"}
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
 name = "ESMValTool"
 requires-python = ">=3.12"
 
@@ -136,7 +136,6 @@ Issues = "https://github.com/ESMValGroup/ESMValTool/issues"
 
 [tool.setuptools]
 include-package-data = true
-license-files = ["LICENSE"]
 packages = ["esmvaltool"]
 zip-safe = false
 
