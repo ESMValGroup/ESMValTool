@@ -57,7 +57,6 @@ datasets_psl_CMIP6: &datasets_psl_cmip6
   - {institute: NASA-GISS, dataset: GISS-E2-2-G, ensemble: r1i1p1f1, grid: gn, esgf_version: v20191120, start_year: 1970}
   - {institute: NCAR, dataset: CESM2-FV2, ensemble: r1i1p1f1, grid: gn, esgf_version: v20191120}
   - {institute: NCAR, dataset: CESM2-WACCM-FV2, ensemble: r1i1p1f1, grid: gn, esgf_version: v20191120}
-  # - {institute: NCAR, dataset: CESM2-WACCM, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190227} #concatenate error
   - {institute: NCAR, dataset: CESM2, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190308}
   - {institute: NCC, dataset: NorCPM1, ensemble: r1i1p1f1, grid: gn, esgf_version: v20200724}
   - {institute: NCC, dataset: NorESM2-LM, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190815}
