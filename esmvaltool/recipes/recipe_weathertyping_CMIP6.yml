@@ -28,7 +28,6 @@ datasets_psl_CMIP6: &datasets_psl_cmip6
   - {institute: BCC, dataset: BCC-ESM1, ensemble: r1i1p1f1, grid: gn, esgf_version: v20181220}
   - {institute: CAS, dataset: FGOALS-f3-L, ensemble: r1i1p1f1, grid: gr, esgf_version: v20191019}
   - {institute: CAS, dataset: FGOALS-g3, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190826}
-  # - {institute: CCCR-IITM, dataset: IITM-ESM, ensemble: r1i1p1f1, grid: gn, esgf_version: v20210203} #discontinous longitude warning
   - {institute: CCCma, dataset: CanESM5, ensemble: r1i1p1f1, grid: gn, esgf_version: v20190429}
   - {institute: CMCC, dataset: CMCC-CM2-HR4, ensemble: r1i1p1f1, grid: gn, esgf_version: v20200904}
   - {institute: CMCC, dataset: CMCC-CM2-SR5, ensemble: r1i1p1f1, grid: gn, esgf_version: v20200616}
