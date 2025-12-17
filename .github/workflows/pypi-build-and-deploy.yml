@@ -4,11 +4,11 @@ name: Publish Python 🐍 distribution 📦 to PyPI and TestPyPI
 on:
   release:
     types: [published]
-  # use this for testing
   push:
+    # Use this for testing the package build.
     branches:
       - main
-      - update-build-and-deploy
+      - v[0-9]+.[0-9]+.x # matches release branches like v2.12.x
 
 jobs:
   build:
@@ -59,25 +59,3 @@ jobs:
           path: dist/
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@v1.13.0
-
-  publish-to-testpypi:
-    name: Publish Python 🐍 distribution 📦 to TestPyPI
-    needs:
-      - build
-    runs-on: ubuntu-latest
-    environment:
-      name: testpypi
-      url: https://test.pypi.org/p/ESMValTool
-    permissions:
-      id-token: write # IMPORTANT: mandatory for trusted publishing
-    steps:
-      - name: Download all the dists
-        uses: actions/download-artifact@v6
-        with:
-          name: python-package-distributions
-          path: dist/
-      - name: Publish distribution 📦 to TestPyPI
-        uses: pypa/gh-action-pypi-publish@v1.13.0
-        with:
-          repository-url: https://test.pypi.org/legacy/
-          verbose: true
