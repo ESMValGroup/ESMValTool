@@ -44,7 +44,6 @@ datasets_psl_CMIP6: &datasets_psl_cmip6
   - {institute: INM, dataset: INM-CM4-8, ensemble: r1i1p1f1, grid: gr1, esgf_version: v20190530}
   - {institute: INM, dataset: INM-CM5-0, ensemble: r1i1p1f1, grid: gr1, esgf_version: v20190610}
   - {institute: IPSL, dataset: IPSL-CM5A2-INCA, ensemble: r1i1p1f1, grid: gr, esgf_version: v20200729}
-  # - {institute: IPSL, dataset: IPSL-CM6A-LR-INCA, ensemble: r1i1p1f1, grid: gr, esgf_version: v20210216} #???
   - {institute: IPSL, dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr, esgf_version: v20180803}
   - {institute: KIOST, dataset: KIOST-ESM, ensemble: r1i1p1f1, grid: gr1, esgf_version: v20210601}
   - {institute: MIROC, dataset: MIROC-ES2L, ensemble: r1i1p1f2, grid: gn, esgf_version: v20191129}
