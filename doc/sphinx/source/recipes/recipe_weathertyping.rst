@@ -111,4 +111,4 @@ Example plots
 .. figure::  /recipes/figures/weathertyping/ERA5__lwt_rel_occurrence_1958-2014.png
    :align:   center
 
-   Stackplot of seasonal relative occureences of each WT for ERA5.
+   Stackplot of seasonal relative occurrences of each WT for ERA5.
