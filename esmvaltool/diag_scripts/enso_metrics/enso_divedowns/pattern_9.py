@@ -78,7 +78,7 @@ def enso_regression(prep_datasets, i, label):
     events = enso_events(prep_datasets[1])
     for enso, years in events.items():
         year_enso = iris.Constraint(
-            time=lambda cell, years=years: cell.point.year in years
+            time=lambda cell, years=years: cell.point.year in years,
         )
         cube_2 = prep_datasets[0].extract(year_enso)
         cube = climate_statistics(cube_2, operator="mean")
@@ -181,7 +181,7 @@ def plot_enso_ssta(prep_datasets, line, label):
     events = enso_events(prep_datasets[1])
     for enso, years in events.items():
         year_enso = iris.Constraint(
-            time=lambda cell, years=years: cell.point.year in years
+            time=lambda cell, years=years: cell.point.year in years,
         )
         cube_2 = prep_datasets[0].extract(year_enso)
         cube = climate_statistics(cube_2, operator="mean")

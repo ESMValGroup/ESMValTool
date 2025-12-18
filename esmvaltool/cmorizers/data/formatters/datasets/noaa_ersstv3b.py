@@ -62,7 +62,11 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     utils.fix_var_metadata(cube, cmor_info)
     utils.set_global_atts(cube, attrs)
     utils.save_variable(
-        cube, var, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        var,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 

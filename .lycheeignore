@@ -1,0 +1,5 @@
+#  doi's may reject requests from link checkers
+https://doi.org/
+
+# embedded video url fails
+https://www.youtube.com/embed/

@@ -46,7 +46,7 @@ def hofm_regions(region, lon2d, lat2d):
         indexesj = np.hstack((indj, indj2))
     elif region == "Barents_sea":
         indi, indj = np.where(
-            (lon2d >= 20) & (lon2d <= 55) & (lat2d >= 70) & (lat2d <= 80)
+            (lon2d >= 20) & (lon2d <= 55) & (lat2d >= 70) & (lat2d <= 80),
         )
 
         indexesi = indi
@@ -54,10 +54,10 @@ def hofm_regions(region, lon2d, lat2d):
     elif region == "North_sea":
         # Amerasian basin of the Arctic Ocean
         indi, indj = np.where(
-            (lon2d >= 355) & (lon2d <= 360) & (lat2d >= 50) & (lat2d <= 60)
+            (lon2d >= 355) & (lon2d <= 360) & (lat2d >= 50) & (lat2d <= 60),
         )
         indi2, indj2 = np.where(
-            (lon2d >= 0) & (lon2d <= 10) & (lat2d >= 50) & (lat2d <= 60)
+            (lon2d >= 0) & (lon2d <= 10) & (lat2d >= 50) & (lat2d <= 60),
         )
 
         indexesi = np.hstack((indi, indi2))
@@ -114,7 +114,7 @@ def transect_points(transect, mult=2):
                 120.0,
                 130.0,
                 140.0,
-            ]
+            ],
         )
         lat_s4 = np.array(
             [
@@ -144,7 +144,7 @@ def transect_points(transect, mult=2):
                 78.2,
                 78.7,
                 79.7,
-            ]
+            ],
         )
     elif transect == "Fram":
         lon_s4 = np.array(
@@ -182,7 +182,7 @@ def transect_points(transect, mult=2):
                 11.0559,
                 12.0102,
                 13.3313,
-            ]
+            ],
         )
         lat_s4 = np.array(
             [
@@ -219,19 +219,25 @@ def transect_points(transect, mult=2):
                 78.8793,
                 78.8715,
                 78.9012,
-            ]
+            ],
         )
 
     else:
         print(f"Transect {transect} is not recognized")
 
     point_number = np.linspace(
-        1, lon_s4.shape[0], num=lon_s4.shape[0], endpoint=True
+        1,
+        lon_s4.shape[0],
+        num=lon_s4.shape[0],
+        endpoint=True,
     )
     f_lons = interp1d(point_number, lon_s4)
     g_lats = interp1d(point_number, lat_s4)
     xnew = np.linspace(
-        1, lon_s4.shape[0], num=mult * lon_s4.shape[0], endpoint=True
+        1,
+        lon_s4.shape[0],
+        num=mult * lon_s4.shape[0],
+        endpoint=True,
     )
 
     lon_s4new = f_lons(xnew)

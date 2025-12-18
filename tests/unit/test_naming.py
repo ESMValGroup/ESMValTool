@@ -69,7 +69,8 @@ class TestNaming(unittest.TestCase):
                 os.path.splitext(filename)[0] for filename in filenames
             )
             self.assertTrue(
-                reserved_names.isdisjoint(without_extensions), error_msg
+                reserved_names.isdisjoint(without_extensions),
+                error_msg,
             )
 
     def test_avoid_casing_collisions(self):

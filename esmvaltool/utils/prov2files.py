@@ -40,7 +40,7 @@ def prov2files(filename):
         # builds a provenance graph.
         raise ValueError(
             "Invalid provenance file encountered,"
-            " ESMValTool provenance describes one result only."
+            " ESMValTool provenance describes one result only.",
         )
     return result_files.pop(), sorted(source_files)
 
@@ -62,13 +62,15 @@ def main():
     for filename in args.provenance_files:
         if not filename.endswith("_provenance.xml"):
             print(
-                "Skipping", filename, "does it contain ESMValTool provenance?"
+                "Skipping",
+                filename,
+                "does it contain ESMValTool provenance?",
             )
             continue
         result, files = prov2files(filename)
         print(f"{result} was derived from:")
         print("\n".join(files))
-        print("")
+        print()
 
 
 if __name__ == "__main__":

@@ -9,7 +9,12 @@ from esmvaltool.cmorizers.data.downloaders.cds import CDSDownloader
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    config,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
@@ -61,7 +66,7 @@ def download_dataset(
             [
                 f"{i + 1:02d}"
                 for i in range(
-                    calendar.monthrange(loop_date.year, loop_date.month)[1]
+                    calendar.monthrange(loop_date.year, loop_date.month)[1],
                 )
             ],
             file_format="nc",

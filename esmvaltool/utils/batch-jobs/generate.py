@@ -237,7 +237,7 @@ def generate_submit():
     """Generate and submit scripts."""
     print(
         "It is recommended that you run the following recipes with the "
-        "configuration in dask.yml in ~/.esmvaltool/dask.yml:"
+        "configuration in dask.yml in ~/.esmvaltool/dask.yml:",
     )
     default_dask_config_file = textwrap.dedent(f"""
     cluster:
@@ -276,10 +276,10 @@ def generate_submit():
             file.write("\n")
             file.write(f"#SBATCH --job-name={recipe.stem}.%J\n")
             file.write(
-                f"#SBATCH --output={home}/{outputs}/{recipe.stem}.%J.out\n"
+                f"#SBATCH --output={home}/{outputs}/{recipe.stem}.%J.out\n",
             )
             file.write(
-                f"#SBATCH --error={home}/{outputs}/{recipe.stem}.%J.err\n"
+                f"#SBATCH --error={home}/{outputs}/{recipe.stem}.%J.err\n",
             )
             file.write(f"#SBATCH --account={account}\n")
             if not SPECIAL_RECIPES.get(recipe.stem, None):
@@ -304,13 +304,12 @@ def generate_submit():
                     if "memory" in SPECIAL_RECIPES[recipe.stem]:
                         file.write(SPECIAL_RECIPES[recipe.stem]["memory"])
                 # Shared nodes (other partitions)
+                # Special memory requirements
+                elif "memory" in SPECIAL_RECIPES[recipe.stem]:
+                    file.write(SPECIAL_RECIPES[recipe.stem]["memory"])
+                # Default
                 else:
-                    # Special memory requirements
-                    if "memory" in SPECIAL_RECIPES[recipe.stem]:
-                        file.write(SPECIAL_RECIPES[recipe.stem]["memory"])
-                    # Default
-                    else:
-                        file.write(f"#SBATCH --mem={memory}\n")
+                    file.write(f"#SBATCH --mem={memory}\n")
             if mail:
                 file.write("#SBATCH --mail-type=FAIL,END \n")
             file.write("\n")
@@ -321,11 +320,10 @@ def generate_submit():
             file.write(f"conda activate {env}\n")
             file.write("\n")
             if not config_dir:
-                file.write(f"esmvaltool run {str(recipe)}")
+                file.write(f"esmvaltool run {recipe!s}")
             else:
                 file.write(
-                    f"esmvaltool run --config_dir "
-                    f"{str(config_dir)} {str(recipe)}"
+                    f"esmvaltool run --config_dir {config_dir!s} {recipe!s}",
                 )
             # set max_parallel_tasks
             max_parallel_tasks = MAX_PARALLEL_TASKS.get(

@@ -90,7 +90,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
         engine="python",
     )
     data_frame = data_frame.rename(
-        columns=lambda x: "" if "Unnamed" in x else x
+        columns=lambda x: "" if "Unnamed" in x else x,
     )
 
     # Extract cube
@@ -113,7 +113,11 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
 
     # Save variable
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
 

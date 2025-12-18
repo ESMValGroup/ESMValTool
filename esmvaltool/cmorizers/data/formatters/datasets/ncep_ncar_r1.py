@@ -78,7 +78,6 @@ def _fix_units(cube, definition):
     Exception is `pr` since the units in the
     raw file are not recognized correctly.
     """
-
     if cube.var_name != "pr":
         cube.convert_units(definition.units)
 
@@ -125,7 +124,8 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
             module="iris",
         )
         cube = iris.load_cube(
-            str(raw_filepath), NameConstraint(var_name=raw_var)
+            str(raw_filepath),
+            NameConstraint(var_name=raw_var),
         )
 
     utils.set_global_atts(cube, attributes)
@@ -142,7 +142,7 @@ def _extract_variable(short_name, var, cfg, raw_filepath, out_dir):
 
     # fix time units
     cube.coord("time").convert_units(
-        Unit("days since 1950-1-1 00:00:00", calendar="gregorian")
+        Unit("days since 1950-1-1 00:00:00", calendar="gregorian"),
     )
 
     cube = _fix_coordinates(cube, definition, cmor_info)

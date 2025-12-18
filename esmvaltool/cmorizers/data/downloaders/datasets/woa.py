@@ -10,7 +10,12 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    config,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download dataset.
 
@@ -58,5 +63,6 @@ def download_dataset(
         os.makedirs(os.path.join(downloader.local_folder, var), exist_ok=True)
         filepath = os.path.join(downloader.local_folder, filename)
         shutil.move(
-            filepath, os.path.join(downloader.local_folder, var, filename)
+            filepath,
+            os.path.join(downloader.local_folder, var, filename),
         )

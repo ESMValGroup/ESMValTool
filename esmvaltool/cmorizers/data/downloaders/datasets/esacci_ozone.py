@@ -12,7 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset(
-    config, dataset, dataset_info, start_date, end_date, overwrite
+    config,
+    dataset,
+    dataset_info,
+    start_date,
+    end_date,
+    overwrite,
 ):
     """Download ESACCI-OZONE dataset using CDS API.
 
@@ -58,12 +63,15 @@ def download_dataset(
 
             if file_path.exists() and not overwrite:
                 logger.info(
-                    "File %s already exists. Skipping download.", file_path
+                    "File %s already exists. Skipping download.",
+                    file_path,
                 )
                 continue
 
             client.retrieve(
-                "satellite-ozone-v1", request, file_path.as_posix()
+                "satellite-ozone-v1",
+                request,
+                file_path.as_posix(),
             )
 
             # Handle both .gz and .zip files

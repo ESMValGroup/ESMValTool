@@ -38,7 +38,7 @@ def fix_coords_non_symetric_lon(cube):
         if cube_coord.var_name == "time":
             logger.info("Fixing time...")
             cube.coord("time").convert_units(
-                Unit("days since 1950-1-1 00:00:00", calendar="gregorian")
+                Unit("days since 1950-1-1 00:00:00", calendar="gregorian"),
             )
             utils.fix_bounds(cube, cube.coord("time"))
 
@@ -111,7 +111,11 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
 
     # Save variable
     utils.save_variable(
-        cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+        cube,
+        short_name,
+        out_dir,
+        attrs,
+        unlimited_dimensions=["time"],
     )
 
     #####
@@ -133,7 +137,11 @@ def _extract_variable(short_name, var, res, cfg, filepath, out_dir):
 
             # Save variable
             utils.save_variable(
-                cube, short_name, out_dir, attrs, unlimited_dimensions=["time"]
+                cube,
+                short_name,
+                out_dir,
+                attrs,
+                unlimited_dimensions=["time"],
             )
 
 
@@ -146,10 +154,15 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
     for res in cfg["attributes"]["resolution"].values():
         for short_name, var in cfg["variables"].items():
             logger.info(
-                "CMORizing variable '%s' on %s°x%s°", short_name, res, res
+                "CMORizing variable '%s' on %s°x%s°",
+                short_name,
+                res,
+                res,
             )
             raw_var = var.get("raw", short_name)
             filepath = raw_filepath.format(
-                raw_name=raw_var, resolution=res, version=ver
+                raw_name=raw_var,
+                resolution=res,
+                version=ver,
             )
             _extract_variable(short_name, var, res, cfg, filepath, out_dir)

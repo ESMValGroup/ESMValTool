@@ -37,16 +37,15 @@ def segment2list(cmap, numcol, reverse=False):
         if callable(cdict[key]):
             print(
                 "ERR>> Colour map ({}) defined by continuous functions,"
-                + " cannot yet convert to list"
+                " cannot yet convert to list",
             ).format(cmap.name)
             return None
             # This doesn't work as end up with negative values in colors[]
             # for j,icol in enumerate(colors_i):
             #     colors[j, i]=cdict[key](icol)
-        else:
-            xy_int = np.array(cdict[key])
-            interpolator = spint.interp1d(xy_int[:, 0], xy_int[:, 1])
-            colors[:, i] = interpolator(colors_i)
+        xy_int = np.array(cdict[key])
+        interpolator = spint.interp1d(xy_int[:, 0], xy_int[:, 1])
+        colors[:, i] = interpolator(colors_i)
 
     if reverse:
         colors = colors[::-1, :]

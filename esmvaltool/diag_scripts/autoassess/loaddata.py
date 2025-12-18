@@ -125,7 +125,8 @@ def seasonal_mean(mycube):
     if "season_year" not in mycube.coords():
         coord_cat.add_season_year(mycube, "time", name="season_year")
     annual_seasonal_mean = mycube.aggregated_by(
-        ["clim_season", "season_year"], iris.analysis.MEAN
+        ["clim_season", "season_year"],
+        iris.analysis.MEAN,
     )
 
     def spans_three_months(time):
@@ -203,7 +204,7 @@ def select_by_pressure_level(cubes, lblev):
     """
     pressure_level = iris.Constraint(pressure=lblev)
     return cubes.extract(
-        pressure_level
+        pressure_level,
     )  # CubeList.extract returns always CubeList
 
 
@@ -249,7 +250,7 @@ def select_by_processing(cubes, lbproc):
 
         if _lbproc != 0:
             raise NotImplementedError(
-                "Lbproc " + str(lbproc) + " is not implemented."
+                "Lbproc " + str(lbproc) + " is not implemented.",
             )
 
     return iris.cube.CubeList(selected_cubes)
@@ -325,13 +326,19 @@ def select_certain_months(cubes, lbmon):
     # add 'month number' coordinate
     add_time_coord = {
         "monthly": lambda cube: coord_cat.add_month_number(
-            cube, "time", name="month_number"
+            cube,
+            "time",
+            name="month_number",
         ),
         "seasonal": lambda cube: coord_cat.add_season(
-            cube, "time", name="clim_season"
+            cube,
+            "time",
+            name="clim_season",
         ),
         "annual": lambda cube: coord_cat.add_season_year(
-            cube, "time", name="season_year"
+            cube,
+            "time",
+            name="season_year",
         ),
     }
     assert isinstance(cubes, iris.cube.CubeList)
@@ -342,7 +349,7 @@ def select_certain_months(cubes, lbmon):
     # filter by month number
     month_constraint = iris.Constraint(month_number=lbmon)
     return cubes.extract(
-        month_constraint
+        month_constraint,
     )  # CubeList.extract returns always CubeList
 
 
@@ -378,7 +385,7 @@ def extract_time_range(cubes, start, end):
         time_constraint = iris.Constraint(
             time=lambda t: (
                 t_1 <= datetime_to_int_days(t.point, time_unit) <= t_2
-            )
+            ),
         )
         cube_slice = cube.extract(time_constraint)
         time_ranged_cubes.append(cube_slice)
@@ -513,14 +520,16 @@ def _load_run_ss(
 
     if averaging_period in ["daily", "monthly", "seasonal", "annual"]:
         selected_cubes = select_by_averaging_period(
-            selected_cubes, averaging_period
+            selected_cubes,
+            averaging_period,
         )
     if lblev:
         selected_cubes = select_by_pressure_level(selected_cubes, lblev)
 
     if lbtim:
         selected_cubes = select_by_initial_meaning_period(
-            selected_cubes, lbtim
+            selected_cubes,
+            lbtim,
         )
 
     if lbmon:

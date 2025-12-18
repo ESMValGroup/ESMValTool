@@ -60,17 +60,17 @@ def _check_x_y_arrays(x_array, y_array):
     if x_array.ndim != 1:
         raise ValueError(
             f"Expected 1D array for X training data, got {x_array.ndim:d}D "
-            f"array"
+            f"array",
         )
     if y_array.ndim != 1:
         raise ValueError(
             f"Expected 1D array for Y training data, got {y_array.ndim:d}D "
-            f"array"
+            f"array",
         )
     if x_array.shape != y_array.shape:
         raise ValueError(
             f"Expected identical shapes for X and Y training data, got "
-            f"{x_array.shape} and {y_array.shape}, respectively"
+            f"{x_array.shape} and {y_array.shape}, respectively",
         )
 
     # Remove masked values
@@ -93,15 +93,15 @@ def _add_column(data_frame, series, column_name):
         for row in series.index:
             if np.isnan(data_frame.loc[row, column_name]):
                 data_frame.loc[row, column_name] = series.loc[row]
-            else:
-                if not np.isclose(
-                    data_frame.loc[row, column_name], series.loc[row]
-                ):
-                    raise ValueError(
-                        f"Got duplicate data for tag '{column_name}' of "
-                        f"'{row}': {series.loc[row]:e} and "
-                        f"{data_frame.loc[row, column_name]:e}"
-                    )
+            elif not np.isclose(
+                data_frame.loc[row, column_name],
+                series.loc[row],
+            ):
+                raise ValueError(
+                    f"Got duplicate data for tag '{column_name}' of "
+                    f"'{row}': {series.loc[row]:e} and "
+                    f"{data_frame.loc[row, column_name]:e}",
+                )
     else:
         data_frame[column_name] = series
     return data_frame
@@ -110,14 +110,14 @@ def _add_column(data_frame, series, column_name):
 def _crop_data_frame(data_frame, ref_data_frame, data_name, ref_data_name):
     """Crop columns of a data_frame so that it matches a given reference."""
     diff_not_in_data_frame = list(
-        ref_data_frame.columns.difference(data_frame.columns)
+        ref_data_frame.columns.difference(data_frame.columns),
     )
     if diff_not_in_data_frame:
         raise ValueError(
-            f"No '{data_name}' given for tags {diff_not_in_data_frame}"
+            f"No '{data_name}' given for tags {diff_not_in_data_frame}",
         )
     diff_not_in_ref = list(
-        data_frame.columns.difference(ref_data_frame.columns)
+        data_frame.columns.difference(ref_data_frame.columns),
     )
     if diff_not_in_ref:
         logger.warning(
@@ -136,7 +136,7 @@ def _check_data_frames(features, label, pred_input, pred_input_err):
         raise ValueError("Expected at least one feature")
     if len(label.columns) != 1:
         raise ValueError(
-            f"Expected exactly 1 'label' variable, got {len(label.columns):d}"
+            f"Expected exactly 1 'label' variable, got {len(label.columns):d}",
         )
 
     # Compare features and label
@@ -144,17 +144,23 @@ def _check_data_frames(features, label, pred_input, pred_input_err):
         raise ValueError(
             f"Expected identical datasets (climate models; independent "
             f"observations) for 'feature' and 'label', got "
-            f"{features.index.values} and {label.index.values}"
+            f"{features.index.values} and {label.index.values}",
         )
     if len(features.index) < 2:
         raise ValueError("Expected at least two training points for features")
 
     # Compare features and prediction input data
     pred_input = _crop_data_frame(
-        pred_input, features, "prediction_input", "feature"
+        pred_input,
+        features,
+        "prediction_input",
+        "feature",
     )
     pred_input_err = _crop_data_frame(
-        pred_input_err, features, "prediction_input_error", "feature"
+        pred_input_err,
+        features,
+        "prediction_input_error",
+        "feature",
     )
 
     # Compare prediction_input and prediction_input_error
@@ -164,7 +170,7 @@ def _check_data_frames(features, label, pred_input, pred_input_err):
         raise ValueError(
             f"Expected identical training points for 'prediction_input' and "
             f"'prediction_input_error', got {pred_input.index.values} "
-            f"and {pred_input_err.index.values}"
+            f"and {pred_input_err.index.values}",
         )
 
     return (features, label, pred_input, pred_input_err)
@@ -182,12 +188,11 @@ def _combine_dicts(old_dict, new_dict):
             if not isinstance(val, list):
                 val = [val]
             old_dict[key] = list(set([*old_dict[key], *val]))
+        elif not isinstance(val, list):
+            if not np.array_equal(val, old_dict[key]):
+                old_dict[key] = [old_dict[key], val]
         else:
-            if not isinstance(val, list):
-                if not np.array_equal(val, old_dict[key]):
-                    old_dict[key] = [old_dict[key], val]
-            else:
-                old_dict[key] = list(set([old_dict[key], *val]))
+            old_dict[key] = list(set([old_dict[key], *val]))
     return old_dict
 
 
@@ -212,19 +217,21 @@ def _get_attributes(cubes):
         attributes.setdefault(tag, {})
         if cube_attrs["var_type"] in ("feature", "label"):
             attributes[tag] = _combine_dicts(
-                attributes[tag], _metadata_to_dict(cube.metadata)
+                attributes[tag],
+                _metadata_to_dict(cube.metadata),
             )
         elif cube_attrs["var_type"] in (
             "prediction_input",
             "prediction_input_error",
         ):
             attributes[tag] = _combine_dicts(
-                attributes[tag], {"filename": cube_attrs["filename"]}
+                attributes[tag],
+                {"filename": cube_attrs["filename"]},
             )
         else:
             raise ValueError(
                 f"File '{cube_attrs['filename']}' has invalid var_type "
-                f"'{cube_attrs['var_type']}'"
+                f"'{cube_attrs['var_type']}'",
             )
 
     # Set default attributes and remove lengthy 'provenance' entry
@@ -260,7 +267,8 @@ def _get_cube_list(
         cube = _load_cube_with_dataset_coord(filename)
         cube.attributes["filename"] = filename
         (feature_cube, prediction_cube) = _split_cube(
-            cube, merge_identical_pred_input
+            cube,
+            merge_identical_pred_input,
         )
         if feature_cube is not None:
             cubes.append(feature_cube)
@@ -301,7 +309,7 @@ def _get_external_file(filepath, auxiliary_data_dir):
         filepath = os.path.join(auxiliary_data_dir, filepath)
     if not os.path.isfile(filepath):
         raise FileNotFoundError(
-            f"Desired external file '{filepath}' does not exist"
+            f"Desired external file '{filepath}' does not exist",
         )
     logger.info("Found external file '%s'", filepath)
     return filepath
@@ -318,7 +326,7 @@ def _get_data_frame(var_type, cubes, label_all_data, group_by=None):
             if group_by is not None and group_by not in cube_attrs:
                 raise AttributeError(
                     f"Group attribute '{group_by}' not available in input "
-                    f"file '{cube_attrs['filename']}'"
+                    f"file '{cube_attrs['filename']}'",
                 )
             group = cube_attrs.get(group_by, label_all_data)
             index = pd.MultiIndex.from_product(
@@ -390,7 +398,7 @@ def _split_cube(cube, merge_identical_pred_input=True):
 
     # Set new index for prediction input
     prediction_cube.coord("dataset").points = np.arange(
-        len(prediction_cube.coord("dataset").points)
+        len(prediction_cube.coord("dataset").points),
     )
     return (feature_cube, prediction_cube)
 
@@ -404,10 +412,12 @@ def _cube_to_dataset_coord(cube):
         datasets = ["".join(d.compressed()) for d in cube.data]
     else:
         raise ValueError(
-            f"Only 1D and 2D cubes supported, got {cube.ndim:d}D cube"
+            f"Only 1D and 2D cubes supported, got {cube.ndim:d}D cube",
         )
     return iris.coords.AuxCoord(
-        datasets, var_name="dataset", long_name="dataset"
+        datasets,
+        var_name="dataset",
+        long_name="dataset",
     )
 
 
@@ -429,7 +439,7 @@ def _get_first_cube_with_coord(cubes, accepted_coord_names):
     else:
         raise ValueError(
             f"No cube of {cubes} contains 'dataset' coordinate (i.e. one of "
-            f"{accepted_coord_names})"
+            f"{accepted_coord_names})",
         )
     return (returned_cube, returned_coord)
 
@@ -450,7 +460,7 @@ def _load_cube_with_dataset_coord(filename):
         if cube.ndim != 1:
             raise ValueError(
                 f"Only 1D cubes supported, got {cube.ndim:d}D cube in file "
-                f"'{filename}'"
+                f"'{filename}'",
             )
         coord.var_name = "dataset"
         coord.standard_name = None
@@ -461,7 +471,7 @@ def _load_cube_with_dataset_coord(filename):
     if len(cubes) > 2:
         raise ValueError(
             f"Loading NCL file '{filename}' failed, at most 2 cubes are "
-            f"supported, got {len(cubes):d}"
+            f"supported, got {len(cubes):d}",
         )
 
     # Get 'model' or 'dataset' cube
@@ -475,20 +485,20 @@ def _load_cube_with_dataset_coord(filename):
     if dataset_cube is None:
         raise ValueError(
             f"No 'dataset' coordinate (one of {accepted_coord_names}) in "
-            f"file '{filename}' available"
+            f"file '{filename}' available",
         )
 
     # Create new coordinate
     if data_cube.ndim != 1:
         raise ValueError(
             f"Only 1D cubes supported, got {data_cube.ndim:d}D cube in file "
-            f"'{filename}'"
+            f"'{filename}'",
         )
     if data_cube.shape[0] != dataset_cube.shape[0]:
         raise ValueError(
             f"Got differing sizes for first dimension of data cube "
             f"({data_cube.shape[0]:d}) and dataset cube "
-            f"({dataset_cube.shape[0]:d}) in file '{filename}'"
+            f"({dataset_cube.shape[0]:d}) in file '{filename}'",
         )
     aux_coord = _cube_to_dataset_coord(dataset_cube)
     data_cube.add_aux_coord(aux_coord, 0)
@@ -544,7 +554,11 @@ def _create_scatterplot(
 
 
 def _create_pred_input_plot(
-    x_pred, x_pred_error, axes, vline_kwargs=None, vspan_kwargs=None
+    x_pred,
+    x_pred_error,
+    axes,
+    vline_kwargs=None,
+    vspan_kwargs=None,
 ):
     """Create plot for prediction input data (vertical lines)."""
     if vline_kwargs is None:
@@ -559,7 +573,12 @@ def _create_pred_input_plot(
 
 
 def _create_pred_output_plot(
-    x_data, y_data, x_pred, x_pred_error, axes, hline_kwargs=None
+    x_data,
+    y_data,
+    x_pred,
+    x_pred_error,
+    axes,
+    hline_kwargs=None,
 ):
     """Create plot for prediction input data (vertical lines)."""
     if hline_kwargs is None:
@@ -592,16 +611,18 @@ def _create_regplot(
     text = rf"$R^2={reg['rvalue'] ** 2:.2f}, p={reg['pvalue']:.4f}$"
     if "label" in line_kwargs:
         line_kwargs["label"] += rf" ({text})"
+    elif reg["rvalue"] < 0.0:
+        axes.text(0.62, 0.93, text, transform=axes.transAxes)
     else:
-        if reg["rvalue"] < 0.0:
-            axes.text(0.62, 0.93, text, transform=axes.transAxes)
-        else:
-            axes.text(0.02, 0.93, text, transform=axes.transAxes)
+        axes.text(0.02, 0.93, text, transform=axes.transAxes)
 
     # Plots regression
     axes.plot(reg["x"], reg["y"], **line_kwargs)
     axes.fill_between(
-        reg["x"], reg["y_minus_err"], reg["y_plus_err"], **fill_between_kwargs
+        reg["x"],
+        reg["y_minus_err"],
+        reg["y_plus_err"],
+        **fill_between_kwargs,
     )
 
     # Plot means if desired
@@ -642,16 +663,19 @@ def _metadata_list_to_cube_list(metadata_list, source):
             if attr not in metadata:
                 raise AttributeError(
                     f"Entry {metadata} from source '{source}' does not "
-                    f"contain necessary attribute '{attr}'"
+                    f"contain necessary attribute '{attr}'",
                 )
         aux_coord = iris.coords.AuxCoord(
-            metadata.pop("dataset"), var_name="dataset", long_name="dataset"
+            metadata.pop("dataset"),
+            var_name="dataset",
+            long_name="dataset",
         )
         data_of_cube = metadata.pop("data")
         if data_of_cube is None:
             data_of_cube = np.nan
         cube = iris.cube.Cube(
-            data_of_cube, aux_coords_and_dims=[(aux_coord, ())]
+            data_of_cube,
+            aux_coords_and_dims=[(aux_coord, ())],
         )
         for key in ("var_name", "standard_name", "long_name", "units"):
             if key in metadata:
@@ -668,7 +692,12 @@ def _gaussian_pdf(x_val, x_mean, x_std):
 
 
 def _get_target_pdf(
-    x_data, y_data, obs_mean, obs_std, n_points=1000, necessary_p_value=None
+    x_data,
+    y_data,
+    obs_mean,
+    obs_std,
+    n_points=1000,
+    necessary_p_value=None,
 ):
     """Get PDF of target variable including linear regression information."""
     (x_data, y_data) = _check_x_y_arrays(x_data, y_data)
@@ -678,7 +707,9 @@ def _get_target_pdf(
     # Get evenly spaced range of y
     y_range = 1.5 * (np.max(y_data) - np.min(y_data))
     y_lin = np.linspace(
-        np.min(y_data) - y_range, np.max(y_data) + y_range, n_points
+        np.min(y_data) - y_range,
+        np.max(y_data) + y_range,
+        n_points,
     )
 
     # Use unconstrained value of desired and necessary
@@ -706,7 +737,10 @@ def _get_target_pdf(
     x_range = 3 * obs_std
     y_pdf = [
         integrate.quad(
-            comb_pdf, obs_mean - x_range, obs_mean + x_range, args=(y,)
+            comb_pdf,
+            obs_mean - x_range,
+            obs_mean + x_range,
+            args=(y,),
         )[0]
         for y in y_lin
     ]
@@ -738,12 +772,12 @@ def check_metadata(metadata, allowed_var_types=None):
         if key not in metadata:
             raise KeyError(
                 f"Necessary key '{key}' not given in metadata of file "
-                f"'{filename}'"
+                f"'{filename}'",
             )
     if metadata["var_type"] not in allowed_var_types:
         raise ValueError(
             f"Expected one of {allowed_var_types} for 'var_type' of file "
-            f"'{filename}', got '{metadata['var_type']}'"
+            f"'{filename}', got '{metadata['var_type']}'",
         )
 
 
@@ -846,7 +880,8 @@ def get_input_data(cfg):
 
     # Get cubes
     external_file = _get_external_file(
-        cfg.get("read_external_file"), cfg["auxiliary_data_dir"]
+        cfg.get("read_external_file"),
+        cfg["auxiliary_data_dir"],
     )
     cubes = _get_cube_list(
         input_files,
@@ -869,10 +904,16 @@ def get_input_data(cfg):
     features = _get_data_frame("feature", cubes, label_all_data, group_by)
     label = _get_data_frame("label", cubes, label_all_data, group_by)
     pred_input = _get_data_frame(
-        "prediction_input", cubes, label_all_data, group_by
+        "prediction_input",
+        cubes,
+        label_all_data,
+        group_by,
     )
     pred_input_err = _get_data_frame(
-        "prediction_input_error", cubes, label_all_data, group_by
+        "prediction_input_error",
+        cubes,
+        label_all_data,
+        group_by,
     )
 
     # Unify indices of features and label
@@ -894,21 +935,26 @@ def get_input_data(cfg):
 
     # Check data
     (features, label, pred_input, pred_input_err) = _check_data_frames(
-        features, label, pred_input, pred_input_err
+        features,
+        label,
+        pred_input,
+        pred_input_err,
     )
     training_data = pd.concat([features, label], axis=1, keys=["x", "y"])
     training_data["idx"] = np.arange(len(training_data.index)) + 1
     training_data.set_index("idx", append=True, inplace=True)
     training_data.index.names = [group_by, "dataset", "idx"]
     prediction_data = pd.concat(
-        [pred_input, pred_input_err], axis=1, keys=["mean", "error"]
+        [pred_input, pred_input_err],
+        axis=1,
+        keys=["mean", "error"],
     )
     if training_data.dropna().shape[0] < 2:
         logger.error("Invalid training data:\n%s", training_data)
         raise ValueError(
             f"Expected at least 2 independent observations (=climate models) "
             f"where all training data (features and target label) is "
-            f"available, got {training_data.dropna().shape[0]:d}"
+            f"available, got {training_data.dropna().shape[0]:d}",
         )
 
     # Logger output
@@ -937,7 +983,10 @@ def combine_groups(groups):
 
 
 def pandas_object_to_cube(
-    pandas_object, index_droplevel=None, columns_droplevel=None, **kwargs
+    pandas_object,
+    index_droplevel=None,
+    columns_droplevel=None,
+    **kwargs,
 ):
     """Convert pandas object to :class:`iris.cube.Cube`.
 
@@ -972,12 +1021,12 @@ def pandas_object_to_cube(
     if columns_droplevel is not None:
         try:
             pandas_object.columns = pandas_object.columns.droplevel(
-                columns_droplevel
+                columns_droplevel,
             )
         except AttributeError as exc:
             raise TypeError(
                 f"'columns_droplevel' only supported for pandas.DataFrame "
-                f"object, got {type(pandas_object)}"
+                f"object, got {type(pandas_object)}",
             ) from exc
     cube = _get_pandas_cube(pandas_object)
     for key, val in kwargs.items():
@@ -1035,28 +1084,28 @@ def get_caption(attributes, feature, label, group=None):
     group_str = "" if group is None else f" ({group})"
     if feature not in attributes:
         raise KeyError(
-            f"Attributes do not include necessary key for feature '{feature}'"
+            f"Attributes do not include necessary key for feature '{feature}'",
         )
     if label not in attributes:
         raise KeyError(
-            f"Attributes do not include necessary key for label '{label}'"
+            f"Attributes do not include necessary key for label '{label}'",
         )
     feature_attrs = attributes[feature]
     label_attrs = attributes[label]
     if "plot_title" not in feature_attrs:
         raise KeyError(
             f"Attributes for feature '{feature}' does not include necessary "
-            f"key 'plot_title'"
+            f"key 'plot_title'",
         )
     if "plot_xlabel" not in feature_attrs:
         raise KeyError(
             f"Attributes for feature '{feature}' does not include necessary "
-            f"key 'plot_xlabel'"
+            f"key 'plot_xlabel'",
         )
     if "plot_ylabel" not in label_attrs:
         raise KeyError(
             f"Attributes for label '{label}' does not include necessary "
-            f"key 'plot_ylabel'"
+            f"key 'plot_ylabel'",
         )
     caption = (
         f"{attributes[feature]['plot_title']}: "
@@ -1161,7 +1210,11 @@ def get_groups(training_data, add_combined_group=False):
 
 
 def plot_individual_scatterplots(
-    training_data, pred_input_data, attributes, basename, cfg
+    training_data,
+    pred_input_data,
+    attributes,
+    basename,
+    cfg,
 ):
     """Plot individual scatterplots for the different groups.
 
@@ -1185,13 +1238,16 @@ def plot_individual_scatterplots(
     logger.info("Plotting individual scatterplots")
     label = training_data.y.columns[0]
     groups = get_groups(
-        training_data, add_combined_group=cfg.get("combine_groups", False)
+        training_data,
+        add_combined_group=cfg.get("combine_groups", False),
     )
 
     # Iterate over features
     for feature in training_data.x.columns:
         (x_data, y_data) = get_xy_data_without_nans(
-            training_data, feature, label
+            training_data,
+            feature,
+            label,
         )
 
         # Individual plots
@@ -1210,7 +1266,8 @@ def plot_individual_scatterplots(
                 y_sub_data,
                 numbers_as_markers=cfg.get("numbers_as_markers", False),
                 plot_regression_line_mean=cfg.get(
-                    "plot_regression_line_mean", False
+                    "plot_regression_line_mean",
+                    False,
                 ),
                 color=colors[idx],
                 label=group,
@@ -1273,7 +1330,7 @@ def plot_individual_scatterplots(
                         long_name=attributes[label]["plot_ylabel"],
                         units=attributes[label]["units"],
                     ),
-                ]
+                ],
             )
             netcdf_path = get_diagnostic_filename(filename, cfg)
             io.iris_save(cubes, netcdf_path)
@@ -1282,7 +1339,11 @@ def plot_individual_scatterplots(
 
 
 def plot_merged_scatterplots(
-    training_data, pred_input_data, attributes, basename, cfg
+    training_data,
+    pred_input_data,
+    attributes,
+    basename,
+    cfg,
 ):
     """Plot merged scatterplots (all groups in one plot).
 
@@ -1306,7 +1367,8 @@ def plot_merged_scatterplots(
     logger.info("Plotting merged scatterplots")
     label = training_data.y.columns[0]
     groups = get_groups(
-        training_data, add_combined_group=cfg.get("combine_groups", False)
+        training_data,
+        add_combined_group=cfg.get("combine_groups", False),
     )
     numbers_as_markers = cfg.get("numbers_as_markers", False)
     plot_regression_line_mean = cfg.get("plot_regression_line_mean", False)
@@ -1315,7 +1377,9 @@ def plot_merged_scatterplots(
     # Iterate over features
     for feature in training_data.x.columns:
         (x_data, y_data) = get_xy_data_without_nans(
-            training_data, feature, label
+            training_data,
+            feature,
+            label,
         )
         (_, axes) = plt.subplots()
         if len(groups) > 1 and cfg.get("combine_groups", False):
@@ -1434,7 +1498,7 @@ def plot_merged_scatterplots(
                     long_name=attributes[label]["plot_ylabel"],
                     units=attributes[label]["units"],
                 ),
-            ]
+            ],
         )
         netcdf_path = get_diagnostic_filename(filename, cfg)
         io.iris_save(cubes, netcdf_path)
@@ -1474,7 +1538,11 @@ def create_simple_scatterplot(x_data, y_data, obs_mean, obs_std):
 
 
 def plot_target_distributions(
-    training_data, pred_input_data, attributes, basename, cfg
+    training_data,
+    pred_input_data,
+    attributes,
+    basename,
+    cfg,
 ):
     """Plot distributions of target variable for every feature.
 
@@ -1495,21 +1563,26 @@ def plot_target_distributions(
     logger.info("Plotting distributions of target variable")
     label = training_data.y.columns[0]
     groups = get_groups(
-        training_data, add_combined_group=cfg["combine_groups"]
+        training_data,
+        add_combined_group=cfg["combine_groups"],
     )
     summary_columns = pd.MultiIndex.from_product(
-        [groups, ["best estimate", "range", "min", "max"]]
+        [groups, ["best estimate", "range", "min", "max"]],
     )
     summaries = []
 
     # Iterate over features
     for feature in training_data.x.columns:
         (x_data, y_data) = get_xy_data_without_nans(
-            training_data, feature, label
+            training_data,
+            feature,
+            label,
         )
         colors = get_colors(cfg, groups=groups)
         summary_for_feature = pd.Series(
-            index=summary_columns, name=feature, dtype=np.float64
+            index=summary_columns,
+            name=feature,
+            dtype=np.float64,
         )
 
         # Iterate over groups
@@ -1536,7 +1609,11 @@ def plot_target_distributions(
                 alpha=0.4,
             )
             axes.plot(
-                y_lin, y_pdf, color=colors[idx], linestyle="-", label=group
+                y_lin,
+                y_pdf,
+                color=colors[idx],
+                linestyle="-",
+                label=group,
             )
 
             # Print results
@@ -1582,7 +1659,8 @@ def plot_target_distributions(
 
         # Save plot
         plot_path = get_plot_filename(
-            f"target_distribution_{basename}_{feature}", cfg
+            f"target_distribution_{basename}_{feature}",
+            cfg,
         )
         plt.savefig(plot_path, **cfg["savefig_kwargs"])
         logger.info("Wrote %s", plot_path)
@@ -1641,7 +1719,9 @@ def export_csv(data_frame, attributes, basename, cfg, tags=None):
     if tags is None:
         tags = data_frame.columns.get_level_values(-1)
     provenance_record = get_provenance_record(
-        attributes, tags, caption=basename
+        attributes,
+        tags,
+        caption=basename,
     )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(csv_path, provenance_record)
@@ -1711,7 +1791,9 @@ def regression_line(x_data, y_data, n_points=1000):
     reg = linregress(x_data, y_data)
     x_range = np.max(x_data) - np.min(x_data)
     x_lin = np.linspace(
-        np.min(x_data) - x_range, np.max(x_data) + x_range, n_points
+        np.min(x_data) - x_range,
+        np.max(x_data) + x_range,
+        n_points,
     )
     out["x"] = x_lin
     out["y"] = reg.slope * x_lin + reg.intercept
@@ -1725,7 +1807,12 @@ def regression_line(x_data, y_data, n_points=1000):
 
 
 def target_pdf(
-    x_data, y_data, obs_mean, obs_std, n_points=1000, necessary_p_value=None
+    x_data,
+    y_data,
+    obs_mean,
+    obs_std,
+    n_points=1000,
+    necessary_p_value=None,
 ):
     """Calculate probability density function (PDF) for target variable.
 
@@ -1785,7 +1872,12 @@ def cdf(data, pdf):
 
 
 def constraint_info_array(
-    x_data, y_data, obs_mean, obs_std, n_points=1000, necessary_p_value=None
+    x_data,
+    y_data,
+    obs_mean,
+    obs_std,
+    n_points=1000,
+    necessary_p_value=None,
 ):
     """Get array with all relevant parameters of emergent constraint.
 
@@ -1873,14 +1965,16 @@ def get_constraint(x_data, y_data, obs_mean, obs_std, confidence_level=0.66):
     y_cdf = cdf(y_lin, y_pdf)
     y_index_range = np.nonzero(
         (y_cdf >= (1.0 - confidence_level) / 2.0)
-        & (y_cdf <= (1.0 + confidence_level) / 2.0)
+        & (y_cdf <= (1.0 + confidence_level) / 2.0),
     )
     y_range = y_lin[y_index_range]
     return (np.min(y_range), y_mean, np.max(y_range))
 
 
 def get_constraint_from_df(
-    training_data, pred_input_data, confidence_level=0.66
+    training_data,
+    pred_input_data,
+    confidence_level=0.66,
 ):
     """Get constraint on target variable from :class:`pandas.DataFrame`.
 
@@ -1903,12 +1997,12 @@ def get_constraint_from_df(
     if len(training_data.columns) != 2:
         raise ValueError(
             f"Expected exactly two columns for training data (feature and "
-            f"label), got {len(training_data.columns):d}"
+            f"label), got {len(training_data.columns):d}",
         )
     if len(pred_input_data.columns) != 2:
         raise ValueError(
             f"Expected exactly two columns for prediction input data (mean "
-            f"and error, got {len(pred_input_data.columns):d}"
+            f"and error, got {len(pred_input_data.columns):d}",
         )
 
     # Extract data
@@ -1920,6 +2014,10 @@ def get_constraint_from_df(
 
     # Calculate constraint
     constraint = get_constraint(
-        x_data, y_data, x_pred, x_pred_error, confidence_level=confidence_level
+        x_data,
+        y_data,
+        x_pred,
+        x_pred_error,
+        confidence_level=confidence_level,
     )
     return constraint

@@ -101,10 +101,13 @@ def calculate_statistics(data_frame, cfg):
     exclude_datasets = cfg["exclude_datasets"]
     if cfg.get("calculate_mean", True):
         logger.info(
-            "Calculating mean over all datasets excluding %s", exclude_datasets
+            "Calculating mean over all datasets excluding %s",
+            exclude_datasets,
         )
         data_frame = _calculate_statistic(
-            data_frame, np.mean, exclude_datasets
+            data_frame,
+            np.mean,
+            exclude_datasets,
         )
     if cfg.get("calculate_std", True):
         logger.info(
@@ -119,13 +122,13 @@ def check_cube(cube, filename):
     """Check properties of cube."""
     if cube.ndim != 1:
         raise ValueError(
-            f"Expected 1D data in file '{filename}', got {cube.ndim:d} cube"
+            f"Expected 1D data in file '{filename}', got {cube.ndim:d} cube",
         )
     try:
         cube.coord("dataset")
     except iris.exceptions.CoordinateNotFoundError as exc:
         raise iris.exceptions.CoordinateNotFoundError(
-            f"Necessary coordinate 'dataset' not found in file '{filename}'"
+            f"Necessary coordinate 'dataset' not found in file '{filename}'",
         ) from exc
 
 
@@ -154,15 +157,15 @@ def create_data_frame(input_files, exclude_datasets):
             for row in series.index:
                 if np.isnan(data_frame.loc[row, cube.var_name]):
                     data_frame.loc[row, cube.var_name] = series.loc[row]
-                else:
-                    if not np.isclose(
-                        data_frame.loc[row, cube.var_name], series.loc[row]
-                    ):
-                        raise ValueError(
-                            f"Got duplicate data for '{cube.var_name}' of "
-                            f"'{row}': {series.loc[row]:e} and "
-                            f"{data_frame.loc[row, cube.var_name]:e}"
-                        )
+                elif not np.isclose(
+                    data_frame.loc[row, cube.var_name],
+                    series.loc[row],
+                ):
+                    raise ValueError(
+                        f"Got duplicate data for '{cube.var_name}' of "
+                        f"'{row}': {series.loc[row]:e} and "
+                        f"{data_frame.loc[row, cube.var_name]:e}",
+                    )
         else:
             data_frame.loc[:, cube.var_name] = series
 

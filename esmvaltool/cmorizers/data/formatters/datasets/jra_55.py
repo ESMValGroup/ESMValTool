@@ -108,7 +108,7 @@ def _extract_variable(short_name, var, in_files, cfg, out_dir):
             oper = var.get("operator")
             raise ValueError(
                 f"multiple input files found for variable {short_name} "
-                f"with unknown operator {oper}"
+                f"with unknown operator {oper}",
             )
     else:
         cube = cubes[0]
@@ -193,19 +193,21 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
         for year in range(start_date, end_date + 1):
             if "file" in var:
                 filename.append(
-                    os.path.join(in_dir, var["file"].format(year=year))
+                    os.path.join(in_dir, var["file"].format(year=year)),
                 )
             elif "files" in var:
                 for file in var["files"]:
                     filename.append(
-                        os.path.join(in_dir, file.format(year=year))
+                        os.path.join(in_dir, file.format(year=year)),
                     )
             else:
                 raise ValueError(
-                    f"No input file(s) specified for variable {short_name}."
+                    f"No input file(s) specified for variable {short_name}.",
                 )
 
         logger.info(
-            "CMORizing variable '%s' from file '%s'", short_name, filename
+            "CMORizing variable '%s' from file '%s'",
+            short_name,
+            filename,
         )
         _extract_variable(short_name, var, filename, cfg, out_dir)

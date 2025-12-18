@@ -44,7 +44,9 @@ def _extract_variable(cmor_info, attrs, in_dir, out_dir, ctl):
     """Extract variable."""
     filepath = os.path.join(in_dir, ctl["binary_prefix"] + ".dat")
     raw_data = np.fromfile(
-        filepath, ctl["dtype"], ctl["t_size"] * ctl["y_size"] * ctl["x_size"]
+        filepath,
+        ctl["dtype"],
+        ctl["t_size"] * ctl["y_size"] * ctl["x_size"],
     ).reshape(ctl["t_size"], ctl["y_size"], ctl["x_size"])
 
     # Get coordinates
@@ -60,7 +62,7 @@ def _extract_variable(cmor_info, attrs, in_dir, out_dir, ctl):
         cube = mask_landsea(cube, "land")
     else:
         raise NotImplementedError(
-            f"CMORizer for '{cmor_info.short_name}' not implemented yet"
+            f"CMORizer for '{cmor_info.short_name}' not implemented yet",
         )
 
     # Fix metadata
@@ -82,7 +84,8 @@ def _add_months(date, delta):
     add_years = delta // 12
     add_months = delta % 12
     return date.replace(
-        year=date.year + add_years, month=date.month + add_months
+        year=date.year + add_years,
+        month=date.month + add_months,
     )
 
 

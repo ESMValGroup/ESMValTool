@@ -74,7 +74,9 @@ def main(config):
 
     # Call the create_plotting_data function
     (exp, exp_minus_ctr, ctr_minus_obs, exp_minus_obs) = create_plotting_data(
-        control, experiment, observation
+        control,
+        experiment,
+        observation,
     )
 
     # If true, set the lists to contain only one level
@@ -101,7 +103,7 @@ def main(config):
             ctr_minus_obs_list,
             exp_minus_obs_list,
             strict=True,
-        )
+        ),
     )
 
     # Iterate through each depth level
@@ -155,15 +157,21 @@ def load_data(config):
 
     # Get experiment input files from config
     exp_filename = diagtools.match_model_to_key(
-        exp_label_from_recipe, config[exp_label_from_recipe], input_files
+        exp_label_from_recipe,
+        config[exp_label_from_recipe],
+        input_files,
     )
     # Get control input files from config
     ctl_filename = diagtools.match_model_to_key(
-        ctl_label_from_recipe, config[ctl_label_from_recipe], input_files
+        ctl_label_from_recipe,
+        config[ctl_label_from_recipe],
+        input_files,
     )
     # Get observation input files from config
     obs_filename = diagtools.match_model_to_key(
-        obs_label_from_recipe, config[obs_label_from_recipe], input_files
+        obs_label_from_recipe,
+        config[obs_label_from_recipe],
+        input_files,
     )
 
     # Set variable names to filename cubes above.
@@ -173,13 +181,16 @@ def load_data(config):
 
     # Fixing all units
     experiment = diagtools.bgc_units(
-        experiment, input_files[exp_filename]["short_name"]
+        experiment,
+        input_files[exp_filename]["short_name"],
     )
     control = diagtools.bgc_units(
-        control, input_files[ctl_filename]["short_name"]
+        control,
+        input_files[ctl_filename]["short_name"],
     )
     observation = diagtools.bgc_units(
-        observation, input_files[obs_filename]["short_name"]
+        observation,
+        input_files[obs_filename]["short_name"],
     )
 
     return experiment, control, observation
@@ -269,7 +280,10 @@ def plot_global_single_level(axis, cube, contour_levels, title):
     # This step transforms the data so it can be displayed as 2D
 
     new_cube, _ = iris.analysis.cartography.project(
-        cube, ccrs.PlateCarree(), nx=400, ny=200
+        cube,
+        ccrs.PlateCarree(),
+        nx=400,
+        ny=200,
     )
 
     # Sets the current Axes instance to the specified axis
@@ -297,7 +311,7 @@ def plot_global_single_level(axis, cube, contour_levels, title):
             contour_levels.min(),
             (contour_levels.max() + contour_levels.min()) / 2.0,
             contour_levels.max(),
-        ]
+        ],
     )
 
     # Adding latitude & longitude axis on each plot.
@@ -464,7 +478,10 @@ def create_quadmap(
     ancestors = list(input_files.keys())
     # Calling save_cube for each cube.
     save_cube(
-        exp_single_level, f"experiment_{formatted_depth}", config, ancestors
+        exp_single_level,
+        f"experiment_{formatted_depth}",
+        config,
+        ancestors,
     )
     save_cube(
         exp_minus_ctr_single_level,

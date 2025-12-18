@@ -1,0 +1,45 @@
+name: Link Checker for Pull requests
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  changedFiles:
+    runs-on: ubuntu-latest
+    outputs:
+      files: ${{ steps.changed-doc-files.outputs.all_changed_files }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Get changed doc files
+        id: changed-doc-files
+        uses: tj-actions/changed-files@v47
+        with:
+          # Avoid using single or double quotes for multiline patterns
+          files: |
+            **.rst
+          matrix: true
+
+  linkChecker:
+    runs-on: ubuntu-latest
+    needs: changedFiles
+    if: ${{ needs.changedFiles.outputs.files != '' && toJSON(fromJSON(needs.changedFiles.outputs.files)) != '[]' }}
+    strategy:
+      matrix:
+        file: ${{ fromJSON(needs.changedFiles.outputs.files) }}
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+      - name: Link Checker for changed files
+        id: lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          #  This token is included to avoid github.com requests rate limiting
+          token: ${{ secrets.TOKEN_GITHUB }}
+          # Fail check on broken links
+          fail: true
+          args: >
+            ${{ matrix.file }}
+            --max-concurrency 1 --no-progress
+            --accept "200..=204, 429"

@@ -467,37 +467,37 @@ def get_provenance_record(metric, ancestor_files):
     caption = {
         "09pattern": (
             "Zonal structure of sea surface temperature anomalies in the "
-            + "equatorial Pacific (averaged between 5°S and 5°N)."
+            "equatorial Pacific (averaged between 5°S and 5°N)."
         ),
         "10lifecycle": (
             "Temporal evolution of sea surface temperature anomalies in "
-            + "the central equatorial Pacific (Niño 3.4 region average), "
-            + "illustrating the ENSO-associated variability."
+            "the central equatorial Pacific (Niño 3.4 region average), "
+            "illustrating the ENSO-associated variability."
         ),
         "11amplitude": (
             "Standard deviation of sea surface temperature anomalies in "
-            + "the central equatorial Pacific (Niño 3.4 region average), "
-            + "representing the amplitude of variability."
+            "the central equatorial Pacific (Niño 3.4 region average), "
+            "representing the amplitude of variability."
         ),
         "12seasonality": (
             "Ratio of winter to spring standard deviation of sea surface "
-            + "temperature anomalies in the central equatorial Pacific, "
-            + "illustrating the seasonal timing of SSTA."
+            "temperature anomalies in the central equatorial Pacific, "
+            "illustrating the seasonal timing of SSTA."
         ),
         "13asymmetry": (
             "Skewness of sea surface temperature anomalies in the central "
-            + "equatorial Pacific, illustrating the expected asymmetry where "
-            + "positive SSTA values should typically be larger than negative "
-            + "SSTA values (usually close to 0). "
+            "equatorial Pacific, illustrating the expected asymmetry where "
+            "positive SSTA values should typically be larger than negative "
+            "SSTA values (usually close to 0). "
         ),
         "14duration": (
             "Duration of the ENSO life cycle where SSTA exceeds 0.25, "
-            + "illustrating the 'duration' of the SSTA event."
+            "illustrating the 'duration' of the SSTA event."
         ),
         "15diversity": (
             "Width of the zonal location of maximum (minimum) SSTA during "
-            + "all El Niño (La Niña) events, illustrating the 'diversity' "
-            + "of ENSO events."
+            "all El Niño (La Niña) events, illustrating the 'diversity' "
+            "of ENSO events."
         ),
         "values": "List of metric values.",
     }

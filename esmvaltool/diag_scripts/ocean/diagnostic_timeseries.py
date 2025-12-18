@@ -119,7 +119,7 @@ def moving_average(cube, window):
         A description of the window to use for the
 
     Returns
-    ----------
+    -------
     iris.cube.Cube:
         A cube with the movinage average set as the data points.
 
@@ -141,7 +141,7 @@ def moving_average(cube, window):
         "yr",
     ]:
         raise ValueError(
-            f"Moving average window units not recognised: {win_units}"
+            f"Moving average window units not recognised: {win_units}",
         )
 
     times = cube.coord("time").units.num2date(cube.coord("time").points)
@@ -160,7 +160,7 @@ def moving_average(cube, window):
                 time_itr.minute,
             )
             for time_itr in times
-        ]
+        ],
     )
 
     for time_itr in times:
@@ -298,7 +298,7 @@ def make_time_series_plots(
                     metadata["dataset"],
                     metadata["long_name"],
                     "with MultiModel value",
-                ]
+                ],
             )
 
         else:
@@ -312,7 +312,7 @@ def make_time_series_plots(
                     "Time series of",
                     metadata["dataset"],
                     metadata["long_name"],
-                ]
+                ],
             )
 
         # Saving files
@@ -352,7 +352,6 @@ def multi_model_time_series(
         The metadata dictionairy for a specific model.
 
     """
-
     ####
     # Load the data for each layer as a separate cube
     model_cubes = {}
@@ -387,7 +386,8 @@ def multi_model_time_series(
             # Take a moving average, if needed.
             if "moving_average" in cfg:
                 cube = moving_average(
-                    model_cubes[filename][layer], cfg["moving_average"]
+                    model_cubes[filename][layer],
+                    cfg["moving_average"],
                 )
             else:
                 cube = model_cubes[filename][layer]
@@ -453,7 +453,9 @@ def multi_model_time_series(
         # Resize and add legend outside thew axes.
         plt.gcf().set_size_inches(9.0, 6.0)
         diagtools.add_legend_outside_right(
-            plot_details, plt.gca(), column_width=0.15
+            plot_details,
+            plt.gca(),
+            column_width=0.15,
         )
 
         logger.info("Saving plots to %s", path)

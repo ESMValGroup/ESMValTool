@@ -170,7 +170,8 @@ def generate_summary(output_dir):
             status = "failed (" + link(debug_log, "debug") + ")"
         name = recipe_dir.name[:-16]
         date = datetime.datetime.strptime(
-            recipe_dir.name[-15:], "%Y%m%d_%H%M%S"
+            recipe_dir.name[-15:],
+            "%Y%m%d_%H%M%S",
         )
         resource_usage = get_resource_usage(recipe_dir)
 
@@ -192,7 +193,8 @@ def generate_overview(output_dir):
 
     def get_date(recipe_dir):
         return datetime.datetime.strptime(
-            recipe_dir.stem[-15:], "%Y%m%d_%H%M%S"
+            recipe_dir.stem[-15:],
+            "%Y%m%d_%H%M%S",
         )
 
     for recipe_dir in sorted(Path(output_dir).glob("recipe_*")):
@@ -230,11 +232,11 @@ def generate_overview(output_dir):
                                     f'<a href="{recipe_url}">'
                                     '<i class="bi bi-arrow-right-circle"></i>'
                                     "</a></p>",
-                                ]
+                                ],
                             ),
                             "card-body",
                         ),
-                    ]
+                    ],
                 ),
                 "card",
             ),
@@ -324,7 +326,7 @@ def write_index_html(lines, output_dir, legal_notice):
           <input class="form-control searchbox-input" type="text" placeholder="Type something here to search...">
           <br>
           <div class="row row-cols-1 row-cols-md-3 g-4">
-    """)  # noqa: E501
+    """)
     endtable = textwrap.dedent("""
           </div>
         </div>
@@ -338,7 +340,7 @@ def write_index_html(lines, output_dir, legal_notice):
             });
           });
         </script>
-    """)  # noqa: E501
+    """)
     footer = textwrap.dedent("""
       </body>
     </html>

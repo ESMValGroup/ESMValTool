@@ -5,9 +5,9 @@ Obtaining input data
 ********************
 
 ESMValTool supports input data from climate models participating in
-`CMIP6 <https://www.wcrp-climate.org/wgcm-cmip/wgcm-cmip6>`__,
-`CMIP5 <https://www.wcrp-climate.org/wgcm-cmip/wgcm-cmip5>`__,
-`CMIP3 <https://www.wcrp-climate.org/wgcm-cmip/wgcm-cmip3>`__, and
+`CMIP6 <https://wcrp-cmip.org/cmip-phases/cmip6/>`__,
+`CMIP5 <https://wcrp-cmip.org/cmip-phases/cmip5/>`__,
+`CMIP3 <https://wcrp-cmip.org/cmip-phases/cmip3/>`__, and
 `CORDEX <https://cordex.org/>`__
 as well as observations, reanalysis, and any other data, provided that it
 adheres to the
@@ -22,7 +22,7 @@ as used in the various
 .. note::
 
     CORDEX support is still
-    `work in progress <https://github.com/orgs/ESMValGroup/projects/11>`__.
+    work in progress.
     Contributions, in the form of
     :ref:`pull request reviews <reviewing>` or
     :ref:`pull requests <esmvalcore:contributing>`
@@ -44,9 +44,7 @@ but many more exist around the world.
 
 If you do not have access to such a facility through your institute or the
 project you are working on, you can request access by applying for the
-`ENES Climate Analytics Service <https://portal.enes.org/data/data-metadata-service/climate-analytics-service>`__
-or, if you need longer term access or more computational resources, the
-`IS-ENES3 Trans-national Access call <https://portal.enes.org/data/data-metadata-service/analysis-platforms>`__.
+`ENES Climate Analytics Service <https://is.enes.org/sdm-climate-analytics-data/>`.
 
 If the options above are not available to you, ESMValTool also offers a feature
 to make it easy to download CMIP6, CMIP5, CMIP3, CORDEX, and obs4MIPs from ESGF.
@@ -82,8 +80,8 @@ See :ref:`esmvalcore:config-esgf` for a more in depth explanation and the
 available configuration options.
 
 Alternatively, you can use an external tool called
-`Synda <http://prodiguer.github.io/synda/index.html>`__
-to maintain your own collection of ESGF data.
+`esgpull <https://github.com/ESGF/esgf-download>`__
+to download and store files from ESGF.
 
 
 .. _inputdata_observations:
@@ -545,18 +543,9 @@ A list of all currently supported native datasets is :ref:`provided here
 A detailed description of how to include new native datasets is given
 :ref:`here <esmvalcore:add_new_fix_native_datasets>`.
 
-To use this functionality, users need to provide a ``rootpath`` in the
-:ref:`configuration <config_option_rootpath>` for the ``native6`` project data
-and/or the dedicated project used for the native dataset, e.g., ``ICON``.
-Then, in the recipe, they can refer to those projects.
-For example:
+To use this functionality, users need to configure their
+`data sources <esmvalcore:config-data-sources>`_ to include the native datasets.
 
-.. code-block:: yaml
-
-    datasets:
-    - {project: native6, dataset: ERA5, type: reanaly, version: v1, tier: 3, start_year: 1990, end_year: 1990}
-    - {project: ICON, dataset: ICON, exp: icon-2.6.1_atm_amip_R2B5_r1i1p1f1, mip: Amon, short_name: tas, start_year: 2000, end_year: 2014}
-
-For project ``native6``, more examples can be found in the diagnostics
+For project ``native6``, more examples of usage can be found in the diagnostics
 ``ERA5_native6`` in the recipe `examples/recipe_check_obs.yml
 <https://github.com/ESMValGroup/ESMValTool/blob/main/esmvaltool/recipes/examples/recipe_check_obs.yml>`_.

@@ -109,7 +109,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
                 [
                     out_timecoord.units.date2num(start_date),
                     out_timecoord.units.date2num(end_date),
-                ]
+                ],
             )
             # write output to file
             logger.debug("Saving cube\n%s", outcube)

@@ -55,7 +55,9 @@ def main(cfg):
                 reference = iris.load_cube(reference_filename)
                 reference = reference.collapsed("time", MEAN)
                 logger.info(
-                    "Reference cube:\n%s\n%s", reference_filename, reference
+                    "Reference cube:\n%s\n%s",
+                    reference_filename,
+                    reference,
                 )
                 break
         else:

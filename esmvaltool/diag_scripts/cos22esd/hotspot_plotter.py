@@ -67,7 +67,8 @@ class HotspotPlot:
             fields_dict = {}
             ancestor_files = []
             for filename in io.get_all_ancestor_files(
-                self.cfg, pattern="hotspot_*.nc"
+                self.cfg,
+                pattern="hotspot_*.nc",
             ):
                 key = os.path.basename(os.path.dirname(filename))
                 splitname = os.path.basename(filename).split("_")
@@ -88,7 +89,8 @@ class HotspotPlot:
             timeseries_dict = {"large_scale": {}, "regional": {}}
             for region, value in timeseries_dict.items():
                 for filename in io.get_all_ancestor_files(
-                    self.cfg, pattern=f"rolling_mean_{region}_{season}.nc"
+                    self.cfg,
+                    pattern=f"rolling_mean_{region}_{season}.nc",
                 ):
                     value[os.path.basename(os.path.dirname(filename))] = (
                         iris.load_cube(filename)
@@ -98,7 +100,9 @@ class HotspotPlot:
                     )
             for var_combination in self.var_combinations:
                 self.timeseries_scatter_plot(
-                    deepcopy(timeseries_dict), season, var_combination
+                    deepcopy(timeseries_dict),
+                    season,
+                    var_combination,
                 )
 
     def hotspot_fields_plot(self, results_dict, tas_bound=None, pr_bound=None):
@@ -138,19 +142,30 @@ class HotspotPlot:
             for var in self.variables
         ]
         for ancestor_files, keys, variable in zip(
-            ancestor_files_var, sorted_keys, self.variables, strict=True
+            ancestor_files_var,
+            sorted_keys,
+            self.variables,
+            strict=True,
         ):
             fig = plt.figure(
-                figsize=(14.4, 3.4), constrained_layout=True, dpi=300
+                figsize=(14.4, 3.4),
+                constrained_layout=True,
+                dpi=300,
             )
             plt.gcf().subplots_adjust()
             # bound colorbar to abs(max) value on the map
             style = self.cb_bounds(
-                variable, results_dict, keys, [tas_bound, pr_bound]
+                variable,
+                results_dict,
+                keys,
+                [tas_bound, pr_bound],
             )
             # plot each panel
             fill, frame = self._hotspot_fields_plot_panels(
-                results_dict, fig, keys, style
+                results_dict,
+                fig,
+                keys,
+                style,
             )
             # plot figtexts
             self._hotspot_fields_plot_figtexts(results_dict["scenario"], frame)
@@ -171,7 +186,7 @@ class HotspotPlot:
                 )
             else:
                 cbar.set_label(
-                    self.formatter(str(results_dict[keys[-1]].units))
+                    self.formatter(str(results_dict[keys[-1]].units)),
                 )
                 against_region = "global"
 
@@ -209,7 +224,9 @@ class HotspotPlot:
                 axes = fig.add_subplot(gspec[1, i - 6], projection=proj)
             self._add_axes_attributes(axes, path_ext, plotextend)
             norm = colors.BoundaryNorm(
-                boundaries=style[0], ncolors=256, extend="both"
+                boundaries=style[0],
+                ncolors=256,
+                extend="both",
             )
             fill = iplt.pcolormesh(
                 self.regrid_longitude_coord(results_dict[key]),
@@ -261,7 +278,11 @@ class HotspotPlot:
         fig.add_artist(line)
 
     def _hotspot_fields_plot_save(
-        self, against_region, variable, scenario, ancestor_files
+        self,
+        against_region,
+        variable,
+        scenario,
+        ancestor_files,
     ):
         """Plot title and save figure."""
         suptitle = (
@@ -275,7 +296,9 @@ class HotspotPlot:
 
         basename = f"{variable}_{scenario}"
         provenance_record = self.get_hotspot_provenance(
-            suptitle, scenario, ancestor_files
+            suptitle,
+            scenario,
+            ancestor_files,
         )
         save_figure(basename, provenance_record, self.cfg)
 
@@ -312,11 +335,15 @@ class HotspotPlot:
                 for project in self.projects
             ]
             for regional_key, large_scale_key in zip(
-                regional_keys, large_scale_keys, strict=True
+                regional_keys,
+                large_scale_keys,
+                strict=True,
             ):
                 project, large_scale_signal_ts, regional_signal_ts = (
                     self._timeseries_scatter_plot_data(
-                        results_dict, large_scale_key, regional_key
+                        results_dict,
+                        large_scale_key,
+                        regional_key,
                     )
                 )
                 # find linear regression
@@ -361,14 +388,14 @@ class HotspotPlot:
                                 f"{self.formatter(project.upper())} (N="
                                 f"{self.cfg['N'][f'{project}_{scen}']})"
                             ),
-                        )
+                        ),
                     )
 
                 max_glob.append(max(large_scale_signal_ts))
                 min_glob.append(min(large_scale_signal_ts))
                 # collect used ancestor files
                 ancestor_files.append(
-                    results_dict["large_scale"][regional_key]
+                    results_dict["large_scale"][regional_key],
                 )
                 ancestor_files.append(results_dict["regional"][regional_key])
 
@@ -393,11 +420,15 @@ class HotspotPlot:
 
         mins_maxs = lims[0], lims[1], min_glob, max_glob
         self._timeseries_scatter_plot_axlim(
-            axes, var_combination, slope, mins_maxs
+            axes,
+            var_combination,
+            slope,
+            mins_maxs,
         )
 
         provenance_record = self.get_rolling_mean_provenance(
-            suptitle, ancestor_files
+            suptitle,
+            ancestor_files,
         )
         basename = (
             "scenario_combination_"
@@ -407,7 +438,9 @@ class HotspotPlot:
 
     @staticmethod
     def _timeseries_scatter_plot_data(
-        results_dict, large_scale_key, regional_key
+        results_dict,
+        large_scale_key,
+        regional_key,
     ):
         """Read regional and large scale data."""
         project = regional_key.split("_")[1]
@@ -419,7 +452,10 @@ class HotspotPlot:
 
     @staticmethod
     def _timeseries_scatter_plot_reg(
-        large_scale_signal_ts, regional_signal_ts, rvalue, slope
+        large_scale_signal_ts,
+        regional_signal_ts,
+        rvalue,
+        slope,
     ):
         """Compute the linear regression."""
         res = stats.linregress(large_scale_signal_ts, regional_signal_ts)
@@ -430,7 +466,9 @@ class HotspotPlot:
 
     @staticmethod
     def _timeseries_scatter_plot_rges(
-        large_scale_signal_ts, regional_signal_ts, var_combination
+        large_scale_signal_ts,
+        regional_signal_ts,
+        var_combination,
     ):
         """Find the ranges for the x and y-axis."""
         if var_combination == "pr:tas":
@@ -480,10 +518,12 @@ class HotspotPlot:
                 f"$^o$ N latitudinal belt"
             )
         large_scale_units = self.formatter(
-            str(iris.load_cube(results_dict["large_scale"][keys[0][-1]]).units)
+            str(
+                iris.load_cube(results_dict["large_scale"][keys[0][-1]]).units,
+            ),
         )
         regional_units = self.formatter(
-            str(iris.load_cube(results_dict["regional"][keys[1][-1]]).units)
+            str(iris.load_cube(results_dict["regional"][keys[1][-1]]).units),
         )
         xlabel = (
             f"{against_region} "
@@ -503,7 +543,7 @@ class HotspotPlot:
             f"{meta['rvalue']['cmip5']:.3f}; "
             f"slope={meta['slope']['cmip5']:.3f} "
             f"\n CMIP6: rval={meta['rvalue']['cmip6']:.3f}; "
-            f"slope={meta['slope']['cmip6']:.3f}"
+            f"slope={meta['slope']['cmip6']:.3f}",
         )
         axes.legend(handles=meta["legend_elements"])
 
@@ -559,7 +599,10 @@ class HotspotPlot:
 
     @staticmethod
     def _timeseries_scatter_plot_axlim(
-        axes, var_combination, slope, mins_maxs
+        axes,
+        var_combination,
+        slope,
+        mins_maxs,
     ):
         """Fix the x and y-axis limits."""
         min_lim, max_lim, min_glob, max_glob = mins_maxs
@@ -649,7 +692,9 @@ class HotspotPlot:
                 bound_limit = pr_bound
             else:
                 bound_limit = self.find_abs_bound_range(
-                    results_dict, keys, avg_over=25
+                    results_dict,
+                    keys,
+                    avg_over=25,
                 )
             cmap = plt.cm.BrBG
         bounds = np.linspace(-1 * bound_limit, bound_limit, 11)
@@ -773,7 +818,8 @@ class HotspotPlot:
         neg_lons = ((cube.coord("longitude").points + 180) % 360) - 180
         # interpolates the cube data to the new 'longitude' dimensions
         cube = cube.interpolate(
-            [("longitude", neg_lons)], iris.analysis.Linear()
+            [("longitude", neg_lons)],
+            iris.analysis.Linear(),
         )
         sorted_cube = self.sorted_dim(cube)
         return sorted_cube

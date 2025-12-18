@@ -251,7 +251,7 @@ def compute_vpd(
     tas.convert_units("degrees_C")
     # Compute vpd
     e_s = 0.6108 * da.exp(
-        da.divide(17.2694 * tas.core_data(), tas.core_data() + 237.3)
+        da.divide(17.2694 * tas.core_data(), tas.core_data() + 237.3),
     )
     # Convert kPa to Pa
     data = 1000.0 * da.multiply(1 - 0.01 * hurs.core_data(), e_s)

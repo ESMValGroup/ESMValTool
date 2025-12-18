@@ -274,7 +274,7 @@ def _compute_daily(cube):
             [
                 cell.point - timedelta(seconds=1)
                 for cell in cube.coord("time").cells()
-            ]
+            ],
         )
 
     if cube.var_name == "tasmax":
@@ -300,7 +300,7 @@ def _compute_daily(cube):
         [
             cell.point.replace(hour=12, minute=0, second=0, microsecond=0)
             for cell in cube.coord("time").cells()
-        ]
+        ],
     )
     cube.coord("time").bounds = None
     cube.coord("time").guess_bounds()
@@ -397,8 +397,9 @@ def _load_cube(in_files, var):
         else:
             raise ValueError(
                 "Multiple input files found, with operator '{}' configured: {}".format(
-                    var.get("operator"), ", ".join(in_files)
-                )
+                    var.get("operator"),
+                    ", ".join(in_files),
+                ),
             )
 
     return cube
@@ -451,7 +452,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
     else:
         raise ValueError(
             "Unknown dataset_id for this script:\
-                         {attributes['dataset_id']}"
+                         {attributes['dataset_id']}",
         )
 
     # Convert units if required
@@ -459,7 +460,8 @@ def _extract_variable(in_files, var, cfg, out_dir):
 
     logger.debug("Saving cube\n%s", cube)
     logger.debug(
-        "Expected output size is %.1fGB", np.prod(cube.shape) * 4 / 2**30
+        "Expected output size is %.1fGB",
+        np.prod(cube.shape) * 4 / 2**30,
     )
     utils.save_variable(
         cube,
@@ -513,9 +515,10 @@ def _run(jobs, n_workers):
             for future in as_completed(futures):
                 try:
                     future.result()
-                except:  # noqa
+                except:
                     logger.error(
-                        "Failed to CMORize %s", ", ".join(futures[future])
+                        "Failed to CMORize %s",
+                        ", ".join(futures[future]),
                     )
                     raise
 
