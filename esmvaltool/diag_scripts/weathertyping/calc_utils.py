@@ -780,27 +780,27 @@ def calc_wt_means(
         wt_cube_mean = extracted_cube.collapsed("time", iris.analysis.MEAN)
         plot_maps(wt, cfg, wt_cube_mean, data_info, "mean")
 
-    ancestors = [
-        f"{data_info.get('preproc_path')}",
-        f"{cfg.get('work_dir')}/ERA5.nc",
-    ]
-    provenance_record = get_provenance_record(
-        f"{var_name} means for {wt_string}",
-        ancestors,
-        [var_name],
-        ["map"],
-        ["mean"],
-    )
+        ancestors = [
+            f"{data_info.get('preproc_path')}",
+            f"{cfg.get('work_dir')}/ERA5.nc",
+        ]
+        provenance_record = get_provenance_record(
+            f"{var_name} means for {wt_string}, wt: {wt}, ",
+            ancestors,
+            [var_name],
+            ["map"],
+            ["mean"],
+        )
 
-    local_path = f"{cfg.get('plot_dir')}/mean"
+        local_path = f"{cfg.get('plot_dir')}/mean"
 
-    log_provenance(
-        f"{local_path}/{wt_string}_{wt}{driver}_"
-        f"{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
-        f"_{var_name}_mean_{data_info.get('timerange')}",
-        cfg,
-        provenance_record,
-    )
+        log_provenance(
+            f"{local_path}/{wt_string}_{wt}{driver}_"
+            f"{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
+            f"_{var_name}_mean_{data_info.get('timerange')}",
+            cfg,
+            provenance_record,
+        )
 
 
 def get_wt_array(wt_string: str, wt_cubes: iris.cube.CubeList) -> tuple:
@@ -900,25 +900,25 @@ def calc_wt_anomalies(
             "anomaly",
         )
 
-    ancestors = [
-        f"{data_info.get('preproc_path')}",
-        f"{cfg.get('work_dir')}/ERA5.nc",
-    ]
-    provenance_record = get_provenance_record(
-        f"{var_name} anomaly for \
-                                              {wt_string}",
-        ancestors,
-        [var_name],
-        ["map"],
-        ["anomaly"],
-    )
+        ancestors = [
+            f"{data_info.get('preproc_path')}",
+            f"{cfg.get('work_dir')}/ERA5.nc",
+        ]
+        provenance_record = get_provenance_record(
+            f"{var_name} anomaly for, wt: {wt} \
+                                                {wt_string}",
+            ancestors,
+            [var_name],
+            ["map"],
+            ["anomaly"],
+        )
 
-    log_provenance(
-        f"{cfg.get('plot_dir')}/anomaly/{wt_string}_{wt}_{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
-        f"_{var_name}_anomaly__{data_info.get('timerange')}",
-        cfg,
-        provenance_record,
-    )
+        log_provenance(
+            f"{cfg.get('plot_dir')}/anomaly/{wt_string}_{wt}_{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
+            f"_{var_name}_anomaly__{data_info.get('timerange')}",
+            cfg,
+            provenance_record,
+        )
 
 
 def calc_wt_std(
@@ -971,28 +971,28 @@ def calc_wt_std(
         wt_cube_std = extracted_cube.collapsed("time", iris.analysis.STD_DEV)
         plot_maps(wt, cfg, wt_cube_std, data_info, "stddev")
 
-    ancestors = [
-        f"{data_info.get('preproc_path')}",
-        f"{cfg.get('work_dir')}/ERA5.nc",
-    ]
-    provenance_record = get_provenance_record(
-        f"{var_name} standard \
-                                              deviation for \
-                                              {wt_string}",
-        ancestors,
-        [var_name],
-        ["map"],
-        ["stddev"],
-    )
+        ancestors = [
+            f"{data_info.get('preproc_path')}",
+            f"{cfg.get('work_dir')}/ERA5.nc",
+        ]
+        provenance_record = get_provenance_record(
+            f"{var_name} standard, wt: {wt}\
+                                                deviation for \
+                                                {wt_string}",
+            ancestors,
+            [var_name],
+            ["map"],
+            ["stddev"],
+        )
 
-    local_path = f"{cfg.get('plot_dir')}/stddev"
+        local_path = f"{cfg.get('plot_dir')}/stddev"
 
-    log_provenance(
-        f"{local_path}/{wt_string}_{wt}_{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
-        f"_{var_name}_stddev_{data_info.get('timerange')}",
-        cfg,
-        provenance_record,
-    )
+        log_provenance(
+            f"{local_path}/{wt_string}_{wt}_{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
+            f"_{var_name}_stddev_{data_info.get('timerange')}",
+            cfg,
+            provenance_record,
+        )
 
 
 def calc_lwt_model(cfg: dict, cube: iris.cube.Cube, data_info: dict):

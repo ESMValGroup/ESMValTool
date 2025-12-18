@@ -152,6 +152,27 @@ def plot_seasonal_occurrence(
             f"{wt_string}_rel_occurrence_{data_info.get('timerange')}.pdf",
         )
         plt.close()
+        # ancestors here are just the wt_cubes i guess
+        ancestors = [
+            f"{data_info.get('preproc_path')}",
+            f"{cfg.get('work_dir')}/ERA5.nc",
+        ]
+        provenance_record = get_provenance_record(
+            f"Seasonal occurrences for {wt_string}, ",
+            ancestors,
+            ["wt occurrences"],
+            ["stackplot"],
+        )
+
+        local_path = f"{cfg.get('plot_dir')}/mean"
+
+        log_provenance(
+            f"{local_path}/{wt_string}_{driver}_"
+            f"{data_info.get('dataset')}_{data_info.get('ensemble', '')}"
+            f"_seasonal_occurrence_{data_info.get('timerange')}",
+            cfg,
+            provenance_record,
+        )
 
 
 def set_gridlines(ax: plt.Axes):
