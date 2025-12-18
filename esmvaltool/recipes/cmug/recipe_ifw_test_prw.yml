@@ -1,0 +1,50 @@
+# ESMValTool
+---
+documentation:
+  title: IFW test
+  description: >
+    Test processing of IFW model data.
+  authors:
+    - lauer_axel
+  maintainer:
+    - lauer_axel
+
+
+datasets:
+  - {project: IFW, dataset: ifwf, fstep: '0', frequency: 12hr, alias: 'IFWf (step 0)'}
+
+
+preprocessors:
+
+  monthly_climatology:
+    custom_order: true
+    daily_statistics:
+    regrid:
+      target_grid: 1x1
+      scheme:
+        reference: esmf_regrid.schemes:ESMFAreaWeighted
+    mask_multimodel:
+    climate_statistics:
+      period: full
+
+
+diagnostics:
+
+  maps:
+    description: Plot monthly mean maps.
+    variables:
+      prw:
+        timerange: '20200601/20200630'
+        mip: Eday
+        preprocessor: monthly_climatology
+        additional_datasets:
+          - {dataset: ERA5, project: native6, tier: 3, frequency: 1hr,
+             type: reanaly, version: 'v1', reference_for_monitor_diags: true, alias: 'ERA5'}
+    scripts:
+      plot:
+        plot_folder: '{plot_dir}'
+        plot_filename: '{plot_type}_{real_name}_{dataset}_{mip}'
+        script: monitor/multi_datasets.py
+        plots:
+          map:
+            common_cbar: true

@@ -210,18 +210,18 @@ diagnostics:
           binwidth: 0.05
           x: od550aer
           hue: alias
-          facet_kws:
-            sharey: false
+#          facet_kws:
+#            sharey: false
 #          col: shape_id
 #          col_order:
 #            - tropics
 #            - nh_midlat
 #            - sh_midlat
 #          col_wrap: 3
-        add_aux_coords: true
-        dropna_kwargs:
-          axis: 0
-          how: any
+#        add_aux_coords: true
+#        dropna_kwargs:
+#          axis: 0
+#          how: any
         legend_title: Dataset
         plot_object_methods:
           set:
