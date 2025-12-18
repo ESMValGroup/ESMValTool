@@ -16,27 +16,244 @@ documentation:
 datasets:
   #NEXTGEMS reference (ground truth) passed as OBS6
   - {dataset: HIGHRES-REF, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
-  #UNet and CORRDIFF downscaled fields (prediction) passed as OBS6
-  - {dataset: CORRDIFF, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
-  - {dataset: CORRDIFF, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
-  - {dataset: UNet, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}      
+  #Downscaled fields (prediction) passed as OBS6
+  # 1-ensemble-member UNet
+  - {dataset: UNet, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}  
+  # 12-ensemble-member CORRDIFF
+  - {dataset: CorrDiff, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  - {dataset: CorrDiff, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  - {dataset: CorrDiff, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  - {dataset: CorrDiff, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  - {dataset: CorrDiff, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  - {dataset: CorrDiff, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  - {dataset: CorrDiff, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  - {dataset: CorrDiff, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  - {dataset: CorrDiff, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  - {dataset: CorrDiff, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  - {dataset: CorrDiff, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  - {dataset: CorrDiff, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+
+  - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  - {dataset: CorrDiff_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+    # 12-ensemble-member CORRDIFF-decay
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  # - {dataset: CorrDiff-decay, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+  # 12-ensemble-member CORRDIFF++
+  - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  - {dataset: CorrDiff++, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+# 2rootpr (instead of pr)
+  - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  - {dataset: CorrDiff++_2rootpr, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+# 0lossweight (instead of 0.25 before)
+  - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  - {dataset: CorrDiff++_1x1Conv, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+# 025lossweight and UNet encoder
+  - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  - {dataset: CorrDiff++_UNet, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+    # 12-ensemble-member GENFOCAL
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 1, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 2, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 3, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 4, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 5, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 6, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 7, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 8, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 9, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 10, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 11, tier: 1}
+  # - {dataset: GenFocal, project: OBS6, mip: 3hr, type: reanaly, version: 12, tier: 1}
+
+    
 
 preprocessors:
+  preproc_extract_time:
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+  preproc_convert_tas:
+    convert_units:
+      units: degC
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
   preproc_convert_huss:
     convert_units:
       units: g kg-1
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
   preproc_convert_pr:
     convert_units:
       units: mm h-1
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
   preproc_convert_ps:
     convert_units:
       units: hPa
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+  preproc_quantileMAE_tas:
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+    extract_season:
+      season: "JJA"
+    convert_units:
+      units: degC
+
+  preproc_quantileMAE_huss:
+    extract_season:
+      season: "JJA"
+    convert_units:
+      units: g kg-1
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+  preproc_quantileMAE_pr:
+    extract_season:
+      season: "DJF"
+    convert_units:
+      units: mm h-1
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+  preproc_quantileMAE_ps:
+    extract_season:
+      season: "JJA"
+    convert_units:
+      units: hPa
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+  preproc_quantileMAE_uas:
+    extract_season:
+      season: "SON"
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+  preproc_quantileMAE_vas:
+    extract_season:
+      season: "SON"
+    extract_time:
+      start_day: 20
+      start_month: 01
+      start_year: 2024
+      end_day: 18
+      end_month: 01
+      end_year: 2025
+
 diagnostics:
+  #Plots for experiment 1
   downscaling_evaluation:
     description: "ML-based downscaling vs HIGHRES-REF"
     variables:
       uas:
+        preprocessor: preproc_extract_time
       vas:
+        preprocessor: preproc_extract_time
       huss:
         preprocessor: preproc_convert_huss
       ps:
@@ -44,26 +261,61 @@ diagnostics:
       pr:
         preprocessor: preproc_convert_pr
       tas:
+        preprocessor: preproc_convert_tas
     scripts:
-      spatial_metrics:
+      spatial_metrics: #calculates bias (relative bias for "pr"), crps, spatial correlation and variance ratio of "reference vs. downscaled fields"
         script: regional_downscaling/ml_downscaling_evaluation.py
         title: "Spatial metrics"
-        ml_methods: ["UNet","CORRDIFF"]
+        ml_methods: ["CorrDiff_2rootpr","CorrDiff++","CorrDiff++_2rootpr","CorrDiff++_1x1Conv","CorrDiff++_UNet"]
         reference: HIGHRES-REF
         analysis_type: spatial_metrics
-        save_cubes: true  # save each plotted cube in work
-      energy_spectrum:
+      energy_spectrum: #plot energy spectrum of "reference vs. downscaled fields"
         script: regional_downscaling/ml_downscaling_evaluation.py
         title: "Energy spectra"
-        ml_methods: ["UNet","CORRDIFF"]
+        ml_methods: ["CorrDiff_2rootpr","CorrDiff++","CorrDiff++_2rootpr","CorrDiff++_1x1Conv","CorrDiff++_UNet"]
         reference: HIGHRES-REF
         analysis_type: energy_spectrum
-        spatial_scale: 6.3 #spatial resolution in km to calculate spatial energy spectrum
-        save_cubes: true  # save each plotted cube in work
-      log_density:
+      log_density: #plot log probability density of "reference vs. downscaled fields"
         script: regional_downscaling/ml_downscaling_evaluation.py
         title: "Probability Density Function"
-        ml_methods: ["UNet","CORRDIFF"]
+        ml_methods: ["CorrDiff_2rootpr","CorrDiff++","CorrDiff++_2rootpr","CorrDiff++_1x1Conv","CorrDiff++_UNet"]
         reference: HIGHRES-REF
         analysis_type: log_density
-        save_cubes: true  # save each plotted cube in work
+      # temporal_structure: #calculate error between ACF at lag -1
+      #   script: regional_downscaling/ml_downscaling_evaluation.py
+      #   ml_methods: ["UNet","CorrDiff","CorrDiff++"]
+      #   reference: HIGHRES-REF
+      #   analysis_type: temporal_structure
+      # create_animation: #creates a animation of "reference vs. downscaled fields" snapshots per snapshots
+      #   script: regional_downscaling/ml_downscaling_evaluation.py
+      #   ml_methods: ["UNet","CorrDiff","CorrDiff++"]
+      #   reference: HIGHRES-REF
+      #   analysis_type: create_animation
+      #   animation_start_time: 100           # Start time index (800)
+      #   animation_end_time: 110            # End time index (810)
+      #   animation_frame_duration: 2     # Seconds to pause on each frame
+
+  # quantileMAE:
+  #   description: "ML-based downscaling vs HIGHRES-REF"
+  #   variables:
+  #     uas:
+  #       preprocessor: preproc_quantileMAE_uas
+  #     vas:
+  #       preprocessor: preproc_quantileMAE_vas
+  #     huss:
+  #       preprocessor: preproc_quantileMAE_huss
+  #     ps:
+  #       preprocessor: preproc_quantileMAE_ps
+  #     pr:
+  #       preprocessor: preproc_quantileMAE_pr
+  #     tas:
+  #       preprocessor: preproc_quantileMAE_tas
+  #   scripts:
+  #     quantile_MAE: #plot MAE between quantiles of "reference vs. downscaled fields"
+  #       script: regional_downscaling/ml_downscaling_evaluation.py
+  #       ml_methods: ["UNet","CorrDiff","CorrDiff++"]
+  #       reference: HIGHRES-REF
+  #       analysis_type: quantile_MAE
+  #       compute_wbgt: true  # Set to true if computing Summer WBGT (wet bulb global temperature) from tas, huss, ps
+  #       compute_wind: true  # Set to true if computing Fall wind speed from uas, vas
+  #       compute_pr: true # Set to true if computing Winter precipitation
