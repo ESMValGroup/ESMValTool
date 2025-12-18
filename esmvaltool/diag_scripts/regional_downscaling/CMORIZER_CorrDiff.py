@@ -16,9 +16,9 @@ time_freq_in_hours = 3
 lon_values = np.linspace(1, 19, 320)
 lat_values = np.linspace(42, 60, 320)
 # Define output folder where CMORized data is saved. Add this path to your ESMValTool config file for OBS6
-cmor_output_path = '/work/bd1179/b309165/ML_downscaling/data/ml_model_cmor_ouput/'
+cmor_output_path = '/work/...data/ml_model_cmor_ouput/'
 # Absolute path to CorrDiff/CorrDiff++ output"
-input_file = "/work/bd1179/b309165/ML_downscaling/data/nextgems/output_CorrPlusPlus_multi_logpr_UNet_025lossweight_xcond_ConFIG_4M_test.nc"
+input_file = "output_CorrPlusPlus_multi_logpr_UNet_025lossweight_xcond_ConFIG_4M_test.nc"
 # Name you want to give to the ML-based dataset
 method_name = "CorrDiff++"
 # List of methods to keep from CorrDiff original output: can only contain "truth" and "prediction"
