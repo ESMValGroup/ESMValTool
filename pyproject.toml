@@ -71,7 +71,6 @@ dependencies = [
     "pyyaml",
     "rasterio>=1.3.10",
     "requests",
-    "ruamel.yaml",
     "scikit-image",
     "scikit-learn>=1.4.0",  # github.com/ESMValGroup/ESMValTool/issues/3504
     "scipy",
