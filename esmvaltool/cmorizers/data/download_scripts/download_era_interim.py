@@ -106,8 +106,8 @@ MONTH_TIMESTEPS = {
         "stream": "moda",
         "type": "an",
         "levelist": "1/5/10/20/30/50/70/100/150/200/"
-        + "250/300/400/500/600/700/850"
-        + "/925/1000",  # CMIP6 Amon table, plev19
+        "250/300/400/500/600/700/850"
+        "/925/1000",  # CMIP6 Amon table, plev19
     },
 }
 
@@ -180,7 +180,7 @@ def _get_land_data(params, timesteps, years, server, era_interim_land_dir):
                     "target": f"{era_interim_land_dir}/ERA-Interim-Land_{symbol}"
                     f"_{frequency}_{year}.nc",
                     **timesteps[timestep],
-                }
+                },
             )
 
 
@@ -201,7 +201,7 @@ def _get_daily_data(params, timesteps, years, server, era_interim_dir):
                     "target": f"{era_interim_dir}/ERA-Interim_{symbol}"
                     f"_{frequency}_{year}.nc",
                     **timesteps[timestep],
-                }
+                },
             )
 
 
@@ -215,7 +215,7 @@ def _get_monthly_data(params, timesteps, years, server, era_interim_dir):
                     "dataset": "interim",
                     # All months of a year eg. 19900101/.../19901101/19901201
                     "date": "/".join(
-                        [f"{year}{m:02}01" for m in range(1, 13)]
+                        [f"{year}{m:02}01" for m in range(1, 13)],
                     ),
                     "expver": "1",
                     "grid": "0.75/0.75",
@@ -224,7 +224,7 @@ def _get_monthly_data(params, timesteps, years, server, era_interim_dir):
                     "target": f"{era_interim_dir}/ERA-Interim_{symbol}"
                     f"_{frequency}_{year}.nc",
                     **timesteps[timestep],
-                }
+                },
             )
 
 
@@ -245,7 +245,7 @@ def _get_invariant_data(params, server, era_interim_dir):
                 "type": "an",
                 "format": "netcdf",
                 "target": f"{era_interim_dir}/ERA-Interim_{symbol}.nc",
-            }
+            },
         )
 
 
@@ -259,21 +259,24 @@ def cli():
         help="Config file",
     )
     parser.add_argument(
-        "--start_year", type=int, default=1979, help="Start year"
+        "--start_year",
+        type=int,
+        default=1979,
+        help="Start year",
     )
     parser.add_argument("--end_year", type=int, default=2019, help="End year")
     args = parser.parse_args()
 
     # get and read config file
     config_file_name = os.path.abspath(
-        os.path.expandvars(os.path.expanduser(args.config_file))
+        os.path.expandvars(os.path.expanduser(args.config_file)),
     )
 
     with open(config_file_name) as config_file:
         config = yaml.safe_load(config_file)
 
     rawobs_dir = os.path.abspath(
-        os.path.expandvars(os.path.expanduser(config["rootpath"]["RAWOBS"]))
+        os.path.expandvars(os.path.expanduser(config["rootpath"]["RAWOBS"])),
     )
     era_interim_dir = f"{rawobs_dir}/Tier3/ERA-Interim"
     os.makedirs(era_interim_dir, exist_ok=True)
@@ -285,11 +288,19 @@ def cli():
 
     _get_daily_data(DAY_PARAMS, DAY_TIMESTEPS, years, server, era_interim_dir)
     _get_monthly_data(
-        MONTH_PARAMS, MONTH_TIMESTEPS, years, server, era_interim_dir
+        MONTH_PARAMS,
+        MONTH_TIMESTEPS,
+        years,
+        server,
+        era_interim_dir,
     )
     _get_invariant_data(INVARIANT_PARAMS, server, era_interim_dir)
     _get_land_data(
-        LAND_PARAMS, DAY_TIMESTEPS, years, server, era_interim_land_dir
+        LAND_PARAMS,
+        DAY_TIMESTEPS,
+        years,
+        server,
+        era_interim_land_dir,
     )
 
 

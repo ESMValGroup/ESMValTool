@@ -96,7 +96,7 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
                 "label": dataset,
                 "linestyle": "none",
                 "markersize": 10,
-            }
+            },
         )
 
         # PiControl data
@@ -108,7 +108,7 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
                 "label": "_" + dataset,
                 "linestyle": "none",
                 "markersize": 6,
-            }
+            },
         )
 
     # Plot data
@@ -222,7 +222,7 @@ def main(cfg):
     provenance_record.update(
         {
             "plot_types": ["scatter"],
-        }
+        },
     )
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)

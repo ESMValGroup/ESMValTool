@@ -30,7 +30,7 @@ dependencies:
   - fsspec
   - gdal >=3.9.0
   - ipython
-  - iris >=3.11
+  - iris >=3.11,<3.14.1
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - jinja2
   - joblib
@@ -49,14 +49,13 @@ dependencies:
   - progressbar2
   - prov
   - pyproj >=2.1
-  - pys2index  # only from conda-forge
-  - python >=3.11,<3.14
+  - pys2index # only from conda-forge
+  - python >=3.12,<3.14
   - python-cdo
   - python-dateutil
   - pyyaml
   - rasterio >=1.3.10
   - requests
-  - ruamel.yaml
   - scikit-image
   - scikit-learn >=1.4.0  # github.com/ESMValGroup/ESMValTool/issues/3504
   - scipy
@@ -84,10 +83,8 @@ dependencies:
   - pydata-sphinx-theme
   # Python packages needed for development
   - codespell ==2.3.0
-  - docformatter ==1.7.5
   - imagehash
-  - prospector >=1.12  # earliest support for Python 3.12
-  - pyroma
+  - ruff == 0.14.5 # keep in sync with .pre-commit-config.yaml
   # - vprof not on conda-forge
   - yamllint ==1.35.1
 

@@ -158,7 +158,9 @@ def read_model_data_ancestor(cfg, variable_group) -> tuple:
 def read_observation_data(datasets: list) -> tuple:
     """Load observation data from list of metadata."""
     return read_input_data(
-        datasets, dim="obs_ensemble", identifier_fmt="{dataset}"
+        datasets,
+        dim="obs_ensemble",
+        identifier_fmt="{dataset}",
     )
 
 
