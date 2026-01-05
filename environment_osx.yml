@@ -30,7 +30,7 @@ dependencies:
   - fsspec
   - gdal >=3.9.0
   - ipython
-  - iris >=3.11,<3.14.1
+  - iris >=3.11
   - iris-esmf-regrid >=0.10.0  # github.com/SciTools-incubator/iris-esmf-regrid/pull/342
   - jinja2
   - joblib
@@ -50,7 +50,7 @@ dependencies:
   - prov
   - pyproj >=2.1
   - pys2index >=0.1.5 # only from conda-forge; https://github.com/ESMValGroup/ESMValTool/pull/3792
-  - python >=3.12,<3.14
+  - python >=3.12,<3.15
   - python-cdo
   - python-dateutil
   - pyyaml
