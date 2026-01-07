@@ -66,161 +66,172 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
         logger.info(f"Starting CMORiser for {var}")
 
-        start_date = datetime.datetime(vals['start_year'], 1, 1)
-        end_date = datetime.datetime(vals['end_year'], 12, 31)
+        
 
-        current_date = start_date
+        
 
         if vals['ir_or_mw'] == 'mw':
             file1 = 'ASC'
-            file2 = 'DES'
+            file2 = 'DES' 
         else:
             file1 = 'DAY'
             file2 = 'NIGHT'
 
 
         this_month = 1
-        while current_date <= end_date:
+        for ir_mw in [file1, file2]:
+            start_date = datetime.datetime(vals['start_year'], 1, 1)
+            end_date = datetime.datetime(vals['end_year'], 12, 31)
+            current_date = start_date
 
-            month_cube_list = iris.cube.CubeList([])
-            # put all cubes in here then concat
-            for day in range(1, calendar.monthrange(current_date.year, current_date.month)[1]+1):
+            logger.info(f"********************************************* {ir_mw} **********************************")
+            logger.info(f"{var=}")
+            while current_date <= end_date:
+
+                month_cube_list = iris.cube.CubeList([])
+                # put all cubes in here then concat
+                for day in range(1, calendar.monthrange(current_date.year, current_date.month)[1]+1):  
+                # for day in range(1, 2):
+
+                    datestr = datetime.datetime.strftime(current_date,
+                                                        "%Y%m%d")
+                    
+                    ##### ADD A MONTH LOOP to make a file per month ######
+
+                    # ESACCI-LST-L3C-LST-SSMI17-0.125deg_1DAILY_DES-20171214000000-fv5.11.nc
+                    file_pattern_1 = f"{in_dir}/{vals['file_base']}-{vals['platform']}-" + \
+                    f"{vals['spatial_resolution']}_{vals['temporal_resolution']}" + \
+                        f"_{ir_mw}-{datestr}000000-*{cfg['attributes']['version']}.nc"
                 
+                    # file_pattern_2 = f"{in_dir}/{vals['file_base']}-{vals['platform']}-" + \
+                    # f"{vals['spatial_resolution']}_{vals['temporal_resolution']}" + \
+                    #     f"_{file2}-{datestr}000000-*{cfg['attributes']['version']}.nc"
 
-                datestr = datetime.datetime.strftime(current_date,
-                                                    "%Y%m%d")
-                
-                ##### ADD A MONTH LOOP to make a file per month ######
 
-                # ESACCI-LST-L3C-LST-SSMI17-0.125deg_1DAILY_DES-20171214000000-fv5.11.nc
-                file_pattern_1 = f"{in_dir}/{vals['file_base']}-{vals['platform']}-" + \
-                f"{vals['spatial_resolution']}_{vals['temporal_resolution']}" + \
-                    f"_{file1}-{datestr}000000-*{cfg['attributes']['version']}.nc"
+                    logger.info(f"{file_pattern_1=}")
+                    all_cubes = iris.cube.CubeList([])
+                    for filename in [file_pattern_1]: #[file_pattern_1, file_pattern_2]:
+                        logger.info(f"{filename}")
+                        cube = iris.load_cube(filename,
+                                        vals['raw'],
+                                        callback = load_callback)
+                        logger.info(f"{cube.coord('time')=}")
+                        cube = fix_coords(cube)
+                        logger.info(f"{cube.coord('time')=}")
+                        logger.info(f"{cube.coord('time').points=}")
+
+
+                        # for KEY in overpass_time.keys():
+                        #     new_time = 0.0
+                        #     if KEY in filename:
+                        #         if 'ASC' in filename:
+                        #             new_time = cube.coord('time').points + overpass_time[KEY]['ASC']/24.
+                        #         if 'DES' in filename:
+                        #             new_time = cube.coord('time').points + overpass_time[KEY]['DES']/24.
+
+                        #         #new_time_points = cube.coord('time').points + new_time/24.
+                        #         new_time_coord = iris.coords.DimCoord(new_time,
+                        #                                             standard_name='time',
+                        #                                             long_name='time',
+                        #                                             var_name='time',
+                        #                                             units=cube.coord('time').units,
+                        #                                             bounds=None,
+                        #                                             attributes=None,
+                        #                                             coord_system=None,
+                        #                                             circular=False
+                        #                                             )                    
+
+                        #         try:
+                        #             cube.remove_coord('time')
+                        #             cube.add_dim_coord(new_time_coord, 0)
+                        #             logger.info('New time coord added')
+                        #         except iris.exceptions.CoordinateNotFoundError:
+                        #             logger.info('Problem adding overpass time to time coord')
+
+                        # indent this after testing
+                        month_cube_list.append(cube)
+
+
+                        
+
+
+                        
+                    
+                    current_date = current_date + datetime.timedelta(days=1)
+
+                logger.info(f"{month_cube_list=}")
+                all_cubes =  month_cube_list.concatenate_cube()
+                logger.info(f"{all_cubes=}")
+
+
             
-                file_pattern_2 = f"{in_dir}/{vals['file_base']}-{vals['platform']}-" + \
-                f"{vals['spatial_resolution']}_{vals['temporal_resolution']}" + \
-                    f"_{file2}-{datestr}000000-*{cfg['attributes']['version']}.nc"
-                
-                #all_files = glob.glob(file_pattern)
-
-                all_cubes = iris.cube.CubeList([])
-                for filename in [file_pattern_1, file_pattern_2]:
-                    logger.info(f"{filename}")
-                    cube = iris.load_cube(filename,
-                                    vals['raw'],
-                                    callback = load_callback)
-                    logger.info(f"{cube.coord('time')=}")
-                    cube = fix_coords(cube)
-                    logger.info(f"{cube.coord('time')=}")
-                    logger.info(f"{cube.coord('time').points=}")
-
-
-                    for KEY in overpass_time.keys():
-                        new_time = 0.0
-                        if KEY in filename:
-                            if 'ASC' in filename:
-                                new_time = cube.coord('time').points + overpass_time[KEY]['ASC']/24.
-                            if 'DES' in filename:
-                                new_time = cube.coord('time').points + overpass_time[KEY]['DES']/24.
-
-                            #new_time_points = cube.coord('time').points + new_time/24.
-                            new_time_coord = iris.coords.DimCoord(new_time,
-                                                                standard_name='time',
-                                                                long_name='time',
-                                                                var_name='time',
-                                                                units=cube.coord('time').units,
-                                                                bounds=None,
-                                                                attributes=None,
-                                                                coord_system=None,
-                                                                circular=False
-                                                                )                    
-
-                            try:
-                                cube.remove_coord('time')
-                                cube.add_dim_coord(new_time_coord, 0)
-                                logger.info('New time coord added')
-                            except iris.exceptions.CoordinateNotFoundError:
-                                logger.info('Problem adding overpass time to time coord')
-
-                            month_cube_list.append(cube)
-
-
-                    
-
-
-                    
-                
-                current_date = current_date + datetime.timedelta(days=1)
-
-            logger.info(f"{month_cube_list=}")
-            all_cubes =  month_cube_list.concatenate_cube()
-            logger.info(f"{all_cubes=}")
-
-
         
-    
-            # this is needed for V1 data, V3 data is ok
-            # try:
-            #     cube.coords()[2].standard_name = 'longitude'
-            #     logger.info('V1 longitude issue fixed')
-            # except IndexError:
-            #     # No change needed
-            #     logger.info('No V1 longitude issue')
+                # this is needed for V1 data, V3 data is ok
+                # try:
+                #     cube.coords()[2].standard_name = 'longitude'
+                #     logger.info('V1 longitude issue fixed')
+                # except IndexError:
+                #     # No change needed
+                #     logger.info('No V1 longitude issue')
 
-                # this gives time as hours since 19500101
-            all_cubes = fix_coords(all_cubes)
+                    # this gives time as hours since 19500101
+                all_cubes = fix_coords(all_cubes)
 
-            # this is need for when uncertainity variables added
-            if all_cubes.long_name == 'land surface temperature':
-                all_cubes.long_name = 'surface_temperature'
-                all_cubes.standard_name = 'surface_temperature'
+                # this is need for when uncertainity variables added
+                if all_cubes.long_name == 'land surface temperature':
+                    all_cubes.long_name = 'surface_temperature'
+                    all_cubes.standard_name = 'surface_temperature'
 
-            if all_cubes.var_name == 'lst':
-                all_cubes.var_name = 'ts'
+                if all_cubes.var_name == 'lst':
+                    all_cubes.var_name = 'ts'
 
-              
+                
 
-            #  Leaving this here for when ESMValCore PR with new CMOR tables for uncertainity are avaible
-            #                 # Land cover class gives this error when
-            #                 # loading in CMORised files
-            #                 # OverflowError:
-            #                 # Python int too large to convert to C long error
-            #                 # This fixes it:
-            #                 if 'land cover' in cubes.long_name:
-            #                     cubes.data.fill_value = 0
+                #  Leaving this here for when ESMValCore PR with new CMOR tables for uncertainity are avaible
+                #                 # Land cover class gives this error when
+                #                 # loading in CMORised files
+                #                 # OverflowError:
+                #                 # Python int too large to convert to C long error
+                #                 # This fixes it:
+                #                 if 'land cover' in cubes.long_name:
+                #                     cubes.data.fill_value = 0
 
-            #                     # Get rid of anything outide 0-255
-            #                     cubes.data[np.where(cubes.data < 0)] = 0
-            #                     cubes.data[np.where(cubes.data > 255)] = 0
+                #                     # Get rid of anything outide 0-255
+                #                     cubes.data[np.where(cubes.data < 0)] = 0
+                #                     cubes.data[np.where(cubes.data > 255)] = 0
 
-            #                     cubes.data = cubes.data.filled()
+                #                     cubes.data = cubes.data.filled()
 
-            #                     # This is the line the ultimately solves things.
-            #                     # Will leave the other checks above in because they
-            #                     cubes.data = cubes.data * 1.0
+                #                     # This is the line the ultimately solves things.
+                #                     # Will leave the other checks above in because they
+                #                     cubes.data = cubes.data * 1.0
 
-            cmor_info = cfg["cmor_table"].get_variable(vals["mip"], vals['raw'])
-            #utils.fix_var_metadata(cube, cmor_info)
+                cmor_info = cfg["cmor_table"].get_variable(vals["mip"], vals['raw'])
+                #utils.fix_var_metadata(cube, cmor_info)
 
-            # Fix global metadata
-            glob_attrs['platform'] = vals['platform']
-            #glob_attrs['orbit_direction'] = orbit_time
+                # Fix global metadata
+                glob_attrs['platform'] = vals['platform']
+                #glob_attrs['orbit_direction'] = orbit_time
 
-            utils.set_global_atts(all_cubes, glob_attrs)
+                utils.set_global_atts(all_cubes, glob_attrs)
 
-            # This util funtion will give all files in the same year the same name
-            # can not see a way to resolve this from the source code
-            # esmvaltool/cmorizers/data/utilities.py
-            utils.save_variable(
-                all_cubes,
-                variable_name,
-                out_dir,
-                glob_attrs,
-                unlimited_dimensions=["time"],
-               )
+                old_version = glob_attrs["version"]
+                glob_attrs["version"] = glob_attrs["version"] + f"_{ir_mw}" + f"_{glob_attrs['platform']}"
 
-            ######## work out how to get utils save to work with the multiple platforms
-            # save_name = f"{out_dir}/OBS_ESACCI-LST_sat_{cfg['attributes']['version']}_{vals['mip']}_" + \
-            #     f"{var}_{datestr}.nc"
-            # iris.save(all_cubes, save_name)
-           
+                # This util funtion will give all files in the same year the same name
+                # can not see a way to resolve this from the source code
+                # esmvaltool/cmorizers/data/utilities.py
+
+                logger.info(f"{glob_attrs=}")
+                logger.info(f"{out_dir=}")
+
+                utils.save_variable(
+                    all_cubes,
+                    variable_name,
+                    out_dir,
+                    glob_attrs,
+                    unlimited_dimensions=["time"],
+                )
+
+                # need to put this back
+                glob_attrs["version"] = old_version

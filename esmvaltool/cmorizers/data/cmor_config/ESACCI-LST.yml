@@ -5,7 +5,7 @@
 
 # Common global attributes for Cmorizer output
 attributes:
-  dataset_id: ESACCI-LST
+  dataset_id: ESACCI-LST-HELLO
   version: '5.11'
   tier: 2
   project_id: OBS
