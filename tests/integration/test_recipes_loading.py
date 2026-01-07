@@ -12,9 +12,7 @@ import esmvalcore.typing
 import pytest
 import pytest_mock
 import yaml
-from esmvalcore import __version__ as core_ver
 from esmvalcore.config import CFG, Session, _config
-from packaging import version
 
 try:
     # Since ESValCore v2.14.0
@@ -83,8 +81,10 @@ class MockDataSource:
     ) -> local.LocalFile:
         file1 = local.LocalFile(self.rootpath / "test_0001-1849.nc")
         file1.facets["timerange"] = "0001/1849"
+        file1.facets["version"] = "v20230101"
         file2 = local.LocalFile(self.rootpath / "test_1850-9999.nc")
         file2.facets["timerange"] = "1850/9999"
+        file2.facets["version"] = "v20230101"
         return [file1, file2]
 
 
@@ -154,9 +154,4 @@ def test_recipe_valid(recipe_file, session, mocker):
             filename.parent.mkdir(parents=True, exist_ok=True)
             filename.touch()
 
-    # Account for module change after esmvalcore=2.7
-    if version.parse(core_ver) <= version.parse("2.7.1"):
-        config_user = session.to_config_user()
-        esmvalcore._recipe.read_recipe_file(recipe_file, config_user)
-    else:
-        esmvalcore._recipe.recipe.read_recipe_file(recipe_file, session)
+    esmvalcore._recipe.recipe.read_recipe_file(recipe_file, session)
