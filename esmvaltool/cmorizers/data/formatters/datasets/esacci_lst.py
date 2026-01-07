@@ -66,10 +66,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
         logger.info(f"Starting CMORiser for {var}")
 
-        
-
-        
-
         if vals['ir_or_mw'] == 'mw':
             file1 = 'ASC'
             file2 = 'DES' 
@@ -84,8 +80,6 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
             end_date = datetime.datetime(vals['end_year'], 12, 31)
             current_date = start_date
 
-            logger.info(f"********************************************* {ir_mw} **********************************")
-            logger.info(f"{var=}")
             while current_date <= end_date:
 
                 month_cube_list = iris.cube.CubeList([])
@@ -211,16 +205,16 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
 
                 # Fix global metadata
                 glob_attrs['platform'] = vals['platform']
-                #glob_attrs['orbit_direction'] = orbit_time
 
                 utils.set_global_atts(all_cubes, glob_attrs)
 
-                old_version = glob_attrs["version"]
-                glob_attrs["version"] = glob_attrs["version"] + f"_{ir_mw}" + f"_{glob_attrs['platform']}"
+                old_version = glob_attrs["dataset_id"]
+                glob_attrs["dataset_id"] = glob_attrs["dataset_id"] + f"_{ir_mw}"
 
                 # This util funtion will give all files in the same year the same name
                 # can not see a way to resolve this from the source code
                 # esmvaltool/cmorizers/data/utilities.py
+                # *** think this is ok now
 
                 logger.info(f"{glob_attrs=}")
                 logger.info(f"{out_dir=}")
@@ -234,4 +228,4 @@ def cmorization(in_dir, out_dir, cfg, cfg_user, start_date, end_date):
                 )
 
                 # need to put this back
-                glob_attrs["version"] = old_version
+                glob_attrs["dataset_id"] = old_version
