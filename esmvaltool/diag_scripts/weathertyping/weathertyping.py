@@ -83,7 +83,8 @@ def process_models_automatic_slwt(
                 f"{data_info['timerange']}.nc"
 
                 wt_cubes = load_wt_files(
-                    wt_cube_path, f"{data_info['ensemble']}_"
+                    wt_cube_path,
+                    f"{data_info['ensemble']}_",
                 )
 
                 var_dict = {
@@ -97,7 +98,10 @@ def process_models_automatic_slwt(
 
                     plot_means(cfg, var_data[0], wt_cubes, data_info)
                 plot_seasonal_occurrence(
-                    cfg, wt_cubes, data_info, wt_cube_path
+                    cfg,
+                    wt_cubes,
+                    data_info,
+                    wt_cube_path,
                 )
 
 
