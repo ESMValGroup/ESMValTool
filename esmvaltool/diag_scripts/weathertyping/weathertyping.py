@@ -74,7 +74,6 @@ def process_models_automatic_slwt(
                 data_info,
                 cfg.get("predefined_slwt"),
             )
-
             # plot means
             if cfg.get("plotting", False):
                 # load wt files
